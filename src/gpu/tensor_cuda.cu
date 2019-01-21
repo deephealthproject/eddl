@@ -27,7 +27,6 @@
 #include <stdio.h>
 #include "tensor_cuda.h"
 
-
 void check_cuda(cudaError_t err,char *msg)
 {
   if(err!=cudaSuccess)
@@ -44,7 +43,6 @@ float* create_tensor(int size)
   check_cuda(cudaMalloc((void**)&devicePointer,size*sizeof(float)),"create_tensor");
   return devicePointer;
 }
-
 
 void delete_tensor(float* p)
 {
