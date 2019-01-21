@@ -4,7 +4,7 @@
 #include "../tensor.h"
 
 
-#int EDDL_DEV=DEV_CPU;
+//int EDDL_DEV=DEV_CPU;
 int EDDL_DEV=DEV_GPU;
 
 int main(int argc, char **argv)

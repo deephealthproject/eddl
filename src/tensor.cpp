@@ -6,6 +6,8 @@
 #include <cstdlib>
 
 #include "tensor.h"
+
+
 #include "gpu/tensor_cuda.h"
 
 extern int EDDL_DEV;
@@ -26,9 +28,7 @@ Tensor::Tensor(int d1)
   size[0]=d1;
 
   if (device==DEV_CPU) ptr1.resize(d1);
-  else if (device==DEV_GPU) {
-     g_ptr=create_tensor(tam);
-  }
+  else if (device==DEV_GPU) g_ptr=create_tensor(tam);
 }
 
 Tensor::Tensor(int d1,int d2)
@@ -40,9 +40,7 @@ Tensor::Tensor(int d1,int d2)
   size[1]=d2;
 
   if (device==DEV_CPU) ptr2.resize(d1,d2);
-  else if (device==DEV_GPU) {
-    g_ptr=create_tensor(tam);
-  }
+  else if (device==DEV_GPU) g_ptr=create_tensor(tam);
 }
 
 Tensor::Tensor(int d1,int d2,int d3)
@@ -59,9 +57,8 @@ Tensor::Tensor(int d1,int d2,int d3)
     for(int i=0;i<d1;++i)
       ptr[i]=new Tensor(d2,d3);
   }
-  else if (device==DEV_GPU) {
-     g_ptr=create_tensor(tam);
-   }
+  else if (device==DEV_GPU) g_ptr=create_tensor(tam);
+
 }
 
 Tensor::Tensor(int d1,int d2,int d3,int d4)
@@ -79,9 +76,8 @@ Tensor::Tensor(int d1,int d2,int d3,int d4)
     for(int i=0;i<d1;++i)
       ptr[i]=new Tensor(d2,d3,d4);
     }
-  else if (device==DEV_GPU) {
-     g_ptr=create_tensor(tam);
-  }
+  else if (device==DEV_GPU) g_ptr=create_tensor(tam);
+
 }
 
 Tensor::Tensor(int d1,int d2,int d3,int d4,int d5)
@@ -95,9 +91,12 @@ Tensor::Tensor(int d1,int d2,int d3,int d4,int d5)
   size[3]=d4;
   size[4]=d5;
 
-  ptr=(Tensor **)malloc(d1*sizeof(Tensor *));
-  for(int i=0;i<d1;++i)
-    ptr[i]=new Tensor(d2,d3,d4,d5);
+  if (device==DEV_CPU) {
+    ptr=(Tensor **)malloc(d1*sizeof(Tensor *));
+    for(int i=0;i<d1;++i)
+      ptr[i]=new Tensor(d2,d3,d4,d5);
+  }
+  else if (device==DEV_GPU) g_ptr=create_tensor(tam);
 }
 
 
