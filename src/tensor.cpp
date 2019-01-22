@@ -32,7 +32,9 @@
 #include "tensor.h"
 
 // only if gpu
+#ifdef useGPU
 #include "gpu/tensor_cuda.h"
+#endif
 
 extern int EDDL_DEV;
 
@@ -50,7 +52,9 @@ Tensor::Tensor(int d1)
   size[0]=d1;
 
   if (device==DEV_CPU) ptr1.resize(d1);
+  #ifdef useGPU
   else if (device==DEV_GPU) g_ptr=create_tensor(tam);
+  #endif
 }
 
 Tensor::Tensor(int d1,int d2)
@@ -62,7 +66,9 @@ Tensor::Tensor(int d1,int d2)
   size[1]=d2;
 
   if (device==DEV_CPU) ptr2.resize(d1,d2);
+  #ifdef useGPU
   else if (device==DEV_GPU) g_ptr=create_tensor(tam);
+  #endif
 }
 
 Tensor::Tensor(int d1,int d2,int d3)
@@ -79,7 +85,9 @@ Tensor::Tensor(int d1,int d2,int d3)
     for(int i=0;i<d1;++i)
       ptr[i]=new Tensor(d2,d3);
   }
+  #ifdef useGPU
   else if (device==DEV_GPU) g_ptr=create_tensor(tam);
+  #endif
 
 }
 
@@ -98,8 +106,9 @@ Tensor::Tensor(int d1,int d2,int d3,int d4)
     for(int i=0;i<d1;++i)
       ptr[i]=new Tensor(d2,d3,d4);
     }
+  #ifdef useGPU
   else if (device==DEV_GPU) g_ptr=create_tensor(tam);
-
+  #endif
 }
 
 Tensor::Tensor(int d1,int d2,int d3,int d4,int d5)
@@ -118,20 +127,24 @@ Tensor::Tensor(int d1,int d2,int d3,int d4,int d5)
     for(int i=0;i<d1;++i)
       ptr[i]=new Tensor(d2,d3,d4,d5);
   }
+  #ifdef useGPU
   else if (device==DEV_GPU) g_ptr=create_tensor(tam);
+  #endif
 }
 
 
 ///////////////////////////////////////////
 Tensor::~Tensor()
 {
-  if (dim==1) ptr1.resize(0);
-  else if (dim==2) ptr2.resize(0,0);
-  else if (dim>2) {
-    for(int i=0;i<size[0];++i) {
-      delete ptr[i];
+  if (device==DEV_CPU) {
+    if (dim==1) ptr1.resize(0);
+    else if (dim==2) ptr2.resize(0,0);
+    else if (dim>2) {
+      for(int i=0;i<size[0];++i) {
+        delete ptr[i];
+      }
+      delete ptr;
     }
-    delete ptr;
   }
 }
 
