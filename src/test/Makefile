@@ -5,12 +5,13 @@ ifneq ($(MAKECMDGOALS),install)
 #DEFAULT VALUES
 ## TARGET=1 LINUX
 ifdef TARGET
-
 ifeq ($(TARGET),1)
 $(info set Linux)
 endif
-
 ifeq ($(TARGET),2)
+$(info set Mac)
+endif
+ifeq ($(TARGET),3)
 $(info set Windows)
 endif
 else
@@ -36,6 +37,13 @@ $(info ----> DEFAULT: set CORE CPU)
 endif
 
 
+## CPU OPTIMIZATIONS
+ifndef OPT
+OPT=3
+$(info ----> DEFAULT: no OPT)
+endif
+
+
 
 #### LINUX
 ifeq ($(TARGET),1)
@@ -44,26 +52,49 @@ ifeq ($(TARGET),1)
 # OPT=3: Nothing
 # OPT=4: Debug
 CXX = g++
-ifdef OPT
 ifeq ($(OPT),1)
 $(info set AVX)
-CXXFLAGS = -fopenmp -I Eigen -march=native -mavx -O3
+CXXFLAGS = -fopenmp -march=native -mavx -O3
 endif
 ifeq ($(OPT),2)
 $(info set SSE)
-CXXFLAGS = -fopenmp -I Eigen -march=native -msse2 -O3
+CXXFLAGS = -fopenmp -march=native -msse2 -O3
 endif
 ifeq ($(OPT),3)
 $(info set no opt)
-CXXFLAGS = -fopenmp -I Eigen -O3
+CXXFLAGS = -fopenmp -O3
 endif
 ifeq ($(OPT),4)
 $(info set Debug)
-CXXFLAGS =  -fopenmp -I Eigen -g
-endif
+CXXFLAGS =  -fopenmp -g
 endif
 endif
 
+
+#### MAC
+ifeq ($(TARGET),2)
+# OPT=1: AVX
+# OPT=2: SSE
+# OPT=3: Nothing
+# OPT=4: Debug
+CXX = g++
+ifeq ($(OPT),1)
+$(info set AVX)
+CXXFLAGS =-march=native -mavx -O3
+endif
+ifeq ($(OPT),2)
+$(info set SSE)
+CXXFLAGS =-march=native -msse2 -O3
+endif
+ifeq ($(OPT),3)
+$(info set no opt)
+CXXFLAGS =-O3
+endif
+ifeq ($(OPT),4)
+$(info set Debug)
+CXXFLAGS =-g
+endif
+endif
 
 
 
