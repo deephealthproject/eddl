@@ -31,14 +31,14 @@
 
 int main(int argc, char **argv)
 {
-  Tensor A({10,20,30});
+  Tensor A({100,200,200,512},DEV_CPU);
 
   A.info();
 
   shape s=A.getshape();
 
 
-  Tensor B(s);
+  Tensor B(A.getshape());
   B.info();
 
 

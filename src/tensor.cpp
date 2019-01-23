@@ -31,7 +31,7 @@
 
 #include "tensor.h"
 
-#ifdef useGPU
+#ifdef cGPU
 #include "gpu/tensor_cuda.h"
 #endif
 
@@ -45,12 +45,17 @@ Tensor::Tensor():device(0),dim(0),tam(0){}
 
 Tensor::Tensor(const std::initializer_list<int>& init):Tensor(init,0){}
 Tensor::Tensor(const std::initializer_list<int>& init, int dev):Tensor(shape(init.begin(), init.end()),dev){}
-
 Tensor::Tensor(const shape s):Tensor(s,0){}
-//Tensor::Tensor(const shape s, int dev):Tensor(s.size(),&((std::vector<int>(s.begin(), s.end()))[0]),dev){}
 
 Tensor::Tensor(shape s,int dev)
 {
+  #ifndef cGPU
+  if (dev==DEV_GPU){
+    fprintf(stderr,"Not compiled for GPU\n");
+    exit(0);
+  }
+  #endif
+
   device=dev;
   dim=s.size();
   tam=1;
@@ -106,6 +111,7 @@ void Tensor::info()
   for (i = 0; i < dim-1; i++)
 		fprintf(stderr,"%d,",sizes[i]);
   fprintf(stderr,"%d)\n",sizes[i]);
+  fprintf(stderr,"Total bytes=%ld\n",tam*sizeof(float));
 
   if (device==DEV_CPU) fprintf(stderr,"Device=CPU\n");
   else if (device==DEV_GPU) fprintf(stderr,"Device=GPU\n");
