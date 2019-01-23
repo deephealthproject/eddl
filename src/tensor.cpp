@@ -43,53 +43,36 @@ using namespace Eigen;
 // Tensor class
 Tensor::Tensor():device(0),dim(0),tam(0){}
 
-Tensor::Tensor(const std::initializer_list<int>& init)
-{
-  Tensor(init,0); //DEV_CPU by default
-}
-Tensor::Tensor(const shape s)
-{
-  Tensor(s,0); //DEV_CPU by default
-}
+Tensor::Tensor(const std::initializer_list<int>& init):Tensor(init,0){}
+Tensor::Tensor(const std::initializer_list<int>& init, int dev):Tensor(shape(init.begin(), init.end()),dev){}
 
-Tensor::Tensor(const std::initializer_list<int>& init, int dev)
-{
-  Tensor(init.size(),init.begin(),dev);
-}
-Tensor::Tensor(const shape s, int dev)
-{
-    fprintf(stderr,"POR AQUI %d\n",s.size());
-}
+Tensor::Tensor(const shape s):Tensor(s,0){}
+//Tensor::Tensor(const shape s, int dev):Tensor(s.size(),&((std::vector<int>(s.begin(), s.end()))[0]),dev){}
 
-
-Tensor::Tensor(int d, const int *s,int dev)
+Tensor::Tensor(shape s,int dev)
 {
   device=dev;
-  dim=d;
+  dim=s.size();
   tam=1;
-  size=(int*)malloc(d*sizeof(int));
+  sizes=s;
 
-  fprintf(stderr,"DIM=%d\n",dim);
-  for(int i=0;i<d;++i) {
-      fprintf(stderr,"%d ",s[i]);
+  for(int i=0;i<dim;++i) {
       tam*=s[i];
-      size[i]=s[i];
   }
-  fprintf(stderr,"\n");
 
   if (dev==DEV_CPU) {
-    if (dim==1) ptr1.resize(size[0]);
-    if (dim==2) ptr2.resize(size[0],size[1]);
+    if (dim==1) ptr1.resize(sizes[0]);
+    if (dim==2) ptr2.resize(sizes[0],sizes[1]);
     else {
-      ptr=(Tensor **)malloc(size[0]*sizeof(Tensor *));
-      for(int i=0;i<size[0];++i)
-        ptr[i]=new Tensor(d-1,size+1,dev);
+      ptr=(Tensor **)malloc(sizes[0]*sizeof(Tensor *));
+      s.erase(s.begin());
+      for(int i=0;i<sizes[0];++i)
+        ptr[i]=new Tensor(s,dev);
     }
   }
   #ifdef useGPU
   else if (device==DEV_GPU) g_ptr=create_tensor(tam);
   #endif
-
 }
 
 ///////////////////////////////////////////
@@ -99,7 +82,7 @@ Tensor::~Tensor()
     if (dim==1) ptr1.resize(0);
     else if (dim==2) ptr2.resize(0,0);
     else if (dim>2) {
-      for(int i=0;i<size[0];++i) {
+      for(int i=0;i<sizes[0];++i) {
         delete ptr[i];
       }
       delete ptr;
@@ -107,26 +90,35 @@ Tensor::~Tensor()
   }
 }
 
-
+///////////////////////////////////////////
 shape Tensor::getshape()
 {
-
-  fprintf(stderr,"dim=%d\n",dim);
-
-  shape s;
-	for (int i = 0; i < dim; i++)
-		s.push_back(size[i]);
-
+  shape s=sizes;
   return s;
 }
 
+void Tensor::info()
+{
+  int i;
+
+  fprintf(stderr,"DIM=%d\n",dim);
+  fprintf(stderr,"(");
+  for (i = 0; i < dim-1; i++)
+		fprintf(stderr,"%d,",sizes[i]);
+  fprintf(stderr,"%d)\n",sizes[i]);
+
+  if (device==DEV_CPU) fprintf(stderr,"Device=CPU\n");
+  else if (device==DEV_GPU) fprintf(stderr,"Device=GPU\n");
+  else fprintf(stderr,"Device=FPGA\n");
+  fprintf(stderr,"\n");
+}
 
 ///////////////////////////////////////////
 int Tensor::eqsize(Tensor *A, Tensor *B) {
   if (A->dim!=B->dim) return 0;
 
   for(int i=0;i<A->dim;i++)
-    if (A->size[i]!=B->size[i]) return 0;
+    if (A->sizes[i]!=B->sizes[i]) return 0;
 
   return 1;
 

@@ -33,11 +33,11 @@
 
 
 #include <initializer_list>
-#include <list>
+#include <vector>
 
 #include "cpu/Eigen/Dense"
 
-typedef std::list<int> shape;
+typedef std::vector<int> shape;
 
 using namespace Eigen;
 
@@ -48,7 +48,7 @@ class Tensor {
   int device;
   int dim;
   int tam;
-  int *size;
+  shape sizes;
 
   Tensor **ptr;
 
@@ -68,11 +68,9 @@ class Tensor {
   Tensor(const std::initializer_list<int>& init, int dev);
   Tensor(const shape s);
   Tensor(const shape s, int dev);
-
-  Tensor(int d, const int *s,int dev);
   /////////
-
   shape getshape();
+  void info();
   /////////
   static int eqsize(Tensor *A, Tensor *B);
 

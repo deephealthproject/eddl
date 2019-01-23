@@ -31,24 +31,18 @@
 
 int main(int argc, char **argv)
 {
+  Tensor A({10,20,30});
 
-  Tensor *A=new Tensor({10,20,30});
+  A.info();
 
-  fprintf(stderr,"DIM=%d",A->dim);
-  shape s=A->getshape();
-
-  //fprintf(stderr,"DIM=%d",s.size());
+  shape s=A.getshape();
 
 
   Tensor B(s);
+  B.info();
 
 
-
-
-
-  //Tensor *B=new Tensor(3,[10,10,10], DEV_CPU);
-
-  //if (Tensor::eqsize(A,B)) printf("iguales\n");
-  //else printf("diferentes\n");
+  if (Tensor::eqsize(&A,&B)) printf("iguales\n");
+  else printf("diferentes\n");
 
 }
