@@ -31,10 +31,10 @@
 
 #include "tensor.h"
 
-// only if gpu
 #ifdef useGPU
 #include "gpu/tensor_cuda.h"
 #endif
+
 #include "cpu/Eigen/Dense"
 
 
