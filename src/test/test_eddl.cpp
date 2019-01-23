@@ -31,18 +31,23 @@
 
 int main(int argc, char **argv)
 {
-  Tensor A({100,200,200,512},DEV_CPU);
+  //Tensor<float> A({100,32,32,512},DEV_CPU);
 
-  A.info();
-
-  shape s=A.getshape();
-
-
-  Tensor B(A.getshape());
-  B.info();
+  TENSOR C=createtensor({1,1,1},DEV_CPU,FLOAT64);
+  C->info();
 
 
-  if (Tensor::eqsize(&A,&B)) printf("iguales\n");
-  else printf("diferentes\n");
+  TENSOR D=tensor({1,1,1});
+  D->info();
+
+  //shape s=A.getshape();
+
+
+  //Tensor<double> B(A.getshape());
+  //B.info();
+
+
+  //if (Tensor<float>::eqsize(&A,&B)) printf("iguales\n");
+  //else printf("diferentes\n");
 
 }

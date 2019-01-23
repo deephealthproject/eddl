@@ -27,105 +27,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <initializer_list>
 #include <vector>
+#include <string>
 
 #include "tensor.h"
 
-#ifdef cGPU
-#include "gpu/tensor_cuda.h"
-#endif
-
-#include "cpu/Eigen/Dense"
-
-using namespace Eigen;
+using namespace std;
 
 
-// Tensor class
-Tensor::Tensor():device(0),dim(0),tam(0){}
-
-Tensor::Tensor(const std::initializer_list<int>& init):Tensor(init,0){}
-Tensor::Tensor(const std::initializer_list<int>& init, int dev):Tensor(shape(init.begin(), init.end()),dev){}
-Tensor::Tensor(const shape s):Tensor(s,0){}
-
-Tensor::Tensor(shape s,int dev)
+Tensor<float> *createtensor(const std::initializer_list<int>& init)
 {
-  #ifndef cGPU
-  if (dev==DEV_GPU){
-    fprintf(stderr,"Not compiled for GPU\n");
-    exit(0);
-  }
-  #endif
-
-  device=dev;
-  dim=s.size();
-  tam=1;
-  sizes=s;
-
-  for(int i=0;i<dim;++i) {
-      tam*=s[i];
-  }
-
-  if (dev==DEV_CPU) {
-    if (dim==1) ptr1.resize(sizes[0]);
-    if (dim==2) ptr2.resize(sizes[0],sizes[1]);
-    else {
-      ptr=(Tensor **)malloc(sizes[0]*sizeof(Tensor *));
-      s.erase(s.begin());
-      for(int i=0;i<sizes[0];++i)
-        ptr[i]=new Tensor(s,dev);
-    }
-  }
-  #ifdef useGPU
-  else if (device==DEV_GPU) g_ptr=create_tensor(tam);
-  #endif
-}
-
-///////////////////////////////////////////
-Tensor::~Tensor()
-{
-  if (device==DEV_CPU) {
-    if (dim==1) ptr1.resize(0);
-    else if (dim==2) ptr2.resize(0,0);
-    else if (dim>2) {
-      for(int i=0;i<sizes[0];++i) {
-        delete ptr[i];
-      }
-      delete ptr;
-    }
-  }
-}
-
-///////////////////////////////////////////
-shape Tensor::getshape()
-{
-  shape s=sizes;
-  return s;
-}
-
-void Tensor::info()
-{
-  int i;
-
-  fprintf(stderr,"DIM=%d\n",dim);
-  fprintf(stderr,"(");
-  for (i = 0; i < dim-1; i++)
-		fprintf(stderr,"%d,",sizes[i]);
-  fprintf(stderr,"%d)\n",sizes[i]);
-  fprintf(stderr,"Total bytes=%ld\n",tam*sizeof(float));
-
-  if (device==DEV_CPU) fprintf(stderr,"Device=CPU\n");
-  else if (device==DEV_GPU) fprintf(stderr,"Device=GPU\n");
-  else fprintf(stderr,"Device=FPGA\n");
-  fprintf(stderr,"\n");
-}
-
-///////////////////////////////////////////
-int Tensor::eqsize(Tensor *A, Tensor *B) {
-  if (A->dim!=B->dim) return 0;
-
-  for(int i=0;i<A->dim;i++)
-    if (A->sizes[i]!=B->sizes[i]) return 0;
-
-  return 1;
-
+  return new Tensor<float>(init,0);
 }

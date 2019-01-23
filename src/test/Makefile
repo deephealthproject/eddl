@@ -80,7 +80,7 @@ ifeq ($(TARGET),2)
 CXX = g++
 ifeq ($(OPT),1)
 $(info set AVX)
-CXXFLAGS =-std=c++11 -march=native -mavx -O3
+CXXFLAGS =-std=c++14 -march=native -mavx -O3
 endif
 ifeq ($(OPT),2)
 $(info set SSE)
@@ -105,8 +105,8 @@ ifeq ($(cuda_path),)
 $(error Set enviroment variable CUDA_PATH with directory to cuda)
 endif
 
-CXXFLAGS :=  $(CXXFLAGS) -DuseGPU -I $(cuda_path)include/
-GPU_CXXFLAGS := -I $(cuda_path)include/ -L  $(cuda_path)lib64/ -DuseGPU
+CXXFLAGS :=  $(CXXFLAGS) -DcGPU -I $(cuda_path)include/
+GPU_CXXFLAGS := -I $(cuda_path)include/ -L  $(cuda_path)lib64/ -DcGPU
 GPU_LIBFLAGS := -lcudart -lcublas -lcurand
 GPU_CXX := $(cuda_path)bin/nvcc
 GPU_OBJ = tensor_cuda.o
