@@ -29,16 +29,26 @@
 
 #include "../tensor.h"
 
-//int EDDL_DEV=DEV_CPU;
-int EDDL_DEV=DEV_GPU;
-
 int main(int argc, char **argv)
 {
 
-  Tensor *A=new Tensor(10,10,10);
-  Tensor *B=new Tensor(10,10,10);
+  Tensor *A=new Tensor({10,20,30});
 
-  if (Tensor::eqsize(A,B)) printf("iguales\n");
-  else printf("diferentes\n");
+  fprintf(stderr,"DIM=%d",A->dim);
+  shape s=A->getshape();
+
+  //fprintf(stderr,"DIM=%d",s.size());
+
+
+  Tensor B(s);
+
+
+
+
+
+  //Tensor *B=new Tensor(3,[10,10,10], DEV_CPU);
+
+  //if (Tensor::eqsize(A,B)) printf("iguales\n");
+  //else printf("diferentes\n");
 
 }

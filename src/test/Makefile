@@ -80,19 +80,19 @@ ifeq ($(TARGET),2)
 CXX = g++
 ifeq ($(OPT),1)
 $(info set AVX)
-CXXFLAGS =-march=native -mavx -O3
+CXXFLAGS =-std=c++11 -march=native -mavx -O3
 endif
 ifeq ($(OPT),2)
 $(info set SSE)
-CXXFLAGS =-march=native -msse2 -O3
+CXXFLAGS =-std=c++11-march=native -msse2 -O3
 endif
 ifeq ($(OPT),3)
 $(info set no opt)
-CXXFLAGS =-O3
+CXXFLAGS =-std=c++11 -O3
 endif
 ifeq ($(OPT),4)
 $(info set Debug)
-CXXFLAGS =-g
+CXXFLAGS =-std=c++11 -g
 endif
 endif
 

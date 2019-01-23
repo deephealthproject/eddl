@@ -24,10 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <vector>
 
 #include "tensor.h"
 
@@ -37,106 +37,60 @@
 
 #include "cpu/Eigen/Dense"
 
-
 using namespace Eigen;
-int EDDL_DEV=1;
 
-Tensor::Tensor()
+
+// Tensor class
+Tensor::Tensor():device(0),dim(0),tam(0){}
+
+Tensor::Tensor(const std::initializer_list<int>& init)
 {
-  device=EDDL_DEV;
-  dim=0;
+  Tensor(init,0); //DEV_CPU by default
+}
+Tensor::Tensor(const shape s)
+{
+  Tensor(s,0); //DEV_CPU by default
 }
 
-Tensor::Tensor(int d1)
+Tensor::Tensor(const std::initializer_list<int>& init, int dev)
 {
-  device=EDDL_DEV;
-  dim=1;
-  tam=d1;
-  size[0]=d1;
-
-  if (device==DEV_CPU) ptr1.resize(d1);
-  #ifdef useGPU
-  else if (device==DEV_GPU) g_ptr=create_tensor(tam);
-  #endif
+  Tensor(init.size(),init.begin(),dev);
+}
+Tensor::Tensor(const shape s, int dev)
+{
+    fprintf(stderr,"POR AQUI %d\n",s.size());
 }
 
-Tensor::Tensor(int d1,int d2)
+
+Tensor::Tensor(int d, const int *s,int dev)
 {
-  printf("AQUI\n");
-  
-  device=EDDL_DEV;
-  dim=2;
-  tam=d1*d2;
-  size[0]=d1;
-  size[1]=d2;
+  device=dev;
+  dim=d;
+  tam=1;
+  size=(int*)malloc(d*sizeof(int));
 
-  if (device==DEV_CPU) ptr2.resize(d1,d2);
-  #ifdef useGPU
-  else if (device==DEV_GPU) g_ptr=create_tensor(tam);
-  #endif
-}
-
-Tensor::Tensor(int d1,int d2,int d3)
-{
-  device=EDDL_DEV;
-  dim=3;
-  tam=d1*d2*d3;
-  size[0]=d1;
-  size[1]=d2;
-  size[2]=d3;
-
-  if (device==DEV_CPU) {
-    ptr=(Tensor **)malloc(d1*sizeof(Tensor *));
-    for(int i=0;i<d1;++i)
-      ptr[i]=new Tensor(d2,d3);
+  fprintf(stderr,"DIM=%d\n",dim);
+  for(int i=0;i<d;++i) {
+      fprintf(stderr,"%d ",s[i]);
+      tam*=s[i];
+      size[i]=s[i];
   }
-  #ifdef useGPU
-  else if (device==DEV_GPU) g_ptr=create_tensor(tam);
-  #endif
+  fprintf(stderr,"\n");
 
-}
-
-Tensor::Tensor(int d1,int d2,int d3,int d4)
-{
-  device=EDDL_DEV;
-  dim=4;
-  tam=d1*d2*d3*d4;
-  size[0]=d1;
-  size[1]=d2;
-  size[2]=d3;
-  size[3]=d4;
-
-  if (device==DEV_CPU) {
-    ptr=(Tensor **)malloc(d1*sizeof(Tensor *));
-    for(int i=0;i<d1;++i)
-      ptr[i]=new Tensor(d2,d3,d4);
+  if (dev==DEV_CPU) {
+    if (dim==1) ptr1.resize(size[0]);
+    if (dim==2) ptr2.resize(size[0],size[1]);
+    else {
+      ptr=(Tensor **)malloc(size[0]*sizeof(Tensor *));
+      for(int i=0;i<size[0];++i)
+        ptr[i]=new Tensor(d-1,size+1,dev);
     }
-  #ifdef useGPU
-  else if (device==DEV_GPU) g_ptr=create_tensor(tam);
-  #endif
-}
-
-Tensor::Tensor(int d1,int d2,int d3,int d4,int d5)
-{
-  device=EDDL_DEV;
-  dim=5;
-  tam=d1*d2*d3*d4*d5;
-  size[0]=d1;
-  size[1]=d2;
-  size[2]=d3;
-  size[3]=d4;
-  size[4]=d5;
-
-  if (device==DEV_CPU) {
-    ptr=(Tensor **)malloc(d1*sizeof(Tensor *));
-    for(int i=0;i<d1;++i)
-      ptr[i]=new Tensor(d2,d3,d4,d5);
   }
   #ifdef useGPU
   else if (device==DEV_GPU) g_ptr=create_tensor(tam);
   #endif
-}
 
+}
 
 ///////////////////////////////////////////
 Tensor::~Tensor()
@@ -154,6 +108,19 @@ Tensor::~Tensor()
 }
 
 
+shape Tensor::getshape()
+{
+
+  fprintf(stderr,"dim=%d\n",dim);
+
+  shape s;
+	for (int i = 0; i < dim; i++)
+		s.push_back(size[i]);
+
+  return s;
+}
+
+
 ///////////////////////////////////////////
 int Tensor::eqsize(Tensor *A, Tensor *B) {
   if (A->dim!=B->dim) return 0;
@@ -164,9 +131,3 @@ int Tensor::eqsize(Tensor *A, Tensor *B) {
   return 1;
 
 }
-
-
-
-
-
-

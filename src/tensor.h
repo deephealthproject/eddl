@@ -31,9 +31,16 @@
 #define DEV_GPU 1
 #define DEV_FPGA 2
 
+
+#include <initializer_list>
+#include <list>
+
 #include "cpu/Eigen/Dense"
 
+typedef std::list<int> shape;
+
 using namespace Eigen;
+
 
 class Tensor {
 
@@ -41,7 +48,8 @@ class Tensor {
   int device;
   int dim;
   int tam;
-  int size[5]; // Up to 5D Tensors
+  int *size;
+
   Tensor **ptr;
 
   // CPU
@@ -55,14 +63,17 @@ class Tensor {
 
   Tensor();
   ~Tensor();
+  //Tensor(int d,int s[],int dev);
+  Tensor(const std::initializer_list<int>& init);
+  Tensor(const std::initializer_list<int>& init, int dev);
+  Tensor(const shape s);
+  Tensor(const shape s, int dev);
 
-  Tensor(int a);
-  Tensor(int a,int b);
-  Tensor(int a,int b,int c);
-  Tensor(int a,int b,int c,int d);
-  Tensor(int a,int b,int c,int d,int e);
+  Tensor(int d, const int *s,int dev);
+  /////////
 
-
+  shape getshape();
+  /////////
   static int eqsize(Tensor *A, Tensor *B);
 
 };
