@@ -33,9 +33,7 @@
 
 #include "cpu/Eigen/Dense"
 
-
 using namespace Eigen;
-using namespace std;
 
 class Tensor {
 
@@ -58,7 +56,6 @@ class Tensor {
   Tensor();
   ~Tensor();
 
-
   Tensor(int a);
   Tensor(int a,int b);
   Tensor(int a,int b,int c);
@@ -70,5 +67,6 @@ class Tensor {
 
 };
 
+int getdim(Tensor *T);
 
 #endif

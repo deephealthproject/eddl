@@ -24,21 +24,51 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdio.h>
-#include <stdlib.h>
+#ifndef _TENSOR_
+#define _TENSOR_
 
-#include "../tensor.h"
+#define DEV_CPU 0
+#define DEV_GPU 1
+#define DEV_FPGA 2
 
-//int EDDL_DEV=DEV_CPU;
-int EDDL_DEV=DEV_GPU;
+#include "cpu/Eigen/Dense"
 
-int main(int argc, char **argv)
-{
+using namespace Eigen;
 
-  Tensor *A=new Tensor(10,10,10);
-  Tensor *B=new Tensor(10,10,20);
+class Tensor {
 
-  if (Tensor::eqsize(A,B)) printf("iguales\n");
-  else printf("diferentes\n");
+  public:
+  int device;
+  int dim;
+  int tam;
+  int size[5]; // Up to 5D Tensors
+  Tensor **ptr;
 
-}
+  // CPU
+  RowVectorXd ptr1;
+  MatrixXd ptr2;
+  ////
+
+  // GPU
+  float *g_ptr;
+  //
+
+  Tensor();
+  ~Tensor();
+
+  Tensor(PyObject*,int s);
+    
+  Tensor(Tensor *);
+  Tensor(int a);
+  Tensor(int a,int b);
+  Tensor(int a,int b,int c);
+  Tensor(int a,int b,int c,int d);
+  Tensor(int a,int b,int c,int d,int e);
+
+
+  static int eqsize(Tensor *A, Tensor *B);
+
+};
+
+
+#endif

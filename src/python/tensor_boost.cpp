@@ -28,23 +28,56 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <boost/python/numpy.hpp>
+#include <boost/python.hpp>
 
-#include "tensor.h"
+#include "tensor_boost.h"
 
 // only if gpu
 #ifdef useGPU
 #include "gpu/tensor_cuda.h"
 #endif
-#include "cpu/Eigen/Dense"
 
-
-using namespace Eigen;
 int EDDL_DEV=1;
+
+
+namespace bp = boost::python;
+namespace bn = boost::python::numpy;
 
 Tensor::Tensor()
 {
   device=EDDL_DEV;
   dim=0;
+}
+
+Tensor::Tensor(Tensor *T)
+{
+  dim=T->dim;
+  printf("Aqui 2\n");
+}
+
+Tensor::Tensor(PyObject* B,int s)
+{
+  fprintf(stderr,"Array");
+  bp::object obj(bp::handle<>(bp::borrowed(B)));
+  std::auto_ptr<bn::ndarray> array( new bn::ndarray(bn::from_object(obj, bn::dtype::get_builtin<double>(), 2, 2, bn::ndarray::V_CONTIGUOUS)));
+
+  if ((array->shape(0) != 2) ||(array->shape(1) != 2)) fprintf(stderr,"ERROR\n");
+  else fprintf(stderr,"OK\n");
+
+  
+  /*
+  if (!PyBuffer_Check(B)) {
+    fprintf(stderr,"No buffer");
+  }
+  else {
+    Py_buffer *C=(Py_buffer *)B;
+    fprintf(stderr,"TODO OK %ld\n",C->len);
+    //float *buf=(float *)C->buf;
+    //printf("%f\n",buf[0]);
+    dim=s;
+  }
+  */
 }
 
 Tensor::Tensor(int d1)
@@ -167,6 +200,12 @@ int Tensor::eqsize(Tensor *A, Tensor *B) {
 
 
 
-
-
+BOOST_PYTHON_MODULE(eddl) {
+  bn::initialize();
+  
+  bp::class_<Tensor>("tensor",bp::init<int,int>())
+    .def(bp::init<Tensor *>())
+    .def(bp::init<PyObject*,int>())
+   ;
+}
 
