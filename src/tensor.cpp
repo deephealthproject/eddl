@@ -30,13 +30,372 @@
 #include <initializer_list>
 #include <vector>
 #include <string>
-
+#include <iostream>
 #include "tensor.h"
 
 using namespace std;
 
-
-Tensor<float> *createtensor(const std::initializer_list<int>& init)
+void msg(string s)
 {
-  return new Tensor<float>(init,0);
+  cout<<"\nERROR in tensor: "<<s<<"\n";
+  exit(0);
 }
+
+// Tensor class
+Tensor::Tensor():device(DEV_CPU),dim(0),tam(0){}
+Tensor::Tensor(const std::initializer_list<int>& init):Tensor(init,DEV_CPU){}
+Tensor::Tensor(const std::initializer_list<int>& init, int dev):Tensor(shape(init.begin(), init.end()),dev){}
+Tensor::Tensor(const shape s):Tensor(s,DEV_CPU){}
+
+Tensor::Tensor(shape s,int dev)
+{
+  #ifndef cGPU
+  if (dev==DEV_GPU){
+    fprintf(stderr,"Not compiled for GPU\n");
+    exit(0);
+  }
+  #endif
+  #ifndef cFPGA
+  if (dev==DEV_FPGA){
+    fprintf(stderr,"Not compiled for FPGA\n");
+    exit(0);
+  }
+  #endif
+
+  device=dev;
+  dim=s.size();
+  sizes=s;
+  type=FLOAT32;
+
+  tam=1;
+  for(int i=0;i<dim;++i) tam*=s[i];
+
+  if (device==DEV_CPU) {
+    if (dim<3) mem(type);
+    else {
+      ptr=(Tensor **)malloc(sizes[0]*sizeof(Tensor *));
+      s.erase(s.begin());
+      for(int i=0;i<sizes[0];++i)
+        ptr[i]=new Tensor(s,device);
+    }
+  }
+  #ifdef cGPU
+  else if (device==DEV_GPU) mem(type);
+  #endif
+}
+
+///////////////////////////////////////////
+void Tensor::clean(int t)
+{
+  if (device==DEV_CPU) {
+    if (dim==1) {
+      if (t==FLOAT32) ptr1f.resize(0);
+      if (t==FLOAT64) ptr1d.resize(0);
+      if (t==INT32) ptr1i.resize(0);
+    }
+    else if (dim==2) {
+      if (t==FLOAT32) ptr2f.resize(0,0);
+      if (t==FLOAT64) ptr2d.resize(0,0);
+      if (t==INT32) ptr2i.resize(0,0);
+    }
+  }
+  #ifdef cGPU
+  else if (device==DEV_GPU) {
+    if (t==FLOAT32) delete_tensor(gptrd);
+    if (t==FLOAT64) delete_tensor(gptrf);
+    if (t==INT32) delete_tensor(gptri);
+  }
+  #endif
+}
+
+void Tensor::mem(int t)
+{
+  if (device==DEV_CPU) {
+  if (dim==1) {
+    if (t==FLOAT32) ptr1f.resize(sizes[0]);
+    if (t==FLOAT64) ptr1d.resize(sizes[0]);
+    if (t==INT32) ptr1i.resize(sizes[0]);
+  }
+  else if (dim==2) {
+    if (t==FLOAT32) ptr2f.resize(sizes[0],sizes[1]);
+    if (t==FLOAT64) ptr2d.resize(sizes[0],sizes[1]);
+    if (t==INT32) ptr2i.resize(sizes[0],sizes[1]);
+  }
+}
+  #ifdef cGPU
+  else if (device==DEV_GPU) mem(type);
+  #endif
+}
+
+///////////////////////////////////////////
+void Tensor::changetype(int t)
+{
+  if (type==t) return;
+
+  if (device==DEV_CPU) {
+    if (dim==1) {clean(type);mem(t);}
+    else if (dim==2) {clean(type);mem(t);}
+    else
+      for(int i=0;i<sizes[0];++i)
+        ptr[i]->changetype(t);
+  }
+  #ifdef cGPU
+  else if (device==DEV_GPU) {clean(type);mem(t);}
+  #endif
+  type=t;
+}
+
+///////////////////////////////////////////
+Tensor *Tensor::clone()
+{
+  Tensor *C=new Tensor(getshape(),device);
+  if (type!=FLOAT32)
+    C->changetype(type);
+  return C;
+
+}
+
+///////////////////////////////////////////
+Tensor::~Tensor()
+{
+  if (device==DEV_CPU) {
+    if (dim<3) clean(type);
+    else {
+      for(int i=0;i<sizes[0];++i)
+        delete ptr[i];
+      delete ptr;
+    }
+  }
+  #ifdef cGPU
+  else if (device==DEV_GPU) clean(type);
+  #endif
+}
+
+///////////////////////////////////////////
+
+shape Tensor::getshape()
+{
+  shape s=sizes;
+  return s;
+}
+
+
+void Tensor::info()
+{
+  int i;
+
+  fprintf(stderr,"DIM=%d\n",dim);
+  fprintf(stderr,"(");
+  for (i = 0; i < dim-1; i++)
+		fprintf(stderr,"%d,",sizes[i]);
+  fprintf(stderr,"%d)\n",sizes[i]);
+
+  if (type==FLOAT32) fprintf(stderr,"Type FLOAT32\nTotal bytes=%ld\n",tam*sizeof(float));
+  if (type==FLOAT64) fprintf(stderr,"Type FLOAT64\nTotal bytes=%ld\n",tam*sizeof(double));
+  if (type==INT32) fprintf(stderr,"Type INT32\nTotal bytes=%ld\n",tam*sizeof(int));
+
+  if (device==DEV_CPU) fprintf(stderr,"Device=CPU\n");
+  else if (device==DEV_GPU) fprintf(stderr,"Device=GPU\n");
+  else fprintf(stderr,"Device=FPGA\n");
+}
+
+
+void Tensor::print(){
+
+  if (device==DEV_CPU) {
+    if (dim==1) {
+      if (type==FLOAT32) cout<<ptr1f;
+      if (type==FLOAT64) cout<<ptr1d;
+      if (type==INT32) cout<<ptr1i;
+      cout<<"\n";
+    }
+    else if (dim==2) {
+      if (type==FLOAT32) cout<<ptr2f;
+      if (type==FLOAT64) cout<<ptr2d;
+      if (type==INT32) cout<<ptr2i;
+      cout<<"\n";
+    }
+    else
+      for(int i=0;i<sizes[0];++i) {
+        ptr[i]->print();
+        cout<<"\n";
+      }
+  }
+}
+
+void Tensor::rand(){
+  if (device==DEV_CPU) {
+    if (dim==1) {
+      if (type==FLOAT32) for(int i=0;i<sizes[0];++i) ptr1f(i)=(float)(std::rand()%1000)/(float)1000.0;
+      if (type==FLOAT64) for(int i=0;i<sizes[0];++i) ptr1d(i)=(double)(std::rand()%1000)/(double)1000.0;
+      if (type==INT32) for(int i=0;i<sizes[0];++i) ptr1i(i)=std::rand()%1000;
+    }
+    else if (dim==2) {
+      if (type==FLOAT32) for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2f(i,j)=(float)(std::rand()%1000)/(float)1000.0;
+      if (type==FLOAT64) for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2d(i,j)=(double)(std::rand()%1000)/(double)1000.0;
+      if (type==INT32) for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2i(i,j)=std::rand()%1000;
+    }
+    else
+      for(int i=0;i<sizes[0];++i)
+        ptr[i]->rand();
+
+  }
+
+}
+
+///////////////////////////////////////////
+///          STATIC METHODS             ///
+///////////////////////////////////////////
+
+int Tensor::eqsize(Tensor *A, Tensor *B) {
+  if (A->dim!=B->dim) return 0;
+
+  for(int i=0;i<A->dim;i++)
+    if (A->sizes[i]!=B->sizes[i]) return 0;
+
+  return 1;
+}
+
+///////////////////////////////////////
+//// MULT2D C=A*B
+//// Dimensions and types must be compatible
+//// Only for 2D Tensors
+///////////////////////////////////////
+void Tensor::mult2D(Tensor *A, Tensor *B, Tensor *C)
+{
+  int aux=0;
+
+  if ((A->type!=B->type)||(A->type!=C->type)) msg("Incompatible types in mult2D");
+  if ((A->device!=B->device)||(A->device!=C->device)) msg("Tensors in different devices in mult2D");
+  if ((A->dim!=2)||(B->dim!=2)||(C->dim!=2)) msg("mult2D only for 2D tensors");
+  if ((A->sizes[1]!=B->sizes[0])||(A->sizes[0]!=C->sizes[0])||(B->sizes[1]!=C->sizes[1])) msg("Incompatible dims in mult2D");
+
+  if (A->device==DEV_CPU) {
+    if (A->type==FLOAT32) C->ptr2f=A->ptr2f*B->ptr2f;
+    if (A->type==FLOAT64) C->ptr2d=A->ptr2d*B->ptr2d;
+    if (A->type==INT32) C->ptr2i=A->ptr2i*B->ptr2i;
+  }
+
+  #ifdef cGPU
+  else
+  {
+
+  }
+  #endif
+}
+
+///////////////////////////////////////
+//// SUM2D C=A+B
+//// Dimensions and types must be compatible
+//// Only for 2D Tensors
+///////////////////////////////////////
+void Tensor::sum2D(Tensor *A, Tensor *B, Tensor *C)
+{
+  int aux=0;
+
+  if ((A->type!=B->type)||(A->type!=C->type)) msg("Incompatible types in sum2D");
+  if ((A->device!=B->device)||(A->device!=C->device)) msg("Tensors in different devices in sum2D");
+  if ((A->dim!=2)||(B->dim!=2)||(C->dim!=2)) msg("sum2D only for 2D tensors");
+  if ((!eqsize(A,B))||(!eqsize(A,C))) msg("Incompatible dims in sum2D");
+
+  if (A->device==DEV_CPU) {
+    if (A->type==FLOAT32) C->ptr2f=A->ptr2f+B->ptr2f;
+    if (A->type==FLOAT64) C->ptr2d=A->ptr2d+B->ptr2d;
+    if (A->type==INT32) C->ptr2i=A->ptr2i+B->ptr2i;
+  }
+  #ifdef cGPU
+  else
+  {
+
+  }
+  #endif
+}
+
+///////////////////////////////////////
+//// SUM2D_rowise C=A.rowise+B
+//// Dimensions and types must be compatible
+//// A is 2D Tensor
+//// B is 1D Tensor
+///////////////////////////////////////
+void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
+{
+  if ((A->type!=B->type)||(A->type!=C->type)) msg("Incompatible types in sum2D_rowwise");
+  if ((A->device!=B->device)||(A->device!=C->device)) msg("Tensors in different devices in sum2D_rowwise");
+  if ((A->dim!=2)||(B->dim!=1)||(C->dim!=2)) msg("sum2D_rowwise dims");
+  if ((!eqsize(A,C))||(A->sizes[1]!=B->sizes[0])) msg("Incompatible dims in sum2D_rowwise");
+
+  if (A->device==DEV_CPU) {
+    if (A->type==FLOAT32) C->ptr2f=A->ptr2f.rowwise()+B->ptr1f;
+    if (A->type==FLOAT64) C->ptr2d=A->ptr2d.rowwise()+B->ptr1d;
+    if (A->type==INT32) C->ptr2i=A->ptr2i.rowwise()+B->ptr1i;
+  }
+  #ifdef cGPU
+  else
+  {
+
+  }
+  #endif
+}
+
+///////////////////////////////////////
+//// SUM2D_colwise C=A.colwise+B
+//// Dimensions and types must be compatible
+//// A is 2D Tensor
+//// B is 1D Tensor
+///////////////////////////////////////
+void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C)
+{
+  if ((A->type!=B->type)||(A->type!=C->type)) msg("Incompatible types in sum2D_colwise");
+  if ((A->device!=B->device)||(A->device!=C->device)) msg("Tensors in different devices in sum2D_colwise");
+  if ((A->dim!=2)||(B->dim!=1)||(C->dim!=2)) msg("sum2D_colwise dims");
+  if ((!eqsize(A,C))||(A->sizes[0]!=B->sizes[0])) msg("Incompatible dims in sum2D_colwise");
+
+  if (A->device==DEV_CPU) {
+    if (A->type==FLOAT32) C->ptr2f=A->ptr2f.colwise()+B->ptr1f.transpose();
+    if (A->type==FLOAT64) C->ptr2d=A->ptr2d.colwise()+B->ptr1d.transpose();
+    if (A->type==INT32) C->ptr2i=A->ptr2i.colwise()+B->ptr1i.transpose();
+  }
+  #ifdef cGPU
+  else
+  {
+
+  }
+  #endif
+}
+
+
+///////////////////////////////////////////
+///////////////////////////////////////////
+///////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////

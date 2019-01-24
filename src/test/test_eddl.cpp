@@ -26,28 +26,48 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 
 #include "../tensor.h"
 
 int main(int argc, char **argv)
 {
-  //Tensor<float> A({100,32,32,512},DEV_CPU);
+  Tensor *A=new Tensor({7,1});
+  A->rand();
+  A->print();
 
-  TENSOR C=createtensor({1,1,1},DEV_CPU,FLOAT64);
-  C->info();
+  Tensor *B=new Tensor({1,5});
+  B->rand();
+  B->print();
 
+  Tensor *C=new Tensor({7,5});
+  //Tensor::mult2D(A,B,C);
+  C->print();
 
-  TENSOR D=tensor({1,1,1});
-  D->info();
+  Tensor *D=new Tensor({5});
+  D->rand();
+  D->print();
 
-  //shape s=A.getshape();
-
-
-  //Tensor<double> B(A.getshape());
-  //B.info();
-
-
-  //if (Tensor<float>::eqsize(&A,&B)) printf("iguales\n");
-  //else printf("diferentes\n");
+  Tensor::sum2D_rowwise(C,D,C);
+  C->print();
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  ///////////
