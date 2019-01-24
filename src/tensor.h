@@ -48,7 +48,9 @@
 
 typedef std::vector<int> shape;
 
-using namespace Eigen;
+void msg(std::string s);
+
+//using namespace Eigen;
 
 class Tensor{
 
@@ -62,13 +64,13 @@ class Tensor{
   Tensor **ptr;
 
   // CPU
-  RowVectorXd ptr1d;
-  RowVectorXf ptr1f;
-  RowVectorXi ptr1i;
+  Eigen::RowVectorXd ptr1d;
+  Eigen::RowVectorXf ptr1f;
+  Eigen::RowVectorXi ptr1i;
 
-  MatrixXd ptr2d;
-  MatrixXf ptr2f;
-  MatrixXi ptr2i;
+  Eigen::MatrixXd ptr2d;
+  Eigen::MatrixXf ptr2f;
+  Eigen::MatrixXi ptr2i;
   ////
 
   // GPU
