@@ -31,11 +31,11 @@
 #define DEV_GPU 1
 #define DEV_FPGA 2
 
-#define INT16 0
 #define INT32 1
-#define INT64 2
 #define FLOAT32 3
 #define FLOAT64 4
+
+
 
 #include <initializer_list>
 #include <vector>
@@ -46,9 +46,13 @@
 #include "gpu/tensor_cuda.h"
 #endif
 
-typedef std::vector<int> shape;
+using namespace std;
 
-void msg(std::string s);
+
+typedef vector<int> shape;
+
+void msg(string s);
+void msg(string s,string s2);
 
 //using namespace Eigen;
 
@@ -81,10 +85,15 @@ class Tensor{
   Tensor();
   ~Tensor();
 
-  Tensor(const std::initializer_list<int>& init);
-  Tensor(const std::initializer_list<int>& init, int dev);
+  Tensor(const initializer_list<int>& init);
+  Tensor(const initializer_list<int>& init, int dev);
+  Tensor(const initializer_list<int>& init, string type);
+  Tensor(const initializer_list<int>& init, int dev,string type);
+
   Tensor(const shape s);
   Tensor(const shape s, int dev);
+  Tensor(const shape s, string t);
+  Tensor(const shape s, int dev, string t);
 
   shape getshape();
   void info();

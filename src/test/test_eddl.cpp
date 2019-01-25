@@ -33,20 +33,24 @@
 
 int main(int argc, char **argv)
 {
-  /*
-  Tensor *A=new Tensor({7,1});
+  Tensor *A=new Tensor({7,1},DEV_CPU,"FLOAT32");
   A->rand();
+  A->info();
+  A->print();
 
-  Tensor *B=new Tensor({1,5});
+  Tensor *B=new Tensor({1,5},"INT32");
   B->rand();
+  B->info();
+  B->print();
+
 
   Tensor *C=new Tensor({7,5});
-*/
+
 
   Input *I=new Input(C,"in1");
   I->info();
 
-  Dense *D=new Dense(I,128,"dense1");
+  Dense *D=new Dense(I,128,"dense1",DEV_CPU,"INT32");
   D->info();
 
   Dense *E=new Dense(D,256,"dense2");

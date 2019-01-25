@@ -35,20 +35,28 @@
 
 using namespace std;
 
-void msg(std::string s)
+void msg(string s,string s2)
 {
-  cout<<"\nERROR in tensor: "<<s<<"\n";
+  cout<<"\n"<<s<<s2<<"\n";
   exit(0);
 }
+void msg(string s){msg(s,"");}
 
 
 // Tensor class
 Tensor::Tensor():device(DEV_CPU),dim(0),tam(0){}
-Tensor::Tensor(const std::initializer_list<int>& init):Tensor(init,DEV_CPU){}
-Tensor::Tensor(const std::initializer_list<int>& init, int dev):Tensor(shape(init.begin(), init.end()),dev){}
-Tensor::Tensor(const shape s):Tensor(s,DEV_CPU){}
 
-Tensor::Tensor(shape s,int dev)
+Tensor::Tensor(const initializer_list<int>& init):Tensor(init,DEV_CPU){}
+Tensor::Tensor(const initializer_list<int>& init, string t):Tensor(shape(init.begin(), init.end()),DEV_CPU,t){}
+Tensor::Tensor(const initializer_list<int>& init, int dev):Tensor(shape(init.begin(), init.end()),dev,std::string("FLOAT32")){}
+Tensor::Tensor(const initializer_list<int>& init, int dev,string t):Tensor(shape(init.begin(), init.end()),dev,t){}
+
+
+Tensor::Tensor(const shape s):Tensor(s,DEV_CPU){}
+Tensor::Tensor(const shape s,string t):Tensor(s,DEV_CPU,t){}
+Tensor::Tensor(const shape s,int dev):Tensor(s,dev,std::string("FLOAT32")){}
+
+Tensor::Tensor(shape s,int dev,string t)
 {
   #ifndef cGPU
   if (dev==DEV_GPU){
@@ -66,7 +74,10 @@ Tensor::Tensor(shape s,int dev)
   device=dev;
   dim=s.size();
   sizes=s;
-  type=FLOAT32;
+  if (t=="FLOAT32") type=FLOAT32;
+  else if (t=="FLOAT64") type=FLOAT64;
+  else if (t=="INT32") type=INT32;
+  else msg("Tensor unkown type",t);
 
   tam=1;
   for(int i=0;i<dim;++i) tam*=s[i];
