@@ -31,15 +31,11 @@
 #define DEV_GPU 1
 #define DEV_FPGA 2
 
-#define INT32 1
-#define FLOAT32 3
-#define FLOAT64 4
-
-
 
 #include <initializer_list>
 #include <vector>
 #include <string>
+
 
 #include "cpu/Eigen/Dense"
 #ifdef cGPU
@@ -54,7 +50,6 @@ void msg(string s);
 void msg(string s,string s2);
 
 //using namespace Eigen;
-
 class Tensor{
 
   public:
@@ -67,29 +62,20 @@ class Tensor{
   Tensor **ptr;
 
   // CPU
-  Eigen::RowVectorXd ptr1d;
-  Eigen::RowVectorXf ptr1f;
-  Eigen::RowVectorXi ptr1i;
-  Eigen::MatrixXd ptr2d;
-  Eigen::MatrixXf ptr2f;
-  Eigen::MatrixXi ptr2i;
+  Eigen::RowVectorXf ptr1;
+  Eigen::MatrixXf ptr2;
+
 
   // GPU
-  float *gptrf;
-  int *gptri;
-  double *gptrd;
+  float *gptr;
 
   // Constructors
   Tensor();
   Tensor(const initializer_list<int>& init);
   Tensor(const initializer_list<int>& init, int dev);
-  Tensor(const initializer_list<int>& init, string type);
-  Tensor(const initializer_list<int>& init, int dev,string type);
 
   Tensor(const shape s);
   Tensor(const shape s, int dev);
-  Tensor(const shape s, string t);
-  Tensor(const shape s, int dev, string t);
 
   ~Tensor();
   ///////// normal metods
@@ -100,13 +86,16 @@ class Tensor{
   void clean(int t);
   void print();
   void rand();
+  void set(float v);
 
   ///////// static metods
   static int eqsize(Tensor *A, Tensor *B);
-  static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C);
+  static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC);
   static void sum2D(Tensor *A, Tensor *B, Tensor *C,int incC);
   static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
   static void sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
+
+
 
 };
 

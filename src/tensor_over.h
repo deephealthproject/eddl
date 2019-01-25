@@ -26,68 +26,26 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <initializer_list>
 
 #include "layer.h"
+#include "tensor.h"
 
 using namespace std;
 
-////////////////////////////////////
-///// BASE LAYER CLASS
-////////////////////////////////////
-Layer::Layer(string n):Layer(n,DEV_CPU){}
+typedef vector<int> shape;
 
-Layer::Layer(string n,int d)
-{
-  mode=TRMODE;
-  delta=input=output=NULL;
-  dev=d;
-  name=n;
-}
-
-void Layer::initialize()
-{
-  for(int i = 0; i != params.size(); i++)
-    params[i]->rand();
-}
-
-void Layer::reset()
-{
-
-}
+#define tensor_sum tensor::sum
 
 
-////////////////////////////////////
-///// LINEAR LAYERS
-////////////////////////////////////
-LinLayer::LinLayer(string n,int d):Layer(n,d)
-{
-    parent=NULL;
-}
+class tensor:public Layer {
+public:
+  static Layer* sum(Layer *a,Layer *b) {
+     return new Add({a,b});
 
-void LinLayer::addchild(Layer *l)
-{
-  child.push_back(l);
-}
-void LinLayer::addparent(Layer *l)
-{
-    if (parent!=NULL) msg("LinLayers only can have one parent layer");
-    parent=l;
-}
+  }
 
-
-////////////////////////////////////
-///// Multiple LAYERS
-////////////////////////////////////
-MLayer::MLayer(string n,int d):Layer(n,d){}
-
-void MLayer::addchild(Layer *l)
-{
-  child.push_back(l);
-}
-void MLayer::addparent(Layer *l)
-{
-  parent.push_back(l);
-}
+};
 
 
 
@@ -95,4 +53,11 @@ void MLayer::addparent(Layer *l)
 
 
 
-//////
+
+
+
+
+
+
+
+//////////////////////

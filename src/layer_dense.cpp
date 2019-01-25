@@ -32,26 +32,26 @@
 
 using namespace std;
 
-
-Dense::Dense(Layer *parent,int dim,string name):Dense(parent,dim,name,DEV_CPU,"FLOAT32"){}
-Dense::Dense(Layer *parent,int dim,string name,int d):Dense(parent,dim,name,d,"FLOAT32"){}
-Dense::Dense(Layer *parent,int dim,string name,string t):Dense(parent,dim,name,DEV_CPU,t){}
-
-Dense::Dense(Layer *parent,int dim,string name,int d,string t):LinLayer(name,d,t)
+Dense::Dense(Layer *parent,int dim):Dense(parent,dim,"__dense__",DEV_CPU){}
+Dense::Dense(Layer *parent,int dim,string name):Dense(parent,dim,name,DEV_CPU){}
+Dense::Dense(Layer *parent,int dim,int dev):Dense(parent,dim,"__dense__",dev){}
+Dense::Dense(Layer *parent,int dim,string name,int d):LinLayer(name,d)
 {
   if (parent->output->dim!=2) msg("Dense only works over 2D tensors");
 
   input=parent->output;
-  output=new Tensor({input->sizes[0],dim},d,t);
-  delta=new Tensor(input->getshape(),d,t);
+  output=new Tensor({input->sizes[0],dim},d);
+  delta=new Tensor(input->getshape(),d);
 
-  W=new Tensor({input->sizes[1],dim},d,t);
-  bias=new Tensor({dim},d,t);
-  gW=new Tensor({input->sizes[1],dim},d,t);
-  gbias=new Tensor({dim},d,t);
+  W=new Tensor({input->sizes[1],dim},d);
+  bias=new Tensor({dim},d);
+  params.push_back(W);
+  params.push_back(bias);
 
-  vparams.push_back(W);
-  vparams.push_back(bias);
+  gW=new Tensor({input->sizes[1],dim},d);
+  gbias=new Tensor({dim},d);
+  gradients.push_back(gW);
+  gradients.push_back(gbias);
 
   parent->addchild(this);
   addparent(parent);
@@ -60,15 +60,20 @@ Dense::Dense(Layer *parent,int dim,string name,int d,string t):LinLayer(name,d,t
 // virtual
 void Dense::forward()
 {
-  Tensor::mult2D(input,0,W,0,output);
+  Tensor::mult2D(input,0,W,0,output,0);
   Tensor::sum2D_rowwise(output,bias,output);
 }
 
 void Dense::backward()
 {
-  if (child!=NULL){
-    Tensor::mult2D(input,1,child->delta,0,gW);
-    Tensor::mult2D(child->delta,0,W,1,delta);
+  if (child.size()){
+    // to deal with multiple childs
+    gW->set(0);
+    delta->set(0);
+    for(int i = 0; i != child.size(); i++) {
+      Tensor::mult2D(input,1,child[i]->delta,0,gW,1);
+      Tensor::mult2D(child[i]->delta,0,W,1,delta,1);
+    }
   }
 }
 
@@ -82,8 +87,11 @@ void Dense::info()
   cout<<"\n===============\n";
   cout<< "Layer Dense "<<name<<"\n";
   cout<< "Parent layer:"<<parent->name<<"\n";
-  if (child!=NULL) cout<< "Child layer:"<<child->name<<"\n";
-  else cout<<"Child layer: None\n";
+  cout<< "Child layers:\n";
+  if (child.size())
+    for(int i = 0; i != child.size(); i++)
+      cout<< child[i]->name<<"\n";
+  else cout<<"None\n";
   cout<<"Input:\n";
   input->info();
   cout<<"Param:\n";

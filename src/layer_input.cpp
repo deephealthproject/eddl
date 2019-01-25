@@ -32,8 +32,12 @@
 
 using namespace std;
 
-
-Input::Input(Tensor *in,string name):LinLayer(name,DEV_CPU,"FLOAT32"){input=output=in;}
+Input::Input(Tensor *in):Input(in,"__input__",DEV_CPU){}
+Input::Input(Tensor *in,int d):Input(in,"__input__",d){}
+Input::Input(Tensor *in,string name):Input(in,name,DEV_CPU){}
+Input::Input(Tensor *in,string name,int d):LinLayer(name,d){
+  input=output=in;
+}
 
 // virtual
 void Input::info()

@@ -24,70 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "layer.h"
-
-using namespace std;
-
-////////////////////////////////////
-///// BASE LAYER CLASS
-////////////////////////////////////
-Layer::Layer(string n):Layer(n,DEV_CPU){}
-
-Layer::Layer(string n,int d)
-{
-  mode=TRMODE;
-  delta=input=output=NULL;
-  dev=d;
-  name=n;
-}
-
-void Layer::initialize()
-{
-  for(int i = 0; i != params.size(); i++)
-    params[i]->rand();
-}
-
-void Layer::reset()
-{
-
-}
+#include "tensor_over.h"
 
 
-////////////////////////////////////
-///// LINEAR LAYERS
-////////////////////////////////////
-LinLayer::LinLayer(string n,int d):Layer(n,d)
-{
-    parent=NULL;
-}
-
-void LinLayer::addchild(Layer *l)
-{
-  child.push_back(l);
-}
-void LinLayer::addparent(Layer *l)
-{
-    if (parent!=NULL) msg("LinLayers only can have one parent layer");
-    parent=l;
-}
 
 
-////////////////////////////////////
-///// Multiple LAYERS
-////////////////////////////////////
-MLayer::MLayer(string n,int d):Layer(n,d){}
 
-void MLayer::addchild(Layer *l)
-{
-  child.push_back(l);
-}
-void MLayer::addparent(Layer *l)
-{
-  parent.push_back(l);
-}
+
+
+
+
+
 
 
 

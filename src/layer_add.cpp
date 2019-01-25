@@ -26,73 +26,44 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 
 #include "layer.h"
 
 using namespace std;
 
-////////////////////////////////////
-///// BASE LAYER CLASS
-////////////////////////////////////
-Layer::Layer(string n):Layer(n,DEV_CPU){}
 
-Layer::Layer(string n,int d)
-{
-  mode=TRMODE;
-  delta=input=output=NULL;
-  dev=d;
-  name=n;
-}
+Add::Add(vector<Layer*> in):Add(in,"__add__",DEV_CPU){}
+Add::Add(vector<Layer*> in,int dev):Add(in,"__add__",DEV_CPU){}
+Add::Add(vector<Layer*> in,string name):Add(in,name,DEV_CPU){}
 
-void Layer::initialize()
-{
-  for(int i = 0; i != params.size(); i++)
-    params[i]->rand();
-}
+Add::Add(vector<Layer*> in,string name,int d):MLayer(name,d){
+  if (in.size()==0) msg("Error: Add layer with empty list");
+  parent=in;
+  if (parent.size()>1)
+    for(int i=0;i<parent.size()-1;++i)
+      if (!Tensor::eqsize(parent[i]->output,parent[i+1]->output))
+        msg("Error: Add layers with different tensor output");
 
-void Layer::reset()
-{
+  input=new Tensor(parent[0]->output->getshape());
+  output=new Tensor(parent[0]->output->getshape());
 
 }
 
-
-////////////////////////////////////
-///// LINEAR LAYERS
-////////////////////////////////////
-LinLayer::LinLayer(string n,int d):Layer(n,d)
+// virtual
+void Add::info()
 {
-    parent=NULL;
+  cout<<"\n===============\n";
+  cout<< "Layer Add "<<name<<"\n";
+  cout<< "Layers: "<<name<<"\n";
+  for(int i = 0; i != parent.size(); i++) {
+   cout<< parent[i]->name<<"\n";
+   parent[i]->info();
+ }
+
+  cout<<"===============\n\n";
 }
 
-void LinLayer::addchild(Layer *l)
-{
-  child.push_back(l);
-}
-void LinLayer::addparent(Layer *l)
-{
-    if (parent!=NULL) msg("LinLayers only can have one parent layer");
-    parent=l;
-}
-
-
-////////////////////////////////////
-///// Multiple LAYERS
-////////////////////////////////////
-MLayer::MLayer(string n,int d):Layer(n,d){}
-
-void MLayer::addchild(Layer *l)
-{
-  child.push_back(l);
-}
-void MLayer::addparent(Layer *l)
-{
-  parent.push_back(l);
-}
-
-
-
-
-
-
-
-//////
+void Add::forward(){}
+void Add::backward(){}
+void Add::applygrads(){}

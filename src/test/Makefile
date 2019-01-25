@@ -118,7 +118,7 @@ endif
 
 
 #######################################################################
-OBJ =	tensor.o tensor_op.o layer.o layer_input.o layer_dense.o
+OBJ =	tensor.o tensor_op.o tensor_over.o layer.o layer_input.o layer_dense.o layer_add.o
 
 all: $(GPU_OBJ) $(OBJ) test_eddl
 
@@ -130,17 +130,25 @@ tensor.o: ../tensor.cpp ../tensor.h
 tensor_op.o: ../tensor_op.cpp ../tensor.h
 		$(CXX) $(CXXFLAGS) -c ../tensor_op.cpp
 
+tensor_over.o: ../tensor_over.cpp ../tensor_over.h
+		$(CXX) $(CXXFLAGS) -c ../tensor_over.cpp
+
+
 layer.o: ../layer.cpp ../layer.h
 		$(CXX) $(CXXFLAGS) -c ../layer.cpp
 
 layer_input.o: ../layer_input.cpp ../layer.h
-				$(CXX) $(CXXFLAGS) -c ../layer_input.cpp
+		$(CXX) $(CXXFLAGS) -c ../layer_input.cpp
 
 layer_dense.o: ../layer_dense.cpp ../layer.h
-								$(CXX) $(CXXFLAGS) -c ../layer_dense.cpp
+		$(CXX) $(CXXFLAGS) -c ../layer_dense.cpp
+
+layer_add.o: ../layer_add.cpp ../layer.h
+		$(CXX) $(CXXFLAGS) -c ../layer_add.cpp
+
 #---------------------------------- gpu code
 tensor_cuda.o: ../gpu/tensor_cuda.cu ../gpu/tensor_cuda.h
-	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c ../gpu/tensor_cuda.cu
+		$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c ../gpu/tensor_cuda.cu
 
 #---------------------------------- release
 test_eddl: test_eddl.cpp $(OBJ) $(GPU_OBJ)

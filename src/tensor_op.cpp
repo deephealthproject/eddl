@@ -53,10 +53,11 @@ int Tensor::eqsize(Tensor *A, Tensor *B) {
 //// MULT2D C=A*B
 //// tA means transpose A {0,1}
 //// tB means transpose B {0,1}
+//// tC 1 means C+=A*B (increment over C)
 //// Dimensions and types must be compatible
 //// Only for 2D Tensors
 ///////////////////////////////////////
-void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C)
+void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
 {
   int aux=0;
 
@@ -78,39 +79,28 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C)
       if ((A->sizes[0]!=B->sizes[1])||(A->sizes[1]!=C->sizes[0])||(B->sizes[0]!=C->sizes[1])) msg("Incompatible dims in mult2D");
   }
 
-
   if (A->device==DEV_CPU) {
-    if (A->type==FLOAT32) {
       if (!tB) {
-        if (!tA) C->ptr2f=A->ptr2f*B->ptr2f;
-        else C->ptr2f=A->ptr2f.transpose()*B->ptr2f;
+        if (!tA){
+          if (!incC) C->ptr2=A->ptr2*B->ptr2;
+          else C->ptr2+=A->ptr2*B->ptr2;
+        }
+        else {
+          if (!incC) C->ptr2=A->ptr2.transpose()*B->ptr2;
+          else C->ptr2+=A->ptr2.transpose()*B->ptr2;
+        }
       }
       else {
-        if (!tA) C->ptr2f=A->ptr2f*B->ptr2f.transpose();
-        else C->ptr2f=A->ptr2f.transpose()*B->ptr2f.transpose();
+        if (!tA){
+          if (!incC) C->ptr2=A->ptr2*B->ptr2.transpose();
+          else C->ptr2+=A->ptr2*B->ptr2.transpose();
+        }
+        else {
+          if (!incC) C->ptr2=A->ptr2.transpose()*B->ptr2.transpose();
+          else C->ptr2+=A->ptr2.transpose()*B->ptr2.transpose();
+        }
       }
     }
-    if (A->type==FLOAT64) {
-      if (!tB) {
-        if (!tA) C->ptr2d=A->ptr2d*B->ptr2d;
-        else C->ptr2d=A->ptr2d.transpose()*B->ptr2d;
-      }
-      else {
-        if (!tA) C->ptr2d=A->ptr2d*B->ptr2d.transpose();
-        else C->ptr2d=A->ptr2d.transpose()*B->ptr2d.transpose();
-      }
-    }
-    if (A->type==INT32) {
-      if (!tB) {
-        if (!tA) C->ptr2i=A->ptr2i*B->ptr2i;
-        else C->ptr2i=A->ptr2i.transpose()*B->ptr2i;
-      }
-      else {
-        if (!tA) C->ptr2i=A->ptr2i*B->ptr2i.transpose();
-        else C->ptr2i=A->ptr2i.transpose()*B->ptr2i.transpose();
-      }
-    }
-  }
   #ifdef cGPU
   else
   {
@@ -135,18 +125,8 @@ void Tensor::sum2D(Tensor *A, Tensor *B, Tensor *C,int incC)
   if ((!eqsize(A,B))||(!eqsize(A,C))) msg("Incompatible dims in sum2D");
 
   if (A->device==DEV_CPU) {
-    if (A->type==FLOAT32) {
-      if (incC) C->ptr2f+=A->ptr2f+B->ptr2f;
-      else C->ptr2f=A->ptr2f+B->ptr2f;
-    }
-    if (A->type==FLOAT64) {
-      if (incC) C->ptr2d+=A->ptr2d+B->ptr2d;
-      else C->ptr2d=A->ptr2d+B->ptr2d;
-    }
-    if (A->type==INT32) {
-      if (incC) C->ptr2i+=A->ptr2i+B->ptr2i;
-      else C->ptr2i=A->ptr2i+B->ptr2i;
-    }
+      if (incC) C->ptr2+=A->ptr2+B->ptr2;
+      else C->ptr2=A->ptr2+B->ptr2;
   }
   #ifdef cGPU
   else
@@ -170,11 +150,7 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
   if ((!eqsize(A,C))||(A->sizes[1]!=B->sizes[0])) msg("Incompatible dims in sum2D_rowwise");
 
 
-  if (A->device==DEV_CPU) {
-    if (A->type==FLOAT32) C->ptr2f=A->ptr2f.rowwise()+B->ptr1f;
-    if (A->type==FLOAT64) C->ptr2d=A->ptr2d.rowwise()+B->ptr1d;
-    if (A->type==INT32) C->ptr2i=A->ptr2i.rowwise()+B->ptr1i;
-  }
+  if (A->device==DEV_CPU) C->ptr2=A->ptr2.rowwise()+B->ptr1;
   #ifdef cGPU
   else
   {
@@ -196,11 +172,7 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C)
   if ((A->dim!=2)||(B->dim!=1)||(C->dim!=2)) msg("sum2D_colwise dims");
   if ((!eqsize(A,C))||(A->sizes[0]!=B->sizes[0])) msg("Incompatible dims in sum2D_colwise");
 
-  if (A->device==DEV_CPU) {
-    if (A->type==FLOAT32) C->ptr2f=A->ptr2f.colwise()+B->ptr1f.transpose();
-    if (A->type==FLOAT64) C->ptr2d=A->ptr2d.colwise()+B->ptr1d.transpose();
-    if (A->type==INT32) C->ptr2i=A->ptr2i.colwise()+B->ptr1i.transpose();
-  }
+  if (A->device==DEV_CPU) C->ptr2=A->ptr2.colwise()+B->ptr1.transpose();
   #ifdef cGPU
   else
   {

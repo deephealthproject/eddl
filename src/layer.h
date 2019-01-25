@@ -41,19 +41,14 @@ class Layer {
   Tensor *output;
   Tensor *delta;
 
-
-  vector<Tensor*>vparams;
+  vector<Tensor*>params;
   vector<Tensor*>gradients;
 
   int mode;
   int dev;
-  string type;
 
-  Layer();
   Layer(string name);
-  Layer(string name,string type);
   Layer(string name,int dev);
-  Layer(string name,int dev,string type);
 
   void initialize();
   void reset();
@@ -67,12 +62,16 @@ class Layer {
   virtual void applygrads(){}
 };
 
+
+/////////////////////////////////////////
+/////////////////////////////////////////
+// Layers with only one input
 class LinLayer : public Layer {
  public:
   Layer *parent;
-  Layer *child;
+  vector<Layer*> child;
 
-  LinLayer(string name,int dev,string type);
+  LinLayer(string name,int dev);
 
   void addchild(Layer *l);
   void addparent(Layer *l);
@@ -85,11 +84,14 @@ class LinLayer : public Layer {
 
 };
 
+
 /// INPUT Layer
 class Input : public LinLayer {
  public:
-
+  Input(Tensor *in);
+  Input(Tensor *in,int dev);
   Input(Tensor *in,string name);
+  Input(Tensor *in,string name,int dev);
 
   void info();
   void forward();
@@ -103,11 +105,10 @@ class Dense : public LinLayer {
  public:
   int dim;
 
-
+  Dense(Layer *parent,int dim);
+  Dense(Layer *parent,int dim,int dev);
   Dense(Layer *parent,int dim,string name);
   Dense(Layer *parent,int dim,string name,int d);
-  Dense(Layer *parent,int dim,string name,string t);
-  Dense(Layer *parent,int dim,string name,int d,string t);
   // Paras
   Tensor *W;
   Tensor *gW;
@@ -115,6 +116,44 @@ class Dense : public LinLayer {
   Tensor *gbias;
 
 
+
+  void info();
+  void forward();
+  void backward();
+  void applygrads();
+
+};
+
+
+
+/////////////////////////////////////////
+/////////////////////////////////////////
+// Layers with several inputs (ADD, CAT,...)
+class MLayer : public Layer {
+ public:
+  vector<Layer*> parent;
+  vector<Layer*> child;
+
+  MLayer(string name,int dev);
+
+  void addchild(Layer *l);
+  void addparent(Layer *l);
+
+  //virtual
+  virtual void info(){};
+  virtual void forward(){}
+  virtual void backward(){}
+  virtual void applygrads(){}
+
+};
+
+/// INPUT Layer
+class Add : public MLayer {
+ public:
+  Add(vector<Layer*> in);
+  Add(vector<Layer*> in,int dev);
+  Add(vector<Layer*> in,string name);
+  Add(vector<Layer*> in,string name,int dev);
 
   void info();
   void forward();

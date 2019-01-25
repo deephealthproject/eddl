@@ -47,16 +47,10 @@ void msg(string s){msg(s,"");}
 Tensor::Tensor():device(DEV_CPU),dim(0),tam(0){}
 
 Tensor::Tensor(const initializer_list<int>& init):Tensor(init,DEV_CPU){}
-Tensor::Tensor(const initializer_list<int>& init, string t):Tensor(shape(init.begin(), init.end()),DEV_CPU,t){}
-Tensor::Tensor(const initializer_list<int>& init, int dev):Tensor(shape(init.begin(), init.end()),dev,std::string("FLOAT32")){}
-Tensor::Tensor(const initializer_list<int>& init, int dev,string t):Tensor(shape(init.begin(), init.end()),dev,t){}
-
+Tensor::Tensor(const initializer_list<int>& init, int dev):Tensor(shape(init.begin(), init.end()),dev){}
 
 Tensor::Tensor(const shape s):Tensor(s,DEV_CPU){}
-Tensor::Tensor(const shape s,string t):Tensor(s,DEV_CPU,t){}
-Tensor::Tensor(const shape s,int dev):Tensor(s,dev,std::string("FLOAT32")){}
-
-Tensor::Tensor(shape s,int dev,string t)
+Tensor::Tensor(shape s,int dev)
 {
   #ifndef cGPU
   if (dev==DEV_GPU){
@@ -74,16 +68,13 @@ Tensor::Tensor(shape s,int dev,string t)
   device=dev;
   dim=s.size();
   sizes=s;
-  if (t=="FLOAT32") type=FLOAT32;
-  else if (t=="FLOAT64") type=FLOAT64;
-  else if (t=="INT32") type=INT32;
-  else msg("Tensor unkown type",t);
 
   tam=1;
   for(int i=0;i<dim;++i) tam*=s[i];
 
   if (device==DEV_CPU) {
-    if (dim<3) mem(type);
+    if (dim==1) ptr1.resize(sizes[0]);
+    else if (dim==2) ptr2.resize(sizes[0],sizes[1]);
     else {
       ptr=(Tensor **)malloc(sizes[0]*sizeof(Tensor *));
       s.erase(s.begin());
@@ -95,50 +86,6 @@ Tensor::Tensor(shape s,int dev,string t)
   else if (device==DEV_GPU) mem(type);
   #endif
 }
-
-///////////////////////////////////////////
-void Tensor::clean(int t)
-{
-  if (device==DEV_CPU) {
-    if (dim==1) {
-      if (t==FLOAT32) ptr1f.resize(0);
-      if (t==FLOAT64) ptr1d.resize(0);
-      if (t==INT32) ptr1i.resize(0);
-    }
-    else if (dim==2) {
-      if (t==FLOAT32) ptr2f.resize(0,0);
-      if (t==FLOAT64) ptr2d.resize(0,0);
-      if (t==INT32) ptr2i.resize(0,0);
-    }
-  }
-  #ifdef cGPU
-  else if (device==DEV_GPU) {
-    if (t==FLOAT32) delete_tensor(gptrd);
-    if (t==FLOAT64) delete_tensor(gptrf);
-    if (t==INT32) delete_tensor(gptri);
-  }
-  #endif
-}
-
-void Tensor::mem(int t)
-{
-  if (device==DEV_CPU) {
-  if (dim==1) {
-    if (t==FLOAT32) ptr1f.resize(sizes[0]);
-    if (t==FLOAT64) ptr1d.resize(sizes[0]);
-    if (t==INT32) ptr1i.resize(sizes[0]);
-  }
-  else if (dim==2) {
-    if (t==FLOAT32) ptr2f.resize(sizes[0],sizes[1]);
-    if (t==FLOAT64) ptr2d.resize(sizes[0],sizes[1]);
-    if (t==INT32) ptr2i.resize(sizes[0],sizes[1]);
-  }
-}
-  #ifdef cGPU
-  else if (device==DEV_GPU) mem(type);
-  #endif
-}
-
 
 ///////////////////////////////////////////
 Tensor *Tensor::clone()
@@ -153,7 +100,8 @@ Tensor *Tensor::clone()
 Tensor::~Tensor()
 {
   if (device==DEV_CPU) {
-    if (dim<3) clean(type);
+    if (dim==1) ptr1.resize(0);
+    else if (dim==2) ptr2.resize(0,0);
     else {
       for(int i=0;i<sizes[0];++i)
         delete ptr[i];
@@ -176,20 +124,27 @@ shape Tensor::getshape()
 ///////////////////////////////////////////
 void Tensor::rand(){
   if (device==DEV_CPU) {
-    if (dim==1) {
-      if (type==FLOAT32) for(int i=0;i<sizes[0];++i) ptr1f(i)=(float)(std::rand()%1000)/(float)1000.0;
-      if (type==FLOAT64) for(int i=0;i<sizes[0];++i) ptr1d(i)=(double)(std::rand()%1000)/(double)1000.0;
-      if (type==INT32) for(int i=0;i<sizes[0];++i) ptr1i(i)=std::rand()%1000;
-    }
-    else if (dim==2) {
-      if (type==FLOAT32) for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2f(i,j)=(float)(std::rand()%1000)/(float)1000.0;
-      if (type==FLOAT64) for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2d(i,j)=(double)(std::rand()%1000)/(double)1000.0;
-      if (type==INT32) for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2i(i,j)=std::rand()%1000;
-    }
+    if (dim==1)
+      for(int i=0;i<sizes[0];++i) ptr1(i)=(std::rand()%1000)/1000.0;
+    else if (dim==2)
+      for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)=(std::rand()%1000)/1000.0;
     else
       for(int i=0;i<sizes[0];++i)
         ptr[i]->rand();
 
+  }
+}
+
+///////////////////////////////////////////
+void Tensor::set(float v){
+  if (device==DEV_CPU) {
+    if (dim==1)
+      for(int i=0;i<sizes[0];++i) ptr1(i)=v;
+    else if (dim==2)
+      for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)=v;
+    else
+      for(int i=0;i<sizes[0];++i)
+        ptr[i]->set(v);
   }
 }
 
@@ -204,10 +159,7 @@ void Tensor::info()
 		fprintf(stderr,"%d,",sizes[i]);
   fprintf(stderr,"%d)\n",sizes[i]);
 
-  if (type==FLOAT32) fprintf(stderr,"Type FLOAT32\nTotal bytes=%ld\n",tam*sizeof(float));
-  if (type==FLOAT64) fprintf(stderr,"Type FLOAT64\nTotal bytes=%ld\n",tam*sizeof(double));
-  if (type==INT32) fprintf(stderr,"Type INT32\nTotal bytes=%ld\n",tam*sizeof(int));
-
+  fprintf(stderr,"Total bytes=%ld\n",tam*sizeof(float));
   if (device==DEV_CPU) fprintf(stderr,"Device=CPU\n");
   else if (device==DEV_GPU) fprintf(stderr,"Device=GPU\n");
   else fprintf(stderr,"Device=FPGA\n");
@@ -217,41 +169,20 @@ void Tensor::info()
 void Tensor::print(){
 
   if (device==DEV_CPU) {
-    if (dim==1) {
-      if (type==FLOAT32) cout<<ptr1f;
-      if (type==FLOAT64) cout<<ptr1d;
-      if (type==INT32) cout<<ptr1i;
-      cout<<"\n";
-    }
-    else if (dim==2) {
-      if (type==FLOAT32) cout<<ptr2f;
-      if (type==FLOAT64) cout<<ptr2d;
-      if (type==INT32) cout<<ptr2i;
-      cout<<"\n";
-    }
+    if (dim==1) cout<<ptr1;
+    else if (dim==2) cout<<ptr2;
     else
       for(int i=0;i<sizes[0];++i) {
         ptr[i]->print();
         cout<<"\n";
       }
+    cout<<"\n";
   }
 }
 
-
-
-
-
-
-
-
-
-
-
 ///////////////////////////////////////////
 ///////////////////////////////////////////
 ///////////////////////////////////////////
-
-
 
 
 
