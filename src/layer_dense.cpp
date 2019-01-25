@@ -42,7 +42,6 @@ Dense::Dense(Layer *parent,int dim,string name,int d,string t):LinLayer(name,d,t
   if (parent->output->dim!=2) msg("Dense only works over 2D tensors");
 
   input=parent->output;
-
   output=new Tensor({input->sizes[0],dim},d,t);
   delta=new Tensor(input->getshape(),d,t);
 
@@ -82,6 +81,9 @@ void Dense::info()
 {
   cout<<"\n===============\n";
   cout<< "Layer Dense "<<name<<"\n";
+  cout<< "Parent layer:"<<parent->name<<"\n";
+  if (child!=NULL) cout<< "Child layer:"<<child->name<<"\n";
+  else cout<<"Child layer: None\n";
   cout<<"Input:\n";
   input->info();
   cout<<"Param:\n";

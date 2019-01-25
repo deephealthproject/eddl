@@ -48,7 +48,6 @@
 
 using namespace std;
 
-
 typedef vector<int> shape;
 
 void msg(string s);
@@ -71,20 +70,17 @@ class Tensor{
   Eigen::RowVectorXd ptr1d;
   Eigen::RowVectorXf ptr1f;
   Eigen::RowVectorXi ptr1i;
-
   Eigen::MatrixXd ptr2d;
   Eigen::MatrixXf ptr2f;
   Eigen::MatrixXi ptr2i;
-  ////
 
   // GPU
   float *gptrf;
   int *gptri;
-  double *gptrd;  //
+  double *gptrd;
 
+  // Constructors
   Tensor();
-  ~Tensor();
-
   Tensor(const initializer_list<int>& init);
   Tensor(const initializer_list<int>& init, int dev);
   Tensor(const initializer_list<int>& init, string type);
@@ -95,17 +91,17 @@ class Tensor{
   Tensor(const shape s, string t);
   Tensor(const shape s, int dev, string t);
 
+  ~Tensor();
+  ///////// normal metods
   shape getshape();
   void info();
-  void changetype(int t);
   Tensor *clone();
   void mem(int t);
   void clean(int t);
   void print();
   void rand();
-  //Tensor(Tensor &A);
-  /////////
 
+  ///////// static metods
   static int eqsize(Tensor *A, Tensor *B);
   static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C);
   static void sum2D(Tensor *A, Tensor *B, Tensor *C,int incC);

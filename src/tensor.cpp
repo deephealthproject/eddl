@@ -139,30 +139,12 @@ void Tensor::mem(int t)
   #endif
 }
 
-///////////////////////////////////////////
-void Tensor::changetype(int t)
-{
-  if (type==t) return;
-
-  if (device==DEV_CPU) {
-    if (dim==1) {clean(type);mem(t);}
-    else if (dim==2) {clean(type);mem(t);}
-    else
-      for(int i=0;i<sizes[0];++i)
-        ptr[i]->changetype(t);
-  }
-  #ifdef cGPU
-  else if (device==DEV_GPU) {clean(type);mem(t);}
-  #endif
-  type=t;
-}
 
 ///////////////////////////////////////////
 Tensor *Tensor::clone()
 {
   Tensor *C=new Tensor(getshape(),device);
-  if (type!=FLOAT32)
-    C->changetype(type);
+
   return C;
 
 }

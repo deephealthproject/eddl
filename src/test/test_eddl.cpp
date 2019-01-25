@@ -38,13 +38,23 @@ int main(int argc, char **argv)
   A->info();
   A->print();
 
+
+
   Tensor *B=new Tensor({1,5},"INT32");
   B->rand();
   B->info();
   B->print();
 
 
+
   Tensor *C=new Tensor({7,5});
+  C->rand();
+  C->info();
+  C->print();
+
+  Tensor *C2=new Tensor({2,5,3,7,10,20});
+  C2->info();
+  /////////////////////////////////////////////////
 
 
   Input *I=new Input(C,"in1");
