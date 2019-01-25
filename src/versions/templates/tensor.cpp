@@ -26,52 +26,17 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream>
+#include <math.h>
+#include <initializer_list>
+#include <vector>
+#include <string>
 
-#include "../tensor.h"
-#include "../layer.h"
+#include "tensor.h"
 
-int main(int argc, char **argv)
+using namespace std;
+
+
+Tensor<float> *maketensor(const std::initializer_list<int>& init)
 {
-  /*
-  Tensor *A=new Tensor({7,1});
-  A->rand();
-
-  Tensor *B=new Tensor({1,5});
-  B->rand();
-
-  Tensor *C=new Tensor({7,5});
-*/
-
-  Input *I=new Input(C,"in1");
-  I->info();
-
-  Dense *D=new Dense(I,128,"dense1");
-  D->info();
-
-  Dense *E=new Dense(D,256,"dense2");
-  E->info();
-
-  D->forward();
-  D->backward();
-
+  return new Tensor<float>(init,0);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  ///////////

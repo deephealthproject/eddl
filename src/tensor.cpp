@@ -180,7 +180,27 @@ shape Tensor::getshape()
   return s;
 }
 
+///////////////////////////////////////////
+void Tensor::rand(){
+  if (device==DEV_CPU) {
+    if (dim==1) {
+      if (type==FLOAT32) for(int i=0;i<sizes[0];++i) ptr1f(i)=(float)(std::rand()%1000)/(float)1000.0;
+      if (type==FLOAT64) for(int i=0;i<sizes[0];++i) ptr1d(i)=(double)(std::rand()%1000)/(double)1000.0;
+      if (type==INT32) for(int i=0;i<sizes[0];++i) ptr1i(i)=std::rand()%1000;
+    }
+    else if (dim==2) {
+      if (type==FLOAT32) for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2f(i,j)=(float)(std::rand()%1000)/(float)1000.0;
+      if (type==FLOAT64) for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2d(i,j)=(double)(std::rand()%1000)/(double)1000.0;
+      if (type==INT32) for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2i(i,j)=std::rand()%1000;
+    }
+    else
+      for(int i=0;i<sizes[0];++i)
+        ptr[i]->rand();
 
+  }
+}
+
+///////////////////////////////////////////
 void Tensor::info()
 {
   int i;
@@ -224,25 +244,6 @@ void Tensor::print(){
   }
 }
 
-void Tensor::rand(){
-  if (device==DEV_CPU) {
-    if (dim==1) {
-      if (type==FLOAT32) for(int i=0;i<sizes[0];++i) ptr1f(i)=(float)(std::rand()%1000)/(float)1000.0;
-      if (type==FLOAT64) for(int i=0;i<sizes[0];++i) ptr1d(i)=(double)(std::rand()%1000)/(double)1000.0;
-      if (type==INT32) for(int i=0;i<sizes[0];++i) ptr1i(i)=std::rand()%1000;
-    }
-    else if (dim==2) {
-      if (type==FLOAT32) for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2f(i,j)=(float)(std::rand()%1000)/(float)1000.0;
-      if (type==FLOAT64) for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2d(i,j)=(double)(std::rand()%1000)/(double)1000.0;
-      if (type==INT32) for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2i(i,j)=std::rand()%1000;
-    }
-    else
-      for(int i=0;i<sizes[0];++i)
-        ptr[i]->rand();
-
-  }
-
-}
 
 
 

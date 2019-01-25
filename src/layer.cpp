@@ -11,10 +11,9 @@ using namespace std;
 Layer::Layer()
 {
   mode=TRMODE;
-  input=output=NULL;
-  lin=lout=0;
-  parent=(Layer **)malloc(MAX_CONNECT*sizeof(Layer*));
-  child=(Layer **)malloc(MAX_CONNECT*sizeof(Layer*));
+  delta=input=output=NULL;
+  parent=NULL;
+  child=NULL;
 
 }
 Layer::Layer(string n):Layer(){name=n;}

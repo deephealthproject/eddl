@@ -13,10 +13,10 @@ class Layer {
   string name;
   Tensor *input;
   Tensor *output;
+  Tensor *delta;
 
-  Layer **parent;
-  Layer **child;
-  int lin,lout;
+  Layer *parent;
+  Layer *child;
 
   int mode;
   Layer();
@@ -53,16 +53,18 @@ class Input : public Layer {
 /// DENSE Layer
 class Dense : public Layer {
  public:
+  int dim;
 
   Dense(Layer *parent,int dim);
   Dense(Layer *parent,int dim,string name);
 
-
   // Paras
   Tensor *W;
   Tensor *gW;
-  Tensor *D;
-  int dim;
+  Tensor *bias;
+  Tensor *gbias;
+
+
 
   void info();
   void addchild(Layer *l);

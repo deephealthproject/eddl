@@ -21,8 +21,7 @@ void Input::info()
 
 void Input::addchild(Layer *l)
 {
-  child[lout]=l;
-  lout++;
+  child=l;
 }
 void Input::addparent(Layer *l)
 {

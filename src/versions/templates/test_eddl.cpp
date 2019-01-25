@@ -26,52 +26,28 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream>
 
 #include "../tensor.h"
-#include "../layer.h"
 
 int main(int argc, char **argv)
 {
-  /*
-  Tensor *A=new Tensor({7,1});
-  A->rand();
+  //Tensor<float> A({100,32,32,512},DEV_CPU);
 
-  Tensor *B=new Tensor({1,5});
-  B->rand();
+  TENSOR C=maketensor({1,1,1},DEV_CPU,FLOAT64);
+  C->info();
 
-  Tensor *C=new Tensor({7,5});
-*/
-
-  Input *I=new Input(C,"in1");
-  I->info();
-
-  Dense *D=new Dense(I,128,"dense1");
+  TENSOR D=maketensor({1,1,1});
+  //TENSOR D=tensor({1,1,1});
   D->info();
 
-  Dense *E=new Dense(D,256,"dense2");
-  E->info();
+  //shape s=A.getshape();
 
-  D->forward();
-  D->backward();
+
+  //Tensor<double> B(A.getshape());
+  //B.info();
+
+
+  //if (Tensor<float>::eqsize(&A,&B)) printf("iguales\n");
+  //else printf("diferentes\n");
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  ///////////

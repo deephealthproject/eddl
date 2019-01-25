@@ -118,7 +118,7 @@ endif
 
 
 #######################################################################
-OBJ =	tensor.o tensor_op.o layer.o layer_input.o layer_dense.o
+OBJ =	tensor.o
 
 all: $(GPU_OBJ) $(OBJ) test_eddl
 
@@ -127,17 +127,6 @@ all: $(GPU_OBJ) $(OBJ) test_eddl
 tensor.o: ../tensor.cpp ../tensor.h
 	$(CXX) $(CXXFLAGS) -c ../tensor.cpp
 
-tensor_op.o: ../tensor_op.cpp ../tensor.h
-		$(CXX) $(CXXFLAGS) -c ../tensor_op.cpp
-
-layer.o: ../layer.cpp ../layer.h
-		$(CXX) $(CXXFLAGS) -c ../layer.cpp
-
-layer_input.o: ../layer_input.cpp ../layer.h
-				$(CXX) $(CXXFLAGS) -c ../layer_input.cpp
-
-layer_dense.o: ../layer_dense.cpp ../layer.h
-								$(CXX) $(CXXFLAGS) -c ../layer_dense.cpp
 #---------------------------------- gpu code
 tensor_cuda.o: ../gpu/tensor_cuda.cu ../gpu/tensor_cuda.h
 	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c ../gpu/tensor_cuda.cu

@@ -37,14 +37,34 @@ void check_cuda(cudaError_t err,char *msg)
 
 }
 
-float* create_tensor(int size)
+float* create_tensorf(int size)
 {
   float* devicePointer;
   check_cuda(cudaMalloc((void**)&devicePointer,size*sizeof(float)),"create_tensor");
   return devicePointer;
 }
+double* create_tensord(int size)
+{
+  double* devicePointer;
+  check_cuda(cudaMalloc((void**)&devicePointer,size*sizeof(double)),"create_tensor");
+  return devicePointer;
+}
+int* create_tensori(int size)
+{
+  float* devicePointer;
+  check_cuda(cudaMalloc((void**)&devicePointer,size*sizeof(int)),"create_tensor");
+  return devicePointer;
+}
 
 void delete_tensor(float* p)
+{
+  check_cuda(cudaFree(p),"delete_tensor");
+}
+void delete_tensor(double* p)
+{
+  check_cuda(cudaFree(p),"delete_tensor");
+}
+void delete_tensor(int* p)
 {
   check_cuda(cudaFree(p),"delete_tensor");
 }
