@@ -41,17 +41,12 @@ int main(int argc, char **argv)
   A->info();
   A->print();
 
-  Tensor *B=new Tensor({1,5});
-  B->rand();
-  B->info();
-  B->print();
-
-  Tensor *C=new Tensor({7,5});
+  Tensor *C=new Tensor({7,5},DEV_GPU);
   C->rand();
   C->info();
   C->print();
 
-  Tensor *C2=new Tensor({2,5,3,7,10,20});
+  Tensor *C2=new Tensor({2,5,3,7,10,20},DEV_GPU);
   C2->info();
   /////////////////////////////////////////////////
 
@@ -59,7 +54,7 @@ int main(int argc, char **argv)
   Input *I=new Input(C,"in1",DEV_GPU);
   I->info();
 
-  Dense *D=new Dense(I,128,"dense1",DEV_CPU);
+  Dense *D=new Dense(I,128,"dense1",DEV_GPU);
   Dense *E=new Dense(D,256,DEV_GPU);
 
   D->info();
