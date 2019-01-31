@@ -33,6 +33,9 @@
 #include <iostream>
 #include "tensor.h"
 
+#ifdef cGPU
+#include "gpu/tensor_cuda.h"
+#endif
 
 
 using namespace std;
