@@ -34,7 +34,7 @@
 #include "../tensor.h"
 #include "tensor_cuda.h"
 
-extern cublasHandle_t p_cublas;
+extern cublasHandle_t hcublas;
 extern curandGenerator_t random_generator;
 extern cublasStatus_t bstatus;
 extern curandStatus_t rstatus;
@@ -78,6 +78,6 @@ if (tB)
   ldC=B->sizes[0];
 }
 
-check_cublas(cublasSgemm(p_cublas,trB,trA,m,n,k,&alfa,B->gptr,ldB,A->gptr,ldA,&beta,C->gptr,ldC),"mult2D");
+check_cublas(cublasSgemm(hcublas,trB,trA,m,n,k,&alfa,B->gptr,ldB,A->gptr,ldA,&beta,C->gptr,ldC),"mult2D");
 
 }
