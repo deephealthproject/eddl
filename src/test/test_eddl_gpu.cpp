@@ -48,8 +48,6 @@ int main(int argc, char **argv)
   C->info();
   C->print();
 
-  Tensor *C2=new Tensor({2,5,3,7,10,20},dev);
-  C2->info();
   /////////////////////////////////////////////////
 
 
@@ -65,6 +63,38 @@ int main(int argc, char **argv)
   D->forward();
   D->backward();
 
+
+
+
+
+
+  int dev=DEV_GPU+0;
+
+  Tensor *A2=new Tensor({7,1},dev);
+  A2->rand();
+  A2->info();
+  A2->print();
+
+  Tensor *C2=new Tensor({7,5},dev);
+  C2->rand();
+  C2->info();
+  C2->print();
+
+
+  /////////////////////////////////////////////////
+
+
+  Input *I2=new Input(C2,"in1",dev);
+  I2->info();
+
+  Dense *D2=new Dense(I2,128,"dense1",dev);
+  Dense *E2=new Dense(D2,256,dev);
+
+  D2->info();
+  E2->info();
+
+  D2->forward();
+  D2->backward();
   //Add *ad=new Add({D,E},"add1");
 
   //Layer *a=tensor_sum(tensor_sum(D,D),tensor_sum(D,D));
