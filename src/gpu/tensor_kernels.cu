@@ -28,19 +28,9 @@
 #include <stdio.h>
 
 #include <cuda.h>
-#include <cuda_runtime_api.h>
-#include <cublas_v2.h>
-
-#include "../tensor.h"
-#include "tensor_cuda.h"
-
-extern cublasHandle_t hcublas[64];
-extern curandGenerator_t random_generator[64];
-extern cublasStatus_t bstatus;
-extern curandStatus_t rstatus;
 
 
-__global__ void sum_mat_row(float* a, float* b, float* c, int rows, int rows)
+__global__ void sum_mat_row(float* a, float* b, float* c, int rows, int cols)
 {
  int ops=rows*cols;
  int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
