@@ -24,9 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <string.h>
 #include <stdio.h>
-
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
@@ -38,9 +36,8 @@
 extern cublasHandle_t hcublas[64];
 extern curandGenerator_t random_generator[64];
 
-using namespace std;
 
-void check_cuda(cudaError_t error, string func)
+void check_cuda(cudaError_t error, char *func)
 {
   if ( error!= cudaSuccess)
   {
@@ -48,7 +45,7 @@ void check_cuda(cudaError_t error, string func)
      exit(1);
   }
 }
-void check_cublas(cublasStatus_t status, string func)
+void check_cublas(cublasStatus_t status, char * func)
 {
   if ( status!=  CUBLAS_STATUS_SUCCESS)
   {
