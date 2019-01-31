@@ -35,6 +35,9 @@
 #include "tensor_cuda.h"
 
 extern cublasHandle_t p_cublas;
+extern curandGenerator_t random_generator;
+extern cublasStatus_t bstatus;
+extern curandStatus_t rstatus;
 
 using namespace std;
 void check_cublas(cublasStatus_t status, string func)

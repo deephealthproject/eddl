@@ -27,6 +27,11 @@
 #include <stdio.h>
 #include "tensor_cuda.h"
 
+cublasHandle_t hcublas;
+curandGenerator_t random_generator;
+cublasStatus_t bstatus;
+curandStatus_t rstatus;
+
 
 
 void check_cuda(cudaError_t err,char *msg)

@@ -34,9 +34,9 @@
 
 cublasHandle_t hcublas;
 curandGenerator_t random_generator;
-
 cublasStatus_t bstatus;
 curandStatus_t rstatus;
+
 
 void gpu_set_device(int device);
 void gpu_init(int device);
