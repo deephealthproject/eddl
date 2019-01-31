@@ -72,10 +72,9 @@ void gpu_init(int device)
   while ((bstatus!=  CUBLAS_STATUS_SUCCESS)&&(i<10)) {
     bstatus=cublasCreate(&(hcublas[device]));
     i++;
-    fprintf(stderr,".");
+    fprintf(stderr,".\n");
   }
-  fprintf(stderr,"\n");
-
+  
   if ( bstatus!=  CUBLAS_STATUS_SUCCESS)
   {
      fprintf(stderr,"Problem in cuBlas Create\n");
