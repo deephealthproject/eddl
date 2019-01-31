@@ -36,7 +36,7 @@
 
 int main(int argc, char **argv)
 {
-  int dev=dev+1;
+  int dev=DEV_GPU+1;
 
   Tensor *A=new Tensor({7,1},dev);
   A->rand();
