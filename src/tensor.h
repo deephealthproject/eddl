@@ -28,8 +28,8 @@
 #define _TENSOR_
 
 #define DEV_CPU 0
-#define DEV_GPU 1
-#define DEV_FPGA 2
+#define DEV_GPU 1000
+#define DEV_FPGA 2000
 
 
 #include <initializer_list>
