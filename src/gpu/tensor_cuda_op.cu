@@ -34,10 +34,10 @@
 #include "../tensor.h"
 #include "tensor_cuda.h"
 
-//cublasHandle_t p_cublas;
+extern cublasHandle_t p_cublas;
 
-
-voir check_cublas(cublasStatus_t status, string func)
+using namespace std;
+void check_cublas(cublasStatus_t status, string func)
 {
   if ( status!=  CUBLAS_STATUS_SUCCESS)
   {
@@ -75,7 +75,6 @@ if (tB)
   ldC=B->sizes[0];
 }
 
-check_cublas(cublasSgemm(p_cublas,trB,trA,m,n,k,&alfa,B,ldB,A,ldA,&beta,C,ldC),"mult2D");
-
+check_cublas(cublasSgemm(p_cublas,trB,trA,m,n,k,&alfa,B->gptr,ldB,A->gptr,ldA,&beta,C->gptr,ldC),"mult2D");
 
 }
