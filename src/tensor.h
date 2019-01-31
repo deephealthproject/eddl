@@ -38,9 +38,6 @@
 
 
 #include "cpu/Eigen/Dense"
-#ifdef cGPU
-#include "gpu/tensor_cuda.h"
-#endif
 
 #define MAX_GPUS 8
 

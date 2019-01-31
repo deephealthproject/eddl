@@ -34,6 +34,7 @@
 #include "tensor.h"
 
 #ifdef cGPU
+#include "gpu/tensor_cuda.h"
 #include "gpu/tensor_cuda_op.h"
 #endif
 
