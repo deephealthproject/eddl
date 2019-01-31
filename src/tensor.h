@@ -58,7 +58,6 @@ class Tensor{
   int device;
   int dim;
   int tam;
-  int type;
   shape sizes;
 
   Tensor **ptr;

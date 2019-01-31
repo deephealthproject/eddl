@@ -61,7 +61,6 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
 {
   int aux=0;
 
-  if ((A->type!=B->type)||(A->type!=C->type)) msg("Incompatible types in mult2D");
   if ((A->device!=B->device)||(A->device!=C->device)) msg("Tensors in different devices in mult2D");
   if ((A->dim!=2)||(B->dim!=2)||(C->dim!=2)) msg("mult2D only for 2D tensors");
   if (!tA) {
@@ -119,7 +118,6 @@ void Tensor::sum2D(Tensor *A, Tensor *B, Tensor *C,int incC)
 {
   int aux=0;
 
-  if ((A->type!=B->type)||(A->type!=C->type)) msg("Incompatible types in sum2D");
   if ((A->device!=B->device)||(A->device!=C->device)) msg("Tensors in different devices in sum2D");
   if ((A->dim!=2)||(B->dim!=2)||(C->dim!=2)) msg("sum2D only for 2D tensors");
   if ((!eqsize(A,B))||(!eqsize(A,C))) msg("Incompatible dims in sum2D");
@@ -144,7 +142,6 @@ void Tensor::sum2D(Tensor *A, Tensor *B, Tensor *C,int incC)
 ///////////////////////////////////////
 void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
 {
-  if ((A->type!=B->type)||(A->type!=C->type)) msg("Incompatible types in sum2D_rowwise");
   if ((A->device!=B->device)||(A->device!=C->device)) msg("Tensors in different devices in sum2D_rowwise");
   if ((A->dim!=2)||(B->dim!=1)||(C->dim!=2)) msg("sum2D_rowwise dims");
   if ((!eqsize(A,C))||(A->sizes[1]!=B->sizes[0])) msg("Incompatible dims in sum2D_rowwise");
@@ -167,7 +164,6 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
 ///////////////////////////////////////
 void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C)
 {
-  if ((A->type!=B->type)||(A->type!=C->type)) msg("Incompatible types in sum2D_colwise");
   if ((A->device!=B->device)||(A->device!=C->device)) msg("Tensors in different devices in sum2D_colwise");
   if ((A->dim!=2)||(B->dim!=1)||(C->dim!=2)) msg("sum2D_colwise dims");
   if ((!eqsize(A,C))||(A->sizes[0]!=B->sizes[0])) msg("Incompatible dims in sum2D_colwise");
