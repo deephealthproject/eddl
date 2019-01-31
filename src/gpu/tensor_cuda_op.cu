@@ -37,14 +37,6 @@ extern cublasHandle_t hcublas[64];
 extern curandGenerator_t random_generator[64];
 
 
-void check_cuda(cudaError_t error, char *func)
-{
-  if ( error!= cudaSuccess)
-  {
-     fprintf(stderr,"Error in cuda execution in %s\n",func);
-     exit(1);
-  }
-}
 void check_cublas(cublasStatus_t status, char * func)
 {
   if ( status!=  CUBLAS_STATUS_SUCCESS)
