@@ -37,8 +37,6 @@
 
 extern cublasHandle_t hcublas[64];
 extern curandGenerator_t random_generator[64];
-extern cublasStatus_t bstatus;
-extern curandStatus_t rstatus;
 
 using namespace std;
 
