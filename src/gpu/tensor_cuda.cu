@@ -47,7 +47,7 @@ void gpu_init(int device)
 
   if (device>nDevices)
    {
-    fprintf(stderr,"Error. GPU %d not available. Number of available GPU is %d. Further information running nvidia-smi\n",selected_gpu,nDevices);
+    fprintf(stderr,"Error. GPU %d not available. Number of available GPU is %d. Further information running nvidia-smi\n",device,nDevices);
     exit(-1);
    }
 
@@ -55,13 +55,13 @@ void gpu_init(int device)
   cudaSetDevice(device);
 
   cudaDeviceProp prop;
-  cudaGetDeviceProperties(&prop,selected_gpu);
+  cudaGetDeviceProperties(&prop,device);
 
   fprintf(stderr,"EDDLL is running on GPU %s\n",prop.name);
 
 
   /// CUBLAS
-  bstatus=cublasCreate(&p_cublas);
+  bstatus=cublasCreate(hcublas);
   // try to init cublas several times
   int i=0;
   while ((bstatus!=  CUBLAS_STATUS_SUCCESS)&&(i<10)) {
@@ -94,7 +94,7 @@ void gpu_init(int device)
     fprintf(stderr,"Error creating random numbers on gpu\n");
     exit(-1);
    }
- rstatus=curandSetPseudoRandomGeneratorSeed(random_generator,gpu_seed);
+  rstatus=curandSetPseudoRandomGeneratorSeed(random_generator,gpu_seed);
 
   if (rand_error != CURAND_STATUS_SUCCESS) {
       fprintf(stderr,"Error seeting the seed for program\n");

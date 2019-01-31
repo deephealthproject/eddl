@@ -33,7 +33,6 @@
 #include <cublas_v2.h>
 
 cublasHandle_t hcublas;
-gpu_specs gspecs;
 curandGenerator_t random_generator;
 
 cublasStatus_t bstatus;
