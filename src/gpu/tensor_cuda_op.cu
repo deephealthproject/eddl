@@ -41,6 +41,15 @@ extern cublasStatus_t bstatus;
 extern curandStatus_t rstatus;
 
 using namespace std;
+
+void check_cuda(cudaError_t error, string func)
+{
+  if ( error!= cudaSuccess)
+  {
+     fprintf(stderr,"Error in cuda execution in %s\n",func);
+     exit(1);
+  }
+}
 void check_cublas(cublasStatus_t status, string func)
 {
   if ( status!=  CUBLAS_STATUS_SUCCESS)
@@ -91,6 +100,6 @@ void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
 
   sum_mat_row<<<dimBlock,dimGrid>>>(A->gptr,B->gptr,C->gptr,A->sizes[0],A->sizes[1]);
 
-  check_cublas(cudaDeviceSynchronize(),"sum2D_rowwise");
+  check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
 
 }
