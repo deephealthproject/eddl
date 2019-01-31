@@ -109,7 +109,7 @@ CXXFLAGS :=  $(CXXFLAGS) -DcGPU -I $(cuda_path)include/
 GPU_CXXFLAGS := -I $(cuda_path)include/ -L  $(cuda_path)lib64/ -DcGPU
 GPU_LIBFLAGS := -lcudart -lcublas -lcurand
 GPU_CXX := $(cuda_path)bin/nvcc
-GPU_OBJ = tensor_cuda.o tensor_cuda_p.o
+GPU_OBJ = tensor_cuda.o tensor_cuda_op.o
 endif
 
 
