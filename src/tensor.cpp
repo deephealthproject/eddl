@@ -42,8 +42,8 @@ void msg(string s,string s2)
 }
 void msg(string s){msg(s,"");}
 
-
-for(int i=0;i<MAXGPUS; ++i) initcuda[i]=0;
+// setting static variables initial values
+for(int i=0;i<MAX_GPUS; ++i) initcuda[i]=0;
 
 // Tensor class
 Tensor::Tensor():device(DEV_CPU),dim(0),tam(0){}
