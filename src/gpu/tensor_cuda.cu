@@ -61,7 +61,7 @@ void gpu_init(int device)
 
 
   /// CUBLAS
-  bstatus=cublasCreate(hcublas);
+  bstatus=cublasCreate(&hcublas);
   // try to init cublas several times
   int i=0;
   while ((bstatus!=  CUBLAS_STATUS_SUCCESS)&&(i<10)) {
@@ -94,7 +94,7 @@ void gpu_init(int device)
     fprintf(stderr,"Error creating random numbers on gpu\n");
     exit(-1);
    }
-  rstatus=curandSetPseudoRandomGeneratorSeed(random_generator,gpu_seed);
+  rstatus=curandSetPseudoRandomGeneratorSeed(random_generator,1234);
 
   if (rand_error != CURAND_STATUS_SUCCESS) {
       fprintf(stderr,"Error seeting the seed for program\n");
