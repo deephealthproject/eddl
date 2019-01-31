@@ -82,6 +82,7 @@ void gpu_init(int device)
      exit(1);
 
   }
+  fprintf(stderr,"CuBlas initialized on device %s\n",prop.name);
 
   bstatus = cublasSetAtomicsMode(hcublas,CUBLAS_ATOMICS_NOT_ALLOWED);
   if ( bstatus!=  CUBLAS_STATUS_SUCCESS)
@@ -90,7 +91,6 @@ void gpu_init(int device)
      exit(1);
 
   }
-
 
   // CURAND
   rstatus=curandCreateGenerator(&random_generator,CURAND_RNG_PSEUDO_MRG32K3A);
@@ -105,6 +105,7 @@ void gpu_init(int device)
       fprintf(stderr,"Error seeting the seed for program\n");
       exit(-1);
   }
+  fprintf(stderr,"CuRand initialized on device %s\n",prop.name);
 
 }
 
