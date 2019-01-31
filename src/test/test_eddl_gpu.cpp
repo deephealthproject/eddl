@@ -36,26 +36,28 @@
 
 int main(int argc, char **argv)
 {
-  Tensor *A=new Tensor({7,1},DEV_GPU);
+  int dev=dev+1;
+
+  Tensor *A=new Tensor({7,1},dev);
   A->rand();
   A->info();
   A->print();
 
-  Tensor *C=new Tensor({7,5},DEV_GPU);
+  Tensor *C=new Tensor({7,5},dev);
   C->rand();
   C->info();
   C->print();
 
-  Tensor *C2=new Tensor({2,5,3,7,10,20},DEV_GPU);
+  Tensor *C2=new Tensor({2,5,3,7,10,20},dev);
   C2->info();
   /////////////////////////////////////////////////
 
 
-  Input *I=new Input(C,"in1",DEV_GPU);
+  Input *I=new Input(C,"in1",dev);
   I->info();
 
-  Dense *D=new Dense(I,128,"dense1",DEV_GPU);
-  Dense *E=new Dense(D,256,DEV_GPU);
+  Dense *D=new Dense(I,128,"dense1",dev);
+  Dense *E=new Dense(D,256,dev);
 
   D->info();
   E->info();

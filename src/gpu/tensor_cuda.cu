@@ -107,6 +107,8 @@ void gpu_init(int device)
   }
   fprintf(stderr,"CuRand initialized on device %s\n",prop.name);
 
+  
+
 }
 
 void gpu_set_device(int device)
