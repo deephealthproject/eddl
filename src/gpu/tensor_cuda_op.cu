@@ -34,8 +34,8 @@
 #include "../tensor.h"
 #include "tensor_cuda.h"
 
-extern cublasHandle_t hcublas;
-extern curandGenerator_t random_generator;
+extern cublasHandle_t hcublas[64];
+extern curandGenerator_t random_generator[64];
 extern cublasStatus_t bstatus;
 extern curandStatus_t rstatus;
 
