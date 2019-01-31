@@ -62,7 +62,7 @@ void gpu_init(int device)
   cudaDeviceProp prop;
   cudaGetDeviceProperties(&prop,device);
 
-  fprintf(stderr,"EDDLL is running on GPU %s\n",prop.name);
+  fprintf(stderr,"EDDLL is running on GPU device %d, %s\n",device prop.name);
 
 
   /// CUBLAS
@@ -82,7 +82,7 @@ void gpu_init(int device)
      exit(1);
 
   }
-  fprintf(stderr,"CuBlas initialized on device %s\n",prop.name);
+  fprintf(stderr,"CuBlas initialized on GPU device %d, %s\n",device,prop.name);
 
   bstatus = cublasSetAtomicsMode(hcublas[device],CUBLAS_ATOMICS_NOT_ALLOWED);
   if ( bstatus!=  CUBLAS_STATUS_SUCCESS)
@@ -105,7 +105,7 @@ void gpu_init(int device)
       fprintf(stderr,"Error seeting the seed for program\n");
       exit(-1);
   }
-  fprintf(stderr,"CuRand initialized on device %s\n",prop.name);
+  fprintf(stderr,"CuRand initialized on GPU device %d, %s\n",device,prop.name);
 
 
 
