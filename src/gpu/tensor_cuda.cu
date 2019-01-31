@@ -27,8 +27,8 @@
 #include <stdio.h>
 #include "tensor_cuda.h"
 
-cublasHandle_t hcublas;
-curandGenerator_t random_generator;
+cublasHandle_t hcublas[64];
+curandGenerator_t random_generator[64];
 cublasStatus_t bstatus;
 curandStatus_t rstatus;
 
@@ -66,11 +66,11 @@ void gpu_init(int device)
 
 
   /// CUBLAS
-  bstatus=cublasCreate(&hcublas);
+  bstatus=cublasCreate(&(hcublas[device]));
   // try to init cublas several times
   int i=0;
   while ((bstatus!=  CUBLAS_STATUS_SUCCESS)&&(i<10)) {
-    bstatus=cublasCreate(&hcublas);
+    bstatus=cublasCreate(&(hcublas[device]));
     i++;
     fprintf(stderr,".");
   }
@@ -84,7 +84,7 @@ void gpu_init(int device)
   }
   fprintf(stderr,"CuBlas initialized on device %s\n",prop.name);
 
-  bstatus = cublasSetAtomicsMode(hcublas,CUBLAS_ATOMICS_NOT_ALLOWED);
+  bstatus = cublasSetAtomicsMode(hcublas[device],CUBLAS_ATOMICS_NOT_ALLOWED);
   if ( bstatus!=  CUBLAS_STATUS_SUCCESS)
   {
      fprintf(stderr,"Problem in cuBlas execution getting: NOT IMPLEMENTED \n");
@@ -93,13 +93,13 @@ void gpu_init(int device)
   }
 
   // CURAND
-  rstatus=curandCreateGenerator(&random_generator,CURAND_RNG_PSEUDO_MRG32K3A);
+  rstatus=curandCreateGenerator(&(random_generator[device]),CURAND_RNG_PSEUDO_MRG32K3A);
   if (rstatus != CURAND_STATUS_SUCCESS)
 	{
     fprintf(stderr,"Error creating random numbers on gpu\n");
     exit(-1);
    }
-  rstatus=curandSetPseudoRandomGeneratorSeed(random_generator,1234);
+  rstatus=curandSetPseudoRandomGeneratorSeed(random_generator[device],1234);
 
   if (rstatus != CURAND_STATUS_SUCCESS) {
       fprintf(stderr,"Error seeting the seed for program\n");
@@ -107,7 +107,7 @@ void gpu_init(int device)
   }
   fprintf(stderr,"CuRand initialized on device %s\n",prop.name);
 
-  
+
 
 }
 

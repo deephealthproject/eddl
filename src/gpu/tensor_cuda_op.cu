@@ -51,6 +51,7 @@ void check_cublas(cublasStatus_t status, string func)
 
 void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
 {
+int device=A->device-DEV_GPU;
 
 float alfa=1.0;
 float beta=(float)incC;
@@ -78,6 +79,6 @@ if (tB)
   ldC=B->sizes[0];
 }
 
-check_cublas(cublasSgemm(hcublas,trB,trA,m,n,k,&alfa,B->gptr,ldB,A->gptr,ldA,&beta,C->gptr,ldC),"mult2D");
+check_cublas(cublasSgemm(hcublas[device],trB,trA,m,n,k,&alfa,B->gptr,ldB,A->gptr,ldA,&beta,C->gptr,ldC),"mult2D");
 
 }
