@@ -85,7 +85,7 @@ Tensor::Tensor(shape s,int dev)
   #ifdef cGPU
   else if (device>DEV_GPU) {
     gpu_device=device-DEV_GPU;
-    if (!initcuda[gpu_device]) gpu_init(int device);
+    if (!initcuda[gpu_device]) gpu_init(device);
     gpu_set_device(gpu_device);
     gptr=gpu_create_tensor(tam);
   }
