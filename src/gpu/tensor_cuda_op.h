@@ -32,5 +32,6 @@
 
 void check_cublas(cublasStatus_t status, string func);
 void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC);
+void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
 
 #endif
