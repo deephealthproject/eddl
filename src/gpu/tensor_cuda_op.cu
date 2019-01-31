@@ -48,35 +48,35 @@ void check_cublas(cublasStatus_t status, char * func)
 
 void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
 {
-int device=A->device-DEV_GPU;
+  int device=A->device-DEV_GPU;
 
-float alfa=1.0;
-float beta=(float)incC;
+  float alfa=1.0;
+  float beta=(float)incC;
 
-cublasOperation_t trA = CUBLAS_OP_N;
-cublasOperation_t trB = CUBLAS_OP_N;
+  cublasOperation_t trA = CUBLAS_OP_N;
+  cublasOperation_t trB = CUBLAS_OP_N;
 
-int ldA=A->sizes[1];
-int ldB=B->sizes[1];
-int ldC=B->sizes[1];
-int m=B->sizes[1];
-int n=A->sizes[0];
-int k=B->sizes[0];
+  int ldA=A->sizes[1];
+  int ldB=B->sizes[1];
+  int ldC=B->sizes[1];
+  int m=B->sizes[1];
+  int n=A->sizes[0];
+  int k=B->sizes[0];
 
-if (tA)
-{
-	trA = CUBLAS_OP_T;
-	n=A->sizes[1];
-}
-if (tB)
-{
-	trB = CUBLAS_OP_T;
-  m=B->sizes[0];
-	k=B->sizes[1];
-  ldC=B->sizes[0];
-}
+  if (tA)
+  {
+    	trA = CUBLAS_OP_T;
+  	n=A->sizes[1];
+  }
+  if (tB)
+    {
+  	trB = CUBLAS_OP_T;
+    m=B->sizes[0];
+  	k=B->sizes[1];
+    ldC=B->sizes[0];
+    }
 
-check_cublas(cublasSgemm(hcublas[device],trB,trA,m,n,k,&alfa,B->gptr,ldB,A->gptr,ldA,&beta,C->gptr,ldC),"mult2D");
+  check_cublas(cublasSgemm(hcublas[device],trB,trA,m,n,k,&alfa,B->gptr,ldB,A->gptr,ldA,&beta,C->gptr,ldC),"mult2D");
 
 }
 
