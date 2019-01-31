@@ -68,9 +68,11 @@ class Tensor{
 
   // GPU
   float *gptr;
+  int gpu_device;
+  static int initcuda[1024];
 
   //FPGA
-  
+
 
   // Constructors
   Tensor();

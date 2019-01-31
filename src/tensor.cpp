@@ -53,13 +53,13 @@ Tensor::Tensor(const shape s):Tensor(s,DEV_CPU){}
 Tensor::Tensor(shape s,int dev)
 {
   #ifndef cGPU
-  if (dev==DEV_GPU){
+  if (dev>DEV_CPU){
     fprintf(stderr,"Not compiled for GPU\n");
     exit(0);
   }
   #endif
   #ifndef cFPGA
-  if (dev==DEV_FPGA){
+  if (dev>DEV_FPGA){
     fprintf(stderr,"Not compiled for FPGA\n");
     exit(0);
   }
@@ -83,7 +83,12 @@ Tensor::Tensor(shape s,int dev)
     }
   }
   #ifdef cGPU
-  else if (device==DEV_GPU) gptr=gpu_create_tensor(tam);
+  else if (device>DEV_GPU) {
+    gpu_device=device-DEV_GPU;
+    if (!initcuda[gpu_device]) gpu_init(int device);
+    gpu_set_device(gpu_device);
+    gptr=gpu_create_tensor(tam);
+  }
   #endif
 }
 
@@ -109,7 +114,10 @@ Tensor::~Tensor()
     }
   }
   #ifdef cGPU
-  else if (device==DEV_GPU) gpu_delete_tensor(gptr);
+  else if (device==DEV_GPU) {
+    gpu_set_device(gpu_device);
+    gpu_delete_tensor(gptr);
+  }
   #endif
 }
 
@@ -161,7 +169,7 @@ void Tensor::info()
 
   fprintf(stderr,"Total bytes=%ld\n",tam*sizeof(float));
   if (device==DEV_CPU) fprintf(stderr,"Device=CPU\n");
-  else if (device==DEV_GPU) fprintf(stderr,"Device=GPU\n");
+  else if (device==DEV_GPU) fprintf(stderr,"Device=GPU (%d)\n",gpu_device);
   else fprintf(stderr,"Device=FPGA\n");
 }
 
