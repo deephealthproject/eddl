@@ -103,7 +103,7 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
   #ifdef cGPU
   else
   {
-
+    gpu_mult2D(A,tA,B,tB,C,incC);
   }
   #endif
 }
@@ -172,7 +172,7 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C)
   #ifdef cGPU
   else
   {
-    gpu_mult2D(A,tA,B,tB,C,incC);
+
   }
   #endif
 }
