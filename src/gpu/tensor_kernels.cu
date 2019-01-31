@@ -37,7 +37,7 @@ __global__ void sum_mat_row(float* a, float* b, float* c, int rows, int cols)
 
  if (thread_id_x < ops) {
    c[thread_id_x]=a[thread_id_x]+b[thread_id_x%cols];
-   fprintf(stderr,"[%d %d] ",thread_id_x,thread_id_x%cols)
+   fprintf(stderr,"[%d %d] ",thread_id_x,thread_id_x%cols);
  }
 
 }
