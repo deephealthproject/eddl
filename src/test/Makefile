@@ -120,8 +120,13 @@ endif
 #######################################################################
 OBJ =	tensor.o tensor_op.o tensor_over.o layer.o layer_input.o layer_dense.o layer_add.o
 
+ifeq ($(CORE),1)
 all: $(GPU_OBJ) $(OBJ) test_eddl
+endif
 
+ifeq ($(CORE),2)
+all: $(GPU_OBJ) $(OBJ) test_eddl_gpu
+endif
 
 #--------------------------------- c code
 tensor.o: ../tensor.cpp ../tensor.h
@@ -157,6 +162,8 @@ tensor_cuda_op.o: ../gpu/tensor_cuda_op.cu ../gpu/tensor_cuda_op.h
 test_eddl: test_eddl.cpp $(OBJ) $(GPU_OBJ)
 	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_eddl.cpp -o test_eddl $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
 
+test_eddl_gpu: test_eddl_gpu.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_eddl_gpu.cpp -o test_eddl_gpu $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
 
 #-------------------------
 
