@@ -24,8 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef _tensor_cuda_
-#define _tensor_cuda_
+#ifndef _TENSOR_CUDA_
+#define _TENSOR_CUDA_
 
 #include <cuda.h>
 #include <curand.h>

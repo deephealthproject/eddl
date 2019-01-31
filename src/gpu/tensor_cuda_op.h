@@ -24,14 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef _tensor_cuda_
-#define _tensor_cuda_
+#ifndef _TENSOR_CUDA_OP_
+#define _TENSOR_CUDA_OP_
 
 #include <cuda.h>
+#include "../tensor.h"
 
-
-float* gpu_create_tensor(int size);
-void gpu_delete_tensor(float* p);
-
+void check_cublas(cublasStatus_t status, string func);
+void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC);
 
 #endif
