@@ -29,7 +29,6 @@
 #include <initializer_list>
 
 #include "layer.h"
-#include "tensor.h"
 
 using namespace std;
 

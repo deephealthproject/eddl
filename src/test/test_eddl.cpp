@@ -28,12 +28,11 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "../tensor.h"
-#include "../tensor_over.h"
-//#include "../layer.h"
+//#include "../tensor.h"
+#include "../layer.h"
+//#include "../tensor_over.h"
 
-
-#define tensor_sum tensor::sum
+//#define tensor_sum tensor::sum
 
 int main(int argc, char **argv)
 {
@@ -71,7 +70,7 @@ int main(int argc, char **argv)
 
   //Add *ad=new Add({D,E},"add1");
 
-  Layer *a=tensor_sum(tensor_sum(D,D),tensor_sum(D,D));
+  //Layer *a=tensor_sum(tensor_sum(D,D),tensor_sum(D,D));
 
 
 

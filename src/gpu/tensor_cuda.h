@@ -30,12 +30,8 @@
 #include <cuda.h>
 
 
-float* create_tensorf(int size);
-double* create_tensord(int size);
-int* create_tensori(int size);
+float* gpu_create_tensor(int size);
+void gpu_delete_tensor(float* p);
 
-void delete_tensor(float* p);
-void delete_tensor(double* p);
-void delete_tensor(int* p);
 
 #endif

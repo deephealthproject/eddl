@@ -69,6 +69,9 @@ class Tensor{
   // GPU
   float *gptr;
 
+  //FPGA
+  
+
   // Constructors
   Tensor();
   Tensor(const initializer_list<int>& init);

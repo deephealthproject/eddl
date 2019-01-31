@@ -24,13 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#ifndef _LAYER_
+#define _LAYER_
 
 #include <string>
+
 #include "tensor.h"
 
-#define MAX_CONNECT 100
-#define TRMODE 0
-#define TSMODE 1
+
+#define TRMODE 1
+#define TSMODE 0
 
 using namespace std;
 
@@ -161,3 +164,5 @@ class Add : public MLayer {
   void applygrads();
 
 };
+
+#endif

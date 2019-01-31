@@ -83,7 +83,7 @@ Tensor::Tensor(shape s,int dev)
     }
   }
   #ifdef cGPU
-  else if (device==DEV_GPU) mem(type);
+  else if (device==DEV_GPU) gptr=gpu_create_tensor(tam);
   #endif
 }
 
@@ -109,7 +109,7 @@ Tensor::~Tensor()
     }
   }
   #ifdef cGPU
-  else if (device==DEV_GPU) clean(type);
+  else if (device==DEV_GPU) gpu_delete_tensor(gptr);
   #endif
 }
 
