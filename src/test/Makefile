@@ -109,7 +109,7 @@ CXXFLAGS :=  $(CXXFLAGS) -DcGPU -I $(cuda_path)include/
 GPU_CXXFLAGS := -I $(cuda_path)include/ -L  $(cuda_path)lib64/ -DcGPU
 GPU_LIBFLAGS := -lcudart -lcublas -lcurand
 GPU_CXX := $(cuda_path)bin/nvcc
-GPU_OBJ = tensor_cuda.o
+GPU_OBJ = tensor_cuda.o tensor_cuda_p.o
 endif
 
 
@@ -149,6 +149,9 @@ layer_add.o: ../layer_add.cpp ../layer.h
 #---------------------------------- gpu code
 tensor_cuda.o: ../gpu/tensor_cuda.cu ../gpu/tensor_cuda.h
 		$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c ../gpu/tensor_cuda.cu
+
+tensor_cuda_op.o: ../gpu/tensor_cuda_op.cu ../gpu/tensor_cuda_op.h
+		$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c ../gpu/tensor_cuda_op.cu
 
 #---------------------------------- release
 test_eddl: test_eddl.cpp $(OBJ) $(GPU_OBJ)
