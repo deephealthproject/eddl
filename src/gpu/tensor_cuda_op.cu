@@ -52,8 +52,6 @@ void check_cublas(cublasStatus_t status, string func)
 void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
 {
 
-fprintf(stderr,"GPU Mult2D");
-
 float alfa=1.0;
 float beta=(float)incC;
 
