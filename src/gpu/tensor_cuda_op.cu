@@ -72,7 +72,7 @@ int ldB=B->sizes[1];
 int ldC=B->sizes[1];
 int m=B->sizes[1];
 int n=A->sizes[0];
-int k=B->sizes[0];
+int k=B->sizes[1];
 
 if (tA)
 {
@@ -83,8 +83,8 @@ if (tB)
 {
 	trB = CUBLAS_OP_T;
   m=B->sizes[0];
-	k=B->sizes[0];
-  ldC=B->sizes[1];
+	k=B->sizes[1];
+  ldC=B->sizes[0];
 }
 
 check_cublas(cublasSgemm(hcublas[device],trB,trA,m,n,k,&alfa,B->gptr,ldB,A->gptr,ldA,&beta,C->gptr,ldC),"mult2D");
