@@ -108,6 +108,9 @@ void gpu_set_device(int device)
    cudaSetDevice(device);
 }
 
+
+///////////////
+
 float* gpu_create_tensor(int size)
 {
   float* devicePointer;
