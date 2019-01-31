@@ -157,7 +157,7 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
   #ifdef cGPU
   else
   {
-
+    gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
   }
   #endif
 }
