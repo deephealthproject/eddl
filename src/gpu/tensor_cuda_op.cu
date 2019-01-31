@@ -61,7 +61,7 @@ int ldB=B->sizes[1];
 int ldC=B->sizes[1];
 int m=B->sizes[1];
 int n=A->sizes[0];
-int k=B->sizes[1];
+int k=B->sizes[0];
 
 if (tA)
 {
