@@ -42,7 +42,7 @@
 #include "gpu/tensor_cuda.h"
 #endif
 
-#define MAX_GPUS 64
+#define MAX_GPUS 8
 
 using namespace std;
 
@@ -71,7 +71,6 @@ class Tensor{
   // GPU
   float *gptr;
   int gpu_device;
-  static int initcuda[MAX_GPUS];
 
   //FPGA
 
@@ -105,6 +104,8 @@ class Tensor{
 
 
 };
+
+
 
 
 

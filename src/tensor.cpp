@@ -34,6 +34,7 @@
 #include "tensor.h"
 
 using namespace std;
+int initcuda[MAX_GPUS]={0,0,0,0,0,0,0,0};
 
 void msg(string s,string s2)
 {
@@ -42,8 +43,6 @@ void msg(string s,string s2)
 }
 void msg(string s){msg(s,"");}
 
-// setting static variables initial values
-for(int i=0;i<MAX_GPUS; ++i) initcuda[i]=0;
 
 // Tensor class
 Tensor::Tensor():device(DEV_CPU),dim(0),tam(0){}
@@ -87,7 +86,10 @@ Tensor::Tensor(shape s,int dev)
   #ifdef cGPU
   else if (device>DEV_GPU) {
     gpu_device=device-DEV_GPU;
-    if (!Tensor::initcuda[gpu_device]) gpu_init(device);
+    if (!initcuda[gpu_device]) {
+      gpu_init(device);
+      initcuda[device]=1;
+    }
     gpu_set_device(gpu_device);
     gptr=gpu_create_tensor(tam);
   }
