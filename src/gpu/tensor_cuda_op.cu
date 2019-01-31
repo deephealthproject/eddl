@@ -41,7 +41,7 @@ void check_cublas(cublasStatus_t status, string func)
 {
   if ( status!=  CUBLAS_STATUS_SUCCESS)
   {
-     cout << "Error in cublas execution in "<<func<<"\n";
+     fprintf(stderr,"Error in cublas execution in %s\n",func);
      exit(1);
   }
 }
