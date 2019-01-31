@@ -91,4 +91,6 @@ void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
 
   sum_mat_row<<<dimBlock,dimGrid>>>(A->gptr,B->gptr,C->gptr,A->sizes[0],A->sizes[1]);
 
+  check_cublas(cudaDeviceSynchronize(),"sum2D_rowwise");
+
 }
