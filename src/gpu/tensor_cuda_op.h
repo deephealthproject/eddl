@@ -28,19 +28,8 @@
 #define _tensor_cuda_
 
 #include <cuda.h>
-#include <curand.h>
-#include <cuda_runtime_api.h>
-#include <cublas_v2.h>
 
-cublasHandle_t hcublas;
-gpu_specs gspecs;
-curandGenerator_t random_generator;
 
-cublasStatus_t bstatus;
-curandStatus_t rstatus;
-
-void gpu_set_device(int device);
-void gpu_init(int device);
 float* gpu_create_tensor(int size);
 void gpu_delete_tensor(float* p);
 

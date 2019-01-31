@@ -24,25 +24,58 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef _tensor_cuda_
-#define _tensor_cuda_
+#include <string.h>
+#include <stdio.h>
 
 #include <cuda.h>
-#include <curand.h>
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
 
-cublasHandle_t hcublas;
-gpu_specs gspecs;
-curandGenerator_t random_generator;
+#include "../tensor.h"
+#include "tensor_cuda.h"
 
-cublasStatus_t bstatus;
-curandStatus_t rstatus;
-
-void gpu_set_device(int device);
-void gpu_init(int device);
-float* gpu_create_tensor(int size);
-void gpu_delete_tensor(float* p);
+//cublasHandle_t p_cublas;
 
 
-#endif
+voir check_cublas(cublasStatus_t status, string func)
+{
+  if ( status!=  CUBLAS_STATUS_SUCCESS)
+  {
+     cout << "Error in cublas execution in "<<func<<"\n";
+     exit(1);
+  }
+}
+
+void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
+{
+
+float alfa=1.0;
+float beta=(float)incC;
+
+cublasOperation_t trA = CUBLAS_OP_N;
+cublasOperation_t trB = CUBLAS_OP_N;
+
+int ldA=A->sizes[1];
+int ldB=B->sizes[1];
+int ldC=B->sizes[1];
+int m=B->sizes[1];
+int n=A->sizes[0];
+int k=B->sizes[0];
+
+if (tA)
+{
+	trA = CUBLAS_OP_T;
+	n=A->sizes[1];
+}
+if (tB)
+{
+	trB = CUBLAS_OP_T;
+  m=B->sizes[0];
+	k=B->sizes[1];
+  ldC=B->sizes[0];
+}
+
+check_cublas(cublasSgemm(p_cublas,trB,trA,m,n,k,&alfa,B,ldB,A,ldA,&beta,C,ldC),"mult2D");
+
+
+}

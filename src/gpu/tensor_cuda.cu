@@ -27,6 +27,8 @@
 #include <stdio.h>
 #include "tensor_cuda.h"
 
+
+
 void check_cuda(cudaError_t err,char *msg)
 {
   if(err!=cudaSuccess)
@@ -35,6 +37,75 @@ void check_cuda(cudaError_t err,char *msg)
      exit(0);
   }
 
+}
+
+void gpu_init(int device)
+{
+
+  int nDevices;
+  cudaGetDeviceCount(&nDevices);
+
+  if (device>nDevices)
+   {
+    fprintf(stderr,"Error. GPU %d not available. Number of available GPU is %d. Further information running nvidia-smi\n",selected_gpu,nDevices);
+    exit(-1);
+   }
+
+  fprintf(stderr,"Selecting GPU device %d\n",device);
+  cudaSetDevice(device);
+
+  cudaDeviceProp prop;
+  cudaGetDeviceProperties(&prop,selected_gpu);
+
+  fprintf(stderr,"EDDLL is running on GPU %s\n",prop.name);
+
+
+  /// CUBLAS
+  bstatus=cublasCreate(&p_cublas);
+  // try to init cublas several times
+  int i=0;
+  while ((bstatus!=  CUBLAS_STATUS_SUCCESS)&&(i<10)) {
+    bstatus=cublasCreate(&hcublas);
+    i++;
+    fprintf(stderr,".");
+  }
+  fprintf(stderr,"\n");
+
+  if ( bstatus!=  CUBLAS_STATUS_SUCCESS)
+  {
+     fprintf(stderr,"Problem in cuBlas Create\n");
+     exit(1);
+
+  }
+
+  bstatus = cublasSetAtomicsMode(hcublas,CUBLAS_ATOMICS_NOT_ALLOWED);
+  if ( bstatus!=  CUBLAS_STATUS_SUCCESS)
+  {
+     fprintf(stderr,"Problem in cuBlas execution getting: NOT IMPLEMENTED \n");
+     exit(1);
+
+  }
+
+
+  // CURAND
+  rstatus=curandCreateGenerator(&random_generator,CURAND_RNG_PSEUDO_MRG32K3A);
+  if (rstatus != CURAND_STATUS_SUCCESS)
+	{
+    fprintf(stderr,"Error creating random numbers on gpu\n");
+    exit(-1);
+   }
+ rstatus=curandSetPseudoRandomGeneratorSeed(random_generator,gpu_seed);
+
+  if (rand_error != CURAND_STATUS_SUCCESS) {
+      fprintf(stderr,"Error seeting the seed for program\n");
+      exit(-1);
+  }
+
+}
+
+void gpu_set_device(int device)
+{
+   cudaSetDevice(device);
 }
 
 float* gpu_create_tensor(int size)
