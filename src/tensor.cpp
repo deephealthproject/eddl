@@ -118,7 +118,7 @@ Tensor::~Tensor()
     }
   }
   #ifdef cGPU
-  else if ((dev>DEV_CPU)&&(dev<DEV_FPGA)) {
+  else if ((device>DEV_CPU)&&(device<DEV_FPGA)) {
     gpu_set_device(gpu_device);
     gpu_delete_tensor(gptr);
   }
