@@ -33,6 +33,7 @@
 
 #include "../tensor.h"
 #include "tensor_cuda.h"
+#include "tensor_kernels.h"
 
 extern cublasHandle_t hcublas[64];
 extern curandGenerator_t random_generator[64];
