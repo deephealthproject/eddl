@@ -96,7 +96,7 @@ void gpu_init(int device)
    }
   rstatus=curandSetPseudoRandomGeneratorSeed(random_generator,1234);
 
-  if (rand_error != CURAND_STATUS_SUCCESS) {
+  if (rstatus != CURAND_STATUS_SUCCESS) {
       fprintf(stderr,"Error seeting the seed for program\n");
       exit(-1);
   }
