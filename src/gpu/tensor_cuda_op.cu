@@ -93,9 +93,11 @@ check_cublas(cublasSgemm(hcublas[device],trB,trA,m,n,k,&alfa,B->gptr,ldB,A->gptr
 
 void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
 {
-  dim3 dimBlock(A->sizes[1]);
-  dim3 dimGrid(A->sizes[0]);
 
+  dim3 dimGrid(A->sizes[0]);
+  dim3 dimBlock(A->sizes[1]);
+
+  
   sum_mat_row<<<dimBlock,dimGrid>>>(A->gptr,B->gptr,C->gptr,A->sizes[0],A->sizes[1]);
 
   check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
