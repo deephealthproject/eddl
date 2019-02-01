@@ -103,21 +103,21 @@ void gpu_sum2D(Tensor *A, Tensor *B, Tensor *C,int incC)
 {
   int device=A->device-DEV_GPU;
 
-  m=sA->col;
-  n=sB->row;
-  ldA=sA->col;
-  ldB=sB->col;
-  ldC=sA->col;
+  int m=sA->col;
+  int n=sB->row;
+  int ldA=sA->col;
+  int ldB=sB->col;
+  int ldC=sA->col;
 
   float alfa=1.0;
   float beta=1.0;
 
   if (incC){
-    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A,ldA,&beta,C,ldB,C,ldC));
-    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,B,ldA,&beta,C,ldB,C,ldC));
+    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A->gptr,ldA,&beta,C->gptr,ldB,C->gptr,ldC));
+    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,B->gptr,ldA,&beta,C->gptr,ldB,C->gptr,ldC));
   }
   else
-    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A,ldA,&beta,B,ldB,C,ldC));
+    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A->gptr,ldA,&beta,B->gptr,ldB,C->gptr,ldC));
 
 }
 
