@@ -103,11 +103,11 @@ void gpu_sum2D(Tensor *A, Tensor *B, Tensor *C,int incC)
 {
   int device=A->device-DEV_GPU;
 
-  int m=sA->col;
-  int n=sB->row;
-  int ldA=sA->col;
-  int ldB=sB->col;
-  int ldC=sA->col;
+  int m=A->sizes[1];
+  int n=B->sizes[0];
+  int ldA=A->sizes[1];
+  int ldB=B->sizes[1];
+  int ldC=A->sizes[1];
 
   float alfa=1.0;
   float beta=1.0;
