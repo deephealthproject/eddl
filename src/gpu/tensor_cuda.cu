@@ -26,6 +26,7 @@
 
 #include <stdio.h>
 #include "tensor_cuda.h"
+#include "tensor_kernels.h"
 
 cublasHandle_t hcublas[64];
 curandGenerator_t random_generator[64];
