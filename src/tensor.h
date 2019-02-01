@@ -93,7 +93,7 @@ class Tensor{
   static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
   static void sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
   static void rand(Tensor *A);
-  static void set(Tensot *A,float v);
+  static void set(Tensor *A,float v);
 
 
 
