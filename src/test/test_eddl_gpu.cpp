@@ -33,25 +33,25 @@
 //#include "../tensor_over.h"
 
 //#define tensor_sum tensor::sum
-#define rand Tensor::rand
+
 int main(int argc, char **argv)
 {
   int dev=DEV_GPU+1;
 
   Tensor *A=new Tensor({7,1},dev);
-  rand(A);
-  A->info();
-  A->print();
-  A->set(3.0);
+  Tensor::rand(A);
+  Tensor::info(A);
+  A->print(A);
+  Tensor::set(A,3.0);
   A->print();
 
 
   Tensor *B=new Tensor({10,5},dev);
-  B->set(1.0);
+  Tensor::set(B,1.0);
   B->print();
 
   Tensor *C=new Tensor({5},dev);
-  C->set(2.0);
+  Tensor::set(C,2.0);
   C->print();
 
   Tensor::sum2D_rowwise(B, C, B);
