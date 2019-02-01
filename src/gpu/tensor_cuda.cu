@@ -135,8 +135,8 @@ void gpu_delete_tensor(float* p)
 
 ///////////////////////////////////////////
 void gpu_set(float *p,float a,int r,int c){
-  dim3 dimGrid(c);
-  dim3 dimBlock(r);
+  dim3 dimGrid(r);
+  dim3 dimBlock(c);
 
   set<<<dimBlock,dimGrid>>>(p,a,r,c);
 
