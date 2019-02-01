@@ -113,6 +113,8 @@ void gpu_sum2D(Tensor *A, Tensor *B, Tensor *C,int incC)
   float alfa=1.0;
   float beta=1.0;
 
+  A->gptr[0]=0;
+  
   if (incC){
     check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A->gptr,ldA,&beta,C->gptr,ldB,C->gptr,ldC),"sum2D");
     check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,B->gptr,ldA,&beta,C->gptr,ldB,C->gptr,ldC),"sum2D");
