@@ -42,6 +42,8 @@ int main(int argc, char **argv)
   A->rand();
   A->info();
   A->print();
+  A->set(1.0);
+  A->print();
 
   Tensor *C=new Tensor({7,5},dev);
   C->rand();
