@@ -44,6 +44,7 @@ void check_cuda(cudaError_t err,char *msg)
 
 }
 
+///////////////////////////////////////////
 void gpu_init(int device)
 {
 
@@ -74,7 +75,7 @@ void gpu_init(int device)
     i++;
     fprintf(stderr,".\n");
   }
-  
+
   if ( bstatus!=  CUBLAS_STATUS_SUCCESS)
   {
      fprintf(stderr,"Problem in cuBlas Create\n");
@@ -110,21 +111,59 @@ void gpu_init(int device)
 
 }
 
+///////////////////////////////////////////
 void gpu_set_device(int device)
 {
    cudaSetDevice(device);
 }
 
 
-///////////////
-
+///////////////////////////////////////////
 float* gpu_create_tensor(int size)
 {
   float* devicePointer;
   check_cuda(cudaMalloc((void**)&devicePointer,size*sizeof(float)),"create_tensor");
   return devicePointer;
 }
+
+///////////////////////////////////////////
 void gpu_delete_tensor(float* p)
 {
   check_cuda(cudaFree(p),"delete_tensor");
 }
+
+///////////////////////////////////////////
+
+void gpu_print(float *gptr,int r,int c,int dim)
+{
+ int i,j,p;
+
+ if (dim==2) {
+   p=0;
+   for(i=0;i<r;++i) {
+     for(j=0;j<c;++j,++p)
+       printf("%f ",gptr[p]);
+      printf("\n");
+    }
+  }
+  else {
+    for(i=0;i<r;++i)
+      printf("%f ",gptr[i]);
+    printf("\n");
+  }
+}
+
+
+///////////////////////////////////////////
+
+///////////////////////////////////////////
+
+///////////////////////////////////////////
+
+///////////////////////////////////////////
+
+///////////////////////////////////////////
+
+///////////////////////////////////////////
+
+///////////////////////////////////////////

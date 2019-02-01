@@ -195,6 +195,10 @@ void Tensor::print(){
       }
     cout<<"\n";
   }
+  else {
+    if (dim<3)
+      gpu_print(gptr,sizes[0],sizes[1],dim);
+  }
 }
 
 ///////////////////////////////////////////

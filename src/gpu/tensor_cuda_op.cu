@@ -46,6 +46,29 @@ void check_cublas(cublasStatus_t status, char * func)
   }
 }
 
+///////////////////////////////////////////
+
+void gpu_print(Tensor *A)
+{
+ int i,j,p;
+
+ if (A->dim==2) {
+   p=0;
+   for(i=0;i<A->sizes[0];++i) {
+     for(j=0;j<A->size[1];++j,++p)
+       printf("%f ",A->gptr[p]);
+      printf("\n");
+    }
+  }
+  else {
+    for(i=0;i<A->sizes[0];++i)
+      printf("%f ",A->gptr[i]);
+    printf("\n");
+  }
+}
+
+///////////////////////////////////////////
+
 void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
 {
   int device=A->device-DEV_GPU;
@@ -65,7 +88,7 @@ void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
 
   if (tA)
   {
-    	trA = CUBLAS_OP_T;
+    trA = CUBLAS_OP_T;
   	n=A->sizes[1];
   }
   if (tB)
@@ -80,8 +103,11 @@ void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
 
 }
 
+///////////////////////////////////////////
 void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
 {
+  int device=A->device-DEV_GPU;
+  cudaSetDevice(device);
 
   dim3 dimGrid(A->sizes[0]);
   dim3 dimBlock(A->sizes[1]);
@@ -91,3 +117,34 @@ void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
   check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
 
 }
+
+///////////////////////////////////////////
+void gpu_sum2D(Tensor *A, Tensor *B, Tensor *C,int incC)
+{
+  int device=A->device-DEV_GPU;
+
+  m=sA->col;
+  n=sB->row;
+  ldA=sA->col;
+  ldB=sB->col;
+  ldC=sA->col;
+
+  float alfa=1.0;
+  float beta=1.0;
+
+  if (incC){
+    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A,ldA,&beta,C,ldB,C,ldC));
+    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,B,ldA,&beta,C,ldB,C,ldC));
+  }
+  else
+    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A,ldA,&beta,B,ldB,C,ldC));
+
+}
+
+///////////////////////////////////////////
+
+
+///////////////////////////////////////////
+
+
+///////////////////////////////////////////
