@@ -31,6 +31,7 @@
 
 
 __global__ void sum_mat_row(float* a, float* b, float* c, int cols, int rows);
+__global__ void sum_mat_col(float* a, float* b, float* c, int rows, int cols);
 __global__ void set(float* a, float v, int rows, int cols);
 
 #endif

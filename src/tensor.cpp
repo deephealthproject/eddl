@@ -175,7 +175,7 @@ void Tensor::print(){
       }
     cout<<"\n";
   }
-  else {
+  else if (device<DEV_FPGA){
     if (dim<3) {
       gpu_set_device(gpu_device);
       float *v= (float*)malloc(tam*sizeof(float));
@@ -197,7 +197,6 @@ void Tensor::print(){
        free(v);
 
     }
-
   }
 }
 
@@ -213,7 +212,7 @@ void Tensor::set(float v){
         ptr[i]->set(v);
   }
   #ifdef cGPU
-  else{
+  else if (device<DEV_FPGA){
     gpu_set_device(gpu_device);
     gpu_set(this,v);
   }

@@ -111,6 +111,21 @@ void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
   check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
 
 }
+///////////////////////////////////////////
+void gpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C)
+{
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  dim3 dimGrid(A->sizes[1]);
+  dim3 dimBlock(A->sizes[0]);
+
+
+  sum_mat_col<<<dimBlock,dimGrid>>>(A->gptr,B->gptr,C->gptr,A->sizes[0],A->sizes[1]);
+
+  check_cuda(cudaDeviceSynchronize(),"sum2D_colwise");
+
+}
 
 ///////////////////////////////////////////
 void gpu_sum2D(Tensor *A, Tensor *B, Tensor *C,int incC)

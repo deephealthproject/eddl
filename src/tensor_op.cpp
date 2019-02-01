@@ -108,7 +108,7 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
       }
     }
   #ifdef cGPU
-  else
+  else if (A->device<DEV_FPGA)
   {
     gpu_mult2D(A,tA,B,tB,C,incC);
   }
@@ -134,7 +134,7 @@ void Tensor::sum2D(Tensor *A, Tensor *B, Tensor *C,int incC)
       else C->ptr2=A->ptr2+B->ptr2;
   }
   #ifdef cGPU
-  else
+  else if (A->device<DEV_FPGA)
   {
      gpu_sum2D(A,B,C,incC);
   }
@@ -156,7 +156,7 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
 
   if (A->device==DEV_CPU) C->ptr2=A->ptr2.rowwise()+B->ptr1;
   #ifdef cGPU
-  else
+  else if (A->device<DEV_FPGA)
   {
     gpu_sum2D_rowwise(A,B,C);
 
@@ -178,9 +178,9 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C)
 
   if (A->device==DEV_CPU) C->ptr2=A->ptr2.colwise()+B->ptr1.transpose();
   #ifdef cGPU
-  else
+  else if (A->device<DEV_FPGA)
   {
-
+    gpu_sum2D_colwise(A,B,C);
   }
   #endif
 }
