@@ -138,6 +138,8 @@ void gpu_print(float *gptr,int r,int c,int dim)
 {
  int i,j,p;
 
+ printf("Dim=%d - %dx%d\n",dim,r,c);
+
  if (dim==2) {
    p=0;
    for(i=0;i<r;++i) {
