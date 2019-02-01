@@ -49,6 +49,7 @@ int main(int argc, char **argv)
   //C->print();
 
 
+  /*
   Input *I=new Input(C,"in1",dev);
   I->info();
 
@@ -61,7 +62,7 @@ int main(int argc, char **argv)
   D->forward();
   D->backward();
 
-
+*/
 
 }
 

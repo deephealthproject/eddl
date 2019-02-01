@@ -163,6 +163,12 @@ void Tensor::set(float v){
       for(int i=0;i<sizes[0];++i)
         ptr[i]->set(v);
   }
+  else{
+    gpu_set_device(gpu_device);
+    if (dim<3)
+     if (dim==1) gpu_set(gptr,v,sizes[0],1);
+     else gpu_set(gptr,v,sizes[0],sizes[1]);
+  }
 }
 
 ///////////////////////////////////////////

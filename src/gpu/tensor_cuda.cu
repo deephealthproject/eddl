@@ -133,8 +133,14 @@ void gpu_delete_tensor(float* p)
 }
 
 ///////////////////////////////////////////
+voif gpu_set(float *p,float a,int r,int c){
+  dim3 dimGrid(c);
+  dim3 dimBlock(r);
 
+  set<<<dimBlock,dimGrid>>>(p,a,r,c);
 
+  check_cuda(cudaDeviceSynchronize(),"set");
+}
 ///////////////////////////////////////////
 
 ///////////////////////////////////////////
