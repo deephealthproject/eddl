@@ -24,82 +24,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef _TENSOR_
-#define _TENSOR_
-
-#define DEV_CPU 0
-#define DEV_GPU 1000
-#define DEV_FPGA 2000
-
-
+#include <stdio.h>
+#include <stdlib.h>
 #include <initializer_list>
-#include <vector>
-#include <string>
 
-
-#include "cpu/Eigen/Dense"
-
-#define MAX_GPUS 8
+#include "layer.h"
 
 using namespace std;
 
 typedef vector<int> shape;
 
-void msg(string s);
-void msg(string s,string s2);
-
-//using namespace Eigen;
-class Tensor{
-
-  public:
-  int device;
-  int dim;
-  int tam;
-  shape sizes;
-
-  Tensor **ptr;
-
-  // CPU
-  Eigen::RowVectorXf ptr1;
-  Eigen::MatrixXf ptr2;
+#define tensor_sum tensor::sum
 
 
-  // GPU
-  float *gptr;
-  int gpu_device;
+class tensor:public Layer {
+public:
+  static Layer* sum(Layer *a,Layer *b) {
+     return new Add({a,b});
 
-  //FPGA
-
-
-  // Constructors
-  Tensor();
-  Tensor(const initializer_list<int>& init);
-  Tensor(const initializer_list<int>& init, int dev);
-
-  Tensor(const shape s);
-  Tensor(const shape s, int dev);
-
-  ~Tensor();
-  ///////// normal metods
-  shape getshape();
-  void info();
-  Tensor *clone();
-  void print();
-  void rand();
-  void set(float v);
-
-
-  ///////// static metods
-  static int eqsize(Tensor *A, Tensor *B);
-  static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC);
-  static void sum2D(Tensor *A, Tensor *B, Tensor *C,int incC);
-  static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
-  static void sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
-  static void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis)
-
-
-
-
+  }
 
 };
 
@@ -107,4 +50,13 @@ class Tensor{
 
 
 
-#endif
+
+
+
+
+
+
+
+
+
+//////////////////////

@@ -185,6 +185,28 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C)
   #endif
 }
 
+///////////////////////////////////////
+//// SUM2D_colwise B=reduce_sum(A)
+//// Dimensions and types must be compatible
+//// A is 2D Tensor
+//// B is 1D Tensor
+//// axis is the dimension to be sumed
+///////////////////////////////////////
+void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis)
+{
+  if (A->device!=B->device) msg("Tensors in different devices in reduce_sum2D");
+  if ((A->dim-1)!=B->dim) msg("Incorrect dims in reduce_sum2D");
+  if ((A->sizes[1-axis]!=B->sizes[0])) msg("Incompatible dims in sum2D_colwise");
+
+  if (A->device==DEV_CPU) {}//C->ptr2=A->ptr2.colwise()+B->ptr1.transpose();
+  #ifdef cGPU
+  else if (A->device<DEV_FPGA)
+  {
+    //gpu_reduce_sum2D(A,B,axis);
+  }
+  #endif
+}
+
 ///////////////////////////////////////////
 ///////////////////////////////////////////
 ///////////////////////////////////////////

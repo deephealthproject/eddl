@@ -118,7 +118,7 @@ endif
 
 
 #######################################################################
-OBJ =	tensor.o tensor_op.o tensor_over.o layer.o layer_input.o layer_dense.o layer_add.o
+OBJ =	tensor.o tensor_op.o layer.o layer_input.o layer_dense.o layer_add.o
 
 ifeq ($(CORE),1)
 all: $(GPU_OBJ) $(OBJ) test_eddl
