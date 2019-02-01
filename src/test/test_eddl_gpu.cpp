@@ -40,8 +40,8 @@ int main(int argc, char **argv)
 
   Tensor *A=new Tensor({7,1},dev);
   Tensor::rand(A);
-  Tensor::info(A);
-  A->print(A);
+  A->info();
+  A->print();
   Tensor::set(A,3.0);
   A->print();
 
