@@ -62,7 +62,7 @@ void Tensor::set(Tensor *A, float v){
     if (A->dim==1)
       for(int i=0;i<A->sizes[0];++i) A->ptr1(i)=v;
     else if (A->dim==2)
-      for(int i=0;i<A->sizes[0];++i) for(int j=0;j<sizes[1];++j) A->ptr2(i,j)=v;
+      for(int i=0;i<A->sizes[0];++i) for(int j=0;j<A->sizes[1];++j) A->ptr2(i,j)=v;
     else
       for(int i=0;i<A->sizes[0];++i)
         Tensor::set(A->ptr[i],v);
@@ -77,15 +77,15 @@ void Tensor::set(Tensor *A, float v){
 
 
 ///////////////////////////////////////////
-void Tensor::rand(){
-  if (device==DEV_CPU) {
-    if (dim==1)
-      for(int i=0;i<sizes[0];++i) ptr1(i)=(std::rand()%1000)/1000.0;
-    else if (dim==2)
-      for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)=(std::rand()%1000)/1000.0;
+void Tensor::rand(Tensor *A){
+  if (A->device==DEV_CPU) {
+    if (A->dim==1)
+      for(int i=0;i<A->sizes[0];++i) A->ptr1(i)=(std::rand()%1000)/1000.0;
+    else if (A->dim==2)
+      for(int i=0;i<A->sizes[0];++i) for(int j=0;j<A->sizes[1];++j) A->ptr2(i,j)=(std::rand()%1000)/1000.0;
     else
       for(int i=0;i<sizes[0];++i)
-        ptr[i]->rand();
+        Tensor::rand(A->ptr[i]);
 
   }
 }
