@@ -33,13 +33,13 @@
 //#include "../tensor_over.h"
 
 //#define tensor_sum tensor::sum
-
+#define rand Tensor::rand
 int main(int argc, char **argv)
 {
   int dev=DEV_GPU+1;
 
   Tensor *A=new Tensor({7,1},dev);
-  A->rand();
+  rand(A);
   A->info();
   A->print();
   A->set(3.0);
