@@ -39,19 +39,19 @@ int main(int argc, char **argv)
   int dev=DEV_GPU+1;
 
   Tensor *A=new Tensor({7,1},dev);
-  Tensor::rand(A);
+  A->rand();
   A->info();
   A->print();
-  Tensor::set(A,3.0);
+  A->set(3.0);
   A->print();
 
 
   Tensor *B=new Tensor({10,5},dev);
-  Tensor::set(B,1.0);
+  B->set(1.0);
   B->print();
 
   Tensor *C=new Tensor({5},dev);
-  Tensor::set(C,2.0);
+  C->set(2.0);
   C->print();
 
   Tensor::sum2D_rowwise(B, C, B);

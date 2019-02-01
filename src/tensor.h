@@ -85,6 +85,9 @@ class Tensor{
   void info();
   Tensor *clone();
   void print();
+  void rand();
+  void set(float v);
+
 
   ///////// static metods
   static int eqsize(Tensor *A, Tensor *B);
@@ -92,8 +95,6 @@ class Tensor{
   static void sum2D(Tensor *A, Tensor *B, Tensor *C,int incC);
   static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
   static void sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
-  static void rand(Tensor *A);
-  static void set(Tensor *A,float v);
 
 
 

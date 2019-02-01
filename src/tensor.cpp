@@ -35,6 +35,7 @@
 
 #ifdef cGPU
 #include "gpu/tensor_cuda.h"
+#include "gpu/tensor_cuda_op.h"
 #endif
 
 
@@ -96,7 +97,7 @@ Tensor::Tensor(shape s,int dev)
       initcuda[gpu_device]=1;
     }
     gpu_set_device(gpu_device);
-    gptr=gpu_create_tensor(tam);
+    =gpu_create_tensor(tam);
   }
   #endif
 }
@@ -130,6 +131,9 @@ Tensor::~Tensor()
   #endif
 }
 
+
+///////////////////////////////////////////
+// unary operators
 ///////////////////////////////////////////
 
 shape Tensor::getshape()
@@ -197,9 +201,43 @@ void Tensor::print(){
   }
 }
 
+///////////////////////////////////////////
+void Tensor::set(float v){
+  if (device==DEV_CPU) {
+    if (dim==1)
+      for(int i=0;i<sizes[0];++i) ptr1(i)=v;
+    else if (dim==2)
+      for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)=v;
+    else
+      for(int i=0;i<sizes[0];++i)
+        Tensor::set(ptr[i],v);
+  }
+  #ifdef cGPU
+  else{
+    gpu_set_device(gpu_device);
+    gpu_set(this,v);
+  }
+  #endif
+}
+
 
 ///////////////////////////////////////////
-///////////////////////////////////////////
+void Tensor::rand(Tensor *A){
+  if (device==DEV_CPU) {
+    if (dim==1)
+      for(int i=0;i<sizes[0];++i) ptr1(i)=(std::rand()%1000)/1000.0;
+    else if (dim==2)
+      for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)=(std::rand()%1000)/1000.0;
+    else
+      for(int i=0;i<sizes[0];++i)
+        Tensor::rand(ptr[i]);
+
+  }
+}
+
+
+
+
 ///////////////////////////////////////////
 
 
