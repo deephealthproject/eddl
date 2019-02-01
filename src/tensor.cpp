@@ -138,38 +138,7 @@ shape Tensor::getshape()
   return s;
 }
 
-///////////////////////////////////////////
-void Tensor::rand(){
-  if (device==DEV_CPU) {
-    if (dim==1)
-      for(int i=0;i<sizes[0];++i) ptr1(i)=(std::rand()%1000)/1000.0;
-    else if (dim==2)
-      for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)=(std::rand()%1000)/1000.0;
-    else
-      for(int i=0;i<sizes[0];++i)
-        ptr[i]->rand();
 
-  }
-}
-
-///////////////////////////////////////////
-void Tensor::set(float v){
-  if (device==DEV_CPU) {
-    if (dim==1)
-      for(int i=0;i<sizes[0];++i) ptr1(i)=v;
-    else if (dim==2)
-      for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)=v;
-    else
-      for(int i=0;i<sizes[0];++i)
-        ptr[i]->set(v);
-  }
-  else{
-    gpu_set_device(gpu_device);
-    if (dim<3)
-     if (dim==1) gpu_set(gptr,v,sizes[0],1);
-     else gpu_set(gptr,v,sizes[0],sizes[1]);
-  }
-}
 
 ///////////////////////////////////////////
 void Tensor::info()
@@ -211,7 +180,7 @@ void Tensor::print(){
         int i,j,p=0;
         for(i=0;i<sizes[0];++i) {
           for(j=0;j<sizes[1];++j,++p)
-            printf("%f ",v[p]);
+            printf("%d %f ",p,v[p]);
           printf("\n");
          }
        }
@@ -224,6 +193,39 @@ void Tensor::print(){
        free(v);
 
     }
+
+  }
+}
+///////////////////////////////////////////
+void Tensor::set(float v){
+  if (device==DEV_CPU) {
+    if (dim==1)
+      for(int i=0;i<sizes[0];++i) ptr1(i)=v;
+    else if (dim==2)
+      for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)=v;
+    else
+      for(int i=0;i<sizes[0];++i)
+        ptr[i]->set(v);
+  }
+  else{
+    gpu_set_device(gpu_device);
+    if (dim<3)
+     if (dim==1) gpu_set(gptr,v,sizes[0],1);
+     else gpu_set(gptr,v,sizes[0],sizes[1]);
+  }
+}
+
+
+///////////////////////////////////////////
+void Tensor::rand(){
+  if (device==DEV_CPU) {
+    if (dim==1)
+      for(int i=0;i<sizes[0];++i) ptr1(i)=(std::rand()%1000)/1000.0;
+    else if (dim==2)
+      for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)=(std::rand()%1000)/1000.0;
+    else
+      for(int i=0;i<sizes[0];++i)
+        ptr[i]->rand();
 
   }
 }
