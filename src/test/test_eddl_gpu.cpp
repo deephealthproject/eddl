@@ -41,7 +41,7 @@ int main(int argc, char **argv)
   Tensor *A=new Tensor({7,1},dev);
   A->rand();
   A->info();
-  //A->print();
+  A->print();
 
   Tensor *C=new Tensor({7,5},dev);
   C->rand();
