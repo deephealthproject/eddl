@@ -134,30 +134,6 @@ void gpu_delete_tensor(float* p)
 
 ///////////////////////////////////////////
 
-void gpu_print(float *v,int r,int c,int dim)
-{
- int i,j,p;
-
- printf("Dim=%d - %dx%d\n",dim,r,c);
-
- printf("%f ",v[0]);
- if (dim==2) {
-   p=0;
-   for(i=0;i<r;++i) {
-     for(j=0;j<c;++j,++p)
-       printf("%d ",p);
-       //gptr[p]=0;
-       //printf("%f ",gptr[p]);
-      //printf("\n");
-    }
-  }
-  else {
-    for(i=0;i<r;++i)
-      printf("%f ",v[i]);
-    printf("\n");
-  }
-}
-
 
 ///////////////////////////////////////////
 

@@ -67,9 +67,6 @@ void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
   int k=B->sizes[0];
 
 
-    printf("print 0\n");
-    A->gptr[0]=0;
-    
   if (tA)
   {
     trA = CUBLAS_OP_T;
