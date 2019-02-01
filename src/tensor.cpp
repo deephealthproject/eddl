@@ -175,6 +175,7 @@ void Tensor::print(){
     if (dim<3) {
       gpu_set_device(gpu_device);
       float *v= (float*)malloc(tam);
+      printf("copyin tam=%d",tam);
       cudaMemcpy(v,gptr,tam,cudaMemcpyDeviceToHost);
       if (dim==2) {
         int i,j,p=0;
