@@ -45,10 +45,17 @@ int main(int argc, char **argv)
   A->set(3.0);
   A->print();
 
-  Tensor *C=new Tensor({7,5},dev);
-  C->rand();
-  C->info();
-  //C->print();
+
+  Tensor *B=new Tensor({10,100},dev);
+  B->set(1.0);
+  B->print();
+
+  Tensor *C=new Tensor({10},dev);
+  C->set(2.0);
+  C->print();
+
+  Tensor::sum2D_rowwise(B, C, B);
+  B->print();
 
 
   /*
