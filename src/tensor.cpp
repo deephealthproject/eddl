@@ -97,7 +97,7 @@ Tensor::Tensor(shape s,int dev)
       initcuda[gpu_device]=1;
     }
     gpu_set_device(gpu_device);
-    =gpu_create_tensor(tam);
+    gptr=gpu_create_tensor(tam);
   }
   #endif
 }
@@ -210,7 +210,7 @@ void Tensor::set(float v){
       for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)=v;
     else
       for(int i=0;i<sizes[0];++i)
-        Tensor::set(ptr[i],v);
+        ptr[i]->set(v);
   }
   #ifdef cGPU
   else{
@@ -222,7 +222,7 @@ void Tensor::set(float v){
 
 
 ///////////////////////////////////////////
-void Tensor::rand(Tensor *A){
+void Tensor::rand(){
   if (device==DEV_CPU) {
     if (dim==1)
       for(int i=0;i<sizes[0];++i) ptr1(i)=(std::rand()%1000)/1000.0;
