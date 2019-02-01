@@ -46,26 +46,6 @@ void check_cublas(cublasStatus_t status, char * func)
   }
 }
 
-///////////////////////////////////////////
-
-void gpu_print(Tensor *A)
-{
- int i,j,p;
-
- if (A->dim==2) {
-   p=0;
-   for(i=0;i<A->sizes[0];++i) {
-     for(j=0;j<A->size[1];++j,++p)
-       printf("%f ",A->gptr[p]);
-      printf("\n");
-    }
-  }
-  else {
-    for(i=0;i<A->sizes[0];++i)
-      printf("%f ",A->gptr[i]);
-    printf("\n");
-  }
-}
 
 ///////////////////////////////////////////
 
