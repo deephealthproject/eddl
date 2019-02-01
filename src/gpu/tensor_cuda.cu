@@ -144,8 +144,9 @@ void gpu_print(float *gptr,int r,int c,int dim)
    p=0;
    for(i=0;i<r;++i) {
      for(j=0;j<c;++j,++p)
-       printf("%f ",gptr[p]);
-      printf("\n");
+       gptr[p]=0;
+       //printf("%f ",gptr[p]);
+      //printf("\n");
     }
   }
   else {

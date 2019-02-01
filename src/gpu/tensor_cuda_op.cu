@@ -89,8 +89,9 @@ void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  dim3 dimGrid(A->sizes[0]);
-  dim3 dimBlock(A->sizes[1]);
+  dim3 dimGrid(A->sizes[1]);
+  dim3 dimBlock(A->sizes[0]);
+
 
   sum_mat_row<<<dimBlock,dimGrid>>>(A->gptr,B->gptr,C->gptr,A->sizes[0],A->sizes[1]);
 

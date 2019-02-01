@@ -182,6 +182,7 @@ void Tensor::info()
   else fprintf(stderr,"Device=FPGA\n");
 }
 
+///////////////////////////////////////////
 
 void Tensor::print(){
 
