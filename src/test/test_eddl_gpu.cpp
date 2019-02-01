@@ -46,11 +46,11 @@ int main(int argc, char **argv)
   A->print();
 
 
-  Tensor *B=new Tensor({10,100},dev);
+  Tensor *B=new Tensor({10,5},dev);
   B->set(1.0);
   B->print();
 
-  Tensor *C=new Tensor({10},dev);
+  Tensor *C=new Tensor({5},dev);
   C->set(2.0);
   C->print();
 
