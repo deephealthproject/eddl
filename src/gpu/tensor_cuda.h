@@ -37,7 +37,7 @@ void gpu_set_device(int device);
 void gpu_init(int device);
 float* gpu_create_tensor(int size);
 void gpu_delete_tensor(float* p);
-void gpu_set(float *p,float a,int r,int c);
+
 
 
 

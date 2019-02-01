@@ -46,6 +46,7 @@ __global__ void set(float* a, float v, int rows, int cols)
  int ops=rows*cols;
  int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
+
  if (thread_id_x < ops)
    a[thread_id_x]=v;
 

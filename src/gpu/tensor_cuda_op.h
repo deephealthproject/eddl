@@ -33,5 +33,5 @@
 void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC);
 void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
 void gpu_sum2D(Tensor *A, Tensor *B, Tensor *C,int incC);
-
+void gpu_set(Tensor *A,float v);
 #endif

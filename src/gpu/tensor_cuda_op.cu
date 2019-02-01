@@ -46,6 +46,18 @@ void check_cublas(cublasStatus_t status, char * func)
   }
 }
 
+///////////////////////////////////////////
+void gpu_set(Tensor *A,float v) {
+  int r,c;
+  r=A->sizes[0];
+  c=1;
+  if (A->dim>1) c=A->tam/r;
+
+  //set<<<dimBlock,dimGrid>>>
+  set<<<c,r>>>(A->gptr,v,r,c);
+  check_cuda(cudaDeviceSynchronize(),"set");
+}
+
 
 ///////////////////////////////////////////
 

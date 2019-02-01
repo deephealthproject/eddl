@@ -133,15 +133,7 @@ void gpu_delete_tensor(float* p)
   check_cuda(cudaFree(p),"delete_tensor");
 }
 
-///////////////////////////////////////////
-void gpu_set(float *p,float a,int r,int c){
-  dim3 dimGrid(r);
-  dim3 dimBlock(c);
 
-  set<<<dimBlock,dimGrid>>>(p,a,r,c);
-
-  check_cuda(cudaDeviceSynchronize(),"set");
-}
 ///////////////////////////////////////////
 
 ///////////////////////////////////////////
