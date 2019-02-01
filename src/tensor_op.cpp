@@ -84,7 +84,7 @@ void Tensor::rand(Tensor *A){
     else if (A->dim==2)
       for(int i=0;i<A->sizes[0];++i) for(int j=0;j<A->sizes[1];++j) A->ptr2(i,j)=(std::rand()%1000)/1000.0;
     else
-      for(int i=0;i<sizes[0];++i)
+      for(int i=0;i<A->sizes[0];++i)
         Tensor::rand(A->ptr[i]);
 
   }
