@@ -49,7 +49,7 @@ __global__ void set(float* a, float v, int rows, int cols)
 
  if (thread_id_x < ops){
    a[thread_id_x]=v;
-   printf("a[%d]=%f",thread_id_x,v);
+   printf("a[%d]=%f\n",thread_id_x,v);
  }
 
 }
