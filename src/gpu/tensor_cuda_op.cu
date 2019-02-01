@@ -51,7 +51,7 @@ void check_cublas(cublasStatus_t status, char * func)
 
 void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
 {
-  int device=A->device-DEV_GPU;
+  int device=A->gpu_device;
 
   float alfa=1.0;
   float beta=(float)incC;
@@ -86,7 +86,7 @@ void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
 ///////////////////////////////////////////
 void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
 {
-  int device=A->device-DEV_GPU;
+  int device=A->gpu_device;
   cudaSetDevice(device);
 
   dim3 dimGrid(A->sizes[0]);
@@ -101,7 +101,7 @@ void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
 ///////////////////////////////////////////
 void gpu_sum2D(Tensor *A, Tensor *B, Tensor *C,int incC)
 {
-  int device=A->device-DEV_GPU;
+  int device=A->gpu_device;
 
   int m=A->sizes[1];
   int n=B->sizes[0];

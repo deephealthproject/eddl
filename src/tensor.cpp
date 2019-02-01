@@ -196,8 +196,11 @@ void Tensor::print(){
     cout<<"\n";
   }
   else {
-    if (dim<3)
+    if (dim<3) {
+      gpu_set_device(gpu_device);
       gpu_print(gptr,sizes[0],sizes[1],dim);
+    }
+
   }
 }
 
