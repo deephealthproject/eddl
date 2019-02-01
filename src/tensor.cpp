@@ -180,7 +180,7 @@ void Tensor::print(){
         int i,j,p=0;
         for(i=0;i<sizes[0];++i) {
           for(j=0;j<sizes[1];++j,++p)
-            printf("%d %f ",p,v[p]);
+            printf("%f ",v[p]);
           printf("\n");
          }
        }
