@@ -68,8 +68,8 @@ void Dense::backward()
 {
   if (child.size()){
     // to deal with multiple childs
-    Tensor::set(gW,0);
-    Tensor::set(delta,0);
+    gW->set(0);
+    gW->set(0);
     for(int i = 0; i != child.size(); i++) {
       Tensor::mult2D(input,1,child[i]->delta,0,gW,1);
       Tensor::mult2D(child[i]->delta,0,W,1,delta,1);

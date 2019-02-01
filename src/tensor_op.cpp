@@ -56,42 +56,6 @@ int Tensor::eqsize(Tensor *A, Tensor *B) {
 }
 
 
-///////////////////////////////////////////
-void Tensor::set(Tensor *A, float v){
-  if (A->device==DEV_CPU) {
-    if (A->dim==1)
-      for(int i=0;i<A->sizes[0];++i) A->ptr1(i)=v;
-    else if (A->dim==2)
-      for(int i=0;i<A->sizes[0];++i) for(int j=0;j<A->sizes[1];++j) A->ptr2(i,j)=v;
-    else
-      for(int i=0;i<A->sizes[0];++i)
-        Tensor::set(A->ptr[i],v);
-  }
-  #ifdef cGPU
-  else{
-    gpu_set_device(A->gpu_device);
-    gpu_set(A,v);
-  }
-  #endif
-}
-
-
-///////////////////////////////////////////
-void Tensor::rand(Tensor *A){
-  if (A->device==DEV_CPU) {
-    if (A->dim==1)
-      for(int i=0;i<A->sizes[0];++i) A->ptr1(i)=(std::rand()%1000)/1000.0;
-    else if (A->dim==2)
-      for(int i=0;i<A->sizes[0];++i) for(int j=0;j<A->sizes[1];++j) A->ptr2(i,j)=(std::rand()%1000)/1000.0;
-    else
-      for(int i=0;i<A->sizes[0];++i)
-        Tensor::rand(A->ptr[i]);
-
-  }
-}
-
-
-
 
 ///////////////////////////////////////
 //// MULT2D C=A*B
