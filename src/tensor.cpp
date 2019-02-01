@@ -230,7 +230,7 @@ void Tensor::rand(){
       for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)=(std::rand()%1000)/1000.0;
     else
       for(int i=0;i<sizes[0];++i)
-        Tensor::rand(ptr[i]);
+        ptr[i]->rand();
 
   }
 }
