@@ -202,7 +202,7 @@ void Tensor::print(){
       float *v= (float*)malloc(tam);
       cudaMemcpy(v,gptr,tam,cudaMemcpyDeviceToHost);
       if (dim==2) {
-        int p=0;
+        int i,j,p=0;
         for(i=0;i<sizes[0];++i) {
           for(j=0;j<sizes[1];++j,++p)
             printf("%f ",v[p]);
