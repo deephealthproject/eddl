@@ -65,7 +65,6 @@ int Tensor::eqsize(Tensor *A, Tensor *B) {
 ///////////////////////////////////////
 void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
 {
-  int aux=0;
 
   if ((A->device!=B->device)||(A->device!=C->device)) msg("Tensors in different devices in mult2D");
   if ((A->dim!=2)||(B->dim!=2)||(C->dim!=2)) msg("mult2D only for 2D tensors");

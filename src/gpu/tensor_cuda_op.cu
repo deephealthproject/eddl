@@ -66,6 +66,10 @@ void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
   int n=A->sizes[0];
   int k=B->sizes[0];
 
+
+    printf("print 0\n");
+    A->gptr[0]=0;
+    
   if (tA)
   {
     trA = CUBLAS_OP_T;
@@ -113,8 +117,6 @@ void gpu_sum2D(Tensor *A, Tensor *B, Tensor *C,int incC)
   float alfa=1.0;
   float beta=1.0;
 
-  printf("print 0\n");
-  A->gptr[0]=0;
 
   if (incC){
     check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A->gptr,ldA,&beta,C->gptr,ldB,C->gptr,ldC),"sum2D");

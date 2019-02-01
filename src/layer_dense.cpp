@@ -60,7 +60,6 @@ Dense::Dense(Layer *parent,int dim,string name,int d):LinLayer(name,d)
 // virtual
 void Dense::forward()
 {
-  printf("dense forward");
   Tensor::mult2D(input,0,W,0,output,0);
   Tensor::sum2D_rowwise(output,bias,output);
 }
