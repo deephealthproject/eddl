@@ -210,6 +210,7 @@ void Tensor::print(){
          }
        }
        else {
+         int i;
          for(i=0;i<sizes[0];++i)
            printf("%f ",v[i]);
          printf("\n");
