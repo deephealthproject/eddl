@@ -38,14 +38,6 @@ int main(int argc, char **argv)
 {
   int dev=DEV_GPU+1;
 
-  Tensor *A=new Tensor({7,1},dev);
-  A->rand();
-  A->info();
-  A->print();
-  A->set(3.0);
-  A->print();
-
-
   Tensor *B=new Tensor({10,5},dev);
   B->set(1.0);
   B->print();
