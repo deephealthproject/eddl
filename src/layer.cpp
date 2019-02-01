@@ -47,7 +47,7 @@ Layer::Layer(string n,int d)
 void Layer::initialize()
 {
   for(int i = 0; i != params.size(); i++)
-    Tensor::rand(params[i]);
+    params[i]->rand();
 }
 
 void Layer::reset()
