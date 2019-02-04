@@ -116,12 +116,12 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
 }
 
 ///////////////////////////////////////
-//// SUM2D C=A+B
-//// or C+=A+B if incC is 1
+//// SUM2D C=(sca*A)+(scb*B)
+//// or C+=(sca*A)+(scb*B) if incC is 1
 //// Dimensions and types must be compatible
 //// Only for 2D Tensors
 ///////////////////////////////////////
-void Tensor::sum2D(Tensor *A, Tensor *B, Tensor *C,int incC)
+void Tensor::sum2D(float scA, Tensor *A, float scB, Tensor *B, Tensor *C,int incC)
 {
   int aux=0;
 
@@ -130,13 +130,13 @@ void Tensor::sum2D(Tensor *A, Tensor *B, Tensor *C,int incC)
   if ((!eqsize(A,B))||(!eqsize(A,C))) msg("Incompatible dims in sum2D");
 
   if (A->device==DEV_CPU) {
-      if (incC) C->ptr2+=A->ptr2+B->ptr2;
-      else C->ptr2=A->ptr2+B->ptr2;
+      if (incC) C->ptr2+=(scA*A->ptr2)+(scB*B->ptr2);
+      else C->ptr2=(scA*A->ptr2)+(scB*B->ptr2);
   }
   #ifdef cGPU
   else if (A->device<DEV_FPGA)
   {
-     gpu_sum2D(A,B,C,incC);
+     gpu_sum2D(scA,A,scB,B,C,incC);
   }
   #endif
 }

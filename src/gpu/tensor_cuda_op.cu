@@ -103,7 +103,7 @@ void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
 }
 
 ///////////////////////////////////////////
-void gpu_sum2D(Tensor *A, Tensor *B, Tensor *C,int incC)
+void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC)
 {
   int device=A->gpu_device;
   cudaSetDevice(device);
@@ -114,13 +114,14 @@ void gpu_sum2D(Tensor *A, Tensor *B, Tensor *C,int incC)
   int ldB=B->sizes[1];
   int ldC=A->sizes[1];
 
-  float alfa=1.0;
-  float beta=1.0;
+  float alfa=scA;
+  float beta=scB;
+  float one=1.0;
 
 
   if (incC){
-    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A->gptr,ldA,&beta,C->gptr,ldB,C->gptr,ldC),"sum2D");
-    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,B->gptr,ldA,&beta,C->gptr,ldB,C->gptr,ldC),"sum2D");
+    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A->gptr,ldA,&one,C->gptr,ldB,C->gptr,ldC),"sum2D");
+    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,B->gptr,ldA,&one,C->gptr,ldB,C->gptr,ldC),"sum2D");
   }
   else
     check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A->gptr,ldA,&beta,B->gptr,ldB,C->gptr,ldC),"sum2D");
