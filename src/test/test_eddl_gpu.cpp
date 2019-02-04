@@ -38,6 +38,7 @@ int main(int argc, char **argv)
 {
   int dev=DEV_GPU+1;
 
+
   Tensor *B=new Tensor({10,5},dev);
   B->set(1.0);
   B->print();
@@ -50,7 +51,7 @@ int main(int argc, char **argv)
   B->print();
 
 
-  /*
+  C=new Tensor({100,64},dev);
   Input *I=new Input(C,"in1",dev);
   I->info();
 
@@ -63,7 +64,7 @@ int main(int argc, char **argv)
   D->forward();
   D->backward();
 
-*/
+
 
 }
 
