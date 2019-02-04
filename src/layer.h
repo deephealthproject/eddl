@@ -83,7 +83,6 @@ class LinLayer : public Layer {
   virtual void info(){};
   virtual void forward(){}
   virtual void backward(){}
-  virtual void applygrads(){}
 
 };
 
@@ -99,7 +98,6 @@ class Input : public LinLayer {
   void info();
   void forward();
   void backward();
-  void applygrads();
 
 };
 
@@ -123,7 +121,6 @@ class Dense : public LinLayer {
   void info();
   void forward();
   void backward();
-  void applygrads();
 
 };
 
@@ -146,7 +143,6 @@ class MLayer : public Layer {
   virtual void info(){};
   virtual void forward(){}
   virtual void backward(){}
-  virtual void applygrads(){}
 
 };
 
@@ -161,7 +157,6 @@ class Add : public MLayer {
   void info();
   void forward();
   void backward();
-  void applygrads();
 
 };
 
