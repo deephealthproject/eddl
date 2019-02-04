@@ -170,7 +170,7 @@ void gpu_reduce_sum2D(Tensor *A,Tensor *B,int axis,int incB)
 
   int r,c;
   r=A->sizes[0];
-  c=A->size[1];
+  c=A->sizes[1];
 
   if (!incB) gpu_set(B,0.0);
 
