@@ -55,6 +55,7 @@ class Layer {
 
   void initialize();
   void reset();
+  void applygrads();
 
   //virtual
   virtual void info(){};
@@ -62,7 +63,6 @@ class Layer {
   virtual void addparent(Layer *l){}
   virtual void forward(){}
   virtual void backward(){}
-  virtual void applygrads(){}
 };
 
 
