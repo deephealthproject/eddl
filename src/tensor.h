@@ -95,7 +95,7 @@ class Tensor{
   static void sum2D(Tensor *A, Tensor *B, Tensor *C,int incC);
   static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
   static void sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
-  static void reduce_sum2D(Tensor *A, Tensor *B, int axis);
+  static void reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB);
 
 
 
