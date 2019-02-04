@@ -79,10 +79,7 @@ void Dense::backward()
   }
 }
 
-void Dense::applygrads()
-{
 
-}
 
 void Dense::info()
 {

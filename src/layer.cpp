@@ -55,6 +55,10 @@ void Layer::reset()
 
 }
 
+void Layer::applygrads()
+{
+
+}
 
 ////////////////////////////////////
 ///// LINEAR LAYERS

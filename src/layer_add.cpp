@@ -66,4 +66,3 @@ void Add::info()
 
 void Add::forward(){}
 void Add::backward(){}
-void Add::applygrads(){}

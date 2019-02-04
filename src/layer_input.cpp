@@ -50,11 +50,6 @@ void Input::info()
 
 void Input::forward(){}
 void Input::backward(){}
-void Input::applygrads(){}
-
-
-
-
 
 
 
