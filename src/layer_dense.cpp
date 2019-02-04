@@ -69,10 +69,12 @@ void Dense::backward()
   if (child.size()){
     // to deal with multiple childs
     gW->set(0);
-    gW->set(0);
+    gbias->set(0);
+    delta->set(0);
     for(int i = 0; i != child.size(); i++) {
       Tensor::mult2D(input,1,child[i]->delta,0,gW,1);
       Tensor::mult2D(child[i]->delta,0,W,1,delta,1);
+      Tensor::reduce_sum2D(delta,gbias,0,1);      
     }
   }
 }

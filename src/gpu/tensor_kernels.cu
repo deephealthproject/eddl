@@ -40,7 +40,6 @@ __global__ void sum_mat_row(float* a, float* b, float* c, int rows, int cols)
    c[thread_id_x]=a[thread_id_x]+b[thread_id_x%cols];
 
 }
-
 ///////////////////////////////////////////
 __global__ void sum_mat_col(float* a, float* b, float* c, int rows, int cols)
 {
@@ -57,7 +56,6 @@ __global__ void set(float* a, float v, int rows, int cols)
  int ops=rows*cols;
  int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
-
  if (thread_id_x < ops)
    a[thread_id_x]=v;
 
@@ -65,7 +63,17 @@ __global__ void set(float* a, float v, int rows, int cols)
 
 ///////////////////////////////////////////
 
+__global__ void reduce_sum2D(float *a,float *b,int rows,int cols,int axis)
+{
+  int ops=rows*cols;
+  int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
+  if (thread_id_x < ops)
+    if (axis==0)
+        b[thread_id_x%cols]+=a[thread_id_x];
+    else
+        b[thread_id_x/cols]+=a[thread_id_x];
+}
 ///////////////////////////////////////////
 
 

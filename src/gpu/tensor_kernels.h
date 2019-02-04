@@ -29,10 +29,12 @@
 
 #include <cuda.h>
 
+__global__ void set(float* a, float v, int rows, int cols);
 
 __global__ void sum_mat_row(float* a, float* b, float* c, int cols, int rows);
-__global__ void sum_mat_col(float* a, float* b, float* c, int rows, int cols);
-__global__ void set(float* a, float v, int rows, int cols);
+__global__ void sum_mat_col(float* a, float* b, float* c, int cols, int rows);
+
+__global__ void reduce_sum2D(float *a,float *b,int r,int c,int axis);
 
 #endif
 

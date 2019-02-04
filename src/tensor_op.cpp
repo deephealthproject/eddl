@@ -186,23 +186,40 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C)
 }
 
 ///////////////////////////////////////
-//// SUM2D_colwise B=reduce_sum(A)
+//// reduce_sum2D B=reduce_sum(A)
 //// Dimensions and types must be compatible
 //// A is 2D Tensor
 //// B is 1D Tensor
 //// axis is the dimension to be sumed
 ///////////////////////////////////////
-void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis)
+void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB)
 {
   if (A->device!=B->device) msg("Tensors in different devices in reduce_sum2D");
   if ((A->dim-1)!=B->dim) msg("Incorrect dims in reduce_sum2D");
-  if ((A->sizes[1-axis]!=B->sizes[0])) msg("Incompatible dims in sum2D_colwise");
+  if ((A->sizes[1-axis]!=B->sizes[0])) msg("Incompatible dims in educe_sum2D");
 
-  if (A->device==DEV_CPU) {}//C->ptr2=A->ptr2.colwise()+B->ptr1.transpose();
+  if (A->device==DEV_CPU) {
+    if (axis=0) {
+      #pragma omp parallel for
+      for(int i=0;i<A->sizes[1];++i) {
+        if (!incB) B->ptr1(i)=0;
+        for(int j=0;j<A->sizes[0];++j)
+           B->ptr1(i)+=A->ptr2(j,i);
+      }
+    }
+    else {
+     #pragma omp parallel for
+     for(int i=0;i<A->sizes[0];++i) {
+        if (!incB) B->ptr1(i)=0;
+        for(int j=0;j<A->sizes[1];++j)
+          B->ptr1(i)+=A->ptr2(i,j);
+      }
+    }
+  }
   #ifdef cGPU
   else if (A->device<DEV_FPGA)
   {
-    //gpu_reduce_sum2D(A,B,axis);
+    gpu_reduce_sum2D(A,B,axis,incB);
   }
   #endif
 }
