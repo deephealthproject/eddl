@@ -196,7 +196,7 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB)
 {
   if (A->device!=B->device) msg("Tensors in different devices in reduce_sum2D");
   if ((A->dim-1)!=B->dim) msg("Incorrect dims in reduce_sum2D");
-  if ((A->sizes[1-axis]!=B->sizes[0])) msg("Incompatible dims in educe_sum2D");
+  if ((A->sizes[1-axis]!=B->sizes[0])) msg("Incompatible dims in reduce_sum2D");
 
   if (A->device==DEV_CPU) {
     if (axis=0) {

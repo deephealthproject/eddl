@@ -73,8 +73,8 @@ void Dense::backward()
     delta->set(0);
     for(int i = 0; i != child.size(); i++) {
       Tensor::mult2D(input,1,child[i]->delta,0,gW,1);
+      Tensor::reduce_sum2D(child->delta,gbias,0,1);
       Tensor::mult2D(child[i]->delta,0,W,1,delta,1);
-      Tensor::reduce_sum2D(delta,gbias,0,1);      
     }
   }
 }
