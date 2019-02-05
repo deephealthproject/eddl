@@ -28,51 +28,25 @@
 #include <stdlib.h>
 #include <iostream>
 
-//#include "../tensor.h"
 #include "../layer.h"
-//#include "../tensor_over.h"
-
-//#define tensor_sum tensor::sum
 
 int main(int argc, char **argv)
 {
-  Tensor *A=new Tensor({7,1},DEV_CPU);
-  A->rand();
-  A->info();
-  A->print();
 
-  Tensor *B=new Tensor({1,5});
-  B->rand();
+  Tensor *A=new Tensor({2,2,3,4});
+  A->rand();
+  A->print();
+  A->save("pr.bin");
+
+  Tensor *B=new Tensor("pr.bin");
   B->info();
   B->print();
 
-  Tensor *C=new Tensor({7,5});
-  C->rand();
-  C->info();
-  C->print();
+  Tensor *X=new Tensor("trX.bin");
+  Tensor *Y=new Tensor("trY.bin");
 
-  Tensor *C2=new Tensor({2,5,3,7,10,20});
-  C2->info();
-  /////////////////////////////////////////////////
-
-
-  Input *I=new Input(C,"in1");
-  I->info();
-
-  Dense *D=new Dense(I,128,"dense1",DEV_CPU);
-  Dense *E=new Dense(D,256);
-
-  D->info();
-  E->info();
-
-  D->forward();
-  D->backward();
-
-  //Add *ad=new Add({D,E},"add1");
-
-  //Layer *a=tensor_sum(tensor_sum(D,D),tensor_sum(D,D));
-
-
+  X->info();
+  Y->info();
 
 
 

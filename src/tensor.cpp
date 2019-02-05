@@ -31,6 +31,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+
 #include "tensor.h"
 
 #ifdef cGPU
@@ -100,6 +101,126 @@ Tensor::Tensor(shape s,int dev)
     gptr=gpu_create_tensor(tam);
   }
   #endif
+}
+///////////////////////////////////////////
+void Tensor::load(FILE *fe)
+{
+  int i,j;
+
+  if (dim==1) {
+    float *fptr=(float *)malloc(sizes[0]*sizeof(float ));
+    int read=fread(fptr,sizeof(float),sizes[0],fe);
+    if (read!=(sizes[0])) {
+        fprintf(stderr,"Error reading file (%d!=%d)\nCheck format\n",read,sizes[1]);
+        exit(1);
+    }
+    for(j=0;j<sizes[0];j++)
+        ptr1(j)=fptr[j];
+    free(fptr);
+  }
+  else if (dim==2) {
+    float *fptr=(float *)malloc(sizes[1]*sizeof(float ));
+    for(i=0;i<sizes[0];i++) {
+      if (feof(fe)) {fprintf(stderr,"Error reading line %d\n",i);exit(1);}
+      int read=fread(fptr,sizeof(float),sizes[1],fe);
+      if (read!=(sizes[1])) {
+          fprintf(stderr,"Error reading file (%d!=%d)\nCheck format\n",read,sizes[1]);
+          exit(1);
+      }
+      for(j=0;j<sizes[1];j++)
+          ptr2(i,j)=fptr[j];
+
+  }
+  free(fptr);
+}
+else
+  for(i=0;i<sizes[0];i++)
+    ptr[i]->load(fe);
+
+}
+
+/////////////////////////////////////////////////////////////////////////
+Tensor::Tensor(string fname)
+{
+  FILE *fe;
+  int i,j,v;
+  float *fptr;
+
+  fe=fopen(fname.c_str(),"rb");
+  if (fe==NULL) {
+    fprintf(stderr,"%s not found\n",fname.c_str());
+    exit(1);
+  }
+
+  int read=fread(&dim,sizeof(int),1,fe);
+  for(int i=0;i<dim;++i) {
+    int read=fread(&v,sizeof(int),1,fe);
+    sizes.push_back(v);
+  }
+  shape s=sizes;
+
+  device=DEV_CPU;
+  tam=1;
+  for(int i=0;i<dim;++i) tam*=sizes[i];
+  if (dim==1) ptr1.resize(sizes[0]);
+  else if (dim==2) ptr2.resize(sizes[0],sizes[1]);
+  else {
+    ptr=(Tensor **)malloc(sizes[0]*sizeof(Tensor *));
+    s.erase(s.begin());
+    for(int i=0;i<sizes[0];++i)
+      ptr[i]=new Tensor(s,device);
+  }
+
+  load(fe);
+  fclose(fe);
+}
+
+///////////////////////////////////////////
+void Tensor::save(FILE *fe)
+{
+   int i,j;
+   float fv;
+
+  if (dim==1) {
+    for(i=0;i<sizes[0];i++){
+        fv=ptr1(i);
+        fwrite(&fv, sizeof(float),1,fe);
+      }
+  }
+  else if (dim==2) {
+    for(i=0;i<sizes[0];i++)
+      for(j=0;j<sizes[1];j++) {
+        fv=ptr2(i,j);
+        fwrite(&fv, sizeof(float),1,fe);
+      }
+  }
+  else
+    for(int i=0;i<sizes[0];i++)
+      ptr[i]->save(fe);
+}
+///////////////////////////////////////////
+void Tensor::save(string fname)
+{
+  int i,j;
+  FILE *fe;
+  float fv;
+
+  fe=fopen(fname.c_str(),"wb");
+  if (fe==NULL) {
+    fprintf(stderr,"Not abel to write %s \n",fname.c_str());
+    exit(1);
+  }
+
+  fprintf(stderr,"writting bin file\n");
+
+  fwrite(&dim, sizeof(int),1,fe);
+  for(i=0;i<dim;++i)
+    fwrite(&sizes[i], sizeof(int),1,fe);
+
+  save(fe);
+
+  fclose(fe);
+
 }
 
 ///////////////////////////////////////////
@@ -175,6 +296,7 @@ void Tensor::print(){
       }
     cout<<"\n";
   }
+  #ifdef cGPU
   else if (device<DEV_FPGA){
     if (dim<3) {
       gpu_set_device(gpu_device);
@@ -198,6 +320,7 @@ void Tensor::print(){
 
     }
   }
+  #endif
 }
 
 ///////////////////////////////////////////

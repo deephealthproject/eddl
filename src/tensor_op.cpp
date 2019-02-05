@@ -199,7 +199,7 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB)
   if ((A->sizes[1-axis]!=B->sizes[0])) msg("Incompatible dims in reduce_sum2D");
 
   if (A->device==DEV_CPU) {
-    if (axis=0) {
+    if (axis==0) {
       #pragma omp parallel for
       for(int i=0;i<A->sizes[1];++i) {
         if (!incB) B->ptr1(i)=0;

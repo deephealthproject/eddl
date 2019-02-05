@@ -78,6 +78,7 @@ class Tensor{
 
   Tensor(const shape s);
   Tensor(const shape s, int dev);
+  Tensor(string fname);
 
   ~Tensor();
   ///////// normal metods
@@ -87,6 +88,9 @@ class Tensor{
   void print();
   void rand();
   void set(float v);
+  void save(string s);
+  void save(FILE *fe);
+  void load(FILE *fe);
 
 
   ///////// static metods
