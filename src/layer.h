@@ -47,6 +47,8 @@ class Layer {
   vector<Tensor*>params;
   vector<Tensor*>gradients;
 
+  vector<Layer*> child;
+
   int mode;
   int dev;
 
@@ -72,7 +74,7 @@ class Layer {
 class LinLayer : public Layer {
  public:
   Layer *parent;
-  vector<Layer*> child;
+
 
   LinLayer(string name,int dev);
 
@@ -132,7 +134,7 @@ class Dense : public LinLayer {
 class MLayer : public Layer {
  public:
   vector<Layer*> parent;
-  vector<Layer*> child;
+
 
   MLayer(string name,int dev);
 

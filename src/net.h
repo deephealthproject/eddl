@@ -1,114 +1,70 @@
-#include "data.h"
+// This file is part of EDDLL an European Distributed Deep Learning Library.
+// Developed within the DeepHealth project.
+// Boosting AI in Europe.
+//
+// The MIT License (MIT)
+//
+// Copyright (c) 2019 Roberto Paredes Palacios, <rparedes@dsic.upv.es>
 
-#define MAX_LAYERS 100
-#define MAX_DATA 100
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 
-class Layer;
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+#ifndef _NET_
+#define _NET_
+
+#include <string>
+#include <initializer_list>
+#include <vector>
+
+#include "layer.h"
+
+using namespace std;
+
+typedef vector<Layer*> vlayer;
+typedef vector<Tensor*> vtensor;
 
 class Net {
  public:
-  
-  Layer *lvec[MAX_LAYERS];
-  Data *Dtrain;
-  Data *Dtest;
-  Data *Dval;
+  string name;
 
-  FILE *flog;
-  
-  Layer *out[MAX_LAYERS];
-  Layer *in[MAX_LAYERS];
-  double err[MAX_LAYERS];
-  
+  vlayer layers;
+  vlayer lin;
+  vlayer lout;
 
-  Layer *fts[MAX_LAYERS];
-  Layer *bts[MAX_LAYERS];
-  
-  char name[100];
-  
-  int layers,olayers,ilayers;
-  int bn;
-  int init;
-  int cropmode;
-  int crops;
-  int batch;
-  int bproc;
-  int berr;
 
-  double mu;
-  double decay;
+  Net(const initializer_list<Layer*>& in,const initializer_list<Layer*>& out);
+  Net(vlayer in,vlayer out);
 
-  double ftime;
-  double btime;
-
-  Net(char *name,int b);
-
-  void addLayer(Layer *l);
-
-  void preparebatch(Data *Dt,int code);
-  void getbatch();
-  void next();
-  int calcbatch(Data *Dt);
+  int inNet(Layer *);
+  void walk(Layer *l);
 
   void initialize();
-  void evaluate(Data *dt);
-
-  void resetLayers();
-  void resetstats();
-  void build_fts();
-  void build_bts();
+  void reset();
   void forward();
   void backward();
   void applygrads();
+  void info();
 
-  void net2dot();
-  void trainmode();
-  void testmode();  
-  void copy(Layer *ld,Layer *ls);
-  void setvalues();
-  void train(int epochs);
-  void testOut(FILE *fs); 
-  void printOut(FILE *fs,int n);
-  void preparetrainbatch();
-  void calcerr(int n);
-  void printerrors(int n);
+  void fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch);
+  void train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out);
 
-  void doforward();
-  void docounterr();
-  void dobackward();
-  void doresetstats();
-  void doupdate();
-  void doprinterrors();
-  void doreseterrors();
-
-  void reseterrors();
-  void Init(FILE *flog);
-
-  void setcropmode(int f);
-  void setmu(double m);
-  void setmmu(double m);
-  void setshift(int f);
-  void setflip(int f);
-  void setbrightness(double f);
-  void setcontrast(double f);
-  void decmu(double decay);  
-  void setact(int a);
-  void setbn(int a);
-  void setmaxn(double m);
-  void setl2(double m);
-  void setl1(double m);
-  void setdrop(double m);
-  void setoptim(int l);
-  void setthreads(int l);
-  void setnoiser(double n);
-  void setnoisesd(double n);
-  void setnoiseb(double n);
-  void setdecay(double f);
-  void setlambda(double f);
-
-  int isIn(Layer *l);
-
-  void save(FILE *fe);
-  void load(FILE *fe);
 
 };
 
+
+#endif

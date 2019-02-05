@@ -44,11 +44,13 @@ Layer::Layer(string n,int d)
   name=n;
 }
 
+
 void Layer::initialize()
 {
   for(int i = 0; i != params.size(); i++)
     params[i]->rand();
 }
+
 
 void Layer::reset()
 {

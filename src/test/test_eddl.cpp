@@ -29,25 +29,26 @@
 #include <iostream>
 
 #include "../layer.h"
+#include "../net.h"
 
 int main(int argc, char **argv)
 {
+  
+  Tensor *tin=new Tensor({100,784});
+  Input* in=new Input(tin);
+  Dense* d1=new Dense(in,128);
+  Dense* d2=new Dense(d1,128);
+  Dense* d3=new Dense(d2,128);
+  Dense* out=new Dense(d3,10);
 
-  Tensor *A=new Tensor({2,2,3,4});
-  A->rand();
-  A->print();
-  A->save("pr.bin");
+  Net *net=new Net({in},{out});
 
-  Tensor *B=new Tensor("pr.bin");
-  B->info();
-  B->print();
+  net->info();
 
-  Tensor *X=new Tensor("trX.bin");
-  Tensor *Y=new Tensor("trY.bin");
+  Tensor *X=new Tensor({60000,784});
+  Tensor *Y=new Tensor({60000,10});
 
-  X->info();
-  Y->info();
-
+  net->fit({X},{Y},100);
 
 
 }

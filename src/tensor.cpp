@@ -281,6 +281,9 @@ void Tensor::info()
   else if (device<DEV_FPGA) fprintf(stderr,"Device=GPU (%d)\n",gpu_device);
   else fprintf(stderr,"Device=FPGA\n");
 }
+///////////////////////////////////////////
+
+
 
 ///////////////////////////////////////////
 

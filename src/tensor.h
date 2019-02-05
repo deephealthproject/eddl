@@ -45,6 +45,7 @@ using namespace std;
 
 typedef vector<int> shape;
 
+
 void msg(string s);
 void msg(string s,string s2);
 
