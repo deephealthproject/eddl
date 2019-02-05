@@ -45,6 +45,9 @@ class Net {
   vlayer layers;
   vlayer lin;
   vlayer lout;
+  vlayer vfts;
+  vlayer vbts;
+
 
 
   Net(const initializer_list<Layer*>& in,const initializer_list<Layer*>& out);
@@ -60,6 +63,8 @@ class Net {
   void applygrads();
   void info();
 
+  void fts();
+  void bts();
   void fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch);
   void train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out);
 

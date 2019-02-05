@@ -42,6 +42,7 @@ Layer::Layer(string n,int d)
   delta=input=output=NULL;
   dev=d;
   name=n;
+  lin=lout=0;
 }
 
 
@@ -51,15 +52,15 @@ void Layer::initialize()
     params[i]->rand();
 }
 
-
 void Layer::reset()
 {
-
+  for(int i = 0; i != gradients.size(); i++)
+    gradients[i]->set(0);
 }
 
 void Layer::applygrads()
 {
-
+  //SGD... params,gradients
 }
 
 ////////////////////////////////////
@@ -73,11 +74,13 @@ LinLayer::LinLayer(string n,int d):Layer(n,d)
 void LinLayer::addchild(Layer *l)
 {
   child.push_back(l);
+  lout++;
 }
 void LinLayer::addparent(Layer *l)
 {
     if (parent!=NULL) msg("LinLayers only can have one parent layer");
     parent=l;
+    lin++;
 }
 
 
@@ -89,10 +92,12 @@ MLayer::MLayer(string n,int d):Layer(n,d){}
 void MLayer::addchild(Layer *l)
 {
   child.push_back(l);
+  lout++;
 }
 void MLayer::addparent(Layer *l)
 {
   parent.push_back(l);
+  lin++;
 }
 
 

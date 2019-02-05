@@ -82,7 +82,7 @@ void Net::info(){
   for(int i=0;i<layers.size();i++)
     fprintf(stderr,"%s ",layers[i]->name.c_str());
 
-
+  cout<<"\n";
   for(int i=0;i<layers.size();i++) {
     cout<<layers[i]->name<<": ";
     shape si=layers[i]->input->getshape();
@@ -100,7 +100,47 @@ void Net::initialize(){}
 void Net::reset(){}
 
 /////////////////////////////////////////
+void Net::fts()
+{
+  int i,j,k,n;
+  vector<int> visit;
+  vector<int> lin;
+
+  for(i=0;i<layers.size();i++) {
+    visit.push_back(0);
+    lin.push_back(layers[i]->lin);
+  }
+
+  for(i=0;i<layers.size();i++) {
+
+    for(j=0;j<layers.size();j++)
+      if ((lin[j]==0)&&(!visit[j])) break;
+
+    if (j==layers.size())
+      msg("error recurrent net in ","fts");
+
+    if (layers[j]->lout)
+      fprintf(stderr,"%s-->",layers[j]->name.c_str());
+    else
+      fprintf(stderr,"%s||",layers[j]->name.c_str());
+
+    visit[j]=1;
+    vfts.push_back(layers[j]);
+
+    for(k=0;k<layers[j]->lout;k++)
+      for(n=0;n<layers.size();n++)
+        if(layers[n]==layers[j]->child[k]) lin[n]--;
+
+  }
+  fprintf(stderr,"\n");
+
+}
+
+/////////////////////////////////////////
 void Net::forward(){}
+
+/////////////////////////////////////////
+void Net::bts(){}
 
 /////////////////////////////////////////
 void Net::backward(){}
@@ -132,6 +172,7 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
       msg("different number os samples","fit");
 
   fprintf(stderr,"%d batches of size %d\n",n/batch,batch);
+  fts();
 
 }
 

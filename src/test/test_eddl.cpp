@@ -33,13 +33,13 @@
 
 int main(int argc, char **argv)
 {
-  
+
   Tensor *tin=new Tensor({100,784});
-  Input* in=new Input(tin);
-  Dense* d1=new Dense(in,128);
-  Dense* d2=new Dense(d1,128);
-  Dense* d3=new Dense(d2,128);
-  Dense* out=new Dense(d3,10);
+  Input* in=new Input(tin,"in");
+  Dense* d1=new Dense(in,512,"dense1");
+  Dense* d2=new Dense(d1,256,"dense2");
+  Dense* d3=new Dense(d2,128,"dense3");
+  Dense* out=new Dense(d3,10,"dense4");
 
   Net *net=new Net({in},{out});
 

@@ -51,6 +51,7 @@ class Layer {
 
   int mode;
   int dev;
+  int lin,lout;
 
   Layer(string name);
   Layer(string name,int dev);
