@@ -43,12 +43,14 @@ int main(int argc, char **argv)
 
   Net *net=new Net({in},{out});
 
+  //net=net->net2gpu({0,2});
+
   net->info();
 
   Tensor *X=new Tensor({60000,784});
   Tensor *Y=new Tensor({60000,10});
 
-  net->fit({X},{Y},100);
+  net->fit({X},{Y},100,1);
 
 
 }

@@ -55,6 +55,34 @@ int Tensor::eqsize(Tensor *A, Tensor *B) {
   return 1;
 }
 
+///////////////////////////////////////
+/// Copy from A to B
+//////////////////////////////////////
+void Tensor::copy(Tensor *A, Tensor *B) {
+  if (!Tensor::eqsize(A,B))
+    msg("Tensors with different sizes in copy");
+
+  if ((A->device==DEV_CPU)&&(B->device==DEV_CPU)) {
+    if (A->dim==1) A->ptr1=B->ptr1;
+    else if (A->dim==2) A->ptr2=B->ptr2;
+    else for(int i=0;i<A->sizes[0];i++) Tensor::copy(A->ptr[i],B->ptr[i]);
+  }
+  else if ((A->device==DEV_CPU)&&(B->device>DEV_CPU)) {
+    float *nptr=A->toLin();
+    //gpu_copy_from(nptr,B);
+    free(nptr);
+  }
+  else if ((A->device>DEV_GPU)&&(B->device==DEV_CPU)) {
+    float *nptr=(float*)malloc(B->tam*sizeof(float));
+    //gpu_copy_to(A,nptr);
+    B->fromLin(nptr);
+    free(nptr);
+  }
+  else if ((A->device!=DEV_CPU)&&(B->device!=DEV_CPU)) {
+    msg("unsuppoted copy between devices");
+  }
+}
+
 
 
 ///////////////////////////////////////

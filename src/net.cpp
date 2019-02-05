@@ -106,6 +106,7 @@ void Net::fts()
   vector<int> visit;
   vector<int> lin;
 
+  fprintf(stderr,"FTS:");
   for(i=0;i<layers.size();i++) {
     visit.push_back(0);
     lin.push_back(layers[i]->lin);
@@ -140,7 +141,40 @@ void Net::fts()
 void Net::forward(){}
 
 /////////////////////////////////////////
-void Net::bts(){}
+void Net::bts(){
+  int i,j,k,n;
+  vector<int> visit;
+  vector<int> lout;
+
+ fprintf(stderr,"BTS:");
+  for(i=0;i<layers.size();i++) {
+    visit.push_back(0);
+    lout.push_back(layers[i]->lout);
+  }
+
+  for(i=0;i<layers.size();i++) {
+
+    for(j=0;j<layers.size();j++)
+      if ((lout[j]==0)&&(!visit[j])) break;
+
+    if (j==layers.size())
+      msg("error recurrent net in ","bts");
+
+    if (layers[j]->lin)
+      fprintf(stderr,"%s-->",layers[j]->name.c_str());
+    else
+      fprintf(stderr,"%s||",layers[j]->name.c_str());
+
+    visit[j]=1;
+    vfts.push_back(layers[j]);
+
+    for(k=0;k<layers[j]->lin;k++)
+      for(n=0;n<layers.size();n++)
+        if(layers[n]==layers[j]->parent[k]) lout[n]--;
+
+  }
+  fprintf(stderr,"\n");
+}
 
 /////////////////////////////////////////
 void Net::backward(){}
@@ -149,7 +183,7 @@ void Net::backward(){}
 void Net::applygrads(){}
 
 /////////////////////////////////////////
-void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch)
+void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch, int epochs)
 {
   int i,j,n;
 
@@ -171,31 +205,90 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
     if(tout[i]->sizes[0]!=n)
       msg("different number os samples","fit");
 
-  fprintf(stderr,"%d batches of size %d\n",n/batch,batch);
+
+  // forward sort
   fts();
+  // backward sort
+  bts();
+
+  // Input and output batch
+  vtensor X;
+  for(i=0;i<tin.size();i++) {
+    shape s=tin[i]->getshape();
+    s[0]=batch;
+    X.push_back(new Tensor(s));
+  }
+  vtensor Y;
+  for(i=0;i<tout.size();i++) {
+    shape s=tout[i]->getshape();
+    s[0]=batch;
+    Y.push_back(new Tensor(s));
+  }
+
+  // Check sizes
+  if (X.size()!=lin.size())
+    msg("input tensor list does not match","fit");
+  if (Y.size()!=lout.size())
+      msg("output tensor list does not match","fit");
+
+  for(int i=0;i<lin.size();i++)
+    if (!Tensor::eqsize(lin[i]->input,X[i]))
+      msg("input tensor shapes does not match","fit");
+
+  for(int i=0;i<lin.size();i++)
+    if (!Tensor::eqsize(lout[i]->output,Y[i]))
+      msg("output tensor shapes does not match","fit");
+
+
+  // Start training
+  fprintf(stderr,"%d epochs of %d batches of size %d\n",epochs,n/batch,batch);
+  for(j=0;j<epochs;j++) {
+    for(i=0;i<2;i++) {
+      // copy a batch from tin--> X
+      // copy a batch from tout--> Y
+      
+      train_batch(X,Y);
+    }
+  }
+
 
 }
 
 /////////////////////////////////////////
 void Net::train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out)
 {
-  vtensor tin=vtensor(in.begin(), in.end());
-  vtensor tout=vtensor(out.begin(), out.end());
+  int i,j,n;
+
+  vtensor X=vtensor(in.begin(), in.end());
+  vtensor Y=vtensor(out.begin(), out.end());
 
   // Check sizes
-  if (tin.size()!=lin.size())
+  if (X.size()!=lin.size())
     msg("input tensor list does not match","fit");
-  if (tout.size()!=lout.size())
+  if (Y.size()!=lout.size())
       msg("output tensor list does not match","fit");
 
   for(int i=0;i<lin.size();i++)
-    if (!Tensor::eqsize(lin[i]->input,tin[i]))
+    if (!Tensor::eqsize(lin[i]->input,X[i]))
       msg("input tensor shapes does not match","fit");
 
-
   for(int i=0;i<lin.size();i++)
-    if (!Tensor::eqsize(lout[i]->output,tout[i]))
+    if (!Tensor::eqsize(lout[i]->output,Y[i]))
       msg("output tensor shapes does not match","fit");
+
+  train_batch(X,Y);
+}
+
+void Net::train_batch(vtensor tin, vtensor tout)
+{
+  int i,j;
+
+  // these copies can go from CPU to {CPU,GPU,FPGA}
+  for(i=0;i<tin.size();i++)
+    Tensor::copy(tin[i],lin[i]->input);
+
+  for(i=0;i<layers.size();i++)
+    layers[i]->forward();
 
   fprintf(stderr,"OK train_batch\n");
 }

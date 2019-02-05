@@ -65,8 +65,10 @@ class Net {
 
   void fts();
   void bts();
-  void fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch);
+  void fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch,int epochs);
+  
   void train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out);
+  void train_batch(vtensor X,vtensor Y);
 
 
 };

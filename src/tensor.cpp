@@ -42,6 +42,7 @@
 
 using namespace std;
 int initcuda[MAX_GPUS]={0,0,0,0,0,0,0,0};
+int linpos;
 
 void msg(string s,string s2)
 {
@@ -256,6 +257,82 @@ Tensor::~Tensor()
 ///////////////////////////////////////////
 // unary operators
 ///////////////////////////////////////////
+void Tensor::tlin(float *n)
+{
+  if (dim==2) {
+    for(int i=0;i<sizes[0];++i) {
+      int p=i*sizes[1];
+      for(int j=0;j<sizes[1];++j,++p)
+        n[linpos+p]=ptr2(i,j);
+    }
+    linpos+=tam;
+  }
+  else {
+    for(int i=0;i<sizes[0];i++)
+      ptr[i]->tlin(n);
+  }
+}
+
+float *Tensor::toLin()
+{
+  float *n=(float*)malloc(tam*sizeof(float));
+
+  linpos=0;
+  if (dim==1) {
+    for(int i=0;i<sizes[0];++i)
+      n[i]=ptr1(i);
+  }
+  else if (dim==2) {
+    for(int i=0;i<sizes[0];++i) {
+      int p=i*sizes[1];
+      for(int j=0;j<sizes[1];++j,++p)
+        n[p]=ptr2(i,j);
+    }
+  }
+  else {
+    for(int i=0;i<sizes[0];i++)
+      ptr[i]->tlin(n);
+  }
+  return n;
+}
+
+//////////////////////////////////////////////////
+void Tensor::flin(float *n)
+{
+  if (dim==2) {
+    for(int i=0;i<sizes[0];++i) {
+      int p=i*sizes[1];
+      for(int j=0;j<sizes[1];++j,++p)
+        ptr2(i,j)=n[linpos+p];
+    }
+    linpos+=tam;
+  }
+  else {
+    for(int i=0;i<sizes[0];i++)
+      ptr[i]->flin(n);
+  }
+}
+
+void Tensor::fromLin(float *n)
+{
+
+  linpos=0;
+  if (dim==1) {
+    for(int i=0;i<sizes[0];++i)
+      ptr1(i)=n[i];
+  }
+  else if (dim==2) {
+    for(int i=0;i<sizes[0];++i) {
+      int p=i*sizes[1];
+      for(int j=0;j<sizes[1];++j,++p)
+        ptr2(i,j)=n[p];
+    }
+  }
+  else {
+    for(int i=0;i<sizes[0];i++)
+      ptr[i]->flin(n);
+  }
+}
 
 shape Tensor::getshape()
 {

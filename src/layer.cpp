@@ -68,7 +68,7 @@ void Layer::applygrads()
 ////////////////////////////////////
 LinLayer::LinLayer(string n,int d):Layer(n,d)
 {
-    parent=NULL;
+
 }
 
 void LinLayer::addchild(Layer *l)
@@ -78,8 +78,8 @@ void LinLayer::addchild(Layer *l)
 }
 void LinLayer::addparent(Layer *l)
 {
-    if (parent!=NULL) msg("LinLayers only can have one parent layer");
-    parent=l;
+    if (parent.size()!=0) msg("This layers only can have one parent layer",l->name.c_str());
+    parent.push_back(l);
     lin++;
 }
 

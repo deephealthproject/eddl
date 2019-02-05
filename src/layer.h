@@ -47,6 +47,8 @@ class Layer {
   vector<Tensor*>params;
   vector<Tensor*>gradients;
 
+
+  vector<Layer*> parent;
   vector<Layer*> child;
 
   int mode;
@@ -74,8 +76,6 @@ class Layer {
 // Layers with only one input
 class LinLayer : public Layer {
  public:
-  Layer *parent;
-
 
   LinLayer(string name,int dev);
 
@@ -134,7 +134,7 @@ class Dense : public LinLayer {
 // Layers with several inputs (ADD, CAT,...)
 class MLayer : public Layer {
  public:
-  vector<Layer*> parent;
+
 
 
   MLayer(string name,int dev);

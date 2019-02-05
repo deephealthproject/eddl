@@ -92,10 +92,15 @@ class Tensor{
   void save(string s);
   void save(FILE *fe);
   void load(FILE *fe);
-
+  void tlin(float *n);
+  float *toLin();
+  void flin(float *n);
+  void fromLin(float *n);
 
   ///////// static metods
   static int eqsize(Tensor *A, Tensor *B);
+  static void copy(Tensor *A,Tensor *B);
+
   static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC);
   static void sum2D(float scA, Tensor *A, float scB,  Tensor *B, Tensor *C,int incC);
   static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);

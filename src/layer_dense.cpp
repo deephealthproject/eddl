@@ -85,7 +85,7 @@ void Dense::info()
 {
   cout<<"\n===============\n";
   cout<< "Layer Dense "<<name<<"\n";
-  cout<< "Parent layer:"<<parent->name<<"\n";
+  cout<< "Parent layer:"<<parent[0]->name<<"\n";
   cout<< "Child layers:\n";
   if (child.size())
     for(int i = 0; i != child.size(); i++)
