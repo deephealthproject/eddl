@@ -60,7 +60,6 @@ class Layer {
 
   void initialize();
   void reset();
-  void applygrads();
 
   //virtual
   virtual void info(){};

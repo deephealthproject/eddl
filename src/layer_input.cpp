@@ -32,11 +32,15 @@
 
 using namespace std;
 
-Input::Input(Tensor *in):Input(in,"__input__",DEV_CPU){}
-Input::Input(Tensor *in,int d):Input(in,"__input__",d){}
+int input_created=1;
+
+Input::Input(Tensor *in):Input(in,"input"+to_string(input_created),DEV_CPU){}
+Input::Input(Tensor *in,int d):Input(in,"input"+to_string(input_created),d){}
 Input::Input(Tensor *in,string name):Input(in,name,DEV_CPU){}
 Input::Input(Tensor *in,string name,int d):LinLayer(name,d){
+  input_created++;
   input=output=in;
+  delta=new Tensor(input->getshape(),d);
 }
 
 // virtual

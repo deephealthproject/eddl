@@ -30,18 +30,21 @@
 
 #include "layer.h"
 
+int dense_created=1;
+
 using namespace std;
 
-Dense::Dense(Layer *parent,int dim):Dense(parent,dim,"__dense__",DEV_CPU){}
+Dense::Dense(Layer *parent,int dim):Dense(parent,dim,"dense"+to_string(dense_created),DEV_CPU){}
 Dense::Dense(Layer *parent,int dim,string name):Dense(parent,dim,name,DEV_CPU){}
-Dense::Dense(Layer *parent,int dim,int dev):Dense(parent,dim,"__dense__",dev){}
+Dense::Dense(Layer *parent,int dim,int dev):Dense(parent,dim,"dense"+to_string(dense_created),dev){}
 Dense::Dense(Layer *parent,int dim,string name,int d):LinLayer(name,d)
 {
   if (parent->output->dim!=2) msg("Dense only works over 2D tensors");
+  dense_created++;
 
   input=parent->output;
   output=new Tensor({input->sizes[0],dim},d);
-  delta=new Tensor(input->getshape(),d);
+  delta=new Tensor(output->getshape(),d);
 
   W=new Tensor({input->sizes[1],dim},d);
   bias=new Tensor({dim},d);
@@ -72,9 +75,9 @@ void Dense::backward()
     gbias->set(0);
     delta->set(0);
     for(int i = 0; i != child.size(); i++) {
-      Tensor::mult2D(input,1,child[i]->delta,0,gW,1);
-      Tensor::reduce_sum2D(child[i]->delta,gbias,0,1);
-      Tensor::mult2D(child[i]->delta,0,W,1,delta,1);
+      Tensor::mult2D(input,1,delta,0,gW,1);
+      Tensor::mult2D(delta,0,W,1,parent[0]->delta,1);
+      Tensor::reduce_sum2D(delta,gbias,0,1);
     }
   }
 }

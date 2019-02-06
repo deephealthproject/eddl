@@ -58,10 +58,6 @@ void Layer::reset()
     gradients[i]->set(0);
 }
 
-void Layer::applygrads()
-{
-  //SGD... params,gradients
-}
 
 ////////////////////////////////////
 ///// LINEAR LAYERS

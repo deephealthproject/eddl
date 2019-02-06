@@ -28,29 +28,33 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "../layer.h"
 #include "../net.h"
 
 int main(int argc, char **argv)
 {
+  int batch=100;
 
-  Tensor *tin=new Tensor({100,784});
-  Input* in=new Input(tin,"in");
-  Dense* d1=new Dense(in,512,"dense1");
-  Dense* d2=new Dense(d1,256,"dense2");
-  Dense* d3=new Dense(d2,128,"dense3");
-  Dense* out=new Dense(d3,10,"dense4");
+  Tensor *tin=new Tensor({batch,784});
+  Input* in=new Input(tin);
+  Dense* d1=new Dense(in,512);
+  Dense* d2=new Dense(d1,256);
+  Dense* d3=new Dense(d2,128);
+  Dense* out=new Dense(d3,10);
 
+  // define input and output layers list
   Net *net=new Net({in},{out});
-
-  //net=net->net2gpu({0,2});
 
   net->info();
 
+  // Attach an optimizer and a list of error criteria
+  net->build(SGD(0.01,0.9),{"mse"});
+
+  /// read data somewhere
   Tensor *X=new Tensor({60000,784});
   Tensor *Y=new Tensor({60000,10});
 
-  net->fit({X},{Y},100,1);
+  // fit, list of input and output tensors, batch, epochs
+  net->fit({X},{Y},batch,1);
 
 
 }

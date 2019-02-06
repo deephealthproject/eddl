@@ -55,6 +55,7 @@ Net::Net(const initializer_list<Layer*>& in,const initializer_list<Layer*>& out)
 
 Net::Net(vlayer in,vlayer out)
 {
+  optimizer=NULL;
   lin=in;
   lout=out;
   for(int i=0;i<lin.size();i++)
@@ -94,10 +95,18 @@ void Net::info(){
 
 }
 /////////////////////////////////////////
-void Net::initialize(){}
+void Net::initialize()
+{
+  for(int i = 0; i != layers.size(); i++)
+    layers[i]->initialize();
+}
 
 /////////////////////////////////////////
-void Net::reset(){}
+void Net::reset()
+{
+  for(int i = 0; i != layers.size(); i++)
+    layers[i]->reset();
+}
 
 /////////////////////////////////////////
 void Net::fts()
@@ -123,7 +132,7 @@ void Net::fts()
     if (layers[j]->lout)
       fprintf(stderr,"%s-->",layers[j]->name.c_str());
     else
-      fprintf(stderr,"%s||",layers[j]->name.c_str());
+      fprintf(stderr,"%s |",layers[j]->name.c_str());
 
     visit[j]=1;
     vfts.push_back(layers[j]);
@@ -137,8 +146,6 @@ void Net::fts()
 
 }
 
-/////////////////////////////////////////
-void Net::forward(){}
 
 /////////////////////////////////////////
 void Net::bts(){
@@ -163,10 +170,10 @@ void Net::bts(){
     if (layers[j]->lin)
       fprintf(stderr,"%s-->",layers[j]->name.c_str());
     else
-      fprintf(stderr,"%s||",layers[j]->name.c_str());
+      fprintf(stderr,"%s |",layers[j]->name.c_str());
 
     visit[j]=1;
-    vfts.push_back(layers[j]);
+    vbts.push_back(layers[j]);
 
     for(k=0;k<layers[j]->lin;k++)
       for(n=0;n<layers.size();n++)
@@ -176,40 +183,79 @@ void Net::bts(){
   fprintf(stderr,"\n");
 }
 
-/////////////////////////////////////////
-void Net::backward(){}
 
 /////////////////////////////////////////
-void Net::applygrads(){}
+void Net::build(optim *opt,const initializer_list<string>& c)
+{
+
+  fprintf(stderr,"Build net\n");
+  cost=vstring(c.begin(), c.end());
+  if (cost.size()!=lout.size())
+    msg("Cost list size does not match output list ","build");
+
+  optimizer=opt;
+  optimizer->setlayers(layers);
+
+  // forward sort
+  fts();
+  // backward sort
+  bts();
+
+}
+
+/////////////////////////////////////////
+void Net::forward()
+{
+  for(int i=0;i<vfts.size();i++)
+    vfts[i]->forward();
+}
+
+void Net::delta(vtensor tout)
+{
+  for(int i=0;i<lout.size();i++) {
+    if (cost[i]=="mse")
+     Tensor::sum2D(1.0,tout[i],-1.0,lout[i]->output, lout[i]->delta,0);
+  }
+}
+/////////////////////////////////////////
+void Net::backward()
+{
+  for(int i=0;i<vbts.size();i++)
+    vbts[i]->backward();
+}
+
+/////////////////////////////////////////
+void Net::applygrads()
+{
+  optimizer->applygrads();
+}
 
 /////////////////////////////////////////
 void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch, int epochs)
 {
   int i,j,n;
 
+  if (optimizer==NULL)
+    msg("Net is not build ","Net fit");
+
   vtensor tin=vtensor(in.begin(), in.end());
   vtensor tout=vtensor(out.begin(), out.end());
 
   // Check sizes
   if (tin.size()!=lin.size())
-    msg("input tensor list does not match","fit");
+    msg("input tensor list does not match with defined input layers","fit");
   if (tout.size()!=lout.size())
-      msg("output tensor list does not match","fit");
+      msg("output tensor list does not match with defined output layers","fit");
 
   n=tin[0]->sizes[0];
   for(i=1;i<tin.size();i++)
    if(tin[i]->sizes[0]!=n)
-     msg("different number os samples","fit");
+     msg("different number of samples in input tensor","fit");
 
   for(i=1;i<tout.size();i++)
     if(tout[i]->sizes[0]!=n)
-      msg("different number os samples","fit");
+      msg("different number of samples in output tensor","fit");
 
-
-  // forward sort
-  fts();
-  // backward sort
-  bts();
 
   // Input and output batch
   vtensor X;
@@ -226,16 +272,11 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
   }
 
   // Check sizes
-  if (X.size()!=lin.size())
-    msg("input tensor list does not match","fit");
-  if (Y.size()!=lout.size())
-      msg("output tensor list does not match","fit");
-
   for(int i=0;i<lin.size();i++)
     if (!Tensor::eqsize(lin[i]->input,X[i]))
       msg("input tensor shapes does not match","fit");
 
-  for(int i=0;i<lin.size();i++)
+  for(int i=0;i<lout.size();i++)
     if (!Tensor::eqsize(lout[i]->output,Y[i]))
       msg("output tensor shapes does not match","fit");
 
@@ -246,7 +287,7 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
     for(i=0;i<2;i++) {
       // copy a batch from tin--> X
       // copy a batch from tout--> Y
-      
+
       train_batch(X,Y);
     }
   }
@@ -255,6 +296,28 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
 }
 
 /////////////////////////////////////////
+
+void Net::train_batch(vtensor tin, vtensor tout)
+{
+  int i,j;
+
+  // these copies can go from CPU to {CPU,GPU,FPGA}
+  for(i=0;i<tin.size();i++)
+    Tensor::copy(tin[i],lin[i]->input);
+
+  forward();
+  delta(tout);
+  backward();
+  applygrads();
+
+  fprintf(stderr,"OK train_batch\n");
+}
+
+
+
+
+/////////////////////////////////////////
+
 void Net::train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out)
 {
   int i,j,n;
@@ -278,26 +341,6 @@ void Net::train_batch(const initializer_list<Tensor*>& in,const initializer_list
 
   train_batch(X,Y);
 }
-
-void Net::train_batch(vtensor tin, vtensor tout)
-{
-  int i,j;
-
-  // these copies can go from CPU to {CPU,GPU,FPGA}
-  for(i=0;i<tin.size();i++)
-    Tensor::copy(tin[i],lin[i]->input);
-
-  for(i=0;i<layers.size();i++)
-    layers[i]->forward();
-
-  fprintf(stderr,"OK train_batch\n");
-}
-
-
-
-
-
-
 
 
 

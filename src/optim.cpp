@@ -24,60 +24,70 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef _NET_
-#define _NET_
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
 
-#include <string>
-#include <initializer_list>
-#include <vector>
-
-#include "layer.h"
 #include "optim.h"
 
 using namespace std;
 
-typedef vector<Layer*> vlayer;
-typedef vector<Tensor*> vtensor;
-typedef vector<string> vstring;
+optim::optim(){
 
-class Net {
- public:
-  string name;
+}
 
-  vlayer layers;
-  vlayer lin;
-  vlayer lout;
-  vlayer vfts;
-  vlayer vbts;
-  vstring cost;
+////// SGD //////
+sgd::sgd(float l,float m):optim(){
+  lr=l;
+  mu=m;
+}
 
-  optim *optimizer;
+void sgd::setlayers(vlayer l)
+{
+  layers=l;
 
+  // create momemtum tensors
+  for(int i=0;i<layers.size();i++)
+    for(int j=0;j<layers[i]->gradients.size();j++) {
+      mT.push_back(new Tensor(layers[i]->gradients[j]->getshape()));
+      mT.back()->set(0.0);
+    }
 
-  Net(const initializer_list<Layer*>& in,const initializer_list<Layer*>& out);
-  Net(vlayer in,vlayer out);
+}
 
-  int inNet(Layer *);
-  void walk(Layer *l);
+void sgd::applygrads(){
 
-  void build(optim *opt,const initializer_list<string>& c);
-  void initialize();
-  void reset();
-  void forward();
-  void delta(vtensor out);
-  void backward();
-  void applygrads();
-  void info();
+  int p=0;
+  for(int i=0;i<layers.size();i++)
+    for(int j=0;j<layers[i]->gradients.size();j++,p++) {
+      Tensor::sum2D(lr,layers[i]->gradients[j],mu, mT[p],mT[p],0);
+      Tensor::sum2D(1.0,layers[i]->params[j],1.0,mT[p],layers[i]->params[j],0);
+    }
 
-  void fts();
-  void bts();
-  void fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch,int epochs);
-
-  void train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out);
-  void train_batch(vtensor X,vtensor Y);
+}
 
 
-};
 
 
-#endif
+
+
+
+
+
+
+
+
+///////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+//////

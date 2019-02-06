@@ -24,60 +24,58 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef _NET_
-#define _NET_
+#ifndef _OPTIM_
+#define _OPTIM_
 
 #include <string>
 #include <initializer_list>
 #include <vector>
 
 #include "layer.h"
-#include "optim.h"
 
 using namespace std;
 
+//shorcuts
+#define SGD new sgd
+
 typedef vector<Layer*> vlayer;
 typedef vector<Tensor*> vtensor;
-typedef vector<string> vstring;
 
-class Net {
+class optim {
  public:
   string name;
-
   vlayer layers;
-  vlayer lin;
-  vlayer lout;
-  vlayer vfts;
-  vlayer vbts;
-  vstring cost;
 
-  optim *optimizer;
+  optim();
+  virtual void setlayers(vlayer l){}
+  virtual void applygrads(){}
 
+};
 
-  Net(const initializer_list<Layer*>& in,const initializer_list<Layer*>& out);
-  Net(vlayer in,vlayer out);
+class sgd: public optim
+{
+public:
+  float lr;
+  float mu;
+  vtensor mT;
 
-  int inNet(Layer *);
-  void walk(Layer *l);
-
-  void build(optim *opt,const initializer_list<string>& c);
-  void initialize();
-  void reset();
-  void forward();
-  void delta(vtensor out);
-  void backward();
+  sgd(float lr,float mu);
+  void setlayers(vlayer l);
   void applygrads();
-  void info();
-
-  void fts();
-  void bts();
-  void fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch,int epochs);
-
-  void train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out);
-  void train_batch(vtensor X,vtensor Y);
-
-
 };
 
 
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+//////////
