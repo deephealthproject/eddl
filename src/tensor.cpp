@@ -44,6 +44,9 @@ using namespace std;
 int initcuda[MAX_GPUS]={0,0,0,0,0,0,0,0};
 int linpos;
 
+extern ostream& operator<<(ostream& os, const shape s);
+
+
 void msg(string s,string s2)
 {
   cout<<"\n"<<s<<s2<<"\n";
@@ -159,6 +162,8 @@ Tensor::Tensor(string fname)
     sizes.push_back(v);
   }
   shape s=sizes;
+
+  cout<<"loading file with tensor:"<<s<<"\n";
 
   device=DEV_CPU;
   tam=1;
@@ -422,14 +427,34 @@ void Tensor::set(float v){
   #endif
 }
 
+///////////////////////////////////////////
+void Tensor::div(float v){
+  if (device==DEV_CPU) {
+    if (dim==1)
+      for(int i=0;i<sizes[0];++i) ptr1(i)/=v;
+    else if (dim==2)
+      for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)/=v;
+    else
+      for(int i=0;i<sizes[0];++i)
+        ptr[i]->div(v);
+  }
+  #ifdef cGPU
+  else if (device<DEV_FPGA){
+
+  }
+  #endif
+}
+
 
 ///////////////////////////////////////////
 void Tensor::rand(){
   if (device==DEV_CPU) {
     if (dim==1)
-      for(int i=0;i<sizes[0];++i) ptr1(i)=(std::rand()%1000)/1000.0;
+      for(int i=0;i<sizes[0];++i) ptr1(i)=((std::rand()%1000)-500)/100000.0;
     else if (dim==2)
-      for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)=(std::rand()%1000)/1000.0;
+      for(int i=0;i<sizes[0];++i)
+        for(int j=0;j<sizes[1];++j)
+          ptr2(i,j)=((std::rand()%1000)-500)/100000.0;
     else
       for(int i=0;i<sizes[0];++i)
         ptr[i]->rand();

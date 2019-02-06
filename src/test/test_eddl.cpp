@@ -32,6 +32,7 @@
 
 int main(int argc, char **argv)
 {
+
   int batch=100;
 
   Tensor *tin=new Tensor({batch,784});
@@ -41,6 +42,7 @@ int main(int argc, char **argv)
   Layer *l=in;
   for(int i=0;i<3;i++)
     l=new Activation(new Dense(l,512),"relu");
+
   Activation *out=new Activation(new Dense(l,10),"softmax");
 
   // define input and output layers list
@@ -50,11 +52,14 @@ int main(int argc, char **argv)
   net->info();
 
   // Attach an optimizer and a list of error criteria
-  net->build(SGD(0.01,0.9),{"mse"});
+  // size of error criteria list must match with size of list of outputs
+  net->build(SGD(0.001,0.9),{"soft_cent"});
 
   /// read data somewhere
-  Tensor *X=new Tensor({60000,784});
-  Tensor *Y=new Tensor({60000,10});
+  Tensor *X=new Tensor("trX.bin");
+  Tensor *Y=new Tensor("trY.bin");
+
+  X->div(255.0);
 
   // training, list of input and output tensors, batch, epochs
   net->fit({X},{Y},batch,1);

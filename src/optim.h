@@ -48,7 +48,7 @@ class optim {
 
   optim();
   virtual void setlayers(vlayer l){}
-  virtual void applygrads(){}
+  virtual void applygrads(int batch){}
 
 };
 
@@ -61,7 +61,7 @@ public:
 
   sgd(float lr,float mu);
   void setlayers(vlayer l);
-  void applygrads();
+  void applygrads(int batch);
 };
 
 

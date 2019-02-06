@@ -54,6 +54,7 @@ class Layer {
   int mode;
   int dev;
   int lin,lout;
+  int delta_bp;
 
   Layer(string name);
   Layer(string name,int dev);
@@ -107,6 +108,7 @@ class Input : public LinLayer {
 class Dense : public LinLayer {
  public:
   int dim;
+
 
   Dense(Layer *parent,int dim);
   Dense(Layer *parent,int dim,int dev);

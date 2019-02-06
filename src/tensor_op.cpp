@@ -63,8 +63,8 @@ void Tensor::copy(Tensor *A, Tensor *B) {
     msg("Tensors with different sizes in copy");
 
   if ((A->device==DEV_CPU)&&(B->device==DEV_CPU)) {
-    if (A->dim==1) A->ptr1=B->ptr1;
-    else if (A->dim==2) A->ptr2=B->ptr2;
+    if (A->dim==1) B->ptr1=A->ptr1;
+    else if (A->dim==2) B->ptr2=A->ptr2;
     else for(int i=0;i<A->sizes[0];i++) Tensor::copy(A->ptr[i],B->ptr[i]);
   }
   else if ((A->device==DEV_CPU)&&(B->device>DEV_CPU)) {
@@ -83,6 +83,38 @@ void Tensor::copy(Tensor *A, Tensor *B) {
   }
 }
 
+///////////////////////////////////////
+/// Copy from A to B
+//////////////////////////////////////
+void Tensor::select(Tensor *A, Tensor *B,vector<int> sind) {
+
+  if ((A->device==DEV_CPU)&&(B->device==DEV_CPU)) {
+    if (A->dim==1)
+      for(int i=0;i<sind.size();i++)
+        B->ptr1(i)=A->ptr1(sind[i]);
+    else if (A->dim==2)
+      for(int i=0;i<sind.size();i++)
+        for(int j=0;j<B->sizes[1];j++)
+          B->ptr2(i,j)=A->ptr2(sind[i],j);
+    else
+      for(int i=0;i<sind.size();i++)
+        Tensor::copy(A->ptr[sind[i]],B->ptr[i]);
+  }
+  else if ((A->device==DEV_CPU)&&(B->device>DEV_CPU)) {
+    float *nptr=A->toLin();
+    //gpu_copy_from(nptr,B);
+    free(nptr);
+  }
+  else if ((A->device>DEV_GPU)&&(B->device==DEV_CPU)) {
+    float *nptr=(float*)malloc(B->tam*sizeof(float));
+    //gpu_copy_to(A,nptr);
+    B->fromLin(nptr);
+    free(nptr);
+  }
+  else if ((A->device!=DEV_CPU)&&(B->device!=DEV_CPU)) {
+    msg("unsuppoted copy between devices");
+  }
+}
 
 
 ///////////////////////////////////////
@@ -314,11 +346,47 @@ float Tensor::total_sum(Tensor *A)
   #endif
 }
 
+
+////////////////////////////////
+/// COST FUNCTIONS
+////////////////////////////////
+// Cross-Entropy: C=-(A*log(B)+(1-A)*log(1-B))
+void Tensor::cent(Tensor *A,Tensor *B, Tensor *C)
+{
+  if (A->device!=B->device) msg("Tensors in different devices in ReLu");
+  if ((!eqsize(A,B))||(!eqsize(A,C))) msg("Incompatible dims in cross-entropy");
+
+  if (A->device==DEV_CPU) {
+    if (A->dim==1) {
+      for(int i=0;i<A->sizes[0];i++) {
+        if (A->ptr1(i)!=0.0) C->ptr1(i)-=A->ptr1(i)*log(B->ptr1(i));
+        if (A->ptr1(i)!=1.0) C->ptr1(i)-=(1.0-A->ptr1(i))*log(1.0-B->ptr1(i));
+      }
+    }
+    else if (A->dim==2) {
+      for(int i=0;i<A->sizes[0];i++)
+        for(int j=0;j<A->sizes[1];j++) {
+          if (A->ptr2(i,j)!=0.0) C->ptr2(i,j)-=A->ptr2(i,j)*log(B->ptr2(i,j));
+          if (A->ptr2(i,j)!=1.0) C->ptr2(i,j)-=(1.0-A->ptr2(i,j))*log(1.0-B->ptr2(i,j));
+        }
+    }
+    else
+      for(int i=0;i<A->sizes[0];i++)
+        Tensor::cent(A->ptr[i],B->ptr[i],C->ptr[i]);
+  }
+  #ifdef cGPU
+  else if (A->device<DEV_FPGA)
+  {
+
+  }
+  #endif
+
+}
+
+
 ////////////////////////////////
 /// ACTIVATIONS
 ////////////////////////////////
-
-
 // RELU
 void Tensor::ReLu(Tensor *A,Tensor *B)
 {

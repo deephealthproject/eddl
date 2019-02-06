@@ -200,6 +200,8 @@ void Net::build(optim *opt,const initializer_list<string>& c)
   fts();
   // backward sort
   bts();
+  // random params
+  initialize();
 
 }
 
@@ -213,19 +215,39 @@ void Net::forward()
 verr Net::delta(vtensor Y)
 {
   verr errors;
-  for(int i=0;i<Y.size();i++) errors.push_back(0.0);
+  for(int i=0;i<Y.size();i++) {
+    errors.push_back(0.0);
+    outs[i]->set(0.0);
+  }
 
   for(int i=0;i<lout.size();i++) {
     if (cost[i]=="mse") {
-      //delta (T-Y)
+      //delta: (T-Y)
       Tensor::sum(1.0,Y[i],-1.0,lout[i]->output, lout[i]->delta,0);
-      // batch error sum((T-Y)^2)
+      // batch error: sum((T-Y)^2)
       Tensor::el_mult(lout[i]->delta,lout[i]->delta,outs[i],0);
       errors[i]=Tensor::total_sum(outs[i]);
    }
-    else if (cost[i]=="cent"){}
+   else if (cost[i]=="cent")
+    {
+      // delta: -t/y + (1-t)/(1-y)
 
+      // batch error: -tlog(y)+(1-t)log(1-y)
+      Tensor::cent(Y[i],lout[i]->output,outs[i]);
+      errors[i]=Tensor::total_sum(outs[i]);
+    }
+    //typical case where cent is after a softmax
+    else if (cost[i]=="soft_cent")
+     {
+       // parent->delta: (t-y)
+       Tensor::sum(1.0,Y[i],-1.0,lout[i]->output, lout[i]->delta,0);
+       lout[i]->delta_bp=1;
 
+       // batch error -tlog(y)+(1-t)log(1-y)
+       Tensor::cent(Y[i],lout[i]->output,outs[i]);
+       errors[i]=Tensor::total_sum(outs[i]);
+
+     }
 
   }
   return errors;
@@ -238,9 +260,9 @@ void Net::backward()
 }
 
 /////////////////////////////////////////
-void Net::applygrads()
+void Net::applygrads(int batch)
 {
-  optimizer->applygrads();
+  optimizer->applygrads(batch);
 }
 
 /////////////////////////////////////////
@@ -279,6 +301,10 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
     s[0]=batch;
     X.push_back(new Tensor(s));
   }
+  for(i=0;i<n;i++)
+   ind.push_back(i);
+  for(i=0;i<batch;i++)
+    sind.push_back(0);
 
   vtensor Y;
   verr errors,err;
@@ -305,20 +331,26 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
   for(i=0;i<epochs;i++) {
     for(j=0;j<tout.size();j++) errors[j]=0.0;
     for(j=0;j<2000;j++) {
+      // random batches
+      for(int k=0;k<batch;k++)
+        sind[k]=rand()%n;
       // copy a batch from tin--> X
+      for(int k=0;k<lin.size();k++)
+        Tensor::select(tin[k],X[k],sind);
       // copy a batch from tout--> Y
+      for(int k=0;k<lin.size();k++)
+        Tensor::select(tout[k],Y[k],sind);
 
       err=train_batch(X,Y);
 
       for(k=0;k<tout.size();k++) errors[k]+=err[k];
       for(k=0;k<tout.size();k++)
-        fprintf(stderr,"batch %d errors: %f ",j,errors[k]);
+        fprintf(stderr,"batch %d errors: %f ",j,errors[k]/(batch*(j+1)));
       fprintf(stderr,"\r");
+      //getchar();
 
     }
   }
-
-
 }
 
 /////////////////////////////////////////
@@ -332,10 +364,11 @@ verr Net::train_batch(vtensor X, vtensor Y)
     Tensor::copy(X[i],lin[i]->input);
 
   verr errors;
+  reset(); //gradients=0
   forward();
   errors=delta(Y);
   backward();
-  applygrads();
+  //applygrads(X[0]->sizes[0]);
 
   return errors;
 }

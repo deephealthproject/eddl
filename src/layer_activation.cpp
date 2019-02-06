@@ -42,6 +42,8 @@ Activation::Activation(Layer *parent,string act,string name,int d):LinLayer(name
 
   activation_created++;
 
+  this->act=act;
+
   input=parent->output;
   output=new Tensor(input->getshape(),d);
   delta=new Tensor(output->getshape(),d);
@@ -57,15 +59,23 @@ void Activation::forward()
     Tensor::ReLu(input,output);
   else if (act=="softmax")
     Tensor::Softmax(input,output);
+
 }
 
 void Activation::backward()
 {
+
   if (parent.size()) {
-    if (act=="relu")
-      Tensor::D_ReLu(delta,input,parent[0]->delta);
-    else if (act=="softmax")
-      Tensor::D_Softmax(delta,output,parent[0]->delta);
+
+    if (delta_bp){
+        Tensor::copy(delta,parent[0]->delta);
+    }
+    else {
+      if (act=="relu")
+        Tensor::D_ReLu(delta,input,parent[0]->delta);
+      else if (act=="softmax")
+        Tensor::D_Softmax(delta,output,parent[0]->delta);
+    }
   }
 }
 

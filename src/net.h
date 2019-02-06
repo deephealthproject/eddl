@@ -40,6 +40,7 @@ typedef vector<Layer*> vlayer;
 typedef vector<Tensor*> vtensor;
 typedef vector<string> vstring;
 typedef vector<float> verr;
+typedef vector<int> vind;
 
 class Net {
  public:
@@ -52,6 +53,8 @@ class Net {
   vlayer vbts;
   vstring cost;
   vtensor outs;
+  vind ind;
+  vind sind;
 
   optim *optimizer;
 
@@ -68,7 +71,7 @@ class Net {
   void forward();
   verr  delta(vtensor out);
   void backward();
-  void applygrads();
+  void applygrads(int batch);
   void info();
 
   void fts();

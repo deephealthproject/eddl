@@ -89,6 +89,7 @@ class Tensor{
   void print();
   void rand();
   void set(float v);
+  void div(float v);
   void save(string s);
   void save(FILE *fe);
   void load(FILE *fe);
@@ -100,6 +101,7 @@ class Tensor{
   ///////// static metods
   static int eqsize(Tensor *A, Tensor *B);
   static void copy(Tensor *A,Tensor *B);
+  static void select(Tensor *A, Tensor *B,vector<int> sind);
 
   static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC);
   static void el_mult(Tensor *A, Tensor *B, Tensor *C,int incC);
@@ -112,6 +114,7 @@ class Tensor{
 
   static float total_sum(Tensor *A);
 
+  static void cent(Tensor *A,Tensor *B, Tensor *C);
 
   static void ReLu(Tensor *A,Tensor *B);
   static void Softmax(Tensor *A,Tensor *B);

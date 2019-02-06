@@ -43,6 +43,7 @@ Layer::Layer(string n,int d)
   dev=d;
   name=n;
   lin=lout=0;
+  delta_bp=0;
 }
 
 
