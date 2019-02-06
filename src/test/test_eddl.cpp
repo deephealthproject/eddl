@@ -35,6 +35,8 @@ int main(int argc, char **argv)
   int batch=100;
 
   Tensor *tin=new Tensor({batch,784});
+
+  // network definition
   Input* in=new Input(tin);
   Dense* d1=new Dense(in,512);
   Dense* d2=new Dense(d1,256);
@@ -44,6 +46,7 @@ int main(int argc, char **argv)
   // define input and output layers list
   Net *net=new Net({in},{out});
 
+  // get some info from the network
   net->info();
 
   // Attach an optimizer and a list of error criteria
@@ -53,7 +56,7 @@ int main(int argc, char **argv)
   Tensor *X=new Tensor({60000,784});
   Tensor *Y=new Tensor({60000,10});
 
-  // fit, list of input and output tensors, batch, epochs
+  // training, list of input and output tensors, batch, epochs
   net->fit({X},{Y},batch,1);
 
 
