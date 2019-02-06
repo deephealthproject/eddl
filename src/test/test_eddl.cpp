@@ -38,10 +38,10 @@ int main(int argc, char **argv)
 
   // network definition
   Input* in=new Input(tin);
-  Dense* d1=new Dense(in,512);
-  Dense* d2=new Dense(d1,256);
-  Dense* d3=new Dense(d2,128);
-  Dense* out=new Dense(d3,10);
+  Layer *l=in;
+  for(int i=0;i<3;i++)
+    l=new Activation(new Dense(l,512),"relu");
+  Activation *out=new Activation(new Dense(l,10),"softmax");
 
   // define input and output layers list
   Net *net=new Net({in},{out});

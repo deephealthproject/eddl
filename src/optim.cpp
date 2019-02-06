@@ -60,8 +60,8 @@ void sgd::applygrads(){
   int p=0;
   for(int i=0;i<layers.size();i++)
     for(int j=0;j<layers[i]->gradients.size();j++,p++) {
-      Tensor::sum2D(lr,layers[i]->gradients[j],mu, mT[p],mT[p],0);
-      Tensor::sum2D(1.0,layers[i]->params[j],1.0,mT[p],layers[i]->params[j],0);
+      Tensor::sum(lr,layers[i]->gradients[j],mu, mT[p],mT[p],0);
+      Tensor::sum(1.0,layers[i]->params[j],1.0,mT[p],layers[i]->params[j],0);
     }
 
 }

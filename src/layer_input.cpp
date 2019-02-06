@@ -52,8 +52,14 @@ void Input::info()
   cout<<"===============\n\n";
 }
 
-void Input::forward(){}
-void Input::backward(){}
+void Input::forward()
+{
+    delta->set(0.0);
+}
+void Input::backward()
+{
+
+}
 
 
 

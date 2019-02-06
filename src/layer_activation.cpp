@@ -30,61 +30,51 @@
 
 #include "layer.h"
 
-int dense_created=1;
+int activation_created=1;
 
 using namespace std;
 
-Dense::Dense(Layer *parent,int dim):Dense(parent,dim,"dense"+to_string(dense_created),DEV_CPU){}
-Dense::Dense(Layer *parent,int dim,string name):Dense(parent,dim,name,DEV_CPU){}
-Dense::Dense(Layer *parent,int dim,int dev):Dense(parent,dim,"dense"+to_string(dense_created),dev){}
-Dense::Dense(Layer *parent,int dim,string name,int d):LinLayer(name,d)
+Activation::Activation(Layer *parent,string act):Activation(parent,act,"Activation"+to_string(activation_created),DEV_CPU){}
+Activation::Activation(Layer *parent,string act,string name):Activation(parent,act,name,DEV_CPU){}
+Activation::Activation(Layer *parent,string act,int dev):Activation(parent,act,"Activation"+to_string(activation_created),dev){}
+Activation::Activation(Layer *parent,string act,string name,int d):LinLayer(name,d)
 {
-  if (parent->output->dim!=2) msg("Dense only works over 2D tensors");
-  dense_created++;
+
+  activation_created++;
 
   input=parent->output;
-  output=new Tensor({input->sizes[0],dim},d);
+  output=new Tensor(input->getshape(),d);
   delta=new Tensor(output->getshape(),d);
-
-  W=new Tensor({input->sizes[1],dim},d);
-  bias=new Tensor({dim},d);
-  params.push_back(W);
-  params.push_back(bias);
-
-  gW=new Tensor({input->sizes[1],dim},d);
-  gbias=new Tensor({dim},d);
-  gradients.push_back(gW);
-  gradients.push_back(gbias);
 
   parent->addchild(this);
   addparent(parent);
 }
 
 // virtual
-void Dense::forward()
+void Activation::forward()
 {
-  Tensor::mult2D(input,0,W,0,output,0);
-  Tensor::sum2D_rowwise(output,bias,output);
-  delta->set(0.0);
+  if (act=="relu")
+    Tensor::ReLu(input,output);
+  else if (act=="softmax")
+    Tensor::Softmax(input,output);
 }
 
-void Dense::backward()
+void Activation::backward()
 {
-  //get gradients with provided delta
-  Tensor::mult2D(input,1,delta,0,gW,0);
-  Tensor::reduce_sum2D(delta,gbias,0,0);
-  // backprop delta
-  if (parent.size())
-    Tensor::mult2D(delta,0,W,1,parent[0]->delta,1);//1: note that increment parent delta
-
+  if (parent.size()) {
+    if (act=="relu")
+      Tensor::D_ReLu(delta,input,parent[0]->delta);
+    else if (act=="softmax")
+      Tensor::D_Softmax(delta,output,parent[0]->delta);
+  }
 }
 
 
 
-void Dense::info()
+void Activation::info()
 {
   cout<<"\n===============\n";
-  cout<< "Layer Dense "<<name<<"\n";
+  cout<< "Layer Activation "<<name<<"\n";
   cout<< "Parent layer:"<<parent[0]->name<<"\n";
   cout<< "Child layers:\n";
   if (child.size())
@@ -93,8 +83,7 @@ void Dense::info()
   else cout<<"None\n";
   cout<<"Input:\n";
   input->info();
-  cout<<"Param:\n";
-  W->info();
+  cout<<"No Params\n";
   cout<<"Output:\n";
   output->info();
   cout<<"===============\n\n";

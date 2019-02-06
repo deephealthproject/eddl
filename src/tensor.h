@@ -102,11 +102,22 @@ class Tensor{
   static void copy(Tensor *A,Tensor *B);
 
   static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC);
-  static void sum2D(float scA, Tensor *A, float scB,  Tensor *B, Tensor *C,int incC);
+  static void el_mult(Tensor *A, Tensor *B, Tensor *C,int incC);
+
+
+  static void sum(float scA, Tensor *A, float scB,  Tensor *B, Tensor *C,int incC);
   static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
   static void sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
   static void reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB);
 
+  static float total_sum(Tensor *A);
+
+
+  static void ReLu(Tensor *A,Tensor *B);
+  static void Softmax(Tensor *A,Tensor *B);
+
+  static void D_ReLu(Tensor *D, Tensor *I, Tensor *PD);
+  static void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
 
 
 };

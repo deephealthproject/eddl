@@ -39,6 +39,7 @@ using namespace std;
 typedef vector<Layer*> vlayer;
 typedef vector<Tensor*> vtensor;
 typedef vector<string> vstring;
+typedef vector<float> verr;
 
 class Net {
  public:
@@ -50,6 +51,7 @@ class Net {
   vlayer vfts;
   vlayer vbts;
   vstring cost;
+  vtensor outs;
 
   optim *optimizer;
 
@@ -64,7 +66,7 @@ class Net {
   void initialize();
   void reset();
   void forward();
-  void delta(vtensor out);
+  verr  delta(vtensor out);
   void backward();
   void applygrads();
   void info();
@@ -73,8 +75,8 @@ class Net {
   void bts();
   void fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch,int epochs);
 
-  void train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out);
-  void train_batch(vtensor X,vtensor Y);
+  verr train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out);
+  verr train_batch(vtensor X,vtensor Y);
 
 
 };

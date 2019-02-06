@@ -210,12 +210,25 @@ void Net::forward()
     vfts[i]->forward();
 }
 
-void Net::delta(vtensor tout)
+verr Net::delta(vtensor Y)
 {
+  verr errors;
+  for(int i=0;i<Y.size();i++) errors.push_back(0.0);
+
   for(int i=0;i<lout.size();i++) {
-    if (cost[i]=="mse")
-     Tensor::sum2D(1.0,tout[i],-1.0,lout[i]->output, lout[i]->delta,0);
+    if (cost[i]=="mse") {
+      //delta (T-Y)
+      Tensor::sum(1.0,Y[i],-1.0,lout[i]->output, lout[i]->delta,0);
+      // batch error sum((T-Y)^2)
+      Tensor::el_mult(lout[i]->delta,lout[i]->delta,outs[i],0);
+      errors[i]=Tensor::total_sum(outs[i]);
+   }
+    else if (cost[i]=="cent"){}
+
+
+
   }
+  return errors;
 }
 /////////////////////////////////////////
 void Net::backward()
@@ -233,7 +246,7 @@ void Net::applygrads()
 /////////////////////////////////////////
 void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch, int epochs)
 {
-  int i,j,n;
+  int i,j,k,n;
 
   if (optimizer==NULL)
     msg("Net is not build ","Net fit");
@@ -241,12 +254,13 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
   vtensor tin=vtensor(in.begin(), in.end());
   vtensor tout=vtensor(out.begin(), out.end());
 
-  // Check sizes
+  // Check list sizes
   if (tin.size()!=lin.size())
     msg("input tensor list does not match with defined input layers","fit");
   if (tout.size()!=lout.size())
       msg("output tensor list does not match with defined output layers","fit");
 
+  // Check data consistency
   n=tin[0]->sizes[0];
   for(i=1;i<tin.size();i++)
    if(tin[i]->sizes[0]!=n)
@@ -257,21 +271,26 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
       msg("different number of samples in output tensor","fit");
 
 
-  // Input and output batch
+  // Create internal variables
+  //Input and output batch...
   vtensor X;
   for(i=0;i<tin.size();i++) {
     shape s=tin[i]->getshape();
     s[0]=batch;
     X.push_back(new Tensor(s));
   }
+
   vtensor Y;
+  verr errors,err;
   for(i=0;i<tout.size();i++) {
     shape s=tout[i]->getshape();
     s[0]=batch;
     Y.push_back(new Tensor(s));
+    errors.push_back(0.0);
+    outs.push_back(new Tensor(Y[i]->getshape()));
   }
 
-  // Check sizes
+  // Check sizes w.r.t layers in and out
   for(int i=0;i<lin.size();i++)
     if (!Tensor::eqsize(lin[i]->input,X[i]))
       msg("input tensor shapes does not match","fit");
@@ -283,12 +302,19 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
 
   // Start training
   fprintf(stderr,"%d epochs of %d batches of size %d\n",epochs,n/batch,batch);
-  for(j=0;j<epochs;j++) {
-    for(i=0;i<2;i++) {
+  for(i=0;i<epochs;i++) {
+    for(j=0;j<tout.size();j++) errors[j]=0.0;
+    for(j=0;j<2000;j++) {
       // copy a batch from tin--> X
       // copy a batch from tout--> Y
 
-      train_batch(X,Y);
+      err=train_batch(X,Y);
+
+      for(k=0;k<tout.size();k++) errors[k]+=err[k];
+      for(k=0;k<tout.size();k++)
+        fprintf(stderr,"batch %d errors: %f ",j,errors[k]);
+      fprintf(stderr,"\r");
+
     }
   }
 
@@ -297,28 +323,28 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
 
 /////////////////////////////////////////
 
-void Net::train_batch(vtensor tin, vtensor tout)
+verr Net::train_batch(vtensor X, vtensor Y)
 {
   int i,j;
 
   // these copies can go from CPU to {CPU,GPU,FPGA}
-  for(i=0;i<tin.size();i++)
-    Tensor::copy(tin[i],lin[i]->input);
+  for(i=0;i<X.size();i++)
+    Tensor::copy(X[i],lin[i]->input);
 
+  verr errors;
   forward();
-  delta(tout);
+  errors=delta(Y);
   backward();
   applygrads();
 
-  fprintf(stderr,"OK train_batch\n");
+  return errors;
 }
 
 
 
 
 /////////////////////////////////////////
-
-void Net::train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out)
+verr Net::train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out)
 {
   int i,j,n;
 
@@ -339,7 +365,7 @@ void Net::train_batch(const initializer_list<Tensor*>& in,const initializer_list
     if (!Tensor::eqsize(lout[i]->output,Y[i]))
       msg("output tensor shapes does not match","fit");
 
-  train_batch(X,Y);
+  return train_batch(X,Y);
 }
 
 

@@ -126,6 +126,21 @@ class Dense : public LinLayer {
 
 };
 
+/// DENSE Layer
+class Activation : public LinLayer {
+ public:
+  string act;
+
+  Activation(Layer *parent,string act);
+  Activation(Layer *parent,string act,int d);
+  Activation(Layer *parent,string act,string name);
+  Activation(Layer *parent,string act,string name,int d);
+
+  void info();
+  void forward();
+  void backward();
+
+};
 
 
 /////////////////////////////////////////
