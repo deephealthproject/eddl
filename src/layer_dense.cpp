@@ -64,19 +64,22 @@ Dense::Dense(Layer *parent,int dim,string name,int d):LinLayer(name,d)
 void Dense::forward()
 {
   Tensor::mult2D(input,0,W,0,output,0);
-  //Tensor::sum2D_rowwise(output,bias,output);
+  Tensor::sum2D_rowwise(output,bias,output);
   delta->set(0.0);
 }
 
 void Dense::backward()
 {
-
   //get gradients with provided delta
   Tensor::mult2D(input,1,delta,0,gW,0);
-  //Tensor::reduce_sum2D(delta,gbias,0,0);
+  Tensor::reduce_sum2D(delta,gbias,0,0);
+  cout<<name<<"\n";
+  cout<<"Delta:"<<Tensor::total_sum(delta)<<"\n";
   // backprop delta
-  if (parent.size())
+  if (parent.size()) {
     Tensor::mult2D(delta,0,W,1,parent[0]->delta,1);//1: note that increment parent delta
+    cout<<"PDelt:"<<Tensor::total_sum(parent[0]->delta)<<"\n";
+  }
 
 }
 

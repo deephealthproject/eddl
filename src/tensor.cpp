@@ -33,6 +33,7 @@
 #include <iostream>
 
 #include "tensor.h"
+#include "utils.h"
 
 #ifdef cGPU
 #include "gpu/tensor_cuda.h"
@@ -450,19 +451,19 @@ void Tensor::div(float v){
 void Tensor::rand(){
   if (device==DEV_CPU) {
     if (dim==1)
-      for(int i=0;i<sizes[0];++i) ptr1(i)=((std::rand()%1000)-500)/100000.0;
-    else if (dim==2)
+      for(int i=0;i<sizes[0];++i) ptr1(i)=uniform()*0.1;
+    else if (dim==2) {
+      float s=1.0/sizes[0];
       for(int i=0;i<sizes[0];++i)
         for(int j=0;j<sizes[1];++j)
-          ptr2(i,j)=((std::rand()%1000)-500)/100000.0;
+          ptr2(i,j)=gauss(0.0,s);
+      }
     else
       for(int i=0;i<sizes[0];++i)
         ptr[i]->rand();
 
   }
 }
-
-
 
 
 ///////////////////////////////////////////

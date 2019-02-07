@@ -84,7 +84,7 @@ void Tensor::copy(Tensor *A, Tensor *B) {
 }
 
 ///////////////////////////////////////
-/// Copy from A to B
+/// Select from A to B
 //////////////////////////////////////
 void Tensor::select(Tensor *A, Tensor *B,vector<int> sind) {
 
@@ -353,7 +353,7 @@ float Tensor::total_sum(Tensor *A)
 // Cross-Entropy: C=-(A*log(B)+(1-A)*log(1-B))
 void Tensor::cent(Tensor *A,Tensor *B, Tensor *C)
 {
-  if (A->device!=B->device) msg("Tensors in different devices in ReLu");
+  if (A->device!=B->device) msg("Tensors in different devices in cross-entropy");
   if ((!eqsize(A,B))||(!eqsize(A,C))) msg("Incompatible dims in cross-entropy");
 
   if (A->device==DEV_CPU) {
@@ -426,15 +426,13 @@ void Tensor::D_ReLu(Tensor *D, Tensor *I, Tensor *PD)
 
   if (D->device==DEV_CPU) {
     if (D->dim==1){
-      PD->ptr1+=D->ptr1;
       for(int i=0;i<D->sizes[0];i++)
-        if (I->ptr1(i)<0) PD->ptr1(i)=0;
+        if (I->ptr1(i)>0) PD->ptr1(i)+=D->ptr1(i);
     }
     else if (D->dim==2) {
-      PD->ptr2+=D->ptr2;
       for(int i=0;i<D->sizes[0];i++)
         for(int j=0;j<D->sizes[1];j++)
-          if (I->ptr2(i,j)<0) PD->ptr2(i,j)=0;
+          if (I->ptr2(i,j)>0) PD->ptr2(i,j)+=D->ptr2(i,j);
     }
     else
       for(int i=0;i<D->sizes[0];i++)
@@ -486,7 +484,7 @@ void Tensor::D_Softmax(Tensor *D,Tensor *I,Tensor *PD)
   if (D->device==DEV_CPU) {
     for(int i=0;i<D->sizes[0];i++) {
       for(int j=0;j<D->sizes[1];j++)
-        PD->ptr2(i,j)=D->ptr2(i,j)*(I->ptr2(i,j)*(1-I->ptr2(i,j)));
+        PD->ptr2(i,j)+=D->ptr2(i,j)*(I->ptr2(i,j)*(1-I->ptr2(i,j)));
       }
     }
 }

@@ -58,11 +58,19 @@ void sgd::setlayers(vlayer l)
 void sgd::applygrads(int batch){
 
   int p=0;
-  for(int i=0;i<layers.size();i++)
+
+  for(int i=0;i<layers.size();i++) {
+      cout<<layers[i]->name<<"\n";
     for(int j=0;j<layers[i]->gradients.size();j++,p++) {
+      cout<<"Param:"<<Tensor::total_sum(layers[i]->params[j])<<"\n";
+      cout<<"Gradi:"<<Tensor::total_sum(layers[i]->gradients[j])<<"\n";
       Tensor::sum(lr/batch,layers[i]->gradients[j],mu, mT[p],mT[p],0);
       Tensor::sum(1.0,layers[i]->params[j],1.0,mT[p],layers[i]->params[j],0);
+      cout<<"Momen:"<<Tensor::total_sum(mT[p])<<"\n";
+      cout<<"Param:"<<Tensor::total_sum(layers[i]->params[j])<<"\n";
     }
+  }
+  getchar();
 
 }
 

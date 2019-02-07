@@ -24,48 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
+#ifndef _UTILS_
+#define _UTILS_
 
-#include "../net.h"
+float uniform();
+float suniform();
+float gaussgen();
+float gauss(float mean,float sd);
 
-int main(int argc, char **argv)
-{
-
-  int batch=5;
-
-  Tensor *tin=new Tensor({batch,784});
-
-  // network definition
-  Input* in=new Input(tin);
-  Layer *l=in;
-  for(int i=0;i<1;i++)
-    l=new Activation(new Dense(l,128),"relu");
-
-  Activation *out=new Activation(new Dense(l,10),"softmax");
-
-  // define input and output layers list
-  Net *net=new Net({in},{out});
-
-  // get some info from the network
-  net->info();
-
-  // Attach an optimizer and a list of error criteria
-  // size of error criteria list must match with size of list of outputs
-  net->build(SGD(0.001,0.0),{"soft_cent"});
-
-  /// read data somewhere
-  Tensor *X=new Tensor("trX.bin");
-  Tensor *Y=new Tensor("trY.bin");
-
-  X->div(255.0);
-
-  // training, list of input and output tensors, batch, epochs
-  net->fit({X},{Y},batch,100);
-
-
-}
+#endif
 
 
 
@@ -77,11 +44,8 @@ int main(int argc, char **argv)
 
 
 
+////////////////
 
 
 
-
-
-
-
-  ///////////
+/////

@@ -294,7 +294,7 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
 
 
   // Create internal variables
-  //Input and output batch...
+  // Input and output batch...
   vtensor X;
   for(i=0;i<tin.size();i++) {
     shape s=tin[i]->getshape();
@@ -329,8 +329,9 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
   // Start training
   fprintf(stderr,"%d epochs of %d batches of size %d\n",epochs,n/batch,batch);
   for(i=0;i<epochs;i++) {
+    fprintf(stderr,"Epoch %d\n",i+1);
     for(j=0;j<tout.size();j++) errors[j]=0.0;
-    for(j=0;j<2000;j++) {
+    for(j=0;j<n/batch;j++) {
       // random batches
       for(int k=0;k<batch;k++)
         sind[k]=rand()%n;
@@ -341,15 +342,16 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
       for(int k=0;k<lin.size();k++)
         Tensor::select(tout[k],Y[k],sind);
 
+
       err=train_batch(X,Y);
 
       for(k=0;k<tout.size();k++) errors[k]+=err[k];
       for(k=0;k<tout.size();k++)
-        fprintf(stderr,"batch %d errors: %f ",j,errors[k]/(batch*(j+1)));
+        fprintf(stderr,"batch %d errors: %f ",j+1,errors[k]/(batch*(j+1)));
       fprintf(stderr,"\r");
       //getchar();
-
     }
+    fprintf(stderr,"\n");
   }
 }
 
@@ -368,7 +370,7 @@ verr Net::train_batch(vtensor X, vtensor Y)
   forward();
   errors=delta(Y);
   backward();
-  //applygrads(X[0]->sizes[0]);
+  applygrads(X[0]->sizes[0]);
 
   return errors;
 }
