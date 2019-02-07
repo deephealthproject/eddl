@@ -50,7 +50,7 @@ extern ostream& operator<<(ostream& os, const shape s);
 
 void msg(string s,string s2)
 {
-  cout<<"\n"<<s<<s2<<"\n";
+  cout<<"\n"<<s<<" ("<<s2<<")\n";
   exit(0);
 }
 void msg(string s){msg(s,"");}

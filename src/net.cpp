@@ -127,7 +127,7 @@ void Net::fts()
       if ((gin[j]==0)&&(!visit[j])) break;
 
     if (j==layers.size())
-      msg("error recurrent net in ","fts");
+      msg("error recurrent net","Net.fts");
 
     if (layers[j]->lout)
       fprintf(stderr,"%s-->",layers[j]->name.c_str());
@@ -165,7 +165,7 @@ void Net::bts(){
       if ((gout[j]==0)&&(!visit[j])) break;
 
     if (j==layers.size())
-      msg("error recurrent net in ","bts");
+      msg("error recurrent net in","Net.bts");
 
     if (layers[j]->lin)
       fprintf(stderr,"%s-->",layers[j]->name.c_str());
@@ -193,10 +193,10 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
   vstring me=vstring(m.begin(), m.end());
 
   if (co.size()!=lout.size())
-    msg("Loss list size does not match output list ","build");
+    msg("Loss list size does not match output list","Net.build");
 
   if (co.size()!=lout.size())
-    msg("Metric list size does not match output list ","build");
+    msg("Metric list size does not match output list" ,"Net.build");
 
   // set optimizer
   optimizer=opt;
@@ -266,26 +266,26 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
   int i,j,k,n;
 
   if (optimizer==NULL)
-    msg("Net is not build ","Net fit");
+    msg("Net is not build","Net.fit");
 
   vtensor tin=vtensor(in.begin(), in.end());
   vtensor tout=vtensor(out.begin(), out.end());
 
   // Check list sizes
   if (tin.size()!=lin.size())
-    msg("input tensor list does not match with defined input layers","fit");
+    msg("input tensor list does not match with defined input layers","Net.fit");
   if (tout.size()!=lout.size())
-      msg("output tensor list does not match with defined output layers","fit");
+      msg("output tensor list does not match with defined output layers","Net.fit");
 
   // Check data consistency
   n=tin[0]->sizes[0];
   for(i=1;i<tin.size();i++)
    if(tin[i]->sizes[0]!=n)
-     msg("different number of samples in input tensor","fit");
+     msg("different number of samples in input tensor","Net.fit");
 
   for(i=1;i<tout.size();i++)
     if(tout[i]->sizes[0]!=n)
-      msg("different number of samples in output tensor","fit");
+      msg("different number of samples in output tensor","Net.fit");
 
 
   // Create internal variables
@@ -314,11 +314,11 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
   // Check sizes w.r.t layers in and out
   for(int i=0;i<lin.size();i++)
     if (!Tensor::eqsize(lin[i]->input,X[i]))
-      msg("input tensor shapes does not match","fit");
+      msg("input tensor shapes does not match","Net.fit");
 
   for(int i=0;i<lout.size();i++)
     if (!Tensor::eqsize(lout[i]->output,Y[i]))
-      msg("output tensor shapes does not match","fit");
+      msg("output tensor shapes does not match","Net.fit");
 
 
   // Start training
@@ -386,17 +386,17 @@ void Net::train_batch(const initializer_list<Tensor*>& in,const initializer_list
 
   // Check sizes
   if (X.size()!=lin.size())
-    msg("input tensor list does not match","fit");
+    msg("input tensor list does not match","Net.train_batch");
   if (Y.size()!=lout.size())
-      msg("output tensor list does not match","fit");
+      msg("output tensor list does not match","Net.train_batch");
 
   for(int i=0;i<lin.size();i++)
     if (!Tensor::eqsize(lin[i]->input,X[i]))
-      msg("input tensor shapes does not match","fit");
+      msg("input tensor shapes does not match","Net.train_batch");
 
   for(int i=0;i<lin.size();i++)
     if (!Tensor::eqsize(lout[i]->output,Y[i]))
-      msg("output tensor shapes does not match","fit");
+      msg("output tensor shapes does not match","Net.train_batch");
 
   train_batch(X,Y);
 }

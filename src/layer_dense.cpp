@@ -39,7 +39,7 @@ Dense::Dense(Layer *parent,int dim,string name):Dense(parent,dim,name,DEV_CPU){}
 Dense::Dense(Layer *parent,int dim,int dev):Dense(parent,dim,"dense"+to_string(dense_created),dev){}
 Dense::Dense(Layer *parent,int dim,string name,int d):LinLayer(name,d)
 {
-  if (parent->output->dim!=2) msg("Dense only works over 2D tensors");
+  if (parent->output->dim!=2) msg("Dense only works over 2D tensors","Dense");
   dense_created++;
 
   input=parent->output;
