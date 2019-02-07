@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 
   // Attach an optimizer and a list of error criteria
   // size of error criteria list must match with size of list of outputs
-  net->build(SGD(0.001,0.9),{"soft_cent","soft_cent"},{"mse","mse"});
+  net->build(SGD(0.01,0.9),{"soft_cent","soft_cent"},{"mse","mse"});
 
   /// read data
   Tensor *X=new Tensor("trX.bin");
