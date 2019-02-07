@@ -56,7 +56,8 @@ void Layer::initialize()
 void Layer::reset()
 {
   for(int i = 0; i != gradients.size(); i++)
-    gradients[i]->set(0);
+    gradients[i]->set(0.0);
+  delta->set(0.0);
 }
 
 

@@ -28,46 +28,42 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "optim.h"
+#include "metric.h"
 
 using namespace std;
 
-optim::optim(){
-
+Metric::Metric(string n){
+  name=n;
 }
 
-////// SGD //////
-sgd::sgd(float l,float m):optim(){
-  lr=l;
-  mu=m;
-}
-
-void sgd::setlayers(vlayer l)
+float Metric::value(Tensor *T, Tensor* Y)
 {
-  layers=l;
-
-  // create momemtum tensors
-  for(int i=0;i<layers.size();i++)
-    for(int j=0;j<layers[i]->gradients.size();j++) {
-      mT.push_back(new Tensor(layers[i]->gradients[j]->getshape()));
-      mT.back()->set(0.0);
+    float f;
+    if (name=="mse") {
+      // batch error: sum((T-Y)^2)
+      Tensor *aux=new Tensor(T->getshape());
+      Tensor::sum(1.0,T,-1.0,Y,aux,0);
+      Tensor::el_mult(1,aux,1,aux,aux,0);
+      f=Tensor::total_sum(aux);
+      delete aux;
+   }
+   else if (name=="accuracy"){
+     f=0;
     }
+
+  return f;
 
 }
 
-void sgd::applygrads(int batch){
 
-  int p=0;
 
-  for(int i=0;i<layers.size();i++) {
-    for(int j=0;j<layers[i]->gradients.size();j++,p++) {
-      Tensor::sum(lr/batch,layers[i]->gradients[j],mu, mT[p],mT[p],0);
-      Tensor::sum(1.0,layers[i]->params[j],1.0,mT[p],layers[i]->params[j],0);
-    }
-  }
-  //getchar();
 
-}
+
+
+
+
+
+
 
 
 

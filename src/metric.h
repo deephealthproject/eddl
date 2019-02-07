@@ -24,73 +24,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
+#ifndef _METRIC_
+#define _METRIC_
 
-#include "optim.h"
+#include <string>
+
+#include "tensor.h"
 
 using namespace std;
 
-optim::optim(){
+class Metric {
+ public:
+  string name;
 
-}
+  Metric(string name);
 
-////// SGD //////
-sgd::sgd(float l,float m):optim(){
-  lr=l;
-  mu=m;
-}
-
-void sgd::setlayers(vlayer l)
-{
-  layers=l;
-
-  // create momemtum tensors
-  for(int i=0;i<layers.size();i++)
-    for(int j=0;j<layers[i]->gradients.size();j++) {
-      mT.push_back(new Tensor(layers[i]->gradients[j]->getshape()));
-      mT.back()->set(0.0);
-    }
-
-}
-
-void sgd::applygrads(int batch){
-
-  int p=0;
-
-  for(int i=0;i<layers.size();i++) {
-    for(int j=0;j<layers[i]->gradients.size();j++,p++) {
-      Tensor::sum(lr/batch,layers[i]->gradients[j],mu, mT[p],mT[p],0);
-      Tensor::sum(1.0,layers[i]->params[j],1.0,mT[p],layers[i]->params[j],0);
-    }
-  }
-  //getchar();
-
-}
+  float value(Tensor *T, Tensor* Y);
+};
 
 
 
-
-
-
-
-
-
-
-
-
-///////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
-
-//////
+#endif

@@ -28,46 +28,84 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "optim.h"
+#include "loss.h"
 
 using namespace std;
 
-optim::optim(){
-
+Loss::Loss(string n){
+  name=n;
 }
 
-////// SGD //////
-sgd::sgd(float l,float m):optim(){
-  lr=l;
-  mu=m;
-}
-
-void sgd::setlayers(vlayer l)
+void Loss::delta(Tensor *T, Tensor* Y, Tensor *D)
 {
-  layers=l;
 
-  // create momemtum tensors
-  for(int i=0;i<layers.size();i++)
-    for(int j=0;j<layers[i]->gradients.size();j++) {
-      mT.push_back(new Tensor(layers[i]->gradients[j]->getshape()));
-      mT.back()->set(0.0);
+   if (name=="mse") {
+      //delta: (T-Y)
+      Tensor::sum(1.0,T,-1.0,Y,D,0);
+   }
+   else if (name=="cent")
+    {
+      // delta: t/y - (1-t)/(1-y)
+      Tensor *aux1=new Tensor(T->getshape());
+      Tensor *aux2=new Tensor(T->getshape());
+      Tensor *one=new Tensor(T->getshape());
+      one->set(1.0);
+
+      //  (1-t)/(1-y)
+      Tensor::sum(1,one,-1,T,aux1,0);
+      Tensor::sum(1,one,-1,Y,aux2,0);
+      Tensor::el_div(1,aux1,1,aux2,aux2,0);
+
+      // t/y
+      Tensor::el_div(1,T,1,Y,aux1,0);
+
+      Tensor::sum(1,aux1,-1,aux2,D,0);
+
+      delete aux1;
+      delete aux2;
+      delete one;
     }
+    //typical case where cent is after a softmax
+    else if (name=="soft_cent")
+     {
+       // parent->delta: (t-y)
+       Tensor::sum(1.0,T,-1.0,Y, D,0);
+      }
 
 }
 
-void sgd::applygrads(int batch){
-
-  int p=0;
-
-  for(int i=0;i<layers.size();i++) {
-    for(int j=0;j<layers[i]->gradients.size();j++,p++) {
-      Tensor::sum(lr/batch,layers[i]->gradients[j],mu, mT[p],mT[p],0);
-      Tensor::sum(1.0,layers[i]->params[j],1.0,mT[p],layers[i]->params[j],0);
+float Loss::value(Tensor *T, Tensor* Y)
+{
+    float f;
+    if (name=="mse") {
+      // batch error: sum((T-Y)^2)
+      Tensor *aux=new Tensor(T->getshape());
+      Tensor::sum(1.0,T,-1.0,Y,aux,0);
+      Tensor::el_mult(1,aux,1,aux,aux,0);
+      f=Tensor::total_sum(aux);
+      delete aux;
+   }
+   else if ((name=="cent")||(name=="soft_cent"))
+    {
+      Tensor *aux=new Tensor(T->getshape());
+      Tensor::cent(T,Y,aux);
+      f=Tensor::total_sum(aux);
+      delete aux;
     }
-  }
-  //getchar();
+
+    return f;
 
 }
+
+
+
+
+
+
+
+
+
+
 
 
 

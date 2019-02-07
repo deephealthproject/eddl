@@ -104,13 +104,14 @@ class Tensor{
   static void select(Tensor *A, Tensor *B,vector<int> sind);
 
   static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC);
-  static void el_mult(Tensor *A, Tensor *B, Tensor *C,int incC);
-
-
   static void sum(float scA, Tensor *A, float scB,  Tensor *B, Tensor *C,int incC);
   static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
   static void sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
   static void reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB);
+
+  static void el_mult(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC);
+  static void el_div(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC);
+
 
   static float total_sum(Tensor *A);
 

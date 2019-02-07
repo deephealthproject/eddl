@@ -118,7 +118,7 @@ endif
 
 
 #######################################################################
-OBJ =	utils.o tensor.o tensor_op.o layer.o layer_input.o layer_dense.o layer_activation.o layer_add.o optim.o net.o
+OBJ =	utils.o tensor.o tensor_op.o layer.o layer_input.o layer_dense.o layer_activation.o layer_add.o loss.o metric.o optim.o net.o
 
 ifeq ($(CORE),1)
 all: $(GPU_OBJ) $(OBJ) test_eddl
@@ -156,6 +156,12 @@ layer_activation.o: ../layer_activation.cpp ../layer.h
 
 layer_add.o: ../layer_add.cpp ../layer.h
 		$(CXX) $(CXXFLAGS) -c ../layer_add.cpp
+
+loss.o: ../loss.cpp ../loss.h
+		$(CXX) $(CXXFLAGS) -c ../loss.cpp
+
+metric.o: ../metric.cpp ../metric.h
+		$(CXX) $(CXXFLAGS) -c ../metric.cpp
 
 optim.o: ../optim.cpp ../optim.h
 		$(CXX) $(CXXFLAGS) -c ../optim.cpp
