@@ -4,8 +4,10 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Roberto Paredes Palacios, <rparedes@dsic.upv.es>
-
+// Copyright (c) 2019 
+// 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
+// 	     Jon Ander Gómez, <jon@dsic.upv.es>
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -24,6 +26,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <stdio.h>
+#include <stdio.h>
 #ifndef _UTILS_
 #define _UTILS_
 
