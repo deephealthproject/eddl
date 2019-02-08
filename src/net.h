@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 
+// Copyright (c) 2019
 // 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
 // 	     Jon Ander Gómez, <jon@dsic.upv.es>
 //
@@ -66,7 +66,10 @@ class Net {
   vloss losses;
   vmetrics metrics;
   verr fiterr;
-
+  vstring strcosts;
+  vstring strmetrics;
+  vector<Net *> snets;
+  
   optim *optimizer;
 
 
@@ -78,6 +81,8 @@ class Net {
   Layer *getLayer(string name);
 
   void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m);
+  void build(optim *opt,vstring in,vstring out);
+
   void initialize();
   void reset();
   void forward();
@@ -86,6 +91,7 @@ class Net {
   void backward();
   void applygrads(int batch);
   void info();
+  void split(int c);
 
   void fts();
   void bts();

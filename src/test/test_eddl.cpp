@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 
+// Copyright (c) 2019
 // 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
 // 	     Jon Ander Gómez, <jon@dsic.upv.es>
 //
@@ -59,6 +59,7 @@ int main(int argc, char **argv)
   net->build(SGD(0.01,0.9),{"soft_cent"},{"acc"});
 
 
+  net->split(10);
 /*
     Dense *d=(Dense *)net->getLayer("dense2");
     d->info();

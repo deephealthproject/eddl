@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 
+// Copyright (c) 2019
 // 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
 // 	     Jon Ander Gómez, <jon@dsic.upv.es>
 //
@@ -65,11 +65,11 @@ void Input::backward()
 
 }
 
-Layer *Input::clone(int c){
+Layer *Input::clone(int c,vector<Layer*>p){
   shape s=input->getshape();
   s[0]/=c;
-  
-  Input *n=new Input(new Tensor(s),name,dev);
+
+  Input *n=new Input(new Tensor(s),"clone_"+to_string(c)+name,dev);
   n->orig=this;
 
   return n;

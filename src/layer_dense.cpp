@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 
+// Copyright (c) 2019
 // 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
 // 	     Jon Ander Gómez, <jon@dsic.upv.es>
 //
@@ -86,13 +86,13 @@ void Dense::backward()
 }
 
 
-Layer *Dense::clone(int c){
-  Dense *n=new Dense(parent[0],dim,name,dev);
+Layer *Dense::clone(int c,vector<Layer*>p){
+  Dense *n=new Dense(p[0],dim,"clone_"+to_string(c)+name,dev);
   n->orig=this;
 
   //share params
   for(int i=0;i<n->params.size();i++) delete n->params[i];
-  n->params.empty();
+  n->params.clear();
 
   n->W=params[0];
   n->bias=params[1];

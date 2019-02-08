@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 
+// Copyright (c) 2019
 // 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
 // 	     Jon Ander Gómez, <jon@dsic.upv.es>
 //
@@ -199,10 +199,16 @@ void Net::bts(){
 /////////////////////////////////////////
 void Net::build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m)
 {
-
-  fprintf(stderr,"Build net\n");
   vstring co=vstring(c.begin(), c.end());
   vstring me=vstring(m.begin(), m.end());
+
+  build(opt,co,me);
+
+}
+void Net::build(optim *opt,vstring co,vstring me)
+{
+
+  fprintf(stderr,"Build net\n");
 
   if (co.size()!=lout.size())
     msg("Loss list size does not match output list","Net.build");
@@ -216,6 +222,7 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
 
   // Initialize fiting errors vector
   for(int i=0;i<co.size();i++) {
+    strcosts.push_back(co[i]);
     fiterr.push_back(0.0);
     fiterr.push_back(0.0);
   }
@@ -227,6 +234,7 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
 
   // set metrics
   for(int i=0;i<me.size();i++) {
+    strmetrics.push_back(me[i]);
     metrics.push_back(new Metric(me[i]));
 
   }
@@ -239,6 +247,73 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
   initialize();
 
 }
+
+int isIn(Layer *l,vlayer vl,int &ind)
+{
+  for(int i=0;i<vl.size();i++)
+    if(l==vl[i]) {ind=i;return 1;}
+
+  return 0;
+}
+int isInorig(Layer *l,vlayer vl,int &ind)
+{
+  for(int i=0;i<vl.size();i++)
+    if(l==vl[i]->orig) {ind=i;return 1;}
+
+  return 0;
+}
+
+/////////////////////////////////////
+void Net::split(int c)
+{
+  int i,j,k,l;
+
+  vlayer nlayers;
+  vlayer nin;
+  vlayer nout;
+  Layer *p;
+  int ind;
+
+  for(i=0;i<c;i++) {
+    cout<<"Split "<<i<<"\n";
+
+    nlayers.clear();
+    nin.clear();
+    nout.clear();
+
+    // set inputs
+    for(j=0;j<lin.size();j++) {
+      vlayer par;
+      nin.push_back(layers[j]->clone(c,par));
+      nlayers.push_back(nin[j]);
+    }
+    for(k=0;k<layers.size();k++)
+      for(j=0;j<layers.size();j++) {
+        if (!isInorig(layers[j],nlayers,ind)) {
+            vlayer par;
+            for(l=0;l<layers[j]->parent.size();l++)
+              if (!isInorig(layers[j]->parent[l],nlayers,ind)) break;
+              else par.push_back(nlayers[ind]);
+
+            if (l==layers[j]->parent.size())
+              nlayers.push_back(layers[j]->clone(c,par));
+           }
+        }
+
+    // set outputs
+    for(j=0;j<lout.size();j++)
+     if (isInorig(lout[j],nlayers,ind))
+        nout.push_back(nlayers[ind]);
+
+  // create new net
+  snets.push_back(new Net(nin,nout));
+  snets[i]->info();
+  // build new net
+  snets[i]->build(optimizer,strcosts,strmetrics);
+  }
+}
+
+
 
 /////////////////////////////////////////
 void Net::forward()
@@ -279,7 +354,7 @@ void Net::applygrads(int batch)
 /////////////////////////////////////////
 void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch, int epochs)
 {
-  int i,j,k,n;
+  int i,j,k,l,n;
 
   if (optimizer==NULL)
     msg("Net is not build","Net.fit");
@@ -365,8 +440,10 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
         errors[p]+=fiterr[p];
         errors[p+1]+=fiterr[p+1];
         fprintf(stderr,"%s(%s=%1.3f,%s=%1.3f) ",lout[k]->name.c_str(),losses[k]->name.c_str(),errors[p]/(batch*(j+1)),metrics[k]->name.c_str(),errors[p+1]/(batch*(j+1)));
+        fiterr[p]=fiterr[p+1]=0.0;
       }
       fprintf(stderr,"\r");
+
     }
     fprintf(stderr,"\n");
   }
@@ -382,12 +459,50 @@ void Net::train_batch(vtensor X, vtensor Y)
   for(i=0;i<X.size();i++)
     Tensor::copy(X[i],lin[i]->input);
 
-  reset(); //gradients=0
-  forward();
-  delta(Y);
-  loss(Y);
-  backward();
-  applygrads(X[0]->sizes[0]);
+
+  if (!snets.size()) {
+    reset(); //gradients=0
+    forward();
+    delta(Y);
+    loss(Y);
+    backward();
+    applygrads(X[0]->sizes[0]);
+  }
+  else {
+    int batch=X[0]->sizes[0]/snets.size();
+    vind sind;
+    for(int i=0;i<batch;i++)
+      sind.push_back(0);
+
+    vtensor Xs;
+    for(int i=0;i<X.size();i++) {
+      shape s=X[0]->getshape();
+      s[0]=batch;
+      Xs.push_back(new Tensor(s));
+    }
+    vtensor Ys;
+    for(int i=0;i<Y.size();i++) {
+      shape s=Y[0]->getshape();
+      s[0]=batch;
+      Ys.push_back(new Tensor(s));
+    }
+    for(int i=0;i<snets.size();i++) {
+
+      for(int j=0;j<batch;j++)
+        sind[j]=(i*batch)+j;
+
+      for(int j=0;j<X.size();j++)
+        Tensor::select(X[j],Xs[j],sind);
+
+      for(int j=0;j<Y.size();j++)
+        Tensor::select(Y[j],Ys[j],sind);
+
+      snets[i]->train_batch(Xs,Ys);
+
+      for(int j=0;j<2*lout.size();j++)
+        fiterr[j]+=snets[i]->fiterr[j];
+    }
+  }
 }
 
 

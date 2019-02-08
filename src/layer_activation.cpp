@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 
+// Copyright (c) 2019
 // 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
 // 	     Jon Ander Gómez, <jon@dsic.upv.es>
 //
@@ -88,9 +88,9 @@ void Activation::backward()
   }
 }
 
-Layer *Activation::clone(int c){
+Layer *Activation::clone(int c,vector<Layer*>p){
 
-  Activation *n=new Activation(parent[0],act,name,dev);
+  Activation *n=new Activation(p[0],act,"clone_"+to_string(c)+name,dev);
   n->orig=this;
   n->delta_bp=delta_bp;
 

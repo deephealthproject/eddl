@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 
+// Copyright (c) 2019
 // 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
 // 	     Jon Ander Gómez, <jon@dsic.upv.es>
 //
@@ -73,7 +73,7 @@ class Layer {
   virtual void addparent(Layer *l){}
   virtual void forward(){}
   virtual void backward(){}
-  virtual Layer *clone(int c){return NULL;}
+  virtual Layer *clone(int c,vector<Layer*>){return NULL;}
 };
 
 
@@ -94,7 +94,7 @@ class LinLayer : public Layer {
   virtual void info(){};
   virtual void forward(){}
   virtual void backward(){}
-  virtual Layer *clone(int c){return NULL;}
+  virtual Layer *clone(int c,vector<Layer*> p){return NULL;}
 
 };
 
@@ -106,7 +106,7 @@ class Input : public LinLayer {
   Input(Tensor *in,int dev);
   Input(Tensor *in,string name);
   Input(Tensor *in,string name,int dev);
-  Layer *clone(int c);
+  Layer *clone(int c,vector<Layer*>p);
 
   void info();
   void forward();
@@ -123,7 +123,7 @@ class Dense : public LinLayer {
   Dense(Layer *parent,int dim,int dev);
   Dense(Layer *parent,int dim,string name);
   Dense(Layer *parent,int dim,string name,int d);
-  Layer *clone(int c);
+  Layer *clone(int c,vector<Layer*>p);
 
   // Paras
   Tensor *W;
@@ -148,7 +148,7 @@ class Activation : public LinLayer {
   Activation(Layer *parent,string act,int d);
   Activation(Layer *parent,string act,string name);
   Activation(Layer *parent,string act,string name,int d);
-  Layer *clone(int c);
+  Layer *clone(int c,vector<Layer*>p);
 
   void info();
   void forward();
@@ -175,7 +175,7 @@ class MLayer : public Layer {
   virtual void info(){};
   virtual void forward(){}
   virtual void backward(){}
-  virtual Layer *clone(int c){return NULL;}
+  virtual Layer *clone(int c,vector<Layer*>p){return NULL;}
 };
 
 /// INPUT Layer
@@ -185,7 +185,7 @@ class Add : public MLayer {
   Add(vector<Layer*> in,int dev);
   Add(vector<Layer*> in,string name);
   Add(vector<Layer*> in,string name,int dev);
-  Layer *clone(int c);
+  Layer *clone(int c,vector<Layer*>p);
 
   void info();
   void forward();

@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 
+// Copyright (c) 2019
 // 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
 // 	     Jon Ander Gómez, <jon@dsic.upv.es>
 //
@@ -70,4 +70,4 @@ void Add::info()
 
 void Add::forward(){}
 void Add::backward(){}
-Layer *Add::clone(int c){return NULL;}
+Layer *Add::clone(int c,vector<Layer*>p){return NULL;}
