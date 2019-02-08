@@ -41,6 +41,7 @@ Dense::Dense(Layer *parent,int dim,string name,int d):LinLayer(name,d)
 {
   if (parent->output->dim!=2) msg("Dense only works over 2D tensors","Dense");
   dense_created++;
+  this->dim=dim;
 
   input=parent->output;
   output=new Tensor({input->sizes[0],dim},d);
@@ -81,6 +82,22 @@ void Dense::backward()
 }
 
 
+Layer *Dense::clone(int c){
+  Dense *n=new Dense(parent[0],dim,name,dev);
+  n->orig=this;
+
+  //share params
+  for(int i=0;i<n->params.size();i++) delete n->params[i];
+  n->params.empty();
+
+  n->W=params[0];
+  n->bias=params[1];
+  n->params.push_back(n->W);
+  n->params.push_back(n->bias);
+
+
+  return n;
+}
 
 void Dense::info()
 {
@@ -94,8 +111,9 @@ void Dense::info()
   else cout<<"None\n";
   cout<<"Input:\n";
   input->info();
-  cout<<"Param:\n";
+  cout<<"Params:\n";
   W->info();
+  bias->info();
   cout<<"Output:\n";
   output->info();
   cout<<"===============\n\n";

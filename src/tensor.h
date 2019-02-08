@@ -35,6 +35,7 @@
 #include <initializer_list>
 #include <vector>
 #include <string>
+#include <mutex>
 
 
 #include "cpu/Eigen/Dense"
@@ -71,6 +72,9 @@ class Tensor{
 
   //FPGA
 
+
+  // Multithreasing. Tensro semaphore
+  mutex *tsem;
 
   // Constructors
   Tensor();
@@ -116,6 +120,7 @@ class Tensor{
   static float total_sum(Tensor *A);
 
   static void cent(Tensor *A,Tensor *B, Tensor *C);
+  static int accuracy(Tensor *A,Tensor *B);
 
   static void ReLu(Tensor *A,Tensor *B);
   static void Softmax(Tensor *A,Tensor *B);

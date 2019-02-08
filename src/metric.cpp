@@ -47,8 +47,8 @@ float Metric::value(Tensor *T, Tensor* Y)
       f=Tensor::total_sum(aux);
       delete aux;
    }
-   else if (name=="accuracy"){
-     f=0;
+   else if (name=="acc"){
+     f=Tensor::accuracy(T,Y);
     }
 
   return f;

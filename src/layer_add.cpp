@@ -66,3 +66,4 @@ void Add::info()
 
 void Add::forward(){}
 void Add::backward(){}
+Layer *Add::clone(int c){return NULL;}

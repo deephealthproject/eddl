@@ -77,6 +77,14 @@ int Net::inNet(Layer *l)
       walk(l->child[i]);
     }
 }
+ Layer *Net::getLayer(string name)
+ {
+   for(int i = 0; i != layers.size(); i++)
+     if (name==layers[i]->name) return layers[i];
+
+   msg("layer %s not found","Net.getLayer");
+   return NULL;
+ }
 
 void Net::info(){
 
@@ -237,10 +245,14 @@ void Net::forward()
 
 void Net::delta(vtensor Y)
 {
+  for(int i=0;i<lout.size();i++)
+    losses[i]->delta(Y[i],lout[i]->output,lout[i]->delta);
+}
+
+void Net::loss(vtensor Y)
+{
   int p=0;
   for(int i=0;i<lout.size();i++,p+=2){
-    // delta
-    losses[i]->delta(Y[i],lout[i]->output,lout[i]->delta);
     // loss value
     fiterr[p]=losses[i]->value(Y[i],lout[i]->output);
     // metric value
@@ -348,7 +360,7 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
       for(k=0;k<tout.size();k++,p+=2) {
         errors[p]+=fiterr[p];
         errors[p+1]+=fiterr[p+1];
-        fprintf(stderr,"%s (loss=%1.3f,metric=%1.3f) ",lout[k]->name.c_str(),errors[p]/(batch*(j+1)),errors[p+1]/(batch*(j+1)));
+        fprintf(stderr,"%s(%s=%1.3f,%s=%1.3f) ",lout[k]->name.c_str(),losses[k]->name.c_str(),errors[p]/(batch*(j+1)),metrics[k]->name.c_str(),errors[p+1]/(batch*(j+1)));
       }
       fprintf(stderr,"\r");
     }
@@ -369,6 +381,7 @@ void Net::train_batch(vtensor X, vtensor Y)
   reset(); //gradients=0
   forward();
   delta(Y);
+  loss(Y);
   backward();
   applygrads(X[0]->sizes[0]);
 }

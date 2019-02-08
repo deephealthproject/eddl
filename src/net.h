@@ -71,12 +71,14 @@ class Net {
 
   int inNet(Layer *);
   void walk(Layer *l);
+  Layer *getLayer(string name);
 
   void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m);
   void initialize();
   void reset();
   void forward();
   void delta(vtensor out);
+  void loss(vtensor out);
   void backward();
   void applygrads(int batch);
   void info();

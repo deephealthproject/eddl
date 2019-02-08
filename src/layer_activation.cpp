@@ -34,9 +34,9 @@ int activation_created=1;
 
 using namespace std;
 
-Activation::Activation(Layer *parent,string act):Activation(parent,act,"Activation"+to_string(activation_created),DEV_CPU){}
+Activation::Activation(Layer *parent,string act):Activation(parent,act,"activation"+to_string(activation_created),DEV_CPU){}
 Activation::Activation(Layer *parent,string act,string name):Activation(parent,act,name,DEV_CPU){}
-Activation::Activation(Layer *parent,string act,int dev):Activation(parent,act,"Activation"+to_string(activation_created),dev){}
+Activation::Activation(Layer *parent,string act,int dev):Activation(parent,act,"activation"+to_string(activation_created),dev){}
 Activation::Activation(Layer *parent,string act,string name,int d):LinLayer(name,d)
 {
 
@@ -84,7 +84,14 @@ void Activation::backward()
   }
 }
 
+Layer *Activation::clone(int c){
 
+  Activation *n=new Activation(parent[0],act,name,dev);
+  n->orig=this;
+  n->delta_bp=delta_bp;
+
+  return n;
+}
 
 void Activation::info()
 {

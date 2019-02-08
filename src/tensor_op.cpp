@@ -145,6 +145,7 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
       if ((A->sizes[0]!=B->sizes[1])||(A->sizes[1]!=C->sizes[0])||(B->sizes[0]!=C->sizes[1])) msg("Incompatible dims","Tensor::mult2D");
   }
 
+  C->tsem->lock();
   if (A->device==DEV_CPU) {
       if (!tB) {
         if (!tA){
@@ -173,6 +174,7 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
     gpu_mult2D(A,tA,B,tB,C,incC);
   }
   #endif
+  C->tsem->unlock();
 }
 
 ///////////////////////////////////////
@@ -429,6 +431,43 @@ void Tensor::cent(Tensor *A,Tensor *B, Tensor *C)
 
 }
 
+////////////////////////////////
+/// METRICS FUNCTIONS
+////////////////////////////////
+int Tensor::accuracy(Tensor *A,Tensor *B)
+{
+  if (A->device!=B->device) msg("Tensors in different devices","Tensor::accuracy");
+  if (!eqsize(A,B)) msg("Incompatible dims","Tensor::accuracy");
+  int acc=0;
+
+  if (A->device==DEV_CPU) {
+    int aind,bind;
+    if (A->dim==1) {
+      A->ptr1.maxCoeff(&aind);
+      B->ptr1.maxCoeff(&bind);
+      if (aind==bind) return 1;
+      else return 0;
+    }
+    else if (A->dim==2) {
+      for(int i=0;i<A->sizes[0];i++) {
+         A->ptr2.row(i).maxCoeff(&aind);
+         B->ptr2.row(i).maxCoeff(&bind);
+         if (aind==bind) acc++;
+        }
+    }
+    else
+      for(int i=0;i<A->sizes[0];i++)
+        acc+=Tensor::accuracy(A->ptr[i],B->ptr[i]);
+  }
+  #ifdef cGPU
+  else if (A->device<DEV_FPGA)
+  {
+   return 0;
+  }
+  #endif
+  return acc;
+
+}
 
 ////////////////////////////////
 /// ACTIVATIONS

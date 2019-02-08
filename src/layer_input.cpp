@@ -61,6 +61,34 @@ void Input::backward()
 
 }
 
+Layer *Input::clone(int c){
+  shape s=input->getshape();
+  s[0]/=c;
+  
+  Input *n=new Input(new Tensor(s),name,dev);
+  n->orig=this;
+
+  return n;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

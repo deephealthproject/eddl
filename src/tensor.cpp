@@ -106,6 +106,7 @@ Tensor::Tensor(shape s,int dev)
     gptr=gpu_create_tensor(tam);
   }
   #endif
+  tsem=new mutex();
 }
 ///////////////////////////////////////////
 void Tensor::load(FILE *fe)

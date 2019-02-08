@@ -37,24 +37,31 @@ int main(int argc, char **argv)
 
   Tensor *tin=new Tensor({batch,784});
 
-  // network definition
+  // graph
   Input* in=new Input(tin);
   Layer *l=in;
   for(int i=0;i<3;i++)
     l=new Activation(new Dense(l,1024),"relu");
 
   Activation *out1=new Activation(new Dense(l,10),"softmax");
-  Activation *out2=new Activation(new Dense(l,10),"softmax");
 
-  // define input and output layers list
-  Net *net=new Net({in},{out1,out2});
+  // net define input and output layers list
+  Net *net=new Net({in},{out1});
 
   // get some info from the network
   net->info();
 
   // Attach an optimizer and a list of error criteria
   // size of error criteria list must match with size of list of outputs
-  net->build(SGD(0.01,0.9),{"soft_cent","soft_cent"},{"mse","mse"});
+  net->build(SGD(0.01,0.9),{"soft_cent"},{"acc"});
+
+
+/*
+    Dense *d=(Dense *)net->getLayer("dense2");
+    d->info();
+    Dense *n=(Dense *)d->clone(4);
+    n->info();
+*/
 
   /// read data
   Tensor *X=new Tensor("trX.bin");
@@ -63,7 +70,7 @@ int main(int argc, char **argv)
   X->div(255.0);
 
   // training, list of input and output tensors, batch, epochs
-  net->fit({X},{Y,Y},batch,100);
+  net->fit({X},{Y},batch,100);
 
 
 }

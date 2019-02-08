@@ -43,6 +43,7 @@ class Layer {
   Tensor *input;
   Tensor *output;
   Tensor *delta;
+  Layer *orig;
 
   vector<Tensor*>params;
   vector<Tensor*>gradients;
@@ -68,6 +69,7 @@ class Layer {
   virtual void addparent(Layer *l){}
   virtual void forward(){}
   virtual void backward(){}
+  virtual Layer *clone(int c){return NULL;}
 };
 
 
@@ -79,13 +81,16 @@ class LinLayer : public Layer {
 
   LinLayer(string name,int dev);
 
+
   void addchild(Layer *l);
   void addparent(Layer *l);
 
   //virtual
+
   virtual void info(){};
   virtual void forward(){}
   virtual void backward(){}
+  virtual Layer *clone(int c){return NULL;}
 
 };
 
@@ -97,6 +102,7 @@ class Input : public LinLayer {
   Input(Tensor *in,int dev);
   Input(Tensor *in,string name);
   Input(Tensor *in,string name,int dev);
+  Layer *clone(int c);
 
   void info();
   void forward();
@@ -109,11 +115,12 @@ class Dense : public LinLayer {
  public:
   int dim;
 
-
   Dense(Layer *parent,int dim);
   Dense(Layer *parent,int dim,int dev);
   Dense(Layer *parent,int dim,string name);
   Dense(Layer *parent,int dim,string name,int d);
+  Layer *clone(int c);
+
   // Paras
   Tensor *W;
   Tensor *gW;
@@ -137,10 +144,12 @@ class Activation : public LinLayer {
   Activation(Layer *parent,string act,int d);
   Activation(Layer *parent,string act,string name);
   Activation(Layer *parent,string act,string name,int d);
+  Layer *clone(int c);
 
   void info();
   void forward();
   void backward();
+
 
 };
 
@@ -162,7 +171,7 @@ class MLayer : public Layer {
   virtual void info(){};
   virtual void forward(){}
   virtual void backward(){}
-
+  virtual Layer *clone(int c){return NULL;}
 };
 
 /// INPUT Layer
@@ -172,6 +181,7 @@ class Add : public MLayer {
   Add(vector<Layer*> in,int dev);
   Add(vector<Layer*> in,string name);
   Add(vector<Layer*> in,string name,int dev);
+  Layer *clone(int c);
 
   void info();
   void forward();
