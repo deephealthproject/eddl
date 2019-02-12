@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 
+// Copyright (c) 2019
 // 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
 // 	     Jon Ander Gómez, <jon@dsic.upv.es>
 //
@@ -44,6 +44,11 @@ optim::optim(){
 sgd::sgd(float l,float m):optim(){
   lr=l;
   mu=m;
+}
+
+optim *sgd::clone()
+{
+  return new sgd(lr,mu);
 }
 
 void sgd::setlayers(vlayer l)

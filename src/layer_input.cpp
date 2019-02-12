@@ -65,11 +65,11 @@ void Input::backward()
 
 }
 
-Layer *Input::clone(int c,vector<Layer*>p){
+Layer *Input::share(int c,vector<Layer*>p){
   shape s=input->getshape();
   s[0]/=c;
 
-  Input *n=new Input(new Tensor(s),"clone_"+to_string(c)+name,dev);
+  Input *n=new Input(new Tensor(s),"share_"+to_string(c)+name,dev);
   n->orig=this;
 
   return n;

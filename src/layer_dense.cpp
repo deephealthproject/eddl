@@ -86,8 +86,8 @@ void Dense::backward()
 }
 
 
-Layer *Dense::clone(int c,vector<Layer*>p){
-  Dense *n=new Dense(p[0],dim,"clone_"+to_string(c)+name,dev);
+Layer *Dense::share(int c,vector<Layer*>p){
+  Dense *n=new Dense(p[0],dim,"share_"+to_string(c)+name,dev);
   n->orig=this;
 
   //share params
@@ -98,7 +98,6 @@ Layer *Dense::clone(int c,vector<Layer*>p){
   n->bias=params[1];
   n->params.push_back(n->W);
   n->params.push_back(n->bias);
-
 
   return n;
 }

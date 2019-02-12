@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 
+// Copyright (c) 2019
 // 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
 // 	     Jon Ander Gómez, <jon@dsic.upv.es>
 //
@@ -53,6 +53,7 @@ class optim {
   optim();
   virtual void setlayers(vlayer l){}
   virtual void applygrads(int batch){}
+  virtual optim *clone(){return NULL;}
 
 };
 
@@ -64,6 +65,7 @@ public:
   vtensor mT;
 
   sgd(float lr,float mu);
+  optim *clone();
   void setlayers(vlayer l);
   void applygrads(int batch);
 };

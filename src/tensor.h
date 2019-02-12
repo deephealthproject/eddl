@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 
+// Copyright (c) 2019
 // 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
 // 	     Jon Ander Gómez, <jon@dsic.upv.es>
 //
@@ -77,7 +77,7 @@ class Tensor{
   //FPGA
 
 
-  // Multithreasing. Tensro semaphore
+  // Multithreading. Tensor semaphore
   mutex *tsem;
 
   // Constructors
@@ -93,7 +93,7 @@ class Tensor{
   ///////// normal metods
   shape getshape();
   void info();
-  Tensor *clone();
+  Tensor *share();
   void print();
   void rand();
   void set(float v);
@@ -123,6 +123,7 @@ class Tensor{
 
   static float total_sum(Tensor *A);
 
+  static void inc(Tensor *A,Tensor *B);
   static void cent(Tensor *A,Tensor *B, Tensor *C);
   static int accuracy(Tensor *A,Tensor *B);
 

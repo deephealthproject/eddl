@@ -36,7 +36,7 @@
 int main(int argc, char **argv)
 {
 
-  int batch=100;
+  int batch=1000;
 
   Tensor *tin=new Tensor({batch,784});
 
@@ -58,14 +58,7 @@ int main(int argc, char **argv)
   // size of error criteria list must match with size of list of outputs
   net->build(SGD(0.01,0.9),{"soft_cent"},{"acc"});
 
-
-  net->split(10);
-/*
-    Dense *d=(Dense *)net->getLayer("dense2");
-    d->info();
-    Dense *n=(Dense *)d->clone(4);
-    n->info();
-*/
+  net->split(5);
 
   /// read data
   Tensor *X=new Tensor("trX.bin");

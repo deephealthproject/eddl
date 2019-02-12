@@ -76,7 +76,7 @@ void Activation::backward()
 
   if (parent.size()) {
     if (delta_bp){
-        Tensor::copy(delta,parent[0]->delta);
+        Tensor::inc(delta,parent[0]->delta);
     }
     else {
       if (act=="relu") {
@@ -88,9 +88,9 @@ void Activation::backward()
   }
 }
 
-Layer *Activation::clone(int c,vector<Layer*>p){
+Layer *Activation::share(int c,vector<Layer*>p){
 
-  Activation *n=new Activation(p[0],act,"clone_"+to_string(c)+name,dev);
+  Activation *n=new Activation(p[0],act,"share_"+to_string(c)+name,dev);
   n->orig=this;
   n->delta_bp=delta_bp;
 

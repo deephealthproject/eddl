@@ -44,11 +44,15 @@ using namespace std;
 
 typedef vector<Layer*> vlayer;
 typedef vector<Tensor*> vtensor;
+typedef vector<vtensor> Mtensor;
 typedef vector<string> vstring;
 typedef vector<float> verr;
 typedef vector<int> vind;
 typedef vector<Loss*> vloss;
 typedef vector<Metric*> vmetrics;
+
+void *train_batch_t(void *targs);
+void *applygrads_t(void *t);
 
 class Net {
  public:
@@ -69,7 +73,7 @@ class Net {
   vstring strcosts;
   vstring strmetrics;
   vector<Net *> snets;
-  
+
   optim *optimizer;
 
 

@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 
+// Copyright (c) 2019
 // 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
 // 	     Jon Ander Gómez, <jon@dsic.upv.es>
 //
@@ -59,8 +59,8 @@ void Layer::initialize()
 
 void Layer::reset()
 {
-  for(int i = 0; i != gradients.size(); i++)
-    gradients[i]->set(0.0);
+  /*for(int i = 0; i != gradients.size(); i++)
+    gradients[i]->set(0.0);*/
   delta->set(0.0);
 }
 

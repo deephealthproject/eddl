@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 
+// Copyright (c) 2019
 // 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
 // 	     Jon Ander Gómez, <jon@dsic.upv.es>
 //
@@ -236,7 +236,7 @@ void Tensor::save(string fname)
 }
 
 ///////////////////////////////////////////
-Tensor *Tensor::clone()
+Tensor *Tensor::share()
 {
   Tensor *C=new Tensor(getshape(),device);
 
