@@ -72,6 +72,7 @@ class Net {
   verr fiterr;
   vstring strcosts;
   vstring strmetrics;
+  // splits
   vector<Net *> snets;
 
   optim *optimizer;
