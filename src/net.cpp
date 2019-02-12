@@ -491,7 +491,7 @@ void Net::train_batch(vtensor X, vtensor Y)
     for(int i=0;i<batch;i++)
       sind.push_back(0);
 
-    vtensor Xs[100];
+    vtensor Xs[snets.size()];
     for(int i=0;i<snets.size();i++)
       for(int j=0;j<X.size();j++) {
         shape s=X[0]->getshape();
@@ -499,7 +499,7 @@ void Net::train_batch(vtensor X, vtensor Y)
         Xs[i].push_back(new Tensor(s));
       }
 
-    vtensor Ys[100];
+    vtensor Ys[snets.size()];
     for(int i=0;i<snets.size();i++)
       for(int j=0;j<Y.size();j++) {
       shape s=Y[0]->getshape();
@@ -519,9 +519,7 @@ void Net::train_batch(vtensor X, vtensor Y)
         Tensor::select(Y[j],Ys[i][j],sind);
 
 
-      //snets[i]->train_batch(Xs[i],Ys[i]);
       //thread params
-
       td[i].net=snets[i];
       td[i].batch=X[0]->sizes[0];
       td[i].Xt.clear();
@@ -577,6 +575,15 @@ void Net::train_batch(vtensor X, vtensor Y)
         fiterr[j]+=snets[i]->fiterr[j];
       }
     }
+
+    for(int i=0;i<snets.size();i++)
+      for(int j=0;j<X.size();j++)
+        delete Xs[i][j];
+
+    for(int i=0;i<snets.size();i++)
+      for(int j=0;j<Y.size();j++)
+        delete Ys[i][j];
+
   }
 }
 
