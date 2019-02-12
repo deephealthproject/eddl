@@ -461,8 +461,35 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
   }
 }
 
-/////////////////////////////////////////
 
+/////////////////////////////////////////
+void Net::train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out)
+{
+  int i,j,n;
+
+  vtensor X=vtensor(in.begin(), in.end());
+  vtensor Y=vtensor(out.begin(), out.end());
+
+  // Check sizes
+  if (X.size()!=lin.size())
+    msg("input tensor list does not match","Net.train_batch");
+  if (Y.size()!=lout.size())
+      msg("output tensor list does not match","Net.train_batch");
+
+  for(int i=0;i<lin.size();i++)
+    if (!Tensor::eqsize(lin[i]->input,X[i]))
+      msg("input tensor shapes does not match","Net.train_batch");
+
+  for(int i=0;i<lin.size();i++)
+    if (!Tensor::eqsize(lout[i]->output,Y[i]))
+      msg("output tensor shapes does not match","Net.train_batch");
+
+  train_batch(X,Y);
+}
+
+
+
+/////////////////////////////////////////
 void Net::train_batch(vtensor X, vtensor Y)
 {
   int i,j;
@@ -587,7 +614,7 @@ void Net::train_batch(vtensor X, vtensor Y)
   }
 }
 
-
+/////////////////////////////////////////
 void *train_batch_t(void *t)
 {
   int i,j;
@@ -607,6 +634,7 @@ void *train_batch_t(void *t)
   //net->applygrads(targs->batch);
 
 }
+/////////////////////////////////////////
 void *applygrads_t(void *t)
 {
   int i,j;
@@ -616,31 +644,6 @@ void *applygrads_t(void *t)
 
   net->applygrads(targs->batch);
 
-}
-
-/////////////////////////////////////////
-void Net::train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out)
-{
-  int i,j,n;
-
-  vtensor X=vtensor(in.begin(), in.end());
-  vtensor Y=vtensor(out.begin(), out.end());
-
-  // Check sizes
-  if (X.size()!=lin.size())
-    msg("input tensor list does not match","Net.train_batch");
-  if (Y.size()!=lout.size())
-      msg("output tensor list does not match","Net.train_batch");
-
-  for(int i=0;i<lin.size();i++)
-    if (!Tensor::eqsize(lin[i]->input,X[i]))
-      msg("input tensor shapes does not match","Net.train_batch");
-
-  for(int i=0;i<lin.size();i++)
-    if (!Tensor::eqsize(lout[i]->output,Y[i]))
-      msg("output tensor shapes does not match","Net.train_batch");
-
-  train_batch(X,Y);
 }
 
 
