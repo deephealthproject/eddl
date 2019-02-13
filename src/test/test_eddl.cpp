@@ -58,7 +58,8 @@ int main(int argc, char **argv)
   // size of error criteria list must match with size of list of outputs
   net->build(SGD(0.01,0.9),{"soft_cent"},{"acc"});
 
-  net->split(5);
+
+  //net->split(4);
 
   /// read data
   Tensor *X=new Tensor("trX.bin");

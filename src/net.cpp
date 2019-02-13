@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <chrono>
+#include <thread>
 #include "net.h"
 
 using namespace std;
@@ -211,6 +212,11 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
   vstring me=vstring(m.begin(), m.end());
 
   build(opt,co,me);
+  // concurrency
+  unsigned int nthreads = std::thread::hardware_concurrency();
+
+  cout<<"set threads to "<<nthreads<<"\n";
+  split(nthreads);
 
 }
 void Net::build(optim *opt,vstring co,vstring me)
@@ -251,6 +257,8 @@ void Net::build(optim *opt,vstring co,vstring me)
   bts();
   // random params
   initialize();
+
+
 
 }
 
@@ -423,6 +431,7 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
   // Start training
   fprintf(stderr,"%d epochs of %d batches of size %d\n",epochs,n/batch,batch);
   for(i=0;i<epochs;i++) {
+    high_resolution_clock::time_point e1 = high_resolution_clock::now();
     fprintf(stderr,"Epoch %d\n",i+1);
     for(j=0;j<2*tout.size();j++) errors[j]=0.0;
 
@@ -457,7 +466,10 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
       fprintf(stderr,"%1.3f secs/batch\r",time_span.count());
 
     }
-    fprintf(stderr,"\n");
+    high_resolution_clock::time_point e2 = high_resolution_clock::now();
+    duration<double> epoch_time_span = e2 - e1;
+
+    fprintf(stderr,"\n%1.3f secs/epoch\n",epoch_time_span);
   }
 }
 
