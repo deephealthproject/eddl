@@ -35,7 +35,6 @@
 
 int main(int argc, char **argv)
 {
-
   int batch=1000;
 
   Tensor *tin=new Tensor({batch,784});

@@ -219,6 +219,7 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
   split(nthreads);
 
 }
+
 void Net::build(optim *opt,vstring co,vstring me)
 {
 
@@ -437,14 +438,14 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
 
     for(j=0;j<n/batch;j++) {
       // random batches
-      for(int k=0;k<batch;k++)
+      for(k=0;k<batch;k++)
         sind[k]=rand()%n;
 
       // copy a batch from tin--> X
-      for(int k=0;k<lin.size();k++)
+      for(k=0;k<lin.size();k++)
         Tensor::select(tin[k],X[k],sind);
       // copy a batch from tout--> Y
-      for(int k=0;k<lout.size();k++)
+      for(k=0;k<lout.size();k++)
         Tensor::select(tout[k],Y[k],sind);
 
       high_resolution_clock::time_point t1 = high_resolution_clock::now();
@@ -576,8 +577,6 @@ void Net::train_batch(vtensor X, vtensor Y)
         fprintf(stderr,"Error:unable to create thread %d",rc);
         exit(-1);
       }
-
-
     }
 
     for(int i=0;i<snets.size();i++) {
@@ -588,9 +587,10 @@ void Net::train_batch(vtensor X, vtensor Y)
       }
     }
 
-   for(int i=0;i<snets.size();i++)
-     snets[i]->applygrads(X[0]->sizes[0]);
-/*
+   /*for(int i=0;i<snets.size();i++)
+     snets[i]->applygrads(X[0]->sizes[0]);*/
+
+
     for(int i=0;i<snets.size();i++) {
       //call thread
       rc = pthread_create(&thr[i], NULL,applygrads_t, (void *)(&td[i]));
@@ -608,7 +608,7 @@ void Net::train_batch(vtensor X, vtensor Y)
         exit(-1);
       }
     }
-*/
+
     for(int i=0;i<snets.size();i++)  {
       for(int j=0;j<2*lout.size();j++) {
         fiterr[j]+=snets[i]->fiterr[j];
