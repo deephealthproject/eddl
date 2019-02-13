@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 
+// Copyright (c) 2019
 // 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
 // 	     Jon Ander Gómez, <jon@dsic.upv.es>
 //
@@ -37,15 +37,13 @@
 
 using namespace std;
 
-class Metric {
- public:
-  string name;
+class Metric
+{
+    public:
+        string name;
 
-  Metric(string name);
+        Metric(string name);
 
-  float value(Tensor *T, Tensor* Y);
+        float value(Tensor *T, Tensor* Y);
 };
-
-
-
 #endif

@@ -54,59 +54,50 @@ typedef vector<Metric*> vmetrics;
 void *train_batch_t(void *targs);
 void *applygrads_t(void *t);
 
-class Net {
- public:
-  string name;
+class Net
+{
+    private:
+        Net(vlayer in,vlayer out);
+        void train_batch(vtensor X,vtensor Y);
+        void build(optim *opt,vstring in,vstring out);
 
-  vlayer layers;
-  vlayer lin;
-  vlayer lout;
-  vlayer vfts;
-  vlayer vbts;
+    public:
+        void initialize();
+        void reset();
+        void forward();
+        void delta(vtensor out);
+        void loss(vtensor out);
+        void backward();
+        void applygrads(int batch);
+        void info();
+        void split(int c);
+        int inNet(Layer *);
+        void walk(Layer *l);
+        void fts();
+        void bts();
+        string name;
 
+        vlayer layers;
+        vlayer lin;
+        vlayer lout;
+        vlayer vfts;
+        vlayer vbts;
+        vind ind;
+        vind sind;
+        vloss losses;
+        vmetrics metrics;
+        optim *optimizer;
+        verr fiterr;
+        vstring strcosts;
+        vstring strmetrics;
+        vector<Net *> snets;
 
-  vind ind;
-  vind sind;
-  vloss losses;
-  vmetrics metrics;
-  verr fiterr;
-  vstring strcosts;
-  vstring strmetrics;
-  // splits
-  vector<Net *> snets;
+        Net(const initializer_list<Layer*>& in,const initializer_list<Layer*>& out);
+        Layer *getLayer(string name);
 
-  optim *optimizer;
-
-
-  Net(const initializer_list<Layer*>& in,const initializer_list<Layer*>& out);
-  Net(vlayer in,vlayer out);
-
-  int inNet(Layer *);
-  void walk(Layer *l);
-  Layer *getLayer(string name);
-
-  void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m);
-  void build(optim *opt,vstring in,vstring out);
-
-  void initialize();
-  void reset();
-  void forward();
-  void delta(vtensor out);
-  void loss(vtensor out);
-  void backward();
-  void applygrads(int batch);
-  void info();
-  void split(int c);
-
-  void fts();
-  void bts();
-  void fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch,int epochs);
-
-  void train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out);
-  void train_batch(vtensor X,vtensor Y);
-
+        void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m);
+        void fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch,int epochs);
+        void train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out);
 
 };
-
-
 #endif

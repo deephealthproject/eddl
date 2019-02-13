@@ -35,58 +35,62 @@
 
 int main(int argc, char **argv)
 {
-  int batch=1000;
+    int batch=1000;
 
-  Tensor *tin=new Tensor({batch,784});
+    Tensor *tin=new Tensor({batch,784}
+    );
 
-  // graph
-  Input* in=new Input(tin);
-  Layer *l=in;
-  for(int i=0;i<3;i++)
-    l=new Activation(new Dense(l,1024),"relu");
+// graph
+    Input* in=new Input(tin);
+    Layer *l=in;
+    for(int i=0;i<3;i++)
+        l=new Activation(new Dense(l,1024),"relu");
 
-  Activation *out1=new Activation(new Dense(l,10),"softmax");
+    Activation *out1=new Activation(new Dense(l,10),"softmax");
 
-  // net define input and output layers list
-  Net *net=new Net({in},{out1});
+// net define input and output layers list
+    Net *net=new Net(
+    {
+        in
+    }
+    ,
+    {
+        out1
+    });
 
-  // get some info from the network
-  net->info();
+// get some info from the network
+    net->info();
 
-  // Attach an optimizer and a list of error criteria
-  // size of error criteria list must match with size of list of outputs
-  net->build(SGD(0.01,0.9),{"soft_cent"},{"acc"});
+// Attach an optimizer and a list of error criteria
+// size of error criteria list must match with size of list of outputs
+    net->build(SGD(0.01,0.95),
+    {
+        "soft_cent"
+    }
+    ,
+    {
+        "acc"
+    });
 
+//net->split(4);
 
-  //net->split(4);
+/// read data
+    Tensor *X=new Tensor("trX.bin");
+    Tensor *Y=new Tensor("trY.bin");
 
-  /// read data
-  Tensor *X=new Tensor("trX.bin");
-  Tensor *Y=new Tensor("trY.bin");
+    X->div(255.0);
 
-  X->div(255.0);
-
-  // training, list of input and output tensors, batch, epochs
-  net->fit({X},{Y},batch,100);
-
+// training, list of input and output tensors, batch, epochs
+    net->fit(
+    {
+        X
+    }
+    ,
+    {
+        Y
+    },batch,100);
 
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  ///////////
+///////////

@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 
+// Copyright (c) 2019
 // 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
 // 	     Jon Ander Gómez, <jon@dsic.upv.es>
 //
@@ -35,19 +35,16 @@
 
 #include "tensor.h"
 
-
 using namespace std;
 
-class Loss {
- public:
-  string name;
+class Loss
+{
+    public:
+        string name;
 
-  Loss(string name);
+        Loss(string name);
 
-  void delta(Tensor *T, Tensor* Y, Tensor *D);
-  float value(Tensor *T, Tensor* Y);
+        void delta(Tensor *T, Tensor* Y, Tensor *D);
+        float value(Tensor *T, Tensor* Y);
 };
-
-
-
 #endif

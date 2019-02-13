@@ -43,81 +43,92 @@ Dense::Dense(Layer *parent,int dim,string name):Dense(parent,dim,name,DEV_CPU){}
 Dense::Dense(Layer *parent,int dim,int dev):Dense(parent,dim,"dense"+to_string(dense_created),dev){}
 Dense::Dense(Layer *parent,int dim,string name,int d):LinLayer(name,d)
 {
-  if (parent->output->dim!=2) msg("Dense only works over 2D tensors","Dense");
-  dense_created++;
-  this->dim=dim;
+    if (parent->output->dim!=2) msg("Dense only works over 2D tensors","Dense");
+    dense_created++;
+    this->dim=dim;
 
-  input=parent->output;
-  output=new Tensor({input->sizes[0],dim},d);
-  delta=new Tensor(output->getshape(),d);
+    input=parent->output;
+    output=new Tensor({input->sizes[0],dim},
+        d);
+    delta=new Tensor(output->getshape(),d);
 
-  W=new Tensor({input->sizes[1],dim},d);
-  bias=new Tensor({dim},d);
-  params.push_back(W);
-  params.push_back(bias);
+    W=new Tensor({input->sizes[1],dim},
+        d);
+    bias=new Tensor({dim},
+        d);
+    params.push_back(W);
+    params.push_back(bias);
 
-  gW=new Tensor({input->sizes[1],dim},d);
-  gbias=new Tensor({dim},d);
-  gradients.push_back(gW);
-  gradients.push_back(gbias);
+    gW=new Tensor({input->sizes[1],dim},
+        d);
+    gbias=new Tensor({dim},
+        d);
+    gradients.push_back(gW);
+    gradients.push_back(gbias);
 
-  parent->addchild(this);
-  addparent(parent);
+    parent->addchild(this);
+    addparent(parent);
 }
+
 
 // virtual
 void Dense::forward()
 {
-  Tensor::mult2D(input,0,W,0,output,0);
-  Tensor::sum2D_rowwise(output,bias,output);
+    Tensor::mult2D(input,0,W,0,output,0);
+    Tensor::sum2D_rowwise(output,bias,output);
 }
+
 
 void Dense::backward()
 {
 
-  //get gradients with provided delta
-  Tensor::mult2D(input,1,delta,0,gW,0);
-  Tensor::reduce_sum2D(delta,gbias,0,0);
-  // backprop delta
-  if (parent.size()) {
-    Tensor::mult2D(delta,0,W,1,parent[0]->delta,1);//1: note that increment parent delta
-  }
+//get gradients with provided delta
+    Tensor::mult2D(input,1,delta,0,gW,0);
+    Tensor::reduce_sum2D(delta,gbias,0,0);
+// backprop delta
+    if (parent.size())
+    {
+                                                  //1: note that increment parent delta
+        Tensor::mult2D(delta,0,W,1,parent[0]->delta,1);
+    }
 
 }
 
 
-Layer *Dense::share(int c,vector<Layer*>p){
-  Dense *n=new Dense(p[0],dim,"share_"+to_string(c)+name,dev);
-  n->orig=this;
+Layer *Dense::share(int c,vector<Layer*>p)
+{
+    Dense *n=new Dense(p[0],dim,"share_"+to_string(c)+name,dev);
+    n->orig=this;
 
-  //share params
-  for(int i=0;i<n->params.size();i++) delete n->params[i];
-  n->params.clear();
+//share params
+    for(int i=0;i<n->params.size();i++) delete n->params[i];
+    n->params.clear();
 
-  n->W=params[0];
-  n->bias=params[1];
-  n->params.push_back(n->W);
-  n->params.push_back(n->bias);
+    n->W=params[0];
+    n->bias=params[1];
+    n->params.push_back(n->W);
+    n->params.push_back(n->bias);
 
-  return n;
+    return n;
 }
+
 
 void Dense::info()
 {
-  cout<<"\n===============\n";
-  cout<< "Layer Dense "<<name<<"\n";
-  cout<< "Parent layer:"<<parent[0]->name<<"\n";
-  cout<< "Child layers:\n";
-  if (child.size())
-    for(int i = 0; i != child.size(); i++)
-      cout<< child[i]->name<<"\n";
-  else cout<<"None\n";
-  cout<<"Input:\n";
-  input->info();
-  cout<<"Params:\n";
-  W->info();
-  bias->info();
-  cout<<"Output:\n";
-  output->info();
-  cout<<"===============\n\n";
+    cout<<"\n===============\n";
+    cout<< "Layer Dense "<<name<<"\n";
+    cout<< "Parent layer:"<<parent[0]->name<<"\n";
+    cout<< "Child layers:\n";
+    if (child.size())
+        for(int i = 0; i != child.size(); i++)
+            cout<< child[i]->name<<"\n";
+    else cout<<"None\n";
+    cout<<"Input:\n";
+    input->info();
+    cout<<"Params:\n";
+    W->info();
+    bias->info();
+    cout<<"Output:\n";
+    output->info();
+    cout<<"===============\n\n";
 }

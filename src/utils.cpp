@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 
+// Copyright (c) 2019
 // 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
 // 	     Jon Ander Gómez, <jon@dsic.upv.es>
 //
@@ -36,33 +36,38 @@
 
 #define PI 3.1415926
 
-float uniform() {
-  return ((rand()%10000)/10000.0);
-}
-
-float suniform() {
-  return (2*uniform())-1;
+float uniform()
+{
+    return ((rand()%10000)/10000.0);
 }
 
 
-float gaussgen() {
-  float x,u1,u2;
-  int i;
-
-  u1=uniform();
-  u2=uniform();
-
-  while (u1==0.0) u1=uniform();
-
-  x=sqrt(log(1/u1))*cos(2*PI*u2);
-
-  return x;
+float suniform()
+{
+    return (2*uniform())-1;
 }
+
+
+float gaussgen()
+{
+    float x,u1,u2;
+    int i;
+
+    u1=uniform();
+    u2=uniform();
+
+    while (u1==0.0) u1=uniform();
+
+    x=sqrt(log(1/u1))*cos(2*PI*u2);
+
+    return x;
+}
+
 
 float gauss(float mean,float sd)
 {
-  int i;
-  return (gaussgen()*sd)+mean;
+    int i;
+    return (gaussgen()*sd)+mean;
 }
 
 

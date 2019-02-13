@@ -44,73 +44,83 @@ Activation::Activation(Layer *parent,string act,int dev):Activation(parent,act,"
 Activation::Activation(Layer *parent,string act,string name,int d):LinLayer(name,d)
 {
 
-  activation_created++;
+    activation_created++;
 
-  this->act=act;
+    this->act=act;
 
-  input=parent->output;
-  output=new Tensor(input->getshape(),d);
-  delta=new Tensor(output->getshape(),d);
-  delta_bp=0;
+    input=parent->output;
+    output=new Tensor(input->getshape(),d);
+    delta=new Tensor(output->getshape(),d);
+    delta_bp=0;
 
-  parent->addchild(this);
-  addparent(parent);
+    parent->addchild(this);
+    addparent(parent);
 }
+
 
 // virtual
 void Activation::forward()
 {
 
-  if (act=="relu")
-    Tensor::ReLu(input,output);
-  else if (act=="softmax"){
-    Tensor::Softmax(input,output);
-    //input->print();
-    //getchar();
+    if (act=="relu")
+        Tensor::ReLu(input,output);
+    else if (act=="softmax")
+    {
+        Tensor::Softmax(input,output);
+//input->print();
+//getchar();
     }
 
 }
+
 
 void Activation::backward()
 {
 
-  if (parent.size()) {
-    if (delta_bp){
-        Tensor::inc(delta,parent[0]->delta);
+    if (parent.size())
+    {
+        if (delta_bp)
+        {
+            Tensor::inc(delta,parent[0]->delta);
+        }
+        else
+        {
+            if (act=="relu")
+            {
+                Tensor::D_ReLu(delta,input,parent[0]->delta);
+            }
+            else if (act=="softmax")
+                Tensor::D_Softmax(delta,output,parent[0]->delta);
+        }
     }
-    else {
-      if (act=="relu") {
-        Tensor::D_ReLu(delta,input,parent[0]->delta);
-      }
-      else if (act=="softmax")
-        Tensor::D_Softmax(delta,output,parent[0]->delta);
-    }
-  }
 }
 
-Layer *Activation::share(int c,vector<Layer*>p){
 
-  Activation *n=new Activation(p[0],act,"share_"+to_string(c)+name,dev);
-  n->orig=this;
-  n->delta_bp=delta_bp;
+Layer *Activation::share(int c,vector<Layer*>p)
+{
 
-  return n;
+    Activation *n=new Activation(p[0],act,"share_"+to_string(c)+name,dev);
+    n->orig=this;
+    n->delta_bp=delta_bp;
+
+    return n;
 }
+
 
 void Activation::info()
 {
-  cout<<"\n===============\n";
-  cout<< "Layer Activation "<<name<<"\n";
-  cout<< "Parent layer:"<<parent[0]->name<<"\n";
-  cout<< "Child layers:\n";
-  if (child.size())
-    for(int i = 0; i != child.size(); i++)
-      cout<< child[i]->name<<"\n";
-  else cout<<"None\n";
-  cout<<"Input:\n";
-  input->info();
-  cout<<"No Params\n";
-  cout<<"Output:\n";
-  output->info();
-  cout<<"===============\n\n";
+    cout<<"\n===============\n";
+    cout<< "Layer Activation "<<name<<"\n";
+    cout<< "Parent layer:"<<parent[0]->name<<"\n";
+    cout<< "Child layers:\n";
+    if (child.size())
+        for(int i = 0; i != child.size(); i++)
+            cout<< child[i]->name<<"\n";
+    else cout<<"None\n";
+    cout<<"Input:\n";
+    input->info();
+    cout<<"No Params\n";
+    cout<<"Output:\n";
+    output->info();
+    cout<<"===============\n\n";
 }

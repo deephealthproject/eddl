@@ -35,162 +35,157 @@
 
 #include "tensor.h"
 
-
 #define TRMODE 1
 #define TSMODE 0
 
 using namespace std;
 
-class Layer {
- public:
-  string name;
-  Tensor *input;
-  Tensor *output;
-  Tensor *delta;
-  Layer *orig;
+class Layer
+{
+    public:
+        string name;
+        Tensor *input;
+        Tensor *output;
+        Tensor *delta;
+        Layer *orig;
 
-  vector<Tensor*>params;
-  vector<Tensor*>gradients;
+        vector<Tensor*>params;
+        vector<Tensor*>gradients;
 
+        vector<Layer*> parent;
+        vector<Layer*> child;
 
-  vector<Layer*> parent;
-  vector<Layer*> child;
+        int mode;
+        int dev;
+        int lin,lout;
+        int delta_bp;
 
-  int mode;
-  int dev;
-  int lin,lout;
-  int delta_bp;
+        Layer(string name);
+        Layer(string name,int dev);
 
-  Layer(string name);
-  Layer(string name,int dev);
+        void initialize();
+        void reset();
 
-  void initialize();
-  void reset();
-
-  //virtual
-  virtual void info(){};
-  virtual void addchild(Layer *l){}
-  virtual void addparent(Layer *l){}
-  virtual void forward(){}
-  virtual void backward(){}
-  virtual Layer *share(int c,vector<Layer*>){return NULL;}
+//virtual
+        virtual void info(){};
+        virtual void addchild(Layer *l){}
+        virtual void addparent(Layer *l){}
+        virtual void forward(){}
+        virtual void backward(){}
+        virtual Layer *share(int c,vector<Layer*>){return NULL;}
 };
-
 
 /////////////////////////////////////////
 /////////////////////////////////////////
 // Layers with only one input
-class LinLayer : public Layer {
- public:
+class LinLayer : public Layer
+{
+    public:
 
-  LinLayer(string name,int dev);
+        LinLayer(string name,int dev);
 
+        void addchild(Layer *l);
+        void addparent(Layer *l);
 
-  void addchild(Layer *l);
-  void addparent(Layer *l);
+//virtual
 
-  //virtual
-
-  virtual void info(){};
-  virtual void forward(){}
-  virtual void backward(){}
-  virtual Layer *share(int c,vector<Layer*> p){return NULL;}
+        virtual void info(){};
+        virtual void forward(){}
+        virtual void backward(){}
+        virtual Layer *share(int c,vector<Layer*> p){return NULL;}
 
 };
-
 
 /// INPUT Layer
-class Input : public LinLayer {
- public:
-  Input(Tensor *in);
-  Input(Tensor *in,int dev);
-  Input(Tensor *in,string name);
-  Input(Tensor *in,string name,int dev);
-  Layer *share(int c,vector<Layer*>p);
+class Input : public LinLayer
+{
+    public:
+        Input(Tensor *in);
+        Input(Tensor *in,int dev);
+        Input(Tensor *in,string name);
+        Input(Tensor *in,string name,int dev);
+        Layer *share(int c,vector<Layer*>p);
 
-  void info();
-  void forward();
-  void backward();
-
-};
-
-/// DENSE Layer
-class Dense : public LinLayer {
- public:
-  int dim;
-
-  Dense(Layer *parent,int dim);
-  Dense(Layer *parent,int dim,int dev);
-  Dense(Layer *parent,int dim,string name);
-  Dense(Layer *parent,int dim,string name,int d);
-  Layer *share(int c,vector<Layer*>p);
-
-  // Paras
-  Tensor *W;
-  Tensor *gW;
-  Tensor *bias;
-  Tensor *gbias;
-
-
-
-  void info();
-  void forward();
-  void backward();
+        void info();
+        void forward();
+        void backward();
 
 };
 
 /// DENSE Layer
-class Activation : public LinLayer {
- public:
-  string act;
+class Dense : public LinLayer
+{
+    public:
+        int dim;
 
-  Activation(Layer *parent,string act);
-  Activation(Layer *parent,string act,int d);
-  Activation(Layer *parent,string act,string name);
-  Activation(Layer *parent,string act,string name,int d);
-  Layer *share(int c,vector<Layer*>p);
+        Dense(Layer *parent,int dim);
+        Dense(Layer *parent,int dim,int dev);
+        Dense(Layer *parent,int dim,string name);
+        Dense(Layer *parent,int dim,string name,int d);
+        Layer *share(int c,vector<Layer*>p);
 
-  void info();
-  void forward();
-  void backward();
+// Paras
+        Tensor *W;
+        Tensor *gW;
+        Tensor *bias;
+        Tensor *gbias;
 
+        void info();
+        void forward();
+        void backward();
 
 };
 
+/// DENSE Layer
+class Activation : public LinLayer
+{
+    public:
+        string act;
+
+        Activation(Layer *parent,string act);
+        Activation(Layer *parent,string act,int d);
+        Activation(Layer *parent,string act,string name);
+        Activation(Layer *parent,string act,string name,int d);
+        Layer *share(int c,vector<Layer*>p);
+
+        void info();
+        void forward();
+        void backward();
+
+};
 
 /////////////////////////////////////////
 /////////////////////////////////////////
 // Layers with several inputs (ADD, CAT,...)
-class MLayer : public Layer {
- public:
+class MLayer : public Layer
+{
+    public:
 
+        MLayer(string name,int dev);
 
+        void addchild(Layer *l);
+        void addparent(Layer *l);
 
-  MLayer(string name,int dev);
-
-  void addchild(Layer *l);
-  void addparent(Layer *l);
-
-  //virtual
-  virtual void info(){};
-  virtual void forward(){}
-  virtual void backward(){}
-  virtual Layer *share(int c,vector<Layer*>p){return NULL;}
+//virtual
+        virtual void info(){};
+        virtual void forward(){}
+        virtual void backward(){}
+        virtual Layer *share(int c,vector<Layer*>p){return NULL;}
 };
 
 /// INPUT Layer
-class Add : public MLayer {
- public:
-  Add(vector<Layer*> in);
-  Add(vector<Layer*> in,int dev);
-  Add(vector<Layer*> in,string name);
-  Add(vector<Layer*> in,string name,int dev);
-  Layer *share(int c,vector<Layer*>p);
+class Add : public MLayer
+{
+    public:
+        Add(vector<Layer*> in);
+        Add(vector<Layer*> in,int dev);
+        Add(vector<Layer*> in,string name);
+        Add(vector<Layer*> in,string name,int dev);
+        Layer *share(int c,vector<Layer*>p);
 
-  void info();
-  void forward();
-  void backward();
+        void info();
+        void forward();
+        void backward();
 
 };
-
 #endif

@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 
+// Copyright (c) 2019
 // 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
 // 	     Jon Ander Gómez, <jon@dsic.upv.es>
 //
@@ -36,61 +36,34 @@
 
 using namespace std;
 
-Metric::Metric(string n){
-  name=n;
+Metric::Metric(string n)
+{
+    name=n;
 }
+
 
 float Metric::value(Tensor *T, Tensor* Y)
 {
     float f;
-    if (name=="mse") {
-      // batch error: sum((T-Y)^2)
-      Tensor *aux=new Tensor(T->getshape());
-      Tensor::sum(1.0,T,-1.0,Y,aux,0);
-      Tensor::el_mult(1,aux,1,aux,aux,0);
-      f=Tensor::total_sum(aux);
-      delete aux;
-   }
-   else if (name=="acc"){
-     f=Tensor::accuracy(T,Y);
+    if (name=="mse")
+    {
+// batch error: sum((T-Y)^2)
+        Tensor *aux=new Tensor(T->getshape());
+        Tensor::sum(1.0,T,-1.0,Y,aux,0);
+        Tensor::el_mult(1,aux,1,aux,aux,0);
+        f=Tensor::total_sum(aux);
+        delete aux;
+    }
+    else if (name=="acc")
+    {
+        f=Tensor::accuracy(T,Y);
     }
 
-  return f;
+    return f;
 
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ///////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
 
 //////

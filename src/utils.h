@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 
+// Copyright (c) 2019
 // 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
 // 	     Jon Ander Gómez, <jon@dsic.upv.es>
 //
@@ -35,21 +35,8 @@ float uniform();
 float suniform();
 float gaussgen();
 float gauss(float mean,float sd);
-
 #endif
 
-
-
-
-
-
-
-
-
-
-
 ////////////////
-
-
 
 /////

@@ -41,59 +41,46 @@ int input_created=1;
 Input::Input(Tensor *in):Input(in,"input"+to_string(input_created),DEV_CPU){}
 Input::Input(Tensor *in,int d):Input(in,"input"+to_string(input_created),d){}
 Input::Input(Tensor *in,string name):Input(in,name,DEV_CPU){}
-Input::Input(Tensor *in,string name,int d):LinLayer(name,d){
-  input_created++;
-  input=output=in;
-  delta=new Tensor(input->getshape(),d);
+Input::Input(Tensor *in,string name,int d):LinLayer(name,d)
+{
+    input_created++;
+    input=output=in;
+    delta=new Tensor(input->getshape(),d);
 }
+
 
 // virtual
 void Input::info()
 {
-  cout<<"\n===============\n";
-  cout<< "Layer Input "<<name<<"\n";
-  input->info();
-  cout<<"===============\n\n";
+    cout<<"\n===============\n";
+    cout<< "Layer Input "<<name<<"\n";
+    input->info();
+    cout<<"===============\n\n";
 }
+
 
 void Input::forward()
 {
     delta->set(0.0);
 }
+
+
 void Input::backward()
 {
 
 }
 
-Layer *Input::share(int c,vector<Layer*>p){
-  shape s=input->getshape();
-  s[0]/=c;
 
-  Input *n=new Input(new Tensor(s),"share_"+to_string(c)+name,dev);
-  n->orig=this;
+Layer *Input::share(int c,vector<Layer*>p)
+{
+    shape s=input->getshape();
+    s[0]/=c;
 
-  return n;
+    Input *n=new Input(new Tensor(s),"share_"+to_string(c)+name,dev);
+    n->orig=this;
+
+    return n;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //////

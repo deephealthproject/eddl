@@ -36,37 +36,40 @@
 
 using namespace std;
 
-
 Add::Add(vector<Layer*> in):Add(in,"__add__",DEV_CPU){}
 Add::Add(vector<Layer*> in,int dev):Add(in,"__add__",DEV_CPU){}
 Add::Add(vector<Layer*> in,string name):Add(in,name,DEV_CPU){}
 
-Add::Add(vector<Layer*> in,string name,int d):MLayer(name,d){
-  if (in.size()==0) msg("Error: Add layer with empty list");
-  parent=in;
-  if (parent.size()>1)
-    for(int i=0;i<parent.size()-1;++i)
-      if (!Tensor::eqsize(parent[i]->output,parent[i+1]->output))
-        msg("Error: Add layers with different tensor output");
+Add::Add(vector<Layer*> in,string name,int d):MLayer(name,d)
+{
+    if (in.size()==0) msg("Error: Add layer with empty list");
+    parent=in;
+    if (parent.size()>1)
+        for(int i=0;i<parent.size()-1;++i)
+            if (!Tensor::eqsize(parent[i]->output,parent[i+1]->output))
+                msg("Error: Add layers with different tensor output");
 
-  input=new Tensor(parent[0]->output->getshape());
-  output=new Tensor(parent[0]->output->getshape());
+    input=new Tensor(parent[0]->output->getshape());
+    output=new Tensor(parent[0]->output->getshape());
 
 }
+
 
 // virtual
 void Add::info()
 {
-  cout<<"\n===============\n";
-  cout<< "Layer Add "<<name<<"\n";
-  cout<< "Layers: "<<name<<"\n";
-  for(int i = 0; i != parent.size(); i++) {
-   cout<< parent[i]->name<<"\n";
-   parent[i]->info();
- }
+    cout<<"\n===============\n";
+    cout<< "Layer Add "<<name<<"\n";
+    cout<< "Layers: "<<name<<"\n";
+    for(int i = 0; i != parent.size(); i++)
+    {
+        cout<< parent[i]->name<<"\n";
+        parent[i]->info();
+    }
 
-  cout<<"===============\n\n";
+    cout<<"===============\n\n";
 }
+
 
 void Add::forward(){}
 void Add::backward(){}

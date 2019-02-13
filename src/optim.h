@@ -45,43 +45,31 @@ using namespace std;
 typedef vector<Layer*> vlayer;
 typedef vector<Tensor*> vtensor;
 
-class optim {
- public:
-  string name;
-  vlayer layers;
+class optim
+{
+    public:
+        string name;
+        vlayer layers;
 
-  optim();
-  virtual void setlayers(vlayer l){}
-  virtual void applygrads(int batch){}
-  virtual optim *clone(){return NULL;}
+        optim();
+        virtual void setlayers(vlayer l){}
+        virtual void applygrads(int batch){}
+        virtual optim *clone(){return NULL;}
 
 };
 
 class sgd: public optim
 {
-public:
-  float lr;
-  float mu;
-  vtensor mT;
+    public:
+        float lr;
+        float mu;
+        vtensor mT;
 
-  sgd(float lr,float mu);
-  optim *clone();
-  void setlayers(vlayer l);
-  void applygrads(int batch);
+        sgd(float lr,float mu);
+        optim *clone();
+        void setlayers(vlayer l);
+        void applygrads(int batch);
 };
-
-
 #endif
-
-
-
-
-
-
-
-
-
-
-
 
 //////////
