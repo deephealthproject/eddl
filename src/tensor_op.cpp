@@ -89,6 +89,7 @@ void Tensor::copy(Tensor *A, Tensor *B)
     }
     else if ((A->device!=DEV_CPU)&&(B->device!=DEV_CPU))
     {
+        cout<<A->device<<"-->"<<B->device<<"\n";
         msg("unsupported copy between devices","Tensor::copy");
     }
     B->tsem->unlock();
