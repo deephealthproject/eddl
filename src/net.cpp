@@ -157,7 +157,7 @@ void Net::fts()
     vector<int> visit;
     vector<int> gin;
 
-    fprintf(stderr,"FTS:");
+    //fprintf(stderr,"FTS:");
     for(i=0;i<layers.size();i++)
     {
         visit.push_back(0);
@@ -187,7 +187,7 @@ void Net::fts()
                 if(layers[n]==layers[j]->child[k]) gin[n]--;
 
     }
-    fprintf(stderr,"\n");
+    //fprintf(stderr,"\n");
 
 }
 
@@ -199,7 +199,7 @@ void Net::bts()
     vector<int> visit;
     vector<int> gout;
 
-    fprintf(stderr,"BTS:");
+    //fprintf(stderr,"BTS:");
     for(i=0;i<layers.size();i++)
     {
         visit.push_back(0);
@@ -229,7 +229,7 @@ void Net::bts()
                 if(layers[n]==layers[j]->parent[k]) gout[n]--;
 
     }
-    fprintf(stderr,"\n");
+    //fprintf(stderr,"\n");
 }
 
 
