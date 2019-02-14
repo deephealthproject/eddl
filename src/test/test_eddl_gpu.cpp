@@ -31,11 +31,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-//#include "../tensor.h"
-#include "../layer.h"
-//#include "../tensor_over.h"
-
-//#define tensor_sum tensor::sum
+#include "../net.h"
 
 int main(int argc, char **argv)
 {
