@@ -28,7 +28,6 @@
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
-#include <string.h>
 
 #include "../tensor.h"
 #include "tensor_cuda.h"
@@ -38,11 +37,11 @@ extern cublasHandle_t hcublas[64];
 extern curandGenerator_t random_generator[64];
 
 
-void check_cublas(cublasStatus_t status, string func)
+void check_cublas(cublasStatus_t status, char *f)
 {
   if ( status!=  CUBLAS_STATUS_SUCCESS)
   {
-     fprintf(stderr,"Error in cublas execution in %s\n",func.c_str());
+     fprintf(stderr,"Error in cublas execution in %s\n",f);
      exit(1);
   }
 }
