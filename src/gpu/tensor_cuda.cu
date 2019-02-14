@@ -46,6 +46,11 @@ void check_cuda(cudaError_t err,char *msg)
 }
 
 ///////////////////////////////////////////
+int gpu_devices()
+{
+  return cudaGetDeviceCount(&nDevices);
+}
+
 void gpu_init(int device)
 {
 
