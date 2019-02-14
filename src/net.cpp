@@ -333,7 +333,7 @@ void Net::build(optim *opt,vstring co,vstring me)
     {
         losses.push_back(new Loss(co[i]));
         if (co[i]=="soft_cent") lout[i]->delta_bp=1;
-        lout[i]->target=new Tensor(lout[i]->output->getshape());
+        lout[i]->target=new Tensor(lout[i]->output->getshape(),dev);
     }
 
 // set metrics
