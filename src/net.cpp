@@ -746,8 +746,10 @@ void Net::train_batch(vtensor X, vtensor Y)
             for(int k=0;k<layers[j]->params.size();k++) {
               // Taking average
               layers[j]->params[k]->set(0.0);
-              for(int i=0;i<snets.size();i++)
+              for(int i=0;i<snets.size();i++) {
+                fprintf(stderr,"%s --> %s\n",snets[i]->layers[j]->name.c_str(),layers[j]->name.c_str());
                 Tensor::inc(snets[i]->layers[j]->params[k],layers[j]->params[k]);
+              }
               layers[j]->params[k]->div(snets.size());
 
               // copy-back to devices
