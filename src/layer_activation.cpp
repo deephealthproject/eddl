@@ -67,8 +67,7 @@ void Activation::forward()
     else if (act=="softmax")
     {
         Tensor::Softmax(input,output);
-//input->print();
-//getchar();
+
     }
 
 }
@@ -100,6 +99,15 @@ Layer *Activation::share(int c,vector<Layer*>p)
 {
 
     Activation *n=new Activation(p[0],act,"share_"+to_string(c)+name,dev);
+    n->orig=this;
+    n->delta_bp=delta_bp;
+
+    return n;
+}
+Layer *Activation::clone(int c,vector<Layer*>p,int todev)
+{
+
+    Activation *n=new Activation(p[0],act,"clone_"+to_string(todev)+name,todev);
     n->orig=this;
     n->delta_bp=delta_bp;
 

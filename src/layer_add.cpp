@@ -74,3 +74,10 @@ void Add::info()
 void Add::forward(){}
 void Add::backward(){}
 Layer *Add::share(int c,vector<Layer*>p){return NULL;}
+Layer *Add::clone(int c,vector<Layer*>p,int todev){return NULL;}
+
+
+
+
+
+///////////////

@@ -45,6 +45,7 @@
 #endif
 
 using namespace std;
+
 int initcuda[MAX_GPUS]={0,0,0,0,0,0,0,0};
 int linpos;
 
@@ -108,6 +109,7 @@ Tensor::Tensor(shape s,int dev)
         gpu_device=device-DEV_GPU;
         if (!initcuda[gpu_device])
         {
+            
             gpu_init(gpu_device);
             initcuda[gpu_device]=1;
         }
@@ -391,7 +393,7 @@ void Tensor::fromLin(float *n)
     }
 }
 
-
+///////////////////////////////////////////
 shape Tensor::getshape()
 {
     shape s=sizes;

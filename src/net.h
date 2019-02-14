@@ -70,13 +70,14 @@ class Net
         void backward();
         void applygrads(int batch);
         void info();
-        void split(int c);
+        void split(int c,int todev);
         int inNet(Layer *);
         void walk(Layer *l);
         void fts();
         void bts();
         string name;
 
+        int dev;
         vlayer layers;
         vlayer lin;
         vlayer lout;
@@ -96,6 +97,7 @@ class Net
         Layer *getLayer(string name);
 
         void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m);
+        void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,int todev);
         void fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch,int epochs);
         void train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out);
 

@@ -49,28 +49,14 @@ int main(int argc, char **argv)
     Activation *out1=new Activation(new Dense(l,10),"softmax");
 
 // net define input and output layers list
-    Net *net=new Net(
-    {
-        in
-    }
-    ,
-    {
-        out1
-    });
+    Net *net=new Net({in},{out1});
 
 // get some info from the network
     net->info();
 
 // Attach an optimizer and a list of error criteria
 // size of error criteria list must match with size of list of outputs
-    net->build(SGD(0.01,0.95),
-    {
-        "soft_cent"
-    }
-    ,
-    {
-        "acc"
-    });
+    net->build(SGD(0.01,0.95),{"soft_cent"},{"acc"});
 
 //net->split(4);
 
@@ -81,14 +67,7 @@ int main(int argc, char **argv)
     X->div(255.0);
 
 // training, list of input and output tensors, batch, epochs
-    net->fit(
-    {
-        X
-    }
-    ,
-    {
-        Y
-    },batch,100);
+    net->fit({X},{Y},batch,100);
 
 }
 

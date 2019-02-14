@@ -48,21 +48,16 @@ Dense::Dense(Layer *parent,int dim,string name,int d):LinLayer(name,d)
     this->dim=dim;
 
     input=parent->output;
-    output=new Tensor({input->sizes[0],dim},
-        d);
+    output=new Tensor({input->sizes[0],dim},d);
     delta=new Tensor(output->getshape(),d);
 
-    W=new Tensor({input->sizes[1],dim},
-        d);
-    bias=new Tensor({dim},
-        d);
+    W=new Tensor({input->sizes[1],dim},d);
+    bias=new Tensor({dim},d);
     params.push_back(W);
     params.push_back(bias);
 
-    gW=new Tensor({input->sizes[1],dim},
-        d);
-    gbias=new Tensor({dim},
-        d);
+    gW=new Tensor({input->sizes[1],dim},d);
+    gbias=new Tensor({dim},d);
     gradients.push_back(gW);
     gradients.push_back(gbias);
 
@@ -88,7 +83,7 @@ void Dense::backward()
 // backprop delta
     if (parent.size())
     {
-                                                  //1: note that increment parent delta
+        //1: note that increment parent delta
         Tensor::mult2D(delta,0,W,1,parent[0]->delta,1);
     }
 
@@ -111,6 +106,15 @@ Layer *Dense::share(int c,vector<Layer*>p)
 
     return n;
 }
+
+Layer *Dense::clone(int c,vector<Layer*>p,int todev)
+{
+    Dense *n=new Dense(p[0],dim,"clone_"+to_string(todev)+name,todev);
+    n->orig=this;
+
+    return n;
+}
+
 
 
 void Dense::info()

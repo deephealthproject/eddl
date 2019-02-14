@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 
+// Copyright (c) 2019
 // 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
 // 	     Jon Ander Gómez, <jon@dsic.upv.es>
 //
@@ -39,53 +39,42 @@
 
 int main(int argc, char **argv)
 {
-  int dev=DEV_GPU+1;
+  int batch=1000;
 
+  Tensor *tin=new Tensor({batch,784}
+  );
 
-  Tensor *B=new Tensor({10,5},dev);
-  B->set(1.0);
-  B->print();
+// graph
+  Input* in=new Input(tin);
+  Layer *l=in;
+  for(int i=0;i<3;i++)
+      l=new Activation(new Dense(l,1024),"relu");
 
-  Tensor *C=new Tensor({5},dev);
-  C->set(2.0);
-  C->print();
+  Activation *out1=new Activation(new Dense(l,10),"softmax");
 
-  Tensor::sum2D_rowwise(B, C, B);
-  B->print();
+// net define input and output layers list
+  Net *net=new Net({in},{out1});
 
+// get some info from the network
+  net->info();
 
-  C=new Tensor({100,64},dev);
-  Input *I=new Input(C,"in1",dev);
-  I->info();
+// Attach an optimizer and a list of error criteria
+// size of error criteria list must match with size of list of outputs
+  net->build(SGD(0.01,0.95),{"soft_cent"},{"acc"},DEV_GPU);
 
-  Dense *D=new Dense(I,128,"dense1",dev);
-  Dense *E=new Dense(D,256,dev);
+//net->split(4);
 
-  D->info();
-  E->info();
+/// read data
+  Tensor *X=new Tensor("trX.bin");
+  Tensor *Y=new Tensor("trY.bin");
 
-  D->forward();
-  D->backward();
+  X->div(255.0);
 
+// training, list of input and output tensors, batch, epochs
+  net->fit({X},{Y},batch,100);
 
 
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  ///////////
+///////////

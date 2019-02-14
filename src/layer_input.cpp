@@ -82,5 +82,17 @@ Layer *Input::share(int c,vector<Layer*>p)
     return n;
 }
 
+Layer *Input::clone(int c,vector<Layer*>p,int todev)
+{
+    shape s=input->getshape();
+    s[0]/=c;
+
+    Input *n=new Input(new Tensor(s,todev),"clone_"+to_string(todev)+name,todev);
+    n->orig=this;
+
+    return n;
+}
+
+
 
 //////

@@ -35,6 +35,10 @@
 #include <thread>
 #include "net.h"
 
+#ifdef cGPU
+#include "gpu/tensor_cuda.h"
+#endif
+
 using namespace std;
 using namespace std::chrono;
 
@@ -228,18 +232,58 @@ void Net::bts()
 
 
 /////////////////////////////////////////
-void Net::build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m)
+int isIn(Layer *l,vlayer vl,int &ind)
+{
+    for(int i=0;i<vl.size();i++)
+        if(l==vl[i]) {ind=i;return 1;}
+
+        return 0;
+}
+
+/////////////////////////////////////////
+int isInorig(Layer *l,vlayer vl,int &ind)
+{
+    for(int i=0;i<vl.size();i++)
+        if(l==vl[i]->orig) {ind=i;return 1;}
+
+        return 0;
+}
+
+
+/////////////////////////////////////////
+void Net::build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m) {
+  build(opt,c,m,DEV_CPU);
+}
+void Net::build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,int todev)
 {
     vstring co=vstring(c.begin(), c.end());
     vstring me=vstring(m.begin(), m.end());
 
     build(opt,co,me);
-// concurrency
-    unsigned int nthreads = std::thread::hardware_concurrency();
 
-    cout<<"set threads to "<<nthreads<<"\n";
-    split(nthreads);
 
+    if (todev==DEV_CPU) {
+      if (dev==DEV_CPU) {
+        // split on multiple threads
+        unsigned int nthreads = std::thread::hardware_concurrency();
+        cout<<"set threads to "<<nthreads<<"\n";
+        if (nthreads>1)
+          split(nthreads,DEV_CPU);
+      }
+    }
+    else{
+      if (dev<DEV_FPGA) {
+        #ifndef cGPU
+         msg("EDDLL not compiled for GPU","Net.build");
+        #endif
+         // split on multiple GPUs
+         int ngpus;
+         split(ngpus,DEV_GPU);
+      }
+      else {
+        // split on multiple FPGAs
+      }
+    }
 }
 
 
@@ -252,6 +296,25 @@ void Net::build(optim *opt,vstring co,vstring me)
 
     if (co.size()!=lout.size())
         msg("Metric list size does not match output list" ,"Net.build");
+
+   // check devices
+   dev=-1;
+   int ind;
+   for(int i=0;i<layers.size();i++)
+      // do not consider input layers, since they are always on CPU
+      if (!isIn(layers[i],lin,ind)) {
+        if (dev==-1) dev=layers[i]->dev;
+        else {
+          if (layers[i]->dev!=dev)
+            msg("Net with layers in different devicess" ,"Net.build");
+        }
+      }
+    if (dev==DEV_CPU)
+      cout<<"Net running on CPU\n";
+    else if (dev<DEV_FPGA)
+      cout<<"Net running on GPU "<<dev-DEV_GPU<<"\n";
+    else
+      cout<<"Net running on FPGA "<<dev-DEV_FPGA<<"\n";
 
 // set optimizer
     optimizer=opt;
@@ -288,26 +351,8 @@ void Net::build(optim *opt,vstring co,vstring me)
 }
 
 
-int isIn(Layer *l,vlayer vl,int &ind)
-{
-    for(int i=0;i<vl.size();i++)
-        if(l==vl[i]) {ind=i;return 1;}
-
-        return 0;
-}
-
-
-int isInorig(Layer *l,vlayer vl,int &ind)
-{
-    for(int i=0;i<vl.size();i++)
-        if(l==vl[i]->orig) {ind=i;return 1;}
-
-        return 0;
-}
-
-
 /////////////////////////////////////
-void Net::split(int c)
+void Net::split(int c,int todev)
 {
     int i,j,k,l;
 
@@ -316,6 +361,7 @@ void Net::split(int c)
     vlayer nout;
     Layer *p;
     int ind;
+
 
     for(i=0;i<c;i++)
     {
@@ -329,7 +375,8 @@ void Net::split(int c)
         for(j=0;j<lin.size();j++)
         {
             vlayer par;
-            nin.push_back(layers[j]->share(c,par));
+            if (todev==DEV_CPU) nin.push_back(layers[j]->share(c,par));
+            else nin.push_back(layers[j]->clone(c,par,todev+i));
             nlayers.push_back(nin[j]);
         }
         for(k=0;k<layers.size();k++)
@@ -340,10 +387,11 @@ void Net::split(int c)
                 vlayer par;
                 for(l=0;l<layers[j]->parent.size();l++)
                     if (!isInorig(layers[j]->parent[l],nlayers,ind)) break;
-                else par.push_back(nlayers[ind]);
+                    else par.push_back(nlayers[ind]);
 
                 if (l==layers[j]->parent.size())
-                    nlayers.push_back(layers[j]->share(i,par));
+                    if (todev==DEV_CPU) nlayers.push_back(layers[j]->share(i,par));
+                    else nlayers.push_back(layers[j]->clone(i,par,todev+i));
             }
         }
 
@@ -546,18 +594,17 @@ void Net::train_batch(vtensor X, vtensor Y)
 {
     int i,j;
 
-// these copies can go from CPU to {CPU,GPU,FPGA}
 
     if (!snets.size())
     {
+        // these copies can go from CPU to {CPU,GPU,FPGA}
         for(i=0;i<X.size();i++)
             Tensor::copy(X[i],lin[i]->input);
-        reset();                                  //delta=0
+        reset();
         forward();
         delta(Y);
         loss(Y);
         backward();
-//applygrads(X[0]->sizes[0]);
     }
     else
     {
@@ -632,8 +679,8 @@ void Net::train_batch(vtensor X, vtensor Y)
             }
         }
 
-/*for(int i=0;i<snets.size();i++)
-  snets[i]->applygrads(X[0]->sizes[0]);*/
+        /*for(int i=0;i<snets.size();i++)
+            snets[i]->applygrads(X[0]->sizes[0]);*/
 
         for(int i=0;i<snets.size();i++)
         {
