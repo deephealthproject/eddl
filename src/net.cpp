@@ -173,11 +173,12 @@ void Net::fts()
         if (j==layers.size())
             msg("error recurrent net","Net.fts");
 
+        /*
         if (layers[j]->lout)
             fprintf(stderr,"%s-->",layers[j]->name.c_str());
         else
             fprintf(stderr,"%s |",layers[j]->name.c_str());
-
+        */
         visit[j]=1;
         vfts.push_back(layers[j]);
 
@@ -214,11 +215,12 @@ void Net::bts()
         if (j==layers.size())
             msg("error recurrent net in","Net.bts");
 
+/*
         if (layers[j]->lin)
             fprintf(stderr,"%s-->",layers[j]->name.c_str());
         else
             fprintf(stderr,"%s |",layers[j]->name.c_str());
-
+*/
         visit[j]=1;
         vbts.push_back(layers[j]);
 
