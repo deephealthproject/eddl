@@ -122,7 +122,7 @@ void Tensor::inc(Tensor *A, Tensor *B)
         B->fromLin(nptr);
         free(nptr);
     }
-    else if ((A->device!=DEV_CPU)&&(B->device!=DEV_CPU))
+    else if ((A->device!=B->device)&&((A->device!=DEV_CPU)&&(B->device!=DEV_CPU)))
     {
         fprintf(stderr,"inc: %d ---> %d\n",A->device,B->device);
         msg("unsupported inc between devices","Tensor::inc");
