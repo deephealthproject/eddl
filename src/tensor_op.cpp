@@ -80,7 +80,7 @@ void Tensor::copy(Tensor *A, Tensor *B)
 //gpu_copy_from(nptr,B);
         free(nptr);
     }
-    else if ((A->device>DEV_GPU)&&(B->device==DEV_CPU))
+    else if ((A->device>DEV_CPU)&&(B->device==DEV_CPU))
     {
         float *nptr=(float*)malloc(B->tam*sizeof(float));
 //gpu_copy_to(A,nptr);
@@ -89,7 +89,7 @@ void Tensor::copy(Tensor *A, Tensor *B)
     }
     else if ((A->device!=DEV_CPU)&&(B->device!=DEV_CPU))
     {
-        msg("unsuppoted copy between devices","Tensor::copy");
+        msg("unsupported copy between devices","Tensor::copy");
     }
     B->tsem->unlock();
 }
