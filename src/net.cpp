@@ -416,8 +416,9 @@ void Net::split(int c,int todev)
 /////////////////////////////////////////
 void Net::forward()
 {
-    for(int i=0;i<vfts.size();i++)
+    for(int i=0;i<vfts.size();i++) {
         vfts[i]->forward();
+      }
 }
 
 
@@ -707,29 +708,29 @@ void Net::train_batch(vtensor X, vtensor Y)
             }
         }
 
-        /*for(int i=0;i<snets.size();i++)
-            snets[i]->applygrads(X[0]->sizes[0]);*/
 
-        for(int i=0;i<snets.size();i++)
-        {
-//call thread
-            rc = pthread_create(&thr[i], NULL,applygrads_t, (void *)(&td[i]));
+        if (snets[i]->dev==DEV_CPU) {
+          for(int i=0;i<snets.size();i++)
+          {
+  //call thread
+                rc = pthread_create(&thr[i], NULL,applygrads_t, (void *)(&td[i]));
 
-            if (rc)
-            {
-                fprintf(stderr,"Error:unable to create thread %d",rc);
-                exit(-1);
-            }
-        }
+              if (rc)
+              {
+                    fprintf(stderr,"Error:unable to create thread %d",rc);
+                  exit(-1);
+              }
+          }
 
-        for(int i=0;i<snets.size();i++)
-        {
-            rc = pthread_join(thr[i], &status);
-            if (rc)
-            {
-                cout << "Error:unable to join," << rc << endl;
-                exit(-1);
-            }
+            for(int i=0;i<snets.size();i++)
+          {
+              rc = pthread_join(thr[i], &status);
+              if (rc)
+                {
+                  cout << "Error:unable to join," << rc << endl;
+                  exit(-1);
+              }
+          }
         }
 
         for(int i=0;i<snets.size();i++)
@@ -747,14 +748,14 @@ void Net::train_batch(vtensor X, vtensor Y)
               // Taking average
               layers[j]->params[k]->set(0.0);
               for(int i=0;i<snets.size();i++) {
-                fprintf(stderr,"%s --> %s\n",snets[i]->layers[j]->name.c_str(),layers[j]->name.c_str());
                 Tensor::inc(snets[i]->layers[j]->params[k],layers[j]->params[k]);
               }
               layers[j]->params[k]->div(snets.size());
 
               // copy-back to devices
-              for(int i=0;i<snets.size();i++)
+              for(int i=0;i<snets.size();i++) {
                 Tensor::copy(layers[j]->params[k],snets[i]->layers[j]->params[k]);
+              }
             }
         }
         /////////////////////////////////////////////////
@@ -766,6 +767,7 @@ void Net::train_batch(vtensor X, vtensor Y)
         for(int i=0;i<snets.size();i++)
             for(int j=0;j<Y.size();j++)
                 delete Ys[i][j];
+
 
     }
 }
@@ -790,7 +792,7 @@ void *train_batch_t(void *t)
     net->delta();
     net->loss();
     net->backward();
-//net->applygrads(targs->batch);
+    if (net->dev>DEV_CPU) net->applygrads(targs->batch);
 
 }
 

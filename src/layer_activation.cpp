@@ -67,7 +67,6 @@ void Activation::forward()
     else if (act=="softmax")
     {
         Tensor::Softmax(input,output);
-
     }
 
 }

@@ -109,7 +109,7 @@ Tensor::Tensor(shape s,int dev)
         gpu_device=device-DEV_GPU;
         if (!initcuda[gpu_device])
         {
-            
+
             gpu_init(gpu_device);
             initcuda[gpu_device]=1;
         }
@@ -190,6 +190,7 @@ Tensor::Tensor(string fname)
 
     device=DEV_CPU;
     tam=1;
+    tsem=new mutex();
     for(int i=0;i<dim;++i) tam*=sizes[i];
     if (dim==1) ptr1.resize(sizes[0]);
     else if (dim==2) ptr2.resize(sizes[0],sizes[1]);
@@ -293,6 +294,7 @@ Tensor::~Tensor()
         gpu_delete_tensor(gptr);
     }
 #endif
+  delete tsem;
 }
 
 

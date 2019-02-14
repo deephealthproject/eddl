@@ -287,10 +287,11 @@ void Tensor::el_mult(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int inc
 ///////////////////////////////////////
 void Tensor::el_div(float scA,Tensor *A, float scB, Tensor *B, Tensor *C,int incC)
 {
-    C->tsem->lock();
+
     if ((A->device!=B->device)||(A->device!=C->device)) msg("Tensors in different devices","Tensor::el_div");
     if ((!eqsize(A,B))||(!eqsize(A,C))) msg("Incompatible dims","Tensor::el_div");
 
+   C->tsem->lock();
     if (A->device==DEV_CPU)
     {
         if (A->dim==1)
@@ -341,10 +342,11 @@ void Tensor::el_div(float scA,Tensor *A, float scB, Tensor *B, Tensor *C,int inc
 void Tensor::sum(float scA, Tensor *A, float scB, Tensor *B, Tensor *C,int incC)
 {
     int aux=0;
-    C->tsem->lock();
+
     if ((A->device!=B->device)||(A->device!=C->device)) msg("Tensors in different devices","Tensor::sum");
     if ((!eqsize(A,B))||(!eqsize(A,C))) msg("Incompatible dims","Tensor::sum");
 
+C->tsem->lock();
     if (A->device==DEV_CPU)
     {
         if (A->dim==1)
@@ -428,6 +430,7 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB)
     if (A->device!=B->device) msg("Tensors in different devices","Tensor::reduce_sum2D");
     if ((A->dim-1)!=B->dim) msg("Incorrect dims","Tensor::reduce_sum2D");
     if ((A->sizes[1-axis]!=B->sizes[0])) msg("Incompatible dims","Tensor::reduce_sum2D");
+
     B->tsem->lock();
     if (A->device==DEV_CPU)
     {
@@ -499,6 +502,7 @@ void Tensor::cent(Tensor *A,Tensor *B, Tensor *C)
 {
     if (A->device!=B->device) msg("Tensors in different devices","Tensor::cross-entropy");
     if ((!eqsize(A,B))||(!eqsize(A,C))) msg("Incompatible dims","Tensor::cross-entropy");
+
     C->tsem->lock();
     if (A->device==DEV_CPU)
     {
@@ -541,6 +545,7 @@ int Tensor::accuracy(Tensor *A,Tensor *B)
     if (A->device!=B->device) msg("Tensors in different devices","Tensor::accuracy");
     if (!eqsize(A,B)) msg("Incompatible dims","Tensor::accuracy");
     int acc=0;
+
     B->tsem->lock();
     if (A->device==DEV_CPU)
     {
@@ -568,7 +573,7 @@ int Tensor::accuracy(Tensor *A,Tensor *B)
 #ifdef cGPU
     else if (A->device<DEV_FPGA)
     {
-        return 0;
+
     }
 #endif
     B->tsem->unlock();
@@ -585,6 +590,7 @@ void Tensor::ReLu(Tensor *A,Tensor *B)
 {
     if (A->device!=B->device) msg("Tensors in different devices","Tensor::ReLu");
     if (!eqsize(A,B)) msg("Incompatible dims","Tensor::ReLu");
+
     B->tsem->lock();
     if (A->device==DEV_CPU)
     {
@@ -654,7 +660,9 @@ void Tensor::Softmax(Tensor *A,Tensor *B)
     if (A->device!=B->device) msg("Tensors in different devices","Tensor::Softmax");
     if (!eqsize(A,B)) msg("Incompatible dims","Tensor::Softmax");
     if (A->dim!=2)  msg("Softmax only over 2D Tensor (batch x logits)","Tensor::Softmax");
+
     B->tsem->lock();
+
     if (A->device==DEV_CPU)
     {
         float max,sum;
@@ -676,6 +684,7 @@ void Tensor::Softmax(Tensor *A,Tensor *B)
     {
     }
 #endif
+
     B->tsem->unlock();
 }
 
@@ -686,7 +695,9 @@ void Tensor::D_Softmax(Tensor *D,Tensor *I,Tensor *PD)
     if ((D->device!=I->device)||(D->device!=PD->device)) msg("Tensors in different devices","Tensor::D_Softmax");
     if ((!eqsize(D,I))||(!eqsize(D,PD))) msg("Incompatible dims","Tensor::D_Softmax");
     if (D->dim!=2) msg("D_Softmax only over 2D Tensor (batch x delta_probs)","Tensor::D_Softmax");
+
     PD->tsem->lock();
+
     if (D->device==DEV_CPU)
     {
         for(int i=0;i<D->sizes[0];i++)
@@ -695,6 +706,7 @@ void Tensor::D_Softmax(Tensor *D,Tensor *I,Tensor *PD)
                 PD->ptr2(i,j)+=D->ptr2(i,j)*(I->ptr2(i,j)*(1.0-I->ptr2(i,j)));
         }
     }
+
     PD->tsem->unlock();
 
 }

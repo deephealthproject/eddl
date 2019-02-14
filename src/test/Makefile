@@ -125,7 +125,7 @@ all: $(GPU_OBJ) $(OBJ) test_eddl
 endif
 
 ifeq ($(CORE),2)
-all: $(GPU_OBJ) $(OBJ) test_eddl_gpu
+all: $(GPU_OBJ) $(OBJ) test_eddl test_eddl_gpu
 endif
 
 #--------------------------------- c code
