@@ -31,8 +31,9 @@
 #include <curand.h>
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
+#include <string.h>
 
-void check_cuda(cudaError_t err,char *msg);
+void check_cuda(cudaError_t err,string msg);
 void gpu_set_device(int device);
 void gpu_init(int device);
 float* gpu_create_tensor(int size);

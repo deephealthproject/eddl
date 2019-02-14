@@ -35,11 +35,11 @@ curandStatus_t rstatus;
 
 
 
-void check_cuda(cudaError_t err,char *msg)
+void check_cuda(cudaError_t err,strig msg)
 {
   if(err!=cudaSuccess)
   {
-     fprintf(stderr,"Cuda Error: %s\n",msg);
+     fprintf(stderr,"Cuda Error: %s\n",msg.c_str());
      exit(0);
   }
 

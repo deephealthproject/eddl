@@ -53,7 +53,7 @@ void gpu_set(Tensor *A,float v) {
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  int r;
+  int r,c;
 
   r=A->sizes[0];
   c=1;
