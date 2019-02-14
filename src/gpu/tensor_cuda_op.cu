@@ -28,6 +28,7 @@
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
+#include <string.h>
 
 #include "../tensor.h"
 #include "tensor_cuda.h"
@@ -37,11 +38,11 @@ extern cublasHandle_t hcublas[64];
 extern curandGenerator_t random_generator[64];
 
 
-void check_cublas(cublasStatus_t status, char * func)
+void check_cublas(cublasStatus_t status, string func)
 {
   if ( status!=  CUBLAS_STATUS_SUCCESS)
   {
-     fprintf(stderr,"Error in cublas execution in %s\n",func);
+     fprintf(stderr,"Error in cublas execution in %s\n",func.c_str());
      exit(1);
   }
 }
@@ -52,13 +53,17 @@ void gpu_set(Tensor *A,float v) {
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  int r,c;
+  int r;
+
   r=A->sizes[0];
   c=1;
+
   if (A->dim>1) c=A->tam/r;
 
-  //set<<<dimBlock,dimGrid>>>
-  set<<<c,r>>>(A->gptr,v,r,c);
+  dim3 dimGrid(r);
+  dim3 dimBlock(c);
+
+  set<<<dimGrid,dimBlock>>>(A->gptr,v,A->sizes[0],A->sizes[1]);
   check_cuda(cudaDeviceSynchronize(),"set");
 
 }
@@ -135,11 +140,11 @@ void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  dim3 dimGrid(A->sizes[1]);
-  dim3 dimBlock(A->sizes[0]);
+  dim3 dimGrid(A->sizes[0]);
+  dim3 dimBlock(A->sizes[1]);
 
 
-  sum_mat_row<<<dimBlock,dimGrid>>>(A->gptr,B->gptr,C->gptr,A->sizes[0],A->sizes[1]);
+  sum_mat_row<<<dimGrid,dimBlock>>>(A->gptr,B->gptr,C->gptr,A->sizes[0],A->sizes[1]);
 
   check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
 
@@ -150,11 +155,10 @@ void gpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  dim3 dimGrid(A->sizes[1]);
-  dim3 dimBlock(A->sizes[0]);
+  dim3 dimGrid(A->sizes[0]);
+  dim3 dimBlock(A->sizes[1]);
 
-
-  sum_mat_col<<<dimBlock,dimGrid>>>(A->gptr,B->gptr,C->gptr,A->sizes[0],A->sizes[1]);
+  sum_mat_col<<<dimGrid,dimBlock>>>(A->gptr,B->gptr,C->gptr,A->sizes[0],A->sizes[1]);
 
   check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
 
@@ -169,13 +173,12 @@ void gpu_reduce_sum2D(Tensor *A,Tensor *B,int axis,int incB)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  int r,c;
-  r=A->sizes[0];
-  c=A->sizes[1];
+  dim3 dimGrid(A->sizes[0]);
+  dim3 dimBlock(A->sizes[1]);
 
   if (!incB) gpu_set(B,0.0);
 
-  reduce_sum2D<<<c,r>>>(A->gptr,B->gptr,r,c,axis);
+  reduce_sum2D<<<dimGrid,dimBlock>>>(A->gptr,B->gptr,A->sizes[0],A->sizes[1],axis);
 
 
   check_cuda(cudaDeviceSynchronize(),"reduce_sum2D");
