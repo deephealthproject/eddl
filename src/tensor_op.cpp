@@ -89,7 +89,7 @@ void Tensor::copy(Tensor *A, Tensor *B)
     }
     else if ((A->device!=DEV_CPU)&&(B->device!=DEV_CPU))
     {
-        cout<<A->device<<"-->"<<B->device<<"\n";
+        fprintf(stderr,"copy: %d ---> %d\n",A->device,B->device);
         msg("unsupported copy between devices","Tensor::copy");
     }
     B->tsem->unlock();
@@ -124,7 +124,7 @@ void Tensor::inc(Tensor *A, Tensor *B)
     }
     else if ((A->device!=DEV_CPU)&&(B->device!=DEV_CPU))
     {
-        cout<<A->device<<"-->"<<B->device<<"\n";
+        fprintf(stderr,"inc: %d ---> %d\n",A->device,B->device);
         msg("unsupported inc between devices","Tensor::inc");
     }
     B->tsem->unlock();
