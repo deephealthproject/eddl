@@ -127,16 +127,18 @@ void gpu_set_device(int device)
 
 
 ///////////////////////////////////////////
-float* gpu_create_tensor(int size)
+float* gpu_create_tensor(int dev,int size)
 {
   float* devicePointer;
+  cudaSetDevice(dev);
   check_cuda(cudaMalloc((void**)&devicePointer,size*sizeof(float)),"create_tensor");
   return devicePointer;
 }
 
 ///////////////////////////////////////////
-void gpu_delete_tensor(float* p)
+void gpu_delete_tensor(int dev,float* p)
 {
+  cudaSetDevice(dev);
   check_cuda(cudaFree(p),"delete_tensor");
 }
 

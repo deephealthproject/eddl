@@ -35,8 +35,10 @@
 void check_cuda(cudaError_t err,char *msg);
 void gpu_set_device(int device);
 void gpu_init(int device);
-float* gpu_create_tensor(int size);
-void gpu_delete_tensor(float* p);
+
+float* gpu_create_tensor(int dev,int size);
+void gpu_delete_tensor(int dev,float* p);
+
 int gpu_devices();
 
 

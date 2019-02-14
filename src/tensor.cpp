@@ -113,8 +113,8 @@ Tensor::Tensor(shape s,int dev)
             gpu_init(gpu_device);
             initcuda[gpu_device]=1;
         }
-        gpu_set_device(gpu_device);
-        gptr=gpu_create_tensor(tam);
+        //gpu_set_device(gpu_device);
+        gptr=gpu_create_tensor(gpu_device,tam);
     }
 #endif
     tsem=new mutex();
@@ -290,8 +290,8 @@ Tensor::~Tensor()
 #ifdef cGPU
     else if ((device>DEV_CPU)&&(device<DEV_FPGA))
     {
-        gpu_set_device(gpu_device);
-        gpu_delete_tensor(gptr);
+        //gpu_set_device(gpu_device);
+        gpu_delete_tensor(gpu_device,gptr);
     }
 #endif
   delete tsem;
@@ -445,6 +445,7 @@ void Tensor::print()
     {
         if (dim<3)
         {
+
             gpu_set_device(gpu_device);
             float *v= (float*)malloc(tam*sizeof(float));
             cudaMemcpy(v,gptr,tam*sizeof(float),cudaMemcpyDeviceToHost);
@@ -489,7 +490,7 @@ void Tensor::set(float v)
 #ifdef cGPU
     else if (device<DEV_FPGA)
     {
-        gpu_set_device(gpu_device);
+        //gpu_set_device(gpu_device);
         gpu_set(this,v);
     }
 #endif
