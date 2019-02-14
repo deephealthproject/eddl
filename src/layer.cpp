@@ -43,7 +43,7 @@ Layer::Layer(string n):Layer(n,DEV_CPU){}
 Layer::Layer(string n,int d)
 {
     mode=TRMODE;
-    delta=input=output=NULL;
+    target=delta=input=output=NULL;
     dev=d;
     name=n;
     lin=lout=0;

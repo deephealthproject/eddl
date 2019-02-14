@@ -100,6 +100,7 @@ void Tensor::inc(Tensor *A, Tensor *B)
 
     if (!Tensor::eqsize(A,B))
         msg("Tensors with different sizes","Tensor::copy");
+
     B->tsem->lock();
     if ((A->device==DEV_CPU)&&(B->device==DEV_CPU))
     {
@@ -110,13 +111,13 @@ void Tensor::inc(Tensor *A, Tensor *B)
     else if ((A->device==DEV_CPU)&&(B->device>DEV_CPU))
     {
         float *nptr=A->toLin();
-//gpu_copy_from(nptr,B);
+        //gpu_copy_from(nptr,B);
         free(nptr);
     }
     else if ((A->device>DEV_GPU)&&(B->device==DEV_CPU))
     {
         float *nptr=(float*)malloc(B->tam*sizeof(float));
-//gpu_copy_to(A,nptr);
+        //gpu_copy_to(A,nptr);
         B->fromLin(nptr);
         free(nptr);
     }

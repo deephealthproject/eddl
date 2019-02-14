@@ -46,6 +46,7 @@ class Layer
         string name;
         Tensor *input;
         Tensor *output;
+        Tensor *target;
         Tensor *delta;
         Layer *orig;
 

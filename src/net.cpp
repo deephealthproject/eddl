@@ -275,11 +275,12 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
       if (dev<DEV_FPGA) {
         #ifndef cGPU
          msg("EDDLL not compiled for GPU","Net.build");
-        #endif
+        #else
          // split on multiple GPUs
          int ngpus=gpu_devices();
          cout<<"split into "<<ngpus<<" GPUs devices\n";
          split(ngpus,DEV_GPU);
+        #endif
       }
       else {
         // split on multiple FPGAs
@@ -327,11 +328,12 @@ void Net::build(optim *opt,vstring co,vstring me)
         fiterr.push_back(0.0);
         fiterr.push_back(0.0);
     }
-// set loss functions
+// set loss functions and create targets tensors
     for(int i=0;i<co.size();i++)
     {
         losses.push_back(new Loss(co[i]));
         if (co[i]=="soft_cent") lout[i]->delta_bp=1;
+        lout[i]->target=new Tensor(lout[i]->output->getshape());
     }
 
 // set metrics
@@ -419,22 +421,22 @@ void Net::forward()
 }
 
 
-void Net::delta(vtensor Y)
+void Net::delta()
 {
     for(int i=0;i<lout.size();i++)
-        losses[i]->delta(Y[i],lout[i]->output,lout[i]->delta);
+        losses[i]->delta(lout[i]->target,lout[i]->output,lout[i]->delta);
 }
 
 
-void Net::loss(vtensor Y)
+void Net::loss()
 {
     int p=0;
     for(int i=0;i<lout.size();i++,p+=2)
     {
 // loss value
-        fiterr[p]=losses[i]->value(Y[i],lout[i]->output);
+        fiterr[p]=losses[i]->value(lout[i]->target,lout[i]->output);
 // metric value
-        fiterr[p+1]=metrics[i]->value(Y[i],lout[i]->output);
+        fiterr[p+1]=metrics[i]->value(lout[i]->target,lout[i]->output);
     }
 }
 
@@ -596,19 +598,44 @@ void Net::train_batch(vtensor X, vtensor Y)
     int i,j;
 
 
-    if (!snets.size())
+    if (snets.size()<2) // One CPU thread __OR__ One {GPU,FPGA}
     {
-        // these copies can go from CPU to {CPU,GPU,FPGA}
-        for(i=0;i<X.size();i++)
-            Tensor::copy(X[i],lin[i]->input);
-        reset();
-        forward();
-        delta(Y);
-        loss(Y);
-        backward();
+        // This copies goes from CPU to CPU or {GPU,FPGA}
+        if (snets.size()) { // one {GPU,FPGA}
+          // With only one device it is not necessary
+          // to synchronize params
+
+          // this copy is between cpu memory and {GPU,FPGA} memory
+          for(i=0;i<X.size();i++)
+              Tensor::copy(X[i],snets[0]->lin[i]->input);
+          for(i=0;i<Y.size();i++)
+              Tensor::copy(Y[i],lout[i]->target);
+
+          snets[0]->reset();
+          snets[0]->forward();
+          snets[0]->delta();
+          snets[0]->loss();
+          snets[0]->backward();
+          snets[0]->applygrads(X[0]->sizes[0]);
+        }
+        else { //one CPU thread
+          // this copy is between cpu memory
+          for(i=0;i<X.size();i++)
+              Tensor::copy(X[i],lin[i]->input);
+          for(i=0;i<Y.size();i++)
+              Tensor::copy(Y[i],lout[i]->target);
+
+          reset();
+          forward();
+          delta();
+          loss();
+          backward();
+      }
     }
-    else
+    else // multiple CPU_cores or GPUs or FPGAs
     {
+        // In case of multiple GPUS or FPGA
+        // it is necessary to synchronize params
         void *status;
         int rc;
         pthread_t thr[100];
@@ -713,6 +740,23 @@ void Net::train_batch(vtensor X, vtensor Y)
             }
         }
 
+        // In case of GPUS or FPGA synchronize params
+        if (snets[0]->dev!=DEV_CPU){
+          for(int j;j<layers.size();j++)
+            for(int k=0;k<layers[j]->params.size();k++) {
+              // Taking average
+              layers[j]->params[k]->set(0.0);
+              for(int i=0;i<snets.size();i++)
+                Tensor::inc(snets[i]->layers[j]->params[k],layers[j]->params[k]);
+              layers[j]->params[k]->div(snets.size());
+
+              // copy-back to devices
+              for(int i=0;i<snets.size();i++)
+                Tensor::copy(layers[j]->params[k],snets[i]->layers[j]->params[k]);
+            }
+        }
+        /////////////////////////////////////////////////
+
         for(int i=0;i<snets.size();i++)
             for(int j=0;j<X.size();j++)
                 delete Xs[i][j];
@@ -736,11 +780,13 @@ void *train_batch_t(void *t)
 // these copies can go from CPU to {CPU,GPU,FPGA}
     for(i=0;i<targs->Xt.size();i++)
         Tensor::copy(targs->Xt[i],net->lin[i]->input);
+    for(i=0;i<targs->Yt.size();i++)
+        Tensor::copy(targs->Yt[i],net->lout[i]->target);
 
     net->reset();
     net->forward();
-    net->delta(targs->Yt);
-    net->loss(targs->Yt);
+    net->delta();
+    net->loss();
     net->backward();
 //net->applygrads(targs->batch);
 

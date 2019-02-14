@@ -65,8 +65,8 @@ class Net
         void initialize();
         void reset();
         void forward();
-        void delta(vtensor out);
-        void loss(vtensor out);
+        void delta();
+        void loss();
         void backward();
         void applygrads(int batch);
         void info();
