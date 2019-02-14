@@ -277,7 +277,8 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
          msg("EDDLL not compiled for GPU","Net.build");
         #endif
          // split on multiple GPUs
-         int ngpus;
+         int ngpus=gpu_devices();
+         cout<<"split into "<<ngpus<<" GPUs devices\n";
          split(ngpus,DEV_GPU);
       }
       else {
