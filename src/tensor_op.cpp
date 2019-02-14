@@ -357,7 +357,7 @@ void Tensor::sum(float scA, Tensor *A, float scB, Tensor *B, Tensor *C,int incC)
 #ifdef cGPU
     else if (A->device<DEV_FPGA)
     {
-        gpu_sum(scA,A,scB,B,C,incC);
+        //gpu_sum(scA,A,scB,B,C,incC);
     }
 #endif
     C->tsem->unlock();
@@ -636,7 +636,7 @@ void Tensor::D_ReLu(Tensor *D, Tensor *I, Tensor *PD)
                 Tensor::D_ReLu(D->ptr[i],I->ptr[i],PD->ptr[i]);
     }
 #ifdef cGPU
-    else if (A->device<DEV_FPGA)
+    else if (D->device<DEV_FPGA)
     {
 
     }
