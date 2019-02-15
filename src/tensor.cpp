@@ -104,18 +104,18 @@ Tensor::Tensor(shape s,int dev)
         }
     }
 #ifdef cGPU
-  else (dev<DEV_FPGA)
-         {
-           gpu_device=device-DEV_GPU;
-           if (!initcuda[gpu_device])
-             {
+  else if (dev<DEV_FPGA)
+    {
+      gpu_device=device-DEV_GPU;
+      if (!initcuda[gpu_device])
+        {
 
-               gpu_init(gpu_device);
-               initcuda[gpu_device]=1;
-             }
-           //gpu_set_device(gpu_device);
-           gptr=gpu_create_tensor(gpu_device,tam);
-         }
+          gpu_init(gpu_device);
+          initcuda[gpu_device]=1;
+        }
+      //gpu_set_device(gpu_device);
+      gptr=gpu_create_tensor(gpu_device,tam);
+    }
 #endif
 #ifdef cFPGA
   else {
@@ -593,17 +593,17 @@ void Tensor::set_log()
         for(int i=0;i<sizes[0];++i)
           ptr[i]->set_log();
     }
-  #ifdef cGPU
+#ifdef cGPU
   else if (device<DEV_FPGA)
     {
       gpu_log(this,v);
     }
-  #endif
-  #ifdef cFPGA
+#endif
+#ifdef cFPGA
   else {
 
   }
-  #endif
+#endif
 }
 ///////////////////////////////////////////
 void Tensor::set_exp()
@@ -618,17 +618,17 @@ void Tensor::set_exp()
         for(int i=0;i<sizes[0];++i)
           ptr[i]->set_exp();
     }
-  #ifdef cGPU
+#ifdef cGPU
   else if (device<DEV_FPGA)
     {
       gpu_exp(this,v);
     }
-  #endif
-  #ifdef cFPGA
+#endif
+#ifdef cFPGA
   else {
 
   }
-  #endif
+#endif
 }
 ///////////////////////////////////////////
 void Tensor::set_sqrt(){
@@ -642,17 +642,17 @@ void Tensor::set_sqrt(){
         for(int i=0;i<sizes[0];++i)
           ptr[i]->set_sqrt();
     }
-  #ifdef cGPU
+#ifdef cGPU
   else if (device<DEV_FPGA)
     {
       gpu_sqrt(this,v);
     }
-  #endif
-  #ifdef cFPGA
+#endif
+#ifdef cFPGA
   else {
 
   }
-  #endif
+#endif
 }
 ///////////////////////////////////////////
 void Tensor::set_sqr(){
@@ -666,17 +666,17 @@ void Tensor::set_sqr(){
         for(int i=0;i<sizes[0];++i)
           ptr[i]->set_sqr();
     }
-  #ifdef cGPU
+#ifdef cGPU
   else if (device<DEV_FPGA)
     {
       gpu_sqr(this,v);
     }
-  #endif
-  #ifdef cFPGA
+#endif
+#ifdef cFPGA
   else {
 
   }
-  #endif
+#endif
 }
 
 ///////////////////////////////////////////
