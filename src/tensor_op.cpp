@@ -150,23 +150,9 @@ void Tensor::select(Tensor *A, Tensor *B,vector<int> sind)
         for(int i=0;i<sind.size();i++)
           Tensor::copy(A->ptr[sind[i]],B->ptr[i]);
     }
-  else if ((A->device==DEV_CPU)&&(B->device>DEV_CPU))
-    {
-      float *nptr=A->toLin();
-      //gpu_copy_from(nptr,B);
-      free(nptr);
-    }
-  else if ((A->device>DEV_GPU)&&(B->device==DEV_CPU))
-    {
-      float *nptr=(float*)malloc(B->tam*sizeof(float));
-      //gpu_copy_to(A,nptr);
-      B->fromLin(nptr);
-      free(nptr);
-    }
-  else if ((A->device!=DEV_CPU)&&(B->device!=DEV_CPU))
-    {
-      msg("unsuppoted copy between devices","Tensor::select");
-    }
+  else {
+    msg("unsuppoted select between devices","Tensor::select");
+  }
   B->tsem->unlock();
 }
 
@@ -239,6 +225,11 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
       gpu_mult2D(A,tA,B,tB,C,incC);
     }
 #endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
   C->tsem->unlock();
 }
 
@@ -275,6 +266,11 @@ void Tensor::el_mult(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int inc
     {
 
     }
+#endif
+#ifdef cFPGA
+  else {
+
+  }
 #endif
   C->tsem->unlock();
 }
@@ -330,6 +326,11 @@ void Tensor::el_div(float scA,Tensor *A, float scB, Tensor *B, Tensor *C,int inc
 
     }
 #endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
   C->tsem->unlock();
 }
 
@@ -365,6 +366,11 @@ void Tensor::sum(float scA, Tensor *A, float scB, Tensor *B, Tensor *C,int incC)
       //gpu_sum(scA,A,scB,B,C,incC);
     }
 #endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
   C->tsem->unlock();
 }
 
@@ -390,6 +396,11 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
 
     }
 #endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
   C->tsem->unlock();
 }
 
@@ -413,6 +424,11 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C)
     {
       gpu_sum2D_colwise(A,B,C);
     }
+#endif
+#ifdef cFPGA
+  else {
+
+  }
 #endif
   C->tsem->unlock();
 }
@@ -461,6 +477,11 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB)
       gpu_reduce_sum2D(A,B,axis,incB);
     }
 #endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
   B->tsem->unlock();
 }
 
@@ -488,6 +509,11 @@ float Tensor::total_sum(Tensor *A)
     {
 
     }
+#endif
+#ifdef cFPGA
+  else {
+
+  }
 #endif
   A->tsem->lock();
   return 0;
@@ -533,6 +559,11 @@ void Tensor::cent(Tensor *A,Tensor *B, Tensor *C)
 
     }
 #endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
   C->tsem->unlock();
 }
 
@@ -576,6 +607,11 @@ int Tensor::accuracy(Tensor *A,Tensor *B)
 
     }
 #endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
   B->tsem->unlock();
   return acc;
 
@@ -617,6 +653,12 @@ void Tensor::ReLu(Tensor *A,Tensor *B)
 
     }
 #endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
+
   B->tsem->unlock();
 }
 
@@ -649,6 +691,11 @@ void Tensor::D_ReLu(Tensor *D, Tensor *I, Tensor *PD)
     {
 
     }
+#endif
+#ifdef cFPGA
+  else {
+
+  }
 #endif
   PD->tsem->unlock();
 }
@@ -684,6 +731,11 @@ void Tensor::Softmax(Tensor *A,Tensor *B)
     {
     }
 #endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
 
   B->tsem->unlock();
 }
@@ -706,6 +758,16 @@ void Tensor::D_Softmax(Tensor *D,Tensor *I,Tensor *PD)
             PD->ptr2(i,j)+=D->ptr2(i,j)*(I->ptr2(i,j)*(1.0-I->ptr2(i,j)));
         }
     }
+#ifdef cGPU
+  else if (A->device<DEV_FPGA)
+    {
+    }
+#endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
 
   PD->tsem->unlock();
 

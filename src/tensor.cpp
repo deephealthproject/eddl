@@ -104,19 +104,25 @@ Tensor::Tensor(shape s,int dev)
         }
     }
 #ifdef cGPU
-  else if ((dev>DEV_CPU)&&(dev<DEV_FPGA))
-    {
-      gpu_device=device-DEV_GPU;
-      if (!initcuda[gpu_device])
-        {
+  else (dev<DEV_FPGA)
+         {
+           gpu_device=device-DEV_GPU;
+           if (!initcuda[gpu_device])
+             {
 
-          gpu_init(gpu_device);
-          initcuda[gpu_device]=1;
-        }
-      //gpu_set_device(gpu_device);
-      gptr=gpu_create_tensor(gpu_device,tam);
-    }
+               gpu_init(gpu_device);
+               initcuda[gpu_device]=1;
+             }
+           //gpu_set_device(gpu_device);
+           gptr=gpu_create_tensor(gpu_device,tam);
+         }
 #endif
+#ifdef cFPGA
+  else {
+    // create FPGA Tensor
+  }
+#endif
+
   tsem=new mutex();
 }
 
@@ -239,6 +245,9 @@ void Tensor::save(FILE *fe)
 ///////////////////////////////////////////
 void Tensor::save(string fname)
 {
+  if (dev!=DEV_CPU)
+    msg("Only save CPU Tensors","Tensor::save");
+
   int i,j;
   FILE *fe;
   float fv;
@@ -288,18 +297,21 @@ Tensor::~Tensor()
         }
     }
 #ifdef cGPU
-  else if ((device>DEV_CPU)&&(device<DEV_FPGA))
-    {
-      //gpu_set_device(gpu_device);
-      gpu_delete_tensor(gpu_device,gptr);
-    }
+  else (dev<DEV_FPGA)
+         {
+           gpu_delete_tensor(gpu_device,gptr);
+         }
+#endif
+#ifdef cFPGA
+  else {
+    // delete FPGA Tensor
+  }
 #endif
   delete tsem;
 }
 
 
-///////////////////////////////////////////
-// unary operators
+
 ///////////////////////////////////////////
 void Tensor::tlin(float *n)
 {
@@ -323,6 +335,8 @@ void Tensor::tlin(float *n)
 
 float *Tensor::toLin()
 {
+  if (dev!=DEV_CPU) return NULL;
+
   float *n=(float*)malloc(tam*sizeof(float));
 
   linpos=0;
@@ -352,6 +366,7 @@ float *Tensor::toLin()
 //////////////////////////////////////////////////
 void Tensor::flin(float *n)
 {
+
   if (dim==2)
     {
       for(int i=0;i<sizes[0];++i)
@@ -372,6 +387,7 @@ void Tensor::flin(float *n)
 
 void Tensor::fromLin(float *n)
 {
+  if (dev!=DEV_CPU) return;
 
   linpos=0;
   if (dim==1)
@@ -421,7 +437,7 @@ void Tensor::info()
 }
 
 
-///////////////////////////////////////////
+
 
 ///////////////////////////////////////////
 
@@ -471,6 +487,11 @@ void Tensor::print()
         }
     }
 #endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
 }
 
 
@@ -490,9 +511,13 @@ void Tensor::set(float v)
 #ifdef cGPU
   else if (device<DEV_FPGA)
     {
-      //gpu_set_device(gpu_device);
       gpu_set(this,v);
     }
+#endif
+#ifdef cFPGA
+  else {
+
+  }
 #endif
 }
 
@@ -513,8 +538,13 @@ void Tensor::div(float v)
 #ifdef cGPU
   else if (device<DEV_FPGA)
     {
-
+      gpu_div(this,v);
     }
+#endif
+#ifdef cFPGA
+  else {
+
+  }
 #endif
 }
 
@@ -538,9 +568,19 @@ void Tensor::rand()
           ptr[i]->rand();
 
     }
+#ifdef cGPU
+  else if (device<DEV_FPGA)
+    {
+      //gpu_rand();
+    }
+#endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
+
 }
 
 
 ///////////////////////////////////////////
-
-//////
