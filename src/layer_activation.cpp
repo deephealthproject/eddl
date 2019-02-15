@@ -83,6 +83,7 @@ cout<<name<<"\n";
         }
       else
         {
+          cout<<name<<" 2\n";
           if (act=="relu")
             Tensor::D_ReLu(delta,input,parent[0]->delta);
           else if (act=="softmax")
