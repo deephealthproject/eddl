@@ -74,13 +74,10 @@ void Activation::forward()
 
 void Activation::backward()
 {
-cout<<name<<"\n";
 
-fprintf(stderr,"Parent %d\n",parent.size());
 
   if (parent.size())
     {
-      fprintf(stderr,"Parent %d\n",parent.size());
       if (delta_bp)
         {
           fprintf(stderr,"Parent %d\n",parent.size());
@@ -88,14 +85,12 @@ fprintf(stderr,"Parent %d\n",parent.size());
         }
       else
         {
-          cout<<name<<" 2\n";
           if (act=="relu")
             Tensor::D_ReLu(delta,input,parent[0]->delta);
           else if (act=="softmax")
             Tensor::D_Softmax(delta,output,parent[0]->delta);
         }
     }
-  cout<<name<<" 3\n";
 }
 
 

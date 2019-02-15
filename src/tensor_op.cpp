@@ -117,7 +117,9 @@ void Tensor::inc(Tensor *A, Tensor *B)
     }
   #ifdef cGPU
   else if ((A->isGPU())&&(B->isGPU())) {
+    B->tsem->unlock();
     Tensor::sum(1,A,1,B,B,0);
+    B->tsem->lock();   
   }
   else if ((A->isCPU())&&(B->isGPU()))
     {
@@ -760,8 +762,7 @@ void Tensor::D_Softmax(Tensor *D,Tensor *I,Tensor *PD)
   if ((!eqsize(D,I))||(!eqsize(D,PD))) msg("Incompatible dims","Tensor::D_Softmax");
   if (D->dim!=2) msg("D_Softmax only over 2D Tensor (batch x delta_probs)","Tensor::D_Softmax");
 
-  cout<<"AQUI DSOFT\n";
-  
+
   PD->tsem->lock();
 
   if (D->isCPU())
