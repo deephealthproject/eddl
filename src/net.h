@@ -5,8 +5,8 @@
 // The MIT License (MIT)
 //
 // Copyright (c) 2019
-// 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
-// 	     Jon Ander Gómez, <jon@dsic.upv.es>
+//           Roberto Paredes Palacios, <rparedes@dsic.upv.es>
+//           Jon Ander Gómez, <jon@dsic.upv.es>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -56,50 +56,50 @@ void *applygrads_t(void *t);
 
 class Net
 {
-    private:
-        Net(vlayer in,vlayer out);
-        void train_batch(vtensor X,vtensor Y);
-        void build(optim *opt,vstring in,vstring out);
+ private:
+  Net(vlayer in,vlayer out);
+  void train_batch(vtensor X,vtensor Y);
+  void build(optim *opt,vstring in,vstring out);
 
-    public:
-        void initialize();
-        void reset();
-        void forward();
-        void delta();
-        void loss();
-        void backward();
-        void applygrads(int batch);
-        void info();
-        void split(int c,int todev);
-        int inNet(Layer *);
-        void walk(Layer *l);
-        void fts();
-        void bts();
-        string name;
+ public:
+  void initialize();
+  void reset();
+  void forward();
+  void delta();
+  void loss();
+  void backward();
+  void applygrads(int batch);
+  void info();
+  void split(int c,int todev);
+  int inNet(Layer *);
+  void walk(Layer *l);
+  void fts();
+  void bts();
+  string name;
 
-        int dev;
-        vlayer layers;
-        vlayer lin;
-        vlayer lout;
-        vlayer vfts;
-        vlayer vbts;
-        vind ind;
-        vind sind;
-        vloss losses;
-        vmetrics metrics;
-        optim *optimizer;
-        verr fiterr;
-        vstring strcosts;
-        vstring strmetrics;
-        vector<Net *> snets;
+  int dev;
+  vlayer layers;
+  vlayer lin;
+  vlayer lout;
+  vlayer vfts;
+  vlayer vbts;
+  vind ind;
+  vind sind;
+  vloss losses;
+  vmetrics metrics;
+  optim *optimizer;
+  verr fiterr;
+  vstring strcosts;
+  vstring strmetrics;
+  vector<Net *> snets;
 
-        Net(const initializer_list<Layer*>& in,const initializer_list<Layer*>& out);
-        Layer *getLayer(string name);
+  Net(const initializer_list<Layer*>& in,const initializer_list<Layer*>& out);
+  Layer *getLayer(string name);
 
-        void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m);
-        void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,int todev);
-        void fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch,int epochs);
-        void train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out);
+  void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m);
+  void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,int todev);
+  void fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch,int epochs);
+  void train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out);
 
 };
 #endif

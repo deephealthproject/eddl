@@ -5,8 +5,8 @@
 // The MIT License (MIT)
 //
 // Copyright (c) 2019
-// 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
-// 	     Jon Ander Gómez, <jon@dsic.upv.es>
+//           Roberto Paredes Palacios, <rparedes@dsic.upv.es>
+//           Jon Ander Gómez, <jon@dsic.upv.es>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -38,36 +38,36 @@
 
 float uniform()
 {
-    return ((rand()%10000)/10000.0);
+  return ((rand()%10000)/10000.0);
 }
 
 
 float suniform()
 {
-    return (2*uniform())-1;
+  return (2*uniform())-1;
 }
 
 
 float gaussgen()
 {
-    float x,u1,u2;
-    int i;
+  float x,u1,u2;
+  int i;
 
-    u1=uniform();
-    u2=uniform();
+  u1=uniform();
+  u2=uniform();
 
-    while (u1==0.0) u1=uniform();
+  while (u1==0.0) u1=uniform();
 
-    x=sqrt(log(1/u1))*cos(2*PI*u2);
+  x=sqrt(log(1/u1))*cos(2*PI*u2);
 
-    return x;
+  return x;
 }
 
 
 float gauss(float mean,float sd)
 {
-    int i;
-    return (gaussgen()*sd)+mean;
+  int i;
+  return (gaussgen()*sd)+mean;
 }
 
 

@@ -5,8 +5,8 @@
 // The MIT License (MIT)
 //
 // Copyright (c) 2019
-// 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
-// 	     Jon Ander Gómez, <jon@dsic.upv.es>
+//           Roberto Paredes Palacios, <rparedes@dsic.upv.es>
+//           Jon Ander Gómez, <jon@dsic.upv.es>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -42,27 +42,27 @@ Layer::Layer(string n):Layer(n,DEV_CPU){}
 
 Layer::Layer(string n,int d)
 {
-    mode=TRMODE;
-    target=delta=input=output=NULL;
-    dev=d;
-    name=n;
-    lin=lout=0;
-    delta_bp=0;
+  mode=TRMODE;
+  target=delta=input=output=NULL;
+  dev=d;
+  name=n;
+  lin=lout=0;
+  delta_bp=0;
 }
 
 
 void Layer::initialize()
 {
-    for(int i = 0; i != params.size(); i++)
-        params[i]->rand();
+  for(int i = 0; i != params.size(); i++)
+    params[i]->rand();
 }
 
 
 void Layer::reset()
 {
-/*for(int i = 0; i != gradients.size(); i++)
-  gradients[i]->set(0.0);*/
-    delta->set(0.0);
+  /*for(int i = 0; i != gradients.size(); i++)
+    gradients[i]->set(0.0);*/
+  delta->set(0.0);
 }
 
 
@@ -77,16 +77,16 @@ LinLayer::LinLayer(string n,int d):Layer(n,d)
 
 void LinLayer::addchild(Layer *l)
 {
-    child.push_back(l);
-    lout++;
+  child.push_back(l);
+  lout++;
 }
 
 
 void LinLayer::addparent(Layer *l)
 {
-    if (parent.size()!=0) msg("This layers only can have one parent layer",l->name.c_str());
-    parent.push_back(l);
-    lin++;
+  if (parent.size()!=0) msg("This layers only can have one parent layer",l->name.c_str());
+  parent.push_back(l);
+  lin++;
 }
 
 
@@ -97,15 +97,15 @@ MLayer::MLayer(string n,int d):Layer(n,d){}
 
 void MLayer::addchild(Layer *l)
 {
-    child.push_back(l);
-    lout++;
+  child.push_back(l);
+  lout++;
 }
 
 
 void MLayer::addparent(Layer *l)
 {
-    parent.push_back(l);
-    lin++;
+  parent.push_back(l);
+  lin++;
 }
 
 

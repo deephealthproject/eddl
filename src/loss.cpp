@@ -5,8 +5,8 @@
 // The MIT License (MIT)
 //
 // Copyright (c) 2019
-// 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
-// 	     Jon Ander Gómez, <jon@dsic.upv.es>
+//           Roberto Paredes Palacios, <rparedes@dsic.upv.es>
+//           Jon Ander Gómez, <jon@dsic.upv.es>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -38,45 +38,45 @@ using namespace std;
 
 Loss::Loss(string n)
 {
-    name=n;
+  name=n;
 }
 
 
 void Loss::delta(Tensor *T, Tensor* Y, Tensor *D)
 {
 
-    if (name=="mse")
+  if (name=="mse")
     {
-//delta: (T-Y)
-        Tensor::sum(1.0,T,-1.0,Y,D,0);
+      //delta: (T-Y)
+      Tensor::sum(1.0,T,-1.0,Y,D,0);
     }
-    else if (name=="cent")
+  else if (name=="cent")
     {
-// delta: t/y - (1-t)/(1-y)
-        Tensor *aux1=new Tensor(T->getshape());
-        Tensor *aux2=new Tensor(T->getshape());
-        Tensor *one=new Tensor(T->getshape());
-        one->set(1.0);
+      // delta: t/y - (1-t)/(1-y)
+      Tensor *aux1=new Tensor(T->getshape());
+      Tensor *aux2=new Tensor(T->getshape());
+      Tensor *one=new Tensor(T->getshape());
+      one->set(1.0);
 
-//  (1-t)/(1-y)
-        Tensor::sum(1,one,-1,T,aux1,0);
-        Tensor::sum(1,one,-1,Y,aux2,0);
-        Tensor::el_div(1,aux1,1,aux2,aux2,0);
+      //  (1-t)/(1-y)
+      Tensor::sum(1,one,-1,T,aux1,0);
+      Tensor::sum(1,one,-1,Y,aux2,0);
+      Tensor::el_div(1,aux1,1,aux2,aux2,0);
 
-// t/y
-        Tensor::el_div(1,T,1,Y,aux1,0);
+      // t/y
+      Tensor::el_div(1,T,1,Y,aux1,0);
 
-        Tensor::sum(1,aux1,-1,aux2,D,0);
+      Tensor::sum(1,aux1,-1,aux2,D,0);
 
-        delete aux1;
-        delete aux2;
-        delete one;
+      delete aux1;
+      delete aux2;
+      delete one;
     }
-//typical case where cent is after a softmax
-    else if (name=="soft_cent")
+  //typical case where cent is after a softmax
+  else if (name=="soft_cent")
     {
-// parent->delta: (t-y)
-        Tensor::sum(1.0,T,-1.0,Y, D,0);
+      // parent->delta: (t-y)
+      Tensor::sum(1.0,T,-1.0,Y, D,0);
     }
 
 }
@@ -84,25 +84,25 @@ void Loss::delta(Tensor *T, Tensor* Y, Tensor *D)
 
 float Loss::value(Tensor *T, Tensor* Y)
 {
-    float f;
-    if (name=="mse")
+  float f;
+  if (name=="mse")
     {
-// batch error: sum((T-Y)^2)
-        Tensor *aux=new Tensor(T->getshape());
-        Tensor::sum(1.0,T,-1.0,Y,aux,0);
-        Tensor::el_mult(1,aux,1,aux,aux,0);
-        f=Tensor::total_sum(aux);
-        delete aux;
+      // batch error: sum((T-Y)^2)
+      Tensor *aux=new Tensor(T->getshape());
+      Tensor::sum(1.0,T,-1.0,Y,aux,0);
+      Tensor::el_mult(1,aux,1,aux,aux,0);
+      f=Tensor::total_sum(aux);
+      delete aux;
     }
-    else if ((name=="cent")||(name=="soft_cent"))
+  else if ((name=="cent")||(name=="soft_cent"))
     {
-        Tensor *aux=new Tensor(T->getshape());
-        Tensor::cent(T,Y,aux);
-        f=Tensor::total_sum(aux);
-        delete aux;
+      Tensor *aux=new Tensor(T->getshape());
+      Tensor::cent(T,Y,aux);
+      f=Tensor::total_sum(aux);
+      delete aux;
     }
 
-    return f;
+  return f;
 
 }
 

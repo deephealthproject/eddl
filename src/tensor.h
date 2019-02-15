@@ -5,8 +5,8 @@
 // The MIT License (MIT)
 //
 // Copyright (c) 2019
-// 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
-// 	     Jon Ander Gómez, <jon@dsic.upv.es>
+//           Roberto Paredes Palacios, <rparedes@dsic.upv.es>
+//           Jon Ander Gómez, <jon@dsic.upv.es>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,8 +32,28 @@
 #define _TENSOR_
 
 #define DEV_CPU 0
+
 #define DEV_GPU 1000
+#define DEV_GPU_0 1000
+#define DEV_GPU_1 1001
+#define DEV_GPU_2 1002
+#define DEV_GPU_3 1003
+#define DEV_GPU_4 1004
+#define DEV_GPU_5 1005
+#define DEV_GPU_6 1006
+#define DEV_GPU_7 1007
+#define DEV_GPU_8 1008
+
 #define DEV_FPGA 2000
+#define DEV_FPGA_0 2000
+#define DEV_FPGA_1 2001
+#define DEV_FPGA_2 2002
+#define DEV_FPGA_3 2003
+#define DEV_FPGA_4 2004
+#define DEV_FPGA_5 2005
+#define DEV_FPGA_6 2006
+#define DEV_FPGA_7 2007
+#define DEV_FPGA_8 2008
 
 #include <initializer_list>
 #include <vector>
@@ -55,78 +75,78 @@ void msg(string s,string s2);
 class Tensor
 {
 
-    public:
-        int device;
-        int dim;
-        int tam;
-        shape sizes;
+ public:
+  int device;
+  int dim;
+  int tam;
+  shape sizes;
 
-        Tensor **ptr;
+  Tensor **ptr;
 
-// CPU
-        Eigen::RowVectorXf ptr1;
-        Eigen::MatrixXf ptr2;
+  // CPU
+  Eigen::RowVectorXf ptr1;
+  Eigen::MatrixXf ptr2;
 
-// GPU
-        float *gptr;
-        int gpu_device;
+  // GPU
+  float *gptr;
+  int gpu_device;
 
-//FPGA
+  //FPGA
 
-// Multithreading. Tensor semaphore
-        mutex *tsem;
+  // Multithreading. Tensor semaphore
+  mutex *tsem;
 
-// Constructors
-        Tensor();
-        Tensor(const initializer_list<int>& init);
-        Tensor(const initializer_list<int>& init, int dev);
+  // Constructors
+  Tensor();
+  Tensor(const initializer_list<int>& init);
+  Tensor(const initializer_list<int>& init, int dev);
 
-        Tensor(const shape s);
-        Tensor(const shape s, int dev);
-        Tensor(string fname);
+  Tensor(const shape s);
+  Tensor(const shape s, int dev);
+  Tensor(string fname);
 
-        ~Tensor();
-///////// normal metods
-        shape getshape();
-        void info();
-        Tensor *share();
-        void print();
-        void rand();
-        void set(float v);
-        void div(float v);
-        void save(string s);
-        void save(FILE *fe);
-        void load(FILE *fe);
-        void tlin(float *n);
-        float *toLin();
-        void flin(float *n);
-        void fromLin(float *n);
+  ~Tensor();
+  ///////// normal metods
+  shape getshape();
+  void info();
+  Tensor *share();
+  void print();
+  void rand();
+  void set(float v);
+  void div(float v);
+  void save(string s);
+  void save(FILE *fe);
+  void load(FILE *fe);
+  void tlin(float *n);
+  float *toLin();
+  void flin(float *n);
+  void fromLin(float *n);
 
-///////// static metods
-        static int eqsize(Tensor *A, Tensor *B);
-        static void copy(Tensor *A,Tensor *B);
-        static void select(Tensor *A, Tensor *B,vector<int> sind);
+  ///////// static metods
+  static int eqsize(Tensor *A, Tensor *B);
+  static void copy(Tensor *A,Tensor *B);
+  static void select(Tensor *A, Tensor *B,vector<int> sind);
 
-        static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC);
-        static void sum(float scA, Tensor *A, float scB,  Tensor *B, Tensor *C,int incC);
-        static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
-        static void sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
-        static void reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB);
+  static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC);
+  static void sum(float scA, Tensor *A, float scB,  Tensor *B, Tensor *C,int incC);
+  static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
+  static void sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
+  static void reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB);
 
-        static void el_mult(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC);
-        static void el_div(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC);
+  static void el_mult(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC);
+  static void el_div(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC);
 
-        static float total_sum(Tensor *A);
+  static float total_sum(Tensor *A);
 
-        static void inc(Tensor *A,Tensor *B);
-        static void cent(Tensor *A,Tensor *B, Tensor *C);
-        static int accuracy(Tensor *A,Tensor *B);
+  static void inc(Tensor *A,Tensor *B);
+  static void cent(Tensor *A,Tensor *B, Tensor *C);
+  static int accuracy(Tensor *A,Tensor *B);
 
-        static void ReLu(Tensor *A,Tensor *B);
-        static void Softmax(Tensor *A,Tensor *B);
+  static void ReLu(Tensor *A,Tensor *B);
+  static void Softmax(Tensor *A,Tensor *B);
 
-        static void D_ReLu(Tensor *D, Tensor *I, Tensor *PD);
-        static void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
+  static void D_ReLu(Tensor *D, Tensor *I, Tensor *PD);
+  static void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
 
 };
 #endif

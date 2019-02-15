@@ -5,8 +5,8 @@
 // The MIT License (MIT)
 //
 // Copyright (c) 2019
-// 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
-// 	     Jon Ander Gómez, <jon@dsic.upv.es>
+//           Roberto Paredes Palacios, <rparedes@dsic.upv.es>
+//           Jon Ander Gómez, <jon@dsic.upv.es>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -47,28 +47,28 @@ typedef vector<Tensor*> vtensor;
 
 class optim
 {
-    public:
-        string name;
-        vlayer layers;
+ public:
+  string name;
+  vlayer layers;
 
-        optim();
-        virtual void setlayers(vlayer l){}
-        virtual void applygrads(int batch){}
-        virtual optim *clone(){return NULL;}
+  optim();
+  virtual void setlayers(vlayer l){}
+  virtual void applygrads(int batch){}
+  virtual optim *clone(){return NULL;}
 
 };
 
 class sgd: public optim
 {
-    public:
-        float lr;
-        float mu;
-        vtensor mT;
+ public:
+  float lr;
+  float mu;
+  vtensor mT;
 
-        sgd(float lr,float mu);
-        optim *clone();
-        void setlayers(vlayer l);
-        void applygrads(int batch);
+  sgd(float lr,float mu);
+  optim *clone();
+  void setlayers(vlayer l);
+  void applygrads(int batch);
 };
 #endif
 

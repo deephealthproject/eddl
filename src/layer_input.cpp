@@ -5,8 +5,8 @@
 // The MIT License (MIT)
 //
 // Copyright (c) 2019
-// 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
-// 	     Jon Ander Gómez, <jon@dsic.upv.es>
+//           Roberto Paredes Palacios, <rparedes@dsic.upv.es>
+//           Jon Ander Gómez, <jon@dsic.upv.es>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -43,25 +43,25 @@ Input::Input(Tensor *in,int d):Input(in,"input"+to_string(input_created),d){}
 Input::Input(Tensor *in,string name):Input(in,name,DEV_CPU){}
 Input::Input(Tensor *in,string name,int d):LinLayer(name,d)
 {
-    input_created++;
-    input=output=in;
-    delta=new Tensor(input->getshape(),d);
+  input_created++;
+  input=output=in;
+  delta=new Tensor(input->getshape(),d);
 }
 
 
 // virtual
 void Input::info()
 {
-    cout<<"\n===============\n";
-    cout<< "Layer Input "<<name<<"\n";
-    input->info();
-    cout<<"===============\n\n";
+  cout<<"\n===============\n";
+  cout<< "Layer Input "<<name<<"\n";
+  input->info();
+  cout<<"===============\n\n";
 }
 
 
 void Input::forward()
 {
-    delta->set(0.0);
+  delta->set(0.0);
 }
 
 
@@ -73,24 +73,24 @@ void Input::backward()
 
 Layer *Input::share(int c,vector<Layer*>p)
 {
-    shape s=input->getshape();
-    s[0]/=c;
+  shape s=input->getshape();
+  s[0]/=c;
 
-    Input *n=new Input(new Tensor(s),"share_"+to_string(c)+name,dev);
-    n->orig=this;
+  Input *n=new Input(new Tensor(s),"share_"+to_string(c)+name,dev);
+  n->orig=this;
 
-    return n;
+  return n;
 }
 
 Layer *Input::clone(int c,vector<Layer*>p,int todev)
 {
-    shape s=input->getshape();
-    s[0]/=c;
+  shape s=input->getshape();
+  s[0]/=c;
 
-    Input *n=new Input(new Tensor(s,todev),"clone_"+to_string(todev)+name,todev);
-    n->orig=this;
+  Input *n=new Input(new Tensor(s,todev),"clone_"+to_string(todev)+name,todev);
+  n->orig=this;
 
-    return n;
+  return n;
 }
 
 

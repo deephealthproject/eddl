@@ -5,8 +5,8 @@
 // The MIT License (MIT)
 //
 // Copyright (c) 2019
-// 	     Roberto Paredes Palacios, <rparedes@dsic.upv.es>
-// 	     Jon Ander Gómez, <jon@dsic.upv.es>
+//           Roberto Paredes Palacios, <rparedes@dsic.upv.es>
+//           Jon Ander Gómez, <jon@dsic.upv.es>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -39,11 +39,11 @@ using namespace std;
 
 class Metric
 {
-    public:
-        string name;
+ public:
+  string name;
 
-        Metric(string name);
+  Metric(string name);
 
-        float value(Tensor *T, Tensor* Y);
+  float value(Tensor *T, Tensor* Y);
 };
 #endif
