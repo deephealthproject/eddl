@@ -67,6 +67,7 @@ void Tensor::copy(Tensor *A, Tensor *B)
 
   if (!Tensor::eqsize(A,B))
     msg("Tensors with different sizes","Tensor::copy");
+
   B->tsem->lock();
   if ((A->isCPU())&&(B->isCPU()))
     {
@@ -102,7 +103,7 @@ void Tensor::inc(Tensor *A, Tensor *B)
 
   if (!Tensor::eqsize(A,B))
     msg("Tensors with different sizes","Tensor::copy");
-    
+
   B->tsem->lock();
   if ((A->isCPU())&&(B->isCPU()))
     {
@@ -123,6 +124,7 @@ void Tensor::inc(Tensor *A, Tensor *B)
       Tensor *n=new Tensor(A->getshape(),A->device);
       Tensor::copy(B,n);
       Tensor::sum(1,n,1,A,A,0);
+      delete n;
     }
   #endif
   else

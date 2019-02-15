@@ -60,8 +60,8 @@ void msg(string s,string s2)
 
 void msg(string s){msg(s,"");}
 
-int Tensor::isCPU(){return (isCPU());}
-int Tensor::isGPU(){return ((device>=DEV_GPU)&&(isGPU()));}
+int Tensor::isCPU(){return (device==DEV_CPU);}
+int Tensor::isGPU(){return ((device>=DEV_GPU)&&(device<DEV_FPGA));}
 int Tensor::isFPGA(){return (device>=DEV_FPGA);}
 
 // Tensor class
