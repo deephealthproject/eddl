@@ -57,23 +57,16 @@ int main(int argc, char **argv)
   // size of error criteria list must match with size of list of outputs
   net->build(SGD(0.01,0.95),{"cent"},{"acc"});
 
-  //net->split(4);
-
   /// read data
   Tensor *X=new Tensor("trX.bin");
   Tensor *Y=new Tensor("trY.bin");
 
+  // Preprocess data
   X->div(255.0);
 
   // training, list of input and output tensors, batch, epochs
   net->fit({X},{Y},batch,100);
-  ///
 
-
-  ////
-
-
-  //net->train_batch({Xb},{Yb})
 
 }
 
