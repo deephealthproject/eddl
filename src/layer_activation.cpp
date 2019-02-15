@@ -80,7 +80,6 @@ void Activation::backward()
     {
       if (delta_bp)
         {
-          fprintf(stderr,"Parent %d\n",parent.size());
           Tensor::inc(delta,parent[0]->delta);
         }
       else
