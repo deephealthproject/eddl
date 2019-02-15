@@ -124,7 +124,7 @@ void gpu_log(Tensor *A) {
   dim3 dimGrid(r);
   dim3 dimBlock(c);
 
-  log<<<dimGrid,dimBlock>>>(A->gptr,v,A->sizes[0],A->sizes[1]);
+  log<<<dimGrid,dimBlock>>>(A->gptr,A->sizes[0],A->sizes[1]);
   check_cuda(cudaDeviceSynchronize(),"set");
 
 }
@@ -145,7 +145,7 @@ void gpu_exp(Tensor *A) {
   dim3 dimGrid(r);
   dim3 dimBlock(c);
 
-  exp<<<dimGrid,dimBlock>>>(A->gptr,v,A->sizes[0],A->sizes[1]);
+  exp<<<dimGrid,dimBlock>>>(A->gptr,A->sizes[0],A->sizes[1]);
   check_cuda(cudaDeviceSynchronize(),"set");
 
 }
@@ -166,7 +166,7 @@ void gpu_sqrt(Tensor *A) {
   dim3 dimGrid(r);
   dim3 dimBlock(c);
 
-  sqrt<<<dimGrid,dimBlock>>>(A->gptr,v,A->sizes[0],A->sizes[1]);
+  sqrt<<<dimGrid,dimBlock>>>(A->gptr,A->sizes[0],A->sizes[1]);
   check_cuda(cudaDeviceSynchronize(),"set");
 
 }
@@ -187,7 +187,7 @@ void gpu_sqr(Tensor *A) {
   dim3 dimGrid(r);
   dim3 dimBlock(c);
 
-  sqr<<<dimGrid,dimBlock>>>(A->gptr,v,A->sizes[0],A->sizes[1]);
+  sqr<<<dimGrid,dimBlock>>>(A->gptr,A->sizes[0],A->sizes[1]);
   check_cuda(cudaDeviceSynchronize(),"set");
 
 }
