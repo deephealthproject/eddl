@@ -759,7 +759,7 @@ void Tensor::D_Softmax(Tensor *D,Tensor *I,Tensor *PD)
         }
     }
 #ifdef cGPU
-  else if (A->device<DEV_FPGA)
+  else if (D->device<DEV_FPGA)
     {
     }
 #endif
