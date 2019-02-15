@@ -76,6 +76,9 @@ void Tensor::copy(Tensor *A, Tensor *B)
       else for(int i=0;i<A->sizes[0];i++) Tensor::copy(A->ptr[i],B->ptr[i]);
     }
   #ifdef cGPU
+  else if ((A->isGPU())&&(B->isGPU())) {
+    gpu_copy_gpu(A,B);
+  }
   else if ((A->isCPU())&&(B->isGPU()))
     {
       float *nptr=A->toLin();
@@ -89,6 +92,7 @@ void Tensor::copy(Tensor *A, Tensor *B)
       B->fromLin(nptr);
       free(nptr);
     }
+
   #endif
   else
     {
@@ -113,6 +117,9 @@ void Tensor::inc(Tensor *A, Tensor *B)
       else for(int i=0;i<A->sizes[0];i++) Tensor::inc(A->ptr[i],B->ptr[i]);
     }
   #ifdef cGPU
+  else if ((A->isGPU())&&(B->isGPU())) {
+    Tensor::sum(1,A,1,B,B,0);
+  }
   else if ((A->isCPU())&&(B->isGPU()))
     {
        Tensor *n=new Tensor(B->getshape(),B->device);

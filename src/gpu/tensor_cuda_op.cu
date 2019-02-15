@@ -229,7 +229,7 @@ void gpu_copy_to_gpu(float *nptr,Tensor *A)
 {
   int device=A->gpu_device;
   cudaSetDevice(device);
-  check_cuda(cudaMemcpy(A->gptr,nptr,A->tam,cudaMemcpyHostToDevice),"gpu_copy_to_gpu");
+  check_cuda(cudaMemcpy(A->gptr,nptr,A->tam*sizeof(float),cudaMemcpyHostToDevice),"gpu_copy_to_gpu");
 }
 
 ///////////////////////////////////////////
@@ -237,8 +237,17 @@ void gpu_copy_from_gpu(Tensor *A,float *nptr)
 {
   int device=A->gpu_device;
   cudaSetDevice(device);
-  check_cuda(cudaMemcpy(nptr,A->gptr,A->tam,cudaMemcpyDeviceToHost),"gpu_copy_to_gpu");
+  check_cuda(cudaMemcpy(nptr,A->gptr,A->tam*sizeof(float),cudaMemcpyDeviceToHost),"gpu_copy_to_gpu");
 }
+
+///////////////////////////////////////////
+void gpu_copy_gpu(Tensor *A,Tensor *B)
+{
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+  check_cuda(cudaMemcpy(B->gptr,A->gptr,A->tam*sizeof(float),cudaMemcpyDeviceToDevice),"gpu_copy_gpu");
+}
+
 
 ///////////////////////////////////////////
 
