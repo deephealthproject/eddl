@@ -130,6 +130,7 @@ void Tensor::inc(Tensor *A, Tensor *B)
   #endif
   else
     {
+      fprintf(stderr,"(%d %d)\n",A->device,B->device);
       msg("unsupported copy between devices","Tensor::inc");
     }
   B->tsem->unlock();
