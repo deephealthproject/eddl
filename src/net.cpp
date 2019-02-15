@@ -753,7 +753,9 @@ void Net::train_batch(vtensor X, vtensor Y)
             // Taking average
             layers[j]->params[k]->set(0.0);
             for(int i=0;i<snets.size();i++) {
+              fprintf(stderr,"De snet %d a Net\n",i);
               Tensor::inc(snets[i]->layers[j]->params[k],layers[j]->params[k]);
+              fprintf(stderr,"OK\n");
             }
             layers[j]->params[k]->div(snets.size());
 
