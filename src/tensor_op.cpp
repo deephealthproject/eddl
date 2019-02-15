@@ -92,6 +92,7 @@ void Tensor::copy(Tensor *A, Tensor *B)
   #endif
   else
     {
+      fprintf(stderr,"(%d %d)\n",A->device,B->device);
       msg("unsupported copy between devices","Tensor::copy");
     }
   B->tsem->unlock();
@@ -102,7 +103,7 @@ void Tensor::inc(Tensor *A, Tensor *B)
 {
 
   if (!Tensor::eqsize(A,B))
-    msg("Tensors with different sizes","Tensor::copy");
+    msg("Tensors with different sizes","Tensor::inc");
 
   B->tsem->lock();
   if ((A->isCPU())&&(B->isCPU()))
@@ -129,7 +130,7 @@ void Tensor::inc(Tensor *A, Tensor *B)
   #endif
   else
     {
-      msg("unsupported copy between devices","Tensor::copy");
+      msg("unsupported copy between devices","Tensor::inc");
     }
   B->tsem->unlock();
 }
