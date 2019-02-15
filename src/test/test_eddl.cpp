@@ -37,8 +37,7 @@ int main(int argc, char **argv)
 {
     int batch=1000;
 
-    Tensor *tin=new Tensor({batch,784}
-    );
+    Tensor *tin=new Tensor({batch,784});
 
 // graph
     Input* in=new Input(tin);
@@ -68,6 +67,13 @@ int main(int argc, char **argv)
 
 // training, list of input and output tensors, batch, epochs
     net->fit({X},{Y},batch,100);
+///
+
+
+////
+
+
+    //net->train_batch({Xb},{Yb})
 
 }
 
