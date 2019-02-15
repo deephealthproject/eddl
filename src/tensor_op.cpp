@@ -108,18 +108,18 @@ void Tensor::inc(Tensor *A, Tensor *B)
   if (!Tensor::eqsize(A,B))
     msg("Tensors with different sizes","Tensor::inc");
 
-  B->tsem->lock();
+ 
   if ((A->isCPU())&&(B->isCPU()))
     {
+      B->tsem->lock();
       if (A->dim==1) B->ptr1+=A->ptr1;
       else if (A->dim==2) B->ptr2+=A->ptr2;
       else for(int i=0;i<A->sizes[0];i++) Tensor::inc(A->ptr[i],B->ptr[i]);
+      B->tsem->unlock();
     }
   #ifdef cGPU
   else if ((A->isGPU())&&(B->isGPU())) {
-    B->tsem->unlock();
     Tensor::sum(1,A,1,B,B,0);
-    B->tsem->lock();
   }
   else if ((A->isCPU())&&(B->isGPU()))
     {
@@ -141,7 +141,6 @@ void Tensor::inc(Tensor *A, Tensor *B)
       fprintf(stderr,"(%d %d)\n",A->device,B->device);
       msg("unsupported copy between devices","Tensor::inc");
     }
-  B->tsem->unlock();
 }
 
 
