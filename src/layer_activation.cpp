@@ -90,6 +90,7 @@ cout<<name<<"\n";
             Tensor::D_Softmax(delta,output,parent[0]->delta);
         }
     }
+  cout<<name<<" 3\n";
 }
 
 
