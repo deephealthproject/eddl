@@ -799,10 +799,11 @@ void *train_batch_t(void *t)
   net->reset();
 
   net->forward();
-  /*
+
   net->delta();
   net->loss();
   net->backward();
+  /*
   if (net->dev>DEV_CPU) net->applygrads(targs->batch);
 */
 }
