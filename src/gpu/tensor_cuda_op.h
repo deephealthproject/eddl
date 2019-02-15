@@ -30,6 +30,7 @@
 #include <cuda.h>
 #include "../tensor.h"
 
+
 void gpu_set(Tensor *A,float v);
 void gpu_mult(Tensor *A,float v);
 void gpu_sum(Tensor *A, float v);
@@ -39,6 +40,8 @@ void gpu_sqrt(Tensor *A);
 void gpu_sqr(Tensor *A);
 void gpu_mask(Tensor *A,float v);
 
+void gpu_copy_to_gpu(float *nptr,Tensor *B);
+void gpu_copy_from_gpu(Tensor *A,float *nptr);
 
 void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC);
 void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC);

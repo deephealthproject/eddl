@@ -106,28 +106,11 @@ class Tensor
   Tensor(string fname);
 
   ~Tensor();
-  ///////// normal metods
+
   shape getshape();
   void info();
   Tensor *share();
   void print();
-  void rand_uniform(float v);
-  void rand_suniform(float v);
-  void rand_gaussian(float m,float s);
-  void rand_binary(float v);
-
-  void set(float v);
-
-  void mult(float v);
-  void div(float v);
-  void sum(float v);
-  void sub(float v);
-
-  void set_log();
-  void set_exp();
-  void set_sqrt();
-  void set_sqr();
-
   void save(string s);
   void save(FILE *fe);
   void load(FILE *fe);
@@ -135,6 +118,27 @@ class Tensor
   float *toLin();
   void flin(float *n);
   void fromLin(float *n);
+  // devices
+  int isCPU();
+  int isGPU();
+  int isFPGA();
+
+  // math
+  void set(float v);
+  void mult(float v);
+  void div(float v);
+  void sum(float v);
+  void sub(float v);
+  void set_log();
+  void set_exp();
+  void set_sqrt();
+  void set_sqr();
+  //rand
+  void rand_uniform(float v);
+  void rand_suniform(float v);
+  void rand_gaussian(float m,float s);
+  void rand_binary(float v);
+
 
   ///////// static metods
   static int eqsize(Tensor *A, Tensor *B);

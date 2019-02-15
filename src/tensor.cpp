@@ -60,6 +60,10 @@ void msg(string s,string s2)
 
 void msg(string s){msg(s,"");}
 
+int Tensor::isCPU(){return (isCPU());}
+int Tensor::isGPU(){return ((device>=DEV_GPU)&&(isGPU()));}
+int Tensor::isFPGA(){return (device>=DEV_FPGA);}
+
 // Tensor class
 Tensor::Tensor():device(DEV_CPU),dim(0),tam(0){}
 
@@ -70,7 +74,7 @@ Tensor::Tensor(const shape s):Tensor(s,DEV_CPU){}
 Tensor::Tensor(shape s,int dev)
 {
 #ifndef cGPU
-  if ((dev>DEV_CPU)&&(device<DEV_FPGA))
+  if ((dev>DEV_CPU)&&(isGPU()))
     {
       fprintf(stderr,"Not compiled for GPU\n");
       exit(0);
@@ -91,7 +95,7 @@ Tensor::Tensor(shape s,int dev)
   tam=1;
   for(int i=0;i<dim;++i) tam*=s[i];
 
-  if (device==DEV_CPU)
+  if (isCPU())
     {
       if (dim==1) ptr1.resize(sizes[0]);
       else if (dim==2) ptr2.resize(sizes[0],sizes[1]);
@@ -104,7 +108,7 @@ Tensor::Tensor(shape s,int dev)
         }
     }
 #ifdef cGPU
-  else if (device<DEV_FPGA)
+  else if (isGPU())
     {
       gpu_device=device-DEV_GPU;
       if (!initcuda[gpu_device])
@@ -245,7 +249,7 @@ void Tensor::save(FILE *fe)
 ///////////////////////////////////////////
 void Tensor::save(string fname)
 {
-  if (device!=DEV_CPU)
+  if (!isCPU())
     msg("Only save CPU Tensors","Tensor::save");
 
   int i,j;
@@ -285,7 +289,7 @@ Tensor *Tensor::share()
 ///////////////////////////////////////////
 Tensor::~Tensor()
 {
-  if (device==DEV_CPU)
+  if (isCPU())
     {
       if (dim==1) ptr1.resize(0);
       else if (dim==2) ptr2.resize(0,0);
@@ -297,7 +301,7 @@ Tensor::~Tensor()
         }
     }
 #ifdef cGPU
-  else if (device<DEV_FPGA)
+  else if (isGPU())
     {
       gpu_delete_tensor(gpu_device,gptr);
     }
@@ -335,7 +339,8 @@ void Tensor::tlin(float *n)
 
 float *Tensor::toLin()
 {
-  if (device!=DEV_CPU) return NULL;
+  if (!isCPU()) msg("Not CPU device is linear","toLin");
+
 
   float *n=(float*)malloc(tam*sizeof(float));
 
@@ -387,7 +392,7 @@ void Tensor::flin(float *n)
 
 void Tensor::fromLin(float *n)
 {
-  if (device!=DEV_CPU) return;
+  if (!isCPU()) msg("Not CPU device is linear","toLin");
 
   linpos=0;
   if (dim==1)
@@ -431,8 +436,8 @@ void Tensor::info()
   fprintf(stderr,"%d)\n",sizes[i]);
 
   fprintf(stderr,"Total bytes=%ld\n",tam*sizeof(float));
-  if (device==DEV_CPU) fprintf(stderr,"Device=CPU\n");
-  else if (device<DEV_FPGA) fprintf(stderr,"Device=GPU (%d)\n",gpu_device);
+  if (isCPU()) fprintf(stderr,"Device=CPU\n");
+  else if (isGPU()) fprintf(stderr,"Device=GPU (%d)\n",gpu_device);
   else fprintf(stderr,"Device=FPGA\n");
 }
 
@@ -444,7 +449,7 @@ void Tensor::info()
 void Tensor::print()
 {
 
-  if (device==DEV_CPU)
+  if (isCPU())
     {
       if (dim==1) cout<<ptr1;
       else if (dim==2) cout<<ptr2;
@@ -457,7 +462,7 @@ void Tensor::print()
       cout<<"\n";
     }
 #ifdef cGPU
-  else if (device<DEV_FPGA)
+  else if (isGPU())
     {
       if (dim<3)
         {
@@ -498,7 +503,7 @@ void Tensor::print()
 ///////////////////////////////////////////
 void Tensor::set(float v)
 {
-  if (device==DEV_CPU)
+  if (isCPU())
     {
       if (dim==1)
         for(int i=0;i<sizes[0];++i) ptr1(i)=v;
@@ -509,7 +514,7 @@ void Tensor::set(float v)
           ptr[i]->set(v);
     }
 #ifdef cGPU
-  else if (device<DEV_FPGA)
+  else if (isGPU())
     {
       gpu_set(this,v);
     }
@@ -525,7 +530,7 @@ void Tensor::set(float v)
 ///////////////////////////////////////////
 void Tensor::mult(float v)
 {
-  if (device==DEV_CPU)
+  if (isCPU())
     {
       if (dim==1)
         for(int i=0;i<sizes[0];++i) ptr1(i)*=v;
@@ -536,7 +541,7 @@ void Tensor::mult(float v)
           ptr[i]->mult(v);
     }
 #ifdef cGPU
-  else if (device<DEV_FPGA)
+  else if (isGPU())
     {
       gpu_mult(this,v);
     }
@@ -555,7 +560,7 @@ void Tensor::div(float v){mult(1.0/v);}
 
 ///////////////////////////////////////////
 void Tensor::sum(float v){
-  if (device==DEV_CPU)
+  if (isCPU())
     {
       if (dim==1)
         for(int i=0;i<sizes[0];++i) ptr1(i)+=v;
@@ -566,7 +571,7 @@ void Tensor::sum(float v){
           ptr[i]->sum(v);
     }
 #ifdef cGPU
-  else if (device<DEV_FPGA)
+  else if (isGPU())
     {
       gpu_sum(this,v);
     }
@@ -583,7 +588,7 @@ void Tensor::sub(float v){sum(-v);}
 ///////////////////////////////////////////
 void Tensor::set_log()
 {
-  if (device==DEV_CPU)
+  if (isCPU())
     {
       if (dim==1)
         for(int i=0;i<sizes[0];++i) ptr1(i)=log(ptr1(i));
@@ -594,7 +599,7 @@ void Tensor::set_log()
           ptr[i]->set_log();
     }
 #ifdef cGPU
-  else if (device<DEV_FPGA)
+  else if (isGPU())
     {
       gpu_log(this);
     }
@@ -608,7 +613,7 @@ void Tensor::set_log()
 ///////////////////////////////////////////
 void Tensor::set_exp()
 {
-  if (device==DEV_CPU)
+  if (isCPU())
     {
       if (dim==1)
         for(int i=0;i<sizes[0];++i) ptr1(i)=exp(ptr1(i));
@@ -619,7 +624,7 @@ void Tensor::set_exp()
           ptr[i]->set_exp();
     }
 #ifdef cGPU
-  else if (device<DEV_FPGA)
+  else if (isGPU())
     {
       gpu_exp(this);
     }
@@ -632,7 +637,7 @@ void Tensor::set_exp()
 }
 ///////////////////////////////////////////
 void Tensor::set_sqrt(){
-  if (device==DEV_CPU)
+  if (isCPU())
     {
       if (dim==1)
         for(int i=0;i<sizes[0];++i) ptr1(i)=sqrt(ptr1(i));
@@ -643,7 +648,7 @@ void Tensor::set_sqrt(){
           ptr[i]->set_sqrt();
     }
 #ifdef cGPU
-  else if (device<DEV_FPGA)
+  else if (isGPU())
     {
       gpu_sqrt(this);
     }
@@ -656,7 +661,7 @@ void Tensor::set_sqrt(){
 }
 ///////////////////////////////////////////
 void Tensor::set_sqr(){
-  if (device==DEV_CPU)
+  if (isCPU())
     {
       if (dim==1)
         for(int i=0;i<sizes[0];++i) ptr1(i)*=ptr1(i);
@@ -667,7 +672,7 @@ void Tensor::set_sqr(){
           ptr[i]->set_sqr();
     }
 #ifdef cGPU
-  else if (device<DEV_FPGA)
+  else if (isGPU())
     {
       gpu_sqr(this);
     }
@@ -682,7 +687,7 @@ void Tensor::set_sqr(){
 ///////////////////////////////////////////
 void Tensor::rand_uniform(float v)
 {
-  if (device==DEV_CPU)
+  if (isCPU())
     {
       if (dim==1)
         for(int i=0;i<sizes[0];++i) ptr1(i)=uniform()*v;
@@ -699,7 +704,7 @@ void Tensor::rand_uniform(float v)
 
     }
 #ifdef cGPU
-  else if (device<DEV_FPGA)
+  else if (isGPU())
     {
       gpu_rand_uniform(this,v);
     }
@@ -717,7 +722,7 @@ void Tensor::rand_uniform(float v)
 ///////////////////////////////////////////
 void Tensor::rand_suniform(float v)
 {
-  if (device==DEV_CPU)
+  if (isCPU())
     {
       if (dim==1)
         for(int i=0;i<sizes[0];++i) ptr1(i)=suniform()*v;
@@ -734,7 +739,7 @@ void Tensor::rand_suniform(float v)
 
     }
 #ifdef cGPU
-  else if (device<DEV_FPGA)
+  else if (isGPU())
     {
       gpu_rand_suniform(this,v);
     }
@@ -753,7 +758,7 @@ void Tensor::rand_suniform(float v)
 ///////////////////////////////////////////
 void Tensor::rand_gaussian(float m,float s)
 {
-  if (device==DEV_CPU)
+  if (isCPU())
     {
       if (dim==1)
         for(int i=0;i<sizes[0];++i) ptr1(i)=gauss(m,s);
@@ -770,7 +775,7 @@ void Tensor::rand_gaussian(float m,float s)
 
     }
 #ifdef cGPU
-  else if (device<DEV_FPGA)
+  else if (isGPU())
     {
       gpu_rand_gaussian(this,m,s);
     }
@@ -787,7 +792,7 @@ void Tensor::rand_gaussian(float m,float s)
 
 void Tensor::rand_binary(float v)
 {
-  if (device==DEV_CPU)
+  if (isCPU())
     {
       if (dim==1)
         for(int i=0;i<sizes[0];++i) ptr1(i)=uniform()<v;
@@ -804,7 +809,7 @@ void Tensor::rand_binary(float v)
 
     }
 #ifdef cGPU
-  else if (device<DEV_FPGA)
+  else if (isGPU())
     {
       gpu_rand_binary(this,v);
     }

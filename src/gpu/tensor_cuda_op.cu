@@ -225,6 +225,22 @@ void gpu_mask(Tensor *A,float v) {
 }
 
 ///////////////////////////////////////////
+void gpu_copy_to_gpu(float *nptr,Tensor *A)
+{
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+  check_cuda(cudaMemcpy(A->gptr,nptr,A->tam,cudaMemcpyHostToDevice),"gpu_copy_to_gpu");
+}
+
+///////////////////////////////////////////
+void gpu_copy_from_gpu(Tensor *A,float *nptr)
+{
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+  check_cuda(cudaMemcpy(nptr,A->gptr,A->tam,cudaMemcpyDeviceToHost),"gpu_copy_to_gpu");
+}
+
+///////////////////////////////////////////
 
 void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
 {

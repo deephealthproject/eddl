@@ -68,28 +68,29 @@ void Tensor::copy(Tensor *A, Tensor *B)
   if (!Tensor::eqsize(A,B))
     msg("Tensors with different sizes","Tensor::copy");
   B->tsem->lock();
-  if ((A->device==DEV_CPU)&&(B->device==DEV_CPU))
+  if ((A->isCPU())&&(B->isCPU()))
     {
       if (A->dim==1) B->ptr1=A->ptr1;
       else if (A->dim==2) B->ptr2=A->ptr2;
       else for(int i=0;i<A->sizes[0];i++) Tensor::copy(A->ptr[i],B->ptr[i]);
     }
-  else if ((A->device==DEV_CPU)&&(B->device>DEV_CPU))
+  #ifdef cGPU
+  else if ((A->isCPU())&&(B->isGPU()))
     {
       float *nptr=A->toLin();
-      //gpu_copy_from(nptr,B);
+      gpu_copy_to_gpu(nptr,B);
       free(nptr);
     }
-  else if ((A->device>DEV_CPU)&&(B->device==DEV_CPU))
+  else if ((A->isGPU())&&(B->isCPU()))
     {
       float *nptr=(float*)malloc(B->tam*sizeof(float));
-      //gpu_copy_to(A,nptr);
+      gpu_copy_from_gpu(A,nptr);
       B->fromLin(nptr);
       free(nptr);
     }
-  else if ((A->device!=DEV_CPU)&&(B->device!=DEV_CPU))
+  #endif
+  else
     {
-      fprintf(stderr,"copy: %d ---> %d\n",A->device,B->device);
       msg("unsupported copy between devices","Tensor::copy");
     }
   B->tsem->unlock();
@@ -101,31 +102,32 @@ void Tensor::inc(Tensor *A, Tensor *B)
 
   if (!Tensor::eqsize(A,B))
     msg("Tensors with different sizes","Tensor::copy");
-
+    
   B->tsem->lock();
-  if ((A->device==DEV_CPU)&&(B->device==DEV_CPU))
+  if ((A->isCPU())&&(B->isCPU()))
     {
       if (A->dim==1) B->ptr1+=A->ptr1;
-      else if (A->dim==2) B->ptr2=A->ptr2;
+      else if (A->dim==2) B->ptr2+=A->ptr2;
       else for(int i=0;i<A->sizes[0];i++) Tensor::inc(A->ptr[i],B->ptr[i]);
     }
-  else if ((A->device==DEV_CPU)&&(B->device>DEV_CPU))
+  #ifdef cGPU
+  else if ((A->isCPU())&&(B->isGPU()))
     {
-      float *nptr=A->toLin();
-      //gpu_copy_from(nptr,B);
-      free(nptr);
+       Tensor *n=new Tensor(B->getshape(),B->device);
+       Tensor::copy(A,n);
+       Tensor::sum(1,n,1,B,B,0);
+       delete n;
     }
-  else if ((A->device>DEV_CPU)&&(B->device==DEV_CPU))
+  else if ((A->isGPU())&&(B->isCPU()))
     {
-      float *nptr=(float*)malloc(B->tam*sizeof(float));
-      //gpu_copy_to(A,nptr);
-      B->fromLin(nptr);
-      free(nptr);
+      Tensor *n=new Tensor(A->getshape(),A->device);
+      Tensor::copy(B,n);
+      Tensor::sum(1,n,1,A,A,0);
     }
-  else if ((A->device!=B->device)&&((A->device!=DEV_CPU)&&(B->device!=DEV_CPU)))
+  #endif
+  else
     {
-      fprintf(stderr,"inc: %d ---> %d\n",A->device,B->device);
-      msg("unsupported inc between devices","Tensor::inc");
+      msg("unsupported copy between devices","Tensor::copy");
     }
   B->tsem->unlock();
 }
@@ -137,7 +139,7 @@ void Tensor::inc(Tensor *A, Tensor *B)
 void Tensor::select(Tensor *A, Tensor *B,vector<int> sind)
 {
   B->tsem->lock();
-  if ((A->device==DEV_CPU)&&(B->device==DEV_CPU))
+  if ((A->isCPU())&&(B->isCPU()))
     {
       if (A->dim==1)
         for(int i=0;i<sind.size();i++)
@@ -190,7 +192,7 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
     }
 
   C->tsem->lock();
-  if (A->device==DEV_CPU)
+  if (A->isCPU())
     {
       if (!tB)
         {
@@ -220,7 +222,7 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
         }
     }
 #ifdef cGPU
-  else if (A->device<DEV_FPGA)
+  else if (A->isGPU())
     {
       gpu_mult2D(A,tA,B,tB,C,incC);
     }
@@ -245,7 +247,7 @@ void Tensor::el_mult(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int inc
   if ((A->device!=B->device)||(A->device!=C->device)) msg("Tensors in different devices","Tensor::el_mult");
   if ((!eqsize(A,B))||(!eqsize(A,C))) msg("Incompatible dims","Tensor::el_mult");
 
-  if (A->device==DEV_CPU)
+  if (A->isCPU())
     {
       if (A->dim==1)
         {
@@ -262,7 +264,7 @@ void Tensor::el_mult(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int inc
           Tensor::el_mult(scA,A->ptr[i],scB,B->ptr[i],C->ptr[i],incC);
     }
 #ifdef cGPU
-  else if (A->device<DEV_FPGA)
+  else if (A->isGPU())
     {
 
     }
@@ -288,7 +290,7 @@ void Tensor::el_div(float scA,Tensor *A, float scB, Tensor *B, Tensor *C,int inc
   if ((!eqsize(A,B))||(!eqsize(A,C))) msg("Incompatible dims","Tensor::el_div");
 
   C->tsem->lock();
-  if (A->device==DEV_CPU)
+  if (A->isCPU())
     {
       if (A->dim==1)
         {
@@ -321,7 +323,7 @@ void Tensor::el_div(float scA,Tensor *A, float scB, Tensor *B, Tensor *C,int inc
           Tensor::el_div(scA,A->ptr[i],scB,B->ptr[i],C->ptr[i],incC);
     }
 #ifdef cGPU
-  else if (A->device<DEV_FPGA)
+  else if (A->isGPU())
     {
 
     }
@@ -348,7 +350,7 @@ void Tensor::sum(float scA, Tensor *A, float scB, Tensor *B, Tensor *C,int incC)
   if ((!eqsize(A,B))||(!eqsize(A,C))) msg("Incompatible dims","Tensor::sum");
 
   C->tsem->lock();
-  if (A->device==DEV_CPU)
+  if (A->isCPU())
     {
       if (A->dim==1)
         if (incC) C->ptr1+=(scA*A->ptr1)+(scB*B->ptr1);
@@ -361,7 +363,7 @@ void Tensor::sum(float scA, Tensor *A, float scB, Tensor *B, Tensor *C,int incC)
           Tensor::sum(scA,A->ptr[i],scB,B->ptr[i],C->ptr[i],incC);
     }
 #ifdef cGPU
-  else if (A->device<DEV_FPGA)
+  else if (A->isGPU())
     {
       //gpu_sum(scA,A,scB,B,C,incC);
     }
@@ -388,9 +390,9 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
   if ((!eqsize(A,C))||(A->sizes[1]!=B->sizes[0])) msg("Incompatible dims","Tensor::sum2D_rowwise");
 
   C->tsem->lock();
-  if (A->device==DEV_CPU) C->ptr2=A->ptr2.rowwise()+B->ptr1;
+  if (A->isCPU()) C->ptr2=A->ptr2.rowwise()+B->ptr1;
 #ifdef cGPU
-  else if (A->device<DEV_FPGA)
+  else if (A->isGPU())
     {
       gpu_sum2D_rowwise(A,B,C);
 
@@ -418,9 +420,9 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C)
   if ((!eqsize(A,C))||(A->sizes[0]!=B->sizes[0])) msg("Incompatible dims","Tensor::sum2D_colwise");
 
   C->tsem->lock();
-  if (A->device==DEV_CPU) C->ptr2=A->ptr2.colwise()+B->ptr1.transpose();
+  if (A->isCPU()) C->ptr2=A->ptr2.colwise()+B->ptr1.transpose();
 #ifdef cGPU
-  else if (A->device<DEV_FPGA)
+  else if (A->isGPU())
     {
       gpu_sum2D_colwise(A,B,C);
     }
@@ -448,7 +450,7 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB)
   if ((A->sizes[1-axis]!=B->sizes[0])) msg("Incompatible dims","Tensor::reduce_sum2D");
 
   B->tsem->lock();
-  if (A->device==DEV_CPU)
+  if (A->isCPU())
     {
       if (axis==0)
         {
@@ -472,7 +474,7 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB)
         }
     }
 #ifdef cGPU
-  else if (A->device<DEV_FPGA)
+  else if (A->isGPU())
     {
       gpu_reduce_sum2D(A,B,axis,incB);
     }
@@ -492,7 +494,7 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB)
 float Tensor::total_sum(Tensor *A)
 {
   A->tsem->lock();
-  if (A->device==DEV_CPU)
+  if (A->isCPU())
     {
       float sum=0.0;
       if (A->dim==1)
@@ -505,7 +507,7 @@ float Tensor::total_sum(Tensor *A)
       return sum;
     }
 #ifdef cGPU
-  else if (A->device<DEV_FPGA)
+  else if (A->isGPU())
     {
 
     }
@@ -530,7 +532,7 @@ void Tensor::cent(Tensor *A,Tensor *B, Tensor *C)
   if ((!eqsize(A,B))||(!eqsize(A,C))) msg("Incompatible dims","Tensor::cross-entropy");
 
   C->tsem->lock();
-  if (A->device==DEV_CPU)
+  if (A->isCPU())
     {
       if (A->dim==1)
         {
@@ -554,7 +556,7 @@ void Tensor::cent(Tensor *A,Tensor *B, Tensor *C)
           Tensor::cent(A->ptr[i],B->ptr[i],C->ptr[i]);
     }
 #ifdef cGPU
-  else if (A->device<DEV_FPGA)
+  else if (A->isGPU())
     {
 
     }
@@ -578,7 +580,7 @@ int Tensor::accuracy(Tensor *A,Tensor *B)
   int acc=0;
 
   B->tsem->lock();
-  if (A->device==DEV_CPU)
+  if (A->isCPU())
     {
       int aind,bind;
       if (A->dim==1)
@@ -602,7 +604,7 @@ int Tensor::accuracy(Tensor *A,Tensor *B)
           acc+=Tensor::accuracy(A->ptr[i],B->ptr[i]);
     }
 #ifdef cGPU
-  else if (A->device<DEV_FPGA)
+  else if (A->isGPU())
     {
 
     }
@@ -628,7 +630,7 @@ void Tensor::ReLu(Tensor *A,Tensor *B)
   if (!eqsize(A,B)) msg("Incompatible dims","Tensor::ReLu");
 
   B->tsem->lock();
-  if (A->device==DEV_CPU)
+  if (A->isCPU())
     {
       if (A->dim==1)
         {
@@ -648,7 +650,7 @@ void Tensor::ReLu(Tensor *A,Tensor *B)
           Tensor::ReLu(A->ptr[i],B->ptr[i]);
     }
 #ifdef cGPU
-  else if (A->device<DEV_FPGA)
+  else if (A->isGPU())
     {
 
     }
@@ -669,7 +671,7 @@ void Tensor::D_ReLu(Tensor *D, Tensor *I, Tensor *PD)
   if ((D->device!=I->device)||(D->device!=PD->device)) msg("Tensors in different devices","Tensor::D_ReLu");
   if ((!eqsize(D,I))||(!eqsize(D,PD))) msg("Incompatible dims","Tensor::D_ReLu");
   PD->tsem->lock();
-  if (D->device==DEV_CPU)
+  if (D->isCPU())
     {
       if (D->dim==1)
         {
@@ -687,7 +689,7 @@ void Tensor::D_ReLu(Tensor *D, Tensor *I, Tensor *PD)
           Tensor::D_ReLu(D->ptr[i],I->ptr[i],PD->ptr[i]);
     }
 #ifdef cGPU
-  else if (D->device<DEV_FPGA)
+  else if (D->isGPU())
     {
 
     }
@@ -710,7 +712,7 @@ void Tensor::Softmax(Tensor *A,Tensor *B)
 
   B->tsem->lock();
 
-  if (A->device==DEV_CPU)
+  if (A->isCPU())
     {
       float max,sum;
 
@@ -727,7 +729,7 @@ void Tensor::Softmax(Tensor *A,Tensor *B)
         }
     }
 #ifdef cGPU
-  else if (A->device<DEV_FPGA)
+  else if (A->isGPU())
     {
     }
 #endif
@@ -750,7 +752,7 @@ void Tensor::D_Softmax(Tensor *D,Tensor *I,Tensor *PD)
 
   PD->tsem->lock();
 
-  if (D->device==DEV_CPU)
+  if (D->isCPU())
     {
       for(int i=0;i<D->sizes[0];i++)
         {
@@ -759,7 +761,7 @@ void Tensor::D_Softmax(Tensor *D,Tensor *I,Tensor *PD)
         }
     }
 #ifdef cGPU
-  else if (D->device<DEV_FPGA)
+  else if (D->isGPU())
     {
     }
 #endif
