@@ -637,6 +637,7 @@ void Net::train_batch(vtensor X, vtensor Y)
     }
     else // multiple CPU_cores or GPUs or FPGAs
     {
+  
         // In case of multiple GPUS or FPGA
         // it is necessary to synchronize params
         void *status;
@@ -691,6 +692,7 @@ void Net::train_batch(vtensor X, vtensor Y)
                 td[i].Yt.push_back(Ys[i][j]);
 
 //call thread
+
             rc = pthread_create(&thr[i], NULL,train_batch_t, (void *)(&td[i]));
 
             if (rc)
@@ -712,6 +714,7 @@ void Net::train_batch(vtensor X, vtensor Y)
 
 
         if (snets[i]->dev==DEV_CPU) {
+          Eigen::initParallel();
           for(int i=0;i<snets.size();i++)
           {
   //call thread
