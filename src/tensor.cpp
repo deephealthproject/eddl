@@ -343,7 +343,7 @@ float *Tensor::toLin()
 
 
   float *n=(float*)malloc(tam*sizeof(float));
-
+ cout<<"toLin\n";
   linpos=0;
   if (dim==1)
     {
@@ -364,6 +364,7 @@ float *Tensor::toLin()
       for(int i=0;i<sizes[0];i++)
         ptr[i]->tlin(n);
     }
+    cout<<"toLin\n";
   return n;
 }
 

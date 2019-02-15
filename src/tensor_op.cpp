@@ -92,7 +92,6 @@ void Tensor::copy(Tensor *A, Tensor *B)
       B->fromLin(nptr);
       free(nptr);
     }
-
   #endif
   else
     {
