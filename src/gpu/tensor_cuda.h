@@ -32,7 +32,7 @@
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
 
-void check_cuda(cudaError_t err,char *msg);
+void check_cuda(cudaError_t err,const char *msg);
 void gpu_set_device(int device);
 void gpu_init(int device);
 
