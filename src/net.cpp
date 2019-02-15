@@ -668,7 +668,7 @@ void Net::train_batch(vtensor X, vtensor Y)
             s[0]=batch;
             Ys[i].push_back(new Tensor(s));
           }
-
+  cout<<"AQUI\n";
       for(int i=0;i<snets.size();i++)
         {
           for(int j=0;j<batch;j++)
@@ -701,7 +701,7 @@ void Net::train_batch(vtensor X, vtensor Y)
               exit(-1);
             }
         }
-
+  cout<<"AQUI\n";
       for(int i=0;i<snets.size();i++)
         {
           rc = pthread_join(thr[i], &status);
@@ -711,7 +711,7 @@ void Net::train_batch(vtensor X, vtensor Y)
               exit(-1);
             }
         }
-
+  cout<<"AQUI\n";
 
       if (snets[i]->dev==DEV_CPU) {
         Eigen::initParallel();
@@ -746,6 +746,7 @@ void Net::train_batch(vtensor X, vtensor Y)
             }
         }
 
+      cout<<"AQUI\n";
       // In case of GPUS or FPGA synchronize params
       if (snets[0]->dev!=DEV_CPU){
         for(int j;j<layers.size();j++)
