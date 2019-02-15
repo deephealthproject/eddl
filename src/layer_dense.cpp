@@ -77,7 +77,6 @@ void Dense::forward()
 void Dense::backward()
 {
 
-  cout<<name<<"\n";
   //get gradients with provided delta
   Tensor::mult2D(input,1,delta,0,gW,0);
   Tensor::reduce_sum2D(delta,gbias,0,0);

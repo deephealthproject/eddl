@@ -119,7 +119,7 @@ void Tensor::inc(Tensor *A, Tensor *B)
   else if ((A->isGPU())&&(B->isGPU())) {
     B->tsem->unlock();
     Tensor::sum(1,A,1,B,B,0);
-    B->tsem->lock();   
+    B->tsem->lock();
   }
   else if ((A->isCPU())&&(B->isGPU()))
     {

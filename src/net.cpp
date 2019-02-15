@@ -792,7 +792,6 @@ void *train_batch_t(void *t)
   for(i=0;i<targs->Yt.size();i++)
     Tensor::copy(targs->Yt[i],net->lout[i]->target);
 
-  cout<<"AQUI "<<net->lin[0]->input->device<<"\n";
 
   net->reset();
 
@@ -800,7 +799,7 @@ void *train_batch_t(void *t)
 
   net->delta();
   net->loss();
-  
+
   net->backward();
   /*
   if (net->dev>DEV_CPU) net->applygrads(targs->batch);
