@@ -760,6 +760,8 @@ void Tensor::D_Softmax(Tensor *D,Tensor *I,Tensor *PD)
   if ((!eqsize(D,I))||(!eqsize(D,PD))) msg("Incompatible dims","Tensor::D_Softmax");
   if (D->dim!=2) msg("D_Softmax only over 2D Tensor (batch x delta_probs)","Tensor::D_Softmax");
 
+  cout<<"AQUI DSOFT\n";
+  
   PD->tsem->lock();
 
   if (D->isCPU())
