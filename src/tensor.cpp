@@ -736,7 +736,7 @@ void Tensor::rand_suniform(float v)
 #ifdef cGPU
   else if (device<DEV_FPGA)
     {
-      //gpu_rand();
+      gpu_rand_suniform(this,v);
     }
 #endif
 #ifdef cFPGA
@@ -772,7 +772,7 @@ void Tensor::rand_gaussian(float m,float s)
 #ifdef cGPU
   else if (device<DEV_FPGA)
     {
-      //gpu_rand();
+      gpu_rand_gaussian(this,m,s);
     }
 #endif
 #ifdef cFPGA
@@ -806,7 +806,7 @@ void Tensor::rand_binary(float v)
 #ifdef cGPU
   else if (device<DEV_FPGA)
     {
-      //gpu_rand();
+      gpu_rand_binary(this,v);
     }
 #endif
 #ifdef cFPGA
