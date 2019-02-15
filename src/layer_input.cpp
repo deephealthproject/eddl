@@ -67,7 +67,7 @@ void Input::forward()
 
 void Input::backward()
 {
-
+cout<<name<<"\n";
 }
 
 

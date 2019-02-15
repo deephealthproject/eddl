@@ -74,7 +74,7 @@ void Activation::forward()
 
 void Activation::backward()
 {
-
+cout<<name<<"\n";
   if (parent.size())
     {
       if (delta_bp)
