@@ -31,6 +31,13 @@
 #include "../tensor.h"
 
 void gpu_set(Tensor *A,float v);
+void gpu_mult(Tensor *A,float v);
+void gpu_sum(Tensor *A, float v);
+void gpu_log(Tensor *A);
+void gpu_exp(Tensor *A);
+void gpu_sqrt(Tensor *A);
+void gpu_sqr(Tensor *A);
+
 void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC);
 void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC);
 

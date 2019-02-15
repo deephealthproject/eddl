@@ -113,7 +113,17 @@ class Tensor
   void print();
   void rand();
   void set(float v);
+
+  void mult(float v);
   void div(float v);
+  void sum(float v);
+  void sub(float v);
+
+  void set_log();
+  void set_exp();
+  void set_sqrt();
+  void set_sqr();
+
   void save(string s);
   void save(FILE *fe);
   void load(FILE *fe);

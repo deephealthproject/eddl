@@ -62,6 +62,72 @@ __global__ void set(float* a, float v, int rows, int cols)
 }
 
 ///////////////////////////////////////////
+__global__ void mult(float* a, float v, int rows, int cols)
+{
+ int ops=rows*cols;
+ int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+ if (thread_id_x < ops)
+   a[thread_id_x]*=v;
+
+}
+
+///////////////////////////////////////////
+__global__ void sum(float* a, float v, int rows, int cols)
+{
+ int ops=rows*cols;
+ int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+ if (thread_id_x < ops)
+   a[thread_id_x]+=v;
+
+}
+
+///////////////////////////////////////////
+__global__ void log(float* a, float v, int rows, int cols)
+{
+ int ops=rows*cols;
+ int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+ if (thread_id_x < ops)
+   a[thread_id_x]=log(a[thread_id_x]);
+
+}
+
+///////////////////////////////////////////
+__global__ void exp(float* a, float v, int rows, int cols)
+{
+ int ops=rows*cols;
+ int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+ if (thread_id_x < ops)
+   a[thread_id_x]=exp(a[thread_id_x]);
+
+}
+
+///////////////////////////////////////////
+__global__ void sqrt(float* a, float v, int rows, int cols)
+{
+ int ops=rows*cols;
+ int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+ if (thread_id_x < ops)
+   a[thread_id_x]=sqrt(a[thread_id_x]);
+
+}
+
+///////////////////////////////////////////
+__global__ void sqr(float* a, float v, int rows, int cols)
+{
+ int ops=rows*cols;
+ int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+ if (thread_id_x < ops)
+   a[thread_id_x]*=a[thread_id_x];
+
+}
+
+///////////////////////////////////////////
 
 __global__ void reduce_sum2D(float *a,float *b,int rows,int cols,int axis)
 {

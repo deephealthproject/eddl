@@ -67,6 +67,132 @@ void gpu_set(Tensor *A,float v) {
 
 }
 
+///////////////////////////////////////////
+void gpu_mult(Tensor *A,float v) {
+
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  int r,c;
+
+  r=A->sizes[0];
+  c=1;
+
+  if (A->dim>1) c=A->tam/r;
+
+  dim3 dimGrid(r);
+  dim3 dimBlock(c);
+
+  mult<<<dimGrid,dimBlock>>>(A->gptr,v,A->sizes[0],A->sizes[1]);
+  check_cuda(cudaDeviceSynchronize(),"set");
+
+}
+///////////////////////////////////////////
+void gpu_sum(Tensor *A,float v) {
+
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  int r,c;
+
+  r=A->sizes[0];
+  c=1;
+
+  if (A->dim>1) c=A->tam/r;
+
+  dim3 dimGrid(r);
+  dim3 dimBlock(c);
+
+  sum<<<dimGrid,dimBlock>>>(A->gptr,v,A->sizes[0],A->sizes[1]);
+  check_cuda(cudaDeviceSynchronize(),"set");
+
+}
+
+///////////////////////////////////////////
+void gpu_log(Tensor *A,float v) {
+
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  int r,c;
+
+  r=A->sizes[0];
+  c=1;
+
+  if (A->dim>1) c=A->tam/r;
+
+  dim3 dimGrid(r);
+  dim3 dimBlock(c);
+
+  log<<<dimGrid,dimBlock>>>(A->gptr,v,A->sizes[0],A->sizes[1]);
+  check_cuda(cudaDeviceSynchronize(),"set");
+
+}
+
+///////////////////////////////////////////
+void gpu_exp(Tensor *A,float v) {
+
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  int r,c;
+
+  r=A->sizes[0];
+  c=1;
+
+  if (A->dim>1) c=A->tam/r;
+
+  dim3 dimGrid(r);
+  dim3 dimBlock(c);
+
+  exp<<<dimGrid,dimBlock>>>(A->gptr,v,A->sizes[0],A->sizes[1]);
+  check_cuda(cudaDeviceSynchronize(),"set");
+
+}
+
+///////////////////////////////////////////
+void gpu_sqrt(Tensor *A,float v) {
+
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  int r,c;
+
+  r=A->sizes[0];
+  c=1;
+
+  if (A->dim>1) c=A->tam/r;
+
+  dim3 dimGrid(r);
+  dim3 dimBlock(c);
+
+  sqrt<<<dimGrid,dimBlock>>>(A->gptr,v,A->sizes[0],A->sizes[1]);
+  check_cuda(cudaDeviceSynchronize(),"set");
+
+}
+
+///////////////////////////////////////////
+void gpu_sqr(Tensor *A,float v) {
+
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  int r,c;
+
+  r=A->sizes[0];
+  c=1;
+
+  if (A->dim>1) c=A->tam/r;
+
+  dim3 dimGrid(r);
+  dim3 dimBlock(c);
+
+  sqr<<<dimGrid,dimBlock>>>(A->gptr,v,A->sizes[0],A->sizes[1]);
+  check_cuda(cudaDeviceSynchronize(),"set");
+
+}
+
+
 
 ///////////////////////////////////////////
 

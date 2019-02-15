@@ -60,8 +60,6 @@ void Layer::initialize()
 
 void Layer::reset()
 {
-  /*for(int i = 0; i != gradients.size(); i++)
-    gradients[i]->set(0.0);*/
   delta->set(0.0);
 }
 
@@ -69,18 +67,13 @@ void Layer::reset()
 ////////////////////////////////////
 ///// LINEAR LAYERS
 ////////////////////////////////////
-LinLayer::LinLayer(string n,int d):Layer(n,d)
-{
-
-}
-
+LinLayer::LinLayer(string n,int d):Layer(n,d){}
 
 void LinLayer::addchild(Layer *l)
 {
   child.push_back(l);
   lout++;
 }
-
 
 void LinLayer::addparent(Layer *l)
 {

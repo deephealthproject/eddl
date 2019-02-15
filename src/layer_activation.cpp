@@ -84,9 +84,7 @@ void Activation::backward()
       else
         {
           if (act=="relu")
-            {
-              Tensor::D_ReLu(delta,input,parent[0]->delta);
-            }
+            Tensor::D_ReLu(delta,input,parent[0]->delta);
           else if (act=="softmax")
             Tensor::D_Softmax(delta,output,parent[0]->delta);
         }

@@ -47,7 +47,7 @@ Add::Add(vector<Layer*> in,string name,int d):MLayer(name,d)
   if (parent.size()>1)
     for(int i=0;i<parent.size()-1;++i)
       if (!Tensor::eqsize(parent[i]->output,parent[i+1]->output))
-        msg("Error: Add layers with different tensor output");
+        msg("Error: Add layers with different tensor sizes");
 
   input=new Tensor(parent[0]->output->getshape());
   output=new Tensor(parent[0]->output->getshape());

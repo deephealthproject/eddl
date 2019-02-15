@@ -245,7 +245,7 @@ void Tensor::save(FILE *fe)
 ///////////////////////////////////////////
 void Tensor::save(string fname)
 {
-  if (dev!=DEV_CPU)
+  if (device!=DEV_CPU)
     msg("Only save CPU Tensors","Tensor::save");
 
   int i,j;
@@ -335,7 +335,7 @@ void Tensor::tlin(float *n)
 
 float *Tensor::toLin()
 {
-  if (dev!=DEV_CPU) return NULL;
+  if (device!=DEV_CPU) return NULL;
 
   float *n=(float*)malloc(tam*sizeof(float));
 
@@ -387,7 +387,7 @@ void Tensor::flin(float *n)
 
 void Tensor::fromLin(float *n)
 {
-  if (dev!=DEV_CPU) return;
+  if (device!=DEV_CPU) return;
 
   linpos=0;
   if (dim==1)
@@ -523,22 +523,22 @@ void Tensor::set(float v)
 
 
 ///////////////////////////////////////////
-void Tensor::div(float v)
+void Tensor::mult(float v)
 {
   if (device==DEV_CPU)
     {
       if (dim==1)
-        for(int i=0;i<sizes[0];++i) ptr1(i)/=v;
+        for(int i=0;i<sizes[0];++i) ptr1(i)*=v;
       else if (dim==2)
-        for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)/=v;
+        for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)*=v;
       else
         for(int i=0;i<sizes[0];++i)
-          ptr[i]->div(v);
+          ptr[i]->mult(v);
     }
 #ifdef cGPU
   else if (device<DEV_FPGA)
     {
-      gpu_div(this,v);
+      gpu_mult(this,v);
     }
 #endif
 #ifdef cFPGA
@@ -548,6 +548,136 @@ void Tensor::div(float v)
 #endif
 }
 
+
+
+///////////////////////////////////////////
+void Tensor::div(float v){mult(1.0/v);}
+
+///////////////////////////////////////////
+void Tensor::sum(float v){
+  if (device==DEV_CPU)
+    {
+      if (dim==1)
+        for(int i=0;i<sizes[0];++i) ptr1(i)+=v;
+      else if (dim==2)
+        for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)+=v;
+      else
+        for(int i=0;i<sizes[0];++i)
+          ptr[i]->sum(v);
+    }
+#ifdef cGPU
+  else if (device<DEV_FPGA)
+    {
+      gpu_sum(this,v);
+    }
+#endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
+}
+///////////////////////////////////////////
+void Tensor::sub(float v){sum(-v);}
+
+///////////////////////////////////////////
+void Tensor::set_log()
+{
+  if (device==DEV_CPU)
+    {
+      if (dim==1)
+        for(int i=0;i<sizes[0];++i) ptr1(i)=log(ptr1(i));
+      else if (dim==2)
+        for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)=log(ptr2(i,j));
+      else
+        for(int i=0;i<sizes[0];++i)
+          ptr[i]->set_log();
+    }
+  #ifdef cGPU
+  else if (device<DEV_FPGA)
+    {
+      gpu_log(this,v);
+    }
+  #endif
+  #ifdef cFPGA
+  else {
+
+  }
+  #endif
+}
+///////////////////////////////////////////
+void Tensor::set_exp()
+{
+  if (device==DEV_CPU)
+    {
+      if (dim==1)
+        for(int i=0;i<sizes[0];++i) ptr1(i)=exp(ptr1(i));
+      else if (dim==2)
+        for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)=exp(ptr2(i,j));
+      else
+        for(int i=0;i<sizes[0];++i)
+          ptr[i]->set_exp();
+    }
+  #ifdef cGPU
+  else if (device<DEV_FPGA)
+    {
+      gpu_exp(this,v);
+    }
+  #endif
+  #ifdef cFPGA
+  else {
+
+  }
+  #endif
+}
+///////////////////////////////////////////
+void Tensor::set_sqrt(){
+  if (device==DEV_CPU)
+    {
+      if (dim==1)
+        for(int i=0;i<sizes[0];++i) ptr1(i)=sqrt(ptr1(i));
+      else if (dim==2)
+        for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)=sqrt(ptr2(i,j));
+      else
+        for(int i=0;i<sizes[0];++i)
+          ptr[i]->set_sqrt();
+    }
+  #ifdef cGPU
+  else if (device<DEV_FPGA)
+    {
+      gpu_sqrt(this,v);
+    }
+  #endif
+  #ifdef cFPGA
+  else {
+
+  }
+  #endif
+}
+///////////////////////////////////////////
+void Tensor::set_sqr(){
+  if (device==DEV_CPU)
+    {
+      if (dim==1)
+        for(int i=0;i<sizes[0];++i) ptr1(i)*=ptr1(i);
+      else if (dim==2)
+        for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)*=ptr2(i,j);
+      else
+        for(int i=0;i<sizes[0];++i)
+          ptr[i]->set_sqr();
+    }
+  #ifdef cGPU
+  else if (device<DEV_FPGA)
+    {
+      gpu_sqr(this,v);
+    }
+  #endif
+  #ifdef cFPGA
+  else {
+
+  }
+  #endif
+}
 
 ///////////////////////////////////////////
 void Tensor::rand()
