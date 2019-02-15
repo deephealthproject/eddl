@@ -46,7 +46,7 @@ void check_cublas(cublasStatus_t status, const char *f)
   }
 }
 
-void check_curand(curandStatus_t error, const char *f)
+void check_curand(curandStatus_t status, const char *f)
 {
   if ( status!=  CURAND_STATUS_SUCCESS)
   {
