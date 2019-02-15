@@ -37,7 +37,7 @@ extern cublasHandle_t hcublas[64];
 extern curandGenerator_t random_generator[64];
 
 
-void check_cublas(cublasStatus_t status, char *f)
+void check_cublas(cublasStatus_t status, const char *f)
 {
   if ( status!=  CUBLAS_STATUS_SUCCESS)
   {
