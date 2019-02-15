@@ -783,8 +783,6 @@ void *train_batch_t(void *t)
 
   Net *net=targs->net;
 
-  cout<<"AQUI "<<net->lin[0]->input->device;
-
 
   // these copies can go from CPU to {CPU,GPU,FPGA}
   for(i=0;i<targs->Xt.size();i++)
@@ -794,7 +792,7 @@ void *train_batch_t(void *t)
   for(i=0;i<targs->Yt.size();i++)
     Tensor::copy(targs->Yt[i],net->lout[i]->target);
 
-  cout<<"AQUI2"<<net->lin[0]->input->device;
+  cout<<"AQUI "<<net->lin[0]->input->device<<"\n";
 
   net->reset();
 
