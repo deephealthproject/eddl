@@ -795,9 +795,11 @@ void *train_batch_t(void *t)
     Tensor::copy(targs->Yt[i],net->lout[i]->target);
 
   cout<<"AQUI2"<<net->lin[0]->input->device;
-/*
+
   net->reset();
+
   net->forward();
+  /*
   net->delta();
   net->loss();
   net->backward();
