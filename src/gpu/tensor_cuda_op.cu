@@ -109,7 +109,7 @@ void gpu_sum(Tensor *A,float v) {
 }
 
 ///////////////////////////////////////////
-void gpu_log(Tensor *A,float v) {
+void gpu_log(Tensor *A) {
 
   int device=A->gpu_device;
   cudaSetDevice(device);
@@ -130,7 +130,7 @@ void gpu_log(Tensor *A,float v) {
 }
 
 ///////////////////////////////////////////
-void gpu_exp(Tensor *A,float v) {
+void gpu_exp(Tensor *A) {
 
   int device=A->gpu_device;
   cudaSetDevice(device);
@@ -151,7 +151,7 @@ void gpu_exp(Tensor *A,float v) {
 }
 
 ///////////////////////////////////////////
-void gpu_sqrt(Tensor *A,float v) {
+void gpu_sqrt(Tensor *A) {
 
   int device=A->gpu_device;
   cudaSetDevice(device);
@@ -172,7 +172,7 @@ void gpu_sqrt(Tensor *A,float v) {
 }
 
 ///////////////////////////////////////////
-void gpu_sqr(Tensor *A,float v) {
+void gpu_sqr(Tensor *A) {
 
   int device=A->gpu_device;
   cudaSetDevice(device);
