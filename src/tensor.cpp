@@ -70,7 +70,7 @@ Tensor::Tensor(const shape s):Tensor(s,DEV_CPU){}
 Tensor::Tensor(shape s,int dev)
 {
 #ifndef cGPU
-  if ((dev>DEV_CPU)&&(dev<DEV_FPGA))
+  if ((dev>DEV_CPU)&&(device<DEV_FPGA))
     {
       fprintf(stderr,"Not compiled for GPU\n");
       exit(0);
@@ -104,7 +104,7 @@ Tensor::Tensor(shape s,int dev)
         }
     }
 #ifdef cGPU
-  else if (dev<DEV_FPGA)
+  else if (device<DEV_FPGA)
     {
       gpu_device=device-DEV_GPU;
       if (!initcuda[gpu_device])
@@ -297,7 +297,7 @@ Tensor::~Tensor()
         }
     }
 #ifdef cGPU
-  else (dev<DEV_FPGA)
+  else (device<DEV_FPGA)
          {
            gpu_delete_tensor(gpu_device,gptr);
          }
@@ -596,7 +596,7 @@ void Tensor::set_log()
 #ifdef cGPU
   else if (device<DEV_FPGA)
     {
-      gpu_log(this,v);
+      gpu_log(this);
     }
 #endif
 #ifdef cFPGA
@@ -621,7 +621,7 @@ void Tensor::set_exp()
 #ifdef cGPU
   else if (device<DEV_FPGA)
     {
-      gpu_exp(this,v);
+      gpu_exp(this);
     }
 #endif
 #ifdef cFPGA
@@ -645,7 +645,7 @@ void Tensor::set_sqrt(){
 #ifdef cGPU
   else if (device<DEV_FPGA)
     {
-      gpu_sqrt(this,v);
+      gpu_sqrt(this);
     }
 #endif
 #ifdef cFPGA
@@ -669,7 +669,7 @@ void Tensor::set_sqr(){
 #ifdef cGPU
   else if (device<DEV_FPGA)
     {
-      gpu_sqr(this,v);
+      gpu_sqr(this);
     }
 #endif
 #ifdef cFPGA
