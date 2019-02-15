@@ -37,7 +37,7 @@ __global__ void log(float* a, int rows, int cols);
 __global__ void exp(float* a, int rows, int cols);
 __global__ void sqrt(float* a,int rows, int cols);
 __global__ void sqr(float* a, int rows, int cols);
-
+__global__ void mask(float* a, float v, int rows, int cols);
 
 __global__ void sum_mat_row(float* a, float* b, float* c, int cols, int rows);
 __global__ void sum_mat_col(float* a, float* b, float* c, int cols, int rows);

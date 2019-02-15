@@ -128,6 +128,17 @@ __global__ void sqr(float* a, int rows, int cols)
 }
 
 ///////////////////////////////////////////
+__global__ void mask(float* a, float v, int rows, int cols)
+{
+ int ops=rows*cols;
+ int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+ if (thread_id_x < ops)
+   a[thread_id_x]=a[thread_id_x]<v;
+
+}
+
+///////////////////////////////////////////
 
 __global__ void reduce_sum2D(float *a,float *b,int rows,int cols,int axis)
 {

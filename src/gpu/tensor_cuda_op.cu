@@ -94,7 +94,7 @@ void gpu_mult(Tensor *A,float v) {
   dim3 dimBlock(c);
 
   mult<<<dimGrid,dimBlock>>>(A->gptr,v,A->sizes[0],A->sizes[1]);
-  check_cuda(cudaDeviceSynchronize(),"set");
+  check_cuda(cudaDeviceSynchronize(),"mult");
 
 }
 ///////////////////////////////////////////
@@ -114,7 +114,7 @@ void gpu_sum(Tensor *A,float v) {
   dim3 dimBlock(c);
 
   sum<<<dimGrid,dimBlock>>>(A->gptr,v,A->sizes[0],A->sizes[1]);
-  check_cuda(cudaDeviceSynchronize(),"set");
+  check_cuda(cudaDeviceSynchronize(),"sum");
 
 }
 
@@ -135,7 +135,7 @@ void gpu_log(Tensor *A) {
   dim3 dimBlock(c);
 
   log<<<dimGrid,dimBlock>>>(A->gptr,A->sizes[0],A->sizes[1]);
-  check_cuda(cudaDeviceSynchronize(),"set");
+  check_cuda(cudaDeviceSynchronize(),"log");
 
 }
 
@@ -156,7 +156,7 @@ void gpu_exp(Tensor *A) {
   dim3 dimBlock(c);
 
   exp<<<dimGrid,dimBlock>>>(A->gptr,A->sizes[0],A->sizes[1]);
-  check_cuda(cudaDeviceSynchronize(),"set");
+  check_cuda(cudaDeviceSynchronize(),"exp");
 
 }
 
@@ -177,7 +177,7 @@ void gpu_sqrt(Tensor *A) {
   dim3 dimBlock(c);
 
   sqrt<<<dimGrid,dimBlock>>>(A->gptr,A->sizes[0],A->sizes[1]);
-  check_cuda(cudaDeviceSynchronize(),"set");
+  check_cuda(cudaDeviceSynchronize(),"sqrt");
 
 }
 
@@ -198,11 +198,31 @@ void gpu_sqr(Tensor *A) {
   dim3 dimBlock(c);
 
   sqr<<<dimGrid,dimBlock>>>(A->gptr,A->sizes[0],A->sizes[1]);
-  check_cuda(cudaDeviceSynchronize(),"set");
+  check_cuda(cudaDeviceSynchronize(),"sqr");
 
 }
 
 
+///////////////////////////////////////////
+void gpu_mask(Tensor *A,float v) {
+
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  int r,c;
+
+  r=A->sizes[0];
+  c=1;
+
+  if (A->dim>1) c=A->tam/r;
+
+  dim3 dimGrid(r);
+  dim3 dimBlock(c);
+
+  mask<<<dimGrid,dimBlock>>>(A->gptr,v,A->sizes[0],A->sizes[1]);
+  check_cuda(cudaDeviceSynchronize(),"mask");
+
+}
 
 ///////////////////////////////////////////
 
@@ -337,3 +357,61 @@ void gpu_rand_uniform(Tensor *A, float v)
   check_cuda(cudaDeviceSynchronize(),"gpu_rand_uniform");
 
 }
+///////////////////////////////////////////
+void gpu_rand_suniform(Tensor *A, float v)
+{
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  check_curand(curandGenerateUniform(random_generator[A->device],A->gptr,A->tam),"gpu_rand_suniform");
+
+  check_cuda(cudaDeviceSynchronize(),"gpu_rand_suniform");
+
+  gpu_mult(A,2*v);
+  gpu_sum(A,-v);
+
+  check_cuda(cudaDeviceSynchronize(),"gpu_rand_suniform");
+
+}
+
+///////////////////////////////////////////
+void gpu_rand_gaussian(Tensor *A, float m,float s)
+{
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  check_curand(curandGenerateNormal(random_generator[A->device],A->gptr,A->tam,m,s),"gpu_rand_gaussian");
+
+  check_cuda(cudaDeviceSynchronize(),"gpu_rand_gaussian");
+
+  check_cuda(cudaDeviceSynchronize(),"gpu_rand_gaussian");
+
+}
+
+///////////////////////////////////////////
+void gpu_rand_binary(Tensor *A, float v)
+{
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  check_curand(curandGenerateUniform(random_generator[A->device],A->gptr,A->tam),"gpu_rand_binary");
+
+  gpu_mask(A,v);
+
+  check_cuda(cudaDeviceSynchronize(),"gpu_rand_binary");
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////
