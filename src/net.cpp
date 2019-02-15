@@ -269,8 +269,11 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
         // split on multiple threads
         unsigned int nthreads = std::thread::hardware_concurrency();
         cout<<"set threads to "<<nthreads<<"\n";
-        if (nthreads>1)
+        if (nthreads>1)	{
+          Eigen::initParallel();
+          Eigen::setNbThreads(1);
           split(nthreads,DEV_CPU);
+        }
       }
     }
     else{
@@ -637,7 +640,6 @@ void Net::train_batch(vtensor X, vtensor Y)
     }
     else // multiple CPU_cores or GPUs or FPGAs
     {
-  
         // In case of multiple GPUS or FPGA
         // it is necessary to synchronize params
         void *status;
