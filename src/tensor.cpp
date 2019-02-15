@@ -680,22 +680,127 @@ void Tensor::set_sqr(){
 }
 
 ///////////////////////////////////////////
-void Tensor::rand()
+void Tensor::rand_uniform(float v)
 {
   if (device==DEV_CPU)
     {
       if (dim==1)
-        for(int i=0;i<sizes[0];++i) ptr1(i)=uniform()*0.1;
+        for(int i=0;i<sizes[0];++i) ptr1(i)=uniform()*v;
       else if (dim==2)
         {
           float s=sqrt(1.0/sizes[0]);
           for(int i=0;i<sizes[0];++i)
             for(int j=0;j<sizes[1];++j)
-              ptr2(i,j)=gauss(0.0,s);
+              ptr2(i,j)=uniform()*v;
         }
       else
         for(int i=0;i<sizes[0];++i)
-          ptr[i]->rand();
+          ptr[i]->rand_uniform(v);
+
+    }
+#ifdef cGPU
+  else if (device<DEV_FPGA)
+    {
+      gpu_rand_uniform(this,v);
+    }
+#endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
+
+}
+
+
+
+///////////////////////////////////////////
+void Tensor::rand_suniform(float v)
+{
+  if (device==DEV_CPU)
+    {
+      if (dim==1)
+        for(int i=0;i<sizes[0];++i) ptr1(i)=suniform()*v;
+      else if (dim==2)
+        {
+          float s=sqrt(1.0/sizes[0]);
+          for(int i=0;i<sizes[0];++i)
+            for(int j=0;j<sizes[1];++j)
+              ptr2(i,j)=suniform()*v;
+        }
+      else
+        for(int i=0;i<sizes[0];++i)
+          ptr[i]->rand_suniform(v);
+
+    }
+#ifdef cGPU
+  else if (device<DEV_FPGA)
+    {
+      //gpu_rand();
+    }
+#endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
+
+
+}
+
+
+
+///////////////////////////////////////////
+void Tensor::rand_gaussian(float m,float s)
+{
+  if (device==DEV_CPU)
+    {
+      if (dim==1)
+        for(int i=0;i<sizes[0];++i) ptr1(i)=gauss(m,s);
+      else if (dim==2)
+        {
+          float s=sqrt(1.0/sizes[0]);
+          for(int i=0;i<sizes[0];++i)
+            for(int j=0;j<sizes[1];++j)
+              ptr2(i,j)=gauss(m,s);
+        }
+      else
+        for(int i=0;i<sizes[0];++i)
+          ptr[i]->rand_gaussian(m,s);
+
+    }
+#ifdef cGPU
+  else if (device<DEV_FPGA)
+    {
+      //gpu_rand();
+    }
+#endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
+
+}
+
+
+
+void Tensor::rand_binary(float v)
+{
+  if (device==DEV_CPU)
+    {
+      if (dim==1)
+        for(int i=0;i<sizes[0];++i) ptr1(i)=uniform()<v;
+      else if (dim==2)
+        {
+          float s=sqrt(1.0/sizes[0]);
+          for(int i=0;i<sizes[0];++i)
+            for(int j=0;j<sizes[1];++j)
+              ptr2(i,j)=uniform()<v;
+        }
+      else
+        for(int i=0;i<sizes[0];++i)
+          ptr[i]->rand_binary(v);
 
     }
 #ifdef cGPU

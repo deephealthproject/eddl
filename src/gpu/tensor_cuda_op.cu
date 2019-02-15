@@ -46,6 +46,16 @@ void check_cublas(cublasStatus_t status, const char *f)
   }
 }
 
+void check_curand(curandStatus_t error, const char *f)
+{
+  if ( status!=  CURAND_STATUS_SUCCESS)
+  {
+     fprintf(stderr,"Error in curand execution in %s\n",f);
+     exit(1);
+  }
+}
+
+
 ///////////////////////////////////////////
 void gpu_set(Tensor *A,float v) {
 
@@ -310,5 +320,20 @@ void gpu_reduce_sum2D(Tensor *A,Tensor *B,int axis,int incB)
 }
 ///////////////////////////////////////////
 
-
 ///////////////////////////////////////////
+////// RAND
+///////////////////////////////////////////
+void gpu_rand_uniform(Tensor *A, float v)
+{
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  check_curand(curandGenerateUniform(random_generator[A->device],A->gptr,A->tam),"gpu_rand_uniform");
+
+  check_cuda(cudaDeviceSynchronize(),"gpu_rand_uniform");
+
+  gpu_mult(A,v);
+
+  check_cuda(cudaDeviceSynchronize(),"gpu_rand_uniform");
+
+}

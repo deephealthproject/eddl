@@ -111,7 +111,11 @@ class Tensor
   void info();
   Tensor *share();
   void print();
-  void rand();
+  void rand_uniform(float v);
+  void rand_suniform(float v);
+  void rand_gaussian(float m,float s);
+  void rand_binary(float v);
+
   void set(float v);
 
   void mult(float v);
