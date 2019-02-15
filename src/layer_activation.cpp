@@ -75,10 +75,15 @@ void Activation::forward()
 void Activation::backward()
 {
 cout<<name<<"\n";
+
+fprintf(stderr,"Parent %d\n",parent.size());
+
   if (parent.size())
     {
+      fprintf(stderr,"Parent %d\n",parent.size());
       if (delta_bp)
         {
+          fprintf(stderr,"Parent %d\n",parent.size());
           Tensor::inc(delta,parent[0]->delta);
         }
       else
