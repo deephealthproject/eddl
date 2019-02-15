@@ -348,7 +348,7 @@ void gpu_rand_uniform(Tensor *A, float v)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  check_curand(curandGenerateUniform(random_generator[A->device],A->gptr,A->tam),"gpu_rand_uniform");
+  check_curand(curandGenerateUniform(random_generator[device],A->gptr,A->tam),"gpu_rand_uniform");
 
   check_cuda(cudaDeviceSynchronize(),"gpu_rand_uniform");
 
@@ -363,7 +363,7 @@ void gpu_rand_suniform(Tensor *A, float v)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  check_curand(curandGenerateUniform(random_generator[A->device],A->gptr,A->tam),"gpu_rand_suniform");
+  check_curand(curandGenerateUniform(random_generator[device],A->gptr,A->tam),"gpu_rand_suniform");
 
   check_cuda(cudaDeviceSynchronize(),"gpu_rand_suniform");
 
@@ -380,7 +380,7 @@ void gpu_rand_gaussian(Tensor *A, float m,float s)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  check_curand(curandGenerateNormal(random_generator[A->device],A->gptr,A->tam,m,s),"gpu_rand_gaussian");
+  check_curand(curandGenerateNormal(random_generator[device],A->gptr,A->tam,m,s),"gpu_rand_gaussian");
 
   check_cuda(cudaDeviceSynchronize(),"gpu_rand_gaussian");
 
@@ -394,7 +394,7 @@ void gpu_rand_binary(Tensor *A, float v)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  check_curand(curandGenerateUniform(random_generator[A->device],A->gptr,A->tam),"gpu_rand_binary");
+  check_curand(curandGenerateUniform(random_generator[device],A->gptr,A->tam),"gpu_rand_binary");
 
   gpu_mask(A,v);
 
