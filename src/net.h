@@ -26,11 +26,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdio.h>
-#include <stdio.h>
+
 #ifndef _NET_
 #define _NET_
 
+#include <stdio.h>
+#include <stdio.h>
 #include <string>
 #include <initializer_list>
 #include <vector>
@@ -57,11 +58,12 @@ void *applygrads_t(void *t);
 class Net
 {
  private:
-  Net(vlayer in,vlayer out);
+
   void train_batch(vtensor X,vtensor Y);
   void build(optim *opt,vstring in,vstring out);
 
  public:
+  Net(vlayer in,vlayer out);
   void initialize();
   void reset();
   void forward();

@@ -31,73 +31,44 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "../net.h"
+#include "../eddl.h"
 
 int main(int argc, char **argv)
 {
 
   int dev=DEV_GPU;
-/*
-  Tensor *A=new Tensor({2,3},dev);
-  Tensor *B=new Tensor({2,3},dev);
-  Tensor *C=new Tensor({2,3},dev);
-
-
-  A->set(2.0);
-  B->rand_uniform(1.0);
-  A->rand_suniform(1.0);
-
-  Tensor::Softmax(A,B);
-
-  //Tensor::ReLu(A,B);
-
-  A->print();
-  B->print();
-
-
-  Tensor::cent(A,B,C);
-
-  C->rand_suniform(1.0);
-  C->print();
-
-  Tensor::D_ReLu(C,A,B);
-  B->print();
-
-  cout<<C->total_sum()<<"\n";
-*/
-
 
   int batch=1000;
-  Tensor *tin=new Tensor({batch,784});
 
-// graph
-  Input* in=new Input(tin);
-  Layer *l=in;
+  tensor tin=eddl.T({batch,784});
+
+  // graph
+  layer in=eddl.Input(tin);
+  layer l=in;
   for(int i=0;i<3;i++)
       l=new Activation(new Dense(l,1024),"relu");
 
-  Activation *out1=new Activation(new Dense(l,10),"softmax");
+  layer out1=eddl.Activation(eddl.Dense(l,10),"softmax");
 
-// net define input and output layers list
-  Net *net=new Net({in},{out1});
+  // net define input and output layers list
+  model net=eddl.Model({in},{out1});
 
-// get some info from the network
-  net->info();
+  // get some info from the network
+  eddl.info(net);
 
-// Attach an optimizer and a list of error criteria
-// size of error criteria list must match with size of list of outputs
-  net->build(SGD(0.01,0.95),{"soft_cent"},{"acc"},dev);
+  // Attach an optimizer and a list of error criteria
+  // size of error criteria list must match with size of list of outputs
+  eddl.build(net,SGD(0.01,0.95),{"soft_cent"},{"acc"},dev);
 
-//net->split(4);
 
-/// read data
-  Tensor *X=new Tensor("trX.bin");
-  Tensor *Y=new Tensor("trY.bin");
+  // read data
+  tensor X=eddl.T("trX.bin");
+  tensor Y=eddl.T("trY.bin");
 
-  X->div(255.0);
+  eddl.div(X,255.0);
 
-// training, list of input and output tensors, batch, epochs
-  net->fit({X},{Y},batch,100);
+  // training, list of input and output tensors, batch, epochs
+  eddl.fit(net,{X},{Y},batch,100);
 
 }
 
