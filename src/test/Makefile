@@ -106,7 +106,14 @@ $(error Set enviroment variable CUDA_PATH with directory to cuda)
 endif
 
 CXXFLAGS :=  $(CXXFLAGS) -DcGPU -I $(cuda_path)include/
+
+ifeq ($(TARGET),1)
 GPU_CXXFLAGS := -std=c++11 -I $(cuda_path)include/ -L  $(cuda_path)lib64/ -DcGPU
+endif
+ifeq ($(TARGET),2)
+GPU_CXXFLAGS := -std=c++11 -I $(cuda_path)include/ -L  $(cuda_path)lib/ -DcGPU
+endif
+
 GPU_LIBFLAGS := -lcudart -lcublas -lcurand
 GPU_CXX := $(cuda_path)bin/nvcc
 GPU_OBJ = tensor_cuda.o tensor_cuda_op.o tensor_kernels.o
