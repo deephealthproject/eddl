@@ -66,6 +66,15 @@ void EDDL::div(tensor t,float v)
   t->div(v);
 }
 //////////////////////////////////////////////////////
+
+layer EDDL::Input(const initializer_list<int>& init){
+  return new Input::Input(new Tensor(init));
+}
+
+layer EDDL::Input(const initializer_list<int>& init,int dev){
+  return new Input::Input(new Tensor(init,dev));
+}
+
 layer EDDL::Input(tensor t)
 {
   return new Input::Input(t);

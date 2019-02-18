@@ -543,9 +543,7 @@ void Tensor::cent(Tensor *A,Tensor *B, Tensor *C)
 #ifdef cGPU
   else if (A->isGPU())
     {
-
        gpu_cent(A,B,C);
-
     }
 #endif
 #ifdef cFPGA
@@ -740,29 +738,27 @@ void Tensor::D_Softmax(Tensor *D,Tensor *I,Tensor *PD)
   if (D->dim!=2) msg("D_Softmax only over 2D Tensor (batch x delta_probs)","Tensor::D_Softmax");
 
 
-
-
   if (D->isCPU())
     {
+      PD->tsem->lock();
       for(int i=0;i<D->sizes[0];i++)
         {
           for(int j=0;j<D->sizes[1];j++)
             PD->ptr2(i,j)+=D->ptr2(i,j)*(I->ptr2(i,j)*(1.0-I->ptr2(i,j)));
         }
+      PD->tsem->unlock();
     }
 #ifdef cGPU
   else if (D->isGPU())
     {
-      PD->tsem->lock();
+
       Tensor *aux=new Tensor(D->getshape(),D->device);
       aux->set(1.0);
       Tensor::sum(1.0,aux,-1.0,I,aux,0);
       Tensor::el_mult(I,aux,aux,0);
-      Tensor::el_mult(D,aux,PD,0);
+      Tensor::el_mult(D,aux,PD,1);
 
       delete aux;
-      PD->tsem->unlock();
-
     }
 #endif
 #ifdef cFPGA

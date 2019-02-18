@@ -53,7 +53,9 @@ public:
   // Create Layers
   static layer Input(tensor t);
   static layer Input(tensor t,int dev);
-
+  static layer Input(const initializer_list<int>& init);
+  static layer Input(const initializer_list<int>& init,int dev);
+  
   static layer Dense(layer parent,int dim);
   static layer Dense(layer parent,int dim,int d);
   static layer Dense(layer parent,int dim,string name);

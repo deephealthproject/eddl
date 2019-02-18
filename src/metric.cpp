@@ -48,7 +48,7 @@ float Metric::value(Tensor *T, Tensor* Y)
   if (name=="mse")
     {
       // batch error: sum((T-Y)^2)
-      Tensor *aux=new Tensor(T->getshape());
+      Tensor *aux=new Tensor(T->getshape(),T->device);
       Tensor::sum(1.0,T,-1.0,Y,aux,0);
       Tensor::el_mult(aux,aux,aux,0);
       f=aux->total_sum();

@@ -26,40 +26,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdio.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-
 #include "../eddl.h"
 
 int main(int argc, char **argv)
 {
-
-  int dev=DEV_GPU;
-
   int batch=1000;
 
-  tensor tin=eddl.T({batch,784});
-
-  // graph
-  layer in=eddl.Input(tin);
+  // network
+  layer in=eddl.Input({batch,784});
   layer l=in;
   for(int i=0;i<3;i++)
-      l=new Activation(new Dense(l,1024),"relu");
+      l=eddl.Activation(eddl.Dense(l,1024),"relu");
 
   layer out1=eddl.Activation(eddl.Dense(l,10),"softmax");
+  layer out2=eddl.Dense(l,10);
 
   // net define input and output layers list
-  model net=eddl.Model({in},{out1});
+  model net=eddl.Model({in},{out1,out2});
 
   // get some info from the network
   eddl.info(net);
 
-  // Attach an optimizer and a list of error criteria
-  // size of error criteria list must match with size of list of outputs
-  eddl.build(net,SGD(0.01,0.95),{"soft_cent"},{"acc"},dev);
-
+  // Attach an optimizer and a list of error criteria and metrics
+  // size of error criteria and metrics list must match with size of list of outputs
+  // optionally put a DEVICE where the net will run
+  eddl.build(net,SGD(0.01,0.95),{"soft_cent","mse"},{"acc","mse"},DEV_GPU);
 
   // read data
   tensor X=eddl.T("trX.bin");
@@ -68,7 +59,7 @@ int main(int argc, char **argv)
   eddl.div(X,255.0);
 
   // training, list of input and output tensors, batch, epochs
-  eddl.fit(net,{X},{Y},batch,100);
+  eddl.fit(net,{X},{Y,Y},batch,100);
 
 }
 
