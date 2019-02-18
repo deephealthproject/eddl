@@ -463,39 +463,35 @@ void Tensor::print()
 #ifdef cGPU
   else if (isGPU())
     {
-      if (dim<3)
+      gpu_set_device(gpu_device);
+      float *v= (float*)malloc(tam*sizeof(float));
+      cudaMemcpy(v,gptr,tam*sizeof(float),cudaMemcpyDeviceToHost);
+      if (dim==2)
         {
-
-          gpu_set_device(gpu_device);
-          float *v= (float*)malloc(tam*sizeof(float));
-          cudaMemcpy(v,gptr,tam*sizeof(float),cudaMemcpyDeviceToHost);
-          if (dim==2)
+          int i,j,p=0;
+          for(i=0;i<sizes[0];++i)
             {
-              int i,j,p=0;
-              for(i=0;i<sizes[0];++i)
-                {
-                  for(j=0;j<sizes[1];++j,++p)
-                    printf("%f ",v[p]);
-                  printf("\n");
-                }
+              for(j=0;j<sizes[1];++j,++p)
+                printf("%f ",v[p]);
+                printf("\n");
             }
-          else
-            {
-              int i;
-              for(i=0;i<sizes[0];++i)
-                printf("%f ",v[i]);
-              printf("\n");
-            }
-          free(v);
-
         }
-    }
+      else
+        {
+          int i;
+          for(i=0;i<tam;++i)
+            printf("%f ",v[i]);
+            printf("\n");
+        }
+        free(v);
+    }    
 #endif
 #ifdef cFPGA
   else {
 
   }
 #endif
+cout<<"\n";
 }
 
 
@@ -682,6 +678,41 @@ void Tensor::set_sqr(){
   }
 #endif
 }
+
+
+///////////////////////////////////////
+float Tensor::total_sum()
+{
+
+  if (isCPU())
+    {
+      float sum=0.0;
+      if (dim==1)
+        sum=ptr1.sum();
+      else if (dim==2)
+        sum=ptr2.sum();
+      else
+        for(int i=0;i<sizes[0];i++)
+          sum+=ptr[i]->total_sum();
+      return sum;
+    }
+#ifdef cGPU
+  else if (isGPU())
+    {
+       float sum;
+       gpu_total_sum(this,&sum);
+       return sum;
+    }
+#endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
+
+  return 0;
+}
+
 
 ///////////////////////////////////////////
 void Tensor::rand_uniform(float v)

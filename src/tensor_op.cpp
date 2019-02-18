@@ -108,7 +108,7 @@ void Tensor::inc(Tensor *A, Tensor *B)
   if (!Tensor::eqsize(A,B))
     msg("Tensors with different sizes","Tensor::inc");
 
- 
+
   if ((A->isCPU())&&(B->isCPU()))
     {
       B->tsem->lock();
@@ -252,7 +252,7 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
 //// incC 1 means C+=A.*B (increment over C)
 //// Dimensions must be compatible
 ///////////////////////////////////////
-void Tensor::el_mult(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC)
+void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C,int incC)
 {
   C->tsem->lock();
   if ((A->device!=B->device)||(A->device!=C->device)) msg("Tensors in different devices","Tensor::el_mult");
@@ -262,22 +262,22 @@ void Tensor::el_mult(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int inc
     {
       if (A->dim==1)
         {
-          if (incC) C->ptr1+=scA*A->ptr1.cwiseProduct(scB*B->ptr1);
-          else C->ptr1=scA*A->ptr1.cwiseProduct(scB*B->ptr1);
+          if (incC) C->ptr1+=A->ptr1.cwiseProduct(B->ptr1);
+          else C->ptr1=A->ptr1.cwiseProduct(B->ptr1);
         }
       else if (A->dim==2)
         {
-          if (incC) C->ptr2+=scA*A->ptr2.cwiseProduct(scB*B->ptr2);
-          else C->ptr2=scA*A->ptr2.cwiseProduct(scB*B->ptr2);
+          if (incC) C->ptr2+=A->ptr2.cwiseProduct(B->ptr2);
+          else C->ptr2=A->ptr2.cwiseProduct(B->ptr2);
         }
       else
         for(int i=0;i<A->sizes[0];i++)
-          Tensor::el_mult(scA,A->ptr[i],scB,B->ptr[i],C->ptr[i],incC);
+          Tensor::el_mult(A->ptr[i],B->ptr[i],C->ptr[i],incC);
     }
 #ifdef cGPU
   else if (A->isGPU())
     {
-
+       gpu_el_mult(A,B,C,incC);
     }
 #endif
 #ifdef cFPGA
@@ -294,7 +294,7 @@ void Tensor::el_mult(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int inc
 //// incC 1 means C+=A./B (increment over C)
 //// Dimensions must be compatible
 ///////////////////////////////////////
-void Tensor::el_div(float scA,Tensor *A, float scB, Tensor *B, Tensor *C,int incC)
+void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C,int incC)
 {
 
   if ((A->device!=B->device)||(A->device!=C->device)) msg("Tensors in different devices","Tensor::el_div");
@@ -308,11 +308,11 @@ void Tensor::el_div(float scA,Tensor *A, float scB, Tensor *B, Tensor *C,int inc
           if (incC)
             {
               for(int i=0;i<A->sizes[0];i++)
-                if (A->ptr1(i)!=0) C->ptr1(i)+=(scA*A->ptr1(i))/(scB*B->ptr1(i));
+                if (A->ptr1(i)!=0) C->ptr1(i)+=A->ptr1(i)/B->ptr1(i);
             }
           else
             for(int i=0;i<A->sizes[0];i++)
-              if (A->ptr1(i)!=0) C->ptr1(i)=(scA*A->ptr1(i))/(scB*B->ptr1(i));
+              if (A->ptr1(i)!=0) C->ptr1(i)=A->ptr1(i)/B->ptr1(i);
               else C->ptr1(i)=0.0;
         }
       else if (A->dim==2)
@@ -321,22 +321,22 @@ void Tensor::el_div(float scA,Tensor *A, float scB, Tensor *B, Tensor *C,int inc
             {
               for(int i=0;i<A->sizes[0];i++)
                 for(int j=0;j<A->sizes[1];j++)
-                  if (A->ptr2(i,j)!=0) C->ptr2(i,j)+=(scA*A->ptr2(i,j))/(scB*B->ptr2(i,j));
+                  if (A->ptr2(i,j)!=0) C->ptr2(i,j)+=A->ptr2(i,j)/B->ptr2(i,j);
             }
           else
             for(int i=0;i<A->sizes[0];i++)
               for(int j=0;j<A->sizes[1];j++)
-                if (A->ptr2(i,j)!=0) C->ptr2(i,j)=(scA*A->ptr2(i,j))/(scB*B->ptr2(i,j));
+                if (A->ptr2(i,j)!=0) C->ptr2(i,j)=A->ptr2(i,j)/B->ptr2(i,j);
                 else C->ptr2(i,j)=0.0;
         }
       else
         for(int i=0;i<A->sizes[0];i++)
-          Tensor::el_div(scA,A->ptr[i],scB,B->ptr[i],C->ptr[i],incC);
+          Tensor::el_div(A->ptr[i],B->ptr[i],C->ptr[i],incC);
     }
 #ifdef cGPU
   else if (A->isGPU())
     {
-
+      gpu_el_div(A,B,C,incC);
     }
 #endif
 #ifdef cFPGA
@@ -376,7 +376,7 @@ void Tensor::sum(float scA, Tensor *A, float scB, Tensor *B, Tensor *C,int incC)
 #ifdef cGPU
   else if (A->isGPU())
     {
-      //gpu_sum(scA,A,scB,B,C,incC);
+      gpu_sum(scA,A,scB,B,C,incC);
     }
 #endif
 #ifdef cFPGA
@@ -386,6 +386,12 @@ void Tensor::sum(float scA, Tensor *A, float scB, Tensor *B, Tensor *C,int incC)
 #endif
   C->tsem->unlock();
 }
+
+void Tensor::sum(Tensor *A,Tensor *B, Tensor *C)
+{
+  Tensor::sum(1.0,A,1.0,B,C,0);
+}
+
 
 
 ///////////////////////////////////////
@@ -499,38 +505,6 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB)
 }
 
 
-///////////////////////////////////////
-//// total_sum \sum A
-///////////////////////////////////////
-float Tensor::total_sum(Tensor *A)
-{
-  A->tsem->lock();
-  if (A->isCPU())
-    {
-      float sum=0.0;
-      if (A->dim==1)
-        sum=A->ptr1.sum();
-      else if (A->dim==2)
-        sum=A->ptr2.sum();
-      else
-        for(int i=0;i<A->sizes[0];i++)
-          sum+=Tensor::total_sum(A->ptr[i]);
-      return sum;
-    }
-#ifdef cGPU
-  else if (A->isGPU())
-    {
-
-    }
-#endif
-#ifdef cFPGA
-  else {
-
-  }
-#endif
-  A->tsem->lock();
-  return 0;
-}
 
 
 ////////////////////////////////
@@ -569,6 +543,8 @@ void Tensor::cent(Tensor *A,Tensor *B, Tensor *C)
 #ifdef cGPU
   else if (A->isGPU())
     {
+
+       gpu_cent(A,B,C);
 
     }
 #endif
@@ -663,7 +639,7 @@ void Tensor::ReLu(Tensor *A,Tensor *B)
 #ifdef cGPU
   else if (A->isGPU())
     {
-
+    gpu_relu(A,B);
     }
 #endif
 #ifdef cFPGA
@@ -702,6 +678,7 @@ void Tensor::D_ReLu(Tensor *D, Tensor *I, Tensor *PD)
 #ifdef cGPU
   else if (D->isGPU())
     {
+      gpu_d_relu(D,I,PD);
 
     }
 #endif
@@ -742,6 +719,7 @@ void Tensor::Softmax(Tensor *A,Tensor *B)
 #ifdef cGPU
   else if (A->isGPU())
     {
+      gpu_softmax(A,B);
     }
 #endif
 #ifdef cFPGA
@@ -762,7 +740,7 @@ void Tensor::D_Softmax(Tensor *D,Tensor *I,Tensor *PD)
   if (D->dim!=2) msg("D_Softmax only over 2D Tensor (batch x delta_probs)","Tensor::D_Softmax");
 
 
-  PD->tsem->lock();
+
 
   if (D->isCPU())
     {
@@ -775,6 +753,16 @@ void Tensor::D_Softmax(Tensor *D,Tensor *I,Tensor *PD)
 #ifdef cGPU
   else if (D->isGPU())
     {
+      PD->tsem->lock();
+      Tensor *aux=new Tensor(D->getshape(),D->device);
+      aux->set(1.0);
+      Tensor::sum(1.0,aux,-1.0,I,aux,0);
+      Tensor::el_mult(I,aux,aux,0);
+      Tensor::el_mult(D,aux,PD,0);
+
+      delete aux;
+      PD->tsem->unlock();
+
     }
 #endif
 #ifdef cFPGA
@@ -783,7 +771,7 @@ void Tensor::D_Softmax(Tensor *D,Tensor *I,Tensor *PD)
   }
 #endif
 
-  PD->tsem->unlock();
+
 
 }
 

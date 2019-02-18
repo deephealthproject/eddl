@@ -35,10 +35,40 @@
 
 int main(int argc, char **argv)
 {
-  int batch=1000;
 
-  Tensor *tin=new Tensor({batch,784}
-  );
+  int dev=DEV_GPU;
+/*
+  Tensor *A=new Tensor({2,3},dev);
+  Tensor *B=new Tensor({2,3},dev);
+  Tensor *C=new Tensor({2,3},dev);
+
+
+  A->set(2.0);
+  B->rand_uniform(1.0);
+  A->rand_suniform(1.0);
+
+  Tensor::Softmax(A,B);
+
+  //Tensor::ReLu(A,B);
+
+  A->print();
+  B->print();
+
+
+  Tensor::cent(A,B,C);
+
+  C->rand_suniform(1.0);
+  C->print();
+
+  Tensor::D_ReLu(C,A,B);
+  B->print();
+
+  cout<<C->total_sum()<<"\n";
+*/
+
+
+  int batch=1000;
+  Tensor *tin=new Tensor({batch,784});
 
 // graph
   Input* in=new Input(tin);
@@ -56,7 +86,7 @@ int main(int argc, char **argv)
 
 // Attach an optimizer and a list of error criteria
 // size of error criteria list must match with size of list of outputs
-  net->build(SGD(0.01,0.95),{"soft_cent"},{"acc"},DEV_GPU);
+  net->build(SGD(0.01,0.95),{"soft_cent"},{"acc"},dev);
 
 //net->split(4);
 
@@ -68,7 +98,6 @@ int main(int argc, char **argv)
 
 // training, list of input and output tensors, batch, epochs
   net->fit({X},{Y},batch,100);
-
 
 }
 

@@ -133,6 +133,7 @@ class Tensor
   void set_exp();
   void set_sqrt();
   void set_sqr();
+  float total_sum();
   //rand
   void rand_uniform(float v);
   void rand_suniform(float v);
@@ -147,14 +148,15 @@ class Tensor
 
   static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC);
   static void sum(float scA, Tensor *A, float scB,  Tensor *B, Tensor *C,int incC);
+  static void sum(Tensor *A, Tensor *B, Tensor *C);
   static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
   static void sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
   static void reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB);
 
-  static void el_mult(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC);
-  static void el_div(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC);
+  static void el_mult(Tensor *A,Tensor *B, Tensor *C,int incC);
+  static void el_div(Tensor *A,Tensor *B, Tensor *C,int incC);
 
-  static float total_sum(Tensor *A);
+
 
   static void inc(Tensor *A,Tensor *B);
   static void cent(Tensor *A,Tensor *B, Tensor *C);

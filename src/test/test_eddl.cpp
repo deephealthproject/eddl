@@ -35,7 +35,7 @@
 
 int main(int argc, char **argv)
 {
-  int batch=100;
+  int batch=1000;
 
   Tensor *tin=new Tensor({batch,784});
 
@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 
   // Attach an optimizer and a list of error criteria
   // size of error criteria list must match with size of list of outputs
-  net->build(SGD(0.01,0.95),{"cent"},{"acc"});
+  net->build(SGD(0.05,0.95),{"cent"},{"acc"});
 
   /// read data
   Tensor *X=new Tensor("trX.bin");

@@ -53,18 +53,18 @@ void Loss::delta(Tensor *T, Tensor* Y, Tensor *D)
   else if (name=="cent")
     {
       // delta: t/y - (1-t)/(1-y)
-      Tensor *aux1=new Tensor(T->getshape());
-      Tensor *aux2=new Tensor(T->getshape());
-      Tensor *one=new Tensor(T->getshape());
+      Tensor *aux1=new Tensor(T->getshape(),T->device);
+      Tensor *aux2=new Tensor(T->getshape(),T->device);
+      Tensor *one=new Tensor(T->getshape(),T->device);
       one->set(1.0);
 
       //  (1-t)/(1-y)
       Tensor::sum(1,one,-1,T,aux1,0);
       Tensor::sum(1,one,-1,Y,aux2,0);
-      Tensor::el_div(1,aux1,1,aux2,aux2,0);
+      Tensor::el_div(aux1,aux2,aux2,0);
 
       // t/y
-      Tensor::el_div(1,T,1,Y,aux1,0);
+      Tensor::el_div(T,Y,aux1,0);
 
       Tensor::sum(1,aux1,-1,aux2,D,0);
 
@@ -88,17 +88,17 @@ float Loss::value(Tensor *T, Tensor* Y)
   if (name=="mse")
     {
       // batch error: sum((T-Y)^2)
-      Tensor *aux=new Tensor(T->getshape());
+      Tensor *aux=new Tensor(T->getshape(),T->device);
       Tensor::sum(1.0,T,-1.0,Y,aux,0);
-      Tensor::el_mult(1,aux,1,aux,aux,0);
-      f=Tensor::total_sum(aux);
+      Tensor::el_mult(aux,aux,aux,0);
+      f=aux->total_sum();
       delete aux;
     }
   else if ((name=="cent")||(name=="soft_cent"))
     {
-      Tensor *aux=new Tensor(T->getshape());
+      Tensor *aux=new Tensor(T->getshape(),T->device);
       Tensor::cent(T,Y,aux);
-      f=Tensor::total_sum(aux);
+      f=aux->total_sum();
       delete aux;
     }
 

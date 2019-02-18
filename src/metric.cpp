@@ -50,8 +50,8 @@ float Metric::value(Tensor *T, Tensor* Y)
       // batch error: sum((T-Y)^2)
       Tensor *aux=new Tensor(T->getshape());
       Tensor::sum(1.0,T,-1.0,Y,aux,0);
-      Tensor::el_mult(1,aux,1,aux,aux,0);
-      f=Tensor::total_sum(aux);
+      Tensor::el_mult(aux,aux,aux,0);
+      f=aux->total_sum();
       delete aux;
     }
   else if (name=="acc")

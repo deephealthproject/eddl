@@ -39,6 +39,7 @@ void gpu_exp(Tensor *A);
 void gpu_sqrt(Tensor *A);
 void gpu_sqr(Tensor *A);
 void gpu_mask(Tensor *A,float v);
+void gpu_total_sum(Tensor *A,float *tot);
 
 void gpu_copy_to_gpu(float *nptr,Tensor *B);
 void gpu_copy_from_gpu(Tensor *A,float *nptr);
@@ -46,14 +47,24 @@ void gpu_copy_gpu(Tensor *A,Tensor *B);
 
 void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC);
 void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC);
+void gpu_sum(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC);
+
+void gpu_el_mult(Tensor *A,Tensor *B,Tensor *C,int incC);
+void gpu_el_div(Tensor *A,Tensor *B,Tensor *C,int incC);
 
 void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
 void gpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
-
 void gpu_reduce_sum2D(Tensor *A,Tensor *B,int axis,int incB);
 
 void gpu_rand_uniform(Tensor *A, float v);
 void gpu_rand_suniform(Tensor *A, float v);
 void gpu_rand_gaussian(Tensor *A, float m,float s);
 void gpu_rand_binary(Tensor *A, float v);
+
+void gpu_cent(Tensor *A,Tensor *B,Tensor *C);
+
+void gpu_relu(Tensor *A,Tensor *B);
+void gpu_d_relu(Tensor *D,Tensor *I,Tensor *PD);
+void gpu_softmax(Tensor *A,Tensor *B);
+
 #endif

@@ -281,6 +281,9 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
 #else
       // split on multiple GPUs
       int ngpus=gpu_devices();
+      if (ngpus==0) {
+        msg("GPU devices not found","Net.build");
+      }
       cout<<"split into "<<ngpus<<" GPUs devices\n";
       split(ngpus,DEV_GPU);
 #endif
@@ -427,8 +430,11 @@ void Net::forward()
 
 void Net::delta()
 {
-  for(int i=0;i<lout.size();i++)
+  for(int i=0;i<lout.size();i++) {
+
     losses[i]->delta(lout[i]->target,lout[i]->output,lout[i]->delta);
+
+  }
 }
 
 
@@ -604,7 +610,6 @@ void Net::train_batch(vtensor X, vtensor Y)
 
   if (snets.size()<2) // One CPU thread __OR__ One {GPU,FPGA}
     {
-      // This copies goes from CPU to CPU or {GPU,FPGA}
       if (snets.size()) { // one {GPU,FPGA}
         // With only one device it is not necessary
         // to synchronize params
@@ -612,8 +617,10 @@ void Net::train_batch(vtensor X, vtensor Y)
         // this copy is between cpu memory and {GPU,FPGA} memory
         for(i=0;i<X.size();i++)
           Tensor::copy(X[i],snets[0]->lin[i]->input);
-        for(i=0;i<Y.size();i++)
-          Tensor::copy(Y[i],lout[i]->target);
+
+        for(i=0;i<Y.size();i++) {
+          Tensor::copy(Y[i],snets[0]->lout[i]->target);
+        }
 
         snets[0]->reset();
         snets[0]->forward();
@@ -621,6 +628,8 @@ void Net::train_batch(vtensor X, vtensor Y)
         snets[0]->loss();
         snets[0]->backward();
         snets[0]->applygrads(X[0]->sizes[0]);
+        for(int j=0;j<2*lout.size();j++)
+          fiterr[j]+=snets[0]->fiterr[j];
       }
       else { //one CPU thread
         // this copy is between cpu memory
@@ -635,6 +644,7 @@ void Net::train_batch(vtensor X, vtensor Y)
         loss();
         backward();
         applygrads(X[0]->sizes[0]);
+
       }
     }
   else // multiple CPU_cores or GPUs or FPGAs
