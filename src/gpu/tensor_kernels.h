@@ -52,6 +52,7 @@ __global__ void sum_mat_col(float* a, float* b, float* c, int cols, int rows);
 __global__ void reduce_sum2D(float *a,float *b,int r,int c,int axis);
 
 __global__ void cent(float* a, float* b, float* c, int tam);
+__global__ void accuracy(float* T, float* N,float* acc,int cols, long int total_ops, int* MC_err);
 
 __global__ void relu(float *a,float *b,int tam);
 __global__ void d_relu(float *d,float *i,float *pd,int tam);

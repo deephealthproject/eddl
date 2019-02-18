@@ -230,6 +230,44 @@ __global__ void cent(float* a, float* b, float* c, int tam)
   }
 }
 
+
+__global__ void accuracy(float* T, float* N,float* acc,int cols, long int total_ops, int* MC_err)
+{
+
+int thread_id_x = threadIdx.x + blockIdx.x*blockDim.x;
+int result_t=T[thread_id_x*cols];
+float result_n=N[thread_id_x*cols];
+
+int row_max_t=0;
+int row_max_n=0;
+
+int aux_t;
+float aux_n;
+if (thread_id_x < total_ops)
+{
+  for(int i=1;i<cols;i++)
+  {
+   aux_t=T[thread_id_x*cols+i];
+   aux_n=N[thread_id_x*cols+i];
+
+	if (aux_t>result_t)
+	 {
+  		result_t=aux_t;
+      row_max_t=i;
+   }
+  if (aux_n>result_n)
+	 {
+		result_n=aux_n;
+    row_max_n=i;
+   }
+  }
+
+  acc[thread_id_x]=row_max_t;
+  atomicAdd(MC_err,(int)(row_max_t==row_max_n));
+}
+
+}
+
 ///////////////////////////////////////////
 __global__ void relu(float *a,float *b,int tam)
 {

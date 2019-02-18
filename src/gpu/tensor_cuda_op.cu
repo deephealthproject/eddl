@@ -556,6 +556,53 @@ void gpu_cent(Tensor *A,Tensor *B,Tensor *C)
 
 }
 
+void gpu_accuracy(Tensor *A,Tensor *B,int *acc)
+{
+
+  /*
+dim3 dimBlock(gsp->row);
+dim3 dimGrid(1);
+long int ops = gsp->row;
+
+switch(t)
+{
+  case CE:
+       {
+       float* max_row=makeTensor(gsp->row);//store it from device but use in gpu
+       int* cerr_g;
+       error=cudaMalloc((void**)&cerr_g,sizeof(int));
+       error_f();
+       cudaMemset(cerr_g, 0, sizeof(int));
+       error_f();
+       MC_loss<<<dimBlock,dimGrid>>>(T,N,max_row,gsp->col,ops,cerr_g);
+       error_f();
+       cudaDeviceSynchronize();
+       */
+
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+  int r,c;
+
+  r=A->sizes[0];
+  c=A->tam/r;
+
+  dim3 dimGrid(r);
+  dim3 dimBlock(c);
+
+  float* max_row=gpu_create_tensor(device,r);
+
+  int *a;
+  check_cuda(cudaMalloc((void**)&a,sizeof(int)),"error cudaMalloc in accuracy");
+  cudaMemset(a, 0, sizeof(int));
+
+  accuracy<<<dimBlock,dimGrid>>>(A->gptr,B->gptr,max_row,c,r,a);
+  check_cuda(cudaMemcpy(acc,a,sizeof(float),cudaMemcpyDeviceToHost),"error copy in accuracy");
+
+  gpu_delete_tensor(device,max_row);
+
+}
+
+
 
 ////////////////////////////////////
 void gpu_relu(Tensor *A,Tensor *B)

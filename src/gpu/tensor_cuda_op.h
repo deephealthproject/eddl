@@ -62,6 +62,8 @@ void gpu_rand_gaussian(Tensor *A, float m,float s);
 void gpu_rand_binary(Tensor *A, float v);
 
 void gpu_cent(Tensor *A,Tensor *B,Tensor *C);
+void gpu_accuracy(Tensor *A,Tensor *B,int *acc);
+
 
 void gpu_relu(Tensor *A,Tensor *B);
 void gpu_d_relu(Tensor *D,Tensor *I,Tensor *PD);

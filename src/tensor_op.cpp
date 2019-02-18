@@ -593,7 +593,7 @@ int Tensor::accuracy(Tensor *A,Tensor *B)
 #ifdef cGPU
   else if (A->isGPU())
     {
-
+       gpu_accuracy(A,B,&acc);
     }
 #endif
 #ifdef cFPGA
