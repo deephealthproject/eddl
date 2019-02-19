@@ -135,11 +135,9 @@ void Net::info()
 /////////////////////////////////////////
 void Net::initialize()
 {
-  for(int i = 0; i != layers.size(); i++) {
+  for(int i = 0; i != layers.size(); i++)
     layers[i]->initialize();
-    for (int j=0;j<layers[i]->params.size();j++)
-      fprintf(stderr,"Ini %f\n",layers[i]->params[j]->total_sum());
-    }
+
 }
 
 
@@ -757,6 +755,7 @@ void Net::train_batch(vtensor X, vtensor Y)
         }
 
       // In case of GPUS or FPGA synchronize params
+
       if (snets[0]->dev!=DEV_CPU){
         for(int j;j<layers.size();j++)
           for(int k=0;k<layers[j]->params.size();k++) {
@@ -773,6 +772,7 @@ void Net::train_batch(vtensor X, vtensor Y)
             }
           }
       }
+
       /////////////////////////////////////////////////
 
       for(int i=0;i<snets.size();i++)
