@@ -121,19 +121,12 @@ void Tensor::inc(Tensor *A, Tensor *B)
   else if ((A->isGPU())&&(B->isGPU())) {
     Tensor::sum(1,A,1,B,B,0);
   }
-  else if ((A->isCPU())&&(B->isGPU()))
+  else if ((A->isCPU())&&(B->isGPU())||((A->isGPU())&&(B->isCPU())))
     {
        Tensor *n=new Tensor(B->getshape(),B->device);
        Tensor::copy(A,n);
        Tensor::sum(1,n,1,B,B,0);
        delete n;
-    }
-  else if ((A->isGPU())&&(B->isCPU()))
-    {
-      Tensor *n=new Tensor(A->getshape(),A->device);
-      Tensor::copy(B,n);
-      Tensor::sum(1,n,1,A,A,0);
-      delete n;
     }
   #endif
   else

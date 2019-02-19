@@ -135,8 +135,11 @@ void Net::info()
 /////////////////////////////////////////
 void Net::initialize()
 {
-  for(int i = 0; i != layers.size(); i++)
+  for(int i = 0; i != layers.size(); i++) {
     layers[i]->initialize();
+    for (int j=0;j<layers[i]->params.size();j++)
+      fprintf(stderr,"Ini %f\n",layers[i]->params[j]->total_sum());
+    }
 }
 
 
@@ -710,6 +713,7 @@ void Net::train_batch(vtensor X, vtensor Y)
               exit(-1);
             }
         }
+
       for(int i=0;i<snets.size();i++)
         {
           rc = pthread_join(thr[i], &status);
@@ -720,8 +724,7 @@ void Net::train_batch(vtensor X, vtensor Y)
             }
         }
 
-      if (snets[i]->dev==DEV_CPU) {
-        Eigen::initParallel();
+      if (snets[0]->dev==DEV_CPU) {
         for(int i=0;i<snets.size();i++)
           {
             //call thread
@@ -811,9 +814,11 @@ void *train_batch_t(void *t)
   net->loss();
 
   net->backward();
-  /*
-  if (net->dev>DEV_CPU) net->applygrads(targs->batch);
-*/
+
+  if (net->dev>DEV_CPU)
+    net->applygrads(targs->batch);
+
+
 }
 
 
