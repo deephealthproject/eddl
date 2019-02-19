@@ -38,10 +38,10 @@ int activation_created=1;
 
 using namespace std;
 
-Activation::Activation(Layer *parent,string act):Activation(parent,act,"activation"+to_string(activation_created),DEV_CPU){}
-Activation::Activation(Layer *parent,string act,string name):Activation(parent,act,name,DEV_CPU){}
-Activation::Activation(Layer *parent,string act,int dev):Activation(parent,act,"activation"+to_string(activation_created),dev){}
-Activation::Activation(Layer *parent,string act,string name,int d):LinLayer(name,d)
+LActivation::LActivation(Layer *parent,string act):LActivation(parent,act,"activation"+to_string(activation_created),DEV_CPU){}
+LActivation::LActivation(Layer *parent,string act,string name):LActivation(parent,act,name,DEV_CPU){}
+LActivation::LActivation(Layer *parent,string act,int dev):LActivation(parent,act,"activation"+to_string(activation_created),dev){}
+LActivation::LActivation(Layer *parent,string act,string name,int d):LinLayer(name,d)
 {
 
   activation_created++;
@@ -59,7 +59,7 @@ Activation::Activation(Layer *parent,string act,string name,int d):LinLayer(name
 
 
 // virtual
-void Activation::forward()
+void LActivation::forward()
 {
 
   if (act=="relu")
@@ -72,7 +72,7 @@ void Activation::forward()
 }
 
 
-void Activation::backward()
+void LActivation::backward()
 {
 
 
@@ -93,19 +93,19 @@ void Activation::backward()
 }
 
 
-Layer *Activation::share(int c,vector<Layer*>p)
+Layer *LActivation::share(int c,vector<Layer*>p)
 {
 
-  Activation *n=new Activation(p[0],act,"share_"+to_string(c)+name,dev);
+  LActivation *n=new LActivation(p[0],act,"share_"+to_string(c)+name,dev);
   n->orig=this;
   n->delta_bp=delta_bp;
 
   return n;
 }
-Layer *Activation::clone(int c,vector<Layer*>p,int todev)
+Layer *LActivation::clone(int c,vector<Layer*>p,int todev)
 {
 
-  Activation *n=new Activation(p[0],act,"clone_"+to_string(todev)+name,todev);
+  LActivation *n=new LActivation(p[0],act,"clone_"+to_string(todev)+name,todev);
   n->orig=this;
   n->delta_bp=delta_bp;
 
@@ -113,17 +113,17 @@ Layer *Activation::clone(int c,vector<Layer*>p,int todev)
 }
 
 
-void Activation::info()
+void LActivation::info()
 {
   cout<<"\n===============\n";
-  cout<< "Layer Activation "<<name<<"\n";
+  cout<< "Layer LActivation "<<name<<"\n";
   cout<< "Parent layer:"<<parent[0]->name<<"\n";
   cout<< "Child layers:\n";
   if (child.size())
     for(int i = 0; i != child.size(); i++)
       cout<< child[i]->name<<"\n";
   else cout<<"None\n";
-  cout<<"Input:\n";
+  cout<<"LInput:\n";
   input->info();
   cout<<"No Params\n";
   cout<<"Output:\n";

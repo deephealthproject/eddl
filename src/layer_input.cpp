@@ -38,10 +38,10 @@ using namespace std;
 
 int input_created=1;
 
-Input::Input(Tensor *in):Input(in,"input"+to_string(input_created),DEV_CPU){}
-Input::Input(Tensor *in,int d):Input(in,"input"+to_string(input_created),d){}
-Input::Input(Tensor *in,string name):Input(in,name,DEV_CPU){}
-Input::Input(Tensor *in,string name,int d):LinLayer(name,d)
+LInput::LInput(Tensor *in):LInput(in,"input"+to_string(input_created),DEV_CPU){}
+LInput::LInput(Tensor *in,int d):LInput(in,"input"+to_string(input_created),d){}
+LInput::LInput(Tensor *in,string name):LInput(in,name,DEV_CPU){}
+LInput::LInput(Tensor *in,string name,int d):LinLayer(name,d)
 {
   input_created++;
   input=output=in;
@@ -50,43 +50,43 @@ Input::Input(Tensor *in,string name,int d):LinLayer(name,d)
 
 
 // virtual
-void Input::info()
+void LInput::info()
 {
   cout<<"\n===============\n";
-  cout<< "Layer Input "<<name<<"\n";
+  cout<< "Layer LInput "<<name<<"\n";
   input->info();
   cout<<"===============\n\n";
 }
 
 
-void Input::forward()
+void LInput::forward()
 {
   delta->set(0.0);
 }
 
 
-void Input::backward()
+void LInput::backward()
 {
 }
 
 
-Layer *Input::share(int c,vector<Layer*>p)
+Layer *LInput::share(int c,vector<Layer*>p)
 {
   shape s=input->getshape();
   s[0]/=c;
 
-  Input *n=new Input(new Tensor(s),"share_"+to_string(c)+name,dev);
+  LInput *n=new LInput(new Tensor(s),"share_"+to_string(c)+name,dev);
   n->orig=this;
 
   return n;
 }
 
-Layer *Input::clone(int c,vector<Layer*>p,int todev)
+Layer *LInput::clone(int c,vector<Layer*>p,int todev)
 {
   shape s=input->getshape();
   s[0]/=c;
 
-  Input *n=new Input(new Tensor(s,todev),"clone_"+to_string(todev)+name,todev);
+  LInput *n=new LInput(new Tensor(s,todev),"clone_"+to_string(todev)+name,todev);
   n->orig=this;
 
   return n;

@@ -68,58 +68,58 @@ void EDDL::div(tensor t,float v)
 //////////////////////////////////////////////////////
 
 layer EDDL::Input(const initializer_list<int>& init){
-  return new Input::Input(new Tensor(init));
+  return new LInput(new Tensor(init));
 }
 
 layer EDDL::Input(const initializer_list<int>& init,int dev){
-  return new Input::Input(new Tensor(init,dev));
+  return new LInput(new Tensor(init,dev));
 }
 
 layer EDDL::Input(tensor t)
 {
-  return new Input::Input(t);
+  return new LInput(t);
 }
 
 layer EDDL::Input(tensor t,int dev)
 {
-  return new Input::Input(t);
+  return new LInput(t);
 }
 //////////////////////////////////////////////////////
 layer EDDL::Dense(layer parent,int dim)
 {
-  return new Dense::Dense(parent,dim,DEV_CPU);
+  return new LDense(parent,dim,DEV_CPU);
 }
 
 layer EDDL::Dense(layer parent,int dim,string name)
 {
-  return new Dense::Dense(parent,dim,name,DEV_CPU);
+  return new LDense(parent,dim,name,DEV_CPU);
 }
 layer EDDL::Dense(layer parent,int dim,int dev)
 {
-  return new Dense::Dense(parent,dim,dev);
+  return new LDense(parent,dim,dev);
 }
 layer EDDL::Dense(layer parent,int dim,string name,int d)
 {
-  return new Dense::Dense(parent,dim,name,d);
+  return new LDense(parent,dim,name,d);
 }
 
 //////////////////////////////////////////////////////
 layer EDDL::Activation(layer parent,string act)
 {
-  return new Activation::Activation(parent,act,DEV_CPU);
+  return new LActivation(parent,act,DEV_CPU);
 }
 
 layer EDDL::Activation(layer parent,string act,string name)
 {
-  return new Activation::Activation(parent,act,name,DEV_CPU);
+  return new LActivation(parent,act,name,DEV_CPU);
 }
 layer EDDL::Activation(layer parent,string act,int dev)
 {
-  return new Activation::Activation(parent,act,dev);
+  return new LActivation(parent,act,dev);
 }
 layer EDDL::Activation(layer parent,string act,string name,int d)
 {
-  return new Activation::Activation(parent,act,name,d);
+  return new LActivation(parent,act,name,d);
 }
 
 /////////////////////////////////////////////////////////

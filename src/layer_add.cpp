@@ -36,18 +36,18 @@
 
 using namespace std;
 
-Add::Add(vector<Layer*> in):Add(in,"__add__",DEV_CPU){}
-Add::Add(vector<Layer*> in,int dev):Add(in,"__add__",DEV_CPU){}
-Add::Add(vector<Layer*> in,string name):Add(in,name,DEV_CPU){}
+LAdd::LAdd(vector<Layer*> in):LAdd(in,"__add__",DEV_CPU){}
+LAdd::LAdd(vector<Layer*> in,int dev):LAdd(in,"__add__",DEV_CPU){}
+LAdd::LAdd(vector<Layer*> in,string name):LAdd(in,name,DEV_CPU){}
 
-Add::Add(vector<Layer*> in,string name,int d):MLayer(name,d)
+LAdd::LAdd(vector<Layer*> in,string name,int d):MLayer(name,d)
 {
-  if (in.size()==0) msg("Error: Add layer with empty list");
+  if (in.size()==0) msg("Error: LAdd layer with empty list");
   parent=in;
   if (parent.size()>1)
     for(int i=0;i<parent.size()-1;++i)
       if (!Tensor::eqsize(parent[i]->output,parent[i+1]->output))
-        msg("Error: Add layers with different tensor sizes");
+        msg("Error: LAdd layers with different tensor sizes");
 
   input=new Tensor(parent[0]->output->getshape());
   output=new Tensor(parent[0]->output->getshape());
@@ -56,10 +56,10 @@ Add::Add(vector<Layer*> in,string name,int d):MLayer(name,d)
 
 
 // virtual
-void Add::info()
+void LAdd::info()
 {
   cout<<"\n===============\n";
-  cout<< "Layer Add "<<name<<"\n";
+  cout<< "Layer LAdd "<<name<<"\n";
   cout<< "Layers: "<<name<<"\n";
   for(int i = 0; i != parent.size(); i++)
     {
@@ -71,10 +71,10 @@ void Add::info()
 }
 
 
-void Add::forward(){}
-void Add::backward(){}
-Layer *Add::share(int c,vector<Layer*>p){return NULL;}
-Layer *Add::clone(int c,vector<Layer*>p,int todev){return NULL;}
+void LAdd::forward(){}
+void LAdd::backward(){}
+Layer *LAdd::share(int c,vector<Layer*>p){return NULL;}
+Layer *LAdd::clone(int c,vector<Layer*>p,int todev){return NULL;}
 
 
 

@@ -494,7 +494,7 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
       msg("different number of samples in output tensor","Net.fit");
 
   // Create internal variables
-  // Input and output batch...
+  // LInput and output batch...
   vtensor X;
   for(i=0;i<tin.size();i++)
     {

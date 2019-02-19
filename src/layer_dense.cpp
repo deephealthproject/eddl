@@ -38,12 +38,12 @@ int dense_created=1;
 
 using namespace std;
 
-Dense::Dense(Layer *parent,int dim):Dense(parent,dim,"dense"+to_string(dense_created),DEV_CPU){}
-Dense::Dense(Layer *parent,int dim,string name):Dense(parent,dim,name,DEV_CPU){}
-Dense::Dense(Layer *parent,int dim,int dev):Dense(parent,dim,"dense"+to_string(dense_created),dev){}
-Dense::Dense(Layer *parent,int dim,string name,int d):LinLayer(name,d)
+LDense::LDense(Layer *parent,int dim):LDense(parent,dim,"dense"+to_string(dense_created),DEV_CPU){}
+LDense::LDense(Layer *parent,int dim,string name):LDense(parent,dim,name,DEV_CPU){}
+LDense::LDense(Layer *parent,int dim,int dev):LDense(parent,dim,"dense"+to_string(dense_created),dev){}
+LDense::LDense(Layer *parent,int dim,string name,int d):LinLayer(name,d)
 {
-  if (parent->output->dim!=2) msg("Dense only works over 2D tensors","Dense");
+  if (parent->output->dim!=2) msg("LDense only works over 2D tensors","LDense");
   dense_created++;
   this->dim=dim;
 
@@ -67,14 +67,14 @@ Dense::Dense(Layer *parent,int dim,string name,int d):LinLayer(name,d)
 
 
 // virtual
-void Dense::forward()
+void LDense::forward()
 {
   Tensor::mult2D(input,0,W,0,output,0);
   Tensor::sum2D_rowwise(output,bias,output);
 }
 
 
-void Dense::backward()
+void LDense::backward()
 {
 
   //get gradients with provided delta
@@ -90,9 +90,9 @@ void Dense::backward()
 }
 
 
-Layer *Dense::share(int c,vector<Layer*>p)
+Layer *LDense::share(int c,vector<Layer*>p)
 {
-  Dense *n=new Dense(p[0],dim,"share_"+to_string(c)+name,dev);
+  LDense *n=new LDense(p[0],dim,"share_"+to_string(c)+name,dev);
   n->orig=this;
 
   //share params
@@ -107,9 +107,9 @@ Layer *Dense::share(int c,vector<Layer*>p)
   return n;
 }
 
-Layer *Dense::clone(int c,vector<Layer*>p,int todev)
+Layer *LDense::clone(int c,vector<Layer*>p,int todev)
 {
-  Dense *n=new Dense(p[0],dim,"clone_"+to_string(todev)+name,todev);
+  LDense *n=new LDense(p[0],dim,"clone_"+to_string(todev)+name,todev);
   n->orig=this;
 
   return n;
@@ -117,17 +117,17 @@ Layer *Dense::clone(int c,vector<Layer*>p,int todev)
 
 
 
-void Dense::info()
+void LDense::info()
 {
   cout<<"\n===============\n";
-  cout<< "Layer Dense "<<name<<"\n";
+  cout<< "Layer LDense "<<name<<"\n";
   cout<< "Parent layer:"<<parent[0]->name<<"\n";
   cout<< "Child layers:\n";
   if (child.size())
     for(int i = 0; i != child.size(); i++)
       cout<< child[i]->name<<"\n";
   else cout<<"None\n";
-  cout<<"Input:\n";
+  cout<<"LInput:\n";
   input->info();
   cout<<"Params:\n";
   W->info();

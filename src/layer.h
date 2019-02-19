@@ -100,13 +100,13 @@ class LinLayer : public Layer
 };
 
 /// INPUT Layer
-class Input : public LinLayer
+class LInput : public LinLayer
 {
  public:
-  Input(Tensor *in);
-  Input(Tensor *in,int dev);
-  Input(Tensor *in,string name);
-  Input(Tensor *in,string name,int dev);
+  LInput(Tensor *in);
+  LInput(Tensor *in,int dev);
+  LInput(Tensor *in,string name);
+  LInput(Tensor *in,string name,int dev);
   Layer *share(int c,vector<Layer*>p);
   Layer *clone(int c,vector<Layer*>,int todev);
 
@@ -117,15 +117,15 @@ class Input : public LinLayer
 };
 
 /// DENSE Layer
-class Dense : public LinLayer
+class LDense : public LinLayer
 {
  public:
   int dim;
 
-  Dense(Layer *parent,int dim);
-  Dense(Layer *parent,int dim,int dev);
-  Dense(Layer *parent,int dim,string name);
-  Dense(Layer *parent,int dim,string name,int d);
+  LDense(Layer *parent,int dim);
+  LDense(Layer *parent,int dim,int dev);
+  LDense(Layer *parent,int dim,string name);
+  LDense(Layer *parent,int dim,string name,int d);
   Layer *share(int c,vector<Layer*>p);
   Layer *clone(int c,vector<Layer*>,int todev);
 
@@ -142,15 +142,15 @@ class Dense : public LinLayer
 };
 
 /// DENSE Layer
-class Activation : public LinLayer
+class LActivation : public LinLayer
 {
  public:
   string act;
 
-  Activation(Layer *parent,string act);
-  Activation(Layer *parent,string act,int d);
-  Activation(Layer *parent,string act,string name);
-  Activation(Layer *parent,string act,string name,int d);
+  LActivation(Layer *parent,string act);
+  LActivation(Layer *parent,string act,int d);
+  LActivation(Layer *parent,string act,string name);
+  LActivation(Layer *parent,string act,string name,int d);
   Layer *share(int c,vector<Layer*>p);
   Layer *clone(int c,vector<Layer*>,int todev);
 
@@ -181,13 +181,13 @@ class MLayer : public Layer
 };
 
 /// INPUT Layer
-class Add : public MLayer
+class LAdd : public MLayer
 {
  public:
-  Add(vector<Layer*> in);
-  Add(vector<Layer*> in,int dev);
-  Add(vector<Layer*> in,string name);
-  Add(vector<Layer*> in,string name,int dev);
+  LAdd(vector<Layer*> in);
+  LAdd(vector<Layer*> in,int dev);
+  LAdd(vector<Layer*> in,string name);
+  LAdd(vector<Layer*> in,string name,int dev);
   Layer *share(int c,vector<Layer*>p);
   Layer *clone(int c,vector<Layer*>,int todev);
 

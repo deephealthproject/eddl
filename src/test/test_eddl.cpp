@@ -31,42 +31,40 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "../net.h"
+#include "../eddl.h"
 
 int main(int argc, char **argv)
 {
   int batch=1000;
 
-  Tensor *tin=new Tensor({batch,784});
+  // network
+  layer in=eddl.Input({batch,784});
+  layer l=in;
+  for(int i=0;i<3;i++)
+      l=eddl.Activation(eddl.Dense(l,1024),"relu");
 
-  // graph
-  Input* in=new Input(tin);
-  Layer *l=in;
-  for(int i=0;i<2;i++)
-    l=new Activation(new Dense(l,1024),"relu");
-
-  Activation *out1=new Activation(new Dense(l,10),"softmax");
+  layer out1=eddl.Activation(eddl.Dense(l,10),"softmax");
+  layer out2=eddl.Dense(l,10);
 
   // net define input and output layers list
-  Net *net=new Net({in},{out1});
+  model net=eddl.Model({in},{out1,out2});
 
   // get some info from the network
-  net->info();
+  eddl.info(net);
 
-  // Attach an optimizer and a list of error criteria
-  // size of error criteria list must match with size of list of outputs
-  net->build(SGD(0.05,0.95),{"cent"},{"acc"});
+  // Attach an optimizer and a list of error criteria and metrics
+  // size of error criteria and metrics list must match with size of list of outputs
+  // optionally put a DEVICE where the net will run
+  eddl.build(net,SGD(0.01,0.95),{"soft_cent","mse"},{"acc","mse"},DEV_CPU);
 
-  /// read data
-  Tensor *X=new Tensor("trX.bin");
-  Tensor *Y=new Tensor("trY.bin");
+  // read data
+  tensor X=eddl.T("trX.bin");
+  tensor Y=eddl.T("trY.bin");
 
-  // Preprocess data
-  X->div(255.0);
+  eddl.div(X,255.0);
 
   // training, list of input and output tensors, batch, epochs
-  net->fit({X},{Y},batch,100);
-
+  eddl.fit(net,{X},{Y,Y},batch,100);
 
 }
 
