@@ -93,7 +93,7 @@ void LActivation::backward()
 }
 
 
-Layer *LActivation::share(int c,vector<Layer*>p)
+Layer *LActivation::share(int c,int bs,vector<Layer*>p)
 {
 
   LActivation *n=new LActivation(p[0],act,"share_"+to_string(c)+name,dev);
@@ -102,7 +102,7 @@ Layer *LActivation::share(int c,vector<Layer*>p)
 
   return n;
 }
-Layer *LActivation::clone(int c,vector<Layer*>p,int todev)
+Layer *LActivation::clone(int c,int bs,vector<Layer*>p,int todev)
 {
 
   LActivation *n=new LActivation(p[0],act,"clone_"+to_string(todev)+name,todev);

@@ -71,9 +71,9 @@ void Tensor::copy(Tensor *A, Tensor *B)
   B->tsem->lock();
   if ((A->isCPU())&&(B->isCPU()))
     {
-      if (A->dim==1) B->ptr1=A->ptr1;
-      else if (A->dim==2) B->ptr2=A->ptr2;
-      else for(int i=0;i<A->sizes[0];i++) Tensor::copy(A->ptr[i],B->ptr[i]);
+      for(int i=0;i<A->tam;i++)
+        B->ptr[i]=A->ptr[i];
+
     }
   #ifdef cGPU
   else if ((A->isGPU())&&(B->isGPU())) {
@@ -81,16 +81,11 @@ void Tensor::copy(Tensor *A, Tensor *B)
   }
   else if ((A->isCPU())&&(B->isGPU()))
     {
-      float *nptr=A->toLin();
-      gpu_copy_to_gpu(nptr,B);
-      free(nptr);
+      gpu_copy_to_gpu(A->ptr,B);
     }
   else if ((A->isGPU())&&(B->isCPU()))
     {
-      float *nptr=(float*)malloc(B->tam*sizeof(float));
-      gpu_copy_from_gpu(A,nptr);
-      B->fromLin(nptr);
-      free(nptr);
+      gpu_copy_from_gpu(A,B->ptr);
     }
   #endif
   else
@@ -112,9 +107,10 @@ void Tensor::inc(Tensor *A, Tensor *B)
   if ((A->isCPU())&&(B->isCPU()))
     {
       B->tsem->lock();
-      if (A->dim==1) B->ptr1+=A->ptr1;
-      else if (A->dim==2) B->ptr2+=A->ptr2;
-      else for(int i=0;i<A->sizes[0];i++) Tensor::inc(A->ptr[i],B->ptr[i]);
+
+      for(int i=0;i<A->tam;i++)
+        B->ptr[i]+=A->ptr[i];
+
       B->tsem->unlock();
     }
   #ifdef cGPU
@@ -140,26 +136,26 @@ void Tensor::inc(Tensor *A, Tensor *B)
 ///////////////////////////////////////
 /// Select from A to B
 //////////////////////////////////////
-void Tensor::select(Tensor *A, Tensor *B,vector<int> sind)
+void Tensor::select(Tensor *A, Tensor *B,vector<int> sind,int ini,int end)
 {
-  B->tsem->lock();
+  if ((A->tam/A->sizes[0])!=(B->tam/B->sizes[0])) msg("Incompatible sizes","Tensor::select");
+
+  //B->tsem->lock();
   if ((A->isCPU())&&(B->isCPU()))
     {
-      if (A->dim==1)
-        for(int i=0;i<sind.size();i++)
-          B->ptr1(i)=A->ptr1(sind[i]);
-      else if (A->dim==2)
-        for(int i=0;i<sind.size();i++)
-          for(int j=0;j<B->sizes[1];j++)
-            B->ptr2(i,j)=A->ptr2(sind[i],j);
-      else
-        for(int i=0;i<sind.size();i++)
-          Tensor::copy(A->ptr[sind[i]],B->ptr[i]);
-    }
+      int s=A->tam/A->sizes[0];
+
+      for(int i=ini;i<end;i++) {
+        int p=sind[i]*s;
+        int pb=(i-ini)*s;
+        for(int j=0;j<s;j++,p++,pb++)
+          B->ptr[pb]=A->ptr[p];
+      }
+  }
   else {
     msg("unsuppoted select between devices","Tensor::select");
   }
-  B->tsem->unlock();
+  //B->tsem->unlock();
 }
 
 
@@ -195,35 +191,39 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
         if ((A->sizes[0]!=B->sizes[1])||(A->sizes[1]!=C->sizes[0])||(B->sizes[0]!=C->sizes[1])) msg("Incompatible dims","Tensor::mult2D");
     }
 
+
   C->tsem->lock();
   if (A->isCPU())
     {
+
       if (!tB)
         {
           if (!tA)
             {
-              if (!incC) C->ptr2=A->ptr2*B->ptr2;
-              else C->ptr2+=A->ptr2*B->ptr2;
+              if (!incC) C->ptr2=B->ptr2*A->ptr2;
+              else C->ptr2+=B->ptr2*A->ptr2;
             }
           else
             {
-              if (!incC) C->ptr2=A->ptr2.transpose()*B->ptr2;
-              else C->ptr2+=A->ptr2.transpose()*B->ptr2;
+              if (!incC) C->ptr2=B->ptr2*A->ptr2.transpose();
+              else C->ptr2+=B->ptr2*A->ptr2.transpose();
             }
         }
       else
         {
           if (!tA)
             {
-              if (!incC) C->ptr2=A->ptr2*B->ptr2.transpose();
-              else C->ptr2+=A->ptr2*B->ptr2.transpose();
+              if (!incC) C->ptr2=B->ptr2.transpose()*A->ptr2;
+              else C->ptr2+=B->ptr2.transpose()*A->ptr2;
             }
           else
             {
-              if (!incC) C->ptr2=A->ptr2.transpose()*B->ptr2.transpose();
-              else C->ptr2+=A->ptr2.transpose()*B->ptr2.transpose();
+              if (!incC) C->ptr2=B->ptr2.transpose()*A->ptr2.transpose();
+              else C->ptr2+=B->ptr2.transpose()*A->ptr2.transpose();
             }
         }
+
+      //_C->ptr2=C->ptr2.transpose();
     }
 #ifdef cGPU
   else if (A->isGPU())
@@ -253,19 +253,10 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C,int incC)
 
   if (A->isCPU())
     {
-      if (A->dim==1)
-        {
-          if (incC) C->ptr1+=A->ptr1.cwiseProduct(B->ptr1);
-          else C->ptr1=A->ptr1.cwiseProduct(B->ptr1);
-        }
-      else if (A->dim==2)
-        {
-          if (incC) C->ptr2+=A->ptr2.cwiseProduct(B->ptr2);
-          else C->ptr2=A->ptr2.cwiseProduct(B->ptr2);
-        }
-      else
-        for(int i=0;i<A->sizes[0];i++)
-          Tensor::el_mult(A->ptr[i],B->ptr[i],C->ptr[i],incC);
+
+        for(int i=0;i<A->tam;i++)
+         if (incC) C->ptr[i]+=A->ptr[i]*B->ptr[i];
+         else C->ptr[i]=A->ptr[i]*B->ptr[i];
     }
 #ifdef cGPU
   else if (A->isGPU())
@@ -283,7 +274,7 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C,int incC)
 
 
 ///////////////////////////////////////
-//// Element Mult C=A./B
+//// Element Div C=A./B
 //// incC 1 means C+=A./B (increment over C)
 //// Dimensions must be compatible
 ///////////////////////////////////////
@@ -296,35 +287,10 @@ void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C,int incC)
   C->tsem->lock();
   if (A->isCPU())
     {
-      if (A->dim==1)
-        {
-          if (incC)
-            {
-              for(int i=0;i<A->sizes[0];i++)
-                if (A->ptr1(i)!=0) C->ptr1(i)+=A->ptr1(i)/B->ptr1(i);
-            }
-          else
-            for(int i=0;i<A->sizes[0];i++)
-              if (A->ptr1(i)!=0) C->ptr1(i)=A->ptr1(i)/B->ptr1(i);
-              else C->ptr1(i)=0.0;
-        }
-      else if (A->dim==2)
-        {
-          if (incC)
-            {
-              for(int i=0;i<A->sizes[0];i++)
-                for(int j=0;j<A->sizes[1];j++)
-                  if (A->ptr2(i,j)!=0) C->ptr2(i,j)+=A->ptr2(i,j)/B->ptr2(i,j);
-            }
-          else
-            for(int i=0;i<A->sizes[0];i++)
-              for(int j=0;j<A->sizes[1];j++)
-                if (A->ptr2(i,j)!=0) C->ptr2(i,j)=A->ptr2(i,j)/B->ptr2(i,j);
-                else C->ptr2(i,j)=0.0;
-        }
-      else
-        for(int i=0;i<A->sizes[0];i++)
-          Tensor::el_div(A->ptr[i],B->ptr[i],C->ptr[i],incC);
+
+      for(int i=0;i<A->tam;i++)
+        if (incC) C->ptr[i]+=A->ptr[i]/B->ptr[i];
+        else C->ptr[i]=A->ptr[i]/B->ptr[i];
     }
 #ifdef cGPU
   else if (A->isGPU())
@@ -355,17 +321,12 @@ void Tensor::sum(float scA, Tensor *A, float scB, Tensor *B, Tensor *C,int incC)
 
   C->tsem->lock();
   if (A->isCPU())
-    {
-      if (A->dim==1)
-        if (incC) C->ptr1+=(scA*A->ptr1)+(scB*B->ptr1);
-        else C->ptr1=(scA*A->ptr1)+(scB*B->ptr1);
-      else if (A->dim==2)
-        if (incC) C->ptr2+=(scA*A->ptr2)+(scB*B->ptr2);
-        else C->ptr2=(scA*A->ptr2)+(scB*B->ptr2);
-      else
-        for(int i=0;i<A->sizes[0];i++)
-          Tensor::sum(scA,A->ptr[i],scB,B->ptr[i],C->ptr[i],incC);
-    }
+  {
+
+    for(int i=0;i<A->tam;i++)
+      if (incC) C->ptr[i]+=scA*A->ptr[i]+scB*B->ptr[i];
+      else C->ptr[i]=scA*A->ptr[i]+scB*B->ptr[i];
+  }
 #ifdef cGPU
   else if (A->isGPU())
     {
@@ -400,7 +361,14 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
   if ((!eqsize(A,C))||(A->sizes[1]!=B->sizes[0])) msg("Incompatible dims","Tensor::sum2D_rowwise");
 
   C->tsem->lock();
-  if (A->isCPU()) C->ptr2=A->ptr2.rowwise()+B->ptr1;
+  if (A->isCPU())
+    {
+      int p=0;
+      for(int i=0;i<A->sizes[0];i++) {
+        for(int j=0;j<A->sizes[1];j++,p++)
+          C->ptr[p]=A->ptr[p]+B->ptr[j];
+        }
+    }
 #ifdef cGPU
   else if (A->isGPU())
     {
@@ -430,7 +398,13 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C)
   if ((!eqsize(A,C))||(A->sizes[0]!=B->sizes[0])) msg("Incompatible dims","Tensor::sum2D_colwise");
 
   C->tsem->lock();
-  if (A->isCPU()) C->ptr2=A->ptr2.colwise()+B->ptr1.transpose();
+  {
+    int p=0;
+    for(int i=0;i<A->sizes[0];i++){
+      for(int j=0;j<A->sizes[1];j++,p++)
+        C->ptr[p]=A->ptr[p]+B->ptr[i];
+      }
+  }
 #ifdef cGPU
   else if (A->isGPU())
     {
@@ -463,23 +437,24 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB)
   if (A->isCPU())
     {
       if (axis==0)
-        {
-#pragma omp parallel for
-          for(int i=0;i<A->sizes[1];++i)
-            {
-              if (!incB) B->ptr1(i)=0;
-              for(int j=0;j<A->sizes[0];++j)
-                B->ptr1(i)+=A->ptr2(j,i);
-            }
-        }
+      {
+        if (!incB) for(int i=0;i<A->sizes[1];++i) B->ptr[i]=0;
+
+        int p=0;
+        for(int i=0;i<A->sizes[0];++i) {
+          for(int j=0;j<A->sizes[1];++j,p++)
+               B->ptr[j]+=A->ptr[p];
+          }
+
+      }
       else
         {
-#pragma omp parallel for
-          for(int i=0;i<A->sizes[0];++i)
-            {
-              if (!incB) B->ptr1(i)=0;
-              for(int j=0;j<A->sizes[1];++j)
-                B->ptr1(i)+=A->ptr2(i,j);
+          if (!incB) for(int i=0;i<A->sizes[0];++i) B->ptr[i]=0;
+
+          int p=0;
+          for(int i=0;i<A->sizes[0];++i) {
+            for(int j=0;j<A->sizes[1];++j,p++)
+                 B->ptr[i]+=A->ptr[p];
             }
         }
     }
@@ -512,27 +487,13 @@ void Tensor::cent(Tensor *A,Tensor *B, Tensor *C)
   C->tsem->lock();
   if (A->isCPU())
     {
-      if (A->dim==1)
-        {
-          for(int i=0;i<A->sizes[0];i++)
-            {
-              if (A->ptr1(i)!=0.0) C->ptr1(i)=-(A->ptr1(i)*log(B->ptr1(i)));
-              if (A->ptr1(i)!=1.0) C->ptr1(i)=-((1.0-A->ptr1(i))*log(1.0-B->ptr1(i)));
-            }
-        }
-      else if (A->dim==2)
-        {
-          for(int i=0;i<A->sizes[0];i++)
-            for(int j=0;j<A->sizes[1];j++)
-              {
-                if (A->ptr2(i,j)!=0.0) C->ptr2(i,j)=-(A->ptr2(i,j)*log(B->ptr2(i,j)));
-                if (A->ptr2(i,j)!=1.0) C->ptr2(i,j)=-((1.0-A->ptr2(i,j))*log(1.0-B->ptr2(i,j)));
-              }
-        }
-      else
-        for(int i=0;i<A->sizes[0];i++)
-          Tensor::cent(A->ptr[i],B->ptr[i],C->ptr[i]);
-    }
+
+      for(int i=0;i<A->tam;i++) {
+        C->ptr[i]=0;
+        if (A->ptr[i]!=0.0) C->ptr[i]-=A->ptr[i]*log(B->ptr[i]);
+        if (A->ptr[i]!=1.0) C->ptr[i]-=(1.0-A->ptr[i])*log(1.0-B->ptr[i]);
+      }
+  }
 #ifdef cGPU
   else if (A->isGPU())
     {
@@ -555,31 +516,22 @@ int Tensor::accuracy(Tensor *A,Tensor *B)
 {
   if (A->device!=B->device) msg("Tensors in different devices","Tensor::accuracy");
   if (!eqsize(A,B)) msg("Incompatible dims","Tensor::accuracy");
+  if (A->dim!=2)  msg("Accuracy only over 2D Tensor (batch x probs)","Tensor::Accuracy");
+
   int acc=0;
 
   B->tsem->lock();
+
   if (A->isCPU())
     {
       int aind,bind;
-      if (A->dim==1)
+
+      for(int i=0;i<A->sizes[0];i++)
         {
-          A->ptr1.maxCoeff(&aind);
-          B->ptr1.maxCoeff(&bind);
-          if (aind==bind) return 1;
-          else return 0;
-        }
-      else if (A->dim==2)
-        {
-          for(int i=0;i<A->sizes[0];i++)
-            {
-              A->ptr2.row(i).maxCoeff(&aind);
-              B->ptr2.row(i).maxCoeff(&bind);
-              if (aind==bind) acc++;
-            }
-        }
-      else
-        for(int i=0;i<A->sizes[0];i++)
-          acc+=Tensor::accuracy(A->ptr[i],B->ptr[i]);
+          A->ptr2.col(i).maxCoeff(&aind);
+          B->ptr2.col(i).maxCoeff(&bind);
+          if (aind==bind) acc++;
+       }
     }
 #ifdef cGPU
   else if (A->isGPU())
@@ -610,22 +562,11 @@ void Tensor::ReLu(Tensor *A,Tensor *B)
   B->tsem->lock();
   if (A->isCPU())
     {
-      if (A->dim==1)
-        {
-          B->ptr1=A->ptr1;
-          for(int i=0;i<A->sizes[0];i++)
-            if (A->ptr1(i)<0) B->ptr1(i)=0;
-        }
-      else if (A->dim==2)
-        {
-          B->ptr2=A->ptr2;
-          for(int i=0;i<A->sizes[0];i++)
-            for(int j=0;j<A->sizes[1];j++)
-              if (A->ptr2(i,j)<0) B->ptr2(i,j)=0;
-        }
-      else
-        for(int i=0;i<A->sizes[0];i++)
-          Tensor::ReLu(A->ptr[i],B->ptr[i]);
+
+      for(int i=0;i<A->tam;i++) {
+        if (A->ptr[i]>0.0) B->ptr[i]=A->ptr[i];
+        else B->ptr[i]=0.0;
+      }
     }
 #ifdef cGPU
   else if (A->isGPU())
@@ -648,24 +589,16 @@ void Tensor::D_ReLu(Tensor *D, Tensor *I, Tensor *PD)
 {
   if ((D->device!=I->device)||(D->device!=PD->device)) msg("Tensors in different devices","Tensor::D_ReLu");
   if ((!eqsize(D,I))||(!eqsize(D,PD))) msg("Incompatible dims","Tensor::D_ReLu");
+
   PD->tsem->lock();
   if (D->isCPU())
-    {
-      if (D->dim==1)
-        {
-          for(int i=0;i<D->sizes[0];i++)
-            if (I->ptr1(i)>0) PD->ptr1(i)+=D->ptr1(i);
-        }
-      else if (D->dim==2)
-        {
-          for(int i=0;i<D->sizes[0];i++)
-            for(int j=0;j<D->sizes[1];j++)
-              if (I->ptr2(i,j)>0) PD->ptr2(i,j)+=D->ptr2(i,j);
-        }
-      else
-        for(int i=0;i<D->sizes[0];i++)
-          Tensor::D_ReLu(D->ptr[i],I->ptr[i],PD->ptr[i]);
+  {
+
+    for(int i=0;i<D->tam;i++) {
+      if (I->ptr[i]>0.0) PD->ptr[i]=D->ptr[i];
+      else PD->ptr[i]=0.0;
     }
+  }
 #ifdef cGPU
   else if (D->isGPU())
     {
@@ -695,16 +628,18 @@ void Tensor::Softmax(Tensor *A,Tensor *B)
     {
       float max,sum;
 
+
+
       for(int i=0;i<A->sizes[0];i++)
         {
 
-          max=A->ptr2.row(i).maxCoeff();
+          max=A->ptr2.col(i).maxCoeff();
           for(int j=0;j<A->sizes[1];j++)
-            B->ptr2(i,j)=exp(A->ptr2(i,j)-max);
+            B->ptr2(j,i)=exp(A->ptr2(j,i)-max);
 
-          sum=B->ptr2.row(i).sum();
+          sum=B->ptr2.col(i).sum();
           for(int j=0;j<B->sizes[1];j++)
-            B->ptr2(i,j)=B->ptr2(i,j)/sum;
+            B->ptr2(j,i)=B->ptr2(j,i)/sum;
         }
     }
 #ifdef cGPU
@@ -734,11 +669,10 @@ void Tensor::D_Softmax(Tensor *D,Tensor *I,Tensor *PD)
   if (D->isCPU())
     {
       PD->tsem->lock();
-      for(int i=0;i<D->sizes[0];i++)
-        {
-          for(int j=0;j<D->sizes[1];j++)
-            PD->ptr2(i,j)+=D->ptr2(i,j)*(I->ptr2(i,j)*(1.0-I->ptr2(i,j)));
-        }
+
+      for(int i=0;i<D->tam;i++)
+         PD->ptr[i]+=D->ptr[i]*(I->ptr[i]*(1.0-I->ptr[i]));
+
       PD->tsem->unlock();
     }
 #ifdef cGPU

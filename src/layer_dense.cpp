@@ -90,7 +90,7 @@ void LDense::backward()
 }
 
 
-Layer *LDense::share(int c,vector<Layer*>p)
+Layer *LDense::share(int c,int bs,vector<Layer*>p)
 {
   LDense *n=new LDense(p[0],dim,"share_"+to_string(c)+name,dev);
   n->orig=this;
@@ -107,7 +107,7 @@ Layer *LDense::share(int c,vector<Layer*>p)
   return n;
 }
 
-Layer *LDense::clone(int c,vector<Layer*>p,int todev)
+Layer *LDense::clone(int c,int bs,vector<Layer*>p,int todev)
 {
   LDense *n=new LDense(p[0],dim,"clone_"+to_string(todev)+name,todev);
   n->orig=this;

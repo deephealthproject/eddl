@@ -73,8 +73,8 @@ class Layer
   virtual void addparent(Layer *l){}
   virtual void forward(){}
   virtual void backward(){}
-  virtual Layer *share(int c,vector<Layer*>){return NULL;}
-  virtual Layer *clone(int c,vector<Layer*>,int todev){return NULL;}
+  virtual Layer *share(int c,int bs,vector<Layer*>){return NULL;}
+  virtual Layer *clone(int c,int bs,vector<Layer*>,int todev){return NULL;}
 };
 
 /////////////////////////////////////////
@@ -94,8 +94,8 @@ class LinLayer : public Layer
   virtual void info(){};
   virtual void forward(){}
   virtual void backward(){}
-  virtual Layer *share(int c,vector<Layer*> p){return NULL;}
-  virtual Layer *clone(int c,vector<Layer*>,int todev){return NULL;}
+  virtual Layer *share(int c,int bs,vector<Layer*> p){return NULL;}
+  virtual Layer *clone(int c,int bs,vector<Layer*>,int todev){return NULL;}
 
 };
 
@@ -107,8 +107,8 @@ class LInput : public LinLayer
   LInput(Tensor *in,int dev);
   LInput(Tensor *in,string name);
   LInput(Tensor *in,string name,int dev);
-  Layer *share(int c,vector<Layer*>p);
-  Layer *clone(int c,vector<Layer*>,int todev);
+  Layer *share(int c,int bs,vector<Layer*>p);
+  Layer *clone(int c,int bs,vector<Layer*>,int todev);
 
   void info();
   void forward();
@@ -126,8 +126,8 @@ class LDense : public LinLayer
   LDense(Layer *parent,int dim,int dev);
   LDense(Layer *parent,int dim,string name);
   LDense(Layer *parent,int dim,string name,int d);
-  Layer *share(int c,vector<Layer*>p);
-  Layer *clone(int c,vector<Layer*>,int todev);
+  Layer *share(int c,int bs,vector<Layer*>p);
+  Layer *clone(int c,int bs,vector<Layer*>,int todev);
 
   // Paras
   Tensor *W;
@@ -151,8 +151,8 @@ class LActivation : public LinLayer
   LActivation(Layer *parent,string act,int d);
   LActivation(Layer *parent,string act,string name);
   LActivation(Layer *parent,string act,string name,int d);
-  Layer *share(int c,vector<Layer*>p);
-  Layer *clone(int c,vector<Layer*>,int todev);
+  Layer *share(int c,int bs,vector<Layer*>p);
+  Layer *clone(int c,int bs,vector<Layer*>,int todev);
 
   void info();
   void forward();
@@ -176,8 +176,8 @@ class MLayer : public Layer
   virtual void info(){};
   virtual void forward(){}
   virtual void backward(){}
-  virtual Layer *share(int c,vector<Layer*>p){return NULL;}
-  virtual Layer *clone(int c,vector<Layer*>,int todev){return NULL;}
+  virtual Layer *share(int c,int bs,vector<Layer*>p){return NULL;}
+  virtual Layer *clone(int c,int bs,vector<Layer*>,int todev){return NULL;}
 };
 
 /// INPUT Layer
@@ -188,8 +188,8 @@ class LAdd : public MLayer
   LAdd(vector<Layer*> in,int dev);
   LAdd(vector<Layer*> in,string name);
   LAdd(vector<Layer*> in,string name,int dev);
-  Layer *share(int c,vector<Layer*>p);
-  Layer *clone(int c,vector<Layer*>,int todev);
+  Layer *share(int c,int bs,vector<Layer*>p);
+  Layer *clone(int c,int bs,vector<Layer*>,int todev);
 
   void info();
   void forward();

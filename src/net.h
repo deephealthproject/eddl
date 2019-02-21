@@ -59,7 +59,7 @@ class Net
 {
  private:
 
-  void train_batch(vtensor X,vtensor Y);
+  void train_batch(vtensor X,vtensor Y,vind sind,int batch);
   void build(optim *opt,vstring in,vstring out);
 
  public:
@@ -94,6 +94,8 @@ class Net
   vstring strcosts;
   vstring strmetrics;
   vector<Net *> snets;
+  vtensor Xs[100];
+  vtensor Ys[100];
 
   Net(const initializer_list<Layer*>& in,const initializer_list<Layer*>& out);
   Layer *getLayer(string name);

@@ -97,15 +97,13 @@ Tensor::Tensor(shape s,int dev)
 
   if (isCPU())
     {
-      if (dim==1) ptr1.resize(sizes[0]);
-      else if (dim==2) ptr2.resize(sizes[0],sizes[1]);
-      else
-        {
-          ptr=(Tensor **)malloc(sizes[0]*sizeof(Tensor *));
-          s.erase(s.begin());
-          for(int i=0;i<sizes[0];++i)
-            ptr[i]=new Tensor(s,device);
-        }
+      if (dim==2) {
+        ptr2=Eigen::MatrixXf(sizes[1],sizes[0]);
+        ptr=&(ptr2(0,0));
+      }
+      else{
+        ptr=(float *)malloc(tam*sizeof(Tensor *));
+      }
     }
 #ifdef cGPU
   else if (isGPU())
@@ -113,11 +111,9 @@ Tensor::Tensor(shape s,int dev)
       gpu_device=device-DEV_GPU;
       if (!initcuda[gpu_device])
         {
-
           gpu_init(gpu_device);
           initcuda[gpu_device]=1;
         }
-      //gpu_set_device(gpu_device);
       gptr=gpu_create_tensor(gpu_device,tam);
     }
 #endif
@@ -131,55 +127,12 @@ Tensor::Tensor(shape s,int dev)
 }
 
 
-///////////////////////////////////////////
-void Tensor::load(FILE *fe)
-{
-  int i,j;
-
-  if (dim==1)
-    {
-      float *fptr=(float *)malloc(sizes[0]*sizeof(float ));
-      int read=fread(fptr,sizeof(float),sizes[0],fe);
-      if (read!=(sizes[0]))
-        {
-          fprintf(stderr,"Error reading file (%d!=%d)\nCheck format\n",read,sizes[1]);
-          exit(1);
-        }
-      for(j=0;j<sizes[0];j++)
-        ptr1(j)=fptr[j];
-      free(fptr);
-    }
-  else if (dim==2)
-    {
-      float *fptr=(float *)malloc(sizes[1]*sizeof(float ));
-      for(i=0;i<sizes[0];i++)
-        {
-          if (feof(fe)) {fprintf(stderr,"Error reading line %d\n",i);exit(1);}
-          int read=fread(fptr,sizeof(float),sizes[1],fe);
-          if (read!=(sizes[1]))
-            {
-              fprintf(stderr,"Error reading file (%d!=%d)\nCheck format\n",read,sizes[1]);
-              exit(1);
-            }
-          for(j=0;j<sizes[1];j++)
-            ptr2(i,j)=fptr[j];
-
-        }
-      free(fptr);
-    }
-  else
-    for(i=0;i<sizes[0];i++)
-      ptr[i]->load(fe);
-
-}
-
 
 /////////////////////////////////////////////////////////////////////////
 Tensor::Tensor(string fname)
 {
   FILE *fe;
   int i,j,v;
-  float *fptr;
 
   fe=fopen(fname.c_str(),"rb");
   if (fe==NULL)
@@ -194,55 +147,35 @@ Tensor::Tensor(string fname)
       int read=fread(&v,sizeof(int),1,fe);
       sizes.push_back(v);
     }
+
   shape s=sizes;
 
   cout<<"loading file with tensor:"<<s<<"\n";
 
   device=DEV_CPU;
   tam=1;
-  tsem=new mutex();
   for(int i=0;i<dim;++i) tam*=sizes[i];
-  if (dim==1) ptr1.resize(sizes[0]);
-  else if (dim==2) ptr2.resize(sizes[0],sizes[1]);
-  else
-    {
-      ptr=(Tensor **)malloc(sizes[0]*sizeof(Tensor *));
-      s.erase(s.begin());
-      for(int i=0;i<sizes[0];++i)
-        ptr[i]=new Tensor(s,device);
-    }
 
-  load(fe);
+  if (dim==2) {
+    ptr2=Eigen::MatrixXf(sizes[1],sizes[0]);
+    ptr=&(ptr2(0,0));
+  }
+  else{
+    ptr=(float *)malloc(tam*sizeof(Tensor *));
+  }
+
+  tsem=new mutex();
+
+  read=fread(ptr,sizeof(float),tam,fe);
+  if (read!=tam)
+      {
+        fprintf(stderr,"Error reading file (%d!=%d)\nCheck format\n",read,tam);
+        exit(1);
+      }
+
+  fprintf(stderr,"OK\n");
+
   fclose(fe);
-}
-
-
-///////////////////////////////////////////
-void Tensor::save(FILE *fe)
-{
-  int i,j;
-  float fv;
-
-  if (dim==1)
-    {
-      for(i=0;i<sizes[0];i++)
-        {
-          fv=ptr1(i);
-          fwrite(&fv, sizeof(float),1,fe);
-        }
-    }
-  else if (dim==2)
-    {
-      for(i=0;i<sizes[0];i++)
-        for(j=0;j<sizes[1];j++)
-          {
-            fv=ptr2(i,j);
-            fwrite(&fv, sizeof(float),1,fe);
-          }
-    }
-  else
-    for(int i=0;i<sizes[0];i++)
-      ptr[i]->save(fe);
 }
 
 
@@ -269,7 +202,7 @@ void Tensor::save(string fname)
   for(i=0;i<dim;++i)
     fwrite(&sizes[i], sizeof(int),1,fe);
 
-  save(fe);
+  fwrite(ptr, sizeof(float),tam,fe);
 
   fclose(fe);
 
@@ -291,14 +224,7 @@ Tensor::~Tensor()
 {
   if (isCPU())
     {
-      if (dim==1) ptr1.resize(0);
-      else if (dim==2) ptr2.resize(0,0);
-      else
-        {
-          for(int i=0;i<sizes[0];++i)
-            delete ptr[i];
-          delete ptr;
-        }
+      if (dim!=2) free(ptr);
     }
 #ifdef cGPU
   else if (isGPU())
@@ -316,104 +242,6 @@ Tensor::~Tensor()
 
 
 
-///////////////////////////////////////////
-void Tensor::tlin(float *n)
-{
-  if (dim==2)
-    {
-      for(int i=0;i<sizes[0];++i)
-        {
-          int p=i*sizes[1];
-          for(int j=0;j<sizes[1];++j,++p)
-            n[linpos+p]=ptr2(i,j);
-        }
-      linpos+=tam;
-    }
-  else
-    {
-      for(int i=0;i<sizes[0];i++)
-        ptr[i]->tlin(n);
-    }
-}
-
-
-float *Tensor::toLin()
-{
-  if (!isCPU()) msg("Not CPU device is linear","toLin");
-
-
-  float *n=(float*)malloc(tam*sizeof(float));
-  linpos=0;
-  if (dim==1)
-    {
-      for(int i=0;i<sizes[0];++i)
-        n[i]=ptr1(i);
-    }
-  else if (dim==2)
-    {
-      for(int i=0;i<sizes[0];++i)
-        {
-          int p=i*sizes[1];
-          for(int j=0;j<sizes[1];++j,++p)
-            n[p]=ptr2(i,j);
-        }
-    }
-  else
-    {
-      for(int i=0;i<sizes[0];i++)
-        ptr[i]->tlin(n);
-    }
-  return n;
-}
-
-
-//////////////////////////////////////////////////
-void Tensor::flin(float *n)
-{
-
-  if (dim==2)
-    {
-      for(int i=0;i<sizes[0];++i)
-        {
-          int p=i*sizes[1];
-          for(int j=0;j<sizes[1];++j,++p)
-            ptr2(i,j)=n[linpos+p];
-        }
-      linpos+=tam;
-    }
-  else
-    {
-      for(int i=0;i<sizes[0];i++)
-        ptr[i]->flin(n);
-    }
-}
-
-
-void Tensor::fromLin(float *n)
-{
-  if (!isCPU()) msg("Not CPU device is linear","toLin");
-
-  linpos=0;
-  if (dim==1)
-    {
-      for(int i=0;i<sizes[0];++i)
-        ptr1(i)=n[i];
-    }
-  else if (dim==2)
-    {
-      for(int i=0;i<sizes[0];++i)
-        {
-          int p=i*sizes[1];
-          for(int j=0;j<sizes[1];++j,++p)
-            ptr2(i,j)=n[p];
-        }
-    }
-  else
-    {
-      for(int i=0;i<sizes[0];i++)
-        ptr[i]->flin(n);
-    }
-}
 
 ///////////////////////////////////////////
 shape Tensor::getshape()
@@ -450,15 +278,26 @@ void Tensor::print()
 
   if (isCPU())
     {
-      if (dim==1) cout<<ptr1;
-      else if (dim==2) cout<<ptr2;
-      else
+      if (dim==1)
         for(int i=0;i<sizes[0];++i)
+          printf("%f ",ptr[i]);
+      else if (dim==2)
+        {
+          int i,j,p=0;
+          for(i=0;i<sizes[0];++i)
+            {
+              for(j=0;j<sizes[1];++j,p++)
+                printf("%1.3f ",ptr[p]);
+              printf("\n");
+            }
+        }
+        else
           {
-            ptr[i]->print();
-            cout<<"\n";
+            int i;
+            for(i=0;i<tam;++i)
+              printf("%f ",ptr[i]);
+            printf("\n");
           }
-      cout<<"\n";
     }
 #ifdef cGPU
   else if (isGPU())
@@ -469,9 +308,9 @@ void Tensor::print()
       if (dim==2)
         {
           int i,j,p=0;
-          for(i=0;i<sizes[0];++i)
+          for(i=0;i<sizes[1];++i)
             {
-              for(j=0;j<sizes[1];++j,++p)
+              for(j=0;j<sizes[0];++j,++p)
                 printf("%f ",v[p]);
                 printf("\n");
             }
@@ -484,7 +323,7 @@ void Tensor::print()
             printf("\n");
         }
         free(v);
-    }    
+    }
 #endif
 #ifdef cFPGA
   else {
@@ -500,13 +339,7 @@ void Tensor::set(float v)
 {
   if (isCPU())
     {
-      if (dim==1)
-        for(int i=0;i<sizes[0];++i) ptr1(i)=v;
-      else if (dim==2)
-        for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)=v;
-      else
-        for(int i=0;i<sizes[0];++i)
-          ptr[i]->set(v);
+      for(int i=0;i<tam;++i) ptr[i]=v;
     }
 #ifdef cGPU
   else if (isGPU())
@@ -526,15 +359,10 @@ void Tensor::set(float v)
 void Tensor::mult(float v)
 {
   if (isCPU())
-    {
-      if (dim==1)
-        for(int i=0;i<sizes[0];++i) ptr1(i)*=v;
-      else if (dim==2)
-        for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)*=v;
-      else
-        for(int i=0;i<sizes[0];++i)
-          ptr[i]->mult(v);
-    }
+  {
+
+    for(int i=0;i<tam;++i) ptr[i]*=v;
+  }
 #ifdef cGPU
   else if (isGPU())
     {
@@ -556,15 +384,10 @@ void Tensor::div(float v){mult(1.0/v);}
 ///////////////////////////////////////////
 void Tensor::sum(float v){
   if (isCPU())
-    {
-      if (dim==1)
-        for(int i=0;i<sizes[0];++i) ptr1(i)+=v;
-      else if (dim==2)
-        for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)+=v;
-      else
-        for(int i=0;i<sizes[0];++i)
-          ptr[i]->sum(v);
-    }
+  {
+
+    for(int i=0;i<tam;++i) ptr[i]+=v;
+  }
 #ifdef cGPU
   else if (isGPU())
     {
@@ -584,15 +407,10 @@ void Tensor::sub(float v){sum(-v);}
 void Tensor::set_log()
 {
   if (isCPU())
-    {
-      if (dim==1)
-        for(int i=0;i<sizes[0];++i) ptr1(i)=log(ptr1(i));
-      else if (dim==2)
-        for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)=log(ptr2(i,j));
-      else
-        for(int i=0;i<sizes[0];++i)
-          ptr[i]->set_log();
-    }
+  {
+
+    for(int i=0;i<tam;++i) ptr[i]=log(ptr[i]);
+  }
 #ifdef cGPU
   else if (isGPU())
     {
@@ -609,15 +427,10 @@ void Tensor::set_log()
 void Tensor::set_exp()
 {
   if (isCPU())
-    {
-      if (dim==1)
-        for(int i=0;i<sizes[0];++i) ptr1(i)=exp(ptr1(i));
-      else if (dim==2)
-        for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)=exp(ptr2(i,j));
-      else
-        for(int i=0;i<sizes[0];++i)
-          ptr[i]->set_exp();
-    }
+  {
+
+    for(int i=0;i<tam;++i) ptr[i]=exp(ptr[i]);
+  }
 #ifdef cGPU
   else if (isGPU())
     {
@@ -633,15 +446,10 @@ void Tensor::set_exp()
 ///////////////////////////////////////////
 void Tensor::set_sqrt(){
   if (isCPU())
-    {
-      if (dim==1)
-        for(int i=0;i<sizes[0];++i) ptr1(i)=sqrt(ptr1(i));
-      else if (dim==2)
-        for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)=sqrt(ptr2(i,j));
-      else
-        for(int i=0;i<sizes[0];++i)
-          ptr[i]->set_sqrt();
-    }
+  {
+
+    for(int i=0;i<tam;++i) ptr[i]=sqrt(ptr[i]);
+  }
 #ifdef cGPU
   else if (isGPU())
     {
@@ -657,15 +465,10 @@ void Tensor::set_sqrt(){
 ///////////////////////////////////////////
 void Tensor::set_sqr(){
   if (isCPU())
-    {
-      if (dim==1)
-        for(int i=0;i<sizes[0];++i) ptr1(i)*=ptr1(i);
-      else if (dim==2)
-        for(int i=0;i<sizes[0];++i) for(int j=0;j<sizes[1];++j) ptr2(i,j)*=ptr2(i,j);
-      else
-        for(int i=0;i<sizes[0];++i)
-          ptr[i]->set_sqr();
-    }
+  {
+
+    for(int i=0;i<tam;++i) ptr[i]*=ptr[i];
+  }
 #ifdef cGPU
   else if (isGPU())
     {
@@ -687,13 +490,38 @@ float Tensor::total_sum()
   if (isCPU())
     {
       float sum=0.0;
-      if (dim==1)
-        sum=ptr1.sum();
-      else if (dim==2)
-        sum=ptr2.sum();
-      else
-        for(int i=0;i<sizes[0];i++)
-          sum+=ptr[i]->total_sum();
+
+      for(int i=0;i<tam;++i) sum+=ptr[i];
+
+      return sum;
+    }
+#ifdef cGPU
+  else if (isGPU())
+    {
+       float sum;
+       gpu_total_sum(this,&sum);
+       return sum;
+    }
+#endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
+
+  return 0;
+}
+
+//////////////////////////////////////
+float Tensor::total_abs()
+{
+
+  if (isCPU())
+    {
+      float sum=0.0;
+
+      for(int i=0;i<tam;++i) sum+=fabs(ptr[i]);
+
       return sum;
     }
 #ifdef cGPU
@@ -719,19 +547,8 @@ void Tensor::rand_uniform(float v)
 {
   if (isCPU())
     {
-      if (dim==1)
-        for(int i=0;i<sizes[0];++i) ptr1(i)=uniform()*v;
-      else if (dim==2)
-        {
-          float s=sqrt(1.0/sizes[0]);
-          for(int i=0;i<sizes[0];++i)
-            for(int j=0;j<sizes[1];++j)
-              ptr2(i,j)=uniform()*v;
-        }
-      else
-        for(int i=0;i<sizes[0];++i)
-          ptr[i]->rand_uniform(v);
 
+      for(int i=0;i<tam;++i) ptr[i]=uniform()*v;
     }
 #ifdef cGPU
   else if (isGPU())
@@ -754,18 +571,8 @@ void Tensor::rand_suniform(float v)
 {
   if (isCPU())
     {
-      if (dim==1)
-        for(int i=0;i<sizes[0];++i) ptr1(i)=suniform()*v;
-      else if (dim==2)
-        {
-          float s=sqrt(1.0/sizes[0]);
-          for(int i=0;i<sizes[0];++i)
-            for(int j=0;j<sizes[1];++j)
-              ptr2(i,j)=suniform()*v;
-        }
-      else
-        for(int i=0;i<sizes[0];++i)
-          ptr[i]->rand_suniform(v);
+
+      for(int i=0;i<tam;++i) ptr[i]=suniform()*v;
 
     }
 #ifdef cGPU
@@ -790,19 +597,8 @@ void Tensor::rand_gaussian(float m,float s)
 {
   if (isCPU())
     {
-      if (dim==1)
-        for(int i=0;i<sizes[0];++i) ptr1(i)=gauss(m,s);
-      else if (dim==2)
-        {
-          float s=sqrt(1.0/sizes[0]);
-          for(int i=0;i<sizes[0];++i)
-            for(int j=0;j<sizes[1];++j)
-              ptr2(i,j)=gauss(m,s);
-        }
-      else
-        for(int i=0;i<sizes[0];++i)
-          ptr[i]->rand_gaussian(m,s);
 
+      for(int i=0;i<tam;++i) ptr[i]=gauss(m,s);
     }
 #ifdef cGPU
   else if (isGPU())
@@ -824,19 +620,8 @@ void Tensor::rand_binary(float v)
 {
   if (isCPU())
     {
-      if (dim==1)
-        for(int i=0;i<sizes[0];++i) ptr1(i)=uniform()<v;
-      else if (dim==2)
-        {
-          float s=sqrt(1.0/sizes[0]);
-          for(int i=0;i<sizes[0];++i)
-            for(int j=0;j<sizes[1];++j)
-              ptr2(i,j)=uniform()<v;
-        }
-      else
-        for(int i=0;i<sizes[0];++i)
-          ptr[i]->rand_binary(v);
 
+      for(int i=0;i<tam;++i) ptr[i]=uniform()<v;
     }
 #ifdef cGPU
   else if (isGPU())

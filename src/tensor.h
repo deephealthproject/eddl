@@ -65,6 +65,7 @@
 #define MAX_GPUS 8
 
 using namespace std;
+typedef Eigen::Matrix<float, -1, -1, Eigen::RowMajor> MatrixXRMf;
 
 typedef vector<int> shape;
 
@@ -81,14 +82,12 @@ class Tensor
   int tam;
   shape sizes;
 
-  Tensor **ptr;
+  float *ptr;
 
-  // CPU
-  Eigen::RowVectorXf ptr1;
+  // CPU_cores
   Eigen::MatrixXf ptr2;
 
   // GPU
-  float *gptr;
   int gpu_device;
 
   //FPGA
@@ -112,12 +111,7 @@ class Tensor
   Tensor *share();
   void print();
   void save(string s);
-  void save(FILE *fe);
-  void load(FILE *fe);
-  void tlin(float *n);
-  float *toLin();
-  void flin(float *n);
-  void fromLin(float *n);
+
   // devices
   int isCPU();
   int isGPU();
@@ -134,6 +128,8 @@ class Tensor
   void set_sqrt();
   void set_sqr();
   float total_sum();
+  float total_abs();
+
   //rand
   void rand_uniform(float v);
   void rand_suniform(float v);
@@ -144,7 +140,7 @@ class Tensor
   ///////// static metods
   static int eqsize(Tensor *A, Tensor *B);
   static void copy(Tensor *A,Tensor *B);
-  static void select(Tensor *A, Tensor *B,vector<int> sind);
+  static void select(Tensor *A, Tensor *B,vector<int> sind,int ini,int end);
 
   static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC);
   static void sum(float scA, Tensor *A, float scB,  Tensor *B, Tensor *C,int incC);

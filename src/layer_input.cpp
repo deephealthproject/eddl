@@ -70,10 +70,10 @@ void LInput::backward()
 }
 
 
-Layer *LInput::share(int c,vector<Layer*>p)
+Layer *LInput::share(int c,int bs,vector<Layer*>p)
 {
   shape s=input->getshape();
-  s[0]/=c;
+  s[0]=bs;
 
   LInput *n=new LInput(new Tensor(s),"share_"+to_string(c)+name,dev);
   n->orig=this;
@@ -81,10 +81,10 @@ Layer *LInput::share(int c,vector<Layer*>p)
   return n;
 }
 
-Layer *LInput::clone(int c,vector<Layer*>p,int todev)
+Layer *LInput::clone(int c,int bs,vector<Layer*>p,int todev)
 {
   shape s=input->getshape();
-  s[0]/=c;
+  s[0]=bs;
 
   LInput *n=new LInput(new Tensor(s,todev),"clone_"+to_string(todev)+name,todev);
   n->orig=this;

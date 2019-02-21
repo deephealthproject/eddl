@@ -45,6 +45,7 @@ Loss::Loss(string n)
 void Loss::delta(Tensor *T, Tensor* Y, Tensor *D)
 {
 
+
   if (name=="mse")
     {
       //delta: (T-Y)
@@ -75,8 +76,11 @@ void Loss::delta(Tensor *T, Tensor* Y, Tensor *D)
   //typical case where cent is after a softmax
   else if (name=="soft_cent")
     {
+
       // parent->delta: (t-y)
+
       Tensor::sum(1.0,T,-1.0,Y, D,0);
+
     }
 
 }

@@ -73,8 +73,8 @@ void LAdd::info()
 
 void LAdd::forward(){}
 void LAdd::backward(){}
-Layer *LAdd::share(int c,vector<Layer*>p){return NULL;}
-Layer *LAdd::clone(int c,vector<Layer*>p,int todev){return NULL;}
+Layer *LAdd::share(int c,int bs,vector<Layer*>p){return NULL;}
+Layer *LAdd::clone(int c,int bs,vector<Layer*>p,int todev){return NULL;}
 
 
 
