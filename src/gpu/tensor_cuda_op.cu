@@ -55,7 +55,7 @@ extern curandGenerator_t random_generator[64];
 // MAX THREADS PER BLOCK
 #define MAX_TPB 1024
 
-#define setDims(A) int r,c;r=(A->tam/MAX_TPB);if (r==0) {r=1;c=A->tam;}else {if (A->tam%MAX_TPB) r++;c=MAX_TPB;}dim3 dimGrid(r);dim3 dimBlock(c);
+#define setDims(A) long int r,c;r=(A->tam/MAX_TPB);if (r==0) {r=1;c=A->tam;}else {if (A->tam%MAX_TPB) r++;c=MAX_TPB;}dim3 dimGrid(r);dim3 dimBlock(c);
 
 
 static const char *_curandGetErrorEnum(curandStatus_t error)
@@ -128,7 +128,7 @@ void gpu_set(Tensor *A,float v) {
 
   setDims(A)
 
-  set<<<dimGrid,dimBlock>>>(A->ptr,v,A->sizes[0],c);
+  set<<<dimGrid,dimBlock>>>(A->ptr,v,r,c);
   check_cuda(cudaDeviceSynchronize(),"set");
 
 }
@@ -525,7 +525,7 @@ void gpu_accuracy(Tensor *A,Tensor *B,int *acc)
   cudaMemset(a, 0, sizeof(int));
 
   accuracy<<<dimBlock,dimGrid>>>(A->ptr,B->ptr,max_row,c,r,a);
-  check_cuda(cudaMemcpy(acc,a,sizeof(float),cudaMemcpyDeviceToHost),"error copy in accuracy");
+  check_cuda(cudaMemcpy(acc,a,sizeof(int),cudaMemcpyDeviceToHost),"error copy in accuracy");
 
   cudaFree(a);
   gpu_delete_tensor(device,max_row);

@@ -31,36 +31,25 @@
 int main(int argc, char **argv)
 {
 
-  int r=1024;
-  int c=4;
+  int r=1025;
+  int c=2048;
   //
+
+
+
   Tensor *A=new Tensor({r,c},DEV_GPU);
-
-  int r2,c2;
-
-  r2=(A->tam/1024);
-
-
-  if (r2==0) {
-    r2=1;
-    c2=A->tam;
-  }
-  else {
-    if (A->tam%1024) r2++;
-    c2=1024;
-  }
-
-
+  A->set(1.0);
+  A->print();
+  getchar();
 
 
   Tensor *B=new Tensor({r,c},DEV_GPU);
-  Tensor *C=new Tensor({r,c},DEV_GPU);
-
-  A->set(1.0);
   B->set(1.0);
-  fprintf(stderr,"grid=%d block=%d\n",r2,c2);
+  B->print();
   getchar();
 
+
+  Tensor *C=new Tensor({r,c},DEV_GPU);
   Tensor::sum(1.0,A,1.0,B,C,0);
 
   C->print();
