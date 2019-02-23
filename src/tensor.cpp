@@ -308,9 +308,9 @@ void Tensor::print()
       if (dim==2)
         {
           int i,j,p=0;
-          for(i=0;i<sizes[1];++i)
+          for(i=0;i<sizes[0];++i)
             {
-              for(j=0;j<sizes[0];++j,++p)
+              for(j=0;j<sizes[1];++j,++p)
                 printf("%f ",v[p]);
                 printf("\n");
             }

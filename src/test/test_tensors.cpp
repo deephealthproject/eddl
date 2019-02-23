@@ -31,40 +31,41 @@
 int main(int argc, char **argv)
 {
 
-  int batch=1000;
+  int r=1024;
+  int c=4;
+  //
+  Tensor *A=new Tensor({r,c},DEV_GPU);
 
-  // network
-  layer in=eddl.Input({batch,784});
-  layer l=in;
-  for(int i=0;i<5;i++)
-      l=eddl.Activation(eddl.Dense(l,1025),"relu");
+  int r2,c2;
 
-  layer out1=eddl.Activation(eddl.Dense(l,10),"softmax");
-  layer out2=eddl.Dense(l,10);
-
-  // net define input and output layers list
-  model net=eddl.Model({in},{out1,out2});
-
-  net->plot("model.pdf");
-
-  // get some info from the network
-  eddl.info(net);
-
-  // Attach an optimizer and a list of error criteria and metrics
-  // size of error criteria and metrics list must match with size of list of outputs
-  // optionally put a DEVICE where the net will run
-  eddl.build(net,SGD(0.01,0.95),{"soft_cent","mse"},{"acc","mse"},DEV_GPU);
-
-  // read data
-  tensor X=eddl.T("trX.bin");
-  tensor Y=eddl.T("trY.bin");
-
-  eddl.div(X,255.0);
+  r2=(A->tam/1024);
 
 
-  // training, list of input and output tensors, batch, epochs
+  if (r2==0) {
+    r2=1;
+    c2=A->tam;
+  }
+  else {
+    if (A->tam%1024) r2++;
+    c2=1024;
+  }
 
-  eddl.fit(net,{X},{Y,Y},batch,100);
+
+
+
+  Tensor *B=new Tensor({r,c},DEV_GPU);
+  Tensor *C=new Tensor({r,c},DEV_GPU);
+
+  A->set(1.0);
+  B->set(1.0);
+  fprintf(stderr,"grid=%d block=%d\n",r2,c2);
+  getchar();
+
+  Tensor::sum(1.0,A,1.0,B,C,0);
+
+  C->print();
+  fprintf(stderr,"%f\n",C->total_sum()/(C->tam));
+
 
 }
 

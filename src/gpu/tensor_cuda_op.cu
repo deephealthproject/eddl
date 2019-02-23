@@ -36,6 +36,28 @@
 extern cublasHandle_t hcublas[64];
 extern curandGenerator_t random_generator[64];
 
+
+// CUDA, NVIDIA compute capabilities:
+// https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#compute-capabilities
+// -----------------------------------------------------------------
+//                      GRID
+// Maximum dimensionality of grid of thread blocks:	3
+// Maximum x-dimension of a grid of thread blocks	(2^31)-1
+// Maximum y- or z-dimension of a grid of thread blocks: 65535
+//                   THREAD BLOCK
+// Maximum dimensionality of thread block:	3
+// Maximum x- or y-dimension of a block:	1024
+// Maximum z-dimension of a block:	64
+//
+// Maximum number of threads per block:	1024
+// -----------------------------------------------------------------
+
+// MAX THREADS PER BLOCK
+#define MAX_TPB 1024
+
+#define setDims(A) int r,c;r=(A->tam/MAX_TPB);if (r==0) {r=1;c=A->tam;}else {if (A->tam%MAX_TPB) r++;c=MAX_TPB;}dim3 dimGrid(r);dim3 dimBlock(c);
+
+
 static const char *_curandGetErrorEnum(curandStatus_t error)
 {
     switch (error)
@@ -104,13 +126,7 @@ void gpu_set(Tensor *A,float v) {
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  int r,c;
-
-  r=A->sizes[0];
-  c=A->tam/r;
-
-  dim3 dimGrid(r);
-  dim3 dimBlock(c);
+  setDims(A)
 
   set<<<dimGrid,dimBlock>>>(A->ptr,v,A->sizes[0],c);
   check_cuda(cudaDeviceSynchronize(),"set");
@@ -123,13 +139,7 @@ void gpu_mult(Tensor *A,float v) {
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  int r,c;
-
-  r=A->sizes[0];
-  c=A->tam/r;
-
-  dim3 dimGrid(r);
-  dim3 dimBlock(c);
+  setDims(A)
 
   mult<<<dimGrid,dimBlock>>>(A->ptr,v,A->sizes[0],c);
   check_cuda(cudaDeviceSynchronize(),"mult");
@@ -141,13 +151,7 @@ void gpu_sum(Tensor *A,float v) {
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  int r,c;
-
-  r=A->sizes[0];
-  c=A->tam/r;
-
-  dim3 dimGrid(r);
-  dim3 dimBlock(c);
+  setDims(A)
 
   sum<<<dimGrid,dimBlock>>>(A->ptr,v,A->sizes[0],c);
   check_cuda(cudaDeviceSynchronize(),"sum");
@@ -160,13 +164,7 @@ void gpu_log(Tensor *A) {
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  int r,c;
-
-  r=A->sizes[0];
-  c=A->tam/r;
-
-  dim3 dimGrid(r);
-  dim3 dimBlock(c);
+  setDims(A)
 
   log<<<dimGrid,dimBlock>>>(A->ptr,A->sizes[0],c);
   check_cuda(cudaDeviceSynchronize(),"log");
@@ -179,13 +177,7 @@ void gpu_exp(Tensor *A) {
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  int r,c;
-
-  r=A->sizes[0];
-  c=A->tam/r;
-
-  dim3 dimGrid(r);
-  dim3 dimBlock(c);
+  setDims(A)
 
   exp<<<dimGrid,dimBlock>>>(A->ptr,A->sizes[0],c);
   check_cuda(cudaDeviceSynchronize(),"exp");
@@ -198,13 +190,7 @@ void gpu_sqrt(Tensor *A) {
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  int r,c;
-
-  r=A->sizes[0];
-  c=A->tam/r;
-
-  dim3 dimGrid(r);
-  dim3 dimBlock(c);
+  setDims(A)
 
   sqrt<<<dimGrid,dimBlock>>>(A->ptr,A->sizes[0],c);
   check_cuda(cudaDeviceSynchronize(),"sqrt");
@@ -217,13 +203,7 @@ void gpu_sqr(Tensor *A) {
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  int r,c;
-
-  r=A->sizes[0];
-  c=A->tam/r;
-
-  dim3 dimGrid(r);
-  dim3 dimBlock(c);
+  setDims(A)
 
   sqr<<<dimGrid,dimBlock>>>(A->ptr,A->sizes[0],c);
   check_cuda(cudaDeviceSynchronize(),"sqr");
@@ -237,13 +217,7 @@ void gpu_mask(Tensor *A,float v) {
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  int r,c;
-
-  r=A->sizes[0];
-  c=A->tam/r;
-
-  dim3 dimGrid(r);
-  dim3 dimBlock(c);
+  setDims(A)
 
   mask<<<dimGrid,dimBlock>>>(A->ptr,v,A->sizes[0],c);
   check_cuda(cudaDeviceSynchronize(),"mask");
@@ -340,14 +314,7 @@ void gpu_el_mult(Tensor *A, Tensor *B, Tensor *C,int incC)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  int r,c;
-
-  r=A->sizes[0];
-  c=A->tam/r;
-
-  dim3 dimGrid(r);
-  dim3 dimBlock(c);
-
+  setDims(A)
 
   el_mult<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,incC,A->sizes[0],c);
 
@@ -359,14 +326,7 @@ void gpu_el_div(Tensor *A, Tensor *B, Tensor *C,int incC)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  int r,c;
-
-  r=A->sizes[0];
-  c=A->tam/r;
-
-  dim3 dimGrid(r);
-  dim3 dimBlock(c);
-
+  setDims(A)
 
   el_mult<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,incC,A->sizes[0],r);
 
@@ -380,13 +340,8 @@ void gpu_sum(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  int r,c;
+  setDims(A)
 
-  r=A->sizes[0];
-  c=A->tam/r;
-
-  dim3 dimGrid(r);
-  dim3 dimBlock(c);
 
   sum<<<dimGrid,dimBlock>>>(scA,A->ptr,scB,B->ptr,C->ptr,incC,A->tam);
   check_cuda(cudaDeviceSynchronize(),"sum");
@@ -543,13 +498,7 @@ void gpu_cent(Tensor *A,Tensor *B,Tensor *C)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  int r,c;
-
-  r=A->sizes[0];
-  c=A->tam/r;
-
-  dim3 dimGrid(r);
-  dim3 dimBlock(c);
+  setDims(A)
 
   cent<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,A->tam);
   check_cuda(cudaDeviceSynchronize(),"gpu_cent");
@@ -591,13 +540,7 @@ void gpu_relu(Tensor *A,Tensor *B)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  int r,c;
-
-  r=A->sizes[0];
-  c=A->tam/r;
-
-  dim3 dimGrid(r);
-  dim3 dimBlock(c);
+  setDims(A)
 
   relu<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->tam);
   check_cuda(cudaDeviceSynchronize(),"gpu_relu");
@@ -609,13 +552,7 @@ void gpu_d_relu(Tensor *D,Tensor *I,Tensor *PD)
   int device=D->gpu_device;
   cudaSetDevice(device);
 
-  int r,c;
-
-  r=D->sizes[0];
-  c=D->tam/r;
-
-  dim3 dimGrid(r);
-  dim3 dimBlock(c);
+  setDims(D)
 
   d_relu<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,D->tam);
   check_cuda(cudaDeviceSynchronize(),"gpu_relu");
@@ -662,13 +599,7 @@ void gpu_d_softmax(Tensor *D,Tensor *I,Tensor *PD)
   int device=D->gpu_device;
   cudaSetDevice(device);
 
-  int r,c;
-
-  r=D->sizes[0];
-  c=D->tam/r;
-
-  dim3 dimGrid(r);
-  dim3 dimBlock(c);
+  setDims(D)
 
   d_relu<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,D->tam);
   check_cuda(cudaDeviceSynchronize(),"gpu_relu");
