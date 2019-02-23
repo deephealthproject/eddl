@@ -53,17 +53,17 @@ tensor EDDL::T(const shape s){
 }
 
 tensor EDDL::T(const shape s, int dev) {
-  return new Tensor(s,dev);
+  return new LTensor(s,dev);
 }
 
 tensor EDDL::T(string fname)
 {
-  return new Tensor(fname);
+  return new LTensor(fname);
 }
 
 void EDDL::div(tensor t,float v)
 {
-  t->div(v);
+  t->input->div(v);
 }
 //////////////////////////////////////////////////////
 
@@ -77,12 +77,12 @@ layer EDDL::Input(const initializer_list<int>& init,int dev){
 
 layer EDDL::Input(tensor t)
 {
-  return new LInput(t);
+  return new LInput(t->input);
 }
 
 layer EDDL::Input(tensor t,int dev)
 {
-  return new LInput(t);
+  return new LInput(t->input);
 }
 //////////////////////////////////////////////////////
 layer EDDL::Dense(layer parent,int dim)
@@ -143,9 +143,21 @@ void EDDL::build(model net,optim *opt,const initializer_list<string>& c,const in
   net->build(opt,c,m,todev);
 }
 
-void EDDL::fit(model net, const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch,int epochs)
+void EDDL::fit(model net, const initializer_list<LTensor*>& in,const initializer_list<LTensor*>& out,int batch,int epochs)
 {
-  net->fit(in,out,batch,epochs);
+  vltensor ltin=vltensor(in.begin(), in.end());
+  vltensor ltout=vltensor(out.begin(), out.end());
+
+  vtensor tin;
+  for(int i=0;i<ltin.size();i++)
+    tin.push_back(ltin[i]->input);
+
+  vtensor tout;
+  for(int i=0;i<ltout.size();i++)
+    tout.push_back(ltout[i]->input);
+
+
+  net->fit(tin,tout,batch,epochs);
 }
 
 

@@ -36,69 +36,27 @@
 
 using namespace std;
 
-int input_created=1;
+int tensor_created=1;
 
-LInput::LInput(Tensor *in):LInput(in,"input"+to_string(input_created),DEV_CPU){}
-LInput::LInput(Tensor *in,int d):LInput(in,"input"+to_string(input_created),d){}
-LInput::LInput(Tensor *in,string name):LInput(in,name,DEV_CPU){}
-LInput::LInput(Tensor *in,string name,int d):LinLayer(name,d)
+LTensor::LTensor(string fname):LinLayer("ltensor"+to_string(tensor_created),DEV_CPU)
 {
-  input_created++;
-  input=output=in;
-  delta=new Tensor(input->getshape(),d);
+  input=output=new Tensor(fname);
+  tensor_created++;
 }
 
-
-// virtual
-void LInput::info()
+LTensor::LTensor(const initializer_list<int>& init):LTensor(init,DEV_CPU){}
+LTensor::LTensor(const initializer_list<int>& init, int dev):LinLayer("ltensor"+to_string(tensor_created),dev)
 {
-  cout<<"\n===============\n";
-  cout<< "Layer LInput "<<name<<"\n";
-  input->info();
-  cout<<"===============\n\n";
-}
-string LInput::plot(int c)
-{
-    string s;
-
-    if (c) s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=LightBlue,shape=box]";
-    else s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=White,shape=box]";
-
-
-    return s;
+  input=output=new Tensor(init,dev);
+  tensor_created++;
 }
 
+LTensor::LTensor(const shape s):LTensor(s,DEV_CPU){}
 
-void LInput::forward()
+LTensor::LTensor(const shape s, int dev):LinLayer("ltensor"+to_string(tensor_created),dev)
 {
-  delta->set(0.0);
-}
-
-
-void LInput::backward()
-{
-}
-
-Layer *LInput::share(int c,int bs,vector<Layer*>p)
-{
-  shape s=input->getshape();
-  s[0]=bs;
-
-  LInput *n=new LInput(new Tensor(s),"share_"+to_string(c)+name,dev);
-  n->orig=this;
-
-  return n;
-}
-
-Layer *LInput::clone(int c,int bs,vector<Layer*>p,int todev)
-{
-  shape s=input->getshape();
-  s[0]=bs;
-
-  LInput *n=new LInput(new Tensor(s,todev),"clone_"+to_string(todev)+name,todev);
-  n->orig=this;
-
-  return n;
+  input=output=new Tensor(s,dev);
+  tensor_created++;
 }
 
 

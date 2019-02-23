@@ -117,7 +117,7 @@ void Tensor::inc(Tensor *A, Tensor *B)
   else if ((A->isGPU())&&(B->isGPU())) {
     Tensor::sum(1,A,1,B,B,0);
   }
-  else if ((A->isCPU())&&(B->isGPU())||((A->isGPU())&&(B->isCPU())))
+  else if (((A->isCPU())&&(B->isGPU()))||((A->isGPU())&&(B->isCPU())))
     {
        Tensor *n=new Tensor(B->getshape(),B->device);
        Tensor::copy(A,n);
@@ -138,6 +138,7 @@ void Tensor::inc(Tensor *A, Tensor *B)
 //////////////////////////////////////
 void Tensor::select(Tensor *A, Tensor *B,vector<int> sind,int ini,int end)
 {
+
   if ((A->tam/A->sizes[0])!=(B->tam/B->sizes[0])) msg("Incompatible sizes","Tensor::select");
 
   //B->tsem->lock();
@@ -398,6 +399,7 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C)
   if ((!eqsize(A,C))||(A->sizes[0]!=B->sizes[0])) msg("Incompatible dims","Tensor::sum2D_colwise");
 
   C->tsem->lock();
+  if (A->isCPU())
   {
     int p=0;
     for(int i=0;i<A->sizes[0];i++){

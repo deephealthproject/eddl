@@ -31,6 +31,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <fstream>
+#include <string>
 #include <chrono>
 #include <thread>
 #include "net.h"
@@ -71,6 +73,27 @@ struct tdata
   vind sind;
   */
 };
+
+
+/////////////////////////////////////////
+int isIn(Layer *l,vlayer vl,int &ind)
+{
+  for(int i=0;i<vl.size();i++)
+    if(l==vl[i]) {ind=i;return 1;}
+
+  return 0;
+}
+
+/////////////////////////////////////////
+int isInorig(Layer *l,vlayer vl,int &ind)
+{
+  for(int i=0;i<vl.size();i++)
+    if(l==vl[i]->orig) {ind=i;return 1;}
+
+  return 0;
+}
+
+
 
 ////////////////////////////////////
 ///// NET CLASS
@@ -141,7 +164,44 @@ void Net::info()
 
 }
 
+void Net::plot(string fname)
+{
+  ofstream out("tmp.dot");
+  int ind;
+  string type=fname.substr(fname.find(".") + 1);
+  string cmd;
 
+
+  out<<"digraph Model {\n";
+  out<<"rankdir=TB;\n";
+
+  // plot layers
+  for(int i = 0; i != layers.size(); i++)
+   if ( (!isIn(layers[i],lin,ind)) && (!isIn(layers[i],lout,ind)))
+    out<<layers[i]->plot(0)<<"\n";
+
+  // Input Layers
+  for(int i = 0; i != lin.size(); i++)
+    out<<lin[i]->plot(1)<<"\n";
+
+  // Output Layers
+  for(int i = 0; i != lout.size(); i++)
+    out<<lout[i]->plot(1)<<"\n";
+
+  //plot links
+  for(int i = 0; i != layers.size(); i++)
+     for(int j=0;j<layers[i]->child.size();j++)
+        out<<layers[i]->name<<"->"<<layers[i]->child[j]->name<<"\n";
+
+  out<<"}\n";
+
+  out.close();
+
+  cmd="dot -T "+type+" ./tmp.dot >"+"./"+fname;
+
+  system(cmd.c_str());
+
+}
 /////////////////////////////////////////
 void Net::initialize()
 {
@@ -240,25 +300,6 @@ void Net::bts()
 
     }
   //fprintf(stderr,"\n");
-}
-
-
-/////////////////////////////////////////
-int isIn(Layer *l,vlayer vl,int &ind)
-{
-  for(int i=0;i<vl.size();i++)
-    if(l==vl[i]) {ind=i;return 1;}
-
-  return 0;
-}
-
-/////////////////////////////////////////
-int isInorig(Layer *l,vlayer vl,int &ind)
-{
-  for(int i=0;i<vl.size();i++)
-    if(l==vl[i]->orig) {ind=i;return 1;}
-
-  return 0;
 }
 
 
@@ -409,7 +450,7 @@ void Net::split(int c,int todev)
   for(int i=0;i<c;i++)
     for(int j=0;j<lout.size();j++)
       {
-        shape s=lout[j]->input->getshape();
+        shape s=lout[j]->output->getshape();
         if (i==(c-1)) s[0]=bs+m;
         else s[0]=bs;
 
@@ -539,13 +580,18 @@ void Net::applygrads(int batch)
 /////////////////////////////////////////
 void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch, int epochs)
 {
+  vtensor tin=vtensor(in.begin(), in.end());
+  vtensor tout=vtensor(out.begin(), out.end());
+
+  fit(tin,tout,batch,epochs);
+}
+
+void Net::fit(vtensor tin,vtensor tout,int batch, int epochs) {
+
   int i,j,k,l,n;
 
   if (optimizer==NULL)
     msg("Net is not build","Net.fit");
-
-  vtensor tin=vtensor(in.begin(), in.end());
-  vtensor tout=vtensor(out.begin(), out.end());
 
   // Check list sizes
   if (tin.size()!=lin.size())

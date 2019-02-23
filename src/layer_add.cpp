@@ -69,6 +69,15 @@ void LAdd::info()
 
   cout<<"===============\n\n";
 }
+string LAdd::plot(int c)
+{
+    string s;
+
+    s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=LightBlue,shape=box]";
+
+    return s;
+}
+
 
 
 void LAdd::forward(){}

@@ -114,7 +114,7 @@ Tensor::Tensor(shape s,int dev)
           gpu_init(gpu_device);
           initcuda[gpu_device]=1;
         }
-      gptr=gpu_create_tensor(gpu_device,tam);
+      ptr=gpu_create_tensor(gpu_device,tam);
     }
 #endif
 #ifdef cFPGA
@@ -229,7 +229,7 @@ Tensor::~Tensor()
 #ifdef cGPU
   else if (isGPU())
     {
-      gpu_delete_tensor(gpu_device,gptr);
+      gpu_delete_tensor(gpu_device,ptr);
     }
 #endif
 #ifdef cFPGA
@@ -304,7 +304,7 @@ void Tensor::print()
     {
       gpu_set_device(gpu_device);
       float *v= (float*)malloc(tam*sizeof(float));
-      cudaMemcpy(v,gptr,tam*sizeof(float),cudaMemcpyDeviceToHost);
+      cudaMemcpy(v,ptr,tam*sizeof(float),cudaMemcpyDeviceToHost);
       if (dim==2)
         {
           int i,j,p=0;
