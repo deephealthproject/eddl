@@ -67,8 +67,10 @@ class Layer
   void initialize();
   void reset();
 
+
   //virtual
-  virtual void info(){};
+  virtual string plot(int c){return "";}
+  virtual void info(){}
   virtual void addchild(Layer *l){}
   virtual void addparent(Layer *l){}
   virtual void forward(){}
@@ -91,11 +93,31 @@ class LinLayer : public Layer
 
   //virtual
 
-  virtual void info(){};
+  virtual void info(){}
+  virtual string plot(int c){return "";}
   virtual void forward(){}
   virtual void backward(){}
   virtual Layer *share(int c,int bs,vector<Layer*> p){return NULL;}
   virtual Layer *clone(int c,int bs,vector<Layer*>,int todev){return NULL;}
+
+};
+
+/// INPUT Layer
+class LTensor : public LinLayer
+{
+ public:
+  LTensor(string fname);
+  LTensor(const initializer_list<int>& init);
+  LTensor(const initializer_list<int>& init, int dev);
+  LTensor(const shape s);
+  LTensor(const shape s, int dev);
+
+  Layer *share(int c,int bs,vector<Layer*>p){return NULL;}
+  Layer *clone(int c,int bs,vector<Layer*>,int todev){return NULL;}
+  void info(){}
+  void forward(){}
+  void backward(){}
+  string plot(int c){return "";}
 
 };
 
@@ -113,6 +135,7 @@ class LInput : public LinLayer
   void info();
   void forward();
   void backward();
+  string plot(int c);
 
 };
 
@@ -138,6 +161,7 @@ class LDense : public LinLayer
   void info();
   void forward();
   void backward();
+  string plot(int c);
 
 };
 
@@ -157,6 +181,7 @@ class LActivation : public LinLayer
   void info();
   void forward();
   void backward();
+  string plot(int c);
 
 };
 
@@ -173,11 +198,13 @@ class MLayer : public Layer
   void addparent(Layer *l);
 
   //virtual
-  virtual void info(){};
+  virtual void info(){}
+  virtual string plot(int c){return "";}
   virtual void forward(){}
   virtual void backward(){}
   virtual Layer *share(int c,int bs,vector<Layer*>p){return NULL;}
   virtual Layer *clone(int c,int bs,vector<Layer*>,int todev){return NULL;}
+
 };
 
 /// INPUT Layer
@@ -194,6 +221,7 @@ class LAdd : public MLayer
   void info();
   void forward();
   void backward();
+  string plot(int c);
 
 };
 #endif

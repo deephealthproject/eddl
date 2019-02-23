@@ -77,8 +77,9 @@ class Net
   void walk(Layer *l);
   void fts();
   void bts();
-  string name;
+  void plot(string fname);
 
+  string name;
   int dev;
   vlayer layers;
   vlayer lin;
@@ -103,7 +104,9 @@ class Net
   void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m);
   void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,int todev);
   void fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch,int epochs);
+  void fit(vtensor tin,vtensor tout,int batch, int epochs);
   void train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out);
+
 
 };
 #endif

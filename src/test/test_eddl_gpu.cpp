@@ -35,7 +35,7 @@ int main(int argc, char **argv)
   // network
   layer in=eddl.Input({batch,784});
   layer l=in;
-  for(int i=0;i<3;i++)
+  for(int i=0;i<5;i++)
       l=eddl.Activation(eddl.Dense(l,1024),"relu");
 
   layer out1=eddl.Activation(eddl.Dense(l,10),"softmax");
@@ -43,6 +43,8 @@ int main(int argc, char **argv)
 
   // net define input and output layers list
   model net=eddl.Model({in},{out1,out2});
+
+  net->plot("model.pdf");
 
   // get some info from the network
   eddl.info(net);
@@ -52,12 +54,12 @@ int main(int argc, char **argv)
   // optionally put a DEVICE where the net will run
   eddl.build(net,SGD(0.01,0.95),{"soft_cent","mse"},{"acc","mse"},DEV_GPU);
 
-
   // read data
   tensor X=eddl.T("trX.bin");
   tensor Y=eddl.T("trY.bin");
 
   eddl.div(X,255.0);
+
 
   // training, list of input and output tensors, batch, epochs
 

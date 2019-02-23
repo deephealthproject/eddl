@@ -225,8 +225,8 @@ __global__ void cent(float* a, float* b, float* c, int tam)
 
  if (thread_id_x < tam){
    c[thread_id_x]=0;
-   if (a[thread_id_x]) c[thread_id_x]+=a[thread_id_x]*log(b[thread_id_x]);
-   if (a[thread_id_x]!=1.0) c[thread_id_x]+=(1.0-a[thread_id_x])*log(1.0-b[thread_id_x]);
+   if (a[thread_id_x]) c[thread_id_x]-=a[thread_id_x]*log(b[thread_id_x]);
+   if (a[thread_id_x]!=1.0) c[thread_id_x]-=(1.0-a[thread_id_x])*log(1.0-b[thread_id_x]);
   }
 }
 

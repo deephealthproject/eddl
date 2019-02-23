@@ -112,7 +112,7 @@ void gpu_set(Tensor *A,float v) {
   dim3 dimGrid(r);
   dim3 dimBlock(c);
 
-  set<<<dimGrid,dimBlock>>>(A->gptr,v,A->sizes[0],c);
+  set<<<dimGrid,dimBlock>>>(A->ptr,v,A->sizes[0],c);
   check_cuda(cudaDeviceSynchronize(),"set");
 
 }
@@ -131,7 +131,7 @@ void gpu_mult(Tensor *A,float v) {
   dim3 dimGrid(r);
   dim3 dimBlock(c);
 
-  mult<<<dimGrid,dimBlock>>>(A->gptr,v,A->sizes[0],c);
+  mult<<<dimGrid,dimBlock>>>(A->ptr,v,A->sizes[0],c);
   check_cuda(cudaDeviceSynchronize(),"mult");
 
 }
@@ -149,7 +149,7 @@ void gpu_sum(Tensor *A,float v) {
   dim3 dimGrid(r);
   dim3 dimBlock(c);
 
-  sum<<<dimGrid,dimBlock>>>(A->gptr,v,A->sizes[0],c);
+  sum<<<dimGrid,dimBlock>>>(A->ptr,v,A->sizes[0],c);
   check_cuda(cudaDeviceSynchronize(),"sum");
 
 }
@@ -168,7 +168,7 @@ void gpu_log(Tensor *A) {
   dim3 dimGrid(r);
   dim3 dimBlock(c);
 
-  log<<<dimGrid,dimBlock>>>(A->gptr,A->sizes[0],c);
+  log<<<dimGrid,dimBlock>>>(A->ptr,A->sizes[0],c);
   check_cuda(cudaDeviceSynchronize(),"log");
 
 }
@@ -187,7 +187,7 @@ void gpu_exp(Tensor *A) {
   dim3 dimGrid(r);
   dim3 dimBlock(c);
 
-  exp<<<dimGrid,dimBlock>>>(A->gptr,A->sizes[0],c);
+  exp<<<dimGrid,dimBlock>>>(A->ptr,A->sizes[0],c);
   check_cuda(cudaDeviceSynchronize(),"exp");
 
 }
@@ -206,7 +206,7 @@ void gpu_sqrt(Tensor *A) {
   dim3 dimGrid(r);
   dim3 dimBlock(c);
 
-  sqrt<<<dimGrid,dimBlock>>>(A->gptr,A->sizes[0],c);
+  sqrt<<<dimGrid,dimBlock>>>(A->ptr,A->sizes[0],c);
   check_cuda(cudaDeviceSynchronize(),"sqrt");
 
 }
@@ -225,7 +225,7 @@ void gpu_sqr(Tensor *A) {
   dim3 dimGrid(r);
   dim3 dimBlock(c);
 
-  sqr<<<dimGrid,dimBlock>>>(A->gptr,A->sizes[0],c);
+  sqr<<<dimGrid,dimBlock>>>(A->ptr,A->sizes[0],c);
   check_cuda(cudaDeviceSynchronize(),"sqr");
 
 }
@@ -245,7 +245,7 @@ void gpu_mask(Tensor *A,float v) {
   dim3 dimGrid(r);
   dim3 dimBlock(c);
 
-  mask<<<dimGrid,dimBlock>>>(A->gptr,v,A->sizes[0],c);
+  mask<<<dimGrid,dimBlock>>>(A->ptr,v,A->sizes[0],c);
   check_cuda(cudaDeviceSynchronize(),"mask");
 
 }
@@ -265,7 +265,7 @@ void gpu_total_sum(Tensor *A,float *tot)
 
 
   check_cuda(cudaMalloc((void**)&total,sizeof(float)),"create float in total_sum");
-  reduce_array_sum<<<dimGrid,dimBlock,ops*sizeof(float)>>>(A->gptr,ops,c,total);
+  reduce_array_sum<<<dimGrid,dimBlock,ops*sizeof(float)>>>(A->ptr,ops,c,total);
   check_cuda(cudaMemcpy(tot,total,sizeof(float),cudaMemcpyDeviceToHost),"error copy in total_sum");
 
   check_cuda(cudaFree(total),"delete float in total_sum");
@@ -276,7 +276,7 @@ void gpu_copy_to_gpu(float *nptr,Tensor *A)
 {
   int device=A->gpu_device;
   cudaSetDevice(device);
-  check_cuda(cudaMemcpy(A->gptr,nptr,A->tam*sizeof(float),cudaMemcpyHostToDevice),"gpu_copy_to_gpu");
+  check_cuda(cudaMemcpy(A->ptr,nptr,A->tam*sizeof(float),cudaMemcpyHostToDevice),"gpu_copy_to_gpu");
 }
 
 ///////////////////////////////////////////
@@ -284,7 +284,7 @@ void gpu_copy_from_gpu(Tensor *A,float *nptr)
 {
   int device=A->gpu_device;
   cudaSetDevice(device);
-  check_cuda(cudaMemcpy(nptr,A->gptr,A->tam*sizeof(float),cudaMemcpyDeviceToHost),"gpu_copy_to_gpu");
+  check_cuda(cudaMemcpy(nptr,A->ptr,A->tam*sizeof(float),cudaMemcpyDeviceToHost),"gpu_copy_to_gpu");
 }
 
 ///////////////////////////////////////////
@@ -292,7 +292,7 @@ void gpu_copy_gpu(Tensor *A,Tensor *B)
 {
   int device=A->gpu_device;
   cudaSetDevice(device);
-  check_cuda(cudaMemcpy(B->gptr,A->gptr,A->tam*sizeof(float),cudaMemcpyDeviceToDevice),"gpu_copy_gpu");
+  check_cuda(cudaMemcpy(B->ptr,A->ptr,A->tam*sizeof(float),cudaMemcpyDeviceToDevice),"gpu_copy_gpu");
 }
 
 
@@ -330,7 +330,7 @@ void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
     ldC=B->sizes[0];
     }
 
-  check_cublas(cublasSgemm(hcublas[device],trB,trA,m,n,k,&alfa,B->gptr,ldB,A->gptr,ldA,&beta,C->gptr,ldC),"mult2D");
+  check_cublas(cublasSgemm(hcublas[device],trB,trA,m,n,k,&alfa,B->ptr,ldB,A->ptr,ldA,&beta,C->ptr,ldC),"mult2D");
 
 }
 
@@ -349,7 +349,7 @@ void gpu_el_mult(Tensor *A, Tensor *B, Tensor *C,int incC)
   dim3 dimBlock(c);
 
 
-  el_mult<<<dimGrid,dimBlock>>>(A->gptr,B->gptr,C->gptr,incC,A->sizes[0],c);
+  el_mult<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,incC,A->sizes[0],c);
 
   check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
 }
@@ -368,7 +368,7 @@ void gpu_el_div(Tensor *A, Tensor *B, Tensor *C,int incC)
   dim3 dimBlock(c);
 
 
-  el_mult<<<dimGrid,dimBlock>>>(A->gptr,B->gptr,C->gptr,incC,A->sizes[0],r);
+  el_mult<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,incC,A->sizes[0],r);
 
   check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
 }
@@ -388,7 +388,7 @@ void gpu_sum(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC)
   dim3 dimGrid(r);
   dim3 dimBlock(c);
 
-  sum<<<dimGrid,dimBlock>>>(scA,A->gptr,scB,B->gptr,C->gptr,incC,A->tam);
+  sum<<<dimGrid,dimBlock>>>(scA,A->ptr,scB,B->ptr,C->ptr,incC,A->tam);
   check_cuda(cudaDeviceSynchronize(),"sum");
 }
 ///////////////////////////////////////////
@@ -409,11 +409,11 @@ void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC)
 
 
   if (incC){
-    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A->gptr,ldA,&one,C->gptr,ldB,C->gptr,ldC),"sum2D");
-    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,B->gptr,ldA,&one,C->gptr,ldB,C->gptr,ldC),"sum2D");
+    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A->ptr,ldA,&one,C->ptr,ldB,C->ptr,ldC),"sum2D");
+    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,B->ptr,ldA,&one,C->ptr,ldB,C->ptr,ldC),"sum2D");
   }
   else
-    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A->gptr,ldA,&beta,B->gptr,ldB,C->gptr,ldC),"sum2D");
+    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A->ptr,ldA,&beta,B->ptr,ldB,C->ptr,ldC),"sum2D");
 
 }
 
@@ -428,7 +428,7 @@ void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
   dim3 dimBlock(A->sizes[1]);
 
 
-  sum_mat_row<<<dimGrid,dimBlock>>>(A->gptr,B->gptr,C->gptr,A->sizes[0],A->sizes[1]);
+  sum_mat_row<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,A->sizes[0],A->sizes[1]);
 
   check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
 
@@ -442,7 +442,7 @@ void gpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C)
   dim3 dimGrid(A->sizes[0]);
   dim3 dimBlock(A->sizes[1]);
 
-  sum_mat_col<<<dimGrid,dimBlock>>>(A->gptr,B->gptr,C->gptr,A->sizes[0],A->sizes[1]);
+  sum_mat_col<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,A->sizes[0],A->sizes[1]);
 
   check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
 
@@ -462,7 +462,7 @@ void gpu_reduce_sum2D(Tensor *A,Tensor *B,int axis,int incB)
 
   if (!incB) gpu_set(B,0.0);
 
-  reduce_sum2D<<<dimGrid,dimBlock>>>(A->gptr,B->gptr,A->sizes[0],A->sizes[1],axis);
+  reduce_sum2D<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->sizes[0],A->sizes[1],axis);
 
 
   check_cuda(cudaDeviceSynchronize(),"reduce_sum2D");
@@ -477,7 +477,7 @@ void gpu_rand_uniform(Tensor *A, float v)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  check_curand(curandGenerateUniform(random_generator[device],A->gptr,A->tam),"gpu_rand_uniform");
+  check_curand(curandGenerateUniform(random_generator[device],A->ptr,A->tam),"gpu_rand_uniform");
 
   check_cuda(cudaDeviceSynchronize(),"gpu_rand_uniform");
 
@@ -492,7 +492,7 @@ void gpu_rand_suniform(Tensor *A, float v)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  check_curand(curandGenerateUniform(random_generator[device],A->gptr,A->tam),"gpu_rand_suniform");
+  check_curand(curandGenerateUniform(random_generator[device],A->ptr,A->tam),"gpu_rand_suniform");
 
   check_cuda(cudaDeviceSynchronize(),"gpu_rand_suniform");
 
@@ -511,10 +511,10 @@ void gpu_rand_gaussian(Tensor *A, float m,float s)
 
   if (A->tam%2) {
     gpu_set(A,0.0);
-    check_curand(curandGenerateNormal(random_generator[device],A->gptr,A->tam-1,m,s),"gpu_rand_gaussian");
+    check_curand(curandGenerateNormal(random_generator[device],A->ptr,A->tam-1,m,s),"gpu_rand_gaussian");
   }
   else
-    check_curand(curandGenerateNormal(random_generator[device],A->gptr,A->tam,m,s),"gpu_rand_gaussian");
+    check_curand(curandGenerateNormal(random_generator[device],A->ptr,A->tam,m,s),"gpu_rand_gaussian");
 
   check_cuda(cudaDeviceSynchronize(),"gpu_rand_gaussian");
 
@@ -526,7 +526,7 @@ void gpu_rand_binary(Tensor *A, float v)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  check_curand(curandGenerateUniform(random_generator[device],A->gptr,A->tam),"gpu_rand_binary");
+  check_curand(curandGenerateUniform(random_generator[device],A->ptr,A->tam),"gpu_rand_binary");
 
   gpu_mask(A,v);
 
@@ -551,7 +551,7 @@ void gpu_cent(Tensor *A,Tensor *B,Tensor *C)
   dim3 dimGrid(r);
   dim3 dimBlock(c);
 
-  cent<<<dimGrid,dimBlock>>>(A->gptr,B->gptr,C->gptr,A->tam);
+  cent<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,A->tam);
   check_cuda(cudaDeviceSynchronize(),"gpu_cent");
 
 }
@@ -575,7 +575,7 @@ void gpu_accuracy(Tensor *A,Tensor *B,int *acc)
   check_cuda(cudaMalloc((void**)&a,sizeof(int)),"error cudaMalloc in accuracy");
   cudaMemset(a, 0, sizeof(int));
 
-  accuracy<<<dimBlock,dimGrid>>>(A->gptr,B->gptr,max_row,c,r,a);
+  accuracy<<<dimBlock,dimGrid>>>(A->ptr,B->ptr,max_row,c,r,a);
   check_cuda(cudaMemcpy(acc,a,sizeof(float),cudaMemcpyDeviceToHost),"error copy in accuracy");
 
   cudaFree(a);
@@ -599,7 +599,7 @@ void gpu_relu(Tensor *A,Tensor *B)
   dim3 dimGrid(r);
   dim3 dimBlock(c);
 
-  relu<<<dimGrid,dimBlock>>>(A->gptr,B->gptr,A->tam);
+  relu<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->tam);
   check_cuda(cudaDeviceSynchronize(),"gpu_relu");
 }
 
@@ -617,7 +617,7 @@ void gpu_d_relu(Tensor *D,Tensor *I,Tensor *PD)
   dim3 dimGrid(r);
   dim3 dimBlock(c);
 
-  d_relu<<<dimGrid,dimBlock>>>(D->gptr,I->gptr,PD->gptr,D->tam);
+  d_relu<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,D->tam);
   check_cuda(cudaDeviceSynchronize(),"gpu_relu");
 }
 
@@ -651,7 +651,7 @@ float* auxE=NULL;
   dim3 dimBlock(r);
 
   float* aux=gpu_create_tensor(device,A->tam);
-  softmax<<<dimGrid,dimBlock>>>(A->gptr,B->gptr,aux,c,A->tam);
+  softmax<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,aux,c,A->tam);
   check_cuda(cudaDeviceSynchronize(),"gpu_relu");
   gpu_delete_tensor(device,aux);
 }
@@ -670,7 +670,7 @@ void gpu_d_softmax(Tensor *D,Tensor *I,Tensor *PD)
   dim3 dimGrid(r);
   dim3 dimBlock(c);
 
-  d_relu<<<dimGrid,dimBlock>>>(D->gptr,I->gptr,PD->gptr,D->tam);
+  d_relu<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,D->tam);
   check_cuda(cudaDeviceSynchronize(),"gpu_relu");
 }
 

@@ -84,7 +84,7 @@ CXXFLAGS =-std=c++11 -march=native -mavx -O3
 endif
 ifeq ($(OPT),2)
 $(info set SSE)
-CXXFLAGS =-std=c++11-march=native -msse2 -O3
+CXXFLAGS =-std=c++11 -march=native -msse2 -O3
 endif
 ifeq ($(OPT),3)
 $(info set no opt)
@@ -125,7 +125,7 @@ endif
 
 
 #######################################################################
-OBJ =	utils.o tensor.o tensor_op.o layer.o layer_input.o layer_dense.o layer_activation.o layer_add.o loss.o metric.o optim.o net.o eddl.o
+OBJ =	utils.o tensor.o tensor_op.o layer.o layer_tensor.o layer_input.o layer_dense.o layer_activation.o layer_add.o loss.o metric.o optim.o net.o eddl.o
 
 ifeq ($(CORE),1)
 all: $(GPU_OBJ) $(OBJ) test_eddl
@@ -151,6 +151,9 @@ tensor_over.o: ../tensor_over.cpp ../tensor_over.h
 
 layer.o: ../layer.cpp ../layer.h
 		$(CXX) $(CXXFLAGS) -c ../layer.cpp
+
+layer_tensor.o: ../layer_tensor.cpp ../layer.h
+				$(CXX) $(CXXFLAGS) -c ../layer_tensor.cpp
 
 layer_input.o: ../layer_input.cpp ../layer.h
 		$(CXX) $(CXXFLAGS) -c ../layer_input.cpp

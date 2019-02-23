@@ -34,9 +34,10 @@
 #include <vector>
 #include "net.h"
 
-#define tensor Tensor*
+#define tensor LTensor*
 #define layer Layer*
 #define model Net*
+typedef vector<LTensor*> vltensor;
 
 class EDDL {
 public:
@@ -72,7 +73,7 @@ public:
   static void info(model m);
   static void build(model net,optim *opt,const initializer_list<string>& c,const initializer_list<string>& m);
   static void build(model net,optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,int todev);
-  static void fit(model m, const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch,int epochs);
+  static void fit(model m, const initializer_list<LTensor*>& in,const initializer_list<LTensor*>& out,int batch,int epochs);
 
 
 };
