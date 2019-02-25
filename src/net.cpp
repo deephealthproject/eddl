@@ -173,7 +173,7 @@ void Net::plot(string fname)
 
 
   out<<"digraph Model {\n";
-  out<<"rankdir=TB;\n";
+  out<<"rankdir=LR;\n";
 
   // plot layers
   for(int i = 0; i != layers.size(); i++)

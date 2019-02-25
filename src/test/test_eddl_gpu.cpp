@@ -39,11 +39,10 @@ int main(int argc, char **argv)
   for(int i=0;i<5;i++)
       l=eddl.Activation(eddl.Dense(l,1025),"relu");
 
-  layer out1=eddl.Activation(eddl.Dense(l,10),"softmax");
-  layer out2=eddl.Dense(l,10);
+  layer out=eddl.Activation(eddl.Dense(l,10),"softmax");
 
   // net define input and output layers list
-  model net=eddl.Model({in},{out1,out2});
+  model net=eddl.Model({in},{out});
 
   net->plot("model.pdf");
 
@@ -53,7 +52,7 @@ int main(int argc, char **argv)
   // Attach an optimizer and a list of error criteria and metrics
   // size of error criteria and metrics list must match with size of list of outputs
   // optionally put a DEVICE where the net will run
-  eddl.build(net,SGD(0.01,0.95),{"soft_cent","mse"},{"acc","mse"},DEV_GPU);
+  eddl.build(net,SGD(0.01,0.95),{"soft_cent"},{"acc"},DEV_GPU);
 
   // read data
   tensor X=eddl.T("trX.bin");
@@ -64,7 +63,7 @@ int main(int argc, char **argv)
 
   // training, list of input and output tensors, batch, epochs
 
-  eddl.fit(net,{X},{Y,Y},batch,100);
+  eddl.fit(net,{X},{Y},batch,100);
 
 }
 

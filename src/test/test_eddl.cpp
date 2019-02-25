@@ -37,40 +37,23 @@ int main(int argc, char **argv)
 {
   int batch=1000;
 
-  // Tensors
-/*
-  tensor A=new Tensor({3,5});
-  for(int i=0;i<A->tam;i++)
-    A->ptr[i]=i;
 
-
-  A->print();
-
-  tensor B=new Tensor({5,2});
-  B->set(1);
-  B->print();
-
-  tensor C=new Tensor({3,2});
-  tensor C2=new Tensor({2,3});
-  C->set(1);
-
-  Tensor::mult2D(B,1,A,1,C2,0);
-
-  C2->print();
-*/
-  //exit(1);
-  // network
   layer in=eddl.Input({batch,784});
   layer l=in;
-  for(int i=0;i<3;i++)
-      l=eddl.Activation(eddl.Dense(l,1024),"relu");
+  for(int i=0;i<5;i++)
+      l=eddl.Activation(eddl.Dense(l,1025),"relu");
 
-  layer out1=eddl.Activation(eddl.Dense(l,10),"softmax");
+  layer out=eddl.Activation(eddl.Dense(l,10),"softmax");
 
   // net define input and output layers list
-  model net=eddl.Model({in},{out1});
+  model net=eddl.Model({in},{out});
+
+  // plot the model
+  net->plot("model.pdf");
+
   // get some info from the network
   eddl.info(net);
+
   // Attach an optimizer and a list of error criteria and metrics
   // size of error criteria and metrics list must match with size of list of outputs
   // optionally put a DEVICE where the net will run
