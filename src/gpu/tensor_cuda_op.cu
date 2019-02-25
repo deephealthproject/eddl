@@ -55,7 +55,7 @@ extern curandGenerator_t random_generator[64];
 // MAX THREADS PER BLOCK
 #define MAX_TPB 1024
 
-#define setDims(A) long int r,c;r=(A->tam/MAX_TPB);if (r==0) {r=1;c=A->tam;}else {if (A->tam%MAX_TPB) r++;c=MAX_TPB;}dim3 dimGrid(r);dim3 dimBlock(c);
+#define setDims(A) int r,c;r=(A->tam/MAX_TPB);if (r==0) {r=1;c=A->tam;}else {if (A->tam%MAX_TPB) r++;c=MAX_TPB;}dim3 dimGrid(r);dim3 dimBlock(c);
 
 
 static const char *_curandGetErrorEnum(curandStatus_t error)
@@ -235,7 +235,7 @@ void gpu_total_sum(Tensor *A,float *tot)
 
   dim3 dimBlock(r);
   dim3 dimGrid(1);
-  long int ops = r;
+  int ops = r;
 
 
   check_cuda(cudaMalloc((void**)&total,sizeof(float)),"create float in total_sum");
@@ -568,8 +568,8 @@ void gpu_softmax(Tensor *A,Tensor *B)
 /*
 dimBlock.x=sp->row;
  dimGrid.x=1;
- long int ops = sp->col*sp->row;
-long int sample_dim=sp->col;
+ int ops = sp->col*sp->row;
+int sample_dim=sp->col;
 
 double alfa=1;
 float* auxE=NULL;
