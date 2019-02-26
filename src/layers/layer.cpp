@@ -28,47 +28,84 @@
 
 #include <stdio.h>
 #include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
-#include <iostream>
 
-#include "../eddl.h"
+#include "layer.h"
 
-int main(int argc, char **argv)
+using namespace std;
+
+////////////////////////////////////
+///// BASE LAYER CLASS
+////////////////////////////////////
+Layer::Layer(string n):Layer(n,DEV_CPU){}
+
+Layer::Layer(string n,int d)
 {
-  int batch=1000;
-
-
-  layer in=eddl.Input({batch,784});
-  layer l=in;
-  for(int i=0;i<5;i++)
-      l=eddl.Activation(eddl.Dense(l,1025),"relu");
-
-  layer out=eddl.Activation(eddl.Dense(l,10),"softmax");
-
-  // net define input and output layers list
-  model net=eddl.Model({in},{out});
-
-  // plot the model
-  eddl.plot(net,"model.jpg");
-
-  // get some info from the network
-  eddl.info(net);
-
-  // Attach an optimizer and a list of error criteria and metrics
-  // size of error criteria and metrics list must match with size of list of outputs
-  // optionally put a DEVICE where the net will run
-  eddl.build(net,SGD(0.01,0.9),{"soft_cent"},{"acc"},DEV_CPU);
-
-  // read data
-  tensor X=eddl.T("trX.bin");
-  tensor Y=eddl.T("trY.bin");
-
-  eddl.div(X,255.0);
-
-  // training, list of input and output tensors, batch, epochs
-  eddl.fit(net,{X},{Y},batch,100);
-
+  mode=TRMODE;
+  target=delta=input=output=NULL;
+  dev=d;
+  name=n;
+  lin=lout=0;
+  delta_bp=0;
 }
 
 
-///////////
+void Layer::initialize()
+{
+  for(int i = 0; i != params.size(); i++) {
+    if (params[i]->dim==1)
+      params[i]->rand_suniform(0.1);
+    else if (params[i]->dim==2)
+      params[i]->rand_gaussian(0.0,sqrt(2.0/params[i]->sizes[0]));
+    else
+      params[i]->rand_gaussian(0.0,0.1);
+    }
+}
+
+
+void Layer::reset()
+{
+  delta->set(0.0);
+}
+
+
+////////////////////////////////////
+///// LINEAR LAYERS
+////////////////////////////////////
+LinLayer::LinLayer(string n,int d):Layer(n,d){}
+
+void LinLayer::addchild(Layer *l)
+{
+  child.push_back(l);
+  lout++;
+}
+
+void LinLayer::addparent(Layer *l)
+{
+  if (parent.size()!=0) msg("This layers only can have one parent layer",l->name.c_str());
+  parent.push_back(l);
+  lin++;
+}
+
+
+////////////////////////////////////
+///// Multiple LAYERS
+////////////////////////////////////
+MLayer::MLayer(string n,int d):Layer(n,d){}
+
+void MLayer::addchild(Layer *l)
+{
+  child.push_back(l);
+  lout++;
+}
+
+
+void MLayer::addparent(Layer *l)
+{
+  parent.push_back(l);
+  lin++;
+}
+
+
+//////

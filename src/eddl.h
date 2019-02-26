@@ -70,6 +70,7 @@ public:
   // Create net
   static model Model(vlayer in,vlayer out);
   // Net operations
+  static void plot(model m,string fname);
   static void info(model m);
   static void build(model net,optim *opt,const initializer_list<string>& c,const initializer_list<string>& m);
   static void build(model net,optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,int todev);

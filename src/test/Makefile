@@ -125,7 +125,7 @@ endif
 
 
 #######################################################################
-OBJ =	utils.o tensor.o tensor_op.o layer.o layer_tensor.o layer_input.o layer_dense.o layer_activation.o layer_add.o loss.o metric.o optim.o net.o eddl.o
+OBJ =	utils.o tensor.o tensor_op.o layer.o layer_tensor.o layer_input.o layer_dense.o layer_activation.o layer_add.o loss.o metric.o optim.o net.o eddl.o layer_reshape.o
 
 ifeq ($(CORE),1)
 all: $(GPU_OBJ) $(OBJ) test_eddl
@@ -149,23 +149,23 @@ tensor_over.o: ../tensor_over.cpp ../tensor_over.h
 		$(CXX) $(CXXFLAGS) -c ../tensor_over.cpp
 
 
-layer.o: ../layer.cpp ../layer.h
-		$(CXX) $(CXXFLAGS) -c ../layer.cpp
+layer.o: ../layers/layer.cpp ../layers/layer.h
+		$(CXX) $(CXXFLAGS) -c ../layers/layer.cpp
 
-layer_tensor.o: ../layer_tensor.cpp ../layer.h
-				$(CXX) $(CXXFLAGS) -c ../layer_tensor.cpp
+layer_tensor.o: ../layers/layer_tensor.cpp ../layers/layer.h
+				$(CXX) $(CXXFLAGS) -c ../layers/layer_tensor.cpp
 
-layer_input.o: ../layer_input.cpp ../layer.h
-		$(CXX) $(CXXFLAGS) -c ../layer_input.cpp
+layer_input.o: ../layers/layer_input.cpp ../layers/layer.h
+		$(CXX) $(CXXFLAGS) -c ../layers/layer_input.cpp
 
-layer_dense.o: ../layer_dense.cpp ../layer.h
-		$(CXX) $(CXXFLAGS) -c ../layer_dense.cpp
+layer_dense.o: ../layers/layer_dense.cpp ../layers/layer.h
+		$(CXX) $(CXXFLAGS) -c ../layers/layer_dense.cpp
 
-layer_activation.o: ../layer_activation.cpp ../layer.h
-		$(CXX) $(CXXFLAGS) -c ../layer_activation.cpp
+layer_activation.o: ../layers/layer_activation.cpp ../layers/layer.h
+		$(CXX) $(CXXFLAGS) -c ../layers/layer_activation.cpp
 
-layer_add.o: ../layer_add.cpp ../layer.h
-		$(CXX) $(CXXFLAGS) -c ../layer_add.cpp
+layer_add.o: ../layers/layer_add.cpp ../layers/layer.h
+		$(CXX) $(CXXFLAGS) -c ../layers/layer_add.cpp
 
 loss.o: ../loss.cpp ../loss.h
 		$(CXX) $(CXXFLAGS) -c ../loss.cpp
@@ -181,6 +181,11 @@ net.o: ../net.cpp ../net.h
 
 eddl.o: ../eddl.cpp ../eddl.h
 		$(CXX) $(CXXFLAGS) -c ../eddl.cpp
+
+layer_reshape.o: ../layers/layer_reshape.cpp ../layers/layer.h
+		$(CXX) $(CXXFLAGS) -c ../layers/layer_reshape.cpp
+
+##ADD_MORE_RULES
 
 #---------------------------------- gpu code
 tensor_cuda.o: ../gpu/tensor_cuda.cu ../gpu/tensor_cuda.h

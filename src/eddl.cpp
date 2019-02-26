@@ -134,6 +134,12 @@ void EDDL::info(model m)
 {
   m->info();
 }
+
+void EDDL::plot(model m,string fname)
+{
+  m->plot(fname);
+}
+
 void EDDL::build(model net,optim *opt,const initializer_list<string>& c,const initializer_list<string>& m)
 {
   net->build(opt,c,m);

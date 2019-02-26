@@ -44,7 +44,7 @@ int main(int argc, char **argv)
   // net define input and output layers list
   model net=eddl.Model({in},{out});
 
-  net->plot("model.pdf");
+  eddl.plot(net,"model.pdf");
 
   // get some info from the network
   eddl.info(net);

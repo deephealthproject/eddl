@@ -36,7 +36,7 @@
 #include <initializer_list>
 #include <vector>
 
-#include "layer.h"
+#include "layers/layer.h"
 #include "optim.h"
 #include "loss.h"
 #include "metric.h"
