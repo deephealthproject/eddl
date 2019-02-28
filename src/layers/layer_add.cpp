@@ -56,19 +56,7 @@ LAdd::LAdd(vector<Layer*> in,string name,int d):MLayer(name,d)
 
 
 // virtual
-void LAdd::info()
-{
-  cout<<"\n===============\n";
-  cout<< "Layer LAdd "<<name<<"\n";
-  cout<< "Layers: "<<name<<"\n";
-  for(int i = 0; i != parent.size(); i++)
-    {
-      cout<< parent[i]->name<<"\n";
-      parent[i]->info();
-    }
 
-  cout<<"===============\n\n";
-}
 string LAdd::plot(int c)
 {
     string s;

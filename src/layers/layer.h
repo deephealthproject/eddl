@@ -66,11 +66,12 @@ class Layer
 
   void initialize();
   void reset();
+  void info();
 
 
   //virtual
   virtual string plot(int c){return "";}
-  virtual void info(){}
+
   virtual void addchild(Layer *l){}
   virtual void addparent(Layer *l){}
   virtual void forward(){}
@@ -93,7 +94,7 @@ class LinLayer : public Layer
 
   //virtual
 
-  virtual void info(){}
+
   virtual string plot(int c){return "";}
   virtual void forward(){}
   virtual void backward(){}
@@ -132,7 +133,6 @@ class LInput : public LinLayer
   Layer *share(int c,int bs,vector<Layer*>p);
   Layer *clone(int c,int bs,vector<Layer*>,int todev);
 
-  void info();
   void forward();
   void backward();
   string plot(int c);
@@ -158,7 +158,6 @@ class LDense : public LinLayer
   Tensor *bias;
   Tensor *gbias;
 
-  void info();
   void forward();
   void backward();
   string plot(int c);
@@ -178,7 +177,6 @@ class LActivation : public LinLayer
   Layer *share(int c,int bs,vector<Layer*>p);
   Layer *clone(int c,int bs,vector<Layer*>,int todev);
 
-  void info();
   void forward();
   void backward();
   string plot(int c);
@@ -198,7 +196,7 @@ class MLayer : public Layer
   void addparent(Layer *l);
 
   //virtual
-  virtual void info(){}
+
   virtual string plot(int c){return "";}
   virtual void forward(){}
   virtual void backward(){}
@@ -218,7 +216,6 @@ class LAdd : public MLayer
   Layer *share(int c,int bs,vector<Layer*>p);
   Layer *clone(int c,int bs,vector<Layer*>,int todev);
 
-  void info();
   void forward();
   void backward();
   string plot(int c);
@@ -248,9 +245,7 @@ class LReshape : public LinLayer
 
   // Params
 
-
   // implementation
-  void info();
   void forward();
   void backward();
   string plot(int c);

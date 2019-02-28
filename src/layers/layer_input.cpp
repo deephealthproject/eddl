@@ -50,13 +50,6 @@ LInput::LInput(Tensor *in,string name,int d):LinLayer(name,d)
 
 
 // virtual
-void LInput::info()
-{
-  cout<<"\n===============\n";
-  cout<< "Layer LInput "<<name<<"\n";
-  input->info();
-  cout<<"===============\n\n";
-}
 string LInput::plot(int c)
 {
     string s;

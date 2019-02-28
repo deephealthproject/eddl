@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 
 #include "layer.h"
 
@@ -69,6 +70,39 @@ void Layer::reset()
   delta->set(0.0);
 }
 
+
+void Layer::info()
+{
+  cout<<"\n===============\n";
+  cout<< "Layer "<<name<<"\n";
+  if (parent.size()) {
+    cout<< "Parent layers:\n";
+    for(int i=0;i<parent.size();i++)
+      cout<<parent[i]->name<<"\n";
+  }
+  else cout<<"No parent layers\n";
+
+  if (child.size()) {
+    cout<< "Child layers:\n";
+    for(int i = 0; i != child.size(); i++)
+      cout<< child[i]->name<<"\n";
+  }
+  else cout<<"No child layers\n";
+
+  cout<<"Input tensor:\n";
+  input->info();
+
+  if (params.size()) {
+    cout<< "Params:\n";
+    for(int i=0;i<params.size();i++)
+      params[i]->info();
+  }
+  else cout<<"No params\n";
+
+  cout<<"Output tensor:\n";
+  output->info();
+  cout<<"===============\n\n";
+}
 
 ////////////////////////////////////
 ///// LINEAR LAYERS

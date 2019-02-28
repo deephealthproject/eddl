@@ -113,23 +113,6 @@ Layer *LActivation::clone(int c,int bs,vector<Layer*>p,int todev)
 }
 
 
-void LActivation::info()
-{
-  cout<<"\n===============\n";
-  cout<< "Layer LActivation "<<name<<"\n";
-  cout<< "Parent layer:"<<parent[0]->name<<"\n";
-  cout<< "Child layers:\n";
-  if (child.size())
-    for(int i = 0; i != child.size(); i++)
-      cout<< child[i]->name<<"\n";
-  else cout<<"None\n";
-  cout<<"LInput:\n";
-  input->info();
-  cout<<"No Params\n";
-  cout<<"Output:\n";
-  output->info();
-  cout<<"===============\n\n";
-}
 string LActivation::plot(int c)
 {
     string s;
