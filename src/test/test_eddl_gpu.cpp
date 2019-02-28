@@ -39,7 +39,7 @@ int main(int argc, char **argv)
   for(int i=0;i<3;i++)
       l=eddl.Activation(eddl.Dense(l,1024),"relu");
 
-  l=eddl.Reshape(l,{batch,32,-1});
+  l=eddl.Reshape(l,{batch,16,2,2,-1});
   l=eddl.Reshape(l,{batch,1024});
 
   layer out=eddl.Activation(eddl.Dense(l,10),"softmax");
