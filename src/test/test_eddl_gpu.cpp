@@ -36,8 +36,11 @@ int main(int argc, char **argv)
   // network
   layer in=eddl.Input({batch,784});
   layer l=in;
-  for(int i=0;i<5;i++)
-      l=eddl.Activation(eddl.Dense(l,1025),"relu");
+  for(int i=0;i<3;i++)
+      l=eddl.Activation(eddl.Dense(l,1024),"relu");
+
+  l=eddl.Reshape(l,{batch,32,-1});
+  l=eddl.Reshape(l,{batch,1024});
 
   layer out=eddl.Activation(eddl.Dense(l,10),"softmax");
 

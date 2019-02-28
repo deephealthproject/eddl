@@ -143,7 +143,6 @@ Tensor::Tensor(shape s,Tensor *T)
       {
     	 ptr=T->ptr;
        ptr2=T->ptr2;
-       mat=T->mat;
       }
   #ifdef cGPU
     else if (isGPU())

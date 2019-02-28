@@ -154,7 +154,7 @@ string LReshape::plot(int c)
     string s;
 
     if (c) s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=White,shape=box]";
-    else s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=White,shape=box]";
+    else s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=gray75,shape=box]";
 
     return s;
 }

@@ -194,39 +194,7 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
 
 
   C->tsem->lock();
-  if (A->isCPU())
-    {
 
-      if (!tB)
-        {
-          if (!tA)
-            {
-              if (!incC) C->mat=B->mat*A->mat;
-              else C->mat+=B->mat*A->mat;
-            }
-          else
-            {
-              if (!incC) C->mat=B->mat*A->mat.transpose();
-              else C->mat+=B->mat*A->mat.transpose();
-            }
-        }
-      else
-        {
-          if (!tA)
-            {
-              if (!incC) C->mat=B->mat.transpose()*A->mat;
-              else C->mat+=B->mat.transpose()*A->mat;
-            }
-          else
-            {
-              if (!incC) C->mat=B->mat.transpose()*A->mat.transpose();
-              else C->mat+=B->mat.transpose()*A->mat.transpose();
-            }
-        }
-
-      //_C->ptr2=C->ptr2.transpose();
-    }
-    /*
   if (A->isCPU())
     {
 
@@ -256,10 +224,8 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
               else *(C->ptr2)+=(*(B->ptr2)).transpose()*((*(A->ptr2)).transpose());
             }
         }
-
-      //_C->ptr2=C->ptr2.transpose();
     }
-    */
+
 #ifdef cGPU
   else if (A->isGPU())
     {

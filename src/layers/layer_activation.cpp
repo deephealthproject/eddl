@@ -134,7 +134,7 @@ string LActivation::plot(int c)
 {
     string s;
 
-    if (c) s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=bisque4,shape=box]";
+    if (c) s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=LightBlue,shape=box]";
     else s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=LightSalmon,shape=box]";
 
     return s;
