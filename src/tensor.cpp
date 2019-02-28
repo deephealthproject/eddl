@@ -71,6 +71,7 @@ Tensor::Tensor(const initializer_list<int>& init):Tensor(init,DEV_CPU){}
 Tensor::Tensor(const initializer_list<int>& init, int dev):Tensor(shape(init.begin(), init.end()),dev){}
 
 Tensor::Tensor(const shape s):Tensor(s,DEV_CPU){}
+
 Tensor::Tensor(shape s,int dev)
 {
 #ifndef cGPU
@@ -98,8 +99,8 @@ Tensor::Tensor(shape s,int dev)
   if (isCPU())
     {
       if (dim==2) {
-        ptr2=Eigen::MatrixXf(sizes[1],sizes[0]);
-        ptr=&(ptr2(0,0));
+        ptr2=new Eigen::MatrixXf(sizes[1],sizes[0]);
+        ptr=&((*ptr2)(0,0));
       }
       else{
         ptr=(float *)malloc(tam*sizeof(Tensor *));
@@ -127,6 +128,37 @@ Tensor::Tensor(shape s,int dev)
 }
 
 
+Tensor::Tensor(shape s,Tensor *T)
+{
+    device=T->device;
+    dim=s.size();
+    sizes=s;
+
+    tam=1;
+    for(int i=0;i<dim;++i) tam*=s[i];
+
+
+    if (isCPU())
+      {
+	 ptr=T->ptr;
+         ptr2=&(Eigen::Map<Eigen::MatrixXf>(ptr, sizes[1], sizes[0])); 
+      }
+  #ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_device=device-DEV_GPU;
+        ptr=T->ptr;
+      }
+  #endif
+  #ifdef cFPGA
+    else {
+      // create FPGA Tensor
+    }
+  #endif
+
+  
+  tsem=new mutex();
+}
 
 /////////////////////////////////////////////////////////////////////////
 Tensor::Tensor(string fname)
@@ -157,8 +189,8 @@ Tensor::Tensor(string fname)
   for(int i=0;i<dim;++i) tam*=sizes[i];
 
   if (dim==2) {
-    ptr2=Eigen::MatrixXf(sizes[1],sizes[0]);
-    ptr=&(ptr2(0,0));
+    ptr2=new Eigen::MatrixXf(sizes[1],sizes[0]);
+    ptr=&((*ptr2)(0,0));
   }
   else{
     ptr=(float *)malloc(tam*sizeof(Tensor *));
@@ -520,7 +552,12 @@ float Tensor::total_abs()
     {
       float sum=0.0;
 
-      for(int i=0;i<tam;++i) sum+=fabs(ptr[i]);
+      if (dim==2)
+	for(int i=0;i<ptr2->rows();i++)
+	  for(int j=0;j<ptr2->cols();j++)
+	    sum+=fabs((*ptr2)(i,j));
+      else
+	for(int i=0;i<tam;++i) sum+=fabs(ptr[i]);
 
       return sum;
     }

@@ -85,7 +85,7 @@ class Tensor
   float *ptr;
 
   // CPU_cores
-  Eigen::MatrixXf ptr2;
+  Eigen::MatrixXf *ptr2;
 
   // GPU
   int gpu_device;
@@ -103,6 +103,8 @@ class Tensor
   Tensor(const shape s);
   Tensor(const shape s, int dev);
   Tensor(string fname);
+
+  Tensor(shape s,Tensor *T);
 
   ~Tensor();
 

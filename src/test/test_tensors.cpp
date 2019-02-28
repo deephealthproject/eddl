@@ -25,17 +25,37 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+#include <stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+
 
 #include "../eddl.h"
 
 int main(int argc, char **argv)
 {
 
+
+
+  Tensor *A=new Tensor({4,4});
+  A->set(1.0);
+  A->ptr2(1,3)=5;
+
+  A->print();
+  Tensor *B=new Tensor({2,8},A);
+  B->print();
+
+  cout<<B->ptr2;
+  
+  exit(1);
+
+  
   int r=1025;
   int c=2048;
   //
 
-
+  /*
 
   Tensor *A=new Tensor({r,c},DEV_GPU);
   A->set(1.0);
@@ -54,7 +74,7 @@ int main(int argc, char **argv)
 
   C->print();
   fprintf(stderr,"%f\n",C->total_sum()/(C->tam));
-
+  */
 
 }
 

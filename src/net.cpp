@@ -321,6 +321,8 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
       unsigned int nthreads = std::thread::hardware_concurrency();
 
       cout<<"set threads to "<<nthreads<<"\n";
+      nthreads=1;
+      
       if (nthreads>1)   {
         Eigen::initParallel();
         Eigen::setNbThreads(1);
@@ -517,6 +519,17 @@ void Net::forward()
   for(int i=0;i<vfts.size();i++) {
     vfts[i]->forward();
   }
+
+  for(int i=0;i<layers.size();i++) {
+    cout<<layers[i]->name<<"\n";
+    fprintf(stderr,"  In:%f\n",layers[i]->input->total_abs());
+    fprintf(stderr,"  Out:%f\n",layers[i]->output->total_abs());
+  }
+  
+  getchar();
+
+
+  
 }
 
 
@@ -560,7 +573,7 @@ void Net::backward()
 void Net::applygrads(int batch)
 {
 
-/*
+
   for(int i=0;i<layers.size();i++) {
     cout<<layers[i]->name<<"\n";
     fprintf(stderr,"  In:%f\n",layers[i]->input->total_abs());
@@ -571,7 +584,7 @@ void Net::applygrads(int batch)
    }
   }
   getchar();
-*/
+
 
   optimizer->applygrads(batch);
 }
@@ -878,7 +891,9 @@ void *train_batch_t(void *t)
 
   Net *net=targs->net;
 
+
   net->reset();
+
 
   net->forward();
 

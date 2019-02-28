@@ -34,21 +34,61 @@
 
 #include "layer.h"
 
+extern ostream& operator<<(ostream& os, const shape s);
+
 int reshape_created=1;
 
 using namespace std;
 
-LReshape::LReshape(Layer *parent):LReshape(parent,"reshape"+to_string(reshape_created),DEV_CPU){}
-LReshape::LReshape(Layer *parent,string name):LReshape(parent,name,DEV_CPU){}
-LReshape::LReshape(Layer *parent,int dev):LReshape(parent,"reshape"+to_string(reshape_created),dev){}
-LReshape::LReshape(Layer *parent,string name,int d):LinLayer(name,d)
-{
+LReshape::LReshape(Layer *parent,const initializer_list<int>& init):LReshape(parent,shape(init.begin(), init.end()),"reshape"+to_string(reshape_created),DEV_CPU){}
+LReshape::LReshape(Layer *parent,const initializer_list<int>& init,string name):LReshape(parent,shape(init.begin(), init.end()),name,DEV_CPU){}
+LReshape::LReshape(Layer *parent,const initializer_list<int>& init,int dev):LReshape(parent,shape(init.begin(), init.end()),"reshape"+to_string(reshape_created),dev){}
+LReshape::LReshape(Layer *parent,const initializer_list<int>& init,string name,int d):LReshape(parent,shape(init.begin(), init.end()),"reshape"+to_string(reshape_created),dev){}
 
+LReshape::LReshape(Layer *parent,shape s):LReshape(parent,s,"reshape"+to_string(reshape_created),DEV_CPU){}
+LReshape::LReshape(Layer *parent,shape s,int d):LReshape(parent,s,"reshape"+to_string(reshape_created),d){}
+LReshape::LReshape(Layer *parent,shape s,string name):LReshape(parent,s,name,DEV_CPU){}
+LReshape::LReshape(Layer *parent,shape s,string name,int d):LinLayer(name,d)
+{
+  ls=s;
   reshape_created++;
 
   input=parent->output;
 
-  ///... add code here
+  shape sin=input->getshape();
+  int tin=input->tam;
+  int t=1,c=0,ind=-1;
+
+  // Check sizes comp.
+  for(int i=0;i<ls.size();i++) {
+    if (ls[i]!=-1) t*=ls[i];
+    else {
+      if (c) msg("Ambiguous reshape","Reshape");
+      else {c=1;ind=i;}
+    }
+  }
+
+  if (c==1) {
+    if (t>tin){
+      msg("Incompatible sizes","Reshape");
+    }
+    else if (tin%t){
+      msg("Incompatible sizes","Reshape");
+    }
+    else{
+      ls[ind]=tin/t;
+      t=tin;
+    }
+  }
+  else if (t!=tin){
+    msg("Incompatible sizes","Reshape");
+  }
+
+  cout<<"Resize from "<<sin<<" to "<<ls<<"\n";
+  ///////
+
+  output=new Tensor(ls,parent->output);
+  delta=new Tensor(ls,parent->delta);
 
   parent->addchild(this);
   addparent(parent);
@@ -59,6 +99,7 @@ LReshape::LReshape(Layer *parent,string name,int d):LinLayer(name,d)
 void LReshape::forward()
 {
 ///... add code here
+  
 
 }
 
@@ -75,19 +116,22 @@ void LReshape::backward()
 
 Layer *LReshape::share(int c,int bs,vector<Layer*>p)
 {
+  shape s=ls;
+  s[0]=bs;
 
-  LReshape *n=new LReshape(p[0],"share_"+to_string(c)+name,dev);
+  LReshape *n=new LReshape(p[0],s,"share_"+to_string(c)+name,dev);
   n->orig=this;
-  n->delta_bp=delta_bp;
 
   return n;
 }
+
 Layer *LReshape::clone(int c,int bs,vector<Layer*>p,int todev)
 {
+  shape s=ls;
+  s[0]=bs;
 
-  LReshape *n=new LReshape(p[0],"clone_"+to_string(todev)+name,todev);
+  LReshape *n=new LReshape(p[0],s,"clone_"+to_string(todev)+name,todev);
   n->orig=this;
-  n->delta_bp=delta_bp;
 
   return n;
 }

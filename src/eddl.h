@@ -67,6 +67,10 @@ public:
   static layer Activation(layer parent,string act,int d);
   static layer Activation(layer parent,string act,string name,int d);
 
+  static layer Reshape(layer parent, const initializer_list<int>& init);
+  static layer Reshape(layer parent, const initializer_list<int>& init,string name);
+  static layer Reshape(layer parent, const initializer_list<int>& init,int d);
+  static layer Reshape(layer parent, const initializer_list<int>& init,string name,int d);
   // Create net
   static model Model(vlayer in,vlayer out);
   // Net operations

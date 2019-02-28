@@ -54,19 +54,19 @@ ifeq ($(TARGET),1)
 CXX = g++
 ifeq ($(OPT),1)
 $(info set AVX)
-CXXFLAGS = -std=c++11 -fopenmp -march=native -mavx -O3
+CXXFLAGS = -std=c++11  -march=native -mavx -O3
 endif
 ifeq ($(OPT),2)
 $(info set SSE)
-CXXFLAGS = -std=c++11 -fopenmp -march=native -msse2 -O3
+CXXFLAGS = -std=c++11  -march=native -msse2 -O3
 endif
 ifeq ($(OPT),3)
 $(info set no opt)
-CXXFLAGS = -std=c++11 -fopenmp -O3
+CXXFLAGS = -std=c++11  -O3
 endif
 ifeq ($(OPT),4)
 $(info set Debug)
-CXXFLAGS =  -std=c++11 -fopenmp -g
+CXXFLAGS =  -std=c++11  -g
 endif
 endif
 
@@ -128,7 +128,7 @@ endif
 OBJ =	utils.o tensor.o tensor_op.o layer.o layer_tensor.o layer_input.o layer_dense.o layer_activation.o layer_add.o loss.o metric.o optim.o net.o eddl.o layer_reshape.o
 
 ifeq ($(CORE),1)
-all: $(GPU_OBJ) $(OBJ) test_eddl
+all: $(GPU_OBJ) $(OBJ) test_eddl test_tensors
 endif
 
 ifeq ($(CORE),2)

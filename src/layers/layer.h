@@ -231,13 +231,18 @@ class LAdd : public MLayer
 class LReshape : public LinLayer
 {
  public:
-  int dim;
+  shape ls;
 
   // constructors and clones
-  LReshape(Layer *parent);
-  LReshape(Layer *parent,int dev);
-  LReshape(Layer *parent,string name);
-  LReshape(Layer *parent,string name,int d);
+  LReshape(Layer *parent,const initializer_list<int>& init);
+  LReshape(Layer *parent,const initializer_list<int>& init,int dev);
+  LReshape(Layer *parent,const initializer_list<int>& init,string name);
+  LReshape(Layer *parent,const initializer_list<int>& init,string name,int d);
+  LReshape(Layer *parent,shape s);
+  LReshape(Layer *parent,shape s,int d);
+  LReshape(Layer *parent,shape s,string name);
+  LReshape(Layer *parent,shape s,string name,int d);
+
   Layer *share(int c,int bs,vector<Layer*>p);
   Layer *clone(int c,int bs,vector<Layer*>p,int todev);
 

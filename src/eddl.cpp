@@ -36,6 +36,7 @@
 
 using namespace std;
 
+extern ostream& operator<<(ostream& os, const shape s);
 
 EDDL eddl;
 
@@ -120,6 +121,26 @@ layer EDDL::Activation(layer parent,string act,int dev)
 layer EDDL::Activation(layer parent,string act,string name,int d)
 {
   return new LActivation(parent,act,name,d);
+}
+
+//////////////////////////////////////////////////////
+layer EDDL::Reshape(layer parent,const initializer_list<int>& init)
+{
+  shape s(init.begin(), init.end());
+  return new LReshape(parent,s);
+}
+
+layer EDDL::Reshape(layer parent,const initializer_list<int>& init,string name)
+{
+  return new LReshape(parent,init,name,DEV_CPU);
+}
+layer EDDL::Reshape(layer parent,const initializer_list<int>& init,int dev)
+{
+  return new LReshape(parent,init,dev);
+}
+layer EDDL::Reshape(layer parent,const initializer_list<int>& init,string name,int d)
+{
+  return new LReshape(parent,init,name,d);
 }
 
 /////////////////////////////////////////////////////////
