@@ -63,7 +63,7 @@ LReshape::LReshape(Layer *parent,shape s,string name,int d):LinLayer(name,d)
   for(int i=0;i<ls.size();i++) {
     if (ls[i]!=-1) t*=ls[i];
     else {
-      if (c) msg("Ambiguous reshape","Reshape");
+      if (c) msg("Ambiguous reshape, more than one -1","Reshape");
       else {c=1;ind=i;}
     }
   }
@@ -87,6 +87,7 @@ LReshape::LReshape(Layer *parent,shape s,string name,int d):LinLayer(name,d)
   cout<<"Resize from "<<sin<<" to "<<ls<<"\n";
   ///////
 
+  // sharing the pointers to data
   output=new Tensor(ls,parent->output);
   delta=new Tensor(ls,parent->delta);
 
