@@ -71,6 +71,12 @@ public:
   static layer Reshape(layer parent, const initializer_list<int>& init,string name);
   static layer Reshape(layer parent, const initializer_list<int>& init,int d);
   static layer Reshape(layer parent, const initializer_list<int>& init,string name,int d);
+
+  static layer Drop(layer parent, float df);
+  static layer Drop(layer parent, float df,string name);
+  static layer Drop(layer parent, float df,int d);
+  static layer Drop(layer parent, float df,string name,int d);
+
   // Create net
   static model Model(vlayer in,vlayer out);
   // Net operations

@@ -323,7 +323,6 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
       unsigned int nthreads = std::thread::hardware_concurrency();
 
       cout<<"set threads to "<<nthreads<<"\n";
-
       if (nthreads>1)   {
         Eigen::initParallel();
         Eigen::setNbThreads(1);

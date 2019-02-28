@@ -251,4 +251,28 @@ class LReshape : public LinLayer
   string plot(int c);
 
 };
+
+
+class LDrop : public LinLayer
+{
+ public:
+  int dim;
+
+  // constructors and clones
+  LDrop(Layer *parent,float df);
+  LDrop(Layer *parent,float df,int dev);
+  LDrop(Layer *parent,float df,string name);
+  LDrop(Layer *parent,float df,string name,int d);
+  Layer *share(int c,int bs,vector<Layer*>p);
+  Layer *clone(int c,int bs,vector<Layer*>p,int todev);
+
+  float df;
+  Tensor *mask;
+
+  // implementation
+  void forward();
+  void backward();
+  string plot(int c);
+
+};
 #endif

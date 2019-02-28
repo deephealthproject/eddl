@@ -28,51 +28,79 @@
 
 #include <stdio.h>
 #include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 
-#include "../eddl.h"
+#include "layer.h"
 
-int main(int argc, char **argv)
+int drop_created=1;
+
+using namespace std;
+
+LDrop::LDrop(Layer *parent,float df):LDrop(parent,df,"drop"+to_string(drop_created),DEV_CPU){}
+LDrop::LDrop(Layer *parent,float df,string name):LDrop(parent,df,name,DEV_CPU){}
+LDrop::LDrop(Layer *parent,float df,int dev):LDrop(parent,df,"drop"+to_string(drop_created),dev){}
+LDrop::LDrop(Layer *parent,float df,string name,int d):LinLayer(name,d)
 {
-  int batch=1000;
 
+  drop_created++;
 
-  layer in=eddl.Input({batch,784});
-  layer l=in;
-  for(int i=0;i<3;i++)
-      l=eddl.Drop(eddl.Activation(eddl.Dense(l,1024),"relu"),0.5);
-      //l=eddl.Activation(eddl.Dense(l,1024),"relu");
+  this->df=df;
 
-  l=eddl.Reshape(l,{batch,16,2,2,-1});
-  l=eddl.Reshape(l,{batch,1024});
+  input=parent->output;
+  output=new Tensor(input->getshape(),d);
+  delta=new Tensor(input->getshape(),d);
 
-  layer out=eddl.Activation(eddl.Dense(l,10),"softmax");
+  mask=new Tensor(input->getshape(),d);
 
-  // net define input and output layers list
-  model net=eddl.Model({in},{out});
-
-  // plot the model
-  eddl.plot(net,"model.jpg");
-
-  // get some info from the network
-  eddl.info(net);
-
-  // Attach an optimizer and a list of error criteria and metrics
-  // size of error criteria and metrics list must match with size of list of outputs
-  // optionally put a DEVICE where the net will run
-  eddl.build(net,SGD(0.01,0.9),{"soft_cent"},{"acc"},DEV_CPU);
-
-  // read data
-  tensor X=eddl.T("trX.bin");
-  tensor Y=eddl.T("trY.bin");
-
-  eddl.div(X,255.0);
-
-  // training, list of input and output tensors, batch, epochs
-  eddl.fit(net,{X},{Y},batch,100);
-
+  parent->addchild(this);
+  addparent(parent);
 }
 
 
-///////////
+// virtual
+void LDrop::forward()
+{
+  mask->rand_binary(df);
+  Tensor::el_mult(input,mask,output,0);
+
+}
+
+void LDrop::backward()
+{
+
+  if (parent.size())
+    {
+      Tensor::el_mult(delta,mask,parent[0]->delta,1);
+    }
+}
+
+
+Layer *LDrop::share(int c,int bs,vector<Layer*>p)
+{
+
+  LDrop *n=new LDrop(p[0],df,"share_"+to_string(c)+name,dev);
+  n->orig=this;
+
+  return n;
+}
+Layer *LDrop::clone(int c,int bs,vector<Layer*>p,int todev)
+{
+
+  LDrop *n=new LDrop(p[0],df,"clone_"+to_string(todev)+name,todev);
+  n->orig=this;
+
+  return n;
+}
+
+
+string LDrop::plot(int c)
+{
+    string s;
+
+    if (c) s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=White,shape=box]";
+    else s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=lightpink,shape=box]";
+
+    return s;
+}

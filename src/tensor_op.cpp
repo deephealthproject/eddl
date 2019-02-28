@@ -254,7 +254,6 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C,int incC)
 
   if (A->isCPU())
     {
-
         for(int i=0;i<A->tam;i++)
          if (incC) C->ptr[i]+=A->ptr[i]*B->ptr[i];
          else C->ptr[i]=A->ptr[i]*B->ptr[i];

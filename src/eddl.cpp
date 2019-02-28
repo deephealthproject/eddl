@@ -144,6 +144,24 @@ layer EDDL::Reshape(layer parent,const initializer_list<int>& init,string name,i
 }
 
 /////////////////////////////////////////////////////////
+layer EDDL::Drop(layer parent, float df)
+{
+  return new LDrop(parent,df);
+}
+layer EDDL::Drop(layer parent, float df,string name)
+{
+  return new LDrop(parent,df,name);
+}
+layer EDDL::Drop(layer parent, float df,int d)
+{
+  return new LDrop(parent,df,d);
+}
+layer EDDL::Drop(layer parent, float df,string name,int d)
+{
+  return new LDrop(parent,df,name,d);
+}
+
+/////////////////////////////////////////////////////////
 model EDDL::Model(vlayer in,vlayer out)
 {
   return new Net(in,out);

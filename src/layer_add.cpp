@@ -28,51 +28,65 @@
 
 #include <stdio.h>
 #include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 
-#include "../eddl.h"
+#include "layer.h"
 
-int main(int argc, char **argv)
+using namespace std;
+
+LAdd::LAdd(vector<Layer*> in):LAdd(in,"__add__",DEV_CPU){}
+LAdd::LAdd(vector<Layer*> in,int dev):LAdd(in,"__add__",DEV_CPU){}
+LAdd::LAdd(vector<Layer*> in,string name):LAdd(in,name,DEV_CPU){}
+
+LAdd::LAdd(vector<Layer*> in,string name,int d):MLayer(name,d)
 {
-  int batch=1000;
+  if (in.size()==0) msg("Error: LAdd layer with empty list");
+  parent=in;
+  if (parent.size()>1)
+    for(int i=0;i<parent.size()-1;++i)
+      if (!Tensor::eqsize(parent[i]->output,parent[i+1]->output))
+        msg("Error: LAdd layers with different tensor sizes");
 
-
-  layer in=eddl.Input({batch,784});
-  layer l=in;
-  for(int i=0;i<3;i++)
-      l=eddl.Drop(eddl.Activation(eddl.Dense(l,1024),"relu"),0.5);
-      //l=eddl.Activation(eddl.Dense(l,1024),"relu");
-
-  l=eddl.Reshape(l,{batch,16,2,2,-1});
-  l=eddl.Reshape(l,{batch,1024});
-
-  layer out=eddl.Activation(eddl.Dense(l,10),"softmax");
-
-  // net define input and output layers list
-  model net=eddl.Model({in},{out});
-
-  // plot the model
-  eddl.plot(net,"model.jpg");
-
-  // get some info from the network
-  eddl.info(net);
-
-  // Attach an optimizer and a list of error criteria and metrics
-  // size of error criteria and metrics list must match with size of list of outputs
-  // optionally put a DEVICE where the net will run
-  eddl.build(net,SGD(0.01,0.9),{"soft_cent"},{"acc"},DEV_CPU);
-
-  // read data
-  tensor X=eddl.T("trX.bin");
-  tensor Y=eddl.T("trY.bin");
-
-  eddl.div(X,255.0);
-
-  // training, list of input and output tensors, batch, epochs
-  eddl.fit(net,{X},{Y},batch,100);
+  input=new Tensor(parent[0]->output->getshape());
+  output=new Tensor(parent[0]->output->getshape());
 
 }
 
 
-///////////
+// virtual
+void LAdd::info()
+{
+  cout<<"\n===============\n";
+  cout<< "Layer LAdd "<<name<<"\n";
+  cout<< "Layers: "<<name<<"\n";
+  for(int i = 0; i != parent.size(); i++)
+    {
+      cout<< parent[i]->name<<"\n";
+      parent[i]->info();
+    }
+
+  cout<<"===============\n\n";
+}
+string LAdd::plot(int c)
+{
+    string s;
+
+    s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=LightBlue,shape=box]";
+
+    return s;
+}
+
+
+
+void LAdd::forward(){}
+void LAdd::backward(){}
+Layer *LAdd::share(int c,int bs,vector<Layer*>p){return NULL;}
+Layer *LAdd::clone(int c,int bs,vector<Layer*>p,int todev){return NULL;}
+
+
+
+
+
+///////////////
