@@ -143,6 +143,8 @@ class Tensor
   ///////// static metods
   static int eqsize(Tensor *A, Tensor *B);
   static void copy(Tensor *A,Tensor *B);
+  static void fill(Tensor *A, int aini,int aend,Tensor *B,int bini,int bend,int inc);
+
   static void select(Tensor *A, Tensor *B,vector<int> sind,int ini,int end);
 
   static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC);

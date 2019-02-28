@@ -29,6 +29,8 @@
 
 #include <cuda.h>
 
+__global__ void fill(float *aptr,float *bptr,int t,int aini,int at,int bini,int bt,int tot,int inc);
+
 __global__ void set(float* a, float v, long int rows, long int cols);
 __global__ void mult(float* a, float v, long int rows, long int cols);
 __global__ void sum(float* a, float v, long int rows, long int cols);

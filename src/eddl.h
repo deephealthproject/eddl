@@ -77,6 +77,16 @@ public:
   static layer Drop(layer parent, float df,int d);
   static layer Drop(layer parent, float df,string name,int d);
 
+  static layer Add(const initializer_list<layer>& init);
+  static layer Add(const initializer_list<layer>& init,string name);
+  static layer Add(const initializer_list<layer>& init,int d);
+  static layer Add(const initializer_list<layer>& init,string name,int d);
+
+  static layer Cat(const initializer_list<layer>& init);
+  static layer Cat(const initializer_list<layer>& init,string name);
+  static layer Cat(const initializer_list<layer>& init,int d);
+  static layer Cat(const initializer_list<layer>& init,string name,int d);
+
   // Create net
   static model Model(vlayer in,vlayer out);
   // Net operations

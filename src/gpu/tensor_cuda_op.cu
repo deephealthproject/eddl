@@ -269,6 +269,43 @@ void gpu_copy_gpu(Tensor *A,Tensor *B)
   check_cuda(cudaMemcpy(B->ptr,A->ptr,A->tam*sizeof(float),cudaMemcpyDeviceToDevice),"gpu_copy_gpu");
 }
 
+void gpu_fill(Tensor *A,int aini,int aend,Tensor *B,int bini,int bend,int inc)
+{
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  int at=A->tam/A->sizes[0];
+  int bt=B->tam/B->sizes[0];
+
+  int t=1;
+  for(int i=2;i<B->dim;i++)
+    t*=B->sizes[i];
+
+  int tot=B->sizes[0]*(bend-1)*B->sizes[1]*t;
+
+  int r,c;
+
+
+  while (aend-aini>0) {
+
+      if ((aend-aini)>MAX_TPB) r=MAX_TPB;
+      else r=(aend-aini);
+      c=t;
+
+      dim3 dimGrid(A->sizes[0],c);
+      dim3 dimBlock(r);
+
+      fill<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,t,aini,at,bini,bt,tot,inc);
+      aini+=MAX_TPB;
+      bini+=MAX_TPB;
+
+  }
+
+
+    //check_cuda(cudaDeviceSynchronize(),"fill");
+
+  //}
+}
 
 ///////////////////////////////////////////
 

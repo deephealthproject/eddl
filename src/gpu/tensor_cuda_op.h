@@ -44,6 +44,7 @@ void gpu_total_sum(Tensor *A,float *tot);
 void gpu_copy_to_gpu(float *nptr,Tensor *B);
 void gpu_copy_from_gpu(Tensor *A,float *nptr);
 void gpu_copy_gpu(Tensor *A,Tensor *B);
+void gpu_fill(Tensor *A,int aini,int aend,Tensor *B,int bini,int bend,int inc);
 
 void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC);
 void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC);

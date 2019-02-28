@@ -654,7 +654,6 @@ void Tensor::rand_binary(float v)
 {
   if (isCPU())
     {
-
       for(int i=0;i<tam;++i) ptr[i]=uniform()<v;
     }
 #ifdef cGPU

@@ -33,19 +33,39 @@
 
 #include "../eddl.h"
 
+layer ResBlock(layer in, int dim,int n)
+{
+  layer l=in;
+  for(int i=0;i<n;i++)
+    l=eddl.Activation(eddl.Dense(l,dim),"relu");
+
+  l=eddl.Add({in,l});
+
+  return l;
+
+}
+
 int main(int argc, char **argv)
 {
+
   int batch=1000;
 
-
+  // network
   layer in=eddl.Input({batch,784});
   layer l=in;
-  for(int i=0;i<3;i++)
-      l=eddl.Drop(eddl.Activation(eddl.Dense(l,1024),"relu"),0.5);
-      //l=eddl.Activation(eddl.Dense(l,1024),"relu");
+  layer l2;
 
-  l=eddl.Reshape(l,{batch,16,2,2,-1});
-  l=eddl.Reshape(l,{batch,1024});
+  l=eddl.Drop(eddl.Activation(eddl.Dense(l,1024),"relu"),0.5);
+  for(int i=0;i<2;i++) {
+      if (i==1) l2=l;
+      l=ResBlock(l,1024,1);
+  }
+
+
+  //l=eddl.Reshape(l,{batch,16,2,2,-1});
+  //l=eddl.Reshape(l,{batch,1024});
+
+  l=eddl.Cat({l,l2});
 
   layer out=eddl.Activation(eddl.Dense(l,10),"softmax");
 
@@ -53,7 +73,7 @@ int main(int argc, char **argv)
   model net=eddl.Model({in},{out});
 
   // plot the model
-  eddl.plot(net,"model.jpg");
+  eddl.plot(net,"model.pdf");
 
   // get some info from the network
   eddl.info(net);

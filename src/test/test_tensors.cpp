@@ -38,15 +38,34 @@ int main(int argc, char **argv)
 
 
 
-  Tensor *A=new Tensor({4,4});
-  A->set(1.0);
-  (*A->ptr2)(1,3)=5;
 
+  Tensor *A=new Tensor({4,1200},DEV_GPU);
+  A->set(1.0);
   A->print();
-  Tensor *B=new Tensor({2,8},A);
+  Tensor *B=new Tensor({4,2},DEV_GPU);
+  B->set(2.0);
   B->print();
 
-  cout<<*B->ptr2;
+  LInput *l1=new LInput(A,DEV_GPU);
+  LInput *l2=new LInput(B,DEV_GPU);
+
+  LCat *add=new LCat({l1,l2},DEV_GPU);
+
+
+  add->forward();
+
+  add->output->print();
+  /////
+  add->delta->set(5.0);
+  add->delta->print();
+
+  l1->delta->set(1.0);
+  l2->delta->set(1.0);
+
+  add->backward();
+
+  l1->delta->print();
+  l2->delta->print();
 
   exit(1);
 

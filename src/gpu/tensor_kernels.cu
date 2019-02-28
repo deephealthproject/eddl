@@ -31,6 +31,23 @@
 #include <cuda.h>
 
 ///////////////////////////////////////////
+__global__ void fill(float *aptr,float *bptr,int t,int aini,int at,int bini,int bt,int tot,int inc)
+{
+  int i=blockIdx.x;
+  int j=threadIdx.x;
+  int k=blockIdx.y;
+
+  int ap=(i*at)+((aini+j)*t)+k;
+  int bp=(i*bt)+((bini+j)*t)+k;
+
+  if (bp<tot)
+    if (inc) bptr[bp]+=aptr[ap];
+    else bptr[bp]=aptr[ap];
+
+}
+
+
+///////////////////////////////////////////
 __global__ void sum_mat_row(float* a, float* b, float* c, long int rows, long int cols)
 {
  long int ops=rows*cols;
@@ -89,8 +106,8 @@ __global__ void el_div(float* a, float *b, float *c, long int incC, long int row
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
   if (thread_id_x < ops)
-    if (incC) c[thread_id_x]+=a[thread_id_x]/b[thread_id_x];
-    else c[thread_id_x]=a[thread_id_x]/b[thread_id_x];
+    if (incC) c[thread_id_x]+=a[thread_id_x]/(b[thread_id_x]);
+    else c[thread_id_x]=a[thread_id_x]/(b[thread_id_x]);
 }
 
 ///////////////////////////////////////////

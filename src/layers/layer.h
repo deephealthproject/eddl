@@ -275,4 +275,29 @@ class LDrop : public LinLayer
   string plot(int c);
 
 };
+
+
+class LCat : public MLayer
+{
+ public:
+  int dim;
+  vector<int> index;
+
+  // constructors and clones
+  LCat(vector<Layer*> in);
+  LCat(vector<Layer*> in,int dev);
+  LCat(vector<Layer*> in,string name);
+  LCat(vector<Layer*> in,string name,int d);
+  Layer *share(int c,int bs,vector<Layer*>p);
+  Layer *clone(int c,int bs,vector<Layer*>p,int todev);
+
+  // Params
+
+
+  // implementation
+  void forward();
+  void backward();
+  string plot(int c);
+
+};
 #endif

@@ -96,6 +96,48 @@ void Tensor::copy(Tensor *A, Tensor *B)
   B->tsem->unlock();
 }
 
+///////////////////////////////////////
+/// Partial copy dim=1
+//////////////////////////////////////
+void Tensor::fill(Tensor *A, int aini,int aend,Tensor *B,int bini,int bend,int inc)
+{
+  if (A->dim!=B->dim)
+    msg("Tensors with different sizes","Tensor::fill");
+
+  B->tsem->lock();
+  if ((A->isCPU())&&(B->isCPU()))
+    {
+      int at=A->tam/A->sizes[0];
+      int bt=B->tam/B->sizes[0];
+
+      int t=1;
+      for(int i=2;i<A->dim;i++)
+        t*=A->sizes[i];
+
+      for(int i=0;i<A->sizes[0];i++) {
+        int ap=(i*at)+(aini*t);
+        int bp=(i*bt)+(bini*t);
+
+        for(int j=aini;j<aend;j++) {
+          for(int k=0;k<t;k++,ap++,bp++)
+            if (inc) B->ptr[bp]+=A->ptr[ap];
+            else B->ptr[bp]=A->ptr[ap];
+        }
+      }
+    }
+  #ifdef cGPU
+  else if ((A->isGPU())&&(B->isGPU())) {
+    gpu_fill(A,aini,aend,B,bini,bend,inc);
+  }
+  #endif
+  else
+    {
+      fprintf(stderr,"(%d %d)\n",A->device,B->device);
+      msg("unsupported copy between devices","Tensor::copy");
+    }
+  B->tsem->unlock();
+}
+
 
 void Tensor::inc(Tensor *A, Tensor *B)
 {

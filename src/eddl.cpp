@@ -162,6 +162,48 @@ layer EDDL::Drop(layer parent, float df,string name,int d)
 }
 
 /////////////////////////////////////////////////////////
+
+layer EDDL::Add(const initializer_list<layer>& init)
+{
+
+   return new LAdd(vlayer(init.begin(), init.end()));
+
+}
+layer EDDL::Add(const initializer_list<layer>& init,string name)
+{
+  return new LAdd(vlayer(init.begin(), init.end()),name);
+}
+layer EDDL::Add(const initializer_list<layer>& init,int d)
+{
+  return new LAdd(vlayer(init.begin(), init.end()),d);
+}
+layer EDDL::Add(const initializer_list<layer>& init,string name,int d)
+{
+  return new LAdd(vlayer(init.begin(), init.end()),name,d);
+}
+
+////////////////////////////////////////////////////////
+
+layer EDDL::Cat(const initializer_list<layer>& init)
+{
+
+   return new LCat(vlayer(init.begin(), init.end()));
+
+}
+layer EDDL::Cat(const initializer_list<layer>& init,string name)
+{
+  return new LCat(vlayer(init.begin(), init.end()),name);
+}
+layer EDDL::Cat(const initializer_list<layer>& init,int d)
+{
+  return new LCat(vlayer(init.begin(), init.end()),d);
+}
+layer EDDL::Cat(const initializer_list<layer>& init,string name,int d)
+{
+  return new LCat(vlayer(init.begin(), init.end()),name,d);
+}
+
+/////////////////////////////////////////////////////////
 model EDDL::Model(vlayer in,vlayer out)
 {
   return new Net(in,out);
