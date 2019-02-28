@@ -98,8 +98,6 @@ LReshape::LReshape(Layer *parent,shape s,string name,int d):LinLayer(name,d)
 // virtual
 void LReshape::forward()
 {
-///... add code here
-  
 
 }
 
@@ -107,10 +105,6 @@ void LReshape::forward()
 void LReshape::backward()
 {
 
-  if (parent.size())
-    {
-      ///... add code here
-    }
 }
 
 

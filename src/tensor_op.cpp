@@ -201,31 +201,65 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
         {
           if (!tA)
             {
-              if (!incC) C->ptr2=B->ptr2*A->ptr2;
-              else C->ptr2+=B->ptr2*A->ptr2;
+              if (!incC) C->mat=B->mat*A->mat;
+              else C->mat+=B->mat*A->mat;
             }
           else
             {
-              if (!incC) C->ptr2=B->ptr2*A->ptr2.transpose();
-              else C->ptr2+=B->ptr2*A->ptr2.transpose();
+              if (!incC) C->mat=B->mat*A->mat.transpose();
+              else C->mat+=B->mat*A->mat.transpose();
             }
         }
       else
         {
           if (!tA)
             {
-              if (!incC) C->ptr2=B->ptr2.transpose()*A->ptr2;
-              else C->ptr2+=B->ptr2.transpose()*A->ptr2;
+              if (!incC) C->mat=B->mat.transpose()*A->mat;
+              else C->mat+=B->mat.transpose()*A->mat;
             }
           else
             {
-              if (!incC) C->ptr2=B->ptr2.transpose()*A->ptr2.transpose();
-              else C->ptr2+=B->ptr2.transpose()*A->ptr2.transpose();
+              if (!incC) C->mat=B->mat.transpose()*A->mat.transpose();
+              else C->mat+=B->mat.transpose()*A->mat.transpose();
             }
         }
 
       //_C->ptr2=C->ptr2.transpose();
     }
+    /*
+  if (A->isCPU())
+    {
+
+      if (!tB)
+        {
+          if (!tA)
+            {
+              if (!incC) *(C->ptr2)=*(B->ptr2)*(*(A->ptr2));
+              else *(C->ptr2)+=*(B->ptr2)*(*(A->ptr2));
+            }
+          else
+            {
+              if (!incC) *(C->ptr2)=*(B->ptr2)*((*(A->ptr2)).transpose());
+              else *(C->ptr2)+=*(B->ptr2)*((*(A->ptr2)).transpose());
+            }
+        }
+      else
+        {
+          if (!tA)
+            {
+              if (!incC) *(C->ptr2)=(*(B->ptr2)).transpose()*(*(A->ptr2));
+              else *(C->ptr2)+=(*(B->ptr2)).transpose()*(*(A->ptr2));
+            }
+          else
+            {
+              if (!incC) *(C->ptr2)=(*(B->ptr2)).transpose()*((*(A->ptr2)).transpose());
+              else *(C->ptr2)+=(*(B->ptr2)).transpose()*((*(A->ptr2)).transpose());
+            }
+        }
+
+      //_C->ptr2=C->ptr2.transpose();
+    }
+    */
 #ifdef cGPU
   else if (A->isGPU())
     {
@@ -530,8 +564,8 @@ int Tensor::accuracy(Tensor *A,Tensor *B)
 
       for(int i=0;i<A->sizes[0];i++)
         {
-          A->ptr2.col(i).maxCoeff(&aind);
-          B->ptr2.col(i).maxCoeff(&bind);
+          (*A->ptr2).col(i).maxCoeff(&aind);
+          (*B->ptr2).col(i).maxCoeff(&bind);
           if (aind==bind) acc++;
        }
     }
@@ -635,13 +669,13 @@ void Tensor::Softmax(Tensor *A,Tensor *B)
       for(int i=0;i<A->sizes[0];i++)
         {
 
-          max=A->ptr2.col(i).maxCoeff();
+          max=(*A->ptr2).col(i).maxCoeff();
           for(int j=0;j<A->sizes[1];j++)
-            B->ptr2(j,i)=exp(A->ptr2(j,i)-max);
+            (*B->ptr2)(j,i)=exp((*A->ptr2)(j,i)-max);
 
-          sum=B->ptr2.col(i).sum();
+          sum=(*B->ptr2).col(i).sum();
           for(int j=0;j<B->sizes[1];j++)
-            B->ptr2(j,i)=B->ptr2(j,i)/sum;
+            (*B->ptr2)(j,i)=(*B->ptr2)(j,i)/sum;
         }
     }
 #ifdef cGPU

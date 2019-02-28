@@ -40,17 +40,17 @@ int main(int argc, char **argv)
 
   Tensor *A=new Tensor({4,4});
   A->set(1.0);
-  A->ptr2(1,3)=5;
+  (*A->ptr2)(1,3)=5;
 
   A->print();
   Tensor *B=new Tensor({2,8},A);
   B->print();
 
-  cout<<B->ptr2;
-  
+  cout<<*B->ptr2;
+
   exit(1);
 
-  
+
   int r=1025;
   int c=2048;
   //

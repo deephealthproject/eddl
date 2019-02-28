@@ -86,6 +86,7 @@ class Tensor
 
   // CPU_cores
   Eigen::MatrixXf *ptr2;
+  Eigen::MatrixXf mat;
 
   // GPU
   int gpu_device;

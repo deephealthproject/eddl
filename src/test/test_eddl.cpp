@@ -35,7 +35,7 @@
 
 int main(int argc, char **argv)
 {
-  int batch=1;
+  int batch=1000;
 
 
   layer in=eddl.Input({batch,784});

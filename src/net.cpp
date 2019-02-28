@@ -41,6 +41,8 @@
 #include "gpu/tensor_cuda.h"
 #endif
 
+#define VERBOSE 0
+
 using namespace std;
 using namespace std::chrono;
 
@@ -321,8 +323,7 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
       unsigned int nthreads = std::thread::hardware_concurrency();
 
       cout<<"set threads to "<<nthreads<<"\n";
-      nthreads=1;
-      
+
       if (nthreads>1)   {
         Eigen::initParallel();
         Eigen::setNbThreads(1);
@@ -520,16 +521,17 @@ void Net::forward()
     vfts[i]->forward();
   }
 
-  for(int i=0;i<layers.size();i++) {
-    cout<<layers[i]->name<<"\n";
-    fprintf(stderr,"  In:%f\n",layers[i]->input->total_abs());
-    fprintf(stderr,"  Out:%f\n",layers[i]->output->total_abs());
+  if (VERBOSE) {
+    for(int i=0;i<layers.size();i++) {
+      cout<<layers[i]->name<<"\n";
+      fprintf(stderr,"  In:%f\n",layers[i]->input->total_abs());
+        fprintf(stderr,"  Out:%f\n",layers[i]->output->total_abs());
+    }
+
+    getchar();
   }
-  
-  getchar();
 
 
-  
 }
 
 
@@ -573,18 +575,18 @@ void Net::backward()
 void Net::applygrads(int batch)
 {
 
-
-  for(int i=0;i<layers.size();i++) {
-    cout<<layers[i]->name<<"\n";
-    fprintf(stderr,"  In:%f\n",layers[i]->input->total_abs());
-    fprintf(stderr,"  Out:%f\n",layers[i]->output->total_abs());
-    fprintf(stderr,"  Delta:%f\n",layers[i]->delta->total_abs());
-    for(int j=0;j<layers[i]->gradients.size();j++) {
-     fprintf(stderr,"  %f\n",layers[i]->gradients[j]->total_abs());
-   }
+  if (VERBOSE) {
+    for(int i=0;i<layers.size();i++) {
+      cout<<layers[i]->name<<"\n";
+      fprintf(stderr,"  In:%f\n",layers[i]->input->total_abs());
+      fprintf(stderr,"  Out:%f\n",layers[i]->output->total_abs());
+      fprintf(stderr,"  Delta:%f\n",layers[i]->delta->total_abs());
+      for(int j=0;j<layers[i]->gradients.size();j++) {
+       fprintf(stderr,"  %f\n",layers[i]->gradients[j]->total_abs());
+     }
+    }
+    getchar();
   }
-  getchar();
-
 
   optimizer->applygrads(batch);
 }

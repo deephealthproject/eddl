@@ -125,7 +125,7 @@ endif
 
 
 #######################################################################
-OBJ =	utils.o tensor.o tensor_op.o layer.o layer_tensor.o layer_input.o layer_dense.o layer_activation.o layer_add.o loss.o metric.o optim.o net.o eddl.o layer_reshape.o
+OBJ =	utils.o tensor.o tensor_op.o layer.o layer_tensor.o layer_input.o layer_dense.o layer_activation.o layer_reshape.o layer_add.o loss.o metric.o optim.o net.o eddl.o 
 
 ifeq ($(CORE),1)
 all: $(GPU_OBJ) $(OBJ) test_eddl test_tensors

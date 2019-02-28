@@ -84,7 +84,6 @@ void LDense::backward()
   if (parent.size())
     {
       //1: note that increment parent delta
-      cout<<parent[0]->delta->ptr2.rows()<<"x"<<parent[0]->delta->ptr2.cols()<<"\n";
       Tensor::mult2D(delta,0,W,1,parent[0]->delta,1);
     }
 
