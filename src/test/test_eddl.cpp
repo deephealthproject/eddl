@@ -61,7 +61,6 @@ int main(int argc, char **argv)
       l=ResBlock(l,1024,1);
   }
 
-
   //l=eddl.Reshape(l,{batch,16,2,2,-1});
   //l=eddl.Reshape(l,{batch,1024});
 

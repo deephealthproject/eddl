@@ -30,7 +30,6 @@
 #include <stdlib.h>
 #include <iostream>
 
-
 #include "eddl.h"
 
 
@@ -40,6 +39,10 @@ extern ostream& operator<<(ostream& os, const shape s);
 
 EDDL eddl;
 
+
+///////////////////////////////////////////////////////
+///// EDDL is a wrapper class to ease and define an API
+///////////////////////////////////////////////////////
 
 tensor EDDL::T(const initializer_list<int>& init){
   return T(shape(init.begin(), init.end()),DEV_CPU);

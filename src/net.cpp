@@ -490,9 +490,10 @@ void Net::split(int c,int todev)
                   if (!isInorig(layers[j]->parent[l],nlayers,ind)) break;
                   else par.push_back(nlayers[ind]);
 
-                if (l==layers[j]->parent.size())
+                if (l==layers[j]->parent.size()) {
                   if (todev==DEV_CPU) nlayers.push_back(layers[j]->share(i,bs,par));
                   else nlayers.push_back(layers[j]->clone(i,bs,par,todev+i));
+                }
               }
           }
 
@@ -679,7 +680,7 @@ void Net::fit(vtensor tin,vtensor tout,int batch, int epochs) {
       high_resolution_clock::time_point e2 = high_resolution_clock::now();
       duration<double> epoch_time_span = e2 - e1;
 
-      fprintf(stderr,"\n%1.3f secs/epoch\n",epoch_time_span);
+      fprintf(stderr,"\n%1.3f secs/epoch\n",epoch_time_span.count());
     }
 }
 
@@ -885,7 +886,7 @@ void Net::train_batch(vtensor X, vtensor Y,vind sind,int batch)
 
 
 /////////////////////////////////////////
-void *train_batch_t(void *t)
+void * train_batch_t(void *t)
 {
   int i,j;
   tdata *targs=(tdata *)t;
@@ -907,7 +908,7 @@ void *train_batch_t(void *t)
   if (net->dev>DEV_CPU)
     net->applygrads(targs->batch);
 
-
+  return NULL;
 }
 
 
@@ -921,6 +922,7 @@ void *applygrads_t(void *t)
 
   net->applygrads(targs->batch);
 
+  return NULL;
 }
 
 

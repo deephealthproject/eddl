@@ -55,6 +55,8 @@ typedef vector<Metric*> vmetrics;
 void *train_batch_t(void *targs);
 void *applygrads_t(void *t);
 
+#define MAX_THREADS 1024
+
 class Net
 {
  private:
@@ -86,8 +88,7 @@ class Net
   vlayer lout;
   vlayer vfts;
   vlayer vbts;
-  vind ind;
-  vind sind;
+
   vloss losses;
   vmetrics metrics;
   optim *optimizer;
@@ -95,8 +96,8 @@ class Net
   vstring strcosts;
   vstring strmetrics;
   vector<Net *> snets;
-  vtensor Xs[100];
-  vtensor Ys[100];
+  vtensor Xs[MAX_THREADS];
+  vtensor Ys[MAX_THREADS];
 
   Net(const initializer_list<Layer*>& in,const initializer_list<Layer*>& out);
   Layer *getLayer(string name);
