@@ -42,7 +42,6 @@ layer ResBlock(layer in, int dim,int n)
   l=eddl.Add({in,l});
 
   return l;
-
 }
 
 int main(int argc, char **argv)
@@ -55,9 +54,11 @@ int main(int argc, char **argv)
   layer l=in;
   layer l2;
 
-   for(int i=0;i<5;i++)
+  /*
+    for(int i=0;i<5;i++)
     l=eddl.Activation(eddl.Dense(l,1024),"relu");
-   /*
+    */
+
   l=eddl.Drop(eddl.Activation(eddl.Dense(l,1024),"relu"),0.5);
   for(int i=0;i<2;i++) {
       if (i==1) l2=l;
@@ -68,7 +69,7 @@ int main(int argc, char **argv)
   //l=eddl.Reshape(l,{batch,1024});
 
   l=eddl.Cat({l,l2});
-   */
+
   layer out=eddl.Activation(eddl.Dense(l,10),"softmax");
 
   // net define input and output layers list

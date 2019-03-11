@@ -78,6 +78,7 @@ class Layer
   virtual void backward(){}
   virtual Layer *share(int c,int bs,vector<Layer*>){return NULL;}
   virtual Layer *clone(int c,int bs,vector<Layer*>,int todev){return NULL;}
+
 };
 
 /////////////////////////////////////////

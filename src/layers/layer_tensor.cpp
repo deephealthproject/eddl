@@ -38,6 +38,8 @@ using namespace std;
 
 int tensor_created=1;
 
+
+
 LTensor::LTensor(string fname):LinLayer("ltensor"+to_string(tensor_created),DEV_CPU)
 {
   input=output=new Tensor(fname);

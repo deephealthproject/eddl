@@ -68,6 +68,7 @@ ifeq ($(OPT),4)
 $(info set Debug)
 CXXFLAGS =  -std=c++11  -g
 endif
+LIBFLAGS=-lpthread
 endif
 
 
