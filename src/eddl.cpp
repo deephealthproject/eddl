@@ -253,6 +253,39 @@ void EDDL::fit(model net, const initializer_list<LTensor*>& in,const initializer
 
 
 
+////
+
+bool exist(string name)
+{
+  if (FILE *file = fopen(name.c_str(), "r")) {
+        fclose(file);
+        return true;
+  }
+  return false;
+}
+
+void EDDL::download_mnist()
+{
+  string cmd;
+  string trX="trX.bin";
+  string trY="trY.bin";
+
+  if ( (!exist(trX)) || (!exist(trY))) {
+    cmd="wget https://www.dropbox.com/s/khrb3th2z6owd9t/trX.bin";
+    int status=system(cmd.c_str());
+    if (status < 0) {
+      msg("wget must be installed","eddl.download_mnist");
+      exit(1);
+    }
+    cmd="wget https://www.dropbox.com/s/m82hmmrg46kcugp/trY.bin";
+    status=system(cmd.c_str());
+    if (status < 0) {
+      msg("wget must be installed","eddl.download_mnist");
+      exit(1);
+    }
+
+  }
+}
 
 
 

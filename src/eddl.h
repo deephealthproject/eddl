@@ -97,6 +97,9 @@ public:
   static void fit(model m, const initializer_list<LTensor*>& in,const initializer_list<LTensor*>& out,int batch,int epochs);
 
 
+
+  // data
+  static void download_mnist();
 };
 
 extern EDDL eddl;
