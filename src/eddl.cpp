@@ -285,15 +285,30 @@ void EDDL::download_mnist()
   string cmd;
   string trX="trX.bin";
   string trY="trY.bin";
+  string tsX="tsX.bin";
+  string tsY="tsY.bin";
 
-  if ( (!exist(trX)) || (!exist(trY))) {
+  if ( (!exist(trX)) || (!exist(trY))|| (!exist(tsX)) || (!exist(tsY))) {
     cmd="wget https://www.dropbox.com/s/khrb3th2z6owd9t/trX.bin";
     int status=system(cmd.c_str());
     if (status < 0) {
       msg("wget must be installed","eddl.download_mnist");
       exit(1);
     }
+
     cmd="wget https://www.dropbox.com/s/m82hmmrg46kcugp/trY.bin";
+    status=system(cmd.c_str());
+    if (status < 0) {
+      msg("wget must be installed","eddl.download_mnist");
+      exit(1);
+    }
+    cmd="wget https://www.dropbox.com/s/7psutd4m4wna2d5/tsX.bin";
+    status=system(cmd.c_str());
+    if (status < 0) {
+      msg("wget must be installed","eddl.download_mnist");
+      exit(1);
+    }
+    cmd="wget https://www.dropbox.com/s/q0tnbjvaenb4tjs/tsY.bin";
     status=system(cmd.c_str());
     if (status < 0) {
       msg("wget must be installed","eddl.download_mnist");
