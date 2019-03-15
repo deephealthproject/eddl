@@ -93,7 +93,17 @@ int main(int argc, char **argv)
   eddl.div(X,255.0);
 
   // training, list of input and output tensors, batch, epochs
-  eddl.fit(net,{X},{Y},batch,100);
+  eddl.fit(net,{X},{Y},batch,1);
+
+
+  //// TEST
+
+  tensor tX=eddl.T("tsX.bin");
+  tensor tY=eddl.T("tsY.bin");
+
+  eddl.div(tX,255.0);
+
+  eddl.evaluate(net,{tX},{tY});
 
 }
 

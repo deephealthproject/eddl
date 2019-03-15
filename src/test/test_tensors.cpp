@@ -37,6 +37,16 @@ int main(int argc, char **argv)
 {
 
 
+  Tensor *X=new Tensor("tsX",0);
+  X->info();
+  Tensor *Y=new Tensor("tsY",0);
+  //Y->print();
+  Y->info();
+
+  X->save("tsX.bin");
+  Y->save("tsY.bin");
+  
+  exit(1);
 
 
   Tensor *A=new Tensor({4,1200},DEV_GPU);

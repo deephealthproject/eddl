@@ -48,6 +48,7 @@ public:
   static tensor T(const shape s, int dev);
   static tensor T(string fname);
 
+
   //Operations tensors
   static void div(tensor t,float v);
 
@@ -95,6 +96,7 @@ public:
   static void build(model net,optim *opt,const initializer_list<string>& c,const initializer_list<string>& m);
   static void build(model net,optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,int todev);
   static void fit(model m, const initializer_list<LTensor*>& in,const initializer_list<LTensor*>& out,int batch,int epochs);
+  static void evaluate(model m, const initializer_list<LTensor*>& in,const initializer_list<LTensor*>& out);
 
 
 

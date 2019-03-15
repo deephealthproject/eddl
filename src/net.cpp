@@ -65,6 +65,7 @@ struct tdata
 {
   Net *net;
   int batch;
+  int eval;
   /*
   int ini;
   int end;
@@ -506,7 +507,7 @@ void Net::split(int c,int todev)
       // create new net
       snets.push_back(new Net(nin,nout));
 
-      snets[i]->info();
+      //snets[i]->info();
 
       // build new net
       snets[i]->build(optimizer->clone(),strcosts,strmetrics);
@@ -714,7 +715,7 @@ void Net::train_batch(const initializer_list<Tensor*>& in,const initializer_list
 
 
 /////////////////////////////////////////
-void Net::train_batch(vtensor X, vtensor Y,vind sind,int batch)
+void Net::train_batch(vtensor X, vtensor Y,vind sind,int batch,int eval)
 {
   int i,j;
 
@@ -732,10 +733,12 @@ void Net::train_batch(vtensor X, vtensor Y,vind sind,int batch)
 
     reset();
     forward();
-    delta();
     loss();
-    backward();
-    applygrads(batch);
+    if (!eval) {
+      delta();
+      backward();
+      applygrads(batch);
+    }
   }
   else if (snets.size()==1) { // one {GPU,FPGA}
     // With only one device it is not necessary
@@ -761,10 +764,12 @@ void Net::train_batch(vtensor X, vtensor Y,vind sind,int batch)
 
     snets[0]->reset();
     snets[0]->forward();
-    snets[0]->delta();
     snets[0]->loss();
-    snets[0]->backward();
-    snets[0]->applygrads(batch);
+    if (!eval) {
+      snets[0]->delta();
+      snets[0]->backward();
+      snets[0]->applygrads(batch);
+    }
     for(int j=0;j<2*lout.size();j++)
       fiterr[j]+=snets[0]->fiterr[j];
   }
@@ -806,7 +811,7 @@ void Net::train_batch(vtensor X, vtensor Y,vind sind,int batch)
           //thread params
           td[i].net=snets[i];
           td[i].batch=batch;
-
+          td[i].eval=eval;
           //call thread
           rc = pthread_create(&thr[i], NULL,train_batch_t, (void *)(&td[i]));
 
@@ -828,30 +833,52 @@ void Net::train_batch(vtensor X, vtensor Y,vind sind,int batch)
             }
         }
 
-      if (snets[0]->dev==DEV_CPU) {
-        for(int i=0;i<snets.size();i++)
-          {
-            //call thread
-            rc = pthread_create(&thr[i], NULL,applygrads_t, (void *)(&td[i]));
+      if (!eval){
+        if (snets[0]->dev==DEV_CPU) {
+          for(int i=0;i<snets.size();i++)
+            {
+              //call thread
+              rc = pthread_create(&thr[i], NULL,applygrads_t, (void *)(&td[i]));
 
-            if (rc)
-              {
-                fprintf(stderr,"Error:unable to create thread %d",rc);
-                exit(-1);
-              }
-          }
+              if (rc)
+                {
+                  fprintf(stderr,"Error:unable to create thread %d",rc);
+                  exit(-1);
+                }
+            }
 
-        for(int i=0;i<snets.size();i++)
-          {
-            rc = pthread_join(thr[i], &status);
-            if (rc)
-              {
-                cout << "Error:unable to join," << rc << endl;
-                exit(-1);
+          for(int i=0;i<snets.size();i++)
+            {
+              rc = pthread_join(thr[i], &status);
+              if (rc)
+                {
+                  cout << "Error:unable to join," << rc << endl;
+                  exit(-1);
+                }
+            }
+        }
+
+        // In case of GPUS or FPGA synchronize params
+        if (snets[0]->dev!=DEV_CPU){
+          for(int j;j<layers.size();j++)
+            for(int k=0;k<layers[j]->params.size();k++) {
+              // Taking average
+              layers[j]->params[k]->set(0.0);
+              for(int i=0;i<snets.size();i++) {
+                Tensor::inc(snets[i]->layers[j]->params[k],layers[j]->params[k]);
               }
-          }
+              layers[j]->params[k]->div(snets.size());
+
+              // copy-back to devices
+              for(int i=0;i<snets.size();i++) {
+                Tensor::copy(layers[j]->params[k],snets[i]->layers[j]->params[k]);
+              }
+            }
+        }
+
       }
 
+      // Sum all errors
       for(int i=0;i<snets.size();i++)
         {
           for(int j=0;j<2*lout.size();j++)
@@ -859,26 +886,6 @@ void Net::train_batch(vtensor X, vtensor Y,vind sind,int batch)
               fiterr[j]+=snets[i]->fiterr[j];
             }
         }
-
-      // In case of GPUS or FPGA synchronize params
-
-      if (snets[0]->dev!=DEV_CPU){
-        for(int j;j<layers.size();j++)
-          for(int k=0;k<layers[j]->params.size();k++) {
-            // Taking average
-            layers[j]->params[k]->set(0.0);
-            for(int i=0;i<snets.size();i++) {
-              Tensor::inc(snets[i]->layers[j]->params[k],layers[j]->params[k]);
-            }
-            layers[j]->params[k]->div(snets.size());
-
-            // copy-back to devices
-            for(int i=0;i<snets.size();i++) {
-              Tensor::copy(layers[j]->params[k],snets[i]->layers[j]->params[k]);
-            }
-          }
-      }
-
       /////////////////////////////////////////////////
 
 
@@ -898,15 +905,14 @@ void * train_batch_t(void *t)
 
   net->forward();
 
-  net->delta();
-
   net->loss();
 
-  net->backward();
-
-  if (net->dev>DEV_CPU)
-    net->applygrads(targs->batch);
-
+  if (!targs->eval) {
+    net->delta();
+    net->backward();
+    if (net->dev>DEV_CPU)
+      net->applygrads(targs->batch);
+  }
   return NULL;
 }
 
@@ -926,5 +932,62 @@ void *applygrads_t(void *t)
 
 
 ///////////////////////////////////////////
+
+void Net::evaluate(vtensor tin,vtensor tout) {
+
+  int i,j,k,l,n;
+
+  // Check list sizes
+  if (tin.size()!=lin.size())
+    msg("input tensor list does not match with defined input layers","Net.evaluate");
+  if (tout.size()!=lout.size())
+    msg("output tensor list does not match with defined output layers","Net.evaluate");
+
+
+  // Check data consistency
+  n=tin[0]->sizes[0];
+  for(i=1;i<tin.size();i++)
+    if(tin[i]->sizes[0]!=n)
+      msg("different number of samples in input tensor","Net.evaluate");
+
+
+  int batch=lin[0]->input->sizes[0];
+  for(i=1;i<lin.size();i++)
+    if(lin[i]->input->sizes[0]!=batch)
+      msg("different number of input tensors w.r.t","Net.evaluate");
+
+  for(i=1;i<tout.size();i++)
+    if(tout[i]->sizes[0]!=n)
+      msg("different number of samples in output tensor","Net.evaluate");
+
+  // Create internal variables
+  vind sind;
+  verr errors;
+  for(i=0;i<tout.size();i++)
+    {
+      errors.push_back(0.0);
+      errors.push_back(0.0);
+    }
+
+  // Start eval
+  for(j=0;j<2*tout.size();j++) errors[j]=0.0;
+
+  for(j=0;j<n/batch;j++)
+    {
+        train_batch(tin,tout,sind,batch,1);
+        int p=0;
+        for(k=0;k<tout.size();k++,p+=2)
+          {
+            errors[p]+=fiterr[p];
+            errors[p+1]+=fiterr[p+1];
+            fiterr[p]=fiterr[p+1]=0.0;
+          }
+      }
+  int p=0;
+  for(k=0;k<tout.size();k++,p+=2)
+   fprintf(stderr,"%s(%s=%1.3f,%s=%1.3f) ",lout[k]->name.c_str(),losses[k]->name.c_str(),errors[p]/n,metrics[k]->name.c_str(),errors[p+1]/n);
+  fprintf(stderr,"\n");
+}
+
 
 //////

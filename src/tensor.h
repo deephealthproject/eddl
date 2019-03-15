@@ -103,7 +103,7 @@ class Tensor
 
   Tensor(const shape s);
   Tensor(const shape s, int dev);
-  Tensor(string fname);
+  Tensor(string fname,int bin=1);
 
   Tensor(shape s,Tensor *T);
 

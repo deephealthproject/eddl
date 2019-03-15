@@ -134,7 +134,7 @@ all: $(GPU_OBJ) $(OBJ) test_eddl
 endif
 
 ifeq ($(CORE),2)
-all: $(GPU_OBJ) $(OBJ) test_eddl 
+all: $(GPU_OBJ) $(OBJ) test_eddl
 endif
 
 #--------------------------------- c code
@@ -209,11 +209,6 @@ tensor_kernels.o: $(SRC_PATH)/gpu/tensor_kernels.cu $(SRC_PATH)/gpu/tensor_kerne
 test_eddl: test_eddl.cpp $(OBJ) $(GPU_OBJ)
 	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_eddl.cpp -o test_eddl $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
 
-test_eddl_gpu: test_eddl_gpu.cpp $(OBJ) $(GPU_OBJ)
-	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_eddl_gpu.cpp -o test_eddl_gpu $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
-
-test_tensors: test_tensors.cpp $(OBJ) $(GPU_OBJ)
-		$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_tensors.cpp -o test_tensors $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
 
 #-------------------------
 

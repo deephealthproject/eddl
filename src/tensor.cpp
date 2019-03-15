@@ -162,11 +162,12 @@ Tensor::Tensor(shape s,Tensor *T)
 }
 
 /////////////////////////////////////////////////////////////////////////
-Tensor::Tensor(string fname)
+Tensor::Tensor(string fname,int bin)
 {
   FILE *fe;
   int i,j,v;
 
+  if (bin) {
   fe=fopen(fname.c_str(),"rb");
   if (fe==NULL)
     {
@@ -207,9 +208,46 @@ Tensor::Tensor(string fname)
         exit(1);
       }
 
-  fprintf(stderr,"OK\n");
-
   fclose(fe);
+  }
+  else {
+    fe=fopen(fname.c_str(),"rt");
+    if (fe==NULL)
+      {
+        fprintf(stderr,"%s not found\n",fname.c_str());
+        exit(1);
+      }
+
+    fscanf(fe,"%d ",&dim);
+    for(int i=0;i<dim;++i)
+      {
+        fscanf(fe,"%d ",&v);
+        sizes.push_back(v);
+      }
+
+    shape s=sizes;
+
+    cout<<"loading file with tensor:"<<s<<"\n";
+
+    device=DEV_CPU;
+    tam=1;
+    for(int i=0;i<dim;++i) tam*=sizes[i];
+
+    if (dim==2) {
+      mat=Eigen::MatrixXf(sizes[1],sizes[0]);
+      ptr2=&mat;
+      ptr=&(mat(0,0));
+    }
+    else{
+      ptr=(float *)malloc(tam*sizeof(Tensor *));
+    }
+
+    tsem=new mutex();
+
+    for(int i=0;i<tam;i++) fscanf(fe,"%f ",&(ptr[i]));
+
+    fclose(fe);
+  }
 }
 
 
