@@ -36,9 +36,8 @@
 int main(int argc, char **argv)
 {
 
-  // read data
+  // download MNIST data
   eddl.download_mnist();
-
 
 
   int batch=1000;
@@ -65,8 +64,6 @@ int main(int argc, char **argv)
   // size of error criteria and metrics list must match with size of list of outputs
   // optionally put a DEVICE where the net will run
   eddl.build(net,SGD(0.01,0.9),{"soft_cent"},{"acc"},DEV_CPU);
-
-
 
 
   // read data
