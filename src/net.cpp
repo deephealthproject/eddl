@@ -503,12 +503,12 @@ void Net::split(int c,int todev)
 
 }
 
-void setmode(int m)
+void Net::setmode(int m)
 {
-  for(int i = 0; i != layers.size(); i++)
+  for(int i = 0; i < layers.size(); i++)
     layers[i]->setmode(m);
 
-  if (snets.size)
+  if (snets.size())
     for(int i = 0; i != snets.size(); i++)
       snets[i]->setmode(m);
 }

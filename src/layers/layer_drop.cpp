@@ -62,7 +62,7 @@ LDrop::LDrop(Layer *parent,float df,string name,int d):LinLayer(name,d)
 // virtual
 void LDrop::forward()
 {
-  if (mode=TRMODE){
+  if (mode==TRMODE){
     mask->rand_binary(df);
     Tensor::el_mult(input,mask,output,0);
   }
