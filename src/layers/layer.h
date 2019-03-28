@@ -67,6 +67,7 @@ class Layer
   void initialize();
   void reset();
   void info();
+  void setmode(int m);
 
 
   //virtual

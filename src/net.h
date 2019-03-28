@@ -80,6 +80,7 @@ class Net
   void fts();
   void bts();
   void plot(string fname);
+  void setmode(int m);
 
   string name;
   int dev;
