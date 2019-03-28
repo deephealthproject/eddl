@@ -73,7 +73,6 @@ void LDense::forward()
   Tensor::sum2D_rowwise(output,bias,output);
 }
 
-
 void LDense::backward()
 {
 
@@ -114,7 +113,6 @@ Layer *LDense::clone(int c,int bs,vector<Layer*>p,int todev)
 
   return n;
 }
-
 
 
 string LDense::plot(int c)
