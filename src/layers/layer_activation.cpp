@@ -68,7 +68,6 @@ void LActivation::forward()
     {
       Tensor::Softmax(input,output);
     }
-
 }
 
 

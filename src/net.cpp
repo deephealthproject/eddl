@@ -66,15 +66,6 @@ struct tdata
   Net *net;
   int batch;
   int eval;
-  /*
-  int ini;
-  int end;
-  vtensor Xt;
-  vtensor Yt;
-  vtensor X;
-  vtensor Y;
-  vind sind;
-  */
 };
 
 
@@ -210,10 +201,7 @@ void Net::initialize()
 {
   for(int i = 0; i != layers.size(); i++)
     layers[i]->initialize();
-
-
 }
-
 
 /////////////////////////////////////////
 void Net::reset()
@@ -221,7 +209,6 @@ void Net::reset()
   for(int i = 0; i != layers.size(); i++)
     layers[i]->reset();
 }
-
 
 /////////////////////////////////////////
 void Net::fts()
@@ -315,9 +302,10 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
   vstring co=vstring(c.begin(), c.end());
   vstring me=vstring(m.begin(), m.end());
 
+  //build net
   build(opt,co,me);
 
-
+  // split net in devices
   if (todev==DEV_CPU) {
     if (dev==DEV_CPU) {
       // split on multiple threads
@@ -515,6 +503,15 @@ void Net::split(int c,int todev)
 
 }
 
+void setmode(int m)
+{
+  for(int i = 0; i != layers.size(); i++)
+    layers[i]->setmode(m);
+
+  if (snets.size)
+    for(int i = 0; i != snets.size(); i++)
+      snets[i]->setmode(m);
+}
 
 /////////////////////////////////////////
 void Net::forward()
@@ -539,11 +536,9 @@ void Net::forward()
 
 void Net::delta()
 {
-
-  for(int i=0;i<lout.size();i++) {
+  for(int i=0;i<lout.size();i++)
     losses[i]->delta(lout[i]->target,lout[i]->output,lout[i]->delta);
 
-  }
 }
 
 
@@ -554,13 +549,9 @@ void Net::loss()
     {
       // loss value
       fiterr[p]=losses[i]->value(lout[i]->target,lout[i]->output);
-
       // metric value
       fiterr[p+1]=metrics[i]->value(lout[i]->target,lout[i]->output);
-
-
     }
-
 }
 
 
@@ -646,6 +637,8 @@ void Net::fit(vtensor tin,vtensor tout,int batch, int epochs) {
     }
 
   // Start training
+  setmode(TRMODE);
+
   fprintf(stderr,"%d epochs of %d batches of size %d\n",epochs,n/batch,batch);
   for(i=0;i<epochs;i++)
     {
@@ -710,6 +703,7 @@ void Net::train_batch(const initializer_list<Tensor*>& in,const initializer_list
     if (!Tensor::eqsize(lout[i]->output,Y[i]))
       msg("output tensor shapes does not match","Net.train_batch");
 
+  setmode(TRMODE);
   train_batch(X,Y,sind,lin[0]->input->sizes[0]);
 }
 
@@ -972,6 +966,7 @@ void Net::evaluate(vtensor tin,vtensor tout) {
   // Start eval
   for(j=0;j<2*tout.size();j++) errors[j]=0.0;
 
+  setmode(TSMODE);
   for(j=0;j<n/batch;j++)
     {
         train_batch(tin,tout,sind,batch,1);

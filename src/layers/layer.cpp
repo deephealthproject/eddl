@@ -71,6 +71,10 @@ void Layer::reset()
   delta->set(0.0);
 }
 
+void Layer::setmode(int m)
+{
+  mode=m;
+}
 
 void Layer::info()
 {
