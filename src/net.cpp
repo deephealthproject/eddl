@@ -983,6 +983,7 @@ void Net::evaluate(vtensor tin,vtensor tout) {
             fiterr[p]=fiterr[p+1]=0.0;
           }
       }
+
   int p=0;
   for(k=0;k<tout.size();k++,p+=2)
    fprintf(stderr,"%s(%s=%1.3f,%s=%1.3f) ",lout[k]->name.c_str(),losses[k]->name.c_str(),errors[p]/n,metrics[k]->name.c_str(),errors[p+1]/n);
