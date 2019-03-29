@@ -46,6 +46,7 @@ LDrop::LDrop(Layer *parent,float df,string name,int d):LinLayer(name,d)
 
   drop_created++;
 
+  // df: drop factor is the probability to delete (drop) an activation
   this->df=df;
 
   input=parent->output;
@@ -63,7 +64,7 @@ LDrop::LDrop(Layer *parent,float df,string name,int d):LinLayer(name,d)
 void LDrop::forward()
 {
   if (mode==TRMODE){
-    mask->rand_binary(df);
+    mask->rand_binary(1.0-df);
     Tensor::el_mult(input,mask,output,0);
   }
   else {

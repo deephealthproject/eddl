@@ -644,7 +644,9 @@ void Net::fit(vtensor tin,vtensor tout,int batch, int epochs) {
     {
       high_resolution_clock::time_point e1 = high_resolution_clock::now();
       fprintf(stderr,"Epoch %d\n",i+1);
+
       for(j=0;j<2*tout.size();j++) errors[j]=0.0;
+
 
       for(j=0;j<n/batch;j++)
         {
@@ -713,6 +715,8 @@ void Net::train_batch(vtensor X, vtensor Y,vind sind,int batch,int eval)
 {
   int i,j;
 
+
+
   if (snets.size()==0){ //one CPU thread
     if (sind.size()==0) {
       for(int i=0;i<batch;i++)
@@ -775,6 +779,8 @@ void Net::train_batch(vtensor X, vtensor Y,vind sind,int batch,int eval)
       int rc;
       pthread_t thr[100];
       struct tdata td[100];
+
+
 
       int bs=batch/snets.size();
 
