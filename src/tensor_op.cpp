@@ -37,6 +37,8 @@
 #include <iostream>
 #include "tensor.h"
 
+#include "cpu/cpu_convol.h"
+
 #ifdef cGPU
 #include "gpu/tensor_cuda.h"
 #include "gpu/tensor_cuda_op.h"
@@ -513,6 +515,96 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB)
   }
 #endif
   B->tsem->unlock();
+}
+
+
+////////////////////////////////
+//// CONVOLUTIONS
+////////////////////////////////
+ConvolDescriptor::ConvolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p)
+{
+  ksize=vector<int>(ks.begin(), ks.end());
+  stride=vector<int>(st.begin(), st.end());
+  padtype=p;
+
+  if(padtype=="same") {
+    pad.push_back(ksize[1]/2);
+    pad.push_back(ksize[2]/2);
+  }
+  else {
+      pad.push_back(0);
+      pad.push_back(0);
+  }
+
+
+}
+
+void ConvolDescriptor::set(Tensor *A,Tensor *K, Tensor *C)
+{
+  if (A->dim!=4) msg("Tensors are not 4D","ConvolDescriptor::mem");
+
+  nk=ksize[0];
+  kr=ksize[1];
+  kc=ksize[2];
+  kz=A->sizes[1];
+
+  sr=stride[0];
+  sc=stride[1];
+
+  iz=A->sizes[1];
+  ir=A->sizes[2];
+  ic=A->sizes[3];
+
+  padr=pad[0];
+  padc=pad[1];
+
+  z=nk;
+  r=(ir-ksize[0]+2*padr)/stride[0]+1;
+  c=(ic-ksize[1]+2*padc)/stride[1]+1;
+
+  // mem for ptr, lowering im2col
+  //eigen mat in col-major
+  matA=Eigen::MatrixXf(r*c,kr*kc*kz);
+  ptr=&(matA(0,0));
+
+  new (&matK) Eigen::Map<Eigen::MatrixXf>(K->ptr,kr*kc*kz,nk);
+
+  // convolution: matC=matA*matK
+}
+
+
+/////////////////////////////////////////////////////////////////////
+//// Conv2D
+//// Dimensions must be compatible
+//// A is input 4D Tensor, Batch x Channels x Rows x Cols
+//// K is 4D Tensor, NumFilters x Channels x FilterRows x FilterCols
+//// D is a ConvolDescriptor
+//// C is output 4D Tensor, Batch x Channels x Rows x Cols
+/////////////////////////////////////////////////////////////////////
+
+void Tensor::Conv2D(Tensor *A,Tensor *K,ConvolDescriptor *D, Tensor *C)
+{
+  if (A->device!=K->device) msg("Tensors in different devices","Tensor::Conv2D");
+  if ((A->dim!=4)||(K->dim!=4)||(C->dim!=4)) msg("Tensors are not 4D","Tensor::Conv2D");
+
+  C->tsem->lock();
+  if (A->isCPU())
+    {
+       D->set(A,K,C);
+       cpu_conv2D(A,D,C);
+    }
+#ifdef cGPU
+  else if (A->isGPU())
+    {
+       //gpu_conv2D(A,B,D,C);
+    }
+#endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
+  C->tsem->unlock();
 }
 
 

@@ -72,7 +72,34 @@ typedef vector<int> shape;
 void msg(string s);
 void msg(string s,string s2);
 
-//using namespace Eigen;
+class Tensor;
+
+class ConvolDescriptor
+{
+ public:
+   vector<int> ksize;
+   vector<int> stride;
+   string padtype;
+   vector<int> pad;
+
+   int nk,kr,kc,kz;
+   int sr,sc;
+   int ir,ic,iz;
+   int r,c,z;
+   int padr,padc;
+   float *ptr;
+   Eigen::MatrixXf matA;
+   Eigen::MatrixXf matK;
+   Eigen::MatrixXf matC;
+
+
+   //...
+   ConvolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p);
+   void set(Tensor *A,Tensor *K,Tensor *C);
+};
+
+
+
 class Tensor
 {
 
@@ -84,7 +111,7 @@ class Tensor
 
   float *ptr;
 
-  // CPU_cores
+  // CPU
   Eigen::MatrixXf *ptr2;
   Eigen::MatrixXf mat;
 
@@ -169,5 +196,32 @@ class Tensor
   static void D_ReLu(Tensor *D, Tensor *I, Tensor *PD);
   static void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
 
+  static void Conv2D(Tensor *A,Tensor *K,ConvolDescriptor *D, Tensor *C);
+
 };
+
+
+
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////

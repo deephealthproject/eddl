@@ -104,7 +104,7 @@ Tensor::Tensor(shape s,int dev)
         ptr=&(mat(0,0));
       }
       else{
-        ptr=(float *)malloc(tam*sizeof(Tensor *));
+        ptr=(float *)malloc(tam*sizeof(float));
       }
     }
 #ifdef cGPU
@@ -142,7 +142,10 @@ Tensor::Tensor(shape s,Tensor *T)
     if (isCPU())
       {
     	 ptr=T->ptr;
-       ptr2=T->ptr2;
+       if (dim==2) {
+         new (&mat) Eigen::Map<Eigen::MatrixXf>(T->ptr,sizes[1],sizes[0]);
+         ptr2=&mat;
+        }
       }
   #ifdef cGPU
     else if (isGPU())
@@ -191,9 +194,14 @@ Tensor::Tensor(string fname,int bin)
   for(int i=0;i<dim;++i) tam*=sizes[i];
 
   if (dim==2) {
+    //ptr=(float *)malloc(tam*sizeof(float));
+    //Eigen::Map<Eigen::MatrixXf> mat(ptr,sizes[1],sizes[0]);
+    //ptr2=&mat;
+
     mat=Eigen::MatrixXf(sizes[1],sizes[0]);
     ptr2=&mat;
     ptr=&(mat(0,0));
+
   }
   else{
     ptr=(float *)malloc(tam*sizeof(Tensor *));
@@ -355,6 +363,8 @@ void Tensor::print()
           printf("%f ",ptr[i]);
       else if (dim==2)
         {
+          cout<<(*ptr2).transpose()<<"\n";
+          /*
           int i,j,p=0;
           for(i=0;i<sizes[0];++i)
             {
@@ -362,6 +372,7 @@ void Tensor::print()
                 printf("%1.3f ",ptr[p]);
               printf("\n");
             }
+            */
         }
         else
           {

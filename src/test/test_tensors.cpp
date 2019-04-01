@@ -36,52 +36,24 @@
 int main(int argc, char **argv)
 {
 
+  int dev=DEV_CPU;
 
-  Tensor *X=new Tensor("tsX",0);
-  X->info();
-  Tensor *Y=new Tensor("tsY",0);
-  //Y->print();
-  Y->info();
+  Tensor *A=new Tensor({1,4,10,10},dev);
+  Tensor *K=new Tensor({1,4,3,3},dev);
+  Tensor *C=new Tensor({1,1,10,10},dev);
 
-  X->save("tsX.bin");
-  Y->save("tsY.bin");
-  
-  exit(1);
+  //A->set(1.0);
+  //K->set(1.0);
 
+  ConvolDescriptor *cd=new ConvolDescriptor({1,3,3},{1,1},"same");
 
-  Tensor *A=new Tensor({4,1200},DEV_GPU);
-  A->set(1.0);
-  A->print();
-  Tensor *B=new Tensor({4,2},DEV_GPU);
-  B->set(2.0);
-  B->print();
+  Tensor::Conv2D(A,K,cd,C);
 
-  LInput *l1=new LInput(A,DEV_GPU);
-  LInput *l2=new LInput(B,DEV_GPU);
-
-  LCat *add=new LCat({l1,l2},DEV_GPU);
-
-
-  add->forward();
-
-  add->output->print();
-  /////
-  add->delta->set(5.0);
-  add->delta->print();
-
-  l1->delta->set(1.0);
-  l2->delta->set(1.0);
-
-  add->backward();
-
-  l1->delta->print();
-  l2->delta->print();
+  //C->print();
 
   exit(1);
 
 
-  int r=1025;
-  int c=2048;
   //
 
   /*
