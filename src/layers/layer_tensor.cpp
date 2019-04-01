@@ -39,13 +39,14 @@ using namespace std;
 int tensor_created=1;
 
 
-
+// From file
 LTensor::LTensor(string fname):LinLayer("ltensor"+to_string(tensor_created),DEV_CPU)
 {
   input=output=new Tensor(fname);
   tensor_created++;
 }
 
+// From list of sizes
 LTensor::LTensor(const initializer_list<int>& init):LTensor(init,DEV_CPU){}
 LTensor::LTensor(const initializer_list<int>& init, int dev):LinLayer("ltensor"+to_string(tensor_created),dev)
 {
@@ -54,14 +55,39 @@ LTensor::LTensor(const initializer_list<int>& init, int dev):LinLayer("ltensor"+
   tensor_created++;
 }
 
+// From shape
 LTensor::LTensor(const shape s):LTensor(s,DEV_CPU){}
-
 LTensor::LTensor(const shape s, int dev):LinLayer("ltensor"+to_string(tensor_created),dev)
 {
   input=output=new Tensor(s,dev);
   delta=new Tensor(s,dev);
   tensor_created++;
 }
+
+
+// From Layer
+LTensor::LTensor(Layer *l):LinLayer("ltensor"+to_string(tensor_created),l->dev){
+  input=output=l->output;
+  delta=l->delta;
+  tensor_created++;
+}
+
+
+
+/// OP OVERLOAD
+LTensor LTensor::operator+(LTensor L)
+{
+  vector<Layer*> vl;
+
+  vl.push_back(this);
+  vl.push_back(&L);
+
+  LTensor *l=new LTensor(new LAdd(vl));
+
+  return *l;
+}
+
+
 
 
 

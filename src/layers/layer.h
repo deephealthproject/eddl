@@ -40,6 +40,7 @@
 
 using namespace std;
 
+
 class Layer
 {
  public:
@@ -82,6 +83,7 @@ class Layer
 
 };
 
+
 /////////////////////////////////////////
 /////////////////////////////////////////
 // Layers with only one input
@@ -114,6 +116,7 @@ class LTensor : public LinLayer
   LTensor(const initializer_list<int>& init, int dev);
   LTensor(const shape s);
   LTensor(const shape s, int dev);
+  LTensor(Layer *l);
 
   Layer *share(int c,int bs,vector<Layer*>p){return NULL;}
   Layer *clone(int c,int bs,vector<Layer*>,int todev){return NULL;}
@@ -121,6 +124,9 @@ class LTensor : public LinLayer
   void forward(){}
   void backward(){}
   string plot(int c){return "";}
+
+  LTensor operator+(LTensor L);
+
 
 };
 
