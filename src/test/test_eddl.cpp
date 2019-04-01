@@ -33,8 +33,21 @@
 
 #include "../eddl.h"
 
+
+float loss(tensor ytrue,tensor ypred)
+{
+  LTensor yt=*ytrue;
+  LTensor yp=*ypred;
+
+  LTensor l=yt+yp+yp;
+
+  return 0.0;
+
+}
+
 layer ResBlock(layer in, int dim,int n)
 {
+
   layer l=in;
   for(int i=0;i<n;i++)
     l=eddl.Activation(eddl.Dense(l,dim),"relu");
