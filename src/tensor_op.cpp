@@ -527,26 +527,30 @@ ConvolDescriptor::ConvolDescriptor(const initializer_list<int>& ks,const initial
   stride=vector<int>(st.begin(), st.end());
   padtype=p;
 
-  if(padtype=="same") {
+  if (padtype=="same") {
     pad.push_back(ksize[1]/2);
     pad.push_back(ksize[2]/2);
   }
-  else {
+  else if (padtype=="none") {
       pad.push_back(0);
       pad.push_back(0);
   }
+  else msg("Incorrct padding type","ConvolDescriptor::ConvolDescriptor");
 
 
 }
 
-void ConvolDescriptor::set(Tensor *A,Tensor *K, Tensor *C)
+void ConvolDescriptor::build(Tensor *A)
 {
-  if (A->dim!=4) msg("Tensors are not 4D","ConvolDescriptor::mem");
+  if (A->dim!=4) msg("Tensors are not 4D","ConvolDescriptor::build");
 
   nk=ksize[0];
   kr=ksize[1];
   kc=ksize[2];
   kz=A->sizes[1];
+
+  K=new Tensor({nk,kz,kr,kc},A->device);
+
 
   sr=stride[0];
   sc=stride[1];
@@ -559,13 +563,17 @@ void ConvolDescriptor::set(Tensor *A,Tensor *K, Tensor *C)
   padc=pad[1];
 
   z=nk;
-  r=(ir-ksize[0]+2*padr)/stride[0]+1;
-  c=(ic-ksize[1]+2*padc)/stride[1]+1;
+  r=(ir-ksize[1]+2*padr)/stride[0]+1;
+  c=(ic-ksize[2]+2*padc)/stride[1]+1;
+
+  O=new Tensor({A->sizes[0],z,r,c},A->device);
+
+  fprintf(stderr,"Output: %dx%d@%dx%d\n",A->sizes[0],z,r,c);
 
   // mem for ptr, lowering im2col
   //eigen mat in col-major
-  matA=Eigen::MatrixXf(r*c,kr*kc*kz);
-  ptr=&(matA(0,0));
+  matI=Eigen::MatrixXf(r*c,kr*kc*kz);
+  ptr=&(matI(0,0));
 
   new (&matK) Eigen::Map<Eigen::MatrixXf>(K->ptr,kr*kc*kz,nk);
 
@@ -582,16 +590,14 @@ void ConvolDescriptor::set(Tensor *A,Tensor *K, Tensor *C)
 //// C is output 4D Tensor, Batch x Channels x Rows x Cols
 /////////////////////////////////////////////////////////////////////
 
-void Tensor::Conv2D(Tensor *A,Tensor *K,ConvolDescriptor *D, Tensor *C)
+void Tensor::Conv2D(Tensor *A,ConvolDescriptor *D)
 {
-  if (A->device!=K->device) msg("Tensors in different devices","Tensor::Conv2D");
-  if ((A->dim!=4)||(K->dim!=4)||(C->dim!=4)) msg("Tensors are not 4D","Tensor::Conv2D");
+  if ((A->dim!=4)) msg("Tensors are not 4D","Tensor::Conv2D");
 
-  C->tsem->lock();
+  //C->tsem->lock();
   if (A->isCPU())
     {
-       D->set(A,K,C);
-       cpu_conv2D(A,D,C);
+       cpu_conv2D(A,D);
     }
 #ifdef cGPU
   else if (A->isGPU())
@@ -604,7 +610,7 @@ void Tensor::Conv2D(Tensor *A,Tensor *K,ConvolDescriptor *D, Tensor *C)
 
   }
 #endif
-  C->tsem->unlock();
+  //C->tsem->unlock();
 }
 
 

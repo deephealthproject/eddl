@@ -4,55 +4,62 @@
 
 #include "cpu_convol.h"
 
-float get_pixel(int b,int px,int py,int pz,Tensor *A,ConvolDescriptor *D)
+float get_pixel(int b,int px,int py,int pz,Tensor *A,ConvolDescriptor *D,int isize,int irsize)
 {
   if (px<0.0) return 0.0;
   if (py<0.0) return 0.0;
   if (px>=D->ic) return 0.0;
   if (py>=D->ir) return 0.0;
 
-  int p=b*(D->ir*D->ic*D->iz)+pz*(D->ir*D->ic)+py*(D->ic)+px;
+  int p=(b*isize)+(pz*irsize)+(py*D->ic)+px;
   return A->ptr[p];
 }
 
 
-void cpu_conv2D(Tensor *A,ConvolDescriptor *D,Tensor *C)
+void cpu_conv2D(Tensor *A,ConvolDescriptor *D)
 {
-  int i,j,k,n,m;
+  int i,j,k;
 
   int pz,py,px,y,x;
-  int ksize=(D->kr*D->kc);
-  int osize=(D->z*D->r*D->c);
+  int ksize=D->kr*D->kc;
+  int kr2=D->kr/2;
+  int kc2=D->kc/2;
+
+  int osize=D->z*D->r*D->c;
+  int orsize=D->r*D->c;
+
+  int isize=D->ir*D->ic*D->iz;
+  int irsize=D->ir*D->ic;
+
 
   for(int b=0;b<A->sizes[0];b++){
-    float *ptr=C->ptr;
+    float *ptr=D->O->ptr;
     ptr+=b*osize;
-    new (&(D->matC)) Eigen::Map<Eigen::MatrixXf>(ptr,D->r*D->c,D->z);
+    new (&(D->matO)) Eigen::Map<Eigen::MatrixXf>(ptr,D->r*D->c,D->z);
 
-    //  matA=Eigen::MatrixXf(r*c,kr*kc*kz);
     k=0;
     py=-D->padr;
     px=-D->padc;
-    for(j=0;j<D->matA.rows();j++) {
-      for(i=0;i<D->matA.cols();i++,k++) {
+    for(j=0;j<D->matI.rows();j++) {
+      k=j;
+      //fprintf(stderr,"%d %d\n",py,px);
+      //getchar();
+      for(i=0;i<D->matI.cols();i++,k+=orsize) {
          pz=i/ksize;
          y=py+(i%ksize)/D->kc;
          x=px+(i%D->kc);
-         D->ptr[k]=get_pixel(b,x,y,pz,A,D);
-         px++;
+
+         D->ptr[k]=get_pixel(b,x,y,pz,A,D,isize,irsize);
         }
-      px++;
-      if (px>=D->ic+D->padc) {
+      px+=D->sc;
+      if (px>=D->ic+D->padc-kc2-1) {
         px=-D->padc;
-        py++;
+        py+=D->sr;
+        //if (py>=D->ir-kr2) py=-D->padr;
       }
     }
 
-    fprintf(stderr,"%dx%d\n",D->matC.rows(),D->matC.cols());
-    fprintf(stderr,"%dx%d\n",D->matA.rows(),D->matA.cols());
-    fprintf(stderr,"%dx%d\n",D->matK.rows(),D->matK.cols());
-
-    D->matC=D->matA*D->matK;
+    D->matO=D->matI*D->matK;
   }// batch
 }
 

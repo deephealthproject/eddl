@@ -1,6 +1,6 @@
 #include "../tensor.h"
 
-void cpu_conv2D(Tensor *A,ConvolDescriptor *D,Tensor *C);
+void cpu_conv2D(Tensor *A,ConvolDescriptor *D);
 
 /*
 void ConvolF(Tensor *N, Tensor *K, Tensor *E,int stride, int rpad,int cpad,int threads,int batch);

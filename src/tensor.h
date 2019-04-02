@@ -88,14 +88,17 @@ class ConvolDescriptor
    int r,c,z;
    int padr,padc;
    float *ptr;
-   Eigen::MatrixXf matA;
-   Eigen::MatrixXf matK;
-   Eigen::MatrixXf matC;
 
+   Eigen::MatrixXf matI; // input
+   Eigen::MatrixXf matK; // kernels
+   Eigen::MatrixXf matO; // output
+
+   Tensor *K;
+   Tensor *O;
 
    //...
    ConvolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p);
-   void set(Tensor *A,Tensor *K,Tensor *C);
+   void build(Tensor *A);
 };
 
 
@@ -196,7 +199,7 @@ class Tensor
   static void D_ReLu(Tensor *D, Tensor *I, Tensor *PD);
   static void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
 
-  static void Conv2D(Tensor *A,Tensor *K,ConvolDescriptor *D, Tensor *C);
+  static void Conv2D(Tensor *A,ConvolDescriptor *D);
 
 };
 
