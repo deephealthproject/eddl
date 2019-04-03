@@ -79,7 +79,6 @@ class ConvolDescriptor
  public:
    vector<int> ksize;
    vector<int> stride;
-   string padtype;
    vector<int> pad;
 
    int nk,kr,kc,kz;
@@ -87,7 +86,7 @@ class ConvolDescriptor
    int ir,ic,iz;
    int r,c,z;
    int padr,padc;
-   float *ptr;
+   //float *ptr;
 
    Eigen::MatrixXf matI; // input
    Eigen::MatrixXf matK; // kernels
@@ -98,6 +97,8 @@ class ConvolDescriptor
 
    //...
    ConvolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p);
+   ConvolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st,const initializer_list<int>& p );
+
    void build(Tensor *A);
 };
 

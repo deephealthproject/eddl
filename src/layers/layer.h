@@ -107,7 +107,7 @@ class LinLayer : public Layer
 
 };
 
-/// INPUT Layer
+/// Tensor Layer
 class LTensor : public LinLayer
 {
  public:
@@ -160,7 +160,7 @@ class LDense : public LinLayer
   Layer *share(int c,int bs,vector<Layer*>p);
   Layer *clone(int c,int bs,vector<Layer*>,int todev);
 
-  // Paras
+  // Params
   Tensor *W;
   Tensor *gW;
   Tensor *bias;
@@ -172,7 +172,7 @@ class LDense : public LinLayer
 
 };
 
-/// DENSE Layer
+/// Activation Layer
 class LActivation : public LinLayer
 {
  public:
@@ -191,48 +191,7 @@ class LActivation : public LinLayer
 
 };
 
-/////////////////////////////////////////
-/////////////////////////////////////////
-// Layers with several inputs (ADD, CAT,...)
-class MLayer : public Layer
-{
- public:
-
-  MLayer(string name,int dev);
-
-  void addchild(Layer *l);
-  void addparent(Layer *l);
-
-  //virtual
-
-  virtual string plot(int c){return "";}
-  virtual void forward(){}
-  virtual void backward(){}
-  virtual Layer *share(int c,int bs,vector<Layer*>p){return NULL;}
-  virtual Layer *clone(int c,int bs,vector<Layer*>,int todev){return NULL;}
-
-};
-
-/// INPUT Layer
-class LAdd : public MLayer
-{
- public:
-  LAdd(vector<Layer*> in);
-  LAdd(vector<Layer*> in,int dev);
-  LAdd(vector<Layer*> in,string name);
-  LAdd(vector<Layer*> in,string name,int dev);
-  Layer *share(int c,int bs,vector<Layer*>p);
-  Layer *clone(int c,int bs,vector<Layer*>,int todev);
-
-  void forward();
-  void backward();
-  string plot(int c);
-
-};
-
-
-
-
+/// Resahpe Layer
 class LReshape : public LinLayer
 {
  public:
@@ -251,7 +210,6 @@ class LReshape : public LinLayer
   Layer *share(int c,int bs,vector<Layer*>p);
   Layer *clone(int c,int bs,vector<Layer*>p,int todev);
 
-  // Params
 
   // implementation
   void forward();
@@ -260,7 +218,45 @@ class LReshape : public LinLayer
 
 };
 
+/// Drop-out Layer
+class LConv: public LinLayer
+{
+ public:
+  ConvolDescriptor *cd;
 
+  // constructors and clones
+  LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p);
+  LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name);
+  LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,int d);
+  LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name,int d);
+
+  LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p);
+  LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name);
+  LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,int d);
+  LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name,int d);
+
+  LConv(Layer *parent,ConvolDescriptor *cd,string name, int d);
+
+  Layer *share(int c,int bs,vector<Layer*>p);
+  Layer *clone(int c,int bs,vector<Layer*>p,int todev);
+
+  // Params
+  Tensor *K;
+  Tensor *bias;
+
+  Tensor *gK;
+  Tensor *gbias;
+
+
+
+  // implementation
+  void forward();
+  void backward();
+  string plot(int c);
+
+};
+
+/// Drop-out Layer
 class LDrop : public LinLayer
 {
  public:
@@ -285,6 +281,52 @@ class LDrop : public LinLayer
 };
 
 
+
+
+
+
+
+/////////////////////////////////////////
+/////////////////////////////////////////
+// Layers with several inputs (ADD, CAT,...)
+class MLayer : public Layer
+{
+ public:
+
+  MLayer(string name,int dev);
+
+  void addchild(Layer *l);
+  void addparent(Layer *l);
+
+  //virtual
+
+  virtual string plot(int c){return "";}
+  virtual void forward(){}
+  virtual void backward(){}
+  virtual Layer *share(int c,int bs,vector<Layer*>p){return NULL;}
+  virtual Layer *clone(int c,int bs,vector<Layer*>,int todev){return NULL;}
+
+};
+
+/// Add Layer
+class LAdd : public MLayer
+{
+ public:
+  LAdd(vector<Layer*> in);
+  LAdd(vector<Layer*> in,int dev);
+  LAdd(vector<Layer*> in,string name);
+  LAdd(vector<Layer*> in,string name,int dev);
+  Layer *share(int c,int bs,vector<Layer*>p);
+  Layer *clone(int c,int bs,vector<Layer*>,int todev);
+
+  void forward();
+  void backward();
+  string plot(int c);
+
+};
+
+
+/// Cat Layer
 class LCat : public MLayer
 {
  public:

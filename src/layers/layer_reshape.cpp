@@ -84,7 +84,6 @@ LReshape::LReshape(Layer *parent,shape s,string name,int d):LinLayer(name,d)
     msg("Incompatible sizes","Reshape");
   }
 
-  cout<<"Resize from "<<sin<<" to "<<ls<<"\n";
   ///////
 
   // sharing the pointers to data

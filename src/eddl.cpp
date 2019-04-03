@@ -109,6 +109,14 @@ layer EDDL::Dense(layer parent,int dim,string name,int d)
 }
 
 //////////////////////////////////////////////////////
+layer EDDL::Conv(layer parent,const initializer_list<int>& ks)
+{
+  return new LConv(parent,ks,{1,1},"same");
+}
+
+
+
+//////////////////////////////////////////////////////
 layer EDDL::Activation(layer parent,string act)
 {
   return new LActivation(parent,act,DEV_CPU);

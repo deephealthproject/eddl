@@ -63,6 +63,8 @@ public:
   static layer Dense(layer parent,int dim,string name);
   static layer Dense(layer parent,int dim,string name,int d);
 
+  static layer Conv(layer parent,const initializer_list<int>& ks);
+  
   static layer Activation(layer parent,string act);
   static layer Activation(layer parent,string act,string name);
   static layer Activation(layer parent,string act,int d);

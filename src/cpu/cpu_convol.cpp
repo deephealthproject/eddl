@@ -31,11 +31,11 @@ void cpu_conv2D(Tensor *A,ConvolDescriptor *D)
   int isize=D->ir*D->ic*D->iz;
   int irsize=D->ir*D->ic;
 
+  float *ptrI=&(D->matI(0,0));
+  float *ptrO=D->O->ptr;
+  for(int b=0;b<A->sizes[0];b++,ptrO+=osize){
 
-  for(int b=0;b<A->sizes[0];b++){
-    float *ptr=D->O->ptr;
-    ptr+=b*osize;
-    new (&(D->matO)) Eigen::Map<Eigen::MatrixXf>(ptr,D->r*D->c,D->z);
+    new (&(D->matO)) Eigen::Map<Eigen::MatrixXf>(ptrO,D->r*D->c,D->z);
 
     k=0;
     py=-D->padr;
@@ -49,21 +49,18 @@ void cpu_conv2D(Tensor *A,ConvolDescriptor *D)
          y=py+(i%ksize)/D->kc;
          x=px+(i%D->kc);
 
-         D->ptr[k]=get_pixel(b,x,y,pz,A,D,isize,irsize);
+         ptrI[k]=get_pixel(b,x,y,pz,A,D,isize,irsize);
         }
       px+=D->sc;
       if (px>=D->ic+D->padc-kc2-1) {
         px=-D->padc;
         py+=D->sr;
-        //if (py>=D->ir-kr2) py=-D->padr;
       }
     }
 
     D->matO=D->matI*D->matK;
   }// batch
 }
-
-
 
 
 

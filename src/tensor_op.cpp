@@ -520,25 +520,37 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB)
 
 ////////////////////////////////
 //// CONVOLUTIONS
-////////////////////////////////
+
+ConvolDescriptor::ConvolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st,const initializer_list<int>& p )
+{
+  ksize=vector<int>(ks.begin(), ks.end());
+  stride=vector<int>(st.begin(), st.end());
+  pad=vector<int>(p.begin(), p.end());
+
+  if (ksize.size()!=3) msg("Kernels must have 3 dimensions","ConvolDescriptor::ConvolDescriptor");
+  if (stride.size()!=2) msg("Strides must have 2 dimensions","ConvolDescriptor::ConvolDescriptor");
+  if (pad.size()!=2) msg("Padding must have 2 dimensions","ConvolDescriptor::ConvolDescriptor");
+}
+
 ConvolDescriptor::ConvolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p)
 {
   ksize=vector<int>(ks.begin(), ks.end());
   stride=vector<int>(st.begin(), st.end());
-  padtype=p;
 
-  if (padtype=="same") {
+  if (ksize.size()!=3) msg("Kernels must have 3 dimensions","ConvolDescriptor::ConvolDescriptor");
+  if (stride.size()!=2) msg("Strides must have 2 dimensions","ConvolDescriptor::ConvolDescriptor");
+
+  if (p=="same") {
     pad.push_back(ksize[1]/2);
     pad.push_back(ksize[2]/2);
   }
-  else if (padtype=="none") {
+  else if (p=="none") {
       pad.push_back(0);
       pad.push_back(0);
   }
   else msg("Incorrct padding type","ConvolDescriptor::ConvolDescriptor");
-
-
 }
+
 
 void ConvolDescriptor::build(Tensor *A)
 {
@@ -550,7 +562,6 @@ void ConvolDescriptor::build(Tensor *A)
   kz=A->sizes[1];
 
   K=new Tensor({nk,kz,kr,kc},A->device);
-
 
   sr=stride[0];
   sc=stride[1];
@@ -567,13 +578,9 @@ void ConvolDescriptor::build(Tensor *A)
   c=(ic-ksize[2]+2*padc)/stride[1]+1;
 
   O=new Tensor({A->sizes[0],z,r,c},A->device);
-
-  fprintf(stderr,"Output: %dx%d@%dx%d\n",A->sizes[0],z,r,c);
-
   // mem for ptr, lowering im2col
   //eigen mat in col-major
   matI=Eigen::MatrixXf(r*c,kr*kc*kz);
-  ptr=&(matI(0,0));
 
   new (&matK) Eigen::Map<Eigen::MatrixXf>(K->ptr,kr*kc*kz,nk);
 
@@ -585,16 +592,14 @@ void ConvolDescriptor::build(Tensor *A)
 //// Conv2D
 //// Dimensions must be compatible
 //// A is input 4D Tensor, Batch x Channels x Rows x Cols
-//// K is 4D Tensor, NumFilters x Channels x FilterRows x FilterCols
 //// D is a ConvolDescriptor
-//// C is output 4D Tensor, Batch x Channels x Rows x Cols
 /////////////////////////////////////////////////////////////////////
 
 void Tensor::Conv2D(Tensor *A,ConvolDescriptor *D)
 {
   if ((A->dim!=4)) msg("Tensors are not 4D","Tensor::Conv2D");
 
-  //C->tsem->lock();
+  D->O->tsem->lock();
   if (A->isCPU())
     {
        cpu_conv2D(A,D);
@@ -610,7 +615,7 @@ void Tensor::Conv2D(Tensor *A,ConvolDescriptor *D)
 
   }
 #endif
-  //C->tsem->unlock();
+  D->O->tsem->unlock();
 }
 
 

@@ -517,6 +517,7 @@ void Net::setmode(int m)
 void Net::forward()
 {
   for(int i=0;i<vfts.size();i++) {
+    if (VERBOSE) cout<<vfts[i]->name<<"\n";
     vfts[i]->forward();
   }
 
@@ -728,7 +729,6 @@ void Net::train_batch(vtensor X, vtensor Y,vind sind,int batch,int eval)
 
     for(i=0;i<Y.size();i++)
         Tensor::select(Y[i],lout[i]->target,sind,0,batch);
-
     reset();
     forward();
     loss();

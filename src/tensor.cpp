@@ -364,15 +364,6 @@ void Tensor::print()
       else if (dim==2)
         {
           cout<<(*ptr2).transpose()<<"\n";
-          /*
-          int i,j,p=0;
-          for(i=0;i<sizes[0];++i)
-            {
-              for(j=0;j<sizes[1];++j,p++)
-                printf("%1.3f ",ptr[p]);
-              printf("\n");
-            }
-            */
         }
         else
           {
