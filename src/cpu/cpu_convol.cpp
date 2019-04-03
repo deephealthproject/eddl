@@ -19,7 +19,6 @@ float get_pixel(int b,int px,int py,int pz,Tensor *A,ConvolDescriptor *D,int isi
 void cpu_conv2D(Tensor *A,ConvolDescriptor *D)
 {
   int i,j,k;
-
   int pz,py,px,y,x;
   int ksize=D->kr*D->kc;
   int kr2=D->kr/2;

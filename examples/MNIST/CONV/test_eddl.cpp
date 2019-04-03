@@ -40,7 +40,7 @@ int main(int argc, char **argv)
   eddl.download_mnist();
 
 
-  int batch=100;
+  int batch=1000;
 
   // network
   layer in=eddl.Input({batch,784});
@@ -48,7 +48,10 @@ int main(int argc, char **argv)
 
   l=eddl.Reshape(l,{batch,1,28,28});
 
-  l=eddl.Conv(l,{16,3,3});
+  l=eddl.Activation(eddl.Conv(l,{32,3,3},{2,2}),"relu");
+  l=eddl.Activation(eddl.Conv(l,{64,3,3},{2,2}),"relu");
+  l=eddl.Activation(eddl.Conv(l,{128,3,3},{2,2}),"relu");
+  l=eddl.Activation(eddl.Conv(l,{256,3,3},{2,2}),"relu");
 
   l=eddl.Reshape(l,{batch,-1});
 

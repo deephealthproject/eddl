@@ -113,7 +113,18 @@ layer EDDL::Conv(layer parent,const initializer_list<int>& ks)
 {
   return new LConv(parent,ks,{1,1},"same");
 }
-
+layer EDDL::Conv(layer parent,const initializer_list<int>& ks,const initializer_list<int>& st)
+{
+  return new LConv(parent,ks,st,"same");
+}
+layer EDDL::Conv(layer parent,const initializer_list<int>& ks,const initializer_list<int>& st,string p)
+{
+  return new LConv(parent,ks,st,p);
+}
+layer EDDL::Conv(layer parent,const initializer_list<int>& ks,string p)
+{
+  return new LConv(parent,ks,{1,1},p);
+}
 
 
 //////////////////////////////////////////////////////

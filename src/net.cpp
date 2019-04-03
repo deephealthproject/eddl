@@ -311,6 +311,7 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
       // split on multiple threads
       unsigned int nthreads = std::thread::hardware_concurrency();
 
+      //nthreads=1;
       cout<<"set threads to "<<nthreads<<"\n";
 
       if (nthreads>1)   {
@@ -465,7 +466,7 @@ void Net::split(int c,int todev)
         {
           vlayer par;
 
-          if (todev==DEV_CPU) nin.push_back(layers[j]->share(c,bs,par));
+          if (todev==DEV_CPU) nin.push_back(layers[j]->share(i,bs,par));
           else nin.push_back(layers[j]->clone(c,bs,par,todev+i));
           nlayers.push_back(nin[j]);
         }
@@ -495,7 +496,7 @@ void Net::split(int c,int todev)
       // create new net
       snets.push_back(new Net(nin,nout));
 
-      //snets[i]->info();
+      snets[i]->info();
 
       // build new net
       snets[i]->build(optimizer->clone(),strcosts,strmetrics);
@@ -517,15 +518,14 @@ void Net::setmode(int m)
 void Net::forward()
 {
   for(int i=0;i<vfts.size();i++) {
-    if (VERBOSE) cout<<vfts[i]->name<<"\n";
     vfts[i]->forward();
   }
 
   if (VERBOSE) {
     for(int i=0;i<layers.size();i++) {
       cout<<layers[i]->name<<"\n";
-      fprintf(stderr,"  In:%f\n",layers[i]->input->total_abs());
-        fprintf(stderr,"  Out:%f\n",layers[i]->output->total_abs());
+      fprintf(stderr,"  %s In:%f\n",layers[i]->name.c_str(),layers[i]->input->total_abs());
+      fprintf(stderr,"  %s Out:%f\n",layers[i]->name.c_str(),layers[i]->output->total_abs());
     }
 
     getchar();
@@ -913,6 +913,7 @@ void * train_batch_t(void *t)
     if (net->dev>DEV_CPU)
       net->applygrads(targs->batch);
   }
+
   return NULL;
 }
 

@@ -104,9 +104,16 @@ Layer *LConv::share(int c,int bs,vector<Layer*>p)
   for(int i=0;i<n->params.size();i++) delete n->params[i];
   n->params.clear();
 
-  n->cd->K=params[0];
+  n->K=n->cd->K=cd->K;
+  new (&n->cd->matK) Eigen::Map<Eigen::MatrixXf>(n->K->ptr,cd->kr*cd->kc*cd->kz,cd->nk);
+
+
+  n->input->info();
+  n->cd->K->info();
+  n->cd->O->info();
+
   //n->bias=params[1];
-  n->params.push_back(n->cd->K);
+  n->params.push_back(n->K);
   //n->params.push_back(n->bias);
 
   return n;
