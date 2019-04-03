@@ -1,0 +1,8 @@
+# Compiled Object files
+**/*.slo
+**/*.lo
+**/*.o
+**/*.obj
+test/test_eddl
+test/test_eddl_gpu
+**/*~
