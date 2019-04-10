@@ -65,7 +65,6 @@ int main(int argc, char **argv)
   //
 
   /*
-
   Tensor *A=new Tensor({r,c},DEV_GPU);
   A->set(1.0);
   A->print();

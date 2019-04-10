@@ -577,6 +577,9 @@ void ConvolDescriptor::build(Tensor *A)
   r=(ir-ksize[1]+2*padr)/stride[0]+1;
   c=(ic-ksize[2]+2*padc)/stride[1]+1;
 
+  if ((r<=0)||(c<=0))
+    msg("Invalid output sizes","ConvolDescriptor::build");
+
   O=new Tensor({A->sizes[0],z,r,c},A->device);
   // mem for ptr, lowering im2col
   //eigen mat in col-major

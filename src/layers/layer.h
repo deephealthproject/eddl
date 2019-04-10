@@ -223,6 +223,7 @@ class LConv: public LinLayer
 {
  public:
   ConvolDescriptor *cd;
+  ConvolDescriptor *cdb;
 
   // constructors and clones
   LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p);

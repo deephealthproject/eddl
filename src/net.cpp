@@ -305,6 +305,7 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
   //build net
   build(opt,co,me);
 
+  
   // split net in devices
   if (todev==DEV_CPU) {
     if (dev==DEV_CPU) {

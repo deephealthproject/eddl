@@ -127,7 +127,7 @@ endif
 SRC_PATH=../../../src
 
 #######################################################################
-OBJ =	utils.o tensor.o tensor_op.o cpu_convol.o layer.o layer_tensor.o layer_input.o layer_dense.o layer_activation.o layer_reshape.o layer_drop.o layer_add.o layer_cat.o loss.o metric.o optim.o net.o eddl.o
+OBJ =	utils.o tensor.o tensor_op.o cpu_convol.o layer.o layer_tensor.o layer_input.o layer_dense.o layer_conv.o layer_activation.o layer_reshape.o layer_drop.o layer_add.o layer_cat.o loss.o metric.o optim.o net.o eddl.o
 
 ifeq ($(CORE),1)
 all: $(GPU_OBJ) $(OBJ) test_eddl
@@ -165,6 +165,9 @@ layer_input.o: $(SRC_PATH)/layers/layer_input.cpp $(SRC_PATH)/layers/layer.h
 
 layer_dense.o: $(SRC_PATH)/layers/layer_dense.cpp $(SRC_PATH)/layers/layer.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_dense.cpp
+
+layer_conv.o: $(SRC_PATH)/layers/layer_conv.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_conv.cpp
 
 layer_activation.o: $(SRC_PATH)/layers/layer_activation.cpp $(SRC_PATH)/layers/layer.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_activation.cpp

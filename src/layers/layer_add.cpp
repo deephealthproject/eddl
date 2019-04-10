@@ -48,8 +48,11 @@ LAdd::LAdd(vector<Layer*> parent,string name,int d):MLayer(name,d)
 
   if (parent.size()>1)
     for(int i=0;i<parent.size()-1;++i)
-      if (!Tensor::eqsize(parent[i]->output,parent[i+1]->output))
+      if (!Tensor::eqsize(parent[i]->output,parent[i+1]->output)) {
+        parent[i]->output->info();
+        parent[i+1]->output->info();
         msg("Error: LAdd layers with different tensor sizes");
+      }
 
   add_created++;
 

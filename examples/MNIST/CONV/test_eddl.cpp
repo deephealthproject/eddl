@@ -33,6 +33,23 @@
 
 #include "../../../src/eddl.h"
 
+layer ResBlock(layer in,int k,int n)
+{
+
+  layer l=in;
+  for(int i=0;i<n;i++)
+    l=eddl.Activation(eddl.Conv(l,{k,3,3},{1,1}),"relu");
+
+  // adap depth of input
+  in=eddl.Conv(in,{k,1,1},{1,1});
+  // add input and last
+  l=eddl.Add({in,l});
+
+  // reduce size
+  l=eddl.Conv(l,{k,3,3},{2,2});
+  return l;
+}
+
 int main(int argc, char **argv)
 {
 
@@ -48,10 +65,8 @@ int main(int argc, char **argv)
 
   l=eddl.Reshape(l,{batch,1,28,28});
 
-  l=eddl.Activation(eddl.Conv(l,{32,3,3},{2,2}),"relu");
-  l=eddl.Activation(eddl.Conv(l,{64,3,3},{2,2}),"relu");
-  l=eddl.Activation(eddl.Conv(l,{128,3,3},{2,2}),"relu");
-  l=eddl.Activation(eddl.Conv(l,{256,3,3},{2,2}),"relu");
+  for(int i=0,k=16;i<3;i++,k=k*2)
+    l=ResBlock(l,k,(i+1)*2);
 
   l=eddl.Reshape(l,{batch,-1});
 

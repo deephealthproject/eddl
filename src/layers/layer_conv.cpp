@@ -52,7 +52,7 @@ LConv::LConv(Layer *parent,const initializer_list<int>& ks,const initializer_lis
 
 LConv::LConv(Layer *parent,ConvolDescriptor *D,string name, int d):LinLayer(name,d)
 {
-  if (parent->output->dim!=4) msg("LConv only works over 4D tensors","LConv");
+  if (parent->output->dim!=4) msg("LConv only works over 4D tensors","LConv::LConv");
   conv_created++;
 
   cd=D;
@@ -68,6 +68,8 @@ LConv::LConv(Layer *parent,ConvolDescriptor *D,string name, int d):LinLayer(name
 
   gK=new Tensor(K->getshape(),d);
   gradients.push_back(gK);
+
+  // CD bakcward
 
   parent->addchild(this);
   addparent(parent);
@@ -85,7 +87,7 @@ void LConv::backward()
 {
 
   //get gradients with provided delta
-
+  //Tensor::Conv2D(delta,);
   // backprop delta
   if (parent.size())
     {
