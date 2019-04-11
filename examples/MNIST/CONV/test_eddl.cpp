@@ -57,7 +57,7 @@ int main(int argc, char **argv)
   eddl.download_mnist();
 
 
-  int batch=1000;
+  int batch=128;
 
   // network
   layer in=eddl.Input({batch,784});
@@ -65,9 +65,14 @@ int main(int argc, char **argv)
 
   l=eddl.Reshape(l,{batch,1,28,28});
 
-  for(int i=0,k=16;i<3;i++,k=k*2)
-    l=ResBlock(l,k,(i+1)*2);
+  l=eddl.Activation(eddl.Conv(l,{16,3,3},{2,2}),"relu");
+  l=eddl.Activation(eddl.Conv(l,{32,3,3},{2,2}),"relu");
+  l=eddl.Activation(eddl.Conv(l,{64,3,3},{2,2}),"relu");
+  l=eddl.Activation(eddl.Conv(l,{128,3,3},{2,2}),"relu");
 
+  /*for(int i=0,k=16;i<3;i++,k=k*2)
+    l=ResBlock(l,k,2);
+*/
   l=eddl.Reshape(l,{batch,-1});
 
   l=eddl.Activation(eddl.Dense(l,1024),"relu");
@@ -96,7 +101,7 @@ int main(int argc, char **argv)
   eddl.div(X,255.0);
 
   // training, list of input and output tensors, batch, epochs
-  eddl.fit(net,{X},{Y},batch,2);
+  eddl.fit(net,{X},{Y},batch,20);
 
 
   // Evaluate test

@@ -223,7 +223,6 @@ class LConv: public LinLayer
 {
  public:
   ConvolDescriptor *cd;
-  ConvolDescriptor *cdb;
 
   // constructors and clones
   LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p);
@@ -241,14 +240,7 @@ class LConv: public LinLayer
   Layer *share(int c,int bs,vector<Layer*>p);
   Layer *clone(int c,int bs,vector<Layer*>p,int todev);
 
-  // Params
-  Tensor *K;
-  Tensor *bias;
-
-  Tensor *gK;
-  Tensor *gbias;
-
-
+  // Params are in ConvolDescriptor
 
   // implementation
   void forward();

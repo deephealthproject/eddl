@@ -61,15 +61,14 @@ LConv::LConv(Layer *parent,ConvolDescriptor *D,string name, int d):LinLayer(name
   cd->build(input);
 
   output=cd->O;
-  delta=new Tensor(output->getshape(),d);
+  delta=cd->D;
+  cd->ID=parent->delta;
 
-  K=cd->K;
-  params.push_back(K);
+  params.push_back(cd->K);
+  params.push_back(cd->bias);
 
-  gK=new Tensor(K->getshape(),d);
-  gradients.push_back(gK);
-
-  // CD bakcward
+  gradients.push_back(cd->gK);
+  gradients.push_back(cd->gbias);
 
   parent->addchild(this);
   addparent(parent);
@@ -80,19 +79,19 @@ LConv::LConv(Layer *parent,ConvolDescriptor *D,string name, int d):LinLayer(name
 // virtual
 void LConv::forward()
 {
-  Tensor::Conv2D(input,cd);
+  Tensor::Conv2D(cd);
 }
 
 void LConv::backward()
 {
 
   //get gradients with provided delta
-  //Tensor::Conv2D(delta,);
+
+  Tensor::Conv2D_grad(cd);
   // backprop delta
   if (parent.size())
     {
-      //1: note that increment parent delta
-      //Tensor::mult2D(delta,0,W,1,parent[0]->delta,1);
+      Tensor::Conv2D_back(cd);
     }
 
 }
@@ -106,17 +105,12 @@ Layer *LConv::share(int c,int bs,vector<Layer*>p)
   for(int i=0;i<n->params.size();i++) delete n->params[i];
   n->params.clear();
 
-  n->K=n->cd->K=cd->K;
-  new (&n->cd->matK) Eigen::Map<Eigen::MatrixXf>(n->K->ptr,cd->kr*cd->kc*cd->kz,cd->nk);
+  n->cd->K=cd->K;
+  n->cd->bias=cd->bias;
+  new (&n->cd->matK) Eigen::Map<Eigen::MatrixXf>(n->cd->K->ptr,cd->kr*cd->kc*cd->kz,cd->nk);
 
-
-  n->input->info();
-  n->cd->K->info();
-  n->cd->O->info();
-
-  //n->bias=params[1];
-  n->params.push_back(n->K);
-  //n->params.push_back(n->bias);
+  n->params.push_back(n->cd->K);
+  n->params.push_back(n->cd->bias);
 
   return n;
 }

@@ -556,12 +556,17 @@ void ConvolDescriptor::build(Tensor *A)
 {
   if (A->dim!=4) msg("Tensors are not 4D","ConvolDescriptor::build");
 
+  I=A;
+
   nk=ksize[0];
   kr=ksize[1];
   kc=ksize[2];
   kz=A->sizes[1];
 
   K=new Tensor({nk,kz,kr,kc},A->device);
+  bias=new Tensor({nk},A->device);
+  gK=new Tensor({nk,kz,kr,kc},A->device);
+  gbias=new Tensor({nk},A->device);
 
   sr=stride[0];
   sc=stride[1];
@@ -581,11 +586,13 @@ void ConvolDescriptor::build(Tensor *A)
     msg("Invalid output sizes","ConvolDescriptor::build");
 
   O=new Tensor({A->sizes[0],z,r,c},A->device);
+  D=new Tensor({A->sizes[0],z,r,c},A->device);
   // mem for ptr, lowering im2col
   //eigen mat in col-major
   matI=Eigen::MatrixXf(r*c,kr*kc*kz);
 
   new (&matK) Eigen::Map<Eigen::MatrixXf>(K->ptr,kr*kc*kz,nk);
+  new (&matgK) Eigen::Map<Eigen::MatrixXf>(gK->ptr,kr*kc*kz,nk);
 
   // convolution: matC=matA*matK
 }
@@ -597,18 +604,17 @@ void ConvolDescriptor::build(Tensor *A)
 //// A is input 4D Tensor, Batch x Channels x Rows x Cols
 //// D is a ConvolDescriptor
 /////////////////////////////////////////////////////////////////////
-
-void Tensor::Conv2D(Tensor *A,ConvolDescriptor *D)
+void Tensor::Conv2D(ConvolDescriptor *D)
 {
-  if ((A->dim!=4)) msg("Tensors are not 4D","Tensor::Conv2D");
+  if ((D->I->dim!=4)) msg("Tensors are not 4D","Tensor::Conv2D");
 
   D->O->tsem->lock();
-  if (A->isCPU())
+  if (D->I->isCPU())
     {
-       cpu_conv2D(A,D);
+       cpu_conv2D(D);
     }
 #ifdef cGPU
-  else if (A->isGPU())
+  else if (D->I->isGPU())
     {
        //gpu_conv2D(A,B,D,C);
     }
@@ -620,7 +626,63 @@ void Tensor::Conv2D(Tensor *A,ConvolDescriptor *D)
 #endif
   D->O->tsem->unlock();
 }
+/////////////////////////////////////////////////////////////////////
+//// Conv2D Grad
+//// Dimensions must be compatible
+//// A is input 4D Tensor, Batch x Channels x Rows x Cols
+//// D is a ConvolDescriptor
+/////////////////////////////////////////////////////////////////////
+void Tensor::Conv2D_grad(ConvolDescriptor *D)
+{
+  if ((D->I->dim!=4)) msg("Tensors are not 4D","Tensor::Conv2D");
 
+  D->gK->tsem->lock();
+  if (D->I->isCPU())
+    {
+       D->gK->set(0.0);
+       cpu_conv2D_grad(D);
+    }
+#ifdef cGPU
+  else if (D->I->isGPU())
+    {
+       //gpu_conv2D(A,B,D,C);
+    }
+#endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
+  D->gK->tsem->unlock();
+}
+/////////////////////////////////////////////////////////////////////
+//// Conv2D Back
+//// Dimensions must be compatible
+//// A is input 4D Tensor, Batch x Channels x Rows x Cols
+//// D is a ConvolDescriptor
+/////////////////////////////////////////////////////////////////////
+void Tensor::Conv2D_back(ConvolDescriptor *D)
+{
+  if ((D->I->dim!=4)) msg("Tensors are not 4D","Tensor::Conv2D");
+
+  D->ID->tsem->lock();
+  if (D->I->isCPU())
+    {
+       cpu_conv2D_back(D);
+    }
+#ifdef cGPU
+  else if (D->I->isGPU())
+    {
+       //gpu_conv2D(A,B,D,C);
+    }
+#endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
+  D->ID->tsem->unlock();
+}
 
 
 

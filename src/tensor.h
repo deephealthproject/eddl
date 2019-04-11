@@ -88,12 +88,23 @@ class ConvolDescriptor
    int padr,padc;
    //float *ptr;
 
+
+   Tensor *I; // Input map
+   Tensor *ID;// Delta input map
+   Tensor *K; // filters
+   Tensor *bias; // bias
+   Tensor *gK;// gradient filters
+   Tensor *gbias;// gradient bias
+   Tensor *D; // Delta
+   Tensor *O; // Outputmap
+
+   // CPU implementation
+
    Eigen::MatrixXf matI; // input
    Eigen::MatrixXf matK; // kernels
    Eigen::MatrixXf matO; // output
-
-   Tensor *K;
-   Tensor *O;
+   Eigen::MatrixXf matD; // Delta
+   Eigen::MatrixXf matgK; // gradient kernels
 
    //...
    ConvolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p);
@@ -200,8 +211,9 @@ class Tensor
   static void D_ReLu(Tensor *D, Tensor *I, Tensor *PD);
   static void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
 
-  static void Conv2D(Tensor *A,ConvolDescriptor *D);
-
+  static void Conv2D(ConvolDescriptor *D);
+  static void Conv2D_grad(ConvolDescriptor *D);
+  static void Conv2D_back(ConvolDescriptor *D);
 };
 
 

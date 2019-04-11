@@ -1,12 +1,5 @@
 #include "../tensor.h"
 
-void cpu_conv2D(Tensor *A,ConvolDescriptor *D);
-
-/*
-void ConvolF(Tensor *N, Tensor *K, Tensor *E,int stride, int rpad,int cpad,int threads,int batch);
-
-void ConvolBGrad(Tensor *N, Tensor *gK, Tensor *D,int stride, int rpad,int cpad,int threads,int batch);
-
-void ConvolBDelta(Tensor *ID, Tensor *K, Tensor *D,int stride, int rpad,int cpad,int threads,int batch);
-
-*/
+void cpu_conv2D(ConvolDescriptor *D);
+void cpu_conv2D_grad(ConvolDescriptor *D);
+void cpu_conv2D_back(ConvolDescriptor *D);
