@@ -532,23 +532,30 @@ ConvolDescriptor::ConvolDescriptor(const initializer_list<int>& ks,const initial
   if (pad.size()!=2) msg("Padding must have 2 dimensions","ConvolDescriptor::ConvolDescriptor");
 }
 
+
+ConvolDescriptor::ConvolDescriptor(const vector<int>& ks, const vector<int>& st, string p)
+{
+    if (ks.size()!=3){ msg("Kernels must have 3 dimensions","ConvolDescriptor::ConvolDescriptor");}
+    if (st.size()!=2){ msg("Strides must have 2 dimensions","ConvolDescriptor::ConvolDescriptor");}
+
+    if (p=="same") {
+        pad.push_back(ks[1]/2);
+        pad.push_back(ks[2]/2);
+    }
+    else if (p=="none") {
+        pad.push_back(0);
+        pad.push_back(0);
+    }
+    else msg("Incorrect padding type","ConvolDescriptor::ConvolDescriptor");
+
+}
+
+
 ConvolDescriptor::ConvolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p)
 {
-  ksize=vector<int>(ks.begin(), ks.end());
-  stride=vector<int>(st.begin(), st.end());
-
-  if (ksize.size()!=3) msg("Kernels must have 3 dimensions","ConvolDescriptor::ConvolDescriptor");
-  if (stride.size()!=2) msg("Strides must have 2 dimensions","ConvolDescriptor::ConvolDescriptor");
-
-  if (p=="same") {
-    pad.push_back(ksize[1]/2);
-    pad.push_back(ksize[2]/2);
-  }
-  else if (p=="none") {
-      pad.push_back(0);
-      pad.push_back(0);
-  }
-  else msg("Incorrct padding type","ConvolDescriptor::ConvolDescriptor");
+    ksize=vector<int>(ks.begin(), ks.end());
+    stride=vector<int>(st.begin(), st.end());
+    ConvolDescriptor(ksize, stride, p);
 }
 
 

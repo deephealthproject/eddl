@@ -1,0 +1,22 @@
+# Compiled Object files
+**/*.slo
+**/*.lo
+**/*.o
+**/*.so
+**/*.obj
+src/test/test_eddl
+src/test/test_eddl_gpu
+**/*~
+
+# Plots
+src/test/*.dot
+src/test/*.pdf
+
+# Developer environments
+*.DS_Store
+.idea
+.vscode
+
+# CMake
+CMakeLists.txt
+cmake-build-debug/*

@@ -67,6 +67,7 @@ public:
   static layer Conv(layer parent,const initializer_list<int>& ks,const initializer_list<int>& st,string p);
   static layer Conv(layer parent,const initializer_list<int>& ks,const initializer_list<int>& st);
   static layer Conv(layer parent,const initializer_list<int>& ks,string p);
+  static layer Conv(layer parent,const vector<int>& ks, const vector<int>& st, string p, int d);
 
   static layer Activation(layer parent,string act);
   static layer Activation(layer parent,string act,string name);
@@ -77,6 +78,7 @@ public:
   static layer Reshape(layer parent, const initializer_list<int>& init,string name);
   static layer Reshape(layer parent, const initializer_list<int>& init,int d);
   static layer Reshape(layer parent, const initializer_list<int>& init,string name,int d);
+  static layer Reshape(layer parent, const vector<int>& init, string name, int d);
 
   static layer Drop(layer parent, float df);
   static layer Drop(layer parent, float df,string name);

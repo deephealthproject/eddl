@@ -36,30 +36,30 @@
 int main(int argc, char **argv)
 {
 
-  int dev=DEV_CPU;
-
-  Tensor *A=new Tensor({2,1,7,7});
-  A->set(1.0);
-  A->ptr[50]=10;
-
-
-  ConvolDescriptor *cd=new ConvolDescriptor({1,3,3},{1,1},"same");
-  cd->build(A);
-
-  cd->K->set(2.0);
-
-  Tensor::Conv2D(A,cd);
-
-  cd->O->print();
-  shape s;
-  s.push_back(cd->O->sizes[0]*cd->O->sizes[1]*cd->O->sizes[2]);
-  s.push_back(cd->O->sizes[3]);
-  Tensor *Cr=new Tensor(s,cd->O);
-  Cr->print();
-
-
-  cout<<"ok\n";
-  exit(1);
+//  int dev=DEV_CPU;
+//
+//  Tensor *A=new Tensor({2,1,7,7});
+//  A->set(1.0);
+//  A->ptr[50]=10;
+//
+//
+//  ConvolDescriptor *cd=new ConvolDescriptor({1,3,3},{1,1},"same");
+//  cd->build(A);
+//
+//  cd->K->set(2.0);
+//
+//  Tensor::Conv2D(A,cd);
+//
+//  cd->O->print();
+//  shape s;
+//  s.push_back(cd->O->sizes[0]*cd->O->sizes[1]*cd->O->sizes[2]);
+//  s.push_back(cd->O->sizes[3]);
+//  Tensor *Cr=new Tensor(s,cd->O);
+//  Cr->print();
+//
+//
+//  cout<<"ok\n";
+//  exit(1);
 
 
   //

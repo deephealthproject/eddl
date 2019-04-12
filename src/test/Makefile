@@ -20,7 +20,7 @@ $(info ----> DEFAULT: set TARGET LINUX)
 endif
 
 
-## CORE=0 CPU
+## CORE=1 CPU
 ifdef CORE
 ifeq ($(CORE),1)
 $(info set CPU)
@@ -52,21 +52,22 @@ ifeq ($(TARGET),1)
 # OPT=3: Nothing
 # OPT=4: Debug
 CXX = g++
+CXXSOFLAGS = -shared
 ifeq ($(OPT),1)
 $(info set AVX)
-CXXFLAGS = -std=c++11  -march=native -mavx -O3
+CXXFLAGS = -std=c++11 -march=native -mavx -O3
 endif
 ifeq ($(OPT),2)
 $(info set SSE)
-CXXFLAGS = -std=c++11  -march=native -msse -O3
+CXXFLAGS = -std=c++11 -march=native -msse -O3
 endif
 ifeq ($(OPT),3)
 $(info set no opt)
-CXXFLAGS = -std=c++11  -O3
+CXXFLAGS = -std=c++11 -O3
 endif
 ifeq ($(OPT),4)
 $(info set Debug)
-CXXFLAGS =  -std=c++11  -g
+CXXFLAGS =  -std=c++11 -g
 endif
 LIBFLAGS=-lpthread
 endif
@@ -79,6 +80,7 @@ ifeq ($(TARGET),2)
 # OPT=3: Nothing
 # OPT=4: Debug
 CXX = g++
+CXXSOFLAGS = -shared
 ifeq ($(OPT),1)
 $(info set AVX)
 CXXFLAGS =-std=c++11 -march=native -mavx -O3
@@ -97,7 +99,8 @@ CXXFLAGS =-std=c++11 -g
 endif
 endif
 
-
+# Create position independent code for the shared library
+CXXFLAGS := $(CXXFLAGS) -fPIC
 
 ##CORE FLAGS
 ifeq ($(CORE),2)
@@ -121,30 +124,30 @@ GPU_OBJ = tensor_cuda.o tensor_cuda_op.o tensor_kernels.o
 endif
 
 
-endif
-endif
+endif # Makegoals
+endif # Makegoals
 
 
 #######################################################################
-OBJ =	utils.o cpu_convol.o tensor.o tensor_op.o layer.o layer_tensor.o layer_input.o layer_dense.o layer_activation.o layer_reshape.o layer_conv.o layer_drop.o layer_add.o layer_cat.o loss.o metric.o optim.o net.o eddl.o
+OBJ =	utils.o cpu_convol.o tensor.o tensor_op.o layer.o layer_tensor.o layer_input.o layer_dense.o layer_activation.o layer_reshape.o layer_conv.o layer_drop.o layer_add.o layer_cat.o loss.o metric.o optim.o net.o eddl.o wrapper.o
 
-ifeq ($(CORE),1)
-all: $(GPU_OBJ) $(OBJ) test_eddl test_tensors
+ifeq ($(CORE),1)  # CPU
+all: $(GPU_OBJ) $(OBJ) test_eddl test_tensors shared_eddl
 endif
 
-ifeq ($(CORE),2)
-all: $(GPU_OBJ) $(OBJ) test_eddl test_eddl_gpu test_tensors
+ifeq ($(CORE),2)  # GPU
+all: $(GPU_OBJ) $(OBJ) test_eddl test_eddl_gpu test_tensors shared_eddl
 endif
 
 #--------------------------------- c code
 utils.o: ../utils.cpp ../utils.h
-	$(CXX) $(CXXFLAGS) -c ../utils.cpp
+		$(CXX) $(CXXFLAGS) -c ../utils.cpp
 
 cpu_convol.o: ../cpu/cpu_convol.cpp ../cpu/cpu_convol.h
-	$(CXX) $(CXXFLAGS) -c ../cpu/cpu_convol.cpp
+		$(CXX) $(CXXFLAGS) -c ../cpu/cpu_convol.cpp
 
 tensor.o: ../tensor.cpp ../tensor.h
-	$(CXX) $(CXXFLAGS) -c ../tensor.cpp
+		$(CXX) $(CXXFLAGS) -c ../tensor.cpp
 
 tensor_op.o: ../tensor_op.cpp ../tensor.h
 		$(CXX) $(CXXFLAGS) -c ../tensor_op.cpp
@@ -152,12 +155,11 @@ tensor_op.o: ../tensor_op.cpp ../tensor.h
 tensor_over.o: ../tensor_over.cpp ../tensor_over.h
 		$(CXX) $(CXXFLAGS) -c ../tensor_over.cpp
 
-
 layer.o: ../layers/layer.cpp ../layers/layer.h
 		$(CXX) $(CXXFLAGS) -c ../layers/layer.cpp
 
 layer_tensor.o: ../layers/layer_tensor.cpp ../layers/layer.h
-				$(CXX) $(CXXFLAGS) -c ../layers/layer_tensor.cpp
+		$(CXX) $(CXXFLAGS) -c ../layers/layer_tensor.cpp
 
 layer_input.o: ../layers/layer_input.cpp ../layers/layer.h
 		$(CXX) $(CXXFLAGS) -c ../layers/layer_input.cpp
@@ -198,6 +200,10 @@ eddl.o: ../eddl.cpp ../eddl.h
 layer_reshape.o: ../layers/layer_reshape.cpp ../layers/layer.h
 		$(CXX) $(CXXFLAGS) -c ../layers/layer_reshape.cpp
 
+wrapper.o: ../wrapper.cpp ../wrapper.h
+		$(CXX) $(CXXFLAGS) -c ../wrapper.cpp
+
+
 ##ADD_MORE_RULES
 
 #---------------------------------- gpu code
@@ -218,8 +224,13 @@ test_eddl_gpu: test_eddl_gpu.cpp $(OBJ) $(GPU_OBJ)
 	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_eddl_gpu.cpp -o test_eddl_gpu $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
 
 test_tensors: test_tensors.cpp $(OBJ) $(GPU_OBJ)
-		$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_tensors.cpp -o test_tensors $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_tensors.cpp -o test_tensors $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
 
+my_test_eddl: my_test_eddl.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) my_test_eddl.cpp -o my_test_eddl $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
+
+shared_eddl: $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(CXXSOFLAGS) $(GPU_CXXFLAGS) -o eddl.so $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
 #-------------------------
 
 install:

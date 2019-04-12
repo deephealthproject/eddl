@@ -235,6 +235,9 @@ class LConv: public LinLayer
   LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,int d);
   LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name,int d);
 
+  LConv(Layer *parent,const vector<int>& ks, const vector<int>& st, string p, int d);
+  LConv(Layer *parent,const vector<int>& ks, const vector<int>& st, string p, string name, int d);
+
   LConv(Layer *parent,ConvolDescriptor *cd,string name, int d);
 
   Layer *share(int c,int bs,vector<Layer*>p);
