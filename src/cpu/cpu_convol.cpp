@@ -23,7 +23,7 @@ void add_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsi
   if (py>=D->ir) return;
 
   int p=(b*isize)+(pz*irsize)+(py*D->ic)+px;
-  D->I->ptr[p]+=val;
+  D->ID->ptr[p]+=val;
 }
 
 void im2col(int b,ConvolDescriptor *D,int col2im)
