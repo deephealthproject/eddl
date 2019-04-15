@@ -348,7 +348,7 @@ void Net::build(optim *opt, vstring co, vstring me){
     if (co.size()!=lout.size())
         msg("Loss list size does not match output list","Net.build");
 
-    if (co.size()!=lout.size())
+    if (me.size()!=lout.size())
         msg("Metric list size does not match output list" ,"Net.build");
 
     // check devices
