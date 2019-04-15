@@ -11,6 +11,7 @@ src/test/test_eddl_gpu
 # Plots
 src/test/*.dot
 src/test/*.pdf
+src/test/*.bin
 
 # Developer environments
 *.DS_Store

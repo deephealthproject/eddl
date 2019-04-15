@@ -292,6 +292,42 @@ void Net::bts()
   //fprintf(stderr,"\n");
 }
 
+void Net::splitDev(int todev){
+    // split net in devices
+    if (todev==DEV_CPU) {
+        if (dev==DEV_CPU) {
+            // split on multiple threads
+            unsigned int nthreads = std::thread::hardware_concurrency();
+
+            //nthreads=1;
+            cout<<"set threads to "<<nthreads<<"\n";
+
+            if (nthreads>1)   {
+                Eigen::initParallel();
+                Eigen::setNbThreads(1);
+                split(nthreads,DEV_CPU);
+            }
+        }
+    }
+    else{
+        if (dev<DEV_FPGA) {
+#ifndef cGPU
+            msg("EDDLL not compiled for GPU","Net.build");
+#else
+            // split on multiple GPUs
+      int ngpus=gpu_devices();
+      if (ngpus==0) {
+        msg("GPU devices not found","Net.build");
+      }
+      cout<<"split into "<<ngpus<<" GPUs devices\n";
+      split(ngpus,DEV_GPU);
+#endif
+        }
+        else {
+            // split on multiple FPGAs
+        }
+    }
+};
 
 /////////////////////////////////////////
 void Net::build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m) {
@@ -303,108 +339,78 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
   vstring me=vstring(m.begin(), m.end());
 
   //build net
-  build(opt,co,me);
-
-  
-  // split net in devices
-  if (todev==DEV_CPU) {
-    if (dev==DEV_CPU) {
-      // split on multiple threads
-      unsigned int nthreads = std::thread::hardware_concurrency();
-
-      //nthreads=1;
-      cout<<"set threads to "<<nthreads<<"\n";
-
-      if (nthreads>1)   {
-        Eigen::initParallel();
-        Eigen::setNbThreads(1);
-        split(nthreads,DEV_CPU);
-      }
-    }
-  }
-  else{
-    if (dev<DEV_FPGA) {
-#ifndef cGPU
-      msg("EDDLL not compiled for GPU","Net.build");
-#else
-      // split on multiple GPUs
-      int ngpus=gpu_devices();
-      if (ngpus==0) {
-        msg("GPU devices not found","Net.build");
-      }
-      cout<<"split into "<<ngpus<<" GPUs devices\n";
-      split(ngpus,DEV_GPU);
-#endif
-    }
-    else {
-      // split on multiple FPGAs
-    }
-  }
+  build(opt,co,me, todev);
 }
 
 /////////////////////////////////////////
-void Net::build(optim *opt,vstring co,vstring me)
+void Net::build(optim *opt, vstring co, vstring me){
+    fprintf(stderr,"Build net\n");
+    if (co.size()!=lout.size())
+        msg("Loss list size does not match output list","Net.build");
+
+    if (co.size()!=lout.size())
+        msg("Metric list size does not match output list" ,"Net.build");
+
+    // check devices
+    dev=-1;
+    int ind;
+    for(int i=0;i<layers.size();i++)
+        // do not consider input layers, since they are always on CPU
+        if (!isIn(layers[i],lin,ind)) {
+            if (dev==-1) dev=layers[i]->dev;
+            else {
+                if (layers[i]->dev!=dev)
+                    msg("Net with layers in different devicess" ,"Net.build");
+            }
+        }
+    if (dev==DEV_CPU)
+        cout<<"Net running on CPU\n";
+    else if (dev<DEV_FPGA)
+        cout<<"Net running on GPU "<<dev-DEV_GPU<<"\n";
+    else
+        cout<<"Net running on FPGA "<<dev-DEV_FPGA<<"\n";
+
+    // set optimizer
+    optimizer=opt;
+    optimizer->setlayers(layers);
+    // Initialize fiting errors vector
+    for(int i=0;i<co.size();i++)
+    {
+        strcosts.push_back(co[i]);
+        fiterr.push_back(0.0);
+        fiterr.push_back(0.0);
+    }
+    // set loss functions and create targets tensors
+    for(int i=0;i<co.size();i++)
+    {
+        losses.push_back(new Loss(co[i]));
+        if (co[i]=="soft_cent") lout[i]->delta_bp=1;
+        lout[i]->target=new Tensor(lout[i]->output->getshape(),dev);
+    }
+
+    // set metrics
+    for(int i=0;i<me.size();i++)
+    {
+        strmetrics.push_back(me[i]);
+        metrics.push_back(new Metric(me[i]));
+
+    }
+
+    // forward sort
+    fts();
+    // backward sort
+    bts();
+    // random params
+    initialize();
+}
+
+void Net::build(optim *opt, vstring co, vstring me, int todev)
 {
+    //build net
+    build(opt, co, me);
 
-  fprintf(stderr,"Build net\n");
-  if (co.size()!=lout.size())
-    msg("Loss list size does not match output list","Net.build");
-
-  if (co.size()!=lout.size())
-    msg("Metric list size does not match output list" ,"Net.build");
-
-  // check devices
-  dev=-1;
-  int ind;
-  for(int i=0;i<layers.size();i++)
-    // do not consider input layers, since they are always on CPU
-    if (!isIn(layers[i],lin,ind)) {
-      if (dev==-1) dev=layers[i]->dev;
-      else {
-        if (layers[i]->dev!=dev)
-          msg("Net with layers in different devicess" ,"Net.build");
-      }
-    }
-  if (dev==DEV_CPU)
-    cout<<"Net running on CPU\n";
-  else if (dev<DEV_FPGA)
-    cout<<"Net running on GPU "<<dev-DEV_GPU<<"\n";
-  else
-    cout<<"Net running on FPGA "<<dev-DEV_FPGA<<"\n";
-
-  // set optimizer
-  optimizer=opt;
-  optimizer->setlayers(layers);
-  // Initialize fiting errors vector
-  for(int i=0;i<co.size();i++)
-    {
-      strcosts.push_back(co[i]);
-      fiterr.push_back(0.0);
-      fiterr.push_back(0.0);
-    }
-  // set loss functions and create targets tensors
-  for(int i=0;i<co.size();i++)
-    {
-      losses.push_back(new Loss(co[i]));
-      if (co[i]=="soft_cent") lout[i]->delta_bp=1;
-      lout[i]->target=new Tensor(lout[i]->output->getshape(),dev);
-    }
-
-  // set metrics
-  for(int i=0;i<me.size();i++)
-    {
-      strmetrics.push_back(me[i]);
-      metrics.push_back(new Metric(me[i]));
-
-    }
-
-  // forward sort
-  fts();
-  // backward sort
-  bts();
-  // random params
-  initialize();
-
+    // split net in devices
+    splitDev(todev);
 }
 
 

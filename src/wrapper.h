@@ -9,6 +9,7 @@
 #include <initializer_list>
 #include <vector>
 #include "net.h"
+#include "optim.h"
 
 #define tensor LTensor*
 #define layer Layer*
@@ -46,18 +47,18 @@ model Model_init(Layer* in, int in_size, Layer* out, int out_size);
 // Net operations
 void plot(model m, const char* fname);
 void info(model m);
-//void build(model net,optim *opt,const initializer_list<string>& c, const initializer_list<string>& m, int todev);
-//void fit(model m, const initializer_list<LTensor*>& in, const initializer_list<LTensor*>& out, int batch, int epochs);
-//void evaluate(model m, const initializer_list<LTensor*>& in, const initializer_list<LTensor*>& out);
-//
-//
-//
-//// data
+void build(model net, optim *opt, const char** c, int size_c, const char** m, int size_m, int todev);
+void fit(model m, tensor in, tensor out, int batch, int epochs);
+void evaluate(model m, tensor in, tensor out);
+
+// data
 //static void download_mnist();
 
 const char* Layer_name(layer l);
 
 
+// Optimizers
+sgd* SGD_init(float lr,float mu);
 
 #ifdef __cplusplus
 }

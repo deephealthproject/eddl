@@ -86,9 +86,38 @@ void info(model m){
     EDDL::info(m);
 }
 
+void build(model net, optim *opt, const char** c, int size_c, const char** m, int size_m, int todev){
+    vector<string> co, me;
+
+    for(int i = 0; i < size_c; ++i){co.emplace_back(*c);}
+    for(int i = 0; i < size_m; ++i){me.emplace_back(*m);}
+
+    net->build(opt, co, me, todev);
+}
+
+
+void fit(model m, tensor in, tensor out, int batch, int epochs){
+    vector<Tensor*> tin = {in->input};
+    vector<Tensor*> tout = {out->input};
+
+    m->fit(tin, tout, batch, epochs);
+}
+
+void evaluate(model m, tensor in, tensor out){
+    vector<Tensor*> tin = {in->input};
+    vector<Tensor*> tout = {out->input};
+
+    m->evaluate(tin,tout);
+}
+
 const char* Layer_name(layer l){
     char* name = new char[l->name.length() + 1];
     strcpy(name, l->name.c_str());
     std::cout << "Cat layer address-g: " << &l << std::endl;
     return name;
+}
+
+// Optimizers
+sgd* SGD_init(float lr, float mu){
+    return SGD(lr, mu);
 }

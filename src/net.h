@@ -62,7 +62,7 @@ class Net
  private:
 
   void train_batch(vtensor X,vtensor Y,vind sind,int batch,int eval=0);
-  void build(optim *opt,vstring in,vstring out);
+  void splitDev(int todev);
 
  public:
   Net(vlayer in,vlayer out);
@@ -105,6 +105,8 @@ class Net
 
   void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m);
   void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,int todev);
+  void build(optim *opt, vstring co, vstring me);
+  void build(optim *opt, vstring co, vstring me, int todev);
   void fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch,int epochs);
   void fit(vtensor tin,vtensor tout,int batch, int epochs);
   void train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out);
