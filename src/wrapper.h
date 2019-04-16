@@ -23,6 +23,7 @@ extern "C"
 
 // Create Tensors
 Tensor* Tensor_init(const int* shape, int shape_size, int dev);
+void Tensor_data(Tensor* t, float* ptr);
 
 // Create Layers
 tensor LTensor_init(const int* shape, int shape_size, int dev);

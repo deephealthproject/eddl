@@ -15,6 +15,12 @@ Tensor* Tensor_init(const int* shape, int shape_size, int dev){
     return new Tensor(v, dev);
 }
 
+void Tensor_data(Tensor* t, float* ptr){
+    int tam=1;
+    for(int i=0;i<t->dim;++i) tam*=t->sizes[i];
+    t->tam = tam;
+    t->ptr = ptr;
+}
 
 // Create Layers
 tensor LTensor_init(const int* shape, int shape_size, int dev){
@@ -79,7 +85,6 @@ model Model_init(Layer* in, int in_size, Layer* out, int out_size){
     for( int i = 0; i < out_size; ++i ) {
         vout.push_back(out++);
     }
-
     return EDDL::Model(vin, vout);
 }
 
@@ -94,6 +99,7 @@ void info(model m){
 void build(model net, optim *opt, const char** c, int size_c, const char** m, int size_m, int todev){
     vector<string> co, me;
 
+    // Add pointer values to vector of strings
     for(int i = 0; i < size_c; ++i){co.emplace_back(*c);}
     for(int i = 0; i < size_m; ++i){me.emplace_back(*m);}
 
@@ -104,22 +110,12 @@ void build(model net, optim *opt, const char** c, int size_c, const char** m, in
 void fit(model m, Tensor* in, Tensor* out, int batch, int epochs){
     vector<Tensor*> tin = {in};
     vector<Tensor*> tout = {out};
-    std::cout << "tin: " << tin.size() << std::endl;
-    std::cout << "tout: " << tout.size() << std::endl;
-
-    std::cout << "t0: dim" << " => " << tin[0]->dim << std::endl;
-    std::cout << "t0: tam" << " => " << tin[0]->tam << std::endl;
-    for(int i = 0; i< 10; ++i ) {
-        std::cout << "t0: #" << i << " => " << tin[0]->sizes[i] << std::endl;
-    }
-
     m->fit(tin, tout, batch, epochs);
 }
 
 void evaluate(model m, Tensor* in, Tensor* out){
     vector<Tensor*> tin = {in};
     vector<Tensor*> tout = {out};
-
     m->evaluate(tin, tout);
 }
 
