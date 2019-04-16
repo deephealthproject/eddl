@@ -6,19 +6,24 @@
 
 #include "wrapper.h"
 #include "eddl.h"
+#include "layers/layer.h"
 
-//// For debugging
-//std::cout << "T_init: " << "["; for ( int i = 0; i < init_size; i++) cout << *(init + i) << ", "; std::cout << "]" << std::endl;
-//std::cout << "init_size: " << init_size << std::endl;
-//std::cout << "dev: " << dev << std::endl;
 
-tensor T_init(const int* init, int init_size, int dev){
-    vector<int> v(init, init + init_size);
+// Create Tensors
+Tensor* Tensor_init(const int* shape, int shape_size, int dev){
+    vector<int> v(shape, shape + shape_size);
+    return new Tensor(v, dev);
+}
+
+
+// Create Layers
+tensor LTensor_init(const int* shape, int shape_size, int dev){
+    vector<int> v(shape, shape + shape_size);
     return EDDL::T(v, dev);
 }
 
-layer Input_init(tensor t, int dev){
-    return EDDL::Input(t, dev);
+layer Input_init(Tensor* in, const char* name, int dev){
+    return new LInput(in, dev);
 }
 
 layer Dense_init(layer parent, int dim, const char* name, int dev){
@@ -35,9 +40,9 @@ layer Activation_init(layer parent, const char* act, const char* name, int dev){
     return EDDL::Activation(parent, act, dev);
 }
 
-layer Reshape_init(layer parent, const int* init, int init_size, const char* name, int dev){
-    vector<int> vinit(init, init + init_size);
-    return EDDL::Reshape(parent, vinit, name, dev);
+layer Reshape_init(layer parent, const int* shape, int shape_size, const char* name, int dev){
+    vector<int> vshape(shape, shape + shape_size);
+    return EDDL::Reshape(parent, vshape, name, dev);
 }
 
 layer Drop_init(layer parent, float df, const char* name, int dev){
@@ -96,24 +101,31 @@ void build(model net, optim *opt, const char** c, int size_c, const char** m, in
 }
 
 
-void fit(model m, tensor in, tensor out, int batch, int epochs){
-    vector<Tensor*> tin = {in->input};
-    vector<Tensor*> tout = {out->input};
+void fit(model m, Tensor* in, Tensor* out, int batch, int epochs){
+    vector<Tensor*> tin = {in};
+    vector<Tensor*> tout = {out};
+    std::cout << "tin: " << tin.size() << std::endl;
+    std::cout << "tout: " << tout.size() << std::endl;
+
+    std::cout << "t0: dim" << " => " << tin[0]->dim << std::endl;
+    std::cout << "t0: tam" << " => " << tin[0]->tam << std::endl;
+    for(int i = 0; i< 10; ++i ) {
+        std::cout << "t0: #" << i << " => " << tin[0]->sizes[i] << std::endl;
+    }
 
     m->fit(tin, tout, batch, epochs);
 }
 
-void evaluate(model m, tensor in, tensor out){
-    vector<Tensor*> tin = {in->input};
-    vector<Tensor*> tout = {out->input};
+void evaluate(model m, Tensor* in, Tensor* out){
+    vector<Tensor*> tin = {in};
+    vector<Tensor*> tout = {out};
 
-    m->evaluate(tin,tout);
+    m->evaluate(tin, tout);
 }
 
 const char* Layer_name(layer l){
     char* name = new char[l->name.length() + 1];
     strcpy(name, l->name.c_str());
-    std::cout << "Cat layer address-g: " << &l << std::endl;
     return name;
 }
 

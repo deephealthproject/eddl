@@ -22,10 +22,12 @@ extern "C"
 
 
 // Create Tensors
-tensor T_init(const int* init, int init_size, int dev);
+Tensor* Tensor_init(const int* shape, int shape_size, int dev);
 
 // Create Layers
-layer Input_init(tensor t, int dev);
+tensor LTensor_init(const int* shape, int shape_size, int dev);
+
+layer Input_init(Tensor* in, const char* name, int dev);
 
 layer Dense_init(layer parent, int dim, const char* name, int dev);
 
@@ -33,7 +35,7 @@ layer Conv_init(layer parent, const int* ks, int ks_size, const int* st, int st_
 
 layer Activation_init(layer parent, const char* act, const char* name, int dev);
 
-layer Reshape_init(layer parent, const int* init, int init_size, const char* name, int dev);
+layer Reshape_init(layer parent, const int* shape, int shape_size, const char* name, int dev);
 
 layer Drop_init(layer parent, float df, const char* name, int dev);
 
@@ -48,8 +50,8 @@ model Model_init(Layer* in, int in_size, Layer* out, int out_size);
 void plot(model m, const char* fname);
 void info(model m);
 void build(model net, optim *opt, const char** c, int size_c, const char** m, int size_m, int todev);
-void fit(model m, tensor in, tensor out, int batch, int epochs);
-void evaluate(model m, tensor in, tensor out);
+void fit(model m, Tensor* in, Tensor* out, int batch, int epochs);
+void evaluate(model m, Tensor* in, Tensor* out);
 
 // data
 //static void download_mnist();

@@ -36,87 +36,90 @@
 
 float loss(tensor ytrue,tensor ypred)
 {
-  LTensor yt=*ytrue;
-  LTensor yp=*ypred;
+    LTensor yt=*ytrue;
+    LTensor yp=*ypred;
 
-  LTensor l=yt+yp+yp;
+    LTensor l=yt+yp+yp;
 
-  return 0.0;
+    return 0.0;
 
 }
 
 layer ResBlock(layer in, int dim,int n)
 {
 
-  layer l=in;
-  for(int i=0;i<n;i++)
-    l=eddl.Activation(eddl.Dense(l,dim),"relu");
+    layer l=in;
+    for(int i=0;i<n;i++)
+        l=eddl.Activation(eddl.Dense(l,dim),"relu");
 
-  l=eddl.Add({in,l});
+    l=eddl.Add({in,l});
 
-  return l;
+    return l;
 }
 
 int main(int argc, char **argv)
 {
 
-  int batch=1000;
+    int batch=1000;
 
-  // network
-  layer in=eddl.Input({batch,784});
-  layer l=in;
-  layer l2;
+    // Download MNIST
+    eddl.download_mnist();
 
-  /*
-    for(int i=0;i<5;i++)
-    l=eddl.Activation(eddl.Dense(l,1024),"relu");
-    */
+    // network
+    layer in=eddl.Input({batch,784});
+    layer l=in;
+    layer l2;
 
-  l=eddl.Drop(eddl.Activation(eddl.Dense(l,1024),"relu"),0.5);
-  for(int i=0;i<2;i++) {
-      if (i==1) l2=l;
-      l=ResBlock(l,1024,1);
-  }
+    /*
+      for(int i=0;i<5;i++)
+      l=eddl.Activation(eddl.Dense(l,1024),"relu");
+      */
 
-  //l=eddl.Reshape(l,{batch,16,2,2,-1});
-  //l=eddl.Reshape(l,{batch,1024});
+    l=eddl.Drop(eddl.Activation(eddl.Dense(l,1024),"relu"),0.5);
+    for(int i=0;i<2;i++) {
+        if (i==1) l2=l;
+        l=ResBlock(l,1024,1);
+    }
 
-  l=eddl.Cat({l,l2});
+    //l=eddl.Reshape(l,{batch,16,2,2,-1});
+    //l=eddl.Reshape(l,{batch,1024});
 
-  layer out=eddl.Activation(eddl.Dense(l,10),"softmax");
+    l=eddl.Cat({l,l2});
 
-  // net define input and output layers list
-  model net=eddl.Model({in},{out});
+    layer out=eddl.Activation(eddl.Dense(l,10),"softmax");
 
-  // plot the model
-  eddl.plot(net,"model.pdf");
+    // net define input and output layers list
+    model net=eddl.Model({in},{out});
 
-  // get some info from the network
-  eddl.info(net);
+    // plot the model
+    eddl.plot(net,"model.pdf");
 
-  // Attach an optimizer and a list of error criteria and metrics
-  // size of error criteria and metrics list must match with size of list of outputs
-  // optionally put a DEVICE where the net will run
-  eddl.build(net,SGD(0.01,0.9),{"soft_cent"},{"acc"},DEV_CPU);
+    // get some info from the network
+    eddl.info(net);
 
-  // read data
-  tensor X=eddl.T("trX.bin");
-  tensor Y=eddl.T("trY.bin");
+    // Attach an optimizer and a list of error criteria and metrics
+    // size of error criteria and metrics list must match with size of list of outputs
+    // optionally put a DEVICE where the net will run
+    eddl.build(net,SGD(0.01,0.9),{"soft_cent"},{"acc"},DEV_CPU);
 
-  eddl.div(X,255.0);
+    // read data
+    tensor X=eddl.T("trX.bin");
+    tensor Y=eddl.T("trY.bin");
 
-  // training, list of input and output tensors, batch, epochs
-  eddl.fit(net,{X},{Y},batch,1);
+    eddl.div(X,255.0);
+
+    // training, list of input and output tensors, batch, epochs
+    eddl.fit(net,{X},{Y},batch,1);
 
 
-  //// TEST
+    //// TEST
 
-  tensor tX=eddl.T("tsX.bin");
-  tensor tY=eddl.T("tsY.bin");
+    tensor tX=eddl.T("tsX.bin");
+    tensor tY=eddl.T("tsY.bin");
 
-  eddl.div(tX,255.0);
+    eddl.div(tX,255.0);
 
-  eddl.evaluate(net,{tX},{tY});
+    eddl.evaluate(net,{tX},{tY});
 
 }
 
