@@ -34,19 +34,6 @@
 #include "../eddl.h"
 
 
-float loss(tensor ytrue,tensor ypred)
-{
-  LTensor yt=*ytrue;
-  LTensor yp=*ypred;
-
-  LTensor l=yt+yp;
-
-  eddl.Add({yt,yp});
-
-  return 0.0;
-
-}
-
 layer ResBlock(layer in, int dim,int n)
 {
 
@@ -101,7 +88,6 @@ int main(int argc, char **argv)
   // optionally put a DEVICE where the net will run
   eddl.build(net,SGD(0.01,0.9),{"myloss1"},{"acc"},DEV_CPU);
 
-  edd.setloss("myloss1",loss);
 
   // read data
   tensor X=eddl.T("trX.bin");

@@ -253,7 +253,7 @@ class LConv: public LinLayer
 class LPool: public LinLayer
 {
  public:
-  PoolDescriptor *cd;
+  PoolDescriptor *pd;
 
   // constructors and clones
   LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p);
@@ -284,7 +284,7 @@ class LPool: public LinLayer
 class LMPool: public LPool
 {
  public:
-  
+
   // constructors and clones
   LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p);
   LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name);
@@ -298,7 +298,8 @@ class LMPool: public LPool
 
   LMPool(Layer *parent,PoolDescriptor *cd,string name, int d);
 
-  // Params are in ConvolDescriptor
+  // Params
+  Tensor *indX,*indY;
 
   // implementation
   void forward();

@@ -55,14 +55,14 @@ LPool::LPool(Layer *parent,PoolDescriptor *D,string name, int d):LinLayer(name,d
   if (parent->output->dim!=4) msg("LPool only works over 4D tensors","LPool::LPool");
   pool_created++;
 
-  cd=D;
+  pd=D;
 
   input=parent->output;
-  cd->build(input);
+  pd->build(input);
 
-  output=cd->O;
-  delta=cd->D;
-  cd->ID=parent->delta;
+  output=pd->O;
+  delta=pd->D;
+  pd->ID=parent->delta;
 
   parent->addchild(this);
   addparent(parent);
@@ -72,7 +72,7 @@ LPool::LPool(Layer *parent,PoolDescriptor *D,string name, int d):LinLayer(name,d
 
 Layer *LPool::share(int c,int bs,vector<Layer*>p)
 {
-  LPool *n=new LPool(p[0],{cd->ksize[0],cd->ksize[1]},{cd->stride[0],cd->stride[1]},{cd->pad[0],cd->pad[1]},"share_"+to_string(c)+name,dev);
+  LPool *n=new LPool(p[0],{pd->kr,pd->kc},{pd->sr,pd->sc},{pd->padr,pd->padc},"share_"+to_string(c)+name,dev);
   n->orig=this;
 
   return n;
@@ -80,7 +80,7 @@ Layer *LPool::share(int c,int bs,vector<Layer*>p)
 
 Layer *LPool::clone(int c,int bs,vector<Layer*>p,int todev)
 {
-  LPool *n=new LPool(p[0],{cd->ksize[0],cd->ksize[1]},{cd->stride[0],cd->stride[1]},{cd->pad[0],cd->pad[1]},"clone_"+to_string(todev)+name,todev);
+  LPool *n=new LPool(p[0],{pd->kr,pd->kc},{pd->sr,pd->sc},{pd->padr,pd->padc},"clone_"+to_string(todev)+name,todev);
   n->orig=this;
 
   return n;
@@ -113,13 +113,17 @@ LMPool::LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_l
 LMPool::LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,int d):LMPool(parent,ks,st,p,"mpool"+to_string(pool_created),d){}
 LMPool::LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name,int d):LMPool(parent,new PoolDescriptor(ks,st,p),name,d){}
 
-LMPool::LMPool(Layer *parent,PoolDescriptor *D,string name, int d):LPool(parent,D,name,d){}
+LMPool::LMPool(Layer *parent,PoolDescriptor *D,string name, int d):LPool(parent,D,name,d)
+{
+  // params
+
+}
 
 
 // virtual
 void LMPool::forward()
 {
-  Tensor::MPool2D(cd);
+  Tensor::MPool2D(pd);
 }
 
 void LMPool::backward()
@@ -128,7 +132,7 @@ void LMPool::backward()
   // backprop delta
   if (parent.size())
     {
-      Tensor::MPool2D_back(cd);
+      Tensor::MPool2D_back(pd);
     }
 
 }
