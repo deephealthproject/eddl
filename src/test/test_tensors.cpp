@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 
   cd->K->set(2.0);
 
-  Tensor::Conv2D(A,cd);
+  Tensor::Conv2D(cd);
 
   cd->O->print();
   shape s;
