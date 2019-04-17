@@ -115,12 +115,13 @@ void cpu_conv2D_back(ConvolDescriptor *D)
 //////////////////
 void cpu_mpool2D(PoolDescriptor *D)
 {
+  // to implement
 
 }
 
 void cpu_mpool2D_back(PoolDescriptor *D)
 {
-
+  // to implement
 }
 
 
