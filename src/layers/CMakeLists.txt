@@ -11,4 +11,5 @@ target_sources(EDDLL
 		layer_input.cpp
 		layer_reshape.cpp
 		layer_tensor.cpp
+		layer_pool.cpp
 )
