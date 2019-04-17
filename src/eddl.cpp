@@ -244,6 +244,17 @@ layer EDDL::Cat(const initializer_list<layer>& init,string name,int d)
   return new LCat(vlayer(init.begin(), init.end()),name,d);
 }
 
+////////////
+
+optimizer EDDL::SGD(const initializer_list<float>& p)
+{
+  return new sgd(p);
+}
+void EDDL::change(optimizer o,const initializer_list<float>& p)
+{
+  o->change(p);
+}
+
 /////////////////////////////////////////////////////////
 model EDDL::Model(vlayer in,vlayer out)
 {
@@ -262,13 +273,13 @@ void EDDL::plot(model m,string fname)
   m->plot(fname);
 }
 
-void EDDL::build(model net,optim *opt,const initializer_list<string>& c,const initializer_list<string>& m)
+void EDDL::build(model net,optimizer o,const initializer_list<string>& c,const initializer_list<string>& m)
 {
-  net->build(opt,c,m);
+  net->build(o,c,m);
 }
-void EDDL::build(model net,optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,int todev)
+void EDDL::build(model net,optimizer o,const initializer_list<string>& c,const initializer_list<string>& m,int todev)
 {
-  net->build(opt,c,m,todev);
+  net->build(o,c,m,todev);
 }
 
 void EDDL::fit(model net, const initializer_list<LTensor*>& in,const initializer_list<LTensor*>& out,int batch,int epochs)

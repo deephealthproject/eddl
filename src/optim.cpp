@@ -43,16 +43,22 @@ optim::optim()
 
 
 ////// SGD //////
-sgd::sgd(float l,float m):optim()
+sgd::sgd(const initializer_list<float>& p):optim()
 {
-  lr=l;
-  mu=m;
+  vector<float>v=vector<float>(p.begin(), p.end());
+  lr=v[0];
+  mu=v[1];
 }
-
+void sgd::change(const initializer_list<float>& p)
+{
+  vector<float>v=vector<float>(p.begin(), p.end());
+  lr=v[0];
+  mu=v[1];
+}
 
 optim *sgd::clone()
 {
-  return new sgd(lr,mu);
+  return new sgd({lr,mu});
 }
 
 

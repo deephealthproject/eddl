@@ -40,7 +40,7 @@
 using namespace std;
 
 //shorcuts
-#define SGD new sgd
+//#define SGD new sgd
 
 typedef vector<Layer*> vlayer;
 typedef vector<Tensor*> vtensor;
@@ -55,6 +55,7 @@ class optim
   virtual void setlayers(vlayer l){}
   virtual void applygrads(int batch){}
   virtual optim *clone(){return NULL;}
+  virtual void change(const initializer_list<float>& p){}
 
 };
 
@@ -65,10 +66,11 @@ class sgd: public optim
   float mu;
   vtensor mT;
 
-  sgd(float lr,float mu);
+  sgd(const initializer_list<float>& p);
   optim *clone();
   void setlayers(vlayer l);
   void applygrads(int batch);
+  void change(const initializer_list<float>& p);
 };
 #endif
 
