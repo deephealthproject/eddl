@@ -756,8 +756,7 @@ void PoolDescriptor::build(Tensor *A)
 
   O=new Tensor({A->sizes[0],z,r,c},A->device);
   D=new Tensor(O->getshape(),A->device);
-  indX=new Tensor(O->getshape(),A->device);
-  indY=new Tensor(O->getshape(),A->device);
+
 
 }
 
@@ -802,6 +801,7 @@ void Tensor::MPool2D_back(PoolDescriptor *D)
   D->ID->tsem->lock();
   if (D->I->isCPU())
     {
+
        cpu_mpool2D_back(D);
     }
 #ifdef cGPU

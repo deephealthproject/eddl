@@ -38,18 +38,6 @@ int pool_created=1;
 
 using namespace std;
 
-// constructors and clones
-LPool::LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p):LPool(parent,ks,st,p,"pool"+to_string(pool_created),DEV_CPU){}
-LPool::LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name):LPool(parent,ks,st,p,name,DEV_CPU){}
-LPool::LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,int d):LPool(parent,ks,st,p,"pool"+to_string(pool_created),d){}
-LPool::LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name,int d):LPool(parent,new PoolDescriptor(ks,st,p),name,d){}
-
-LPool::LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p):LPool(parent,ks,st,p,"pool"+to_string(pool_created),DEV_CPU){}
-LPool::LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name):LPool(parent,ks,st,p,name,DEV_CPU){}
-LPool::LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,int d):LPool(parent,ks,st,p,"pool"+to_string(pool_created),d){}
-LPool::LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name,int d):LPool(parent,new PoolDescriptor(ks,st,p),name,d){}
-
-
 LPool::LPool(Layer *parent,PoolDescriptor *D,string name, int d):LinLayer(name,d)
 {
   if (parent->output->dim!=4) msg("LPool only works over 4D tensors","LPool::LPool");
@@ -70,35 +58,6 @@ LPool::LPool(Layer *parent,PoolDescriptor *D,string name, int d):LinLayer(name,d
 }
 
 
-Layer *LPool::share(int c,int bs,vector<Layer*>p)
-{
-  LPool *n=new LPool(p[0],{pd->kr,pd->kc},{pd->sr,pd->sc},{pd->padr,pd->padc},"share_"+to_string(c)+name,dev);
-  n->orig=this;
-
-  return n;
-}
-
-Layer *LPool::clone(int c,int bs,vector<Layer*>p,int todev)
-{
-  LPool *n=new LPool(p[0],{pd->kr,pd->kc},{pd->sr,pd->sc},{pd->padr,pd->padc},"clone_"+to_string(todev)+name,todev);
-  n->orig=this;
-
-  return n;
-}
-
-
-string LPool::plot(int c)
-{
-    string s;
-
-    if (c) s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=gray,shape=box]";
-    else s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=red,shape=box]";
-
-    return s;
-}
-
-
-
 //////////////
 // MaxPool2D
 //////////////
@@ -116,11 +75,13 @@ LMPool::LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_l
 LMPool::LMPool(Layer *parent,PoolDescriptor *D,string name, int d):LPool(parent,D,name,d)
 {
   // params
-
+  D->indX=new Tensor(D->O->getshape(),d);
+  D->indY=new Tensor(D->O->getshape(),d);
 }
 
 
 // virtual
+
 void LMPool::forward()
 {
   Tensor::MPool2D(pd);
@@ -128,14 +89,39 @@ void LMPool::forward()
 
 void LMPool::backward()
 {
-
   // backprop delta
   if (parent.size())
     {
       Tensor::MPool2D_back(pd);
     }
-
 }
+
+Layer *LMPool::share(int c,int bs,vector<Layer*>p)
+{
+  LMPool *n=new LMPool(p[0],{pd->kr,pd->kc},{pd->sr,pd->sc},{pd->padr,pd->padc},"share_"+to_string(c)+name,dev);
+  n->orig=this;
+
+  return n;
+}
+
+Layer *LMPool::clone(int c,int bs,vector<Layer*>p,int todev)
+{
+  LMPool *n=new LMPool(p[0],{pd->kr,pd->kc},{pd->sr,pd->sc},{pd->padr,pd->padc},"clone_"+to_string(todev)+name,todev);
+  n->orig=this;
+
+  return n;
+}
+
+string LMPool::plot(int c)
+{
+    string s;
+
+    if (c) s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=gray,shape=box]";
+    else s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=red,shape=box]";
+
+    return s;
+}
+
 
 //////////////
 // APool2D

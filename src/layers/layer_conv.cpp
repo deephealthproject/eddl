@@ -89,7 +89,6 @@ void LConv::backward()
 {
 
   //get gradients with provided delta
-
   Tensor::Conv2D_grad(cd);
   // backprop delta
   if (parent.size())

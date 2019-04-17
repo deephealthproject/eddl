@@ -62,7 +62,7 @@ int main(int argc, char **argv)
 
 
 
-  PoolDescriptor *pd=new PoolDescriptor({3,3},{1,1},"same");
+  PoolDescriptor *pd=new PoolDescriptor({3,3},{3,3},"none");
   pd->build(cd->O);
 
   pd->O->info();

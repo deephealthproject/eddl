@@ -306,14 +306,13 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
   //build net
   build(opt,co,me);
 
-  
+
   // split net in devices
   if (todev==DEV_CPU) {
     if (dev==DEV_CPU) {
       // split on multiple threads
       unsigned int nthreads = std::thread::hardware_concurrency();
 
-      //nthreads=1;
       cout<<"set threads to "<<nthreads<<"\n";
 
       if (nthreads>1)   {
@@ -526,8 +525,8 @@ void Net::forward()
   if (VERBOSE) {
     for(int i=0;i<layers.size();i++) {
       cout<<layers[i]->name<<"\n";
-      fprintf(stderr,"  %s In:%f\n",layers[i]->name.c_str(),layers[i]->input->total_abs());
-      fprintf(stderr,"  %s Out:%f\n",layers[i]->name.c_str(),layers[i]->output->total_abs());
+      fprintf(stderr,"  %s In:%f\n",layers[i]->name.c_str(),layers[i]->input->total_sum());
+      fprintf(stderr,"  %s Out:%f\n",layers[i]->name.c_str(),layers[i]->output->total_sum());
     }
 
     getchar();
