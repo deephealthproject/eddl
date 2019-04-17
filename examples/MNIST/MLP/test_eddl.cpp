@@ -63,7 +63,11 @@ int main(int argc, char **argv)
   // Attach an optimizer and a list of error criteria and metrics
   // size of error criteria and metrics list must match with size of list of outputs
   // optionally put a DEVICE where the net will run
-  eddl.build(net,SGD(0.01,0.9),{"soft_cent"},{"acc"},DEV_CPU);
+
+  optimizer sgd=eddl.SGD({0.01,0.9});
+
+
+  eddl.build(net,sgd,{"soft_cent"},{"acc"},DEV_CPU);
 
 
   // read data
