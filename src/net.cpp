@@ -36,6 +36,7 @@
 #include <chrono>
 #include <thread>
 #include "net.h"
+#include <pthread.h>
 
 #ifdef cGPU
 #include "gpu/tensor_cuda.h"

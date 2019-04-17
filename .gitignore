@@ -21,3 +21,8 @@ src/test/*.bin
 # CMake
 CMakeLists.txt
 cmake-build-debug/*
+
+# Build
+/[Bb]uild*
+/[Bb]in*
+/examples/MNIST/CONV/test_eddl

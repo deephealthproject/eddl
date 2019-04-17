@@ -111,9 +111,35 @@ class ConvolDescriptor
    ConvolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st,const initializer_list<int>& p );
    ConvolDescriptor(const vector<int>& ks, const vector<int>& st, string p);
 
+   void params();
    void build(Tensor *A);
 };
 
+class PoolDescriptor
+{
+ public:
+   vector<int> ksize;
+   vector<int> stride;
+   vector<int> pad;
+
+   Tensor *I; // Input map
+   Tensor *ID;// Delta input map
+   Tensor *D; // Delta
+   Tensor *O; // Outputmap
+
+   int kr,kc;
+   int sr,sc;
+   int ir,ic,iz;
+   int r,c,z;
+   int padr,padc;
+
+   //...
+   PoolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p);
+   PoolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st,const initializer_list<int>& p );
+
+   void params();
+   void build(Tensor *A);
+};
 
 
 class Tensor
@@ -215,6 +241,11 @@ class Tensor
   static void Conv2D(ConvolDescriptor *D);
   static void Conv2D_grad(ConvolDescriptor *D);
   static void Conv2D_back(ConvolDescriptor *D);
+
+
+  static void MPool2D(PoolDescriptor *D);
+  static void MPool2D_back(PoolDescriptor *D);
+
 };
 
 

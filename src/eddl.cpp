@@ -125,9 +125,28 @@ layer EDDL::Conv(layer parent,const initializer_list<int>& ks,string p)
 {
   return new LConv(parent,ks,{1,1},p);
 }
+
 layer EDDL::Conv(layer parent,const vector<int>& ks, const vector<int>& st, string p, int d)
 {
     return new LConv(parent,ks,st,p,d);
+}
+
+//////////////////////////////////////////////////////
+layer EDDL::MPool(layer parent,const initializer_list<int>& ks)
+{
+  return new LMPool(parent,ks,ks,"none");
+}
+layer EDDL::MPool(layer parent,const initializer_list<int>& ks,const initializer_list<int>& st)
+{
+  return new LMPool(parent,ks,st,"none");
+}
+layer EDDL::MPool(layer parent,const initializer_list<int>& ks,const initializer_list<int>& st,string p)
+{
+  return new LMPool(parent,ks,st,p);
+}
+layer EDDL::MPool(layer parent,const initializer_list<int>& ks,string p)
+{
+  return new LMPool(parent,ks,ks,p);
 }
 
 //////////////////////////////////////////////////////

@@ -570,11 +570,6 @@ void ConvolDescriptor::build(Tensor *A)
   kc=ksize[2];
   kz=A->sizes[1];
 
-  K=new Tensor({nk,kz,kr,kc},A->device);
-  bias=new Tensor({nk},A->device);
-  gK=new Tensor({nk,kz,kr,kc},A->device);
-  gbias=new Tensor({nk},A->device);
-
   sr=stride[0];
   sc=stride[1];
 
@@ -586,24 +581,101 @@ void ConvolDescriptor::build(Tensor *A)
   padc=pad[1];
 
   z=nk;
-  r=(ir-ksize[1]+2*padr)/stride[0]+1;
-  c=(ic-ksize[2]+2*padc)/stride[1]+1;
+  r=(ir-kr+2*padr)/sr+1;
+  c=(ic-kc+2*padc)/sc+1;
 
   if ((r<=0)||(c<=0))
     msg("Invalid output sizes","ConvolDescriptor::build");
 
   O=new Tensor({A->sizes[0],z,r,c},A->device);
   D=new Tensor({A->sizes[0],z,r,c},A->device);
-  // mem for ptr, lowering im2col
-  //eigen mat in col-major
-  matI=Eigen::MatrixXf(r*c,kr*kc*kz);
 
-  new (&matK) Eigen::Map<Eigen::MatrixXf>(K->ptr,kr*kc*kz,nk);
-  new (&matgK) Eigen::Map<Eigen::MatrixXf>(gK->ptr,kr*kc*kz,nk);
-
-  // convolution: matC=matA*matK
 }
 
+void ConvolDescriptor::params()
+{
+  K=new Tensor({nk,kz,kr,kc},I->device);
+  bias=new Tensor({nk},I->device);
+  gK=new Tensor({nk,kz,kr,kc},I->device);
+  gbias=new Tensor({nk},I->device);
+
+  if (I->isCPU()) {
+    // mem for ptr, lowering im2col
+    //eigen mat in col-major
+    matI=Eigen::MatrixXf(r*c,kr*kc*kz);
+    new (&matK) Eigen::Map<Eigen::MatrixXf>(K->ptr,kr*kc*kz,nk);
+    new (&matgK) Eigen::Map<Eigen::MatrixXf>(gK->ptr,kr*kc*kz,nk);
+    // convolution: matC=matA*matK
+  }
+
+}
+
+
+////////////////////////////////
+////  POOLING
+
+PoolDescriptor::PoolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st,const initializer_list<int>& p )
+{
+  ksize=vector<int>(ks.begin(), ks.end());
+  stride=vector<int>(st.begin(), st.end());
+  pad=vector<int>(p.begin(), p.end());
+
+  if (ksize.size()!=2) msg("Pooling Kernels must have 2 dimensions","PoolDescriptor::PoolDescriptor");
+  if (stride.size()!=2) msg("Strides must have 2 dimensions","PoolDescriptor::PoolDescriptor");
+  if (pad.size()!=2) msg("Padding must have 2 dimensions","PoolDescriptor::PoolDescriptor");
+}
+
+PoolDescriptor::PoolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p)
+{
+  ksize=vector<int>(ks.begin(), ks.end());
+  stride=vector<int>(st.begin(), st.end());
+
+  if (ksize.size()!=2) msg("Pooling Kernels must have 2 dimensions","PoolDescriptor::PoolDescriptor");
+  if (stride.size()!=2) msg("Strides must have 2 dimensions","PoolDescriptor::PoolDescriptor");
+
+  if (p=="same") {
+    pad.push_back(ksize[1]/2);
+    pad.push_back(ksize[2]/2);
+  }
+  else if (p=="none") {
+      pad.push_back(0);
+      pad.push_back(0);
+  }
+  else msg("Incorrect padding type","PoolDescriptor::PoolDescriptor");
+}
+
+
+void PoolDescriptor::build(Tensor *A)
+{
+  if (A->dim!=4) msg("Tensors are not 4D","PoolDescriptor::build");
+
+  I=A;
+
+
+  kr=ksize[0];
+  kc=ksize[1];
+
+  sr=stride[0];
+  sc=stride[1];
+
+  iz=A->sizes[1];
+  ir=A->sizes[2];
+  ic=A->sizes[3];
+
+  padr=pad[0];
+  padc=pad[1];
+
+  z=iz;
+  r=(ir-kr+2*padr)/sr+1;
+  c=(ic-kc+2*padc)/sc+1;
+
+  if ((r<=0)||(c<=0))
+    msg("Invalid output sizes","PoolDescriptor::build");
+
+  O=new Tensor({A->sizes[0],z,r,c},A->device);
+  D=new Tensor({A->sizes[0],z,r,c},A->device);
+
+}
 
 /////////////////////////////////////////////////////////////////////
 //// Conv2D
@@ -691,6 +763,62 @@ void Tensor::Conv2D_back(ConvolDescriptor *D)
   D->ID->tsem->unlock();
 }
 
+
+/////////////////////////////////////////////////////////////////////
+//// MPool2D
+//// Dimensions must be compatible
+//// A is input 4D Tensor, Batch x Channels x Rows x Cols
+//// D is a ConvolDescriptor
+/////////////////////////////////////////////////////////////////////
+void Tensor::MPool2D(PoolDescriptor *D)
+{
+  if ((D->I->dim!=4)) msg("Tensors are not 4D","Tensor::MPool2D");
+
+  D->O->tsem->lock();
+  if (D->I->isCPU())
+    {
+       cpu_mpool2D(D);
+    }
+#ifdef cGPU
+  else if (D->I->isGPU())
+    {
+    }
+#endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
+  D->O->tsem->unlock();
+}
+
+/////////////////////////////////////////////////////////////////////
+//// MPool2D
+//// Dimensions must be compatible
+//// A is input 4D Tensor, Batch x Channels x Rows x Cols
+//// D is a ConvolDescriptor
+/////////////////////////////////////////////////////////////////////
+void Tensor::MPool2D_back(PoolDescriptor *D)
+{
+  if ((D->I->dim!=4)) msg("Tensors are not 4D","Tensor::MPool2D_back");
+
+  D->ID->tsem->lock();
+  if (D->I->isCPU())
+    {
+       cpu_mpool2D_back(D);
+    }
+#ifdef cGPU
+  else if (D->I->isGPU())
+    {
+    }
+#endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
+  D->ID->tsem->unlock();
+}
 
 
 ////////////////////////////////

@@ -69,6 +69,11 @@ public:
   static layer Conv(layer parent,const initializer_list<int>& ks,string p);
   static layer Conv(layer parent,const vector<int>& ks, const vector<int>& st, string p, int d);
 
+  static layer MPool(layer parent,const initializer_list<int>& ks);
+  static layer MPool(layer parent,const initializer_list<int>& ks,const initializer_list<int>& st,string p);
+  static layer MPool(layer parent,const initializer_list<int>& ks,const initializer_list<int>& st);
+  static layer MPool(layer parent,const initializer_list<int>& ks,string p);
+
   static layer Activation(layer parent,string act);
   static layer Activation(layer parent,string act,string name);
   static layer Activation(layer parent,string act,int d);

@@ -129,7 +129,7 @@ endif # Makegoals
 
 
 #######################################################################
-OBJ =	utils.o cpu_convol.o tensor.o tensor_op.o layer.o layer_tensor.o layer_input.o layer_dense.o layer_activation.o layer_reshape.o layer_conv.o layer_drop.o layer_add.o layer_cat.o loss.o metric.o optim.o net.o eddl.o wrapper.o
+OBJ =	utils.o cpu_convol.o tensor.o tensor_op.o layer.o layer_tensor.o layer_input.o layer_dense.o layer_activation.o layer_reshape.o layer_conv.o layer_pool.o layer_drop.o layer_add.o layer_cat.o loss.o metric.o optim.o net.o eddl.o wrapper.o
 
 ifeq ($(CORE),1)  # CPU
 all: $(GPU_OBJ) $(OBJ) test_eddl test_tensors shared_eddl
@@ -178,7 +178,10 @@ layer_cat.o: ../layers/layer_cat.cpp ../layers/layer.h
 
 layer_conv.o: ../layers/layer_conv.cpp ../layers/layer.h
 		$(CXX) $(CXXFLAGS) -c ../layers/layer_conv.cpp
-		
+
+layer_pool.o: ../layers/layer_pool.cpp ../layers/layer.h
+		$(CXX) $(CXXFLAGS) -c ../layers/layer_pool.cpp
+
 layer_drop.o: ../layers/layer_drop.cpp ../layers/layer.h
 		$(CXX) $(CXXFLAGS) -c ../layers/layer_drop.cpp
 
