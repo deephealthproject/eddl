@@ -59,6 +59,7 @@ LConv::LConv(Layer *parent,ConvolDescriptor *D,string name, int d):LinLayer(name
 
   input=parent->output;
   cd->build(input);
+  cd->params();
 
   output=cd->O;
   delta=cd->D;

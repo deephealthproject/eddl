@@ -218,7 +218,7 @@ class LReshape : public LinLayer
 
 };
 
-/// Drop-out Layer
+/// Conv2D Layer
 class LConv: public LinLayer
 {
  public:
@@ -248,6 +248,64 @@ class LConv: public LinLayer
   string plot(int c);
 
 };
+
+/// Pool2D Layer
+class LPool: public LinLayer
+{
+ public:
+  PoolDescriptor *cd;
+
+  // constructors and clones
+  LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p);
+  LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name);
+  LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,int d);
+  LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name,int d);
+
+  LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p);
+  LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name);
+  LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,int d);
+  LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name,int d);
+
+  LPool(Layer *parent,PoolDescriptor *cd,string name, int d);
+
+  Layer *share(int c,int bs,vector<Layer*>p);
+  Layer *clone(int c,int bs,vector<Layer*>p,int todev);
+
+  // Params are in ConvolDescriptor
+
+  // implementation
+  virtual void forward(){}
+  virtual void backward(){}
+  string plot(int c);
+
+};
+
+/// MaxPool2D Layer
+class LMPool: public LPool
+{
+ public:
+  
+  // constructors and clones
+  LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p);
+  LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name);
+  LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,int d);
+  LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name,int d);
+
+  LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p);
+  LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name);
+  LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,int d);
+  LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name,int d);
+
+  LMPool(Layer *parent,PoolDescriptor *cd,string name, int d);
+
+  // Params are in ConvolDescriptor
+
+  // implementation
+  void forward();
+  void backward();
+
+};
+
 
 /// Drop-out Layer
 class LDrop : public LinLayer

@@ -39,7 +39,9 @@ float loss(tensor ytrue,tensor ypred)
   LTensor yt=*ytrue;
   LTensor yp=*ypred;
 
-  LTensor l=yt+yp+yp;
+  LTensor l=yt+yp;
+
+  eddl.Add({yt,yp});
 
   return 0.0;
 
@@ -97,7 +99,9 @@ int main(int argc, char **argv)
   // Attach an optimizer and a list of error criteria and metrics
   // size of error criteria and metrics list must match with size of list of outputs
   // optionally put a DEVICE where the net will run
-  eddl.build(net,SGD(0.01,0.9),{"soft_cent"},{"acc"},DEV_CPU);
+  eddl.build(net,SGD(0.01,0.9),{"myloss1"},{"acc"},DEV_CPU);
+
+  edd.setloss("myloss1",loss);
 
   // read data
   tensor X=eddl.T("trX.bin");

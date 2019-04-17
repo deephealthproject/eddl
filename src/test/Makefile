@@ -126,7 +126,7 @@ endif
 
 
 #######################################################################
-OBJ =	utils.o cpu_convol.o tensor.o tensor_op.o layer.o layer_tensor.o layer_input.o layer_dense.o layer_activation.o layer_reshape.o layer_conv.o layer_drop.o layer_add.o layer_cat.o loss.o metric.o optim.o net.o eddl.o
+OBJ =	utils.o cpu_convol.o tensor.o tensor_op.o layer.o layer_tensor.o layer_input.o layer_dense.o layer_activation.o layer_reshape.o layer_conv.o layer_pool.o layer_drop.o layer_add.o layer_cat.o loss.o metric.o optim.o net.o eddl.o
 
 ifeq ($(CORE),1)
 all: $(GPU_OBJ) $(OBJ) test_eddl test_tensors
@@ -152,7 +152,6 @@ tensor_op.o: ../tensor_op.cpp ../tensor.h
 tensor_over.o: ../tensor_over.cpp ../tensor_over.h
 		$(CXX) $(CXXFLAGS) -c ../tensor_over.cpp
 
-
 layer.o: ../layers/layer.cpp ../layers/layer.h
 		$(CXX) $(CXXFLAGS) -c ../layers/layer.cpp
 
@@ -176,7 +175,10 @@ layer_cat.o: ../layers/layer_cat.cpp ../layers/layer.h
 
 layer_conv.o: ../layers/layer_conv.cpp ../layers/layer.h
 		$(CXX) $(CXXFLAGS) -c ../layers/layer_conv.cpp
-		
+
+layer_pool.o: ../layers/layer_pool.cpp ../layers/layer.h
+		$(CXX) $(CXXFLAGS) -c ../layers/layer_pool.cpp
+
 layer_drop.o: ../layers/layer_drop.cpp ../layers/layer.h
 		$(CXX) $(CXXFLAGS) -c ../layers/layer_drop.cpp
 
