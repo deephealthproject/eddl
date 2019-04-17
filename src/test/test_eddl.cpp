@@ -34,6 +34,18 @@
 #include "../eddl.h"
 
 
+float loss(tensor ytrue,tensor ypred)
+{
+  LTensor yt=*ytrue;
+  LTensor yp=*ypred;
+
+  LTensor l=yt+yp;
+
+
+  return 0.0;
+
+}
+
 layer ResBlock(layer in, int dim,int n)
 {
 
