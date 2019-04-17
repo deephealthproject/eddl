@@ -1,5 +1,5 @@
 # EDDL Library
 
-[European Distributed Deep Learnin] Library
+[European Distributed Deep Learning] Library
 
 Come on!
