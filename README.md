@@ -1,2 +1,7 @@
-# EDDLL
-European Distributed Deep Learning Library
+# EDDL Library
+
+[European Distributed Deep Learning] Library
+
+Come on!
+
+
