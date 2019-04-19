@@ -29,7 +29,7 @@
 
 cmake_minimum_required (VERSION 3.13)
 
-project (EDDLL)
+project (EDDLL CXX)
 add_library(EDDLL "")
 add_subdirectory(src)
 
@@ -63,7 +63,8 @@ endif()
 # The following commands should be removed when pthread linux 
 # specific calls will be replaced by thread c++ standard calls 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-	set(EDDLL_PTHREADS_INSTALL_PATH "" CACHE PATH "")
+
+	set(EDDLL_PTHREADS_INSTALL_PATH "$ENV{PTHREADS_ROOT}" CACHE PATH "Path to the installation of pthreads under Windows")
 	
 	if(EDDLL_PTHREADS_INSTALL_PATH STREQUAL "")
 		message(ERROR " pthreds install path must be specified under Windows")
@@ -74,8 +75,8 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 								debug "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib")
 								 
 	target_link_libraries(EDDLL optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib"
-								optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib"
-								optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib")
+								optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib"
+								optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")
 								 
 	include_directories("${EDDLL_PTHREADS_INSTALL_PATH}/include")
 	
@@ -86,6 +87,17 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 endif()
 #--------------------------------------------------------------------------------------------------------
 # END: pthreads setup for windows os												
+#--------------------------------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------------------------------
+# BEGIN: pthreads setup for linux os												
+#--------------------------------------------------------------------------------------------------------
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    find_package(Threads REQUIRED)
+    target_link_libraries(EDDLL Threads::Threads)
+endif()
+#--------------------------------------------------------------------------------------------------------
+# END: pthreads setup for linux os												
 #--------------------------------------------------------------------------------------------------------
 
 add_executable(MNIST-CONV "")

@@ -419,7 +419,7 @@ void Net::split(int c,int todev)
   Layer *p;
   int ind;
 
-
+  
   int batch=(lin[0]->input->getshape())[0];
   if (batch<c)
     msg("Too small batch size to split into cores","Net.split");
@@ -497,7 +497,7 @@ void Net::split(int c,int todev)
       // create new net
       snets.push_back(new Net(nin,nout));
 
-      snets[i]->info();
+      //snets[i]->info();
 
       // build new net
       snets[i]->build(optimizer->clone(),strcosts,strmetrics);
