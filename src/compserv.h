@@ -26,69 +26,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#ifndef _COMPSERV_
+#define _COMPSERV_
+
 #include <stdio.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
+#include <string>
+#include <initializer_list>
+#include <vector>
 
-#include "../../../src/eddl.h"
-
-int main(int argc, char **argv)
+using namespace std;
+class CompServ
 {
-
-  // download MNIST data
-  eddl.download_mnist();
-
-
-  int batch=1000;
-
-  // network
-  layer in=eddl.Input({batch,784});
-  layer l=in;
-
-  for(int i=0;i<3;i++)
-    l=eddl.Activation(eddl.Dense(l,1024),"relu");
-
-  layer out=eddl.Activation(eddl.Dense(l,10),"softmax");
-
-  // net define input and output layers list
-  model net=eddl.Model({in},{out});
-
-  // plot the model
-  eddl.plot(net,"model.pdf");
-
-  // get some info from the network
-  eddl.info(net);
-
-  // Attach an optimizer and a list of error criteria and metrics
-  // size of error criteria and metrics list must match with size of list of outputs
-  // optionally put a DEVICE where the net will run
-
-  optimizer sgd=eddl.SGD({0.01,0.9});
+  public:
+  string type;
 
 
-  eddl.build(net,sgd,{"soft_cent"},{"acc"});
+  int local_threads;
+  vector<int> local_gpus;
+  vector<int> local_fpgas;
 
+  // for local
+  CompServ(int threads, const initializer_list<int>& g,const initializer_list<int>& f);
 
-  // read data
-  tensor X=eddl.T("trX.bin");
-  tensor Y=eddl.T("trY.bin");
+  // for Distributed
+  CompServ(FILE *csspec);
 
-  eddl.div(X,255.0);
+};
 
-  // training, list of input and output tensors, batch, epochs
-  eddl.fit(net,{X},{Y},batch,2);
-
-
-  // Evaluate test
-  tensor tX=eddl.T("tsX.bin");
-  tensor tY=eddl.T("tsY.bin");
-
-  eddl.div(tX,255.0);
-
-  eddl.evaluate(net,{tX},{tY});
-
-}
-
-
-///////////
+#endif

@@ -110,7 +110,7 @@ public:
   static void plot(model m,string fname);
   static void info(model m);
   static void build(model net,optimizer o,const initializer_list<string>& c,const initializer_list<string>& m);
-  static void build(model net,optimizer o,const initializer_list<string>& c,const initializer_list<string>& m,int todev);
+  static void build(model net,optimizer o,const initializer_list<string>& c,const initializer_list<string>& m,CompServ *cs);
   static void fit(model m, const initializer_list<LTensor*>& in,const initializer_list<LTensor*>& out,int batch,int epochs);
   static void evaluate(model m, const initializer_list<LTensor*>& in,const initializer_list<LTensor*>& out);
 

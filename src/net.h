@@ -40,6 +40,7 @@
 #include "optim.h"
 #include "loss.h"
 #include "metric.h"
+#include "compserv.h"
 
 using namespace std;
 
@@ -84,6 +85,7 @@ class Net
 
   string name;
   int dev;
+  vector<int> devsel;
   vlayer layers;
   vlayer lin;
   vlayer lout;
@@ -104,7 +106,7 @@ class Net
   Layer *getLayer(string name);
 
   void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m);
-  void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,int todev);
+  void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,CompServ *cs);
   void fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch,int epochs);
   void fit(vtensor tin,vtensor tout,int batch, int epochs);
   void train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out);

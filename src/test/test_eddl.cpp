@@ -73,7 +73,7 @@ int main(int argc, char **argv)
     l=eddl.Activation(eddl.Dense(l,1024),"relu");
     */
 
-  l=eddl.Drop(eddl.Activation(eddl.Dense(l,1024),"relu"),0.5);
+  l=eddl.Activation(eddl.Dense(l,1024),"relu");
   for(int i=0;i<2;i++) {
       if (i==1) l2=l;
       l=ResBlock(l,1024,1);
@@ -100,7 +100,7 @@ int main(int argc, char **argv)
   // optionally put a DEVICE where the net will run
   optimizer sgd=eddl.SGD({0.01,0.9});
 
-  eddl.build(net,sgd,{"myloss1"},{"acc"},DEV_CPU);
+  eddl.build(net,sgd,{"soft_cent"},{"acc"});
 
 
   // read data

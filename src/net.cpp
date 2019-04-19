@@ -296,51 +296,75 @@ void Net::bts()
 
 /////////////////////////////////////////
 void Net::build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m) {
-  build(opt,c,m,DEV_CPU);
+  build(opt,c,m,new CompServ(std::thread::hardware_concurrency(),{},{}));
 }
-void Net::build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,int todev)
+void Net::build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,CompServ *cs)
 {
+  int todev;
+
   vstring co=vstring(c.begin(), c.end());
   vstring me=vstring(m.begin(), m.end());
 
   //build net
   build(opt,co,me);
 
+  if (cs->type=="local") {
 
-  // split net in devices
-  if (todev==DEV_CPU) {
-    if (dev==DEV_CPU) {
-      // split on multiple threads
-      unsigned int nthreads = std::thread::hardware_concurrency();
+    if (cs->local_gpus.size()>0) todev=DEV_GPU;
+    else if (cs->local_fpgas.size()>0) todev=DEV_FPGA;
+    else todev=DEV_CPU;
 
-      cout<<"set threads to "<<nthreads<<"\n";
+    // split net in devices
+    if (todev==DEV_CPU) {
+      if (dev==DEV_CPU) {
+        // split on multiple threads
+        unsigned int nthreads = cs->local_threads;
 
-      if (nthreads>1)   {
-        Eigen::initParallel();
-        Eigen::setNbThreads(1);
-        split(nthreads,DEV_CPU);
+        if (nthreads<=0)
+          msg("Threads must be > 0","Net.build");
+
+        cout<<"set threads to "<<nthreads<<"\n";
+
+        if (nthreads>1)   {
+          Eigen::initParallel();
+          Eigen::setNbThreads(1);
+          split(nthreads,DEV_CPU);
+        }
+      }
+      else {
+        msg("Net and Layers device missmatch","Net.build");
       }
     }
+    else if (todev<DEV_FPGA) {
+  #ifndef cGPU
+        msg("EDDLL not compiled for GPU","Net.build");
+  #else
+        // split on multiple GPUs
+        int ngpus=gpu_devices();
+        if (ngpus==0) {
+          msg("GPU devices not found","Net.build");
+        }
+        if (cs->local_gpus.size()>ngpus)
+        {
+          msg("GPU list on ComputingService is larger than available devices","Net.build");
+        }
+
+        for(int i=0;i<cs->local_gpus.size();i++)
+          if (cs->local_gpus[i]) devsel.push_back(i);
+
+        cout<<"split into "<<cs->local_gpus.size()<<" GPUs devices\n";
+        split(cs->local_gpus.size(),DEV_GPU);
+  #endif
+      }
+      else {
+        // split on multiple FPGAs
+      }
   }
-  else{
-    if (dev<DEV_FPGA) {
-#ifndef cGPU
-      msg("EDDLL not compiled for GPU","Net.build");
-#else
-      // split on multiple GPUs
-      int ngpus=gpu_devices();
-      if (ngpus==0) {
-        msg("GPU devices not found","Net.build");
-      }
-      cout<<"split into "<<ngpus<<" GPUs devices\n";
-      split(ngpus,DEV_GPU);
-#endif
-    }
-    else {
-      // split on multiple FPGAs
-    }
+  else {
+    msg("Distributed version not yet implemented","Net.build");
   }
 }
+
 
 /////////////////////////////////////////
 void Net::build(optim *opt,vstring co,vstring me)
@@ -409,6 +433,7 @@ void Net::build(optim *opt,vstring co,vstring me)
 
 
 /////////////////////////////////////
+
 void Net::split(int c,int todev)
 {
   int i,j,k,l;
@@ -419,7 +444,7 @@ void Net::split(int c,int todev)
   Layer *p;
   int ind;
 
-  
+
   int batch=(lin[0]->input->getshape())[0];
   if (batch<c)
     msg("Too small batch size to split into cores","Net.split");
@@ -468,7 +493,7 @@ void Net::split(int c,int todev)
           vlayer par;
 
           if (todev==DEV_CPU) nin.push_back(layers[j]->share(i,bs,par));
-          else nin.push_back(layers[j]->clone(c,bs,par,todev+i));
+          else nin.push_back(layers[j]->clone(c,bs,par,todev+devsel[i]));
           nlayers.push_back(nin[j]);
         }
 
@@ -484,7 +509,7 @@ void Net::split(int c,int todev)
 
                 if (l==layers[j]->parent.size()) {
                   if (todev==DEV_CPU) nlayers.push_back(layers[j]->share(i,bs,par));
-                  else nlayers.push_back(layers[j]->clone(i,bs,par,todev+i));
+                  else nlayers.push_back(layers[j]->clone(i,bs,par,todev+devsel[i]));
                 }
               }
           }

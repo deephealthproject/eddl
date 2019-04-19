@@ -95,7 +95,7 @@ int main(int argc, char **argv)
 
   optimizer sgd=eddl.SGD({0.01,0.9});
 
-  eddl.build(net,sgd,{"soft_cent"},{"acc"},DEV_CPU);
+  eddl.build(net,sgd,{"soft_cent"},{"acc"});
 
 
   // read data
