@@ -277,9 +277,9 @@ void EDDL::build(model net,optimizer o,const initializer_list<string>& c,const i
 {
   net->build(o,c,m);
 }
-void EDDL::build(model net,optimizer o,const initializer_list<string>& c,const initializer_list<string>& m,int todev)
+void EDDL::build(model net,optimizer o,const initializer_list<string>& c,const initializer_list<string>& m,CompServ *cs)
 {
-  net->build(o,c,m,todev);
+  net->build(o,c,m,cs);
 }
 
 void EDDL::fit(model net, const initializer_list<LTensor*>& in,const initializer_list<LTensor*>& out,int batch,int epochs)
