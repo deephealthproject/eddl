@@ -15,6 +15,8 @@ target_sources(EDDLL
 		tensor_op.cpp
 		utils.cpp
 		utils.h
+        compserv.cpp
+        compserv.h
 )
 
 add_subdirectory(layers)
