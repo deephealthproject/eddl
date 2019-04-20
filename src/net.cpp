@@ -351,8 +351,10 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
 
         for(int i=0;i<cs->local_gpus.size();i++)
           if (cs->local_gpus[i]) devsel.push_back(i);
-
-        cout<<"split into "<<cs->local_gpus.size()<<" GPUs devices\n";
+        if (!devsel.size())
+          msg("No gpu selected","Net.build");
+          
+        cout<<"split into "<<devsel.size()<<" GPUs devices\n";
         split(cs->local_gpus.size(),DEV_GPU);
   #endif
       }
