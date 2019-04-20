@@ -38,6 +38,7 @@
 #define layer Layer*
 #define model Net*
 #define optimizer optim*
+#define compserv CompServ*
 
 typedef vector<LTensor*> vltensor;
 
@@ -106,6 +107,12 @@ public:
 
   // Create net
   static model Model(vlayer in,vlayer out);
+  // cs
+  ///////////
+  compserv CS_CPU(int th);
+  compserv CS_GPU(const initializer_list<int>& g);
+  compserv CS_FGPA(const initializer_list<int>& f);
+  
   // Net operations
   static void plot(model m,string fname);
   static void info(model m);

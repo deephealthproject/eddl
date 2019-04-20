@@ -261,6 +261,22 @@ model EDDL::Model(vlayer in,vlayer out)
   return new Net(in,out);
 }
 
+///////////
+compserv EDDL::CS_CPU(int th)
+{
+  return new CompServ(th,{},{});
+}
+///////////
+compserv EDDL::CS_GPU(const initializer_list<int>& g)
+{
+  return new CompServ(0,g,{});
+}
+compserv EDDL::CS_FGPA(const initializer_list<int>& f)
+{
+  return new CompServ(0,{},f);
+}
+
+
 ////////////
 
 void EDDL::info(model m)
