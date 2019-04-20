@@ -63,8 +63,8 @@ int main(int argc, char **argv)
   // optionally put a Computing Servoce where the net will run
   // size of error criteria and metrics list must match with size of list of outputs
   optimizer sgd=eddl.SGD({0.01,0.9});
-  //compserv cs=eddl.CS_CPU(6); // CPU with 6 threads
-  compserv cs=eddl.CS_GPU({1,0,0,0}); // GPU using the first gpu of 4 installed
+  compserv cs=eddl.CS_CPU(6); // CPU with 6 threads
+  //compserv cs=eddl.CS_GPU({1,0,0,0}); // GPU using the first gpu of 4 installed
   eddl.build(net,sgd,{"soft_cent"},{"acc"},cs);
 
   // read data
