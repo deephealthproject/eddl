@@ -23,7 +23,13 @@ extern "C"
 
 // Create Tensors
 Tensor* Tensor_init(const int* shape, int shape_size, int dev);
-void Tensor_data(Tensor* t, float* ptr);
+int Tensor_device(Tensor*t);
+int Tensor_dim(Tensor*t);
+int Tensor_length(Tensor*t);  // Data length
+int* Tensor_shape(Tensor*t);
+float* Tensor_getData(Tensor*t);
+void Tensor_addData(Tensor* t, float* ptr);
+
 
 // Create Layers
 tensor LTensor_init(const int* shape, int shape_size, int dev);
@@ -57,7 +63,10 @@ void evaluate(model m, Tensor* in, Tensor* out);
 // data
 //static void download_mnist();
 
+// Layer properties
 const char* Layer_name(layer l);
+Tensor* Layer_input(layer l);
+Tensor* Layer_output(layer l);
 
 
 // Optimizers

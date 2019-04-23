@@ -15,7 +15,27 @@ Tensor* Tensor_init(const int* shape, int shape_size, int dev){
     return new Tensor(v, dev);
 }
 
-void Tensor_data(Tensor* t, float* ptr){
+int Tensor_device(Tensor*t){
+    return t->device;
+}
+
+int Tensor_dim(Tensor*t){
+    return t->dim;
+}
+
+int Tensor_length(Tensor*t){ // Data length
+    return t->tam;
+}
+
+int* Tensor_shape(Tensor*t){
+    return &t->sizes[0];
+}
+
+float* Tensor_getData(Tensor*t){
+    return t->ptr;
+}
+
+void Tensor_addData(Tensor* t, float* ptr){
     int tam=1;
     for(int i=0;i<t->dim;++i) tam*=t->sizes[i];
     t->tam = tam;
@@ -124,6 +144,15 @@ const char* Layer_name(layer l){
     strcpy(name, l->name.c_str());
     return name;
 }
+
+Tensor* Layer_input(layer l){
+    return l->input;
+}
+
+Tensor* Layer_output(layer l){
+    return l->output;
+}
+
 
 // Optimizers
 sgd* SGD_init(float lr, float mu){
