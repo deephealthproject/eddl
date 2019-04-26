@@ -266,7 +266,6 @@ compserv EDDL::CS_CPU(int th)
 {
   return new CompServ(th,{},{});
 }
-///////////
 compserv EDDL::CS_GPU(const initializer_list<int>& g)
 {
   return new CompServ(0,g,{});
