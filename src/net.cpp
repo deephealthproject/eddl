@@ -61,13 +61,49 @@ ostream& operator<<(ostream& os, const shape s)
   return os;
 }
 
-
+//// THREADS
 struct tdata
 {
   Net *net;
   int batch;
   int eval;
 };
+
+/////////////////////////////////////////
+void * train_batch_t(void *t)
+{
+  int i,j;
+  tdata *targs=(tdata *)t;
+
+  Net *net=targs->net;
+
+  net->reset();
+
+  net->forward();
+
+  net->loss();
+
+  if (!targs->eval) {
+    net->delta();
+    net->backward();
+    if (net->dev>DEV_CPU)
+      net->applygrads(targs->batch);
+  }
+
+  return NULL;
+}
+/////////////////////////////////////////
+void *applygrads_t(void *t)
+{
+  int i,j;
+  tdata *targs=(tdata *)t;
+
+  Net *net=targs->net;
+
+  net->applygrads(targs->batch);
+
+  return NULL;
+}
 
 
 /////////////////////////////////////////
@@ -838,47 +874,6 @@ void Net::sync_weights() {
       }
     }
 }
-
-
-
-/////////////////////////////////////////
-void * train_batch_t(void *t)
-{
-  int i,j;
-  tdata *targs=(tdata *)t;
-
-  Net *net=targs->net;
-
-  net->reset();
-
-  net->forward();
-
-  net->loss();
-
-  if (!targs->eval) {
-    net->delta();
-    net->backward();
-    if (net->dev>DEV_CPU)
-      net->applygrads(targs->batch);
-  }
-
-  return NULL;
-}
-
-
-/////////////////////////////////////////
-void *applygrads_t(void *t)
-{
-  int i,j;
-  tdata *targs=(tdata *)t;
-
-  Net *net=targs->net;
-
-  net->applygrads(targs->batch);
-
-  return NULL;
-}
-
 
 ///////////////////////////////////////////
 
