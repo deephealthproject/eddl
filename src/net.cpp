@@ -325,11 +325,9 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
 
         cout<<"set threads to "<<nthreads<<"\n";
 
-        if (nthreads>1)   {
-          Eigen::initParallel();
-          Eigen::setNbThreads(1);
-          split(nthreads,DEV_CPU);
-        }
+        Eigen::initParallel();
+        Eigen::setNbThreads(1);
+        split(nthreads,DEV_CPU);
       }
       else {
         msg("Net and Layers device missmatch","Net.build");
@@ -353,7 +351,7 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
           if (cs->local_gpus[i]) devsel.push_back(i);
         if (!devsel.size())
           msg("No gpu selected","Net.build");
-          
+
         cout<<"split into "<<devsel.size()<<" GPUs devices\n";
         split(cs->local_gpus.size(),DEV_GPU);
   #endif
@@ -744,181 +742,103 @@ void Net::train_batch(vtensor X, vtensor Y,vind sind,int batch,int eval)
 {
   int i,j;
 
+  void *status;
+  int rc;
+  pthread_t thr[100];
+  struct tdata td[100];
 
+  int bs=batch/snets.size();
 
-  if (snets.size()==0){ //one CPU thread
-    if (sind.size()==0) {
-      for(int i=0;i<batch;i++)
-        sind.push_back(i);
+  if (sind.size()==0) {
+    for(int i=0;i<batch;i++)
+      sind.push_back(0);
+      for(int i=0;i<snets.size();i++)
+         for(int j=0;j<Xs[i][0]->sizes[0];j++)
+            sind[j]=(i*bs)+j;
+  }
+
+  for(int i=0;i<snets.size();i++){
+    int ini=i*bs;
+    int end=ini+Xs[i][0]->sizes[0];
+
+    for(int j=0;j<X.size();j++) {
+      Tensor::select(X[j],Xs[i][j],sind,ini,end);
+      Tensor::copy(Xs[i][j],snets[i]->lin[j]->input);
     }
-    // this copy is between cpu memory
-    for(i=0;i<X.size();i++)
-        Tensor::select(X[i],lin[i]->input,sind,0,batch);
 
-    for(i=0;i<Y.size();i++)
-        Tensor::select(Y[i],lout[i]->target,sind,0,batch);
-    reset();
-    forward();
-    loss();
-    if (!eval) {
-      delta();
-      backward();
-      applygrads(batch);
+    for(int j=0;j<Y.size();j++){
+      Tensor::select(Y[j],Ys[i][j],sind,ini,end);
+      Tensor::copy(Ys[i][j],snets[i]->lout[j]->target);
+    }
+
+    //thread params
+    td[i].net=snets[i];
+    td[i].batch=batch;
+    td[i].eval=eval;
+    //call thread
+    rc = pthread_create(&thr[i], NULL,train_batch_t, (void *)(&td[i]));
+    if (rc){
+      fprintf(stderr,"Error:unable to create thread %d",rc);
+      exit(-1);
     }
   }
-  else if (snets.size()==1) { // one {GPU,FPGA}
-    // With only one device it is not necessary
-    // to synchronize params
-    // the following copies are between cpu memory and {GPU,FPGA} memory
-    for(i=0;i<X.size();i++) {
-      if (sind.size()) {
-        Tensor::select(X[i],Xs[0][i],sind,0,batch);
-        Tensor::copy(Xs[0][i],snets[0]->lin[i]->input);
-      }
-      else
-        Tensor::copy(X[i],snets[0]->lin[i]->input);
-    }
 
-    for(i=0;i<Y.size();i++) {
-      if (sind.size()) {
-        Tensor::select(Y[i],Ys[0][i],sind,0,batch);
-        Tensor::copy(Ys[0][i],snets[0]->lout[i]->target);
-      }
-      else
-        Tensor::copy(Y[i],snets[0]->lout[i]->target);
+  for(int i=0;i<snets.size();i++)  {
+    rc = pthread_join(thr[i], &status);
+    if (rc){
+      cout << "Error:unable to join," << rc << endl;
+      exit(-1);
     }
-
-    snets[0]->reset();
-    snets[0]->forward();
-    snets[0]->loss();
-    if (!eval) {
-      snets[0]->delta();
-      snets[0]->backward();
-      snets[0]->applygrads(batch);
-    }
-    for(int j=0;j<2*lout.size();j++)
-      fiterr[j]+=snets[0]->fiterr[j];
   }
-  else // multiple CPU_cores or GPUs or FPGAs
-    {
-      // In case of multiple GPUS or FPGA
-      // it is necessary to synchronize params
-      void *status;
-      int rc;
-      pthread_t thr[100];
-      struct tdata td[100];
 
-
-
-      int bs=batch/snets.size();
-
-      if (sind.size()==0) {
-        for(int i=0;i<batch;i++)
-          sind.push_back(0);
-
-        for(int i=0;i<snets.size();i++)
-          for(int j=0;j<Xs[i][0]->sizes[0];j++)
-              sind[j]=(i*bs)+j;
-      }
-
-      for(int i=0;i<snets.size();i++)
-        {
-          int ini=i*bs;
-          int end=ini+Xs[i][0]->sizes[0];
-
-          for(int j=0;j<X.size();j++) {
-            Tensor::select(X[j],Xs[i][j],sind,ini,end);
-            Tensor::copy(Xs[i][j],snets[i]->lin[j]->input);
+  if (!eval){
+    if (snets[0]->dev==DEV_CPU) {
+      for(int i=0;i<snets.size();i++) {
+          rc = pthread_create(&thr[i], NULL,applygrads_t, (void *)(&td[i]));
+          if (rc) {
+            fprintf(stderr,"Error:unable to create thread %d",rc);
+            exit(-1);
           }
-
-          for(int j=0;j<Y.size();j++){
-            Tensor::select(Y[j],Ys[i][j],sind,ini,end);
-            Tensor::copy(Ys[i][j],snets[i]->lout[j]->target);
-          }
-
-          //thread params
-          td[i].net=snets[i];
-          td[i].batch=batch;
-          td[i].eval=eval;
-          //call thread
-          rc = pthread_create(&thr[i], NULL,train_batch_t, (void *)(&td[i]));
-
-          if (rc)
-            {
-              fprintf(stderr,"Error:unable to create thread %d",rc);
-              exit(-1);
-            }
-        }
-
-
-      for(int i=0;i<snets.size();i++)
-        {
-          rc = pthread_join(thr[i], &status);
-          if (rc)
-            {
-              cout << "Error:unable to join," << rc << endl;
-              exit(-1);
-            }
-        }
-
-      if (!eval){
-        if (snets[0]->dev==DEV_CPU) {
-          for(int i=0;i<snets.size();i++)
-            {
-              //call thread
-              rc = pthread_create(&thr[i], NULL,applygrads_t, (void *)(&td[i]));
-
-              if (rc)
-                {
-                  fprintf(stderr,"Error:unable to create thread %d",rc);
-                  exit(-1);
-                }
-            }
-
-          for(int i=0;i<snets.size();i++)
-            {
-              rc = pthread_join(thr[i], &status);
-              if (rc)
-                {
-                  cout << "Error:unable to join," << rc << endl;
-                  exit(-1);
-                }
-            }
-        }
-
-        // In case of GPUS or FPGA synchronize params
-        if (snets[0]->dev!=DEV_CPU){
-          for(int j;j<layers.size();j++)
-            for(int k=0;k<layers[j]->params.size();k++) {
-              // Taking average
-              layers[j]->params[k]->set(0.0);
-              for(int i=0;i<snets.size();i++) {
-                Tensor::inc(snets[i]->layers[j]->params[k],layers[j]->params[k]);
-              }
-              layers[j]->params[k]->div(snets.size());
-
-              // copy-back to devices
-              for(int i=0;i<snets.size();i++) {
-                Tensor::copy(layers[j]->params[k],snets[i]->layers[j]->params[k]);
-              }
-            }
-        }
-
       }
-
-      // Sum all errors
-      for(int i=0;i<snets.size();i++)
-        {
-          for(int j=0;j<2*lout.size();j++)
-            {
-              fiterr[j]+=snets[i]->fiterr[j];
-            }
+      for(int i=0;i<snets.size();i++){
+        rc = pthread_join(thr[i], &status);
+        if (rc){
+          cout << "Error:unable to join," << rc << endl;
+          exit(-1);
         }
-      /////////////////////////////////////////////////
+      }
+    }
+  // In case of multiple GPUS or FPGA synchronize params
+  if ((snets[0]->dev!=DEV_CPU)&&(snets.size()>1)) sync_weights();
+  }
+
+  // Sum all errors
+  for(int i=0;i<snets.size();i++) {
+    for(int j=0;j<2*lout.size();j++) {
+        fiterr[j]+=snets[i]->fiterr[j];
+    }
+  }
+}
 
 
+/////////////////////////////////////////
+void Net::sync_weights() {
+  for(int j;j<layers.size();j++)
+    for(int k=0;k<layers[j]->params.size();k++) {
+      // Taking average
+      layers[j]->params[k]->set(0.0);
+      for(int i=0;i<snets.size();i++) {
+        Tensor::inc(snets[i]->layers[j]->params[k],layers[j]->params[k]);
+      }
+      layers[j]->params[k]->div(snets.size());
+
+      // copy-back to devices
+      for(int i=0;i<snets.size();i++) {
+        Tensor::copy(layers[j]->params[k],snets[i]->layers[j]->params[k]);
+      }
     }
 }
+
 
 
 /////////////////////////////////////////

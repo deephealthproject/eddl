@@ -82,6 +82,7 @@ class Net
   void bts();
   void plot(string fname);
   void setmode(int m);
+  void sync_weights();
 
   string name;
   int dev;
