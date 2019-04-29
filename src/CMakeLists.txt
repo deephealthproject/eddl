@@ -21,3 +21,6 @@ target_sources(EDDLL
 
 add_subdirectory(layers)
 add_subdirectory(cpu)
+
+target_include_directories(EDDLL PUBLIC layers)
+target_include_directories(EDDLL PUBLIC cpu)
