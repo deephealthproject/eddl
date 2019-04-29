@@ -93,7 +93,7 @@ int main(int argc, char **argv)
   // size of error criteria and metrics list must match with size of list of outputs
   // optionally put a DEVICE where the net will run
 
-  optimizer sgd=eddl.SGD({0.01,0.9});
+  optimizer sgd=eddl.SGD({0.01f,0.9f});
 
   eddl.build(net,sgd,{"soft_cent"},{"acc"});
 
@@ -107,7 +107,7 @@ int main(int argc, char **argv)
   // training, list of input and output tensors, batch, epochs
   eddl.fit(net,{X},{Y},batch,1);
 
-  eddl.change(sgd,{0.001,0.9});
+  eddl.change(sgd,{0.001f,0.9f});
 
   eddl.fit(net,{X},{Y},batch,2);
 
