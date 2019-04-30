@@ -28,73 +28,24 @@
 
 #include <stdio.h>
 #include <stdio.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
+#include <string>
+#include <initializer_list>
+#include <vector>
 
-#include "optim.h"
+#include "compserv.h"
 
-using namespace std;
 
-optim::optim()
+// for local
+CompServ::CompServ(int t, const initializer_list<int>& g,const initializer_list<int>& f)
+{
+  type="local";
+  local_threads=t;
+  local_gpus=vector<int>(g.begin(),g.end());
+  local_fpgas=vector<int>(f.begin(),f.end());
+}
+
+// for Distributed
+CompServ::CompServ(FILE *csspec)
 {
 
 }
-
-
-////// SGD //////
-sgd::sgd(const initializer_list<float>& p):optim()
-{
-  vector<float>v=vector<float>(p.begin(), p.end());
-  lr=v[0];
-  mu=v[1];
-}
-void sgd::change(const initializer_list<float>& p)
-{
-  vector<float>v=vector<float>(p.begin(), p.end());
-  lr=v[0];
-  mu=v[1];
-}
-
-optim *sgd::clone()
-{
-  return new sgd({lr,mu});
-}
-
-
-void sgd::setlayers(vlayer l)
-{
-  layers=l;
-
-  // create momemtum tensors
-  for(int i=0;i<layers.size();i++)
-    for(int j=0;j<layers[i]->gradients.size();j++)
-      {
-        mT.push_back(new Tensor(layers[i]->gradients[j]->getshape(),layers[i]->dev));
-        mT.back()->set(0.0);
-      }
-
-}
-
-
-void sgd::applygrads(int batch)
-{
-
-  int p=0;
-
-  for(int i=0;i<layers.size();i++)
-    {
-      for(int j=0;j<layers[i]->gradients.size();j++,p++)
-        {
-          Tensor::sum(lr/batch,layers[i]->gradients[j],mu, mT[p],mT[p],0);
-          Tensor::sum(1.0,layers[i]->params[j],1.0,mT[p],layers[i]->params[j],0);
-        }
-    }
-  //getchar();
-
-}
-
-
-///////////////////////////////////////////
-
-//////

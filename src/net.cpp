@@ -61,13 +61,49 @@ ostream& operator<<(ostream& os, const shape s)
   return os;
 }
 
-
+//// THREADS
 struct tdata
 {
   Net *net;
   int batch;
   int eval;
 };
+
+/////////////////////////////////////////
+void * train_batch_t(void *t)
+{
+  int i,j;
+  tdata *targs=(tdata *)t;
+
+  Net *net=targs->net;
+
+  net->reset();
+
+  net->forward();
+
+  net->loss();
+
+  if (!targs->eval) {
+    net->delta();
+    net->backward();
+    if (net->dev>DEV_CPU)
+      net->applygrads(targs->batch);
+  }
+
+  return NULL;
+}
+/////////////////////////////////////////
+void *applygrads_t(void *t)
+{
+  int i,j;
+  tdata *targs=(tdata *)t;
+
+  Net *net=targs->net;
+
+  net->applygrads(targs->batch);
+
+  return NULL;
+}
 
 
 /////////////////////////////////////////
@@ -293,42 +329,78 @@ void Net::bts()
   //fprintf(stderr,"\n");
 }
 
-void Net::splitDev(int todev){
+
+/////////////////////////////////////////
+void Net::build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m) {
+  build(opt,c,m,new CompServ(std::thread::hardware_concurrency(),{},{}));
+}
+void Net::build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,CompServ *cs)
+{
+  int todev;
+
+  vstring co=vstring(c.begin(), c.end());
+  vstring me=vstring(m.begin(), m.end());
+
+  //build net
+  build(opt,co,me);
+
+  if (cs->type=="local") {
+
+    if (cs->local_gpus.size()>0) todev=DEV_GPU;
+    else if (cs->local_fpgas.size()>0) todev=DEV_FPGA;
+    else todev=DEV_CPU;
+
     // split net in devices
     if (todev==DEV_CPU) {
-        if (dev==DEV_CPU) {
-            // split on multiple threads
-            unsigned int nthreads = std::thread::hardware_concurrency();
+      if (dev==DEV_CPU) {
+        // split on multiple threads
+        unsigned int nthreads = cs->local_threads;
 
-            //nthreads=1;
-            cout<<"set threads to "<<nthreads<<"\n";
+        if (nthreads<=0)
+          msg("Threads must be > 0","Net.build");
 
-            if (nthreads>1)   {
-                Eigen::initParallel();
-                Eigen::setNbThreads(1);
-                split(nthreads,DEV_CPU);
-            }
-        }
-    }
-    else{
-        if (dev<DEV_FPGA) {
-#ifndef cGPU
-            msg("EDDLL not compiled for GPU","Net.build");
-#else
-            // split on multiple GPUs
-      int ngpus=gpu_devices();
-      if (ngpus==0) {
-        msg("GPU devices not found","Net.build");
+        cout<<"set threads to "<<nthreads<<"\n";
+
+        Eigen::initParallel();
+        Eigen::setNbThreads(1);
+        split(nthreads,DEV_CPU);
       }
-      cout<<"split into "<<ngpus<<" GPUs devices\n";
-      split(ngpus,DEV_GPU);
-#endif
-        }
-        else {
-            // split on multiple FPGAs
-        }
+      else {
+        msg("Net and Layers device missmatch","Net.build");
+      }
     }
-};
+    else if (todev<DEV_FPGA) {
+  #ifndef cGPU
+        msg("EDDLL not compiled for GPU","Net.build");
+  #else
+        // split on multiple GPUs
+        int ngpus=gpu_devices();
+        if (ngpus==0) {
+          msg("GPU devices not found","Net.build");
+        }
+        if (cs->local_gpus.size()>ngpus)
+        {
+          msg("GPU list on ComputingService is larger than available devices","Net.build");
+        }
+
+        for(int i=0;i<cs->local_gpus.size();i++)
+          if (cs->local_gpus[i]) devsel.push_back(i);
+        if (!devsel.size())
+          msg("No gpu selected","Net.build");
+
+        cout<<"split into "<<devsel.size()<<" GPUs devices\n";
+        split(cs->local_gpus.size(),DEV_GPU);
+  #endif
+      }
+      else {
+        // split on multiple FPGAs
+      }
+  }
+  else {
+    msg("Distributed version not yet implemented","Net.build");
+  }
+}
+
 
 /////////////////////////////////////////
 void Net::build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m) {
@@ -475,7 +547,7 @@ void Net::split(int c,int todev)
           vlayer par;
 
           if (todev==DEV_CPU) nin.push_back(layers[j]->share(i,bs,par));
-          else nin.push_back(layers[j]->clone(c,bs,par,todev+i));
+          else nin.push_back(layers[j]->clone(c,bs,par,todev+devsel[i]));
           nlayers.push_back(nin[j]);
         }
 
@@ -491,7 +563,7 @@ void Net::split(int c,int todev)
 
                 if (l==layers[j]->parent.size()) {
                   if (todev==DEV_CPU) nlayers.push_back(layers[j]->share(i,bs,par));
-                  else nlayers.push_back(layers[j]->clone(i,bs,par,todev+i));
+                  else nlayers.push_back(layers[j]->clone(i,bs,par,todev+devsel[i]));
                 }
               }
           }
@@ -504,7 +576,7 @@ void Net::split(int c,int todev)
       // create new net
       snets.push_back(new Net(nin,nout));
 
-      snets[i]->info();
+      //snets[i]->info();
 
       // build new net
       snets[i]->build(optimizer->clone(),strcosts,strmetrics);
@@ -532,8 +604,8 @@ void Net::forward()
   if (VERBOSE) {
     for(int i=0;i<layers.size();i++) {
       cout<<layers[i]->name<<"\n";
-      fprintf(stderr,"  %s In:%f\n",layers[i]->name.c_str(),layers[i]->input->total_abs());
-      fprintf(stderr,"  %s Out:%f\n",layers[i]->name.c_str(),layers[i]->output->total_abs());
+      fprintf(stderr,"  %s In:%f\n",layers[i]->name.c_str(),layers[i]->input->total_sum());
+      fprintf(stderr,"  %s Out:%f\n",layers[i]->name.c_str(),layers[i]->output->total_sum());
     }
 
     getchar();
@@ -724,221 +796,102 @@ void Net::train_batch(vtensor X, vtensor Y,vind sind,int batch,int eval)
 {
   int i,j;
 
+  void *status;
+  int rc;
+  pthread_t thr[100];
+  struct tdata td[100];
 
+  int bs=batch/snets.size();
 
-  if (snets.size()==0){ //one CPU thread
-    if (sind.size()==0) {
-      for(int i=0;i<batch;i++)
-        sind.push_back(i);
+  if (sind.size()==0) {
+    for(int i=0;i<batch;i++)
+      sind.push_back(0);
+      for(int i=0;i<snets.size();i++)
+         for(int j=0;j<Xs[i][0]->sizes[0];j++)
+            sind[j]=(i*bs)+j;
+  }
+
+  for(int i=0;i<snets.size();i++){
+    int ini=i*bs;
+    int end=ini+Xs[i][0]->sizes[0];
+
+    for(int j=0;j<X.size();j++) {
+      Tensor::select(X[j],Xs[i][j],sind,ini,end);
+      Tensor::copy(Xs[i][j],snets[i]->lin[j]->input);
     }
-    // this copy is between cpu memory
-    for(i=0;i<X.size();i++)
-        Tensor::select(X[i],lin[i]->input,sind,0,batch);
 
-    for(i=0;i<Y.size();i++)
-        Tensor::select(Y[i],lout[i]->target,sind,0,batch);
-    reset();
-    forward();
-    loss();
-    if (!eval) {
-      delta();
-      backward();
-      applygrads(batch);
+    for(int j=0;j<Y.size();j++){
+      Tensor::select(Y[j],Ys[i][j],sind,ini,end);
+      Tensor::copy(Ys[i][j],snets[i]->lout[j]->target);
+    }
+
+    //thread params
+    td[i].net=snets[i];
+    td[i].batch=batch;
+    td[i].eval=eval;
+    //call thread
+    rc = pthread_create(&thr[i], NULL,train_batch_t, (void *)(&td[i]));
+    if (rc){
+      fprintf(stderr,"Error:unable to create thread %d",rc);
+      exit(-1);
     }
   }
-  else if (snets.size()==1) { // one {GPU,FPGA}
-    // With only one device it is not necessary
-    // to synchronize params
-    // the following copies are between cpu memory and {GPU,FPGA} memory
-    for(i=0;i<X.size();i++) {
-      if (sind.size()) {
-        Tensor::select(X[i],Xs[0][i],sind,0,batch);
-        Tensor::copy(Xs[0][i],snets[0]->lin[i]->input);
-      }
-      else
-        Tensor::copy(X[i],snets[0]->lin[i]->input);
-    }
 
-    for(i=0;i<Y.size();i++) {
-      if (sind.size()) {
-        Tensor::select(Y[i],Ys[0][i],sind,0,batch);
-        Tensor::copy(Ys[0][i],snets[0]->lout[i]->target);
-      }
-      else
-        Tensor::copy(Y[i],snets[0]->lout[i]->target);
+  for(int i=0;i<snets.size();i++)  {
+    rc = pthread_join(thr[i], &status);
+    if (rc){
+      cout << "Error:unable to join," << rc << endl;
+      exit(-1);
     }
-
-    snets[0]->reset();
-    snets[0]->forward();
-    snets[0]->loss();
-    if (!eval) {
-      snets[0]->delta();
-      snets[0]->backward();
-      snets[0]->applygrads(batch);
-    }
-    for(int j=0;j<2*lout.size();j++)
-      fiterr[j]+=snets[0]->fiterr[j];
   }
-  else // multiple CPU_cores or GPUs or FPGAs
-    {
-      // In case of multiple GPUS or FPGA
-      // it is necessary to synchronize params
-      void *status;
-      int rc;
-      pthread_t thr[100];
-      struct tdata td[100];
 
-
-
-      int bs=batch/snets.size();
-
-      if (sind.size()==0) {
-        for(int i=0;i<batch;i++)
-          sind.push_back(0);
-
-        for(int i=0;i<snets.size();i++)
-          for(int j=0;j<Xs[i][0]->sizes[0];j++)
-              sind[j]=(i*bs)+j;
-      }
-
-      for(int i=0;i<snets.size();i++)
-        {
-          int ini=i*bs;
-          int end=ini+Xs[i][0]->sizes[0];
-
-          for(int j=0;j<X.size();j++) {
-            Tensor::select(X[j],Xs[i][j],sind,ini,end);
-            Tensor::copy(Xs[i][j],snets[i]->lin[j]->input);
+  if (!eval){
+    if (snets[0]->dev==DEV_CPU) {
+      for(int i=0;i<snets.size();i++) {
+          rc = pthread_create(&thr[i], NULL,applygrads_t, (void *)(&td[i]));
+          if (rc) {
+            fprintf(stderr,"Error:unable to create thread %d",rc);
+            exit(-1);
           }
-
-          for(int j=0;j<Y.size();j++){
-            Tensor::select(Y[j],Ys[i][j],sind,ini,end);
-            Tensor::copy(Ys[i][j],snets[i]->lout[j]->target);
-          }
-
-          //thread params
-          td[i].net=snets[i];
-          td[i].batch=batch;
-          td[i].eval=eval;
-          //call thread
-          rc = pthread_create(&thr[i], NULL,train_batch_t, (void *)(&td[i]));
-
-          if (rc)
-            {
-              fprintf(stderr,"Error:unable to create thread %d",rc);
-              exit(-1);
-            }
-        }
-
-
-      for(int i=0;i<snets.size();i++)
-        {
-          rc = pthread_join(thr[i], &status);
-          if (rc)
-            {
-              cout << "Error:unable to join," << rc << endl;
-              exit(-1);
-            }
-        }
-
-      if (!eval){
-        if (snets[0]->dev==DEV_CPU) {
-          for(int i=0;i<snets.size();i++)
-            {
-              //call thread
-              rc = pthread_create(&thr[i], NULL,applygrads_t, (void *)(&td[i]));
-
-              if (rc)
-                {
-                  fprintf(stderr,"Error:unable to create thread %d",rc);
-                  exit(-1);
-                }
-            }
-
-          for(int i=0;i<snets.size();i++)
-            {
-              rc = pthread_join(thr[i], &status);
-              if (rc)
-                {
-                  cout << "Error:unable to join," << rc << endl;
-                  exit(-1);
-                }
-            }
-        }
-
-        // In case of GPUS or FPGA synchronize params
-        if (snets[0]->dev!=DEV_CPU){
-          for(int j;j<layers.size();j++)
-            for(int k=0;k<layers[j]->params.size();k++) {
-              // Taking average
-              layers[j]->params[k]->set(0.0);
-              for(int i=0;i<snets.size();i++) {
-                Tensor::inc(snets[i]->layers[j]->params[k],layers[j]->params[k]);
-              }
-              layers[j]->params[k]->div(snets.size());
-
-              // copy-back to devices
-              for(int i=0;i<snets.size();i++) {
-                Tensor::copy(layers[j]->params[k],snets[i]->layers[j]->params[k]);
-              }
-            }
-        }
-
       }
-
-      // Sum all errors
-      for(int i=0;i<snets.size();i++)
-        {
-          for(int j=0;j<2*lout.size();j++)
-            {
-              fiterr[j]+=snets[i]->fiterr[j];
-            }
+      for(int i=0;i<snets.size();i++){
+        rc = pthread_join(thr[i], &status);
+        if (rc){
+          cout << "Error:unable to join," << rc << endl;
+          exit(-1);
         }
-      /////////////////////////////////////////////////
-
-
+      }
     }
+  // In case of multiple GPUS or FPGA synchronize params
+  if ((snets[0]->dev!=DEV_CPU)&&(snets.size()>1)) sync_weights();
+  }
+
+  // Sum all errors
+  for(int i=0;i<snets.size();i++) {
+    for(int j=0;j<2*lout.size();j++) {
+        fiterr[j]+=snets[i]->fiterr[j];
+    }
+  }
 }
 
 
 /////////////////////////////////////////
-void * train_batch_t(void *t)
-{
-  int i,j;
-  tdata *targs=(tdata *)t;
+void Net::sync_weights() {
+  for(int j;j<layers.size();j++)
+    for(int k=0;k<layers[j]->params.size();k++) {
+      // Taking average
+      layers[j]->params[k]->set(0.0);
+      for(int i=0;i<snets.size();i++) {
+        Tensor::inc(snets[i]->layers[j]->params[k],layers[j]->params[k]);
+      }
+      layers[j]->params[k]->div(snets.size());
 
-  Net *net=targs->net;
-
-  net->reset();
-
-  net->forward();
-
-  net->loss();
-
-  if (!targs->eval) {
-    net->delta();
-    net->backward();
-    if (net->dev>DEV_CPU)
-      net->applygrads(targs->batch);
-  }
-
-  return NULL;
+      // copy-back to devices
+      for(int i=0;i<snets.size();i++) {
+        Tensor::copy(layers[j]->params[k],snets[i]->layers[j]->params[k]);
+      }
+    }
 }
-
-
-/////////////////////////////////////////
-void *applygrads_t(void *t)
-{
-  int i,j;
-  tdata *targs=(tdata *)t;
-
-  Net *net=targs->net;
-
-  net->applygrads(targs->batch);
-
-  return NULL;
-}
-
 
 ///////////////////////////////////////////
 

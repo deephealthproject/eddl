@@ -95,16 +95,6 @@ class LinLayer : public Layer
 
   void addchild(Layer *l);
   void addparent(Layer *l);
-
-  //virtual
-
-
-  virtual string plot(int c){return "";}
-  virtual void forward(){}
-  virtual void backward(){}
-  virtual Layer *share(int c,int bs,vector<Layer*> p){return NULL;}
-  virtual Layer *clone(int c,int bs,vector<Layer*>,int todev){return NULL;}
-
 };
 
 /// Tensor Layer
@@ -256,38 +246,17 @@ class LConv: public LinLayer
 class LPool: public LinLayer
 {
  public:
-  PoolDescriptor *cd;
+  PoolDescriptor *pd;
 
-  // constructors and clones
-  LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p);
-  LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name);
-  LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,int d);
-  LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name,int d);
-
-  LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p);
-  LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name);
-  LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,int d);
-  LPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name,int d);
-
+  // constructors
   LPool(Layer *parent,PoolDescriptor *cd,string name, int d);
-
-  Layer *share(int c,int bs,vector<Layer*>p);
-  Layer *clone(int c,int bs,vector<Layer*>p,int todev);
-
-  // Params are in ConvolDescriptor
-
-  // implementation
-  virtual void forward(){}
-  virtual void backward(){}
-  string plot(int c);
-
 };
 
 /// MaxPool2D Layer
 class LMPool: public LPool
 {
  public:
-  
+
   // constructors and clones
   LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p);
   LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name);
@@ -301,11 +270,15 @@ class LMPool: public LPool
 
   LMPool(Layer *parent,PoolDescriptor *cd,string name, int d);
 
-  // Params are in ConvolDescriptor
+  // Params
+  Tensor *indX,*indY;
 
   // implementation
   void forward();
   void backward();
+  Layer *share(int c,int bs,vector<Layer*>p);
+  Layer *clone(int c,int bs,vector<Layer*>p,int todev);
+  string plot(int c);
 
 };
 

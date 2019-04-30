@@ -39,7 +39,6 @@ int main(int argc, char **argv)
   // download MNIST data
   eddl.download_mnist();
 
-
   int batch=1000;
 
   // network
@@ -61,10 +60,15 @@ int main(int argc, char **argv)
   eddl.info(net);
 
   // Attach an optimizer and a list of error criteria and metrics
+  // optionally put a Computing Service where the net will run
   // size of error criteria and metrics list must match with size of list of outputs
-  // optionally put a DEVICE where the net will run
-  eddl.build(net,SGD(0.01,0.9),{"soft_cent"},{"acc"},DEV_CPU);
+  optimizer sgd=eddl.SGD({0.01,0.9});
 
+  compserv cs=eddl.CS_CPU(6); // local CPU with 6 threads
+  //compserv cs=eddl.CS_GPU({1,0,0,0}); // local GPU using the first gpu of 4 installed
+  //compserv cs=eddl.CS_GPU({1});// local GPU using the first gpu of 1 installed
+
+  eddl.build(net,sgd,{"soft_cent"},{"acc"},cs);
 
   // read data
   tensor X=eddl.T("trX.bin");
@@ -73,7 +77,7 @@ int main(int argc, char **argv)
   eddl.div(X,255.0);
 
   // training, list of input and output tensors, batch, epochs
-  eddl.fit(net,{X},{Y},batch,2);
+  eddl.fit(net,{X},{Y},batch,20);
 
 
   // Evaluate test

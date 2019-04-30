@@ -4,6 +4,9 @@
 
 #include "cpu_convol.h"
 
+
+
+
 float get_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize)
 {
   if (px<0.0) return 0.0;
@@ -115,13 +118,51 @@ void cpu_conv2D_back(ConvolDescriptor *D)
 //////////////////
 void cpu_mpool2D(PoolDescriptor *D)
 {
-  // to implement
+  int i,j,k,ki,kj;
+  int isize=D->ir*D->ic*D->iz;
+  int irsize=D->ir*D->ic;
 
+  int p=0;
+  for(int b=0;b<D->I->sizes[0];b++){
+    for(k=0;k<D->iz;k++) {
+      for(i=-D->padr;i<=D->ir+D->padr-D->kr;i+=D->sr) {
+        for(j=-D->padc;j<=D->ic+D->padc-D->kc;j+=D->sc,p++) {
+           float max=0;
+           for(ki=0;ki<D->kr;ki++)
+             for(kj=0;kj<D->kc;kj++) {
+               float v=get_pixel(b,j+kj,i+ki,k,D,isize,irsize);
+               if (v>max) {
+                 max=v;
+                 D->indX->ptr[p]=j+kj;
+                 D->indY->ptr[p]=i+ki;
+               }
+              }
+           D->O->ptr[p]=max;
+        }
+      }
+    } // depth
+  }// batch
 }
 
 void cpu_mpool2D_back(PoolDescriptor *D)
 {
-  // to implement
+  int i,j,k,ki,kj;
+  int isize=D->ir*D->ic*D->iz;
+  int irsize=D->ir*D->ic;
+
+  int p=0;
+  for(int b=0;b<D->I->sizes[0];b++){
+    for(k=0;k<D->iz;k++) {
+      for(i=-D->padr;i<=D->ir+D->padr-D->kr;i+=D->sr) {
+        for(j=-D->padc;j<=D->ic+D->padc-D->kc;j+=D->sc,p++) {
+           int x=D->indX->ptr[p];
+           int y=D->indY->ptr[p];
+           add_pixel(b,x,y,k,D,isize,irsize,D->D->ptr[p]);
+        }
+      }
+    } // depth
+  }// batch
+
 }
 
 

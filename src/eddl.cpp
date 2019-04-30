@@ -248,11 +248,37 @@ layer EDDL::Cat(const initializer_list<layer>& init,string name,int d)
   return new LCat(vlayer(init.begin(), init.end()),name,d);
 }
 
+////////////
+
+optimizer EDDL::SGD(const initializer_list<float>& p)
+{
+  return new sgd(p);
+}
+void EDDL::change(optimizer o,const initializer_list<float>& p)
+{
+  o->change(p);
+}
+
 /////////////////////////////////////////////////////////
 model EDDL::Model(vlayer in,vlayer out)
 {
   return new Net(in,out);
 }
+
+///////////
+compserv EDDL::CS_CPU(int th)
+{
+  return new CompServ(th,{},{});
+}
+compserv EDDL::CS_GPU(const initializer_list<int>& g)
+{
+  return new CompServ(0,g,{});
+}
+compserv EDDL::CS_FGPA(const initializer_list<int>& f)
+{
+  return new CompServ(0,{},f);
+}
+
 
 ////////////
 
@@ -266,13 +292,13 @@ void EDDL::plot(model m,string fname)
   m->plot(fname);
 }
 
-void EDDL::build(model net,optim *opt,const initializer_list<string>& c,const initializer_list<string>& m)
+void EDDL::build(model net,optimizer o,const initializer_list<string>& c,const initializer_list<string>& m)
 {
-  net->build(opt,c,m);
+  net->build(o,c,m);
 }
-void EDDL::build(model net,optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,int todev)
+void EDDL::build(model net,optimizer o,const initializer_list<string>& c,const initializer_list<string>& m,CompServ *cs)
 {
-  net->build(opt,c,m,todev);
+  net->build(o,c,m,cs);
 }
 
 void EDDL::fit(model net, const initializer_list<LTensor*>& in,const initializer_list<LTensor*>& out,int batch,int epochs)

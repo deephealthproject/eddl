@@ -40,6 +40,7 @@
 #include "optim.h"
 #include "loss.h"
 #include "metric.h"
+#include "compserv.h"
 
 using namespace std;
 
@@ -62,9 +63,10 @@ class Net
  private:
 
   void train_batch(vtensor X,vtensor Y,vind sind,int batch,int eval=0);
-  void splitDev(int todev);
+  void build(optim *opt,vstring in,vstring out);
+  //void splitDev(int todev);
 
- public:
+public:
   Net(vlayer in,vlayer out);
   void initialize();
   void reset();
@@ -81,9 +83,11 @@ class Net
   void bts();
   void plot(string fname);
   void setmode(int m);
+  void sync_weights();
 
   string name;
   int dev;
+  vector<int> devsel;
   vlayer layers;
   vlayer lin;
   vlayer lout;
@@ -104,7 +108,7 @@ class Net
   Layer *getLayer(string name);
 
   void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m);
-  void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,int todev);
+  void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,CompServ *cs);
   void build(optim *opt, vstring co, vstring me);
   void build(optim *opt, vstring co, vstring me, int todev);
   void fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch,int epochs);

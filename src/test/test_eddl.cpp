@@ -34,18 +34,17 @@
 #include "../eddl.h"
 
 
-//float loss(tensor ytrue,tensor ypred)
-//{
-//  LTensor yt=*ytrue;
-//  LTensor yp=*ypred;
-//
-//  LTensor l=yt+yp;
-//
-//  eddl.Add({yt,yp});
-//
-//  return 0.0;
-//
-//}
+float loss(tensor ytrue,tensor ypred)
+{
+  LTensor yt=*ytrue;
+  LTensor yp=*ypred;
+
+  LTensor l=yt+yp;
+
+
+  return 0.0;
+
+}
 
 layer ResBlock(layer in, int dim,int n)
 {
@@ -99,9 +98,10 @@ int main(int argc, char **argv)
   // Attach an optimizer and a list of error criteria and metrics
   // size of error criteria and metrics list must match with size of list of outputs
   // optionally put a DEVICE where the net will run
-  eddl.build(net,SGD(0.01,0.9),{"myloss1"},{"acc"},DEV_CPU);
+  optimizer sgd=eddl.SGD({0.01,0.9});
 
-    //eddl.setloss("myloss1",loss);
+  eddl.build(net,sgd,{"soft_cent"},{"acc"});
+
 
   // read data
   tensor X=eddl.T("trX.bin");

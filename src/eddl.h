@@ -37,6 +37,9 @@
 #define tensor LTensor*
 #define layer Layer*
 #define model Net*
+#define optimizer optim*
+#define compserv CompServ*
+
 typedef vector<LTensor*> vltensor;
 
 class EDDL {
@@ -100,13 +103,23 @@ public:
   static layer Cat(const initializer_list<layer>& init,int d);
   static layer Cat(const initializer_list<layer>& init,string name,int d);
 
+  static optimizer SGD(const initializer_list<float>& p);
+  static void change(optimizer o,const initializer_list<float>& p);
+
+
   // Create net
   static model Model(vlayer in,vlayer out);
+  // cs
+  ///////////
+  compserv CS_CPU(int th);
+  compserv CS_GPU(const initializer_list<int>& g);
+  compserv CS_FGPA(const initializer_list<int>& f);
+  
   // Net operations
   static void plot(model m,string fname);
   static void info(model m);
-  static void build(model net,optim *opt,const initializer_list<string>& c,const initializer_list<string>& m);
-  static void build(model net,optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,int todev);
+  static void build(model net,optimizer o,const initializer_list<string>& c,const initializer_list<string>& m);
+  static void build(model net,optimizer o,const initializer_list<string>& c,const initializer_list<string>& m,CompServ *cs);
   static void fit(model m, const initializer_list<LTensor*>& in,const initializer_list<LTensor*>& out,int batch,int epochs);
   static void evaluate(model m, const initializer_list<LTensor*>& in,const initializer_list<LTensor*>& out);
 

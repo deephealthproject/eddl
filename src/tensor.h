@@ -107,37 +107,25 @@ class ConvolDescriptor
    Eigen::MatrixXf matgK; // gradient kernels
 
    //...
+   ConvolDescriptor();
    ConvolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p);
    ConvolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st,const initializer_list<int>& p );
    ConvolDescriptor(const vector<int>& ks, const vector<int>& st, string p);
 
-   void params();
+
    void build(Tensor *A);
 };
 
-class PoolDescriptor
+class PoolDescriptor:public ConvolDescriptor
 {
  public:
-   vector<int> ksize;
-   vector<int> stride;
-   vector<int> pad;
 
-   Tensor *I; // Input map
-   Tensor *ID;// Delta input map
-   Tensor *D; // Delta
-   Tensor *O; // Outputmap
-
-   int kr,kc;
-   int sr,sc;
-   int ir,ic,iz;
-   int r,c,z;
-   int padr,padc;
+   Tensor *indX,*indY; // indexes
 
    //...
    PoolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p);
    PoolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st,const initializer_list<int>& p );
 
-   void params();
    void build(Tensor *A);
 };
 

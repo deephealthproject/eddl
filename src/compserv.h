@@ -26,75 +26,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdio.h>
-#include <stdio.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
+#ifndef _COMPSERV_
+#define _COMPSERV_
 
-#include "optim.h"
+#include <stdio.h>
+#include <stdio.h>
+#include <string>
+#include <initializer_list>
+#include <vector>
 
 using namespace std;
-
-optim::optim()
+class CompServ
 {
-
-}
-
-
-////// SGD //////
-sgd::sgd(const initializer_list<float>& p):optim()
-{
-  vector<float>v=vector<float>(p.begin(), p.end());
-  lr=v[0];
-  mu=v[1];
-}
-void sgd::change(const initializer_list<float>& p)
-{
-  vector<float>v=vector<float>(p.begin(), p.end());
-  lr=v[0];
-  mu=v[1];
-}
-
-optim *sgd::clone()
-{
-  return new sgd({lr,mu});
-}
+  public:
+  string type;
 
 
-void sgd::setlayers(vlayer l)
-{
-  layers=l;
+  int local_threads;
+  vector<int> local_gpus;
+  vector<int> local_fpgas;
 
-  // create momemtum tensors
-  for(int i=0;i<layers.size();i++)
-    for(int j=0;j<layers[i]->gradients.size();j++)
-      {
-        mT.push_back(new Tensor(layers[i]->gradients[j]->getshape(),layers[i]->dev));
-        mT.back()->set(0.0);
-      }
+  // for local
+  CompServ(int threads, const initializer_list<int>& g,const initializer_list<int>& f);
 
-}
+  // for Distributed
+  CompServ(FILE *csspec);
 
+};
 
-void sgd::applygrads(int batch)
-{
-
-  int p=0;
-
-  for(int i=0;i<layers.size();i++)
-    {
-      for(int j=0;j<layers[i]->gradients.size();j++,p++)
-        {
-          Tensor::sum(lr/batch,layers[i]->gradients[j],mu, mT[p],mT[p],0);
-          Tensor::sum(1.0,layers[i]->params[j],1.0,mT[p],layers[i]->params[j],0);
-        }
-    }
-  //getchar();
-
-}
-
-
-///////////////////////////////////////////
-
-//////
+#endif

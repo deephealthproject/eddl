@@ -57,7 +57,7 @@ int main(int argc, char **argv)
   eddl.download_mnist();
 
 
-  int batch=128;
+  int batch=100;
 
   // network
   layer in=eddl.Input({batch,784});
@@ -76,7 +76,7 @@ int main(int argc, char **argv)
 
   l=eddl.Reshape(l,{batch,-1});
 
-  l=eddl.Activation(eddl.Dense(l,1024),"relu");
+  l=eddl.Activation(eddl.Dense(l,32),"relu");
 
   layer out=eddl.Activation(eddl.Dense(l,10),"softmax");
 
@@ -92,7 +92,10 @@ int main(int argc, char **argv)
   // Attach an optimizer and a list of error criteria and metrics
   // size of error criteria and metrics list must match with size of list of outputs
   // optionally put a DEVICE where the net will run
-  eddl.build(net,SGD(0.01,0.9),{"soft_cent"},{"acc"},DEV_CPU);
+
+  optimizer sgd=eddl.SGD({0.01f,0.9f});
+
+  eddl.build(net,sgd,{"soft_cent"},{"acc"});
 
 
   // read data
@@ -102,8 +105,11 @@ int main(int argc, char **argv)
   eddl.div(X,255.0);
 
   // training, list of input and output tensors, batch, epochs
-  eddl.fit(net,{X},{Y},batch,20);
+  eddl.fit(net,{X},{Y},batch,1);
 
+  eddl.change(sgd,{0.001f,0.9f});
+
+  eddl.fit(net,{X},{Y},batch,2);
 
   // Evaluate test
   tensor tX=eddl.T("tsX.bin");

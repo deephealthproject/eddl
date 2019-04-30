@@ -520,7 +520,10 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB)
 
 ////////////////////////////////
 //// CONVOLUTIONS
+ConvolDescriptor::ConvolDescriptor()
+{
 
+}
 ConvolDescriptor::ConvolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st,const initializer_list<int>& p )
 {
   ksize=vector<int>(ks.begin(), ks.end());
@@ -588,12 +591,9 @@ void ConvolDescriptor::build(Tensor *A)
     msg("Invalid output sizes","ConvolDescriptor::build");
 
   O=new Tensor({A->sizes[0],z,r,c},A->device);
-  D=new Tensor({A->sizes[0],z,r,c},A->device);
+  D=new Tensor(O->getshape(),A->device);
 
-}
-
-void ConvolDescriptor::params()
-{
+  // Params
   K=new Tensor({nk,kz,kr,kc},I->device);
   bias=new Tensor({nk},I->device);
   gK=new Tensor({nk,kz,kr,kc},I->device);
@@ -608,74 +608,9 @@ void ConvolDescriptor::params()
     // convolution: matC=matA*matK
   }
 
-}
-
-
-////////////////////////////////
-////  POOLING
-
-PoolDescriptor::PoolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st,const initializer_list<int>& p )
-{
-  ksize=vector<int>(ks.begin(), ks.end());
-  stride=vector<int>(st.begin(), st.end());
-  pad=vector<int>(p.begin(), p.end());
-
-  if (ksize.size()!=2) msg("Pooling Kernels must have 2 dimensions","PoolDescriptor::PoolDescriptor");
-  if (stride.size()!=2) msg("Strides must have 2 dimensions","PoolDescriptor::PoolDescriptor");
-  if (pad.size()!=2) msg("Padding must have 2 dimensions","PoolDescriptor::PoolDescriptor");
-}
-
-PoolDescriptor::PoolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p)
-{
-  ksize=vector<int>(ks.begin(), ks.end());
-  stride=vector<int>(st.begin(), st.end());
-
-  if (ksize.size()!=2) msg("Pooling Kernels must have 2 dimensions","PoolDescriptor::PoolDescriptor");
-  if (stride.size()!=2) msg("Strides must have 2 dimensions","PoolDescriptor::PoolDescriptor");
-
-  if (p=="same") {
-    pad.push_back(ksize[1]/2);
-    pad.push_back(ksize[2]/2);
-  }
-  else if (p=="none") {
-      pad.push_back(0);
-      pad.push_back(0);
-  }
-  else msg("Incorrect padding type","PoolDescriptor::PoolDescriptor");
-}
-
-
-void PoolDescriptor::build(Tensor *A)
-{
-  if (A->dim!=4) msg("Tensors are not 4D","PoolDescriptor::build");
-
-  I=A;
-
-
-  kr=ksize[0];
-  kc=ksize[1];
-
-  sr=stride[0];
-  sc=stride[1];
-
-  iz=A->sizes[1];
-  ir=A->sizes[2];
-  ic=A->sizes[3];
-
-  padr=pad[0];
-  padc=pad[1];
-
-  z=iz;
-  r=(ir-kr+2*padr)/sr+1;
-  c=(ic-kc+2*padc)/sc+1;
-
-  if ((r<=0)||(c<=0))
-    msg("Invalid output sizes","PoolDescriptor::build");
-
-  O=new Tensor({A->sizes[0],z,r,c},A->device);
-  D=new Tensor({A->sizes[0],z,r,c},A->device);
 
 }
+
 
 /////////////////////////////////////////////////////////////////////
 //// Conv2D
@@ -764,6 +699,74 @@ void Tensor::Conv2D_back(ConvolDescriptor *D)
 }
 
 
+////////////////////////////////
+////  POOLING
+
+PoolDescriptor::PoolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st,const initializer_list<int>& p )
+{
+  ksize=vector<int>(ks.begin(), ks.end());
+  stride=vector<int>(st.begin(), st.end());
+  pad=vector<int>(p.begin(), p.end());
+
+  if (ksize.size()!=2) msg("Pooling Kernels must have 2 dimensions","PoolDescriptor::PoolDescriptor");
+  if (stride.size()!=2) msg("Strides must have 2 dimensions","PoolDescriptor::PoolDescriptor");
+  if (pad.size()!=2) msg("Padding must have 2 dimensions","PoolDescriptor::PoolDescriptor");
+}
+
+PoolDescriptor::PoolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p)
+{
+  ksize=vector<int>(ks.begin(), ks.end());
+  stride=vector<int>(st.begin(), st.end());
+
+  if (ksize.size()!=2) msg("Pooling Kernels must have 2 dimensions","PoolDescriptor::PoolDescriptor");
+  if (stride.size()!=2) msg("Strides must have 2 dimensions","PoolDescriptor::PoolDescriptor");
+
+  if (p=="same") {
+    pad.push_back(ksize[0]/2);
+    pad.push_back(ksize[1]/2);
+  }
+  else if (p=="none") {
+      pad.push_back(0);
+      pad.push_back(0);
+  }
+  else msg("Incorrect padding type","PoolDescriptor::PoolDescriptor");
+}
+
+
+void PoolDescriptor::build(Tensor *A)
+{
+  if (A->dim!=4) msg("Tensors are not 4D","PoolDescriptor::build");
+
+  I=A;
+
+  kr=ksize[0];
+  kc=ksize[1];
+
+  sr=stride[0];
+  sc=stride[1];
+
+  iz=A->sizes[1];
+  ir=A->sizes[2];
+  ic=A->sizes[3];
+
+  padr=pad[0];
+  padc=pad[1];
+
+  z=iz;
+  r=(ir-kr+2*padr)/sr+1;
+  //if (kr%2==0) r--;
+  c=(ic-kc+2*padc)/sc+1;
+  //if (kc%2==0) c--;
+
+  if ((r<=0)||(c<=0))
+    msg("Invalid output sizes","PoolDescriptor::build");
+
+  O=new Tensor({A->sizes[0],z,r,c},A->device);
+  D=new Tensor(O->getshape(),A->device);
+
+
+}
+
 /////////////////////////////////////////////////////////////////////
 //// MPool2D
 //// Dimensions must be compatible
@@ -805,6 +808,7 @@ void Tensor::MPool2D_back(PoolDescriptor *D)
   D->ID->tsem->lock();
   if (D->I->isCPU())
     {
+
        cpu_mpool2D_back(D);
     }
 #ifdef cGPU
