@@ -7,7 +7,7 @@
 #include "wrapper.h"
 #include "eddl.h"
 #include "layers/layer.h"
-
+#include <thread>
 
 // Create Tensors
 Tensor* Tensor_init(const int* shape, int shape_size, int dev){
@@ -116,14 +116,14 @@ void info(model m){
     EDDL::info(m);
 }
 
-void build(model net, optim *opt, const char** c, int size_c, const char** m, int size_m, int todev){
+void build(model net, optimizer opt, const char** c, int size_c, const char** m, int size_m, int todev){
     vector<string> co, me;
 
     // Add pointer values to vector of strings
     for(int i = 0; i < size_c; ++i){co.emplace_back(*c);}
     for(int i = 0; i < size_m; ++i){me.emplace_back(*m);}
 
-    net->build(opt, co, me, todev);
+    net->build(opt, co, me, new CompServ(std::thread::hardware_concurrency(),{},{}));
 }
 
 
@@ -155,6 +155,6 @@ Tensor* Layer_output(layer l){
 
 
 // Optimizers
-sgd* SGD_init(float lr, float mu){
-    return SGD(lr, mu);
+optimizer SGD_init(float lr, float mu){
+    return new sgd({lr,mu});
 }

@@ -14,6 +14,8 @@
 #define tensor LTensor*
 #define layer Layer*
 #define model Net*
+#define optimizer optim*
+#define compserv CompServ*
 
 #ifdef __cplusplus
 extern "C"
@@ -56,7 +58,7 @@ model Model_init(Layer* in, int in_size, Layer* out, int out_size);
 // Net operations
 void plot(model m, const char* fname);
 void info(model m);
-void build(model net, optim *opt, const char** c, int size_c, const char** m, int size_m, int todev);
+void build(model net, optimizer opt, const char** c, int size_c, const char** m, int size_m, int todev);
 void fit(model m, Tensor* in, Tensor* out, int batch, int epochs);
 void evaluate(model m, Tensor* in, Tensor* out);
 
@@ -70,7 +72,7 @@ Tensor* Layer_output(layer l);
 
 
 // Optimizers
-sgd* SGD_init(float lr,float mu);
+optimizer SGD_init(float lr,float mu);
 
 #ifdef __cplusplus
 }

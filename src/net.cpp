@@ -336,83 +336,9 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
 }
 void Net::build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,CompServ *cs)
 {
-  int todev;
-
-  vstring co=vstring(c.begin(), c.end());
-  vstring me=vstring(m.begin(), m.end());
-
-  //build net
-  build(opt,co,me);
-
-  if (cs->type=="local") {
-
-    if (cs->local_gpus.size()>0) todev=DEV_GPU;
-    else if (cs->local_fpgas.size()>0) todev=DEV_FPGA;
-    else todev=DEV_CPU;
-
-    // split net in devices
-    if (todev==DEV_CPU) {
-      if (dev==DEV_CPU) {
-        // split on multiple threads
-        unsigned int nthreads = cs->local_threads;
-
-        if (nthreads<=0)
-          msg("Threads must be > 0","Net.build");
-
-        cout<<"set threads to "<<nthreads<<"\n";
-
-        Eigen::initParallel();
-        Eigen::setNbThreads(1);
-        split(nthreads,DEV_CPU);
-      }
-      else {
-        msg("Net and Layers device missmatch","Net.build");
-      }
-    }
-    else if (todev<DEV_FPGA) {
-  #ifndef cGPU
-        msg("EDDLL not compiled for GPU","Net.build");
-  #else
-        // split on multiple GPUs
-        int ngpus=gpu_devices();
-        if (ngpus==0) {
-          msg("GPU devices not found","Net.build");
-        }
-        if (cs->local_gpus.size()>ngpus)
-        {
-          msg("GPU list on ComputingService is larger than available devices","Net.build");
-        }
-
-        for(int i=0;i<cs->local_gpus.size();i++)
-          if (cs->local_gpus[i]) devsel.push_back(i);
-        if (!devsel.size())
-          msg("No gpu selected","Net.build");
-
-        cout<<"split into "<<devsel.size()<<" GPUs devices\n";
-        split(cs->local_gpus.size(),DEV_GPU);
-  #endif
-      }
-      else {
-        // split on multiple FPGAs
-      }
-  }
-  else {
-    msg("Distributed version not yet implemented","Net.build");
-  }
-}
-
-
-/////////////////////////////////////////
-void Net::build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m) {
-  build(opt,c,m,DEV_CPU);
-}
-void Net::build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,int todev)
-{
-  vstring co=vstring(c.begin(), c.end());
-  vstring me=vstring(m.begin(), m.end());
-
-  //build net
-  build(opt,co,me, todev);
+    vstring co=vstring(c.begin(), c.end());
+    vstring me=vstring(m.begin(), m.end());
+    build(opt, co, me, cs);
 }
 
 /////////////////////////////////////////
@@ -477,15 +403,69 @@ void Net::build(optim *opt, vstring co, vstring me){
     initialize();
 }
 
-void Net::build(optim *opt, vstring co, vstring me, int todev)
+void Net::build(optim *opt, vstring co, vstring me, CompServ *cs)
 {
+    int todev;
+
     //build net
-    build(opt, co, me);
+    build(opt,co,me);
 
-    // split net in devices
-    splitDev(todev);
+    if (cs->type=="local") {
+
+        if (cs->local_gpus.size()>0) todev=DEV_GPU;
+        else if (cs->local_fpgas.size()>0) todev=DEV_FPGA;
+        else todev=DEV_CPU;
+
+        // split net in devices
+        if (todev==DEV_CPU) {
+            if (dev==DEV_CPU) {
+                // split on multiple threads
+                unsigned int nthreads = cs->local_threads;
+
+                if (nthreads<=0)
+                    msg("Threads must be > 0","Net.build");
+
+                cout<<"set threads to "<<nthreads<<"\n";
+
+                Eigen::initParallel();
+                Eigen::setNbThreads(1);
+                split(nthreads,DEV_CPU);
+            }
+            else {
+                msg("Net and Layers device missmatch","Net.build");
+            }
+        }
+        else if (todev<DEV_FPGA) {
+#ifndef cGPU
+            msg("EDDLL not compiled for GPU","Net.build");
+#else
+            // split on multiple GPUs
+        int ngpus=gpu_devices();
+        if (ngpus==0) {
+          msg("GPU devices not found","Net.build");
+        }
+        if (cs->local_gpus.size()>ngpus)
+        {
+          msg("GPU list on ComputingService is larger than available devices","Net.build");
+        }
+
+        for(int i=0;i<cs->local_gpus.size();i++)
+          if (cs->local_gpus[i]) devsel.push_back(i);
+        if (!devsel.size())
+          msg("No gpu selected","Net.build");
+
+        cout<<"split into "<<devsel.size()<<" GPUs devices\n";
+        split(cs->local_gpus.size(),DEV_GPU);
+#endif
+        }
+        else {
+            // split on multiple FPGAs
+        }
+    }
+    else {
+        msg("Distributed version not yet implemented","Net.build");
+    }
 }
-
 
 /////////////////////////////////////
 void Net::split(int c,int todev)

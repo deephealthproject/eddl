@@ -63,6 +63,9 @@ int main(int argc, char **argv)
 
   int batch=1000;
 
+  // Download dataset
+  eddl.download_mnist();
+
   // network
   layer in=eddl.Input({batch,784});
   layer l=in;
