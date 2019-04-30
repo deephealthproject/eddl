@@ -180,7 +180,7 @@ void Net::info()
 {
 
   for(int i=0;i<layers.size();i++)
-    fprintf(stderr,"%s ",layers[i]->name.c_str());
+    fprintf(stdout,"%s ",layers[i]->name.c_str());
 
   cout<<"\n";
   for(int i=0;i<layers.size();i++)
@@ -191,7 +191,7 @@ void Net::info()
       cout<<si<<"-->"<<so<<"\n";
     }
 
-  fprintf(stderr,"\n");
+  fprintf(stdout,"\n");
 
 }
 
@@ -254,7 +254,7 @@ void Net::fts()
   vector<int> visit;
   vector<int> gin;
 
-  //fprintf(stderr,"FTS:");
+  //fprintf(stdout,"FTS:");
   for(i=0;i<layers.size();i++)
     {
       visit.push_back(0);
@@ -272,9 +272,9 @@ void Net::fts()
 
       /*
         if (layers[j]->lout)
-        fprintf(stderr,"%s-->",layers[j]->name.c_str());
+        fprintf(stdout,"%s-->",layers[j]->name.c_str());
         else
-        fprintf(stderr,"%s |",layers[j]->name.c_str());
+        fprintf(stdout,"%s |",layers[j]->name.c_str());
       */
       visit[j]=1;
       vfts.push_back(layers[j]);
@@ -284,7 +284,7 @@ void Net::fts()
           if(layers[n]==layers[j]->child[k]) gin[n]--;
 
     }
-  //fprintf(stderr,"\n");
+  //fprintf(stdout,"\n");
 
 }
 
@@ -296,7 +296,7 @@ void Net::bts()
   vector<int> visit;
   vector<int> gout;
 
-  //fprintf(stderr,"BTS:");
+  //fprintf(stdout,"BTS:");
   for(i=0;i<layers.size();i++)
     {
       visit.push_back(0);
@@ -314,9 +314,9 @@ void Net::bts()
 
       /*
         if (layers[j]->lin)
-        fprintf(stderr,"%s-->",layers[j]->name.c_str());
+        fprintf(stdout,"%s-->",layers[j]->name.c_str());
         else
-        fprintf(stderr,"%s |",layers[j]->name.c_str());
+        fprintf(stdout,"%s |",layers[j]->name.c_str());
       */
       visit[j]=1;
       vbts.push_back(layers[j]);
@@ -326,7 +326,7 @@ void Net::bts()
           if(layers[n]==layers[j]->parent[k]) gout[n]--;
 
     }
-  //fprintf(stderr,"\n");
+  //fprintf(stdout,"\n");
 }
 
 
@@ -343,7 +343,7 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
 
 /////////////////////////////////////////
 void Net::build(optim *opt, vstring co, vstring me){
-    fprintf(stderr,"Build net\n");
+    fprintf(stdout,"Build net\n");
     if (co.size()!=lout.size())
         msg("Loss list size does not match output list","Net.build");
 
@@ -584,8 +584,8 @@ void Net::forward()
   if (VERBOSE) {
     for(int i=0;i<layers.size();i++) {
       cout<<layers[i]->name<<"\n";
-      fprintf(stderr,"  %s In:%f\n",layers[i]->name.c_str(),layers[i]->input->total_sum());
-      fprintf(stderr,"  %s Out:%f\n",layers[i]->name.c_str(),layers[i]->output->total_sum());
+      fprintf(stdout,"  %s In:%f\n",layers[i]->name.c_str(),layers[i]->input->total_sum());
+      fprintf(stdout,"  %s Out:%f\n",layers[i]->name.c_str(),layers[i]->output->total_sum());
     }
 
     getchar();
@@ -632,11 +632,11 @@ void Net::applygrads(int batch)
   if (VERBOSE) {
     for(int i=0;i<layers.size();i++) {
       cout<<layers[i]->name<<"\n";
-      fprintf(stderr,"  In:%f\n",layers[i]->input->total_abs());
-      fprintf(stderr,"  Out:%f\n",layers[i]->output->total_abs());
-      fprintf(stderr,"  Delta:%f\n",layers[i]->delta->total_abs());
+      fprintf(stdout,"  In:%f\n",layers[i]->input->total_abs());
+      fprintf(stdout,"  Out:%f\n",layers[i]->output->total_abs());
+      fprintf(stdout,"  Delta:%f\n",layers[i]->delta->total_abs());
       for(int j=0;j<layers[i]->gradients.size();j++) {
-       fprintf(stderr,"  %f\n",layers[i]->gradients[j]->total_abs());
+       fprintf(stdout,"  %f\n",layers[i]->gradients[j]->total_abs());
      }
     }
     getchar();
@@ -930,8 +930,9 @@ void Net::evaluate(vtensor tin,vtensor tout) {
 
   int p=0;
   for(k=0;k<tout.size();k++,p+=2)
-   fprintf(stderr,"%s(%s=%1.3f,%s=%1.3f) ",lout[k]->name.c_str(),losses[k]->name.c_str(),errors[p]/n,metrics[k]->name.c_str(),errors[p+1]/n);
-  fprintf(stderr,"\n");
+   fprintf(stdout,"%s(%s=%1.3f,%s=%1.3f) ",lout[k]->name.c_str(),losses[k]->name.c_str(),errors[p]/n,metrics[k]->name.c_str(),errors[p+1]/n);
+  fprintf(stdout,"\n");
+  fflush(stdout);
 }
 
 
