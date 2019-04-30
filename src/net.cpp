@@ -700,11 +700,11 @@ void Net::fit(vtensor tin,vtensor tout,int batch, int epochs) {
   // Start training
   setmode(TRMODE);
 
-  fprintf(stderr,"%d epochs of %d batches of size %d\n",epochs,n/batch,batch);
+  fprintf(stdout,"%d epochs of %d batches of size %d\n",epochs,n/batch,batch);
   for(i=0;i<epochs;i++)
     {
       high_resolution_clock::time_point e1 = high_resolution_clock::now();
-      fprintf(stderr,"Epoch %d\n",i+1);
+      fprintf(stdout,"Epoch %d\n",i+1);
 
       for(j=0;j<2*tout.size();j++) errors[j]=0.0;
 
@@ -724,22 +724,23 @@ void Net::fit(vtensor tin,vtensor tout,int batch, int epochs) {
           duration<double> time_span = t2 - t1;
 
           int p=0;
-          fprintf(stderr,"batch %d ",j+1);
+          fprintf(stdout,"batch %d ",j+1);
           for(k=0;k<tout.size();k++,p+=2)
             {
               errors[p]+=fiterr[p];
               errors[p+1]+=fiterr[p+1];
-              fprintf(stderr,"%s(%s=%1.3f,%s=%1.3f) ",lout[k]->name.c_str(),losses[k]->name.c_str(),errors[p]/(batch*(j+1)),metrics[k]->name.c_str(),errors[p+1]/(batch*(j+1)));
+              fprintf(stdout,"%s(%s=%1.3f,%s=%1.3f) ",lout[k]->name.c_str(),losses[k]->name.c_str(),errors[p]/(batch*(j+1)),metrics[k]->name.c_str(),errors[p+1]/(batch*(j+1)));
               fiterr[p]=fiterr[p+1]=0.0;
             }
-          fprintf(stderr,"%1.3f secs/batch\r",time_span.count());
-
+          fprintf(stdout,"%1.3f secs/batch\r",time_span.count());
+          fflush(stdout);
         }
       high_resolution_clock::time_point e2 = high_resolution_clock::now();
       duration<double> epoch_time_span = e2 - e1;
 
-      fprintf(stderr,"\n%1.3f secs/epoch\n",epoch_time_span.count());
+      fprintf(stdout,"\n%1.3f secs/epoch\n",epoch_time_span.count());
     }
+  fflush(stdout);
 }
 
 
