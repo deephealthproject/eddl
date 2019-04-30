@@ -132,11 +132,11 @@ endif # Makegoals
 OBJ =	utils.o cpu_convol.o tensor.o tensor_op.o compserv.o layer.o layer_tensor.o layer_input.o layer_dense.o layer_activation.o layer_reshape.o layer_conv.o layer_pool.o layer_drop.o layer_add.o layer_cat.o loss.o metric.o optim.o net.o eddl.o wrapper.o
 
 ifeq ($(CORE),1)  # CPU
-all: $(GPU_OBJ) $(OBJ) test_eddl test_tensors shared_eddl
+all: $(GPU_OBJ) $(OBJ) test_eddl test_tensors shared_eddl test_wrapper
 endif
 
 ifeq ($(CORE),2)  # GPU
-all: $(GPU_OBJ) $(OBJ) test_eddl test_eddl_gpu test_tensors shared_eddl
+all: $(GPU_OBJ) $(OBJ) test_eddl test_eddl_gpu test_tensors shared_eddl test_wrapper
 endif
 
 #--------------------------------- c code
@@ -232,8 +232,8 @@ test_eddl_gpu: test_eddl_gpu.cpp $(OBJ) $(GPU_OBJ)
 test_tensors: test_tensors.cpp $(OBJ) $(GPU_OBJ)
 	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_tensors.cpp -o test_tensors $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
 
-my_test_eddl: my_test_eddl.cpp $(OBJ) $(GPU_OBJ)
-	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) my_test_eddl.cpp -o my_test_eddl $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
+test_wrapper: test_wrapper.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_wrapper.cpp -o test_wrapper $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
 
 shared_eddl: $(OBJ) $(GPU_OBJ)
 	$(CXX) $(CXXFLAGS) $(CXXSOFLAGS) $(GPU_CXXFLAGS) -o eddl.so $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
