@@ -32,6 +32,7 @@
 #include <iostream>
 
 #include "../eddl.h"
+#include "../wrapper.h"
 
 
 float loss(tensor ytrue,tensor ypred)
@@ -51,9 +52,10 @@ layer ResBlock(layer in, int dim,int n)
 
   layer l=in;
   for(int i=0;i<n;i++)
-    l=eddl.Activation(eddl.Dense(l,dim),"relu");
+    l=Activation_init(Dense_init(l,dim, "Dense", DEV_CPU),"relu", "", DEV_CPU);
 
-  l=eddl.Add({in,l});
+  layer l_add[] = {in, l};
+  l=Add_init(l_add, 2, "Add", DEV_CPU);
 
   return l;
 }
@@ -67,63 +69,70 @@ int main(int argc, char **argv)
   //eddl.download_mnist();
 
   // network
-  layer in=eddl.Input({batch,784});
+  const int s[] = {batch,784};
+  Tensor* t = Tensor_init(s, 2, DEV_CPU);
+  layer in=Input_init(t, "Input", DEV_CPU);
   layer l=in;
   layer l2;
 
-  /*
-    for(int i=0;i<5;i++)
-    l=eddl.Activation(eddl.Dense(l,1024),"relu");
-    */
-
-  l=eddl.Drop(eddl.Activation(eddl.Dense(l,1024),"relu"),0.5);
+  l=Drop_init(Activation_init(Dense_init(l,1024, "Dense", DEV_CPU),"relu", "Activation", DEV_CPU),0.5, "drop", DEV_CPU);
   for(int i=0;i<2;i++) {
       if (i==1) l2=l;
       l=ResBlock(l,1024,1);
   }
 
-  //l=eddl.Reshape(l,{batch,16,2,2,-1});
-  //l=eddl.Reshape(l,{batch,1024});
+  layer l_cat[] = {l, l2};
+  l=Cat_init(l_cat, 2, "cat", DEV_CPU);
 
-  l=eddl.Cat({l,l2});
-
-  layer out=eddl.Activation(eddl.Dense(l,10),"softmax");
+  layer out=Activation_init(Dense_init(l,10, "Dense", DEV_CPU),"softmax", "Activation", DEV_CPU);
 
   // net define input and output layers list
-  model net=eddl.Model({in},{out});
+  model net=Model_init(in, 1, out, 1);
 
   // plot the model
-  eddl.plot(net,"model.pdf");
+  plot(net,"model.pdf");
 
   // get some info from the network
-  eddl.info(net);
+  info(net);
 
   // Attach an optimizer and a list of error criteria and metrics
   // size of error criteria and metrics list must match with size of list of outputs
   // optionally put a DEVICE where the net will run
-  optimizer sgd=eddl.SGD({0.01,0.9});
+  optimizer sgd=SGD_init(0.01, 0.9);
 
-  eddl.build(net,sgd,{"soft_cent"},{"acc"});
+  const char* c1 = "soft_cent";
+  const char* m1 = "acc";
+
+  const char** c = {&c1};
+  const char** m = {&m1};
+
+  // build(model net, optimizer opt, const char** c, int size_c, const char** m, int size_m, int todev)
+  build(net,sgd,c, 1, m, 1, DEV_CPU);
 
 
   // read data
-  tensor X=eddl.T("trX.bin");
-  tensor Y=eddl.T("trY.bin");
+  tensor X=LTensor_init_fromfile("trX.bin");
+  tensor Y=LTensor_init_fromfile("trY.bin");
 
-  eddl.div(X,255.0);
+  LTensor_div(X, 255.0);
 
   // training, list of input and output tensors, batch, epochs
-  eddl.fit(net,{X},{Y},batch,1);
+  fit(net,X->input,Y->input,batch,1);
 
 
-  //// TEST
+  //// EVALUATE TRAIN
+  std::cout << "Evaluate train:" << std::endl;
+  evaluate(net,X->input,Y->input);
 
-  tensor tX=eddl.T("tsX.bin");
-  tensor tY=eddl.T("tsY.bin");
 
-  eddl.div(tX,255.0);
+  //// EVALUATE TEST
+  tensor tX=LTensor_init_fromfile("tsX.bin");
+  tensor tY=LTensor_init_fromfile("tsY.bin");
 
-  eddl.evaluate(net,{tX},{tY});
+  LTensor_div(tX, 255.0);
+  std::cout << "Evaluate test:" << std::endl;
+
+  evaluate(net,tX->input,tY->input);
 
 }
 

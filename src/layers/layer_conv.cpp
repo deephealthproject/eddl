@@ -49,6 +49,8 @@ LConv::LConv(Layer *parent,const initializer_list<int>& ks,const initializer_lis
 LConv::LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,int d):LConv(parent,ks,st,p,"conv"+to_string(conv_created),d){}
 LConv::LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name,int d):LConv(parent,new ConvolDescriptor(ks,st,p),name,d){}
 
+LConv::LConv(Layer *parent,const vector<int>& ks, const vector<int>& st, string p, int d):LConv(parent,ks,st,p,"conv"+to_string(conv_created),d){}
+LConv::LConv(Layer *parent,const vector<int>& ks, const vector<int>& st, string p, string name, int d):LConv(parent,new ConvolDescriptor(ks,st,p),name,d){}
 
 LConv::LConv(Layer *parent,ConvolDescriptor *D,string name, int d):LinLayer(name,d)
 {

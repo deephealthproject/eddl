@@ -126,6 +126,11 @@ layer EDDL::Conv(layer parent,const initializer_list<int>& ks,string p)
   return new LConv(parent,ks,{1,1},p);
 }
 
+layer EDDL::Conv(layer parent,const vector<int>& ks, const vector<int>& st, string p, int d)
+{
+    return new LConv(parent,ks,st,p,d);
+}
+
 //////////////////////////////////////////////////////
 layer EDDL::MPool(layer parent,const initializer_list<int>& ks)
 {
@@ -143,7 +148,6 @@ layer EDDL::MPool(layer parent,const initializer_list<int>& ks,string p)
 {
   return new LMPool(parent,ks,ks,p);
 }
-
 
 //////////////////////////////////////////////////////
 layer EDDL::Activation(layer parent,string act)
@@ -183,6 +187,10 @@ layer EDDL::Reshape(layer parent,const initializer_list<int>& init,string name,i
 {
   return new LReshape(parent,init,name,d);
 }
+layer EDDL::Reshape(layer parent,const vector<int>& init,string name,int d)
+{
+    return new LReshape(parent,init,d);
+}
 
 /////////////////////////////////////////////////////////
 layer EDDL::Drop(layer parent, float df)
@@ -206,9 +214,7 @@ layer EDDL::Drop(layer parent, float df,string name,int d)
 
 layer EDDL::Add(const initializer_list<layer>& init)
 {
-
    return new LAdd(vlayer(init.begin(), init.end()));
-
 }
 layer EDDL::Add(const initializer_list<layer>& init,string name)
 {
@@ -227,9 +233,7 @@ layer EDDL::Add(const initializer_list<layer>& init,string name,int d)
 
 layer EDDL::Cat(const initializer_list<layer>& init)
 {
-
    return new LCat(vlayer(init.begin(), init.end()));
-
 }
 layer EDDL::Cat(const initializer_list<layer>& init,string name)
 {
