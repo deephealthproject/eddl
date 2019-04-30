@@ -57,7 +57,7 @@ int main(int argc, char **argv)
   eddl.download_mnist();
 
 
-  int batch=100;
+  int batch=1000;
 
   // network
   layer in=eddl.Input({batch,784});
@@ -94,8 +94,9 @@ int main(int argc, char **argv)
   // optionally put a DEVICE where the net will run
 
   optimizer sgd=eddl.SGD({0.01f,0.9f});
+  compserv cs=eddl.CS_CPU(4);
 
-  eddl.build(net,sgd,{"soft_cent"},{"acc"});
+  eddl.build(net,sgd,{"soft_cent"},{"acc"},cs);
 
 
   // read data

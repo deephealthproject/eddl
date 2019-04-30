@@ -9,6 +9,7 @@
 
 float get_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize)
 {
+
   if (px<0.0) return 0.0;
   if (py<0.0) return 0.0;
   if (px>=D->ic) return 0.0;
@@ -72,26 +73,38 @@ void im2col(int b,ConvolDescriptor *D,int col2im)
   }
 }
 
+
 void cpu_conv2D(ConvolDescriptor *D)
 {
   int osize=D->z*D->r*D->c;
-  float *ptrO=D->O->ptr;
-  for(int b=0;b<D->I->sizes[0];b++,ptrO+=osize){
-    im2col(b,D,0);
+  int isize=D->r*D->c*D->kc*D->kr*D->kz;//r*c,kr*kc*kz
 
+  float *ptrO=D->O->ptr;
+  float *ptrI=D->ptrI;
+
+  for(int b=0;b<D->I->sizes[0];b++,ptrO+=osize,ptrI+=isize){
+    new (&(D->matI)) Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
     new (&(D->matO)) Eigen::Map<Eigen::MatrixXf>(ptrO,D->r*D->c,D->z);
+
+    im2col(b,D,0);
 
     D->matO=D->matI*D->matK;
   }// batch
 }
 
+
 void cpu_conv2D_grad(ConvolDescriptor *D)
 {
+  //return;
   int osize=D->z*D->r*D->c;
-  float *ptrD=D->D->ptr;
-  for(int b=0;b<D->I->sizes[0];b++,ptrD+=osize){
-    im2col(b,D,0);
+  int isize=D->r*D->c*D->kc*D->kr*D->kz;//r*c,kr*kc*kz
 
+  float *ptrD=D->D->ptr;
+  float *ptrI=D->ptrI;
+
+  for(int b=0;b<D->I->sizes[0];b++,ptrD+=osize,ptrI+=isize){
+    // re-using previous lowering
+    new (&(D->matI)) Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
     new (&(D->matD)) Eigen::Map<Eigen::MatrixXf>(ptrD,D->r*D->c,D->z);
 
     D->matgK+=D->matI.transpose()*D->matD;
@@ -101,9 +114,15 @@ void cpu_conv2D_grad(ConvolDescriptor *D)
 void cpu_conv2D_back(ConvolDescriptor *D)
 {
   int osize=D->z*D->r*D->c;
+  int isize=D->r*D->c*D->kc*D->kr*D->kz;//r*c,kr*kc*kz
+
   float *ptrD=D->D->ptr;
+  float *ptrI=D->ptrI;
+  new (&(D->matI)) Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
+
   for(int b=0;b<D->I->sizes[0];b++,ptrD+=osize){
     new (&(D->matD)) Eigen::Map<Eigen::MatrixXf>(ptrD,D->r*D->c,D->z);
+
     D->matI=D->matD*D->matK.transpose();
 
     im2col(b,D,1);

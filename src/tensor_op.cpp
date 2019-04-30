@@ -594,8 +594,7 @@ void ConvolDescriptor::build(Tensor *A)
 
   if (I->isCPU()) {
     // mem for ptr, lowering im2col
-    //eigen mat in col-major
-    matI=Eigen::MatrixXf(r*c,kr*kc*kz);
+    ptrI=(float *)malloc(A->sizes[0]*r*c*kr*kc*kz*sizeof(float));
     new (&matK) Eigen::Map<Eigen::MatrixXf>(K->ptr,kr*kc*kz,nk);
     new (&matgK) Eigen::Map<Eigen::MatrixXf>(gK->ptr,kr*kc*kz,nk);
     // convolution: matC=matA*matK

@@ -64,7 +64,7 @@ int main(int argc, char **argv)
   // size of error criteria and metrics list must match with size of list of outputs
   optimizer sgd=eddl.SGD({0.01,0.9});
 
-  compserv cs=eddl.CS_CPU(6); // local CPU with 6 threads
+  compserv cs=eddl.CS_CPU(4); // local CPU with 6 threads
   //compserv cs=eddl.CS_GPU({1,0,0,0}); // local GPU using the first gpu of 4 installed
   //compserv cs=eddl.CS_GPU({1});// local GPU using the first gpu of 1 installed
 

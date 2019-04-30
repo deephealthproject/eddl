@@ -99,7 +99,7 @@ class ConvolDescriptor
    Tensor *O; // Outputmap
 
    // CPU implementation
-
+   float *ptrI;
    Eigen::MatrixXf matI; // input
    Eigen::MatrixXf matK; // kernels
    Eigen::MatrixXf matO; // output
