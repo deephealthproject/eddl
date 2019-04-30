@@ -5,7 +5,6 @@
 
 [European Distributed Deep Learning] Library
 
-
-Come on!
+This is a draft for the README.
 
 
