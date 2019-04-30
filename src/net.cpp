@@ -72,7 +72,6 @@ struct tdata
 /////////////////////////////////////////
 void * train_batch_t(void *t)
 {
-  int i,j;
   tdata *targs=(tdata *)t;
 
   Net *net=targs->net;
@@ -95,7 +94,6 @@ void * train_batch_t(void *t)
 /////////////////////////////////////////
 void *applygrads_t(void *t)
 {
-  int i,j;
   tdata *targs=(tdata *)t;
 
   Net *net=targs->net;
@@ -475,7 +473,6 @@ void Net::split(int c,int todev)
   vlayer nlayers;
   vlayer nin;
   vlayer nout;
-  Layer *p;
   int ind;
 
 
@@ -657,7 +654,7 @@ void Net::fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*
 
 void Net::fit(vtensor tin,vtensor tout,int batch, int epochs) {
 
-  int i,j,k,l,n;
+  int i,j,k,n;
 
   if (optimizer==NULL)
     msg("Net is not build","Net.fit");
@@ -747,7 +744,6 @@ void Net::fit(vtensor tin,vtensor tout,int batch, int epochs) {
 /////////////////////////////////////////
 void Net::train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out)
 {
-  int i,j,n;
   vind sind;
 
   vtensor X=vtensor(in.begin(), in.end());
@@ -775,8 +771,6 @@ void Net::train_batch(const initializer_list<Tensor*>& in,const initializer_list
 /////////////////////////////////////////
 void Net::train_batch(vtensor X, vtensor Y,vind sind,int batch,int eval)
 {
-  int i,j;
-
   void *status;
   int rc;
   pthread_t thr[100];
@@ -858,7 +852,7 @@ void Net::train_batch(vtensor X, vtensor Y,vind sind,int batch,int eval)
 
 /////////////////////////////////////////
 void Net::sync_weights() {
-  for(int j;j<layers.size();j++)
+  for(int j = 0;j<layers.size();j++)
     for(int k=0;k<layers[j]->params.size();k++) {
       // Taking average
       layers[j]->params[k]->set(0.0);
@@ -878,7 +872,7 @@ void Net::sync_weights() {
 
 void Net::evaluate(vtensor tin,vtensor tout) {
 
-  int i,j,k,l,n;
+  int i,j,k,n;
 
   // Check list sizes
   if (tin.size()!=lin.size())
