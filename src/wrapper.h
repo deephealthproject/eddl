@@ -30,11 +30,13 @@ int Tensor_dim(Tensor*t);
 int Tensor_length(Tensor*t);  // Data length
 int* Tensor_shape(Tensor*t);
 float* Tensor_getData(Tensor*t);
-void Tensor_addData(Tensor* t, float* ptr);
+void Tensor_point2data(Tensor* t, float* ptr);
 
 
 // Create Layers
 tensor LTensor_init(const int* shape, int shape_size, int dev);
+tensor LTensor_init_fromfile(const char* fname);
+void LTensor_div(tensor t, float v);
 
 layer Input_init(Tensor* in, const char* name, int dev);
 

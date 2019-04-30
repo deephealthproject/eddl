@@ -35,7 +35,7 @@ float* Tensor_getData(Tensor*t){
     return t->ptr;
 }
 
-void Tensor_addData(Tensor* t, float* ptr){
+void Tensor_point2data(Tensor* t, float* ptr){
     int tam=1;
     for(int i=0;i<t->dim;++i) tam*=t->sizes[i];
     t->tam = tam;
@@ -46,6 +46,14 @@ void Tensor_addData(Tensor* t, float* ptr){
 tensor LTensor_init(const int* shape, int shape_size, int dev){
     vector<int> v(shape, shape + shape_size);
     return EDDL::T(v, dev);
+}
+
+tensor LTensor_init_fromfile(const char* fname){
+    return EDDL::T(fname);
+}
+
+void LTensor_div(tensor t, float v){
+    t->input->div(v);
 }
 
 layer Input_init(Tensor* in, const char* name, int dev){
