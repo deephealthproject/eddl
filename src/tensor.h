@@ -125,6 +125,7 @@ class PoolDescriptor:public ConvolDescriptor
    //...
    PoolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p);
    PoolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st,const initializer_list<int>& p );
+   PoolDescriptor(const vector<int>& ks, const vector<int>& st, string p);
 
    void build(Tensor *A);
 };
