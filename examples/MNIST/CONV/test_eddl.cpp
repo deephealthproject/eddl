@@ -53,12 +53,10 @@ layer ResBlock(layer in,int k,int n)
 int main(int argc, char **argv)
 {
 
-  cout<<"OK\n";
 
 
   // download MNIST data
   eddl.download_mnist();
-  cout<<"OK\n";
 
   int batch=1000;
 
@@ -66,10 +64,8 @@ int main(int argc, char **argv)
   layer in=eddl.Input({batch,784});
   layer l=in;
 
-  cout<<"OK\n";
 
   l=eddl.Reshape(l,{batch,1,28,28});
-  cout<<"OK\n";
   l=eddl.MPool(eddl.Activation(eddl.Conv(l,{16,3,3}),"relu"),{2,2});
   l=eddl.MPool(eddl.Activation(eddl.Conv(l,{32,3,3}),"relu"),{2,2});
   l=eddl.MPool(eddl.Activation(eddl.Conv(l,{64,3,3}),"relu"),{2,2});
@@ -78,7 +74,6 @@ int main(int argc, char **argv)
   /*for(int i=0,k=16;i<3;i++,k=k*2)
     l=ResBlock(l,k,2);
 */
-  cout<<"OK\n";
   l=eddl.Reshape(l,{batch,-1});
 
   l=eddl.Activation(eddl.Dense(l,32),"relu");

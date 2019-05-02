@@ -715,8 +715,11 @@ PoolDescriptor::PoolDescriptor(const initializer_list<int>& ks,const initializer
 
 PoolDescriptor::PoolDescriptor(const vector<int>& ks, const vector<int>& st, string p)
 {
-    if (ksize.size()!=2) msg("Pooling Kernels must have 2 dimensions","PoolDescriptor::PoolDescriptor");
-    if (stride.size()!=2) msg("Strides must have 2 dimensions","PoolDescriptor::PoolDescriptor");
+    if (ks.size()!=2) msg("Pooling Kernels must have 2 dimensions","PoolDescriptor::PoolDescriptor");
+    if (st.size()!=2) msg("Strides must have 2 dimensions","PoolDescriptor::PoolDescriptor");
+
+    ksize=ks;
+    stride=st;
 
     if (p=="same") {
         pad.push_back(ksize[0]/2);
@@ -729,13 +732,7 @@ PoolDescriptor::PoolDescriptor(const vector<int>& ks, const vector<int>& st, str
     else msg("Incorrect padding type","PoolDescriptor::PoolDescriptor");
 }
 
-PoolDescriptor::PoolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p)
-{
-    ksize=vector<int>(ks.begin(), ks.end());
-    stride=vector<int>(st.begin(), st.end());
-    PoolDescriptor(ksize, stride, p);
-}
-
+PoolDescriptor::PoolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p):PoolDescriptor(vector<int>(ks.begin(), ks.end()),vector<int>(st.begin(), st.end()),p){}
 
 
 
