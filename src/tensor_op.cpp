@@ -541,6 +541,9 @@ ConvolDescriptor::ConvolDescriptor(const vector<int>& ks, const vector<int>& st,
     if (ks.size()!=3){ msg("Kernels must have 3 dimensions","ConvolDescriptor::ConvolDescriptor");}
     if (st.size()!=2){ msg("Strides must have 2 dimensions","ConvolDescriptor::ConvolDescriptor");}
 
+    ksize=ks;
+    stride=st;
+
     if (p=="same") {
         pad.push_back(ks[1]/2);
         pad.push_back(ks[2]/2);
@@ -554,16 +557,14 @@ ConvolDescriptor::ConvolDescriptor(const vector<int>& ks, const vector<int>& st,
 }
 
 
-ConvolDescriptor::ConvolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p)
+ConvolDescriptor::ConvolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p):ConvolDescriptor(vector<int>(ks.begin(), ks.end()),vector<int>(st.begin(), st.end()),p)
 {
-    ksize=vector<int>(ks.begin(), ks.end());
-    stride=vector<int>(st.begin(), st.end());
-    ConvolDescriptor(ksize, stride, p);
 }
 
 
 void ConvolDescriptor::build(Tensor *A)
 {
+
   if (A->dim!=4) msg("Tensors are not 4D","ConvolDescriptor::build");
 
   I=A;
