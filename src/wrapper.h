@@ -44,6 +44,8 @@ layer Dense_init(layer parent, int dim, const char* name, int dev);
 
 layer Conv_init(layer parent, const int* ks, int ks_size, const int* st, int st_size, const char* p, int dev);
 
+layer MPool_init(layer parent, const int* ks, int ks_size, const int* st, int st_size, const char* p, int dev);
+
 layer Activation_init(layer parent, const char* act, const char* name, int dev);
 
 layer Reshape_init(layer parent, const int* shape, int shape_size, const char* name, int dev);
