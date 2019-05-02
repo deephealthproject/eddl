@@ -106,11 +106,11 @@ int main(int argc, char **argv)
   eddl.div(X,255.0);
 
   // training, list of input and output tensors, batch, epochs
-  eddl.fit(net,{X},{Y},batch,1);
+  eddl.fit(net,{X},{Y},batch,10);
 
   eddl.change(sgd,{0.001f,0.9f});
 
-  eddl.fit(net,{X},{Y},batch,2);
+  eddl.fit(net,{X},{Y},batch,10);
 
   // Evaluate test
   tensor tX=eddl.T("tsX.bin");
