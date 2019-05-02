@@ -43,8 +43,7 @@ optim::optim()
 
 
 ////// SGD //////
-sgd::sgd(const initializer_list<float>& p):optim()
-{
+sgd::sgd(const initializer_list<float>& p):optim(){
   vector<float>v=vector<float>(p.begin(), p.end());
   lr=v[0];
   mu=v[1];

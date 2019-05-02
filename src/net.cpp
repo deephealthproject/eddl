@@ -178,7 +178,7 @@ void Net::info()
 {
 
   for(int i=0;i<layers.size();i++)
-    fprintf(stderr,"%s ",layers[i]->name.c_str());
+    fprintf(stdout,"%s ",layers[i]->name.c_str());
 
   cout<<"\n";
   for(int i=0;i<layers.size();i++)
@@ -189,7 +189,7 @@ void Net::info()
       cout<<si<<"-->"<<so<<"\n";
     }
 
-  fprintf(stderr,"\n");
+  fprintf(stdout,"\n");
 
 }
 
@@ -252,7 +252,7 @@ void Net::fts()
   vector<int> visit;
   vector<int> gin;
 
-  //fprintf(stderr,"FTS:");
+  //fprintf(stdout,"FTS:");
   for(i=0;i<layers.size();i++)
     {
       visit.push_back(0);
@@ -270,9 +270,9 @@ void Net::fts()
 
       /*
         if (layers[j]->lout)
-        fprintf(stderr,"%s-->",layers[j]->name.c_str());
+        fprintf(stdout,"%s-->",layers[j]->name.c_str());
         else
-        fprintf(stderr,"%s |",layers[j]->name.c_str());
+        fprintf(stdout,"%s |",layers[j]->name.c_str());
       */
       visit[j]=1;
       vfts.push_back(layers[j]);
@@ -282,7 +282,7 @@ void Net::fts()
           if(layers[n]==layers[j]->child[k]) gin[n]--;
 
     }
-  //fprintf(stderr,"\n");
+  //fprintf(stdout,"\n");
 
 }
 
@@ -294,7 +294,7 @@ void Net::bts()
   vector<int> visit;
   vector<int> gout;
 
-  //fprintf(stderr,"BTS:");
+  //fprintf(stdout,"BTS:");
   for(i=0;i<layers.size();i++)
     {
       visit.push_back(0);
@@ -312,9 +312,9 @@ void Net::bts()
 
       /*
         if (layers[j]->lin)
-        fprintf(stderr,"%s-->",layers[j]->name.c_str());
+        fprintf(stdout,"%s-->",layers[j]->name.c_str());
         else
-        fprintf(stderr,"%s |",layers[j]->name.c_str());
+        fprintf(stdout,"%s |",layers[j]->name.c_str());
       */
       visit[j]=1;
       vbts.push_back(layers[j]);
@@ -324,7 +324,7 @@ void Net::bts()
           if(layers[n]==layers[j]->parent[k]) gout[n]--;
 
     }
-  //fprintf(stderr,"\n");
+  //fprintf(stdout,"\n");
 }
 
 
@@ -334,44 +334,110 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
 }
 void Net::build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,CompServ *cs)
 {
-  int todev;
+    vstring co=vstring(c.begin(), c.end());
+    vstring me=vstring(m.begin(), m.end());
+    build(opt, co, me, cs);
+}
 
-  vstring co=vstring(c.begin(), c.end());
-  vstring me=vstring(m.begin(), m.end());
+/////////////////////////////////////////
+void Net::build(optim *opt, vstring co, vstring me){
+    fprintf(stdout,"Build net\n");
+    if (co.size()!=lout.size())
+        msg("Loss list size does not match output list","Net.build");
 
-  //build net
-  build(opt,co,me);
+    if (me.size()!=lout.size())
+        msg("Metric list size does not match output list" ,"Net.build");
 
-  if (cs->type=="local") {
+    // check devices
+    dev=-1;
+    int ind;
+    for(int i=0;i<layers.size();i++)
+        // do not consider input layers, since they are always on CPU
+        if (!isIn(layers[i],lin,ind)) {
+            if (dev==-1) dev=layers[i]->dev;
+            else {
+                if (layers[i]->dev!=dev)
+                    msg("Net with layers in different devicess" ,"Net.build");
+            }
+        }
+    if (dev==DEV_CPU)
+        cout<<"Net running on CPU\n";
+    else if (dev<DEV_FPGA)
+        cout<<"Net running on GPU "<<dev-DEV_GPU<<"\n";
+    else
+        cout<<"Net running on FPGA "<<dev-DEV_FPGA<<"\n";
 
-    if (cs->local_gpus.size()>0) todev=DEV_GPU;
-    else if (cs->local_fpgas.size()>0) todev=DEV_FPGA;
-    else todev=DEV_CPU;
-
-    // split net in devices
-    if (todev==DEV_CPU) {
-      if (dev==DEV_CPU) {
-        // split on multiple threads
-        unsigned int nthreads = cs->local_threads;
-
-        if (nthreads<=0)
-          msg("Threads must be > 0","Net.build");
-
-        cout<<"set threads to "<<nthreads<<"\n";
-
-        Eigen::initParallel();
-        Eigen::setNbThreads(1);
-        split(nthreads,DEV_CPU);
-      }
-      else {
-        msg("Net and Layers device missmatch","Net.build");
-      }
+    // set optimizer
+    optimizer=opt;
+    optimizer->setlayers(layers);
+    // Initialize fiting errors vector
+    for(int i=0;i<co.size();i++)
+    {
+        strcosts.push_back(co[i]);
+        fiterr.push_back(0.0);
+        fiterr.push_back(0.0);
     }
-    else if (todev<DEV_FPGA) {
-  #ifndef cGPU
-        msg("EDDLL not compiled for GPU","Net.build");
-  #else
-        // split on multiple GPUs
+    // set loss functions and create targets tensors
+    for(int i=0;i<co.size();i++)
+    {
+        losses.push_back(new Loss(co[i]));
+        if (co[i]=="soft_cent") lout[i]->delta_bp=1;
+        lout[i]->target=new Tensor(lout[i]->output->getshape(),dev);
+    }
+
+    // set metrics
+    for(int i=0;i<me.size();i++)
+    {
+        strmetrics.push_back(me[i]);
+        metrics.push_back(new Metric(me[i]));
+
+    }
+
+    // forward sort
+    fts();
+    // backward sort
+    bts();
+    // random params
+    initialize();
+}
+
+void Net::build(optim *opt, vstring co, vstring me, CompServ *cs)
+{
+    int todev;
+
+    //build net
+    build(opt,co,me);
+
+    if (cs->type=="local") {
+
+        if (cs->local_gpus.size()>0) todev=DEV_GPU;
+        else if (cs->local_fpgas.size()>0) todev=DEV_FPGA;
+        else todev=DEV_CPU;
+
+        // split net in devices
+        if (todev==DEV_CPU) {
+            if (dev==DEV_CPU) {
+                // split on multiple threads
+                unsigned int nthreads = cs->local_threads;
+
+                if (nthreads<=0)
+                    msg("Threads must be > 0","Net.build");
+
+                cout<<"set threads to "<<nthreads<<"\n";
+
+                Eigen::initParallel();
+                Eigen::setNbThreads(1);
+                split(nthreads,DEV_CPU);
+            }
+            else {
+                msg("Net and Layers device missmatch","Net.build");
+            }
+        }
+        else if (todev<DEV_FPGA) {
+#ifndef cGPU
+            msg("EDDLL not compiled for GPU","Net.build");
+#else
+            // split on multiple GPUs
         int ngpus=gpu_devices();
         if (ngpus==0) {
           msg("GPU devices not found","Net.build");
@@ -388,86 +454,18 @@ void Net::build(optim *opt,const initializer_list<string>& c,const initializer_l
 
         cout<<"split into "<<devsel.size()<<" GPUs devices\n";
         split(cs->local_gpus.size(),DEV_GPU);
-  #endif
-      }
-      else {
-        // split on multiple FPGAs
-      }
-  }
-  else {
-    msg("Distributed version not yet implemented","Net.build");
-  }
+#endif
+        }
+        else {
+            // split on multiple FPGAs
+        }
+    }
+    else {
+        msg("Distributed version not yet implemented","Net.build");
+    }
 }
-
-
-/////////////////////////////////////////
-void Net::build(optim *opt,vstring co,vstring me)
-{
-
-  fprintf(stderr,"Build net\n");
-  if (co.size()!=lout.size())
-    msg("Loss list size does not match output list","Net.build");
-
-  if (co.size()!=lout.size())
-    msg("Metric list size does not match output list" ,"Net.build");
-
-  // check devices
-  dev=-1;
-  int ind;
-  for(int i=0;i<layers.size();i++)
-    // do not consider input layers, since they are always on CPU
-    if (!isIn(layers[i],lin,ind)) {
-      if (dev==-1) dev=layers[i]->dev;
-      else {
-        if (layers[i]->dev!=dev)
-          msg("Net with layers in different devicess" ,"Net.build");
-      }
-    }
-  if (dev==DEV_CPU)
-    cout<<"Net running on CPU\n";
-  else if (dev<DEV_FPGA)
-    cout<<"Net running on GPU "<<dev-DEV_GPU<<"\n";
-  else
-    cout<<"Net running on FPGA "<<dev-DEV_FPGA<<"\n";
-
-  // set optimizer
-  optimizer=opt;
-  optimizer->setlayers(layers);
-  // Initialize fiting errors vector
-  for(int i=0;i<co.size();i++)
-    {
-      strcosts.push_back(co[i]);
-      fiterr.push_back(0.0);
-      fiterr.push_back(0.0);
-    }
-  // set loss functions and create targets tensors
-  for(int i=0;i<co.size();i++)
-    {
-      losses.push_back(new Loss(co[i]));
-      if (co[i]=="soft_cent") lout[i]->delta_bp=1;
-      lout[i]->target=new Tensor(lout[i]->output->getshape(),dev);
-    }
-
-  // set metrics
-  for(int i=0;i<me.size();i++)
-    {
-      strmetrics.push_back(me[i]);
-      metrics.push_back(new Metric(me[i]));
-
-    }
-
-  // forward sort
-  fts();
-  // backward sort
-  bts();
-  // random params
-  initialize();
-
-}
-
 
 /////////////////////////////////////
-
 void Net::split(int c,int todev)
 {
   int i,j,k,l;
@@ -583,8 +581,8 @@ void Net::forward()
   if (VERBOSE) {
     for(int i=0;i<layers.size();i++) {
       cout<<layers[i]->name<<"\n";
-      fprintf(stderr,"  %s In:%f\n",layers[i]->name.c_str(),layers[i]->input->total_sum());
-      fprintf(stderr,"  %s Out:%f\n",layers[i]->name.c_str(),layers[i]->output->total_sum());
+      fprintf(stdout,"  %s In:%f\n",layers[i]->name.c_str(),layers[i]->input->total_sum());
+      fprintf(stdout,"  %s Out:%f\n",layers[i]->name.c_str(),layers[i]->output->total_sum());
     }
 
     getchar();
@@ -631,11 +629,11 @@ void Net::applygrads(int batch)
   if (VERBOSE) {
     for(int i=0;i<layers.size();i++) {
       cout<<layers[i]->name<<"\n";
-      fprintf(stderr,"  In:%f\n",layers[i]->input->total_abs());
-      fprintf(stderr,"  Out:%f\n",layers[i]->output->total_abs());
-      fprintf(stderr,"  Delta:%f\n",layers[i]->delta->total_abs());
+      fprintf(stdout,"  In:%f\n",layers[i]->input->total_abs());
+      fprintf(stdout,"  Out:%f\n",layers[i]->output->total_abs());
+      fprintf(stdout,"  Delta:%f\n",layers[i]->delta->total_abs());
       for(int j=0;j<layers[i]->gradients.size();j++) {
-       fprintf(stderr,"  %f\n",layers[i]->gradients[j]->total_abs());
+       fprintf(stdout,"  %f\n",layers[i]->gradients[j]->total_abs());
      }
     }
     getchar();
@@ -699,11 +697,11 @@ void Net::fit(vtensor tin,vtensor tout,int batch, int epochs) {
   // Start training
   setmode(TRMODE);
 
-  fprintf(stderr,"%d epochs of %d batches of size %d\n",epochs,n/batch,batch);
+  fprintf(stdout,"%d epochs of %d batches of size %d\n",epochs,n/batch,batch);
   for(i=0;i<epochs;i++)
     {
       high_resolution_clock::time_point e1 = high_resolution_clock::now();
-      fprintf(stderr,"Epoch %d\n",i+1);
+      fprintf(stdout,"Epoch %d\n",i+1);
 
       for(j=0;j<2*tout.size();j++) errors[j]=0.0;
 
@@ -723,22 +721,23 @@ void Net::fit(vtensor tin,vtensor tout,int batch, int epochs) {
           duration<double> time_span = t2 - t1;
 
           int p=0;
-          fprintf(stderr,"batch %d ",j+1);
+          fprintf(stdout,"batch %d ",j+1);
           for(k=0;k<tout.size();k++,p+=2)
             {
               errors[p]+=fiterr[p];
               errors[p+1]+=fiterr[p+1];
-              fprintf(stderr,"%s(%s=%1.3f,%s=%1.3f) ",lout[k]->name.c_str(),losses[k]->name.c_str(),errors[p]/(batch*(j+1)),metrics[k]->name.c_str(),errors[p+1]/(batch*(j+1)));
+              fprintf(stdout,"%s(%s=%1.3f,%s=%1.3f) ",lout[k]->name.c_str(),losses[k]->name.c_str(),errors[p]/(batch*(j+1)),metrics[k]->name.c_str(),errors[p+1]/(batch*(j+1)));
               fiterr[p]=fiterr[p+1]=0.0;
             }
-          fprintf(stderr,"%1.3f secs/batch\r",time_span.count());
-
+          fprintf(stdout,"%1.3f secs/batch\r",time_span.count());
+          fflush(stdout);
         }
       high_resolution_clock::time_point e2 = high_resolution_clock::now();
       duration<double> epoch_time_span = e2 - e1;
 
-      fprintf(stderr,"\n%1.3f secs/epoch\n",epoch_time_span.count());
+      fprintf(stdout,"\n%1.3f secs/epoch\n",epoch_time_span.count());
     }
+  fflush(stdout);
 }
 
 
@@ -925,8 +924,9 @@ void Net::evaluate(vtensor tin,vtensor tout) {
 
   int p=0;
   for(k=0;k<tout.size();k++,p+=2)
-   fprintf(stderr,"%s(%s=%1.3f,%s=%1.3f) ",lout[k]->name.c_str(),losses[k]->name.c_str(),errors[p]/n,metrics[k]->name.c_str(),errors[p+1]/n);
-  fprintf(stderr,"\n");
+   fprintf(stdout,"%s(%s=%1.3f,%s=%1.3f) ",lout[k]->name.c_str(),losses[k]->name.c_str(),errors[p]/n,metrics[k]->name.c_str(),errors[p+1]/n);
+  fprintf(stdout,"\n");
+  fflush(stdout);
 }
 
 

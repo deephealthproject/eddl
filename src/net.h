@@ -61,11 +61,10 @@ void *applygrads_t(void *t);
 class Net
 {
  private:
+    void train_batch(vtensor X,vtensor Y,vind sind,int batch,int eval=0);
+    void build(optim *opt,vstring in,vstring out);
 
-  void train_batch(vtensor X,vtensor Y,vind sind,int batch,int eval=0);
-  void build(optim *opt,vstring in,vstring out);
-
- public:
+public:
   Net(vlayer in,vlayer out);
   void initialize();
   void reset();
@@ -108,6 +107,7 @@ class Net
 
   void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m);
   void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,CompServ *cs);
+  void build(optim *opt, vstring c, vstring m, CompServ *cs);
   void fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch,int epochs);
   void fit(vtensor tin,vtensor tout,int batch, int epochs);
   void train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out);
