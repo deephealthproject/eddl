@@ -147,6 +147,10 @@ layer EDDL::MPool(layer parent,const initializer_list<int>& ks,string p)
 {
   return new LMPool(parent,ks,ks,p);
 }
+layer EDDL::MPool(layer parent,const vector<int>& ks, const vector<int>& st, string p, int d)
+{
+  return new LMPool(parent,ks,st,p, d);
+}
 
 //////////////////////////////////////////////////////
 layer EDDL::Activation(layer parent,string act)

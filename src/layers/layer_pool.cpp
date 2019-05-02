@@ -72,6 +72,10 @@ LMPool::LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_l
 LMPool::LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,int d):LMPool(parent,ks,st,p,"mpool"+to_string(pool_created),d){}
 LMPool::LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name,int d):LMPool(parent,new PoolDescriptor(ks,st,p),name,d){}
 
+LMPool::LMPool(Layer *parent,const vector<int>& ks, const vector<int>& st, string p, int d):LMPool(parent,ks,st,p,"mpool"+to_string(pool_created),d){}
+LMPool::LMPool(Layer *parent,const vector<int>& ks, const vector<int>& st, string p, string name, int d):LMPool(parent,new PoolDescriptor(ks,st,p),name,d){}
+
+
 LMPool::LMPool(Layer *parent,PoolDescriptor *D,string name, int d):LPool(parent,D,name,d)
 {
   // params

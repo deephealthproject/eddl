@@ -713,24 +713,31 @@ PoolDescriptor::PoolDescriptor(const initializer_list<int>& ks,const initializer
   if (pad.size()!=2) msg("Padding must have 2 dimensions","PoolDescriptor::PoolDescriptor");
 }
 
+PoolDescriptor::PoolDescriptor(const vector<int>& ks, const vector<int>& st, string p)
+{
+    if (ksize.size()!=2) msg("Pooling Kernels must have 2 dimensions","PoolDescriptor::PoolDescriptor");
+    if (stride.size()!=2) msg("Strides must have 2 dimensions","PoolDescriptor::PoolDescriptor");
+
+    if (p=="same") {
+        pad.push_back(ksize[0]/2);
+        pad.push_back(ksize[1]/2);
+    }
+    else if (p=="none") {
+        pad.push_back(0);
+        pad.push_back(0);
+    }
+    else msg("Incorrect padding type","PoolDescriptor::PoolDescriptor");
+}
+
 PoolDescriptor::PoolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p)
 {
-  ksize=vector<int>(ks.begin(), ks.end());
-  stride=vector<int>(st.begin(), st.end());
-
-  if (ksize.size()!=2) msg("Pooling Kernels must have 2 dimensions","PoolDescriptor::PoolDescriptor");
-  if (stride.size()!=2) msg("Strides must have 2 dimensions","PoolDescriptor::PoolDescriptor");
-
-  if (p=="same") {
-    pad.push_back(ksize[0]/2);
-    pad.push_back(ksize[1]/2);
-  }
-  else if (p=="none") {
-      pad.push_back(0);
-      pad.push_back(0);
-  }
-  else msg("Incorrect padding type","PoolDescriptor::PoolDescriptor");
+    ksize=vector<int>(ks.begin(), ks.end());
+    stride=vector<int>(st.begin(), st.end());
+    PoolDescriptor(ksize, stride, p);
 }
+
+
+
 
 
 void PoolDescriptor::build(Tensor *A)

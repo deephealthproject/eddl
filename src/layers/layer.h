@@ -268,6 +268,9 @@ class LMPool: public LPool
   LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,int d);
   LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name,int d);
 
+  LMPool(Layer *parent,const vector<int>& ks, const vector<int>& st, string p, int d);
+  LMPool(Layer *parent,const vector<int>& ks, const vector<int>& st, string p, string name, int d);
+
   LMPool(Layer *parent,PoolDescriptor *cd,string name, int d);
 
   // Params

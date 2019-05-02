@@ -70,6 +70,12 @@ layer Conv_init(layer parent, const int* ks, int ks_size, const int* st, int st_
     return EDDL::Conv(parent, vks, vst, p, dev);
 }
 
+layer MPool_init(layer parent, const int* ks, int ks_size, const int* st, int st_size, const char* p, int dev){
+    vector<int> vks(ks, ks + ks_size);
+    vector<int> vst(st, st + st_size);
+    return EDDL::MPool(parent, vks, vst, p, dev);
+}
+
 layer Activation_init(layer parent, const char* act, const char* name, int dev){
     return EDDL::Activation(parent, act, dev);
 }
