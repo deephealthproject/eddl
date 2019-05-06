@@ -64,7 +64,7 @@ int main(int argc, char **argv)
   int batch=1000;
 
   // Download dataset
-  //eddl.download_mnist();
+  eddl.download_mnist();
 
   // network
   layer in=eddl.Input({batch,784});
@@ -103,26 +103,31 @@ int main(int argc, char **argv)
   // optionally put a DEVICE where the net will run
   optimizer sgd=eddl.SGD({0.01,0.9});
 
-  eddl.build(net,sgd,{"soft_cent"},{"acc"});
+  compserv cs = eddl.CS_CPU(4); // local CPU with 6 threads
+  //compserv cs=eddl.CS_GPU({1,0,0,0}); // local GPU using the first gpu of 4 installed
+  //compserv cs=eddl.CS_GPU({1});// local GPU using the first gpu of 1 installed
 
+  eddl.build(net,sgd,{"soft_cent"},{"acc"}, cs);
 
-  // read data
+  // Load and preprocess training data
   tensor X=eddl.T("trX.bin");
   tensor Y=eddl.T("trY.bin");
-
   eddl.div(X,255.0);
 
   // training, list of input and output tensors, batch, epochs
   eddl.fit(net,{X},{Y},batch,1);
 
+  // Evaluate train
+  std::cout << "Evaluate train:" << std::endl;
+  eddl.evaluate(net,{X},{Y});
 
-  //// TEST
-
+  // Load and preprocess test data
   tensor tX=eddl.T("tsX.bin");
   tensor tY=eddl.T("tsY.bin");
-
   eddl.div(tX,255.0);
 
+  // Evaluate test
+  std::cout << "Evaluate test:" << std::endl;
   eddl.evaluate(net,{tX},{tY});
 
 }

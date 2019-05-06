@@ -66,7 +66,7 @@ int main(int argc, char **argv)
   int batch=1000;
 
   // Download dataset
-  //eddl.download_mnist();
+  eddl.download_mnist();
 
   // network
   const int s[] = {batch,784};
@@ -106,33 +106,31 @@ int main(int argc, char **argv)
   const char** c = {&c1};
   const char** m = {&m1};
 
+  compserv cs = CS_CPU_init(4); // local CPU with 6 threads
+
   // build(model net, optimizer opt, const char** c, int size_c, const char** m, int size_m, int todev)
-  build(net,sgd,c, 1, m, 1, DEV_CPU);
+  build(net, sgd, c, 1, m, 1, cs);
 
 
-  // read data
+  // Load and preprocess training data
   tensor X=LTensor_init_fromfile("trX.bin");
   tensor Y=LTensor_init_fromfile("trY.bin");
-
   LTensor_div(X, 255.0);
 
   // training, list of input and output tensors, batch, epochs
-  fit(net,X->input,Y->input,batch,1);
+  fit(net, X->input, Y->input, batch, 1);
 
-
-  //// EVALUATE TRAIN
+  // Evaluate train
   std::cout << "Evaluate train:" << std::endl;
-  evaluate(net,X->input,Y->input);
+  evaluate(net, X->input, Y->input);
 
-
-  //// EVALUATE TEST
+  // Evaluate test
   tensor tX=LTensor_init_fromfile("tsX.bin");
   tensor tY=LTensor_init_fromfile("tsY.bin");
-
   LTensor_div(tX, 255.0);
-  std::cout << "Evaluate test:" << std::endl;
 
-  evaluate(net,tX->input,tY->input);
+  std::cout << "Evaluate test:" << std::endl;
+  evaluate(net, tX->input, tY->input);
 
 }
 

@@ -70,24 +70,26 @@ int main(int argc, char **argv)
 
   eddl.build(net,sgd,{"soft_cent"},{"acc"},cs);
 
-  // read data
+  // Load and preprocess training data
   tensor X=eddl.T("trX.bin");
   tensor Y=eddl.T("trY.bin");
-
   eddl.div(X,255.0);
 
   // training, list of input and output tensors, batch, epochs
-  eddl.fit(net,{X},{Y},batch,20);
+  eddl.fit(net,{X},{Y},batch,1);
 
+  // Evaluate train
+  std::cout << "Evaluate train:" << std::endl;
+  eddl.evaluate(net,{X},{Y});
 
-  // Evaluate test
+  // Load and preprocess test data
   tensor tX=eddl.T("tsX.bin");
   tensor tY=eddl.T("tsY.bin");
-
   eddl.div(tX,255.0);
 
+  // Evaluate test
+  std::cout << "Evaluate test:" << std::endl;
   eddl.evaluate(net,{tX},{tY});
-
 }
 
 

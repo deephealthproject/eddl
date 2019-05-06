@@ -20,7 +20,7 @@ $(info ----> DEFAULT: set TARGET LINUX)
 endif
 
 
-## CORE=0 CPU
+## CORE=1 CPU
 ifdef CORE
 ifeq ($(CORE),1)
 $(info set CPU)
@@ -127,14 +127,14 @@ endif
 SRC_PATH=../../../src
 
 #######################################################################
-OBJ =	utils.o tensor.o tensor_op.o cpu_convol.o compserv.o layer.o layer_tensor.o layer_input.o layer_dense.o layer_conv.o layer_pool.o layer_activation.o layer_reshape.o layer_drop.o layer_add.o layer_cat.o loss.o metric.o optim.o net.o eddl.o
+OBJ =	utils.o tensor.o tensor_op.o cpu_convol.o compserv.o layer.o layer_tensor.o layer_input.o layer_dense.o layer_conv.o layer_pool.o layer_activation.o layer_reshape.o layer_drop.o layer_add.o layer_cat.o loss.o metric.o optim.o net.o eddl.o wrapper.o
 
-ifeq ($(CORE),1)
-all: $(GPU_OBJ) $(OBJ) test_eddl
+ifeq ($(CORE),1)  # CPU
+all: $(GPU_OBJ) $(OBJ) test_eddl test_wrapper
 endif
 
-ifeq ($(CORE),2)
-all: $(GPU_OBJ) $(OBJ) test_eddl
+ifeq ($(CORE),2)  # GPU
+all: $(GPU_OBJ) $(OBJ) test_eddl test_wrapper
 endif
 
 #--------------------------------- c code
@@ -204,6 +204,9 @@ eddl.o: $(SRC_PATH)/eddl.cpp $(SRC_PATH)/eddl.h
 layer_reshape.o: $(SRC_PATH)/layers/layer_reshape.cpp $(SRC_PATH)/layers/layer.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_reshape.cpp
 
+wrapper.o: $(SRC_PATH)/eddl.cpp $(SRC_PATH)/wrapper.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/wrapper.cpp
+
 ##ADD_MORE_RULES
 
 #---------------------------------- gpu code
@@ -220,6 +223,8 @@ tensor_kernels.o: $(SRC_PATH)/gpu/tensor_kernels.cu $(SRC_PATH)/gpu/tensor_kerne
 test_eddl: test_eddl.cpp $(OBJ) $(GPU_OBJ)
 	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_eddl.cpp -o test_eddl $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
 
+test_wrapper: test_wrapper.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_wrapper.cpp -o test_wrapper $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
 
 #-------------------------
 
