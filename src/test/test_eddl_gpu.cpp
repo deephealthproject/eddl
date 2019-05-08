@@ -28,64 +28,62 @@
 
 #include "../eddl.h"
 
-layer ResBlock(layer in, int dim,int n)
-{
-  layer l=in;
-  for(int i=0;i<n;i++)
-    l=eddl.Activation(eddl.Dense(l,dim),"relu");
+layer ResBlock(layer in, int dim, int n) {
+    layer l = in;
+    for (int i = 0; i < n; i++)
+        l = eddl.Activation(eddl.Dense(l, dim), "relu");
 
-  l=eddl.Add({in,l});
+    l = eddl.Add({in, l});
 
-  return l;
+    return l;
 
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 
-  int batch=1000;
+    int batch = 1000;
 
-  // network
-  layer in=eddl.Input({batch,784});
-  layer l=in;
-  layer l2;
+    // network
+    layer in = eddl.Input({batch, 784});
+    layer l = in;
+    layer l2;
 
-  l=eddl.Drop(eddl.Activation(eddl.Dense(l,1000),"relu"),0.5);
-  for(int i=0;i<2;i++) {
-      if (i==1) l2=l;
-      l=ResBlock(l,1000,1);
-  }
+    l = eddl.Drop(eddl.Activation(eddl.Dense(l, 1000), "relu"), 0.5);
+    for (int i = 0; i < 2; i++) {
+        if (i == 1) l2 = l;
+        l = ResBlock(l, 1000, 1);
+    }
 
 
-  //l=eddl.Reshape(l,{batch,16,2,2,-1});
-  //l=eddl.Reshape(l,{batch,1024});
+    //l=eddl.Reshape(l,{batch,16,2,2,-1});
+    //l=eddl.Reshape(l,{batch,1024});
 
-  l=eddl.Cat({l,l2});
+    l = eddl.Cat({l, l2});
 
-  layer out=eddl.Activation(eddl.Dense(l,10),"softmax");
-  // net define input and output layers list
-  model net=eddl.Model({in},{out});
+    layer out = eddl.Activation(eddl.Dense(l, 10), "softmax");
+    // net define input and output layers list
+    model net = eddl.Model({in}, {out});
 
-  // plot the model
-  eddl.plot(net,"model.pdf");
+    // plot the model
+    eddl.plot(net, "model.pdf");
 
-  // get some info from the network
-  eddl.info(net);
+    // get some info from the network
+    eddl.info(net);
 
-  // Attach an optimizer and a list of error criteria and metrics
-  // size of error criteria and metrics list must match with size of list of outputs
-  // optionally put a DEVICE where the net will run
-  optimizer sgd=eddl.SGD({0.01,0.9});
-  eddl.build(net,sgd,{"soft_cent"},{"acc"});
+    // Attach an optimizer and a list of error criteria and metrics
+    // size of error criteria and metrics list must match with size of list of outputs
+    // optionally put a DEVICE where the net will run
+    optimizer sgd = eddl.SGD({0.01, 0.9});
+    eddl.build(net, sgd, {"soft_cent"}, {"acc"});
 
-  // read data
-  tensor X=eddl.T("trX.bin");
-  tensor Y=eddl.T("trY.bin");
+    // read data
+    tensor X = eddl.T("trX.bin");
+    tensor Y = eddl.T("trY.bin");
 
-  eddl.div(X,255.0);
+    eddl.div(X, 255.0);
 
-  // training, list of input and output tensors, batch, epochs
-  eddl.fit(net,{X},{Y},batch,100);
+    // training, list of input and output tensors, batch, epochs
+    eddl.fit(net, {X}, {Y}, batch, 100);
 
 }
 
