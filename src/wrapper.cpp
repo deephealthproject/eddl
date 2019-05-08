@@ -10,9 +10,9 @@
 #include <thread>
 
 // Create Tensors
-Tensor* Tensor_init(const int* shape, int shape_size, int dev){
+Tensor* Tensor_init(const int* shape, int shape_size){
     vector<int> v(shape, shape + shape_size);
-    return new Tensor(v, dev);
+    return new Tensor(v, DEV_CPU);
 }
 
 int Tensor_device(Tensor*t){
@@ -43,9 +43,9 @@ void Tensor_point2data(Tensor* t, float* ptr){
 }
 
 // Create Layers
-tensor LTensor_init(const int* shape, int shape_size, int dev){
+tensor LTensor_init(const int* shape, int shape_size){
     vector<int> s(shape, shape + shape_size);
-    return new LTensor(s, dev);
+    return new LTensor(s, DEV_CPU);
 }
 
 tensor LTensor_init_fromfile(const char* fname){
@@ -56,55 +56,55 @@ void LTensor_div(tensor t, float v){
     t->input->div(v);
 }
 
-layer Input_init(Tensor* in, const char* name, int dev){
-    return new LInput(in, dev);
+layer Input_init(Tensor* in, const char* name){
+    return new LInput(in, name, DEV_CPU);
 }
 
-layer Dense_init(layer parent, int dim, const char* name, int dev){
+layer Dense_init(layer parent, int dim, const char* name){
     return new LDense(parent, dim, name, DEV_CPU);
 }
 
-layer Conv_init(layer parent, const int* ks, int ks_size, const int* st, int st_size, const char* p, int dev){
+layer Conv_init(layer parent, const int* ks, int ks_size, const int* st, int st_size, const char* p, const char* name){
     vector<int> vks(ks, ks + ks_size);
     vector<int> vst(st, st + st_size);
-    return new LConv(parent, vks, vst, p, dev);
+    return new LConv(parent, vks, vst, p, name, DEV_CPU);
 }
 
-layer MPool_init(layer parent, const int* ks, int ks_size, const int* st, int st_size, const char* p, int dev){
+layer MPool_init(layer parent, const int* ks, int ks_size, const int* st, int st_size, const char* p, const char* name){
     vector<int> vks(ks, ks + ks_size);
     vector<int> vst(st, st + st_size);
-    return new LMPool(parent, vks, vst, p, dev);
+    return new LMPool(parent, vks, vst, p, name, DEV_CPU);
 }
 
-layer Activation_init(layer parent, const char* act, const char* name, int dev){
+layer Activation_init(layer parent, const char* act, const char* name){
     return new LActivation(parent, act, name, DEV_CPU);
 }
 
-layer Reshape_init(layer parent, const int* shape, int shape_size, const char* name, int dev){
+layer Reshape_init(layer parent, const int* shape, int shape_size, const char* name){
     vector<int> vshape(shape, shape + shape_size);
     return new LReshape(parent, vshape, name, DEV_CPU);
 }
 
-layer Drop_init(layer parent, float df, const char* name, int dev){
-    return new LDrop(parent, df, name);
+layer Drop_init(layer parent, float df, const char* name){
+    return new LDrop(parent, df, name, DEV_CPU);
 }
 
-layer Add_init(Layer** parent, int parent_size, const char* name, int dev){
+layer Add_init(Layer** parent, int parent_size, const char* name){
     vector<Layer*> vparent;
     vparent.reserve(parent_size);
     for( int i = 0; i < parent_size; ++i ){
         vparent.push_back(parent[i]);
     }
-    return new LAdd(vparent, dev);
+    return new LAdd(vparent,name, DEV_CPU);
 };
 
-layer Cat_init(Layer** init, int init_size, const char* name, int dev){
+layer Cat_init(Layer** init, int init_size, const char* name){
     vector<Layer*> vinit;
     vinit.reserve(init_size);
     for( int i = 0; i < init_size; ++i ){
         vinit.push_back(init[i]);
     }
-    return new LCat(vinit, dev);
+    return new LCat(vinit, name, DEV_CPU);
 }
 
 model Model_init(Layer* in, int in_size, Layer* out, int out_size){

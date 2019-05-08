@@ -24,7 +24,7 @@ extern "C"
 
 
 // Create Tensors
-Tensor* Tensor_init(const int* shape, int shape_size, int dev);
+Tensor* Tensor_init(const int* shape, int shape_size);
 int Tensor_device(Tensor*t);
 int Tensor_dim(Tensor*t);
 int Tensor_length(Tensor*t);  // Data length
@@ -34,27 +34,27 @@ void Tensor_point2data(Tensor* t, float* ptr);
 
 
 // Create Layers
-tensor LTensor_init(const int* shape, int shape_size, int dev);
+tensor LTensor_init(const int* shape, int shape_size);
 tensor LTensor_init_fromfile(const char* fname);
 void LTensor_div(tensor t, float v);
 
-layer Input_init(Tensor* in, const char* name, int dev);
+layer Input_init(Tensor* in, const char* name);
 
-layer Dense_init(layer parent, int dim, const char* name, int dev);
+layer Dense_init(layer parent, int dim, const char* name);
 
-layer Conv_init(layer parent, const int* ks, int ks_size, const int* st, int st_size, const char* p, int dev);
+layer Conv_init(layer parent, const int* ks, int ks_size, const int* st, int st_size, const char* p, const char* name);
 
-layer MPool_init(layer parent, const int* ks, int ks_size, const int* st, int st_size, const char* p, int dev);
+layer MPool_init(layer parent, const int* ks, int ks_size, const int* st, int st_size, const char* p, const char* name);
 
-layer Activation_init(layer parent, const char* act, const char* name, int dev);
+layer Activation_init(layer parent, const char* act, const char* name);
 
-layer Reshape_init(layer parent, const int* shape, int shape_size, const char* name, int dev);
+layer Reshape_init(layer parent, const int* shape, int shape_size, const char* name);
 
-layer Drop_init(layer parent, float df, const char* name, int dev);
+layer Drop_init(layer parent, float df, const char* name);
 
-layer Add_init(Layer** parent, int parent_size, const char* name, int dev);
+layer Add_init(Layer** parent, int parent_size, const char* name);
 
-layer Cat_init(Layer** init, int init_size, const char* name, int dev);
+layer Cat_init(Layer** init, int init_size, const char* name);
 
 // Create net
 model Model_init(Layer* in, int in_size, Layer* out, int out_size);
