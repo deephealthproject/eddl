@@ -44,12 +44,12 @@ void Tensor_point2data(Tensor* t, float* ptr){
 
 // Create Layers
 tensor LTensor_init(const int* shape, int shape_size, int dev){
-    vector<int> v(shape, shape + shape_size);
-    return EDDL::T(v, dev);
+    vector<int> s(shape, shape + shape_size);
+    return new LTensor(s, dev);
 }
 
 tensor LTensor_init_fromfile(const char* fname){
-    return EDDL::T(fname);
+    return new LTensor(fname);
 }
 
 void LTensor_div(tensor t, float v){
@@ -61,32 +61,32 @@ layer Input_init(Tensor* in, const char* name, int dev){
 }
 
 layer Dense_init(layer parent, int dim, const char* name, int dev){
-    return EDDL::Dense(parent, dim, dev);
+    return new LDense(parent, dim, name, DEV_CPU);
 }
 
 layer Conv_init(layer parent, const int* ks, int ks_size, const int* st, int st_size, const char* p, int dev){
     vector<int> vks(ks, ks + ks_size);
     vector<int> vst(st, st + st_size);
-    return EDDL::Conv(parent, vks, vst, p, dev);
+    return new LConv(parent, vks, vst, p, dev);
 }
 
 layer MPool_init(layer parent, const int* ks, int ks_size, const int* st, int st_size, const char* p, int dev){
     vector<int> vks(ks, ks + ks_size);
     vector<int> vst(st, st + st_size);
-    return EDDL::MPool(parent, vks, vst, p, dev);
+    return new LMPool(parent, vks, vst, p, dev);
 }
 
 layer Activation_init(layer parent, const char* act, const char* name, int dev){
-    return EDDL::Activation(parent, act, dev);
+    return new LActivation(parent, act, name, DEV_CPU);
 }
 
 layer Reshape_init(layer parent, const int* shape, int shape_size, const char* name, int dev){
     vector<int> vshape(shape, shape + shape_size);
-    return EDDL::Reshape(parent, vshape, name, dev);
+    return new LReshape(parent, vshape, name, DEV_CPU);
 }
 
 layer Drop_init(layer parent, float df, const char* name, int dev){
-    return EDDL::Drop(parent, df, dev);
+    return new LDrop(parent, df, name);
 }
 
 layer Add_init(Layer** parent, int parent_size, const char* name, int dev){
@@ -96,10 +96,10 @@ layer Add_init(Layer** parent, int parent_size, const char* name, int dev){
         vparent.push_back(parent[i]);
     }
     return new LAdd(vparent, dev);
- };
+};
 
 layer Cat_init(Layer** init, int init_size, const char* name, int dev){
-   vector<Layer*> vinit;
+    vector<Layer*> vinit;
     vinit.reserve(init_size);
     for( int i = 0; i < init_size; ++i ){
         vinit.push_back(init[i]);
