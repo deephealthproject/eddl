@@ -52,10 +52,10 @@ layer ResBlock(layer in, int dim,int n)
 
   layer l=in;
   for(int i=0;i<n;i++)
-    l=Activation_init(Dense_init(l,dim, "Dense", DEV_CPU),"relu", "", DEV_CPU);
+    l=Activation_init(Dense_init(l,dim, "Dense"),"relu", "Activation");
 
   layer l_add[] = {in, l};
-  l=Add_init(l_add, 2, "Add", DEV_CPU);
+  l=Add_init(l_add, 2, "Add");
 
   return l;
 }
@@ -70,21 +70,21 @@ int main(int argc, char **argv)
 
   // network
   const int s[] = {batch,784};
-  Tensor* t = Tensor_init(s, 2, DEV_CPU);
-  layer in=Input_init(t, "Input", DEV_CPU);
+  Tensor* t = Tensor_init(s, 2);
+  layer in=Input_init(t, "Input");
   layer l=in;
   layer l2;
 
-  l=Drop_init(Activation_init(Dense_init(l,1024, "Dense", DEV_CPU),"relu", "Activation", DEV_CPU),0.5, "drop", DEV_CPU);
+  l=Drop_init(Activation_init(Dense_init(l,1024, "Dense"),"relu", "Activation"),0.5, "drop");
   for(int i=0;i<2;i++) {
       if (i==1) l2=l;
       l=ResBlock(l,1024,1);
   }
 
   layer l_cat[] = {l, l2};
-  l=Cat_init(l_cat, 2, "cat", DEV_CPU);
+  l=Cat_init(l_cat, 2, "cat");
 
-  layer out=Activation_init(Dense_init(l,10, "Dense", DEV_CPU),"softmax", "Activation", DEV_CPU);
+  layer out=Activation_init(Dense_init(l,10, "Dense"),"softmax", "Activation");
 
   // net define input and output layers list
   model net=Model_init(in, 1, out, 1);

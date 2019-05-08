@@ -44,14 +44,14 @@ int main(int argc, char **argv)
 
     // network
     const int s[] = {batch,784};
-    Tensor* t = Tensor_init(s, 2, DEV_CPU);
-    layer in=Input_init(t, "Input", DEV_CPU);
+    Tensor* t = Tensor_init(s, 2);
+    layer in=Input_init(t, "Input");
     layer l=in;
 
     for(int i=0;i<3;i++)
-        l=Activation_init(Dense_init(l,1024, "Dense", DEV_CPU),"relu", "Activation", DEV_CPU);
+        l=Activation_init(Dense_init(l,1024, "Dense"),"relu", "Activation");
 
-    layer out=Activation_init(Dense_init(l,10, "Dense", DEV_CPU),"softmax", "Activation", DEV_CPU);
+    layer out=Activation_init(Dense_init(l,10, "Dense"),"softmax", "Activation");
 
     // net define input and output layers list
     model net=Model_init(in, 1, out, 1);

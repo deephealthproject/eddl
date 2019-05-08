@@ -44,17 +44,17 @@ layer ResBlock(layer in,int k,int n)
     layer l=in;
     for(int i=0;i<n;i++)
 
-        l=Activation_init(Conv_init(l, ks3_c, 3, st1_c, 2, "same", DEV_CPU), "relu", "Activation", DEV_CPU);
+        l=Activation_init(Conv_init(l, ks3_c, 3, st1_c, 2, "same", "Conv"), "relu", "Activation");
 
     // adapt depth of input
-    in=Conv_init(in,ks1_c, 3, st1_c, 2, "same", DEV_CPU);
+    in=Conv_init(in,ks1_c, 3, st1_c, 2, "same", "Conv");
 
     // add input and last
     layer l_add[] = {in, l};
-    l=Add_init(l_add, 2, "Add", DEV_CPU);
+    l=Add_init(l_add, 2, "Add");
 
     // reduce size
-    l=Conv_init(l,ks3_c, 3, st2_c, 2, "same", DEV_CPU);
+    l=Conv_init(l,ks3_c, 3, st2_c, 2, "same", "Conv");
     return l;
 }
 
@@ -68,12 +68,12 @@ int main(int argc, char **argv)
 
     // network
     const int s[] = {batch,784};
-    Tensor* t = Tensor_init(s, 2, DEV_CPU);
-    layer in=Input_init(t, "Input", DEV_CPU);
+    Tensor* t = Tensor_init(s, 2);
+    layer in=Input_init(t, "Input");
     layer l=in;
 
     const int rs_shape[] = {batch,1,28,28};
-    l=Reshape_init(l, rs_shape, 4, "Reshape", DEV_CPU);
+    l=Reshape_init(l, rs_shape, 4, "Reshape");
 
     const int ks1_c[] = {16, 3, 3};
     const int ks2_c[] = {32, 3, 3};
@@ -82,20 +82,20 @@ int main(int argc, char **argv)
     const int st1_c[] = {1,1};
     const int ks2_p[] = {2,2};
     const int st2_p[] = {2,2};
-    l=MPool_init(Activation_init(Conv_init(l, ks1_c, 3, st1_c, 2, "same", DEV_CPU),"relu", "Activation", DEV_CPU), ks2_p, 2, st2_p, 2, "none", DEV_CPU);
-    l=MPool_init(Activation_init(Conv_init(l, ks2_c, 3, st1_c, 2, "same", DEV_CPU),"relu", "Activation", DEV_CPU), ks2_p, 2, st2_p, 2, "none", DEV_CPU);
-    l=MPool_init(Activation_init(Conv_init(l, ks3_c, 3, st1_c, 2, "same", DEV_CPU),"relu", "Activation", DEV_CPU), ks2_p, 2, st2_p, 2, "none", DEV_CPU);
-    l=MPool_init(Activation_init(Conv_init(l, ks4_c, 3, st1_c, 2, "same", DEV_CPU),"relu", "Activation", DEV_CPU), ks2_p, 2, st2_p, 2, "none", DEV_CPU);
+    l=MPool_init(Activation_init(Conv_init(l, ks1_c, 3, st1_c, 2, "same", "Conv"),"relu", "Activation"), ks2_p, 2, st2_p, 2, "none", "MaxPool");
+    l=MPool_init(Activation_init(Conv_init(l, ks2_c, 3, st1_c, 2, "same", "Conv"),"relu", "Activation"), ks2_p, 2, st2_p, 2, "none", "MaxPool");
+    l=MPool_init(Activation_init(Conv_init(l, ks3_c, 3, st1_c, 2, "same", "Conv"),"relu", "Activation"), ks2_p, 2, st2_p, 2, "none", "MaxPool");
+    l=MPool_init(Activation_init(Conv_init(l, ks4_c, 3, st1_c, 2, "same", "Conv"),"relu", "Activation"), ks2_p, 2, st2_p, 2, "none", "MaxPool");
 
     /*for(int i=0,k=16;i<3;i++,k=k*2)
       l=ResBlock(l,k,2);
   */
     const int shape[] = {batch, -1};
-    l=Reshape_init(l, shape, 2, "Reshape", DEV_CPU);
+    l=Reshape_init(l, shape, 2, "Reshape");
 
-    l=Activation_init(Dense_init(l, 32, "Dense", DEV_CPU), "relu", "Activation", DEV_CPU);
+    l=Activation_init(Dense_init(l, 32, "Dense"), "relu", "Activation");
 
-    layer out=Activation_init(Dense_init(l,10, "Dense", DEV_CPU),"softmax", "Activation", DEV_CPU);
+    layer out=Activation_init(Dense_init(l,10, "Dense"),"softmax", "Activation");
 
     // net define input and output layers list
     model net=Model_init(in, 1, out, 1);
