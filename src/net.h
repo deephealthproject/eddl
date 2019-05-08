@@ -44,74 +44,99 @@
 
 using namespace std;
 
-typedef vector<Layer*> vlayer;
-typedef vector<Tensor*> vtensor;
+typedef vector<Layer *> vlayer;
+typedef vector<Tensor *> vtensor;
 typedef vector<vtensor> Mtensor;
 typedef vector<string> vstring;
 typedef vector<float> verr;
 typedef vector<int> vind;
-typedef vector<Loss*> vloss;
-typedef vector<Metric*> vmetrics;
+typedef vector<Loss *> vloss;
+typedef vector<Metric *> vmetrics;
 
 void *train_batch_t(void *targs);
+
 void *applygrads_t(void *t);
 
 #define MAX_THREADS 1024
 
-class Net
-{
- private:
-    void train_batch(vtensor X,vtensor Y,vind sind,int batch,int eval=0);
-    void build(optim *opt,vstring in,vstring out);
+class Net {
+private:
+    void train_batch(vtensor X, vtensor Y, vind sind, int batch, int eval = 0);
+
+    void build(optim *opt, vstring in, vstring out);
 
 public:
-  Net(vlayer in,vlayer out);
-  void initialize();
-  void reset();
-  void forward();
-  void delta();
-  void loss();
-  void backward();
-  void applygrads(int batch);
-  void info();
-  void split(int c,int todev);
-  int inNet(Layer *);
-  void walk(Layer *l);
-  void fts();
-  void bts();
-  void plot(string fname);
-  void setmode(int m);
-  void sync_weights();
+    Net(vlayer in, vlayer out);
 
-  string name;
-  int dev;
-  vector<int> devsel;
-  vlayer layers;
-  vlayer lin;
-  vlayer lout;
-  vlayer vfts;
-  vlayer vbts;
+    void initialize();
 
-  vloss losses;
-  vmetrics metrics;
-  optim *optimizer;
-  verr fiterr;
-  vstring strcosts;
-  vstring strmetrics;
-  vector<Net *> snets;
-  vtensor Xs[MAX_THREADS];
-  vtensor Ys[MAX_THREADS];
+    void reset();
 
-  Net(const initializer_list<Layer*>& in,const initializer_list<Layer*>& out);
-  Layer *getLayer(string name);
+    void forward();
 
-  void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m);
-  void build(optim *opt,const initializer_list<string>& c,const initializer_list<string>& m,CompServ *cs);
-  void build(optim *opt, vstring c, vstring m, CompServ *cs);
-  void fit(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out,int batch,int epochs);
-  void fit(vtensor tin,vtensor tout,int batch, int epochs);
-  void train_batch(const initializer_list<Tensor*>& in,const initializer_list<Tensor*>& out);
-  void evaluate(vtensor tin,vtensor tout);
+    void delta();
+
+    void loss();
+
+    void backward();
+
+    void applygrads(int batch);
+
+    void info();
+
+    void split(int c, int todev);
+
+    int inNet(Layer *);
+
+    void walk(Layer *l);
+
+    void fts();
+
+    void bts();
+
+    void plot(string fname);
+
+    void setmode(int m);
+
+    void sync_weights();
+
+    string name;
+    int dev;
+    vector<int> devsel;
+    vlayer layers;
+    vlayer lin;
+    vlayer lout;
+    vlayer vfts;
+    vlayer vbts;
+
+    vloss losses;
+    vmetrics metrics;
+    optim *optimizer;
+    verr fiterr;
+    vstring strcosts;
+    vstring strmetrics;
+    vector<Net *> snets;
+    vtensor Xs[MAX_THREADS];
+    vtensor Ys[MAX_THREADS];
+
+    Net(const initializer_list<Layer *> &in, const initializer_list<Layer *> &out);
+
+    Layer *getLayer(string name);
+
+    void build(optim *opt, const initializer_list<string> &c, const initializer_list<string> &m);
+
+    void build(optim *opt, const initializer_list<string> &c, const initializer_list<string> &m, CompServ *cs);
+
+    void build(optim *opt, vstring c, vstring m, CompServ *cs);
+
+    void fit(const initializer_list<Tensor *> &in, const initializer_list<Tensor *> &out, int batch, int epochs);
+
+    void fit(vtensor tin, vtensor tout, int batch, int epochs);
+
+    void train_batch(const initializer_list<Tensor *> &in, const initializer_list<Tensor *> &out);
+
+    void evaluate(vtensor tin, vtensor tout);
 
 };
+
 #endif

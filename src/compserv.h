@@ -36,21 +36,21 @@
 #include <vector>
 
 using namespace std;
-class CompServ
-{
-  public:
-  string type;
+
+class CompServ {
+public:
+    string type;
 
 
-  int local_threads;
-  vector<int> local_gpus;
-  vector<int> local_fpgas;
+    int local_threads;
+    vector<int> local_gpus;
+    vector<int> local_fpgas;
 
-  // for local
-  CompServ(int threads, const initializer_list<int>& g,const initializer_list<int>& f);
+    // for local
+    CompServ(int threads, const initializer_list<int> &g, const initializer_list<int> &f);
 
-  // for Distributed
-  CompServ(FILE *csspec);
+    // for Distributed
+    CompServ(FILE *csspec);
 
 };
 

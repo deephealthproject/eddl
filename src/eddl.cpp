@@ -35,7 +35,7 @@
 
 using namespace std;
 
-extern ostream& operator<<(ostream& os, const shape s);
+extern ostream &operator<<(ostream &os, const shape s);
 
 EDDL eddl;
 
@@ -43,276 +43,254 @@ EDDL eddl;
 ///// EDDL is a wrapper class to ease and define the API
 ////////////////////////////////////////////////////////
 
-tensor EDDL::T(const initializer_list<int>& init){
-  shape s(init.begin(), init.end());
-  return T(s);
+tensor EDDL::T(const initializer_list<int> &init) {
+    shape s(init.begin(), init.end());
+    return T(s);
 }
 
-tensor EDDL::T(const shape s){
-  return new LTensor(s, DEV_CPU);
+tensor EDDL::T(const shape s) {
+    return new LTensor(s, DEV_CPU);
 }
 
-tensor EDDL::T(string fname)
-{
-  return new LTensor(fname);
+tensor EDDL::T(string fname) {
+    return new LTensor(fname);
 }
 
 
-void EDDL::div(tensor t,float v)
-{
-  t->input->div(v);
+void EDDL::div(tensor t, float v) {
+    t->input->div(v);
 }
 //////////////////////////////////////////////////////
 
-layer EDDL::Input(const initializer_list<int>& init){
-  return new LInput(new Tensor(init), "input"+to_string(1 + LInput::input_created), DEV_CPU);
+layer EDDL::Input(const initializer_list<int> &init) {
+    return new LInput(new Tensor(init), "input" + to_string(1 + LInput::input_created), DEV_CPU);
 }
 
-layer EDDL::Input(tensor t)
-{
-  return new LInput(t->input, "input"+to_string(1 + LInput::input_created), DEV_CPU);
+layer EDDL::Input(tensor t) {
+    return new LInput(t->input, "input" + to_string(1 + LInput::input_created), DEV_CPU);
 }
 
 //////////////////////////////////////////////////////
-layer EDDL::Dense(layer parent, int dim)
-{
-  return new LDense(parent, dim, "dense"+to_string(1 + LDense::dense_created), DEV_CPU);
+layer EDDL::Dense(layer parent, int dim) {
+    return new LDense(parent, dim, "dense" + to_string(1 + LDense::dense_created), DEV_CPU);
 }
 
-layer EDDL::Dense(layer parent, int dim, string name)
-{
-  return new LDense(parent, dim, name, DEV_CPU);
+layer EDDL::Dense(layer parent, int dim, string name) {
+    return new LDense(parent, dim, name, DEV_CPU);
 }
 
 
 //////////////////////////////////////////////////////
-layer EDDL::Conv(layer parent,const initializer_list<int>& ks)
-{
-  return new LConv(parent,ks,{1,1},"same", "conv"+to_string(1 + LConv::conv_created), DEV_CPU);
+layer EDDL::Conv(layer parent, const initializer_list<int> &ks) {
+    return new LConv(parent, ks, {1, 1}, "same", "conv" + to_string(1 + LConv::conv_created), DEV_CPU);
 }
-layer EDDL::Conv(layer parent,const initializer_list<int>& ks,const initializer_list<int>& st)
-{
-  return new LConv(parent,ks,st,"same", "conv"+to_string(1 + LConv::conv_created), DEV_CPU);
+
+layer EDDL::Conv(layer parent, const initializer_list<int> &ks, const initializer_list<int> &st) {
+    return new LConv(parent, ks, st, "same", "conv" + to_string(1 + LConv::conv_created), DEV_CPU);
 }
-layer EDDL::Conv(layer parent,const initializer_list<int>& ks,const initializer_list<int>& st,string p)
-{
-  return new LConv(parent,ks,st,p, "conv"+to_string(1 + LConv::conv_created), DEV_CPU);
+
+layer EDDL::Conv(layer parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p) {
+    return new LConv(parent, ks, st, p, "conv" + to_string(1 + LConv::conv_created), DEV_CPU);
 }
-layer EDDL::Conv(layer parent,const initializer_list<int>& ks,string p)
-{
-  return new LConv(parent,ks,{1,1},p, "conv"+to_string(1 + LConv::conv_created), DEV_CPU);
+
+layer EDDL::Conv(layer parent, const initializer_list<int> &ks, string p) {
+    return new LConv(parent, ks, {1, 1}, p, "conv" + to_string(1 + LConv::conv_created), DEV_CPU);
 }
 
 //////////////////////////////////////////////////////
-layer EDDL::MPool(layer parent,const initializer_list<int>& ks)
-{
-  return new LMPool(parent,ks,ks,"none", "mpool"+to_string(1 + LMPool::pool_created), DEV_CPU);
+layer EDDL::MPool(layer parent, const initializer_list<int> &ks) {
+    return new LMPool(parent, ks, ks, "none", "mpool" + to_string(1 + LMPool::pool_created), DEV_CPU);
 }
-layer EDDL::MPool(layer parent,const initializer_list<int>& ks,const initializer_list<int>& st)
-{
-  return new LMPool(parent,ks,st,"none", "mpool"+to_string(1 + LMPool::pool_created), DEV_CPU);
+
+layer EDDL::MPool(layer parent, const initializer_list<int> &ks, const initializer_list<int> &st) {
+    return new LMPool(parent, ks, st, "none", "mpool" + to_string(1 + LMPool::pool_created), DEV_CPU);
 }
-layer EDDL::MPool(layer parent,const initializer_list<int>& ks,const initializer_list<int>& st,string p)
-{
-  return new LMPool(parent,ks,st,p, "mpool"+to_string(1 + LMPool::pool_created), DEV_CPU);
+
+layer EDDL::MPool(layer parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p) {
+    return new LMPool(parent, ks, st, p, "mpool" + to_string(1 + LMPool::pool_created), DEV_CPU);
 }
-layer EDDL::MPool(layer parent,const initializer_list<int>& ks,string p)
-{
-  return new LMPool(parent,ks,ks,p, "mpool"+to_string(1 + LMPool::pool_created), DEV_CPU);
+
+layer EDDL::MPool(layer parent, const initializer_list<int> &ks, string p) {
+    return new LMPool(parent, ks, ks, p, "mpool" + to_string(1 + LMPool::pool_created), DEV_CPU);
 }
 
 //////////////////////////////////////////////////////
-layer EDDL::Activation(layer parent,string act)
-{
-  return new LActivation(parent,act,"activation"+to_string(1 + LActivation::activation_created),DEV_CPU);
+layer EDDL::Activation(layer parent, string act) {
+    return new LActivation(parent, act, "activation" + to_string(1 + LActivation::activation_created), DEV_CPU);
 }
 
-layer EDDL::Activation(layer parent,string act,string name)
-{
-  return new LActivation(parent,act,name,DEV_CPU);
+layer EDDL::Activation(layer parent, string act, string name) {
+    return new LActivation(parent, act, name, DEV_CPU);
 }
 
 
 //////////////////////////////////////////////////////
-layer EDDL::Reshape(layer parent,const initializer_list<int>& init)
-{
-  shape s(init.begin(), init.end());
-  return new LReshape(parent,s,"reshape"+to_string(1 + LReshape::reshape_created), DEV_CPU);
+layer EDDL::Reshape(layer parent, const initializer_list<int> &init) {
+    shape s(init.begin(), init.end());
+    return new LReshape(parent, s, "reshape" + to_string(1 + LReshape::reshape_created), DEV_CPU);
 }
 
-layer EDDL::Reshape(layer parent,const initializer_list<int>& init,string name)
-{
-  return new LReshape(parent,init,name,DEV_CPU);
+layer EDDL::Reshape(layer parent, const initializer_list<int> &init, string name) {
+    return new LReshape(parent, init, name, DEV_CPU);
 }
 
 /////////////////////////////////////////////////////////
-layer EDDL::Drop(layer parent, float df)
-{
-  return new LDrop(parent,df,"drop"+to_string(1 + LDrop::drop_created), DEV_CPU);
+layer EDDL::Drop(layer parent, float df) {
+    return new LDrop(parent, df, "drop" + to_string(1 + LDrop::drop_created), DEV_CPU);
 }
-layer EDDL::Drop(layer parent, float df,string name)
-{
-  return new LDrop(parent, df, name, DEV_CPU);
+
+layer EDDL::Drop(layer parent, float df, string name) {
+    return new LDrop(parent, df, name, DEV_CPU);
 }
 
 /////////////////////////////////////////////////////////
 
-layer EDDL::Add(const initializer_list<layer>& init)
-{
-   return new LAdd(vlayer(init.begin(), init.end()), "add"+to_string(1 + LAdd::add_created), DEV_CPU);
+layer EDDL::Add(const initializer_list<layer> &init) {
+    return new LAdd(vlayer(init.begin(), init.end()), "add" + to_string(1 + LAdd::add_created), DEV_CPU);
 }
-layer EDDL::Add(const initializer_list<layer>& init,string name)
-{
-  return new LAdd(vlayer(init.begin(), init.end()),name, DEV_CPU);
+
+layer EDDL::Add(const initializer_list<layer> &init, string name) {
+    return new LAdd(vlayer(init.begin(), init.end()), name, DEV_CPU);
 }
 
 ////////////////////////////////////////////////////////
 
-layer EDDL::Cat(const initializer_list<layer>& init)
-{
-   return new LCat(vlayer(init.begin(), init.end()), "cat"+to_string(1 + LCat::cat_created), DEV_CPU);
+layer EDDL::Cat(const initializer_list<layer> &init) {
+    return new LCat(vlayer(init.begin(), init.end()), "cat" + to_string(1 + LCat::cat_created), DEV_CPU);
 }
-layer EDDL::Cat(const initializer_list<layer>& init,string name)
-{
-  return new LCat(vlayer(init.begin(), init.end()),name, DEV_CPU);
+
+layer EDDL::Cat(const initializer_list<layer> &init, string name) {
+    return new LCat(vlayer(init.begin(), init.end()), name, DEV_CPU);
 }
 
 
 ////////////
 
-optimizer EDDL::SGD(const initializer_list<float>& p)
-{
-  return new sgd(p);
+optimizer EDDL::SGD(const initializer_list<float> &p) {
+    return new sgd(p);
 }
-void EDDL::change(optimizer o,const initializer_list<float>& p)
-{
-  o->change(p);
+
+void EDDL::change(optimizer o, const initializer_list<float> &p) {
+    o->change(p);
 }
 
 /////////////////////////////////////////////////////////
-model EDDL::Model(vlayer in,vlayer out)
-{
-  return new Net(in,out);
+model EDDL::Model(vlayer in, vlayer out) {
+    return new Net(in, out);
 }
 
 ///////////
-compserv EDDL::CS_CPU(int th)
-{
-  return new CompServ(th,{},{});
+compserv EDDL::CS_CPU(int th) {
+    return new CompServ(th, {}, {});
 }
-compserv EDDL::CS_GPU(const initializer_list<int>& g)
-{
-  return new CompServ(0,g,{});
+
+compserv EDDL::CS_GPU(const initializer_list<int> &g) {
+    return new CompServ(0, g, {});
 }
-compserv EDDL::CS_FGPA(const initializer_list<int>& f)
-{
-  return new CompServ(0,{},f);
+
+compserv EDDL::CS_FGPA(const initializer_list<int> &f) {
+    return new CompServ(0, {}, f);
 }
 
 
 ////////////
 
-void EDDL::info(model m)
-{
-  m->info();
+void EDDL::info(model m) {
+    m->info();
 }
 
-void EDDL::plot(model m,string fname)
-{
-  m->plot(fname);
+void EDDL::plot(model m, string fname) {
+    m->plot(fname);
 }
 
-void EDDL::build(model net,optimizer o,const initializer_list<string>& c,const initializer_list<string>& m)
-{
-  net->build(o,c,m);
-}
-void EDDL::build(model net,optimizer o,const initializer_list<string>& c,const initializer_list<string>& m,CompServ *cs)
-{
-  net->build(o,c,m,cs);
+void EDDL::build(model net, optimizer o, const initializer_list<string> &c, const initializer_list<string> &m) {
+    net->build(o, c, m);
 }
 
-void EDDL::fit(model net, const initializer_list<LTensor*>& in,const initializer_list<LTensor*>& out,int batch,int epochs)
-{
-  vltensor ltin=vltensor(in.begin(), in.end());
-  vltensor ltout=vltensor(out.begin(), out.end());
-
-  vtensor tin;
-  for(int i=0;i<ltin.size();i++)
-    tin.push_back(ltin[i]->input);
-
-  vtensor tout;
-  for(int i=0;i<ltout.size();i++)
-    tout.push_back(ltout[i]->input);
-
-
-  net->fit(tin,tout,batch,epochs);
+void EDDL::build(model net, optimizer o, const initializer_list<string> &c, const initializer_list<string> &m,
+                 CompServ *cs) {
+    net->build(o, c, m, cs);
 }
 
-void EDDL::evaluate(model net, const initializer_list<LTensor*>& in,const initializer_list<LTensor*>& out)
-{
-  vltensor ltin=vltensor(in.begin(), in.end());
-  vltensor ltout=vltensor(out.begin(), out.end());
+void EDDL::fit(model net, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out, int batch,
+               int epochs) {
+    vltensor ltin = vltensor(in.begin(), in.end());
+    vltensor ltout = vltensor(out.begin(), out.end());
 
-  vtensor tin;
-  for(int i=0;i<ltin.size();i++)
-    tin.push_back(ltin[i]->input);
+    vtensor tin;
+    for (int i = 0; i < ltin.size(); i++)
+        tin.push_back(ltin[i]->input);
 
-  vtensor tout;
-  for(int i=0;i<ltout.size();i++)
-    tout.push_back(ltout[i]->input);
+    vtensor tout;
+    for (int i = 0; i < ltout.size(); i++)
+        tout.push_back(ltout[i]->input);
 
 
-  net->evaluate(tin,tout);
+    net->fit(tin, tout, batch, epochs);
+}
+
+void EDDL::evaluate(model net, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out) {
+    vltensor ltin = vltensor(in.begin(), in.end());
+    vltensor ltout = vltensor(out.begin(), out.end());
+
+    vtensor tin;
+    for (int i = 0; i < ltin.size(); i++)
+        tin.push_back(ltin[i]->input);
+
+    vtensor tout;
+    for (int i = 0; i < ltout.size(); i++)
+        tout.push_back(ltout[i]->input);
+
+
+    net->evaluate(tin, tout);
 }
 
 
 ////
 
-bool exist(string name)
-{
-  if (FILE *file = fopen(name.c_str(), "r")) {
+bool exist(string name) {
+    if (FILE *file = fopen(name.c_str(), "r")) {
         fclose(file);
         return true;
-  }
-  return false;
+    }
+    return false;
 }
 
-void EDDL::download_mnist()
-{
-  string cmd;
-  string trX="trX.bin";
-  string trY="trY.bin";
-  string tsX="tsX.bin";
-  string tsY="tsY.bin";
+void EDDL::download_mnist() {
+    string cmd;
+    string trX = "trX.bin";
+    string trY = "trY.bin";
+    string tsX = "tsX.bin";
+    string tsY = "tsY.bin";
 
-  if ( (!exist(trX)) || (!exist(trY))|| (!exist(tsX)) || (!exist(tsY))) {
-    cmd="wget https://www.dropbox.com/s/khrb3th2z6owd9t/trX.bin";
-    int status=system(cmd.c_str());
-    if (status < 0) {
-      msg("wget must be installed","eddl.download_mnist");
-      exit(1);
-    }
+    if ((!exist(trX)) || (!exist(trY)) || (!exist(tsX)) || (!exist(tsY))) {
+        cmd = "wget https://www.dropbox.com/s/khrb3th2z6owd9t/trX.bin";
+        int status = system(cmd.c_str());
+        if (status < 0) {
+            msg("wget must be installed", "eddl.download_mnist");
+            exit(1);
+        }
 
-    cmd="wget https://www.dropbox.com/s/m82hmmrg46kcugp/trY.bin";
-    status=system(cmd.c_str());
-    if (status < 0) {
-      msg("wget must be installed","eddl.download_mnist");
-      exit(1);
-    }
-    cmd="wget https://www.dropbox.com/s/7psutd4m4wna2d5/tsX.bin";
-    status=system(cmd.c_str());
-    if (status < 0) {
-      msg("wget must be installed","eddl.download_mnist");
-      exit(1);
-    }
-    cmd="wget https://www.dropbox.com/s/q0tnbjvaenb4tjs/tsY.bin";
-    status=system(cmd.c_str());
-    if (status < 0) {
-      msg("wget must be installed","eddl.download_mnist");
-      exit(1);
-    }
+        cmd = "wget https://www.dropbox.com/s/m82hmmrg46kcugp/trY.bin";
+        status = system(cmd.c_str());
+        if (status < 0) {
+            msg("wget must be installed", "eddl.download_mnist");
+            exit(1);
+        }
+        cmd = "wget https://www.dropbox.com/s/7psutd4m4wna2d5/tsX.bin";
+        status = system(cmd.c_str());
+        if (status < 0) {
+            msg("wget must be installed", "eddl.download_mnist");
+            exit(1);
+        }
+        cmd = "wget https://www.dropbox.com/s/q0tnbjvaenb4tjs/tsY.bin";
+        status = system(cmd.c_str());
+        if (status < 0) {
+            msg("wget must be installed", "eddl.download_mnist");
+            exit(1);
+        }
 
-  }
+    }
 }
 
 

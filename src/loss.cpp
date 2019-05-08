@@ -36,77 +36,67 @@
 
 using namespace std;
 
-Loss::Loss(string n)
-{
-  name=n;
+Loss::Loss(string n) {
+    name = n;
 }
 
 
-void Loss::delta(Tensor *T, Tensor* Y, Tensor *D)
-{
+void Loss::delta(Tensor *T, Tensor *Y, Tensor *D) {
 
 
-  if (name=="mse")
-    {
-      //delta: (T-Y)
-      Tensor::sum(1.0,T,-1.0,Y,D,0);
+    if (name == "mse") {
+        //delta: (T-Y)
+        Tensor::sum(1.0, T, -1.0, Y, D, 0);
+    } else if (name == "cent") {
+        // delta: t/y - (1-t)/(1-y)
+        Tensor *aux1 = new Tensor(T->getshape(), T->device);
+        Tensor *aux2 = new Tensor(T->getshape(), T->device);
+        Tensor *one = new Tensor(T->getshape(), T->device);
+        one->set(1.0);
+
+        //  (1-t)/(1-y)
+        Tensor::sum(1, one, -1, T, aux1, 0);
+        Tensor::sum(1, one, -1, Y, aux2, 0);
+        Tensor::el_div(aux1, aux2, aux2, 0);
+
+        // t/y
+        Tensor::el_div(T, Y, aux1, 0);
+
+        Tensor::sum(1, aux1, -1, aux2, D, 0);
+
+        delete aux1;
+        delete aux2;
+        delete one;
     }
-  else if (name=="cent")
-    {
-      // delta: t/y - (1-t)/(1-y)
-      Tensor *aux1=new Tensor(T->getshape(),T->device);
-      Tensor *aux2=new Tensor(T->getshape(),T->device);
-      Tensor *one=new Tensor(T->getshape(),T->device);
-      one->set(1.0);
+        //typical case where cent is after a softmax
+    else if (name == "soft_cent") {
 
-      //  (1-t)/(1-y)
-      Tensor::sum(1,one,-1,T,aux1,0);
-      Tensor::sum(1,one,-1,Y,aux2,0);
-      Tensor::el_div(aux1,aux2,aux2,0);
+        // parent->delta: (t-y)
 
-      // t/y
-      Tensor::el_div(T,Y,aux1,0);
-
-      Tensor::sum(1,aux1,-1,aux2,D,0);
-
-      delete aux1;
-      delete aux2;
-      delete one;
-    }
-  //typical case where cent is after a softmax
-  else if (name=="soft_cent")
-    {
-
-      // parent->delta: (t-y)
-
-      Tensor::sum(1.0,T,-1.0,Y, D,0);
+        Tensor::sum(1.0, T, -1.0, Y, D, 0);
 
     }
 
 }
 
 
-float Loss::value(Tensor *T, Tensor* Y)
-{
-  float f;
-  if (name=="mse")
-    {
-      // batch error: sum((T-Y)^2)
-      Tensor *aux=new Tensor(T->getshape(),T->device);
-      Tensor::sum(1.0,T,-1.0,Y,aux,0);
-      Tensor::el_mult(aux,aux,aux,0);
-      f=aux->total_sum();
-      delete aux;
-    }
-  else if ((name=="cent")||(name=="soft_cent"))
-    {
-      Tensor *aux=new Tensor(T->getshape(),T->device);
-      Tensor::cent(T,Y,aux);
-      f=aux->total_sum();
-      delete aux;
+float Loss::value(Tensor *T, Tensor *Y) {
+    float f;
+    if (name == "mse") {
+        // batch error: sum((T-Y)^2)
+        Tensor *aux = new Tensor(T->getshape(), T->device);
+        Tensor::sum(1.0, T, -1.0, Y, aux, 0);
+        Tensor::el_mult(aux, aux, aux, 0);
+        f = aux->total_sum();
+        delete aux;
+    } else if ((name == "cent") || (name == "soft_cent")) {
+        Tensor *aux = new Tensor(T->getshape(), T->device);
+        Tensor::cent(T, Y, aux);
+        f = aux->total_sum();
+        delete aux;
     }
 
-  return f;
+    return f;
 
 }
 

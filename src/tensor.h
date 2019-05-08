@@ -28,6 +28,7 @@
 
 #include <stdio.h>
 #include <stdio.h>
+
 #ifndef _TENSOR_
 #define _TENSOR_
 
@@ -70,173 +71,212 @@ typedef Eigen::Matrix<float, -1, -1, Eigen::RowMajor> MatrixXRMf;
 typedef vector<int> shape;
 
 void msg(string s);
-void msg(string s,string s2);
+
+void msg(string s, string s2);
 
 class Tensor;
 
-class ConvolDescriptor
-{
- public:
-   vector<int> ksize;
-   vector<int> stride;
-   vector<int> pad;
+class ConvolDescriptor {
+public:
+    vector<int> ksize;
+    vector<int> stride;
+    vector<int> pad;
 
-   int nk,kr,kc,kz;
-   int sr,sc;
-   int ir,ic,iz;
-   int r,c,z;
-   int padr,padc;
-   //float *ptr;
-
-
-   Tensor *I; // Input map
-   Tensor *ID;// Delta input map
-   Tensor *K; // filters
-   Tensor *bias; // bias
-   Tensor *gK;// gradient filters
-   Tensor *gbias;// gradient bias
-   Tensor *D; // Delta
-   Tensor *O; // Outputmap
-
-   // CPU implementation
-   float *ptrI;
-   Eigen::MatrixXf matI; // input
-   Eigen::MatrixXf matK; // kernels
-   Eigen::MatrixXf matO; // output
-   Eigen::MatrixXf matD; // Delta
-   Eigen::MatrixXf matgK; // gradient kernels
-
-   //...
-   ConvolDescriptor();
-   ConvolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p);
-   ConvolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st,const initializer_list<int>& p );
-   ConvolDescriptor(const vector<int>& ks, const vector<int>& st, string p);
+    int nk, kr, kc, kz;
+    int sr, sc;
+    int ir, ic, iz;
+    int r, c, z;
+    int padr, padc;
+    //float *ptr;
 
 
-   void build(Tensor *A);
+    Tensor *I; // Input map
+    Tensor *ID;// Delta input map
+    Tensor *K; // filters
+    Tensor *bias; // bias
+    Tensor *gK;// gradient filters
+    Tensor *gbias;// gradient bias
+    Tensor *D; // Delta
+    Tensor *O; // Outputmap
+
+    // CPU implementation
+    float *ptrI;
+    Eigen::MatrixXf matI; // input
+    Eigen::MatrixXf matK; // kernels
+    Eigen::MatrixXf matO; // output
+    Eigen::MatrixXf matD; // Delta
+    Eigen::MatrixXf matgK; // gradient kernels
+
+    //...
+    ConvolDescriptor();
+
+    ConvolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st, string p);
+
+    ConvolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st, const initializer_list<int> &p);
+
+    ConvolDescriptor(const vector<int> &ks, const vector<int> &st, string p);
+
+
+    void build(Tensor *A);
 };
 
-class PoolDescriptor:public ConvolDescriptor
-{
- public:
+class PoolDescriptor : public ConvolDescriptor {
+public:
 
-   Tensor *indX,*indY; // indexes
+    Tensor *indX, *indY; // indexes
 
-   //...
-   PoolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p);
-   PoolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st,const initializer_list<int>& p );
-   PoolDescriptor(const vector<int>& ks, const vector<int>& st, string p);
+    //...
+    PoolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st, string p);
 
-   void build(Tensor *A);
+    PoolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st, const initializer_list<int> &p);
+
+    PoolDescriptor(const vector<int> &ks, const vector<int> &st, string p);
+
+    void build(Tensor *A);
 };
 
 
-class Tensor
-{
+class Tensor {
 
- public:
-  int device;
-  int dim;
-  int tam;
-  shape sizes;
+public:
+    int device;
+    int dim;
+    int tam;
+    shape sizes;
 
-  float *ptr;
+    float *ptr;
 
-  // CPU
-  Eigen::MatrixXf *ptr2;
-  Eigen::MatrixXf mat;
+    // CPU
+    Eigen::MatrixXf *ptr2;
+    Eigen::MatrixXf mat;
 
-  // GPU
-  int gpu_device;
+    // GPU
+    int gpu_device;
 
-  //FPGA
+    //FPGA
 
-  // Multithreading. Tensor semaphore
-  mutex *tsem;
+    // Multithreading. Tensor semaphore
+    mutex *tsem;
 
-  // Constructors
-  Tensor();
-  Tensor(const initializer_list<int>& init);
-  Tensor(const initializer_list<int>& init, int dev);
+    // Constructors
+    Tensor();
 
-  Tensor(const shape s);
-  Tensor(const shape s, int dev);
-  Tensor(string fname,int bin=1);
+    Tensor(const initializer_list<int> &init);
 
-  Tensor(shape s,Tensor *T);
+    Tensor(const initializer_list<int> &init, int dev);
 
-  ~Tensor();
+    Tensor(const shape s);
 
-  shape getshape();
-  void info();
-  Tensor *share();
-  void print();
-  void save(string s);
+    Tensor(const shape s, int dev);
 
-  // devices
-  int isCPU();
-  int isGPU();
-  int isFPGA();
+    Tensor(string fname, int bin = 1);
 
-  // math
-  void set(float v);
-  void mult(float v);
-  void div(float v);
-  void sum(float v);
-  void sub(float v);
-  void set_log();
-  void set_exp();
-  void set_sqrt();
-  void set_sqr();
-  float total_sum();
-  float total_abs();
+    Tensor(shape s, Tensor *T);
 
-  //rand
-  void rand_uniform(float v);
-  void rand_suniform(float v);
-  void rand_gaussian(float m,float s);
-  void rand_binary(float v);
+    ~Tensor();
 
+    shape getshape();
 
-  ///////// static metods
-  static int eqsize(Tensor *A, Tensor *B);
-  static void copy(Tensor *A,Tensor *B);
-  static void fill(Tensor *A, int aini,int aend,Tensor *B,int bini,int bend,int inc);
+    void info();
 
-  static void select(Tensor *A, Tensor *B,vector<int> sind,int ini,int end);
+    Tensor *share();
 
-  static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC);
-  static void sum(float scA, Tensor *A, float scB,  Tensor *B, Tensor *C,int incC);
-  static void sum(Tensor *A, Tensor *B, Tensor *C);
-  static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
-  static void sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
-  static void reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB);
+    void print();
 
-  static void el_mult(Tensor *A,Tensor *B, Tensor *C,int incC);
-  static void el_div(Tensor *A,Tensor *B, Tensor *C,int incC);
+    void save(string s);
 
+    // devices
+    int isCPU();
 
+    int isGPU();
 
-  static void inc(Tensor *A,Tensor *B);
-  static void cent(Tensor *A,Tensor *B, Tensor *C);
-  static int accuracy(Tensor *A,Tensor *B);
+    int isFPGA();
 
-  static void ReLu(Tensor *A,Tensor *B);
-  static void Softmax(Tensor *A,Tensor *B);
+    // math
+    void set(float v);
 
-  static void D_ReLu(Tensor *D, Tensor *I, Tensor *PD);
-  static void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
+    void mult(float v);
 
-  static void Conv2D(ConvolDescriptor *D);
-  static void Conv2D_grad(ConvolDescriptor *D);
-  static void Conv2D_back(ConvolDescriptor *D);
+    void div(float v);
+
+    void sum(float v);
+
+    void sub(float v);
+
+    void set_log();
+
+    void set_exp();
+
+    void set_sqrt();
+
+    void set_sqr();
+
+    float total_sum();
+
+    float total_abs();
+
+    //rand
+    void rand_uniform(float v);
+
+    void rand_suniform(float v);
+
+    void rand_gaussian(float m, float s);
+
+    void rand_binary(float v);
 
 
-  static void MPool2D(PoolDescriptor *D);
-  static void MPool2D_back(PoolDescriptor *D);
+    ///////// static metods
+    static int eqsize(Tensor *A, Tensor *B);
+
+    static void copy(Tensor *A, Tensor *B);
+
+    static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
+
+    static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
+
+    static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
+
+    static void sum(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
+
+    static void sum(Tensor *A, Tensor *B, Tensor *C);
+
+    static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
+
+    static void sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
+
+    static void reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
+
+    static void el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
+
+    static void el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
+
+
+    static void inc(Tensor *A, Tensor *B);
+
+    static void cent(Tensor *A, Tensor *B, Tensor *C);
+
+    static int accuracy(Tensor *A, Tensor *B);
+
+    static void ReLu(Tensor *A, Tensor *B);
+
+    static void Softmax(Tensor *A, Tensor *B);
+
+    static void D_ReLu(Tensor *D, Tensor *I, Tensor *PD);
+
+    static void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
+
+    static void Conv2D(ConvolDescriptor *D);
+
+    static void Conv2D_grad(ConvolDescriptor *D);
+
+    static void Conv2D_back(ConvolDescriptor *D);
+
+
+    static void MPool2D(PoolDescriptor *D);
+
+    static void MPool2D_back(PoolDescriptor *D);
 
 };
-
 
 
 #endif

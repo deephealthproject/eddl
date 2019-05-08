@@ -28,6 +28,7 @@
 
 #include <stdio.h>
 #include <stdio.h>
+
 #ifndef _METRIC_
 #define _METRIC_
 
@@ -37,13 +38,13 @@
 
 using namespace std;
 
-class Metric
-{
- public:
-  string name;
+class Metric {
+public:
+    string name;
 
-  Metric(string name);
+    Metric(string name);
 
-  float value(Tensor *T, Tensor* Y);
+    float value(Tensor *T, Tensor *Y);
 };
+
 #endif

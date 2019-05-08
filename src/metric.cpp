@@ -36,30 +36,25 @@
 
 using namespace std;
 
-Metric::Metric(string n)
-{
-  name=n;
+Metric::Metric(string n) {
+    name = n;
 }
 
 
-float Metric::value(Tensor *T, Tensor* Y)
-{
-  float f;
-  if (name=="mse")
-    {
-      // batch error: sum((T-Y)^2)
-      Tensor *aux=new Tensor(T->getshape(),T->device);
-      Tensor::sum(1.0,T,-1.0,Y,aux,0);
-      Tensor::el_mult(aux,aux,aux,0);
-      f=aux->total_sum();
-      delete aux;
-    }
-  else if (name=="acc")
-    {
-      f=Tensor::accuracy(T,Y);
+float Metric::value(Tensor *T, Tensor *Y) {
+    float f;
+    if (name == "mse") {
+        // batch error: sum((T-Y)^2)
+        Tensor *aux = new Tensor(T->getshape(), T->device);
+        Tensor::sum(1.0, T, -1.0, Y, aux, 0);
+        Tensor::el_mult(aux, aux, aux, 0);
+        f = aux->total_sum();
+        delete aux;
+    } else if (name == "acc") {
+        f = Tensor::accuracy(T, Y);
     }
 
-  return f;
+    return f;
 
 }
 

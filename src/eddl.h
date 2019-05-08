@@ -50,10 +50,11 @@ public:
   static tensor T(string fname);
 
 
-  //Operations tensors
+    //Operations tensors
   static void div(tensor t,float v);
 
-  // Create Layers
+
+    // Create Layers
   static layer Input(tensor t);
   static layer Input(const initializer_list<int>& init);
 

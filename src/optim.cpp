@@ -36,60 +36,53 @@
 
 using namespace std;
 
-optim::optim()
-{
+optim::optim() {
 
 }
 
 
 ////// SGD //////
-sgd::sgd(const initializer_list<float>& p):optim(){
-  vector<float>v=vector<float>(p.begin(), p.end());
-  lr=v[0];
-  mu=v[1];
-}
-void sgd::change(const initializer_list<float>& p)
-{
-  vector<float>v=vector<float>(p.begin(), p.end());
-  lr=v[0];
-  mu=v[1];
+sgd::sgd(const initializer_list<float> &p) : optim() {
+    vector<float> v = vector<float>(p.begin(), p.end());
+    lr = v[0];
+    mu = v[1];
 }
 
-optim *sgd::clone()
-{
-  return new sgd({lr,mu});
+void sgd::change(const initializer_list<float> &p) {
+    vector<float> v = vector<float>(p.begin(), p.end());
+    lr = v[0];
+    mu = v[1];
+}
+
+optim *sgd::clone() {
+    return new sgd({lr, mu});
 }
 
 
-void sgd::setlayers(vlayer l)
-{
-  layers=l;
+void sgd::setlayers(vlayer l) {
+    layers = l;
 
-  // create momemtum tensors
-  for(int i=0;i<layers.size();i++)
-    for(int j=0;j<layers[i]->gradients.size();j++)
-      {
-        mT.push_back(new Tensor(layers[i]->gradients[j]->getshape(),layers[i]->dev));
-        mT.back()->set(0.0);
-      }
+    // create momemtum tensors
+    for (int i = 0; i < layers.size(); i++)
+        for (int j = 0; j < layers[i]->gradients.size(); j++) {
+            mT.push_back(new Tensor(layers[i]->gradients[j]->getshape(), layers[i]->dev));
+            mT.back()->set(0.0);
+        }
 
 }
 
 
-void sgd::applygrads(int batch)
-{
+void sgd::applygrads(int batch) {
 
-  int p=0;
+    int p = 0;
 
-  for(int i=0;i<layers.size();i++)
-    {
-      for(int j=0;j<layers[i]->gradients.size();j++,p++)
-        {
-          Tensor::sum(lr/batch,layers[i]->gradients[j],mu, mT[p],mT[p],0);
-          Tensor::sum(1.0,layers[i]->params[j],1.0,mT[p],layers[i]->params[j],0);
+    for (int i = 0; i < layers.size(); i++) {
+        for (int j = 0; j < layers[i]->gradients.size(); j++, p++) {
+            Tensor::sum(lr / batch, layers[i]->gradients[j], mu, mT[p], mT[p], 0);
+            Tensor::sum(1.0, layers[i]->params[j], 1.0, mT[p], layers[i]->params[j], 0);
         }
     }
-  //getchar();
+    //getchar();
 
 }
 

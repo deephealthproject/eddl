@@ -28,6 +28,7 @@
 
 #include <stdio.h>
 #include <stdio.h>
+
 #ifndef _OPTIM_
 #define _OPTIM_
 
@@ -42,36 +43,43 @@ using namespace std;
 //shorcuts
 //#define SGD new sgd
 
-typedef vector<Layer*> vlayer;
-typedef vector<Tensor*> vtensor;
+typedef vector<Layer *> vlayer;
+typedef vector<Tensor *> vtensor;
 
-class optim
-{
- public:
-  string name;
-  vlayer layers;
+class optim {
+public:
+    string name;
+    vlayer layers;
 
-  optim();
-  virtual void setlayers(vlayer l){}
-  virtual void applygrads(int batch){}
-  virtual optim *clone(){return NULL;}
-  virtual void change(const initializer_list<float>& p){}
+    optim();
+
+    virtual void setlayers(vlayer l) {}
+
+    virtual void applygrads(int batch) {}
+
+    virtual optim *clone() { return NULL; }
+
+    virtual void change(const initializer_list<float> &p) {}
 
 };
 
-class sgd: public optim
-{
- public:
-  float lr;
-  float mu;
-  vtensor mT;
+class sgd : public optim {
+public:
+    float lr;
+    float mu;
+    vtensor mT;
 
-  sgd(const initializer_list<float>& p);
-  optim *clone();
-  void setlayers(vlayer l);
-  void applygrads(int batch);
-  void change(const initializer_list<float>& p);
+    sgd(const initializer_list<float> &p);
+
+    optim *clone();
+
+    void setlayers(vlayer l);
+
+    void applygrads(int batch);
+
+    void change(const initializer_list<float> &p);
 };
+
 #endif
 
 //////////

@@ -50,129 +50,119 @@ using namespace std;
 /// TENSOR OPERATIONS AS STATIC METHODS ///
 ///////////////////////////////////////////
 
-int Tensor::eqsize(Tensor *A, Tensor *B)
-{
-  if (A->dim!=B->dim) return 0;
+int Tensor::eqsize(Tensor *A, Tensor *B) {
+    if (A->dim != B->dim) return 0;
 
-  for(int i=0;i<A->dim;i++)
-    if (A->sizes[i]!=B->sizes[i]) return 0;
+    for (int i = 0; i < A->dim; i++)
+        if (A->sizes[i] != B->sizes[i]) return 0;
 
-  return 1;
+    return 1;
 }
 
 
 ///////////////////////////////////////
 /// Copy from A to B
 //////////////////////////////////////
-void Tensor::copy(Tensor *A, Tensor *B)
-{
+void Tensor::copy(Tensor *A, Tensor *B) {
 
-  if (!Tensor::eqsize(A,B))
-    msg("Tensors with different sizes","Tensor::copy");
+    if (!Tensor::eqsize(A, B))
+        msg("Tensors with different sizes", "Tensor::copy");
 
-  B->tsem->lock();
-  if ((A->isCPU())&&(B->isCPU()))
-    {
-      for(int i=0;i<A->tam;i++)
-        B->ptr[i]=A->ptr[i];
+    B->tsem->lock();
+    if ((A->isCPU()) && (B->isCPU())) {
+        for (int i = 0; i < A->tam; i++)
+            B->ptr[i] = A->ptr[i];
 
     }
-  #ifdef cGPU
-  else if ((A->isGPU())&&(B->isGPU())) {
-    gpu_copy_gpu(A,B);
-  }
-  else if ((A->isCPU())&&(B->isGPU()))
-    {
-      gpu_copy_to_gpu(A->ptr,B);
+#ifdef cGPU
+        else if ((A->isGPU())&&(B->isGPU())) {
+          gpu_copy_gpu(A,B);
+        }
+        else if ((A->isCPU())&&(B->isGPU()))
+          {
+            gpu_copy_to_gpu(A->ptr,B);
+          }
+        else if ((A->isGPU())&&(B->isCPU()))
+          {
+            gpu_copy_from_gpu(A,B->ptr);
+          }
+#endif
+    else {
+        fprintf(stderr, "(%d %d)\n", A->device, B->device);
+        msg("unsupported copy between devices", "Tensor::copy");
     }
-  else if ((A->isGPU())&&(B->isCPU()))
-    {
-      gpu_copy_from_gpu(A,B->ptr);
-    }
-  #endif
-  else
-    {
-      fprintf(stderr,"(%d %d)\n",A->device,B->device);
-      msg("unsupported copy between devices","Tensor::copy");
-    }
-  B->tsem->unlock();
+    B->tsem->unlock();
 }
 
 ///////////////////////////////////////
 /// Partial copy dim=1
 //////////////////////////////////////
-void Tensor::fill(Tensor *A, int aini,int aend,Tensor *B,int bini,int bend,int inc)
-{
-  if (A->dim!=B->dim)
-    msg("Tensors with different sizes","Tensor::fill");
+void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc) {
+    if (A->dim != B->dim)
+        msg("Tensors with different sizes", "Tensor::fill");
 
-  B->tsem->lock();
-  if ((A->isCPU())&&(B->isCPU()))
-    {
-      int at=A->tam/A->sizes[0];
-      int bt=B->tam/B->sizes[0];
+    B->tsem->lock();
+    if ((A->isCPU()) && (B->isCPU())) {
+        int at = A->tam / A->sizes[0];
+        int bt = B->tam / B->sizes[0];
 
-      int t=1;
-      for(int i=2;i<A->dim;i++)
-        t*=A->sizes[i];
+        int t = 1;
+        for (int i = 2; i < A->dim; i++)
+            t *= A->sizes[i];
 
-      for(int i=0;i<A->sizes[0];i++) {
-        int ap=(i*at)+(aini*t);
-        int bp=(i*bt)+(bini*t);
+        for (int i = 0; i < A->sizes[0]; i++) {
+            int ap = (i * at) + (aini * t);
+            int bp = (i * bt) + (bini * t);
 
-        for(int j=aini;j<aend;j++) {
-          for(int k=0;k<t;k++,ap++,bp++)
-            if (inc) B->ptr[bp]+=A->ptr[ap];
-            else B->ptr[bp]=A->ptr[ap];
+            for (int j = aini; j < aend; j++) {
+                for (int k = 0; k < t; k++, ap++, bp++)
+                    if (inc) B->ptr[bp] += A->ptr[ap];
+                    else B->ptr[bp] = A->ptr[ap];
+            }
         }
-      }
     }
-  #ifdef cGPU
-  else if ((A->isGPU())&&(B->isGPU())) {
-    gpu_fill(A,aini,aend,B,bini,bend,inc);
-  }
-  #endif
-  else
-    {
-      fprintf(stderr,"(%d %d)\n",A->device,B->device);
-      msg("unsupported copy between devices","Tensor::copy");
+#ifdef cGPU
+        else if ((A->isGPU())&&(B->isGPU())) {
+          gpu_fill(A,aini,aend,B,bini,bend,inc);
+        }
+#endif
+    else {
+        fprintf(stderr, "(%d %d)\n", A->device, B->device);
+        msg("unsupported copy between devices", "Tensor::copy");
     }
-  B->tsem->unlock();
+    B->tsem->unlock();
 }
 
 
-void Tensor::inc(Tensor *A, Tensor *B)
-{
+void Tensor::inc(Tensor *A, Tensor *B) {
 
-  if (!Tensor::eqsize(A,B))
-    msg("Tensors with different sizes","Tensor::inc");
+    if (!Tensor::eqsize(A, B))
+        msg("Tensors with different sizes", "Tensor::inc");
 
 
-  if ((A->isCPU())&&(B->isCPU()))
-    {
-      B->tsem->lock();
+    if ((A->isCPU()) && (B->isCPU())) {
+        B->tsem->lock();
 
-      for(int i=0;i<A->tam;i++)
-        B->ptr[i]+=A->ptr[i];
+        for (int i = 0; i < A->tam; i++)
+            B->ptr[i] += A->ptr[i];
 
-      B->tsem->unlock();
+        B->tsem->unlock();
     }
-  #ifdef cGPU
-  else if ((A->isGPU())&&(B->isGPU())) {
-    Tensor::sum(1,A,1,B,B,0);
-  }
-  else if (((A->isCPU())&&(B->isGPU()))||((A->isGPU())&&(B->isCPU())))
-    {
-       Tensor *n=new Tensor(B->getshape(),B->device);
-       Tensor::copy(A,n);
-       Tensor::sum(1,n,1,B,B,0);
-       delete n;
-    }
-  #endif
-  else
-    {
-      fprintf(stderr,"(%d %d)\n",A->device,B->device);
-      msg("unsupported copy between devices","Tensor::inc");
+#ifdef cGPU
+        else if ((A->isGPU())&&(B->isGPU())) {
+          Tensor::sum(1,A,1,B,B,0);
+        }
+        else if (((A->isCPU())&&(B->isGPU()))||((A->isGPU())&&(B->isCPU())))
+          {
+             Tensor *n=new Tensor(B->getshape(),B->device);
+             Tensor::copy(A,n);
+             Tensor::sum(1,n,1,B,B,0);
+             delete n;
+          }
+#endif
+    else {
+        fprintf(stderr, "(%d %d)\n", A->device, B->device);
+        msg("unsupported copy between devices", "Tensor::inc");
     }
 }
 
@@ -180,27 +170,24 @@ void Tensor::inc(Tensor *A, Tensor *B)
 ///////////////////////////////////////
 /// Select from A to B
 //////////////////////////////////////
-void Tensor::select(Tensor *A, Tensor *B,vector<int> sind,int ini,int end)
-{
+void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
 
-  if ((A->tam/A->sizes[0])!=(B->tam/B->sizes[0])) msg("Incompatible sizes","Tensor::select");
+    if ((A->tam / A->sizes[0]) != (B->tam / B->sizes[0])) msg("Incompatible sizes", "Tensor::select");
 
-  //B->tsem->lock();
-  if ((A->isCPU())&&(B->isCPU()))
-    {
-      int s=A->tam/A->sizes[0];
+    //B->tsem->lock();
+    if ((A->isCPU()) && (B->isCPU())) {
+        int s = A->tam / A->sizes[0];
 
-      for(int i=ini;i<end;i++) {
-        int p=sind[i]*s;
-        int pb=(i-ini)*s;
-        for(int j=0;j<s;j++,p++,pb++)
-          B->ptr[pb]=A->ptr[p];
-      }
-  }
-  else {
-    msg("unsuppoted select between devices","Tensor::select");
-  }
-  //B->tsem->unlock();
+        for (int i = ini; i < end; i++) {
+            int p = sind[i] * s;
+            int pb = (i - ini) * s;
+            for (int j = 0; j < s; j++, p++, pb++)
+                B->ptr[pb] = A->ptr[p];
+        }
+    } else {
+        msg("unsuppoted select between devices", "Tensor::select");
+    }
+    //B->tsem->unlock();
 }
 
 
@@ -212,76 +199,60 @@ void Tensor::select(Tensor *A, Tensor *B,vector<int> sind,int ini,int end)
 //// Dimensions and types must be compatible
 //// Only for 2D Tensors
 ///////////////////////////////////////
-void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
-{
+void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
 
-  if ((A->device!=B->device)||(A->device!=C->device)) msg("Tensors in different devices","Tensor::mult2D");
-  if ((A->dim!=2)||(B->dim!=2)||(C->dim!=2)) msg("Only 2D tensors","Tensor::mult2D");
-  if (!tA)
-    {
-      if (!tB)
-        {
-          if ((A->sizes[1]!=B->sizes[0])||(A->sizes[0]!=C->sizes[0])||(B->sizes[1]!=C->sizes[1])) msg("Incompatible dims","Tensor::mult2D");
-        }
-      else
-        if ((A->sizes[1]!=B->sizes[1])||(A->sizes[0]!=C->sizes[0])||(B->sizes[0]!=C->sizes[1])) msg("Incompatible dims","Tensor::mult2D");
-    }
-  else
-    {
-      if (!tB)
-        {
-          if ((A->sizes[0]!=B->sizes[0])||(A->sizes[1]!=C->sizes[0])||(B->sizes[1]!=C->sizes[1])) msg("Incompatible dims","Tensor::mult2D");
-        }
-      else
-        if ((A->sizes[0]!=B->sizes[1])||(A->sizes[1]!=C->sizes[0])||(B->sizes[0]!=C->sizes[1])) msg("Incompatible dims","Tensor::mult2D");
+    if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::mult2D");
+    if ((A->dim != 2) || (B->dim != 2) || (C->dim != 2)) msg("Only 2D tensors", "Tensor::mult2D");
+    if (!tA) {
+        if (!tB) {
+            if ((A->sizes[1] != B->sizes[0]) || (A->sizes[0] != C->sizes[0]) || (B->sizes[1] != C->sizes[1]))
+                msg("Incompatible dims", "Tensor::mult2D");
+        } else if ((A->sizes[1] != B->sizes[1]) || (A->sizes[0] != C->sizes[0]) || (B->sizes[0] != C->sizes[1]))
+            msg("Incompatible dims", "Tensor::mult2D");
+    } else {
+        if (!tB) {
+            if ((A->sizes[0] != B->sizes[0]) || (A->sizes[1] != C->sizes[0]) || (B->sizes[1] != C->sizes[1]))
+                msg("Incompatible dims", "Tensor::mult2D");
+        } else if ((A->sizes[0] != B->sizes[1]) || (A->sizes[1] != C->sizes[0]) || (B->sizes[0] != C->sizes[1]))
+            msg("Incompatible dims", "Tensor::mult2D");
     }
 
 
-  C->tsem->lock();
+    C->tsem->lock();
 
-  if (A->isCPU())
-    {
+    if (A->isCPU()) {
 
-      if (!tB)
-        {
-          if (!tA)
-            {
-              if (!incC) *(C->ptr2)=*(B->ptr2)*(*(A->ptr2));
-              else *(C->ptr2)+=*(B->ptr2)*(*(A->ptr2));
+        if (!tB) {
+            if (!tA) {
+                if (!incC) *(C->ptr2) = *(B->ptr2) * (*(A->ptr2));
+                else *(C->ptr2) += *(B->ptr2) * (*(A->ptr2));
+            } else {
+                if (!incC) *(C->ptr2) = *(B->ptr2) * ((*(A->ptr2)).transpose());
+                else *(C->ptr2) += *(B->ptr2) * ((*(A->ptr2)).transpose());
             }
-          else
-            {
-              if (!incC) *(C->ptr2)=*(B->ptr2)*((*(A->ptr2)).transpose());
-              else *(C->ptr2)+=*(B->ptr2)*((*(A->ptr2)).transpose());
-            }
-        }
-      else
-        {
-          if (!tA)
-            {
-              if (!incC) *(C->ptr2)=(*(B->ptr2)).transpose()*(*(A->ptr2));
-              else *(C->ptr2)+=(*(B->ptr2)).transpose()*(*(A->ptr2));
-            }
-          else
-            {
-              if (!incC) *(C->ptr2)=(*(B->ptr2)).transpose()*((*(A->ptr2)).transpose());
-              else *(C->ptr2)+=(*(B->ptr2)).transpose()*((*(A->ptr2)).transpose());
+        } else {
+            if (!tA) {
+                if (!incC) *(C->ptr2) = (*(B->ptr2)).transpose() * (*(A->ptr2));
+                else *(C->ptr2) += (*(B->ptr2)).transpose() * (*(A->ptr2));
+            } else {
+                if (!incC) *(C->ptr2) = (*(B->ptr2)).transpose() * ((*(A->ptr2)).transpose());
+                else *(C->ptr2) += (*(B->ptr2)).transpose() * ((*(A->ptr2)).transpose());
             }
         }
     }
 
 #ifdef cGPU
-  else if (A->isGPU())
-    {
-      gpu_mult2D(A,tA,B,tB,C,incC);
-    }
+    else if (A->isGPU())
+      {
+        gpu_mult2D(A,tA,B,tB,C,incC);
+      }
 #endif
 #ifdef cFPGA
-  else {
+    else {
 
-  }
+    }
 #endif
-  C->tsem->unlock();
+    C->tsem->unlock();
 }
 
 
@@ -290,30 +261,28 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
 //// incC 1 means C+=A.*B (increment over C)
 //// Dimensions must be compatible
 ///////////////////////////////////////
-void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C,int incC)
-{
-  C->tsem->lock();
-  if ((A->device!=B->device)||(A->device!=C->device)) msg("Tensors in different devices","Tensor::el_mult");
-  if ((!eqsize(A,B))||(!eqsize(A,C))) msg("Incompatible dims","Tensor::el_mult");
+void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
+    C->tsem->lock();
+    if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::el_mult");
+    if ((!eqsize(A, B)) || (!eqsize(A, C))) msg("Incompatible dims", "Tensor::el_mult");
 
-  if (A->isCPU())
-    {
-        for(int i=0;i<A->tam;i++)
-         if (incC) C->ptr[i]+=A->ptr[i]*B->ptr[i];
-         else C->ptr[i]=A->ptr[i]*B->ptr[i];
+    if (A->isCPU()) {
+        for (int i = 0; i < A->tam; i++)
+            if (incC) C->ptr[i] += A->ptr[i] * B->ptr[i];
+            else C->ptr[i] = A->ptr[i] * B->ptr[i];
     }
 #ifdef cGPU
-  else if (A->isGPU())
-    {
-       gpu_el_mult(A,B,C,incC);
-    }
+    else if (A->isGPU())
+      {
+         gpu_el_mult(A,B,C,incC);
+      }
 #endif
 #ifdef cFPGA
-  else {
+    else {
 
-  }
+    }
 #endif
-  C->tsem->unlock();
+    C->tsem->unlock();
 }
 
 
@@ -322,32 +291,30 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C,int incC)
 //// incC 1 means C+=A./B (increment over C)
 //// Dimensions must be compatible
 ///////////////////////////////////////
-void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C,int incC)
-{
+void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
 
-  if ((A->device!=B->device)||(A->device!=C->device)) msg("Tensors in different devices","Tensor::el_div");
-  if ((!eqsize(A,B))||(!eqsize(A,C))) msg("Incompatible dims","Tensor::el_div");
+    if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::el_div");
+    if ((!eqsize(A, B)) || (!eqsize(A, C))) msg("Incompatible dims", "Tensor::el_div");
 
-  C->tsem->lock();
-  if (A->isCPU())
-    {
+    C->tsem->lock();
+    if (A->isCPU()) {
 
-      for(int i=0;i<A->tam;i++)
-        if (incC) C->ptr[i]+=A->ptr[i]/B->ptr[i];
-        else C->ptr[i]=A->ptr[i]/B->ptr[i];
+        for (int i = 0; i < A->tam; i++)
+            if (incC) C->ptr[i] += A->ptr[i] / B->ptr[i];
+            else C->ptr[i] = A->ptr[i] / B->ptr[i];
     }
 #ifdef cGPU
-  else if (A->isGPU())
-    {
-      gpu_el_div(A,B,C,incC);
-    }
+    else if (A->isGPU())
+      {
+        gpu_el_div(A,B,C,incC);
+      }
 #endif
 #ifdef cFPGA
-  else {
+    else {
 
-  }
+    }
 #endif
-  C->tsem->unlock();
+    C->tsem->unlock();
 }
 
 
@@ -356,40 +323,36 @@ void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C,int incC)
 //// or C+=(sca*A)+(scb*B) if incC is 1
 //// Dimensions and types must be compatible
 ///////////////////////////////////////
-void Tensor::sum(float scA, Tensor *A, float scB, Tensor *B, Tensor *C,int incC)
-{
-  int aux=0;
+void Tensor::sum(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
+    int aux = 0;
 
-  if ((A->device!=B->device)||(A->device!=C->device)) msg("Tensors in different devices","Tensor::sum");
-  if ((!eqsize(A,B))||(!eqsize(A,C))) msg("Incompatible dims","Tensor::sum");
+    if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::sum");
+    if ((!eqsize(A, B)) || (!eqsize(A, C))) msg("Incompatible dims", "Tensor::sum");
 
-  C->tsem->lock();
-  if (A->isCPU())
-  {
+    C->tsem->lock();
+    if (A->isCPU()) {
 
-    for(int i=0;i<A->tam;i++)
-      if (incC) C->ptr[i]+=scA*A->ptr[i]+scB*B->ptr[i];
-      else C->ptr[i]=scA*A->ptr[i]+scB*B->ptr[i];
-  }
-#ifdef cGPU
-  else if (A->isGPU())
-    {
-      gpu_sum(scA,A,scB,B,C,incC);
+        for (int i = 0; i < A->tam; i++)
+            if (incC) C->ptr[i] += scA * A->ptr[i] + scB * B->ptr[i];
+            else C->ptr[i] = scA * A->ptr[i] + scB * B->ptr[i];
     }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+        gpu_sum(scA,A,scB,B,C,incC);
+      }
 #endif
 #ifdef cFPGA
-  else {
+    else {
 
-  }
+    }
 #endif
-  C->tsem->unlock();
+    C->tsem->unlock();
 }
 
-void Tensor::sum(Tensor *A,Tensor *B, Tensor *C)
-{
-  Tensor::sum(1.0,A,1.0,B,C,0);
+void Tensor::sum(Tensor *A, Tensor *B, Tensor *C) {
+    Tensor::sum(1.0, A, 1.0, B, C, 0);
 }
-
 
 
 ///////////////////////////////////////
@@ -398,34 +361,33 @@ void Tensor::sum(Tensor *A,Tensor *B, Tensor *C)
 //// A is 2D Tensor
 //// B is 1D Tensor
 ///////////////////////////////////////
-void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
-{
-  if ((A->device!=B->device)||(A->device!=C->device)) msg("Tensors in different devices","Tensor::sum2D_rowwise");
-  if ((A->dim!=2)||(B->dim!=1)||(C->dim!=2)) msg("sum2D_rowwise dims");
-  if ((!eqsize(A,C))||(A->sizes[1]!=B->sizes[0])) msg("Incompatible dims","Tensor::sum2D_rowwise");
+void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
+    if ((A->device != B->device) || (A->device != C->device))
+        msg("Tensors in different devices", "Tensor::sum2D_rowwise");
+    if ((A->dim != 2) || (B->dim != 1) || (C->dim != 2)) msg("sum2D_rowwise dims");
+    if ((!eqsize(A, C)) || (A->sizes[1] != B->sizes[0])) msg("Incompatible dims", "Tensor::sum2D_rowwise");
 
-  C->tsem->lock();
-  if (A->isCPU())
-    {
-      int p=0;
-      for(int i=0;i<A->sizes[0];i++) {
-        for(int j=0;j<A->sizes[1];j++,p++)
-          C->ptr[p]=A->ptr[p]+B->ptr[j];
+    C->tsem->lock();
+    if (A->isCPU()) {
+        int p = 0;
+        for (int i = 0; i < A->sizes[0]; i++) {
+            for (int j = 0; j < A->sizes[1]; j++, p++)
+                C->ptr[p] = A->ptr[p] + B->ptr[j];
         }
     }
 #ifdef cGPU
-  else if (A->isGPU())
-    {
-      gpu_sum2D_rowwise(A,B,C);
+    else if (A->isGPU())
+      {
+        gpu_sum2D_rowwise(A,B,C);
+
+      }
+#endif
+#ifdef cFPGA
+    else {
 
     }
 #endif
-#ifdef cFPGA
-  else {
-
-  }
-#endif
-  C->tsem->unlock();
+    C->tsem->unlock();
 }
 
 
@@ -435,33 +397,32 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
 //// A is 2D Tensor
 //// B is 1D Tensor
 ///////////////////////////////////////
-void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C)
-{
-  if ((A->device!=B->device)||(A->device!=C->device)) msg("Tensors in different devices","Tensor::sum2D_colwise");
-  if ((A->dim!=2)||(B->dim!=1)||(C->dim!=2)) msg("sum2D_colwise dims");
-  if ((!eqsize(A,C))||(A->sizes[0]!=B->sizes[0])) msg("Incompatible dims","Tensor::sum2D_colwise");
+void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
+    if ((A->device != B->device) || (A->device != C->device))
+        msg("Tensors in different devices", "Tensor::sum2D_colwise");
+    if ((A->dim != 2) || (B->dim != 1) || (C->dim != 2)) msg("sum2D_colwise dims");
+    if ((!eqsize(A, C)) || (A->sizes[0] != B->sizes[0])) msg("Incompatible dims", "Tensor::sum2D_colwise");
 
-  C->tsem->lock();
-  if (A->isCPU())
-  {
-    int p=0;
-    for(int i=0;i<A->sizes[0];i++){
-      for(int j=0;j<A->sizes[1];j++,p++)
-        C->ptr[p]=A->ptr[p]+B->ptr[i];
-      }
-  }
-#ifdef cGPU
-  else if (A->isGPU())
-    {
-      gpu_sum2D_colwise(A,B,C);
+    C->tsem->lock();
+    if (A->isCPU()) {
+        int p = 0;
+        for (int i = 0; i < A->sizes[0]; i++) {
+            for (int j = 0; j < A->sizes[1]; j++, p++)
+                C->ptr[p] = A->ptr[p] + B->ptr[i];
+        }
     }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+        gpu_sum2D_colwise(A,B,C);
+      }
 #endif
 #ifdef cFPGA
-  else {
+    else {
 
-  }
+    }
 #endif
-  C->tsem->unlock();
+    C->tsem->unlock();
 }
 
 
@@ -472,141 +433,132 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C)
 //// B is 1D Tensor
 //// axis is the dimension to be sumed
 ///////////////////////////////////////
-void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB)
-{
-  if (A->device!=B->device) msg("Tensors in different devices","Tensor::reduce_sum2D");
-  if ((A->dim-1)!=B->dim) msg("Incorrect dims","Tensor::reduce_sum2D");
-  if ((A->sizes[1-axis]!=B->sizes[0])) msg("Incompatible dims","Tensor::reduce_sum2D");
+void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::reduce_sum2D");
+    if ((A->dim - 1) != B->dim) msg("Incorrect dims", "Tensor::reduce_sum2D");
+    if ((A->sizes[1 - axis] != B->sizes[0])) msg("Incompatible dims", "Tensor::reduce_sum2D");
 
-  B->tsem->lock();
-  if (A->isCPU())
-    {
-      if (axis==0)
-      {
-        if (!incB) for(int i=0;i<A->sizes[1];++i) B->ptr[i]=0;
+    B->tsem->lock();
+    if (A->isCPU()) {
+        if (axis == 0) {
+            if (!incB) for (int i = 0; i < A->sizes[1]; ++i) B->ptr[i] = 0;
 
-        int p=0;
-        for(int i=0;i<A->sizes[0];++i) {
-          for(int j=0;j<A->sizes[1];++j,p++)
-               B->ptr[j]+=A->ptr[p];
-          }
+            int p = 0;
+            for (int i = 0; i < A->sizes[0]; ++i) {
+                for (int j = 0; j < A->sizes[1]; ++j, p++)
+                    B->ptr[j] += A->ptr[p];
+            }
 
-      }
-      else
-        {
-          if (!incB) for(int i=0;i<A->sizes[0];++i) B->ptr[i]=0;
+        } else {
+            if (!incB) for (int i = 0; i < A->sizes[0]; ++i) B->ptr[i] = 0;
 
-          int p=0;
-          for(int i=0;i<A->sizes[0];++i) {
-            for(int j=0;j<A->sizes[1];++j,p++)
-                 B->ptr[i]+=A->ptr[p];
+            int p = 0;
+            for (int i = 0; i < A->sizes[0]; ++i) {
+                for (int j = 0; j < A->sizes[1]; ++j, p++)
+                    B->ptr[i] += A->ptr[p];
             }
         }
     }
 #ifdef cGPU
-  else if (A->isGPU())
-    {
-      gpu_reduce_sum2D(A,B,axis,incB);
-    }
+    else if (A->isGPU())
+      {
+        gpu_reduce_sum2D(A,B,axis,incB);
+      }
 #endif
 #ifdef cFPGA
-  else {
+    else {
 
-  }
+    }
 #endif
-  B->tsem->unlock();
+    B->tsem->unlock();
 }
 
 
 ////////////////////////////////
 //// CONVOLUTIONS
-ConvolDescriptor::ConvolDescriptor()
-{
+ConvolDescriptor::ConvolDescriptor() {
 
 }
-ConvolDescriptor::ConvolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st,const initializer_list<int>& p )
-{
-  ksize=vector<int>(ks.begin(), ks.end());
-  stride=vector<int>(st.begin(), st.end());
-  pad=vector<int>(p.begin(), p.end());
 
-  if (ksize.size()!=3) msg("Kernels must have 3 dimensions","ConvolDescriptor::ConvolDescriptor");
-  if (stride.size()!=2) msg("Strides must have 2 dimensions","ConvolDescriptor::ConvolDescriptor");
-  if (pad.size()!=2) msg("Padding must have 2 dimensions","ConvolDescriptor::ConvolDescriptor");
+ConvolDescriptor::ConvolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st,
+                                   const initializer_list<int> &p) {
+    ksize = vector<int>(ks.begin(), ks.end());
+    stride = vector<int>(st.begin(), st.end());
+    pad = vector<int>(p.begin(), p.end());
+
+    if (ksize.size() != 3) msg("Kernels must have 3 dimensions", "ConvolDescriptor::ConvolDescriptor");
+    if (stride.size() != 2) msg("Strides must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor");
+    if (pad.size() != 2) msg("Padding must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor");
 }
 
 
-ConvolDescriptor::ConvolDescriptor(const vector<int>& ks, const vector<int>& st, string p)
-{
-    if (ks.size()!=3){ msg("Kernels must have 3 dimensions","ConvolDescriptor::ConvolDescriptor");}
-    if (st.size()!=2){ msg("Strides must have 2 dimensions","ConvolDescriptor::ConvolDescriptor");}
+ConvolDescriptor::ConvolDescriptor(const vector<int> &ks, const vector<int> &st, string p) {
+    if (ks.size() != 3) { msg("Kernels must have 3 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
+    if (st.size() != 2) { msg("Strides must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
 
-    ksize=ks;
-    stride=st;
+    ksize = ks;
+    stride = st;
 
-    if (p=="same") {
-        pad.push_back(ks[1]/2);
-        pad.push_back(ks[2]/2);
-    }
-    else if (p=="none") {
+    if (p == "same") {
+        pad.push_back(ks[1] / 2);
+        pad.push_back(ks[2] / 2);
+    } else if (p == "none") {
         pad.push_back(0);
         pad.push_back(0);
+    } else msg("Incorrect padding type", "ConvolDescriptor::ConvolDescriptor");
+
+}
+
+
+ConvolDescriptor::ConvolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st, string p)
+        : ConvolDescriptor(vector<int>(ks.begin(), ks.end()), vector<int>(st.begin(), st.end()), p) {
+}
+
+
+void ConvolDescriptor::build(Tensor *A) {
+
+    if (A->dim != 4) msg("Tensors are not 4D", "ConvolDescriptor::build");
+
+    I = A;
+
+    nk = ksize[0];
+    kr = ksize[1];
+    kc = ksize[2];
+    kz = A->sizes[1];
+
+    sr = stride[0];
+    sc = stride[1];
+
+    iz = A->sizes[1];
+    ir = A->sizes[2];
+    ic = A->sizes[3];
+
+    padr = pad[0];
+    padc = pad[1];
+
+    z = nk;
+    r = (ir - kr + 2 * padr) / sr + 1;
+    c = (ic - kc + 2 * padc) / sc + 1;
+
+    if ((r <= 0) || (c <= 0))
+        msg("Invalid output sizes", "ConvolDescriptor::build");
+
+    O = new Tensor({A->sizes[0], z, r, c}, A->device);
+    D = new Tensor(O->getshape(), A->device);
+
+    // Params
+    K = new Tensor({nk, kz, kr, kc}, I->device);
+    bias = new Tensor({nk}, I->device);
+    gK = new Tensor({nk, kz, kr, kc}, I->device);
+    gbias = new Tensor({nk}, I->device);
+
+    if (I->isCPU()) {
+        // mem for ptr, lowering im2col
+        ptrI = (float *) malloc(A->sizes[0] * r * c * kr * kc * kz * sizeof(float));
+        new(&matK) Eigen::Map<Eigen::MatrixXf>(K->ptr, kr * kc * kz, nk);
+        new(&matgK) Eigen::Map<Eigen::MatrixXf>(gK->ptr, kr * kc * kz, nk);
+        // convolution: matC=matA*matK
     }
-    else msg("Incorrect padding type","ConvolDescriptor::ConvolDescriptor");
-
-}
-
-
-ConvolDescriptor::ConvolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p):ConvolDescriptor(vector<int>(ks.begin(), ks.end()),vector<int>(st.begin(), st.end()),p)
-{
-}
-
-
-void ConvolDescriptor::build(Tensor *A)
-{
-
-  if (A->dim!=4) msg("Tensors are not 4D","ConvolDescriptor::build");
-
-  I=A;
-
-  nk=ksize[0];
-  kr=ksize[1];
-  kc=ksize[2];
-  kz=A->sizes[1];
-
-  sr=stride[0];
-  sc=stride[1];
-
-  iz=A->sizes[1];
-  ir=A->sizes[2];
-  ic=A->sizes[3];
-
-  padr=pad[0];
-  padc=pad[1];
-
-  z=nk;
-  r=(ir-kr+2*padr)/sr+1;
-  c=(ic-kc+2*padc)/sc+1;
-
-  if ((r<=0)||(c<=0))
-    msg("Invalid output sizes","ConvolDescriptor::build");
-
-  O=new Tensor({A->sizes[0],z,r,c},A->device);
-  D=new Tensor(O->getshape(),A->device);
-
-  // Params
-  K=new Tensor({nk,kz,kr,kc},I->device);
-  bias=new Tensor({nk},I->device);
-  gK=new Tensor({nk,kz,kr,kc},I->device);
-  gbias=new Tensor({nk},I->device);
-
-  if (I->isCPU()) {
-    // mem for ptr, lowering im2col
-    ptrI=(float *)malloc(A->sizes[0]*r*c*kr*kc*kz*sizeof(float));
-    new (&matK) Eigen::Map<Eigen::MatrixXf>(K->ptr,kr*kc*kz,nk);
-    new (&matgK) Eigen::Map<Eigen::MatrixXf>(gK->ptr,kr*kc*kz,nk);
-    // convolution: matC=matA*matK
-  }
 
 
 }
@@ -618,155 +570,146 @@ void ConvolDescriptor::build(Tensor *A)
 //// A is input 4D Tensor, Batch x Channels x Rows x Cols
 //// D is a ConvolDescriptor
 /////////////////////////////////////////////////////////////////////
-void Tensor::Conv2D(ConvolDescriptor *D)
-{
-  if ((D->I->dim!=4)) msg("Tensors are not 4D","Tensor::Conv2D");
+void Tensor::Conv2D(ConvolDescriptor *D) {
+    if ((D->I->dim != 4)) msg("Tensors are not 4D", "Tensor::Conv2D");
 
-  D->O->tsem->lock();
-  if (D->I->isCPU())
-    {
-       cpu_conv2D(D);
+    D->O->tsem->lock();
+    if (D->I->isCPU()) {
+        cpu_conv2D(D);
     }
 #ifdef cGPU
-  else if (D->I->isGPU())
-    {
-       //gpu_conv2D(A,B,D,C);
-    }
+    else if (D->I->isGPU())
+      {
+         //gpu_conv2D(A,B,D,C);
+      }
 #endif
 #ifdef cFPGA
-  else {
+    else {
 
-  }
+    }
 #endif
-  D->O->tsem->unlock();
+    D->O->tsem->unlock();
 }
+
 /////////////////////////////////////////////////////////////////////
 //// Conv2D Grad
 //// Dimensions must be compatible
 //// A is input 4D Tensor, Batch x Channels x Rows x Cols
 //// D is a ConvolDescriptor
 /////////////////////////////////////////////////////////////////////
-void Tensor::Conv2D_grad(ConvolDescriptor *D)
-{
-  if ((D->I->dim!=4)) msg("Tensors are not 4D","Tensor::Conv2D");
+void Tensor::Conv2D_grad(ConvolDescriptor *D) {
+    if ((D->I->dim != 4)) msg("Tensors are not 4D", "Tensor::Conv2D");
 
-  D->gK->tsem->lock();
-  if (D->I->isCPU())
-    {
-       D->gK->set(0.0);
-       cpu_conv2D_grad(D);
+    D->gK->tsem->lock();
+    if (D->I->isCPU()) {
+        D->gK->set(0.0);
+        cpu_conv2D_grad(D);
     }
 #ifdef cGPU
-  else if (D->I->isGPU())
-    {
-       //gpu_conv2D(A,B,D,C);
-    }
+    else if (D->I->isGPU())
+      {
+         //gpu_conv2D(A,B,D,C);
+      }
 #endif
 #ifdef cFPGA
-  else {
+    else {
 
-  }
+    }
 #endif
-  D->gK->tsem->unlock();
+    D->gK->tsem->unlock();
 }
+
 /////////////////////////////////////////////////////////////////////
 //// Conv2D Back
 //// Dimensions must be compatible
 //// A is input 4D Tensor, Batch x Channels x Rows x Cols
 //// D is a ConvolDescriptor
 /////////////////////////////////////////////////////////////////////
-void Tensor::Conv2D_back(ConvolDescriptor *D)
-{
-  if ((D->I->dim!=4)) msg("Tensors are not 4D","Tensor::Conv2D");
+void Tensor::Conv2D_back(ConvolDescriptor *D) {
+    if ((D->I->dim != 4)) msg("Tensors are not 4D", "Tensor::Conv2D");
 
-  D->ID->tsem->lock();
-  if (D->I->isCPU())
-    {
-       cpu_conv2D_back(D);
+    D->ID->tsem->lock();
+    if (D->I->isCPU()) {
+        cpu_conv2D_back(D);
     }
 #ifdef cGPU
-  else if (D->I->isGPU())
-    {
-       //gpu_conv2D(A,B,D,C);
-    }
+    else if (D->I->isGPU())
+      {
+         //gpu_conv2D(A,B,D,C);
+      }
 #endif
 #ifdef cFPGA
-  else {
+    else {
 
-  }
+    }
 #endif
-  D->ID->tsem->unlock();
+    D->ID->tsem->unlock();
 }
 
 
 ////////////////////////////////
 ////  POOLING
 
-PoolDescriptor::PoolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st,const initializer_list<int>& p )
-{
-  ksize=vector<int>(ks.begin(), ks.end());
-  stride=vector<int>(st.begin(), st.end());
-  pad=vector<int>(p.begin(), p.end());
+PoolDescriptor::PoolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st,
+                               const initializer_list<int> &p) {
+    ksize = vector<int>(ks.begin(), ks.end());
+    stride = vector<int>(st.begin(), st.end());
+    pad = vector<int>(p.begin(), p.end());
 
-  if (ksize.size()!=2) msg("Pooling Kernels must have 2 dimensions","PoolDescriptor::PoolDescriptor");
-  if (stride.size()!=2) msg("Strides must have 2 dimensions","PoolDescriptor::PoolDescriptor");
-  if (pad.size()!=2) msg("Padding must have 2 dimensions","PoolDescriptor::PoolDescriptor");
+    if (ksize.size() != 2) msg("Pooling Kernels must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
+    if (stride.size() != 2) msg("Strides must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
+    if (pad.size() != 2) msg("Padding must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
 }
 
-PoolDescriptor::PoolDescriptor(const vector<int>& ks, const vector<int>& st, string p)
-{
-    if (ks.size()!=2) msg("Pooling Kernels must have 2 dimensions","PoolDescriptor::PoolDescriptor");
-    if (st.size()!=2) msg("Strides must have 2 dimensions","PoolDescriptor::PoolDescriptor");
+PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, string p) {
+    if (ks.size() != 2) msg("Pooling Kernels must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
+    if (st.size() != 2) msg("Strides must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
 
-    ksize=ks;
-    stride=st;
+    ksize = ks;
+    stride = st;
 
-    if (p=="same") {
-        pad.push_back(ksize[0]/2);
-        pad.push_back(ksize[1]/2);
-    }
-    else if (p=="none") {
+    if (p == "same") {
+        pad.push_back(ksize[0] / 2);
+        pad.push_back(ksize[1] / 2);
+    } else if (p == "none") {
         pad.push_back(0);
         pad.push_back(0);
-    }
-    else msg("Incorrect padding type","PoolDescriptor::PoolDescriptor");
+    } else msg("Incorrect padding type", "PoolDescriptor::PoolDescriptor");
 }
 
-PoolDescriptor::PoolDescriptor(const initializer_list<int>& ks,const initializer_list<int>& st, string p):PoolDescriptor(vector<int>(ks.begin(), ks.end()),vector<int>(st.begin(), st.end()),p){}
+PoolDescriptor::PoolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st, string p)
+        : PoolDescriptor(vector<int>(ks.begin(), ks.end()), vector<int>(st.begin(), st.end()), p) {}
 
 
+void PoolDescriptor::build(Tensor *A) {
+    if (A->dim != 4) msg("Tensors are not 4D", "PoolDescriptor::build");
 
+    I = A;
 
-void PoolDescriptor::build(Tensor *A)
-{
-  if (A->dim!=4) msg("Tensors are not 4D","PoolDescriptor::build");
+    kr = ksize[0];
+    kc = ksize[1];
 
-  I=A;
+    sr = stride[0];
+    sc = stride[1];
 
-  kr=ksize[0];
-  kc=ksize[1];
+    iz = A->sizes[1];
+    ir = A->sizes[2];
+    ic = A->sizes[3];
 
-  sr=stride[0];
-  sc=stride[1];
+    padr = pad[0];
+    padc = pad[1];
 
-  iz=A->sizes[1];
-  ir=A->sizes[2];
-  ic=A->sizes[3];
+    z = iz;
+    r = (ir - kr + 2 * padr) / sr + 1;
+    //if (kr%2==0) r--;
+    c = (ic - kc + 2 * padc) / sc + 1;
+    //if (kc%2==0) c--;
 
-  padr=pad[0];
-  padc=pad[1];
+    if ((r <= 0) || (c <= 0))
+        msg("Invalid output sizes", "PoolDescriptor::build");
 
-  z=iz;
-  r=(ir-kr+2*padr)/sr+1;
-  //if (kr%2==0) r--;
-  c=(ic-kc+2*padc)/sc+1;
-  //if (kc%2==0) c--;
-
-  if ((r<=0)||(c<=0))
-    msg("Invalid output sizes","PoolDescriptor::build");
-
-  O=new Tensor({A->sizes[0],z,r,c},A->device);
-  D=new Tensor(O->getshape(),A->device);
+    O = new Tensor({A->sizes[0], z, r, c}, A->device);
+    D = new Tensor(O->getshape(), A->device);
 
 
 }
@@ -777,26 +720,24 @@ void PoolDescriptor::build(Tensor *A)
 //// A is input 4D Tensor, Batch x Channels x Rows x Cols
 //// D is a ConvolDescriptor
 /////////////////////////////////////////////////////////////////////
-void Tensor::MPool2D(PoolDescriptor *D)
-{
-  if ((D->I->dim!=4)) msg("Tensors are not 4D","Tensor::MPool2D");
+void Tensor::MPool2D(PoolDescriptor *D) {
+    if ((D->I->dim != 4)) msg("Tensors are not 4D", "Tensor::MPool2D");
 
-  D->O->tsem->lock();
-  if (D->I->isCPU())
-    {
-       cpu_mpool2D(D);
+    D->O->tsem->lock();
+    if (D->I->isCPU()) {
+        cpu_mpool2D(D);
     }
 #ifdef cGPU
-  else if (D->I->isGPU())
-    {
-    }
+    else if (D->I->isGPU())
+      {
+      }
 #endif
 #ifdef cFPGA
-  else {
+    else {
 
-  }
+    }
 #endif
-  D->O->tsem->unlock();
+    D->O->tsem->unlock();
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -805,27 +746,25 @@ void Tensor::MPool2D(PoolDescriptor *D)
 //// A is input 4D Tensor, Batch x Channels x Rows x Cols
 //// D is a ConvolDescriptor
 /////////////////////////////////////////////////////////////////////
-void Tensor::MPool2D_back(PoolDescriptor *D)
-{
-  if ((D->I->dim!=4)) msg("Tensors are not 4D","Tensor::MPool2D_back");
+void Tensor::MPool2D_back(PoolDescriptor *D) {
+    if ((D->I->dim != 4)) msg("Tensors are not 4D", "Tensor::MPool2D_back");
 
-  D->ID->tsem->lock();
-  if (D->I->isCPU())
-    {
+    D->ID->tsem->lock();
+    if (D->I->isCPU()) {
 
-       cpu_mpool2D_back(D);
+        cpu_mpool2D_back(D);
     }
 #ifdef cGPU
-  else if (D->I->isGPU())
-    {
-    }
+    else if (D->I->isGPU())
+      {
+      }
 #endif
 #ifdef cFPGA
-  else {
+    else {
 
-  }
+    }
 #endif
-  D->ID->tsem->unlock();
+    D->ID->tsem->unlock();
 }
 
 
@@ -833,73 +772,68 @@ void Tensor::MPool2D_back(PoolDescriptor *D)
 /// COST FUNCTIONS
 ////////////////////////////////
 // Cross-Entropy: C=-(A*log(B)+(1-A)*log(1-B))
-void Tensor::cent(Tensor *A,Tensor *B, Tensor *C)
-{
-  if (A->device!=B->device) msg("Tensors in different devices","Tensor::cross-entropy");
-  if ((!eqsize(A,B))||(!eqsize(A,C))) msg("Incompatible dims","Tensor::cross-entropy");
+void Tensor::cent(Tensor *A, Tensor *B, Tensor *C) {
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::cross-entropy");
+    if ((!eqsize(A, B)) || (!eqsize(A, C))) msg("Incompatible dims", "Tensor::cross-entropy");
 
-  C->tsem->lock();
-  if (A->isCPU())
-    {
+    C->tsem->lock();
+    if (A->isCPU()) {
 
-      for(int i=0;i<A->tam;i++) {
-        C->ptr[i]=0;
-        if (A->ptr[i]!=0.0) C->ptr[i]-=A->ptr[i]*log(B->ptr[i]);
-        if (A->ptr[i]!=1.0) C->ptr[i]-=(1.0-A->ptr[i])*log(1.0-B->ptr[i]);
-      }
-  }
-#ifdef cGPU
-  else if (A->isGPU())
-    {
-       gpu_cent(A,B,C);
+        for (int i = 0; i < A->tam; i++) {
+            C->ptr[i] = 0;
+            if (A->ptr[i] != 0.0) C->ptr[i] -= A->ptr[i] * log(B->ptr[i]);
+            if (A->ptr[i] != 1.0) C->ptr[i] -= (1.0 - A->ptr[i]) * log(1.0 - B->ptr[i]);
+        }
     }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+         gpu_cent(A,B,C);
+      }
 #endif
 #ifdef cFPGA
-  else {
+    else {
 
-  }
+    }
 #endif
-  C->tsem->unlock();
+    C->tsem->unlock();
 }
 
 
 ////////////////////////////////
 /// METRICS FUNCTIONS
 ////////////////////////////////
-int Tensor::accuracy(Tensor *A,Tensor *B)
-{
-  if (A->device!=B->device) msg("Tensors in different devices","Tensor::accuracy");
-  if (!eqsize(A,B)) msg("Incompatible dims","Tensor::accuracy");
-  if (A->dim!=2)  msg("Accuracy only over 2D Tensor (batch x probs)","Tensor::Accuracy");
+int Tensor::accuracy(Tensor *A, Tensor *B) {
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::accuracy");
+    if (!eqsize(A, B)) msg("Incompatible dims", "Tensor::accuracy");
+    if (A->dim != 2) msg("Accuracy only over 2D Tensor (batch x probs)", "Tensor::Accuracy");
 
-  int acc=0;
+    int acc = 0;
 
-  B->tsem->lock();
+    B->tsem->lock();
 
-  if (A->isCPU())
-    {
-      int aind,bind;
+    if (A->isCPU()) {
+        int aind, bind;
 
-      for(int i=0;i<A->sizes[0];i++)
-        {
-          (*A->ptr2).col(i).maxCoeff(&aind);
-          (*B->ptr2).col(i).maxCoeff(&bind);
-          if (aind==bind) acc++;
-       }
+        for (int i = 0; i < A->sizes[0]; i++) {
+            (*A->ptr2).col(i).maxCoeff(&aind);
+            (*B->ptr2).col(i).maxCoeff(&bind);
+            if (aind == bind) acc++;
+        }
     }
 #ifdef cGPU
-  else if (A->isGPU())
-    {
-       gpu_accuracy(A,B,&acc);
-    }
+    else if (A->isGPU())
+      {
+         gpu_accuracy(A,B,&acc);
+      }
 #endif
 #ifdef cFPGA
-  else {
+    else {
 
-  }
+    }
 #endif
-  B->tsem->unlock();
-  return acc;
+    B->tsem->unlock();
+    return acc;
 
 }
 
@@ -908,146 +842,135 @@ int Tensor::accuracy(Tensor *A,Tensor *B)
 /// ACTIVATIONS
 ////////////////////////////////
 // RELU
-void Tensor::ReLu(Tensor *A,Tensor *B)
-{
-  if (A->device!=B->device) msg("Tensors in different devices","Tensor::ReLu");
-  if (!eqsize(A,B)) msg("Incompatible dims","Tensor::ReLu");
+void Tensor::ReLu(Tensor *A, Tensor *B) {
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::ReLu");
+    if (!eqsize(A, B)) msg("Incompatible dims", "Tensor::ReLu");
 
-  B->tsem->lock();
-  if (A->isCPU())
-    {
+    B->tsem->lock();
+    if (A->isCPU()) {
 
-      for(int i=0;i<A->tam;i++) {
-        if (A->ptr[i]>0.0) B->ptr[i]=A->ptr[i];
-        else B->ptr[i]=0.0;
-      }
+        for (int i = 0; i < A->tam; i++) {
+            if (A->ptr[i] > 0.0) B->ptr[i] = A->ptr[i];
+            else B->ptr[i] = 0.0;
+        }
     }
 #ifdef cGPU
-  else if (A->isGPU())
-    {
-    gpu_relu(A,B);
-    }
+    else if (A->isGPU())
+      {
+      gpu_relu(A,B);
+      }
 #endif
 #ifdef cFPGA
-  else {
+    else {
 
-  }
+    }
 #endif
 
-  B->tsem->unlock();
+    B->tsem->unlock();
 }
 
 
 // RELU Derivative, always increment over parent delta
-void Tensor::D_ReLu(Tensor *D, Tensor *I, Tensor *PD)
-{
-  if ((D->device!=I->device)||(D->device!=PD->device)) msg("Tensors in different devices","Tensor::D_ReLu");
-  if ((!eqsize(D,I))||(!eqsize(D,PD))) msg("Incompatible dims","Tensor::D_ReLu");
+void Tensor::D_ReLu(Tensor *D, Tensor *I, Tensor *PD) {
+    if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_ReLu");
+    if ((!eqsize(D, I)) || (!eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_ReLu");
 
-  PD->tsem->lock();
-  if (D->isCPU())
-  {
+    PD->tsem->lock();
+    if (D->isCPU()) {
 
-    for(int i=0;i<D->tam;i++) {
-      if (I->ptr[i]>0.0) PD->ptr[i]=D->ptr[i];
-      else PD->ptr[i]=0.0;
+        for (int i = 0; i < D->tam; i++) {
+            if (I->ptr[i] > 0.0) PD->ptr[i] = D->ptr[i];
+            else PD->ptr[i] = 0.0;
+        }
     }
-  }
 #ifdef cGPU
-  else if (D->isGPU())
-    {
-      gpu_d_relu(D,I,PD);
+    else if (D->isGPU())
+      {
+        gpu_d_relu(D,I,PD);
 
-    }
+      }
 #endif
 #ifdef cFPGA
-  else {
+    else {
 
-  }
+    }
 #endif
-  PD->tsem->unlock();
+    PD->tsem->unlock();
 }
 
 
 // SOFTMAX
-void Tensor::Softmax(Tensor *A,Tensor *B)
-{
-  if (A->device!=B->device) msg("Tensors in different devices","Tensor::Softmax");
-  if (!eqsize(A,B)) msg("Incompatible dims","Tensor::Softmax");
-  if (A->dim!=2)  msg("Softmax only over 2D Tensor (batch x logits)","Tensor::Softmax");
+void Tensor::Softmax(Tensor *A, Tensor *B) {
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::Softmax");
+    if (!eqsize(A, B)) msg("Incompatible dims", "Tensor::Softmax");
+    if (A->dim != 2) msg("Softmax only over 2D Tensor (batch x logits)", "Tensor::Softmax");
 
-  B->tsem->lock();
+    B->tsem->lock();
 
-  if (A->isCPU())
-    {
-      float max,sum;
+    if (A->isCPU()) {
+        float max, sum;
 
 
+        for (int i = 0; i < A->sizes[0]; i++) {
 
-      for(int i=0;i<A->sizes[0];i++)
-        {
+            max = (*A->ptr2).col(i).maxCoeff();
+            for (int j = 0; j < A->sizes[1]; j++)
+                (*B->ptr2)(j, i) = exp((*A->ptr2)(j, i) - max);
 
-          max=(*A->ptr2).col(i).maxCoeff();
-          for(int j=0;j<A->sizes[1];j++)
-            (*B->ptr2)(j,i)=exp((*A->ptr2)(j,i)-max);
-
-          sum=(*B->ptr2).col(i).sum();
-          for(int j=0;j<B->sizes[1];j++)
-            (*B->ptr2)(j,i)=(*B->ptr2)(j,i)/sum;
+            sum = (*B->ptr2).col(i).sum();
+            for (int j = 0; j < B->sizes[1]; j++)
+                (*B->ptr2)(j, i) = (*B->ptr2)(j, i) / sum;
         }
     }
 #ifdef cGPU
-  else if (A->isGPU())
-    {
-      gpu_softmax(A,B);
-    }
+    else if (A->isGPU())
+      {
+        gpu_softmax(A,B);
+      }
 #endif
 #ifdef cFPGA
-  else {
+    else {
 
-  }
+    }
 #endif
 
-  B->tsem->unlock();
+    B->tsem->unlock();
 }
 
 
 // SOFTMAX DERIVATIVE
-void Tensor::D_Softmax(Tensor *D,Tensor *I,Tensor *PD)
-{
-  if ((D->device!=I->device)||(D->device!=PD->device)) msg("Tensors in different devices","Tensor::D_Softmax");
-  if ((!eqsize(D,I))||(!eqsize(D,PD))) msg("Incompatible dims","Tensor::D_Softmax");
-  if (D->dim!=2) msg("D_Softmax only over 2D Tensor (batch x delta_probs)","Tensor::D_Softmax");
+void Tensor::D_Softmax(Tensor *D, Tensor *I, Tensor *PD) {
+    if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_Softmax");
+    if ((!eqsize(D, I)) || (!eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_Softmax");
+    if (D->dim != 2) msg("D_Softmax only over 2D Tensor (batch x delta_probs)", "Tensor::D_Softmax");
 
 
-  if (D->isCPU())
-    {
-      PD->tsem->lock();
+    if (D->isCPU()) {
+        PD->tsem->lock();
 
-      for(int i=0;i<D->tam;i++)
-         PD->ptr[i]+=D->ptr[i]*(I->ptr[i]*(1.0-I->ptr[i]));
+        for (int i = 0; i < D->tam; i++)
+            PD->ptr[i] += D->ptr[i] * (I->ptr[i] * (1.0 - I->ptr[i]));
 
-      PD->tsem->unlock();
+        PD->tsem->unlock();
     }
 #ifdef cGPU
-  else if (D->isGPU())
-    {
+    else if (D->isGPU())
+      {
 
-      Tensor *aux=new Tensor(D->getshape(),D->device);
-      aux->set(1.0);
-      Tensor::sum(1.0,aux,-1.0,I,aux,0);
-      Tensor::el_mult(I,aux,aux,0);
-      Tensor::el_mult(D,aux,PD,1);
+        Tensor *aux=new Tensor(D->getshape(),D->device);
+        aux->set(1.0);
+        Tensor::sum(1.0,aux,-1.0,I,aux,0);
+        Tensor::el_mult(I,aux,aux,0);
+        Tensor::el_mult(D,aux,PD,1);
 
-      delete aux;
-    }
+        delete aux;
+      }
 #endif
 #ifdef cFPGA
-  else {
+    else {
 
-  }
+    }
 #endif
-
 
 
 }

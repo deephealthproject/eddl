@@ -28,13 +28,18 @@
 
 #include <stdio.h>
 #include <stdio.h>
+
 #ifndef _UTILS_
 #define _UTILS_
 
 float uniform();
+
 float suniform();
+
 float gaussgen();
-float gauss(float mean,float sd);
+
+float gauss(float mean, float sd);
+
 #endif
 
 ////////////////
