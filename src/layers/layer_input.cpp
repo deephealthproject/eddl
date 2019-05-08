@@ -36,11 +36,9 @@
 
 using namespace std;
 
-int input_created=1;
 
-LInput::LInput(Tensor *in):LInput(in,"input"+to_string(input_created),DEV_CPU){}
-LInput::LInput(Tensor *in,int d):LInput(in,"input"+to_string(input_created),d){}
-LInput::LInput(Tensor *in,string name):LInput(in,name,DEV_CPU){}
+int LInput::input_created = 0;
+
 LInput::LInput(Tensor *in,string name,int d):LinLayer(name,d)
 {
   input_created++;

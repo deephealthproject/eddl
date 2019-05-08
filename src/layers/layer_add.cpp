@@ -34,13 +34,10 @@
 
 #include "layer.h"
 
-int add_created=1;
-
 using namespace std;
 
-LAdd::LAdd(vector<Layer*> parent):LAdd(parent,"add"+to_string(add_created),DEV_CPU){}
-LAdd::LAdd(vector<Layer*> parent,int dev):LAdd(parent,"add"+to_string(add_created),DEV_CPU){}
-LAdd::LAdd(vector<Layer*> parent,string name):LAdd(parent,name,DEV_CPU){}
+
+int LAdd::add_created = 0;
 
 LAdd::LAdd(vector<Layer*> parent,string name,int d):MLayer(name,d)
 {

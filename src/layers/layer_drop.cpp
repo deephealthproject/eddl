@@ -34,13 +34,10 @@
 
 #include "layer.h"
 
-int drop_created=1;
-
 using namespace std;
 
-LDrop::LDrop(Layer *parent,float df):LDrop(parent,df,"drop"+to_string(drop_created),DEV_CPU){}
-LDrop::LDrop(Layer *parent,float df,string name):LDrop(parent,df,name,DEV_CPU){}
-LDrop::LDrop(Layer *parent,float df,int dev):LDrop(parent,df,"drop"+to_string(drop_created),dev){}
+int LDrop::drop_created = 0;
+
 LDrop::LDrop(Layer *parent,float df,string name,int d):LinLayer(name,d)
 {
 

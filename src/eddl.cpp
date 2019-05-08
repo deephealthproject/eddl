@@ -44,19 +44,12 @@ EDDL eddl;
 ////////////////////////////////////////////////////////
 
 tensor EDDL::T(const initializer_list<int>& init){
-  return T(shape(init.begin(), init.end()),DEV_CPU);
-}
-
-tensor EDDL::T(const initializer_list<int>& init, int dev){
-  return T(shape(init.begin(), init.end()),dev);
+  shape s(init.begin(), init.end());
+  return T(s);
 }
 
 tensor EDDL::T(const shape s){
-  return T(s,DEV_CPU);
-}
-
-tensor EDDL::T(const shape s, int dev) {
-  return new LTensor(s,dev);
+  return new LTensor(s, DEV_CPU);
 }
 
 tensor EDDL::T(string fname)
@@ -72,184 +65,118 @@ void EDDL::div(tensor t,float v)
 //////////////////////////////////////////////////////
 
 layer EDDL::Input(const initializer_list<int>& init){
-  return new LInput(new Tensor(init));
-}
-
-layer EDDL::Input(const initializer_list<int>& init,int dev){
-  return new LInput(new Tensor(init,dev));
+  return new LInput(new Tensor(init), "input"+to_string(1 + LInput::input_created), DEV_CPU);
 }
 
 layer EDDL::Input(tensor t)
 {
-  return new LInput(t->input);
+  return new LInput(t->input, "input"+to_string(1 + LInput::input_created), DEV_CPU);
 }
 
-layer EDDL::Input(tensor t,int dev)
-{
-  return new LInput(t->input);
-}
 //////////////////////////////////////////////////////
-layer EDDL::Dense(layer parent,int dim)
+layer EDDL::Dense(layer parent, int dim)
 {
-  return new LDense(parent,dim,DEV_CPU);
+  return new LDense(parent, dim, "dense"+to_string(1 + LDense::dense_created), DEV_CPU);
 }
 
-layer EDDL::Dense(layer parent,int dim,string name)
+layer EDDL::Dense(layer parent, int dim, string name)
 {
-  return new LDense(parent,dim,name,DEV_CPU);
+  return new LDense(parent, dim, name, DEV_CPU);
 }
-layer EDDL::Dense(layer parent,int dim,int dev)
-{
-  return new LDense(parent,dim,dev);
-}
-layer EDDL::Dense(layer parent,int dim,string name,int d)
-{
-  return new LDense(parent,dim,name,d);
-}
+
 
 //////////////////////////////////////////////////////
 layer EDDL::Conv(layer parent,const initializer_list<int>& ks)
 {
-  return new LConv(parent,ks,{1,1},"same");
+  return new LConv(parent,ks,{1,1},"same", "conv"+to_string(1 + LConv::conv_created), DEV_CPU);
 }
 layer EDDL::Conv(layer parent,const initializer_list<int>& ks,const initializer_list<int>& st)
 {
-  return new LConv(parent,ks,st,"same");
+  return new LConv(parent,ks,st,"same", "conv"+to_string(1 + LConv::conv_created), DEV_CPU);
 }
 layer EDDL::Conv(layer parent,const initializer_list<int>& ks,const initializer_list<int>& st,string p)
 {
-  return new LConv(parent,ks,st,p);
+  return new LConv(parent,ks,st,p, "conv"+to_string(1 + LConv::conv_created), DEV_CPU);
 }
 layer EDDL::Conv(layer parent,const initializer_list<int>& ks,string p)
 {
-  return new LConv(parent,ks,{1,1},p);
-}
-
-layer EDDL::Conv(layer parent,const vector<int>& ks, const vector<int>& st, string p, int d)
-{
-    return new LConv(parent,ks,st,p,d);
+  return new LConv(parent,ks,{1,1},p, "conv"+to_string(1 + LConv::conv_created), DEV_CPU);
 }
 
 //////////////////////////////////////////////////////
 layer EDDL::MPool(layer parent,const initializer_list<int>& ks)
 {
-  return new LMPool(parent,ks,ks,"none");
+  return new LMPool(parent,ks,ks,"none", "mpool"+to_string(1 + LMPool::pool_created), DEV_CPU);
 }
 layer EDDL::MPool(layer parent,const initializer_list<int>& ks,const initializer_list<int>& st)
 {
-  return new LMPool(parent,ks,st,"none");
+  return new LMPool(parent,ks,st,"none", "mpool"+to_string(1 + LMPool::pool_created), DEV_CPU);
 }
 layer EDDL::MPool(layer parent,const initializer_list<int>& ks,const initializer_list<int>& st,string p)
 {
-  return new LMPool(parent,ks,st,p);
+  return new LMPool(parent,ks,st,p, "mpool"+to_string(1 + LMPool::pool_created), DEV_CPU);
 }
 layer EDDL::MPool(layer parent,const initializer_list<int>& ks,string p)
 {
-  return new LMPool(parent,ks,ks,p);
-}
-layer EDDL::MPool(layer parent,const vector<int>& ks, const vector<int>& st, string p, int d)
-{
-  return new LMPool(parent,ks,st,p, d);
+  return new LMPool(parent,ks,ks,p, "mpool"+to_string(1 + LMPool::pool_created), DEV_CPU);
 }
 
 //////////////////////////////////////////////////////
 layer EDDL::Activation(layer parent,string act)
 {
-  return new LActivation(parent,act,DEV_CPU);
+  return new LActivation(parent,act,"activation"+to_string(1 + LActivation::activation_created),DEV_CPU);
 }
 
 layer EDDL::Activation(layer parent,string act,string name)
 {
   return new LActivation(parent,act,name,DEV_CPU);
 }
-layer EDDL::Activation(layer parent,string act,int dev)
-{
-  return new LActivation(parent,act,dev);
-}
-layer EDDL::Activation(layer parent,string act,string name,int d)
-{
-  return new LActivation(parent,act,name,d);
-}
+
 
 //////////////////////////////////////////////////////
 layer EDDL::Reshape(layer parent,const initializer_list<int>& init)
 {
   shape s(init.begin(), init.end());
-  return new LReshape(parent,s);
+  return new LReshape(parent,s,"reshape"+to_string(1 + LReshape::reshape_created), DEV_CPU);
 }
 
 layer EDDL::Reshape(layer parent,const initializer_list<int>& init,string name)
 {
   return new LReshape(parent,init,name,DEV_CPU);
 }
-layer EDDL::Reshape(layer parent,const initializer_list<int>& init,int dev)
-{
-  return new LReshape(parent,init,dev);
-}
-layer EDDL::Reshape(layer parent,const initializer_list<int>& init,string name,int d)
-{
-  return new LReshape(parent,init,name,d);
-}
-layer EDDL::Reshape(layer parent,const vector<int>& init,string name,int d)
-{
-    return new LReshape(parent,init,d);
-}
 
 /////////////////////////////////////////////////////////
 layer EDDL::Drop(layer parent, float df)
 {
-  return new LDrop(parent,df);
+  return new LDrop(parent,df,"drop"+to_string(1 + LDrop::drop_created), DEV_CPU);
 }
 layer EDDL::Drop(layer parent, float df,string name)
 {
-  return new LDrop(parent,df,name);
-}
-layer EDDL::Drop(layer parent, float df,int d)
-{
-  return new LDrop(parent,df,d);
-}
-layer EDDL::Drop(layer parent, float df,string name,int d)
-{
-  return new LDrop(parent,df,name,d);
+  return new LDrop(parent, df, name, DEV_CPU);
 }
 
 /////////////////////////////////////////////////////////
 
 layer EDDL::Add(const initializer_list<layer>& init)
 {
-   return new LAdd(vlayer(init.begin(), init.end()));
+   return new LAdd(vlayer(init.begin(), init.end()), "add"+to_string(1 + LAdd::add_created), DEV_CPU);
 }
 layer EDDL::Add(const initializer_list<layer>& init,string name)
 {
-  return new LAdd(vlayer(init.begin(), init.end()),name);
-}
-layer EDDL::Add(const initializer_list<layer>& init,int d)
-{
-  return new LAdd(vlayer(init.begin(), init.end()),d);
-}
-layer EDDL::Add(const initializer_list<layer>& init,string name,int d)
-{
-  return new LAdd(vlayer(init.begin(), init.end()),name,d);
+  return new LAdd(vlayer(init.begin(), init.end()),name, DEV_CPU);
 }
 
 ////////////////////////////////////////////////////////
 
 layer EDDL::Cat(const initializer_list<layer>& init)
 {
-   return new LCat(vlayer(init.begin(), init.end()));
+   return new LCat(vlayer(init.begin(), init.end()), "cat"+to_string(1 + LCat::cat_created), DEV_CPU);
 }
 layer EDDL::Cat(const initializer_list<layer>& init,string name)
 {
-  return new LCat(vlayer(init.begin(), init.end()),name);
+  return new LCat(vlayer(init.begin(), init.end()),name, DEV_CPU);
 }
-layer EDDL::Cat(const initializer_list<layer>& init,int d)
-{
-  return new LCat(vlayer(init.begin(), init.end()),d);
-}
-layer EDDL::Cat(const initializer_list<layer>& init,string name,int d)
-{
-  return new LCat(vlayer(init.begin(), init.end()),name,d);
-}
+
 
 ////////////
 

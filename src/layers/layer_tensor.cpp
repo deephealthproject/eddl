@@ -36,7 +36,8 @@
 
 using namespace std;
 
-int tensor_created=1;
+
+int LTensor::tensor_created = 0;
 
 
 // From file
@@ -47,7 +48,6 @@ LTensor::LTensor(string fname):LinLayer("ltensor"+to_string(tensor_created),DEV_
 }
 
 // From list of sizes
-LTensor::LTensor(const initializer_list<int>& init):LTensor(init,DEV_CPU){}
 LTensor::LTensor(const initializer_list<int>& init, int dev):LinLayer("ltensor"+to_string(tensor_created),dev)
 {
   input=output=new Tensor(init,dev);
@@ -56,7 +56,6 @@ LTensor::LTensor(const initializer_list<int>& init, int dev):LinLayer("ltensor"+
 }
 
 // From shape
-LTensor::LTensor(const shape s):LTensor(s,DEV_CPU){}
 LTensor::LTensor(const shape s, int dev):LinLayer("ltensor"+to_string(tensor_created),dev)
 {
   input=output=new Tensor(s,dev);
@@ -82,7 +81,7 @@ LTensor LTensor::operator+(LTensor L)
   vl.push_back(this);
   vl.push_back(&L);
 
-  LTensor *l=new LTensor(new LAdd(vl));
+  LTensor *l=new LTensor(new LAdd(vl, "add"+to_string(1 + LAdd::add_created), DEV_CPU));
 
   return *l;
 }

@@ -34,13 +34,10 @@
 
 #include "layer.h"
 
-int dense_created=1;
-
 using namespace std;
 
-LDense::LDense(Layer *parent,int dim):LDense(parent,dim,"dense"+to_string(dense_created),DEV_CPU){}
-LDense::LDense(Layer *parent,int dim,string name):LDense(parent,dim,name,DEV_CPU){}
-LDense::LDense(Layer *parent,int dim,int dev):LDense(parent,dim,"dense"+to_string(dense_created),dev){}
+int LDense::dense_created = 0;
+
 LDense::LDense(Layer *parent,int dim,string name,int d):LinLayer(name,d)
 {
   if (parent->output->dim!=2) msg("LDense only works over 2D tensors","LDense");

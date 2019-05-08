@@ -36,18 +36,13 @@
 
 extern ostream& operator<<(ostream& os, const shape s);
 
-int reshape_created=1;
 
 using namespace std;
 
-LReshape::LReshape(Layer *parent,const initializer_list<int>& init):LReshape(parent,shape(init.begin(), init.end()),"reshape"+to_string(reshape_created),DEV_CPU){}
-LReshape::LReshape(Layer *parent,const initializer_list<int>& init,string name):LReshape(parent,shape(init.begin(), init.end()),name,DEV_CPU){}
-LReshape::LReshape(Layer *parent,const initializer_list<int>& init,int dev):LReshape(parent,shape(init.begin(), init.end()),"reshape"+to_string(reshape_created),dev){}
+int LReshape::reshape_created = 0;
+
 LReshape::LReshape(Layer *parent,const initializer_list<int>& init,string name,int d):LReshape(parent,shape(init.begin(), init.end()),"reshape"+to_string(reshape_created),dev){}
 
-LReshape::LReshape(Layer *parent,shape s):LReshape(parent,s,"reshape"+to_string(reshape_created),DEV_CPU){}
-LReshape::LReshape(Layer *parent,shape s,int d):LReshape(parent,s,"reshape"+to_string(reshape_created),d){}
-LReshape::LReshape(Layer *parent,shape s,string name):LReshape(parent,s,name,DEV_CPU){}
 LReshape::LReshape(Layer *parent,shape s,string name,int d):LinLayer(name,d)
 {
   ls=s;

@@ -34,22 +34,15 @@
 
 #include "layer.h"
 
-int conv_created=1;
-
 using namespace std;
 
+int LConv::conv_created = 0;
+
 // constructors and clones
-LConv::LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p):LConv(parent,ks,st,p,"conv"+to_string(conv_created),DEV_CPU){}
-LConv::LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name):LConv(parent,ks,st,p,name,DEV_CPU){}
-LConv::LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,int d):LConv(parent,ks,st,p,"conv"+to_string(conv_created),d){}
 LConv::LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name,int d):LConv(parent,new ConvolDescriptor(ks,st,p),name,d){}
 
-LConv::LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p):LConv(parent,ks,st,p,"conv"+to_string(conv_created),DEV_CPU){}
-LConv::LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name):LConv(parent,ks,st,p,name,DEV_CPU){}
-LConv::LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,int d):LConv(parent,ks,st,p,"conv"+to_string(conv_created),d){}
 LConv::LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name,int d):LConv(parent,new ConvolDescriptor(ks,st,p),name,d){}
 
-LConv::LConv(Layer *parent,const vector<int>& ks, const vector<int>& st, string p, int d):LConv(parent,ks,st,p,"conv"+to_string(conv_created),d){}
 LConv::LConv(Layer *parent,const vector<int>& ks, const vector<int>& st, string p, string name, int d):LConv(parent,new ConvolDescriptor(ks,st,p),name,d){}
 
 LConv::LConv(Layer *parent,ConvolDescriptor *D,string name, int d):LinLayer(name,d)

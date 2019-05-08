@@ -62,7 +62,6 @@ class Layer
   int lin,lout;
   int delta_bp;
 
-  Layer(string name);
   Layer(string name,int dev);
 
   void initialize();
@@ -101,10 +100,10 @@ class LinLayer : public Layer
 class LTensor : public LinLayer
 {
  public:
+    static int tensor_created;
+
   LTensor(string fname);
-  LTensor(const initializer_list<int>& init);
   LTensor(const initializer_list<int>& init, int dev);
-  LTensor(const shape s);
   LTensor(const shape s, int dev);
   LTensor(Layer *l);
 
@@ -124,9 +123,8 @@ class LTensor : public LinLayer
 class LInput : public LinLayer
 {
  public:
-  LInput(Tensor *in);
-  LInput(Tensor *in,int dev);
-  LInput(Tensor *in,string name);
+    static int input_created;
+
   LInput(Tensor *in,string name,int dev);
   Layer *share(int c,int bs,vector<Layer*>p);
   Layer *clone(int c,int bs,vector<Layer*>,int todev);
@@ -142,10 +140,8 @@ class LDense : public LinLayer
 {
  public:
   int dim;
+  static int dense_created;
 
-  LDense(Layer *parent,int dim);
-  LDense(Layer *parent,int dim,int dev);
-  LDense(Layer *parent,int dim,string name);
   LDense(Layer *parent,int dim,string name,int d);
   Layer *share(int c,int bs,vector<Layer*>p);
   Layer *clone(int c,int bs,vector<Layer*>,int todev);
@@ -167,11 +163,9 @@ class LActivation : public LinLayer
 {
  public:
   string act;
+  static int activation_created;
 
-  LActivation(Layer *parent,string act);
-  LActivation(Layer *parent,string act,int d);
-  LActivation(Layer *parent,string act,string name);
-  LActivation(Layer *parent,string act,string name,int d);
+    LActivation(Layer *parent,string act,string name,int d);
   Layer *share(int c,int bs,vector<Layer*>p);
   Layer *clone(int c,int bs,vector<Layer*>,int todev);
 
@@ -185,16 +179,11 @@ class LActivation : public LinLayer
 class LReshape : public LinLayer
 {
  public:
+    static int reshape_created;
   shape ls;
 
   // constructors and clones
-  LReshape(Layer *parent,const initializer_list<int>& init);
-  LReshape(Layer *parent,const initializer_list<int>& init,int dev);
-  LReshape(Layer *parent,const initializer_list<int>& init,string name);
   LReshape(Layer *parent,const initializer_list<int>& init,string name,int d);
-  LReshape(Layer *parent,shape s);
-  LReshape(Layer *parent,shape s,int d);
-  LReshape(Layer *parent,shape s,string name);
   LReshape(Layer *parent,shape s,string name,int d);
 
   Layer *share(int c,int bs,vector<Layer*>p);
@@ -212,20 +201,15 @@ class LReshape : public LinLayer
 class LConv: public LinLayer
 {
  public:
+  static int conv_created;
+
   ConvolDescriptor *cd;
 
   // constructors and clones
-  LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p);
-  LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name);
-  LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,int d);
   LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name,int d);
 
-  LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p);
-  LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name);
-  LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,int d);
   LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name,int d);
 
-  LConv(Layer *parent,const vector<int>& ks, const vector<int>& st, string p, int d);
   LConv(Layer *parent,const vector<int>& ks, const vector<int>& st, string p, string name, int d);
 
   LConv(Layer *parent,ConvolDescriptor *cd,string name, int d);
@@ -246,6 +230,7 @@ class LConv: public LinLayer
 class LPool: public LinLayer
 {
  public:
+  static int pool_created;
   PoolDescriptor *pd;
 
   // constructors
@@ -258,17 +243,10 @@ class LMPool: public LPool
  public:
 
   // constructors and clones
-  LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p);
-  LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name);
-  LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,int d);
   LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name,int d);
 
-  LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p);
-  LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name);
-  LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,int d);
   LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name,int d);
 
-  LMPool(Layer *parent,const vector<int>& ks, const vector<int>& st, string p, int d);
   LMPool(Layer *parent,const vector<int>& ks, const vector<int>& st, string p, string name, int d);
 
   LMPool(Layer *parent,PoolDescriptor *cd,string name, int d);
@@ -291,11 +269,9 @@ class LDrop : public LinLayer
 {
  public:
   int dim;
+  static int drop_created;
 
   // constructors and clones
-  LDrop(Layer *parent,float df);
-  LDrop(Layer *parent,float df,int dev);
-  LDrop(Layer *parent,float df,string name);
   LDrop(Layer *parent,float df,string name,int d);
   Layer *share(int c,int bs,vector<Layer*>p);
   Layer *clone(int c,int bs,vector<Layer*>p,int todev);
@@ -309,8 +285,6 @@ class LDrop : public LinLayer
   string plot(int c);
 
 };
-
-
 
 
 
@@ -342,9 +316,9 @@ class MLayer : public Layer
 class LAdd : public MLayer
 {
  public:
-  LAdd(vector<Layer*> in);
-  LAdd(vector<Layer*> in,int dev);
-  LAdd(vector<Layer*> in,string name);
+    static int add_created;
+
+
   LAdd(vector<Layer*> in,string name,int dev);
   Layer *share(int c,int bs,vector<Layer*>p);
   Layer *clone(int c,int bs,vector<Layer*>,int todev);
@@ -362,11 +336,9 @@ class LCat : public MLayer
  public:
   int dim;
   vector<int> index;
+  static int cat_created;
 
   // constructors and clones
-  LCat(vector<Layer*> in);
-  LCat(vector<Layer*> in,int dev);
-  LCat(vector<Layer*> in,string name);
   LCat(vector<Layer*> in,string name,int d);
   Layer *share(int c,int bs,vector<Layer*>p);
   Layer *clone(int c,int bs,vector<Layer*>p,int todev);

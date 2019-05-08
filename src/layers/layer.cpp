@@ -40,9 +40,8 @@ using namespace std;
 ////////////////////////////////////
 ///// BASE LAYER CLASS
 ////////////////////////////////////
-Layer::Layer(string n):Layer(n,DEV_CPU){}
 
-Layer::Layer(string n,int d)
+Layer::Layer(string n, int d)
 {
   mode=TRMODE;
   target=delta=input=output=NULL;

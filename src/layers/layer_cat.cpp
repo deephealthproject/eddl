@@ -34,13 +34,10 @@
 
 #include "layer.h"
 
-int cat_created=1;
-
 using namespace std;
 
-LCat::LCat(vector<Layer*> parent):LCat(parent,"cat"+to_string(cat_created),DEV_CPU){}
-LCat::LCat(vector<Layer*> parent,string name):LCat(parent,name,DEV_CPU){}
-LCat::LCat(vector<Layer*> parent,int dev):LCat(parent,"cat"+to_string(cat_created),dev){}
+int LCat::cat_created = 0;
+
 LCat::LCat(vector<Layer*> parent,string name,int d):MLayer(name,d)
 {
   if (parent.size()==0) msg("Error: LCat layer with empty list");

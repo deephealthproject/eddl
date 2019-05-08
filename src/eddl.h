@@ -46,9 +46,7 @@ class EDDL {
 public:
   // Create Tensors
   static tensor T(const initializer_list<int>& init);
-  static tensor T(const initializer_list<int>& init, int dev);
   static tensor T(const shape s);
-  static tensor T(const shape s, int dev);
   static tensor T(string fname);
 
 
@@ -57,52 +55,35 @@ public:
 
   // Create Layers
   static layer Input(tensor t);
-  static layer Input(tensor t,int dev);
   static layer Input(const initializer_list<int>& init);
-  static layer Input(const initializer_list<int>& init,int dev);
 
   static layer Dense(layer parent,int dim);
-  static layer Dense(layer parent,int dim,int d);
   static layer Dense(layer parent,int dim,string name);
-  static layer Dense(layer parent,int dim,string name,int d);
 
   static layer Conv(layer parent,const initializer_list<int>& ks);
   static layer Conv(layer parent,const initializer_list<int>& ks,const initializer_list<int>& st,string p);
   static layer Conv(layer parent,const initializer_list<int>& ks,const initializer_list<int>& st);
   static layer Conv(layer parent,const initializer_list<int>& ks,string p);
-  static layer Conv(layer parent,const vector<int>& ks, const vector<int>& st, string p, int d);
 
   static layer MPool(layer parent,const initializer_list<int>& ks);
   static layer MPool(layer parent,const initializer_list<int>& ks,const initializer_list<int>& st,string p);
   static layer MPool(layer parent,const initializer_list<int>& ks,const initializer_list<int>& st);
   static layer MPool(layer parent,const initializer_list<int>& ks,string p);
-  static layer MPool(layer parent,const vector<int>& ks, const vector<int>& st, string p, int d);
 
   static layer Activation(layer parent,string act);
   static layer Activation(layer parent,string act,string name);
-  static layer Activation(layer parent,string act,int d);
-  static layer Activation(layer parent,string act,string name,int d);
 
   static layer Reshape(layer parent, const initializer_list<int>& init);
   static layer Reshape(layer parent, const initializer_list<int>& init,string name);
-  static layer Reshape(layer parent, const initializer_list<int>& init,int d);
-  static layer Reshape(layer parent, const initializer_list<int>& init,string name,int d);
-  static layer Reshape(layer parent, const vector<int>& init, string name, int d);
 
   static layer Drop(layer parent, float df);
   static layer Drop(layer parent, float df,string name);
-  static layer Drop(layer parent, float df,int d);
-  static layer Drop(layer parent, float df,string name,int d);
 
   static layer Add(const initializer_list<layer>& init);
   static layer Add(const initializer_list<layer>& init,string name);
-  static layer Add(const initializer_list<layer>& init,int d);
-  static layer Add(const initializer_list<layer>& init,string name,int d);
 
   static layer Cat(const initializer_list<layer>& init);
   static layer Cat(const initializer_list<layer>& init,string name);
-  static layer Cat(const initializer_list<layer>& init,int d);
-  static layer Cat(const initializer_list<layer>& init,string name,int d);
 
   static optimizer SGD(const initializer_list<float>& p);
   static void change(optimizer o,const initializer_list<float>& p);

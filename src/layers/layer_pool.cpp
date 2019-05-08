@@ -34,9 +34,10 @@
 
 #include "layer.h"
 
-int pool_created=1;
-
 using namespace std;
+
+
+int LPool::pool_created = 0;
 
 LPool::LPool(Layer *parent,PoolDescriptor *D,string name, int d):LinLayer(name,d)
 {
@@ -62,19 +63,11 @@ LPool::LPool(Layer *parent,PoolDescriptor *D,string name, int d):LinLayer(name,d
 // MaxPool2D
 //////////////
 // constructors and clones
-LMPool::LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p):LMPool(parent,ks,st,p,"mpool"+to_string(pool_created),DEV_CPU){}
-LMPool::LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name):LMPool(parent,ks,st,p,name,DEV_CPU){}
-LMPool::LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,int d):LMPool(parent,ks,st,p,"mpool"+to_string(pool_created),d){}
 LMPool::LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name,int d):LMPool(parent,new PoolDescriptor(ks,st,p),name,d){}
 
-LMPool::LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p):LMPool(parent,ks,st,p,"mpool"+to_string(pool_created),DEV_CPU){}
-LMPool::LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name):LMPool(parent,ks,st,p,name,DEV_CPU){}
-LMPool::LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,int d):LMPool(parent,ks,st,p,"mpool"+to_string(pool_created),d){}
 LMPool::LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name,int d):LMPool(parent,new PoolDescriptor(ks,st,p),name,d){}
 
-LMPool::LMPool(Layer *parent,const vector<int>& ks, const vector<int>& st, string p, int d):LMPool(parent,ks,st,p,"mpool"+to_string(pool_created),d){}
 LMPool::LMPool(Layer *parent,const vector<int>& ks, const vector<int>& st, string p, string name, int d):LMPool(parent,new PoolDescriptor(ks,st,p),name,d){}
-
 
 LMPool::LMPool(Layer *parent,PoolDescriptor *D,string name, int d):LPool(parent,D,name,d)
 {

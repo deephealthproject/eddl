@@ -34,13 +34,10 @@
 
 #include "layer.h"
 
-int activation_created=1;
-
 using namespace std;
 
-LActivation::LActivation(Layer *parent,string act):LActivation(parent,act,"activation"+to_string(activation_created),DEV_CPU){}
-LActivation::LActivation(Layer *parent,string act,string name):LActivation(parent,act,name,DEV_CPU){}
-LActivation::LActivation(Layer *parent,string act,int dev):LActivation(parent,act,"activation"+to_string(activation_created),dev){}
+int LActivation::activation_created = 0;
+
 LActivation::LActivation(Layer *parent,string act,string name,int d):LinLayer(name,d)
 {
 
