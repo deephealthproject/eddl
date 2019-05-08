@@ -28,6 +28,7 @@
 
 #include <stdio.h>
 #include <stdio.h>
+
 #ifndef _LAYER_
 #define _LAYER_
 
@@ -41,44 +42,51 @@
 using namespace std;
 
 
-class Layer
-{
- public:
-  string name;
-  Tensor *input;
-  Tensor *output;
-  Tensor *target;
-  Tensor *delta;
-  Layer *orig;
+class Layer {
+public:
+    string name;
+    Tensor *input;
+    Tensor *output;
+    Tensor *target;
+    Tensor *delta;
+    Layer *orig;
 
-  vector<Tensor*>params;
-  vector<Tensor*>gradients;
+    vector<Tensor *> params;
+    vector<Tensor *> gradients;
 
-  vector<Layer*> parent;
-  vector<Layer*> child;
+    vector<Layer *> parent;
+    vector<Layer *> child;
 
-  int mode;
-  int dev;
-  int lin,lout;
-  int delta_bp;
+    int mode;
+    int dev;
+    int lin, lout;
+    int delta_bp;
 
-  Layer(string name,int dev);
+    Layer(string name, int dev);
 
-  void initialize();
-  void reset();
-  void info();
-  void setmode(int m);
+    void initialize();
+
+    void reset();
+
+    void info();
+
+    void setmode(int m);
 
 
-  //virtual
-  virtual string plot(int c){return "";}
+    //virtual
+    virtual string plot(int c) { return ""; }
 
-  virtual void addchild(Layer *l){}
-  virtual void addparent(Layer *l){}
-  virtual void forward(){}
-  virtual void backward(){}
-  virtual Layer *share(int c,int bs,vector<Layer*>){return NULL;}
-  virtual Layer *clone(int c,int bs,vector<Layer*>,int todev){return NULL;}
+    virtual void addchild(Layer *l) {}
+
+    virtual void addparent(Layer *l) {}
+
+    virtual void forward() {}
+
+    virtual void backward() {}
+
+    virtual Layer *share(int c, int bs, vector<Layer *>) { return NULL; }
+
+    virtual Layer *clone(int c, int bs, vector<Layer *>, int todev) { return NULL; }
 
 };
 
@@ -86,270 +94,308 @@ class Layer
 /////////////////////////////////////////
 /////////////////////////////////////////
 // Layers with only one input
-class LinLayer : public Layer
-{
- public:
+class LinLayer : public Layer {
+public:
 
-  LinLayer(string name,int dev);
+    LinLayer(string name, int dev);
 
-  void addchild(Layer *l);
-  void addparent(Layer *l);
+    void addchild(Layer *l);
+
+    void addparent(Layer *l);
 };
 
 /// Tensor Layer
-class LTensor : public LinLayer
-{
- public:
+class LTensor : public LinLayer {
+public:
     static int tensor_created;
 
-  LTensor(string fname);
-  LTensor(const initializer_list<int>& init, int dev);
-  LTensor(const shape s, int dev);
-  LTensor(Layer *l);
+    LTensor(string fname);
 
-  Layer *share(int c,int bs,vector<Layer*>p){return NULL;}
-  Layer *clone(int c,int bs,vector<Layer*>,int todev){return NULL;}
-  void info(){}
-  void forward(){}
-  void backward(){}
-  string plot(int c){return "";}
+    LTensor(const initializer_list<int> &init, int dev);
 
-  LTensor operator+(LTensor L);
+    LTensor(const shape s, int dev);
+
+    LTensor(Layer *l);
+
+    Layer *share(int c, int bs, vector<Layer *> p) { return NULL; }
+
+    Layer *clone(int c, int bs, vector<Layer *>, int todev) { return NULL; }
+
+    void info() {}
+
+    void forward() {}
+
+    void backward() {}
+
+    string plot(int c) { return ""; }
+
+    LTensor operator+(LTensor L);
 
 
 };
 
 /// INPUT Layer
-class LInput : public LinLayer
-{
- public:
+class LInput : public LinLayer {
+public:
     static int input_created;
 
-  LInput(Tensor *in,string name,int dev);
-  Layer *share(int c,int bs,vector<Layer*>p);
-  Layer *clone(int c,int bs,vector<Layer*>,int todev);
+    LInput(Tensor *in, string name, int dev);
 
-  void forward();
-  void backward();
-  string plot(int c);
+    Layer *share(int c, int bs, vector<Layer *> p);
+
+    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+
+    void forward();
+
+    void backward();
+
+    string plot(int c);
 
 };
 
 /// DENSE Layer
-class LDense : public LinLayer
-{
- public:
-  int dim;
-  static int dense_created;
+class LDense : public LinLayer {
+public:
+    int dim;
+    static int dense_created;
 
-  LDense(Layer *parent,int dim,string name,int d);
-  Layer *share(int c,int bs,vector<Layer*>p);
-  Layer *clone(int c,int bs,vector<Layer*>,int todev);
+    LDense(Layer *parent, int dim, string name, int d);
 
-  // Params
-  Tensor *W;
-  Tensor *gW;
-  Tensor *bias;
-  Tensor *gbias;
+    Layer *share(int c, int bs, vector<Layer *> p);
 
-  void forward();
-  void backward();
-  string plot(int c);
+    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+
+    // Params
+    Tensor *W;
+    Tensor *gW;
+    Tensor *bias;
+    Tensor *gbias;
+
+    void forward();
+
+    void backward();
+
+    string plot(int c);
 
 };
 
 /// Activation Layer
-class LActivation : public LinLayer
-{
- public:
-  string act;
-  static int activation_created;
+class LActivation : public LinLayer {
+public:
+    string act;
+    static int activation_created;
 
-    LActivation(Layer *parent,string act,string name,int d);
-  Layer *share(int c,int bs,vector<Layer*>p);
-  Layer *clone(int c,int bs,vector<Layer*>,int todev);
+    LActivation(Layer *parent, string act, string name, int d);
 
-  void forward();
-  void backward();
-  string plot(int c);
+    Layer *share(int c, int bs, vector<Layer *> p);
+
+    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+
+    void forward();
+
+    void backward();
+
+    string plot(int c);
 
 };
 
 /// Resahpe Layer
-class LReshape : public LinLayer
-{
- public:
+class LReshape : public LinLayer {
+public:
     static int reshape_created;
-  shape ls;
+    shape ls;
 
-  // constructors and clones
-  LReshape(Layer *parent,const initializer_list<int>& init,string name,int d);
-  LReshape(Layer *parent,shape s,string name,int d);
+    // constructors and clones
+    LReshape(Layer *parent, const initializer_list<int> &init, string name, int d);
 
-  Layer *share(int c,int bs,vector<Layer*>p);
-  Layer *clone(int c,int bs,vector<Layer*>p,int todev);
+    LReshape(Layer *parent, shape s, string name, int d);
+
+    Layer *share(int c, int bs, vector<Layer *> p);
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
 
 
-  // implementation
-  void forward();
-  void backward();
-  string plot(int c);
+    // implementation
+    void forward();
+
+    void backward();
+
+    string plot(int c);
 
 };
 
 /// Conv2D Layer
-class LConv: public LinLayer
-{
- public:
-  static int conv_created;
+class LConv : public LinLayer {
+public:
+    static int conv_created;
 
-  ConvolDescriptor *cd;
+    ConvolDescriptor *cd;
 
-  // constructors and clones
-  LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name,int d);
+    // constructors and clones
+    LConv(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p, string name,
+          int d);
 
-  LConv(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name,int d);
+    LConv(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st,
+          const initializer_list<int> &p, string name, int d);
 
-  LConv(Layer *parent,const vector<int>& ks, const vector<int>& st, string p, string name, int d);
+    LConv(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name, int d);
 
-  LConv(Layer *parent,ConvolDescriptor *cd,string name, int d);
+    LConv(Layer *parent, ConvolDescriptor *cd, string name, int d);
 
-  Layer *share(int c,int bs,vector<Layer*>p);
-  Layer *clone(int c,int bs,vector<Layer*>p,int todev);
+    Layer *share(int c, int bs, vector<Layer *> p);
 
-  // Params are in ConvolDescriptor
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
 
-  // implementation
-  void forward();
-  void backward();
-  string plot(int c);
+    // Params are in ConvolDescriptor
+
+    // implementation
+    void forward();
+
+    void backward();
+
+    string plot(int c);
 
 };
 
 /// Pool2D Layer
-class LPool: public LinLayer
-{
- public:
-  static int pool_created;
-  PoolDescriptor *pd;
+class LPool : public LinLayer {
+public:
+    static int pool_created;
+    PoolDescriptor *pd;
 
-  // constructors
-  LPool(Layer *parent,PoolDescriptor *cd,string name, int d);
+    // constructors
+    LPool(Layer *parent, PoolDescriptor *cd, string name, int d);
 };
 
 /// MaxPool2D Layer
-class LMPool: public LPool
-{
- public:
+class LMPool : public LPool {
+public:
 
-  // constructors and clones
-  LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name,int d);
+    // constructors and clones
+    LMPool(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p, string name,
+           int d);
 
-  LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name,int d);
+    LMPool(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st,
+           const initializer_list<int> &p, string name, int d);
 
-  LMPool(Layer *parent,const vector<int>& ks, const vector<int>& st, string p, string name, int d);
+    LMPool(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name, int d);
 
-  LMPool(Layer *parent,PoolDescriptor *cd,string name, int d);
+    LMPool(Layer *parent, PoolDescriptor *cd, string name, int d);
 
-  // Params
-  Tensor *indX,*indY;
+    // Params
+    Tensor *indX, *indY;
 
-  // implementation
-  void forward();
-  void backward();
-  Layer *share(int c,int bs,vector<Layer*>p);
-  Layer *clone(int c,int bs,vector<Layer*>p,int todev);
-  string plot(int c);
+    // implementation
+    void forward();
+
+    void backward();
+
+    Layer *share(int c, int bs, vector<Layer *> p);
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
+
+    string plot(int c);
 
 };
 
 
 /// Drop-out Layer
-class LDrop : public LinLayer
-{
- public:
-  int dim;
-  static int drop_created;
+class LDrop : public LinLayer {
+public:
+    int dim;
+    static int drop_created;
 
-  // constructors and clones
-  LDrop(Layer *parent,float df,string name,int d);
-  Layer *share(int c,int bs,vector<Layer*>p);
-  Layer *clone(int c,int bs,vector<Layer*>p,int todev);
+    // constructors and clones
+    LDrop(Layer *parent, float df, string name, int d);
 
-  float df;
-  Tensor *mask;
+    Layer *share(int c, int bs, vector<Layer *> p);
 
-  // implementation
-  void forward();
-  void backward();
-  string plot(int c);
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
+
+    float df;
+    Tensor *mask;
+
+    // implementation
+    void forward();
+
+    void backward();
+
+    string plot(int c);
 
 };
-
-
-
 
 
 /////////////////////////////////////////
 /////////////////////////////////////////
 // Layers with several inputs (ADD, CAT,...)
-class MLayer : public Layer
-{
- public:
+class MLayer : public Layer {
+public:
 
-  MLayer(string name,int dev);
+    MLayer(string name, int dev);
 
-  void addchild(Layer *l);
-  void addparent(Layer *l);
+    void addchild(Layer *l);
 
-  //virtual
+    void addparent(Layer *l);
 
-  virtual string plot(int c){return "";}
-  virtual void forward(){}
-  virtual void backward(){}
-  virtual Layer *share(int c,int bs,vector<Layer*>p){return NULL;}
-  virtual Layer *clone(int c,int bs,vector<Layer*>,int todev){return NULL;}
+    //virtual
+
+    virtual string plot(int c) { return ""; }
+
+    virtual void forward() {}
+
+    virtual void backward() {}
+
+    virtual Layer *share(int c, int bs, vector<Layer *> p) { return NULL; }
+
+    virtual Layer *clone(int c, int bs, vector<Layer *>, int todev) { return NULL; }
 
 };
 
 /// Add Layer
-class LAdd : public MLayer
-{
- public:
+class LAdd : public MLayer {
+public:
     static int add_created;
 
 
-  LAdd(vector<Layer*> in,string name,int dev);
-  Layer *share(int c,int bs,vector<Layer*>p);
-  Layer *clone(int c,int bs,vector<Layer*>,int todev);
+    LAdd(vector<Layer *> in, string name, int dev);
 
-  void forward();
-  void backward();
-  string plot(int c);
+    Layer *share(int c, int bs, vector<Layer *> p);
+
+    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+
+    void forward();
+
+    void backward();
+
+    string plot(int c);
 
 };
 
 
 /// Cat Layer
-class LCat : public MLayer
-{
- public:
-  int dim;
-  vector<int> index;
-  static int cat_created;
+class LCat : public MLayer {
+public:
+    int dim;
+    vector<int> index;
+    static int cat_created;
 
-  // constructors and clones
-  LCat(vector<Layer*> in,string name,int d);
-  Layer *share(int c,int bs,vector<Layer*>p);
-  Layer *clone(int c,int bs,vector<Layer*>p,int todev);
+    // constructors and clones
+    LCat(vector<Layer *> in, string name, int d);
 
-  // Params
+    Layer *share(int c, int bs, vector<Layer *> p);
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
+
+    // Params
 
 
-  // implementation
-  void forward();
-  void backward();
-  string plot(int c);
+    // implementation
+    void forward();
+
+    void backward();
+
+    string plot(int c);
 
 };
+
 #endif

@@ -1,15 +1,15 @@
 target_sources(EDDLL
-	PRIVATE
-		layer.cpp
-		layer.h
-		layer_activation.cpp
-		layer_add.cpp
-		layer_cat.cpp
-		layer_conv.cpp
-		layer_dense.cpp
-		layer_drop.cpp
-		layer_input.cpp
-		layer_reshape.cpp
-		layer_tensor.cpp
-		layer_pool.cpp
-)
+        PRIVATE
+        layer.cpp
+        layer.h
+        layer_activation.cpp
+        layer_add.cpp
+        layer_cat.cpp
+        layer_conv.cpp
+        layer_dense.cpp
+        layer_drop.cpp
+        layer_input.cpp
+        layer_reshape.cpp
+        layer_tensor.cpp
+        layer_pool.cpp
+        )

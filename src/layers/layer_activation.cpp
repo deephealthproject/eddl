@@ -38,83 +38,73 @@ using namespace std;
 
 int LActivation::activation_created = 0;
 
-LActivation::LActivation(Layer *parent,string act,string name,int d):LinLayer(name,d)
-{
+LActivation::LActivation(Layer *parent, string act, string name, int d) : LinLayer(name, d) {
 
-  activation_created++;
+    activation_created++;
 
-  this->act=act;
+    this->act = act;
 
-  input=parent->output;
-  output=new Tensor(input->getshape(),d);
-  delta=new Tensor(output->getshape(),d);
-  delta_bp=0;
+    input = parent->output;
+    output = new Tensor(input->getshape(), d);
+    delta = new Tensor(output->getshape(), d);
+    delta_bp = 0;
 
-  parent->addchild(this);
-  addparent(parent);
+    parent->addchild(this);
+    addparent(parent);
 }
 
 
 // virtual
-void LActivation::forward()
-{
+void LActivation::forward() {
 
-  if (act=="relu")
-    Tensor::ReLu(input,output);
-  else if (act=="softmax")
-    {
-      Tensor::Softmax(input,output);
+    if (act == "relu")
+        Tensor::ReLu(input, output);
+    else if (act == "softmax") {
+        Tensor::Softmax(input, output);
     }
 }
 
 
-void LActivation::backward()
-{
+void LActivation::backward() {
 
 
-  if (parent.size())
-    {
-      if (delta_bp)
-        {
-          Tensor::inc(delta,parent[0]->delta);
-        }
-      else
-        {
-          if (act=="relu")
-            Tensor::D_ReLu(delta,input,parent[0]->delta);
-          else if (act=="softmax")
-            Tensor::D_Softmax(delta,output,parent[0]->delta);
+    if (parent.size()) {
+        if (delta_bp) {
+            Tensor::inc(delta, parent[0]->delta);
+        } else {
+            if (act == "relu")
+                Tensor::D_ReLu(delta, input, parent[0]->delta);
+            else if (act == "softmax")
+                Tensor::D_Softmax(delta, output, parent[0]->delta);
         }
     }
 }
 
 
-Layer *LActivation::share(int c,int bs,vector<Layer*>p)
-{
+Layer *LActivation::share(int c, int bs, vector<Layer *> p) {
 
-  LActivation *n=new LActivation(p[0],act,"share_"+to_string(c)+name,dev);
-  n->orig=this;
-  n->delta_bp=delta_bp;
+    LActivation *n = new LActivation(p[0], act, "share_" + to_string(c) + name, dev);
+    n->orig = this;
+    n->delta_bp = delta_bp;
 
-  return n;
-}
-Layer *LActivation::clone(int c,int bs,vector<Layer*>p,int todev)
-{
-
-  LActivation *n=new LActivation(p[0],act,"clone_"+to_string(todev)+name,todev);
-  n->orig=this;
-  n->delta_bp=delta_bp;
-
-  return n;
+    return n;
 }
 
+Layer *LActivation::clone(int c, int bs, vector<Layer *> p, int todev) {
 
-string LActivation::plot(int c)
-{
+    LActivation *n = new LActivation(p[0], act, "clone_" + to_string(todev) + name, todev);
+    n->orig = this;
+    n->delta_bp = delta_bp;
+
+    return n;
+}
+
+
+string LActivation::plot(int c) {
     string s;
 
-    if (c) s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=LightBlue,shape=box]";
-    else s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=LightSalmon,shape=box]";
+    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=LightBlue,shape=box]";
+    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=LightSalmon,shape=box]";
 
     return s;
 }

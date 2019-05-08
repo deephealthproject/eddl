@@ -39,22 +39,21 @@ using namespace std;
 
 int LPool::pool_created = 0;
 
-LPool::LPool(Layer *parent,PoolDescriptor *D,string name, int d):LinLayer(name,d)
-{
-  if (parent->output->dim!=4) msg("LPool only works over 4D tensors","LPool::LPool");
-  pool_created++;
+LPool::LPool(Layer *parent, PoolDescriptor *D, string name, int d) : LinLayer(name, d) {
+    if (parent->output->dim != 4) msg("LPool only works over 4D tensors", "LPool::LPool");
+    pool_created++;
 
-  pd=D;
+    pd = D;
 
-  input=parent->output;
-  pd->build(input);
+    input = parent->output;
+    pd->build(input);
 
-  output=pd->O;
-  delta=pd->D;
-  pd->ID=parent->delta;
+    output = pd->O;
+    delta = pd->D;
+    pd->ID = parent->delta;
 
-  parent->addchild(this);
-  addparent(parent);
+    parent->addchild(this);
+    addparent(parent);
 
 }
 
@@ -63,58 +62,57 @@ LPool::LPool(Layer *parent,PoolDescriptor *D,string name, int d):LinLayer(name,d
 // MaxPool2D
 //////////////
 // constructors and clones
-LMPool::LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, string p,string name,int d):LMPool(parent,new PoolDescriptor(ks,st,p),name,d){}
+LMPool::LMPool(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p, string name,
+               int d) : LMPool(parent, new PoolDescriptor(ks, st, p), name, d) {}
 
-LMPool::LMPool(Layer *parent,const initializer_list<int>& ks,const initializer_list<int>& st, const initializer_list<int>& p,string name,int d):LMPool(parent,new PoolDescriptor(ks,st,p),name,d){}
+LMPool::LMPool(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st,
+               const initializer_list<int> &p, string name, int d) : LMPool(parent, new PoolDescriptor(ks, st, p), name,
+                                                                            d) {}
 
-LMPool::LMPool(Layer *parent,const vector<int>& ks, const vector<int>& st, string p, string name, int d):LMPool(parent,new PoolDescriptor(ks,st,p),name,d){}
+LMPool::LMPool(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name, int d) : LMPool(
+        parent, new PoolDescriptor(ks, st, p), name, d) {}
 
-LMPool::LMPool(Layer *parent,PoolDescriptor *D,string name, int d):LPool(parent,D,name,d)
-{
-  // params
-  D->indX=new Tensor(D->O->getshape(),d);
-  D->indY=new Tensor(D->O->getshape(),d);
+LMPool::LMPool(Layer *parent, PoolDescriptor *D, string name, int d) : LPool(parent, D, name, d) {
+    // params
+    D->indX = new Tensor(D->O->getshape(), d);
+    D->indY = new Tensor(D->O->getshape(), d);
 }
 
 
 // virtual
 
-void LMPool::forward()
-{
-  Tensor::MPool2D(pd);
+void LMPool::forward() {
+    Tensor::MPool2D(pd);
 }
 
-void LMPool::backward()
-{
-  // backprop delta
-  if (parent.size())
-    {
-      Tensor::MPool2D_back(pd);
+void LMPool::backward() {
+    // backprop delta
+    if (parent.size()) {
+        Tensor::MPool2D_back(pd);
     }
 }
 
-Layer *LMPool::share(int c,int bs,vector<Layer*>p)
-{
-  LMPool *n=new LMPool(p[0],{pd->kr,pd->kc},{pd->sr,pd->sc},{pd->padr,pd->padc},"share_"+to_string(c)+name,dev);
-  n->orig=this;
+Layer *LMPool::share(int c, int bs, vector<Layer *> p) {
+    LMPool *n = new LMPool(p[0], {pd->kr, pd->kc}, {pd->sr, pd->sc}, {pd->padr, pd->padc},
+                           "share_" + to_string(c) + name, dev);
+    n->orig = this;
 
-  return n;
+    return n;
 }
 
-Layer *LMPool::clone(int c,int bs,vector<Layer*>p,int todev)
-{
-  LMPool *n=new LMPool(p[0],{pd->kr,pd->kc},{pd->sr,pd->sc},{pd->padr,pd->padc},"clone_"+to_string(todev)+name,todev);
-  n->orig=this;
+Layer *LMPool::clone(int c, int bs, vector<Layer *> p, int todev) {
+    LMPool *n = new LMPool(p[0], {pd->kr, pd->kc}, {pd->sr, pd->sc}, {pd->padr, pd->padc},
+                           "clone_" + to_string(todev) + name, todev);
+    n->orig = this;
 
-  return n;
+    return n;
 }
 
-string LMPool::plot(int c)
-{
+string LMPool::plot(int c) {
     string s;
 
-    if (c) s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=gray,shape=box]";
-    else s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=red,shape=box]";
+    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=gray,shape=box]";
+    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=red,shape=box]";
 
     return s;
 }

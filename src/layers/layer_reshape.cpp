@@ -34,104 +34,104 @@
 
 #include "layer.h"
 
-extern ostream& operator<<(ostream& os, const shape s);
+extern ostream &operator<<(ostream &os, const shape s);
 
 
 using namespace std;
 
 int LReshape::reshape_created = 0;
 
-LReshape::LReshape(Layer *parent,const initializer_list<int>& init,string name,int d):LReshape(parent,shape(init.begin(), init.end()),"reshape"+to_string(reshape_created),dev){}
+LReshape::LReshape(Layer *parent, const initializer_list<int> &init, string name, int d) : LReshape(parent,
+                                                                                                    shape(init.begin(),
+                                                                                                          init.end()),
+                                                                                                    "reshape" +
+                                                                                                    to_string(
+                                                                                                            reshape_created),
+                                                                                                    dev) {}
 
-LReshape::LReshape(Layer *parent,shape s,string name,int d):LinLayer(name,d)
-{
-  ls=s;
-  reshape_created++;
+LReshape::LReshape(Layer *parent, shape s, string name, int d) : LinLayer(name, d) {
+    ls = s;
+    reshape_created++;
 
-  input=parent->output;
+    input = parent->output;
 
-  shape sin=input->getshape();
-  int tin=input->tam;
-  int t=1,c=0,ind=-1;
+    shape sin = input->getshape();
+    int tin = input->tam;
+    int t = 1, c = 0, ind = -1;
 
-  // Check sizes comp.
-  for(int i=0;i<ls.size();i++) {
-    if (ls[i]!=-1) t*=ls[i];
-    else {
-      if (c) msg("Ambiguous reshape, more than one -1","Reshape");
-      else {c=1;ind=i;}
+    // Check sizes comp.
+    for (int i = 0; i < ls.size(); i++) {
+        if (ls[i] != -1) t *= ls[i];
+        else {
+            if (c) msg("Ambiguous reshape, more than one -1", "Reshape");
+            else {
+                c = 1;
+                ind = i;
+            }
+        }
     }
-  }
 
-  if (c==1) {
-    if (t>tin){
-      msg("Incompatible sizes","Reshape");
+    if (c == 1) {
+        if (t > tin) {
+            msg("Incompatible sizes", "Reshape");
+        } else if (tin % t) {
+            msg("Incompatible sizes", "Reshape");
+        } else {
+            ls[ind] = tin / t;
+            t = tin;
+        }
+    } else if (t != tin) {
+        msg("Incompatible sizes", "Reshape");
     }
-    else if (tin%t){
-      msg("Incompatible sizes","Reshape");
-    }
-    else{
-      ls[ind]=tin/t;
-      t=tin;
-    }
-  }
-  else if (t!=tin){
-    msg("Incompatible sizes","Reshape");
-  }
 
-  ///////
+    ///////
 
-  // sharing the pointers to data
-  output=new Tensor(ls,parent->output);
-  delta=new Tensor(ls,parent->delta);
+    // sharing the pointers to data
+    output = new Tensor(ls, parent->output);
+    delta = new Tensor(ls, parent->delta);
 
-  parent->addchild(this);
-  addparent(parent);
+    parent->addchild(this);
+    addparent(parent);
 }
 
 
 // virtual
-void LReshape::forward()
-{
+void LReshape::forward() {
 
 }
 
 
-void LReshape::backward()
-{
+void LReshape::backward() {
 
 }
 
 
-Layer *LReshape::share(int c,int bs,vector<Layer*>p)
-{
-  shape s=ls;
-  s[0]=bs;
+Layer *LReshape::share(int c, int bs, vector<Layer *> p) {
+    shape s = ls;
+    s[0] = bs;
 
-  LReshape *n=new LReshape(p[0],s,"share_"+to_string(c)+name,dev);
-  n->orig=this;
+    LReshape *n = new LReshape(p[0], s, "share_" + to_string(c) + name, dev);
+    n->orig = this;
 
-  return n;
+    return n;
 }
 
-Layer *LReshape::clone(int c,int bs,vector<Layer*>p,int todev)
-{
-  shape s=ls;
-  s[0]=bs;
+Layer *LReshape::clone(int c, int bs, vector<Layer *> p, int todev) {
+    shape s = ls;
+    s[0] = bs;
 
-  LReshape *n=new LReshape(p[0],s,"clone_"+to_string(todev)+name,todev);
-  n->orig=this;
+    LReshape *n = new LReshape(p[0], s, "clone_" + to_string(todev) + name, todev);
+    n->orig = this;
 
-  return n;
+    return n;
 }
 
 
-string LReshape::plot(int c)
-{
+string LReshape::plot(int c) {
     string s;
 
-    if (c) s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=White,shape=box]";
-    else s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=gray75,shape=box]";
+    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";
+    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=gray75,shape=box]";
 
     return s;
 }

@@ -39,57 +39,51 @@ using namespace std;
 
 int LInput::input_created = 0;
 
-LInput::LInput(Tensor *in,string name,int d):LinLayer(name,d)
-{
-  input_created++;
-  input=output=in;
-  delta=new Tensor(input->getshape(),d);
+LInput::LInput(Tensor *in, string name, int d) : LinLayer(name, d) {
+    input_created++;
+    input = output = in;
+    delta = new Tensor(input->getshape(), d);
 }
 
 
 // virtual
-string LInput::plot(int c)
-{
+string LInput::plot(int c) {
     string s;
 
-    if (c) s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=LightBlue,shape=box]";
-    else s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=White,shape=box]";
+    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=LightBlue,shape=box]";
+    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";
 
 
     return s;
 }
 
 
-void LInput::forward()
-{
-  delta->set(0.0);
+void LInput::forward() {
+    delta->set(0.0);
 }
 
 
-void LInput::backward()
-{
+void LInput::backward() {
 }
 
-Layer *LInput::share(int c,int bs,vector<Layer*>p)
-{
-  shape s=input->getshape();
-  s[0]=bs;
+Layer *LInput::share(int c, int bs, vector<Layer *> p) {
+    shape s = input->getshape();
+    s[0] = bs;
 
-  LInput *n=new LInput(new Tensor(s),"share_"+to_string(c)+name,dev);
-  n->orig=this;
+    LInput *n = new LInput(new Tensor(s), "share_" + to_string(c) + name, dev);
+    n->orig = this;
 
-  return n;
+    return n;
 }
 
-Layer *LInput::clone(int c,int bs,vector<Layer*>p,int todev)
-{
-  shape s=input->getshape();
-  s[0]=bs;
+Layer *LInput::clone(int c, int bs, vector<Layer *> p, int todev) {
+    shape s = input->getshape();
+    s[0] = bs;
 
-  LInput *n=new LInput(new Tensor(s,todev),"clone_"+to_string(todev)+name,todev);
-  n->orig=this;
+    LInput *n = new LInput(new Tensor(s, todev), "clone_" + to_string(todev) + name, todev);
+    n->orig = this;
 
-  return n;
+    return n;
 }
 
 
