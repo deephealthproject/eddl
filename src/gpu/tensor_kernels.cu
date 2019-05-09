@@ -121,11 +121,11 @@ __global__ void sum(float* a, float v, long int rows, long int cols)
 
 }
 ///////////////////////////////////////////
-__global__ void sum(float scA,float* a,float scB,float *b, float *c,long int incC, long int tam)
+__global__ void sum(float scA,float* a,float scB,float *b, float *c,long int incC, long int size)
 {
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
-  if (thread_id_x < tam) {
+  if (thread_id_x < size) {
     if (incC) c[thread_id_x]+=scA*a[thread_id_x]+scB*b[thread_id_x];
     else c[thread_id_x]=scA*a[thread_id_x]+scB*b[thread_id_x];
   }
@@ -235,12 +235,12 @@ __global__ void reduce_sum2D(float *a,float *b,long int rows,long int cols,long 
         b[thread_id_x/cols]+=a[thread_id_x];
 }
 ///////////////////////////////////////////
-__global__ void cent(float* a, float* b, float* c, long int tam)
+__global__ void cent(float* a, float* b, float* c, long int size)
 {
 
  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
- if (thread_id_x < tam){
+ if (thread_id_x < size){
    c[thread_id_x]=0;
    if (a[thread_id_x]) c[thread_id_x]-=a[thread_id_x]*log(b[thread_id_x]);
    if (a[thread_id_x]!=1.0) c[thread_id_x]-=(1.0-a[thread_id_x])*log(1.0-b[thread_id_x]);
@@ -286,22 +286,22 @@ if (thread_id_x < total_ops)
 }
 
 ///////////////////////////////////////////
-__global__ void relu(float *a,float *b,long int tam)
+__global__ void relu(float *a,float *b,long int size)
 {
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
-  if (thread_id_x < tam){
+  if (thread_id_x < size){
     if (a[thread_id_x]>0.0) b[thread_id_x]=a[thread_id_x];
     else b[thread_id_x]=0.0;
    }
 }
 
 
-__global__ void d_relu(float *d,float *i,float *pd,long int tam)
+__global__ void d_relu(float *d,float *i,float *pd,long int size)
 {
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
-  if (thread_id_x < tam){
+  if (thread_id_x < size){
     if (i[thread_id_x]>0.0) pd[thread_id_x]=d[thread_id_x];
     else pd[thread_id_x]=0.0;
    }

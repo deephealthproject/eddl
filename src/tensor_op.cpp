@@ -70,7 +70,7 @@ void Tensor::copy(Tensor *A, Tensor *B) {
 
     B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
-        for (int i = 0; i < A->tam; i++)
+        for (int i = 0; i < A->size; i++)
             B->ptr[i] = A->ptr[i];
 
     }
@@ -103,8 +103,8 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
 
     B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
-        int at = A->tam / A->sizes[0];
-        int bt = B->tam / B->sizes[0];
+        int at = A->size / A->sizes[0];
+        int bt = B->size / B->sizes[0];
 
         int t = 1;
         for (int i = 2; i < A->ndim; i++)
@@ -143,7 +143,7 @@ void Tensor::inc(Tensor *A, Tensor *B) {
     if ((A->isCPU()) && (B->isCPU())) {
         B->tsem->lock();
 
-        for (int i = 0; i < A->tam; i++)
+        for (int i = 0; i < A->size; i++)
             B->ptr[i] += A->ptr[i];
 
         B->tsem->unlock();
@@ -172,11 +172,11 @@ void Tensor::inc(Tensor *A, Tensor *B) {
 //////////////////////////////////////
 void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
 
-    if ((A->tam / A->sizes[0]) != (B->tam / B->sizes[0])) msg("Incompatible sizes", "Tensor::select");
+    if ((A->size / A->sizes[0]) != (B->size / B->sizes[0])) msg("Incompatible sizes", "Tensor::select");
 
     //B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
-        int s = A->tam / A->sizes[0];
+        int s = A->size / A->sizes[0];
 
         for (int i = ini; i < end; i++) {
             int p = sind[i] * s;
@@ -267,7 +267,7 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
     if ((!eqsize(A, B)) || (!eqsize(A, C))) msg("Incompatible dims", "Tensor::el_mult");
 
     if (A->isCPU()) {
-        for (int i = 0; i < A->tam; i++)
+        for (int i = 0; i < A->size; i++)
             if (incC) C->ptr[i] += A->ptr[i] * B->ptr[i];
             else C->ptr[i] = A->ptr[i] * B->ptr[i];
     }
@@ -299,7 +299,7 @@ void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
     C->tsem->lock();
     if (A->isCPU()) {
 
-        for (int i = 0; i < A->tam; i++)
+        for (int i = 0; i < A->size; i++)
             if (incC) C->ptr[i] += A->ptr[i] / B->ptr[i];
             else C->ptr[i] = A->ptr[i] / B->ptr[i];
     }
@@ -332,7 +332,7 @@ void Tensor::sum(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
     C->tsem->lock();
     if (A->isCPU()) {
 
-        for (int i = 0; i < A->tam; i++)
+        for (int i = 0; i < A->size; i++)
             if (incC) C->ptr[i] += scA * A->ptr[i] + scB * B->ptr[i];
             else C->ptr[i] = scA * A->ptr[i] + scB * B->ptr[i];
     }
@@ -779,7 +779,7 @@ void Tensor::cent(Tensor *A, Tensor *B, Tensor *C) {
     C->tsem->lock();
     if (A->isCPU()) {
 
-        for (int i = 0; i < A->tam; i++) {
+        for (int i = 0; i < A->size; i++) {
             C->ptr[i] = 0;
             if (A->ptr[i] != 0.0) C->ptr[i] -= A->ptr[i] * log(B->ptr[i]);
             if (A->ptr[i] != 1.0) C->ptr[i] -= (1.0 - A->ptr[i]) * log(1.0 - B->ptr[i]);
@@ -849,7 +849,7 @@ void Tensor::ReLu(Tensor *A, Tensor *B) {
     B->tsem->lock();
     if (A->isCPU()) {
 
-        for (int i = 0; i < A->tam; i++) {
+        for (int i = 0; i < A->size; i++) {
             if (A->ptr[i] > 0.0) B->ptr[i] = A->ptr[i];
             else B->ptr[i] = 0.0;
         }
@@ -878,7 +878,7 @@ void Tensor::D_ReLu(Tensor *D, Tensor *I, Tensor *PD) {
     PD->tsem->lock();
     if (D->isCPU()) {
 
-        for (int i = 0; i < D->tam; i++) {
+        for (int i = 0; i < D->size; i++) {
             if (I->ptr[i] > 0.0) PD->ptr[i] = D->ptr[i];
             else PD->ptr[i] = 0.0;
         }
@@ -948,7 +948,7 @@ void Tensor::D_Softmax(Tensor *D, Tensor *I, Tensor *PD) {
     if (D->isCPU()) {
         PD->tsem->lock();
 
-        for (int i = 0; i < D->tam; i++)
+        for (int i = 0; i < D->size; i++)
             PD->ptr[i] += D->ptr[i] * (I->ptr[i] * (1.0 - I->ptr[i]));
 
         PD->tsem->unlock();

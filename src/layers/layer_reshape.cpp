@@ -56,7 +56,7 @@ LReshape::LReshape(Layer *parent, shape s, string name, int d) : LinLayer(name, 
     input = parent->output;
 
     shape sin = input->getshape();
-    int tin = input->tam;
+    int tin = input->size;
     int t = 1, c = 0, ind = -1;
 
     // Check sizes comp.

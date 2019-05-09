@@ -44,7 +44,7 @@ __global__ void mask(float* a, float v, long int rows, long int cols);
 
 __global__ void reduce_array_sum(float* array, long int ops, long int cols,float* result);
 
-__global__ void sum(float scA,float* a,float scB,float *b, float *c,long int incC, long int tam);
+__global__ void sum(float scA,float* a,float scB,float *b, float *c,long int incC, long int size);
 __global__ void el_mult(float* a,float *b, float *c, long int incC, long int rows, long int cols);
 __global__ void el_div(float* a, float *b, float *c, long int incC, long int rows, long int cols);
 
@@ -53,11 +53,11 @@ __global__ void sum_mat_col(float* a, float* b, float* c, long int cols, long in
 
 __global__ void reduce_sum2D(float *a,float *b,long int r,long int c,long int axis);
 
-__global__ void cent(float* a, float* b, float* c, long int tam);
+__global__ void cent(float* a, float* b, float* c, long int size);
 __global__ void accuracy(float* T, float* N,float* acc,long int cols, long int total_ops, int* MC_err);
 
-__global__ void relu(float *a,float *b,long int tam);
-__global__ void d_relu(float *d,float *i,float *pd,long int tam);
+__global__ void relu(float *a,float *b,long int size);
+__global__ void d_relu(float *d,float *i,float *pd,long int size);
 __global__ void softmax(float* E,float* N,float* auxE ,long int sample_ndim, long int n_vals);
 
 #endif

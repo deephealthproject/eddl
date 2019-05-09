@@ -58,7 +58,7 @@ void Layer::initialize() {
         else if (params[i]->ndim == 2)
             params[i]->rand_gaussian(0.0, sqrt(2.0 / params[i]->sizes[0]));
         else
-            params[i]->rand_gaussian(0.0, sqrt(2.0 / (params[i]->tam / params[i]->sizes[0])));
+            params[i]->rand_gaussian(0.0, sqrt(2.0 / (params[i]->size / params[i]->sizes[0])));
     }
 }
 

@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
     Tensor::sum(1.0,A,1.0,B,C,0);
 
     C->print();
-    fprintf(stderr,"%f\n",C->total_sum()/(C->tam));
+    fprintf(stderr,"%f\n",C->total_sum()/(C->size));
     */
 
 }

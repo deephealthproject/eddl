@@ -55,7 +55,7 @@ extern curandGenerator_t random_generator[64];
 // MAX THREADS PER BLOCK
 #define MAX_TPB 1024
 
-#define setDims(A) int r,c;r=(A->tam/MAX_TPB);if (r==0) {r=1;c=A->tam;}else {if (A->tam%MAX_TPB) r++;c=MAX_TPB;}dim3 dimGrid(r);dim3 dimBlock(c);
+#define setDims(A) int r,c;r=(A->size/MAX_TPB);if (r==0) {r=1;c=A->size;}else {if (A->size%MAX_TPB) r++;c=MAX_TPB;}dim3 dimGrid(r);dim3 dimBlock(c);
 
 
 static const char *_curandGetErrorEnum(curandStatus_t error)
@@ -231,7 +231,7 @@ void gpu_total_sum(Tensor *A,float *tot)
   cudaSetDevice(device);
 
   int r=A->sizes[0];
-  int c=A->tam/r;
+  int c=A->size/r;
 
   dim3 dimBlock(r);
   dim3 dimGrid(1);
@@ -250,7 +250,7 @@ void gpu_copy_to_gpu(float *nptr,Tensor *A)
 {
   int device=A->gpu_device;
   cudaSetDevice(device);
-  check_cuda(cudaMemcpy(A->ptr,nptr,A->tam*sizeof(float),cudaMemcpyHostToDevice),"gpu_copy_to_gpu");
+  check_cuda(cudaMemcpy(A->ptr,nptr,A->size*sizeof(float),cudaMemcpyHostToDevice),"gpu_copy_to_gpu");
 }
 
 ///////////////////////////////////////////
@@ -258,7 +258,7 @@ void gpu_copy_from_gpu(Tensor *A,float *nptr)
 {
   int device=A->gpu_device;
   cudaSetDevice(device);
-  check_cuda(cudaMemcpy(nptr,A->ptr,A->tam*sizeof(float),cudaMemcpyDeviceToHost),"gpu_copy_to_gpu");
+  check_cuda(cudaMemcpy(nptr,A->ptr,A->size*sizeof(float),cudaMemcpyDeviceToHost),"gpu_copy_to_gpu");
 }
 
 ///////////////////////////////////////////
@@ -266,7 +266,7 @@ void gpu_copy_gpu(Tensor *A,Tensor *B)
 {
   int device=A->gpu_device;
   cudaSetDevice(device);
-  check_cuda(cudaMemcpy(B->ptr,A->ptr,A->tam*sizeof(float),cudaMemcpyDeviceToDevice),"gpu_copy_gpu");
+  check_cuda(cudaMemcpy(B->ptr,A->ptr,A->size*sizeof(float),cudaMemcpyDeviceToDevice),"gpu_copy_gpu");
 }
 
 void gpu_fill(Tensor *A,int aini,int aend,Tensor *B,int bini,int bend,int inc)
@@ -274,8 +274,8 @@ void gpu_fill(Tensor *A,int aini,int aend,Tensor *B,int bini,int bend,int inc)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  int at=A->tam/A->sizes[0];
-  int bt=B->tam/B->sizes[0];
+  int at=A->size/A->sizes[0];
+  int bt=B->size/B->sizes[0];
 
   int t=1;
   for(int i=2;i<B->ndim;i++)
@@ -380,7 +380,7 @@ void gpu_sum(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC)
   setDims(A)
 
 
-  sum<<<dimGrid,dimBlock>>>(scA,A->ptr,scB,B->ptr,C->ptr,incC,A->tam);
+  sum<<<dimGrid,dimBlock>>>(scA,A->ptr,scB,B->ptr,C->ptr,incC,A->size);
   check_cuda(cudaDeviceSynchronize(),"sum");
 }
 ///////////////////////////////////////////
@@ -469,7 +469,7 @@ void gpu_rand_uniform(Tensor *A, float v)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  check_curand(curandGenerateUniform(random_generator[device],A->ptr,A->tam),"gpu_rand_uniform");
+  check_curand(curandGenerateUniform(random_generator[device],A->ptr,A->size),"gpu_rand_uniform");
 
   check_cuda(cudaDeviceSynchronize(),"gpu_rand_uniform");
 
@@ -484,7 +484,7 @@ void gpu_rand_suniform(Tensor *A, float v)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  check_curand(curandGenerateUniform(random_generator[device],A->ptr,A->tam),"gpu_rand_suniform");
+  check_curand(curandGenerateUniform(random_generator[device],A->ptr,A->size),"gpu_rand_suniform");
 
   check_cuda(cudaDeviceSynchronize(),"gpu_rand_suniform");
 
@@ -501,12 +501,12 @@ void gpu_rand_gaussian(Tensor *A, float m,float s)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  if (A->tam%2) {
+  if (A->size%2) {
     gpu_set(A,0.0);
-    check_curand(curandGenerateNormal(random_generator[device],A->ptr,A->tam-1,m,s),"gpu_rand_gaussian");
+    check_curand(curandGenerateNormal(random_generator[device],A->ptr,A->size-1,m,s),"gpu_rand_gaussian");
   }
   else
-    check_curand(curandGenerateNormal(random_generator[device],A->ptr,A->tam,m,s),"gpu_rand_gaussian");
+    check_curand(curandGenerateNormal(random_generator[device],A->ptr,A->size,m,s),"gpu_rand_gaussian");
 
   check_cuda(cudaDeviceSynchronize(),"gpu_rand_gaussian");
 
@@ -518,7 +518,7 @@ void gpu_rand_binary(Tensor *A, float v)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  check_curand(curandGenerateUniform(random_generator[device],A->ptr,A->tam),"gpu_rand_binary");
+  check_curand(curandGenerateUniform(random_generator[device],A->ptr,A->size),"gpu_rand_binary");
 
   gpu_mask(A,v);
 
@@ -537,7 +537,7 @@ void gpu_cent(Tensor *A,Tensor *B,Tensor *C)
 
   setDims(A)
 
-  cent<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,A->tam);
+  cent<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,A->size);
   check_cuda(cudaDeviceSynchronize(),"gpu_cent");
 
 }
@@ -550,7 +550,7 @@ void gpu_accuracy(Tensor *A,Tensor *B,int *acc)
   int r,c;
 
   r=A->sizes[0];
-  c=A->tam/r;
+  c=A->size/r;
 
   dim3 dimGrid(r);
   dim3 dimBlock(c);
@@ -579,7 +579,7 @@ void gpu_relu(Tensor *A,Tensor *B)
 
   setDims(A)
 
-  relu<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->tam);
+  relu<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->size);
   check_cuda(cudaDeviceSynchronize(),"gpu_relu");
 }
 
@@ -591,7 +591,7 @@ void gpu_d_relu(Tensor *D,Tensor *I,Tensor *PD)
 
   setDims(D)
 
-  d_relu<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,D->tam);
+  d_relu<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,D->size);
   check_cuda(cudaDeviceSynchronize(),"gpu_relu");
 }
 
@@ -624,8 +624,8 @@ float* auxE=NULL;
   dim3 dimGrid(1);
   dim3 dimBlock(r);
 
-  float* aux=gpu_create_tensor(device,A->tam);
-  softmax<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,aux,c,A->tam);
+  float* aux=gpu_create_tensor(device,A->size);
+  softmax<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,aux,c,A->size);
   check_cuda(cudaDeviceSynchronize(),"gpu_relu");
   gpu_delete_tensor(device,aux);
 }
@@ -638,7 +638,7 @@ void gpu_d_softmax(Tensor *D,Tensor *I,Tensor *PD)
 
   setDims(D)
 
-  d_relu<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,D->tam);
+  d_relu<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,D->size);
   check_cuda(cudaDeviceSynchronize(),"gpu_relu");
 }
 

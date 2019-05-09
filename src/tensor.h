@@ -141,7 +141,7 @@ class Tensor {
 public:
     int device;
     int ndim;
-    int tam;
+    int size;
     shape sizes;
 
     float *ptr;

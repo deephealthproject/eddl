@@ -26,8 +26,8 @@ extern "C"
 // Create Tensors
 Tensor *Tensor_init(const int *shape, int shape_size);
 int Tensor_device(Tensor *t);
-int Tensor_dim(Tensor *t);
-int Tensor_length(Tensor *t);  // Data length
+int Tensor_ndim(Tensor *t);
+int Tensor_size(Tensor *t);  // Data length
 int *Tensor_shape(Tensor *t);
 float *Tensor_getData(Tensor *t);
 void Tensor_point2data(Tensor *t, float *ptr);

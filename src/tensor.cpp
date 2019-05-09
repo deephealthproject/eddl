@@ -66,7 +66,7 @@ int Tensor::isGPU() { return ((device >= DEV_GPU) && (device < DEV_FPGA)); }
 int Tensor::isFPGA() { return (device >= DEV_FPGA); }
 
 // Tensor class
-Tensor::Tensor() : device(DEV_CPU), ndim(0), tam(0) {}
+Tensor::Tensor() : device(DEV_CPU), ndim(0), size(0) {}
 
 Tensor::Tensor(const initializer_list<int> &init) : Tensor(init, DEV_CPU) {}
 
@@ -92,8 +92,8 @@ Tensor::Tensor(shape s, int dev) {
     ndim = s.size();
     sizes = s;
 
-    tam = 1;
-    for (int i = 0; i < ndim; ++i) tam *= s[i];
+    size = 1;
+    for (int i = 0; i < ndim; ++i) size *= s[i];
 
     if (isCPU()) {
         if (ndim == 2) {
@@ -101,7 +101,7 @@ Tensor::Tensor(shape s, int dev) {
             ptr2 = &mat;
             ptr = &(mat(0, 0));
         } else {
-            ptr = (float *) malloc(tam * sizeof(float));
+            ptr = (float *) malloc(size * sizeof(float));
         }
     }
 #ifdef cGPU
@@ -113,7 +113,7 @@ Tensor::Tensor(shape s, int dev) {
             gpu_init(gpu_device);
             initcuda[gpu_device]=1;
           }
-        ptr=gpu_create_tensor(gpu_device,tam);
+        ptr=gpu_create_tensor(gpu_device,size);
       }
 #endif
 #ifdef cFPGA
@@ -131,8 +131,8 @@ Tensor::Tensor(shape s, Tensor *T) {
     ndim = s.size();
     sizes = s;
 
-    tam = 1;
-    for (int i = 0; i < ndim; ++i) tam *= s[i];
+    size = 1;
+    for (int i = 0; i < ndim; ++i) size *= s[i];
 
 
     if (isCPU()) {
@@ -182,11 +182,11 @@ Tensor::Tensor(string fname, int bin) {
         cout << "loading file with tensor:" << s << "\n";
 
         device = DEV_CPU;
-        tam = 1;
-        for (int i = 0; i < ndim; ++i) tam *= sizes[i];
+        size = 1;
+        for (int i = 0; i < ndim; ++i) size *= sizes[i];
 
         if (ndim == 2) {
-            //ptr=(float *)malloc(tam*sizeof(float));
+            //ptr=(float *)malloc(size*sizeof(float));
             //Eigen::Map<Eigen::MatrixXf> mat(ptr,sizes[1],sizes[0]);
             //ptr2=&mat;
 
@@ -195,14 +195,14 @@ Tensor::Tensor(string fname, int bin) {
             ptr = &(mat(0, 0));
 
         } else {
-            ptr = (float *) malloc(tam * sizeof(Tensor *));
+            ptr = (float *) malloc(size * sizeof(Tensor *));
         }
 
         tsem = new mutex();
 
-        read = fread(ptr, sizeof(float), tam, fe);
-        if (read != tam) {
-            fprintf(stderr, "Error reading file (%d!=%d)\nCheck format\n", read, tam);
+        read = fread(ptr, sizeof(float), size, fe);
+        if (read != size) {
+            fprintf(stderr, "Error reading file (%d!=%d)\nCheck format\n", read, size);
             exit(1);
         }
 
@@ -225,20 +225,20 @@ Tensor::Tensor(string fname, int bin) {
         cout << "loading file with tensor:" << s << "\n";
 
         device = DEV_CPU;
-        tam = 1;
-        for (int i = 0; i < ndim; ++i) tam *= sizes[i];
+        size = 1;
+        for (int i = 0; i < ndim; ++i) size *= sizes[i];
 
         if (ndim == 2) {
             mat = Eigen::MatrixXf(sizes[1], sizes[0]);
             ptr2 = &mat;
             ptr = &(mat(0, 0));
         } else {
-            ptr = (float *) malloc(tam * sizeof(Tensor *));
+            ptr = (float *) malloc(size * sizeof(Tensor *));
         }
 
         tsem = new mutex();
 
-        for (int i = 0; i < tam; i++) fscanf(fe, "%f ", &(ptr[i]));
+        for (int i = 0; i < size; i++) fscanf(fe, "%f ", &(ptr[i]));
 
         fclose(fe);
     }
@@ -266,7 +266,7 @@ void Tensor::save(string fname) {
     for (i = 0; i < ndim; ++i)
         fwrite(&sizes[i], sizeof(int), 1, fe);
 
-    fwrite(ptr, sizeof(float), tam, fe);
+    fwrite(ptr, sizeof(float), size, fe);
 
     fclose(fe);
 
@@ -319,7 +319,7 @@ void Tensor::info() {
         fprintf(stderr, "%d,", sizes[i]);
     fprintf(stderr, "%d)\n", sizes[i]);
 
-    fprintf(stderr, "Total bytes=%ld\n", tam * sizeof(float));
+    fprintf(stderr, "Total bytes=%ld\n", size * sizeof(float));
     if (isCPU()) fprintf(stderr, "Device=CPU\n");
     else if (isGPU()) fprintf(stderr, "Device=GPU (%d)\n", gpu_device);
     else fprintf(stderr, "Device=FPGA\n");
@@ -340,7 +340,7 @@ void Tensor::print() {
             cout << (*ptr2).transpose() << "\n";
         } else {
             int i;
-            for (i = 0; i < tam; ++i)
+            for (i = 0; i < size; ++i)
                 printf("%f ", ptr[i]);
             printf("\n");
         }
@@ -349,8 +349,8 @@ void Tensor::print() {
     else if (isGPU())
       {
         gpu_set_device(gpu_device);
-        float *v= (float*)malloc(tam*sizeof(float));
-        cudaMemcpy(v,ptr,tam*sizeof(float),cudaMemcpyDeviceToHost);
+        float *v= (float*)malloc(size*sizeof(float));
+        cudaMemcpy(v,ptr,size*sizeof(float),cudaMemcpyDeviceToHost);
         if (ndim==2)
           {
             int i,j,p=0;
@@ -364,7 +364,7 @@ void Tensor::print() {
         else
           {
             int i;
-            for(i=0;i<tam;++i)
+            for(i=0;i<size;++i)
               printf("%f ",v[i]);
               printf("\n");
           }
@@ -383,7 +383,7 @@ void Tensor::print() {
 ///////////////////////////////////////////
 void Tensor::set(float v) {
     if (isCPU()) {
-        for (int i = 0; i < tam; ++i) ptr[i] = v;
+        for (int i = 0; i < size; ++i) ptr[i] = v;
     }
 #ifdef cGPU
     else if (isGPU())
@@ -403,7 +403,7 @@ void Tensor::set(float v) {
 void Tensor::mult(float v) {
     if (isCPU()) {
 
-        for (int i = 0; i < tam; ++i) ptr[i] *= v;
+        for (int i = 0; i < size; ++i) ptr[i] *= v;
     }
 #ifdef cGPU
     else if (isGPU())
@@ -426,7 +426,7 @@ void Tensor::div(float v) { mult(1.0 / v); }
 void Tensor::sum(float v) {
     if (isCPU()) {
 
-        for (int i = 0; i < tam; ++i) ptr[i] += v;
+        for (int i = 0; i < size; ++i) ptr[i] += v;
     }
 #ifdef cGPU
     else if (isGPU())
@@ -448,7 +448,7 @@ void Tensor::sub(float v) { sum(-v); }
 void Tensor::set_log() {
     if (isCPU()) {
 
-        for (int i = 0; i < tam; ++i) ptr[i] = log(ptr[i]);
+        for (int i = 0; i < size; ++i) ptr[i] = log(ptr[i]);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -467,7 +467,7 @@ void Tensor::set_log() {
 void Tensor::set_exp() {
     if (isCPU()) {
 
-        for (int i = 0; i < tam; ++i) ptr[i] = exp(ptr[i]);
+        for (int i = 0; i < size; ++i) ptr[i] = exp(ptr[i]);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -486,7 +486,7 @@ void Tensor::set_exp() {
 void Tensor::set_sqrt() {
     if (isCPU()) {
 
-        for (int i = 0; i < tam; ++i) ptr[i] = sqrt(ptr[i]);
+        for (int i = 0; i < size; ++i) ptr[i] = sqrt(ptr[i]);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -505,7 +505,7 @@ void Tensor::set_sqrt() {
 void Tensor::set_sqr() {
     if (isCPU()) {
 
-        for (int i = 0; i < tam; ++i) ptr[i] *= ptr[i];
+        for (int i = 0; i < size; ++i) ptr[i] *= ptr[i];
     }
 #ifdef cGPU
     else if (isGPU())
@@ -527,7 +527,7 @@ float Tensor::total_sum() {
     if (isCPU()) {
         float sum = 0.0;
 
-        for (int i = 0; i < tam; ++i) sum += ptr[i];
+        for (int i = 0; i < size; ++i) sum += ptr[i];
 
         return sum;
     }
@@ -554,7 +554,7 @@ float Tensor::total_abs() {
     if (isCPU()) {
         float sum = 0.0;
 
-        for (int i = 0; i < tam; ++i) sum += fabs(ptr[i]);
+        for (int i = 0; i < size; ++i) sum += fabs(ptr[i]);
 
         return sum;
     }
@@ -580,7 +580,7 @@ float Tensor::total_abs() {
 void Tensor::rand_uniform(float v) {
     if (isCPU()) {
 
-        for (int i = 0; i < tam; ++i) ptr[i] = uniform() * v;
+        for (int i = 0; i < size; ++i) ptr[i] = uniform() * v;
     }
 #ifdef cGPU
     else if (isGPU())
@@ -601,7 +601,7 @@ void Tensor::rand_uniform(float v) {
 void Tensor::rand_suniform(float v) {
     if (isCPU()) {
 
-        for (int i = 0; i < tam; ++i) ptr[i] = suniform() * v;
+        for (int i = 0; i < size; ++i) ptr[i] = suniform() * v;
 
     }
 #ifdef cGPU
@@ -624,7 +624,7 @@ void Tensor::rand_suniform(float v) {
 void Tensor::rand_gaussian(float m, float s) {
     if (isCPU()) {
 
-        for (int i = 0; i < tam; ++i) ptr[i] = gauss(m, s);
+        for (int i = 0; i < size; ++i) ptr[i] = gauss(m, s);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -643,7 +643,7 @@ void Tensor::rand_gaussian(float m, float s) {
 
 void Tensor::rand_binary(float v) {
     if (isCPU()) {
-        for (int i = 0; i < tam; ++i)
+        for (int i = 0; i < size; ++i)
             if (uniform() < v) ptr[i] = 1.0;
             else ptr[i] = 0.0;
     }
