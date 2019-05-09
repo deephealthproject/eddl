@@ -46,11 +46,11 @@ float loss(tensor ytrue, tensor ypred) {
 
 }
 
-layer ResBlock(layer in, int dim, int n) {
+layer ResBlock(layer in, int ndim, int n) {
 
     layer l = in;
     for (int i = 0; i < n; i++)
-        l = Activation_init(Dense_init(l, dim, "Dense"), "relu", "Activation");
+        l = Activation_init(Dense_init(l, ndim, "Dense"), "relu", "Activation");
 
     layer l_add[] = {in, l};
     l = Add_init(l_add, 2, "Add");

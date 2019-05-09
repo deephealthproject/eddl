@@ -58,7 +58,7 @@ __global__ void accuracy(float* T, float* N,float* acc,long int cols, long int t
 
 __global__ void relu(float *a,float *b,long int tam);
 __global__ void d_relu(float *d,float *i,float *pd,long int tam);
-__global__ void softmax(float* E,float* N,float* auxE ,long int sample_dim, long int n_vals);
+__global__ void softmax(float* E,float* N,float* auxE ,long int sample_ndim, long int n_vals);
 
 #endif
 

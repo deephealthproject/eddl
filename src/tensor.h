@@ -140,7 +140,7 @@ class Tensor {
 
 public:
     int device;
-    int dim;
+    int ndim;
     int tam;
     shape sizes;
 

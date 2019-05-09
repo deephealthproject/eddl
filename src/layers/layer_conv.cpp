@@ -55,7 +55,7 @@ LConv::LConv(Layer *parent, const vector<int> &ks, const vector<int> &st, string
                                                                                                                 d) {}
 
 LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int d) : LinLayer(name, d) {
-    if (parent->output->dim != 4) msg("LConv only works over 4D tensors", "LConv::LConv");
+    if (parent->output->ndim != 4) msg("LConv only works over 4D tensors", "LConv::LConv");
 
     // Check dev with tensor dev
 

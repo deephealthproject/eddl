@@ -66,9 +66,9 @@ public:
 
     static layer Embedding(int input_dim, int output_dim, string name); //Todo: Implement
 
-    static layer Dense(layer parent, int dim);
-    static layer Dense(layer parent, int dim, string name);
-    static layer Dense(layer parent, int dim, string name, bool use_bias); //Todo: Implement
+    static layer Dense(layer parent, int ndim);
+    static layer Dense(layer parent, int ndim, string name);
+    static layer Dense(layer parent, int ndim, string name, bool use_bias); //Todo: Implement
 
     static layer Conv(layer parent, const initializer_list<int> &ks);
     static layer Conv(layer parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p);

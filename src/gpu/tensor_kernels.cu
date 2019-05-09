@@ -309,28 +309,28 @@ __global__ void d_relu(float *d,float *i,float *pd,long int tam)
 }
 
 ///////////////////////////////////////////
-__global__ void softmax(float* E,float* N,float* auxE ,long int sample_dim, long int n_vals)
+__global__ void softmax(float* E,float* N,float* auxE ,long int sample_ndim, long int n_vals)
 {
     float C_value=0;
     long int thread_id_x = threadIdx.x + blockIdx.x*blockDim.x;
-    float maxCoef = E[thread_id_x*sample_dim];
+    float maxCoef = E[thread_id_x*sample_ndim];
     float actualCoef = 0;
     if (thread_id_x<n_vals)
     {
 
-	    for (long int cA = 1; cA < sample_dim; cA++)
-    		if (E[thread_id_x*sample_dim+cA] > maxCoef)
-    			 maxCoef=E[thread_id_x*sample_dim+cA];
+	    for (long int cA = 1; cA < sample_ndim; cA++)
+    		if (E[thread_id_x*sample_ndim+cA] > maxCoef)
+    			 maxCoef=E[thread_id_x*sample_ndim+cA];
 
-	    for (long int cA = 0; cA < sample_dim; cA++)
+	    for (long int cA = 0; cA < sample_ndim; cA++)
   		{
-  			actualCoef=expf(E[thread_id_x*sample_dim+cA]-maxCoef);
-  			auxE[thread_id_x*sample_dim+cA]=actualCoef;
+  			actualCoef=expf(E[thread_id_x*sample_ndim+cA]-maxCoef);
+  			auxE[thread_id_x*sample_ndim+cA]=actualCoef;
         C_value+=actualCoef;
   		}
 
-      for (long int cA=0; cA < sample_dim; cA++)
-	       N[thread_id_x*sample_dim+cA]=auxE[thread_id_x*sample_dim+cA]/C_value;
+      for (long int cA=0; cA < sample_ndim; cA++)
+	       N[thread_id_x*sample_ndim+cA]=auxE[thread_id_x*sample_ndim+cA]/C_value;
     }
 
 }

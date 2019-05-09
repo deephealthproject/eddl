@@ -278,7 +278,7 @@ void gpu_fill(Tensor *A,int aini,int aend,Tensor *B,int bini,int bend,int inc)
   int bt=B->tam/B->sizes[0];
 
   int t=1;
-  for(int i=2;i<B->dim;i++)
+  for(int i=2;i<B->ndim;i++)
     t*=B->sizes[i];
 
   int tot=B->sizes[0]*(bend-1)*B->sizes[1]*t;
@@ -606,14 +606,14 @@ void gpu_softmax(Tensor *A,Tensor *B)
 dimBlock.x=sp->row;
  dimGrid.x=1;
  int ops = sp->col*sp->row;
-int sample_dim=sp->col;
+int sample_ndim=sp->col;
 
 double alfa=1;
 float* auxE=NULL;
   ops=sp->row;
           auxE = makeTensor(sp->col,sp->row);
           set_sc(auxE, 0.0, sp);
-  	Softmax<<<dimBlock,dimGrid>>>(E,N,auxE,sample_dim,ops);
+  	Softmax<<<dimBlock,dimGrid>>>(E,N,auxE,sample_ndim,ops);
 */
 
   int r,c;

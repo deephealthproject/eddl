@@ -71,12 +71,12 @@ layer EDDL::Input(tensor t) {
 }
 
 //////////////////////////////////////////////////////
-layer EDDL::Dense(layer parent, int dim) {
-    return new LDense(parent, dim, "dense" + to_string(1 + LDense::dense_created), DEV_CPU);
+layer EDDL::Dense(layer parent, int ndim) {
+    return new LDense(parent, ndim, "dense" + to_string(1 + LDense::dense_created), DEV_CPU);
 }
 
-layer EDDL::Dense(layer parent, int dim, string name) {
-    return new LDense(parent, dim, name, DEV_CPU);
+layer EDDL::Dense(layer parent, int ndim, string name) {
+    return new LDense(parent, ndim, name, DEV_CPU);
 }
 
 

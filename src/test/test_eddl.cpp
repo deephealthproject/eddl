@@ -45,11 +45,11 @@ float loss(tensor ytrue, tensor ypred) {
 
 }
 
-layer ResBlock(layer in, int dim, int n) {
+layer ResBlock(layer in, int ndim, int n) {
 
     layer l = in;
     for (int i = 0; i < n; i++)
-        l = eddl.Activation(eddl.Dense(l, dim), "relu");
+        l = eddl.Activation(eddl.Dense(l, ndim), "relu");
 
     l = eddl.Add({in, l});
 

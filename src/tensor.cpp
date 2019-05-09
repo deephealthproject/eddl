@@ -66,7 +66,7 @@ int Tensor::isGPU() { return ((device >= DEV_GPU) && (device < DEV_FPGA)); }
 int Tensor::isFPGA() { return (device >= DEV_FPGA); }
 
 // Tensor class
-Tensor::Tensor() : device(DEV_CPU), dim(0), tam(0) {}
+Tensor::Tensor() : device(DEV_CPU), ndim(0), tam(0) {}
 
 Tensor::Tensor(const initializer_list<int> &init) : Tensor(init, DEV_CPU) {}
 
@@ -89,14 +89,14 @@ Tensor::Tensor(shape s, int dev) {
 #endif
 
     device = dev;
-    dim = s.size();
+    ndim = s.size();
     sizes = s;
 
     tam = 1;
-    for (int i = 0; i < dim; ++i) tam *= s[i];
+    for (int i = 0; i < ndim; ++i) tam *= s[i];
 
     if (isCPU()) {
-        if (dim == 2) {
+        if (ndim == 2) {
             mat = Eigen::MatrixXf(sizes[1], sizes[0]);
             ptr2 = &mat;
             ptr = &(mat(0, 0));
@@ -128,16 +128,16 @@ Tensor::Tensor(shape s, int dev) {
 
 Tensor::Tensor(shape s, Tensor *T) {
     device = T->device;
-    dim = s.size();
+    ndim = s.size();
     sizes = s;
 
     tam = 1;
-    for (int i = 0; i < dim; ++i) tam *= s[i];
+    for (int i = 0; i < ndim; ++i) tam *= s[i];
 
 
     if (isCPU()) {
         ptr = T->ptr;
-        if (dim == 2) {
+        if (ndim == 2) {
             new(&mat) Eigen::Map<Eigen::MatrixXf>(T->ptr, sizes[1], sizes[0]);
             ptr2 = &mat;
         }
@@ -171,8 +171,8 @@ Tensor::Tensor(string fname, int bin) {
             exit(1);
         }
 
-        int read = fread(&dim, sizeof(int), 1, fe);
-        for (int i = 0; i < dim; ++i) {
+        int read = fread(&ndim, sizeof(int), 1, fe);
+        for (int i = 0; i < ndim; ++i) {
             int read = fread(&v, sizeof(int), 1, fe);
             sizes.push_back(v);
         }
@@ -183,9 +183,9 @@ Tensor::Tensor(string fname, int bin) {
 
         device = DEV_CPU;
         tam = 1;
-        for (int i = 0; i < dim; ++i) tam *= sizes[i];
+        for (int i = 0; i < ndim; ++i) tam *= sizes[i];
 
-        if (dim == 2) {
+        if (ndim == 2) {
             //ptr=(float *)malloc(tam*sizeof(float));
             //Eigen::Map<Eigen::MatrixXf> mat(ptr,sizes[1],sizes[0]);
             //ptr2=&mat;
@@ -214,8 +214,8 @@ Tensor::Tensor(string fname, int bin) {
             exit(1);
         }
 
-        fscanf(fe, "%d ", &dim);
-        for (int i = 0; i < dim; ++i) {
+        fscanf(fe, "%d ", &ndim);
+        for (int i = 0; i < ndim; ++i) {
             fscanf(fe, "%d ", &v);
             sizes.push_back(v);
         }
@@ -226,9 +226,9 @@ Tensor::Tensor(string fname, int bin) {
 
         device = DEV_CPU;
         tam = 1;
-        for (int i = 0; i < dim; ++i) tam *= sizes[i];
+        for (int i = 0; i < ndim; ++i) tam *= sizes[i];
 
-        if (dim == 2) {
+        if (ndim == 2) {
             mat = Eigen::MatrixXf(sizes[1], sizes[0]);
             ptr2 = &mat;
             ptr = &(mat(0, 0));
@@ -262,8 +262,8 @@ void Tensor::save(string fname) {
 
     fprintf(stderr, "writting bin file\n");
 
-    fwrite(&dim, sizeof(int), 1, fe);
-    for (i = 0; i < dim; ++i)
+    fwrite(&ndim, sizeof(int), 1, fe);
+    for (i = 0; i < ndim; ++i)
         fwrite(&sizes[i], sizeof(int), 1, fe);
 
     fwrite(ptr, sizeof(float), tam, fe);
@@ -285,7 +285,7 @@ Tensor *Tensor::share() {
 ///////////////////////////////////////////
 Tensor::~Tensor() {
     if (isCPU()) {
-        if (dim != 2) free(ptr);
+        if (ndim != 2) free(ptr);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -313,9 +313,9 @@ shape Tensor::getshape() {
 void Tensor::info() {
     int i;
 
-    fprintf(stderr, "DIM=%d\n", dim);
+    fprintf(stderr, "DIM=%d\n", ndim);
     fprintf(stderr, "(");
-    for (i = 0; i < dim - 1; i++)
+    for (i = 0; i < ndim - 1; i++)
         fprintf(stderr, "%d,", sizes[i]);
     fprintf(stderr, "%d)\n", sizes[i]);
 
@@ -333,10 +333,10 @@ void Tensor::info() {
 void Tensor::print() {
 
     if (isCPU()) {
-        if (dim == 1)
+        if (ndim == 1)
             for (int i = 0; i < sizes[0]; ++i)
                 printf("%f ", ptr[i]);
-        else if (dim == 2) {
+        else if (ndim == 2) {
             cout << (*ptr2).transpose() << "\n";
         } else {
             int i;
@@ -351,7 +351,7 @@ void Tensor::print() {
         gpu_set_device(gpu_device);
         float *v= (float*)malloc(tam*sizeof(float));
         cudaMemcpy(v,ptr,tam*sizeof(float),cudaMemcpyDeviceToHost);
-        if (dim==2)
+        if (ndim==2)
           {
             int i,j,p=0;
             for(i=0;i<sizes[0];++i)

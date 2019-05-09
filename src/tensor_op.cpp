@@ -51,9 +51,9 @@ using namespace std;
 ///////////////////////////////////////////
 
 int Tensor::eqsize(Tensor *A, Tensor *B) {
-    if (A->dim != B->dim) return 0;
+    if (A->ndim != B->ndim) return 0;
 
-    for (int i = 0; i < A->dim; i++)
+    for (int i = 0; i < A->ndim; i++)
         if (A->sizes[i] != B->sizes[i]) return 0;
 
     return 1;
@@ -95,10 +95,10 @@ void Tensor::copy(Tensor *A, Tensor *B) {
 }
 
 ///////////////////////////////////////
-/// Partial copy dim=1
+/// Partial copy ndim=1
 //////////////////////////////////////
 void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc) {
-    if (A->dim != B->dim)
+    if (A->ndim != B->ndim)
         msg("Tensors with different sizes", "Tensor::fill");
 
     B->tsem->lock();
@@ -107,7 +107,7 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
         int bt = B->tam / B->sizes[0];
 
         int t = 1;
-        for (int i = 2; i < A->dim; i++)
+        for (int i = 2; i < A->ndim; i++)
             t *= A->sizes[i];
 
         for (int i = 0; i < A->sizes[0]; i++) {
@@ -202,7 +202,7 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
 void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
 
     if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::mult2D");
-    if ((A->dim != 2) || (B->dim != 2) || (C->dim != 2)) msg("Only 2D tensors", "Tensor::mult2D");
+    if ((A->ndim != 2) || (B->ndim != 2) || (C->ndim != 2)) msg("Only 2D tensors", "Tensor::mult2D");
     if (!tA) {
         if (!tB) {
             if ((A->sizes[1] != B->sizes[0]) || (A->sizes[0] != C->sizes[0]) || (B->sizes[1] != C->sizes[1]))
@@ -364,7 +364,7 @@ void Tensor::sum(Tensor *A, Tensor *B, Tensor *C) {
 void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
     if ((A->device != B->device) || (A->device != C->device))
         msg("Tensors in different devices", "Tensor::sum2D_rowwise");
-    if ((A->dim != 2) || (B->dim != 1) || (C->dim != 2)) msg("sum2D_rowwise dims");
+    if ((A->ndim != 2) || (B->ndim != 1) || (C->ndim != 2)) msg("sum2D_rowwise dims");
     if ((!eqsize(A, C)) || (A->sizes[1] != B->sizes[0])) msg("Incompatible dims", "Tensor::sum2D_rowwise");
 
     C->tsem->lock();
@@ -400,7 +400,7 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
 void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
     if ((A->device != B->device) || (A->device != C->device))
         msg("Tensors in different devices", "Tensor::sum2D_colwise");
-    if ((A->dim != 2) || (B->dim != 1) || (C->dim != 2)) msg("sum2D_colwise dims");
+    if ((A->ndim != 2) || (B->ndim != 1) || (C->ndim != 2)) msg("sum2D_colwise dims");
     if ((!eqsize(A, C)) || (A->sizes[0] != B->sizes[0])) msg("Incompatible dims", "Tensor::sum2D_colwise");
 
     C->tsem->lock();
@@ -435,7 +435,7 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
 ///////////////////////////////////////
 void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::reduce_sum2D");
-    if ((A->dim - 1) != B->dim) msg("Incorrect dims", "Tensor::reduce_sum2D");
+    if ((A->ndim - 1) != B->ndim) msg("Incorrect dims", "Tensor::reduce_sum2D");
     if ((A->sizes[1 - axis] != B->sizes[0])) msg("Incompatible dims", "Tensor::reduce_sum2D");
 
     B->tsem->lock();
@@ -517,7 +517,7 @@ ConvolDescriptor::ConvolDescriptor(const initializer_list<int> &ks, const initia
 
 void ConvolDescriptor::build(Tensor *A) {
 
-    if (A->dim != 4) msg("Tensors are not 4D", "ConvolDescriptor::build");
+    if (A->ndim != 4) msg("Tensors are not 4D", "ConvolDescriptor::build");
 
     I = A;
 
@@ -571,7 +571,7 @@ void ConvolDescriptor::build(Tensor *A) {
 //// D is a ConvolDescriptor
 /////////////////////////////////////////////////////////////////////
 void Tensor::Conv2D(ConvolDescriptor *D) {
-    if ((D->I->dim != 4)) msg("Tensors are not 4D", "Tensor::Conv2D");
+    if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::Conv2D");
 
     D->O->tsem->lock();
     if (D->I->isCPU()) {
@@ -598,7 +598,7 @@ void Tensor::Conv2D(ConvolDescriptor *D) {
 //// D is a ConvolDescriptor
 /////////////////////////////////////////////////////////////////////
 void Tensor::Conv2D_grad(ConvolDescriptor *D) {
-    if ((D->I->dim != 4)) msg("Tensors are not 4D", "Tensor::Conv2D");
+    if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::Conv2D");
 
     D->gK->tsem->lock();
     if (D->I->isCPU()) {
@@ -626,7 +626,7 @@ void Tensor::Conv2D_grad(ConvolDescriptor *D) {
 //// D is a ConvolDescriptor
 /////////////////////////////////////////////////////////////////////
 void Tensor::Conv2D_back(ConvolDescriptor *D) {
-    if ((D->I->dim != 4)) msg("Tensors are not 4D", "Tensor::Conv2D");
+    if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::Conv2D");
 
     D->ID->tsem->lock();
     if (D->I->isCPU()) {
@@ -682,7 +682,7 @@ PoolDescriptor::PoolDescriptor(const initializer_list<int> &ks, const initialize
 
 
 void PoolDescriptor::build(Tensor *A) {
-    if (A->dim != 4) msg("Tensors are not 4D", "PoolDescriptor::build");
+    if (A->ndim != 4) msg("Tensors are not 4D", "PoolDescriptor::build");
 
     I = A;
 
@@ -721,7 +721,7 @@ void PoolDescriptor::build(Tensor *A) {
 //// D is a ConvolDescriptor
 /////////////////////////////////////////////////////////////////////
 void Tensor::MPool2D(PoolDescriptor *D) {
-    if ((D->I->dim != 4)) msg("Tensors are not 4D", "Tensor::MPool2D");
+    if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::MPool2D");
 
     D->O->tsem->lock();
     if (D->I->isCPU()) {
@@ -747,7 +747,7 @@ void Tensor::MPool2D(PoolDescriptor *D) {
 //// D is a ConvolDescriptor
 /////////////////////////////////////////////////////////////////////
 void Tensor::MPool2D_back(PoolDescriptor *D) {
-    if ((D->I->dim != 4)) msg("Tensors are not 4D", "Tensor::MPool2D_back");
+    if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::MPool2D_back");
 
     D->ID->tsem->lock();
     if (D->I->isCPU()) {
@@ -806,7 +806,7 @@ void Tensor::cent(Tensor *A, Tensor *B, Tensor *C) {
 int Tensor::accuracy(Tensor *A, Tensor *B) {
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::accuracy");
     if (!eqsize(A, B)) msg("Incompatible dims", "Tensor::accuracy");
-    if (A->dim != 2) msg("Accuracy only over 2D Tensor (batch x probs)", "Tensor::Accuracy");
+    if (A->ndim != 2) msg("Accuracy only over 2D Tensor (batch x probs)", "Tensor::Accuracy");
 
     int acc = 0;
 
@@ -903,7 +903,7 @@ void Tensor::D_ReLu(Tensor *D, Tensor *I, Tensor *PD) {
 void Tensor::Softmax(Tensor *A, Tensor *B) {
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::Softmax");
     if (!eqsize(A, B)) msg("Incompatible dims", "Tensor::Softmax");
-    if (A->dim != 2) msg("Softmax only over 2D Tensor (batch x logits)", "Tensor::Softmax");
+    if (A->ndim != 2) msg("Softmax only over 2D Tensor (batch x logits)", "Tensor::Softmax");
 
     B->tsem->lock();
 
@@ -942,7 +942,7 @@ void Tensor::Softmax(Tensor *A, Tensor *B) {
 void Tensor::D_Softmax(Tensor *D, Tensor *I, Tensor *PD) {
     if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_Softmax");
     if ((!eqsize(D, I)) || (!eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_Softmax");
-    if (D->dim != 2) msg("D_Softmax only over 2D Tensor (batch x delta_probs)", "Tensor::D_Softmax");
+    if (D->ndim != 2) msg("D_Softmax only over 2D Tensor (batch x delta_probs)", "Tensor::D_Softmax");
 
 
     if (D->isCPU()) {

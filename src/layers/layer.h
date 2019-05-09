@@ -156,10 +156,10 @@ public:
 /// DENSE Layer
 class LDense : public LinLayer {
 public:
-    int dim;
+    int ndim;
     static int dense_created;
 
-    LDense(Layer *parent, int dim, string name, int d);
+    LDense(Layer *parent, int ndim, string name, int d);
 
     Layer *share(int c, int bs, vector<Layer *> p);
 
@@ -302,7 +302,7 @@ public:
 /// Drop-out Layer
 class LDrop : public LinLayer {
 public:
-    int dim;
+    int ndim;
     static int drop_created;
 
     // constructors and clones
@@ -375,7 +375,7 @@ public:
 /// Cat Layer
 class LCat : public MLayer {
 public:
-    int dim;
+    int ndim;
     vector<int> index;
     static int cat_created;
 

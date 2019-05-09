@@ -41,18 +41,18 @@ int LCat::cat_created = 0;
 LCat::LCat(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
     if (parent.size() == 0) msg("Error: LCat layer with empty list");
 
-    dim = parent[0]->output->dim;
+    ndim = parent[0]->output->ndim;
 
     if (parent.size() > 1) {
         for (int i = 0; i < parent.size() - 1; ++i)
-            if (dim != parent[i]->output->dim)
+            if (ndim != parent[i]->output->ndim)
                 msg("Error: LCat layers with different tensor dims");
 
-        if (dim == 2) {
+        if (ndim == 2) {
             for (int i = 0; i < parent.size() - 1; ++i)
                 if (parent[i]->output->sizes[0] != parent[i + 1]->output->sizes[0])
                     msg("Error: LCat layers with different size in dim 1");
-        } else if (dim == 4) {
+        } else if (ndim == 4) {
             for (int i = 0; i < parent.size() - 1; ++i) {
                 if (parent[i]->output->sizes[0] != parent[i + 1]->output->sizes[0])
                     msg("Error: LCat layers with different size in dim 1");

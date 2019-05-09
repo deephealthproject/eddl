@@ -40,7 +40,7 @@ using namespace std;
 int LPool::pool_created = 0;
 
 LPool::LPool(Layer *parent, PoolDescriptor *D, string name, int d) : LinLayer(name, d) {
-    if (parent->output->dim != 4) msg("LPool only works over 4D tensors", "LPool::LPool");
+    if (parent->output->ndim != 4) msg("LPool only works over 4D tensors", "LPool::LPool");
     pool_created++;
 
     pd = D;

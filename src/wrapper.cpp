@@ -19,8 +19,8 @@ int Tensor_device(Tensor *t) {
     return t->device;
 }
 
-int Tensor_dim(Tensor *t) {
-    return t->dim;
+int Tensor_ndim(Tensor *t) {
+    return t->ndim;
 }
 
 int Tensor_length(Tensor *t) { // Data length
@@ -37,7 +37,7 @@ float *Tensor_getData(Tensor *t) {
 
 void Tensor_point2data(Tensor *t, float *ptr) {
     int tam = 1;
-    for (int i = 0; i < t->dim; ++i) tam *= t->sizes[i];
+    for (int i = 0; i < t->ndim; ++i) tam *= t->sizes[i];
     t->tam = tam;
     t->ptr = ptr;
 }
@@ -60,8 +60,8 @@ layer Input_init(Tensor *in, const char *name) {
     return new LInput(in, name, DEV_CPU);
 }
 
-layer Dense_init(layer parent, int dim, const char *name) {
-    return new LDense(parent, dim, name, DEV_CPU);
+layer Dense_init(layer parent, int ndim, const char *name) {
+    return new LDense(parent, ndim, name, DEV_CPU);
 }
 
 layer Conv_init(layer parent, const int *ks, int ks_size, const int *st, int st_size, const char *p, const char *name) {
