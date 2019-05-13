@@ -49,7 +49,7 @@ typedef vector<LTensor *> vltensor;
 class EDDL {
 public:
     // Create Tensors
-    static tensor T(const initializer_list<int> &shape);
+    static tensor T(const initializer_list<int> &shape);//*
     static tensor T(const vector<int> shape);
     static tensor T(string fname);
 
@@ -59,14 +59,8 @@ public:
 
 
     // Create Layers
-    static layer Input(tensor t);
-    static layer Input(const initializer_list<int> &shape);
-
-    static layer Embedding(int input_dim, int output_dim, string name); //Todo: Implement
-
-    static layer Dense(layer parent, int ndim);
-    static layer Dense(layer parent, int ndim, string name);
-    static layer Dense(layer parent, int ndim, string name, bool use_bias); //Todo: Implement
+    static layer Activation(layer parent, string activation);
+    static layer Activation(layer parent, string activation, string name);
 
     static layer Conv(layer parent, const initializer_list<int> &ks);
     static layer Conv(layer parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p);
@@ -76,89 +70,116 @@ public:
                       const initializer_list<int> &strides, int groups, const initializer_list<int> &dilation_rate,
                       bool use_bias, string name); //Todo: Implement
 
+    static layer Dense(layer parent, int ndim);//*
+    static layer Dense(layer parent, int ndim, string name);
+    static layer Dense(layer parent, int ndim, bool use_bias, string name); //Todo: Implement
+
     static layer DeConv(layer parent, int filters, const initializer_list<int> &kernel_size, string padding,
                         const initializer_list<int> &output_padding, const initializer_list<int> &dilation_rate,
                         const initializer_list<int> &strides, bool use_bias, string name); //Todo: Implement
 
-    static layer UpSampling(layer parent, const initializer_list<int> &size, string interpolation,
-                            string name); //Todo: Implement
+    static layer Embedding(int input_dim, int output_dim, string name); //Todo: Implement
 
-    static layer MPool(layer parent, const initializer_list<int> &ks);
-    static layer MPool(layer parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p);
-    static layer MPool(layer parent, const initializer_list<int> &ks, const initializer_list<int> &st);
-    static layer MPool(layer parent, const initializer_list<int> &ks, string p);
+    static layer Input(tensor t);//*
+    static layer Input(const initializer_list<int> &shape);
+    static layer Input(const initializer_list<int> &shape, string name);
 
-    static layer Activation(layer parent, string act);
-    static layer Activation(layer parent, string act, string name);
+    static layer Interpolate(layer parent, const initializer_list<int> &size, string interpolation, string name); //Todo: Implement
 
-    static layer Reshape(layer parent, const initializer_list<int> &shape);
+    static layer Reshape(layer parent, const initializer_list<int> &shape); //*
     static layer Reshape(layer parent, const initializer_list<int> &shape, string name);
 
-    static layer Transpose(layer parent, const initializer_list<int> &dims, string name, int d); //Todo: Implement
-
-    static layer Drop(layer parent, float df);
-    static layer Drop(layer parent, float df, string name);
-    static layer Dropout(layer parent, float rate, string name, int d); //Todo: Implement
-
-    static layer BatchNormalization(layer parent, float momentum, float epsilon, bool affine,
-                                    string name); //Todo: Implement
-
-    static layer GaussianNoise(layer parent, float stddev, string name); //Todo: Implement
-
-    //Todo: Implement -> static layer MaxPool(layer parent,const initializer_list<int>& pool_size,const initializer_list<int>& strides,string padding,string name);
-    static layer GlobalMaxPool(layer parent, string name); //Todo: Implement
-
-    static layer AveragePool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides,
-                             string padding, string name); //Todo: Implement
-
-    static layer GlobalAveragePool(layer parent, string name); //Todo: Implement
+    static layer Transpose(layer parent, const initializer_list<int> &dims, string name); //Todo: Implement
 
 
     // ---- MERGE LAYERS ----
-    static layer Add(const initializer_list<layer> &init);
-    static layer Add(const initializer_list<layer> &init, string name);
+    static layer Add(const initializer_list<layer> &layers);
+    static layer Add(const initializer_list<layer> &layers, string name);
 
-    static layer Substract(const initializer_list<layer> &layers, string name); //Todo: Implement
-
-    static layer Cat(const initializer_list<layer> &init);
-    static layer Cat(const initializer_list<layer> &init, string name);
-    //Todo: Implement -> static layer Concat(const initializer_list<layer>& layers,string name);
-
-    static layer MatMul(const initializer_list<layer> &layers, string name); //Todo: Implement
+    static layer Average(const initializer_list<layer> &layers); //Todo: Implement
     static layer Average(const initializer_list<layer> &layers, string name); //Todo: Implement
+
+    static layer Concat(const initializer_list<layer> &layers);
+    static layer Concat(const initializer_list<layer> &layers, string name);
+
+    static layer MatMul(const initializer_list<layer> &layers); //Todo: Implement
+    static layer MatMul(const initializer_list<layer> &layers, string name); //Todo: Implement
+
+    static layer Maximum(const initializer_list<layer> &layers); //Todo: Implement
     static layer Maximum(const initializer_list<layer> &layers, string name); //Todo: Implement
+
+    static layer Minimum(const initializer_list<layer> &layers); //Todo: Implement
     static layer Minimum(const initializer_list<layer> &layers, string name); //Todo: Implement
 
+    static layer Subtract(const initializer_list<layer> &layers); //Todo: Implement
+    static layer Subtract(const initializer_list<layer> &layers, string name); //Todo: Implement
+
+
+    // ---- NOISE LAYERS ----
+    static layer GaussianNoise(layer parent, float stddev, string name); //Todo: Implement
+
+
+    // ---- NORMALIZATION LAYERS ----
+    static layer BatchNormalization(layer parent, float momentum, float epsilon, bool affine, string name); //Todo: Implement
+
+    static layer Dropout(layer parent, float rate);
+    static layer Dropout(layer parent, float rate, string name); //Todo: Implement
 
     // ---- OPTIMIZERS ----
-    static optimizer SGD(const initializer_list<float> &p);
-    static optimizer SGD(float lr, float momentum, float weight_decay, bool nesterov); //Todo: Implement
-    static optimizer Adam(float lr, float beta_1, float beta_2, float epsilon, float weight_decay,
-                          bool amsgrad); //Todo: Implement
-    static optimizer RMSprop(float lr, float alpha, float weight_decay, float momentum); //Todo: Implement
-    static optimizer Adagrad(float lr, float epsilon, float weight_decay); //Todo: Implement
     static optimizer Adadelta(float lr, float rho, float epsilon, float weight_decay); //Todo: Implement
+    static optimizer Adam(float lr, float beta_1, float beta_2, float epsilon, float weight_decay, bool amsgrad); //Todo: Implement
+    static optimizer Adagrad(float lr, float epsilon, float weight_decay); //Todo: Implement
     static optimizer Adamax(float lr, float beta_1, float beta_2, float epsilon, float weight_decay); //Todo: Implement
     static optimizer Nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule_decay); //Todo: Implement
+    static optimizer RMSprop(float lr, float alpha, float weight_decay, float momentum); //Todo: Implement
+
+    static optimizer SGD(const initializer_list<float> &p);
+    static optimizer SGD(float lr, float momentum, float weight_decay, bool nesterov); //Todo: Implement
 
     static void change(optimizer o, const initializer_list<float> &p);
 
+
+    // ---- POOLING LAYERS ----
+    static layer AveragePool(layer parent, const initializer_list<int> &pool_size);
+    static layer AveragePool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding="none");
+    static layer AveragePool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding, string name);
+
+
+    static layer GlobalMaxPool(layer parent);
+    static layer GlobalMaxPool(layer parent, string name); //Todo: Implement
+
+    static layer GlobalAveragePool(layer parent);
+    static layer GlobalAveragePool(layer parent, string name); //Todo: Implement
+
+
+    static layer MaxPool(layer parent, const initializer_list<int> &pool_size);
+    static layer MaxPool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding="none");
+    static layer MaxPool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding, string name);
+
+
+    // ---- RECURRENT LAYERS ----
+    static layer RNN(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional);
+    static layer RNN(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name);
+
+    static layer LSTM(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional);
+    static layer LSTM(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name);
+
+
     // ---- LR SCHEDULERS ----
-    static callback StepLR(int step_size, float gamma, int last_epoch); //Todo: Implement
-    static callback MultiStepLR(const initializer_list<int> &milestones, float gamma, int last_epoch); //Todo: Implement
-    static callback ExponentialLR(float gamma, int last_epoch); //Todo: Implement
     static callback CosineAnnealingLR(int T_max, float eta_min, int last_epoch); //Todo: Implement
-    static callback ReduceLROnPlateau(string metric, string mode, float factor, int patience, float threshold,
-                                      string threshold_mode, int cooldown, float min_lr, float eps); //Todo: Implement
+    static callback ExponentialLR(float gamma, int last_epoch); //Todo: Implement
+    static callback MultiStepLR(const initializer_list<int> &milestones, float gamma, int last_epoch); //Todo: Implement
+    static callback ReduceLROnPlateau(string metric, string mode, float factor, int patience, float threshold, string threshold_mode, int cooldown, float min_lr, float eps); //Todo: Implement
+    static callback StepLR(int step_size, float gamma, int last_epoch); //Todo: Implement
 
     // ---- INITIALIZERS ----
     static initializer Constant(float value); //Todo: Implement
-    static initializer RandomNormal(float mean, float stddev, int seed); //Todo: Implement
-    static initializer RandomUniform(float minval, float maxval, int seed); //Todo: Implement
     static initializer Identity(float gain); //Todo: Implement
-    static initializer Orthogonal(float gain, int seed); //Todo: Implement
     static initializer GlorotNormal(float seed); //Todo: Implement
     static initializer GlorotUniform(float seed); //Todo: Implement
+    static initializer RandomNormal(float mean, float stdev, int seed); //Todo: Implement
+    static initializer RandomUniform(float minval, float maxval, int seed); //Todo: Implement
+    static initializer Orthogonal(float gain, int seed); //Todo: Implement
 
 
     // Create net
@@ -173,15 +194,14 @@ public:
     static void set_trainable(layer l); //Todo: Implement
 
     // Net operations
-    static void plot(model m, string fname);
-    static void info(model m);
-    static void summary(model m); //Todo: Implement
     static void build(model net, optimizer o, const initializer_list<string> &c, const initializer_list<string> &m);
-
     static void build(model net, optimizer o, const initializer_list<string> &c, const initializer_list<string> &m, CompServ *cs);
+    static void info(model m);
+    static void plot(model m, string fname);
+    static void summary(model m); //Todo: Implement
 
-    static void
-    fit(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out, int batch, int epochs);
+
+    static void fit(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out, int batch, int epochs);
 
     static void evaluate(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out);
 

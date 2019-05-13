@@ -62,25 +62,22 @@ void EDDL::div(tensor t, float v) {
 }
 //////////////////////////////////////////////////////
 
-layer EDDL::Input(const initializer_list<int> &shape) {
-    return new LInput(new Tensor(shape), "input" + to_string(1 + LInput::input_created), DEV_CPU);
+
+layer EDDL::Activation(layer parent, string activation) {
+    return EDDL::Activation(parent, activation, "activation" + to_string(1 + LActivation::activation_created));
 }
 
-layer EDDL::Input(tensor t) {
-    return new LInput(t->input, "input" + to_string(1 + LInput::input_created), DEV_CPU);
+layer EDDL::Activation(layer parent, string activation, string name) {
+    return new LActivation(parent, activation, name, DEV_CPU);
+}
+//////////////////////////////////////////////////////
+
+layer EDDL::BatchNormalization(layer parent, float momentum, float epsilon, bool affine, string name){
+    //Todo: Implement
 }
 
 //////////////////////////////////////////////////////
-layer EDDL::Dense(layer parent, int ndim) {
-    return new LDense(parent, ndim, "dense" + to_string(1 + LDense::dense_created), DEV_CPU);
-}
 
-layer EDDL::Dense(layer parent, int ndim, string name) {
-    return new LDense(parent, ndim, name, DEV_CPU);
-}
-
-
-//////////////////////////////////////////////////////
 layer EDDL::Conv(layer parent, const initializer_list<int> &ks) {
     return new LConv(parent, ks, {1, 1}, "same", "conv" + to_string(1 + LConv::conv_created), DEV_CPU);
 }
@@ -97,37 +94,139 @@ layer EDDL::Conv(layer parent, const initializer_list<int> &ks, string p) {
     return new LConv(parent, ks, {1, 1}, p, "conv" + to_string(1 + LConv::conv_created), DEV_CPU);
 }
 
-//////////////////////////////////////////////////////
-layer EDDL::MPool(layer parent, const initializer_list<int> &ks) {
-    return new LMPool(parent, ks, ks, "none", "mpool" + to_string(1 + LMPool::pool_created), DEV_CPU);
-}
-
-layer EDDL::MPool(layer parent, const initializer_list<int> &ks, const initializer_list<int> &st) {
-    return new LMPool(parent, ks, st, "none", "mpool" + to_string(1 + LMPool::pool_created), DEV_CPU);
-}
-
-layer EDDL::MPool(layer parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p) {
-    return new LMPool(parent, ks, st, p, "mpool" + to_string(1 + LMPool::pool_created), DEV_CPU);
-}
-
-layer EDDL::MPool(layer parent, const initializer_list<int> &ks, string p) {
-    return new LMPool(parent, ks, ks, p, "mpool" + to_string(1 + LMPool::pool_created), DEV_CPU);
+layer EDDL::Conv(layer parent, int filters, const initializer_list<int> &kernel_size, string padding,
+                 const initializer_list<int> &strides, int groups, const initializer_list<int> &dilation_rate,
+                 bool use_bias, string name) {
+    // TODO: IMPLEMENT
 }
 
 //////////////////////////////////////////////////////
-layer EDDL::Activation(layer parent, string act) {
-    return new LActivation(parent, act, "activation" + to_string(1 + LActivation::activation_created), DEV_CPU);
+layer EDDL::Dense(layer parent, int ndim) {
+    return EDDL::Dense(parent, ndim, "dense" + to_string(1 + LDense::dense_created));
 }
 
-layer EDDL::Activation(layer parent, string act, string name) {
-    return new LActivation(parent, act, name, DEV_CPU);
+layer EDDL::Dense(layer parent, int ndim, string name) {
+    return new LDense(parent, ndim, name, DEV_CPU);
+}
+
+//////////////////////////////////////////////////////
+
+layer EDDL::DeConv(layer parent, int filters, const initializer_list<int> &kernel_size, string padding,
+        const initializer_list<int> &output_padding, const initializer_list<int> &dilation_rate,
+        const initializer_list<int> &strides, bool use_bias, string name){
+    // TODO: IMPLEMENT
+}
+
+/////////////////////////////////////////////////////////
+layer EDDL::Dropout(layer parent, float rate) {
+    return EDDL::Dropout(parent, rate, "drop" + to_string(1 + LDrop::drop_created));
+}
+
+layer EDDL::Dropout(layer parent, float rate, string name) {
+    return new LDrop(parent, rate, name, DEV_CPU);
+}
+
+//////////////////////////////////////////////////////
+layer EDDL::Embedding(int input_dim, int output_dim, string name){
+    // TODO: IMPLEMENT
+}
+
+//////////////////////////////////////////////////////
+layer EDDL::GaussianNoise(layer parent, float stdev, string name){
+    // TODO: IMPLEMENT
+}
+
+//////////////////////////////////////////////////////
+
+layer EDDL::Input(tensor t) {
+    return new LInput(t->input, "input" + to_string(1 + LInput::input_created), DEV_CPU);
+}
+
+layer EDDL::Input(const initializer_list<int> &shape) {
+    return EDDL::Input(shape, "input" + to_string(1 + LInput::input_created));
+}
+
+layer EDDL::Input(const initializer_list<int> &shape, string name) {
+    return new LInput(new Tensor(shape), name, DEV_CPU);
+}
+
+//////////////////////////////////////////////////////
+
+layer EDDL::Interpolate(layer parent, const initializer_list<int> &size, string interpolation, string name){
+    // TODO: IMPLEMENT
+}
+
+//////////////////////////////////////////////////////
+layer EDDL::AveragePool(layer parent, const initializer_list<int> &pool_size) {
+    return EDDL::AveragePool(parent, pool_size, pool_size);
+}
+
+layer EDDL::AveragePool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding){
+    //TODO: Fix LMPool
+    return EDDL::AveragePool(parent, pool_size, strides, padding, "avgpool" + to_string(1 + LMPool::pool_created));
+}
+
+layer EDDL::AveragePool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding, string name){
+    //TODO: Implement
+}
+
+//////////////////////////////////////////////////////
+static layer GlobalMaxPool(layer parent){
+    //TODO: Fix LMPool
+    //return EDDL::GlobalMaxPool(parent, "globalmaxpool" + to_string(1 + LMPool::pool_created));
+}
+
+static layer GlobalMaxPool(layer parent, string name){
+    //TODO: Implement
+}
+
+//////////////////////////////////////////////////////
+static layer GlobalAveragePool(layer parent){
+    //TODO: Fix LMPool
+    //return EDDL::GlobalAveragePool(parent, "globalavgpool" + to_string(1 + LMPool::pool_created));
+}
+
+static layer GlobalAveragePool(layer parent, string name){
+    //TODO: Implement
 }
 
 
+//////////////////////////////////////////////////////
+layer EDDL::MaxPool(layer parent, const initializer_list<int> &pool_size) {
+    return EDDL::MaxPool(parent, pool_size, pool_size);
+}
+
+layer EDDL::MaxPool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding){
+    return EDDL::MaxPool(parent, pool_size, strides, padding, "mpool" + to_string(1 + LMPool::pool_created));
+}
+
+layer EDDL::MaxPool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding, string name){
+    return new LMPool(parent, pool_size, strides, padding, name, DEV_CPU);
+
+}
+
+//////////////////////////////////////////////////////
+layer EDDL::RNN(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional){
+    //TODO: Fix name
+    return EDDL::RNN(parent, units, num_layers, use_bias, dropout, bidirectional, "rnn" + to_string(1 + LMPool::pool_created));
+}
+
+layer EDDL::RNN(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name){
+    //TODO: Implement
+}
+
+//////////////////////////////////////////////////////
+layer EDDL::LSTM(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional){
+    //TODO: Fix name
+    return EDDL::LSTM(parent, units, num_layers, use_bias, dropout, bidirectional, "lstm" + to_string(1 + LMPool::pool_created));
+}
+
+layer EDDL::LSTM(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name){
+    //TODO: Implement
+}
 //////////////////////////////////////////////////////
 layer EDDL::Reshape(layer parent, const initializer_list<int> &shape) {
-    vector<int> s(shape.begin(), shape.end());
-    return new LReshape(parent, s, "reshape" + to_string(1 + LReshape::reshape_created), DEV_CPU);
+    return EDDL::Reshape(parent, shape, "reshape" + to_string(1 + LReshape::reshape_created));
 }
 
 layer EDDL::Reshape(layer parent, const initializer_list<int> &shape, string name) {
@@ -135,36 +234,89 @@ layer EDDL::Reshape(layer parent, const initializer_list<int> &shape, string nam
 }
 
 /////////////////////////////////////////////////////////
-layer EDDL::Drop(layer parent, float df) {
-    return new LDrop(parent, df, "drop" + to_string(1 + LDrop::drop_created), DEV_CPU);
+
+layer EDDL::Transpose(layer parent, const initializer_list<int> &dims, string name){
+    //TODO: Implement
 }
 
-layer EDDL::Drop(layer parent, float df, string name) {
-    return new LDrop(parent, df, name, DEV_CPU);
-}
 
 /////////////////////////////////////////////////////////
 
-layer EDDL::Add(const initializer_list<layer> &init) {
-    return new LAdd(vlayer(init.begin(), init.end()), "add" + to_string(1 + LAdd::add_created), DEV_CPU);
+layer EDDL::Add(const initializer_list<layer> &layers) {
+    return EDDL::Add(layers, "add" + to_string(1 + LAdd::add_created));
 }
 
-layer EDDL::Add(const initializer_list<layer> &init, string name) {
-    return new LAdd(vlayer(init.begin(), init.end()), name, DEV_CPU);
+layer EDDL::Add(const initializer_list<layer> &layers, string name) {
+    return new LAdd(vlayer(layers.begin(), layers.end()), name, DEV_CPU);
 }
 
 ////////////////////////////////////////////////////////
 
-layer EDDL::Cat(const initializer_list<layer> &init) {
-    return new LCat(vlayer(init.begin(), init.end()), "cat" + to_string(1 + LCat::cat_created), DEV_CPU);
+static layer Average(const initializer_list<layer> &layers){
+    // TODO: Fix LCAT
+    return EDDL::Average(layers, "average" + to_string(1 + LCat::cat_created));
 }
 
-layer EDDL::Cat(const initializer_list<layer> &init, string name) {
-    return new LCat(vlayer(init.begin(), init.end()), name, DEV_CPU);
+static layer Average(const initializer_list<layer> &layers, string name){
+    //TODO: Implement
+}
+
+/////////////////////////////////////////////////////////
+
+layer EDDL::Subtract(const initializer_list<layer> &layers) {
+    // TODO: Fix LAadd
+    return EDDL::Subtract(layers, "substract" + to_string(1 + LAdd::add_created));
+}
+
+layer EDDL::Subtract(const initializer_list<layer> &layers, string name) {
+    //TODO: Implement
+}
+
+////////////////////////////////////////////////////////
+
+layer EDDL::Concat(const initializer_list<layer> &layers) {
+    return EDDL::Concat(layers, "concat" + to_string(1 + LCat::cat_created));
+}
+
+layer EDDL::Concat(const initializer_list<layer> &layers, string name) {
+    return new LCat(vlayer(layers.begin(), layers.end()), name, DEV_CPU);
+}
+
+////////////////////////////////////////////////////////
+
+static layer MatMul(const initializer_list<layer> &layers){
+    // TODO: Fix LCAT
+    return EDDL::MatMul(layers, "matmul" + to_string(1 + LCat::cat_created));
+}
+
+static layer MatMul(const initializer_list<layer> &layers, string name){
+    //TODO: Implement
+}
+
+////////////////////////////////////////////////////////
+
+static layer Maximum(const initializer_list<layer> &layers){
+    // TODO: Fix LCAT
+    return EDDL::Maximum(layers, "maximum" + to_string(1 + LCat::cat_created));
+}
+
+static layer Maximum(const initializer_list<layer> &layers, string name){
+    //TODO: Implement
+}
+
+////////////////////////////////////////////////////////
+
+static layer Minimum(const initializer_list<layer> &layers){
+    // TODO: Fix LCAT
+    return EDDL::Minimum(layers, "minimum" + to_string(1 + LCat::cat_created));
+}
+
+static layer Minimum(const initializer_list<layer> &layers, string name){
+    //TODO: Implement
 }
 
 
-////////////
+////////////////////////////////////////////////////////
 
 optimizer EDDL::SGD(const initializer_list<float> &p) {
     return new sgd(p);
@@ -173,6 +325,32 @@ optimizer EDDL::SGD(const initializer_list<float> &p) {
 void EDDL::change(optimizer o, const initializer_list<float> &p) {
     o->change(p);
 }
+
+////////////////////////////////////////////////////////
+
+initializer EDDL::Constant(float value){
+    //Todo: Implement
+}
+
+initializer EDDL::Identity(float gain){
+    //Todo: Implement
+}
+initializer EDDL::GlorotNormal(float seed) {
+    //Todo: Implement
+}
+initializer EDDL::GlorotUniform(float seed){
+    //Todo: Implement
+}
+initializer EDDL::RandomNormal(float mean, float stdev, int seed){
+    //Todo: Implement
+}
+initializer EDDL::RandomUniform(float minval, float maxval, int seed){
+    //Todo: Implement
+}
+initializer EDDL::Orthogonal(float gain, int seed){
+    //Todo: Implement
+}
+
 
 /////////////////////////////////////////////////////////
 model EDDL::Model(vlayer in, vlayer out) {

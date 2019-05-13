@@ -298,7 +298,6 @@ public:
 
 };
 
-
 /// Drop-out Layer
 class LDrop : public LinLayer {
 public:
