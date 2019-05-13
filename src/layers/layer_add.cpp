@@ -70,7 +70,7 @@ LAdd::LAdd(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
 string LAdd::plot(int c) {
     string s;
 
-    s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=lightblue3,tshape=box]";
+    s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=lightblue3,shape=box]";
 
     return s;
 }
