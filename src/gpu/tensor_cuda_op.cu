@@ -141,7 +141,7 @@ void gpu_mult(Tensor *A,float v) {
 
   setDims(A)
 
-  mult<<<dimGrid,dimBlock>>>(A->ptr,v,A->sizes[0],c);
+  mult<<<dimGrid,dimBlock>>>(A->ptr,v,A->shape[0],c);
   check_cuda(cudaDeviceSynchronize(),"mult");
 
 }
@@ -153,7 +153,7 @@ void gpu_sum(Tensor *A,float v) {
 
   setDims(A)
 
-  sum<<<dimGrid,dimBlock>>>(A->ptr,v,A->sizes[0],c);
+  sum<<<dimGrid,dimBlock>>>(A->ptr,v,A->shape[0],c);
   check_cuda(cudaDeviceSynchronize(),"sum");
 
 }
@@ -166,7 +166,7 @@ void gpu_log(Tensor *A) {
 
   setDims(A)
 
-  log<<<dimGrid,dimBlock>>>(A->ptr,A->sizes[0],c);
+  log<<<dimGrid,dimBlock>>>(A->ptr,A->shape[0],c);
   check_cuda(cudaDeviceSynchronize(),"log");
 
 }
@@ -179,7 +179,7 @@ void gpu_exp(Tensor *A) {
 
   setDims(A)
 
-  exp<<<dimGrid,dimBlock>>>(A->ptr,A->sizes[0],c);
+  exp<<<dimGrid,dimBlock>>>(A->ptr,A->shape[0],c);
   check_cuda(cudaDeviceSynchronize(),"exp");
 
 }
@@ -192,7 +192,7 @@ void gpu_sqrt(Tensor *A) {
 
   setDims(A)
 
-  sqrt<<<dimGrid,dimBlock>>>(A->ptr,A->sizes[0],c);
+  sqrt<<<dimGrid,dimBlock>>>(A->ptr,A->shape[0],c);
   check_cuda(cudaDeviceSynchronize(),"sqrt");
 
 }
@@ -205,7 +205,7 @@ void gpu_sqr(Tensor *A) {
 
   setDims(A)
 
-  sqr<<<dimGrid,dimBlock>>>(A->ptr,A->sizes[0],c);
+  sqr<<<dimGrid,dimBlock>>>(A->ptr,A->shape[0],c);
   check_cuda(cudaDeviceSynchronize(),"sqr");
 
 }
@@ -219,7 +219,7 @@ void gpu_mask(Tensor *A,float v) {
 
   setDims(A)
 
-  mask<<<dimGrid,dimBlock>>>(A->ptr,v,A->sizes[0],c);
+  mask<<<dimGrid,dimBlock>>>(A->ptr,v,A->shape[0],c);
   check_cuda(cudaDeviceSynchronize(),"mask");
 
 }
@@ -230,7 +230,7 @@ void gpu_total_sum(Tensor *A,float *tot)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  int r=A->sizes[0];
+  int r=A->shape[0];
   int c=A->size/r;
 
   dim3 dimBlock(r);
@@ -274,14 +274,14 @@ void gpu_fill(Tensor *A,int aini,int aend,Tensor *B,int bini,int bend,int inc)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  int at=A->size/A->sizes[0];
-  int bt=B->size/B->sizes[0];
+  int at=A->size/A->shape[0];
+  int bt=B->size/B->shape[0];
 
   int t=1;
   for(int i=2;i<B->ndim;i++)
-    t*=B->sizes[i];
+    t*=B->shape[i];
 
-  int tot=B->sizes[0]*(bend-1)*B->sizes[1]*t;
+  int tot=B->shape[0]*(bend-1)*B->shape[1]*t;
 
   int r,c;
 
@@ -292,7 +292,7 @@ void gpu_fill(Tensor *A,int aini,int aend,Tensor *B,int bini,int bend,int inc)
       else r=(aend-aini);
       c=t;
 
-      dim3 dimGrid(A->sizes[0],c);
+      dim3 dimGrid(A->shape[0],c);
       dim3 dimBlock(r);
 
       fill<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,t,aini,at,bini,bt,tot,inc);
@@ -320,25 +320,25 @@ void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
   cublasOperation_t trA = CUBLAS_OP_N;
   cublasOperation_t trB = CUBLAS_OP_N;
 
-  int ldA=A->sizes[1];
-  int ldB=B->sizes[1];
-  int ldC=B->sizes[1];
-  int m=B->sizes[1];
-  int n=A->sizes[0];
-  int k=B->sizes[0];
+  int ldA=A->shape[1];
+  int ldB=B->shape[1];
+  int ldC=B->shape[1];
+  int m=B->shape[1];
+  int n=A->shape[0];
+  int k=B->shape[0];
 
 
   if (tA)
   {
     trA = CUBLAS_OP_T;
-  	n=A->sizes[1];
+  	n=A->shape[1];
   }
   if (tB)
     {
   	trB = CUBLAS_OP_T;
-    m=B->sizes[0];
-  	k=B->sizes[1];
-    ldC=B->sizes[0];
+    m=B->shape[0];
+  	k=B->shape[1];
+    ldC=B->shape[0];
     }
 
   check_cublas(cublasSgemm(hcublas[device],trB,trA,m,n,k,&alfa,B->ptr,ldB,A->ptr,ldA,&beta,C->ptr,ldC),"mult2D");
@@ -353,7 +353,7 @@ void gpu_el_mult(Tensor *A, Tensor *B, Tensor *C,int incC)
 
   setDims(A)
 
-  el_mult<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,incC,A->sizes[0],c);
+  el_mult<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,incC,A->shape[0],c);
 
   check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
 }
@@ -365,7 +365,7 @@ void gpu_el_div(Tensor *A, Tensor *B, Tensor *C,int incC)
 
   setDims(A)
 
-  el_mult<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,incC,A->sizes[0],r);
+  el_mult<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,incC,A->shape[0],r);
 
   check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
 }
@@ -389,11 +389,11 @@ void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  int m=A->sizes[1];
-  int n=B->sizes[0];
-  int ldA=A->sizes[1];
-  int ldB=B->sizes[1];
-  int ldC=A->sizes[1];
+  int m=A->shape[1];
+  int n=B->shape[0];
+  int ldA=A->shape[1];
+  int ldB=B->shape[1];
+  int ldC=A->shape[1];
 
   float alfa=scA;
   float beta=scB;
@@ -416,11 +416,11 @@ void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  dim3 dimGrid(A->sizes[0]);
-  dim3 dimBlock(A->sizes[1]);
+  dim3 dimGrid(A->shape[0]);
+  dim3 dimBlock(A->shape[1]);
 
 
-  sum_mat_row<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,A->sizes[0],A->sizes[1]);
+  sum_mat_row<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,A->shape[0],A->shape[1]);
 
   check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
 
@@ -431,10 +431,10 @@ void gpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  dim3 dimGrid(A->sizes[0]);
-  dim3 dimBlock(A->sizes[1]);
+  dim3 dimGrid(A->shape[0]);
+  dim3 dimBlock(A->shape[1]);
 
-  sum_mat_col<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,A->sizes[0],A->sizes[1]);
+  sum_mat_col<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,A->shape[0],A->shape[1]);
 
   check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
 
@@ -449,12 +449,12 @@ void gpu_reduce_sum2D(Tensor *A,Tensor *B,int axis,int incB)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  dim3 dimGrid(A->sizes[0]);
-  dim3 dimBlock(A->sizes[1]);
+  dim3 dimGrid(A->shape[0]);
+  dim3 dimBlock(A->shape[1]);
 
   if (!incB) gpu_set(B,0.0);
 
-  reduce_sum2D<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->sizes[0],A->sizes[1],axis);
+  reduce_sum2D<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->shape[0],A->shape[1],axis);
 
 
   check_cuda(cudaDeviceSynchronize(),"reduce_sum2D");
@@ -549,7 +549,7 @@ void gpu_accuracy(Tensor *A,Tensor *B,int *acc)
   cudaSetDevice(device);
   int r,c;
 
-  r=A->sizes[0];
+  r=A->shape[0];
   c=A->size/r;
 
   dim3 dimGrid(r);
@@ -618,8 +618,8 @@ float* auxE=NULL;
 
   int r,c;
 
-  r=A->sizes[0];
-  c=A->sizes[1];
+  r=A->shape[0];
+  c=A->shape[1];
 
   dim3 dimGrid(1);
   dim3 dimBlock(r);

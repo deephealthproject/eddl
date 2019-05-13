@@ -54,7 +54,7 @@ int Tensor::eqsize(Tensor *A, Tensor *B) {
     if (A->ndim != B->ndim) return 0;
 
     for (int i = 0; i < A->ndim; i++)
-        if (A->sizes[i] != B->sizes[i]) return 0;
+        if (A->shape[i] != B->shape[i]) return 0;
 
     return 1;
 }
@@ -66,7 +66,7 @@ int Tensor::eqsize(Tensor *A, Tensor *B) {
 void Tensor::copy(Tensor *A, Tensor *B) {
 
     if (!Tensor::eqsize(A, B))
-        msg("Tensors with different sizes", "Tensor::copy");
+        msg("Tensors with different shape", "Tensor::copy");
 
     B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
@@ -99,18 +99,18 @@ void Tensor::copy(Tensor *A, Tensor *B) {
 //////////////////////////////////////
 void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc) {
     if (A->ndim != B->ndim)
-        msg("Tensors with different sizes", "Tensor::fill");
+        msg("Tensors with different shape", "Tensor::fill");
 
     B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
-        int at = A->size / A->sizes[0];
-        int bt = B->size / B->sizes[0];
+        int at = A->size / A->shape[0];
+        int bt = B->size / B->shape[0];
 
         int t = 1;
         for (int i = 2; i < A->ndim; i++)
-            t *= A->sizes[i];
+            t *= A->shape[i];
 
-        for (int i = 0; i < A->sizes[0]; i++) {
+        for (int i = 0; i < A->shape[0]; i++) {
             int ap = (i * at) + (aini * t);
             int bp = (i * bt) + (bini * t);
 
@@ -137,7 +137,7 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
 void Tensor::inc(Tensor *A, Tensor *B) {
 
     if (!Tensor::eqsize(A, B))
-        msg("Tensors with different sizes", "Tensor::inc");
+        msg("Tensors with different shape", "Tensor::inc");
 
 
     if ((A->isCPU()) && (B->isCPU())) {
@@ -172,11 +172,11 @@ void Tensor::inc(Tensor *A, Tensor *B) {
 //////////////////////////////////////
 void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
 
-    if ((A->size / A->sizes[0]) != (B->size / B->sizes[0])) msg("Incompatible sizes", "Tensor::select");
+    if ((A->size / A->shape[0]) != (B->size / B->shape[0])) msg("Incompatible shape", "Tensor::select");
 
     //B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
-        int s = A->size / A->sizes[0];
+        int s = A->size / A->shape[0];
 
         for (int i = ini; i < end; i++) {
             int p = sind[i] * s;
@@ -205,15 +205,15 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
     if ((A->ndim != 2) || (B->ndim != 2) || (C->ndim != 2)) msg("Only 2D tensors", "Tensor::mult2D");
     if (!tA) {
         if (!tB) {
-            if ((A->sizes[1] != B->sizes[0]) || (A->sizes[0] != C->sizes[0]) || (B->sizes[1] != C->sizes[1]))
+            if ((A->shape[1] != B->shape[0]) || (A->shape[0] != C->shape[0]) || (B->shape[1] != C->shape[1]))
                 msg("Incompatible dims", "Tensor::mult2D");
-        } else if ((A->sizes[1] != B->sizes[1]) || (A->sizes[0] != C->sizes[0]) || (B->sizes[0] != C->sizes[1]))
+        } else if ((A->shape[1] != B->shape[1]) || (A->shape[0] != C->shape[0]) || (B->shape[0] != C->shape[1]))
             msg("Incompatible dims", "Tensor::mult2D");
     } else {
         if (!tB) {
-            if ((A->sizes[0] != B->sizes[0]) || (A->sizes[1] != C->sizes[0]) || (B->sizes[1] != C->sizes[1]))
+            if ((A->shape[0] != B->shape[0]) || (A->shape[1] != C->shape[0]) || (B->shape[1] != C->shape[1]))
                 msg("Incompatible dims", "Tensor::mult2D");
-        } else if ((A->sizes[0] != B->sizes[1]) || (A->sizes[1] != C->sizes[0]) || (B->sizes[0] != C->sizes[1]))
+        } else if ((A->shape[0] != B->shape[1]) || (A->shape[1] != C->shape[0]) || (B->shape[0] != C->shape[1]))
             msg("Incompatible dims", "Tensor::mult2D");
     }
 
@@ -365,13 +365,13 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
     if ((A->device != B->device) || (A->device != C->device))
         msg("Tensors in different devices", "Tensor::sum2D_rowwise");
     if ((A->ndim != 2) || (B->ndim != 1) || (C->ndim != 2)) msg("sum2D_rowwise dims");
-    if ((!eqsize(A, C)) || (A->sizes[1] != B->sizes[0])) msg("Incompatible dims", "Tensor::sum2D_rowwise");
+    if ((!eqsize(A, C)) || (A->shape[1] != B->shape[0])) msg("Incompatible dims", "Tensor::sum2D_rowwise");
 
     C->tsem->lock();
     if (A->isCPU()) {
         int p = 0;
-        for (int i = 0; i < A->sizes[0]; i++) {
-            for (int j = 0; j < A->sizes[1]; j++, p++)
+        for (int i = 0; i < A->shape[0]; i++) {
+            for (int j = 0; j < A->shape[1]; j++, p++)
                 C->ptr[p] = A->ptr[p] + B->ptr[j];
         }
     }
@@ -401,13 +401,13 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
     if ((A->device != B->device) || (A->device != C->device))
         msg("Tensors in different devices", "Tensor::sum2D_colwise");
     if ((A->ndim != 2) || (B->ndim != 1) || (C->ndim != 2)) msg("sum2D_colwise dims");
-    if ((!eqsize(A, C)) || (A->sizes[0] != B->sizes[0])) msg("Incompatible dims", "Tensor::sum2D_colwise");
+    if ((!eqsize(A, C)) || (A->shape[0] != B->shape[0])) msg("Incompatible dims", "Tensor::sum2D_colwise");
 
     C->tsem->lock();
     if (A->isCPU()) {
         int p = 0;
-        for (int i = 0; i < A->sizes[0]; i++) {
-            for (int j = 0; j < A->sizes[1]; j++, p++)
+        for (int i = 0; i < A->shape[0]; i++) {
+            for (int j = 0; j < A->shape[1]; j++, p++)
                 C->ptr[p] = A->ptr[p] + B->ptr[i];
         }
     }
@@ -436,25 +436,25 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
 void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::reduce_sum2D");
     if ((A->ndim - 1) != B->ndim) msg("Incorrect dims", "Tensor::reduce_sum2D");
-    if ((A->sizes[1 - axis] != B->sizes[0])) msg("Incompatible dims", "Tensor::reduce_sum2D");
+    if ((A->shape[1 - axis] != B->shape[0])) msg("Incompatible dims", "Tensor::reduce_sum2D");
 
     B->tsem->lock();
     if (A->isCPU()) {
         if (axis == 0) {
-            if (!incB) for (int i = 0; i < A->sizes[1]; ++i) B->ptr[i] = 0;
+            if (!incB) for (int i = 0; i < A->shape[1]; ++i) B->ptr[i] = 0;
 
             int p = 0;
-            for (int i = 0; i < A->sizes[0]; ++i) {
-                for (int j = 0; j < A->sizes[1]; ++j, p++)
+            for (int i = 0; i < A->shape[0]; ++i) {
+                for (int j = 0; j < A->shape[1]; ++j, p++)
                     B->ptr[j] += A->ptr[p];
             }
 
         } else {
-            if (!incB) for (int i = 0; i < A->sizes[0]; ++i) B->ptr[i] = 0;
+            if (!incB) for (int i = 0; i < A->shape[0]; ++i) B->ptr[i] = 0;
 
             int p = 0;
-            for (int i = 0; i < A->sizes[0]; ++i) {
-                for (int j = 0; j < A->sizes[1]; ++j, p++)
+            for (int i = 0; i < A->shape[0]; ++i) {
+                for (int j = 0; j < A->shape[1]; ++j, p++)
                     B->ptr[i] += A->ptr[p];
             }
         }
@@ -524,14 +524,14 @@ void ConvolDescriptor::build(Tensor *A) {
     nk = ksize[0];
     kr = ksize[1];
     kc = ksize[2];
-    kz = A->sizes[1];
+    kz = A->shape[1];
 
     sr = stride[0];
     sc = stride[1];
 
-    iz = A->sizes[1];
-    ir = A->sizes[2];
-    ic = A->sizes[3];
+    iz = A->shape[1];
+    ir = A->shape[2];
+    ic = A->shape[3];
 
     padr = pad[0];
     padc = pad[1];
@@ -541,9 +541,9 @@ void ConvolDescriptor::build(Tensor *A) {
     c = (ic - kc + 2 * padc) / sc + 1;
 
     if ((r <= 0) || (c <= 0))
-        msg("Invalid output sizes", "ConvolDescriptor::build");
+        msg("Invalid output shape", "ConvolDescriptor::build");
 
-    O = new Tensor({A->sizes[0], z, r, c}, A->device);
+    O = new Tensor({A->shape[0], z, r, c}, A->device);
     D = new Tensor(O->getshape(), A->device);
 
     // Params
@@ -554,7 +554,7 @@ void ConvolDescriptor::build(Tensor *A) {
 
     if (I->isCPU()) {
         // mem for ptr, lowering im2col
-        ptrI = (float *) malloc(A->sizes[0] * r * c * kr * kc * kz * sizeof(float));
+        ptrI = (float *) malloc(A->shape[0] * r * c * kr * kc * kz * sizeof(float));
         new(&matK) Eigen::Map<Eigen::MatrixXf>(K->ptr, kr * kc * kz, nk);
         new(&matgK) Eigen::Map<Eigen::MatrixXf>(gK->ptr, kr * kc * kz, nk);
         // convolution: matC=matA*matK
@@ -692,9 +692,9 @@ void PoolDescriptor::build(Tensor *A) {
     sr = stride[0];
     sc = stride[1];
 
-    iz = A->sizes[1];
-    ir = A->sizes[2];
-    ic = A->sizes[3];
+    iz = A->shape[1];
+    ir = A->shape[2];
+    ic = A->shape[3];
 
     padr = pad[0];
     padc = pad[1];
@@ -706,9 +706,9 @@ void PoolDescriptor::build(Tensor *A) {
     //if (kc%2==0) c--;
 
     if ((r <= 0) || (c <= 0))
-        msg("Invalid output sizes", "PoolDescriptor::build");
+        msg("Invalid output shape", "PoolDescriptor::build");
 
-    O = new Tensor({A->sizes[0], z, r, c}, A->device);
+    O = new Tensor({A->shape[0], z, r, c}, A->device);
     D = new Tensor(O->getshape(), A->device);
 
 
@@ -815,7 +815,7 @@ int Tensor::accuracy(Tensor *A, Tensor *B) {
     if (A->isCPU()) {
         int aind, bind;
 
-        for (int i = 0; i < A->sizes[0]; i++) {
+        for (int i = 0; i < A->shape[0]; i++) {
             (*A->ptr2).col(i).maxCoeff(&aind);
             (*B->ptr2).col(i).maxCoeff(&bind);
             if (aind == bind) acc++;
@@ -911,14 +911,14 @@ void Tensor::Softmax(Tensor *A, Tensor *B) {
         float max, sum;
 
 
-        for (int i = 0; i < A->sizes[0]; i++) {
+        for (int i = 0; i < A->shape[0]; i++) {
 
             max = (*A->ptr2).col(i).maxCoeff();
-            for (int j = 0; j < A->sizes[1]; j++)
+            for (int j = 0; j < A->shape[1]; j++)
                 (*B->ptr2)(j, i) = exp((*A->ptr2)(j, i) - max);
 
             sum = (*B->ptr2).col(i).sum();
-            for (int j = 0; j < B->sizes[1]; j++)
+            for (int j = 0; j < B->shape[1]; j++)
                 (*B->ptr2)(j, i) = (*B->ptr2)(j, i) / sum;
         }
     }

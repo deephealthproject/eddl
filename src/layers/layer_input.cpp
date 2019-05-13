@@ -50,8 +50,8 @@ LInput::LInput(Tensor *in, string name, int d) : LinLayer(name, d) {
 string LInput::plot(int c) {
     string s;
 
-    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=LightBlue,shape=box]";
-    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";
+    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=LightBlue,tshape=box]";
+    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,tshape=box]";
 
 
     return s;
@@ -67,7 +67,7 @@ void LInput::backward() {
 }
 
 Layer *LInput::share(int c, int bs, vector<Layer *> p) {
-    shape s = input->getshape();
+    tshape s = input->getshape();
     s[0] = bs;
 
     LInput *n = new LInput(new Tensor(s), "share_" + to_string(c) + name, dev);
@@ -77,7 +77,7 @@ Layer *LInput::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LInput::clone(int c, int bs, vector<Layer *> p, int todev) {
-    shape s = input->getshape();
+    tshape s = input->getshape();
     s[0] = bs;
 
     LInput *n = new LInput(new Tensor(s, todev), "clone_" + to_string(todev) + name, todev);

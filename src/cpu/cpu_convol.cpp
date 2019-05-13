@@ -82,7 +82,7 @@ void cpu_conv2D(ConvolDescriptor *D)
   float *ptrO=D->O->ptr;
   float *ptrI=D->ptrI;
 
-  for(int b=0;b<D->I->sizes[0];b++,ptrO+=osize,ptrI+=isize){
+  for(int b=0;b<D->I->shape[0];b++,ptrO+=osize,ptrI+=isize){
     new (&(D->matI)) Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
     new (&(D->matO)) Eigen::Map<Eigen::MatrixXf>(ptrO,D->r*D->c,D->z);
 
@@ -102,7 +102,7 @@ void cpu_conv2D_grad(ConvolDescriptor *D)
   float *ptrD=D->D->ptr;
   float *ptrI=D->ptrI;
 
-  for(int b=0;b<D->I->sizes[0];b++,ptrD+=osize,ptrI+=isize){
+  for(int b=0;b<D->I->shape[0];b++,ptrD+=osize,ptrI+=isize){
     // re-using previous lowering
     new (&(D->matI)) Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
     new (&(D->matD)) Eigen::Map<Eigen::MatrixXf>(ptrD,D->r*D->c,D->z);
@@ -120,7 +120,7 @@ void cpu_conv2D_back(ConvolDescriptor *D)
   float *ptrI=D->ptrI;
   new (&(D->matI)) Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
 
-  for(int b=0;b<D->I->sizes[0];b++,ptrD+=osize){
+  for(int b=0;b<D->I->shape[0];b++,ptrD+=osize){
     new (&(D->matD)) Eigen::Map<Eigen::MatrixXf>(ptrD,D->r*D->c,D->z);
 
     D->matI=D->matD*D->matK.transpose();
@@ -142,7 +142,7 @@ void cpu_mpool2D(PoolDescriptor *D)
   int irsize=D->ir*D->ic;
 
   int p=0;
-  for(int b=0;b<D->I->sizes[0];b++){
+  for(int b=0;b<D->I->shape[0];b++){
     for(k=0;k<D->iz;k++) {
       for(i=-D->padr;i<=D->ir+D->padr-D->kr;i+=D->sr) {
         for(j=-D->padc;j<=D->ic+D->padc-D->kc;j+=D->sc,p++) {
@@ -170,7 +170,7 @@ void cpu_mpool2D_back(PoolDescriptor *D)
   int irsize=D->ir*D->ic;
 
   int p=0;
-  for(int b=0;b<D->I->sizes[0];b++){
+  for(int b=0;b<D->I->shape[0];b++){
     for(k=0;k<D->iz;k++) {
       for(i=-D->padr;i<=D->ir+D->padr-D->kr;i+=D->sr) {
         for(j=-D->padc;j<=D->ic+D->padc-D->kc;j+=D->sc,p++) {

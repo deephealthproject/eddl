@@ -50,15 +50,15 @@ LCat::LCat(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
 
         if (ndim == 2) {
             for (int i = 0; i < parent.size() - 1; ++i)
-                if (parent[i]->output->sizes[0] != parent[i + 1]->output->sizes[0])
+                if (parent[i]->output->shape[0] != parent[i + 1]->output->shape[0])
                     msg("Error: LCat layers with different size in dim 1");
         } else if (ndim == 4) {
             for (int i = 0; i < parent.size() - 1; ++i) {
-                if (parent[i]->output->sizes[0] != parent[i + 1]->output->sizes[0])
+                if (parent[i]->output->shape[0] != parent[i + 1]->output->shape[0])
                     msg("Error: LCat layers with different size in dim 1");
-                else if (parent[i]->output->sizes[2] != parent[i + 1]->output->sizes[2])
+                else if (parent[i]->output->shape[2] != parent[i + 1]->output->shape[2])
                     msg("Error: LCat layers with different size in dim 3, rows of 4D");
-                else if (parent[i]->output->sizes[3] != parent[i + 1]->output->sizes[3])
+                else if (parent[i]->output->shape[3] != parent[i + 1]->output->shape[3])
                     msg("Error: LCat layers with different size in dim 4, cols of 4D");
             }
         } else {
@@ -71,11 +71,11 @@ LCat::LCat(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
     input = parent[0]->output;
     int t = 0;
     for (int i = 0; i < parent.size(); ++i) {
-        t += parent[i]->output->sizes[1];
+        t += parent[i]->output->shape[1];
         index.push_back(t);
     }
 
-    shape s = parent[0]->output->getshape();
+    tshape s = parent[0]->output->getshape();
     s[1] = t;
 
     output = new Tensor(s, d);
@@ -93,7 +93,7 @@ LCat::LCat(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
 void LCat::forward() {
     int ini = 0;
     for (int i = 0; i < parent.size(); ++i) {
-        Tensor::fill(parent[i]->output, 0, parent[i]->output->sizes[1], output, ini, index[i], 0);
+        Tensor::fill(parent[i]->output, 0, parent[i]->output->shape[1], output, ini, index[i], 0);
         ini = index[i];
     }
 }
@@ -104,7 +104,7 @@ void LCat::backward() {
     if (parent.size()) {
         int ini = 0;
         for (int i = 0; i < parent.size(); ++i) {
-            Tensor::fill(delta, ini, index[i], parent[i]->delta, 0, parent[i]->output->sizes[1], 1);
+            Tensor::fill(delta, ini, index[i], parent[i]->delta, 0, parent[i]->output->shape[1], 1);
             ini = index[i];
         }
     }
@@ -131,8 +131,8 @@ Layer *LCat::clone(int c, int bs, vector<Layer *> p, int todev) {
 string LCat::plot(int c) {
     string s;
 
-    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";
-    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=lightblue3,shape=box]";
+    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,tshape=box]";
+    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=lightblue3,tshape=box]";
 
     return s;
 }

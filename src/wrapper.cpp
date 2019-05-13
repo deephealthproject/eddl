@@ -28,7 +28,7 @@ int Tensor_size(Tensor *t) { // Data length
 }
 
 int *Tensor_shape(Tensor *t) {
-    return &t->sizes[0];
+    return &t->shape[0];
 }
 
 float *Tensor_getData(Tensor *t) {
@@ -37,7 +37,7 @@ float *Tensor_getData(Tensor *t) {
 
 void Tensor_point2data(Tensor *t, float *ptr) {
     int size = 1;
-    for (int i = 0; i < t->ndim; ++i) size *= t->sizes[i];
+    for (int i = 0; i < t->ndim; ++i) size *= t->shape[i];
     t->size = size;
     t->ptr = ptr;
 }

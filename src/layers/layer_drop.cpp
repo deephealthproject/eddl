@@ -96,8 +96,8 @@ Layer *LDrop::clone(int c, int bs, vector<Layer *> p, int todev) {
 string LDrop::plot(int c) {
     string s;
 
-    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";
-    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=lightpink,shape=box]";
+    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,tshape=box]";
+    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=lightpink,tshape=box]";
 
     return s;
 }

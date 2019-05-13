@@ -50,9 +50,7 @@ class EDDL {
 public:
     // Create Tensors
     static tensor T(const initializer_list<int> &init);
-
-    static tensor T(const shape s);
-
+    static tensor T(const tshape s);
     static tensor T(string fname);
 
 

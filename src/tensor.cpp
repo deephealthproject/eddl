@@ -49,7 +49,7 @@ using namespace std;
 int initcuda[MAX_GPUS] = {0, 0, 0, 0, 0, 0, 0, 0};
 int linpos;
 
-extern ostream &operator<<(ostream &os, const shape s);
+extern ostream &operator<<(ostream &os, const tshape s);
 
 void msg(string s, string s2) {
     cout << "\n" << s << " (" << s2 << ")\n";
@@ -70,11 +70,11 @@ Tensor::Tensor() : device(DEV_CPU), ndim(0), size(0) {}
 
 Tensor::Tensor(const initializer_list<int> &init) : Tensor(init, DEV_CPU) {}
 
-Tensor::Tensor(const initializer_list<int> &init, int dev) : Tensor(shape(init.begin(), init.end()), dev) {}
+Tensor::Tensor(const initializer_list<int> &init, int dev) : Tensor(tshape(init.begin(), init.end()), dev) {}
 
-Tensor::Tensor(const shape s) : Tensor(s, DEV_CPU) {}
+Tensor::Tensor(const tshape s) : Tensor(s, DEV_CPU) {}
 
-Tensor::Tensor(shape s, int dev) {
+Tensor::Tensor(tshape s, int dev) {
 #ifndef cGPU
     if ((dev > DEV_CPU) && (isGPU())) {
         fprintf(stderr, "Not compiled for GPU\n");
@@ -90,14 +90,14 @@ Tensor::Tensor(shape s, int dev) {
 
     device = dev;
     ndim = s.size();
-    sizes = s;
+    shape = s;
 
     size = 1;
     for (int i = 0; i < ndim; ++i) size *= s[i];
 
     if (isCPU()) {
         if (ndim == 2) {
-            mat = Eigen::MatrixXf(sizes[1], sizes[0]);
+            mat = Eigen::MatrixXf(shape[1], shape[0]);
             ptr2 = &mat;
             ptr = &(mat(0, 0));
         } else {
@@ -126,10 +126,10 @@ Tensor::Tensor(shape s, int dev) {
 }
 
 
-Tensor::Tensor(shape s, Tensor *T) {
+Tensor::Tensor(tshape s, Tensor *T) {
     device = T->device;
     ndim = s.size();
-    sizes = s;
+    shape = s;
 
     size = 1;
     for (int i = 0; i < ndim; ++i) size *= s[i];
@@ -138,7 +138,7 @@ Tensor::Tensor(shape s, Tensor *T) {
     if (isCPU()) {
         ptr = T->ptr;
         if (ndim == 2) {
-            new(&mat) Eigen::Map<Eigen::MatrixXf>(T->ptr, sizes[1], sizes[0]);
+            new(&mat) Eigen::Map<Eigen::MatrixXf>(T->ptr, shape[1], shape[0]);
             ptr2 = &mat;
         }
     }
@@ -174,23 +174,23 @@ Tensor::Tensor(string fname, int bin) {
         int read = fread(&ndim, sizeof(int), 1, fe);
         for (int i = 0; i < ndim; ++i) {
             int read = fread(&v, sizeof(int), 1, fe);
-            sizes.push_back(v);
+            shape.push_back(v);
         }
 
-        shape s = sizes;
+        tshape s = shape;
 
         cout << "loading file with tensor:" << s << "\n";
 
         device = DEV_CPU;
         size = 1;
-        for (int i = 0; i < ndim; ++i) size *= sizes[i];
+        for (int i = 0; i < ndim; ++i) size *= shape[i];
 
         if (ndim == 2) {
             //ptr=(float *)malloc(size*sizeof(float));
-            //Eigen::Map<Eigen::MatrixXf> mat(ptr,sizes[1],sizes[0]);
+            //Eigen::Map<Eigen::MatrixXf> mat(ptr,shape[1],shape[0]);
             //ptr2=&mat;
 
-            mat = Eigen::MatrixXf(sizes[1], sizes[0]);
+            mat = Eigen::MatrixXf(shape[1], shape[0]);
             ptr2 = &mat;
             ptr = &(mat(0, 0));
 
@@ -217,19 +217,19 @@ Tensor::Tensor(string fname, int bin) {
         fscanf(fe, "%d ", &ndim);
         for (int i = 0; i < ndim; ++i) {
             fscanf(fe, "%d ", &v);
-            sizes.push_back(v);
+            shape.push_back(v);
         }
 
-        shape s = sizes;
+        tshape s = shape;
 
         cout << "loading file with tensor:" << s << "\n";
 
         device = DEV_CPU;
         size = 1;
-        for (int i = 0; i < ndim; ++i) size *= sizes[i];
+        for (int i = 0; i < ndim; ++i) size *= shape[i];
 
         if (ndim == 2) {
-            mat = Eigen::MatrixXf(sizes[1], sizes[0]);
+            mat = Eigen::MatrixXf(shape[1], shape[0]);
             ptr2 = &mat;
             ptr = &(mat(0, 0));
         } else {
@@ -264,7 +264,7 @@ void Tensor::save(string fname) {
 
     fwrite(&ndim, sizeof(int), 1, fe);
     for (i = 0; i < ndim; ++i)
-        fwrite(&sizes[i], sizeof(int), 1, fe);
+        fwrite(&shape[i], sizeof(int), 1, fe);
 
     fwrite(ptr, sizeof(float), size, fe);
 
@@ -303,8 +303,8 @@ Tensor::~Tensor() {
 
 
 ///////////////////////////////////////////
-shape Tensor::getshape() {
-    shape s = sizes;
+tshape Tensor::getshape() {
+    tshape s = shape;
     return s;
 }
 
@@ -316,8 +316,8 @@ void Tensor::info() {
     fprintf(stderr, "DIM=%d\n", ndim);
     fprintf(stderr, "(");
     for (i = 0; i < ndim - 1; i++)
-        fprintf(stderr, "%d,", sizes[i]);
-    fprintf(stderr, "%d)\n", sizes[i]);
+        fprintf(stderr, "%d,", shape[i]);
+    fprintf(stderr, "%d)\n", shape[i]);
 
     fprintf(stderr, "Total bytes=%ld\n", size * sizeof(float));
     if (isCPU()) fprintf(stderr, "Device=CPU\n");
@@ -334,7 +334,7 @@ void Tensor::print() {
 
     if (isCPU()) {
         if (ndim == 1)
-            for (int i = 0; i < sizes[0]; ++i)
+            for (int i = 0; i < shape[0]; ++i)
                 printf("%f ", ptr[i]);
         else if (ndim == 2) {
             cout << (*ptr2).transpose() << "\n";
@@ -354,9 +354,9 @@ void Tensor::print() {
         if (ndim==2)
           {
             int i,j,p=0;
-            for(i=0;i<sizes[0];++i)
+            for(i=0;i<shape[0];++i)
               {
-                for(j=0;j<sizes[1];++j,++p)
+                for(j=0;j<shape[1];++j,++p)
                   printf("%f ",v[p]);
                   printf("\n");
               }

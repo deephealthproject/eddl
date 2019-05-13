@@ -34,7 +34,7 @@
 
 #include "layer.h"
 
-extern ostream &operator<<(ostream &os, const shape s);
+extern ostream &operator<<(ostream &os, const tshape s);
 
 
 using namespace std;
@@ -42,24 +42,24 @@ using namespace std;
 int LReshape::reshape_created = 0;
 
 LReshape::LReshape(Layer *parent, const initializer_list<int> &init, string name, int d) : LReshape(parent,
-                                                                                                    shape(init.begin(),
+                                                                                                    tshape(init.begin(),
                                                                                                           init.end()),
                                                                                                     "reshape" +
                                                                                                     to_string(
                                                                                                             reshape_created),
                                                                                                     dev) {}
 
-LReshape::LReshape(Layer *parent, shape s, string name, int d) : LinLayer(name, d) {
+LReshape::LReshape(Layer *parent, tshape s, string name, int d) : LinLayer(name, d) {
     ls = s;
     reshape_created++;
 
     input = parent->output;
 
-    shape sin = input->getshape();
+    tshape sin = input->getshape();
     int tin = input->size;
     int t = 1, c = 0, ind = -1;
 
-    // Check sizes comp.
+    // Check shape comp.
     for (int i = 0; i < ls.size(); i++) {
         if (ls[i] != -1) t *= ls[i];
         else {
@@ -73,15 +73,15 @@ LReshape::LReshape(Layer *parent, shape s, string name, int d) : LinLayer(name, 
 
     if (c == 1) {
         if (t > tin) {
-            msg("Incompatible sizes", "Reshape");
+            msg("Incompatible shape", "Reshape");
         } else if (tin % t) {
-            msg("Incompatible sizes", "Reshape");
+            msg("Incompatible shape", "Reshape");
         } else {
             ls[ind] = tin / t;
             t = tin;
         }
     } else if (t != tin) {
-        msg("Incompatible sizes", "Reshape");
+        msg("Incompatible shape", "Reshape");
     }
 
     ///////
@@ -107,7 +107,7 @@ void LReshape::backward() {
 
 
 Layer *LReshape::share(int c, int bs, vector<Layer *> p) {
-    shape s = ls;
+    tshape s = ls;
     s[0] = bs;
 
     LReshape *n = new LReshape(p[0], s, "share_" + to_string(c) + name, dev);
@@ -117,7 +117,7 @@ Layer *LReshape::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LReshape::clone(int c, int bs, vector<Layer *> p, int todev) {
-    shape s = ls;
+    tshape s = ls;
     s[0] = bs;
 
     LReshape *n = new LReshape(p[0], s, "clone_" + to_string(todev) + name, todev);
@@ -130,8 +130,8 @@ Layer *LReshape::clone(int c, int bs, vector<Layer *> p, int todev) {
 string LReshape::plot(int c) {
     string s;
 
-    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";
-    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=gray75,shape=box]";
+    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,tshape=box]";
+    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=gray75,tshape=box]";
 
     return s;
 }

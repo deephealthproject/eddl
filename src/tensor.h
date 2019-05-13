@@ -68,7 +68,7 @@
 using namespace std;
 typedef Eigen::Matrix<float, -1, -1, Eigen::RowMajor> MatrixXRMf;
 
-typedef vector<int> shape;
+typedef vector<int> tshape;
 
 void msg(string s);
 
@@ -142,7 +142,7 @@ public:
     int device;
     int ndim;
     int size;
-    shape sizes;
+    tshape shape;
 
     float *ptr;
 
@@ -165,17 +165,17 @@ public:
 
     Tensor(const initializer_list<int> &init, int dev);
 
-    Tensor(const shape s);
+    Tensor(const tshape s);
 
-    Tensor(const shape s, int dev);
+    Tensor(const tshape s, int dev);
 
     Tensor(string fname, int bin = 1);
 
-    Tensor(shape s, Tensor *T);
+    Tensor(tshape s, Tensor *T);
 
     ~Tensor();
 
-    shape getshape();
+    tshape getshape();
 
     void info();
 

@@ -47,7 +47,7 @@
 using namespace std;
 using namespace std::chrono;
 
-ostream &operator<<(ostream &os, const shape s) {
+ostream &operator<<(ostream &os, const tshape s) {
     int i;
     os << "(";
     for (i = 0; i < s.size() - 1; ++i) {
@@ -179,8 +179,8 @@ void Net::info() {
     cout << "\n";
     for (int i = 0; i < layers.size(); i++) {
         cout << layers[i]->name << ": ";
-        shape si = layers[i]->input->getshape();
-        shape so = layers[i]->output->getshape();
+        tshape si = layers[i]->input->getshape();
+        tshape so = layers[i]->output->getshape();
         cout << si << "-->" << so << "\n";
     }
 
@@ -466,7 +466,7 @@ void Net::split(int c, int todev) {
     // Tensors for input/output for split nets.
     for (int i = 0; i < c; i++)
         for (int j = 0; j < lin.size(); j++) {
-            shape s = lin[j]->input->getshape();
+            tshape s = lin[j]->input->getshape();
             if (i == (c - 1)) s[0] = bs + m;
             else s[0] = bs;
 
@@ -476,7 +476,7 @@ void Net::split(int c, int todev) {
 
     for (int i = 0; i < c; i++)
         for (int j = 0; j < lout.size(); j++) {
-            shape s = lout[j]->output->getshape();
+            tshape s = lout[j]->output->getshape();
             if (i == (c - 1)) s[0] = bs + m;
             else s[0] = bs;
 
@@ -623,7 +623,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     if (optimizer == NULL)
         msg("Net is not build", "Net.fit");
 
-    // Check list sizes
+    // Check list shape
     if (tin.size() != lin.size())
         msg("input tensor list does not match with defined input layers", "Net.fit");
     if (tout.size() != lout.size())
@@ -631,18 +631,18 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 
 
     // Check data consistency
-    n = tin[0]->sizes[0];
+    n = tin[0]->shape[0];
     for (i = 1; i < tin.size(); i++)
-        if (tin[i]->sizes[0] != n)
+        if (tin[i]->shape[0] != n)
             msg("different number of samples in input tensor", "Net.fit");
 
 
     for (i = 0; i < lin.size(); i++)
-        if (lin[i]->input->sizes[0] != batch)
+        if (lin[i]->input->shape[0] != batch)
             msg("different number of samples in input tensor w.r.t batch size", "Net.fit");
 
     for (i = 1; i < tout.size(); i++)
-        if (tout[i]->sizes[0] != n)
+        if (tout[i]->shape[0] != n)
             msg("different number of samples in output tensor", "Net.fit");
 
     // Create internal variables
@@ -709,7 +709,7 @@ void Net::train_batch(const initializer_list<Tensor *> &in, const initializer_li
     vtensor X = vtensor(in.begin(), in.end());
     vtensor Y = vtensor(out.begin(), out.end());
 
-    // Check sizes
+    // Check shape
     if (X.size() != lin.size())
         msg("input tensor list does not match", "Net.train_batch");
     if (Y.size() != lout.size())
@@ -724,7 +724,7 @@ void Net::train_batch(const initializer_list<Tensor *> &in, const initializer_li
             msg("output tensor shapes does not match", "Net.train_batch");
 
     setmode(TRMODE);
-    train_batch(X, Y, sind, lin[0]->input->sizes[0]);
+    train_batch(X, Y, sind, lin[0]->input->shape[0]);
 }
 
 
@@ -741,13 +741,13 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int batch, int eval) {
         for (int i = 0; i < batch; i++)
             sind.push_back(0);
         for (int i = 0; i < snets.size(); i++)
-            for (int j = 0; j < Xs[i][0]->sizes[0]; j++)
+            for (int j = 0; j < Xs[i][0]->shape[0]; j++)
                 sind[j] = (i * bs) + j;
     }
 
     for (int i = 0; i < snets.size(); i++) {
         int ini = i * bs;
-        int end = ini + Xs[i][0]->sizes[0];
+        int end = ini + Xs[i][0]->shape[0];
 
         for (int j = 0; j < X.size(); j++) {
             Tensor::select(X[j], Xs[i][j], sind, ini, end);
@@ -833,7 +833,7 @@ void Net::evaluate(vtensor tin, vtensor tout) {
 
     int i, j, k, n;
 
-    // Check list sizes
+    // Check list shape
     if (tin.size() != lin.size())
         msg("input tensor list does not match with defined input layers", "Net.evaluate");
     if (tout.size() != lout.size())
@@ -841,19 +841,19 @@ void Net::evaluate(vtensor tin, vtensor tout) {
 
 
     // Check data consistency
-    n = tin[0]->sizes[0];
+    n = tin[0]->shape[0];
     for (i = 1; i < tin.size(); i++)
-        if (tin[i]->sizes[0] != n)
+        if (tin[i]->shape[0] != n)
             msg("different number of samples in input tensor", "Net.evaluate");
 
 
-    int batch = lin[0]->input->sizes[0];
+    int batch = lin[0]->input->shape[0];
     for (i = 1; i < lin.size(); i++)
-        if (lin[i]->input->sizes[0] != batch)
+        if (lin[i]->input->shape[0] != batch)
             msg("different number of input tensors w.r.t", "Net.evaluate");
 
     for (i = 1; i < tout.size(); i++)
-        if (tout[i]->sizes[0] != n)
+        if (tout[i]->shape[0] != n)
             msg("different number of samples in output tensor", "Net.evaluate");
 
     // Create internal variables

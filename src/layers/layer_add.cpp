@@ -47,7 +47,7 @@ LAdd::LAdd(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
             if (!Tensor::eqsize(parent[i]->output, parent[i + 1]->output)) {
                 parent[i]->output->info();
                 parent[i + 1]->output->info();
-                msg("Error: LAdd layers with different tensor sizes");
+                msg("Error: LAdd layers with different tensor shape");
             }
 
     add_created++;
@@ -70,7 +70,7 @@ LAdd::LAdd(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
 string LAdd::plot(int c) {
     string s;
 
-    s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=lightblue3,shape=box]";
+    s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=lightblue3,tshape=box]";
 
     return s;
 }

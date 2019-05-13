@@ -35,7 +35,7 @@
 
 using namespace std;
 
-extern ostream &operator<<(ostream &os, const shape s);
+extern ostream &operator<<(ostream &os, const tshape s);
 
 EDDL eddl;
 
@@ -44,11 +44,11 @@ EDDL eddl;
 ////////////////////////////////////////////////////////
 
 tensor EDDL::T(const initializer_list<int> &init) {
-    shape s(init.begin(), init.end());
+    tshape s(init.begin(), init.end());
     return T(s);
 }
 
-tensor EDDL::T(const shape s) {
+tensor EDDL::T(const tshape s) {
     return new LTensor(s, DEV_CPU);
 }
 
@@ -126,7 +126,7 @@ layer EDDL::Activation(layer parent, string act, string name) {
 
 //////////////////////////////////////////////////////
 layer EDDL::Reshape(layer parent, const initializer_list<int> &init) {
-    shape s(init.begin(), init.end());
+    tshape s(init.begin(), init.end());
     return new LReshape(parent, s, "reshape" + to_string(1 + LReshape::reshape_created), DEV_CPU);
 }
 

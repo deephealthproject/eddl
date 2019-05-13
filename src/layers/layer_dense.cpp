@@ -44,15 +44,15 @@ LDense::LDense(Layer *parent, int ndim, string name, int d) : LinLayer(name, d) 
     this->ndim = ndim;
 
     input = parent->output;
-    output = new Tensor({input->sizes[0], ndim}, d);
+    output = new Tensor({input->shape[0], ndim}, d);
     delta = new Tensor(output->getshape(), d);
 
-    W = new Tensor({input->sizes[1], ndim}, d);
+    W = new Tensor({input->shape[1], ndim}, d);
     bias = new Tensor({ndim}, d);
     params.push_back(W);
     params.push_back(bias);
 
-    gW = new Tensor({input->sizes[1], ndim}, d);
+    gW = new Tensor({input->shape[1], ndim}, d);
     gbias = new Tensor({ndim}, d);
     gradients.push_back(gW);
     gradients.push_back(gbias);
@@ -109,8 +109,8 @@ Layer *LDense::clone(int c, int bs, vector<Layer *> p, int todev) {
 string LDense::plot(int c) {
     string s;
 
-    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=bisque4,shape=box]";
-    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";
+    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=bisque4,tshape=box]";
+    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,tshape=box]";
 
     return s;
 }
