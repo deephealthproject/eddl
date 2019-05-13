@@ -142,7 +142,7 @@ public:
     int device;
     int ndim;
     int size;
-    tshape shape;
+    vector<int> shape;
 
     float *ptr;
 
@@ -165,17 +165,17 @@ public:
 
     Tensor(const initializer_list<int> &init, int dev);
 
-    Tensor(const tshape s);
+    Tensor(const vector<int> shape);
 
-    Tensor(const tshape s, int dev);
+    Tensor(const vector<int> shape, int dev);
 
     Tensor(string fname, int bin = 1);
 
-    Tensor(tshape s, Tensor *T);
+    Tensor(vector<int> shape, Tensor *T);
 
     ~Tensor();
 
-    tshape getshape();
+    vector<int> getshape();
 
     void info();
 

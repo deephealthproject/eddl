@@ -113,7 +113,7 @@ public:
 
     LTensor(const initializer_list<int> &init, int dev);
 
-    LTensor(const tshape s, int dev);
+    LTensor(const vector<int> shape, int dev);
 
     LTensor(Layer *l);
 
@@ -203,12 +203,12 @@ public:
 class LReshape : public LinLayer {
 public:
     static int reshape_created;
-    tshape ls;
+    vector<int> ls;
 
     // constructors and clones
     LReshape(Layer *parent, const initializer_list<int> &init, string name, int d);
 
-    LReshape(Layer *parent, tshape s, string name, int d);
+    LReshape(Layer *parent, vector<int> shape, string name, int d);
 
     Layer *share(int c, int bs, vector<Layer *> p);
 

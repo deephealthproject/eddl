@@ -53,10 +53,10 @@ int main(int argc, char **argv) {
     Tensor::Conv2D(cd);
 
     cd->O->print();
-    tshape s;
-    s.push_back(cd->O->shape[0] * cd->O->shape[1] * cd->O->shape[2]);
-    s.push_back(cd->O->shape[3]);
-    Tensor *Cr = new Tensor(s, cd->O);
+    vector<int> shape;
+    shape.push_back(cd->O->shape[0] * cd->O->shape[1] * cd->O->shape[2]);
+    shape.push_back(cd->O->shape[3]);
+    Tensor *Cr = new Tensor(shape, cd->O);
     Cr->print();
 
 
@@ -68,10 +68,10 @@ int main(int argc, char **argv) {
     Tensor::MPool2D(pd);
 
     pd->O->print();
-    tshape s2;
-    s2.push_back(pd->O->shape[0] * pd->O->shape[1] * pd->O->shape[2]);
-    s2.push_back(pd->O->shape[3]);
-    Tensor *Pr = new Tensor(s2, pd->O);
+    vector<int> shape2;
+    shape2.push_back(pd->O->shape[0] * pd->O->shape[1] * pd->O->shape[2]);
+    shape2.push_back(pd->O->shape[3]);
+    Tensor *Pr = new Tensor(shape2, pd->O);
     Pr->print();
 
     cout << "ok\n";

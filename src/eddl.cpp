@@ -35,7 +35,7 @@
 
 using namespace std;
 
-extern ostream &operator<<(ostream &os, const tshape s);
+extern ostream &operator<<(ostream &os, const vector<int> shape);
 
 EDDL eddl;
 
@@ -43,13 +43,13 @@ EDDL eddl;
 ///// EDDL is a wrapper class to ease and define the API
 ////////////////////////////////////////////////////////
 
-tensor EDDL::T(const initializer_list<int> &init) {
-    tshape s(init.begin(), init.end());
+tensor EDDL::T(const initializer_list<int> &shape) {
+    vector<int> s(shape.begin(), shape.end());
     return T(s);
 }
 
-tensor EDDL::T(const tshape s) {
-    return new LTensor(s, DEV_CPU);
+tensor EDDL::T(const vector<int> shape) {
+    return new LTensor(shape, DEV_CPU);
 }
 
 tensor EDDL::T(string fname) {
@@ -62,8 +62,8 @@ void EDDL::div(tensor t, float v) {
 }
 //////////////////////////////////////////////////////
 
-layer EDDL::Input(const initializer_list<int> &init) {
-    return new LInput(new Tensor(init), "input" + to_string(1 + LInput::input_created), DEV_CPU);
+layer EDDL::Input(const initializer_list<int> &shape) {
+    return new LInput(new Tensor(shape), "input" + to_string(1 + LInput::input_created), DEV_CPU);
 }
 
 layer EDDL::Input(tensor t) {
@@ -125,13 +125,13 @@ layer EDDL::Activation(layer parent, string act, string name) {
 
 
 //////////////////////////////////////////////////////
-layer EDDL::Reshape(layer parent, const initializer_list<int> &init) {
-    tshape s(init.begin(), init.end());
+layer EDDL::Reshape(layer parent, const initializer_list<int> &shape) {
+    vector<int> s(shape.begin(), shape.end());
     return new LReshape(parent, s, "reshape" + to_string(1 + LReshape::reshape_created), DEV_CPU);
 }
 
-layer EDDL::Reshape(layer parent, const initializer_list<int> &init, string name) {
-    return new LReshape(parent, init, name, DEV_CPU);
+layer EDDL::Reshape(layer parent, const initializer_list<int> &shape, string name) {
+    return new LReshape(parent, shape, name, DEV_CPU);
 }
 
 /////////////////////////////////////////////////////////

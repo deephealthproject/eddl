@@ -47,14 +47,14 @@
 using namespace std;
 using namespace std::chrono;
 
-ostream &operator<<(ostream &os, const tshape s) {
+ostream &operator<<(ostream &os, const vector<int> shape) {
     int i;
     os << "(";
-    for (i = 0; i < s.size() - 1; ++i) {
-        os << s[i];
+    for (i = 0; i < shape.size() - 1; ++i) {
+        os << shape[i];
         os << "x";
     }
-    os << s[i] << ")";
+    os << shape[i] << ")";
 
     return os;
 }
@@ -179,8 +179,8 @@ void Net::info() {
     cout << "\n";
     for (int i = 0; i < layers.size(); i++) {
         cout << layers[i]->name << ": ";
-        tshape si = layers[i]->input->getshape();
-        tshape so = layers[i]->output->getshape();
+        vector<int> si = layers[i]->input->getshape();
+        vector<int> so = layers[i]->output->getshape();
         cout << si << "-->" << so << "\n";
     }
 
@@ -466,21 +466,21 @@ void Net::split(int c, int todev) {
     // Tensors for input/output for split nets.
     for (int i = 0; i < c; i++)
         for (int j = 0; j < lin.size(); j++) {
-            tshape s = lin[j]->input->getshape();
-            if (i == (c - 1)) s[0] = bs + m;
-            else s[0] = bs;
+            vector<int> shape = lin[j]->input->getshape();
+            if (i == (c - 1)) shape[0] = bs + m;
+            else shape[0] = bs;
 
-            Xs[i].push_back(new Tensor(s));
+            Xs[i].push_back(new Tensor(shape));
         }
 
 
     for (int i = 0; i < c; i++)
         for (int j = 0; j < lout.size(); j++) {
-            tshape s = lout[j]->output->getshape();
-            if (i == (c - 1)) s[0] = bs + m;
-            else s[0] = bs;
+            vector<int> shape = lout[j]->output->getshape();
+            if (i == (c - 1)) shape[0] = bs + m;
+            else shape[0] = bs;
 
-            Ys[i].push_back(new Tensor(s));
+            Ys[i].push_back(new Tensor(shape));
         }
     ////
 

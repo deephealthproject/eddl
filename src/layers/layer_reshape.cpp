@@ -34,7 +34,7 @@
 
 #include "layer.h"
 
-extern ostream &operator<<(ostream &os, const tshape s);
+extern ostream &operator<<(ostream &os, const vector<int> shape);
 
 
 using namespace std;
@@ -42,20 +42,20 @@ using namespace std;
 int LReshape::reshape_created = 0;
 
 LReshape::LReshape(Layer *parent, const initializer_list<int> &init, string name, int d) : LReshape(parent,
-                                                                                                    tshape(init.begin(),
+                                                                                                    vector<int>(init.begin(),
                                                                                                           init.end()),
                                                                                                     "reshape" +
                                                                                                     to_string(
                                                                                                             reshape_created),
                                                                                                     dev) {}
 
-LReshape::LReshape(Layer *parent, tshape s, string name, int d) : LinLayer(name, d) {
-    ls = s;
+LReshape::LReshape(Layer *parent, vector<int> shape, string name, int d) : LinLayer(name, d) {
+    ls = shape;
     reshape_created++;
 
     input = parent->output;
 
-    tshape sin = input->getshape();
+    vector<int> sin = input->getshape();
     int tin = input->size;
     int t = 1, c = 0, ind = -1;
 
@@ -107,20 +107,20 @@ void LReshape::backward() {
 
 
 Layer *LReshape::share(int c, int bs, vector<Layer *> p) {
-    tshape s = ls;
-    s[0] = bs;
+    vector<int> shape = ls;
+    shape[0] = bs;
 
-    LReshape *n = new LReshape(p[0], s, "share_" + to_string(c) + name, dev);
+    LReshape *n = new LReshape(p[0], shape, "share_" + to_string(c) + name, dev);
     n->orig = this;
 
     return n;
 }
 
 Layer *LReshape::clone(int c, int bs, vector<Layer *> p, int todev) {
-    tshape s = ls;
-    s[0] = bs;
+    vector<int> shape = ls;
+    shape[0] = bs;
 
-    LReshape *n = new LReshape(p[0], s, "clone_" + to_string(todev) + name, todev);
+    LReshape *n = new LReshape(p[0], shape, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
 
     return n;

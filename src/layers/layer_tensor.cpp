@@ -53,10 +53,10 @@ LTensor::LTensor(const initializer_list<int> &init, int dev) : LinLayer("ltensor
     tensor_created++;
 }
 
-// From tshape
-LTensor::LTensor(const tshape s, int dev) : LinLayer("ltensor" + to_string(tensor_created), dev) {
-    input = output = new Tensor(s, dev);
-    delta = new Tensor(s, dev);
+// From vector<int>
+LTensor::LTensor(const vector<int> shape, int dev) : LinLayer("ltensor" + to_string(tensor_created), dev) {
+    input = output = new Tensor(shape, dev);
+    delta = new Tensor(shape, dev);
     tensor_created++;
 }
 

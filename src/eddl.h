@@ -49,8 +49,8 @@ typedef vector<LTensor *> vltensor;
 class EDDL {
 public:
     // Create Tensors
-    static tensor T(const initializer_list<int> &init);
-    static tensor T(const tshape s);
+    static tensor T(const initializer_list<int> &shape);
+    static tensor T(const vector<int> shape);
     static tensor T(string fname);
 
 
@@ -60,7 +60,7 @@ public:
 
     // Create Layers
     static layer Input(tensor t);
-    static layer Input(const initializer_list<int> &init);
+    static layer Input(const initializer_list<int> &shape);
 
     static layer Embedding(int input_dim, int output_dim, string name); //Todo: Implement
 
@@ -91,8 +91,8 @@ public:
     static layer Activation(layer parent, string act);
     static layer Activation(layer parent, string act, string name);
 
-    static layer Reshape(layer parent, const initializer_list<int> &init);
-    static layer Reshape(layer parent, const initializer_list<int> &init, string name);
+    static layer Reshape(layer parent, const initializer_list<int> &shape);
+    static layer Reshape(layer parent, const initializer_list<int> &shape, string name);
 
     static layer Transpose(layer parent, const initializer_list<int> &dims, string name, int d); //Todo: Implement
 

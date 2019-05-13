@@ -75,11 +75,11 @@ LCat::LCat(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
         index.push_back(t);
     }
 
-    tshape s = parent[0]->output->getshape();
-    s[1] = t;
+    vector<int> shape = parent[0]->output->getshape();
+    shape[1] = t;
 
-    output = new Tensor(s, d);
-    delta = new Tensor(s, d);
+    output = new Tensor(shape, d);
+    delta = new Tensor(shape, d);
 
     for (int i = 0; i < parent.size(); ++i) {
         parent[i]->addchild(this);

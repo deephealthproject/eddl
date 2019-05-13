@@ -49,7 +49,7 @@ using namespace std;
 int initcuda[MAX_GPUS] = {0, 0, 0, 0, 0, 0, 0, 0};
 int linpos;
 
-extern ostream &operator<<(ostream &os, const tshape s);
+extern ostream &operator<<(ostream &os, const vector<int> shape);
 
 void msg(string s, string s2) {
     cout << "\n" << s << " (" << s2 << ")\n";
@@ -70,11 +70,11 @@ Tensor::Tensor() : device(DEV_CPU), ndim(0), size(0) {}
 
 Tensor::Tensor(const initializer_list<int> &init) : Tensor(init, DEV_CPU) {}
 
-Tensor::Tensor(const initializer_list<int> &init, int dev) : Tensor(tshape(init.begin(), init.end()), dev) {}
+Tensor::Tensor(const initializer_list<int> &init, int dev) : Tensor(vector<int>(init.begin(), init.end()), dev) {}
 
-Tensor::Tensor(const tshape s) : Tensor(s, DEV_CPU) {}
+Tensor::Tensor(const vector<int> shape) : Tensor(shape, DEV_CPU) {}
 
-Tensor::Tensor(tshape s, int dev) {
+Tensor::Tensor(vector<int> shape, int dev) {
 #ifndef cGPU
     if ((dev > DEV_CPU) && (isGPU())) {
         fprintf(stderr, "Not compiled for GPU\n");
@@ -88,12 +88,12 @@ Tensor::Tensor(tshape s, int dev) {
     }
 #endif
 
-    device = dev;
-    ndim = s.size();
-    shape = s;
+    this->device = dev;
+    this->ndim = shape.size();
+    this->shape = shape;
 
     size = 1;
-    for (int i = 0; i < ndim; ++i) size *= s[i];
+    for (int i = 0; i < ndim; ++i) size *= shape[i];
 
     if (isCPU()) {
         if (ndim == 2) {
@@ -126,13 +126,13 @@ Tensor::Tensor(tshape s, int dev) {
 }
 
 
-Tensor::Tensor(tshape s, Tensor *T) {
-    device = T->device;
-    ndim = s.size();
-    shape = s;
+Tensor::Tensor(vector<int> shape, Tensor *T) {
+    this->device = T->device;
+    this->ndim = shape.size();
+    this->shape = shape;
 
     size = 1;
-    for (int i = 0; i < ndim; ++i) size *= s[i];
+    for (int i = 0; i < ndim; ++i) size *= shape[i];
 
 
     if (isCPU()) {
@@ -177,11 +177,9 @@ Tensor::Tensor(string fname, int bin) {
             shape.push_back(v);
         }
 
-        tshape s = shape;
+        cout << "loading file with tensor:" << shape << "\n";
 
-        cout << "loading file with tensor:" << s << "\n";
-
-        device = DEV_CPU;
+        this->device = DEV_CPU;
         size = 1;
         for (int i = 0; i < ndim; ++i) size *= shape[i];
 
@@ -220,11 +218,9 @@ Tensor::Tensor(string fname, int bin) {
             shape.push_back(v);
         }
 
-        tshape s = shape;
+        cout << "loading file with tensor:" << shape << "\n";
 
-        cout << "loading file with tensor:" << s << "\n";
-
-        device = DEV_CPU;
+        this->device = DEV_CPU;
         size = 1;
         for (int i = 0; i < ndim; ++i) size *= shape[i];
 
@@ -303,9 +299,9 @@ Tensor::~Tensor() {
 
 
 ///////////////////////////////////////////
-tshape Tensor::getshape() {
-    tshape s = shape;
-    return s;
+vector<int> Tensor::getshape() {
+    vector<int> shape = this->shape;
+    return shape;
 }
 
 
