@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
       l=eddl.Activation(eddl.Dense(l,1024),"relu");
       */
 
-    l = eddl.Drop(eddl.Activation(eddl.Dense(l, 1024), "relu"), 0.5);
+    l = eddl.Dropout(eddl.Activation(eddl.Dense(l, 1024), "relu"), 0.5);
     for (int i = 0; i < 2; i++) {
         if (i == 1) l2 = l;
         l = ResBlock(l, 1024, 1);
@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
     //l=eddl.Reshape(l,{batch,16,2,2,-1});
     //l=eddl.Reshape(l,{batch,1024});
 
-    l = eddl.Cat({l, l2});
+    l = eddl.Concat({l, l2});
 
     layer out = eddl.Activation(eddl.Dense(l, 10), "softmax");
 
