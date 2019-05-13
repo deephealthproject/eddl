@@ -75,7 +75,7 @@ LCat::LCat(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
         index.push_back(t);
     }
 
-    vector<int> shape = parent[0]->output->getshape();
+    vector<int> shape = parent[0]->output->getShape();
     shape[1] = t;
 
     output = new Tensor(shape, d);

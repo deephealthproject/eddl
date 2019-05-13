@@ -179,8 +179,8 @@ void Net::info() {
     cout << "\n";
     for (int i = 0; i < layers.size(); i++) {
         cout << layers[i]->name << ": ";
-        vector<int> si = layers[i]->input->getshape();
-        vector<int> so = layers[i]->output->getshape();
+        vector<int> si = layers[i]->input->getShape();
+        vector<int> so = layers[i]->output->getShape();
         cout << si << "-->" << so << "\n";
     }
 
@@ -367,7 +367,7 @@ void Net::build(optim *opt, vstring co, vstring me) {
     for (int i = 0; i < co.size(); i++) {
         losses.push_back(new Loss(co[i]));
         if (co[i] == "soft_cent") lout[i]->delta_bp = 1;
-        lout[i]->target = new Tensor(lout[i]->output->getshape(), dev);
+        lout[i]->target = new Tensor(lout[i]->output->getShape(), dev);
     }
 
     // set metrics
@@ -454,7 +454,7 @@ void Net::split(int c, int todev) {
     int ind;
 
 
-    int batch = (lin[0]->input->getshape())[0];
+    int batch = (lin[0]->input->getShape())[0];
     if (batch < c)
         msg("Too small batch size to split into cores", "Net.split");
 
@@ -466,7 +466,7 @@ void Net::split(int c, int todev) {
     // Tensors for input/output for split nets.
     for (int i = 0; i < c; i++)
         for (int j = 0; j < lin.size(); j++) {
-            vector<int> shape = lin[j]->input->getshape();
+            vector<int> shape = lin[j]->input->getShape();
             if (i == (c - 1)) shape[0] = bs + m;
             else shape[0] = bs;
 
@@ -476,7 +476,7 @@ void Net::split(int c, int todev) {
 
     for (int i = 0; i < c; i++)
         for (int j = 0; j < lout.size(); j++) {
-            vector<int> shape = lout[j]->output->getshape();
+            vector<int> shape = lout[j]->output->getShape();
             if (i == (c - 1)) shape[0] = bs + m;
             else shape[0] = bs;
 

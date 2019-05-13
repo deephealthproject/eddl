@@ -54,8 +54,8 @@ LAdd::LAdd(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
 
     input = parent[0]->output;
 
-    output = new Tensor(parent[0]->output->getshape(), d);
-    delta = new Tensor(parent[0]->output->getshape(), d);
+    output = new Tensor(parent[0]->output->getShape(), d);
+    delta = new Tensor(parent[0]->output->getShape(), d);
 
     for (int i = 0; i < parent.size(); ++i) {
         parent[i]->addchild(this);

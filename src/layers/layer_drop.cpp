@@ -46,10 +46,10 @@ LDrop::LDrop(Layer *parent, float df, string name, int d) : LinLayer(name, d) {
     this->df = df;
 
     input = parent->output;
-    output = new Tensor(input->getshape(), d);
-    delta = new Tensor(input->getshape(), d);
+    output = new Tensor(input->getShape(), d);
+    delta = new Tensor(input->getShape(), d);
 
-    mask = new Tensor(input->getshape(), d);
+    mask = new Tensor(input->getShape(), d);
 
     parent->addchild(this);
     addparent(parent);

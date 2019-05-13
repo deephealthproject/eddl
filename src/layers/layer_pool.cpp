@@ -74,8 +74,8 @@ LMPool::LMPool(Layer *parent, const vector<int> &ks, const vector<int> &st, stri
 
 LMPool::LMPool(Layer *parent, PoolDescriptor *D, string name, int d) : LPool(parent, D, name, d) {
     // params
-    D->indX = new Tensor(D->O->getshape(), d);
-    D->indY = new Tensor(D->O->getshape(), d);
+    D->indX = new Tensor(D->O->getShape(), d);
+    D->indY = new Tensor(D->O->getShape(), d);
 }
 
 

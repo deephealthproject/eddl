@@ -42,7 +42,7 @@ int LInput::input_created = 0;
 LInput::LInput(Tensor *in, string name, int d) : LinLayer(name, d) {
     input_created++;
     input = output = in;
-    delta = new Tensor(input->getshape(), d);
+    delta = new Tensor(input->getShape(), d);
 }
 
 
@@ -67,7 +67,7 @@ void LInput::backward() {
 }
 
 Layer *LInput::share(int c, int bs, vector<Layer *> p) {
-    vector<int> shape = input->getshape();
+    vector<int> shape = input->getShape();
     shape[0] = bs;
 
     LInput *n = new LInput(new Tensor(shape), "share_" + to_string(c) + name, dev);
@@ -77,7 +77,7 @@ Layer *LInput::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LInput::clone(int c, int bs, vector<Layer *> p, int todev) {
-    vector<int> shape = input->getshape();
+    vector<int> shape = input->getShape();
     shape[0] = bs;
 
     LInput *n = new LInput(new Tensor(shape, todev), "clone_" + to_string(todev) + name, todev);

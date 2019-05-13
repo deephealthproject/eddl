@@ -55,7 +55,7 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int d) : LinLa
 
     input = parent->output;
 
-    vector<int> sin = input->getshape();
+    vector<int> sin = input->getShape();
     int tin = input->size;
     int t = 1, c = 0, ind = -1;
 

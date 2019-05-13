@@ -175,7 +175,7 @@ public:
 
     ~Tensor();
 
-    vector<int> getshape();
+    vector<int> getShape();
 
     void info();
 

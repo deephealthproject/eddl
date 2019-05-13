@@ -271,7 +271,7 @@ void Tensor::save(string fname) {
 
 ///////////////////////////////////////////
 Tensor *Tensor::share() {
-    Tensor *C = new Tensor(getshape(), device);
+    Tensor *C = new Tensor(getShape(), device);
 
     return C;
 
@@ -299,7 +299,7 @@ Tensor::~Tensor() {
 
 
 ///////////////////////////////////////////
-vector<int> Tensor::getshape() {
+vector<int> Tensor::getShape() {
     vector<int> shape = this->shape;
     return shape;
 }

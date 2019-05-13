@@ -544,7 +544,7 @@ void ConvolDescriptor::build(Tensor *A) {
         msg("Invalid output shape", "ConvolDescriptor::build");
 
     O = new Tensor({A->shape[0], z, r, c}, A->device);
-    D = new Tensor(O->getshape(), A->device);
+    D = new Tensor(O->getShape(), A->device);
 
     // Params
     K = new Tensor({nk, kz, kr, kc}, I->device);
@@ -709,7 +709,7 @@ void PoolDescriptor::build(Tensor *A) {
         msg("Invalid output shape", "PoolDescriptor::build");
 
     O = new Tensor({A->shape[0], z, r, c}, A->device);
-    D = new Tensor(O->getshape(), A->device);
+    D = new Tensor(O->getShape(), A->device);
 
 
 }

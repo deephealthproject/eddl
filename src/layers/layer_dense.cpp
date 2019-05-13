@@ -45,7 +45,7 @@ LDense::LDense(Layer *parent, int ndim, string name, int d) : LinLayer(name, d) 
 
     input = parent->output;
     output = new Tensor({input->shape[0], ndim}, d);
-    delta = new Tensor(output->getshape(), d);
+    delta = new Tensor(output->getShape(), d);
 
     W = new Tensor({input->shape[1], ndim}, d);
     bias = new Tensor({ndim}, d);

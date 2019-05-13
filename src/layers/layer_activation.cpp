@@ -45,8 +45,8 @@ LActivation::LActivation(Layer *parent, string act, string name, int d) : LinLay
     this->act = act;
 
     input = parent->output;
-    output = new Tensor(input->getshape(), d);
-    delta = new Tensor(output->getshape(), d);
+    output = new Tensor(input->getShape(), d);
+    delta = new Tensor(output->getShape(), d);
     delta_bp = 0;
 
     parent->addchild(this);
