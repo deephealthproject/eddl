@@ -57,7 +57,7 @@ int main(int argc, char **argv)
   eddl.plot(net,"model.pdf");
 
   // get some info from the network
-  eddl.info(net);
+  eddl.summary(net);
 
   // Attach an optimizer and a list of error criteria and metrics
   // optionally put a Computing Service where the net will run

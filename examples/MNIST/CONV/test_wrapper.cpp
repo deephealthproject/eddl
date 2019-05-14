@@ -104,7 +104,7 @@ int main(int argc, char **argv)
     plot(net,"model.pdf");
 
     // get some info from the network
-    info(net);
+    summary(net);
 
     // Attach an optimizer and a list of error criteria and metrics
     // size of error criteria and metrics list must match with size of list of outputs
