@@ -67,9 +67,13 @@ class sgd : public optim {
 public:
     float lr;
     float mu;
+    float weight_decay;
+    bool nesterov;
+
     vtensor mT;
 
-    sgd(const initializer_list<float> &p);
+    sgd(const initializer_list<float> &params);
+    sgd(float lr=0.01f, float momentum=0.0f, float weight_decay=0.0f, bool nesterov=false);
 
     optim *clone();
 

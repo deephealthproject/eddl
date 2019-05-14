@@ -61,7 +61,7 @@ model Model_init(Layer *in, int in_size, Layer *out, int out_size);
 
 // Net operations
 void plot(model m, const char *fname);
-void info(model m);
+void summary(model m);
 void build(model net, optimizer opt, const char **c, int size_c, const char **m, int size_m, compserv cs);
 void fit(model m, Tensor *in, Tensor *out, int batch, int epochs);
 void evaluate(model m, Tensor *in, Tensor *out);

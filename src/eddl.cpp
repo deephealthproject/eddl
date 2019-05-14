@@ -109,6 +109,10 @@ layer EDDL::Dense(layer parent, int ndim, string name) {
     return new LDense(parent, ndim, name, DEV_CPU);
 }
 
+layer EDDL::Dense(layer parent, int ndim, bool use_bias, string name){
+    // TODO: IMPLEMENT
+}
+
 //////////////////////////////////////////////////////
 
 layer EDDL::DeConv(layer parent, int filters, const initializer_list<int> &kernel_size, string padding,
@@ -171,22 +175,22 @@ layer EDDL::AveragePool(layer parent, const initializer_list<int> &pool_size, co
 }
 
 //////////////////////////////////////////////////////
-static layer GlobalMaxPool(layer parent){
+layer EDDL::GlobalMaxPool(layer parent){
     //TODO: Fix LMPool
     //return EDDL::GlobalMaxPool(parent, "globalmaxpool" + to_string(1 + LMPool::pool_created));
 }
 
-static layer GlobalMaxPool(layer parent, string name){
+layer EDDL::GlobalMaxPool(layer parent, string name){
     //TODO: Implement
 }
 
 //////////////////////////////////////////////////////
-static layer GlobalAveragePool(layer parent){
+layer EDDL::GlobalAveragePool(layer parent){
     //TODO: Fix LMPool
     //return EDDL::GlobalAveragePool(parent, "globalavgpool" + to_string(1 + LMPool::pool_created));
 }
 
-static layer GlobalAveragePool(layer parent, string name){
+layer EDDL::GlobalAveragePool(layer parent, string name){
     //TODO: Implement
 }
 
@@ -252,12 +256,12 @@ layer EDDL::Add(const initializer_list<layer> &layers, string name) {
 
 ////////////////////////////////////////////////////////
 
-static layer Average(const initializer_list<layer> &layers){
+layer EDDL::Average(const initializer_list<layer> &layers){
     // TODO: Fix LCAT
     return EDDL::Average(layers, "average" + to_string(1 + LCat::cat_created));
 }
 
-static layer Average(const initializer_list<layer> &layers, string name){
+layer EDDL::Average(const initializer_list<layer> &layers, string name){
     //TODO: Implement
 }
 
@@ -284,46 +288,71 @@ layer EDDL::Concat(const initializer_list<layer> &layers, string name) {
 
 ////////////////////////////////////////////////////////
 
-static layer MatMul(const initializer_list<layer> &layers){
+layer EDDL::MatMul(const initializer_list<layer> &layers){
     // TODO: Fix LCAT
     return EDDL::MatMul(layers, "matmul" + to_string(1 + LCat::cat_created));
 }
 
-static layer MatMul(const initializer_list<layer> &layers, string name){
+layer EDDL::MatMul(const initializer_list<layer> &layers, string name){
     //TODO: Implement
 }
 
 ////////////////////////////////////////////////////////
 
-static layer Maximum(const initializer_list<layer> &layers){
+layer EDDL::Maximum(const initializer_list<layer> &layers){
     // TODO: Fix LCAT
     return EDDL::Maximum(layers, "maximum" + to_string(1 + LCat::cat_created));
 }
 
-static layer Maximum(const initializer_list<layer> &layers, string name){
+layer EDDL::Maximum(const initializer_list<layer> &layers, string name){
     //TODO: Implement
 }
 
 ////////////////////////////////////////////////////////
 
-static layer Minimum(const initializer_list<layer> &layers){
+layer EDDL::Minimum(const initializer_list<layer> &layers){
     // TODO: Fix LCAT
     return EDDL::Minimum(layers, "minimum" + to_string(1 + LCat::cat_created));
 }
 
-static layer Minimum(const initializer_list<layer> &layers, string name){
+layer EDDL::Minimum(const initializer_list<layer> &layers, string name){
     //TODO: Implement
 }
 
 
 ////////////////////////////////////////////////////////
 
-optimizer EDDL::SGD(const initializer_list<float> &p) {
-    return new sgd(p);
+optimizer EDDL::Adadelta(float lr, float rho, float epsilon, float weight_decay){
+    //Todo: Implement
+}
+optimizer EDDL::Adam(float lr, float beta_1, float beta_2, float epsilon, float weight_decay, bool amsgrad){
+    //Todo: Implement
+}
+optimizer EDDL::Adagrad(float lr, float epsilon, float weight_decay){
+    //Todo: Implement
+}
+optimizer EDDL::Adamax(float lr, float beta_1, float beta_2, float epsilon, float weight_decay){
+    //Todo: Implement
+}
+optimizer EDDL::Nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule_decay){
+    //Todo: Implement
+}
+optimizer EDDL::RMSprop(float lr, float alpha, float weight_decay, float momentum){
+    //Todo: Implement
 }
 
-void EDDL::change(optimizer o, const initializer_list<float> &p) {
-    o->change(p);
+
+optimizer EDDL::SGD(const initializer_list<float> &params) {
+    return new sgd(params);
+}
+
+optimizer EDDL::SGD(float lr, float momentum, float weight_decay, bool nesterov){
+    return new sgd(lr, momentum, weight_decay, nesterov);
+}
+
+
+void EDDL::change(optimizer optim, const initializer_list<float> &params) {
+    optim->change(params);
 }
 
 ////////////////////////////////////////////////////////
@@ -373,7 +402,7 @@ compserv EDDL::CS_FGPA(const initializer_list<int> &f) {
 
 ////////////
 
-void EDDL::info(model m) {
+void EDDL::summary(model m) {
     m->info();
 }
 
@@ -385,13 +414,11 @@ void EDDL::build(model net, optimizer o, const initializer_list<string> &c, cons
     net->build(o, c, m);
 }
 
-void EDDL::build(model net, optimizer o, const initializer_list<string> &c, const initializer_list<string> &m,
-                 CompServ *cs) {
+void EDDL::build(model net, optimizer o, const initializer_list<string> &c, const initializer_list<string> &m, CompServ *cs) {
     net->build(o, c, m, cs);
 }
 
-void EDDL::fit(model net, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out, int batch,
-               int epochs) {
+void EDDL::fit(model net, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out, int batch, int epochs) {
     vltensor ltin = vltensor(in.begin(), in.end());
     vltensor ltout = vltensor(out.begin(), out.end());
 
@@ -405,6 +432,10 @@ void EDDL::fit(model net, const initializer_list<LTensor *> &in, const initializ
 
 
     net->fit(tin, tout, batch, epochs);
+}
+
+void EDDL::fit(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out, int batch, int epochs, const initializer_list<Callback *> &cbs){
+    // TODO: Implement
 }
 
 void EDDL::evaluate(model net, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out) {
@@ -423,6 +454,36 @@ void EDDL::evaluate(model net, const initializer_list<LTensor *> &in, const init
     net->evaluate(tin, tout);
 }
 
+
+void EDDL::set_trainable(layer l){
+    //Todo: Implement
+}
+
+layer EDDL::get_layer(model m, int id){
+    //Todo: Implement
+}
+
+layer EDDL::get_layer(model m, string layer_name){
+    //Todo: Implement
+}
+
+
+model EDDL::load_model(string fname){
+    //Todo: Implement
+}
+
+void EDDL::save_model(model m, string fname){
+    //Todo: Implement
+}
+
+
+void EDDL::set_trainable(model m){
+    //Todo: Implement
+}
+
+model EDDL::zoo_models(string model_name){
+    //Todo: Implement
+}
 
 ////
 
@@ -471,7 +532,13 @@ void EDDL::download_mnist() {
     }
 }
 
+void EDDL::download_cifar10() {
+    // TODO: Implement
+}
 
+void EDDL::download_cifar100() {
+    // TODO: Implement
+}
 
 
 

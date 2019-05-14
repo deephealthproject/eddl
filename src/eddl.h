@@ -48,17 +48,15 @@ typedef vector<LTensor *> vltensor;
 
 class EDDL {
 public:
-    // Create Tensors
+    // ---- TENSOR ----
     static tensor T(const initializer_list<int> &shape);//*
     static tensor T(const vector<int> shape);
     static tensor T(string fname);
 
-
-    //Operations tensors
+    // ---- TENSOR OPERATIONS ----
     static void div(tensor t, float v);
 
-
-    // Create Layers
+    // ---- CORE LAYERS ----
     static layer Activation(layer parent, string activation);
     static layer Activation(layer parent, string activation, string name);
 
@@ -91,6 +89,8 @@ public:
 
     static layer Transpose(layer parent, const initializer_list<int> &dims, string name); //Todo: Implement
 
+
+    // ---- LOSSES ----
 
     // ---- MERGE LAYERS ----
     static layer Add(const initializer_list<layer> &layers);
@@ -134,9 +134,9 @@ public:
     static optimizer RMSprop(float lr, float alpha, float weight_decay, float momentum); //Todo: Implement
 
     static optimizer SGD(const initializer_list<float> &p);
-    static optimizer SGD(float lr, float momentum, float weight_decay, bool nesterov); //Todo: Implement
+    static optimizer SGD(float lr, float momentum, float weight_decay, bool nesterov);
 
-    static void change(optimizer o, const initializer_list<float> &p);
+    static void change(optimizer optim, const initializer_list<float> &params);
 
 
     // ---- POOLING LAYERS ----
@@ -144,13 +144,11 @@ public:
     static layer AveragePool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding="none");
     static layer AveragePool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding, string name);
 
-
     static layer GlobalMaxPool(layer parent);
     static layer GlobalMaxPool(layer parent, string name); //Todo: Implement
 
     static layer GlobalAveragePool(layer parent);
     static layer GlobalAveragePool(layer parent, string name); //Todo: Implement
-
 
     static layer MaxPool(layer parent, const initializer_list<int> &pool_size);
     static layer MaxPool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding="none");
@@ -165,12 +163,12 @@ public:
     static layer LSTM(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name);
 
 
-    // ---- LR SCHEDULERS ----
-    static callback CosineAnnealingLR(int T_max, float eta_min, int last_epoch); //Todo: Implement
-    static callback ExponentialLR(float gamma, int last_epoch); //Todo: Implement
-    static callback MultiStepLR(const initializer_list<int> &milestones, float gamma, int last_epoch); //Todo: Implement
-    static callback ReduceLROnPlateau(string metric, string mode, float factor, int patience, float threshold, string threshold_mode, int cooldown, float min_lr, float eps); //Todo: Implement
-    static callback StepLR(int step_size, float gamma, int last_epoch); //Todo: Implement
+//    // ---- LR SCHEDULERS ----
+//    static callback CosineAnnealingLR(int T_max, float eta_min, int last_epoch); //Todo: Implement
+//    static callback ExponentialLR(float gamma, int last_epoch); //Todo: Implement
+//    static callback MultiStepLR(const initializer_list<int> &milestones, float gamma, int last_epoch); //Todo: Implement
+//    static callback ReduceLROnPlateau(string metric, string mode, float factor, int patience, float threshold, string threshold_mode, int cooldown, float min_lr, float eps); //Todo: Implement
+//    static callback StepLR(int step_size, float gamma, int last_epoch); //Todo: Implement
 
     // ---- INITIALIZERS ----
     static initializer Constant(float value); //Todo: Implement
@@ -182,38 +180,33 @@ public:
     static initializer Orthogonal(float gain, int seed); //Todo: Implement
 
 
-    // Create net
-    static model Model(vlayer in, vlayer out);
-    // cs
-    ///////////
+    // ---- COMPUTING SERVICES ----
     compserv CS_CPU(int th);
     compserv CS_GPU(const initializer_list<int> &g);
     compserv CS_FGPA(const initializer_list<int> &f);
 
-    // Layer operations
-    static void set_trainable(layer l); //Todo: Implement
-
-    // Net operations
+    // ---- MODEL METHODS ----
+    static model Model(vlayer in, vlayer out);
     static void build(model net, optimizer o, const initializer_list<string> &c, const initializer_list<string> &m);
     static void build(model net, optimizer o, const initializer_list<string> &c, const initializer_list<string> &m, CompServ *cs);
-    static void info(model m);
+    static void summary(model m);
     static void plot(model m, string fname);
-    static void summary(model m); //Todo: Implement
-
-
     static void fit(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out, int batch, int epochs);
-
+    static void fit(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out, int batch, int epochs, const initializer_list<Callback *> &cbs); //Todo: Implement
     static void evaluate(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out);
-
-    static void save_model(model m, string fname); //Todo: Implement
     static model load_model(string fname); //Todo: Implement
-    static layer get_layer(model m, string layer_name); //Todo: Implement
+    static void save_model(model m, string fname); //Todo: Implement
     static void set_trainable(model m); //Todo: Implement
     static model zoo_models(string model_name); //Todo: Implement
 
-    // data
-    static void download_mnist();
+    // ---- LAYER METHODS ----
+    static void set_trainable(layer l); //Todo: Implement
+    static layer get_layer(model m, int id); //Todo: Implement
+    static layer get_layer(model m, string layer_name); //Todo: Implement
 
+
+    // ---- DATASETS ----
+    static void download_mnist();
     static void download_cifar10(); //Todo: Implement
     static void download_cifar100(); //Todo: Implement
 };

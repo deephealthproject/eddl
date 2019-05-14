@@ -36,8 +36,8 @@
 
 using namespace std;
 
-Loss::Loss(string n) {
-    name = n;
+Loss::Loss(string name) {
+    this->name = name;
 }
 
 

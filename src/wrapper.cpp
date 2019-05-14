@@ -127,8 +127,8 @@ void plot(model m, const char *fname) {
     EDDL::plot(m, fname);
 }
 
-void info(model m) {
-    EDDL::info(m);
+void summary(model m) {
+    EDDL::summary(m);
 }
 
 void build(model net, optimizer opt, const char **c, int size_c, const char **m, int size_m, compserv cs) {

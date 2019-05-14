@@ -42,12 +42,21 @@ optim::optim() {
 
 
 ////// SGD //////
-sgd::sgd(const initializer_list<float> &p) : optim() {
-    vector<float> v = vector<float>(p.begin(), p.end());
-    lr = v[0];
-    mu = v[1];
+sgd::sgd(const initializer_list<float> &params) : optim() {
+    vector<float> vparams = vector<float>(params.begin(), params.end());
+    lr = vparams[0];
+    mu = vparams[1];
+    this->weight_decay = 0.0f;
+    this->nesterov = false;
 }
 
+sgd::sgd(float lr, float momentum, float weight_decay, bool nesterov) : optim() {
+    this->lr = lr;
+    this->mu = momentum;
+    this->weight_decay = weight_decay;
+    this->nesterov = nesterov;
+
+}
 void sgd::change(const initializer_list<float> &p) {
     vector<float> v = vector<float>(p.begin(), p.end());
     lr = v[0];

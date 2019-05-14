@@ -100,6 +100,22 @@ void Layer::info() {
     cout << "===============\n\n";
 }
 
+Tensor Layer::getWeights(){
+
+}
+
+Tensor Layer::setWeights(Tensor bias){
+
+}
+
+Tensor Layer::getBias(){
+
+}
+
+Tensor Layer::setBias(Tensor bias){
+
+}
+
 ////////////////////////////////////
 ///// LINEAR LAYERS
 ////////////////////////////////////

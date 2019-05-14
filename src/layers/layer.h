@@ -72,6 +72,11 @@ public:
 
     void setmode(int m);
 
+    Tensor getWeights();
+    Tensor setWeights(Tensor bias);
+
+    Tensor getBias();
+    Tensor setBias(Tensor bias);
 
     //virtual
     virtual string plot(int c) { return ""; }
