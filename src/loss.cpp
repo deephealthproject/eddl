@@ -39,68 +39,68 @@ using namespace std;
 Loss::Loss(string name) {
     this->name = name;
 }
+void Loss::delta(Tensor *T, Tensor *Y, Tensor *D) {}
+float Loss::value(Tensor *T, Tensor *Y) {return 0;}
 
 
-void Loss::delta(Tensor *T, Tensor *Y, Tensor *D) {
-
-
-    if (name == "mse") {
-        //delta: (T-Y)
-        Tensor::sum(1.0, T, -1.0, Y, D, 0);
-    } else if (name == "cent") {
-        // delta: t/y - (1-t)/(1-y)
-        Tensor *aux1 = new Tensor(T->getShape(), T->device);
-        Tensor *aux2 = new Tensor(T->getShape(), T->device);
-        Tensor *one = new Tensor(T->getShape(), T->device);
-        one->set(1.0);
-
-        //  (1-t)/(1-y)
-        Tensor::sum(1, one, -1, T, aux1, 0);
-        Tensor::sum(1, one, -1, Y, aux2, 0);
-        Tensor::el_div(aux1, aux2, aux2, 0);
-
-        // t/y
-        Tensor::el_div(T, Y, aux1, 0);
-
-        Tensor::sum(1, aux1, -1, aux2, D, 0);
-
-        delete aux1;
-        delete aux2;
-        delete one;
-    }
-        //typical case where cent is after a softmax
-    else if (name == "soft_cent") {
-
-        // parent->delta: (t-y)
-
-        Tensor::sum(1.0, T, -1.0, Y, D, 0);
-
-    }
-
+LMeanSquaredError::LMeanSquaredError() : Loss("mean_squared_error"){}
+void LMeanSquaredError::delta(Tensor *T, Tensor *Y, Tensor *D) {
+    //delta: (T-Y)
+    Tensor::sum(1.0, T, -1.0, Y, D, 0);
 }
-
-
-float Loss::value(Tensor *T, Tensor *Y) {
+float LMeanSquaredError::value(Tensor *T, Tensor *Y) {
     float f;
-    if (name == "mse") {
-        // batch error: sum((T-Y)^2)
-        Tensor *aux = new Tensor(T->getShape(), T->device);
-        Tensor::sum(1.0, T, -1.0, Y, aux, 0);
-        Tensor::el_mult(aux, aux, aux, 0);
-        f = aux->total_sum();
-        delete aux;
-    } else if ((name == "cent") || (name == "soft_cent")) {
-        Tensor *aux = new Tensor(T->getShape(), T->device);
-        Tensor::cent(T, Y, aux);
-        f = aux->total_sum();
-        delete aux;
-    }
-
+    // batch error: sum((T-Y)^2)
+    Tensor *aux = new Tensor(T->getShape(), T->device);
+    Tensor::sum(1.0, T, -1.0, Y, aux, 0);
+    Tensor::el_mult(aux, aux, aux, 0);
+    f = aux->total_sum();
+    delete aux;
     return f;
-
 }
 
 
-///////////////////////////////////////////
+LCrossEntropy::LCrossEntropy() : Loss("cross_entropy"){}
+void LCrossEntropy::delta(Tensor *T, Tensor *Y, Tensor *D) {
+    // delta: t/y - (1-t)/(1-y)
+    Tensor *aux1 = new Tensor(T->getShape(), T->device);
+    Tensor *aux2 = new Tensor(T->getShape(), T->device);
+    Tensor *one = new Tensor(T->getShape(), T->device);
+    one->set(1.0);
 
-//////
+    //  (1-t)/(1-y)
+    Tensor::sum(1, one, -1, T, aux1, 0);
+    Tensor::sum(1, one, -1, Y, aux2, 0);
+    Tensor::el_div(aux1, aux2, aux2, 0);
+
+    // t/y
+    Tensor::el_div(T, Y, aux1, 0);
+
+    Tensor::sum(1, aux1, -1, aux2, D, 0);
+
+    delete aux1;
+    delete aux2;
+    delete one;
+}
+float LCrossEntropy::value(Tensor *T, Tensor *Y) {
+    float f;
+    Tensor *aux = new Tensor(T->getShape(), T->device);
+    Tensor::cent(T, Y, aux);
+    f = aux->total_sum();
+    delete aux;
+    return f;
+}
+
+
+LSoftCrossEntropy::LSoftCrossEntropy() : Loss("soft_cross_entropy"){}
+void LSoftCrossEntropy::delta(Tensor *T, Tensor *Y, Tensor *D) {
+    Tensor::sum(1.0, T, -1.0, Y, D, 0);
+}
+float LSoftCrossEntropy::value(Tensor *T, Tensor *Y) {
+    float f;
+    Tensor *aux = new Tensor(T->getShape(), T->device);
+    Tensor::cent(T, Y, aux);
+    f = aux->total_sum();
+    delete aux;
+    return f;
+}

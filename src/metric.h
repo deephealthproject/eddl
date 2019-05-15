@@ -42,9 +42,25 @@ class Metric {
 public:
     string name;
 
-    Metric(string name);
+    explicit Metric(string name);
 
-    float value(Tensor *T, Tensor *Y);
+    virtual float value(Tensor *T, Tensor *Y);
+};
+
+
+class MMeanSquaredError : public Metric {
+public:
+    MMeanSquaredError();
+
+    float value(Tensor *T, Tensor *Y) override;
+};
+
+
+class MAccuracy : public Metric {
+public:
+    MAccuracy();
+
+    float value(Tensor *T, Tensor *Y) override;
 };
 
 #endif

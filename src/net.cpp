@@ -316,18 +316,14 @@ void Net::bts() {
 
 
 /////////////////////////////////////////
-void Net::build(optim *opt, const initializer_list<string> &c, const initializer_list<string> &m) {
-    build(opt, c, m, new CompServ(std::thread::hardware_concurrency(), {}, {}));
-}
-
-void Net::build(optim *opt, const initializer_list<string> &c, const initializer_list<string> &m, CompServ *cs) {
-    vstring co = vstring(c.begin(), c.end());
-    vstring me = vstring(m.begin(), m.end());
+void Net::build(optim *opt, const initializer_list<Loss *> &c, const initializer_list<Metric *> &m, CompServ *cs) {
+    vloss co = vloss(c.begin(), c.end());
+    vmetrics me = vmetrics(m.begin(), m.end());
     build(opt, co, me, cs);
 }
 
 /////////////////////////////////////////
-void Net::build(optim *opt, vstring co, vstring me) {
+void Net::build(optim *opt, vloss co, vmetrics me) {
     fprintf(stdout, "Build net\n");
     if (co.size() != lout.size())
         msg("Loss list size does not match output list", "Net.build");
@@ -359,23 +355,18 @@ void Net::build(optim *opt, vstring co, vstring me) {
     optimizer->setlayers(layers);
     // Initialize fiting errors vector
     for (int i = 0; i < co.size(); i++) {
-        strcosts.push_back(co[i]);
         fiterr.push_back(0.0);
         fiterr.push_back(0.0);
     }
     // set loss functions and create targets tensors
+    this->losses = vloss(co);
     for (int i = 0; i < co.size(); i++) {
-        losses.push_back(new Loss(co[i]));
-        if (co[i] == "soft_cent") lout[i]->delta_bp = 1;
+        if (co[i]->name == "soft_cross_entropy") lout[i]->delta_bp = 1;
         lout[i]->target = new Tensor(lout[i]->output->getShape(), dev);
     }
 
     // set metrics
-    for (int i = 0; i < me.size(); i++) {
-        strmetrics.push_back(me[i]);
-        metrics.push_back(new Metric(me[i]));
-
-    }
+    this->metrics = vmetrics(me);
 
     // forward sort
     fts();
@@ -385,7 +376,7 @@ void Net::build(optim *opt, vstring co, vstring me) {
     initialize();
 }
 
-void Net::build(optim *opt, vstring co, vstring me, CompServ *cs) {
+void Net::build(optim *opt, vloss co, vmetrics me, CompServ *cs) {
     int todev;
 
     //build net
@@ -528,7 +519,7 @@ void Net::split(int c, int todev) {
         //snets[i]->info();
 
         // build new net
-        snets[i]->build(optimizer->clone(), strcosts, strmetrics);
+        snets[i]->build(optimizer->clone(), losses, metrics);
     }
 
 }

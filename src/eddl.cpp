@@ -242,8 +242,27 @@ layer EDDL::Reshape(layer parent, const initializer_list<int> &shape, string nam
 layer EDDL::Transpose(layer parent, const initializer_list<int> &dims, string name){
     //TODO: Implement
 }
+/////////////////////////////////////////////////////////
 
 
+loss EDDL::MeanSquaredError(){
+    return new LMeanSquaredError();
+}
+loss EDDL::CrossEntropy(){
+    return new LCrossEntropy();
+}
+loss EDDL::SoftCrossEntropy(){
+    return new LSoftCrossEntropy();
+}
+/////////////////////////////////////////////////////////
+
+
+metric EDDL::MeanSquaredErrorMetric(){
+    return new MMeanSquaredError();
+}
+metric EDDL::AccuracyMetric(){
+    return new MAccuracy();
+}
 /////////////////////////////////////////////////////////
 
 layer EDDL::Add(const initializer_list<layer> &layers) {
@@ -410,11 +429,11 @@ void EDDL::plot(model m, string fname) {
     m->plot(fname);
 }
 
-void EDDL::build(model net, optimizer o, const initializer_list<string> &c, const initializer_list<string> &m) {
-    net->build(o, c, m);
+void EDDL::build(model net, optimizer o, const initializer_list<Loss *> &c, const initializer_list<Metric *> &m) {
+    EDDL::build(net, o, c, m, new CompServ(std::thread::hardware_concurrency(), {}, {}));
 }
 
-void EDDL::build(model net, optimizer o, const initializer_list<string> &c, const initializer_list<string> &m, CompServ *cs) {
+void EDDL::build(model net, optimizer o, const initializer_list<Loss *> &c, const initializer_list<Metric *> &m, CompServ *cs) {
     net->build(o, c, m, cs);
 }
 

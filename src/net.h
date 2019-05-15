@@ -63,7 +63,7 @@ class Net {
 private:
     void train_batch(vtensor X, vtensor Y, vind sind, int batch, int eval = 0);
 
-    void build(optim *opt, vstring in, vstring out);
+    void build(optim *opt, vloss in, vmetrics out);
 
 public:
     Net(vlayer in, vlayer out);
@@ -113,8 +113,6 @@ public:
     vmetrics metrics;
     optim *optimizer;
     verr fiterr;
-    vstring strcosts;
-    vstring strmetrics;
     vector<Net *> snets;
     vtensor Xs[MAX_THREADS];
     vtensor Ys[MAX_THREADS];
@@ -123,11 +121,9 @@ public:
 
     Layer *getLayer(string name);
 
-    void build(optim *opt, const initializer_list<string> &c, const initializer_list<string> &m);
+    void build(optim *opt, const initializer_list<Loss *> &c, const initializer_list<Metric *> &m, CompServ *cs);
 
-    void build(optim *opt, const initializer_list<string> &c, const initializer_list<string> &m, CompServ *cs);
-
-    void build(optim *opt, vstring c, vstring m, CompServ *cs);
+    void build(optim *opt, vloss c, vmetrics m, CompServ *cs);
 
     void fit(const initializer_list<Tensor *> &in, const initializer_list<Tensor *> &out, int batch, int epochs);
 

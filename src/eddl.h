@@ -35,6 +35,10 @@
 #include "net.h"
 #include "callbacks.h"
 #include "initializers.h"
+#include "loss.h"
+#include "metric.h"
+#include <thread>
+#include <pthread.h>
 
 #define tensor LTensor*
 #define layer Layer*
@@ -42,6 +46,8 @@
 #define optimizer optim*
 #define callback Callback*
 #define initializer Initializer*
+#define loss Loss*
+#define metric Metric*
 #define compserv CompServ*
 
 typedef vector<LTensor *> vltensor;
@@ -91,6 +97,13 @@ public:
 
 
     // ---- LOSSES ----
+    static loss MeanSquaredError();
+    static loss CrossEntropy();
+    static loss SoftCrossEntropy();
+
+    // ---- METRICS ----
+    static metric MeanSquaredErrorMetric();
+    static metric AccuracyMetric();
 
     // ---- MERGE LAYERS ----
     static layer Add(const initializer_list<layer> &layers);
@@ -187,8 +200,8 @@ public:
 
     // ---- MODEL METHODS ----
     static model Model(vlayer in, vlayer out);
-    static void build(model net, optimizer o, const initializer_list<string> &c, const initializer_list<string> &m);
-    static void build(model net, optimizer o, const initializer_list<string> &c, const initializer_list<string> &m, CompServ *cs);
+    static void build(model net, optimizer o, const initializer_list<Loss *> &c, const initializer_list<Metric *> &m);
+    static void build(model net, optimizer o, const initializer_list<Loss *> &c, const initializer_list<Metric *> &m, CompServ *cs);
     static void summary(model m);
     static void plot(model m, string fname);
     static void fit(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out, int batch, int epochs);

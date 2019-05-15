@@ -131,8 +131,9 @@ void summary(model m) {
     EDDL::summary(m);
 }
 
-void build(model net, optimizer opt, const char **c, int size_c, const char **m, int size_m, compserv cs) {
-    vector<string> co, me;
+void build(model net, optimizer opt, Loss **c, int size_c, Metric **m, int size_m, compserv cs) {
+    vector<Loss *> co;
+    vector<Metric *> me;
 
     // Add pointer values to vector of strings
     for (int i = 0; i < size_c; ++i) { co.emplace_back(*c); }
