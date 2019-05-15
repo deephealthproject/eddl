@@ -65,21 +65,15 @@ int main(int argc, char **argv)
     // Attach an optimizer and a list of error criteria and metrics
     // size of error criteria and metrics list must match with size of list of outputs
     // optionally put a DEVICE where the net will run
-    optimizer sgd=SGD_init(0.01, 0.9);
+    optimizer sgd = SGD_init(0.01, 0.9);
 
-    const char* c1 = "soft_cent";
-    const char* m1 = "acc";
-
-    const char** c = {&c1};
-    const char** m = {&m1};
+    Loss* c[] = {eddl.SoftCrossEntropy()};
+    Metric* m[] = {eddl.AccuracyMetric()};
 
     compserv cs = CS_CPU_init(4); // local CPU with 6 threads
-    //compserv cs=eddl.CS_GPU({1,0,0,0}); // local GPU using the first gpu of 4 installed
-    //compserv cs=eddl.CS_GPU({1});// local GPU using the first gpu of 1 installed
 
     // build(model net, optimizer opt, const char** c, int size_c, const char** m, int size_m, int todev)
     build(net, sgd, c, 1, m, 1, cs);
-
 
     // Load and preprocess training data
     tensor X=LTensor_init_fromfile("trX.bin");

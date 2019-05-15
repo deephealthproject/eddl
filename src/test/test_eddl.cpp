@@ -34,16 +34,16 @@
 #include "../eddl.h"
 
 
-float loss(tensor ytrue, tensor ypred) {
-    LTensor yt = *ytrue;
-    LTensor yp = *ypred;
-
-    LTensor l = yt + yp;
-
-
-    return 0.0;
-
-}
+//float loss(tensor ytrue, tensor ypred) {
+//    LTensor yt = *ytrue;
+//    LTensor yp = *ypred;
+//
+//    LTensor l = yt + yp;
+//
+//
+//    return 0.0;
+//
+//}
 
 layer ResBlock(layer in, int ndim, int n) {
 
@@ -104,7 +104,8 @@ int main(int argc, char **argv) {
     //compserv cs=eddl.CS_GPU({1,0,0,0}); // local GPU using the first gpu of 4 installed
     //compserv cs=eddl.CS_GPU({1});// local GPU using the first gpu of 1 installed
 
-    eddl.build(net, sgd, {"soft_cent"}, {"acc"}, cs);
+    // Build model
+    eddl.build(net, sgd, {eddl.SoftCrossEntropy()}, {eddl.AccuracyMetric()}, cs);
 
     // Load and preprocess training data
     tensor X = eddl.T("trX.bin");

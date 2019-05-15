@@ -35,16 +35,16 @@
 #include "../wrapper.h"
 
 
-float loss(tensor ytrue, tensor ypred) {
-    LTensor yt = *ytrue;
-    LTensor yp = *ypred;
-
-    LTensor l = yt + yp;
-
-
-    return 0.0;
-
-}
+//float loss(tensor ytrue, tensor ypred) {
+//    LTensor yt = *ytrue;
+//    LTensor yp = *ypred;
+//
+//    LTensor l = yt + yp;
+//
+//
+//    return 0.0;
+//
+//}
 
 layer ResBlock(layer in, int ndim, int n) {
 
@@ -97,17 +97,13 @@ int main(int argc, char **argv) {
     // optionally put a DEVICE where the net will run
     optimizer sgd = SGD_init(0.01, 0.9);
 
-    const char *c1 = "soft_cent";
-    const char *m1 = "acc";
-
-    const char **c = {&c1};
-    const char **m = {&m1};
+    Loss* c[] = {eddl.SoftCrossEntropy()};
+    Metric* m[] = {eddl.AccuracyMetric()};
 
     compserv cs = CS_CPU_init(4); // local CPU with 6 threads
 
     // build(model net, optimizer opt, const char** c, int size_c, const char** m, int size_m, int todev)
     build(net, sgd, c, 1, m, 1, cs);
-
 
     // Load and preprocess training data
     tensor X = LTensor_init_fromfile("trX.bin");
