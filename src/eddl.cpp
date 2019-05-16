@@ -187,6 +187,7 @@ layer EDDL::AveragePool(layer parent, const initializer_list<int> &pool_size, co
 
 layer EDDL::AveragePool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding, string name){
     //TODO: Implement
+    return new LAveragePool(parent, pool_size, strides, padding, name, DEV_CPU);
 }
 
 //////////////////////////////////////////////////////
@@ -393,6 +394,7 @@ optimizer EDDL::SGD(float lr, float momentum, float weight_decay, bool nesterov)
 
 
 void EDDL::change(optimizer optim, const initializer_list<float> &params) {
+    // TODO: Check this function
     optim->change(params);
 }
 

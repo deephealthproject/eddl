@@ -410,8 +410,8 @@ class LAveragePool : public LPool {
 public:
 
     // constructors and clones
-
-    LAveragePool(Layer *parent, PoolDescriptor *cd, string name, int dev);
+    LAveragePool(Layer *parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding, string name, int dev);
+    LAveragePool(Layer *parent, PoolDescriptor *D, string name, int dev);
 
 //    // Params
 //    Tensor *indX, *indY;

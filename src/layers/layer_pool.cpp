@@ -66,8 +66,7 @@ LMPool::LMPool(Layer *parent, const initializer_list<int> &ks, const initializer
                int d) : LMPool(parent, new PoolDescriptor(ks, st, p), name, d) {}
 
 LMPool::LMPool(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st,
-               const initializer_list<int> &p, string name, int d) : LMPool(parent, new PoolDescriptor(ks, st, p), name,
-                                                                            d) {}
+               const initializer_list<int> &p, string name, int d) : LMPool(parent, new PoolDescriptor(ks, st, p), name, d) {}
 
 LMPool::LMPool(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name, int d) : LMPool(
         parent, new PoolDescriptor(ks, st, p), name, d) {}
@@ -118,11 +117,11 @@ string LMPool::plot(int c) {
 }
 
 
-//////////////
-// APool2D
-//////////////
-
-//....
+// ---- AVERAGE POOL ----
+LAveragePool::LAveragePool(Layer *parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding, string name, int dev) : LAveragePool(parent, new PoolDescriptor(pool_size, strides, padding), name, dev) {}
+LAveragePool::LAveragePool(Layer *parent, PoolDescriptor *D, string name, int dev) : LPool(parent, D, name, dev) {
+    // TODO: Implement
+}
 
 //////////////
 // SPool2D
