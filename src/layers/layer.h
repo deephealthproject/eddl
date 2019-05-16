@@ -430,13 +430,13 @@ public:
 };
 
 /// Drop-out Layer
-class LDrop : public LinLayer {
+class LDropout : public LinLayer {
 public:
     int ndim;
     static int total_layers;
 
     // constructors and clones
-    LDrop(Layer *parent, float df, string name, int d);
+    LDropout(Layer *parent, float df, string name, int d);
 
     Layer *share(int c, int bs, vector<Layer *> p);
 

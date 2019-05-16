@@ -36,9 +36,9 @@
 
 using namespace std;
 
-int LDrop::total_layers = 0;
+int LDropout::total_layers = 0;
 
-LDrop::LDrop(Layer *parent, float df, string name, int d) : LinLayer(name, d) {
+LDropout::LDropout(Layer *parent, float df, string name, int d) : LinLayer(name, d) {
 
     total_layers++;
 
@@ -57,7 +57,7 @@ LDrop::LDrop(Layer *parent, float df, string name, int d) : LinLayer(name, d) {
 
 
 // virtual
-void LDrop::forward() {
+void LDropout::forward() {
     if (mode == TRMODE) {
         mask->rand_binary(1.0 - df);
         Tensor::el_mult(input, mask, output, 0);
@@ -68,7 +68,7 @@ void LDrop::forward() {
 
 }
 
-void LDrop::backward() {
+void LDropout::backward() {
 
     if (parent.size()) {
         Tensor::el_mult(delta, mask, parent[0]->delta, 1);
@@ -76,24 +76,24 @@ void LDrop::backward() {
 }
 
 
-Layer *LDrop::share(int c, int bs, vector<Layer *> p) {
+Layer *LDropout::share(int c, int bs, vector<Layer *> p) {
 
-    LDrop *n = new LDrop(p[0], df, "share_" + to_string(c) + name, dev);
+    LDropout *n = new LDropout(p[0], df, "share_" + to_string(c) + name, dev);
     n->orig = this;
 
     return n;
 }
 
-Layer *LDrop::clone(int c, int bs, vector<Layer *> p, int todev) {
+Layer *LDropout::clone(int c, int bs, vector<Layer *> p, int todev) {
 
-    LDrop *n = new LDrop(p[0], df, "clone_" + to_string(todev) + name, todev);
+    LDropout *n = new LDropout(p[0], df, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
 
     return n;
 }
 
 
-string LDrop::plot(int c) {
+string LDropout::plot(int c) {
     string s;
 
     if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";

@@ -87,7 +87,7 @@ layer Reshape_init(layer parent, const int *shape, int shape_size, const char *n
 }
 
 layer Drop_init(layer parent, float df, const char *name) {
-    return new LDrop(parent, df, name, DEV_CPU);
+    return new LDropout(parent, df, name, DEV_CPU);
 }
 
 layer Add_init(Layer **parent, int parent_size, const char *name) {

@@ -131,11 +131,11 @@ layer EDDL::Dense(layer parent, int ndim, bool use_bias, string name){
 
 
 layer EDDL::Dropout(layer parent, float rate) {
-    return EDDL::Dropout(parent, rate, "drop" + to_string(1 + LDrop::total_layers));
+    return EDDL::Dropout(parent, rate, "drop" + to_string(1 + LDropout::total_layers));
 }
 
 layer EDDL::Dropout(layer parent, float rate, string name) {
-    return new LDrop(parent, rate, name, DEV_CPU);
+    return new LDropout(parent, rate, name, DEV_CPU);
 }
 
 //////////////////////////////////////////////////////
