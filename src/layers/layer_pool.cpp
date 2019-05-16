@@ -62,16 +62,16 @@ LPool::LPool(Layer *parent, PoolDescriptor *D, string name, int d) : LinLayer(na
 // MaxPool2D
 //////////////
 // constructors and clones
-LMPool::LMPool(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p, string name,
-               int d) : LMPool(parent, new PoolDescriptor(ks, st, p), name, d) {}
+LMaxPool::LMaxPool(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p, string name,
+               int d) : LMaxPool(parent, new PoolDescriptor(ks, st, p), name, d) {}
 
-LMPool::LMPool(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st,
-               const initializer_list<int> &p, string name, int d) : LMPool(parent, new PoolDescriptor(ks, st, p), name, d) {}
+LMaxPool::LMaxPool(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st,
+               const initializer_list<int> &p, string name, int d) : LMaxPool(parent, new PoolDescriptor(ks, st, p), name, d) {}
 
-LMPool::LMPool(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name, int d) : LMPool(
+LMaxPool::LMaxPool(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name, int d) : LMaxPool(
         parent, new PoolDescriptor(ks, st, p), name, d) {}
 
-LMPool::LMPool(Layer *parent, PoolDescriptor *D, string name, int d) : LPool(parent, D, name, d) {
+LMaxPool::LMaxPool(Layer *parent, PoolDescriptor *D, string name, int d) : LPool(parent, D, name, d) {
     // params
     D->indX = new Tensor(D->O->getShape(), d);
     D->indY = new Tensor(D->O->getShape(), d);
@@ -80,34 +80,34 @@ LMPool::LMPool(Layer *parent, PoolDescriptor *D, string name, int d) : LPool(par
 
 // virtual
 
-void LMPool::forward() {
+void LMaxPool::forward() {
     Tensor::MPool2D(pd);
 }
 
-void LMPool::backward() {
+void LMaxPool::backward() {
     // backprop delta
     if (parent.size()) {
         Tensor::MPool2D_back(pd);
     }
 }
 
-Layer *LMPool::share(int c, int bs, vector<Layer *> p) {
-    LMPool *n = new LMPool(p[0], {pd->kr, pd->kc}, {pd->sr, pd->sc}, {pd->padr, pd->padc},
+Layer *LMaxPool::share(int c, int bs, vector<Layer *> p) {
+    LMaxPool *n = new LMaxPool(p[0], {pd->kr, pd->kc}, {pd->sr, pd->sc}, {pd->padr, pd->padc},
                            "share_" + to_string(c) + name, dev);
     n->orig = this;
 
     return n;
 }
 
-Layer *LMPool::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LMPool *n = new LMPool(p[0], {pd->kr, pd->kc}, {pd->sr, pd->sc}, {pd->padr, pd->padc},
+Layer *LMaxPool::clone(int c, int bs, vector<Layer *> p, int todev) {
+    LMaxPool *n = new LMaxPool(p[0], {pd->kr, pd->kc}, {pd->sr, pd->sc}, {pd->padr, pd->padc},
                            "clone_" + to_string(todev) + name, todev);
     n->orig = this;
 
     return n;
 }
 
-string LMPool::plot(int c) {
+string LMaxPool::plot(int c) {
     string s;
 
     if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=gray,shape=box]";

@@ -72,8 +72,12 @@ layer EDDL::Activation(layer parent, string activation, string name) {
 }
 //////////////////////////////////////////////////////
 
+layer EDDL::BatchNormalization(layer parent, float momentum, float epsilon, bool affine){
+    return EDDL::BatchNormalization(parent, momentum, epsilon, affine, "batchnorm" + to_string(1 + LBatchNorm::total_layers));
+}
+
 layer EDDL::BatchNormalization(layer parent, float momentum, float epsilon, bool affine, string name){
-    //Todo: Implement
+    return new LBatchNorm(parent, momentum, epsilon, affine, name, DEV_CPU);
 }
 
 //////////////////////////////////////////////////////
@@ -147,8 +151,11 @@ layer EDDL::Embedding(int input_dim, int output_dim, string name){
 }
 
 //////////////////////////////////////////////////////
+layer EDDL::GaussianNoise(layer parent, float stdev){
+    return EDDL::GaussianNoise(parent, stdev, "gaussiannoise" + to_string(1 + LGaussianNoise::total_layers));
+}
 layer EDDL::GaussianNoise(layer parent, float stdev, string name){
-    // TODO: IMPLEMENT
+    return new LGaussianNoise(parent, stdev, name, DEV_CPU);
 }
 
 //////////////////////////////////////////////////////
@@ -181,8 +188,8 @@ layer EDDL::AveragePool(layer parent, const initializer_list<int> &pool_size) {
 }
 
 layer EDDL::AveragePool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding){
-    //TODO: Fix LMPool
-    return EDDL::AveragePool(parent, pool_size, strides, padding, "avgpool" + to_string(1 + LMPool::total_layers));
+    //TODO: Fix LMaxPool
+    return EDDL::AveragePool(parent, pool_size, strides, padding, "avgpool" + to_string(1 + LAveragePool::total_layers));
 }
 
 layer EDDL::AveragePool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding, string name){
@@ -192,8 +199,8 @@ layer EDDL::AveragePool(layer parent, const initializer_list<int> &pool_size, co
 
 //////////////////////////////////////////////////////
 layer EDDL::GlobalMaxPool(layer parent){
-    //TODO: Fix LMPool
-    //return EDDL::GlobalMaxPool(parent, "globalmaxpool" + to_string(1 + LMPool::pool_created));
+    //TODO: Fix LMaxPool
+    //return EDDL::GlobalMaxPool(parent, "globalmaxpool" + to_string(1 + LMaxPool::pool_created));
 }
 
 layer EDDL::GlobalMaxPool(layer parent, string name){
@@ -202,8 +209,8 @@ layer EDDL::GlobalMaxPool(layer parent, string name){
 
 //////////////////////////////////////////////////////
 layer EDDL::GlobalAveragePool(layer parent){
-    //TODO: Fix LMPool
-    //return EDDL::GlobalAveragePool(parent, "globalavgpool" + to_string(1 + LMPool::pool_created));
+    //TODO: Fix LMaxPool
+    //return EDDL::GlobalAveragePool(parent, "globalavgpool" + to_string(1 + LMaxPool::pool_created));
 }
 
 layer EDDL::GlobalAveragePool(layer parent, string name){
@@ -217,32 +224,32 @@ layer EDDL::MaxPool(layer parent, const initializer_list<int> &pool_size) {
 }
 
 layer EDDL::MaxPool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding){
-    return EDDL::MaxPool(parent, pool_size, strides, padding, "mpool" + to_string(1 + LMPool::total_layers));
+    return EDDL::MaxPool(parent, pool_size, strides, padding, "mpool" + to_string(1 + LMaxPool::total_layers));
 }
 
 layer EDDL::MaxPool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding, string name){
-    return new LMPool(parent, pool_size, strides, padding, name, DEV_CPU);
+    return new LMaxPool(parent, pool_size, strides, padding, name, DEV_CPU);
 
 }
 
 //////////////////////////////////////////////////////
 layer EDDL::RNN(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional){
     //TODO: Fix name
-    return EDDL::RNN(parent, units, num_layers, use_bias, dropout, bidirectional, "rnn" + to_string(1 + LMPool::total_layers));
+    return EDDL::RNN(parent, units, num_layers, use_bias, dropout, bidirectional, "rnn" + to_string(1 + LRNN::total_layers));
 }
 
 layer EDDL::RNN(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name){
-    //TODO: Implement
+    return new LRNN(parent, units, num_layers, use_bias, dropout, bidirectional, name, DEV_CPU);
 }
 
 //////////////////////////////////////////////////////
 layer EDDL::LSTM(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional){
     //TODO: Fix name
-    return EDDL::LSTM(parent, units, num_layers, use_bias, dropout, bidirectional, "lstm" + to_string(1 + LMPool::total_layers));
+    return EDDL::LSTM(parent, units, num_layers, use_bias, dropout, bidirectional, "lstm" + to_string(1 + LLSTM::total_layers));
 }
 
 layer EDDL::LSTM(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name){
-    //TODO: Implement
+    return new LLSTM(parent, units, num_layers, use_bias, dropout, bidirectional, name, DEV_CPU);
 }
 //////////////////////////////////////////////////////
 layer EDDL::Reshape(layer parent, const initializer_list<int> &shape) {
@@ -255,7 +262,7 @@ layer EDDL::Reshape(layer parent, const initializer_list<int> &shape, string nam
 /////////////////////////////////////////////////////////
 
 layer EDDL::Transpose(layer parent, const initializer_list<int> &dims){
-    return EDDL::Transpose(parent, dims, "transposed" + to_string(1 + LReshape::total_layers));
+    return EDDL::Transpose(parent, dims, "transpose" + to_string(1 + LTranspose::total_layers));
 }
 layer EDDL::Transpose(layer parent, const initializer_list<int> &dims, string name){
     return new LTranspose(parent, dims, name, DEV_CPU);
@@ -297,7 +304,7 @@ layer EDDL::Add(const initializer_list<layer> &layers, string name) {
 
 layer EDDL::Average(const initializer_list<layer> &layers){
     // TODO: Fix LCAT
-    return EDDL::Average(layers, "average" + to_string(1 + LConcat::total_layers));
+    return EDDL::Average(layers, "average" + to_string(1 + LAverage::total_layers));
 }
 
 layer EDDL::Average(const initializer_list<layer> &layers, string name){
@@ -309,7 +316,7 @@ layer EDDL::Average(const initializer_list<layer> &layers, string name){
 
 layer EDDL::Subtract(const initializer_list<layer> &layers) {
     // TODO: Fix LAadd
-    return EDDL::Subtract(layers, "substract" + to_string(1 + LAdd::total_layers));
+    return EDDL::Subtract(layers, "substract" + to_string(1 + LSubtract::total_layers));
 }
 
 layer EDDL::Subtract(const initializer_list<layer> &layers, string name) {
@@ -330,7 +337,7 @@ layer EDDL::Concat(const initializer_list<layer> &layers, string name) {
 
 layer EDDL::MatMul(const initializer_list<layer> &layers){
     // TODO: Fix LCAT
-    return EDDL::MatMul(layers, "matmul" + to_string(1 + LConcat::total_layers));
+    return EDDL::MatMul(layers, "matmul" + to_string(1 + LMatMul::total_layers));
 }
 
 layer EDDL::MatMul(const initializer_list<layer> &layers, string name){
@@ -341,7 +348,7 @@ layer EDDL::MatMul(const initializer_list<layer> &layers, string name){
 
 layer EDDL::Maximum(const initializer_list<layer> &layers){
     // TODO: Fix LCAT
-    return EDDL::Maximum(layers, "maximum" + to_string(1 + LConcat::total_layers));
+    return EDDL::Maximum(layers, "maximum" + to_string(1 + LMaximum::total_layers));
 }
 
 layer EDDL::Maximum(const initializer_list<layer> &layers, string name){
@@ -352,7 +359,7 @@ layer EDDL::Maximum(const initializer_list<layer> &layers, string name){
 
 layer EDDL::Minimum(const initializer_list<layer> &layers){
     // TODO: Fix LCAT
-    return EDDL::Minimum(layers, "minimum" + to_string(1 + LConcat::total_layers));
+    return EDDL::Minimum(layers, "minimum" + to_string(1 + LMinimum::total_layers));
 }
 
 layer EDDL::Minimum(const initializer_list<layer> &layers, string name){

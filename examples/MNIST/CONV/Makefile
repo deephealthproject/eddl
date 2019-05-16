@@ -127,7 +127,7 @@ endif
 SRC_PATH=../../../src
 
 #######################################################################
-OBJ =	utils.o tensor.o tensor_op.o cpu_convol.o compserv.o layer.o layer_tensor.o layer_transpose.o layer_input.o layer_embedding.o layer_dense.o layer_conv.o layer_pool.o layer_activation.o layer_reshape.o layer_drop.o layer_add.o layer_cat.o layer_average.o layer_matmul.o layer_maximum.o layer_minimum.o layer_subtract.o loss.o metric.o optim.o net.o eddl.o wrapper.o
+OBJ =	utils.o tensor.o tensor_op.o cpu_convol.o compserv.o layer.o layer_tensor.o layer_transpose.o layer_input.o layer_embedding.o layer_dense.o layer_conv.o layer_pool.o layer_activation.o layer_reshape.o layer_drop.o layer_add.o layer_cat.o layer_average.o layer_matmul.o layer_maximum.o layer_minimum.o layer_subtract.o layer_batchnorm.o layer_noise.o layer_rnn.o layer_lstm.o loss.o metric.o optim.o net.o eddl.o wrapper.o
 
 ifeq ($(CORE),1)  # CPU
 all: $(GPU_OBJ) $(OBJ) test_eddl test_wrapper
@@ -206,6 +206,18 @@ layer_cat.o: $(SRC_PATH)/layers/layer_cat.cpp $(SRC_PATH)/layers/layer.h
 
 layer_drop.o: $(SRC_PATH)/layers/layer_drop.cpp $(SRC_PATH)/layers/layer.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_drop.cpp
+
+layer_batchnorm.o: $(SRC_PATH)/layers/layer_batchnorm.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_batchnorm.cpp
+
+layer_noise.o: $(SRC_PATH)/layers/layer_noise.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_noise.cpp
+
+layer_rnn.o: $(SRC_PATH)/layers/layer_rnn.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_rnn.cpp
+
+layer_lstm.o: $(SRC_PATH)/layers/layer_lstm.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_lstm.cpp
 
 loss.o: $(SRC_PATH)/loss.cpp $(SRC_PATH)/loss.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/loss.cpp

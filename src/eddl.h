@@ -134,10 +134,12 @@ public:
 
 
     // ---- NOISE LAYERS ----
+    static layer GaussianNoise(layer parent, float stddev); //Todo: Implement
     static layer GaussianNoise(layer parent, float stddev, string name); //Todo: Implement
 
 
     // ---- NORMALIZATION LAYERS ----
+    static layer BatchNormalization(layer parent, float momentum, float epsilon, bool affine); //Todo: Implement
     static layer BatchNormalization(layer parent, float momentum, float epsilon, bool affine, string name); //Todo: Implement
 
     static layer Dropout(layer parent, float rate);

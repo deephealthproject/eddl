@@ -15,7 +15,6 @@ target_sources(EDDLL
         # Other layers
         layer_activation.cpp
         layer_dense.cpp
-        layer_drop.cpp
         layer_input.cpp
         layer_conv.cpp
         layer_embedding.cpp
@@ -23,4 +22,15 @@ target_sources(EDDLL
         layer_tensor.cpp
         layer_transpose.cpp
         layer_pool.cpp
+
+        # Normalization layers
+        layer_batchnorm.cpp
+        layer_drop.cpp
+
+        # Noise layers
+        layer_noise.cpp
+
+        # Recurrent layers
+        layer_rnn.cpp
+        layer_lstm.cpp
         )

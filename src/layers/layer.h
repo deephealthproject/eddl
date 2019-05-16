@@ -179,7 +179,7 @@ public:
 
 };
 
-/// DENSE Layer
+/// Dense Layer
 class LDense : public LinLayer {
 public:
     int ndim;
@@ -374,19 +374,19 @@ public:
 };
 
 /// MaxPool2D Layer
-class LMPool : public LPool {
+class LMaxPool : public LPool {
 public:
 
     // constructors and clones
-    LMPool(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p, string name,
+    LMaxPool(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p, string name,
            int d);
 
-    LMPool(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st,
+    LMaxPool(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st,
            const initializer_list<int> &p, string name, int d);
 
-    LMPool(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name, int d);
+    LMaxPool(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name, int d);
 
-    LMPool(Layer *parent, PoolDescriptor *cd, string name, int d);
+    LMaxPool(Layer *parent, PoolDescriptor *cd, string name, int d);
 
     // Params
     Tensor *indX, *indY;
@@ -628,6 +628,96 @@ public:
 
     string plot(int c);
 
+};
+
+
+/// BatchNormalization Layer
+class LBatchNorm : public LinLayer {
+public:
+    float momentum;
+    float epsilon;
+    bool affine;
+    static int total_layers;
+
+    LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev);
+
+    Layer *share(int c, int bs, vector<Layer *> p);
+
+    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+
+    void forward();
+
+    void backward();
+
+    string plot(int c);
+};
+
+
+/// GaussianNoise Layer
+class LGaussianNoise : public LinLayer {
+public:
+    float stdev;
+    static int total_layers;
+
+    LGaussianNoise(Layer *parent, float stdev, string name, int dev);
+
+    Layer *share(int c, int bs, vector<Layer *> p);
+
+    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+
+    void forward();
+
+    void backward();
+
+    string plot(int c);
+};
+
+
+/// RNN Layer
+class LRNN : public LinLayer {
+public:
+    int units;
+    int num_layers;
+    bool use_bias;
+    float dropout;
+    bool bidirectional;
+    static int total_layers;
+
+    LRNN(Layer *parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev);
+
+    Layer *share(int c, int bs, vector<Layer *> p);
+
+    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+
+    void forward();
+
+    void backward();
+
+    string plot(int c);
+};
+
+
+/// LSTM Layer
+class LLSTM : public LinLayer {
+public:
+    int units;
+    int num_layers;
+    bool use_bias;
+    float dropout;
+    bool bidirectional;
+    static int total_layers;
+
+    LLSTM(Layer *parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev);
+
+    Layer *share(int c, int bs, vector<Layer *> p);
+
+    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+
+    void forward();
+
+    void backward();
+
+    string plot(int c);
 };
 
 #endif

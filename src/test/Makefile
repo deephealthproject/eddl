@@ -129,7 +129,7 @@ endif # Makegoals
 
 
 #######################################################################
-OBJ =	utils.o cpu_convol.o tensor.o tensor_op.o compserv.o layer.o layer_tensor.o layer_transpose.o layer_input.o layer_embedding.o layer_dense.o layer_activation.o layer_reshape.o layer_conv.o layer_pool.o layer_drop.o layer_add.o layer_average.o layer_matmul.o layer_maximum.o layer_minimum.o layer_subtract.o layer_cat.o loss.o metric.o optim.o net.o eddl.o wrapper.o
+OBJ =	utils.o cpu_convol.o tensor.o tensor_op.o compserv.o layer.o layer_tensor.o layer_transpose.o layer_input.o layer_embedding.o layer_dense.o layer_activation.o layer_reshape.o layer_conv.o layer_pool.o layer_drop.o layer_add.o layer_cat.o layer_average.o layer_matmul.o layer_maximum.o layer_minimum.o layer_subtract.o layer_batchnorm.o layer_noise.o layer_rnn.o layer_lstm.o loss.o metric.o optim.o net.o eddl.o wrapper.o
 
 ifeq ($(CORE),1)  # CPU
 all: $(GPU_OBJ) $(OBJ) test_eddl test_tensors shared_eddl test_wrapper
@@ -208,6 +208,18 @@ layer_pool.o: ../layers/layer_pool.cpp ../layers/layer.h
 
 layer_drop.o: ../layers/layer_drop.cpp ../layers/layer.h
 		$(CXX) $(CXXFLAGS) -c ../layers/layer_drop.cpp
+
+layer_batchnorm.o: ../layers/layer_batchnorm.cpp ../layers/layer.h
+		$(CXX) $(CXXFLAGS) -c ../layers/layer_batchnorm.cpp
+
+layer_noise.o: ../layers/layer_noise.cpp ../layers/layer.h
+		$(CXX) $(CXXFLAGS) -c ../layers/layer_noise.cpp
+
+layer_rnn.o: ../layers/layer_rnn.cpp ../layers/layer.h
+		$(CXX) $(CXXFLAGS) -c ../layers/layer_rnn.cpp
+
+layer_lstm.o: ../layers/layer_lstm.cpp ../layers/layer.h
+		$(CXX) $(CXXFLAGS) -c ../layers/layer_lstm.cpp
 
 loss.o: ../loss.cpp ../loss.h
 		$(CXX) $(CXXFLAGS) -c ../loss.cpp

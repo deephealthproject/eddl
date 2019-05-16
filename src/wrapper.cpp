@@ -74,7 +74,7 @@ layer MPool_init(layer parent, const int *ks, int ks_size, const int *st, int st
                  const char *name) {
     vector<int> vks(ks, ks + ks_size);
     vector<int> vst(st, st + st_size);
-    return new LMPool(parent, vks, vst, p, name, DEV_CPU);
+    return new LMaxPool(parent, vks, vst, p, name, DEV_CPU);
 }
 
 layer Activation_init(layer parent, const char *act, const char *name) {
