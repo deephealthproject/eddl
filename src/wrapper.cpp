@@ -60,8 +60,8 @@ layer Input_init(Tensor *in, const char *name) {
     return new LInput(in, name, DEV_CPU);
 }
 
-layer Dense_init(layer parent, int ndim, const char *name) {
-    return new LDense(parent, ndim, name, DEV_CPU);
+layer Dense_init(layer parent, int ndim, bool use_bias, const char *name) {
+    return new LDense(parent, ndim, use_bias, name, DEV_CPU);
 }
 
 layer Conv_init(layer parent, const int *ks, int ks_size, const int *st, int st_size, const char *p, const char *name) {
@@ -172,7 +172,7 @@ Tensor *Layer_output(layer l) {
 
 // Optimizers
 optimizer SGD_init(float lr, float mu) {
-    return new sgd({lr, mu});
+    return new sgd(lr, mu);
 }
 
 // Computing service

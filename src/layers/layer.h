@@ -112,7 +112,7 @@ public:
 /// Tensor Layer
 class LTensor : public LinLayer {
 public:
-    static int tensor_created;
+    static int total_layers;
 
     LTensor(string fname);
 
@@ -142,9 +142,30 @@ public:
 /// INPUT Layer
 class LInput : public LinLayer {
 public:
-    static int input_created;
+    static int total_layers;
 
     LInput(Tensor *in, string name, int dev);
+
+    Layer *share(int c, int bs, vector<Layer *> p);
+
+    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+
+    void forward();
+
+    void backward();
+
+    string plot(int c);
+
+};
+
+/// EMBEDDING Layer
+class LEmbedding : public LinLayer {
+public:
+    int input_dim;
+    int output_dim;
+    static int total_layers;
+
+    LEmbedding(int input_dim, int output_dim, string name, int dev);
 
     Layer *share(int c, int bs, vector<Layer *> p);
 
@@ -162,9 +183,10 @@ public:
 class LDense : public LinLayer {
 public:
     int ndim;
-    static int dense_created;
+    bool use_bias;  // TODO: Implement
+    static int total_layers;
 
-    LDense(Layer *parent, int ndim, string name, int d);
+    LDense(Layer *parent, int ndim, bool use_bias, string name, int dev);
 
     Layer *share(int c, int bs, vector<Layer *> p);
 
@@ -188,7 +210,7 @@ public:
 class LActivation : public LinLayer {
 public:
     string act;
-    static int activation_created;
+    static int total_layers;
 
     LActivation(Layer *parent, string act, string name, int d);
 
@@ -207,7 +229,7 @@ public:
 /// Resahpe Layer
 class LReshape : public LinLayer {
 public:
-    static int reshape_created;
+    static int total_layers;
     vector<int> ls;
 
     // constructors and clones
@@ -232,16 +254,18 @@ public:
 /// Conv2D Layer
 class LConv : public LinLayer {
 public:
-    static int conv_created;
+    static int total_layers;
 
     ConvolDescriptor *cd;
 
     // constructors and clones
-    LConv(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p, string name,
-          int d);
+    LConv(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p, string name, int d);
 
     LConv(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st,
           const initializer_list<int> &p, string name, int d);
+
+    LConv(Layer *parent, int filters, const initializer_list<int> &kernel_size, const initializer_list<int> &strides, string padding,
+            int groups, const initializer_list<int> &dilation_rate, bool use_bias, string name, int dev);
 
     LConv(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name, int d);
 
@@ -262,10 +286,64 @@ public:
 
 };
 
+/// ConvT2D Layer
+class LConvT : public LinLayer {
+public:
+    static int total_layers;
+
+    ConvolDescriptor *cd;
+
+    // constructors and clones
+    LConvT(Layer *parent, int filters, const initializer_list<int> &kernel_size,
+        const initializer_list<int> &output_padding, string padding, const initializer_list<int> &dilation_rate,
+        const initializer_list<int> &strides, bool use_bias, string name, int dev);
+
+    LConvT(Layer *parent, ConvolDescriptor *cd, string name, int dev);
+
+//    Layer *share(int c, int bs, vector<Layer *> p);
+//
+//    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
+//
+//    // Params are in ConvolDescriptor
+//
+//    // implementation
+//    void forward();
+//
+//    void backward();
+//
+//    string plot(int c);
+
+};
+
+/// UpSampling2D Layer
+class LUpSampling : public LinLayer {
+public:
+    vector<int> size;
+    string interpolation;
+    static int total_layers;
+
+    // constructors and clones
+    LUpSampling(Layer *parent, const initializer_list<int> &size, string interpolation, string name, int dev);
+
+//    Layer *share(int c, int bs, vector<Layer *> p);
+//
+//    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
+//
+//    // Params are in ConvolDescriptor
+//
+//    // implementation
+//    void forward();
+//
+//    void backward();
+//
+//    string plot(int c);
+
+};
+
 /// Pool2D Layer
 class LPool : public LinLayer {
 public:
-    static int pool_created;
+    static int total_layers;
     PoolDescriptor *pd;
 
     // constructors
@@ -307,7 +385,7 @@ public:
 class LDrop : public LinLayer {
 public:
     int ndim;
-    static int drop_created;
+    static int total_layers;
 
     // constructors and clones
     LDrop(Layer *parent, float df, string name, int d);
@@ -358,7 +436,7 @@ public:
 /// Add Layer
 class LAdd : public MLayer {
 public:
-    static int add_created;
+    static int total_layers;
 
 
     LAdd(vector<Layer *> in, string name, int dev);
@@ -381,7 +459,7 @@ class LCat : public MLayer {
 public:
     int ndim;
     vector<int> index;
-    static int cat_created;
+    static int total_layers;
 
     // constructors and clones
     LCat(vector<Layer *> in, string name, int d);

@@ -36,19 +36,7 @@
 
 using namespace std;
 
-optim::optim() {
-
-}
-
-
-////// SGD //////
-sgd::sgd(const initializer_list<float> &params) : optim() {
-    vector<float> vparams = vector<float>(params.begin(), params.end());
-    lr = vparams[0];
-    mu = vparams[1];
-    this->weight_decay = 0.0f;
-    this->nesterov = false;
-}
+optim::optim() {}
 
 sgd::sgd(float lr, float momentum, float weight_decay, bool nesterov) : optim() {
     this->lr = lr;
@@ -64,7 +52,7 @@ void sgd::change(const initializer_list<float> &p) {
 }
 
 optim *sgd::clone() {
-    return new sgd({lr, mu});
+    return new sgd(lr, mu, weight_decay, nesterov);
 }
 
 
@@ -94,8 +82,3 @@ void sgd::applygrads(int batch) {
     //getchar();
 
 }
-
-
-///////////////////////////////////////////
-
-//////

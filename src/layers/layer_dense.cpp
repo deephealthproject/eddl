@@ -36,24 +36,25 @@
 
 using namespace std;
 
-int LDense::dense_created = 0;
+int LDense::total_layers = 0;
 
-LDense::LDense(Layer *parent, int ndim, string name, int d) : LinLayer(name, d) {
+LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev) : LinLayer(name, dev) {
     if (parent->output->ndim != 2) msg("LDense only works over 2D tensors", "LDense");
-    dense_created++;
+    total_layers++;
     this->ndim = ndim;
+    this->use_bias = use_bias;
 
     input = parent->output;
-    output = new Tensor({input->shape[0], ndim}, d);
-    delta = new Tensor(output->getShape(), d);
+    output = new Tensor({input->shape[0], ndim}, dev);
+    delta = new Tensor(output->getShape(), dev);
 
-    W = new Tensor({input->shape[1], ndim}, d);
-    bias = new Tensor({ndim}, d);
+    W = new Tensor({input->shape[1], ndim}, dev);
+    bias = new Tensor({ndim}, dev);
     params.push_back(W);
     params.push_back(bias);
 
-    gW = new Tensor({input->shape[1], ndim}, d);
-    gbias = new Tensor({ndim}, d);
+    gW = new Tensor({input->shape[1], ndim}, dev);
+    gbias = new Tensor({ndim}, dev);
     gradients.push_back(gW);
     gradients.push_back(gbias);
 
@@ -83,7 +84,7 @@ void LDense::backward() {
 
 
 Layer *LDense::share(int c, int bs, vector<Layer *> p) {
-    LDense *n = new LDense(p[0], ndim, "share_" + to_string(c) + name, dev);
+    LDense *n = new LDense(p[0], ndim, use_bias, "share_" + to_string(c) + name, dev);
     n->orig = this;
 
     //share params
@@ -99,7 +100,7 @@ Layer *LDense::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LDense::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LDense *n = new LDense(p[0], ndim, "clone_" + to_string(todev) + name, todev);
+    LDense *n = new LDense(p[0], ndim, use_bias, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
 
     return n;

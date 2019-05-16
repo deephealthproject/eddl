@@ -149,5 +149,3 @@ void MLayer::addparent(Layer *l) {
     lin++;
 }
 
-
-//////

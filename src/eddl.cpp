@@ -64,7 +64,7 @@ void EDDL::div(tensor t, float v) {
 
 
 layer EDDL::Activation(layer parent, string activation) {
-    return EDDL::Activation(parent, activation, "activation" + to_string(1 + LActivation::activation_created));
+    return EDDL::Activation(parent, activation, "activation" + to_string(1 + LActivation::total_layers));
 }
 
 layer EDDL::Activation(layer parent, string activation, string name) {
@@ -79,51 +79,59 @@ layer EDDL::BatchNormalization(layer parent, float momentum, float epsilon, bool
 //////////////////////////////////////////////////////
 
 layer EDDL::Conv(layer parent, const initializer_list<int> &ks) {
-    return new LConv(parent, ks, {1, 1}, "same", "conv" + to_string(1 + LConv::conv_created), DEV_CPU);
+    return new LConv(parent, ks, {1, 1}, "same", "conv" + to_string(1 + LConv::total_layers), DEV_CPU);
 }
 
 layer EDDL::Conv(layer parent, const initializer_list<int> &ks, const initializer_list<int> &st) {
-    return new LConv(parent, ks, st, "same", "conv" + to_string(1 + LConv::conv_created), DEV_CPU);
+    return new LConv(parent, ks, st, "same", "conv" + to_string(1 + LConv::total_layers), DEV_CPU);
 }
 
 layer EDDL::Conv(layer parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p) {
-    return new LConv(parent, ks, st, p, "conv" + to_string(1 + LConv::conv_created), DEV_CPU);
+    return new LConv(parent, ks, st, p, "conv" + to_string(1 + LConv::total_layers), DEV_CPU);
 }
 
 layer EDDL::Conv(layer parent, const initializer_list<int> &ks, string p) {
-    return new LConv(parent, ks, {1, 1}, p, "conv" + to_string(1 + LConv::conv_created), DEV_CPU);
+    return new LConv(parent, ks, {1, 1}, p, "conv" + to_string(1 + LConv::total_layers), DEV_CPU);
 }
 
-layer EDDL::Conv(layer parent, int filters, const initializer_list<int> &kernel_size, string padding,
-                 const initializer_list<int> &strides, int groups, const initializer_list<int> &dilation_rate,
+layer EDDL::Conv(layer parent, int filters, const initializer_list<int> &kernel_size,
+                 const initializer_list<int> &strides, string padding, int groups, const initializer_list<int> &dilation_rate,
+                 bool use_bias) {
+    return EDDL::Conv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, "conv" + to_string(1 + LConv::total_layers));
+}
+layer EDDL::Conv(layer parent, int filters, const initializer_list<int> &kernel_size,
+                 const initializer_list<int> &strides, string padding, int groups, const initializer_list<int> &dilation_rate,
                  bool use_bias, string name) {
-    // TODO: IMPLEMENT
+    return new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU);
 }
-
 //////////////////////////////////////////////////////
-layer EDDL::Dense(layer parent, int ndim) {
-    return EDDL::Dense(parent, ndim, "dense" + to_string(1 + LDense::dense_created));
-}
 
-layer EDDL::Dense(layer parent, int ndim, string name) {
-    return new LDense(parent, ndim, name, DEV_CPU);
+
+layer EDDL::ConvT(layer parent, int filters, const initializer_list<int> &kernel_size,
+                  const initializer_list<int> &output_padding, string padding, const initializer_list<int> &dilation_rate,
+                  const initializer_list<int> &strides, bool use_bias){
+    return EDDL::ConvT(parent, filters, kernel_size, output_padding, padding, dilation_rate, strides, use_bias, "convT" + to_string(1 + LConvT::total_layers));
+}
+layer EDDL::ConvT(layer parent, int filters, const initializer_list<int> &kernel_size,
+                  const initializer_list<int> &output_padding, string padding, const initializer_list<int> &dilation_rate,
+                  const initializer_list<int> &strides, bool use_bias, string name){
+    return new LConvT(parent, filters, kernel_size, output_padding, padding, dilation_rate, strides, use_bias, name, DEV_CPU);
+}
+/////////////////////////////////////////////////////////
+
+
+layer EDDL::Dense(layer parent, int ndim, bool use_bias) {
+    return EDDL::Dense(parent, ndim, use_bias, "dense" + to_string(1 + LDense::total_layers));
 }
 
 layer EDDL::Dense(layer parent, int ndim, bool use_bias, string name){
-    // TODO: IMPLEMENT
+    return new LDense(parent, ndim, use_bias, name, DEV_CPU);
 }
-
 //////////////////////////////////////////////////////
 
-layer EDDL::DeConv(layer parent, int filters, const initializer_list<int> &kernel_size, string padding,
-        const initializer_list<int> &output_padding, const initializer_list<int> &dilation_rate,
-        const initializer_list<int> &strides, bool use_bias, string name){
-    // TODO: IMPLEMENT
-}
 
-/////////////////////////////////////////////////////////
 layer EDDL::Dropout(layer parent, float rate) {
-    return EDDL::Dropout(parent, rate, "drop" + to_string(1 + LDrop::drop_created));
+    return EDDL::Dropout(parent, rate, "drop" + to_string(1 + LDrop::total_layers));
 }
 
 layer EDDL::Dropout(layer parent, float rate, string name) {
@@ -131,8 +139,11 @@ layer EDDL::Dropout(layer parent, float rate, string name) {
 }
 
 //////////////////////////////////////////////////////
+layer EDDL::Embedding(int input_dim, int output_dim){
+    return EDDL::Embedding(input_dim, output_dim, "embedding" + to_string(1 + LEmbedding::total_layers));
+}
 layer EDDL::Embedding(int input_dim, int output_dim, string name){
-    // TODO: IMPLEMENT
+    return new LEmbedding(input_dim, output_dim, name, DEV_CPU);
 }
 
 //////////////////////////////////////////////////////
@@ -143,11 +154,11 @@ layer EDDL::GaussianNoise(layer parent, float stdev, string name){
 //////////////////////////////////////////////////////
 
 layer EDDL::Input(tensor t) {
-    return new LInput(t->input, "input" + to_string(1 + LInput::input_created), DEV_CPU);
+    return new LInput(t->input, "input" + to_string(1 + LInput::total_layers), DEV_CPU);
 }
 
 layer EDDL::Input(const initializer_list<int> &shape) {
-    return EDDL::Input(shape, "input" + to_string(1 + LInput::input_created));
+    return EDDL::Input(shape, "input" + to_string(1 + LInput::total_layers));
 }
 
 layer EDDL::Input(const initializer_list<int> &shape, string name) {
@@ -156,8 +167,12 @@ layer EDDL::Input(const initializer_list<int> &shape, string name) {
 
 //////////////////////////////////////////////////////
 
-layer EDDL::Interpolate(layer parent, const initializer_list<int> &size, string interpolation, string name){
-    // TODO: IMPLEMENT
+layer EDDL::UpSampling(layer parent, const initializer_list<int> &size, string interpolation){
+    return EDDL::UpSampling(parent, size, interpolation, "UpSampling" + to_string(1 + LUpSampling::total_layers));
+}
+
+layer EDDL::UpSampling(layer parent, const initializer_list<int> &size, string interpolation, string name){
+    return new LUpSampling(parent, size, interpolation, name, DEV_CPU);
 }
 
 //////////////////////////////////////////////////////
@@ -167,7 +182,7 @@ layer EDDL::AveragePool(layer parent, const initializer_list<int> &pool_size) {
 
 layer EDDL::AveragePool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding){
     //TODO: Fix LMPool
-    return EDDL::AveragePool(parent, pool_size, strides, padding, "avgpool" + to_string(1 + LMPool::pool_created));
+    return EDDL::AveragePool(parent, pool_size, strides, padding, "avgpool" + to_string(1 + LMPool::total_layers));
 }
 
 layer EDDL::AveragePool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding, string name){
@@ -201,7 +216,7 @@ layer EDDL::MaxPool(layer parent, const initializer_list<int> &pool_size) {
 }
 
 layer EDDL::MaxPool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding){
-    return EDDL::MaxPool(parent, pool_size, strides, padding, "mpool" + to_string(1 + LMPool::pool_created));
+    return EDDL::MaxPool(parent, pool_size, strides, padding, "mpool" + to_string(1 + LMPool::total_layers));
 }
 
 layer EDDL::MaxPool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding, string name){
@@ -212,7 +227,7 @@ layer EDDL::MaxPool(layer parent, const initializer_list<int> &pool_size, const 
 //////////////////////////////////////////////////////
 layer EDDL::RNN(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional){
     //TODO: Fix name
-    return EDDL::RNN(parent, units, num_layers, use_bias, dropout, bidirectional, "rnn" + to_string(1 + LMPool::pool_created));
+    return EDDL::RNN(parent, units, num_layers, use_bias, dropout, bidirectional, "rnn" + to_string(1 + LMPool::total_layers));
 }
 
 layer EDDL::RNN(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name){
@@ -222,7 +237,7 @@ layer EDDL::RNN(layer parent, int units, int num_layers, bool use_bias, float dr
 //////////////////////////////////////////////////////
 layer EDDL::LSTM(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional){
     //TODO: Fix name
-    return EDDL::LSTM(parent, units, num_layers, use_bias, dropout, bidirectional, "lstm" + to_string(1 + LMPool::pool_created));
+    return EDDL::LSTM(parent, units, num_layers, use_bias, dropout, bidirectional, "lstm" + to_string(1 + LMPool::total_layers));
 }
 
 layer EDDL::LSTM(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name){
@@ -230,7 +245,7 @@ layer EDDL::LSTM(layer parent, int units, int num_layers, bool use_bias, float d
 }
 //////////////////////////////////////////////////////
 layer EDDL::Reshape(layer parent, const initializer_list<int> &shape) {
-    return EDDL::Reshape(parent, shape, "reshape" + to_string(1 + LReshape::reshape_created));
+    return EDDL::Reshape(parent, shape, "reshape" + to_string(1 + LReshape::total_layers));
 }
 
 layer EDDL::Reshape(layer parent, const initializer_list<int> &shape, string name) {
@@ -266,7 +281,7 @@ metric EDDL::AccuracyMetric(){
 /////////////////////////////////////////////////////////
 
 layer EDDL::Add(const initializer_list<layer> &layers) {
-    return EDDL::Add(layers, "add" + to_string(1 + LAdd::add_created));
+    return EDDL::Add(layers, "add" + to_string(1 + LAdd::total_layers));
 }
 
 layer EDDL::Add(const initializer_list<layer> &layers, string name) {
@@ -277,7 +292,7 @@ layer EDDL::Add(const initializer_list<layer> &layers, string name) {
 
 layer EDDL::Average(const initializer_list<layer> &layers){
     // TODO: Fix LCAT
-    return EDDL::Average(layers, "average" + to_string(1 + LCat::cat_created));
+    return EDDL::Average(layers, "average" + to_string(1 + LCat::total_layers));
 }
 
 layer EDDL::Average(const initializer_list<layer> &layers, string name){
@@ -288,7 +303,7 @@ layer EDDL::Average(const initializer_list<layer> &layers, string name){
 
 layer EDDL::Subtract(const initializer_list<layer> &layers) {
     // TODO: Fix LAadd
-    return EDDL::Subtract(layers, "substract" + to_string(1 + LAdd::add_created));
+    return EDDL::Subtract(layers, "substract" + to_string(1 + LAdd::total_layers));
 }
 
 layer EDDL::Subtract(const initializer_list<layer> &layers, string name) {
@@ -298,7 +313,7 @@ layer EDDL::Subtract(const initializer_list<layer> &layers, string name) {
 ////////////////////////////////////////////////////////
 
 layer EDDL::Concat(const initializer_list<layer> &layers) {
-    return EDDL::Concat(layers, "concat" + to_string(1 + LCat::cat_created));
+    return EDDL::Concat(layers, "concat" + to_string(1 + LCat::total_layers));
 }
 
 layer EDDL::Concat(const initializer_list<layer> &layers, string name) {
@@ -309,7 +324,7 @@ layer EDDL::Concat(const initializer_list<layer> &layers, string name) {
 
 layer EDDL::MatMul(const initializer_list<layer> &layers){
     // TODO: Fix LCAT
-    return EDDL::MatMul(layers, "matmul" + to_string(1 + LCat::cat_created));
+    return EDDL::MatMul(layers, "matmul" + to_string(1 + LCat::total_layers));
 }
 
 layer EDDL::MatMul(const initializer_list<layer> &layers, string name){
@@ -320,7 +335,7 @@ layer EDDL::MatMul(const initializer_list<layer> &layers, string name){
 
 layer EDDL::Maximum(const initializer_list<layer> &layers){
     // TODO: Fix LCAT
-    return EDDL::Maximum(layers, "maximum" + to_string(1 + LCat::cat_created));
+    return EDDL::Maximum(layers, "maximum" + to_string(1 + LCat::total_layers));
 }
 
 layer EDDL::Maximum(const initializer_list<layer> &layers, string name){
@@ -331,7 +346,7 @@ layer EDDL::Maximum(const initializer_list<layer> &layers, string name){
 
 layer EDDL::Minimum(const initializer_list<layer> &layers){
     // TODO: Fix LCAT
-    return EDDL::Minimum(layers, "minimum" + to_string(1 + LCat::cat_created));
+    return EDDL::Minimum(layers, "minimum" + to_string(1 + LCat::total_layers));
 }
 
 layer EDDL::Minimum(const initializer_list<layer> &layers, string name){
@@ -360,10 +375,6 @@ optimizer EDDL::RMSprop(float lr, float alpha, float weight_decay, float momentu
     //Todo: Implement
 }
 
-
-optimizer EDDL::SGD(const initializer_list<float> &params) {
-    return new sgd(params);
-}
 
 optimizer EDDL::SGD(float lr, float momentum, float weight_decay, bool nesterov){
     return new sgd(lr, momentum, weight_decay, nesterov);
@@ -478,9 +489,6 @@ void EDDL::set_trainable(layer l){
     //Todo: Implement
 }
 
-layer EDDL::get_layer(model m, int id){
-    //Todo: Implement
-}
 
 layer EDDL::get_layer(model m, string layer_name){
     //Todo: Implement

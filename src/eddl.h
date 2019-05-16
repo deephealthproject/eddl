@@ -56,7 +56,7 @@ class EDDL {
 public:
     // ---- TENSOR ----
     static tensor T(const initializer_list<int> &shape);//*
-    static tensor T(const vector<int> shape);
+    static tensor T(vector<int> shape);
     static tensor T(string fname);
 
     // ---- TENSOR OPERATIONS ----
@@ -66,29 +66,37 @@ public:
     static layer Activation(layer parent, string activation);
     static layer Activation(layer parent, string activation, string name);
 
-    static layer Conv(layer parent, const initializer_list<int> &ks);
-    static layer Conv(layer parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p);
-    static layer Conv(layer parent, const initializer_list<int> &ks, const initializer_list<int> &st);
-    static layer Conv(layer parent, const initializer_list<int> &ks, string p);
-    static layer Conv(layer parent, int filters, const initializer_list<int> &kernel_size, string padding,
-                      const initializer_list<int> &strides, int groups, const initializer_list<int> &dilation_rate,
+    static layer Conv(layer parent, const initializer_list<int> &ks);//Todo: Remove
+    static layer Conv(layer parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p);//Todo: Remove
+    static layer Conv(layer parent, const initializer_list<int> &ks, const initializer_list<int> &st);//Todo: Remove
+    static layer Conv(layer parent, const initializer_list<int> &ks, string p); //Todo: Remove
+    static layer Conv(layer parent, int filters, const initializer_list<int> &kernel_size,
+                      const initializer_list<int> &strides, string padding, int groups, const initializer_list<int> &dilation_rate,
+                      bool use_bias); //Todo: Implement
+    static layer Conv(layer parent, int filters, const initializer_list<int> &kernel_size,
+                      const initializer_list<int> &strides, string padding, int groups, const initializer_list<int> &dilation_rate,
                       bool use_bias, string name); //Todo: Implement
 
-    static layer Dense(layer parent, int ndim);//*
-    static layer Dense(layer parent, int ndim, string name);
+    static layer ConvT(layer parent, int filters, const initializer_list<int> &kernel_size,
+                       const initializer_list<int> &output_padding, string padding, const initializer_list<int> &dilation_rate,
+                       const initializer_list<int> &strides, bool use_bias); //Todo: Implement
+    static layer ConvT(layer parent, int filters, const initializer_list<int> &kernel_size,
+                       const initializer_list<int> &output_padding, string padding, const initializer_list<int> &dilation_rate,
+                       const initializer_list<int> &strides, bool use_bias, string name); //Todo: Implement
+
+    static layer Dense(layer parent, int ndim, bool use_bias=true);//*
     static layer Dense(layer parent, int ndim, bool use_bias, string name); //Todo: Implement
 
-    static layer DeConv(layer parent, int filters, const initializer_list<int> &kernel_size, string padding,
-                        const initializer_list<int> &output_padding, const initializer_list<int> &dilation_rate,
-                        const initializer_list<int> &strides, bool use_bias, string name); //Todo: Implement
-
+    static layer Embedding(int input_dim, int output_dim); //Todo: Implement
     static layer Embedding(int input_dim, int output_dim, string name); //Todo: Implement
 
-    static layer Input(tensor t);//*
+    static layer Input(tensor t); // Why initializing from a tensor?
     static layer Input(const initializer_list<int> &shape);
     static layer Input(const initializer_list<int> &shape, string name);
 
-    static layer Interpolate(layer parent, const initializer_list<int> &size, string interpolation, string name); //Todo: Implement
+    // TODO: Interpolate, Resize, upsampling (downsampling?)
+    static layer UpSampling(layer parent, const initializer_list<int> &size, string interpolation); //Todo: Implement
+    static layer UpSampling(layer parent, const initializer_list<int> &size, string interpolation, string name); //Todo: Implement
 
     static layer Reshape(layer parent, const initializer_list<int> &shape); //*
     static layer Reshape(layer parent, const initializer_list<int> &shape, string name);
@@ -146,8 +154,7 @@ public:
     static optimizer Nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule_decay); //Todo: Implement
     static optimizer RMSprop(float lr, float alpha, float weight_decay, float momentum); //Todo: Implement
 
-    static optimizer SGD(const initializer_list<float> &p);
-    static optimizer SGD(float lr, float momentum, float weight_decay, bool nesterov);
+    static optimizer SGD(float lr=0.01f, float momentum=0.0f, float weight_decay=0.0f, bool nesterov=false);
 
     static void change(optimizer optim, const initializer_list<float> &params);
 
@@ -214,7 +221,6 @@ public:
 
     // ---- LAYER METHODS ----
     static void set_trainable(layer l); //Todo: Implement
-    static layer get_layer(model m, int id); //Todo: Implement
     static layer get_layer(model m, string layer_name); //Todo: Implement
 
 

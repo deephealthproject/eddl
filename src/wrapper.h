@@ -40,7 +40,7 @@ void LTensor_div(tensor t, float v);
 
 layer Input_init(Tensor *in, const char *name);
 
-layer Dense_init(layer parent, int ndim, const char *name);
+layer Dense_init(layer parent, int ndim, bool use_bias, const char *name);
 
 layer Conv_init(layer parent, const int *ks, int ks_size, const int *st, int st_size, const char *p, const char *name);
 

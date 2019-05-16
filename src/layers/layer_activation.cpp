@@ -36,11 +36,11 @@
 
 using namespace std;
 
-int LActivation::activation_created = 0;
+int LActivation::total_layers = 0;
 
 LActivation::LActivation(Layer *parent, string act, string name, int d) : LinLayer(name, d) {
 
-    activation_created++;
+    total_layers++;
 
     this->act = act;
 

@@ -36,11 +36,11 @@
 
 using namespace std;
 
-int LDrop::drop_created = 0;
+int LDrop::total_layers = 0;
 
 LDrop::LDrop(Layer *parent, float df, string name, int d) : LinLayer(name, d) {
 
-    drop_created++;
+    total_layers++;
 
     // df: drop factor is the probability to delete (drop) an activation
     this->df = df;

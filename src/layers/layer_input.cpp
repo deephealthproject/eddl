@@ -37,10 +37,10 @@
 using namespace std;
 
 
-int LInput::input_created = 0;
+int LInput::total_layers = 0;
 
 LInput::LInput(Tensor *in, string name, int d) : LinLayer(name, d) {
-    input_created++;
+    total_layers++;
     input = output = in;
     delta = new Tensor(input->getShape(), d);
 }
@@ -52,7 +52,6 @@ string LInput::plot(int c) {
 
     if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=LightBlue,shape=box]";
     else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";
-
 
     return s;
 }

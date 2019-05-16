@@ -36,7 +36,7 @@
 
 using namespace std;
 
-int LCat::cat_created = 0;
+int LCat::total_layers = 0;
 
 LCat::LCat(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
     if (parent.size() == 0) msg("Error: LCat layer with empty list");
@@ -66,7 +66,7 @@ LCat::LCat(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
         }
     }
 
-    cat_created++;
+    total_layers++;
 
     input = parent[0]->output;
     int t = 0;

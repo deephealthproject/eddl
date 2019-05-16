@@ -9,6 +9,7 @@ target_sources(EDDLL
         layer_dense.cpp
         layer_drop.cpp
         layer_input.cpp
+        layer_embedding.cpp
         layer_reshape.cpp
         layer_tensor.cpp
         layer_pool.cpp

@@ -36,14 +36,21 @@
 
 using namespace std;
 
-int LConv::conv_created = 0;
+int LConv::total_layers = 0;
+int LConvT::total_layers = 0;
+int LUpSampling::total_layers = 0;
 
+// ---- CONVOLUTION ----
 // constructors and clones
-LConv::LConv(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p, string name,
-             int d) : LConv(parent, new ConvolDescriptor(ks, st, p), name, d) {}
+LConv::LConv(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p, string name, int d) : LConv(parent, new ConvolDescriptor(ks, st, p), name, d) {}
 
 LConv::LConv(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st,
              const initializer_list<int> &p, string name, int d) : LConv(parent, new ConvolDescriptor(ks, st, p), name, d) {}
+
+LConv::LConv(Layer *parent, int filters, const initializer_list<int> &kernel_size, const initializer_list<int> &strides, string padding,
+int groups, const initializer_list<int> &dilation_rate, bool use_bias, string name, int dev) : LConv(parent, new ConvolDescriptor(kernel_size, strides, padding), name, dev) {
+    // TODO: Implement (Fix initialization)
+};
 
 LConv::LConv(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name, int d) : LConv(parent, new ConvolDescriptor(ks, st, p), name, d) {}
 
@@ -52,7 +59,7 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int d) : LinLayer(
 
     // Check dev with tensor dev
 
-    conv_created++;
+    total_layers++;
 
     cd = D;
 
@@ -126,4 +133,25 @@ string LConv::plot(int c) {
     else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";
 
     return s;
+}
+
+
+// ---- TRANSPOSED CONVOLUTION ----
+LConvT::LConvT(Layer *parent, int filters, const initializer_list<int> &kernel_size,
+    const initializer_list<int> &output_padding, string padding, const initializer_list<int> &dilation_rate,
+    const initializer_list<int> &strides, bool use_bias, string name, int dev) : LConvT(parent, new ConvolDescriptor(kernel_size, strides, padding), name, dev) {
+    // TODO: Implement (Fix initialization)
+};
+
+LConvT::LConvT(Layer *parent, ConvolDescriptor *cd, string name, int dev) : LinLayer(name, dev) {
+    // TODO: Implement (Fix initialization)
+    total_layers++;
+}
+
+
+// ---- CONVOLUTION ----
+LUpSampling::LUpSampling(Layer *parent, const initializer_list<int> &size, string interpolation, string name, int dev) : LinLayer(name, dev) {
+   this->size = size;
+   this->interpolation = interpolation;
+   total_layers++;
 }

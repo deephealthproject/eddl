@@ -57,7 +57,7 @@ public:
 
     virtual void applygrads(int batch) {}
 
-    virtual optim *clone() { return NULL; }
+    virtual optim *clone() { return nullptr; }
 
     virtual void change(const initializer_list<float> &p) {}
 
@@ -72,7 +72,6 @@ public:
 
     vtensor mT;
 
-    sgd(const initializer_list<float> &params);
     sgd(float lr=0.01f, float momentum=0.0f, float weight_decay=0.0f, bool nesterov=false);
 
     optim *clone();
