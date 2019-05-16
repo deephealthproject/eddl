@@ -149,7 +149,7 @@ public:
     static optimizer Adagrad(float lr, float epsilon, float weight_decay); //Todo: Implement
     static optimizer Adamax(float lr, float beta_1, float beta_2, float epsilon, float weight_decay); //Todo: Implement
     static optimizer Nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule_decay); //Todo: Implement
-    static optimizer RMSprop(float lr, float alpha, float weight_decay, float momentum); //Todo: Implement
+    static optimizer RMSprop(float lr, float rho, float epsilon, float weight_decay); //Todo: Implement
 
     static optimizer SGD(float lr=0.01f, float momentum=0.0f, float weight_decay=0.0f, bool nesterov=false);
 
