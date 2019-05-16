@@ -367,18 +367,23 @@ optimizer EDDL::Adadelta(float lr, float rho, float epsilon, float weight_decay)
 }
 optimizer EDDL::Adam(float lr, float beta_1, float beta_2, float epsilon, float weight_decay, bool amsgrad){
     //Todo: Implement
+    return new adam(lr, beta_1, beta_2, epsilon, weight_decay, amsgrad);
 }
 optimizer EDDL::Adagrad(float lr, float epsilon, float weight_decay){
     //Todo: Implement
+    return new adagrad(lr, epsilon, weight_decay);
 }
 optimizer EDDL::Adamax(float lr, float beta_1, float beta_2, float epsilon, float weight_decay){
     //Todo: Implement
+    return new adamax(lr, beta_1, beta_2, epsilon, weight_decay);
 }
 optimizer EDDL::Nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule_decay){
     //Todo: Implement
+    return new nadam(lr, beta_1, beta_2, epsilon, schedule_decay);
 }
-optimizer EDDL::RMSprop(float lr, float alpha, float weight_decay, float momentum){
+optimizer EDDL::RMSprop(float lr, float rho, float epsilon, float weight_decay){
     //Todo: Implement
+    return new rmsprop(lr, rho, epsilon, weight_decay);
 }
 
 

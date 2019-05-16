@@ -83,9 +83,56 @@ void sgd::applygrads(int batch) {
 
 }
 
+// ---- Adam ----
+adam::adam(float lr, float beta_1, float beta_2, float epsilon, float weight_decay, bool amsgrad) : optim() {
+    this->lr = lr;
+    this->beta_1 = beta_1;
+    this->beta_2 = beta_2;
+    this->epsilon = epsilon;
+    this->weight_decay = weight_decay;
+    this->amsgrad = amsgrad;
+
+}
 
 // ---- AdaDelta ----
 adadelta::adadelta(float lr, float rho, float epsilon, float weight_decay) : optim() {
+    this->lr = lr;
+    this->rho = rho;
+    this->epsilon = epsilon;
+    this->weight_decay = weight_decay;
+
+}
+
+// ---- Adagrad ----
+adagrad::adagrad(float lr, float epsilon, float weight_decay) : optim() {
+    this->lr = lr;
+    this->epsilon = epsilon;
+    this->weight_decay = weight_decay;
+
+}
+
+// ---- Adamax ----
+adamax::adamax(float lr, float beta_1, float beta_2, float epsilon, float weight_decay) : optim() {
+    this->lr = lr;
+    this->beta_1 = beta_1;
+    this->beta_2 = beta_2;
+    this->epsilon = epsilon;
+    this->weight_decay = weight_decay;
+
+}
+
+// ---- Nadam ----
+nadam::nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule_decay) : optim() {
+    this->lr = lr;
+    this->beta_1 = beta_1;
+    this->beta_2 = beta_2;
+    this->epsilon = epsilon;
+    this->schedule_decay = schedule_decay;
+
+}
+
+// ---- RMSProp ----
+rmsprop::rmsprop(float lr, float rho, float epsilon, float weight_decay) : optim() {
     this->lr = lr;
     this->rho = rho;
     this->epsilon = epsilon;

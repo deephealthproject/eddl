@@ -83,6 +83,29 @@ public:
     void change(const initializer_list<float> &p);
 };
 
+// ---- Adam ----
+class adam: public optim {
+public:
+    float lr;
+    float beta_1;
+    float beta_2;
+    float epsilon;
+    float weight_decay;
+    bool amsgrad;
+
+    vtensor mT;
+
+    adam(float lr=0.01f, float beta_1=0.9f, float beta_2=0.999f, float epsilon=1e-8f, float weight_decay=0.0f, bool amsgrad=false);
+
+//    optim *clone();
+//
+//    void setlayers(vlayer l);
+//
+//    void applygrads(int batch);
+//
+//    void change(const initializer_list<float> &p);
+};
+
 
 // ---- AdaDelta ----
 class adadelta : public optim {
@@ -95,6 +118,91 @@ public:
     vtensor mT;
 
     adadelta(float lr=0.01f, float rho=0.95f, float epsilon=1e-8f, float weight_decay=0.0f);
+
+//    optim *clone();
+//
+//    void setlayers(vlayer l);
+//
+//    void applygrads(int batch);
+//
+//    void change(const initializer_list<float> &p);
+};
+
+// ---- Adagrad ----
+class adagrad : public optim {
+public:
+    float lr;
+    float epsilon;
+    float weight_decay;
+
+    vtensor mT;
+
+    adagrad(float lr=0.01f, float epsilon=1e-8f, float weight_decay=0.0f);
+
+//    optim *clone();
+//
+//    void setlayers(vlayer l);
+//
+//    void applygrads(int batch);
+//
+//    void change(const initializer_list<float> &p);
+};
+
+// ---- Adamax ----
+class adamax : public optim {
+public:
+    float lr;
+    float beta_1;
+    float beta_2;
+    float epsilon;
+    float weight_decay;
+
+    vtensor mT;
+
+    adamax(float lr=0.01f, float beta_1=0.9f, float beta_2=0.999f, float epsilon=1e-8f, float weight_decay=0.0f);
+
+//    optim *clone();
+//
+//    void setlayers(vlayer l);
+//
+//    void applygrads(int batch);
+//
+//    void change(const initializer_list<float> &p);
+};
+
+// ---- Nadam ----
+class nadam : public optim {
+public:
+    float lr;
+    float beta_1;
+    float beta_2;
+    float epsilon;
+    float schedule_decay;
+
+    vtensor mT;
+
+    nadam(float lr=0.01f, float beta_1=0.9f, float beta_2=0.999f, float epsilon=1e-8f, float schedule_decay=0.004f);
+
+//    optim *clone();
+//
+//    void setlayers(vlayer l);
+//
+//    void applygrads(int batch);
+//
+//    void change(const initializer_list<float> &p);
+};
+
+// ---- RMSProp ----
+class rmsprop : public optim {
+public:
+    float lr;
+    float rho;
+    float epsilon;
+    float weight_decay;
+
+    vtensor mT;
+
+    rmsprop(float lr=0.01f, float rho=0.9f, float epsilon=1e-8f, float weight_decay=0.0f);
 
 //    optim *clone();
 //
