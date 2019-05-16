@@ -36,33 +36,33 @@
 
 using namespace std;
 
-int LCat::total_layers = 0;
+int LConcat::total_layers = 0;
 
-LCat::LCat(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
-    if (parent.size() == 0) msg("Error: LCat layer with empty list");
+LConcat::LConcat(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
+    if (parent.size() == 0) msg("Error: LConcat layer with empty list");
 
     ndim = parent[0]->output->ndim;
 
     if (parent.size() > 1) {
         for (int i = 0; i < parent.size() - 1; ++i)
             if (ndim != parent[i]->output->ndim)
-                msg("Error: LCat layers with different tensor dims");
+                msg("Error: LConcat layers with different tensor dims");
 
         if (ndim == 2) {
             for (int i = 0; i < parent.size() - 1; ++i)
                 if (parent[i]->output->shape[0] != parent[i + 1]->output->shape[0])
-                    msg("Error: LCat layers with different size in dim 1");
+                    msg("Error: LConcat layers with different size in dim 1");
         } else if (ndim == 4) {
             for (int i = 0; i < parent.size() - 1; ++i) {
                 if (parent[i]->output->shape[0] != parent[i + 1]->output->shape[0])
-                    msg("Error: LCat layers with different size in dim 1");
+                    msg("Error: LConcat layers with different size in dim 1");
                 else if (parent[i]->output->shape[2] != parent[i + 1]->output->shape[2])
-                    msg("Error: LCat layers with different size in dim 3, rows of 4D");
+                    msg("Error: LConcat layers with different size in dim 3, rows of 4D");
                 else if (parent[i]->output->shape[3] != parent[i + 1]->output->shape[3])
-                    msg("Error: LCat layers with different size in dim 4, cols of 4D");
+                    msg("Error: LConcat layers with different size in dim 4, cols of 4D");
             }
         } else {
-            msg("Error: LCat layers of 2D or 4D tensors");
+            msg("Error: LConcat layers of 2D or 4D tensors");
         }
     }
 
@@ -90,7 +90,7 @@ LCat::LCat(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
 
 
 // virtual
-void LCat::forward() {
+void LConcat::forward() {
     int ini = 0;
     for (int i = 0; i < parent.size(); ++i) {
         Tensor::fill(parent[i]->output, 0, parent[i]->output->shape[1], output, ini, index[i], 0);
@@ -99,7 +99,7 @@ void LCat::forward() {
 }
 
 
-void LCat::backward() {
+void LConcat::backward() {
 
     if (parent.size()) {
         int ini = 0;
@@ -111,24 +111,24 @@ void LCat::backward() {
 }
 
 
-Layer *LCat::share(int c, int bs, vector<Layer *> p) {
+Layer *LConcat::share(int c, int bs, vector<Layer *> p) {
 
-    LCat *n = new LCat(p, "share_" + to_string(c) + name, dev);
+    LConcat *n = new LConcat(p, "share_" + to_string(c) + name, dev);
     n->orig = this;
 
     return n;
 }
 
-Layer *LCat::clone(int c, int bs, vector<Layer *> p, int todev) {
+Layer *LConcat::clone(int c, int bs, vector<Layer *> p, int todev) {
 
-    LCat *n = new LCat(p, "clone_" + to_string(todev) + name, todev);
+    LConcat *n = new LConcat(p, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
 
     return n;
 }
 
 
-string LCat::plot(int c) {
+string LConcat::plot(int c) {
     string s;
 
     if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";

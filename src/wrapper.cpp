@@ -105,7 +105,7 @@ layer Cat_init(Layer **init, int init_size, const char *name) {
     for (int i = 0; i < init_size; ++i) {
         vinit.push_back(init[i]);
     }
-    return new LCat(vinit, name, DEV_CPU);
+    return new LConcat(vinit, name, DEV_CPU);
 }
 
 model Model_init(Layer *in, int in_size, Layer *out, int out_size) {
