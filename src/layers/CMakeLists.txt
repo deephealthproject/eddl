@@ -12,5 +12,6 @@ target_sources(EDDLL
         layer_embedding.cpp
         layer_reshape.cpp
         layer_tensor.cpp
+        layer_transpose.cpp
         layer_pool.cpp
         )

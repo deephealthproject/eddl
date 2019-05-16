@@ -251,34 +251,38 @@ layer EDDL::Reshape(layer parent, const initializer_list<int> &shape) {
 layer EDDL::Reshape(layer parent, const initializer_list<int> &shape, string name) {
     return new LReshape(parent, shape, name, DEV_CPU);
 }
-
 /////////////////////////////////////////////////////////
 
+layer EDDL::Transpose(layer parent, const initializer_list<int> &dims){
+    return EDDL::Transpose(parent, dims, "transposed" + to_string(1 + LReshape::total_layers));
+}
 layer EDDL::Transpose(layer parent, const initializer_list<int> &dims, string name){
-    //TODO: Implement
+    return new LTranspose(parent, dims, name, DEV_CPU);
 }
 /////////////////////////////////////////////////////////
 
 
-loss EDDL::MeanSquaredError(){
-    return new LMeanSquaredError();
-}
-loss EDDL::CrossEntropy(){
-    return new LCrossEntropy();
-}
-loss EDDL::SoftCrossEntropy(){
-    return new LSoftCrossEntropy();
+loss EDDL::LossFunc(string type){
+    if(type == "mse" || type == "mean_squared_error"){
+        return new LMeanSquaredError();
+    } else if(type == "cross_entropy"){
+        return new LCrossEntropy();
+    } else if (type == "soft_cross_entropy"){
+        return new LSoftCrossEntropy();
+    }
 }
 /////////////////////////////////////////////////////////
 
 
-metric EDDL::MeanSquaredErrorMetric(){
-    return new MMeanSquaredError();
-}
-metric EDDL::AccuracyMetric(){
-    return new MAccuracy();
+metric EDDL::MetricFunc(string type){
+    if(type == "mse" || type == "mean_squared_error"){
+        return new MMeanSquaredError();
+    } else if(type == "categorical_accuracy" || type == "accuracy"){
+        return new MAccuracy();
+    }
 }
 /////////////////////////////////////////////////////////
+
 
 layer EDDL::Add(const initializer_list<layer> &layers) {
     return EDDL::Add(layers, "add" + to_string(1 + LAdd::total_layers));
@@ -297,6 +301,7 @@ layer EDDL::Average(const initializer_list<layer> &layers){
 
 layer EDDL::Average(const initializer_list<layer> &layers, string name){
     //TODO: Implement
+    return new LAverage(layers, name);
 }
 
 /////////////////////////////////////////////////////////
@@ -358,6 +363,7 @@ layer EDDL::Minimum(const initializer_list<layer> &layers, string name){
 
 optimizer EDDL::Adadelta(float lr, float rho, float epsilon, float weight_decay){
     //Todo: Implement
+    return new adadelta(lr, rho, epsilon, weight_decay);
 }
 optimizer EDDL::Adam(float lr, float beta_1, float beta_2, float epsilon, float weight_decay, bool amsgrad){
     //Todo: Implement

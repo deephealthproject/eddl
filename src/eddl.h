@@ -101,17 +101,14 @@ public:
     static layer Reshape(layer parent, const initializer_list<int> &shape); //*
     static layer Reshape(layer parent, const initializer_list<int> &shape, string name);
 
+    static layer Transpose(layer parent, const initializer_list<int> &dims); //Todo: Implement
     static layer Transpose(layer parent, const initializer_list<int> &dims, string name); //Todo: Implement
 
-
     // ---- LOSSES ----
-    static loss MeanSquaredError();
-    static loss CrossEntropy();
-    static loss SoftCrossEntropy();
+    static loss LossFunc(string type);
 
     // ---- METRICS ----
-    static metric MeanSquaredErrorMetric();
-    static metric AccuracyMetric();
+    static metric MetricFunc(string type);
 
     // ---- MERGE LAYERS ----
     static layer Add(const initializer_list<layer> &layers);

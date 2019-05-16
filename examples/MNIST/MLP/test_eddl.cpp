@@ -68,7 +68,7 @@ int main(int argc, char **argv)
   //compserv cs=eddl.CS_GPU({1,0,0,0}); // local GPU using the first gpu of 4 installed
   //compserv cs=eddl.CS_GPU({1});// local GPU using the first gpu of 1 installed
 
-  eddl.build(net, sgd, {eddl.SoftCrossEntropy()}, {eddl.AccuracyMetric()}, cs);
+  eddl.build(net, sgd, {eddl.LossFunc("soft_cross_entropy")}, {eddl.MetricFunc("categorical_accuracy")}, cs);
 
   // Load and preprocess training data
   tensor X=eddl.T("trX.bin");

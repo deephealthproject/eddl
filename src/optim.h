@@ -83,6 +83,27 @@ public:
     void change(const initializer_list<float> &p);
 };
 
+
+// ---- AdaDelta ----
+class adadelta : public optim {
+public:
+    float lr;
+    float rho;
+    float epsilon;
+    float weight_decay;
+
+    vtensor mT;
+
+    adadelta(float lr=0.01f, float rho=0.95f, float epsilon=1e-8f, float weight_decay=0.0f);
+
+//    optim *clone();
+//
+//    void setlayers(vlayer l);
+//
+//    void applygrads(int batch);
+//
+//    void change(const initializer_list<float> &p);
+};
 #endif
 
 //////////

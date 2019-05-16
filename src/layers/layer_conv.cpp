@@ -151,7 +151,8 @@ LConvT::LConvT(Layer *parent, ConvolDescriptor *cd, string name, int dev) : LinL
 
 // ---- CONVOLUTION ----
 LUpSampling::LUpSampling(Layer *parent, const initializer_list<int> &size, string interpolation, string name, int dev) : LinLayer(name, dev) {
-   this->size = size;
-   this->interpolation = interpolation;
-   total_layers++;
+    // TODO: Implement
+    this->size = size;
+    this->interpolation = interpolation;
+    total_layers++;
 }

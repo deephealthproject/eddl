@@ -97,8 +97,8 @@ int main(int argc, char **argv) {
     // optionally put a DEVICE where the net will run
     optimizer sgd = SGD_init(0.01, 0.9);
 
-    Loss* c[] = {eddl.SoftCrossEntropy()};
-    Metric* m[] = {eddl.AccuracyMetric()};
+    Loss* c[] = {eddl.LossFunc("soft_cross_entropy")};
+    Metric* m[] = {eddl.MetricFunc("categorical_accuracy")};
 
     compserv cs = CS_CPU_init(4); // local CPU with 6 threads
 

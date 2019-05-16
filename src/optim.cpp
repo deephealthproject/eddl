@@ -82,3 +82,13 @@ void sgd::applygrads(int batch) {
     //getchar();
 
 }
+
+
+// ---- AdaDelta ----
+adadelta::adadelta(float lr, float rho, float epsilon, float weight_decay) : optim() {
+    this->lr = lr;
+    this->rho = rho;
+    this->epsilon = epsilon;
+    this->weight_decay = weight_decay;
+
+}

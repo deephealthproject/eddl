@@ -226,7 +226,7 @@ public:
 
 };
 
-/// Resahpe Layer
+/// Reshape Layer
 class LReshape : public LinLayer {
 public:
     static int total_layers;
@@ -248,6 +248,29 @@ public:
     void backward();
 
     string plot(int c);
+
+};
+
+/// Transpose Layer
+class LTranspose : public LinLayer {
+public:
+    static int total_layers;
+    vector<int> dims;
+
+    // constructors and clones
+    LTranspose(Layer *parent, const initializer_list<int> &dims, string name, int dev);
+
+//    Layer *share(int c, int bs, vector<Layer *> p);
+//
+//    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
+//
+//
+//    // implementation
+//    void forward();
+//
+//    void backward();
+//
+//    string plot(int c);
 
 };
 
@@ -378,6 +401,31 @@ public:
     Layer *clone(int c, int bs, vector<Layer *> p, int todev);
 
     string plot(int c);
+
+};
+
+
+/// AveragePool2D Layer
+class LAveragePool : public LPool {
+public:
+
+    // constructors and clones
+
+    LAveragePool(Layer *parent, PoolDescriptor *cd, string name, int dev);
+
+//    // Params
+//    Tensor *indX, *indY;
+//
+//    // implementation
+//    void forward();
+//
+//    void backward();
+//
+//    Layer *share(int c, int bs, vector<Layer *> p);
+//
+//    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
+//
+//    string plot(int c);
 
 };
 
