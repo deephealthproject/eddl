@@ -296,12 +296,12 @@ layer EDDL::Add(const initializer_list<layer> &layers, string name) {
 
 layer EDDL::Average(const initializer_list<layer> &layers){
     // TODO: Fix LCAT
-    return EDDL::Average(layers, "average" + to_string(1 + LCat::total_layers));
+    return EDDL::Average(layers, "average" + to_string(1 + LConcat::total_layers));
 }
 
 layer EDDL::Average(const initializer_list<layer> &layers, string name){
     //TODO: Implement
-    return new LAverage(layers, name);
+    return new LAverage(layers, name, DEV_CPU);
 }
 
 /////////////////////////////////////////////////////////
@@ -312,50 +312,50 @@ layer EDDL::Subtract(const initializer_list<layer> &layers) {
 }
 
 layer EDDL::Subtract(const initializer_list<layer> &layers, string name) {
-    //TODO: Implement
+    return new LSubtract(layers, name, DEV_CPU);
 }
 
 ////////////////////////////////////////////////////////
 
 layer EDDL::Concat(const initializer_list<layer> &layers) {
-    return EDDL::Concat(layers, "concat" + to_string(1 + LCat::total_layers));
+    return EDDL::Concat(layers, "concat" + to_string(1 + LConcat::total_layers));
 }
 
 layer EDDL::Concat(const initializer_list<layer> &layers, string name) {
-    return new LCat(vlayer(layers.begin(), layers.end()), name, DEV_CPU);
+    return new LConcat(vlayer(layers.begin(), layers.end()), name, DEV_CPU);
 }
 
 ////////////////////////////////////////////////////////
 
 layer EDDL::MatMul(const initializer_list<layer> &layers){
     // TODO: Fix LCAT
-    return EDDL::MatMul(layers, "matmul" + to_string(1 + LCat::total_layers));
+    return EDDL::MatMul(layers, "matmul" + to_string(1 + LConcat::total_layers));
 }
 
 layer EDDL::MatMul(const initializer_list<layer> &layers, string name){
-    //TODO: Implement
+    return new LMatMul(layers, name, DEV_CPU);
 }
 
 ////////////////////////////////////////////////////////
 
 layer EDDL::Maximum(const initializer_list<layer> &layers){
     // TODO: Fix LCAT
-    return EDDL::Maximum(layers, "maximum" + to_string(1 + LCat::total_layers));
+    return EDDL::Maximum(layers, "maximum" + to_string(1 + LConcat::total_layers));
 }
 
 layer EDDL::Maximum(const initializer_list<layer> &layers, string name){
-    //TODO: Implement
+    return new LMaximum(layers, name, DEV_CPU);
 }
 
 ////////////////////////////////////////////////////////
 
 layer EDDL::Minimum(const initializer_list<layer> &layers){
     // TODO: Fix LCAT
-    return EDDL::Minimum(layers, "minimum" + to_string(1 + LCat::total_layers));
+    return EDDL::Minimum(layers, "minimum" + to_string(1 + LConcat::total_layers));
 }
 
 layer EDDL::Minimum(const initializer_list<layer> &layers, string name){
-    //TODO: Implement
+    return new LMinimum(layers, name, DEV_CPU);
 }
 
 

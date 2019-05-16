@@ -129,7 +129,7 @@ endif # Makegoals
 
 
 #######################################################################
-OBJ =	utils.o cpu_convol.o tensor.o tensor_op.o compserv.o layer.o layer_tensor.o layer_transpose.o layer_input.o layer_embedding.o layer_dense.o layer_activation.o layer_reshape.o layer_conv.o layer_pool.o layer_drop.o layer_add.o layer_cat.o loss.o metric.o optim.o net.o eddl.o wrapper.o
+OBJ =	utils.o cpu_convol.o tensor.o tensor_op.o compserv.o layer.o layer_tensor.o layer_transpose.o layer_input.o layer_embedding.o layer_dense.o layer_activation.o layer_reshape.o layer_conv.o layer_pool.o layer_drop.o layer_add.o layer_average.o layer_matmul.o layer_maximum.o layer_minimum.o layer_subtract.o layer_cat.o loss.o metric.o optim.o net.o eddl.o wrapper.o
 
 ifeq ($(CORE),1)  # CPU
 all: $(GPU_OBJ) $(OBJ) test_eddl test_tensors shared_eddl test_wrapper
@@ -181,6 +181,21 @@ layer_activation.o: ../layers/layer_activation.cpp ../layers/layer.h
 
 layer_add.o: ../layers/layer_add.cpp ../layers/layer.h
 		$(CXX) $(CXXFLAGS) -c ../layers/layer_add.cpp
+
+layer_average.o: ../layers/layer_average.cpp ../layers/layer.h
+		$(CXX) $(CXXFLAGS) -c ../layers/layer_average.cpp
+
+layer_matmul.o: ../layers/layer_matmul.cpp ../layers/layer.h
+		$(CXX) $(CXXFLAGS) -c ../layers/layer_matmul.cpp
+
+layer_maximum.o: ../layers/layer_maximum.cpp ../layers/layer.h
+		$(CXX) $(CXXFLAGS) -c ../layers/layer_maximum.cpp
+
+layer_minimum.o: ../layers/layer_minimum.cpp ../layers/layer.h
+		$(CXX) $(CXXFLAGS) -c ../layers/layer_minimum.cpp
+
+layer_subtract.o: ../layers/layer_subtract.cpp ../layers/layer.h
+		$(CXX) $(CXXFLAGS) -c ../layers/layer_subtract.cpp
 
 layer_cat.o: ../layers/layer_cat.cpp ../layers/layer.h
 		$(CXX) $(CXXFLAGS) -c ../layers/layer_cat.cpp

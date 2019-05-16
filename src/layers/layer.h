@@ -501,16 +501,118 @@ public:
 
 };
 
+/// Subtract Layer
+class LSubtract : public MLayer {
+public:
+    static int total_layers;
 
-/// Cat Layer
-class LCat : public MLayer {
+
+    LSubtract(vector<Layer *> in, string name, int dev);
+
+    Layer *share(int c, int bs, vector<Layer *> p);
+
+    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+
+    void forward();
+
+    void backward();
+
+    string plot(int c);
+
+};
+
+
+/// MatMul Layer
+class LMatMul : public MLayer {
+public:
+    static int total_layers;
+
+
+    LMatMul(vector<Layer *> in, string name, int dev);
+
+    Layer *share(int c, int bs, vector<Layer *> p);
+
+    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+
+    void forward();
+
+    void backward();
+
+    string plot(int c);
+
+};
+
+
+/// Average Layer
+class LAverage : public MLayer {
+public:
+    static int total_layers;
+
+
+    LAverage(vector<Layer *> in, string name, int dev);
+
+    Layer *share(int c, int bs, vector<Layer *> p);
+
+    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+
+    void forward();
+
+    void backward();
+
+    string plot(int c);
+
+};
+
+/// Maximum Layer
+class LMaximum : public MLayer {
+public:
+    static int total_layers;
+
+
+    LMaximum(vector<Layer *> in, string name, int dev);
+
+    Layer *share(int c, int bs, vector<Layer *> p);
+
+    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+
+    void forward();
+
+    void backward();
+
+    string plot(int c);
+
+};
+
+/// Maximum Layer
+class LMinimum : public MLayer {
+public:
+    static int total_layers;
+
+
+    LMinimum(vector<Layer *> in, string name, int dev);
+
+    Layer *share(int c, int bs, vector<Layer *> p);
+
+    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+
+    void forward();
+
+    void backward();
+
+    string plot(int c);
+
+};
+
+
+/// Concat Layer
+class LConcat : public MLayer {
 public:
     int ndim;
     vector<int> index;
     static int total_layers;
 
     // constructors and clones
-    LCat(vector<Layer *> in, string name, int d);
+    LConcat(vector<Layer *> in, string name, int d);
 
     Layer *share(int c, int bs, vector<Layer *> p);
 
