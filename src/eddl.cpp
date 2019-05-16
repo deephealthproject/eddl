@@ -182,7 +182,7 @@ layer EDDL::AveragePool(layer parent, const initializer_list<int> &pool_size) {
 
 layer EDDL::AveragePool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding){
     //TODO: Fix LMPool
-    return EDDL::AveragePool(parent, pool_size, strides, padding, "avgpool" + to_string(1 + LMPool::total_layers));
+    return EDDL::AveragePool(parent, pool_size, strides, padding, "avgpool" + to_string(1 + LAveragePool::total_layers));
 }
 
 layer EDDL::AveragePool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding, string name){
@@ -193,21 +193,23 @@ layer EDDL::AveragePool(layer parent, const initializer_list<int> &pool_size, co
 //////////////////////////////////////////////////////
 layer EDDL::GlobalMaxPool(layer parent){
     //TODO: Fix LMPool
-    //return EDDL::GlobalMaxPool(parent, "globalmaxpool" + to_string(1 + LMPool::pool_created));
+    return EDDL::GlobalMaxPool(parent, "globalmaxpool" + to_string(1 + LGlobalMaxPool::pool_created));
 }
 
 layer EDDL::GlobalMaxPool(layer parent, string name){
     //TODO: Implement
+    return new LGlobalMaxPool(parent, name, DEV_CPU);
 }
 
 //////////////////////////////////////////////////////
 layer EDDL::GlobalAveragePool(layer parent){
     //TODO: Fix LMPool
-    //return EDDL::GlobalAveragePool(parent, "globalavgpool" + to_string(1 + LMPool::pool_created));
+    return EDDL::GlobalAveragePool(parent, "globalavgpool" + to_string(1 + LGlobalAveragePool::pool_created));
 }
 
 layer EDDL::GlobalAveragePool(layer parent, string name){
     //TODO: Implement
+    return new LGlobalAveragePool(parent, name, DEV_CPU);
 }
 
 
