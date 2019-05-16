@@ -50,7 +50,7 @@ layer ResBlock(layer in, int ndim, int n) {
 
     layer l = in;
     for (int i = 0; i < n; i++)
-        l = Activation_init(Dense_init(l, ndim, "Dense"), "relu", "Activation");
+        l = Activation_init(Dense_init(l, ndim,false, "Dense"), "relu", "Activation");
 
     layer l_add[] = {in, l};
     l = Add_init(l_add, 2, "Add");
@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
     layer l = in;
     layer l2;
 
-    l = Drop_init(Activation_init(Dense_init(l, 1024, "Dense"), "relu", "Activation"), 0.5, "drop");
+    l = Drop_init(Activation_init(Dense_init(l, 1024, false, "Dense"), "relu", "Activation"), 0.5, "drop");
     for (int i = 0; i < 2; i++) {
         if (i == 1) l2 = l;
         l = ResBlock(l, 1024, 1);
@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
     layer l_cat[] = {l, l2};
     l = Cat_init(l_cat, 2, "cat");
 
-    layer out = Activation_init(Dense_init(l, 10, "Dense"), "softmax", "Activation");
+    layer out = Activation_init(Dense_init(l, 10, false, "Dense"), "softmax", "Activation");
 
     // net define input and output layers list
     model net = Model_init(in, 1, out, 1);

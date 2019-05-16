@@ -93,9 +93,9 @@ int main(int argc, char **argv)
     const int shape[] = {batch, -1};
     l=Reshape_init(l, shape, 2, "Reshape");
 
-    l=Activation_init(Dense_init(l, 32, "Dense"), "relu", "Activation");
+    l=Activation_init(Dense_init(l, 32, false, "Dense"), "relu", "Activation");
 
-    layer out=Activation_init(Dense_init(l,10, "Dense"),"softmax", "Activation");
+    layer out=Activation_init(Dense_init(l,10, false, "Dense"),"softmax", "Activation");
 
     // net define input and output layers list
     model net=Model_init(in, 1, out, 1);

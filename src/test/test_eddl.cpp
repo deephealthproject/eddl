@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
     // Attach an optimizer and a list of error criteria and metrics
     // size of error criteria and metrics list must match with size of list of outputs
     // optionally put a DEVICE where the net will run
-    optimizer sgd = eddl.SGD({0.01, 0.9});
+    optimizer sgd = eddl.SGD(0.01, 0.9);
 
     compserv cs = eddl.CS_CPU(4); // local CPU with 6 threads
     //compserv cs=eddl.CS_GPU({1,0,0,0}); // local GPU using the first gpu of 4 installed
