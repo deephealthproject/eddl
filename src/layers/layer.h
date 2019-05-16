@@ -434,7 +434,7 @@ class LGlobalMaxPool : public LPool {
 public:
 
     // constructors and clones
-    LGlobalMaxPool(Layer *parent, string name, int dev);
+    LGlobalMaxPool(Layer *parent, PoolDescriptor *D, string name, int dev);
 
 //    // Params
 //    Tensor *indX, *indY;
@@ -457,7 +457,7 @@ class LGlobalAveragePool : public LPool {
 public:
 
     // constructors and clones
-    LGlobalAveragePool(Layer *parent, string name, int dev);
+    LGlobalAveragePool(Layer *parent, PoolDescriptor *D, string name, int dev);
 
 //    // Params
 //    Tensor *indX, *indY;

@@ -200,23 +200,23 @@ layer EDDL::AveragePool(layer parent, const initializer_list<int> &pool_size, co
 //////////////////////////////////////////////////////
 layer EDDL::GlobalMaxPool(layer parent){
     //TODO: Fix LMaxPool
-    //return EDDL::GlobalMaxPool(parent, "globalmaxpool" + to_string(1 + LMaxPool::pool_created));
+    return EDDL::GlobalMaxPool(parent, "globalmaxpool" + to_string(1 + LGlobalMaxPool::total_layers));
 }
 
 layer EDDL::GlobalMaxPool(layer parent, string name){
     //TODO: Implement
-    return new LGlobalMaxPool(parent, name, DEV_CPU);
+    //return new LGlobalMaxPool(parent, PoolDescriptor({1,1}, {1,1}), name, DEV_CPU);
 }
 
 //////////////////////////////////////////////////////
 layer EDDL::GlobalAveragePool(layer parent){
     //TODO: Fix LMaxPool
-    //return EDDL::GlobalAveragePool(parent, "globalavgpool" + to_string(1 + LMaxPool::pool_created));
+    return EDDL::GlobalAveragePool(parent, "globalavgpool" + to_string(1 + LGlobalAveragePool::total_layers));
 }
 
 layer EDDL::GlobalAveragePool(layer parent, string name){
     //TODO: Implement
-    return new LGlobalAveragePool(parent, name, DEV_CPU);
+    //return new LGlobalAveragePool(parent,  PoolDescriptor({1,1}, {1,1}, "none"), name, DEV_CPU);
 }
 
 
