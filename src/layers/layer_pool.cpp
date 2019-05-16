@@ -123,6 +123,16 @@ LAveragePool::LAveragePool(Layer *parent, PoolDescriptor *D, string name, int de
     // TODO: Implement
 }
 
+// ---- GLOBAL MAX POOL ----
+LGlobalMaxPool::LGlobalMaxPool(Layer *parent, string name, int dev) : LPool(parent, name, dev) {
+    // TODO: Implement
+}
+
+// ---- GLOBAL AVERAGE POOL ----
+LGlobalAveragePool::LGlobalAveragePool(Layer *parent, string name, int dev) : LPool(parent, name, dev) {
+// TODO: Implement
+}
+
 //////////////
 // SPool2D
 //////////////

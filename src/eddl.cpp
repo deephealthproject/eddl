@@ -205,6 +205,7 @@ layer EDDL::GlobalMaxPool(layer parent){
 
 layer EDDL::GlobalMaxPool(layer parent, string name){
     //TODO: Implement
+    return new LGlobalMaxPool(parent, name, DEV_CPU);
 }
 
 //////////////////////////////////////////////////////
@@ -215,6 +216,7 @@ layer EDDL::GlobalAveragePool(layer parent){
 
 layer EDDL::GlobalAveragePool(layer parent, string name){
     //TODO: Implement
+    return new LGlobalAveragePool(parent, name, DEV_CPU);
 }
 
 

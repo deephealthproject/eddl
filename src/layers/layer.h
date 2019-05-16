@@ -429,6 +429,52 @@ public:
 
 };
 
+/// GlobalMaxPool2D Layer
+class LGlobalMaxPool : public LPool {
+public:
+
+    // constructors and clones
+    LGlobalMaxPool(Layer *parent, string name, int dev);
+
+//    // Params
+//    Tensor *indX, *indY;
+//
+//    // implementation
+//    void forward();
+//
+//    void backward();
+//
+//    Layer *share(int c, int bs, vector<Layer *> p);
+//
+//    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
+//
+//    string plot(int c);
+
+};
+
+/// GlobalAveragePool2D Layer
+class LGlobalAveragePool : public LPool {
+public:
+
+    // constructors and clones
+    LGlobalAveragePool(Layer *parent, string name, int dev);
+
+//    // Params
+//    Tensor *indX, *indY;
+//
+//    // implementation
+//    void forward();
+//
+//    void backward();
+//
+//    Layer *share(int c, int bs, vector<Layer *> p);
+//
+//    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
+//
+//    string plot(int c);
+
+};
+
 /// Drop-out Layer
 class LDropout : public LinLayer {
 public:
