@@ -61,7 +61,7 @@
 #include <string>
 #include <mutex>
 
-#include "cpu/Eigen/Dense"
+#include "hardware/cpu/Eigen/Dense"
 
 #define MAX_GPUS 8
 

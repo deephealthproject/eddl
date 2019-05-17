@@ -144,8 +144,8 @@ endif
 utils.o: $(SRC_PATH)/utils.cpp $(SRC_PATH)/utils.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/utils.cpp
 
-cpu_convol.o: $(SRC_PATH)/cpu/cpu_convol.cpp $(SRC_PATH)/cpu/cpu_convol.h
-	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/cpu/cpu_convol.cpp
+cpu_convol.o: $(SRC_PATH)/hardware/cpu/cpu_convol.cpp $(SRC_PATH)/hardware/cpu/cpu_convol.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/cpu_convol.cpp
 
 tensor.o: $(SRC_PATH)/tensor.cpp $(SRC_PATH)/tensor.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor.cpp
@@ -249,14 +249,14 @@ wrapper.o: $(SRC_PATH)/eddl.cpp $(SRC_PATH)/wrapper.h
 ##ADD_MORE_RULES
 
 #---------------------------------- gpu code
-tensor_cuda.o: $(SRC_PATH)/gpu/tensor_cuda.cu $(SRC_PATH)/gpu/tensor_cuda.h
-		$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/gpu/tensor_cuda.cu
+tensor_cuda.o: $(SRC_PATH)/hardware/gpu/tensor_cuda.cu $(SRC_PATH)/hardware/gpu/tensor_cuda.h
+		$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/tensor_cuda.cu
 
-tensor_cuda_op.o: $(SRC_PATH)/gpu/tensor_cuda_op.cu $(SRC_PATH)/gpu/tensor_cuda_op.h
-		$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/gpu/tensor_cuda_op.cu
+tensor_cuda_op.o: $(SRC_PATH)/hardware/gpu/tensor_cuda_op.cu $(SRC_PATH)/hardware/gpu/tensor_cuda_op.h
+		$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/tensor_cuda_op.cu
 
-tensor_kernels.o: $(SRC_PATH)/gpu/tensor_kernels.cu $(SRC_PATH)/gpu/tensor_kernels.h
-		$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/gpu/tensor_kernels.cu
+tensor_kernels.o: $(SRC_PATH)/hardware/gpu/tensor_kernels.cu $(SRC_PATH)/hardware/gpu/tensor_kernels.h
+		$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/tensor_kernels.cu
 
 #---------------------------------- release
 test_eddl: test_eddl.cpp $(OBJ) $(GPU_OBJ)

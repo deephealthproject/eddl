@@ -37,11 +37,11 @@
 #include <iostream>
 #include "tensor.h"
 
-#include "cpu/cpu_convol.h"
+#include "hardware/cpu/cpu_convol.h"
 
 #ifdef cGPU
-#include "gpu/tensor_cuda.h"
-#include "gpu/tensor_cuda_op.h"
+#include "hardware/gpu/tensor_cuda.h"
+#include "hardware/gpu/tensor_cuda_op.h"
 #endif
 
 using namespace std;

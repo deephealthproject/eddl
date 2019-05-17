@@ -19,7 +19,7 @@ src/test/*.bin
 .vscode
 
 # CMake
-CMakeLists.txt
+#CMakeLists.txt
 cmake-build-debug/*
 
 # Build
