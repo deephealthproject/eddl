@@ -36,55 +36,49 @@
 
 using namespace std;
 
-int tensor_created=1;
+
+int LTensor::total_layers = 0;
 
 
 // From file
-LTensor::LTensor(string fname):LinLayer("ltensor"+to_string(tensor_created),DEV_CPU)
-{
-  input=output=new Tensor(fname);
-  tensor_created++;
+LTensor::LTensor(string fname) : LinLayer("ltensor" + to_string(total_layers), DEV_CPU) {
+    input = output = new Tensor(fname);
+    total_layers++;
 }
 
-// From list of sizes
-LTensor::LTensor(const initializer_list<int>& init):LTensor(init,DEV_CPU){}
-LTensor::LTensor(const initializer_list<int>& init, int dev):LinLayer("ltensor"+to_string(tensor_created),dev)
-{
-  input=output=new Tensor(init,dev);
-  delta=new Tensor(init,dev);
-  tensor_created++;
+// From list of shape
+LTensor::LTensor(const initializer_list<int> &init, int dev) : LinLayer("ltensor" + to_string(total_layers), dev) {
+    input = output = new Tensor(init, dev);
+    delta = new Tensor(init, dev);
+    total_layers++;
 }
 
-// From shape
-LTensor::LTensor(const shape s):LTensor(s,DEV_CPU){}
-LTensor::LTensor(const shape s, int dev):LinLayer("ltensor"+to_string(tensor_created),dev)
-{
-  input=output=new Tensor(s,dev);
-  delta=new Tensor(s,dev);
-  tensor_created++;
+// From vector<int>
+LTensor::LTensor(const vector<int> shape, int dev) : LinLayer("ltensor" + to_string(total_layers), dev) {
+    input = output = new Tensor(shape, dev);
+    delta = new Tensor(shape, dev);
+    total_layers++;
 }
 
 
 // From Layer
-LTensor::LTensor(Layer *l):LinLayer("ltensor"+to_string(tensor_created),l->dev){
-  input=output=l->output;
-  delta=l->delta;
-  tensor_created++;
+LTensor::LTensor(Layer *l) : LinLayer("ltensor" + to_string(total_layers), l->dev) {
+    input = output = l->output;
+    delta = l->delta;
+    total_layers++;
 }
 
 
-
 /// OP OVERLOAD
-LTensor LTensor::operator+(LTensor L)
-{
-  vector<Layer*> vl;
+LTensor LTensor::operator+(LTensor L) {
+    vector<Layer *> vl;
 
-  vl.push_back(this);
-  vl.push_back(&L);
+    vl.push_back(this);
+    vl.push_back(&L);
 
-  LTensor *l=new LTensor(new LAdd(vl));
+    LTensor *l = new LTensor(new LAdd(vl, "add" + to_string(1 + LAdd::total_layers), DEV_CPU));
 
-  return *l;
+    return *l;
 }
 
 

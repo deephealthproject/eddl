@@ -34,80 +34,70 @@
 
 #include "layer.h"
 
-int drop_created=1;
-
 using namespace std;
 
-LDrop::LDrop(Layer *parent,float df):LDrop(parent,df,"drop"+to_string(drop_created),DEV_CPU){}
-LDrop::LDrop(Layer *parent,float df,string name):LDrop(parent,df,name,DEV_CPU){}
-LDrop::LDrop(Layer *parent,float df,int dev):LDrop(parent,df,"drop"+to_string(drop_created),dev){}
-LDrop::LDrop(Layer *parent,float df,string name,int d):LinLayer(name,d)
-{
+int LDropout::total_layers = 0;
 
-  drop_created++;
+LDropout::LDropout(Layer *parent, float df, string name, int d) : LinLayer(name, d) {
 
-  // df: drop factor is the probability to delete (drop) an activation
-  this->df=df;
+    total_layers++;
 
-  input=parent->output;
-  output=new Tensor(input->getshape(),d);
-  delta=new Tensor(input->getshape(),d);
+    // df: drop factor is the probability to delete (drop) an activation
+    this->df = df;
 
-  mask=new Tensor(input->getshape(),d);
+    input = parent->output;
+    output = new Tensor(input->getShape(), d);
+    delta = new Tensor(input->getShape(), d);
 
-  parent->addchild(this);
-  addparent(parent);
+    mask = new Tensor(input->getShape(), d);
+
+    parent->addchild(this);
+    addparent(parent);
 }
 
 
 // virtual
-void LDrop::forward()
-{
-  if (mode==TRMODE){
-    mask->rand_binary(1.0-df);
-    Tensor::el_mult(input,mask,output,0);
-  }
-  else {
-    Tensor::copy(input,output);
-    output->mult(1.0-df);
-  }
+void LDropout::forward() {
+    if (mode == TRMODE) {
+        mask->rand_binary(1.0 - df);
+        Tensor::el_mult(input, mask, output, 0);
+    } else {
+        Tensor::copy(input, output);
+        output->mult(1.0 - df);
+    }
 
 }
 
-void LDrop::backward()
-{
+void LDropout::backward() {
 
-  if (parent.size())
-    {
-      Tensor::el_mult(delta,mask,parent[0]->delta,1);
+    if (parent.size()) {
+        Tensor::el_mult(delta, mask, parent[0]->delta, 1);
     }
 }
 
 
-Layer *LDrop::share(int c,int bs,vector<Layer*>p)
-{
+Layer *LDropout::share(int c, int bs, vector<Layer *> p) {
 
-  LDrop *n=new LDrop(p[0],df,"share_"+to_string(c)+name,dev);
-  n->orig=this;
+    LDropout *n = new LDropout(p[0], df, "share_" + to_string(c) + name, dev);
+    n->orig = this;
 
-  return n;
-}
-Layer *LDrop::clone(int c,int bs,vector<Layer*>p,int todev)
-{
-
-  LDrop *n=new LDrop(p[0],df,"clone_"+to_string(todev)+name,todev);
-  n->orig=this;
-
-  return n;
+    return n;
 }
 
+Layer *LDropout::clone(int c, int bs, vector<Layer *> p, int todev) {
 
-string LDrop::plot(int c)
-{
+    LDropout *n = new LDropout(p[0], df, "clone_" + to_string(todev) + name, todev);
+    n->orig = this;
+
+    return n;
+}
+
+
+string LDropout::plot(int c) {
     string s;
 
-    if (c) s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=White,shape=box]";
-    else s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=lightpink,shape=box]";
+    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";
+    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=lightpink,shape=box]";
 
     return s;
 }

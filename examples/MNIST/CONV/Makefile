@@ -1,4 +1,3 @@
-
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),install)
 
@@ -20,7 +19,7 @@ $(info ----> DEFAULT: set TARGET LINUX)
 endif
 
 
-## CORE=0 CPU
+## CORE=1 CPU
 ifdef CORE
 ifeq ($(CORE),1)
 $(info set CPU)
@@ -79,6 +78,7 @@ ifeq ($(TARGET),2)
 # OPT=3: Nothing
 # OPT=4: Debug
 CXX = g++
+CXXSOFLAGS = -shared
 ifeq ($(OPT),1)
 $(info set AVX)
 CXXFLAGS =-std=c++11 -march=native -mavx -O3
@@ -97,6 +97,8 @@ CXXFLAGS =-std=c++11 -g
 endif
 endif
 
+# Create position independent code for the shared library
+CXXFLAGS := $(CXXFLAGS) -fPIC
 
 
 ##CORE FLAGS
@@ -126,110 +128,181 @@ endif
 
 SRC_PATH=../../../src
 
-#######################################################################
-OBJ =	utils.o tensor.o tensor_op.o cpu_convol.o compserv.o layer.o layer_tensor.o layer_input.o layer_dense.o layer_conv.o layer_pool.o layer_activation.o layer_reshape.o layer_drop.o layer_add.o layer_cat.o loss.o metric.o optim.o net.o eddl.o
+# Group compiled objects (Alphabetically sorted!)
+APIS_OBJ = eddl.o wrapper.o
+HARDWARE_OBJ = cpu_convol.o
+CORE_LAYERS_OBJ = layer.o layer_activation.o layer_batchnorm.o layer_dense.o layer_drop.o layer_embedding.o layer_input.o layer_reshape.o layer_tensor.o layer_transpose.o
+CONV_LAYERS_OBJ = layer_conv.o layer_transposed_conv.o layer_upsampling.o
+MERGE_LAYERS_OBJ = layer_add.o layer_average.o layer_concat.o layer_matmul.o layer_maximum.o layer_minimum.o layer_subtract.o
+NOISE_LAYERS_OBJ = layer_gaussian.o
+POOL_LAYERS_OBJ = layer_globalmaxpool.o layer_avgpool.o layer_globalavgpool.o layer_maxpool.o layer_pool.o
+RECURRENT_LAYERS_OBJ = layer_rnn.o layer_lstm.o
+LOSSES_OBJ = loss.o loss_cross_entropy.o loss_mean_squared_error.o loss_soft_cross_entropy.o
+METRICS_OBJ = metric.o metric_categorical_acc.o metric_mean_squared_error.o
+OPTIMIZERS_OBJ = optim.o optim_adadelta.o optim_adagrad.o optim_adam.o optim_adamax.o optim_nadam.o optim_rmsprop.o optim_sgd.o
+CORE_OBJ = compserv.o initializer.o net.o tensor.o tensor_op.o utils.o
 
-ifeq ($(CORE),1)
-all: $(GPU_OBJ) $(OBJ) test_eddl
+# Join groups
+OBJ := $(APIS_OBJ) $(HARDWARE_OBJ) $(CORE_LAYERS_OBJ) $(CONV_LAYERS_OBJ) $(MERGE_LAYERS_OBJ) $(NOISE_LAYERS_OBJ) $(POOL_LAYERS_OBJ) $(RECURRENT_LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(CORE_OBJ)
+
+ifeq ($(CORE),1)  # CPU
+all: $(GPU_OBJ) $(OBJ) shared_eddl test_eddl test_wrapper
 endif
 
-ifeq ($(CORE),2)
-all: $(GPU_OBJ) $(OBJ) test_eddl
+ifeq ($(CORE),2)  # GPU
+all: $(GPU_OBJ) $(OBJ) shared_eddl test_eddl test_wrapper
 endif
 
-#--------------------------------- c code
-utils.o: $(SRC_PATH)/utils.cpp $(SRC_PATH)/utils.h
-	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/utils.cpp
+#---------------------------------- apis
+eddl.o: $(SRC_PATH)/apis/eddl.cpp $(SRC_PATH)/apis/eddl.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/apis/eddl.cpp
+wrapper.o: $(SRC_PATH)/apis/eddl.cpp $(SRC_PATH)/apis/wrapper.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/apis/wrapper.cpp
 
-cpu_convol.o: $(SRC_PATH)/cpu/cpu_convol.cpp $(SRC_PATH)/cpu/cpu_convol.h
-	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/cpu/cpu_convol.cpp
+#---------------------------------- hardware
+cpu_convol.o: $(SRC_PATH)/hardware/cpu/cpu_convol.cpp $(SRC_PATH)/hardware/cpu/cpu_convol.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/cpu_convol.cpp
 
-tensor.o: $(SRC_PATH)/tensor.cpp $(SRC_PATH)/tensor.h
-	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor.cpp
-
-tensor_op.o: $(SRC_PATH)/tensor_op.cpp $(SRC_PATH)/tensor.h
-		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor_op.cpp
-
-tensor_over.o: $(SRC_PATH)/tensor_over.cpp $(SRC_PATH)/tensor_over.h
-		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor_over.cpp
-
-compserv.o: $(SRC_PATH)/compserv.cpp $(SRC_PATH)/compserv.h
-		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/compserv.cpp
-
+#---------------------------------- core layers
 layer.o: $(SRC_PATH)/layers/layer.cpp $(SRC_PATH)/layers/layer.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer.cpp
-
-layer_tensor.o: $(SRC_PATH)/layers/layer_tensor.cpp $(SRC_PATH)/layers/layer.h
-				$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_tensor.cpp
-
-layer_input.o: $(SRC_PATH)/layers/layer_input.cpp $(SRC_PATH)/layers/layer.h
-		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_input.cpp
-
-layer_dense.o: $(SRC_PATH)/layers/layer_dense.cpp $(SRC_PATH)/layers/layer.h
-		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_dense.cpp
-
-layer_conv.o: $(SRC_PATH)/layers/layer_conv.cpp $(SRC_PATH)/layers/layer.h
-		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_conv.cpp
-
-layer_pool.o: $(SRC_PATH)/layers/layer_pool.cpp $(SRC_PATH)/layers/layer.h
-		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_pool.cpp
-
 layer_activation.o: $(SRC_PATH)/layers/layer_activation.cpp $(SRC_PATH)/layers/layer.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_activation.cpp
-
-layer_add.o: $(SRC_PATH)/layers/layer_add.cpp $(SRC_PATH)/layers/layer.h
-		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_add.cpp
-
-layer_cat.o: $(SRC_PATH)/layers/layer_cat.cpp $(SRC_PATH)/layers/layer.h
-		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_cat.cpp
-
+layer_batchnorm.o: $(SRC_PATH)/layers/layer_batchnorm.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_batchnorm.cpp
+layer_dense.o: $(SRC_PATH)/layers/layer_dense.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_dense.cpp
 layer_drop.o: $(SRC_PATH)/layers/layer_drop.cpp $(SRC_PATH)/layers/layer.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_drop.cpp
-
-loss.o: $(SRC_PATH)/loss.cpp $(SRC_PATH)/loss.h
-		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/loss.cpp
-
-metric.o: $(SRC_PATH)/metric.cpp $(SRC_PATH)/metric.h
-		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/metric.cpp
-
-optim.o: $(SRC_PATH)/optim.cpp $(SRC_PATH)/optim.h
-		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/optim.cpp
-
-net.o: $(SRC_PATH)/net.cpp $(SRC_PATH)/net.h
-		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/net.cpp
-
-eddl.o: $(SRC_PATH)/eddl.cpp $(SRC_PATH)/eddl.h
-		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/eddl.cpp
-
+layer_embedding.o: $(SRC_PATH)/layers/layer_embedding.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_embedding.cpp
+layer_input.o: $(SRC_PATH)/layers/layer_input.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_input.cpp
 layer_reshape.o: $(SRC_PATH)/layers/layer_reshape.cpp $(SRC_PATH)/layers/layer.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_reshape.cpp
+layer_tensor.o: $(SRC_PATH)/layers/layer_tensor.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_tensor.cpp
+layer_transpose.o: $(SRC_PATH)/layers/layer_transpose.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer_transpose.cpp
 
-##ADD_MORE_RULES
+#---------------------------------- conv layers
+layer_conv.o: $(SRC_PATH)/layers/conv/layer_conv.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/conv/layer_conv.cpp
+layer_transposed_conv.o: $(SRC_PATH)/layers/conv/layer_transposed_conv.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/conv/layer_transposed_conv.cpp
+layer_upsampling.o: $(SRC_PATH)/layers/conv/layer_conv.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/conv/layer_upsampling.cpp
 
-#---------------------------------- gpu code
-tensor_cuda.o: $(SRC_PATH)/gpu/tensor_cuda.cu $(SRC_PATH)/gpu/tensor_cuda.h
-		$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/gpu/tensor_cuda.cu
+#---------------------------------- merge layers
+layer_add.o: $(SRC_PATH)/layers/merge/layer_add.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/merge/layer_add.cpp
+layer_average.o: $(SRC_PATH)/layers/merge/layer_average.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/merge/layer_average.cpp
+layer_concat.o: $(SRC_PATH)/layers/merge/layer_concat.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/merge/layer_concat.cpp
+layer_matmul.o: $(SRC_PATH)/layers/merge/layer_matmul.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/merge/layer_matmul.cpp
+layer_maximum.o: $(SRC_PATH)/layers/merge/layer_maximum.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/merge/layer_maximum.cpp
+layer_minimum.o: $(SRC_PATH)/layers/merge/layer_minimum.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/merge/layer_minimum.cpp
+layer_subtract.o: $(SRC_PATH)/layers/merge/layer_subtract.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/merge/layer_subtract.cpp
 
-tensor_cuda_op.o: $(SRC_PATH)/gpu/tensor_cuda_op.cu $(SRC_PATH)/gpu/tensor_cuda_op.h
-		$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/gpu/tensor_cuda_op.cu
+#---------------------------------- noise layers
+layer_gaussian.o: $(SRC_PATH)/layers/noise/layer_gaussian.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/noise/layer_gaussian.cpp
 
-tensor_kernels.o: $(SRC_PATH)/gpu/tensor_kernels.cu $(SRC_PATH)/gpu/tensor_kernels.h
-		$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/gpu/tensor_kernels.cu
+#---------------------------------- pool layers
+layer_avgpool.o: $(SRC_PATH)/layers/pool/layer_avgpool.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/pool/layer_avgpool.cpp
+layer_globalavgpool.o: $(SRC_PATH)/layers/pool/layer_globalavgpool.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/pool/layer_globalavgpool.cpp
+layer_globalmaxpool.o: $(SRC_PATH)/layers/pool/layer_globalmaxpool.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/pool/layer_globalmaxpool.cpp
+layer_maxpool.o: $(SRC_PATH)/layers/pool/layer_maxpool.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/pool/layer_maxpool.cpp
+layer_pool.o: $(SRC_PATH)/layers/pool/layer_pool.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/pool/layer_pool.cpp
+
+#---------------------------------- recurrent layers
+layer_rnn.o: $(SRC_PATH)/layers/recurrent/layer_rnn.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/recurrent/layer_rnn.cpp
+layer_lstm.o: $(SRC_PATH)/layers/recurrent/layer_lstm.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/recurrent/layer_lstm.cpp
+
+#---------------------------------- losses
+loss.o: $(SRC_PATH)/losses/loss.cpp $(SRC_PATH)/losses/loss.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/losses/loss.cpp
+loss_cross_entropy.o: $(SRC_PATH)/losses/loss_cross_entropy.cpp $(SRC_PATH)/losses/loss.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/losses/loss_cross_entropy.cpp
+loss_mean_squared_error.o: $(SRC_PATH)/losses/loss_mean_squared_error.cpp $(SRC_PATH)/losses/loss.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/losses/loss_mean_squared_error.cpp
+loss_soft_cross_entropy.o: $(SRC_PATH)/losses/loss_soft_cross_entropy.cpp $(SRC_PATH)/losses/loss.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/losses/loss_soft_cross_entropy.cpp
+
+#---------------------------------- metrics
+metric.o: $(SRC_PATH)/metrics/metric.cpp $(SRC_PATH)/metrics/metric.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/metrics/metric.cpp
+metric_categorical_acc.o: $(SRC_PATH)/metrics/metric_categorical_acc.cpp $(SRC_PATH)/metrics/metric.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/metrics/metric_categorical_acc.cpp
+metric_mean_squared_error.o: $(SRC_PATH)/metrics/metric_mean_squared_error.cpp $(SRC_PATH)/metrics/metric.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/metrics/metric_mean_squared_error.cpp
+
+#---------------------------------- optimizers
+optim.o: $(SRC_PATH)/optimizers/optim.cpp $(SRC_PATH)/optimizers/optim.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/optimizers/optim.cpp
+optim_adadelta.o: $(SRC_PATH)/optimizers/optim_adadelta.cpp $(SRC_PATH)/optimizers/optim.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/optimizers/optim_adadelta.cpp
+optim_adagrad.o: $(SRC_PATH)/optimizers/optim_adagrad.cpp $(SRC_PATH)/optimizers/optim.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/optimizers/optim_adagrad.cpp
+optim_adam.o: $(SRC_PATH)/optimizers/optim_adam.cpp $(SRC_PATH)/optimizers/optim.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/optimizers/optim_adam.cpp
+optim_adamax.o: $(SRC_PATH)/optimizers/optim_adamax.cpp $(SRC_PATH)/optimizers/optim.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/optimizers/optim_adamax.cpp
+optim_nadam.o: $(SRC_PATH)/optimizers/optim_nadam.cpp $(SRC_PATH)/optimizers/optim.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/optimizers/optim_nadam.cpp
+optim_rmsprop.o: $(SRC_PATH)/optimizers/optim_rmsprop.cpp $(SRC_PATH)/optimizers/optim.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/optimizers/optim_rmsprop.cpp
+optim_sgd.o: $(SRC_PATH)/optimizers/optim_sgd.cpp $(SRC_PATH)/optimizers/optim.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/optimizers/optim_sgd.cpp
+
+#---------------------------------- core classes
+compserv.o: $(SRC_PATH)/compserv.cpp $(SRC_PATH)/compserv.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/compserv.cpp
+initializer.o: $(SRC_PATH)/initializer.cpp $(SRC_PATH)/initializer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/initializer.cpp
+net.o: $(SRC_PATH)/net.cpp $(SRC_PATH)/net.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/net.cpp
+tensor.o: $(SRC_PATH)/tensor.cpp $(SRC_PATH)/tensor.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor.cpp
+tensor_op.o: $(SRC_PATH)/tensor_op.cpp $(SRC_PATH)/tensor.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor_op.cpp
+utils.o: $(SRC_PATH)/utils.cpp $(SRC_PATH)/utils.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/utils.cpp
+
+#---------------------------------- GPU code
+tensor_cuda.o: $(SRC_PATH)/hardware/gpu/tensor_cuda.cu $(SRC_PATH)/hardware/gpu/tensor_cuda.h
+		$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/tensor_cuda.cu
+
+tensor_cuda_op.o: $(SRC_PATH)/hardware/gpu/tensor_cuda_op.cu $(SRC_PATH)/hardware/gpu/tensor_cuda_op.h
+		$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/tensor_cuda_op.cu
+
+tensor_kernels.o: $(SRC_PATH)/hardware/gpu/tensor_kernels.cu $(SRC_PATH)/hardware/gpu/tensor_kernels.h
+		$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/tensor_kernels.cu
 
 #---------------------------------- release
+shared_eddl: $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(CXXSOFLAGS) $(GPU_CXXFLAGS) -o eddl.so $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
+
 test_eddl: test_eddl.cpp $(OBJ) $(GPU_OBJ)
 	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_eddl.cpp -o test_eddl $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
 
+test_wrapper: test_wrapper.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_wrapper.cpp -o test_wrapper $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
 
-#-------------------------
-
+#---------------------------------- Extra options
 install:
 	cp test_eddl /usr/local/bin
 clean:
 	rm *.o
-
-
-
-
-
-###########################################################################

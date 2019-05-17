@@ -36,62 +36,53 @@
 
 using namespace std;
 
-int input_created=1;
 
-LInput::LInput(Tensor *in):LInput(in,"input"+to_string(input_created),DEV_CPU){}
-LInput::LInput(Tensor *in,int d):LInput(in,"input"+to_string(input_created),d){}
-LInput::LInput(Tensor *in,string name):LInput(in,name,DEV_CPU){}
-LInput::LInput(Tensor *in,string name,int d):LinLayer(name,d)
-{
-  input_created++;
-  input=output=in;
-  delta=new Tensor(input->getshape(),d);
+int LInput::total_layers = 0;
+
+LInput::LInput(Tensor *in, string name, int d) : LinLayer(name, d) {
+    total_layers++;
+    input = output = in;
+    delta = new Tensor(input->getShape(), d);
 }
 
 
 // virtual
-string LInput::plot(int c)
-{
+string LInput::plot(int c) {
     string s;
 
-    if (c) s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=LightBlue,shape=box]";
-    else s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=White,shape=box]";
-
+    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=LightBlue,shape=box]";
+    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";
 
     return s;
 }
 
 
-void LInput::forward()
-{
-  delta->set(0.0);
+void LInput::forward() {
+    delta->set(0.0);
 }
 
 
-void LInput::backward()
-{
+void LInput::backward() {
 }
 
-Layer *LInput::share(int c,int bs,vector<Layer*>p)
-{
-  shape s=input->getshape();
-  s[0]=bs;
+Layer *LInput::share(int c, int bs, vector<Layer *> p) {
+    vector<int> shape = input->getShape();
+    shape[0] = bs;
 
-  LInput *n=new LInput(new Tensor(s),"share_"+to_string(c)+name,dev);
-  n->orig=this;
+    LInput *n = new LInput(new Tensor(shape), "share_" + to_string(c) + name, dev);
+    n->orig = this;
 
-  return n;
+    return n;
 }
 
-Layer *LInput::clone(int c,int bs,vector<Layer*>p,int todev)
-{
-  shape s=input->getshape();
-  s[0]=bs;
+Layer *LInput::clone(int c, int bs, vector<Layer *> p, int todev) {
+    vector<int> shape = input->getShape();
+    shape[0] = bs;
 
-  LInput *n=new LInput(new Tensor(s,todev),"clone_"+to_string(todev)+name,todev);
-  n->orig=this;
+    LInput *n = new LInput(new Tensor(shape, todev), "clone_" + to_string(todev) + name, todev);
+    n->orig = this;
 
-  return n;
+    return n;
 }
 
 

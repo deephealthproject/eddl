@@ -31,7 +31,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "../../../src/eddl.h"
+#include "../../../src/apis/eddl.h"
 
 int main(int argc, char **argv)
 {
@@ -57,37 +57,39 @@ int main(int argc, char **argv)
   eddl.plot(net,"model.pdf");
 
   // get some info from the network
-  eddl.info(net);
+  eddl.summary(net);
 
   // Attach an optimizer and a list of error criteria and metrics
   // optionally put a Computing Service where the net will run
   // size of error criteria and metrics list must match with size of list of outputs
-  optimizer sgd=eddl.SGD({0.01,0.9});
+  optimizer sgd=eddl.SGD(0.01,0.9);
 
   compserv cs=eddl.CS_CPU(4); // local CPU with 6 threads
   //compserv cs=eddl.CS_GPU({1,0,0,0}); // local GPU using the first gpu of 4 installed
   //compserv cs=eddl.CS_GPU({1});// local GPU using the first gpu of 1 installed
 
-  eddl.build(net,sgd,{"soft_cent"},{"acc"},cs);
+  eddl.build(net, sgd, {eddl.LossFunc("soft_cross_entropy")}, {eddl.MetricFunc("categorical_accuracy")}, cs);
 
-  // read data
+  // Load and preprocess training data
   tensor X=eddl.T("trX.bin");
   tensor Y=eddl.T("trY.bin");
-
   eddl.div(X,255.0);
 
   // training, list of input and output tensors, batch, epochs
-  eddl.fit(net,{X},{Y},batch,20);
+  eddl.fit(net,{X},{Y},batch,1);
 
+  // Evaluate train
+  std::cout << "Evaluate train:" << std::endl;
+  eddl.evaluate(net,{X},{Y});
 
-  // Evaluate test
+  // Load and preprocess test data
   tensor tX=eddl.T("tsX.bin");
   tensor tY=eddl.T("tsY.bin");
-
   eddl.div(tX,255.0);
 
+  // Evaluate test
+  std::cout << "Evaluate test:" << std::endl;
   eddl.evaluate(net,{tX},{tY});
-
 }
 
 

@@ -36,16 +36,14 @@
 
 
 // for local
-CompServ::CompServ(int t, const initializer_list<int>& g,const initializer_list<int>& f)
-{
-  type="local";
-  local_threads=t;
-  local_gpus=vector<int>(g.begin(),g.end());
-  local_fpgas=vector<int>(f.begin(),f.end());
+CompServ::CompServ(int t, const initializer_list<int> &g, const initializer_list<int> &f) {
+    type = "local";
+    local_threads = t;
+    local_gpus = vector<int>(g.begin(), g.end());
+    local_fpgas = vector<int>(f.begin(), f.end());
 }
 
 // for Distributed
-CompServ::CompServ(FILE *csspec)
-{
+CompServ::CompServ(FILE *csspec) {
 
 }

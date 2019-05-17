@@ -42,7 +42,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
     include(CheckCXXCompilerFlag)
     CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
     CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-    
+
     if(COMPILER_SUPPORTS_CXX11 AND NOT CMAKE_CXX_FLAGS MATCHES "-std=c\\+\\+11")
         set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}" CACHE STRING "Enable c++11" FORCE)
     elseif(COMPILER_SUPPORTS_CXX0X AND NOT CMAKE_CXX_FLAGS MATCHES "-std=c\\+\\+11")
@@ -71,70 +71,70 @@ add_subdirectory(src)
 target_include_directories(EDDLL PUBLIC src)
 
 #--------------------------------------------------------------------------------------------------------
-# BEGIN: static/dinamic runtime 												
+# BEGIN: static/dinamic runtime
 #--------------------------------------------------------------------------------------------------------
 set(EDDLL_STATIC ON CACHE BOOL "Whether to build static or dynamic libraries")
 
 if(MSVC)
     if(EDDLL_STATIC)
         message(STATUS "Setting static runtime for MSVC")
-        foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO) 
+        foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
             string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
         endforeach(flag_var)
     else()
 	    message(STATUS "Setting dinamic runtime for MSVC")
-        foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO) 
+        foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
             string(REGEX REPLACE "/MT" "/MD" ${flag_var} "${${flag_var}}")
         endforeach(flag_var)
 	endif()
 endif()
 #--------------------------------------------------------------------------------------------------------
-# END: static/dinamic runtime										
+# END: static/dinamic runtime
 #--------------------------------------------------------------------------------------------------------
 
 
 #--------------------------------------------------------------------------------------------------------
-# BEGIN: pthreads setup for windows os												
+# BEGIN: pthreads setup for windows os
 #--------------------------------------------------------------------------------------------------------
 
-# The following commands should be removed when pthread linux 
-# specific calls will be replaced by thread c++ standard calls 
+# The following commands should be removed when pthread linux
+# specific calls will be replaced by thread c++ standard calls
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 
 	set(EDDLL_PTHREADS_INSTALL_PATH "$ENV{PTHREADS_ROOT}" CACHE PATH "Path to the installation of pthreads under Windows")
-	
+
 	if(EDDLL_PTHREADS_INSTALL_PATH STREQUAL "")
 		message(ERROR " pthreds install path must be specified under Windows")
 	endif()
-	
+
 	target_link_libraries(EDDLL debug "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3d.lib"
 								debug "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib"
 								debug "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib")
-								 
+
 	target_link_libraries(EDDLL optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib"
 								optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib"
 								optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")
-								 
+
 	include_directories("${EDDLL_PTHREADS_INSTALL_PATH}/include")
-	
+
 	# The following command should be moved elsewhere
 	if(MSVC)
 		add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	endif()
 endif()
 #--------------------------------------------------------------------------------------------------------
-# END: pthreads setup for windows os												
+# END: pthreads setup for windows os
 #--------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------------------------------
-# BEGIN: pthreads setup for linux os												
+# BEGIN: pthreads setup for linux os
 #--------------------------------------------------------------------------------------------------------
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_package(Threads REQUIRED)
     target_link_libraries(EDDLL Threads::Threads)
 endif()
 #--------------------------------------------------------------------------------------------------------
-# END: pthreads setup for linux os												
+# END: pthreads setup for linux os
 #--------------------------------------------------------------------------------------------------------
 
 add_executable(MNIST-CONV "")
@@ -142,7 +142,7 @@ add_subdirectory(examples/MNIST/CONV)
 target_link_libraries(MNIST-CONV EDDLL)
 
 #--------------------------------------------------------------------------------------------------------
-# BEGIN: install EDDLL (basic version)											
+# BEGIN: install EDDLL (basic version)
 #--------------------------------------------------------------------------------------------------------
 #set(${CMAKE_DEBUG_POSTFIX} "d")
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -160,7 +160,7 @@ install(TARGETS EDDLL
 		RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/Release/bin
 		LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/Release/lib
 		ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/Release/lib/static
-		)		
+		)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
 		DESTINATION ${CMAKE_INSTALL_PREFIX}/include
         FILES_MATCHING PATTERN "*.h")
@@ -168,7 +168,7 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
 # TODO: use Eigen CMakeLists.txt instead of doing it by hand
 set(EIGEN_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/Eigen")
 set(ESCAPED_CMAKE_CURRENT_SOURCE_DIR "${EIGEN_SOURCE_DIR}")
-file(GLOB Eigen_directory_files "${EIGEN_SOURCE_DIR}/*")		
+file(GLOB Eigen_directory_files "${EIGEN_SOURCE_DIR}/*")
 #message(STATUS ${Eigen_directory_files})
 foreach(f ${Eigen_directory_files})
   if(NOT f MATCHES "\\.txt" AND NOT f MATCHES "${ESCAPED_CMAKE_CURRENT_SOURCE_DIR}/[.].+" AND NOT f MATCHES "${ESCAPED_CMAKE_CURRENT_SOURCE_DIR}/src")
@@ -180,9 +180,9 @@ endforeach(f ${Eigen_directory_files})
 install(FILES
   ${Eigen_directory_files_to_install}
   DESTINATION ${CMAKE_INSTALL_PREFIX}/include/cpu/Eigen/
-  )	
+  )
 #--------------------------------------------------------------------------------------------------------
-# END: install EDDLL (basic version)												
+# END: install EDDLL (basic version)
 #--------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------------------------------

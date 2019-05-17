@@ -34,93 +34,84 @@
 
 #include "layer.h"
 
-int dense_created=1;
-
 using namespace std;
 
-LDense::LDense(Layer *parent,int dim):LDense(parent,dim,"dense"+to_string(dense_created),DEV_CPU){}
-LDense::LDense(Layer *parent,int dim,string name):LDense(parent,dim,name,DEV_CPU){}
-LDense::LDense(Layer *parent,int dim,int dev):LDense(parent,dim,"dense"+to_string(dense_created),dev){}
-LDense::LDense(Layer *parent,int dim,string name,int d):LinLayer(name,d)
-{
-  if (parent->output->dim!=2) msg("LDense only works over 2D tensors","LDense");
-  dense_created++;
-  this->dim=dim;
+int LDense::total_layers = 0;
 
-  input=parent->output;
-  output=new Tensor({input->sizes[0],dim},d);
-  delta=new Tensor(output->getshape(),d);
+LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev) : LinLayer(name, dev) {
+    if (parent->output->ndim != 2) msg("LDense only works over 2D tensors", "LDense");
+    total_layers++;
+    this->ndim = ndim;
+    this->use_bias = use_bias;
 
-  W=new Tensor({input->sizes[1],dim},d);
-  bias=new Tensor({dim},d);
-  params.push_back(W);
-  params.push_back(bias);
+    input = parent->output;
+    output = new Tensor({input->shape[0], ndim}, dev);
+    delta = new Tensor(output->getShape(), dev);
 
-  gW=new Tensor({input->sizes[1],dim},d);
-  gbias=new Tensor({dim},d);
-  gradients.push_back(gW);
-  gradients.push_back(gbias);
+    W = new Tensor({input->shape[1], ndim}, dev);
+    bias = new Tensor({ndim}, dev);
+    params.push_back(W);
+    params.push_back(bias);
 
-  parent->addchild(this);
-  addparent(parent);
+    gW = new Tensor({input->shape[1], ndim}, dev);
+    gbias = new Tensor({ndim}, dev);
+    gradients.push_back(gW);
+    gradients.push_back(gbias);
+
+    parent->addchild(this);
+    addparent(parent);
 }
 
 
 // virtual
-void LDense::forward()
-{
-  Tensor::mult2D(input,0,W,0,output,0);
-  Tensor::sum2D_rowwise(output,bias,output);
+void LDense::forward() {
+    Tensor::mult2D(input, 0, W, 0, output, 0);
+    Tensor::sum2D_rowwise(output, bias, output);
 }
 
-void LDense::backward()
-{
+void LDense::backward() {
 
-  //get gradients with provided delta
-  Tensor::mult2D(input,1,delta,0,gW,0);
-  Tensor::reduce_sum2D(delta,gbias,0,0);
-  // backprop delta
-  if (parent.size())
-    {
-      //1: note that increment parent delta
-      Tensor::mult2D(delta,0,W,1,parent[0]->delta,1);
+    //get gradients with provided delta
+    Tensor::mult2D(input, 1, delta, 0, gW, 0);
+    Tensor::reduce_sum2D(delta, gbias, 0, 0);
+    // backprop delta
+    if (parent.size()) {
+        //1: note that increment parent delta
+        Tensor::mult2D(delta, 0, W, 1, parent[0]->delta, 1);
     }
 
 }
 
 
-Layer *LDense::share(int c,int bs,vector<Layer*>p)
-{
-  LDense *n=new LDense(p[0],dim,"share_"+to_string(c)+name,dev);
-  n->orig=this;
+Layer *LDense::share(int c, int bs, vector<Layer *> p) {
+    LDense *n = new LDense(p[0], ndim, use_bias, "share_" + to_string(c) + name, dev);
+    n->orig = this;
 
-  //share params
-  for(int i=0;i<n->params.size();i++) delete n->params[i];
-  n->params.clear();
+    //share params
+    for (int i = 0; i < n->params.size(); i++) delete n->params[i];
+    n->params.clear();
 
-  n->W=params[0];
-  n->bias=params[1];
-  n->params.push_back(n->W);
-  n->params.push_back(n->bias);
+    n->W = params[0];
+    n->bias = params[1];
+    n->params.push_back(n->W);
+    n->params.push_back(n->bias);
 
-  return n;
+    return n;
 }
 
-Layer *LDense::clone(int c,int bs,vector<Layer*>p,int todev)
-{
-  LDense *n=new LDense(p[0],dim,"clone_"+to_string(todev)+name,todev);
-  n->orig=this;
+Layer *LDense::clone(int c, int bs, vector<Layer *> p, int todev) {
+    LDense *n = new LDense(p[0], ndim, use_bias, "clone_" + to_string(todev) + name, todev);
+    n->orig = this;
 
-  return n;
+    return n;
 }
 
 
-string LDense::plot(int c)
-{
+string LDense::plot(int c) {
     string s;
 
-    if (c) s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=bisque4,shape=box]";
-    else s=name+" [label="+"\""+name+"\",style=filled,fontsize=12,fillcolor=White,shape=box]";
+    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=bisque4,shape=box]";
+    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";
 
     return s;
 }
