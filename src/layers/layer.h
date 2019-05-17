@@ -26,14 +26,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdio.h>
-#include <stdio.h>
-
 #ifndef _LAYER_
 #define _LAYER_
 
 #include <string>
-
+#include <stdio.h>
 #include "../tensor.h"
 
 #define TRMODE 1
@@ -313,8 +310,6 @@ public:
 class LConvT : public LinLayer {
 public:
     static int total_layers;
-
-    ConvolDescriptor *cd;
 
     // constructors and clones
     LConvT(Layer *parent, int filters, const initializer_list<int> &kernel_size,

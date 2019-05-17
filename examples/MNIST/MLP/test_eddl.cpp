@@ -31,7 +31,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "../../../src/eddl.h"
+#include "../../../src/apis/eddl.h"
 
 int main(int argc, char **argv)
 {

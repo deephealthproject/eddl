@@ -37,9 +37,9 @@
 #include <vector>
 
 #include "layers/layer.h"
-#include "optim.h"
-#include "loss.h"
-#include "metric.h"
+#include "optimizers/optim.h"
+#include "losses/loss.h"
+#include "metrics/metric.h"
 #include "compserv.h"
 
 using namespace std;

@@ -4,14 +4,12 @@
 **/*.o
 **/*.so
 **/*.obj
-src/test/test_eddl
-src/test/test_eddl_gpu
 **/*~
 
 # Plots
-src/test/*.dot
-src/test/*.pdf
-src/test/*.bin
+/examples/MNIST/**/*.dot
+/examples/MNIST/**/*.pdf
+/examples/MNIST/**/*.bin
 
 # Developer environments
 *.DS_Store
@@ -25,4 +23,3 @@ cmake-build-debug/*
 # Build
 /[Bb]uild*
 /[Bb]in*
-/examples/MNIST/CONV/test_eddl

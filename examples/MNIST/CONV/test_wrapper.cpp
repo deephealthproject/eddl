@@ -31,8 +31,8 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "../../../src/eddl.h"
-#include "../../../src/wrapper.h"
+#include "../../../src/apis/eddl.h"
+#include "../../../src/apis/wrapper.h"
 
 layer ResBlock(layer in,int k,int n)
 {
