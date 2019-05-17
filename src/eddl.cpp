@@ -411,25 +411,32 @@ void EDDL::change(optimizer optim, const initializer_list<float> &params) {
 
 initializer EDDL::Constant(float value){
     //Todo: Implement
+    return new IConstant(value);
 }
 
 initializer EDDL::Identity(float gain){
     //Todo: Implement
+    return new IIdentity(gain);
 }
 initializer EDDL::GlorotNormal(float seed) {
     //Todo: Implement
+    return new IGlorotNormal(seed);
 }
 initializer EDDL::GlorotUniform(float seed){
     //Todo: Implement
+    return new IGlorotUniform(seed);
 }
 initializer EDDL::RandomNormal(float mean, float stdev, int seed){
     //Todo: Implement
+    return new IRandomNormal(mean, stdev, seed);
 }
 initializer EDDL::RandomUniform(float minval, float maxval, int seed){
     //Todo: Implement
+    return new IRandomUniform(minval, maxval, seed);
 }
 initializer EDDL::Orthogonal(float gain, int seed){
     //Todo: Implement
+    return new IOrthogonal(gain, seed);
 }
 
 

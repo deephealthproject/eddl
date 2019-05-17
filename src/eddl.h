@@ -34,7 +34,7 @@
 #include <vector>
 #include "net.h"
 #include "callbacks.h"
-#include "initializers.h"
+#include "initializer.h"
 #include "loss.h"
 #include "metric.h"
 #include <thread>
