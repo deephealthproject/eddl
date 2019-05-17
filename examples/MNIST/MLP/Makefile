@@ -79,6 +79,7 @@ ifeq ($(TARGET),2)
 # OPT=3: Nothing
 # OPT=4: Debug
 CXX = g++
+CXXSOFLAGS = -shared
 ifeq ($(OPT),1)
 $(info set AVX)
 CXXFLAGS =-std=c++11 -march=native -mavx -O3
@@ -97,6 +98,8 @@ CXXFLAGS =-std=c++11 -g
 endif
 endif
 
+# Create position independent code for the shared library
+CXXFLAGS := $(CXXFLAGS) -fPIC
 
 
 ##CORE FLAGS
@@ -130,11 +133,11 @@ SRC_PATH=../../../src
 OBJ =	utils.o tensor.o tensor_op.o cpu_convol.o compserv.o layer.o layer_tensor.o layer_transpose.o layer_input.o layer_embedding.o layer_dense.o layer_conv.o layer_pool.o layer_activation.o layer_reshape.o layer_drop.o layer_add.o layer_cat.o layer_average.o layer_matmul.o layer_maximum.o layer_minimum.o layer_subtract.o layer_batchnorm.o layer_noise.o layer_rnn.o layer_lstm.o loss.o metric.o initializer.o optim.o net.o eddl.o wrapper.o
 
 ifeq ($(CORE),1)  # CPU
-all: $(GPU_OBJ) $(OBJ) test_eddl test_wrapper
+all: $(GPU_OBJ) $(OBJ) test_eddl test_wrapper shared_eddl
 endif
 
 ifeq ($(CORE),2)  # GPU
-all: $(GPU_OBJ) $(OBJ) test_eddl test_wrapper
+all: $(GPU_OBJ) $(OBJ) test_eddl test_wrapper shared_eddl
 endif
 
 #--------------------------------- c code
@@ -262,6 +265,8 @@ test_eddl: test_eddl.cpp $(OBJ) $(GPU_OBJ)
 test_wrapper: test_wrapper.cpp $(OBJ) $(GPU_OBJ)
 	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_wrapper.cpp -o test_wrapper $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
 
+shared_eddl: $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(CXXSOFLAGS) $(GPU_CXXFLAGS) -o eddl.so $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
 #-------------------------
 
 install:
