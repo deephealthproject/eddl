@@ -95,6 +95,131 @@ public:
 
 /////////////////////////////////////////
 /////////////////////////////////////////
+// Operator layer
+class OperatorLayer : public Layer {
+public:
+
+    OperatorLayer(string name, int dev);
+
+    Layer *share(int c, int bs, vector<Layer *>) override;
+
+    Layer *clone(int c, int bs, vector<Layer *>, int todev) override;
+};
+
+
+/// Diff Layer
+class LDiff : public OperatorLayer {
+public:
+
+    LDiff(string name, int dev);
+
+    void forward();
+
+    void backward();
+};
+
+/// Div Layer
+class LDiv : public OperatorLayer {
+public:
+
+    LDiv(string name, int dev);
+
+    void forward();
+
+    void backward();
+};
+
+/// Exp Layer
+class LExp : public OperatorLayer {
+public:
+
+    LExp(string name, int dev);
+
+    void forward();
+
+    void backward();
+};
+
+/// Log Layer
+class LLog : public OperatorLayer {
+public:
+
+    LLog(string name, int dev);
+
+    void forward();
+
+    void backward();
+};
+
+/// Mean Layer
+class LMean : public OperatorLayer {
+public:
+
+    LMean(string name, int dev);
+
+    void forward();
+
+    void backward();
+};
+
+/// Mult Layer
+class LMult : public OperatorLayer {
+public:
+
+    LMult(string name, int dev);
+
+    void forward();
+
+    void backward();
+};
+
+/// Pow Layer
+class LPow : public OperatorLayer {
+public:
+
+    LPow(string name, int dev);
+
+    void forward();
+
+    void backward();
+};
+
+/// Sqrt Layer
+class LSqrt : public OperatorLayer {
+public:
+
+    LSqrt(string name, int dev);
+
+    void forward();
+
+    void backward();
+};
+
+/// Sum Layer
+class LSum : public OperatorLayer {
+public:
+
+    LSum(string name, int dev);
+
+    void forward();
+
+    void backward();
+};
+
+/// Var Layer
+class LVar : public OperatorLayer {
+public:
+
+    LVar(string name, int dev);
+
+    void forward();
+
+    void backward();
+};
+
+
+/////////////////////////////////////////
+/////////////////////////////////////////
 // Layers with only one input
 class LinLayer : public Layer {
 public:
