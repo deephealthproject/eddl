@@ -65,7 +65,7 @@ public:
 
     void reset();
 
-    void info();
+    virtual void info();
 
     void setmode(int m);
 
@@ -86,10 +86,135 @@ public:
 
     virtual void backward() {}
 
-    virtual Layer *share(int c, int bs, vector<Layer *>) { return NULL; }
+    virtual Layer *share(int c, int bs, vector<Layer *> p) { return nullptr; }
 
-    virtual Layer *clone(int c, int bs, vector<Layer *>, int todev) { return NULL; }
+    virtual Layer *clone(int c, int bs, vector<Layer *> p, int todev) { return nullptr; }
 
+};
+
+
+/////////////////////////////////////////
+/////////////////////////////////////////
+// Operator layer
+class OperatorLayer : public Layer {
+public:
+
+    OperatorLayer(string name, int dev);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+};
+
+
+/// Diff Layer
+class LDiff : public OperatorLayer {
+public:
+
+    LDiff(string name, int dev);
+
+    void forward() override;
+
+    void backward() override;
+};
+
+/// Div Layer
+class LDiv : public OperatorLayer {
+public:
+
+    LDiv(string name, int dev);
+
+    void forward() override;
+
+    void backward() override;
+};
+
+/// Exp Layer
+class LExp : public OperatorLayer {
+public:
+
+    LExp(string name, int dev);
+
+    void forward() override;
+
+    void backward() override;
+};
+
+/// Log Layer
+class LLog : public OperatorLayer {
+public:
+
+    LLog(string name, int dev);
+
+    void forward() override;
+
+    void backward() override;
+};
+
+/// Mean Layer
+class LMean : public OperatorLayer {
+public:
+
+    LMean(string name, int dev);
+
+    void forward() override;
+
+    void backward() override;
+};
+
+/// Mult Layer
+class LMult : public OperatorLayer {
+public:
+
+    LMult(string name, int dev);
+
+    void forward() override;
+
+    void backward() override;
+};
+
+/// Pow Layer
+class LPow : public OperatorLayer {
+public:
+
+    LPow(string name, int dev);
+
+    void forward() override;
+
+    void backward() override;
+};
+
+/// Sqrt Layer
+class LSqrt : public OperatorLayer {
+public:
+
+    LSqrt(string name, int dev);
+
+    void forward() override;
+
+    void backward() override;
+};
+
+/// Sum Layer
+class LSum : public OperatorLayer {
+public:
+
+    LSum(string name, int dev);
+
+    void forward() override;
+
+    void backward() override;
+};
+
+/// Var Layer
+class LVar : public OperatorLayer {
+public:
+
+    LVar(string name, int dev);
+
+    void forward() override;
+
+    void backward() override;
 };
 
 
@@ -101,9 +226,9 @@ public:
 
     LinLayer(string name, int dev);
 
-    void addchild(Layer *l);
+    void addchild(Layer *l) override;
 
-    void addparent(Layer *l);
+    void addparent(Layer *l) override;
 };
 
 /// Tensor Layer
@@ -115,21 +240,21 @@ public:
 
     LTensor(const initializer_list<int> &init, int dev);
 
-    LTensor(const vector<int> shape, int dev);
+    LTensor(vector<int> shape, int dev);
 
-    LTensor(Layer *l);
+    explicit LTensor(Layer *l);
 
-    Layer *share(int c, int bs, vector<Layer *> p) { return NULL; }
+    Layer *share(int c, int bs, vector<Layer *> p) override { return nullptr; }
 
-    Layer *clone(int c, int bs, vector<Layer *>, int todev) { return NULL; }
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override { return nullptr; }
 
-    void info() {}
+    void info() override {}
 
-    void forward() {}
+    void forward() override {}
 
-    void backward() {}
+    void backward() override {}
 
-    string plot(int c) { return ""; }
+    string plot(int c) override { return ""; }
 
     LTensor operator+(LTensor L);
 
@@ -143,15 +268,15 @@ public:
 
     LInput(Tensor *in, string name, int dev);
 
-    Layer *share(int c, int bs, vector<Layer *> p);
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void forward();
+    void forward() override;
 
-    void backward();
+    void backward() override;
 
-    string plot(int c);
+    string plot(int c) override;
 
 };
 
@@ -164,15 +289,15 @@ public:
 
     LEmbedding(int input_dim, int output_dim, string name, int dev);
 
-    Layer *share(int c, int bs, vector<Layer *> p);
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void forward();
+    void forward() override;
 
-    void backward();
+    void backward() override;
 
-    string plot(int c);
+    string plot(int c) override;
 
 };
 
@@ -185,9 +310,9 @@ public:
 
     LDense(Layer *parent, int ndim, bool use_bias, string name, int dev);
 
-    Layer *share(int c, int bs, vector<Layer *> p);
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
     // Params
     Tensor *W;
@@ -195,11 +320,11 @@ public:
     Tensor *bias;
     Tensor *gbias;
 
-    void forward();
+    void forward() override;
 
-    void backward();
+    void backward() override;
 
-    string plot(int c);
+    string plot(int c) override;
 
 };
 
@@ -211,15 +336,15 @@ public:
 
     LActivation(Layer *parent, string act, string name, int d);
 
-    Layer *share(int c, int bs, vector<Layer *> p);
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void forward();
+    void forward() override;
 
-    void backward();
+    void backward() override;
 
-    string plot(int c);
+    string plot(int c) override;
 
 };
 
@@ -234,17 +359,17 @@ public:
 
     LReshape(Layer *parent, vector<int> shape, string name, int d);
 
-    Layer *share(int c, int bs, vector<Layer *> p);
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
 
     // implementation
-    void forward();
+    void forward() override;
 
-    void backward();
+    void backward() override;
 
-    string plot(int c);
+    string plot(int c) override;
 
 };
 
@@ -257,17 +382,17 @@ public:
     // constructors and clones
     LTranspose(Layer *parent, const initializer_list<int> &dims, string name, int dev);
 
-//    Layer *share(int c, int bs, vector<Layer *> p);
+//    Layer *share(int c, int bs, vector<Layer *> p) override;
 //
-//    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
+//    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 //
 //
 //    // implementation
-//    void forward();
+//    void forward() override;
 //
-//    void backward();
+//    void backward() override;
 //
-//    string plot(int c);
+//    string plot(int c) override;
 
 };
 
@@ -291,18 +416,18 @@ public:
 
     LConv(Layer *parent, ConvolDescriptor *cd, string name, int d);
 
-    Layer *share(int c, int bs, vector<Layer *> p);
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
     // Params are in ConvolDescriptor
 
     // implementation
-    void forward();
+    void forward() override;
 
-    void backward();
+    void backward() override;
 
-    string plot(int c);
+    string plot(int c) override;
 
 };
 
@@ -318,18 +443,18 @@ public:
 
     LConvT(Layer *parent, ConvolDescriptor *cd, string name, int dev);
 
-//    Layer *share(int c, int bs, vector<Layer *> p);
+//    Layer *share(int c, int bs, vector<Layer *> p) override;
 //
-//    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
+//    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 //
 //    // Params are in ConvolDescriptor
 //
 //    // implementation
-//    void forward();
+//    void forward() override;
 //
-//    void backward();
+//    void backward() override;
 //
-//    string plot(int c);
+//    string plot(int c) override;
 
 };
 
@@ -343,18 +468,18 @@ public:
     // constructors and clones
     LUpSampling(Layer *parent, const initializer_list<int> &size, string interpolation, string name, int dev);
 
-//    Layer *share(int c, int bs, vector<Layer *> p);
+//    Layer *share(int c, int bs, vector<Layer *> p) override;
 //
-//    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
+//    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 //
 //    // Params are in ConvolDescriptor
 //
 //    // implementation
-//    void forward();
+//    void forward() override;
 //
-//    void backward();
+//    void backward() override;
 //
-//    string plot(int c);
+//    string plot(int c) override;
 
 };
 
@@ -387,15 +512,15 @@ public:
     Tensor *indX, *indY;
 
     // implementation
-    void forward();
+    void forward() override;
 
-    void backward();
+    void backward() override;
 
-    Layer *share(int c, int bs, vector<Layer *> p);
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    string plot(int c);
+    string plot(int c) override;
 
 };
 
@@ -412,15 +537,15 @@ public:
 //    Tensor *indX, *indY;
 //
 //    // implementation
-//    void forward();
+//    void forward() override;
 //
-//    void backward();
+//    void backward() override;
 //
-//    Layer *share(int c, int bs, vector<Layer *> p);
+//    Layer *share(int c, int bs, vector<Layer *> p) override;
 //
-//    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
+//    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 //
-//    string plot(int c);
+//    string plot(int c) override;
 
 };
 
@@ -435,15 +560,15 @@ public:
 //    Tensor *indX, *indY;
 //
 //    // implementation
-//    void forward();
+//    void forward() override;
 //
-//    void backward();
+//    void backward() override;
 //
-//    Layer *share(int c, int bs, vector<Layer *> p);
+//    Layer *share(int c, int bs, vector<Layer *> p) override;
 //
-//    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
+//    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 //
-//    string plot(int c);
+//    string plot(int c) override;
 
 };
 
@@ -458,15 +583,15 @@ public:
 //    Tensor *indX, *indY;
 //
 //    // implementation
-//    void forward();
+//    void forward() override;
 //
-//    void backward();
+//    void backward() override;
 //
-//    Layer *share(int c, int bs, vector<Layer *> p);
+//    Layer *share(int c, int bs, vector<Layer *> p) override;
 //
-//    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
+//    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 //
-//    string plot(int c);
+//    string plot(int c) override;
 
 };
 
@@ -479,19 +604,19 @@ public:
     // constructors and clones
     LDropout(Layer *parent, float df, string name, int d);
 
-    Layer *share(int c, int bs, vector<Layer *> p);
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
     float df;
     Tensor *mask;
 
     // implementation
-    void forward();
+    void forward() override;
 
-    void backward();
+    void backward() override;
 
-    string plot(int c);
+    string plot(int c) override;
 
 };
 
@@ -504,21 +629,21 @@ public:
 
     MLayer(string name, int dev);
 
-    void addchild(Layer *l);
+    void addchild(Layer *l) override;
 
-    void addparent(Layer *l);
+    void addparent(Layer *l) override;
 
     //virtual
 
-    virtual string plot(int c) { return ""; }
+    string plot(int c) override { return ""; }
 
-    virtual void forward() {}
+    void forward() override {}
 
-    virtual void backward() {}
+    void backward() override {}
 
-    virtual Layer *share(int c, int bs, vector<Layer *> p) { return NULL; }
+    Layer *share(int c, int bs, vector<Layer *> p) override { return nullptr; }
 
-    virtual Layer *clone(int c, int bs, vector<Layer *>, int todev) { return NULL; }
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override { return nullptr; }
 
 };
 
@@ -530,15 +655,15 @@ public:
 
     LAdd(vector<Layer *> in, string name, int dev);
 
-    Layer *share(int c, int bs, vector<Layer *> p);
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void forward();
+    void forward() override;
 
-    void backward();
+    void backward() override;
 
-    string plot(int c);
+    string plot(int c) override;
 
 };
 
@@ -550,15 +675,15 @@ public:
 
     LSubtract(vector<Layer *> in, string name, int dev);
 
-    Layer *share(int c, int bs, vector<Layer *> p);
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void forward();
+    void forward() override;
 
-    void backward();
+    void backward() override;
 
-    string plot(int c);
+    string plot(int c) override;
 
 };
 
@@ -571,15 +696,15 @@ public:
 
     LMatMul(vector<Layer *> in, string name, int dev);
 
-    Layer *share(int c, int bs, vector<Layer *> p);
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void forward();
+    void forward() override;
 
-    void backward();
+    void backward() override;
 
-    string plot(int c);
+    string plot(int c) override;
 
 };
 
@@ -592,15 +717,15 @@ public:
 
     LAverage(vector<Layer *> in, string name, int dev);
 
-    Layer *share(int c, int bs, vector<Layer *> p);
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void forward();
+    void forward() override;
 
-    void backward();
+    void backward() override;
 
-    string plot(int c);
+    string plot(int c) override;
 
 };
 
@@ -612,15 +737,15 @@ public:
 
     LMaximum(vector<Layer *> in, string name, int dev);
 
-    Layer *share(int c, int bs, vector<Layer *> p);
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void forward();
+    void forward() override;
 
-    void backward();
+    void backward() override;
 
-    string plot(int c);
+    string plot(int c) override;
 
 };
 
@@ -632,15 +757,15 @@ public:
 
     LMinimum(vector<Layer *> in, string name, int dev);
 
-    Layer *share(int c, int bs, vector<Layer *> p);
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void forward();
+    void forward() override;
 
-    void backward();
+    void backward() override;
 
-    string plot(int c);
+    string plot(int c) override;
 
 };
 
@@ -655,19 +780,19 @@ public:
     // constructors and clones
     LConcat(vector<Layer *> in, string name, int d);
 
-    Layer *share(int c, int bs, vector<Layer *> p);
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-    Layer *clone(int c, int bs, vector<Layer *> p, int todev);
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
     // Params
 
 
     // implementation
-    void forward();
+    void forward() override;
 
-    void backward();
+    void backward() override;
 
-    string plot(int c);
+    string plot(int c) override;
 
 };
 
@@ -682,15 +807,15 @@ public:
 
     LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev);
 
-    Layer *share(int c, int bs, vector<Layer *> p);
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void forward();
+    void forward() override;
 
-    void backward();
+    void backward() override;
 
-    string plot(int c);
+    string plot(int c) override;
 };
 
 
@@ -702,15 +827,15 @@ public:
 
     LGaussianNoise(Layer *parent, float stdev, string name, int dev);
 
-    Layer *share(int c, int bs, vector<Layer *> p);
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void forward();
+    void forward() override;
 
-    void backward();
+    void backward() override;
 
-    string plot(int c);
+    string plot(int c) override;
 };
 
 
@@ -726,15 +851,15 @@ public:
 
     LRNN(Layer *parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev);
 
-    Layer *share(int c, int bs, vector<Layer *> p);
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void forward();
+    void forward() override;
 
-    void backward();
+    void backward() override;
 
-    string plot(int c);
+    string plot(int c) override;
 };
 
 
@@ -750,15 +875,15 @@ public:
 
     LLSTM(Layer *parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev);
 
-    Layer *share(int c, int bs, vector<Layer *> p);
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-    Layer *clone(int c, int bs, vector<Layer *>, int todev);
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void forward();
+    void forward() override;
 
-    void backward();
+    void backward() override;
 
-    string plot(int c);
+    string plot(int c) override;
 };
 
 #endif

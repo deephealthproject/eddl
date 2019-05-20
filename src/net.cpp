@@ -68,7 +68,7 @@ struct tdata {
 
 /////////////////////////////////////////
 void *train_batch_t(void *t) {
-    tdata *targs = (tdata *) t;
+    auto *targs = (tdata *) t;
 
     Net *net = targs->net;
 
@@ -85,18 +85,18 @@ void *train_batch_t(void *t) {
             net->applygrads(targs->batch);
     }
 
-    return NULL;
+    return nullptr;
 }
 
 /////////////////////////////////////////
 void *applygrads_t(void *t) {
-    tdata *targs = (tdata *) t;
+    auto *targs = (tdata *) t;
 
     Net *net = targs->net;
 
     net->applygrads(targs->batch);
 
-    return NULL;
+    return nullptr;
 }
 
 
@@ -133,7 +133,7 @@ Net::Net(const initializer_list<Layer *> &in, const initializer_list<Layer *> &o
                                                                                                  out.end())) {}
 
 Net::Net(vlayer in, vlayer out) {
-    optimizer = NULL;
+    optimizer = nullptr;
     lin = in;
     lout = out;
 
@@ -167,7 +167,7 @@ Layer *Net::getLayer(string name) {
         if (name == layers[i]->name) return layers[i];
 
     msg("layer %s not found", "Net.getLayer");
-    return NULL;
+    return nullptr;
 }
 
 /////////////////////////////////////////
@@ -191,7 +191,7 @@ void Net::info() {
 void Net::plot(string fname) {
     ofstream out("tmp.dot");
     int ind;
-    string type = fname.substr(fname.find(".") + 1);
+    string type = fname.substr(fname.find('.') + 1);
     string cmd;
 
 
@@ -611,7 +611,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 
     int i, j, k, n;
 
-    if (optimizer == NULL)
+    if (optimizer == nullptr)
         msg("Net is not build", "Net.fit");
 
     // Check list shape
@@ -750,7 +750,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int batch, int eval) {
         td[i].batch = batch;
         td[i].eval = eval;
         //call thread
-        rc = pthread_create(&thr[i], NULL, train_batch_t, (void *) (&td[i]));
+        rc = pthread_create(&thr[i], nullptr, train_batch_t, (void *) (&td[i]));
         if (rc) {
             fprintf(stderr, "Error:unable to create thread %d", rc);
             exit(-1);
@@ -768,7 +768,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int batch, int eval) {
     if (!eval) {
         if (snets[0]->dev == DEV_CPU) {
             for (int i = 0; i < snets.size(); i++) {
-                rc = pthread_create(&thr[i], NULL, applygrads_t, (void *) (&td[i]));
+                rc = pthread_create(&thr[i], nullptr, applygrads_t, (void *) (&td[i]));
                 if (rc) {
                     fprintf(stderr, "Error:unable to create thread %d", rc);
                     exit(-1);

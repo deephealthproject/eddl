@@ -72,13 +72,13 @@ public:
 
     explicit sgd(float lr=0.01f, float momentum=0.0f, float weight_decay=0.0f, bool nesterov=false);
 
-    optim *clone();
+    optim *clone() override;
 
-    void setlayers(vlayer l);
+    void setlayers(vlayer l) override;
 
-    void applygrads(int batch);
+    void applygrads(int batch) override;
 
-    void change(const initializer_list<float> &p);
+    void change(const initializer_list<float> &p) override;
 };
 
 // ---- Adam ----
