@@ -728,13 +728,8 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int batch, int eval) {
 
     int bs = batch / snets.size();
 
-    if (sind.size() == 0) {
-        for (int i = 0; i < batch; i++)
-            sind.push_back(0);
-        for (int i = 0; i < snets.size(); i++)
-            for (int j = 0; j < Xs[i][0]->shape[0]; j++)
-                sind[j] = (i * bs) + j;
-    }
+    if (sind.size() == 0) msg("error void index","Net::train_btch");
+
 
     for (int i = 0; i < snets.size(); i++) {
         int ini = i * bs;
@@ -849,6 +844,9 @@ void Net::evaluate(vtensor tin, vtensor tout) {
 
     // Create internal variables
     vind sind;
+    for (k=0;k<batch;k++)
+      sind.push_back(0);
+
     verr errors;
     for (i = 0; i < tout.size(); i++) {
         errors.push_back(0.0);
@@ -856,12 +854,17 @@ void Net::evaluate(vtensor tin, vtensor tout) {
     }
 
     // Start eval
-    for (j = 0; j < 2 * tout.size(); j++) errors[j] = 0.0;
+    int p=0;
+    for (j = 0; j < 2 * tout.size(); j++,p+=2) {fiterr[p] = fiterr[p + 1] = 0.0;errors[j] = 0.0;}
 
     setmode(TSMODE);
     for (j = 0; j < n / batch; j++) {
+
+        for (k=0;k<batch;k++)
+          sind[k]=(j*batch)+k;
+
         train_batch(tin, tout, sind, batch, 1);
-        int p = 0;
+        p = 0;
         for (k = 0; k < tout.size(); k++, p += 2) {
             errors[p] += fiterr[p];
             errors[p + 1] += fiterr[p + 1];
@@ -869,12 +872,13 @@ void Net::evaluate(vtensor tin, vtensor tout) {
         }
     }
 
-    int p = 0;
+    p = 0;
     for (k = 0; k < tout.size(); k++, p += 2)
         fprintf(stdout, "%s(%s=%1.3f,%s=%1.3f) ", lout[k]->name.c_str(), losses[k]->name.c_str(), errors[p] / n,
                 metrics[k]->name.c_str(), errors[p + 1] / n);
     fprintf(stdout, "\n");
     fflush(stdout);
+
 }
 
 
