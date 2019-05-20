@@ -117,7 +117,7 @@ public:
     ConvolDescriptor(const vector<int> &ks, const vector<int> &st, string p);
 
 
-    void build(Tensor *A);
+    virtual void build(Tensor *A);
 };
 
 class PoolDescriptor : public ConvolDescriptor {
@@ -132,7 +132,7 @@ public:
 
     PoolDescriptor(const vector<int> &ks, const vector<int> &st, string p);
 
-    void build(Tensor *A);
+    void build(Tensor *A) override;
 };
 
 
@@ -165,11 +165,11 @@ public:
 
     Tensor(const initializer_list<int> &init, int dev);
 
-    Tensor(const vector<int> shape);
+    explicit Tensor(vector<int> shape);
 
-    Tensor(const vector<int> shape, int dev);
+    Tensor(vector<int> shape, int dev);
 
-    Tensor(string fname, int bin = 1);
+    explicit Tensor(string fname, int bin = 1);
 
     Tensor(vector<int> shape, Tensor *T);
 

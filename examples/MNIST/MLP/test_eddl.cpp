@@ -76,7 +76,7 @@ int main(int argc, char **argv)
   eddl.div(X,255.0);
 
   // training, list of input and output tensors, batch, epochs
-  eddl.fit(net,{X},{Y},batch,50);
+  eddl.fit(net,{X},{Y},batch,1);
 
   // Evaluate train
   std::cout << "Evaluate train:" << std::endl;
