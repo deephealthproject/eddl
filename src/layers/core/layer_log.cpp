@@ -35,9 +35,10 @@
 using namespace std;
 
 
-LLog::LLog(string name, int dev): OperatorLayer(name, dev) {
+LLog::LLog(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
     //TODO: Implement
 }
+
 
 void LLog::forward(){
     //TODO: Implement

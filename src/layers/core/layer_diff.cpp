@@ -35,7 +35,11 @@
 using namespace std;
 
 
-LDiff::LDiff(string name, int dev): OperatorLayer(name, dev) {
+LDiff::LDiff(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev) {
+    //TODO: Implement
+}
+
+LDiff::LDiff(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
     //TODO: Implement
 }
 

@@ -35,7 +35,7 @@
 using namespace std;
 
 
-LVar::LVar(string name, int dev): OperatorLayer(name, dev) {
+LVar::LVar(Layer *l, string name, int dev): OperatorLayer(name, dev) {
     //TODO: Implement
 }
 

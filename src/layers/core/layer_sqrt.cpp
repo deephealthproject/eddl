@@ -35,7 +35,7 @@
 using namespace std;
 
 
-LSqrt::LSqrt(string name, int dev): OperatorLayer(name, dev) {
+LSqrt::LSqrt(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
     //TODO: Implement
 }
 

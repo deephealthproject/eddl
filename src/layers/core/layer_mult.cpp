@@ -34,8 +34,11 @@
 
 using namespace std;
 
+LMult::LMult(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev) {
+    //TODO: Implement
+}
 
-LMult::LMult(string name, int dev): OperatorLayer(name, dev) {
+LMult::LMult(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
     //TODO: Implement
 }
 

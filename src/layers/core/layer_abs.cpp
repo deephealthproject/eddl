@@ -35,15 +35,15 @@
 using namespace std;
 
 
-LExp::LExp(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
+
+LAbs::LAbs(Layer *l, string name, int dev): OperatorLayer(name, dev) {
     //TODO: Implement
 }
 
-
-void LExp::forward(){
+void LAbs::forward(){
     //TODO: Implement
 }
 
-void LExp::backward(){
+void LAbs::backward(){
     //TODO: Implement
 }

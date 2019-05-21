@@ -35,9 +35,10 @@
 using namespace std;
 
 
-LMean::LMean(string name, int dev): OperatorLayer(name, dev) {
+LMean::LMean(Layer *l, string name, int dev): OperatorLayer(name, dev) {
     //TODO: Implement
 }
+
 
 void LMean::forward(){
     //TODO: Implement

@@ -35,7 +35,11 @@
 using namespace std;
 
 
-LDiv::LDiv(string name, int dev): OperatorLayer(name, dev) {
+LDiv::LDiv(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev) {
+    //TODO: Implement
+}
+
+LDiv::LDiv(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
     //TODO: Implement
 }
 

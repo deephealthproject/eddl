@@ -35,7 +35,11 @@
 using namespace std;
 
 
-LSum::LSum(string name, int dev): OperatorLayer(name, dev) {
+LSum::LSum(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev) {
+    //TODO: Implement
+}
+
+LSum::LSum(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
     //TODO: Implement
 }
 

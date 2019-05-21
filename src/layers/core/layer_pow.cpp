@@ -35,7 +35,7 @@
 using namespace std;
 
 
-LPow::LPow(string name, int dev): OperatorLayer(name, dev) {
+LPow::LPow(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
     //TODO: Implement
 }
 
