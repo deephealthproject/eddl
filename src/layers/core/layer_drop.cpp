@@ -27,62 +27,75 @@
 // SOFTWARE.
 
 #include <stdio.h>
-#include <stdio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 
-#include "layer.h"
+#include "../layer.h"
 
 using namespace std;
 
+int LDropout::total_layers = 0;
 
-int LTensor::total_layers = 0;
+LDropout::LDropout(Layer *parent, float df, string name, int d) : LinLayer(name, d) {
 
-
-// From file
-LTensor::LTensor(string fname) : LinLayer("ltensor" + to_string(total_layers), DEV_CPU) {
-    input = output = new Tensor(fname);
     total_layers++;
-}
 
-// From list of shape
-LTensor::LTensor(const initializer_list<int> &init, int dev) : LinLayer("ltensor" + to_string(total_layers), dev) {
-    input = output = new Tensor(init, dev);
-    delta = new Tensor(init, dev);
-    total_layers++;
-}
+    // df: drop factor is the probability to delete (drop) an activation
+    this->df = df;
 
-// From vector<int>
-LTensor::LTensor(const vector<int> shape, int dev) : LinLayer("ltensor" + to_string(total_layers), dev) {
-    input = output = new Tensor(shape, dev);
-    delta = new Tensor(shape, dev);
-    total_layers++;
-}
+    input = parent->output;
+    output = new Tensor(input->getShape(), d);
+    delta = new Tensor(input->getShape(), d);
 
+    mask = new Tensor(input->getShape(), d);
 
-// From Layer
-LTensor::LTensor(Layer *l) : LinLayer("ltensor" + to_string(total_layers), l->dev) {
-    input = output = l->output;
-    delta = l->delta;
-    total_layers++;
+    parent->addchild(this);
+    addparent(parent);
 }
 
 
-/// OP OVERLOAD
-LTensor LTensor::operator+(LTensor L) {
-    vector<Layer *> vl;
+// virtual
+void LDropout::forward() {
+    if (mode == TRMODE) {
+        mask->rand_binary(1.0 - df);
+        Tensor::el_mult(input, mask, output, 0);
+    } else {
+        Tensor::copy(input, output);
+        output->mult(1.0 - df);
+    }
 
-    vl.push_back(this);
-    vl.push_back(&L);
+}
 
-    LTensor *l = new LTensor(new LAdd(vl, "add" + to_string(1 + LAdd::total_layers), DEV_CPU));
+void LDropout::backward() {
 
-    return *l;
+    if (parent.size()) {
+        Tensor::el_mult(delta, mask, parent[0]->delta, 1);
+    }
 }
 
 
+Layer *LDropout::share(int c, int bs, vector<Layer *> p) {
+
+    LDropout *n = new LDropout(p[0], df, "share_" + to_string(c) + name, dev);
+    n->orig = this;
+
+    return n;
+}
+
+Layer *LDropout::clone(int c, int bs, vector<Layer *> p, int todev) {
+
+    LDropout *n = new LDropout(p[0], df, "clone_" + to_string(todev) + name, todev);
+    n->orig = this;
+
+    return n;
+}
 
 
+string LDropout::plot(int c) {
+    string s;
 
-//////
+    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";
+    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=lightpink,shape=box]";
+
+    return s;
+}

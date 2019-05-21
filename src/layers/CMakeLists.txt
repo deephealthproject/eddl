@@ -6,6 +6,17 @@ target_sources(EDDLL
         conv/layer_transposed_conv.cpp
         conv/layer_upsampling.cpp
 
+        # Core layers
+        layer.cpp
+        layer.h
+        core/layer_activation.cpp
+        core/layer_batchnorm.cpp
+        core/layer_dense.cpp
+        core/layer_drop.cpp
+        core/layer_embedding.cpp
+        core/layer_input.cpp
+        core/layer_tensor.cpp
+
         # Merge layers
         merge/layer_add.cpp
         merge/layer_concat.cpp
@@ -18,6 +29,22 @@ target_sources(EDDLL
         # Noise layers
         noise/layer_gaussian.cpp
 
+        # Operators
+        operators/layer_abs.cpp
+        operators/layer_diff.cpp
+        operators/layer_div.cpp
+        operators/layer_exp.cpp
+        operators/layer_log.cpp
+        operators/layer_mean.cpp
+        operators/layer_mult.cpp
+        operators/layer_operator.cpp
+        operators/layer_pow.cpp
+        operators/layer_reshape.cpp
+        operators/layer_sqrt.cpp
+        operators/layer_sum.cpp
+        operators/layer_transpose.cpp
+        operators/layer_var.cpp
+
         # Pooling layers
         pool/layer_pool.cpp
         pool/layer_avgpool.cpp
@@ -28,17 +55,4 @@ target_sources(EDDLL
         # Recurrent layers
         recurrent/layer_rnn.cpp
         recurrent/layer_lstm.cpp
-
-        # Core layers
-        layer.cpp
-        layer.h
-        layer_activation.cpp
-        layer_batchnorm.cpp
-        layer_dense.cpp
-        layer_drop.cpp
-        layer_embedding.cpp
-        layer_input.cpp
-        layer_reshape.cpp
-        layer_tensor.cpp
-        layer_transpose.cpp
         )

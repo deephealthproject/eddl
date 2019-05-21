@@ -27,63 +27,59 @@
 // SOFTWARE.
 
 #include <stdio.h>
-#include <stdio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 
-#include "layer.h"
+#include "../layer.h"
 
 using namespace std;
 
 
-int LInput::total_layers = 0;
+int LTensor::total_layers = 0;
 
-LInput::LInput(Tensor *in, string name, int d) : LinLayer(name, d) {
+
+// From file
+LTensor::LTensor(string fname) : LinLayer("ltensor" + to_string(total_layers), DEV_CPU) {
+    input = output = new Tensor(fname);
     total_layers++;
-    input = output = in;
-    delta = new Tensor(input->getShape(), d);
+}
+
+// From list of shape
+LTensor::LTensor(const initializer_list<int> &init, int dev) : LinLayer("ltensor" + to_string(total_layers), dev) {
+    input = output = new Tensor(init, dev);
+    delta = new Tensor(init, dev);
+    total_layers++;
+}
+
+// From vector<int>
+LTensor::LTensor(const vector<int> shape, int dev) : LinLayer("ltensor" + to_string(total_layers), dev) {
+    input = output = new Tensor(shape, dev);
+    delta = new Tensor(shape, dev);
+    total_layers++;
 }
 
 
-// virtual
-string LInput::plot(int c) {
-    string s;
-
-    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=LightBlue,shape=box]";
-    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";
-
-    return s;
+// From Layer
+LTensor::LTensor(Layer *l) : LinLayer("ltensor" + to_string(total_layers), l->dev) {
+    input = output = l->output;
+    delta = l->delta;
+    total_layers++;
 }
 
 
-void LInput::forward() {
-    delta->set(0.0);
+/// OP OVERLOAD
+LTensor LTensor::operator+(LTensor L) {
+    vector<Layer *> vl;
+
+    vl.push_back(this);
+    vl.push_back(&L);
+
+    LTensor *l = new LTensor(new LAdd(vl, "add" + to_string(1 + LAdd::total_layers), DEV_CPU));
+
+    return *l;
 }
 
 
-void LInput::backward() {
-}
-
-Layer *LInput::share(int c, int bs, vector<Layer *> p) {
-    vector<int> shape = input->getShape();
-    shape[0] = bs;
-
-    LInput *n = new LInput(new Tensor(shape), "share_" + to_string(c) + name, dev);
-    n->orig = this;
-
-    return n;
-}
-
-Layer *LInput::clone(int c, int bs, vector<Layer *> p, int todev) {
-    vector<int> shape = input->getShape();
-    shape[0] = bs;
-
-    LInput *n = new LInput(new Tensor(shape, todev), "clone_" + to_string(todev) + name, todev);
-    n->orig = this;
-
-    return n;
-}
 
 
 

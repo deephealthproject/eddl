@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "layer.h"
+#include "../layer.h"
 
 extern ostream &operator<<(ostream &os, const vector<int> shape);
 

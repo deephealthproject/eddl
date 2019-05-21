@@ -27,12 +27,10 @@
 // SOFTWARE.
 
 #include <stdio.h>
-#include <stdio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 
-#include "layer.h"
+#include "../layer.h"
 
 using namespace std;
 
