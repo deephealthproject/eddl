@@ -46,7 +46,7 @@ int main(int argc, char **argv)
   layer l=in;
 
   for(int i=0;i<3;i++)
-    l=new LAbs(eddl.Activation(eddl.Dense(l,1024),"relu"),"labs",DEV_CPU);
+    l=eddl.Activation(eddl.Dense(l,1024),"relu");
 
   layer out=eddl.Activation(eddl.Dense(l,10),"softmax");
 

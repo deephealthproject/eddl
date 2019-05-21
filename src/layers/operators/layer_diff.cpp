@@ -34,29 +34,63 @@
 
 using namespace std;
 
-
 LDiff::LDiff(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev) {
-    //TODO: Implement
+    binary=1;
+
+    input = l1->output;
+
+    output = new Tensor(l1->output->getShape(), dev);
+    delta = new Tensor(l1->output->getShape(), dev);
+
+    l1->addchild(this);
+    l2->addchild(this);
+    addparent(l1);
+    addparent(l2);
 }
 
 LDiff::LDiff(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
-    //TODO: Implement
+  val=k;
+
+  input = l->output;
+  output = new Tensor(l->output->getShape(), dev);
+  delta = new Tensor(l->output->getShape(), dev);
+
+  l->addchild(this);
+  addparent(l);
 }
 
 void LDiff::forward(){
-    //TODO: Implement
+    if (binary) Tensor::sum(1.0,parent[0]->output,-1.0,parent[1]->output,output,0);
+    else {
+      Tensor::copy(parent[0]->output,output);
+      output->sum(-val);
+    }
 }
 
 void LDiff::backward(){
-    //TODO: Implement
+  Tensor::inc(delta,parent[0]->delta);
+  if (binary) {
+    delta->mult(-1.0);
+    Tensor::inc(delta,parent[1]->delta);
+  }
 }
 
 Layer *LDiff::share(int c, int bs, vector<Layer *> p) {
-
-    return nullptr;
+  LDiff *n;
+  if (binary)
+    n = new LDiff(p[0], p[1],"share_" + to_string(c) + name, dev);
+  else
+    n = new LDiff(p[0],val,"share_" + to_string(c) + name, dev);
+  n->orig = this;
+  return n;
 }
 
 Layer *LDiff::clone(int c, int bs, vector<Layer *> p, int todev) {
-
-    return nullptr;
+  LDiff *n;
+  if (binary)
+    n = new LDiff(p[0], p[1],"share_" + to_string(c) + name, todev);
+  else
+    n = new LDiff(p[0],val,"share_" + to_string(c) + name, todev);
+  n->orig = this;
+  return n;
 }

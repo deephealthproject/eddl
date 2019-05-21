@@ -100,6 +100,7 @@ class OperatorLayer : public Layer {
 public:
 
     int binary;
+    float val;
 
     OperatorLayer(string name, int dev);
 
