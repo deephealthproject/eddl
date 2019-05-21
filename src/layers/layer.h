@@ -69,11 +69,11 @@ public:
 
     void setmode(int m);
 
-    Tensor getWeights();
-    Tensor setWeights(Tensor bias);
+    Tensor* getWeights();
+    Tensor* setWeights(Tensor bias);
 
-    Tensor getBias();
-    Tensor setBias(Tensor bias);
+    Tensor* getBias();
+    Tensor* setBias(Tensor bias);
 
     //virtual
     virtual string plot(int c) { return ""; }
@@ -99,16 +99,24 @@ public:
 class OperatorLayer : public Layer {
 public:
 
+    int binary;
+
     OperatorLayer(string name, int dev);
+
+    void addchild(Layer *l) override;
+
+    void addparent(Layer *l) override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
 };
 
 /// Abs Layer
 class LAbs : public OperatorLayer {
 public:
+    Tensor *mask;
 
     LAbs(Layer *l, string name, int dev);
 

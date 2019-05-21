@@ -35,15 +35,23 @@
 using namespace std;
 
 
-
 LAbs::LAbs(Layer *l, string name, int dev): OperatorLayer(name, dev) {
-    //TODO: Implement
+    input=l->output;
+    mask=new Tensor(l->output->getShape(),dev);
+    output=new Tensor(l->output->getShape(),dev);
+    delta=new Tensor(l->output->getShape(),dev);
+
+
+    l->addchild(this);
+    addparent(l);
 }
 
 void LAbs::forward(){
-    //TODO: Implement
+    Tensor::copy(input,output);
+    output->set_abs();
 }
 
 void LAbs::backward(){
-    //TODO: Implement
+    Tensor::sign(input,mask);
+    Tensor::el_mult(delta,mask,parent[0]->delta,1);
 }

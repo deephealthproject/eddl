@@ -100,20 +100,20 @@ void Layer::info() {
     cout << "===============\n\n";
 }
 
-Tensor Layer::getWeights(){
-
+Tensor* Layer::getWeights(){
+return nullptr;
 }
 
-Tensor Layer::setWeights(Tensor bias){
-
+Tensor* Layer::setWeights(Tensor bias){
+return nullptr;
 }
 
-Tensor Layer::getBias(){
-
+Tensor* Layer::getBias(){
+return nullptr;
 }
 
-Tensor Layer::setBias(Tensor bias){
-
+Tensor* Layer::setBias(Tensor bias){
+return nullptr;
 }
 
 ////////////////////////////////////

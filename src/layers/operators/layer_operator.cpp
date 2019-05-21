@@ -35,8 +35,20 @@
 using namespace std;
 
 OperatorLayer::OperatorLayer(string name, int dev) : Layer(name, dev) {
-    //TODO: Implement
+    binary=0;
 }
+
+
+void OperatorLayer::addchild(Layer *l) {
+    child.push_back(l);
+    lout++;
+}
+
+void OperatorLayer::addparent(Layer *l) {
+    parent.push_back(l);
+    lin++;
+}
+
 
 Layer *OperatorLayer::share(int c, int bs, vector<Layer *> p) {
     //TODO: Implement

@@ -206,6 +206,7 @@ layer EDDL::GlobalMaxPool(layer parent){
 layer EDDL::GlobalMaxPool(layer parent, string name){
     //TODO: Implement
     //return new LGlobalMaxPool(parent, PoolDescriptor({1,1}, {1,1}), name, DEV_CPU);
+    return nullptr;
 }
 
 //////////////////////////////////////////////////////
@@ -217,6 +218,7 @@ layer EDDL::GlobalAveragePool(layer parent){
 layer EDDL::GlobalAveragePool(layer parent, string name){
     //TODO: Implement
     //return new LGlobalAveragePool(parent,  PoolDescriptor({1,1}, {1,1}, "none"), name, DEV_CPU);
+    return nullptr;
 }
 
 
@@ -280,6 +282,7 @@ loss EDDL::LossFunc(string type){
     } else if (type == "soft_cross_entropy"){
         return new LSoftCrossEntropy();
     }
+    return nullptr;
 }
 /////////////////////////////////////////////////////////
 
@@ -290,6 +293,7 @@ metric EDDL::MetricFunc(string type){
     } else if(type == "categorical_accuracy" || type == "accuracy"){
         return new MCategoricalAccuracy();
     }
+    return nullptr;
 }
 /////////////////////////////////////////////////////////
 
@@ -516,16 +520,19 @@ void EDDL::evaluate(model net, const initializer_list<LTensor *> &in, const init
 
 void EDDL::set_trainable(layer l){
     //Todo: Implement
+
 }
 
 
 layer EDDL::get_layer(model m, string layer_name){
     //Todo: Implement
+    return nullptr;
 }
 
 
 model EDDL::load_model(string fname){
     //Todo: Implement
+    return nullptr;
 }
 
 void EDDL::save_model(model m, string fname){
@@ -539,6 +546,7 @@ void EDDL::set_trainable(model m){
 
 model EDDL::zoo_models(string model_name){
     //Todo: Implement
+    return nullptr;
 }
 
 ////

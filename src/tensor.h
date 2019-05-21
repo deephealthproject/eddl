@@ -203,6 +203,9 @@ public:
 
     void sub(float v);
 
+
+    void set_abs();
+
     void set_log();
 
     void set_exp();
@@ -231,6 +234,8 @@ public:
     static void copy(Tensor *A, Tensor *B);
 
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
+
+    static void sign(Tensor *A,Tensor *B);
 
     static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
 

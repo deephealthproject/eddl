@@ -459,6 +459,26 @@ void Tensor::set_log() {
 #endif
 }
 
+
+///////////////////////////////////////////
+void Tensor::set_abs() {
+    if (isCPU()) {
+
+        for (int i = 0; i < size; ++i) ptr[i] = fabs(ptr[i]);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        //gpu_abs(this);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
 ///////////////////////////////////////////
 void Tensor::set_exp() {
     if (isCPU()) {

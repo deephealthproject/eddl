@@ -190,6 +190,33 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
     //B->tsem->unlock();
 }
 
+void Tensor::sign(Tensor *A,Tensor *B)
+{
+  B->tsem->lock();
+
+  if (!Tensor::eqsize(A, B))
+      msg("Tensors with different shape", "Tensor::sign");
+  if (A->device != B->device) msg("Tensors in different devices", "Tensor::sign");
+
+  if (A->isCPU()) {
+      for (int i = 0; i < A->size; i++)
+          if (A->ptr[i]<0)  B->ptr[i]=1.0;
+          else B->ptr[i]=-1.0;
+  }
+#ifdef cGPU
+  else if (A->isGPU())
+    {
+
+    }
+#endif
+#ifdef cFPGA
+  else {
+
+  }
+#endif
+  B->tsem->unlock();
+
+}
 
 ///////////////////////////////////////
 //// MULT2D C=A*B
