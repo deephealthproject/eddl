@@ -27,77 +27,62 @@
 // SOFTWARE.
 
 #include <stdio.h>
-#include <stdio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 
-#include "layer.h"
+#include "../layer.h"
 
 using namespace std;
 
-int LDropout::total_layers = 0;
 
-LDropout::LDropout(Layer *parent, float df, string name, int d) : LinLayer(name, d) {
+int LInput::total_layers = 0;
 
+LInput::LInput(Tensor *in, string name, int d) : LinLayer(name, d) {
     total_layers++;
-
-    // df: drop factor is the probability to delete (drop) an activation
-    this->df = df;
-
-    input = parent->output;
-    output = new Tensor(input->getShape(), d);
+    input = output = in;
     delta = new Tensor(input->getShape(), d);
-
-    mask = new Tensor(input->getShape(), d);
-
-    parent->addchild(this);
-    addparent(parent);
 }
 
 
 // virtual
-void LDropout::forward() {
-    if (mode == TRMODE) {
-        mask->rand_binary(1.0 - df);
-        Tensor::el_mult(input, mask, output, 0);
-    } else {
-        Tensor::copy(input, output);
-        output->mult(1.0 - df);
-    }
-
-}
-
-void LDropout::backward() {
-
-    if (parent.size()) {
-        Tensor::el_mult(delta, mask, parent[0]->delta, 1);
-    }
-}
-
-
-Layer *LDropout::share(int c, int bs, vector<Layer *> p) {
-
-    LDropout *n = new LDropout(p[0], df, "share_" + to_string(c) + name, dev);
-    n->orig = this;
-
-    return n;
-}
-
-Layer *LDropout::clone(int c, int bs, vector<Layer *> p, int todev) {
-
-    LDropout *n = new LDropout(p[0], df, "clone_" + to_string(todev) + name, todev);
-    n->orig = this;
-
-    return n;
-}
-
-
-string LDropout::plot(int c) {
+string LInput::plot(int c) {
     string s;
 
-    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";
-    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=lightpink,shape=box]";
+    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=LightBlue,shape=box]";
+    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";
 
     return s;
 }
+
+
+void LInput::forward() {
+    delta->set(0.0);
+}
+
+
+void LInput::backward() {
+}
+
+Layer *LInput::share(int c, int bs, vector<Layer *> p) {
+    vector<int> shape = input->getShape();
+    shape[0] = bs;
+
+    LInput *n = new LInput(new Tensor(shape), "share_" + to_string(c) + name, dev);
+    n->orig = this;
+
+    return n;
+}
+
+Layer *LInput::clone(int c, int bs, vector<Layer *> p, int todev) {
+    vector<int> shape = input->getShape();
+    shape[0] = bs;
+
+    LInput *n = new LInput(new Tensor(shape, todev), "clone_" + to_string(todev) + name, todev);
+    n->orig = this;
+
+    return n;
+}
+
+
+
+//////
