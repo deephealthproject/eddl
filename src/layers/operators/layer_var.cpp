@@ -46,3 +46,13 @@ void LVar::forward(){
 void LVar::backward(){
     //TODO: Implement
 }
+
+Layer *LVar::share(int c, int bs, vector<Layer *> p) {
+
+    return nullptr;
+}
+
+Layer *LVar::clone(int c, int bs, vector<Layer *> p, int todev) {
+
+    return nullptr;
+}

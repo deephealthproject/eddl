@@ -48,14 +48,3 @@ void OperatorLayer::addparent(Layer *l) {
     parent.push_back(l);
     lin++;
 }
-
-
-Layer *OperatorLayer::share(int c, int bs, vector<Layer *> p) {
-    //TODO: Implement
-    return nullptr;
-}
-
-Layer *OperatorLayer::clone(int c, int bs, vector<Layer *> p, int todev) {
-    //TODO: Implement
-    return nullptr;
-}

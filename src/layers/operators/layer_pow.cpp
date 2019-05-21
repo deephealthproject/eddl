@@ -46,3 +46,13 @@ void LPow::forward(){
 void LPow::backward(){
     //TODO: Implement
 }
+
+Layer *LPow::share(int c, int bs, vector<Layer *> p) {
+
+    return nullptr;
+}
+
+Layer *LPow::clone(int c, int bs, vector<Layer *> p, int todev) {
+
+    return nullptr;
+}

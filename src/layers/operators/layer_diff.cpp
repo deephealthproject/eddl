@@ -50,3 +50,13 @@ void LDiff::forward(){
 void LDiff::backward(){
     //TODO: Implement
 }
+
+Layer *LDiff::share(int c, int bs, vector<Layer *> p) {
+
+    return nullptr;
+}
+
+Layer *LDiff::clone(int c, int bs, vector<Layer *> p, int todev) {
+
+    return nullptr;
+}

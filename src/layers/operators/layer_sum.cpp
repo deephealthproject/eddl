@@ -50,3 +50,13 @@ void LSum::forward(){
 void LSum::backward(){
     //TODO: Implement
 }
+
+Layer *LSum::share(int c, int bs, vector<Layer *> p) {
+
+    return nullptr;
+}
+
+Layer *LSum::clone(int c, int bs, vector<Layer *> p, int todev) {
+
+    return nullptr;
+}

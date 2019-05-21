@@ -47,3 +47,13 @@ void LMean::forward(){
 void LMean::backward(){
     //TODO: Implement
 }
+
+Layer *LMean::share(int c, int bs, vector<Layer *> p) {
+
+    return nullptr;
+}
+
+Layer *LMean::clone(int c, int bs, vector<Layer *> p, int todev) {
+
+    return nullptr;
+}

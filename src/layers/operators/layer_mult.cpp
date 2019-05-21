@@ -49,3 +49,13 @@ void LMult::forward(){
 void LMult::backward(){
     //TODO: Implement
 }
+
+Layer *LMult::share(int c, int bs, vector<Layer *> p) {
+
+    return nullptr;
+}
+
+Layer *LMult::clone(int c, int bs, vector<Layer *> p, int todev) {
+
+    return nullptr;
+}

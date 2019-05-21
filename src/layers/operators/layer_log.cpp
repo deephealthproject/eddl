@@ -47,3 +47,13 @@ void LLog::forward(){
 void LLog::backward(){
     //TODO: Implement
 }
+
+Layer *LLog::share(int c, int bs, vector<Layer *> p) {
+
+    return nullptr;
+}
+
+Layer *LLog::clone(int c, int bs, vector<Layer *> p, int todev) {
+
+    return nullptr;
+}

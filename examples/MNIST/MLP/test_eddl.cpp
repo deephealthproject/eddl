@@ -46,7 +46,7 @@ int main(int argc, char **argv)
   layer l=in;
 
   for(int i=0;i<3;i++)
-    l=eddl.Activation(eddl.Dense(l,1024),"relu");
+    l=new LAbs(eddl.Activation(eddl.Dense(l,1024),"relu"),"labs",DEV_CPU);
 
   layer out=eddl.Activation(eddl.Dense(l,10),"softmax");
 
@@ -76,7 +76,7 @@ int main(int argc, char **argv)
   eddl.div(X,255.0);
 
   // training, list of input and output tensors, batch, epochs
-  eddl.fit(net,{X},{Y},batch,1);
+  eddl.fit(net,{X},{Y},batch,5);
 
   // Evaluate train
   std::cout << "Evaluate train:" << std::endl;

@@ -46,3 +46,13 @@ void LSqrt::forward(){
 void LSqrt::backward(){
     //TODO: Implement
 }
+
+Layer *LSqrt::share(int c, int bs, vector<Layer *> p) {
+
+    return nullptr;
+}
+
+Layer *LSqrt::clone(int c, int bs, vector<Layer *> p, int todev) {
+
+    return nullptr;
+}

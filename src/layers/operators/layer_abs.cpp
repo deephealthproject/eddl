@@ -55,3 +55,17 @@ void LAbs::backward(){
     Tensor::sign(input,mask);
     Tensor::el_mult(delta,mask,parent[0]->delta,1);
 }
+
+Layer *LAbs::share(int c, int bs, vector<Layer *> p) {
+    LAbs *n = new LAbs(p[0], "share_" + to_string(c) + name, dev);
+    n->orig = this;
+
+    return n;
+}
+
+Layer *LAbs::clone(int c, int bs, vector<Layer *> p, int todev) {
+    LAbs *n = new LAbs(p[0], "share_" + to_string(c) + name, todev);
+    n->orig = this;
+
+    return n;
+}

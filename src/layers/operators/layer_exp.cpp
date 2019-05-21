@@ -47,3 +47,13 @@ void LExp::forward(){
 void LExp::backward(){
     //TODO: Implement
 }
+
+Layer *LExp::share(int c, int bs, vector<Layer *> p) {
+
+    return nullptr;
+}
+
+Layer *LExp::clone(int c, int bs, vector<Layer *> p, int todev) {
+
+    return nullptr;
+}

@@ -50,3 +50,13 @@ void LDiv::forward(){
 void LDiv::backward(){
     //TODO: Implement
 }
+
+Layer *LDiv::share(int c, int bs, vector<Layer *> p) {
+
+    return nullptr;
+}
+
+Layer *LDiv::clone(int c, int bs, vector<Layer *> p, int todev) {
+
+    return nullptr;
+}

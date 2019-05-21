@@ -107,9 +107,6 @@ public:
 
     void addparent(Layer *l) override;
 
-    Layer *share(int c, int bs, vector<Layer *> p) override;
-
-    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
 };
 
@@ -123,6 +120,10 @@ public:
     void forward() override;
 
     void backward() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 };
 
 
@@ -137,6 +138,10 @@ public:
     void forward() override;
 
     void backward() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 };
 
 /// Div Layer
@@ -149,6 +154,10 @@ public:
     void forward() override;
 
     void backward() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 };
 
 /// Exp Layer
@@ -160,6 +169,10 @@ public:
     void forward() override;
 
     void backward() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 };
 
 /// Log Layer
@@ -171,6 +184,10 @@ public:
     void forward() override;
 
     void backward() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 };
 
 /// Mean Layer
@@ -182,6 +199,10 @@ public:
     void forward() override;
 
     void backward() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 };
 
 /// Mult Layer
@@ -194,6 +215,10 @@ public:
     void forward() override;
 
     void backward() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 };
 
 /// Pow Layer
@@ -205,6 +230,10 @@ public:
     void forward() override;
 
     void backward() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 };
 
 /// Sqrt Layer
@@ -216,6 +245,10 @@ public:
     void forward() override;
 
     void backward() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 };
 
 /// Sum Layer
@@ -228,6 +261,10 @@ public:
     void forward() override;
 
     void backward() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 };
 
 /// Var Layer
@@ -239,6 +276,10 @@ public:
     void forward() override;
 
     void backward() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 };
 
 
@@ -406,9 +447,9 @@ public:
     // constructors and clones
     LTranspose(Layer *parent, const initializer_list<int> &dims, string name, int dev);
 
-//    Layer *share(int c, int bs, vector<Layer *> p) override;
-//
-//    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 //
 //
 //    // implementation
