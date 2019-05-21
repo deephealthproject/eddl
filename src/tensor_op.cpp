@@ -200,8 +200,8 @@ void Tensor::sign(Tensor *A,Tensor *B)
 
   if (A->isCPU()) {
       for (int i = 0; i < A->size; i++)
-          if (A->ptr[i]<0)  B->ptr[i]=1.0;
-          else B->ptr[i]=-1.0;
+          if (A->ptr[i]<0)  B->ptr[i]=-1.0;
+          else B->ptr[i]=1.0;
   }
 #ifdef cGPU
   else if (A->isGPU())
