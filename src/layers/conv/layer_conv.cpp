@@ -27,14 +27,13 @@
 // SOFTWARE.
 
 #include <stdio.h>
-#include <stdio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 
-#include "../layer.h"
+#include "layer_conv.h"
 
 using namespace std;
+
 
 int LConv::total_layers = 0;
 

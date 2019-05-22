@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "../layer.h"
+#include "layer_core.h"
 
 using namespace std;
 

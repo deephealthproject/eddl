@@ -167,95 +167,95 @@ cpu_convol.o: $(SRC_PATH)/hardware/cpu/cpu_convol.cpp $(SRC_PATH)/hardware/cpu/c
 #---------------------------------- core layers
 layer.o: $(SRC_PATH)/layers/layer.cpp $(SRC_PATH)/layers/layer.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer.cpp
-layer_activation.o: $(SRC_PATH)/layers/core/layer_activation.cpp $(SRC_PATH)/layers/layer.h
+layer_activation.o: $(SRC_PATH)/layers/core/layer_activation.cpp $(SRC_PATH)/layers/core/layer_core.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/core/layer_activation.cpp
-layer_batchnorm.o: $(SRC_PATH)/layers/core/layer_batchnorm.cpp $(SRC_PATH)/layers/layer.h
+layer_batchnorm.o: $(SRC_PATH)/layers/core/layer_batchnorm.cpp $(SRC_PATH)/layers/core/layer_core.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/core/layer_batchnorm.cpp
-layer_dense.o: $(SRC_PATH)/layers/core/layer_dense.cpp $(SRC_PATH)/layers/layer.h
+layer_dense.o: $(SRC_PATH)/layers/core/layer_dense.cpp $(SRC_PATH)/layers/core/layer_core.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/core/layer_dense.cpp
-layer_drop.o: $(SRC_PATH)/layers/core/layer_drop.cpp $(SRC_PATH)/layers/layer.h
+layer_drop.o: $(SRC_PATH)/layers/core/layer_drop.cpp $(SRC_PATH)/layers/core/layer_core.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/core/layer_drop.cpp
-layer_embedding.o: $(SRC_PATH)/layers/core/layer_embedding.cpp $(SRC_PATH)/layers/layer.h
+layer_embedding.o: $(SRC_PATH)/layers/core/layer_embedding.cpp $(SRC_PATH)/layers/core/layer_core.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/core/layer_embedding.cpp
-layer_input.o: $(SRC_PATH)/layers/core/layer_input.cpp $(SRC_PATH)/layers/layer.h
+layer_input.o: $(SRC_PATH)/layers/core/layer_input.cpp $(SRC_PATH)/layers/core/layer_core.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/core/layer_input.cpp
-layer_reshape.o: $(SRC_PATH)/layers/core/layer_reshape.cpp $(SRC_PATH)/layers/layer.h
+layer_reshape.o: $(SRC_PATH)/layers/core/layer_reshape.cpp $(SRC_PATH)/layers/core/layer_core.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/core/layer_reshape.cpp
-layer_tensor.o: $(SRC_PATH)/layers/core/layer_tensor.cpp $(SRC_PATH)/layers/layer.h
+layer_tensor.o: $(SRC_PATH)/layers/core/layer_tensor.cpp $(SRC_PATH)/layers/core/layer_core.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/core/layer_tensor.cpp
-layer_transpose.o: $(SRC_PATH)/layers/core/layer_transpose.cpp $(SRC_PATH)/layers/layer.h
+layer_transpose.o: $(SRC_PATH)/layers/core/layer_transpose.cpp $(SRC_PATH)/layers/core/layer_core.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/core/layer_transpose.cpp
 
 #---------------------------------- conv layers
-layer_conv.o: $(SRC_PATH)/layers/conv/layer_conv.cpp $(SRC_PATH)/layers/layer.h
+layer_conv.o: $(SRC_PATH)/layers/conv/layer_conv.cpp $(SRC_PATH)/layers/conv/layer_conv.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/conv/layer_conv.cpp
-layer_transposed_conv.o: $(SRC_PATH)/layers/conv/layer_transposed_conv.cpp $(SRC_PATH)/layers/layer.h
+layer_transposed_conv.o: $(SRC_PATH)/layers/conv/layer_transposed_conv.cpp $(SRC_PATH)/layers/conv/layer_conv.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/conv/layer_transposed_conv.cpp
-layer_upsampling.o: $(SRC_PATH)/layers/conv/layer_conv.cpp $(SRC_PATH)/layers/layer.h
+layer_upsampling.o: $(SRC_PATH)/layers/conv/layer_conv.cpp $(SRC_PATH)/layers/conv/layer_conv.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/conv/layer_upsampling.cpp
 
 #---------------------------------- merge layers
-layer_add.o: $(SRC_PATH)/layers/merge/layer_add.cpp $(SRC_PATH)/layers/layer.h
+layer_add.o: $(SRC_PATH)/layers/merge/layer_add.cpp $(SRC_PATH)/layers/merge/layer_merge.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/merge/layer_add.cpp
-layer_average.o: $(SRC_PATH)/layers/merge/layer_average.cpp $(SRC_PATH)/layers/layer.h
+layer_average.o: $(SRC_PATH)/layers/merge/layer_average.cpp $(SRC_PATH)/layers/merge/layer_merge.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/merge/layer_average.cpp
-layer_concat.o: $(SRC_PATH)/layers/merge/layer_concat.cpp $(SRC_PATH)/layers/layer.h
+layer_concat.o: $(SRC_PATH)/layers/merge/layer_concat.cpp $(SRC_PATH)/layers/merge/layer_merge.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/merge/layer_concat.cpp
-layer_matmul.o: $(SRC_PATH)/layers/merge/layer_matmul.cpp $(SRC_PATH)/layers/layer.h
+layer_matmul.o: $(SRC_PATH)/layers/merge/layer_matmul.cpp $(SRC_PATH)/layers/merge/layer_merge.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/merge/layer_matmul.cpp
-layer_maximum.o: $(SRC_PATH)/layers/merge/layer_maximum.cpp $(SRC_PATH)/layers/layer.h
+layer_maximum.o: $(SRC_PATH)/layers/merge/layer_maximum.cpp $(SRC_PATH)/layers/merge/layer_merge.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/merge/layer_maximum.cpp
-layer_minimum.o: $(SRC_PATH)/layers/merge/layer_minimum.cpp $(SRC_PATH)/layers/layer.h
+layer_minimum.o: $(SRC_PATH)/layers/merge/layer_minimum.cpp $(SRC_PATH)/layers/merge/layer_merge.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/merge/layer_minimum.cpp
-layer_subtract.o: $(SRC_PATH)/layers/merge/layer_subtract.cpp $(SRC_PATH)/layers/layer.h
+layer_subtract.o: $(SRC_PATH)/layers/merge/layer_subtract.cpp $(SRC_PATH)/layers/merge/layer_merge.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/merge/layer_subtract.cpp
 
 #---------------------------------- noise layers
-layer_gaussian.o: $(SRC_PATH)/layers/noise/layer_gaussian.cpp $(SRC_PATH)/layers/layer.h
+layer_gaussian.o: $(SRC_PATH)/layers/noise/layer_gaussian.cpp $(SRC_PATH)/layers/noise/layer_noise.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/noise/layer_gaussian.cpp
 
 #---------------------------------- operator layers
-layer_operator.o: $(SRC_PATH)/layers/operators/layer_operator.cpp $(SRC_PATH)/layers/layer.h
+layer_operator.o: $(SRC_PATH)/layers/operators/layer_operator.cpp $(SRC_PATH)/layers/operators/layer_operators.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_operator.cpp
-layer_abs.o: $(SRC_PATH)/layers/operators/layer_abs.cpp $(SRC_PATH)/layers/layer.h
+layer_abs.o: $(SRC_PATH)/layers/operators/layer_abs.cpp $(SRC_PATH)/layers/operators/layer_operators.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_abs.cpp
-layer_diff.o: $(SRC_PATH)/layers/operators/layer_diff.cpp $(SRC_PATH)/layers/layer.h
+layer_diff.o: $(SRC_PATH)/layers/operators/layer_diff.cpp $(SRC_PATH)/layers/operators/layer_operators.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_diff.cpp
-layer_div.o: $(SRC_PATH)/layers/operators/layer_div.cpp $(SRC_PATH)/layers/layer.h
+layer_div.o: $(SRC_PATH)/layers/operators/layer_div.cpp $(SRC_PATH)/layers/operators/layer_operators.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_div.cpp
-layer_exp.o: $(SRC_PATH)/layers/operators/layer_exp.cpp $(SRC_PATH)/layers/layer.h
+layer_exp.o: $(SRC_PATH)/layers/operators/layer_exp.cpp $(SRC_PATH)/layers/operators/layer_operators.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_exp.cpp
-layer_log.o: $(SRC_PATH)/layers/operators/layer_log.cpp $(SRC_PATH)/layers/layer.h
+layer_log.o: $(SRC_PATH)/layers/operators/layer_log.cpp $(SRC_PATH)/layers/operators/layer_operators.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_log.cpp
-layer_mean.o: $(SRC_PATH)/layers/operators/layer_mean.cpp $(SRC_PATH)/layers/layer.h
+layer_mean.o: $(SRC_PATH)/layers/operators/layer_mean.cpp $(SRC_PATH)/layers/operators/layer_operators.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_mean.cpp
-layer_mult.o: $(SRC_PATH)/layers/operators/layer_mult.cpp $(SRC_PATH)/layers/layer.h
+layer_mult.o: $(SRC_PATH)/layers/operators/layer_mult.cpp $(SRC_PATH)/layers/operators/layer_operators.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_mult.cpp
-layer_pow.o: $(SRC_PATH)/layers/operators/layer_pow.cpp $(SRC_PATH)/layers/layer.h
+layer_pow.o: $(SRC_PATH)/layers/operators/layer_pow.cpp $(SRC_PATH)/layers/operators/layer_operators.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_pow.cpp
-layer_sqrt.o: $(SRC_PATH)/layers/operators/layer_sqrt.cpp $(SRC_PATH)/layers/layer.h
+layer_sqrt.o: $(SRC_PATH)/layers/operators/layer_sqrt.cpp $(SRC_PATH)/layers/operators/layer_operators.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_sqrt.cpp
-layer_sum.o: $(SRC_PATH)/layers/operators/layer_sum.cpp $(SRC_PATH)/layers/layer.h
+layer_sum.o: $(SRC_PATH)/layers/operators/layer_sum.cpp $(SRC_PATH)/layers/operators/layer_operators.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_sum.cpp
-layer_var.o: $(SRC_PATH)/layers/operators/layer_var.cpp $(SRC_PATH)/layers/layer.h
+layer_var.o: $(SRC_PATH)/layers/operators/layer_var.cpp $(SRC_PATH)/layers/operators/layer_operators.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_var.cpp
 
 #---------------------------------- pool layers
-layer_avgpool.o: $(SRC_PATH)/layers/pool/layer_avgpool.cpp $(SRC_PATH)/layers/layer.h
+layer_avgpool.o: $(SRC_PATH)/layers/pool/layer_avgpool.cpp $(SRC_PATH)/layers/pool/layer_pool.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/pool/layer_avgpool.cpp
-layer_globalavgpool.o: $(SRC_PATH)/layers/pool/layer_globalavgpool.cpp $(SRC_PATH)/layers/layer.h
+layer_globalavgpool.o: $(SRC_PATH)/layers/pool/layer_globalavgpool.cpp $(SRC_PATH)/layers/pool/layer_pool.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/pool/layer_globalavgpool.cpp
-layer_globalmaxpool.o: $(SRC_PATH)/layers/pool/layer_globalmaxpool.cpp $(SRC_PATH)/layers/layer.h
+layer_globalmaxpool.o: $(SRC_PATH)/layers/pool/layer_globalmaxpool.cpp $(SRC_PATH)/layers/pool/layer_pool.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/pool/layer_globalmaxpool.cpp
-layer_maxpool.o: $(SRC_PATH)/layers/pool/layer_maxpool.cpp $(SRC_PATH)/layers/layer.h
+layer_maxpool.o: $(SRC_PATH)/layers/pool/layer_maxpool.cpp $(SRC_PATH)/layers/pool/layer_pool.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/pool/layer_maxpool.cpp
-layer_pool.o: $(SRC_PATH)/layers/pool/layer_pool.cpp $(SRC_PATH)/layers/layer.h
+layer_pool.o: $(SRC_PATH)/layers/pool/layer_pool.cpp $(SRC_PATH)/layers/pool/layer_pool.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/pool/layer_pool.cpp
 
 #---------------------------------- recurrent layers
-layer_rnn.o: $(SRC_PATH)/layers/recurrent/layer_rnn.cpp $(SRC_PATH)/layers/layer.h
+layer_rnn.o: $(SRC_PATH)/layers/recurrent/layer_rnn.cpp $(SRC_PATH)/layers/recurrent/layer_recurrent.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/recurrent/layer_rnn.cpp
-layer_lstm.o: $(SRC_PATH)/layers/recurrent/layer_lstm.cpp $(SRC_PATH)/layers/layer.h
+layer_lstm.o: $(SRC_PATH)/layers/recurrent/layer_lstm.cpp $(SRC_PATH)/layers/recurrent/layer_recurrent.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/recurrent/layer_lstm.cpp
 
 #---------------------------------- losses

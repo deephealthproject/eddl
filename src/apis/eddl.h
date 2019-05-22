@@ -32,13 +32,23 @@
 
 #include <initializer_list>
 #include <vector>
+#include <thread>
+#include <pthread.h>
+
 #include "../net.h"
 #include "../callbacks.h"
 #include "../initializer.h"
 #include "../losses/loss.h"
 #include "../metrics/metric.h"
-#include <thread>
-#include <pthread.h>
+
+#include "../layers/layer.h"
+#include "../layers/conv/layer_conv.h"
+#include "../layers/core/layer_core.h"
+#include "../layers/merge/layer_merge.h"
+#include "../layers/noise/layer_noise.h"
+#include "../layers/operators/layer_operators.h"
+#include "../layers/pool/layer_pool.h"
+#include "../layers/recurrent/layer_recurrent.h"
 
 #define tensor LTensor*
 #define layer Layer*

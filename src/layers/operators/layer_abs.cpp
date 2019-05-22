@@ -30,7 +30,8 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "../layer.h"
+#include "layer_operators.h"
+
 
 using namespace std;
 

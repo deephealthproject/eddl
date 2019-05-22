@@ -26,41 +26,67 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#ifndef EDDLL_LAYER_RECURRENT_H
+#define EDDLL_LAYER_RECURRENT_H
+
+
+#include <string>
 #include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
 
-#include "layer_operators.h"
+#include "../layer.h"
 
+#define TRMODE 1
+#define TSMODE 0
 
 using namespace std;
 
-int LPow::total_layers = 0;
 
-LPow::LPow(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev) {
-    total_layers++;
-    //TODO: Implement
-}
+/// RNN Layer
+class LRNN : public LinLayer {
+public:
+    int units;
+    int num_layers;
+    bool use_bias;
+    float dropout;
+    bool bidirectional;
+    static int total_layers;
 
-LPow::LPow(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
-    total_layers++;
-    //TODO: Implement
-}
+    LRNN(Layer *parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev);
 
-void LPow::forward(){
-    //TODO: Implement
-}
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-void LPow::backward(){
-    //TODO: Implement
-}
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-Layer *LPow::share(int c, int bs, vector<Layer *> p) {
+    void forward() override;
 
-    return nullptr;
-}
+    void backward() override;
 
-Layer *LPow::clone(int c, int bs, vector<Layer *> p, int todev) {
+    string plot(int c) override;
+};
 
-    return nullptr;
-}
+
+/// LSTM Layer
+class LLSTM : public LinLayer {
+public:
+    int units;
+    int num_layers;
+    bool use_bias;
+    float dropout;
+    bool bidirectional;
+    static int total_layers;
+
+    LLSTM(Layer *parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void forward() override;
+
+    void backward() override;
+
+    string plot(int c) override;
+};
+
+#endif //EDDLL_LAYER_RECURRENT_H
+

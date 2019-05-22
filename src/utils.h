@@ -27,10 +27,9 @@
 // SOFTWARE.
 
 #include <stdio.h>
-#include <stdio.h>
 
-#ifndef _UTILS_
-#define _UTILS_
+#ifndef EDDLL_UTILS_H
+#define EDDLL_UTILS_H
 
 float uniform();
 
@@ -40,8 +39,4 @@ float gaussgen();
 
 float gauss(float mean, float sd);
 
-#endif
-
-////////////////
-
-/////
+#endif //EDDLL_UTILS_H

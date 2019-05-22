@@ -26,41 +26,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#ifndef EDDLL_LAYER_NOISE_H
+#define EDDLL_LAYER_NOISE_H
+
+
+#include <string>
 #include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
 
-#include "layer_operators.h"
+#include "../layer.h"
 
+#define TRMODE 1
+#define TSMODE 0
 
 using namespace std;
 
-int LPow::total_layers = 0;
+/// GaussianNoise Layer
+class LGaussianNoise : public LinLayer {
+public:
+    float stdev;
+    static int total_layers;
 
-LPow::LPow(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev) {
-    total_layers++;
-    //TODO: Implement
-}
+    LGaussianNoise(Layer *parent, float stdev, string name, int dev);
 
-LPow::LPow(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
-    total_layers++;
-    //TODO: Implement
-}
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
-void LPow::forward(){
-    //TODO: Implement
-}
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-void LPow::backward(){
-    //TODO: Implement
-}
+    void forward() override;
 
-Layer *LPow::share(int c, int bs, vector<Layer *> p) {
+    void backward() override;
 
-    return nullptr;
-}
+    string plot(int c) override;
+};
 
-Layer *LPow::clone(int c, int bs, vector<Layer *> p, int todev) {
+#endif //EDDLL_LAYER_NOISE_H
 
-    return nullptr;
-}

@@ -26,10 +26,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef _COMPSERV_
-#define _COMPSERV_
+#ifndef EDDLL_COMPSERV_H
+#define EDDLL_COMPSERV_H
 
-#include <stdio.h>
 #include <stdio.h>
 #include <string>
 #include <initializer_list>
@@ -54,4 +53,4 @@ public:
 
 };
 
-#endif
+#endif  //EDDLL_COMPSERV_H

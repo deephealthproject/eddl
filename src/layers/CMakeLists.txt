@@ -7,8 +7,8 @@ target_sources(EDDLL
         conv/layer_upsampling.cpp
 
         # Core layers
-        layer.cpp
-        layer.h
+        core/layer_core.cpp
+        core/layer_core.h
         core/layer_activation.cpp
         core/layer_batchnorm.cpp
         core/layer_dense.cpp

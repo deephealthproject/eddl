@@ -29,8 +29,8 @@
 #ifndef EDDLL_CALLBACKS_H
 #define EDDLL_CALLBACKS_H
 
-#endif //EDDLL_CALLBACKS_H
-
 class Callback {
 
 };
+
+#endif //EDDLL_CALLBACKS_H
