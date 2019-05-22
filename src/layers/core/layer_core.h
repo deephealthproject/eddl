@@ -186,8 +186,11 @@ class LTranspose : public LinLayer {
 public:
     static int total_layers;
     vector<int> dims;
+    vector<int> rdims;
 
     // constructors and clones
+    LTranspose(Layer *parent, vector<int> dims, string name, int dev);
+
     LTranspose(Layer *parent, const initializer_list<int> &dims, string name, int dev);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
@@ -196,11 +199,11 @@ public:
 //
 //
 //    // implementation
-//    void forward() override;
+    void forward() override;
 //
-//    void backward() override;
+    void backward() override;
 //
-//    string plot(int c) override;
+    string plot(int c) override;
 
 };
 
@@ -253,4 +256,3 @@ public:
 
 
 #endif //EDDLL_LAYER_CORE_H
-

@@ -79,13 +79,7 @@ void LSum::backward() {
 }
 
 Layer *LSum::share(int c, int bs, vector<Layer *> p) {
-    LSum *n;
-    if (binary)
-        n = new LSum(p[0], p[1], "share_" + to_string(c) + name, dev);
-    else
-        n = new LSum(p[0], val, "share_" + to_string(c) + name, dev);
-    n->orig = this;
-    return n;
+  return clone(c,bs,p,dev);
 }
 
 Layer *LSum::clone(int c, int bs, vector<Layer *> p, int todev) {

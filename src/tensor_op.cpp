@@ -59,6 +59,40 @@ int Tensor::eqsize(Tensor *A, Tensor *B) {
     return 1;
 }
 
+// Transpose
+void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims)
+{
+  B->tsem->lock();
+  if (!Tensor::eqsize(A, B))
+      msg("Tensors with different shape", "Tensor::transpose");
+
+  if (A->device != B->device) msg("Tensors in different devices", "Tensor::transpose");
+
+  Tensor *N;
+  if (A==B) N=new Tensor(A->getShape(),A->device);
+  else N=B;
+
+  if (A->isCPU()) {
+      for (int i = 0; i < A->size; i++)
+          N->ptr[i]=A->ptr[i];
+  }
+  #ifdef cGPU
+  else if (A->isGPU())
+    {
+
+    }
+  #endif
+  #ifdef cFPGA
+  else {
+
+  }
+  #endif
+  B->tsem->unlock();
+
+  if (A==B) delete N;
+
+}
+
 
 ///////////////////////////////////////
 /// Copy from A to B

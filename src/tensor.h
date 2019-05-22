@@ -232,6 +232,8 @@ public:
     ///////// static metods
     static int eqsize(Tensor *A, Tensor *B);
 
+    static void transpose(Tensor *A, Tensor *B, vector<int> dims);
+
     static void copy(Tensor *A, Tensor *B);
 
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);

@@ -60,10 +60,7 @@ void LExp::backward() {
 }
 
 Layer *LExp::share(int c, int bs, vector<Layer *> p) {
-    LExp *n;
-    n = new LExp(p[0], "share_" + to_string(c) + name, dev);
-    n->orig = this;
-    return n;
+  return clone(c,bs,p,dev);
 }
 
 Layer *LExp::clone(int c, int bs, vector<Layer *> p, int todev) {
