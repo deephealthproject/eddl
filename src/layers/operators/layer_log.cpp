@@ -37,6 +37,16 @@ using namespace std;
 
 int LLog::total_layers = 0;
 
+/**
+  @brief Computes natural logarithm of a Layer element-wise
+
+  @param l a Layer.
+  @param name a name for the operation (predefined as 'log_TotalLogLayers')
+  @param dev which computing service utilize
+
+  @returns the result of the logarithm operation over l
+
+  */
 LLog::LLog(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
     total_layers++;
 

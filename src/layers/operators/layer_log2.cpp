@@ -38,6 +38,16 @@ using namespace std;
 int LLog2::total_layers = 0;
 
 
+/**
+  @brief Computes natural logarithm with base 2 of a Layer element-wise
+
+  @param l a Layer.
+  @param name a name for the operation (predefined as 'log2_TotalLog2Layers')
+  @param dev which computing service utilize
+
+  @returns the result of the logarithm with base 2 operation over l
+
+  */
 LLog2::LLog2(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
     total_layers++;
 

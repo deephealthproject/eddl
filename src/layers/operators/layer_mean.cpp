@@ -37,7 +37,27 @@ using namespace std;
 
 int LMean::total_layers = 0;
 
-LMean::LMean(Layer *l, string name, int dev): OperatorLayer(name, dev) {
+/**
+  @brief Computes the mean of elements across dimensions of a Layer
+
+  @param l a Layer
+  @param axis the dimensions to reduce. If NULL (the default), reduces all dimensions
+  @param keepdims if true, retains reduced dimensions with length 1. Default False
+  @param name a name for the operation (predefined as 'mean+TotalMeanLayers')
+  @param dev which computing service utilize
+
+  @returns the result of the logarithm operation over l
+
+  Example:
+  \verbatim
+      # x contains [[1., 1.], [2., 2.]]
+      eddl.Mean(x)  # 1.5
+      eddl.Mean(x, 0)  # [1.5, 1.5]
+      eddl.Mean(x, 1)  # [1.,  2.]
+   \endverbatim
+
+  */
+LMean::LMean(Layer *l, int axis, bool keepdims, string name, int dev): OperatorLayer(name, dev) {
     total_layers++;
     //TODO: Implement
 }

@@ -37,7 +37,16 @@ using namespace std;
 
 int LExp::total_layers = 0;
 
+/**
+  @brief Computes exponential of a Layer element-wise
 
+  @param l a Layer.
+  @param name a name for the operation (predefined as 'exp+TotalExpLayers')
+  @param dev which computing service utilize
+
+  @returns the result of e^l
+
+  */
 LExp::LExp(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
     total_layers++;
 

@@ -180,7 +180,7 @@ class LMean : public OperatorLayer {
 public:
     static int total_layers;
 
-    LMean(Layer *l, string name, int dev);
+    LMean(Layer *l, int axis, bool keepdims, string name, int dev);
 
     void forward() override;
 

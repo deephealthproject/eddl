@@ -37,6 +37,16 @@ using namespace std;
 
 int LAbs::total_layers = 0;
 
+/**
+  @brief Computes the absolute value of a Layer
+
+  @param l a Layer.
+  @param name a name for the operation (predefined as 'abs+TotalAbsLayers')
+  @param dev which computing service utilize
+
+  @returns the absolute value of each element in l
+
+  */
 LAbs::LAbs(Layer *l, string name, int dev): OperatorLayer(name, dev) {
     total_layers++;
     input=l->output;

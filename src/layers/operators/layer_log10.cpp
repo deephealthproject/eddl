@@ -38,6 +38,16 @@ using namespace std;
 int LLog10::total_layers = 0;
 
 
+/**
+  @brief Computes natural logarithm with base 10 of a Layer element-wise
+
+  @param l a Layer.
+  @param name a name for the operation (predefined as 'log10_TotalLog10Layers')
+  @param dev which computing service utilize
+
+  @returns the result of the logarithm with base 10 operation over l
+
+  */
 LLog10::LLog10(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
     total_layers++;
 

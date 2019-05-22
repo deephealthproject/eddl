@@ -37,6 +37,16 @@ using namespace std;
 
 int LSqrt::total_layers = 0;
 
+/**
+  @brief Computes square root of a Layer element-wise
+
+  @param l a Layer.
+  @param name a name for the operation (predefined as 'sqrt+TotalSqrtLayers')
+  @param dev which computing service utilize
+
+  @returns the result of the square root operation over l
+
+  */
 LSqrt::LSqrt(Layer *l, string name, int dev): OperatorLayer(name, dev) {
     total_layers++;
     //TODO: Implement

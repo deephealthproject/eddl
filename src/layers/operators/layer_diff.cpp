@@ -37,6 +37,17 @@ using namespace std;
 
 int LDiff::total_layers = 0;
 
+/**
+  @brief Computes the subtraction operation between two layers
+
+  @param l1 a Layer.
+  @param l2 a Layer.
+  @param name a name for the operation (predefined as 'diff+TotalDiffLayers')
+  @param dev which computing service utilize
+
+  @returns the result of l1-l2 element-wise
+
+  */
 LDiff::LDiff(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev) {
     total_layers++;
     binary=1;
@@ -52,6 +63,17 @@ LDiff::LDiff(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, de
     addparent(l2);
 }
 
+/**
+  @brief Computes the subtraction operation between a layer and a float
+
+  @param l a Layer.
+  @param k a float.
+  @param name a name for the operation (predefined as 'diff+TotalDiffLayers')
+  @param dev which computing service utilize
+
+  @returns the result of l-k element-wise over l
+
+  */
 LDiff::LDiff(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
     total_layers++;
     val=k;

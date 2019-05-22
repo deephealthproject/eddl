@@ -99,7 +99,19 @@ layer EDDL::Log10(layer l) {
 }
 
 layer EDDL::Mean(layer l) {
-    return new LMean(l, "mean" + to_string(1 + LMean::total_layers), DEV_CPU);
+    return EDDL::Mean(l, NULL, false);
+}
+
+layer EDDL::Mean(layer l, int axis) {
+    return EDDL::Mean(l, axis, false);
+}
+
+layer EDDL::Mean(layer l, bool keepdims) {
+    return EDDL::Mean(l, NULL, keepdims);
+}
+
+layer EDDL::Mean(layer l, int axis, bool keepdims) {
+    return new LMean(l, axis, keepdims, "mean" + to_string(1 + LMean::total_layers), DEV_CPU);
 }
 
 layer EDDL::Mult(layer l1, layer l2) {
