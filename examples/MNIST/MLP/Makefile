@@ -136,7 +136,7 @@ CONV_LAYERS_OBJ = layer_conv.o layer_transposed_conv.o layer_upsampling.o
 CORE_LAYERS_OBJ = layer.o layer_activation.o layer_batchnorm.o layer_dense.o layer_drop.o layer_embedding.o layer_input.o layer_reshape.o layer_tensor.o layer_transpose.o
 MERGE_LAYERS_OBJ = layer_add.o layer_average.o layer_concat.o layer_matmul.o layer_maximum.o layer_minimum.o layer_subtract.o
 NOISE_LAYERS_OBJ = layer_gaussian.o
-OPERATORS_LAYERS_OBJ = layer_operator.o layer_abs.o layer_diff.o layer_div.o layer_exp.o layer_log.o layer_mean.o layer_mult.o layer_pow.o layer_sqrt.o layer_sum.o layer_var.o
+OPERATORS_LAYERS_OBJ = layer_operator.o layer_abs.o layer_diff.o layer_div.o layer_exp.o layer_log.o layer_log2.o layer_log10.o layer_mean.o layer_mult.o layer_pow.o layer_sqrt.o layer_sum.o layer_var.o
 POOL_LAYERS_OBJ = layer_globalmaxpool.o layer_avgpool.o layer_globalavgpool.o layer_maxpool.o layer_pool.o
 RECURRENT_LAYERS_OBJ = layer_rnn.o layer_lstm.o
 LOSSES_OBJ = loss.o loss_cross_entropy.o loss_mean_squared_error.o loss_soft_cross_entropy.o
@@ -247,6 +247,10 @@ layer_exp.o: $(SRC_PATH)/layers/operators/layer_exp.cpp $(SRC_PATH)/layers/opera
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_exp.cpp
 layer_log.o: $(SRC_PATH)/layers/operators/layer_log.cpp $(SRC_PATH)/layers/operators/layer_operators.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_log.cpp
+layer_log2.o: $(SRC_PATH)/layers/operators/layer_log2.cpp $(SRC_PATH)/layers/operators/layer_operators.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_log2.cpp
+layer_log10.o: $(SRC_PATH)/layers/operators/layer_log10.cpp $(SRC_PATH)/layers/operators/layer_operators.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_log10.cpp
 layer_mean.o: $(SRC_PATH)/layers/operators/layer_mean.cpp $(SRC_PATH)/layers/operators/layer_operators.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_mean.cpp
 layer_mult.o: $(SRC_PATH)/layers/operators/layer_mult.cpp $(SRC_PATH)/layers/operators/layer_operators.h

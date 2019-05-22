@@ -143,6 +143,38 @@ public:
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 };
 
+/// Log2 Layer
+class LLog2 : public OperatorLayer {
+public:
+    static int total_layers;
+
+    LLog2(Layer *l, string name, int dev);
+
+    void forward() override;
+
+    void backward() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+};
+
+/// Log10 Layer
+class LLog10 : public OperatorLayer {
+public:
+    static int total_layers;
+
+    LLog10(Layer *l, string name, int dev);
+
+    void forward() override;
+
+    void backward() override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+};
+
 /// Mean Layer
 class LMean : public OperatorLayer {
 public:

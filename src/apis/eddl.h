@@ -163,6 +163,8 @@ public:
     static layer Div(layer l1, float k);
     static layer Exp(layer l);
     static layer Log(layer l);
+    static layer Log2(layer l);
+    static layer Log10(layer l);
     static layer Mean(layer l);
     static layer Mult(layer l1, layer l2);
     static layer Mult(layer l1, float k);

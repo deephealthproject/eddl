@@ -37,6 +37,8 @@ target_sources(EDDLL
         operators/layer_div.cpp
         operators/layer_exp.cpp
         operators/layer_log.cpp
+        operators/layer_log2.cpp
+        operators/layer_log10.cpp
         operators/layer_mean.cpp
         operators/layer_mult.cpp
         operators/layer_operator.cpp

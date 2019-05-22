@@ -87,7 +87,15 @@ layer EDDL::Exp(layer l) {
 }
 
 layer EDDL::Log(layer l) {
-    return new LLog(l, "log" + to_string(1 + LLog::total_layers), DEV_CPU);
+    return new LLog(l, "log_" + to_string(1 + LLog::total_layers), DEV_CPU);
+}
+
+layer EDDL::Log2(layer l) {
+    return new LLog2(l, "log2_" + to_string(1 + LLog2::total_layers), DEV_CPU);
+}
+
+layer EDDL::Log10(layer l) {
+    return new LLog10(l, "log10_" + to_string(1 + LLog10::total_layers), DEV_CPU);
 }
 
 layer EDDL::Mean(layer l) {
