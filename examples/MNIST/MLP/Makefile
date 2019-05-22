@@ -43,7 +43,6 @@ $(info ----> DEFAULT: no OPT)
 endif
 
 
-
 #### LINUX
 ifeq ($(TARGET),1)
 # OPT=1: AVX
@@ -51,6 +50,7 @@ ifeq ($(TARGET),1)
 # OPT=3: Nothing
 # OPT=4: Debug
 CXX = g++
+CXXSOFLAGS = -shared
 ifeq ($(OPT),1)
 $(info set AVX)
 CXXFLAGS = -std=c++11  -march=native -mavx -O3
