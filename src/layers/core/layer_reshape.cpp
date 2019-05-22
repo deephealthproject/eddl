@@ -27,12 +27,10 @@
 // SOFTWARE.
 
 #include <stdio.h>
-#include <stdio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 
-#include "../layer.h"
+#include "layer_core.h"
 
 extern ostream &operator<<(ostream &os, const vector<int> shape);
 

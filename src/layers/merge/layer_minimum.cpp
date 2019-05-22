@@ -27,15 +27,13 @@
 // SOFTWARE.
 
 #include <stdio.h>
-#include <stdio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 
-#include "../layer.h"
+#include "layer_merge.h"
+
 
 using namespace std;
-
 
 int LMinimum::total_layers = 0;
 

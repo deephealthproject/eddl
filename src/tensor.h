@@ -26,11 +26,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdio.h>
-#include <stdio.h>
 
-#ifndef _TENSOR_
-#define _TENSOR_
+#ifndef EDDLL_TENSOR_H
+#define EDDLL_TENSOR_H
+
+#include <stdio.h>
+#include <initializer_list>
+#include <vector>
+#include <string>
+#include <mutex>
+
+#include "hardware/cpu/Eigen/Dense"
 
 #define DEV_CPU 0
 
@@ -55,13 +61,6 @@
 #define DEV_FPGA_6 2006
 #define DEV_FPGA_7 2007
 #define DEV_FPGA_8 2008
-
-#include <initializer_list>
-#include <vector>
-#include <string>
-#include <mutex>
-
-#include "hardware/cpu/Eigen/Dense"
 
 #define MAX_GPUS 8
 
@@ -288,7 +287,7 @@ public:
 };
 
 
-#endif
+#endif //EDDLL_TENSOR_H
 
 
 

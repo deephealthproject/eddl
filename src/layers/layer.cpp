@@ -27,12 +27,11 @@
 // SOFTWARE.
 
 #include <stdio.h>
-#include <stdio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 
 #include "layer.h"
+#include "../tensor.h"
 
 using namespace std;
 
@@ -101,19 +100,19 @@ void Layer::info() {
 }
 
 Tensor* Layer::getWeights(){
-return nullptr;
+    return nullptr;
 }
 
 Tensor* Layer::setWeights(Tensor bias){
-return nullptr;
+    return nullptr;
 }
 
 Tensor* Layer::getBias(){
-return nullptr;
+    return nullptr;
 }
 
 Tensor* Layer::setBias(Tensor bias){
-return nullptr;
+    return nullptr;
 }
 
 ////////////////////////////////////

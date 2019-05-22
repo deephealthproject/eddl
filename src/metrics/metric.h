@@ -26,12 +26,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdio.h>
-#include <stdio.h>
 
 #ifndef _METRIC_
 #define _METRIC_
 
+#include <stdio.h>
 #include <string>
 
 #include "../tensor.h"

@@ -30,7 +30,9 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "../layer.h"
+#include "layer_core.h"
+#include "../merge/layer_merge.h"  // TODO: Review dependency (LADD)
+
 
 using namespace std;
 

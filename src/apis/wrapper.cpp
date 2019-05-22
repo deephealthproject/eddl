@@ -2,12 +2,12 @@
 // Created by Salva Carrión on 2019-04-10.
 //
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <iostream>
 
-#include "wrapper.h"
 #include "eddl.h"
-#include "../layers/layer.h"
-#include <thread>
+#include "wrapper.h"
 
 // Create Tensors
 Tensor *Tensor_init(const int *shape, int shape_size) {
