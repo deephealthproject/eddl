@@ -37,25 +37,35 @@ using namespace std;
 
 int LLog2::total_layers = 0;
 
+
 LLog2::LLog2(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
     total_layers++;
-    //TODO: Implement
+
+    input = l->output;
+    output = new Tensor(l->output->getShape(), dev);
+    delta = new Tensor(l->output->getShape(), dev);
+
+    l->addchild(this);
+    addparent(l);
 }
 
 void LLog2::forward() {
-    //TODO: Implement
+    Tensor::copy(parent[0]->output, output);
+    output->set_log2();
 }
 
 void LLog2::backward() {
-    //TODO: Implement
+  delta->div(log(2));
+  Tensor::el_div(delta,parent[0]->output, parent[0]->delta, 1);
 }
 
 Layer *LLog2::share(int c, int bs, vector<Layer *> p) {
-
-    return nullptr;
+  return clone(c,bs,p,dev);
 }
 
 Layer *LLog2::clone(int c, int bs, vector<Layer *> p, int todev) {
-
-    return nullptr;
+  LLog *n;
+  n = new LLog(p[0], "share_" + to_string(c) + name, todev);
+  n->orig = this;
+  return n;
 }

@@ -479,6 +479,26 @@ void Tensor::set_log2() {
 }
 
 ///////////////////////////////////////////
+void Tensor::set_log10() {
+    if (isCPU()) {
+
+        for (int i = 0; i < size; ++i) ptr[i] = log10f(ptr[i]);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        //gpu_log(this);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+
+///////////////////////////////////////////
 void Tensor::set_abs() {
     if (isCPU()) {
 

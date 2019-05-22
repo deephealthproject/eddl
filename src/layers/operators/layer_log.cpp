@@ -54,7 +54,7 @@ void LLog::forward() {
 }
 
 void LLog::backward() {
-  Tensor::el_div(parent[0]->output, delta, parent[0]->delta, 1);
+  Tensor::el_div(delta,parent[0]->output, parent[0]->delta, 1);
 }
 
 Layer *LLog::share(int c, int bs, vector<Layer *> p) {

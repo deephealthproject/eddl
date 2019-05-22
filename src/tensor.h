@@ -209,6 +209,8 @@ public:
 
     void set_log2();
 
+    void set_log10();
+
     void set_exp();
 
     void set_sqrt();

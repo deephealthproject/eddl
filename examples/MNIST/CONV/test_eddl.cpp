@@ -92,7 +92,7 @@ int main(int argc, char **argv)
   // size of error criteria and metrics list must match with size of list of outputs
   optimizer sgd=eddl.SGD(0.01,0.9);
 
-  compserv cs=eddl.CS_CPU(4); // local CPU with 6 threads
+  compserv cs=eddl.CS_CPU(4); // local CPU with 4 threads
   //compserv cs=eddl.CS_GPU({1,0,0,0}); // local GPU using the first gpu of 4 installed
   //compserv cs=eddl.CS_GPU({1});// local GPU using the first gpu of 1 installed
 
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
   eddl.div(X,255.0);
 
   // training, list of input and output tensors, batch, epochs
-  eddl.fit(net,{X},{Y},batch,1);
+  eddl.fit(net,{X},{Y},batch,10);
 
   // Evaluate train
   std::cout << "Evaluate train:" << std::endl;
