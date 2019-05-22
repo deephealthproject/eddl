@@ -37,7 +37,6 @@ using namespace std;
 int LExp::total_layers = 0;
 
 
-
 LExp::LExp(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
     total_layers++;
 
