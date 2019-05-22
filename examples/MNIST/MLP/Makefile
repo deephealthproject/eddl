@@ -179,8 +179,12 @@ layer_embedding.o: $(SRC_PATH)/layers/core/layer_embedding.cpp $(SRC_PATH)/layer
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/core/layer_embedding.cpp
 layer_input.o: $(SRC_PATH)/layers/core/layer_input.cpp $(SRC_PATH)/layers/layer.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/core/layer_input.cpp
+layer_reshape.o: $(SRC_PATH)/layers/core/layer_reshape.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/core/layer_reshape.cpp
 layer_tensor.o: $(SRC_PATH)/layers/core/layer_tensor.cpp $(SRC_PATH)/layers/layer.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/core/layer_tensor.cpp
+layer_transpose.o: $(SRC_PATH)/layers/core/layer_transpose.cpp $(SRC_PATH)/layers/layer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/core/layer_transpose.cpp
 
 #---------------------------------- conv layers
 layer_conv.o: $(SRC_PATH)/layers/conv/layer_conv.cpp $(SRC_PATH)/layers/layer.h
@@ -229,14 +233,10 @@ layer_mult.o: $(SRC_PATH)/layers/operators/layer_mult.cpp $(SRC_PATH)/layers/lay
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_mult.cpp
 layer_pow.o: $(SRC_PATH)/layers/operators/layer_pow.cpp $(SRC_PATH)/layers/layer.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_pow.cpp
-layer_reshape.o: $(SRC_PATH)/layers/operators/layer_reshape.cpp $(SRC_PATH)/layers/layer.h
-		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_reshape.cpp
 layer_sqrt.o: $(SRC_PATH)/layers/operators/layer_sqrt.cpp $(SRC_PATH)/layers/layer.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_sqrt.cpp
 layer_sum.o: $(SRC_PATH)/layers/operators/layer_sum.cpp $(SRC_PATH)/layers/layer.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_sum.cpp
-layer_transpose.o: $(SRC_PATH)/layers/operators/layer_transpose.cpp $(SRC_PATH)/layers/layer.h
-		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_transpose.cpp
 layer_var.o: $(SRC_PATH)/layers/operators/layer_var.cpp $(SRC_PATH)/layers/layer.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/operators/layer_var.cpp
 

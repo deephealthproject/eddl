@@ -34,8 +34,10 @@
 
 using namespace std;
 
+int LLog::total_layers = 0;
 
-LLog::LLog(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
+LLog::LLog(Layer *l, string name, int dev): OperatorLayer(name, dev) {
+    total_layers++;
     //TODO: Implement
 }
 

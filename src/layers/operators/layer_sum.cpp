@@ -34,9 +34,11 @@
 
 using namespace std;
 
+int LSum::total_layers = 0;
 
-LSum::LSum(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev) {
-    binary=1;
+LSum::LSum(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev) {
+    total_layers++;
+    binary = 1;
 
     input = l1->output;
 
@@ -49,47 +51,48 @@ LSum::LSum(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev)
     addparent(l2);
 }
 
-LSum::LSum(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
-  val=k;
+LSum::LSum(Layer *l, float k, string name, int dev) : OperatorLayer(name, dev) {
+    total_layers++;
+    val = k;
 
-  input = l->output;
-  output = new Tensor(l->output->getShape(), dev);
-  delta = new Tensor(l->output->getShape(), dev);
+    input = l->output;
+    output = new Tensor(l->output->getShape(), dev);
+    delta = new Tensor(l->output->getShape(), dev);
 
-  l->addchild(this);
-  addparent(l);
+    l->addchild(this);
+    addparent(l);
 }
 
-void LSum::forward(){
-    if (binary) Tensor::sum(1.0,parent[0]->output,1.0,parent[1]->output,output,0);
+void LSum::forward() {
+    if (binary) Tensor::sum(1.0, parent[0]->output, 1.0, parent[1]->output, output, 0);
     else {
-      Tensor::copy(parent[0]->output,output);
-      output->sum(val);
+        Tensor::copy(parent[0]->output, output);
+        output->sum(val);
     }
 }
 
-void LSum::backward(){
-  Tensor::inc(delta,parent[0]->delta);
-  if (binary)
-    Tensor::inc(delta,parent[1]->delta);
+void LSum::backward() {
+    Tensor::inc(delta, parent[0]->delta);
+    if (binary)
+        Tensor::inc(delta, parent[1]->delta);
 }
 
 Layer *LSum::share(int c, int bs, vector<Layer *> p) {
-  LSum *n;
-  if (binary)
-    n = new LSum(p[0], p[1],"share_" + to_string(c) + name, dev);
-  else
-    n = new LSum(p[0],val,"share_" + to_string(c) + name, dev);
-  n->orig = this;
-  return n;
+    LSum *n;
+    if (binary)
+        n = new LSum(p[0], p[1], "share_" + to_string(c) + name, dev);
+    else
+        n = new LSum(p[0], val, "share_" + to_string(c) + name, dev);
+    n->orig = this;
+    return n;
 }
 
 Layer *LSum::clone(int c, int bs, vector<Layer *> p, int todev) {
-  LSum *n;
-  if (binary)
-    n = new LSum(p[0], p[1],"share_" + to_string(c) + name, todev);
-  else
-    n = new LSum(p[0],val,"share_" + to_string(c) + name, todev);
-  n->orig = this;
-  return n;
+    LSum *n;
+    if (binary)
+        n = new LSum(p[0], p[1], "share_" + to_string(c) + name, todev);
+    else
+        n = new LSum(p[0], val, "share_" + to_string(c) + name, todev);
+    n->orig = this;
+    return n;
 }

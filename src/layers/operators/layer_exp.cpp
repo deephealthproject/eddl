@@ -34,8 +34,10 @@
 
 using namespace std;
 
+int LExp::total_layers = 0;
 
-LExp::LExp(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
+LExp::LExp(Layer *l, string name, int dev): OperatorLayer(name, dev) {
+    total_layers++;
     //TODO: Implement
 }
 

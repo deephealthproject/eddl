@@ -34,8 +34,10 @@
 
 using namespace std;
 
+int LSqrt::total_layers = 0;
 
-LSqrt::LSqrt(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
+LSqrt::LSqrt(Layer *l, string name, int dev): OperatorLayer(name, dev) {
+    total_layers++;
     //TODO: Implement
 }
 

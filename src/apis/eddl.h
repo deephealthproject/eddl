@@ -145,6 +145,24 @@ public:
     static layer Dropout(layer parent, float rate);
     static layer Dropout(layer parent, float rate, string name); //Todo: Implement
 
+    // ---- OPERATOR LAYERS ----
+    static layer Abs(layer l);
+    static layer Diff(layer l1, layer l2);
+    static layer Diff(layer l1, float k);
+    static layer Div(layer l1, layer l2);
+    static layer Div(layer l1, float k);
+    static layer Exp(layer l);
+    static layer Log(layer l);
+    static layer Mean(layer l);
+    static layer Mult(layer l1, layer l2);
+    static layer Mult(layer l1, float k);
+    static layer Pow(layer l1, layer l2);
+    static layer Pow(layer l1, float k);
+    static layer Sqrt(layer l);
+    static layer Sum(layer l1, layer l2);
+    static layer Sum(layer l1, float k);
+    static layer Var(layer l);
+
     // ---- OPTIMIZERS ----
     static optimizer Adadelta(float lr, float rho, float epsilon, float weight_decay); //Todo: Implement
     static optimizer Adam(float lr, float beta_1, float beta_2, float epsilon, float weight_decay, bool amsgrad); //Todo: Implement

@@ -34,11 +34,15 @@
 
 using namespace std;
 
+int LMult::total_layers = 0;
+
 LMult::LMult(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev) {
+    total_layers++;
     //TODO: Implement
 }
 
 LMult::LMult(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
+    total_layers++;
     //TODO: Implement
 }
 

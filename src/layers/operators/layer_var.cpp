@@ -34,8 +34,10 @@
 
 using namespace std;
 
+int LVar::total_layers = 0;
 
 LVar::LVar(Layer *l, string name, int dev): OperatorLayer(name, dev) {
+    total_layers++;
     //TODO: Implement
 }
 

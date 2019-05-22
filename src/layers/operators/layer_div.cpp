@@ -34,8 +34,11 @@
 
 using namespace std;
 
-LDiv::LDiv(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev) {
-    binary=1;
+int LDiv::total_layers = 0;
+
+LDiv::LDiv(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev) {
+    total_layers++;
+    binary = 1;
 
     input = l1->output;
 
@@ -48,57 +51,57 @@ LDiv::LDiv(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev)
     addparent(l2);
 }
 
-LDiv::LDiv(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
-  val=k;
+LDiv::LDiv(Layer *l, float k, string name, int dev) : OperatorLayer(name, dev) {
+    total_layers++;
+    val = k;
 
-  input = l->output;
-  output = new Tensor(l->output->getShape(), dev);
-  delta = new Tensor(l->output->getShape(), dev);
+    input = l->output;
+    output = new Tensor(l->output->getShape(), dev);
+    delta = new Tensor(l->output->getShape(), dev);
 
-  l->addchild(this);
-  addparent(l);
+    l->addchild(this);
+    addparent(l);
 }
 
-void LDiv::forward(){
-    if (binary) Tensor::el_div(parent[0]->output,parent[1]->output,output,0);
+void LDiv::forward() {
+    if (binary) Tensor::el_div(parent[0]->output, parent[1]->output, output, 0);
     else {
-      Tensor::copy(parent[0]->output,output);
-      output->div(val);
+        Tensor::copy(parent[0]->output, output);
+        output->div(val);
     }
 }
 
-void LDiv::backward(){
-  if (binary) {
-    Tensor::el_div(delta, parent[1]->output,delta,0);
-    Tensor::inc(delta,parent[0]->delta);
-    //
-    Tensor::el_div(delta, parent[1]->output,delta,0);
-    Tensor::el_mult(delta,parent[0]->output,delta,0);
-    delta->mult(-1);
-    Tensor::inc(delta,parent[1]->delta);
-  }
-  else {
-    delta->div(val);
-    Tensor::inc(delta,parent[0]->delta);
-  }
+void LDiv::backward() {
+    if (binary) {
+        Tensor::el_div(delta, parent[1]->output, delta, 0);
+        Tensor::inc(delta, parent[0]->delta);
+        //
+        Tensor::el_div(delta, parent[1]->output, delta, 0);
+        Tensor::el_mult(delta, parent[0]->output, delta, 0);
+        delta->mult(-1);
+        Tensor::inc(delta, parent[1]->delta);
+    } else {
+        delta->div(val);
+        Tensor::inc(delta, parent[0]->delta);
+    }
 }
 
 Layer *LDiv::share(int c, int bs, vector<Layer *> p) {
-  LDiv *n;
-  if (binary)
-    n = new LDiv(p[0], p[1],"share_" + to_string(c) + name, dev);
-  else
-    n = new LDiv(p[0],val,"share_" + to_string(c) + name, dev);
-  n->orig = this;
-  return n;
+    LDiv *n;
+    if (binary)
+        n = new LDiv(p[0], p[1], "share_" + to_string(c) + name, dev);
+    else
+        n = new LDiv(p[0], val, "share_" + to_string(c) + name, dev);
+    n->orig = this;
+    return n;
 }
 
 Layer *LDiv::clone(int c, int bs, vector<Layer *> p, int todev) {
-  LDiv *n;
-  if (binary)
-    n = new LDiv(p[0], p[1],"share_" + to_string(c) + name, todev);
-  else
-    n = new LDiv(p[0],val,"share_" + to_string(c) + name, todev);
-  n->orig = this;
-  return n;
+    LDiv *n;
+    if (binary)
+        n = new LDiv(p[0], p[1], "share_" + to_string(c) + name, todev);
+    else
+        n = new LDiv(p[0], val, "share_" + to_string(c) + name, todev);
+    n->orig = this;
+    return n;
 }

@@ -15,7 +15,9 @@ target_sources(EDDLL
         core/layer_drop.cpp
         core/layer_embedding.cpp
         core/layer_input.cpp
+        core/layer_reshape.cpp
         core/layer_tensor.cpp
+        core/layer_transpose.cpp
 
         # Merge layers
         merge/layer_add.cpp
@@ -39,10 +41,8 @@ target_sources(EDDLL
         operators/layer_mult.cpp
         operators/layer_operator.cpp
         operators/layer_pow.cpp
-        operators/layer_reshape.cpp
         operators/layer_sqrt.cpp
         operators/layer_sum.cpp
-        operators/layer_transpose.cpp
         operators/layer_var.cpp
 
         # Pooling layers

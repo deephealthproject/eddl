@@ -114,6 +114,8 @@ public:
 /// Abs Layer
 class LAbs : public OperatorLayer {
 public:
+    static int total_layers;
+
     Tensor *mask;
 
     LAbs(Layer *l, string name, int dev);
@@ -131,7 +133,7 @@ public:
 /// Diff Layer
 class LDiff : public OperatorLayer {
 public:
-
+    static int total_layers;
 
     LDiff(Layer *l1, Layer *l2, string name, int dev);
     LDiff(Layer *l, float k, string name, int dev);
@@ -148,6 +150,7 @@ public:
 /// Div Layer
 class LDiv : public OperatorLayer {
 public:
+    static int total_layers;
 
     LDiv(Layer *l1, Layer *l2, string name, int dev);
     LDiv(Layer *l, float k, string name, int dev);
@@ -164,8 +167,9 @@ public:
 /// Exp Layer
 class LExp : public OperatorLayer {
 public:
+    static int total_layers;
 
-    LExp(Layer *l, float k, string name, int dev);
+    LExp(Layer *l, string name, int dev);
 
     void forward() override;
 
@@ -179,8 +183,9 @@ public:
 /// Log Layer
 class LLog : public OperatorLayer {
 public:
+    static int total_layers;
 
-    LLog(Layer *l, float k, string name, int dev);
+    LLog(Layer *l, string name, int dev);
 
     void forward() override;
 
@@ -194,6 +199,7 @@ public:
 /// Mean Layer
 class LMean : public OperatorLayer {
 public:
+    static int total_layers;
 
     LMean(Layer *l, string name, int dev);
 
@@ -209,6 +215,7 @@ public:
 /// Mult Layer
 class LMult : public OperatorLayer {
 public:
+    static int total_layers;
 
     LMult(Layer *l1, Layer *l2, string name, int dev);
     LMult(Layer *l, float k, string name, int dev);
@@ -225,7 +232,9 @@ public:
 /// Pow Layer
 class LPow : public OperatorLayer {
 public:
+    static int total_layers;
 
+    LPow(Layer *l1, Layer *l2, string name, int dev);
     LPow(Layer *l, float k, string name, int dev);
 
     void forward() override;
@@ -240,8 +249,9 @@ public:
 /// Sqrt Layer
 class LSqrt : public OperatorLayer {
 public:
+    static int total_layers;
 
-    LSqrt(Layer *l, float k, string name, int dev);
+    LSqrt(Layer *l, string name, int dev);
 
     void forward() override;
 
@@ -255,6 +265,7 @@ public:
 /// Sum Layer
 class LSum : public OperatorLayer {
 public:
+    static int total_layers;
 
     LSum(Layer *l1, Layer *l2, string name, int dev);
     LSum(Layer *l, float k, string name, int dev);
@@ -271,6 +282,7 @@ public:
 /// Var Layer
 class LVar : public OperatorLayer {
 public:
+    static int total_layers;
 
     LVar(Layer *l, string name, int dev);
 

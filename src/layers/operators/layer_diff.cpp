@@ -34,7 +34,10 @@
 
 using namespace std;
 
+int LDiff::total_layers = 0;
+
 LDiff::LDiff(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev) {
+    total_layers++;
     binary=1;
 
     input = l1->output;
@@ -49,48 +52,49 @@ LDiff::LDiff(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, de
 }
 
 LDiff::LDiff(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
-  val=k;
+    total_layers++;
+    val=k;
 
-  input = l->output;
-  output = new Tensor(l->output->getShape(), dev);
-  delta = new Tensor(l->output->getShape(), dev);
+    input = l->output;
+    output = new Tensor(l->output->getShape(), dev);
+    delta = new Tensor(l->output->getShape(), dev);
 
-  l->addchild(this);
-  addparent(l);
+    l->addchild(this);
+    addparent(l);
 }
 
 void LDiff::forward(){
     if (binary) Tensor::sum(1.0,parent[0]->output,-1.0,parent[1]->output,output,0);
     else {
-      Tensor::copy(parent[0]->output,output);
-      output->sum(-val);
+        Tensor::copy(parent[0]->output,output);
+        output->sum(-val);
     }
 }
 
 void LDiff::backward(){
-  Tensor::inc(delta,parent[0]->delta);
-  if (binary) {
-    delta->mult(-1.0);
-    Tensor::inc(delta,parent[1]->delta);
-  }
+    Tensor::inc(delta,parent[0]->delta);
+    if (binary) {
+        delta->mult(-1.0);
+        Tensor::inc(delta,parent[1]->delta);
+    }
 }
 
 Layer *LDiff::share(int c, int bs, vector<Layer *> p) {
-  LDiff *n;
-  if (binary)
-    n = new LDiff(p[0], p[1],"share_" + to_string(c) + name, dev);
-  else
-    n = new LDiff(p[0],val,"share_" + to_string(c) + name, dev);
-  n->orig = this;
-  return n;
+    LDiff *n;
+    if (binary)
+        n = new LDiff(p[0], p[1],"share_" + to_string(c) + name, dev);
+    else
+        n = new LDiff(p[0],val,"share_" + to_string(c) + name, dev);
+    n->orig = this;
+    return n;
 }
 
 Layer *LDiff::clone(int c, int bs, vector<Layer *> p, int todev) {
-  LDiff *n;
-  if (binary)
-    n = new LDiff(p[0], p[1],"share_" + to_string(c) + name, todev);
-  else
-    n = new LDiff(p[0],val,"share_" + to_string(c) + name, todev);
-  n->orig = this;
-  return n;
+    LDiff *n;
+    if (binary)
+        n = new LDiff(p[0], p[1],"share_" + to_string(c) + name, todev);
+    else
+        n = new LDiff(p[0],val,"share_" + to_string(c) + name, todev);
+    n->orig = this;
+    return n;
 }

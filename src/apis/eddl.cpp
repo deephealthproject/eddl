@@ -60,6 +60,72 @@ tensor EDDL::T(string fname) {
 void EDDL::div(tensor t, float v) {
     t->input->div(v);
 }
+
+// ---- Operator Layers ----
+layer EDDL::Abs(layer l) {
+    return new LAbs(l, "abs" + to_string(1 + LAbs::total_layers), DEV_CPU);
+}
+
+layer EDDL::Diff(layer l1, layer l2) {
+    return new LDiff(l1, l2, "diff" + to_string(1 + LDiff::total_layers), DEV_CPU);
+}
+
+layer EDDL::Diff(layer l1, float k) {
+    return new LDiff(l1, k, "diff" + to_string(1 + LDiff::total_layers), DEV_CPU);
+}
+
+layer EDDL::Div(layer l1, layer l2) {
+    return new LDiv(l1, l2, "div" + to_string(1 + LDiv::total_layers), DEV_CPU);
+}
+
+layer EDDL::Div(layer l1, float k) {
+    return new LDiv(l1, k, "div" + to_string(1 + LDiv::total_layers), DEV_CPU);
+}
+
+layer EDDL::Exp(layer l) {
+    return new LExp(l, "exp" + to_string(1 + LExp::total_layers), DEV_CPU);
+}
+
+layer EDDL::Log(layer l) {
+    return new LLog(l, "log" + to_string(1 + LLog::total_layers), DEV_CPU);
+}
+
+layer EDDL::Mean(layer l) {
+    return new LMean(l, "mean" + to_string(1 + LMean::total_layers), DEV_CPU);
+}
+
+layer EDDL::Mult(layer l1, layer l2) {
+    return new LMult(l1, l2, "mult" + to_string(1 + LMult::total_layers), DEV_CPU);
+}
+
+layer EDDL::Mult(layer l1, float k) {
+    return new LMult(l1, k, "mult" + to_string(1 + LMult::total_layers), DEV_CPU);
+}
+
+layer EDDL::Pow(layer l1, layer l2) {
+    return new LPow(l1, l2, "pow" + to_string(1 + LPow::total_layers), DEV_CPU);
+}
+
+layer EDDL::Pow(layer l1, float k) {
+    return new LPow(l1, k, "pow" + to_string(1 + LPow::total_layers), DEV_CPU);
+}
+
+layer EDDL::Sqrt(layer l) {
+    return new LSqrt(l, "sqrt" + to_string(1 + LSqrt::total_layers), DEV_CPU);
+}
+
+layer EDDL::Sum(layer l1, layer l2) {
+    return new LSum(l1, l2, "sum" + to_string(1 + LSum::total_layers), DEV_CPU);
+}
+
+layer EDDL::Sum(layer l1, float k) {
+    return new LSum(l1, k, "sum" + to_string(1 + LSum::total_layers), DEV_CPU);
+}
+
+layer EDDL::Var(layer l) {
+    return new LVar(l, "var" + to_string(1 + LVar::total_layers), DEV_CPU);
+}
+
 //////////////////////////////////////////////////////
 
 

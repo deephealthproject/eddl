@@ -34,8 +34,15 @@
 
 using namespace std;
 
+int LPow::total_layers = 0;
+
+LPow::LPow(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev) {
+    total_layers++;
+    //TODO: Implement
+}
 
 LPow::LPow(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
+    total_layers++;
     //TODO: Implement
 }
 

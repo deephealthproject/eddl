@@ -34,8 +34,10 @@
 
 using namespace std;
 
+int LAbs::total_layers = 0;
 
 LAbs::LAbs(Layer *l, string name, int dev): OperatorLayer(name, dev) {
+    total_layers++;
     input=l->output;
     mask=new Tensor(l->output->getShape(),dev);
     output=new Tensor(l->output->getShape(),dev);

@@ -34,8 +34,10 @@
 
 using namespace std;
 
+int LMean::total_layers = 0;
 
 LMean::LMean(Layer *l, string name, int dev): OperatorLayer(name, dev) {
+    total_layers++;
     //TODO: Implement
 }
 
