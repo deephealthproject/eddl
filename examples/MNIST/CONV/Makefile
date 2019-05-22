@@ -130,6 +130,7 @@ SRC_PATH=../../../src
 
 # Group compiled objects (Alphabetically sorted!)
 APIS_OBJ = eddl.o wrapper.o
+INITIALIZERS_OBJ = initializer.o initializer_constant.o initializer_glorot_normal.o initializer_glorot_uniform.o initializer_indentity.o initializer_orthogonal.o initializer_random_normal.o initializer_random_uniform.o
 HARDWARE_OBJ = cpu_convol.o
 CONV_LAYERS_OBJ = layer_conv.o layer_transposed_conv.o layer_upsampling.o
 CORE_LAYERS_OBJ = layer.o layer_activation.o layer_batchnorm.o layer_dense.o layer_drop.o layer_embedding.o layer_input.o layer_reshape.o layer_tensor.o layer_transpose.o
@@ -141,10 +142,10 @@ RECURRENT_LAYERS_OBJ = layer_rnn.o layer_lstm.o
 LOSSES_OBJ = loss.o loss_cross_entropy.o loss_mean_squared_error.o loss_soft_cross_entropy.o
 METRICS_OBJ = metric.o metric_categorical_acc.o metric_mean_squared_error.o
 OPTIMIZERS_OBJ = optim.o optim_adadelta.o optim_adagrad.o optim_adam.o optim_adamax.o optim_nadam.o optim_rmsprop.o optim_sgd.o
-CORE_OBJ = compserv.o initializer.o net.o tensor.o tensor_op.o utils.o
+CORE_OBJ = compserv.o net.o tensor.o tensor_op.o utils.o
 
 # Join groups
-OBJ := $(APIS_OBJ) $(HARDWARE_OBJ) $(CONV_LAYERS_OBJ) $(CORE_LAYERS_OBJ) $(MERGE_LAYERS_OBJ) $(NOISE_LAYERS_OBJ) $(OPERATORS_LAYERS_OBJ) $(POOL_LAYERS_OBJ) $(RECURRENT_LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(CORE_OBJ)
+OBJ := $(APIS_OBJ) $(INITIALIZERS_OBJ) $(HARDWARE_OBJ) $(CONV_LAYERS_OBJ) $(CORE_LAYERS_OBJ) $(MERGE_LAYERS_OBJ) $(NOISE_LAYERS_OBJ) $(OPERATORS_LAYERS_OBJ) $(POOL_LAYERS_OBJ) $(RECURRENT_LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(CORE_OBJ)
 
 ifeq ($(CORE),1)  # CPU
 all: $(GPU_OBJ) $(OBJ) shared_eddl test_eddl test_wrapper
@@ -164,6 +165,25 @@ wrapper.o: $(SRC_PATH)/apis/eddl.cpp $(SRC_PATH)/apis/wrapper.h
 cpu_convol.o: $(SRC_PATH)/hardware/cpu/cpu_convol.cpp $(SRC_PATH)/hardware/cpu/cpu_convol.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/cpu_convol.cpp
 
+#---------------------------------- initializers
+initializer.o: $(SRC_PATH)/initializers/initializer.cpp $(SRC_PATH)/initializers/initializer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/initializers/initializer.cpp
+initializer_constant.o: $(SRC_PATH)/initializers/initializer_constant.cpp $(SRC_PATH)/initializers/initializer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/initializers/initializer_constant.cpp
+initializer_glorot_normal.o: $(SRC_PATH)/initializers/initializer_glorot_normal.cpp $(SRC_PATH)/initializers/initializer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/initializers/initializer_glorot_normal.cpp
+initializer_glorot_uniform.o: $(SRC_PATH)/initializers/initializer_glorot_uniform.cpp $(SRC_PATH)/initializers/initializer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/initializers/initializer_glorot_uniform.cpp
+initializer_indentity.o: $(SRC_PATH)/initializers/initializer_indentity.cpp $(SRC_PATH)/initializers/initializer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/initializers/initializer_indentity.cpp
+initializer_orthogonal.o: $(SRC_PATH)/initializers/initializer_orthogonal.cpp $(SRC_PATH)/initializers/initializer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/initializers/initializer_orthogonal.cpp
+initializer_random_normal.o: $(SRC_PATH)/initializers/initializer_random_normal.cpp $(SRC_PATH)/initializers/initializer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/initializers/initializer_random_normal.cpp
+initializer_random_uniform.o: $(SRC_PATH)/initializers/initializer_random_uniform.cpp $(SRC_PATH)/initializers/initializer.h
+		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/initializers/initializer_random_uniform.cpp
+
+#----------------------------------> layers
 #---------------------------------- core layers
 layer.o: $(SRC_PATH)/layers/layer.cpp $(SRC_PATH)/layers/layer.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer.cpp
@@ -257,6 +277,7 @@ layer_rnn.o: $(SRC_PATH)/layers/recurrent/layer_rnn.cpp $(SRC_PATH)/layers/recur
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/recurrent/layer_rnn.cpp
 layer_lstm.o: $(SRC_PATH)/layers/recurrent/layer_lstm.cpp $(SRC_PATH)/layers/recurrent/layer_recurrent.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/recurrent/layer_lstm.cpp
+#<---------------------------------- layers
 
 #---------------------------------- losses
 loss.o: $(SRC_PATH)/losses/loss.cpp $(SRC_PATH)/losses/loss.h
@@ -297,8 +318,6 @@ optim_sgd.o: $(SRC_PATH)/optimizers/optim_sgd.cpp $(SRC_PATH)/optimizers/optim.h
 #---------------------------------- core classes
 compserv.o: $(SRC_PATH)/compserv.cpp $(SRC_PATH)/compserv.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/compserv.cpp
-initializer.o: $(SRC_PATH)/initializer.cpp $(SRC_PATH)/initializer.h
-		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/initializer.cpp
 net.o: $(SRC_PATH)/net.cpp $(SRC_PATH)/net.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/net.cpp
 tensor.o: $(SRC_PATH)/tensor.cpp $(SRC_PATH)/tensor.h

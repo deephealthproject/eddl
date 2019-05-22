@@ -12,8 +12,8 @@
 #include <pthread.h>
 
 #include "../net.h"
-#include "../callbacks.h"
-#include "../initializer.h"
+#include "../callbacks/callbacks.h"
+#include "../initializers/initializer.h"
 #include "../losses/loss.h"
 #include "../metrics/metric.h"
 
