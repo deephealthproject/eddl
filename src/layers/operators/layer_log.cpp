@@ -36,26 +36,36 @@ using namespace std;
 
 int LLog::total_layers = 0;
 
-LLog::LLog(Layer *l, string name, int dev): OperatorLayer(name, dev) {
+LLog::LLog(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
     total_layers++;
-    //TODO: Implement
+
+    input = l->output;
+    output = new Tensor(l->output->getShape(), dev);
+    delta = new Tensor(l->output->getShape(), dev);
+
+    l->addchild(this);
+    addparent(l);
 }
 
-
-void LLog::forward(){
-    //TODO: Implement
+void LLog::forward() {
+    Tensor::copy(parent[0]->output, output);
+    output->set_log();
 }
 
-void LLog::backward(){
-    //TODO: Implement
+void LLog::backward() {
+  Tensor::el_div(parent[0]->output, delta, parent[0]->delta, 1);
 }
 
 Layer *LLog::share(int c, int bs, vector<Layer *> p) {
-
-    return nullptr;
+    LLog *n;
+    n = new LLog(p[0], "share_" + to_string(c) + name, dev);
+    n->orig = this;
+    return n;
 }
 
 Layer *LLog::clone(int c, int bs, vector<Layer *> p, int todev) {
-
-    return nullptr;
+  LLog *n;
+  n = new LLog(p[0], "share_" + to_string(c) + name, todev);
+  n->orig = this;
+  return n;
 }

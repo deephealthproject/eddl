@@ -36,26 +36,39 @@ using namespace std;
 
 int LExp::total_layers = 0;
 
-LExp::LExp(Layer *l, string name, int dev): OperatorLayer(name, dev) {
+
+
+LExp::LExp(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
     total_layers++;
-    //TODO: Implement
+
+    input = l->output;
+    output = new Tensor(l->output->getShape(), dev);
+    delta = new Tensor(l->output->getShape(), dev);
+
+    l->addchild(this);
+    addparent(l);
 }
 
-
-void LExp::forward(){
-    //TODO: Implement
+void LExp::forward() {
+    Tensor::copy(parent[0]->output, output);
+    output->set_exp();
 }
 
-void LExp::backward(){
-    //TODO: Implement
+void LExp::backward() {
+  delta->set_exp();
+  Tensor::el_mult(delta, parent[0]->output, parent[0]->delta, 1);
 }
 
 Layer *LExp::share(int c, int bs, vector<Layer *> p) {
-
-    return nullptr;
+    LExp *n;
+    n = new LExp(p[0], "share_" + to_string(c) + name, dev);
+    n->orig = this;
+    return n;
 }
 
 Layer *LExp::clone(int c, int bs, vector<Layer *> p, int todev) {
-
-    return nullptr;
+  LExp *n;
+  n = new LExp(p[0], "share_" + to_string(c) + name, todev);
+  n->orig = this;
+  return n;
 }
