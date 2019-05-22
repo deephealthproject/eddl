@@ -59,10 +59,7 @@ void LAbs::backward(){
 }
 
 Layer *LAbs::share(int c, int bs, vector<Layer *> p) {
-    LAbs *n = new LAbs(p[0], "share_" + to_string(c) + name, dev);
-    n->orig = this;
-
-    return n;
+    return clone(c,bs,p,dev);
 }
 
 Layer *LAbs::clone(int c, int bs, vector<Layer *> p, int todev) {

@@ -87,13 +87,7 @@ void LDiv::backward() {
 }
 
 Layer *LDiv::share(int c, int bs, vector<Layer *> p) {
-    LDiv *n;
-    if (binary)
-        n = new LDiv(p[0], p[1], "share_" + to_string(c) + name, dev);
-    else
-        n = new LDiv(p[0], val, "share_" + to_string(c) + name, dev);
-    n->orig = this;
-    return n;
+  return clone(c,bs,p,dev);
 }
 
 Layer *LDiv::clone(int c, int bs, vector<Layer *> p, int todev) {

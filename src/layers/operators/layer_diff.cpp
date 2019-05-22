@@ -80,13 +80,7 @@ void LDiff::backward(){
 }
 
 Layer *LDiff::share(int c, int bs, vector<Layer *> p) {
-    LDiff *n;
-    if (binary)
-        n = new LDiff(p[0], p[1],"share_" + to_string(c) + name, dev);
-    else
-        n = new LDiff(p[0],val,"share_" + to_string(c) + name, dev);
-    n->orig = this;
-    return n;
+  return clone(c,bs,p,dev);
 }
 
 Layer *LDiff::clone(int c, int bs, vector<Layer *> p, int todev) {

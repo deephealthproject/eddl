@@ -57,10 +57,7 @@ void LLog::backward() {
 }
 
 Layer *LLog::share(int c, int bs, vector<Layer *> p) {
-    LLog *n;
-    n = new LLog(p[0], "share_" + to_string(c) + name, dev);
-    n->orig = this;
-    return n;
+  return clone(c,bs,p,dev);
 }
 
 Layer *LLog::clone(int c, int bs, vector<Layer *> p, int todev) {
