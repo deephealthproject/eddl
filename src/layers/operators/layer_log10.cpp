@@ -39,7 +39,7 @@ int LLog10::total_layers = 0;
 
 
 /**
-  @brief Computes natural logarithm with base 10 of a Layer element-wise
+  @brief Computes logarithm with base 10 of a Layer element-wise
 
   @param l a Layer.
   @param name a name for the operation (predefined as 'log10_TotalLog10Layers')
