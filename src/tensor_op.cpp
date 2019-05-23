@@ -93,6 +93,35 @@ void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims)
 
 }
 
+//
+// Sum all the axis of A in B
+//
+void Tensor::reduceTosum(Tensor *A, Tensor *B,int axis)
+{
+  B->tsem->lock();
+
+  if (A->device != B->device) msg("Tensors in different devices", "Tensor::transpose");
+
+  B->set(0.0);
+  if (A->isCPU()) {
+      for (int i = 0; i < B->size; i++)
+        for(int j=0;j<A->shape[axis];j++)
+          B->ptr[i]+=A->ptr[j];
+  }
+  #ifdef cGPU
+  else if (A->isGPU())
+    {
+
+    }
+  #endif
+  #ifdef cFPGA
+  else {
+
+  }
+  #endif
+  B->tsem->unlock();
+
+}
 
 ///////////////////////////////////////
 /// Copy from A to B

@@ -61,6 +61,13 @@ LTensor::LTensor(const vector<int> shape, int dev) : LinLayer("ltensor" + to_str
 }
 
 
+/*
+void Ltensor::mult2D(LTensor *A,...){
+  Tensor::mult2d(A->output, tA,B->output,tB,C->output,incC);
+}
+*/
+
+
 // From Layer
 LTensor::LTensor(Layer *l) : LinLayer("ltensor" + to_string(total_layers), l->dev) {
     input = output = l->output;

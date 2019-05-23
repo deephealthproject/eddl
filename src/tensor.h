@@ -191,6 +191,9 @@ public:
 
     int isFPGA();
 
+    ////////////////////////////////
+
+
     // math
     void set(float v);
 
@@ -246,6 +249,8 @@ public:
 
     static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
 
+    static void inc(Tensor *A, Tensor *B);
+
     static void sum(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
 
     static void sum(Tensor *A, Tensor *B, Tensor *C);
@@ -261,12 +266,18 @@ public:
     static void el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
 
 
-    static void inc(Tensor *A, Tensor *B);
 
+
+///////7
+    static void reduceTosum(Tensor *A, Tensor *B,int axis);
+
+
+//////
     static void cent(Tensor *A, Tensor *B, Tensor *C);
 
     static int accuracy(Tensor *A, Tensor *B);
 
+/////
     static void ReLu(Tensor *A, Tensor *B);
 
     static void Softmax(Tensor *A, Tensor *B);
@@ -275,6 +286,9 @@ public:
 
     static void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
 
+
+
+  ///////
     static void Conv2D(ConvolDescriptor *D);
 
     static void Conv2D_grad(ConvolDescriptor *D);
