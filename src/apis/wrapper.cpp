@@ -42,11 +42,17 @@ void Tensor_point2data(Tensor *t, float *ptr) {
     t->ptr = ptr;
 }
 
-void Tensor_floodData(Tensor *t, float *ptr){
+void Tensor_addData(Tensor *t, const float *ptr){
+    // Compute size from dimensions
     int size = 1;
     for (int i = 0; i < t->ndim; ++i) size *= t->shape[i];
     t->size = size;
-    t->ptr = ptr;
+
+    // Allocate memory
+    t->ptr = (float *) malloc(size * sizeof(Tensor *));
+
+    // Fill tensor
+    for (int i = 0; i < size; ++i) t->ptr[i] = ptr[i];
 }
 
 
@@ -138,7 +144,7 @@ void summary(model m) {
     EDDL::summary(m);
 }
 
-void build(model net, optimizer opt, Loss **c, int size_c, Metric **m, int size_m, compserv cs) {
+void build(model net, optimizer opt, loss *c, int size_c, metric *m, int size_m, compserv cs) {
     vector<Loss *> co;
     vector<Metric *> me;
 

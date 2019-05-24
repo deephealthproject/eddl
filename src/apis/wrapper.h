@@ -51,7 +51,7 @@ int Tensor_size(Tensor *t);  // Data length
 int *Tensor_shape(Tensor *t);
 float *Tensor_getData(Tensor *t);
 void Tensor_point2data(Tensor *t, float *ptr);
-void Tensor_floodData(Tensor *t, float *ptr);
+void Tensor_addData(Tensor *t, const float *ptr);
 
 
 // Initializers =========================
@@ -115,7 +115,7 @@ compserv CS_CPU_init(int th);
 model Model_init(Layer *in, int in_size, Layer *out, int out_size);
 void plot(model m, const char *fname);
 void summary(model m);
-void build(model net, optimizer opt, Loss **c, int size_c, Metric **m, int size_m, compserv cs);
+void build(model net, optimizer opt, loss *c, int size_c, metric *m, int size_m, compserv cs);
 void fit(model m, Tensor *in, Tensor *out, int batch, int epochs);
 void fit_safe(model m, const char *in, const char *out, int batch, int epochs);
 void evaluate(model m, Tensor *in, Tensor *out);
