@@ -6,10 +6,11 @@
 **/*.obj
 **/*~
 
-# Plots
-/examples/MNIST/**/*.dot
-/examples/MNIST/**/*.pdf
-/examples/MNIST/**/*.bin
+# Tests
+/examples/**/*.dot
+/examples/**/*.pdf
+/examples/**/*.bin
+/examples/**/*.tmp
 
 # Developer environments
 *.DS_Store

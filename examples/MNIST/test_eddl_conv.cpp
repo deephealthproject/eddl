@@ -27,11 +27,10 @@
 // SOFTWARE.
 
 #include <stdio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 
-#include "../../../src/apis/eddl.h"
+#include "../../src/apis/eddl.h"
 
 layer ResBlock(layer in,int k,int n)
 {

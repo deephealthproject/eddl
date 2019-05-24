@@ -27,12 +27,11 @@
 // SOFTWARE.
 
 #include <stdio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 
-#include "../../../src/apis/eddl.h"
-#include "../../../src/apis/wrapper.h"
+#include "../../src/apis/eddl.h"
+#include "../../src/apis/wrapper.h"
 
 layer ResBlock(layer in,int k,int n)
 {
@@ -82,10 +81,10 @@ int main(int argc, char **argv)
     const int st1_c[] = {1,1};
     const int ks2_p[] = {2,2};
     const int st2_p[] = {2,2};
-    l=MPool_init(Activation_init(Conv_init(l, ks1_c, 3, st1_c, 2, "same", "Conv"),"relu", "Activation"), ks2_p, 2, st2_p, 2, "none", "MaxPool");
-    l=MPool_init(Activation_init(Conv_init(l, ks2_c, 3, st1_c, 2, "same", "Conv"),"relu", "Activation"), ks2_p, 2, st2_p, 2, "none", "MaxPool");
-    l=MPool_init(Activation_init(Conv_init(l, ks3_c, 3, st1_c, 2, "same", "Conv"),"relu", "Activation"), ks2_p, 2, st2_p, 2, "none", "MaxPool");
-    l=MPool_init(Activation_init(Conv_init(l, ks4_c, 3, st1_c, 2, "same", "Conv"),"relu", "Activation"), ks2_p, 2, st2_p, 2, "none", "MaxPool");
+    l=MaxPool_init(Activation_init(Conv_init(l, ks1_c, 3, st1_c, 2, "same", "Conv"),"relu", "Activation"), ks2_p, 2, st2_p, 2, "none", "MaxPool");
+    l=MaxPool_init(Activation_init(Conv_init(l, ks2_c, 3, st1_c, 2, "same", "Conv"),"relu", "Activation"), ks2_p, 2, st2_p, 2, "none", "MaxPool");
+    l=MaxPool_init(Activation_init(Conv_init(l, ks3_c, 3, st1_c, 2, "same", "Conv"),"relu", "Activation"), ks2_p, 2, st2_p, 2, "none", "MaxPool");
+    l=MaxPool_init(Activation_init(Conv_init(l, ks4_c, 3, st1_c, 2, "same", "Conv"),"relu", "Activation"), ks2_p, 2, st2_p, 2, "none", "MaxPool");
 
     /*for(int i=0,k=16;i<3;i++,k=k*2)
       l=ResBlock(l,k,2);
@@ -120,8 +119,8 @@ int main(int argc, char **argv)
     build(net, sgd, c, 1, m, 1, cs);
 
     // Load and preprocess training data
-    tensor X=LTensor_init_fromfile("trX.bin");
-    tensor Y=LTensor_init_fromfile("trY.bin");
+    layer X=LTensor_init_fromfile("trX.bin");
+    layer Y=LTensor_init_fromfile("trY.bin");
     LTensor_div(X, 255.0);
 
     // training, list of input and output tensors, batch, epochs
@@ -132,8 +131,8 @@ int main(int argc, char **argv)
     evaluate(net, X->input, Y->input);
 
     // Load and preprocess test data
-    tensor tX=LTensor_init_fromfile("tsX.bin");
-    tensor tY=LTensor_init_fromfile("tsY.bin");
+    layer tX=LTensor_init_fromfile("tsX.bin");
+    layer tY=LTensor_init_fromfile("tsY.bin");
     LTensor_div(tX, 255.0);
 
     // Evaluate test

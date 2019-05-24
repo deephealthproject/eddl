@@ -27,11 +27,10 @@
 // SOFTWARE.
 
 #include <stdio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 
-#include "../../../src/apis/eddl.h"
+#include "../../src/apis/eddl.h"
 
 int main(int argc, char **argv)
 {

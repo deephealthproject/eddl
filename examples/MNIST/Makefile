@@ -126,7 +126,7 @@ endif
 endif
 endif
 
-SRC_PATH=../../../src
+SRC_PATH=../../src
 
 # Group compiled objects (Alphabetically sorted!)
 APIS_OBJ = eddl.o wrapper.o
@@ -148,11 +148,11 @@ CORE_OBJ = compserv.o net.o tensor.o tensor_op.o utils.o
 OBJ := $(APIS_OBJ) $(INITIALIZERS_OBJ) $(HARDWARE_OBJ) $(CONV_LAYERS_OBJ) $(CORE_LAYERS_OBJ) $(MERGE_LAYERS_OBJ) $(NOISE_LAYERS_OBJ) $(OPERATORS_LAYERS_OBJ) $(POOL_LAYERS_OBJ) $(RECURRENT_LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(CORE_OBJ)
 
 ifeq ($(CORE),1)  # CPU
-all: $(GPU_OBJ) $(OBJ) shared_eddl test_eddl test_wrapper
+all: $(GPU_OBJ) $(OBJ) shared_eddl test_eddl_mlp test_wrapper_mlp test_eddl_conv test_wrapper_conv
 endif
 
 ifeq ($(CORE),2)  # GPU
-all: $(GPU_OBJ) $(OBJ) shared_eddl test_eddl test_wrapper
+all: $(GPU_OBJ) $(OBJ) shared_eddl test_eddl_mlp test_wrapper_mlp test_eddl_conv test_wrapper_conv
 endif
 
 #---------------------------------- apis
@@ -345,11 +345,17 @@ tensor_kernels.o: $(SRC_PATH)/hardware/gpu/tensor_kernels.cu $(SRC_PATH)/hardwar
 shared_eddl: $(OBJ) $(GPU_OBJ)
 	$(CXX) $(CXXFLAGS) $(CXXSOFLAGS) $(GPU_CXXFLAGS) -o eddl.so $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
 
-test_eddl: test_eddl.cpp $(OBJ) $(GPU_OBJ)
-	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_eddl.cpp -o test_eddl $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
+test_eddl_mlp: test_eddl_mlp.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_eddl_mlp.cpp -o test_eddl_mlp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
 
-test_wrapper: test_wrapper.cpp $(OBJ) $(GPU_OBJ)
-	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_wrapper.cpp -o test_wrapper $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
+test_wrapper_mlp: test_wrapper_mlp.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_wrapper_mlp.cpp -o test_wrapper_mlp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
+
+test_eddl_conv: test_eddl_conv.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_eddl_conv.cpp -o test_eddl_conv $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
+
+test_wrapper_conv: test_wrapper_conv.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) test_wrapper_conv.cpp -o test_wrapper_conv $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS)
 
 #---------------------------------- Extra options
 install:

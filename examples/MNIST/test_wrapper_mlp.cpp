@@ -27,12 +27,11 @@
 // SOFTWARE.
 
 #include <stdio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 
-#include "../../../src/apis/eddl.h"
-#include "../../../src/apis/wrapper.h"
+#include "../../src/apis/eddl.h"
+#include "../../src/apis/wrapper.h"
 
 int main(int argc, char **argv)
 {
@@ -76,8 +75,8 @@ int main(int argc, char **argv)
     build(net, sgd, c, 1, m, 1, cs);
 
     // Load and preprocess training data
-    tensor X=LTensor_init_fromfile("trX.bin");
-    tensor Y=LTensor_init_fromfile("trY.bin");
+    layer X=LTensor_init_fromfile("trX.bin");
+    layer Y=LTensor_init_fromfile("trY.bin");
     LTensor_div(X, 255.0);
 
     // training, list of input and output tensors, batch, epochs
@@ -88,8 +87,8 @@ int main(int argc, char **argv)
     evaluate(net, X->input, Y->input);
 
     // Load and preprocess test data
-    tensor tX=LTensor_init_fromfile("tsX.bin");
-    tensor tY=LTensor_init_fromfile("tsY.bin");
+    layer tX=LTensor_init_fromfile("tsX.bin");
+    layer tY=LTensor_init_fromfile("tsY.bin");
     LTensor_div(tX, 255.0);
 
     // Evaluate test
