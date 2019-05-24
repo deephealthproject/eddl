@@ -334,15 +334,16 @@ void Net::build(optim *opt, vloss co, vmetrics me) {
     // check devices
     dev = -1;
     int ind;
-    for (int i = 0; i < layers.size(); i++)
+    for (int i = 0; i < layers.size(); i++){
         // do not consider input layers, since they are always on CPU
         if (!isIn(layers[i], lin, ind)) {
             if (dev == -1) dev = layers[i]->dev;
             else {
                 if (layers[i]->dev != dev)
-                    msg("Net with layers in different devicess", "Net.build");
+                    msg("Net with layers in different devices", "Net.build");
             }
         }
+    }
     if (dev == DEV_CPU)
         cout << "Net running on CPU\n";
     else if (dev < DEV_FPGA)
@@ -681,7 +682,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
                         errors[p] / (batch * (j + 1)), metrics[k]->name.c_str(), errors[p + 1] / (batch * (j + 1)));
                 fiterr[p] = fiterr[p + 1] = 0.0;
             }
-            fprintf(stdout, "%1.3f secs/batch\r", time_span.count());
+            fprintf(stdout, "%1.3f secs/batch\n", time_span.count());
             fflush(stdout);
         }
         high_resolution_clock::time_point e2 = high_resolution_clock::now();

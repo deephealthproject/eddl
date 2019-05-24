@@ -40,13 +40,13 @@ int LConvT::total_layers = 0;
 // ---- TRANSPOSED CONVOLUTION ----
 LConvT::LConvT(Layer *parent, int filters, const initializer_list<int> &kernel_size,
     const initializer_list<int> &output_padding, string padding, const initializer_list<int> &dilation_rate,
-    const initializer_list<int> &strides, bool use_bias, string name, int dev) : LConvT(parent, new ConvolDescriptor(kernel_size, strides, padding), name, dev) {
+    const initializer_list<int> &strides, bool use_bias, string name, int dev) : LConvT(parent, new ConvolDescriptor(filters, kernel_size, strides, padding), name, dev) {
     // TODO: Implement (Fix initialization)
 };
 
 LConvT::LConvT(Layer *parent, ConvolDescriptor *cd, string name, int dev) : LinLayer(name, dev) {
     // TODO: Implement (Fix initialization)
-    total_layers++;
+    if(name.empty()) this->name = "convt" + to_string(++total_layers);
 }
 
 

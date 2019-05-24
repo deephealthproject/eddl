@@ -15,7 +15,7 @@ int LBatchNorm::total_layers = 0;
 
 LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev) : LinLayer(name, dev) {
     if (parent->output->ndim != 2) msg("LBatchNorm only works over 2D tensors", "LBatchNorm");
-    total_layers++;
+    if(name.empty()) this->name = "batchnorm" + to_string(++total_layers);
     this->momentum = momentum;
     this->epsilon = epsilon;
     this->affine = affine;

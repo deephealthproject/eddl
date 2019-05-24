@@ -48,7 +48,7 @@ LMinimum::LMinimum(vector<Layer *> parent, string name, int dev) : MLayer(name, 
                 msg("Error: LMinimum layers with different tensor shape");
             }
 
-    total_layers++;
+    if(name.empty()) this->name = "minimum" + to_string(++total_layers);
 
     input = parent[0]->output;
 

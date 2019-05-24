@@ -35,25 +35,25 @@
 
 layer ResBlock(layer in,int k,int n)
 {
-    const int ks1_c[] = {k, 1, 1};
-    const int ks3_c[] = {k, 3, 3};
+    const int ks1_c[] = {1, 1};
+    const int ks3_c[] = {3, 3};
     const int st1_c[] = {1, 1};
     const int st2_c[] = {2, 2};
 
     layer l=in;
     for(int i=0;i<n;i++)
 
-        l=Activation_init(Conv_init(l, ks3_c, 3, st1_c, 2, "same", "Conv"), "relu", "Activation");
+        l=Activation_init(Conv_init(l, k, ks3_c, 2, st1_c, 2, "same", "Conv"), "relu", "Activation");
 
     // adapt depth of input
-    in=Conv_init(in,ks1_c, 3, st1_c, 2, "same", "Conv");
+    in=Conv_init(in, k, ks1_c, 2, st1_c, 2, "same", "Conv");
 
     // add input and last
     layer l_add[] = {in, l};
     l=Add_init(l_add, 2, "Add");
 
     // reduce size
-    l=Conv_init(l,ks3_c, 3, st2_c, 2, "same", "Conv");
+    l=Conv_init(l, k, ks3_c, 2, st2_c, 2, "same", "Conv");
     return l;
 }
 
@@ -74,17 +74,14 @@ int main(int argc, char **argv)
     const int rs_shape[] = {batch,1,28,28};
     l=Reshape_init(l, rs_shape, 4, "Reshape");
 
-    const int ks1_c[] = {16, 3, 3};
-    const int ks2_c[] = {32, 3, 3};
-    const int ks3_c[] = {64, 3, 3};
-    const int ks4_c[] = {128, 3, 3};
+    const int ks1_c[] = {3,3};
     const int st1_c[] = {1,1};
     const int ks2_p[] = {2,2};
     const int st2_p[] = {2,2};
-    l=MaxPool_init(Activation_init(Conv_init(l, ks1_c, 3, st1_c, 2, "same", "Conv"),"relu", "Activation"), ks2_p, 2, st2_p, 2, "none", "MaxPool");
-    l=MaxPool_init(Activation_init(Conv_init(l, ks2_c, 3, st1_c, 2, "same", "Conv"),"relu", "Activation"), ks2_p, 2, st2_p, 2, "none", "MaxPool");
-    l=MaxPool_init(Activation_init(Conv_init(l, ks3_c, 3, st1_c, 2, "same", "Conv"),"relu", "Activation"), ks2_p, 2, st2_p, 2, "none", "MaxPool");
-    l=MaxPool_init(Activation_init(Conv_init(l, ks4_c, 3, st1_c, 2, "same", "Conv"),"relu", "Activation"), ks2_p, 2, st2_p, 2, "none", "MaxPool");
+    l=MaxPool_init(Activation_init(Conv_init(l, 16, ks1_c, 2, st1_c, 2, "same", "Conv"),"relu", "Activation"), ks2_p, 2, st2_p, 2, "none", "MaxPool");
+    l=MaxPool_init(Activation_init(Conv_init(l, 32, ks1_c, 2, st1_c, 2, "same", "Conv"),"relu", "Activation"), ks2_p, 2, st2_p, 2, "none", "MaxPool");
+    l=MaxPool_init(Activation_init(Conv_init(l, 64, ks1_c, 2, st1_c, 2, "same", "Conv"),"relu", "Activation"), ks2_p, 2, st2_p, 2, "none", "MaxPool");
+    l=MaxPool_init(Activation_init(Conv_init(l, 128, ks1_c, 2, st1_c, 2, "same", "Conv"),"relu", "Activation"), ks2_p, 2, st2_p, 2, "none", "MaxPool");
 
     /*for(int i=0,k=16;i<3;i++,k=k*2)
       l=ResBlock(l,k,2);

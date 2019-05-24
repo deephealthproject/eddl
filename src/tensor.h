@@ -108,13 +108,8 @@ public:
 
     //...
     ConvolDescriptor();
-
-    ConvolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st, string p);
-
+    ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p);
     ConvolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st, const initializer_list<int> &p);
-
-    ConvolDescriptor(const vector<int> &ks, const vector<int> &st, string p);
-
 
     virtual void build(Tensor *A);
 };

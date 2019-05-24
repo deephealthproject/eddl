@@ -48,7 +48,7 @@ LMaximum::LMaximum(vector<Layer *> parent, string name, int dev) : MLayer(name, 
                 msg("Error: LMaximum layers with different tensor shape");
             }
 
-    total_layers++;
+    if(name.empty()) this->name = "maximum" + to_string(++total_layers);
 
     input = parent[0]->output;
 

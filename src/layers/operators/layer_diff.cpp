@@ -49,7 +49,7 @@ int LDiff::total_layers = 0;
 
   */
 LDiff::LDiff(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev) {
-    total_layers++;
+    if(name.empty()) this->name = "diff" + to_string(++total_layers);
     binary=1;
 
     input = l1->output;
@@ -75,7 +75,7 @@ LDiff::LDiff(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, de
 
   */
 LDiff::LDiff(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
-    total_layers++;
+    if(name.empty()) this->name = "diff" + to_string(++total_layers);
     val=k;
 
     input = l->output;

@@ -49,7 +49,7 @@ int LSum::total_layers = 0;
 
   */
 LSum::LSum(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev) {
-    total_layers++;
+    if(name.empty()) this->name = "sum" + to_string(++total_layers);
     binary = 1;
 
     input = l1->output;
@@ -75,7 +75,7 @@ LSum::LSum(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev
 
   */
 LSum::LSum(Layer *l, float k, string name, int dev) : OperatorLayer(name, dev) {
-    total_layers++;
+    if(name.empty()) this->name = "sum" + to_string(++total_layers);
     val = k;
 
     input = l->output;

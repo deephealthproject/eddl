@@ -48,7 +48,7 @@ int LSqrt::total_layers = 0;
 
   */
 LSqrt::LSqrt(Layer *l, string name, int dev): OperatorLayer(name, dev) {
-    total_layers++;
+    if(name.empty()) this->name = "sqrt" + to_string(++total_layers);
     //TODO: Implement
 }
 

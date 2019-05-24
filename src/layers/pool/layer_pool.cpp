@@ -40,7 +40,7 @@ int LPool::total_layers = 0;
 
 LPool::LPool(Layer *parent, PoolDescriptor *D, string name, int d) : LinLayer(name, d) {
     if (parent->output->ndim != 4) msg("LPool only works over 4D tensors", "LPool::LPool");
-    total_layers++;
+    if(name.empty()) this->name = "pool" + to_string(++total_layers);
 
     pd = D;
 

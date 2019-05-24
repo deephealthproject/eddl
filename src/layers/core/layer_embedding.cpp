@@ -38,7 +38,7 @@ int LEmbedding::total_layers = 0;
 
 LEmbedding::LEmbedding(int input_dim, int output_dim, string name, int dev): LinLayer(name, dev) {
     // TODO: Implement
-    total_layers++;
+    if(name.empty()) this->name = "embedding" + to_string(++total_layers);
     this->input_dim = input_dim;
     this->output_dim = output_dim;
 }

@@ -49,7 +49,7 @@ int LDiv::total_layers = 0;
 
   */
 LDiv::LDiv(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev) {
-    total_layers++;
+    if(name.empty()) this->name = "div" + to_string(++total_layers);
     binary = 1;
 
     input = l1->output;
@@ -75,7 +75,7 @@ LDiv::LDiv(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev
 
   */
 LDiv::LDiv(Layer *l, float k, string name, int dev) : OperatorLayer(name, dev) {
-    total_layers++;
+    if(name.empty()) this->name = "div" + to_string(++total_layers);
     val = k;
 
     input = l->output;

@@ -38,7 +38,7 @@ int LDropout::total_layers = 0;
 
 LDropout::LDropout(Layer *parent, float df, string name, int d) : LinLayer(name, d) {
 
-    total_layers++;
+    if(name.empty()) this->name = "dropout" + to_string(++total_layers);
 
     // df: drop factor is the probability to delete (drop) an activation
     this->df = df;

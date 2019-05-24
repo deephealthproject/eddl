@@ -65,7 +65,7 @@ LConcat::LConcat(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
         }
     }
 
-    total_layers++;
+    if(name.empty()) this->name = "concat" + to_string(++total_layers);
 
     input = parent[0]->output;
     int t = 0;

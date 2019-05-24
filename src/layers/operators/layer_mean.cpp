@@ -58,7 +58,7 @@ int LMean::total_layers = 0;
 
   */
 LMean::LMean(Layer *l, int axis, bool keepdims, string name, int dev): OperatorLayer(name, dev) {
-    total_layers++;
+    if(name.empty()) this->name = "mean" + to_string(++total_layers);
     //TODO: Implement
 }
 

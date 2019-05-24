@@ -48,11 +48,10 @@ void Tensor_addData(Tensor *t, const float *ptr){
     for (int i = 0; i < t->ndim; ++i) size *= t->shape[i];
     t->size = size;
 
-    // Allocate memory
-    t->ptr = (float *) malloc(size * sizeof(Tensor *));
+    // Allocate memory and fill tensor
+    t->ptr = new float[size];
+    std::copy(ptr, ptr+size, t->ptr);
 
-    // Fill tensor
-    for (int i = 0; i < size; ++i) t->ptr[i] = ptr[i];
 }
 
 
@@ -78,10 +77,12 @@ layer Dense_init(layer parent, int ndim, bool use_bias, const char *name) {
     return new LDense(parent, ndim, use_bias, name, DEV_CPU);
 }
 
-layer Conv_init(layer parent, const int *ks, int ks_size, const int *st, int st_size, const char *p, const char *name) {
+layer Conv_init(layer parent, int filters, const int *ks, int ks_size, const int *st, int st_size, const char *p, const char *name) {
     vector<int> vks(ks, ks + ks_size);
     vector<int> vst(st, st + st_size);
-    return new LConv(parent, vks, vst, p, name, DEV_CPU);
+    vector<int> vdr = {1,1};
+    return new LConv(parent, filters, vks, vst, p, 1, vdr, true, name, DEV_CPU);
+
 }
 
 layer MaxPool_init(layer parent, const int *ks, int ks_size, const int *st, int st_size, const char *p, const char *name) {
@@ -136,6 +137,33 @@ model Model_init(Layer *in, int in_size, Layer *out, int out_size) {
     return EDDL::Model(vin, vout);
 }
 
+model Model_default(){
+    int batch=1000;
+
+    // network
+    layer in=eddl.Input({batch,784});
+    layer l=in;
+
+
+    l=eddl.Reshape(l,{batch,1,28,28});
+    l=eddl.MaxPool(eddl.Activation(eddl.Conv(l,16,{3,3}),"relu"),{2,2});
+    l=eddl.MaxPool(eddl.Activation(eddl.Conv(l,32,{3,3}),"relu"),{2,2});
+    l=eddl.MaxPool(eddl.Activation(eddl.Conv(l,64,{3,3}),"relu"),{2,2});
+    l=eddl.MaxPool(eddl.Activation(eddl.Conv(l,128,{3,3}),"relu"),{2,2});
+
+    /*for(int i=0,k=16;i<3;i++,k=k*2)
+      l=ResBlock(l,k,2);
+  */
+    l=eddl.Reshape(l,{batch,-1});
+
+    l=eddl.Activation(eddl.Dense(l,32),"relu");
+
+    layer out=eddl.Activation(eddl.Dense(l,10),"softmax");
+
+    // net define input and output layers list
+    model net=eddl.Model({in},{out});
+    return net;
+}
 void plot(model m, const char *fname) {
     EDDL::plot(m, fname);
 }
@@ -159,18 +187,6 @@ void build(model net, optimizer opt, loss *c, int size_c, metric *m, int size_m,
 void fit(model m, Tensor *in, Tensor *out, int batch, int epochs) {
     vector<Tensor *> tin = {in};
     vector<Tensor *> tout = {out};
-    m->fit(tin, tout, batch, epochs);
-}
-
-void fit_safe(model m, const char *in, const char *out, int batch, int epochs){
-    // Load and preprocess training data
-    layer X=LTensor_init_fromfile(in);
-    layer Y=LTensor_init_fromfile(out);
-    LTensor_div(X, 255.0);
-
-    vector<Tensor *> tin = {X->input};
-    vector<Tensor *> tout = {Y->input};
-
     m->fit(tin, tout, batch, epochs);
 }
 

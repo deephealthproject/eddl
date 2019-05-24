@@ -49,8 +49,6 @@ LAdd::LAdd(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
                 msg("Error: LAdd layers with different tensor shape");
             }
 
-    total_layers++;
-
     input = parent[0]->output;
 
     output = new Tensor(parent[0]->output->getShape(), d);

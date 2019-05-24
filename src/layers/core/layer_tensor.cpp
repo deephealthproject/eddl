@@ -43,21 +43,18 @@ int LTensor::total_layers = 0;
 // From file
 LTensor::LTensor(string fname) : LinLayer("ltensor" + to_string(total_layers), DEV_CPU) {
     input = output = new Tensor(fname);
-    total_layers++;
 }
 
 // From list of shape
 LTensor::LTensor(const initializer_list<int> &init, int dev) : LinLayer("ltensor" + to_string(total_layers), dev) {
     input = output = new Tensor(init, dev);
     delta = new Tensor(init, dev);
-    total_layers++;
 }
 
 // From vector<int>
 LTensor::LTensor(const vector<int> shape, int dev) : LinLayer("ltensor" + to_string(total_layers), dev) {
     input = output = new Tensor(shape, dev);
     delta = new Tensor(shape, dev);
-    total_layers++;
 }
 
 
@@ -72,7 +69,6 @@ void Ltensor::mult2D(LTensor *A,...){
 LTensor::LTensor(Layer *l) : LinLayer("ltensor" + to_string(total_layers), l->dev) {
     input = output = l->output;
     delta = l->delta;
-    total_layers++;
 }
 
 
@@ -83,7 +79,7 @@ LTensor LTensor::operator+(LTensor L) {
     vl.push_back(this);
     vl.push_back(&L);
 
-    LTensor *l = new LTensor(new LAdd(vl, "add" + to_string(1 + LAdd::total_layers), DEV_CPU));
+    LTensor *l = new LTensor(new LAdd(vl, "", DEV_CPU));
 
     return *l;
 }

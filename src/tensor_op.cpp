@@ -566,12 +566,28 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
 
 ////////////////////////////////
 //// CONVOLUTIONS
-ConvolDescriptor::ConvolDescriptor() {
+ConvolDescriptor::ConvolDescriptor() {}
+
+ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p){
+    if (ks.size() != 2) { msg("Kernels must have 3 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
+    if (st.size() != 2) { msg("Strides must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
+
+    // Add filters to kernel_size
+    ksize = vector<int>(ks);
+    ksize.insert(ksize.begin(), 1, filters);
+    stride = vector<int>(st.begin(), st.end());
+
+    if (p == "same") {
+        pad.push_back(ksize[1] / 2);
+        pad.push_back(ksize[2] / 2);
+    } else if (p == "none") {
+        pad.push_back(0);
+        pad.push_back(0);
+    } else msg("Incorrect padding type", "ConvolDescriptor::ConvolDescriptor");
 
 }
 
-ConvolDescriptor::ConvolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st,
-                                   const initializer_list<int> &p) {
+ConvolDescriptor::ConvolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st, const initializer_list<int> &p) {
     ksize = vector<int>(ks.begin(), ks.end());
     stride = vector<int>(st.begin(), st.end());
     pad = vector<int>(p.begin(), p.end());
@@ -580,30 +596,6 @@ ConvolDescriptor::ConvolDescriptor(const initializer_list<int> &ks, const initia
     if (stride.size() != 2) msg("Strides must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor");
     if (pad.size() != 2) msg("Padding must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor");
 }
-
-
-ConvolDescriptor::ConvolDescriptor(const vector<int> &ks, const vector<int> &st, string p) {
-    if (ks.size() != 3) { msg("Kernels must have 3 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
-    if (st.size() != 2) { msg("Strides must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
-
-    ksize = ks;
-    stride = st;
-
-    if (p == "same") {
-        pad.push_back(ks[1] / 2);
-        pad.push_back(ks[2] / 2);
-    } else if (p == "none") {
-        pad.push_back(0);
-        pad.push_back(0);
-    } else msg("Incorrect padding type", "ConvolDescriptor::ConvolDescriptor");
-
-}
-
-
-ConvolDescriptor::ConvolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st, string p)
-        : ConvolDescriptor(vector<int>(ks.begin(), ks.end()), vector<int>(st.begin(), st.end()), p) {
-}
-
 
 void ConvolDescriptor::build(Tensor *A) {
 

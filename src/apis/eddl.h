@@ -73,46 +73,28 @@ public:
     static void div(tensor t, float v);
 
     // ---- CORE LAYERS ----
-    static layer Activation(layer parent, string activation);
-    static layer Activation(layer parent, string activation, string name);
+    static layer Activation(layer parent, string activation, string name="");
 
-    static layer Conv(layer parent, const initializer_list<int> &ks);//Todo: Remove
-    static layer Conv(layer parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p);//Todo: Remove
-    static layer Conv(layer parent, const initializer_list<int> &ks, const initializer_list<int> &st);//Todo: Remove
-    static layer Conv(layer parent, const initializer_list<int> &ks, string p); //Todo: Remove
     static layer Conv(layer parent, int filters, const initializer_list<int> &kernel_size,
-                      const initializer_list<int> &strides, string padding, int groups, const initializer_list<int> &dilation_rate,
-                      bool use_bias); //Todo: Implement
-    static layer Conv(layer parent, int filters, const initializer_list<int> &kernel_size,
-                      const initializer_list<int> &strides, string padding, int groups, const initializer_list<int> &dilation_rate,
-                      bool use_bias, string name); //Todo: Implement
+                      const initializer_list<int> &strides={1,1}, string padding="same", int groups=1, const initializer_list<int> &dilation_rate={1,1},
+                      bool use_bias=true, string name=""); //Todo: Implement
 
     static layer ConvT(layer parent, int filters, const initializer_list<int> &kernel_size,
-                       const initializer_list<int> &output_padding, string padding, const initializer_list<int> &dilation_rate,
-                       const initializer_list<int> &strides, bool use_bias); //Todo: Implement
-    static layer ConvT(layer parent, int filters, const initializer_list<int> &kernel_size,
-                       const initializer_list<int> &output_padding, string padding, const initializer_list<int> &dilation_rate,
-                       const initializer_list<int> &strides, bool use_bias, string name); //Todo: Implement
+                       const initializer_list<int> &output_padding, string padding="same", const initializer_list<int> &dilation_rate={1,1},
+                       const initializer_list<int> &strides={1,1}, bool use_bias=true, string name=""); //Todo: Implement
 
-    static layer Dense(layer parent, int ndim, bool use_bias=true);//*
-    static layer Dense(layer parent, int ndim, bool use_bias, string name); //Todo: Implement
+    static layer Dense(layer parent, int ndim, bool use_bias=true, string name=""); //Todo: Implement
 
-    static layer Embedding(int input_dim, int output_dim); //Todo: Implement
-    static layer Embedding(int input_dim, int output_dim, string name); //Todo: Implement
+    static layer Embedding(int input_dim, int output_dim, string name=""); //Todo: Implement
 
-    static layer Input(tensor t); // Why initializing from a tensor?
-    static layer Input(const initializer_list<int> &shape);
-    static layer Input(const initializer_list<int> &shape, string name);
+    static layer Input(const initializer_list<int> &shape, string name="");
 
     // TODO: Interpolate, Resize, upsampling (downsampling?)
-    static layer UpSampling(layer parent, const initializer_list<int> &size, string interpolation); //Todo: Implement
-    static layer UpSampling(layer parent, const initializer_list<int> &size, string interpolation, string name); //Todo: Implement
+    static layer UpSampling(layer parent, const initializer_list<int> &size, string interpolation="nearest", string name=""); //Todo: Implement
 
-    static layer Reshape(layer parent, const initializer_list<int> &shape); //*
-    static layer Reshape(layer parent, const initializer_list<int> &shape, string name);
+    static layer Reshape(layer parent, const initializer_list<int> &shape, string name="");
 
-    static layer Transpose(layer parent, const initializer_list<int> &dims); //Todo: Implement
-    static layer Transpose(layer parent, const initializer_list<int> &dims, string name); //Todo: Implement
+    static layer Transpose(layer parent, const initializer_list<int> &dims, string name=""); //Todo: Implement
 
     // ---- LOSSES ----
     static loss LossFunc(string type);
@@ -121,39 +103,29 @@ public:
     static metric MetricFunc(string type);
 
     // ---- MERGE LAYERS ----
-    static layer Add(const initializer_list<layer> &layers);
-    static layer Add(const initializer_list<layer> &layers, string name);
+    static layer Add(const initializer_list<layer> &layers, string name="");
 
-    static layer Average(const initializer_list<layer> &layers); //Todo: Implement
-    static layer Average(const initializer_list<layer> &layers, string name); //Todo: Implement
+    static layer Average(const initializer_list<layer> &layers, string name=""); //Todo: Implement
 
-    static layer Concat(const initializer_list<layer> &layers);
-    static layer Concat(const initializer_list<layer> &layers, string name);
+    static layer Concat(const initializer_list<layer> &layers, string name="");
 
-    static layer MatMul(const initializer_list<layer> &layers); //Todo: Implement
-    static layer MatMul(const initializer_list<layer> &layers, string name); //Todo: Implement
+    static layer MatMul(const initializer_list<layer> &layers, string name=""); //Todo: Implement
 
-    static layer Maximum(const initializer_list<layer> &layers); //Todo: Implement
-    static layer Maximum(const initializer_list<layer> &layers, string name); //Todo: Implement
+    static layer Maximum(const initializer_list<layer> &layers, string name=""); //Todo: Implement
 
-    static layer Minimum(const initializer_list<layer> &layers); //Todo: Implement
-    static layer Minimum(const initializer_list<layer> &layers, string name); //Todo: Implement
+    static layer Minimum(const initializer_list<layer> &layers, string name=""); //Todo: Implement
 
-    static layer Subtract(const initializer_list<layer> &layers); //Todo: Implement
-    static layer Subtract(const initializer_list<layer> &layers, string name); //Todo: Implement
+    static layer Subtract(const initializer_list<layer> &layers, string name=""); //Todo: Implement
 
 
     // ---- NOISE LAYERS ----
-    static layer GaussianNoise(layer parent, float stddev); //Todo: Implement
-    static layer GaussianNoise(layer parent, float stddev, string name); //Todo: Implement
+    static layer GaussianNoise(layer parent, float stddev, string name=""); //Todo: Implement
 
 
     // ---- NORMALIZATION LAYERS ----
-    static layer BatchNormalization(layer parent, float momentum, float epsilon, bool affine); //Todo: Implement
-    static layer BatchNormalization(layer parent, float momentum, float epsilon, bool affine, string name); //Todo: Implement
+    static layer BatchNormalization(layer parent, float momentum=0.99f, float epsilon=0.001f, bool affine=true, string name=""); //Todo: Implement
 
-    static layer Dropout(layer parent, float rate);
-    static layer Dropout(layer parent, float rate, string name); //Todo: Implement
+    static layer Dropout(layer parent, float rate, string name=""); //Todo: Implement
 
     // ---- OPERATOR LAYERS ----
     static layer Abs(layer l);
@@ -193,26 +165,20 @@ public:
 
     // ---- POOLING LAYERS ----
     static layer AveragePool(layer parent, const initializer_list<int> &pool_size);
-    static layer AveragePool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding="none");
-    static layer AveragePool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding, string name);
+    static layer AveragePool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding="none", string name="");
 
-    static layer GlobalMaxPool(layer parent);
-    static layer GlobalMaxPool(layer parent, string name); //Todo: Implement
+    static layer GlobalMaxPool(layer parent, string name=""); //Todo: Implement
 
-    static layer GlobalAveragePool(layer parent);
-    static layer GlobalAveragePool(layer parent, string name); //Todo: Implement
+    static layer GlobalAveragePool(layer parent, string name=""); //Todo: Implement
 
-    static layer MaxPool(layer parent, const initializer_list<int> &pool_size);
-    static layer MaxPool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding="none");
-    static layer MaxPool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding, string name);
+    static layer MaxPool(layer parent, const initializer_list<int> &pool_size, string padding="none", string name="");
+    static layer MaxPool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding="none", string name="");
 
 
     // ---- RECURRENT LAYERS ----
-    static layer RNN(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional);
-    static layer RNN(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name);
+    static layer RNN(layer parent, int units, int num_layers, bool use_bias=true, float dropout=.0f, bool bidirectional=false, string name="");
 
-    static layer LSTM(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional);
-    static layer LSTM(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name);
+    static layer LSTM(layer parent, int units, int num_layers, bool use_bias=true, float dropout=.0f, bool bidirectional=false, string name="");
 
 
 //    // ---- LR SCHEDULERS ----

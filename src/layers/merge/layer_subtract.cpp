@@ -48,7 +48,7 @@ LSubtract::LSubtract(vector<Layer *> parent, string name, int dev) : MLayer(name
                 msg("Error: LSubtract layers with different tensor shape");
             }
 
-    total_layers++;
+    if(name.empty()) this->name = "subtract" + to_string(++total_layers);
 
     input = parent[0]->output;
 

@@ -49,7 +49,7 @@ int LLog10::total_layers = 0;
 
   */
 LLog10::LLog10(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
-    total_layers++;
+    if(name.empty()) this->name = "log10" + to_string(++total_layers);
 
     input = l->output;
     output = new Tensor(l->output->getShape(), dev);

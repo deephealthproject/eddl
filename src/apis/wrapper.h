@@ -64,7 +64,7 @@ Tensor *Layer_input(layer l);
 Tensor *Layer_output(layer l);
 
 // Convolutional layers -----------------
-layer Conv_init(layer parent, const int *ks, int ks_size, const int *st, int st_size, const char *p, const char *name);
+layer Conv_init(layer parent, int filters, const int *ks, int ks_size, const int *st, int st_size, const char *p, const char *name);
 
 
 // Core layers --------------------------
@@ -113,11 +113,11 @@ compserv CS_CPU_init(int th);
 
 // Net ===================================
 model Model_init(Layer *in, int in_size, Layer *out, int out_size);
+model Model_default();
 void plot(model m, const char *fname);
 void summary(model m);
 void build(model net, optimizer opt, loss *c, int size_c, metric *m, int size_m, compserv cs);
 void fit(model m, Tensor *in, Tensor *out, int batch, int epochs);
-void fit_safe(model m, const char *in, const char *out, int batch, int epochs);
 void evaluate(model m, Tensor *in, Tensor *out);
 
 

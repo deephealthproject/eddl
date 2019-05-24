@@ -48,7 +48,7 @@ int LExp::total_layers = 0;
 
   */
 LExp::LExp(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
-    total_layers++;
+    if(name.empty()) this->name = "exp" + to_string(++total_layers);
 
     input = l->output;
     output = new Tensor(l->output->getShape(), dev);

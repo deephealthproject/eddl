@@ -38,7 +38,7 @@ using namespace std;
 int LInput::total_layers = 0;
 
 LInput::LInput(Tensor *in, string name, int d) : LinLayer(name, d) {
-    total_layers++;
+    if(name.empty()) this->name = "input" + to_string(++total_layers);
     input = output = in;
     delta = new Tensor(input->getShape(), d);
 }

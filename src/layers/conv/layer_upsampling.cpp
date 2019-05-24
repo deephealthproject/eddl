@@ -41,5 +41,5 @@ LUpSampling::LUpSampling(Layer *parent, const initializer_list<int> &size, strin
     // TODO: Implement
     this->size = size;
     this->interpolation = interpolation;
-    total_layers++;
+    if(name.empty()) this->name = "upsampling" + to_string(++total_layers);
 }
