@@ -42,17 +42,25 @@ void Tensor_point2data(Tensor *t, float *ptr) {
     t->ptr = ptr;
 }
 
+void Tensor_floodData(Tensor *t, float *ptr){
+    int size = 1;
+    for (int i = 0; i < t->ndim; ++i) size *= t->shape[i];
+    t->size = size;
+    t->ptr = ptr;
+}
+
+
 // Create Layers
-tensor LTensor_init(const int *shape, int shape_size) {
+layer LTensor_init(const int *shape, int shape_size) {
     vector<int> s(shape, shape + shape_size);
     return new LTensor(s, DEV_CPU);
 }
 
-tensor LTensor_init_fromfile(const char *fname) {
+layer LTensor_init_fromfile(const char *fname) {
     return new LTensor(fname);
 }
 
-void LTensor_div(tensor t, float v) {
+void LTensor_div(layer t, float v) {
     t->input->div(v);
 }
 
@@ -70,8 +78,7 @@ layer Conv_init(layer parent, const int *ks, int ks_size, const int *st, int st_
     return new LConv(parent, vks, vst, p, name, DEV_CPU);
 }
 
-layer MPool_init(layer parent, const int *ks, int ks_size, const int *st, int st_size, const char *p,
-                 const char *name) {
+layer MaxPool_init(layer parent, const int *ks, int ks_size, const int *st, int st_size, const char *p, const char *name) {
     vector<int> vks(ks, ks + ks_size);
     vector<int> vst(st, st + st_size);
     return new LMaxPool(parent, vks, vst, p, name, DEV_CPU);
@@ -99,7 +106,7 @@ layer Add_init(Layer **parent, int parent_size, const char *name) {
     return new LAdd(vparent, name, DEV_CPU);
 };
 
-layer Cat_init(Layer **init, int init_size, const char *name) {
+layer Concat_init(Layer **init, int init_size, const char *name) {
     vector<Layer *> vinit;
     vinit.reserve(init_size);
     for (int i = 0; i < init_size; ++i) {
@@ -149,6 +156,18 @@ void fit(model m, Tensor *in, Tensor *out, int batch, int epochs) {
     m->fit(tin, tout, batch, epochs);
 }
 
+void fit_safe(model m, const char *in, const char *out, int batch, int epochs){
+    // Load and preprocess training data
+    layer X=LTensor_init_fromfile(in);
+    layer Y=LTensor_init_fromfile(out);
+    LTensor_div(X, 255.0);
+
+    vector<Tensor *> tin = {X->input};
+    vector<Tensor *> tout = {Y->input};
+
+    m->fit(tin, tout, batch, epochs);
+}
+
 void evaluate(model m, Tensor *in, Tensor *out) {
     vector<Tensor *> tin = {in};
     vector<Tensor *> tout = {out};
@@ -169,6 +188,26 @@ Tensor *Layer_output(layer l) {
     return l->output;
 }
 
+// Losses
+loss Loss_MeanSquaredError_init(){
+    return new LMeanSquaredError();
+
+}
+loss Loss_CrossEntropy_init(){
+    return new LCrossEntropy();
+}
+loss Loss_SoftCrossEntropy_init(){
+    return new LSoftCrossEntropy();
+}
+
+// Metrics
+metric Metric_MeanSquaredError_init(){
+    return new MMeanSquaredError();
+
+}
+metric Metric_CategoricalAccuracy_init(){
+    return new MCategoricalAccuracy();
+}
 
 // Optimizers
 optimizer SGD_init(float lr, float mu) {
