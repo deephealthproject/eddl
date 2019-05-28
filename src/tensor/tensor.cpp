@@ -27,8 +27,6 @@
 // SOFTWARE.
 
 #include <stdio.h>
-#include <stdio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <initializer_list>
@@ -68,11 +66,7 @@ int Tensor::isFPGA() { return (device >= DEV_FPGA); }
 // Tensor class
 Tensor::Tensor() : device(DEV_CPU), ndim(0), size(0) {}
 
-Tensor::Tensor(const initializer_list<int> &init) : Tensor(init, DEV_CPU) {}
-
 Tensor::Tensor(const initializer_list<int> &init, int dev) : Tensor(vector<int>(init.begin(), init.end()), dev) {}
-
-Tensor::Tensor(const vector<int> shape) : Tensor(shape, DEV_CPU) {}
 
 Tensor::Tensor(vector<int> shape, int dev) {
 #ifndef cGPU
@@ -166,7 +160,7 @@ Tensor::Tensor(string fname, int bin) {
 
     if (bin) {
         fe = fopen(fname.c_str(), "rb");
-        if (fe == NULL) {
+        if (fe == nullptr) {
             fprintf(stderr, "%s not found\n", fname.c_str());
             exit(1);
         }
@@ -207,7 +201,7 @@ Tensor::Tensor(string fname, int bin) {
         fclose(fe);
     } else {
         fe = fopen(fname.c_str(), "rt");
-        if (fe == NULL) {
+        if (fe == nullptr) {
             fprintf(stderr, "%s not found\n", fname.c_str());
             exit(1);
         }
@@ -251,7 +245,7 @@ void Tensor::save(string fname) {
     float fv;
 
     fe = fopen(fname.c_str(), "wb");
-    if (fe == NULL) {
+    if (fe == nullptr) {
         fprintf(stderr, "Not abel to write %s \n", fname.c_str());
         exit(1);
     }
@@ -300,8 +294,7 @@ Tensor::~Tensor() {
 
 ///////////////////////////////////////////
 vector<int> Tensor::getShape() {
-    vector<int> shape = this->shape;
-    return shape;
+    return vector<int>(this->shape);
 }
 
 

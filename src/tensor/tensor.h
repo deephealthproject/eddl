@@ -156,17 +156,9 @@ public:
 
     // Constructors
     Tensor();
-
-    Tensor(const initializer_list<int> &init);
-
-    Tensor(const initializer_list<int> &init, int dev);
-
-    explicit Tensor(vector<int> shape);
-
-    Tensor(vector<int> shape, int dev);
-
-    explicit Tensor(string fname, int bin = 1);
-
+    Tensor(const initializer_list<int> &init, int dev=DEV_CPU);
+    Tensor(vector<int> shape, int dev=DEV_CPU);
+    Tensor(string fname, int bin=1);
     Tensor(vector<int> shape, Tensor *T);
 
     ~Tensor();
