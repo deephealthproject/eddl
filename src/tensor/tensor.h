@@ -36,7 +36,7 @@
 #include <string>
 #include <mutex>
 
-#include "hardware/cpu/Eigen/Dense"
+#include "../hardware/cpu/Eigen/Dense"
 
 #define DEV_CPU 0
 
@@ -108,7 +108,9 @@ public:
 
     //...
     ConvolDescriptor();
+
     ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p);
+
     ConvolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st, const initializer_list<int> &p);
 
     virtual void build(Tensor *A);
@@ -238,7 +240,7 @@ public:
 
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
 
-    static void sign(Tensor *A,Tensor *B);
+    static void sign(Tensor *A, Tensor *B);
 
     static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
 
@@ -261,10 +263,8 @@ public:
     static void el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
 
 
-
-
 ///////7
-    static void reduceTosum(Tensor *A, Tensor *B,int axis);
+    static void reduceTosum(Tensor *A, Tensor *B, int axis);
 
 
 //////
@@ -282,8 +282,7 @@ public:
     static void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
 
 
-
-  ///////
+    ///////
     static void Conv2D(ConvolDescriptor *D);
 
     static void Conv2D_grad(ConvolDescriptor *D);

@@ -35,13 +35,15 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include "tensor.h"
 
-#include "hardware/cpu/cpu_convol.h"
+#include "tensor.h"
+#include "../utils.h"
+
+#include "../hardware/cpu/cpu_convol.h"
 
 #ifdef cGPU
-#include "hardware/gpu/tensor_cuda.h"
-#include "hardware/gpu/tensor_cuda_op.h"
+#include "../hardware/gpu/tensor_cuda.h"
+#include "../hardware/gpu/tensor_cuda_op.h"
 #endif
 
 using namespace std;
@@ -60,66 +62,64 @@ int Tensor::eqsize(Tensor *A, Tensor *B) {
 }
 
 // Transpose
-void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims)
-{
-  B->tsem->lock();
-  if (!Tensor::eqsize(A, B))
-      msg("Tensors with different shape", "Tensor::transpose");
+void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
+    B->tsem->lock();
+    if (!Tensor::eqsize(A, B))
+        msg("Tensors with different shape", "Tensor::transpose");
 
-  if (A->device != B->device) msg("Tensors in different devices", "Tensor::transpose");
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::transpose");
 
-  Tensor *N;
-  if (A==B) N=new Tensor(A->getShape(),A->device);
-  else N=B;
+    Tensor *N;
+    if (A == B) N = new Tensor(A->getShape(), A->device);
+    else N = B;
 
-  if (A->isCPU()) {
-      for (int i = 0; i < A->size; i++)
-          N->ptr[i]=A->ptr[i];
-  }
-  #ifdef cGPU
-  else if (A->isGPU())
-    {
+    if (A->isCPU()) {
+        for (int i = 0; i < A->size; i++)
+            N->ptr[i] = A->ptr[i];
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+
+      }
+#endif
+#ifdef cFPGA
+    else {
 
     }
-  #endif
-  #ifdef cFPGA
-  else {
+#endif
+    B->tsem->unlock();
 
-  }
-  #endif
-  B->tsem->unlock();
-
-  if (A==B) delete N;
+    if (A == B) delete N;
 
 }
 
 //
 // Sum all the axis of A in B
 //
-void Tensor::reduceTosum(Tensor *A, Tensor *B,int axis)
-{
-  B->tsem->lock();
+void Tensor::reduceTosum(Tensor *A, Tensor *B, int axis) {
+    B->tsem->lock();
 
-  if (A->device != B->device) msg("Tensors in different devices", "Tensor::transpose");
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::transpose");
 
-  B->set(0.0);
-  if (A->isCPU()) {
-      for (int i = 0; i < B->size; i++)
-        for(int j=0;j<A->shape[axis];j++)
-          B->ptr[i]+=A->ptr[j];
-  }
-  #ifdef cGPU
-  else if (A->isGPU())
-    {
+    B->set(0.0);
+    if (A->isCPU()) {
+        for (int i = 0; i < B->size; i++)
+            for (int j = 0; j < A->shape[axis]; j++)
+                B->ptr[i] += A->ptr[j];
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+
+      }
+#endif
+#ifdef cFPGA
+    else {
 
     }
-  #endif
-  #ifdef cFPGA
-  else {
-
-  }
-  #endif
-  B->tsem->unlock();
+#endif
+    B->tsem->unlock();
 
 }
 
@@ -253,31 +253,30 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
     //B->tsem->unlock();
 }
 
-void Tensor::sign(Tensor *A,Tensor *B)
-{
-  B->tsem->lock();
+void Tensor::sign(Tensor *A, Tensor *B) {
+    B->tsem->lock();
 
-  if (!Tensor::eqsize(A, B))
-      msg("Tensors with different shape", "Tensor::sign");
-  if (A->device != B->device) msg("Tensors in different devices", "Tensor::sign");
+    if (!Tensor::eqsize(A, B))
+        msg("Tensors with different shape", "Tensor::sign");
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::sign");
 
-  if (A->isCPU()) {
-      for (int i = 0; i < A->size; i++)
-          if (A->ptr[i]<0)  B->ptr[i]=-1.0;
-          else B->ptr[i]=1.0;
-  }
+    if (A->isCPU()) {
+        for (int i = 0; i < A->size; i++)
+            if (A->ptr[i] < 0) B->ptr[i] = -1.0;
+            else B->ptr[i] = 1.0;
+    }
 #ifdef cGPU
-  else if (A->isGPU())
-    {
+    else if (A->isGPU())
+      {
+
+      }
+#endif
+#ifdef cFPGA
+    else {
 
     }
 #endif
-#ifdef cFPGA
-  else {
-
-  }
-#endif
-  B->tsem->unlock();
+    B->tsem->unlock();
 
 }
 
@@ -568,7 +567,7 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
 //// CONVOLUTIONS
 ConvolDescriptor::ConvolDescriptor() {}
 
-ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p){
+ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p) {
     if (ks.size() != 2) { msg("Kernels must have 3 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
     if (st.size() != 2) { msg("Strides must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
 
@@ -587,7 +586,8 @@ ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vec
 
 }
 
-ConvolDescriptor::ConvolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st, const initializer_list<int> &p) {
+ConvolDescriptor::ConvolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st,
+                                   const initializer_list<int> &p) {
     ksize = vector<int>(ks.begin(), ks.end());
     stride = vector<int>(st.begin(), st.end());
     pad = vector<int>(p.begin(), p.end());

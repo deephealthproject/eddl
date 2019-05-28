@@ -28,7 +28,7 @@
 #define _TENSOR_CUDA_OP_
 
 #include <cuda.h>
-#include "../../tensor.h"
+#include "../tensor/tensor.h"
 
 
 void gpu_set(Tensor *A,float v);

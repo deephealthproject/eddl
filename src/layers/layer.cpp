@@ -31,7 +31,7 @@
 #include <iostream>
 
 #include "layer.h"
-#include "../tensor.h"
+#include "../tensor/tensor.h"
 
 using namespace std;
 

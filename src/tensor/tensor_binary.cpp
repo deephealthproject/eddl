@@ -26,40 +26,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-
-#ifndef _METRIC_
-#define _METRIC_
-
 #include <stdio.h>
+#include <stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <initializer_list>
+#include <vector>
 #include <string>
+#include <iostream>
 
-#include "../tensor/tensor.h"
+#include "tensor.h"
+#include "../utils.h"
+
+#ifdef cGPU
+#include "../hardware/gpu/tensor_cuda.h"
+#include "../hardware/gpu/tensor_cuda_op.h"
+#endif
 
 using namespace std;
 
-class Metric {
-public:
-    string name;
 
-    explicit Metric(string name);
+void Tensor::rand_gaussian(float m, float s) {
+    if (isCPU()) {
 
-    virtual float value(Tensor *T, Tensor *Y);
-};
-
-
-class MMeanSquaredError : public Metric {
-public:
-    MMeanSquaredError();
-
-    float value(Tensor *T, Tensor *Y) override;
-};
-
-
-class MCategoricalAccuracy : public Metric {
-public:
-    MCategoricalAccuracy();
-
-    float value(Tensor *T, Tensor *Y) override;
-};
-
+        for (int i = 0; i < size; ++i) ptr[i] = gauss(m, s);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_rand_gaussian(this,m,s);
+      }
 #endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+}

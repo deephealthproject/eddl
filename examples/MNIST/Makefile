@@ -142,10 +142,11 @@ RECURRENT_LAYERS_OBJ = layer_rnn.o layer_lstm.o
 LOSSES_OBJ = loss.o loss_cross_entropy.o loss_mean_squared_error.o loss_soft_cross_entropy.o
 METRICS_OBJ = metric.o metric_categorical_acc.o metric_mean_squared_error.o
 OPTIMIZERS_OBJ = optim.o optim_adadelta.o optim_adagrad.o optim_adam.o optim_adamax.o optim_nadam.o optim_rmsprop.o optim_sgd.o
-CORE_OBJ = compserv.o net.o tensor.o tensor_op.o utils.o
+TENSORS_OBJ = tensor.o tensor_binary.o tensor_operators.o tensor_unary.o tensor_zero.o
+CORE_OBJ = compserv.o net.o utils.o
 
 # Join groups
-OBJ := $(APIS_OBJ) $(INITIALIZERS_OBJ) $(HARDWARE_OBJ) $(CONV_LAYERS_OBJ) $(CORE_LAYERS_OBJ) $(MERGE_LAYERS_OBJ) $(NOISE_LAYERS_OBJ) $(OPERATORS_LAYERS_OBJ) $(POOL_LAYERS_OBJ) $(RECURRENT_LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(CORE_OBJ)
+OBJ := $(APIS_OBJ) $(INITIALIZERS_OBJ) $(HARDWARE_OBJ) $(CONV_LAYERS_OBJ) $(CORE_LAYERS_OBJ) $(MERGE_LAYERS_OBJ) $(NOISE_LAYERS_OBJ) $(OPERATORS_LAYERS_OBJ) $(POOL_LAYERS_OBJ) $(RECURRENT_LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(TENSORS_OBJ) $(CORE_OBJ)
 
 ifeq ($(CORE),1)  # CPU
 all: $(GPU_OBJ) $(OBJ) shared_eddl test_eddl_mlp test_wrapper_mlp test_eddl_conv test_wrapper_conv
@@ -319,15 +320,23 @@ optim_rmsprop.o: $(SRC_PATH)/optimizers/optim_rmsprop.cpp $(SRC_PATH)/optimizers
 optim_sgd.o: $(SRC_PATH)/optimizers/optim_sgd.cpp $(SRC_PATH)/optimizers/optim.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/optimizers/optim_sgd.cpp
 
+#---------------------------------- tensors
+tensor.o: $(SRC_PATH)/tensor/tensor.cpp $(SRC_PATH)/tensor/tensor.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor.cpp
+tensor_binary.o: $(SRC_PATH)/tensor/tensor_binary.cpp $(SRC_PATH)/tensor/tensor.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor_binary.cpp
+tensor_operators.o: $(SRC_PATH)/tensor/tensor_operators.cpp $(SRC_PATH)/tensor/tensor.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor_operators.cpp
+tensor_unary.o: $(SRC_PATH)/tensor/tensor_unary.cpp $(SRC_PATH)/tensor/tensor.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor_unary.cpp
+tensor_zero.o: $(SRC_PATH)/tensor/tensor_zero.cpp $(SRC_PATH)/tensor/tensor.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor_zero.cpp
+
 #---------------------------------- core classes
 compserv.o: $(SRC_PATH)/compserv.cpp $(SRC_PATH)/compserv.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/compserv.cpp
 net.o: $(SRC_PATH)/net.cpp $(SRC_PATH)/net.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/net.cpp
-tensor.o: $(SRC_PATH)/tensor.cpp $(SRC_PATH)/tensor.h
-	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor.cpp
-tensor_op.o: $(SRC_PATH)/tensor_op.cpp $(SRC_PATH)/tensor.h
-		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor_op.cpp
 utils.o: $(SRC_PATH)/utils.cpp $(SRC_PATH)/utils.h
 		$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/utils.cpp
 

@@ -31,7 +31,7 @@
 
 #include <string>
 #include <stdio.h>
-#include "../tensor.h"
+#include "../tensor/tensor.h"
 
 #define TRMODE 1
 #define TSMODE 0

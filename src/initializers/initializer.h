@@ -31,7 +31,7 @@
 
 #include <string>
 
-#include "../tensor.h"
+#include "../tensor/tensor.h"
 
 using namespace std;
 
