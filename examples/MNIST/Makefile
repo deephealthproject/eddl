@@ -53,21 +53,21 @@ CXX = g++
 CXXSOFLAGS = -shared
 ifeq ($(OPT),1)
 $(info set AVX)
-CXXFLAGS = -std=c++11  -march=native -mavx -O3
+CXXFLAGS = -std=c++11 -march=native -mavx -O3 -pthread
 endif
 ifeq ($(OPT),2)
 $(info set SSE)
-CXXFLAGS = -std=c++11  -march=native -msse -O3
+CXXFLAGS = -std=c++11 -march=native -msse -O3 -pthread
 endif
 ifeq ($(OPT),3)
 $(info set no opt)
-CXXFLAGS = -std=c++11  -O3
+CXXFLAGS = -std=c++11 -O3 -pthread
 endif
 ifeq ($(OPT),4)
 $(info set Debug)
-CXXFLAGS =  -std=c++11  -g
+CXXFLAGS = -std=c++11 -g -pthread
 endif
-LIBFLAGS=-lpthread
+LIBFLAGS = -Wl,--no-as-needed -pthread
 endif
 
 
