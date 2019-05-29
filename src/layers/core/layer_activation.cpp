@@ -36,7 +36,7 @@ using namespace std;
 
 int LActivation::total_layers = 0;
 
-LActivation::LActivation(Layer *parent, string act, string name, int d) : LinLayer(name, d) {
+LActivation::LActivation(Layer *parent, string act, string name, int dev) : LinLayer(name, dev) {
 
     // Set default name
     if(name.empty()) this->name = "activation" + to_string(++total_layers);
@@ -44,8 +44,8 @@ LActivation::LActivation(Layer *parent, string act, string name, int d) : LinLay
     this->act = act;
 
     input = parent->output;
-    output = new Tensor(input->getShape(), d);
-    delta = new Tensor(output->getShape(), d);
+    output = new Tensor(input->getShape(), dev);
+    delta = new Tensor(output->getShape(), dev);
     delta_bp = 0;
 
     parent->addchild(this);

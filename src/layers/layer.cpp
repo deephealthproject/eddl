@@ -40,11 +40,11 @@ using namespace std;
 ///// BASE LAYER CLASS
 ////////////////////////////////////
 
-Layer::Layer(string n, int d) {
+Layer::Layer(string name, int dev) {
     mode = TRMODE;
-    target = delta = input = output = NULL;
-    dev = d;
-    name = n;
+    target = delta = input = output = nullptr;
+    this->name = name;
+    this->dev = dev;
     lin = lout = 0;
     delta_bp = 0;
 }
@@ -118,7 +118,7 @@ Tensor* Layer::setBias(Tensor bias){
 ////////////////////////////////////
 ///// LINEAR LAYERS
 ////////////////////////////////////
-LinLayer::LinLayer(string n, int d) : Layer(n, d) {}
+LinLayer::LinLayer(string name, int dev) : Layer(name, dev) {}
 
 void LinLayer::addchild(Layer *l) {
     child.push_back(l);
@@ -135,7 +135,7 @@ void LinLayer::addparent(Layer *l) {
 ////////////////////////////////////
 ///// Multiple LAYERS
 ////////////////////////////////////
-MLayer::MLayer(string n, int d) : Layer(n, d) {}
+MLayer::MLayer(string name, int dev) : Layer(name, dev) {}
 
 void MLayer::addchild(Layer *l) {
     child.push_back(l);

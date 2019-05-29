@@ -142,7 +142,7 @@ public:
     string act;
     static int total_layers;
 
-    LActivation(Layer *parent, string act, string name, int d);
+    LActivation(Layer *parent, string act, string name, int dev);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -163,9 +163,9 @@ public:
     vector<int> ls;
 
     // constructors and clones
-    LReshape(Layer *parent, const initializer_list<int> &init, string name, int d);
+    LReshape(Layer *parent, const initializer_list<int> &init, string name, int dev);
 
-    LReshape(Layer *parent, vector<int> shape, string name, int d);
+    LReshape(Layer *parent, vector<int> shape, string name, int dev);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -213,7 +213,7 @@ public:
     static int total_layers;
 
     // constructors and clones
-    LDropout(Layer *parent, float df, string name, int d);
+    LDropout(Layer *parent, float df, string name, int dev);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

@@ -48,12 +48,12 @@ public:
     ConvolDescriptor *cd;
 
     // constructors and clones
-    LConv(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st, const initializer_list<int> &p, string name, int d);
+    LConv(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st, const initializer_list<int> &p, string name, int dev);
 
     LConv(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
           int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev);
 
-    LConv(Layer *parent, ConvolDescriptor *cd, string name, int d);
+    LConv(Layer *parent, ConvolDescriptor *cd, string name, int dev);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

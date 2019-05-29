@@ -36,7 +36,7 @@ using namespace std;
 
 int LDropout::total_layers = 0;
 
-LDropout::LDropout(Layer *parent, float df, string name, int d) : LinLayer(name, d) {
+LDropout::LDropout(Layer *parent, float df, string name, int dev) : LinLayer(name, dev) {
 
     if(name.empty()) this->name = "dropout" + to_string(++total_layers);
 
@@ -44,10 +44,10 @@ LDropout::LDropout(Layer *parent, float df, string name, int d) : LinLayer(name,
     this->df = df;
 
     input = parent->output;
-    output = new Tensor(input->getShape(), d);
-    delta = new Tensor(input->getShape(), d);
+    output = new Tensor(input->getShape(), dev);
+    delta = new Tensor(input->getShape(), dev);
 
-    mask = new Tensor(input->getShape(), d);
+    mask = new Tensor(input->getShape(), dev);
 
     parent->addchild(this);
     addparent(parent);

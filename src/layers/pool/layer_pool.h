@@ -48,7 +48,7 @@ public:
     PoolDescriptor *pd;
 
     // constructors
-    LPool(Layer *parent, PoolDescriptor *cd, string name, int d);
+    LPool(Layer *parent, PoolDescriptor *cd, string name, int dev);
 };
 
 /// MaxPool2D Layer
@@ -60,11 +60,11 @@ public:
              int d);
 
     LMaxPool(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st,
-             const initializer_list<int> &p, string name, int d);
+             const initializer_list<int> &p, string name, int dev);
 
-    LMaxPool(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name, int d);
+    LMaxPool(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name, int dev);
 
-    LMaxPool(Layer *parent, PoolDescriptor *cd, string name, int d);
+    LMaxPool(Layer *parent, PoolDescriptor *cd, string name, int dev);
 
     // Params
     Tensor *indX, *indY;

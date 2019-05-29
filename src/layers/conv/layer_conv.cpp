@@ -40,14 +40,14 @@ int LConv::total_layers = 0;
 // constructors and clones
 
 LConv::LConv(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st,
-             const initializer_list<int> &p, string name, int d) : LConv(parent, new ConvolDescriptor(ks, st, p), name, d) {}
+             const initializer_list<int> &p, string name, int dev) : LConv(parent, new ConvolDescriptor(ks, st, p), name, dev) {}
 
 LConv::LConv(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
 int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev) : LConv(parent, new ConvolDescriptor(filters, kernel_size, strides, padding), name, dev) {
     // TODO: Implement (Fix initialization)
 };
 
-LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int d) : LinLayer(name, d) {
+LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev) : LinLayer(name, dev) {
     if (parent->output->ndim != 4) msg("LConv only works over 4D tensors", "LConv::LConv");
 
     // Check dev with tensor dev

@@ -38,7 +38,7 @@ using namespace std;
 
 int LAdd::total_layers = 0;
 
-LAdd::LAdd(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
+LAdd::LAdd(vector<Layer *> parent, string name, int dev) : MLayer(name, dev) {
     if (parent.size() == 0) msg("Error: LAdd layer with empty list");
 
     if (parent.size() > 1)
@@ -51,8 +51,8 @@ LAdd::LAdd(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
 
     input = parent[0]->output;
 
-    output = new Tensor(parent[0]->output->getShape(), d);
-    delta = new Tensor(parent[0]->output->getShape(), d);
+    output = new Tensor(parent[0]->output->getShape(), dev);
+    delta = new Tensor(parent[0]->output->getShape(), dev);
 
     for (int i = 0; i < parent.size(); ++i) {
         parent[i]->addchild(this);

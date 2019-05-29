@@ -39,18 +39,18 @@ using namespace std;
 // ---- MAXPOOL2D ----
 // constructors and clones
 LMaxPool::LMaxPool(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p, string name,
-               int d) : LMaxPool(parent, new PoolDescriptor(ks, st, p), name, d) {}
+               int d) : LMaxPool(parent, new PoolDescriptor(ks, st, p), name, dev) {}
 
 LMaxPool::LMaxPool(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st,
-               const initializer_list<int> &p, string name, int d) : LMaxPool(parent, new PoolDescriptor(ks, st, p), name, d) {}
+               const initializer_list<int> &p, string name, int dev) : LMaxPool(parent, new PoolDescriptor(ks, st, p), name, dev) {}
 
-LMaxPool::LMaxPool(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name, int d) : LMaxPool(
-        parent, new PoolDescriptor(ks, st, p), name, d) {}
+LMaxPool::LMaxPool(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name, int dev) : LMaxPool(
+        parent, new PoolDescriptor(ks, st, p), name, dev) {}
 
-LMaxPool::LMaxPool(Layer *parent, PoolDescriptor *D, string name, int d) : LPool(parent, D, name, d) {
+LMaxPool::LMaxPool(Layer *parent, PoolDescriptor *D, string name, int dev) : LPool(parent, D, name, dev) {
     // params
-    D->indX = new Tensor(D->O->getShape(), d);
-    D->indY = new Tensor(D->O->getShape(), d);
+    D->indX = new Tensor(D->O->getShape(), dev);
+    D->indY = new Tensor(D->O->getShape(), dev);
 }
 
 

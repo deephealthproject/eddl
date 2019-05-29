@@ -37,7 +37,7 @@ using namespace std;
 
 int LConcat::total_layers = 0;
 
-LConcat::LConcat(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
+LConcat::LConcat(vector<Layer *> parent, string name, int dev) : MLayer(name, dev) {
     if (parent.size() == 0) msg("Error: LConcat layer with empty list");
 
     ndim = parent[0]->output->ndim;
@@ -77,8 +77,8 @@ LConcat::LConcat(vector<Layer *> parent, string name, int d) : MLayer(name, d) {
     vector<int> shape = parent[0]->output->getShape();
     shape[1] = t;
 
-    output = new Tensor(shape, d);
-    delta = new Tensor(shape, d);
+    output = new Tensor(shape, dev);
+    delta = new Tensor(shape, dev);
 
     for (int i = 0; i < parent.size(); ++i) {
         parent[i]->addchild(this);
