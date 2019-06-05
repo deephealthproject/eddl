@@ -67,4 +67,34 @@ float gauss(float mean, float sd) {
 }
 
 
+float *get_fmem(int size,char *str)
+{
+  float *ptr=(float *)malloc(size*sizeof(float));
+  if (ptr==NULL) {
+    fprintf(stderr,"Malloc error allocating %d bytes in %s\n",size*sizeof(float),str);
+  }
+  return ptr;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /////

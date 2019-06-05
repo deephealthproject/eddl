@@ -39,4 +39,6 @@ float gaussgen();
 
 float gauss(float mean, float sd);
 
+float *get_fmem(int size,char *str);
+
 #endif //EDDLL_UTILS_H
