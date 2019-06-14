@@ -13,6 +13,15 @@
 import os
 import sys
 
+# -- Readthedocs ----------------------------------------------------------
+
+#  Mock out the imports of libraries that depend on C modules
+import mock
+
+MOCK_MODULES = ['pyeddl._C']
+for mod_name in MOCK_MODULES:
+    sys.modules[mod_name] = mock.Mock()
+
 # ReadTheDocs starts from "/docs/source"
 sys.path.append(os.path.abspath("../../src/python"))
 
