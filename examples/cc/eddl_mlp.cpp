@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "../apis/eddl.h"
+#include "eddl.h"
 
 int main(int argc, char **argv)
 {

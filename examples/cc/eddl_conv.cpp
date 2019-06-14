@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "../apis/eddl.h"
+#include "eddl.h"
 
 layer ResBlock(layer in,int k,int n)
 {

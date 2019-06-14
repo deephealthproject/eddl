@@ -128,21 +128,27 @@ SET(SOURCES
         src/cc/eddl/tensor/tensor_operators.cpp
         src/cc/eddl/tensor/tensor_unary.cpp
         src/cc/eddl/tensor/tensor_zero.cpp
-        #src/cc/eddl/tests/test_eddl_conv.cpp  #DO NOT UNCOMMENT THIS ON MASTER! (CI)
-        #src/cc/eddl/tests/test_eddl_mlp.cpp  #DO NOT UNCOMMENT THIS ON MASTER! (CI)
         src/cc/eddl/compserv.cpp
         src/cc/eddl/compserv.h
         src/cc/eddl/net.cpp
         src/cc/eddl/net.h
         src/cc/eddl/utils.cpp
-        src/cc/eddl/utils.h)
+        src/cc/eddl/utils.h
+        )
 
+# [TESTS] ****************************
 SET(TEST_DIR "tests/cc")
 SET(TESTS
     "${TEST_DIR}/test_main.cpp"
     "${TEST_DIR}/test_tensor.cpp"
     )
 
+# [EXAMPLES] ****************************
+#SET(EXAMPLES_DIR "examples/cc")
+#SET(EXAMPLES
+#        "${EXAMPLES_DIR}/eddl_mlp.cpp"
+#        #"${EXAMPLES_DIR}/eddl_conv.cpp"
+#        )
 
 # [SHARED LIBRARY]
 ##include_directories(${CMAKE_SOURCE_DIR}/pyeddl)
@@ -170,14 +176,11 @@ SET(TESTS
 #        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig)
 #add_executable(${PROJECT_NAME} ${SOURCES})
 
-
 # [TESTS] Generate a test executable
 SET(TEST_LIB_NAME "${PROJECT_NAME}_test")
-find_package(Eigen3 REQUIRED)
 include_directories(third_party/eigen)
 add_subdirectory(third_party/catch2)
 add_executable(${TEST_LIB_NAME} ${SOURCES} ${TESTS})
-target_link_libraries(${TEST_LIB_NAME} Eigen3::Eigen)
 target_link_libraries(${TEST_LIB_NAME} Catch2::Catch2)
 target_link_libraries(${TEST_LIB_NAME} Threads::Threads)
 
