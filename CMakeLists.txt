@@ -139,8 +139,8 @@ SET(SOURCES
 
 SET(TEST_DIR "tests/cc")
 SET(TESTS
-    tests/cc/test_main.cpp
-    #"${TEST_DIR}/test_tensor.cpp"
+    "${TEST_DIR}/test_main.cpp"
+    "${TEST_DIR}/test_tensor.cpp"
     )
 
 
@@ -173,8 +173,8 @@ SET(TESTS
 
 # [TESTS] Generate a test executable
 SET(TEST_LIB_NAME "${PROJECT_NAME}_test")
-#add_subdirectory(third_party/eigen)
-add_subdirectory(third_party/eigen)
+find_package(Eigen3 REQUIRED)
+include_directories(third_party/eigen)
 add_subdirectory(third_party/catch2)
 add_executable(${TEST_LIB_NAME} ${SOURCES} ${TESTS})
 target_link_libraries(${TEST_LIB_NAME} Eigen3::Eigen)
@@ -182,7 +182,7 @@ target_link_libraries(${TEST_LIB_NAME} Catch2::Catch2)
 target_link_libraries(${TEST_LIB_NAME} Threads::Threads)
 
 # [BINDING] Create pyhton binding
-#SET(C_LIB_NAME "_C")
-#add_subdirectory(third_party/pybind11)
-#pybind11_add_module(${C_LIB_NAME} ${SOURCES} "${SOURCE_DIR}/binding.cpp")
+SET(C_LIB_NAME "_C")
+add_subdirectory(third_party/pybind11)
+pybind11_add_module(${C_LIB_NAME} ${SOURCES} "${SOURCE_DIR}/binding.cpp")
 
