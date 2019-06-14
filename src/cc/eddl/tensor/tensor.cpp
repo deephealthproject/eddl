@@ -95,7 +95,7 @@ Tensor::Tensor(vector<int> shape, int dev) {
             ptr2 = &mat;
             ptr = &(mat(0, 0));
         } else {
-            ptr = (float *) malloc(size * sizeof(float));
+            ptr = get_fmem(size,"Tensor::Tensor");
         }
     }
 #ifdef cGPU
@@ -187,7 +187,7 @@ Tensor::Tensor(string fname, int bin) {
             ptr = &(mat(0, 0));
 
         } else {
-            ptr = (float *) malloc(size * sizeof(Tensor *));
+            ptr = get_fmem(size,"Tensor::Tensor");
         }
 
         tsem = new mutex();
@@ -223,7 +223,7 @@ Tensor::Tensor(string fname, int bin) {
             ptr2 = &mat;
             ptr = &(mat(0, 0));
         } else {
-            ptr = (float *) malloc(size * sizeof(Tensor *));
+            ptr = get_fmem(size,"Tensor::Tensor");
         }
 
         tsem = new mutex();
@@ -338,7 +338,7 @@ void Tensor::print() {
     else if (isGPU())
       {
         gpu_set_device(gpu_device);
-        float *v= (float*)malloc(size*sizeof(float));
+        float *v= get_fmem(size,"Tensor::Tensor");
         cudaMemcpy(v,ptr,size*sizeof(float),cudaMemcpyDeviceToHost);
         if (ndim==2)
           {
