@@ -1,9 +1,15 @@
-#include <catch2/catch.hpp>
-
+#include "gtest/gtest.h"
 #include "tensor/tensor.h"
 
-TEST_CASE("Tensor operations")
-{
-    REQUIRE(Tensor({1, 1, 1}, DEV_CPU).device == DEV_CPU);
-    REQUIRE(Tensor({1, 1, 1}, DEV_CPU).ndim == 3);
+
+// Test tensor constructor
+TEST(TensorTest, Constructor) {
+    ASSERT_EQ(DEV_CPU, Tensor({1, 1, 1}, DEV_CPU).device);
+    ASSERT_EQ(3, Tensor({1, 1, 1}, DEV_CPU).ndim);
+}
+
+
+int main(int argc, char **argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

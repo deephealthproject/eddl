@@ -23,10 +23,16 @@ SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
 
+# SET GTEST *******************************
+#find_package(GTest REQUIRED)
+#include_directories(${GTEST_INCLUDE_DIRS})
+add_subdirectory(third_party/googletest)
+enable_testing()
+include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+
 # SET LIBRARIES *******************************
 add_subdirectory(third_party/pybind11)
 include_directories(third_party/eigen)
-add_subdirectory(third_party/catch2)
 
 # Add the given directories to those the compiler uses to search for include files
 include_directories(src)
@@ -152,33 +158,25 @@ SET(SOURCES
         )
 
 # [TESTS] ****************************
-#SET(TEST_DIR "tests")
-#SET(TESTS
-#    "${TEST_DIR}/test_main.cpp"
-#    "${TEST_DIR}/test_tensor.cpp"
-#    )
+SET(TEST_DIR "tests")
+SET(TESTS
+    "${TEST_DIR}/test_tensor.cpp"
+    )
 
-# [EXAMPLES] ****************************
-SET(EXAMPLES_DIR "examples")
-SET(EXAMPLES
-        "${EXAMPLES_DIR}/eddl_mlp.cpp"
-        #"${EXAMPLES_DIR}/eddl_conv.cpp"
-        )
 
 # [BINDING] Create python binding
 SET(C_LIB_NAME "_C")
-pybind11_add_module(${C_LIB_NAME} ${SOURCES} "${SOURCE_DIR}/binding.cpp")
+#pybind11_add_module(${C_LIB_NAME} ${SOURCES} "${SOURCE_DIR}/binding.cpp")
 
-## [TESTS] Generate a test executable
-#SET(TEST_EXEC_NAME "${PROJECT_NAME}_test")
-#add_executable(${TEST_EXEC_NAME} ${SOURCES} ${TEST})
-#target_link_libraries(${TEST_EXEC_NAME} Catch2::Catch2)
-#target_link_libraries(${TEST_EXEC_NAME} Threads::Threads)
+# [TESTS] Generate a test executable
+SET(UNITTEST_NAME "${PROJECT_NAME}_tests")
+add_executable(${UNITTEST_NAME} ${SOURCES} ${TESTS})
+target_link_libraries(${UNITTEST_NAME} gtest gtest_main Threads::Threads)
+add_test(UnitTests ${UNITTEST_NAME})  # To do "make test"
 
-# [EXAMPLES] Generate a test executable
-SET(EXAMPLE_EXEC_NAME "${PROJECT_NAME}_example")
-add_executable(${EXAMPLE_EXEC_NAME} ${SOURCES} ${EXAMPLES})
-target_link_libraries(${EXAMPLE_EXEC_NAME} Catch2::Catch2)
-target_link_libraries(${EXAMPLE_EXEC_NAME} Threads::Threads)
-
-
+## [EXAMPLES] Generate a test executable
+SET(EXAMPLES_DIR "examples")
+add_executable(example_conv ${SOURCES} "${EXAMPLES_DIR}/eddl_conv.cpp")
+add_executable(example_mlp ${SOURCES} "${EXAMPLES_DIR}/eddl_mlp.cpp")
+target_link_libraries(example_conv Threads::Threads)
+target_link_libraries(example_mlp Threads::Threads)

@@ -6,9 +6,6 @@
 
 -----------------
 
-[![Documentation Status](https://readthedocs.org/projects/pyeddl/badge/?version=latest)](https://pyeddl.readthedocs.io/en/latest/?badge=latest) 
-[![Build Status](https://travis-ci.org/salvacarrion/pyeddl.svg?branch=master)](https://travis-ci.org/salvacarrion/pyeddl)
-[![codecov](https://codecov.io/gh/salvacarrion/pyeddl/branch/master/graph/badge.svg)](https://codecov.io/gh/salvacarrion/pyeddl)
 [![Gitter chat](https://badges.gitter.im/USER/pyeddl.png)](https://gitter.im/pyeddl "Gitter chat")
 
 **EDDL** is European Deep Learning Library for numerical computation tailored to the healthcare domain.
@@ -29,7 +26,8 @@
 To build `eddl`, clone or download this repository and then, from within the repository, run:
 
 ```bash
-mkdir build; cd build
+mkdir build
+cd build
 cmake ..
 make
 ```
@@ -100,7 +98,7 @@ You can find more examples in the _examples_ folder.
 To execute all unit tests, go to your build folder and run the following command:
 
 ```bash
-./eddl_test
+make test
 ```
 
 
