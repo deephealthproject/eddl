@@ -144,11 +144,11 @@ SET(TESTS
     )
 
 # [EXAMPLES] ****************************
-#SET(EXAMPLES_DIR "examples/cc")
-#SET(EXAMPLES
-#        "${EXAMPLES_DIR}/eddl_mlp.cpp"
-#        #"${EXAMPLES_DIR}/eddl_conv.cpp"
-#        )
+SET(EXAMPLES_DIR "examples/cc")
+SET(EXAMPLES
+        "${EXAMPLES_DIR}/eddl_mlp.cpp"
+        #"${EXAMPLES_DIR}/eddl_conv.cpp"
+        )
 
 # [SHARED LIBRARY]
 ##include_directories(${CMAKE_SOURCE_DIR}/pyeddl)
@@ -176,16 +176,19 @@ SET(TESTS
 #        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig)
 #add_executable(${PROJECT_NAME} ${SOURCES})
 
-# [TESTS] Generate a test executable
-SET(TEST_LIB_NAME "${PROJECT_NAME}_test")
-include_directories(third_party/eigen)
-add_subdirectory(third_party/catch2)
-add_executable(${TEST_LIB_NAME} ${SOURCES} ${TESTS})
-target_link_libraries(${TEST_LIB_NAME} Catch2::Catch2)
-target_link_libraries(${TEST_LIB_NAME} Threads::Threads)
-
 # [BINDING] Create pyhton binding
 SET(C_LIB_NAME "_C")
 add_subdirectory(third_party/pybind11)
 pybind11_add_module(${C_LIB_NAME} ${SOURCES} "${SOURCE_DIR}/binding.cpp")
+
+# [TESTS] Generate a test executable
+SET(TEST_LIB_NAME "${PROJECT_NAME}_test")
+include_directories(third_party/eigen)
+add_subdirectory(third_party/catch2)
+#add_subdirectory(third_party/pybind11)
+#add_executable(${TEST_LIB_NAME} ${SOURCES} ${TESTS})
+add_executable(${TEST_LIB_NAME} ${SOURCES} ${EXAMPLES})
+target_link_libraries(${TEST_LIB_NAME} Catch2::Catch2)
+target_link_libraries(${TEST_LIB_NAME} Threads::Threads)
+
 

@@ -64,44 +64,13 @@ private:
 
     void build(optim *opt, vloss in, vmetrics out);
 
+    void set_compserv(CompServ *cs);
+
 public:
-    Net(vlayer in, vlayer out);
-
-    void initialize();
-
-    void reset();
-
-    void forward();
-
-    void delta();
-
-    void loss();
-
-    void backward();
-
-    void applygrads(int batch);
-
-    string summary();
-
-    void split(int c, int todev);
-
-    int inNet(Layer *);
-
-    void walk(Layer *l);
-
-    void fts();
-
-    void bts();
-
-    void plot(string fname);
-
-    void setmode(int m);
-
-    void sync_weights();
-
     string name;
     int dev;
     vector<int> devsel;
+
     vlayer layers;
     vlayer lin;
     vlayer lout;
@@ -110,25 +79,45 @@ public:
 
     vloss losses;
     vmetrics metrics;
+
     optim *optimizer;
     verr fiterr;
     vector<Net *> snets;
+
     vtensor Xs[MAX_THREADS];
     vtensor Ys[MAX_THREADS];
 
-    Net(const initializer_list<Layer *> &in, const initializer_list<Layer *> &out);
+    Net(vlayer in, vlayer out);
+
+    void initialize();
+    void reset();
+    void forward();
+    void delta();
+    void loss();
+    void backward();
+    void applygrads(int batch);
+
+    void split(int c, int todev);
+    int inNet(Layer *l); //
+    void walk(Layer *l); //
+
+    void fts();
+    void bts();
+
+    string summary();
+    void plot(string fname);
+
+    void setmode(int m);
+    void sync_weights();
+
 
     Layer *getLayer(string name);
 
-    void build(optim *opt, const initializer_list<Loss *> &c, const initializer_list<Metric *> &m, CompServ *cs);
+    void build(optim *opt, vloss in, vmetrics out, CompServ *cs); //
 
-    void build(optim *opt, vloss c, vmetrics m, CompServ *cs);
+    void fit(vtensor tin, vtensor tout, int batch_size, int epochs);
 
-    void fit(const initializer_list<Tensor *> &in, const initializer_list<Tensor *> &out, int batch, int epochs);
-
-    void fit(vtensor tin, vtensor tout, int batch, int epochs);
-
-    void train_batch(const initializer_list<Tensor *> &in, const initializer_list<Tensor *> &out);
+//    void train_batch2(vector<Tensor *> in, vector<Tensor *> out);
 
     void evaluate(vtensor tin, vtensor tout);
 

@@ -471,9 +471,6 @@ void EDDL::fit(model net, const initializer_list<LTensor *> &in, const initializ
     net->fit(tin, tout, batch, epochs);
 }
 
-void EDDL::fit(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out, int batch, int epochs, const initializer_list<Callback *> &cbs){
-    // TODO: Implement
-}
 
 void EDDL::evaluate(model net, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out) {
     vltensor ltin = vltensor(in.begin(), in.end());
@@ -568,14 +565,6 @@ void EDDL::download_mnist() {
         }
 
     }
-}
-
-void EDDL::download_cifar10() {
-    // TODO: Implement
-}
-
-void EDDL::download_cifar100() {
-    // TODO: Implement
 }
 
 

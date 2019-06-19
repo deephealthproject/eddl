@@ -1,3 +1,5 @@
+import numpy as np
+
 import pyeddl
 from pyeddl import _C
 
@@ -53,7 +55,7 @@ def compile(model, optim, losses, metrics, device):
     compserv = _get_compserv(device)
 
     _C.EDDL.build(model, optim, losses, metrics, compserv)
-    asdas = 3
+
 
 def summary(model):
     return model.summary()
@@ -62,6 +64,20 @@ def summary(model):
 def plot(model, filename):
     return model.plot(filename)
 
-def train_batch(x, y):
-    pass
+
+def train_batch(model, x, y):
+    # Transform array to a single vector
+    txi = _C.Tensor(x.shape, _C.DEV_CPU)
+    tyi = _C.Tensor(y.shape, _C.DEV_CPU)
+
+    # Row major
+    xi_row_major = x.flatten(order='C').astype(np.float32)
+    yi_row_major = y.flatten(order='C').astype(np.float32)
+
+    # Copy data
+    _C.copydata(txi, xi_row_major)
+    _C.copydata(tyi, yi_row_major)
+
+    model.train_batch2([txi], [tyi])
+    asdas = 33
     #_C.train_batch(x, y)

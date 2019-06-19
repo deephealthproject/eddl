@@ -60,7 +60,7 @@ ostream &operator<<(ostream &os, const vector<int> shape) {
 //// THREADS
 struct tdata {
     Net *net;
-    int batch;
+    int batch_size;
     int eval;
 };
 
@@ -80,7 +80,7 @@ void *train_batch_t(void *t) {
         net->delta();
         net->backward();
         if (net->dev > DEV_CPU)
-            net->applygrads(targs->batch);
+            net->applygrads(targs->batch_size);
     }
 
     return nullptr;
@@ -92,7 +92,7 @@ void *applygrads_t(void *t) {
 
     Net *net = targs->net;
 
-    net->applygrads(targs->batch);
+    net->applygrads(targs->batch_size);
 
     return nullptr;
 }
@@ -126,24 +126,26 @@ int isInorig(Layer *l, vlayer vl, int &ind) {
 ///// NET CLASS
 ////////////////////////////////////
 
-Net::Net(const initializer_list<Layer *> &in, const initializer_list<Layer *> &out) : Net(vlayer(in.begin(), in.end()),
-                                                                                          vlayer(out.begin(),
-                                                                                                 out.end())) {}
-
 Net::Net(vlayer in, vlayer out) {
-    optimizer = nullptr;
+    // Set input/outlayer
     lin = in;
     lout = out;
 
-    for (int i = 0; i < lin.size(); i++)
-        walk(lin[i]);
+    // Default optimizer
+    optimizer = nullptr;
 
+    // Walk through the pointers of all layers, to get a plain
+    // vector with all the layers
+    for (int i = 0; i < lin.size(); i++) {
+        walk(lin[i]);
+    }
 }
 
 
 /////////////////////////////////////////
 int Net::inNet(Layer *l) {
-    for (int i = 0; i != layers.size(); i++)
+    // Check if the layer l is in the network
+    for (int i = 0; i < layers.size(); i++)
         if (l == layers[i]) return 1;
     return 0;
 }
@@ -151,10 +153,10 @@ int Net::inNet(Layer *l) {
 
 /////////////////////////////////////////
 void Net::walk(Layer *l) {
-
+    // If this layer is not in the network, add it, as well as all its children (recursively)
     if (!inNet(l)) {
         layers.push_back(l);
-        for (int i = 0; i != l->child.size(); i++)
+        for (int i = 0; i < l->child.size(); i++)
             walk(l->child[i]);
     }
 }
@@ -316,13 +318,6 @@ void Net::bts() {
 
 
 /////////////////////////////////////////
-void Net::build(optim *opt, const initializer_list<Loss *> &c, const initializer_list<Metric *> &m, CompServ *cs) {
-    vloss co = vloss(c.begin(), c.end());
-    vmetrics me = vmetrics(m.begin(), m.end());
-    build(opt, co, me, cs);
-}
-
-/////////////////////////////////////////
 void Net::build(optim *opt, vloss co, vmetrics me) {
     fprintf(stdout, "Build net\n");
     if (co.size() != lout.size())
@@ -377,11 +372,8 @@ void Net::build(optim *opt, vloss co, vmetrics me) {
     initialize();
 }
 
-void Net::build(optim *opt, vloss co, vmetrics me, CompServ *cs) {
+void Net::set_compserv(CompServ *cs){
     int todev;
-
-    //build net
-    build(opt, co, me);
 
     if (cs->type == "local") {
 
@@ -436,7 +428,6 @@ void Net::build(optim *opt, vloss co, vmetrics me, CompServ *cs) {
     }
 }
 
-/////////////////////////////////////
 void Net::split(int c, int todev) {
     int i, j, k, l;
 
@@ -600,140 +591,145 @@ void Net::applygrads(int batch) {
 }
 
 
-/////////////////////////////////////////
-void Net::fit(const initializer_list<Tensor *> &in, const initializer_list<Tensor *> &out, int batch, int epochs) {
-    vtensor tin = vtensor(in.begin(), in.end());
-    vtensor tout = vtensor(out.begin(), out.end());
-
-    fit(tin, tout, batch, epochs);
+void Net::build(optim *opt, vloss in, vmetrics out, CompServ *cs){
+    build(opt, in, out);
+    set_compserv(cs);
 }
-
-void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
-
+void Net::fit(vtensor tin, vtensor tout, int batch_size, int epochs) {
     int i, j, k, n;
 
+    // Check current optimizer
     if (optimizer == nullptr)
         msg("Net is not build", "Net.fit");
 
-    // Check list shape
+    // Check if number of input/output network layers matches with the input/output tensor data
     if (tin.size() != lin.size())
         msg("input tensor list does not match with defined input layers", "Net.fit");
     if (tout.size() != lout.size())
         msg("output tensor list does not match with defined output layers", "Net.fit");
 
-
-    // Check data consistency
+    // Check if all the data inputs has the same number of samples
     n = tin[0]->shape[0];
     for (i = 1; i < tin.size(); i++)
         if (tin[i]->shape[0] != n)
             msg("different number of samples in input tensor", "Net.fit");
 
-
+    // Check if the size of the input layers matches with the batch size
     for (i = 0; i < lin.size(); i++)
-        if (lin[i]->input->shape[0] != batch)
+        if (lin[i]->input->shape[0] != batch_size)
             msg("different number of samples in input tensor w.r.t batch size", "Net.fit");
 
+    // Check if the size of the output layers matches with the batch size
     for (i = 1; i < tout.size(); i++)
         if (tout[i]->shape[0] != n)
             msg("different number of samples in output tensor", "Net.fit");
 
     // Create internal variables
 
+    // Create array to store batch indices (later random)
     vind sind;
-    for (i = 0; i < batch; i++)
+    for (i = 0; i < batch_size; i++)
         sind.push_back(0);
 
-    verr errors;
+    // Store errors of each output layer
+    verr total_loss;
+    verr total_metric;
     for (i = 0; i < tout.size(); i++) {
-        errors.push_back(0.0);
-        errors.push_back(0.0);
+        total_loss.push_back(0.0);
+        total_metric.push_back(0.0);
     }
 
     // Start training
     setmode(TRMODE);
 
-    fprintf(stdout, "%d epochs of %d batches of size %d\n", epochs, n / batch, batch);
+    // Set some parameters
+    int num_batches = n / batch_size;
+
+    // Train network
+    fprintf(stdout, "%d epochs of %d batches of size %d\n", epochs, num_batches, batch_size);
     for (i = 0; i < epochs; i++) {
         high_resolution_clock::time_point e1 = high_resolution_clock::now();
         fprintf(stdout, "Epoch %d\n", i + 1);
 
-        for (j = 0; j < 2 * tout.size(); j++) errors[j] = 0.0;
+        // Reset errors
+        for (j = 0; j < tout.size(); j++){
+            total_loss[j] = 0.0;
+            total_metric[j] = 0.0;
+        }
 
+        // For each batch
+        for (j = 0; j < num_batches; j++) {
 
-        for (j = 0; j < n / batch; j++) { //Num_samples per batch
-            // random batches
-            for (k = 0; k < batch; k++)
-                sind[k] = rand() % n;
+            // Set random indices
+            for (k = 0; k < batch_size; k++) sind[k] = rand() % n;
 
+            // Train batch
             high_resolution_clock::time_point t1 = high_resolution_clock::now();
-
-            train_batch(tin, tout, sind, batch);
-
+            train_batch(tin, tout, sind, batch_size);
             high_resolution_clock::time_point t2 = high_resolution_clock::now();
-
             duration<double> time_span = t2 - t1;
 
+            // Print errors
             int p = 0;
             fprintf(stdout, "batch %d ", j + 1);
             for (k = 0; k < tout.size(); k++, p += 2) {
-                errors[p] += fiterr[p];
-                errors[p + 1] += fiterr[p + 1];
-                fprintf(stdout, "%s(%s=%1.3f,%s=%1.3f) ", lout[k]->name.c_str(), losses[k]->name.c_str(),
-                        errors[p] / (batch * (j + 1)), metrics[k]->name.c_str(), errors[p + 1] / (batch * (j + 1)));
+                total_loss[p] += fiterr[p];  // loss
+                total_metric[p] += fiterr[p + 1];  // metric
+
+                fprintf(stdout, "%s(%s=%1.3f,%s=%1.3f) ", lout[k]->name.c_str(),
+                        losses[k]->name.c_str(), total_loss[p] / (batch_size * (j + 1)),
+                        metrics[k]->name.c_str(), total_metric[p] / (batch_size * (j + 1)));
+
                 fiterr[p] = fiterr[p + 1] = 0.0;
             }
             fprintf(stdout, "%1.3f secs/batch\n", time_span.count());
             fflush(stdout);
         }
+
         high_resolution_clock::time_point e2 = high_resolution_clock::now();
         duration<double> epoch_time_span = e2 - e1;
-
         fprintf(stdout, "\n%1.3f secs/epoch\n", epoch_time_span.count());
     }
     fflush(stdout);
 }
 
-
-/////////////////////////////////////////
-void Net::train_batch(const initializer_list<Tensor *> &in, const initializer_list<Tensor *> &out) {
-    vind sind;
-
-    vtensor X = vtensor(in.begin(), in.end());
-    vtensor Y = vtensor(out.begin(), out.end());
-
-    // Check shape
-    if (X.size() != lin.size())
-        msg("input tensor list does not match", "Net.train_batch");
-    if (Y.size() != lout.size())
-        msg("output tensor list does not match", "Net.train_batch");
-
-    for (int i = 0; i < lin.size(); i++)
-        if (!Tensor::eqsize(lin[i]->input, X[i]))
-            msg("input tensor shapes does not match", "Net.train_batch");
-
-    for (int i = 0; i < lin.size(); i++)
-        if (!Tensor::eqsize(lout[i]->output, Y[i]))
-            msg("output tensor shapes does not match", "Net.train_batch");
-
-    setmode(TRMODE);
-    train_batch(X, Y, sind, lin[0]->input->shape[0]);
-}
+//
+//void Net::train_batch2(vector<Tensor *> X, vector<Tensor *> Y) {
+//    vind sind;
+//
+//    // Check shape
+//    if (X.size() != lin.size())
+//        msg("input tensor list does not match", "Net.train_batch");
+//    if (Y.size() != lout.size())
+//        msg("output tensor list does not match", "Net.train_batch");
+//
+//    for (int i = 0; i < lin.size(); i++)
+//        if (!Tensor::eqsize(lin[i]->input, X[i]))
+//            msg("input tensor shapes does not match", "Net.train_batch");
+//
+//    for (int i = 0; i < lin.size(); i++)
+//        if (!Tensor::eqsize(lout[i]->output, Y[i]))
+//            msg("output tensor shapes does not match", "Net.train_batch");
+//
+//    setmode(TRMODE);
+//    train_batch(X, Y, sind, lin[0]->input->shape[0]);
+//}
 
 
 /////////////////////////////////////////
-void Net::train_batch(vtensor X, vtensor Y, vind sind, int batch, int eval) {
+void Net::train_batch(vtensor X, vtensor Y, vind sind, int batch_size, int eval) {
     void *status;
     int rc;
     pthread_t thr[100];
     struct tdata td[100];
 
-    int bs = batch / snets.size();
+    int thread_batch_size = batch_size / snets.size();
 
     if (sind.size() == 0) msg("error void index","Net::train_btch");
 
 
     for (int i = 0; i < snets.size(); i++) {
-        int ini = i * bs;
+        int ini = i * thread_batch_size;
         int end = ini + Xs[i][0]->shape[0];
 
         for (int j = 0; j < X.size(); j++) {
@@ -748,7 +744,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int batch, int eval) {
 
         //thread params
         td[i].net = snets[i];
-        td[i].batch = batch;
+        td[i].batch_size = batch_size;
         td[i].eval = eval;
         //call thread
         rc = pthread_create(&thr[i], nullptr, train_batch_t, (void *) (&td[i]));

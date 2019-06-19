@@ -211,7 +211,6 @@ public:
     static string summary(model m);
     static void plot(model m, string fname);
     static void fit(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out, int batch, int epochs);
-    static void fit(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out, int batch, int epochs, const initializer_list<Callback *> &cbs); //Todo: Implement
     static void evaluate(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out);
     static model load_model(string fname); //Todo: Implement
     static void save_model(model m, string fname); //Todo: Implement
@@ -225,8 +224,6 @@ public:
 
     // ---- DATASETS ----
     static void download_mnist();
-    static void download_cifar10(); //Todo: Implement
-    static void download_cifar100(); //Todo: Implement
 
     // ---- MODELS ----
     static model get_model_mlp();

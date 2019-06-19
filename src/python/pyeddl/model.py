@@ -241,8 +241,6 @@ class Model(object):
             print('\t=> Epoch #{}\tTrain loss: {:.5f}\tAcc: {:.5f}\tVal. loss: {:.5f}\tVal. acc: {:.5f}'.format(e, 0,0,0,0))
 
 
-
-
     def evaluate(self,
                  x=None,
                  y=None,
@@ -352,7 +350,7 @@ class Model(object):
             the display labels for the scalar outputs.
 
         """
-        K.train_batch(x, y)
+        K.train_batch(self.c_model, x, y)
 
     def summary(self):
         return K.summary(self.c_model)

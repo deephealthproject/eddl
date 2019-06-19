@@ -6,21 +6,14 @@
 
 namespace py = pybind11;
 
-//py::array_t<float> getdata() {
-//
-//}
-//
-//void copydata(py::array_t<double> array){}
 
-//Tensor npy2Tensor(py::array_t<double> array){
-//    py::buffer_info info = array.request();
-//    auto ptr = static_cast<float *>(info.ptr);
-//
-//    vector<int> s(info.shape.begin(), info.shape.end());
-//    Tensor t = Tensor();
-//    t.copydata(s, ptr);
-//    return t;
-//}
+void copydata_from_npy(Tensor* T, pybind11::array_t<float, pybind11::array::c_style | pybind11::array::forcecast> array)
+{
+    // Allocate memory and fill tensor
+    T->ptr = new float[T->size];
+    std::copy(array.data(), array.data()+T->size, T->ptr);
+}
+
 
 // Inner name of the shared library (the python import must much this name and the filename.so)
 PYBIND11_MODULE(_C, m) {
@@ -37,16 +30,17 @@ PYBIND11_MODULE(_C, m) {
         .def_readonly("ndim", &Tensor::ndim)
         .def_readonly("size", &Tensor::size)
         .def_readonly("shape", &Tensor::shape);
+
     //
     //        .def("point2data", &Tensor::point2data)
     //        .def("getdata", &getdata)
-    //        .def("copydata", &copydata);
 
-    //m.def("npy2Tensor", &npy2Tensor);
+    m.def("copydata", &copydata_from_npy);
 
     py::class_<Net>(m, "Model")
         .def("summary", &Net::summary)
-        .def("plot", &Net::plot);
+        .def("plot", &Net::plot)
+        .def("train_batch2", &Net::train_batch2);
 
     // Optimizer
     py::class_<optim> (m, "Optim");
