@@ -11,72 +11,97 @@
 [![codecov](https://codecov.io/gh/salvacarrion/pyeddl/branch/master/graph/badge.svg)](https://codecov.io/gh/salvacarrion/pyeddl)
 [![Gitter chat](https://badges.gitter.im/USER/pyeddl.png)](https://gitter.im/pyeddl "Gitter chat")
 
-**PyEDDL** is a Python package that wraps the EDDL library in order to provide two high-level features:
-- Tensor computation (like NumPy) with strong GPU acceleration
-- Deep neural networks
-
-> **What is EDDL?** A European Deep Learning Library for numerical computation tailored to the healthcare domain.
+**EDDL** is European Deep Learning Library for numerical computation tailored to the healthcare domain.
 > More information: [https://deephealth-project.eu/](https://deephealth-project.eu/)
+
+
+# Requirements
+
+- CMake 3.9.2 or higher
+- A modern compiler with C++11 support
+
+> To clone all third_party submodules use: 
+> `git clone --recurse-submodules -j8 https://github.com/deephealthproject/eddl.git`
 
 
 # Installation
 
-To build and install `pyeddl`, clone or download this repository and then, from within the repository, run:
+To build `eddl`, clone or download this repository and then, from within the repository, run:
 
 ```bash
-python3 setup.py install
+mkdir build; cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make
 ```
 
 
 # Getting started
 
-```python
-import pyeddl
-from pyeddl.model import Model
-from pyeddl.datasets import mnist
+```c++
+#include "eddl.h"
 
-# Load dataset
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
-x_train, x_test = x_train/255.0, x_test/255.0
+int main(int argc, char **argv)
+{
 
-# View model
-m = Model.from_model('mlp')
-print(m.summary())
-m.plot("model.pdf")
+  // Download dataset
+  eddl.download_mnist();
+  
+  // Settings
+  int epochs=5;
+  int batch_size=1000;
+  int num_classes=10;
 
-# Building params
-optim = pyeddl.optim.SGD(0.01, 0.9)
-losses = ['soft_crossentropy']
-metrics = ['accuracy']
+  // Define network
+  layer in=eddl.Input({batch_size, 784});
+  layer l = in;  // aux var
+  l=eddl.Activation(eddl.Dense(l, 1024), "relu");
+  l=eddl.Activation(eddl.Dense(l, 1024), "relu");
+  l=eddl.Activation(eddl.Dense(l, 1024), "relu");
+  layer out=eddl.Activation(eddl.Dense(l, num_classes),"softmax");
+  model net=eddl.Model({in}, {out});
 
-# Build model
-m.compile(optimizer=optim, losses=losses, metrics=metrics, device='cpu')
+  // View model
+  eddl.summary(net);
+  eddl.plot(net,"model.pdf");
 
-# Training
-m.fit(x_train, y_train, batch_size=1000, epochs=5)
+  // Build model
+  eddl.build(net, 
+            eddl.SGD(0.01,0.9), // Optimizer
+            {eddl.LossFunc("soft_cross_entropy")}, // Losses
+            {eddl.MetricFunc("categorical_accuracy")}, // Metrics
+            eddl.CS_CPU(4) // CPU with 6 threads
+            );
 
-# Evaluate
-print("Evaluate train:")
-m.evaluate(x_train, y_train)
+  // Load dataset
+  tensor x_train = eddl.T("trX.bin");
+  tensor y_train = eddl.T("trY.bin");
+  tensor x_test = eddl.T("tsX.bin");
+  tensor y_test = eddl.T("tsY.bin");
+  
+  // Preprocessing
+  eddl.div(x_train, 255.0);
+  eddl.div(x_test, 255.0);
+
+  // Train model
+  eddl.fit(net, {x_train}, {y_train}, batch_size, 5);
+
+  // Evaluate test
+  std::cout << "Evaluate train:" << std::endl;
+  eddl.evaluate(net, {x_test}, {y_test});
+}
+
 ```
 
-Learn more examples about how to do specific tasks in PyEddl at the [tutorials page](https://pyeddl.readthedocs.io/en/latest/user/tutorial.html)
 
+You can find more examples in the _examples_ folder.
 
 # Tests
 
-To execute all unit tests, run the following command:
+To execute all unit tests, go to your build folder and run the following command:
 
 ```bash
-python3 ./setup.py test
+./eddl_test
 ```
-
-
-# Requirements
-
-- Python 3
-- CMake 3.14 or higher
-- A modern compiler with C++11 support
 
 
 # Continuous build status
@@ -88,3 +113,8 @@ python3 ./setup.py test
 | **Mac OS**      |  [![Build Status](https://travis-ci.org/salvacarrion/EDDL.svg?branch=master)](https://travis-ci.org/salvacarrion/EDDL)|
 | **Windows CPU** |  [![Build Status](https://travis-ci.org/salvacarrion/EDDL.svg?branch=master)](https://travis-ci.org/salvacarrion/EDDL)|
 | **Windows GPU** |  [![Build Status](https://travis-ci.org/salvacarrion/EDDL.svg?branch=master)](https://travis-ci.org/salvacarrion/EDDL)|
+
+
+# Python wrapper
+
+If you are not a big fan of C++, you can always try our [PyEDDL](https://github.com/deephealthproject/pyeddl), a python wrapper for this library.

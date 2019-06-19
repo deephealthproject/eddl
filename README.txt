@@ -1,8 +1,5 @@
 ==================
-PyEDDL
+European Distributed Deep Learning
 ==================
 
-PyEDDL is a Python package that wraps the European Distributed Deep Learning Library (EDDL) in order to provide two
-high-level features:
-- Tensor computation (like NumPy) with strong GPU acceleration
-- Deep neural networks
+EDDL is a European Distributed Deep Learning Library for numerical computation tailored to the healthcare domain.
