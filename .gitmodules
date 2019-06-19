@@ -3,11 +3,6 @@
     path = third_party/pybind11
     url = https://github.com/pybind/pybind11.git
 
-[submodule "third_party/catch2"]
-    ignore = dirty
-	path = third_party/catch2
-	url = https://github.com/catchorg/Catch2.git
-
 [submodule "third_party/eigen"]
     ignore = dirty
 	path = third_party/eigen
