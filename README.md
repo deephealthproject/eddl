@@ -1,7 +1,7 @@
 # European Distributed Deep Learning Library
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/salvacarrion/salvacarrion.github.io/master/assets/hot-linking/logo-pyeddl.png">
+  <img src="https://raw.githubusercontent.com/salvacarrion/salvacarrion.github.io/master/assets/hot-linking/logo-eddl.png">
 </div>
 
 -----------------
