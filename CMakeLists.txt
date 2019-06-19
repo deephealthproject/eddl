@@ -166,7 +166,7 @@ SET(TESTS
 
 # [BINDING] Create python binding
 SET(C_LIB_NAME "_C")
-#pybind11_add_module(${C_LIB_NAME} ${SOURCES} "${SOURCE_DIR}/binding.cpp")
+pybind11_add_module(${C_LIB_NAME} ${SOURCES} "${SOURCE_DIR}/binding.cpp")
 
 # [TESTS] Generate a test executable
 SET(UNITTEST_NAME "${PROJECT_NAME}_tests")
