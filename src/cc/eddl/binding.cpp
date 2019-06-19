@@ -39,8 +39,8 @@ PYBIND11_MODULE(_C, m) {
 
     py::class_<Net>(m, "Model")
         .def("summary", &Net::summary)
-        .def("plot", &Net::plot)
-        .def("train_batch2", &Net::train_batch2);
+        .def("plot", &Net::plot);
+        //.def("train_batch2", &Net::train_batch2);
 
     // Optimizer
     py::class_<optim> (m, "Optim");
