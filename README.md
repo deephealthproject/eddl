@@ -30,7 +30,7 @@ To build `eddl`, clone or download this repository and then, from within the rep
 
 ```bash
 mkdir build; cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake ..
 make
 ```
 
