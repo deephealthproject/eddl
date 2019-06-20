@@ -15,8 +15,11 @@
 - CMake 3.9.2 or higher
 - A modern compiler with C++11 support
 
-> To clone all third_party submodules use: 
-> `git clone --recurse-submodules -j8 https://github.com/deephealthproject/eddl.git`
+To clone all third_party submodules use:
+
+```bash
+ `git clone --recurse-submodules -j8 https://github.com/deephealthproject/eddl.git`
+ ```
 
 
 # Installation
@@ -48,7 +51,7 @@ int main(int argc, char **argv)
 
   // Download dataset
   eddl.download_mnist();
-  
+
   // Settings
   int epochs=5;
   int batch_size=1000;
@@ -68,7 +71,7 @@ int main(int argc, char **argv)
   eddl.plot(net,"model.pdf");
 
   // Build model
-  eddl.build(net, 
+  eddl.build(net,
             eddl.SGD(0.01,0.9), // Optimizer
             {eddl.LossFunc("soft_cross_entropy")}, // Losses
             {eddl.MetricFunc("categorical_accuracy")}, // Metrics
@@ -80,7 +83,7 @@ int main(int argc, char **argv)
   tensor y_train = eddl.T("trY.bin");
   tensor x_test = eddl.T("tsX.bin");
   tensor y_test = eddl.T("tsY.bin");
-  
+
   // Preprocessing
   eddl.div(x_train, 255.0);
   eddl.div(x_test, 255.0);
