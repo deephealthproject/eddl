@@ -1,12 +1,10 @@
-# European Distributed Deep Learning Library
-
 <div align="center">
   <img src="https://raw.githubusercontent.com/salvacarrion/salvacarrion.github.io/master/assets/hot-linking/logo-eddl.png" alt="EDDL" height="150" width="300">
 </div>
 
 -----------------
 
-**EDDL** is European Deep Learning Library for numerical computation tailored to the healthcare domain.
+**EDDL** is an open source library for numerical computation tailored to the healthcare domain.
 > More information: [https://deephealth-project.eu/](https://deephealth-project.eu/)
 
 
@@ -19,7 +17,7 @@ To clone all third_party submodules use:
 
 ```bash
 git clone --recurse-submodules -j8 https://github.com/deephealthproject/eddl.git
- ```
+```
 
 
 # Installation
@@ -49,6 +47,7 @@ To execute all unit tests, go to your build folder and run the following command
 ```bash
 make test
 ```
+
 
 # Getting started
 
@@ -107,9 +106,7 @@ int main(int argc, char **argv)
 
 ```
 
-
 You can find more examples in the _examples_ folder.
-
 
 
 # Continuous build status
