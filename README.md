@@ -18,7 +18,7 @@
 To clone all third_party submodules use:
 
 ```bash
- `git clone --recurse-submodules -j8 https://github.com/deephealthproject/eddl.git`
+git clone --recurse-submodules -j8 https://github.com/deephealthproject/eddl.git
  ```
 
 
