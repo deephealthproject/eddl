@@ -41,6 +41,15 @@ There are some interesting flags to choose what to compile:
 
 > By default, all of them are enabled.
 
+
+# Tests
+
+To execute all unit tests, go to your build folder and run the following command:
+
+```bash
+make test
+```
+
 # Getting started
 
 ```c++
@@ -101,13 +110,6 @@ int main(int argc, char **argv)
 
 You can find more examples in the _examples_ folder.
 
-# Tests
-
-To execute all unit tests, go to your build folder and run the following command:
-
-```bash
-make test
-```
 
 
 # Continuous build status
