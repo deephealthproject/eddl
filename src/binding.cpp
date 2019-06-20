@@ -6,14 +6,39 @@
 
 namespace py = pybind11;
 
+Tensor* tensor_from_npy(py::array_t<float, py::array::c_style | py::array::forcecast> array, int dev){
+    // Read input arrays
+    py::buffer_info buf = array.request();
+    auto size = (int)buf.size;
+    auto *ptr = (float *)buf.ptr;
 
-void copydata_from_npy(Tensor* T, pybind11::array_t<float, pybind11::array::c_style | pybind11::array::forcecast> array)
-{
-    // Allocate memory and fill tensor
-    T->ptr = new float[T->size];
-    std::copy(array.data(), array.data()+T->size, T->ptr);
+    // Cast pybind shape
+    vector<int> shape;
+    for(size_t d : buf.shape){
+        shape.push_back((int)d);
+    }
+
+    // Build tensor
+    Tensor* T = new Tensor(shape, dev);
+    std::copy(ptr, ptr+size, T->ptr);
+
+    return T;
 }
 
+
+py::array_t<float, py::array::c_style | py::array::forcecast> tensor_getdata(Tensor* T){
+    py::array_t<float> result = py::array_t<float>(T->size);
+
+    // Read input arrays
+    py::buffer_info buf = result.request();
+    auto *ptr = (float *)buf.ptr;
+
+    // Copy and resize
+    std::copy(T->ptr, T->ptr+T->size, ptr);
+    result.resize(T->shape);
+
+    return result;
+}
 
 // Inner name of the shared library (the python import must much this name and the filename.so)
 PYBIND11_MODULE(_C, m) {
@@ -30,17 +55,13 @@ PYBIND11_MODULE(_C, m) {
         .def_readonly("ndim", &Tensor::ndim)
         .def_readonly("size", &Tensor::size)
         .def_readonly("shape", &Tensor::shape);
-
-    //
-    //        .def("point2data", &Tensor::point2data)
-    //        .def("getdata", &getdata)
-
-    m.def("copydata", &copydata_from_npy);
+    m.def("tensor_from_npy", &tensor_from_npy);
+    m.def("tensor_getdata", &tensor_getdata);
 
     py::class_<Net>(m, "Model")
         .def("summary", &Net::summary)
-        .def("plot", &Net::plot);
-        //.def("train_batch2", &Net::train_batch2);
+        .def("plot", &Net::plot)
+        .def("train_batch_ni", &Net::train_batch_ni);
 
     // Optimizer
     py::class_<optim> (m, "Optim");

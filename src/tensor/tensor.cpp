@@ -386,17 +386,3 @@ void Tensor::copydata(const vector<int>& s, float *newptr){
     this->ptr = new float[size];
     std::copy(newptr, newptr+size, this->ptr);
 }
-
-//void Tensor::copydata_from_npy(pybind11::array_t<float, pybind11::array::c_style | pybind11::array::forcecast> array)
-//{
-//    // Allocate memory and fill tensor
-//    this->ptr = new float[size];
-//    std::copy(array.data(), array.data()+size, this->ptr);
-//
-////
-////    // allocate std::vector (to pass to the C++ function)
-////    std::vector<double> array_vec(array.size());
-////
-////    // copy py::array -> std::vector
-////    std::memcpy(array_vec.data(),array.data(),array.size()*sizeof(double));
-//}

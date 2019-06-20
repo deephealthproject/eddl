@@ -117,7 +117,7 @@ public:
 
     void fit(vtensor tin, vtensor tout, int batch_size, int epochs);
 
-//    void train_batch2(vector<Tensor *> in, vector<Tensor *> out);
+    void train_batch_ni(vector<Tensor *> in, vector<Tensor *> out);
 
     void evaluate(vtensor tin, vtensor tout);
 

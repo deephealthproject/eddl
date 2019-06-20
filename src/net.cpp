@@ -693,27 +693,36 @@ void Net::fit(vtensor tin, vtensor tout, int batch_size, int epochs) {
     fflush(stdout);
 }
 
-//
-//void Net::train_batch2(vector<Tensor *> X, vector<Tensor *> Y) {
-//    vind sind;
-//
-//    // Check shape
-//    if (X.size() != lin.size())
-//        msg("input tensor list does not match", "Net.train_batch");
-//    if (Y.size() != lout.size())
-//        msg("output tensor list does not match", "Net.train_batch");
-//
-//    for (int i = 0; i < lin.size(); i++)
-//        if (!Tensor::eqsize(lin[i]->input, X[i]))
-//            msg("input tensor shapes does not match", "Net.train_batch");
-//
-//    for (int i = 0; i < lin.size(); i++)
-//        if (!Tensor::eqsize(lout[i]->output, Y[i]))
-//            msg("output tensor shapes does not match", "Net.train_batch");
-//
-//    setmode(TRMODE);
-//    train_batch(X, Y, sind, lin[0]->input->shape[0]);
-//}
+
+void Net::train_batch_ni(vector<Tensor *> X, vector<Tensor *> Y) {
+    vind sind;
+
+    // Check shape
+    if (X.size() != lin.size()){
+        msg("input tensor list does not match", "Net.train_batch");
+    }
+
+    if (Y.size() != lout.size()) {
+        msg("output tensor list does not match", "Net.train_batch");
+    }
+
+    for (int i = 0; i < lin.size(); i++) {
+        if (!Tensor::eqsize(lin[i]->input, X[i]))
+            msg("input tensor shapes does not match", "Net.train_batch");
+    }
+
+    for (int i = 0; i < lin.size(); i++){
+        if (!Tensor::eqsize(lout[i]->output, Y[i]))
+            msg("output tensor shapes does not match", "Net.train_batch");
+    }
+
+    // Create indices
+    for (int i = 0; i < Y[i]->shape[0]; i++)
+        sind.push_back(i);
+
+    setmode(TRMODE);
+    train_batch(X, Y, sind, lin[0]->input->shape[0]);
+}
 
 
 /////////////////////////////////////////
@@ -725,28 +734,32 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int batch_size, int eval)
 
     int thread_batch_size = batch_size / snets.size();
 
+    // Check indices
     if (sind.size() == 0) msg("error void index","Net::train_btch");
 
-
+    // Split data for each network
     for (int i = 0; i < snets.size(); i++) {
-        int ini = i * thread_batch_size;
-        int end = ini + Xs[i][0]->shape[0];
+        int start = i * thread_batch_size;
+        int end = start + Xs[i][0]->shape[0];
 
+        // Copy samples
         for (int j = 0; j < X.size(); j++) {
-            Tensor::select(X[j], Xs[i][j], sind, ini, end);
+            Tensor::select(X[j], Xs[i][j], sind, start, end);
             Tensor::copy(Xs[i][j], snets[i]->lin[j]->input);
         }
 
+        // Copy targets
         for (int j = 0; j < Y.size(); j++) {
-            Tensor::select(Y[j], Ys[i][j], sind, ini, end);
+            Tensor::select(Y[j], Ys[i][j], sind, start, end);
             Tensor::copy(Ys[i][j], snets[i]->lout[j]->target);
         }
 
-        //thread params
+        // Thread params
         td[i].net = snets[i];
         td[i].batch_size = batch_size;
         td[i].eval = eval;
-        //call thread
+
+        // Call thread
         rc = pthread_create(&thr[i], nullptr, train_batch_t, (void *) (&td[i]));
         if (rc) {
             fprintf(stderr, "Error:unable to create thread %d", rc);
@@ -754,6 +767,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int batch_size, int eval)
         }
     }
 
+    // Wait until all threads have finished
     for (int i = 0; i < snets.size(); i++) {
         rc = pthread_join(thr[i], &status);
         if (rc) {
@@ -762,6 +776,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int batch_size, int eval)
         }
     }
 
+    // If training (eval==0), apply gradients
     if (!eval) {
         if (snets[0]->dev == DEV_CPU) {
             for (int i = 0; i < snets.size(); i++) {

@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <new>      // included for std::bad_alloc
 
 #include "utils.h"
 
@@ -60,16 +61,17 @@ float gaussgen() {
 
 
 float gauss(float mean, float sd) {
-    int i;
     return (gaussgen() * sd) + mean;
 }
 
 
-float *get_fmem(int size,char *str)
-{
-    float *ptr=(float *)malloc(size*sizeof(float));
-    if (ptr==NULL) {
-        fprintf(stderr,"Malloc error allocating %d bytes in %s\n",size*sizeof(float),str);
+float *get_fmem(int size, char *str){
+    float* ptr = nullptr;
+    try{
+        ptr = new float[size];
+    }
+    catch (std::bad_alloc& badAlloc){
+        fprintf(stderr, "Malloc error allocating %lu bytes in %s\n" ,size*sizeof(float), str);
     }
     return ptr;
 }
