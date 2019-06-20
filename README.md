@@ -6,8 +6,6 @@
 
 -----------------
 
-[![Gitter chat](https://badges.gitter.im/USER/pyeddl.png)](https://gitter.im/pyeddl "Gitter chat")
-
 **EDDL** is European Deep Learning Library for numerical computation tailored to the healthcare domain.
 > More information: [https://deephealth-project.eu/](https://deephealth-project.eu/)
 
@@ -32,6 +30,13 @@ cmake ..
 make
 ```
 
+There are some interesting flags to choose what to compile:
+
+- `-DBUILD_PYTHON=ON`: Compiles Python binding
+- `-DBUILD_TESTS=ON`: Compiles tests
+- `-DBUILD_EXAMPLES=ON`: Compiles examples
+
+> By default, all of them are enabled.
 
 # Getting started
 

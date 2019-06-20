@@ -34,6 +34,13 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 add_subdirectory(third_party/pybind11)
 include_directories(third_party/eigen)
 
+
+# USER OPTIONS *******************************
+option(BUILD_PYTHON "Compile python binding" ON)
+option(BUILD_TESTS "Compile tests" ON)
+option(BUILD_EXAMPLES "Compile examples" ON)
+
+
 # Add the given directories to those the compiler uses to search for include files
 include_directories(src)
 include_directories(src/apis)
@@ -165,18 +172,27 @@ SET(TESTS
 
 
 # [BINDING] Create python binding
-SET(C_LIB_NAME "_C")
-pybind11_add_module(${C_LIB_NAME} ${SOURCES} "${SOURCE_DIR}/binding.cpp")
+if(BUILD_PYTHON)
+    SET(C_LIB_NAME "_C")
+    pybind11_add_module(${C_LIB_NAME} ${SOURCES} "${SOURCE_DIR}/binding.cpp")
+endif(BUILD_PYTHON)
+unset(BUILD_PYTHON CACHE)
 
 # [TESTS] Generate a test executable
-SET(UNITTEST_NAME "${PROJECT_NAME}_tests")
-add_executable(${UNITTEST_NAME} ${SOURCES} ${TESTS})
-target_link_libraries(${UNITTEST_NAME} gtest gtest_main Threads::Threads)
-add_test(UnitTests ${UNITTEST_NAME})  # To do "make test"
+if(BUILD_TESTS)
+    SET(UNITTEST_NAME "${PROJECT_NAME}_tests")
+    add_executable(${UNITTEST_NAME} ${SOURCES} ${TESTS})
+    target_link_libraries(${UNITTEST_NAME} gtest gtest_main Threads::Threads)
+    add_test(UnitTests ${UNITTEST_NAME})  # To do "make test"
+endif(BUILD_TESTS)
+unset(BUILD_TESTS CACHE)
 
 ## [EXAMPLES] Generate a test executable
-SET(EXAMPLES_DIR "examples")
-add_executable(example_conv ${SOURCES} "${EXAMPLES_DIR}/eddl_conv.cpp")
-add_executable(example_mlp ${SOURCES} "${EXAMPLES_DIR}/eddl_mlp.cpp")
-target_link_libraries(example_conv Threads::Threads)
-target_link_libraries(example_mlp Threads::Threads)
+    if(BUILD_EXAMPLES)
+    SET(EXAMPLES_DIR "examples")
+    add_executable(example_conv ${SOURCES} "${EXAMPLES_DIR}/eddl_conv.cpp")
+    add_executable(example_mlp ${SOURCES} "${EXAMPLES_DIR}/eddl_mlp.cpp")
+    target_link_libraries(example_conv Threads::Threads)
+    target_link_libraries(example_mlp Threads::Threads)
+endif(BUILD_EXAMPLES)
+unset(BUILD_EXAMPLES CACHE)
