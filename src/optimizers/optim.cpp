@@ -37,5 +37,5 @@
 using namespace std;
 
 
-optim::optim() {}
+Optimizer::Optimizer() {}
 

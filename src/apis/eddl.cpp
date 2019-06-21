@@ -376,9 +376,9 @@ optimizer EDDL::SGD(float lr, float momentum, float weight_decay, bool nesterov)
 }
 
 
-void EDDL::change(optimizer optim, const initializer_list<float> &params) {
+void EDDL::change(optimizer o, const initializer_list<float> &params) {
     // TODO: Check this function
-    optim->change(params);
+    o->change(params);
 }
 
 ////////////////////////////////////////////////////////
@@ -443,15 +443,15 @@ void EDDL::plot(model m, string fname) {
     m->plot(fname);
 }
 
-void EDDL::build(model net, optimizer o, const initializer_list<Loss *> &c, const initializer_list<Metric *> &m) {
-    EDDL::build(net, o, c, m, new CompServ(std::thread::hardware_concurrency(), {}, {}));
+void EDDL::build(model net, optimizer o, const initializer_list<Loss *> &lo, const initializer_list<Metric *> &me) {
+    EDDL::build(net, o, lo, me, new CompServ(std::thread::hardware_concurrency(), {}, {}));
 }
 
-void EDDL::build(model net, optimizer o, const initializer_list<Loss *> &c, const initializer_list<Metric *> &m, CompServ *cs) {
-    net->build(o, c, m, cs);
+void EDDL::build(model net, optimizer o, const initializer_list<Loss *> &lo, const initializer_list<Metric *> &me, CompServ *cs) {
+    net->build(o, lo, me, cs);
 }
 
-void EDDL::build2(Net *m,  optim *o, vector<Loss *> lo, vector<Metric *> me, CompServ *cs) {
+void EDDL::build2(Net *m,  Optimizer *o, vector<Loss *> lo, vector<Metric *> me, CompServ *cs) {
     m->build(o, lo, me, cs);
 }
 
@@ -568,12 +568,9 @@ void EDDL::download_mnist() {
 }
 
 
-model EDDL::get_model_mlp(){
-
-    int batch=1000;
-
+model EDDL::get_model_mlp(int batch_size){
     // network
-    layer in=eddl.Input({batch,784});
+    layer in=eddl.Input({batch_size, 784});
     layer l=in;
 
     for(int i=0;i<3;i++)
@@ -587,14 +584,12 @@ model EDDL::get_model_mlp(){
     return net;
 }
 
-model EDDL::get_model_cnn(){
-    int batch=1000;
-
+model EDDL::get_model_cnn(int batch_size){
     // network
-    layer in=eddl.Input({batch,784});
+    layer in=eddl.Input({batch_size,784});
     layer l=in;
 
-    l=eddl.Reshape(l,{batch,1,28,28});
+    l=eddl.Reshape(l,{batch_size, 1,28,28});
     l=eddl.MaxPool(eddl.Activation(eddl.Conv(l, 16, {3,3}),"relu"),{2,2});
     l=eddl.MaxPool(eddl.Activation(eddl.Conv(l, 32, {3,3}),"relu"),{2,2});
     l=eddl.MaxPool(eddl.Activation(eddl.Conv(l, 64, {3,3}),"relu"),{2,2});
@@ -603,7 +598,7 @@ model EDDL::get_model_cnn(){
     /*for(int i=0,k=16;i<3;i++,k=k*2)
       l=ResBlock(l,k,2);
   */
-    l=eddl.Reshape(l,{batch,-1});
+    l=eddl.Reshape(l,{batch_size,-1});
 
     l=eddl.Activation(eddl.Dense(l,32),"relu");
 

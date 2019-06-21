@@ -37,7 +37,7 @@
 using namespace std;
 
 
-sgd::sgd(float lr, float momentum, float weight_decay, bool nesterov) : optim() {
+sgd::sgd(float lr, float momentum, float weight_decay, bool nesterov) : Optimizer() {
     this->lr = lr;
     this->mu = momentum;
     this->weight_decay = weight_decay;
@@ -51,7 +51,7 @@ void sgd::change(const initializer_list<float> &p) {
     mu = v[1];
 }
 
-optim *sgd::clone() {
+Optimizer *sgd::clone() {
     return new sgd(lr, mu, weight_decay, nesterov);
 }
 

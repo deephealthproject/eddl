@@ -53,7 +53,7 @@
 #define tensor LTensor*
 #define layer Layer*
 #define model Net*
-#define optimizer optim*
+#define optimizer Optimizer*
 #define callback Callback*
 #define initializer Initializer*
 #define loss Loss*
@@ -160,7 +160,7 @@ public:
 
     static optimizer SGD(float lr=0.01f, float momentum=0.0f, float weight_decay=0.0f, bool nesterov=false);
 
-    static void change(optimizer optim, const initializer_list<float> &params);
+    static void change(optimizer o, const initializer_list<float> &params);
 
 
     // ---- POOLING LAYERS ----
@@ -205,9 +205,9 @@ public:
 
     // ---- MODEL METHODS ----
     static model Model(vlayer in, vlayer out);
-    static void build(model net, optimizer o, const initializer_list<Loss *> &c, const initializer_list<Metric *> &m);
-    static void build(model net, optimizer o, const initializer_list<Loss *> &c, const initializer_list<Metric *> &m, CompServ *cs);
-    static void build2(Net *m,  optim *o, vector<Loss *> lo, vector<Metric *> me, CompServ *cs);
+    static void build(model net, optimizer o, const initializer_list<Loss *> &lo, const initializer_list<Metric *> &me);
+    static void build(model net, optimizer o, const initializer_list<Loss *> &lo, const initializer_list<Metric *> &me, CompServ *cs);
+    static void build2(Net *m,  Optimizer *o, vector<Loss *> lo, vector<Metric *> me, CompServ *cs);
     static string summary(model m);
     static void plot(model m, string fname);
     static void fit(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out, int batch, int epochs);
@@ -226,8 +226,8 @@ public:
     static void download_mnist();
 
     // ---- MODELS ----
-    static model get_model_mlp();
-    static model get_model_cnn();
+    static model get_model_mlp(int batch_size);
+    static model get_model_cnn(int batch_size);
 };
 
 extern EDDL eddl;

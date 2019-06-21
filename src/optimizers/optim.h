@@ -44,24 +44,24 @@ using namespace std;
 typedef vector<Layer *> vlayer;
 typedef vector<Tensor *> vtensor;
 
-class optim {
+class Optimizer {
 public:
     string name;
     vlayer layers;
 
-    optim();
+    Optimizer();
 
     virtual void setlayers(vlayer l) {}
 
     virtual void applygrads(int batch) {}
 
-    virtual optim *clone() { return nullptr; }
+    virtual Optimizer *clone() { return nullptr; }
 
     virtual void change(const initializer_list<float> &p) {}
 
 };
 
-class sgd : public optim {
+class sgd : public Optimizer {
 public:
     float lr;
     float mu;
@@ -72,7 +72,7 @@ public:
 
     explicit sgd(float lr=0.01f, float momentum=0.0f, float weight_decay=0.0f, bool nesterov=false);
 
-    optim *clone() override;
+    Optimizer *clone() override;
 
     void setlayers(vlayer l) override;
 
@@ -82,7 +82,7 @@ public:
 };
 
 // ---- Adam ----
-class adam: public optim {
+class adam: public Optimizer {
 public:
     float lr;
     float beta_1;
@@ -95,7 +95,7 @@ public:
 
     explicit adam(float lr=0.01f, float beta_1=0.9f, float beta_2=0.999f, float epsilon=1e-8f, float weight_decay=0.0f, bool amsgrad=false);
 
-//    optim *clone();
+//    Optimizer *clone();
 //
 //    void setlayers(vlayer l);
 //
@@ -106,7 +106,7 @@ public:
 
 
 // ---- AdaDelta ----
-class adadelta : public optim {
+class adadelta : public Optimizer {
 public:
     float lr;
     float rho;
@@ -117,7 +117,7 @@ public:
 
     explicit adadelta(float lr=0.01f, float rho=0.95f, float epsilon=1e-8f, float weight_decay=0.0f);
 
-//    optim *clone();
+//    Optimizer *clone();
 //
 //    void setlayers(vlayer l);
 //
@@ -127,7 +127,7 @@ public:
 };
 
 // ---- Adagrad ----
-class adagrad : public optim {
+class adagrad : public Optimizer {
 public:
     float lr;
     float epsilon;
@@ -137,7 +137,7 @@ public:
 
     explicit adagrad(float lr=0.01f, float epsilon=1e-8f, float weight_decay=0.0f);
 
-//    optim *clone();
+//    Optimizer *clone();
 //
 //    void setlayers(vlayer l);
 //
@@ -147,7 +147,7 @@ public:
 };
 
 // ---- Adamax ----
-class adamax : public optim {
+class adamax : public Optimizer {
 public:
     float lr;
     float beta_1;
@@ -159,7 +159,7 @@ public:
 
     explicit adamax(float lr=0.01f, float beta_1=0.9f, float beta_2=0.999f, float epsilon=1e-8f, float weight_decay=0.0f);
 
-//    optim *clone();
+//    Optimizer *clone();
 //
 //    void setlayers(vlayer l);
 //
@@ -169,7 +169,7 @@ public:
 };
 
 // ---- Nadam ----
-class nadam : public optim {
+class nadam : public Optimizer {
 public:
     float lr;
     float beta_1;
@@ -181,7 +181,7 @@ public:
 
     explicit nadam(float lr=0.01f, float beta_1=0.9f, float beta_2=0.999f, float epsilon=1e-8f, float schedule_decay=0.004f);
 
-//    optim *clone();
+//    Optimizer *clone();
 //
 //    void setlayers(vlayer l);
 //
@@ -191,7 +191,7 @@ public:
 };
 
 // ---- RMSProp ----
-class rmsprop : public optim {
+class rmsprop : public Optimizer {
 public:
     float lr;
     float rho;
@@ -202,7 +202,7 @@ public:
 
     explicit rmsprop(float lr=0.01f, float rho=0.9f, float epsilon=1e-8f, float weight_decay=0.0f);
 
-//    optim *clone();
+//    Optimizer *clone();
 //
 //    void setlayers(vlayer l);
 //
