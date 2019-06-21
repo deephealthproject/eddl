@@ -71,7 +71,7 @@ float *get_fmem(int size, char *str){
         ptr = new float[size];
     }
     catch (std::bad_alloc& badAlloc){
-        fprintf(stderr, "Malloc error allocating %lu bytes in %s\n" ,size*sizeof(float), str);
+        fprintf(stderr, "Malloc error allocating %lu bytes in %s\n", size*sizeof(float), str);
     }
     return ptr;
 }

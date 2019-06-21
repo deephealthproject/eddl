@@ -69,11 +69,8 @@ void *train_batch_t(void *t) {
     auto *targs = (tdata *) t;
 
     Net *net = targs->net;
-
     net->reset();
-
     net->forward();
-
     net->loss();
 
     if (!targs->eval) {
@@ -318,9 +315,10 @@ void Net::bts() {
 
 
 /////////////////////////////////////////
-void Net::build(optim *opt, vloss co, vmetrics me) {
+void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
     fprintf(stdout, "Build net\n");
-    if (co.size() != lout.size())
+
+    if (lo.size() != lout.size())
         msg("Loss list size does not match output list", "Net.build");
 
     if (me.size() != lout.size())
@@ -350,14 +348,14 @@ void Net::build(optim *opt, vloss co, vmetrics me) {
     optimizer = opt;
     optimizer->setlayers(layers);
     // Initialize fiting errors vector
-    for (int i = 0; i < co.size(); i++) {
+    for (int i = 0; i < lo.size(); i++) {
         fiterr.push_back(0.0);
         fiterr.push_back(0.0);
     }
     // set loss functions and create targets tensors
-    this->losses = vloss(co);
-    for (int i = 0; i < co.size(); i++) {
-        if (co[i]->name == "soft_cross_entropy") lout[i]->delta_bp = 1;
+    this->losses = vloss(lo);
+    for (int i = 0; i < lo.size(); i++) {
+        if (lo[i]->name == "soft_cross_entropy") lout[i]->delta_bp = 1;
         lout[i]->target = new Tensor(lout[i]->output->getShape(), dev);
     }
 
@@ -553,8 +551,11 @@ void Net::delta() {
 
 
 void Net::loss() {
+
     int p = 0;
     for (int i = 0; i < lout.size(); i++, p += 2) {
+//        cout << "LOSS -> " << losses[i]->name << endl;
+//        cout << "LOSS -> " <<  metrics[i]->name << endl;
         // loss value
         fiterr[p] = losses[i]->value(lout[i]->target, lout[i]->output);
         // metric value
@@ -591,8 +592,8 @@ void Net::applygrads(int batch) {
 }
 
 
-void Net::build(optim *opt, vloss in, vmetrics out, CompServ *cs){
-    build(opt, in, out);
+void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs){
+    build(opt, lo, me);
     set_compserv(cs);
 }
 void Net::fit(vtensor tin, vtensor tout, int batch_size, int epochs) {
@@ -717,11 +718,12 @@ void Net::train_batch_ni(vector<Tensor *> X, vector<Tensor *> Y) {
     }
 
     // Create indices
-    for (int i = 0; i < Y[i]->shape[0]; i++)
+    int batch_size = lin[0]->input->shape[0];
+    for (int i = 0; i < batch_size; i++)
         sind.push_back(i);
 
     setmode(TRMODE);
-    train_batch(X, Y, sind, lin[0]->input->shape[0]);
+    train_batch(X, Y, sind, batch_size);
 }
 
 
@@ -735,8 +737,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int batch_size, int eval)
     int thread_batch_size = batch_size / snets.size();
 
     // Check indices
-    if (sind.size() == 0) msg("error void index","Net::train_btch");
-
+    if (sind.size() == 0) msg("error void index","Net::train_batch");
     // Split data for each network
     for (int i = 0; i < snets.size(); i++) {
         int start = i * thread_batch_size;

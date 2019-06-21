@@ -61,16 +61,23 @@ PYBIND11_MODULE(_C, m) {
     py::class_<Net>(m, "Model")
         .def("summary", &Net::summary)
         .def("plot", &Net::plot)
-        .def("train_batch_ni", &Net::train_batch_ni);
+        .def("train_batch_ni", &Net::train_batch_ni)
+        .def("evaluate", &Net::evaluate)
+        .def_readonly("fiterr", &Net::fiterr)
+        .def_readonly("losses", &Net::losses)
+        .def_readonly("metrics", &Net::metrics);
 
     // Optimizer
-    py::class_<optim> (m, "Optim");
+    py::class_<Optimizer> (m, "Optim");
     // Optimizer: SGD
-    py::class_<sgd, optim> (m, "SGD")
+    py::class_<sgd, Optimizer> (m, "SGD")
         .def(py::init<float, float, float, bool>());
 
     // Loss
-    py::class_<Loss> (m, "Loss");
+    py::class_<Loss> (m, "Loss")
+        .def(py::init<std::string>())
+        .def_readonly("name", &Loss::name);
+
     // Loss: Cross Entropy
     py::class_<LCrossEntropy, Loss> (m, "LCrossEntropy")
     .def(py::init<>());
@@ -82,13 +89,16 @@ PYBIND11_MODULE(_C, m) {
     .def(py::init<>());
 
     // Metric
-    py::class_<Metric> (m, "Metric");
+    py::class_<Metric> (m, "Metric")
+        .def(py::init<std::string>())
+        .def_readonly("name", &Metric::name);
+
     // Metric: Categorical Accuracy
     py::class_<MCategoricalAccuracy, Metric> (m, "MCategoricalAccuracy")
         .def(py::init<>());
     // Metric: Mean Squared Error
     py::class_<MMeanSquaredError, Metric> (m, "MMeanSquaredError")
-    .def(py::init<>());
+        .def(py::init<>());
 
     // Computing service
     py::class_<CompServ>(m, "CompServ");
