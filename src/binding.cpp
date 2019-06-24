@@ -54,7 +54,23 @@ PYBIND11_MODULE(_C, m) {
         .def_readonly("device", &Tensor::device)
         .def_readonly("ndim", &Tensor::ndim)
         .def_readonly("size", &Tensor::size)
-        .def_readonly("shape", &Tensor::shape);
+        .def_readonly("shape", &Tensor::shape)
+        .def_buffer([](Tensor &t) -> py::buffer_info {
+	  std::vector<ssize_t> strides(t.ndim);
+	  ssize_t S = sizeof(float);
+	  for (int i = t.ndim - 1; i >=0; --i) {
+	    strides[i] = S;
+	    S *= t.shape[i];
+	  }
+	  return py::buffer_info(
+            t.ptr,
+            sizeof(float),
+            py::format_descriptor<float>::format(),
+            t.ndim,
+            t.shape,
+	    strides
+	  );
+	});
     m.def("tensor_from_npy", &tensor_from_npy);
     m.def("tensor_getdata", &tensor_getdata);
 
