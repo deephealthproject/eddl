@@ -64,8 +64,7 @@ void LExp::forward() {
 }
 
 void LExp::backward() {
-  delta->set_exp();
-  Tensor::el_mult(delta, parent[0]->output, parent[0]->delta, 1);
+  Tensor::el_mult(delta, output, parent[0]->delta, 1);
 }
 
 Layer *LExp::share(int c, int bs, vector<Layer *> p) {
