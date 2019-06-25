@@ -74,19 +74,40 @@ PYBIND11_MODULE(_C, m) {
     m.def("tensor_from_npy", &tensor_from_npy);
     m.def("tensor_getdata", &tensor_getdata);
 
+    py::class_<Layer>(m, "Layer")
+        .def_readonly("name", &Layer::name)
+        .def_readonly("input", &Layer::input)
+        .def_readonly("output", &Layer::output)
+        .def_readonly("target", &Layer::target)
+        .def_readonly("delta", &Layer::delta)
+        .def_readonly("orig", &Layer::orig)
+        .def_readonly("params", &Layer::params)
+        .def_readonly("gradients", &Layer::gradients)
+        .def_readonly("parent", &Layer::parent)
+        .def_readonly("child", &Layer::child);
+
     py::class_<Net>(m, "Model")
+        .def_readonly("name", &Net::name)
+        .def_readonly("dev", &Net::dev)
+        .def_readonly("layers", &Net::layers)
+        .def_readonly("input_layers", &Net::lin)
+        .def_readonly("output_layers", &Net::lout)
+        .def_readonly("losses", &Net::losses)
+        .def_readonly("metrics", &Net::metrics)
+        .def_readonly("fiterr", &Net::fiterr)
+        //.def_readonly("optimizer", &Net::optimizer)
+        .def("clean_fiterr", &Net::clean_fiterr)
         .def("summary", &Net::summary)
         .def("plot", &Net::plot)
         .def("train_batch_ni", &Net::train_batch_ni)
-        .def("evaluate", &Net::evaluate)
-        .def_readonly("fiterr", &Net::fiterr)
-        .def_readonly("losses", &Net::losses)
-        .def_readonly("metrics", &Net::metrics);
+        .def("evaluate", &Net::evaluate);
 
     // Optimizer
-    py::class_<Optimizer> (m, "Optim");
+    py::class_<Optimizer> (m, "Optimizer")
+        .def_readonly("name", &Optimizer::name);
+
     // Optimizer: SGD
-    py::class_<sgd, Optimizer> (m, "SGD")
+    py::class_<SGD, Optimizer> (m, "SGD")
         .def(py::init<float, float, float, bool>());
 
     // Loss
@@ -102,7 +123,7 @@ PYBIND11_MODULE(_C, m) {
         .def(py::init<>());
     // Loss: Mean Squared Error
     py::class_<LMeanSquaredError, Loss> (m, "LMeanSquaredError")
-    .def(py::init<>());
+        .def(py::init<>());
 
     // Metric
     py::class_<Metric> (m, "Metric")
@@ -117,13 +138,17 @@ PYBIND11_MODULE(_C, m) {
         .def(py::init<>());
 
     // Computing service
-    py::class_<CompServ>(m, "CompServ");
+    py::class_<CompServ>(m, "CompServ")
+        .def_readonly("type", &CompServ::type)
+        .def_readonly("local_threads", &CompServ::local_threads)
+        .def_readonly("local_gpus", &CompServ::local_gpus)
+        .def_readonly("local_fpgas", &CompServ::local_fpgas);
 
     // EDDL
     py::class_<EDDL>(m, "EDDL")
         .def(py::init<>())
         .def("CS_CPU", &EDDL::CS_CPU)
         .def("build", &EDDL::build2)
-        .def("get_model_mlp", &EDDL::get_model_mlp)
-        .def("get_model_cnn", &EDDL::get_model_cnn);
+        .def("get_model_mlp", &EDDL::get_model_mlp)  // Temp. for debugging
+        .def("get_model_cnn", &EDDL::get_model_cnn);  // Temp. for debugging
 }

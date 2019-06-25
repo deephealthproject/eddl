@@ -554,8 +554,6 @@ void Net::loss() {
 
     int p = 0;
     for (int i = 0; i < lout.size(); i++, p += 2) {
-//        cout << "LOSS -> " << losses[i]->name << endl;
-//        cout << "LOSS -> " <<  metrics[i]->name << endl;
         // loss value
         fiterr[p] = losses[i]->value(lout[i]->target, lout[i]->output);
         // metric value
@@ -596,6 +594,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs){
     build(opt, lo, me);
     set_compserv(cs);
 }
+
 void Net::fit(vtensor tin, vtensor tout, int batch_size, int epochs) {
     int i, j, k, n;
 
@@ -826,6 +825,12 @@ void Net::sync_weights() {
         }
 }
 
+void Net::clean_fiterr() {
+    int k, p;
+    for (k = p = 0; k < lout.size(); k++, p += 2) {
+        fiterr[p] = fiterr[p + 1] = 0.0;
+    }
+}
 ///////////////////////////////////////////
 
 void Net::evaluate(vtensor tin, vtensor tout) {

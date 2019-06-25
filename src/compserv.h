@@ -49,7 +49,7 @@ public:
     CompServ(int threads, const initializer_list<int> &g, const initializer_list<int> &f);
 
     // for Distributed
-    CompServ(FILE *csspec);
+    explicit CompServ(FILE *csspec);
 
 };
 

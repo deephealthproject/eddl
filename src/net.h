@@ -109,6 +109,7 @@ public:
 
     void setmode(int m);
     void sync_weights();
+    void clean_fiterr();
 
 
     Layer *getLayer(string name);
