@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 
     // Build model
     eddl.build(net,
-               eddl.SGD(0.01, 0.9), // Optimizer
+               eddl.sgd(0.01, 0.9), // Optimizer
                {eddl.LossFunc("soft_cross_entropy")}, // Losses
                {eddl.MetricFunc("categorical_accuracy")}, // Metrics
                eddl.CS_CPU(4) // CPU with 4 threads
@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
     eddl.div(x_test, 255.0);
 
     // Train model
-    eddl.fit(net, {x_train}, {y_train}, batch_size, 5);
+    eddl.fit(net, {x_train}, {y_train}, batch_size, epochs);
 
     // Evaluate test
     std::cout << "Evaluate train:" << std::endl;
