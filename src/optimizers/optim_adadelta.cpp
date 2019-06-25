@@ -37,7 +37,7 @@
 using namespace std;
 
 
-adadelta::adadelta(float lr, float rho, float epsilon, float weight_decay) : Optimizer() {
+AdaDelta::AdaDelta(float lr, float rho, float epsilon, float weight_decay) : Optimizer() {
     this->lr = lr;
     this->rho = rho;
     this->epsilon = epsilon;

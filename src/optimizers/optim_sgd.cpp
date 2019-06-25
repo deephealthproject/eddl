@@ -37,7 +37,7 @@
 using namespace std;
 
 
-sgd::sgd(float lr, float momentum, float weight_decay, bool nesterov) : Optimizer() {
+SGD::SGD(float lr, float momentum, float weight_decay, bool nesterov) : Optimizer() {
     this->lr = lr;
     this->mu = momentum;
     this->weight_decay = weight_decay;
@@ -45,17 +45,17 @@ sgd::sgd(float lr, float momentum, float weight_decay, bool nesterov) : Optimize
 
 }
 
-void sgd::change(const initializer_list<float> &p) {
+void SGD::change(const initializer_list<float> &p) {
     vector<float> v = vector<float>(p.begin(), p.end());
     lr = v[0];
     mu = v[1];
 }
 
-Optimizer *sgd::clone() {
-    return new sgd(lr, mu, weight_decay, nesterov);
+Optimizer *SGD::clone() {
+    return new SGD(lr, mu, weight_decay, nesterov);
 }
 
-void sgd::setlayers(vlayer l) {
+void SGD::setlayers(vlayer l) {
     layers = l;
 
     // create momemtum tensors
@@ -67,7 +67,7 @@ void sgd::setlayers(vlayer l) {
 
 }
 
-void sgd::applygrads(int batch) {
+void SGD::applygrads(int batch) {
 
     int p = 0;
 

@@ -37,7 +37,7 @@
 using namespace std;
 
 
-adam::adam(float lr, float beta_1, float beta_2, float epsilon, float weight_decay, bool amsgrad) : Optimizer() {
+Adam::Adam(float lr, float beta_1, float beta_2, float epsilon, float weight_decay, bool amsgrad) : Optimizer() {
     this->lr = lr;
     this->beta_1 = beta_1;
     this->beta_2 = beta_2;

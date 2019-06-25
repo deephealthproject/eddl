@@ -37,7 +37,7 @@
 using namespace std;
 
 
-adamax::adamax(float lr, float beta_1, float beta_2, float epsilon, float weight_decay) : Optimizer() {
+Adamax::Adamax(float lr, float beta_1, float beta_2, float epsilon, float weight_decay) : Optimizer() {
     this->lr = lr;
     this->beta_1 = beta_1;
     this->beta_2 = beta_2;

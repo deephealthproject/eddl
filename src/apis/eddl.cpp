@@ -345,34 +345,33 @@ layer EDDL::Minimum(const initializer_list<layer> &layers, string name){
 
 ////////////////////////////////////////////////////////
 
-optimizer EDDL::Adadelta(float lr, float rho, float epsilon, float weight_decay){
+optimizer EDDL::adadelta(float lr, float rho, float epsilon, float weight_decay){
     //Todo: Implement
-    return new adadelta(lr, rho, epsilon, weight_decay);
+    return new AdaDelta(lr, rho, epsilon, weight_decay);
 }
-optimizer EDDL::Adam(float lr, float beta_1, float beta_2, float epsilon, float weight_decay, bool amsgrad){
+optimizer EDDL::adam(float lr, float beta_1, float beta_2, float epsilon, float weight_decay, bool amsgrad){
     //Todo: Implement
-    return new adam(lr, beta_1, beta_2, epsilon, weight_decay, amsgrad);
+    return new Adam(lr, beta_1, beta_2, epsilon, weight_decay, amsgrad);
 }
-optimizer EDDL::Adagrad(float lr, float epsilon, float weight_decay){
+optimizer EDDL::adagrad(float lr, float epsilon, float weight_decay){
     //Todo: Implement
-    return new adagrad(lr, epsilon, weight_decay);
+    return new Adagrad(lr, epsilon, weight_decay);
 }
-optimizer EDDL::Adamax(float lr, float beta_1, float beta_2, float epsilon, float weight_decay){
+optimizer EDDL::adamax(float lr, float beta_1, float beta_2, float epsilon, float weight_decay){
     //Todo: Implement
-    return new adamax(lr, beta_1, beta_2, epsilon, weight_decay);
+    return new Adamax(lr, beta_1, beta_2, epsilon, weight_decay);
 }
-optimizer EDDL::Nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule_decay){
+optimizer EDDL::nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule_decay){
     //Todo: Implement
-    return new nadam(lr, beta_1, beta_2, epsilon, schedule_decay);
+    return new Nadam(lr, beta_1, beta_2, epsilon, schedule_decay);
 }
-optimizer EDDL::RMSprop(float lr, float rho, float epsilon, float weight_decay){
+optimizer EDDL::rmsprop(float lr, float rho, float epsilon, float weight_decay){
     //Todo: Implement
-    return new rmsprop(lr, rho, epsilon, weight_decay);
+    return new RMSProp(lr, rho, epsilon, weight_decay);
 }
 
-
-optimizer EDDL::SGD(float lr, float momentum, float weight_decay, bool nesterov){
-    return new sgd(lr, momentum, weight_decay, nesterov);
+optimizer EDDL::sgd(float lr, float momentum, float weight_decay, bool nesterov){
+    return new SGD(lr, momentum, weight_decay, nesterov);
 }
 
 
@@ -531,6 +530,8 @@ bool exist(string name) {
 }
 
 void EDDL::download_mnist() {
+    // TODO: Too big, we should use the one in the PyEDDL
+    // TODO: Need for "to_categorical" method
     string cmd;
     string trX = "trX.bin";
     string trY = "trY.bin";
@@ -569,6 +570,7 @@ void EDDL::download_mnist() {
 
 
 model EDDL::get_model_mlp(int batch_size){
+    // Temp. for debugging
     // network
     layer in=eddl.Input({batch_size, 784});
     layer l=in;
@@ -585,6 +587,7 @@ model EDDL::get_model_mlp(int batch_size){
 }
 
 model EDDL::get_model_cnn(int batch_size){
+    // Temp. for debugging
     // network
     layer in=eddl.Input({batch_size,784});
     layer l=in;

@@ -151,14 +151,13 @@ public:
     static layer Var(layer l);
 
     // ---- OPTIMIZERS ----
-    static optimizer Adadelta(float lr, float rho, float epsilon, float weight_decay); //Todo: Implement
-    static optimizer Adam(float lr, float beta_1, float beta_2, float epsilon, float weight_decay, bool amsgrad); //Todo: Implement
-    static optimizer Adagrad(float lr, float epsilon, float weight_decay); //Todo: Implement
-    static optimizer Adamax(float lr, float beta_1, float beta_2, float epsilon, float weight_decay); //Todo: Implement
-    static optimizer Nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule_decay); //Todo: Implement
-    static optimizer RMSprop(float lr, float rho, float epsilon, float weight_decay); //Todo: Implement
-
-    static optimizer SGD(float lr=0.01f, float momentum=0.0f, float weight_decay=0.0f, bool nesterov=false);
+    static optimizer adadelta(float lr, float rho, float epsilon, float weight_decay); //Todo: Implement
+    static optimizer adam(float lr, float beta_1, float beta_2, float epsilon, float weight_decay, bool amsgrad); //Todo: Implement
+    static optimizer adagrad(float lr, float epsilon, float weight_decay); //Todo: Implement
+    static optimizer adamax(float lr, float beta_1, float beta_2, float epsilon, float weight_decay); //Todo: Implement
+    static optimizer nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule_decay); //Todo: Implement
+    static optimizer rmsprop(float lr, float rho, float epsilon, float weight_decay); //Todo: Implement
+    static optimizer sgd(float lr=0.01f, float momentum=0.0f, float weight_decay=0.0f, bool nesterov=false);
 
     static void change(optimizer o, const initializer_list<float> &params);
 

@@ -37,7 +37,7 @@
 using namespace std;
 
 
-nadam::nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule_decay) : Optimizer() {
+Nadam::Nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule_decay) : Optimizer() {
     this->lr = lr;
     this->beta_1 = beta_1;
     this->beta_2 = beta_2;

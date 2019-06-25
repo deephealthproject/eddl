@@ -37,7 +37,7 @@
 using namespace std;
 
 
-rmsprop::rmsprop(float lr, float rho, float epsilon, float weight_decay) : Optimizer() {
+RMSProp::RMSProp(float lr, float rho, float epsilon, float weight_decay) : Optimizer() {
     this->lr = lr;
     this->rho = rho;
     this->epsilon = epsilon;

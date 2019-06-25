@@ -37,7 +37,7 @@
 using namespace std;
 
 
-adagrad::adagrad(float lr, float epsilon, float weight_decay) : Optimizer() {
+Adagrad::Adagrad(float lr, float epsilon, float weight_decay) : Optimizer() {
     this->lr = lr;
     this->epsilon = epsilon;
     this->weight_decay = weight_decay;
