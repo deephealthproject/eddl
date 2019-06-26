@@ -11,28 +11,32 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(CMAKE_CXX_FLAGS "-march=native")
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+#set(CMAKE_CXX_FLAGS "-march=native")
+#set(CMAKE_CXX_FLAGS_DEBUG "-g")
+#set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 message(STATUS "Build type: " ${CMAKE_BUILD_TYPE} )
 message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS} )
 
-# SET THREADS *******************************
-SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
-SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
-find_package(Threads REQUIRED)
 
-# SET GTEST *******************************
-#find_package(GTest REQUIRED)
-#include_directories(${GTEST_INCLUDE_DIRS})
-add_subdirectory(third_party/googletest)
-enable_testing()
-include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+# SET STATIC/DYNAMIC RUNTIME
+set(EDDLL_SHARED OFF CACHE BOOL "Whether to build a static or dynamic library")
 
-# SET LIBRARIES *******************************
-add_subdirectory(third_party/pybind11)
-include_directories(third_party/eigen)
+if(MSVC)
+    if(EDDLL_STATIC)
+        message(STATUS "Setting static runtime for MSVC")
+        foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO) 
+            string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+        endforeach(flag_var)
+    else()
+	    message(STATUS "Setting dinamic runtime for MSVC")
+        foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO) 
+            string(REGEX REPLACE "/MT" "/MD" ${flag_var} "${${flag_var}}")
+        endforeach(flag_var)
+	endif()
+    
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
 
 
 # USER OPTIONS *******************************
@@ -42,24 +46,24 @@ option(BUILD_EXAMPLES "Compile examples" ON)
 
 
 # Add the given directories to those the compiler uses to search for include files
-include_directories(src)
-include_directories(src/apis)
-include_directories(src/callbacks)
-include_directories(src/hardware/cpu)
-include_directories(src/hardware/gpu)
-include_directories(src/initializers)
-include_directories(src/layers)
-include_directories(src/layers/conv)
-include_directories(src/layers/core)
-include_directories(src/layers/merge)
-include_directories(src/layers/noise)
-include_directories(src/layers/operators)
-include_directories(src/layers/pool)
-include_directories(src/layers/recurrent)
-include_directories(src/losses)
-include_directories(src/metrics)
-include_directories(src/optimizers)
-include_directories(src/tensor)
+#include_directories(src)
+#include_directories(src/apis)
+#include_directories(src/callbacks)
+#include_directories(src/hardware/cpu)
+#include_directories(src/hardware/gpu)
+#include_directories(src/initializers)
+#include_directories(src/layers)
+#include_directories(src/layers/conv)
+#include_directories(src/layers/core)
+#include_directories(src/layers/merge)
+#include_directories(src/layers/noise)
+#include_directories(src/layers/operators)
+#include_directories(src/layers/pool)
+#include_directories(src/layers/recurrent)
+#include_directories(src/losses)
+#include_directories(src/metrics)
+#include_directories(src/optimizers)
+#include_directories(src/tensor)
 
 
 # SET SOURCES *******************************
@@ -164,35 +168,120 @@ SET(SOURCES
         src/utils.h
         )
 
-# [TESTS] ****************************
+
+# SET TESTS ****************************
 SET(TEST_DIR "tests")
 SET(TESTS
     "${TEST_DIR}/test_tensor.cpp"
     )
 
 
+# [LIBRARY] EDDLL LIBRARY *********************
+if(EDDLL_SHARED)
+	add_library(EDDLL SHARED "")
+else(EDDLL_SHARED)
+	add_library(EDDLL STATIC "")
+endif(EDDLL_SHARED)
+target_sources(EDDLL PRIVATE ${SOURCES})
+target_include_directories(EDDLL PUBLIC	
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>  
+	$<INSTALL_INTERFACE:include>
+)
+target_include_directories(EDDLL PUBLIC 
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen>  
+	$<INSTALL_INTERFACE:include/third_party/eigen>
+)
+set_target_properties(EDDLL PROPERTIES OUTPUT_NAME_DEBUG "eddlld")
+set_target_properties(EDDLL PROPERTIES OUTPUT_NAME_RELEASE "eddll")
+
+# pthreads setup for windows os				
+# The following commands should be removed when pthread linux 
+# specific calls will be replaced by thread c++ standard calls 
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+	set(EDDLL_PTHREADS_INSTALL_PATH "$ENV{PTHREADS_ROOT}" CACHE PATH "Path to the installation of pthreads under Windows")	
+	if(EDDLL_PTHREADS_INSTALL_PATH STREQUAL "")
+		message(ERROR " pthreds install path must be specified under Windows")
+	endif()	
+	target_link_libraries(EDDLL debug "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3d.lib"
+								debug "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib"
+								debug "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib")								 
+	target_link_libraries(EDDLL optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib"
+								optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib"
+								optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")								 
+	target_include_directories(EDDLL PUBLIC "${EDDLL_PTHREADS_INSTALL_PATH}/include")
+endif()
+
+# pthreads setup for linux os	
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+    SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
+    find_package(Threads REQUIRED)
+    target_link_libraries(EDDLL Threads::Threads)
+endif()
+
 # [BINDING] Create python binding
 if(BUILD_PYTHON)
+    add_subdirectory(third_party/pybind11)
     SET(C_LIB_NAME "_C")
     pybind11_add_module(${C_LIB_NAME} ${SOURCES} "${SOURCE_DIR}/binding.cpp")
 endif(BUILD_PYTHON)
-unset(BUILD_PYTHON CACHE)
+#unset(BUILD_PYTHON CACHE)
 
 # [TESTS] Generate a test executable
 if(BUILD_TESTS)
+    add_subdirectory(third_party/googletest)
     SET(UNITTEST_NAME "${PROJECT_NAME}_tests")
-    add_executable(${UNITTEST_NAME} ${SOURCES} ${TESTS})
-    target_link_libraries(${UNITTEST_NAME} gtest gtest_main Threads::Threads)
+    add_executable(${UNITTEST_NAME} ${TESTS})
+    target_include_directories(${UNITTEST_NAME} PUBLIC ${gtest_SOURCE_DIR}/include)    
+    target_link_libraries(${UNITTEST_NAME} EDDLL gtest gtest_main)
     add_test(UnitTests ${UNITTEST_NAME})  # To do "make test"
+    enable_testing()
 endif(BUILD_TESTS)
-unset(BUILD_TESTS CACHE)
+#unset(BUILD_TESTS CACHE)
 
-## [EXAMPLES] Generate a test executable
-    if(BUILD_EXAMPLES)
+# [EXAMPLES] Generate a test executable
+if(BUILD_EXAMPLES)
     SET(EXAMPLES_DIR "examples")
-    add_executable(example_conv ${SOURCES} "${EXAMPLES_DIR}/eddl_conv.cpp")
-    add_executable(example_mlp ${SOURCES} "${EXAMPLES_DIR}/eddl_mlp.cpp")
-    target_link_libraries(example_conv Threads::Threads)
-    target_link_libraries(example_mlp Threads::Threads)
+    add_executable(example_conv "${EXAMPLES_DIR}/eddl_conv.cpp")
+    add_executable(example_mlp "${EXAMPLES_DIR}/eddl_mlp.cpp")
+    target_link_libraries(example_conv EDDLL)
+    target_link_libraries(example_mlp EDDLL)
 endif(BUILD_EXAMPLES)
-unset(BUILD_EXAMPLES CACHE)
+#unset(BUILD_EXAMPLES CACHE)
+
+
+# [INSTALL] Install the eddll library
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    message(STATUS "....")
+    set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "..." FORCE)
+endif()
+install(TARGETS EDDLL 
+		EXPORT EDDLLConfig
+		RUNTIME DESTINATION bin
+		LIBRARY DESTINATION lib
+		ARCHIVE DESTINATION lib/static
+		)
+install(EXPORT EDDLLConfig DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
+		DESTINATION include/eddll
+        FILES_MATCHING PATTERN "*.h")
+        
+set(EIGEN_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen/Eigen")
+set(ESCAPED_CMAKE_CURRENT_SOURCE_DIR "${EIGEN_SOURCE_DIR}")
+file(GLOB Eigen_directory_files "${EIGEN_SOURCE_DIR}/*")		
+#message(STATUS ${Eigen_directory_files})
+foreach(f ${Eigen_directory_files})
+  if(NOT f MATCHES "\\.txt" AND NOT f MATCHES "${ESCAPED_CMAKE_CURRENT_SOURCE_DIR}/[.].+" AND NOT f MATCHES "${ESCAPED_CMAKE_CURRENT_SOURCE_DIR}/src")
+    list(APPEND Eigen_directory_files_to_install ${f})
+  endif()
+endforeach(f ${Eigen_directory_files})
+
+install(FILES
+  ${Eigen_directory_files_to_install}
+  DESTINATION include/third_party/eigen/Eigen
+) 
+
+
+
+
+

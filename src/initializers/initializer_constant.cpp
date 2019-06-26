@@ -40,4 +40,4 @@ IConstant::IConstant(float value) : Initializer("constant") {
     this->value = value;
 }
 
-float IConstant::set_weights(Tensor *T){}
+float IConstant::set_weights(Tensor* T) { return 0; }
