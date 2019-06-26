@@ -162,6 +162,7 @@ public:
     explicit Tensor(vector<int> shape, int dev=DEV_CPU);
     Tensor(vector<int> shape, Tensor *T);
     explicit Tensor(string fname, int bin=1);
+    Tensor(vector<int> shape, float *fptr, int dev=DEV_CPU);
 
     ~Tensor();
 

@@ -50,6 +50,8 @@ public:
 
     LTensor(vector<int> shape, int dev);
 
+    LTensor(const vector<int> shape, float *fptr,int dev);
+
     explicit LTensor(Layer *l);
 
     Layer *share(int c, int bs, vector<Layer *> p) override { return nullptr; }

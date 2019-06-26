@@ -914,5 +914,64 @@ void Net::evaluate(vtensor tin, vtensor tout) {
 
 }
 
+///////////////////////////////////////////
+
+void Net::predict(vtensor tin, vtensor tout) {
+
+    int i, j, k, n;
+
+    // Check list shape
+    if (tin.size() != lin.size())
+        msg("input tensor list does not match with defined input layers", "Net.predict");
+    if (tout.size() != lout.size())
+        msg("output tensor list does not match with defined output layers", "Net.predict");
+
+    // Check data consistency
+    n = tin[0]->shape[0];
+    if (n!=1)
+      msg("Predict only one sample","Net.predict");
+
+    for (i = 1; i < tin.size(); i++)
+        if (tin[i]->shape[0] != n)
+            msg("different number of samples in input tensor", "Net.predict");
+
+    for (i = 1; i < tout.size(); i++)
+        if (tout[i]->shape[0] != n)
+            msg("different number of samples in output tensor", "Net.predict");
+
+
+    if (batch_size!=1) resize(1);
+
+    printf("Predict...\n");
+
+    // Copy samples
+    for (int j = 0; j < tin.size(); j++)
+        Tensor::copy(tin[j], snets[0]->lin[j]->input);
+
+    snets[0]->reset();
+    snets[0]->forward();
+
+    for (int j = 0; j < tout.size(); j++) {
+        Tensor::copy(snets[0]->lout[j]->output,tout[j]);
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //////

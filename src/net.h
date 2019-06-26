@@ -124,6 +124,7 @@ public:
     void train_batch_ni(vector<Tensor *> in, vector<Tensor *> out);
 
     void evaluate(vtensor tin, vtensor tout);
+    void predict(vtensor tin, vtensor tout);
 
 };
 

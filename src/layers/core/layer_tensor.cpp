@@ -51,6 +51,11 @@ LTensor::LTensor(const initializer_list<int> &init, int dev) : LinLayer("ltensor
     delta = new Tensor(init, dev);
 }
 
+LTensor::LTensor(const vector<int> shape, float *fptr,int dev) : LinLayer("ltensor" + to_string(total_layers), dev) {
+    input = output = new Tensor(shape, fptr, dev);
+    delta = new Tensor(shape, dev);
+}
+
 // From vector<int>
 LTensor::LTensor(const vector<int> shape, int dev) : LinLayer("ltensor" + to_string(total_layers), dev) {
     input = output = new Tensor(shape, dev);

@@ -68,6 +68,50 @@ Tensor::Tensor() : device(DEV_CPU), ndim(0), size(0) {}
 
 Tensor::Tensor(const initializer_list<int> &init, int dev) : Tensor(vector<int>(init.begin(), init.end()), dev) {}
 
+Tensor::Tensor(vector<int> shape, float *fptr, int dev)
+{
+  #ifndef cGPU
+      if ((dev > DEV_CPU) && (isGPU())) {
+          fprintf(stderr, "Not compiled for GPU\n");
+          exit(0);
+      }
+  #endif
+  #ifndef cFPGA
+      if (dev >= DEV_FPGA) {
+          fprintf(stderr, "Not compiled for FPGA\n");
+          exit(0);
+      }
+  #endif
+
+      this->device = dev;
+      this->ndim = shape.size();
+      this->shape = shape;
+
+      size = 1;
+      for (int i = 0; i < ndim; ++i) size *= shape[i];
+
+      if (isCPU()) {
+          ptr=fptr;
+          if (ndim == 2) {
+              new(&mat) Eigen::Map<Eigen::MatrixXf>(ptr, shape[1], shape[0]);
+              ptr2 = &mat;
+          }
+      }
+  #ifdef cGPU
+      else if (isGPU())
+        {
+          // Not implemented
+        }
+  #endif
+  #ifdef cFPGA
+      else {
+        // create FPGA Tensor
+      }
+  #endif
+
+      tsem = new mutex();
+}
+
 Tensor::Tensor(vector<int> shape, int dev) {
 #ifndef cGPU
     if ((dev > DEV_CPU) && (isGPU())) {

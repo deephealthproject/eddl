@@ -68,6 +68,8 @@ public:
     static tensor T(const initializer_list<int> &shape);//*
     static tensor T(vector<int> shape);
     static tensor T(string fname);
+    static tensor T(const initializer_list<int> &shape,float *ptr);
+    static float * T_getptr(tensor T);
 
     // ---- TENSOR OPERATIONS ----
     static void div(tensor t, float v);
@@ -211,6 +213,7 @@ public:
     static void plot(model m, string fname);
     static void fit(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out, int batch, int epochs);
     static void evaluate(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out);
+    static void predict(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out);
     static model load_model(string fname); //Todo: Implement
     static void save_model(model m, string fname); //Todo: Implement
     static void set_trainable(model m); //Todo: Implement
