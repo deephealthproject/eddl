@@ -61,7 +61,7 @@ endmacro()
 # UPDATE THIRD_PARTY MANDATORY MODULES
 find_package(Git QUIET)
 eddll_update_third_party(eigen)
-
+include_directories(third_party/eigen)
 
 # USER OPTIONS *******************************
 option(BUILD_PYTHON "Compile python binding" ON)
@@ -217,6 +217,7 @@ target_include_directories(eddll PUBLIC
 )
 set_target_properties(eddll PROPERTIES OUTPUT_NAME_DEBUG "eddlld")
 set_target_properties(eddll PROPERTIES OUTPUT_NAME_RELEASE "eddll")
+set_target_properties(eddll PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 # pthreads setup for windows os				
 # The following commands should be removed when pthread linux 
@@ -250,8 +251,18 @@ if(BUILD_PYTHON)
     add_subdirectory(third_party/pybind11)
     set(CMAKE_FOLDER "")
     SET(C_LIB_NAME "_C")
-    pybind11_add_module(${C_LIB_NAME} "${SOURCE_DIR}/binding.cpp")
-    target_link_libraries(${C_LIB_NAME} PRIVATE eddll)
+    pybind11_add_module(${C_LIB_NAME} ${SOURCES} "${SOURCE_DIR}/binding.cpp")
+    # can we just link the library instead of adding all the sources and linking pthreads again?
+    # target_link_libraries(${C_LIB_NAME} PRIVATE eddll)
+    if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+        target_link_libraries(${C_LIB_NAME} PRIVATE "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib")
+        target_link_libraries(${C_LIB_NAME} PRIVATE "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib")
+        target_link_libraries(${C_LIB_NAME} PRIVATE "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")							 
+        target_include_directories(${C_LIB_NAME} PUBLIC "${EDDLL_PTHREADS_INSTALL_PATH}/include")
+    endif()
+    if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+        target_link_libraries(${C_LIB_NAME} PRIVATE Threads::Threads)
+    endif()
 endif(BUILD_PYTHON)
 #unset(BUILD_PYTHON CACHE)
 
