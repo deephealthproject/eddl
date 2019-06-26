@@ -39,12 +39,12 @@ int main(int argc, char **argv) {
     eddl.download_mnist();
 
     // Settings
-    int epochs = 5;
-    int batch_size = 1000;
+    int epochs = 1;
+
     int num_classes = 10;
 
     // Define network
-    layer in = eddl.Input({batch_size, 784});
+    layer in = eddl.Input({784});
     layer l = in;  // Aux var
 
     l = eddl.Activation(eddl.Dense(l, 1024), "relu");
@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
                eddl.sgd(0.01, 0.9), // Optimizer
                {eddl.LossFunc("soft_cross_entropy")}, // Losses
                {eddl.MetricFunc("categorical_accuracy")}, // Metrics
-               eddl.CS_CPU(4) // CPU with 4 threads
+               eddl.CS_CPU(6) // CPU with 4 threads
     );
 
     // Load dataset
@@ -76,6 +76,7 @@ int main(int argc, char **argv) {
     eddl.div(x_test, 255.0);
 
     // Train model
+    int batch_size = 1000;
     eddl.fit(net, {x_train}, {y_train}, batch_size, epochs);
 
     // Evaluate test

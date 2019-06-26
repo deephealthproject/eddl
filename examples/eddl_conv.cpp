@@ -57,15 +57,14 @@ int main(int argc, char **argv)
 
     // Settings
     int epochs = 5;
-    int batch_size = 10000;
     int num_classes = 10;
 
   // network
-  layer in=eddl.Input({batch_size,784});
+  layer in=eddl.Input({784});
   layer l=in;
 
 
-  l=eddl.Reshape(l,{batch_size,1,28,28});
+  l=eddl.Reshape(l,{1,28,28});
   l=eddl.MaxPool(eddl.Activation(eddl.Conv(l, 16, {3,3}),"relu"),{2,2});
   l=eddl.MaxPool(eddl.Activation(eddl.Conv(l, 32, {3,3}),"relu"),{2,2});
   l=eddl.MaxPool(eddl.Activation(eddl.Conv(l, 64, {3,3}),"relu"),{2,2});
@@ -74,7 +73,7 @@ int main(int argc, char **argv)
   /*for(int i=0,k=16;i<3;i++,k=k*2)
     l=ResBlock(l,k,2);
 */
-  l=eddl.Reshape(l,{batch_size,-1});
+  l=eddl.Reshape(l,{-1});
 
   l=eddl.Activation(eddl.Dense(l,32),"relu");
 
@@ -94,7 +93,7 @@ int main(int argc, char **argv)
   // size of error criteria and metrics list must match with size of list of outputs
   optimizer sgd=eddl.sgd(0.01,0.9);
 
-  compserv cs=eddl.CS_CPU(4); // local CPU with 4 threads
+  compserv cs=eddl.CS_CPU(6); // local CPU with 4 threads
   //compserv cs=eddl.CS_GPU({1,0,0,0}); // local GPU using the first gpu of 4 installed
   //compserv cs=eddl.CS_GPU({1});// local GPU using the first gpu of 1 installed
 
@@ -106,6 +105,7 @@ int main(int argc, char **argv)
   eddl.div(X,255.0);
 
   // training, list of input and output tensors, batch, epochs
+  int batch_size = 1000;
   eddl.fit(net,{X},{Y},batch_size, epochs);
 
   // Evaluate train
