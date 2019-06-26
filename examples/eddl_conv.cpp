@@ -32,28 +32,11 @@
 
 #include "eddl.h"
 
-layer ResBlock(layer in,int k,int n)
-{
-
-  layer l=in;
-  for(int i=0;i<n;i++)
-    l=eddl.Activation(eddl.Conv(l,k, {3,3},{1,1}),"relu");
-
-  // adap depth of input
-  in=eddl.Conv(in,k, {1,1},{1,1});
-  // add input and last
-  l=eddl.Add({in,l});
-
-  // reduce size
-  l=eddl.Conv(l,k, {3,3},{2,2});
-  return l;
-}
-
 int main(int argc, char **argv)
 {
 
   // download MNIST data
-    //eddl.download_mnist();
+  eddl.download_mnist();
 
   // Settings
   int epochs = 5;
