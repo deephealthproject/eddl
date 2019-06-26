@@ -89,7 +89,11 @@ int main(int argc, char **argv) {
 
     eddl.predict(net,{TX},{TY});
 
-    // In float *Y is the result
+    // The result is in float *Y
+    // but in general you can get the pointer to
+    // tensor data by:
+    float *result=eddl.T_getptr(TY);
+
 
 }
 
