@@ -55,9 +55,9 @@ int main(int argc, char **argv)
   // download MNIST data
     //eddl.download_mnist();
 
-    // Settings
-    int epochs = 5;
-    int num_classes = 10;
+  // Settings
+  int epochs = 5;
+  int num_classes = 10;
 
   // network
   layer in=eddl.Input({784});
