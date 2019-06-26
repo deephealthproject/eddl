@@ -66,6 +66,8 @@ public:
 
     void backward() override;
 
+    void resize(int batch) override;
+
     string plot(int c) override;
 
 };
@@ -123,4 +125,3 @@ public:
 };
 
 #endif //EDDLL_LAYER_CONV_H
-

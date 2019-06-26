@@ -62,6 +62,10 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev) : L
 
 
 // virtual
+void  LDense::resize(int batch){
+  Layer::resize(batch);
+}
+
 void LDense::forward() {
     Tensor::mult2D(input, 0, W, 0, output, 0);
     Tensor::sum2D_rowwise(output, bias, output);

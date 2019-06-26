@@ -89,6 +89,17 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev) : Lin
 
 
 // virtual
+void LReshape::resize(int batch){
+  //cout<<"Resize "<<name<<"\n";
+
+  ls[0]=batch;
+
+  input = parent[0]->output;
+  output = new Tensor(ls, parent[0]->output);
+  delta = new Tensor(ls, parent[0]->delta);
+
+}
+
 void LReshape::forward() {
 
 }

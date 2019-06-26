@@ -113,7 +113,8 @@ public:
 
     ConvolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st, const initializer_list<int> &p);
 
-    virtual void build(Tensor *A);
+    void build(Tensor *A);
+    void resize(Tensor *A);
 };
 
 class PoolDescriptor : public ConvolDescriptor {
@@ -128,7 +129,8 @@ public:
 
     PoolDescriptor(const vector<int> &ks, const vector<int> &st, string p);
 
-    void build(Tensor *A) override;
+    void build(Tensor *A);
+    void resize(Tensor *A);
 };
 
 

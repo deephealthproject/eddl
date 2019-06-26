@@ -51,9 +51,12 @@ LActivation::LActivation(Layer *parent, string act, string name, int dev) : LinL
     parent->addchild(this);
     addparent(parent);
 }
-
-
 // virtual
+void LActivation::resize(int batch){
+  Layer::resize(batch);
+}
+
+
 void LActivation::forward() {
 
     if (act == "relu")

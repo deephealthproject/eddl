@@ -48,11 +48,25 @@ LMaxPool::LMaxPool(Layer *parent, const vector<int> &ks, const vector<int> &st, 
         parent, new PoolDescriptor(ks, st, p), name, dev) {}
 
 LMaxPool::LMaxPool(Layer *parent, PoolDescriptor *D, string name, int dev) : LPool(parent, D, name, dev) {
-    // params
+    // Params
+
     D->indX = new Tensor(D->O->getShape(), dev);
     D->indY = new Tensor(D->O->getShape(), dev);
 }
 
+
+void LMaxPool::resize(int batch){
+  //cout<<"Resize "<<name<<"\n";
+
+  LPool::resize(batch);
+
+  delete pd->indX;
+  delete pd->indY;
+
+  pd->indX = new Tensor(pd->O->getShape(), dev);
+  pd->indY = new Tensor(pd->O->getShape(), dev);
+
+}
 
 void LMaxPool::forward() {
     Tensor::MPool2D(pd);

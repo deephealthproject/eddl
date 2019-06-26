@@ -128,8 +128,11 @@ void Tensor::reduceTosum(Tensor *A, Tensor *B, int axis) {
 //////////////////////////////////////
 void Tensor::copy(Tensor *A, Tensor *B) {
 
-    if (!Tensor::eqsize(A, B))
+    if (!Tensor::eqsize(A, B)) {
+        A->info();
+        B->info();
         msg("Tensors with different shape", "Tensor::copy");
+      }
 
     B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
@@ -235,7 +238,11 @@ void Tensor::inc(Tensor *A, Tensor *B) {
 //////////////////////////////////////
 void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
 
-    if ((A->size / A->shape[0]) != (B->size / B->shape[0])) msg("Incompatible shape", "Tensor::select");
+    if ((A->size / A->shape[0]) != (B->size / B->shape[0])) {
+      A->info();
+      B->info();
+      msg("Incompatible shape", "Tensor::select");
+    }
 
     //B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
@@ -597,6 +604,7 @@ ConvolDescriptor::ConvolDescriptor(const initializer_list<int> &ks, const initia
     if (pad.size() != 2) msg("Padding must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor");
 }
 
+
 void ConvolDescriptor::build(Tensor *A) {
 
     if (A->ndim != 4) msg("Tensors are not 4D", "ConvolDescriptor::build");
@@ -641,10 +649,23 @@ void ConvolDescriptor::build(Tensor *A) {
         new(&matgK) Eigen::Map<Eigen::MatrixXf>(gK->ptr, kr * kc * kz, nk);
         // convolution: matC=matA*matK
     }
-
-
 }
 
+void ConvolDescriptor::resize(Tensor *A)
+{
+  I=A;
+
+  delete O;
+  delete D;
+  O = new Tensor({A->shape[0], z, r, c}, A->device);
+  D = new Tensor(O->getShape(), A->device);
+
+  if (I->isCPU()) {
+      free(ptrI);
+      ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptor::build");
+  }
+
+}
 
 /////////////////////////////////////////////////////////////////////
 //// Conv2D
@@ -794,6 +815,17 @@ void PoolDescriptor::build(Tensor *A) {
     D = new Tensor(O->getShape(), A->device);
 
 
+}
+
+void PoolDescriptor::resize(Tensor *A) {
+
+    I = A;
+
+    delete O;
+    delete D;
+
+    O = new Tensor({A->shape[0], z, r, c}, A->device);
+    D = new Tensor(O->getShape(), A->device);
 }
 
 /////////////////////////////////////////////////////////////////////

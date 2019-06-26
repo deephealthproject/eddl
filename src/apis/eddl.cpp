@@ -206,7 +206,10 @@ layer EDDL::GaussianNoise(layer parent, float stdev, string name){
 
 
 layer EDDL::Input(const initializer_list<int> &shape, string name) {
-    return new LInput(new Tensor(shape), name, DEV_CPU);
+    tshape s=vector<int>(shape.begin(), shape.end());
+    s.insert(s.begin(), 1);
+
+    return new LInput(new Tensor(s), name, DEV_CPU);
 }
 
 //////////////////////////////////////////////////////
@@ -266,7 +269,9 @@ layer EDDL::LSTM(layer parent, int units, int num_layers, bool use_bias, float d
 //////////////////////////////////////////////////////
 
 layer EDDL::Reshape(layer parent, const initializer_list<int> &shape, string name) {
-    return new LReshape(parent, shape, name, DEV_CPU);
+    tshape s=vector<int>(shape.begin(), shape.end());
+    s.insert(s.begin(), 1);
+    return new LReshape(parent, s, name, DEV_CPU);
 }
 /////////////////////////////////////////////////////////
 

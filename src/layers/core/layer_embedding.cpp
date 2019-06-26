@@ -45,6 +45,10 @@ LEmbedding::LEmbedding(int input_dim, int output_dim, string name, int dev): Lin
 
 
 // virtual
+void LEmbedding::resize(int batch){
+  Layer::resize(batch);
+}
+
 string LEmbedding::plot(int c) {
     string s;
 

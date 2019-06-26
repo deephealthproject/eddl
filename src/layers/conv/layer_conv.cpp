@@ -77,6 +77,19 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev) : LinLaye
 
 
 // virtual
+void LConv::resize(int batch){
+
+  //cout<<"Resize "<<name<<"\n";
+
+  input = parent[0]->output;
+  cd->resize(input);
+
+  output = cd->O;
+  delta = cd->D;
+  cd->ID = parent[0]->delta;
+
+}
+
 void LConv::forward() {
     Tensor::Conv2D(cd);
 }

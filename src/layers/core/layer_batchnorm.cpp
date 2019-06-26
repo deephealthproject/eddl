@@ -25,6 +25,10 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
 
 // virtual
+void LBatchNorm::resize(int batch){
+  Layer::resize(batch);
+}
+
 void LBatchNorm::forward() {
     // TODO: Implement
 }
@@ -39,7 +43,7 @@ Layer *LBatchNorm::share(int c, int bs, vector<Layer *> p) {
     n->orig = this;
 
     // TODO: Implement
-    
+
     return n;
 }
 
@@ -48,7 +52,7 @@ Layer *LBatchNorm::clone(int c, int bs, vector<Layer *> p, int todev) {
     n->orig = this;
 
     // TODO: Implement
-    
+
     return n;
 }
 

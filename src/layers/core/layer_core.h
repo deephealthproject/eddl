@@ -62,6 +62,8 @@ public:
 
     void backward() override {}
 
+    void resize(int batch) override;
+
     string plot(int c) override { return ""; }
 
     LTensor operator+(LTensor L);
@@ -84,6 +86,8 @@ public:
 
     void backward() override;
 
+    void resize(int batch) override;
+
     string plot(int c) override;
 
 };
@@ -104,6 +108,8 @@ public:
     void forward() override;
 
     void backward() override;
+
+    void resize(int batch) override;
 
     string plot(int c) override;
 
@@ -132,6 +138,8 @@ public:
 
     void backward() override;
 
+    void resize(int batch) override;
+
     string plot(int c) override;
 
 };
@@ -151,6 +159,8 @@ public:
     void forward() override;
 
     void backward() override;
+
+    void resize(int batch) override;
 
     string plot(int c) override;
 
@@ -177,6 +187,8 @@ public:
 
     void backward() override;
 
+    void resize(int batch) override;
+
     string plot(int c) override;
 
 };
@@ -202,7 +214,8 @@ public:
     void forward() override;
 //
     void backward() override;
-//
+    void resize(int batch) override;
+
     string plot(int c) override;
 
 };
@@ -226,7 +239,7 @@ public:
     void forward() override;
 
     void backward() override;
-
+    void resize(int batch) override;
     string plot(int c) override;
 
 };
@@ -250,6 +263,8 @@ public:
     void forward() override;
 
     void backward() override;
+
+    void resize(int batch) override;
 
     string plot(int c) override;
 };

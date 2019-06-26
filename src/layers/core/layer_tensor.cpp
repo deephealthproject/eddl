@@ -63,6 +63,9 @@ void Ltensor::mult2D(LTensor *A,...){
   Tensor::mult2d(A->output, tA,B->output,tB,C->output,incC);
 }
 */
+void LTensor::resize(int batch){
+  Layer::resize(batch);
+}
 
 
 // From Layer

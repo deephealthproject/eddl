@@ -49,6 +49,8 @@ public:
 
     // constructors
     LPool(Layer *parent, PoolDescriptor *cd, string name, int dev);
+
+    void resize(int batch) override;
 };
 
 /// MaxPool2D Layer
@@ -73,6 +75,8 @@ public:
     void forward() override;
 
     void backward() override;
+
+    void resize(int batch) override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -153,4 +157,3 @@ public:
 };
 
 #endif //EDDLL_LAYER_POOL_H
-

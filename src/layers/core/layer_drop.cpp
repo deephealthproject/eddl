@@ -55,6 +55,10 @@ LDropout::LDropout(Layer *parent, float df, string name, int dev) : LinLayer(nam
 
 
 // virtual
+void LDropout::resize(int batch){
+  Layer::resize(batch);
+}
+
 void LDropout::forward() {
     if (mode == TRMODE) {
         mask->rand_binary(1.0 - df);

@@ -61,6 +61,8 @@ public:
 
     Layer(string name, int dev);
 
+
+
     void initialize();
 
     void reset();
@@ -76,6 +78,8 @@ public:
     Tensor* setBias(Tensor bias);
 
     //virtual
+    virtual void resize(int batch);
+
     virtual string plot(int c) { return ""; }
 
     virtual void addchild(Layer *l) {}
@@ -103,6 +107,21 @@ public:
     void addchild(Layer *l) override;
 
     void addparent(Layer *l) override;
+
+    //virtual
+
+    string plot(int c) override { return ""; }
+
+    void resize(int batch) override {}
+
+    void forward() override {}
+
+    void backward() override {}
+
+    Layer *share(int c, int bs, vector<Layer *> p) override { return nullptr; }
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override { return nullptr; }
+
 };
 
 /////////////////////////////////////////
@@ -120,6 +139,8 @@ public:
     //virtual
 
     string plot(int c) override { return ""; }
+
+    void resize(int batch) override {}
 
     void forward() override {}
 
