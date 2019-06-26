@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.9.2)
 PROJECT(eddl)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "")
+
 # SET C++ COMPILER STANDARD
 SET(CMAKE_CXX_STANDARD 11)
 
@@ -11,9 +14,11 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
-#set(CMAKE_CXX_FLAGS "-march=native")
-#set(CMAKE_CXX_FLAGS_DEBUG "-g")
-#set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
+    set(CMAKE_CXX_FLAGS "-march=native ${CMAKE_CXX_FLAGS}")
+    set(CMAKE_CXX_FLAGS_DEBUG "-g ${CMAKE_CXX_FLAGS_DEBUG}")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 ${CMAKE_CXX_FLAGS_RELEASE}")
+endif()
 
 message(STATUS "Build type: " ${CMAKE_BUILD_TYPE} )
 message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS} )
@@ -23,20 +28,39 @@ message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS} )
 set(EDDLL_SHARED OFF CACHE BOOL "Whether to build a static or dynamic library")
 
 if(MSVC)
-    if(EDDLL_STATIC)
+    if(EDDLL_SHARED)
+        message(STATUS "Setting dinamic runtime for MSVC")
+        foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO) 
+            string(REGEX REPLACE "/MT" "/MD" ${flag_var} "${${flag_var}}")
+        endforeach(flag_var)
+    else(EDDLL_SHARED)
         message(STATUS "Setting static runtime for MSVC")
         foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO) 
             string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
         endforeach(flag_var)
-    else()
-	    message(STATUS "Setting dinamic runtime for MSVC")
-        foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO) 
-            string(REGEX REPLACE "/MT" "/MD" ${flag_var} "${${flag_var}}")
-        endforeach(flag_var)
-	endif()
+	endif(EDDLL_SHARED)
     
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
+
+
+macro(eddll_update_third_party SUBMODULE)
+    if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
+    # Update submodule as needed
+        message(STATUS "${SUBMODULE} update")
+        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive third_party/${SUBMODULE}
+                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                        RESULT_VARIABLE GIT_SUBMOD_RESULT)
+        if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+            message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout ${SUBMODULE} submodule")
+        endif()
+endif()
+endmacro()
+
+
+# UPDATE THIRD_PARTY MANDATORY MODULES
+find_package(Git QUIET)
+eddll_update_third_party(eigen)
 
 
 # USER OPTIONS *******************************
@@ -178,21 +202,21 @@ SET(TESTS
 
 # [LIBRARY] EDDLL LIBRARY *********************
 if(EDDLL_SHARED)
-	add_library(EDDLL SHARED "")
+	add_library(eddll SHARED "")
 else(EDDLL_SHARED)
-	add_library(EDDLL STATIC "")
+	add_library(eddll STATIC "")
 endif(EDDLL_SHARED)
-target_sources(EDDLL PRIVATE ${SOURCES})
-target_include_directories(EDDLL PUBLIC	
+target_sources(eddll PRIVATE ${SOURCES})
+target_include_directories(eddll PUBLIC	
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>  
 	$<INSTALL_INTERFACE:include>
 )
-target_include_directories(EDDLL PUBLIC 
+target_include_directories(eddll PUBLIC 
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen>  
 	$<INSTALL_INTERFACE:include/third_party/eigen>
 )
-set_target_properties(EDDLL PROPERTIES OUTPUT_NAME_DEBUG "eddlld")
-set_target_properties(EDDLL PROPERTIES OUTPUT_NAME_RELEASE "eddll")
+set_target_properties(eddll PROPERTIES OUTPUT_NAME_DEBUG "eddlld")
+set_target_properties(eddll PROPERTIES OUTPUT_NAME_RELEASE "eddll")
 
 # pthreads setup for windows os				
 # The following commands should be removed when pthread linux 
@@ -202,13 +226,13 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 	if(EDDLL_PTHREADS_INSTALL_PATH STREQUAL "")
 		message(ERROR " pthreds install path must be specified under Windows")
 	endif()	
-	target_link_libraries(EDDLL debug "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3d.lib"
+	target_link_libraries(eddll debug "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3d.lib"
 								debug "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib"
 								debug "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib")								 
-	target_link_libraries(EDDLL optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib"
+	target_link_libraries(eddll optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib"
 								optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib"
 								optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")								 
-	target_include_directories(EDDLL PUBLIC "${EDDLL_PTHREADS_INSTALL_PATH}/include")
+	target_include_directories(eddll PUBLIC "${EDDLL_PTHREADS_INSTALL_PATH}/include")
 endif()
 
 # pthreads setup for linux os	
@@ -216,36 +240,46 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
     SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
     find_package(Threads REQUIRED)
-    target_link_libraries(EDDLL Threads::Threads)
+    target_link_libraries(eddll Threads::Threads)
 endif()
 
 # [BINDING] Create python binding
 if(BUILD_PYTHON)
+    eddll_update_third_party(pybind11)    
+    set(CMAKE_FOLDER 3party/pybind11)
     add_subdirectory(third_party/pybind11)
+    set(CMAKE_FOLDER "")
     SET(C_LIB_NAME "_C")
-    pybind11_add_module(${C_LIB_NAME} ${SOURCES} "${SOURCE_DIR}/binding.cpp")
+    pybind11_add_module(${C_LIB_NAME} "${SOURCE_DIR}/binding.cpp")
+    target_link_libraries(${C_LIB_NAME} PRIVATE eddll)
 endif(BUILD_PYTHON)
 #unset(BUILD_PYTHON CACHE)
 
 # [TESTS] Generate a test executable
 if(BUILD_TESTS)
+    eddll_update_third_party(googletest)
+    set(CMAKE_FOLDER 3party/googletest)
     add_subdirectory(third_party/googletest)
     SET(UNITTEST_NAME "${PROJECT_NAME}_tests")
+    set(CMAKE_FOLDER "")
     add_executable(${UNITTEST_NAME} ${TESTS})
     target_include_directories(${UNITTEST_NAME} PUBLIC ${gtest_SOURCE_DIR}/include)    
-    target_link_libraries(${UNITTEST_NAME} EDDLL gtest gtest_main)
+    target_link_libraries(${UNITTEST_NAME} eddll gtest gtest_main)
     add_test(UnitTests ${UNITTEST_NAME})  # To do "make test"
     enable_testing()
 endif(BUILD_TESTS)
 #unset(BUILD_TESTS CACHE)
 
-# [EXAMPLES] Generate a test executable
+
+# [EXAMPLES] Generate a few test executables
 if(BUILD_EXAMPLES)
     SET(EXAMPLES_DIR "examples")
+    set(CMAKE_FOLDER examples)
     add_executable(example_conv "${EXAMPLES_DIR}/eddl_conv.cpp")
     add_executable(example_mlp "${EXAMPLES_DIR}/eddl_mlp.cpp")
-    target_link_libraries(example_conv EDDLL)
-    target_link_libraries(example_mlp EDDLL)
+    target_link_libraries(example_conv eddll)
+    target_link_libraries(example_mlp eddll)
+    set(CMAKE_FOLDER "")
 endif(BUILD_EXAMPLES)
 #unset(BUILD_EXAMPLES CACHE)
 
@@ -255,7 +289,7 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     message(STATUS "....")
     set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "..." FORCE)
 endif()
-install(TARGETS EDDLL 
+install(TARGETS eddll 
 		EXPORT EDDLLConfig
 		RUNTIME DESTINATION bin
 		LIBRARY DESTINATION lib
