@@ -48,6 +48,7 @@ tensor EDDL::T(const initializer_list<int> &shape) {
     return T(s);
 }
 
+
 tensor EDDL::T(const vector<int> shape) {
     return new LTensor(shape, DEV_CPU);
 }
@@ -56,6 +57,15 @@ tensor EDDL::T(string fname) {
     return new LTensor(fname);
 }
 
+tensor EDDL::T(const initializer_list<int> &shape,float *ptr) {
+    vector<int> s(shape.begin(), shape.end());
+    return new LTensor(s,ptr,DEV_CPU);
+}
+
+float * EDDL::T_getptr(tensor T)
+{
+  return T->input->ptr;
+}
 
 void EDDL::div(tensor t, float v) {
     t->input->div(v);
@@ -490,6 +500,22 @@ void EDDL::evaluate(model net, const initializer_list<LTensor *> &in, const init
 
 
     net->evaluate(tin, tout);
+}
+
+void EDDL::predict(model net, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out) {
+    vltensor ltin = vltensor(in.begin(), in.end());
+    vltensor ltout = vltensor(out.begin(), out.end());
+
+    vtensor tin;
+    for (int i = 0; i < ltin.size(); i++)
+        tin.push_back(ltin[i]->input);
+
+    vtensor tout;
+    for (int i = 0; i < ltout.size(); i++)
+        tout.push_back(ltout[i]->input);
+
+
+    net->predict(tin, tout);
 }
 
 

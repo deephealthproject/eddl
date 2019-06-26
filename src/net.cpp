@@ -60,7 +60,6 @@ ostream &operator<<(ostream &os, const vector<int> shape) {
 //// THREADS
 struct tdata {
     Net *net;
-    int batch_size;
     int eval;
 };
 
@@ -77,7 +76,7 @@ void *train_batch_t(void *t) {
         net->delta();
         net->backward();
         if (net->dev > DEV_CPU)
-            net->applygrads(targs->batch_size);
+            net->applygrads();
     }
 
     return nullptr;
@@ -89,7 +88,7 @@ void *applygrads_t(void *t) {
 
     Net *net = targs->net;
 
-    net->applygrads(targs->batch_size);
+    net->applygrads();
 
     return nullptr;
 }
@@ -127,7 +126,7 @@ Net::Net(vlayer in, vlayer out) {
     // Set input/outlayer
     lin = in;
     lout = out;
-
+    batch_size=1;
     // Default optimizer
     optimizer = nullptr;
 
@@ -311,6 +310,46 @@ void Net::bts() {
 
     }
     //fprintf(stdout,"\n");
+}
+
+void Net::resize(int b)
+{
+  int i,j;
+
+  batch_size=b;
+
+  int c=snets.size();
+  int bs,m;
+
+  if (batch_size<c) {
+    printf("=====> Warning: batch_size (%d) lower than compserv resources (%d)\n",batch_size,c);
+    bs=1;
+    m=0;
+    c=batch_size;
+  }
+  else {
+    bs = batch_size / c;
+    m = batch_size % c;
+  }
+
+
+  for(i=0; i<c; i++) {
+    Xs[i].clear();
+    Ys[i].clear();
+
+    if (i==c-1) bs+=m;
+    snets[i]->batch_size=bs;
+    for (j = 0; j < snets[i]->layers.size(); j++)
+        snets[i]->layers[j]->resize(bs);
+
+    for (j = 0; j < snets[i]->lin.size(); j++)
+        Xs[i].push_back(new Tensor(snets[i]->lin[j]->input->shape));
+
+    for (j = 0; j < snets[i]->lout.size(); j++)
+        Ys[i].push_back(new Tensor(snets[i]->lout[j]->input->shape));
+  }
+
+
 }
 
 
@@ -548,7 +587,7 @@ void Net::backward() {
 
 
 /////////////////////////////////////////
-void Net::applygrads(int batch) {
+void Net::applygrads() {
 
     if (VERBOSE) {
         for (int i = 0; i < layers.size(); i++) {
@@ -563,7 +602,7 @@ void Net::applygrads(int batch) {
         getchar();
     }
 
-    optimizer->applygrads(batch);
+    optimizer->applygrads(batch_size);
 }
 
 
@@ -572,7 +611,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs){
     set_compserv(cs);
 }
 
-void Net::fit(vtensor tin, vtensor tout, int batch_size, int epochs) {
+void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     int i, j, k, n;
 
     // Check current optimizer
@@ -591,40 +630,15 @@ void Net::fit(vtensor tin, vtensor tout, int batch_size, int epochs) {
         if (tin[i]->shape[0] != n)
             msg("different number of samples in input tensor", "Net.fit");
 
-    // Set batch size
-    int c=snets.size();
-    if (batch_size<c) {
-      fprintf(stderr,"\n======> Warning batch size %d on comserv %d\n\n",batch_size,c);
-      c=batch_size;
-    }
-
-
-    int bs = batch_size / c;
-    int m = batch_size % c;
-
-
-    for(i=0; i<c; i++) {
-
-      Xs[i].clear();
-      Ys[i].clear();
-
-      if (i==c-1) bs+=m;
-      for (j = 0; j < snets[i]->layers.size(); j++)
-          snets[i]->layers[j]->resize(bs);
-
-      for (j = 0; j < snets[i]->lin.size(); j++)
-          Xs[i].push_back(new Tensor(snets[i]->lin[j]->input->shape));
-
-      for (j = 0; j < snets[i]->lout.size(); j++)
-          Ys[i].push_back(new Tensor(snets[i]->lout[j]->input->shape));
-    }
-
 
     // Check if the size of the output layers matches with inputs sizes
     for (i = 1; i < tout.size(); i++)
         if (tout[i]->shape[0] != n)
             msg("different number of samples in output tensor", "Net.fit");
 
+
+    // Set batch size
+    resize(batch);
 
     // Create array to store batch indices (later random)
     vind sind;
@@ -665,7 +679,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch_size, int epochs) {
 
             // Train batch
             high_resolution_clock::time_point t1 = high_resolution_clock::now();
-            train_batch(tin, tout, sind, batch_size);
+            train_batch(tin, tout, sind);
             high_resolution_clock::time_point t2 = high_resolution_clock::now();
             duration<double> time_span = t2 - t1;
 
@@ -717,17 +731,16 @@ void Net::train_batch_ni(vector<Tensor *> X, vector<Tensor *> Y) {
     }
 
     // Create indices
-    int batch_size = lin[0]->input->shape[0];
     for (int i = 0; i < batch_size; i++)
         sind.push_back(i);
 
     setmode(TRMODE);
-    train_batch(X, Y, sind, batch_size);
+    train_batch(X, Y, sind);
 }
 
 
 /////////////////////////////////////////
-void Net::train_batch(vtensor X, vtensor Y, vind sind, int batch_size, int eval) {
+void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
     void *status;
     int rc;
     pthread_t thr[100];
@@ -762,7 +775,6 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int batch_size, int eval)
 
         // Thread params
         td[i].net = snets[i];
-        td[i].batch_size = batch_size;
         td[i].eval = eval;
 
         // Call thread
@@ -860,22 +872,13 @@ void Net::evaluate(vtensor tin, vtensor tout) {
             msg("different number of samples in output tensor", "Net.evaluate");
 
 
+    if (n<batch_size) resize(n);
 
-
-    int batch = 0;
-    for (i = 0; i < snets.size(); i++)
-       batch+=snets[i]->lin[0]->input->shape[0];
-
-    printf("Evaluate with batch size %d\n",batch);
-
-
-    if (n<batch)
-      msg("Data lower than batch size, reduce compserv","Net.evaluate");
-
+    printf("Evaluate with batch size %d\n",batch_size);
 
     // Create internal variables
     vind sind;
-    for (k=0;k<batch;k++)
+    for (k=0;k<batch_size;k++)
       sind.push_back(0);
 
     verr errors;
@@ -888,12 +891,12 @@ void Net::evaluate(vtensor tin, vtensor tout) {
     for (j = 0; j < 2 * tout.size(); j++,p+=2) {fiterr[p] = fiterr[p + 1] = 0.0;errors[j] = 0.0;}
 
     setmode(TSMODE);
-    for (j = 0; j < n / batch; j++) {
+    for (j = 0; j < n / batch_size; j++) {
 
-        for (k=0;k<batch;k++)
-          sind[k]=(j*batch)+k;
+        for (k=0;k<batch_size;k++)
+          sind[k]=(j*batch_size)+k;
 
-        train_batch(tin, tout, sind, batch, 1);
+        train_batch(tin, tout, sind, 1);
         p = 0;
         for (k = 0; k < tout.size(); k++, p += 2) {
             errors[p] += fiterr[p];
@@ -910,6 +913,65 @@ void Net::evaluate(vtensor tin, vtensor tout) {
     fflush(stdout);
 
 }
+
+///////////////////////////////////////////
+
+void Net::predict(vtensor tin, vtensor tout) {
+
+    int i, j, k, n;
+
+    // Check list shape
+    if (tin.size() != lin.size())
+        msg("input tensor list does not match with defined input layers", "Net.predict");
+    if (tout.size() != lout.size())
+        msg("output tensor list does not match with defined output layers", "Net.predict");
+
+    // Check data consistency
+    n = tin[0]->shape[0];
+    if (n!=1)
+      msg("Predict only one sample","Net.predict");
+
+    for (i = 1; i < tin.size(); i++)
+        if (tin[i]->shape[0] != n)
+            msg("different number of samples in input tensor", "Net.predict");
+
+    for (i = 1; i < tout.size(); i++)
+        if (tout[i]->shape[0] != n)
+            msg("different number of samples in output tensor", "Net.predict");
+
+
+    if (batch_size!=1) resize(1);
+
+    printf("Predict...\n");
+
+    // Copy samples
+    for (int j = 0; j < tin.size(); j++)
+        Tensor::copy(tin[j], snets[0]->lin[j]->input);
+
+    snets[0]->reset();
+    snets[0]->forward();
+
+    for (int j = 0; j < tout.size(); j++) {
+        Tensor::copy(snets[0]->lout[j]->output,tout[j]);
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //////
