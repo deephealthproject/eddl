@@ -60,7 +60,7 @@ void *applygrads_t(void *t);
 
 class Net {
 private:
-    void train_batch(vtensor X, vtensor Y, vind sind, int batch, int eval = 0);
+    void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);
 
     void build(Optimizer *opt, vloss lo, vmetrics me);
 
@@ -69,6 +69,7 @@ private:
 public:
     string name;
     int dev;
+    int batch_size;
     vector<int> devsel;
 
     vlayer layers;
@@ -95,7 +96,7 @@ public:
     void delta();
     void loss();
     void backward();
-    void applygrads(int batch);
+    void applygrads();
 
     void split(int c, int todev);
     int inNet(Layer *l); //
@@ -103,6 +104,8 @@ public:
 
     void fts();
     void bts();
+
+    void resize(int batch);
 
     string summary();
     void plot(string fname);
