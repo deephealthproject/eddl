@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
                eddl.sgd(0.01, 0.9), // Optimizer
                {eddl.LossFunc("soft_cross_entropy")}, // Losses
                {eddl.MetricFunc("categorical_accuracy")}, // Metrics
-               eddl.CS_CPU(6) // CPU with 4 threads
+               eddl.CS_CPU(4) // CPU with 4 threads
     );
 
     // Load dataset
