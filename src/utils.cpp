@@ -36,15 +36,20 @@
 
 #define PI 3.1415926
 
-float uniform() {
-    return ((rand() % 10000) / 10000.0);
-}
+// Default seed
+std::random_device rd;  //Will be used to obtain a seed for the random number engine
+std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
 
+float uniform(float min, float max) {
+    // rand() may not generate numbers uniformly and is therefore discouraged
+    // Talk: https://channel9.msdn.com/Events/GoingNative/2013/rand-Considered-Harmful
+    std::uniform_real_distribution<float> distr(min, max);
+    return distr(gen);
+}
 
 float suniform() {
     return (2 * uniform()) - 1;
 }
-
 
 float gaussgen() {
     float x, u1, u2;

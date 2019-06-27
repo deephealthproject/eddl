@@ -31,7 +31,7 @@
 #ifndef EDDLL_UTILS_H
 #define EDDLL_UTILS_H
 
-float uniform();
+float uniform(float min=0.0f, float max=1.0f);
 
 float suniform();
 
