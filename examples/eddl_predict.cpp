@@ -39,8 +39,8 @@ int main(int argc, char **argv) {
     eddl.download_mnist();
 
     // Settings
-
-
+    int epochs = 1;
+    int batch_size = 1000;
     int num_classes = 10;
 
     // Define network
@@ -76,15 +76,13 @@ int main(int argc, char **argv) {
     eddl.div(x_test, 255.0);
 
     // Train model
-    int batch_size = 1000;
-    int epochs = 1;
     eddl.fit(net, {x_train}, {y_train}, batch_size, epochs);
 
     ///  Predict *one* sample
-    float *X=(float*)malloc(1*784*sizeof(float));
+    auto *X=new float[1*784];
     tensor TX=eddl.T({1,784},X);
 
-    float *Y=(float*)malloc(1*10*sizeof(float));
+    auto *Y=new float[1*10];
     tensor TY=eddl.T({1,10},Y);
 
     eddl.predict(net,{TX},{TY});

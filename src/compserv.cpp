@@ -27,7 +27,6 @@
 // SOFTWARE.
 
 #include <stdio.h>
-#include <stdio.h>
 #include <string>
 #include <initializer_list>
 #include <vector>
