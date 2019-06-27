@@ -39,4 +39,4 @@ IGlorotUniform::IGlorotUniform(int seed) : Initializer("glorot_uniform") {
     // Todo: Implement
     this->seed = seed;
 }
-float IGlorotUniform::set_weights(Tensor *T){}
+float IGlorotUniform::set_weights(Tensor* T) { return 0; }

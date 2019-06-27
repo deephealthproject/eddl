@@ -42,4 +42,4 @@ IRandomUniform::IRandomUniform(float minval, float maxval, int seed) : Initializ
     this->seed = seed;
 
 }
-float IRandomUniform::set_weights(Tensor *T){}
+float IRandomUniform::set_weights(Tensor* T) { return 0; }

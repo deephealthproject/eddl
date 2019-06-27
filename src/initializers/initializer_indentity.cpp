@@ -39,4 +39,4 @@ IIdentity::IIdentity(float gain) : Initializer("identity") {
     // Todo: Implement
     this->gain = gain;
 }
-float IIdentity::set_weights(Tensor *T){}
+float IIdentity::set_weights(Tensor* T) { return 0; }
