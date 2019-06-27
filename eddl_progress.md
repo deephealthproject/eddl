@@ -11,7 +11,7 @@
 | Activation    | <span style="color:blue">**PROGRESS**</span> | <span style="color:blue">**PROGRESS**</span> | Sigmoid, LReLu ...
 | BatchNorm     | <span style="color:red">**TODO**</span> | <span style="color:red">**TODO**</span> |
 | Embedding     | <span style="color:red">**TODO**</span> | <span style="color:red">**TODO**</span> |
-| Input         | ```diff + DONE ``` | <span style="color:green">**DONE**</span> |  |
+| Input         | <span style="color:green">**DONE**</span> | <span style="color:green">**DONE**</span> |  |
 | Reshape       | <span style="color:green">**DONE**</span> | <span style="color:green">**DONE**</span> |  |
 | Transpose     | <span style="color:red">**TODO**</span> | <span style="color:red">**TODO**</span> |
 | Drop          | <span style="color:blue">**PROGRESS**</span> | <span style="color:blue">**PROGRESS**</span> | minor modification
