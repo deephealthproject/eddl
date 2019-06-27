@@ -30,16 +30,16 @@ set(EDDLL_SHARED OFF CACHE BOOL "Whether to build a static or dynamic library")
 if(MSVC)
     if(EDDLL_SHARED)
         message(STATUS "Setting dinamic runtime for MSVC")
-        foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO) 
+        foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
             string(REGEX REPLACE "/MT" "/MD" ${flag_var} "${${flag_var}}")
         endforeach(flag_var)
     else(EDDLL_SHARED)
         message(STATUS "Setting static runtime for MSVC")
-        foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO) 
+        foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
             string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
         endforeach(flag_var)
 	endif(EDDLL_SHARED)
-    
+
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
@@ -207,36 +207,36 @@ else(EDDLL_SHARED)
 	add_library(eddll STATIC "")
 endif(EDDLL_SHARED)
 target_sources(eddll PRIVATE ${SOURCES})
-target_include_directories(eddll PUBLIC	
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>  
+target_include_directories(eddll PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 	$<INSTALL_INTERFACE:include>
 )
-target_include_directories(eddll PUBLIC 
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen>  
+target_include_directories(eddll PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen>
 	$<INSTALL_INTERFACE:include/third_party/eigen>
 )
 set_target_properties(eddll PROPERTIES OUTPUT_NAME_DEBUG "eddlld")
 set_target_properties(eddll PROPERTIES OUTPUT_NAME_RELEASE "eddll")
 set_target_properties(eddll PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-# pthreads setup for windows os				
-# The following commands should be removed when pthread linux 
-# specific calls will be replaced by thread c++ standard calls 
+# pthreads setup for windows os
+# The following commands should be removed when pthread linux
+# specific calls will be replaced by thread c++ standard calls
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-	set(EDDLL_PTHREADS_INSTALL_PATH "$ENV{PTHREADS_ROOT}" CACHE PATH "Path to the installation of pthreads under Windows")	
+	set(EDDLL_PTHREADS_INSTALL_PATH "$ENV{PTHREADS_ROOT}" CACHE PATH "Path to the installation of pthreads under Windows")
 	if(EDDLL_PTHREADS_INSTALL_PATH STREQUAL "")
 		message(ERROR " pthreds install path must be specified under Windows")
-	endif()	
+	endif()
 	target_link_libraries(eddll debug "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3d.lib"
 								debug "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib"
-								debug "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib")								 
+								debug "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib")
 	target_link_libraries(eddll optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib"
 								optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib"
-								optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")								 
+								optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")
 	target_include_directories(eddll PUBLIC "${EDDLL_PTHREADS_INSTALL_PATH}/include")
 endif()
 
-# pthreads setup for linux os	
+# pthreads setup for linux os
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
     SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
@@ -246,7 +246,7 @@ endif()
 
 # [BINDING] Create python binding
 if(BUILD_PYTHON)
-    eddll_update_third_party(pybind11)    
+    eddll_update_third_party(pybind11)
     set(CMAKE_FOLDER 3party/pybind11)
     add_subdirectory(third_party/pybind11)
     set(CMAKE_FOLDER "")
@@ -257,7 +257,7 @@ if(BUILD_PYTHON)
     if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
         target_link_libraries(${C_LIB_NAME} PRIVATE "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib")
         target_link_libraries(${C_LIB_NAME} PRIVATE "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib")
-        target_link_libraries(${C_LIB_NAME} PRIVATE "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")							 
+        target_link_libraries(${C_LIB_NAME} PRIVATE "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")
         target_include_directories(${C_LIB_NAME} PUBLIC "${EDDLL_PTHREADS_INSTALL_PATH}/include")
     endif()
     if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
@@ -274,7 +274,7 @@ if(BUILD_TESTS)
     SET(UNITTEST_NAME "${PROJECT_NAME}_tests")
     set(CMAKE_FOLDER "")
     add_executable(${UNITTEST_NAME} ${TESTS})
-    target_include_directories(${UNITTEST_NAME} PUBLIC ${gtest_SOURCE_DIR}/include)    
+    target_include_directories(${UNITTEST_NAME} PUBLIC ${gtest_SOURCE_DIR}/include)
     target_link_libraries(${UNITTEST_NAME} eddll gtest gtest_main)
     add_test(UnitTests ${UNITTEST_NAME})  # To do "make test"
     enable_testing()
@@ -288,10 +288,10 @@ if(BUILD_EXAMPLES)
     set(CMAKE_FOLDER examples)
     add_executable(example_conv "${EXAMPLES_DIR}/eddl_conv.cpp")
     add_executable(example_mlp "${EXAMPLES_DIR}/eddl_mlp.cpp")
-	add_executable(example_predict "${EXAMPLES_DIR}/eddl_predict.cpp")
+  	add_executable(example_predict "${EXAMPLES_DIR}/eddl_predict.cpp")
     target_link_libraries(example_conv eddll)
     target_link_libraries(example_mlp eddll)
-	target_link_libraries(example_predict eddll)
+  	target_link_libraries(example_predict eddll)
     set(CMAKE_FOLDER "")
 endif(BUILD_EXAMPLES)
 #unset(BUILD_EXAMPLES CACHE)
@@ -302,7 +302,7 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     message(STATUS "....")
     set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "..." FORCE)
 endif()
-install(TARGETS eddll 
+install(TARGETS eddll
 		EXPORT EDDLLConfig
 		RUNTIME DESTINATION bin
 		LIBRARY DESTINATION lib
@@ -312,10 +312,10 @@ install(EXPORT EDDLLConfig DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
 		DESTINATION include/eddll
         FILES_MATCHING PATTERN "*.h")
-        
+
 set(EIGEN_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen/Eigen")
 set(ESCAPED_CMAKE_CURRENT_SOURCE_DIR "${EIGEN_SOURCE_DIR}")
-file(GLOB Eigen_directory_files "${EIGEN_SOURCE_DIR}/*")		
+file(GLOB Eigen_directory_files "${EIGEN_SOURCE_DIR}/*")
 #message(STATUS ${Eigen_directory_files})
 foreach(f ${Eigen_directory_files})
   if(NOT f MATCHES "\\.txt" AND NOT f MATCHES "${ESCAPED_CMAKE_CURRENT_SOURCE_DIR}/[.].+" AND NOT f MATCHES "${ESCAPED_CMAKE_CURRENT_SOURCE_DIR}/src")
@@ -326,9 +326,4 @@ endforeach(f ${Eigen_directory_files})
 install(FILES
   ${Eigen_directory_files_to_install}
   DESTINATION include/third_party/eigen/Eigen
-) 
-
-
-
-
-
+)
