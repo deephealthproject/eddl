@@ -1,4 +1,6 @@
 # EDDL Backend Development Status
+---
+&nbsp;
 
 ✅: DONE
 
@@ -6,7 +8,10 @@
 
 ❌: TODO
 
-## LAYERS
+&nbsp;
+
+---
+# LAYERS
 
 ### CORE
 
@@ -84,8 +89,11 @@
 |  LSTM    | ❌ | ❌ |
 |  RNN    | ❌ | ❌ |
 
+&nbsp;
 
-## INITIALIZERS
+---
+
+# INITIALIZERS
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -97,7 +105,9 @@
 | RandomNormal  | ❌ | ❌ |
 | RandomUniform | ❌ | ❌ |
 
+&nbsp;
 
+---
 ## LOSSES
 
 | Functionality | CPU  | GPU  | Comments |
@@ -106,9 +116,10 @@
 | MSE           | ✅ | ✅ |
 | SoftCE        | ✅ | ✅ |
 
+&nbsp;
 
-
-## OPTIMIZERS
+---
+# OPTIMIZERS
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -120,9 +131,10 @@
 | RMSProp       | ❌ | ❌ |
 | SGD           | ✅ | ✅ |
 
+&nbsp;
 
-
-## METRICS
+---
+# METRICS
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
