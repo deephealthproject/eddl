@@ -32,6 +32,7 @@
 #include <new>      // included for std::bad_alloc
 
 #include "utils.h"
+#include <random>
 
 #define PI 3.1415926
 

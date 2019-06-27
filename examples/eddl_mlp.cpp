@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
 
     // Settings
     int epochs = 1;
-
+    int batch_size = 1000;
     int num_classes = 10;
 
     // Define network
@@ -75,7 +75,6 @@ int main(int argc, char **argv) {
     eddl.div(x_test, 255.0);
 
     // Train model
-    int batch_size = 1000;
     eddl.fit(net, {x_train}, {y_train}, batch_size, epochs);
 
     // Evaluate test
