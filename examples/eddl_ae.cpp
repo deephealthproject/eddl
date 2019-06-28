@@ -43,7 +43,6 @@ int main(int argc, char **argv) {
     // Settings
     int epochs = 10;
     int batch_size = 1000;
-    int num_classes = 10;
 
     // Define network
     layer in = eddl.Input({784});
