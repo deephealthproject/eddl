@@ -47,14 +47,14 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev) : L
     delta = new Tensor(output->getShape(), dev);
 
     W = new Tensor({input->shape[1], ndim}, dev);
-    bias = new Tensor({ndim}, dev);
+    if (use_bias) bias = new Tensor({ndim}, dev);
     params.push_back(W);
-    params.push_back(bias);
+    if (use_bias) params.push_back(bias);
 
     gW = new Tensor({input->shape[1], ndim}, dev);
-    gbias = new Tensor({ndim}, dev);
+    if (use_bias) gbias = new Tensor({ndim}, dev);
     gradients.push_back(gW);
-    gradients.push_back(gbias);
+    if (use_bias) gradients.push_back(gbias);
 
     parent->addchild(this);
     addparent(parent);
@@ -68,14 +68,14 @@ void  LDense::resize(int batch){
 
 void LDense::forward() {
     Tensor::mult2D(input, 0, W, 0, output, 0);
-    Tensor::sum2D_rowwise(output, bias, output);
+    if (use_bias) Tensor::sum2D_rowwise(output, bias, output);
 }
 
 void LDense::backward() {
 
     //get gradients with provided delta
     Tensor::mult2D(input, 1, delta, 0, gW, 0);
-    Tensor::reduce_sum2D(delta, gbias, 0, 0);
+    if (use_bias) Tensor::reduce_sum2D(delta, gbias, 0, 0);
     // backprop delta
     if (parent.size()) {
         //1: note that increment parent delta

@@ -18,14 +18,14 @@
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
 | Tensor        | ✅ | ✅ |  |
-| Dense         | 🔵 | 🔵 | useibas  |
+| Dense         | ✅ | ✅ |  |
 | Activation    | 🔵 | 🔵 | Sigmoid, LReLu ...
 | BatchNorm     | ❌ | ❌ |
 | Embedding     | ❌ | ❌ |
 | Input         | ✅ | ✅ |  |
 | Reshape       | ✅ | ✅ |  |
 | Transpose     | ❌ | ❌ |
-| Drop          | 🔵 | 🔵 | minor modification
+| Drop          | ✅ | ✅ |
 
 
 ### CONV and POOL
@@ -140,5 +140,3 @@
 | ------------- |------| -----| ---------|
 | CategoricalAcc | ✅ | ✅ |
 | MSE            | ✅ | ✅ |
-
-

@@ -57,6 +57,8 @@ LDropout::LDropout(Layer *parent, float df, string name, int dev) : LinLayer(nam
 // virtual
 void LDropout::resize(int batch){
   Layer::resize(batch);
+  delete mask;
+  mask = new Tensor(input->getShape(), dev);
 }
 
 void LDropout::forward() {
