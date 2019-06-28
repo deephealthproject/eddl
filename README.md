@@ -66,7 +66,7 @@ int main(int argc, char **argv)
   int num_classes=10;
 
   // Define network
-  layer in=eddl.Input({batch_size, 784});
+  layer in=eddl.Input({784});
   layer l = in;  // aux var
   l=eddl.Activation(eddl.Dense(l, 1024), "relu");
   l=eddl.Activation(eddl.Dense(l, 1024), "relu");
