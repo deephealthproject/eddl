@@ -693,12 +693,12 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             int p = 0;
             fprintf(stdout, "batch %d ", j + 1);
             for (k = 0; k < tout.size(); k++, p += 2) {
-                total_loss[p] += fiterr[p];  // loss
-                total_metric[p] += fiterr[p + 1];  // metric
+                total_loss[k] += fiterr[p];  // loss
+                total_metric[k] += fiterr[p + 1];  // metric
 
                 fprintf(stdout, "%s(%s=%1.3f,%s=%1.3f) ", lout[k]->name.c_str(),
-                        losses[k]->name.c_str(), total_loss[p] / (batch_size * (j + 1)),
-                        metrics[k]->name.c_str(), total_metric[p] / (batch_size * (j + 1)));
+                        losses[k]->name.c_str(), total_loss[k] / (batch_size * (j + 1)),
+                        metrics[k]->name.c_str(), total_metric[k] / (batch_size * (j + 1)));
 
                 fiterr[p] = fiterr[p + 1] = 0.0;
             }
