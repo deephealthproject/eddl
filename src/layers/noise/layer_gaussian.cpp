@@ -43,16 +43,40 @@ LGaussianNoise::LGaussianNoise(Layer *parent, float stdev, string name, int dev)
     this->stdev = stdev;
 
     // TODO: Implement
+    input = parent->output;
+    output = new Tensor(input->getShape(), dev);
+    delta = parent->delta;
+    noise = new Tensor(input->getShape(), dev);
+
+    parent->addchild(this);
+    addparent(parent);
+
 }
 
 
 // virtual
+void LGaussianNoise::resize(int batch){
+  input = parent[0]->output;
+  delta = parent[0]->delta;
+
+  delete output;
+  output = new Tensor(input->getShape(), dev);
+
+  delete noise;
+  noise = new Tensor(input->getShape(), dev);
+}
+
 void LGaussianNoise::forward() {
-    // TODO: Implement
+  if (mode == TRMODE) {
+      noise->rand_gaussian(0.0,stdev);
+      Tensor::sum(1.0,input,1.0, noise, output, 0);
+  } else {
+      Tensor::copy(input, output);
+  }
 }
 
 void LGaussianNoise::backward() {
-    // TODO: Implement
+
 }
 
 

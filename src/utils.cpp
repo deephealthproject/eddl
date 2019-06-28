@@ -35,10 +35,15 @@
 #include <random>
 
 #define PI 3.1415926
+#define MAX_RTABLE 100000
+
+float *RTable=nullptr;
+int posTable=0;
 
 // Default seed
 std::random_device rd;  //Will be used to obtain a seed for the random number engine
 std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+
 
 float uniform(float min, float max) {
     // rand() may not generate numbers uniformly and is therefore discouraged
@@ -70,6 +75,21 @@ float gauss(float mean, float sd) {
     return (gaussgen() * sd) + mean;
 }
 
+void gen_rtable()
+{
+  if (RTable==nullptr) {
+    printf("Generating Random Table\n");
+    RTable=get_fmem(MAX_RTABLE,"gen_rtable");
+
+    for(int i=0;i<MAX_RTABLE;i++)
+      RTable[i]=gaussgen();
+  }
+}
+
+float gauss(int s, float mean, float sd) {
+    posTable=(posTable+s)%MAX_RTABLE;
+    return (RTable[posTable] * sd) + mean;
+}
 
 float *get_fmem(int size, char *str){
     float* ptr = nullptr;
@@ -81,4 +101,3 @@ float *get_fmem(int size, char *str){
     }
     return ptr;
 }
-

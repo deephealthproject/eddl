@@ -35,6 +35,7 @@
 #include <thread>
 #include "net.h"
 #include <pthread.h>
+#include "utils.h"
 
 #ifdef cGPU
 #include "gpu/tensor_cuda.h"
@@ -56,6 +57,8 @@ ostream &operator<<(ostream &os, const vector<int> shape) {
 
     return os;
 }
+
+
 
 //// THREADS
 struct tdata {
@@ -135,6 +138,7 @@ Net::Net(vlayer in, vlayer out) {
     for (int i = 0; i < lin.size(); i++) {
         walk(lin[i]);
     }
+    gen_rtable();
 }
 
 
@@ -357,6 +361,7 @@ void Net::resize(int b)
 void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
     fprintf(stdout, "Build net\n");
 
+
     if (lo.size() != lout.size())
         msg("Loss list size does not match output list", "Net.build");
 
@@ -472,7 +477,6 @@ void Net::split(int c, int todev) {
     vlayer nin;
     vlayer nout;
     int ind;
-
 
     int bs=1;
     int m=0;
@@ -656,6 +660,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     // Start training
     setmode(TRMODE);
 
+
     // Set some parameters
     int num_batches = n / batch_size;
 
@@ -734,7 +739,7 @@ void Net::train_batch_ni(vector<Tensor *> X, vector<Tensor *> Y) {
     for (int i = 0; i < batch_size; i++)
         sind.push_back(i);
 
-    setmode(TRMODE);
+
     train_batch(X, Y, sind);
 }
 
@@ -753,7 +758,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
 
     int thread_batch_size=batch_size / comp;
 
-
+    setmode(TRMODE);
     // Check indices
     if (sind.size() == 0) msg("error void index","Net::train_batch");
     // Split data for each network
@@ -919,7 +924,8 @@ void Net::evaluate(vtensor tin, vtensor tout) {
 void Net::predict(vtensor tin, vtensor tout) {
 
     int i, j, k, n;
-
+    setmode(TSMODE);
+    
     // Check list shape
     if (tin.size() != lin.size())
         msg("input tensor list does not match with defined input layers", "Net.predict");

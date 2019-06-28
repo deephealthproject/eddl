@@ -59,7 +59,7 @@
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
-|  Gaussian    | ❌ | ❌ |
+|  Gaussian    | ✅ | ✅ |
 
 
 

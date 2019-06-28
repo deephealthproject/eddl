@@ -47,8 +47,8 @@ using namespace std;
 
 void Tensor::rand_gaussian(float m, float s) {
     if (isCPU()) {
-
-        for (int i = 0; i < size; ++i) ptr[i] = gauss(m, s);
+        int r=rand();
+        for (int i = 0; i < size; ++i) ptr[i] = gauss(r, m, s);
     }
 #ifdef cGPU
     else if (isGPU())

@@ -47,6 +47,8 @@ int main(int argc, char **argv)
     layer in=eddl.Input({784});
     layer l=in;
 
+    //l = eddl.GaussianNoise(l,0.3);
+
     l=eddl.Reshape(l,{1,28,28});
 
     l=eddl.MaxPool(eddl.Activation(eddl.Conv(l, 16, {3,3}),"relu"),{2,2});

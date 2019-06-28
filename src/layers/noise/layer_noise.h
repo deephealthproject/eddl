@@ -45,6 +45,7 @@ class LGaussianNoise : public LinLayer {
 public:
     float stdev;
     static int total_layers;
+    Tensor *noise;
 
     LGaussianNoise(Layer *parent, float stdev, string name, int dev);
 
@@ -52,6 +53,8 @@ public:
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
+    void resize(int batch) override;
+    
     void forward() override;
 
     void backward() override;
@@ -60,4 +63,3 @@ public:
 };
 
 #endif //EDDLL_LAYER_NOISE_H
-

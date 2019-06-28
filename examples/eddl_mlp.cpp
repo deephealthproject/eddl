@@ -46,6 +46,9 @@ int main(int argc, char **argv) {
     layer in = eddl.Input({784});
     layer l = in;  // Aux var
 
+    //l = eddl.GaussianNoise(l,0.3);  
+
+
     l = eddl.Activation(eddl.Dense(l, 1024), "relu");
     l = eddl.Activation(eddl.Dense(l, 1024), "relu");
     l = eddl.Activation(eddl.Dense(l, 1024), "relu");
