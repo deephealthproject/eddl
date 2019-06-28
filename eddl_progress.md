@@ -67,13 +67,13 @@
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
-|  Abs    |  ✅ |  ✅ |
+|  Abs    |  ✅ |  ❌ |
 |  Diff   |  ✅ |  ✅ |
 |  Div    |  ✅ |  ✅ |
 |  Exp    |  ✅ |  ✅ |
 |  Log    |  ✅ |  ✅ |
-|  Log10    |  ✅ |  ✅ |
-|  Log2    |  ✅ |  ✅ |
+|  Log10    |  ✅ |  ❌|
+|  Log2    |  ✅ |  ❌ |
 |  Mean    | ❌ | ❌ |
 |  Mult    |  ✅ |  ✅|
 |  Pow    | ❌ | ❌ |

@@ -350,7 +350,7 @@ void Net::resize(int b)
         Xs[i].push_back(new Tensor(snets[i]->lin[j]->input->shape));
 
     for (j = 0; j < snets[i]->lout.size(); j++)
-        Ys[i].push_back(new Tensor(snets[i]->lout[j]->input->shape));
+        Ys[i].push_back(new Tensor(snets[i]->lout[j]->output->shape));
   }
 
 
@@ -397,6 +397,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
         fiterr.push_back(0.0);
     }
     // set loss functions and create targets tensors
+
     this->losses = vloss(lo);
     for (int i = 0; i < lo.size(); i++) {
         if (lo[i]->name == "soft_cross_entropy") lout[i]->delta_bp = 1;
@@ -526,7 +527,7 @@ void Net::split(int c, int todev) {
         for (j = 0; j < snets[i]->lin.size(); j++)
             Xs[i].push_back(new Tensor(snets[i]->lin[j]->input->shape));
         for (j = 0; j < snets[i]->lout.size(); j++)
-            Ys[i].push_back(new Tensor(snets[i]->lout[j]->input->shape));
+            Ys[i].push_back(new Tensor(snets[i]->lout[j]->output->shape));
 
         // build new net
         snets[i]->build(optimizer->clone(), losses, metrics);
@@ -925,7 +926,7 @@ void Net::predict(vtensor tin, vtensor tout) {
 
     int i, j, k, n;
     setmode(TSMODE);
-    
+
     // Check list shape
     if (tin.size() != lin.size())
         msg("input tensor list does not match with defined input layers", "Net.predict");
