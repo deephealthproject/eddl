@@ -358,7 +358,12 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
 void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
     C->tsem->lock();
     if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::el_mult");
-    if ((!eqsize(A, B)) || (!eqsize(A, C))) msg("Incompatible dims", "Tensor::el_mult");
+    if ((!eqsize(A, B)) || (!eqsize(A, C))) {
+      A->info();
+      B->info();
+      C->info();
+      msg("Incompatible dims", "Tensor::el_mult");
+    }
 
     if (A->isCPU()) {
         for (int i = 0; i < A->size; i++)
