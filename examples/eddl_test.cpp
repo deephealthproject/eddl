@@ -35,16 +35,15 @@
 
 int main(int argc, char **argv) {
 
-    Tensor *A=new Tensor({4,2,3});
-    Tensor *B=new Tensor({4,2});
-    Tensor *C=new Tensor({4,2});
-    int axis=2;
+    Tensor *A=new Tensor({4,2,3,7});
+    Tensor *B=new Tensor({4,3,7});
+    Tensor *C=new Tensor({4,3,7});
+    int axis=1;
 
     A->info();
     A->rand_uniform(1.0);
     A->print();
 
-    B->set(0);
 
     Tensor::reduce(A,B,axis,"mean",NULL,0);
 
@@ -63,7 +62,6 @@ int main(int argc, char **argv) {
     Tensor::reduce(A,B,axis,"sum",NULL,0);
     B->info();
     B->print();
-
 }
 
 

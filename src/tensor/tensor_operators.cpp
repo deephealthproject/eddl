@@ -596,6 +596,7 @@ void Tensor::reduce(Tensor *A, Tensor *B, int axis, string mode, Tensor *C,int i
     if (!eqsize(B,C))
       msg("Incorrect sizes in reduce max", "Tensor::reduce_mean");
   }
+  else B->set(0);
 
   int i,j,k,s;
 
@@ -621,24 +622,28 @@ void Tensor::reduce(Tensor *A, Tensor *B, int axis, string mode, Tensor *C,int i
   }
 
 
+  sort(ind.begin(), ind.end());
+  /*for(i=0;i<ind.size();i++)
+    cout<<ind[i]<<"\n";
+  cout<<"\n";*/
+
   float max;
   for(i=0;i<B->size;i++)
   {
-    int p=ind[i]/A->shape[axis];
     for(j=0;j<A->shape[axis];j++) {
       float v=A->ptr[ind[i]+(j*A->stride[axis])];
       if (m==2) {
-        if (j==0) {max=v;B->ptr[p]=max;C->ptr[p]=j;}
+        if (j==0) {max=v;B->ptr[i]=max;C->ptr[i]=j;}
         else if (v>max) {
           max=v;
-          B->ptr[p]=max;
-          C->ptr[p]=j;
+          B->ptr[i]=max;
+          C->ptr[i]=j;
         }
       }
       else
-          B->ptr[p]+=v;
+          B->ptr[i]+=v;
     }
-    if (m==0) B->ptr[p]/=A->shape[axis];
+    if (m==0) B->ptr[i]/=A->shape[axis];
 
   }
 
