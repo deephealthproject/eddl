@@ -90,6 +90,13 @@ Tensor::Tensor(vector<int> shape, float *fptr, int dev)
       size = 1;
       for (int i = 0; i < ndim; ++i) size *= shape[i];
 
+      int s=size;
+      for(int i=0;i<ndim;i++) {
+        s/=shape[i];
+        stride.push_back(s);
+      }
+
+
       if (isCPU()) {
           ptr=fptr;
           if (ndim == 2) {
@@ -133,6 +140,12 @@ Tensor::Tensor(vector<int> shape, int dev) {
     size = 1;
     for (int i = 0; i < ndim; ++i) size *= shape[i];
 
+    int s=size;
+    for(int i=0;i<ndim;i++) {
+      s/=shape[i];
+      stride.push_back(s);
+    }
+
     if (isCPU()) {
         if (ndim == 2) {
             mat = Eigen::MatrixXf(shape[1], shape[0]);
@@ -172,6 +185,11 @@ Tensor::Tensor(vector<int> shape, Tensor *T) {
     size = 1;
     for (int i = 0; i < ndim; ++i) size *= shape[i];
 
+    int s=size;
+    for(int i=0;i<ndim;i++) {
+      s/=shape[i];
+      stride.push_back(s);
+    }
 
     if (isCPU()) {
         ptr = T->ptr;
@@ -221,6 +239,12 @@ Tensor::Tensor(string fname, int bin) {
         size = 1;
         for (int i = 0; i < ndim; ++i) size *= shape[i];
 
+        int s=size;
+        for(int i=0;i<ndim;i++) {
+          s/=shape[i];
+          stride.push_back(s);
+        }
+
         if (ndim == 2) {
             //ptr=(float *)malloc(size*sizeof(float));
             //Eigen::Map<Eigen::MatrixXf> mat(ptr,shape[1],shape[0]);
@@ -261,6 +285,12 @@ Tensor::Tensor(string fname, int bin) {
         this->device = DEV_CPU;
         size = 1;
         for (int i = 0; i < ndim; ++i) size *= shape[i];
+
+        int s=size;
+        for(int i=0;i<ndim;i++) {
+          s/=shape[i];
+          stride.push_back(s);
+        }
 
         if (ndim == 2) {
             mat = Eigen::MatrixXf(shape[1], shape[0]);
@@ -418,6 +448,11 @@ void Tensor::point2data(const vector<int>& s, float *newptr){
     this->size = 1;
     this->shape = s;
     for (int i : s) this->size *= i;  // Compute size
+    int sz=size;
+    for(int i=0;i<ndim;i++) {
+      sz/=shape[i];
+      stride.push_back(sz);
+    }
     this->ptr = newptr;  // Point to new data
 }
 
@@ -425,6 +460,11 @@ void Tensor::copydata(const vector<int>& s, float *newptr){
     this->size = 1;
     this->shape = s;
     for (int i : s) this->size *= i;  // Compute size
+    int sz=size;
+    for(int i=0;i<ndim;i++) {
+      sz/=shape[i];
+      stride.push_back(sz);
+    }
 
     // Allocate memory and fill tensor
     this->ptr = new float[size];

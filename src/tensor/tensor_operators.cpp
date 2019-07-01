@@ -573,6 +573,77 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
 }
 
 
+
+///////////////////////////////////////
+//// reductions
+///////////////////////////////////////
+void Tensor::reduce(Tensor *A, Tensor *B, int axis, string mode, Tensor *C,int incB)
+{
+  if (A->device != B->device) msg("Tensors in different devices", "Tensor::reduce_mean");
+  if ((A->ndim - 1) != B->ndim) msg("Incorrect dims", "Tensor::reduce_mean");
+
+  int m;
+  if (mode=="mean") m=0;
+  else if (mode=="sum") m=1;
+  else if (mode=="max") m=2;
+  else
+    msg("Incorrect reduction mode", "Tensor::reduce_mean");
+
+
+  if (m==2) {
+    if (C==nullptr)
+      msg("reduce max requires tensor with indexes", "Tensor::reduce_mean");
+    if (!eqsize(B,C))
+      msg("Incorrect sizes in reduce max", "Tensor::reduce_mean");
+  }
+
+  int i,j,k,s;
+
+  j=0;
+  for(i=0;i<A->ndim;i++) {
+      if (i!=axis){
+        if (A->shape[i]!=B->shape[j])
+          msg("Incompatible dims", "Tensor::reduce_mean");
+        j++;
+      }
+  }
+
+
+  vector<int> ind;
+  ind.push_back(0);
+  for(i=0;i<A->ndim;i++) {
+    if (i!=axis) {
+      s=ind.size();
+      for(j=0;j<s;j++)
+        for(k=0;k<A->shape[i]-1;k++)
+          ind.push_back(ind[j]+(k+1)*A->stride[i]);
+    }
+  }
+
+  float max;
+  for(i=0;i<B->size;i++)
+  {
+
+    for(j=0;j<A->shape[axis];j++) {
+      if (m==2) {
+        if (j==0) {max=A->ptr[ind[i]];B->ptr[i]=max;C->ptr[i]=j;}
+        if (A->ptr[ind[i]+(j*A->stride[axis])]>max)
+          max=A->ptr[ind[i]+(j*A->stride[axis])];
+          B->ptr[i]=max;
+          C->ptr[i]=j;
+      }
+      else
+          B->ptr[i]+=A->ptr[ind[i]+(j*A->stride[axis])];
+    }
+    if (m==0) B->ptr[i]/=A->shape[axis];
+
+  }
+
+}
+
+
+
+
 ////////////////////////////////
 //// CONVOLUTIONS
 ConvolDescriptor::ConvolDescriptor() {}

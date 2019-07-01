@@ -141,6 +141,7 @@ public:
     int ndim;
     int size;
     vector<int> shape;
+    vector<int> stride;
 
     float *ptr;
 
@@ -264,6 +265,8 @@ public:
 
 ///////7
     static void reduceTosum(Tensor *A, Tensor *B, int axis);
+
+    static void reduce(Tensor *A, Tensor *B, int axis, string mode, Tensor *C, int incB);
 
 
 //////
