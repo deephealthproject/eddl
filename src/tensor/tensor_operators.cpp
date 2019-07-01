@@ -620,22 +620,25 @@ void Tensor::reduce(Tensor *A, Tensor *B, int axis, string mode, Tensor *C,int i
     }
   }
 
+
   float max;
   for(i=0;i<B->size;i++)
   {
-
+    int p=ind[i]/A->shape[axis];
     for(j=0;j<A->shape[axis];j++) {
+      float v=A->ptr[ind[i]+(j*A->stride[axis])];
       if (m==2) {
-        if (j==0) {max=A->ptr[ind[i]];B->ptr[i]=max;C->ptr[i]=j;}
-        if (A->ptr[ind[i]+(j*A->stride[axis])]>max)
-          max=A->ptr[ind[i]+(j*A->stride[axis])];
-          B->ptr[i]=max;
-          C->ptr[i]=j;
+        if (j==0) {max=v;B->ptr[p]=max;C->ptr[p]=j;}
+        else if (v>max) {
+          max=v;
+          B->ptr[p]=max;
+          C->ptr[p]=j;
+        }
       }
       else
-          B->ptr[i]+=A->ptr[ind[i]+(j*A->stride[axis])];
+          B->ptr[p]+=v;
     }
-    if (m==0) B->ptr[i]/=A->shape[axis];
+    if (m==0) B->ptr[p]/=A->shape[axis];
 
   }
 
