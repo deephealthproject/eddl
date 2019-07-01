@@ -58,6 +58,10 @@ int main(int argc, char **argv) {
     C->info();
     C->print();
 
+    Tensor::delta_reduce(B,A,axis,"max",C,0);
+
+    A->print();
+
 /////
     Tensor::reduce(A,B,axis,"sum",NULL,0);
     B->info();

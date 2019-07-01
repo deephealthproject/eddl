@@ -267,7 +267,7 @@ public:
     static void reduceTosum(Tensor *A, Tensor *B, int axis);
 
     static void reduce(Tensor *A, Tensor *B, int axis, string mode, Tensor *C, int incB);
-
+    static void delta_reduce(Tensor *A, Tensor *B, int axis, string mode, Tensor *C,int incB);
 
 //////
     static void cent(Tensor *A, Tensor *B, Tensor *C);
