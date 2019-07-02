@@ -65,6 +65,7 @@ LMean::LMean(Layer *l, vector <int> axis, bool keepdims, string name, int dev): 
 
     input=l->output;
     this->axis=axis;
+    this->keepdims=keepdims;
 
     for(int i=0;i<input->ndim;i++) {
       if (find(axis.begin(), axis.end(), i) == axis.end())
@@ -88,11 +89,13 @@ void LMean::backward(){
 }
 
 Layer *LMean::share(int c, int bs, vector<Layer *> p) {
-
+    clone(c,bs,p,dev);
     return nullptr;
 }
 
 Layer *LMean::clone(int c, int bs, vector<Layer *> p, int todev) {
-
-    return nullptr;
+    LMean *n;
+    n = new LMean(p[0], axis, keepdims, "clone_" + to_string(c) + name, todev);
+    n->orig = this;
+    return n;
 }
