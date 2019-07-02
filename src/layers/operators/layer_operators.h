@@ -181,7 +181,8 @@ public:
     static int total_layers;
     tshape os;
     vector<int> axis;
-
+    bool keepdims;
+    
     LMean(Layer *l, initializer_list<int> &axis, bool keepdims, string name, int dev);
     LMean(Layer *l, vector<int> axis, bool keepdims, string name, int dev);
 
