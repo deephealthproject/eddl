@@ -42,23 +42,23 @@ int LTensor::total_layers = 0;
 
 // From file
 LTensor::LTensor(string fname) : LinLayer("ltensor" + to_string(total_layers), DEV_CPU) {
-    input = output = new Tensor(fname);
+    data = input = output = new Tensor(fname);
 }
 
 // From list of shape
 LTensor::LTensor(const initializer_list<int> &init, int dev) : LinLayer("ltensor" + to_string(total_layers), dev) {
-    input = output = new Tensor(init, dev);
+    data = input = output = new Tensor(init, dev);
     delta = new Tensor(init, dev);
 }
 
 LTensor::LTensor(const vector<int> shape, float *fptr,int dev) : LinLayer("ltensor" + to_string(total_layers), dev) {
-    input = output = new Tensor(shape, fptr, dev);
+    data = input = output = new Tensor(shape, fptr, dev);
     delta = new Tensor(shape, dev);
 }
 
 // From vector<int>
 LTensor::LTensor(const vector<int> shape, int dev) : LinLayer("ltensor" + to_string(total_layers), dev) {
-    input = output = new Tensor(shape, dev);
+    data = input = output = new Tensor(shape, dev);
     delta = new Tensor(shape, dev);
 }
 
@@ -75,7 +75,7 @@ void LTensor::resize(int batch){
 
 // From Layer
 LTensor::LTensor(Layer *l) : LinLayer("ltensor" + to_string(total_layers), l->dev) {
-    input = output = l->output;
+    data = input = output = l->output;
     delta = l->delta;
 }
 

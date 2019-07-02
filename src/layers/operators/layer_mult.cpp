@@ -37,30 +37,74 @@ using namespace std;
 
 int LMult::total_layers = 0;
 
-LMult::LMult(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev) {
+LMult::LMult(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev) {
     if(name.empty()) this->name = "mult" + to_string(++total_layers);
-    //TODO: Implement
+    binary = 1;
+
+    input.push_back(l1->output);
+    input.push_back(l2->output);
+
+    output = new Tensor(l1->output->getShape(), dev);
+    delta = new Tensor(l1->output->getShape(), dev);
+
+    l1->addchild(this);
+    l2->addchild(this);
+    addparent(l1);
+    addparent(l2);
 }
 
-LMult::LMult(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
+/**
+  @brief Computes the sum operation between a layer and a float
+
+  @param l a Layer.
+  @param k a float.
+  @param name a name for the operation (predefined as 'sum+TotaLMultLayers')
+  @param dev which computing service utilize
+
+  @returns the result of l+k element-wise over l
+
+  */
+LMult::LMult(Layer *l, float k, string name, int dev) : OperatorLayer(name, dev) {
     if(name.empty()) this->name = "mult" + to_string(++total_layers);
-    //TODO: Implement
+    val = k;
+
+    input.push_back(l->output);
+    output = new Tensor(l->output->getShape(), dev);
+    delta = new Tensor(l->output->getShape(), dev);
+
+    l->addchild(this);
+    addparent(l);
 }
 
-void LMult::forward(){
-    //TODO: Implement
+void LMult::forward() {
+    if (binary) Tensor::el_mult(input[0], input[1], output, 0);
+    else {
+        Tensor::copy(input[0], output);
+        output->mult(val);
+    }
 }
 
-void LMult::backward(){
-    //TODO: Implement
+void LMult::backward() {
+    if (binary) {
+        Tensor::el_mult(delta,input[0],parent[1]->delta,1);
+        Tensor::el_mult(delta,input[1],parent[0]->delta,1);
+    }
+    else {
+      delta->mult(val);
+      Tensor::inc(delta,parent[0]->delta);
+    }
 }
 
 Layer *LMult::share(int c, int bs, vector<Layer *> p) {
-
-    return nullptr;
+  return clone(c,bs,p,dev);
 }
 
 Layer *LMult::clone(int c, int bs, vector<Layer *> p, int todev) {
-
-    return nullptr;
+    LMult *n;
+    if (binary)
+        n = new LMult(p[0], p[1], "share_" + to_string(c) + name, todev);
+    else
+        n = new LMult(p[0], val, "share_" + to_string(c) + name, todev);
+    n->orig = this;
+    return n;
 }

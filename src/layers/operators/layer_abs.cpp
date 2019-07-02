@@ -51,7 +51,8 @@ LAbs::LAbs(Layer *l, string name, int dev): OperatorLayer(name, dev) {
     // Set default name
     if(name.empty()) this->name = "abs" + to_string(++total_layers);
 
-    input=l->output;
+    input.push_back(l->output);
+
     mask=new Tensor(l->output->getShape(),dev);
     output=new Tensor(l->output->getShape(),dev);
     delta=new Tensor(l->output->getShape(),dev);
@@ -62,12 +63,12 @@ LAbs::LAbs(Layer *l, string name, int dev): OperatorLayer(name, dev) {
 }
 
 void LAbs::forward(){
-    Tensor::copy(input,output);
+    Tensor::copy(input[0],output);
     output->set_abs();
 }
 
 void LAbs::backward(){
-    Tensor::sign(input,mask);
+    Tensor::sign(input[0],mask);
     Tensor::el_mult(delta,mask,parent[0]->delta,1);
 }
 

@@ -155,7 +155,11 @@ layer EDDL::Sum(layer l1, float k) {
 }
 
 layer EDDL::Var(layer l) {
-    return new LVar(l, "", DEV_CPU);
+    return EDDL::Var(l, {0});
+}
+
+layer EDDL::Var(layer l, initializer_list<int> axis) {
+      return new LVar(l, axis, "", DEV_CPU);
 }
 
 //////////////////////////////////////////////////////

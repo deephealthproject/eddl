@@ -151,6 +151,7 @@ public:
     static layer Sum(layer l1, layer l2);
     static layer Sum(layer l1, float k);
     static layer Var(layer l);
+    static layer Var(layer l, initializer_list<int> axis);
 
     // ---- OPTIMIZERS ----
     static optimizer adadelta(float lr, float rho, float epsilon, float weight_decay); //Todo: Implement

@@ -51,7 +51,7 @@ int LLog10::total_layers = 0;
 LLog10::LLog10(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
     if(name.empty()) this->name = "log10" + to_string(++total_layers);
 
-    input = l->output;
+    input.push_back(l->output);
     output = new Tensor(l->output->getShape(), dev);
     delta = new Tensor(l->output->getShape(), dev);
 
@@ -60,13 +60,13 @@ LLog10::LLog10(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
 }
 
 void LLog10::forward() {
-    Tensor::copy(parent[0]->output, output);
+    Tensor::copy(input[0], output);
     output->set_log10();
 }
 
 void LLog10::backward() {
   delta->div(log(10));
-  Tensor::el_div(delta,parent[0]->output, parent[0]->delta, 1);
+  Tensor::el_div(delta,input[0], parent[0]->delta, 1);
 }
 
 Layer *LLog10::share(int c, int bs, vector<Layer *> p) {

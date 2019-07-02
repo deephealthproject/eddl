@@ -50,7 +50,7 @@ int LExp::total_layers = 0;
 LExp::LExp(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
     if(name.empty()) this->name = "exp" + to_string(++total_layers);
 
-    input = l->output;
+    input.push_back(l->output);
     output = new Tensor(l->output->getShape(), dev);
     delta = new Tensor(l->output->getShape(), dev);
 
@@ -59,7 +59,7 @@ LExp::LExp(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
 }
 
 void LExp::forward() {
-    Tensor::copy(parent[0]->output, output);
+    Tensor::copy(input[0], output);
     output->set_exp();
 }
 

@@ -49,42 +49,93 @@ int main(int argc, char **argv) {
     A->print();
 
 
-    Tensor::reduce(A,B,axis,"mean",NULL,0);
+    cout<<"Mean\n";
+    Tensor::reduce(A,B,axis,"mean",false,NULL,0);
 
     B->info();
     B->print();
 
  /////
-    Tensor::reduce(A,B,axis,"max",C,0);
+    cout<<"Max\n";
+    Tensor::reduce(A,B,axis,"max",false,C,0);
+
+    B->info();
+    B->print();
+    C->info();
+    C->print();
+    cout<<"Delta max\n";
+    Tensor::delta_reduce(B,A,axis,"max",false,C,0);
+
+    A->print();
+
+/////
+    cout<<"Sum\n";
+    Tensor::reduce(A,B,axis,"sum",false,NULL,0);
+    B->info();
+    B->print();
+
+    cout<<"==================\n";
+    cout<<"keepdims true\n";
+    cout<<"==================\n";
+    A=new Tensor({4,2,3});
+    B=new Tensor({4,2,3});
+    C=new Tensor({4,2,3});
+
+    vector<int> axis2;
+    axis2.push_back(1);
+
+    A->info();
+    A->set(1.0);
+    A->print();
+
+    cout<<"Mean\n";
+    Tensor::reduce(A,B,axis2,"mean",true,NULL,0);
+
+    B->info();
+    B->print();
+
+    /////
+    cout<<"Max\n";
+    Tensor::reduce(A,B,axis2,"max",true,C,0);
 
     B->info();
     B->print();
     C->info();
     C->print();
 
-    Tensor::delta_reduce(B,A,axis,"max",C,0);
-
+    cout<<"Delta max\n";
+    Tensor::delta_reduce(B,A,axis,"max",true,C,0);
     A->print();
 
-/////
-    Tensor::reduce(A,B,axis,"sum",NULL,0);
+    /////
+    cout<<"Sum\n";
+    Tensor::reduce(A,B,axis2,"sum",true,NULL,0);
     B->info();
     B->print();
 
-
-
+    cout<<"==================\n";
+    cout<<"EDDL Layers\n";
     cout<<"==================\n";
 
     tensor t = eddl.T({10,10,4});
-    layer m= eddl.Mean(t,{2});
+    t->data->set(1.0);
+    t->data->ptr[0]=10;
 
-
+    cout<<"\nMean\n";
+    layer m=eddl.Mean(t,{1,2});
     m->forward();
-
     m->output->info();
     m->output->print();
 
-    
+    cout<<"\nVar\n";
+    //t->data->print();
+    layer v=eddl.Var(t,{1,2});
+
+    v->forward();
+    v->output->info();
+    v->output->print();
+
+
 
 }
 

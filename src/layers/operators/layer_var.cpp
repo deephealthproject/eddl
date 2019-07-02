@@ -37,25 +37,62 @@ using namespace std;
 
 int LVar::total_layers = 0;
 
-LVar::LVar(Layer *l, string name, int dev): OperatorLayer(name, dev) {
+LVar::LVar(Layer *l, initializer_list<int> &axis, string name, int dev):LVar(l,vector<int>(axis.begin(), axis.end()),name,dev){}
+
+
+
+LVar::LVar(Layer *l, vector<int> axis, string name, int dev): OperatorLayer(name, dev) {
     if(name.empty()) this->name = "var" + to_string(++total_layers);
-    //TODO: Implement
+
+    input.push_back(l->output);
+
+    output=l->output;
+    delta=l->delta;
+
+    this->axis=axis;
+
+    rsize=1;
+    for(int i=0;i<input[0]->ndim;i++) {
+      if (find(axis.begin(), axis.end(), i) == axis.end())
+          os.push_back(input[0]->shape[i]);
+      else rsize*=input[0]->shape[i];
+    }
+
+    cout<<"rsize "<<rsize<<"\n";
+
+    LMean *m1=new LMean(this,axis, true,name+"mean_keepdims",dev);
+    LDiff *diff=new LDiff(this,m1,name+"diff",dev);
+    LMult *mult=new LMult(diff,diff,name+"mult",dev);
+    LMean *m2=new LMean(mult,axis,false,name+"mean_red",dev);
+
+    layers.push_back(m1);
+    layers.push_back(diff);
+    layers.push_back(mult);
+    layers.push_back(m2);
+
+    output=m2->output;
+    delta=m2->delta;
+
+    l->addchild(this);
+    addparent(l);
 }
 
 void LVar::forward(){
-    //TODO: Implement
+    for(int i=0;i<layers.size();i++) layers[i]->forward();
 }
 
 void LVar::backward(){
-    //TODO: Implement
+  for(int i=layers.size()-1;i>=0;i--) layers[i]->backward();
 }
 
 Layer *LVar::share(int c, int bs, vector<Layer *> p) {
-
+    clone(c,bs,p,dev);
     return nullptr;
 }
 
 Layer *LVar::clone(int c, int bs, vector<Layer *> p, int todev) {
-
-    return nullptr;
+    LVar *n;
+    n = new LVar(p[0], axis, "clone_" + to_string(c) + name, todev);
+    n->orig = this;
+    return n;
 }

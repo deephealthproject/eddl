@@ -47,6 +47,8 @@ using namespace std;
 class OperatorLayer : public Layer {
 public:
 
+    vector<Tensor *>input;
+
     int binary;
     float val;
 
@@ -182,7 +184,7 @@ public:
     tshape os;
     vector<int> axis;
     bool keepdims;
-    
+
     LMean(Layer *l, initializer_list<int> &axis, bool keepdims, string name, int dev);
     LMean(Layer *l, vector<int> axis, bool keepdims, string name, int dev);
 
@@ -266,8 +268,14 @@ public:
 class LVar : public OperatorLayer {
 public:
     static int total_layers;
+    tshape os;
+    vector<int> axis;
+    Tensor *mean;
+    int rsize;
+    vector<Layer *> layers;
 
-    LVar(Layer *l, string name, int dev);
+    LVar(Layer *l, initializer_list<int> &axis, string name, int dev);
+    LVar(Layer *l, vector<int> axis, string name, int dev);
 
     void forward() override;
 

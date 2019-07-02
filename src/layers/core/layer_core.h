@@ -42,6 +42,9 @@ using namespace std;
 /// Tensor Layer
 class LTensor : public LinLayer {
 public:
+
+    Tensor *data;
+    
     static int total_layers;
 
     LTensor(string fname);
