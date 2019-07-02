@@ -140,9 +140,9 @@ public:
     static layer Log2(layer l);
     static layer Log10(layer l);
     static layer Mean(layer l);
-    static layer Mean(layer l, int axis);
+    static layer Mean(layer l, const initializer_list<int> axis);
     static layer Mean(layer l, bool keepdims);
-    static layer Mean(layer l, int axis, bool keepdims);
+    static layer Mean(layer l, const initializer_list<int> axis, bool keepdims);
     static layer Mult(layer l1, layer l2);
     static layer Mult(layer l1, float k);
     static layer Pow(layer l1, layer l2);

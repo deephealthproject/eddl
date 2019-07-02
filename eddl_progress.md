@@ -36,7 +36,7 @@
 |  Conv2DT      | ❌ | ❌ |
 |  Upsampling   | ❌ | ❌ |
 |  AvgPool   | ❌ | ❌ |
-|  GlobalMacPool   | ❌ | ❌ |
+|  GlobalMaxPool   | ❌ | ❌ |
 |  MaxPool  |  ✅ | ❌ |
 
 

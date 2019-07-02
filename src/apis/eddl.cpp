@@ -108,21 +108,23 @@ layer EDDL::Log10(layer l) {
     return new LLog10(l, "", DEV_CPU);
 }
 
+
 layer EDDL::Mean(layer l) {
-    return EDDL::Mean(l, 0, false);
+    return EDDL::Mean(l, {0}, false);
 }
 
-layer EDDL::Mean(layer l, int axis) {
+layer EDDL::Mean(layer l, initializer_list<int> axis) {
     return EDDL::Mean(l, axis, false);
 }
 
 layer EDDL::Mean(layer l, bool keepdims) {
-    return EDDL::Mean(l, 0, keepdims);
+    return EDDL::Mean(l, {0}, keepdims);
 }
 
-layer EDDL::Mean(layer l, int axis, bool keepdims) {
+layer EDDL::Mean(layer l, const initializer_list<int> axis, bool keepdims) {
     return new LMean(l, axis, keepdims, "", DEV_CPU);
 }
+
 
 layer EDDL::Mult(layer l1, layer l2) {
     return new LMult(l1, l2, "", DEV_CPU);

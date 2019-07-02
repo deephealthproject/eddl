@@ -57,18 +57,34 @@ int LMean::total_layers = 0;
    \endverbatim
 
   */
-LMean::LMean(Layer *l, int axis, bool keepdims, string name, int dev): OperatorLayer(name, dev) {
+
+LMean::LMean(Layer *l, initializer_list<int> &axis, bool keepdims, string name, int dev):LMean(l,vector<int>(axis.begin(), axis.end()),keepdims,name,dev){}
+
+LMean::LMean(Layer *l, vector <int> axis, bool keepdims, string name, int dev): OperatorLayer(name, dev) {
     if(name.empty()) this->name = "mean" + to_string(++total_layers);
-    //TODO: Implement
+
+    input=l->output;
+    this->axis=axis;
+
+    for(int i=0;i<input->ndim;i++) {
+      if (find(axis.begin(), axis.end(), i) == axis.end())
+          os.push_back(input->shape[i]);
+    }
+
+    output=new Tensor(os,dev);
+    delta=new Tensor(os,dev);
+
+    l->addchild(this);
+    addparent(l);
+
 }
 
-
 void LMean::forward(){
-    //TODO: Implement
+    Tensor::reduce(input,output,axis,"mean",NULL,0);
 }
 
 void LMean::backward(){
-    //TODO: Implement
+    Tensor::delta_reduce(delta,parent[0]->delta,axis,"mean",NULL,1);
 }
 
 Layer *LMean::share(int c, int bs, vector<Layer *> p) {

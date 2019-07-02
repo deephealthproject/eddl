@@ -179,8 +179,11 @@ public:
 class LMean : public OperatorLayer {
 public:
     static int total_layers;
+    tshape os;
+    vector<int> axis;
 
-    LMean(Layer *l, int axis, bool keepdims, string name, int dev);
+    LMean(Layer *l, initializer_list<int> &axis, bool keepdims, string name, int dev);
+    LMean(Layer *l, vector<int> axis, bool keepdims, string name, int dev);
 
     void forward() override;
 
@@ -275,4 +278,3 @@ public:
 };
 
 #endif //EDDLL_LAYER_OPERATORS_H
-

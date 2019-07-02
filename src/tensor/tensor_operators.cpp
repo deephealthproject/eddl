@@ -577,12 +577,14 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
 ///////////////////////////////////////
 //// reductions
 ///////////////////////////////////////
-void Tensor::reduce(Tensor *A, Tensor *B, int axis, string mode, Tensor *C,int incB)
+void Tensor::reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, Tensor *C,int incB)
 {
   if (A->device != B->device) msg("Tensors in different devices", "Tensor::reduce");
-  if ((A->ndim - 1) != B->ndim) msg("Incorrect dims", "Tensor::reduce");
+  if ((A->ndim - axis.size()) != B->ndim) msg("Incorrect dims", "Tensor::reduce");
 
-  int m;
+  int i,j,k,l,s;
+  int m,d;
+
   if (mode=="mean") m=0;
   else if (mode=="sum") m=1;
   else if (mode=="max") m=2;
@@ -597,13 +599,9 @@ void Tensor::reduce(Tensor *A, Tensor *B, int axis, string mode, Tensor *C,int i
       msg("Incorrect sizes in reduce max", "Tensor::reduce");
   }
 
-  if (!incB) B->set(0);
-
-  int i,j,k,s;
-
   j=0;
   for(i=0;i<A->ndim;i++) {
-      if (i!=axis){
+      if (find(axis.begin(), axis.end(), i) == axis.end()) {
         if (A->shape[i]!=B->shape[j])
           msg("Incompatible dims", "Tensor::reduce");
         j++;
@@ -611,10 +609,20 @@ void Tensor::reduce(Tensor *A, Tensor *B, int axis, string mode, Tensor *C,int i
   }
 
 
+  if (m==0) {
+    d=1;
+    for(i=0;i<axis.size();i++)
+      d*=A->shape[axis[i]];
+  }
+
+  if (!incB) B->set(0);
+
+
+
   vector<int> ind;
   ind.push_back(0);
   for(i=0;i<A->ndim;i++) {
-    if (i!=axis) {
+    if (find(axis.begin(), axis.end(), i) == axis.end()) {
       s=ind.size();
       for(j=0;j<s;j++)
         for(k=0;k<A->shape[i]-1;k++)
@@ -625,43 +633,66 @@ void Tensor::reduce(Tensor *A, Tensor *B, int axis, string mode, Tensor *C,int i
 
   sort(ind.begin(), ind.end());
 
+
+
   float max;
   for(i=0;i<B->size;i++)
   {
-    for(j=0;j<A->shape[axis];j++) {
-      float v=A->ptr[ind[i]+(j*A->stride[axis])];
+    vector<int> sind;
+    sind.push_back(ind[i]);
+    for(l=0;l<A->ndim;l++) {
+      if (find(axis.begin(), axis.end(), l) != axis.end()) {
+        s=sind.size();
+        for(j=0;j<s;j++)
+          for(k=0;k<A->shape[l]-1;k++)
+            sind.push_back(sind[j]+(k+1)*A->stride[l]);
+      }
+    }
+
+    for(j=0;j<sind.size();j++) {
+      float v=A->ptr[sind[j]];
       if (m==2) {
-        if (j==0) {max=v;C->ptr[i]=j;}
+        if (j==0) {max=v;C->ptr[i]=sind[j];}
         else if (v>max) {
           max=v;
-          C->ptr[i]=j;
+          C->ptr[i]=sind[j];
         }
       }
       else if (m==0)
-        B->ptr[i]+=v/A->shape[axis];
+        B->ptr[i]+=v/d;
       else
         B->ptr[i]+=v;
-    }
+    }// j
     if (m==2) B->ptr[i]+=max;
-  }
+  }// i
 
 }
 
 
 
 //// Gradient reduction
-void Tensor::delta_reduce(Tensor *A, Tensor *B, int axis, string mode, Tensor *C,int incB)
+void Tensor::delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, Tensor *C,int incB)
 {
   if (A->device != B->device) msg("Tensors in different devices", "Tensor::delta_reduce");
-  if ((A->ndim) != B->ndim-1) msg("Incorrect dims", "Tensor::delta_reduce");
+  if ((A->ndim) != B->ndim-axis.size()) msg("Incorrect dims", "Tensor::delta_reduce");
 
-  int m;
+  int m,d;
+  int i,j,k,s,l;
+
   if (mode=="mean") m=0;
   else if (mode=="sum") m=1;
   else if (mode=="max") m=2;
   else
     msg("Incorrect reduction mode", "Tensor::delta_reduce");
 
+  j=0;
+  for(i=0;i<B->ndim;i++) {
+      if (find(axis.begin(), axis.end(), i) == axis.end()) {
+        if (B->shape[i]!=A->shape[j])
+          msg("Incompatible dims", "Tensor::reduce_mean");
+        j++;
+      }
+  }
 
   if (m==2) {
     if (C==nullptr)
@@ -670,24 +701,19 @@ void Tensor::delta_reduce(Tensor *A, Tensor *B, int axis, string mode, Tensor *C
       msg("Incorrect sizes in reduce max", "Tensor::delta_reduce");
   }
 
-  if (!incB) B->set(0);
-
-  int i,j,k,s;
-
-  j=0;
-  for(i=0;i<B->ndim;i++) {
-      if (i!=axis){
-        if (B->shape[i]!=A->shape[j])
-          msg("Incompatible dims", "Tensor::reduce_mean");
-        j++;
-      }
+  if (m==0) {
+    d=1;
+    for(i=0;i<axis.size();i++)
+      d*=B->shape[axis[i]];
   }
+
+  if (!incB) B->set(0);
 
 
   vector<int> ind;
   ind.push_back(0);
   for(i=0;i<B->ndim;i++) {
-    if (i!=axis) {
+    if (find(axis.begin(), axis.end(), i) == axis.end()) {
       s=ind.size();
       for(j=0;j<s;j++)
         for(k=0;k<B->shape[i]-1;k++)
@@ -698,20 +724,34 @@ void Tensor::delta_reduce(Tensor *A, Tensor *B, int axis, string mode, Tensor *C
 
   sort(ind.begin(), ind.end());
 
+
+
   for(i=0;i<A->size;i++)
   {
     if (m==2) {
       int p=C->ptr[i];
-      B->ptr[ind[i]+(p*B->stride[axis])]+=A->ptr[i];
+      B->ptr[p]+=A->ptr[i];
     }
-    else
-      for(j=0;j<B->shape[axis];j++) {
-        if (m==0)
-          B->ptr[ind[i]+(j*B->stride[axis])]+=A->ptr[i]/B->shape[axis];
-        else
-          B->ptr[ind[i]+(j*B->stride[axis])]+=A->ptr[i];
+    else {
+      vector<int> sind;
+      sind.push_back(ind[i]);
+      for(l=0;l<B->ndim;l++) {
+        if (find(axis.begin(), axis.end(), l) != axis.end()) {
+          s=sind.size();
+          for(j=0;j<s;j++)
+            for(k=0;k<B->shape[l]-1;k++)
+              sind.push_back(sind[j]+(k+1)*B->stride[l]);
+        }
       }
-  }
+
+      for(j=0;j<sind.size();j++) {
+        if (m==0)
+          B->ptr[sind[j]]+=A->ptr[i]/d;
+        else
+          B->ptr[sind[j]]+=A->ptr[i];
+      }
+    }//else
+  }//i
 }
 
 

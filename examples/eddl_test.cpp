@@ -36,11 +36,15 @@
 int main(int argc, char **argv) {
 
     Tensor *A=new Tensor({4,2,3,7});
-    Tensor *B=new Tensor({4,3,7});
-    Tensor *C=new Tensor({4,3,7});
-    int axis=1;
+    Tensor *B=new Tensor({4,3});
+    Tensor *C=new Tensor({4,3});
+
+    vector<int> axis;
+    axis.push_back(1);
+    axis.push_back(3);
 
     A->info();
+    A->set(1.0);
     A->rand_uniform(1.0);
     A->print();
 
@@ -66,6 +70,21 @@ int main(int argc, char **argv) {
     Tensor::reduce(A,B,axis,"sum",NULL,0);
     B->info();
     B->print();
+
+
+
+    cout<<"==================\n";
+
+    tensor t = eddl.T({10,10,4});
+    layer m= eddl.Mean(t,{2});
+
+
+    m->forward();
+
+    m->output->info();
+    m->output->print();
+
+
 }
 
 
