@@ -74,12 +74,12 @@
 |  Log    |  ✅ |  ✅ |
 |  Log10    |  ✅ |  ❌|
 |  Log2    |  ✅ |  ❌ |
-|  Mean    | ❌ | ❌ |
+|  Mean    | ✅| ❌ | still test properly
 |  Mult    |  ✅ |  ✅|
 |  Pow    | ❌ | ❌ |
 |  Sqrt    | ❌ | ❌ |
 |  Sum    |  ✅ |  ✅ |
-|  Var    | ❌ | ❌ |
+|  Var    |  ✅| ❌ | still test properly
 
 ### RECURRENT
 
