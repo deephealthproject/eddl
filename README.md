@@ -39,6 +39,12 @@ There are some interesting flags to choose what to compile:
 
 > By default, all of them are enabled.
 
+# Windows specific installation
+
+Default for `Visual Studio 15 2017` build envrionment is x86, while EDDLL requires x64. This can be changed by typing `cmake -A x64 .` as cmake command.
+
+On Windows, the POSIX threads library is required. Path to this library can be specified to cmake as follows: `env PTHREADS_ROOT=path_to_pthreads cmake -A x64 .`
+The PThreads library can be found at [https://sourceforge.net/projects/pthreads4w/](https://sourceforge.net/projects/pthreads4w/).
 
 # Tests
 
