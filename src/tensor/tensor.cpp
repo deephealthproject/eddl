@@ -107,7 +107,13 @@ Tensor::Tensor(vector<int> shape, float *fptr, int dev)
   #ifdef cGPU
       else if (isGPU())
         {
-          // Not implemented
+          gpu_device=device-DEV_GPU;
+          if (!initcuda[gpu_device])
+            {
+              gpu_init(gpu_device);
+              initcuda[gpu_device]=1;
+            }
+          ptr=gpu_create_tensor(gpu_device,size);
         }
   #endif
   #ifdef cFPGA
