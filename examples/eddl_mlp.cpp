@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
     layer in = eddl.Input({784});
     layer l = in;  // Aux var
 
-    //l = eddl.GaussianNoise(l,0.3);  
+    //l = eddl.GaussianNoise(l,0.3);
 
 
     l = eddl.Activation(eddl.Dense(l, 1024), "relu");
@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
     eddl.fit(net, {x_train}, {y_train}, batch_size, epochs);
 
     // Evaluate test
-    std::cout << "Evaluate train:" << std::endl;
+    std::cout << "Evaluate test:" << std::endl;
     eddl.evaluate(net, {x_test}, {y_test});
 }
 

@@ -58,8 +58,6 @@ LVar::LVar(Layer *l, vector<int> axis, string name, int dev): OperatorLayer(name
       else rsize*=input[0]->shape[i];
     }
 
-    cout<<"rsize "<<rsize<<"\n";
-
     LMean *m1=new LMean(this,axis, true,name+"mean_keepdims",dev);
     LDiff *diff=new LDiff(this,m1,name+"diff",dev);
     LMult *mult=new LMult(diff,diff,name+"mult",dev);

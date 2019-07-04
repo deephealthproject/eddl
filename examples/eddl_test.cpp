@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
     C->print();
 
     cout<<"Delta max\n";
-    Tensor::delta_reduce(B,A,axis,"max",true,C,0);
+    Tensor::delta_reduce(B,A,axis2,"max",true,C,0);
     A->print();
 
     /////
@@ -117,7 +117,7 @@ int main(int argc, char **argv) {
     cout<<"EDDL Layers\n";
     cout<<"==================\n";
 
-    tensor t = eddl.T({10,10,4});
+    tensor t = eddl.T({1,10,10,4});
     t->data->set(1.0);
     t->data->ptr[0]=10;
 
