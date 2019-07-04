@@ -188,3 +188,18 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Visual studio project files
+*.vcxproj
+*.vcxproj.filters
+*.sln
+*.sln.DotSettings.user
+*.suo
+.vs/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+*.dir/
+*.cmake
+
