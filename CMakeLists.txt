@@ -141,14 +141,19 @@ SET(SOURCES
         src/layers/operators/layer_log.cpp
         src/layers/operators/layer_log10.cpp
         src/layers/operators/layer_log2.cpp
-        src/layers/operators/layer_mean.cpp
         src/layers/operators/layer_mult.cpp
         src/layers/operators/layer_operator.cpp
         src/layers/operators/layer_operators.h
         src/layers/operators/layer_pow.cpp
         src/layers/operators/layer_sqrt.cpp
         src/layers/operators/layer_sum.cpp
-        src/layers/operators/layer_var.cpp
+        src/layers/reductions/layer_mean.cpp
+        src/layers/reductions/layer_reduction.cpp
+        src/layers/reductions/layer_reductions.h
+        src/layers/reductions/layer_var.cpp
+        src/layers/reductions/layer_sum.cpp
+        src/layers/reductions/layer_max.cpp
+        src/layers/reductions/layer_min.cpp
         src/layers/pool/layer_avgpool.cpp
         src/layers/pool/layer_globalavgpool.cpp
         src/layers/pool/layer_globalmaxpool.cpp

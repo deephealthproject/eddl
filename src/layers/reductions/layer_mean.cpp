@@ -30,12 +30,13 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "layer_operators.h"
+#include "../operators/layer_operators.h"
+#include "layer_reductions.h"
 
 
 using namespace std;
 
-int LMean::total_layers = 0;
+int LRMean::total_layers = 0;
 
 /**
   @brief Computes the mean of elements across dimensions of a Layer
@@ -43,7 +44,7 @@ int LMean::total_layers = 0;
   @param l a Layer
   @param axis the dimensions to reduce. If NULL (the default), reduces all dimensions
   @param keepdims if true, retains reduced dimensions with length 1. Default False
-  @param name a name for the operation (predefined as 'mean+TotalMeanLayers')
+  @param name a name for the operation (predefined as 'mean+TotaLRMeanLayers')
   @param dev which computing service utilize
 
   @returns the result of the logarithm operation over l
@@ -58,9 +59,9 @@ int LMean::total_layers = 0;
 
   */
 
-LMean::LMean(Layer *l, initializer_list<int> &axis, bool keepdims, string name, int dev):LMean(l,vector<int>(axis.begin(), axis.end()),keepdims,name,dev){}
+LRMean::LRMean(Layer *l, initializer_list<int> &axis, bool keepdims, string name, int dev):LRMean(l,vector<int>(axis.begin(), axis.end()),keepdims,name,dev){}
 
-LMean::LMean(Layer *l, vector <int> axis, bool keepdims, string name, int dev): OperatorLayer(name, dev) {
+LRMean::LRMean(Layer *l, vector <int> axis, bool keepdims, string name, int dev): ReductionLayer(name, dev) {
     if(name.empty()) this->name = "mean" + to_string(++total_layers);
 
     input.push_back(l->output);
@@ -85,22 +86,22 @@ LMean::LMean(Layer *l, vector <int> axis, bool keepdims, string name, int dev): 
 
 }
 
-void LMean::forward(){
+void LRMean::forward(){
     Tensor::reduce(input[0],output,axis,"mean",keepdims,NULL,0);
 }
 
-void LMean::backward(){
+void LRMean::backward(){
     Tensor::delta_reduce(delta,parent[0]->delta,axis,"mean",keepdims,NULL,1);
 }
 
-Layer *LMean::share(int c, int bs, vector<Layer *> p) {
+Layer *LRMean::share(int c, int bs, vector<Layer *> p) {
     clone(c,bs,p,dev);
     return nullptr;
 }
 
-Layer *LMean::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LMean *n;
-    n = new LMean(p[0], axis, keepdims, "clone_" + to_string(c) + name, todev);
+Layer *LRMean::clone(int c, int bs, vector<Layer *> p, int todev) {
+    LRMean *n;
+    n = new LRMean(p[0], axis, keepdims, "clone_" + to_string(c) + name, todev);
     n->orig = this;
     return n;
 }

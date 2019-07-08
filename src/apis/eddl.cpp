@@ -108,24 +108,6 @@ layer EDDL::Log10(layer l) {
     return new LLog10(l, "", DEV_CPU);
 }
 
-
-layer EDDL::Mean(layer l) {
-    return EDDL::Mean(l, {0}, false);
-}
-
-layer EDDL::Mean(layer l, initializer_list<int> axis) {
-    return EDDL::Mean(l, axis, false);
-}
-
-layer EDDL::Mean(layer l, bool keepdims) {
-    return EDDL::Mean(l, {0}, keepdims);
-}
-
-layer EDDL::Mean(layer l, const initializer_list<int> axis, bool keepdims) {
-    return new LMean(l, axis, keepdims, "", DEV_CPU);
-}
-
-
 layer EDDL::Mult(layer l1, layer l2) {
     return new LMult(l1, l2, "", DEV_CPU);
 }
@@ -154,12 +136,86 @@ layer EDDL::Sum(layer l1, float k) {
     return new LSum(l1, k, "", DEV_CPU);
 }
 
-layer EDDL::Var(layer l) {
-    return EDDL::Var(l, {0});
+
+// ---- Reduction Layers ----
+layer EDDL::ReduceMean(layer l) {
+    return EDDL::ReduceMean(l, {0}, false);
 }
 
-layer EDDL::Var(layer l, initializer_list<int> axis) {
-      return new LVar(l, axis, "", DEV_CPU);
+layer EDDL::ReduceMean(layer l, initializer_list<int> axis) {
+    return EDDL::ReduceMean(l, axis, false);
+}
+
+layer EDDL::ReduceMean(layer l, bool keepdims) {
+    return EDDL::ReduceMean(l, {0}, keepdims);
+}
+
+layer EDDL::ReduceMean(layer l, const initializer_list<int> axis, bool keepdims) {
+    return new LRMean(l, axis, keepdims, "", DEV_CPU);
+}
+
+layer EDDL::ReduceVar(layer l) {
+    return EDDL::ReduceVar(l, {0});
+}
+
+layer EDDL::ReduceVar(layer l, initializer_list<int> axis) {
+    return EDDL::ReduceVar(l, axis, false);
+}
+
+layer EDDL::ReduceVar(layer l, bool keepdims) {
+    return EDDL::ReduceVar(l, {0}, keepdims);
+}
+
+layer EDDL::ReduceVar(layer l, const initializer_list<int> axis, bool keepdims) {
+    return new LRVar(l, axis, keepdims, "", DEV_CPU);
+}
+
+layer EDDL::ReduceSum(layer l) {
+    return EDDL::ReduceSum(l, {0});
+}
+
+layer EDDL::ReduceSum(layer l, initializer_list<int> axis) {
+    return EDDL::ReduceSum(l, axis, false);
+}
+
+layer EDDL::ReduceSum(layer l, bool keepdims) {
+    return EDDL::ReduceSum(l, {0}, keepdims);
+}
+
+layer EDDL::ReduceSum(layer l, const initializer_list<int> axis, bool keepdims) {
+    return new LRSum(l, axis, keepdims, "", DEV_CPU);
+}
+
+layer EDDL::ReduceMax(layer l) {
+    return EDDL::ReduceMax(l, {0});
+}
+
+layer EDDL::ReduceMax(layer l, initializer_list<int> axis) {
+    return EDDL::ReduceMax(l, axis, false);
+}
+
+layer EDDL::ReduceMax(layer l, bool keepdims) {
+    return EDDL::ReduceMax(l, {0}, keepdims);
+}
+
+layer EDDL::ReduceMax(layer l, const initializer_list<int> axis, bool keepdims) {
+    return new LRMax(l, axis, keepdims, "", DEV_CPU);
+}
+
+layer EDDL::ReduceMin(layer l) {
+    return EDDL::ReduceMin(l, {0});
+}
+
+layer EDDL::ReduceMin(layer l, initializer_list<int> axis) {
+    return EDDL::ReduceMin(l, axis, false);
+}
+
+layer EDDL::ReduceMin(layer l, bool keepdims) {
+    return EDDL::ReduceMin(l, {0}, keepdims);
+}
+
+layer EDDL::ReduceMin(layer l, const initializer_list<int> axis, bool keepdims) {
+    return new LRMin(l, axis, keepdims, "", DEV_CPU);
 }
 
 //////////////////////////////////////////////////////

@@ -122,14 +122,14 @@ int main(int argc, char **argv) {
     t->data->ptr[0]=10;
 
     cout<<"\nMean\n";
-    layer m=eddl.Mean(t,{1,2});
+    layer m=eddl.ReduceMean(t,{1,2});
     m->forward();
     m->output->info();
     m->output->print();
 
     cout<<"\nVar\n";
     //t->data->print();
-    layer v=eddl.Var(t,{1,2});
+    layer v=eddl.ReduceVar(t,{1,2});
 
     v->forward();
     v->output->info();

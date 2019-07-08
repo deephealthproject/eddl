@@ -30,18 +30,20 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "layer_operators.h"
+#include "../operators/layer_operators.h"
+#include "layer_reductions.h"
 
 
 using namespace std;
 
-int LVar::total_layers = 0;
+int LRMax::total_layers = 0;
 
-LVar::LVar(Layer *l, initializer_list<int> &axis, string name, int dev):LVar(l,vector<int>(axis.begin(), axis.end()),name,dev){}
+LRMax::LRMax(Layer *l, initializer_list<int> &axis, bool keepdims, string name, int dev):LRMax(l,vector<int>(axis.begin(), axis.end()),keepdims,name,dev){}
 
 
 
-LVar::LVar(Layer *l, vector<int> axis, string name, int dev): OperatorLayer(name, dev) {
+LRMax::LRMax(Layer *l, vector<int> axis, bool keepdims, string name, int dev): ReductionLayer(name, dev) {
+    // TODO: Implement
     if(name.empty()) this->name = "var" + to_string(++total_layers);
 
     input.push_back(l->output);
@@ -50,47 +52,38 @@ LVar::LVar(Layer *l, vector<int> axis, string name, int dev): OperatorLayer(name
     delta=l->delta;
 
     this->axis=axis;
+    this->keepdims=keepdims;
 
-    rsize=1;
-    for(int i=0;i<input[0]->ndim;i++) {
-      if (find(axis.begin(), axis.end(), i) == axis.end())
-          os.push_back(input[0]->shape[i]);
-      else rsize*=input[0]->shape[i];
+    if (keepdims){
+        os=input[0]->shape;
     }
 
-    LMean *m1=new LMean(this,axis, true,name+"mean_keepdims",dev);
-    LDiff *diff=new LDiff(this,m1,name+"diff",dev);
-    LMult *mult=new LMult(diff,diff,name+"mult",dev);
-    LMean *m2=new LMean(mult,axis,false,name+"mean_red",dev);
-
-    layers.push_back(m1);
-    layers.push_back(diff);
-    layers.push_back(mult);
-    layers.push_back(m2);
-
-    output=m2->output;
-    delta=m2->delta;
+    ////////////
 
     l->addchild(this);
     addparent(l);
 }
 
-void LVar::forward(){
+void LRMax::forward(){
+    // TODO: Implement
     for(int i=0;i<layers.size();i++) layers[i]->forward();
 }
 
-void LVar::backward(){
+void LRMax::backward(){
+  // TODO: Implement
   for(int i=layers.size()-1;i>=0;i--) layers[i]->backward();
 }
 
-Layer *LVar::share(int c, int bs, vector<Layer *> p) {
+Layer *LRMax::share(int c, int bs, vector<Layer *> p) {
+    // TODO: Implement
     clone(c,bs,p,dev);
     return nullptr;
 }
 
-Layer *LVar::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LVar *n;
-    n = new LVar(p[0], axis, "clone_" + to_string(c) + name, todev);
+Layer *LRMax::clone(int c, int bs, vector<Layer *> p, int todev) {
+    // TODO: Implement
+    LRMax *n;
+    n = new LRMax(p[0], axis, keepdims, "clone_" + to_string(c) + name, todev);
     n->orig = this;
     return n;
 }

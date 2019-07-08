@@ -178,7 +178,7 @@ public:
 };
 
 /// Mean Layer
-class LMean : public OperatorLayer {
+/*class LMean : public OperatorLayer {
 public:
     static int total_layers;
     tshape os;
@@ -195,7 +195,7 @@ public:
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-};
+};*/
 
 /// Mult Layer
 class LMult : public OperatorLayer {
@@ -265,17 +265,18 @@ public:
 };
 
 /// Var Layer
-class LVar : public OperatorLayer {
+/*class LVar : public OperatorLayer {
 public:
     static int total_layers;
     tshape os;
     vector<int> axis;
+    bool keepdims;
     Tensor *mean;
     int rsize;
     vector<Layer *> layers;
 
-    LVar(Layer *l, initializer_list<int> &axis, string name, int dev);
-    LVar(Layer *l, vector<int> axis, string name, int dev);
+    LVar(Layer *l, initializer_list<int> &axis, bool keepdims, string name, int dev);
+    LVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev);
 
     void forward() override;
 
@@ -284,6 +285,6 @@ public:
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-};
+};*/
 
 #endif //EDDLL_LAYER_OPERATORS_H

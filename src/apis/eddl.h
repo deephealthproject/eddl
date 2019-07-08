@@ -47,6 +47,7 @@
 #include "../layers/merge/layer_merge.h"
 #include "../layers/noise/layer_noise.h"
 #include "../layers/operators/layer_operators.h"
+#include "../layers/reductions/layer_reductions.h"
 #include "../layers/pool/layer_pool.h"
 #include "../layers/recurrent/layer_recurrent.h"
 
@@ -139,10 +140,6 @@ public:
     static layer Log(layer l);
     static layer Log2(layer l);
     static layer Log10(layer l);
-    static layer Mean(layer l);
-    static layer Mean(layer l, const initializer_list<int> axis);
-    static layer Mean(layer l, bool keepdims);
-    static layer Mean(layer l, const initializer_list<int> axis, bool keepdims);
     static layer Mult(layer l1, layer l2);
     static layer Mult(layer l1, float k);
     static layer Pow(layer l1, layer l2);
@@ -150,8 +147,28 @@ public:
     static layer Sqrt(layer l);
     static layer Sum(layer l1, layer l2);
     static layer Sum(layer l1, float k);
-    static layer Var(layer l);
-    static layer Var(layer l, initializer_list<int> axis);
+
+    // ---- REDUCTION LAYERS ----
+    static layer ReduceMean(layer l);
+    static layer ReduceMean(layer l, const initializer_list<int> axis);
+    static layer ReduceMean(layer l, bool keepdims);
+    static layer ReduceMean(layer l, const initializer_list<int> axis, bool keepdims);
+    static layer ReduceVar(layer l);
+    static layer ReduceVar(layer l, initializer_list<int> axis);
+    static layer ReduceVar(layer l, bool keepdims);
+    static layer ReduceVar(layer l, const initializer_list<int> axis, bool keepdims);
+    static layer ReduceSum(layer l);
+    static layer ReduceSum(layer l, initializer_list<int> axis);
+    static layer ReduceSum(layer l, bool keepdims);
+    static layer ReduceSum(layer l, const initializer_list<int> axis, bool keepdims);
+    static layer ReduceMax(layer l);
+    static layer ReduceMax(layer l, initializer_list<int> axis);
+    static layer ReduceMax(layer l, bool keepdims);
+    static layer ReduceMax(layer l, const initializer_list<int> axis, bool keepdims);
+    static layer ReduceMin(layer l);
+    static layer ReduceMin(layer l, initializer_list<int> axis);
+    static layer ReduceMin(layer l, bool keepdims);
+    static layer ReduceMin(layer l, const initializer_list<int> axis, bool keepdims);
 
     // ---- OPTIMIZERS ----
     static optimizer adadelta(float lr, float rho, float epsilon, float weight_decay); //Todo: Implement
