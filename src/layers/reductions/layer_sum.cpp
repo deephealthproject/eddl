@@ -44,7 +44,7 @@ LRSum::LRSum(Layer *l, initializer_list<int> &axis, bool keepdims, string name, 
 
 LRSum::LRSum(Layer *l, vector<int> axis, bool keepdims, string name, int dev): ReductionLayer(name, dev) {
     // TODO: Implement
-    if(name.empty()) this->name = "var" + to_string(++total_layers);
+    if(name.empty()) this->name = "reduction_sum" + to_string(++total_layers);
 
     input.push_back(l->output);
 

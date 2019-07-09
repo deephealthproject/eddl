@@ -43,7 +43,7 @@ LRVar::LRVar(Layer *l, initializer_list<int> &axis, bool keepdims, string name, 
 
 
 LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev): ReductionLayer(name, dev) {
-    if(name.empty()) this->name = "var" + to_string(++total_layers);
+    if(name.empty()) this->name = "reduction_var" + to_string(++total_layers);
 
     input.push_back(l->output);
 
