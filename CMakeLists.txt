@@ -344,3 +344,5 @@ install(FILES
   ${Eigen_directory_files_to_install}
   DESTINATION include/third_party/eigen/Eigen
 )
+
+install(DIRECTORY ${EIGEN_SOURCE_DIR}/src DESTINATION include/third_party/eigen/Eigen COMPONENT Devel FILES_MATCHING PATTERN "*.h")
