@@ -30,60 +30,22 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "../operators/layer_operators.h"
-#include "layer_reductions.h"
+#include "layer_generators.h"
 
 
 using namespace std;
 
-int LRMin::total_layers = 0;
-
-LRMin::LRMin(Layer *l, initializer_list<int> &axis, bool keepdims, string name, int dev):LRMin(l,vector<int>(axis.begin(), axis.end()),keepdims,name,dev){}
-
-
-
-LRMin::LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev): ReductionLayer(name, dev) {
-    // TODO: Implement
-    if(name.empty()) this->name = "reduction_min" + to_string(++total_layers);
-
-    input.push_back(l->output);
-
-    output=l->output;
-    delta=l->delta;
-
-    this->axis=axis;
-    this->keepdims=keepdims;
-
-    if (keepdims){
-        os=input[0]->shape;
-    }
-
-    ////////////
-
-    l->addchild(this);
-    addparent(l);
+GeneratorLayer::GeneratorLayer(string name, int dev) : Layer(name, dev) {
+    binary=0;
 }
 
-void LRMin::forward(){
-    // TODO: Implement
-    for(int i=0;i<layers.size();i++) layers[i]->forward();
+
+void GeneratorLayer::addchild(Layer *l) {
+    child.push_back(l);
+    lout++;
 }
 
-void LRMin::backward(){
-  // TODO: Implement
-  for(int i=layers.size()-1;i>=0;i--) layers[i]->backward();
-}
-
-Layer *LRMin::share(int c, int bs, vector<Layer *> p) {
-    // TODO: Implement
-    clone(c,bs,p,dev);
-    return nullptr;
-}
-
-Layer *LRMin::clone(int c, int bs, vector<Layer *> p, int todev) {
-    // TODO: Implement
-    LRMin *n;
-    n = new LRMin(p[0], axis, keepdims, "clone_" + to_string(c) + name, todev);
-    n->orig = this;
-    return n;
+void GeneratorLayer::addparent(Layer *l) {
+    parent.push_back(l);
+    lin++;
 }

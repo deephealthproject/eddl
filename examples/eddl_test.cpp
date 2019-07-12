@@ -129,7 +129,7 @@ int main(int argc, char **argv) {
 
     cout<<"\nVar\n";
     //t->data->print();
-    layer v=eddl.ReduceVar(t,{1,2});
+    layer v=eddl.ReduceVar(t,{1,3});
 
     v->forward();
     v->output->info();

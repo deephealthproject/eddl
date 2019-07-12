@@ -31,59 +31,56 @@
 #include <iostream>
 
 #include "../operators/layer_operators.h"
-#include "layer_reductions.h"
+#include "layer_generators.h"
 
 
 using namespace std;
 
-int LRMin::total_layers = 0;
+int LUniform::total_layers = 0;
 
-LRMin::LRMin(Layer *l, initializer_list<int> &axis, bool keepdims, string name, int dev):LRMin(l,vector<int>(axis.begin(), axis.end()),keepdims,name,dev){}
+/**
+  @brief Draw samples from a uniform distribution
 
+  @param low Lower boundary of the output interval. All values generated will be greater than or equal to low.
+  @param high Upper boundary of the output interval. All values generated will be less than high.
+  @param name a name for the operation (predefined as 'abs+TotalAbsLayers')
+  @param dev which computing service utilize
 
+  @returns the absolute value of each element in l
 
-LRMin::LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev): ReductionLayer(name, dev) {
+  */
+
+LUniform::LUniform(float low, float high, initializer_list<int> &size, string name, int dev):LUniform(low,high,vector<int>(size.begin(), size.end()),name,dev){}
+
+LUniform::LUniform(float low, float high, vector<int> size, string name, int dev): GeneratorLayer(name, dev) {
     // TODO: Implement
-    if(name.empty()) this->name = "reduction_min" + to_string(++total_layers);
+    if(name.empty()) this->name = "generator_uniform" + to_string(++total_layers);
 
-    input.push_back(l->output);
-
-    output=l->output;
-    delta=l->delta;
-
-    this->axis=axis;
-    this->keepdims=keepdims;
-
-    if (keepdims){
-        os=input[0]->shape;
-    }
+    this->low=low;
+    this->high=high;
 
     ////////////
 
-    l->addchild(this);
-    addparent(l);
 }
 
-void LRMin::forward(){
+void LUniform::forward(){
     // TODO: Implement
-    for(int i=0;i<layers.size();i++) layers[i]->forward();
 }
 
-void LRMin::backward(){
+void LUniform::backward(){
   // TODO: Implement
-  for(int i=layers.size()-1;i>=0;i--) layers[i]->backward();
 }
 
-Layer *LRMin::share(int c, int bs, vector<Layer *> p) {
+Layer *LUniform::share(int c, int bs, vector<Layer *> p) {
     // TODO: Implement
     clone(c,bs,p,dev);
     return nullptr;
 }
 
-Layer *LRMin::clone(int c, int bs, vector<Layer *> p, int todev) {
+Layer *LUniform::clone(int c, int bs, vector<Layer *> p, int todev) {
     // TODO: Implement
-    LRMin *n;
-    n = new LRMin(p[0], axis, keepdims, "clone_" + to_string(c) + name, todev);
+    LUniform *n;
+    n = new LUniform(low, high, size, "clone_" + to_string(c) + name, todev);
     n->orig = this;
     return n;
 }

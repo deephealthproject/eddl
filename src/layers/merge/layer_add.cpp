@@ -38,6 +38,8 @@ using namespace std;
 
 int LAdd::total_layers = 0;
 
+
+
 LAdd::LAdd(vector<Layer *> parent, string name, int dev) : MLayer(name, dev) {
     if (parent.size() == 0) msg("Error: LAdd layer with empty list");
 

@@ -124,6 +124,10 @@ SET(SOURCES
         src/layers/core/layer_reshape.cpp
         src/layers/core/layer_tensor.cpp
         src/layers/core/layer_transpose.cpp
+        src/layers/generators/layer_generator.cpp
+        src/layers/generators/layer_generators.h
+        src/layers/generators/layer_gauss.cpp
+        src/layers/generators/layer_uniform.cpp
         src/layers/merge/layer_add.cpp
         src/layers/merge/layer_average.cpp
         src/layers/merge/layer_concat.cpp
@@ -147,13 +151,6 @@ SET(SOURCES
         src/layers/operators/layer_pow.cpp
         src/layers/operators/layer_sqrt.cpp
         src/layers/operators/layer_sum.cpp
-        src/layers/reductions/layer_mean.cpp
-        src/layers/reductions/layer_reduction.cpp
-        src/layers/reductions/layer_reductions.h
-        src/layers/reductions/layer_var.cpp
-        src/layers/reductions/layer_sum.cpp
-        src/layers/reductions/layer_max.cpp
-        src/layers/reductions/layer_min.cpp
         src/layers/pool/layer_avgpool.cpp
         src/layers/pool/layer_globalavgpool.cpp
         src/layers/pool/layer_globalmaxpool.cpp
@@ -163,6 +160,13 @@ SET(SOURCES
         src/layers/recurrent/layer_lstm.cpp
         src/layers/recurrent/layer_recurrent.h
         src/layers/recurrent/layer_rnn.cpp
+        src/layers/reductions/layer_mean.cpp
+        src/layers/reductions/layer_reduction.cpp
+        src/layers/reductions/layer_reductions.h
+        src/layers/reductions/layer_var.cpp
+        src/layers/reductions/layer_sum.cpp
+        src/layers/reductions/layer_max.cpp
+        src/layers/reductions/layer_min.cpp
         src/layers/layer.cpp
         src/layers/layer.h
         src/losses/loss.cpp
@@ -340,3 +344,5 @@ install(FILES
   ${Eigen_directory_files_to_install}
   DESTINATION include/third_party/eigen/Eigen
 )
+
+install(DIRECTORY ${EIGEN_SOURCE_DIR}/src DESTINATION include/third_party/eigen/Eigen COMPONENT Devel FILES_MATCHING PATTERN "*.h")

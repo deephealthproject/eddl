@@ -74,12 +74,28 @@
 |  Log    |  ✅ |  ✅ |
 |  Log10    |  ✅ |  ❌|
 |  Log2    |  ✅ |  ❌ |
-|  Mean    | ✅| ❌ | still test properly
 |  Mult    |  ✅ |  ✅|
 |  Pow    | ❌ | ❌ |
 |  Sqrt    | ❌ | ❌ |
 |  Sum    |  ✅ |  ✅ |
+
+
+### REDUCTIONS
+
+| Functionality | CPU  | GPU  | Comments |
+| ------------- |------| -----| ---------|
+|  Mean    | ✅| ❌ | still test properly
 |  Var    |  ✅| ❌ | still test properly
+|  Sum    |  ❌| ❌ | still test properly
+|  Max    |  ❌| ❌ | still test properly
+|  Min    |  ❌| ❌ | still test properly
+
+### GENERATORS
+
+| Functionality | CPU  | GPU  | Comments |
+| ------------- |------| -----| ---------|
+|  Gaussian    | ❌| ❌ | still test properly
+|  Uniform    |  ❌| ❌ | still test properly
 
 ### RECURRENT
 

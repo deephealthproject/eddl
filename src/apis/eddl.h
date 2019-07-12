@@ -44,6 +44,7 @@
 #include "../layers/layer.h"
 #include "../layers/conv/layer_conv.h"
 #include "../layers/core/layer_core.h"
+#include "../layers/generators/layer_generators.h"
 #include "../layers/merge/layer_merge.h"
 #include "../layers/noise/layer_noise.h"
 #include "../layers/operators/layer_operators.h"
@@ -150,25 +151,29 @@ public:
 
     // ---- REDUCTION LAYERS ----
     static layer ReduceMean(layer l);
-    static layer ReduceMean(layer l, const initializer_list<int> axis);
+    static layer ReduceMean(layer l, initializer_list<int> axis);
     static layer ReduceMean(layer l, bool keepdims);
-    static layer ReduceMean(layer l, const initializer_list<int> axis, bool keepdims);
+    static layer ReduceMean(layer l, initializer_list<int> axis, bool keepdims);
     static layer ReduceVar(layer l);
     static layer ReduceVar(layer l, initializer_list<int> axis);
     static layer ReduceVar(layer l, bool keepdims);
-    static layer ReduceVar(layer l, const initializer_list<int> axis, bool keepdims);
+    static layer ReduceVar(layer l, initializer_list<int> axis, bool keepdims);
     static layer ReduceSum(layer l);
     static layer ReduceSum(layer l, initializer_list<int> axis);
     static layer ReduceSum(layer l, bool keepdims);
-    static layer ReduceSum(layer l, const initializer_list<int> axis, bool keepdims);
+    static layer ReduceSum(layer l, initializer_list<int> axis, bool keepdims);
     static layer ReduceMax(layer l);
     static layer ReduceMax(layer l, initializer_list<int> axis);
     static layer ReduceMax(layer l, bool keepdims);
-    static layer ReduceMax(layer l, const initializer_list<int> axis, bool keepdims);
+    static layer ReduceMax(layer l, initializer_list<int> axis, bool keepdims);
     static layer ReduceMin(layer l);
     static layer ReduceMin(layer l, initializer_list<int> axis);
     static layer ReduceMin(layer l, bool keepdims);
-    static layer ReduceMin(layer l, const initializer_list<int> axis, bool keepdims);
+    static layer ReduceMin(layer l, initializer_list<int> axis, bool keepdims);
+
+    // ---- GENERATOR LAYERS ----
+    static layer GaussGenerator(float mean, float stdev, initializer_list<int> size);
+    static layer UniformGenerator(float low, float high, initializer_list<int> size);
 
     // ---- OPTIMIZERS ----
     static optimizer adadelta(float lr, float rho, float epsilon, float weight_decay); //Todo: Implement

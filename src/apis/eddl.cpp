@@ -142,7 +142,7 @@ layer EDDL::ReduceMean(layer l) {
     return EDDL::ReduceMean(l, {0}, false);
 }
 
-layer EDDL::ReduceMean(layer l, initializer_list<int> axis) {
+layer EDDL::ReduceMean(layer l, const initializer_list<int> axis) {
     return EDDL::ReduceMean(l, axis, false);
 }
 
@@ -158,7 +158,7 @@ layer EDDL::ReduceVar(layer l) {
     return EDDL::ReduceVar(l, {0});
 }
 
-layer EDDL::ReduceVar(layer l, initializer_list<int> axis) {
+layer EDDL::ReduceVar(layer l, const initializer_list<int> axis) {
     return EDDL::ReduceVar(l, axis, false);
 }
 
@@ -216,6 +216,15 @@ layer EDDL::ReduceMin(layer l, bool keepdims) {
 
 layer EDDL::ReduceMin(layer l, const initializer_list<int> axis, bool keepdims) {
     return new LRMin(l, axis, keepdims, "", DEV_CPU);
+}
+
+// ---- Generator Layers ----
+layer EDDL::GaussGenerator(float mean, float stdev, initializer_list<int> size) {
+    return new LGauss(mean, stdev, size, "", DEV_CPU);
+}
+
+layer EDDL::UniformGenerator(float low, float high, initializer_list<int> size) {
+    return new LUniform(low, high, size, "", DEV_CPU);
 }
 
 //////////////////////////////////////////////////////
