@@ -103,7 +103,7 @@ int main(int argc, char **argv)
   eddl.div(x_test, 255.0);
 
   // Train model
-  eddl.fit(net, {x_train}, {y_train}, batch_size, 5);
+  eddl.fit(net, {x_train}, {y_train}, batch_size, epochs);
 
   // Evaluate test
   std::cout << "Evaluate train:" << std::endl;
