@@ -53,6 +53,7 @@ LRMax::LRMax(Layer *l, vector<int> axis, bool keepdims, string name, int dev): R
 
     this->axis=axis;
     this->keepdims=keepdims;
+    
 
     if (keepdims){
       os=input[0]->shape;
