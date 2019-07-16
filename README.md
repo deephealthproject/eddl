@@ -4,8 +4,6 @@
 
 -----------------
 
-You lose...
-
 **EDDL** is an open source library for numerical computation tailored to the healthcare domain.
 > More information: [https://deephealth-project.eu/](https://deephealth-project.eu/)
 
