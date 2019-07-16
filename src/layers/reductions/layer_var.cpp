@@ -54,15 +54,16 @@ LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev): R
     this->keepdims=keepdims;
 
     if (keepdims){
-        os=input[0]->shape;
+      os=input[0]->shape;
+    }
+    else {
+      for(int i=0;i<input[0]->ndim;i++) {
+        if (find(axis.begin(), axis.end(), i) == axis.end())
+            os.push_back(input[0]->shape[i]);
+      }
     }
 
-    rsize=1;
-    for(int i=0;i<input[0]->ndim;i++) {
-      if (find(axis.begin(), axis.end(), i) == axis.end())
-          os.push_back(input[0]->shape[i]);
-      else rsize*=input[0]->shape[i];
-    }
+
 
     LRMean *m1=new LRMean(this,axis, true,name+"mean_keepdims",dev);
     LDiff *diff=new LDiff(this,m1,name+"diff",dev);

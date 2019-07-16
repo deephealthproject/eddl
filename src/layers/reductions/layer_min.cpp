@@ -55,10 +55,17 @@ LRMin::LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev): R
     this->keepdims=keepdims;
 
     if (keepdims){
-        os=input[0]->shape;
+      os=input[0]->shape;
+    }
+    else {
+      for(int i=0;i<input[0]->ndim;i++) {
+        if (find(axis.begin(), axis.end(), i) == axis.end())
+            os.push_back(input[0]->shape[i]);
+      }
     }
 
-    ////////////
+    output=new Tensor(os,dev);
+    delta=new Tensor(os,dev);
 
     l->addchild(this);
     addparent(l);
