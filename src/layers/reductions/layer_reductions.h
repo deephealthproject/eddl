@@ -1,12 +1,6 @@
-// This file is part of EDDLL an European Distributed Deep Learning Library.
-// Developed within the DeepHealth project.
-// Boosting AI in Europe.
-//
 // The MIT License (MIT)
 //
-// Copyright (c) 2019
-//           Roberto Paredes Palacios, <rparedes@dsic.upv.es>
-//           Jon Ander Gómez, <jon@dsic.upv.es>
+// Copyright (c) 2019 PRHLT Research Group. Inc. http://www.prhlt.upv.es
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +19,26 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
+
+/////////////////////////////////////////////////////////////////////////////
+// This file is part of EDDLL an European Distributed Deep Learning Library.
+// Developed within the DeepHealth project.
+// Boosting AI in Europe.
+//
+// Main authors and developers:
+//      Roberto Paredes: rparedes@prhlt.upv.es
+//      Joan Ander Gómez: jon@prhlt.upv.es
+//
+//
+// Collaborators:
+//      Salva Carrión: salcarpo@prhlt.upv.es
+//      Mario Parreño: maparla@prhlt.upv.es
+//
+//
+// To collaborate please contact rparedes@prhlt.upv.es
+//
+/////////////////////////////////////////////////////////////////////////////
 
 #ifndef EDDLL_LAYER_REDUCTIONS_H
 #define EDDLL_LAYER_REDUCTIONS_H
