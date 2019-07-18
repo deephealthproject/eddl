@@ -32,8 +32,7 @@
 //
 //
 // Collaborators:
-//      Salva Carrión: salcarpo@prhlt.upv.es
-//      Mario Parreño: maparla@prhlt.upv.es
+//      Juan Maroñas: jmaronas@prhlt.upv.es
 //
 //
 // To collaborate please contact rparedes@prhlt.upv.es
