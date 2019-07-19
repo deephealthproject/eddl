@@ -84,6 +84,10 @@ public:
 
     void initialize();
     void reset();
+    void save(FILE *fe);
+    void load(FILE *fe);
+
+  
     void forward();
     void delta();
     void loss();

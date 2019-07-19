@@ -234,6 +234,19 @@ void Net::reset() {
         layers[i]->reset();
 }
 
+void Net::save(FILE *fe)
+{
+  for (int i = 0; i != layers.size(); i++)
+    layers[i]->save(fe);
+}
+
+void Net::load(FILE *fe)
+{
+  for (int i = 0; i != layers.size(); i++)
+    layers[i]->load(fe);
+}
+
+
 /////////////////////////////////////////
 void Net::fts() {
     int i, j, k, n;

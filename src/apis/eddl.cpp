@@ -516,6 +516,37 @@ string EDDL::summary(model m) {
     return m->summary();
 }
 
+void EDDL::save(model m,string fname)
+{
+  FILE *fe = fopen(fname.c_str(), "wb");
+  if (fe == nullptr) {
+      fprintf(stderr, "Not able to write to %s \n", fname.c_str());
+      exit(1);
+  }
+
+  fprintf(stderr, "writting bin file\n");
+
+  m->save(fe);
+
+  fclose(fe);
+
+}
+
+void EDDL::load(model m,string fname)
+{
+  FILE *fe = fopen(fname.c_str(), "rb");
+  if (fe == nullptr) {
+      fprintf(stderr, "Not able to read from %s \n", fname.c_str());
+      exit(1);
+  }
+
+  fprintf(stderr, "reading bin file\n");
+
+  m->load(fe);
+
+  fclose(fe);
+
+}
 void EDDL::plot(model m, string fname) {
     m->plot(fname);
 }

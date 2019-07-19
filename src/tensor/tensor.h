@@ -168,7 +168,9 @@ public:
     void print();
 
     void save(string s);
-
+    
+    void save(FILE *fe);
+    void load(FILE *fe);
     // data
     void point2data(const vector<int>& shape, float *ptr);
     void copydata(const vector<int>& s, float *newptr);

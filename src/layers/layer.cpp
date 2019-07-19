@@ -90,6 +90,18 @@ void Layer::setmode(int m) {
     mode = m;
 }
 
+void Layer::save(FILE *fe)
+{
+  for (int i = 0; i != params.size(); i++)
+    params[i]->save(fe);
+}
+
+void Layer::load(FILE *fe)
+{
+  for (int i = 0; i != params.size(); i++)
+    params[i]->load(fe);
+}
+
 void Layer::info() {
     cout << "\n===============\n";
     cout << "Layer " << name << "\n";

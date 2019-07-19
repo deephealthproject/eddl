@@ -333,7 +333,19 @@ void Tensor::save(string fname) {
     fclose(fe);
 
 }
+///////////////////////////////////////////
+void Tensor::save(FILE *fe) {
+    if (!isCPU())
+        msg("Only save CPU Tensors", "Tensor::save");
 
+    fwrite(ptr, sizeof(float), size, fe);
+}
+void Tensor::load(FILE *fe) {
+    if (!isCPU())
+        msg("Only save CPU Tensors", "Tensor::save");
+
+    fread(ptr, sizeof(float), size, fe);
+}
 
 ///////////////////////////////////////////
 Tensor *Tensor::share() {
