@@ -221,10 +221,14 @@ public:
 
     // ---- MODEL METHODS ----
     static model Model(vlayer in, vlayer out);
+
     static void build(model net, optimizer o, const initializer_list<Loss *> &lo, const initializer_list<Metric *> &me);
     static void build(model net, optimizer o, const initializer_list<Loss *> &lo, const initializer_list<Metric *> &me, CompServ *cs);
     static void build2(Net *m,  Optimizer *o, vector<Loss *> lo, vector<Metric *> me, CompServ *cs);
+
     static string summary(model m);
+    static void load(model m,string fname);
+    static void save(model m,string fname);
     static void plot(model m, string fname);
     static void fit(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out, int batch, int epochs);
     static void evaluate(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out);

@@ -58,7 +58,9 @@ public:
     void initialize();
 
     void reset();
-
+    void save(FILE *fe);
+    void load(FILE *fe);
+    
     virtual void info();
 
     void setmode(int m);
@@ -68,6 +70,7 @@ public:
 
     Tensor* getBias();
     Tensor* setBias(Tensor bias);
+
 
     //virtual
     virtual void resize(int batch);
