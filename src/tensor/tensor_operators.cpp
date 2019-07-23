@@ -610,9 +610,10 @@ void Tensor::reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool ke
   else {
     j=0;
     for(i=0;i<A->ndim;i++) {
-        if (find(axis.begin(), axis.end(), i) == axis.end()) {
-          if (A->shape[i]!=B->shape[j])
-            msg("Incompatible shapes", "Tensor::reduce");
+        if (find(axis.begin(), axis.end(), i) == axis.end()) {  // Dim not found
+          if (A->shape[i]!=B->shape[j]){
+              msg("Incompatible shapes", "Tensor::reduce");
+          }
           j++;
         }
       }
@@ -620,8 +621,9 @@ void Tensor::reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool ke
 
   if (m==0) {
     d=1;
-    for(i=0;i<axis.size();i++)
-      d*=A->shape[axis[i]];
+    for(i=0;i<axis.size();i++){
+        d *= A->shape[axis[i]];
+    }
   }
 
   if (!incB) B->set(0);
@@ -630,7 +632,7 @@ void Tensor::reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool ke
   vector<int> ind;
   ind.push_back(0);
   for(i=0;i<A->ndim;i++) {
-    if (find(axis.begin(), axis.end(), i) == axis.end()) {
+    if (find(axis.begin(), axis.end(), i) == axis.end()) { // Dim not found
       s=ind.size();
       for(j=0;j<s;j++)
         for(k=0;k<A->shape[i]-1;k++)

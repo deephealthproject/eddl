@@ -386,16 +386,16 @@ vector<int> Tensor::getShape() {
 void Tensor::info() {
     int i;
 
-    fprintf(stderr, "DIM=%d\n", ndim);
-    fprintf(stderr, "(");
+    fprintf(stdout, "DIM=%d\n", ndim);
+    fprintf(stdout, "(");
     for (i = 0; i < ndim - 1; i++)
-        fprintf(stderr, "%d,", shape[i]);
-    fprintf(stderr, "%d)\n", shape[i]);
+        fprintf(stdout, "%d,", shape[i]);
+    fprintf(stdout, "%d)\n", shape[i]);
 
-    fprintf(stderr, "Total bytes=%ld\n", size * sizeof(float));
-    if (isCPU()) fprintf(stderr, "Device=CPU\n");
-    else if (isGPU()) fprintf(stderr, "Device=GPU (%d)\n", gpu_device);
-    else fprintf(stderr, "Device=FPGA\n");
+    fprintf(stdout, "Total bytes=%ld\n", size * sizeof(float));
+    if (isCPU()) fprintf(stdout, "Device=CPU\n");
+    else if (isGPU()) fprintf(stdout, "Device=GPU (%d)\n", gpu_device);
+    else fprintf(stdout, "Device=FPGA\n");
 }
 
 

@@ -1,50 +1,60 @@
 cmake_minimum_required(VERSION 3.9.2)
-PROJECT(eddl)
-
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "")
+PROJECT(eddl LANGUAGES CXX)
+#PROJECT(eddl LANGUAGES CXX CUDA)
 
 # SET C++ COMPILER STANDARD
 SET(CMAKE_CXX_STANDARD 11)
 
-# SET COMPILER FLAGS
-#set(CMAKE_CXX_FLAGS "-march=native -mavx -O3")
+# USER OPTIONS *******************************
+option(BUILD_PYTHON "Compile python binding" OFF)
+option(BUILD_TESTS "Compile tests" OFF)
+option(BUILD_EXAMPLES "Compile examples" OFF)
 
+# PROPERTIES *******************************
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "")
+
+
+# SET BUILD TYPE (RELEASE/DEBUG)
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
+# SET COMPILER FLAGS
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
     set(CMAKE_CXX_FLAGS "-march=native ${CMAKE_CXX_FLAGS}")
     set(CMAKE_CXX_FLAGS_DEBUG "-g ${CMAKE_CXX_FLAGS_DEBUG}")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 ${CMAKE_CXX_FLAGS_RELEASE}")
 endif()
-
 message(STATUS "Build type: " ${CMAKE_BUILD_TYPE} )
 message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS} )
 
+# CUDA FLAGS
+#set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -lcudart -lcublas -lcurand")
 
 # SET STATIC/DYNAMIC RUNTIME
-set(EDDLL_SHARED OFF CACHE BOOL "Whether to build a static or dynamic library")
+set(EDDL_SHARED OFF CACHE BOOL "Whether to build a static or dynamic library")
 
+# Microsoft Visual C++
 if(MSVC)
-    if(EDDLL_SHARED)
+    if(EDDL_SHARED)
         message(STATUS "Setting dinamic runtime for MSVC")
         foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
             string(REGEX REPLACE "/MT" "/MD" ${flag_var} "${${flag_var}}")
         endforeach(flag_var)
-    else(EDDLL_SHARED)
+    else(EDDL_SHARED)
         message(STATUS "Setting static runtime for MSVC")
         foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
             string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
         endforeach(flag_var)
-	endif(EDDLL_SHARED)
+	endif(EDDL_SHARED)
 
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
 
-macro(eddll_update_third_party SUBMODULE)
+# [MACRO] Download submodules
+macro(eddl_update_third_party SUBMODULE)
     if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     # Update submodule as needed
         message(STATUS "${SUBMODULE} update")
@@ -57,17 +67,10 @@ macro(eddll_update_third_party SUBMODULE)
 endif()
 endmacro()
 
-
 # UPDATE THIRD_PARTY MANDATORY MODULES
 find_package(Git QUIET)
-eddll_update_third_party(eigen)
+eddl_update_third_party(eigen)
 include_directories(third_party/eigen)
-
-# USER OPTIONS *******************************
-option(BUILD_PYTHON "Compile python binding" ON)
-option(BUILD_TESTS "Compile tests" ON)
-option(BUILD_EXAMPLES "Compile examples" ON)
-
 
 # Add the given directories to those the compiler uses to search for include files
 include_directories(src)
@@ -92,15 +95,12 @@ include_directories(src/tensor)
 
 # SET SOURCES *******************************
 SET(SOURCE_DIR "src")
-SET(SOURCES
+SET(CPP_SOURCES
         src/apis/eddl.cpp
         src/apis/eddl.h
         src/callbacks/callbacks.h
         src/hardware/cpu/cpu_convol.cpp
         src/hardware/cpu/cpu_convol.h
-        src/hardware/gpu/tensor_cuda.h
-        src/hardware/gpu/tensor_cuda_op.h
-        src/hardware/gpu/tensor_kernels.h
         src/initializers/initializer.cpp
         src/initializers/initializer.h
         src/initializers/initializer_constant.cpp
@@ -200,7 +200,15 @@ SET(SOURCES
         src/utils.cpp
         src/utils.h
         )
-
+SET(CUDA_SOURCES
+        src/hardware/gpu/tensor_cuda.cu
+        src/hardware/gpu/tensor_cuda.h
+        src/hardware/gpu/tensor_cuda_op.cu
+        src/hardware/gpu/tensor_cuda_op.h
+        src/hardware/gpu/tensor_kernels.cu
+        src/hardware/gpu/tensor_kernels.h
+        )
+SET(SOURCES ${CPP_SOURCES} ${CUDA_SOURCES})
 
 # SET TESTS ****************************
 SET(TEST_DIR "tests")
@@ -209,40 +217,45 @@ SET(TESTS
     )
 
 
-# [LIBRARY] EDDLL LIBRARY *********************
-if(EDDLL_SHARED)
-	add_library(eddll SHARED "")
-else(EDDLL_SHARED)
-	add_library(eddll STATIC "")
-endif(EDDLL_SHARED)
-target_sources(eddll PRIVATE ${SOURCES})
-target_include_directories(eddll PUBLIC
+# [LIBRARY] EDDL LIBRARY *********************
+if(EDDL_SHARED)
+	add_library(eddl SHARED "")
+else(EDDL_SHARED)
+	add_library(eddl STATIC "")
+endif(EDDL_SHARED)
+target_sources(eddl PRIVATE ${SOURCES})
+target_include_directories(eddl PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 	$<INSTALL_INTERFACE:include>
 )
-target_include_directories(eddll PUBLIC
+target_include_directories(eddl PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen>
 	$<INSTALL_INTERFACE:include/third_party/eigen>
 )
-set_target_properties(eddll PROPERTIES OUTPUT_NAME_DEBUG "eddlld")
-set_target_properties(eddll PROPERTIES OUTPUT_NAME_RELEASE "eddll")
-set_target_properties(eddll PROPERTIES POSITION_INDEPENDENT_CODE ON)
+#target_compile_features(eddl PUBLIC cxx_std_11)
+
+
+# Target properties
+set_target_properties(eddl PROPERTIES OUTPUT_NAME_DEBUG "eddld")
+set_target_properties(eddl PROPERTIES OUTPUT_NAME_RELEASE "eddl")
+set_target_properties(eddl PROPERTIES POSITION_INDEPENDENT_CODE ON)
+#set_target_properties(eddl PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 # pthreads setup for windows os
 # The following commands should be removed when pthread linux
 # specific calls will be replaced by thread c++ standard calls
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-	set(EDDLL_PTHREADS_INSTALL_PATH "$ENV{PTHREADS_ROOT}" CACHE PATH "Path to the installation of pthreads under Windows")
-	if(EDDLL_PTHREADS_INSTALL_PATH STREQUAL "")
+	set(EDDL_PTHREADS_INSTALL_PATH "$ENV{PTHREADS_ROOT}" CACHE PATH "Path to the installation of pthreads under Windows")
+	if(EDDL_PTHREADS_INSTALL_PATH STREQUAL "")
 		message(ERROR " pthreds install path must be specified under Windows")
 	endif()
-	target_link_libraries(eddll debug "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3d.lib"
-								debug "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib"
-								debug "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib")
-	target_link_libraries(eddll optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib"
-								optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib"
-								optimized "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")
-	target_include_directories(eddll PUBLIC "${EDDLL_PTHREADS_INSTALL_PATH}/include")
+	target_link_libraries(eddl debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3d.lib"
+								debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib"
+								debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib")
+	target_link_libraries(eddl optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib"
+								optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib"
+								optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")
+	target_include_directories(eddl PUBLIC "${EDDL_PTHREADS_INSTALL_PATH}/include")
 endif()
 
 # pthreads setup for linux os
@@ -250,24 +263,25 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
     SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
     find_package(Threads REQUIRED)
-    target_link_libraries(eddll Threads::Threads)
+    target_link_libraries(eddl Threads::Threads)
+    #target_link_libraries(eddl -lcudart -lcublas -lcurand)
 endif()
 
 # [BINDING] Create python binding
 if(BUILD_PYTHON)
-    eddll_update_third_party(pybind11)
+    eddl_update_third_party(pybind11)
     set(CMAKE_FOLDER 3party/pybind11)
     add_subdirectory(third_party/pybind11)
     set(CMAKE_FOLDER "")
     SET(C_LIB_NAME "_C")
     pybind11_add_module(${C_LIB_NAME} ${SOURCES} "${SOURCE_DIR}/binding.cpp")
     # can we just link the library instead of adding all the sources and linking pthreads again?
-    # target_link_libraries(${C_LIB_NAME} PRIVATE eddll)
+    # target_link_libraries(${C_LIB_NAME} PRIVATE eddl)
     if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-        target_link_libraries(${C_LIB_NAME} PRIVATE "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib")
-        target_link_libraries(${C_LIB_NAME} PRIVATE "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib")
-        target_link_libraries(${C_LIB_NAME} PRIVATE "${EDDLL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")
-        target_include_directories(${C_LIB_NAME} PUBLIC "${EDDLL_PTHREADS_INSTALL_PATH}/include")
+        target_link_libraries(${C_LIB_NAME} PRIVATE "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib")
+        target_link_libraries(${C_LIB_NAME} PRIVATE "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib")
+        target_link_libraries(${C_LIB_NAME} PRIVATE "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")
+        target_include_directories(${C_LIB_NAME} PUBLIC "${EDDL_PTHREADS_INSTALL_PATH}/include")
     endif()
     if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         target_link_libraries(${C_LIB_NAME} PRIVATE Threads::Threads)
@@ -277,14 +291,14 @@ endif(BUILD_PYTHON)
 
 # [TESTS] Generate a test executable
 if(BUILD_TESTS)
-    eddll_update_third_party(googletest)
+    eddl_update_third_party(googletest)
     set(CMAKE_FOLDER 3party/googletest)
     add_subdirectory(third_party/googletest)
     SET(UNITTEST_NAME "${PROJECT_NAME}_tests")
     set(CMAKE_FOLDER "")
     add_executable(${UNITTEST_NAME} ${TESTS})
     target_include_directories(${UNITTEST_NAME} PUBLIC ${gtest_SOURCE_DIR}/include)
-    target_link_libraries(${UNITTEST_NAME} eddll gtest gtest_main)
+    target_link_libraries(${UNITTEST_NAME} eddl gtest gtest_main)
     add_test(UnitTests ${UNITTEST_NAME})  # To do "make test"
     enable_testing()
 endif(BUILD_TESTS)
@@ -303,48 +317,48 @@ if(BUILD_EXAMPLES)
     add_executable(example_dae_class "${EXAMPLES_DIR}/eddl_dae_class.cpp")
     add_executable(example_test "${EXAMPLES_DIR}/eddl_test.cpp")
     add_executable(example_load_save "${EXAMPLES_DIR}/eddl_load_save.cpp")
-    target_link_libraries(example_conv eddll)
-    target_link_libraries(example_mlp eddll)
-  	target_link_libraries(example_predict eddll)
-    target_link_libraries(example_ae eddll)
-    target_link_libraries(example_dae eddll)
-    target_link_libraries(example_dae_class eddll)
-    target_link_libraries(example_test eddll)
-    target_link_libraries(example_load_save eddll)
+    target_link_libraries(example_conv eddl)
+    target_link_libraries(example_mlp eddl)
+  	target_link_libraries(example_predict eddl)
+    target_link_libraries(example_ae eddl)
+    target_link_libraries(example_dae eddl)
+    target_link_libraries(example_dae_class eddl)
+    target_link_libraries(example_test eddl)
+    target_link_libraries(example_load_save eddl)
     set(CMAKE_FOLDER "")
 endif(BUILD_EXAMPLES)
 #unset(BUILD_EXAMPLES CACHE)
 
 
-# [INSTALL] Install the eddll library
+# [INSTALL] Install the EDDL library
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     message(STATUS "....")
     set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "..." FORCE)
 endif()
-install(TARGETS eddll
-		EXPORT EDDLLConfig
+install(TARGETS eddl
+		EXPORT EDDLConfig
 		RUNTIME DESTINATION bin
 		LIBRARY DESTINATION lib
 		ARCHIVE DESTINATION lib/static
 		)
-install(EXPORT EDDLLConfig DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(EXPORT EDDLConfig DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
-		DESTINATION include/eddll
+		DESTINATION include/eddl
         FILES_MATCHING PATTERN "*.h")
 
-set(EIGEN_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen/Eigen")
-set(ESCAPED_CMAKE_CURRENT_SOURCE_DIR "${EIGEN_SOURCE_DIR}")
-file(GLOB Eigen_directory_files "${EIGEN_SOURCE_DIR}/*")
+# [INSTALL] Install Eigen files
+include("${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen/cmake/RegexUtils.cmake")
+test_escape_string_as_regex()
+escape_string_as_regex(ESCAPED_EIGEN_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen/Eigen")
+file(GLOB Eigen_directory_files "${ESCAPED_EIGEN_SOURCE_DIR}/*")
 #message(STATUS ${Eigen_directory_files})
 foreach(f ${Eigen_directory_files})
-  if(NOT f MATCHES "\\.txt" AND NOT f MATCHES "${ESCAPED_CMAKE_CURRENT_SOURCE_DIR}/[.].+" AND NOT f MATCHES "${ESCAPED_CMAKE_CURRENT_SOURCE_DIR}/src")
-    list(APPEND Eigen_directory_files_to_install ${f})
-  endif()
+    if(NOT f MATCHES "\\.txt" AND NOT f MATCHES "${ESCAPED_EIGEN_SOURCE_DIR}/[.].+" AND NOT f MATCHES "${ESCAPED_EIGEN_SOURCE_DIR}/src")
+        list(APPEND Eigen_directory_files_to_install ${f})
+    endif()
 endforeach(f ${Eigen_directory_files})
-
 install(FILES
-  ${Eigen_directory_files_to_install}
-  DESTINATION include/third_party/eigen/Eigen
-)
-
-install(DIRECTORY ${EIGEN_SOURCE_DIR}/src DESTINATION include/third_party/eigen/Eigen COMPONENT Devel FILES_MATCHING PATTERN "*.h")
+        ${Eigen_directory_files_to_install}
+        DESTINATION "include/third_party/eigen/Eigen"
+        )
+install(DIRECTORY ${EIGEN_SOURCE_DIR}/src DESTINATION "include/third_party/eigen/Eigen" COMPONENT Devel FILES_MATCHING PATTERN "*.h")

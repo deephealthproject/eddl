@@ -27,9 +27,10 @@
 
 int main(int argc, char **argv) {
 
-    Tensor *A=new Tensor({4,2,3,7});
-    Tensor *B=new Tensor({4,3});
-    Tensor *C=new Tensor({4,3});
+    int dev = DEV_CPU;
+    Tensor *A=new Tensor({4,2,3,7}, dev);
+    Tensor *B=new Tensor({4,3}, dev);
+    Tensor *C=new Tensor({4,3}, dev);
 
     vector<int> axis;
     axis.push_back(1);
