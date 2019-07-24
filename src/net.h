@@ -24,7 +24,6 @@
 
 #include <stdio.h>
 #include <string>
-#include <initializer_list>
 #include <vector>
 
 #include "layers/layer.h"

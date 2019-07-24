@@ -23,14 +23,13 @@
 #include <iostream>
 
 #include "eddl.h"
-#include "eddl.h"
 
 int main(int argc, char **argv) {
 
     int dev = DEV_CPU;
-    Tensor *A=new Tensor({4,2,3,7}, dev);
-    Tensor *B=new Tensor({4,3}, dev);
-    Tensor *C=new Tensor({4,3}, dev);
+    Tensor *A=new Tensor(vector<int>{4,2,3,7}, dev);
+    Tensor *B=new Tensor(vector<int>{4,3}, dev);
+    Tensor *C=new Tensor(vector<int>{4,3}, dev);
 
     vector<int> axis;
     axis.push_back(1);
@@ -43,7 +42,7 @@ int main(int argc, char **argv) {
 
 
     cout<<"Mean\n";
-    Tensor::reduce(A,B,axis,"mean",false,NULL,0);
+    Tensor::reduce(A,B,axis,"mean", false,NULL,0);
 
     B->info();
     B->print();
@@ -70,9 +69,9 @@ int main(int argc, char **argv) {
     cout<<"==================\n";
     cout<<"keepdims true\n";
     cout<<"==================\n";
-    A=new Tensor({4,2,3});
-    B=new Tensor({4,2,3});
-    C=new Tensor({4,2,3});
+    A=new Tensor(vector<int>{4,2,3});
+    B=new Tensor(vector<int>{4,2,3});
+    C=new Tensor(vector<int>{4,2,3});
 
     vector<int> axis2;
     axis2.push_back(1);

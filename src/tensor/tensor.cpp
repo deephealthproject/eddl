@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <initializer_list>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -57,8 +56,6 @@ int Tensor::isFPGA() { return (device >= DEV_FPGA); }
 
 // Tensor class
 Tensor::Tensor() : device(DEV_CPU), ndim(0), size(0) {}
-
-Tensor::Tensor(const initializer_list<int> &init, int dev) : Tensor(vector<int>(init.begin(), init.end()), dev) {}
 
 Tensor::Tensor(vector<int> shape, float *fptr, int dev)
 {

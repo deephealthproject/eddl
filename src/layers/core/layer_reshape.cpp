@@ -31,8 +31,6 @@ using namespace std;
 
 int LReshape::total_layers = 0;
 
-LReshape::LReshape(Layer *parent, const initializer_list<int> &init, string name, int dev) : LReshape(parent, vector<int>(init.begin(), init.end()), name, dev) {}
-
 LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev) : LinLayer(name, dev) {
     ls = shape;
     if(name.empty()) this->name = "reshape" + to_string(++total_layers);

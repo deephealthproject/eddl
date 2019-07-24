@@ -60,9 +60,8 @@ class EDDL {
 public:
     // ---- TENSOR ----
     static tensor T(const initializer_list<int> &shape);//*
-    static tensor T(vector<int> shape);
+    static tensor T(const initializer_list<int> &shape, float *ptr);
     static tensor T(string fname);
-    static tensor T(const initializer_list<int> &shape,float *ptr);
     static float * T_getptr(tensor T);
 
     // ---- TENSOR OPERATIONS ----
@@ -224,7 +223,6 @@ public:
 
     static void build(model net, optimizer o, const initializer_list<Loss *> &lo, const initializer_list<Metric *> &me);
     static void build(model net, optimizer o, const initializer_list<Loss *> &lo, const initializer_list<Metric *> &me, CompServ *cs);
-    static void build2(Net *m,  Optimizer *o, vector<Loss *> lo, vector<Metric *> me, CompServ *cs);
 
     static string summary(model m);
     static void load(model m,string fname);

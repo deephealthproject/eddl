@@ -37,21 +37,16 @@ EDDL eddl;
 
 tensor EDDL::T(const initializer_list<int> &shape) {
     vector<int> s(shape.begin(), shape.end());
-    return T(s);
-}
-
-
-tensor EDDL::T(const vector<int> shape) {
     return new LTensor(shape, DEV_CPU);
-}
-
-tensor EDDL::T(string fname) {
-    return new LTensor(fname);
 }
 
 tensor EDDL::T(const initializer_list<int> &shape,float *ptr) {
     vector<int> s(shape.begin(), shape.end());
     return new LTensor(s,ptr,DEV_CPU);
+}
+
+tensor EDDL::T(string fname) {
+    return new LTensor(fname);
 }
 
 float * EDDL::T_getptr(tensor T)
@@ -454,8 +449,8 @@ optimizer EDDL::sgd(float lr, float momentum, float weight_decay, bool nesterov)
 
 
 void EDDL::change(optimizer o, const initializer_list<float> &params) {
-    // TODO: Check this function
-    o->change(params);
+    vector<float> p(params.begin(), params.end());
+    o->change(p);
 }
 
 ////////////////////////////////////////////////////////
@@ -559,9 +554,6 @@ void EDDL::build(model net, optimizer o, const initializer_list<Loss *> &lo, con
     net->build(o, lo, me, cs);
 }
 
-void EDDL::build2(Net *m,  Optimizer *o, vector<Loss *> lo, vector<Metric *> me, CompServ *cs) {
-    m->build(o, lo, me, cs);
-}
 
 void EDDL::fit(model net, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out, int batch, int epochs) {
     vltensor ltin = vltensor(in.begin(), in.end());

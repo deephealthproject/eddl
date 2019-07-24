@@ -23,7 +23,6 @@
 #define EDDLL_TENSOR_H
 
 #include <stdio.h>
-#include <initializer_list>
 #include <vector>
 #include <string>
 #include <mutex>
@@ -103,7 +102,7 @@ public:
 
     ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p);
 
-    ConvolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st, const initializer_list<int> &p);
+    ConvolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p);
 
     void build(Tensor *A);
     void resize(Tensor *A);
@@ -115,11 +114,9 @@ public:
     Tensor *indX, *indY; // indexes
 
     //...
-    PoolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st, string p);
-
-    PoolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st, const initializer_list<int> &p);
-
     PoolDescriptor(const vector<int> &ks, const vector<int> &st, string p);
+
+    PoolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p);
 
     void build(Tensor *A);
     void resize(Tensor *A);
@@ -151,11 +148,10 @@ public:
 
     // Constructors
     Tensor();
-    Tensor(const initializer_list<int> &init, int dev=DEV_CPU);
-    explicit Tensor(vector<int> shape, int dev=DEV_CPU);
+    Tensor(vector<int> shape, int dev=DEV_CPU);
     Tensor(vector<int> shape, Tensor *T);
-    explicit Tensor(string fname, int bin=1);
     Tensor(vector<int> shape, float *fptr, int dev=DEV_CPU);
+    explicit Tensor(string fname, int bin=1);
 
     ~Tensor();
 

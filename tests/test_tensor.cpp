@@ -4,8 +4,8 @@
 
 // Test tensor constructor
 TEST(TensorTest, Constructor) {
-    ASSERT_EQ(DEV_CPU, Tensor({1, 1, 1}, DEV_CPU).device);
-    ASSERT_EQ(3, Tensor({1, 1, 1}, DEV_CPU).ndim);
+    ASSERT_EQ(DEV_CPU, Tensor(vector<int>{1, 1, 1}, DEV_CPU).device);
+    ASSERT_EQ(3, Tensor(vector<int>{1, 1, 1}, DEV_CPU).ndim);
 }
 
 

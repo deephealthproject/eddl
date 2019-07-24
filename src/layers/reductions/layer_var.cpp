@@ -30,9 +30,6 @@ using namespace std;
 
 int LRVar::total_layers = 0;
 
-LRVar::LRVar(Layer *l, initializer_list<int> &axis, bool keepdims, string name, int dev):LRVar(l,vector<int>(axis.begin(), axis.end()),keepdims,name,dev){}
-
-
 
 LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev): ReductionLayer(name, dev) {
     if(name.empty()) this->name = "reduction_var" + to_string(++total_layers);
@@ -57,10 +54,10 @@ LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev): R
 
 
 
-    LRMean *m1=new LRMean(this,axis, true,name+"mean_keepdims",dev);
+    LRMean *m1=new LRMean(this, axis, true,name+"mean_keepdims",dev);
     LDiff *diff=new LDiff(this,m1,name+"diff",dev);
     LMult *mult=new LMult(diff,diff,name+"mult",dev);
-    LRMean *m2=new LRMean(mult,axis,keepdims,name+"mean_red",dev);
+    LRMean *m2=new LRMean(mult, axis,keepdims,name+"mean_red",dev);
 
     layers.push_back(m1);
     layers.push_back(diff);

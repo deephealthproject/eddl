@@ -29,8 +29,6 @@ using namespace std;
 
 int LTranspose::total_layers = 0;
 
-LTranspose::LTranspose(Layer *parent, const initializer_list<int> &dims, string name, int dev):LTranspose(parent, vector<int>(dims.begin(), dims.end()), name,dev){}
-
 LTranspose::LTranspose(Layer *parent, vector<int> dims, string name, int dev) : LinLayer(name, dev) {
     if(name.empty()) this->name = "transpose" + to_string(++total_layers);
     this->dims = dims;

@@ -30,10 +30,6 @@ using namespace std;
 
 int LRSum::total_layers = 0;
 
-LRSum::LRSum(Layer *l, initializer_list<int> &axis, bool keepdims, string name, int dev):LRSum(l,vector<int>(axis.begin(), axis.end()),keepdims,name,dev){}
-
-
-
 LRSum::LRSum(Layer *l, vector<int> axis, bool keepdims, string name, int dev): ReductionLayer(name, dev) {
     // TODO: Implement
     if(name.empty()) this->name = "reduction_sum" + to_string(++total_layers);

@@ -8,7 +8,7 @@ SET(CMAKE_CXX_STANDARD 11)
 # USER OPTIONS *******************************
 option(BUILD_PYTHON "Compile python binding" OFF)
 option(BUILD_TESTS "Compile tests" OFF)
-option(BUILD_EXAMPLES "Compile examples" OFF)
+option(BUILD_EXAMPLES "Compile examples" ON)
 
 # PROPERTIES *******************************
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

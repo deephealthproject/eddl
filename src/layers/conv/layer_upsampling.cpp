@@ -29,7 +29,7 @@ using namespace std;
 
 int LUpSampling::total_layers = 0;
 
-LUpSampling::LUpSampling(Layer *parent, const initializer_list<int> &size, string interpolation, string name, int dev) : LinLayer(name, dev) {
+LUpSampling::LUpSampling(Layer *parent, const vector<int> &size, string interpolation, string name, int dev) : LinLayer(name, dev) {
     // TODO: Implement
     this->size = size;
     this->interpolation = interpolation;
