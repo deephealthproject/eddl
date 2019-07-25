@@ -177,7 +177,7 @@ public:
     vector<int> axis;
     bool keepdims;
 
-    LMean(Layer *l, initializer_list<int> &axis, bool keepdims, string name, int dev);
+    LMean(Layer *l, vector<int> &axis, bool keepdims, string name, int dev);
     LMean(Layer *l, vector<int> axis, bool keepdims, string name, int dev);
 
     void forward() override;
@@ -267,7 +267,7 @@ public:
     int rsize;
     vector<Layer *> layers;
 
-    LVar(Layer *l, initializer_list<int> &axis, bool keepdims, string name, int dev);
+    LVar(Layer *l, vector<int> &axis, bool keepdims, string name, int dev);
     LVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev);
 
     void forward() override;

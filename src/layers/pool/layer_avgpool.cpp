@@ -29,7 +29,7 @@ using namespace std;
 
 
 // ---- AVERAGE POOL ----
-LAveragePool::LAveragePool(Layer *parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding, string name, int dev) : LAveragePool(parent, new PoolDescriptor(pool_size, strides, padding), name, dev) {}
+LAveragePool::LAveragePool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name, int dev) : LAveragePool(parent, new PoolDescriptor(pool_size, strides, padding), name, dev) {}
 LAveragePool::LAveragePool(Layer *parent, PoolDescriptor *D, string name, int dev) : LPool(parent, D, name, dev) {
     // TODO: Implement
 }

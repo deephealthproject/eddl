@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <initializer_list>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -52,6 +51,7 @@ int Tensor::eqsize(Tensor *A, Tensor *B) {
 }
 
 // Transpose
+// TODO: Review correctness
 void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
     B->tsem->lock();
     if (!Tensor::eqsize(A, B))
@@ -63,6 +63,8 @@ void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
     if (A == B) N = new Tensor(A->getShape(), A->device);
     else N = B;
 
+
+    // Copy tensor data
     if (A->isCPU()) {
         for (int i = 0; i < A->size; i++)
             N->ptr[i] = A->ptr[i];
@@ -87,6 +89,7 @@ void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
 //
 // Sum all the axis of A in B
 //
+// TODO: Review cost (l1/l2)
 void Tensor::reduceTosum(Tensor *A, Tensor *B, int axis) {
     B->tsem->lock();
 
@@ -116,13 +119,14 @@ void Tensor::reduceTosum(Tensor *A, Tensor *B, int axis) {
 ///////////////////////////////////////
 /// Copy from A to B
 //////////////////////////////////////
+// TODO: Review correctness for ndim==2
 void Tensor::copy(Tensor *A, Tensor *B) {
 
     if (!Tensor::eqsize(A, B)) {
         A->info();
         B->info();
         msg("Tensors with different shape", "Tensor::copy");
-      }
+    }
 
     B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
@@ -190,6 +194,7 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
 }
 
 
+// TODO: Review against sum
 void Tensor::inc(Tensor *A, Tensor *B) {
 
     if (!Tensor::eqsize(A, B))
@@ -229,9 +234,9 @@ void Tensor::inc(Tensor *A, Tensor *B) {
 void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
 
     if ((A->size / A->shape[0]) != (B->size / B->shape[0])) {
-      A->info();
-      B->info();
-      msg("Incompatible shape", "Tensor::select");
+        A->info();
+        B->info();
+        msg("Incompatible shape", "Tensor::select");
     }
 
     //B->tsem->lock();
@@ -250,6 +255,10 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
     //B->tsem->unlock();
 }
 
+
+///////////////////////////////////////
+/// Get sign (+-) of all values
+//////////////////////////////////////
 void Tensor::sign(Tensor *A, Tensor *B) {
     B->tsem->lock();
 
@@ -351,10 +360,10 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
     C->tsem->lock();
     if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::el_mult");
     if ((!eqsize(A, B)) || (!eqsize(A, C))) {
-      A->info();
-      B->info();
-      C->info();
-      msg("Incompatible dims", "Tensor::el_mult");
+        A->info();
+        B->info();
+        C->info();
+        msg("Incompatible dims", "Tensor::el_mult");
     }
 
     if (A->isCPU()) {
@@ -419,10 +428,10 @@ void Tensor::sum(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
 
     if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::sum");
     if ((!eqsize(A, B)) || (!eqsize(A, C))) {
-      A->info();
-      B->info();
-      C->info();
-      msg("Incompatible dims", "Tensor::sum");
+        A->info();
+        B->info();
+        C->info();
+        msg("Incompatible dims", "Tensor::sum");
     }
 
     C->tsem->lock();
@@ -574,128 +583,140 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
 ///////////////////////////////////////
 //// reductions
 ///////////////////////////////////////
-void Tensor::reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB)
-{
-  if (A->device != B->device) msg("Tensors in different devices", "Tensor::reduce");
-
-  if (keepdims) {
-    if (A->ndim!=B->ndim) msg("Incorrect dims keepdims", "Tensor::reduce");
-  }
-  else
-    if ((A->ndim - axis.size()) != B->ndim) msg("Incorrect dims ", "Tensor::reduce");
-
-  int i,j,k,l,s;
-  int m,d;
-
-  if (mode=="mean") m=0;
-  else if (mode=="sum") m=1;
-  else if (mode=="max") m=2;
-  else
-    msg("Incorrect reduction mode", "Tensor::reduce");
-
-
-  if (m==2) {
-    if (C==nullptr)
-      msg("reduce max requires tensor with indexes", "Tensor::reduce");
-    if (!eqsize(B,C))
-      msg("Incorrect sizes in reduce max", "Tensor::reduce");
-  }
-
-  if (keepdims) {
-    for(i=0;i<A->ndim;i++) {
-        if (A->shape[i]!=B->shape[i])
-          msg("Incompatible shapes", "Tensor::reduce");
+void Tensor::reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB){
+    // Check device
+    if (A->device != B->device){
+        msg("Tensors in different devices", "Tensor::reduce");
     }
-  }
-  else {
-    j=0;
-    for(i=0;i<A->ndim;i++) {
-        if (find(axis.begin(), axis.end(), i) == axis.end()) {
-          if (A->shape[i]!=B->shape[j])
-            msg("Incompatible shapes", "Tensor::reduce");
-          j++;
+
+    // Check number of dimensions
+    if (keepdims) {
+        if (A->ndim!=B->ndim) msg("Incorrect dims keepdims", "Tensor::reduce");
+    } else {
+        if ((A->ndim - axis.size()) != B->ndim) msg("Incorrect dims ", "Tensor::reduce");
+    }
+
+    int i,j,k,l,s;
+    int m,d;
+
+    // Select mode
+    if (mode=="mean") m=0;
+    else if (mode=="sum") m=1;
+    else if (mode=="max") m=2;
+    else
+        msg("Incorrect reduction mode", "Tensor::reduce");
+
+    // [MAX]
+    if (m==2) {
+        if (C==nullptr) msg("reduce max requires tensor with indexes", "Tensor::reduce");
+        if (!eqsize(B,C)) msg("Incorrect sizes in reduce max", "Tensor::reduce");
+    }
+
+    // Check shapes
+    if (keepdims) {
+        for(i=0; i<A->ndim; i++) {
+            if (A->shape[i]!=B->shape[i]) msg("Incompatible shapes", "Tensor::reduce");
         }
-      }
-  }
-
-  if (m==0) {
-    d=1;
-    for(i=0;i<axis.size();i++)
-      d*=A->shape[axis[i]];
-  }
-
-  if (!incB) B->set(0);
-
-  // get indexes for reduction
-  vector<int> ind;
-  ind.push_back(0);
-  for(i=0;i<A->ndim;i++) {
-    if (find(axis.begin(), axis.end(), i) == axis.end()) {
-      s=ind.size();
-      for(j=0;j<s;j++)
-        for(k=0;k<A->shape[i]-1;k++)
-          ind.push_back(ind[j]+(k+1)*A->stride[i]);
-    }
-  }
-
-
-  sort(ind.begin(), ind.end());
-
-
-  // reduce through axis to be reduced
-  float max,sum;
-  int imax;
-  for(i=0;i<ind.size();i++)
-  {
-    // get axis to be reduced
-    vector<int> sind;
-    sind.push_back(ind[i]);
-    for(l=0;l<A->ndim;l++) {
-      if (find(axis.begin(), axis.end(), l) != axis.end()) {
-        s=sind.size();
-        for(j=0;j<s;j++)
-          for(k=0;k<A->shape[l]-1;k++)
-            sind.push_back(sind[j]+(k+1)*A->stride[l]);
-      }
-    }
-
-    //reduce
-    sum=0;
-    for(j=0;j<sind.size();j++) {
-      float v=A->ptr[sind[j]];
-      if (m==2) {
-        if (j==0) {max=v;imax=sind[j];}
-        else if (v>max) {
-          max=v;
-          imax=sind[j];
+    } else {
+        // Check A and B have the same shape ignoring axis to be reduced [Axis=(1)]: (3, 2*, 1) == (3, 1)
+        j=0;
+        for(i=0;i<A->ndim;i++) {
+            // Check if "this" dimension is going to be reduced
+            bool isFound = find(axis.begin(), axis.end(), i) != axis.end();
+            if (!isFound) {  // Dims to not be reduced, must match (2,4) => (2,4)
+                if (A->shape[i]!=B->shape[j]){
+                    msg("Incompatible shapes", "Tensor::reduce");
+                } j++;
+            }
         }
-      }
-      else sum+=v;
     }
 
-    // set in B
-    if (m<2) {
-      if (m==0) sum/=d;
-      if (keepdims) {
-        for(j=0;j<sind.size();j++)
-          B->ptr[sind[j]]+=sum;
-      }
-      else B->ptr[i]+=sum;
+    // [MEAN]: Compute items to be reduced
+    if (m==0) {
+        d=1;
+        for(i=0;i<axis.size();i++){
+            d *= A->shape[axis[i]];
+        }
     }
-    else {
-      if (keepdims) {
+
+    // If result is added to B
+    if (!incB) B->set(0);
+
+    // get indexes for reduction
+    vector<int> ind;
+    ind.push_back(0);
+    for(i=0;i<A->ndim;i++) {
+        // Check if "this" dimension is going to be reduced
+        bool isFound = find(axis.begin(), axis.end(), i) != axis.end();
+        if (!isFound) {  // Dims to not be reduced...
+            s=ind.size();
+            for(j=0;j<s;j++)
+                for(k=0; k<A->shape[i]-1; k++)
+                    ind.push_back(ind[j]+(k+1)*A->stride[i]);
+        }
+    }
+
+
+
+    sort(ind.begin(), ind.end());
+
+
+    // reduce through axis to be reduced
+    float max,sum;
+    int imax;
+    for(i=0;i<ind.size();i++)
+    {
+        // get axis to be reduced
+        vector<int> sind;
+        sind.push_back(ind[i]);
+        for(l=0;l<A->ndim;l++) {
+            // Check if "this" dimension is going to be reduced
+            bool isFound = find(axis.begin(), axis.end(), l) != axis.end();
+            if (isFound) {  // Dims to be reduced...
+                s=sind.size();
+                for(j=0;j<s;j++)
+                    for(k=0;k<A->shape[l]-1;k++)
+                        sind.push_back(sind[j]+(k+1)*A->stride[l]);
+            }
+        }
+
+        //reduce
+        sum=0;
         for(j=0;j<sind.size();j++) {
-          B->ptr[sind[j]]+=max;
-          C->ptr[sind[j]]=imax;
+            float v=A->ptr[sind[j]];
+            if (m==2) {
+                if (j==0) {max=v;imax=sind[j];}
+                else if (v>max) {
+                    max=v;
+                    imax=sind[j];
+                }
+            }
+            else sum+=v;
         }
-      }
-      else {
-        B->ptr[i]+=max;
-        C->ptr[i]=imax;
-      }
-    }
 
-  }// i
+        // set in B
+        if (m<2) {
+            if (m==0) sum/=d;
+            if (keepdims) {
+                for(j=0;j<sind.size();j++)
+                    B->ptr[sind[j]]+=sum;
+            }
+            else B->ptr[i]+=sum;
+        }
+        else {
+            if (keepdims) {
+                for(j=0;j<sind.size();j++) {
+                    B->ptr[sind[j]]+=max;
+                    C->ptr[sind[j]]=imax;
+                }
+            }
+            else {
+                B->ptr[i]+=max;
+                C->ptr[i]=imax;
+            }
+        }
+
+    }// i
 
 }
 
@@ -704,114 +725,114 @@ void Tensor::reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool ke
 //// Gradient reduction
 void Tensor::delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB)
 {
-  if (A->device != B->device) msg("Tensors in different devices", "Tensor::delta_reduce");
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::delta_reduce");
 
-  if (keepdims) {
-    if (A->ndim!=B->ndim) msg("Incorrect dims keepdims", "Tensor::delta_reduce");
-  }
-  else
+    if (keepdims) {
+        if (A->ndim!=B->ndim) msg("Incorrect dims keepdims", "Tensor::delta_reduce");
+    }
+    else
     if (A->ndim!= (B->ndim - axis.size())) msg("Incorrect dims ", "Tensor::delta_reduce");
 
-  int i,j,k,l,s;
-  int m,d;
+    int i,j,k,l,s;
+    int m,d;
 
-  if (mode=="mean") m=0;
-  else if (mode=="sum") m=1;
-  else if (mode=="max") m=2;
-  else
-    msg("Incorrect reduction mode", "Tensor::delta_reduce");
+    if (mode=="mean") m=0;
+    else if (mode=="sum") m=1;
+    else if (mode=="max") m=2;
+    else
+        msg("Incorrect reduction mode", "Tensor::delta_reduce");
 
-  if (keepdims) {
-    for(i=0;i<B->ndim;i++)
-      if (B->shape[i]!=A->shape[i]) {
-        msg("Incompatible shapes", "Tensor::delta_reduce");
-      }
-  }
-  else {
-    j=0;
-    for(i=0;i<B->ndim;i++) {
-        if (find(axis.begin(), axis.end(), i) == axis.end()) {
-          if (B->shape[i]!=A->shape[j])
-            msg("Incompatible shapes", "Tensor::delta_reduce");
-          j++;
-        }
+    if (keepdims) {
+        for(i=0;i<B->ndim;i++)
+            if (B->shape[i]!=A->shape[i]) {
+                msg("Incompatible shapes", "Tensor::delta_reduce");
+            }
     }
-  }
-
-  if (m==2) {
-    if (C==nullptr)
-      msg("delta_reduce max requires tensor with indexes", "Tensor::delta_reduce");
-    if (!eqsize(A,C))
-      msg("Incorrect sizes in reduce max", "Tensor::delta_reduce");
-  }
-
-  if (m==0) {
-    d=1;
-    for(i=0;i<axis.size();i++)
-      d*=B->shape[axis[i]];
-  }
-
-  if (!incB) B->set(0);
-
-  // get indexes for reduction
-  vector<int> ind;
-  ind.push_back(0);
-  for(i=0;i<B->ndim;i++) {
-    if (find(axis.begin(), axis.end(), i) == axis.end()) {
-      s=ind.size();
-      for(j=0;j<s;j++)
-        for(k=0;k<B->shape[i]-1;k++)
-          ind.push_back(ind[j]+(k+1)*B->stride[i]);
-    }
-  }
-
-
-  sort(ind.begin(), ind.end());
-
-
-
-  for(i=0;i<A->size;i++)
-  {
-    vector<int> sind;
-    if (!keepdims) {
-      sind.push_back(ind[i]);
-      for(l=0;l<B->ndim;l++) {
-        if (find(axis.begin(), axis.end(), l) != axis.end()) {
-          s=sind.size();
-          for(j=0;j<s;j++)
-            for(k=0;k<B->shape[l]-1;k++)
-              sind.push_back(sind[j]+(k+1)*B->stride[l]);
+    else {
+        j=0;
+        for(i=0;i<B->ndim;i++) {
+            if (find(axis.begin(), axis.end(), i) == axis.end()) {
+                if (B->shape[i]!=A->shape[j])
+                    msg("Incompatible shapes", "Tensor::delta_reduce");
+                j++;
+            }
         }
-      }
     }
 
     if (m==2) {
-      if (keepdims) {
-        int p=C->ptr[i];
-        B->ptr[p]+=A->ptr[i];
-      }
-      else {
-        int p=C->ptr[i];
-        B->ptr[p]+=A->ptr[i];
-      }
+        if (C==nullptr)
+            msg("delta_reduce max requires tensor with indexes", "Tensor::delta_reduce");
+        if (!eqsize(A,C))
+            msg("Incorrect sizes in reduce max", "Tensor::delta_reduce");
     }
-    else {
-      if (keepdims) {
-        if (m==0)
-          B->ptr[i]+=A->ptr[i]/d;
-        else
-          B->ptr[i]+=A->ptr[i];
-      }
-      else {
-        for(j=0;j<sind.size();j++) {
-          if (m==0)
-            B->ptr[sind[j]]+=A->ptr[i]/d;
-          else
-            B->ptr[sind[j]]+=A->ptr[i];
+
+    if (m==0) {
+        d=1;
+        for(i=0;i<axis.size();i++)
+            d*=B->shape[axis[i]];
+    }
+
+    if (!incB) B->set(0);
+
+    // get indexes for reduction
+    vector<int> ind;
+    ind.push_back(0);
+    for(i=0;i<B->ndim;i++) {
+        if (find(axis.begin(), axis.end(), i) == axis.end()) {
+            s=ind.size();
+            for(j=0;j<s;j++)
+                for(k=0;k<B->shape[i]-1;k++)
+                    ind.push_back(ind[j]+(k+1)*B->stride[i]);
         }
-      }
     }
-  }//i
+
+
+    sort(ind.begin(), ind.end());
+
+
+
+    for(i=0;i<A->size;i++)
+    {
+        vector<int> sind;
+        if (!keepdims) {
+            sind.push_back(ind[i]);
+            for(l=0;l<B->ndim;l++) {
+                if (find(axis.begin(), axis.end(), l) != axis.end()) {
+                    s=sind.size();
+                    for(j=0;j<s;j++)
+                        for(k=0;k<B->shape[l]-1;k++)
+                            sind.push_back(sind[j]+(k+1)*B->stride[l]);
+                }
+            }
+        }
+
+        if (m==2) {
+            if (keepdims) {
+                int p=C->ptr[i];
+                B->ptr[p]+=A->ptr[i];
+            }
+            else {
+                int p=C->ptr[i];
+                B->ptr[p]+=A->ptr[i];
+            }
+        }
+        else {
+            if (keepdims) {
+                if (m==0)
+                    B->ptr[i]+=A->ptr[i]/d;
+                else
+                    B->ptr[i]+=A->ptr[i];
+            }
+            else {
+                for(j=0;j<sind.size();j++) {
+                    if (m==0)
+                        B->ptr[sind[j]]+=A->ptr[i]/d;
+                    else
+                        B->ptr[sind[j]]+=A->ptr[i];
+                }
+            }
+        }
+    }//i
 }
 
 
@@ -838,8 +859,8 @@ ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vec
 
 }
 
-ConvolDescriptor::ConvolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st,
-                                   const initializer_list<int> &p) {
+ConvolDescriptor::ConvolDescriptor(const vector<int> &ks, const vector<int> &st,
+                                   const vector<int> &p) {
     ksize = vector<int>(ks.begin(), ks.end());
     stride = vector<int>(st.begin(), st.end());
     pad = vector<int>(p.begin(), p.end());
@@ -878,14 +899,14 @@ void ConvolDescriptor::build(Tensor *A) {
     if ((r <= 0) || (c <= 0))
         msg("Invalid output shape", "ConvolDescriptor::build");
 
-    O = new Tensor({A->shape[0], z, r, c}, A->device);
+    O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
     D = new Tensor(O->getShape(), A->device);
 
     // Params
-    K = new Tensor({nk, kz, kr, kc}, I->device);
-    bias = new Tensor({nk}, I->device);
-    gK = new Tensor({nk, kz, kr, kc}, I->device);
-    gbias = new Tensor({nk}, I->device);
+    K = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
+    bias = new Tensor(vector<int>{nk}, I->device);
+    gK = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
+    gbias = new Tensor(vector<int>{nk}, I->device);
 
     if (I->isCPU()) {
         // mem for ptr, lowering im2col
@@ -898,17 +919,17 @@ void ConvolDescriptor::build(Tensor *A) {
 
 void ConvolDescriptor::resize(Tensor *A)
 {
-  I=A;
+    I=A;
 
-  delete O;
-  delete D;
-  O = new Tensor({A->shape[0], z, r, c}, A->device);
-  D = new Tensor(O->getShape(), A->device);
+    delete O;
+    delete D;
+    O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
+    D = new Tensor(O->getShape(), A->device);
 
-  if (I->isCPU()) {
-      free(ptrI);
-      ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptor::build");
-  }
+    if (I->isCPU()) {
+        free(ptrI);
+        ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptor::build");
+    }
 
 }
 
@@ -998,8 +1019,8 @@ void Tensor::Conv2D_back(ConvolDescriptor *D) {
 ////////////////////////////////
 ////  POOLING
 
-PoolDescriptor::PoolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st,
-                               const initializer_list<int> &p) {
+PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st,
+                               const vector<int> &p) {
     ksize = vector<int>(ks.begin(), ks.end());
     stride = vector<int>(st.begin(), st.end());
     pad = vector<int>(p.begin(), p.end());
@@ -1024,9 +1045,6 @@ PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, str
         pad.push_back(0);
     } else msg("Incorrect padding type", "PoolDescriptor::PoolDescriptor");
 }
-
-PoolDescriptor::PoolDescriptor(const initializer_list<int> &ks, const initializer_list<int> &st, string p)
-        : PoolDescriptor(vector<int>(ks.begin(), ks.end()), vector<int>(st.begin(), st.end()), p) {}
 
 
 void PoolDescriptor::build(Tensor *A) {
@@ -1056,7 +1074,7 @@ void PoolDescriptor::build(Tensor *A) {
     if ((r <= 0) || (c <= 0))
         msg("Invalid output shape", "PoolDescriptor::build");
 
-    O = new Tensor({A->shape[0], z, r, c}, A->device);
+    O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
     D = new Tensor(O->getShape(), A->device);
 
 
@@ -1069,7 +1087,7 @@ void PoolDescriptor::resize(Tensor *A) {
     delete O;
     delete D;
 
-    O = new Tensor({A->shape[0], z, r, c}, A->device);
+    O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
     D = new Tensor(O->getShape(), A->device);
 }
 

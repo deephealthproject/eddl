@@ -72,7 +72,7 @@ void gen_rtable()
 {
   if (RTable==nullptr) {
     printf("Generating Random Table\n");
-    RTable=get_fmem(MAX_RTABLE,"gen_rtable");
+    RTable=get_fmem(MAX_RTABLE, "gen_rtable");
 
     for(int i=0;i<MAX_RTABLE;i++)
       RTable[i]=gaussgen();

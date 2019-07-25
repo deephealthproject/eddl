@@ -31,8 +31,8 @@ int LConv::total_layers = 0;
 
 // constructors and clones
 
-LConv::LConv(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st,
-             const initializer_list<int> &p, string name, int dev) : LConv(parent, new ConvolDescriptor(ks, st, p), name, dev) {}
+LConv::LConv(Layer *parent, const vector<int> &ks, const vector<int> &st,
+             const vector<int> &p, string name, int dev) : LConv(parent, new ConvolDescriptor(ks, st, p), name, dev) {}
 
 LConv::LConv(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
 int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev) : LConv(parent, new ConvolDescriptor(filters, kernel_size, strides, padding), name, dev) {

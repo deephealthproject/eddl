@@ -41,8 +41,6 @@ public:
 
     LTensor(string fname);
 
-    LTensor(const initializer_list<int> &init, int dev);
-
     LTensor(vector<int> shape, int dev);
 
     LTensor(const vector<int> shape, float *fptr,int dev);
@@ -170,8 +168,6 @@ public:
     vector<int> ls;
 
     // constructors and clones
-    LReshape(Layer *parent, const initializer_list<int> &init, string name, int dev);
-
     LReshape(Layer *parent, vector<int> shape, string name, int dev);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
@@ -199,8 +195,6 @@ public:
 
     // constructors and clones
     LTranspose(Layer *parent, vector<int> dims, string name, int dev);
-
-    LTranspose(Layer *parent, const initializer_list<int> &dims, string name, int dev);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

@@ -30,14 +30,13 @@ using namespace std;
 
 // ---- MAXPOOL2D ----
 // constructors and clones
-LMaxPool::LMaxPool(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st, string p, string name,
-               int d) : LMaxPool(parent, new PoolDescriptor(ks, st, p), name, dev) {}
 
-LMaxPool::LMaxPool(Layer *parent, const initializer_list<int> &ks, const initializer_list<int> &st,
-               const initializer_list<int> &p, string name, int dev) : LMaxPool(parent, new PoolDescriptor(ks, st, p), name, dev) {}
+// constructors and clones
+LMaxPool::LMaxPool(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name,
+                   int d) : LMaxPool(parent, new PoolDescriptor(ks, st, p), name, dev) {}
 
-LMaxPool::LMaxPool(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name, int dev) : LMaxPool(
-        parent, new PoolDescriptor(ks, st, p), name, dev) {}
+LMaxPool::LMaxPool(Layer *parent, const vector<int> &ks, const vector<int> &st,
+               const vector<int> &p, string name, int dev) : LMaxPool(parent, new PoolDescriptor(ks, st, p), name, dev) {}
 
 LMaxPool::LMaxPool(Layer *parent, PoolDescriptor *D, string name, int dev) : LPool(parent, D, name, dev) {
     // Params
@@ -72,7 +71,7 @@ void LMaxPool::backward() {
 }
 
 Layer *LMaxPool::share(int c, int bs, vector<Layer *> p) {
-    LMaxPool *n = new LMaxPool(p[0], {pd->kr, pd->kc}, {pd->sr, pd->sc}, {pd->padr, pd->padc},
+    LMaxPool *n = new LMaxPool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, vector<int>{pd->padr, pd->padc},
                            "share_" + to_string(c) + name, dev);
     n->orig = this;
 
@@ -80,7 +79,7 @@ Layer *LMaxPool::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LMaxPool::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LMaxPool *n = new LMaxPool(p[0], {pd->kr, pd->kc}, {pd->sr, pd->sc}, {pd->padr, pd->padc},
+    LMaxPool *n = new LMaxPool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, vector<int>{pd->padr, pd->padc},
                            "clone_" + to_string(todev) + name, todev);
     n->orig = this;
 

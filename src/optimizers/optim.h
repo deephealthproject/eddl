@@ -23,7 +23,6 @@
 
 #include <stdio.h>
 #include <string>
-#include <initializer_list>
 #include <vector>
 
 #include "../layers/layer.h"
@@ -49,7 +48,7 @@ public:
 
     virtual Optimizer *clone() { return nullptr; }
 
-    virtual void change(const initializer_list<float> &p) {}
+    virtual void change(vector<float> &p) {}
 
 };
 
@@ -70,7 +69,7 @@ public:
 
     void applygrads(int batch) override;
 
-    void change(const initializer_list<float> &p) override;
+    void change(vector<float> &p) override;
 };
 
 // ---- Adam ----
@@ -93,7 +92,7 @@ public:
 //
 //    void applygrads(int batch);
 //
-//    void change(const initializer_list<float> &p);
+//    void change(const vector<float> &p);
 };
 
 
@@ -115,7 +114,7 @@ public:
 //
 //    void applygrads(int batch);
 //
-//    void change(const initializer_list<float> &p);
+//    void change(const vector<float> &p);
 };
 
 // ---- Adagrad ----
@@ -135,7 +134,7 @@ public:
 //
 //    void applygrads(int batch);
 //
-//    void change(const initializer_list<float> &p);
+//    void change(const vector<float> &p);
 };
 
 // ---- Adamax ----
@@ -157,7 +156,7 @@ public:
 //
 //    void applygrads(int batch);
 //
-//    void change(const initializer_list<float> &p);
+//    void change(const vector<float> &p);
 };
 
 // ---- Nadam ----
@@ -179,7 +178,7 @@ public:
 //
 //    void applygrads(int batch);
 //
-//    void change(const initializer_list<float> &p);
+//    void change(const vector<float> &p);
 };
 
 // ---- RMSProp ----
@@ -200,7 +199,7 @@ public:
 //
 //    void applygrads(int batch);
 //
-//    void change(const initializer_list<float> &p);
+//    void change(const vector<float> &p);
 };
 #endif
 

@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <initializer_list>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -58,9 +57,7 @@ int Tensor::isFPGA() { return (device >= DEV_FPGA); }
 // Tensor class
 Tensor::Tensor() : device(DEV_CPU), ndim(0), size(0) {}
 
-Tensor::Tensor(const initializer_list<int> &init, int dev) : Tensor(vector<int>(init.begin(), init.end()), dev) {}
-
-Tensor::Tensor(vector<int> shape, float *fptr, int dev)
+Tensor::Tensor(const vector<int> &shape, float *fptr, int dev)
 {
   #ifndef cGPU
       if ((dev > DEV_CPU) && (isGPU())) {
@@ -117,7 +114,7 @@ Tensor::Tensor(vector<int> shape, float *fptr, int dev)
       tsem = new mutex();
 }
 
-Tensor::Tensor(vector<int> shape, int dev) {
+Tensor::Tensor(const vector<int> &shape, int dev) {
 #ifndef cGPU
     if ((dev > DEV_CPU) && (isGPU())) {
         fprintf(stderr, "Not compiled for GPU\n");
@@ -174,8 +171,7 @@ Tensor::Tensor(vector<int> shape, int dev) {
     tsem = new mutex();
 }
 
-
-Tensor::Tensor(vector<int> shape, Tensor *T) {
+Tensor::Tensor(const vector<int> &shape, Tensor *T) {
     this->device = T->device;
     this->ndim = shape.size();
     this->shape = shape;
@@ -214,7 +210,7 @@ Tensor::Tensor(vector<int> shape, Tensor *T) {
 }
 
 /////////////////////////////////////////////////////////////////////////
-Tensor::Tensor(string fname, int bin) {
+void Tensor::load(std::string fname, int bin) {
     FILE *fe;
     int i, j, v;
 
@@ -386,16 +382,16 @@ vector<int> Tensor::getShape() {
 void Tensor::info() {
     int i;
 
-    fprintf(stderr, "DIM=%d\n", ndim);
-    fprintf(stderr, "(");
+    fprintf(stdout, "DIM=%d\n", ndim);
+    fprintf(stdout, "(");
     for (i = 0; i < ndim - 1; i++)
-        fprintf(stderr, "%d,", shape[i]);
-    fprintf(stderr, "%d)\n", shape[i]);
+        fprintf(stdout, "%d,", shape[i]);
+    fprintf(stdout, "%d)\n", shape[i]);
 
-    fprintf(stderr, "Total bytes=%ld\n", size * sizeof(float));
-    if (isCPU()) fprintf(stderr, "Device=CPU\n");
-    else if (isGPU()) fprintf(stderr, "Device=GPU (%d)\n", gpu_device);
-    else fprintf(stderr, "Device=FPGA\n");
+    fprintf(stdout, "Total bytes=%ld\n", size * sizeof(float));
+    if (isCPU()) fprintf(stdout, "Device=CPU\n");
+    else if (isGPU()) fprintf(stdout, "Device=GPU (%d)\n", gpu_device);
+    else fprintf(stdout, "Device=FPGA\n");
 }
 
 

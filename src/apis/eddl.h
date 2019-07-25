@@ -22,7 +22,6 @@
 #ifndef _EDDL_
 #define _EDDL_
 
-#include <initializer_list>
 #include <vector>
 #include <thread>
 #include <pthread.h>
@@ -56,201 +55,195 @@
 
 typedef vector<LTensor *> vltensor;
 
-class EDDL {
-public:
-    // ---- TENSOR ----
-    static tensor T(const initializer_list<int> &shape);//*
-    static tensor T(vector<int> shape);
-    static tensor T(string fname);
-    static tensor T(const initializer_list<int> &shape,float *ptr);
-    static float * T_getptr(tensor T);
+// ---- TENSOR ----
+tensor T(const vector<int> &shape);//*
+tensor T(const vector<int> &shape, float *ptr);
+tensor T_load(string fname);
+float * T_getptr(tensor T);
 
-    // ---- TENSOR OPERATIONS ----
-    static void div(tensor t, float v);
+// ---- TENSOR OPERATIONS ----
+void div(tensor t, float v);
 
-    // ---- CORE LAYERS ----
-    static layer Activation(layer parent, string activation, string name="");
+// ---- CORE LAYERS ----
+layer Activation(layer parent, string activation, string name="");
 
-    static layer Conv(layer parent, int filters, const initializer_list<int> &kernel_size,
-                      const initializer_list<int> &strides={1,1}, string padding="same", int groups=1, const initializer_list<int> &dilation_rate={1,1},
-                      bool use_bias=true, string name=""); //Todo: Implement
+layer Conv(layer parent, int filters, const vector<int> &kernel_size,
+                  const vector<int> &strides={1,1}, string padding="same", int groups=1, const vector<int> &dilation_rate={1,1},
+                  bool use_bias=true, string name=""); //Todo: Implement
 
-    static layer ConvT(layer parent, int filters, const initializer_list<int> &kernel_size,
-                       const initializer_list<int> &output_padding, string padding="same", const initializer_list<int> &dilation_rate={1,1},
-                       const initializer_list<int> &strides={1,1}, bool use_bias=true, string name=""); //Todo: Implement
+layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
+                   const vector<int> &output_padding, string padding="same", const vector<int> &dilation_rate={1,1},
+                   const vector<int> &strides={1,1}, bool use_bias=true, string name=""); //Todo: Implement
 
-    static layer Dense(layer parent, int ndim, bool use_bias=true, string name=""); //Todo: Implement
+layer Dense(layer parent, int ndim, bool use_bias=true, string name=""); //Todo: Implement
 
-    static layer Embedding(int input_dim, int output_dim, string name=""); //Todo: Implement
+layer Embedding(int input_dim, int output_dim, string name=""); //Todo: Implement
 
-    static layer Input(const initializer_list<int> &shape, string name="");
+layer Input(const vector<int> &shape, string name="");
 
-    // TODO: Interpolate, Resize, upsampling (downsampling?)
-    static layer UpSampling(layer parent, const initializer_list<int> &size, string interpolation="nearest", string name=""); //Todo: Implement
+// TODO: Interpolate, Resize, upsampling (downsampling?)
+layer UpSampling(layer parent, const vector<int> &size, string interpolation="nearest", string name=""); //Todo: Implement
 
-    static layer Reshape(layer parent, const initializer_list<int> &shape, string name="");
+layer Reshape(layer parent, const vector<int> &shape, string name="");
 
-    static layer Transpose(layer parent, const initializer_list<int> &dims, string name=""); //Todo: Implement
+layer Transpose(layer parent, const vector<int> &dims, string name=""); //Todo: Implement
 
-    // ---- LOSSES ----
-    static loss LossFunc(string type);
+// ---- LOSSES ----
+loss LossFunc(string type);
 
-    // ---- METRICS ----
-    static metric MetricFunc(string type);
+// ---- METRICS ----
+metric MetricFunc(string type);
 
-    // ---- MERGE LAYERS ----
-    static layer Add(const initializer_list<layer> &layers, string name="");
+// ---- MERGE LAYERS ----
+layer Add(const vector<layer> &layers, string name="");
 
-    static layer Average(const initializer_list<layer> &layers, string name=""); //Todo: Implement
+layer Average(const vector<layer> &layers, string name=""); //Todo: Implement
 
-    static layer Concat(const initializer_list<layer> &layers, string name="");
+layer Concat(const vector<layer> &layers, string name="");
 
-    static layer MatMul(const initializer_list<layer> &layers, string name=""); //Todo: Implement
+layer MatMul(const vector<layer> &layers, string name=""); //Todo: Implement
 
-    static layer Maximum(const initializer_list<layer> &layers, string name=""); //Todo: Implement
+layer Maximum(const vector<layer> &layers, string name=""); //Todo: Implement
 
-    static layer Minimum(const initializer_list<layer> &layers, string name=""); //Todo: Implement
+layer Minimum(const vector<layer> &layers, string name=""); //Todo: Implement
 
-    static layer Subtract(const initializer_list<layer> &layers, string name=""); //Todo: Implement
+layer Subtract(const vector<layer> &layers, string name=""); //Todo: Implement
 
 
-    // ---- NOISE LAYERS ----
-    static layer GaussianNoise(layer parent, float stddev, string name=""); //Todo: Implement
+// ---- NOISE LAYERS ----
+layer GaussianNoise(layer parent, float stddev, string name=""); //Todo: Implement
 
 
-    // ---- NORMALIZATION LAYERS ----
-    static layer BatchNormalization(layer parent, float momentum=0.99f, float epsilon=0.001f, bool affine=true, string name=""); //Todo: Implement
+// ---- NORMALIZATION LAYERS ----
+layer BatchNormalization(layer parent, float momentum=0.99f, float epsilon=0.001f, bool affine=true, string name=""); //Todo: Implement
 
-    static layer Dropout(layer parent, float rate, string name=""); //Todo: Implement
+layer Dropout(layer parent, float rate, string name=""); //Todo: Implement
 
-    // ---- OPERATOR LAYERS ----
-    static layer Abs(layer l);
-    static layer Diff(layer l1, layer l2);
-    static layer Diff(layer l1, float k);
-    static layer Div(layer l1, layer l2);
-    static layer Div(layer l1, float k);
-    static layer Exp(layer l);
-    static layer Log(layer l);
-    static layer Log2(layer l);
-    static layer Log10(layer l);
-    static layer Mult(layer l1, layer l2);
-    static layer Mult(layer l1, float k);
-    static layer Pow(layer l1, layer l2);
-    static layer Pow(layer l1, float k);
-    static layer Sqrt(layer l);
-    static layer Sum(layer l1, layer l2);
-    static layer Sum(layer l1, float k);
+// ---- OPERATOR LAYERS ----
+layer Abs(layer l);
+layer Diff(layer l1, layer l2);
+layer Diff(layer l1, float k);
+layer Div(layer l1, layer l2);
+layer Div(layer l1, float k);
+layer Exp(layer l);
+layer Log(layer l);
+layer Log2(layer l);
+layer Log10(layer l);
+layer Mult(layer l1, layer l2);
+layer Mult(layer l1, float k);
+layer Pow(layer l1, layer l2);
+layer Pow(layer l1, float k);
+layer Sqrt(layer l);
+layer Sum(layer l1, layer l2);
+layer Sum(layer l1, float k);
 
-    // ---- REDUCTION LAYERS ----
-    static layer ReduceMean(layer l);
-    static layer ReduceMean(layer l, initializer_list<int> axis);
-    static layer ReduceMean(layer l, bool keepdims);
-    static layer ReduceMean(layer l, initializer_list<int> axis, bool keepdims);
-    static layer ReduceVar(layer l);
-    static layer ReduceVar(layer l, initializer_list<int> axis);
-    static layer ReduceVar(layer l, bool keepdims);
-    static layer ReduceVar(layer l, initializer_list<int> axis, bool keepdims);
-    static layer ReduceSum(layer l);
-    static layer ReduceSum(layer l, initializer_list<int> axis);
-    static layer ReduceSum(layer l, bool keepdims);
-    static layer ReduceSum(layer l, initializer_list<int> axis, bool keepdims);
-    static layer ReduceMax(layer l);
-    static layer ReduceMax(layer l, initializer_list<int> axis);
-    static layer ReduceMax(layer l, bool keepdims);
-    static layer ReduceMax(layer l, initializer_list<int> axis, bool keepdims);
-    static layer ReduceMin(layer l);
-    static layer ReduceMin(layer l, initializer_list<int> axis);
-    static layer ReduceMin(layer l, bool keepdims);
-    static layer ReduceMin(layer l, initializer_list<int> axis, bool keepdims);
+// ---- REDUCTION LAYERS ----
+layer ReduceMean(layer l);
+layer ReduceMean(layer l, vector<int> axis);
+layer ReduceMean(layer l, bool keepdims);
+layer ReduceMean(layer l, vector<int> axis, bool keepdims);
+layer ReduceVar(layer l);
+layer ReduceVar(layer l, vector<int> axis);
+layer ReduceVar(layer l, bool keepdims);
+layer ReduceVar(layer l, vector<int> axis, bool keepdims);
+layer ReduceSum(layer l);
+layer ReduceSum(layer l, vector<int> axis);
+layer ReduceSum(layer l, bool keepdims);
+layer ReduceSum(layer l, vector<int> axis, bool keepdims);
+layer ReduceMax(layer l);
+layer ReduceMax(layer l, vector<int> axis);
+layer ReduceMax(layer l, bool keepdims);
+layer ReduceMax(layer l, vector<int> axis, bool keepdims);
+layer ReduceMin(layer l);
+layer ReduceMin(layer l, vector<int> axis);
+layer ReduceMin(layer l, bool keepdims);
+layer ReduceMin(layer l, vector<int> axis, bool keepdims);
 
-    // ---- GENERATOR LAYERS ----
-    static layer GaussGenerator(float mean, float stdev, initializer_list<int> size);
-    static layer UniformGenerator(float low, float high, initializer_list<int> size);
+// ---- GENERATOR LAYERS ----
+layer GaussGenerator(float mean, float stdev, vector<int> size);
+layer UniformGenerator(float low, float high, vector<int> size);
 
-    // ---- OPTIMIZERS ----
-    static optimizer adadelta(float lr, float rho, float epsilon, float weight_decay); //Todo: Implement
-    static optimizer adam(float lr, float beta_1, float beta_2, float epsilon, float weight_decay, bool amsgrad); //Todo: Implement
-    static optimizer adagrad(float lr, float epsilon, float weight_decay); //Todo: Implement
-    static optimizer adamax(float lr, float beta_1, float beta_2, float epsilon, float weight_decay); //Todo: Implement
-    static optimizer nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule_decay); //Todo: Implement
-    static optimizer rmsprop(float lr, float rho, float epsilon, float weight_decay); //Todo: Implement
-    static optimizer sgd(float lr=0.01f, float momentum=0.0f, float weight_decay=0.0f, bool nesterov=false);
+// ---- OPTIMIZERS ----
+optimizer adadelta(float lr, float rho, float epsilon, float weight_decay); //Todo: Implement
+optimizer adam(float lr, float beta_1, float beta_2, float epsilon, float weight_decay, bool amsgrad); //Todo: Implement
+optimizer adagrad(float lr, float epsilon, float weight_decay); //Todo: Implement
+optimizer adamax(float lr, float beta_1, float beta_2, float epsilon, float weight_decay); //Todo: Implement
+optimizer nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule_decay); //Todo: Implement
+optimizer rmsprop(float lr, float rho, float epsilon, float weight_decay); //Todo: Implement
+optimizer sgd(float lr=0.01f, float momentum=0.0f, float weight_decay=0.0f, bool nesterov=false);
 
-    static void change(optimizer o, const initializer_list<float> &params);
-
-
-    // ---- POOLING LAYERS ----
-    static layer AveragePool(layer parent, const initializer_list<int> &pool_size);
-    static layer AveragePool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding="none", string name="");
-
-    static layer GlobalMaxPool(layer parent, string name=""); //Todo: Implement
-
-    static layer GlobalAveragePool(layer parent, string name=""); //Todo: Implement
-
-    static layer MaxPool(layer parent, const initializer_list<int> &pool_size, string padding="none", string name="");
-    static layer MaxPool(layer parent, const initializer_list<int> &pool_size, const initializer_list<int> &strides, string padding="none", string name="");
+void change(optimizer o, vector<float> &params);
 
 
-    // ---- RECURRENT LAYERS ----
-    static layer RNN(layer parent, int units, int num_layers, bool use_bias=true, float dropout=.0f, bool bidirectional=false, string name="");
+// ---- POOLING LAYERS ----
+layer AveragePool(layer parent, const vector<int> &pool_size);
+layer AveragePool(layer parent, const vector<int> &pool_size, const vector<int> &strides, string padding="none", string name="");
 
-    static layer LSTM(layer parent, int units, int num_layers, bool use_bias=true, float dropout=.0f, bool bidirectional=false, string name="");
+layer GlobalMaxPool(layer parent, string name=""); //Todo: Implement
+
+layer GlobalAveragePool(layer parent, string name=""); //Todo: Implement
+
+layer MaxPool(layer parent, const vector<int> &pool_size, string padding="none", string name="");
+layer MaxPool(layer parent, const vector<int> &pool_size, const vector<int> &strides, string padding="none", string name="");
+
+
+// ---- RECURRENT LAYERS ----
+layer RNN(layer parent, int units, int num_layers, bool use_bias=true, float dropout=.0f, bool bidirectional=false, string name="");
+
+layer LSTM(layer parent, int units, int num_layers, bool use_bias=true, float dropout=.0f, bool bidirectional=false, string name="");
 
 
 //    // ---- LR SCHEDULERS ----
-//    static callback CosineAnnealingLR(int T_max, float eta_min, int last_epoch); //Todo: Implement
-//    static callback ExponentialLR(float gamma, int last_epoch); //Todo: Implement
-//    static callback MultiStepLR(const initializer_list<int> &milestones, float gamma, int last_epoch); //Todo: Implement
-//    static callback ReduceLROnPlateau(string metric, string mode, float factor, int patience, float threshold, string threshold_mode, int cooldown, float min_lr, float eps); //Todo: Implement
-//    static callback StepLR(int step_size, float gamma, int last_epoch); //Todo: Implement
+//    callback CosineAnnealingLR(int T_max, float eta_min, int last_epoch); //Todo: Implement
+//    callback ExponentialLR(float gamma, int last_epoch); //Todo: Implement
+//    callback MultiStepLR(const vector<int> &milestones, float gamma, int last_epoch); //Todo: Implement
+//    callback ReduceLROnPlateau(string metric, string mode, float factor, int patience, float threshold, string threshold_mode, int cooldown, float min_lr, float eps); //Todo: Implement
+//    callback StepLR(int step_size, float gamma, int last_epoch); //Todo: Implement
 
-    // ---- INITIALIZERS ----
-    static initializer Constant(float value); //Todo: Implement
-    static initializer Identity(float gain); //Todo: Implement
-    static initializer GlorotNormal(float seed); //Todo: Implement
-    static initializer GlorotUniform(float seed); //Todo: Implement
-    static initializer RandomNormal(float mean, float stdev, int seed); //Todo: Implement
-    static initializer RandomUniform(float minval, float maxval, int seed); //Todo: Implement
-    static initializer Orthogonal(float gain, int seed); //Todo: Implement
-
-
-    // ---- COMPUTING SERVICES ----
-    static compserv CS_CPU(int th);
-    static compserv CS_GPU(const initializer_list<int> &g);
-    static compserv CS_FGPA(const initializer_list<int> &f);
-
-    // ---- MODEL METHODS ----
-    static model Model(vlayer in, vlayer out);
-
-    static void build(model net, optimizer o, const initializer_list<Loss *> &lo, const initializer_list<Metric *> &me);
-    static void build(model net, optimizer o, const initializer_list<Loss *> &lo, const initializer_list<Metric *> &me, CompServ *cs);
-    static void build2(Net *m,  Optimizer *o, vector<Loss *> lo, vector<Metric *> me, CompServ *cs);
-
-    static string summary(model m);
-    static void load(model m,string fname);
-    static void save(model m,string fname);
-    static void plot(model m, string fname);
-    static void fit(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out, int batch, int epochs);
-    static void evaluate(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out);
-    static void predict(model m, const initializer_list<LTensor *> &in, const initializer_list<LTensor *> &out);
-    static model load_model(string fname); //Todo: Implement
-    static void save_model(model m, string fname); //Todo: Implement
-    static void set_trainable(model m); //Todo: Implement
-    static model zoo_models(string model_name); //Todo: Implement
-
-    // ---- LAYER METHODS ----
-    static void set_trainable(layer l); //Todo: Implement
-    static layer get_layer(model m, string layer_name); //Todo: Implement
+// ---- INITIALIZERS ----
+initializer Constant(float value); //Todo: Implement
+initializer Identity(float gain); //Todo: Implement
+initializer GlorotNormal(float seed); //Todo: Implement
+initializer GlorotUniform(float seed); //Todo: Implement
+initializer RandomNormal(float mean, float stdev, int seed); //Todo: Implement
+initializer RandomUniform(float minval, float maxval, int seed); //Todo: Implement
+initializer Orthogonal(float gain, int seed); //Todo: Implement
 
 
-    // ---- DATASETS ----
-    static void download_mnist();
+// ---- COMPUTING SERVICES ----
+compserv CS_CPU(int th);
+compserv CS_GPU(const vector<int> &g);
+compserv CS_FGPA(const vector<int> &f);
 
-    // ---- MODELS ----
-    static model get_model_mlp(int batch_size);
-    static model get_model_cnn(int batch_size);
-};
+// ---- MODEL METHODS ----
+model Model(vlayer in, vlayer out);
 
-extern EDDL eddl;
+void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me);
+void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs);
+
+string summary(model m);
+void load(model m,string fname);
+void save(model m,string fname);
+void plot(model m, string fname);
+void fit(model m, const vector<LTensor *> &in, const vector<LTensor *> &out, int batch, int epochs);
+void evaluate(model m, const vector<LTensor *> &in, const vector<LTensor *> &out);
+void predict(model m, const vector<LTensor *> &in, const vector<LTensor *> &out);
+model load_model(string fname); //Todo: Implement
+void save_model(model m, string fname); //Todo: Implement
+void set_trainable(model m); //Todo: Implement
+model zoo_models(string model_name); //Todo: Implement
+
+// ---- LAYER METHODS ----
+void set_trainable(layer l); //Todo: Implement
+layer get_layer(model m, string layer_name); //Todo: Implement
+
+
+// ---- DATASETS ----
+void download_mnist();
+
+// ---- MODELS ----
+model get_model_mlp(int batch_size);
+model get_model_cnn(int batch_size);
+
 
 #endif

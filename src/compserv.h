@@ -23,7 +23,6 @@
 
 #include <stdio.h>
 #include <string>
-#include <initializer_list>
 #include <vector>
 
 using namespace std;
@@ -38,7 +37,7 @@ public:
     vector<int> local_fpgas;
 
     // for local
-    CompServ(int threads, const initializer_list<int> &g, const initializer_list<int> &f);
+    CompServ(int threads, const vector<int> &g, const vector<int> &f);
 
     // for Distributed
     explicit CompServ(FILE *csspec);

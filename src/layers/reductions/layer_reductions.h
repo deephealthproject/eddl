@@ -62,7 +62,6 @@ public:
     vector<int> axis;
     bool keepdims;
 
-    LRMean(Layer *l, initializer_list<int> &axis, bool keepdims, string name, int dev);
     LRMean(Layer *l, vector<int> axis, bool keepdims, string name, int dev);
 
     void forward() override;
@@ -85,7 +84,6 @@ public:
     int rsize;
     vector<Layer *> layers;
 
-    LRVar(Layer *l, initializer_list<int> &axis, bool keepdims, string name, int dev);
     LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev);
 
     void forward() override;
@@ -108,7 +106,6 @@ public:
     int rsize;
     vector<Layer *> layers;
 
-    LRSum(Layer *l, initializer_list<int> &axis, bool keepdims, string name, int dev);
     LRSum(Layer *l, vector<int> axis, bool keepdims, string name, int dev);
 
     void forward() override;
@@ -131,7 +128,6 @@ public:
     int rsize;
     vector<Layer *> layers;
 
-    LRMax(Layer *l, initializer_list<int> &axis, bool keepdims, string name, int dev);
     LRMax(Layer *l, vector<int> axis, bool keepdims, string name, int dev);
 
     void forward() override;
@@ -154,7 +150,6 @@ public:
     int rsize;
     vector<Layer *> layers;
 
-    LRMin(Layer *l, initializer_list<int> &axis, bool keepdims, string name, int dev);
     LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev);
 
     void forward() override;

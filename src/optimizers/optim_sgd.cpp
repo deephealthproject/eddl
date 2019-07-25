@@ -35,10 +35,9 @@ SGD::SGD(float lr, float momentum, float weight_decay, bool nesterov) : Optimize
 
 }
 
-void SGD::change(const initializer_list<float> &p) {
-    vector<float> v = vector<float>(p.begin(), p.end());
-    lr = v[0];
-    mu = v[1];
+void SGD::change(vector<float> &p) {
+    lr = p[0];
+    mu = p[1];
 }
 
 Optimizer *SGD::clone() {

@@ -63,7 +63,6 @@ public:
 
     Tensor *mask;
 
-    LGauss(float mean, float stdev, initializer_list<int> &size, string name, int dev);
     LGauss(float mean, float stdev, vector<int> size, string name, int dev);
 
     void forward() override;
@@ -85,7 +84,6 @@ public:
 
     Tensor *mask;
 
-    LUniform(float low, float high, initializer_list<int> &size, string name, int dev);
     LUniform(float low, float high, vector<int> size, string name, int dev);
 
     void forward() override;

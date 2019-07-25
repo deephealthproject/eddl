@@ -22,14 +22,14 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "eddl.h"
-#include "eddl.h"
+#include "apis/eddl.h"
 
 int main(int argc, char **argv) {
 
-    Tensor *A=new Tensor({4,2,3,7});
-    Tensor *B=new Tensor({4,3});
-    Tensor *C=new Tensor({4,3});
+    int dev = DEV_CPU;
+    Tensor *A=new Tensor({4,2,3,7}, dev);
+    Tensor *B=new Tensor({4,3}, dev);
+    Tensor *C=new Tensor({4,3}, dev);
 
     vector<int> axis;
     axis.push_back(1);
@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
 
 
     cout<<"Mean\n";
-    Tensor::reduce(A,B,axis,"mean",false,NULL,0);
+    Tensor::reduce(A,B,axis,"mean", false,NULL,0);
 
     B->info();
     B->print();
@@ -109,19 +109,19 @@ int main(int argc, char **argv) {
     cout<<"EDDL Layers\n";
     cout<<"==================\n";
 
-    tensor t = eddl.T({1,10,10,4});
+    tensor t =T({1,10,10,4});
     t->data->set(1.0);
     t->data->ptr[0]=10;
 
     cout<<"\nMean\n";
-    layer m=eddl.ReduceMean(t,{1,2});
+    layer m=ReduceMean(t,{1,2});
     m->forward();
     m->output->info();
     m->output->print();
 
     cout<<"\nVar\n";
     //t->data->print();
-    layer v=eddl.ReduceVar(t,{1,3});
+    layer v=ReduceVar(t,{1,3});
 
     v->forward();
     v->output->info();

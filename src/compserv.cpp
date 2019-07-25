@@ -21,14 +21,13 @@
 
 #include <stdio.h>
 #include <string>
-#include <initializer_list>
 #include <vector>
 
 #include "compserv.h"
 
 
 // for local
-CompServ::CompServ(int t, const initializer_list<int> &g, const initializer_list<int> &f) {
+CompServ::CompServ(int t, const vector<int> &g, const vector<int> &f) {
     type = "local";
     local_threads = t;
     local_gpus = vector<int>(g.begin(), g.end());

@@ -35,16 +35,16 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev) : L
     this->use_bias = use_bias;
 
     input = parent->output;
-    output = new Tensor({input->shape[0], ndim}, dev);
+    output = new Tensor(vector<int>{input->shape[0], ndim}, dev);
     delta = new Tensor(output->getShape(), dev);
 
-    W = new Tensor({input->shape[1], ndim}, dev);
-    if (use_bias) bias = new Tensor({ndim}, dev);
+    W = new Tensor(vector<int>{input->shape[1], ndim}, dev);
+    if (use_bias) bias = new Tensor(vector<int>{ndim}, dev);
     params.push_back(W);
     if (use_bias) params.push_back(bias);
 
-    gW = new Tensor({input->shape[1], ndim}, dev);
-    if (use_bias) gbias = new Tensor({ndim}, dev);
+    gW = new Tensor(vector<int>{input->shape[1], ndim}, dev);
+    if (use_bias) gbias = new Tensor(vector<int>{ndim}, dev);
     gradients.push_back(gW);
     if (use_bias) gradients.push_back(gbias);
 
