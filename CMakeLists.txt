@@ -336,12 +336,12 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "..." FORCE)
 endif()
 install(TARGETS eddl
-		EXPORT EDDLConfig
+		EXPORT EDDLTargets
 		RUNTIME DESTINATION bin
 		LIBRARY DESTINATION lib
 		ARCHIVE DESTINATION lib/static
 		)
-install(EXPORT EDDLConfig DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(EXPORT EDDLTargets DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
 		DESTINATION include/eddl
         FILES_MATCHING PATTERN "*.h")
@@ -361,4 +361,9 @@ install(FILES
         ${Eigen_directory_files_to_install}
         DESTINATION "include/third_party/eigen/Eigen"
         )
-install(DIRECTORY ${EIGEN_SOURCE_DIR}/src DESTINATION "include/third_party/eigen/Eigen" COMPONENT Devel FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY ${ESCAPED_EIGEN_SOURCE_DIR}/src DESTINATION "include/third_party/eigen/Eigen" COMPONENT Devel FILES_MATCHING PATTERN "*.h")
+
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/EDDLConfig.cmake.in ${CMAKE_BINARY_DIR}/cmake/EDDLConfig.cmake @ONLY)
+install(FILES ${CMAKE_BINARY_DIR}/cmake/EDDLConfig.cmake
+        DESTINATION ${CMAKE_INSTALL_PREFIX}) 
