@@ -65,10 +65,10 @@ int main(int argc, char **argv) {
 
     // Build model with two losses and metrics
     build(net,
-               sgd(0.001, 0.9), // Optimizer
-               {LossFunc("mean_squared_error"),LossFunc("soft_cross_entropy")}, // Losses
-               {MetricFunc("mean_squared_error"),MetricFunc("categorical_accuracy")}, // Metrics
-               CS_CPU(4) // CPU with 4 threads
+          sgd(0.01, 0.9), // Optimizer
+          {"soft_cross_entropy", "mean_squared_error"}, // Losses
+          {"categorical_accuracy", "mean_squared_error"}, // Metrics
+          CS_CPU(4) // CPU with 4 threads
     );
 
     // Load dataset

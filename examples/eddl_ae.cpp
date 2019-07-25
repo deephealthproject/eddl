@@ -51,13 +51,13 @@ int main(int argc, char **argv) {
     // View model
     summary(net);
     plot(net, "model.pdf");
-
+    
     // Build model
     build(net,
-               sgd(0.01, 0.9), // Optimizer
-               {LossFunc("mean_squared_error")}, // Losses
-               {MetricFunc("mean_squared_error")}, // Metrics
-               CS_CPU(4) // CPU with 4 threads
+          sgd(0.01, 0.9), // Optimizer
+          {"mean_squared_error"}, // Losses
+          {"mean_squared_error"}, // Metrics
+          CS_CPU(4) // CPU with 4 threads
     );
 
     // Load dataset

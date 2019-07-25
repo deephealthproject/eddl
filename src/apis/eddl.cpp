@@ -533,12 +533,23 @@ void plot(model m, string fname) {
     m->plot(fname);
 }
 
-void build(model net, optimizer o, const vector<Loss *> &lo, const vector<Metric *> &me) {
+void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me) {
     build(net, o, lo, me, new CompServ(std::thread::hardware_concurrency(), {}, {}));
 }
 
-void build(model net, optimizer o, const vector<Loss *> &lo, const vector<Metric *> &me, CompServ *cs) {
-    net->build(o, lo, me, cs);
+void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs) {
+    vector<Loss*> l;
+    vector<Metric*> m;
+
+    // Replace string by functions
+    for(const auto & li : lo){
+        l.push_back(LossFunc(li));
+    }
+    for(const auto & mi : me){
+        m.push_back(MetricFunc(mi));
+    }
+
+    net->build(o, l, m, cs);
 }
 
 

@@ -64,11 +64,10 @@ int main(int argc, char **argv){
     // Build model
     build(net,
           sgd(0.01, 0.9), // Optimizer
-          {LossFunc("soft_cross_entropy")}, // Losses
-          {MetricFunc("categorical_accuracy")}, // Metrics
+          {"soft_cross_entropy"}, // Losses
+          {"categorical_accuracy"}, // Metrics
           CS_CPU(4) // CPU with 4 threads
     );
-    
     
     // Load and preprocess training data
     tensor X=T_load("trX.bin");

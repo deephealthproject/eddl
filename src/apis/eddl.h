@@ -218,8 +218,8 @@ compserv CS_FGPA(const vector<int> &f);
 // ---- MODEL METHODS ----
 model Model(vlayer in, vlayer out);
 
-void build(model net, optimizer o, const vector<Loss *> &lo, const vector<Metric *> &me);
-void build(model net, optimizer o, const vector<Loss *> &lo, const vector<Metric *> &me, CompServ *cs);
+void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me);
+void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs);
 
 string summary(model m);
 void load(model m,string fname);
