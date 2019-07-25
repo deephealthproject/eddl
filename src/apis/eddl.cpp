@@ -5,12 +5,12 @@
 // Boosting AI in Europe.
 //
 // Main authors and developers:
+//      Salva Carrión: salcarpo@prhlt.upv.es
 //      Roberto Paredes: rparedes@prhlt.upv.es
 //      Joan Ander Gómez: jon@prhlt.upv.es
 //
 //
 // Collaborators:
-//      Salva Carrión: salcarpo@prhlt.upv.es
 //      Mario Parreño: maparla@prhlt.upv.es
 //
 //
@@ -636,8 +636,6 @@ bool exist(string name) {
 
 
 //////
-
-
 void download_mnist() {
     // TODO: Too big, we should use the one in the PyEDDL
     // TODO: Need for "to_categorical" method
@@ -678,8 +676,6 @@ void download_mnist() {
 }
 
 
-
-
 model get_model_mlp(int batch_size){
     // Temp. for debugging
     // network
@@ -709,9 +705,6 @@ model get_model_cnn(int batch_size){
     l=MaxPool(Activation(Conv(l, 64, {3,3}),"relu"),{2,2});
     l=MaxPool(Activation(Conv(l, 128, {3,3}),"relu"),{2,2});
 
-    /*for(int i=0,k=16;i<3;i++,k=k*2)
-      l=ResBlock(l,k,2);
-  */
     l=Reshape(l,{batch_size,-1});
 
     l=Activation(Dense(l,32),"relu");
