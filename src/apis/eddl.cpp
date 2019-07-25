@@ -14,7 +14,7 @@
 //      Mario Parreño: maparla@prhlt.upv.es
 //
 //
-// To collaborate please contact rparedes@prhlt.upv.es
+// To collaborate please contact salcarpo@prhlt.upv.es
 //
 /////////////////////////////////////////////////////////////////////////////
 
