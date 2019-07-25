@@ -96,6 +96,8 @@ include_directories(src/tensor)
 # SET SOURCES *******************************
 SET(SOURCE_DIR "src")
 SET(CPP_SOURCES
+        src/apis/binder.cpp
+        src/apis/binder.h
         src/apis/eddl.cpp
         src/apis/eddl.h
         src/callbacks/callbacks.h

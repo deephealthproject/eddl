@@ -22,7 +22,8 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "apis/eddl.h"
+#include "apis/binder.h"
+//#include "apis/eddl.h"
 
 int main(int argc, char **argv) {
 
