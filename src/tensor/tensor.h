@@ -148,10 +148,9 @@ public:
 
     // Constructors
     Tensor();
-    Tensor(vector<int> shape, int dev=DEV_CPU);
-    Tensor(vector<int> shape, Tensor *T);
-    Tensor(vector<int> shape, float *fptr, int dev=DEV_CPU);
-    explicit Tensor(string fname, int bin=1);
+    Tensor(const vector<int> &shape, int dev=DEV_CPU);
+    Tensor(const vector<int> &shape, float *fptr, int dev=DEV_CPU);
+    Tensor(const vector<int> &shape, Tensor *T);
 
     ~Tensor();
 
@@ -167,6 +166,8 @@ public:
     
     void save(FILE *fe);
     void load(FILE *fe);
+    void load(std::string fname, int bin=1);
+
     // data
     void point2data(const vector<int>& shape, float *ptr);
     void copydata(const vector<int>& s, float *newptr);
