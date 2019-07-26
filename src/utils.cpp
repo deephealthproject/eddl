@@ -26,6 +26,7 @@
 
 #include "utils.h"
 #include <random>
+#include "sys/mman.h"
 
 #define PI 3.1415926
 #define MAX_RTABLE 100000
@@ -84,13 +85,32 @@ float gauss(int s, float mean, float sd) {
     return (RTable[posTable] * sd) + mean;
 }
 
+
 float *get_fmem(int size, char *str){
     float* ptr = nullptr;
+    bool error = false;
+
+    // New vs Malloc *******************
+    // New is the C++ way of doing it
+    // New is type-safe, Malloc is not
+    // New calls your type constructor, Malloc not
     try{
         ptr = new float[size];
     }
     catch (std::bad_alloc& badAlloc){
-        fprintf(stderr, "Malloc error allocating %lu bytes in %s\n", size*sizeof(float), str);
+        error=true;
+    }
+
+    // Check for errors
+    // mlock tell the system to lock to a specified memory range, and to not allow
+    // that memory to be page
+    // More info:
+    // https://stackoverflow.com/questions/48585079/malloc-on-linux-without-overcommitting
+    // https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_MRG/1.3/html/Realtime_Reference_Guide/sect-Realtime_Reference_Guide-Memory_allocation-Using_mlock_to_avoid_memory_faults.html
+    if (mlock(ptr, size) != 0  || error) {
+        delete ptr;
+        fprintf(stderr, "Error allocating %lu bytes in %s\n", size*sizeof(float), str);
+        exit(EXIT_FAILURE);
     }
     return ptr;
 }
