@@ -32,21 +32,43 @@ message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS} )
 # CUDA FLAGS
 #set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -lcudart -lcublas -lcurand")
 
+# Check for CUDA support
+set(EDDL_WITH_CUDA ON CACHE BOOL "Enable CUDA support if checked")
+if(EDDL_WITH_CUDA)
+	include(CheckLanguage)
+	check_language(CUDA)	
+	if(CMAKE_CUDA_COMPILER)
+		enable_language(CUDA)
+	else()
+		message(WARNING "No CUDA support")
+	endif()
+endif()
+
 # SET STATIC/DYNAMIC RUNTIME
 set(EDDL_SHARED OFF CACHE BOOL "Whether to build a static or dynamic library")
 
-# Microsoft Visual C++
+# Microsoft Visual C++ - set static/dynamic runtime
 if(MSVC)
     if(EDDL_SHARED)
         message(STATUS "Setting dinamic runtime for MSVC")
         foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
             string(REGEX REPLACE "/MT" "/MD" ${flag_var} "${${flag_var}}")
         endforeach(flag_var)
+        if (EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
+			foreach(flag_var CMAKE_CUDA_FLAGS_DEBUG CMAKE_CUDA_FLAGS_RELEASE CMAKE_CUDA_FLAGS_MINSIZEREL CMAKE_CUDA_FLAGS_RELWITHDEBINFO) 
+				string(REGEX REPLACE "-MT" "-MD" ${flag_var} "${${flag_var}}")
+			endforeach(flag_var)
+        endif()
     else(EDDL_SHARED)
         message(STATUS "Setting static runtime for MSVC")
         foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
             string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
         endforeach(flag_var)
+        if (EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
+			foreach(flag_var CMAKE_CUDA_FLAGS_DEBUG CMAKE_CUDA_FLAGS_RELEASE CMAKE_CUDA_FLAGS_MINSIZEREL CMAKE_CUDA_FLAGS_RELWITHDEBINFO) 
+				string(REGEX REPLACE "-MD" "-MT" ${flag_var} "${${flag_var}}")
+			endforeach(flag_var)
+        endif()
 	endif(EDDL_SHARED)
 
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -71,6 +93,7 @@ endmacro()
 find_package(Git QUIET)
 eddl_update_third_party(eigen)
 include_directories(third_party/eigen)
+
 
 # Add the given directories to those the compiler uses to search for include files
 include_directories(src)
@@ -223,7 +246,10 @@ if(EDDL_SHARED)
 else(EDDL_SHARED)
 	add_library(eddl STATIC "")
 endif(EDDL_SHARED)
-target_sources(eddl PRIVATE ${SOURCES})
+target_sources(eddl PRIVATE ${CPP_SOURCES})
+if(EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
+    target_sources(eddl PRIVATE ${CUDA_SOURCES})
+endif()
 target_include_directories(eddl PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 	$<INSTALL_INTERFACE:include>
@@ -332,7 +358,6 @@ endif(BUILD_EXAMPLES)
 
 # [INSTALL] Install the EDDL library
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    message(STATUS "....")
     set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "..." FORCE)
 endif()
 install(TARGETS eddl
