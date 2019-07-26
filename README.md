@@ -37,7 +37,7 @@ There are some interesting flags to choose what to compile:
 - `-DBUILD_TESTS=ON`: Compiles tests
 - `-DBUILD_EXAMPLES=ON`: Compiles examples
 
-> By default, all of them are enabled.
+<!-- > By default, all of them are enabled. -->
 
 # Windows specific installation
 
@@ -125,6 +125,14 @@ You can find more examples in the _examples_ folder.
 | **Windows CPU** |  [![Build Status](https://travis-ci.org/salvacarrion/EDDL.svg?branch=master)](https://travis-ci.org/salvacarrion/EDDL)|
 | **Windows GPU** |  [![Build Status](https://travis-ci.org/salvacarrion/EDDL.svg?branch=master)](https://travis-ci.org/salvacarrion/EDDL)|
 
+| System  |  Compiler  | Status |
+|:-------:|:----------:|:------:|
+| Windows (CPU) | VS 15.9.11 | [![Build Status](https://jenkins-master-deephealth-unix01.ing.unimore.it/badge/job/DeepHealth/job/eddl/job/master/windows_end?)](https://jenkins-master-deephealth-unix01.ing.unimore.it/job/DeepHealth/job/eddl/job/master/)        |
+| Linux (CPU)   | GCC 5.5.0  | [![Build Status](https://jenkins-master-deephealth-unix01.ing.unimore.it/badge/job/DeepHealth/job/eddl/job/master/linux_end?)](https://jenkins-master-deephealth-unix01.ing.unimore.it/job/DeepHealth/job/eddl/job/master/)        |
+| Windows (GPU) | VS 15.9.11 |         |
+| Linux (GPU)   | GCC 5.5.0  |         |
+
+Documentation available [here](http://imagelab.ing.unimore.it/eddl/).
 
 # Python wrapper
 
