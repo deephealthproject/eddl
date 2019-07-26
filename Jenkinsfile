@@ -14,7 +14,7 @@ pipeline {
                         stage('Build') {
                             steps {
                                 echo 'Building..'
-                                cmakeBuild buildDir: 'build', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
+                                cmakeBuild buildDir: 'build', cmakeArgs: '-D BUILD_TESTS=ON', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
                              }
                         }
                         stage('Test') {
@@ -38,7 +38,7 @@ pipeline {
                         stage('Build') {
                             steps {
                                 echo 'Building..'
-                                cmakeBuild buildDir: 'build', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
+                                cmakeBuild buildDir: 'build', cmakeArgs: '-D BUILD_TESTS=ON',  installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
                             }
                         }
                         stage('Test') {
