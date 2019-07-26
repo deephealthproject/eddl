@@ -132,6 +132,8 @@ You can find more examples in the _examples_ folder.
 | Windows (GPU) | VS 15.9.11 |         |
 | Linux (GPU)   | GCC 5.5.0  |         |
 
+Documentation available [here](http://imagelab.ing.unimore.it/eddl/).
+
 # Python wrapper
 
 If you are not a big fan of C++, you can always try our [PyEDDL](https://github.com/deephealthproject/pyeddl), a python wrapper for this library.
