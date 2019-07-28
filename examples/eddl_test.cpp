@@ -23,8 +23,15 @@
 #include <iostream>
 
 #include "apis/eddl.h"
+#include "../utils.h"
+
+using namespace eddl;
+
 
 int main(int argc, char **argv) {
+
+//    get_fmem(100000000, "Ok!"); // 0.4GB
+//    get_fmem(1000000000, "Wrong!"); // 4GB
 
     int dev = DEV_CPU;
     Tensor *A=new Tensor({4,2,3,7}, dev);

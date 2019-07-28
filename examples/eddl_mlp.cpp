@@ -24,6 +24,9 @@
 
 #include "apis/eddl.h"
 
+
+using namespace eddl;
+
 int main(int argc, char **argv) {
 
     // Download dataset
