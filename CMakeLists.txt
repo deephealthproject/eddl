@@ -220,6 +220,7 @@ SET(CPP_SOURCES
         src/compserv.h
         src/net.cpp
         src/net.h
+        src/system_info.h
         src/utils.cpp
         src/utils.h
         )
