@@ -44,15 +44,15 @@ __global__ void conv2D(float* I, int batch,int irows,int icols, int idepth, floa
    int or=(bm%rc)/ocols;
    int oc=(bm%rc)%ocols;
 
-   // input pixel at batch=ob, coord=(or,oc) at map=oz
+   //
    int ircd=irows*icols*idepth;
    int irc=irows*icols;
-
 
    int kr2=kr/2;
    int kc2=kc/2;
    int krc=kr*kc;
    int ptrI;
+
    // Select filter oz from nk
    int ptrKb=oz*kr*kc*idepth;
 

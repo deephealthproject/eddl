@@ -27,7 +27,7 @@
 
 #include "system_info.h"
 
-#ifdef EDDL_LINUX || EDDL_UNIX
+#ifdef EDDL_LINUX || EDDL_UNIX || EDDL_APPLE
 #include "sys/mman.h"
 #endif
 
@@ -116,19 +116,21 @@ float *get_fmem(int size, char *str){
     // https://stackoverflow.com/questions/48585079/malloc-on-linux-without-overcommitting
     // https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_MRG/1.3/html/Realtime_Reference_Guide/sect-Realtime_Reference_Guide-Memory_allocation-Using_mlock_to_avoid_memory_faults.html
 
-#ifdef EDDL_LINUX 
+
+
+#ifdef EDDL_LINUX || EDDL_APPLE
     if (mlock(ptr, size) != 0 || error) {
         delete ptr;
 
         fprintf(stderr, "Error allocating %s in %s\n", humanSize(size*sizeof(float)), str);
         exit(EXIT_FAILURE);
     }
-#endif 
+#endif
 
-#ifdef EDDL_WINDOWS 
+#ifdef EDDL_WINDOWS
     if (VirtualLock(ptr, size) == 0 || error) {
         delete ptr;
-        fprintf(stderr, "Error allocating %lu bytes in %s\n", size * sizeof(float), str);
+        fprintf(stderr, "Error allocating %s in %s\n", humanSize(size*sizeof(float)), str);
         exit(EXIT_FAILURE);
     }
 #endif

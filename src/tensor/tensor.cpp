@@ -239,17 +239,11 @@ void Tensor::load(std::string fname, int bin) {
           stride.push_back(s);
         }
 
+        ptr = get_fmem(size,"Tensor::Tensor");
         if (ndim == 2) {
-            //ptr=(float *)malloc(size*sizeof(float));
-            //Eigen::Map<Eigen::MatrixXf> mat(ptr,shape[1],shape[0]);
-            //ptr2=&mat;
+          new(&mat) Eigen::Map<Eigen::MatrixXf>(ptr, shape[1], shape[0]);
+          ptr2 = &mat;
 
-            mat = Eigen::MatrixXf(shape[1], shape[0]);
-            ptr2 = &mat;
-            ptr = &(mat(0, 0));
-
-        } else {
-            ptr = get_fmem(size,"Tensor::Tensor");
         }
 
         tsem = new mutex();
@@ -286,13 +280,13 @@ void Tensor::load(std::string fname, int bin) {
           stride.push_back(s);
         }
 
+        ptr = get_fmem(size,"Tensor::Tensor");
         if (ndim == 2) {
-            mat = Eigen::MatrixXf(shape[1], shape[0]);
-            ptr2 = &mat;
-            ptr = &(mat(0, 0));
-        } else {
-            ptr = get_fmem(size,"Tensor::Tensor");
+          new(&mat) Eigen::Map<Eigen::MatrixXf>(ptr, shape[1], shape[0]);
+          ptr2 = &mat;
+
         }
+
 
         tsem = new mutex();
 
