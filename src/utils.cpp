@@ -27,12 +27,22 @@
 
 #include "system_info.h"
 #include <fstream>
-#include<string.h>
+#include <string.h>
 
 #ifdef EDDL_LINUX
 #include "sys/mman.h"
 #include <sys/sysinfo.h>
+#include <unistd.h>
+#endif
 
+#ifdef EDDL_APPLE
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#include <mach/mach.h>
+#include <mach/vm_statistics.h>
+#include <mach/mach_types.h>
+#include <mach/mach_init.h>
+#include <mach/mach_host.h>
 #endif
 
 #ifdef EDDL_WINDOWS
@@ -120,29 +130,15 @@ float *get_fmem(int size, char *str){
     // https://stackoverflow.com/questions/48585079/malloc-on-linux-without-overcommitting
     // https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_MRG/1.3/html/Realtime_Reference_Guide/sect-Realtime_Reference_Guide-Memory_allocation-Using_mlock_to_avoid_memory_faults.html
 
+    // Check if free memory is bigger than requested
+    unsigned long freemem = get_free_mem();
+    if (size*sizeof(float) > freemem) {
+        error=true;
+    }
 
-    #ifdef EDDL_LINUX
-        unsigned long mem = get_free_mem();
-        if (size*sizeof(float) > mem) {
-            error=true;
-        }
-    #endif
-
-    #ifdef EDDL_APPLE
-        if (mlock(ptr, size*sizeof(float)) != 0) {
-            error=true;
-        }
-    #endif
-
-    #ifdef EDDL_WINDOWS
-        if (VirtualLock(ptr, size*sizeof(float)) == 0) {
-             error=true;
-        }
-    #endif
-
+    // Not enough free memory
     if (error) {
         delete ptr;
-
         fprintf(stderr, "Error allocating %s in %s\n", humanSize(size*sizeof(float)), str);
         exit(EXIT_FAILURE);
     }
@@ -167,6 +163,7 @@ char *humanSize(uint64_t bytes){
     return output;
 }
 
+
 #ifdef EDDL_LINUX
     unsigned long get_free_mem() {
         std::string token;
@@ -188,14 +185,37 @@ char *humanSize(uint64_t bytes){
     }
 #endif
 
+
+
 #ifdef EDDL_APPLE
 unsigned long get_free_mem() {
-
+    // Not sure of its correctness
+    mach_port_t host_port;
+    mach_msg_type_number_t host_size;
+    vm_size_t pagesize;
+    host_port = mach_host_self();
+    host_size = sizeof(vm_statistics64) / sizeof(integer_t);
+    host_page_size(host_port, &pagesize);
+    pagesize = 0;
+    int mib[2] = { CTL_HW, HW_PAGESIZE };
+    size_t length = sizeof(pagesize);
+    const int sysctlResult = sysctl(mib, 2, &pagesize, &length, NULL, 0);
+    struct vm_statistics64 vm_stat{};
+    if (host_statistics64(host_port, HOST_VM_INFO64, (host_info64_t)&vm_stat, &host_size) != KERN_SUCCESS) {
+        fprintf(stderr,"Failed to fetch vm statistics");
+        exit(EXIT_FAILURE);
+    }
+    unsigned long mem_free = vm_stat.free_count * pagesize;
+    return mem_free;
 }
+
 #endif
 
 #ifdef EDDL_WINDOWS
 unsigned long get_free_mem() {
-
+    MEMORYSTATUSEX status;
+    status.dwLength = sizeof(status);
+    GlobalMemoryStatusEx(&status);
+    return status.ullTotalPhys;
 }
 #endif
