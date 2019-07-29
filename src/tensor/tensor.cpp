@@ -355,7 +355,7 @@ Tensor *Tensor::share() {
 ///////////////////////////////////////////
 Tensor::~Tensor() {
     if (isCPU()) {
-        if (ndim != 2) free(ptr);
+        if (ndim != 2) delete ptr;
     }
 #ifdef cGPU
     else if (isGPU())
@@ -437,7 +437,7 @@ void Tensor::print() {
               printf("%f ",v[i]);
               printf("\n");
           }
-          free(v);
+          delete v;
       }
 #endif
 #ifdef cFPGA

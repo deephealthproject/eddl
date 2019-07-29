@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <cmath>
 
 #include "apis/eddl.h"
 #include "../utils.h"

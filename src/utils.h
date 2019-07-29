@@ -18,7 +18,8 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#include <stdio.h>
+#include <cstdio>
+#include <cstdint> // uint64_t
 
 #ifndef EDDLL_UTILS_H
 #define EDDLL_UTILS_H
@@ -36,5 +37,7 @@ void gen_rtable();
 float gauss(int s, float mean, float sd);
 
 float *get_fmem(int size,char *str);
+
+char *humanSize(uint64_t bytes);
 
 #endif //EDDLL_UTILS_H
