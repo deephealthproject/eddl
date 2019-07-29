@@ -285,7 +285,7 @@ target_include_directories(eddl PUBLIC
 set_target_properties(eddl PROPERTIES OUTPUT_NAME_DEBUG "eddld")
 set_target_properties(eddl PROPERTIES OUTPUT_NAME_RELEASE "eddl")
 set_target_properties(eddl PROPERTIES POSITION_INDEPENDENT_CODE ON)
-#set_target_properties(eddl PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+set_target_properties(eddl PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 # pthreads setup for windows os
 # The following commands should be removed when pthread linux

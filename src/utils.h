@@ -40,4 +40,6 @@ float *get_fmem(int size,char *str);
 
 char *humanSize(uint64_t bytes);
 
+unsigned long get_free_mem();
+
 #endif //EDDLL_UTILS_H

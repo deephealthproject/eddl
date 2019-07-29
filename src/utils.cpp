@@ -26,9 +26,13 @@
 #include <random>
 
 #include "system_info.h"
+#include <fstream>
+#include<string.h>
 
-#ifdef EDDL_LINUX || EDDL_UNIX || EDDL_APPLE
+#ifdef EDDL_LINUX
 #include "sys/mman.h"
+#include <sys/sysinfo.h>
+
 #endif
 
 #ifdef EDDL_WINDOWS
@@ -117,23 +121,31 @@ float *get_fmem(int size, char *str){
     // https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_MRG/1.3/html/Realtime_Reference_Guide/sect-Realtime_Reference_Guide-Memory_allocation-Using_mlock_to_avoid_memory_faults.html
 
 
+    #ifdef EDDL_LINUX
+        unsigned long mem = get_free_mem();
+        if (size*sizeof(float) > mem) {
+            error=true;
+        }
+    #endif
 
-#ifdef EDDL_LINUX || EDDL_APPLE
-    if (mlock(ptr, size*4) != 0 || error) {
+    #ifdef EDDL_APPLE
+        if (mlock(ptr, size*sizeof(float)) != 0) {
+            error=true;
+        }
+    #endif
+
+    #ifdef EDDL_WINDOWS
+        if (VirtualLock(ptr, size*sizeof(float)) == 0) {
+             error=true;
+        }
+    #endif
+
+    if (error) {
         delete ptr;
 
         fprintf(stderr, "Error allocating %s in %s\n", humanSize(size*sizeof(float)), str);
         exit(EXIT_FAILURE);
     }
-#endif
-
-#ifdef EDDL_WINDOWS
-    if (VirtualLock(ptr, size) == 0 || error) {
-        delete ptr;
-        fprintf(stderr, "Error allocating %s in %s\n", humanSize(size*sizeof(float)), str);
-        exit(EXIT_FAILURE);
-    }
-#endif
 
     return ptr;
 }
@@ -154,3 +166,36 @@ char *humanSize(uint64_t bytes){
     sprintf(output, "%.02lf %s", dblBytes, suffix[i]);
     return output;
 }
+
+#ifdef EDDL_LINUX
+    unsigned long get_free_mem() {
+        std::string token;
+        std::string type = "MemFree:";
+        std::ifstream file("/proc/meminfo");
+        while(file >> token) {
+            if(token == type) {
+                unsigned long mem;
+                if(file >> mem) {
+                    return mem * 1024; // From kB to Bytes
+                } else {
+                    return 0;
+                }
+            }
+            // ignore rest of the line
+            file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        return 0; // nothing found
+    }
+#endif
+
+#ifdef EDDL_APPLE
+unsigned long get_free_mem() {
+
+}
+#endif
+
+#ifdef EDDL_WINDOWS
+unsigned long get_free_mem() {
+
+}
+#endif
