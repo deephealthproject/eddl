@@ -93,7 +93,8 @@ float *get_fmem(int size, char *str){
     // New vs Malloc *******************
     // New is the C++ way of doing it
     // New is type-safe, Malloc is not
-    // New calls your type constructor, Malloc not
+    // New calls your type constructor, Malloc not - Same for destructor
+    // New is an operator, Malloc a function (slower)
     try{
         ptr = new float[size];
     }

@@ -18,8 +18,8 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#include <stdio.h>
-#include <stdint.h> // uint64_t
+#include <cstdio>
+#include <cstdint> // uint64_t
 
 #ifndef EDDLL_UTILS_H
 #define EDDLL_UTILS_H
