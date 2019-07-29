@@ -119,7 +119,7 @@ float *get_fmem(int size, char *str){
 
 
 #ifdef EDDL_LINUX || EDDL_APPLE
-    if (mlock(ptr, size) != 0 || error) {
+    if (mlock(ptr, size*4) != 0 || error) {
         delete ptr;
 
         fprintf(stderr, "Error allocating %s in %s\n", humanSize(size*sizeof(float)), str);

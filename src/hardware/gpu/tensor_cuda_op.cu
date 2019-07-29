@@ -95,7 +95,6 @@ static const char *_curandGetErrorEnum(curandStatus_t error)
 
 }
 
-
 void check_cublas(cublasStatus_t status, const char *f)
 {
   if ( status!=  CUBLAS_STATUS_SUCCESS)
@@ -114,8 +113,8 @@ void check_curand(curandStatus_t status, const char *f)
   }
 }
 
-
 ///////////////////////////////////////////
+
 void gpu_set(Tensor *A,float v) {
 
   int device=A->gpu_device;
@@ -128,7 +127,6 @@ void gpu_set(Tensor *A,float v) {
 
 }
 
-///////////////////////////////////////////
 void gpu_mult(Tensor *A,float v) {
 
   int device=A->gpu_device;
@@ -140,7 +138,7 @@ void gpu_mult(Tensor *A,float v) {
   check_cuda(cudaDeviceSynchronize(),"mult");
 
 }
-///////////////////////////////////////////
+
 void gpu_sum(Tensor *A,float v) {
 
   int device=A->gpu_device;
@@ -153,7 +151,6 @@ void gpu_sum(Tensor *A,float v) {
 
 }
 
-///////////////////////////////////////////
 void gpu_log(Tensor *A) {
 
   int device=A->gpu_device;
@@ -166,7 +163,6 @@ void gpu_log(Tensor *A) {
 
 }
 
-///////////////////////////////////////////
 void gpu_exp(Tensor *A) {
 
   int device=A->gpu_device;
@@ -179,7 +175,6 @@ void gpu_exp(Tensor *A) {
 
 }
 
-///////////////////////////////////////////
 void gpu_sqrt(Tensor *A) {
 
   int device=A->gpu_device;
@@ -192,7 +187,6 @@ void gpu_sqrt(Tensor *A) {
 
 }
 
-///////////////////////////////////////////
 void gpu_sqr(Tensor *A) {
 
   int device=A->gpu_device;
@@ -205,8 +199,6 @@ void gpu_sqr(Tensor *A) {
 
 }
 
-
-///////////////////////////////////////////
 void gpu_mask(Tensor *A,float v) {
 
   int device=A->gpu_device;
@@ -241,6 +233,7 @@ void gpu_total_sum(Tensor *A,float *tot)
 }
 
 ///////////////////////////////////////////
+
 void gpu_copy_to_gpu(float *nptr,Tensor *A)
 {
   int device=A->gpu_device;
@@ -248,7 +241,6 @@ void gpu_copy_to_gpu(float *nptr,Tensor *A)
   check_cuda(cudaMemcpy(A->ptr,nptr,A->size*sizeof(float),cudaMemcpyHostToDevice),"gpu_copy_to_gpu");
 }
 
-///////////////////////////////////////////
 void gpu_copy_from_gpu(Tensor *A,float *nptr)
 {
   int device=A->gpu_device;
@@ -256,7 +248,6 @@ void gpu_copy_from_gpu(Tensor *A,float *nptr)
   check_cuda(cudaMemcpy(nptr,A->ptr,A->size*sizeof(float),cudaMemcpyDeviceToHost),"gpu_copy_to_gpu");
 }
 
-///////////////////////////////////////////
 void gpu_copy_gpu(Tensor *A,Tensor *B)
 {
   int device=A->gpu_device;
@@ -340,6 +331,44 @@ void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC)
 
 }
 
+void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC)
+{
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    int m=A->shape[1];
+    int n=B->shape[0];
+    int ldA=A->shape[1];
+    int ldB=B->shape[1];
+    int ldC=A->shape[1];
+
+    float alfa=scA;
+    float beta=scB;
+    float one=1.0;
+
+
+    if (incC){
+        check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A->ptr,ldA,&one,C->ptr,ldB,C->ptr,ldC),"sum2D");
+        check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,B->ptr,ldA,&one,C->ptr,ldB,C->ptr,ldC),"sum2D");
+    }
+    else
+        check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A->ptr,ldA,&beta,B->ptr,ldB,C->ptr,ldC),"sum2D");
+
+}
+
+void gpu_sum(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC)
+{
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A)
+
+
+    sum<<<dimGrid,dimBlock>>>(scA,A->ptr,scB,B->ptr,C->ptr,incC,A->size);
+    check_cuda(cudaDeviceSynchronize(),"sum");
+}
+
+///////////////////////////////////////////
 
 void gpu_el_mult(Tensor *A, Tensor *B, Tensor *C,int incC)
 {
@@ -365,47 +394,8 @@ void gpu_el_div(Tensor *A, Tensor *B, Tensor *C,int incC)
   check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
 }
 
-
 ///////////////////////////////////////////
-void gpu_sum(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC)
-{
-  int device=A->gpu_device;
-  cudaSetDevice(device);
 
-  setDims(A)
-
-
-  sum<<<dimGrid,dimBlock>>>(scA,A->ptr,scB,B->ptr,C->ptr,incC,A->size);
-  check_cuda(cudaDeviceSynchronize(),"sum");
-}
-///////////////////////////////////////////
-void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC)
-{
-  int device=A->gpu_device;
-  cudaSetDevice(device);
-
-  int m=A->shape[1];
-  int n=B->shape[0];
-  int ldA=A->shape[1];
-  int ldB=B->shape[1];
-  int ldC=A->shape[1];
-
-  float alfa=scA;
-  float beta=scB;
-  float one=1.0;
-
-
-  if (incC){
-    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A->ptr,ldA,&one,C->ptr,ldB,C->ptr,ldC),"sum2D");
-    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,B->ptr,ldA,&one,C->ptr,ldB,C->ptr,ldC),"sum2D");
-  }
-  else
-    check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A->ptr,ldA,&beta,B->ptr,ldB,C->ptr,ldC),"sum2D");
-
-}
-
-
-///////////////////////////////////////////
 void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
 {
   int device=A->gpu_device;
@@ -420,7 +410,7 @@ void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
   check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
 
 }
-///////////////////////////////////////////
+
 void gpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C)
 {
   int device=A->gpu_device;
@@ -434,9 +424,6 @@ void gpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C)
   check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
 
 }
-
-
-///////////////////////////////////////////
 
 void gpu_reduce_sum2D(Tensor *A,Tensor *B,int axis,int incB)
 {
@@ -454,11 +441,9 @@ void gpu_reduce_sum2D(Tensor *A,Tensor *B,int axis,int incB)
 
   check_cuda(cudaDeviceSynchronize(),"reduce_sum2D");
 }
-///////////////////////////////////////////
 
 ///////////////////////////////////////////
-////// RAND
-///////////////////////////////////////////
+
 void gpu_rand_uniform(Tensor *A, float v)
 {
   int device=A->gpu_device;
@@ -473,7 +458,7 @@ void gpu_rand_uniform(Tensor *A, float v)
   check_cuda(cudaDeviceSynchronize(),"gpu_rand_uniform");
 
 }
-///////////////////////////////////////////
+
 void gpu_rand_suniform(Tensor *A, float v)
 {
   int device=A->gpu_device;
@@ -490,7 +475,6 @@ void gpu_rand_suniform(Tensor *A, float v)
 
 }
 
-///////////////////////////////////////////
 void gpu_rand_gaussian(Tensor *A, float m,float s)
 {
   int device=A->gpu_device;
@@ -507,7 +491,6 @@ void gpu_rand_gaussian(Tensor *A, float m,float s)
 
 }
 
-///////////////////////////////////////////
 void gpu_rand_binary(Tensor *A, float v)
 {
   int device=A->gpu_device;
@@ -520,7 +503,6 @@ void gpu_rand_binary(Tensor *A, float v)
   check_cuda(cudaDeviceSynchronize(),"gpu_rand_binary");
 
 }
-
 
 
 ///////////////////////////////////////////
@@ -537,7 +519,6 @@ void gpu_cent(Tensor *A,Tensor *B,Tensor *C)
 
 }
 
-////////////////////////////////////
 void gpu_accuracy(Tensor *A,Tensor *B,int *acc)
 {
   int device=A->gpu_device;
@@ -564,9 +545,8 @@ void gpu_accuracy(Tensor *A,Tensor *B,int *acc)
 
 }
 
-
-
 ////////////////////////////////////
+
 void gpu_relu(Tensor *A,Tensor *B)
 {
   int device=A->gpu_device;
@@ -577,7 +557,6 @@ void gpu_relu(Tensor *A,Tensor *B)
   relu<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->size);
   check_cuda(cudaDeviceSynchronize(),"gpu_relu");
 }
-
 
 void gpu_d_relu(Tensor *D,Tensor *I,Tensor *PD)
 {
@@ -591,6 +570,7 @@ void gpu_d_relu(Tensor *D,Tensor *I,Tensor *PD)
 }
 
 ////////////////////////////////////
+
 void gpu_softmax(Tensor *A,Tensor *B)
 {
   int device=A->gpu_device;
@@ -625,7 +605,6 @@ float* auxE=NULL;
   gpu_delete_tensor(device,aux);
 }
 
-
 void gpu_d_softmax(Tensor *D,Tensor *I,Tensor *PD)
 {
   int device=D->gpu_device;
@@ -636,9 +615,6 @@ void gpu_d_softmax(Tensor *D,Tensor *I,Tensor *PD)
   d_relu<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,D->size);
   check_cuda(cudaDeviceSynchronize(),"gpu_relu");
 }
-
-
-
 
 
 ////////////////////////////////////
@@ -675,7 +651,6 @@ void gpu_conv2D(ConvolDescriptor *D)
 
 }
 
-
 void gpu_conv2D_grad(ConvolDescriptor *D)
 {
 
@@ -686,7 +661,6 @@ void gpu_conv2D_grad(ConvolDescriptor *D)
   
 }
 
-
 void gpu_conv2D_back(ConvolDescriptor *D)
 {
 
@@ -696,13 +670,3 @@ void gpu_conv2D_back(ConvolDescriptor *D)
 
 }
 
-
-
-
-
-
-
-
-
-
-//////////////
