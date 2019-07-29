@@ -641,10 +641,48 @@ void gpu_d_softmax(Tensor *D,Tensor *I,Tensor *PD)
 
 
 
-
-
-
-
-
-
 ////////////////////////////////////
+/*
+ConvolDescriptor
+
+int nk, kr, kc, kz;
+int sr, sc;
+int ir, ic, iz;
+int r, c, z;
+int padr, padc;
+
+Tensor *I; // Input map
+Tensor *ID;// Delta input map
+Tensor *K; // filters
+Tensor *bias; // bias
+Tensor *gK;// gradient filters
+Tensor *gbias;// gradient bias
+Tensor *D; // Delta
+Tensor *O; // Outputmap
+*/
+
+void gpu_conv2D(ConvolDescriptor *D)
+{
+
+  int device=D->I->gpu_device;
+  cudaSetDevice(device);
+
+  setDims(D->O)
+
+  conv2D<<<dimGrid,dimBlock>>>(D->I, D->I->shape[0],D->ir,D->ic,D->iz,D->K,D->nk,D->kr,D->kc,D->O,D->r,D->c,D->sr,D->sc,D->padr);
+
+  check_cuda(cudaDeviceSynchronize(),"gpu_relu");
+
+}
+
+
+
+
+
+
+
+
+
+
+
+//////////////

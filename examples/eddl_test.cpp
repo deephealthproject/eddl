@@ -54,6 +54,24 @@ int main(int argc, char **argv) {
     B->info();
     B->print();
 
+
+    A->set(1.0);
+    A->print();
+
+  ////////////////
+    Tensor::reduce(A,B,axis,"mean", false,NULL,0);
+    B->info();
+    B->print();
+
+    Tensor::reduced_op(A,B, axis,"sum",A,0);
+
+    A->print();
+
+    Tensor::delta_reduced_op(A,B, axis,"sum",C,0);
+
+    C->print();
+    getchar();
+
  /////
     cout<<"Max\n";
     Tensor::reduce(A,B,axis,"max",false,C,0);

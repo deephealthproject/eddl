@@ -64,4 +64,8 @@ void gpu_relu(Tensor *A,Tensor *B);
 void gpu_d_relu(Tensor *D,Tensor *I,Tensor *PD);
 void gpu_softmax(Tensor *A,Tensor *B);
 
+
+void gpu_conv2D(ConvolDescriptor *D);
+
+
 #endif

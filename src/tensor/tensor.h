@@ -163,7 +163,7 @@ public:
     void print();
 
     void save(string s);
-    
+
     void save(FILE *fe);
     void load(FILE *fe);
     void load(std::string fname, int bin=1);
@@ -260,6 +260,8 @@ public:
     static void reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims, Tensor *C, int incB);
     static void delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims, Tensor *C,int incB);
 
+    static void reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
+    static void delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC);
 //////
     static void cent(Tensor *A, Tensor *B, Tensor *C);
 

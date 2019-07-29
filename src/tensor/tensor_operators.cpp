@@ -834,7 +834,165 @@ void Tensor::delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, b
         }
     }//i
 }
+///////////////////////////////////////
+//// reduced operations
+///////////////////////////////////////
+void Tensor::reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC){
+    // Check device
+    if ((A->device != B->device)||(A->device != C->device)){
+        msg("Tensors in different devices", "Tensor::reduce_op");
+    }
 
+    // Check number of dimensions
+    if ((A->ndim - axis.size()) != B->ndim) msg("Incorrect dims ", "Tensor::reduce_sum");
+    if (!eqsize(A,C)) msg("Incorrect dims ", "Tensor::reduce_op");
+
+    int i,j,k,l,s;
+    int m,d;
+
+
+    // Check A and B have the same shape ignoring axis to be reduced [Axis=(1)]: (3, 2*, 1) == (3, 1)
+    j=0;
+    for(i=0;i<A->ndim;i++) {
+        // Check if "this" dimension is going to be reduced
+        bool isFound = find(axis.begin(), axis.end(), i) != axis.end();
+        if (!isFound) {  // Dims to not be reduced, must match (2,4) => (2,4)
+            if (A->shape[i]!=B->shape[j]){
+                msg("Incompatible shapes", "Tensor::reduce_op");
+            } j++;
+        }
+    }
+
+
+    // get indexes for reduction
+    vector<int> ind;
+    ind.push_back(0);
+    for(i=0;i<A->ndim;i++) {
+        // Check if "this" dimension is going to be reduced
+        bool isFound = find(axis.begin(), axis.end(), i) != axis.end();
+        if (!isFound) {  // Dims to not be reduced...
+            s=ind.size();
+            for(j=0;j<s;j++)
+                for(k=0; k<A->shape[i]-1; k++)
+                    ind.push_back(ind[j]+(k+1)*A->stride[i]);
+        }
+    }
+
+
+
+    sort(ind.begin(), ind.end());
+
+
+    // reduce through axis to be reduced
+
+    for(i=0;i<ind.size();i++)
+    {
+        // get axis to be reduced
+        vector<int> sind;
+        sind.push_back(ind[i]);
+        for(l=0;l<A->ndim;l++) {
+            // Check if "this" dimension is going to be reduced
+            bool isFound = find(axis.begin(), axis.end(), l) != axis.end();
+            if (isFound) {  // Dims to be reduced...
+                s=sind.size();
+                for(j=0;j<s;j++)
+                    for(k=0;k<A->shape[l]-1;k++)
+                        sind.push_back(sind[j]+(k+1)*A->stride[l]);
+            }
+        }
+
+        //reduce sum
+        for(j=0;j<sind.size();j++) {
+          if (op=="sum") {
+            if (!incC) C->ptr[sind[j]]=A->ptr[sind[j]]+B->ptr[i];
+            else C->ptr[sind[j]]+=A->ptr[sind[j]]+B->ptr[i];
+          }
+          else if (op=="diff") {
+            if (!incC) C->ptr[sind[j]]=A->ptr[sind[j]]-B->ptr[i];
+            else C->ptr[sind[j]]+=A->ptr[sind[j]]-B->ptr[i];
+          }
+          else {
+            msg("Incorrect operation","Tensor::reduce_op");
+          }
+        }
+    }// i
+
+}
+//// Gradient reduced operations
+void Tensor::delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC)
+{
+    if ((A->device != B->device)||(A->device != C->device)){
+        msg("Tensors in different devices", "Tensor::reduce_op");
+    }
+
+    // Check number of dimensions
+    if ((A->ndim - axis.size()) != B->ndim) msg("Incorrect dims ", "Tensor::delta_reduce_op");
+    if (!eqsize(B,C)) msg("Incorrect dims ", "Tensor::delta_reduce_op");
+
+    int i,j,k,l,s;
+    int m,d;
+
+
+    j=0;
+    for(i=0;i<B->ndim;i++) {
+        if (find(axis.begin(), axis.end(), i) == axis.end()) {
+            if (B->shape[i]!=A->shape[j])
+                msg("Incompatible shapes", "Tensor::delta_reduce");
+            j++;
+        }
+    }
+    // get indexes for reduction
+    vector<int> ind;
+    ind.push_back(0);
+    for(i=0;i<A->ndim;i++) {
+        // Check if "this" dimension is going to be reduced
+        bool isFound = find(axis.begin(), axis.end(), i) != axis.end();
+        if (!isFound) {  // Dims to not be reduced...
+            s=ind.size();
+            for(j=0;j<s;j++)
+                for(k=0; k<A->shape[i]-1; k++)
+                    ind.push_back(ind[j]+(k+1)*A->stride[i]);
+        }
+    }
+
+
+
+    sort(ind.begin(), ind.end());
+
+
+    if (!incC) C->set(0.0);
+    // reduce through axis to be reduced
+    for(i=0;i<ind.size();i++)
+    {
+        // get axis to be reduced
+        vector<int> sind;
+        sind.push_back(ind[i]);
+        for(l=0;l<A->ndim;l++) {
+            // Check if "this" dimension is going to be reduced
+            bool isFound = find(axis.begin(), axis.end(), l) != axis.end();
+            if (isFound) {  // Dims to be reduced...
+                s=sind.size();
+                for(j=0;j<s;j++)
+                    for(k=0;k<A->shape[l]-1;k++)
+                        sind.push_back(sind[j]+(k+1)*A->stride[l]);
+            }
+        }
+
+        //reduce sum
+        for(j=0;j<sind.size();j++) {
+          if (op=="sum") {
+            C->ptr[i]+=A->ptr[sind[j]];
+          }
+          else if (op=="diff") {
+            C->ptr[i]+=A->ptr[sind[j]];
+          }
+          else {
+            msg("Incorrect operation","Tensor::delta_reduce_op");
+          }
+        }
+    }// i
+
+}
 
 ////////////////////////////////
 //// CONVOLUTIONS
@@ -949,7 +1107,7 @@ void Tensor::Conv2D(ConvolDescriptor *D) {
 #ifdef cGPU
     else if (D->I->isGPU())
       {
-         //gpu_conv2D(A,B,D,C);
+         gpu_conv2D(D);
       }
 #endif
 #ifdef cFPGA
