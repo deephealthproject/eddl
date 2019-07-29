@@ -25,8 +25,9 @@
 #include "eddl.h"
 
 
-// DENOISSING-AUTOENCODER
+using namespace eddl;
 
+// DENOISSING-AUTOENCODER
 int main(int argc, char **argv) {
 
     // Download dataset

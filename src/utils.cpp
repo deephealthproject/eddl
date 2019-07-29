@@ -187,7 +187,7 @@ char *humanSize(uint64_t bytes){
 
 #ifdef EDDL_APPLE
 unsigned long get_free_mem() {
-    // Not sure of its correctness
+    // TODO: Review. This doesn't work correctly
     mach_port_t host_port;
     mach_msg_type_number_t host_size;
     vm_size_t pagesize;
