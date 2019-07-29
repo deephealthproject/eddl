@@ -26,9 +26,23 @@
 #include <random>
 
 #include "system_info.h"
+#include <fstream>
+#include <string.h>
 
-#ifdef EDDL_LINUX || EDDL_UNIX || EDDL_APPLE
+#ifdef EDDL_LINUX
 #include "sys/mman.h"
+#include <sys/sysinfo.h>
+#include <unistd.h>
+#endif
+
+#ifdef EDDL_APPLE
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#include <mach/mach.h>
+#include <mach/vm_statistics.h>
+#include <mach/mach_types.h>
+#include <mach/mach_init.h>
+#include <mach/mach_host.h>
 #endif
 
 #ifdef EDDL_WINDOWS
@@ -116,24 +130,18 @@ float *get_fmem(int size, char *str){
     // https://stackoverflow.com/questions/48585079/malloc-on-linux-without-overcommitting
     // https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_MRG/1.3/html/Realtime_Reference_Guide/sect-Realtime_Reference_Guide-Memory_allocation-Using_mlock_to_avoid_memory_faults.html
 
-
-
-#ifdef EDDL_LINUX || EDDL_APPLE
-    if (mlock(ptr, size*4) != 0 || error) {
-        delete ptr;
-
-        fprintf(stderr, "Error allocating %s in %s\n", humanSize(size*sizeof(float)), str);
-        exit(EXIT_FAILURE);
+    // Check if free memory is bigger than requested
+    unsigned long freemem = get_free_mem();
+    if (size*sizeof(float) > freemem) {
+        error=true;
     }
-#endif
 
-#ifdef EDDL_WINDOWS
-    if (VirtualLock(ptr, size) == 0 || error) {
+    // Not enough free memory
+    if (error) {
         delete ptr;
         fprintf(stderr, "Error allocating %s in %s\n", humanSize(size*sizeof(float)), str);
         exit(EXIT_FAILURE);
     }
-#endif
 
     return ptr;
 }
@@ -154,3 +162,58 @@ char *humanSize(uint64_t bytes){
     sprintf(output, "%.02lf %s", dblBytes, suffix[i]);
     return output;
 }
+
+
+#ifdef EDDL_LINUX
+    unsigned long get_free_mem() {
+        std::string token;
+        std::string type = "MemFree:";
+        std::ifstream file("/proc/meminfo");
+        while(file >> token) {
+            if(token == type) {
+                unsigned long mem;
+                if(file >> mem) {
+                    return mem * 1024; // From kB to Bytes
+                } else {
+                    return 0;
+                }
+            }
+            // ignore rest of the line
+            file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        return 0; // nothing found
+    }
+#endif
+
+#ifdef EDDL_APPLE
+unsigned long get_free_mem() {
+    // TODO: Review. This doesn't work correctly
+    mach_port_t host_port;
+    mach_msg_type_number_t host_size;
+    vm_size_t pagesize;
+    host_port = mach_host_self();
+    host_size = sizeof(vm_statistics64) / sizeof(integer_t);
+    host_page_size(host_port, &pagesize);
+    pagesize = 0;
+    int mib[2] = { CTL_HW, HW_PAGESIZE };
+    size_t length = sizeof(pagesize);
+    const int sysctlResult = sysctl(mib, 2, &pagesize, &length, NULL, 0);
+    struct vm_statistics64 vm_stat{};
+    if (host_statistics64(host_port, HOST_VM_INFO64, (host_info64_t)&vm_stat, &host_size) != KERN_SUCCESS) {
+        fprintf(stderr,"Failed to fetch vm statistics");
+        exit(EXIT_FAILURE);
+    }
+    unsigned long mem_free = vm_stat.free_count * pagesize;
+    return mem_free;
+}
+
+#endif
+
+#ifdef EDDL_WINDOWS
+unsigned long get_free_mem() {
+    MEMORYSTATUSEX status;
+    status.dwLength = sizeof(status);
+    GlobalMemoryStatusEx(&status);
+    return -1;
+}
+#endif
