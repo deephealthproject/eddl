@@ -109,8 +109,26 @@ float *get_fmem(int size, char *str){
     // https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_MRG/1.3/html/Realtime_Reference_Guide/sect-Realtime_Reference_Guide-Memory_allocation-Using_mlock_to_avoid_memory_faults.html
     if (mlock(ptr, size) != 0  || error) {
         delete ptr;
-        fprintf(stderr, "Error allocating %lu bytes in %s\n", size*sizeof(float), str);
+
+        fprintf(stderr, "Error allocating %s in %s\n", humanSize(size*sizeof(float)), str);
         exit(EXIT_FAILURE);
     }
     return ptr;
+}
+
+char *humanSize(uint64_t bytes){
+    char *suffix[] = {"B", "KB", "MB", "GB", "TB"};
+    char length = sizeof(suffix) / sizeof(suffix[0]);
+
+    int i = 0;
+    double dblBytes = bytes;
+
+    if (bytes > 1024) {
+        for (i = 0; (bytes / 1024) > 0 && i<length-1; i++, bytes /= 1024)
+            dblBytes = bytes / 1024.0;
+    }
+
+    static char output[200];
+    sprintf(output, "%.02lf %s", dblBytes, suffix[i]);
+    return output;
 }

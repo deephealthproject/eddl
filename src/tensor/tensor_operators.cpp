@@ -927,7 +927,7 @@ void ConvolDescriptor::resize(Tensor *A)
     D = new Tensor(O->getShape(), A->device);
 
     if (I->isCPU()) {
-        free(ptrI);
+        delete ptrI;
         ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptor::build");
     }
 
