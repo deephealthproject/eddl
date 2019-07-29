@@ -33,7 +33,7 @@ using namespace std;
 
 // constructors and clones
 LMaxPool::LMaxPool(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name,
-                   int d) : LMaxPool(parent, new PoolDescriptor(ks, st, p), name, dev) {}
+                   int dev) : LMaxPool(parent, new PoolDescriptor(ks, st, p), name, dev) {}
 
 LMaxPool::LMaxPool(Layer *parent, const vector<int> &ks, const vector<int> &st,
                const vector<int> &p, string name, int dev) : LMaxPool(parent, new PoolDescriptor(ks, st, p), name, dev) {}

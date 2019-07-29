@@ -185,8 +185,6 @@ char *humanSize(uint64_t bytes){
     }
 #endif
 
-
-
 #ifdef EDDL_APPLE
 unsigned long get_free_mem() {
     // Not sure of its correctness
@@ -216,6 +214,6 @@ unsigned long get_free_mem() {
     MEMORYSTATUSEX status;
     status.dwLength = sizeof(status);
     GlobalMemoryStatusEx(&status);
-    return status.ullTotalPhys;
+    return -1;
 }
 #endif
