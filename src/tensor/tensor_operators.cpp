@@ -1135,7 +1135,8 @@ void Tensor::Conv2D_grad(ConvolDescriptor *D) {
 #ifdef cGPU
     else if (D->I->isGPU())
       {
-         //gpu_conv2D(A,B,D,C);
+         D->gk->set(0.0);
+         gpu_conv2D_grad(D);
       }
 #endif
 #ifdef cFPGA
@@ -1162,7 +1163,7 @@ void Tensor::Conv2D_back(ConvolDescriptor *D) {
 #ifdef cGPU
     else if (D->I->isGPU())
       {
-         //gpu_conv2D(A,B,D,C);
+         gpu_conv2D_back(D);
       }
 #endif
 #ifdef cFPGA

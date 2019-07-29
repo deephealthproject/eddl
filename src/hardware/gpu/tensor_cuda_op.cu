@@ -676,6 +676,26 @@ void gpu_conv2D(ConvolDescriptor *D)
 }
 
 
+void gpu_conv2D_grad(ConvolDescriptor *D)
+{
+
+  int device=D->I->gpu_device;
+  cudaSetDevice(device);
+
+  // Todo
+  
+}
+
+
+void gpu_conv2D_back(ConvolDescriptor *D)
+{
+
+  int device=D->I->gpu_device;
+  cudaSetDevice(device);
+  // Todo
+
+}
+
 
 
 
