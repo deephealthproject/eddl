@@ -24,9 +24,6 @@
 
 #include "apis/eddl.h"
 
-using namespace eddl;
-
-
 int main(int argc, char **argv){
     // download MNIST data
     download_mnist();

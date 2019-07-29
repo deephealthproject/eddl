@@ -24,7 +24,6 @@
 
 #include "eddl.h"
 
-using namespace eddl;
 
 // AUTOENCODER
 int main(int argc, char **argv) {
