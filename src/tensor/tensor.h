@@ -158,8 +158,6 @@ public:
 
     void info();
 
-    Tensor *share();
-
     void print();
 
     void save(string s);

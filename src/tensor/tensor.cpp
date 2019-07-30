@@ -133,7 +133,7 @@ Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr,T->devic
 ///////////////////////////////////////////
 Tensor::~Tensor() {
     if (isCPU()) {
-        free(ptr);
+        delete ptr;
     }
 #ifdef cGPU
     else if (isGPU())
@@ -191,13 +191,6 @@ void Tensor::load(FILE *fe) {
 
     fread(ptr, sizeof(float), size, fe);
 }
-
-///////////////////////////////////////////
-Tensor *Tensor::share() {
-    Tensor *C = new Tensor(getShape(), device);
-    return C;
-}
-
 
 
 ///////////////////////////////////////////

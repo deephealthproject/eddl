@@ -35,9 +35,8 @@ void LSoftCrossEntropy::delta(Tensor *T, Tensor *Y, Tensor *D) {
 
 float LSoftCrossEntropy::value(Tensor *T, Tensor *Y) {
     float f;
-    Tensor *aux = new Tensor(T->getShape(), T->device);
-    Tensor::cent(T, Y, aux);
-    f = aux->total_sum();
-    delete aux;
+    if (aux1==NULL) aux1 = new Tensor(T->getShape(), T->device);
+    Tensor::cent(T, Y, aux1);
+    f = aux1->total_sum();
     return f;
 }

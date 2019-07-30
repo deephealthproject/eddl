@@ -131,14 +131,6 @@ float *get_fmem(int size, char *str){
     }
 
     // Check for errors
-    // mlock tell the system to lock to a specified memory range, and to not allow
-    // that memory to be page
-    // More info:
-    // https://stackoverflow.com/questions/48585079/malloc-on-linux-without-overcommitting
-    // https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_MRG/1.3/html/Realtime_Reference_Guide/sect-Realtime_Reference_Guide-Memory_allocation-Using_mlock_to_avoid_memory_faults.html
-
-
-
     // Not enough free memory
     if (error) {
         delete ptr;
@@ -204,6 +196,7 @@ unsigned long get_free_mem() {
         exit(EXIT_FAILURE);
     }
     unsigned long mem_free = (vm_stat.free_count +vm_stat.inactive_count) * pagesize;
+    //fprintf(stderr,"%s Free\n",humanSize(mem_free));
 
     return mem_free;
 }
