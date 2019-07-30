@@ -3,6 +3,7 @@ PROJECT(eddl LANGUAGES CXX)
 
 # SET C++ COMPILER STANDARD
 SET(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # USER OPTIONS *******************************
 option(BUILD_PYTHON "Compile python binding" OFF)
@@ -22,13 +23,15 @@ endif()
 
 # SET COMPILER FLAGS
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
-    set(CMAKE_CXX_FLAGS "-march=native ${CMAKE_CXX_FLAGS}")
+    #set(CMAKE_CXX_FLAGS "-march=native ${CMAKE_CXX_FLAGS}") // This is a bad idea
     set(CMAKE_CXX_FLAGS_DEBUG "-g ${CMAKE_CXX_FLAGS_DEBUG}")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 ${CMAKE_CXX_FLAGS_RELEASE}")
 endif()
 
 # CUDA FLAGS
-set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -lcudart -lcublas -lcurand")
+set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr -lcudart -lcublas -lcurand")
+set(CMAKE_CUDA_STANDARD 11)
+set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 set(EDDL_WITH_CUDA OFF CACHE BOOL "Enable CUDA support if checked")
 
 # Device specific setup
