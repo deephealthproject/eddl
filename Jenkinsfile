@@ -54,6 +54,58 @@ pipeline {
                         }
                     }
                 }
+                stage('linux_gpu') {
+                    agent {
+                        docker { 
+                            label 'docker && gpu'
+                            image 'stal12/cuda10-gcc5'
+                            args '--gpus 1'
+                        }
+                    }
+                    stages {
+                        stage('Build') {
+                            steps {
+                                echo 'Building..'
+                                cmakeBuild buildDir: 'build', cmakeArgs: '-D BUILD_TARGET=gpu -D BUILD_TESTS=ON', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
+                             }
+                        }
+                        stage('Test') {
+                            steps {
+                                echo 'Testing..'
+                                ctest arguments: '-C Debug -VV', installation: 'InSearchPath', workingDir: 'build'
+                            }
+                        }
+                        stage('linux_gpu_end') {
+                            steps {
+                                echo 'Success!'
+                            }
+                        }
+                    }
+                }
+                stage('windows_gpu') {
+                    agent {
+                        label 'windows && gpu'
+                    }
+                    stages {
+                        stage('Build') {
+                            steps {
+                                echo 'Building..'
+                                cmakeBuild buildDir: 'build', cmakeArgs: '-D BUILD_TARGET=gpu -D BUILD_TESTS=ON',  installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
+                            }
+                        }
+                        stage('Test') {
+                            steps {
+                                echo 'Testing..'
+                                bat 'cd build && ctest -C Debug -VV'
+                            }
+                        }
+                        stage('windows_gpu_end') {
+                            steps {
+                                echo 'Success!'
+                            }
+                        }
+                    }
+                }
                 stage('documentation') {
                     when { 
                         branch 'master' 
