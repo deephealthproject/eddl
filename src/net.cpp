@@ -32,7 +32,7 @@
 #include "utils.h"
 
 #ifdef cGPU
-#include "gpu/tensor_cuda.h"
+#include "hardware/gpu/tensor_cuda.h"
 #endif
 
 #define VERBOSE 0

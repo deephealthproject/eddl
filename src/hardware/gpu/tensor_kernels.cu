@@ -38,10 +38,9 @@ __global__ void conv2D(float* I, int batch,int irows,int icols, int idepth, floa
    int ob=thread_id_x/rcd;
    int bm=thread_id_x%rcd;
 
-   int oz=bm/rc;
-
-   int or=(bm%rc)/ocols;
-   int oc=(bm%rc)%ocols;
+   int ouz=bm/rc;
+   int our=(bm%rc)/ocols;
+   int ouc=(bm%rc)%ocols;
 
    //
    int ircd=irows*icols*idepth;
@@ -53,18 +52,18 @@ __global__ void conv2D(float* I, int batch,int irows,int icols, int idepth, floa
    int ptrI;
 
    // Select filter oz from nk
-   int ptrKb=oz*kr*kc*idepth;
+   int ptrKb=ouz*kr*kc*idepth;
 
    // Convol
    float sum=0.0;
-   for(int i=or-kr2-pad;i<=or+kr2-pad;i+=sr) {
-     if ((i>0)&&(i<irows) {
-       for(int j=oc-kc2-pad;j<=oc+kc2-pad;j+=sc,ptrKb++){
-          if ((j>0)&&(j<icols) {
+   for(int i=our-kr2-pad;i<=our+kr2-pad;i+=sr) {
+     if ((i>0)&&(i<irows)) {
+       for(int j=ouc-kc2-pad;j<=ouc+kc2-pad;j+=sc,ptrKb++){
+          if ((j>0)&&(j<icols)) {
             ptrI=ob*ircd;
             ptrI+=i*icols;
             ptrI+=j;
-            ptrK=ptrKb;
+            int ptrK=ptrKb;
             for(int k=0;k<idepth;k++) {
               sum+=I[ptrI]*K[ptrK];
               ptrI+=irc;

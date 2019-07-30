@@ -63,7 +63,7 @@ CXXFLAGS = -std=c++11 -march=native -mavx -O3 -pthread
 endif
 ifeq ($(OPT),2)
 $(info set SSE)
-CXXFLAGS = -std=c++11 -march=native -msse -O3 -pthread
+CXXFLAGS = -std=c++11 -msse -O3 -pthread
 endif
 ifeq ($(OPT),3)
 $(info set no opt)

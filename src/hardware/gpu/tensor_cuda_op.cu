@@ -24,7 +24,7 @@
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
 
-#include "../tensor/tensor.h"
+#include "../../tensor/tensor.h"
 #include "tensor_cuda.h"
 #include "tensor_kernels.h"
 
@@ -645,7 +645,7 @@ void gpu_conv2D(ConvolDescriptor *D)
 
   setDims(D->O)
 
-  conv2D<<<dimGrid,dimBlock>>>(D->I, D->I->shape[0],D->ir,D->ic,D->iz,D->K,D->nk,D->kr,D->kc,D->O,D->r,D->c,D->sr,D->sc,D->padr);
+  conv2D<<<dimGrid,dimBlock>>>(D->I->ptr, D->I->shape[0],D->ir,D->ic,D->iz,D->K->ptr,D->nk,D->kr,D->kc,D->O->ptr,D->r,D->c,D->sr,D->sc,D->padr);
 
   check_cuda(cudaDeviceSynchronize(),"gpu_relu");
 
@@ -658,7 +658,7 @@ void gpu_conv2D_grad(ConvolDescriptor *D)
   cudaSetDevice(device);
 
   // Todo
-  
+
 }
 
 void gpu_conv2D_back(ConvolDescriptor *D)
@@ -669,4 +669,3 @@ void gpu_conv2D_back(ConvolDescriptor *D)
   // Todo
 
 }
-
