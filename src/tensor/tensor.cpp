@@ -192,13 +192,6 @@ void Tensor::load(FILE *fe) {
     fread(ptr, sizeof(float), size, fe);
 }
 
-///////////////////////////////////////////
-Tensor *Tensor::share() {
-    Tensor *C = new Tensor(getShape(), device);
-    return C;
-}
-
-
 
 ///////////////////////////////////////////
 vector<int> Tensor::getShape() {
