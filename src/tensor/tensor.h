@@ -136,7 +136,7 @@ public:
 
     // CPU
     Eigen::MatrixXf *ptr2;
-    Eigen::MatrixXf mat;
+
 
     // GPU
     int gpu_device;
@@ -166,7 +166,6 @@ public:
 
     void save(FILE *fe);
     void load(FILE *fe);
-    void load(std::string fname, int bin=1);
 
     // data
     void point2data(const vector<int>& shape, float *ptr);

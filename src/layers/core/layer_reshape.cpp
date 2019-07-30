@@ -80,7 +80,6 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev) : Lin
 
 // virtual
 void LReshape::resize(int batch){
-  //cout<<"Resize "<<name<<"\n";
 
   ls[0]=batch;
 
