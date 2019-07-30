@@ -133,7 +133,7 @@ Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr,T->devic
 ///////////////////////////////////////////
 Tensor::~Tensor() {
     if (isCPU()) {
-        free(ptr);
+        delete ptr;
     }
 #ifdef cGPU
     else if (isGPU())
