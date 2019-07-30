@@ -33,6 +33,10 @@ class Metric {
 public:
     string name;
 
+    Tensor *aux1;
+    Tensor *aux2;
+    Tensor *one;
+
     explicit Metric(string name);
 
     virtual float value(Tensor *T, Tensor *Y);

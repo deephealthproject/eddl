@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 1;
+    int epochs = 10;
     int batch_size = 1000;
     int num_classes = 10;
 
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
     layer in = Input({784});
     layer l = in;  // Aux var
 
-    //l = GaussianNoise(l,0.3);
+    l = GaussianNoise(l,0.3);
 
     l = Activation(Dense(l, 1024), "relu");
     l = Activation(Dense(l, 1024), "relu");
