@@ -24,7 +24,7 @@
 #include <cmath>
 
 #include "apis/eddl.h"
-#include "../utils.h"
+#include "utils.h"
 
 int main(int argc, char **argv) {
 

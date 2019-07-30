@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "eddl.h"
+#include "apis/eddl.h"
 
 using namespace eddl;
 
