@@ -215,7 +215,7 @@ void Tensor::inc(Tensor *A, Tensor *B) {
         }
         else if (((A->isCPU())&&(B->isGPU()))||((A->isGPU())&&(B->isCPU())))
           {
-             Tensor *n=new Tensor(B->getshape(),B->device);
+             Tensor *n=new Tensor(B->getShape(),B->device);
              Tensor::copy(A,n);
              Tensor::sum(1,n,1,B,B,0);
              delete n;
@@ -1135,7 +1135,7 @@ void Tensor::Conv2D_grad(ConvolDescriptor *D) {
 #ifdef cGPU
     else if (D->I->isGPU())
       {
-         D->gk->set(0.0);
+         D->gK->set(0.0);
          gpu_conv2D_grad(D);
       }
 #endif
@@ -1493,7 +1493,7 @@ void Tensor::D_Softmax(Tensor *D, Tensor *I, Tensor *PD) {
     else if (D->isGPU())
       {
 
-        Tensor *aux=new Tensor(D->getshape(),D->device);
+        Tensor *aux=new Tensor(D->getShape(),D->device);
         aux->set(1.0);
         Tensor::sum(1.0,aux,-1.0,I,aux,0);
         Tensor::el_mult(I,aux,aux,0);
