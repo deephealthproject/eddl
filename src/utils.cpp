@@ -111,6 +111,13 @@ float *get_fmem(int size, char *str){
     float* ptr = nullptr;
     bool error = false;
 
+
+    // Check if free memory is bigger than requested
+    unsigned long freemem = get_free_mem();
+    if (size*sizeof(float) > freemem) {
+        error=true;
+    }
+
     // New vs Malloc *******************
     // New is the C++ way of doing it
     // New is type-safe, Malloc is not
@@ -130,11 +137,7 @@ float *get_fmem(int size, char *str){
     // https://stackoverflow.com/questions/48585079/malloc-on-linux-without-overcommitting
     // https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_MRG/1.3/html/Realtime_Reference_Guide/sect-Realtime_Reference_Guide-Memory_allocation-Using_mlock_to_avoid_memory_faults.html
 
-    // Check if free memory is bigger than requested
-    unsigned long freemem = get_free_mem();
-    if (size*sizeof(float) > freemem) {
-        error=true;
-    }
+
 
     // Not enough free memory
     if (error) {
@@ -194,16 +197,14 @@ unsigned long get_free_mem() {
     host_port = mach_host_self();
     host_size = sizeof(vm_statistics64) / sizeof(integer_t);
     host_page_size(host_port, &pagesize);
-    pagesize = 0;
-    int mib[2] = { CTL_HW, HW_PAGESIZE };
-    size_t length = sizeof(pagesize);
-    const int sysctlResult = sysctl(mib, 2, &pagesize, &length, NULL, 0);
+
     struct vm_statistics64 vm_stat{};
     if (host_statistics64(host_port, HOST_VM_INFO64, (host_info64_t)&vm_stat, &host_size) != KERN_SUCCESS) {
         fprintf(stderr,"Failed to fetch vm statistics");
         exit(EXIT_FAILURE);
     }
-    unsigned long mem_free = vm_stat.free_count * pagesize;
+    unsigned long mem_free = (vm_stat.free_count +vm_stat.inactive_count) * pagesize;
+
     return mem_free;
 }
 

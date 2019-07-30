@@ -31,41 +31,54 @@ using namespace std;
 
 int LTensor::total_layers = 0;
 
+extern ostream &operator<<(ostream &os, const vector<int> shape);
 
-// From file
-LTensor::LTensor(string fname) : LinLayer("ltensor" + to_string(total_layers), DEV_CPU) {
-    Tensor* t = new Tensor();
-    t->load(fname);
-    data = input = output = t;
-}
-
-LTensor::LTensor(const vector<int> shape, float *fptr,int dev) : LinLayer("ltensor" + to_string(total_layers), dev) {
-    data = input = output = new Tensor(shape, fptr, dev);
-    delta = new Tensor(shape, dev);
-}
-
-// From vector<int>
+// From shape
 LTensor::LTensor(const vector<int> shape, int dev) : LinLayer("ltensor" + to_string(total_layers), dev) {
     data = input = output = new Tensor(shape, dev);
     delta = new Tensor(shape, dev);
 }
 
 
-/*
-void Ltensor::mult2D(LTensor *A,...){
-  Tensor::mult2d(A->output, tA,B->output,tB,C->output,incC);
+// From file
+LTensor::LTensor(string fname) : LinLayer("ltensor" + to_string(total_layers), DEV_CPU) {
+  FILE *fe = fopen(fname.c_str(), "rb");
+  if (fe == nullptr) {
+      fprintf(stderr, "%s not found\n", fname.c_str());
+      exit(1);
+  }
+
+  vector<int> shape;
+  int ndim,v;
+  int read = fread(&ndim, sizeof(int), 1, fe);
+  for (int i = 0; i < ndim; ++i) {
+      int read = fread(&v, sizeof(int), 1, fe);
+      shape.push_back(v);
+  }
+
+  Tensor *t=new Tensor(shape,DEV_CPU);
+  cout << "loading file with tensor:" << shape << "\n";
+  t->load(fe);
+  data = input = output = t;
 }
-*/
-void LTensor::resize(int batch){
-  Layer::resize(batch);
+
+// From shape, ptr (sharing) and device
+LTensor::LTensor(const vector<int> shape, float *fptr,int dev) : LinLayer("ltensor" + to_string(total_layers), dev) {
+    data = input = output = new Tensor(shape, fptr, dev);
+    delta = new Tensor(shape, dev);
 }
 
 
-// From Layer
+// From Layer (sharing)
 LTensor::LTensor(Layer *l) : LinLayer("ltensor" + to_string(total_layers), l->dev) {
     data = input = output = l->output;
     delta = l->delta;
 }
+
+void LTensor::resize(int batch){
+  Layer::resize(batch);
+}
+
 
 
 /// OP OVERLOAD

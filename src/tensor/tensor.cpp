@@ -54,9 +54,12 @@ int Tensor::isGPU() { return ((device >= DEV_GPU) && (device < DEV_FPGA)); }
 
 int Tensor::isFPGA() { return (device >= DEV_FPGA); }
 
-// Tensor class
-Tensor::Tensor() : device(DEV_CPU), ndim(0), size(0) {}
 
+///////////////////////////////////////////////////////
+//// Tensor constructors
+///////////////////////////////////////////////////////
+Tensor::Tensor() : device(DEV_CPU), ndim(0), size(0) {}
+// From shape, pointer (sharing) and device
 Tensor::Tensor(const vector<int> &shape, float *fptr, int dev)
 {
   #ifndef cGPU
@@ -85,12 +88,12 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev)
         stride.push_back(s);
       }
 
-
       if (isCPU()) {
-          ptr=fptr;
+          if (fptr==NULL) ptr = get_fmem(size,"Tensor::Tensor");
+          else  ptr=fptr;
+
           if (ndim == 2) {
-              new(&mat) Eigen::Map<Eigen::MatrixXf>(ptr, shape[1], shape[0]);
-              ptr2 = &mat;
+            ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(ptr, shape[1], shape[0]);
           }
       }
   #ifdef cGPU
@@ -102,7 +105,9 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev)
               gpu_init(gpu_device);
               initcuda[gpu_device]=1;
             }
-          ptr=gpu_create_tensor(gpu_device,size);
+          if (fptr==NULL) ptr=gpu_create_tensor(gpu_device,size);
+          else ptr=fptr;
+
         }
   #endif
   #ifdef cFPGA
@@ -114,189 +119,39 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev)
       tsem = new mutex();
 }
 
-Tensor::Tensor(const vector<int> &shape, int dev) {
-#ifndef cGPU
-    if ((dev > DEV_CPU) && (isGPU())) {
-        fprintf(stderr, "Not compiled for GPU\n");
-        exit(0);
-    }
-#endif
-#ifndef cFPGA
-    if (dev >= DEV_FPGA) {
-        fprintf(stderr, "Not compiled for FPGA\n");
-        exit(0);
-    }
-#endif
 
-    this->device = dev;
-    this->ndim = shape.size();
-    this->shape = shape;
 
-    size = 1;
-    for (int i = 0; i < ndim; ++i) size *= shape[i];
+// From shape and device
+Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape,NULL,dev){}
 
-    int s=size;
-    for(int i=0;i<ndim;i++) {
-      s/=shape[i];
-      stride.push_back(s);
-    }
+// From shape and Tensor (sharing ptr)
+Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr,T->device) {}
 
+
+///////////////////////////////////////////
+// Tensor destructor
+///////////////////////////////////////////
+Tensor::~Tensor() {
     if (isCPU()) {
-        if (ndim == 2) {
-            mat = Eigen::MatrixXf(shape[1], shape[0]);
-            ptr2 = &mat;
-            ptr = &(mat(0, 0));
-        } else {
-            ptr = get_fmem(size,"Tensor::Tensor");
-        }
+        free(ptr);
     }
 #ifdef cGPU
     else if (isGPU())
       {
-        gpu_device=device-DEV_GPU;
-        if (!initcuda[gpu_device])
-          {
-            gpu_init(gpu_device);
-            initcuda[gpu_device]=1;
-          }
-        ptr=gpu_create_tensor(gpu_device,size);
+        gpu_delete_tensor(gpu_device,ptr);
       }
 #endif
 #ifdef cFPGA
     else {
-      // create FPGA Tensor
+      // delete FPGA Tensor
     }
 #endif
-
-    tsem = new mutex();
-}
-
-Tensor::Tensor(const vector<int> &shape, Tensor *T) {
-    this->device = T->device;
-    this->ndim = shape.size();
-    this->shape = shape;
-
-    size = 1;
-    for (int i = 0; i < ndim; ++i) size *= shape[i];
-
-    int s=size;
-    for(int i=0;i<ndim;i++) {
-      s/=shape[i];
-      stride.push_back(s);
-    }
-
-    if (isCPU()) {
-        ptr = T->ptr;
-        if (ndim == 2) {
-            new(&mat) Eigen::Map<Eigen::MatrixXf>(T->ptr, shape[1], shape[0]);
-            ptr2 = &mat;
-        }
-    }
-#ifdef cGPU
-    else if (isGPU())
-      {
-        gpu_device=device-DEV_GPU;
-        ptr=T->ptr;
-      }
-#endif
-#ifdef cFPGA
-    else {
-      // create FPGA Tensor
-    }
-#endif
-
-
-    tsem = new mutex();
-}
-
-/////////////////////////////////////////////////////////////////////////
-void Tensor::load(std::string fname, int bin) {
-    FILE *fe;
-    int i, j, v;
-
-    if (bin) {
-        fe = fopen(fname.c_str(), "rb");
-        if (fe == nullptr) {
-            fprintf(stderr, "%s not found\n", fname.c_str());
-            exit(1);
-        }
-
-        int read = fread(&ndim, sizeof(int), 1, fe);
-        for (int i = 0; i < ndim; ++i) {
-            int read = fread(&v, sizeof(int), 1, fe);
-            shape.push_back(v);
-        }
-
-        cout << "loading file with tensor:" << shape << "\n";
-
-        this->device = DEV_CPU;
-        size = 1;
-        for (int i = 0; i < ndim; ++i) size *= shape[i];
-
-        int s=size;
-        for(int i=0;i<ndim;i++) {
-          s/=shape[i];
-          stride.push_back(s);
-        }
-
-        ptr = get_fmem(size,"Tensor::Tensor");
-        if (ndim == 2) {
-          new(&mat) Eigen::Map<Eigen::MatrixXf>(ptr, shape[1], shape[0]);
-          ptr2 = &mat;
-
-        }
-
-        tsem = new mutex();
-
-        read = fread(ptr, sizeof(float), size, fe);
-        if (read != size) {
-            fprintf(stderr, "Error reading file (%d!=%d)\nCheck format\n", read, size);
-            exit(1);
-        }
-
-        fclose(fe);
-    } else {
-        fe = fopen(fname.c_str(), "rt");
-        if (fe == nullptr) {
-            fprintf(stderr, "%s not found\n", fname.c_str());
-            exit(1);
-        }
-
-        fscanf(fe, "%d ", &ndim);
-        for (int i = 0; i < ndim; ++i) {
-            fscanf(fe, "%d ", &v);
-            shape.push_back(v);
-        }
-
-        cout << "loading file with tensor:" << shape << "\n";
-
-        this->device = DEV_CPU;
-        size = 1;
-        for (int i = 0; i < ndim; ++i) size *= shape[i];
-
-        int s=size;
-        for(int i=0;i<ndim;i++) {
-          s/=shape[i];
-          stride.push_back(s);
-        }
-
-        ptr = get_fmem(size,"Tensor::Tensor");
-        if (ndim == 2) {
-          new(&mat) Eigen::Map<Eigen::MatrixXf>(ptr, shape[1], shape[0]);
-          ptr2 = &mat;
-
-        }
-
-
-        tsem = new mutex();
-
-        for (int i = 0; i < size; i++) fscanf(fe, "%f ", &(ptr[i]));
-
-        fclose(fe);
-    }
+    delete tsem;
 }
 
 
+///////////////////////////////////////////
+// Other methods
 ///////////////////////////////////////////
 void Tensor::save(string fname) {
     if (!isCPU())
@@ -340,30 +195,9 @@ void Tensor::load(FILE *fe) {
 ///////////////////////////////////////////
 Tensor *Tensor::share() {
     Tensor *C = new Tensor(getShape(), device);
-
     return C;
-
 }
 
-
-///////////////////////////////////////////
-Tensor::~Tensor() {
-    if (isCPU()) {
-        if (ndim != 2) delete ptr;
-    }
-#ifdef cGPU
-    else if (isGPU())
-      {
-        gpu_delete_tensor(gpu_device,ptr);
-      }
-#endif
-#ifdef cFPGA
-    else {
-      // delete FPGA Tensor
-    }
-#endif
-    delete tsem;
-}
 
 
 ///////////////////////////////////////////

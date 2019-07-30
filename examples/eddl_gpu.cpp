@@ -28,7 +28,7 @@
 //using namespace eddl;
 //
 //
-//int main(int argc, char **argv) {
+int main(int argc, char **argv) {
 //
 //    int dev = DEV_GPU;
 //    Tensor *A=new Tensor({4,3}, dev);
@@ -49,7 +49,7 @@
 //    C->info();
 //    C->print();
 //
-//}
+}
 //
 //
 /////////////
