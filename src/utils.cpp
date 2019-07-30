@@ -204,6 +204,7 @@ unsigned long get_free_mem() {
         exit(EXIT_FAILURE);
     }
     unsigned long mem_free = (vm_stat.free_count +vm_stat.inactive_count) * pagesize;
+    //fprintf(stderr,"%s Free\n",humanSize(mem_free));
 
     return mem_free;
 }
