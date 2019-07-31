@@ -31,13 +31,13 @@ cmake ..
 make
 ```
 
-There are some interesting flags to choose what to compile:
+Compiler flags and options:
 
 - `-DBUILD_PYTHON=ON`: Compiles Python binding
 - `-DBUILD_TESTS=ON`: Compiles tests
 - `-DBUILD_EXAMPLES=ON`: Compiles examples
+- `-DBUILD_TARGET=cpu`: Compiles for {`cpu`, `gpu` or `fpga`}
 
-<!-- > By default, all of them are enabled. -->
 
 # Windows specific installation
 
@@ -45,6 +45,7 @@ Default for `Visual Studio 15 2017` build envrionment is x86, while EDDLL requir
 
 On Windows, the POSIX threads library is required. Path to this library can be specified to cmake as follows: `env PTHREADS_ROOT=path_to_pthreads cmake -A x64 .`
 The PThreads library can be found at [https://sourceforge.net/projects/pthreads4w/](https://sourceforge.net/projects/pthreads4w/).
+
 
 # Tests
 
@@ -58,56 +59,57 @@ make test
 # Getting started
 
 ```c++
-#include "eddl.h"
+#include "apis/eddl.h"
 
-int main(int argc, char **argv)
-{
+using namespace eddl;
 
-  // Download dataset
-  eddl.download_mnist();
+int main(int argc, char **argv) {
 
-  // Settings
-  int epochs=5;
-  int batch_size=1000;
-  int num_classes=10;
+    // Download dataset
+    download_mnist();
 
-  // Define network
-  layer in=eddl.Input({784});
-  layer l = in;  // aux var
-  l=eddl.Activation(eddl.Dense(l, 1024), "relu");
-  l=eddl.Activation(eddl.Dense(l, 1024), "relu");
-  l=eddl.Activation(eddl.Dense(l, 1024), "relu");
-  layer out=eddl.Activation(eddl.Dense(l, num_classes),"softmax");
-  model net=eddl.Model({in}, {out});
+    // Settings
+    int epochs = 10;
+    int batch_size = 1000;
+    int num_classes = 10;
 
-  // View model
-  eddl.summary(net);
-  eddl.plot(net,"model.pdf");
+    // Define network
+    layer in = Input({784});
+    layer l = in;  // Aux var
+    l = Activation(Dense(l, 1024), "relu");
+    l = Activation(Dense(l, 1024), "relu");
+    l = Activation(Dense(l, 1024), "relu");
+    layer out = Activation(Dense(l, num_classes), "softmax");
+    model net = Model({in}, {out});
 
-  // Build model
-  eddl.build(net,
-            eddl.SGD(0.01,0.9), // Optimizer
-            {eddl.LossFunc("soft_cross_entropy")}, // Losses
-            {eddl.MetricFunc("categorical_accuracy")}, // Metrics
-            eddl.CS_CPU(4) // CPU with 4 threads
-            );
+    // View model
+    summary(net);
+    plot(net, "model.pdf");
 
-  // Load dataset
-  tensor x_train = eddl.T("trX.bin");
-  tensor y_train = eddl.T("trY.bin");
-  tensor x_test = eddl.T("tsX.bin");
-  tensor y_test = eddl.T("tsY.bin");
+    // Build model
+    build(net,
+          sgd(0.01, 0.9), // Optimizer
+          {"soft_cross_entropy"}, // Losses
+          {"categorical_accuracy"}, // Metrics
+          CS_CPU(4) // CPU with 4 threads
+    );
 
-  // Preprocessing
-  eddl.div(x_train, 255.0);
-  eddl.div(x_test, 255.0);
+    // Load dataset
+    tensor x_train = T_load("trX.bin");
+    tensor y_train = T_load("trY.bin");
+    tensor x_test = T_load("tsX.bin");
+    tensor y_test = T_load("tsY.bin");
 
-  // Train model
-  eddl.fit(net, {x_train}, {y_train}, batch_size, epochs);
+    // Preprocessing
+    div(x_train, 255.0);
+    div(x_test, 255.0);
 
-  // Evaluate test
-  std::cout << "Evaluate train:" << std::endl;
-  eddl.evaluate(net, {x_test}, {y_test});
+    // Train model
+    fit(net, {x_train}, {y_train}, batch_size, epochs);
+
+    // Evaluate test
+    std::cout << "Evaluate test:" << std::endl;
+    evaluate(net, {x_test}, {y_test});
 }
 
 ```
@@ -116,14 +118,6 @@ You can find more examples in the _examples_ folder.
 
 
 # Continuous build status
-
-| **Build Type**  | **Status** |
-|-------------|--------|
-| **Linux CPU**   |  [![Build Status](https://travis-ci.org/salvacarrion/EDDL.svg?branch=master)](https://travis-ci.org/salvacarrion/EDDL)|
-| **Linux GPU**   |  [![Build Status](https://travis-ci.org/salvacarrion/EDDL.svg?branch=master)](https://travis-ci.org/salvacarrion/EDDL)|
-| **Mac OS**      |  [![Build Status](https://travis-ci.org/salvacarrion/EDDL.svg?branch=master)](https://travis-ci.org/salvacarrion/EDDL)|
-| **Windows CPU** |  [![Build Status](https://travis-ci.org/salvacarrion/EDDL.svg?branch=master)](https://travis-ci.org/salvacarrion/EDDL)|
-| **Windows GPU** |  [![Build Status](https://travis-ci.org/salvacarrion/EDDL.svg?branch=master)](https://travis-ci.org/salvacarrion/EDDL)|
 
 | System  |  Compiler  | Status |
 |:-------:|:----------:|:------:|
@@ -134,6 +128,7 @@ You can find more examples in the _examples_ folder.
 
 Documentation available [here](http://imagelab.ing.unimore.it/eddl/).
 
+
 # Python wrapper
 
-If you are not a big fan of C++, you can always try our [PyEDDL](https://github.com/deephealthproject/pyeddl), a python wrapper for this library.
+If you are not a C++ fan, try [PyEDDL](https://github.com/deephealthproject/pyeddl), a python wrapper for this library.
