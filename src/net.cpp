@@ -544,7 +544,9 @@ void Net::split(int c, int todev) {
             Ys[i].push_back(new Tensor(snets[i]->lout[j]->output->shape));
 
         // build new net
-        snets[i]->name="snet"+i;
+        char cname[100];
+        sprintf(cname,"snet_%d",i);
+        snets[i]->name=cname;
         snets[i]->build(optimizer->clone(), losses, metrics);
     }
 
@@ -561,6 +563,7 @@ void Net::setmode(int m) {
 
 /////////////////////////////////////////
 void Net::forward() {
+  
     for (int i = 0; i < vfts.size(); i++) {
         vfts[i]->forward();
     }

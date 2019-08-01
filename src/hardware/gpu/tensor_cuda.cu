@@ -32,7 +32,7 @@ void check_cuda(cudaError_t err,const char *msg)
 {
   if(err!=cudaSuccess)
     {
-      fprintf(stderr,"Cuda Error: %s\n",msg);
+      fprintf(stderr,"Cuda Error %d in %s\n",err,msg);
       exit(0);
     }
 

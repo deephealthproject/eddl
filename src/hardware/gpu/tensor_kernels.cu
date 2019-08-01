@@ -146,7 +146,7 @@ __global__ void exp(float* a, long int rows, long int cols)
  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
  if (thread_id_x < ops)
-   a[thread_id_x]=exp(a[thread_id_x]);
+   a[thread_id_x]=expf(a[thread_id_x]);
 
 }
 
@@ -293,8 +293,8 @@ __global__ void cent(float* a, float* b, float* c, long int size)
 
  if (thread_id_x < size){
    c[thread_id_x]=0;
-   if (a[thread_id_x]) c[thread_id_x]-=a[thread_id_x]*log(b[thread_id_x]);
-   if (a[thread_id_x]!=1.0) c[thread_id_x]-=(1.0-a[thread_id_x])*log(1.0-b[thread_id_x]);
+   if (a[thread_id_x]) c[thread_id_x]-=a[thread_id_x]*logf(b[thread_id_x]);
+   if (a[thread_id_x]!=1.0) c[thread_id_x]-=(1.0-a[thread_id_x])*logf(1.0-b[thread_id_x]);
   }
 }
 

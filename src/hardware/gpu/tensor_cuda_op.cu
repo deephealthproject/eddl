@@ -511,7 +511,6 @@ void gpu_cent(Tensor *A,Tensor *B,Tensor *C)
 
   int device=A->gpu_device;
   cudaSetDevice(device);
-
   setDims(A)
 
   cent<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,A->size);
