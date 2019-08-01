@@ -126,6 +126,7 @@ Net::Net(vlayer in, vlayer out) {
     batch_size=1;
     // Default optimizer
     optimizer = nullptr;
+    name="model";
 
     // Walk through the pointers of all layers, to get a plain
     // vector with all the layers
@@ -366,7 +367,7 @@ void Net::resize(int b)
 
 /////////////////////////////////////////
 void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
-    fprintf(stdout, "Build net\n");
+    fprintf(stdout, "Build net %s\n",name.c_str());
 
 
     if (lo.size() != lout.size())
@@ -462,13 +463,19 @@ void Net::set_compserv(CompServ *cs){
           msg("GPU list on ComputingService is larger than available devices","Net.build");
         }
 
+        fprintf(stderr,"Selecting GPUs from CS_GPU\n");
         for(int i=0;i<cs->local_gpus.size();i++)
-          if (cs->local_gpus[i]) devsel.push_back(i);
+          if (cs->local_gpus[i]) {
+            devsel.push_back(i);
+            fprintf(stderr,"GPU(%d) ",i);
+          }
+
+        fprintf(stderr,"\n");
         if (!devsel.size())
           msg("No gpu selected","Net.build");
 
         cout<<"split into "<<devsel.size()<<" GPUs devices\n";
-        split(cs->local_gpus.size(),DEV_GPU);
+        split(devsel.size(),DEV_GPU);
 #endif
         } else {
             // split on multiple FPGAs
@@ -537,6 +544,7 @@ void Net::split(int c, int todev) {
             Ys[i].push_back(new Tensor(snets[i]->lout[j]->output->shape));
 
         // build new net
+        snets[i]->name="snet"+i;
         snets[i]->build(optimizer->clone(), losses, metrics);
     }
 
