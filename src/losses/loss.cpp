@@ -28,7 +28,6 @@ using namespace std;
 
 Loss::Loss(string name) {
     this->name = name;
-    aux1=aux2=one=NULL;
 }
 
 void Loss::delta(Tensor *T, Tensor *Y, Tensor *D) {}

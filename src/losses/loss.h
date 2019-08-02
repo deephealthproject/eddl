@@ -31,9 +31,6 @@ using namespace std;
 class Loss {
 public:
     string name;
-    Tensor *aux1;
-    Tensor *aux2;
-    Tensor *one;
 
     explicit Loss(string name);
 

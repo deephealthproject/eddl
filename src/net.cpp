@@ -720,12 +720,12 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 
                 fiterr[p] = fiterr[p + 1] = 0.0;
             }
+
             high_resolution_clock::time_point e2 = high_resolution_clock::now();
             duration<double> epoch_time_span = e2 - e1;
             fprintf(stdout, "%1.3f secs/batch\r", epoch_time_span.count()/(j+1));
             fflush(stdout);
         }
-
         high_resolution_clock::time_point e2 = high_resolution_clock::now();
         duration<double> epoch_time_span = e2 - e1;
         fprintf(stdout, "\n%1.3f secs/epoch\n", epoch_time_span.count());
