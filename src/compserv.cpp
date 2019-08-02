@@ -20,6 +20,7 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string>
 #include <vector>
 
@@ -37,7 +38,7 @@ CompServ::CompServ(int t, const vector<int> &g, const vector<int> &f,int lsb) {
     this->lsb=lsb;
     if (lsb<0) {
       fprintf(stderr,"Error creating CS with lsb<0 in CompServ::CompServ");
-      exit(0);
+      exit(EXIT_FAILURE);
     }
 }
 
