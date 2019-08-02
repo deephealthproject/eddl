@@ -705,10 +705,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 
             // Train batch
             tr_batches++;
-            high_resolution_clock::time_point t1 = high_resolution_clock::now();
             train_batch(tin, tout, sind);
-            high_resolution_clock::time_point t2 = high_resolution_clock::now();
-            duration<double> time_span = t2 - t1;
 
             // Print errors
             int p = 0;
@@ -723,7 +720,9 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 
                 fiterr[p] = fiterr[p + 1] = 0.0;
             }
-            fprintf(stdout, "%1.3f secs/batch\r", time_span.count());
+            high_resolution_clock::time_point e2 = high_resolution_clock::now();
+            duration<double> epoch_time_span = e2 - e1;
+            fprintf(stdout, "%1.3f secs/batch\r", epoch_time_span.count()/(j+1));
             fflush(stdout);
         }
 
@@ -840,7 +839,9 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
             }
         }
         // In case of multiple GPUS or FPGA synchronize params
-        if ((snets[0]->dev != DEV_CPU) && (comp > 1) && (tr_batches%cs->lsb==0)) sync_weights();
+        if ((snets[0]->dev != DEV_CPU) && (comp > 1) && (tr_batches%cs->lsb==0)) {
+          sync_weights();
+        }
     }
 
     // Sum all errors
