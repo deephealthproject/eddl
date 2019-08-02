@@ -380,16 +380,16 @@ namespace eddl {
 
 
     // ---- COMPUTING SERVICES ----
-    compserv CS_CPU(int th) {
-        return new CompServ(th, {}, {});
+    compserv CS_CPU(int th,int lsb) {
+        return new CompServ(th, {}, {},lsb);
     }
 
-    compserv CS_GPU(const vector<int> &g) {
-        return new CompServ(0, g, {});
+    compserv CS_GPU(const vector<int> &g,int lsb) {
+        return new CompServ(0, g, {},lsb);
     }
 
-    compserv CS_FGPA(const vector<int> &f) {
-        return new CompServ(0, {}, f);
+    compserv CS_FGPA(const vector<int> &f,int lsb) {
+        return new CompServ(0, {}, f,lsb);
     }
 
 

@@ -208,11 +208,11 @@ namespace eddl {
 
 
 // ---- COMPUTING SERVICES ----
-    compserv CS_CPU(int th);
+    compserv CS_CPU(int th,int lsb=1);
 
-    compserv CS_GPU(const vector<int> &g);
+    compserv CS_GPU(const vector<int> &g,int lsb=1);
 
-    compserv CS_FGPA(const vector<int> &f);
+    compserv CS_FGPA(const vector<int> &f,int lsb=1);
 
 // ---- MODEL METHODS ----
     model Model(vlayer in, vlayer out);

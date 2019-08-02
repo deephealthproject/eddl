@@ -127,6 +127,7 @@ Net::Net(vlayer in, vlayer out) {
     // Default optimizer
     optimizer = nullptr;
     name="model";
+    tr_batches=0;
 
     // Walk through the pointers of all layers, to get a plain
     // vector with all the layers
@@ -425,6 +426,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
 
 void Net::set_compserv(CompServ *cs){
     int todev;
+    this->cs=cs;
 
     if (cs->type == "local") {
 
@@ -563,7 +565,7 @@ void Net::setmode(int m) {
 
 /////////////////////////////////////////
 void Net::forward() {
-  
+
     for (int i = 0; i < vfts.size(); i++) {
         vfts[i]->forward();
     }
@@ -702,6 +704,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             for (k = 0; k < batch_size; k++) sind[k] = rand() % n;
 
             // Train batch
+            tr_batches++;
             high_resolution_clock::time_point t1 = high_resolution_clock::now();
             train_batch(tin, tout, sind);
             high_resolution_clock::time_point t2 = high_resolution_clock::now();
@@ -837,7 +840,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
             }
         }
         // In case of multiple GPUS or FPGA synchronize params
-        if ((snets[0]->dev != DEV_CPU) && (comp > 1)) sync_weights();
+        if ((snets[0]->dev != DEV_CPU) && (comp > 1) && (tr_batches%cs->lsb==0)) sync_weights();
     }
 
     // Sum all errors

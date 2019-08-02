@@ -61,7 +61,9 @@ public:
     string name;
     int dev;
     int batch_size;
+    int tr_batches;
     vector<int> devsel;
+    CompServ *cs;
 
     vlayer layers;
     vlayer lin;
@@ -86,7 +88,7 @@ public:
     void save(FILE *fe);
     void load(FILE *fe);
 
-  
+
     void forward();
     void delta();
     void loss();

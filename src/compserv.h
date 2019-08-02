@@ -35,12 +35,14 @@ public:
     int local_threads;
     vector<int> local_gpus;
     vector<int> local_fpgas;
+    int lsb; //local sync batches
 
     // for local
-    CompServ(int threads, const vector<int> &g, const vector<int> &f);
+    CompServ(int threads, const vector<int> &g, const vector<int> &f,int lsb=1);
 
     // for Distributed
     explicit CompServ(FILE *csspec);
+
 
 };
 

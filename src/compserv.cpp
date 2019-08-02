@@ -27,11 +27,18 @@
 
 
 // for local
-CompServ::CompServ(int t, const vector<int> &g, const vector<int> &f) {
+CompServ::CompServ(int t, const vector<int> &g, const vector<int> &f,int lsb) {
     type = "local";
     local_threads = t;
+
     local_gpus = vector<int>(g.begin(), g.end());
     local_fpgas = vector<int>(f.begin(), f.end());
+
+    this->lsb=lsb;
+    if (lsb<0) {
+      fprintf(stderr,"Error creating CS with lsb<0 in CompServ::CompServ");
+      exit(0);
+    }
 }
 
 // for Distributed
