@@ -32,13 +32,16 @@
 //////////////////////////////////////////////////////////
 class TestTensor
 {
-  public:
+  private:
     Tensor *T;
-    Tensor *Tg;
-    Tensor *Tc;
+
+  public:
+    Tensor *TC;
+    Tensor *TG;
 
     TestTensor(vector<int>shape);
     void ToGPU();
+    void check(string s);
 
 };
 
@@ -46,19 +49,19 @@ class TestTensor
 TestTensor::TestTensor(vector<int>shape)
 {
 
+    TC=new Tensor(shape, DEV_CPU);
+    TG=new Tensor(shape, DEV_GPU);
     T=new Tensor(shape, DEV_CPU);
-    Tg=new Tensor(shape, DEV_GPU);
-    Tc=new Tensor(shape, DEV_CPU);
 }
 
 void TestTensor::ToGPU(){
-  Tensor::copy(T,Tg);
+  Tensor::copy(TC,TG);
 }
 
 
-void check(TestTensor *A, string s) {
-  Tensor::copy(A->Tg,A->Tc);
-  int val=Tensor::equal(A->T,A->Tc);
+void TestTensor::check(string s) {
+  Tensor::copy(TG,T);
+  int val=Tensor::equal(T,TC);
 
   cout<<"====================\n";
   if (!val) {
@@ -84,42 +87,41 @@ int main(int argc, char **argv) {
   TestTensor *E=new TestTensor({10,10});
 
   ////////////// COPY ////////////////////
-
-  A->T->rand_uniform(1.0);
-  Tensor::copy(A->T,A->Tg);
-  check(A,"copy");
+  A->TC->rand_uniform(1.0);
+  A->ToGPU();
+  A->check("copy");
 
   ///////////// SET //////////////////////
+  A->TC->set(1.0);
+  A->TG->set(1.0);
 
-  A->T->set(1.0);
-  A->Tg->set(1.0);
-
-  check(A,"set");
+  A->check("set");
 
   //////////// MULT2D ///////////////////
-  A->T->rand_uniform(1.0);
-  B->T->rand_uniform(1.0);
+  A->TC->rand_uniform(1.0);
+  B->TC->rand_uniform(1.0);
 
   A->ToGPU();
   B->ToGPU();
 
-  Tensor::mult2D(A->T,0,B->T,0,C->T,0);
-  Tensor::mult2D(A->Tg,0,B->Tg,0,C->Tg,0);
+  Tensor::mult2D(A->TC,0,B->TC,0,C->TC,0);
+  Tensor::mult2D(A->TG,0,B->TG,0,C->TG,0);
 
-  check(C,"mult2D");
+  C->check("mult2D");
 
   //////////// SUM /////////////////////
-  D->T->rand_uniform(1.0);
+  A->TC->rand_uniform(1.0);
+  D->TC->rand_uniform(1.0);
+
+  A->ToGPU();
   D->ToGPU();
 
-  Tensor::sum(1.0,A->T,1.0,D->T,E->T,0);
-  Tensor::sum(1.0,A->Tg,1.0,D->Tg,E->Tg,0);
+  Tensor::sum(1.0,A->TC,1.0,D->TC,E->TC,0);
+  Tensor::sum(1.0,A->TG,1.0,D->TG,E->TG,0);
 
-  check(E,"sum");
+  E->check("sum");
 
 
-
-//
 //    int dev = DEV_CPU;
 //    Tensor *A=new Tensor({4,2,3,7}, dev);
 //    Tensor *B=new Tensor({4,3}, dev);
