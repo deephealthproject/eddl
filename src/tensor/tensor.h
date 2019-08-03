@@ -221,6 +221,7 @@ public:
 
     ///////// static metods
     static int eqsize(Tensor *A, Tensor *B);
+    static int equal(Tensor *A, Tensor *B);
 
     static void transpose(Tensor *A, Tensor *B, vector<int> dims);
 

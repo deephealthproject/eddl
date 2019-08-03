@@ -26,12 +26,98 @@
 #include "apis/eddl.h"
 #include "utils.h"
 
-int main(int argc, char **argv) {
+//////////////////////////////////////////////////////////
+///////////// TestTensor class to ease testing ///////////
+///////////// CPU, GPU ///////////////////////////////////
+//////////////////////////////////////////////////////////
+class TestTensor
+{
+  public:
+    Tensor *T;
+    Tensor *Tg;
+    Tensor *Tc;
 
-    get_fmem(pow(2, 20), "Super-small allocation"); // 4MB = 1MB * 4(float=4bytes)
-    get_fmem(pow(2, 20)*100, "Small allocation"); // 400MB = 100MB * 4(float=4bytes)
-    get_fmem(pow(2, 30), "Medium allocation"); // 4GB = 1GB * 4(float=4bytes)
-    get_fmem(pow(2, 40), "Big allocation"); // 4TB = 1TB * 4(float=4bytes)
+    TestTensor(vector<int>shape);
+    void ToGPU();
+
+};
+
+
+TestTensor::TestTensor(vector<int>shape)
+{
+
+    T=new Tensor(shape, DEV_CPU);
+    Tg=new Tensor(shape, DEV_GPU);
+    Tc=new Tensor(shape, DEV_CPU);
+}
+
+void TestTensor::ToGPU(){
+  Tensor::copy(T,Tg);
+}
+
+
+void check(TestTensor *A, string s) {
+  Tensor::copy(A->Tg,A->Tc);
+  int val=Tensor::equal(A->T,A->Tc);
+
+  cout<<"====================\n";
+  if (!val) {
+    cout<<"Fail "<<s<<"\n";
+    exit(1);
+  }
+  else {
+    cout<<"OK "<<s<<"\n";
+  }
+  cout<<"====================\n";
+}
+
+
+//////////////////////////////////////////
+//////////// TEST MAIN ///////////////////
+//////////////////////////////////////////
+int main(int argc, char **argv) {
+  TestTensor *A=new TestTensor({10,10});
+  TestTensor *B=new TestTensor({10,100});
+  TestTensor *C=new TestTensor({10,100});
+
+  TestTensor *D=new TestTensor({10,10});
+  TestTensor *E=new TestTensor({10,10});
+
+  ////////////// COPY ////////////////////
+
+  A->T->rand_uniform(1.0);
+  Tensor::copy(A->T,A->Tg);
+  check(A,"copy");
+
+  ///////////// SET //////////////////////
+
+  A->T->set(1.0);
+  A->Tg->set(1.0);
+
+  check(A,"set");
+
+  //////////// MULT2D ///////////////////
+  A->T->rand_uniform(1.0);
+  B->T->rand_uniform(1.0);
+
+  A->ToGPU();
+  B->ToGPU();
+
+  Tensor::mult2D(A->T,0,B->T,0,C->T,0);
+  Tensor::mult2D(A->Tg,0,B->Tg,0,C->Tg,0);
+
+  check(C,"mult2D");
+
+  //////////// SUM /////////////////////
+  D->T->rand_uniform(1.0);
+  D->ToGPU();
+
+  Tensor::sum(1.0,A->T,1.0,D->T,E->T,0);
+  Tensor::sum(1.0,A->Tg,1.0,D->Tg,E->Tg,0);
+
+  check(E,"sum");
+
+
 
 //
 //    int dev = DEV_CPU;

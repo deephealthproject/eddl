@@ -50,6 +50,34 @@ int Tensor::eqsize(Tensor *A, Tensor *B) {
     return 1;
 }
 
+int Tensor::equal(Tensor *A, Tensor *B) {
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::equal");
+
+    if (!eqsize(A,B)) return 0;
+
+    if (A->isCPU()) {
+      for (int i = 0; i < A->size; i++)
+          if (fabs(A->ptr[i]-B->ptr[i])>0.001) {
+            fprintf(stderr,"%f != %f\n",A->ptr[i],B->ptr[i]);
+            return 0;
+          }
+    }
+    #ifdef cGPU
+        else if (A->isGPU())
+          {
+            msg("Equal only for CPU Tensors", "Tensor::equal");
+          }
+    #endif
+    #ifdef cFPGA
+        else {
+          msg("Equal only for CPU Tensors", "Tensor::equal");
+        }
+    #endif
+
+    return 1;
+}
+
+
 // Transpose
 // TODO: Review correctness
 void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
@@ -153,6 +181,7 @@ void Tensor::copy(Tensor *A, Tensor *B) {
     }
     B->tsem->unlock();
 }
+
 
 ///////////////////////////////////////
 /// Partial copy ndim=1
