@@ -216,17 +216,16 @@ void gpu_total_sum(Tensor *A,float *tot)
   float *total;
   int device=A->gpu_device;
   cudaSetDevice(device);
+  float t=0;
 
-  int r=A->shape[0];
-  int c=A->size/r;
-
-  dim3 dimBlock(r);
-  dim3 dimGrid(1);
-  int ops = r;
-
+  setDims(A)
 
   check_cuda(cudaMalloc((void**)&total,sizeof(float)),"create float in total_sum");
-  reduce_array_sum<<<dimGrid,dimBlock,ops*sizeof(float)>>>(A->ptr,ops,c,total);
+
+  check_cuda(cudaMemcpy(total,&t,sizeof(float),cudaMemcpyHostToDevice),"error copy in total_sum");
+
+  reduce_array_sum<<<dimGrid,dimBlock>>>(A->ptr,A->size,total);
+
   check_cuda(cudaMemcpy(tot,total,sizeof(float),cudaMemcpyDeviceToHost),"error copy in total_sum");
 
   check_cuda(cudaFree(total),"delete float in total_sum");
@@ -401,8 +400,7 @@ void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  dim3 dimGrid(A->shape[0]);
-  dim3 dimBlock(A->shape[1]);
+  setDims(A)
 
 
   sum_mat_row<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,A->shape[0],A->shape[1]);
@@ -416,8 +414,7 @@ void gpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  dim3 dimGrid(A->shape[0]);
-  dim3 dimBlock(A->shape[1]);
+  setDims(A)
 
   sum_mat_col<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,A->shape[0],A->shape[1]);
 
@@ -431,8 +428,7 @@ void gpu_reduce_sum2D(Tensor *A,Tensor *B,int axis,int incB)
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  dim3 dimGrid(A->shape[0]);
-  dim3 dimBlock(A->shape[1]);
+  setDims(A);
 
   if (!incB) gpu_set(B,0.0);
 

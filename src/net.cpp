@@ -550,7 +550,16 @@ void Net::split(int c, int todev) {
         sprintf(cname,"snet_%d",i);
         snets[i]->name=cname;
         snets[i]->build(optimizer->clone(), losses, metrics);
+
     }
+
+
+    for (int j = 0; j < layers.size(); j++)
+        for (int k = 0; k < layers[j]->params.size(); k++) {
+            for (int i = 0; i < snets.size(); i++) {
+                Tensor::copy(layers[j]->params[k], snets[i]->layers[j]->params[k]);
+            }
+        }
 
 }
 

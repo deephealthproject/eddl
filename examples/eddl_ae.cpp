@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
 
     // Settings
     int epochs = 10;
-    int batch_size = 1000;
+    int batch_size = 100;
 
     // Define network
     layer in = Input({784});
@@ -45,6 +45,7 @@ int main(int argc, char **argv) {
     l = Activation(Dense(l, 64), "relu");
     l = Activation(Dense(l, 128), "relu");
     l = Activation(Dense(l, 256), "relu");
+
     layer out = Dense(l, 784);
 
     model net = Model({in}, {out});
@@ -52,13 +53,14 @@ int main(int argc, char **argv) {
     // View model
     summary(net);
     plot(net, "model.pdf");
-    
+
     // Build model
     build(net,
-          sgd(0.01, 0.9), // Optimizer
+          sgd(0.001, 0.9), // Optimizer
           {"mean_squared_error"}, // Losses
           {"mean_squared_error"}, // Metrics
-          CS_CPU(4) // CPU with 4 threads
+          //CS_CPU(4) // CPU with 4 threads
+          CS_GPU({1})
     );
 
     // Load dataset

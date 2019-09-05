@@ -40,7 +40,7 @@ __global__ void sqrt(float* a,long int rows, long int cols);
 __global__ void sqr(float* a, long int rows, long int cols);
 __global__ void mask(float* a, float v, long int rows, long int cols);
 
-__global__ void reduce_array_sum(float* array, long int ops, long int cols,float* result);
+__global__ void reduce_array_sum(float* a, long int ops, float* result);
 
 __global__ void sum(float scA,float* a,float scB,float *b, float *c,long int incC, long int size);
 __global__ void el_mult(float* a,float *b, float *c, long int incC, long int rows, long int cols);

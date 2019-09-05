@@ -32,15 +32,15 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 10;
-    int batch_size = 1000;
+    int epochs = 100;
+    int batch_size = 100;
     int num_classes = 10;
 
     // Define network
     layer in = Input({784});
     layer l = in;  // Aux var
 
-    l = GaussianNoise(l,0.3);
+    //l = GaussianNoise(l,0.3);
 
     l = Activation(Dense(l, 1024), "relu");
     l = Activation(Dense(l, 1024), "relu");
@@ -57,8 +57,8 @@ int main(int argc, char **argv) {
           sgd(0.01, 0.9), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          //CS_GPU({1,1},10) // 2 GPUs with local_sync_batches=10
-          CS_CPU(4) // 4 GCPU threads
+          CS_GPU({1},10) // 2 GPUs with local_sync_batches=10
+          //CS_CPU(12) // 12 GCPU threads
     );
 
     // Load dataset

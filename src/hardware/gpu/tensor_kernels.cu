@@ -182,38 +182,13 @@ __global__ void mask(float* a, float v, long int rows, long int cols)
 
 ///////////////////////////////////////////
 
-__global__ void reduce_array_sum(float* array, long int ops, long int cols,float* result)
+__global__ void reduce_array_sum(float* a, long int ops, float* result)
 {
-    extern __shared__ float arr_acc[];
-    __shared__ float accumulate_result[1];
+  long int thread_id_x = threadIdx.x+(blockDim.x*blockIdx.x);
 
-    long int thread_id_x = threadIdx.x +blockIdx.x*blockDim.x;
-    float sum=0;
-    arr_acc[thread_id_x]=0.0;
-
-    if(thread_id_x==0)
-        accumulate_result[thread_id_x]=0.0;
-
-    __syncthreads();
-    if (thread_id_x<ops)
-    {
-        for (long int i=0; i<cols;i++)
-            sum+=array[thread_id_x*cols+i];
-
-        __syncthreads();
-        arr_acc[thread_id_x]=sum;
-        __syncthreads();
-
-    }
-
-    if (thread_id_x==0)
-    {
-        for (long int i=0; i<ops;i++)
-            accumulate_result[thread_id_x]+=arr_acc[thread_id_x+i];
-
-        result[thread_id_x]=accumulate_result[thread_id_x];//copy back to global memory from shared
-
-    }
+  if (thread_id_x < ops){
+    atomicAdd(result,a[thread_id_x]);
+  }
 }
 
 ///////////////////////////////////////////
@@ -275,13 +250,15 @@ __global__ void sum_mat_col(float* a, float* b, float* c, long int rows, long in
 __global__ void reduce_sum2D(float *a,float *b,long int rows,long int cols,long int axis)
 {
   long int ops=rows*cols;
-  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+  long int thread_id_x = threadIdx.x+(blockDim.x*blockIdx.x);
 
-  if (thread_id_x < ops)
+  if (thread_id_x < ops){
     if (axis==0)
-        b[thread_id_x%cols]+=a[thread_id_x];
+      atomicAdd(&(b[thread_id_x%cols]),a[thread_id_x]);
     else
-        b[thread_id_x/cols]+=a[thread_id_x];
+      atomicAdd(&(b[thread_id_x/cols]),a[thread_id_x]);
+  }
+
 }
 
 ///////////////////////////////////////////

@@ -28,6 +28,6 @@ using namespace std;
 
 Metric::Metric(string name) {
     this->name = name;
-    aux1=aux2=one=NULL;
+  
 }
 float Metric::value(Tensor *T, Tensor *Y) {return 0; }

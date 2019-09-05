@@ -58,6 +58,7 @@ int Tensor::equal(Tensor *A, Tensor *B) {
     if (A->isCPU()) {
       for (int i = 0; i < A->size; i++)
           if (fabs(A->ptr[i]-B->ptr[i])>0.001) {
+            fprintf(stderr,"\n>>>>>>>>>>\n");
             fprintf(stderr,"%f != %f\n",A->ptr[i],B->ptr[i]);
             return 0;
           }
@@ -239,20 +240,20 @@ void Tensor::inc(Tensor *A, Tensor *B) {
         B->tsem->unlock();
     }
 #ifdef cGPU
-        else if ((A->isGPU())&&(B->isGPU())) {
-          Tensor::sum(1,A,1,B,B,0);
-        }
-        else if (((A->isCPU())&&(B->isGPU()))||((A->isGPU())&&(B->isCPU())))
-          {
-             Tensor *n=new Tensor(B->getShape(),B->device);
-             Tensor::copy(A,n);
-             Tensor::sum(1,n,1,B,B,0);
-             delete n;
-          }
+    else if ((A->isGPU())&&(B->isGPU())) {
+        Tensor::sum(1,A,1,B,B,0);
+    }
+    else if (((A->isCPU())&&(B->isGPU()))||((A->isGPU())&&(B->isCPU())))
+    {
+        Tensor *n=new Tensor(B->getShape(),B->device);
+        Tensor::copy(A,n);
+        Tensor::sum(1,n,1,B,B,0);
+        delete n;
+    }
 #endif
     else {
         fprintf(stderr, "(%d %d)\n", A->device, B->device);
-        msg("unsupported copy between devices", "Tensor::inc");
+        msg("unsupported inc between devices", "Tensor::inc");
     }
 }
 
@@ -1346,8 +1347,8 @@ void Tensor::cent(Tensor *A, Tensor *B, Tensor *C) {
 
         for (int i = 0; i < A->size; i++) {
             C->ptr[i] = 0;
-            if (A->ptr[i] != 0.0) C->ptr[i] -= A->ptr[i] * log(B->ptr[i]);
-            if (A->ptr[i] != 1.0) C->ptr[i] -= (1.0 - A->ptr[i]) * log(1.0 - B->ptr[i]);
+            if (A->ptr[i] != 0.0) C->ptr[i] -= A->ptr[i] * log(B->ptr[i]+0.00001);
+            if (A->ptr[i] != 1.0) C->ptr[i] -= (1.0 - A->ptr[i]) * log(1.0 - B->ptr[i]+0.00001);
         }
     }
 #ifdef cGPU

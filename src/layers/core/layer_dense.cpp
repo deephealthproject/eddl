@@ -86,9 +86,9 @@ Layer *LDense::share(int c, int bs, vector<Layer *> p) {
     n->params.clear();
 
     n->W = params[0];
-    n->bias = params[1];
+    if (use_bias) n->bias = params[1];
     n->params.push_back(n->W);
-    n->params.push_back(n->bias);
+    if (use_bias) n->params.push_back(n->bias);
 
     return n;
 }
