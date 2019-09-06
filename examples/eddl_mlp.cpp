@@ -57,8 +57,9 @@ int main(int argc, char **argv) {
           sgd(0.01, 0.9), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_GPU({1},10) // 2 GPUs with local_sync_batches=10
-          //CS_CPU(12) // 12 GCPU threads
+          //CS_GPU({1,1},10) // 2 GPUs with local_sync_batches=10
+          //CS_GPU({1}) // 1 GPU
+          CS_CPU(4) // 4 CPU threads
     );
 
     // Load dataset

@@ -59,8 +59,8 @@ int main(int argc, char **argv) {
           sgd(0.001, 0.9), // Optimizer
           {"mean_squared_error"}, // Losses
           {"mean_squared_error"}, // Metrics
-          //CS_CPU(4) // CPU with 4 threads
-          CS_GPU({1})
+          CS_CPU(4) // CPU with 4 threads
+          //CS_GPU({1})
     );
 
     // Load dataset
