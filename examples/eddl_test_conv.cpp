@@ -75,7 +75,7 @@ void check_c_vs_g(Tensor *A, Tensor *B,string s)
 int main(int argc, char **argv) {
 
 
-    TestTensor *A=new TestTensor({2,3,5,5});
+    TestTensor *A=new TestTensor({1,3,11,11});
     ConvolDescriptor *CDC=new ConvolDescriptor(vector<int>{3,3,3}, vector<int>{1,1}, vector<int>{1,1});
     ConvolDescriptor *CDG=new ConvolDescriptor(vector<int>{3,3,3}, vector<int>{1,1}, vector<int>{1,1});
 
