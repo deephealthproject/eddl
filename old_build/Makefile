@@ -59,7 +59,7 @@ CXX = g++
 CXXSOFLAGS = -shared
 ifeq ($(OPT),1)
 $(info set AVX)
-CXXFLAGS = -std=c++11 -march=native -mavx -O3 -pthread
+CXXFLAGS = -std=c++11  -mavx -O3 -pthread
 endif
 ifeq ($(OPT),2)
 $(info set SSE)
@@ -87,11 +87,11 @@ CXX = g++
 CXXSOFLAGS = -shared
 ifeq ($(OPT),1)
 $(info set AVX)
-CXXFLAGS =-std=c++11 -march=native -mavx -O3
+CXXFLAGS =-std=c++11 -mavx -O3
 endif
 ifeq ($(OPT),2)
 $(info set SSE)
-CXXFLAGS =-std=c++11 -march=native -msse -O3
+CXXFLAGS =-std=c++11 -msse -O3
 endif
 ifeq ($(OPT),3)
 $(info set no opt)
@@ -146,11 +146,11 @@ TENSOR_OBJ = tensor_unary.o tensor_zero.o tensor_binary.o tensor.o tensor_operat
 OBJ := $(APIS_OBJ) $(CORE_OBJ) $(HARDWARE_OBJ) $(INITIALIZERS_OBJ) $(LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(TENSOR_OBJ)
 
 ifeq ($(CORE),1)  # CPU
-all: $(GPU_OBJ) $(OBJ) example_mlp example_dae_class example_predict example_dae example_conv example_ae example_test example_gpu example_load_save
+all: $(GPU_OBJ) $(OBJ) example_mlp example_dae_class example_predict example_dae example_conv example_ae example_test example_test_conv example_gpu example_load_save
 endif
 
 ifeq ($(CORE),2)  # GPU
-all: $(GPU_OBJ) $(OBJ) example_mlp example_dae_class example_predict example_dae example_conv example_ae example_test example_gpu example_load_save
+all: $(GPU_OBJ) $(OBJ) example_mlp example_dae_class example_predict example_dae example_conv example_ae example_test example_test_conv example_gpu example_load_save
 endif
 
 utils.o: $(SRC_PATH)/utils.cpp $(SRC_PATH)/utils.h $(SRC_PATH)/system_info.h
@@ -432,6 +432,9 @@ example_ae: $(EXAMPLES_PATH)/eddl_ae.cpp $(OBJ) $(GPU_OBJ)
 
 example_test: $(EXAMPLES_PATH)/eddl_test.cpp $(OBJ) $(GPU_OBJ)
 	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_PATH)/eddl_test.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
+
+example_test_conv: $(EXAMPLES_PATH)/eddl_test_conv.cpp $(OBJ) $(GPU_OBJ)
+		$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_PATH)/eddl_test_conv.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
 
 example_gpu: $(EXAMPLES_PATH)/eddl_gpu.cpp $(OBJ) $(GPU_OBJ)
 	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_PATH)/eddl_gpu.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@

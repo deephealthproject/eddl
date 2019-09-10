@@ -67,6 +67,7 @@ void gpu_softmax(Tensor *A,Tensor *B);
 void gpu_d_softmax(Tensor *D,Tensor *I,Tensor *PD);
 
 void gpu_conv2D(ConvolDescriptor *D);
+void gpu_conv2D_old(ConvolDescriptor *D);
 void gpu_conv2D_grad(ConvolDescriptor *D);
 void gpu_conv2D_back(ConvolDescriptor *D);
 

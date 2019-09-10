@@ -63,7 +63,7 @@ Tensor::Tensor() : device(DEV_CPU), ndim(0), size(0) {}
 Tensor::Tensor(const vector<int> &shape, float *fptr, int dev)
 {
   #ifndef cGPU
-      if ((dev > DEV_CPU) && (isGPU())) {
+      if ((dev > DEV_CPU)&&(dev<DEV_FPGA)) {
           fprintf(stderr, "Not compiled for GPU\n");
           exit(0);
       }

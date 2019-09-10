@@ -97,6 +97,13 @@ public:
     Eigen::MatrixXf matD; // Delta
     Eigen::MatrixXf matgK; // gradient kernels
 
+    // GPU implementation
+    Tensor *gpuI; // input
+    Tensor *gpuO; // output
+    Tensor *gpuK; // kernels
+    Tensor *gpugK; // gradient kernels
+    Tensor *gpuD; // Delta
+
     //...
     ConvolDescriptor();
 

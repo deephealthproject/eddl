@@ -25,61 +25,53 @@
 #include <iostream>
 #include <cuda.h>
 
-__global__ void conv2D(float* I, int batch,int irows,int icols, int idepth, float* K, int nk, int kr,int kc, float* O,int orows,int ocols,int sr,int sc,int pad)
+__global__ void gpu_im2col_k(float* I, float *ptrI,int b,int irows,int icols, int idepth, float* K, int nk, int kr,int kc, float* O,int orows,int ocols,int sr,int sc,int pad,int col2im)
 {
- long int ops=batch*orows*ocols*nk;
- long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+  long int ops=orows*ocols*kr*kc*idepth;
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
- if (thread_id_x < ops) {
-   // output pixel at batch=ob, coord=(or,oc) at map=oz
-   int rcd=orows*ocols*nk;
-   int rc=orows*ocols;
 
-   int ob=thread_id_x/rcd;
-   int bm=thread_id_x%rcd;
+  if (thread_id_x < ops) {
+    int iz,ix,iy;
 
-   int ouz=bm/rc;
-   int our=(bm%rc)/ocols;
-   int ouc=(bm%rc)%ocols;
+    int ksize=kr*kc*idepth;
+    int isize=b*irows*icols*idepth;
+    //int kr2=kr/2;
+    //int kc2=kc/2;
 
-   //
-   int ircd=irows*icols*idepth;
-   int irc=irows*icols;
+    int r=thread_id_x/ksize;
+    int c=thread_id_x%ksize;
 
-   int kr2=kr/2;
-   int kc2=kc/2;
-   int krc=kr*kc;
-   int ptrI;
+    int oy=r/ocols;
+    int ox=r%ocols;
 
-   // Select filter oz from nk
-   int ptrKb=ouz*kr*kc*idepth;
 
-   // Convol
-   float sum=0.0;
-   for(int i=our-kr2-pad;i<=our+kr2-pad;i+=sr) {
-     if ((i>0)&&(i<irows)) {
-       for(int j=ouc-kc2-pad;j<=ouc+kc2-pad;j+=sc,ptrKb++){
-          if ((j>0)&&(j<icols)) {
-            ptrI=ob*ircd;
-            ptrI+=i*icols;
-            ptrI+=j;
-            int ptrK=ptrKb;
-            for(int k=0;k<idepth;k++) {
-              sum+=I[ptrI]*K[ptrK];
-              ptrI+=irc;
-              ptrK+=krc;
-            }// k
-         }// if j
-       } //j
-     } //if i
-     else ptrKb+=kc;
-   }//i
+    ix=(ox*sc)-pad;
+    iy=(oy*sr)-pad;
+    iz=c/(kr*kc);
 
-   O[thread_id_x]=sum;
 
- }
+
+    c=c%(kr*kc);
+
+    iy+=c/kc;
+    ix+=c%kc;
+
+
+    if ((ix>=0)&&(ix<icols)&&(iy>=0)&&(iy<irows)) {
+      int p=iz*(irows*icols)+(iy*icols)+ix;
+      if (col2im) //I[p+isize]+=ptrI[thread_id_x];
+        atomicAdd(&(I[p+isize]),ptrI[thread_id_x]);
+      else ptrI[thread_id_x]=I[p+isize];
+    }
+    else
+      if (!col2im) ptrI[thread_id_x]=0;
+
+  }
 
 }
+
+
 
 __global__ void fill(float *aptr,float *bptr,int t,int aini,int at,int bini,int bt,int tot,int inc)
 {

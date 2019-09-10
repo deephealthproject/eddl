@@ -1103,6 +1103,17 @@ void ConvolDescriptor::build(Tensor *A) {
         new(&matgK) Eigen::Map<Eigen::MatrixXf>(gK->ptr, kr * kc * kz, nk);
         // convolution: matC=matA*matK
     }
+    #ifdef cGPU
+    else if (I->isGPU()) {
+      gpuI=new Tensor(vector<int>{r*c,kc*kr*kz}, I->device);
+
+      gpuO=new Tensor(vector<int>{z,r*c}, I->device);
+      gpuD=new Tensor(vector<int>{z,r*c}, I->device);
+
+      gpuK=new Tensor(vector<int>{z,kc*kr*kz}, I->device);
+      gpugK=new Tensor(vector<int>{z,kc*kr*kz}, I->device);
+    }
+    #endif
 }
 
 void ConvolDescriptor::resize(Tensor *A)

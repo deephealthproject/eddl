@@ -106,9 +106,7 @@ void cpu_conv2D(ConvolDescriptor *D)
   for(int b=0;b<D->I->shape[0];b++,ptrO+=osize,ptrI+=isize){
     new (&(D->matI)) Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
     new (&(D->matO)) Eigen::Map<Eigen::MatrixXf>(ptrO,D->r*D->c,D->z);
-
     im2col(b,D,0);
-
     D->matO=D->matI*D->matK;
   }// batch
 }
