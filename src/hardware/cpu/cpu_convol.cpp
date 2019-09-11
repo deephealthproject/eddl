@@ -109,6 +109,15 @@ void cpu_conv2D(ConvolDescriptor *D)
     im2col(b,D,0);
     D->matO=D->matI*D->matK;
   }// batch
+
+  //bias
+  ptrO=D->O->ptr;
+  for(int b=0;b<D->O->shape[0];b++)
+    for(int z=0;z<D->O->shape[1];z++)
+      for(int r=0;r<D->O->shape[2];r++)
+        for(int c=0;c<D->O->shape[3];c++,ptrO++)
+            (*ptrO)+=D->bias->ptr[z];
+
 }
 
 
@@ -128,6 +137,15 @@ void cpu_conv2D_grad(ConvolDescriptor *D)
 
     D->matgK+=D->matI.transpose()*D->matD;
   }// batch
+
+  //bias
+  ptrD=D->D->ptr;
+  for(int b=0;b<D->D->shape[0];b++)
+    for(int z=0;z<D->D->shape[1];z++)
+      for(int r=0;r<D->D->shape[2];r++)
+        for(int c=0;c<D->D->shape[3];c++,ptrD++)
+            D->gbias->ptr[z]+=(*ptrD);
+
 }
 
 void cpu_conv2D_back(ConvolDescriptor *D)

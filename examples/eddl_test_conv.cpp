@@ -94,8 +94,9 @@ int main(int argc, char **argv) {
     Tensor::Conv2D(CDG);
     Tensor::Conv2D(CDC);
 
+
     check_c_vs_g(CDC->O,CDG->O,"conv2d");
-    
+
 
     ////
     printf("GRAD\n");
