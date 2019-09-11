@@ -120,7 +120,7 @@ int main(int argc, char **argv) {
   float fc=A->TC->total_sum();
   float fg=A->TG->total_sum();
 
-  if (fabs(fc-fg)>0.001) {
+  if (fabs(fc-fg)>0.01) {
     fprintf(stderr,"Fail total sum %f!=%f\n",fc,fg);
     exit(EXIT_FAILURE);
   }
@@ -246,6 +246,18 @@ int main(int argc, char **argv) {
  Tensor::reduce_sum2D(A->TG, F->TG, 0, 0);
 
  F->check("reduce_sum2D");
+
+ A->TC->rand_uniform(1.0);
+ F->TC->rand_uniform(1.0);
+
+ A->ToGPU();
+ F->ToGPU();
+
+ Tensor::reduce_sum2D(A->TC, F->TC, 0, 1);
+ Tensor::reduce_sum2D(A->TG, F->TG, 0, 1);
+
+ F->check("reduce_sum2D inc");
+
 
  //////////// ReLU ////////////////
  A->TC->rand_suniform(1.0);
