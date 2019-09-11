@@ -27,6 +27,12 @@
 using namespace eddl;
 
 
+layer Block(layer l,int filters, vector<int> kernel, vector<int> stride)
+{
+  return Activation(Conv(l, filters, kernel,stride),"relu");
+  //return MaxPool(Activation(Conv(l, filters, kernel,stride),"relu"),{2,2});
+}
+
 int main(int argc, char **argv){
     // download MNIST data
     download_mnist();
@@ -44,14 +50,14 @@ int main(int argc, char **argv){
 
     l=Reshape(l,{1,28,28});
 
-    l=MaxPool(Activation(Conv(l, 16, {3,3}),"relu"),{2,2});
-    l=MaxPool(Activation(Conv(l, 32, {3,3}),"relu"),{2,2});
-    l=MaxPool(Activation(Conv(l, 64, {3,3}),"relu"),{2,2});
-    l=MaxPool(Activation(Conv(l, 128, {3,3}),"relu"),{2,2});
+    l=Block(l,16,{3,3},{2,2});
+    l=Block(l,32,{3,3},{2,2});
+    l=Block(l,64,{3,3},{2,2});
+    l=Block(l,128,{3,3},{2,2});
 
     l=Reshape(l,{-1});
 
-    l=Activation(Dense(l,32),"relu");
+    l=Activation(Dense(l,256),"relu");
 
     layer out=Activation(Dense(l,num_classes),"softmax");
 
@@ -70,7 +76,7 @@ int main(int argc, char **argv){
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_CPU(6) // CPU with 4 threads
-          //CS_GPU({1}) // GPU with only one gpu 
+          //CS_GPU({1}) // GPU with only one gpu
     );
 
     // Load and preprocess training data

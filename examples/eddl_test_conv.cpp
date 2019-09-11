@@ -80,10 +80,8 @@ int main(int argc, char **argv) {
     ConvolDescriptor *CDG=new ConvolDescriptor(vector<int>{3,3,3}, vector<int>{2,2}, vector<int>{1,1});
 
     CDC->build(A->TC);
-    CDC->ID=new Tensor(A->TC->getShape(),DEV_CPU);
-
     CDG->build(A->TG);
-    CDG->ID=new Tensor(A->TG->getShape(),DEV_GPU);
+
 
     ////
     printf("FORW\n");
@@ -97,8 +95,9 @@ int main(int argc, char **argv) {
     Tensor::Conv2D(CDC);
 
     check_c_vs_g(CDC->O,CDG->O,"conv2d");
+    
 
-
+    ////
     printf("GRAD\n");
 
     CDC->D->rand_suniform(0.1);
@@ -113,7 +112,11 @@ int main(int argc, char **argv) {
     check_c_vs_g(CDC->gK,CDG->gK,"conv2d_grad");
 
 
+    ////
     printf("BACK\n");
+    CDC->ID=new Tensor(A->TC->getShape(),DEV_CPU);
+    CDG->ID=new Tensor(A->TG->getShape(),DEV_GPU);
+
     CDC->D->rand_suniform(0.1);
     CDC->ID->set(0.0);
 
@@ -125,11 +128,6 @@ int main(int argc, char **argv) {
     Tensor::Conv2D_back(CDG);
 
     check_c_vs_g(CDC->ID,CDG->ID,"conv2d_back");
-
-
-
-
-
 
 
 }
