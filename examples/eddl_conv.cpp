@@ -33,7 +33,7 @@ int main(int argc, char **argv){
 
     // Settings
     int epochs = 5;
-    int batch_size = 1000;
+    int batch_size = 100;
     int num_classes = 10;
 
     // network
@@ -69,8 +69,8 @@ int main(int argc, char **argv){
           sgd(0.01, 0.9), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_CPU(4) // CPU with 4 threads
-          //CS_GPU({1}) // CPU with 4 threads
+          CS_CPU(6) // CPU with 4 threads
+          //CS_GPU({1}) // GPU with only one gpu 
     );
 
     // Load and preprocess training data

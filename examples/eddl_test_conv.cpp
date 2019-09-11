@@ -76,8 +76,8 @@ int main(int argc, char **argv) {
 
 
     TestTensor *A=new TestTensor({1,3,11,11});
-    ConvolDescriptor *CDC=new ConvolDescriptor(vector<int>{3,3,3}, vector<int>{1,1}, vector<int>{1,1});
-    ConvolDescriptor *CDG=new ConvolDescriptor(vector<int>{3,3,3}, vector<int>{1,1}, vector<int>{1,1});
+    ConvolDescriptor *CDC=new ConvolDescriptor(vector<int>{3,3,3}, vector<int>{2,2}, vector<int>{1,1});
+    ConvolDescriptor *CDG=new ConvolDescriptor(vector<int>{3,3,3}, vector<int>{2,2}, vector<int>{1,1});
 
     CDC->build(A->TC);
     CDC->ID=new Tensor(A->TC->getShape(),DEV_CPU);
