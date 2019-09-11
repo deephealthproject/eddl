@@ -32,7 +32,7 @@
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
-|  Conv2D       | 🔵  | ❌ | Dilated, Groups...
+|  Conv2D       | 🔵  | 🔵 | Dilated, Groups...
 |  Conv2DT      | ❌ | ❌ |
 |  Upsampling   | ❌ | ❌ |
 |  AvgPool   | ❌ | ❌ |
@@ -45,7 +45,7 @@
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
-|  Add    |  ✅ | ❌ |
+|  Add    |  ✅ | ✅ |
 |  Average    | ❌ | ❌ |
 |  Concat    | ❌ | ❌ |
 |  MatMul    | ❌ | ❌ |
