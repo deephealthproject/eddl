@@ -378,7 +378,7 @@ void gpu_el_mult(Tensor *A, Tensor *B, Tensor *C,int incC)
 
   el_mult<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,incC,A->shape[0],c);
 
-  check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
+  check_cuda(cudaDeviceSynchronize(),"gpu_el_mult");
 }
 
 void gpu_el_div(Tensor *A, Tensor *B, Tensor *C,int incC)
@@ -390,7 +390,7 @@ void gpu_el_div(Tensor *A, Tensor *B, Tensor *C,int incC)
 
   el_mult<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,incC,A->shape[0],r);
 
-  check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
+  check_cuda(cudaDeviceSynchronize(),"gpu_el_div");
 }
 
 ///////////////////////////////////////////
@@ -668,9 +668,12 @@ void gpu_conv2D(ConvolDescriptor *D)
 
     gpu_mult2D(D->gpuK,0,D->gpuI,1,D->gpuO,0);
 
-
-
   }// batch
+
+  D->gpuO->ptr=D->O->ptr;
+  for(int b=0;b<D->I->shape[0];b++,D->gpuO->ptr+=osize)
+    gpu_sum2D_colwise(D->gpuO,D->bias,D->gpuO);
+
 
 //fprintf(stderr,"gpu_con2D out");
 
@@ -695,6 +698,11 @@ void gpu_conv2D_grad(ConvolDescriptor *D)
     gpu_mult2D(D->gpuD,0,D->gpuI,0,D->gpugK,1);
 
   }// batch
+
+  D->gpuD->ptr=D->D->ptr;
+  for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize)
+    gpu_reduce_sum2D(D->gpuD,D->gbias,1,1);
+
 }
 
 void gpu_conv2D_back(ConvolDescriptor *D)

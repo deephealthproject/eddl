@@ -43,6 +43,7 @@ Layer::Layer(string name, int dev) {
 
 
 void Layer::initialize() {
+
     for (int i = 0; i != params.size(); i++) {
         if (params[i]->ndim == 1)
             params[i]->rand_suniform(0.1);

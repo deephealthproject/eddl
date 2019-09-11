@@ -1171,12 +1171,14 @@ void Tensor::Conv2D_grad(ConvolDescriptor *D) {
     D->gK->tsem->lock();
     if (D->I->isCPU()) {
         D->gK->set(0.0);
+        D->gbias->set(0.0);
         cpu_conv2D_grad(D);
     }
 #ifdef cGPU
     else if (D->I->isGPU())
       {
          D->gK->set(0.0);
+         D->gbias->set(0.0);
          gpu_conv2D_grad(D);
       }
 #endif

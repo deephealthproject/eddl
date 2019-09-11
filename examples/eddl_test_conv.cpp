@@ -75,21 +75,26 @@ void check_c_vs_g(Tensor *A, Tensor *B,string s)
 int main(int argc, char **argv) {
 
 
-    TestTensor *A=new TestTensor({1,3,11,11});
+    TestTensor *A=new TestTensor({100,32,3,3});
     ConvolDescriptor *CDC=new ConvolDescriptor(vector<int>{3,3,3}, vector<int>{2,2}, vector<int>{1,1});
     ConvolDescriptor *CDG=new ConvolDescriptor(vector<int>{3,3,3}, vector<int>{2,2}, vector<int>{1,1});
 
     CDC->build(A->TC);
     CDG->build(A->TG);
 
+    CDC->I->info();
+    CDG->I->info();
 
     ////
     printf("FORW\n");
 
     CDC->I->rand_suniform(0.1);
     CDC->K->rand_suniform(0.1);
+    CDC->bias->rand_suniform(0.1);
+
     Tensor::copy(CDC->I,CDG->I);
     Tensor::copy(CDC->K,CDG->K);
+    Tensor::copy(CDC->bias,CDG->bias);
 
     Tensor::Conv2D(CDG);
     Tensor::Conv2D(CDC);
@@ -103,14 +108,17 @@ int main(int argc, char **argv) {
 
     CDC->D->rand_suniform(0.1);
     CDC->gK->set(0.0);
+    CDC->gbias->set(0.0);
 
     Tensor::copy(CDC->D,CDG->D);
     CDG->gK->set(0.0);
+    CDG->gbias->set(0.0);
 
     Tensor::Conv2D_grad(CDC);
     Tensor::Conv2D_grad(CDG);
 
-    check_c_vs_g(CDC->gK,CDG->gK,"conv2d_grad");
+    check_c_vs_g(CDC->gK,CDG->gK,"conv2d_grad gK");
+    check_c_vs_g(CDC->gbias,CDG->gbias,"conv2d_grad gbias");
 
 
     ////
