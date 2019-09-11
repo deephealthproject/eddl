@@ -66,6 +66,7 @@ void LDense::forward() {
 void LDense::backward() {
 
     //get gradients with provided delta
+
     Tensor::mult2D(input, 1, delta, 0, gW, 0);
     if (use_bias) Tensor::reduce_sum2D(delta, gbias, 0, 0);
     // backprop delta

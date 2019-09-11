@@ -258,7 +258,6 @@ int main(int argc, char **argv) {
 
  F->check("reduce_sum2D inc");
 
-
  //////////// ReLU ////////////////
  A->TC->rand_suniform(1.0);
  A->ToGPU();
