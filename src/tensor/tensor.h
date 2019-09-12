@@ -99,6 +99,7 @@ public:
 
     // GPU implementation
     Tensor *gpuI; // input
+    Tensor *gpuIB; // input
     Tensor *gpuO; // output
     Tensor *gpuK; // kernels
     Tensor *gpugK; // gradient kernels

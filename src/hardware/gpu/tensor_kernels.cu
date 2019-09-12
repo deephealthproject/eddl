@@ -25,6 +25,65 @@
 #include <iostream>
 #include <cuda.h>
 
+
+__global__ void conv2D(float* I, int batch,int irows,int icols, int idepth, float* K, int nk, int kr,int kc, float* O,int orows,int ocols,int sr,int sc,int pad)
+{
+ long int ops=batch*orows*ocols*nk;
+ long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+ if (thread_id_x < ops) {
+   // output pixel at batch=ob, coord=(or,oc) at map=oz
+   int rcd=orows*ocols*nk;
+   int rc=orows*ocols;
+
+   int ob=thread_id_x/rcd;
+   int bm=thread_id_x%rcd;
+
+   int ouz=bm/rc;
+   int our=(bm%rc)/ocols;
+   int ouc=(bm%rc)%ocols;
+
+   //
+   int ircd=irows*icols*idepth;
+   int irc=irows*icols;
+
+   int kr2=kr/2;
+   int kc2=kc/2;
+   int krc=kr*kc;
+   int ptrI;
+
+   // Select filter outz from nk
+   int ptrKb=ouz*kr*kc*idepth;
+
+   // Convol
+   float sum=0.0;
+   int inr=(our*sr)+kr2-pad;
+   int inc=(ouc*sc)+kr2-pad;
+   for(int i=inr-kr2;i<=inr+kr2;i++) {
+     if ((i>=0)&&(i<irows)) {
+       for(int j=inc-kc2;j<=inc+kc2;j++,ptrKb++){
+          if ((j>=0)&&(j<icols)) {
+            ptrI=ob*ircd;
+            ptrI+=i*icols;
+            ptrI+=j;
+            int ptrK=ptrKb;
+            for(int k=0;k<idepth;k++) {
+              sum+=I[ptrI]*K[ptrK];
+              ptrI+=irc;
+              ptrK+=krc;
+            }// k
+         }// if j
+       } //j
+     } //if i
+     else ptrKb+=kc;
+   }//i
+
+   O[thread_id_x]=sum;
+
+ }
+
+}
+
 __global__ void gpu_im2col_k(float* I, float *ptrI,int b,int irows,int icols, int idepth, float* K, int nk, int kr,int kc, float* O,int orows,int ocols,int sr,int sc,int pad,int col2im)
 {
   long int ops=orows*ocols*kr*kc*idepth;

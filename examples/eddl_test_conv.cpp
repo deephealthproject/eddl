@@ -75,7 +75,7 @@ void check_c_vs_g(Tensor *A, Tensor *B,string s)
 int main(int argc, char **argv) {
 
 
-    TestTensor *A=new TestTensor({100,32,3,3});
+    TestTensor *A=new TestTensor({1,2,5,5});
     ConvolDescriptor *CDC=new ConvolDescriptor(vector<int>{3,3,3}, vector<int>{2,2}, vector<int>{1,1});
     ConvolDescriptor *CDG=new ConvolDescriptor(vector<int>{3,3,3}, vector<int>{2,2}, vector<int>{1,1});
 
@@ -92,12 +92,20 @@ int main(int argc, char **argv) {
     CDC->K->rand_suniform(0.1);
     CDC->bias->rand_suniform(0.1);
 
+    //CDC->I->set(1.0);
+    //CDC->K->set(1.0);
+
     Tensor::copy(CDC->I,CDG->I);
     Tensor::copy(CDC->K,CDG->K);
     Tensor::copy(CDC->bias,CDG->bias);
 
     Tensor::Conv2D(CDG);
     Tensor::Conv2D(CDC);
+
+
+    //CDC->O->print();
+    //CDG->O->print();
+
 
 
     check_c_vs_g(CDC->O,CDG->O,"conv2d");

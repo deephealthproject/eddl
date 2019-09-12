@@ -111,6 +111,7 @@ void cpu_conv2D(ConvolDescriptor *D)
   }// batch
 
   //bias
+
   ptrO=D->O->ptr;
   for(int b=0;b<D->O->shape[0];b++)
     for(int z=0;z<D->O->shape[1];z++)

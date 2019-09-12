@@ -31,7 +31,6 @@
 extern cublasHandle_t hcublas[64];
 extern curandGenerator_t random_generator[64];
 
-
 // CUDA, NVIDIA compute capabilities:
 // https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#compute-capabilities
 // -----------------------------------------------------------------
@@ -631,6 +630,20 @@ Tensor *gbias;// gradient bias
 Tensor *D; // Delta
 Tensor *O; // Outputmap
 */
+void gpu_conv2D_old(ConvolDescriptor *D)
+{
+
+  int device=D->I->gpu_device;
+  cudaSetDevice(device);
+
+  setDims(D->O)
+
+  conv2D<<<dimGrid,dimBlock>>>(D->I->ptr, D->I->shape[0],D->ir,D->ic,D->iz,D->K->ptr,D->nk,D->kr,D->kc,D->O->ptr,D->r,D->c,D->sr,D->sc,D->padr);
+
+  check_cuda(cudaDeviceSynchronize(),"gpu_conv2D");
+
+
+}
 
 void gpu_im2col(int b,ConvolDescriptor *D,int col2im)
 {
@@ -658,24 +671,22 @@ void gpu_conv2D(ConvolDescriptor *D)
   cudaSetDevice(device);
 
   int osize=D->z*D->r*D->c;
+  int isize=D->iz*D->ir*D->ic;
 
   D->gpuK->ptr=D->K->ptr;
   D->gpuO->ptr=D->O->ptr;
-  for(int b=0;b<D->I->shape[0];b++,D->gpuO->ptr+=osize){ //batch
-    //fprintf(stderr,"%d\n",b);
-    //I->ptr=D->I->ptr+isize;
+  D->gpuI->ptr=D->gpuIB->ptr;
+
+  //
+
+  for(int b=0;b<D->I->shape[0];b++,D->gpuO->ptr+=osize,D->gpuI->ptr+=isize){ //batch
     gpu_im2col(b,D,0);
 
     gpu_mult2D(D->gpuK,0,D->gpuI,1,D->gpuO,0);
 
-  }// batch
-
-  D->gpuO->ptr=D->O->ptr;
-  for(int b=0;b<D->I->shape[0];b++,D->gpuO->ptr+=osize)
     gpu_sum2D_colwise(D->gpuO,D->bias,D->gpuO);
 
-
-//fprintf(stderr,"gpu_con2D out");
+  }// batch
 
 
 }
@@ -684,29 +695,34 @@ void gpu_conv2D(ConvolDescriptor *D)
 void gpu_conv2D_grad(ConvolDescriptor *D)
 {
 
+
+
   //fprintf(stderr,"gpu_con2D in");
   int device=D->I->gpu_device;
+
   cudaSetDevice(device);
 
   int osize=D->z*D->r*D->c;
+  int isize=D->iz*D->ir*D->ic;
 
   D->gpugK->ptr=D->gK->ptr;
   D->gpuD->ptr=D->D->ptr;
-  for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize){ //batch
-    gpu_im2col(b,D,0);
+  D->gpuI->ptr=D->gpuIB->ptr;
+  for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize,D->gpuI->ptr+=isize){ //batch
+
+    //gpu_im2col(b,D,0);
 
     gpu_mult2D(D->gpuD,0,D->gpuI,0,D->gpugK,1);
 
-  }// batch
-
-  D->gpuD->ptr=D->D->ptr;
-  for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize)
     gpu_reduce_sum2D(D->gpuD,D->gbias,1,1);
+
+  }// batch
 
 }
 
 void gpu_conv2D_back(ConvolDescriptor *D)
 {
+
   //fprintf(stderr,"gpu_con2D in");
   int device=D->I->gpu_device;
   cudaSetDevice(device);
@@ -715,6 +731,7 @@ void gpu_conv2D_back(ConvolDescriptor *D)
 
   D->gpuK->ptr=D->K->ptr;
   D->gpuD->ptr=D->D->ptr;
+  D->gpuI->ptr=D->gpuIB->ptr;
   for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize){ //batch
 
     gpu_mult2D(D->gpuD,1,D->gpuK,0,D->gpuI,0);

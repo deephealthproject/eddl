@@ -1105,6 +1105,7 @@ void ConvolDescriptor::build(Tensor *A) {
     }
     #ifdef cGPU
     else if (I->isGPU()) {
+      gpuIB=new Tensor(vector<int>{A->shape[0]*r*c,kc*kr*kz}, I->device);
       gpuI=new Tensor(vector<int>{r*c,kc*kr*kz}, I->device);
 
       gpuO=new Tensor(vector<int>{z,r*c}, I->device);
@@ -1129,6 +1130,16 @@ void ConvolDescriptor::resize(Tensor *A)
         delete ptrI;
         ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptor::build");
     }
+    #ifdef cGPU
+    else if (I->isGPU()) {
+      delete gpuIB;
+      gpuIB=new Tensor(vector<int>{A->shape[0]*r*c,kc*kr*kz}, I->device);
+
+
+      gpuK=new Tensor(vector<int>{z,kc*kr*kz}, I->device);
+      gpugK=new Tensor(vector<int>{z,kc*kr*kz}, I->device);
+    }
+    #endif
 
 }
 
@@ -1148,6 +1159,7 @@ void Tensor::Conv2D(ConvolDescriptor *D) {
 #ifdef cGPU
     else if (D->I->isGPU())
       {
+         //gpu_conv2D_old(D);
          gpu_conv2D(D);
       }
 #endif
