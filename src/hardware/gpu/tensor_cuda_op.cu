@@ -217,6 +217,7 @@ void gpu_total_sum(Tensor *A,float *tot)
   cudaSetDevice(device);
   float t=0;
 
+  
   setDims(A)
 
   check_cuda(cudaMalloc((void**)&total,sizeof(float)),"create float in total_sum");
@@ -630,20 +631,7 @@ Tensor *gbias;// gradient bias
 Tensor *D; // Delta
 Tensor *O; // Outputmap
 */
-void gpu_conv2D_old(ConvolDescriptor *D)
-{
 
-  int device=D->I->gpu_device;
-  cudaSetDevice(device);
-
-  setDims(D->O)
-
-  conv2D<<<dimGrid,dimBlock>>>(D->I->ptr, D->I->shape[0],D->ir,D->ic,D->iz,D->K->ptr,D->nk,D->kr,D->kc,D->O->ptr,D->r,D->c,D->sr,D->sc,D->padr);
-
-  check_cuda(cudaDeviceSynchronize(),"gpu_conv2D");
-
-
-}
 
 void gpu_im2col(int b,ConvolDescriptor *D,int col2im)
 {
@@ -666,7 +654,6 @@ void gpu_im2col(int b,ConvolDescriptor *D,int col2im)
 void gpu_conv2D(ConvolDescriptor *D)
 {
 
-  //fprintf(stderr,"gpu_con2D in");
   int device=D->I->gpu_device;
   cudaSetDevice(device);
 
@@ -676,8 +663,6 @@ void gpu_conv2D(ConvolDescriptor *D)
   D->gpuK->ptr=D->K->ptr;
   D->gpuO->ptr=D->O->ptr;
   D->gpuI->ptr=D->gpuIB->ptr;
-
-  //
 
   for(int b=0;b<D->I->shape[0];b++,D->gpuO->ptr+=osize,D->gpuI->ptr+=isize){ //batch
     gpu_im2col(b,D,0);
@@ -695,9 +680,6 @@ void gpu_conv2D(ConvolDescriptor *D)
 void gpu_conv2D_grad(ConvolDescriptor *D)
 {
 
-
-
-  //fprintf(stderr,"gpu_con2D in");
   int device=D->I->gpu_device;
 
   cudaSetDevice(device);
@@ -723,7 +705,6 @@ void gpu_conv2D_grad(ConvolDescriptor *D)
 void gpu_conv2D_back(ConvolDescriptor *D)
 {
 
-  //fprintf(stderr,"gpu_con2D in");
   int device=D->I->gpu_device;
   cudaSetDevice(device);
 

@@ -1105,14 +1105,22 @@ void ConvolDescriptor::build(Tensor *A) {
     }
     #ifdef cGPU
     else if (I->isGPU()) {
+      // Big tensor with all the lowering
       gpuIB=new Tensor(vector<int>{A->shape[0]*r*c,kc*kr*kz}, I->device);
+
+      // Tensor with variable shared ptr, delete create ptr
       gpuI=new Tensor(vector<int>{r*c,kc*kr*kz}, I->device);
+      gpu_delete_tensor(gpuI->gpu_device,gpuI->ptr);
 
       gpuO=new Tensor(vector<int>{z,r*c}, I->device);
+      gpu_delete_tensor(gpuI->gpu_device,gpuO->ptr);
       gpuD=new Tensor(vector<int>{z,r*c}, I->device);
+      gpu_delete_tensor(gpuI->gpu_device,gpuD->ptr);
 
       gpuK=new Tensor(vector<int>{z,kc*kr*kz}, I->device);
+      gpu_delete_tensor(gpuI->gpu_device,gpuK->ptr);
       gpugK=new Tensor(vector<int>{z,kc*kr*kz}, I->device);
+      gpu_delete_tensor(gpuI->gpu_device,gpugK->ptr);
     }
     #endif
 }
@@ -1134,10 +1142,6 @@ void ConvolDescriptor::resize(Tensor *A)
     else if (I->isGPU()) {
       delete gpuIB;
       gpuIB=new Tensor(vector<int>{A->shape[0]*r*c,kc*kr*kz}, I->device);
-
-
-      gpuK=new Tensor(vector<int>{z,kc*kr*kz}, I->device);
-      gpugK=new Tensor(vector<int>{z,kc*kr*kz}, I->device);
     }
     #endif
 
