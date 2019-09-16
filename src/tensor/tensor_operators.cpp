@@ -1325,9 +1325,7 @@ void Tensor::MPool2D(PoolDescriptor *D) {
 #ifdef cGPU
     else if (D->I->isGPU())
       {
-        printf("mpool2d: 1-T.OP\n");
         gpu_mpool2D(D);
-        printf("mpool2d: 2-T.OP\n");
       }
 #endif
 #ifdef cFPGA

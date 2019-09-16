@@ -735,18 +735,14 @@ void gpu_conv2D_back(ConvolDescriptor *D)
 
 
 void gpu_mpool2D(PoolDescriptor *D){
-    setbuf(stdout, NULL);
-
-    printf("mpool2d: 11-T.CU\n");
     int device=D->I->gpu_device;
-    printf("mpool2d: 11-T.CU\n");
     cudaSetDevice(device);
-    printf("mpool2d: 11-T.CU\n");
+
     setDims(D->O);
 
-    printf("mpool2d: 12-T.CU\n");
+
     maxpool2d<<<dimGrid,dimBlock>>>(D->I->ptr, D->I->shape[0],D->ir,D->ic,D->iz,D->kr,D->kc,D->O->ptr,D->r,D->c,D->z, D->sr,D->sc,D->padr, D->padc, D->indX->ptr, D->indY->ptr);
-    printf("mpool2d: 22-T.CU\n");
+
 
     check_cuda(cudaDeviceSynchronize(),"gpu_mpool");
 

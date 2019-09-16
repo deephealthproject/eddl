@@ -29,7 +29,7 @@
 
 
 __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padr, int padc, float* indX, float* indY) {
-    printf("Block %d; thread %d\n", blockIdx.x, threadIdx.x);
+
     long int ops = batch * orows * ocols * odepth;
     long int thread_id_x = blockDim.x * blockIdx.x + threadIdx.x;
 
