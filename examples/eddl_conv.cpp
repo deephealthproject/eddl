@@ -29,8 +29,8 @@ using namespace eddl;
 
 layer Block(layer l,int filters, vector<int> kernel, vector<int> stride)
 {
-  return Activation(Conv(l, filters, kernel,stride),"relu");
-  //return MaxPool(Activation(Conv(l, filters, kernel,stride),"relu"),{2,2});
+  //return Activation(Conv(l, filters, kernel,stride),"relu");
+  return MaxPool(Activation(Conv(l, filters, kernel,stride),"relu"),{2,2});
 }
 
 int main(int argc, char **argv){
@@ -50,10 +50,10 @@ int main(int argc, char **argv){
 
     l=Reshape(l,{1,28,28});
 
-    l=Block(l,64,{3,3},{2,2});
-    l=Block(l,128,{3,3},{2,2});
-    l=Block(l,256,{3,3},{2,2});
-    l=Block(l,512,{3,3},{2,2});
+    l=Block(l,64,{3,3},{1,1});
+    l=Block(l,128,{3,3},{1,1});
+    l=Block(l,256,{3,3},{1,1});
+    l=Block(l,512,{3,3},{1,1});
 
     l=Reshape(l,{-1});
 
