@@ -27,6 +27,7 @@
 
 
 
+
 __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padr, int padc, float* indX, float* indY) {
     printf("Block %d; thread %d\n", blockIdx.x, threadIdx.x);
     long int ops = batch * orows * ocols * odepth;
@@ -94,7 +95,30 @@ __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, i
 
 }
 
-__global__ void gpu_im2col_k(float* I, float *ptrI,int b,int irows,int icols, int idepth, float* K, int nk, int kr,int kc, float* O,int orows,int ocols,int sr,int sc,int pad,int col2im)
+__global__ void  gpu_addbias_k(float *O, int batch, int r,int c,int nk,float *bias)
+{
+  int size=nk*r*c;
+  int thread_id_x=threadIdx.x;
+
+  int p=blockIdx.x*size+thread_id_x*r*c;
+  for (int i = 0; i < r*c; i++)
+     O[p+i]+=bias[thread_id_x];
+
+}
+
+__global__ void  gpu_deltabias_k(float *D, int batch, int r,int c,int nk,float *bias)
+{
+  int size=nk*r*c;
+  int thread_id_x=threadIdx.x;
+
+  int p=blockIdx.x*size+thread_id_x*r*c;
+  for (int i = 0; i < r*c; i++)
+    atomicAdd(&(bias[thread_id_x]),D[p+i]);
+
+}
+
+
+__global__ void gpu_im2col_k(float* I, float *ptrI,int b,int irows,int icols, int idepth, float* K, int nk, int kr,int kc, float* O,int orows,int ocols,int sr,int sc,int pad)
 {
   long int ops=orows*ocols*kr*kc*idepth;
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
@@ -123,13 +147,46 @@ __global__ void gpu_im2col_k(float* I, float *ptrI,int b,int irows,int icols, in
 
     if ((ix>=0)&&(ix<icols)&&(iy>=0)&&(iy<irows)) {
       int p=iz*(irows*icols)+(iy*icols)+ix;
-      if (col2im) //I[p+isize]+=ptrI[thread_id_x];
-        atomicAdd(&(I[p+isize]),ptrI[thread_id_x]);
-      else ptrI[thread_id_x]=I[p+isize];
+      ptrI[thread_id_x]=I[p+isize];
     }
     else
-      if (!col2im) ptrI[thread_id_x]=0;
+      ptrI[thread_id_x]=0;
 
+  }
+
+}
+
+__global__ void gpu_col2im_k(float* I, float *ptrI,int b,int irows,int icols, int idepth, float* K, int nk, int kr,int kc, float* O,int orows,int ocols,int sr,int sc,int pad)
+{
+  long int ops=orows*ocols*kr*kc*idepth;
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+
+  if (thread_id_x < ops) {
+    int iz,ix,iy;
+
+    int ksize=kr*kc*idepth;
+    int isize=b*irows*icols*idepth;
+
+    int r=thread_id_x/ksize;
+    int c=thread_id_x%ksize;
+
+    int oy=r/ocols;
+    int ox=r%ocols;
+
+    ix=(ox*sc)-pad;
+    iy=(oy*sr)-pad;
+    iz=c/(kr*kc);
+
+    c=c%(kr*kc);
+
+    iy+=c/kc;
+    ix+=c%kc;
+
+    if ((ix>=0)&&(ix<icols)&&(iy>=0)&&(iy<irows)) {
+      int p=iz*(irows*icols)+(iy*icols)+ix;
+      atomicAdd(&(I[p+isize]),ptrI[thread_id_x]);
+    }
   }
 
 }

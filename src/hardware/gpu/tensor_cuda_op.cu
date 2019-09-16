@@ -217,7 +217,7 @@ void gpu_total_sum(Tensor *A,float *tot)
   cudaSetDevice(device);
   float t=0;
 
-  
+
   setDims(A)
 
   check_cuda(cudaMalloc((void**)&total,sizeof(float)),"create float in total_sum");
@@ -632,7 +632,6 @@ Tensor *D; // Delta
 Tensor *O; // Outputmap
 */
 
-
 void gpu_im2col(int b,ConvolDescriptor *D,int col2im)
 {
   int device=D->I->gpu_device;
@@ -642,14 +641,15 @@ void gpu_im2col(int b,ConvolDescriptor *D,int col2im)
 
 
   if (col2im)
-    gpu_im2col_k<<<dimGrid,dimBlock>>>(D->ID->ptr, D->gpuI->ptr,b,D->ir,D->ic,D->iz,D->K->ptr,D->nk,D->kr,D->kc,D->O->ptr,D->r,D->c,D->sr,D->sc,D->padr,col2im);
+    gpu_col2im_k<<<dimGrid,dimBlock>>>(D->ID->ptr, D->gpuI->ptr,b,D->ir,D->ic,D->iz,D->K->ptr,D->nk,D->kr,D->kc,D->O->ptr,D->r,D->c,D->sr,D->sc,D->padr);
   else
-    gpu_im2col_k<<<dimGrid,dimBlock>>>(D->I->ptr, D->gpuI->ptr,b,D->ir,D->ic,D->iz,D->K->ptr,D->nk,D->kr,D->kc,D->O->ptr,D->r,D->c,D->sr,D->sc,D->padr,col2im);
+    gpu_im2col_k<<<dimGrid,dimBlock>>>(D->I->ptr, D->gpuI->ptr,b,D->ir,D->ic,D->iz,D->K->ptr,D->nk,D->kr,D->kc,D->O->ptr,D->r,D->c,D->sr,D->sc,D->padr);
 
   check_cuda(cudaDeviceSynchronize(),"gpu_im2col");
 
 
 }
+
 
 void gpu_conv2D(ConvolDescriptor *D)
 {
@@ -669,9 +669,14 @@ void gpu_conv2D(ConvolDescriptor *D)
 
     gpu_mult2D(D->gpuK,0,D->gpuI,1,D->gpuO,0);
 
-    gpu_sum2D_colwise(D->gpuO,D->bias,D->gpuO);
-
   }// batch
+
+
+
+  gpu_addbias_k<<<D->O->shape[0],D->bias->shape[0]>>>(D->O->ptr, D->O->shape[0], D->r,D->c,D->nk,D->bias->ptr);
+
+  check_cuda(cudaDeviceSynchronize(),"gpu_addbias");
+
 
 
 }
@@ -690,15 +695,16 @@ void gpu_conv2D_grad(ConvolDescriptor *D)
   D->gpugK->ptr=D->gK->ptr;
   D->gpuD->ptr=D->D->ptr;
   D->gpuI->ptr=D->gpuIB->ptr;
-  for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize,D->gpuI->ptr+=isize){ //batch
-
-    //gpu_im2col(b,D,0);
-
+  for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize,D->gpuI->ptr+=isize)
     gpu_mult2D(D->gpuD,0,D->gpuI,0,D->gpugK,1);
 
-    gpu_reduce_sum2D(D->gpuD,D->gbias,1,1);
 
-  }// batch
+
+  gpu_deltabias_k<<<D->D->shape[0],D->bias->shape[0]>>>(D->D->ptr, D->D->shape[0], D->r,D->c,D->nk,D->gbias->ptr);
+
+  check_cuda(cudaDeviceSynchronize(),"gpu_deltabias");
+
+
 
 }
 
@@ -723,6 +729,9 @@ void gpu_conv2D_back(ConvolDescriptor *D)
 
 
 }
+
+
+
 
 
 void gpu_mpool2D(PoolDescriptor *D){
