@@ -40,6 +40,7 @@ class TestTensor
     Tensor *TG;
 
     TestTensor(vector<int>shape);
+    TestTensor(Tensor *t_tc, Tensor *t_tg);
     void ToGPU();
     void check(string s);
 
@@ -52,6 +53,13 @@ TestTensor::TestTensor(vector<int>shape)
     TC=new Tensor(shape, DEV_CPU);
     TG=new Tensor(shape, DEV_GPU);
     T=new Tensor(shape, DEV_CPU);
+}
+
+TestTensor::TestTensor(Tensor *t_tc, Tensor *t_tg)
+{
+    TC=t_tc;
+    TG=t_tg;
+    T=t_tc;
 }
 
 void TestTensor::ToGPU(){
@@ -110,6 +118,66 @@ int main(int argc, char **argv) {
   A->TG->set(1.0);
 
   A->check("set");
+
+
+    //////////// MAXPOOL /////////////////////
+    // Test CPU
+    float mpool_ref[16] = {12.0, 20.0, 30.0, 0.0, 8.0, 12.0, 2.0, 0.0, 34.0, 70.0, 37.0, 4.0, 112.0, 100.0, 25.0, 12.0};
+    float mpool_sol[4] = {20.0, 30.0, 112.0, 37.0};
+
+    // CPU input
+    TestTensor *T_cpu=new TestTensor({1, 1, 4, 4});
+    T_cpu->TC->ptr = mpool_ref;
+
+    // GPU input
+    TestTensor *T_gpu=new TestTensor({1, 1, 4, 4});
+    T_gpu->TC->ptr = mpool_ref;
+    T_gpu->ToGPU();
+
+    // Result
+    TestTensor *T_cpu_ref=new TestTensor({1, 1, 2, 2});
+    T_cpu_ref->TC->ptr = mpool_sol;
+
+    // [CPU] Instantiate PoolDescription + perform MaxPooling
+    auto *pd_cpu = new PoolDescriptor(vector<int>{2,2}, vector<int>{2,2}, "none");
+    pd_cpu->build(T_cpu->TC);
+    pd_cpu->indX = new Tensor(pd_cpu->O->getShape(), DEV_CPU);
+    pd_cpu->indY = new Tensor(pd_cpu->O->getShape(), DEV_CPU);
+    Tensor::MPool2D(pd_cpu);
+
+    // Check CPU correctness
+    auto Z = new TestTensor(pd_cpu->O, T_cpu_ref->TC);
+    Z->check("MPool2D CPU correctness");
+
+    printf("\nCPU result:\n");
+    pd_cpu->O->info();
+    pd_cpu->O->print();
+
+    printf("\nCPU correct solution:\n");
+    T_cpu_ref->TC->info();
+    T_cpu_ref->TC->print();
+
+    // [GPU] Instantiate PoolDescription + perform MaxPooling
+    setbuf(stdout, NULL);
+    printf("mpool2d: 0-Test\n");
+    auto *pd_gpu = new PoolDescriptor(vector<int>{2,2}, vector<int>{2,2}, "none");
+    printf("mpool2d: 1-Test\n");
+    pd_gpu->build(T_gpu->TC);
+    printf("mpool2d: 2-Test\n");
+    pd_gpu->indX = new Tensor(pd_gpu->O->getShape(), DEV_GPU);
+    printf("mpool2d: 3-Test\n");
+    pd_gpu->indY = new Tensor(pd_gpu->O->getShape(), DEV_GPU);
+    printf("mpool2d: 4-Test\n");
+    Tensor::MPool2D(pd_gpu);
+    printf("mpool2d: 5-Test\n");
+
+    // Check GPU correctness
+    auto Z2 = new TestTensor(pd_cpu->O, pd_cpu->O);
+    Z2->check("MPool2D GPU correctness");
+
+    printf("\nGPU solution:\n");
+    pd_gpu->O->info();
+    pd_gpu->O->print();
 
   ///////////// total_sum ////////////////
 
