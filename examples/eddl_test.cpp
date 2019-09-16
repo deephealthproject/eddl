@@ -162,17 +162,19 @@ int main(int argc, char **argv) {
     printf("mpool2d: 0-Test\n");
     auto *pd_gpu = new PoolDescriptor(vector<int>{2,2}, vector<int>{2,2}, "none");
     printf("mpool2d: 1-Test\n");
-    pd_gpu->build(T_gpu->TC);
+    pd_gpu->build(T_gpu->TG);
     printf("mpool2d: 2-Test\n");
     pd_gpu->indX = new Tensor(pd_gpu->O->getShape(), DEV_GPU);
     printf("mpool2d: 3-Test\n");
     pd_gpu->indY = new Tensor(pd_gpu->O->getShape(), DEV_GPU);
     printf("mpool2d: 4-Test\n");
+    cout << (pd_gpu->I->isGPU()) << endl;
+    printf("mpool2d: 4.1-Test\n");
     Tensor::MPool2D(pd_gpu);
     printf("mpool2d: 5-Test\n");
 
     // Check GPU correctness
-    auto Z2 = new TestTensor(pd_cpu->O, pd_cpu->O);
+    auto Z2 = new TestTensor(pd_cpu->O, pd_gpu->O);
     Z2->check("MPool2D GPU correctness");
 
     printf("\nGPU solution:\n");
