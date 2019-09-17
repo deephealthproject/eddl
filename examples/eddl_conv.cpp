@@ -29,7 +29,6 @@ using namespace eddl;
 
 layer Block(layer l,int filters, vector<int> kernel, vector<int> stride)
 {
-  //return Activation(Conv(l, filters, kernel,stride),"relu");
   return MaxPool(Activation(Conv(l, filters, kernel,stride),"relu"),{2,2});
 }
 
