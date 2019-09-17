@@ -71,5 +71,6 @@ void gpu_conv2D_grad(ConvolDescriptor *D);
 void gpu_conv2D_back(ConvolDescriptor *D);
 
 void gpu_mpool2D(PoolDescriptor *D);
+void gpu_mpool2D_back(PoolDescriptor *D);
 
 #endif

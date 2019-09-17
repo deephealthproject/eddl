@@ -1353,6 +1353,7 @@ void Tensor::MPool2D_back(PoolDescriptor *D) {
 #ifdef cGPU
     else if (D->I->isGPU())
       {
+        gpu_mpool2D_back(D);
       }
 #endif
 #ifdef cFPGA

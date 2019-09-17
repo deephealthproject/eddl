@@ -149,37 +149,29 @@ int main(int argc, char **argv) {
     auto Z = new TestTensor(pd_cpu->O, T_cpu_ref->TC);
     Z->check("MPool2D CPU correctness");
 
-    printf("\nCPU result:\n");
-    pd_cpu->O->info();
-    pd_cpu->O->print();
-
-    printf("\nCPU correct solution:\n");
-    T_cpu_ref->TC->info();
-    T_cpu_ref->TC->print();
+//    printf("\nCPU result:\n");
+//    pd_cpu->O->info();
+//    pd_cpu->O->print();
+//
+//    printf("\nCPU correct solution:\n");
+//    T_cpu_ref->TC->info();
+//    T_cpu_ref->TC->print();
 
     // [GPU] Instantiate PoolDescription + perform MaxPooling
-    setbuf(stdout, NULL);
-    printf("mpool2d: 0-Test\n");
+//    setbuf(stdout, NULL);
     auto *pd_gpu = new PoolDescriptor(vector<int>{2,2}, vector<int>{2,2}, "none");
-    printf("mpool2d: 1-Test\n");
     pd_gpu->build(T_gpu->TG);
-    printf("mpool2d: 2-Test\n");
     pd_gpu->indX = new Tensor(pd_gpu->O->getShape(), DEV_GPU);
-    printf("mpool2d: 3-Test\n");
     pd_gpu->indY = new Tensor(pd_gpu->O->getShape(), DEV_GPU);
-    printf("mpool2d: 4-Test\n");
-    cout << (pd_gpu->I->isGPU()) << endl;
-    printf("mpool2d: 4.1-Test\n");
     Tensor::MPool2D(pd_gpu);
-    printf("mpool2d: 5-Test\n");
 
     // Check GPU correctness
     auto Z2 = new TestTensor(pd_cpu->O, pd_gpu->O);
     Z2->check("MPool2D GPU correctness");
 
-    printf("\nGPU solution:\n");
-    pd_gpu->O->info();
-    pd_gpu->O->print();
+//    printf("\nGPU solution:\n");
+//    pd_gpu->O->info();
+//    pd_gpu->O->print();
 
   ///////////// total_sum ////////////////
 

@@ -747,6 +747,18 @@ void gpu_mpool2D(PoolDescriptor *D){
 
 }
 
+void gpu_mpool2D_back(PoolDescriptor *D){
+    int device=D->I->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(D->D)
+
+    maxpool2d_back<<<dimGrid,dimBlock>>>(D->I->ptr, D->I->shape[0],D->ir,D->ic,D->iz,D->kr,D->kc, D->sr,D->sc,D->padr, D->padc, D->indX->ptr, D->indY->ptr, D->D->ptr, D->ID->ptr);
+
+    check_cuda(cudaDeviceSynchronize(),"gpu_mpool_back");
+
+}
+
 
 
 

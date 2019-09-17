@@ -26,6 +26,7 @@
 #include <cuda.h>
 
 __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padr, int padc, float* indX, float* indY);
+__global__ void maxpool2d_back(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, int sr,int sc,int padr, int padc, float* indX, float* indY, float* D, float* ID);
 
 __global__ void  gpu_addbias_k(float *O, int b, int r,int c,int nk,float *bias);
 __global__ void  gpu_deltabias_k(float *D, int batch, int r,int c,int nk,float *bias);
