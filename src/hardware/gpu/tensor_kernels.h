@@ -45,6 +45,7 @@ __global__ void log(float* a, long int rows, long int cols);
 __global__ void exp(float* a, long int rows, long int cols);
 __global__ void sqrt(float* a,long int rows, long int cols);
 __global__ void sqr(float* a, long int rows, long int cols);
+__global__ void pow(float* a, float v, long int rows, long int cols);
 __global__ void mask(float* a, float v, long int rows, long int cols);
 
 __global__ void reduce_array_sum(float* a, long int ops, float* result);

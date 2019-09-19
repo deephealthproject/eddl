@@ -183,6 +183,7 @@ public:
 
     int isFPGA();
 
+
     // ***** Core *****************************
     void set(float v);
 
@@ -209,6 +210,8 @@ public:
     void sqrt();
 
     void sqr();
+
+    void pow(float exponent);
 
     float sum();
 

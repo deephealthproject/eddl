@@ -32,6 +32,7 @@ void gpu_log(Tensor *A);
 void gpu_exp(Tensor *A);
 void gpu_sqrt(Tensor *A);
 void gpu_sqr(Tensor *A);
+void gpu_pow(Tensor *A, float v);
 void gpu_mask(Tensor *A,float v);
 void gpu_total_sum(Tensor *A,float *tot);
 

@@ -302,6 +302,16 @@ __global__ void sqr(float* a, long int rows, long int cols)
 
 }
 
+__global__ void pow(float* a, float v, long int rows, long int cols)
+{
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]=pow(a[thread_id_x], v);
+
+}
+
 __global__ void mask(float* a, float v, long int rows, long int cols)
 {
  long int ops=rows*cols;

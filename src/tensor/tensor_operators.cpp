@@ -1026,3 +1026,4 @@ void Tensor::delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,
 
 
 
+

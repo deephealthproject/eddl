@@ -239,6 +239,23 @@ void Tensor::sqr() {
 #endif
 }
 
+void Tensor::pow(float exponent) {
+    if (isCPU()) {
+
+        for (int i = 0; i < size; ++i) ptr[i] = std::pow(ptr[i], exponent);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_pow(this, exponent);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
 
 ///////////////////////////////////////
 float Tensor::sum() {

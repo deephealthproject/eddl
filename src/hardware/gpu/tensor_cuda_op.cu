@@ -198,6 +198,16 @@ void gpu_sqr(Tensor *A) {
 
 }
 
+void gpu_pow(Tensor *A, float v){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A)
+
+    pow<<<dimGrid,dimBlock>>>(A->ptr, v, A->shape[0],c);
+    check_cuda(cudaDeviceSynchronize(), "pow");
+}
+
 void gpu_mask(Tensor *A,float v) {
 
   int device=A->gpu_device;

@@ -32,10 +32,10 @@
 //////////////////////////////////////////////////////////
 class TestTensor
 {
-  private:
+private:
     Tensor *T;
 
-  public:
+public:
     Tensor *TC;
     Tensor *TG;
 
@@ -63,25 +63,25 @@ TestTensor::TestTensor(Tensor *t_tc, Tensor *t_tg)
 }
 
 void TestTensor::ToGPU(){
-  Tensor::copy(TC,TG);
+    Tensor::copy(TC,TG);
 }
 
 
 void TestTensor::check(string s) {
-  Tensor::copy(TG,T);
+    Tensor::copy(TG,T);
 
-  // equal(CPU,GPU)?
-  int val=Tensor::equal(TC,T);
+    // equal(CPU,GPU)?
+    int val=Tensor::equal(TC,T);
 
-  if (!val) {
-    cout<<"Fail "<<s<<"\n";
-    exit(1);
-  }
-  else {
-    cout<<"====================\n";
-    cout<<"OK "<<s<<"\n";
-    cout<<"====================\n";
-  }
+    if (!val) {
+        cout<<"Fail "<<s<<"\n";
+        exit(1);
+    }
+    else {
+        cout<<"====================\n";
+        cout<<"OK "<<s<<"\n";
+        cout<<"====================\n";
+    }
 }
 
 
@@ -89,36 +89,48 @@ void TestTensor::check(string s) {
 //////////// TEST MAIN ///////////////////
 //////////////////////////////////////////
 int main(int argc, char **argv) {
-  int dim1,dim2,dim3;
+    int dim1,dim2,dim3;
 
-  dim1=1000;
-  dim2=1000;
-  dim3=100;
+    dim1=1000;
+    dim2=1000;
+    dim3=100;
 
-  TestTensor *A=new TestTensor({dim1,dim3});
-  TestTensor *B=new TestTensor({dim3,dim2});
-  TestTensor *C=new TestTensor({dim1,dim2});
+    TestTensor *A=new TestTensor({dim1,dim3});
+    TestTensor *B=new TestTensor({dim3,dim2});
+    TestTensor *C=new TestTensor({dim1,dim2});
 
-  TestTensor *Bt=new TestTensor({dim1,dim2});
-  TestTensor *Bt2=new TestTensor({dim2,dim3});
-  TestTensor *Ct2=new TestTensor({dim1,dim2});
-  TestTensor *Ct=new TestTensor({dim3,dim2});
+    TestTensor *Bt=new TestTensor({dim1,dim2});
+    TestTensor *Bt2=new TestTensor({dim2,dim3});
+    TestTensor *Ct2=new TestTensor({dim1,dim2});
+    TestTensor *Ct=new TestTensor({dim3,dim2});
 
-  TestTensor *D=new TestTensor({dim1,dim3});
-  TestTensor *E=new TestTensor({dim1,dim3});
+    TestTensor *D=new TestTensor({dim1,dim3});
+    TestTensor *E=new TestTensor({dim1,dim3});
 
-  TestTensor *F=new TestTensor({dim3});
-  ////////////// COPY ////////////////////
-  A->TC->rand_uniform(1.0);
-  A->ToGPU();
-  A->check("copy");
+    TestTensor *F=new TestTensor({dim3});
+    ////////////// COPY ////////////////////
+    A->TC->rand_uniform(1.0);
+    A->ToGPU();
+    A->check("copy");
 
-  ///////////// SET //////////////////////
-  A->TC->set(1.0);
-  A->TG->set(1.0);
+    ///////////// SET //////////////////////
+    A->TC->set(1.0);
+    A->TG->set(1.0);
 
-  A->check("set");
+    A->check("set");
 
+
+    ///////////// pow ////////////////
+    A->TC->rand_suniform(1);
+    A->ToGPU();
+
+    float exp = 2.0;
+    A->TC->pow(exp);
+    A->TG->pow(exp);
+
+    A->check("pow");
+
+    cout<<"OK pow\n";
 
     //////////// MAXPOOL /////////////////////
     // Test CPU
@@ -173,172 +185,172 @@ int main(int argc, char **argv) {
 //    pd_gpu->O->info();
 //    pd_gpu->O->print();
 
-  ///////////// total_sum ////////////////
+    ///////////// total_sum ////////////////
 
 
-  A->TC->rand_suniform(1);
-  A->ToGPU();
+    A->TC->rand_suniform(1);
+    A->ToGPU();
 
-  float fc= A->TC->sum();
-  float fg= A->TG->sum();
+    float fc= A->TC->sum();
+    float fg= A->TG->sum();
 
-  if (fabs(fc-fg)>0.01) {
-    fprintf(stderr,"Fail total add %f!=%f\n",fc,fg);
-    exit(EXIT_FAILURE);
-  }
-  cout<<"OK sum\n";
-
-
-  //////////// MULT2D ///////////////////
-  A->TC->rand_uniform(1.0);
-  B->TC->rand_uniform(1.0);
-
-  A->ToGPU();
-  B->ToGPU();
-
-  Tensor::mult2D(A->TC,0,B->TC,0,C->TC,0);
-  Tensor::mult2D(A->TG,0,B->TG,0,C->TG,0);
-
-  C->check("mult2D");
-
-  A->TC->rand_uniform(1.0);
-  Bt->TC->rand_uniform(1.0);
-
-  A->ToGPU();
-  Bt->ToGPU();
-
-  Tensor::mult2D(A->TC,1,Bt->TC,0,Ct->TC,0);
-  Tensor::mult2D(A->TG,1,Bt->TG,0,Ct->TG,0);
-
-  Ct->check("mult2D Trasp");
+    if (fabs(fc-fg)>0.01) {
+        fprintf(stderr,"Fail total add %f!=%f\n",fc,fg);
+        exit(EXIT_FAILURE);
+    }
+    cout<<"OK sum\n";
 
 
-  A->TC->rand_uniform(1.0);
-  Bt2->TC->rand_uniform(1.0);
+    //////////// MULT2D ///////////////////
+    A->TC->rand_uniform(1.0);
+    B->TC->rand_uniform(1.0);
 
-  A->ToGPU();
-  Bt2->ToGPU();
+    A->ToGPU();
+    B->ToGPU();
 
-  Tensor::mult2D(A->TC,0,Bt2->TC,1,Ct2->TC,0);
-  Tensor::mult2D(A->TG,0,Bt2->TG,1,Ct2->TG,0);
+    Tensor::mult2D(A->TC,0,B->TC,0,C->TC,0);
+    Tensor::mult2D(A->TG,0,B->TG,0,C->TG,0);
 
-  Ct2->check("mult2D Trasp2");
+    C->check("mult2D");
 
+    A->TC->rand_uniform(1.0);
+    Bt->TC->rand_uniform(1.0);
 
-  A->TC->rand_uniform(1.0);
-  Bt2->TC->rand_uniform(1.0);
+    A->ToGPU();
+    Bt->ToGPU();
 
-  A->ToGPU();
-  Bt2->ToGPU();
+    Tensor::mult2D(A->TC,1,Bt->TC,0,Ct->TC,0);
+    Tensor::mult2D(A->TG,1,Bt->TG,0,Ct->TG,0);
 
-  Tensor::mult2D(A->TC,0,Bt2->TC,1,Ct2->TC,1);
-  Tensor::mult2D(A->TG,0,Bt2->TG,1,Ct2->TG,1);
-
-  Ct2->check("mult2D Trasp2 inc");
-
-
-  //////////// SUM /////////////////////
-  A->TC->rand_uniform(1.0);
-  D->TC->rand_uniform(1.0);
-
-  A->ToGPU();
-  D->ToGPU();
-
-  Tensor::sum(1.0,A->TC,1.0,D->TC,E->TC,0);
-  Tensor::sum(1.0,A->TG,1.0,D->TG,E->TG,0);
-
-  E->check("add");
-
-  //////////// INC /////////////////////
-  A->TC->rand_uniform(100.0);
-  D->TC->rand_uniform(100.0);
-
-  A->ToGPU();
-  D->ToGPU();
-
-  Tensor::inc(A->TC,D->TC);
-  Tensor::inc(A->TG,D->TG);
-
-  D->check("inc");
+    Ct->check("mult2D Trasp");
 
 
- //////////// Softmax /////////////////////
- A->TC->rand_suniform(100000);
- A->ToGPU();
+    A->TC->rand_uniform(1.0);
+    Bt2->TC->rand_uniform(1.0);
 
- Tensor::Softmax(A->TC,D->TC);
- Tensor::Softmax(A->TG,D->TG);
+    A->ToGPU();
+    Bt2->ToGPU();
 
- A->check("Softmax");
+    Tensor::mult2D(A->TC,0,Bt2->TC,1,Ct2->TC,0);
+    Tensor::mult2D(A->TG,0,Bt2->TG,1,Ct2->TG,0);
 
- //////////// Cross Ent ///////////////////
- A->TC->rand_uniform(1);
- D->TC->rand_binary(0.1);
- A->ToGPU();
- D->ToGPU();
-
- Tensor::cent(A->TC,D->TC,E->TC);
- Tensor::cent(A->TG,D->TG,E->TG);
-
- E->check("cross entropy");
+    Ct2->check("mult2D Trasp2");
 
 
- //////////// sum2D_rowwise ///////////////
+    A->TC->rand_uniform(1.0);
+    Bt2->TC->rand_uniform(1.0);
+
+    A->ToGPU();
+    Bt2->ToGPU();
+
+    Tensor::mult2D(A->TC,0,Bt2->TC,1,Ct2->TC,1);
+    Tensor::mult2D(A->TG,0,Bt2->TG,1,Ct2->TG,1);
+
+    Ct2->check("mult2D Trasp2 inc");
 
 
- A->TC->rand_uniform(1.0);
- F->TC->rand_uniform(1.0);
+    //////////// SUM /////////////////////
+    A->TC->rand_uniform(1.0);
+    D->TC->rand_uniform(1.0);
 
- A->ToGPU();
- F->ToGPU();
+    A->ToGPU();
+    D->ToGPU();
 
- Tensor::sum2D_rowwise(A->TC, F->TC, D->TC);
- Tensor::sum2D_rowwise(A->TG, F->TG, D->TG);
+    Tensor::sum(1.0,A->TC,1.0,D->TC,E->TC,0);
+    Tensor::sum(1.0,A->TG,1.0,D->TG,E->TG,0);
 
- D->check("sum2D_rowwise");
+    E->check("add");
 
- //////////// reduce_sum2D ////////////////
- A->TC->rand_uniform(1.0);
- F->TC->rand_uniform(1.0);
+    //////////// INC /////////////////////
+    A->TC->rand_uniform(100.0);
+    D->TC->rand_uniform(100.0);
 
- A->ToGPU();
- F->ToGPU();
+    A->ToGPU();
+    D->ToGPU();
 
- Tensor::reduce_sum2D(A->TC, F->TC, 0, 0);
- Tensor::reduce_sum2D(A->TG, F->TG, 0, 0);
+    Tensor::inc(A->TC,D->TC);
+    Tensor::inc(A->TG,D->TG);
 
- F->check("reduce_sum2D");
+    D->check("inc");
 
- A->TC->rand_uniform(1.0);
- F->TC->rand_uniform(1.0);
 
- A->ToGPU();
- F->ToGPU();
+    //////////// Softmax /////////////////////
+    A->TC->rand_suniform(100000);
+    A->ToGPU();
 
- Tensor::reduce_sum2D(A->TC, F->TC, 0, 1);
- Tensor::reduce_sum2D(A->TG, F->TG, 0, 1);
+    Tensor::Softmax(A->TC,D->TC);
+    Tensor::Softmax(A->TG,D->TG);
 
- F->check("reduce_sum2D inc");
+    A->check("Softmax");
 
- //////////// ReLU ////////////////
- A->TC->rand_suniform(1.0);
- A->ToGPU();
+    //////////// Cross Ent ///////////////////
+    A->TC->rand_uniform(1);
+    D->TC->rand_binary(0.1);
+    A->ToGPU();
+    D->ToGPU();
 
- Tensor::ReLu(A->TC, D->TC);
- Tensor::ReLu(A->TG, D->TG);
+    Tensor::cent(A->TC,D->TC,E->TC);
+    Tensor::cent(A->TG,D->TG,E->TG);
 
- D->check("ReLU");
+    E->check("cross entropy");
 
- //////////// D_ReLU ////////////////
- A->TC->rand_suniform(1.0);
- D->TC->rand_suniform(1.0);
- A->ToGPU();
- D->ToGPU();
 
- Tensor::D_ReLu(D->TC, A->TC,E->TC);
- Tensor::D_ReLu(D->TG, A->TG,E->TG);
+    //////////// sum2D_rowwise ///////////////
 
- E->check("D_ReLU");
+
+    A->TC->rand_uniform(1.0);
+    F->TC->rand_uniform(1.0);
+
+    A->ToGPU();
+    F->ToGPU();
+
+    Tensor::sum2D_rowwise(A->TC, F->TC, D->TC);
+    Tensor::sum2D_rowwise(A->TG, F->TG, D->TG);
+
+    D->check("sum2D_rowwise");
+
+    //////////// reduce_sum2D ////////////////
+    A->TC->rand_uniform(1.0);
+    F->TC->rand_uniform(1.0);
+
+    A->ToGPU();
+    F->ToGPU();
+
+    Tensor::reduce_sum2D(A->TC, F->TC, 0, 0);
+    Tensor::reduce_sum2D(A->TG, F->TG, 0, 0);
+
+    F->check("reduce_sum2D");
+
+    A->TC->rand_uniform(1.0);
+    F->TC->rand_uniform(1.0);
+
+    A->ToGPU();
+    F->ToGPU();
+
+    Tensor::reduce_sum2D(A->TC, F->TC, 0, 1);
+    Tensor::reduce_sum2D(A->TG, F->TG, 0, 1);
+
+    F->check("reduce_sum2D inc");
+
+    //////////// ReLU ////////////////
+    A->TC->rand_suniform(1.0);
+    A->ToGPU();
+
+    Tensor::ReLu(A->TC, D->TC);
+    Tensor::ReLu(A->TG, D->TG);
+
+    D->check("ReLU");
+
+    //////////// D_ReLU ////////////////
+    A->TC->rand_suniform(1.0);
+    D->TC->rand_suniform(1.0);
+    A->ToGPU();
+    D->ToGPU();
+
+    Tensor::D_ReLu(D->TC, A->TC,E->TC);
+    Tensor::D_ReLu(D->TG, A->TG,E->TG);
+
+    E->check("D_ReLU");
 
 
 
