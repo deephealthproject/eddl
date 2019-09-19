@@ -130,8 +130,6 @@ int main(int argc, char **argv) {
 
     A->check("pow");
 
-    cout<<"OK pow\n";
-
     //////////// MAXPOOL /////////////////////
     // Test CPU
     float mpool_ref[16] = {12.0, 20.0, 30.0, 0.0, 8.0, 12.0, 2.0, 0.0, 34.0, 70.0, 37.0, 4.0, 112.0, 100.0, 25.0, 12.0};
@@ -185,7 +183,7 @@ int main(int argc, char **argv) {
 //    pd_gpu->O->info();
 //    pd_gpu->O->print();
 
-    ///////////// total_sum ////////////////
+    ///////////// sum ////////////////
 
 
     A->TC->rand_suniform(1);
@@ -195,10 +193,10 @@ int main(int argc, char **argv) {
     float fg= A->TG->sum();
 
     if (fabs(fc-fg)>0.01) {
-        fprintf(stderr,"Fail total add %f!=%f\n",fc,fg);
+        fprintf(stderr,"Fail sum %f!=%f\n",fc,fg);
         exit(EXIT_FAILURE);
     }
-    cout<<"OK add\n";
+    cout<<"OK sum\n";
 
 
     //////////// MULT2D ///////////////////
@@ -249,7 +247,7 @@ int main(int argc, char **argv) {
     Ct2->check("mult2D Trasp2 inc");
 
 
-    //////////// SUM /////////////////////
+    //////////// Add /////////////////////
     A->TC->rand_uniform(1.0);
     D->TC->rand_uniform(1.0);
 

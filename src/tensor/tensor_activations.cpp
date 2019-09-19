@@ -133,7 +133,7 @@ void Tensor::D_Softmax(Tensor *D, Tensor *I, Tensor *PD) {
 
         Tensor *aux=new Tensor(D->getShape(),D->device);
         aux->set(1.0);
-        Tensor::sum(1.0,aux,-1.0,I,aux,0);
+        Tensor::add(1.0,aux,-1.0,I,aux,0);
         Tensor::el_mult(I,aux,aux,0);
         Tensor::el_mult(D,aux,PD,1);
 
