@@ -18,8 +18,8 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef EDDLL_LAYER_H
-#define EDDLL_LAYER_H
+#ifndef EDDL_LAYER_H
+#define EDDL_LAYER_H
 
 #include <string>
 #include <stdio.h>
@@ -147,4 +147,4 @@ public:
 
 };
 
-#endif //EDDLL_LAYER_H
+#endif //EDDL_LAYER_H

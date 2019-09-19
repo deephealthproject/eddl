@@ -18,8 +18,8 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef EDDLL_LAYER_NOISE_H
-#define EDDLL_LAYER_NOISE_H
+#ifndef EDDL_LAYER_NOISE_H
+#define EDDL_LAYER_NOISE_H
 
 
 #include <string>
@@ -54,4 +54,4 @@ public:
     string plot(int c) override;
 };
 
-#endif //EDDLL_LAYER_NOISE_H
+#endif //EDDL_LAYER_NOISE_H

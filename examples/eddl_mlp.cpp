@@ -59,8 +59,8 @@ int main(int argc, char **argv) {
           {"categorical_accuracy"}, // Metrics
           //CS_GPU({1,1},10) // 2 GPUs with local_sync_batches=10
           //CS_GPU({1}) // 1 GPU
-          //CS_CPU(4) // 4 CPU threads
-          CS_COMPSS("../config/compss/resources.xml")
+          CS_CPU(4) // 4 CPU threads
+          //CS_COMPSS("../config/compss/resources.xml")
     );
 
     // Load dataset

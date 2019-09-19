@@ -87,7 +87,7 @@ void LDiff::forward(){
     if (binary) Tensor::sum(1.0,input[0],-1.0,input[1],output,0);
     else {
         Tensor::copy(input[0],output);
-        output->sum(-val);
+        output->add(-val);
     }
 }
 

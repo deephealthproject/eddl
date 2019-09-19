@@ -21,8 +21,8 @@
 #include <cstdio>
 #include <cstdint> // uint64_t
 
-#ifndef EDDLL_UTILS_H
-#define EDDLL_UTILS_H
+#ifndef EDDL_UTILS_H
+#define EDDL_UTILS_H
 
 float uniform(float min=0.0f, float max=1.0f);
 
@@ -42,4 +42,4 @@ char *humanSize(uint64_t bytes);
 
 unsigned long get_free_mem();
 
-#endif //EDDLL_UTILS_H
+#endif //EDDL_UTILS_H

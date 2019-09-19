@@ -140,7 +140,7 @@ LAYERS_OBJ = layer_lstm.o layer_input.o layer_conv.o layer_mean.o layer_log10.o 
 LOSSES_OBJ = loss_mean_squared_error.o loss_soft_cross_entropy.o loss.o loss_cross_entropy.o
 METRICS_OBJ = metric_categorical_acc.o metric.o metric_mean_squared_error.o
 OPTIMIZERS_OBJ = optim_adam.o optim.o optim_nadam.o optim_adagrad.o optim_sgd.o optim_rmsprop.o optim_adamax.o optim_adadelta.o
-TENSOR_OBJ = tensor_unary.o tensor_zero.o tensor_binary.o tensor.o tensor_operators.o
+TENSOR_OBJ = tensor.o tensor_activations.o tensor_losses.o tensor_math.o tensor_metrics.o tensor_nn.o tensor_operators.o tensor_random.o
 
 # Join groups
 OBJ := $(APIS_OBJ) $(CORE_OBJ) $(HARDWARE_OBJ) $(INITIALIZERS_OBJ) $(LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(TENSOR_OBJ)
@@ -162,20 +162,29 @@ compserv.o: $(SRC_PATH)/compserv.cpp $(SRC_PATH)/compserv.h
 net.o: $(SRC_PATH)/net.cpp $(SRC_PATH)/net.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/net.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
-tensor_unary.o: $(SRC_PATH)/tensor/tensor_unary.cpp $(SRC_PATH)/tensor/tensor.h
-	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor_unary.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+tensor.o: $(SRC_PATH)/tensor/tensor.cpp $(SRC_PATH)/tensor/tensor.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
-tensor_zero.o: $(SRC_PATH)/tensor/tensor_zero.cpp $(SRC_PATH)/tensor/tensor.h
-	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor_zero.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+tensor_activations.o: $(SRC_PATH)/tensor/tensor_activations.cpp $(SRC_PATH)/tensor/tensor.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor_activations.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+tensor_losses.o: $(SRC_PATH)/tensor/tensor_losses.cpp $(SRC_PATH)/tensor/tensor.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor_losses.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+tensor_math.o: $(SRC_PATH)/tensor/tensor_math.cpp $(SRC_PATH)/tensor/tensor.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor_math.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+tensor_metrics.o: $(SRC_PATH)/tensor/tensor_metrics.cpp $(SRC_PATH)/tensor/tensor.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor_metrics.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+tensor_nn.o: $(SRC_PATH)/tensor/tensor_nn.cpp $(SRC_PATH)/tensor/tensor.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor_nn.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 tensor_operators.o: $(SRC_PATH)/tensor/tensor_operators.cpp $(SRC_PATH)/tensor/tensor.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor_operators.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
-tensor_binary.o: $(SRC_PATH)/tensor/tensor_binary.cpp $(SRC_PATH)/tensor/tensor.h
-	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor_binary.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
-
-tensor.o: $(SRC_PATH)/tensor/tensor.cpp $(SRC_PATH)/tensor/tensor.h
-	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+tensor_random.o: $(SRC_PATH)/tensor/tensor_random.cpp $(SRC_PATH)/tensor/tensor.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor_random.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 cpu_convol.o: $(SRC_PATH)/hardware/cpu/cpu_convol.cpp $(SRC_PATH)/hardware/cpu/cpu_convol.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/cpu_convol.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@

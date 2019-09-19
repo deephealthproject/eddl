@@ -18,8 +18,8 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef EDDLL_COMPSERV_H
-#define EDDLL_COMPSERV_H
+#ifndef EDDL_COMPSERV_H
+#define EDDL_COMPSERV_H
 
 #include <stdio.h>
 #include <string>
@@ -46,4 +46,4 @@ public:
 
 };
 
-#endif  //EDDLL_COMPSERV_H
+#endif  //EDDL_COMPSERV_H

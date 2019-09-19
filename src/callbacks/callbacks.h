@@ -18,11 +18,11 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef EDDLL_CALLBACKS_H
-#define EDDLL_CALLBACKS_H
+#ifndef EDDL_CALLBACKS_H
+#define EDDL_CALLBACKS_H
 
 class Callback {
 
 };
 
-#endif //EDDLL_CALLBACKS_H
+#endif //EDDL_CALLBACKS_H

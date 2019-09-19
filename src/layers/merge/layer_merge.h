@@ -18,8 +18,8 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef EDDLL_LAYER_MERGE_H
-#define EDDLL_LAYER_MERGE_H
+#ifndef EDDL_LAYER_MERGE_H
+#define EDDL_LAYER_MERGE_H
 
 #include <string>
 #include <stdio.h>
@@ -178,5 +178,5 @@ public:
 
 };
 
-#endif //EDDLL_LAYER_MERGE_H
+#endif //EDDL_LAYER_MERGE_H
 

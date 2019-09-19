@@ -582,8 +582,8 @@ void Net::forward() {
     if (VERBOSE) {
         for (int i = 0; i < layers.size(); i++) {
             cout << layers[i]->name << "\n";
-            fprintf(stdout, "  %s In:%f\n", layers[i]->name.c_str(), layers[i]->input->total_sum());
-            fprintf(stdout, "  %s Out:%f\n", layers[i]->name.c_str(), layers[i]->output->total_sum());
+            fprintf(stdout, "  %s In:%f\n", layers[i]->name.c_str(), layers[i]->input->sum());
+            fprintf(stdout, "  %s Out:%f\n", layers[i]->name.c_str(), layers[i]->output->sum());
         }
 
         getchar();

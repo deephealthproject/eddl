@@ -19,8 +19,8 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef EDDLL_TENSOR_H
-#define EDDLL_TENSOR_H
+#ifndef EDDL_TENSOR_H
+#define EDDL_TENSOR_H
 
 #include <stdio.h>
 #include <vector>
@@ -145,7 +145,6 @@ public:
     // CPU
     Eigen::MatrixXf *ptr2;
 
-
     // GPU
     int gpu_device;
 
@@ -184,51 +183,39 @@ public:
 
     int isFPGA();
 
-    ////////////////////////////////
-
-
-    // math
+    // ***** Core *****************************
     void set(float v);
 
+
+    // ***** Math *****************************
     void mult(float v);
 
     void div(float v);
 
-    void sum(float v);
+    void add(float v);
 
     void sub(float v);
 
+    void abs();
 
-    void set_abs();
+    void log();
 
-    void set_log();
+    void log2();
 
-    void set_log2();
+    void log10();
 
-    void set_log10();
+    void exp();
 
-    void set_exp();
+    void sqrt();
 
-    void set_sqrt();
+    void sqr();
 
-    void set_sqr();
-
-    float total_sum();
+    float sum();
 
     float total_abs();
 
-    //rand
-    void rand_uniform(float v);
-
-    void rand_suniform(float v);
-
-    void rand_gaussian(float m, float s);
-
-    void rand_binary(float v);
-
-
-    ///////// static metods
     static int eqsize(Tensor *A, Tensor *B);
+
     static int equal(Tensor *A, Tensor *B);
 
     static void transpose(Tensor *A, Tensor *B, vector<int> dims);
@@ -259,65 +246,55 @@ public:
 
     static void el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
 
-
-///////7
     static void reduceTosum(Tensor *A, Tensor *B, int axis);
 
     static void reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims, Tensor *C, int incB);
+
     static void delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims, Tensor *C,int incB);
 
     static void reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
     static void delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC);
-//////
+
+
+    // ***** Random *****************************
+    void rand_uniform(float v);
+
+    void rand_suniform(float v);
+
+    void rand_gaussian(float m, float s);
+
+    void rand_binary(float v);
+
+
+    // ***** Losses *****************************
     static void cent(Tensor *A, Tensor *B, Tensor *C);
 
+    // ***** Metrics *****************************
     static int accuracy(Tensor *A, Tensor *B);
 
-/////
+
+    // ***** Activations *****************************
     static void ReLu(Tensor *A, Tensor *B);
 
-    static void Softmax(Tensor *A, Tensor *B);
-
     static void D_ReLu(Tensor *D, Tensor *I, Tensor *PD);
+
+    static void Softmax(Tensor *A, Tensor *B);
 
     static void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
 
 
-    ///////
+    // ***** Deep Learning *****************************
     static void Conv2D(ConvolDescriptor *D);
 
     static void Conv2D_grad(ConvolDescriptor *D);
 
     static void Conv2D_back(ConvolDescriptor *D);
 
-
     static void MPool2D(PoolDescriptor *D);
 
     static void MPool2D_back(PoolDescriptor *D);
-
 };
 
 
-#endif //EDDLL_TENSOR_H
+#endif //EDDL_TENSOR_H
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////
