@@ -41,7 +41,7 @@ int LSum::total_layers = 0;
 
   */
 LSum::LSum(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev) {
-    if(name.empty()) this->name = "sum" + to_string(++total_layers);
+    if(name.empty()) this->name = "add" + to_string(++total_layers);
     binary = 1;
 
     input.push_back(l1->output);
@@ -68,7 +68,7 @@ LSum::LSum(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev
 
   */
 LSum::LSum(Layer *l, float k, string name, int dev) : OperatorLayer(name, dev) {
-    if(name.empty()) this->name = "sum" + to_string(++total_layers);
+    if(name.empty()) this->name = "add" + to_string(++total_layers);
     val = k;
 
     input.push_back(l->output);
@@ -83,7 +83,7 @@ void LSum::forward() {
     if (binary) Tensor::sum(1.0, input[0], 1.0, input[1], output, 0);
     else {
         Tensor::copy(input[0], output);
-        output->sum(val);
+        output->add(val);
     }
 }
 

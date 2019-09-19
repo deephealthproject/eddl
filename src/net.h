@@ -19,8 +19,8 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef EDDLL_NET_H
-#define EDDLL_NET_H
+#ifndef EDDL_NET_H
+#define EDDL_NET_H
 
 #include <stdio.h>
 #include <string>
@@ -125,4 +125,4 @@ public:
 
 };
 
-#endif  //EDDLL_NET_H
+#endif  //EDDL_NET_H

@@ -214,6 +214,9 @@ namespace eddl {
 
     compserv CS_FGPA(const vector<int> &f,int lsb=1);
 
+    compserv CS_COMPSS(char* path);
+
+
 // ---- MODEL METHODS ----
     model Model(vlayer in, vlayer out);
 

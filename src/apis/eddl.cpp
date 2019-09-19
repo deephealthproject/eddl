@@ -18,6 +18,7 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
+#include <stdio.h>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -390,6 +391,11 @@ namespace eddl {
 
     compserv CS_FGPA(const vector<int> &f,int lsb) {
         return new CompServ(0, {}, f,lsb);
+    }
+
+    compserv CS_COMPSS(char* path) {
+        FILE* csspec = fopen(path , "r");
+        return new CompServ(csspec);
     }
 
 

@@ -18,8 +18,8 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef EDDLL_LAYER_RECURRENT_H
-#define EDDLL_LAYER_RECURRENT_H
+#ifndef EDDL_LAYER_RECURRENT_H
+#define EDDL_LAYER_RECURRENT_H
 
 
 #include <string>
@@ -80,5 +80,5 @@ public:
     string plot(int c) override;
 };
 
-#endif //EDDLL_LAYER_RECURRENT_H
+#endif //EDDL_LAYER_RECURRENT_H
 

@@ -18,8 +18,8 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef EDDLL_LAYER_REDUCTIONS_H
-#define EDDLL_LAYER_REDUCTIONS_H
+#ifndef EDDL_LAYER_REDUCTIONS_H
+#define EDDL_LAYER_REDUCTIONS_H
 
 
 #include <string>
@@ -161,4 +161,4 @@ public:
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 };
 
-#endif //EDDLL_LAYER_OPERATORS_H
+#endif //EDDL_LAYER_OPERATORS_H

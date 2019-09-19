@@ -39,7 +39,7 @@ float LSoftCrossEntropy::value(Tensor *T, Tensor *Y) {
 
     aux1 = new Tensor(T->getShape(), T->device);
     Tensor::cent(T, Y, aux1);
-    f = aux1->total_sum();
+    f = aux1->sum();
 
     delete aux1;
 

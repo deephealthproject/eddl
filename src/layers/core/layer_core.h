@@ -18,8 +18,8 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef EDDLL_LAYER_CORE_H
-#define EDDLL_LAYER_CORE_H
+#ifndef EDDL_LAYER_CORE_H
+#define EDDL_LAYER_CORE_H
 
 #include <string>
 #include <stdio.h>
@@ -261,4 +261,4 @@ public:
 };
 
 
-#endif //EDDLL_LAYER_CORE_H
+#endif //EDDL_LAYER_CORE_H

@@ -179,14 +179,14 @@ int main(int argc, char **argv) {
   A->TC->rand_suniform(1);
   A->ToGPU();
 
-  float fc=A->TC->total_sum();
-  float fg=A->TG->total_sum();
+  float fc= A->TC->sum();
+  float fg= A->TG->sum();
 
   if (fabs(fc-fg)>0.01) {
-    fprintf(stderr,"Fail total sum %f!=%f\n",fc,fg);
+    fprintf(stderr,"Fail total add %f!=%f\n",fc,fg);
     exit(EXIT_FAILURE);
   }
-  cout<<"OK total_sum\n";
+  cout<<"OK sum\n";
 
 
   //////////// MULT2D ///////////////////
@@ -247,7 +247,7 @@ int main(int argc, char **argv) {
   Tensor::sum(1.0,A->TC,1.0,D->TC,E->TC,0);
   Tensor::sum(1.0,A->TG,1.0,D->TG,E->TG,0);
 
-  E->check("sum");
+  E->check("add");
 
   //////////// INC /////////////////////
   A->TC->rand_uniform(100.0);
@@ -378,7 +378,7 @@ int main(int argc, char **argv) {
 //
 ///////
 //    cout<<"Sum\n";
-//    Tensor::reduce(A,B,axis,"sum",false,NULL,0);
+//    Tensor::reduce(A,B,axis,"add",false,NULL,0);
 //    B->info();
 //    B->print();
 //
@@ -417,7 +417,7 @@ int main(int argc, char **argv) {
 //
 //    /////
 //    cout<<"Sum\n";
-//    Tensor::reduce(A,B,axis2,"sum",true,NULL,0);
+//    Tensor::reduce(A,B,axis2,"add",true,NULL,0);
 //    B->info();
 //    B->print();
 //

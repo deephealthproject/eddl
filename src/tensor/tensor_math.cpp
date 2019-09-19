@@ -19,10 +19,8 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
-#include <stdio.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
+#include <cmath>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -39,10 +37,76 @@ using namespace std;
 
 
 ///////////////////////////////////////////
-void Tensor::set_log() {
+void Tensor::set(float v) {
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = v;
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_set(this,v);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+
+///////////////////////////////////////////
+void Tensor::mult(float v) {
     if (isCPU()) {
 
-        for (int i = 0; i < size; ++i) ptr[i] = log(ptr[i]);
+        for (int i = 0; i < size; ++i) ptr[i] *= v;
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_mult(this,v);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+
+///////////////////////////////////////////
+void Tensor::div(float v) { mult(1.0 / v); }
+
+///////////////////////////////////////////
+void Tensor::add(float v) {
+    if (isCPU()) {
+
+        for (int i = 0; i < size; ++i) ptr[i] += v;
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_sum(this,v);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+///////////////////////////////////////////
+void Tensor::sub(float v) { add(-v); }
+
+
+
+///////////////////////////////////////////
+void Tensor::log() {
+    if (isCPU()) {
+
+        for (int i = 0; i < size; ++i) ptr[i] = std::log(ptr[i]);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -59,10 +123,10 @@ void Tensor::set_log() {
 
 
 ///////////////////////////////////////////
-void Tensor::set_log2() {
+void Tensor::log2() {
     if (isCPU()) {
 
-        for (int i = 0; i < size; ++i) ptr[i] = log2f(ptr[i]);
+        for (int i = 0; i < size; ++i) ptr[i] = std::log2f(ptr[i]);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -79,10 +143,10 @@ void Tensor::set_log2() {
 
 
 ///////////////////////////////////////////
-void Tensor::set_log10() {
+void Tensor::log10() {
     if (isCPU()) {
 
-        for (int i = 0; i < size; ++i) ptr[i] = log10f(ptr[i]);
+        for (int i = 0; i < size; ++i) ptr[i] = std::log10f(ptr[i]);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -99,10 +163,10 @@ void Tensor::set_log10() {
 
 
 ///////////////////////////////////////////
-void Tensor::set_abs() {
+void Tensor::abs() {
     if (isCPU()) {
 
-        for (int i = 0; i < size; ++i) ptr[i] = fabs(ptr[i]);
+        for (int i = 0; i < size; ++i) ptr[i] = std::fabs(ptr[i]);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -118,10 +182,10 @@ void Tensor::set_abs() {
 }
 
 ///////////////////////////////////////////
-void Tensor::set_exp() {
+void Tensor::exp() {
     if (isCPU()) {
 
-        for (int i = 0; i < size; ++i) ptr[i] = exp(ptr[i]);
+        for (int i = 0; i < size; ++i) ptr[i] = std::exp(ptr[i]);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -137,10 +201,10 @@ void Tensor::set_exp() {
 }
 
 ///////////////////////////////////////////
-void Tensor::set_sqrt() {
+void Tensor::sqrt() {
     if (isCPU()) {
 
-        for (int i = 0; i < size; ++i) ptr[i] = sqrt(ptr[i]);
+        for (int i = 0; i < size; ++i) ptr[i] = std::sqrt(ptr[i]);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -157,7 +221,7 @@ void Tensor::set_sqrt() {
 
 
 ///////////////////////////////////////////
-void Tensor::set_sqr() {
+void Tensor::sqr() {
     if (isCPU()) {
 
         for (int i = 0; i < size; ++i) ptr[i] *= ptr[i];
@@ -177,7 +241,7 @@ void Tensor::set_sqr() {
 
 
 ///////////////////////////////////////
-float Tensor::total_sum() {
+float Tensor::sum() {
 
     if (isCPU()) {
         float sum = 0.0;
@@ -210,7 +274,7 @@ float Tensor::total_abs() {
     if (isCPU()) {
         float sum = 0.0;
 
-        for (int i = 0; i < size; ++i) sum += fabs(ptr[i]);
+        for (int i = 0; i < size; ++i) sum += std::fabs(ptr[i]);
 
         return sum;
     }
@@ -230,4 +294,3 @@ float Tensor::total_abs() {
 
     return 0;
 }
-

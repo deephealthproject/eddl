@@ -53,7 +53,7 @@ LLog10::LLog10(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
 
 void LLog10::forward() {
     Tensor::copy(input[0], output);
-    output->set_log10();
+    output->log10();
 }
 
 void LLog10::backward() {

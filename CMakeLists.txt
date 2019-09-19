@@ -234,10 +234,13 @@ SET(CPP_SOURCES
         src/optimizers/optim_sgd.cpp
         src/tensor/tensor.cpp
         src/tensor/tensor.h
-        src/tensor/tensor_binary.cpp
+        src/tensor/tensor_activations.cpp
+        src/tensor/tensor_losses.cpp
+        src/tensor/tensor_math.cpp
+        src/tensor/tensor_metrics.cpp
+        src/tensor/tensor_nn.cpp
         src/tensor/tensor_operators.cpp
-        src/tensor/tensor_unary.cpp
-        src/tensor/tensor_zero.cpp
+        src/tensor/tensor_random.cpp
         src/compserv.cpp
         src/compserv.h
         src/net.cpp

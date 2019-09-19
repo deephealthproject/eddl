@@ -18,8 +18,8 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef EDDLL_LAYER_GENERATORS_H
-#define EDDLL_LAYER_GENERATORS_H
+#ifndef EDDL_LAYER_GENERATORS_H
+#define EDDL_LAYER_GENERATORS_H
 
 
 #include <string>
@@ -96,4 +96,4 @@ public:
 };
 
 
-#endif //EDDLL_LAYER_GENERATORS_H
+#endif //EDDL_LAYER_GENERATORS_H

@@ -18,8 +18,8 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef EDDLL_LAYER_POOL_H
-#define EDDLL_LAYER_POOL_H
+#ifndef EDDL_LAYER_POOL_H
+#define EDDL_LAYER_POOL_H
 
 
 #include <string>
@@ -144,4 +144,4 @@ public:
 
 };
 
-#endif //EDDLL_LAYER_POOL_H
+#endif //EDDL_LAYER_POOL_H

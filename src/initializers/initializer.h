@@ -18,8 +18,8 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef EDDLL_INITIALIZER_H
-#define EDDLL_INITIALIZER_H
+#ifndef EDDL_INITIALIZER_H
+#define EDDL_INITIALIZER_H
 
 #include <string>
 
@@ -97,4 +97,4 @@ public:
     float set_weights(Tensor *T) override;
 };
 
-#endif //EDDLL_INITIALIZER_H
+#endif //EDDL_INITIALIZER_H

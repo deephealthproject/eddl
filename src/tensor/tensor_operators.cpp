@@ -20,7 +20,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
+#include <cmath>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -57,7 +57,7 @@ int Tensor::equal(Tensor *A, Tensor *B) {
 
     if (A->isCPU()) {
       for (int i = 0; i < A->size; i++)
-          if (fabs(A->ptr[i]-B->ptr[i])>0.001) {
+          if (std::fabs(A->ptr[i]-B->ptr[i])>0.001) {
             fprintf(stderr,"\n>>>>>>>>>>\n");
             fprintf(stderr,"%f != %f\n",A->ptr[i],B->ptr[i]);
             return 0;
@@ -224,7 +224,7 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
 }
 
 
-// TODO: Review against sum
+// TODO: Review against add
 void Tensor::inc(Tensor *A, Tensor *B) {
 
     if (!Tensor::eqsize(A, B))
@@ -247,7 +247,7 @@ void Tensor::inc(Tensor *A, Tensor *B) {
     {
         Tensor *n=new Tensor(B->getShape(),B->device);
         Tensor::copy(A,n);
-        Tensor::sum(1,n,1,B,B,0);
+        Tensor::add(1,n,1,B,B,0);
         delete n;
     }
 #endif
@@ -456,12 +456,12 @@ void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
 void Tensor::sum(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
     int aux = 0;
 
-    if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::sum");
+    if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::add");
     if ((!eqsize(A, B)) || (!eqsize(A, C))) {
         A->info();
         B->info();
         C->info();
-        msg("Incompatible dims", "Tensor::sum");
+        msg("Incompatible dims", "Tensor::add");
     }
 
     C->tsem->lock();
@@ -631,7 +631,7 @@ void Tensor::reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool ke
 
     // Select mode
     if (mode=="mean") m=0;
-    else if (mode=="sum") m=1;
+    else if (mode=="add") m=1;
     else if (mode=="max") m=2;
     else
         msg("Incorrect reduction mode", "Tensor::reduce");
@@ -767,7 +767,7 @@ void Tensor::delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, b
     int m,d;
 
     if (mode=="mean") m=0;
-    else if (mode=="sum") m=1;
+    else if (mode=="add") m=1;
     else if (mode=="max") m=2;
     else
         msg("Incorrect reduction mode", "Tensor::delta_reduce");
@@ -931,9 +931,9 @@ void Tensor::reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor
             }
         }
 
-        //reduce sum
+        //reduce add
         for(j=0;j<sind.size();j++) {
-          if (op=="sum") {
+          if (op=="add") {
             if (!incC) C->ptr[sind[j]]=A->ptr[sind[j]]+B->ptr[i];
             else C->ptr[sind[j]]+=A->ptr[sind[j]]+B->ptr[i];
           }
@@ -1008,9 +1008,9 @@ void Tensor::delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,
             }
         }
 
-        //reduce sum
+        //reduce add
         for(j=0;j<sind.size();j++) {
-          if (op=="sum") {
+          if (op=="add") {
             C->ptr[i]+=A->ptr[sind[j]];
           }
           else if (op=="diff") {
@@ -1024,555 +1024,5 @@ void Tensor::delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,
 
 }
 
-////////////////////////////////
-//// CONVOLUTIONS
-ConvolDescriptor::ConvolDescriptor() {}
 
-ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p) {
-    if (ks.size() != 2) { msg("Kernels must have 3 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
-    if (st.size() != 2) { msg("Strides must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
 
-    // Add filters to kernel_size
-    ksize = vector<int>(ks);
-    ksize.insert(ksize.begin(), 1, filters);
-    stride = vector<int>(st.begin(), st.end());
-
-    if (p == "same") {
-        pad.push_back(ksize[1] / 2);
-        pad.push_back(ksize[2] / 2);
-    } else if (p == "none") {
-        pad.push_back(0);
-        pad.push_back(0);
-    } else msg("Incorrect padding type", "ConvolDescriptor::ConvolDescriptor");
-
-}
-
-ConvolDescriptor::ConvolDescriptor(const vector<int> &ks, const vector<int> &st,
-                                   const vector<int> &p) {
-    ksize = vector<int>(ks.begin(), ks.end());
-    stride = vector<int>(st.begin(), st.end());
-    pad = vector<int>(p.begin(), p.end());
-
-    if (ksize.size() != 3) msg("Kernels must have 3 dimensions", "ConvolDescriptor::ConvolDescriptor");
-    if (stride.size() != 2) msg("Strides must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor");
-    if (pad.size() != 2) msg("Padding must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor");
-}
-
-
-void ConvolDescriptor::build(Tensor *A) {
-
-    if (A->ndim != 4) msg("Tensors are not 4D", "ConvolDescriptor::build");
-
-    I = A;
-
-    nk = ksize[0];
-    kr = ksize[1];
-    kc = ksize[2];
-    kz = A->shape[1];
-
-    sr = stride[0];
-    sc = stride[1];
-
-    iz = A->shape[1];
-    ir = A->shape[2];
-    ic = A->shape[3];
-
-    padr = pad[0];
-    padc = pad[1];
-
-    z = nk;
-    r = (ir - kr + 2 * padr) / sr + 1;
-    c = (ic - kc + 2 * padc) / sc + 1;
-
-    if ((r <= 0) || (c <= 0))
-        msg("Invalid output shape", "ConvolDescriptor::build");
-
-    O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
-    D = new Tensor(O->getShape(), A->device);
-
-    // Params
-    K = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
-    bias = new Tensor(vector<int>{nk}, I->device);
-    gK = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
-    gbias = new Tensor(vector<int>{nk}, I->device);
-
-    if (I->isCPU()) {
-        // mem for ptr, lowering im2col
-        ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptor::build");
-        new(&matK) Eigen::Map<Eigen::MatrixXf>(K->ptr, kr * kc * kz, nk);
-        new(&matgK) Eigen::Map<Eigen::MatrixXf>(gK->ptr, kr * kc * kz, nk);
-        // convolution: matC=matA*matK
-    }
-    #ifdef cGPU
-    else if (I->isGPU()) {
-      // Big tensor with all the lowering
-      gpuIB=new Tensor(vector<int>{A->shape[0]*r*c,kc*kr*kz}, I->device);
-
-      // Tensor with variable shared ptr, delete create ptr
-      gpuI=new Tensor(vector<int>{r*c,kc*kr*kz}, I->device);
-      gpu_delete_tensor(gpuI->gpu_device,gpuI->ptr);
-
-      gpuO=new Tensor(vector<int>{z,r*c}, I->device);
-      gpu_delete_tensor(gpuI->gpu_device,gpuO->ptr);
-      gpuD=new Tensor(vector<int>{z,r*c}, I->device);
-      gpu_delete_tensor(gpuI->gpu_device,gpuD->ptr);
-
-      gpuK=new Tensor(vector<int>{z,kc*kr*kz}, I->device);
-      gpu_delete_tensor(gpuI->gpu_device,gpuK->ptr);
-      gpugK=new Tensor(vector<int>{z,kc*kr*kz}, I->device);
-      gpu_delete_tensor(gpuI->gpu_device,gpugK->ptr);
-    }
-    #endif
-}
-
-void ConvolDescriptor::resize(Tensor *A)
-{
-    I=A;
-
-    delete O;
-    delete D;
-    O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
-    D = new Tensor(O->getShape(), A->device);
-
-    if (I->isCPU()) {
-        delete ptrI;
-        ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptor::build");
-    }
-    #ifdef cGPU
-    else if (I->isGPU()) {
-      delete gpuIB;
-      gpuIB=new Tensor(vector<int>{A->shape[0]*r*c,kc*kr*kz}, I->device);
-    }
-    #endif
-
-}
-
-/////////////////////////////////////////////////////////////////////
-//// Conv2D
-//// Dimensions must be compatible
-//// A is input 4D Tensor, Batch x Channels x Rows x Cols
-//// D is a ConvolDescriptor
-/////////////////////////////////////////////////////////////////////
-void Tensor::Conv2D(ConvolDescriptor *D) {
-    if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::Conv2D");
-
-    D->O->tsem->lock();
-    if (D->I->isCPU()) {
-        cpu_conv2D(D);
-    }
-#ifdef cGPU
-    else if (D->I->isGPU())
-      {
-         //gpu_conv2D_old(D);
-         gpu_conv2D(D);
-      }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-    D->O->tsem->unlock();
-}
-
-/////////////////////////////////////////////////////////////////////
-//// Conv2D Grad
-//// Dimensions must be compatible
-//// A is input 4D Tensor, Batch x Channels x Rows x Cols
-//// D is a ConvolDescriptor
-/////////////////////////////////////////////////////////////////////
-void Tensor::Conv2D_grad(ConvolDescriptor *D) {
-    if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::Conv2D");
-
-    D->gK->tsem->lock();
-    if (D->I->isCPU()) {
-        D->gK->set(0.0);
-        D->gbias->set(0.0);
-        cpu_conv2D_grad(D);
-    }
-#ifdef cGPU
-    else if (D->I->isGPU())
-      {
-         D->gK->set(0.0);
-         D->gbias->set(0.0);
-         gpu_conv2D_grad(D);
-      }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-    D->gK->tsem->unlock();
-}
-
-/////////////////////////////////////////////////////////////////////
-//// Conv2D Back
-//// Dimensions must be compatible
-//// A is input 4D Tensor, Batch x Channels x Rows x Cols
-//// D is a ConvolDescriptor
-/////////////////////////////////////////////////////////////////////
-void Tensor::Conv2D_back(ConvolDescriptor *D) {
-    if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::Conv2D");
-
-    D->ID->tsem->lock();
-    if (D->I->isCPU()) {
-        cpu_conv2D_back(D);
-    }
-#ifdef cGPU
-    else if (D->I->isGPU())
-      {
-         gpu_conv2D_back(D);
-      }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-    D->ID->tsem->unlock();
-}
-
-
-////////////////////////////////
-////  POOLING
-
-PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st,
-                               const vector<int> &p) {
-    ksize = vector<int>(ks.begin(), ks.end());
-    stride = vector<int>(st.begin(), st.end());
-    pad = vector<int>(p.begin(), p.end());
-
-    if (ksize.size() != 2) msg("Pooling Kernels must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
-    if (stride.size() != 2) msg("Strides must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
-    if (pad.size() != 2) msg("Padding must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
-}
-
-PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, string p) {
-    if (ks.size() != 2) msg("Pooling Kernels must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
-    if (st.size() != 2) msg("Strides must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
-
-    ksize = ks;
-    stride = st;
-
-    if (p == "same") {
-        pad.push_back(ksize[0] / 2);
-        pad.push_back(ksize[1] / 2);
-    } else if (p == "none") {
-        pad.push_back(0);
-        pad.push_back(0);
-    } else msg("Incorrect padding type", "PoolDescriptor::PoolDescriptor");
-}
-
-
-void PoolDescriptor::build(Tensor *A) {
-    if (A->ndim != 4) msg("Tensors are not 4D", "PoolDescriptor::build");
-
-    I = A;
-
-    kr = ksize[0];
-    kc = ksize[1];
-
-    sr = stride[0];
-    sc = stride[1];
-
-    iz = A->shape[1];
-    ir = A->shape[2];
-    ic = A->shape[3];
-
-    padr = pad[0];
-    padc = pad[1];
-
-    z = iz;
-    r = (ir - kr + 2 * padr) / sr + 1;
-    //if (kr%2==0) r--;
-    c = (ic - kc + 2 * padc) / sc + 1;
-    //if (kc%2==0) c--;
-
-    if ((r <= 0) || (c <= 0))
-        msg("Invalid output shape", "PoolDescriptor::build");
-
-    O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
-    D = new Tensor(O->getShape(), A->device);
-
-
-}
-
-void PoolDescriptor::resize(Tensor *A) {
-
-    I = A;
-
-    delete O;
-    delete D;
-
-    O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
-    D = new Tensor(O->getShape(), A->device);
-}
-
-/////////////////////////////////////////////////////////////////////
-//// MPool2D
-//// Dimensions must be compatible
-//// A is input 4D Tensor, Batch x Channels x Rows x Cols
-//// D is a ConvolDescriptor
-/////////////////////////////////////////////////////////////////////
-void Tensor::MPool2D(PoolDescriptor *D) {
-    if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::MPool2D");
-
-    D->O->tsem->lock();
-    if (D->I->isCPU()) {
-        cpu_mpool2D(D);
-    }
-#ifdef cGPU
-    else if (D->I->isGPU())
-      {
-        gpu_mpool2D(D);
-      }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-    D->O->tsem->unlock();
-}
-
-/////////////////////////////////////////////////////////////////////
-//// MPool2D
-//// Dimensions must be compatible
-//// A is input 4D Tensor, Batch x Channels x Rows x Cols
-//// D is a ConvolDescriptor
-/////////////////////////////////////////////////////////////////////
-void Tensor::MPool2D_back(PoolDescriptor *D) {
-    if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::MPool2D_back");
-
-    D->ID->tsem->lock();
-    if (D->I->isCPU()) {
-
-        cpu_mpool2D_back(D);
-    }
-#ifdef cGPU
-    else if (D->I->isGPU())
-      {
-        gpu_mpool2D_back(D);
-      }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-    D->ID->tsem->unlock();
-}
-
-
-////////////////////////////////
-/// COST FUNCTIONS
-////////////////////////////////
-// Cross-Entropy: C=-(A*log(B)+(1-A)*log(1-B))
-void Tensor::cent(Tensor *A, Tensor *B, Tensor *C) {
-    if (A->device != B->device) msg("Tensors in different devices", "Tensor::cross-entropy");
-    if ((!eqsize(A, B)) || (!eqsize(A, C))) msg("Incompatible dims", "Tensor::cross-entropy");
-
-    C->tsem->lock();
-    if (A->isCPU()) {
-
-        for (int i = 0; i < A->size; i++) {
-            C->ptr[i] = 0;
-            if (A->ptr[i] != 0.0) C->ptr[i] -= A->ptr[i] * log(B->ptr[i]+0.00001);
-            if (A->ptr[i] != 1.0) C->ptr[i] -= (1.0 - A->ptr[i]) * log(1.0 - B->ptr[i]+0.00001);
-        }
-    }
-#ifdef cGPU
-    else if (A->isGPU())
-      {
-         gpu_cent(A,B,C);
-      }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-    C->tsem->unlock();
-}
-
-
-////////////////////////////////
-/// METRICS FUNCTIONS
-////////////////////////////////
-int Tensor::accuracy(Tensor *A, Tensor *B) {
-    if (A->device != B->device) msg("Tensors in different devices", "Tensor::accuracy");
-    if (!eqsize(A, B)) msg("Incompatible dims", "Tensor::accuracy");
-    if (A->ndim != 2) msg("Accuracy only over 2D Tensor (batch x probs)", "Tensor::Accuracy");
-
-    int acc = 0;
-
-    B->tsem->lock();
-
-    if (A->isCPU()) {
-        int aind, bind;
-
-        for (int i = 0; i < A->shape[0]; i++) {
-            (*A->ptr2).col(i).maxCoeff(&aind);
-            (*B->ptr2).col(i).maxCoeff(&bind);
-            if (aind == bind) acc++;
-        }
-    }
-#ifdef cGPU
-    else if (A->isGPU())
-      {
-         gpu_accuracy(A,B,&acc);
-      }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-    B->tsem->unlock();
-    return acc;
-
-}
-
-
-////////////////////////////////
-/// ACTIVATIONS
-////////////////////////////////
-// RELU
-void Tensor::ReLu(Tensor *A, Tensor *B) {
-    if (A->device != B->device) msg("Tensors in different devices", "Tensor::ReLu");
-    if (!eqsize(A, B)) msg("Incompatible dims", "Tensor::ReLu");
-
-    B->tsem->lock();
-    if (A->isCPU()) {
-
-        for (int i = 0; i < A->size; i++) {
-            if (A->ptr[i] > 0.0) B->ptr[i] = A->ptr[i];
-            else B->ptr[i] = 0.0;
-        }
-    }
-#ifdef cGPU
-    else if (A->isGPU())
-      {
-      gpu_relu(A,B);
-      }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-
-    B->tsem->unlock();
-}
-
-
-// RELU Derivative, always increment over parent delta
-void Tensor::D_ReLu(Tensor *D, Tensor *I, Tensor *PD) {
-    if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_ReLu");
-    if ((!eqsize(D, I)) || (!eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_ReLu");
-
-    PD->tsem->lock();
-    if (D->isCPU()) {
-
-        for (int i = 0; i < D->size; i++) {
-            if (I->ptr[i] > 0.0) PD->ptr[i] = D->ptr[i];
-            else PD->ptr[i] = 0.0;
-        }
-    }
-#ifdef cGPU
-    else if (D->isGPU())
-      {
-        gpu_d_relu(D,I,PD);
-
-      }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-    PD->tsem->unlock();
-}
-
-
-// SOFTMAX
-void Tensor::Softmax(Tensor *A, Tensor *B) {
-    if (A->device != B->device) msg("Tensors in different devices", "Tensor::Softmax");
-    if (!eqsize(A, B)) msg("Incompatible dims", "Tensor::Softmax");
-    if (A->ndim != 2) msg("Softmax only over 2D Tensor (batch x logits)", "Tensor::Softmax");
-
-    B->tsem->lock();
-
-    if (A->isCPU()) {
-        float max, sum;
-
-
-        for (int i = 0; i < A->shape[0]; i++) {
-
-            max = (*A->ptr2).col(i).maxCoeff();
-            for (int j = 0; j < A->shape[1]; j++)
-                (*B->ptr2)(j, i) = exp((*A->ptr2)(j, i) - max);
-
-            sum = (*B->ptr2).col(i).sum();
-            for (int j = 0; j < B->shape[1]; j++)
-                (*B->ptr2)(j, i) = (*B->ptr2)(j, i) / sum;
-        }
-    }
-#ifdef cGPU
-    else if (A->isGPU())
-      {
-        gpu_softmax(A,B);
-      }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-
-    B->tsem->unlock();
-}
-
-
-// SOFTMAX DERIVATIVE
-void Tensor::D_Softmax(Tensor *D, Tensor *I, Tensor *PD) {
-    if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_Softmax");
-    if ((!eqsize(D, I)) || (!eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_Softmax");
-    if (D->ndim != 2) msg("D_Softmax only over 2D Tensor (batch x delta_probs)", "Tensor::D_Softmax");
-
-
-    if (D->isCPU()) {
-        PD->tsem->lock();
-
-        for (int i = 0; i < D->size; i++)
-            PD->ptr[i] += D->ptr[i] * (I->ptr[i] * (1.0 - I->ptr[i]));
-
-        PD->tsem->unlock();
-    }
-#ifdef cGPU
-    else if (D->isGPU())
-      {
-
-        Tensor *aux=new Tensor(D->getShape(),D->device);
-        aux->set(1.0);
-        Tensor::sum(1.0,aux,-1.0,I,aux,0);
-        Tensor::el_mult(I,aux,aux,0);
-        Tensor::el_mult(D,aux,PD,1);
-
-        delete aux;
-      }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-
-
-}
-
-
-///////////////////////////
-
-//////
