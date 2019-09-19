@@ -235,9 +235,9 @@ public:
 
     static void inc(Tensor *A, Tensor *B);
 
-    static void sum(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
+    static void add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
 
-    static void sum(Tensor *A, Tensor *B, Tensor *C);
+    static void add(Tensor *A, Tensor *B, Tensor *C);
 
     static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
 

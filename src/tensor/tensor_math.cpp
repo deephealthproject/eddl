@@ -126,7 +126,7 @@ void Tensor::log() {
 void Tensor::log2() {
     if (isCPU()) {
 
-        for (int i = 0; i < size; ++i) ptr[i] = std::log2f(ptr[i]);
+        for (int i = 0; i < size; ++i) ptr[i] = std::log2(ptr[i]);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -146,7 +146,7 @@ void Tensor::log2() {
 void Tensor::log10() {
     if (isCPU()) {
 
-        for (int i = 0; i < size; ++i) ptr[i] = std::log10f(ptr[i]);
+        for (int i = 0; i < size; ++i) ptr[i] = std::log10(ptr[i]);
     }
 #ifdef cGPU
     else if (isGPU())

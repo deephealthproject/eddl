@@ -80,7 +80,7 @@ LSum::LSum(Layer *l, float k, string name, int dev) : OperatorLayer(name, dev) {
 }
 
 void LSum::forward() {
-    if (binary) Tensor::sum(1.0, input[0], 1.0, input[1], output, 0);
+    if (binary) Tensor::add(1.0, input[0], 1.0, input[1], output, 0);
     else {
         Tensor::copy(input[0], output);
         output->add(val);

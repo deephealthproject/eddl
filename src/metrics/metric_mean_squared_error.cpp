@@ -32,8 +32,8 @@ float MMeanSquaredError::value(Tensor *T, Tensor *Y) {
     float f;
     // batch error: add((T-Y)^2)
     Tensor *aux1 = new Tensor(T->getShape(), T->device);
-    
-    Tensor::sum(1.0, T, -1.0, Y, aux1, 0);
+
+    Tensor::add(1.0, T, -1.0, Y, aux1, 0);
     Tensor::el_mult(aux1, aux1, aux1, 0);
     f = aux1->sum();
 

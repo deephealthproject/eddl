@@ -241,7 +241,7 @@ void Tensor::inc(Tensor *A, Tensor *B) {
     }
 #ifdef cGPU
     else if ((A->isGPU())&&(B->isGPU())) {
-        Tensor::sum(1,A,1,B,B,0);
+        Tensor::add(1,A,1,B,B,0);
     }
     else if (((A->isCPU())&&(B->isGPU()))||((A->isGPU())&&(B->isCPU())))
     {
@@ -453,7 +453,7 @@ void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
 //// or C+=(sca*A)+(scb*B) if incC is 1
 //// Dimensions and types must be compatible
 ///////////////////////////////////////
-void Tensor::sum(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
+void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
     int aux = 0;
 
     if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::add");
@@ -485,8 +485,8 @@ void Tensor::sum(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
     C->tsem->unlock();
 }
 
-void Tensor::sum(Tensor *A, Tensor *B, Tensor *C) {
-    Tensor::sum(1.0, A, 1.0, B, C, 0);
+void Tensor::add(Tensor *A, Tensor *B, Tensor *C) {
+    Tensor::add(1.0, A, 1.0, B, C, 0);
 }
 
 

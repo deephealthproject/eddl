@@ -198,7 +198,7 @@ int main(int argc, char **argv) {
         fprintf(stderr,"Fail total add %f!=%f\n",fc,fg);
         exit(EXIT_FAILURE);
     }
-    cout<<"OK sum\n";
+    cout<<"OK add\n";
 
 
     //////////// MULT2D ///////////////////
@@ -256,8 +256,8 @@ int main(int argc, char **argv) {
     A->ToGPU();
     D->ToGPU();
 
-    Tensor::sum(1.0,A->TC,1.0,D->TC,E->TC,0);
-    Tensor::sum(1.0,A->TG,1.0,D->TG,E->TG,0);
+    Tensor::add(1.0, A->TC, 1.0, D->TC, E->TC, 0);
+    Tensor::add(1.0, A->TG, 1.0, D->TG, E->TG, 0);
 
     E->check("add");
 
