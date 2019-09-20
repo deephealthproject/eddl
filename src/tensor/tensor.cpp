@@ -171,6 +171,11 @@ Tensor* Tensor::eye(int size, int dev){
     return t;
 }
 
+Tensor* Tensor::randn(const vector<int> &shape, int dev){
+    auto t = new Tensor(shape, nullptr, dev);
+    t->rand_normal(0.0f, 1.0f, false);
+    return t;
+}
 
 ///////////////////////////////////////////
 // Tensor destructor

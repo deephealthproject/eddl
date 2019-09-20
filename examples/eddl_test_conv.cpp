@@ -88,9 +88,9 @@ int main(int argc, char **argv) {
     ////
     printf("FORW\n");
 
-    CDC->I->rand_suniform(0.1);
-    CDC->K->rand_suniform(0.1);
-    CDC->bias->rand_suniform(0.1);
+    CDC->I->rand_signed_uniform(0.1);
+    CDC->K->rand_signed_uniform(0.1);
+    CDC->bias->rand_signed_uniform(0.1);
 
     //CDC->I->set(1.0);
     //CDC->K->set(1.0);
@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
     ////
     printf("GRAD\n");
 
-    CDC->D->rand_suniform(0.1);
+    CDC->D->rand_signed_uniform(0.1);
     CDC->gK->set(0.0);
     CDC->gbias->set(0.0);
 
@@ -134,7 +134,7 @@ int main(int argc, char **argv) {
     CDC->ID=new Tensor(A->TC->getShape(),DEV_CPU);
     CDG->ID=new Tensor(A->TG->getShape(),DEV_GPU);
 
-    CDC->D->rand_suniform(0.1);
+    CDC->D->rand_signed_uniform(0.1);
     CDC->ID->set(0.0);
 
     Tensor::copy(CDC->D,CDG->D);

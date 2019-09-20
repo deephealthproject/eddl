@@ -30,6 +30,7 @@
 #include "net.h"
 #include <pthread.h>
 #include "utils.h"
+#include "random.h"
 
 #ifdef cGPU
 #include "hardware/gpu/tensor_cuda.h"
@@ -134,7 +135,7 @@ Net::Net(vlayer in, vlayer out) {
     for (int i = 0; i < lin.size(); i++) {
         walk(lin[i]);
     }
-    gen_rtable();
+    build_randn_table();
 }
 
 
@@ -626,11 +627,11 @@ void Net::applygrads() {
     if (VERBOSE) {
         for (int i = 0; i < layers.size(); i++) {
             cout << layers[i]->name << "\n";
-            fprintf(stdout, "  In:%f\n", layers[i]->input->total_abs());
-            fprintf(stdout, "  Out:%f\n", layers[i]->output->total_abs());
-            fprintf(stdout, "  Delta:%f\n", layers[i]->delta->total_abs());
+            fprintf(stdout, "  In:%f\n", layers[i]->input->sum_abs());
+            fprintf(stdout, "  Out:%f\n", layers[i]->output->sum_abs());
+            fprintf(stdout, "  Delta:%f\n", layers[i]->delta->sum_abs());
             for (int j = 0; j < layers[i]->gradients.size(); j++) {
-                fprintf(stdout, "  %f\n", layers[i]->gradients[j]->total_abs());
+                fprintf(stdout, "  %f\n", layers[i]->gradients[j]->sum_abs());
             }
         }
         getchar();

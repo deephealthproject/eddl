@@ -291,7 +291,7 @@ float Tensor::sum() {
 
 
 ///////////////////////////////////////
-float Tensor::total_abs() {
+float Tensor::sum_abs() {
 
     if (isCPU()) {
         float sum = 0.0;

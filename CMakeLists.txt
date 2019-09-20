@@ -248,6 +248,8 @@ SET(CPP_SOURCES
         src/system_info.h
         src/utils.cpp
         src/utils.h
+        src/random.cpp
+        src/random.h
         )
 SET(CUDA_SOURCES
         src/hardware/gpu/tensor_cuda.cu

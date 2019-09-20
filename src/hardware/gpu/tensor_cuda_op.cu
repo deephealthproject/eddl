@@ -465,19 +465,19 @@ void gpu_rand_uniform(Tensor *A, float v)
 
 }
 
-void gpu_rand_suniform(Tensor *A, float v)
+void gpu_rand_signed_uniform(Tensor *A, float v)
 {
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-  check_curand(curandGenerateUniform(random_generator[device],A->ptr,A->size),"gpu_rand_suniform");
+  check_curand(curandGenerateUniform(random_generator[device],A->ptr,A->size),"gpu_rand_signed_uniform");
 
-  check_cuda(cudaDeviceSynchronize(),"gpu_rand_suniform");
+  check_cuda(cudaDeviceSynchronize(),"gpu_rand_signed_uniform");
 
   gpu_mult(A,2*v);
   gpu_sum(A,-v);
 
-  check_cuda(cudaDeviceSynchronize(),"gpu_rand_suniform");
+  check_cuda(cudaDeviceSynchronize(),"gpu_rand_signed_uniform");
 
 }
 

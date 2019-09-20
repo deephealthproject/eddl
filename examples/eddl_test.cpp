@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
 
 
     ///////////// pow ////////////////
-    A->TC->rand_suniform(1);
+    A->TC->rand_signed_uniform(1);
     A->ToGPU();
 
     float exp = 2.0;
@@ -186,7 +186,7 @@ int main(int argc, char **argv) {
     ///////////// sum ////////////////
 
 
-    A->TC->rand_suniform(1);
+    A->TC->rand_signed_uniform(1);
     A->ToGPU();
 
     float fc= A->TC->sum();
@@ -273,7 +273,7 @@ int main(int argc, char **argv) {
 
 
     //////////// Softmax /////////////////////
-    A->TC->rand_suniform(100000);
+    A->TC->rand_signed_uniform(100000);
     A->ToGPU();
 
     Tensor::Softmax(A->TC,D->TC);
@@ -331,7 +331,7 @@ int main(int argc, char **argv) {
     F->check("reduce_sum2D inc");
 
     //////////// ReLU ////////////////
-    A->TC->rand_suniform(1.0);
+    A->TC->rand_signed_uniform(1.0);
     A->ToGPU();
 
     Tensor::ReLu(A->TC, D->TC);
@@ -340,8 +340,8 @@ int main(int argc, char **argv) {
     D->check("ReLU");
 
     //////////// D_ReLU ////////////////
-    A->TC->rand_suniform(1.0);
-    D->TC->rand_suniform(1.0);
+    A->TC->rand_signed_uniform(1.0);
+    D->TC->rand_signed_uniform(1.0);
     A->ToGPU();
     D->ToGPU();
 

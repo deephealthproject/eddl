@@ -133,7 +133,7 @@ endif
 
 # Group compiled objects (Alphabetically sorted!)
 APIS_OBJ = eddl.o
-CORE_OBJ = compserv.o net.o utils.o
+CORE_OBJ = compserv.o net.o utils.o random.o
 HARDWARE_OBJ = cpu_convol.o
 INITIALIZERS_OBJ = initializer_indentity.o initializer_random_uniform.o initializer_glorot_uniform.o initializer_orthogonal.o initializer_random_normal.o initializer_constant.o initializer_glorot_normal.o initializer.o
 LAYERS_OBJ = layer_lstm.o layer_input.o layer_conv.o layer_mean.o layer_log10.o layer_reshape.o layer_log.o layer_mult.o layer_maxpool.o layer_embedding.o layer_globalavgpool.o layer_upsampling.o layer_add.o layer_batchnorm.o layer_div.o layer_log2.o layer_gaussian.o layer_average.o layer.o layer_globalmaxpool.o layer_reduction.o layer_sum.o layer_sum_op.o layer_gauss.o layer_transposed_conv.o layer_activation.o layer_operator.o layer_concat.o layer_maximum.o layer_diff.o layer_var.o layer_drop.o layer_pool.o layer_exp.o layer_rnn.o layer_min.o layer_pow.o layer_dense.o layer_sqrt.o layer_tensor.o layer_minimum.o layer_abs.o layer_avgpool.o layer_matmul.o layer_uniform.o layer_max.o layer_subtract.o layer_generator.o layer_transpose.o
@@ -155,6 +155,9 @@ endif
 
 utils.o: $(SRC_PATH)/utils.cpp $(SRC_PATH)/utils.h $(SRC_PATH)/system_info.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/utils.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+random.o: $(SRC_PATH)/random.cpp $(SRC_PATH)/random.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/random.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 compserv.o: $(SRC_PATH)/compserv.cpp $(SRC_PATH)/compserv.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/compserv.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@

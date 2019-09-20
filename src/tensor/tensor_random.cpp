@@ -7,6 +7,7 @@
 
 #include "tensor.h"
 #include "../utils.h"
+#include "../random.h"
 
 #ifdef cGPU
 #include "../hardware/gpu/tensor_cuda.h"
@@ -18,7 +19,6 @@ using namespace std;
 
 void Tensor::rand_uniform(float v) {
     if (isCPU()) {
-
         for (int i = 0; i < size; ++i) ptr[i] = uniform() * v;
     }
 #ifdef cGPU
@@ -36,16 +36,14 @@ void Tensor::rand_uniform(float v) {
 }
 
 
-void Tensor::rand_suniform(float v) {
+void Tensor::rand_signed_uniform(float v) {
     if (isCPU()) {
-
-        for (int i = 0; i < size; ++i) ptr[i] = suniform() * v;
-
+        for (int i = 0; i < size; ++i) ptr[i] = signed_uniform() * v;
     }
 #ifdef cGPU
     else if (isGPU())
       {
-        gpu_rand_suniform(this,v);
+        gpu_rand_signed_uniform(this,v);
       }
 #endif
 #ifdef cFPGA
@@ -79,10 +77,14 @@ void Tensor::rand_binary(float v) {
 }
 
 
-void Tensor::rand_gaussian(float m, float s) {
+void Tensor::rand_normal(float m, float s, bool fast_math) {
     if (isCPU()) {
-        int r=rand();
-        for (int i = 0; i < size; ++i) ptr[i] = gauss(r, m, s);
+        if(fast_math){
+            for (int i = 0; i < size; ++i) ptr[i] = fast_randn(m, s, rand());
+        }else{
+            for (int i = 0; i < size; ++i) ptr[i] = randn_(m, s);
+        }
+
     }
 #ifdef cGPU
     else if (isGPU())

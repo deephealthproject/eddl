@@ -159,20 +159,13 @@ public:
     Tensor(const vector<int> &shape, float *fptr, int dev=DEV_CPU);
     Tensor(const vector<int> &shape, Tensor *T);
 
-    // Create
-    static Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
-    static Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
-    static Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
-    static Tensor* arange(float min, float max, float step=1.0, int dev=DEV_CPU);
-    static Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
-    static Tensor* eye(int size, int dev=DEV_CPU);
-
     ~Tensor();
 
     vector<int> getShape();
     void info();
     void print();
 
+    // Input/Output
     void save(string s);
     void save(FILE *fe);
     void load(FILE *fe);
@@ -186,92 +179,67 @@ public:
     int isGPU();
     int isFPGA();
 
-    // ***** Core *****************************
+
+    // ***** Core (In-place) *****************************
     void set(float v);
 
-    // ***** Math *****************************
+    // ***** Math (In-place) *****************************
     void mult(float v);
-
     void div(float v);
-
     void add(float v);
-
     void sub(float v);
-
+    float sum();
+    float sum_abs();
     void abs();
-
     void log();
-
     void log2();
-
     void log10();
-
     void exp();
-
     void sqrt();
-
     void sqr();
-
     void pow(float exp);
 
-    float sum();
+    // ***** Random (In-place) *****************************
+    void rand_uniform(float v);
+    void rand_signed_uniform(float v);
+    void rand_normal(float m, float s, bool fast_math=true);
+    void rand_binary(float v);
 
-    float total_abs();
+    // Create new tensor
+    static Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
+    static Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
+    static Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
+    static Tensor* arange(float min, float max, float step=1.0, int dev=DEV_CPU);
+    static Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
+    static Tensor* eye(int size, int dev=DEV_CPU);
+    static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
     static int eqsize(Tensor *A, Tensor *B);
-
     static int equal(Tensor *A, Tensor *B);
-
     static void transpose(Tensor *A, Tensor *B, vector<int> dims);
-
     static void copy(Tensor *A, Tensor *B);
-
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
-
     static void sign(Tensor *A, Tensor *B);
-
     static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
-
     static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
-
     static void inc(Tensor *A, Tensor *B);
-
     static void add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
-
     static void add(Tensor *A, Tensor *B, Tensor *C);
-
     static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
-
     static void sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
-
     static void reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
-
     static void el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
-
     static void el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
-
     static void reduceTosum(Tensor *A, Tensor *B, int axis);
-
     static void reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims, Tensor *C, int incB);
-
     static void delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims, Tensor *C,int incB);
-
     static void reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
     static void delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC);
 
-
-    // ***** Random *****************************
-    void rand_uniform(float v);
-
-    void rand_suniform(float v);
-
-    void rand_gaussian(float m, float s);
-
-    void rand_binary(float v);
-
-
+    // TODO: Take this out of here -------------------
     // ***** Losses *****************************
     static void cent(Tensor *A, Tensor *B, Tensor *C);
+
 
     // ***** Metrics *****************************
     static int accuracy(Tensor *A, Tensor *B);
@@ -279,26 +247,20 @@ public:
 
     // ***** Activations *****************************
     static void ReLu(Tensor *A, Tensor *B);
-
     static void D_ReLu(Tensor *D, Tensor *I, Tensor *PD);
 
     static void Softmax(Tensor *A, Tensor *B);
-
     static void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
 
 
     // ***** Deep Learning *****************************
     static void Conv2D(ConvolDescriptor *D);
-
     static void Conv2D_grad(ConvolDescriptor *D);
-
     static void Conv2D_back(ConvolDescriptor *D);
 
     static void MPool2D(PoolDescriptor *D);
-
     static void MPool2D_back(PoolDescriptor *D);
 };
-
 
 #endif //EDDL_TENSOR_H
 

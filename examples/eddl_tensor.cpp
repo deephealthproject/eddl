@@ -41,6 +41,12 @@ int main(int argc, char **argv) {
     t->info();
     t->print();
 
+    // TEST: full
+    cout << "\n" << "full: =============" << endl;
+    t = Tensor::full({10, 5}, 7.0);
+    t->info();
+    t->print();
+
     // TEST: arange
     cout << "\n" << "arange: =============" << endl;
     t = Tensor::arange(0.0, 1.0, 0.5);
@@ -59,6 +65,10 @@ int main(int argc, char **argv) {
     t->info();
     t->print();
 
-
+    // TEST: randn
+    cout << "\n" << "randn: =============" << endl;
+    t = Tensor::randn({5, 4});
+    t->info();
+    t->print();
 }
 

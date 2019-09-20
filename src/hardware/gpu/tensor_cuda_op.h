@@ -53,7 +53,7 @@ void gpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
 void gpu_reduce_sum2D(Tensor *A,Tensor *B,int axis,int incB);
 
 void gpu_rand_uniform(Tensor *A, float v);
-void gpu_rand_suniform(Tensor *A, float v);
+void gpu_rand_signed_uniform(Tensor *A, float v);
 void gpu_rand_gaussian(Tensor *A, float m,float s);
 void gpu_rand_binary(Tensor *A, float v);
 

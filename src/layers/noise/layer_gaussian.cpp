@@ -60,7 +60,7 @@ void LGaussianNoise::resize(int batch){
 
 void LGaussianNoise::forward() {
   if (mode == TRMODE) {
-      noise->rand_gaussian(0.0,stdev);
+      noise->rand_normal(0.0, stdev);
       Tensor::add(1.0, input, 1.0, noise, output, 0);
   } else {
       Tensor::copy(input, output);
