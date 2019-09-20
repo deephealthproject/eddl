@@ -11,7 +11,7 @@ void build_randn_table();
 float uniform(float min=0.0f, float max=1.0f);
 float signed_uniform();
 
-float randn_(float mean, float sd);
+float slow_randn(float mean, float sd);
 float fast_randn(float mean, float sd, int seed);
 
 

@@ -82,7 +82,7 @@ void Tensor::rand_normal(float m, float s, bool fast_math) {
         if(fast_math){
             for (int i = 0; i < size; ++i) ptr[i] = fast_randn(m, s, rand());
         }else{
-            for (int i = 0; i < size; ++i) ptr[i] = randn_(m, s);
+            for (int i = 0; i < size; ++i) ptr[i] = slow_randn(m, s);
         }
 
     }

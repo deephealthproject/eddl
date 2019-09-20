@@ -37,7 +37,7 @@ float gaussgen() {
     return x;
 }
 
-float randn_(float mean, float sd) {
+float slow_randn(float mean, float sd) {
     return (gaussgen() * sd) + mean;
 }
 
