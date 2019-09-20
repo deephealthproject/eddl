@@ -146,11 +146,11 @@ TENSOR_OBJ = tensor.o tensor_activations.o tensor_losses.o tensor_math.o tensor_
 OBJ := $(APIS_OBJ) $(CORE_OBJ) $(HARDWARE_OBJ) $(INITIALIZERS_OBJ) $(LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(TENSOR_OBJ)
 
 ifeq ($(CORE),1)  # CPU
-all: $(GPU_OBJ) $(OBJ) example_mlp example_dae_class example_predict example_dae example_conv example_ae example_test example_test_conv example_gpu example_load_save
+all: $(GPU_OBJ) $(OBJ) example_mlp example_dae_class example_predict example_dae example_conv example_ae example_test example_test_conv example_gpu example_load_save example_tensor example_temp
 endif
 
 ifeq ($(CORE),2)  # GPU
-all: $(GPU_OBJ) $(OBJ) example_mlp example_dae_class example_predict example_dae example_conv example_ae example_test example_test_conv example_gpu example_load_save
+all: $(GPU_OBJ) $(OBJ) example_mlp example_dae_class example_predict example_dae example_conv example_ae example_test example_test_conv example_gpu example_load_save example_tensor example_temp
 endif
 
 utils.o: $(SRC_PATH)/utils.cpp $(SRC_PATH)/utils.h $(SRC_PATH)/system_info.h
@@ -450,6 +450,12 @@ example_gpu: $(EXAMPLES_PATH)/eddl_gpu.cpp $(OBJ) $(GPU_OBJ)
 
 example_load_save: $(EXAMPLES_PATH)/eddl_load_save.cpp $(OBJ) $(GPU_OBJ)
 	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_PATH)/eddl_load_save.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
+
+example_tensor: $(EXAMPLES_PATH)/eddl_tensor.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_PATH)/eddl_tensor.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
+
+example_temp: $(EXAMPLES_PATH)/eddl_temp.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_PATH)/eddl_temp.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
 
 
 #---------------------------------- Extra options

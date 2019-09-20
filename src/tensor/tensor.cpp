@@ -59,6 +59,7 @@ int Tensor::isFPGA() { return (device >= DEV_FPGA); }
 //// Tensor constructors
 ///////////////////////////////////////////////////////
 Tensor::Tensor() : device(DEV_CPU), ndim(0), size(0) {}
+
 // From shape, pointer (sharing) and device
 Tensor::Tensor(const vector<int> &shape, float *fptr, int dev)
 {
@@ -89,7 +90,7 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev)
       }
 
       if (isCPU()) {
-          if (fptr==NULL) ptr = get_fmem(size,"Tensor::Tensor");
+          if (fptr==nullptr) ptr = get_fmem(size,"Tensor::Tensor");
           else  ptr=fptr;
 
           if (ndim == 2) {
@@ -122,10 +123,53 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev)
 
 
 // From shape and device
-Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape,NULL,dev){}
+Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape,nullptr,dev){}
 
 // From shape and Tensor (sharing ptr)
 Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr,T->device) {}
+
+Tensor* Tensor::zeros(const vector<int> &shape, int dev){
+    auto t = new Tensor(shape, nullptr, dev);
+    t->set(0.0f);
+    return t;
+}
+
+Tensor* Tensor::ones(const vector<int> &shape, int dev){
+    auto t = new Tensor(shape, nullptr, dev);
+    t->set(1.0f);
+    return t;
+}
+
+Tensor* Tensor::full(const vector<int> &shape, float value, int dev){
+    auto t = new Tensor(shape, nullptr, dev);
+    t->set(value);
+    return t;
+}
+
+Tensor* Tensor::arange(float min, float max, float step, int dev){
+    int size = (max-min)/step + 1;
+    auto t = new Tensor(vector<int>{size}, nullptr, dev);
+    float v=min;
+    for(int i=0; i<size; i++){
+        t->ptr[i] = v;
+        v+=step;
+    }
+    return t;
+}
+
+Tensor* Tensor::linspace(float start, float end, int steps, int dev){
+    float step = (end-start)/((float)steps-1);
+    return Tensor::arange(start, end, step, dev);
+}
+
+Tensor* Tensor::eye(int size, int dev){
+    auto t = new Tensor(vector<int>{size, size}, nullptr, dev);
+    //t->set(0.0f);
+    for(int i=0; i<size; i++){
+        t->ptr[i*size+i] = 1.0f;
+    }
+    return t;
+}
 
 
 ///////////////////////////////////////////
@@ -176,8 +220,8 @@ void Tensor::save(string fname) {
     fwrite(ptr, sizeof(float), size, fe);
 
     fclose(fe);
-
 }
+
 ///////////////////////////////////////////
 void Tensor::save(FILE *fe) {
     if (!isCPU())

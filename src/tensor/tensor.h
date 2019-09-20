@@ -155,20 +155,25 @@ public:
 
     // Constructors
     Tensor();
-    Tensor(const vector<int> &shape, int dev=DEV_CPU);
+    explicit Tensor(const vector<int> &shape, int dev=DEV_CPU);
     Tensor(const vector<int> &shape, float *fptr, int dev=DEV_CPU);
     Tensor(const vector<int> &shape, Tensor *T);
+
+    // Create
+    static Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
+    static Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
+    static Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
+    static Tensor* arange(float min, float max, float step=1.0, int dev=DEV_CPU);
+    static Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
+    static Tensor* eye(int size, int dev=DEV_CPU);
 
     ~Tensor();
 
     vector<int> getShape();
-
     void info();
-
     void print();
 
     void save(string s);
-
     void save(FILE *fe);
     void load(FILE *fe);
 
@@ -178,15 +183,11 @@ public:
 
     // devices
     int isCPU();
-
     int isGPU();
-
     int isFPGA();
-
 
     // ***** Core *****************************
     void set(float v);
-
 
     // ***** Math *****************************
     void mult(float v);
@@ -211,7 +212,7 @@ public:
 
     void sqr();
 
-    void pow(float exponent);
+    void pow(float exp);
 
     float sum();
 

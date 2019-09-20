@@ -222,8 +222,9 @@ void Tensor::sqrt() {
 
 ///////////////////////////////////////////
 void Tensor::sqr() {
+    // pow(x, 2) == x*x  To know more, read comments in pow's function
+    // speed: 0.000497s
     if (isCPU()) {
-
         for (int i = 0; i < size; ++i) ptr[i] *= ptr[i];
     }
 #ifdef cGPU
@@ -239,15 +240,17 @@ void Tensor::sqr() {
 #endif
 }
 
-void Tensor::pow(float exponent) {
+void Tensor::pow(float exp) {
+    // To compute the power, std uses real floating-point number with the formurla: e^(y*log(x))
+    // Quite inefficient (x100 slower) in g++ except for pow(x, 2) which is inlined as x*x
+    // speed: 0.057887s
     if (isCPU()) {
-
-        for (int i = 0; i < size; ++i) ptr[i] = std::pow(ptr[i], exponent);
+        for (int i = 0; i < size; ++i) ptr[i] = std::pow(ptr[i], exp);
     }
 #ifdef cGPU
     else if (isGPU())
       {
-        gpu_pow(this, exponent);
+        gpu_pow(this, exp);
       }
 #endif
 #ifdef cFPGA
@@ -256,6 +259,8 @@ void Tensor::pow(float exponent) {
     }
 #endif
 }
+
+
 
 ///////////////////////////////////////
 float Tensor::sum() {
