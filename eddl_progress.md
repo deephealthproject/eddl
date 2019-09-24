@@ -37,7 +37,7 @@
 |  Upsampling   | ❌ | ❌ |
 |  AvgPool   | ❌ | ❌ |
 |  GlobalMaxPool   | ❌ | ❌ |
-|  MaxPool  |  ✅ | ❌ |
+|  MaxPool  |  ✅ | ✅ |
 
 
 
