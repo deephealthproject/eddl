@@ -1,17 +1,17 @@
-# EDDL Backend Development Status
+# Development Status
 ---
-&nbsp;
 
-✅: DONE
+Legend:
 
-🔵: PROGRESS
+| Functionality | Meaning |
+| ------------- |------| 
+| ✅        | Done | 
+| 🔵         | In progress | 
+| ❌         | Todo | 
 
-❌: TODO
 
-&nbsp;
-
+## LAYERS
 ---
-# LAYERS
 
 ### CORE
 
@@ -40,7 +40,6 @@
 |  MaxPool  |  ✅ | ✅ |
 
 
-
 ### MERGE
 
 | Functionality | CPU  | GPU  | Comments |
@@ -60,7 +59,6 @@
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
 |  Gaussian    | ✅ | ✅ |
-
 
 
 ### OPERATORS
@@ -90,6 +88,7 @@
 |  Max    |  ❌| ❌ | still test properly
 |  Min    |  ❌| ❌ | still test properly
 
+
 ### GENERATORS
 
 | Functionality | CPU  | GPU  | Comments |
@@ -97,19 +96,16 @@
 |  Gaussian    | ❌| ❌ | still test properly
 |  Uniform    |  ❌| ❌ | still test properly
 
-### RECURRENT
 
+### RECURRENT
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
 |  LSTM    | ❌ | ❌ |
 |  RNN    | ❌ | ❌ |
 
-&nbsp;
 
----
-
-# INITIALIZERS
+### INITIALIZERS
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -121,10 +117,8 @@
 | RandomNormal  | ❌ | ❌ |
 | RandomUniform | ❌ | ❌ |
 
-&nbsp;
 
----
-## LOSSES
+### LOSSES
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -132,10 +126,8 @@
 | MSE           | ✅ | ✅ |
 | SoftCE        | ✅ | ✅ |
 
-&nbsp;
 
----
-# OPTIMIZERS
+### OPTIMIZERS
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -147,10 +139,9 @@
 | RMSProp       | ❌ | ❌ |
 | SGD           | ✅ | ✅ |
 
-&nbsp;
 
+## METRICS
 ---
-# METRICS
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -158,11 +149,12 @@
 | MSE            | ✅ | ✅ |
 
 
-# TENSOR OPERATIONS
+## TENSOR OPERATIONS
+---
 
 Numpy-like operations
 
-## Creation ops
+### Creation ops
 
 
 | Functionality | CPU  | GPU  | Comments |
@@ -177,7 +169,7 @@ Numpy-like operations
 | full  | ✅ | ✅ |
 
 
-## Indexing, Slicing, Joining, Mutating Ops
+### Indexing, Slicing, Joining, Mutating Ops
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -196,7 +188,7 @@ Numpy-like operations
 | set  | ❌ | ❌  |
 
 
-## Generators
+### Generators
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -209,7 +201,7 @@ Numpy-like operations
 | randn | ✅ | ✅ |
 
 
-## Serialization
+### Serialization
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -217,9 +209,9 @@ Numpy-like operations
 | load | ✅ | ✅ |
 
 
-## Math operations
+### Math operations
 
-### Pointwise Ops
+#### Pointwise Ops
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -258,7 +250,7 @@ Numpy-like operations
 | trunc |❌ | ❌  |
 
 
-### Reduction ops
+#### Reduction ops
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -277,7 +269,7 @@ Numpy-like operations
 | var | ❌ | ❌  |
 
 
-### Comparison ops
+#### Comparison ops
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -299,7 +291,7 @@ Numpy-like operations
 
 
 
-### Other ops
+#### Other ops
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
