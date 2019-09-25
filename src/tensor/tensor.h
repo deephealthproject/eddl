@@ -181,6 +181,7 @@ public:
 
 
     // ***** Core (In-place) *****************************
+    int numel();
     void set(float v);
 
     // ***** Math (In-place) *****************************
@@ -194,6 +195,7 @@ public:
     void log();
     void log2();
     void log10();
+    void logn(float n);
     void exp();
     void sqrt();
     void sqr();
@@ -210,7 +212,9 @@ public:
     static Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
     static Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
     static Tensor* arange(float min, float max, float step=1.0, int dev=DEV_CPU);
+    static Tensor* range(float min, float max, float step=1.0, int dev=DEV_CPU);
     static Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
+    static Tensor* logspace(float start, float end, int steps=100, float base=10.0, int dev=DEV_CPU);
     static Tensor* eye(int size, int dev=DEV_CPU);
     static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 

@@ -272,6 +272,35 @@ __global__ void log(float* a, long int rows, long int cols)
 
 }
 
+__global__ void log2(float* a, long int rows, long int cols)
+{
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]=log2f(a[thread_id_x]);
+
+}
+
+__global__ void log10(float* a, long int rows, long int cols)
+{
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]=log10f(a[thread_id_x]);
+
+}
+__global__ void logn(float* a, long int rows, long int cols, float n)
+{
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]=log10f(a[thread_id_x])/log10f(n);
+
+}
+
 __global__ void exp(float* a, long int rows, long int cols)
 {
  long int ops=rows*cols;

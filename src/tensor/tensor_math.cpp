@@ -37,6 +37,10 @@ using namespace std;
 
 
 ///////////////////////////////////////////
+int Tensor::numel(){
+    return this->size;
+}
+
 void Tensor::set(float v) {
     if (isCPU()) {
         for (int i = 0; i < size; ++i) ptr[i] = v;
@@ -105,7 +109,6 @@ void Tensor::sub(float v) { add(-v); }
 ///////////////////////////////////////////
 void Tensor::log() {
     if (isCPU()) {
-
         for (int i = 0; i < size; ++i) ptr[i] = std::log(ptr[i]);
     }
 #ifdef cGPU
@@ -131,7 +134,7 @@ void Tensor::log2() {
 #ifdef cGPU
     else if (isGPU())
       {
-        //gpu_log(this);
+        gpu_logn(this, 2.0f);
       }
 #endif
 #ifdef cFPGA
@@ -151,7 +154,25 @@ void Tensor::log10() {
 #ifdef cGPU
     else if (isGPU())
       {
-        //gpu_log(this);
+        gpu_logn(this, 10.0f);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+void Tensor::logn(float n) {
+    if (isCPU()) {
+
+        for (int i = 0; i < size; ++i) ptr[i] = std::log10(ptr[i])/std::log10(n);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_logn(this, n);
       }
 #endif
 #ifdef cFPGA

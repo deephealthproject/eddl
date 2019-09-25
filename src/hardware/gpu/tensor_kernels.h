@@ -42,6 +42,9 @@ __global__ void sum(float* a, float v, long int rows, long int cols);
 
 
 __global__ void log(float* a, long int rows, long int cols);
+__global__ void log2(float* a, long int rows, long int cols);
+__global__ void log10(float* a, long int rows, long int cols);
+__global__ void logn(float* a, long int rows, long int cols, float n);
 __global__ void exp(float* a, long int rows, long int cols);
 __global__ void sqrt(float* a,long int rows, long int cols);
 __global__ void sqr(float* a, long int rows, long int cols);

@@ -162,6 +162,40 @@ void gpu_log(Tensor *A) {
 
 }
 
+void gpu_log2(Tensor *A) {
+
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A)
+
+    log2<<<dimGrid,dimBlock>>>(A->ptr,A->shape[0],c);
+    check_cuda(cudaDeviceSynchronize(),"log2");
+
+}
+
+void gpu_log10(Tensor *A) {
+
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A)
+
+    log10<<<dimGrid,dimBlock>>>(A->ptr,A->shape[0],c);
+    check_cuda(cudaDeviceSynchronize(),"log10");
+
+}
+
+void gpu_logn(Tensor *A, float n){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A)
+
+    logn<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c, n);
+    check_cuda(cudaDeviceSynchronize(),"logn");
+};
+
 void gpu_exp(Tensor *A) {
 
   int device=A->gpu_device;

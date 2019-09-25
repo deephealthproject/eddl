@@ -49,13 +49,25 @@ int main(int argc, char **argv) {
 
     // TEST: arange
     cout << "\n" << "arange: =============" << endl;
-    t = Tensor::arange(0.0, 1.0, 0.5);
+    t = Tensor::arange(1.0, 2.5, 0.5);
+    t->info();
+    t->print();
+
+    // TEST: range
+    cout << "\n" << "range: =============" << endl;
+    t = Tensor::range(1.0, 4.0, 0.5);
     t->info();
     t->print();
 
     // TEST: Linear space
     cout << "\n" << "linspace: =============" << endl;
-    t = Tensor::linspace(3.0, 10.0, 5);
+    t = Tensor::linspace(0.1, 1.0, 5);
+    t->info();
+    t->print();
+
+    // TEST: Linear space
+    cout << "\n" << "logspace: =============" << endl;
+    t = Tensor::logspace(0.1, 1.0, 5, 10.0);
     t->info();
     t->print();
 

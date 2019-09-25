@@ -146,8 +146,8 @@ Tensor* Tensor::full(const vector<int> &shape, float value, int dev){
     return t;
 }
 
-Tensor* Tensor::arange(float min, float max, float step, int dev){
-    int size = (max-min)/step + 1;
+
+Tensor* raw_range(float min, float step, int size, int dev){
     auto t = new Tensor(vector<int>{size}, nullptr, dev);
     float v=min;
     for(int i=0; i<size; i++){
@@ -157,9 +157,30 @@ Tensor* Tensor::arange(float min, float max, float step, int dev){
     return t;
 }
 
+Tensor* Tensor::arange(float min, float max, float step, int dev){
+    // Returns a 1-D tensor of size floor(end - start)/ + 1 with values from start to end with step step.
+    // Step is the gap between two values in the tensor.
+    int size = std::ceilf((max-min)/step);
+    return raw_range(min, step, size, dev);
+}
+
+Tensor* Tensor::range(float min, float max, float step, int dev){
+    int size = std::floorf((max-min)/step) + 1;
+    return raw_range(min, step, size, dev);
+}
+
 Tensor* Tensor::linspace(float start, float end, int steps, int dev){
     float step = (end-start)/((float)steps-1);
-    return Tensor::arange(start, end, step, dev);
+    return Tensor::range(start, end, step, dev);
+}
+
+Tensor* Tensor::logspace(float start, float end, int steps, float base, int dev){
+    float step = (end-start)/((float)steps-1);
+    auto t = Tensor::range(start, end, step, dev);
+    for(int i=0; i<steps; i++){
+        t->ptr[i] = std::pow(base, t->ptr[i]);
+    }
+    return t;
 }
 
 Tensor* Tensor::eye(int size, int dev){

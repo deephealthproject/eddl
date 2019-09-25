@@ -156,3 +156,157 @@
 | ------------- |------| -----| ---------|
 | CategoricalAcc | ✅ | ✅ |
 | MSE            | ✅ | ✅ |
+
+
+# TENSOR OPERATIONS
+
+Numpy-like operations
+
+## Creation ops
+
+
+| Functionality | CPU  | GPU  | Comments |
+| ------------- |------| -----| ---------|
+| zeros | ✅ | ✅ |
+| ones  | ✅ | ✅ |
+| arange  | ✅ | ✅ |
+| range  | ✅ | ✅ |
+| linspace  | ✅ | ✅ |
+| logspace  | ✅ | ✅ |
+| eye  | ✅ | ✅ |
+| full  | ✅ | ✅ |
+
+
+## Indexing, Slicing, Joining, Mutating Ops
+
+| Functionality | CPU  | GPU  | Comments |
+| ------------- |------| -----| ---------|
+| cat  | ❌ | ❌  |
+| chunk  | ❌ | ❌  |
+| gather  | ❌ | ❌  |
+| nonzero  | ❌ | ❌  |
+| reshape  | ✅ | ✅ |
+| split  | ❌ | ❌  |
+| squeeze  | ❌ | ❌  |
+| stack  | ❌ | ❌  |
+| transpose  | ✅ | ✅ |
+| unsqueeze  | ❌ | ❌  |
+| where  | ❌ | ❌  |
+| get  | ❌ | ❌  |
+| set  | ❌ | ❌  |
+
+
+## Generators
+
+| Functionality | CPU  | GPU  | Comments |
+| ------------- |------| -----| ---------|
+| bernoulli  | ❌ | ❌  |
+| multinomial  | ❌ | ❌  |
+| uniform | ✅ | ✅ |
+| signed-uniform | ✅ | ✅ |
+| normal | ✅ | ✅ |
+| rand | ✅ | ✅ |
+| randn | ✅ | ✅ |
+
+
+## Serialization
+
+| Functionality | CPU  | GPU  | Comments |
+| ------------- |------| -----| ---------|
+| save | ✅ | ✅ |
+| load | ✅ | ✅ |
+
+
+## Math operations
+
+### Pointwise Ops
+
+| Functionality | CPU  | GPU  | Comments |
+| ------------- |------| -----| ---------|
+| abs | ✅ | ✅ |
+| acos |  ❌ | ❌  |
+| add | ✅ | ✅ |
+| asin |  ❌ | ❌  |
+| atan |  ❌ | ❌  |
+| ceil |  ❌ | ❌  |
+| clamp |  ❌ | ❌  |
+| cos |  ❌ | ❌  |
+| cosh |  ❌ | ❌  |
+| div | ✅ | ✅ |
+| exp | ✅ | ✅ |
+| floor |  ❌ | ❌  |
+| log | ✅ | ✅ |
+| log2 | ✅ | ✅ |
+| log10 | ✅ | ✅ |
+| logn | ✅ | ✅ |
+| mod |  ❌ | ❌  |
+| mul | ✅ | ✅ |
+| neg |❌ | ❌  |
+| pow | ✅ | ✅ |
+| reciprocal |❌ | ❌  |
+| remainder |❌ | ❌  |
+| round |❌ | ❌  |
+| rsqrt |❌ | ❌  |
+| sigmoid |❌ | ❌  |
+| sign |❌ | ❌  |
+| sin |  ❌ | ❌  |
+| sinh |  ❌ | ❌  |
+| sqr |✅ | ✅ |
+| sqrt |✅ | ✅ |
+| tan |  ❌ | ❌  |
+| tanh |  ❌ | ❌  |
+| trunc |❌ | ❌  |
+
+
+### Reduction ops
+
+| Functionality | CPU  | GPU  | Comments |
+| ------------- |------| -----| ---------|
+| argmax | ❌ | ❌  |
+| argmin | ❌ | ❌  |
+| cumprod | ❌ | ❌  |
+| cumsum | ❌ | ❌  |
+| mean | ❌ | ❌  |
+| median | ❌ | ❌  |
+| mode | ❌ | ❌  |
+| norm | ❌ | ❌  |
+| prod | ❌ | ❌  |
+| std | ❌ | ❌  |
+| sum | ❌ | ❌  |
+| unique | ❌ | ❌  |
+| var | ❌ | ❌  |
+
+
+### Comparison ops
+
+| Functionality | CPU  | GPU  | Comments |
+| ------------- |------| -----| ---------|
+| allclose | ❌ | ❌  |
+| argsort | ❌ | ❌  |
+| eq | ❌ | ❌  |
+| ge | ❌ | ❌  |
+| gt | ❌ | ❌  |
+| isfinite | ❌ | ❌  |
+| isinf | ❌ | ❌  |
+| isnan | ❌ | ❌  |
+| le | ❌ | ❌  |
+| lt | ❌ | ❌  |
+| max | ❌ | ❌  |
+| min | ❌ | ❌  |
+| ne | ❌ | ❌  |
+| sort | ❌ | ❌  |
+| topk | ❌ | ❌  |
+
+
+
+### Other ops
+
+| Functionality | CPU  | GPU  | Comments |
+| ------------- |------| -----| ---------|
+| cross | ❌ | ❌  |
+| diag | ❌ | ❌  |
+| einsum | ❌ | ❌  |
+| flatten | ❌ | ❌  |
+| flip | ❌ | ❌  |
+| trace | ❌ | ❌  |
+| dot | ❌ | ❌  |
