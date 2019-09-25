@@ -1,19 +1,17 @@
 # Development Status
 ---
 
-Legend:
-
-| Functionality | Meaning |
+| Image | Meaning |
 | ------------- |------| 
 | ✅        | Done | 
 | 🔵         | In progress | 
 | ❌         | Todo | 
 
 
-## LAYERS
+## Layers
 ---
 
-### CORE
+### Core layers
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -28,7 +26,7 @@ Legend:
 | Drop          | ✅ | ✅ |
 
 
-### CONV and POOL
+### Convolutional layers
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -40,7 +38,16 @@ Legend:
 |  MaxPool  |  ✅ | ✅ |
 
 
-### MERGE
+### Pooling layers
+
+| Functionality | CPU  | GPU  | Comments |
+| ------------- |------| -----| ---------|
+|  AvgPool   | ❌ | ❌ |
+|  GlobalMaxPool   | ❌ | ❌ |
+|  MaxPool  |  ✅ | ✅ |
+
+
+### Merge layers
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -54,14 +61,17 @@ Legend:
 |  Substract    | ❌ | ❌ |
 
 
-### NOISE
+### Noise layers
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
 |  Gaussian    | ✅ | ✅ |
+|  Uniform    |  ❌| ❌ | still test properly
 
 
-### OPERATORS
+### Operators layers
+
+> **Note:** Do not confuse with raw-tensor operations
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -78,7 +88,9 @@ Legend:
 |  Sum    |  ✅ |  ✅ |
 
 
-### REDUCTIONS
+### Reduction layers
+
+> **Note:** Do not confuse with raw-tensor reductions
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -89,15 +101,7 @@ Legend:
 |  Min    |  ❌| ❌ | still test properly
 
 
-### GENERATORS
-
-| Functionality | CPU  | GPU  | Comments |
-| ------------- |------| -----| ---------|
-|  Gaussian    | ❌| ❌ | still test properly
-|  Uniform    |  ❌| ❌ | still test properly
-
-
-### RECURRENT
+### Recurrent layers
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -105,7 +109,8 @@ Legend:
 |  RNN    | ❌ | ❌ |
 
 
-### INITIALIZERS
+## Initializers
+---
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -118,7 +123,8 @@ Legend:
 | RandomUniform | ❌ | ❌ |
 
 
-### LOSSES
+## Loss functions
+---
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -127,7 +133,17 @@ Legend:
 | SoftCE        | ✅ | ✅ |
 
 
-### OPTIMIZERS
+### Metric functions
+---
+
+| Functionality | CPU  | GPU  | Comments |
+| ------------- |------| -----| ---------|
+| CategoricalAcc | ✅ | ✅ |
+| MSE            | ✅ | ✅ |
+
+
+## Optimizers
+---
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
@@ -140,19 +156,10 @@ Legend:
 | SGD           | ✅ | ✅ |
 
 
-## METRICS
+## Raw-Tensor operations
 ---
 
-| Functionality | CPU  | GPU  | Comments |
-| ------------- |------| -----| ---------|
-| CategoricalAcc | ✅ | ✅ |
-| MSE            | ✅ | ✅ |
-
-
-## TENSOR OPERATIONS
----
-
-Numpy-like operations
+Numpy-like operations over a raw-tensor object
 
 ### Creation ops
 
@@ -288,7 +295,6 @@ Numpy-like operations
 | ne | ❌ | ❌  |
 | sort | ❌ | ❌  |
 | topk | ❌ | ❌  |
-
 
 
 #### Other ops
