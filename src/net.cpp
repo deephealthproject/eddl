@@ -80,17 +80,6 @@ void *train_batch_t(void *t) {
     return nullptr;
 }
 
-/////////////////////////////////////////
-void *applygrads_t(void *t) {
-    auto *targs = (tdata *) t;
-
-    Net *net = targs->net;
-
-    net->applygrads();
-
-    return nullptr;
-}
-
 
 /////////////////////////////////////////
 int isIn(Layer *l, vlayer vl, int &ind) {
@@ -833,20 +822,8 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
     // If training (eval==0), apply gradients
     if (!eval) {
         if (snets[0]->dev == DEV_CPU) {
-            for (int i = 0; i < comp; i++) {
-                rc = pthread_create(&thr[i], nullptr, applygrads_t, (void *) (&td[i]));
-                if (rc) {
-                    fprintf(stderr, "Error:unable to create thread %d", rc);
-                    exit(-1);
-                }
-            }
-            for (int i = 0; i < comp; i++) {
-                rc = pthread_join(thr[i], &status);
-                if (rc) {
-                    cout << "Error:unable to join," << rc << endl;
-                    exit(-1);
-                }
-            }
+            // shared gradients...
+            snets[0]->applygrads();
         }
         // In case of multiple GPUS or FPGA synchronize params
         if ((snets[0]->dev != DEV_CPU) && (comp > 1) && (tr_batches%cs->lsb==0)) {
