@@ -133,7 +133,7 @@
 | SoftCE        | ✅ | ✅ |
 
 
-### Metric functions
+## Metric functions
 ---
 
 | Functionality | CPU  | GPU  | Comments |

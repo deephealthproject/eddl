@@ -165,11 +165,6 @@ public:
     void info();
     void print();
 
-    // Input/Output
-    void save(string s);
-    void save(FILE *fe);
-    void load(FILE *fe);
-
     // data
     void point2data(const vector<int>& shape, float *ptr);
     void copydata(const vector<int>& s, float *newptr);
@@ -179,35 +174,11 @@ public:
     int isGPU();
     int isFPGA();
 
+    // ************************************************
+    // ****** Tensor operations ***********************
+    // ************************************************
 
-    // ***** Core (In-place) *****************************
-    int numel();
-    void set(float v);
-
-    // ***** Math (In-place) *****************************
-    void mult(float v);
-    void div(float v);
-    void add(float v);
-    void sub(float v);
-    float sum();
-    float sum_abs();
-    void abs();
-    void log();
-    void log2();
-    void log10();
-    void logn(float n);
-    void exp();
-    void sqrt();
-    void sqr();
-    void pow(float exp);
-
-    // ***** Random (In-place) *****************************
-    void rand_uniform(float v);
-    void rand_signed_uniform(float v);
-    void rand_normal(float m, float s, bool fast_math=true);
-    void rand_binary(float v);
-
-    // Create new tensor
+    // Creation ops ***********************************
     static Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
     static Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
     static Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
@@ -217,6 +188,68 @@ public:
     static Tensor* logspace(float start, float end, int steps=100, float base=10.0, int dev=DEV_CPU);
     static Tensor* eye(int size, int dev=DEV_CPU);
     static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
+
+    // Core (In-place) ********************************
+    int numel();
+    void set(float v);
+
+    // Indexing, Slicing, Joining, Mutating Ops *******
+
+    // Generators *************************************
+    void rand_bernoulli(); // Todo
+    void rand_multinomial(); // Todo
+    void rand_uniform(float v);
+    void rand_signed_uniform(float v);
+    void rand_normal(float m, float s, bool fast_math=true);
+    void rand_binary(float v);
+    // Rethink names
+
+    // Serialization **********************************
+    void save(string s);
+    void save(FILE *fe);
+    void load(FILE *fe);
+
+    // Math operations ********************************
+    // Math operations: Pointwise ops (in-place)
+    void abs();
+    void acos(); // Todo
+    void add(float v);
+    void asin(); // Todo
+    void atan(); // Todo
+    void ceil(); // Todo
+    void clamp(); // Todo
+    void cos(); // Todo
+    void cosh(); // Todo
+    void div(float v);
+    void exp();
+    void floor(); // Todo
+    void log();
+    void log2();
+    void log10();
+    void logn(float n);
+    void mod(); // Todo
+    void mult(float v);
+    void neg(); // Todo
+    void pow(float exp);
+    void reciprocal(); // Todo
+    void remainder(); // Todo
+    void round(); // Todo
+    void rsqrt(); // Todo
+    void sigmoid(); // Todo
+    void sign(); // Todo
+    void sin(); // Todo
+    void sinh(); // Todo
+    void sqr();
+    void sqrt();
+    void sub(float v);
+    float sum();
+    float sum_abs();
+    void tan(); // Todo
+    void tanh(); // Todo
+
+    // Math operations: Reduction ops
+    // Math operations: Comparison ops
+    // Math operations: Other ops
 
     static int eqsize(Tensor *A, Tensor *B);
     static int equal(Tensor *A, Tensor *B);
@@ -243,7 +276,6 @@ public:
     // TODO: Take this out of here -------------------
     // ***** Losses *****************************
     static void cent(Tensor *A, Tensor *B, Tensor *C);
-
 
     // ***** Metrics *****************************
     static int accuracy(Tensor *A, Tensor *B);

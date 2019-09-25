@@ -128,13 +128,12 @@ void Tensor::log() {
 ///////////////////////////////////////////
 void Tensor::log2() {
     if (isCPU()) {
-
         for (int i = 0; i < size; ++i) ptr[i] = std::log2(ptr[i]);
     }
 #ifdef cGPU
     else if (isGPU())
       {
-        gpu_logn(this, 2.0f);
+        gpu_log2(this);
       }
 #endif
 #ifdef cFPGA
@@ -148,13 +147,12 @@ void Tensor::log2() {
 ///////////////////////////////////////////
 void Tensor::log10() {
     if (isCPU()) {
-
         for (int i = 0; i < size; ++i) ptr[i] = std::log10(ptr[i]);
     }
 #ifdef cGPU
     else if (isGPU())
       {
-        gpu_logn(this, 10.0f);
+        gpu_log10(this);
       }
 #endif
 #ifdef cFPGA
@@ -166,7 +164,6 @@ void Tensor::log10() {
 
 void Tensor::logn(float n) {
     if (isCPU()) {
-
         for (int i = 0; i < size; ++i) ptr[i] = std::log10(ptr[i])/std::log10(n);
     }
 #ifdef cGPU
