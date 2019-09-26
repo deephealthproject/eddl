@@ -84,7 +84,7 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
         A->info();
         B->info();
         C->info();
-        msg("Incompatible dims", "Tensor::add_");
+        msg("Incompatible dims", "Tensor::add");
     }
 
     C->tsem->lock();
@@ -111,7 +111,7 @@ void Tensor::add(Tensor *A, Tensor *B, Tensor *C) {
     Tensor::add(1.0, A, 1.0, B, C, 0);
 }
 void Tensor::inc(Tensor *A, Tensor *B) {
-    // TODO: Review against add_
+    // TODO: Review against add
 
     if (!Tensor::eqsize(A, B))
         msg("Tensors with different shape", "Tensor::inc");
@@ -133,7 +133,7 @@ void Tensor::inc(Tensor *A, Tensor *B) {
     {
         Tensor *n=new Tensor(B->getShape(),B->device);
         Tensor::copy(A,n);
-        Tensor::add_(1,n,1,B,B,0);
+        Tensor::add(1,n,1,B,B,0);
         delete n;
     }
 #endif

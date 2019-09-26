@@ -4,6 +4,12 @@
 
 #include "descriptors.h"
 
+
+#ifdef cGPU
+#include "../hardware/gpu/tensor_cuda.h"
+#include "../hardware/gpu/tensor_cuda_op.h"
+#endif
+
 ConvolDescriptor::ConvolDescriptor() {}
 
 ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p) {

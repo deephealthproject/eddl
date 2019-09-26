@@ -126,7 +126,7 @@ void Tensor::reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool ke
 
     // Select mode
     if (mode=="mean") m=0;
-    else if (mode=="add_") m=1;
+    else if (mode=="add") m=1;
     else if (mode=="max") m=2;
     else
         msg("Incorrect reduction mode", "Tensor::reduce");
@@ -259,7 +259,7 @@ void Tensor::delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, b
     int m,d;
 
     if (mode=="mean") m=0;
-    else if (mode=="add_") m=1;
+    else if (mode=="add") m=1;
     else if (mode=="max") m=2;
     else
         msg("Incorrect reduction mode", "Tensor::delta_reduce");
@@ -424,9 +424,9 @@ void Tensor::reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor
             }
         }
 
-        //reduce add_
+        //reduce add
         for(j=0;j<sind.size();j++) {
-            if (op=="add_") {
+            if (op=="add") {
                 if (!incC) C->ptr[sind[j]]=A->ptr[sind[j]]+B->ptr[i];
                 else C->ptr[sind[j]]+=A->ptr[sind[j]]+B->ptr[i];
             }
@@ -502,9 +502,9 @@ void Tensor::delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,
             }
         }
 
-        //reduce add_
+        //reduce add
         for(j=0;j<sind.size();j++) {
-            if (op=="add_") {
+            if (op=="add") {
                 C->ptr[i]+=A->ptr[sind[j]];
             }
             else if (op=="diff") {

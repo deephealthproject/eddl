@@ -36,7 +36,7 @@ void LMeanSquaredError::delta(Tensor *T, Tensor *Y, Tensor *D) {
 
 float LMeanSquaredError::value(Tensor *T, Tensor *Y) {
     float f;
-    // batch error: add_((T-Y)^2)
+    // batch error: add((T-Y)^2)
     Tensor *aux1;
     aux1 = new Tensor(T->getShape(), T->device);
     Tensor::add(1.0, T, -1.0, Y, aux1, 0);

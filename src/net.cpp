@@ -139,7 +139,7 @@ int Net::inNet(Layer *l) {
 
 /////////////////////////////////////////
 void Net::walk(Layer *l) {
-    // If this layer is not in the network, add_ it, as well as all its children (recursively)
+    // If this layer is not in the network, add it, as well as all its children (recursively)
     if (!inNet(l)) {
         layers.push_back(l);
         for (int i = 0; i < l->child.size(); i++)
