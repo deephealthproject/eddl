@@ -52,11 +52,11 @@ LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev): R
       }
     }
 
-    LRMean *m1=new LRMean(this, axis, true,name+"mean_keepdims",dev);
-    LDiff *diff=new LDiff(this,m1,name+"diff",dev);
-    LMult *mult=new LMult(diff,diff,name+"mult_",dev);
-    LRMean *m2=new LRMean(mult, axis,keepdims,name+"mean_red",dev);
-    LSqrt *sq=new LSqrt(m2,"sqrt",dev);
+    LRMean *m1=new LRMean(this, axis, true,this->name+"mean_keepdims",dev);
+    LDiff *diff=new LDiff(this,m1,this->name+"diff",dev);
+    LMult *mult=new LMult(diff,diff,this->name+"mult",dev);
+    LRMean *m2=new LRMean(mult, axis,keepdims,this->name+"mean_red",dev);
+    LSqrt *sq=new LSqrt(m2,this->name+"sqrt",dev);
 
     layers.push_back(m1);
     layers.push_back(diff);
