@@ -57,7 +57,8 @@ void Layer::initialize() {
 
 void Layer::resize(int batch)
 {
-   //cout<<"Resize "<<name<<"\n";
+   cout<<"Resize "<<name<<"\n";
+   cout<<"-----\n";
 
    input=parent[0]->output;
    if (output!=nullptr) {
@@ -80,6 +81,8 @@ void Layer::resize(int batch)
       delete target;
       target=new Tensor(s,dev);
     }
+    cout<<"OK\n";
+
 }
 
 

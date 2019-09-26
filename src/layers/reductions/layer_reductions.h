@@ -90,6 +90,8 @@ public:
 
     void backward() override;
 
+    void resize(int b) override;
+
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
