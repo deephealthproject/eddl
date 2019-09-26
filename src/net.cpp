@@ -139,7 +139,7 @@ int Net::inNet(Layer *l) {
 
 /////////////////////////////////////////
 void Net::walk(Layer *l) {
-    // If this layer is not in the network, add it, as well as all its children (recursively)
+    // If this layer is not in the network, add_ it, as well as all its children (recursively)
     if (!inNet(l)) {
         layers.push_back(l);
         for (int i = 0; i < l->child.size(); i++)
@@ -572,8 +572,8 @@ void Net::forward() {
     if (VERBOSE) {
         for (int i = 0; i < layers.size(); i++) {
             cout << layers[i]->name << "\n";
-            fprintf(stdout, "  %s In:%f\n", layers[i]->name.c_str(), layers[i]->input->sum());
-            fprintf(stdout, "  %s Out:%f\n", layers[i]->name.c_str(), layers[i]->output->sum());
+            fprintf(stdout, "  %s In:%f\n", layers[i]->name.c_str(), layers[i]->input->sum_());
+            fprintf(stdout, "  %s Out:%f\n", layers[i]->name.c_str(), layers[i]->output->sum_());
         }
 
         getchar();
@@ -616,11 +616,11 @@ void Net::applygrads() {
     if (VERBOSE) {
         for (int i = 0; i < layers.size(); i++) {
             cout << layers[i]->name << "\n";
-            fprintf(stdout, "  In:%f\n", layers[i]->input->sum_abs());
-            fprintf(stdout, "  Out:%f\n", layers[i]->output->sum_abs());
-            fprintf(stdout, "  Delta:%f\n", layers[i]->delta->sum_abs());
+            fprintf(stdout, "  In:%f\n", layers[i]->input->sum_abs_());
+            fprintf(stdout, "  Out:%f\n", layers[i]->output->sum_abs_());
+            fprintf(stdout, "  Delta:%f\n", layers[i]->delta->sum_abs_());
             for (int j = 0; j < layers[i]->gradients.size(); j++) {
-                fprintf(stdout, "  %f\n", layers[i]->gradients[j]->sum_abs());
+                fprintf(stdout, "  %f\n", layers[i]->gradients[j]->sum_abs_());
             }
         }
         getchar();
@@ -849,7 +849,7 @@ void Net::sync_weights() {
             for (int i = 0; i < snets.size(); i++) {
                 Tensor::inc(snets[i]->layers[j]->params[k], layers[j]->params[k]);
             }
-            layers[j]->params[k]->div(snets.size());
+            layers[j]->params[k]->div_(snets.size());
 
             // copy-back to devices
             for (int i = 0; i < snets.size(); i++) {

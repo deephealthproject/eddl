@@ -52,7 +52,7 @@ namespace eddl {
 
     // ---- TENSOR OPERATIONS ----
     void div(tensor t, float v) {
-        t->input->div(v);
+        t->input->div_(v);
     }
 
 

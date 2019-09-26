@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
 //    B->print();
 //
 //    cout<<"Sum\n";
-//    Tensor::add(A,B, C);
+//    Tensor::add_(A,B, C);
 //
 //    C->info();
 //    C->print();

@@ -1,25 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <cmath>
-#include <vector>
-#include <string>
-#include <iostream>
-
-#include "tensor.h"
-#include "../utils.h"
-
-#ifdef cGPU
-#include "../hardware/gpu/tensor_cuda.h"
-#include "../hardware/gpu/tensor_cuda_op.h"
-#endif
-
-using namespace std;
-
+#include "tensor_aux.h"
 
 // ReLU
-void Tensor::ReLu(Tensor *A, Tensor *B) {
+void ReLu(Tensor *A, Tensor *B) {
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::ReLu");
-    if (!eqsize(A, B)) msg("Incompatible dims", "Tensor::ReLu");
+    if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::ReLu");
 
     B->tsem->lock();
     if (A->isCPU()) {
@@ -45,9 +29,9 @@ void Tensor::ReLu(Tensor *A, Tensor *B) {
 }
 
 // RELU Derivative, always increment over parent delta
-void Tensor::D_ReLu(Tensor *D, Tensor *I, Tensor *PD) {
+void D_ReLu(Tensor *D, Tensor *I, Tensor *PD) {
     if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_ReLu");
-    if ((!eqsize(D, I)) || (!eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_ReLu");
+    if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_ReLu");
 
     PD->tsem->lock();
     if (D->isCPU()) {
@@ -72,11 +56,10 @@ void Tensor::D_ReLu(Tensor *D, Tensor *I, Tensor *PD) {
     PD->tsem->unlock();
 }
 
-
 // SOFTMAX
-void Tensor::Softmax(Tensor *A, Tensor *B) {
+void Softmax(Tensor *A, Tensor *B) {
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::Softmax");
-    if (!eqsize(A, B)) msg("Incompatible dims", "Tensor::Softmax");
+    if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::Softmax");
     if (A->ndim != 2) msg("Softmax only over 2D Tensor (batch x logits)", "Tensor::Softmax");
 
     B->tsem->lock();
@@ -111,11 +94,10 @@ void Tensor::Softmax(Tensor *A, Tensor *B) {
     B->tsem->unlock();
 }
 
-
 // SOFTMAX DERIVATIVE
-void Tensor::D_Softmax(Tensor *D, Tensor *I, Tensor *PD) {
+void D_Softmax(Tensor *D, Tensor *I, Tensor *PD) {
     if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_Softmax");
-    if ((!eqsize(D, I)) || (!eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_Softmax");
+    if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_Softmax");
     if (D->ndim != 2) msg("D_Softmax only over 2D Tensor (batch x delta_probs)", "Tensor::D_Softmax");
 
 

@@ -1,23 +1,8 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <cmath>
-#include <vector>
-#include <string>
-#include <iostream>
+#include "tensor_aux.h"
 
-#include "tensor.h"
-#include "../utils.h"
-
-#ifdef cGPU
-#include "../hardware/gpu/tensor_cuda.h"
-#include "../hardware/gpu/tensor_cuda_op.h"
-#endif
-
-using namespace std;
-
-int Tensor::accuracy(Tensor *A, Tensor *B) {
+int accuracy(Tensor *A, Tensor *B) {
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::accuracy");
-    if (!eqsize(A, B)) msg("Incompatible dims", "Tensor::accuracy");
+    if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::accuracy");
     if (A->ndim != 2) msg("Accuracy only over 2D Tensor (batch x probs)", "Tensor::Accuracy");
 
     int acc = 0;

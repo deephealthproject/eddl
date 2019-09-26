@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     // Test #ref
     begin = clock();
     for(int i=0; i<N; i++){
-        t1->sqr();
+        t1->sqr_();
     }
     end = clock();
     elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
     // Test #1
     begin = clock();
     for(int i=0; i<N; i++){
-        t1->pow(2.0f);
+        t1->pow_(2.0f);
     }
     end = clock();
     elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;

@@ -22,8 +22,9 @@
 #define EDDL_LAYER_H
 
 #include <string>
-#include <stdio.h>
+#include <cstdio>
 #include "../tensor/tensor.h"
+#include "../tensor/aux/tensor_aux.h"
 
 #define TRMODE 1
 #define TSMODE 0

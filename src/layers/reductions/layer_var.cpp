@@ -56,7 +56,7 @@ LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev): R
 
     LRMean *m1=new LRMean(this, axis, true,name+"mean_keepdims",dev);
     LDiff *diff=new LDiff(this,m1,name+"diff",dev);
-    LMult *mult=new LMult(diff,diff,name+"mult",dev);
+    LMult *mult=new LMult(diff,diff,name+"mult_",dev);
     LRMean *m2=new LRMean(mult, axis,keepdims,name+"mean_red",dev);
 
     layers.push_back(m1);

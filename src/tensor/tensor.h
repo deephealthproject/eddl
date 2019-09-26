@@ -28,6 +28,7 @@
 #include <mutex>
 
 #include <Eigen/Dense>
+#include "../descriptors/descriptors.h"
 
 #define DEV_CPU 0
 
@@ -56,79 +57,12 @@
 #define MAX_GPUS 8
 
 using namespace std;
+
+// TODO: Remove this. Don't like here
 typedef Eigen::Matrix<float, -1, -1, Eigen::RowMajor> MatrixXRMf;
-
 typedef vector<int> tshape;
-
 void msg(string s);
-
 void msg(string s, string s2);
-
-class Tensor;
-
-class ConvolDescriptor {
-public:
-    vector<int> ksize;
-    vector<int> stride;
-    vector<int> pad;
-
-    int nk, kr, kc, kz;
-    int sr, sc;
-    int ir, ic, iz;
-    int r, c, z;
-    int padr, padc;
-    //float *ptr;
-
-
-    Tensor *I; // Input map
-    Tensor *ID;// Delta input map
-    Tensor *K; // filters
-    Tensor *bias; // bias
-    Tensor *gK;// gradient filters
-    Tensor *gbias;// gradient bias
-    Tensor *D; // Delta
-    Tensor *O; // Outputmap
-
-    // CPU implementation
-    float *ptrI;
-    Eigen::MatrixXf matI; // input
-    Eigen::MatrixXf matK; // kernels
-    Eigen::MatrixXf matO; // output
-    Eigen::MatrixXf matD; // Delta
-    Eigen::MatrixXf matgK; // gradient kernels
-
-    // GPU implementation
-    Tensor *gpuI; // input
-    Tensor *gpuIB; // input
-    Tensor *gpuO; // output
-    Tensor *gpuK; // kernels
-    Tensor *gpugK; // gradient kernels
-    Tensor *gpuD; // Delta
-
-    //...
-    ConvolDescriptor();
-
-    ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p);
-
-    ConvolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p);
-
-    void build(Tensor *A);
-    void resize(Tensor *A);
-};
-
-class PoolDescriptor : public ConvolDescriptor {
-public:
-
-    Tensor *indX, *indY; // indexes
-
-    //...
-    PoolDescriptor(const vector<int> &ks, const vector<int> &st, string p);
-
-    PoolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p);
-
-    void build(Tensor *A);
-    void resize(Tensor *A);
-};
 
 
 class Tensor {
@@ -139,19 +73,12 @@ public:
     int size;
     vector<int> shape;
     vector<int> stride;
-
     float *ptr;
 
-    // CPU
+    // Aux stuff
     Eigen::MatrixXf *ptr2;
-
-    // GPU
     int gpu_device;
-
-    //FPGA
-
-    // Multithreading. Tensor semaphore
-    mutex *tsem;
+    mutex *tsem;  // Multithreading. Tensor semaphore
 
     // Constructors
     Tensor();
@@ -159,20 +86,29 @@ public:
     Tensor(const vector<int> &shape, float *fptr, int dev=DEV_CPU);
     Tensor(const vector<int> &shape, Tensor *T);
 
+    // Destructors
     ~Tensor();
 
-    vector<int> getShape();
-    void info();
-    void print();
-
-    // data
-    void point2data(const vector<int>& shape, float *ptr);
-    void copydata(const vector<int>& s, float *newptr);
-
-    // devices
+    // Check device
     int isCPU();
     int isGPU();
     int isFPGA();
+
+    // View methods
+    void info();
+    void print();
+
+    // Core
+    int numel();
+    vector<int> getShape();
+    void point2data(const vector<int>& shape, float *ptr);
+    void copydata(const vector<int>& s, float *newptr);
+    void set(float v);
+
+    // Serialization
+    void save(string s);
+    void save(FILE *fe);
+    void load(FILE *fe);
 
     // ************************************************
     // ****** Tensor operations ***********************
@@ -189,113 +125,157 @@ public:
     static Tensor* eye(int size, int dev=DEV_CPU);
     static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
-    // Core (In-place) ********************************
-    int numel();
-    void set(float v);
-
-    // Indexing, Slicing, Joining, Mutating Ops *******
-
-    // Generators *************************************
-    void rand_bernoulli(); // Todo
-    void rand_multinomial(); // Todo
-    void rand_uniform(float v);
-    void rand_signed_uniform(float v);
-    void rand_normal(float m, float s, bool fast_math=true);
-    void rand_binary(float v);
-    // Rethink names
-
-    // Serialization **********************************
-    void save(string s);
-    void save(FILE *fe);
-    void load(FILE *fe);
-
     // Math operations ********************************
     // Math operations: Pointwise ops (in-place)
-    void abs();
-    void acos(); // Todo
-    void add(float v);
-    void asin(); // Todo
-    void atan(); // Todo
-    void ceil(); // Todo
-    void clamp(); // Todo
-    void cos(); // Todo
-    void cosh(); // Todo
-    void div(float v);
-    void exp();
-    void floor(); // Todo
-    void log();
-    void log2();
-    void log10();
-    void logn(float n);
-    void mod(); // Todo
-    void mult(float v);
-    void neg(); // Todo
-    void pow(float exp);
-    void reciprocal(); // Todo
-    void remainder(); // Todo
-    void round(); // Todo
-    void rsqrt(); // Todo
-    void sigmoid(); // Todo
-    void sign(); // Todo
-    void sin(); // Todo
-    void sinh(); // Todo
-    void sqr();
-    void sqrt();
-    void sub(float v);
-    float sum();
-    float sum_abs();
-    void tan(); // Todo
-    void tanh(); // Todo
+    void abs_();
+    static Tensor* abs(Tensor *A);
 
-    // Math operations: Reduction ops
-    // Math operations: Comparison ops
-    // Math operations: Other ops
+    void acos_(); // Todo
+    static Tensor* acos(Tensor *A);
 
-    static int eqsize(Tensor *A, Tensor *B);
-    static int equal(Tensor *A, Tensor *B);
-    static void transpose(Tensor *A, Tensor *B, vector<int> dims);
-    static void copy(Tensor *A, Tensor *B);
-    static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
-    static void sign(Tensor *A, Tensor *B);
-    static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
-    static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
-    static void inc(Tensor *A, Tensor *B);
+    void add_(float v);
+    static Tensor* add(Tensor *A, Tensor *B);
     static void add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
     static void add(Tensor *A, Tensor *B, Tensor *C);
+    static void inc(Tensor *A, Tensor *B);
+
+    void asin_(); // Todo
+    static Tensor* asin(Tensor *A);
+
+    void atan_(); // Todo
+    static Tensor* atan(Tensor *A);
+
+    void ceil_(); // Todo
+    static Tensor* ceil(Tensor *A);
+
+    void clamp_(); // Todo
+    static Tensor* clamp(Tensor *A);
+
+    void cos_(); // Todo
+    static Tensor* cos(Tensor *A);
+
+    void cosh_(); // Todo
+    static Tensor* cosh(Tensor *A);
+
+    void div_(float v);
+    static Tensor* div(Tensor *A);
+    static void el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
+
+    void exp_();
+    static Tensor* exp(Tensor *A);
+
+    void floor_(); // Todo
+    static Tensor* floor(Tensor *A);
+
+    void log_();
+    static Tensor* log(Tensor *A);
+
+    void log2_();
+    static Tensor* log2(Tensor *A);
+
+    void log10_();
+    static Tensor* log10(Tensor *A);
+
+    void logn_(float n);
+    static Tensor* logn(Tensor *A);
+
+    void mod_(); // Todo
+    static Tensor* mod(Tensor *A);
+
+    void mult_(float v);
+    static Tensor* mult(Tensor *A);
+    static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
+    static void el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
+
+    void neg_(); // Todo
+    static Tensor* neg(Tensor *A);
+
+    void pow_(float exp);
+    static Tensor* pow(Tensor *A);
+
+    void reciprocal_(); // Todo
+    static Tensor* reciprocal(Tensor *A);
+
+    void remainder_(); // Todo
+    static Tensor* remainder(Tensor *A);
+
+    void round_(); // Todo
+    static Tensor* round(Tensor *A);
+
+    void rsqrt_(); // Todo
+    static Tensor* rsqrt(Tensor *A);
+
+    void sigmoid_(); // Todo
+    static Tensor* sigmoid(Tensor *A);
+
+    void sign_(); // Todo
+    static Tensor* sign(Tensor *A);
+    static void sign(Tensor *A, Tensor *B);
+
+    void sin_(); // Todo
+    static Tensor* sin(Tensor *A);
+
+    void sinh_(); // Todo
+    static Tensor* sinh(Tensor *A);
+
+    void sqr_();
+    static Tensor* sqr(Tensor *A);
+
+    void sqrt_();
+    static Tensor* sqrt(Tensor *A);
+
+    void sub_(float v);
+    static Tensor* sub(Tensor *A, Tensor *B);
+
+    float sum_();
+    static Tensor* sum(Tensor *A);
     static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
     static void sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
+
+    float sum_abs_();
+    static Tensor* sum_abs(Tensor *A);
+
+    void tan_(); // Todo
+    static Tensor* tan(Tensor *A);
+
+    void tanh_(); // Todo
+    static Tensor* tanh(Tensor *A);
+
+    // Math operations: Reduction ops
     static void reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
-    static void el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
-    static void el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
     static void reduceTosum(Tensor *A, Tensor *B, int axis);
     static void reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims, Tensor *C, int incB);
     static void delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims, Tensor *C,int incB);
     static void reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
     static void delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC);
 
-    // TODO: Take this out of here -------------------
-    // ***** Losses *****************************
-    static void cent(Tensor *A, Tensor *B, Tensor *C);
+    // Math operations: Comparison ops
+    static int eqsize(Tensor *A, Tensor *B);
+    static int equal(Tensor *A, Tensor *B);
 
-    // ***** Metrics *****************************
-    static int accuracy(Tensor *A, Tensor *B);
+    // Math operations: Other ops
+    static int cross(Tensor *A, Tensor *B); // TODO
+    static int diag(Tensor *A); // TODO
+    static int einsum(string subscripts, Tensor *A); // TODO
+    static int flatten(Tensor *A); // TODO
+    static int flip(Tensor *A);  // TODO
+    static int trace(Tensor *A);  // TODO
+    static int dot(Tensor *A);  // TODO
 
+    // Indexing, Slicing, Joining, Mutating Ops *******
+    static void transpose(Tensor *A, Tensor *B, vector<int> dims);
+    static void copy(Tensor *A, Tensor *B);
+    static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
+    static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
 
-    // ***** Activations *****************************
-    static void ReLu(Tensor *A, Tensor *B);
-    static void D_ReLu(Tensor *D, Tensor *I, Tensor *PD);
-
-    static void Softmax(Tensor *A, Tensor *B);
-    static void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
-
-
-    // ***** Deep Learning *****************************
-    static void Conv2D(ConvolDescriptor *D);
-    static void Conv2D_grad(ConvolDescriptor *D);
-    static void Conv2D_back(ConvolDescriptor *D);
-
-    static void MPool2D(PoolDescriptor *D);
-    static void MPool2D_back(PoolDescriptor *D);
+    // Generators (In-place) *************************************
+    // Rethink names
+    void rand_bernoulli(); // Todo
+    void rand_multinomial(); // Todo
+    void rand_uniform(float v);
+    void rand_signed_uniform(float v);
+    void rand_normal(float m, float s, bool fast_math=true);
+    void rand_binary(float v);
 };
 
 #endif //EDDL_TENSOR_H

@@ -60,13 +60,13 @@ void LMaxPool::resize(int batch){
 }
 
 void LMaxPool::forward() {
-    Tensor::MPool2D(pd);
+    MPool2D(this->pd);
 }
 
 void LMaxPool::backward() {
     // backprop delta
     if (parent.size()) {
-        Tensor::MPool2D_back(pd);
+        MPool2D_back(this->pd);
     }
 }
 

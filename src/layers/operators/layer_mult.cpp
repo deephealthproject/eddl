@@ -30,7 +30,7 @@ using namespace std;
 int LMult::total_layers = 0;
 
 LMult::LMult(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev) {
-    if(name.empty()) this->name = "mult" + to_string(++total_layers);
+    if(name.empty()) this->name = "mult_" + to_string(++total_layers);
     binary = 1;
 
     input.push_back(l1->output);
@@ -57,7 +57,7 @@ LMult::LMult(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, d
 
   */
 LMult::LMult(Layer *l, float k, string name, int dev) : OperatorLayer(name, dev) {
-    if(name.empty()) this->name = "mult" + to_string(++total_layers);
+    if(name.empty()) this->name = "mult_" + to_string(++total_layers);
     val = k;
 
     input.push_back(l->output);
@@ -72,7 +72,7 @@ void LMult::forward() {
     if (binary) Tensor::el_mult(input[0], input[1], output, 0);
     else {
         Tensor::copy(input[0], output);
-        output->mult(val);
+        output->mult_(val);
     }
 }
 
@@ -82,7 +82,7 @@ void LMult::backward() {
         Tensor::el_mult(delta,input[1],parent[0]->delta,1);
     }
     else {
-      delta->mult(val);
+        delta->mult_(val);
       Tensor::inc(delta,parent[0]->delta);
     }
 }

@@ -1,6 +1,6 @@
-<div align="center">
+<div_ align="center">
   <img src="https://raw.githubusercontent.com/salvacarrion/salvacarrion.github.io/master/assets/hot-linking/logo-eddl.png" alt="EDDL" height="140" width="300">
-</div>
+</div_>
 
 -----------------
 
@@ -101,8 +101,8 @@ int main(int argc, char **argv) {
     tensor y_test = T_load("tsY.bin");
 
     // Preprocessing
-    div(x_train, 255.0);
-    div(x_test, 255.0);
+    div_(x_train, 255.0);
+    div_(x_test, 255.0);
 
     // Train model
     fit(net, {x_train}, {y_train}, batch_size, epochs);

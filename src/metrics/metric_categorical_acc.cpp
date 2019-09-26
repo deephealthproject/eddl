@@ -31,6 +31,6 @@ MCategoricalAccuracy::MCategoricalAccuracy() : Metric("categorical_accuracy"){}
 
 float MCategoricalAccuracy::value(Tensor *T, Tensor *Y) {
     float f;
-    f = Tensor::accuracy(T, Y);
+    f = accuracy(T, Y);
     return f;
 }

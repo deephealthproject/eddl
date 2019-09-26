@@ -83,16 +83,16 @@ void LConv::resize(int batch){
 }
 
 void LConv::forward() {
-    Tensor::Conv2D(cd);
+    Conv2D(this->cd);
 }
 
 void LConv::backward() {
 
     //get gradients with provided delta
-    Tensor::Conv2D_grad(cd);
+    Conv2D_grad(this->cd);
     // backprop delta
-    if (parent.size()) {
-        Tensor::Conv2D_back(cd);
+    if (this->parent.size()) {
+        Conv2D_back(this->cd);
     }
 
 }

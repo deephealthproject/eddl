@@ -41,7 +41,7 @@ int LLog2::total_layers = 0;
 
   */
 LLog2::LLog2(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
-    if(name.empty()) this->name = "log2" + to_string(++total_layers);
+    if(name.empty()) this->name = "log2_" + to_string(++total_layers);
 
     input.push_back(l->output);
     output = new Tensor(l->output->getShape(), dev);
@@ -53,11 +53,11 @@ LLog2::LLog2(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
 
 void LLog2::forward() {
     Tensor::copy(input[0], output);
-    output->log2();
+    output->log2_();
 }
 
 void LLog2::backward() {
-  delta->div(log(2));
+    delta->div_(log(2));
   Tensor::el_div(delta,input[0], parent[0]->delta, 1);
 }
 

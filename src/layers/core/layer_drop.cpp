@@ -59,7 +59,7 @@ void LDropout::forward() {
         Tensor::el_mult(input, mask, output, 0);
     } else {
         Tensor::copy(input, output);
-        output->mult(1.0 - df);
+        output->mult_(1.0 - df);
     }
 
 }

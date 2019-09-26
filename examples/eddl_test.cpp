@@ -125,10 +125,10 @@ int main(int argc, char **argv) {
     A->ToGPU();
 
     float exp = 2.0;
-    A->TC->pow(exp);
-    A->TG->pow(exp);
+    A->TC->pow_(exp);
+    A->TG->pow_(exp);
 
-    A->check("pow");
+    A->check("pow_");
 
     //////////// MAXPOOL /////////////////////
     // Test CPU
@@ -153,7 +153,7 @@ int main(int argc, char **argv) {
     pd_cpu->build(T_cpu->TC);
     pd_cpu->indX = new Tensor(pd_cpu->O->getShape(), DEV_CPU);
     pd_cpu->indY = new Tensor(pd_cpu->O->getShape(), DEV_CPU);
-    Tensor::MPool2D(pd_cpu);
+    MPool2D(pd_cpu);
 
     // Check CPU correctness
     auto Z = new TestTensor(pd_cpu->O, T_cpu_ref->TC);
@@ -173,7 +173,7 @@ int main(int argc, char **argv) {
     pd_gpu->build(T_gpu->TG);
     pd_gpu->indX = new Tensor(pd_gpu->O->getShape(), DEV_GPU);
     pd_gpu->indY = new Tensor(pd_gpu->O->getShape(), DEV_GPU);
-    Tensor::MPool2D(pd_gpu);
+    MPool2D(pd_gpu);
 
     // Check GPU correctness
     auto Z2 = new TestTensor(pd_cpu->O, pd_gpu->O);
@@ -189,14 +189,14 @@ int main(int argc, char **argv) {
     A->TC->rand_signed_uniform(1);
     A->ToGPU();
 
-    float fc= A->TC->sum();
-    float fg= A->TG->sum();
+    float fc= A->TC->sum_();
+    float fg= A->TG->sum_();
 
     if (fabs(fc-fg)>0.01) {
-        fprintf(stderr,"Fail sum %f!=%f\n",fc,fg);
+        fprintf(stderr,"Fail sum_ %f!=%f\n",fc,fg);
         exit(EXIT_FAILURE);
     }
-    cout<<"OK sum\n";
+    cout<<"OK sum_\n";
 
 
     //////////// MULT2D ///////////////////
@@ -257,7 +257,7 @@ int main(int argc, char **argv) {
     Tensor::add(1.0, A->TC, 1.0, D->TC, E->TC, 0);
     Tensor::add(1.0, A->TG, 1.0, D->TG, E->TG, 0);
 
-    E->check("add");
+    E->check("add_");
 
     //////////// INC /////////////////////
     A->TC->rand_uniform(100.0);
@@ -276,8 +276,8 @@ int main(int argc, char **argv) {
     A->TC->rand_signed_uniform(100000);
     A->ToGPU();
 
-    Tensor::Softmax(A->TC,D->TC);
-    Tensor::Softmax(A->TG,D->TG);
+    Softmax(A->TC,D->TC);
+    Softmax(A->TG,D->TG);
 
     A->check("Softmax");
 
@@ -287,8 +287,8 @@ int main(int argc, char **argv) {
     A->ToGPU();
     D->ToGPU();
 
-    Tensor::cent(A->TC,D->TC,E->TC);
-    Tensor::cent(A->TG,D->TG,E->TG);
+    cent(A->TC,D->TC,E->TC);
+    cent(A->TG,D->TG,E->TG);
 
     E->check("cross entropy");
 
@@ -334,8 +334,8 @@ int main(int argc, char **argv) {
     A->TC->rand_signed_uniform(1.0);
     A->ToGPU();
 
-    Tensor::ReLu(A->TC, D->TC);
-    Tensor::ReLu(A->TG, D->TG);
+    ReLu(A->TC, D->TC);
+    ReLu(A->TG, D->TG);
 
     D->check("ReLU");
 
@@ -345,8 +345,8 @@ int main(int argc, char **argv) {
     A->ToGPU();
     D->ToGPU();
 
-    Tensor::D_ReLu(D->TC, A->TC,E->TC);
-    Tensor::D_ReLu(D->TG, A->TG,E->TG);
+    D_ReLu(D->TC, A->TC,E->TC);
+    D_ReLu(D->TG, A->TG,E->TG);
 
     E->check("D_ReLU");
 
@@ -388,7 +388,7 @@ int main(int argc, char **argv) {
 //
 ///////
 //    cout<<"Sum\n";
-//    Tensor::reduce(A,B,axis,"add",false,NULL,0);
+//    Tensor::reduce(A,B,axis,"add_",false,NULL,0);
 //    B->info();
 //    B->print();
 //
@@ -427,7 +427,7 @@ int main(int argc, char **argv) {
 //
 //    /////
 //    cout<<"Sum\n";
-//    Tensor::reduce(A,B,axis2,"add",true,NULL,0);
+//    Tensor::reduce(A,B,axis2,"add_",true,NULL,0);
 //    B->info();
 //    B->print();
 //

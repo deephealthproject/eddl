@@ -222,26 +222,26 @@ Numpy-like operations over a raw-tensor object
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- |------| -----| ---------|
-| abs | ✅ | ✅ |
+| abs_ | ✅ | ✅ |
 | acos |  ❌ | ❌  |
-| add | ✅ | ✅ |
+| add_ | ✅ | ✅ |
 | asin |  ❌ | ❌  |
 | atan |  ❌ | ❌  |
 | ceil |  ❌ | ❌  |
 | clamp |  ❌ | ❌  |
 | cos |  ❌ | ❌  |
 | cosh |  ❌ | ❌  |
-| div | ✅ | ✅ |
-| exp | ✅ | ✅ |
+| div_ | ✅ | ✅ |
+| exp_ | ✅ | ✅ |
 | floor |  ❌ | ❌  |
-| log | ✅ | ✅ |
-| log2 | ✅ | ✅ |
-| log10 | ✅ | ✅ |
+| log_ | ✅ | ✅ |
+| log2_ | ✅ | ✅ |
+| log10_ | ✅ | ✅ |
 | logn | ✅ | ✅ |
 | mod |  ❌ | ❌  |
 | mul | ✅ | ✅ |
 | neg |❌ | ❌  |
-| pow | ✅ | ✅ |
+| pow_ | ✅ | ✅ |
 | reciprocal |❌ | ❌  |
 | remainder |❌ | ❌  |
 | round |❌ | ❌  |
@@ -250,8 +250,8 @@ Numpy-like operations over a raw-tensor object
 | sign |❌ | ❌  |
 | sin |  ❌ | ❌  |
 | sinh |  ❌ | ❌  |
-| sqr |✅ | ✅ |
-| sqrt |✅ | ✅ |
+| sqr_ |✅ | ✅ |
+| sqrt_ |✅ | ✅ |
 | tan |  ❌ | ❌  |
 | tanh |  ❌ | ❌  |
 | trunc |❌ | ❌  |
@@ -271,7 +271,7 @@ Numpy-like operations over a raw-tensor object
 | norm | ❌ | ❌  |
 | prod | ❌ | ❌  |
 | std | ❌ | ❌  |
-| sum | ❌ | ❌  |
+| sum_ | ❌ | ❌  |
 | unique | ❌ | ❌  |
 | var | ❌ | ❌  |
 

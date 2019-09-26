@@ -41,7 +41,7 @@ int LDiv::total_layers = 0;
 
   */
 LDiv::LDiv(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev) {
-    if(name.empty()) this->name = "div" + to_string(++total_layers);
+    if(name.empty()) this->name = "div_" + to_string(++total_layers);
     binary = 1;
 
     input.push_back(l1->output);
@@ -68,7 +68,7 @@ LDiv::LDiv(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev
 
   */
 LDiv::LDiv(Layer *l, float k, string name, int dev) : OperatorLayer(name, dev) {
-    if(name.empty()) this->name = "div" + to_string(++total_layers);
+    if(name.empty()) this->name = "div_" + to_string(++total_layers);
     val = k;
 
     input.push_back(l->output);
@@ -83,7 +83,7 @@ void LDiv::forward() {
     if (binary) Tensor::el_div(input[0], input[1], output, 0);
     else {
         Tensor::copy(input[0], output);
-        output->div(val);
+        output->div_(val);
     }
 }
 
@@ -94,10 +94,10 @@ void LDiv::backward() {
         //
         Tensor::el_div(delta, input[1], delta, 0);
         Tensor::el_mult(delta, input[0], delta, 0);
-        delta->mult(-1);
+        delta->mult_(-1);
         Tensor::inc(delta, parent[1]->delta);
     } else {
-        delta->div(val);
+        delta->div_(val);
         Tensor::inc(delta, parent[0]->delta);
     }
 }

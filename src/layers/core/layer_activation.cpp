@@ -52,9 +52,9 @@ void LActivation::resize(int batch){
 void LActivation::forward() {
 
     if (act == "relu")
-        Tensor::ReLu(input, output);
+        ReLu(this->input, this->output);
     else if (act == "softmax") {
-        Tensor::Softmax(input, output);
+        Softmax(this->input, this->output);
     }
 }
 
@@ -67,9 +67,9 @@ void LActivation::backward() {
             Tensor::inc(delta, parent[0]->delta);
         } else {
             if (act == "relu")
-                Tensor::D_ReLu(delta, input, parent[0]->delta);
+                D_ReLu(delta, input, parent[0]->delta);
             else if (act == "softmax")
-                Tensor::D_Softmax(delta, output, parent[0]->delta);
+                D_Softmax(delta, output, parent[0]->delta);
         }
     }
 }

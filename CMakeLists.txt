@@ -136,6 +136,7 @@ include_directories(src/losses)
 include_directories(src/metrics)
 include_directories(src/optimizers)
 include_directories(src/tensor)
+include_directories(src/descriptors)
 
 
 # SET SOURCES *******************************
@@ -232,15 +233,23 @@ SET(CPP_SOURCES
         src/optimizers/optim_nadam.cpp
         src/optimizers/optim_rmsprop.cpp
         src/optimizers/optim_sgd.cpp
-        src/tensor/tensor.cpp
+        src/descriptors/descriptors.h
+        src/descriptors/descriptor_conv.cpp
+        src/descriptors/descriptor_pool.cpp
         src/tensor/tensor.h
-        src/tensor/tensor_activations.cpp
-        src/tensor/tensor_losses.cpp
+        src/tensor/tensor.cpp
+        src/tensor/tensor_comparison.cpp
+        src/tensor/tensor_core.cpp
+        src/tensor/tensor_create.cpp
+        src/tensor/tensor_generator.cpp
         src/tensor/tensor_math.cpp
-        src/tensor/tensor_metrics.cpp
-        src/tensor/tensor_nn.cpp
-        src/tensor/tensor_operators.cpp
-        src/tensor/tensor_random.cpp
+        src/tensor/tensor_reduction.cpp
+        src/tensor/tensor_serialization.cpp
+        src/tensor/aux/tensor_aux.h
+        src/tensor/aux/tensor_activations.cpp
+        src/tensor/aux/tensor_losses.cpp
+        src/tensor/aux/tensor_metrics.cpp
+        src/tensor/aux/tensor_nn.cpp
         src/compserv.cpp
         src/compserv.h
         src/net.cpp

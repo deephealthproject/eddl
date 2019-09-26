@@ -40,7 +40,7 @@ int LLog::total_layers = 0;
 
   */
 LLog::LLog(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
-    if(name.empty()) this->name = "log" + to_string(++total_layers);
+    if(name.empty()) this->name = "log_" + to_string(++total_layers);
 
     input.push_back(l->output);
     output = new Tensor(l->output->getShape(), dev);
@@ -52,7 +52,7 @@ LLog::LLog(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
 
 void LLog::forward() {
     Tensor::copy(input[0], output);
-    output->log();
+    output->log_();
 }
 
 void LLog::backward() {

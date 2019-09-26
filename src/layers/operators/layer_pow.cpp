@@ -48,7 +48,7 @@ int LPow::total_layers = 0;
 
   */
 LPow::LPow(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev) {
-    if(name.empty()) this->name = "pow" + to_string(++total_layers);
+    if(name.empty()) this->name = "pow_" + to_string(++total_layers);
     //TODO: Implement
 }
 
@@ -70,7 +70,7 @@ LPow::LPow(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev)
 
   */
 LPow::LPow(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
-    if(name.empty()) this->name = "pow" + to_string(++total_layers);
+    if(name.empty()) this->name = "pow_" + to_string(++total_layers);
     //TODO: Implement
 }
 

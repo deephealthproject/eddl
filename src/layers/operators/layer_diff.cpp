@@ -87,14 +87,14 @@ void LDiff::forward(){
     if (binary) Tensor::add(1.0, input[0], -1.0, input[1], output, 0);
     else {
         Tensor::copy(input[0],output);
-        output->add(-val);
+        output->add_(-val);
     }
 }
 
 void LDiff::backward(){
     Tensor::inc(delta,parent[0]->delta);
     if (binary) {
-        delta->mult(-1.0);
+        delta->mult_(-1.0);
         Tensor::inc(delta,parent[1]->delta);
     }
 }

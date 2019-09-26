@@ -35,70 +35,57 @@
 
 using namespace std;
 
+// TODO: Don't like here
 int initcuda[MAX_GPUS] = {0, 0, 0, 0, 0, 0, 0, 0};
 int linpos;
-
 extern ostream &operator<<(ostream &os, const vector<int> shape);
-
 void msg(string s, string s2) {
     cout << "\n" << s << " (" << s2 << ")\n";
     exit(0);
 }
-
-
 void msg(string s) { msg(s, ""); }
 
-int Tensor::isCPU() { return (device == DEV_CPU); }
 
-int Tensor::isGPU() { return ((device >= DEV_GPU) && (device < DEV_FPGA)); }
-
-int Tensor::isFPGA() { return (device >= DEV_FPGA); }
-
-
-///////////////////////////////////////////////////////
-//// Tensor constructors
-///////////////////////////////////////////////////////
 Tensor::Tensor() : device(DEV_CPU), ndim(0), size(0) {}
 
-// From shape, pointer (sharing) and device
 Tensor::Tensor(const vector<int> &shape, float *fptr, int dev)
 {
-  #ifndef cGPU
-      if ((dev > DEV_CPU)&&(dev<DEV_FPGA)) {
-          fprintf(stderr, "Not compiled for GPU\n");
-          exit(0);
-      }
-  #endif
-  #ifndef cFPGA
-      if (dev >= DEV_FPGA) {
-          fprintf(stderr, "Not compiled for FPGA\n");
-          exit(0);
-      }
-  #endif
+#ifndef cGPU
+    if ((dev > DEV_CPU)&&(dev<DEV_FPGA)) {
+        fprintf(stderr, "Not compiled for GPU\n");
+        exit(0);
+    }
+#endif
+#ifndef cFPGA
+    if (dev >= DEV_FPGA) {
+        fprintf(stderr, "Not compiled for FPGA\n");
+        exit(0);
+    }
+#endif
 
-      this->device = dev;
-      this->ndim = shape.size();
-      this->shape = shape;
+    this->device = dev;
+    this->ndim = shape.size();
+    this->shape = shape;
 
-      size = 1;
-      for (int i = 0; i < ndim; ++i) size *= shape[i];
+    size = 1;
+    for (int i = 0; i < ndim; ++i) size *= shape[i];
 
-      int s=size;
-      for(int i=0;i<ndim;i++) {
+    int s=size;
+    for(int i=0;i<ndim;i++) {
         s/=shape[i];
         stride.push_back(s);
-      }
+    }
 
-      if (isCPU()) {
-          if (fptr==nullptr) ptr = get_fmem(size,"Tensor::Tensor");
-          else  ptr=fptr;
+    if (isCPU()) {
+        if (fptr==nullptr) ptr = get_fmem(size,"Tensor::Tensor");
+        else  ptr=fptr;
 
-          if (ndim == 2) {
+        if (ndim == 2) {
             ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(ptr, shape[1], shape[0]);
-          }
-      }
-  #ifdef cGPU
-      else if (isGPU())
+        }
+    }
+#ifdef cGPU
+    else if (isGPU())
         {
           gpu_device=device-DEV_GPU;
           if (!initcuda[gpu_device])
@@ -110,17 +97,15 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev)
           else ptr=fptr;
 
         }
-  #endif
-  #ifdef cFPGA
-      else {
+#endif
+#ifdef cFPGA
+    else {
         // create FPGA Tensor
       }
-  #endif
+#endif
 
-      tsem = new mutex();
+    tsem = new mutex();
 }
-
-
 
 // From shape and device
 Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape,nullptr,dev){}
@@ -128,79 +113,6 @@ Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape,nullptr,dev){}
 // From shape and Tensor (sharing ptr)
 Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr,T->device) {}
 
-Tensor* Tensor::zeros(const vector<int> &shape, int dev){
-    auto t = new Tensor(shape, nullptr, dev);
-    t->set(0.0f);
-    return t;
-}
-
-Tensor* Tensor::ones(const vector<int> &shape, int dev){
-    auto t = new Tensor(shape, nullptr, dev);
-    t->set(1.0f);
-    return t;
-}
-
-Tensor* Tensor::full(const vector<int> &shape, float value, int dev){
-    auto t = new Tensor(shape, nullptr, dev);
-    t->set(value);
-    return t;
-}
-
-
-Tensor* raw_range(float min, float step, int size, int dev){
-    auto t = new Tensor(vector<int>{size}, nullptr, dev);
-    float v=min;
-    for(int i=0; i<size; i++){
-        t->ptr[i] = v;
-        v+=step;
-    }
-    return t;
-}
-
-Tensor* Tensor::arange(float min, float max, float step, int dev){
-    // Returns a 1-D tensor of size floor(end - start)/ + 1 with values from start to end with step step.
-    // Step is the gap between two values in the tensor.
-    int size = std::ceilf((max-min)/step);
-    return raw_range(min, step, size, dev);
-}
-
-Tensor* Tensor::range(float min, float max, float step, int dev){
-    int size = std::floorf((max-min)/step) + 1;
-    return raw_range(min, step, size, dev);
-}
-
-Tensor* Tensor::linspace(float start, float end, int steps, int dev){
-    float step = (end-start)/((float)steps-1);
-    return Tensor::range(start, end, step, dev);
-}
-
-Tensor* Tensor::logspace(float start, float end, int steps, float base, int dev){
-    float step = (end-start)/((float)steps-1);
-    auto t = Tensor::range(start, end, step, dev);
-    for(int i=0; i<steps; i++){
-        t->ptr[i] = std::pow(base, t->ptr[i]);
-    }
-    return t;
-}
-
-Tensor* Tensor::eye(int size, int dev){
-    auto t = new Tensor(vector<int>{size, size}, nullptr, dev);
-    //t->set(0.0f);
-    for(int i=0; i<size; i++){
-        t->ptr[i*size+i] = 1.0f;
-    }
-    return t;
-}
-
-Tensor* Tensor::randn(const vector<int> &shape, int dev){
-    auto t = new Tensor(shape, nullptr, dev);
-    t->rand_normal(0.0f, 1.0f, false);
-    return t;
-}
-
-///////////////////////////////////////////
-// Tensor destructor
-///////////////////////////////////////////
 Tensor::~Tensor() {
     if (isCPU()) {
         delete ptr;
@@ -219,57 +131,16 @@ Tensor::~Tensor() {
     delete tsem;
 }
 
+int Tensor::isCPU() { return (device == DEV_CPU); }
 
-///////////////////////////////////////////
-// Other methods
-///////////////////////////////////////////
-void Tensor::save(string fname) {
-    if (!isCPU())
-        msg("Only save CPU Tensors", "Tensor::save");
+int Tensor::isGPU() { return ((device >= DEV_GPU) && (device < DEV_FPGA)); }
 
-    int i, j;
-    FILE *fe;
-    float fv;
+int Tensor::isFPGA() { return (device >= DEV_FPGA); }
 
-    fe = fopen(fname.c_str(), "wb");
-    if (fe == nullptr) {
-        fprintf(stderr, "Not abel to write %s \n", fname.c_str());
-        exit(1);
-    }
-
-    fprintf(stderr, "writting bin file\n");
-
-    fwrite(&ndim, sizeof(int), 1, fe);
-    for (i = 0; i < ndim; ++i)
-        fwrite(&shape[i], sizeof(int), 1, fe);
-
-    fwrite(ptr, sizeof(float), size, fe);
-
-    fclose(fe);
-}
-
-///////////////////////////////////////////
-void Tensor::save(FILE *fe) {
-    if (!isCPU())
-        msg("Only save CPU Tensors", "Tensor::save");
-
-    fwrite(ptr, sizeof(float), size, fe);
-}
-void Tensor::load(FILE *fe) {
-    if (!isCPU())
-        msg("Only save CPU Tensors", "Tensor::save");
-
-    fread(ptr, sizeof(float), size, fe);
-}
-
-
-///////////////////////////////////////////
 vector<int> Tensor::getShape() {
     return vector<int>(this->shape);
 }
 
-
-///////////////////////////////////////////
 void Tensor::info() {
     int i;
 
@@ -284,11 +155,6 @@ void Tensor::info() {
     else if (isGPU()) fprintf(stdout, "Device=GPU (%d)\n", gpu_device);
     else fprintf(stdout, "Device=FPGA\n");
 }
-
-
-
-
-///////////////////////////////////////////
 
 void Tensor::print() {
 
@@ -339,8 +205,6 @@ void Tensor::print() {
     cout << "\n";
 }
 
-
-///////////////////////////////////////////
 void Tensor::point2data(const vector<int>& s, float *newptr){
     this->size = 1;
     this->shape = s;
@@ -366,4 +230,26 @@ void Tensor::copydata(const vector<int>& s, float *newptr){
     // Allocate memory and fill tensor
     this->ptr = new float[size];
     std::copy(newptr, newptr+size, this->ptr);
+}
+
+int Tensor::numel(){
+    return this->size;
+}
+
+
+void Tensor::set(float v) {
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = v;
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_set(this,v);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
 }

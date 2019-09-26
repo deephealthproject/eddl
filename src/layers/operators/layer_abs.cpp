@@ -41,7 +41,7 @@ int LAbs::total_layers = 0;
   */
 LAbs::LAbs(Layer *l, string name, int dev): OperatorLayer(name, dev) {
     // Set default name
-    if(name.empty()) this->name = "abs" + to_string(++total_layers);
+    if(name.empty()) this->name = "abs_" + to_string(++total_layers);
 
     input.push_back(l->output);
 
@@ -56,7 +56,7 @@ LAbs::LAbs(Layer *l, string name, int dev): OperatorLayer(name, dev) {
 
 void LAbs::forward(){
     Tensor::copy(input[0],output);
-    output->abs();
+    output->abs_();
 }
 
 void LAbs::backward(){

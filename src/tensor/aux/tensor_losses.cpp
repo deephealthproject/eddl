@@ -1,24 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <cmath>
-#include <vector>
-#include <string>
-#include <iostream>
+#include "tensor_aux.h"
 
-#include "tensor.h"
-#include "../utils.h"
-
-#ifdef cGPU
-#include "../hardware/gpu/tensor_cuda.h"
-#include "../hardware/gpu/tensor_cuda_op.h"
-#endif
-
-using namespace std;
-
-// Cross-Entropy: C=-(A*log(B)+(1-A)*log(1-B))
-void Tensor::cent(Tensor *A, Tensor *B, Tensor *C) {
+// Cross-Entropy: C=-(A*log(B)+(1-A)*log_(1-B))
+void cent(Tensor *A, Tensor *B, Tensor *C) {
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::cross-entropy");
-    if ((!eqsize(A, B)) || (!eqsize(A, C))) msg("Incompatible dims", "Tensor::cross-entropy");
+    if ((!Tensor::eqsize(A, B)) || (!Tensor::eqsize(A, C))) msg("Incompatible dims", "Tensor::cross-entropy");
 
     C->tsem->lock();
     if (A->isCPU()) {
