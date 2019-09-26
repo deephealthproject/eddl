@@ -17,15 +17,11 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-
-
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 #include <cuda.h>
-
-
 
 
 __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padr, int padc, float* indX, float* indY) {
@@ -523,7 +519,7 @@ __global__ void softmax(float* E,float* N,float* auxE ,long int sample_ndim, lon
   		{
   			actualCoef=expf(E[thread_id_x*sample_ndim+cA]-maxCoef);
   			auxE[thread_id_x*sample_ndim+cA]=actualCoef;
-        C_value+=actualCoef;
+  			C_value+=actualCoef;
   		}
 
       for (long int cA=0; cA < sample_ndim; cA++)

@@ -38,7 +38,7 @@ using namespace std;
 void Tensor::abs_() {
     if (isCPU()) {
 
-        for (int i = 0; i < size; ++i) ptr[i] = std::fabs(ptr[i]);
+        for (int i = 0; i < size; ++i) ptr[i] = fabs(ptr[i]);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -658,7 +658,7 @@ float Tensor::sum_abs_() {
     if (isCPU()) {
         float sum = 0.0;
 
-        for (int i = 0; i < size; ++i) sum += std::fabs(ptr[i]);
+        for (int i = 0; i < size; ++i) sum += fabs(ptr[i]);
 
         return sum;
     }

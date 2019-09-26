@@ -24,9 +24,11 @@
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
 
-#include "../../tensor/tensor.h"
 #include "tensor_cuda.h"
 #include "tensor_kernels.h"
+
+#include "../../tensor/tensor.h"
+#include "../../descriptors/descriptors.h"
 
 extern cublasHandle_t hcublas[64];
 extern curandGenerator_t random_generator[64];
@@ -676,7 +678,7 @@ Tensor *D; // Delta
 Tensor *O; // Outputmap
 */
 
-void gpu_im2col(ConvolDescriptor *D,int col2im)
+void gpu_im2col(ConvolDescriptor *D, int col2im)
 {
   int device=D->I->gpu_device;
   cudaSetDevice(device);
@@ -766,13 +768,12 @@ void gpu_conv2D_back(ConvolDescriptor *D)
   D->gpuD->ptr=D->D->ptr;
   D->gpuI->ptr=D->gpuIB->ptr;
 
-  for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize,D->gpuI->ptr+=isize)
-    gpu_mult2D(D->gpuD,1,D->gpuK,0,D->gpuI,0);
-
+  for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize,D->gpuI->ptr+=isize) {
+      gpu_mult2D(D->gpuD, 1, D->gpuK, 0, D->gpuI, 0);
+  }
 
   D->gpuI->ptr=D->gpuIB->ptr;
   gpu_im2col(D,1);
-
 }
 
 
@@ -782,13 +783,9 @@ void gpu_mpool2D(PoolDescriptor *D){
     cudaSetDevice(device);
 
     setDims(D->O);
-
-
     maxpool2d<<<dimGrid,dimBlock>>>(D->I->ptr, D->I->shape[0],D->ir,D->ic,D->iz,D->kr,D->kc,D->O->ptr,D->r,D->c,D->z, D->sr,D->sc,D->padr, D->padc, D->indX->ptr, D->indY->ptr);
 
-
     check_cuda(cudaDeviceSynchronize(),"gpu_mpool");
-
 }
 
 void gpu_mpool2D_back(PoolDescriptor *D){
@@ -796,29 +793,9 @@ void gpu_mpool2D_back(PoolDescriptor *D){
     cudaSetDevice(device);
 
     setDims(D->D)
-
     maxpool2d_back<<<dimGrid,dimBlock>>>(D->I->ptr, D->I->shape[0],D->ir,D->ic,D->iz,D->kr,D->kc, D->sr,D->sc,D->padr, D->padc, D->indX->ptr, D->indY->ptr, D->D->ptr, D->ID->ptr);
 
     check_cuda(cudaDeviceSynchronize(),"gpu_mpool_back");
-
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-////
-////

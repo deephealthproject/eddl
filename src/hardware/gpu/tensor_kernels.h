@@ -71,24 +71,3 @@ __global__ void softmax(float* E,float* N,float* auxE ,long int sample_ndim, lon
 
 #endif
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//////

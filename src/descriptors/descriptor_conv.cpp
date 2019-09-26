@@ -3,7 +3,6 @@
 //
 
 #include "descriptors.h"
-#include "../utils.h"
 
 ConvolDescriptor::ConvolDescriptor() {}
 

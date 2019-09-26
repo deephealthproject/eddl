@@ -8,10 +8,7 @@
 #include "tensor.h"
 #include "../utils.h"
 
-#ifdef cGPU
-#include "../hardware/gpu/tensor_cuda.h"
-#include "../hardware/gpu/tensor_cuda_op.h"
-#endif
+
 
 using namespace std;
 
@@ -31,7 +28,7 @@ int Tensor::equal(Tensor *A, Tensor *B) {
 
     if (A->isCPU()) {
         for (int i = 0; i < A->size; i++)
-            if (std::fabs(A->ptr[i]-B->ptr[i])>0.001) {
+            if (fabs(A->ptr[i]-B->ptr[i])>0.001) {
                 fprintf(stderr,"\n>>>>>>>>>>\n");
                 fprintf(stderr,"%f != %f\n",A->ptr[i],B->ptr[i]);
                 return 0;
