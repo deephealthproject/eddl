@@ -1,6 +1,6 @@
-<div_ align="center">
+<p align="center">
   <img src="https://raw.githubusercontent.com/salvacarrion/salvacarrion.github.io/master/assets/hot-linking/logo-eddl.png" alt="EDDL" height="140" width="300">
-</div_>
+</p>
 
 -----------------
 
