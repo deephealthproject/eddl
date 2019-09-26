@@ -39,6 +39,7 @@ Layer::Layer(string name, int dev) {
     this->dev = dev;
     lin = lout = 0;
     delta_bp = 0;
+    isplot=true;
 }
 
 
@@ -79,7 +80,6 @@ void Layer::resize(int batch)
       delete target;
       target=new Tensor(s,dev);
     }
-
 }
 
 

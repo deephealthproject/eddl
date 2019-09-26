@@ -51,6 +51,7 @@ public:
     int dev;
     int lin, lout;
     int delta_bp;
+    bool isplot;
 
     Layer(string name, int dev);
 
@@ -61,7 +62,7 @@ public:
     void reset();
     void save(FILE *fe);
     void load(FILE *fe);
-    
+
     virtual void info();
 
     void setmode(int m);

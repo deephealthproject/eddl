@@ -39,8 +39,6 @@ using namespace std;
 class GeneratorLayer : public Layer {
 public:
 
-    vector<Tensor *>input;
-
     int binary;
     float val;
 
