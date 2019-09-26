@@ -70,13 +70,9 @@ LMult::LMult(Layer *l, float k, string name, int dev) : OperatorLayer(name, dev)
 void LMult::forward() {
     if (binary) Tensor::el_mult(parent[0]->output, parent[1]->output, output, 0);
     else {
-<<<<<<< HEAD
+
         Tensor::copy(parent[0]->output, output);
-        output->mult(val);
-=======
-        Tensor::copy(input[0], output);
         output->mult_(val);
->>>>>>> 8f2c1df6d23bf235963a4979296317faf4deee5a
     }
 }
 

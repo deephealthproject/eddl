@@ -52,23 +52,14 @@ LLog2::LLog2(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
 }
 
 void LLog2::forward() {
-<<<<<<< HEAD
     Tensor::copy(parent[0]->output, output);
-    output->log2();
-}
-
-void LLog2::backward() {
-  delta->div(log(2));
-  Tensor::el_div(delta,parent[0]->output, parent[0]->delta, 1);
-=======
-    Tensor::copy(input[0], output);
     output->log2_();
 }
 
 void LLog2::backward() {
-    delta->div_(log(2));
-  Tensor::el_div(delta,input[0], parent[0]->delta, 1);
->>>>>>> 8f2c1df6d23bf235963a4979296317faf4deee5a
+  delta->div_(log(2));
+  Tensor::el_div(delta,parent[0]->output, parent[0]->delta, 1);
+
 }
 
 Layer *LLog2::share(int c, int bs, vector<Layer *> p) {

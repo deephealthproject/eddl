@@ -38,7 +38,7 @@ int LSqrt::total_layers = 0;
   @returns the result of the square root operation over l
 
   */
-<<<<<<< HEAD
+
   LSqrt::LSqrt(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
       if(name.empty()) this->name = "Sqrt" + to_string(++total_layers);
 
@@ -52,12 +52,12 @@ int LSqrt::total_layers = 0;
 
   void LSqrt::forward() {
       Tensor::copy(parent[0]->output, output);
-      output->sqrt();
+      output->sqrt_();
   }
 
   void LSqrt::backward() {
     Tensor::el_div(delta, output, delta, 0);
-    delta->div(2.0);
+    delta->div_(2.0);
     Tensor::inc(delta, parent[0]->delta);
   }
 
@@ -71,27 +71,3 @@ int LSqrt::total_layers = 0;
     n->orig = this;
     return n;
   }
-=======
-LSqrt::LSqrt(Layer *l, string name, int dev): OperatorLayer(name, dev) {
-    if(name.empty()) this->name = "sqrt_" + to_string(++total_layers);
-    //TODO: Implement
-}
-
-void LSqrt::forward(){
-    //TODO: Implement
-}
-
-void LSqrt::backward(){
-    //TODO: Implement
-}
-
-Layer *LSqrt::share(int c, int bs, vector<Layer *> p) {
-
-    return nullptr;
-}
-
-Layer *LSqrt::clone(int c, int bs, vector<Layer *> p, int todev) {
-
-    return nullptr;
-}
->>>>>>> 8f2c1df6d23bf235963a4979296317faf4deee5a

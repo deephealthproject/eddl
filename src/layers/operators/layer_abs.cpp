@@ -55,13 +55,9 @@ LAbs::LAbs(Layer *l, string name, int dev): OperatorLayer(name, dev) {
 }
 
 void LAbs::forward(){
-<<<<<<< HEAD
     Tensor::copy(parent[0]->output,output);
-    output->abs();
-=======
-    Tensor::copy(input[0],output);
     output->abs_();
->>>>>>> 8f2c1df6d23bf235963a4979296317faf4deee5a
+
 }
 
 void LAbs::backward(){

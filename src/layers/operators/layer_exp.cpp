@@ -51,13 +51,9 @@ LExp::LExp(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
 }
 
 void LExp::forward() {
-<<<<<<< HEAD
     Tensor::copy(parent[0]->output, output);
-    output->exp();
-=======
-    Tensor::copy(input[0], output);
     output->exp_();
->>>>>>> 8f2c1df6d23bf235963a4979296317faf4deee5a
+
 }
 
 void LExp::backward() {

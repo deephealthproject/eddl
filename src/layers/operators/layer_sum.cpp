@@ -41,11 +41,9 @@ int LSum::total_layers = 0;
 
   */
 LSum::LSum(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev) {
-<<<<<<< HEAD
-    if(name.empty()) this->name = "add" + to_string(++total_layers);
-=======
+
+
     if(name.empty()) this->name = "add_" + to_string(++total_layers);
->>>>>>> 8f2c1df6d23bf235963a4979296317faf4deee5a
     binary = 1;
 
     input=l1->output;
@@ -71,11 +69,8 @@ LSum::LSum(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev
 
   */
 LSum::LSum(Layer *l, float k, string name, int dev) : OperatorLayer(name, dev) {
-<<<<<<< HEAD
-    if(name.empty()) this->name = "add" + to_string(++total_layers);
-=======
+
     if(name.empty()) this->name = "add_" + to_string(++total_layers);
->>>>>>> 8f2c1df6d23bf235963a4979296317faf4deee5a
     val = k;
 
     input=l->output;
@@ -87,17 +82,11 @@ LSum::LSum(Layer *l, float k, string name, int dev) : OperatorLayer(name, dev) {
 }
 
 void LSum::forward() {
-<<<<<<< HEAD
     if (binary) Tensor::add(1.0, parent[0]->output, 1.0, parent[1]->output, output, 0);
     else {
         Tensor::copy(parent[0]->output, output);
-        output->add(val);
-=======
-    if (binary) Tensor::add(1.0, input[0], 1.0, input[1], output, 0);
-    else {
-        Tensor::copy(input[0], output);
         output->add_(val);
->>>>>>> 8f2c1df6d23bf235963a4979296317faf4deee5a
+
     }
 }
 
