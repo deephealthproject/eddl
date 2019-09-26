@@ -56,17 +56,17 @@ LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev): R
     LDiff *diff=new LDiff(this,m1,this->name+"diff",dev);
     LMult *mult=new LMult(diff,diff,this->name+"mult",dev);
     LRMean *m2=new LRMean(mult, axis,keepdims,this->name+"mean_red",dev);
-    LSqrt *sq=new LSqrt(m2,this->name+"sqrt",dev);
+
 
     layers.push_back(m1);
     layers.push_back(diff);
     layers.push_back(mult);
     layers.push_back(m2);
-    layers.push_back(sq);
+
     for(int i=0;i<layers.size();i++) layers[i]->isplot=false;
 
-    output=sq->output;
-    delta=sq->delta;
+    output=m2->output;
+    delta=m2->delta;
 
     l->addchild(this);
     addparent(l);
