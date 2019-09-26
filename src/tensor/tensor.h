@@ -30,6 +30,11 @@
 #include <Eigen/Dense>
 #include "../descriptors/descriptors.h"
 
+#ifdef cGPU
+#include "../hardware/gpu/tensor_cuda.h"
+#include "../hardware/gpu/tensor_cuda_op.h"
+#endif
+
 #define DEV_CPU 0
 
 #define DEV_GPU 1000

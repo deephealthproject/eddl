@@ -34,6 +34,4 @@ void gpu_delete_tensor(int dev,float* p);
 
 int gpu_devices();
 
-
-
 #endif
