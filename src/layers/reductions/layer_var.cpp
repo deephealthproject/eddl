@@ -34,7 +34,7 @@ int LRVar::total_layers = 0;
 LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev): ReductionLayer(name, dev) {
     if(name.empty()) this->name = "reduction_var" + to_string(++total_layers);
 
-    input.push_back(l->output);
+    input=l->output;
 
     output=l->output;
     delta=l->delta;
@@ -43,29 +43,30 @@ LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev): R
     this->keepdims=keepdims;
 
     if (keepdims){
-      os=input[0]->shape;
+      os=input->shape;
     }
     else {
-      for(int i=0;i<input[0]->ndim;i++) {
+      for(int i=0;i<input->ndim;i++) {
         if (find(axis.begin(), axis.end(), i) == axis.end())
-            os.push_back(input[0]->shape[i]);
+            os.push_back(input->shape[i]);
       }
     }
-
-
 
     LRMean *m1=new LRMean(this, axis, true,name+"mean_keepdims",dev);
     LDiff *diff=new LDiff(this,m1,name+"diff",dev);
     LMult *mult=new LMult(diff,diff,name+"mult_",dev);
     LRMean *m2=new LRMean(mult, axis,keepdims,name+"mean_red",dev);
+    LSqrt *sq=new LSqrt(m2,"sqrt",dev);
 
     layers.push_back(m1);
     layers.push_back(diff);
     layers.push_back(mult);
     layers.push_back(m2);
+    layers.push_back(sq);
+    for(int i=0;i<layers.size();i++) layers[i]->isplot=false;
 
-    output=m2->output;
-    delta=m2->delta;
+    output=sq->output;
+    delta=sq->delta;
 
     l->addchild(this);
     addparent(l);
@@ -80,8 +81,7 @@ void LRVar::backward(){
 }
 
 Layer *LRVar::share(int c, int bs, vector<Layer *> p) {
-    clone(c,bs,p,dev);
-    return nullptr;
+    return clone(c,bs,p,dev);
 }
 
 Layer *LRVar::clone(int c, int bs, vector<Layer *> p, int todev) {
