@@ -188,6 +188,7 @@ void Net::plot(string fname) {
 
     // plot layers
     for (int i = 0; i != layers.size(); i++)
+       if (layers[i]->isplot)
         if ((!isIn(layers[i], lin, ind)) && (!isIn(layers[i], lout, ind)))
             out << layers[i]->plot(0) << "\n";
 
@@ -202,7 +203,8 @@ void Net::plot(string fname) {
     //plot links
     for (int i = 0; i != layers.size(); i++)
         for (int j = 0; j < layers[i]->child.size(); j++)
-            out << layers[i]->name << "->" << layers[i]->child[j]->name << "\n";
+            if (layers[i]->child[j]->isplot)
+              out << layers[i]->name << "->" << layers[i]->child[j]->name << "\n";
 
     out << "}\n";
 
