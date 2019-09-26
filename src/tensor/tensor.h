@@ -28,12 +28,7 @@
 #include <mutex>
 
 #include <Eigen/Dense>
-#include "../descriptors/descriptors.h"
 
-#ifdef cGPU
-#include "../hardware/gpu/tensor_cuda.h"
-#include "../hardware/gpu/tensor_cuda_op.h"
-#endif
 
 #define DEV_CPU 0
 
@@ -78,10 +73,12 @@ public:
     int size;
     vector<int> shape;
     vector<int> stride;
-    float *ptr;
 
-    // Aux stuff
-    Eigen::MatrixXf *ptr2;
+    // Data pointers
+    float *ptr;
+    Eigen::MatrixXf *ptr2;  // TODO: I don't like. float or eigen, not both
+
+    // Aux variables
     int gpu_device;
     mutex *tsem;  // Multithreading. Tensor semaphore
 

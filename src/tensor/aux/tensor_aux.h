@@ -5,17 +5,9 @@
 #ifndef EDDL_TENSOR_AUX_H
 #define EDDL_TENSOR_AUX_H
 
-#include <stdio.h>
-#include <vector>
-#include <string>
-#include <mutex>
-
-#include <Eigen/Dense>
-
 #include "../tensor.h"
 #include "../../descriptors/descriptors.h"
 
-// TODO: Take this out of here -------------------
 // ***** Losses *****************************
 void cent(Tensor *A, Tensor *B, Tensor *C);
 

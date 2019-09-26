@@ -21,8 +21,6 @@
 
 using namespace std;
 
-class Tensor;
-
 class ConvolDescriptor {
 public:
     vector<int> ksize;

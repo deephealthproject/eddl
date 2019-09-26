@@ -1,12 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <cmath>
-#include <vector>
-#include <string>
-#include <iostream>
-
 #include "tensor.h"
-#include "../utils.h"
 
 #ifdef cGPU
 #include "../hardware/gpu/tensor_cuda.h"
@@ -14,7 +6,6 @@
 #endif
 
 using namespace std;
-
 
 void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
     // Transpose

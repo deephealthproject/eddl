@@ -21,6 +21,7 @@
 
 
 #include "../../tensor/tensor.h"
+#include "../../descriptors/descriptors.h"
 
 void cpu_conv2D(ConvolDescriptor *D);
 void cpu_conv2D_grad(ConvolDescriptor *D);

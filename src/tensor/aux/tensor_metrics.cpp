@@ -1,5 +1,11 @@
 #include "tensor_aux.h"
 
+#ifdef cGPU
+#include "../../hardware/gpu/tensor_cuda.h"
+#include "../../hardware/gpu/tensor_cuda_op.h"
+#endif
+
+
 int accuracy(Tensor *A, Tensor *B) {
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::accuracy");
     if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::accuracy");

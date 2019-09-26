@@ -1,5 +1,11 @@
 #include "tensor_aux.h"
 
+#ifdef cGPU
+#include "../../hardware/gpu/tensor_cuda.h"
+#include "../../hardware/gpu/tensor_cuda_op.h"
+#endif
+
+
 // Cross-Entropy: C=-(A*log(B)+(1-A)*log_(1-B))
 void cent(Tensor *A, Tensor *B, Tensor *C) {
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::cross-entropy");

@@ -18,11 +18,6 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <cmath>
-#include <vector>
-#include <string>
 #include <iostream>
 
 #include "tensor.h"

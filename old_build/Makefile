@@ -208,7 +208,6 @@ tensor_metrics.o: $(SRC_PATH)/tensor/aux/tensor_metrics.cpp $(SRC_PATH)/tensor/a
 tensor_nn.o: $(SRC_PATH)/tensor/aux/tensor_nn.cpp $(SRC_PATH)/tensor/aux/tensor_aux.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/aux/tensor_nn.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
-
 cpu_convol.o: $(SRC_PATH)/hardware/cpu/cpu_convol.cpp $(SRC_PATH)/hardware/cpu/cpu_convol.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/cpu_convol.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
