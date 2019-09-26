@@ -39,8 +39,6 @@ using namespace std;
 class ReductionLayer : public Layer {
 public:
 
-    vector<Tensor *>input;
-
     int binary;
     float val;
 
@@ -49,6 +47,8 @@ public:
     void addchild(Layer *l) override;
 
     void addparent(Layer *l) override;
+
+    string plot(int c) override;
 
 
 };

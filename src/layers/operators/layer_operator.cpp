@@ -41,3 +41,12 @@ void OperatorLayer::addparent(Layer *l) {
     parent.push_back(l);
     lin++;
 }
+
+string OperatorLayer::plot(int c) {
+    string s;
+
+    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=bisque4,shape=diamond]";
+    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=Beige,shape=diamond]";
+
+    return s;
+}

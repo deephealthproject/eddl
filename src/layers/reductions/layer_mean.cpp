@@ -55,17 +55,17 @@ int LRMean::total_layers = 0;
 LRMean::LRMean(Layer *l, vector <int> axis, bool keepdims, string name, int dev): ReductionLayer(name, dev) {
     if(name.empty()) this->name = "reduction_mean" + to_string(++total_layers);
 
-    input.push_back(l->output);
+    input=l->output;
     this->axis=axis;
     this->keepdims=keepdims;
 
     if (keepdims){
-      os=input[0]->shape;
+      os=input->shape;
     }
     else {
-      for(int i=0;i<input[0]->ndim;i++) {
+      for(int i=0;i<input->ndim;i++) {
         if (find(axis.begin(), axis.end(), i) == axis.end())
-            os.push_back(input[0]->shape[i]);
+            os.push_back(input->shape[i]);
       }
     }
 
@@ -78,7 +78,7 @@ LRMean::LRMean(Layer *l, vector <int> axis, bool keepdims, string name, int dev)
 }
 
 void LRMean::forward(){
-    Tensor::reduce(input[0],output,axis,"mean",keepdims,NULL,0);
+    Tensor::reduce(input,output,axis,"mean",keepdims,NULL,0);
 }
 
 void LRMean::backward(){
@@ -86,8 +86,7 @@ void LRMean::backward(){
 }
 
 Layer *LRMean::share(int c, int bs, vector<Layer *> p) {
-    clone(c,bs,p,dev);
-    return nullptr;
+    return clone(c,bs,p,dev);
 }
 
 Layer *LRMean::clone(int c, int bs, vector<Layer *> p, int todev) {

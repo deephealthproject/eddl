@@ -33,8 +33,7 @@ LMult::LMult(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, d
     if(name.empty()) this->name = "mult_" + to_string(++total_layers);
     binary = 1;
 
-    input.push_back(l1->output);
-    input.push_back(l2->output);
+    input=l1->output;
 
     output = new Tensor(l1->output->getShape(), dev);
     delta = new Tensor(l1->output->getShape(), dev);
@@ -60,7 +59,7 @@ LMult::LMult(Layer *l, float k, string name, int dev) : OperatorLayer(name, dev)
     if(name.empty()) this->name = "mult_" + to_string(++total_layers);
     val = k;
 
-    input.push_back(l->output);
+    input=l->output;
     output = new Tensor(l->output->getShape(), dev);
     delta = new Tensor(l->output->getShape(), dev);
 
@@ -69,17 +68,22 @@ LMult::LMult(Layer *l, float k, string name, int dev) : OperatorLayer(name, dev)
 }
 
 void LMult::forward() {
-    if (binary) Tensor::el_mult(input[0], input[1], output, 0);
+    if (binary) Tensor::el_mult(parent[0]->output, parent[1]->output, output, 0);
     else {
+<<<<<<< HEAD
+        Tensor::copy(parent[0]->output, output);
+        output->mult(val);
+=======
         Tensor::copy(input[0], output);
         output->mult_(val);
+>>>>>>> 8f2c1df6d23bf235963a4979296317faf4deee5a
     }
 }
 
 void LMult::backward() {
     if (binary) {
-        Tensor::el_mult(delta,input[0],parent[1]->delta,1);
-        Tensor::el_mult(delta,input[1],parent[0]->delta,1);
+        Tensor::el_mult(delta,parent[0]->output,parent[1]->delta,1);
+        Tensor::el_mult(delta,parent[1]->output,parent[0]->delta,1);
     }
     else {
         delta->mult_(val);

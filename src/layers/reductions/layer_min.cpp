@@ -34,7 +34,7 @@ LRMin::LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev): R
     // TODO: Implement
     if(name.empty()) this->name = "reduction_min" + to_string(++total_layers);
 
-    input.push_back(l->output);
+    input=l->output;
 
     output=l->output;
     delta=l->delta;
@@ -43,12 +43,12 @@ LRMin::LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev): R
     this->keepdims=keepdims;
 
     if (keepdims){
-      os=input[0]->shape;
+      os=input->shape;
     }
     else {
-      for(int i=0;i<input[0]->ndim;i++) {
+      for(int i=0;i<input->ndim;i++) {
         if (find(axis.begin(), axis.end(), i) == axis.end())
-            os.push_back(input[0]->shape[i]);
+            os.push_back(input->shape[i]);
       }
     }
 
@@ -61,12 +61,10 @@ LRMin::LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev): R
 
 void LRMin::forward(){
     // TODO: Implement
-    for(int i=0;i<layers.size();i++) layers[i]->forward();
 }
 
 void LRMin::backward(){
   // TODO: Implement
-  for(int i=layers.size()-1;i>=0;i--) layers[i]->backward();
 }
 
 Layer *LRMin::share(int c, int bs, vector<Layer *> p) {
