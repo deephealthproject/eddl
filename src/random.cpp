@@ -53,5 +53,6 @@ void build_randn_table() {
 
 float fast_randn(float mean, float sd, int seed) {
     posTable = (posTable + seed) % MAX_RTABLE;
+    if (posTable<0) posTable=-posTable;
     return (RTable[posTable] * sd) + mean;
 }
