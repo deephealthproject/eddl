@@ -150,8 +150,16 @@ public:
     void ceil_(); // Todo
     static Tensor* ceil(Tensor *A);
 
-    void clamp_(); // Todo
-    static Tensor* clamp(Tensor *A);
+    void clamp_aux(float min, float max, int mode);
+
+    void clamp_(float min, float max); // Todo
+    static Tensor* clamp(Tensor *A, float min, float max);
+
+    void clampmax_(float max); // Todo
+    static Tensor* clampmax(Tensor *A, float max);
+
+    void clampmin_(float min); // Todo
+    static Tensor* clampmin(Tensor *A, float min);
 
     void cos_(); // Todo
     static Tensor* cos(Tensor *A);
@@ -181,8 +189,14 @@ public:
     void logn_(float n);
     static Tensor* logn(Tensor *A);
 
-    void mod_(); // Todo
-    static Tensor* mod(Tensor *A);
+    float max();
+    static float max(Tensor *A);
+
+    float min();
+    static float min(Tensor *A);
+
+    void mod_(float v); // Todo
+    static Tensor* mod(Tensor *A, float v);
 
     void mult_(float v);
     static Tensor* mult(Tensor *A);
@@ -192,14 +206,17 @@ public:
     void neg_(); // Todo
     static Tensor* neg(Tensor *A);
 
+    void normalize_(float min=0.0f, float max=1.0f); // Todo
+    static Tensor* normalize_(Tensor *A, float min=0.0f, float max=1.0f);
+
     void pow_(float exp);
     static Tensor* pow(Tensor *A);
 
     void reciprocal_(); // Todo
     static Tensor* reciprocal(Tensor *A);
 
-    void remainder_(); // Todo
-    static Tensor* remainder(Tensor *A);
+    void remainder_(float v); // Todo
+    static Tensor* remainder(Tensor *A, float v);
 
     void round_(); // Todo
     static Tensor* round(Tensor *A);
@@ -242,6 +259,9 @@ public:
 
     void tanh_(); // Todo
     static Tensor* tanh(Tensor *A);
+
+    void trunc_(); // Todo
+    static Tensor* trunc(Tensor *A);
 
     // Math operations: Reduction ops
     static void reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);

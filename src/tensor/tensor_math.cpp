@@ -18,20 +18,23 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "tensor.h"
+#include <limits>
 
 #ifdef cGPU
 #include "../hardware/gpu/tensor_cuda.h"
 #include "../hardware/gpu/tensor_cuda_op.h"
 #endif
 
+#define MAX_FLOAT std::numeric_limits<float>::max()
+#define MIN_FLOAT -std::numeric_limits<float>::max()
+#define PRECISION_FLOAT -std::numeric_limits<float>::max()
 
 using namespace std;
 
 
 void Tensor::abs_() {
     if (isCPU()) {
-
-        for (int i = 0; i < size; ++i) ptr[i] = fabs(ptr[i]);
+        for (int i = 0; i < size; ++i) ptr[i] = std::fabs(ptr[i]);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -48,13 +51,27 @@ void Tensor::abs_() {
 
 Tensor* Tensor::abs(Tensor *A){}
 
-void Tensor::acos_(){}
+void Tensor::acos_(){
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = std::acosf(ptr[i]);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        //gpu_abs(this);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
 
 Tensor* Tensor::acos(Tensor *A){}
 
 void Tensor::add_(float v) {
     if (isCPU()) {
-
         for (int i = 0; i < size; ++i) ptr[i] += v;
     }
 #ifdef cGPU
@@ -71,6 +88,7 @@ void Tensor::add_(float v) {
 }
 
 Tensor* Tensor::add(Tensor *A, Tensor *B){}
+
 void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
     ///////////////////////////////////////
     //// sum C=(sca*A)+(scb*B)
@@ -143,26 +161,134 @@ void Tensor::inc(Tensor *A, Tensor *B) {
     }
 }
 
-void Tensor::asin_(){}; // Todo
+void Tensor::asin_(){
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = std::asinf(ptr[i]);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        //gpu_abs(this);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
 Tensor* Tensor::asin(Tensor *A){}
 
-void Tensor::atan_(){} // Todo
+void Tensor::atan_(){
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = std::atanf(ptr[i]);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        //gpu_abs(this);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
 Tensor* Tensor::atan(Tensor *A){}
 
-void Tensor::ceil_(){} // Todo
+void Tensor::ceil_(){
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = std::ceilf(ptr[i]);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        //gpu_abs(this);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
 Tensor* Tensor::ceil(Tensor *A){}
 
-void Tensor::clamp_(){} // Todo
-Tensor* Tensor::clamp(Tensor *A){}
+void Tensor::clamp_(float min, float max){
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i){
+            if (ptr[i] < min){
+                ptr[i] = min;
+            } else if(ptr[i] > max){
+                ptr[i] = max;
+            }
+        }
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        //gpu_abs(this);
+      }
+#endif
+#ifdef cFPGA
+    else {
 
-void Tensor::cos_(){} // Todo
+    }
+#endif
+}
+
+Tensor* Tensor::clamp(Tensor *A, float min, float max){}
+
+void Tensor::clampmax_(float max){ clamp_(MIN_FLOAT, max); }
+Tensor* Tensor::clampmax(Tensor *A, float max){}
+
+void Tensor::clampmin_(float min){ clamp_(min, MAX_FLOAT); }
+Tensor* Tensor::clampmin(Tensor *A, float min){}
+
+void Tensor::cos_(){
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = std::cosf(ptr[i]);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        //gpu_abs(this);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
 Tensor* Tensor::cos(Tensor *A){}
 
-void Tensor::cosh_(){}
+void Tensor::cosh_(){
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = std::coshf(ptr[i]);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        //gpu_abs(this);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
 Tensor* Tensor::cosh(Tensor *A){}
 
 
-void Tensor::div_(float v) { mult_(1.0 / v); }
+void Tensor::div_(float v) { mult_(1.0f / v); }
 
 Tensor* Tensor::div(Tensor *A){}
 
@@ -199,8 +325,7 @@ void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
 
 void Tensor::exp_() {
     if (isCPU()) {
-
-        for (int i = 0; i < size; ++i) ptr[i] = std::exp(ptr[i]);
+        for (int i = 0; i < size; ++i) ptr[i] = std::expf(ptr[i]);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -218,13 +343,29 @@ void Tensor::exp_() {
 
 Tensor* Tensor::exp(Tensor *A){}
 
-void Tensor::floor_(){} // Todo
+void Tensor::floor_(){
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = std::floorf(ptr[i]);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        //gpu_abs(this);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
 Tensor* Tensor::floor(Tensor *A){}
 
 
 void Tensor::log_() {
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = std::log(ptr[i]);
+        for (int i = 0; i < size; ++i) ptr[i] = std::logf(ptr[i]);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -243,7 +384,7 @@ Tensor* Tensor::log(Tensor *A){}
 
 void Tensor::log2_() {
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = std::log2(ptr[i]);
+        for (int i = 0; i < size; ++i) ptr[i] = std::log2f(ptr[i]);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -263,7 +404,7 @@ Tensor* Tensor::log2(Tensor *A){}
 
 void Tensor::log10_() {
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = std::log10(ptr[i]);
+        for (int i = 0; i < size; ++i) ptr[i] = std::log10f(ptr[i]);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -283,7 +424,7 @@ Tensor* Tensor::log10(Tensor *A){}
 
 void Tensor::logn_(float n) {
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = std::log10(ptr[i])/std::log10(n);
+        for (int i = 0; i < size; ++i) ptr[i] = std::logf(ptr[i])/std::logf(n);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -300,12 +441,74 @@ void Tensor::logn_(float n) {
 
 Tensor* Tensor::logn(Tensor *A){}
 
-void Tensor::mod_(){}; // Todo
-Tensor* Tensor::mod(Tensor *A){};
+float Tensor::max(){
+    if (isCPU()) {
+        float max = MIN_FLOAT;
+        for (int i = 0; i < size; ++i) {
+            if (ptr[i] > max) { max = ptr[i]; }
+        }
+        return max;
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_log10(this);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+float Tensor::max(Tensor *A){}
+
+float Tensor::min(){
+    if (isCPU()) {
+        float min = MAX_FLOAT;
+        for (int i = 0; i < size; ++i) {
+            if (ptr[i] < min) { min = ptr[i]; }
+        }
+        return min;
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_log10(this);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+float Tensor::min(Tensor *A){}
+
+
+void Tensor::mod_(float v){
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = std::fmod(ptr[i], v);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_log10(this);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+Tensor* Tensor::mod(Tensor *A, float v){};
 
 void Tensor::mult_(float v) {
     if (isCPU()) {
-
         for (int i = 0; i < size; ++i) ptr[i] *= v;
     }
 #ifdef cGPU
@@ -423,15 +626,41 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
     C->tsem->unlock();
 }
 
-void Tensor::neg_(){}; // Todo
+void Tensor::neg_(){ mult_(-1.0f); }
+
 Tensor* Tensor::neg(Tensor *A){};
+
+
+void Tensor::normalize_(float min, float max){
+    // Normalize in range: 423 from [23, 562], to range [-1, 1] => 0.4842
+    // (max2-min2)/(max1-min1) * (x-min1) + min2
+    float max_ori = this->max();
+    float min_ori = this->min();
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = (max-min)/(max_ori-min_ori) * (ptr[i]-min_ori) + min;
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_pow(this, exp);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+static Tensor* normalize_(Tensor *A, float min=0.0f, float max=1.0f);
+
 
 void Tensor::pow_(float exp) {
     // To compute the power, std uses real floating-point number with the formurla: e^(y*log_(x))
     // Quite inefficient (x100 slower) in g++ except for pow_(x, 2) which is inlined as x*x
     // speed: 0.057887s
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = std::pow(ptr[i], exp);
+        for (int i = 0; i < size; ++i) ptr[i] = std::powf(ptr[i], exp);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -448,23 +677,128 @@ void Tensor::pow_(float exp) {
 
 Tensor* Tensor::pow(Tensor *A){}
 
-void Tensor::reciprocal_(){} // Todo
+void Tensor::reciprocal_() {
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = 1.0f/ptr[i];
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_pow(this, exp);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
 Tensor* Tensor::reciprocal(Tensor *A){}
 
-void Tensor::remainder_(){} // Todo
-Tensor* Tensor::remainder(Tensor *A){}
+void Tensor::remainder_(float v) {
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = (int)(ptr[i]/v);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_pow(this, exp);
+      }
+#endif
+#ifdef cFPGA
+    else {
 
-void Tensor::round_(){} // Todo
+    }
+#endif
+}
+
+Tensor* Tensor::remainder(Tensor *A, float v){}
+
+void Tensor::round_(){
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = std::roundf(ptr[i]);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_pow(this, exp);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
 Tensor* Tensor::round(Tensor *A){}
 
-void Tensor::rsqrt_(){} // Todo
+void Tensor::rsqrt_(){
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = 1.0f/std::sqrtf(ptr[i]);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_pow(this, exp);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
 Tensor* Tensor::rsqrt(Tensor *A){}
 
-void Tensor::sigmoid_(){} // Todo
+void Tensor::sigmoid_(){
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = std::expf(ptr[i])/(std::expf(ptr[i])+1.0f);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_pow(this, exp);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
 Tensor* Tensor::sigmoid(Tensor *A){}
 
-void Tensor::sign_(){} // Todo
+void Tensor::sign_(){
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) {
+            if(ptr[i] > 0.0f){
+                ptr[i] = 1.0f;
+            }else if(ptr[i] < 0.0f){
+                ptr[i] = -1.0f;
+            }else{
+                ptr[i] = 0.0f;
+            }
+        };
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_pow(this, exp);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
 Tensor* Tensor::sign(Tensor *A){}
+
 void Tensor::sign(Tensor *A, Tensor *B) {
     ///////////////////////////////////////
     /// Get sign (+-) of all values
@@ -495,10 +829,42 @@ void Tensor::sign(Tensor *A, Tensor *B) {
 
 }
 
-void Tensor::sin_(){} // Todo
+void Tensor::sin_(){
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = std::sinf(ptr[i]);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_pow(this, exp);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
 Tensor* Tensor::sin(Tensor *A){}
 
-void Tensor::sinh_(){} // Todo
+void Tensor::sinh_(){
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = std::sinhf(ptr[i]);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_pow(this, exp);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
 Tensor* Tensor::sinh(Tensor *A){}
 
 
@@ -526,8 +892,7 @@ Tensor* Tensor::sqr(Tensor *A){}
 
 void Tensor::sqrt_() {
     if (isCPU()) {
-
-        for (int i = 0; i < size; ++i) ptr[i] = std::sqrt(ptr[i]);
+        for (int i = 0; i < size; ++i) ptr[i] = std::sqrtf(ptr[i]);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -550,12 +915,9 @@ void Tensor::sub_(float v) { add_(-v); }
 Tensor* Tensor::sub(Tensor *A, Tensor *B){}
 
 float Tensor::sum_() {
-
     if (isCPU()) {
         float sum = 0.0;
-
         for (int i = 0; i < size; ++i) sum += ptr[i];
-
         return sum;
     }
 #ifdef cGPU
@@ -571,7 +933,6 @@ float Tensor::sum_() {
 
     }
 #endif
-
     return 0;
 }
 
@@ -647,12 +1008,9 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
 }
 
 float Tensor::sum_abs_() {
-
     if (isCPU()) {
         float sum = 0.0;
-
-        for (int i = 0; i < size; ++i) sum += fabs(ptr[i]);
-
+        for (int i = 0; i < size; ++i) sum += std::fabs(ptr[i]);
         return sum;
     }
 #ifdef cGPU
@@ -668,15 +1026,66 @@ float Tensor::sum_abs_() {
 
     }
 #endif
-
     return 0;
 }
 
 Tensor* Tensor::sum_abs(Tensor *A){}
 
 
-void tan_(){} // Todo
+void Tensor::tan_(){
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = std::tanf(ptr[i]);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_sqrt(this);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
 Tensor* Tensor::tan(Tensor *A){}
 
-void tanh_(){} // Todo
+void Tensor::tanh_(){
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = std::tanhf(ptr[i]);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_sqrt(this);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
 Tensor* Tensor::tanh(Tensor *A){}
+
+
+void Tensor::trunc_(){
+    if (isCPU()) {
+        for (int i = 0; i < size; ++i) ptr[i] = (int)(ptr[i]);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_sqrt(this);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+Tensor* Tensor::trunc(Tensor *A){}
