@@ -40,7 +40,7 @@ void Tensor::abs_() {
 #ifdef cGPU
     else if (isGPU())
       {
-        //gpu_abs(this);
+
       }
 #endif
 #ifdef cFPGA
@@ -59,7 +59,7 @@ void Tensor::acos_(){
 #ifdef cGPU
     else if (isGPU())
       {
-        //gpu_abs(this);
+
       }
 #endif
 #ifdef cFPGA
@@ -169,7 +169,7 @@ void Tensor::asin_(){
 #ifdef cGPU
     else if (isGPU())
       {
-        //gpu_abs(this);
+
       }
 #endif
 #ifdef cFPGA
@@ -188,7 +188,7 @@ void Tensor::atan_(){
 #ifdef cGPU
     else if (isGPU())
       {
-        //gpu_abs(this);
+
       }
 #endif
 #ifdef cFPGA
@@ -207,7 +207,7 @@ void Tensor::ceil_(){
 #ifdef cGPU
     else if (isGPU())
       {
-        //gpu_abs(this);
+
       }
 #endif
 #ifdef cFPGA
@@ -232,7 +232,7 @@ void Tensor::clamp_(float min, float max){
 #ifdef cGPU
     else if (isGPU())
       {
-        //gpu_abs(this);
+
       }
 #endif
 #ifdef cFPGA
@@ -257,7 +257,7 @@ void Tensor::cos_(){
 #ifdef cGPU
     else if (isGPU())
       {
-        //gpu_abs(this);
+
       }
 #endif
 #ifdef cFPGA
@@ -276,7 +276,7 @@ void Tensor::cosh_(){
 #ifdef cGPU
     else if (isGPU())
       {
-        //gpu_abs(this);
+
       }
 #endif
 #ifdef cFPGA
@@ -351,7 +351,7 @@ void Tensor::floor_(){
 #ifdef cGPU
     else if (isGPU())
       {
-        //gpu_abs(this);
+
       }
 #endif
 #ifdef cFPGA
@@ -461,6 +461,7 @@ float Tensor::max(){
 
     }
 #endif
+    return -1.0f;  // Temp
 }
 
 float Tensor::max(Tensor *A){}
@@ -484,6 +485,8 @@ float Tensor::min(){
 
     }
 #endif
+
+    return -1.0f;  // Temp
 }
 
 float Tensor::min(Tensor *A){}
@@ -643,7 +646,7 @@ void Tensor::normalize_(float min, float max){
 #ifdef cGPU
     else if (isGPU())
       {
-        gpu_pow(this, exp);
+
       }
 #endif
 #ifdef cFPGA
@@ -685,7 +688,7 @@ void Tensor::reciprocal_() {
 #ifdef cGPU
     else if (isGPU())
       {
-        gpu_pow(this, exp);
+
       }
 #endif
 #ifdef cFPGA
@@ -704,7 +707,7 @@ void Tensor::remainder_(float v) {
 #ifdef cGPU
     else if (isGPU())
       {
-        gpu_pow(this, exp);
+
       }
 #endif
 #ifdef cFPGA
@@ -723,7 +726,7 @@ void Tensor::round_(){
 #ifdef cGPU
     else if (isGPU())
       {
-        gpu_pow(this, exp);
+
       }
 #endif
 #ifdef cFPGA
@@ -742,7 +745,7 @@ void Tensor::rsqrt_(){
 #ifdef cGPU
     else if (isGPU())
       {
-        gpu_pow(this, exp);
+
       }
 #endif
 #ifdef cFPGA
@@ -761,7 +764,7 @@ void Tensor::sigmoid_(){
 #ifdef cGPU
     else if (isGPU())
       {
-        gpu_pow(this, exp);
+
       }
 #endif
 #ifdef cFPGA
@@ -788,7 +791,7 @@ void Tensor::sign_(){
 #ifdef cGPU
     else if (isGPU())
       {
-        gpu_pow(this, exp);
+
       }
 #endif
 #ifdef cFPGA
@@ -837,7 +840,7 @@ void Tensor::sin_(){
 #ifdef cGPU
     else if (isGPU())
       {
-        gpu_pow(this, exp);
+
       }
 #endif
 #ifdef cFPGA
@@ -856,7 +859,7 @@ void Tensor::sinh_(){
 #ifdef cGPU
     else if (isGPU())
       {
-        gpu_pow(this, exp);
+
       }
 #endif
 #ifdef cFPGA
@@ -963,7 +966,6 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
     else if (A->isGPU())
       {
         gpu_sum2D_rowwise(A,B,C);
-
       }
 #endif
 #ifdef cFPGA
