@@ -1,4 +1,4 @@
-#include "tensor_aux.h"
+#include "tensor_nn.h"
 
 #ifdef cGPU
 #include "../../hardware/gpu/tensor_cuda.h"

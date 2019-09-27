@@ -132,3 +132,8 @@ Documentation available [here](http://imagelab.ing.unimore.it/eddl/).
 # Python wrapper
 
 If you are not a C++ fan, try [PyEDDL](https://github.com/deephealthproject/pyeddl), a python wrapper for this library.
+
+# FAQs
+
+- **When I run an example from `examples/` I get `segmentation fault (core dumped)`**: This is probably because your processor does not support 
+AVX instructions. Try to compile the source with the optimization flags: `OPT=2` or `OPT=3`.

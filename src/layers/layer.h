@@ -24,7 +24,7 @@
 #include <string>
 #include <cstdio>
 #include "../tensor/tensor.h"
-#include "../tensor/aux/tensor_aux.h"
+#include "../tensor/nn/tensor_nn.h"
 
 #define TRMODE 1
 #define TSMODE 0

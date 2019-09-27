@@ -25,7 +25,7 @@
 #include <string>
 
 #include "../tensor/tensor.h"
-#include "../tensor/aux/tensor_aux.h"
+#include "../tensor/nn/tensor_nn.h"
 
 using namespace std;
 

@@ -245,11 +245,12 @@ SET(CPP_SOURCES
         src/tensor/tensor_math.cpp
         src/tensor/tensor_reduction.cpp
         src/tensor/tensor_serialization.cpp
-        src/tensor/aux/tensor_aux.h
-        src/tensor/aux/tensor_activations.cpp
-        src/tensor/aux/tensor_losses.cpp
-        src/tensor/aux/tensor_metrics.cpp
-        src/tensor/aux/tensor_nn.cpp
+        src/tensor/nn/tensor_nn.h
+        src/tensor/nn/tensor_activations.cpp
+        src/tensor/nn/tensor_conv.cpp
+        src/tensor/nn/tensor_losses.cpp
+        src/tensor/nn/tensor_metrics.cpp
+        src/tensor/nn/tensor_pool.cpp
         src/compserv.cpp
         src/compserv.h
         src/net.cpp
