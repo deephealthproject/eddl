@@ -1,4 +1,3 @@
-
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of EDDLL an European Distributed Deep Learning Library.
 // Developed within the DeepHealth project.
@@ -18,10 +17,12 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
+#ifndef EDDL_CPU_NN_H
+#define EDDL_CPU_NN_H
 
+#include "../../../tensor/tensor.h"
+#include "../../../descriptors/descriptors.h"
 
-#include "../../tensor/tensor.h"
-#include "../../descriptors/descriptors.h"
 
 void cpu_conv2D(ConvolDescriptor *D);
 void cpu_conv2D_grad(ConvolDescriptor *D);
@@ -29,3 +30,6 @@ void cpu_conv2D_back(ConvolDescriptor *D);
 
 void cpu_mpool2D(PoolDescriptor*D);
 void cpu_mpool2D_back(PoolDescriptor *D);
+
+
+#endif //EDDL_CPU_NN_H

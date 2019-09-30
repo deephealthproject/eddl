@@ -16,26 +16,25 @@
 // To collaborate please contact rparedes@prhlt.upv.es
 //
 /////////////////////////////////////////////////////////////////////////////
-
-#include "tensor.h"
 #include <cmath>
 #include <limits>
+
+
+#include "tensor.h"
+#include "../hardware/cpu/cpu_hw.h"
 
 #ifdef cGPU
 #include "../hardware/gpu/tensor_cuda.h"
 #include "../hardware/gpu/tensor_cuda_op.h"
 #endif
 
-#define MAX_FLOAT std::numeric_limits<float>::max()
-#define MIN_FLOAT -std::numeric_limits<float>::max()
-#define PRECISION_FLOAT -std::numeric_limits<float>::max()
 
 using namespace std;
 
 
 void Tensor::abs_() {
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::fabs(ptr[i]);
+        cpu_abs_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -54,7 +53,7 @@ Tensor* Tensor::abs(Tensor *A){}
 
 void Tensor::acos_(){
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::acosf(ptr[i]);
+        cpu_acos_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -73,7 +72,7 @@ Tensor* Tensor::acos(Tensor *A){}
 
 void Tensor::add_(float v) {
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] += v;
+        cpu_add_(this, v);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -108,10 +107,7 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
 
     C->tsem->lock();
     if (A->isCPU()) {
-
-        for (int i = 0; i < A->size; i++)
-            if (incC) C->ptr[i] += scA * A->ptr[i] + scB * B->ptr[i];
-            else C->ptr[i] = scA * A->ptr[i] + scB * B->ptr[i];
+        cpu_add(scA, A, scB, B, C, incC);
     }
 #ifdef cGPU
     else if (A->isGPU())
@@ -129,6 +125,7 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
 void Tensor::add(Tensor *A, Tensor *B, Tensor *C) {
     Tensor::add(1.0, A, 1.0, B, C, 0);
 }
+
 void Tensor::inc(Tensor *A, Tensor *B) {
     // TODO: Review against add
 
@@ -137,12 +134,7 @@ void Tensor::inc(Tensor *A, Tensor *B) {
 
 
     if ((A->isCPU()) && (B->isCPU())) {
-        B->tsem->lock();
-
-        for (int i = 0; i < A->size; i++)
-            B->ptr[i] += A->ptr[i];
-
-        B->tsem->unlock();
+        cpu_inc(A, B);
     }
 #ifdef cGPU
         else if ((A->isGPU())&&(B->isGPU())) {
@@ -164,7 +156,7 @@ void Tensor::inc(Tensor *A, Tensor *B) {
 
 void Tensor::asin_(){
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::asinf(ptr[i]);
+        cpu_asin_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -183,7 +175,7 @@ Tensor* Tensor::asin(Tensor *A){}
 
 void Tensor::atan_(){
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::atanf(ptr[i]);
+        cpu_atan_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -202,7 +194,7 @@ Tensor* Tensor::atan(Tensor *A){}
 
 void Tensor::ceil_(){
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::ceilf(ptr[i]);
+        cpu_ceil_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -221,13 +213,7 @@ Tensor* Tensor::ceil(Tensor *A){}
 
 void Tensor::clamp_(float min, float max){
     if (isCPU()) {
-        for (int i = 0; i < size; ++i){
-            if (ptr[i] < min){
-                ptr[i] = min;
-            } else if(ptr[i] > max){
-                ptr[i] = max;
-            }
-        }
+        cpu_clamp_(this, min, max);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -246,13 +232,12 @@ Tensor* Tensor::clamp(Tensor *A, float min, float max){}
 
 void Tensor::clampmax_(float max){ clamp_(MIN_FLOAT, max); }
 Tensor* Tensor::clampmax(Tensor *A, float max){}
-
 void Tensor::clampmin_(float min){ clamp_(min, MAX_FLOAT); }
 Tensor* Tensor::clampmin(Tensor *A, float min){}
 
 void Tensor::cos_(){
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::cosf(ptr[i]);
+        cpu_cos_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -271,7 +256,7 @@ Tensor* Tensor::cos(Tensor *A){}
 
 void Tensor::cosh_(){
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::coshf(ptr[i]);
+        cpu_cosh_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -305,10 +290,7 @@ void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
 
     C->tsem->lock();
     if (A->isCPU()) {
-
-        for (int i = 0; i < A->size; i++)
-            if (incC) C->ptr[i] += A->ptr[i] / B->ptr[i];
-            else C->ptr[i] = A->ptr[i] / B->ptr[i];
+        cpu_el_div(A, B, C, incC);
     }
 #ifdef cGPU
     else if (A->isGPU())
@@ -326,7 +308,7 @@ void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
 
 void Tensor::exp_() {
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::expf(ptr[i]);
+        cpu_exp_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -346,7 +328,7 @@ Tensor* Tensor::exp(Tensor *A){}
 
 void Tensor::floor_(){
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::floorf(ptr[i]);
+        cpu_floor_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -366,7 +348,7 @@ Tensor* Tensor::floor(Tensor *A){}
 
 void Tensor::log_() {
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::logf(ptr[i]);
+        cpu_log_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -385,7 +367,7 @@ Tensor* Tensor::log(Tensor *A){}
 
 void Tensor::log2_() {
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::log2f(ptr[i]);
+        cpu_log2_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -405,7 +387,7 @@ Tensor* Tensor::log2(Tensor *A){}
 
 void Tensor::log10_() {
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::log10f(ptr[i]);
+        cpu_log10_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -425,7 +407,7 @@ Tensor* Tensor::log10(Tensor *A){}
 
 void Tensor::logn_(float n) {
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::logf(ptr[i])/::logf(n);
+        cpu_logn_(this, n);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -444,11 +426,7 @@ Tensor* Tensor::logn(Tensor *A){}
 
 float Tensor::max(){
     if (isCPU()) {
-        float max = MIN_FLOAT;
-        for (int i = 0; i < size; ++i) {
-            if (ptr[i] > max) { max = ptr[i]; }
-        }
-        return max;
+        return cpu_max(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -464,15 +442,11 @@ float Tensor::max(){
     return -1.0f;  // Temp
 }
 
-float Tensor::max(Tensor *A){}
+//float Tensor::max(Tensor *A){}
 
 float Tensor::min(){
     if (isCPU()) {
-        float min = MAX_FLOAT;
-        for (int i = 0; i < size; ++i) {
-            if (ptr[i] < min) { min = ptr[i]; }
-        }
-        return min;
+        return cpu_min(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -485,16 +459,15 @@ float Tensor::min(){
 
     }
 #endif
-
     return -1.0f;  // Temp
 }
 
-float Tensor::min(Tensor *A){}
+//float Tensor::min(Tensor *A){}
 
 
 void Tensor::mod_(float v){
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::fmod(ptr[i], v);
+        cpu_mod_(this, v);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -513,7 +486,7 @@ Tensor* Tensor::mod(Tensor *A, float v){};
 
 void Tensor::mult_(float v) {
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] *= v;
+        cpu_mult_(this, v);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -561,24 +534,7 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
     C->tsem->lock();
 
     if (A->isCPU()) {
-
-        if (!tB) {
-            if (!tA) {
-                if (!incC) *(C->ptr2) = *(B->ptr2) * (*(A->ptr2));
-                else *(C->ptr2) += *(B->ptr2) * (*(A->ptr2));
-            } else {
-                if (!incC) *(C->ptr2) = *(B->ptr2) * ((*(A->ptr2)).transpose());
-                else *(C->ptr2) += *(B->ptr2) * ((*(A->ptr2)).transpose());
-            }
-        } else {
-            if (!tA) {
-                if (!incC) *(C->ptr2) = (*(B->ptr2)).transpose() * (*(A->ptr2));
-                else *(C->ptr2) += (*(B->ptr2)).transpose() * (*(A->ptr2));
-            } else {
-                if (!incC) *(C->ptr2) = (*(B->ptr2)).transpose() * ((*(A->ptr2)).transpose());
-                else *(C->ptr2) += (*(B->ptr2)).transpose() * ((*(A->ptr2)).transpose());
-            }
-        }
+        cpu_mult2D(A, tA, B, tB, C, incC);
     }
 
 #ifdef cGPU
@@ -612,9 +568,7 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
     }
 
     if (A->isCPU()) {
-        for (int i = 0; i < A->size; i++)
-            if (incC) C->ptr[i] += A->ptr[i] * B->ptr[i];
-            else C->ptr[i] = A->ptr[i] * B->ptr[i];
+        cpu_el_mult(A, B, C, incC);
     }
 #ifdef cGPU
     else if (A->isGPU())
@@ -638,10 +592,8 @@ Tensor* Tensor::neg(Tensor *A){};
 void Tensor::normalize_(float min, float max){
     // Normalize in range: 423 from [23, 562], to range [-1, 1] => 0.4842
     // (max2-min2)/(max1-min1) * (x-min1) + min2
-    float max_ori = this->max();
-    float min_ori = this->min();
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = (max-min)/(max_ori-min_ori) * (ptr[i]-min_ori) + min;
+        cpu_normalize_(this, min, max);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -656,7 +608,7 @@ void Tensor::normalize_(float min, float max){
 #endif
 }
 
-static Tensor* normalize_(Tensor *A, float min=0.0f, float max=1.0f);
+static Tensor* normalize(Tensor *A, float min=0.0f, float max=1.0f);
 
 
 void Tensor::pow_(float exp) {
@@ -664,7 +616,7 @@ void Tensor::pow_(float exp) {
     // Quite inefficient (x100 slower) in g++ except for pow_(x, 2) which is inlined as x*x
     // speed: 0.057887s
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::powf(ptr[i], exp);
+        cpu_pow_(this, exp);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -683,7 +635,7 @@ Tensor* Tensor::pow(Tensor *A){}
 
 void Tensor::reciprocal_() {
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = 1.0f/ptr[i];
+        cpu_reciprocal_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -702,7 +654,7 @@ Tensor* Tensor::reciprocal(Tensor *A){}
 
 void Tensor::remainder_(float v) {
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = (int)(ptr[i]/v);
+        cpu_remainder_(this, v);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -721,7 +673,7 @@ Tensor* Tensor::remainder(Tensor *A, float v){}
 
 void Tensor::round_(){
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::roundf(ptr[i]);
+        cpu_round_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -740,7 +692,7 @@ Tensor* Tensor::round(Tensor *A){}
 
 void Tensor::rsqrt_(){
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = 1.0f/::sqrtf(ptr[i]);
+        cpu_rsqrt_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -759,7 +711,7 @@ Tensor* Tensor::rsqrt(Tensor *A){}
 
 void Tensor::sigmoid_(){
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::expf(ptr[i])/(::expf(ptr[i])+1.0f);
+        cpu_sigmoid_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -778,15 +730,7 @@ Tensor* Tensor::sigmoid(Tensor *A){}
 
 void Tensor::sign_(){
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) {
-            if(ptr[i] > 0.0f){
-                ptr[i] = 1.0f;
-            }else if(ptr[i] < 0.0f){
-                ptr[i] = -1.0f;
-            }else{
-                ptr[i] = 0.0f;
-            }
-        };
+        cpu_sign_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -814,9 +758,7 @@ void Tensor::sign(Tensor *A, Tensor *B) {
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::sign");
 
     if (A->isCPU()) {
-        for (int i = 0; i < A->size; i++)
-            if (A->ptr[i] < 0) B->ptr[i] = -1.0;
-            else B->ptr[i] = 1.0;
+        cpu_sign2(A, B);
     }
 #ifdef cGPU
     else if (A->isGPU())
@@ -835,7 +777,7 @@ void Tensor::sign(Tensor *A, Tensor *B) {
 
 void Tensor::sin_(){
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::sinf(ptr[i]);
+        cpu_sin_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -854,7 +796,7 @@ Tensor* Tensor::sin(Tensor *A){}
 
 void Tensor::sinh_(){
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::sinhf(ptr[i]);
+        cpu_sinh_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -876,7 +818,7 @@ void Tensor::sqr_() {
     // pow(x, 2) == x*x  To know more, read comments in pow_'s function
     // speed: 0.000497s
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] *= ptr[i];
+        cpu_sqr_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -896,7 +838,7 @@ Tensor* Tensor::sqr(Tensor *A){}
 
 void Tensor::sqrt_() {
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::sqrtf(ptr[i]);
+        cpu_sqrt_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -918,11 +860,9 @@ void Tensor::sub_(float v) { add_(-v); }
 
 Tensor* Tensor::sub(Tensor *A, Tensor *B){}
 
-float Tensor::sum_() {
+float Tensor::sum() {
     if (isCPU()) {
-        float sum = 0.0;
-        for (int i = 0; i < size; ++i) sum += ptr[i];
-        return sum;
+        return cpu_sum(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -940,7 +880,7 @@ float Tensor::sum_() {
     return 0;
 }
 
-Tensor* Tensor::sum(Tensor *A){}
+//Tensor* Tensor::sum(Tensor *A){}
 
 void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
     ///////////////////////////////////////
@@ -956,11 +896,7 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
 
     C->tsem->lock();
     if (A->isCPU()) {
-        int p = 0;
-        for (int i = 0; i < A->shape[0]; i++) {
-            for (int j = 0; j < A->shape[1]; j++, p++)
-                C->ptr[p] = A->ptr[p] + B->ptr[j];
-        }
+        cpu_sum2D_rowwise(A, B, C);
     }
 #ifdef cGPU
     else if (A->isGPU())
@@ -990,11 +926,7 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
 
     C->tsem->lock();
     if (A->isCPU()) {
-        int p = 0;
-        for (int i = 0; i < A->shape[0]; i++) {
-            for (int j = 0; j < A->shape[1]; j++, p++)
-                C->ptr[p] = A->ptr[p] + B->ptr[i];
-        }
+        cpu_sum2D_colwise(A, B, C);
     }
 #ifdef cGPU
     else if (A->isGPU())
@@ -1010,11 +942,9 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
     C->tsem->unlock();
 }
 
-float Tensor::sum_abs_() {
+float Tensor::sum_abs() {
     if (isCPU()) {
-        float sum = 0.0;
-        for (int i = 0; i < size; ++i) sum += ::fabs(ptr[i]);
-        return sum;
+        return cpu_sum_abs(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -1037,7 +967,7 @@ Tensor* Tensor::sum_abs(Tensor *A){}
 
 void Tensor::tan_(){
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::tanf(ptr[i]);
+        cpu_tan_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -1056,7 +986,7 @@ Tensor* Tensor::tan(Tensor *A){}
 
 void Tensor::tanh_(){
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = ::tanhf(ptr[i]);
+        cpu_tanh_(this);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -1076,7 +1006,7 @@ Tensor* Tensor::tanh(Tensor *A){}
 
 void Tensor::trunc_(){
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = (int)(ptr[i]);
+        cpu_trunc_(this);
     }
 #ifdef cGPU
     else if (isGPU())

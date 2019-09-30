@@ -244,7 +244,8 @@ Numpy-like operations over a raw-tensor object
 | median* | ❌ | ❌ | Not reduced
 | min* | ✅ | ❌ | Not reduced
 | mod | ✅ | ❌ |
-| mul | ✅ | ✅ |
+| mode* | ✅ | ❌ | Not reduced
+| mult | ✅ | ✅ |
 | neg | ✅ | ❌ |
 | normalize* | ✅ | ❌ | Not reduced
 | pow | ✅ | ✅ |

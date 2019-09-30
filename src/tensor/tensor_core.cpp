@@ -1,4 +1,5 @@
 #include "tensor.h"
+#include "../hardware/cpu/cpu_hw.h"
 
 #ifdef cGPU
 #include "../hardware/gpu/tensor_cuda.h"
@@ -23,8 +24,7 @@ void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
 
     // Copy tensor data
     if (A->isCPU()) {
-        for (int i = 0; i < A->size; i++)
-            N->ptr[i] = A->ptr[i];
+        cpu_transpose(A, N);
     }
 #ifdef cGPU
     else if (A->isGPU())
@@ -57,8 +57,7 @@ void Tensor::copy(Tensor *A, Tensor *B) {
 
     B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
-        for (int i = 0; i < A->size; i++)
-            B->ptr[i] = A->ptr[i];
+        cpu_copy(A, B);
 
     }
 #ifdef cGPU
@@ -90,23 +89,7 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
 
     B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
-        int at = A->size / A->shape[0];
-        int bt = B->size / B->shape[0];
-
-        int t = 1;
-        for (int i = 2; i < A->ndim; i++)
-            t *= A->shape[i];
-
-        for (int i = 0; i < A->shape[0]; i++) {
-            int ap = (i * at) + (aini * t);
-            int bp = (i * bt) + (bini * t);
-
-            for (int j = aini; j < aend; j++) {
-                for (int k = 0; k < t; k++, ap++, bp++)
-                    if (inc) B->ptr[bp] += A->ptr[ap];
-                    else B->ptr[bp] = A->ptr[ap];
-            }
-        }
+        cpu_fill(A, aini, aend, B, bini, bend, inc);
     }
 #ifdef cGPU
         else if ((A->isGPU())&&(B->isGPU())) {
@@ -133,14 +116,7 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
 
     //B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
-        int s = A->size / A->shape[0];
-
-        for (int i = ini; i < end; i++) {
-            int p = sind[i] * s;
-            int pb = (i - ini) * s;
-            for (int j = 0; j < s; j++, p++, pb++)
-                B->ptr[pb] = A->ptr[p];
-        }
+        cpu_select(A, B, sind, ini, end);
     } else {
         msg("unsuppoted select between devices", "Tensor::select");
     }
