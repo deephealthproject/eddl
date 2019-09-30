@@ -160,17 +160,20 @@ Layer *Net::getLayer(string name) {
 string Net::summary() {
     std::stringstream ss;
 
-    for (int i = 0; i < layers.size(); i++) {
-        ss << layers[i]->name.c_str() << " ";
+    for (int i = 0; i < vfts.size(); i++) {
+        if(vfts[i]->isplot)
+          ss << vfts[i]->name.c_str() << " ";
     }
 
     ss << "\n";
-    for (int i = 0; i < layers.size(); i++) {
-        ss << layers[i]->name << ": ";
+    for (int i = 0; i < vfts.size(); i++) {
+      if(vfts[i]->isplot) {
+        ss << vfts[i]->name << ": ";
 
-        vector<int> si = layers[i]->input->getShape();
-        vector<int> so = layers[i]->output->getShape();
+        vector<int> si = vfts[i]->input->getShape();
+        vector<int> so = vfts[i]->output->getShape();
         ss << si << "-->" << so << "\n";
+      }
     }
 
     return ss.str();
