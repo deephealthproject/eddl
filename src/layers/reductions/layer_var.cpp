@@ -52,8 +52,8 @@ LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev): R
       }
     }
 
-    LRMean *m1=new LRMean(this, axis, true,this->name+"mean_keepdims",dev);
-    LDiff *diff=new LDiff(this,m1,this->name+"diff",dev);
+    LRMean *m1=new LRMean(l, axis, true,this->name+"mean_keepdims",dev);
+    LDiff *diff=new LDiff(l, m1,this->name+"diff",dev);
     LMult *mult=new LMult(diff,diff,this->name+"mult",dev);
     LRMean *m2=new LRMean(mult, axis,keepdims,this->name+"mean_red",dev);
 
@@ -63,7 +63,10 @@ LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev): R
     layers.push_back(mult);
     layers.push_back(m2);
 
-    for(int i=0;i<layers.size();i++) layers[i]->isplot=false;
+    for(int i=0;i<layers.size();i++) {
+      layers[i]->isplot=false;
+      layers[i]->inner=true;
+    }
 
     output=m2->output;
     delta=m2->delta;
@@ -100,7 +103,10 @@ void LRVar::backward(){
 }
 
 Layer *LRVar::share(int c, int bs, vector<Layer *> p) {
-    return clone(c,bs,p,dev);
+  LRVar *n;
+  n = new LRVar(p[0], axis, keepdims, "share_" + to_string(c) + name, dev);
+  n->orig = this;
+  return n;
 }
 
 Layer *LRVar::clone(int c, int bs, vector<Layer *> p, int todev) {

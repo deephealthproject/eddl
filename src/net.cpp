@@ -160,17 +160,20 @@ Layer *Net::getLayer(string name) {
 string Net::summary() {
     std::stringstream ss;
 
-    for (int i = 0; i < layers.size(); i++) {
-        ss << layers[i]->name.c_str() << " ";
+    for (int i = 0; i < vfts.size(); i++) {
+        if(vfts[i]->isplot)
+          ss << vfts[i]->name.c_str() << " ";
     }
 
     ss << "\n";
-    for (int i = 0; i < layers.size(); i++) {
-        ss << layers[i]->name << ": ";
+    for (int i = 0; i < vfts.size(); i++) {
+      if(vfts[i]->isplot) {
+        ss << vfts[i]->name << ": ";
 
-        vector<int> si = layers[i]->input->getShape();
-        vector<int> so = layers[i]->output->getShape();
+        vector<int> si = vfts[i]->input->getShape();
+        vector<int> so = vfts[i]->output->getShape();
         ss << si << "-->" << so << "\n";
+      }
     }
 
     return ss.str();
@@ -276,7 +279,13 @@ void Net::fts() {
 
     }
     //fprintf(stdout,"\n");
-
+    if (VERBOSE) {
+      cout<<"Forward sort:";
+      for (i = 0; i < vfts.size(); i++)
+        cout<<vfts[i]->name<<"-->";
+      cout<<"\n";
+      getchar();
+    }
 }
 
 
@@ -509,19 +518,24 @@ void Net::split(int c, int todev) {
         }
 
         for (k = 0; k < layers.size(); k++)
+            if (!layers[k]->inner) {
             for (j = 0; j < layers.size(); j++) {
+              if (!layers[j]->inner) {
                 if (!isInorig(layers[j], nlayers, ind)) {
                     vlayer par;
                     for (l = 0; l < layers[j]->parent.size(); l++)
+                    if (!layers[l]->inner) {
                         if (!isInorig(layers[j]->parent[l], nlayers, ind)) break;
                         else par.push_back(nlayers[ind]);
-
+                    }
                     if (l == layers[j]->parent.size()) {
                         if (todev == DEV_CPU) nlayers.push_back(layers[j]->share(i, bs, par));
                         else nlayers.push_back(layers[j]->clone(i, bs, par, todev + devsel[i]));
                     }
                 }
+              }
             }
+          }
 
         // set outputs
         for (j = 0; j < lout.size(); j++)
@@ -543,16 +557,20 @@ void Net::split(int c, int todev) {
         snets[i]->name=cname;
         snets[i]->build(optimizer->clone(), losses, metrics);
 
+        //cout<<summary();
+        snets[i]->plot("kk.pdf");
+
+
     }
 
-
+/*
     for (int j = 0; j < layers.size(); j++)
         for (int k = 0; k < layers[j]->params.size(); k++) {
             for (int i = 0; i < snets.size(); i++) {
                 Tensor::copy(layers[j]->params[k], snets[i]->layers[j]->params[k]);
             }
         }
-
+*/
 }
 
 void Net::setmode(int m) {
@@ -569,19 +587,13 @@ void Net::forward() {
 
     for (int i = 0; i < vfts.size(); i++) {
         vfts[i]->forward();
-    }
-
-    if (VERBOSE) {
-        for (int i = 0; i < layers.size(); i++) {
-            cout << layers[i]->name << "\n";
-            fprintf(stdout, "  %s In:%f\n", layers[i]->name.c_str(), layers[i]->input->sum());
-            fprintf(stdout, "  %s Out:%f\n", layers[i]->name.c_str(), layers[i]->output->sum());
+        if (VERBOSE) {
+          cout << vfts[i]->name << "\n";
+          fprintf(stdout, "  %s In:%f\n", vfts[i]->name.c_str(), vfts[i]->input->sum_());
+          fprintf(stdout, "  %s Out:%f\n", vfts[i]->name.c_str(), vfts[i]->output->sum_());
+          getchar();
         }
-
-        getchar();
     }
-
-
 }
 
 
@@ -618,11 +630,11 @@ void Net::applygrads() {
     if (VERBOSE) {
         for (int i = 0; i < layers.size(); i++) {
             cout << layers[i]->name << "\n";
-            fprintf(stdout, "  In:%f\n", layers[i]->input->sum_abs());
-            fprintf(stdout, "  Out:%f\n", layers[i]->output->sum_abs());
-            fprintf(stdout, "  Delta:%f\n", layers[i]->delta->sum_abs());
+            fprintf(stdout, "  In:%f\n", layers[i]->input->sum_abs_());
+            fprintf(stdout, "  Out:%f\n", layers[i]->output->sum_abs_());
+            fprintf(stdout, "  Delta:%f\n", layers[i]->delta->sum_abs_());
             for (int j = 0; j < layers[i]->gradients.size(); j++) {
-                fprintf(stdout, "  %f\n", layers[i]->gradients[j]->sum_abs());
+                fprintf(stdout, "  %f\n", layers[i]->gradients[j]->sum_abs_());
             }
         }
         getchar();

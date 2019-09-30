@@ -92,9 +92,8 @@ void LDiv::backward() {
         Tensor::el_div(delta, parent[1]->output, delta, 0);
         Tensor::inc(delta, parent[0]->delta);
         //
-
-        Tensor::el_div(delta, parent[1]->output, delta, 0);
         Tensor::el_mult(delta, parent[0]->output, delta, 0);
+        Tensor::el_div(delta, parent[1]->output, delta, 0);
         delta->mult_(-1);
         Tensor::inc(delta, parent[1]->delta);
     } else {
@@ -104,15 +103,21 @@ void LDiv::backward() {
 }
 
 Layer *LDiv::share(int c, int bs, vector<Layer *> p) {
-  return clone(c,bs,p,dev);
+  LDiv *n;
+  if (binary)
+      n = new LDiv(p[0], p[1], "share_" + to_string(c) + name, dev);
+  else
+      n = new LDiv(p[0], val, "share_" + to_string(c) + name, dev);
+  n->orig = this;
+  return n;
 }
 
 Layer *LDiv::clone(int c, int bs, vector<Layer *> p, int todev) {
     LDiv *n;
     if (binary)
-        n = new LDiv(p[0], p[1], "share_" + to_string(c) + name, todev);
+        n = new LDiv(p[0], p[1], "clone_" + to_string(c) + name, todev);
     else
-        n = new LDiv(p[0], val, "share_" + to_string(c) + name, todev);
+        n = new LDiv(p[0], val, "clone_" + to_string(c) + name, todev);
     n->orig = this;
     return n;
 }
