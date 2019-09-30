@@ -189,14 +189,14 @@ int main(int argc, char **argv) {
     A->TC->rand_signed_uniform(1);
     A->ToGPU();
 
-    float fc= A->TC->sum_();
-    float fg= A->TG->sum_();
+    float fc= A->TC->sum();
+    float fg= A->TG->sum();
 
     if (fabs(fc-fg)>0.01) {
-        fprintf(stderr,"Fail sum_ %f!=%f\n",fc,fg);
+        fprintf(stderr,"Fail sum %f!=%f\n",fc,fg);
         exit(EXIT_FAILURE);
     }
-    cout<<"OK sum_\n";
+    cout<<"OK sum\n";
 
 
     //////////// MULT2D ///////////////////
@@ -257,7 +257,7 @@ int main(int argc, char **argv) {
     Tensor::add(1.0, A->TC, 1.0, D->TC, E->TC, 0);
     Tensor::add(1.0, A->TG, 1.0, D->TG, E->TG, 0);
 
-    E->check("add_");
+    E->check("add");
 
     //////////// INC /////////////////////
     A->TC->rand_uniform(100.0);

@@ -135,7 +135,7 @@ endif
 APIS_OBJ = eddl.o
 CORE_OBJ = compserv.o net.o utils.o random.o
 DESCRIPTORS_OBJ = descriptor_conv.o descriptor_pool.o
-HARDWARE_OBJ = cpu_convol.o
+HARDWARE_CPU_OBJ = cpu_comparison.o cpu_core.o cpu_generator.o cpu_math.o cpu_reduction.o cpu_conv.o
 INITIALIZERS_OBJ = initializer_indentity.o initializer_random_uniform.o initializer_glorot_uniform.o initializer_orthogonal.o initializer_random_normal.o initializer_constant.o initializer_glorot_normal.o initializer.o
 LAYERS_OBJ = layer_lstm.o layer_input.o layer_conv.o layer_mean.o layer_log10.o layer_reshape.o layer_log.o layer_mult.o layer_maxpool.o layer_embedding.o layer_globalavgpool.o layer_upsampling.o layer_add.o layer_batchnorm.o layer_div.o layer_log2.o layer_gaussian.o layer_average.o layer.o layer_globalmaxpool.o layer_reduction.o layer_sum.o layer_sum_op.o layer_gauss.o layer_transposed_conv.o layer_activation.o layer_operator.o layer_concat.o layer_maximum.o layer_diff.o layer_var.o layer_drop.o layer_pool.o layer_exp.o layer_rnn.o layer_min.o layer_pow.o layer_dense.o layer_sqrt.o layer_tensor.o layer_minimum.o layer_abs.o layer_avgpool.o layer_matmul.o layer_uniform.o layer_max.o layer_subtract.o layer_generator.o layer_transpose.o
 LOSSES_OBJ = loss_mean_squared_error.o loss_soft_cross_entropy.o loss.o loss_cross_entropy.o
@@ -144,7 +144,7 @@ OPTIMIZERS_OBJ = optim_adam.o optim.o optim_nadam.o optim_adagrad.o optim_sgd.o 
 TENSOR_OBJ = tensor.o tensor_comparison.o tensor_core.o tensor_create.o tensor_generator.o tensor_math.o tensor_reduction.o tensor_serialization.o tensor_activations.o tensor_conv.o tensor_losses.o tensor_metrics.o tensor_pool.o
 
 # Join groups
-OBJ := $(APIS_OBJ) $(CORE_OBJ) $(DESCRIPTORS_OBJ) $(HARDWARE_OBJ) $(INITIALIZERS_OBJ) $(LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(TENSOR_OBJ)
+OBJ := $(APIS_OBJ) $(CORE_OBJ) $(DESCRIPTORS_OBJ) $(HARDWARE_CPU_OBJ) $(INITIALIZERS_OBJ) $(LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(TENSOR_OBJ)
 
 ifeq ($(CORE),1)  # CPU
 all: $(GPU_OBJ) $(OBJ) example_mlp example_dae_class example_predict example_dae example_conv example_ae example_test example_test_conv example_gpu example_load_save example_tensor example_temp
@@ -211,8 +211,23 @@ tensor_metrics.o: $(SRC_PATH)/tensor/nn/tensor_metrics.cpp $(SRC_PATH)/tensor/nn
 tensor_pool.o: $(SRC_PATH)/tensor/nn/tensor_pool.cpp $(SRC_PATH)/tensor/nn/tensor_nn.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/nn/tensor_pool.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
-cpu_convol.o: $(SRC_PATH)/hardware/cpu/cpu_convol.cpp $(SRC_PATH)/hardware/cpu/cpu_convol.h
-	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/cpu_convol.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+cpu_conv.o: $(SRC_PATH)/hardware/cpu/nn/cpu_conv.cpp $(SRC_PATH)/hardware/cpu/nn/cpu_nn.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/nn/cpu_conv.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+cpu_comparison.o: $(SRC_PATH)/hardware/cpu/cpu_comparison.cpp $(SRC_PATH)/hardware/cpu/cpu_hw.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/cpu_comparison.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+cpu_core.o: $(SRC_PATH)/hardware/cpu/cpu_core.cpp $(SRC_PATH)/hardware/cpu/cpu_hw.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/cpu_core.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+cpu_generator.o: $(SRC_PATH)/hardware/cpu/cpu_generator.cpp $(SRC_PATH)/hardware/cpu/cpu_hw.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/cpu_generator.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+cpu_math.o: $(SRC_PATH)/hardware/cpu/cpu_math.cpp $(SRC_PATH)/hardware/cpu/cpu_hw.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/cpu_math.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+cpu_reduction.o: $(SRC_PATH)/hardware/cpu/cpu_reduction.cpp $(SRC_PATH)/hardware/cpu/cpu_hw.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/cpu_reduction.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 optim_adam.o: $(SRC_PATH)/optimizers/optim_adam.cpp $(SRC_PATH)/optimizers/optim.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/optimizers/optim_adam.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@

@@ -135,5 +135,7 @@ If you are not a C++ fan, try [PyEDDL](https://github.com/deephealthproject/pyed
 
 # FAQs
 
-- **When I run an example from `examples/` I get `segmentation fault (core dumped)`**: This is probably because your processor does not support 
-AVX instructions. Try to compile the source with the optimization flags: `OPT=2` or `OPT=3`.
+- **When I run an example from `examples/` I get `segmentation fault (core dumped)`**: 
+    - **CPU**: This is probably because your processor does not support 
+    AVX instructions. Try to compile the source with the optimization flags: `OPT=2` or `OPT=3` (uppercase). 
+    - **GPU**: Make sure you are using the computing service: `CS_GPU`.
