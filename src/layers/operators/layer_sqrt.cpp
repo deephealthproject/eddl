@@ -62,12 +62,15 @@ int LSqrt::total_layers = 0;
   }
 
   Layer *LSqrt::share(int c, int bs, vector<Layer *> p) {
-    return clone(c,bs,p,dev);
+    LSqrt *n;
+    n = new LSqrt(p[0], "share_" + to_string(c) + name, dev);
+    n->orig = this;
+    return n;
   }
 
   Layer *LSqrt::clone(int c, int bs, vector<Layer *> p, int todev) {
     LSqrt *n;
-    n = new LSqrt(p[0], "share_" + to_string(c) + name, todev);
+    n = new LSqrt(p[0], "clone_" + to_string(c) + name, todev);
     n->orig = this;
     return n;
   }

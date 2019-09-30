@@ -86,7 +86,10 @@ void LRMean::backward(){
 }
 
 Layer *LRMean::share(int c, int bs, vector<Layer *> p) {
-    return clone(c,bs,p,dev);
+  LRMean *n;
+  n = new LRMean(p[0], axis, keepdims, "share_" + to_string(c) + name,dev);
+  n->orig = this;
+  return n;
 }
 
 Layer *LRMean::clone(int c, int bs, vector<Layer *> p, int todev) {
