@@ -18,6 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "tensor.h"
+#include "../hardware/cpu/cpu_hw.h"
 
 #ifdef cGPU
 #include "../hardware/gpu/tensor_cuda.h"

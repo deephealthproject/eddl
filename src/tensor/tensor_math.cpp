@@ -16,10 +16,12 @@
 // To collaborate please contact rparedes@prhlt.upv.es
 //
 /////////////////////////////////////////////////////////////////////////////
-
-#include "tensor.h"
 #include <cmath>
 #include <limits>
+
+
+#include "tensor.h"
+#include "../hardware/cpu/cpu_hw.h"
 
 #ifdef cGPU
 #include "../hardware/gpu/tensor_cuda.h"

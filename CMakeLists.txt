@@ -122,6 +122,7 @@ include_directories(src)
 include_directories(src/apis)
 include_directories(src/callbacks)
 include_directories(src/hardware/cpu)
+include_directories(src/hardware/cpu/nn)
 include_directories(src/hardware/gpu)
 include_directories(src/initializers)
 include_directories(src/layers)
@@ -145,8 +146,13 @@ SET(CPP_SOURCES
         src/apis/eddl.cpp
         src/apis/eddl.h
         src/callbacks/callbacks.h
-        src/hardware/cpu/cpu_convol.cpp
-        src/hardware/cpu/cpu_convol.h
+        src/hardware/cpu/cpu_hw.h
+        src/hardware/cpu/cpu_comparison.cpp
+        src/hardware/cpu/cpu_core.cpp
+        src/hardware/cpu/cpu_generator.cpp
+        src/hardware/cpu/cpu_math.cpp
+        src/hardware/cpu/cpu_reduction.cpp
+        src/hardware/cpu/nn/cpu_conv.cpp
         src/initializers/initializer.cpp
         src/initializers/initializer.h
         src/initializers/initializer_constant.cpp

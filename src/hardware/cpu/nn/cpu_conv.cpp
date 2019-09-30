@@ -23,7 +23,7 @@
 #include <stdlib.h>     /* malloc, free, rand */
 #include <iostream>
 
-#include "cpu_convol.h"
+#include "cpu_nn.h"
 
 
 float get_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize)
@@ -119,7 +119,6 @@ void cpu_conv2D(ConvolDescriptor *D)
 
 }
 
-
 void cpu_conv2D_grad(ConvolDescriptor *D)
 {
   //return;
@@ -167,10 +166,6 @@ void cpu_conv2D_back(ConvolDescriptor *D)
 }
 
 
-
-///////////////////
-// POOLING
-//////////////////
 void cpu_mpool2D(PoolDescriptor *D)
 {
   int i,j,k,ki,kj;
@@ -220,17 +215,3 @@ void cpu_mpool2D_back(PoolDescriptor *D)
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-//////////////////////////////////
