@@ -59,15 +59,15 @@ CXX = g++
 CXXSOFLAGS = -shared
 ifeq ($(OPT),1)
 $(info set AVX)
-CXXFLAGS = -std=c++11  -mavx -O3 -pthread
+CXXFLAGS = -std=c++11  -fopenmp -mavx -O3 -pthread
 endif
 ifeq ($(OPT),2)
 $(info set SSE)
-CXXFLAGS = -std=c++11 -msse -O3 -pthread
+CXXFLAGS = -std=c++11 -fopenmp -msse -O3 -pthread
 endif
 ifeq ($(OPT),3)
 $(info set no opt)
-CXXFLAGS = -std=c++11 -O3 -pthread
+CXXFLAGS = -std=c++11 -fopenmp -O3 -pthread
 endif
 ifeq ($(OPT),4)
 $(info set Debug)
