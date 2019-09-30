@@ -43,24 +43,7 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
 
     B->tsem->lock();
     if (A->isCPU()) {
-        if (axis == 0) {
-            if (!incB) for (int i = 0; i < A->shape[1]; ++i) B->ptr[i] = 0;
-
-            int p = 0;
-            for (int i = 0; i < A->shape[0]; ++i) {
-                for (int j = 0; j < A->shape[1]; ++j, p++)
-                    B->ptr[j] += A->ptr[p];
-            }
-
-        } else {
-            if (!incB) for (int i = 0; i < A->shape[0]; ++i) B->ptr[i] = 0;
-
-            int p = 0;
-            for (int i = 0; i < A->shape[0]; ++i) {
-                for (int j = 0; j < A->shape[1]; ++j, p++)
-                    B->ptr[i] += A->ptr[p];
-            }
-        }
+        cpu_reduce_sum2D(A, B, axis, incB);
     }
 #ifdef cGPU
     else if (A->isGPU())
@@ -87,9 +70,7 @@ void Tensor::reduceTosum(Tensor *A, Tensor *B, int axis) {
 
     B->set(0.0);
     if (A->isCPU()) {
-        for (int i = 0; i < B->size; i++)
-            for (int j = 0; j < A->shape[axis]; j++)
-                B->ptr[i] += A->ptr[j];
+        cpu_reduceTosum(A, B, axis);
     }
 #ifdef cGPU
     else if (A->isGPU())

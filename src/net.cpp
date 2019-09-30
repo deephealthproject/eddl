@@ -574,8 +574,8 @@ void Net::forward() {
     if (VERBOSE) {
         for (int i = 0; i < layers.size(); i++) {
             cout << layers[i]->name << "\n";
-            fprintf(stdout, "  %s In:%f\n", layers[i]->name.c_str(), layers[i]->input->sum_());
-            fprintf(stdout, "  %s Out:%f\n", layers[i]->name.c_str(), layers[i]->output->sum_());
+            fprintf(stdout, "  %s In:%f\n", layers[i]->name.c_str(), layers[i]->input->sum());
+            fprintf(stdout, "  %s Out:%f\n", layers[i]->name.c_str(), layers[i]->output->sum());
         }
 
         getchar();
@@ -618,11 +618,11 @@ void Net::applygrads() {
     if (VERBOSE) {
         for (int i = 0; i < layers.size(); i++) {
             cout << layers[i]->name << "\n";
-            fprintf(stdout, "  In:%f\n", layers[i]->input->sum_abs_());
-            fprintf(stdout, "  Out:%f\n", layers[i]->output->sum_abs_());
-            fprintf(stdout, "  Delta:%f\n", layers[i]->delta->sum_abs_());
+            fprintf(stdout, "  In:%f\n", layers[i]->input->sum_abs());
+            fprintf(stdout, "  Out:%f\n", layers[i]->output->sum_abs());
+            fprintf(stdout, "  Delta:%f\n", layers[i]->delta->sum_abs());
             for (int j = 0; j < layers[i]->gradients.size(); j++) {
-                fprintf(stdout, "  %f\n", layers[i]->gradients[j]->sum_abs_());
+                fprintf(stdout, "  %f\n", layers[i]->gradients[j]->sum_abs());
             }
         }
         getchar();

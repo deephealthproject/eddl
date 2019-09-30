@@ -23,12 +23,7 @@ int Tensor::equal(Tensor *A, Tensor *B) {
     if (!eqsize(A,B)) return 0;
 
     if (A->isCPU()) {
-        for (int i = 0; i < A->size; i++)
-            if (fabs(A->ptr[i]-B->ptr[i])>0.001) {
-                fprintf(stderr,"\n>>>>>>>>>>\n");
-                fprintf(stderr,"%f != %f\n",A->ptr[i],B->ptr[i]);
-                return 0;
-            }
+        cpu_equal(A, B);
     }
 #ifdef cGPU
     else if (A->isGPU())

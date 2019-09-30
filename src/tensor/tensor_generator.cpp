@@ -1,4 +1,3 @@
-#include "../random.h"
 
 #include "tensor.h"
 #include "../hardware/cpu/cpu_hw.h"
@@ -13,7 +12,7 @@ using namespace std;
 
 void Tensor::rand_uniform(float v) {
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = uniform() * v;
+        cpu_rand_uniform(this, v);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -32,7 +31,7 @@ void Tensor::rand_uniform(float v) {
 
 void Tensor::rand_signed_uniform(float v) {
     if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = signed_uniform() * v;
+        cpu_rand_signed_uniform(this, v);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -52,9 +51,7 @@ void Tensor::rand_signed_uniform(float v) {
 
 void Tensor::rand_binary(float v) {
     if (isCPU()) {
-        for (int i = 0; i < size; ++i)
-            if (uniform() < v) ptr[i] = 1.0;
-            else ptr[i] = 0.0;
+        cpu_rand_binary(this, v);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -73,12 +70,7 @@ void Tensor::rand_binary(float v) {
 
 void Tensor::rand_normal(float m, float s, bool fast_math) {
     if (isCPU()) {
-        if(fast_math){
-            for (int i = 0; i < size; ++i) ptr[i] = fast_randn(m, s, rand());
-        }else{
-            for (int i = 0; i < size; ++i) ptr[i] = slow_randn(m, s);
-        }
-
+        cpu_rand_normal(this, m, s, fast_math);
     }
 #ifdef cGPU
     else if (isGPU())

@@ -150,8 +150,6 @@ public:
     void ceil_(); // Todo
     static Tensor* ceil(Tensor *A);
 
-    void clamp_aux(float min, float max, int mode);
-
     void clamp_(float min, float max); // Todo
     static Tensor* clamp(Tensor *A, float min, float max);
 
@@ -190,10 +188,10 @@ public:
     static Tensor* logn(Tensor *A);
 
     float max();
-    static float max(Tensor *A);
+//    static float max(Tensor *A);
 
     float min();
-    static float min(Tensor *A);
+//    static float min(Tensor *A);
 
     void mod_(float v); // Todo
     static Tensor* mod(Tensor *A, float v);
@@ -207,7 +205,7 @@ public:
     static Tensor* neg(Tensor *A);
 
     void normalize_(float min=0.0f, float max=1.0f); // Todo
-    static Tensor* normalize_(Tensor *A, float min=0.0f, float max=1.0f);
+    static Tensor* normalize(Tensor *A, float min=0.0f, float max=1.0f);
 
     void pow_(float exp);
     static Tensor* pow(Tensor *A);
@@ -246,12 +244,12 @@ public:
     void sub_(float v);
     static Tensor* sub(Tensor *A, Tensor *B);
 
-    float sum_();
-    static Tensor* sum(Tensor *A);
+    float sum();
+//    static Tensor* sum(Tensor *A);
     static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
     static void sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
 
-    float sum_abs_();
+    float sum_abs();
     static Tensor* sum_abs(Tensor *A);
 
     void tan_(); // Todo

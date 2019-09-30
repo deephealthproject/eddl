@@ -189,8 +189,8 @@ int main(int argc, char **argv) {
     A->TC->rand_signed_uniform(1);
     A->ToGPU();
 
-    float fc= A->TC->sum_();
-    float fg= A->TG->sum_();
+    float fc= A->TC->sum();
+    float fg= A->TG->sum();
 
     if (fabs(fc-fg)>0.01) {
         fprintf(stderr,"Fail sum %f!=%f\n",fc,fg);

@@ -336,14 +336,14 @@ int main(int argc, char **argv) {
     cout << "\n" << "sum: =============" << endl;
     t = Tensor::range(0.0, 10.0, 1.0);
     t->print();
-    cout << "sum:" << t->sum_() << endl;
+    cout << "sum:" << t->sum() << endl;
     t->print();
 
     // TEST: sum_abs
     cout << "\n" << "sum: =============" << endl;
     t = Tensor::range(-5.0, 5.0, 1.0);
     t->print();
-    cout << "sum_abs:" << t->sum_abs_() << endl;
+    cout << "sum_abs:" << t->sum_abs() << endl;
     t->print();
 
 
