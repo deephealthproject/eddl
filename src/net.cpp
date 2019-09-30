@@ -171,7 +171,9 @@ string Net::summary() {
         ss << vfts[i]->name << ": ";
 
         vector<int> si = vfts[i]->input->getShape();
+        si.erase(si.begin());
         vector<int> so = vfts[i]->output->getShape();
+        so.erase(so.begin());
         ss << si << "-->" << so << "\n";
       }
     }
@@ -447,8 +449,13 @@ void Net::set_compserv(CompServ *cs){
                 cout << "set threads to " << nthreads << "\n";
 
                 Eigen::initParallel();
-                Eigen::setNbThreads(1);
-                split(nthreads, DEV_CPU);
+                Eigen::setNbThreads(nthreads);
+
+                split(1, DEV_CPU);
+
+                int n = Eigen::nbThreads( );
+                cout << "---> threads = " << n << "\n";
+
             } else {
                 msg("Net and Layers device missmatch", "Net.build");
             }
