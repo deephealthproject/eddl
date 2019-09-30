@@ -28,8 +28,9 @@ using namespace std;
 
 int LDense::total_layers = 0;
 
-LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev) : LinLayer("Dense", dev) {
+LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev) : LinLayer(name, dev) {
     if (parent->output->ndim != 2) msg("LDense only works over 2D tensors", "LDense");
+
     if(name.empty()) this->name = "dense" + to_string(++total_layers);
     this->ndim = ndim;
     this->use_bias = use_bias;
