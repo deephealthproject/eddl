@@ -20,10 +20,18 @@
 #ifndef _TENSOR_CUDA_
 #define _TENSOR_CUDA_
 
+#include <stdio.h>
 #include <cuda.h>
-#include <curand.h>
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
+
+#include "tensor_cuda.h"
+#include "tensor_kernels.h"
+
+
+void check_cublas(cublasStatus_t status, const char *f);
+
+void check_curand(curandStatus_t status, const char *f);
 
 void check_cuda(cudaError_t err,const char *msg);
 void gpu_set_device(int device);

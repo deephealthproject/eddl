@@ -28,8 +28,8 @@
 __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padr, int padc, float* indX, float* indY);
 __global__ void maxpool2d_back(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, int sr,int sc,int padr, int padc, float* indX, float* indY, float* D, float* ID);
 
-__global__ void  gpu_addbias_k(float *O, int b, int r,int c,int nk,float *bias);
-__global__ void  gpu_deltabias_k(float *D, int batch, int r,int c,int nk,float *bias);
+__global__ void gpu_addbias_k(float *O, int b, int r,int c,int nk,float *bias);
+__global__ void gpu_deltabias_k(float *D, int batch, int r,int c,int nk,float *bias);
 
 __global__ void gpu_im2col_k(float* I, float *ptrI, int b,int irows,int icols, int idepth, float* K, int nk, int kr,int kc, float* O,int orows,int ocols,int sr,int sc,int pad,int col2im);
 
@@ -38,7 +38,7 @@ __global__ void fill(float *aptr,float *bptr,int t,int aini,int at,int bini,int 
 
 __global__ void set(float* a, float v, long int rows, long int cols);
 __global__ void mult(float* a, float v, long int rows, long int cols);
-__global__ void sum(float* a, float v, long int rows, long int cols);
+__global__ void add(float* a, float v, long int rows, long int cols);
 
 
 __global__ void log(float* a, long int rows, long int cols);
@@ -53,7 +53,7 @@ __global__ void mask(float* a, float v, long int rows, long int cols);
 
 __global__ void reduce_array_sum(float* a, long int ops, float* result);
 
-__global__ void sum(float scA,float* a,float scB,float *b, float *c,long int incC, long int size);
+__global__ void addc(float scA,float* a,float scB,float *b, float *c,long int incC, long int size);
 __global__ void el_mult(float* a,float *b, float *c, long int incC, long int rows, long int cols);
 __global__ void el_div(float* a, float *b, float *c, long int incC, long int rows, long int cols);
 

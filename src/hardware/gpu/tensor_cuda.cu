@@ -19,13 +19,105 @@
 
 
 #include <stdio.h>
+#include <cuda.h>
+#include <cuda_runtime_api.h>
+#include <cublas_v2.h>
+
 #include "tensor_cuda.h"
 #include "tensor_kernels.h"
+
+#include "../../tensor/tensor.h"
+#include "../../descriptors/descriptors.h"
 
 cublasHandle_t hcublas[64];
 curandGenerator_t random_generator[64];
 cublasStatus_t bstatus;
 curandStatus_t rstatus;
+
+extern cublasHandle_t hcublas[64];
+extern curandGenerator_t random_generator[64];
+
+// CUDA, NVIDIA compute capabilities:
+// https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#compute-capabilities
+// -----------------------------------------------------------------
+//                      GRID
+// Maximum dimensionality of grid of thread blocks:	3
+// Maximum x-dimension of a grid of thread blocks	(2^31)-1
+// Maximum y- or z-dimension of a grid of thread blocks: 65535
+//                   THREAD BLOCK
+// Maximum dimensionality of thread block:	3
+// Maximum x- or y-dimension of a block:	1024
+// Maximum z-dimension of a block:	64
+//
+// Maximum number of threads per block:	1024
+// -----------------------------------------------------------------
+
+// MAX THREADS PER BLOCK
+#define MAX_TPB 1024
+
+#define setDims(A) int r,c;r=(A->size/MAX_TPB);if (r==0) {r=1;c=A->size;}else {if (A->size%MAX_TPB) r++;c=MAX_TPB;}dim3 dimGrid(r);dim3 dimBlock(c);
+
+
+static const char *_curandGetErrorEnum(curandStatus_t error)
+{
+    switch (error)
+    {
+        case CURAND_STATUS_ALLOCATION_FAILED:
+            return "CURAND_STATUS_ALLOCATION_FAILED";
+            break;
+        case CURAND_STATUS_INITIALIZATION_FAILED:
+            return "CURAND_STATUS_INITIALIZATION_FAILED";
+            break;
+        case CURAND_STATUS_VERSION_MISMATCH:
+            return "CURAND_STATUS_VERSION_MISMATCH";
+            break;
+
+        case CURAND_STATUS_TYPE_ERROR:
+            return "CURAND_STATUS_TYPE_ERROR";
+            break;
+
+        case CURAND_STATUS_OUT_OF_RANGE:
+            return "CURAND_STATUS_OUT_OF_RANGE";
+            break;
+
+        case CURAND_STATUS_PREEXISTING_FAILURE:
+            return "CURAND_STATUS_PREEXISTING_FAILURE";
+            break;
+
+        case CURAND_STATUS_NOT_INITIALIZED:
+            return "CURAND_STATUS_NOT_INITIALIZED";
+            break;
+
+        case CURAND_STATUS_DOUBLE_PRECISION_REQUIRED:
+            return "CURAND_STATUS_DOUBLE_PRECISION_REQUIRED";
+            break;
+        case CURAND_STATUS_LENGTH_NOT_MULTIPLE:
+            return "CURAND_STATUS_LENGTH_NOT_MULTIPLE";
+        default:
+            fprintf(stderr,"Not all curand errors here %d\n",error);
+            exit(-1);
+    }
+
+}
+
+void check_cublas(cublasStatus_t status, const char *f)
+{
+    if ( status!=  CUBLAS_STATUS_SUCCESS)
+    {
+        fprintf(stderr,"Error in cublas execution in %s\n",f);
+        exit(1);
+    }
+}
+
+void check_curand(curandStatus_t status, const char *f)
+{
+    if ( status!=  CURAND_STATUS_SUCCESS)
+    {
+        fprintf(stderr,"Error in curand execution in %s\n",_curandGetErrorEnum(status));
+        exit(1);
+    }
+}
+
 
 
 void check_cuda(cudaError_t err,const char *msg)

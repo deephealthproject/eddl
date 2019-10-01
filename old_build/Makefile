@@ -125,7 +125,7 @@ endif
 
 GPU_LIBFLAGS := -lcudart -lcublas -lcurand
 GPU_CXX := $(cuda_path)bin/nvcc
-GPU_OBJ = tensor_cuda.o tensor_cuda_op.o tensor_kernels.o
+GPU_OBJ = tensor_cuda.o tensor_kernels.o gpu_comparison.o gpu_core.o gpu_generator.o gpu_math.o gpu_reduction.o gpu_activations.o gpu_conv.o gpu_losses.o gpu_metrics.o gpu_pool.o
 endif
 
 endif
@@ -468,8 +468,35 @@ tensor_cuda.o: $(SRC_PATH)/hardware/gpu/tensor_cuda.cu $(SRC_PATH)/hardware/gpu/
 tensor_kernels.o: $(SRC_PATH)/hardware/gpu/tensor_kernels.cu $(SRC_PATH)/hardware/gpu/tensor_kernels.h
 	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/tensor_kernels.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
-tensor_cuda_op.o: $(SRC_PATH)/hardware/gpu/tensor_cuda_op.cu $(SRC_PATH)/hardware/gpu/tensor_cuda_op.h
-	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/tensor_cuda_op.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+gpu_comparison.o: $(SRC_PATH)/hardware/gpu/gpu_comparison.cu $(SRC_PATH)/hardware/gpu/gpu_hw.h
+	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/gpu_comparison.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+gpu_core.o: $(SRC_PATH)/hardware/gpu/gpu_core.cu $(SRC_PATH)/hardware/gpu/gpu_hw.h
+	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/gpu_core.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+gpu_generator.o: $(SRC_PATH)/hardware/gpu/gpu_generator.cu $(SRC_PATH)/hardware/gpu/gpu_hw.h
+	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/gpu_generator.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+gpu_math.o: $(SRC_PATH)/hardware/gpu/gpu_math.cu $(SRC_PATH)/hardware/gpu/gpu_hw.h
+	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/gpu_math.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+gpu_reduction.o: $(SRC_PATH)/hardware/gpu/gpu_reduction.cu $(SRC_PATH)/hardware/gpu/gpu_hw.h
+	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/gpu_reduction.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+gpu_activations.o: $(SRC_PATH)/hardware/gpu/nn/gpu_activations.cu $(SRC_PATH)/hardware/gpu/nn/gpu_nn.h
+	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/nn/gpu_activations.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+gpu_conv.o: $(SRC_PATH)/hardware/gpu/nn/gpu_conv.cu $(SRC_PATH)/hardware/gpu/nn/gpu_nn.h
+	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/nn/gpu_conv.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+gpu_losses.o: $(SRC_PATH)/hardware/gpu/nn/gpu_losses.cu $(SRC_PATH)/hardware/nn/gpu/nn/gpu_nn.h
+	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/gpu_losses.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+gpu_metrics.o: $(SRC_PATH)/hardware/gpu/nn/gpu_metrics.cu $(SRC_PATH)/hardware/gpu/nn/gpu_nn.h
+	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/nn/gpu_metrics.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+gpu_pool.o: $(SRC_PATH)/hardware/gpu/nn/gpu_pool.cu $(SRC_PATH)/hardware/gpu/nn/gpu_nn.h
+	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/nn/gpu_pool.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 
 #---------------------------------- release

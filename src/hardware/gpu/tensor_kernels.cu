@@ -246,7 +246,7 @@ __global__ void mult(float* a, float v, long int rows, long int cols)
 
 }
 
-__global__ void sum(float* a, float v, long int rows, long int cols)
+__global__ void add(float* a, float v, long int rows, long int cols)
 {
     long int ops=rows*cols;
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
@@ -360,7 +360,7 @@ __global__ void reduce_array_sum(float* a, long int ops, float* result)
 
 ///////////////////////////////////////////
 
-__global__ void sum(float scA,float* a,float scB,float *b, float *c,long int incC, long int size)
+__global__ void addc(float scA,float* a,float scB,float *b, float *c,long int incC, long int size)
 {
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
