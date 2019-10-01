@@ -77,11 +77,10 @@ public:
 class LRVar : public ReductionLayer {
 public:
     static int total_layers;
-    tshape os;
+
     vector<int> axis;
     bool keepdims;
-    Tensor *mean;
-    int rsize;
+
     vector<Layer *> layers;
 
     LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev);

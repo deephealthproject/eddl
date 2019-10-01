@@ -37,7 +37,6 @@ void reduction(ReduceDescriptor *RD){
     int d;
     int i,j,k,l,s;
 
-
     // [MEAN]: Compute items to be reduced
     if (RD->m==0) {
         d=1;
@@ -116,7 +115,7 @@ void reduction_back(ReduceDescriptor *RD)
 
   for(i=0;i<RD->index.size();i++)
     {
-        if (RD->m==2) {
+        if (RD->m>2) {
             if (RD->keepdims) {
                 int p=RD->S->ptr[i];
                 RD->ID->ptr[p]+=RD->D->ptr[i];
