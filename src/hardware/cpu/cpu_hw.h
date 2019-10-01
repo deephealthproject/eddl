@@ -15,7 +15,7 @@
 // CPU: Comparison
 int cpu_equal(Tensor *A, Tensor *B);
 
-// CPU: Core
+// CPU: Core (static)
 void cpu_transpose(Tensor *A, Tensor *B);
 void cpu_copy(Tensor *A, Tensor *B);
 void cpu_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
@@ -25,33 +25,26 @@ void cpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
 void cpu_rand_uniform(Tensor *A, float v);
 void cpu_rand_signed_uniform(Tensor *A, float v);
 void cpu_rand_binary(Tensor *A, float v);
-void cpu_rand_normal(Tensor *A, float m, float s, bool fast_math);
+void cpu_rand_normal(Tensor *A, float m, float s, bool fast_math);  // TODO: Don't like it
 
-// CPU: Math
+// CPU: Math (in-place)
 void cpu_abs_(Tensor *A);
 void cpu_acos_(Tensor *A);
 void cpu_add_(Tensor *A, float v);
-void cpu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
-void cpu_inc(Tensor *A, Tensor *B);
 void cpu_asin_(Tensor *A);
 void cpu_atan_(Tensor *A);
 void cpu_ceil_(Tensor *A);
 void cpu_clamp_(Tensor *A, float min, float max);
 void cpu_cos_(Tensor *A);
 void cpu_cosh_(Tensor *A);
-void cpu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
 void cpu_exp_(Tensor *A);
 void cpu_floor_(Tensor *A);
 void cpu_log_(Tensor *A);
 void cpu_log2_(Tensor *A);
 void cpu_log10_(Tensor *A);
 void cpu_logn_(Tensor *A, float n);
-float cpu_max(Tensor *A);
-float cpu_min(Tensor *A);
 void cpu_mod_(Tensor *A, float v);
 void cpu_mult_(Tensor *A, float v);
-void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
-void cpu_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
 void cpu_normalize_(Tensor *A, float min, float max);
 void cpu_pow_(Tensor *A, float exp);
 void cpu_reciprocal_(Tensor *A);
@@ -60,18 +53,30 @@ void cpu_round_(Tensor *A);
 void cpu_rsqrt_(Tensor *A);
 void cpu_sigmoid_(Tensor *A);
 void cpu_sign_(Tensor *A);
-void cpu_sign2(Tensor *A, Tensor *B); // TODO: Remove
 void cpu_sin_(Tensor *A);
 void cpu_sinh_(Tensor *A);
 void cpu_sqr_(Tensor *A);
 void cpu_sqrt_(Tensor *A);
-float cpu_sum(Tensor *A);
-void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
-void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
-float cpu_sum_abs(Tensor *A);
 void cpu_tan_(Tensor *A);
 void cpu_tanh_(Tensor *A);
 void cpu_trunc_(Tensor *A);
+
+// CPU: Math (static)
+void cpu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
+void cpu_inc(Tensor *A, Tensor *B);
+void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
+void cpu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
+void cpu_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
+void cpu_sign2(Tensor *A, Tensor *B); // TODO: Remove
+void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
+void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
+
+
+// CPU: Should be reductions
+float cpu_max(Tensor *A);
+float cpu_min(Tensor *A);
+float cpu_sum(Tensor *A);
+float cpu_sum_abs(Tensor *A);
 
 // CPU: Reduction
 void cpu_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);

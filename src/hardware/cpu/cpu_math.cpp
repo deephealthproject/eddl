@@ -4,6 +4,8 @@
 
 #include "cpu_hw.h"
 
+// CPU: Math (in-place) ********************************************
+
 void cpu_abs_(Tensor *A) {
     for (int i = 0; i < A->size; ++i) A->ptr[i] = ::fabs(A->ptr[i]);
 }
@@ -16,21 +18,6 @@ void cpu_add_(Tensor *A, float v) {
     for (int i = 0; i < A->size; ++i) A->ptr[i] += v;
 }
 
-void cpu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
-    for (int i = 0; i < A->size; i++)
-        if (incC) C->ptr[i] += scA * A->ptr[i] + scB * B->ptr[i];
-        else C->ptr[i] = scA * A->ptr[i] + scB * B->ptr[i];
-}
-
-
-void cpu_inc(Tensor *A, Tensor *B) {
-    B->tsem->lock();
-
-    for (int i = 0; i < A->size; i++)
-        B->ptr[i] += A->ptr[i];
-
-    B->tsem->unlock();
-}
 
 void cpu_asin_(Tensor *A){
     for (int i = 0; i < A->size; ++i) A->ptr[i] = ::asinf(A->ptr[i]);
@@ -63,12 +50,6 @@ void cpu_cosh_(Tensor *A){
     for (int i = 0; i < A->size; ++i) A->ptr[i] = ::coshf(A->ptr[i]);
 }
 
-void cpu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
-    for (int i = 0; i < A->size; i++)
-        if (incC) C->ptr[i] += A->ptr[i] / B->ptr[i];
-        else C->ptr[i] = A->ptr[i] / B->ptr[i];
-}
-
 void cpu_exp_(Tensor *A) {
     for (int i = 0; i < A->size; ++i) A->ptr[i] = ::expf(A->ptr[i]);
 }
@@ -93,21 +74,6 @@ void cpu_logn_(Tensor *A, float n) {
     for (int i = 0; i < A->size; ++i) A->ptr[i] = ::logf(A->ptr[i])/::logf(n);
 }
 
-float cpu_max(Tensor *A){
-    float max = MIN_FLOAT;
-    for (int i = 0; i < A->size; ++i) {
-        if (A->ptr[i] > max) { max = A->ptr[i]; }
-    }
-    return max;
-}
-
-float cpu_min(Tensor *A){
-    float min = MAX_FLOAT;
-    for (int i = 0; i < A->size; ++i) {
-        if (A->ptr[i] < min) { min = A->ptr[i]; }
-    }
-    return min;
-}
 
 void cpu_mod_(Tensor *A, float v){
     for (int i = 0; i < A->size; ++i) A->ptr[i] = ::fmod(A->ptr[i], v);
@@ -115,32 +81,6 @@ void cpu_mod_(Tensor *A, float v){
 
 void cpu_mult_(Tensor *A, float v) {
     for (int i = 0; i < A->size; ++i) A->ptr[i] *= v;
-}
-
-void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
-    if (!tB) {
-        if (!tA) {
-            if (!incC) *(C->ptr2) = *(B->ptr2) * (*(A->ptr2));
-            else *(C->ptr2) += *(B->ptr2) * (*(A->ptr2));
-        } else {
-            if (!incC) *(C->ptr2) = *(B->ptr2) * ((*(A->ptr2)).transpose());
-            else *(C->ptr2) += *(B->ptr2) * ((*(A->ptr2)).transpose());
-        }
-    } else {
-        if (!tA) {
-            if (!incC) *(C->ptr2) = (*(B->ptr2)).transpose() * (*(A->ptr2));
-            else *(C->ptr2) += (*(B->ptr2)).transpose() * (*(A->ptr2));
-        } else {
-            if (!incC) *(C->ptr2) = (*(B->ptr2)).transpose() * ((*(A->ptr2)).transpose());
-            else *(C->ptr2) += (*(B->ptr2)).transpose() * ((*(A->ptr2)).transpose());
-        }
-    }
-}
-
-void cpu_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
-    for (int i = 0; i < A->size; i++)
-        if (incC) C->ptr[i] += A->ptr[i] * B->ptr[i];
-        else C->ptr[i] = A->ptr[i] * B->ptr[i];
 }
 
 void cpu_normalize_(Tensor *A, float min, float max){
@@ -190,12 +130,6 @@ void cpu_sign_(Tensor *A){
     };
 }
 
-void cpu_sign2(Tensor *A, Tensor *B){
-    // TODO: Remove
-    for (int i = 0; i < A->size; i++)
-        if (A->ptr[i] < 0) B->ptr[i] = -1.0;
-        else B->ptr[i] = 1.0;
-}
 
 void cpu_sin_(Tensor *A){
     for (int i = 0; i < A->size; ++i) A->ptr[i] = ::sinf(A->ptr[i]);
@@ -215,11 +149,77 @@ void cpu_sqrt_(Tensor *A) {
     for (int i = 0; i < A->size; ++i) A->ptr[i] = ::sqrtf(A->ptr[i]);
 }
 
+void cpu_tan_(Tensor *A){
+    for (int i = 0; i < A->size; ++i) A->ptr[i] = ::tanf(A->ptr[i]);
+}
 
-float cpu_sum(Tensor *A) {
-    float sum = 0.0;
-    for (int i = 0; i < A->size; ++i) sum += A->ptr[i];
-    return sum;
+void cpu_tanh_(Tensor *A){
+    for (int i = 0; i < A->size; ++i) A->ptr[i] = ::tanhf(A->ptr[i]);
+}
+
+void cpu_trunc_(Tensor *A){
+    for (int i = 0; i < A->size; ++i) A->ptr[i] = (int)(A->ptr[i]);
+}
+
+
+
+// CPU: Math (static) ***************************
+
+void cpu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
+    for (int i = 0; i < A->size; i++)
+        if (incC) C->ptr[i] += scA * A->ptr[i] + scB * B->ptr[i];
+        else C->ptr[i] = scA * A->ptr[i] + scB * B->ptr[i];
+}
+
+
+void cpu_inc(Tensor *A, Tensor *B) {
+    B->tsem->lock();
+
+    for (int i = 0; i < A->size; i++)
+        B->ptr[i] += A->ptr[i];
+
+    B->tsem->unlock();
+}
+
+void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
+    if (!tB) {
+        if (!tA) {
+            if (!incC) *(C->ptr2) = *(B->ptr2) * (*(A->ptr2));
+            else *(C->ptr2) += *(B->ptr2) * (*(A->ptr2));
+        } else {
+            if (!incC) *(C->ptr2) = *(B->ptr2) * ((*(A->ptr2)).transpose());
+            else *(C->ptr2) += *(B->ptr2) * ((*(A->ptr2)).transpose());
+        }
+    } else {
+        if (!tA) {
+            if (!incC) *(C->ptr2) = (*(B->ptr2)).transpose() * (*(A->ptr2));
+            else *(C->ptr2) += (*(B->ptr2)).transpose() * (*(A->ptr2));
+        } else {
+            if (!incC) *(C->ptr2) = (*(B->ptr2)).transpose() * ((*(A->ptr2)).transpose());
+            else *(C->ptr2) += (*(B->ptr2)).transpose() * ((*(A->ptr2)).transpose());
+        }
+    }
+}
+
+void cpu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
+    for (int i = 0; i < A->size; i++)
+        if (incC) C->ptr[i] += A->ptr[i] / B->ptr[i];
+        else C->ptr[i] = A->ptr[i] / B->ptr[i];
+}
+
+
+void cpu_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
+    for (int i = 0; i < A->size; i++)
+        if (incC) C->ptr[i] += A->ptr[i] * B->ptr[i];
+        else C->ptr[i] = A->ptr[i] * B->ptr[i];
+}
+
+
+void cpu_sign2(Tensor *A, Tensor *B){
+    // TODO: Remove
+    for (int i = 0; i < A->size; i++)
+        if (A->ptr[i] < 0) B->ptr[i] = -1.0;
+        else B->ptr[i] = 1.0;
 }
 
 void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
@@ -238,20 +238,32 @@ void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
     }
 }
 
+// CPU: Should be reductions ***************************
+
+float cpu_max(Tensor *A){
+    float max = MIN_FLOAT;
+    for (int i = 0; i < A->size; ++i) {
+        if (A->ptr[i] > max) { max = A->ptr[i]; }
+    }
+    return max;
+}
+
+float cpu_min(Tensor *A){
+    float min = MAX_FLOAT;
+    for (int i = 0; i < A->size; ++i) {
+        if (A->ptr[i] < min) { min = A->ptr[i]; }
+    }
+    return min;
+}
+
+float cpu_sum(Tensor *A) {
+    float sum = 0.0;
+    for (int i = 0; i < A->size; ++i) sum += A->ptr[i];
+    return sum;
+}
+
 float cpu_sum_abs(Tensor *A) {
     float sum = 0.0;
     for (int i = 0; i < A->size; ++i) sum += ::fabs(A->ptr[i]);
     return sum;
-}
-
-void cpu_tan_(Tensor *A){
-    for (int i = 0; i < A->size; ++i) A->ptr[i] = ::tanf(A->ptr[i]);
-}
-
-void cpu_tanh_(Tensor *A){
-    for (int i = 0; i < A->size; ++i) A->ptr[i] = ::tanhf(A->ptr[i]);
-}
-
-void cpu_trunc_(Tensor *A){
-    for (int i = 0; i < A->size; ++i) A->ptr[i] = (int)(A->ptr[i]);
 }

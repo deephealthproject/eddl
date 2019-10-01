@@ -152,7 +152,11 @@ SET(CPP_SOURCES
         src/hardware/cpu/cpu_generator.cpp
         src/hardware/cpu/cpu_math.cpp
         src/hardware/cpu/cpu_reduction.cpp
+        src/hardware/cpu/nn/cpu_activations.cpp
         src/hardware/cpu/nn/cpu_conv.cpp
+        src/hardware/cpu/nn/cpu_losses.cpp
+        src/hardware/cpu/nn/cpu_metrics.cpp
+        src/hardware/cpu/nn/cpu_pool.cpp
         src/initializers/initializer.cpp
         src/initializers/initializer.h
         src/initializers/initializer_constant.cpp

@@ -14,11 +14,7 @@ void ReLu(Tensor *A, Tensor *B) {
 
     B->tsem->lock();
     if (A->isCPU()) {
-
-        for (int i = 0; i < A->size; i++) {
-            if (A->ptr[i] > 0.0) B->ptr[i] = A->ptr[i];
-            else B->ptr[i] = 0.0;
-        }
+        cpu_relu(A, B);
     }
 #ifdef cGPU
     else if (A->isGPU())
@@ -42,11 +38,7 @@ void D_ReLu(Tensor *D, Tensor *I, Tensor *PD) {
 
     PD->tsem->lock();
     if (D->isCPU()) {
-
-        for (int i = 0; i < D->size; i++) {
-            if (I->ptr[i] > 0.0) PD->ptr[i] = D->ptr[i];
-            else PD->ptr[i] = 0.0;
-        }
+        cpu_d_relu(D, I, PD);
     }
 #ifdef cGPU
     else if (D->isGPU())
@@ -72,19 +64,7 @@ void Softmax(Tensor *A, Tensor *B) {
     B->tsem->lock();
 
     if (A->isCPU()) {
-        float max, sum;
-
-
-        for (int i = 0; i < A->shape[0]; i++) {
-
-            max = (*A->ptr2).col(i).maxCoeff();
-            for (int j = 0; j < A->shape[1]; j++)
-                (*B->ptr2)(j, i) = std::exp((*A->ptr2)(j, i) - max);
-
-            sum = (*B->ptr2).col(i).sum();
-            for (int j = 0; j < B->shape[1]; j++)
-                (*B->ptr2)(j, i) = (*B->ptr2)(j, i) / sum;
-        }
+        cpu_softmax(A, B);
     }
 #ifdef cGPU
     else if (A->isGPU())
@@ -107,14 +87,8 @@ void D_Softmax(Tensor *D, Tensor *I, Tensor *PD) {
     if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_Softmax");
     if (D->ndim != 2) msg("D_Softmax only over 2D Tensor (batch x delta_probs)", "Tensor::D_Softmax");
 
-
     if (D->isCPU()) {
-        PD->tsem->lock();
-
-        for (int i = 0; i < D->size; i++)
-            PD->ptr[i] += D->ptr[i] * (I->ptr[i] * (1.0 - I->ptr[i]));
-
-        PD->tsem->unlock();
+       cpu_d_softmax(D, I, PD);
     }
 #ifdef cGPU
     else if (D->isGPU())
@@ -134,6 +108,5 @@ void D_Softmax(Tensor *D, Tensor *I, Tensor *PD) {
 
     }
 #endif
-
 
 }

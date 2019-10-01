@@ -23,13 +23,31 @@
 #include "../../../tensor/tensor.h"
 #include "../../../descriptors/descriptors.h"
 
+// Aux
+float get_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize);
+void add_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize,float val);
 
+// Activations
+void cpu_relu(Tensor *A, Tensor *B);
+void cpu_d_relu(Tensor *D, Tensor *I, Tensor *PD);
+void cpu_softmax(Tensor *A, Tensor *B);
+void cpu_d_softmax(Tensor *D, Tensor *I, Tensor *PD);
+
+// Losses
+void cpu_cent(Tensor *A, Tensor *B, Tensor *C);
+
+// Metrics
+int cpu_accuracy(Tensor *A, Tensor *B);
+
+// Conv
 void cpu_conv2D(ConvolDescriptor *D);
 void cpu_conv2D_grad(ConvolDescriptor *D);
 void cpu_conv2D_back(ConvolDescriptor *D);
 
+// Pool
 void cpu_mpool2D(PoolDescriptor*D);
 void cpu_mpool2D_back(PoolDescriptor *D);
+
 
 
 #endif //EDDL_CPU_NN_H

@@ -17,13 +17,7 @@ int accuracy(Tensor *A, Tensor *B) {
     B->tsem->lock();
 
     if (A->isCPU()) {
-        int aind, bind;
-
-        for (int i = 0; i < A->shape[0]; i++) {
-            (*A->ptr2).col(i).maxCoeff(&aind);
-            (*B->ptr2).col(i).maxCoeff(&bind);
-            if (aind == bind) acc++;
-        }
+        acc = cpu_accuracy(A, B);
     }
 #ifdef cGPU
     else if (A->isGPU())

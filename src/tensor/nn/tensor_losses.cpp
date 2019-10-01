@@ -14,12 +14,7 @@ void cent(Tensor *A, Tensor *B, Tensor *C) {
 
     C->tsem->lock();
     if (A->isCPU()) {
-
-        for (int i = 0; i < A->size; i++) {
-            C->ptr[i] = 0;
-            if (A->ptr[i] != 0.0) C->ptr[i] -= A->ptr[i] * std::log(B->ptr[i]+0.00001);
-            if (A->ptr[i] != 1.0) C->ptr[i] -= (1.0 - A->ptr[i]) * std::log(1.0 - B->ptr[i]+0.00001);
-        }
+        cpu_cent(A, B, C);
     }
 #ifdef cGPU
     else if (A->isGPU())

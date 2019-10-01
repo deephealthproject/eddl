@@ -46,7 +46,6 @@ void MPool2D_back(PoolDescriptor *D) {
 
     D->ID->tsem->lock();
     if (D->I->isCPU()) {
-
         cpu_mpool2D_back(D);
     }
 #ifdef cGPU
