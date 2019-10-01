@@ -45,6 +45,8 @@ LDiff::LDiff(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, de
     binary=1;
 
     input=l1->output;
+    tin.push_back(l1->output);
+    tin.push_back(l2->output);
 
     output = new Tensor(l1->output->getShape(), dev);
     delta = new Tensor(l1->output->getShape(), dev);
@@ -53,8 +55,6 @@ LDiff::LDiff(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, de
     l2->addchild(this);
     addparent(l1);
     addparent(l2);
-
-
 }
 
 /**
@@ -74,6 +74,7 @@ LDiff::LDiff(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) 
 
     input=l->output;
 
+
     output = new Tensor(l->output->getShape(), dev);
     delta = new Tensor(l->output->getShape(), dev);
 
@@ -84,7 +85,9 @@ LDiff::LDiff(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) 
 void LDiff::forward(){
 
 
-    if (binary) Tensor::add(1.0, parent[0]->output, -1.0, parent[1]->output, output, 0);
+    if (binary) {
+      Tensor::add(1.0, tin[0], -1.0, tin[1], output, 0);
+    }
     else {
         Tensor::copy(parent[0]->output,output);
         output->add_(-val);

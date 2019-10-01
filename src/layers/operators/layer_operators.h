@@ -76,6 +76,8 @@ class LDiff : public OperatorLayer {
 public:
     static int total_layers;
 
+    vector<Tensor *> tin;
+
     LDiff(Layer *l1, Layer *l2, string name, int dev);
     LDiff(Layer *l, float k, string name, int dev);
 
