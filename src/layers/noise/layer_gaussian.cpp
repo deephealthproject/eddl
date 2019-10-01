@@ -48,14 +48,8 @@ LGaussianNoise::LGaussianNoise(Layer *parent, float stdev, string name, int dev)
 
 // virtual
 void LGaussianNoise::resize(int batch){
-  input = parent[0]->output;
-  delta = parent[0]->delta;
-
-  delete output;
-  output = new Tensor(input->getShape(), dev);
-
-  delete noise;
-  noise = new Tensor(input->getShape(), dev);
+  output->resize(batch, parent[0]->output);
+  noise->resize(batch, parent[0]->delta);
 }
 
 void LGaussianNoise::forward() {

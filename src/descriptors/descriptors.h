@@ -63,7 +63,7 @@ public:
     ConvolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p);
 
     void build(Tensor *A);
-    void resize(Tensor *A);
+    void resize(int b);
 };
 
 
@@ -76,7 +76,7 @@ public:
     PoolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p);
 
     void build(Tensor *A);
-    void resize(Tensor *A);
+    void resize(int b);
 };
 
 #endif //EDDL_CONV_DESCRIPTOR_H

@@ -108,24 +108,27 @@ void ConvolDescriptor::build(Tensor *A) {
 #endif
 }
 
-void ConvolDescriptor::resize(Tensor *A)
+void ConvolDescriptor::resize(int b)
 {
-    I=A;
+    if (b==O->shape[0]) return;
 
-    delete O;
-    delete D;
-    O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
-    D = new Tensor(O->getShape(), A->device);
+    O->resize(b);
+    D->resize(b);
 
     if (I->isCPU()) {
         delete ptrI;
-        ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptor::build");
+        ptrI=get_fmem(b * r * c * kr * kc * kz,"ConvolDescriptor::build");
     }
 #ifdef cGPU
     else if (I->isGPU()) {
-      delete gpuIB;
-      gpuIB=new Tensor(vector<int>{A->shape[0]*r*c,kc*kr*kz}, I->device);
+      gpuIB->resize(b*r*c);
     }
 #endif
 
 }
+
+
+
+
+
+////

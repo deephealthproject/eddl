@@ -65,13 +65,9 @@ void PoolDescriptor::build(Tensor *A) {
 
 }
 
-void PoolDescriptor::resize(Tensor *A) {
+void PoolDescriptor::resize(int b) {
+  if (b==O->shape[0]) return;
 
-    I = A;
-
-    delete O;
-    delete D;
-
-    O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
-    D = new Tensor(O->getShape(), A->device);
+  O->resize(b);
+  D->resize(b);
 }

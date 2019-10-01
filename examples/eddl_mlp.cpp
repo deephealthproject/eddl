@@ -42,15 +42,17 @@ int main(int argc, char **argv) {
 
     //l = GaussianNoise(l,0.3);
 
+    l=Reshape(l,{1,28,28});
+
+    l=Reshape(l,{-1});
+
     l = Activation(Dense(l, 1024), "relu");
     l = Activation(Dense(l, 1024), "relu");
     l = Activation(Dense(l, 1024), "relu");
     layer out = Activation(Dense(l, num_classes), "softmax");
     model net = Model({in}, {out});
 
-    // View model
-    summary(net);
-    plot(net, "model.pdf");
+
 
     // Build model
     build(net,
@@ -62,6 +64,10 @@ int main(int argc, char **argv) {
           CS_CPU(4) // 4 CPU threads
           //CS_COMPSS("../config/compss/resources.xml")
     );
+
+    // View model
+    cout<<summary(net);
+    plot(net, "model.pdf");
 
     // Load dataset
     tensor x_train = T_load("trX.bin");

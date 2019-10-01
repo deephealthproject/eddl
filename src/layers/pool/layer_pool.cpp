@@ -49,13 +49,5 @@ LPool::LPool(Layer *parent, PoolDescriptor *D, string name, int dev) : LinLayer(
 }
 
 void LPool::resize(int batch){
-  //cout<<"Resize "<<name<<"\n";
-
-  input = parent[0]->output;
-  pd->resize(input);
-
-  output = pd->O;
-  delta = pd->D;
-  pd->ID = parent[0]->delta;
-
+  pd->resize(batch);
 }

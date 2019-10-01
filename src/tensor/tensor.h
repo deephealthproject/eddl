@@ -88,6 +88,11 @@ public:
     Tensor(const vector<int> &shape, float *fptr, int dev=DEV_CPU);
     Tensor(const vector<int> &shape, Tensor *T);
 
+
+    void resize(int b, float *fptr);
+    void resize(int b);
+    void resize(int b, Tensor *T);
+
     // Destructors
     ~Tensor();
 
@@ -299,4 +304,3 @@ public:
 };
 
 #endif //EDDL_TENSOR_H
-

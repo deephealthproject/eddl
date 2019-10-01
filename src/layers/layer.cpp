@@ -56,32 +56,12 @@ void Layer::initialize() {
     }
 }
 
+
 void Layer::resize(int batch)
 {
-
-   input=parent[0]->output;
-   if (output!=nullptr) {
-      tshape s=output->shape;
-      s[0]=batch;
-      delete output;
-      output=new Tensor(s,dev);
-   }
-
-   if (delta!=nullptr) {
-      tshape s=delta->shape;
-      s[0]=batch;
-      delete delta;
-      delta=new Tensor(s,dev);
-    }
-
-   if (target!=nullptr) {
-      tshape s=target->shape;
-      s[0]=batch;
-      delete target;
-      target=new Tensor(s,dev);
-    }
-
-
+     if (output!=nullptr) output->resize(batch);
+     if (delta!=nullptr) delta->resize(batch);
+     if (target!=nullptr) target->resize(batch);
 }
 
 

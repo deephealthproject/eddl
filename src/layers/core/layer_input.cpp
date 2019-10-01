@@ -38,18 +38,7 @@ LInput::LInput(Tensor *in, string name, int dev) : LinLayer(name, dev) {
 
 // virtual
 void LInput::resize(int batch){
-
-  //cout<<"Resize "<<name<<"\n";
-
-  tshape s=input->shape;
-  s[0]=batch;
-
-  delete input;
-  input=output=new Tensor(s,dev);
-
-  delete delta;
-  delta=new Tensor(s,dev);
-
+  Layer::resize(batch);
 }
 
 string LInput::plot(int c) {

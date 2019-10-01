@@ -348,6 +348,7 @@ void Net::resize(int b)
     m = batch_size % c;
   }
 
+  cout<<"Resizing net to batch_size="<<b<<"\n";
 
   for(i=0; i<c; i++) {
     Xs[i].clear();
@@ -441,7 +442,7 @@ void Net::set_compserv(CompServ *cs){
         if (todev == DEV_CPU) {
             if (dev == DEV_CPU) {
                 // split on multiple threads
-                unsigned int nthreads = cs->local_threads;
+                int nthreads = cs->local_threads;
 
                 if (nthreads <= 0)
                     msg("Threads must be > 0", "Net.build");
@@ -451,7 +452,7 @@ void Net::set_compserv(CompServ *cs){
                 Eigen::initParallel();
                 Eigen::setNbThreads(nthreads);
 
-                split(1, DEV_CPU);
+                split(6, DEV_CPU);
 
                 int n = Eigen::nbThreads( );
                 cout << "---> threads = " << n << "\n";
