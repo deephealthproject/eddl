@@ -912,6 +912,66 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
     C->tsem->unlock();
 }
 
+
+void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
+    ///////////////////////////////////////
+    //// reduce_sum2D B=reduce_sum2D(A)
+    //// Dimensions and types must be compatible
+    //// A is 2D Tensor
+    //// B is 1D Tensor
+    //// axis is the dimension to be sumed
+    ///////////////////////////////////////
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::reduce_sum2D");
+    if ((A->ndim - 1) != B->ndim) msg("Incorrect dims", "Tensor::reduce_sum2D");
+    if ((A->shape[1 - axis] != B->shape[0])) msg("Incompatible dims", "Tensor::reduce_sum2D");
+
+    B->tsem->lock();
+    if (A->isCPU()) {
+        cpu_reduce_sum2D(A, B, axis, incB);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+        gpu_reduce_sum2D(A,B,axis,incB);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+    B->tsem->unlock();
+}
+
+void Tensor::reduceTosum(Tensor *A, Tensor *B, int axis) {
+    //
+    // Sum all the axis of A in B
+    //
+    // TODO: Review cost (l1/l2)
+    B->tsem->lock();
+
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::transpose");
+
+    B->set(0.0);
+    if (A->isCPU()) {
+        cpu_reduceTosum(A, B, axis);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+    B->tsem->unlock();
+
+}
+
+
 void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
     ///////////////////////////////////////
     //// sum2D_colwise C=A.colwise+B

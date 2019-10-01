@@ -56,21 +56,12 @@ LRMean::LRMean(Layer *l, vector <int> axis, bool keepdims, string name, int dev)
     if(name.empty()) this->name = "reduction_mean" + to_string(++total_layers);
 
     input=l->output;
-    this->axis=axis;
-    this->keepdims=keepdims;
 
-    if (keepdims){
-      os=input->shape;
-    }
-    else {
-      for(int i=0;i<input->ndim;i++) {
-        if (find(axis.begin(), axis.end(), i) == axis.end())
-            os.push_back(input->shape[i]);
-      }
-    }
+    RD=new ReduceDescriptor(input,axis,"mean",keepdims);
 
-    output=new Tensor(os,dev);
-    delta=new Tensor(os,dev);
+    output=RD->O;
+    delta=RD->D;
+    RD->ID = l->delta;
 
     l->addchild(this);
     addparent(l);
@@ -78,23 +69,29 @@ LRMean::LRMean(Layer *l, vector <int> axis, bool keepdims, string name, int dev)
 }
 
 void LRMean::forward(){
-    Tensor::reduce(input,output,axis,"mean",keepdims,NULL,0);
+    reduction(RD);
 }
 
 void LRMean::backward(){
-    Tensor::delta_reduce(delta,parent[0]->delta,axis,"mean",keepdims,NULL,1);
+    reduction_back(RD);
 }
+
+// virtual
+void LRMean::resize(int batch){
+    RD->resize(batch);
+}
+
 
 Layer *LRMean::share(int c, int bs, vector<Layer *> p) {
   LRMean *n;
-  n = new LRMean(p[0], axis, keepdims, "share_" + to_string(c) + name,dev);
+  n = new LRMean(p[0], RD->axis, RD->keepdims, "share_" + to_string(c) + name,dev);
   n->orig = this;
   return n;
 }
 
 Layer *LRMean::clone(int c, int bs, vector<Layer *> p, int todev) {
     LRMean *n;
-    n = new LRMean(p[0], axis, keepdims, "clone_" + to_string(c) + name, todev);
+    n = new LRMean(p[0],RD->axis, RD->keepdims, "clone_" + to_string(c) + name, todev);
     n->orig = this;
     return n;
 }

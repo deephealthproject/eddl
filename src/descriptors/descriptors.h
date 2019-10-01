@@ -17,6 +17,25 @@
 
 using namespace std;
 
+class ReduceDescriptor {
+public:
+   vector<int> axis;
+   bool keepdims;
+   int m;
+
+   vector<vector<int>> index;
+   Tensor *I; // input
+   Tensor *O; // output
+   Tensor *D; // delta
+   Tensor *ID; // parent delta
+   Tensor *S; // indexes for max,min...
+
+   ReduceDescriptor();
+   ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool keepdims);
+   void resize(int b);
+
+};
+
 class ConvolDescriptor {
 public:
     vector<int> ksize;

@@ -58,15 +58,15 @@ public:
 class LRMean : public ReductionLayer {
 public:
     static int total_layers;
-    tshape os;
-    vector<int> axis;
-    bool keepdims;
+    ReduceDescriptor *RD;
 
     LRMean(Layer *l, vector<int> axis, bool keepdims, string name, int dev);
 
     void forward() override;
 
     void backward() override;
+
+    void resize(int b) override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
