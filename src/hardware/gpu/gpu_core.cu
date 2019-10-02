@@ -11,14 +11,6 @@
 #include "../../descriptors/descriptors.h"
 
 
-// MAX THREADS PER BLOCK
-#define MAX_TPB 1024
-#define setDims(A) int r,c;r=(A->size/MAX_TPB);if (r==0) {r=1;c=A->size;}else {if (A->size%MAX_TPB) r++;c=MAX_TPB;}dim3 dimGrid(r);dim3 dimBlock(c);
-
-extern cublasHandle_t hcublas[64];
-extern curandGenerator_t random_generator[64];
-
-
 void gpu_set(Tensor *A,float v) {
 
   int device=A->gpu_device;
@@ -85,7 +77,6 @@ void gpu_fill(Tensor *A,int aini,int aend,Tensor *B,int bini,int bend,int inc){
     //check_cuda(cudaDeviceSynchronize(),"fill");
 
 }
-
 
 
 void gpu_mask(Tensor *A,float v) {

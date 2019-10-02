@@ -37,10 +37,6 @@
 // Maximum number of threads per block:	1024
 // -----------------------------------------------------------------
 
-// MAX THREADS PER BLOCK
-#define MAX_TPB 1024
-#define setDims(A) int r,c;r=(A->size/MAX_TPB);if (r==0) {r=1;c=A->size;}else {if (A->size%MAX_TPB) r++;c=MAX_TPB;}dim3 dimGrid(r);dim3 dimBlock(c);
-
 cublasHandle_t hcublas[64];
 curandGenerator_t random_generator[64];
 cublasStatus_t bstatus;

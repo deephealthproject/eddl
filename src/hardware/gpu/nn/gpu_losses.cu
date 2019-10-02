@@ -11,19 +11,11 @@
 #include "../../../descriptors/descriptors.h"
 
 
-// MAX THREADS PER BLOCK
-#define MAX_TPB 1024
-#define setDims(A) int r,c;r=(A->size/MAX_TPB);if (r==0) {r=1;c=A->size;}else {if (A->size%MAX_TPB) r++;c=MAX_TPB;}dim3 dimGrid(r);dim3 dimBlock(c);
-
-extern cublasHandle_t hcublas[64];
-extern curandGenerator_t random_generator[64];
-
-
 void gpu_cent(Tensor *A,Tensor *B,Tensor *C){
 
   int device=A->gpu_device;
   cudaSetDevice(device);
-  setDims(A)
+  setDims(A);
 
   cent<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,A->size);
   check_cuda(cudaDeviceSynchronize(),"gpu_cent");
