@@ -45,16 +45,21 @@ namespace eddl {
         return new LTensor(fname);
     }
 
-    float *T_getptr(tensor T) {
+    float *T_getptr(layer T) {
         return T->input->ptr;
     }
 
-
-    // ---- TENSOR OPERATIONS ----
-    void div(tensor t, float v) {
-        t->input->div_(v);
+    vector<int> getShape(layer l){
+      return l->getShape();
     }
 
+    // ---- TENSOR OPERATIONS ----
+    void div(layer t, float v) {
+        t->input->div_(v);
+    }
+    void set(layer t, float v) {
+        t->output->set(v);
+    }
 
     // ---- CORE LAYERS ----
     layer Activation(layer parent, string activation, string name) {
