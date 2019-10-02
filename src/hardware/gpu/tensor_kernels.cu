@@ -174,7 +174,7 @@ __global__ void gpu_im2col_k(float* I, float *ptrI,int batch,int irows,int icols
     int im=thread_id_x/(ksize*orows*ocols);
     int ioffset=im*irows*icols*idepth;
 
-     
+
     int tx=thread_id_x%(ksize*orows*ocols);
 
 

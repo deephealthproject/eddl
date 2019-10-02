@@ -76,7 +76,7 @@ void Tensor::rand_normal(float m, float s, bool fast_math) {
 #ifdef cGPU
     else if (isGPU())
       {
-        gpu_rand_gaussian(this,m,s);
+        gpu_rand_normal(this,m,s);
       }
 #endif
 #ifdef cFPGA

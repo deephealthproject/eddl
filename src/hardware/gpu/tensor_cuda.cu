@@ -19,23 +19,8 @@
 
 
 #include <stdio.h>
-#include <cuda.h>
-#include <cuda_runtime_api.h>
-#include <cublas_v2.h>
-
 #include "tensor_cuda.h"
 #include "tensor_kernels.h"
-
-#include "../../tensor/tensor.h"
-#include "../../descriptors/descriptors.h"
-
-cublasHandle_t hcublas[64];
-curandGenerator_t random_generator[64];
-cublasStatus_t bstatus;
-curandStatus_t rstatus;
-
-extern cublasHandle_t hcublas[64];
-extern curandGenerator_t random_generator[64];
 
 // CUDA, NVIDIA compute capabilities:
 // https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#compute-capabilities
@@ -54,12 +39,14 @@ extern curandGenerator_t random_generator[64];
 
 // MAX THREADS PER BLOCK
 #define MAX_TPB 1024
-
 #define setDims(A) int r,c;r=(A->size/MAX_TPB);if (r==0) {r=1;c=A->size;}else {if (A->size%MAX_TPB) r++;c=MAX_TPB;}dim3 dimGrid(r);dim3 dimBlock(c);
 
+cublasHandle_t hcublas[64];
+curandGenerator_t random_generator[64];
+cublasStatus_t bstatus;
+curandStatus_t rstatus;
 
-static const char *_curandGetErrorEnum(curandStatus_t error)
-{
+static const char *_curandGetErrorEnum(curandStatus_t error){
     switch (error)
     {
         case CURAND_STATUS_ALLOCATION_FAILED:
@@ -119,21 +106,23 @@ void check_curand(curandStatus_t status, const char *f)
 }
 
 
-
 void check_cuda(cudaError_t err,const char *msg)
 {
-  if(err!=cudaSuccess)
+    if(err!=cudaSuccess)
     {
-      fprintf(stderr,"Cuda Error %d in %s\n",err,msg);
-      exit(0);
+        fprintf(stderr,"Cuda Error %d in %s\n",err,msg);
+        exit(0);
     }
 
 }
+
 
 void gpu_set_device(int device)
 {
     cudaSetDevice(device);
 }
+
+
 void gpu_init(int device)
 {
 
@@ -200,19 +189,22 @@ void gpu_init(int device)
 
 }
 
+
 float* gpu_create_tensor(int dev,int size)
 {
-  float* devicePointer;
-  cudaSetDevice(dev);
-  check_cuda(cudaMalloc((void**)&devicePointer,size*sizeof(float)),"create_tensor");
-  return devicePointer;
+    float* devicePointer;
+    cudaSetDevice(dev);
+    check_cuda(cudaMalloc((void**)&devicePointer,size*sizeof(float)),"create_tensor");
+    return devicePointer;
 }
+
 
 void gpu_delete_tensor(int dev,float* p)
 {
-  cudaSetDevice(dev);
-  check_cuda(cudaFree(p),"delete_tensor");
+    cudaSetDevice(dev);
+    check_cuda(cudaFree(p),"delete_tensor");
 }
+
 
 int gpu_devices()
 {

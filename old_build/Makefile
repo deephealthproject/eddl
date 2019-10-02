@@ -489,8 +489,8 @@ gpu_activations.o: $(SRC_PATH)/hardware/gpu/nn/gpu_activations.cu $(SRC_PATH)/ha
 gpu_conv.o: $(SRC_PATH)/hardware/gpu/nn/gpu_conv.cu $(SRC_PATH)/hardware/gpu/nn/gpu_nn.h
 	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/nn/gpu_conv.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
-gpu_losses.o: $(SRC_PATH)/hardware/gpu/nn/gpu_losses.cu $(SRC_PATH)/hardware/nn/gpu/nn/gpu_nn.h
-	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/gpu_losses.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+gpu_losses.o: $(SRC_PATH)/hardware/gpu/nn/gpu_losses.cu $(SRC_PATH)/hardware/gpu/nn/gpu_nn.h
+	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/nn/gpu_losses.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 gpu_metrics.o: $(SRC_PATH)/hardware/gpu/nn/gpu_metrics.cu $(SRC_PATH)/hardware/gpu/nn/gpu_nn.h
 	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/nn/gpu_metrics.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@

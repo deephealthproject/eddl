@@ -1,4 +1,3 @@
-
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of EDDLL an European Distributed Deep Learning Library.
 // Developed within the DeepHealth project.
@@ -20,13 +19,20 @@
 #ifndef _TENSOR_CUDA_
 #define _TENSOR_CUDA_
 
-#include <stdio.h>
 #include <cuda.h>
+#include <curand.h>
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
 
-#include "tensor_cuda.h"
-#include "tensor_kernels.h"
+//
+//#include <stdio.h>
+//#include <cuda.h>
+//#include <cuda_runtime_api.h>
+//#include <cublas_v2.h>
+//
+//#include "tensor_cuda.h"
+//#include "tensor_kernels.h"
+
 
 
 void check_cublas(cublasStatus_t status, const char *f);
