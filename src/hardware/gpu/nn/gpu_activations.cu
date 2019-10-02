@@ -3,9 +3,10 @@
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
 
-#include "../tensor_cuda.h"
-#include "../tensor_kernels.h"
+#include "gpu_nn.h"
 #include "../gpu_hw.h"
+#include "../gpu_tensor.h"
+#include "../gpu_kernels.h"
 
 #include "../../../tensor/tensor.h"
 #include "../../../descriptors/descriptors.h"

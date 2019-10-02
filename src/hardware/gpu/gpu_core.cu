@@ -3,25 +3,13 @@
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
 
-#include "tensor_cuda.h"
-#include "tensor_kernels.h"
+#include "gpu_tensor.h"
+#include "gpu_kernels.h"
 #include "gpu_hw.h"
 
 #include "../../tensor/tensor.h"
 #include "../../descriptors/descriptors.h"
 
-
-void gpu_set(Tensor *A,float v) {
-
-  int device=A->gpu_device;
-  cudaSetDevice(device);
-
-  setDims(A);
-
-  set<<<dimGrid,dimBlock>>>(A->ptr,v,r,c);
-  check_cuda(cudaDeviceSynchronize(),"set");
-
-}
 
 
 void gpu_copy_to_gpu(float *nptr,Tensor *A){
@@ -88,5 +76,18 @@ void gpu_mask(Tensor *A,float v) {
 
   mask<<<dimGrid,dimBlock>>>(A->ptr,v,A->shape[0],c);
   check_cuda(cudaDeviceSynchronize(),"mask");
+
+}
+
+
+void gpu_set(Tensor *A,float v) {
+
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    set<<<dimGrid,dimBlock>>>(A->ptr,v,r,c);
+    check_cuda(cudaDeviceSynchronize(),"set");
 
 }

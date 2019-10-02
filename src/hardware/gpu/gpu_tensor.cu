@@ -19,8 +19,8 @@
 
 
 #include <stdio.h>
-#include "tensor_cuda.h"
-#include "tensor_kernels.h"
+#include "gpu_tensor.h"
+#include "gpu_kernels.h"
 
 // CUDA, NVIDIA compute capabilities:
 // https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#compute-capabilities

@@ -33,7 +33,7 @@
 #include "random.h"
 
 #ifdef cGPU
-#include "hardware/gpu/tensor_cuda.h"
+#include "hardware/gpu/gpu_tensor.h"
 #endif
 
 #define VERBOSE 0

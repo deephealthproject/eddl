@@ -30,7 +30,7 @@
 //#include <cuda_runtime_api.h>
 //#include <cublas_v2.h>
 //
-//#include "tensor_cuda.h"
+//#include "gpu_tensor.h"
 //#include "tensor_kernels.h"
 
 

@@ -279,10 +279,9 @@ SET(CUDA_SOURCES
         src/hardware/gpu/gpu_generator.cu
         src/hardware/gpu/gpu_math.cu
         src/hardware/gpu/gpu_reduction.cu
-        src/hardware/gpu/tensor_cuda.cu
-        src/hardware/gpu/tensor_cuda.h
-        src/hardware/gpu/tensor_kernels.cu
-        src/hardware/gpu/tensor_kernels.h
+        src/hardware/gpu/gpu_tensor.cu
+        src/hardware/gpu/gpu_tensor.h
+        src/hardware/gpu/gpu_kernels.h
         src/hardware/gpu/nn/gpu_nn.h
         src/hardware/gpu/nn/gpu_activations.cu
         src/hardware/gpu/nn/gpu_conv.cu
