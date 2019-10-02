@@ -81,6 +81,11 @@ void Layer::setmode(int m) {
     mode = m;
 }
 
+vector<int> Layer::getShape()
+{
+  return output->getShape();
+}
+
 void Layer::save(FILE *fe)
 {
   for (int i = 0; i != params.size(); i++)

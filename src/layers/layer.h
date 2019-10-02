@@ -69,6 +69,7 @@ public:
 
     void setmode(int m);
     void detach(Layer *l);
+    vector<int> getShape();
 
     Tensor* getWeights();
     Tensor* setWeights(Tensor bias);

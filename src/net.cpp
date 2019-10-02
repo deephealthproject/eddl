@@ -124,6 +124,9 @@ Net::Net(vlayer in, vlayer out) {
     for (int i = 0; i < lin.size(); i++) {
         walk(lin[i]);
     }
+    for (int i = 0; i < lout.size(); i++) {
+        walk_back(lout[i]);
+    }
     build_randn_table();
 }
 
@@ -141,10 +144,23 @@ int Net::inNet(Layer *l) {
 void Net::walk(Layer *l) {
     // If this layer is not in the network, add it, as well as all its children (recursively)
     if (!inNet(l)) {
+      //cout<<l->name<<"\n";
       layers.push_back(l);
       for (int i = 0; i < l->child.size(); i++)
           walk(l->child[i]);
     }
+}
+/////////////////////////////////////////
+void Net::walk_back(Layer *l) {
+    // If this layer is not in the network, add it, as well as all its children (recursively)
+
+    if (!inNet(l)) {
+      //cout<<l->name<<"  BACK\n";
+      layers.push_back(l);
+    }
+    for (int i = 0; i < l->parent.size(); i++)
+        walk_back(l->parent[i]);
+
 }
 
 /////////////////////////////////////////
@@ -415,6 +431,8 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
     // set metrics
     this->metrics = vmetrics(me);
 
+
+
     // forward sort
     fts();
     // backward sort
@@ -510,14 +528,28 @@ void Net::split(int c, int todev) {
         nout.clear();
 
         if (i == c - 1) bs += m;
-
         // set inputs
-        for (j = 0; j < lin.size(); j++) {
+        for (j = 0; j < lin.size(); j++)  {
             vlayer par;
 
-            if (todev == DEV_CPU) nin.push_back(layers[j]->share(i, bs, par));
-            else nin.push_back(layers[j]->clone(c, bs, par, todev + devsel[i]));
+            if (todev == DEV_CPU) nin.push_back(lin[j]->share(i, bs, par));
+            else nin.push_back(lin[j]->clone(c, bs, par, todev + devsel[i]));
             nlayers.push_back(nin[j]);
+        }
+        for (j = 0; j < layers.size(); j++)
+          if ((layers[j]->lin==0)&&(!isIn(layers[j],lin,ind))) {
+            vlayer par;
+
+
+            if (todev == DEV_CPU) {
+              Layer *n=layers[j]->share(i, bs, par);
+              nlayers.push_back(n);
+              Tensor::copy(layers[j]->output,n->output);
+              cout<<n->name<<" "<<n->output->sum_abs()<<"\n";
+            }
+            else nlayers.push_back(layers[j]->clone(c, bs, par, todev + devsel[i]));
+
+
         }
 
         for (k = 0; k < layers.size(); k++) {

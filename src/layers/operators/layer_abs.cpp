@@ -65,6 +65,12 @@ void LAbs::backward(){
     Tensor::el_mult(delta,mask,parent[0]->delta,1);
 }
 
+void LAbs::resize(int b)
+{
+  Layer::resize(b);
+  mask->resize(b);
+}
+
 Layer *LAbs::share(int c, int bs, vector<Layer *> p) {
     return clone(c,bs,p,dev);
 }

@@ -98,6 +98,7 @@ public:
     void split(int c, int todev);
     int inNet(Layer *l); //
     void walk(Layer *l); //
+    void walk_back(Layer *l); //
 
     void fts();
     void bts();
