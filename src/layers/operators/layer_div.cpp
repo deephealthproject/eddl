@@ -94,6 +94,7 @@ void LDiv::backward() {
         //
         Tensor::el_mult(delta, parent[0]->output, delta, 0);
         Tensor::el_div(delta, parent[1]->output, delta, 0);
+        
         delta->mult_(-1);
         Tensor::inc(delta, parent[1]->delta);
     } else {

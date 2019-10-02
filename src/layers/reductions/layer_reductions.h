@@ -41,6 +41,7 @@ public:
 
     int binary;
     float val;
+    ReduceDescriptor *RD;
 
     ReductionLayer(string name, int dev);
 
@@ -58,7 +59,7 @@ public:
 class LRMean : public ReductionLayer {
 public:
     static int total_layers;
-    ReduceDescriptor *RD;
+
 
     LRMean(Layer *l, vector<int> axis, bool keepdims, string name, int dev);
 
@@ -100,18 +101,14 @@ public:
 class LRSum : public ReductionLayer {
 public:
     static int total_layers;
-    tshape os;
-    vector<int> axis;
-    bool keepdims;
-    Tensor *mean;
-    int rsize;
-    vector<Layer *> layers;
 
     LRSum(Layer *l, vector<int> axis, bool keepdims, string name, int dev);
 
     void forward() override;
 
     void backward() override;
+
+    void resize(int b) override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -122,18 +119,15 @@ public:
 class LRMax : public ReductionLayer {
 public:
     static int total_layers;
-    tshape os;
-    vector<int> axis;
-    bool keepdims;
-    Tensor *mean;
-    int rsize;
-    vector<Layer *> layers;
+
 
     LRMax(Layer *l, vector<int> axis, bool keepdims, string name, int dev);
 
     void forward() override;
 
     void backward() override;
+
+    void resize(int b) override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -144,12 +138,6 @@ public:
 class LRMin : public ReductionLayer {
 public:
     static int total_layers;
-    tshape os;
-    vector<int> axis;
-    bool keepdims;
-    Tensor *mean;
-    int rsize;
-    vector<Layer *> layers;
 
     LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev);
 
@@ -157,6 +145,8 @@ public:
 
     void backward() override;
 
+    void resize(int b) override;
+    
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;

@@ -68,19 +68,9 @@ void LRVar::resize(int b)
 {
   int i;
 
-  input=parent[0]->output;
-
   for(i=0;i<layers.size();i++) layers[i]->resize(b);
 
-  output=layers[i-1]->output;
-  delta=layers[i-1]->delta;
-
-  if (target!=nullptr) {
-     tshape s=target->shape;
-     s[0]=b;
-     delete target;
-     target=new Tensor(s,dev);
-   }
+  if (target!=nullptr) target->resize(b);
 }
 
 void LRVar::forward(){

@@ -36,47 +36,40 @@ LRMin::LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev): R
 
     input=l->output;
 
-    output=l->output;
-    delta=l->delta;
+    RD=new ReduceDescriptor(input,axis,"min",keepdims);
 
-    this->axis=axis;
-    this->keepdims=keepdims;
-
-    if (keepdims){
-      os=input->shape;
-    }
-    else {
-      for(int i=0;i<input->ndim;i++) {
-        if (find(axis.begin(), axis.end(), i) == axis.end())
-            os.push_back(input->shape[i]);
-      }
-    }
-
-    output=new Tensor(os,dev);
-    delta=new Tensor(os,dev);
+    output=RD->O;
+    delta=RD->D;
+    RD->ID = l->delta;
 
     l->addchild(this);
     addparent(l);
+
 }
 
 void LRMin::forward(){
-    // TODO: Implement
+reduction(RD);
 }
 
 void LRMin::backward(){
-  // TODO: Implement
+reduction_back(RD);
+}
+// virtual
+void LRMin::resize(int batch){
+    RD->resize(batch);
 }
 
+
 Layer *LRMin::share(int c, int bs, vector<Layer *> p) {
-    // TODO: Implement
-    clone(c,bs,p,dev);
-    return nullptr;
+  LRMin *n;
+  n = new LRMin(p[0], RD->axis, RD->keepdims, "share_" + to_string(c) + name,dev);
+  n->orig = this;
+  return n;
 }
 
 Layer *LRMin::clone(int c, int bs, vector<Layer *> p, int todev) {
-    // TODO: Implement
     LRMin *n;
-    n = new LRMin(p[0], axis, keepdims, "clone_" + to_string(c) + name, todev);
+    n = new LRMin(p[0],RD->axis, RD->keepdims, "clone_" + to_string(c) + name, todev);
     n->orig = this;
     return n;
 }
