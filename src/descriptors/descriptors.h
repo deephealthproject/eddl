@@ -33,6 +33,7 @@ public:
    ReduceDescriptor();
    ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool keepdims);
    void resize(int b);
+   void build_index();
 
 };
 

@@ -49,7 +49,9 @@ void reduction(ReduceDescriptor *RD){
     for(i=0;i<RD->index.size();i++)
     {
         sum=0;
+
         for(j=0;j<RD->index[i].size();j++) {
+
             float v=RD->I->ptr[RD->index[i][j]];
             if (RD->m==2) {
                 if (j==0) {val=v;ind=RD->index[i][j];}
@@ -72,8 +74,9 @@ void reduction(ReduceDescriptor *RD){
         if (RD->m<2) { // mean or sum
             if (RD->m==0) sum/=d;
             if (RD->keepdims) {
-                for(j=0;j<RD->index[i].size();j++)
+                for(j=0;j<RD->index[i].size();j++) {
                     RD->O->ptr[RD->index[i][j]]=sum;
+                  }
             }
             else RD->O->ptr[i]=sum;
         }

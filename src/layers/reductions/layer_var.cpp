@@ -84,7 +84,9 @@ void LRVar::resize(int b)
 }
 
 void LRVar::forward(){
-  for(int i=0;i<layers.size();i++) layers[i]->forward();
+  for(int i=0;i<layers.size();i++) {
+    layers[i]->forward();
+  }
 }
 
 void LRVar::backward(){

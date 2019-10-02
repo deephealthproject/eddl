@@ -28,9 +28,9 @@ ReduceDescriptor::ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool
 
   tshape os;
 
-  if (find(axis.begin(), axis.end(), 0) != axis.end())
+  /*if (find(axis.begin(), axis.end(), 0) != axis.end())
     msg("Batch axis reduction not allowed","ReduceDescriptor");
-
+*/
   if (keepdims){
     os=A->shape;
   }
@@ -50,18 +50,25 @@ ReduceDescriptor::ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool
   if ((m==2)||(m==3))
    S=new Tensor(os,dev);
 
+  build_index();
+
+}
+
+void ReduceDescriptor::build_index() {
   // indexes
   // get indexes for reduction
+  index.clear();
+
   vector<int> ind;
   ind.push_back(0);
-  for(int i=0;i<A->ndim;i++) {
+  for(int i=0;i<I->ndim;i++) {
       // Check if "this" dimension is going to be reduced
       bool isFound = find(axis.begin(), axis.end(), i) != axis.end();
       if (!isFound) {  // Dims to not be reduced...
           int s=ind.size();
           for(int j=0;j<s;j++)
-              for(int k=0; k<A->shape[i]-1; k++)
-                  ind.push_back(ind[j]+(k+1)*A->stride[i]);
+              for(int k=0; k<I->shape[i]-1; k++)
+                  ind.push_back(ind[j]+(k+1)*I->stride[i]);
       }
   }
 
@@ -76,16 +83,17 @@ ReduceDescriptor::ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool
       index.push_back(vector<int>());
 
       index[i].push_back(ind[i]);
-      for(int l=0;l<A->ndim;l++) {
+      for(int l=0;l<I->ndim;l++) {
           // Check if "this" dimension is going to be reduced
           bool isFound = find(axis.begin(), axis.end(), l) != axis.end();
           if (isFound) {  // Dims to be reduced...
               int s=index[i].size();
               for(int j=0;j<s;j++)
-                  for(int k=0;k<A->shape[l]-1;k++)
-                      index[i].push_back(index[i][j]+(k+1)*A->stride[l]);
+                  for(int k=0;k<I->shape[l]-1;k++)
+                      index[i].push_back(index[i][j]+(k+1)*I->stride[l]);
           }
       }
+
     }
     //////
 
@@ -96,10 +104,13 @@ ReduceDescriptor::ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool
 
 void ReduceDescriptor::resize(int b)
 {
+
   O->resize(b);
   D->resize(b);
   if ((m==2)||(m==3))
   S->resize(b);
+
+  build_index();
 }
 
 
