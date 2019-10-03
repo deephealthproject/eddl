@@ -61,10 +61,12 @@ namespace eddl {
 
     tensor T_load(string fname);
 
-    float *T_getptr(tensor T);
+    float *T_getptr(layer T);
 
+    vector<int> getShape(layer l);
 // ---- TENSOR OPERATIONS ----
-    void div(tensor t, float v);
+    void div(layer t, float v);
+    void set(layer t, float v);
 
 // ---- CORE LAYERS ----
     layer Activation(layer parent, string activation, string name = "");

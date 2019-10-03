@@ -24,6 +24,7 @@
 #include <string>
 #include <cstdio>
 #include "../tensor/tensor.h"
+#include "../tensor/tensor_reduction.h"
 #include "../tensor/nn/tensor_nn.h"
 
 #define TRMODE 1
@@ -67,6 +68,8 @@ public:
     virtual void info();
 
     void setmode(int m);
+    void detach(Layer *l);
+    vector<int> getShape();
 
     Tensor* getWeights();
     Tensor* setWeights(Tensor bias);

@@ -35,67 +35,48 @@ LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev): R
     if(name.empty()) this->name = "reduction_var" + to_string(++total_layers);
 
     input=l->output;
-
     output=l->output;
     delta=l->delta;
 
     this->axis=axis;
     this->keepdims=keepdims;
 
-    if (keepdims){
-      os=input->shape;
-    }
-    else {
-      for(int i=0;i<input->ndim;i++) {
-        if (find(axis.begin(), axis.end(), i) == axis.end())
-            os.push_back(input->shape[i]);
-      }
-    }
-
-    LRMean *m1=new LRMean(l, axis, true,this->name+"mean_keepdims",dev);
-    LDiff *diff=new LDiff(l, m1,this->name+"diff",dev);
+    // create a sub-graph
+    LRMean *m1=new LRMean(this, axis, true,this->name+"mean_keepdims",dev);
+    LDiff *diff=new LDiff(this, m1,this->name+"diff",dev);
     LMult *mult=new LMult(diff,diff,this->name+"mult",dev);
     LRMean *m2=new LRMean(mult, axis,keepdims,this->name+"mean_red",dev);
-
-
     layers.push_back(m1);
     layers.push_back(diff);
     layers.push_back(mult);
     layers.push_back(m2);
 
-    for(int i=0;i<layers.size();i++) {
-      layers[i]->isplot=false;
-      layers[i]->inner=true;
-    }
+    // detach from the main graph
+    detach(m1);
+    detach(diff);
+    ////////////////////////////
 
     output=m2->output;
     delta=m2->delta;
 
     l->addchild(this);
     addparent(l);
+
 }
 
 void LRVar::resize(int b)
 {
   int i;
 
-  input=parent[0]->output;
-
   for(i=0;i<layers.size();i++) layers[i]->resize(b);
 
-  output=layers[i-1]->output;
-  delta=layers[i-1]->delta;
-
-  if (target!=nullptr) {
-     tshape s=target->shape;
-     s[0]=b;
-     delete target;
-     target=new Tensor(s,dev);
-   }
+  if (target!=nullptr) target->resize(b);
 }
 
 void LRVar::forward(){
-    for(int i=0;i<layers.size();i++) layers[i]->forward();
+  for(int i=0;i<layers.size();i++) {
+    layers[i]->forward();
+  }
 }
 
 void LRVar::backward(){

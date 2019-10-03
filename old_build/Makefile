@@ -134,7 +134,7 @@ endif
 # Group compiled objects (Alphabetically sorted!)
 APIS_OBJ = eddl.o
 CORE_OBJ = compserv.o net.o utils.o random.o
-DESCRIPTORS_OBJ = descriptor_conv.o descriptor_pool.o
+DESCRIPTORS_OBJ = descriptor_conv.o descriptor_pool.o descriptor_reduce.o
 HARDWARE_CPU_OBJ = cpu_comparison.o cpu_core.o cpu_generator.o cpu_math.o cpu_reduction.o cpu_activations.o cpu_conv.o cpu_losses.o cpu_metrics.o cpu_pool.o
 INITIALIZERS_OBJ = initializer_indentity.o initializer_random_uniform.o initializer_glorot_uniform.o initializer_orthogonal.o initializer_random_normal.o initializer_constant.o initializer_glorot_normal.o initializer.o
 LAYERS_OBJ = layer_lstm.o layer_input.o layer_conv.o layer_mean.o layer_log10.o layer_reshape.o layer_log.o layer_mult.o layer_maxpool.o layer_embedding.o layer_globalavgpool.o layer_upsampling.o layer_add.o layer_batchnorm.o layer_div.o layer_log2.o layer_gaussian.o layer_average.o layer.o layer_globalmaxpool.o layer_reduction.o layer_sum.o layer_sum_op.o layer_gauss.o layer_transposed_conv.o layer_activation.o layer_operator.o layer_concat.o layer_maximum.o layer_diff.o layer_var.o layer_drop.o layer_pool.o layer_exp.o layer_rnn.o layer_min.o layer_pow.o layer_dense.o layer_sqrt.o layer_tensor.o layer_minimum.o layer_abs.o layer_avgpool.o layer_matmul.o layer_uniform.o layer_max.o layer_subtract.o layer_generator.o layer_transpose.o
@@ -171,6 +171,9 @@ descriptor_conv.o: $(SRC_PATH)/descriptors/descriptor_conv.cpp $(SRC_PATH)/descr
 
 descriptor_pool.o: $(SRC_PATH)/descriptors/descriptor_pool.cpp $(SRC_PATH)/descriptors/descriptors.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/descriptors/descriptor_pool.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+descriptor_reduce.o: $(SRC_PATH)/descriptors/descriptor_reduce.cpp $(SRC_PATH)/descriptors/descriptors.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/descriptors/descriptor_reduce.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 tensor.o: $(SRC_PATH)/tensor/tensor.cpp $(SRC_PATH)/tensor/tensor.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@

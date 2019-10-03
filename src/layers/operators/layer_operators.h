@@ -66,6 +66,8 @@ public:
 
     void backward() override;
 
+    void resize(int b) override;
+
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
@@ -75,6 +77,8 @@ public:
 class LDiff : public OperatorLayer {
 public:
     static int total_layers;
+
+    vector<Tensor *> tin;
 
     LDiff(Layer *l1, Layer *l2, string name, int dev);
     LDiff(Layer *l, float k, string name, int dev);

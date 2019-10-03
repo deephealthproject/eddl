@@ -83,7 +83,7 @@ void LMult::backward() {
     }
     else {
         delta->mult_(val);
-      Tensor::inc(delta,parent[0]->delta);
+        Tensor::inc(delta,parent[0]->delta);
     }
 }
 

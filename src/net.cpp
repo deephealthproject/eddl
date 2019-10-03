@@ -124,6 +124,9 @@ Net::Net(vlayer in, vlayer out) {
     for (int i = 0; i < lin.size(); i++) {
         walk(lin[i]);
     }
+    for (int i = 0; i < lout.size(); i++) {
+        walk_back(lout[i]);
+    }
     build_randn_table();
 }
 
@@ -141,10 +144,23 @@ int Net::inNet(Layer *l) {
 void Net::walk(Layer *l) {
     // If this layer is not in the network, add it, as well as all its children (recursively)
     if (!inNet(l)) {
-        layers.push_back(l);
-        for (int i = 0; i < l->child.size(); i++)
-            walk(l->child[i]);
+      //cout<<l->name<<"\n";
+      layers.push_back(l);
+      for (int i = 0; i < l->child.size(); i++)
+          walk(l->child[i]);
     }
+}
+/////////////////////////////////////////
+void Net::walk_back(Layer *l) {
+    // If this layer is not in the network, add it, as well as all its children (recursively)
+
+    if (!inNet(l)) {
+      //cout<<l->name<<"  BACK\n";
+      layers.push_back(l);
+    }
+    for (int i = 0; i < l->parent.size(); i++)
+        walk_back(l->parent[i]);
+
 }
 
 /////////////////////////////////////////
@@ -164,6 +180,7 @@ string Net::summary() {
         if(vfts[i]->isplot)
           ss << vfts[i]->name.c_str() << " ";
     }
+
 
     ss << "\n";
     for (int i = 0; i < vfts.size(); i++) {
@@ -311,12 +328,6 @@ void Net::bts() {
         if (j == layers.size())
             msg("error recurrent net in", "Net.bts");
 
-        /*
-          if (layers[j]->lin)
-          fprintf(stdout,"%s-->",layers[j]->name.c_str());
-          else
-          fprintf(stdout,"%s |",layers[j]->name.c_str());
-        */
         visit[j] = 1;
         vbts.push_back(layers[j]);
 
@@ -420,6 +431,8 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
     // set metrics
     this->metrics = vmetrics(me);
 
+
+
     // forward sort
     fts();
     // backward sort
@@ -452,7 +465,7 @@ void Net::set_compserv(CompServ *cs){
                 Eigen::initParallel();
                 Eigen::setNbThreads(nthreads);
 
-                split(6, DEV_CPU);
+                split(1, DEV_CPU);
 
                 int n = Eigen::nbThreads( );
                 cout << "---> threads = " << n << "\n";
@@ -515,24 +528,36 @@ void Net::split(int c, int todev) {
         nout.clear();
 
         if (i == c - 1) bs += m;
-
         // set inputs
-        for (j = 0; j < lin.size(); j++) {
+        for (j = 0; j < lin.size(); j++)  {
             vlayer par;
 
-            if (todev == DEV_CPU) nin.push_back(layers[j]->share(i, bs, par));
-            else nin.push_back(layers[j]->clone(c, bs, par, todev + devsel[i]));
+            if (todev == DEV_CPU) nin.push_back(lin[j]->share(i, bs, par));
+            else nin.push_back(lin[j]->clone(c, bs, par, todev + devsel[i]));
             nlayers.push_back(nin[j]);
         }
+        for (j = 0; j < layers.size(); j++)
+          if ((layers[j]->lin==0)&&(!isIn(layers[j],lin,ind))) {
+            vlayer par;
 
-        for (k = 0; k < layers.size(); k++)
-            if (!layers[k]->inner) {
+
+            if (todev == DEV_CPU) {
+              Layer *n=layers[j]->share(i, bs, par);
+              nlayers.push_back(n);
+              Tensor::copy(layers[j]->output,n->output);
+              cout<<n->name<<" "<<n->output->sum_abs()<<"\n";
+            }
+            else nlayers.push_back(layers[j]->clone(c, bs, par, todev + devsel[i]));
+
+
+        }
+
+        for (k = 0; k < layers.size(); k++) {
             for (j = 0; j < layers.size(); j++) {
-              if (!layers[j]->inner) {
+
                 if (!isInorig(layers[j], nlayers, ind)) {
                     vlayer par;
-                    for (l = 0; l < layers[j]->parent.size(); l++)
-                    if (!layers[l]->inner) {
+                    for (l = 0; l < layers[j]->parent.size(); l++) {
                         if (!isInorig(layers[j]->parent[l], nlayers, ind)) break;
                         else par.push_back(nlayers[ind]);
                     }
@@ -541,7 +566,7 @@ void Net::split(int c, int todev) {
                         else nlayers.push_back(layers[j]->clone(i, bs, par, todev + devsel[i]));
                     }
                 }
-              }
+
             }
           }
 
@@ -636,13 +661,13 @@ void Net::backward() {
 void Net::applygrads() {
 
     if (VERBOSE) {
-        for (int i = 0; i < layers.size(); i++) {
-            cout << layers[i]->name << "\n";
-            fprintf(stdout, "  In:%f\n", layers[i]->input->sum_abs());
-            fprintf(stdout, "  Out:%f\n", layers[i]->output->sum_abs());
-            fprintf(stdout, "  Delta:%f\n", layers[i]->delta->sum_abs());
-            for (int j = 0; j < layers[i]->gradients.size(); j++) {
-                fprintf(stdout, "  %f\n", layers[i]->gradients[j]->sum_abs());
+        for (int i = 0; i < vbts.size(); i++) {
+            cout <<vbts[i]->name << "\n";
+            fprintf(stdout, "  In:%f\n", vbts[i]->input->sum_abs());
+            fprintf(stdout, "  Out:%f\n", vbts[i]->output->sum_abs());
+            fprintf(stdout, "  Delta:%f\n", vbts[i]->delta->sum_abs());
+            for (int j = 0; j < vbts[i]->gradients.size(); j++) {
+                fprintf(stdout, "  %f\n", vbts[i]->gradients[j]->sum_abs());
             }
         }
         getchar();

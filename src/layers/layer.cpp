@@ -64,6 +64,14 @@ void Layer::resize(int batch)
      if (target!=nullptr) target->resize(batch);
 }
 
+void Layer::detach(Layer *l)
+{
+  for(int i=0;i<child.size();i++)
+    if(child[i]==l) {
+      child.erase(child.begin() + i);
+      lout--;
+    }
+}
 
 void Layer::reset() {
     delta->set(0.0);
@@ -71,6 +79,11 @@ void Layer::reset() {
 
 void Layer::setmode(int m) {
     mode = m;
+}
+
+vector<int> Layer::getShape()
+{
+  return output->getShape();
 }
 
 void Layer::save(FILE *fe)
@@ -137,7 +150,7 @@ LinLayer::LinLayer(string name, int dev) : Layer(name, dev) {}
 
 void LinLayer::addchild(Layer *l) {
     child.push_back(l);
-    lout++;
+    if (!l->inner) lout++;
 }
 
 void LinLayer::addparent(Layer *l) {
@@ -154,7 +167,7 @@ MLayer::MLayer(string name, int dev) : Layer(name, dev) {}
 
 void MLayer::addchild(Layer *l) {
     child.push_back(l);
-    lout++;
+    if (!l->inner) lout++;
 }
 
 

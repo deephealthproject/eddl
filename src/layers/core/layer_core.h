@@ -36,7 +36,7 @@ class LTensor : public LinLayer {
 public:
 
     Tensor *data;
-    
+
     static int total_layers;
 
     LTensor(string fname);
@@ -47,9 +47,9 @@ public:
 
     explicit LTensor(Layer *l);
 
-    Layer *share(int c, int bs, vector<Layer *> p) override { return nullptr; }
+    Layer *share(int c, int bs, vector<Layer *> p) override; 
 
-    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override { return nullptr; }
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
     void info() override {}
 

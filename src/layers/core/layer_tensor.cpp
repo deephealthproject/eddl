@@ -34,7 +34,7 @@ int LTensor::total_layers = 0;
 extern ostream &operator<<(ostream &os, const vector<int> shape);
 
 // From shape
-LTensor::LTensor(const vector<int> shape, int dev) : LinLayer("ltensor" + to_string(total_layers), dev) {
+LTensor::LTensor(const vector<int> shape, int dev) : LinLayer("ltensor" + to_string(total_layers++), dev) {
     data = input = output = new Tensor(shape, dev);
     delta = new Tensor(shape, dev);
 }
@@ -69,6 +69,24 @@ LTensor::LTensor(const vector<int> shape, float *fptr,int dev) : LinLayer("ltens
 }
 
 
+
+Layer *LTensor::share(int c, int bs, vector<Layer *> p) {
+
+    LTensor *n = new LTensor(output->shape, dev);
+    n->orig = this;
+
+    return n;
+}
+
+Layer *LTensor::clone(int c, int bs, vector<Layer *> p, int todev) {
+
+    LTensor *n = new LTensor(output->shape, todev);
+    n->orig = this;
+
+    return n;
+}
+
+
 // From Layer (sharing)
 LTensor::LTensor(Layer *l) : LinLayer("ltensor" + to_string(total_layers), l->dev) {
     data = input = output = l->output;
@@ -76,7 +94,12 @@ LTensor::LTensor(Layer *l) : LinLayer("ltensor" + to_string(total_layers), l->de
 }
 
 void LTensor::resize(int batch){
+  float v=output->ptr[0];
+
   Layer::resize(batch);
+
+  output->set(v);
+
 }
 
 

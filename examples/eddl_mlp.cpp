@@ -26,6 +26,20 @@
 
 using namespace eddl;
 
+layer BN(layer l){
+  vector<int> axis;
+  axis.push_back(1);
+
+  layer m=ReduceMean(l,axis,true);
+  layer d=Diff(l,m);
+
+  layer v=ReduceVar(l,axis,true);
+
+  l=Div(d,Sqrt(Sum(v,0.001)));
+
+  return l;
+}
+
 int main(int argc, char **argv) {
 
     // Download dataset
@@ -42,10 +56,6 @@ int main(int argc, char **argv) {
 
     //l = GaussianNoise(l,0.3);
 
-    l=Reshape(l,{1,28,28});
-
-    l=Reshape(l,{-1});
-
     l = Activation(Dense(l, 1024), "relu");
     l = Activation(Dense(l, 1024), "relu");
     l = Activation(Dense(l, 1024), "relu");
@@ -56,7 +66,7 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          sgd(0.01, 0.9), // Optimizer
+          sgd(0.001, 0.9), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           //CS_GPU({1,1},10) // 2 GPUs with local_sync_batches=10
