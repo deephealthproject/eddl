@@ -26,107 +26,272 @@
 #include "gpu_kernels.h"
 
 
-__global__ void add(float* a, float v, long int rows, long int cols)
-{
+__global__ void abs_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]=fabsf(a[thread_id_x]);
+}
+
+__global__ void acos_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]=acosf(a[thread_id_x]);
+}
+
+__global__ void add_(float* a, long int rows, long int cols, float v){
     long int ops=rows*cols;
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x < ops)
         a[thread_id_x]+=v;
-
 }
 
+__global__ void asin_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
-__global__ void exp(float* a, long int rows, long int cols)
-{
- long int ops=rows*cols;
- long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
-
- if (thread_id_x < ops)
-   a[thread_id_x]=expf(a[thread_id_x]);
-
+    if (thread_id_x < ops)
+        a[thread_id_x]=asinf(a[thread_id_x]);
 }
 
+__global__ void atan_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
-__global__ void log(float* a, long int rows, long int cols)
-{
- long int ops=rows*cols;
- long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+    if (thread_id_x < ops)
+        a[thread_id_x]=atanf(a[thread_id_x]);
+}
+__global__ void ceil_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
- if (thread_id_x < ops)
-   a[thread_id_x]=logf(a[thread_id_x]);
-
+    if (thread_id_x < ops)
+        a[thread_id_x]=ceilf(a[thread_id_x]);
 }
 
-__global__ void log2(float* a, long int rows, long int cols)
-{
+__global__ void clamp_(float* a, long int rows, long int cols, float min, float max){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        if (a[thread_id_x] < min){
+            a[thread_id_x] = min;
+        } else if(a[thread_id_x] > max){
+            a[thread_id_x] = max;
+        }
+}
+
+__global__ void cos_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]=cosf(a[thread_id_x]);
+}
+
+__global__ void cosh_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]=coshf(a[thread_id_x]);
+}
+
+__global__ void exp_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]=expf(a[thread_id_x]);
+}
+
+__global__ void floor_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]=floorf(a[thread_id_x]);
+}
+
+__global__ void log_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]=logf(a[thread_id_x]);
+}
+
+__global__ void log2_(float* a, long int rows, long int cols){
     long int ops=rows*cols;
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x < ops)
         a[thread_id_x]=log2f(a[thread_id_x]);
-
 }
 
-__global__ void log10(float* a, long int rows, long int cols)
-{
+__global__ void log10_(float* a, long int rows, long int cols){
     long int ops=rows*cols;
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x < ops)
         a[thread_id_x]=log10f(a[thread_id_x]);
-
 }
-__global__ void logn(float* a, long int rows, long int cols, float n)
-{
+
+__global__ void logn_(float* a, long int rows, long int cols, float n){
     long int ops=rows*cols;
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x < ops)
-        a[thread_id_x]=log10f(a[thread_id_x])/log10f(n);
-
+        a[thread_id_x]=logf(a[thread_id_x])/logf(n);
 }
 
-
-__global__ void mult(float* a, float v, long int rows, long int cols)
-{
+__global__ void mod_(float* a, long int rows, long int cols, float v){
     long int ops=rows*cols;
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x < ops)
-        a[thread_id_x]*=v;
-
+        a[thread_id_x]=fmodf(a[thread_id_x], v);
 }
 
-__global__ void pow(float* a, float v, long int rows, long int cols)
-{
+__global__ void mult_(float* a, long int rows, long int cols, float v){
     long int ops=rows*cols;
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x < ops)
-        a[thread_id_x]=pow(a[thread_id_x], v);
-
+        a[thread_id_x] *= v;
 }
 
-__global__ void sqr(float* a, long int rows, long int cols)
-{
- long int ops=rows*cols;
- long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+__global__ void normalize_(float* a, long int rows, long int cols, float min_ori, float max_ori, float min, float max){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
- if (thread_id_x < ops)
-   a[thread_id_x]*=a[thread_id_x];
-
+    if (thread_id_x < ops)
+        a[thread_id_x]=(max-min)/(max_ori-min_ori) * (a[thread_id_x]-min_ori) + min;
 }
 
-__global__ void sqrt(float* a, long int rows, long int cols)
-{
- long int ops=rows*cols;
- long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+__global__ void pow_(float* a, long int rows, long int cols, float exp){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
- if (thread_id_x < ops)
-   a[thread_id_x]=sqrt(a[thread_id_x]);
-
+    if (thread_id_x < ops)
+        a[thread_id_x]=powf(a[thread_id_x], exp);
 }
+
+__global__ void reciprocal_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]=1.0f/a[thread_id_x];
+}
+
+__global__ void remainder_(float* a, long int rows, long int cols, float v){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x] = (int)(a[thread_id_x]/v);
+}
+
+__global__ void round_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]=roundf(a[thread_id_x]);
+}
+
+__global__ void rsqrt_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]=1.0f/sqrtf(a[thread_id_x]);
+}
+
+__global__ void sigmoid_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x] = expf(a[thread_id_x])/(expf(a[thread_id_x])+1.0f);
+}
+
+__global__ void sign_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops){
+        if(a[thread_id_x] > 0.0f){
+            a[thread_id_x] = 1.0f;
+        }else if(a[thread_id_x] < 0.0f){
+            a[thread_id_x] = -1.0f;
+        }else{
+            a[thread_id_x] = 0.0f;
+        }
+    }
+}
+
+__global__ void sin_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]=sinf(a[thread_id_x]);
+}
+
+__global__ void sinh_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]=sinhf(a[thread_id_x]);
+}
+
+__global__ void sqr_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]*=a[thread_id_x];
+}
+
+__global__ void sqrt_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]=sqrtf(a[thread_id_x]);
+}
+
+__global__ void tan_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]=tanf(a[thread_id_x]);
+}
+
+__global__ void tanh_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]=tanhf(a[thread_id_x]);
+}
+
+__global__ void trunc_(float* a, long int rows, long int cols){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < ops)
+        a[thread_id_x]= (int)(a[thread_id_x]);
+}
+
 
 
 ///////////////////////////////////////////

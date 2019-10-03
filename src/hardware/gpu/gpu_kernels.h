@@ -37,16 +37,38 @@ __global__ void mask(float* a, float v, long int rows, long int cols);
 // GPU: Generator
 
 // GPU: Math (in-place)
-__global__ void add(float* a, float v, long int rows, long int cols);
-__global__ void exp(float* a, long int rows, long int cols);
-__global__ void log(float* a, long int rows, long int cols);
-__global__ void log2(float* a, long int rows, long int cols);
-__global__ void log10(float* a, long int rows, long int cols);
-__global__ void logn(float* a, long int rows, long int cols, float n);
-__global__ void mult(float* a, float v, long int rows, long int cols);
-__global__ void sqr(float* a, long int rows, long int cols);
-__global__ void sqrt(float* a,long int rows, long int cols);
-__global__ void pow(float* a, float v, long int rows, long int cols);
+__global__ void abs_(float* a, long int rows, long int cols);
+__global__ void acos_(float* a, long int rows, long int cols);
+__global__ void add_(float* a, long int rows, long int cols, float v);
+__global__ void asin_(float* a, long int rows, long int cols);
+__global__ void atan_(float* a, long int rows, long int cols);
+__global__ void ceil_(float* a, long int rows, long int cols);
+__global__ void clamp_(float* a, long int rows, long int cols, float min, float max);
+__global__ void cos_(float* a, long int rows, long int cols);
+__global__ void cosh_(float* a, long int rows, long int cols);
+__global__ void exp_(float* a, long int rows, long int cols);
+__global__ void floor_(float* a, long int rows, long int cols);
+__global__ void log_(float* a, long int rows, long int cols);
+__global__ void log2_(float* a, long int rows, long int cols);
+__global__ void log10_(float* a, long int rows, long int cols);
+__global__ void logn_(float* a, long int rows, long int cols, float n);
+__global__ void mod_(float* a, long int rows, long int cols, float v);
+__global__ void mult_(float* a, long int rows, long int cols, float v);
+__global__ void normalize_(float* a, long int rows, long int cols, float min_ori, float max_ori, float min, float max);
+__global__ void pow_(float* a, long int rows, long int cols, float exp);
+__global__ void reciprocal_(float* a, long int rows, long int cols);
+__global__ void remainder_(float* a, long int rows, long int cols, float v);
+__global__ void round_(float* a, long int rows, long int cols);
+__global__ void rsqrt_(float* a, long int rows, long int cols);
+__global__ void sigmoid_(float* a, long int rows, long int cols);
+__global__ void sign_(float* a, long int rows, long int cols);
+__global__ void sin_(float* a, long int rows, long int cols);
+__global__ void sinh_(float* a, long int rows, long int cols);
+__global__ void sqr_(float* a, long int rows, long int cols);
+__global__ void sqrt_(float* a, long int rows, long int cols);
+__global__ void tan_(float* a, long int rows, long int cols);
+__global__ void tanh_(float* a, long int rows, long int cols);
+__global__ void trunc_(float* a, long int rows, long int cols);
 
 // GPU: Math (static)
 __global__ void addc(float scA,float* a,float scB,float *b, float *c,long int incC, long int size);

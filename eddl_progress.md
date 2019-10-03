@@ -221,20 +221,20 @@ Numpy-like operations over a raw-tensor object
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| abs | ✅ | ❌ |
-| acos | ✅ | ❌ |
+| abs | ✅ | ✅ |
+| acos | ✅ | ✅ |
 | add | ✅ | ✅ |
-| asin | ✅ | ❌ |
-| atan | ✅ | ❌ |
-| ceil | ✅ | ❌ |
-| clamp | ✅ | ❌ |
-| clampmax | ✅ | ❌ |
-| clampmin | ✅ | ❌ |
-| cos | ✅ | ❌ |
-| cosh | ✅ | ❌ |
+| asin | ✅ | ✅ |
+| atan | ✅ | ✅ |
+| ceil | ✅ | ✅ |
+| clamp | ✅ | ✅ |
+| clampmax | ✅ | ✅ |
+| clampmin | ✅ | ✅ |
+| cos | ✅ | ✅ |
+| cosh | ✅ | ✅ |
 | div | ✅ | ✅ |
 | exp | ✅ | ✅ |
-| floor | ✅ | ❌ |
+| floor | ✅ | ✅ |
 | log | ✅ | ✅ |
 | log2 | ✅ | ✅ |
 | log10 | ✅ | ✅ |
@@ -243,28 +243,28 @@ Numpy-like operations over a raw-tensor object
 | mean* | ❌ | ❌ | Not reduced
 | median* | ❌ | ❌ | Not reduced
 | min* | ✅ | ❌ | Not reduced
-| mod | ✅ | ❌ |
+| mod | ✅ | ✅ |
 | mode* | ✅ | ❌ | Not reduced
 | mult | ✅ | ✅ |
-| neg | ✅ | ❌ |
-| normalize* | ✅ | ❌ | Not reduced
+| neg | ✅ | ✅ |
+| normalize* | ✅ | ✅ | Not reduced
 | pow | ✅ | ✅ |
-| reciprocal | ✅ | ❌ |
-| remainder | ✅ | ❌ |
-| round | ✅ | ❌ |
-| rsqrt | ✅ | ❌ |
-| sigmoid | ✅ | ❌ |
-| sign | ✅ | ❌ |
-| sin | ✅ | ❌ |
-| sinh | ✅ | ❌ |
+| reciprocal | ✅ | ✅ |
+| remainder | ✅ | ✅ |
+| round | ✅ | ✅ |
+| rsqrt | ✅ | ✅ |
+| sigmoid | ✅ | ✅ |
+| sign | ✅ | ✅ |
+| sin | ✅ | ✅ |
+| sinh | ✅ | ✅ |
 | sqr | ✅ | ✅ |
 | sqrt | ✅ | ✅ |
 | std* | ❌ | ❌ | Not reduced
-| sub | ✅ | ❌ |
-| sum* | ✅ | ❌ | Not reduced by default
-| tan | ✅ | ❌ |
-| tanh | ✅ | ❌ |
-| trunc | ✅ | ❌ |
+| sub | ✅ | ✅ |
+| sum* | ✅ | ✅ | Not reduced by default
+| tan | ✅ | ✅ |
+| tanh | ✅ | ✅ |
+| trunc | ✅ | ✅ |
 | var* | ❌ | ❌ | Not reduced
 
 
