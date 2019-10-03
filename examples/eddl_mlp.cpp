@@ -28,17 +28,36 @@ using namespace eddl;
 
 layer BN(layer l){
   vector<int> axis;
-  axis.push_back(1);
+  axis.push_back(0);
 
   layer m=ReduceMean(l,axis,true);
-  layer d=Diff(l,m);
 
-  layer v=ReduceVar(l,axis,true);
+  layer M=T(getShape(m));
+  set(M,0.0);
 
-  l=Div(d,Sqrt(Sum(v,0.001)));
+
+  m=Mult(m,0.1);
+  M=Mult(M,0.9);
+  M=Sum(M,m);
+
+
+  layer d=Diff(l,M);
+  layer mu=Mult(d,d);
+  layer v=ReduceMean(mu,axis,true);
+
+  layer V=T(getShape(v));
+  set(V,1.0);
+
+  v=Mult(v,0.1);
+  V=Mult(V,0.9);
+  V=Sum(V,v);
+
+
+  l=Div(d,Sqrt(V));
 
   return l;
 }
+
 
 int main(int argc, char **argv) {
 
@@ -54,19 +73,17 @@ int main(int argc, char **argv) {
     layer in = Input({784});
     layer l = in;  // Aux var
 
-    //l = GaussianNoise(l,0.3);
-
-    l = Activation(Dense(l, 1024), "relu");
-    l = Activation(Dense(l, 1024), "relu");
-    l = Activation(Dense(l, 1024), "relu");
+    l = BatchNormalization(Activation(Dense(l, 1024), "relu"));
+    l = BatchNormalization(Activation(Dense(l, 1024), "relu"));
+    l = BatchNormalization(Activation(Dense(l, 1024), "relu"));
     layer out = Activation(Dense(l, num_classes), "softmax");
     model net = Model({in}, {out});
 
-
+    plot(net, "model.pdf");
 
     // Build model
     build(net,
-          sgd(0.001, 0.9), // Optimizer
+          sgd(0.01, 0.9), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           //CS_GPU({1,1},10) // 2 GPUs with local_sync_batches=10
@@ -77,7 +94,7 @@ int main(int argc, char **argv) {
 
     // View model
     cout<<summary(net);
-    plot(net, "model.pdf");
+
 
     // Load dataset
     tensor x_train = T_load("trX.bin");
@@ -90,11 +107,13 @@ int main(int argc, char **argv) {
     div(x_test, 255.0);
 
     // Train model
-    fit(net, {x_train}, {y_train}, batch_size, epochs);
+    for(int i=0;i<epochs;i++) {
+      fit(net, {x_train}, {y_train}, batch_size, 1);
 
-    // Evaluate test
-    std::cout << "Evaluate test:" << std::endl;
-    evaluate(net, {x_test}, {y_test});
+      // Evaluate test
+      std::cout << "Evaluate test:" << std::endl;
+      evaluate(net, {x_test}, {y_test});
+    }
 }
 
 

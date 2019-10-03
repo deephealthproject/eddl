@@ -91,6 +91,44 @@ void TestTensor::check(string s) {
 int main(int argc, char **argv) {
     int dim1,dim2,dim3;
 
+
+    int dev = DEV_CPU;
+    Tensor *T=new Tensor({10,5}, dev);
+
+    vector<int> axis;
+    axis.push_back(0);
+    //axis.push_back(3);
+/*
+    ReduceDescriptor *RD=new ReduceDescriptor(T,axis,"mean",false);
+
+    //
+    T->info();
+    T->set(1.0);
+    T->rand_uniform(1.0);
+    T->print();
+
+    //
+    cout<<"Mean\n";
+    reduction(RD);
+    //
+    RD->O->info();
+    RD->O->print();
+*/
+    LTensor *LT= new LTensor(T->getShape(),DEV_CPU);
+    LT->output->info();
+    LT->output->rand_uniform(1.0);
+    LT->output->print();
+
+    cout<<"Mean:\n";
+    LRMean *LRM=new LRMean(LT,axis,true,"LTmean",DEV_CPU);
+    LRM->forward();
+
+    LRM->output->info();
+    LRM->output->print();
+
+    exit(1);
+
+
     dim1=1000;
     dim2=1000;
     dim3=100;
