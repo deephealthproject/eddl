@@ -30,7 +30,6 @@ using namespace std;
 int LGaussianNoise::total_layers = 0;
 
 LGaussianNoise::LGaussianNoise(Layer *parent, float stdev, string name, int dev) : LinLayer(name, dev) {
-    if (parent->output->ndim != 2) msg("LGaussianNoise only works over 2D tensors", "LGaussianNoise");
     if(name.empty()) this->name = "gaussiannoise" + to_string(++total_layers);
     this->stdev = stdev;
 
