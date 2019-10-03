@@ -110,7 +110,7 @@ namespace eddl {
     layer GaussianNoise(layer parent, float stddev, string name = ""); //Todo: Implement
 
 // ---- NORMALIZATION LAYERS ----
-    layer BatchNormalization(layer parent, float momentum = 0.9f, float epsilon = 0.0001f, bool affine = true,
+    layer BatchNormalization(layer parent, float momentum = 0.9f, float epsilon = 0.001f, bool affine = true,
                              string name = ""); //Todo: Implement
     layer Dropout(layer parent, float rate, string name = ""); //Todo: Implement
 

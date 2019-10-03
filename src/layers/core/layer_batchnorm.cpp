@@ -35,7 +35,7 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
     vector<int> axis;
     if (parent->output->ndim == 2) axis.push_back(0);
-    else if (parent->output->ndim == 4) {axis.push_back(0);axis.push_back(1);}
+    else if (parent->output->ndim == 4) {axis.push_back(0);axis.push_back(2);axis.push_back(3);}
     else msg("LBatchNorm only works over 2D or 4D tensors", "LBatchNorm");
 
     if(name.empty()) this->name = "batchnorm" + to_string(++total_layers);
