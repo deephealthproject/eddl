@@ -30,7 +30,7 @@ using namespace eddl;
 using namespace std;
 
 int main(int argc, char **argv) {
-    int dev = DEV_CPU;
+    int dev = DEV_GPU;
 
     // Creation ops ***********************************
     // TEST: ones
