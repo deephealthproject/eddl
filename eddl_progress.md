@@ -96,9 +96,9 @@
 | ------------- |------| -----| ---------|
 | Mean | ✅| ❌ | still test properly
 | Var | ✅| ❌ | still test properly
-| Sum | ❌| ❌ | still test properly
-| Max | ❌| ❌ | still test properly
-| Min | ❌| ❌ | still test properly
+| Sum | ✅| ❌ | still test properly
+| Max | ✅| ❌ | still test properly
+| Min | ✅| ❌ | still test properly
 
 
 ### Recurrent layers
