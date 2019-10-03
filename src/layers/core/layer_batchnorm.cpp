@@ -33,7 +33,11 @@ int LBatchNorm::total_layers = 0;
 
 LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev) : LinLayer(name, dev) {
 
-    if (parent->output->ndim != 2) msg("LBatchNorm only works over 2D tensors", "LBatchNorm");
+    vector<int> axis;
+    if (parent->output->ndim == 2) axis.push_back(0);
+    else if (parent->output->ndim == 4) {axis.push_back(0);axis.push_back(1);}
+    else msg("LBatchNorm only works over 2D or 4D tensors", "LBatchNorm");
+
     if(name.empty()) this->name = "batchnorm" + to_string(++total_layers);
 
     this->momentum = momentum;
@@ -51,8 +55,6 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
       variance->output->set(1.0);
     }
 
-    vector<int> axis;
-    axis.push_back(0);
 
 
     // create a sub-graph
