@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////////////////////
 #include <cmath>
 #include <limits>
-
+#include <iostream>
 
 #include "tensor.h"
 #include "../hardware/cpu/cpu_hw.h"
@@ -594,11 +594,13 @@ void Tensor::normalize_(float min, float max){
     // Normalize in range: 423 from [23, 562], to range [-1, 1] => 0.4842
     // (max2-min2)/(max1-min1) * (x-min1) + min2
     if (isCPU()) {
+        cout << "CPUUUUUU***_*_*_*_**__*_*" << endl;
         cpu_normalize_(this, min, max);
     }
 #ifdef cGPU
     else if (isGPU())
       {
+        cout << "GPUUUUUU" << endl;
         gpu_normalize_(this, min, max); // TODO: fix
       }
 #endif
