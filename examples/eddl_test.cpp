@@ -158,6 +158,16 @@ int main(int argc, char **argv) {
     A->check("set");
 
 
+    ///////////// abs_ ////////////////
+    A->TC->rand_uniform(1.0f);
+    A->ToGPU();
+
+    A->TC->abs_();
+    A->TG->abs_();
+
+    A->check("abs_");
+
+
     ///////////// pow ////////////////
     A->TC->rand_signed_uniform(1);
     A->ToGPU();
