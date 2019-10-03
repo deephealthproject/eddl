@@ -6,6 +6,9 @@
 #define EDDL_GPU_HW_H
 
 #include <cuda.h>
+#include <curand.h>
+#include <cuda_runtime_api.h>
+#include <cublas_v2.h>
 
 #include "../../tensor/tensor.h"
 #include "../../descriptors/descriptors.h"

@@ -4,6 +4,8 @@
 #include <cublas_v2.h>
 
 #include "gpu_nn.h"
+#include "gpu_nn_kernels.h"
+
 #include "../gpu_hw.h"
 #include "../gpu_tensor.h"
 #include "../gpu_kernels.h"
