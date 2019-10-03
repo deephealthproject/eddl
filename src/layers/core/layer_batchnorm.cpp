@@ -57,8 +57,8 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
     // create a sub-graph
     LRMean *mean_x,*var;
-    LMult *mx,*mm,*vx,*vm,*mult;
-    LSum *addm,*addv,*veps;
+    LMult *mult;
+    LSum *veps;
     LDiff *diff;
     LSqrt *sd;
     LDiv *div;
@@ -76,8 +76,19 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
     // norm
     div=new LDiv(diff,sd,this->name+"div",dev);
 
+    layers.push_back(mean_x); //0
+    layers.push_back(diff);  //1 --
+    layers.push_back(mult);  //2
+    layers.push_back(var);   //3
+    layers.push_back(veps);  //4 --
+    layers.push_back(sd);    //5 --
+    layers.push_back(div);   //6 --
+
     // save statistics with momentum
     if (momentum!=0.0) {
+      LMult *mx,*mm,*vx,*vm;
+      LSum *addm,*addv;
+
       mx=new LMult(mean_x,(1.0-momentum),this->name+"mx",dev);
       mm=new LMult(mean,momentum,this->name+"mm",dev);
       addm=new LSum(mx,mm,this->name+"sum_m",dev);
@@ -85,27 +96,16 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
       vx=new LMult(var,(1-momentum),this->name+"sx",dev);
       vm=new LMult(variance,momentum,this->name+"sm",dev);
       addv=new LSum(vx,vm,this->name+"sum_sd",dev);
+
+      layers.push_back(mx);  //7
+      layers.push_back(mm);  //8
+      layers.push_back(addm);//9
+
+      layers.push_back(vx);  //10
+      layers.push_back(vm);  //11
+      layers.push_back(addv);//12
     }
-
-
-    layers.push_back(mean_x); //0
-
-    layers.push_back(diff);  //1 --
-    layers.push_back(mult);  //2
-    layers.push_back(var);   //3
-
-    layers.push_back(veps);  //4 --
-    layers.push_back(sd);    //5 --
-    layers.push_back(div);   //6 --
-
-    layers.push_back(mx);  //7
-    layers.push_back(mm);  //8
-    layers.push_back(addm);//9
-
-    layers.push_back(vx);  //10
-    layers.push_back(vm);  //11
-    layers.push_back(addv);//12
-
+    
     // detach from the main graph
     parent->detach(mean_x);
     parent->detach(diff);
