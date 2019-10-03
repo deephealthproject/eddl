@@ -55,8 +55,6 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
       variance->output->set(1.0);
     }
 
-
-
     // create a sub-graph
     LRMean *mean_x,*var;
     LMult *mx,*mm,*vx,*vm,*mult;
@@ -65,49 +63,48 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
     LSqrt *sd;
     LDiv *div;
 
+    // mean
     mean_x=new LRMean(parent, axis, true,this->name+"mean_x",dev);
-    // momentum to mean
+
+    // var
+    diff=new LDiff(parent, mean_x,this->name+"diff",dev);
+    mult=new LMult(diff,diff,this->name+"mult",dev);
+    var=new LRMean(mult, axis,true,this->name+"mean_mult",dev);
+    //sd
+    veps=new LSum(var,epsilon,this->name+"sum_eps",dev);
+    sd=new LSqrt(veps,this->name+"sqrt",dev);
+    // norm
+    div=new LDiv(diff,sd,this->name+"div",dev);
+
+    // save statistics with momentum
     if (momentum!=0.0) {
       mx=new LMult(mean_x,(1.0-momentum),this->name+"mx",dev);
       mm=new LMult(mean,momentum,this->name+"mm",dev);
       addm=new LSum(mx,mm,this->name+"sum_m",dev);
-    }
-    diff=new LDiff(parent, mean_x,this->name+"diff",dev);
 
-    // obtain var
-    mult=new LMult(diff,diff,this->name+"mult",dev);
-    var=new LRMean(mult, axis,true,this->name+"mean_mult",dev);
-    //
-    // momentum to var
-    if (momentum!=0.0) {
       vx=new LMult(var,(1-momentum),this->name+"sx",dev);
       vm=new LMult(variance,momentum,this->name+"sm",dev);
       addv=new LSum(vx,vm,this->name+"sum_sd",dev);
     }
 
-    veps=new LSum(var,epsilon,this->name+"sum_eps",dev);
-    sd=new LSqrt(veps,this->name+"sqrt",dev);
-    div=new LDiv(diff,sd,this->name+"div",dev);
 
     layers.push_back(mean_x); //0
-    if (momentum!=0.0) {
-      layers.push_back(mx);  //1
-      layers.push_back(mm);  //2
-      layers.push_back(addm);//3
-    }
 
-    layers.push_back(diff);  //4 --
-    layers.push_back(mult);  //5
-    layers.push_back(var);   //6
+    layers.push_back(diff);  //1 --
+    layers.push_back(mult);  //2
+    layers.push_back(var);   //3
 
-    if (momentum!=0.0) {
-      layers.push_back(vx);  //7
-      layers.push_back(vm);  //8
-      layers.push_back(addv);//9
-    }
-    layers.push_back(veps);  //10
-    layers.push_back(sd);    //11 --
-    layers.push_back(div);   //12 --
+    layers.push_back(veps);  //4 --
+    layers.push_back(sd);    //5 --
+    layers.push_back(div);   //6 --
+
+    layers.push_back(mx);  //7
+    layers.push_back(mm);  //8
+    layers.push_back(addm);//9
+
+    layers.push_back(vx);  //10
+    layers.push_back(vm);  //11
+    layers.push_back(addv);//12
 
     // detach from the main graph
     parent->detach(mean_x);
@@ -153,16 +150,18 @@ void LBatchNorm::forward() {
       layers[i]->forward();
     }
     if (momentum!=0.0) {
-      Tensor::copy(layers[9]->output,variance->output);
-      Tensor::copy(layers[3]->output,mean->output);
+      Tensor::copy(layers[9]->output,mean->output);
+      Tensor::copy(layers[12]->output,variance->output);
     }
   }
   else {
     Tensor::copy(mean->output,layers[0]->output);
-    Tensor::copy(variance->output,layers[10]->output);
+    layers[1]->forward();
+
+    Tensor::copy(variance->output,layers[3]->output);
     layers[4]->forward();
-    layers[11]->forward();
-    layers[12]->forward();
+    layers[5]->forward();
+    layers[6]->forward();
   }
 
 }
