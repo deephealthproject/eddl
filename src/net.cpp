@@ -303,7 +303,7 @@ void Net::fts() {
       for (i = 0; i < vfts.size(); i++)
         cout<<vfts[i]->name<<"-->";
       cout<<"\n";
-      getchar();
+      //getchar();
     }
 }
 
@@ -624,7 +624,7 @@ void Net::forward() {
           cout << vfts[i]->name << "\n";
           fprintf(stdout, "  %s In:%f\n", vfts[i]->name.c_str(), vfts[i]->input->sum());
           fprintf(stdout, "  %s Out:%f\n", vfts[i]->name.c_str(), vfts[i]->output->sum());
-          getchar();
+          //getchar();
         }
     }
 }
@@ -651,8 +651,10 @@ void Net::loss() {
 
 /////////////////////////////////////////
 void Net::backward() {
-    for (int i = 0; i < vbts.size(); i++)
+    for (int i = 0; i < vbts.size(); i++) {
+        //cout<<"BACK: "<<vbts[i]->name<<"delta:"<<vbts[i]->delta->sum_abs()<<"\n";
         vbts[i]->backward();
+      }
 
 }
 
@@ -825,7 +827,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
 
     int thread_batch_size=batch_size / comp;
 
-    setmode(TRMODE);
+
     // Check indices
     if (sind.size() == 0) msg("error void index","Net::train_batch");
     // Split data for each network

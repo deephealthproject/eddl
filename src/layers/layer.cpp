@@ -78,6 +78,7 @@ void Layer::reset() {
 }
 
 void Layer::setmode(int m) {
+  
     mode = m;
 }
 

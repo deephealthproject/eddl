@@ -244,7 +244,8 @@ public:
     float epsilon;
     bool affine;
     LTensor *mean;
-    LTensor *sd;
+    LTensor *variance;
+
     static int total_layers;
     vector<Layer *> layers;
 
@@ -259,6 +260,8 @@ public:
     void backward() override;
 
     void resize(int batch) override;
+
+    void reset() override;
 
     string plot(int c) override;
 };

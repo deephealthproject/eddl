@@ -61,7 +61,7 @@ public:
 
     void initialize();
 
-    void reset();
+
     void save(FILE *fe);
     void load(FILE *fe);
 
@@ -79,6 +79,8 @@ public:
 
 
     //virtual
+    virtual void reset();
+    
     virtual void resize(int batch);
 
     virtual string plot(int c) { return ""; }

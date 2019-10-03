@@ -83,6 +83,13 @@ void LRVar::backward(){
   for(int i=layers.size()-1;i>=0;i--) layers[i]->backward();
 }
 
+
+void LRVar::reset()
+{
+  for (int i = 0; i != layers.size(); i++)
+      layers[i]->reset();
+}
+
 Layer *LRVar::share(int c, int bs, vector<Layer *> p) {
   LRVar *n;
   n = new LRVar(p[0], axis, keepdims, "share_" + to_string(c) + name, dev);
