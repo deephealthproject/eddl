@@ -47,7 +47,7 @@ public:
 
     explicit LTensor(Layer *l);
 
-    Layer *share(int c, int bs, vector<Layer *> p) override; 
+    Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
@@ -243,7 +243,10 @@ public:
     float momentum;
     float epsilon;
     bool affine;
+    LTensor *mean;
+    LTensor *sd;
     static int total_layers;
+    vector<Layer *> layers;
 
     LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev);
 
