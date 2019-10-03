@@ -3,8 +3,9 @@
 #include "../hardware/cpu/cpu_hw.h"
 
 #ifdef cGPU
-#include "../hardware/gpu/tensor_cuda.h"
-#include "../hardware/gpu/tensor_cuda_op.h"
+#include "../hardware/gpu/gpu_tensor.h"
+#include "../hardware/gpu/gpu_hw.h"
+#include "../hardware/gpu/nn/gpu_nn.h"
 #endif
 
 
@@ -75,7 +76,7 @@ void Tensor::rand_normal(float m, float s, bool fast_math) {
 #ifdef cGPU
     else if (isGPU())
       {
-        gpu_rand_gaussian(this,m,s);
+        gpu_rand_normal(this,m,s);
       }
 #endif
 #ifdef cFPGA

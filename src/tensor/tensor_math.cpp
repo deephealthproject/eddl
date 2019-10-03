@@ -24,8 +24,9 @@
 #include "../hardware/cpu/cpu_hw.h"
 
 #ifdef cGPU
-#include "../hardware/gpu/tensor_cuda.h"
-#include "../hardware/gpu/tensor_cuda_op.h"
+#include "../hardware/gpu/gpu_tensor.h"
+#include "../hardware/gpu/gpu_hw.h"
+#include "../hardware/gpu/nn/gpu_nn.h"
 #endif
 
 
@@ -77,7 +78,7 @@ void Tensor::add_(float v) {
 #ifdef cGPU
     else if (isGPU())
       {
-        gpu_sum(this,v);
+        gpu_add(this,v);
       }
 #endif
 #ifdef cFPGA
@@ -112,7 +113,7 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_sum(scA,A,scB,B,C,incC);
+        gpu_addc(scA,A,scB,B,C,incC);
       }
 #endif
 #ifdef cFPGA
@@ -867,8 +868,8 @@ float Tensor::sum() {
 #ifdef cGPU
     else if (isGPU())
       {
-         float sum;
-         gpu_total_sum(this,&sum);
+         float sum;  // TODO: Fix
+         gpu_total_sum(this, &sum);
          return sum;
       }
 #endif
@@ -1009,9 +1010,7 @@ float Tensor::sum_abs() {
 #ifdef cGPU
     else if (isGPU())
       {
-         float sum;
-         gpu_total_sum(this,&sum);
-         return sum;
+         //return gpu_sum_abs(this);
       }
 #endif
 #ifdef cFPGA

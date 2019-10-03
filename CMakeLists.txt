@@ -124,6 +124,7 @@ include_directories(src/callbacks)
 include_directories(src/hardware/cpu)
 include_directories(src/hardware/cpu/nn)
 include_directories(src/hardware/gpu)
+include_directories(src/hardware/gpu/nn)
 include_directories(src/initializers)
 include_directories(src/layers)
 include_directories(src/layers/conv)
@@ -272,12 +273,21 @@ SET(CPP_SOURCES
         src/random.h
         )
 SET(CUDA_SOURCES
-        src/hardware/gpu/tensor_cuda.cu
-        src/hardware/gpu/tensor_cuda.h
-        src/hardware/gpu/tensor_cuda_op.cu
-        src/hardware/gpu/tensor_cuda_op.h
-        src/hardware/gpu/tensor_kernels.cu
-        src/hardware/gpu/tensor_kernels.h
+        src/hardware/gpu/gpu_hw.h
+        src/hardware/gpu/gpu_comparison.cu
+        src/hardware/gpu/gpu_core.cu
+        src/hardware/gpu/gpu_generator.cu
+        src/hardware/gpu/gpu_math.cu
+        src/hardware/gpu/gpu_reduction.cu
+        src/hardware/gpu/gpu_tensor.cu
+        src/hardware/gpu/gpu_tensor.h
+        src/hardware/gpu/gpu_kernels.h
+        src/hardware/gpu/nn/gpu_nn.h
+        src/hardware/gpu/nn/gpu_activations.cu
+        src/hardware/gpu/nn/gpu_conv.cu
+        src/hardware/gpu/nn/gpu_losses.cu
+        src/hardware/gpu/nn/gpu_metrics.cu
+        src/hardware/gpu/nn/gpu_pool.cu
         )
 SET(SOURCES ${CPP_SOURCES} ${CUDA_SOURCES})
 
