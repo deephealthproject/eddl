@@ -1,4 +1,3 @@
-
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of EDDLL an European Distributed Deep Learning Library.
 // Developed within the DeepHealth project.
@@ -17,21 +16,24 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef _TENSOR_CUDA_
-#define _TENSOR_CUDA_
-
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
 #include <cuda.h>
-#include <curand.h>
-#include <cuda_runtime_api.h>
-#include <cublas_v2.h>
 
-void check_cuda(cudaError_t err,const char *msg);
-void gpu_set_device(int device);
-void gpu_init(int device);
+#include "gpu_nn_kernels.h"
+#include "../gpu_kernels.h"
 
-float* gpu_create_tensor(int dev,int size);
-void gpu_delete_tensor(int dev,float* p);
 
-int gpu_devices();
+__global__ void cent(float* a, float* b, float* c, long int size)
+{
 
-#endif
+ long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+ if (thread_id_x < size){
+   c[thread_id_x]=0;
+   if (a[thread_id_x]) c[thread_id_x]-=a[thread_id_x]*logf(b[thread_id_x]+0.00001);
+   if (a[thread_id_x]!=1.0) c[thread_id_x]-=(1.0-a[thread_id_x])*logf(1.0-b[thread_id_x]+0.00001);
+  }
+}

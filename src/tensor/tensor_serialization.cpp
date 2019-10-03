@@ -2,8 +2,9 @@
 #include "../hardware/cpu/cpu_hw.h"
 
 #ifdef cGPU
-#include "../hardware/gpu/tensor_cuda.h"
-#include "../hardware/gpu/tensor_cuda_op.h"
+#include "../hardware/gpu/gpu_tensor.h"
+#include "../hardware/gpu/gpu_hw.h"
+#include "../hardware/gpu/nn/gpu_nn.h"
 #endif
 
 
