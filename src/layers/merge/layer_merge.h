@@ -48,6 +48,8 @@ public:
 
     void backward() override;
 
+    void resize(int batch) override;
+
     string plot(int c) override;
 
 };
@@ -107,6 +109,8 @@ public:
     void forward() override;
 
     void backward() override;
+
+    void resize(int batch) override;
 
     string plot(int c) override;
 
@@ -176,7 +180,8 @@ public:
 
     string plot(int c) override;
 
+    void resize(int batch) override;
+
 };
 
 #endif //EDDL_LAYER_MERGE_H
-

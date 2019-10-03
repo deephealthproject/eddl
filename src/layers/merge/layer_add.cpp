@@ -79,6 +79,10 @@ void LAdd::backward() {
         Tensor::inc(delta, parent[i]->delta);
 }
 
+void LAdd::resize(int batch){
+  Layer::resize(batch);
+}
+
 Layer *LAdd::share(int c, int bs, vector<Layer *> p) {
     LAdd *n = new LAdd(p, "share_" + to_string(c) + name, dev);
     n->orig = this;

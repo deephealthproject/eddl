@@ -101,6 +101,9 @@ void LConcat::backward() {
     }
 }
 
+void LConcat::resize(int batch){
+  Layer::resize(batch);
+}
 
 Layer *LConcat::share(int c, int bs, vector<Layer *> p) {
 

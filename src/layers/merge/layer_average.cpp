@@ -81,6 +81,11 @@ void LAverage::backward() {
         Tensor::inc(delta, parent[i]->delta);
 }
 
+void LAverage::resize(int batch){
+  Layer::resize(batch);
+}
+
+
 Layer *LAverage::share(int c, int bs, vector<Layer *> p) {
     LAverage *n = new LAverage(p, "share_" + to_string(c) + name, dev);
     n->orig = this;
