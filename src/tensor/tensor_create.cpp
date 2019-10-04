@@ -12,11 +12,20 @@ using namespace std;
 //TODO: Move. Aux func I don't like it
 Tensor* raw_range(float min, float step, int size, int dev){
     auto t = new Tensor(vector<int>{size}, nullptr, dev);
-    float v=min;
-    for(int i=0; i<size; i++){
-        t->ptr[i] = v;
-        v+=step;
+    if (t->isCPU()) {
+        cpu_range(t, min, step);
     }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_abs_(this);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
     return t;
 }
 

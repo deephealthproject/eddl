@@ -21,6 +21,9 @@ void cpu_copy(Tensor *A, Tensor *B);
 void cpu_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
 void cpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
 
+// CPU: Create
+void cpu_range(Tensor *A, float min, float step);
+
 // CPU: Generator
 void cpu_rand_uniform(Tensor *A, float v);
 void cpu_rand_signed_uniform(Tensor *A, float v);

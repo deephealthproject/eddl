@@ -51,8 +51,6 @@ void *applygrads_t(void *t);
 
 class Net {
 private:
-    void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);
-
     void build(Optimizer *opt, vloss lo, vmetrics me);
 
     void set_compserv(CompServ *cs);
@@ -119,6 +117,7 @@ public:
 
     void fit(vtensor tin, vtensor tout, int batch_size, int epochs);
 
+    void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);
     void train_batch_ni(vector<Tensor *> in, vector<Tensor *> out);
 
     void evaluate(vtensor tin, vtensor tout);

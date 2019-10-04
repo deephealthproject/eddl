@@ -247,6 +247,7 @@ SET(CPP_SOURCES
         src/descriptors/descriptors.h
         src/descriptors/descriptor_conv.cpp
         src/descriptors/descriptor_pool.cpp
+        src/descriptors/descriptor_reduce.cpp
         src/tensor/tensor.h
         src/tensor/tensor.cpp
         src/tensor/tensor_comparison.cpp
@@ -394,6 +395,7 @@ if(BUILD_EXAMPLES)
     set(CMAKE_FOLDER examples)
     add_executable(example_conv "${EXAMPLES_DIR}/eddl_conv.cpp")
     add_executable(example_mlp "${EXAMPLES_DIR}/eddl_mlp.cpp")
+    add_executable(example_train_batch "${EXAMPLES_DIR}/eddl_train_batch.cpp")
   	add_executable(example_predict "${EXAMPLES_DIR}/eddl_predict.cpp")
     add_executable(example_ae "${EXAMPLES_DIR}/eddl_ae.cpp")
     add_executable(example_dae "${EXAMPLES_DIR}/eddl_dae.cpp")
@@ -405,6 +407,7 @@ if(BUILD_EXAMPLES)
     add_executable(example_tensor "${EXAMPLES_DIR}/eddl_tensor.cpp")
     target_link_libraries(example_conv eddl)
     target_link_libraries(example_mlp eddl)
+    target_link_libraries(example_train_batch eddl)
   	target_link_libraries(example_predict eddl)
     target_link_libraries(example_ae eddl)
     target_link_libraries(example_dae eddl)

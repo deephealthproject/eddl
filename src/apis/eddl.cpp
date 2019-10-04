@@ -403,6 +403,25 @@ namespace eddl {
         return new CompServ(csspec);
     }
 
+// ---- FINE-GRAINED METHODS ----
+    vector<int> random_indices(int batch_size, int num_samples){
+        vector<int> sind;
+        for (int k = 0; k < batch_size; k++) sind.push_back(rand() % num_samples);
+        return sind;
+    }
+
+    void resize_model(model net, int batch_size){
+        net->resize(batch_size);
+    }
+
+    void set_mode(model net, int mode){
+        net->setmode(mode);
+    }
+
+    void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices){
+        net->tr_batches++;
+        net->train_batch(in, out, indices);
+    }
 
     // ---- MODEL METHODS ----
     model Model(vlayer in, vlayer out) {

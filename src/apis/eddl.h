@@ -219,6 +219,16 @@ namespace eddl {
     compserv CS_COMPSS(char* path);
 
 
+// ---- FINE-GRAINED METHODS ----
+    vector<int> random_indices(int batch_size, int num_samples);
+
+    void resize_model(model net, int batch_size);
+
+    void set_mode(model net, int mode);
+
+    void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
+
+
 // ---- MODEL METHODS ----
     model Model(vlayer in, vlayer out);
 
