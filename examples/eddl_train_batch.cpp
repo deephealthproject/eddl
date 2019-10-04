@@ -100,8 +100,12 @@ int main(int argc, char **argv) {
             // Set random indices
             vector<int> indices = random_indices(batch_size, num_samples); // Should declared from python
 
+            // COMPS: wait for weights()
+
             // Train batch
             train_batch(net, tin, tout, indices);  // Bind this function
+
+            // COMPS: send grads()
         }
     }
 
