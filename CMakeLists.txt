@@ -150,6 +150,7 @@ SET(CPP_SOURCES
         src/hardware/cpu/cpu_hw.h
         src/hardware/cpu/cpu_comparison.cpp
         src/hardware/cpu/cpu_core.cpp
+        src/hardware/cpu/cpu_create.cpp
         src/hardware/cpu/cpu_generator.cpp
         src/hardware/cpu/cpu_math.cpp
         src/hardware/cpu/cpu_reduction.cpp
@@ -277,6 +278,7 @@ SET(CUDA_SOURCES
         src/hardware/gpu/gpu_hw.h
         src/hardware/gpu/gpu_comparison.cu
         src/hardware/gpu/gpu_core.cu
+        src/hardware/gpu/gpu_create.cu
         src/hardware/gpu/gpu_generator.cu
         src/hardware/gpu/gpu_math.cu
         src/hardware/gpu/gpu_reduction.cu

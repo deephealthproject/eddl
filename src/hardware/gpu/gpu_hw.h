@@ -42,6 +42,9 @@ void gpu_copy(Tensor *A, Tensor *B);
 void gpu_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
 void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
 
+// GPU: Create (static)
+void gpu_range(Tensor *A, float min, float step, int size)
+
 // GPU: Generator
 void gpu_rand_uniform(Tensor *A, float v);
 void gpu_rand_signed_uniform(Tensor *A, float v);

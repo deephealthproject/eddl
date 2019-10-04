@@ -81,7 +81,6 @@ void gpu_mask(Tensor *A,float v) {
 
 
 void gpu_set(Tensor *A,float v) {
-
     int device=A->gpu_device;
     cudaSetDevice(device);
 
@@ -89,5 +88,4 @@ void gpu_set(Tensor *A,float v) {
 
     set<<<dimGrid,dimBlock>>>(A->ptr,v,r,c);
     check_cuda(cudaDeviceSynchronize(),"set");
-
 }
