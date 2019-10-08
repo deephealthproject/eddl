@@ -391,7 +391,8 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
     find_package(Threads REQUIRED)
     target_link_libraries(eddl PRIVATE Threads::Threads)
-    if(EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
+
+    if(EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
         set(EDDL_CUDA_LIBRARIES_PATH "${CUDA_TOOLKIT_ROOT_DIR}/lib64" CACHE PATH "Path to cublas, cudart, and curand libs")
         if (EDDL_CUDA_LIBRARIES_PATH STREQUAL "")
             message(ERROR ": cudart, cublas, and curand paths must be specified")
