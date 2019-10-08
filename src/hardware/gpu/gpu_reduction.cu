@@ -17,7 +17,7 @@ void gpu_reduction(ReduceDescriptor *RD){
 
   cudaSetDevice(device);
 
-  int i,j,d,s,max,p;
+  int i,j,d,s,p;
 
 
   // [MEAN]: Compute items to be reduced
@@ -42,23 +42,31 @@ void gpu_reduction(ReduceDescriptor *RD){
     for(i=0;i<s;i++) ind[i]=-1;
 
     for(i=0;i<RD->index.size();i++) {
-      p=i*max;
+      p=i*RD->max;
+      fprintf(stderr,"%d\n",p);
       for(j=0;j<RD->index[i].size();j++,p++)
         ind[p]=RD->index[i][j];
     }
 
+    for(i=0;i<s;i++) printf("%d ",ind[i]);
+    getchar();
+
+    if (RD->S==nullptr) RD->S=new Tensor(vector<int>{1},RD->I->device);
+
     check_cuda(cudaMalloc((void**)&(RD->ind),s*sizeof(int)),"create_index");
+    check_cuda(cudaDeviceSynchronize(), "create ind");
     check_cuda(cudaMemcpy(RD->ind,ind,s*sizeof(int),cudaMemcpyHostToDevice),"copy ind");
+    check_cuda(cudaDeviceSynchronize(), "copy");
 
     free(ind);
   }
 
   printf("OK created\n");
   //reduce
-  dim3 dimGrid(RD->index.size());
+  dim3 dimGrid(s);
   dim3 dimBlock(1);
 
-  printf("Kernel\n");
+  printf("Kernel %dx%d\n",dimGrid.x,dimBlock.x);
   reduction_kernel<<<dimGrid,dimBlock>>>(RD->I->ptr, RD->O->ptr, RD->S->ptr,RD->m, RD->keepdims,d,RD->ind,RD->max);
   check_cuda(cudaDeviceSynchronize(), "reduction_kernel");
 
