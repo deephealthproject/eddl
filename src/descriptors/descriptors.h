@@ -22,13 +22,16 @@ public:
    vector<int> axis;
    bool keepdims;
    int m;
+   int max;
 
    vector<vector<int>> index;
+   int *ind;
    Tensor *I; // input
    Tensor *O; // output
    Tensor *D; // delta
    Tensor *ID; // parent delta
    Tensor *S; // indexes for max,min...
+
 
    ReduceDescriptor();
    ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool keepdims);

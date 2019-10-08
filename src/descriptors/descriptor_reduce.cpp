@@ -16,6 +16,7 @@ ReduceDescriptor::ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool
 {
   this->axis=axis;
   this->keepdims=keepdims;
+  ind=nullptr;
 
   // Select mode
   if (mode=="mean") m=0;
@@ -28,9 +29,6 @@ ReduceDescriptor::ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool
 
   tshape os;
 
-  /*if (find(axis.begin(), axis.end(), 0) != axis.end())
-    msg("Batch axis reduction not allowed","ReduceDescriptor");
-*/
   if (keepdims){
     os=A->shape;
   }
