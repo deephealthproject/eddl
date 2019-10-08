@@ -94,12 +94,7 @@ LTensor::LTensor(Layer *l) : LinLayer("ltensor" + to_string(total_layers), l->de
 }
 
 void LTensor::resize(int batch){
-  float v=output->ptr[0];
-
   Layer::resize(batch);
-
-  output->set(v);
-
 }
 
 

@@ -29,12 +29,12 @@ void gpu_reduction(ReduceDescriptor *RD){
   }
 
   if (RD->ind==nullptr) {
-    fprintf(stderr,"Mem GPU ind\n");
-
+    
     RD->max=0;
     for(i=0;i<RD->index.size();i++)
        if(RD->max<RD->index[i].size()) RD->max=RD->index[i].size();
     RD->max++;
+
     s=RD->index.size()*RD->max;
 
     int *ind=(int *)malloc(s*sizeof(int));
@@ -43,30 +43,26 @@ void gpu_reduction(ReduceDescriptor *RD){
 
     for(i=0;i<RD->index.size();i++) {
       p=i*RD->max;
-      fprintf(stderr,"%d\n",p);
       for(j=0;j<RD->index[i].size();j++,p++)
         ind[p]=RD->index[i][j];
     }
 
-    for(i=0;i<s;i++) printf("%d ",ind[i]);
-    getchar();
 
-    if (RD->S==nullptr) RD->S=new Tensor(vector<int>{1},RD->I->device);
+    if (RD->m<2) RD->S=new Tensor(vector<int>{1},RD->I->device);
 
     check_cuda(cudaMalloc((void**)&(RD->ind),s*sizeof(int)),"create_index");
     check_cuda(cudaDeviceSynchronize(), "create ind");
+
     check_cuda(cudaMemcpy(RD->ind,ind,s*sizeof(int),cudaMemcpyHostToDevice),"copy ind");
     check_cuda(cudaDeviceSynchronize(), "copy");
 
     free(ind);
   }
 
-  printf("OK created\n");
   //reduce
-  dim3 dimGrid(s);
+  dim3 dimGrid(RD->index.size());
   dim3 dimBlock(1);
 
-  printf("Kernel %dx%d\n",dimGrid.x,dimBlock.x);
   reduction_kernel<<<dimGrid,dimBlock>>>(RD->I->ptr, RD->O->ptr, RD->S->ptr,RD->m, RD->keepdims,d,RD->ind,RD->max);
   check_cuda(cudaDeviceSynchronize(), "reduction_kernel");
 

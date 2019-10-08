@@ -28,6 +28,7 @@ __global__ void reduction_kernel(float *I,float *O,float *S,int m, int keepdims,
 {
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
+  
 
   if (ind[thread_id_x]!=-1) {
 
@@ -38,10 +39,9 @@ __global__ void reduction_kernel(float *I,float *O,float *S,int m, int keepdims,
   int i;
 
   int p=max*blockIdx.x;
-  printf("p=%d\n",p);
+
 
   for(j=0;j<max && ind[p]!=-1;j++,p++) {
-     printf("%d %d\n",j,ind[p]);
       v=I[ind[p]];
       if (m==2) {
           if (j==0) {val=v;i=p;}
