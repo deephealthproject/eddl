@@ -48,15 +48,17 @@ void gpu_reduction(ReduceDescriptor *RD){
     }
 
     check_cuda(cudaMalloc((void**)&(RD->ind),s*sizeof(int)),"create_index");
-    check_cuda(cudaMemcpy(ind,RD->ind,s*sizeof(int),cudaMemcpyHostToDevice),"copy ind");
+    check_cuda(cudaMemcpy(RD->ind,ind,s*sizeof(int),cudaMemcpyHostToDevice),"copy ind");
 
     free(ind);
   }
 
+  printf("OK created\n");
   //reduce
   dim3 dimGrid(RD->index.size());
   dim3 dimBlock(1);
 
+  printf("Kernel\n");
   reduction_kernel<<<dimGrid,dimBlock>>>(RD->I->ptr, RD->O->ptr, RD->S->ptr,RD->m, RD->keepdims,d,RD->ind,RD->max);
   check_cuda(cudaDeviceSynchronize(), "reduction_kernel");
 
