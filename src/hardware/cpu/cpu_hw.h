@@ -6,7 +6,7 @@
 #define EDDL_CPU_HW_H
 
 #include "../../tensor/tensor.h"
-
+#include "../../descriptors/descriptors.h"
 
 #define MAX_FLOAT std::numeric_limits<float>::max()
 #define MIN_FLOAT -std::numeric_limits<float>::max()
@@ -84,6 +84,8 @@ float cpu_sum_abs(Tensor *A);
 // CPU: Reduction
 void cpu_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
 void cpu_reduceTosum(Tensor *A, Tensor *B, int axis);
+void cpu_reduction(ReduceDescriptor *RD);
+void cpu_reduction_back(ReduceDescriptor *RD);
 //void cpu_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB);
 //void cpu_delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB);
 //void cpu_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
