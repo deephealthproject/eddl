@@ -26,7 +26,6 @@ void repeat_nn(Tensor *A, Tensor *B, vector<int> size) {
     }
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU()) {
-      {
         gpu_repeat_nn(A, B, size);
       }
 #endif
@@ -39,15 +38,14 @@ void repeat_nn(Tensor *A, Tensor *B, vector<int> size) {
 
 void d_repeat_nn(Tensor *D, Tensor *A, vector<int> size) {
     // TODO: Should be for N dimensions, not 2 (...and generic, not just NN)
-    if ((A->device != D->device)) msg("Tensors in different devices", "Tensor::D_Repeat_NN");
+    if ((D->device != A->device)) msg("Tensors in different devices", "Tensor::D_Repeat_NN");
 
-    if (A->isCPU() && D->isCPU()) {
+    if (D->isCPU() && A->isCPU()) {
         cpu_d_repeat_nn(D, A, size);
     }
 #ifdef cGPU
-    else if (A->isGPU() && B->isGPU()) {
-      {
-        gpu_repeat_nn(A, B, size);
+    else if (D->isGPU() && A->isGPU()) {
+        gpu_d_repeat_nn(D, A, size);
       }
 #endif
 #ifdef cFPGA

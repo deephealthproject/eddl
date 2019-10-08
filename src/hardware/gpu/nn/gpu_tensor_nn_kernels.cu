@@ -27,8 +27,8 @@
 
 
 
-__global__ void repeat_nn(float *a, long int a_rows, long int a_cols, float *b, long int b_rows, long int b_cols, float *s, int size){
-    long int ops=rows*cols;
+__global__ void repeat_nn(float *a, int a_rows, int a_cols, float *b, int b_rows, int b_cols, int *size){
+    long int ops=b_rows*b_cols;
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x < ops){
@@ -41,12 +41,12 @@ __global__ void repeat_nn(float *a, long int a_rows, long int a_cols, float *b, 
         int col_a = col_b/size[1];
         int offset_a = row_a*a_cols + col_a;
 
-        B->ptr[thread_id_x] = A->ptr[offset_a];
+        b[thread_id_x] = a[offset_a];
     }
 }
 
-__global__ void d_repeat_nn(float *d, long int d_rows, long int d_cols, float *a, long int a_rows, long int a_cols, float *s, int size){
-    long int ops=rows*cols;
+__global__ void d_repeat_nn(float *d, int d_rows, int d_cols, float *a, int a_rows, int a_cols, int *size){
+    long int ops=d_rows*d_cols;
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x < ops){
@@ -59,6 +59,6 @@ __global__ void d_repeat_nn(float *d, long int d_rows, long int d_cols, float *a
         int col_a = col_d/size[1];
         int offset_a = row_a*a_cols + col_a;
 
-        A->ptr[offset_a] += D->ptr[thread_id_x];
+        a[offset_a] += d[thread_id_x];
     }
 }
