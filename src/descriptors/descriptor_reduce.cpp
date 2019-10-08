@@ -108,6 +108,7 @@ void ReduceDescriptor::resize(int b)
   if ((m==2)||(m==3))
     S->resize(b);
 
+  ind=nullptr;
   build_index();
 }
 

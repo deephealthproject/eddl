@@ -46,6 +46,10 @@ __global__ void gpu_im2col_k(float* I, float *ptrI, int b,int irows,int icols, i
 __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padr, int padc, float* indX, float* indY);
 __global__ void maxpool2d_back(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, int sr,int sc,int padr, int padc, float* indX, float* indY, float* D, float* ID);
 
+// GPU: Tensor
+__global__ void repeat_nn_k(float *a, int a_rows, int a_cols, float *b, int b_rows, int b_cols, int *size);
+__global__ void d_repeat_nn_k(float *d, int d_rows, int d_cols, float *a, int a_rows, int a_cols, int *size);
+
 
 #endif
 

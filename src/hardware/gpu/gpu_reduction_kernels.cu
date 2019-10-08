@@ -28,13 +28,18 @@ __global__ void reduction_kernel(float *I,float *O,float *S,int m, int keepdims,
 {
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
+  
+
   if (ind[thread_id_x]!=-1) {
 
   int j;
   float sum=0;
   float v,val;
-  int p=max*blockDim.x;
+
   int i;
+
+  int p=max*blockIdx.x;
+
 
   for(j=0;j<max && ind[p]!=-1;j++,p++) {
       v=I[ind[p]];
@@ -55,22 +60,19 @@ __global__ void reduction_kernel(float *I,float *O,float *S,int m, int keepdims,
       else sum+=v;
   }
 
-  p=max*blockDim.x;
+  p=max*blockIdx.x;
   // set in Output
   if (m<2) { // mean or sum
       if (m==0) sum/=d;
       if (keepdims) {
-        for(j=0;j<max;j++,p++) {
-            if (ind[p]==-1) break;
-              O[ind[p]]=sum;
-            }
+        for(j=0;j<max&& ind[p]!=-1;j++,p++)
+            O[ind[p]]=sum;
       }
       else O[thread_id_x]=sum;
   }
   else { // max or min
       if (keepdims) {
-        for(j=0;j<max;j++,p++) {
-            if (ind[p]==-1) break;
+        for(j=0;j<max && ind[p]!=-1;j++,p++) {
               O[ind[p]]=val;
               S[ind[p]]=i;
           }

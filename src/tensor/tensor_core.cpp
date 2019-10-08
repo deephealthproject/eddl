@@ -123,3 +123,4 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
     }
     //B->tsem->unlock();
 }
+

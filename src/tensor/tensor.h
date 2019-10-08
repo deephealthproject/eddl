@@ -272,7 +272,7 @@ public:
     static void reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims, Tensor *C, int incB);
     static void delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims, Tensor *C,int incB);
     static void reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
-    static void delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC);
+    static void delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C, int incC);
 
     // Math operations: Comparison ops
     static int eqsize(Tensor *A, Tensor *B);

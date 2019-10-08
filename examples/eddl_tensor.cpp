@@ -371,5 +371,31 @@ int main(int argc, char **argv) {
     t->trunc_();
     t->print();
 
+    // TEST: Repeat
+    cout << "\n" << "Repeat: =============" << endl;
+    vector<int> size{2,2};
+    float data[9] = {1,2,3,4,5,6,7,8,9};
+
+    Tensor *A = new Tensor({1,1, 3,3}, data, dev);
+    Tensor *B = new Tensor({1,1, 3*size[0], 3*size[1]}, dev);
+    A->print();
+    B->print();
+    repeat_nn(A, B, size);
+    B->print();
+
+
+
+    // TEST: D_Repeat
+    cout << "\n" << "D_Repeat: =============" << endl;
+    vector<int> size_d{1,2};
+    float data_d[18] = {1,1, 2,2, 3,3, 4,4, 5,5, 6,6, 7,7, 8,8, 9,9};
+
+    A = new Tensor({1,1, 3,6}, data_d, dev);
+    B = new Tensor({1,1, A->shape[2+0]/size_d[0], A->shape[2+1]/size_d[1]}, dev);
+    A->print();
+    B->print();
+    d_repeat_nn(A, B, size_d);
+    B->print();
+
 }
 

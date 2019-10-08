@@ -26,34 +26,22 @@
 
 using namespace eddl;
 
+
 layer BN(layer l){
+  return BatchNormalization(l);
+
+  /*
   vector<int> axis;
   axis.push_back(0);
 
   layer m=ReduceMean(l,axis,true);
-
-  layer M=T(getShape(m));
-  set(M,0.0);
-
-
-  m=Mult(m,0.1);
-  M=Mult(M,0.9);
-  M=Sum(M,m);
-
-
-  layer d=Diff(l,M);
+  layer d=Diff(l,m);
   layer mu=Mult(d,d);
   layer v=ReduceMean(mu,axis,true);
+  v=Sum(v,0.0001);
 
-  layer V=T(getShape(v));
-  set(V,1.0);
-
-  v=Mult(v,0.1);
-  V=Mult(V,0.9);
-  V=Sum(V,v);
-
-
-  l=Div(d,Sqrt(V));
+  l=Div(d,Sqrt(v));
+  */
 
   return l;
 }
@@ -73,9 +61,9 @@ int main(int argc, char **argv) {
     layer in = Input({784});
     layer l = in;  // Aux var
 
-    l = Activation(Dense(l, 1024), "relu");
-    l = Activation(Dense(l, 1024), "relu");
-    l = Activation(Dense(l, 1024), "relu");
+    l = BN(Activation(Dense(l, 1024), "relu"));
+    l = BN(Activation(Dense(l, 1024), "relu"));
+    l = BN(Activation(Dense(l, 1024), "relu"));
     layer out = Activation(Dense(l, num_classes), "softmax");
     model net = Model({in}, {out});
 
@@ -83,12 +71,12 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          sgd(0.01, 0.9), // Optimizer
+          sgd(0.001, 0.9), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           //CS_GPU({1,1},10) // 2 GPUs with local_sync_batches=10
-          CS_GPU({1}) // 1 GPU
-          //CS_CPU(4) // 4 CPU threads
+          //CS_GPU({1}) // 1 GPU
+          CS_CPU(4) // 4 CPU threads
           //CS_COMPSS("../config/compss/resources.xml")
     );
 

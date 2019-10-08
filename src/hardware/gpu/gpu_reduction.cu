@@ -17,7 +17,7 @@ void gpu_reduction(ReduceDescriptor *RD){
 
   cudaSetDevice(device);
 
-  int i,j,d,s,max,p;
+  int i,j,d,s,p;
 
 
   // [MEAN]: Compute items to be reduced
@@ -29,12 +29,12 @@ void gpu_reduction(ReduceDescriptor *RD){
   }
 
   if (RD->ind==nullptr) {
-    fprintf(stderr,"Mem GPU ind\n");
-
+    
     RD->max=0;
     for(i=0;i<RD->index.size();i++)
        if(RD->max<RD->index[i].size()) RD->max=RD->index[i].size();
     RD->max++;
+
     s=RD->index.size()*RD->max;
 
     int *ind=(int *)malloc(s*sizeof(int));
@@ -42,13 +42,19 @@ void gpu_reduction(ReduceDescriptor *RD){
     for(i=0;i<s;i++) ind[i]=-1;
 
     for(i=0;i<RD->index.size();i++) {
-      p=i*max;
+      p=i*RD->max;
       for(j=0;j<RD->index[i].size();j++,p++)
         ind[p]=RD->index[i][j];
     }
 
+
+    if (RD->m<2) RD->S=new Tensor(vector<int>{1},RD->I->device);
+
     check_cuda(cudaMalloc((void**)&(RD->ind),s*sizeof(int)),"create_index");
-    check_cuda(cudaMemcpy(ind,RD->ind,s*sizeof(int),cudaMemcpyHostToDevice),"copy ind");
+    check_cuda(cudaDeviceSynchronize(), "create ind");
+
+    check_cuda(cudaMemcpy(RD->ind,ind,s*sizeof(int),cudaMemcpyHostToDevice),"copy ind");
+    check_cuda(cudaDeviceSynchronize(), "copy");
 
     free(ind);
   }
