@@ -50,11 +50,11 @@ void LUpSampling::resize(int batch){
 
 void LUpSampling::forward() {
     //Repeats the rows and columns of the data by size[0] and size[1] respectively.
-    //repeat_nn(this->input, this->output, this->size);
+    repeat_nn(this->input, this->output, this->size);
 }
 
 void LUpSampling::backward() {
-    //d_repeat_nn(delta, parent[0]->delta, this->size);
+    d_repeat_nn(delta, parent[0]->delta, this->size);
 }
 
 Layer *LUpSampling::share(int c, int bs, vector<Layer *> p) {
