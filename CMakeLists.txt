@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.9.2)
+
 PROJECT(eddl LANGUAGES CXX)
 
 # SET C++ COMPILER STANDARD
@@ -9,12 +10,12 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(BUILD_PYTHON "Compile python binding" OFF)
 option(BUILD_TESTS "Compile tests" OFF)
 option(BUILD_EXAMPLES "Compile examples" ON)
-SET(BUILD_TARGET "cpu" CACHE STRING "Compile library for {cpu, gpu, fpga}")
+SET(BUILD_TARGET "CPU" CACHE STRING "Compile library for {cpu, gpu, fpga}")
+set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
 
 # PROPERTIES *******************************
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "")
-
 
 # SET BUILD TYPE (RELEASE/DEBUG)
 if(NOT CMAKE_BUILD_TYPE)
@@ -29,20 +30,19 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
 endif()
 
 # CUDA FLAGS
-set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr -lcudart -lcublas -lcurand")
-set(CMAKE_CUDA_STANDARD 11)
-set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+# Is this the best approach?
+#set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr -lcudart -lcublas -lcurand")
 set(EDDL_WITH_CUDA OFF CACHE BOOL "Enable CUDA support if checked")
 
 # Device specific setup
-if(BUILD_TARGET STREQUAL "cpu")
+if(BUILD_TARGET STREQUAL "CPU")
     message("Compiling for CPU...")
-elseif(BUILD_TARGET STREQUAL "gpu")
+elseif(BUILD_TARGET STREQUAL "GPU")
     message("Compiling for GPU...")
     set(EDDL_WITH_CUDA ON)
-elseif(BUILD_TARGET STREQUAL "fpga")
+elseif(BUILD_TARGET STREQUAL "FPGA")
     message("Compiling for FPGA...")
-    message( FATAL_ERROR "FPGA not implemented, CMake will exit." )
+    message(FATAL_ERROR "FPGA not implemented, CMake will exit." )
 endif()
 
 # SET STATIC/DYNAMIC RUNTIME
@@ -64,6 +64,14 @@ if(EDDL_WITH_CUDA)
     check_language(CUDA)
     if(CMAKE_CUDA_COMPILER)
         enable_language(CUDA)
+        if(NOT DEFINED CMAKE_CUDA_STANDARD)
+            set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr")
+            set(CMAKE_CUDA_STANDARD 11)
+            set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+        endif()
+        set(CUDA_TOOLKIT_ROOT_DIR "${CMAKE_CUDA_COMPILER}")
+        get_filename_component(CUDA_TOOLKIT_ROOT_DIR "${CUDA_TOOLKIT_ROOT_DIR}/../.." ABSOLUTE)
+        message(STATUS "CUDA ROOT DIR: " ${CUDA_TOOLKIT_ROOT_DIR})
     else()
         message(WARNING "No CUDA support")
     endif()
@@ -77,9 +85,9 @@ if(MSVC)
             string(REGEX REPLACE "/MT" "/MD" ${flag_var} "${${flag_var}}")
         endforeach(flag_var)
         if (EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
-			foreach(flag_var CMAKE_CUDA_FLAGS_DEBUG CMAKE_CUDA_FLAGS_RELEASE CMAKE_CUDA_FLAGS_MINSIZEREL CMAKE_CUDA_FLAGS_RELWITHDEBINFO) 
-				string(REGEX REPLACE "-MT" "-MD" ${flag_var} "${${flag_var}}")
-			endforeach(flag_var)
+            foreach(flag_var CMAKE_CUDA_FLAGS_DEBUG CMAKE_CUDA_FLAGS_RELEASE CMAKE_CUDA_FLAGS_MINSIZEREL CMAKE_CUDA_FLAGS_RELWITHDEBINFO) 
+                string(REGEX REPLACE "-MT" "-MD" ${flag_var} "${${flag_var}}")
+            endforeach(flag_var)
         endif()
     else(EDDL_SHARED)
         message(STATUS "Setting static runtime for MSVC")
@@ -87,19 +95,19 @@ if(MSVC)
             string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
         endforeach(flag_var)
         if (EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
-			foreach(flag_var CMAKE_CUDA_FLAGS_DEBUG CMAKE_CUDA_FLAGS_RELEASE CMAKE_CUDA_FLAGS_MINSIZEREL CMAKE_CUDA_FLAGS_RELWITHDEBINFO) 
-				string(REGEX REPLACE "-MD" "-MT" ${flag_var} "${${flag_var}}")
-			endforeach(flag_var)
+            foreach(flag_var CMAKE_CUDA_FLAGS_DEBUG CMAKE_CUDA_FLAGS_RELEASE CMAKE_CUDA_FLAGS_MINSIZEREL CMAKE_CUDA_FLAGS_RELWITHDEBINFO) 
+                string(REGEX REPLACE "-MD" "-MT" ${flag_var} "${${flag_var}}")
+            endforeach(flag_var)
         endif()
-	endif(EDDL_SHARED)
+    endif(EDDL_SHARED)
 
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
 
 # [MACRO] Download submodules
 macro(eddl_update_third_party SUBMODULE)
-    if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
+    if(GIT_FOUND AND IS_DIRECTORY "${PROJECT_SOURCE_DIR}/.git")
     # Update submodule as needed
         message(STATUS "${SUBMODULE} update")
         execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive third_party/${SUBMODULE}
@@ -277,20 +285,32 @@ SET(CPP_SOURCES
 SET(CUDA_SOURCES
         src/hardware/gpu/gpu_hw.h
         src/hardware/gpu/gpu_comparison.cu
+        src/hardware/gpu/gpu_comparison_kernels.cu
         src/hardware/gpu/gpu_core.cu
+        src/hardware/gpu/gpu_core_kernels.cu
         src/hardware/gpu/gpu_create.cu
+        src/hardware/gpu/gpu_create_kernels.cu
         src/hardware/gpu/gpu_generator.cu
+        src/hardware/gpu/gpu_generator_kernels.cu
         src/hardware/gpu/gpu_math.cu
+        src/hardware/gpu/gpu_math_kernels.cu
         src/hardware/gpu/gpu_reduction.cu
+        src/hardware/gpu/gpu_reduction_kernels.cu
         src/hardware/gpu/gpu_tensor.cu
         src/hardware/gpu/gpu_tensor.h
         src/hardware/gpu/gpu_kernels.h
         src/hardware/gpu/nn/gpu_nn.h
+        src/hardware/gpu/nn/gpu_nn_kernels.h
         src/hardware/gpu/nn/gpu_activations.cu
+        src/hardware/gpu/nn/gpu_activations_kernels.cu
         src/hardware/gpu/nn/gpu_conv.cu
+        src/hardware/gpu/nn/gpu_conv_kernels.cu
         src/hardware/gpu/nn/gpu_losses.cu
+        src/hardware/gpu/nn/gpu_losses_kernels.cu
         src/hardware/gpu/nn/gpu_metrics.cu
+        src/hardware/gpu/nn/gpu_metrics_kernels.cu
         src/hardware/gpu/nn/gpu_pool.cu
+        src/hardware/gpu/nn/gpu_pool_kernels.cu
         )
 SET(SOURCES ${CPP_SOURCES} ${CUDA_SOURCES})
 
@@ -303,46 +323,63 @@ SET(TESTS
 
 # [LIBRARY] EDDL LIBRARY *********************
 if(EDDL_SHARED)
-	add_library(eddl SHARED "")
+    add_library(eddl SHARED "")
 else(EDDL_SHARED)
-	add_library(eddl STATIC "")
+    add_library(eddl STATIC "")
 endif(EDDL_SHARED)
 target_sources(eddl PRIVATE ${CPP_SOURCES})
 if(EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
     target_sources(eddl PRIVATE ${CUDA_SOURCES})
+    target_include_directories(eddl PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+    add_compile_definitions(cGPU)
 endif()
 target_include_directories(eddl PUBLIC
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-	$<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    $<INSTALL_INTERFACE:include>
 )
 target_include_directories(eddl PUBLIC
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen>
-	$<INSTALL_INTERFACE:include/third_party/eigen>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen>
+    $<INSTALL_INTERFACE:include/third_party/eigen>
 )
 #target_compile_features(eddl PUBLIC cxx_std_11)
 
 
 # Target properties
-set_target_properties(eddl PROPERTIES OUTPUT_NAME_DEBUG "eddld")
-set_target_properties(eddl PROPERTIES OUTPUT_NAME_RELEASE "eddl")
-set_target_properties(eddl PROPERTIES POSITION_INDEPENDENT_CODE ON)
-set_target_properties(eddl PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+set_target_properties(eddl PROPERTIES 
+    OUTPUT_NAME_DEBUG "eddld"
+    OUTPUT_NAME_RELEASE "eddl"
+    POSITION_INDEPENDENT_CODE ON
+    CUDA_SEPARABLE_COMPILATION ON
+    CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 
 # pthreads setup for windows os
 # The following commands should be removed when pthread linux
 # specific calls will be replaced by thread c++ standard calls
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-	set(EDDL_PTHREADS_INSTALL_PATH "$ENV{PTHREADS_ROOT}" CACHE PATH "Path to the installation of pthreads under Windows")
-	if(EDDL_PTHREADS_INSTALL_PATH STREQUAL "")
-		message(ERROR " pthreds install path must be specified under Windows")
-	endif()
-	target_link_libraries(eddl debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3d.lib"
-								debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib"
-								debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib")
-	target_link_libraries(eddl optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib"
-								optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib"
-								optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")
-	target_include_directories(eddl PUBLIC "${EDDL_PTHREADS_INSTALL_PATH}/include")
+    set(EDDL_PTHREADS_INSTALL_PATH "$ENV{PTHREADS_ROOT}" CACHE PATH "Path to the installation of pthreads under Windows")
+    if(EDDL_PTHREADS_INSTALL_PATH STREQUAL "")
+        message(ERROR ": pthreds install path must be specified under Windows")
+    endif()
+    target_link_libraries(eddl PRIVATE debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3d.lib"
+                               PRIVATE debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib"
+                               PRIVATE debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib")
+    target_link_libraries(eddl PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib"
+                               PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib"
+                               PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")
+    target_include_directories(eddl PUBLIC "${EDDL_PTHREADS_INSTALL_PATH}/include")
+
+    if(EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
+        set(EDDL_CUDA_LIBRARIES_PATH "${CUDA_TOOLKIT_ROOT_DIR}/lib/x64" CACHE PATH "Path to cublas, cudart, and curand libs")
+        if (EDDL_CUDA_LIBRARIES_PATH STREQUAL "")
+            message(ERROR ": cudart, cublas, and curand paths must be specified")
+        else()
+            target_link_libraries(eddl
+                PRIVATE "${EDDL_CUDA_LIBRARIES_PATH}/cublas.lib"
+                PRIVATE "${EDDL_CUDA_LIBRARIES_PATH}/cudart.lib"
+                PRIVATE "${EDDL_CUDA_LIBRARIES_PATH}/curand.lib"
+            )
+        endif()
+    endif()
 endif()
 
 # pthreads setup for linux os
@@ -350,7 +387,19 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
     SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
     find_package(Threads REQUIRED)
-    target_link_libraries(eddl Threads::Threads)
+    target_link_libraries(eddl PRIVATE Threads::Threads)
+    if(EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
+        set(EDDL_CUDA_LIBRARIES_PATH "${CUDA_TOOLKIT_ROOT_DIR}/lib64" CACHE PATH "Path to cublas, cudart, and curand libs")
+        if (EDDL_CUDA_LIBRARIES_PATH STREQUAL "")
+            message(ERROR ": cudart, cublas, and curand paths must be specified")
+        else()
+            target_link_libraries(eddl
+                PRIVATE "${EDDL_CUDA_LIBRARIES_PATH}/libcublas.so"
+                PRIVATE "${EDDL_CUDA_LIBRARIES_PATH}/libcudart.so"
+                PRIVATE "${EDDL_CUDA_LIBRARIES_PATH}/libcurand.so"
+            )
+        endif()
+    endif()
 endif()
 
 ## [BINDING] Create python binding
@@ -398,7 +447,7 @@ if(BUILD_EXAMPLES)
     add_executable(example_conv "${EXAMPLES_DIR}/eddl_conv.cpp")
     add_executable(example_mlp "${EXAMPLES_DIR}/eddl_mlp.cpp")
     add_executable(example_train_batch "${EXAMPLES_DIR}/eddl_train_batch.cpp")
-  	add_executable(example_predict "${EXAMPLES_DIR}/eddl_predict.cpp")
+    add_executable(example_predict "${EXAMPLES_DIR}/eddl_predict.cpp")
     add_executable(example_ae "${EXAMPLES_DIR}/eddl_ae.cpp")
     add_executable(example_dae "${EXAMPLES_DIR}/eddl_dae.cpp")
     add_executable(example_dae_class "${EXAMPLES_DIR}/eddl_dae_class.cpp")
@@ -410,7 +459,7 @@ if(BUILD_EXAMPLES)
     target_link_libraries(example_conv eddl)
     target_link_libraries(example_mlp eddl)
     target_link_libraries(example_train_batch eddl)
-  	target_link_libraries(example_predict eddl)
+    target_link_libraries(example_predict eddl)
     target_link_libraries(example_ae eddl)
     target_link_libraries(example_dae eddl)
     target_link_libraries(example_dae_class eddl)
@@ -429,14 +478,14 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "..." FORCE)
 endif()
 install(TARGETS eddl
-		EXPORT EDDLTargets
-		RUNTIME DESTINATION bin
-		LIBRARY DESTINATION lib
-		ARCHIVE DESTINATION lib
-		)
+        EXPORT EDDLTargets
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        )
 install(EXPORT EDDLTargets DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
-		DESTINATION include/eddl
+        DESTINATION include/eddl
         FILES_MATCHING PATTERN "*.h")
 
 # [INSTALL] Install Eigen files
