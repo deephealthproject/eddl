@@ -50,7 +50,7 @@ void Tensor::abs_() {
 #endif
 }
 
-Tensor* Tensor::abs(Tensor *A){}
+Tensor* Tensor::abs(Tensor *A){ return nullptr; }
 
 void Tensor::acos_(){
     if (isCPU()) {
@@ -69,7 +69,7 @@ void Tensor::acos_(){
 #endif
 }
 
-Tensor* Tensor::acos(Tensor *A){}
+Tensor* Tensor::acos(Tensor *A){ return nullptr; }
 
 void Tensor::add_(float v) {
     if (isCPU()) {
@@ -88,7 +88,7 @@ void Tensor::add_(float v) {
 #endif
 }
 
-Tensor* Tensor::add(Tensor *A, Tensor *B){}
+Tensor* Tensor::add(Tensor *A, Tensor *B){ return nullptr; }
 
 void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
     ///////////////////////////////////////
@@ -172,7 +172,7 @@ void Tensor::asin_(){
 #endif
 }
 
-Tensor* Tensor::asin(Tensor *A){}
+Tensor* Tensor::asin(Tensor *A){ return nullptr; }
 
 void Tensor::atan_(){
     if (isCPU()) {
@@ -191,7 +191,7 @@ void Tensor::atan_(){
 #endif
 }
 
-Tensor* Tensor::atan(Tensor *A){}
+Tensor* Tensor::atan(Tensor *A){ return nullptr; }
 
 void Tensor::ceil_(){
     if (isCPU()) {
@@ -210,7 +210,7 @@ void Tensor::ceil_(){
 #endif
 }
 
-Tensor* Tensor::ceil(Tensor *A){}
+Tensor* Tensor::ceil(Tensor *A){ return nullptr; }
 
 void Tensor::clamp_(float min, float max){
     if (isCPU()) {
@@ -229,12 +229,12 @@ void Tensor::clamp_(float min, float max){
 #endif
 }
 
-Tensor* Tensor::clamp(Tensor *A, float min, float max){}
+Tensor* Tensor::clamp(Tensor *A, float min, float max){ return nullptr; }
 
 void Tensor::clampmax_(float max){ clamp_(MIN_FLOAT, max); }
-Tensor* Tensor::clampmax(Tensor *A, float max){}
+Tensor* Tensor::clampmax(Tensor *A, float max){ return nullptr; }
 void Tensor::clampmin_(float min){ clamp_(min, MAX_FLOAT); }
-Tensor* Tensor::clampmin(Tensor *A, float min){}
+Tensor* Tensor::clampmin(Tensor *A, float min){ return nullptr; }
 
 void Tensor::cos_(){
     if (isCPU()) {
@@ -253,7 +253,7 @@ void Tensor::cos_(){
 #endif
 }
 
-Tensor* Tensor::cos(Tensor *A){}
+Tensor* Tensor::cos(Tensor *A){ return nullptr; }
 
 void Tensor::cosh_(){
     if (isCPU()) {
@@ -272,12 +272,12 @@ void Tensor::cosh_(){
 #endif
 }
 
-Tensor* Tensor::cosh(Tensor *A){}
+Tensor* Tensor::cosh(Tensor *A){ return nullptr; }
 
 
 void Tensor::div_(float v) { mult_(1.0f / v); }
 
-Tensor* Tensor::div(Tensor *A){}
+Tensor* Tensor::div(Tensor *A){ return nullptr; }
 
 void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
     ///////////////////////////////////////
@@ -325,7 +325,7 @@ void Tensor::exp_() {
 }
 
 
-Tensor* Tensor::exp(Tensor *A){}
+Tensor* Tensor::exp(Tensor *A){ return nullptr; }
 
 void Tensor::floor_(){
     if (isCPU()) {
@@ -344,7 +344,7 @@ void Tensor::floor_(){
 #endif
 }
 
-Tensor* Tensor::floor(Tensor *A){}
+Tensor* Tensor::floor(Tensor *A){ return nullptr; }
 
 
 void Tensor::log_() {
@@ -364,7 +364,7 @@ void Tensor::log_() {
 #endif
 }
 
-Tensor* Tensor::log(Tensor *A){}
+Tensor* Tensor::log(Tensor *A){ return nullptr; }
 
 void Tensor::log2_() {
     if (isCPU()) {
@@ -383,7 +383,7 @@ void Tensor::log2_() {
 #endif
 }
 
-Tensor* Tensor::log2(Tensor *A){}
+Tensor* Tensor::log2(Tensor *A){ return nullptr; }
 
 
 void Tensor::log10_() {
@@ -403,7 +403,7 @@ void Tensor::log10_() {
 #endif
 }
 
-Tensor* Tensor::log10(Tensor *A){}
+Tensor* Tensor::log10(Tensor *A){ return nullptr; }
 
 
 void Tensor::logn_(float n) {
@@ -423,7 +423,7 @@ void Tensor::logn_(float n) {
 #endif
 }
 
-Tensor* Tensor::logn(Tensor *A){}
+Tensor* Tensor::logn(Tensor *A){ return nullptr; }
 
 float Tensor::max(){
     if (isCPU()) {
@@ -483,7 +483,7 @@ void Tensor::mod_(float v){
 #endif
 }
 
-Tensor* Tensor::mod(Tensor *A, float v){};
+Tensor* Tensor::mod(Tensor *A, float v){ return nullptr; };
 
 void Tensor::mult_(float v) {
     if (isCPU()) {
@@ -502,7 +502,7 @@ void Tensor::mult_(float v) {
 #endif
 }
 
-Tensor* Tensor::mult(Tensor *A){}
+Tensor* Tensor::mult(Tensor *A){ return nullptr; }
 
 
 void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
@@ -587,7 +587,7 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
 
 void Tensor::neg_(){ mult_(-1.0f); }
 
-Tensor* Tensor::neg(Tensor *A){};
+Tensor* Tensor::neg(Tensor *A){ return nullptr; };
 
 
 void Tensor::normalize_(float min, float max){
@@ -634,7 +634,7 @@ void Tensor::pow_(float exp) {
 #endif
 }
 
-Tensor* Tensor::pow(Tensor *A){}
+Tensor* Tensor::pow(Tensor *A){ return nullptr; }
 
 void Tensor::reciprocal_() {
     if (isCPU()) {
@@ -653,7 +653,7 @@ void Tensor::reciprocal_() {
 #endif
 }
 
-Tensor* Tensor::reciprocal(Tensor *A){}
+Tensor* Tensor::reciprocal(Tensor *A){ return nullptr; }
 
 void Tensor::remainder_(float v) {
     if (isCPU()) {
@@ -672,7 +672,7 @@ void Tensor::remainder_(float v) {
 #endif
 }
 
-Tensor* Tensor::remainder(Tensor *A, float v){}
+Tensor* Tensor::remainder(Tensor *A, float v){ return nullptr; }
 
 void Tensor::round_(){
     if (isCPU()) {
@@ -691,7 +691,7 @@ void Tensor::round_(){
 #endif
 }
 
-Tensor* Tensor::round(Tensor *A){}
+Tensor* Tensor::round(Tensor *A){ return nullptr; }
 
 void Tensor::rsqrt_(){
     if (isCPU()) {
@@ -710,7 +710,7 @@ void Tensor::rsqrt_(){
 #endif
 }
 
-Tensor* Tensor::rsqrt(Tensor *A){}
+Tensor* Tensor::rsqrt(Tensor *A){ return nullptr; }
 
 void Tensor::sigmoid_(){
     if (isCPU()) {
@@ -729,7 +729,7 @@ void Tensor::sigmoid_(){
 #endif
 }
 
-Tensor* Tensor::sigmoid(Tensor *A){}
+Tensor* Tensor::sigmoid(Tensor *A){ return nullptr; }
 
 void Tensor::sign_(){
     if (isCPU()) {
@@ -748,7 +748,7 @@ void Tensor::sign_(){
 #endif
 }
 
-Tensor* Tensor::sign(Tensor *A){}
+Tensor* Tensor::sign(Tensor *A){ return nullptr; }
 
 void Tensor::sign(Tensor *A, Tensor *B) {
     ///////////////////////////////////////
@@ -795,7 +795,7 @@ void Tensor::sin_(){
 #endif
 }
 
-Tensor* Tensor::sin(Tensor *A){}
+Tensor* Tensor::sin(Tensor *A){ return nullptr; }
 
 void Tensor::sinh_(){
     if (isCPU()) {
@@ -814,7 +814,7 @@ void Tensor::sinh_(){
 #endif
 }
 
-Tensor* Tensor::sinh(Tensor *A){}
+Tensor* Tensor::sinh(Tensor *A){ return nullptr; }
 
 
 void Tensor::sqr_() {
@@ -836,7 +836,7 @@ void Tensor::sqr_() {
 #endif
 }
 
-Tensor* Tensor::sqr(Tensor *A){}
+Tensor* Tensor::sqr(Tensor *A){ return nullptr; }
 
 
 void Tensor::sqrt_() {
@@ -856,12 +856,12 @@ void Tensor::sqrt_() {
 #endif
 }
 
-Tensor* Tensor::sqrt(Tensor *A){}
+Tensor* Tensor::sqrt(Tensor *A){ return nullptr; }
 
 
 void Tensor::sub_(float v) { add_(-v); }
 
-Tensor* Tensor::sub(Tensor *A, Tensor *B){}
+Tensor* Tensor::sub(Tensor *A, Tensor *B){ return nullptr; }
 
 float Tensor::sum() {
     if (isCPU()) {
@@ -1023,7 +1023,7 @@ float Tensor::sum_abs() {
     return 0;
 }
 
-Tensor* Tensor::sum_abs(Tensor *A){}
+Tensor* Tensor::sum_abs(Tensor *A){ return nullptr; }
 
 
 void Tensor::tan_(){
@@ -1043,7 +1043,7 @@ void Tensor::tan_(){
 #endif
 }
 
-Tensor* Tensor::tan(Tensor *A){}
+Tensor* Tensor::tan(Tensor *A){ return nullptr; }
 
 void Tensor::tanh_(){
     if (isCPU()) {
@@ -1062,7 +1062,7 @@ void Tensor::tanh_(){
 #endif
 }
 
-Tensor* Tensor::tanh(Tensor *A){}
+Tensor* Tensor::tanh(Tensor *A){ return nullptr; }
 
 
 void Tensor::trunc_(){
@@ -1082,4 +1082,4 @@ void Tensor::trunc_(){
 #endif
 }
 
-Tensor* Tensor::trunc(Tensor *A){}
+Tensor* Tensor::trunc(Tensor *A){ return nullptr; }
