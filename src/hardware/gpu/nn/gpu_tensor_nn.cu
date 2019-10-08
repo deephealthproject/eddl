@@ -20,8 +20,8 @@ void gpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
 
     setDims(B);
 
-    repeat_nn<<<dimGrid,dimBlock>>>(A->ptr, A->shape[2], A->shape[3], B->ptr, B->shape[2], B->shape[3], size.data(), size.size());
-    check_cuda(cudaDeviceSynchronize(), "repeat_nn");
+    repeat_nn_k<<<dimGrid,dimBlock>>>(A->ptr, A->shape[2], A->shape[3], B->ptr, B->shape[2], B->shape[3], size.data());
+    check_cuda(cudaDeviceSynchronize(), "repeat_nn_k");
 }
 
 void gpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
@@ -30,6 +30,6 @@ void gpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
 
     setDims(D);
 
-    d_repeat_nn<<<dimGrid,dimBlock>>>(D->ptr, D->shape[2], D->shape[3], A->ptr, A->shape[2], A->shape[3], size.data(), size.size());
-    check_cuda(cudaDeviceSynchronize(), "d_repeat_nn");
+    d_repeat_nn_k<<<dimGrid,dimBlock>>>(D->ptr, D->shape[2], D->shape[3], A->ptr, A->shape[2], A->shape[3], size.data());
+    check_cuda(cudaDeviceSynchronize(), "d_repeat_nn_k");
 }

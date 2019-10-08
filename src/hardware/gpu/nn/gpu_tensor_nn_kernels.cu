@@ -27,7 +27,7 @@
 
 
 
-__global__ void repeat_nn(float *a, int a_rows, int a_cols, float *b, int b_rows, int b_cols, int *size){
+__global__ void repeat_nn_k(float *a, int a_rows, int a_cols, float *b, int b_rows, int b_cols, int *size){
     long int ops=b_rows*b_cols;
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
@@ -45,7 +45,7 @@ __global__ void repeat_nn(float *a, int a_rows, int a_cols, float *b, int b_rows
     }
 }
 
-__global__ void d_repeat_nn(float *d, int d_rows, int d_cols, float *a, int a_rows, int a_cols, int *size){
+__global__ void d_repeat_nn_k(float *d, int d_rows, int d_cols, float *a, int a_rows, int a_cols, int *size){
     long int ops=d_rows*d_cols;
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
