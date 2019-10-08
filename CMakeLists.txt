@@ -313,7 +313,8 @@ SET(CUDA_SOURCES
         src/hardware/gpu/nn/gpu_metrics_kernels.cu
         src/hardware/gpu/nn/gpu_pool.cu
         src/hardware/gpu/nn/gpu_pool_kernels.cu
-        src/hardware/gpu/nn/gpu_tensor_nn.cu        )
+        src/hardware/gpu/nn/gpu_tensor_nn.cu
+        )
 SET(SOURCES ${CPP_SOURCES} ${CUDA_SOURCES})
 
 # SET TESTS ****************************
