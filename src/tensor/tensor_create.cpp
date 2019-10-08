@@ -16,7 +16,7 @@ Tensor* raw_range(float min, float step, int size, int dev){
         cpu_range(t, min, step);
     }
 #ifdef cGPU
-    else if (isGPU())
+    else if (t->isGPU())
       {
         cpu_range(t, min, step);
       }
