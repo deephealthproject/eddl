@@ -48,6 +48,9 @@ void cpu_conv2D_back(ConvolDescriptor *D);
 void cpu_mpool2D(PoolDescriptor*D);
 void cpu_mpool2D_back(PoolDescriptor *D);
 
+// Tensor (special functions that deal with 4D tensors)
+void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size);
+void cpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size);
 
 
 #endif //EDDL_CPU_NN_H

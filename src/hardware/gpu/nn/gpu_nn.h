@@ -33,4 +33,8 @@ void gpu_conv2D_back(ConvolDescriptor *D);
 void gpu_mpool2D(PoolDescriptor *D);
 void gpu_mpool2D_back(PoolDescriptor *D);
 
+// Tensor
+void gpu_repeat(Tensor *A, Tensor *B, vector<int> size);
+void gpu_d_repeat(Tensor *D, Tensor *A, vector<int> size);
+
 #endif //EDDL_GPU_NN_H
