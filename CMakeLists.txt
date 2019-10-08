@@ -159,6 +159,7 @@ SET(CPP_SOURCES
         src/hardware/cpu/nn/cpu_losses.cpp
         src/hardware/cpu/nn/cpu_metrics.cpp
         src/hardware/cpu/nn/cpu_pool.cpp
+        src/hardware/cpu/nn/cpu_tensor_nn.cpp
         src/initializers/initializer.cpp
         src/initializers/initializer.h
         src/initializers/initializer_constant.cpp
@@ -264,6 +265,7 @@ SET(CPP_SOURCES
         src/tensor/nn/tensor_losses.cpp
         src/tensor/nn/tensor_metrics.cpp
         src/tensor/nn/tensor_pool.cpp
+        src/tensor/nn/tensor_core_nn.cpp
         src/compserv.cpp
         src/compserv.h
         src/net.cpp
@@ -291,6 +293,7 @@ SET(CUDA_SOURCES
         src/hardware/gpu/nn/gpu_losses.cu
         src/hardware/gpu/nn/gpu_metrics.cu
         src/hardware/gpu/nn/gpu_pool.cu
+        src/hardware/gpu/nn/gpu_tensor_nn.cu
         )
 SET(SOURCES ${CPP_SOURCES} ${CUDA_SOURCES})
 

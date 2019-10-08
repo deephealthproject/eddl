@@ -101,18 +101,20 @@ public:
     // constructors and clones
     LUpSampling(Layer *parent, const vector<int> &size, string interpolation, string name, int dev);
 
-//    Layer *share(int c, int bs, vector<Layer *> p) override;
-//
-//    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-//
-//    // Params are in ConvolDescriptor
-//
-//    // implementation
-//    void forward() override;
-//
-//    void backward() override;
-//
-//    string plot(int c) override;
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    // Params are in ConvolDescriptor
+
+    // implementation
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    string plot(int c) override;
 
 };
 

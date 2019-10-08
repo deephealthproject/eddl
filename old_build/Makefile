@@ -125,7 +125,7 @@ endif
 
 GPU_LIBFLAGS := -lcudart -lcublas -lcurand
 GPU_CXX := $(cuda_path)bin/nvcc
-GPU_OBJ = gpu_tensor.o gpu_activations_kernels.o gpu_conv_kernels.o gpu_losses_kernels.o gpu_metrics_kernels.o gpu_pool_kernels.o gpu_core_kernels.o gpu_create_kernels.o gpu_generator_kernels.o gpu_math_kernels.o gpu_reduction_kernels.o gpu_comparison.o gpu_core.o gpu_create.o gpu_generator.o gpu_math.o gpu_reduction.o gpu_activations.o gpu_conv.o gpu_losses.o gpu_metrics.o gpu_pool.o
+GPU_OBJ = gpu_tensor.o gpu_activations_kernels.o gpu_conv_kernels.o gpu_tensor_nn_kernels.o gpu_losses_kernels.o gpu_metrics_kernels.o gpu_pool_kernels.o gpu_core_kernels.o gpu_create_kernels.o gpu_generator_kernels.o gpu_math_kernels.o gpu_reduction_kernels.o gpu_comparison.o gpu_core.o gpu_create.o gpu_generator.o gpu_math.o gpu_reduction.o gpu_activations.o gpu_conv.o gpu_tensor_nn.o gpu_losses.o gpu_metrics.o gpu_pool.o
 
 endif
 endif
@@ -135,13 +135,13 @@ endif
 APIS_OBJ = eddl.o
 CORE_OBJ = compserv.o net.o utils.o random.o
 DESCRIPTORS_OBJ = descriptor_conv.o descriptor_pool.o descriptor_reduce.o
-HARDWARE_CPU_OBJ = cpu_comparison.o cpu_core.o cpu_create.o cpu_generator.o cpu_math.o cpu_reduction.o cpu_activations.o cpu_conv.o cpu_losses.o cpu_metrics.o cpu_pool.o
+HARDWARE_CPU_OBJ = cpu_comparison.o cpu_core.o cpu_create.o cpu_generator.o cpu_math.o cpu_reduction.o cpu_activations.o cpu_conv.o cpu_losses.o cpu_metrics.o cpu_pool.o cpu_tensor_nn.o
 INITIALIZERS_OBJ = initializer_indentity.o initializer_random_uniform.o initializer_glorot_uniform.o initializer_orthogonal.o initializer_random_normal.o initializer_constant.o initializer_glorot_normal.o initializer.o
 LAYERS_OBJ = layer_lstm.o layer_input.o layer_conv.o layer_mean.o layer_log10.o layer_reshape.o layer_log.o layer_mult.o layer_maxpool.o layer_embedding.o layer_globalavgpool.o layer_upsampling.o layer_add.o layer_batchnorm.o layer_div.o layer_log2.o layer_gaussian.o layer_average.o layer.o layer_globalmaxpool.o layer_reduction.o layer_sum.o layer_sum_op.o layer_gauss.o layer_transposed_conv.o layer_activation.o layer_operator.o layer_concat.o layer_maximum.o layer_diff.o layer_var.o layer_drop.o layer_pool.o layer_exp.o layer_rnn.o layer_min.o layer_pow.o layer_dense.o layer_sqrt.o layer_tensor.o layer_minimum.o layer_abs.o layer_avgpool.o layer_matmul.o layer_uniform.o layer_max.o layer_subtract.o layer_generator.o layer_transpose.o
 LOSSES_OBJ = loss_mean_squared_error.o loss_soft_cross_entropy.o loss.o loss_cross_entropy.o
 METRICS_OBJ = metric_categorical_acc.o metric.o metric_mean_squared_error.o
 OPTIMIZERS_OBJ = optim_adam.o optim.o optim_nadam.o optim_adagrad.o optim_sgd.o optim_rmsprop.o optim_adamax.o optim_adadelta.o
-TENSOR_OBJ = tensor.o tensor_comparison.o tensor_core.o tensor_create.o tensor_generator.o tensor_math.o tensor_reduction.o tensor_serialization.o tensor_activations.o tensor_conv.o tensor_losses.o tensor_metrics.o tensor_pool.o
+TENSOR_OBJ = tensor.o tensor_comparison.o tensor_core.o tensor_create.o tensor_generator.o tensor_math.o tensor_reduction.o tensor_serialization.o tensor_activations.o tensor_conv.o tensor_core_nn.o tensor_losses.o tensor_metrics.o tensor_pool.o
 
 # Join groups
 OBJ := $(APIS_OBJ) $(CORE_OBJ) $(DESCRIPTORS_OBJ) $(HARDWARE_CPU_OBJ) $(INITIALIZERS_OBJ) $(LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(TENSOR_OBJ)
@@ -205,6 +205,9 @@ tensor_activations.o: $(SRC_PATH)/tensor/nn/tensor_activations.cpp $(SRC_PATH)/t
 tensor_conv.o: $(SRC_PATH)/tensor/nn/tensor_conv.cpp $(SRC_PATH)/tensor/nn/tensor_nn.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/nn/tensor_conv.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
+tensor_core_nn.o: $(SRC_PATH)/tensor/nn/tensor_core_nn.cpp $(SRC_PATH)/tensor/nn/tensor_nn.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/nn/tensor_core_nn.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
 tensor_losses.o: $(SRC_PATH)/tensor/nn/tensor_losses.cpp $(SRC_PATH)/tensor/nn/tensor_nn.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/nn/tensor_losses.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
@@ -228,6 +231,9 @@ cpu_metrics.o: $(SRC_PATH)/hardware/cpu/nn/cpu_metrics.cpp $(SRC_PATH)/hardware/
 
 cpu_pool.o: $(SRC_PATH)/hardware/cpu/nn/cpu_pool.cpp $(SRC_PATH)/hardware/cpu/nn/cpu_nn.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/nn/cpu_pool.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+cpu_tensor_nn.o: $(SRC_PATH)/hardware/cpu/nn/cpu_tensor_nn.cpp $(SRC_PATH)/hardware/cpu/nn/cpu_nn.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/nn/cpu_tensor_nn.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 cpu_comparison.o: $(SRC_PATH)/hardware/cpu/cpu_comparison.cpp $(SRC_PATH)/hardware/cpu/cpu_hw.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/cpu_comparison.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
@@ -505,6 +511,9 @@ gpu_metrics.o: $(SRC_PATH)/hardware/gpu/nn/gpu_metrics.cu $(SRC_PATH)/hardware/g
 gpu_pool.o: $(SRC_PATH)/hardware/gpu/nn/gpu_pool.cu $(SRC_PATH)/hardware/gpu/nn/gpu_nn.h
 	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/nn/gpu_pool.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
+gpu_tensor_nn.o: $(SRC_PATH)/hardware/gpu/nn/gpu_tensor_nn.cu $(SRC_PATH)/hardware/gpu/nn/gpu_nn.h
+	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/nn/gpu_tensor_nn.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
 #--- kernels
 gpu_core_kernels.o: $(SRC_PATH)/hardware/gpu/gpu_core_kernels.cu $(SRC_PATH)/hardware/gpu/gpu_kernels.h
 	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/gpu_core_kernels.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
@@ -527,6 +536,9 @@ gpu_activations_kernels.o: $(SRC_PATH)/hardware/gpu/nn/gpu_activations_kernels.c
 
 gpu_conv_kernels.o: $(SRC_PATH)/hardware/gpu/nn/gpu_conv_kernels.cu $(SRC_PATH)/hardware/gpu/nn/gpu_nn_kernels.h
 	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/nn/gpu_conv_kernels.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+gpu_tensor_nn_kernels.o: $(SRC_PATH)/hardware/gpu/nn/gpu_tensor_nn_kernels.cu $(SRC_PATH)/hardware/gpu/nn/gpu_nn_kernels.h
+	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/nn/gpu_tensor_nn_kernels.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 gpu_losses_kernels.o: $(SRC_PATH)/hardware/gpu/nn/gpu_losses_kernels.cu $(SRC_PATH)/hardware/gpu/nn/gpu_nn_kernels.h
 	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/nn/gpu_losses_kernels.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
@@ -582,7 +594,7 @@ example_temp: $(EXAMPLES_PATH)/eddl_temp.cpp $(OBJ) $(GPU_OBJ)
 
 #---------------------------------- Extra options
 install:
-#     ln -s $(LIBS_PATH) /usr/local/include/
-#     ln -s $(SRC_PATH) /usr/local/include/
+#	ln -s $(LIBS_PATH) /usr/local/include/
+#	ln -s $(SRC_PATH) /usr/local/include/
 clean:
 	rm *.o *.so example_* *.dot *.pdf
