@@ -115,32 +115,20 @@ void cpu_reduction(ReduceDescriptor *RD){
 
       for(i=0;i<RD->index.size();i++)
         {
-            if (RD->m>2) {
-                if (RD->keepdims) {
-                    int p=RD->S->ptr[i];
-                    RD->ID->ptr[p]+=RD->D->ptr[i];
-                }
-                else {
-                    int p=RD->S->ptr[i];
-                    RD->ID->ptr[p]+=RD->D->ptr[i];
-                }
+            if (RD->m>=2) {
+                int p=RD->S->ptr[i];
+                RD->ID->ptr[p]+=RD->D->ptr[i];
             }
             else {
-                if (RD->keepdims) {
-                    if (RD->m==0)
-                        RD->ID->ptr[i]+=RD->D->ptr[i]/d;
-                    else
-                        RD->ID->ptr[i]+=RD->D->ptr[i];
-                }
-                else {
-                    for(j=0;j<RD->index[i].size();j++) {
-                        if (RD->m==0)
-                            RD->ID->ptr[RD->index[i][j]]+=RD->D->ptr[i]/d;
-                        else
-                            RD->ID->ptr[RD->index[i][j]]+=RD->D->ptr[i];
-                    }
-                }
-            }
+                if (RD->m==0)
+                  for(j=0;j<RD->index[i].size();j++)
+                      RD->ID->ptr[RD->index[i][j]]+=RD->D->ptr[i]/d;
+                else
+                  for(j=0;j<RD->index[i].size();j++)
+                      RD->ID->ptr[i]+=RD->D->ptr[i];
+
+
+              }
         }//i
 
     }

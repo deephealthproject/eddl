@@ -29,7 +29,7 @@ void gpu_reduction(ReduceDescriptor *RD){
   }
 
   if (RD->ind==nullptr) {
-    
+
     RD->max=0;
     for(i=0;i<RD->index.size();i++)
        if(RD->max<RD->index[i].size()) RD->max=RD->index[i].size();
@@ -63,13 +63,11 @@ void gpu_reduction(ReduceDescriptor *RD){
   dim3 dimGrid(RD->index.size());
   dim3 dimBlock(1);
 
+
   reduction_kernel<<<dimGrid,dimBlock>>>(RD->I->ptr, RD->O->ptr, RD->S->ptr,RD->m, RD->keepdims,d,RD->ind,RD->max);
   check_cuda(cudaDeviceSynchronize(), "reduction_kernel");
 
 }
-
-
-
 
 
 void gpu_reduction_back(ReduceDescriptor *RD){
@@ -91,9 +89,9 @@ void gpu_reduction_back(ReduceDescriptor *RD){
   }
 
   //reduce
-  //dim3 dimGrid(RD->index.size());
-  //dim3 dimBlock(1024);
+  dim3 dimGrid(RD->index.size());
+  dim3 dimBlock(1);
 
-  //reduction_back_kernel<<<dimGrid,dimBlock>>>(RD->I->ptr, RD->O->ptr, RD->m, RD->keepdims);
-  //check_cuda(cudaDeviceSynchronize(), "reduction_back_kernel");
+  reduction_back_kernel<<<dimGrid,dimBlock>>>(RD->D->ptr, RD->ID->ptr, RD->S->ptr,RD->m, RD->keepdims,d,RD->ind,RD->max);
+  check_cuda(cudaDeviceSynchronize(), "reduction_back_kernel");
 }

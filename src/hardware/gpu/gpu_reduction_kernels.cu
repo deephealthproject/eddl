@@ -28,7 +28,7 @@ __global__ void reduction_kernel(float *I,float *O,float *S,int m, int keepdims,
 {
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
-  
+
 
   if (ind[thread_id_x]!=-1) {
 
@@ -86,51 +86,31 @@ __global__ void reduction_kernel(float *I,float *O,float *S,int m, int keepdims,
 }
 
 
-  /// backward
-/*
-      float val,sum;
-      int ind;
-      int d;
-      int i,j,k,l,s;
 
+__global__ void reduction_back_kernel(float *I,float *O,float *S,int m, int keepdims,int d,int *ind,int max)
+{
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
-      // [MEAN]: Compute items to be reduced
-      if (RD->m==0) {
-          d=1;
-          for(i=0;i<RD->axis.size();i++){
-              d *= RD->I->shape[RD->axis[i]];
-          }
-      }
+  if (ind[thread_id_x]!=-1) {
 
-      for(i=0;i<RD->index.size();i++)
-        {
-            if (RD->m>2) {
-                if (RD->keepdims) {
-                    int p=RD->S->ptr[i];
-                    RD->ID->ptr[p]+=RD->D->ptr[i];
-                }
-                else {
-                    int p=RD->S->ptr[i];
-                    RD->ID->ptr[p]+=RD->D->ptr[i];
-                }
-            }
-            else {
-                if (RD->keepdims) {
-                    if (RD->m==0)
-                        RD->ID->ptr[i]+=RD->D->ptr[i]/d;
-                    else
-                        RD->ID->ptr[i]+=RD->D->ptr[i];
-                }
-                else {
-                    for(j=0;j<RD->index[i].size();j++) {
-                        if (RD->m==0)
-                            RD->ID->ptr[RD->index[i][j]]+=RD->D->ptr[i]/d;
-                        else
-                            RD->ID->ptr[RD->index[i][j]]+=RD->D->ptr[i];
-                    }
-                }
-            }
-        }//i
+  int j;
+  float sum=0;
 
-    }
-*/
+  int p=max*blockIdx.x;
+
+  // set in Delta
+  if (m>=2) {
+      int p=S[thread_id_x];
+      O[p]+=I[thread_id_x];
+  }
+  else {
+    if (m==0)
+      for(j=0;j<max && ind[p]!=-1;j++,p++)
+          O[ind[p]]+=I[thread_id_x]/d;
+    else
+      for(j=0;j<max && ind[p]!=-1;j++,p++)
+          O[ind[p]]+=I[thread_id_x];
+  }
+
+  }
+}

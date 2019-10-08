@@ -652,8 +652,9 @@ void Net::loss() {
 /////////////////////////////////////////
 void Net::backward() {
     for (int i = 0; i < vbts.size(); i++) {
-        //cout<<"BACK: "<<vbts[i]->name<<"delta:"<<vbts[i]->delta->sum_abs()<<"\n";
+
         vbts[i]->backward();
+        if (VERBOSE) cout<<"BACK: "<<vbts[i]->name<<"delta:"<<vbts[i]->delta->sum()<<"\n";
       }
 
 }
@@ -665,11 +666,11 @@ void Net::applygrads() {
     if (VERBOSE) {
         for (int i = 0; i < vbts.size(); i++) {
             cout <<vbts[i]->name << "\n";
-            fprintf(stdout, "  In:%f\n", vbts[i]->input->sum_abs());
-            fprintf(stdout, "  Out:%f\n", vbts[i]->output->sum_abs());
-            fprintf(stdout, "  Delta:%f\n", vbts[i]->delta->sum_abs());
+            fprintf(stdout, "  In:%f\n", vbts[i]->input->sum());
+            fprintf(stdout, "  Out:%f\n", vbts[i]->output->sum());
+            fprintf(stdout, "  Delta:%f\n", vbts[i]->delta->sum());
             for (int j = 0; j < vbts[i]->gradients.size(); j++) {
-                fprintf(stdout, "  %f\n", vbts[i]->gradients[j]->sum_abs());
+                fprintf(stdout, "  %f\n", vbts[i]->gradients[j]->sum());
             }
         }
         getchar();

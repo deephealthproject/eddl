@@ -84,5 +84,6 @@ __global__ void reduce_sum2D(float *a,float *b,long int r,long int c,long int ax
 __global__ void reduce_array_sum(float* a, long int ops, float* result);
 
 __global__ void reduction_kernel(float *I,float *O,float *S,int m, int keepdims,int d,int *ind,int max);
+__global__ void reduction_back_kernel(float *I,float *O,float *S,int m, int keepdims,int d,int *ind,int max);
 
 #endif
