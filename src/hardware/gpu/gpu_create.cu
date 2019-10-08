@@ -16,6 +16,6 @@ void gpu_range(Tensor *A, float min, float step, int size) {
 
     setDims(A);
 
-    range<<<dimGrid,dimBlock>>>(A->ptr, r, c, min, step, size);
+    //range<<<dimGrid,dimBlock>>>(A->ptr, r, c, min, step, size);
     check_cuda(cudaDeviceSynchronize(),"range");
 }

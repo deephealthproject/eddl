@@ -43,7 +43,7 @@ void gpu_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int 
 void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
 
 // GPU: Create (static)
-void gpu_range(Tensor *A, float min, float step, int size)
+void gpu_range(Tensor *A, float min, float step, int size);
 
 // GPU: Generator
 void gpu_rand_uniform(Tensor *A, float v);
@@ -106,6 +106,8 @@ float gpu_sum_abs(Tensor *A);
 // GPU: Reduction
 void gpu_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
 void gpu_reduceTosum(Tensor *A, Tensor *B, int axis);
+void gpu_reduction(ReduceDescriptor *RD);
+
 //void gpu_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB);
 //void gpu_delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB);
 //void gpu_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);

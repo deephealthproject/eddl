@@ -38,7 +38,7 @@ void reduction(ReduceDescriptor *RD){
       cpu_reduction(RD);
     }
     #ifdef cGPU
-        else if (isGPU())
+        else if (RD->I->isGPU())
           {
             gpu_reduction(RD);
           }
@@ -57,9 +57,9 @@ void reduction_back(ReduceDescriptor *RD)
     cpu_reduction_back(RD);
   }
   #ifdef cGPU
-      else if (isGPU())
+      else if (RD->I->isGPU())
         {
-          gpu_reduction_back(RD);
+          //gpu_reduction_back(RD);
         }
   #endif
   #ifdef cFPGA
