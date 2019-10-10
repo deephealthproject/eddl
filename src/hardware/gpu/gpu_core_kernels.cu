@@ -42,23 +42,22 @@ __global__ void fill(float *aptr,float *bptr,int t,int aini,int at,int bini,int 
 }
 
 
-__global__ void mask(float* a, float v, long int rows, long int cols)
+__global__ void mask(float* a, float v, long int size)
 {
- long int ops=rows*cols;
- long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
- if (thread_id_x < ops)
+ if (thread_id_x < size)
    a[thread_id_x]=a[thread_id_x]<v;
 
 }
 
 
-__global__ void set(float* a, float v, long int rows, long int cols)
+__global__ void set(float* a, float v, long int size)
 {
-    long int ops=rows*cols;
+
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
-    if (thread_id_x < ops)
+    if (thread_id_x < size)
         a[thread_id_x]=v;
 
 }

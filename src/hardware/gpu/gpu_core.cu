@@ -74,7 +74,7 @@ void gpu_mask(Tensor *A,float v) {
 
   setDims(A);
 
-  mask<<<dimGrid,dimBlock>>>(A->ptr,v,A->shape[0],c);
+  mask<<<dimGrid,dimBlock>>>(A->ptr,v,A->size);
   check_cuda(cudaDeviceSynchronize(),"mask");
 
 }
@@ -86,7 +86,6 @@ void gpu_set(Tensor *A, float v) {
 
     setDims(A);
 
-    set<<<dimGrid,dimBlock>>>(A->ptr,v,r,c);
+    set<<<dimGrid,dimBlock>>>(A->ptr,v,A->size);
     check_cuda(cudaDeviceSynchronize(),"set");
 }
-
