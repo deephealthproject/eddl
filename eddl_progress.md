@@ -2,10 +2,10 @@
 ---
 
 | Image | Meaning |
-| ------------- |------| 
-| ✅ | Done | 
-| 🔵 | In progress | 
-| ❌ | Todo | 
+| ------------- |------|
+| ✅ | Done |
+| 🔵 | In progress |
+| ❌ | Todo |
 
 
 ## Layers
@@ -18,7 +18,7 @@
 | Tensor | ✅ | ✅ | |
 | Dense | ✅ | ✅ | |
 | Activation | 🔵 | 🔵 | Sigmoid, LReLu ...
-| BatchNorm | ❌ | ❌ |
+| BatchNorm | ✅ | ✅ |
 | Embedding | ❌ | ❌ |
 | Input | ✅ | ✅ | |
 | Reshape | ✅ | ✅ | |
@@ -32,7 +32,7 @@
 | ------------- |------| -----| ---------|
 | Conv2D | 🔵 | 🔵 | Dilated, Groups...
 | Conv2DT | ❌ | ❌ |
-| Upsampling | ❌ | ❌ |
+| Upsampling | ✅ | ❌ |
 | AvgPool | ❌ | ❌ |
 | GlobalMaxPool | ❌ | ❌ |
 | MaxPool | ✅ | ✅ |
@@ -94,11 +94,11 @@
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| Mean | ✅| ❌ | still test properly
-| Var | ✅| ❌ | still test properly
-| Sum | ✅| ❌ | still test properly
-| Max | ✅| ❌ | still test properly
-| Min | ✅| ❌ | still test properly
+| Mean | ✅| ✅ |
+| Var | ✅| ✅ |
+| Sum | ✅| ✅ |
+| Max | ✅| ✅ |
+| Min | ✅| ✅ | 
 
 
 ### Recurrent layers

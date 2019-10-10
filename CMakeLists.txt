@@ -85,7 +85,7 @@ if(MSVC)
             string(REGEX REPLACE "/MT" "/MD" ${flag_var} "${${flag_var}}")
         endforeach(flag_var)
         if (EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
-            foreach(flag_var CMAKE_CUDA_FLAGS_DEBUG CMAKE_CUDA_FLAGS_RELEASE CMAKE_CUDA_FLAGS_MINSIZEREL CMAKE_CUDA_FLAGS_RELWITHDEBINFO) 
+            foreach(flag_var CMAKE_CUDA_FLAGS_DEBUG CMAKE_CUDA_FLAGS_RELEASE CMAKE_CUDA_FLAGS_MINSIZEREL CMAKE_CUDA_FLAGS_RELWITHDEBINFO)
                 string(REGEX REPLACE "-MT" "-MD" ${flag_var} "${${flag_var}}")
             endforeach(flag_var)
         endif()
@@ -95,7 +95,7 @@ if(MSVC)
             string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
         endforeach(flag_var)
         if (EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
-            foreach(flag_var CMAKE_CUDA_FLAGS_DEBUG CMAKE_CUDA_FLAGS_RELEASE CMAKE_CUDA_FLAGS_MINSIZEREL CMAKE_CUDA_FLAGS_RELWITHDEBINFO) 
+            foreach(flag_var CMAKE_CUDA_FLAGS_DEBUG CMAKE_CUDA_FLAGS_RELEASE CMAKE_CUDA_FLAGS_MINSIZEREL CMAKE_CUDA_FLAGS_RELWITHDEBINFO)
                 string(REGEX REPLACE "-MD" "-MT" ${flag_var} "${${flag_var}}")
             endforeach(flag_var)
         endif()
@@ -348,7 +348,7 @@ target_include_directories(eddl PUBLIC
 
 
 # Target properties
-set_target_properties(eddl PROPERTIES 
+set_target_properties(eddl PROPERTIES
     OUTPUT_NAME_DEBUG "eddld"
     OUTPUT_NAME_RELEASE "eddl"
     POSITION_INDEPENDENT_CODE ON
@@ -450,28 +450,8 @@ if(BUILD_EXAMPLES)
     set(CMAKE_FOLDER examples)
     add_executable(example_conv "${EXAMPLES_DIR}/eddl_conv.cpp")
     add_executable(example_mlp "${EXAMPLES_DIR}/eddl_mlp.cpp")
-    add_executable(example_train_batch "${EXAMPLES_DIR}/eddl_train_batch.cpp")
-    add_executable(example_predict "${EXAMPLES_DIR}/eddl_predict.cpp")
-    add_executable(example_ae "${EXAMPLES_DIR}/eddl_ae.cpp")
-    add_executable(example_dae "${EXAMPLES_DIR}/eddl_dae.cpp")
-    add_executable(example_dae_class "${EXAMPLES_DIR}/eddl_dae_class.cpp")
-    add_executable(example_test "${EXAMPLES_DIR}/eddl_test.cpp")
-    add_executable(example_load_save "${EXAMPLES_DIR}/eddl_load_save.cpp")
-    add_executable(example_gpu "${EXAMPLES_DIR}/eddl_gpu.cpp")
-    add_executable(example_temp "${EXAMPLES_DIR}/eddl_temp.cpp")
-    add_executable(example_tensor "${EXAMPLES_DIR}/eddl_tensor.cpp")
     target_link_libraries(example_conv eddl)
     target_link_libraries(example_mlp eddl)
-    target_link_libraries(example_train_batch eddl)
-    target_link_libraries(example_predict eddl)
-    target_link_libraries(example_ae eddl)
-    target_link_libraries(example_dae eddl)
-    target_link_libraries(example_dae_class eddl)
-    target_link_libraries(example_test eddl)
-    target_link_libraries(example_load_save eddl)
-    target_link_libraries(example_gpu eddl)
-    target_link_libraries(example_tensor eddl)
-    target_link_libraries(example_temp eddl)
     set(CMAKE_FOLDER "")
 endif(BUILD_EXAMPLES)
 #unset(BUILD_EXAMPLES CACHE)
@@ -512,4 +492,4 @@ install(DIRECTORY ${ESCAPED_EIGEN_SOURCE_DIR}/src DESTINATION "include/third_par
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/EDDLConfig.cmake.in ${CMAKE_BINARY_DIR}/cmake/EDDLConfig.cmake @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/cmake/EDDLConfig.cmake
-        DESTINATION ${CMAKE_INSTALL_PREFIX}) 
+        DESTINATION ${CMAKE_INSTALL_PREFIX})
