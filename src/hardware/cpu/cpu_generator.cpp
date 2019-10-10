@@ -20,8 +20,9 @@ void cpu_rand_binary(Tensor *A, float v){
 }
 
 void cpu_rand_normal(Tensor *A, float m, float s, bool fast_math){
+    int r=rand();
     if(fast_math){
-        for (int i = 0; i < A->size; ++i) A->ptr[i] = fast_randn(m, s, rand());
+        for (int i = 0; i < A->size; ++i) A->ptr[i] = fast_randn(m, s, r++);
     }else{
         for (int i = 0; i < A->size; ++i) A->ptr[i] = slow_randn(m, s);
     }
