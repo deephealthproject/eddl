@@ -1,5 +1,4 @@
-# Development Status
----
+### Development Status
 
 | Image | Meaning |
 | ------------- |------|
@@ -159,6 +158,8 @@
 | Nadam | ❌ | ❌ |
 | RMSProp | ❌ | ❌ |
 | SGD | ✅ | ✅ |
+
+
 
 
 ---
