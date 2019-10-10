@@ -34,14 +34,11 @@ int main(int argc, char **argv){
   layer in=Input({784});
   layer l=in;
 
-  //l = GaussianNoise(l,0.3);
-
   l=Reshape(l,{1,28,28});
-    l=UpSampling(l, {2,2});
-//  l=Block(l,16,{3,3},{1,1});
-//  l=Block(l,32,{3,3},{1,1});
-//  l=Block(l,64,{3,3},{1,1});
-//  l=Block(l,128,{3,3},{1,1});
+  l=Block(l,16,{3,3},{1,1});
+  l=Block(l,32,{3,3},{1,1});
+  l=Block(l,64,{3,3},{1,1});
+  l=Block(l,128,{3,3},{1,1});
 
   l=Reshape(l,{-1});
 
@@ -63,8 +60,8 @@ int main(int argc, char **argv){
     sgd(0.01, 0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    //CS_CPU(1) // CPU with 4 threads
-    CS_GPU({1}) // GPU with only one gpu
+    CS_CPU(4) // CPU with 4 threads
+    //S_GPU({1}) // GPU with only one gpu
   );
 
   // Load and preprocess training data
