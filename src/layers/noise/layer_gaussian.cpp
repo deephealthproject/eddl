@@ -47,8 +47,8 @@ LGaussianNoise::LGaussianNoise(Layer *parent, float stdev, string name, int dev)
 
 // virtual
 void LGaussianNoise::resize(int batch){
-  output->resize(batch, parent[0]->output);
-  noise->resize(batch, parent[0]->delta);
+  output->resize(batch);
+  noise->resize(batch);
 }
 
 void LGaussianNoise::forward() {
