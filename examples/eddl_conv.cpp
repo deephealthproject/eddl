@@ -42,18 +42,13 @@ int main(int argc, char **argv){
 
   l=Reshape(l,{-1});
 
-  l=Activation(Dense(l,256),"relu");
+  l=Activation(Dense(l,64),"relu");
 
   layer out=Activation(Dense(l,num_classes),"softmax");
 
   // net define input and output layers list
   model net=Model({in},{out});
 
-  // plot the model
-  plot(net,"model.pdf");
-
-  // get some info from the network
-  cout << summary(net) << endl;
 
   // Build model
   build(net,
@@ -63,6 +58,12 @@ int main(int argc, char **argv){
     CS_CPU(4) // CPU with 4 threads
     //S_GPU({1}) // GPU with only one gpu
   );
+
+  // plot the model
+  plot(net,"model.pdf");
+
+  // get some info from the network
+  cout << summary(net) << endl;
 
   // Load and preprocess training data
   tensor X=T_load("trX.bin");
