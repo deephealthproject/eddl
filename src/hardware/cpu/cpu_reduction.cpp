@@ -104,8 +104,6 @@ void cpu_reduction(ReduceDescriptor *RD){
       int d;
       int i,j,k,l,s;
 
-
-      // [MEAN]: Compute items to be reduced
       if (RD->m==0) {
           d=1;
           for(i=0;i<RD->axis.size();i++){
@@ -120,15 +118,17 @@ void cpu_reduction(ReduceDescriptor *RD){
                 RD->ID->ptr[p]+=RD->D->ptr[i];
             }
             else {
-                if (RD->m==0)
-                  for(j=0;j<RD->index[i].size();j++)
-                      RD->ID->ptr[RD->index[i][j]]+=RD->D->ptr[i]/d;
-                else
-                  for(j=0;j<RD->index[i].size();j++)
-                      RD->ID->ptr[i]+=RD->D->ptr[i];
-
-
+              val=0;
+              if(RD->keepdims) {
+                for(j=0;j<RD->index[i].size();j++)
+                  val+=RD->D->ptr[RD->index[i][j]];
               }
+              else val=RD->D->ptr[i];
+
+              if (RD->m==0) val/=d;
+              for(j=0;j<RD->index[i].size();j++)
+                RD->ID->ptr[RD->index[i][j]]+=val;
+            }
         }//i
 
     }

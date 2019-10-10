@@ -87,7 +87,7 @@ void gpu_reduction_back(ReduceDescriptor *RD){
           d *= RD->I->shape[RD->axis[i]];
       }
   }
-
+  
   //reduce
   dim3 dimGrid(RD->index.size());
   dim3 dimBlock(1);

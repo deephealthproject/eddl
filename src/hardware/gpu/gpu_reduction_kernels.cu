@@ -93,24 +93,27 @@ __global__ void reduction_back_kernel(float *I,float *O,float *S,int m, int keep
 
   if (ind[thread_id_x]!=-1) {
 
-  int j;
-  float sum=0;
+    int j;
+    float val=0;
 
-  int p=max*blockIdx.x;
+    int p;
 
-  // set in Delta
-  if (m>=2) {
+    // set in Delta
+    if (m>=2) {
       int p=S[thread_id_x];
       O[p]+=I[thread_id_x];
-  }
-  else {
-    if (m==0)
-      for(j=0;j<max && ind[p]!=-1;j++,p++)
-          O[ind[p]]+=I[thread_id_x]/d;
-    else
-      for(j=0;j<max && ind[p]!=-1;j++,p++)
-          O[ind[p]]+=I[thread_id_x];
-  }
+    }
+    else {
+      p=max*blockIdx.x;
+      if(keepdims) {
+        for(j=0;j<max && ind[p]!=-1;j++,p++)
+          val+=I[ind[p]];
+      }
+      else val=I[thread_id_x];
+      if (m==0) val/=d;
 
+      for(j=0;j<max && ind[p]!=-1;j++,p++)
+        O[ind[p]]+=val;
+    }
   }
 }
