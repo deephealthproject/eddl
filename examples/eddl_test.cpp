@@ -82,10 +82,10 @@ int main(int argc, char **argv) {
 
 
     int dev = DEV_GPU;
-    Tensor *T=new Tensor({15,5,5,3,2}, dev);
+    Tensor *T=new Tensor({15,5}, dev);
 
     vector<int> axis;
-    axis.push_back(0,2,3);
+    axis.push_back(0);
     //axis.push_back(3);
 /*
     ReduceDescriptor *RD=new ReduceDescriptor(T,axis,"mean",false);
