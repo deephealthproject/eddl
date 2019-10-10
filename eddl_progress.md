@@ -8,10 +8,11 @@
 | ❌ | Todo |
 
 
-## Layers
+---
+# Layers
 ---
 
-### Core layers
+## Core layers
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
@@ -26,7 +27,7 @@
 | Drop | ✅ | ✅ |
 
 
-### Convolutional layers
+## Convolutional layers
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
@@ -38,7 +39,7 @@
 | MaxPool | ✅ | ✅ |
 
 
-### Pooling layers
+## Pooling layers
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
@@ -47,7 +48,7 @@
 | MaxPool | ✅ | ✅ |
 
 
-### Merge layers
+## Merge layers
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
@@ -61,7 +62,7 @@
 | Substract | ❌ | ❌ |
 
 
-### Noise layers
+## Noise layers
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
@@ -69,7 +70,7 @@
 | Uniform | ❌| ❌ | still test properly
 
 
-### Operators layers
+## Operators layers
 
 > **Note:** Do not confuse with raw-tensor operations
 
@@ -88,7 +89,7 @@
 | Sum | ✅ | ✅ |
 
 
-### Reduction layers
+## Reduction layers
 
 > **Note:** Do not confuse with raw-tensor reductions
 
@@ -101,7 +102,7 @@
 | Min | ✅| ✅ | 
 
 
-### Recurrent layers
+## Recurrent layers
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
@@ -109,7 +110,8 @@
 | RNN | ❌ | ❌ |
 
 
-## Initializers
+---
+# Initializers
 ---
 
 | Functionality | CPU | GPU | Comments |
@@ -123,7 +125,8 @@
 | RandomUniform | ❌ | ❌ |
 
 
-## Loss functions
+---
+# Loss functions
 ---
 
 | Functionality | CPU | GPU | Comments |
@@ -133,7 +136,8 @@
 | SoftCE | ✅ | ✅ |
 
 
-## Metric functions
+---
+# Metric functions
 ---
 
 | Functionality | CPU | GPU | Comments |
@@ -142,7 +146,8 @@
 | MSE | ✅ | ✅ |
 
 
-## Optimizers
+---
+# Optimizers
 ---
 
 | Functionality | CPU | GPU | Comments |
@@ -156,12 +161,17 @@
 | SGD | ✅ | ✅ |
 
 
-## Raw-Tensor operations
+---
+---
+# Raw-Tensor operations
+---
 ---
 
 Numpy-like operations over a raw-tensor object
 
-### Creation ops
+---
+## Creation ops
+---
 
 
 | Functionality | CPU | GPU | Comments |
@@ -176,7 +186,10 @@ Numpy-like operations over a raw-tensor object
 | full | ✅ | ✅ |
 
 
-### Indexing, Slicing, Joining, Mutating Ops
+---
+## Indexing, Slicing, Joining, Mutating Ops
+---
+
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
@@ -195,7 +208,9 @@ Numpy-like operations over a raw-tensor object
 | set | ❌ | ❌ |
 
 
-### Generators
+---
+## Generators
+---
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
@@ -207,7 +222,9 @@ Numpy-like operations over a raw-tensor object
 | rand binary | ✅ | ✅ |
 
 
-### Serialization
+---
+## Serialization
+---
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
@@ -215,9 +232,11 @@ Numpy-like operations over a raw-tensor object
 | load | ✅ | ✅ |
 
 
-### Math operations
+---
+## Math operations
+---
 
-#### Pointwise Ops
+### Pointwise Ops
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
@@ -268,7 +287,7 @@ Numpy-like operations over a raw-tensor object
 | var* | ❌ | ❌ | Not reduced
 
 
-#### Reduction ops
+### Reduction ops
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
@@ -289,7 +308,7 @@ Numpy-like operations over a raw-tensor object
 | var | ❌ | ❌ |
 
 
-#### Comparison ops
+### Comparison ops
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
@@ -308,7 +327,7 @@ Numpy-like operations over a raw-tensor object
 | topk | ❌ | ❌ |
 
 
-#### Other ops
+### Other ops
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
