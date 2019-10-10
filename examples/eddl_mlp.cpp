@@ -1,22 +1,11 @@
-
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of EDDLL an European Distributed Deep Learning Library.
-// Developed within the DeepHealth project.
-// Boosting AI in Europe.
-//
-// Main authors and developers:
-//      Roberto Paredes: rparedes@prhlt.upv.es
-//      Joan Ander Gómez: jon@prhlt.upv.es
-//
-//
-// Collaborators:
-//      Salva Carrión: salcarpo@prhlt.upv.es
-//      Mario Parreño: maparla@prhlt.upv.es
-//
-//
-// To collaborate please contact rparedes@prhlt.upv.es
-//
-/////////////////////////////////////////////////////////////////////////////
+/*
+* EDDL Library - European Distributed Deep Learning Library.
+* Version: 0.1
+* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: October 2019
+* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
+* All rights reserved
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,9 +30,9 @@ int main(int argc, char **argv) {
     layer in = Input({784});
     layer l = in;  // Aux var
 
-    l = BatchNormalization(Activation(Dense(l, 1024), "relu"));
-    l = BatchNormalization(Activation(Dense(l, 1024), "relu"));
-    l = BatchNormalization(Activation(Dense(l, 1024), "relu"));
+    l = GaussianNoise(BatchNormalization(Activation(Dense(l, 1024), "relu")),0.3);
+    l = GaussianNoise(BatchNormalization(Activation(Dense(l, 1024), "relu")),0.3);
+    l = GaussianNoise(BatchNormalization(Activation(Dense(l, 1024), "relu")),0.3);
     layer out = Activation(Dense(l, num_classes), "softmax");
     model net = Model({in}, {out});
 

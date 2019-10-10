@@ -1,22 +1,11 @@
-
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of EDDLL an European Distributed Deep Learning Library.
-// Developed within the DeepHealth project.
-// Boosting AI in Europe.
-//
-// Main authors and developers:
-//      Roberto Paredes: rparedes@prhlt.upv.es
-//      Joan Ander Gómez: jon@prhlt.upv.es
-//
-//
-// Collaborators:
-//      Salva Carrión: salcarpo@prhlt.upv.es
-//      Mario Parreño: maparla@prhlt.upv.es
-//
-//
-// To collaborate please contact rparedes@prhlt.upv.es
-//
-/////////////////////////////////////////////////////////////////////////////
+/*
+* EDDL Library - European Distributed Deep Learning Library.
+* Version: 0.1
+* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: October 2019
+* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
+* All rights reserved
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -92,11 +81,11 @@ int main(int argc, char **argv) {
     int dim1,dim2,dim3;
 
 
-    int dev = DEV_CPU;
-    Tensor *T=new Tensor({10,5}, dev);
+    int dev = DEV_GPU;
+    Tensor *T=new Tensor({15,5,5,3,2}, dev);
 
     vector<int> axis;
-    axis.push_back(0);
+    axis.push_back(0,2,3);
     //axis.push_back(3);
 /*
     ReduceDescriptor *RD=new ReduceDescriptor(T,axis,"mean",false);
@@ -114,13 +103,13 @@ int main(int argc, char **argv) {
     RD->O->info();
     RD->O->print();
 */
-    LTensor *LT= new LTensor(T->getShape(),DEV_CPU);
+    LTensor *LT= new LTensor(T->getShape(),dev);
     LT->output->info();
     LT->output->rand_uniform(1.0);
     LT->output->print();
 
     cout<<"Mean:\n";
-    LRMean *LRM=new LRMean(LT,axis,true,"LTmean",DEV_CPU);
+    LRMean *LRM=new LRMean(LT,axis,true,"LTmean",dev);
     LRM->forward();
 
     LRM->output->info();

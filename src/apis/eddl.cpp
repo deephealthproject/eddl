@@ -1,22 +1,12 @@
+/*
+* EDDL Library - European Distributed Deep Learning Library.
+* Version: 0.1
+* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: October 2019
+* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
+* All rights reserved
+*/
 
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of EDDLL an European Distributed Deep Learning Library.
-// Developed within the DeepHealth project.
-// Boosting AI in Europe.
-//
-// Main authors and developers:
-//      Salva Carrión: salcarpo@prhlt.upv.es
-//      Roberto Paredes: rparedes@prhlt.upv.es
-//      Joan Ander Gómez: jon@prhlt.upv.es
-//
-//
-// Collaborators:
-//      Mario Parreño: maparla@prhlt.upv.es
-//
-//
-// To collaborate please contact salcarpo@prhlt.upv.es
-//
-/////////////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
 #include <cstdio>
