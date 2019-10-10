@@ -53,6 +53,7 @@ void reduction(ReduceDescriptor *RD){
 
 void reduction_back(ReduceDescriptor *RD)
 {
+  
   if (RD->I->isCPU()) {
     cpu_reduction_back(RD);
   }
