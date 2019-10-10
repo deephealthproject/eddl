@@ -18,7 +18,7 @@ void gpu_abs_(Tensor *A){
 
     setDims(A);
 
-    abs_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c);
+    abs_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "abs_");
 }
 
@@ -28,7 +28,7 @@ void gpu_acos_(Tensor *A){
 
     setDims(A);
 
-    acos_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c);
+    acos_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "acos_");
 }
 
@@ -38,7 +38,7 @@ void gpu_add_(Tensor *A, float v) {
 
   setDims(A);
 
-  add_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c, v);
+  add_<<<dimGrid,dimBlock>>>(A->ptr, A->size, v);
   check_cuda(cudaDeviceSynchronize(), "add_");
 }
 
@@ -48,7 +48,7 @@ void gpu_asin_(Tensor *A){
 
     setDims(A);
 
-    asin_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c);
+    asin_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "asin_");
 }
 
@@ -58,7 +58,7 @@ void gpu_atan_(Tensor *A){
 
     setDims(A);
 
-    atan_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c);
+    atan_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "atan_");
 }
 
@@ -68,7 +68,7 @@ void gpu_ceil_(Tensor *A){
 
     setDims(A);
 
-    ceil_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c);
+    ceil_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "ceil_");
 }
 
@@ -78,7 +78,7 @@ void gpu_clamp_(Tensor *A, float min, float max){
 
     setDims(A);
 
-    clamp_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c, min, max);
+    clamp_<<<dimGrid,dimBlock>>>(A->ptr, A->size, min, max);
     check_cuda(cudaDeviceSynchronize(), "clamp_");
 }
 
@@ -88,7 +88,7 @@ void gpu_cos_(Tensor *A){
 
     setDims(A);
 
-    cos_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c);
+    cos_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "cos_");
 }
 
@@ -98,7 +98,7 @@ void gpu_cosh_(Tensor *A){
 
     setDims(A);
 
-    cosh_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c);
+    cosh_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "cosh_");
 }
 
@@ -109,7 +109,7 @@ void gpu_exp_(Tensor *A) {
 
   setDims(A);
 
-  exp_<<<dimGrid,dimBlock>>>(A->ptr,A->shape[0],c);
+  exp_<<<dimGrid,dimBlock>>>(A->ptr,A->size);
   check_cuda(cudaDeviceSynchronize(),"exp_");
 
 }
@@ -120,7 +120,7 @@ void gpu_floor_(Tensor *A){
 
     setDims(A);
 
-    floor_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c);
+    floor_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "floor_");
 }
 
@@ -131,7 +131,7 @@ void gpu_log_(Tensor *A) {
 
   setDims(A);
 
-  log_<<<dimGrid,dimBlock>>>(A->ptr,A->shape[0], c);
+  log_<<<dimGrid,dimBlock>>>(A->ptr,A->size);
   check_cuda(cudaDeviceSynchronize(), "log_");
 
 }
@@ -143,7 +143,7 @@ void gpu_log2_(Tensor *A) {
 
     setDims(A);
 
-    log2_<<<dimGrid,dimBlock>>>(A->ptr,A->shape[0], c);
+    log2_<<<dimGrid,dimBlock>>>(A->ptr,A->size);
     check_cuda(cudaDeviceSynchronize(),"log2_");
 }
 
@@ -154,7 +154,7 @@ void gpu_log10_(Tensor *A) {
 
     setDims(A);
 
-    log10_<<<dimGrid,dimBlock>>>(A->ptr,A->shape[0], c);
+    log10_<<<dimGrid,dimBlock>>>(A->ptr,A->size);
     check_cuda(cudaDeviceSynchronize(),"log10_");
 }
 
@@ -165,7 +165,7 @@ void gpu_logn_(Tensor *A, float n){
 
     setDims(A);
 
-    logn_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c, n);
+    logn_<<<dimGrid,dimBlock>>>(A->ptr, A->size, n);
     check_cuda(cudaDeviceSynchronize(), "logn_");
 };
 
@@ -175,7 +175,7 @@ void gpu_mod_(Tensor *A, float v){
 
     setDims(A);
 
-    mod_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c, v);
+    mod_<<<dimGrid,dimBlock>>>(A->ptr, A->size, v);
     check_cuda(cudaDeviceSynchronize(), "mod_");
 }
 
@@ -185,7 +185,7 @@ void gpu_mult_(Tensor *A, float v) {
 
   setDims(A);
 
-  mult_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c, v);
+  mult_<<<dimGrid,dimBlock>>>(A->ptr, A->size, v);
   check_cuda(cudaDeviceSynchronize(),"mult_");
 
 }
@@ -200,7 +200,7 @@ void gpu_normalize_(Tensor *A, float min, float max){
     float min_ori = 0;
     float max_ori = 10000;
 
-    normalize_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c, min_ori, max_ori, min, max);
+    normalize_<<<dimGrid,dimBlock>>>(A->ptr, A->size, min_ori, max_ori, min, max);
     check_cuda(cudaDeviceSynchronize(), "normalize_");
 }
 
@@ -210,7 +210,7 @@ void gpu_pow_(Tensor *A, float v){
 
     setDims(A);
 
-    pow_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c, v);
+    pow_<<<dimGrid,dimBlock>>>(A->ptr, A->size, v);
     check_cuda(cudaDeviceSynchronize(), "pow_");
 }
 
@@ -221,7 +221,7 @@ void gpu_reciprocal_(Tensor *A){
 
     setDims(A);
 
-    reciprocal_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c);
+    reciprocal_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "reciprocal_");
 }
 
@@ -231,7 +231,7 @@ void gpu_remainder_(Tensor *A, float v){
 
     setDims(A);
 
-    remainder_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c, v);
+    remainder_<<<dimGrid,dimBlock>>>(A->ptr, A->size, v);
     check_cuda(cudaDeviceSynchronize(), "remainder_");
 }
 
@@ -241,7 +241,7 @@ void gpu_round_(Tensor *A){
 
     setDims(A);
 
-    round_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c);
+    round_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "round_");
 }
 
@@ -251,7 +251,7 @@ void gpu_rsqrt_(Tensor *A){
 
     setDims(A);
 
-    rsqrt_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c);
+    rsqrt_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "rsqrt_");
 }
 
@@ -261,7 +261,7 @@ void gpu_sigmoid_(Tensor *A){
 
     setDims(A);
 
-    sigmoid_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c);
+    sigmoid_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "sigmoid_");
 }
 
@@ -271,7 +271,7 @@ void gpu_sign_(Tensor *A){
 
     setDims(A);
 
-    sign_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c);
+    sign_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "sign_");
 }
 
@@ -281,7 +281,7 @@ void gpu_sin_(Tensor *A){
 
     setDims(A);
 
-    sin_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c);
+    sin_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "sin_");
 }
 
@@ -291,7 +291,7 @@ void gpu_sinh_(Tensor *A){
 
     setDims(A);
 
-    sinh_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c);
+    sinh_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "sinh_");
 }
 
@@ -303,7 +303,7 @@ void gpu_sqr_(Tensor *A) {
 
   setDims(A);
 
-  sqr_<<<dimGrid,dimBlock>>>(A->ptr,A->shape[0],c);
+  sqr_<<<dimGrid,dimBlock>>>(A->ptr,A->size);
   check_cuda(cudaDeviceSynchronize(),"sqr_");
 
 }
@@ -315,7 +315,7 @@ void gpu_sqrt_(Tensor *A) {
 
   setDims(A);
 
-  sqrt_<<<dimGrid,dimBlock>>>(A->ptr,A->shape[0],c);
+  sqrt_<<<dimGrid,dimBlock>>>(A->ptr,A->size);
   check_cuda(cudaDeviceSynchronize(),"sqrt_");
 }
 
@@ -325,7 +325,7 @@ void gpu_tan_(Tensor *A){
 
     setDims(A);
 
-    tan_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c);
+    tan_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "tan_");
 }
 
@@ -335,7 +335,7 @@ void gpu_tanh_(Tensor *A){
 
     setDims(A);
 
-    tanh_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c);
+    tanh_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "tanh_");
 }
 
@@ -345,7 +345,7 @@ void gpu_trunc_(Tensor *A){
 
     setDims(A);
 
-    trunc_<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], c);
+    trunc_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "trunc_");
 }
 
@@ -406,7 +406,7 @@ void gpu_el_div(Tensor *A, Tensor *B, Tensor *C,int incC) {
 
   setDims(A);
 
-  el_mult<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,incC,A->shape[0],r);
+  el_div<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,incC,A->size);
 
   check_cuda(cudaDeviceSynchronize(),"gpu_el_div");
 }
@@ -418,7 +418,7 @@ void gpu_el_mult(Tensor *A, Tensor *B, Tensor *C,int incC){
 
   setDims(A);
 
-  el_mult<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,incC,A->shape[0],c);
+  el_mult<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,incC,A->size);
 
   check_cuda(cudaDeviceSynchronize(),"gpu_el_mult");
 }
