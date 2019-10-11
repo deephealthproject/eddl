@@ -18,7 +18,7 @@ using namespace eddl;
 
 layer Block(layer l,int filters, vector<int> kernel, vector<int> stride)
 {
-  return MaxPool(BatchNormalization(Activation(Conv(l, filters, kernel,stride),"relu")),{2,2});
+  return MaxPool(Activation(Conv(l, filters, kernel,stride),"relu"),{2,2});
 }
 
 int main(int argc, char **argv){
@@ -27,18 +27,19 @@ int main(int argc, char **argv){
 
   // Settings
   int epochs = 5;
-  int batch_size = 1;
+  int batch_size = 100;
   int num_classes = 10;
 
   // network
   layer in=Input({784});
   layer l=in;
   l=Reshape(l,{1,28,28});
-    l=UpSampling(l, vector<int>{2, 2});
-//  l=Block(l,16,{3,3},{1,1});
-//  l=Block(l,32,{3,3},{1,1});
-//  l=Block(l,64,{3,3},{1,1});
-//  l=Block(l,128,{3,3},{1,1});
+  l=UpSampling(l, vector<int>{2, 2});
+  l=MaxPool(l,{2,2});
+  l=Block(l,16,{3,3},{1,1});
+  l=Block(l,32,{3,3},{1,1});
+  l=Block(l,64,{3,3},{1,1});
+  l=Block(l,128,{3,3},{1,1});
 
   l=Reshape(l,{-1});
 
