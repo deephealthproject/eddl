@@ -27,7 +27,7 @@ public:
    vector<int> axis;
    bool keepdims;
    int m;
-   int max;
+   int red_size;
 
    vector<vector<int>> index;
    int *ind;
