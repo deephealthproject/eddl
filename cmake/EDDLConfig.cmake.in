@@ -1,0 +1,13 @@
+include(CMakeFindDependencyMacro)
+
+# pthreads setup for linux os
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+    SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
+    find_dependency(Threads)
+endif()
+
+include("@CMAKE_INSTALL_PREFIX@/EDDLTargets.cmake")
+
+SET(EDDL_LIBRARIES eddl)
+SET(EDDL_INCLUDE_DIR "@CMAKE_INSTALL_PREFIX@/include")
