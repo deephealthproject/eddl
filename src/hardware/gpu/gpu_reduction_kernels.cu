@@ -15,7 +15,8 @@
 #include <cuda.h>
 
 #include "gpu_kernels.h"
-
+//dim3 dimGrid(RD->index.size());
+//dim3 dimBlock(1);
 __global__ void reduction_kernel(float *I,float *O,float *S,int m, int keepdims,int d,int *ind,int rs)
 {
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
@@ -75,16 +76,15 @@ __global__ void reduction_kernel(float *I,float *O,float *S,int m, int keepdims,
 }
 
 
-
+//dim3 dimGrid(RD->index.size());
+//dim3 dimBlock(1);
 __global__ void reduction_back_kernel(float *I,float *O,float *S,int m, int keepdims,int d,int *ind,int rs)
 {
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     int j;
     float val=0;
-
     int p;
-
 
     // set in Delta
     if (m>=2) {
@@ -116,21 +116,19 @@ __global__ void reduction_back_kernel(float *I,float *O,float *S,int m, int keep
 //dim3 dimGrid(red_size);
 //dim3 dimBlock(RD->index.size());
 
-__global__ void reduction_kernel_sum(float *I,float *O,int m, int keepdims,int d,int *ind,int rs)
+__global__ void reduction_kernel_sum(float *I,float *O,int m, int d,int *ind,int rs)
 {
-  int p=rs*threadIdx.x+blockIdx.x;
+  long int p=rs*threadIdx.x+blockIdx.x;
 
-  if (m==0) atomicAdd(&(O[threadIdx.x]),I[ind[p]]/d);
-  else atomicAdd(&(O[threadIdx.x]),I[ind[p]]);
+  atomicAdd(&(O[threadIdx.x]),I[ind[p]]/d);
 
 }
 
 
-__global__ void reduction_kernel_keep(float *I,float *O,int m, int keepdims,int d,int *ind,int rs)
+__global__ void reduction_kernel_keep(float *I, float *O,int m, int d,int *ind,int rs)
 {
+  long int p=rs*threadIdx.x+blockIdx.x;
 
-  int p=rs*threadIdx.x+blockIdx.x;
-
-  O[ind[p]]=O[threadIdx.x];
-
+  O[ind[p]]=I[threadIdx.x];
+  
 }

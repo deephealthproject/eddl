@@ -49,7 +49,7 @@ void gpu_reduction(ReduceDescriptor *RD){
         ind[p]=RD->index[i][j];
     }
 
-    RD->S=RD->O;
+    if (RD->m<2) RD->S=RD->O;
 
     check_cuda(cudaMalloc((void**)&(RD->ind),s*sizeof(int)),"create_index");
     check_cuda(cudaDeviceSynchronize(), "create ind");
@@ -60,19 +60,23 @@ void gpu_reduction(ReduceDescriptor *RD){
     free(ind);
   }
 
-  if (RD->m<0) {// mean or sum
+
+  if (RD->m<-1) {// mean or sum
     RD->O->set(0.0);
     dim3 dimGrid(RD->red_size);
     dim3 dimBlock(RD->index.size());
 
-    reduction_kernel_sum<<<dimGrid,dimBlock>>>(RD->I->ptr, RD->O->ptr, RD->m, RD->keepdims,d,RD->ind,RD->red_size);
+    printf("KERNEL %dx%d\n",dimGrid.x,dimBlock.x);
+
+    reduction_kernel_sum<<<dimGrid,dimBlock>>>(RD->I->ptr, RD->O->ptr, RD->m, d,RD->ind,RD->red_size);
     check_cuda(cudaDeviceSynchronize(), "reduction_kernel");
 
     if (RD->keepdims) {
-      reduction_kernel_keep<<<dimGrid,dimBlock>>>(RD->I->ptr, RD->O->ptr, RD->m, RD->keepdims,d,RD->ind,RD->red_size);
+      reduction_kernel_keep<<<dimGrid,dimBlock>>>(RD->O->ptr, RD->O->ptr, RD->m,d,RD->ind,RD->red_size);
       check_cuda(cudaDeviceSynchronize(), "reduction_kernel");
     }
   }else{ // still slow for max, min on conv
+    RD->O->set(0.0);
     dim3 dimGrid(RD->index.size());
     dim3 dimBlock(1);
     reduction_kernel<<<dimGrid,dimBlock>>>(RD->I->ptr, RD->O->ptr, RD->S->ptr,RD->m, RD->keepdims,d,RD->ind,RD->red_size);
@@ -82,15 +86,15 @@ void gpu_reduction(ReduceDescriptor *RD){
 }
 
 
+//////
+////// back
+//////
 void gpu_reduction_back(ReduceDescriptor *RD){
   int device=RD->I->gpu_device;
 
   cudaSetDevice(device);
 
-  float val,sum;
-  int ind;
   int d,i;
-
 
   // [MEAN]: Compute items to be reduced
   if (RD->m==0) {
@@ -101,27 +105,36 @@ void gpu_reduction_back(ReduceDescriptor *RD){
   }
 
   //reduce
-  if (RD->m<0) {// mean or sum
+  if (RD->m<-1) {// mean or sum
     dim3 dimGrid(RD->red_size);
     dim3 dimBlock(RD->index.size());
+
+
 
     Tensor *aux=new Tensor(RD->ID->getShape(),RD->ID->device);
     Tensor::copy(RD->ID,aux);
     RD->ID->set(0.0);
-    reduction_kernel_sum<<<dimGrid,dimBlock>>>(RD->D->ptr, RD->ID->ptr,RD->m, RD->keepdims,d,RD->ind,RD->red_size);
-    check_cuda(cudaDeviceSynchronize(), "reduction_kernel");
 
     if (RD->keepdims) {
-      reduction_kernel_keep<<<dimGrid,dimBlock>>>(RD->D->ptr, RD->ID->ptr, RD->m, RD->keepdims,d,RD->ind,RD->red_size);
+      reduction_kernel_sum<<<dimGrid,dimBlock>>>(RD->D->ptr, RD->ID->ptr,RD->m, d,RD->ind,RD->red_size);
+      check_cuda(cudaDeviceSynchronize(), "reduction_kernel");
+      reduction_kernel_keep<<<dimGrid,dimBlock>>>(RD->ID->ptr,RD->ID->ptr, RD->m, d,RD->ind,RD->red_size);
       check_cuda(cudaDeviceSynchronize(), "reduction_kernel");
     }
+    else {
+      reduction_kernel_keep<<<dimGrid,dimBlock>>>(RD->D->ptr,RD->ID->ptr, RD->m, d,RD->ind,RD->red_size);
+      check_cuda(cudaDeviceSynchronize(), "reduction_kernel");
+    }
+
+
+
     Tensor::inc(aux,RD->ID);
     delete aux;
 
   }else{ // still slow for max, min on conv
     dim3 dimGrid(RD->index.size());
     dim3 dimBlock(1);
-    reduction_back_kernel<<<dimGrid,dimBlock>>>(RD->I->ptr, RD->O->ptr, RD->S->ptr,RD->m, RD->keepdims,d,RD->ind,RD->red_size);
+    reduction_back_kernel<<<dimGrid,dimBlock>>>(RD->D->ptr, RD->ID->ptr, RD->S->ptr,RD->m, RD->keepdims,d,RD->ind,RD->red_size);
     check_cuda(cudaDeviceSynchronize(), "reduction_kernel");
   }
 }
