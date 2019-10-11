@@ -147,6 +147,9 @@ include_directories(src/metrics)
 include_directories(src/optimizers)
 include_directories(src/tensor)
 include_directories(src/descriptors)
+# Temp
+include_directories(tests)
+include_directories(tests/dev)
 
 
 # SET SOURCES *******************************
@@ -283,6 +286,11 @@ SET(CPP_SOURCES
         src/utils.h
         src/random.cpp
         src/random.h
+        # Temp
+        tests/test_tensor.cpp
+        tests/dev/aux_tests.cpp
+        tests/dev/aux_tests.h
+        tests/dev/aux_tests.h
         )
 SET(CUDA_SOURCES
         src/hardware/gpu/gpu_hw.h
@@ -450,6 +458,8 @@ if(BUILD_EXAMPLES)
     set(CMAKE_FOLDER examples)
     add_executable(example_conv "${EXAMPLES_DIR}/eddl_conv.cpp")
     add_executable(example_mlp "${EXAMPLES_DIR}/eddl_mlp.cpp")
+    add_executable(test_main "tests/test_main.cpp")
+    target_link_libraries(test_main eddl)
     target_link_libraries(example_conv eddl)
     target_link_libraries(example_mlp eddl)
     set(CMAKE_FOLDER "")
