@@ -27,18 +27,18 @@ int main(int argc, char **argv){
 
   // Settings
   int epochs = 5;
-  int batch_size = 100;
+  int batch_size = 1;
   int num_classes = 10;
 
   // network
   layer in=Input({784});
   layer l=in;
-
   l=Reshape(l,{1,28,28});
-  l=Block(l,16,{3,3},{1,1});
-  l=Block(l,32,{3,3},{1,1});
-  l=Block(l,64,{3,3},{1,1});
-  l=Block(l,128,{3,3},{1,1});
+    l=UpSampling(l, vector<int>{2, 2});
+//  l=Block(l,16,{3,3},{1,1});
+//  l=Block(l,32,{3,3},{1,1});
+//  l=Block(l,64,{3,3},{1,1});
+//  l=Block(l,128,{3,3},{1,1});
 
   l=Reshape(l,{-1});
 
@@ -55,8 +55,8 @@ int main(int argc, char **argv){
     sgd(0.01, 0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    CS_CPU(4) // CPU with 4 threads
-    //CS_GPU({1}) // GPU with only one gpu
+    //CS_CPU(4) // CPU with 4 threads
+    CS_GPU({1}) // GPU with only one gpu
   );
 
   // plot the model
