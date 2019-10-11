@@ -137,7 +137,10 @@ void LBatchNorm::reset()
 void LBatchNorm::forward() {
   if (mode==TRMODE) {
     for(int i=0;i<layers.size();i++) {
+      //cout<<layers[i]->name<<":"<<layers[i]->input->sum()<<"\n";
       layers[i]->forward();
+      //cout<<layers[i]->name<<":"<<layers[i]->input->sum()<<"\n";
+      //cout<<layers[i]->name<<":"<<layers[i]->output->sum()<<"\n";
     }
     if (momentum!=0.0) {
       Tensor::copy(layers[9]->output,mean->output);
@@ -157,9 +160,11 @@ void LBatchNorm::forward() {
 }
 
 void LBatchNorm::backward() {
+
   for(int i=layers.size()-1;i>=0;i--) {
     layers[i]->backward();
   }
+
 }
 
 
