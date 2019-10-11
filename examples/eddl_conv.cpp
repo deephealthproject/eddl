@@ -33,8 +33,8 @@ int main(int argc, char **argv){
   // network
   layer in=Input({784});
   layer l=in;
+  l=Reshape(l,{1,28,28});
     l=UpSampling(l, vector<int>{2, 2});
-//  l=Reshape(l,{1,28,28});
 //  l=Block(l,16,{3,3},{1,1});
 //  l=Block(l,32,{3,3},{1,1});
 //  l=Block(l,64,{3,3},{1,1});
