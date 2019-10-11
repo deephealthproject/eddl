@@ -38,8 +38,8 @@ __global__ void repeat_nn_k(float *a, int batch, int depth, int a_rows, int a_co
         int a_rcd=depth*a_rows*a_cols; // out size of batch
         int a_rc=a_rows*a_cols;  // out size of slice
 
-        int arow_i = row_b/2;  // TODO: Temp!!! Should be size[0] allocated in device
-        int acol_i = col_b/2;
+        int arow_i = row_b/size[0];
+        int acol_i = col_b/size[1];
         long int offset_a = (batch_i*a_rcd) + (depth_i*a_rc) + (arow_i*a_cols) + acol_i;
 //        printf("offset_a: %ld, batch: %d, depth: %d, arow_i: %d, acol_i: %d\n", offset_a, batch_i, depth_i, arow_i, acol_i );
 
@@ -66,11 +66,11 @@ __global__ void d_repeat_nn_k(float *d, int batch, int depth, int d_rows, int d_
         int a_rcd=depth*a_rows*a_cols; // out size of batch
         int a_rc=a_rows*a_cols;  // out size of slice
 
-        int arow_i = row_d/2;  // TODO: Temp!!! Should be size[0] allocated in device
-        int acol_i = col_d/2;
+        int arow_i = row_d/size[0];
+        int acol_i = col_d/size[1];
         long int offset_a = (batch_i*a_rcd) + (depth_i*a_rc) + (arow_i*a_cols) + acol_i;
 //        printf("offset_a: %ld, batch: %d, depth: %d, arow_i: %d, acol_i: %d\n", offset_a, batch_i, depth_i, arow_i, acol_i );
 
-        a[offset_a] += d[thread_id_x];
+        atomicAdd(&(a[offset_a]), d[thread_id_x]);
     }
 }

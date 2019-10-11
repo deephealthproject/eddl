@@ -31,9 +31,13 @@ void gpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
 
     setDims(B);
 
-//    int d_size[2] = {2, 2};
-    repeat_nn_k<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->ptr, B->shape[2], B->shape[3], size.data());
+    // Copy vector from host to device
+    int *d_size; cudaMalloc((int**)&d_size, 2*sizeof(int));
+    cudaMemcpy(d_size, size.data(), 2*sizeof(int), cudaMemcpyHostToDevice);
 
+    repeat_nn_k<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->ptr, B->shape[2], B->shape[3], d_size);
+
+    cudaFree(d_size);
     check_cuda(cudaDeviceSynchronize(), "repeat_nn_k");
 }
 
@@ -43,7 +47,12 @@ void gpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
 
     setDims(D);
 
-//    int d_size[2] = {2, 2};
-    d_repeat_nn_k<<<dimGrid,dimBlock>>>(D->ptr, D->shape[0], D->shape[1], D->shape[2], D->shape[3], A->ptr, A->shape[2], A->shape[3], size.data());
+    // Copy vector from host to device
+    int *d_size; cudaMalloc((int**)&d_size, 2*sizeof(int));
+    cudaMemcpy(d_size, size.data(), 2*sizeof(int), cudaMemcpyHostToDevice);
+
+    d_repeat_nn_k<<<dimGrid,dimBlock>>>(D->ptr, D->shape[0], D->shape[1], D->shape[2], D->shape[3], A->ptr, A->shape[2], A->shape[3], d_size);
+
+    cudaFree(d_size);
     check_cuda(cudaDeviceSynchronize(), "d_repeat_nn_k");
 }
