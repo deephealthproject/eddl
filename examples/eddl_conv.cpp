@@ -56,7 +56,7 @@ int main(int argc, char **argv){
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
     CS_CPU(4) // CPU with 4 threads
-    //S_GPU({1}) // GPU with only one gpu
+    //CS_GPU({1}) // GPU with only one gpu
   );
 
   // plot the model
