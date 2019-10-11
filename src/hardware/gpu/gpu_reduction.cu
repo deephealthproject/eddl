@@ -60,13 +60,14 @@ void gpu_reduction(ReduceDescriptor *RD){
     free(ind);
   }
 
-
-  if (RD->m<-1) {// mean or sum
+  // lento=-1
+  // rapido=2
+  if (RD->m<2) {// mean or sum
     RD->O->set(0.0);
     dim3 dimGrid(RD->red_size);
     dim3 dimBlock(RD->index.size());
 
-    printf("KERNEL %dx%d\n",dimGrid.x,dimBlock.x);
+    //printf("KERNEL %dx%d\n",dimGrid.x,dimBlock.x);
 
     reduction_kernel_sum<<<dimGrid,dimBlock>>>(RD->I->ptr, RD->O->ptr, RD->m, d,RD->ind,RD->red_size);
     check_cuda(cudaDeviceSynchronize(), "reduction_kernel");
