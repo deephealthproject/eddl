@@ -6,6 +6,6 @@
 #define EDDL_AUX_TESTS_H
 
 
-bool test_mpool();
+bool test_mpool(int dev);
 
 #endif //EDDL_AUX_TESTS_H

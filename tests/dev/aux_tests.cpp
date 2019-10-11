@@ -3,13 +3,21 @@
 //
 
 #include "aux_tests.h"
-#include "../tensor/tensor.h"
-#include "../tensor/nn/tensor_nn.h"
-#include "../descriptors/descriptors.h"
-#include "../descriptors/descriptors.h"
+#include "../../src/tensor/tensor.h"
+#include "../../src/tensor/nn/tensor_nn.h"
+#include "../../src/descriptors/descriptors.h"
+#include "../../src/descriptors/descriptors.h"
+
+#include "../../src/hardware/cpu/nn/cpu_nn.h"
+
+#ifdef cGPU
+#include "../../src/hardware/gpu/gpu_tensor.h"
+#include "../../src/hardware/gpu/gpu_hw.h"
+#include "../../src/hardware/gpu/nn/gpu_nn.h"
+#endif
 
 
-bool test_mpool(){
+bool test_mpool(int dev){
     // Set data
     float mpool_input[16] = {12.0, 20.0, 30.0, 0.0,
                              8.0, 12.0, 2.0, 0.0,
@@ -19,15 +27,15 @@ bool test_mpool(){
                           112.0, 37.0};
 
     // Create tensors
-    Tensor *t_cpu = new Tensor({1, 1, 4, 4}, mpool_input, DEV_CPU);
-    Tensor *t_cpu_sol = new Tensor({1, 1, 2, 2}, mpool_sol, DEV_CPU);
+    Tensor *t = new Tensor({1, 1, 4, 4}, mpool_input, dev);
+    Tensor *t_sol = new Tensor({1, 1, 2, 2}, mpool_sol, dev);
 
-    // [CPU] Instantiate PoolDescription + perform MaxPooling
-    auto *pd_cpu = new PoolDescriptor(vector<int>{2,2}, vector<int>{2,2}, "none");
-    pd_cpu->build(t_cpu);
-    pd_cpu->indX = new Tensor(pd_cpu->O->getShape(), DEV_CPU);
-    pd_cpu->indY = new Tensor(pd_cpu->O->getShape(), DEV_CPU);
-    MPool2D(pd_cpu);
+    // Instantiate PoolDescription + Perform MaxPooling
+    auto *pd = new PoolDescriptor(vector<int>{2,2}, vector<int>{2,2}, "none");
+    pd->build(t);
+    pd->indX = new Tensor(pd->O->getShape(), dev);
+    pd->indY = new Tensor(pd->O->getShape(), dev);
+    MPool2D(pd);
 
-    return Tensor::equal(pd_cpu->O, t_cpu_sol);
+    return Tensor::equal(pd->O, t_sol);
 }

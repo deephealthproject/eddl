@@ -9,7 +9,7 @@
 
 #include <iostream>
 #include "tensor/tensor.h"
-#include "../tests/dev/aux_tests.h"
+#include "dev/aux_tests.h"
 
 using namespace std;
 
@@ -26,7 +26,7 @@ void pretty_res(string name, bool res){
 }
 
 int main(int argc, char **argv) {
-    pretty_res("MaxPool2D (CPU, correctness)", test_mpool());
-//    pretty_res("MaxPool2D (GPU, correctness)", test_mpool());
+    pretty_res("MaxPool2D (CPU correctness)", test_mpool(DEV_CPU));
+//    pretty_res("MaxPool2D (GPU correctness)", test_mpool(DEV_GPU));
 //    pretty_res("MaxPool2D (CPU==GPU)", test_mpool());
 }
