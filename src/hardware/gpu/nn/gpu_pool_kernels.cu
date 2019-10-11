@@ -85,48 +85,31 @@ __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, i
 
 }
 
-__global__ void maxpool2d_back(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, int sr,int sc,int padr, int padc, float* indX, float* indY, float* D, float* ID){
+__global__ void maxpool2d_back(float* D, float* ID, int batch, int irows, int icols, int orows, int ocols, int depth, float* indX, float* indY)
+{
+    int size=orows * ocols * depth;
+    int rsize=orows * ocols;
 
-    int isize=irows * icols * idepth;
-    int irsize=irows * icols;
+    int isize = irows *icols * depth;
+    int irsize = irows *icols;
 
-    long int ops = batch * isize;
+    long int ops = batch * size;
     long int thread_id_x = blockDim.x * blockIdx.x + threadIdx.x;
 
     if (thread_id_x < ops) {
 
-        int b=thread_id_x/isize; // current batch (ib=ob)
-        int bm=thread_id_x%isize; // index in batch
-        int z=bm/irsize; // out depth (iuz=ouz)
-        int r=(bm%irsize)/icols; // out row
-        int c=(bm%irsize)%icols; // out col
-
-        int inr = r * sr;  // in row
-        int inc = c * sc;  // in col
-
-        int min_i = -padr;
-        int max_i = irows+padr-kr;
-        int i = min_i + inr;  // row
-
-        int min_j = -padc;
-        int max_j = icols+padc-kc;
-        int j = min_j + inc;  // column
+        int b=thread_id_x/size; // current batch (ib=ob)
+        int bm=thread_id_x%size; // index in batch
+        int z=bm/rsize; // out depth (iuz=ouz)
 
         int p = thread_id_x;  // index
 
         // Check bounds
-        if (i <= max_i && j <= max_j){
-            int px=indX[p];
-            int py=indY[p];
-            int pz=z;
+        int px=indX[p];
+        int py=indY[p];
+        int pz=z;
 
-
-            if (px>=0.0 && py>=0.0 && px<icols && p<irows){
-                int p=(b*isize)+(pz*irsize)+(py*icols)+px;
-                ID[p]+=D[p]; // +val
-            }
-
-        }
+        p=(b*isize)+(pz*irsize)+(py*icols)+px;
+        ID[p]+=D[thread_id_x]; // +val
     }
-
 }
