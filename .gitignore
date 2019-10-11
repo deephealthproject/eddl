@@ -8,8 +8,9 @@
 .vscode
 
 # Build
-#/[Bb]uild*
+/[Bb]uild*
 /[Bb]in*
+/cmake*
 
 # Other files
 *.dot

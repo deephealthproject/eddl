@@ -7,10 +7,12 @@
 * All rights reserved
 */
 
+#include <iostream>
 #include <stdio.h>
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
+
 
 #include "gpu_nn.h"
 #include "gpu_nn_kernels.h"
@@ -29,7 +31,9 @@ void gpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
 
     setDims(B);
 
-    repeat_nn_k<<<dimGrid,dimBlock>>>(A->ptr, A->shape[2], A->shape[3], B->ptr, B->shape[2], B->shape[3], size.data());
+//    int d_size[2] = {2, 2};
+    repeat_nn_k<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->ptr, B->shape[2], B->shape[3], size.data());
+
     check_cuda(cudaDeviceSynchronize(), "repeat_nn_k");
 }
 
@@ -39,6 +43,7 @@ void gpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
 
     setDims(D);
 
-    d_repeat_nn_k<<<dimGrid,dimBlock>>>(D->ptr, D->shape[2], D->shape[3], A->ptr, A->shape[2], A->shape[3], size.data());
+//    int d_size[2] = {2, 2};
+    d_repeat_nn_k<<<dimGrid,dimBlock>>>(D->ptr, D->shape[0], D->shape[1], D->shape[2], D->shape[3], A->ptr, A->shape[2], A->shape[3], size.data());
     check_cuda(cudaDeviceSynchronize(), "d_repeat_nn_k");
 }
