@@ -33,7 +33,7 @@ typedef vector<Metric *> vmetrics;
 
 void *train_batch_t(void *targs);
 
-void *applygrads_t(void *t);
+
 
 #define MAX_THREADS 1024
 
