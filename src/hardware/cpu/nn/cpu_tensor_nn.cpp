@@ -24,10 +24,13 @@ void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
 
         B->ptr[i] = A->ptr[offset_a];
     }
+
 }
 
 void cpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
     // TODO: Should be for N dimensions, not 2 (...and generic, not just NN)
+    //#pragma omp parallel for
+
     #pragma omp parallel for
     for(int i=0; i<D->size; i++){
         // Get row/col of Tensor B
@@ -41,4 +44,5 @@ void cpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
 
         A->ptr[offset_a] += D->ptr[i];
     }
+
 }

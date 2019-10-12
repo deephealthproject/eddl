@@ -156,7 +156,7 @@ all: $(GPU_OBJ) $(OBJ) example_mlp  example_conv test_main example_ae example_da
 endif
 
 ifeq ($(CORE),2)  # GPU
-all: $(GPU_OBJ) $(OBJ) example_mlp  example_conv test_main
+all: $(GPU_OBJ) $(OBJ) example_mlp  example_conv test_main example_ae example_dae example_dae_class example_tensor example_load_save example_train_batch
 endif
 
 utils.o: $(SRC_PATH)/utils.cpp $(SRC_PATH)/utils.h $(SRC_PATH)/system_info.h
@@ -578,9 +578,6 @@ example_tensor: $(EXAMPLES_PATH)/eddl_tensor.cpp $(OBJ) $(GPU_OBJ)
 
 example_train_batch: $(EXAMPLES_PATH)/eddl_train_batch.cpp $(OBJ) $(GPU_OBJ)
 	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_PATH)/eddl_train_batch.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
-
-example_mlp: $(EXAMPLES_PATH)/eddl_mlp.cpp $(OBJ) $(GPU_OBJ)
-	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_PATH)/eddl_mlp.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
 
 example_mlp: $(EXAMPLES_PATH)/eddl_mlp.cpp $(OBJ) $(GPU_OBJ)
 	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_PATH)/eddl_mlp.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
