@@ -33,6 +33,18 @@ Layer::Layer(string name, int dev) {
     inner=false;
 }
 
+Layer::~Layer()
+{
+  cout<<"OKL1\n";
+  if (input!=nullptr) delete input;
+  cout<<"OKL2\n";
+  if (output!=nullptr) delete output;
+  cout<<"OKL3\n";
+  if (delta!=nullptr) delete delta;
+  cout<<"OKL4\n";
+  if (target!=nullptr) delete target;
+  cout<<"OKL5\n";
+}
 
 void Layer::initialize() {
 

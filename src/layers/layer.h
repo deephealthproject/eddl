@@ -46,7 +46,8 @@ public:
     bool inner;
 
     Layer(string name, int dev);
-
+    // Destructor
+    virtual ~Layer();
 
 
     void initialize();

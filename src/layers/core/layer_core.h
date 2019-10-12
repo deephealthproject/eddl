@@ -30,6 +30,7 @@ public:
     static int total_layers;
 
     LTensor(string fname);
+    ~LTensor() override;
 
     LTensor(vector<int> shape, int dev);
 
