@@ -18,6 +18,7 @@
 // for local
 CompServ::CompServ(int t, const vector<int> &g, const vector<int> &f,int lsb) {
     type = "local";
+
     if (t==-1) local_threads = Eigen::nbThreads();
     else local_threads = t;
 
