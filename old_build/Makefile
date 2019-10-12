@@ -149,7 +149,7 @@ TESTS_OBJ = aux_tests.o
 OBJ := $(APIS_OBJ) $(CORE_OBJ) $(DESCRIPTORS_OBJ) $(HARDWARE_CPU_OBJ) $(INITIALIZERS_OBJ) $(LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(TENSOR_OBJ) $(TESTS_OBJ)
 
 ifeq ($(CORE),1)  # CPU
-all: $(GPU_OBJ) $(OBJ) example_mlp  example_conv test_main
+all: $(GPU_OBJ) $(OBJ) example_mlp  example_conv test_main example_ae example_dae example_dae_class example_tensor example_load_save example_train_batch 
 endif
 
 ifeq ($(CORE),2)  # GPU
@@ -557,6 +557,28 @@ aux_tests.o: $(TESTS_PATH)/dev/aux_tests.cpp $(TESTS_PATH)/dev/aux_tests.h
 	$(CXX) $(CXXFLAGS) -c $(TESTS_PATH)/dev/aux_tests.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 #---------------------------------- release
+
+example_ae: $(EXAMPLES_PATH)/eddl_ae.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_PATH)/eddl_ae.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
+
+example_dae: $(EXAMPLES_PATH)/eddl_dae.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_PATH)/eddl_dae.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
+
+example_dae_class: $(EXAMPLES_PATH)/eddl_dae_class.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_PATH)/eddl_dae_class.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
+
+example_load_save: $(EXAMPLES_PATH)/eddl_load_save.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_PATH)/eddl_load_save.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
+
+example_tensor: $(EXAMPLES_PATH)/eddl_tensor.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_PATH)/eddl_tensor.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
+
+example_train_batch: $(EXAMPLES_PATH)/eddl_train_batch.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_PATH)/eddl_train_batch.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
+
+example_mlp: $(EXAMPLES_PATH)/eddl_mlp.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_PATH)/eddl_mlp.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
+
 example_mlp: $(EXAMPLES_PATH)/eddl_mlp.cpp $(OBJ) $(GPU_OBJ)
 	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_PATH)/eddl_mlp.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
 
