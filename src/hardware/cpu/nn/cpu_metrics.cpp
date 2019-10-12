@@ -15,13 +15,14 @@
 #include "cpu_nn.h"
 
 int cpu_accuracy(Tensor *A, Tensor *B){
-    int acc = 0;
-    int aind, bind;
+  int acc = 0;
+  int aind, bind;
 
-    for (int i = 0; i < A->shape[0]; i++) {
-        (*A->ptr2).col(i).maxCoeff(&aind);
-        (*B->ptr2).col(i).maxCoeff(&bind);
-        if (aind == bind) acc++;
-    }
-    return acc;
+  #pragma omp parallel for
+  for (int i = 0; i < A->shape[0]; i++) {
+    (*A->ptr2).col(i).maxCoeff(&aind);
+    (*B->ptr2).col(i).maxCoeff(&bind);
+    if (aind == bind) acc++;
+  }
+  return acc;
 }

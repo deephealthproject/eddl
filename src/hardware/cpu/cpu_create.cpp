@@ -12,6 +12,8 @@
 
 void cpu_range(Tensor *A, float min, float step){
     float v=min;
+
+    #pragma omp parallel for
     for(int i=0; i<A->size; i++){
         A->ptr[i] = v;
         v+=step;
