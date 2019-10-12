@@ -376,8 +376,8 @@ namespace eddl {
 
 
     // ---- COMPUTING SERVICES ----
-    compserv CS_CPU(int th,int lsb) {
-        return new CompServ(th, {}, {},lsb);
+    compserv CS_CPU(int th) {
+        return new CompServ(th, {}, {},0);
     }
 
     compserv CS_GPU(const vector<int> &g,int lsb) {

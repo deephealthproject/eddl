@@ -199,7 +199,7 @@ namespace eddl {
 
 
 // ---- COMPUTING SERVICES ----
-    compserv CS_CPU(int th,int lsb=1);
+    compserv CS_CPU(int th=-1);
 
     compserv CS_GPU(const vector<int> &g,int lsb=1);
 

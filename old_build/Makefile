@@ -60,15 +60,15 @@ CXX = g++
 CXXSOFLAGS = -shared
 ifeq ($(OPT),1)
 $(info set AVX)
-CXXFLAGS = -std=c++11  -fopenmp -mavx -O3 -pthread
+CXXFLAGS = -std=c++11 -mavx -O3 -pthread
 endif
 ifeq ($(OPT),2)
 $(info set SSE)
-CXXFLAGS = -std=c++11 -fopenmp -msse -O3 -pthread
+CXXFLAGS = -std=c++11 -msse -O3 -pthread
 endif
 ifeq ($(OPT),3)
 $(info set no opt)
-CXXFLAGS = -std=c++11 -fopenmp -O3 -pthread
+CXXFLAGS = -std=c++11 -O3 -pthread
 endif
 ifeq ($(OPT),4)
 $(info set Debug)
@@ -84,7 +84,9 @@ ifeq ($(TARGET),2)
 # OPT=2: SSE
 # OPT=3: Nothing
 # OPT=4: Debug
-CXX = g++
+
+#CXX = g++ #clang
+CXX = /usr/local/bin/g++-9 # OpenMP
 CXXSOFLAGS = -shared
 ifeq ($(OPT),1)
 $(info set AVX)
@@ -105,7 +107,8 @@ endif
 endif
 
 # Create position independent code for the shared library
-CXXFLAGS := $(CXXFLAGS) -fPIC
+#CXXFLAGS := $(CXXFLAGS) -fPIC
+CXXFLAGS := $(CXXFLAGS) -fopenmp -fPIC
 
 
 ##CORE FLAGS
@@ -149,7 +152,7 @@ TESTS_OBJ = aux_tests.o
 OBJ := $(APIS_OBJ) $(CORE_OBJ) $(DESCRIPTORS_OBJ) $(HARDWARE_CPU_OBJ) $(INITIALIZERS_OBJ) $(LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(TENSOR_OBJ) $(TESTS_OBJ)
 
 ifeq ($(CORE),1)  # CPU
-all: $(GPU_OBJ) $(OBJ) example_mlp  example_conv test_main example_ae example_dae example_dae_class example_tensor example_load_save example_train_batch 
+all: $(GPU_OBJ) $(OBJ) example_mlp  example_conv test_main example_ae example_dae example_dae_class example_tensor example_load_save example_train_batch
 endif
 
 ifeq ($(CORE),2)  # GPU
