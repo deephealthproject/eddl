@@ -27,7 +27,9 @@ void cpu_mpool2D(PoolDescriptor *D)
     for(k=0;k<D->iz;k++) {
       for(i=-D->padr;i<=D->ir+D->padr-D->kr;i+=D->sr) {
         for(j=-D->padc;j<=D->ic+D->padc-D->kc;j+=D->sc,p++) {
-           float max=0;
+           float max=get_pixel(b,j,i,k,D,isize,irsize);
+           D->indX->ptr[p]=j;
+           D->indY->ptr[p]=i;
            for(ki=0;ki<D->kr;ki++)
              for(kj=0;kj<D->kc;kj++) {
                float v=get_pixel(b,j+kj,i+ki,k,D,isize,irsize);
