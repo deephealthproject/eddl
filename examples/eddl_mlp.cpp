@@ -30,9 +30,9 @@ int main(int argc, char **argv) {
     layer in = Input({784});
     layer l = in;  // Aux var
 
-    l = GaussianNoise(BatchNormalization(Activation(Dense(l, 1024), "relu")),0.3);
-    l = GaussianNoise(BatchNormalization(Activation(Dense(l, 1024), "relu")),0.3);
-    l = GaussianNoise(BatchNormalization(Activation(Dense(l, 1024), "relu")),0.3);
+    l = BatchNormalization(Activation(Dense(l, 1024), "relu"));
+    l = BatchNormalization(Activation(Dense(l, 1024), "relu"));
+    l = BatchNormalization(Activation(Dense(l, 1024), "relu"));
     layer out = Activation(Dense(l, num_classes), "softmax");
     model net = Model({in}, {out});
 

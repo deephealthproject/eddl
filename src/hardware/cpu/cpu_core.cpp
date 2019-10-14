@@ -34,7 +34,7 @@ cpu_fill(Tensor * A, int aini, int aend, Tensor * B, int bini, int bend, int inc
 
     int t = 1;
 
-    #pragma omp parallel for
+
     for (int i = 2; i < A->ndim; i++)
         t *= A->shape[i];
 

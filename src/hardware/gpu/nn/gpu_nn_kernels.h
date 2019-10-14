@@ -13,7 +13,11 @@
 
 
 #include <cuda.h>
+#include <stdio.h>
 
+// todo
+#define MAX_FLOAT 1000000.0f
+#define MIN_FLOAT -10000000.0f
 
 // GPU: Activations
 __global__ void relu(float *a,float *b,long int size);

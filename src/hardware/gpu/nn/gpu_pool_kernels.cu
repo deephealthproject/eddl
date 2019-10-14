@@ -52,10 +52,9 @@ __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, i
 
         // Check bounds
         if (i <= max_i && j <= max_j){
-            indX[p]=i;
-            indY[p]=j;
-            // Get maximum value in the kernel window
-            float max = 0;
+      
+            float max = MIN_FLOAT;
+            //float max = I[i,j];
             for (int ki = 0; ki < kr; ki++)  // kernel_rows
                 for (int kj = 0; kj < kc; kj++) {  // kernel_cols
 

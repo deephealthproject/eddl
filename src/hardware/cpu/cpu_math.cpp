@@ -206,8 +206,8 @@ void cpu_trunc_(Tensor *A){
 void cpu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
   #pragma omp parallel for
   for (int i = 0; i < A->size; i++)
-  if (incC) C->ptr[i] += scA * A->ptr[i] + scB * B->ptr[i];
-  else C->ptr[i] = scA * A->ptr[i] + scB * B->ptr[i];
+    if (incC) C->ptr[i] += scA * A->ptr[i] + scB * B->ptr[i];
+    else C->ptr[i] = scA * A->ptr[i] + scB * B->ptr[i];
 }
 
 
@@ -216,7 +216,7 @@ void cpu_inc(Tensor *A, Tensor *B) {
 
   #pragma omp parallel for
   for (int i = 0; i < A->size; i++)
-  B->ptr[i] += A->ptr[i];
+    B->ptr[i] += A->ptr[i];
 
   B->tsem->unlock();
 }
@@ -244,8 +244,8 @@ void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
 void cpu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
   #pragma omp parallel for
   for (int i = 0; i < A->size; i++)
-  if (incC) C->ptr[i] += A->ptr[i] / B->ptr[i];
-  else C->ptr[i] = A->ptr[i] / B->ptr[i];
+    if (incC) C->ptr[i] += A->ptr[i] / B->ptr[i];
+    else C->ptr[i] = A->ptr[i] / B->ptr[i];
 }
 
 
@@ -266,18 +266,19 @@ void cpu_sign2(Tensor *A, Tensor *B){
 }
 
 void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
-  int p = 0;
   #pragma omp parallel for
   for (int i = 0; i < A->shape[0]; i++) {
+    int p=i*A->shape[1];
     for (int j = 0; j < A->shape[1]; j++, p++)
-    C->ptr[p] = A->ptr[p] + B->ptr[j];
+      C->ptr[p] = A->ptr[p] + B->ptr[j];
   }
 }
 
 void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
-  int p = 0;
+
   #pragma omp parallel for
   for (int i = 0; i < A->shape[0]; i++) {
+    int p=i*A->shape[1];
     for (int j = 0; j < A->shape[1]; j++, p++)
     C->ptr[p] = A->ptr[p] + B->ptr[i];
   }
@@ -287,7 +288,7 @@ void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
 
 float cpu_max(Tensor *A){
   float max = MIN_FLOAT;
-  #pragma omp parallel for
+  // todo
   for (int i = 0; i < A->size; ++i) {
     if (A->ptr[i] > max) { max = A->ptr[i]; }
   }
@@ -296,7 +297,7 @@ float cpu_max(Tensor *A){
 
 float cpu_min(Tensor *A){
   float min = MAX_FLOAT;
-  #pragma omp parallel for
+  // todo
   for (int i = 0; i < A->size; ++i) {
     if (A->ptr[i] < min) { min = A->ptr[i]; }
   }
@@ -305,14 +306,12 @@ float cpu_min(Tensor *A){
 
 float cpu_sum(Tensor *A) {
   float sum = 0.0;
-  #pragma omp parallel for
   for (int i = 0; i < A->size; ++i) sum += A->ptr[i];
   return sum;
 }
 
 float cpu_sum_abs(Tensor *A) {
   float sum = 0.0;
-  #pragma omp parallel for
   for (int i = 0; i < A->size; ++i) sum += ::fabs(A->ptr[i]);
   return sum;
 }

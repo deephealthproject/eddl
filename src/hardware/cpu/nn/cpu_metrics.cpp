@@ -18,7 +18,6 @@ int cpu_accuracy(Tensor *A, Tensor *B){
   int acc = 0;
   int aind, bind;
 
-  #pragma omp parallel for
   for (int i = 0; i < A->shape[0]; i++) {
     (*A->ptr2).col(i).maxCoeff(&aind);
     (*B->ptr2).col(i).maxCoeff(&bind);

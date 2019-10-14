@@ -34,7 +34,7 @@ void cpu_d_relu(Tensor *D, Tensor *I, Tensor *PD){
 void cpu_softmax(Tensor *A, Tensor *B) {
   float max, sum;
 
-  #pragma omp parallel for
+  //#pragma omp parallel for
   for (int i = 0; i < A->shape[0]; i++) {
     max = (*A->ptr2).col(i).maxCoeff();
     for (int j = 0; j < A->shape[1]; j++)
@@ -51,7 +51,7 @@ void cpu_d_softmax(Tensor *D, Tensor *I, Tensor *PD) {
 
   #pragma omp parallel for
   for (int i = 0; i < D->size; i++)
-  PD->ptr[i] += D->ptr[i] * (I->ptr[i] * (1.0 - I->ptr[i]));
+    PD->ptr[i] += D->ptr[i] * (I->ptr[i] * (1.0 - I->ptr[i]));
 
   PD->tsem->unlock();
 }

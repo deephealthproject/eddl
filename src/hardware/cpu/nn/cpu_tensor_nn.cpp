@@ -29,7 +29,7 @@ void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
 
 void cpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
     // TODO: Should be for N dimensions, not 2 (...and generic, not just NN)
-    //#pragma omp parallel for
+    ////#pragma omp parallel for
 
     #pragma omp parallel for
     for(int i=0; i<D->size; i++){

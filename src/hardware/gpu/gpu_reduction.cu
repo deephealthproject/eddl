@@ -62,7 +62,7 @@ void gpu_reduction(ReduceDescriptor *RD){
 
   // lento=-1
   // rapido=2
-  if (RD->m<2) {// mean or sum
+  if (RD->m<-1) {// mean or sum
     RD->O->set(0.0);
     dim3 dimGrid(RD->red_size);
     dim3 dimBlock(RD->index.size());
