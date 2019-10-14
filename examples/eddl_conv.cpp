@@ -18,7 +18,8 @@ using namespace eddl;
 
 layer Block(layer l,int filters, vector<int> kernel, vector<int> stride)
 {
-  return MaxPool(Activation(Conv(l, filters, kernel,stride),"relu"),{2,2});
+  return MaxPool(BatchNormalization(Activation(Conv(l, filters, kernel,stride),"relu")),{2,2});
+  //return MaxPool(Activation(Conv(l, filters, kernel,stride),"relu"),{2,2});
 }
 
 int main(int argc, char **argv){
@@ -57,8 +58,8 @@ int main(int argc, char **argv){
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
     //CS_CPU(4) // 4 CPU threads
-    CS_CPU() // CPU with maximum threads availables
-    //CS_GPU({1}) // GPU with only one gpu
+    //CS_CPU() // CPU with maximum threads availables
+    CS_GPU({1}) // GPU with only one gpu
   );
 
   // plot the model
