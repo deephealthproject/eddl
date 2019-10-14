@@ -12,6 +12,11 @@
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
 
+#include <thrust/device_ptr.h>
+//#include <thrust/transform.h>
+#include <thrust/reduce.h>
+#include <thrust/functional.h>
+
 #include "gpu_tensor.h"
 #include "gpu_kernels.h"
 #include "gpu_hw.h"
@@ -463,23 +468,13 @@ void gpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C){
 
 void gpu_total_sum(Tensor *A, float *tot)
 {
-  float *total;
   int device=A->gpu_device;
   cudaSetDevice(device);
-  float t=0;
 
+  thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
 
-  setDims(A);
+  *tot = thrust::reduce(dev_ptr, dev_ptr + A->size);
 
-  check_cuda(cudaMalloc((void**)&total,sizeof(float)),"create float in sum");
-
-  check_cuda(cudaMemcpy(total,&t,sizeof(float),cudaMemcpyHostToDevice),"error copy in sum");
-
-  reduce_array_sum<<<dimGrid,dimBlock>>>(A->ptr,A->size,total);
-
-  check_cuda(cudaMemcpy(tot,total,sizeof(float),cudaMemcpyDeviceToHost),"error copy in sum");
-
-  check_cuda(cudaFree(total),"delete float in sum");
 }
 
 
