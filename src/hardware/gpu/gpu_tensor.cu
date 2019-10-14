@@ -37,33 +37,33 @@ static const char *_curandGetErrorEnum(curandStatus_t error){
     {
         case CURAND_STATUS_ALLOCATION_FAILED:
             return "CURAND_STATUS_ALLOCATION_FAILED";
-            break;
+      
         case CURAND_STATUS_INITIALIZATION_FAILED:
             return "CURAND_STATUS_INITIALIZATION_FAILED";
-            break;
+
         case CURAND_STATUS_VERSION_MISMATCH:
             return "CURAND_STATUS_VERSION_MISMATCH";
-            break;
+
 
         case CURAND_STATUS_TYPE_ERROR:
             return "CURAND_STATUS_TYPE_ERROR";
-            break;
+
 
         case CURAND_STATUS_OUT_OF_RANGE:
             return "CURAND_STATUS_OUT_OF_RANGE";
-            break;
+
 
         case CURAND_STATUS_PREEXISTING_FAILURE:
             return "CURAND_STATUS_PREEXISTING_FAILURE";
-            break;
+
 
         case CURAND_STATUS_NOT_INITIALIZED:
             return "CURAND_STATUS_NOT_INITIALIZED";
-            break;
+
 
         case CURAND_STATUS_DOUBLE_PRECISION_REQUIRED:
             return "CURAND_STATUS_DOUBLE_PRECISION_REQUIRED";
-            break;
+
         case CURAND_STATUS_LENGTH_NOT_MULTIPLE:
             return "CURAND_STATUS_LENGTH_NOT_MULTIPLE";
         default:
