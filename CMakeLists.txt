@@ -32,14 +32,14 @@ endif()
 # CUDA FLAGS
 # Is this the best approach?
 #set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr -lcudart -lcublas -lcurand")
-set(EDDL_WITH_CUDA OFF CACHE BOOL "Enable CUDA support if checked")
+#set(EDDL_WITH_CUDA OFF CACHE BOOL "Enable CUDA support if checked")
 
 # Device specific setup
 if(BUILD_TARGET STREQUAL "CPU")
     message("Compiling for CPU...")
 elseif(BUILD_TARGET STREQUAL "GPU")
     message("Compiling for GPU...")
-    set(EDDL_WITH_CUDA ON)
+    set(EDDL_WITH_CUDA ON BOOL FORCE)
 elseif(BUILD_TARGET STREQUAL "FPGA")
     message("Compiling for FPGA...")
     message(FATAL_ERROR "FPGA not implemented, CMake will exit." )
@@ -322,6 +322,7 @@ SET(CUDA_SOURCES
         src/hardware/gpu/nn/gpu_pool.cu
         src/hardware/gpu/nn/gpu_pool_kernels.cu
         src/hardware/gpu/nn/gpu_tensor_nn.cu
+        src/hardware/gpu/nn/gpu_tensor_nn_kernels.cu
         )
 SET(SOURCES ${CPP_SOURCES} ${CUDA_SOURCES})
 
@@ -362,6 +363,13 @@ set_target_properties(eddl PROPERTIES
     POSITION_INDEPENDENT_CODE ON
     CUDA_SEPARABLE_COMPILATION ON
     CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+
+# OPENMP
+find_package(OpenMP)
+if (OPENMP_FOUND)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
 
 # pthreads setup for windows os
 # The following commands should be removed when pthread linux
@@ -456,12 +464,26 @@ endif(BUILD_TESTS)
 if(BUILD_EXAMPLES)
     SET(EXAMPLES_DIR "examples")
     set(CMAKE_FOLDER examples)
+    add_executable(example_ae "${EXAMPLES_DIR}/eddl_ae.cpp")
     add_executable(example_conv "${EXAMPLES_DIR}/eddl_conv.cpp")
+    add_executable(example_dae "${EXAMPLES_DIR}/eddl_dae.cpp")
+    add_executable(example_dae_class "${EXAMPLES_DIR}/eddl_dae_class.cpp")
+    add_executable(example_load_save "${EXAMPLES_DIR}/eddl_load_save.cpp")
     add_executable(example_mlp "${EXAMPLES_DIR}/eddl_mlp.cpp")
-    add_executable(test_main "tests/test_main.cpp")
-    target_link_libraries(test_main eddl)
+    add_executable(example_predict "${EXAMPLES_DIR}/eddl_predict.cpp")
+    add_executable(example_tensor "${EXAMPLES_DIR}/eddl_tensor.cpp")
+    add_executable(example_test "${EXAMPLES_DIR}/eddl_test.cpp")
+    add_executable(example_train_batch "${EXAMPLES_DIR}/eddl_train_batch.cpp")
+    target_link_libraries(example_ae eddl)
     target_link_libraries(example_conv eddl)
+    target_link_libraries(example_dae eddl)
+    target_link_libraries(example_dae_class eddl)
+    target_link_libraries(example_load_save eddl)
     target_link_libraries(example_mlp eddl)
+    target_link_libraries(example_predict eddl)
+    target_link_libraries(example_tensor eddl)
+    target_link_libraries(example_test eddl)
+    target_link_libraries(example_train_batch eddl)
     set(CMAKE_FOLDER "")
 endif(BUILD_EXAMPLES)
 #unset(BUILD_EXAMPLES CACHE)
