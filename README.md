@@ -36,7 +36,7 @@ Compiler flags and options:
 - `-DBUILD_PYTHON=ON`: Compiles Python binding
 - `-DBUILD_TESTS=ON`: Compiles tests
 - `-DBUILD_EXAMPLES=ON`: Compiles examples
-- `-DBUILD_TARGET=cpu`: Compiles for {`cpu`, `gpu` or `fpga`}
+- `-DBUILD_TARGET=CPU`: Compiles for {`CPU`, `GPU` or `FPGA`} (uppercase)
 
 
 # Windows specific installation
@@ -135,7 +135,7 @@ If you are not a C++ fan, try [PyEDDL](https://github.com/deephealthproject/pyed
 
 # FAQs
 
-- **When I run an example from `examples/` I get `segmentation fault (core dumped)`**: 
-    - **CPU**: This is probably because your processor does not support 
-    AVX instructions. Try to compile the source with the optimization flags: `OPT=2` or `OPT=3` (uppercase). 
+- **When I run an example from `examples/` I get `segmentation fault (core dumped)`**:
+    - **CPU**: This is probably because your processor does not support
+    AVX instructions. Try to compile the source with the optimization flags: `OPT=2` or `OPT=3` (uppercase).
     - **GPU**: Make sure you are using the computing service: `CS_GPU`.
