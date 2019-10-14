@@ -125,12 +125,15 @@ void gpu_reduction_back(ReduceDescriptor *RD){
   if (RD->factor*RD->index.size()<RD->red_size) fast=1;
 
   if ((fast)&&((RD->m==0)&&(RD->keepdims))) {// mean with keepdims=true (BN)
-    setDims(RD->ID);
-    reduction_permute<<<dimGrid,dimBlock>>>(RD->D->ptr, RD->ID->ptr, RD->ind, RD->O->size);
+    float *aux;
+    check_cuda(cudaMalloc((void**)&aux,RD->D->size*sizeof(float)),"create_tensor");
+
+    setDims(RD->D);
+    reduction_permute<<<dimGrid,dimBlock>>>(RD->D->ptr, aux, RD->ind, RD->O->size);
     check_cuda(cudaDeviceSynchronize(), "reduction_kernel");
 
     for(int i=0;i<RD->index.size();i++) {
-      float *ptr=RD->ID->ptr+(i*RD->red_size);
+      float *ptr=aux+(i*RD->red_size);
 
       thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(ptr);
       thrust::device_ptr<float> base = thrust::device_pointer_cast(RD->red);
@@ -139,7 +142,9 @@ void gpu_reduction_back(ReduceDescriptor *RD){
       thrust::fill(base+i, base + i + 1, (float)sum/RD->red_size);
     }
 
-    reduction_kernel_keep<<<dimGrid,dimBlock>>>(RD->red, RD->ID->ptr, RD->ind, RD->index.size(),RD->red_size);
+    check_cuda(cudaFree(aux),"delete_tensor");
+
+    reduction_kernel_keep_inc<<<dimGrid,dimBlock>>>(RD->red, RD->ID->ptr, RD->ind, RD->index.size(),RD->red_size);
     check_cuda(cudaDeviceSynchronize(), "reduction_kernel");
 
   }else{ // still slow for max, min on conv

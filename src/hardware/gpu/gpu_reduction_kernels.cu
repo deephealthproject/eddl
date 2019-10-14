@@ -130,13 +130,10 @@ __global__ void reduction_kernel_keep(float *red, float *O, int *ind, int size, 
         O[ind[thread_id_x]]=red[thread_id_x/rsize];
     }
 }
-
-
-
-__global__ void reduction_kernel_sum(float *I,float *O,int m, int d,int *ind,int rs)
+__global__ void reduction_kernel_keep_inc(float *red, float *O, int *ind, int size, int rsize)
 {
-  long int p=rs*threadIdx.x+blockIdx.x;
-
-  atomicAdd(&(O[threadIdx.x]),I[ind[p]]/d);
-
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+    if (thread_id_x<size*rsize) {
+        O[ind[thread_id_x]]+=red[thread_id_x/rsize];
+    }
 }

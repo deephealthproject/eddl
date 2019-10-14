@@ -78,6 +78,7 @@ __global__ void reduction_back_kernel(float *I,float *O,float *S,int m, int keep
 
 __global__ void reduction_permute(float *I,float *O,int *ind,int size);
 __global__ void  reduction_kernel_keep(float *r, float *I, int *ind, int size, int rsize);
+__global__ void  reduction_kernel_keep_inc(float *r, float *I, int *ind, int size, int rsize);
 
 __global__ void reduction_kernel_sum(float *I,float *O,int m, int d,int *ind,int rs);
 
