@@ -287,17 +287,6 @@ __global__ void trunc_(float* a, long int size){
 
 ///////////////////////////////////////////
 
-__global__ void reduce_array_sum(float* a, long int ops, float* result)
-{
-  long int thread_id_x = threadIdx.x+(blockDim.x*blockIdx.x);
-
-  if (thread_id_x < ops){
-    atomicAdd(result,a[thread_id_x]);
-  }
-}
-
-///////////////////////////////////////////
-
 __global__ void addc(float scA,float* a,float scB,float *b, float *c,long int incC, long int size)
 {
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
