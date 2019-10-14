@@ -92,12 +92,28 @@ int main(int argc, char **argv) {
     int dim1,dim2,dim3;
 
 
-    int dev = DEV_CPU;
-    Tensor *T=new Tensor({10,5}, dev);
+    int dev = DEV_GPU;
+    //Tensor *T=new Tensor({10,5,5,2}, dev);
+    Tensor *T=new Tensor({2,2,2,3}, DEV_CPU);
+    Tensor *TG=new Tensor({2,2,2,3}, DEV_GPU);
+
+    int p=0;
+    for(int i=0;i<T->size;i++) {
+      if (i%6==0) p++;
+      T->ptr[i]=p;
+
+    }
+
+    T->print();
+
+    Tensor::copy(T,TG);
+
+    TG->print();
 
     vector<int> axis;
     axis.push_back(0);
-    //axis.push_back(3);
+    axis.push_back(2);
+    axis.push_back(3);
 /*
     ReduceDescriptor *RD=new ReduceDescriptor(T,axis,"mean",false);
 
@@ -114,13 +130,12 @@ int main(int argc, char **argv) {
     RD->O->info();
     RD->O->print();
 */
-    LTensor *LT= new LTensor(T->getShape(),DEV_CPU);
-    LT->output->info();
-    LT->output->rand_uniform(1.0);
+    LTensor *LT= new LTensor(TG->getShape(),dev);
+    LT->input=LT->output=TG;
     LT->output->print();
 
     cout<<"Mean:\n";
-    LRMean *LRM=new LRMean(LT,axis,true,"LTmean",DEV_CPU);
+    LRMean *LRM=new LRMean(LT,axis,true,"LTmean",dev);
     LRM->forward();
 
     LRM->output->info();

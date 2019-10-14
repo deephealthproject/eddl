@@ -30,13 +30,15 @@ public:
    int red_size;
 
    vector<vector<int>> index;
-   int *ind;
    Tensor *I; // input
    Tensor *O; // output
    Tensor *D; // delta
    Tensor *ID; // parent delta
    Tensor *S; // indexes for max,min...
-
+   // for gpu:
+   int *ind;
+   float *red;
+   int factor;
 
    ReduceDescriptor();
    ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool keepdims);

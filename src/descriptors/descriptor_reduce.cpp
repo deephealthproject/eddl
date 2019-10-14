@@ -23,6 +23,7 @@ ReduceDescriptor::ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool
   this->axis=axis;
   this->keepdims=keepdims;
   ind=nullptr;
+  factor=10;
 
   // Select mode
   if (mode=="mean") m=0;
