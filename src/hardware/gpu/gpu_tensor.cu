@@ -3,7 +3,7 @@
 * Version: 0.1
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
-* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
+* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es), (jmaronasm@gmail.com)
 * All rights reserved
 */
 
@@ -37,7 +37,7 @@ static const char *_curandGetErrorEnum(curandStatus_t error){
     {
         case CURAND_STATUS_ALLOCATION_FAILED:
             return "CURAND_STATUS_ALLOCATION_FAILED";
-      
+
         case CURAND_STATUS_INITIALIZATION_FAILED:
             return "CURAND_STATUS_INITIALIZATION_FAILED";
 
