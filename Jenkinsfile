@@ -13,14 +13,18 @@ pipeline {
                     stages {
                         stage('Build') {
                             steps {
-                                echo 'Building..'
-                                cmakeBuild buildDir: 'build', cmakeArgs: '-D BUILD_TESTS=ON', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
-                             }
+								timeout(15) {
+									echo 'Building..'
+									cmakeBuild buildDir: 'build', cmakeArgs: '-D BUILD_TESTS=ON', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
+								}
+                            }
                         }
                         stage('Test') {
                             steps {
-                                echo 'Testing..'
-                                ctest arguments: '-C Debug -VV', installation: 'InSearchPath', workingDir: 'build'
+								timeout(15) {
+									echo 'Testing..'
+									ctest arguments: '-C Debug -VV', installation: 'InSearchPath', workingDir: 'build'
+								}
                             }
                         }
                         stage('linux_end') {
@@ -37,14 +41,18 @@ pipeline {
                     stages {
                         stage('Build') {
                             steps {
-                                echo 'Building..'
-                                cmakeBuild buildDir: 'build', cmakeArgs: '-D BUILD_TESTS=ON',  installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
+								timeout(15) {
+									echo 'Building..'
+									cmakeBuild buildDir: 'build', cmakeArgs: '-D BUILD_TESTS=ON',  installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
+								}
                             }
                         }
                         stage('Test') {
                             steps {
-                                echo 'Testing..'
-                                bat 'cd build && ctest -C Debug -VV'
+								timeout(15) {
+									echo 'Testing..'
+									bat 'cd build && ctest -C Debug -VV'
+								}
                             }
                         }
                         stage('windows_end') {
@@ -65,15 +73,19 @@ pipeline {
                     stages {
                         stage('Build') {
                             steps {
-                                echo 'Building..'
-                                cmakeBuild buildDir: 'build', cmakeArgs: '-D BUILD_TARGET=gpu -D BUILD_TESTS=ON', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
-                             }
+								timeout(15) {
+									echo 'Building..'
+									cmakeBuild buildDir: 'build', cmakeArgs: '-D BUILD_TARGET=GPU -D BUILD_TESTS=ON', installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
+								}
+							}
                         }
                         stage('Test') {
                             steps {
-                                echo 'Testing..'
-                                ctest arguments: '-C Debug -VV', installation: 'InSearchPath', workingDir: 'build'
-                            }
+								timeout(15) {
+									echo 'Testing..'
+									ctest arguments: '-C Debug -VV', installation: 'InSearchPath', workingDir: 'build'
+								}
+							}
                         }
                         stage('linux_gpu_end') {
                             steps {
@@ -89,14 +101,18 @@ pipeline {
                     stages {
                         stage('Build') {
                             steps {
-                                echo 'Building..'
-                                cmakeBuild buildDir: 'build', cmakeArgs: '-D BUILD_TARGET=gpu -D BUILD_TESTS=ON',  installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
+								timeout(15) {
+									echo 'Building..'
+									cmakeBuild buildDir: 'build', cmakeArgs: '-D BUILD_TARGET=GPU -D BUILD_TESTS=ON',  installation: 'InSearchPath', sourceDir: '.', cleanBuild: true, steps: [[withCmake: true]]
+								}
                             }
                         }
                         stage('Test') {
                             steps {
-                                echo 'Testing..'
-                                bat 'cd build && ctest -C Debug -VV'
+								timeout(15) {
+									echo 'Testing..'
+									bat 'cd build && ctest -C Debug -VV'
+								}
                             }
                         }
                         stage('windows_gpu_end') {
@@ -117,9 +133,11 @@ pipeline {
                     stages {
                         stage('Update documentation') {
                             steps {
-                                bat 'cd doc\\doxygen && doxygen'
-                                bat 'powershell -Command "(gc %EDDL_DOXYGEN_INPUT_COMMANDS%) -replace \'@local_dir\', \'doc\\html\' | Out-File commands_out.txt"'
-                                bat 'winscp /ini:nul /script:commands_out.txt'
+								timeout(15) {
+									bat 'cd doc\\doxygen && doxygen'
+									bat 'powershell -Command "(gc %EDDL_DOXYGEN_INPUT_COMMANDS%) -replace \'@local_dir\', \'doc\\html\' | Out-File commands_out.txt"'
+									bat 'winscp /ini:nul /script:commands_out.txt'
+								}
                             }
                         }
                     }
