@@ -18,6 +18,9 @@
 #include "../../../tensor/tensor.h"
 #include "../../../descriptors/descriptors.h"
 
+#define MAX_FLOAT 10000000.0
+#define MIN_FLOAT -10000000.0
+
 // Aux
 
 // Activations
