@@ -76,13 +76,18 @@ public:
     Tensor(const vector<int> &shape, float *fptr, int dev=DEV_CPU);
     Tensor(const vector<int> &shape, Tensor *T);
 
+    // Destructors
+    ~Tensor();
 
+    // Copy data
+    void ToCPU(int dev=DEV_CPU);
+    void ToGPU(int dev=DEV_GPU);
+    Tensor* clone();
+
+    // Resize
     void resize(int b, float *fptr);
     void resize(int b);
     void resize(int b, Tensor *T);
-
-    // Destructors
-    ~Tensor();
 
     // Check device
     int isCPU();

@@ -67,7 +67,6 @@ void Tensor::copy(Tensor *A, Tensor *B) {
     B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
         cpu_copy(A, B);
-
     }
 #ifdef cGPU
         else if ((A->isGPU())&&(B->isGPU())) {

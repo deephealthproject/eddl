@@ -13,6 +13,18 @@
 
 using namespace std;
 
+
+// MPool data
+float mpool_input[16] = {12.0, 20.0, 30.0, 0.0,
+                         8.0, 12.0, 2.0, 0.0,
+                         34.0, 70.0, 37.0, 4.0,
+                         112.0, 100.0, 25.0, 12.0};
+float mpool_sol[4] = {20.0, 30.0,
+                      112.0, 37.0};
+Tensor *t_mpool = new Tensor({1, 1, 4, 4}, mpool_input, DEV_CPU);
+Tensor *t_mpool_sol = new Tensor({1, 1, 2, 2}, mpool_sol, DEV_CPU);
+
+
 void pretty_res(string name, bool res){
     cout << "===================" << endl;
     cout << name << ": ";
@@ -25,8 +37,9 @@ void pretty_res(string name, bool res){
     cout << "===================" << endl;
 }
 
+
 int main(int argc, char **argv) {
-    pretty_res("MaxPool2D (CPU correctness)", test_mpool(DEV_CPU));
-//    pretty_res("MaxPool2D (GPU correctness)", test_mpool(DEV_GPU));
-//    pretty_res("MaxPool2D (CPU==GPU)", test_mpool());
+    pretty_res("MaxPool2D (CPU correctness)", check_tensors(run_mpool1(t_mpool, DEV_CPU), t_mpool_sol));
+    pretty_res("MaxPool2D (GPU correctness)", check_tensors(run_mpool1(t_mpool, DEV_GPU), t_mpool_sol));
+    pretty_res("MaxPool2D (CPU==GPU)", check_tensors(run_mpool1(t_mpool, DEV_CPU), run_mpool1(t_mpool, DEV_GPU)));
 }
