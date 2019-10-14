@@ -19,8 +19,6 @@
 #include "../../tensor/tensor.h"
 #include "../../descriptors/descriptors.h"
 
-#define MAX_FLOAT std::numeric_limits<float>::max()
-#define MIN_FLOAT -std::numeric_limits<float>::max()
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
 
 // MAX THREADS PER BLOCK
