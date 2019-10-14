@@ -33,8 +33,10 @@ void msg(string s) { msg(s, ""); }
 
 Tensor::Tensor() : device(DEV_CPU), ndim(0), size(0) {}
 
-Tensor::Tensor(const vector<int> &shape, float *fptr, int dev)
-{
+Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
+    /*
+     * Important! If we are creating a GPU tensor, "fptr" must point to a GPU pointer.
+     */
 #ifndef cGPU
     if ((dev > DEV_CPU)&&(dev<DEV_FPGA)) {
         fprintf(stderr, "Not compiled for GPU\n");
@@ -78,7 +80,7 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev)
               gpu_init(gpu_device);
               initcuda[gpu_device]=1;
             }
-          if (fptr==NULL) ptr=gpu_create_tensor(gpu_device,size);
+          if (fptr==nullptr) ptr=gpu_create_tensor(gpu_device,size);
           else ptr=fptr;
 
         }
@@ -93,15 +95,76 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev)
 }
 
 // From shape and device
-Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape,nullptr,dev){}
+Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape, nullptr, dev){}
 
 // From shape and Tensor (sharing ptr)
 Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr,T->device) {}
 
 
+void Tensor::ToCPU(int dev){
+    if (isCPU()) {
+        printf("Tensor already in CPU\n");
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        this->device = dev;
+
+        float *cpu_ptr = get_fmem(size, "Tensor::ToCPU");
+        float *gpu_ptr = ptr;
+
+        if (ndim == 2) {
+            ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(cpu_ptr, shape[1], shape[0]);
+        }
+
+        gpu_copy_from_gpu(this, cpu_ptr);
+        this->ptr = cpu_ptr;
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+void Tensor::ToGPU(int dev){
+    if (isCPU()) {
+        this->device = dev;
+        this->gpu_device = this->device - DEV_GPU;
+
+        float *cpu_ptr = ptr;
+        float *gpu_ptr = gpu_create_tensor(this->gpu_device, this->size);
+
+        if (!initcuda[gpu_device]){
+            gpu_init(gpu_device);
+            initcuda[gpu_device] = 1;
+        }
+
+        this->ptr = gpu_ptr;
+        gpu_copy_to_gpu(cpu_ptr, this);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        printf("Tensor already in GPU\n");
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+Tensor* Tensor::clone(){
+    Tensor* t_new = new Tensor(this->shape, this->device);
+    Tensor::copy(this, t_new);
+    return t_new;
+}
+
 // Resizing tensors
-void Tensor::resize(int b,float *fptr)
-{
+void Tensor::resize(int b, float *fptr){
 
     if (b==shape[0]) return;
 
