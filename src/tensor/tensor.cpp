@@ -129,6 +129,7 @@ void Tensor::ToCPU(int dev){
 }
 
 void Tensor::ToGPU(int dev){
+#ifdef cGPU
     if (isCPU()) {
         this->device = dev;
         this->gpu_device = this->device - DEV_GPU;
@@ -144,7 +145,6 @@ void Tensor::ToGPU(int dev){
         this->ptr = gpu_ptr;
         gpu_copy_to_gpu(cpu_ptr, this);
     }
-#ifdef cGPU
     else if (isGPU())
       {
         printf("Tensor already in GPU\n");
