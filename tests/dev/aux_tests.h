@@ -7,8 +7,13 @@
 
 #include "../../src/tensor/tensor.h"
 
+struct TestResult{
+    double time;
+    Tensor* tensor;
+};
+
 bool check_tensors(Tensor* t_res, Tensor* t_sol);
 
-Tensor* run_mpool1(Tensor* t_input, int dev);
+TestResult run_mpool1(Tensor* t_input, int dev, int runs=1);
 
 #endif //EDDL_AUX_TESTS_H
