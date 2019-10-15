@@ -46,6 +46,9 @@ void LActivation::forward() {
     else if (act == "softmax") {
         Softmax(this->input, this->output);
     }
+    else if (act == "sigmoid") {
+        Sigmoid(this->input, this->output);
+    }
 }
 
 
@@ -60,6 +63,9 @@ void LActivation::backward() {
                 D_ReLu(delta, input, parent[0]->delta);
             else if (act == "softmax")
                 D_Softmax(delta, output, parent[0]->delta);
+            else if (act == "sigmoid") {
+              D_Sigmoid(delta, output, parent[0]->delta);
+            }
         }
     }
 }

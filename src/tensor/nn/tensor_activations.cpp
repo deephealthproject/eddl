@@ -64,6 +64,55 @@ void D_ReLu(Tensor *D, Tensor *I, Tensor *PD) {
     PD->tsem->unlock();
 }
 
+// Sigmoid
+void Sigmoid(Tensor *A, Tensor *B) {
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::Sigmoid");
+    if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::Sigmoid");
+
+    B->tsem->lock();
+    if (A->isCPU()) {
+        cpu_sigmoid(A, B);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+      gpu_sigmoid(A,B);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+    B->tsem->unlock();
+}
+
+// Sigmoid Derivative, always increment over parent delta
+void D_Sigmoid(Tensor *D, Tensor *I, Tensor *PD) {
+    if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_Sigmoid");
+    if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_Sigmoid");
+
+    PD->tsem->lock();
+    if (D->isCPU()) {
+        cpu_d_sigmoid(D, I, PD);
+    }
+#ifdef cGPU
+    else if (D->isGPU())
+      {
+        gpu_d_sigmoid(D,I,PD);
+
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+    PD->tsem->unlock();
+}
+
+
 // SOFTMAX
 void Softmax(Tensor *A, Tensor *B) {
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::Softmax");

@@ -22,6 +22,10 @@
 // GPU: Activations
 __global__ void relu(float *a,float *b,long int size);
 __global__ void d_relu(float *d,float *i,float *pd,long int size);
+
+__global__ void sigmoid(float *a,float *b,long int size);
+__global__ void d_sigmoid(float *d,float *i,float *pd,long int size);
+
 __global__ void softmax(float* E,float* N,float* auxE ,long int sample_ndim, long int n_vals);
 
 // GPU: Losses

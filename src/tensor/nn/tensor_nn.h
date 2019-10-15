@@ -28,6 +28,10 @@ int accuracy(Tensor *A, Tensor *B);
 void ReLu(Tensor *A, Tensor *B);
 void D_ReLu(Tensor *D, Tensor *I, Tensor *PD);
 
+// Sigmoid
+void Sigmoid(Tensor *A, Tensor *B);
+void D_Sigmoid(Tensor *D, Tensor *I, Tensor *PD);
+
 // Softmax
 void Softmax(Tensor *A, Tensor *B);
 void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);

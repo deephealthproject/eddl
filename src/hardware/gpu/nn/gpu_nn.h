@@ -26,6 +26,9 @@
 void gpu_relu(Tensor *A,Tensor *B);
 void gpu_d_relu(Tensor *D,Tensor *I,Tensor *PD);
 
+void gpu_sigmoid(Tensor *A,Tensor *B);
+void gpu_d_sigmoid(Tensor *D,Tensor *I,Tensor *PD);
+
 void gpu_softmax(Tensor *A,Tensor *B);
 void gpu_d_softmax(Tensor *D,Tensor *I,Tensor *PD);
 

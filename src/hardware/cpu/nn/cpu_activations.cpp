@@ -30,6 +30,19 @@ void cpu_d_relu(Tensor *D, Tensor *I, Tensor *PD){
   }
 }
 
+void cpu_sigmoid(Tensor *A, Tensor *B){
+  #pragma omp parallel for
+  for (int i = 0; i < A->size; i++)
+    B->ptr[i] = 1/(1+std::exp(-A->ptr[i]));
+}
+
+void cpu_d_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
+  #pragma omp parallel for
+  for (int i = 0; i < D->size; i++)
+    PD->ptr[i] = D->ptr[i]*((1-I->ptr[i])*I->ptr[i]);
+}
+
+
 
 void cpu_softmax(Tensor *A, Tensor *B) {
   float max, sum;
