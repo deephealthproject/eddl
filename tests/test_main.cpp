@@ -41,15 +41,17 @@ void pretty_res(string name, bool res){
 int main(int argc, char **argv) {
     TestResult res_cpu, res_gpu;
 
+    // MaxPool *****************************************
     // Check correctness
-    pretty_res("MaxPool2D (CPU correctness)", check_tensors(run_mpool1(t_mpool, DEV_CPU).tensor, t_mpool_sol));
-    pretty_res("MaxPool2D (GPU correctness)", check_tensors(run_mpool1(t_mpool, DEV_GPU).tensor, t_mpool_sol));
-    pretty_res("MaxPool2D (CPU==GPU correctness)", check_tensors(run_mpool1(t_mpool, DEV_CPU).tensor, run_mpool1(t_mpool, DEV_GPU).tensor));
+    pretty_res("MaxPool2D small (CPU correctness)", check_tensors(run_mpool1(t_mpool, DEV_CPU).tensor, t_mpool_sol));
+    pretty_res("MaxPool2D small (GPU correctness)", check_tensors(run_mpool1(t_mpool, DEV_GPU).tensor, t_mpool_sol));
+    pretty_res("MaxPool2D small (CPU==GPU correctness)", check_tensors(run_mpool1(t_mpool, DEV_CPU).tensor, run_mpool1(t_mpool, DEV_GPU).tensor));
     
     // Check times
     res_cpu = run_mpool1(t_mpool, DEV_CPU, 1);
-    pretty_res("MaxPool2D (CPU time=" + std::to_string(res_cpu.time)  + ")", true);
     res_gpu = run_mpool1(t_mpool, DEV_GPU, 1);
-    pretty_res("MaxPool2D (GPU time=" + std::to_string(res_gpu.time)  + ")", true);
-    pretty_res("MaxPool2D (GPU << CPU: x" + std::to_string(res_gpu.time/res_cpu.time) + ")", res_gpu.time<res_cpu.time);
+    pretty_res("MaxPool2D big (CPU==GPU correctness)", check_tensors(run_mpool1(t_mpool, DEV_CPU).tensor, run_mpool1(t_mpool, DEV_GPU).tensor));
+    pretty_res("MaxPool2D big (CPU time=" + std::to_string(res_cpu.time)  + ")", true);
+    pretty_res("MaxPool2D big (GPU time=" + std::to_string(res_gpu.time)  + ")", true);
+    pretty_res("MaxPool2D big (GPU << CPU: x" + std::to_string(res_gpu.time/res_cpu.time) + ")", res_gpu.time<res_cpu.time);
 }
