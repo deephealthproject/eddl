@@ -58,6 +58,10 @@ namespace eddl {
     void set(layer t, float v);
 
 // ---- CORE LAYERS ----
+    layer Softmax(layer parent);
+    layer Sigmoid(layer parent);
+    layer ReLu(layer parent);
+    
     layer Activation(layer parent, string activation, string name = "");
 
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,

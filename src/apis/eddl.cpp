@@ -52,6 +52,19 @@ namespace eddl {
     }
 
     // ---- CORE LAYERS ----
+    layer Softmax(layer parent)
+    {
+      return new LActivation(parent,"softmax","",DEV_CPU);
+    }
+    layer Sigmoid(layer parent)
+    {
+      return new LActivation(parent,"sigmoid","",DEV_CPU);
+    }
+    layer ReLu(layer parent)
+    {
+      return new LActivation(parent,"relu","",DEV_CPU);
+    }
+
     layer Activation(layer parent, string activation, string name) {
         return new LActivation(parent, activation, name, DEV_CPU);
     }
