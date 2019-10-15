@@ -103,7 +103,7 @@ Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr,T->devic
 
 void Tensor::ToCPU(int dev){
     if (isCPU()) {
-        printf("Tensor already in CPU\n");
+//        printf("Tensor already in CPU\n");
     }
 #ifdef cGPU
     else if (isGPU())
@@ -147,7 +147,7 @@ void Tensor::ToGPU(int dev){
     }
     else if (isGPU())
       {
-        printf("Tensor already in GPU\n");
+//        printf("Tensor already in GPU\n");
       }
 #endif
 #ifdef cFPGA
