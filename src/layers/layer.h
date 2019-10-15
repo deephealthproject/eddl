@@ -88,7 +88,17 @@ public:
 
     virtual Layer *clone(int c, int bs, vector<Layer *> p, int todev) { return nullptr; }
 
+
+
 };
+
+Layer* operator+(Layer &l1,Layer &l2);
+Layer* operator+(Layer &l1,float l2);
+Layer* operator+(float f,Layer &l);
+
+Layer* operator*(Layer &l1,Layer &l2);
+Layer* operator*(Layer &l1,float l2);
+Layer* operator*(float f,Layer &l);
 
 /////////////////////////////////////////
 /////////////////////////////////////////

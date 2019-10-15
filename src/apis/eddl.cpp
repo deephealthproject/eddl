@@ -183,12 +183,19 @@ namespace eddl {
         return new LDiff(l1, k, "", DEV_CPU);
     }
 
+    layer Diff(float k,layer l1) {
+        return new LDiff(k, l1, "", DEV_CPU);
+    }
     layer Div(layer l1, layer l2) {
         return new LDiv(l1, l2, "", DEV_CPU);
     }
 
     layer Div(layer l1, float k) {
         return new LDiv(l1, k, "", DEV_CPU);
+    }
+
+    layer Div(float k,layer l1) {
+        return new LDiv(k, l1, "", DEV_CPU);
     }
 
     layer Exp(layer l) {
@@ -215,6 +222,9 @@ namespace eddl {
         return new LMult(l1, k, "", DEV_CPU);
     }
 
+    layer Mult(float k,layer l1) {
+        return new LMult(l1, k, "", DEV_CPU);
+    }
     layer Pow(layer l1, layer l2) {
         return new LPow(l1, l2, "", DEV_CPU);
     }
@@ -235,6 +245,9 @@ namespace eddl {
         return new LSum(l1, k, "", DEV_CPU);
     }
 
+    layer Sum(float k,layer l1) {
+        return new LSum(l1, k, "", DEV_CPU);
+    }
 
     // ---- REDUCTION LAYERS ----
     layer ReduceMean(layer l, const vector<int> axis, bool keepdims) {

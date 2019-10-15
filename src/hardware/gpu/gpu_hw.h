@@ -57,6 +57,7 @@ void gpu_rand_binary(Tensor *A, float v);
 void gpu_rand_normal(Tensor *A, float m, float s);
 
 // GPU: Math (in-place)
+void gpu_inv_(Tensor *A);
 void gpu_abs_(Tensor *A);
 void gpu_acos_(Tensor *A);
 void gpu_add_(Tensor *A, float v);

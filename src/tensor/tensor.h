@@ -163,6 +163,8 @@ public:
     void cosh_(); // Todo
     static Tensor* cosh(Tensor *A);
 
+    void inv_();
+    
     void div_(float v);
     static Tensor* div(Tensor *A);
     static void el_div(Tensor *A, Tensor *B, Tensor *C, int incC);

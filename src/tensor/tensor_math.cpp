@@ -268,6 +268,24 @@ Tensor* Tensor::cosh(Tensor *A){ return nullptr; }
 
 void Tensor::div_(float v) { mult_(1.0f / v); }
 
+void Tensor::inv_() {
+  if (isCPU()) {
+      cpu_inv_(this);
+  }
+  #ifdef cGPU
+  else if (isGPU())
+    {
+      gpu_inv_(this);
+    }
+  #endif
+  #ifdef cFPGA
+  else {
+
+  }
+  #endif
+}
+
+
 Tensor* Tensor::div(Tensor *A){ return nullptr; }
 
 void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
