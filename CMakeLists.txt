@@ -375,11 +375,10 @@ set_target_properties(eddl PROPERTIES
     CUDA_SEPARABLE_COMPILATION ON
     CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 
-# OPENMP
+# OpenMP
 find_package(OpenMP)
 if (OPENMP_FOUND)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    target_link_libraries(eddl PRIVATE OpenMP::OpenMP_CXX)
 endif()
 
 # pthreads setup for windows os
