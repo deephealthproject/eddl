@@ -145,11 +145,12 @@ LAYERS_OBJ = layer_lstm.o layer_input.o layer_conv.o layer_mean.o layer_log10.o 
 LOSSES_OBJ = loss_mean_squared_error.o loss_soft_cross_entropy.o loss.o loss_cross_entropy.o
 METRICS_OBJ = metric_categorical_acc.o metric.o metric_mean_squared_error.o
 OPTIMIZERS_OBJ = optim_adam.o optim.o optim_nadam.o optim_adagrad.o optim_sgd.o optim_rmsprop.o optim_adamax.o optim_adadelta.o
+REGULARIZERS_OBJ = regularizer.o
 TENSOR_OBJ = tensor.o tensor_comparison.o tensor_core.o tensor_create.o tensor_generator.o tensor_math.o tensor_reduction.o tensor_serialization.o tensor_activations.o tensor_conv.o tensor_core_nn.o tensor_losses.o tensor_metrics.o tensor_pool.o
 TESTS_OBJ = aux_tests.o
 
 # Join groups
-OBJ := $(APIS_OBJ) $(CORE_OBJ) $(DESCRIPTORS_OBJ) $(HARDWARE_CPU_OBJ) $(INITIALIZERS_OBJ) $(LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(TENSOR_OBJ) $(TESTS_OBJ)
+OBJ := $(APIS_OBJ) $(CORE_OBJ) $(DESCRIPTORS_OBJ) $(HARDWARE_CPU_OBJ) $(INITIALIZERS_OBJ) $(LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(REGULARIZERS_OBJ) $(TENSOR_OBJ) $(TESTS_OBJ)
 
 ifeq ($(CORE),1)  # CPU
 all: $(GPU_OBJ) $(OBJ) example_mlp  example_conv example_test test_main example_ae example_dae example_dae_class example_tensor example_load_save example_train_batch
@@ -477,6 +478,8 @@ initializer_constant.o: $(SRC_PATH)/initializers/initializer_constant.cpp $(SRC_
 initializer.o: $(SRC_PATH)/initializers/initializer.cpp $(SRC_PATH)/initializers/initializer.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/initializers/initializer.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
+regularizer.o: $(SRC_PATH)/regularizers/regularizer.cpp $(SRC_PATH)/regularizers/regularizer.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/regularizers/regularizer.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 #---------------------------------- GPU code
 gpu_comparison.o: $(SRC_PATH)/hardware/gpu/gpu_comparison.cu $(SRC_PATH)/hardware/gpu/gpu_hw.h
