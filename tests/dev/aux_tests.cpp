@@ -2,7 +2,10 @@
 // Created by Salva Carrión on 11/10/2019.
 //
 
+#include <ctime>
+
 #include "aux_tests.h"
+
 #include "../../src/tensor/tensor.h"
 #include "../../src/tensor/nn/tensor_nn.h"
 #include "../../src/descriptors/descriptors.h"
@@ -17,6 +20,7 @@
 #endif
 
 
+
 bool check_tensors(Tensor* t_res, Tensor* t_sol){
     // Clone input tensors
     t_res = t_res->clone();
@@ -29,7 +33,7 @@ bool check_tensors(Tensor* t_res, Tensor* t_sol){
     return Tensor::equal(t_res, t_sol);
 }
 
-Tensor* run_mpool1(Tensor* t_input, int dev){
+TestResult run_mpool1(Tensor* t_input, int dev, int runs){
     // Clone input tensor
     t_input = t_input->clone();
 
@@ -43,8 +47,16 @@ Tensor* run_mpool1(Tensor* t_input, int dev){
     pd->build(t_input);
     pd->indX = new Tensor(pd->O->getShape(), dev);
     pd->indY = new Tensor(pd->O->getShape(), dev);
-    MPool2D(pd);
 
-    return pd->O;
+    clock_t begin = clock();
+    for(int i=0; i<runs; i++){
+        MPool2D(pd);
+    }
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
+    TestResult result;
+    result.time = elapsed_secs;
+    result.tensor = pd->O;
+    return result;
 }
-

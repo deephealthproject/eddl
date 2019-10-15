@@ -119,10 +119,21 @@ macro(eddl_update_third_party SUBMODULE)
 endif()
 endmacro()
 
-# UPDATE THIRD_PARTY MANDATORY MODULES
-find_package(Git QUIET)
-eddl_update_third_party(eigen)
-include_directories(third_party/eigen)
+# ERROR! ==============================================>
+#
+# I need this to work in CLion in order to debug
+#error: could not lock config file /Users/salvacarrion/Documents/Programming/C++/eddl/.git/modules/third_party/eigen/config: File exists
+#fatal: could not set 'core.worktree' to '../../../../third_party/eigen'
+#CMake Error at CMakeLists.txt:117 (message):
+#git submodule update --init failed with 1, please checkout eigen submodule
+#Call Stack (most recent call first):
+#CMakeLists.txt:124 (eddl_update_third_party)
+#
+## UPDATE THIRD_PARTY MANDATORY MODULES
+#find_package(Git QUIET)
+#eddl_update_third_party(eigen)
+#include_directories(third_party/eigen)
+#<==============================================
 
 
 # Add the given directories to those the compiler uses to search for include files
@@ -484,6 +495,9 @@ if(BUILD_EXAMPLES)
     target_link_libraries(example_tensor eddl)
     target_link_libraries(example_test eddl)
     target_link_libraries(example_train_batch eddl)
+    # Temp
+    add_executable(test_main "tests/test_main.cpp")
+    target_link_libraries(test_main eddl)
     set(CMAKE_FOLDER "")
 endif(BUILD_EXAMPLES)
 #unset(BUILD_EXAMPLES CACHE)
