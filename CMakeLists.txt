@@ -57,7 +57,7 @@ message(STATUS "CUDA Enabled: " ${EDDL_WITH_CUDA} )
 message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS} )
 message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
 
-# Add cuda (if possible)
+# Add CUDA (if possible)
 if(EDDL_WITH_CUDA)
     include(CheckLanguage)
     check_language(CUDA)
@@ -68,9 +68,6 @@ if(EDDL_WITH_CUDA)
             set(CMAKE_CUDA_STANDARD 11)
             set(CMAKE_CUDA_STANDARD_REQUIRED ON)
         endif()
-        set(CUDA_TOOLKIT_ROOT_DIR "${CMAKE_CUDA_COMPILER}")
-        get_filename_component(CUDA_TOOLKIT_ROOT_DIR "${CUDA_TOOLKIT_ROOT_DIR}/../.." ABSOLUTE)
-        message(STATUS "CUDA ROOT DIR: " ${CUDA_TOOLKIT_ROOT_DIR})
     else()
         message(WARNING "No CUDA support")
     endif()
@@ -407,7 +404,6 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
                                PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib"
                                PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")
     target_include_directories(eddl PUBLIC "${EDDL_PTHREADS_INSTALL_PATH}/include")
-
 endif()
 
 
