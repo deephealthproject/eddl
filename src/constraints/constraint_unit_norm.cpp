@@ -12,13 +12,14 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "regularizer.h"
+#include "constraint.h"
 
 using namespace std;
 
-Regularizer::Regularizer(string name) {
-    this->name = name;
+
+CUnitNorm::CUnitNorm(int axis) : Constraint("unit_norm") {
+    // Todo: Implement
+    this->axis;
 }
-float Regularizer::apply(Tensor *T) {
-    return 0;
-}
+
+float CUnitNorm::apply(Tensor* T) { return 0; }

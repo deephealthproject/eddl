@@ -16,9 +16,10 @@
 
 using namespace std;
 
-Regularizer::Regularizer(string name) {
-    this->name = name;
+
+RL2::RL2(float value) : Regularizer("l2") {
+    // Todo: Implement
+    this->l = l; // regularization factor
 }
-float Regularizer::apply(Tensor *T) {
-    return 0;
-}
+
+float RL2::apply(Tensor* T) { return 0; }

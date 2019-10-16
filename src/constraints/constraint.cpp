@@ -12,13 +12,13 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "regularizer.h"
+#include "constraint.h"
 
 using namespace std;
 
-Regularizer::Regularizer(string name) {
+Constraint::Constraint(string name) {
     this->name = name;
 }
-float Regularizer::apply(Tensor *T) {
+float Constraint::apply(Tensor *T) {
     return 0;
 }

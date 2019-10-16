@@ -137,6 +137,7 @@ endif
 
 # Group compiled objects (Alphabetically sorted!)
 APIS_OBJ = eddl.o
+CONSTRAINTS_OBJ = constraint_max_norm.o constraint_min_max_norm.o constraint_non_neg.o constraint_unit_norm.o constraint.o
 CORE_OBJ = compserv.o net.o utils.o random.o
 DESCRIPTORS_OBJ = descriptor_conv.o descriptor_pool.o descriptor_reduce.o
 HARDWARE_CPU_OBJ = cpu_comparison.o cpu_core.o cpu_create.o cpu_generator.o cpu_math.o cpu_reduction.o cpu_activations.o cpu_conv.o cpu_losses.o cpu_metrics.o cpu_pool.o cpu_tensor_nn.o
@@ -145,12 +146,12 @@ LAYERS_OBJ = layer_lstm.o layer_input.o layer_conv.o layer_mean.o layer_log10.o 
 LOSSES_OBJ = loss_mean_squared_error.o loss_soft_cross_entropy.o loss.o loss_cross_entropy.o
 METRICS_OBJ = metric_categorical_acc.o metric.o metric_mean_squared_error.o
 OPTIMIZERS_OBJ = optim_adam.o optim.o optim_nadam.o optim_adagrad.o optim_sgd.o optim_rmsprop.o optim_adamax.o optim_adadelta.o
-REGULARIZERS_OBJ = regularizer.o
+REGULARIZERS_OBJ = regularizer_l1.o regularizer_l2.o regularizer_l1_l2.o regularizer.o
 TENSOR_OBJ = tensor.o tensor_comparison.o tensor_core.o tensor_create.o tensor_generator.o tensor_math.o tensor_reduction.o tensor_serialization.o tensor_activations.o tensor_conv.o tensor_core_nn.o tensor_losses.o tensor_metrics.o tensor_pool.o
 TESTS_OBJ = aux_tests.o
 
 # Join groups
-OBJ := $(APIS_OBJ) $(CORE_OBJ) $(DESCRIPTORS_OBJ) $(HARDWARE_CPU_OBJ) $(INITIALIZERS_OBJ) $(LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(REGULARIZERS_OBJ) $(TENSOR_OBJ) $(TESTS_OBJ)
+OBJ := $(APIS_OBJ) $(CONSTRAINTS_OBJ) $(CORE_OBJ) $(DESCRIPTORS_OBJ) $(HARDWARE_CPU_OBJ) $(INITIALIZERS_OBJ) $(LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(REGULARIZERS_OBJ) $(TENSOR_OBJ) $(TESTS_OBJ)
 
 ifeq ($(CORE),1)  # CPU
 all: $(GPU_OBJ) $(OBJ) test_main example_mlp  example_conv #example_test example_ae example_dae example_dae_class example_tensor example_load_save example_train_batch
@@ -162,6 +163,21 @@ endif
 
 utils.o: $(SRC_PATH)/utils.cpp $(SRC_PATH)/utils.h $(SRC_PATH)/system_info.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/utils.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+constraint_max_norm.o: $(SRC_PATH)/constraints/constraint_max_norm.cpp $(SRC_PATH)/constraints/constraint.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/constraints/constraint_max_norm.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+constraint_min_max_norm.o: $(SRC_PATH)/constraints/constraint_min_max_norm.cpp $(SRC_PATH)/constraints/constraint.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/constraints/constraint_min_max_norm.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+constraint_non_neg.o: $(SRC_PATH)/constraints/constraint_non_neg.cpp $(SRC_PATH)/constraints/constraint.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/constraints/constraint_non_neg.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+constraint_unit_norm.o: $(SRC_PATH)/constraints/constraint_unit_norm.cpp $(SRC_PATH)/constraints/constraint.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/constraints/constraint_unit_norm.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+constraint.o: $(SRC_PATH)/constraints/constraint.cpp $(SRC_PATH)/constraints/constraint.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/constraints/constraint.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 random.o: $(SRC_PATH)/random.cpp $(SRC_PATH)/random.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/random.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
@@ -477,6 +493,15 @@ initializer_constant.o: $(SRC_PATH)/initializers/initializer_constant.cpp $(SRC_
 
 initializer.o: $(SRC_PATH)/initializers/initializer.cpp $(SRC_PATH)/initializers/initializer.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/initializers/initializer.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+regularizer_l1.o: $(SRC_PATH)/regularizers/regularizer_l1.cpp $(SRC_PATH)/regularizers/regularizer.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/regularizers/regularizer_l1.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+regularizer_l2.o: $(SRC_PATH)/regularizers/regularizer_l2.cpp $(SRC_PATH)/regularizers/regularizer.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/regularizers/regularizer_l2.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+regularizer_l1_l2.o: $(SRC_PATH)/regularizers/regularizer_l1_l2.cpp $(SRC_PATH)/regularizers/regularizer.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/regularizers/regularizer_l1_l2.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 regularizer.o: $(SRC_PATH)/regularizers/regularizer.cpp $(SRC_PATH)/regularizers/regularizer.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/regularizers/regularizer.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
