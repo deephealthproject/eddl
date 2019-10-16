@@ -90,3 +90,61 @@ TestResult run_conv2d(Tensor* t_input, Tensor* t_kernel, int dev, int runs){
     result.tensor = cd->O;
     return result;
 }
+
+TestResult run_dense(Tensor* t_input, Tensor* t_weights, int dev, int runs){
+    // Clone input tensor
+    t_input = t_input->clone();
+    t_weights = t_weights->clone();
+    Tensor *t_output = new Tensor(vector<int>{t_input->shape[0], t_weights->shape[1]}, dev);
+
+    // Move to device
+    if (dev == DEV_GPU){
+        t_input->ToGPU();
+        t_weights->ToGPU();
+        t_output->ToGPU();
+    }
+
+    clock_t begin = clock();
+    for(int i=0; i<runs; i++){
+        Tensor::mult2D(t_input, 0, t_weights, 0, t_output, 0);
+    }
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
+    TestResult result{};
+    result.time = elapsed_secs;
+    result.tensor = t_output;
+    return result;
+}
+
+
+TestResult run_activation(Tensor* t_input, string act, int dev, int runs){
+    // Clone input tensor
+    t_input = t_input->clone();
+    Tensor *t_output = new Tensor(t_input->getShape(), dev);
+
+    // Move to device
+    if (dev == DEV_GPU){
+        t_input->ToGPU();
+        t_output->ToGPU();
+    }
+
+    clock_t begin = clock();
+    for(int i=0; i<runs; i++){
+        if (act == "relu")
+            ReLu(t_input, t_output);
+        else if (act == "softmax") {
+            Softmax(t_input, t_output);
+        }
+        else if (act == "sigmoid") {
+            Sigmoid(t_input, t_output);
+        }
+    }
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
+    TestResult result{};
+    result.time = elapsed_secs;
+    result.tensor = t_output;
+    return result;
+}
