@@ -458,7 +458,7 @@ endif()
 # [TESTS] Generate a test executable
 if(BUILD_TESTS)
     eddl_update_third_party(googletest)
-    set(CMAKE_FOLDER 3party/googletest)
+    set(CMAKE_FOLDER third_party/googletest)
     add_subdirectory(third_party/googletest)
     SET(UNITTEST_NAME "${PROJECT_NAME}_tests")
     set(CMAKE_FOLDER "")
