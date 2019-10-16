@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
                               2.0, 2.0, 0.0,
                               0.0, 1.0, 2.0};
     float conv2d_sol[9] = {12.0, 12.0, 17.0,
-                           10.0, 18.0, 19.0,
+                           10.0, 17.0, 19.0,
                            9.0, 6.0, 14.0};
     Tensor *t_conv2d = new Tensor({1, 1, 5, 5}, conv2d_input, DEV_CPU);
     Tensor *t_conv2d_kernel = new Tensor({1, 1, 3, 3}, conv2d_kernel, DEV_CPU);
@@ -84,7 +84,6 @@ int main(int argc, char **argv) {
 
     // *** [CONV2D] *****************************************
     res_small_cpu = run_conv2d(t_conv2d, t_conv2d_kernel, DEV_CPU, 1);
-    res_small_cpu.tensor->print();
     res_small_gpu = run_conv2d(t_conv2d, t_conv2d_kernel, DEV_GPU, 1);
     res_big_cpu = run_conv2d(t_conv2d_big, t_conv2d_kernel, DEV_CPU, 1);
     res_big_gpu = run_conv2d(t_conv2d_big, t_conv2d_kernel, DEV_GPU, 1);

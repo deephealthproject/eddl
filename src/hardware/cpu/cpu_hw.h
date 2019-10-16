@@ -18,7 +18,7 @@
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
 
 // CPU: Comparison
-int cpu_equal(Tensor *A, Tensor *B);
+int cpu_equal(Tensor *A, Tensor *B, float epsilon);
 
 // CPU: Core (static)
 void cpu_transpose(Tensor *A, Tensor *B);
