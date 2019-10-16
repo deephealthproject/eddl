@@ -8,8 +8,9 @@
 //*/
 //
 //#include "gtest/gtest.h"
+//
 //#include "tensor/tensor.h"
-//#include "tests/dev/aux_tensor.h"
+//#include "dev/aux_tests.h"
 //
 //
 //// Test tensor constructor

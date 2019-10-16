@@ -83,15 +83,16 @@ void ConvolDescriptor::build(Tensor *A) {
     // Params
     K = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
     bias = new Tensor(vector<int>{nk}, I->device);
+    bias->print();
     gK = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
     gbias = new Tensor(vector<int>{nk}, I->device);
 
     if (I->isCPU()) {
         // mem for ptr, lowering im2col
         ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptor::build");
-        new(&matK) Eigen::Map<Eigen::MatrixXf>(K->ptr, kr * kc * kz, nk);
-        new(&matgK) Eigen::Map<Eigen::MatrixXf>(gK->ptr, kr * kc * kz, nk);
-        // convolution: matC=matA*matK
+//        new(&matK) Eigen::Map<Eigen::MatrixXf>(K->ptr, kr * kc * kz, nk);
+//        new(&matgK) Eigen::Map<Eigen::MatrixXf>(gK->ptr, kr * kc * kz, nk);
+//        // convolution: matC=matA*matK
     }
 #ifdef cGPU
     else if (I->isGPU()) {

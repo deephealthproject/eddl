@@ -165,14 +165,12 @@ string Net::summary() {
     std::stringstream ss;
 
     for (int i = 0; i < vfts.size(); i++) {
-        if(vfts[i]->isplot)
           ss << vfts[i]->name.c_str() << " ";
     }
 
 
     ss << "\n";
     for (int i = 0; i < vfts.size(); i++) {
-      if(vfts[i]->isplot) {
         ss << vfts[i]->name << ": ";
 
         vector<int> si = vfts[i]->input->getShape();
@@ -180,7 +178,7 @@ string Net::summary() {
         vector<int> so = vfts[i]->output->getShape();
         so.erase(so.begin());
         ss << si << "-->" << so << "\n";
-      }
+      
     }
 
     return ss.str();
@@ -198,7 +196,6 @@ void Net::plot(string fname) {
 
     // plot layers
     for (int i = 0; i != layers.size(); i++)
-       if (layers[i]->isplot)
         if ((!isIn(layers[i], lin, ind)) && (!isIn(layers[i], lout, ind)))
             out << layers[i]->plot(0) << "\n";
 
@@ -213,7 +210,6 @@ void Net::plot(string fname) {
     //plot links
     for (int i = 0; i != layers.size(); i++)
         for (int j = 0; j < layers[i]->child.size(); j++)
-            if (layers[i]->child[j]->isplot)
               out << layers[i]->name << "->" << layers[i]->child[j]->name << "\n";
 
     out << "}\n";

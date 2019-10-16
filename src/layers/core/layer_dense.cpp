@@ -39,7 +39,6 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev) : L
     gradients.push_back(gW);
     if (use_bias) gradients.push_back(gbias);
 
-    //isplot=true;
 
     parent->addchild(this);
     addparent(parent);

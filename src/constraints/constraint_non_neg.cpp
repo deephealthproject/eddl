@@ -8,14 +8,17 @@
 */
 
 
-#include "cpu_hw.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
 
-int cpu_equal(Tensor *A, Tensor *B, float epsilon){
+#include "constraint.h"
 
-  for (int i = 0; i < A->size; i++)
-  if (::fabs(A->ptr[i]-B->ptr[i])>epsilon) {
-    fprintf(stderr,"\n>>>>>>>>>>\n");
-    fprintf(stderr,"%f != %f\n",A->ptr[i], B->ptr[i]);
-    return 0;
-  }
+using namespace std;
+
+
+CNonNeg::CNonNeg() : Constraint("non_neg") {
+    // Todo: Implement
 }
+
+float CNonNeg::apply(Tensor* T) { return 0; }

@@ -42,9 +42,7 @@ public:
     int dev;
     int lin, lout;
     int delta_bp;
-    bool isplot;
-    bool inner;
-
+  
     Layer(string name, int dev);
     // Destructor
     virtual ~Layer();

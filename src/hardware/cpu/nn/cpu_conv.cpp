@@ -89,6 +89,9 @@ void cpu_conv2D(ConvolDescriptor *D)
   float *ptrO=D->O->ptr;
   float *ptrI=D->ptrI;
 
+  // Map memory to Eigen
+  new(&D->matK) Eigen::Map<Eigen::MatrixXf>(D->K->ptr, D->kr * D->kc * D->kz, D->nk);
+
   for(int b=0;b<D->I->shape[0];b++,ptrO+=osize,ptrI+=isize){
     new (&(D->matI)) Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
     new (&(D->matO)) Eigen::Map<Eigen::MatrixXf>(ptrO,D->r*D->c,D->z);
@@ -116,6 +119,9 @@ void cpu_conv2D_grad(ConvolDescriptor *D)
   float *ptrD=D->D->ptr;
   float *ptrI=D->ptrI;
 
+  // Map memory to Eigen
+  new(&D->matgK) Eigen::Map<Eigen::MatrixXf>(D->gK->ptr, D->kr * D->kc * D->kz, D->nk);
+
   for(int b=0;b<D->I->shape[0];b++,ptrD+=osize,ptrI+=isize){
     // re-using previous lowering
     new (&(D->matI)) Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
@@ -141,6 +147,9 @@ void cpu_conv2D_back(ConvolDescriptor *D)
 
   float *ptrD=D->D->ptr;
   float *ptrI=D->ptrI;
+
+  // Map memory to Eigen
+  new(&D->matK) Eigen::Map<Eigen::MatrixXf>(D->K->ptr, D->kr * D->kc * D->kz, D->nk);
   new (&(D->matI)) Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
 
   for(int b=0;b<D->I->shape[0];b++,ptrD+=osize){

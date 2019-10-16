@@ -8,14 +8,17 @@
 */
 
 
-#include "cpu_hw.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
 
-int cpu_equal(Tensor *A, Tensor *B, float epsilon){
+#include "constraint.h"
 
-  for (int i = 0; i < A->size; i++)
-  if (::fabs(A->ptr[i]-B->ptr[i])>epsilon) {
-    fprintf(stderr,"\n>>>>>>>>>>\n");
-    fprintf(stderr,"%f != %f\n",A->ptr[i], B->ptr[i]);
+using namespace std;
+
+Constraint::Constraint(string name) {
+    this->name = name;
+}
+float Constraint::apply(Tensor *T) {
     return 0;
-  }
 }

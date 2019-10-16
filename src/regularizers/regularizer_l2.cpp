@@ -8,14 +8,18 @@
 */
 
 
-#include "cpu_hw.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
 
-int cpu_equal(Tensor *A, Tensor *B, float epsilon){
+#include "regularizer.h"
 
-  for (int i = 0; i < A->size; i++)
-  if (::fabs(A->ptr[i]-B->ptr[i])>epsilon) {
-    fprintf(stderr,"\n>>>>>>>>>>\n");
-    fprintf(stderr,"%f != %f\n",A->ptr[i], B->ptr[i]);
-    return 0;
-  }
+using namespace std;
+
+
+RL2::RL2(float value) : Regularizer("l2") {
+    // Todo: Implement
+    this->l = l; // regularization factor
 }
+
+float RL2::apply(Tensor* T) { return 0; }
