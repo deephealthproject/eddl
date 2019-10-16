@@ -10,7 +10,7 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(BUILD_PYTHON "Compile python binding" OFF)
 option(BUILD_TESTS "Compile tests" OFF)
 option(BUILD_EXAMPLES "Compile examples" ON)
-SET(BUILD_TARGET "CPU" CACHE STRING "Compile library for {cpu, gpu, fpga}")
+SET(BUILD_TARGET "CPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
 set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
 
 # PROPERTIES *******************************
@@ -32,14 +32,13 @@ endif()
 # CUDA FLAGS
 # Is this the best approach?
 #set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr -lcudart -lcublas -lcurand")
-#set(EDDL_WITH_CUDA OFF CACHE BOOL "Enable CUDA support if checked")
 
 # Device specific setup
 if(BUILD_TARGET STREQUAL "CPU")
     message("Compiling for CPU...")
 elseif(BUILD_TARGET STREQUAL "GPU")
     message("Compiling for GPU...")
-    set(EDDL_WITH_CUDA ON BOOL FORCE)
+    set(EDDL_WITH_CUDA ON CACHE BOOL "Enable CUDA support if checked")
 elseif(BUILD_TARGET STREQUAL "FPGA")
     message("Compiling for FPGA...")
     message(FATAL_ERROR "FPGA not implemented, CMake will exit." )
@@ -375,11 +374,23 @@ set_target_properties(eddl PROPERTIES
     CUDA_SEPARABLE_COMPILATION ON
     CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 
+
 # OpenMP
 find_package(OpenMP)
 if (OPENMP_FOUND)
     target_link_libraries(eddl PRIVATE OpenMP::OpenMP_CXX)
 endif()
+
+
+# CUDA
+if(EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
+    target_link_libraries(eddl
+        PRIVATE cublas
+        PRIVATE cudart
+        PRIVATE curand
+    )
+endif()
+
 
 # pthreads setup for windows os
 # The following commands should be removed when pthread linux
@@ -397,19 +408,8 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
                                PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")
     target_include_directories(eddl PUBLIC "${EDDL_PTHREADS_INSTALL_PATH}/include")
 
-    if(EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
-        set(EDDL_CUDA_LIBRARIES_PATH "${CUDA_TOOLKIT_ROOT_DIR}/lib/x64" CACHE PATH "Path to cublas, cudart, and curand libs")
-        if (EDDL_CUDA_LIBRARIES_PATH STREQUAL "")
-            message(ERROR ": cudart, cublas, and curand paths must be specified")
-        else()
-            target_link_libraries(eddl
-                PRIVATE "${EDDL_CUDA_LIBRARIES_PATH}/cublas.lib"
-                PRIVATE "${EDDL_CUDA_LIBRARIES_PATH}/cudart.lib"
-                PRIVATE "${EDDL_CUDA_LIBRARIES_PATH}/curand.lib"
-            )
-        endif()
-    endif()
 endif()
+
 
 # pthreads setup for linux os
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
@@ -417,19 +417,6 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
     find_package(Threads REQUIRED)
     target_link_libraries(eddl PRIVATE Threads::Threads)
-
-    if(EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
-        set(EDDL_CUDA_LIBRARIES_PATH "${CUDA_TOOLKIT_ROOT_DIR}/lib64" CACHE PATH "Path to cublas, cudart, and curand libs")
-        if (EDDL_CUDA_LIBRARIES_PATH STREQUAL "")
-            message(ERROR ": cudart, cublas, and curand paths must be specified")
-        else()
-            target_link_libraries(eddl
-                PRIVATE "${EDDL_CUDA_LIBRARIES_PATH}/libcublas.so"
-                PRIVATE "${EDDL_CUDA_LIBRARIES_PATH}/libcudart.so"
-                PRIVATE "${EDDL_CUDA_LIBRARIES_PATH}/libcurand.so"
-            )
-        endif()
-    endif()
 endif()
 
 ## [BINDING] Create python binding
