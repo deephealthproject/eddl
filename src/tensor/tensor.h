@@ -271,7 +271,7 @@ public:
 
     // Math operations: Comparison ops
     static int eqsize(Tensor *A, Tensor *B);
-    static int equal(Tensor *A, Tensor *B);
+    static int equal(Tensor *A, Tensor *B, float epsilon=1e-3);
 
     // Math operations: Other ops
     static int cross(Tensor *A, Tensor *B); // TODO

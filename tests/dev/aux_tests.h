@@ -14,6 +14,7 @@ struct TestResult{
 
 bool check_tensors(Tensor* t_res, Tensor* t_sol);
 
-TestResult run_mpool1(Tensor* t_input, int dev, int runs=1);
+TestResult run_mpool(Tensor* t_input, int dev, int runs=1);
+TestResult run_conv2d(Tensor* t_input, Tensor* t_kernel, int dev, int runs=1);
 
 #endif //EDDL_AUX_TESTS_H
