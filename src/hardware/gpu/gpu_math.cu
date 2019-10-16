@@ -193,6 +193,18 @@ void gpu_mod_(Tensor *A, float v){
     check_cuda(cudaDeviceSynchronize(), "mod_");
 }
 
+void gpu_inv_(Tensor *A)
+{
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  setDims(A);
+
+  inv_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
+  check_cuda(cudaDeviceSynchronize(),"inv_");
+
+}
+
 void gpu_mult_(Tensor *A, float v) {
   int device=A->gpu_device;
   cudaSetDevice(device);

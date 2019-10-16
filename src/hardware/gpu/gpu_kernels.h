@@ -43,6 +43,7 @@ __global__ void log2_(float* a, long int size);
 __global__ void log10_(float* a, long int size);
 __global__ void logn_(float* a, long int size, float n);
 __global__ void mod_(float* a, long int size, float v);
+__global__ void inv_(float* a, long int size);
 __global__ void mult_(float* a, long int size, float v);
 __global__ void normalize_(float* a, long int size, float min_ori, float max_ori, float min, float max);
 __global__ void pow_(float* a, long int size, float exp);

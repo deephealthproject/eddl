@@ -101,6 +101,12 @@ void cpu_mod_(Tensor *A, float v){
   for (int i = 0; i < A->size; ++i) A->ptr[i] = ::fmod(A->ptr[i], v);
 }
 
+
+void cpu_inv_(Tensor *A){
+  #pragma omp parallel for
+  for (int i = 0; i < A->size; ++i) A->ptr[i] = 1/A->ptr[i];
+}
+
 void cpu_mult_(Tensor *A, float v) {
   #pragma omp parallel for
   for (int i = 0; i < A->size; ++i) A->ptr[i] *= v;

@@ -58,6 +58,10 @@ namespace eddl {
     void set(layer t, float v);
 
 // ---- CORE LAYERS ----
+    layer Softmax(layer parent);
+    layer Sigmoid(layer parent);
+    layer ReLu(layer parent);
+    
     layer Activation(layer parent, string activation, string name = "");
 
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
@@ -110,9 +114,13 @@ namespace eddl {
 
     layer Diff(layer l1, float k);
 
+    layer Diff(float k, layer l1);
+
     layer Div(layer l1, layer l2);
 
     layer Div(layer l1, float k);
+
+    layer Div(float k, layer l1);
 
     layer Exp(layer l);
 
@@ -126,6 +134,8 @@ namespace eddl {
 
     layer Mult(layer l1, float k);
 
+    layer Mult(float k,layer l1);
+
     layer Pow(layer l1, layer l2);
 
     layer Pow(layer l1, float k);
@@ -135,6 +145,8 @@ namespace eddl {
     layer Sum(layer l1, layer l2);
 
     layer Sum(layer l1, float k);
+
+    layer Sum(float k, layer l1);
 
 // ---- REDUCTION LAYERS ----
     layer ReduceMean(layer l, vector<int> axis = {0}, bool keepdims = false);
