@@ -12,13 +12,15 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "regularizer.h"
+#include "constraint.h"
 
 using namespace std;
 
-Regularizer::Regularizer(string name) {
-    this->name = name;
+
+CMaxNorm::CMaxNorm(float max_value, int axis) : Constraint("max_norm") {
+    // Todo: Implement
+    this->max_value;
+    this->axis;
 }
-float Regularizer::apply(Tensor *T) {
-    return 0;
-}
+
+float CMaxNorm::apply(Tensor* T) { return 0; }

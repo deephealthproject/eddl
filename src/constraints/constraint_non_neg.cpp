@@ -12,13 +12,13 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "regularizer.h"
+#include "constraint.h"
 
 using namespace std;
 
-Regularizer::Regularizer(string name) {
-    this->name = name;
+
+CNonNeg::CNonNeg() : Constraint("non_neg") {
+    // Todo: Implement
 }
-float Regularizer::apply(Tensor *T) {
-    return 0;
-}
+
+float CNonNeg::apply(Tensor* T) { return 0; }

@@ -30,21 +30,15 @@ Layer::Layer(string name, int dev) {
     this->dev = dev;
     lin = lout = 0;
     delta_bp = 0;
-    isplot=true;
-    inner=false;
 }
 
 Layer::~Layer()
 {
-  cout<<"OKL1\n";
   if (input!=nullptr) delete input;
-  cout<<"OKL2\n";
   if (output!=nullptr) delete output;
-  cout<<"OKL3\n";
   if (delta!=nullptr) delete delta;
-  cout<<"OKL4\n";
   if (target!=nullptr) delete target;
-  cout<<"OKL5\n";
+
 }
 
 void Layer::initialize() {
@@ -154,7 +148,7 @@ LinLayer::LinLayer(string name, int dev) : Layer(name, dev) {}
 
 void LinLayer::addchild(Layer *l) {
     child.push_back(l);
-    if (!l->inner) lout++;
+    lout++;
 }
 
 void LinLayer::addparent(Layer *l) {
@@ -171,7 +165,7 @@ MLayer::MLayer(string name, int dev) : Layer(name, dev) {}
 
 void MLayer::addchild(Layer *l) {
     child.push_back(l);
-    if (!l->inner) lout++;
+    lout++;
 }
 
 
