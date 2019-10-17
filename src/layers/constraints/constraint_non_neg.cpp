@@ -8,11 +8,11 @@
 */
 
 
-#ifndef EDDL_CALLBACKS_H
-#define EDDL_CALLBACKS_H
+#include "constraint.h"
 
-class Callback {
 
-};
+CNonNeg::CNonNeg() : Constraint("non_neg") {
+    // Todo: Implement
+}
 
-#endif //EDDL_CALLBACKS_H
+float CNonNeg::apply(Tensor* T) { return 0; }

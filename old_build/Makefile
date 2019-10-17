@@ -164,20 +164,20 @@ endif
 utils.o: $(SRC_PATH)/utils.cpp $(SRC_PATH)/utils.h $(SRC_PATH)/system_info.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/utils.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
-constraint_max_norm.o: $(SRC_PATH)/constraints/constraint_max_norm.cpp $(SRC_PATH)/constraints/constraint.h
-	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/constraints/constraint_max_norm.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+constraint.o: $(SRC_PATH)/layers/constraints/constraint.cpp $(SRC_PATH)/layers/constraints/constraint.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/constraints/constraint.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
-constraint_min_max_norm.o: $(SRC_PATH)/constraints/constraint_min_max_norm.cpp $(SRC_PATH)/constraints/constraint.h
-	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/constraints/constraint_min_max_norm.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+constraint_max_norm.o: $(SRC_PATH)/layers/constraints/constraint_max_norm.cpp $(SRC_PATH)/layers/constraints/constraint.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/constraints/constraint_max_norm.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
-constraint_non_neg.o: $(SRC_PATH)/constraints/constraint_non_neg.cpp $(SRC_PATH)/constraints/constraint.h
-	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/constraints/constraint_non_neg.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+constraint_min_max_norm.o: $(SRC_PATH)/layers/constraints/constraint_min_max_norm.cpp $(SRC_PATH)/layers/constraints/constraint.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/constraints/constraint_min_max_norm.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
-constraint_unit_norm.o: $(SRC_PATH)/constraints/constraint_unit_norm.cpp $(SRC_PATH)/constraints/constraint.h
-	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/constraints/constraint_unit_norm.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+constraint_non_neg.o: $(SRC_PATH)/layers/constraints/constraint_non_neg.cpp $(SRC_PATH)/layers/constraints/constraint.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/constraints/constraint_non_neg.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
-constraint.o: $(SRC_PATH)/constraints/constraint.cpp $(SRC_PATH)/constraints/constraint.h
-	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/constraints/constraint.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+constraint_unit_norm.o: $(SRC_PATH)/layers/constraints/constraint_unit_norm.cpp $(SRC_PATH)/layers/constraints/constraint.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/constraints/constraint_unit_norm.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 random.o: $(SRC_PATH)/random.cpp $(SRC_PATH)/random.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/random.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@

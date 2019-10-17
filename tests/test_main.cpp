@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
     t_input = new Tensor({1, 1, 5, 5}, conv2d_input, DEV_CPU);
     Tensor *t_conv2d_kernel = new Tensor({1, 1, 3, 3}, conv2d_kernel, DEV_CPU);
     t_input_sol = new Tensor({1, 1, 3, 3}, conv2d_sol, DEV_CPU);
-    t_input_big =  Tensor::randn({1, 1, 10, 10}, DEV_CPU);
+    t_input_big =  Tensor::randn({1, 128, 100, 100}, DEV_CPU);
     Tensor *t_conv2d_kernel_big = Tensor::randn({128, 512, 3, 3}, DEV_CPU);
 
 

@@ -8,18 +8,15 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-
 #include "constraint.h"
 
 using namespace std;
 
 
-CUnitNorm::CUnitNorm(int axis) : Constraint("unit_norm") {
+CMaxNorm::CMaxNorm(float max_value, int axis) : Constraint("max_norm") {
     // Todo: Implement
+    this->max_value;
     this->axis;
 }
 
-float CUnitNorm::apply(Tensor* T) { return 0; }
+float CMaxNorm::apply(Tensor* T) { return 0; }

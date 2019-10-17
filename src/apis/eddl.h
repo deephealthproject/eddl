@@ -16,7 +16,6 @@
 #include <pthread.h>
 
 #include "../net.h"
-#include "../callbacks/callbacks.h"
 #include "../initializers/initializer.h"
 #include "../losses/loss.h"
 #include "../metrics/metric.h"
@@ -38,7 +37,6 @@ namespace eddl {
 #define layer Layer*
 #define model Net*
 #define optimizer Optimizer*
-#define callback Callback*
 #define initializer Initializer*
 #define loss Loss*
 #define metric Metric*
@@ -192,13 +190,6 @@ namespace eddl {
     layer LSTM(layer parent, int units, int num_layers, bool use_bias = true, float dropout = .0f,
                bool bidirectional = false, string name = "");
 
-
-//    // ---- LR SCHEDULERS ----
-//    callback CosineAnnealingLR(int T_max, float eta_min, int last_epoch); //Todo: Implement
-//    callback ExponentialLR(float gamma, int last_epoch); //Todo: Implement
-//    callback MultiStepLR(const vector<int> &milestones, float gamma, int last_epoch); //Todo: Implement
-//    callback ReduceLROnPlateau(string metric, string mode, float factor, int patience, float threshold, string threshold_mode, int cooldown, float min_lr, float eps); //Todo: Implement
-//    callback StepLR(int step_size, float gamma, int last_epoch); //Todo: Implement
 
 // ---- INITIALIZERS ----
     initializer Constant(float value); //Todo: Implement

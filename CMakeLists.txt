@@ -135,7 +135,6 @@ endmacro()
 # Add the given directories to those the compiler uses to search for include files
 include_directories(src)
 include_directories(src/apis)
-include_directories(src/callbacks)
 include_directories(src/hardware/cpu)
 include_directories(src/hardware/cpu/nn)
 include_directories(src/hardware/gpu)
@@ -164,7 +163,6 @@ SET(SOURCE_DIR "src")
 SET(CPP_SOURCES
         src/apis/eddl.cpp
         src/apis/eddl.h
-        src/callbacks/callbacks.h
         src/hardware/cpu/cpu_hw.h
         src/hardware/cpu/cpu_comparison.cpp
         src/hardware/cpu/cpu_core.cpp
@@ -187,6 +185,12 @@ SET(CPP_SOURCES
         src/initializers/initializer_orthogonal.cpp
         src/initializers/initializer_random_normal.cpp
         src/initializers/initializer_random_uniform.cpp
+        src/layers/constraints/constraint.cpp
+        src/layers/constraints/constraint.h
+        src/layers/constraints/constraint_max_norm.cpp
+        src/layers/constraints/constraint_min_max_norm.cpp
+        src/layers/constraints/constraint_non_neg.cpp
+        src/layers/constraints/constraint_unit_norm.cpp
         src/layers/conv/layer_conv.cpp
         src/layers/conv/layer_conv.h
         src/layers/conv/layer_transposed_conv.cpp
