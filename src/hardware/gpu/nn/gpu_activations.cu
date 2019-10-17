@@ -12,6 +12,12 @@
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
 
+#include <thrust/device_ptr.h>
+#include <thrust/extrema.h>
+#include <thrust/functional.h>
+#include <thrust/device_vector.h>
+#include <thrust/iterator/transform_iterator.h>
+
 #include "gpu_nn.h"
 #include "gpu_nn_kernels.h"
 
@@ -65,39 +71,44 @@ void gpu_d_sigmoid(Tensor *D,Tensor *I,Tensor *PD){
   check_cuda(cudaDeviceSynchronize(),"gpu_relu");
 }
 
-
 void gpu_softmax(Tensor *A,Tensor *B){
+
   int device=A->gpu_device;
   cudaSetDevice(device);
 
-
-/*
-dimBlock.x=sp->row;
- dimGrid.x=1;
- int ops = sp->col*sp->row;
-int sample_ndim=sp->col;
-
-double alfa=1;
-float* auxE=NULL;
-  ops=sp->row;
-          auxE = makeTensor(sp->col,sp->row);
-          set_sc(auxE, 0.0, sp);
-  	Softmax<<<dimBlock,dimGrid>>>(E,N,auxE,sample_ndim,ops);
-*/
-
   int r,c;
-
   r=A->shape[0];
   c=A->shape[1];
 
   dim3 dimGrid(1);
-  dim3 dimBlock(r);
+  dim3 dimBlock(MAX_TPB);
 
-  float* aux=gpu_create_tensor(device,A->size);
-  softmax<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,aux,c,A->size);
-  check_cuda(cudaDeviceSynchronize(),"gpu_relu");
-  gpu_delete_tensor(device,aux);
+  int i;
+  for(i=0;i<r/MAX_TPB;i++) {
+    float *aptr=A->ptr+(i*MAX_TPB*c);
+    float *bptr=B->ptr+(i*MAX_TPB*c);
+    int size=MAX_TPB*c;
+
+    float* aux=gpu_create_tensor(device,size);
+    softmax<<<dimGrid,dimBlock>>>(aptr,bptr,aux,c,size);
+    check_cuda(cudaDeviceSynchronize(),"gpu_relu");
+    gpu_delete_tensor(device,aux);
+  }
+
+  if (r%MAX_TPB) {
+    dim3 dimGridm(1);
+    dim3 dimBlockm(r%MAX_TPB);
+    float *aptr=A->ptr+(i*MAX_TPB*c);
+    float *bptr=B->ptr+(i*MAX_TPB*c);
+    int size=(r%MAX_TPB)*c;
+
+    float* aux=gpu_create_tensor(device,size);
+    softmax<<<dimGridm,dimBlockm>>>(aptr,bptr,aux,c,size);
+    check_cuda(cudaDeviceSynchronize(),"gpu_relu");
+    gpu_delete_tensor(device,aux);
+  }
 }
+
 
 
 void gpu_d_softmax(Tensor *D,Tensor *I,Tensor *PD){
