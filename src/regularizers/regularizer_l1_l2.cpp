@@ -31,7 +31,7 @@ void RL1L2::apply(Tensor* T) {
   Tensor::el_mult(S,B,B,0);
   Tensor::add(1.0f, T, -this->l1, B, T, 0);
 
-  Tensor::add(this->l1, T, -this->l2, A, T, 0);
+  Tensor::add(1.0f, T, -this->l2, A, T, 0);
 
   delete A;
   delete B;
