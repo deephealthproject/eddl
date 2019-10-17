@@ -225,7 +225,7 @@ void Net::plot(string fname) {
 /////////////////////////////////////////
 void Net::initialize() {
     for (int i = 0; i != layers.size(); i++)
-        layers[i]->initialize();
+        layers[i]->initialize(this->init);
 }
 
 /////////////////////////////////////////
@@ -366,9 +366,8 @@ void Net::resize(int b)
 
 
 /////////////////////////////////////////
-void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
+void Net::build(Optimizer *opt, vloss lo, vmetrics me, Initializer* init) {
     fprintf(stdout, "Build net %s\n",name.c_str());
-
 
     if (lo.size() != lout.size())
         msg("Loss list size does not match output list", "Net.build");
@@ -399,7 +398,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
     // set optimizer
     optimizer = opt;
     optimizer->setlayers(layers);
-    // Initialize fiting errors vector
+    // Initialize fitting errors vector
     for (int i = 0; i < lo.size(); i++) {
         fiterr.push_back(0.0);
         fiterr.push_back(0.0);
@@ -415,7 +414,8 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
     // set metrics
     this->metrics = vmetrics(me);
 
-
+    // set global initializer
+    this->init = init;
 
     // forward sort
     fts();
@@ -524,7 +524,6 @@ void Net::split(int c, int todev) {
           if ((layers[j]->lin==0)&&(!isIn(layers[j],lin,ind))) {
             vlayer par;
 
-
             if (todev == DEV_CPU) {
               Layer *n=layers[j]->share(i, bs, par);
               nlayers.push_back(n);
@@ -532,8 +531,6 @@ void Net::split(int c, int todev) {
               cout<<n->name<<" "<<n->output->sum_abs()<<"\n";
             }
             else nlayers.push_back(layers[j]->clone(c, bs, par, todev + devsel[i]));
-
-
         }
 
         for (k = 0; k < layers.size(); k++) {
@@ -572,12 +569,10 @@ void Net::split(int c, int todev) {
         char cname[100];
         sprintf(cname,"snet_%d",i);
         snets[i]->name=cname;
-        snets[i]->build(optimizer->clone(), losses, metrics);
+        snets[i]->build(optimizer->clone(), losses, metrics, init);
 
         //cout<<summary();
         snets[i]->plot("kk.pdf");
-
-
     }
 
 /*
@@ -664,8 +659,8 @@ void Net::applygrads() {
 }
 
 
-void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs){
-    build(opt, lo, me);
+void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, Initializer* init){
+    build(opt, lo, me, init);
     set_compserv(cs);
 }
 

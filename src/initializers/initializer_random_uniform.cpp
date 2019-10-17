@@ -24,4 +24,4 @@ IRandomUniform::IRandomUniform(float minval, float maxval, int seed) : Initializ
     this->seed = seed;
 
 }
-float IRandomUniform::set_weights(Tensor* T) { return 0; }
+void IRandomUniform::apply(Tensor* params){}

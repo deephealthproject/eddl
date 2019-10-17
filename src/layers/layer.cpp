@@ -13,7 +13,6 @@
 #include <iostream>
 
 #include "layer.h"
-#include "../tensor/tensor.h"
 #include "operators/layer_operators.h"
 
 using namespace std;
@@ -41,15 +40,9 @@ Layer::~Layer()
 
 }
 
-void Layer::initialize() {
-
+void Layer::initialize(Initializer *init) {
     for (int i = 0; i != params.size(); i++) {
-        if (params[i]->ndim == 1)
-            params[i]->rand_signed_uniform(0.1);
-        else if (params[i]->ndim == 2)
-            params[i]->rand_normal(0.0, sqrt(2.0 / params[i]->shape[0]));
-        else
-            params[i]->rand_normal(0.0, sqrt(2.0 / (params[i]->size / params[i]->shape[0])));
+        init->apply(params[i]);
     }
 }
 
@@ -168,7 +161,6 @@ void MLayer::addchild(Layer *l) {
     lout++;
 }
 
-
 void MLayer::addparent(Layer *l) {
     parent.push_back(l);
     lin++;
@@ -178,39 +170,25 @@ void MLayer::addparent(Layer *l) {
 ///////////////////////////////////////
 /// OP OVERLOAD
 Layer* operator+(Layer &l1,Layer &l2) {
-
     return  new LSum(&l1, &l2,"",l1.dev);
-
-}
-Layer* operator+(Layer &l,float f)
-{
-
-  return new LSum(&l, f,"",l.dev);
-
 }
 
-Layer* operator+(float f,Layer &l)
-{
-
+Layer* operator+(Layer &l,float f){
   return new LSum(&l, f,"",l.dev);
+}
 
+Layer* operator+(float f,Layer &l){
+  return new LSum(&l, f,"",l.dev);
 }
 
 Layer* operator*(Layer &l1,Layer &l2) {
-
-    return  new LMult(&l1, &l2,"",l1.dev);
-
-}
-Layer* operator*(Layer &l,float f)
-{
-
-  return new LMult(&l, f,"",l.dev);
-
+    return  new LMult(&l1, &l2,"", l1.dev);
 }
 
-Layer* operator*(float f,Layer &l)
-{
+Layer* operator*(Layer &l,float f){
+  return new LMult(&l, f,"", l.dev);
+}
 
-  return new LMult(&l, f,"",l.dev);
-
+Layer* operator*(float f,Layer &l){
+  return new LMult(&l, f,"", l.dev);
 }

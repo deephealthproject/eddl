@@ -444,14 +444,11 @@ namespace eddl {
         return new Net(in, out);
     }
 
-    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me) {
-        build(net, o, lo, me, new CompServ(std::thread::hardware_concurrency(), {}, {}));
-    }
-
-    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs) {
+    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs, Initializer* init) {
         vector<Loss *> l;
         vector<Metric *> m;
 
+        // TODO: Fix this sh*t
         // Replace string by functions
         for (const auto &li : lo) {
             l.push_back(getLoss(li));
@@ -460,7 +457,17 @@ namespace eddl {
             m.push_back(getMetric(mi));
         }
 
-        net->build(o, l, m, cs);
+        // Assign default computing service
+        if (cs== nullptr){
+            cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
+        }
+
+        // Assign default initializer
+        if (init== nullptr){
+            init = new IGlorotUniform();
+        }
+
+        net->build(o, l, m, cs, init);
     }
 
     string summary(model m) {
@@ -475,11 +482,8 @@ namespace eddl {
         }
 
         fprintf(stderr, "reading bin file\n");
-
         m->load(fe);
-
         fclose(fe);
-
     }
 
     void save(model m, string fname) {

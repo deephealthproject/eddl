@@ -22,4 +22,4 @@ IConstant::IConstant(float value) : Initializer("constant") {
     this->value = value;
 }
 
-float IConstant::set_weights(Tensor* T) { return 0; }
+void IConstant::apply(Tensor* params){}

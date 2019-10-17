@@ -13,6 +13,9 @@
 
 #include <string>
 #include <cstdio>
+
+#include "../initializers/initializer.h"
+
 #include "../tensor/tensor.h"
 #include "../tensor/tensor_reduction.h"
 #include "../tensor/nn/tensor_nn.h"
@@ -48,7 +51,7 @@ public:
     virtual ~Layer();
 
 
-    void initialize();
+    void initialize(Initializer *init);
 
 
     void save(FILE *fe);

@@ -21,4 +21,4 @@ IIdentity::IIdentity(float gain) : Initializer("identity") {
     // Todo: Implement
     this->gain = gain;
 }
-float IIdentity::set_weights(Tensor* T) { return 0; }
+void IIdentity::apply(Tensor* params){}

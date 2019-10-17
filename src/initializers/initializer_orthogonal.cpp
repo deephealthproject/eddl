@@ -23,4 +23,4 @@ IOrthogonal::IOrthogonal(float gain, int seed) : Initializer("orthogonal") {
     this->seed = seed;
 
 }
-float IOrthogonal::set_weights(Tensor* T) { return 0; }
+void IOrthogonal::apply(Tensor* params){}

@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <cmath>
 
 #include "initializer.h"
 
@@ -21,4 +22,12 @@ IGlorotUniform::IGlorotUniform(int seed) : Initializer("glorot_uniform") {
     // Todo: Implement
     this->seed = seed;
 }
-float IGlorotUniform::set_weights(Tensor* T) { return 0; }
+void IGlorotUniform::apply(Tensor* params) {
+    if (params->ndim == 1)
+        params->rand_signed_uniform(0.1f);
+    else if (params->ndim == 2)
+        params->rand_normal(0.0f, ::sqrtf(2.0f / (float)params->shape[0]));
+    else
+        params->rand_normal(0.0f, ::sqrtf(2.0f / ((float)params->size / params->shape[0])));
+
+}

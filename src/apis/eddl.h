@@ -224,9 +224,7 @@ namespace eddl {
 // ---- MODEL METHODS ----
     model Model(vlayer in, vlayer out);
 
-    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me);
-
-    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs);
+    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr, Initializer* init=nullptr);
 
     string summary(model m);
 

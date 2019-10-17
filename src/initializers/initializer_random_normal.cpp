@@ -24,4 +24,4 @@ IRandomNormal::IRandomNormal(float mean, float stdev, int seed) : Initializer("r
     this->seed = seed;
 
 }
-float IRandomNormal::set_weights(Tensor* T) { return 0; }
+void IRandomNormal::apply(Tensor* params){}

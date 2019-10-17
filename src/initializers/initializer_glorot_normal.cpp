@@ -21,4 +21,4 @@ IGlorotNormal::IGlorotNormal(int seed) : Initializer("glorot_normal") {
     // Todo: Implement
     this->seed = seed;
 }
-float IGlorotNormal::set_weights(Tensor* T) { return 0; }
+void IGlorotNormal::apply(Tensor* params){}
