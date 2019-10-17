@@ -47,7 +47,7 @@ void gpu_d_relu(Tensor *D,Tensor *I,Tensor *PD) {
   setDims(D)
 
   d_relu<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,D->size);
-  check_cuda(cudaDeviceSynchronize(),"gpu_relu");
+  check_cuda(cudaDeviceSynchronize(),"gpu_d_relu");
 }
 
 
@@ -58,7 +58,7 @@ void gpu_sigmoid(Tensor *A,Tensor *B){
   setDims(A);
 
   sigmoid<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->size);
-  check_cuda(cudaDeviceSynchronize(),"gpu_relu");
+  check_cuda(cudaDeviceSynchronize(),"gpu_sigmoid");
 }
 
 void gpu_d_sigmoid(Tensor *D,Tensor *I,Tensor *PD){
@@ -68,7 +68,7 @@ void gpu_d_sigmoid(Tensor *D,Tensor *I,Tensor *PD){
   setDims(D)
 
   d_sigmoid<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,D->size);
-  check_cuda(cudaDeviceSynchronize(),"gpu_relu");
+  check_cuda(cudaDeviceSynchronize(),"gpu_d_sigmoid");
 }
 
 void gpu_softmax(Tensor *A,Tensor *B){
@@ -91,7 +91,7 @@ void gpu_softmax(Tensor *A,Tensor *B){
 
     float* aux=gpu_create_tensor(device,size);
     softmax<<<dimGrid,dimBlock>>>(aptr,bptr,aux,c,size);
-    check_cuda(cudaDeviceSynchronize(),"gpu_relu");
+    check_cuda(cudaDeviceSynchronize(),"gpu_softmax");
     gpu_delete_tensor(device,aux);
   }
 
@@ -104,19 +104,7 @@ void gpu_softmax(Tensor *A,Tensor *B){
 
     float* aux=gpu_create_tensor(device,size);
     softmax<<<dimGridm,dimBlockm>>>(aptr,bptr,aux,c,size);
-    check_cuda(cudaDeviceSynchronize(),"gpu_relu");
+    check_cuda(cudaDeviceSynchronize(),"gpu_softmax");
     gpu_delete_tensor(device,aux);
   }
-}
-
-
-
-void gpu_d_softmax(Tensor *D,Tensor *I,Tensor *PD){
-  int device=D->gpu_device;
-  cudaSetDevice(device);
-
-  setDims(D)
-
-  d_relu<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,D->size);
-  check_cuda(cudaDeviceSynchronize(),"gpu_relu");
 }
