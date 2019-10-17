@@ -22,10 +22,13 @@ RL1::RL1(float l1) : Regularizer("l1") {
 }
 
 void RL1::apply(Tensor* T) {
+    Tensor *S = T->clone();
     Tensor *B = T->clone();
 
-    B->abs_();
-    Tensor::add(1.0f, T, this->l1, B, T, 0.0);
+    S->sign_();
+    Tensor::el_mult(S,B,B,0);
+    Tensor::add(1.0f, T, -this->l1, B, T, 0);
 
     delete B;
+    delete S;
 }

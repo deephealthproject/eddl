@@ -64,6 +64,7 @@ public:
     static int total_layers;
 
     LInput(Tensor *in, string name, int dev);
+    ~LInput() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

@@ -25,6 +25,12 @@ LInput::LInput(Tensor *in, string name, int dev) : LinLayer(name, dev) {
     delta = new Tensor(input->getShape(), dev);
 }
 
+LInput::~LInput()
+{
+  delete output;
+  output=input=nullptr;
+
+}
 
 // virtual
 void LInput::resize(int batch){

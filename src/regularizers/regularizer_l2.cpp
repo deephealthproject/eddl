@@ -24,8 +24,7 @@ RL2::RL2(float l2) : Regularizer("l2") {
 void RL2::apply(Tensor* T) {
     Tensor *B = T->clone();
 
-    B->sqr_();
-    Tensor::add(1.0f, T, this->l2, B, T, 0.0);
+    Tensor::add(1.0f, T, -this->l2, B, T, 0);
 
     delete B;
 }

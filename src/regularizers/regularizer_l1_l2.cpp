@@ -23,13 +23,17 @@ RL1L2::RL1L2(float l1, float l2) : Regularizer("l1_l2") {
 }
 
 void RL1L2::apply(Tensor* T) {
-    Tensor *A = T->clone();
-    Tensor *B = T->clone();
+  Tensor *S = T->clone();
+  Tensor *B = T->clone();
+  Tensor *A = T->clone();
 
-    A->abs_();
-    B->sqr_();
-    Tensor::add(this->l1, A, this->l2, B, T, 0.0);
+  S->sign_();
+  Tensor::el_mult(S,B,B,0);
+  Tensor::add(1.0f, T, -this->l1, B, T, 0);
 
-    delete A;
-    delete B;
+  Tensor::add(this->l1, T, -this->l2, A, T, 0);
+
+  delete A;
+  delete B;
+  delete S;
 }

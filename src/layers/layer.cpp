@@ -33,11 +33,9 @@ Layer::Layer(string name, int dev) {
 
 Layer::~Layer()
 {
-  if (input!=nullptr) delete input;
   if (output!=nullptr) delete output;
   if (delta!=nullptr) delete delta;
   if (target!=nullptr) delete target;
-
 }
 
 void Layer::initialize(Initializer *init) {

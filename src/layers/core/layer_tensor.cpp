@@ -90,9 +90,8 @@ void LTensor::resize(int batch){
 
 LTensor::~LTensor()
 {
-  delete input;
-  delete delta;
-  delta = input = output = nullptr;
+  delete output;
+  input = output = nullptr;
 }
 
 /// OP OVERLOAD
