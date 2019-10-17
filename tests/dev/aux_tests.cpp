@@ -8,6 +8,7 @@
 
 #include "../../src/tensor/tensor.h"
 #include "../../src/tensor/nn/tensor_nn.h"
+#include "../../src/layers/core/layer_core.h"
 #include "../../src/descriptors/descriptors.h"
 #include "../../src/descriptors/descriptors.h"
 
@@ -146,5 +147,32 @@ TestResult run_activation(Tensor* t_input, string act, int dev, int runs){
     TestResult result{};
     result.time = elapsed_secs;
     result.tensor = t_output;
+    return result;
+}
+
+
+
+TestResult run_batchnorm(Tensor* t_input, int dev, int runs){
+    // Clone input tensor
+    t_input = t_input->clone();
+
+    // Move to device
+    if (dev == DEV_GPU){
+        t_input->ToGPU();
+    }
+
+    LTensor* l_t = new LTensor(t_input->getShape(), t_input->ptr, t_input->device);
+    LBatchNorm* l_bn = new LBatchNorm(l_t, 0.9f, 0.001f, true, "", dev);
+
+    clock_t begin = clock();
+    for(int i=0; i<runs; i++){
+        l_bn->forward();
+    }
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
+    TestResult result{};
+    result.time = elapsed_secs;
+    result.tensor = l_bn->output;
     return result;
 }
