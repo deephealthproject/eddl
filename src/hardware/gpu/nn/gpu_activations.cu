@@ -71,35 +71,6 @@ void gpu_d_sigmoid(Tensor *D,Tensor *I,Tensor *PD){
   check_cuda(cudaDeviceSynchronize(),"gpu_relu");
 }
 
-
-class exp_max_functor {
-
-    float max;
-
-    public:
-
-        exp_max_functor(float m_) { max = m_; }
-
-        __host__ __device__ float operator()(float x) const
-        {
-            return expf(x-max);
-        }
-};
-
-class inv_sum_functor {
-
-    float sum;
-
-    public:
-
-        inv_sum_functor(float s_) { sum = s_; }
-
-        __host__ __device__ float operator()(float x) const
-        {
-            return x/sum;
-        }
-};
-
 void gpu_softmax(Tensor *A,Tensor *B){
 
   int device=A->gpu_device;
@@ -108,19 +79,6 @@ void gpu_softmax(Tensor *A,Tensor *B){
   int r,c;
   r=A->shape[0];
   c=A->shape[1];
-
-    /*
-    check_cuda(cudaMemcpy(B->ptr,A->ptr,A->size*sizeof(float),cudaMemcpyDeviceToDevice),"gpu_copy_gpu");
-    for(int i=0;i<r;i++,B->ptr) {
-      float *ptr=B->ptr+(i*c);
-      thrust::device_ptr<float> dptr = thrust::device_pointer_cast(ptr);
-
-      float max=*(thrust::max_element(dptr, dptr + c));
-      thrust::transform(dptr, dptr + c, dptr,exp_max_functor(max));
-      float sum=thrust::reduce(dptr,dptr+c);
-      thrust::transform(dptr, dptr + c, dptr,inv_sum_functor(sum));
-    }
-    */
 
   dim3 dimGrid(1);
   dim3 dimBlock(MAX_TPB);
