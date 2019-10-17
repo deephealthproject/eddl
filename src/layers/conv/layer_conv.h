@@ -15,6 +15,7 @@
 #include <stdio.h>
 
 #include "../layer.h"
+#include "../../regularizers/regularizer.h"
 
 #define TRMODE 1
 #define TSMODE 0
@@ -26,6 +27,7 @@ using namespace std;
 class LConv : public LinLayer {
 public:
     static int total_layers;
+    Regularizer *reg;
 
     ConvolDescriptor *cd;
 

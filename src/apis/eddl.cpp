@@ -71,9 +71,10 @@ namespace eddl {
 
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
                const vector<int> &strides, string padding, int groups, const vector<int> &dilation_rate,
-               bool use_bias, string name) {
-        return new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name,
-                         DEV_CPU);
+               bool use_bias, Regularizer *reg, string name) {
+        LConv *l = new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU);
+        l->reg = reg;
+        return l;
     }
 
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
@@ -83,8 +84,10 @@ namespace eddl {
                           DEV_CPU);
     }
 
-    layer Dense(layer parent, int ndim, bool use_bias, string name) {
-        return new LDense(parent, ndim, use_bias, name, DEV_CPU);
+    layer Dense(layer parent, int ndim, bool use_bias, Regularizer *reg, string name) {
+        LDense *l = new LDense(parent, ndim, use_bias, name, DEV_CPU);
+        l->reg = reg;
+        return l;
     }
 
     layer Embedding(int input_dim, int output_dim, string name) {
@@ -400,6 +403,17 @@ namespace eddl {
         return new IOrthogonal(gain, seed);
     }
 
+    // ---- REGULARIZERS ----
+    regularizer L1(float l1){
+        return new RL1(l1);
+    }
+    regularizer L2(float l2){
+        return new RL2(l2);
+    }
+
+    regularizer L1L2(float l1, float l2){
+        return new RL1L2(l1, l2);
+    }
 
     // ---- COMPUTING SERVICES ----
     compserv CS_CPU(int th) {

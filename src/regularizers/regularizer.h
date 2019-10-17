@@ -23,32 +23,32 @@ public:
     string name;
     // Todo: Implement
     explicit Regularizer(string name);
-    virtual float apply(Tensor *T);
+    virtual void apply(Tensor *T) = 0;
 };
 
 class RL1 : public Regularizer {
 public:
-    float l; // regularization factor
+    float l1; // regularization factor
 
-    explicit RL1(float l);
-    float apply(Tensor *T) override;
+    explicit RL1(float l1);
+    void apply(Tensor *T) override;
 };
 
 class RL2 : public Regularizer {
 public:
-    float l; // regularization factor
+    float l2; // regularization factor
 
-    explicit RL2(float l);
-    float apply(Tensor *T) override;
+    explicit RL2(float l2);
+    void apply(Tensor *T) override;
 };
 
-class RL1_L2 : public Regularizer {
+class RL1L2 : public Regularizer {
 public:
-    float l1; // regularization factor for l1
-    float l2; // regularization factor for l1
+    float l1;
+    float l2;
 
-    explicit RL1_L2(float l1, float l2);
-    float apply(Tensor *T) override;
+    explicit RL1L2(float l1, float l2);
+    void apply(Tensor *T) override;
 };
 
 #endif //EDDL_REGULARIZER_H

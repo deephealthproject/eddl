@@ -17,6 +17,7 @@
 
 #include "../net.h"
 #include "../initializers/initializer.h"
+#include "../regularizers/regularizer.h"
 #include "../losses/loss.h"
 #include "../metrics/metric.h"
 
@@ -38,6 +39,7 @@ namespace eddl {
 #define model Net*
 #define optimizer Optimizer*
 #define initializer Initializer*
+#define regularizer Regularizer*
 #define loss Loss*
 #define metric Metric*
 #define compserv CompServ*
@@ -65,12 +67,12 @@ namespace eddl {
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
                const vector<int> &strides = {1, 1}, string padding = "same", int groups = 1,
                const vector<int> &dilation_rate = {1, 1},
-               bool use_bias = true, string name = ""); //Todo: Implement
+               bool use_bias = true, Regularizer *reg=nullptr, string name = "");
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding = "same",
                 const vector<int> &dilation_rate = {1, 1},
                 const vector<int> &strides = {1, 1}, bool use_bias = true, string name = ""); //Todo: Implement
-    layer Dense(layer parent, int ndim, bool use_bias = true, string name = ""); //Todo: Implement
+    layer Dense(layer parent, int ndim, bool use_bias = true, Regularizer *reg=nullptr, string name = "");
     layer Embedding(int input_dim, int output_dim, string name = ""); //Todo: Implement
     layer Input(const vector<int> &shape, string name = "");
 
@@ -102,7 +104,7 @@ namespace eddl {
 
 // ---- NORMALIZATION LAYERS ----
     layer BatchNormalization(layer parent, float momentum = 0.9f, float epsilon = 0.001f, bool affine = true,
-                             string name = ""); //Todo: Implement
+                             string name = "");
     layer Dropout(layer parent, float rate, string name = ""); //Todo: Implement
 
 // ---- OPERATOR LAYERS ----
@@ -200,14 +202,15 @@ namespace eddl {
     initializer RandomUniform(float minval, float maxval, int seed); //Todo: Implement
     initializer Orthogonal(float gain, int seed); //Todo: Implement
 
+    // ---- REGULARIZERS ----
+    regularizer L1(float l1=0.01f);
+    regularizer L2(float l2=0.01f);
+    regularizer L1L2(float l1=0.01f, float l2=0.01f);
 
 // ---- COMPUTING SERVICES ----
     compserv CS_CPU(int th=-1);
-
     compserv CS_GPU(const vector<int> &g,int lsb=1);
-
     compserv CS_FGPA(const vector<int> &f,int lsb=1);
-
     compserv CS_COMPSS(char* path);
 
 

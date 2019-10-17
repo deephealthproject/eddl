@@ -17,9 +17,15 @@
 using namespace std;
 
 
-RL2::RL2(float value) : Regularizer("l2") {
-    // Todo: Implement
-    this->l = l; // regularization factor
+RL2::RL2(float l2) : Regularizer("l2") {
+    this->l2 = l2;
 }
 
-float RL2::apply(Tensor* T) { return 0; }
+void RL2::apply(Tensor* T) {
+    Tensor *B = T->clone();
+
+    B->sqr_();
+    Tensor::add(1.0f, T, this->l2, B, T, 0.0);
+
+    delete B;
+}

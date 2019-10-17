@@ -53,6 +53,9 @@ void  LDense::resize(int batch){
 void LDense::forward() {
     Tensor::mult2D(input, 0, W, 0, output, 0);
     if (use_bias) Tensor::sum2D_rowwise(output, bias, output);
+
+    // Regularizer
+    if(this->reg != nullptr) {this->reg->apply(this->W);}
 }
 
 void LDense::backward() {
@@ -66,7 +69,6 @@ void LDense::backward() {
         //1: note that increment parent delta
         Tensor::mult2D(delta, 0, W, 1, parent[0]->delta, 1);
     }
-
 }
 
 

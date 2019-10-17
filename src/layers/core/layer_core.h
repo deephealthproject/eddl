@@ -15,6 +15,7 @@
 #include <stdio.h>
 
 #include "../layer.h"
+#include "../../regularizers/regularizer.h"
 
 #define TRMODE 1
 #define TSMODE 0
@@ -104,9 +105,10 @@ public:
 /// Dense Layer
 class LDense : public LinLayer {
 public:
+    static int total_layers;
     int ndim;
     bool use_bias;  // TODO: Implement
-    static int total_layers;
+    Regularizer *reg;
 
     LDense(Layer *parent, int ndim, bool use_bias, string name, int dev);
 

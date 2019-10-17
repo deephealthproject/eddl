@@ -151,6 +151,7 @@ include_directories(src/layers/recurrent)
 include_directories(src/losses)
 include_directories(src/metrics)
 include_directories(src/optimizers)
+include_directories(src/regularizers)
 include_directories(src/tensor)
 include_directories(src/descriptors)
 # Temp
@@ -272,6 +273,11 @@ SET(CPP_SOURCES
         src/descriptors/descriptor_conv.cpp
         src/descriptors/descriptor_pool.cpp
         src/descriptors/descriptor_reduce.cpp
+        src/regularizers/regularizer.h
+        src/regularizers/regularizer.cpp
+        src/regularizers/regularizer_l1.cpp
+        src/regularizers/regularizer_l1_l2.cpp
+        src/regularizers/regularizer_l2.cpp
         src/tensor/tensor.h
         src/tensor/tensor.cpp
         src/tensor/tensor_comparison.cpp

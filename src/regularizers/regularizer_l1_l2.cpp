@@ -17,10 +17,19 @@
 using namespace std;
 
 
-RL1_L2::RL1_L2(float l1, float l2) : Regularizer("l1_l2") {
-    // Todo: Implement
-    this->l1 = l1; // regularization factor for l1
-    this->l2 = l2; // regularization factor for l1
+RL1L2::RL1L2(float l1, float l2) : Regularizer("l1_l2") {
+    this->l1 = l1;
+    this->l2 = l2;
 }
 
-float RL1_L2::apply(Tensor* T) { return 0; }
+void RL1L2::apply(Tensor* T) {
+    Tensor *A = T->clone();
+    Tensor *B = T->clone();
+
+    A->abs_();
+    B->sqr_();
+    Tensor::add(this->l1, A, this->l2, B, T, 0.0);
+
+    delete A;
+    delete B;
+}

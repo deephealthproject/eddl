@@ -19,6 +19,4 @@ using namespace std;
 Regularizer::Regularizer(string name) {
     this->name = name;
 }
-float Regularizer::apply(Tensor *T) {
-    return 0;
-}
+
