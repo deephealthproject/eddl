@@ -37,6 +37,8 @@ public:
 
     LTensor(const vector<int> shape, float *fptr,int dev);
 
+    LTensor *fromCSV(string fname);
+
     explicit LTensor(Layer *l);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;

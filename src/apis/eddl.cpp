@@ -35,6 +35,12 @@ namespace eddl {
         return new LTensor(fname);
     }
 
+    tensor T_fromCSV(string fname)
+    {
+      tensor n;
+      return n->fromCSV(fname);
+    }
+
     float *T_getptr(layer T) {
         return T->input->ptr;
     }

@@ -49,6 +49,7 @@ namespace eddl {
     tensor T(const vector<int> &shape, float *ptr);
 
     tensor T_load(string fname);
+    tensor T_fromCSV(string fname);
 
     float *T_getptr(layer T);
 
@@ -61,7 +62,7 @@ namespace eddl {
     layer Softmax(layer parent);
     layer Sigmoid(layer parent);
     layer ReLu(layer parent);
-    
+
     layer Activation(layer parent, string activation, string name = "");
 
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
