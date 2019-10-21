@@ -37,6 +37,7 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev) : LinLaye
     // Set default name
     if(name.empty()) this->name = "conv" + to_string(++total_layers);
 
+    this->reg = nullptr;
     cd = D;
 
     input = parent->output;
@@ -97,6 +98,8 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
     n->params.push_back(n->cd->K);
     n->params.push_back(n->cd->bias);
 
+    n->reg=reg;
+
     return n;
 }
 
@@ -104,7 +107,8 @@ Layer *LConv::clone(int c, int bs, vector<Layer *> p, int todev) {
     LConv *n = new LConv(p[0], {cd->ksize[0], cd->ksize[1], cd->ksize[2]}, {cd->stride[0], cd->stride[1]},
                          {cd->pad[0], cd->pad[1]}, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
-
+    n->reg=reg;
+    
     return n;
 }
 
