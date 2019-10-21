@@ -17,14 +17,17 @@
 using namespace std;
 
 
-
+int total_ok = 0;
+int total_errors = 0;
 
 void pretty_res(string text, bool res, string extra=""){
     cout << "===================" << endl;
     cout << text << ": ";
     if(res){
+        total_ok += 1;
         cout << "OK!";
     }else{
+        total_errors += 1;
         cout << "FAILED!";
     }
     cout << extra << endl;
@@ -178,4 +181,30 @@ int main(int argc, char **argv) {
 
     // Print results
     print_results("UpSampling", res_big_cpu, res_big_gpu);
+
+
+    // *** [Math operations] *****************************************
+    vector<string> math_ops = {"abs", "acos", "add", "asin", "atan", "ceil", "clamp", "cos", "cosh", "exp", "inv",
+                               "floor", "log", "log2", "log10", "logn", "mod", "mult", "normalize", "pow", "reciprocal",
+                               "remainder", "round", "rsqrt", "sigmoid", "sign", "sin", "sinh", "sqr", "sqrt", "tan",
+                               "tanh", "trunc"};
+    for (auto op:math_ops){
+            t_input_big = Tensor::randn({1000, 1000}, DEV_CPU);
+            res_big_cpu = run_tensor_op(t_input_big, op, DEV_CPU, 1);
+            res_big_gpu = run_tensor_op(t_input_big, op, DEV_GPU, 1);
+            print_results(op, res_big_cpu, res_big_gpu);
+    }
+
+
+    // *** [Summary] *****************************************
+    float total_tests = total_ok + total_errors;
+    cout << "" << endl;
+    cout << "*************************************************" << endl;
+    cout << "*** SUMMARY: ************************************" << endl;
+    cout << "*************************************************" << endl;
+    cout << "Total tests: " << total_ok + total_errors << endl;
+    cout << "\t- Total ok: " << total_ok << " (" << (int)((float)total_ok/total_tests*100.0f) << "%)" << endl;
+    cout << "\t- Total errors: " << total_errors << " (" << (int)((float)total_errors/total_tests*100.0f) << "%)" << endl;
+    cout << "" << endl;
+
 }

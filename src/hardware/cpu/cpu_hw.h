@@ -38,7 +38,6 @@ void cpu_rand_binary(Tensor *A, float v);
 void cpu_rand_normal(Tensor *A, float m, float s, bool fast_math);  // TODO: Don't like it
 
 // CPU: Math (in-place)
-void cpu_inv_(Tensor *A);
 void cpu_abs_(Tensor *A);
 void cpu_acos_(Tensor *A);
 void cpu_add_(Tensor *A, float v);
@@ -49,6 +48,7 @@ void cpu_clamp_(Tensor *A, float min, float max);
 void cpu_cos_(Tensor *A);
 void cpu_cosh_(Tensor *A);
 void cpu_exp_(Tensor *A);
+void cpu_inv_(Tensor *A);
 void cpu_floor_(Tensor *A);
 void cpu_log_(Tensor *A);
 void cpu_log2_(Tensor *A);
