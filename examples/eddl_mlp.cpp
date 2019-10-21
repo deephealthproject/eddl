@@ -30,9 +30,15 @@ int main(int argc, char **argv) {
     layer in = Input({784});
     layer l = in;  // Aux var
 
-    l = BatchNormalization(Activation(Dense(l, 1024, true, L1(0.01f)), "relu"));
-    l = BatchNormalization(Activation(Dense(l, 1024, true, L2(0.01f)), "relu"));
-    l = BatchNormalization(Activation(Dense(l, 1024, true, L1L2(0.01f, 0.01f)), "relu"));
+
+    l = BatchNormalization(Activation(Dense(l, 1024 ), "relu"));
+    l = BatchNormalization(Activation(Dense(l, 1024), "relu"));
+    l = BatchNormalization(Activation(Dense(l, 1024), "relu"));
+
+//  TODO: Regularization not working with GPU
+//    l = BatchNormalization(Activation(Dense(l, 1024, true, L1(0.01f)), "relu"));
+//    l = BatchNormalization(Activation(Dense(l, 1024, true, L2(0.01f)), "relu"));
+//    l = BatchNormalization(Activation(Dense(l, 1024, true, L1L2(0.01f, 0.01f)), "relu"));
     layer out = Activation(Dense(l, num_classes), "softmax");
     model net = Model({in}, {out});
 
@@ -44,9 +50,9 @@ int main(int argc, char **argv) {
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           //CS_GPU({1,1},10) // 2 GPUs with local_sync_batches=10
-          //CS_GPU({1}) // 1 GPU
+          CS_GPU({1}) // 1 GPU
           //CS_CPU(4) // 4 CPU threads
-          CS_CPU() // CPU with maximum threads availables
+          //CS_CPU() // CPU with maximum threads availables
           //CS_COMPSS("../config/compss/resources.xml")
     );
 

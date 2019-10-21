@@ -1011,7 +1011,10 @@ float Tensor::sum() {
 #ifdef cGPU
     else if (isGPU())
       {
-         return gpu_sum(this);
+        float sum;  // TODO: Fix
+         gpu_total_sum(this, &sum);
+         return sum;
+//         return gpu_sum(this);
       }
 #endif
 #ifdef cFPGA

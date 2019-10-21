@@ -106,6 +106,7 @@ void gpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
 float gpu_max(Tensor *A);
 float gpu_min(Tensor *A);
 float gpu_sum(Tensor *A);
+void gpu_total_sum(Tensor *A, float *tot);
 float gpu_sum_abs(Tensor *A);
 
 // GPU: Reduction

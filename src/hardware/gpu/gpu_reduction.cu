@@ -45,9 +45,9 @@ void gpu_reduceTosum(Tensor *A, Tensor *B, int axis){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
-    setDims(A);
+    setDims(B);
 
-    reduceToSum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[axis]);
+    reduceToSum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, A->shape[axis]);
 
     check_cuda(cudaDeviceSynchronize(),"reduceTosum");
 }
