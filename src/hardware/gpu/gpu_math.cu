@@ -24,8 +24,17 @@
 #include "../../tensor/tensor.h"
 #include "../../descriptors/descriptors.h"
 
+// GPU: Structs for Thrust ********************************************
 
-// CPU: Math (in-place) ********************************************
+struct sum_abs_value : public thrust::unary_function<float, float>
+{
+    __host__ __device__ float operator()(const float &x) const
+    {
+        return fabsf(x);
+    }
+};
+
+// GPU: Math (in-place) ********************************************
 void gpu_abs_(Tensor *A){
     int device=A->gpu_device;
     cudaSetDevice(device);
@@ -222,9 +231,8 @@ void gpu_normalize_(Tensor *A, float min, float max){
 
     setDims(A);
 
-    // TODO: Temp
-    float min_ori = 0;
-    float max_ori = 10000;
+    float min_ori = gpu_min(A);
+    float max_ori = gpu_max(A);
 
     normalize_<<<dimGrid,dimBlock>>>(A->ptr, A->size, min_ori, max_ori, min, max);
     check_cuda(cudaDeviceSynchronize(), "normalize_");
@@ -476,22 +484,46 @@ void gpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C){
 
 }
 
-// CPU: Should be reductions ***************************************
 
-void gpu_total_sum(Tensor *A, float *tot)
-{
-  int device=A->gpu_device;
-  cudaSetDevice(device);
+// GPU: Should be reductions ***************************
+float gpu_max(Tensor *A){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
 
-  thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
 
-  *tot = thrust::reduce(dev_ptr, dev_ptr + A->size);
+    return thrust::max_element(dev_ptr, dev_ptr + A->size);
+}
 
+float gpu_min(Tensor *A){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+
+    return thrust::min_element(dev_ptr, dev_ptr + A->size);
+}
+
+float gpu_sum(Tensor *A){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+
+    return thrust::reduce(dev_ptr, dev_ptr + A->size, (int)0, thrust::plus<float>());
+}
+
+float gpu_sum_abs(Tensor *A){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+
+    return thrust::transform_reduce(dev_ptr, dev_ptr + A->size, sum_abs_value(), (int)0, thrust::plus<float>());
 }
 
 
-
-
+// GPU: Reduction ***************************
 void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC){
     int device=A->gpu_device;
     cudaSetDevice(device);
@@ -506,28 +538,13 @@ void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC){
     float beta=scB;
     float one=1.0;
 
-
     if (incC){
         check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A->ptr,ldA,&one,C->ptr,ldB,C->ptr,ldC),"sum2D");
         check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,B->ptr,ldA,&one,C->ptr,ldB,C->ptr,ldC),"sum2D");
     }
-    else
-        check_cublas(cublasSgeam(hcublas[device],CUBLAS_OP_N,CUBLAS_OP_N, m,n,&alfa,A->ptr,ldA,&beta,B->ptr,ldB,C->ptr,ldC),"sum2D");
-
-}
-
-
-void gpu_reduce_sum2D(Tensor *A,Tensor *B,int axis,int incB){
-
-  int device=A->gpu_device;
-  cudaSetDevice(device);
-
-  setDims(A);
-
-  if (!incB) gpu_set(B,0.0);
-
-  reduce_sum2D<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->shape[0],A->shape[1],axis);
-
-
-  check_cuda(cudaDeviceSynchronize(),"reduce_sum2D");
+    else {
+        check_cublas(
+                cublasSgeam(hcublas[device], CUBLAS_OP_N, CUBLAS_OP_N, m, n, &alfa, A->ptr, ldA, &beta, B->ptr, ldB,
+                            C->ptr, ldC), "sum2D");
+    }
 }

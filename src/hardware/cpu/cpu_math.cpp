@@ -202,7 +202,7 @@ void cpu_tanh_(Tensor *A){
 
 void cpu_trunc_(Tensor *A){
   #pragma omp parallel for
-  for (int i = 0; i < A->size; ++i) A->ptr[i] = (int)(A->ptr[i]);
+  for (int i = 0; i < A->size; ++i) A->ptr[i] = ::truncf(A->ptr[i]);
 }
 
 
@@ -294,7 +294,7 @@ void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
 
 float cpu_max(Tensor *A){
   float max = MIN_FLOAT;
-  // todo
+  // todo: #pragma omp parallel for
   for (int i = 0; i < A->size; ++i) {
     if (A->ptr[i] > max) { max = A->ptr[i]; }
   }
@@ -303,7 +303,7 @@ float cpu_max(Tensor *A){
 
 float cpu_min(Tensor *A){
   float min = MAX_FLOAT;
-  // todo
+  // todo: #pragma omp parallel for
   for (int i = 0; i < A->size; ++i) {
     if (A->ptr[i] < min) { min = A->ptr[i]; }
   }

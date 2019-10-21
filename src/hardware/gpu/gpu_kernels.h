@@ -72,13 +72,14 @@ __global__ void sum_mat_col(float* a, float* b, float* c, long int cols, long in
 
 // GPU: Reduction
 __global__ void reduce_sum2D(float *a,float *b,long int r,long int c,long int axis);
+__global__ void reduceToSum(float *a, float *b, int a_ndim);
 
 __global__ void reduction_kernel(float *I,float *O,float *S,int m, int keepdims,int d,int *ind,int rs);
 __global__ void reduction_back_kernel(float *I,float *O,float *S,int m, int keepdims,int d,int *ind,int rs);
 
 __global__ void reduction_permute(float *I,float *O,int *ind,int size);
-__global__ void  reduction_kernel_keep(float *r, float *I, int *ind, int size, int rsize);
-__global__ void  reduction_kernel_keep_inc(float *r, float *I, int *ind, int size, int rsize);
+__global__ void reduction_kernel_keep(float *r, float *I, int *ind, int size, int rsize);
+__global__ void reduction_kernel_keep_inc(float *r, float *I, int *ind, int size, int rsize);
 
 __global__ void reduction_kernel_sum(float *I,float *O,int m, int d,int *ind,int rs);
 

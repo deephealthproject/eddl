@@ -123,6 +123,7 @@ __global__ void reduction_permute(float *I,float *O,int *ind,int size)
   if (thread_id_x<size)
     O[thread_id_x]=I[ind[thread_id_x]];
 }
+
 __global__ void reduction_kernel_keep(float *red, float *O, int *ind, int size, int rsize)
 {
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
@@ -130,6 +131,7 @@ __global__ void reduction_kernel_keep(float *red, float *O, int *ind, int size, 
         O[ind[thread_id_x]]=red[thread_id_x/rsize];
     }
 }
+
 __global__ void reduction_kernel_keep_inc(float *red, float *O, int *ind, int size, int rsize)
 {
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;

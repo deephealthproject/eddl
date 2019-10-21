@@ -105,7 +105,6 @@ void gpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
 // GPU: Should be reductions
 float gpu_max(Tensor *A);
 float gpu_min(Tensor *A);
-void gpu_total_sum(Tensor *A,float *tot);
 float gpu_sum(Tensor *A);
 float gpu_sum_abs(Tensor *A);
 
@@ -114,8 +113,6 @@ void gpu_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
 void gpu_reduceTosum(Tensor *A, Tensor *B, int axis);
 void gpu_reduction(ReduceDescriptor *RD);
 void gpu_reduction_back(ReduceDescriptor *RD);
-
-
 //void gpu_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB);
 //void gpu_delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB);
 //void gpu_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);

@@ -288,7 +288,7 @@ __global__ void trunc_(float* a, long int size){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x < size)
-        a[thread_id_x]= (int)(a[thread_id_x]);
+        a[thread_id_x]= truncf(a[thread_id_x]);
 }
 
 
@@ -358,5 +358,16 @@ __global__ void reduce_sum2D(float *a,float *b,long int rows,long int cols,long 
     else
       atomicAdd(&(b[thread_id_x/cols]),a[thread_id_x]);
   }
+
+}
+
+__global__ void reduceToSum(float *a, float *b, int a_ndim){
+    long int ops=rows*cols;
+    long int thread_id_x = threadIdx.x+(blockDim.x*blockIdx.x);
+
+    if (thread_id_x < ops){
+        for (int j = 0; j < a_ndim; j++)
+            b[thread_id_x] += a[j];
+    }
 
 }

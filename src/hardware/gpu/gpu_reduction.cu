@@ -26,6 +26,32 @@
 
 
 
+void gpu_reduce_sum2D(Tensor *A,Tensor *B,int axis,int incB){
+
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    if (!incB) gpu_set(B,0.0);
+
+    reduce_sum2D<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->shape[0],A->shape[1],axis);
+
+    check_cuda(cudaDeviceSynchronize(),"reduce_sum2D");
+}
+
+
+void gpu_reduceTosum(Tensor *A, Tensor *B, int axis){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    reduceToSum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[axis]);
+
+    check_cuda(cudaDeviceSynchronize(),"reduceTosum");
+}
+
 void gpu_reduction(ReduceDescriptor *RD){
   int device=RD->I->gpu_device;
 
@@ -103,9 +129,6 @@ void gpu_reduction(ReduceDescriptor *RD){
 }
 
 
-//////
-////// back
-//////
 void gpu_reduction_back(ReduceDescriptor *RD){
   int device=RD->I->gpu_device;
 
