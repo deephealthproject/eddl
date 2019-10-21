@@ -156,13 +156,26 @@ int main(int argc, char **argv) {
     // Print results
     print_results(act, res_big_cpu, res_big_gpu);
 
+
     // *** [BathNorm] *****************************************
     // Data =================================
-    t_input_big = Tensor::ones({1, 3, 1000, 1000}, DEV_CPU);
+    t_input_big = Tensor::randn({1, 3, 1000, 1000}, DEV_CPU);
 
     res_big_cpu = run_batchnorm(t_input_big, DEV_CPU, 1);
     res_big_gpu = run_batchnorm(t_input_big, DEV_GPU, 1);
 
     // Print results
     print_results("BatchNorm", res_big_cpu, res_big_gpu);
+
+
+    // *** [UpSampling] *****************************************
+    // Data =================================
+    vector<int> size = {2, 2};
+    t_input_big = Tensor::randn({1, 3, 1000, 1000}, DEV_CPU);
+
+    res_big_cpu = run_upsampling(t_input_big, size, DEV_CPU, 1);
+    res_big_gpu = run_upsampling(t_input_big, size, DEV_GPU, 1);
+
+    // Print results
+    print_results("UpSampling", res_big_cpu, res_big_gpu);
 }

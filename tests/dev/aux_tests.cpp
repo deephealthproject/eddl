@@ -176,3 +176,29 @@ TestResult run_batchnorm(Tensor* t_input, int dev, int runs){
     result.tensor = l_bn->output;
     return result;
 }
+
+
+TestResult run_upsampling(Tensor* t_input, vector<int> size, int dev, int runs){
+    // Clone input tensor
+    t_input = t_input->clone();
+    Tensor *t_output = new Tensor(t_input->getShape(), dev);
+
+    // Move to device
+    if (dev == DEV_GPU){
+        t_input->ToGPU();
+        t_output->ToGPU();
+    }
+
+    clock_t begin = clock();
+    for(int i=0; i<runs; i++){
+        repeat_nn(t_input, t_output, size);
+    }
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
+    TestResult result{};
+    result.time = elapsed_secs;
+    result.tensor = t_output;
+    return result;
+}
+
