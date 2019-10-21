@@ -171,7 +171,7 @@ int main(int argc, char **argv) {
     // *** [UpSampling] *****************************************
     // Data =================================
     vector<int> size = {2, 2};
-    t_input_big = Tensor::randn({1, 3, 1000, 1000}, DEV_CPU);
+    t_input_big = Tensor::randn({1000, 1000}, DEV_CPU);
 
     res_big_cpu = run_upsampling(t_input_big, size, DEV_CPU, 1);
     res_big_gpu = run_upsampling(t_input_big, size, DEV_GPU, 1);
