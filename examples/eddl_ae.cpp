@@ -40,7 +40,9 @@ int main(int argc, char **argv) {
     model net = Model({in}, {out});
 
     // View model
-    summary(net);
+  
+
+    cout<<summary(net);
     plot(net, "model.pdf");
 
     // Build model
