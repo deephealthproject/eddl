@@ -30,6 +30,11 @@ LTensor::LTensor(const vector<int> shape, int dev) : LinLayer("ltensor" + to_str
 }
 
 
+LTensor::~LTensor()
+{
+  input = output = nullptr;
+}
+
 // From file
 LTensor::LTensor(string fname) : LinLayer("ltensor" + to_string(total_layers), DEV_CPU) {
   FILE *fe = fopen(fname.c_str(), "rb");
@@ -113,12 +118,6 @@ void LTensor::resize(int batch){
   Layer::resize(batch);
 }
 
-
-LTensor::~LTensor()
-{
-  delete output;
-  input = output = nullptr;
-}
 
 /// OP OVERLOAD
 LTensor LTensor::operator+(LTensor L) {

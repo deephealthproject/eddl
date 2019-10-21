@@ -27,8 +27,10 @@ LInput::LInput(Tensor *in, string name, int dev) : LinLayer(name, dev) {
 
 LInput::~LInput()
 {
-  delete output;
-  output=input=nullptr;
+  if (output!=nullptr) {
+    delete output;
+    output=nullptr;
+  }
 
 }
 
