@@ -130,7 +130,7 @@ public:
     void abs_();
     static Tensor* abs(Tensor *A);
 
-    void acos_(); // Todo
+    void acos_();
     static Tensor* acos(Tensor *A);
 
     void add_(float v);
@@ -139,40 +139,40 @@ public:
     static void add(Tensor *A, Tensor *B, Tensor *C);
     static void inc(Tensor *A, Tensor *B);
 
-    void asin_(); // Todo
+    void asin_();
     static Tensor* asin(Tensor *A);
 
-    void atan_(); // Todo
+    void atan_();
     static Tensor* atan(Tensor *A);
 
-    void ceil_(); // Todo
+    void ceil_();
     static Tensor* ceil(Tensor *A);
 
-    void clamp_(float min, float max); // Todo
+    void clamp_(float min, float max);
     static Tensor* clamp(Tensor *A, float min, float max);
 
-    void clampmax_(float max); // Todo
+    void clampmax_(float max);
     static Tensor* clampmax(Tensor *A, float max);
 
-    void clampmin_(float min); // Todo
+    void clampmin_(float min);
     static Tensor* clampmin(Tensor *A, float min);
 
-    void cos_(); // Todo
+    void cos_();
     static Tensor* cos(Tensor *A);
 
-    void cosh_(); // Todo
+    void cosh_();
     static Tensor* cosh(Tensor *A);
 
     void inv_();
     
     void div_(float v);
-    static Tensor* div(Tensor *A);
+    static Tensor* div(Tensor *A, float v);
     static void el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
 
     void exp_();
     static Tensor* exp(Tensor *A);
 
-    void floor_(); // Todo
+    void floor_();
     static Tensor* floor(Tensor *A);
 
     void log_();
@@ -185,7 +185,7 @@ public:
     static Tensor* log10(Tensor *A);
 
     void logn_(float n);
-    static Tensor* logn(Tensor *A);
+    static Tensor* logn(Tensor *A, float n);
 
     float max();
 //    static float max(Tensor *A);
@@ -193,46 +193,46 @@ public:
     float min();
 //    static float min(Tensor *A);
 
-    void mod_(float v); // Todo
+    void mod_(float v);
     static Tensor* mod(Tensor *A, float v);
 
     void mult_(float v);
-    static Tensor* mult(Tensor *A);
+    static Tensor* mult(Tensor *A, float v);
     static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
     static void el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
 
-    void neg_(); // Todo
+    void neg_();
     static Tensor* neg(Tensor *A);
 
-    void normalize_(float min=0.0f, float max=1.0f); // Todo
+    void normalize_(float min=0.0f, float max=1.0f);
     static Tensor* normalize(Tensor *A, float min=0.0f, float max=1.0f);
 
     void pow_(float exp);
-    static Tensor* pow(Tensor *A);
+    static Tensor* pow(Tensor *A, float exp);
 
-    void reciprocal_(); // Todo
+    void reciprocal_();
     static Tensor* reciprocal(Tensor *A);
 
-    void remainder_(float v); // Todo
+    void remainder_(float v);
     static Tensor* remainder(Tensor *A, float v);
 
-    void round_(); // Todo
+    void round_();
     static Tensor* round(Tensor *A);
 
-    void rsqrt_(); // Todo
+    void rsqrt_();
     static Tensor* rsqrt(Tensor *A);
 
-    void sigmoid_(); // Todo
+    void sigmoid_();
     static Tensor* sigmoid(Tensor *A);
 
-    void sign_(); // Todo
+    void sign_();
     static Tensor* sign(Tensor *A);
     static void sign(Tensor *A, Tensor *B);
 
-    void sin_(); // Todo
+    void sin_();
     static Tensor* sin(Tensor *A);
 
-    void sinh_(); // Todo
+    void sinh_();
     static Tensor* sinh(Tensor *A);
 
     void sqr_();
@@ -252,13 +252,13 @@ public:
     float sum_abs();
     static Tensor* sum_abs(Tensor *A);
 
-    void tan_(); // Todo
+    void tan_();
     static Tensor* tan(Tensor *A);
 
-    void tanh_(); // Todo
+    void tanh_();
     static Tensor* tanh(Tensor *A);
 
-    void trunc_(); // Todo
+    void trunc_();
     static Tensor* trunc(Tensor *A);
 
     // Math operations: Reduction ops
@@ -279,7 +279,7 @@ public:
     static int einsum(string subscripts, Tensor *A); // TODO
     static int flatten(Tensor *A); // TODO
     static int flip(Tensor *A);  // TODO
-    static int trace(Tensor *A);  // TODO
+    static int trace(Tensor *A);
     static int dot(Tensor *A);  // TODO
 
     // Indexing, Slicing, Joining, Mutating Ops *******
