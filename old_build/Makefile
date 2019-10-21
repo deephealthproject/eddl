@@ -154,11 +154,11 @@ TESTS_OBJ = aux_tests.o
 OBJ := $(APIS_OBJ) $(CONSTRAINTS_OBJ) $(CORE_OBJ) $(DESCRIPTORS_OBJ) $(HARDWARE_CPU_OBJ) $(INITIALIZERS_OBJ) $(LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(REGULARIZERS_OBJ) $(TENSOR_OBJ) $(TESTS_OBJ)
 
 ifeq ($(CORE),1)  # CPU
-all: $(GPU_OBJ) $(OBJ) test_main example_mlp  example_conv #example_test example_ae example_dae example_dae_class example_tensor example_load_save example_train_batch
+all: $(GPU_OBJ) $(OBJ) test_main example_mlp  example_conv example_test example_ae example_dae example_dae_class example_tensor example_load_save example_traain_batch
 endif
 
 ifeq ($(CORE),2)  # GPU
-all: $(GPU_OBJ) $(OBJ) test_main example_mlp  example_conv #example_test example_ae example_dae example_dae_class example_tensor example_load_save example_train_batch
+all: $(GPU_OBJ) $(OBJ) test_main example_mlp  example_conv example_test example_ae example_dae example_dae_class example_tensor example_load_save example_train_batch
 endif
 
 utils.o: $(SRC_PATH)/utils.cpp $(SRC_PATH)/utils.h $(SRC_PATH)/system_info.h

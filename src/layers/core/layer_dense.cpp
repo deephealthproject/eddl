@@ -24,6 +24,7 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev) : L
     if(name.empty()) this->name = "dense" + to_string(++total_layers);
     this->ndim = ndim;
     this->use_bias = use_bias;
+    this->reg = nullptr;
 
     input = parent->output;
     output = new Tensor(vector<int>{input->shape[0], ndim}, dev);
@@ -85,12 +86,15 @@ Layer *LDense::share(int c, int bs, vector<Layer *> p) {
     n->params.push_back(n->W);
     if (use_bias) n->params.push_back(n->bias);
 
+    n->reg=reg;
+
     return n;
 }
 
 Layer *LDense::clone(int c, int bs, vector<Layer *> p, int todev) {
     LDense *n = new LDense(p[0], ndim, use_bias, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
+    n->reg=reg;
 
     return n;
 }
