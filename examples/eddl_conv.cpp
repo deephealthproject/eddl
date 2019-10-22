@@ -18,7 +18,8 @@ using namespace eddl;
 
 layer Block(layer l,int filters, vector<int> kernel, vector<int> stride)
 {
-  return MaxPool(BatchNormalization(Activation(L2(Conv(l, filters, kernel,stride),0.0001f),"relu")),{2,2});
+  //return MaxPool(BatchNormalization(Activation(L2(Conv(l, filters, kernel,stride),0.0001f),"relu")),{2,2});
+  return MaxPool(BatchNormalization(Activation(Conv(l, filters, kernel,stride),"relu")),{2,2});
   //return MaxPool(Activation(Conv(l, filters, kernel,stride),"relu"),{2,2});
 }
 

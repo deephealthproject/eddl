@@ -65,9 +65,6 @@ void LConv::resize(int batch){
 
 void LConv::forward() {
     Conv2D(this->cd);
-
-    // Regularizer
-    if(this->reg!= nullptr) {this->reg->apply(cd->K);}
 }
 
 void LConv::backward() {
@@ -78,6 +75,9 @@ void LConv::backward() {
     if (this->parent.size()) {
         Conv2D_back(this->cd);
     }
+
+    // Regularizer
+    if(reg!= nullptr) {reg->apply(cd->K);}
 
 }
 

@@ -24,7 +24,7 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev) : L
     if(name.empty()) this->name = "dense" + to_string(++total_layers);
     this->ndim = ndim;
     this->use_bias = use_bias;
-    this->reg = nullptr;
+
 
     input = parent->output;
     output = new Tensor(vector<int>{input->shape[0], ndim}, dev);
@@ -54,9 +54,6 @@ void  LDense::resize(int batch){
 void LDense::forward() {
     Tensor::mult2D(input, 0, W, 0, output, 0);
     if (use_bias) Tensor::sum2D_rowwise(output, bias, output);
-
-    // Regularizer
-    if(this->reg != nullptr) {this->reg->apply(this->W);}
 }
 
 void LDense::backward() {
@@ -70,6 +67,9 @@ void LDense::backward() {
         //1: note that increment parent delta
         Tensor::mult2D(delta, 0, W, 1, parent[0]->delta, 1);
     }
+
+    // Regularizer
+    if(reg != nullptr) {reg->apply(this->W);}
 }
 
 
@@ -83,6 +83,7 @@ Layer *LDense::share(int c, int bs, vector<Layer *> p) {
 
     n->W = params[0];
     if (use_bias) n->bias = params[1];
+
     n->params.push_back(n->W);
     if (use_bias) n->params.push_back(n->bias);
 
