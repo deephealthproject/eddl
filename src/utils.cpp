@@ -43,6 +43,9 @@
 
 
 float *get_fmem(int size, char *str){
+    // Careful with memory overcommitment:
+    // https://stackoverflow.com/questions/48585079/malloc-on-linux-without-overcommitting
+    // TODO: This function does not work properly (...but it does, at least most of the time -for linux and mac-)
     float* ptr = nullptr;
     bool error = false;
 
