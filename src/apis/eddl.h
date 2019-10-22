@@ -65,6 +65,7 @@ namespace eddl {
 
     layer Activation(layer parent, string activation, string name = "");
 
+    layer L2(layer l,float l2);
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
                const vector<int> &strides = {1, 1}, string padding = "same", int groups = 1,
                const vector<int> &dilation_rate = {1, 1},

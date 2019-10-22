@@ -27,7 +27,6 @@ using namespace std;
 class LConv : public LinLayer {
 public:
     static int total_layers;
-    Regularizer *reg;
 
     ConvolDescriptor *cd;
 

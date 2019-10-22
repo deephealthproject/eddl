@@ -29,6 +29,7 @@ Layer::Layer(string name, int dev) {
     this->dev = dev;
     lin = lout = 0;
     delta_bp = 0;
+    this->reg = nullptr;
 }
 
 Layer::~Layer()

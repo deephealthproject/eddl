@@ -19,6 +19,7 @@
 #include "../tensor/tensor.h"
 #include "../tensor/tensor_reduction.h"
 #include "../tensor/nn/tensor_nn.h"
+#include "../regularizers/regularizer.h"
 
 #define TRMODE 1
 #define TSMODE 0
@@ -41,11 +42,13 @@ public:
     vector<Layer *> parent;
     vector<Layer *> child;
 
+    Regularizer *reg;
+
     int mode;
     int dev;
     int lin, lout;
     int delta_bp;
-  
+
     Layer(string name, int dev);
     // Destructor
     virtual ~Layer();

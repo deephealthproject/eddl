@@ -75,6 +75,10 @@ namespace eddl {
         return new LActivation(parent, activation, name, DEV_CPU);
     }
 
+    layer L2(layer l,float l2){
+      l->reg=new RL2(l2);
+    }
+
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
                const vector<int> &strides, string padding, int groups, const vector<int> &dilation_rate,
                bool use_bias, Regularizer *reg, string name) {
