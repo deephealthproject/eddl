@@ -106,8 +106,8 @@ Layer *LConv::clone(int c, int bs, vector<Layer *> p, int todev) {
     LConv *n = new LConv(p[0], {cd->ksize[0], cd->ksize[1], cd->ksize[2]}, {cd->stride[0], cd->stride[1]},
                          {cd->pad[0], cd->pad[1]}, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
-    n->reg=reg;
 
+    n->reg=reg;
     return n;
 }
 

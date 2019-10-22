@@ -77,6 +77,15 @@ namespace eddl {
 
     layer L2(layer l,float l2){
       l->reg=new RL2(l2);
+      return l;
+    }
+    layer L1(layer l,float l1){
+      l->reg=new RL1(l1);
+      return l;
+    }
+    layer L1L2(layer l,float l1,float l2){
+      l->reg=new RL1L2(l1,l2);
+      return l;
     }
 
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
