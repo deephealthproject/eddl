@@ -56,7 +56,7 @@ void gpu_rand_normal(Tensor *A, float m, float s){
   cudaSetDevice(device);
 
   if (A->size%2) {
-    gpu_set(A,0.0);
+    gpu_fill_(A,0.0);
     check_curand(curandGenerateNormal(random_generator[device],A->ptr,A->size-1,m,s),"gpu_rand_normal");
   }
   else
