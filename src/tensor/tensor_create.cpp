@@ -59,16 +59,20 @@ Tensor* Tensor::full(const vector<int> &shape, float value, int dev){
     return t;
 }
 
-Tensor* Tensor::arange(float min, float max, float step, int dev){
-    // Returns a 1-D tensor of size floor(end - start)/ + 1 with values from start to end with step step.
+Tensor* Tensor::arange(float start, float end, float step, int dev){
+    // [1, 100)
+    // Returns a 1-D tensor of size ceil(end - start) with values from start to end with step step.
     // Step is the gap between two values in the tensor.
-    int size = ::ceilf((max-min)/step);
-    return raw_range(min, step, size, dev);
+    int size = ::ceilf((end-start)/step);
+    return raw_range(start, step, size, dev);
 }
 
-Tensor* Tensor::range(float min, float max, float step, int dev){
-    int size = ::floorf((max-min)/step) + 1;
-    return raw_range(min, step, size, dev);
+Tensor* Tensor::range(float start, float end, float step, int dev){
+    // [1, 100]
+    // Returns a 1-D tensor of size floor(end - start)/ + 1 with values from start to end with step step.
+    // Step is the gap between two values in the tensor.
+    int size = ::floorf((end-start)/step) + 1;
+    return raw_range(start, step, size, dev);
 }
 
 Tensor* Tensor::linspace(float start, float end, int steps, int dev){

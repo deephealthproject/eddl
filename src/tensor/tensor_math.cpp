@@ -515,7 +515,7 @@ float Tensor::max(){
 #ifdef cGPU
     else if (isGPU())
       {
-        // TODO
+        return gpu_max(this);
       }
 #endif
 #ifdef cFPGA
@@ -525,8 +525,6 @@ float Tensor::max(){
 #endif
     return -1.0f;  // Temp
 }
-
-//float Tensor::max(Tensor *A){}
 
 float Tensor::min(){
     if (isCPU()) {
@@ -535,7 +533,7 @@ float Tensor::min(){
 #ifdef cGPU
     else if (isGPU())
       {
-        // TODO
+        return gpu_min(this);
       }
 #endif
 #ifdef cFPGA
@@ -545,8 +543,6 @@ float Tensor::min(){
 #endif
     return -1.0f;  // Temp
 }
-
-//float Tensor::min(Tensor *A){}
 
 
 void Tensor::mod_(float v){

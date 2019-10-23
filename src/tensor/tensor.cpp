@@ -102,9 +102,6 @@ Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr,T->devic
 
 
 void Tensor::ToCPU(int dev){
-    if (isCPU()) {
-//        printf("Tensor already in CPU\n");
-    }
 #ifdef cGPU
     else if (isGPU())
       {

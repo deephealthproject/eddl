@@ -109,9 +109,12 @@ public:
     void save(FILE *fe);
     void load(FILE *fe);
 
-    // ***** Core *****************************
+    // ***** Core (in-place) *****************************
+    int get_address_rowmajor(vector<int> indices);
     void fill_(float v);
-    void get(vector<int> indices);
+    void reshape_(vector<int> indices);
+    float get_(vector<int> indices);
+    void set_(vector<int> indices, float value);
 
     // ************************************************
     // ****** Tensor operations ***********************
@@ -121,10 +124,10 @@ public:
     static Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
     static Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
     static Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
-    static Tensor* arange(float min, float max, float step=1.0, int dev=DEV_CPU);
-    static Tensor* range(float min, float max, float step=1.0, int dev=DEV_CPU);
+    static Tensor* arange(float start, float end, float step=1.0f, int dev=DEV_CPU);
+    static Tensor* range(float start, float end, float step=1.0f, int dev=DEV_CPU);
     static Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
-    static Tensor* logspace(float start, float end, int steps=100, float base=10.0, int dev=DEV_CPU);
+    static Tensor* logspace(float start, float end, int steps=100, float base=10.0f, int dev=DEV_CPU);
     static Tensor* eye(int size, int dev=DEV_CPU);
     static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
@@ -210,10 +213,7 @@ public:
     static Tensor* logn(Tensor *A, float n);
 
     float max();
-//    static float max(Tensor *A);
-
     float min();
-//    static float min(Tensor *A);
 
     void mod_(float v);
     static Tensor* mod(Tensor *A, float v);

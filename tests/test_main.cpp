@@ -187,7 +187,7 @@ int main(int argc, char **argv) {
 //    vector<string> math_ops = {"abs", "acos", "add", "asin", "atan", "ceil", "clamp", "cos", "cosh", "exp", "inv",
 //                               "floor", "log", "log2", "log10", "logn", "mod", "mult", "normalize", "pow", "reciprocal",
 //                               "remainder", "round", "rsqrt", "sigmoid", "sign", "sin", "sinh", "sqr", "sqrt", "tan",
-//                               "tanh", "trunc"};
+//                               "tanh", "trunc", "max", "min"};
 //    for (auto op:math_ops){
 //            t_input_big = Tensor::randn({1000, 1000}, DEV_CPU);
 //            res_big_cpu = run_tensor_op(t_input_big, op, DEV_CPU, 1);
@@ -195,24 +195,49 @@ int main(int argc, char **argv) {
 //            print_results(op, res_big_cpu, res_big_gpu);
 //    }
 
-    // *** [Math operations] *****************************************
-    vector<string> data_aug = {"shift"};//, "rotate", "flip_h", "flip_v", "scale", "crop", "cut_out"};
-    for (auto op:data_aug){
-        t_input = Tensor::ones({5, 5}, DEV_CPU);
-        res_small_cpu = run_tensor_op(t_input, op, DEV_CPU, 1);
-        res_small_gpu = run_tensor_op(t_input, op, DEV_GPU, 1);
-        print_results("[Big] " + op, res_small_cpu, res_small_gpu);
-    }
+//    // *** [Math operations] *****************************************
+//    vector<string> data_aug = {"shift"};//, "rotate", "flip_h", "flip_v", "scale", "crop", "cut_out"};
+//    for (auto op:data_aug){
+//        t_input = Tensor::ones({5, 5}, DEV_CPU);
+//        res_small_cpu = run_tensor_op(t_input, op, DEV_CPU, 1);
+//        res_small_gpu = run_tensor_op(t_input, op, DEV_GPU, 1);
+//        print_results("[Big] " + op, res_small_cpu, res_small_gpu);
+//    }
+//
+//    // *** [Summary] *****************************************
+//    float total_tests = total_ok + total_errors;
+//    cout << "" << endl;
+//    cout << "*************************************************" << endl;
+//    cout << "*** SUMMARY: ************************************" << endl;
+//    cout << "*************************************************" << endl;
+//    cout << "Total tests: " << total_ok + total_errors << endl;
+//    cout << "\t- Total ok: " << total_ok << " (" << (int)((float)total_ok/total_tests*100.0f) << "%)" << endl;
+//    cout << "\t- Total errors: " << total_errors << " (" << (int)((float)total_errors/total_tests*100.0f) << "%)" << endl;
+//    cout << "" << endl;
 
-    // *** [Summary] *****************************************
-    float total_tests = total_ok + total_errors;
-    cout << "" << endl;
-    cout << "*************************************************" << endl;
-    cout << "*** SUMMARY: ************************************" << endl;
-    cout << "*************************************************" << endl;
-    cout << "Total tests: " << total_ok + total_errors << endl;
-    cout << "\t- Total ok: " << total_ok << " (" << (int)((float)total_ok/total_tests*100.0f) << "%)" << endl;
-    cout << "\t- Total errors: " << total_errors << " (" << (int)((float)total_errors/total_tests*100.0f) << "%)" << endl;
-    cout << "" << endl;
+    // *** [Test Raw-Tensor operations] *****************************************
+    t_input = Tensor::range(1.0f, 27.0f);
+    t_input->info();
+    t_input->print();
+
+    cout << endl;
+
+    t_input->reshape_({3, 3, 3});
+    t_input->info();
+    t_input->print();
+
+    cout << endl;
+
+    cout << t_input->get_address_rowmajor({1, 1, 2}) << endl;
+
+    cout << endl;
+
+    cout << t_input->get_({1, 1, 2}) << endl;
+
+    cout << endl;
+
+    t_input->set_({1, 1, 2}, 0.0f);
+    t_input->print();
+
 
 }

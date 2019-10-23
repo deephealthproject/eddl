@@ -250,6 +250,8 @@ TestResult run_tensor_op(Tensor* t_input, string op, int dev, int runs){
         else if(op=="tan"){ t_input->tan_(); }
         else if(op=="tanh"){ t_input->tanh_(); }
         else if(op=="trunc"){ t_input->trunc_(); }
+        else if(op=="max"){ t_input->max(); }
+        else if(op=="min"){ t_input->min(); }
 
         // Data augmentation
         else if(op=="shift"){ t_input->shift_({2,2}); }

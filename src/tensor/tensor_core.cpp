@@ -17,6 +17,66 @@
 
 using namespace std;
 
+// ***** Core (in-place) *****************************
+void Tensor::fill_(float v) {
+    if (isCPU()) {
+        cpu_fill_(this, v);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_fill_(this,v);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+void Tensor::reshape_(vector<int> shape){
+    int new_size = 1;
+    for(auto i : shape) new_size *= i;
+
+    // Check if the new size is compatible
+    if(new_size!=this->size){
+        msg("Tensors in different devices", "Tensor::reshape_");
+    }
+
+    // Update attributes
+    this->ndim = shape.size();
+    this->shape = shape;
+
+    // Use eigen for 2 dimensions
+    if (this->ndim == 2) {
+        this->ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(ptr, this->shape[1], this->shape[0]);
+    }
+}
+
+int Tensor::get_address_rowmajor(vector<int> indices){
+    int address=0;
+    for(int i=0; i<this->ndim-1; i++){
+        int accum = 1;
+        for(int j=i+1; j<this->ndim; j++){
+            accum*=this->shape[j];
+        }
+        address += indices[i] * accum;
+    }
+    address += indices[this->ndim-1];
+    return address;
+}
+
+float Tensor::get_(vector<int> indices){
+    return this->ptr[get_address_rowmajor(indices)];
+}
+
+void Tensor::set_(vector<int> indices, float value){
+    this->ptr[get_address_rowmajor(indices)] = value;
+}
+
+
+// ***** Core (static) *****************************
 void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
     // Transpose
     // TODO: Review correctness
@@ -86,24 +146,6 @@ void Tensor::copy(Tensor *A, Tensor *B) {
         msg("unsupported copy between devices", "Tensor::copy");
     }
     B->tsem->unlock();
-}
-
-
-void Tensor::fill_(float v) {
-    if (isCPU()) {
-        cpu_fill_(this, v);
-    }
-#ifdef cGPU
-    else if (isGPU())
-      {
-        gpu_fill_(this,v);
-      }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
 }
 
 
