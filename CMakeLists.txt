@@ -168,6 +168,7 @@ SET(CPP_SOURCES
         src/hardware/cpu/cpu_comparison.cpp
         src/hardware/cpu/cpu_core.cpp
         src/hardware/cpu/cpu_create.cpp
+        src/hardware/cpu/cpu_da.cpp
         src/hardware/cpu/cpu_generator.cpp
         src/hardware/cpu/cpu_math.cpp
         src/hardware/cpu/cpu_reduction.cpp
@@ -283,6 +284,7 @@ SET(CPP_SOURCES
         src/tensor/tensor_comparison.cpp
         src/tensor/tensor_core.cpp
         src/tensor/tensor_create.cpp
+        src/tensor/tensor_da.cpp
         src/tensor/tensor_generator.cpp
         src/tensor/tensor_math.cpp
         src/tensor/tensor_reduction.cpp

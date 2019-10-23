@@ -216,6 +216,7 @@ TestResult run_tensor_op(Tensor* t_input, string op, int dev, int runs){
 
     clock_t begin = clock();
     for(int i=0; i<runs; i++){
+        // Math operations
         if(op=="abs"){ t_input->abs_(); }
         else if(op=="acos"){ t_input->acos_(); }
         else if(op=="add"){ t_input->add_(2.0f); }
@@ -249,6 +250,16 @@ TestResult run_tensor_op(Tensor* t_input, string op, int dev, int runs){
         else if(op=="tan"){ t_input->tan_(); }
         else if(op=="tanh"){ t_input->tanh_(); }
         else if(op=="trunc"){ t_input->trunc_(); }
+
+        // Data augmentation
+        else if(op=="shift"){ t_input->shift_({2,2}); }
+        else if(op=="rotate"){ t_input->rotate_(90.0f, {1, 0}); }
+        else if(op=="flip_h"){ t_input->flip_(1);}
+        else if(op=="flip_v"){ t_input->flip_(0); }
+        else if(op=="scale"){ t_input->scale_(2.0f);}
+        else if(op=="crop"){ t_input->crop_({2,2}, {5, 5}); }
+        else if(op=="cutout"){ t_input->cutout_({2,2}, {5, 5});}
+
         else{
             std::cout << "Unknown operator" << std::endl;
         }

@@ -140,21 +140,21 @@ APIS_OBJ = eddl.o
 CONSTRAINTS_OBJ = constraint_max_norm.o constraint_min_max_norm.o constraint_non_neg.o constraint_unit_norm.o constraint.o
 CORE_OBJ = compserv.o net.o utils.o random.o
 DESCRIPTORS_OBJ = descriptor_conv.o descriptor_pool.o descriptor_reduce.o
-HARDWARE_CPU_OBJ = cpu_comparison.o cpu_core.o cpu_create.o cpu_generator.o cpu_math.o cpu_reduction.o cpu_activations.o cpu_conv.o cpu_losses.o cpu_metrics.o cpu_pool.o cpu_tensor_nn.o
+HARDWARE_CPU_OBJ = cpu_comparison.o cpu_core.o cpu_create.o cpu_da.o cpu_generator.o cpu_math.o cpu_reduction.o cpu_activations.o cpu_conv.o cpu_losses.o cpu_metrics.o cpu_pool.o cpu_tensor_nn.o
 INITIALIZERS_OBJ = initializer_indentity.o initializer_random_uniform.o initializer_glorot_uniform.o initializer_orthogonal.o initializer_random_normal.o initializer_constant.o initializer_glorot_normal.o initializer.o
 LAYERS_OBJ = layer_lstm.o layer_input.o layer_conv.o layer_mean.o layer_log10.o layer_reshape.o layer_log.o layer_mult.o layer_maxpool.o layer_embedding.o layer_globalavgpool.o layer_upsampling.o layer_add.o layer_batchnorm.o layer_div.o layer_log2.o layer_gaussian.o layer_average.o layer.o layer_globalmaxpool.o layer_reduction.o layer_sum.o layer_sum_op.o layer_gauss.o layer_transposed_conv.o layer_activation.o layer_operator.o layer_concat.o layer_maximum.o layer_diff.o layer_var.o layer_drop.o layer_pool.o layer_exp.o layer_rnn.o layer_min.o layer_pow.o layer_dense.o layer_sqrt.o layer_tensor.o layer_minimum.o layer_abs.o layer_avgpool.o layer_matmul.o layer_uniform.o layer_max.o layer_subtract.o layer_generator.o layer_transpose.o
 LOSSES_OBJ = loss_mean_squared_error.o loss_soft_cross_entropy.o loss.o loss_cross_entropy.o
 METRICS_OBJ = metric_categorical_acc.o metric.o metric_mean_squared_error.o
 OPTIMIZERS_OBJ = optim_adam.o optim.o optim_nadam.o optim_adagrad.o optim_sgd.o optim_rmsprop.o optim_adamax.o optim_adadelta.o
 REGULARIZERS_OBJ = regularizer_l1.o regularizer_l2.o regularizer_l1_l2.o regularizer.o
-TENSOR_OBJ = tensor.o tensor_comparison.o tensor_core.o tensor_create.o tensor_generator.o tensor_math.o tensor_reduction.o tensor_serialization.o tensor_activations.o tensor_conv.o tensor_core_nn.o tensor_losses.o tensor_metrics.o tensor_pool.o
+TENSOR_OBJ = tensor.o tensor_comparison.o tensor_core.o tensor_create.o tensor_da.o tensor_generator.o tensor_math.o tensor_reduction.o tensor_serialization.o tensor_activations.o tensor_conv.o tensor_core_nn.o tensor_losses.o tensor_metrics.o tensor_pool.o
 TESTS_OBJ = aux_tests.o
 
 # Join groups
 OBJ := $(APIS_OBJ) $(CONSTRAINTS_OBJ) $(CORE_OBJ) $(DESCRIPTORS_OBJ) $(HARDWARE_CPU_OBJ) $(INITIALIZERS_OBJ) $(LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(REGULARIZERS_OBJ) $(TENSOR_OBJ) $(TESTS_OBJ)
 
 ifeq ($(CORE),1)  # CPU
-all: $(GPU_OBJ) $(OBJ) test_main example_mlp  example_conv example_test example_ae example_dae example_dae_class example_tensor example_load_save example_traain_batch
+all: $(GPU_OBJ) $(OBJ) test_main example_mlp  example_conv example_test example_ae example_dae example_dae_class example_tensor example_load_save example_train_batch
 endif
 
 ifeq ($(CORE),2)  # GPU
@@ -208,6 +208,9 @@ tensor_core.o: $(SRC_PATH)/tensor/tensor_core.cpp $(SRC_PATH)/tensor/tensor.h
 
 tensor_create.o: $(SRC_PATH)/tensor/tensor_create.cpp $(SRC_PATH)/tensor/tensor.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor_create.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+tensor_da.o: $(SRC_PATH)/tensor/tensor_da.cpp $(SRC_PATH)/tensor/tensor.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor_da.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 tensor_generator.o: $(SRC_PATH)/tensor/tensor_generator.cpp $(SRC_PATH)/tensor/tensor.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor_generator.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
@@ -265,6 +268,9 @@ cpu_core.o: $(SRC_PATH)/hardware/cpu/cpu_core.cpp $(SRC_PATH)/hardware/cpu/cpu_h
 
 cpu_create.o: $(SRC_PATH)/hardware/cpu/cpu_create.cpp $(SRC_PATH)/hardware/cpu/cpu_hw.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/cpu_create.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+cpu_da.o: $(SRC_PATH)/hardware/cpu/cpu_da.cpp $(SRC_PATH)/hardware/cpu/cpu_hw.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/cpu_da.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 cpu_generator.o: $(SRC_PATH)/hardware/cpu/cpu_generator.cpp $(SRC_PATH)/hardware/cpu/cpu_hw.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/cpu_generator.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@

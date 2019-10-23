@@ -125,6 +125,25 @@ public:
     static Tensor* eye(int size, int dev=DEV_CPU);
     static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
+    // ***** Data augmentation *****************************
+    void shift_(vector<int> shift, bool reshape=false, string mode="constant", float constant=0.0f);  // TODO: Implement
+    static Tensor* shift(Tensor *A, vector<int> shift, bool reshape=false, string mode="constant", float constant=0.0f);
+
+    void rotate_(float angle, vector<int> axis, bool reshape=false, string mode="constant", float constant=0.0f);  // TODO: Implement
+    static Tensor* rotate(Tensor *A, float angle, vector<int> axis, bool reshape=false, string mode="constant", float constant=0.0f);
+
+    void scale_(float factor, bool reshape=false, string mode="constant", float constant=0.0f);  // TODO: Implement
+    static Tensor* scale(Tensor *A, float factor, bool reshape=false, string mode="constant", float constant=0.0f);
+
+    void flip_(int axis=0);  // TODO: Implement
+    static Tensor* flip(Tensor *A, int axis=0);
+
+    void crop_(vector<int> coords_from, vector<int> coords_to);  // TODO: Implement
+    static Tensor* crop(Tensor *A, vector<int> coords_from, vector<int> coords_to);
+
+    void cutout_(vector<int> coords_from, vector<int> coords_to);  // TODO: Implement
+    static Tensor* cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to);
+
     // Math operations ********************************
     // Math operations: Pointwise ops (in-place)
     void abs_();
