@@ -88,6 +88,25 @@ void Tensor::copy(Tensor *A, Tensor *B) {
     B->tsem->unlock();
 }
 
+
+void Tensor::fill_(float v) {
+    if (isCPU()) {
+        cpu_fill_(this, v);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_fill_(this,v);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+
 void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc) {
     ///////////////////////////////////////
     /// Partial copy ndim=1

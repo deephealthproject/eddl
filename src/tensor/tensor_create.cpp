@@ -43,19 +43,19 @@ Tensor* raw_range(float min, float step, int size, int dev){
 
 Tensor* Tensor::zeros(const vector<int> &shape, int dev){
     auto t = new Tensor(shape, dev);
-    t->set(0.0f);
+    t->fill_(0.0f);
     return t;
 }
 
 Tensor* Tensor::ones(const vector<int> &shape, int dev){
     auto t = new Tensor(shape, dev);
-    t->set(1.0f);
+    t->fill_(1.0f);
     return t;
 }
 
 Tensor* Tensor::full(const vector<int> &shape, float value, int dev){
     auto t = new Tensor(shape, dev);
-    t->set(value);
+    t->fill_(value);
     return t;
 }
 
@@ -87,7 +87,7 @@ Tensor* Tensor::logspace(float start, float end, int steps, float base, int dev)
 
 Tensor* Tensor::eye(int size, int dev){
     auto t = new Tensor(vector<int>{size, size}, dev);
-    //t->set(0.0f);
+    //t->fill_(0.0f);
     for(int i=0; i<size; i++){
         t->ptr[i*size+i] = 1.0f;
     }

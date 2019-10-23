@@ -874,7 +874,7 @@ void Net::sync_weights() {
     for (int j = 0; j < layers.size(); j++)
         for (int k = 0; k < layers[j]->params.size(); k++) {
             // Taking average
-            layers[j]->params[k]->set(0.0);
+            layers[j]->params[k]->fill_(0.0);
             for (int i = 0; i < snets.size(); i++) {
                 Tensor::inc(snets[i]->layers[j]->params[k], layers[j]->params[k]);
             }

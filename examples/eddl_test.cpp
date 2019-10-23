@@ -119,7 +119,7 @@ int main(int argc, char **argv) {
 
     //
     T->info();
-    T->set(1.0);
+    T->fill_(1.0);
     T->rand_uniform(1.0);
     T->print();
 
@@ -170,10 +170,10 @@ int main(int argc, char **argv) {
     A->check("copy");
 
     ///////////// SET //////////////////////
-    A->TC->set(1.0);
-    A->TG->set(1.0);
+    A->TC->fill_(1.0);
+    A->TG->fill_(1.0);
 
-    A->check("set");
+    A->check("fill_");
 
 
     ///////////// abs_ ////////////////
@@ -428,7 +428,7 @@ int main(int argc, char **argv) {
 //    axis.push_back(3);
 //
 //    A->info();
-//    A->set(1.0);
+//    A->fill_(1.0);
 //    A->rand_uniform(1.0);
 //    A->print();
 //
@@ -469,7 +469,7 @@ int main(int argc, char **argv) {
 //    axis2.push_back(1);
 //
 //    A->info();
-//    A->set(1.0);
+//    A->fill_(1.0);
 //    A->print();
 //
 //    cout<<"Mean\n";
@@ -502,7 +502,7 @@ int main(int argc, char **argv) {
 //    cout<<"==================\n";
 //
 //    tensor t =T({1,10,10,4});
-//    t->data->set(1.0);
+//    t->data->fill_(1.0);
 //    t->data->ptr[0]=10;
 //
 //    cout<<"\nMean\n";

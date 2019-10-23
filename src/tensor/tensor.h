@@ -103,12 +103,15 @@ public:
     vector<int> getShape();
     void point2data(const vector<int>& shape, float *ptr);
     void copydata(const vector<int>& s, float *newptr);
-    void set(float v);
 
     // Serialization
     void save(string s);
     void save(FILE *fe);
     void load(FILE *fe);
+
+    // ***** Core *****************************
+    void fill_(float v);
+    void get(vector<int> indices);
 
     // ************************************************
     // ****** Tensor operations ***********************

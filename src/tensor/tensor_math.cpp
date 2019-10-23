@@ -1094,7 +1094,7 @@ void Tensor::reduceTosum(Tensor *A, Tensor *B, int axis) {
 
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::transpose");
 
-    B->set(0.0);
+    B->fill_(0.0);
     if (A->isCPU()) {
         cpu_reduceTosum(A, B, axis);
     }

@@ -40,7 +40,7 @@ void SGD::setlayers(vlayer l) {
     for (int i = 0; i < layers.size(); i++)
         for (int j = 0; j < layers[i]->gradients.size(); j++) {
             mT.push_back(new Tensor(layers[i]->gradients[j]->getShape(), layers[i]->dev));
-            mT.back()->set(0.0);
+            mT.back()->fill_(0.0);
         }
 
 }

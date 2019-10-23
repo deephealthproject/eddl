@@ -54,7 +54,7 @@ namespace eddl {
         t->input->div_(v);
     }
     void set(layer t, float v) {
-        t->output->set(v);
+        t->output->fill_(v);
     }
 
     // ---- CORE LAYERS ----

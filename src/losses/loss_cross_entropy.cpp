@@ -32,7 +32,7 @@ void LCrossEntropy::delta(Tensor *T, Tensor *Y, Tensor *D) {
     aux2 = new Tensor(T->getShape(), T->device);
     one = new Tensor(T->getShape(), T->device);
 
-    one->set(1.0);
+    one->fill_(1.0);
 
     //  (1-t)/(1-y)
     Tensor::add(1, one, -1, T, aux1, 0);

@@ -344,21 +344,3 @@ void Tensor::copydata(const vector<int>& s, float *newptr){
 int Tensor::numel(){
     return this->size;
 }
-
-
-void Tensor::set(float v) {
-    if (isCPU()) {
-        for (int i = 0; i < size; ++i) ptr[i] = v;
-    }
-#ifdef cGPU
-    else if (isGPU())
-      {
-        gpu_set(this,v);
-      }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-}

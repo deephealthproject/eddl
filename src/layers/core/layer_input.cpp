@@ -50,7 +50,7 @@ string LInput::plot(int c) {
 
 
 void LInput::forward() {
-    delta->set(0.0);
+    delta->fill_(0.0);
 }
 
 

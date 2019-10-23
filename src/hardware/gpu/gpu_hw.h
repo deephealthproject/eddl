@@ -33,8 +33,8 @@ extern curandGenerator_t random_generator[64];
 // GPU: Comparison
 int gpu_equal(Tensor *A, Tensor *B);
 
-// GPU: Core (static)
-void gpu_set(Tensor *A, float v);
+// GPU: Core
+void gpu_fill_(Tensor *A, float v);
 void gpu_mask(Tensor *A,float v);
 
 void gpu_copy_to_gpu(float *nptr,Tensor *B);

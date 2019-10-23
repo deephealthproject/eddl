@@ -44,7 +44,7 @@ string LEmbedding::plot(int c) {
 
 void LEmbedding::forward() {
     // TODO: Implement
-    delta->set(0.0);
+    delta->fill_(0.0);
 }
 
 

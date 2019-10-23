@@ -63,7 +63,7 @@ void Layer::detach(Layer *l)
 }
 
 void Layer::reset() {
-    delta->set(0.0);
+    delta->fill_(0.0);
 }
 
 void Layer::setmode(int m) {

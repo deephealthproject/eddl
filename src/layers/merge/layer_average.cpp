@@ -59,7 +59,7 @@ string LAverage::plot(int c) {
 
 void LAverage::forward() {
     // TODO: Implement
-    output->set(0.0);
+    output->fill_(0.0);
     for (int i = 0; i < parent.size(); ++i)
         Tensor::inc(parent[i]->output, output);
 

@@ -119,7 +119,7 @@ void gpu_reduction(ReduceDescriptor *RD){
     check_cuda(cudaDeviceSynchronize(), "reduction_kernel");
 
   }else{ // still slow for max, min on conv
-    RD->O->set(0.0);
+    RD->O->fill_(0.0);
     dim3 dimGrid(RD->index.size());
     dim3 dimBlock(1);
     reduction_kernel<<<dimGrid,dimBlock>>>(RD->I->ptr, RD->O->ptr, RD->S->ptr,RD->m, RD->keepdims,d,RD->ind,RD->red_size);
