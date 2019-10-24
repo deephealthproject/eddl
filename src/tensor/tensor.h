@@ -99,10 +99,7 @@ public:
     void print();
 
     // Core
-    int numel();
     vector<int> getShape();
-    void point2data(const vector<int>& shape, float *ptr);
-    void copydata(const vector<int>& s, float *newptr);
 
     // Serialization
     void save(string s);
@@ -189,7 +186,7 @@ public:
     static Tensor* cosh(Tensor *A);
 
     void inv_();
-    
+
     void div_(float v);
     static Tensor* div(Tensor *A, float v);
     static void el_div(Tensor *A, Tensor *B, Tensor *C, int incC);

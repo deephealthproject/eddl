@@ -160,62 +160,6 @@ Tensor* Tensor::clone(){
     return t_new;
 }
 
-// Resizing tensors
-void Tensor::resize(int b, float *fptr){
-
-    if (b==shape[0]) return;
-
-    shape[0] = b;
-
-    size = 1;
-    for (int i = 0; i < ndim; ++i) size *= shape[i];
-
-    int s=size;
-    for(int i=0;i<ndim;i++) {
-        s/=shape[i];
-        stride.push_back(s);
-    }
-
-    if (isCPU()) {
-        if (fptr==nullptr) {
-          free(ptr);
-          ptr = get_fmem(size,"Tensor::resize");
-        }
-        else {
-          ptr=fptr;
-        }
-        if (ndim == 2) {
-            ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(ptr, shape[1], shape[0]);
-        }
-    }
-#ifdef cGPU
-    else if (isGPU())
-        {
-          if (fptr==nullptr) {
-            gpu_delete_tensor(gpu_device,ptr);
-            ptr=gpu_create_tensor(gpu_device,size);
-          }
-          else {
-            ptr=fptr;
-          }
-        }
-#endif
-#ifdef cFPGA
-    else {
-        // create FPGA Tensor
-      }
-#endif
-
-}
-
-void Tensor::resize(int b)
-{
-  resize(b,(float *)nullptr);
-}
-void Tensor::resize(int b, Tensor *T)
-{
-  resize(b,T->ptr);
-}
 
 
 
@@ -309,35 +253,4 @@ void Tensor::print() {
     }
 #endif
     cout << "\n";
-}
-
-void Tensor::point2data(const vector<int>& s, float *newptr){
-    this->size = 1;
-    this->shape = s;
-    for (int i : s) this->size *= i;  // Compute size
-    int sz=size;
-    for(int i=0;i<ndim;i++) {
-      sz/=shape[i];
-      stride.push_back(sz);
-    }
-    this->ptr = newptr;  // Point to new data
-}
-
-void Tensor::copydata(const vector<int>& s, float *newptr){
-    this->size = 1;
-    this->shape = s;
-    for (int i : s) this->size *= i;  // Compute size
-    int sz=size;
-    for(int i=0;i<ndim;i++) {
-      sz/=shape[i];
-      stride.push_back(sz);
-    }
-
-    // Allocate memory and fill tensor
-    this->ptr = new float[size];
-    std::copy(newptr, newptr+size, this->ptr);
-}
-
-int Tensor::numel(){
-    return this->size;
 }
