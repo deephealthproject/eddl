@@ -17,7 +17,15 @@
 
 using namespace std;
 
-
+/**
+ * Glorot uniform initializer, also called Xavier uniform initializer.
+ *
+ * It draws samples from a uniform distribution within [-limit, limit] where limit is sqrt(6 / (fan_in + fan_out))
+ * where fan_in is the number of input units in the weight tensor and fan_out is the number of output
+ * units in the weight tensor.
+ *
+ * @param seed int; Used to seed the random generator.
+*/
 IGlorotUniform::IGlorotUniform(int seed) : Initializer("glorot_uniform") {
     // Todo: Implement
     this->seed = seed;

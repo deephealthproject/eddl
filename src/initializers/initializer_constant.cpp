@@ -16,7 +16,11 @@
 
 using namespace std;
 
-
+/**
+ * Initializer that generates tensors initialized to a constant value.
+ *
+ * @param value float; the value of the generator tensors.
+*/
 IConstant::IConstant(float value) : Initializer("constant") {
     // Todo: Implement
     this->value = value;

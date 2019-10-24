@@ -16,7 +16,13 @@
 
 using namespace std;
 
-
+/**
+ * Initializer that generates the identity matrix.
+ *
+ * Only use for 2D matrices. If desired matrix is not square, gets padded with zeros for the additional rows/columns.
+ *
+ * @param gain float; Multiplicative factor to apply to the identity matrix.
+*/
 IIdentity::IIdentity(float gain) : Initializer("identity") {
     // Todo: Implement
     this->gain = gain;

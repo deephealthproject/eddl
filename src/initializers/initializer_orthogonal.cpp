@@ -16,7 +16,12 @@
 
 using namespace std;
 
-
+/**
+ * Initializer that generates a random orthogonal matrix.
+ *
+ * @param gain float; Multiplicative factor to apply to the orthogonal matrix.
+ * @param seed int; Used to seed the random generator.
+*/
 IOrthogonal::IOrthogonal(float gain, int seed) : Initializer("orthogonal") {
     // Todo: Implement
     this->gain = gain;

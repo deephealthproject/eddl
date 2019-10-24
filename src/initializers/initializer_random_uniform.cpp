@@ -16,7 +16,13 @@
 
 using namespace std;
 
-
+/**
+ * Initializer that generates tensors with a uniform distribution.
+ *
+ * @param minval float; Lower bound of the range of random values to generate.
+ * @param maxval float; Upper bound of the range of random values to generate.
+ * @param seed int; Used to seed the random generator.
+*/
 IRandomUniform::IRandomUniform(float minval, float maxval, int seed) : Initializer("random_uniform") {
     // Todo: Implement
     this->minval = minval;
