@@ -21,6 +21,36 @@ using namespace std;
 ////////////////////////////////////////////////////////
 ///// EDDL is a wrapper class to ease and define the API
 ////////////////////////////////////////////////////////
+
+namespace eddlT {
+    Tensor * create(const vector<int> &shape){
+      return new Tensor(shape,DEV_CPU);
+    }
+    Tensor * create(const vector<int> &shape,float *ptr)
+    {
+      return new Tensor(shape,ptr,DEV_CPU);
+    }
+    Tensor * create(const vector<int> &shape,int dev){
+      return new Tensor(shape,dev);
+    }
+
+    // TODO : load
+    
+    void div(Tensor *t, float f) {
+      t->div_(f);
+    }
+
+
+    float * getptr(Tensor *t) {
+        return t->ptr;
+    }
+
+    vector<int> getShape(Tensor *t){
+      return t->shape;
+    }
+}
+
+
 namespace eddl {
     // ---- TENSOR ----
     tensor T(const vector<int> &shape) {

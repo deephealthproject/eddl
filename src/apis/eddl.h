@@ -32,6 +32,17 @@
 #include "../layers/pool/layer_pool.h"
 #include "../layers/recurrent/layer_recurrent.h"
 
+
+namespace eddlT {
+    //#define tensor Tensor*
+    Tensor * create(const vector<int> &shape);
+    Tensor * create(const vector<int> &shape,float *ptr);
+    Tensor * create(const vector<int> &shape,int dev);
+    void div(Tensor *t, float f);
+    float * getptr(Tensor *t);
+    vector<int> getShape(Tensor *t);
+}
+
 namespace eddl {
 
 #define tensor LTensor*
@@ -54,9 +65,14 @@ namespace eddl {
     float *T_getptr(layer T);
 
     vector<int> getShape(layer l);
+
+
 // ---- TENSOR OPERATIONS ----
     void div(layer t, float v);
     void set(layer t, float v);
+
+
+
 
 // ---- CORE LAYERS ----
     layer Softmax(layer parent);

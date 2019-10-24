@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
     l = BatchNormalization(Activation(L2(Dense(l, 1024),0.0001f), "relu"));
     l = BatchNormalization(Activation(L2(Dense(l, 1024),0.0001f), "relu"));
     //l = BatchNormalization(Activation(Dense(l, 1024, true, L2(0.0001f)), "relu"));
-    
+
     layer out = Activation(Dense(l, num_classes), "softmax");
     model net = Model({in}, {out});
 
@@ -59,6 +59,9 @@ int main(int argc, char **argv) {
 
     // Load dataset
     tensor x_train = T_load("trX.bin");
+
+    eddlT::div(x_train->output,255.0);
+    
     tensor y_train = T_load("trY.bin");
     tensor x_test = T_load("tsX.bin");
     tensor y_test = T_load("tsY.bin");
