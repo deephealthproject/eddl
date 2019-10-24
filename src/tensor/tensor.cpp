@@ -103,7 +103,7 @@ Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr,T->devic
 
 void Tensor::ToCPU(int dev){
 #ifdef cGPU
-    else if (isGPU())
+    if (isGPU())
       {
         this->device = dev;
 
