@@ -58,7 +58,7 @@ namespace eddlT {
     return Tensor::linspace(start,end,steps,dev);
   }
   Tensor* logspace(float start, float end, int steps, float base, int dev){
-    return Tensor::logspace(start,end,steps,dev);
+    return Tensor::logspace(start,end,steps,base,dev);
   }
   Tensor* eye(int size, int dev){
     return Tensor::eye(size,dev);

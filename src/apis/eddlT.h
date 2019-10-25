@@ -26,10 +26,10 @@ namespace eddlT{
   Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
   Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
   Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
-  Tensor* arange(float start, float end, float step=1.0f, int dev=DEV_CPU);
-  Tensor* range(float start, float end, float step=1.0f, int dev=DEV_CPU);
-  Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
-  Tensor* logspace(float start, float end, int steps=100, float base=10.0f, int dev=DEV_CPU);
+  Tensor* arange(float start, float end, float step, int dev=DEV_CPU);
+  Tensor* range(float start, float end, float step, int dev=DEV_CPU);
+  Tensor* linspace(float start, float end, int steps, int dev=DEV_CPU);
+  Tensor* logspace(float start, float end, int steps, float base, int dev=DEV_CPU);
   Tensor* eye(int size, int dev=DEV_CPU);
   Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
@@ -133,8 +133,8 @@ namespace eddlT{
   void neg_(Tensor *A);
   Tensor* neg(Tensor *A);
 
-  void normalize_(Tensor *A,float min=0.0f, float max=1.0f);
-  Tensor* normalize(Tensor *A, float min=0.0f, float max=1.0f);
+  void normalize_(Tensor *A,float min, float max);
+  Tensor* normalize(Tensor *A, float min, float max);
 
   void pow_(Tensor *A,float exp);
    Tensor* pow(Tensor *A, float exp);
