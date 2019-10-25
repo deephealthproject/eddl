@@ -547,4 +547,4 @@ install(DIRECTORY ${ESCAPED_EIGEN_SOURCE_DIR}/src DESTINATION "include/third_par
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/EDDLConfig.cmake.in ${CMAKE_BINARY_DIR}/cmake/EDDLConfig.cmake @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/cmake/EDDLConfig.cmake
-        DESTINATION ${CMAKE_INSTALL_PREFIX})
+        DESTINATION ${EDDL_CONFIG_INSTALL_PATH})
