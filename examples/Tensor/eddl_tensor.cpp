@@ -21,7 +21,8 @@ using namespace eddlT;
 int main(int argc, char **argv) {
     int dev = DEV_GPU;
 
-
+    tensor A=create({10,10});
+    
     tensor T=randn({10,10},dev);
 
     print(T);

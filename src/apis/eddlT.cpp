@@ -33,6 +33,10 @@ namespace eddlT {
   {
     return new Tensor(shape,ptr);
   }
+  Tensor* create(const vector<int> &shape)
+  {
+    return new Tensor(shape);
+  }
 
   Tensor* zeros(const vector<int> &shape, int dev)
   {
