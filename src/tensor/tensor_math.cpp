@@ -729,6 +729,30 @@ Tensor* Tensor::pow(Tensor *A, float exp){
     return t_new;
 }
 
+void Tensor::powb_(float base) {
+    // Similar to pow (tensor^exp) but here we revert the order (base^tensor)
+    if (isCPU()) {
+        cpu_powb_(this, base);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_powb_(this, base);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+Tensor* Tensor::powb(Tensor *A, float base){
+    Tensor *t_new = A->clone();
+    t_new->powb_(base);
+    return t_new;
+}
+
 void Tensor::reciprocal_() {
     if (isCPU()) {
         cpu_reciprocal_(this);

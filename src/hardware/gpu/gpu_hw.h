@@ -48,7 +48,8 @@ void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
 
 
 // GPU: Create (static)
-void gpu_range(Tensor *A, float min, float step, int size);
+void gpu_range(Tensor *A, float start, float step);
+void gpu_eye(Tensor *A);
 
 // GPU: Generator
 void gpu_rand_uniform(Tensor *A, float v);
@@ -77,6 +78,7 @@ void gpu_mod_(Tensor *A, float v);
 void gpu_mult_(Tensor *A, float v);
 void gpu_normalize_(Tensor *A, float min, float max);
 void gpu_pow_(Tensor *A, float exp);
+void gpu_powb_(Tensor *A, float base);
 void gpu_reciprocal_(Tensor *A);
 void gpu_remainder_(Tensor *A, float v);
 void gpu_round_(Tensor *A);

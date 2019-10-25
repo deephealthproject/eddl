@@ -229,6 +229,9 @@ public:
     void pow_(float exp);
     static Tensor* pow(Tensor *A, float exp);
 
+    void powb_(float base);
+    static Tensor* powb(Tensor *A, float base);
+
     void reciprocal_();
     static Tensor* reciprocal(Tensor *A);
 

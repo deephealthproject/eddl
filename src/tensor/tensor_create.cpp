@@ -17,16 +17,15 @@
 
 using namespace std;
 
-//TODO: Move. Aux func I don't like it
-Tensor* raw_range(float min, float step, int size, int dev){
+Tensor* raw_range(float start, float step, int size, int dev){
     auto t = new Tensor(vector<int>{size}, nullptr, dev);
     if (t->isCPU()) {
-        cpu_range(t, min, step);
+        cpu_range(t, start, step);
     }
 #ifdef cGPU
     else if (t->isGPU())
       {
-        cpu_range(t, min, step);
+        gpu_range(t, start, step);
       }
 #endif
 #ifdef cFPGA
@@ -36,6 +35,7 @@ Tensor* raw_range(float min, float step, int size, int dev){
 #endif
     return t;
 }
+
 
 // ************************************************
 // Creation ops ***********************************
@@ -83,19 +83,28 @@ Tensor* Tensor::linspace(float start, float end, int steps, int dev){
 Tensor* Tensor::logspace(float start, float end, int steps, float base, int dev){
     float step = (end-start)/((float)steps-1);
     auto t = Tensor::range(start, end, step, dev);
-    for(int i=0; i<steps; i++){
-        t->ptr[i] = std::pow(base, t->ptr[i]);
-    }
+    t->powb_(base);
     return t;
 }
 
 Tensor* Tensor::eye(int size, int dev){
     auto t = new Tensor(vector<int>{size, size}, dev);
-    //t->fill_(0.0f);
-    for(int i=0; i<size; i++){
-        t->ptr[i*size+i] = 1.0f;
+    if (t->isCPU()) {
+        cpu_eye(t);
     }
+#ifdef cGPU
+    else if (t->isGPU())
+      {
+        gpu_eye(t);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
     return t;
+
 }
 
 Tensor* Tensor::randn(const vector<int> &shape, int dev){

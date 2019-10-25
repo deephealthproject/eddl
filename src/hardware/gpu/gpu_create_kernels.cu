@@ -16,12 +16,19 @@
 
 #include "gpu_kernels.h"
 
-__global__ void range(float* a, long int rows, long int cols, float min, float step, int size)
-{
-    long int ops=rows*cols;
-    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+__global__ void range(float* a, float start, float step, long int size) {
+    long int thread_id_x = blockDim.x*blockIdx.x + threadIdx.x;
+
+    if (thread_id_x < size)
+        a[thread_id_x]= start + step*(float)(thread_id_x);
+}
+
+
+__global__ void eye(float* a, long int rows, long int cols) {
+    long int ops = rows*cols;
+    long int thread_id_x = blockDim.x*blockIdx.x + threadIdx.x;
 
     if (thread_id_x < ops)
-        a[thread_id_x]= min*(float)(thread_id_x + 1);
-
+        if (thread_id_x/rows == thread_id_x%cols){ a[thread_id_x] = 1.0f; }
+        else { a[thread_id_x] = 0.0f; }
 }

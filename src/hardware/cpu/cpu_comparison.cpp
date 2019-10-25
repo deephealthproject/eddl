@@ -12,10 +12,13 @@
 
 int cpu_equal(Tensor *A, Tensor *B, float epsilon){
 
-  for (int i = 0; i < A->size; i++)
-  if (::fabs(A->ptr[i]-B->ptr[i])>epsilon) {
-    fprintf(stderr,"\n>>>>>>>>>>\n");
-    fprintf(stderr,"%f != %f\n",A->ptr[i], B->ptr[i]);
-    return 0;
+  for (int i = 0; i < A->size; i++){
+      float delta = ::fabs(A->ptr[i] - B->ptr[i]);
+      if (delta > epsilon) {
+          fprintf(stderr, "\n>>>>>>>>>>\n");
+          fprintf(stderr, "%f != %f\n", A->ptr[i], B->ptr[i]);
+          fprintf(stderr, "%f > %f\n", delta, epsilon);
+          return 0;
+      }
   }
 }

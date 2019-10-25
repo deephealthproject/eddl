@@ -52,6 +52,14 @@ void Tensor::reshape_(vector<int> shape){
     if (this->ndim == 2) {
         this->ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(ptr, this->shape[1], this->shape[0]);
     }
+
+    // Update strides
+    this->stride = vector<int>();
+    int s=this->size;
+    for(int i=0;i<ndim;i++) {
+        s/=shape[i];
+        this->stride.push_back(s);
+    }
 }
 
 int Tensor::get_address_rowmajor(vector<int> indices){
@@ -61,7 +69,6 @@ int Tensor::get_address_rowmajor(vector<int> indices){
         for(int j=i+1; j<this->ndim; j++){
             accum*=this->shape[j];
         }
-        address += indices[i] * accum;
     }
     address += indices[this->ndim-1];
     return address;

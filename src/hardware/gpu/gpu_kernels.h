@@ -15,9 +15,11 @@
 #include <cuda.h>
 
 
-// GPU: Temp
-
 // GPU: Comparison
+
+// GPU: Create
+__global__ void range(float* a, float start, float step, long int size);
+__global__ void eye(float* a, long int rows, long int cols);
 
 // GPU: Core (static)
 __global__ void fill(float *aptr,float *bptr,int t,int aini,int at,int bini,int bt,int tot,int inc);
@@ -47,6 +49,7 @@ __global__ void inv_(float* a, long int size);
 __global__ void mult_(float* a, long int size, float v);
 __global__ void normalize_(float* a, long int size, float min_ori, float max_ori, float min, float max);
 __global__ void pow_(float* a, long int size, float exp);
+__global__ void powb_(float* a, long int size, float base);
 __global__ void reciprocal_(float* a, long int size);
 __global__ void remainder_(float* a, long int size, float v);
 __global__ void round_(float* a, long int size);

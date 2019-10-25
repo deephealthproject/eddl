@@ -24,16 +24,16 @@
 
 
 
-bool check_tensors(Tensor* t_res, Tensor* t_sol){
+bool check_tensors(Tensor* A, Tensor* B, float epsilon){
     // Clone input tensors
-    t_res = t_res->clone();
-    t_sol = t_sol->clone();
+    A = A->clone();
+    B = B->clone();
 
     // Copy to CPU (equal only supported in CPU)
-    t_res->ToCPU();
-    t_sol->ToCPU();
+    A->ToCPU();
+    B->ToCPU();
 
-    return Tensor::equal(t_res, t_sol);
+    return Tensor::equal(A, B, epsilon);
 }
 
 TestResult run_mpool(Tensor* t_input, int dev, int runs){
@@ -237,6 +237,7 @@ TestResult run_tensor_op(Tensor* t_input, string op, int dev, int runs){
         else if(op=="mult"){ t_input->mult_(5.0f); }
         else if(op=="normalize"){ t_input->normalize_(0.0f, 1.0f); }
         else if(op=="pow"){ t_input->pow_(2.0f); }
+        else if(op=="powb"){ t_input->powb_(2.0f); }
         else if(op=="reciprocal"){ t_input->reciprocal_(); }
         else if(op=="remainder"){ t_input->remainder_(5.0f); }
         else if(op=="round"){ t_input->round_(); }
@@ -275,3 +276,49 @@ TestResult run_tensor_op(Tensor* t_input, string op, int dev, int runs){
     return result;
 }
 
+
+TestResult run_tensor_create(string op, int dev, int runs){
+    Tensor* t_input;
+
+    clock_t begin = clock();
+    for(int i=0; i<runs; i++){
+        // Math operations
+        if(op=="zeros"){
+            t_input = Tensor::zeros({10}, dev);
+        }
+        else if(op=="ones"){
+            t_input = Tensor::ones({10}, dev);
+        }
+        else if(op=="full"){
+            t_input = Tensor::full({10}, 5.0f, dev);
+        }
+        else if(op=="arange"){
+            t_input = Tensor::arange(1.0f, 10.0f, 1.0f, dev);
+        }
+        else if(op=="range"){
+            t_input = Tensor::range(1.0f, 10.0f, 1.0f, dev);
+        }
+        else if(op=="linspace"){
+            t_input = Tensor::linspace(3.0f, 10.0f, 5, dev);
+        }
+        else if(op=="logspace"){
+            t_input = Tensor::logspace(0.1f, 1.0f, 5, 10.0f, dev);
+        }
+        else if(op=="eye"){
+            t_input = Tensor::eye(3, dev);
+        }
+        else if(op=="randn"){
+            t_input = Tensor::randn({1000, 1000}, dev);
+        }
+        else{
+            std::cout << "Unknown operator" << std::endl;
+        }
+    }
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
+    TestResult result{};
+    result.time = elapsed_secs;
+    result.tensor = t_input;
+    return result;
+}

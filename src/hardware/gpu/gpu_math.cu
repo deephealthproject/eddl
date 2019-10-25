@@ -248,6 +248,16 @@ void gpu_pow_(Tensor *A, float v){
     check_cuda(cudaDeviceSynchronize(), "pow_");
 }
 
+void gpu_powb_(Tensor *A, float v){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    powb_<<<dimGrid,dimBlock>>>(A->ptr, A->size, v);
+    check_cuda(cudaDeviceSynchronize(), "powb_");
+}
+
 
 void gpu_reciprocal_(Tensor *A){
     int device=A->gpu_device;

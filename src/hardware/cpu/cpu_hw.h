@@ -31,6 +31,7 @@ void cpu_d_repeat(Tensor *D, Tensor *A, vector<int> size);
 
 // CPU: Create
 void cpu_range(Tensor *A, float min, float step);
+void cpu_eye(Tensor *A);
 
 // CPU: Generator
 void cpu_rand_uniform(Tensor *A, float v);
@@ -67,6 +68,7 @@ void cpu_mod_(Tensor *A, float v);
 void cpu_mult_(Tensor *A, float v);
 void cpu_normalize_(Tensor *A, float min, float max);
 void cpu_pow_(Tensor *A, float exp);
+void cpu_powb_(Tensor *A, float base);
 void cpu_reciprocal_(Tensor *A);
 void cpu_remainder_(Tensor *A, float v);
 void cpu_round_(Tensor *A);

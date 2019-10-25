@@ -180,6 +180,14 @@ __global__ void pow_(float* a, long int size, float exp){
         a[thread_id_x]=powf(a[thread_id_x], exp);
 }
 
+__global__ void powb_(float* a, long int size, float base){
+
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < size)
+        a[thread_id_x]=powf(base, a[thread_id_x]);
+}
+
 __global__ void reciprocal_(float* a, long int size){
 
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;

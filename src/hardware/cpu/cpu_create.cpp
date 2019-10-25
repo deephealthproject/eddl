@@ -19,3 +19,12 @@ void cpu_range(Tensor *A, float min, float step){
         v+=step;
     }
 }
+
+void cpu_eye(Tensor *A){
+    #pragma omp parallel for
+    for(int i=0; i<A->size; i++){
+
+        if (i/A->shape[0] == i%A->shape[1]){ A->ptr[i] = 1.0f; }
+        else { A->ptr[i] = 0.0f; }
+    }
+}

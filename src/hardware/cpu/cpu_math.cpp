@@ -128,6 +128,11 @@ void cpu_pow_(Tensor *A, float exp) {
   for (int i = 0; i < A->size; ++i) A->ptr[i] = ::powf(A->ptr[i], exp);
 }
 
+void cpu_powb_(Tensor *A, float base) {
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; ++i) A->ptr[i] = ::powf(base, A->ptr[i]);
+}
+
 void cpu_reciprocal_(Tensor *A) {
   #pragma omp parallel for
   for (int i = 0; i < A->size; ++i) A->ptr[i] = 1.0f/A->ptr[i];
