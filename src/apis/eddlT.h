@@ -19,7 +19,6 @@ namespace eddlT{
   #define tensor Tensor*
 
   // Creation ops ***********************************
-  Tensor* create(const vector<int> &shape, float *ptr=nullptr, int dev=DEV_CPU);
   Tensor* create(const vector<int> &shape, int dev=DEV_CPU);
   Tensor* create(const vector<int> &shape, float *ptr=nullptr);
 

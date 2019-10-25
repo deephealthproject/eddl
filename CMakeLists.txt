@@ -164,6 +164,8 @@ SET(SOURCE_DIR "src")
 SET(CPP_SOURCES
         src/apis/eddl.cpp
         src/apis/eddl.h
+        src/apis/eddlT.cpp
+        src/apis/eddlT.h
         src/hardware/cpu/cpu_hw.h
         src/hardware/cpu/cpu_comparison.cpp
         src/hardware/cpu/cpu_core.cpp
