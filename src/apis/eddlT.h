@@ -35,6 +35,9 @@ namespace eddlT{
   // Pointer functions ********************************
   float *getptr(Tensor *A);
 
+  // Print functions   ********************************
+  void print(Tensor *A);
+
   // Load from file ***********************************
   Tensor *load(string fname);
 

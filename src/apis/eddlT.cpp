@@ -70,7 +70,10 @@ namespace eddlT {
     return A->ptr;
   }
 
-
+  // Print functions   ********************************
+  void print(Tensor *A){
+    A->print();
+  }
 
   // Load from file ***********************************
   Tensor *load(string fname){
