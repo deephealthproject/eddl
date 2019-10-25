@@ -13,32 +13,32 @@
 #include <ctime>
 #include <limits>
 
-#include "apis/eddl.h"
 #include "apis/eddlT.h"
 
 using namespace std;
+using namespace eddlT;
 
 int main(int argc, char **argv) {
     int dev = DEV_GPU;
 
 
-    tensor T=eddlT::randn({10,10},dev);
+    tensor T=randn({10,10},dev);
 
-    eddlT::print(T);
+    print(T);
 
-    eddlT::normalize_(T,0,1);
+    normalize_(T,0,1);
 
-    eddlT::print(T);
+    print(T);
 
-    tensor U=eddlT::randn({10,3},dev);
+    tensor U=randn({10,3},dev);
 
-    eddlT::print(U);
+    print(U);
 
-    tensor V=eddlT::mult2D(T,U);
+    tensor V=mult2D(T,U);
 
-    eddlT::info(V);
+    info(V);
 
-    eddlT::print(V);
+    print(V);
 
 
 }
