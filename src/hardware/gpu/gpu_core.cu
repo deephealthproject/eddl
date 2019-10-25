@@ -89,12 +89,12 @@ void gpu_mask(Tensor *A,float v) {
 }
 
 
-void gpu_set(Tensor *A, float v) {
+void gpu_fill_(Tensor *A, float v) {
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     setDims(A);
 
-    set<<<dimGrid,dimBlock>>>(A->ptr,v,A->size);
+    fill_<<<dimGrid,dimBlock>>>(A->ptr,v,A->size);
     check_cuda(cudaDeviceSynchronize(),"set");
 }

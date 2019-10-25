@@ -83,6 +83,7 @@ void ConvolDescriptor::build(Tensor *A) {
     // Params
     K = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
     bias = new Tensor(vector<int>{nk}, I->device);
+
     gK = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
     gbias = new Tensor(vector<int>{nk}, I->device);
 

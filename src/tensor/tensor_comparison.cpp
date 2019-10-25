@@ -26,13 +26,13 @@ int Tensor::eqsize(Tensor *A, Tensor *B) {
     return 1;
 }
 
-int Tensor::equal(Tensor *A, Tensor *B) {
+int Tensor::equal(Tensor *A, Tensor *B, float epsilon) {
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::equal");
 
     if (!eqsize(A,B)) return 0;
 
     if (A->isCPU()) {
-        cpu_equal(A, B);
+        return cpu_equal(A, B, epsilon);
     }
 #ifdef cGPU
     else if (A->isGPU())

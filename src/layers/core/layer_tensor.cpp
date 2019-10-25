@@ -30,6 +30,11 @@ LTensor::LTensor(const vector<int> shape, int dev) : LinLayer("ltensor" + to_str
 }
 
 
+LTensor::~LTensor()
+{
+  input = output = nullptr;
+}
+
 // From file
 LTensor::LTensor(string fname) : LinLayer("ltensor" + to_string(total_layers), DEV_CPU) {
   FILE *fe = fopen(fname.c_str(), "rb");
@@ -51,6 +56,32 @@ LTensor::LTensor(string fname) : LinLayer("ltensor" + to_string(total_layers), D
   t->load(fe);
   data = input = output = t;
 }
+
+// From file
+LTensor * LTensor::fromCSV(string fname) {
+  FILE *fe = fopen(fname.c_str(), "rt");
+  if (fe == nullptr) {
+      fprintf(stderr, "%s not found\n", fname.c_str());
+      exit(1);
+  }
+  vector<int> shape;
+  int ndim,v;
+
+  fscanf(fe,"%d",&ndim);
+  for(int i=0;i<ndim;i++) {
+    fscanf(fe,"%d",&v);
+    shape.push_back(v);
+  }
+
+  LTensor *n=new LTensor(shape,DEV_CPU);
+
+  for (int i = 0; i < n->output->size; ++i)
+      fscanf(fe,"%f ",&(n->output->ptr[i]));
+
+  return n;
+
+}
+
 
 // From shape, ptr (sharing) and device
 LTensor::LTensor(const vector<int> shape, float *fptr,int dev) : LinLayer("ltensor" + to_string(total_layers), dev) {
@@ -86,7 +117,6 @@ LTensor::LTensor(Layer *l) : LinLayer("ltensor" + to_string(total_layers), l->de
 void LTensor::resize(int batch){
   Layer::resize(batch);
 }
-
 
 
 /// OP OVERLOAD

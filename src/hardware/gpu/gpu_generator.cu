@@ -3,7 +3,7 @@
 * Version: 0.1
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
-* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
+* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es), (jmaronasm@gmail.com)
 * All rights reserved
 */
 
@@ -56,7 +56,7 @@ void gpu_rand_normal(Tensor *A, float m, float s){
   cudaSetDevice(device);
 
   if (A->size%2) {
-    gpu_set(A,0.0);
+    gpu_fill_(A,0.0);
     check_curand(curandGenerateNormal(random_generator[device],A->ptr,A->size-1,m,s),"gpu_rand_normal");
   }
   else

@@ -3,7 +3,9 @@ ifneq ($(MAKECMDGOALS),install)
 
 # Default paths
 SRC_PATH=../src
-EXAMPLES_PATH=../examples
+EXAMPLES_NN_PATH=../examples/NN
+EXAMPLES_T_PATH=../examples/Tensor
+
 TESTS_PATH=../tests
 BUILD_PATH=.
 LIBS_PATH=../third_party/eigen/
@@ -60,15 +62,15 @@ CXX = g++
 CXXSOFLAGS = -shared
 ifeq ($(OPT),1)
 $(info set AVX)
-CXXFLAGS = -std=c++11  -fopenmp -mavx -O3 -pthread
+CXXFLAGS = -std=c++11 -mavx -O3 -pthread
 endif
 ifeq ($(OPT),2)
 $(info set SSE)
-CXXFLAGS = -std=c++11 -fopenmp -msse -O3 -pthread
+CXXFLAGS = -std=c++11 -msse -O3 -pthread
 endif
 ifeq ($(OPT),3)
 $(info set no opt)
-CXXFLAGS = -std=c++11 -fopenmp -O3 -pthread
+CXXFLAGS = -std=c++11 -O3 -pthread
 endif
 ifeq ($(OPT),4)
 $(info set Debug)
@@ -84,7 +86,9 @@ ifeq ($(TARGET),2)
 # OPT=2: SSE
 # OPT=3: Nothing
 # OPT=4: Debug
-CXX = g++
+
+#CXX = g++ #clang
+CXX = /usr/local/bin/g++-9 # OpenMP
 CXXSOFLAGS = -shared
 ifeq ($(OPT),1)
 $(info set AVX)
@@ -105,7 +109,8 @@ endif
 endif
 
 # Create position independent code for the shared library
-CXXFLAGS := $(CXXFLAGS) -fPIC
+#CXXFLAGS := $(CXXFLAGS) -fPIC
+CXXFLAGS := $(CXXFLAGS) -fopenmp -fPIC
 
 
 ##CORE FLAGS
@@ -133,31 +138,48 @@ endif
 endif
 
 # Group compiled objects (Alphabetically sorted!)
-APIS_OBJ = eddl.o
+APIS_OBJ = eddl.o eddlT.o
+CONSTRAINTS_OBJ = constraint_max_norm.o constraint_min_max_norm.o constraint_non_neg.o constraint_unit_norm.o constraint.o
 CORE_OBJ = compserv.o net.o utils.o random.o
 DESCRIPTORS_OBJ = descriptor_conv.o descriptor_pool.o descriptor_reduce.o
-HARDWARE_CPU_OBJ = cpu_comparison.o cpu_core.o cpu_create.o cpu_generator.o cpu_math.o cpu_reduction.o cpu_activations.o cpu_conv.o cpu_losses.o cpu_metrics.o cpu_pool.o cpu_tensor_nn.o
+HARDWARE_CPU_OBJ = cpu_comparison.o cpu_core.o cpu_create.o cpu_da.o cpu_generator.o cpu_math.o cpu_reduction.o cpu_activations.o cpu_conv.o cpu_losses.o cpu_metrics.o cpu_pool.o cpu_tensor_nn.o
 INITIALIZERS_OBJ = initializer_indentity.o initializer_random_uniform.o initializer_glorot_uniform.o initializer_orthogonal.o initializer_random_normal.o initializer_constant.o initializer_glorot_normal.o initializer.o
 LAYERS_OBJ = layer_lstm.o layer_input.o layer_conv.o layer_mean.o layer_log10.o layer_reshape.o layer_log.o layer_mult.o layer_maxpool.o layer_embedding.o layer_globalavgpool.o layer_upsampling.o layer_add.o layer_batchnorm.o layer_div.o layer_log2.o layer_gaussian.o layer_average.o layer.o layer_globalmaxpool.o layer_reduction.o layer_sum.o layer_sum_op.o layer_gauss.o layer_transposed_conv.o layer_activation.o layer_operator.o layer_concat.o layer_maximum.o layer_diff.o layer_var.o layer_drop.o layer_pool.o layer_exp.o layer_rnn.o layer_min.o layer_pow.o layer_dense.o layer_sqrt.o layer_tensor.o layer_minimum.o layer_abs.o layer_avgpool.o layer_matmul.o layer_uniform.o layer_max.o layer_subtract.o layer_generator.o layer_transpose.o
 LOSSES_OBJ = loss_mean_squared_error.o loss_soft_cross_entropy.o loss.o loss_cross_entropy.o
 METRICS_OBJ = metric_categorical_acc.o metric.o metric_mean_squared_error.o
 OPTIMIZERS_OBJ = optim_adam.o optim.o optim_nadam.o optim_adagrad.o optim_sgd.o optim_rmsprop.o optim_adamax.o optim_adadelta.o
-TENSOR_OBJ = tensor.o tensor_comparison.o tensor_core.o tensor_create.o tensor_generator.o tensor_math.o tensor_reduction.o tensor_serialization.o tensor_activations.o tensor_conv.o tensor_core_nn.o tensor_losses.o tensor_metrics.o tensor_pool.o
+REGULARIZERS_OBJ = regularizer_l1.o regularizer_l2.o regularizer_l1_l2.o regularizer.o
+TENSOR_OBJ = tensor.o tensor_comparison.o tensor_core.o tensor_create.o tensor_da.o tensor_generator.o tensor_math.o tensor_reduction.o tensor_serialization.o tensor_activations.o tensor_conv.o tensor_core_nn.o tensor_losses.o tensor_metrics.o tensor_pool.o
 TESTS_OBJ = aux_tests.o
 
 # Join groups
-OBJ := $(APIS_OBJ) $(CORE_OBJ) $(DESCRIPTORS_OBJ) $(HARDWARE_CPU_OBJ) $(INITIALIZERS_OBJ) $(LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(TENSOR_OBJ) $(TESTS_OBJ)
+OBJ := $(APIS_OBJ) $(CONSTRAINTS_OBJ) $(CORE_OBJ) $(DESCRIPTORS_OBJ) $(HARDWARE_CPU_OBJ) $(INITIALIZERS_OBJ) $(LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(REGULARIZERS_OBJ) $(TENSOR_OBJ) $(TESTS_OBJ)
 
 ifeq ($(CORE),1)  # CPU
-all: $(GPU_OBJ) $(OBJ) example_mlp  example_conv test_main
+all: $(GPU_OBJ) $(OBJ) test_main example_mlp example_conv example_ae example_dae example_dae_class example_tensor example_load_save example_train_batch
 endif
 
 ifeq ($(CORE),2)  # GPU
-all: $(GPU_OBJ) $(OBJ) example_mlp  example_conv test_main
+all: $(GPU_OBJ) $(OBJ) test_main example_mlp example_conv example_ae example_dae example_dae_class example_tensor example_load_save example_train_batch
 endif
 
 utils.o: $(SRC_PATH)/utils.cpp $(SRC_PATH)/utils.h $(SRC_PATH)/system_info.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/utils.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+constraint.o: $(SRC_PATH)/layers/constraints/constraint.cpp $(SRC_PATH)/layers/constraints/constraint.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/constraints/constraint.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+constraint_max_norm.o: $(SRC_PATH)/layers/constraints/constraint_max_norm.cpp $(SRC_PATH)/layers/constraints/constraint.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/constraints/constraint_max_norm.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+constraint_min_max_norm.o: $(SRC_PATH)/layers/constraints/constraint_min_max_norm.cpp $(SRC_PATH)/layers/constraints/constraint.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/constraints/constraint_min_max_norm.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+constraint_non_neg.o: $(SRC_PATH)/layers/constraints/constraint_non_neg.cpp $(SRC_PATH)/layers/constraints/constraint.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/constraints/constraint_non_neg.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+constraint_unit_norm.o: $(SRC_PATH)/layers/constraints/constraint_unit_norm.cpp $(SRC_PATH)/layers/constraints/constraint.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/constraints/constraint_unit_norm.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 random.o: $(SRC_PATH)/random.cpp $(SRC_PATH)/random.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/random.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
@@ -188,6 +210,9 @@ tensor_core.o: $(SRC_PATH)/tensor/tensor_core.cpp $(SRC_PATH)/tensor/tensor.h
 
 tensor_create.o: $(SRC_PATH)/tensor/tensor_create.cpp $(SRC_PATH)/tensor/tensor.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor_create.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+tensor_da.o: $(SRC_PATH)/tensor/tensor_da.cpp $(SRC_PATH)/tensor/tensor.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor_da.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 tensor_generator.o: $(SRC_PATH)/tensor/tensor_generator.cpp $(SRC_PATH)/tensor/tensor.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/tensor/tensor_generator.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
@@ -246,6 +271,9 @@ cpu_core.o: $(SRC_PATH)/hardware/cpu/cpu_core.cpp $(SRC_PATH)/hardware/cpu/cpu_h
 cpu_create.o: $(SRC_PATH)/hardware/cpu/cpu_create.cpp $(SRC_PATH)/hardware/cpu/cpu_hw.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/cpu_create.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
+cpu_da.o: $(SRC_PATH)/hardware/cpu/cpu_da.cpp $(SRC_PATH)/hardware/cpu/cpu_hw.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/cpu_da.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
 cpu_generator.o: $(SRC_PATH)/hardware/cpu/cpu_generator.cpp $(SRC_PATH)/hardware/cpu/cpu_hw.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/hardware/cpu/cpu_generator.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
@@ -281,6 +309,9 @@ optim_adadelta.o: $(SRC_PATH)/optimizers/optim_adadelta.cpp $(SRC_PATH)/optimize
 
 eddl.o: $(SRC_PATH)/apis/eddl.cpp $(SRC_PATH)/apis/eddl.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/apis/eddl.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+eddlT.o: $(SRC_PATH)/apis/eddlT.cpp $(SRC_PATH)/apis/eddlT.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/apis/eddlT.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 layer.o: $(SRC_PATH)/layers/layer.cpp $(SRC_PATH)/layers/layer.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
@@ -474,6 +505,17 @@ initializer_constant.o: $(SRC_PATH)/initializers/initializer_constant.cpp $(SRC_
 initializer.o: $(SRC_PATH)/initializers/initializer.cpp $(SRC_PATH)/initializers/initializer.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/initializers/initializer.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
+regularizer_l1.o: $(SRC_PATH)/regularizers/regularizer_l1.cpp $(SRC_PATH)/regularizers/regularizer.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/regularizers/regularizer_l1.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+regularizer_l2.o: $(SRC_PATH)/regularizers/regularizer_l2.cpp $(SRC_PATH)/regularizers/regularizer.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/regularizers/regularizer_l2.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+regularizer_l1_l2.o: $(SRC_PATH)/regularizers/regularizer_l1_l2.cpp $(SRC_PATH)/regularizers/regularizer.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/regularizers/regularizer_l1_l2.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+regularizer.o: $(SRC_PATH)/regularizers/regularizer.cpp $(SRC_PATH)/regularizers/regularizer.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/regularizers/regularizer.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 #---------------------------------- GPU code
 gpu_comparison.o: $(SRC_PATH)/hardware/gpu/gpu_comparison.cu $(SRC_PATH)/hardware/gpu/gpu_hw.h
@@ -557,11 +599,30 @@ aux_tests.o: $(TESTS_PATH)/dev/aux_tests.cpp $(TESTS_PATH)/dev/aux_tests.h
 	$(CXX) $(CXXFLAGS) -c $(TESTS_PATH)/dev/aux_tests.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 #---------------------------------- release
-example_mlp: $(EXAMPLES_PATH)/eddl_mlp.cpp $(OBJ) $(GPU_OBJ)
-	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_PATH)/eddl_mlp.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
 
-example_conv: $(EXAMPLES_PATH)/eddl_conv.cpp $(OBJ) $(GPU_OBJ)
-	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_PATH)/eddl_conv.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
+example_ae: $(EXAMPLES_NN_PATH)/eddl_ae.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_NN_PATH)/eddl_ae.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
+
+example_dae: $(EXAMPLES_NN_PATH)/eddl_dae.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_NN_PATH)/eddl_dae.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
+
+example_dae_class: $(EXAMPLES_NN_PATH)/eddl_dae_class.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_NN_PATH)/eddl_dae_class.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
+
+example_load_save: $(EXAMPLES_NN_PATH)/eddl_load_save.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_NN_PATH)/eddl_load_save.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
+
+example_tensor: $(EXAMPLES_T_PATH)/eddl_tensor.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_T_PATH)/eddl_tensor.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
+
+example_train_batch: $(EXAMPLES_NN_PATH)/eddl_train_batch.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_NN_PATH)/eddl_train_batch.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
+
+example_mlp: $(EXAMPLES_NN_PATH)/eddl_mlp.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_NN_PATH)/eddl_mlp.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
+
+example_conv: $(EXAMPLES_NN_PATH)/eddl_conv.cpp $(OBJ) $(GPU_OBJ)
+	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(EXAMPLES_NN_PATH)/eddl_conv.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@
 
 test_main: $(TESTS_PATH)/test_main.cpp $(OBJ) $(GPU_OBJ)
 	$(CXX) $(CXXFLAGS) $(GPU_CXXFLAGS) $(TESTS_PATH)/test_main.cpp $(OBJ) $(GPU_OBJ) $(LIBFLAGS) $(GPU_LIBFLAGS) -I $(LIBS_PATH) -I $(SRC_PATH) -o $(BUILD_PATH)/$@

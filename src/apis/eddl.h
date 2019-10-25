@@ -16,8 +16,8 @@
 #include <pthread.h>
 
 #include "../net.h"
-#include "../callbacks/callbacks.h"
 #include "../initializers/initializer.h"
+#include "../regularizers/regularizer.h"
 #include "../losses/loss.h"
 #include "../metrics/metric.h"
 
@@ -32,43 +32,39 @@
 #include "../layers/pool/layer_pool.h"
 #include "../layers/recurrent/layer_recurrent.h"
 
+
+
 namespace eddl {
 
-#define tensor LTensor*
 #define layer Layer*
 #define model Net*
 #define optimizer Optimizer*
-#define callback Callback*
 #define initializer Initializer*
+#define regularizer Regularizer*
 #define loss Loss*
 #define metric Metric*
 #define compserv CompServ*
 
-// ---- TENSOR ----
-    tensor T(const vector<int> &shape);//*
-    tensor T(const vector<int> &shape, float *ptr);
-
-    tensor T_load(string fname);
-
-    float *T_getptr(layer T);
-
-    vector<int> getShape(layer l);
-// ---- TENSOR OPERATIONS ----
-    void div(layer t, float v);
-    void set(layer t, float v);
-
 // ---- CORE LAYERS ----
+    layer Softmax(layer parent);
+    layer Sigmoid(layer parent);
+    layer ReLu(layer parent);
+
     layer Activation(layer parent, string activation, string name = "");
+
+    layer L2(layer l,float l2);
+    layer L1(layer l,float l1);
+    layer L1L2(layer l,float l1,float l2);
 
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
                const vector<int> &strides = {1, 1}, string padding = "same", int groups = 1,
                const vector<int> &dilation_rate = {1, 1},
-               bool use_bias = true, string name = ""); //Todo: Implement
+               bool use_bias = true, Regularizer *reg=nullptr, string name = "");
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding = "same",
                 const vector<int> &dilation_rate = {1, 1},
                 const vector<int> &strides = {1, 1}, bool use_bias = true, string name = ""); //Todo: Implement
-    layer Dense(layer parent, int ndim, bool use_bias = true, string name = ""); //Todo: Implement
+    layer Dense(layer parent, int ndim, bool use_bias = true, Regularizer *reg=nullptr, string name = "");
     layer Embedding(int input_dim, int output_dim, string name = ""); //Todo: Implement
     layer Input(const vector<int> &shape, string name = "");
 
@@ -100,7 +96,7 @@ namespace eddl {
 
 // ---- NORMALIZATION LAYERS ----
     layer BatchNormalization(layer parent, float momentum = 0.9f, float epsilon = 0.001f, bool affine = true,
-                             string name = ""); //Todo: Implement
+                             string name = "");
     layer Dropout(layer parent, float rate, string name = ""); //Todo: Implement
 
 // ---- OPERATOR LAYERS ----
@@ -110,9 +106,13 @@ namespace eddl {
 
     layer Diff(layer l1, float k);
 
+    layer Diff(float k, layer l1);
+
     layer Div(layer l1, layer l2);
 
     layer Div(layer l1, float k);
+
+    layer Div(float k, layer l1);
 
     layer Exp(layer l);
 
@@ -126,6 +126,8 @@ namespace eddl {
 
     layer Mult(layer l1, float k);
 
+    layer Mult(float k,layer l1);
+
     layer Pow(layer l1, layer l2);
 
     layer Pow(layer l1, float k);
@@ -135,6 +137,8 @@ namespace eddl {
     layer Sum(layer l1, layer l2);
 
     layer Sum(layer l1, float k);
+
+    layer Sum(float k, layer l1);
 
 // ---- REDUCTION LAYERS ----
     layer ReduceMean(layer l, vector<int> axis = {0}, bool keepdims = false);
@@ -181,13 +185,6 @@ namespace eddl {
                bool bidirectional = false, string name = "");
 
 
-//    // ---- LR SCHEDULERS ----
-//    callback CosineAnnealingLR(int T_max, float eta_min, int last_epoch); //Todo: Implement
-//    callback ExponentialLR(float gamma, int last_epoch); //Todo: Implement
-//    callback MultiStepLR(const vector<int> &milestones, float gamma, int last_epoch); //Todo: Implement
-//    callback ReduceLROnPlateau(string metric, string mode, float factor, int patience, float threshold, string threshold_mode, int cooldown, float min_lr, float eps); //Todo: Implement
-//    callback StepLR(int step_size, float gamma, int last_epoch); //Todo: Implement
-
 // ---- INITIALIZERS ----
     initializer Constant(float value); //Todo: Implement
     initializer Identity(float gain); //Todo: Implement
@@ -197,14 +194,15 @@ namespace eddl {
     initializer RandomUniform(float minval, float maxval, int seed); //Todo: Implement
     initializer Orthogonal(float gain, int seed); //Todo: Implement
 
+    // ---- REGULARIZERS ----
+    regularizer L1(float l1=0.01f);
+    regularizer L2(float l2=0.01f);
+    regularizer L1L2(float l1=0.01f, float l2=0.01f);
 
 // ---- COMPUTING SERVICES ----
-    compserv CS_CPU(int th,int lsb=1);
-
+    compserv CS_CPU(int th=-1);
     compserv CS_GPU(const vector<int> &g,int lsb=1);
-
     compserv CS_FGPA(const vector<int> &f,int lsb=1);
-
     compserv CS_COMPSS(char* path);
 
 
@@ -221,9 +219,7 @@ namespace eddl {
 // ---- MODEL METHODS ----
     model Model(vlayer in, vlayer out);
 
-    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me);
-
-    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs);
+    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr, Initializer* init=nullptr);
 
     string summary(model m);
 
@@ -233,11 +229,11 @@ namespace eddl {
 
     void plot(model m, string fname);
 
-    void fit(model m, const vector<LTensor *> &in, const vector<LTensor *> &out, int batch, int epochs);
+    void fit(model m, const vector<Tensor *> &in, const vector<Tensor *> &out, int batch, int epochs);
 
-    void evaluate(model m, const vector<LTensor *> &in, const vector<LTensor *> &out);
+    void evaluate(model m, const vector<Tensor *> &in, const vector<Tensor *> &out);
 
-    void predict(model m, const vector<LTensor *> &in, const vector<LTensor *> &out);
+    void predict(model m, const vector<Tensor *> &in, const vector<Tensor *> &out);
 
     model load_model(string fname); //Todo: Implement
     void save_model(model m, string fname); //Todo: Implement

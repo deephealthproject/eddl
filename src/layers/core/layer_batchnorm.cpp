@@ -39,10 +39,10 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
     if (momentum!=0.0) {
       mean=new LTensor(input->getShape(),dev);
-      mean->output->set(0.0);
+        mean->output->fill_(0.0);
 
       variance=new LTensor(input->getShape(),dev);
-      variance->output->set(1.0);
+        variance->output->fill_(1.0);
     }
 
     // create a sub-graph
@@ -121,10 +121,10 @@ void LBatchNorm::resize(int batch){
 
   if (momentum!=0.0) {
     mean->resize(batch);
-    mean->output->set(0.0);
+      mean->output->fill_(0.0);
 
     variance->resize(batch);
-    variance->output->set(1.0);
+      variance->output->fill_(1.0);
   }
 }
 

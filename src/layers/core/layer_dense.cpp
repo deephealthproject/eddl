@@ -25,6 +25,7 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev) : L
     this->ndim = ndim;
     this->use_bias = use_bias;
 
+
     input = parent->output;
     output = new Tensor(vector<int>{input->shape[0], ndim}, dev);
     delta = new Tensor(output->getShape(), dev);
@@ -39,7 +40,6 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev) : L
     gradients.push_back(gW);
     if (use_bias) gradients.push_back(gbias);
 
-    //isplot=true;
 
     parent->addchild(this);
     addparent(parent);
@@ -68,6 +68,8 @@ void LDense::backward() {
         Tensor::mult2D(delta, 0, W, 1, parent[0]->delta, 1);
     }
 
+    // Regularizer
+    if(reg != nullptr) {reg->apply(this->W);}
 }
 
 
@@ -81,8 +83,11 @@ Layer *LDense::share(int c, int bs, vector<Layer *> p) {
 
     n->W = params[0];
     if (use_bias) n->bias = params[1];
+
     n->params.push_back(n->W);
     if (use_bias) n->params.push_back(n->bias);
+
+    n->reg=reg;
 
     return n;
 }
@@ -90,6 +95,7 @@ Layer *LDense::share(int c, int bs, vector<Layer *> p) {
 Layer *LDense::clone(int c, int bs, vector<Layer *> p, int todev) {
     LDense *n = new LDense(p[0], ndim, use_bias, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
+    n->reg=reg;
 
     return n;
 }

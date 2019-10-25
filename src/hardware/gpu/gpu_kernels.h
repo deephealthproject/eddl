@@ -15,13 +15,15 @@
 #include <cuda.h>
 
 
-// GPU: Temp
-
 // GPU: Comparison
+
+// GPU: Create
+__global__ void range(float* a, float start, float step, long int size);
+__global__ void eye(float* a, long int rows, long int cols);
 
 // GPU: Core (static)
 __global__ void fill(float *aptr,float *bptr,int t,int aini,int at,int bini,int bt,int tot,int inc);
-__global__ void set(float* a, float v, long int size);
+__global__ void fill_(float* a, float v, long int size);
 __global__ void mask(float* a, float v, long int size);
 
 // GPU: Generator
@@ -43,9 +45,11 @@ __global__ void log2_(float* a, long int size);
 __global__ void log10_(float* a, long int size);
 __global__ void logn_(float* a, long int size, float n);
 __global__ void mod_(float* a, long int size, float v);
+__global__ void inv_(float* a, long int size);
 __global__ void mult_(float* a, long int size, float v);
 __global__ void normalize_(float* a, long int size, float min_ori, float max_ori, float min, float max);
 __global__ void pow_(float* a, long int size, float exp);
+__global__ void powb_(float* a, long int size, float base);
 __global__ void reciprocal_(float* a, long int size);
 __global__ void remainder_(float* a, long int size, float v);
 __global__ void round_(float* a, long int size);
@@ -71,13 +75,17 @@ __global__ void sum_mat_col(float* a, float* b, float* c, long int cols, long in
 
 // GPU: Reduction
 __global__ void reduce_sum2D(float *a,float *b,long int r,long int c,long int axis);
-__global__ void reduce_array_sum(float* a, long int ops, float* result);
+__global__ void reduceToSum(float *a, float *b, long int b_size, int a_axis_ndim);
 
 __global__ void reduction_kernel(float *I,float *O,float *S,int m, int keepdims,int d,int *ind,int rs);
 __global__ void reduction_back_kernel(float *I,float *O,float *S,int m, int keepdims,int d,int *ind,int rs);
 
+__global__ void reduction_permute(float *I,float *O,int *ind,int size);
+__global__ void reduction_kernel_keep(float *r, float *I, int *ind, int size, int rsize);
+__global__ void reduction_kernel_keep_inc(float *r, float *I, int *ind, int size, int rsize);
+
 __global__ void reduction_kernel_sum(float *I,float *O,int m, int d,int *ind,int rs);
-__global__ void reduction_kernel_keep(float *I,float *O,int m, int d,int *ind,int rs);
+
 
 
 

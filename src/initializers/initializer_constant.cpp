@@ -16,10 +16,14 @@
 
 using namespace std;
 
-
+/**
+ * Initializer that generates tensors initialized to a constant value.
+ *
+ * @param value float; the value of the generator tensors.
+*/
 IConstant::IConstant(float value) : Initializer("constant") {
     // Todo: Implement
     this->value = value;
 }
 
-float IConstant::set_weights(Tensor* T) { return 0; }
+void IConstant::apply(Tensor* params){}

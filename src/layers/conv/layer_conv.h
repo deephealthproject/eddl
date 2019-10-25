@@ -15,6 +15,7 @@
 #include <stdio.h>
 
 #include "../layer.h"
+#include "../../regularizers/regularizer.h"
 
 #define TRMODE 1
 #define TSMODE 0

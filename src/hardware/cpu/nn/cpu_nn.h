@@ -21,6 +21,8 @@ void add_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsi
 // Activations
 void cpu_relu(Tensor *A, Tensor *B);
 void cpu_d_relu(Tensor *D, Tensor *I, Tensor *PD);
+void cpu_sigmoid(Tensor *A, Tensor *B);
+void cpu_d_sigmoid(Tensor *D, Tensor *I, Tensor *PD);
 void cpu_softmax(Tensor *A, Tensor *B);
 void cpu_d_softmax(Tensor *D, Tensor *I, Tensor *PD);
 

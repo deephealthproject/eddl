@@ -148,6 +148,14 @@ __global__ void mod_(float* a, long int size, float v){
         a[thread_id_x]=fmodf(a[thread_id_x], v);
 }
 
+__global__ void inv_(float* a, long int size){
+
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < size)
+        a[thread_id_x] = 1.0f/a[thread_id_x];
+}
+
 __global__ void mult_(float* a, long int size, float v){
 
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
@@ -170,6 +178,14 @@ __global__ void pow_(float* a, long int size, float exp){
 
     if (thread_id_x < size)
         a[thread_id_x]=powf(a[thread_id_x], exp);
+}
+
+__global__ void powb_(float* a, long int size, float base){
+
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < size)
+        a[thread_id_x]=powf(base, a[thread_id_x]);
 }
 
 __global__ void reciprocal_(float* a, long int size){
@@ -280,21 +296,10 @@ __global__ void trunc_(float* a, long int size){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x < size)
-        a[thread_id_x]= (int)(a[thread_id_x]);
+        a[thread_id_x]= truncf(a[thread_id_x]);
 }
 
 
-
-///////////////////////////////////////////
-
-__global__ void reduce_array_sum(float* a, long int ops, float* result)
-{
-  long int thread_id_x = threadIdx.x+(blockDim.x*blockIdx.x);
-
-  if (thread_id_x < ops){
-    atomicAdd(result,a[thread_id_x]);
-  }
-}
 
 ///////////////////////////////////////////
 
@@ -361,5 +366,15 @@ __global__ void reduce_sum2D(float *a,float *b,long int rows,long int cols,long 
     else
       atomicAdd(&(b[thread_id_x/cols]),a[thread_id_x]);
   }
+
+}
+
+__global__ void reduceToSum(float *a, float *b, long int b_size, int a_axis_ndim){
+    long int thread_id_x = threadIdx.x+(blockDim.x*blockIdx.x);
+
+    if (thread_id_x < b_size){
+        for (int j = 0; j < a_axis_ndim; j++)
+            b[thread_id_x] += a[j];
+    }
 
 }

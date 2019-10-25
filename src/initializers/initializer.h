@@ -23,7 +23,7 @@ public:
     string name;
     // Todo: Implement
     explicit Initializer(string name);
-    virtual float set_weights(Tensor *T);
+    virtual void apply(Tensor *params) = 0;  // Pure virtual
 };
 
 class IConstant : public Initializer {
@@ -31,7 +31,7 @@ public:
     float value;
 
     explicit IConstant(float value);
-    float set_weights(Tensor *T) override;
+    void apply(Tensor *params) override;
 };
 
 class IIdentity : public Initializer {
@@ -39,7 +39,7 @@ public:
     float gain;
 
     explicit IIdentity(float gain);
-    float set_weights(Tensor *T) override;
+    void apply(Tensor *params) override;
 };
 
 class IGlorotNormal : public Initializer {
@@ -47,7 +47,7 @@ public:
     int seed;
 
     explicit IGlorotNormal(int seed=-1);
-    float set_weights(Tensor *T) override;
+    void apply(Tensor *params) override;
 };
 
 class IGlorotUniform : public Initializer {
@@ -55,7 +55,7 @@ public:
     int seed;
 
     explicit IGlorotUniform(int seed=-1);
-    float set_weights(Tensor *T) override;
+    void apply(Tensor *params) override;
 };
 
 class IRandomNormal : public Initializer {
@@ -65,7 +65,7 @@ public:
     int seed;
 
     explicit IRandomNormal(float mean, float stdev, int seed=-1);
-    float set_weights(Tensor *T) override;
+    void apply(Tensor *params) override;
 };
 
 class IRandomUniform : public Initializer {
@@ -75,7 +75,7 @@ public:
     int seed;
 
     explicit IRandomUniform(float minval, float maxval, int seed=-1);
-    float set_weights(Tensor *T) override;
+    void apply(Tensor *params) override;
 };
 
 class IOrthogonal : public Initializer {
@@ -84,7 +84,7 @@ public:
     int seed;
 
     explicit IOrthogonal(float gain, int seed=-1);
-    float set_weights(Tensor *T) override;
+    void apply(Tensor *params) override;
 };
 
 #endif //EDDL_INITIALIZER_H

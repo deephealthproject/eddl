@@ -58,7 +58,7 @@ string LAdd::plot(int c) {
 
 
 void LAdd::forward() {
-    output->set(0.0);
+    output->fill_(0.0);
     for (int i = 0; i < parent.size(); ++i)
         Tensor::inc(parent[i]->output, output);
 

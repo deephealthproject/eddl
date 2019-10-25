@@ -10,7 +10,7 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(BUILD_PYTHON "Compile python binding" OFF)
 option(BUILD_TESTS "Compile tests" OFF)
 option(BUILD_EXAMPLES "Compile examples" ON)
-SET(BUILD_TARGET "CPU" CACHE STRING "Compile library for {cpu, gpu, fpga}")
+SET(BUILD_TARGET "CPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
 set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
 
 # PROPERTIES *******************************
@@ -32,14 +32,13 @@ endif()
 # CUDA FLAGS
 # Is this the best approach?
 #set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr -lcudart -lcublas -lcurand")
-set(EDDL_WITH_CUDA OFF CACHE BOOL "Enable CUDA support if checked")
 
 # Device specific setup
 if(BUILD_TARGET STREQUAL "CPU")
     message("Compiling for CPU...")
 elseif(BUILD_TARGET STREQUAL "GPU")
     message("Compiling for GPU...")
-    set(EDDL_WITH_CUDA ON)
+    set(EDDL_WITH_CUDA ON CACHE BOOL "Enable CUDA support if checked")
 elseif(BUILD_TARGET STREQUAL "FPGA")
     message("Compiling for FPGA...")
     message(FATAL_ERROR "FPGA not implemented, CMake will exit." )
@@ -58,20 +57,17 @@ message(STATUS "CUDA Enabled: " ${EDDL_WITH_CUDA} )
 message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS} )
 message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
 
-# Add cuda (if possible)
+# Add CUDA (if possible)
 if(EDDL_WITH_CUDA)
     include(CheckLanguage)
     check_language(CUDA)
     if(CMAKE_CUDA_COMPILER)
         enable_language(CUDA)
         if(NOT DEFINED CMAKE_CUDA_STANDARD)
-            set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr")
+            set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr -D_MWAITXINTRIN_H_INCLUDED -D_FORCE_INLINES -D__STRICT_ANSI__")
             set(CMAKE_CUDA_STANDARD 11)
             set(CMAKE_CUDA_STANDARD_REQUIRED ON)
         endif()
-        set(CUDA_TOOLKIT_ROOT_DIR "${CMAKE_CUDA_COMPILER}")
-        get_filename_component(CUDA_TOOLKIT_ROOT_DIR "${CUDA_TOOLKIT_ROOT_DIR}/../.." ABSOLUTE)
-        message(STATUS "CUDA ROOT DIR: " ${CUDA_TOOLKIT_ROOT_DIR})
     else()
         message(WARNING "No CUDA support")
     endif()
@@ -119,16 +115,26 @@ macro(eddl_update_third_party SUBMODULE)
 endif()
 endmacro()
 
-# UPDATE THIRD_PARTY MANDATORY MODULES
-find_package(Git QUIET)
-eddl_update_third_party(eigen)
-include_directories(third_party/eigen)
+# ERROR! ==============================================>
+#
+# I need this to work in CLion in order to debug
+#error: could not lock config file /Users/salvacarrion/Documents/Programming/C++/eddl/.git/modules/third_party/eigen/config: File exists
+#fatal: could not set 'core.worktree' to '../../../../third_party/eigen'
+#CMake Error at CMakeLists.txt:117 (message):
+#git submodule update --init failed with 1, please checkout eigen submodule
+#Call Stack (most recent call first):
+#CMakeLists.txt:124 (eddl_update_third_party)
+#
+## UPDATE THIRD_PARTY MANDATORY MODULES
+#find_package(Git QUIET)
+#eddl_update_third_party(eigen)
+#include_directories(third_party/eigen)
+#<==============================================
 
 
 # Add the given directories to those the compiler uses to search for include files
 include_directories(src)
 include_directories(src/apis)
-include_directories(src/callbacks)
 include_directories(src/hardware/cpu)
 include_directories(src/hardware/cpu/nn)
 include_directories(src/hardware/gpu)
@@ -145,6 +151,7 @@ include_directories(src/layers/recurrent)
 include_directories(src/losses)
 include_directories(src/metrics)
 include_directories(src/optimizers)
+include_directories(src/regularizers)
 include_directories(src/tensor)
 include_directories(src/descriptors)
 # Temp
@@ -157,11 +164,13 @@ SET(SOURCE_DIR "src")
 SET(CPP_SOURCES
         src/apis/eddl.cpp
         src/apis/eddl.h
-        src/callbacks/callbacks.h
+        src/apis/eddlT.cpp
+        src/apis/eddlT.h
         src/hardware/cpu/cpu_hw.h
         src/hardware/cpu/cpu_comparison.cpp
         src/hardware/cpu/cpu_core.cpp
         src/hardware/cpu/cpu_create.cpp
+        src/hardware/cpu/cpu_da.cpp
         src/hardware/cpu/cpu_generator.cpp
         src/hardware/cpu/cpu_math.cpp
         src/hardware/cpu/cpu_reduction.cpp
@@ -180,6 +189,12 @@ SET(CPP_SOURCES
         src/initializers/initializer_orthogonal.cpp
         src/initializers/initializer_random_normal.cpp
         src/initializers/initializer_random_uniform.cpp
+        src/layers/constraints/constraint.cpp
+        src/layers/constraints/constraint.h
+        src/layers/constraints/constraint_max_norm.cpp
+        src/layers/constraints/constraint_min_max_norm.cpp
+        src/layers/constraints/constraint_non_neg.cpp
+        src/layers/constraints/constraint_unit_norm.cpp
         src/layers/conv/layer_conv.cpp
         src/layers/conv/layer_conv.h
         src/layers/conv/layer_transposed_conv.cpp
@@ -261,11 +276,17 @@ SET(CPP_SOURCES
         src/descriptors/descriptor_conv.cpp
         src/descriptors/descriptor_pool.cpp
         src/descriptors/descriptor_reduce.cpp
+        src/regularizers/regularizer.h
+        src/regularizers/regularizer.cpp
+        src/regularizers/regularizer_l1.cpp
+        src/regularizers/regularizer_l1_l2.cpp
+        src/regularizers/regularizer_l2.cpp
         src/tensor/tensor.h
         src/tensor/tensor.cpp
         src/tensor/tensor_comparison.cpp
         src/tensor/tensor_core.cpp
         src/tensor/tensor_create.cpp
+        src/tensor/tensor_da.cpp
         src/tensor/tensor_generator.cpp
         src/tensor/tensor_math.cpp
         src/tensor/tensor_reduction.cpp
@@ -322,6 +343,7 @@ SET(CUDA_SOURCES
         src/hardware/gpu/nn/gpu_pool.cu
         src/hardware/gpu/nn/gpu_pool_kernels.cu
         src/hardware/gpu/nn/gpu_tensor_nn.cu
+        src/hardware/gpu/nn/gpu_tensor_nn_kernels.cu
         )
 SET(SOURCES ${CPP_SOURCES} ${CUDA_SOURCES})
 
@@ -363,6 +385,24 @@ set_target_properties(eddl PROPERTIES
     CUDA_SEPARABLE_COMPILATION ON
     CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 
+
+# OpenMP
+find_package(OpenMP)
+if (OPENMP_FOUND)
+    target_link_libraries(eddl PRIVATE OpenMP::OpenMP_CXX)
+endif()
+
+
+# CUDA
+if(EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
+    target_link_libraries(eddl
+        PRIVATE cublas
+        PRIVATE cudart
+        PRIVATE curand
+    )
+endif()
+
+
 # pthreads setup for windows os
 # The following commands should be removed when pthread linux
 # specific calls will be replaced by thread c++ standard calls
@@ -378,20 +418,8 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
                                PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib"
                                PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")
     target_include_directories(eddl PUBLIC "${EDDL_PTHREADS_INSTALL_PATH}/include")
-
-    if(EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
-        set(EDDL_CUDA_LIBRARIES_PATH "${CUDA_TOOLKIT_ROOT_DIR}/lib/x64" CACHE PATH "Path to cublas, cudart, and curand libs")
-        if (EDDL_CUDA_LIBRARIES_PATH STREQUAL "")
-            message(ERROR ": cudart, cublas, and curand paths must be specified")
-        else()
-            target_link_libraries(eddl
-                PRIVATE "${EDDL_CUDA_LIBRARIES_PATH}/cublas.lib"
-                PRIVATE "${EDDL_CUDA_LIBRARIES_PATH}/cudart.lib"
-                PRIVATE "${EDDL_CUDA_LIBRARIES_PATH}/curand.lib"
-            )
-        endif()
-    endif()
 endif()
+
 
 # pthreads setup for linux os
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
@@ -399,19 +427,6 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
     find_package(Threads REQUIRED)
     target_link_libraries(eddl PRIVATE Threads::Threads)
-
-    if(EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
-        set(EDDL_CUDA_LIBRARIES_PATH "${CUDA_TOOLKIT_ROOT_DIR}/lib64" CACHE PATH "Path to cublas, cudart, and curand libs")
-        if (EDDL_CUDA_LIBRARIES_PATH STREQUAL "")
-            message(ERROR ": cudart, cublas, and curand paths must be specified")
-        else()
-            target_link_libraries(eddl
-                PRIVATE "${EDDL_CUDA_LIBRARIES_PATH}/libcublas.so"
-                PRIVATE "${EDDL_CUDA_LIBRARIES_PATH}/libcudart.so"
-                PRIVATE "${EDDL_CUDA_LIBRARIES_PATH}/libcurand.so"
-            )
-        endif()
-    endif()
 endif()
 
 ## [BINDING] Create python binding
@@ -439,7 +454,7 @@ endif()
 # [TESTS] Generate a test executable
 if(BUILD_TESTS)
     eddl_update_third_party(googletest)
-    set(CMAKE_FOLDER 3party/googletest)
+    set(CMAKE_FOLDER third_party/googletest)
     add_subdirectory(third_party/googletest)
     SET(UNITTEST_NAME "${PROJECT_NAME}_tests")
     set(CMAKE_FOLDER "")
@@ -456,12 +471,27 @@ endif(BUILD_TESTS)
 if(BUILD_EXAMPLES)
     SET(EXAMPLES_DIR "examples")
     set(CMAKE_FOLDER examples)
-    add_executable(example_conv "${EXAMPLES_DIR}/eddl_conv.cpp")
-    add_executable(example_mlp "${EXAMPLES_DIR}/eddl_mlp.cpp")
+    add_executable(example_ae "${EXAMPLES_DIR}/NN/eddl_ae.cpp")
+    add_executable(example_conv "${EXAMPLES_DIR}/NN/eddl_conv.cpp")
+    add_executable(example_dae "${EXAMPLES_DIR}/NN/eddl_dae.cpp")
+    add_executable(example_dae_class "${EXAMPLES_DIR}/NN/eddl_dae_class.cpp")
+    add_executable(example_load_save "${EXAMPLES_DIR}/NN/eddl_load_save.cpp")
+    add_executable(example_mlp "${EXAMPLES_DIR}/NN/eddl_mlp.cpp")
+    add_executable(example_predict "${EXAMPLES_DIR}/NN/eddl_predict.cpp")
+    add_executable(example_train_batch "${EXAMPLES_DIR}/NN/eddl_train_batch.cpp")
+    add_executable(example_tensor "${EXAMPLES_DIR}/Tensor/eddl_tensor.cpp")
+    target_link_libraries(example_ae eddl)
+    target_link_libraries(example_conv eddl)
+    target_link_libraries(example_dae eddl)
+    target_link_libraries(example_dae_class eddl)
+    target_link_libraries(example_load_save eddl)
+    target_link_libraries(example_mlp eddl)
+    target_link_libraries(example_predict eddl)
+    target_link_libraries(example_train_batch eddl)
+    target_link_libraries(example_tensor eddl)
+    # Temp
     add_executable(test_main "tests/test_main.cpp")
     target_link_libraries(test_main eddl)
-    target_link_libraries(example_conv eddl)
-    target_link_libraries(example_mlp eddl)
     set(CMAKE_FOLDER "")
 endif(BUILD_EXAMPLES)
 #unset(BUILD_EXAMPLES CACHE)

@@ -3,7 +3,7 @@
 * Version: 0.1
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
-* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
+* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es), (jmaronasm@gmail.com)
 * All rights reserved
 */
 
@@ -19,8 +19,6 @@
 #include "../../tensor/tensor.h"
 #include "../../descriptors/descriptors.h"
 
-#define MAX_FLOAT std::numeric_limits<float>::max()
-#define MIN_FLOAT -std::numeric_limits<float>::max()
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
 
 // MAX THREADS PER BLOCK
@@ -35,8 +33,8 @@ extern curandGenerator_t random_generator[64];
 // GPU: Comparison
 int gpu_equal(Tensor *A, Tensor *B);
 
-// GPU: Core (static)
-void gpu_set(Tensor *A, float v);
+// GPU: Core
+void gpu_fill_(Tensor *A, float v);
 void gpu_mask(Tensor *A,float v);
 
 void gpu_copy_to_gpu(float *nptr,Tensor *B);
@@ -50,7 +48,8 @@ void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
 
 
 // GPU: Create (static)
-void gpu_range(Tensor *A, float min, float step, int size);
+void gpu_range(Tensor *A, float start, float step);
+void gpu_eye(Tensor *A);
 
 // GPU: Generator
 void gpu_rand_uniform(Tensor *A, float v);
@@ -59,6 +58,7 @@ void gpu_rand_binary(Tensor *A, float v);
 void gpu_rand_normal(Tensor *A, float m, float s);
 
 // GPU: Math (in-place)
+void gpu_inv_(Tensor *A);
 void gpu_abs_(Tensor *A);
 void gpu_acos_(Tensor *A);
 void gpu_add_(Tensor *A, float v);
@@ -78,6 +78,7 @@ void gpu_mod_(Tensor *A, float v);
 void gpu_mult_(Tensor *A, float v);
 void gpu_normalize_(Tensor *A, float min, float max);
 void gpu_pow_(Tensor *A, float exp);
+void gpu_powb_(Tensor *A, float base);
 void gpu_reciprocal_(Tensor *A);
 void gpu_remainder_(Tensor *A, float v);
 void gpu_round_(Tensor *A);
@@ -106,8 +107,8 @@ void gpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
 // GPU: Should be reductions
 float gpu_max(Tensor *A);
 float gpu_min(Tensor *A);
-void gpu_total_sum(Tensor *A,float *tot);
 float gpu_sum(Tensor *A);
+void gpu_total_sum(Tensor *A, float *tot);
 float gpu_sum_abs(Tensor *A);
 
 // GPU: Reduction
@@ -115,8 +116,6 @@ void gpu_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
 void gpu_reduceTosum(Tensor *A, Tensor *B, int axis);
 void gpu_reduction(ReduceDescriptor *RD);
 void gpu_reduction_back(ReduceDescriptor *RD);
-
-
 //void gpu_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB);
 //void gpu_delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB);
 //void gpu_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);

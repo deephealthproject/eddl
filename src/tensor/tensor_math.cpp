@@ -41,7 +41,11 @@ void Tensor::abs_() {
 #endif
 }
 
-Tensor* Tensor::abs(Tensor *A){ return nullptr; }
+Tensor* Tensor::abs(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->abs_();
+    return t_new;
+}
 
 void Tensor::acos_(){
     if (isCPU()) {
@@ -60,7 +64,11 @@ void Tensor::acos_(){
 #endif
 }
 
-Tensor* Tensor::acos(Tensor *A){ return nullptr; }
+Tensor* Tensor::acos(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->acos_();
+    return t_new;
+ }
 
 void Tensor::add_(float v) {
     if (isCPU()) {
@@ -79,7 +87,11 @@ void Tensor::add_(float v) {
 #endif
 }
 
-Tensor* Tensor::add(Tensor *A, Tensor *B){ return nullptr; }
+Tensor* Tensor::add(Tensor *A, Tensor *B){
+    Tensor *t_new = A->clone();
+    add(1.0f, A, 1.0f, B, t_new, 0);
+    return t_new;
+ }
 
 void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
     ///////////////////////////////////////
@@ -163,7 +175,11 @@ void Tensor::asin_(){
 #endif
 }
 
-Tensor* Tensor::asin(Tensor *A){ return nullptr; }
+Tensor* Tensor::asin(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->asin_();
+    return t_new;
+ }
 
 void Tensor::atan_(){
     if (isCPU()) {
@@ -182,7 +198,11 @@ void Tensor::atan_(){
 #endif
 }
 
-Tensor* Tensor::atan(Tensor *A){ return nullptr; }
+Tensor* Tensor::atan(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->atan_();
+    return t_new;
+ }
 
 void Tensor::ceil_(){
     if (isCPU()) {
@@ -201,7 +221,11 @@ void Tensor::ceil_(){
 #endif
 }
 
-Tensor* Tensor::ceil(Tensor *A){ return nullptr; }
+Tensor* Tensor::ceil(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->ceil_();
+    return t_new;
+ }
 
 void Tensor::clamp_(float min, float max){
     if (isCPU()) {
@@ -220,12 +244,26 @@ void Tensor::clamp_(float min, float max){
 #endif
 }
 
-Tensor* Tensor::clamp(Tensor *A, float min, float max){ return nullptr; }
+Tensor* Tensor::clamp(Tensor *A, float min, float max){
+    Tensor *t_new = A->clone();
+    t_new->clamp_(min, max);
+    return t_new;
+ }
 
 void Tensor::clampmax_(float max){ clamp_(MIN_FLOAT, max); }
-Tensor* Tensor::clampmax(Tensor *A, float max){ return nullptr; }
+
+Tensor* Tensor::clampmax(Tensor *A, float max){
+    Tensor *t_new = A->clone();
+    t_new->clampmax_(max);
+    return t_new;
+}
+
 void Tensor::clampmin_(float min){ clamp_(min, MAX_FLOAT); }
-Tensor* Tensor::clampmin(Tensor *A, float min){ return nullptr; }
+Tensor* Tensor::clampmin(Tensor *A, float min){
+    Tensor *t_new = A->clone();
+    t_new->clampmin_(min);
+    return t_new;
+}
 
 void Tensor::cos_(){
     if (isCPU()) {
@@ -244,7 +282,11 @@ void Tensor::cos_(){
 #endif
 }
 
-Tensor* Tensor::cos(Tensor *A){ return nullptr; }
+Tensor* Tensor::cos(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->cos_();
+    return t_new;
+}
 
 void Tensor::cosh_(){
     if (isCPU()) {
@@ -263,12 +305,38 @@ void Tensor::cosh_(){
 #endif
 }
 
-Tensor* Tensor::cosh(Tensor *A){ return nullptr; }
+Tensor* Tensor::cosh(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->cosh_();
+    return t_new;
+}
 
 
 void Tensor::div_(float v) { mult_(1.0f / v); }
 
-Tensor* Tensor::div(Tensor *A){ return nullptr; }
+void Tensor::inv_() {
+  if (isCPU()) {
+      cpu_inv_(this);
+  }
+  #ifdef cGPU
+  else if (isGPU())
+    {
+      gpu_inv_(this);
+    }
+  #endif
+  #ifdef cFPGA
+  else {
+
+  }
+  #endif
+}
+
+
+Tensor* Tensor::div(Tensor *A, float v){
+    Tensor *t_new = A->clone();
+    t_new->div_(v);
+    return t_new;
+}
 
 void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
     ///////////////////////////////////////
@@ -316,7 +384,11 @@ void Tensor::exp_() {
 }
 
 
-Tensor* Tensor::exp(Tensor *A){ return nullptr; }
+Tensor* Tensor::exp(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->exp_();
+    return t_new;
+}
 
 void Tensor::floor_(){
     if (isCPU()) {
@@ -335,7 +407,11 @@ void Tensor::floor_(){
 #endif
 }
 
-Tensor* Tensor::floor(Tensor *A){ return nullptr; }
+Tensor* Tensor::floor(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->floor_();
+    return t_new;
+}
 
 
 void Tensor::log_() {
@@ -355,7 +431,11 @@ void Tensor::log_() {
 #endif
 }
 
-Tensor* Tensor::log(Tensor *A){ return nullptr; }
+Tensor* Tensor::log(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->log_();
+    return t_new;
+}
 
 void Tensor::log2_() {
     if (isCPU()) {
@@ -374,7 +454,11 @@ void Tensor::log2_() {
 #endif
 }
 
-Tensor* Tensor::log2(Tensor *A){ return nullptr; }
+Tensor* Tensor::log2(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->log2_();
+    return t_new;
+}
 
 
 void Tensor::log10_() {
@@ -394,7 +478,11 @@ void Tensor::log10_() {
 #endif
 }
 
-Tensor* Tensor::log10(Tensor *A){ return nullptr; }
+Tensor* Tensor::log10(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->log10_();
+    return t_new;
+}
 
 
 void Tensor::logn_(float n) {
@@ -414,7 +502,11 @@ void Tensor::logn_(float n) {
 #endif
 }
 
-Tensor* Tensor::logn(Tensor *A){ return nullptr; }
+Tensor* Tensor::logn(Tensor *A, float n){
+    Tensor *t_new = A->clone();
+    t_new->logn_(n);
+    return t_new;
+}
 
 float Tensor::max(){
     if (isCPU()) {
@@ -423,7 +515,7 @@ float Tensor::max(){
 #ifdef cGPU
     else if (isGPU())
       {
-        // TODO
+        return gpu_max(this);
       }
 #endif
 #ifdef cFPGA
@@ -433,8 +525,6 @@ float Tensor::max(){
 #endif
     return -1.0f;  // Temp
 }
-
-//float Tensor::max(Tensor *A){}
 
 float Tensor::min(){
     if (isCPU()) {
@@ -443,7 +533,7 @@ float Tensor::min(){
 #ifdef cGPU
     else if (isGPU())
       {
-        // TODO
+        return gpu_min(this);
       }
 #endif
 #ifdef cFPGA
@@ -453,8 +543,6 @@ float Tensor::min(){
 #endif
     return -1.0f;  // Temp
 }
-
-//float Tensor::min(Tensor *A){}
 
 
 void Tensor::mod_(float v){
@@ -474,7 +562,11 @@ void Tensor::mod_(float v){
 #endif
 }
 
-Tensor* Tensor::mod(Tensor *A, float v){ return nullptr; };
+Tensor* Tensor::mod(Tensor *A, float v){
+    Tensor *t_new = A->clone();
+    t_new->mod_(v);
+    return t_new;
+};
 
 void Tensor::mult_(float v) {
     if (isCPU()) {
@@ -493,7 +585,11 @@ void Tensor::mult_(float v) {
 #endif
 }
 
-Tensor* Tensor::mult(Tensor *A){ return nullptr; }
+Tensor* Tensor::mult(Tensor *A, float v){
+    Tensor *t_new = A->clone();
+    t_new->mult_(v);
+    return t_new;
+}
 
 
 void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
@@ -578,20 +674,22 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
 
 void Tensor::neg_(){ mult_(-1.0f); }
 
-Tensor* Tensor::neg(Tensor *A){ return nullptr; };
+Tensor* Tensor::neg(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->neg_();
+    return t_new;
+};
 
 
 void Tensor::normalize_(float min, float max){
     // Normalize in range: 423 from [23, 562], to range [-1, 1] => 0.4842
     // (max2-min2)/(max1-min1) * (x-min1) + min2
     if (isCPU()) {
-        cout << "CPUUUUUU***_*_*_*_**__*_*" << endl;
         cpu_normalize_(this, min, max);
     }
 #ifdef cGPU
     else if (isGPU())
       {
-        cout << "GPUUUUUU" << endl;
         gpu_normalize_(this, min, max); // TODO: fix
       }
 #endif
@@ -625,7 +723,35 @@ void Tensor::pow_(float exp) {
 #endif
 }
 
-Tensor* Tensor::pow(Tensor *A){ return nullptr; }
+Tensor* Tensor::pow(Tensor *A, float exp){
+    Tensor *t_new = A->clone();
+    t_new->pow_(exp);
+    return t_new;
+}
+
+void Tensor::powb_(float base) {
+    // Similar to pow (tensor^exp) but here we revert the order (base^tensor)
+    if (isCPU()) {
+        cpu_powb_(this, base);
+    }
+#ifdef cGPU
+    else if (isGPU())
+      {
+        gpu_powb_(this, base);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+Tensor* Tensor::powb(Tensor *A, float base){
+    Tensor *t_new = A->clone();
+    t_new->powb_(base);
+    return t_new;
+}
 
 void Tensor::reciprocal_() {
     if (isCPU()) {
@@ -644,7 +770,11 @@ void Tensor::reciprocal_() {
 #endif
 }
 
-Tensor* Tensor::reciprocal(Tensor *A){ return nullptr; }
+Tensor* Tensor::reciprocal(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->reciprocal_();
+    return t_new;
+}
 
 void Tensor::remainder_(float v) {
     if (isCPU()) {
@@ -663,7 +793,11 @@ void Tensor::remainder_(float v) {
 #endif
 }
 
-Tensor* Tensor::remainder(Tensor *A, float v){ return nullptr; }
+Tensor* Tensor::remainder(Tensor *A, float v){
+    Tensor *t_new = A->clone();
+    t_new->remainder_(v);
+    return t_new;
+}
 
 void Tensor::round_(){
     if (isCPU()) {
@@ -682,7 +816,11 @@ void Tensor::round_(){
 #endif
 }
 
-Tensor* Tensor::round(Tensor *A){ return nullptr; }
+Tensor* Tensor::round(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->round_();
+    return t_new;
+}
 
 void Tensor::rsqrt_(){
     if (isCPU()) {
@@ -701,7 +839,11 @@ void Tensor::rsqrt_(){
 #endif
 }
 
-Tensor* Tensor::rsqrt(Tensor *A){ return nullptr; }
+Tensor* Tensor::rsqrt(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->rsqrt_();
+    return t_new;
+}
 
 void Tensor::sigmoid_(){
     if (isCPU()) {
@@ -720,7 +862,11 @@ void Tensor::sigmoid_(){
 #endif
 }
 
-Tensor* Tensor::sigmoid(Tensor *A){ return nullptr; }
+Tensor* Tensor::sigmoid(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->sigmoid_();
+    return t_new;
+}
 
 void Tensor::sign_(){
     if (isCPU()) {
@@ -739,7 +885,11 @@ void Tensor::sign_(){
 #endif
 }
 
-Tensor* Tensor::sign(Tensor *A){ return nullptr; }
+Tensor* Tensor::sign(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->sign_();
+    return t_new;
+}
 
 void Tensor::sign(Tensor *A, Tensor *B) {
     ///////////////////////////////////////
@@ -786,7 +936,11 @@ void Tensor::sin_(){
 #endif
 }
 
-Tensor* Tensor::sin(Tensor *A){ return nullptr; }
+Tensor* Tensor::sin(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->sin_();
+    return t_new;
+}
 
 void Tensor::sinh_(){
     if (isCPU()) {
@@ -805,7 +959,11 @@ void Tensor::sinh_(){
 #endif
 }
 
-Tensor* Tensor::sinh(Tensor *A){ return nullptr; }
+Tensor* Tensor::sinh(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->sinh_();
+    return t_new;
+}
 
 
 void Tensor::sqr_() {
@@ -827,7 +985,11 @@ void Tensor::sqr_() {
 #endif
 }
 
-Tensor* Tensor::sqr(Tensor *A){ return nullptr; }
+Tensor* Tensor::sqr(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->sqr_();
+    return t_new;
+}
 
 
 void Tensor::sqrt_() {
@@ -847,12 +1009,20 @@ void Tensor::sqrt_() {
 #endif
 }
 
-Tensor* Tensor::sqrt(Tensor *A){ return nullptr; }
+Tensor* Tensor::sqrt(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->sqrt_();
+    return t_new;
+}
 
 
 void Tensor::sub_(float v) { add_(-v); }
 
-Tensor* Tensor::sub(Tensor *A, Tensor *B){ return nullptr; }
+Tensor* Tensor::sub(Tensor *A, Tensor *B){
+    Tensor *t_new = A->clone();
+    add(1.0f, A, -1.0f, B, t_new, 0);
+    return t_new;
+}
 
 float Tensor::sum() {
     if (isCPU()) {
@@ -860,11 +1030,9 @@ float Tensor::sum() {
     }
 #ifdef cGPU
     else if (isGPU())
-      {
-         float sum;  // TODO: Fix
-         gpu_total_sum(this, &sum);
-         return sum;
-      }
+    {
+        return gpu_sum(this);
+    }
 #endif
 #ifdef cFPGA
     else {
@@ -946,7 +1114,7 @@ void Tensor::reduceTosum(Tensor *A, Tensor *B, int axis) {
 
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::transpose");
 
-    B->set(0.0);
+    B->fill_(0.0);
     if (A->isCPU()) {
         cpu_reduceTosum(A, B, axis);
     }
@@ -1014,8 +1182,7 @@ float Tensor::sum_abs() {
     return 0;
 }
 
-Tensor* Tensor::sum_abs(Tensor *A){ return nullptr; }
-
+//Tensor* Tensor::sum_abs(Tensor *A){}
 
 void Tensor::tan_(){
     if (isCPU()) {
@@ -1034,7 +1201,11 @@ void Tensor::tan_(){
 #endif
 }
 
-Tensor* Tensor::tan(Tensor *A){ return nullptr; }
+Tensor* Tensor::tan(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->tan_();
+    return t_new;
+}
 
 void Tensor::tanh_(){
     if (isCPU()) {
@@ -1053,7 +1224,11 @@ void Tensor::tanh_(){
 #endif
 }
 
-Tensor* Tensor::tanh(Tensor *A){ return nullptr; }
+Tensor* Tensor::tanh(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->tanh_();
+    return t_new;
+}
 
 
 void Tensor::trunc_(){
@@ -1073,4 +1248,8 @@ void Tensor::trunc_(){
 #endif
 }
 
-Tensor* Tensor::trunc(Tensor *A){ return nullptr; }
+Tensor* Tensor::trunc(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->trunc_();
+    return t_new;
+}

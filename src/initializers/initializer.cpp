@@ -19,6 +19,3 @@ using namespace std;
 Initializer::Initializer(string name) {
     this->name = name;
 }
-float Initializer::set_weights(Tensor *T) {
-    return 0;
-}

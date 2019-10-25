@@ -22,6 +22,7 @@ using namespace std;
 LCrossEntropy::LCrossEntropy() : Loss("cross_entropy"){}
 
 void LCrossEntropy::delta(Tensor *T, Tensor *Y, Tensor *D) {
+    float eps=0.000001;
     Tensor *aux1;
     Tensor *aux2;
     Tensor *one;
@@ -31,14 +32,16 @@ void LCrossEntropy::delta(Tensor *T, Tensor *Y, Tensor *D) {
     aux2 = new Tensor(T->getShape(), T->device);
     one = new Tensor(T->getShape(), T->device);
 
-    one->set(1.0);
+    one->fill_(1.0);
 
     //  (1-t)/(1-y)
     Tensor::add(1, one, -1, T, aux1, 0);
     Tensor::add(1, one, -1, Y, aux2, 0);
+    aux2->add_(eps);
     Tensor::el_div(aux1, aux2, aux2, 0);
 
     // t/y
+    Y->add_(eps);
     Tensor::el_div(T, Y, aux1, 0);
 
 

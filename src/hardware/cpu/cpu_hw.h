@@ -18,11 +18,12 @@
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
 
 // CPU: Comparison
-int cpu_equal(Tensor *A, Tensor *B);
+int cpu_equal(Tensor *A, Tensor *B, float epsilon);
 
 // CPU: Core (static)
 void cpu_transpose(Tensor *A, Tensor *B);
 void cpu_copy(Tensor *A, Tensor *B);
+void cpu_fill_(Tensor *A, float v);
 void cpu_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
 void cpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
 void cpu_repeat(Tensor *A, Tensor *B, vector<int> size);
@@ -30,12 +31,21 @@ void cpu_d_repeat(Tensor *D, Tensor *A, vector<int> size);
 
 // CPU: Create
 void cpu_range(Tensor *A, float min, float step);
+void cpu_eye(Tensor *A);
 
 // CPU: Generator
 void cpu_rand_uniform(Tensor *A, float v);
 void cpu_rand_signed_uniform(Tensor *A, float v);
 void cpu_rand_binary(Tensor *A, float v);
 void cpu_rand_normal(Tensor *A, float m, float s, bool fast_math);  // TODO: Don't like it
+
+// CPU: Math (in-place)
+void cpu_shift_(Tensor *A, vector<int> shift, bool reshape, string mode, float constant);
+void cpu_rotate_(Tensor *A, float angle, vector<int> axis, bool reshape, string mode, float constant);
+void cpu_scale_(Tensor *A, float factor, bool reshape, string mode, float constant);
+void cpu_flip_(Tensor *A, int axis);
+void cpu_crop_(Tensor *A, vector<int> coords_from, vector<int> coords_to);
+void cpu_cutout_(Tensor *A, vector<int> coords_from, vector<int> coords_to);
 
 // CPU: Math (in-place)
 void cpu_abs_(Tensor *A);
@@ -48,6 +58,7 @@ void cpu_clamp_(Tensor *A, float min, float max);
 void cpu_cos_(Tensor *A);
 void cpu_cosh_(Tensor *A);
 void cpu_exp_(Tensor *A);
+void cpu_inv_(Tensor *A);
 void cpu_floor_(Tensor *A);
 void cpu_log_(Tensor *A);
 void cpu_log2_(Tensor *A);
@@ -57,6 +68,7 @@ void cpu_mod_(Tensor *A, float v);
 void cpu_mult_(Tensor *A, float v);
 void cpu_normalize_(Tensor *A, float min, float max);
 void cpu_pow_(Tensor *A, float exp);
+void cpu_powb_(Tensor *A, float base);
 void cpu_reciprocal_(Tensor *A);
 void cpu_remainder_(Tensor *A, float v);
 void cpu_round_(Tensor *A);

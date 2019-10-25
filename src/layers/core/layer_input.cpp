@@ -25,6 +25,14 @@ LInput::LInput(Tensor *in, string name, int dev) : LinLayer(name, dev) {
     delta = new Tensor(input->getShape(), dev);
 }
 
+LInput::~LInput()
+{
+  if (output!=nullptr) {
+    delete output;
+    output=nullptr;
+  }
+
+}
 
 // virtual
 void LInput::resize(int batch){
@@ -42,7 +50,7 @@ string LInput::plot(int c) {
 
 
 void LInput::forward() {
-    delta->set(0.0);
+    delta->fill_(0.0);
 }
 
 

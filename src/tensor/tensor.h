@@ -76,13 +76,18 @@ public:
     Tensor(const vector<int> &shape, float *fptr, int dev=DEV_CPU);
     Tensor(const vector<int> &shape, Tensor *T);
 
+    // Destructors
+    ~Tensor();
 
+    // Copy data
+    void ToCPU(int dev=DEV_CPU);
+    void ToGPU(int dev=DEV_GPU);
+    Tensor* clone();
+
+    // Resize
     void resize(int b, float *fptr);
     void resize(int b);
     void resize(int b, Tensor *T);
-
-    // Destructors
-    ~Tensor();
 
     // Check device
     int isCPU();
@@ -94,38 +99,61 @@ public:
     void print();
 
     // Core
-    int numel();
     vector<int> getShape();
-    void point2data(const vector<int>& shape, float *ptr);
-    void copydata(const vector<int>& s, float *newptr);
-    void set(float v);
 
     // Serialization
     void save(string s);
     void save(FILE *fe);
     void load(FILE *fe);
 
+
+    // ***** Core (in-place) *****************************
+    int get_address_rowmajor(vector<int> indices);
+    void fill_(float v);
+    void reshape_(vector<int> indices);
+    float get_(vector<int> indices);
+    void set_(vector<int> indices, float value);
+
     // ************************************************
     // ****** Tensor operations ***********************
     // ************************************************
+      // Creation ops ***********************************
+      static Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
+      static Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
+      static Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
+      static Tensor* arange(float start, float end, float step=1.0f, int dev=DEV_CPU);
+      static Tensor* range(float start, float end, float step=1.0f, int dev=DEV_CPU);
+      static Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
+      static Tensor* logspace(float start, float end, int steps=100, float base=10.0f, int dev=DEV_CPU);
+      static Tensor* eye(int size, int dev=DEV_CPU);
+      static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
-    // Creation ops ***********************************
-    static Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
-    static Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
-    static Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
-    static Tensor* arange(float min, float max, float step=1.0, int dev=DEV_CPU);
-    static Tensor* range(float min, float max, float step=1.0, int dev=DEV_CPU);
-    static Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
-    static Tensor* logspace(float start, float end, int steps=100, float base=10.0, int dev=DEV_CPU);
-    static Tensor* eye(int size, int dev=DEV_CPU);
-    static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
+
+    // ***** Data augmentation *****************************
+    void shift_(vector<int> shift, bool reshape=false, string mode="constant", float constant=0.0f);  // TODO: Implement
+    static Tensor* shift(Tensor *A, vector<int> shift, bool reshape=false, string mode="constant", float constant=0.0f);
+
+    void rotate_(float angle, vector<int> axis, bool reshape=false, string mode="constant", float constant=0.0f);  // TODO: Implement
+    static Tensor* rotate(Tensor *A, float angle, vector<int> axis, bool reshape=false, string mode="constant", float constant=0.0f);
+
+    void scale_(float factor, bool reshape=false, string mode="constant", float constant=0.0f);  // TODO: Implement
+    static Tensor* scale(Tensor *A, float factor, bool reshape=false, string mode="constant", float constant=0.0f);
+
+    void flip_(int axis=0);  // TODO: Implement
+    static Tensor* flip(Tensor *A, int axis=0);
+
+    void crop_(vector<int> coords_from, vector<int> coords_to);  // TODO: Implement
+    static Tensor* crop(Tensor *A, vector<int> coords_from, vector<int> coords_to);
+
+    void cutout_(vector<int> coords_from, vector<int> coords_to);  // TODO: Implement
+    static Tensor* cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to);
 
     // Math operations ********************************
     // Math operations: Pointwise ops (in-place)
     void abs_();
     static Tensor* abs(Tensor *A);
 
-    void acos_(); // Todo
+    void acos_();
     static Tensor* acos(Tensor *A);
 
     void add_(float v);
@@ -134,38 +162,40 @@ public:
     static void add(Tensor *A, Tensor *B, Tensor *C);
     static void inc(Tensor *A, Tensor *B);
 
-    void asin_(); // Todo
+    void asin_();
     static Tensor* asin(Tensor *A);
 
-    void atan_(); // Todo
+    void atan_();
     static Tensor* atan(Tensor *A);
 
-    void ceil_(); // Todo
+    void ceil_();
     static Tensor* ceil(Tensor *A);
 
-    void clamp_(float min, float max); // Todo
+    void clamp_(float min, float max);
     static Tensor* clamp(Tensor *A, float min, float max);
 
-    void clampmax_(float max); // Todo
+    void clampmax_(float max);
     static Tensor* clampmax(Tensor *A, float max);
 
-    void clampmin_(float min); // Todo
+    void clampmin_(float min);
     static Tensor* clampmin(Tensor *A, float min);
 
-    void cos_(); // Todo
+    void cos_();
     static Tensor* cos(Tensor *A);
 
-    void cosh_(); // Todo
+    void cosh_();
     static Tensor* cosh(Tensor *A);
 
+    void inv_();
+
     void div_(float v);
-    static Tensor* div(Tensor *A);
+    static Tensor* div(Tensor *A, float v);
     static void el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
 
     void exp_();
     static Tensor* exp(Tensor *A);
 
-    void floor_(); // Todo
+    void floor_();
     static Tensor* floor(Tensor *A);
 
     void log_();
@@ -178,54 +208,54 @@ public:
     static Tensor* log10(Tensor *A);
 
     void logn_(float n);
-    static Tensor* logn(Tensor *A);
+    static Tensor* logn(Tensor *A, float n);
 
     float max();
-//    static float max(Tensor *A);
-
     float min();
-//    static float min(Tensor *A);
 
-    void mod_(float v); // Todo
+    void mod_(float v);
     static Tensor* mod(Tensor *A, float v);
 
     void mult_(float v);
-    static Tensor* mult(Tensor *A);
+    static Tensor* mult(Tensor *A, float v);
     static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
     static void el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
 
-    void neg_(); // Todo
+    void neg_();
     static Tensor* neg(Tensor *A);
 
-    void normalize_(float min=0.0f, float max=1.0f); // Todo
+    void normalize_(float min=0.0f, float max=1.0f);
     static Tensor* normalize(Tensor *A, float min=0.0f, float max=1.0f);
 
     void pow_(float exp);
-    static Tensor* pow(Tensor *A);
+    static Tensor* pow(Tensor *A, float exp);
 
-    void reciprocal_(); // Todo
+    void powb_(float base);
+    static Tensor* powb(Tensor *A, float base);
+
+    void reciprocal_();
     static Tensor* reciprocal(Tensor *A);
 
-    void remainder_(float v); // Todo
+    void remainder_(float v);
     static Tensor* remainder(Tensor *A, float v);
 
-    void round_(); // Todo
+    void round_();
     static Tensor* round(Tensor *A);
 
-    void rsqrt_(); // Todo
+    void rsqrt_();
     static Tensor* rsqrt(Tensor *A);
 
-    void sigmoid_(); // Todo
+    void sigmoid_();
     static Tensor* sigmoid(Tensor *A);
 
-    void sign_(); // Todo
+    void sign_();
     static Tensor* sign(Tensor *A);
     static void sign(Tensor *A, Tensor *B);
 
-    void sin_(); // Todo
+    void sin_();
     static Tensor* sin(Tensor *A);
 
-    void sinh_(); // Todo
+    void sinh_();
     static Tensor* sinh(Tensor *A);
 
     void sqr_();
@@ -245,13 +275,13 @@ public:
     float sum_abs();
     static Tensor* sum_abs(Tensor *A);
 
-    void tan_(); // Todo
+    void tan_();
     static Tensor* tan(Tensor *A);
 
-    void tanh_(); // Todo
+    void tanh_();
     static Tensor* tanh(Tensor *A);
 
-    void trunc_(); // Todo
+    void trunc_();
     static Tensor* trunc(Tensor *A);
 
     // Math operations: Reduction ops
@@ -264,7 +294,7 @@ public:
 
     // Math operations: Comparison ops
     static int eqsize(Tensor *A, Tensor *B);
-    static int equal(Tensor *A, Tensor *B);
+    static int equal(Tensor *A, Tensor *B, float epsilon=1e-3);
 
     // Math operations: Other ops
     static int cross(Tensor *A, Tensor *B); // TODO
@@ -272,7 +302,7 @@ public:
     static int einsum(string subscripts, Tensor *A); // TODO
     static int flatten(Tensor *A); // TODO
     static int flip(Tensor *A);  // TODO
-    static int trace(Tensor *A);  // TODO
+    static int trace(Tensor *A);
     static int dot(Tensor *A);  // TODO
 
     // Indexing, Slicing, Joining, Mutating Ops *******
@@ -290,5 +320,7 @@ public:
     void rand_normal(float m, float s, bool fast_math=true);
     void rand_binary(float v);
 };
+
+
 
 #endif //EDDL_TENSOR_H

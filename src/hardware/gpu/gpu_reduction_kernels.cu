@@ -116,19 +116,26 @@ __global__ void reduction_back_kernel(float *I,float *O,float *S,int m, int keep
 //dim3 dimGrid(red_size);
 //dim3 dimBlock(RD->index.size());
 
-__global__ void reduction_kernel_sum(float *I,float *O,int m, int d,int *ind,int rs)
+__global__ void reduction_permute(float *I,float *O,int *ind,int size)
 {
-  long int p=rs*threadIdx.x+blockIdx.x;
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
-  atomicAdd(&(O[threadIdx.x]),I[ind[p]]/d);
-
+  if (thread_id_x<size)
+    O[thread_id_x]=I[ind[thread_id_x]];
 }
 
-
-__global__ void reduction_kernel_keep(float *I, float *O,int m, int d,int *ind,int rs)
+__global__ void reduction_kernel_keep(float *red, float *O, int *ind, int size, int rsize)
 {
-  long int p=rs*threadIdx.x+blockIdx.x;
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+    if (thread_id_x<size*rsize) {
+        O[ind[thread_id_x]]=red[thread_id_x/rsize];
+    }
+}
 
-  O[ind[p]]=I[threadIdx.x];
-  
+__global__ void reduction_kernel_keep_inc(float *red, float *O, int *ind, int size, int rsize)
+{
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+    if (thread_id_x<size*rsize) {
+        O[ind[thread_id_x]]+=red[thread_id_x/rsize];
+    }
 }

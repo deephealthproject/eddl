@@ -10,10 +10,10 @@
 #ifndef EDDL_NET_H
 #define EDDL_NET_H
 
-#include <stdio.h>
 #include <string>
 #include <vector>
 
+#include "initializers/initializer.h"
 #include "layers/layer.h"
 #include "optimizers/optim.h"
 #include "losses/loss.h"
@@ -34,12 +34,11 @@ typedef vector<Metric *> vmetrics;
 void *train_batch_t(void *targs);
 
 
-
 #define MAX_THREADS 1024
 
 class Net {
 private:
-    void build(Optimizer *opt, vloss lo, vmetrics me);
+    void build(Optimizer *opt, vloss lo, vmetrics me, Initializer* init);
 
     void set_compserv(CompServ *cs);
 
@@ -50,6 +49,7 @@ public:
     int tr_batches;
     vector<int> devsel;
     CompServ *cs;
+    Initializer *init;
 
     vlayer layers;
     vlayer lin;
@@ -98,10 +98,9 @@ public:
     void sync_weights();
     void clean_fiterr();
 
-
     Layer *getLayer(string name);
 
-    void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs); //
+    void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, Initializer* init); //
 
     void fit(vtensor tin, vtensor tout, int batch_size, int epochs);
 

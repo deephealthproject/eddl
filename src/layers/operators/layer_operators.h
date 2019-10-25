@@ -67,11 +67,12 @@ public:
 class LDiff : public OperatorLayer {
 public:
     static int total_layers;
-
+    int left;
     vector<Tensor *> tin;
 
     LDiff(Layer *l1, Layer *l2, string name, int dev);
     LDiff(Layer *l, float k, string name, int dev);
+    LDiff(float k, Layer *l, string name, int dev);
 
     void forward() override;
 
@@ -86,9 +87,11 @@ public:
 class LDiv : public OperatorLayer {
 public:
     static int total_layers;
+    int left;
 
     LDiv(Layer *l1, Layer *l2, string name, int dev);
     LDiv(Layer *l, float k, string name, int dev);
+    LDiv(float k, Layer *l,string name, int dev);
 
     void forward() override;
 

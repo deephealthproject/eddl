@@ -3,7 +3,7 @@
 * Version: 0.1
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
-* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
+* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es), (jmaronasm@gmail.com)
 * All rights reserved
 */
 
@@ -37,33 +37,33 @@ static const char *_curandGetErrorEnum(curandStatus_t error){
     {
         case CURAND_STATUS_ALLOCATION_FAILED:
             return "CURAND_STATUS_ALLOCATION_FAILED";
-            break;
+
         case CURAND_STATUS_INITIALIZATION_FAILED:
             return "CURAND_STATUS_INITIALIZATION_FAILED";
-            break;
+
         case CURAND_STATUS_VERSION_MISMATCH:
             return "CURAND_STATUS_VERSION_MISMATCH";
-            break;
+
 
         case CURAND_STATUS_TYPE_ERROR:
             return "CURAND_STATUS_TYPE_ERROR";
-            break;
+
 
         case CURAND_STATUS_OUT_OF_RANGE:
             return "CURAND_STATUS_OUT_OF_RANGE";
-            break;
+
 
         case CURAND_STATUS_PREEXISTING_FAILURE:
             return "CURAND_STATUS_PREEXISTING_FAILURE";
-            break;
+
 
         case CURAND_STATUS_NOT_INITIALIZED:
             return "CURAND_STATUS_NOT_INITIALIZED";
-            break;
+
 
         case CURAND_STATUS_DOUBLE_PRECISION_REQUIRED:
             return "CURAND_STATUS_DOUBLE_PRECISION_REQUIRED";
-            break;
+
         case CURAND_STATUS_LENGTH_NOT_MULTIPLE:
             return "CURAND_STATUS_LENGTH_NOT_MULTIPLE";
         default:

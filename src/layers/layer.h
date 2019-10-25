@@ -13,9 +13,13 @@
 
 #include <string>
 #include <cstdio>
+
+#include "../initializers/initializer.h"
+
 #include "../tensor/tensor.h"
 #include "../tensor/tensor_reduction.h"
 #include "../tensor/nn/tensor_nn.h"
+#include "../regularizers/regularizer.h"
 
 #define TRMODE 1
 #define TSMODE 0
@@ -38,18 +42,19 @@ public:
     vector<Layer *> parent;
     vector<Layer *> child;
 
+    Regularizer *reg;
+
     int mode;
     int dev;
     int lin, lout;
     int delta_bp;
-    bool isplot;
-    bool inner;
 
     Layer(string name, int dev);
+    // Destructor
+    virtual ~Layer();
 
 
-
-    void initialize();
+    void initialize(Initializer *init);
 
 
     void save(FILE *fe);
@@ -87,7 +92,17 @@ public:
 
     virtual Layer *clone(int c, int bs, vector<Layer *> p, int todev) { return nullptr; }
 
+
+
 };
+
+Layer* operator+(Layer &l1,Layer &l2);
+Layer* operator+(Layer &l1,float l2);
+Layer* operator+(float f,Layer &l);
+
+Layer* operator*(Layer &l1,Layer &l2);
+Layer* operator*(Layer &l1,float l2);
+Layer* operator*(float f,Layer &l);
 
 /////////////////////////////////////////
 /////////////////////////////////////////

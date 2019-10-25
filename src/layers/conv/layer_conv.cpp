@@ -76,6 +76,9 @@ void LConv::backward() {
         Conv2D_back(this->cd);
     }
 
+    // Regularizer
+    if(reg!= nullptr) {reg->apply(cd->K);}
+
 }
 
 Layer *LConv::share(int c, int bs, vector<Layer *> p) {
@@ -94,6 +97,8 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
     n->params.push_back(n->cd->K);
     n->params.push_back(n->cd->bias);
 
+    n->reg=reg;
+
     return n;
 }
 
@@ -102,6 +107,7 @@ Layer *LConv::clone(int c, int bs, vector<Layer *> p, int todev) {
                          {cd->pad[0], cd->pad[1]}, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
 
+    n->reg=reg;
     return n;
 }
 

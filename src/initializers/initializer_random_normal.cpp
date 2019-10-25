@@ -16,7 +16,13 @@
 
 using namespace std;
 
-
+/**
+ * Initializer that generates tensors with a normal distribution.
+ *
+ * @param mean float; Mean of the random values to generate.
+ * @param stdev float; Standard deviation of the random values to generate.
+ * @param seed int; Used to seed the random generator
+*/
 IRandomNormal::IRandomNormal(float mean, float stdev, int seed) : Initializer("random_normal") {
     // Todo: Implement
     this->mean = mean;
@@ -24,4 +30,4 @@ IRandomNormal::IRandomNormal(float mean, float stdev, int seed) : Initializer("r
     this->seed = seed;
 
 }
-float IRandomNormal::set_weights(Tensor* T) { return 0; }
+void IRandomNormal::apply(Tensor* params){}

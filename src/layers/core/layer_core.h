@@ -15,6 +15,7 @@
 #include <stdio.h>
 
 #include "../layer.h"
+#include "../../regularizers/regularizer.h"
 
 #define TRMODE 1
 #define TSMODE 0
@@ -30,10 +31,13 @@ public:
     static int total_layers;
 
     LTensor(string fname);
+    ~LTensor() override;
 
     LTensor(vector<int> shape, int dev);
 
     LTensor(const vector<int> shape, float *fptr,int dev);
+
+    LTensor *fromCSV(string fname);
 
     explicit LTensor(Layer *l);
 
@@ -62,6 +66,7 @@ public:
     static int total_layers;
 
     LInput(Tensor *in, string name, int dev);
+    ~LInput() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -103,9 +108,10 @@ public:
 /// Dense Layer
 class LDense : public LinLayer {
 public:
+    static int total_layers;
     int ndim;
     bool use_bias;  // TODO: Implement
-    static int total_layers;
+    Regularizer *reg;
 
     LDense(Layer *parent, int ndim, bool use_bias, string name, int dev);
 
@@ -159,7 +165,8 @@ public:
 
     // constructors and clones
     LReshape(Layer *parent, vector<int> shape, string name, int dev);
-
+    ~LReshape() override;
+    
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;

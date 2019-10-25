@@ -22,45 +22,44 @@ using namespace std;
 ///// EDDL is a wrapper class to ease and define the API
 ////////////////////////////////////////////////////////
 namespace eddl {
-    // ---- TENSOR ----
-    tensor T(const vector<int> &shape) {
-        return new LTensor(shape, DEV_CPU);
-    }
-
-    tensor T(const vector<int> &shape, float *ptr) {
-        return new LTensor(shape, ptr, DEV_CPU);
-    }
-
-    tensor T_load(string fname) {
-        return new LTensor(fname);
-    }
-
-    float *T_getptr(layer T) {
-        return T->input->ptr;
-    }
-
-    vector<int> getShape(layer l){
-      return l->getShape();
-    }
-
-    // ---- TENSOR OPERATIONS ----
-    void div(layer t, float v) {
-        t->input->div_(v);
-    }
-    void set(layer t, float v) {
-        t->output->set(v);
-    }
 
     // ---- CORE LAYERS ----
+    layer Softmax(layer parent)
+    {
+      return new LActivation(parent,"softmax","",DEV_CPU);
+    }
+    layer Sigmoid(layer parent)
+    {
+      return new LActivation(parent,"sigmoid","",DEV_CPU);
+    }
+    layer ReLu(layer parent)
+    {
+      return new LActivation(parent,"relu","",DEV_CPU);
+    }
+
     layer Activation(layer parent, string activation, string name) {
         return new LActivation(parent, activation, name, DEV_CPU);
     }
 
+    layer L2(layer l,float l2){
+      l->reg=new RL2(l2);
+      return l;
+    }
+    layer L1(layer l,float l1){
+      l->reg=new RL1(l1);
+      return l;
+    }
+    layer L1L2(layer l,float l1,float l2){
+      l->reg=new RL1L2(l1,l2);
+      return l;
+    }
+
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
                const vector<int> &strides, string padding, int groups, const vector<int> &dilation_rate,
-               bool use_bias, string name) {
-        return new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name,
-                         DEV_CPU);
+               bool use_bias, Regularizer *reg, string name) {
+        LConv *l = new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU);
+        l->reg = reg;
+        return l;
     }
 
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
@@ -70,8 +69,10 @@ namespace eddl {
                           DEV_CPU);
     }
 
-    layer Dense(layer parent, int ndim, bool use_bias, string name) {
-        return new LDense(parent, ndim, use_bias, name, DEV_CPU);
+    layer Dense(layer parent, int ndim, bool use_bias, Regularizer *reg, string name) {
+        LDense *l = new LDense(parent, ndim, use_bias, name, DEV_CPU);
+        l->reg = reg;
+        return l;
     }
 
     layer Embedding(int input_dim, int output_dim, string name) {
@@ -183,12 +184,19 @@ namespace eddl {
         return new LDiff(l1, k, "", DEV_CPU);
     }
 
+    layer Diff(float k,layer l1) {
+        return new LDiff(k, l1, "", DEV_CPU);
+    }
     layer Div(layer l1, layer l2) {
         return new LDiv(l1, l2, "", DEV_CPU);
     }
 
     layer Div(layer l1, float k) {
         return new LDiv(l1, k, "", DEV_CPU);
+    }
+
+    layer Div(float k,layer l1) {
+        return new LDiv(k, l1, "", DEV_CPU);
     }
 
     layer Exp(layer l) {
@@ -215,6 +223,9 @@ namespace eddl {
         return new LMult(l1, k, "", DEV_CPU);
     }
 
+    layer Mult(float k,layer l1) {
+        return new LMult(l1, k, "", DEV_CPU);
+    }
     layer Pow(layer l1, layer l2) {
         return new LPow(l1, l2, "", DEV_CPU);
     }
@@ -235,6 +246,9 @@ namespace eddl {
         return new LSum(l1, k, "", DEV_CPU);
     }
 
+    layer Sum(float k,layer l1) {
+        return new LSum(l1, k, "", DEV_CPU);
+    }
 
     // ---- REDUCTION LAYERS ----
     layer ReduceMean(layer l, const vector<int> axis, bool keepdims) {
@@ -374,10 +388,21 @@ namespace eddl {
         return new IOrthogonal(gain, seed);
     }
 
+    // ---- REGULARIZERS ----
+    regularizer L1(float l1){
+        return new RL1(l1);
+    }
+    regularizer L2(float l2){
+        return new RL2(l2);
+    }
+
+    regularizer L1L2(float l1, float l2){
+        return new RL1L2(l1, l2);
+    }
 
     // ---- COMPUTING SERVICES ----
-    compserv CS_CPU(int th,int lsb) {
-        return new CompServ(th, {}, {},lsb);
+    compserv CS_CPU(int th) {
+        return new CompServ(th, {}, {},0);
     }
 
     compserv CS_GPU(const vector<int> &g,int lsb) {
@@ -418,14 +443,11 @@ namespace eddl {
         return new Net(in, out);
     }
 
-    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me) {
-        build(net, o, lo, me, new CompServ(std::thread::hardware_concurrency(), {}, {}));
-    }
-
-    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs) {
+    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs, Initializer* init) {
         vector<Loss *> l;
         vector<Metric *> m;
 
+        // TODO: Fix this sh*t
         // Replace string by functions
         for (const auto &li : lo) {
             l.push_back(getLoss(li));
@@ -434,7 +456,17 @@ namespace eddl {
             m.push_back(getMetric(mi));
         }
 
-        net->build(o, l, m, cs);
+        // Assign default computing service
+        if (cs== nullptr){
+            cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
+        }
+
+        // Assign default initializer
+        if (init== nullptr){
+            init = new IGlorotUniform();
+        }
+
+        net->build(o, l, m, cs, init);
     }
 
     string summary(model m) {
@@ -449,11 +481,8 @@ namespace eddl {
         }
 
         fprintf(stderr, "reading bin file\n");
-
         m->load(fe);
-
         fclose(fe);
-
     }
 
     void save(model m, string fname) {
@@ -475,43 +504,16 @@ namespace eddl {
         m->plot(fname);
     }
 
-    void fit(model net, const vector<LTensor *> &in, const vector<LTensor *> &out, int batch, int epochs) {
-        vtensor tin;
-        for (int i = 0; i < in.size(); i++)
-            tin.push_back(in[i]->input);
-
-        vtensor tout;
-        for (int i = 0; i < out.size(); i++)
-            tout.push_back(out[i]->input);
-
-
-        net->fit(tin, tout, batch, epochs);
+    void fit(model net, const vector<Tensor *> &in, const vector<Tensor *> &out, int batch, int epochs) {
+        net->fit(in, out, batch, epochs);
     }
 
-    void evaluate(model net, const vector<LTensor *> &in, const vector<LTensor *> &out) {
-        vtensor tin;
-        for (int i = 0; i < in.size(); i++)
-            tin.push_back(in[i]->input);
-
-        vtensor tout;
-        for (int i = 0; i < out.size(); i++)
-            tout.push_back(out[i]->input);
-
-
-        net->evaluate(tin, tout);
+    void evaluate(model net, const vector<Tensor *> &in, const vector<Tensor *> &out) {
+        net->evaluate(in, out);
     }
 
-    void predict(model net, const vector<LTensor *> &in, const vector<LTensor *> &out) {
-        vtensor tin;
-        for (int i = 0; i < in.size(); i++)
-            tin.push_back(in[i]->input);
-
-        vtensor tout;
-        for (int i = 0; i < out.size(); i++)
-            tout.push_back(out[i]->input);
-
-
-        net->predict(tin, tout);
+    void predict(model net, const vector<Tensor *> &in, const vector<Tensor *> &out) {
+        net->predict(in, out);
     }
 
     model load_model(string fname) {
@@ -635,3 +637,4 @@ namespace eddl {
         return net;
     }
 }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            

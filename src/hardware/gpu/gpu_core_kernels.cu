@@ -17,6 +17,16 @@
 #include "gpu_kernels.h"
 
 
+__global__ void fill_(float* a, float v, long int size)
+{
+
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < size)
+        a[thread_id_x]=v;
+
+}
+
 __global__ void fill(float *aptr,float *bptr,int t,int aini,int at,int bini,int bt,int tot,int inc)
 {
   int i=blockIdx.x;
@@ -43,13 +53,3 @@ __global__ void mask(float* a, float v, long int size)
 
 }
 
-
-__global__ void set(float* a, float v, long int size)
-{
-
-    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
-
-    if (thread_id_x < size)
-        a[thread_id_x]=v;
-
-}
