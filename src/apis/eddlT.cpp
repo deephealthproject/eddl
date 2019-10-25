@@ -94,7 +94,13 @@ namespace eddlT {
   }
 
 
-  // Pointer functions ********************************
+  // Fill            **********************************
+  void fill_(Tensor *A,float v)
+  {
+    A->fill_(v);
+  }
+  
+// Pointer functions ********************************
   float *getptr(Tensor *A){
     return A->ptr;
   }

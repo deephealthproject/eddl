@@ -22,10 +22,14 @@ int main(int argc, char **argv) {
     int dev = DEV_CPU;
 
     tensor A=create({10,10});
+    fill_(A,0.0);
 
     tensor T=randn({10,10},dev);
 
     print(T);
+
+    add_(A,T);
+    print(A);
 
     normalize_(T,0,1);
 

@@ -34,13 +34,15 @@ namespace eddlT{
   Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
 
-  // Copy data        ********************************
+  // Copy data     c   ********************************
   void ToCPU_(Tensor *A);
   void ToGPU_(Tensor *A);
   Tensor * ToCPU(Tensor *A);
   Tensor * ToGPU(Tensor *A);
   Tensor* clone(Tensor *A);
 
+  // Fill            **********************************
+  void fill_(Tensor *A,float v);
 
   // Pointer functions ********************************
   float *getptr(Tensor *A);
