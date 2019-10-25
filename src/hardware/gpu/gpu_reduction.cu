@@ -16,6 +16,7 @@
 //#include <thrust/transform.h>
 #include <thrust/reduce.h>
 #include <thrust/functional.h>
+#include <thrust/extrema.h>
 
 #include "gpu_tensor.h"
 #include "gpu_kernels.h"

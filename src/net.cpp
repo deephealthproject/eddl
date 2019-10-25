@@ -178,7 +178,7 @@ string Net::summary() {
         vector<int> so = vfts[i]->output->getShape();
         so.erase(so.begin());
         ss << si << "-->" << so << "\n";
-      
+
     }
 
     return ss.str();

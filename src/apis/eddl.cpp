@@ -21,71 +21,7 @@ using namespace std;
 ////////////////////////////////////////////////////////
 ///// EDDL is a wrapper class to ease and define the API
 ////////////////////////////////////////////////////////
-
-namespace eddlT {
-    Tensor * create(const vector<int> &shape){
-      return new Tensor(shape,DEV_CPU);
-    }
-    Tensor * create(const vector<int> &shape,float *ptr)
-    {
-      return new Tensor(shape,ptr,DEV_CPU);
-    }
-    Tensor * create(const vector<int> &shape,int dev){
-      return new Tensor(shape,dev);
-    }
-
-    // TODO : load
-    
-    void div(Tensor *t, float f) {
-      t->div_(f);
-    }
-
-
-    float * getptr(Tensor *t) {
-        return t->ptr;
-    }
-
-    vector<int> getShape(Tensor *t){
-      return t->shape;
-    }
-}
-
-
 namespace eddl {
-    // ---- TENSOR ----
-    tensor T(const vector<int> &shape) {
-        return new LTensor(shape, DEV_CPU);
-    }
-
-    tensor T(const vector<int> &shape, float *ptr) {
-        return new LTensor(shape, ptr, DEV_CPU);
-    }
-
-    tensor T_load(string fname) {
-        return new LTensor(fname);
-    }
-
-    tensor T_fromCSV(string fname)
-    {
-      tensor n;
-      return n->fromCSV(fname);
-    }
-
-    float *T_getptr(layer T) {
-        return T->input->ptr;
-    }
-
-    vector<int> getShape(layer l){
-      return l->getShape();
-    }
-
-    // ---- TENSOR OPERATIONS ----
-    void div(layer t, float v) {
-        t->input->div_(v);
-    }
-    void set(layer t, float v) {
-        t->output->fill_(v);
-    }
 
     // ---- CORE LAYERS ----
     layer Softmax(layer parent)
@@ -568,43 +504,16 @@ namespace eddl {
         m->plot(fname);
     }
 
-    void fit(model net, const vector<LTensor *> &in, const vector<LTensor *> &out, int batch, int epochs) {
-        vtensor tin;
-        for (int i = 0; i < in.size(); i++)
-            tin.push_back(in[i]->input);
-
-        vtensor tout;
-        for (int i = 0; i < out.size(); i++)
-            tout.push_back(out[i]->input);
-
-
-        net->fit(tin, tout, batch, epochs);
+    void fit(model net, const vector<Tensor *> &in, const vector<Tensor *> &out, int batch, int epochs) {
+        net->fit(in, out, batch, epochs);
     }
 
-    void evaluate(model net, const vector<LTensor *> &in, const vector<LTensor *> &out) {
-        vtensor tin;
-        for (int i = 0; i < in.size(); i++)
-            tin.push_back(in[i]->input);
-
-        vtensor tout;
-        for (int i = 0; i < out.size(); i++)
-            tout.push_back(out[i]->input);
-
-
-        net->evaluate(tin, tout);
+    void evaluate(model net, const vector<Tensor *> &in, const vector<Tensor *> &out) {
+        net->evaluate(in, out);
     }
 
-    void predict(model net, const vector<LTensor *> &in, const vector<LTensor *> &out) {
-        vtensor tin;
-        for (int i = 0; i < in.size(); i++)
-            tin.push_back(in[i]->input);
-
-        vtensor tout;
-        for (int i = 0; i < out.size(); i++)
-            tout.push_back(out[i]->input);
-
-
-        net->predict(tin, tout);
+    void predict(model net, const vector<Tensor *> &in, const vector<Tensor *> &out) {
+        net->predict(in, out);
     }
 
     model load_model(string fname) {
@@ -728,3 +637,4 @@ namespace eddl {
         return net;
     }
 }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            

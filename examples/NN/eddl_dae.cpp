@@ -12,9 +12,10 @@
 #include <iostream>
 
 #include "apis/eddl.h"
-
+#include "apis/eddlT.h"
 
 using namespace eddl;
+
 
 // DENOISSING-AUTOENCODER
 int main(int argc, char **argv) {
@@ -25,7 +26,6 @@ int main(int argc, char **argv) {
     // Settings
     int epochs = 10;
     int batch_size = 1000;
-    int num_classes = 10;
 
     // Define network
     layer in = Input({784});
@@ -36,40 +36,33 @@ int main(int argc, char **argv) {
 
     l = Activation(Dense(l, 256), "relu");
     l = Activation(Dense(l, 128), "relu");
-    layer lc= l = Activation(Dense(l, 64), "relu");
-
-    // Autoencoder branch
+    l = Activation(Dense(l, 64), "relu");
     l = Activation(Dense(l, 128), "relu");
     l = Activation(Dense(l, 256), "relu");
-    layer outdae = Dense(l, 784);
+    layer out = Dense(l, 784);
 
-    // Classification branch
-    layer outclass = Activation(Dense(lc, num_classes), "softmax");
-
-    // model with two outpus
-    model net = Model({in}, {outdae,outclass});
+    model net = Model({in}, {out});
 
     // View model
     summary(net);
     plot(net, "model.pdf");
 
-    // Build model with two losses and metrics
+    // Build model
     build(net,
-          sgd(0.001, 0.9), // Optimizer
-          {"mean_squared_error","soft_cross_entropy"}, // Losses
-          {"mean_squared_error","categorical_accuracy"}, // Metrics
+          sgd(0.01, 0.9), // Optimizer
+          {"mean_squared_error"}, // Losses
+          {"mean_squared_error"}, // Metrics
           CS_CPU(4) // CPU with 4 threads
     );
 
     // Load dataset
-    tensor x_train = T_load("trX.bin");
-    tensor y_train = T_load("trY.bin");
-
+    tensor x_train = eddlT::load("trX.bin");
     // Preprocessing
-    div(x_train, 255.0);
+    eddlT::div_(x_train, 255.0);
+
 
     // Train model
-    fit(net, {x_train}, {x_train,y_train}, batch_size, epochs);
+    fit(net, {x_train}, {x_train}, batch_size, epochs);
 
 
 }
