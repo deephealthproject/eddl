@@ -74,6 +74,10 @@ namespace eddlT {
   void print(Tensor *A){
     A->print();
   }
+  void info(Tensor *A)
+  {
+    A->info();
+  }
 
   // Load from file ***********************************
   Tensor *load(string fname){
@@ -295,7 +299,8 @@ namespace eddlT {
 
    Tensor *mult2D(Tensor *A, Tensor *B)
    {
-     Tensor *C=new Tensor(A->getShape(),A->device);
+
+     Tensor *C=new Tensor({A->shape[0],B->shape[1]},A->device);
      Tensor::mult2D(A,0,B,0,C,0);
      return C;
    }

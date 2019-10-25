@@ -37,6 +37,7 @@ namespace eddlT{
 
   // Print functions   ********************************
   void print(Tensor *A);
+  void info(Tensor *A);
 
   // Load from file ***********************************
   Tensor *load(string fname);

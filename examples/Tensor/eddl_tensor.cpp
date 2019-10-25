@@ -19,7 +19,7 @@
 using namespace std;
 
 int main(int argc, char **argv) {
-    int dev = DEV_CPU;
+    int dev = DEV_GPU;
 
 
     tensor T=eddlT::randn({10,10},dev);
@@ -29,6 +29,16 @@ int main(int argc, char **argv) {
     eddlT::normalize_(T,0,1);
 
     eddlT::print(T);
+
+    tensor U=eddlT::randn({10,3},dev);
+
+    eddlT::print(U);
+
+    tensor V=eddlT::mult2D(T,U);
+
+    eddlT::info(V);
+
+    eddlT::print(V);
 
 
 }
