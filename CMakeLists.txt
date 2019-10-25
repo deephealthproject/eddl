@@ -47,6 +47,15 @@ endif()
 # SET STATIC/DYNAMIC RUNTIME
 set(EDDL_SHARED OFF CACHE BOOL "Whether to build a static or dynamic library")
 
+# Set default install directories
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    if (WIN32)
+        set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "Installation Directory" FORCE)
+    else()
+        set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Installation Directory" FORCE)
+    endif()
+endif()
+
 # SHOW OPTIONS
 message(STATUS "Build type: " ${CMAKE_BUILD_TYPE} )
 message(STATUS "Build target: " ${BUILD_TARGET} )
@@ -498,6 +507,12 @@ endif(BUILD_EXAMPLES)
 
 
 # [INSTALL] Install the EDDL library
+if (WIN32)
+    SET(EDDL_CONFIG_INSTALL_PATH ${CMAKE_INSTALL_PREFIX})
+else()
+    SET(EDDL_CONFIG_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/lib/cmake/eddl)
+endif()
+
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "..." FORCE)
 endif()
@@ -507,7 +522,7 @@ install(TARGETS eddl
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
         )
-install(EXPORT EDDLTargets DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(EXPORT EDDLTargets DESTINATION ${EDDL_CONFIG_INSTALL_PATH})
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
         DESTINATION include/eddl
         FILES_MATCHING PATTERN "*.h")

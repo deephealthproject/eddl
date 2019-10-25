@@ -14,7 +14,8 @@ if (${EDDL_WITH_CUDA})
 endif()
 
 find_dependency(OpenMP)
-include("@CMAKE_INSTALL_PREFIX@/EDDLTargets.cmake")
+
+include("@EDDL_CONFIG_INSTALL_PATH@/EDDLTargets.cmake")
 
 SET(EDDL_LIBRARIES eddl)
 SET(EDDL_INCLUDE_DIR "@CMAKE_INSTALL_PREFIX@/include")
