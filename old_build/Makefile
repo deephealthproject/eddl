@@ -136,7 +136,7 @@ endif
 endif
 
 # Group compiled objects (Alphabetically sorted!)
-APIS_OBJ = eddl.o
+APIS_OBJ = eddl.o eddlT.o
 CONSTRAINTS_OBJ = constraint_max_norm.o constraint_min_max_norm.o constraint_non_neg.o constraint_unit_norm.o constraint.o
 CORE_OBJ = compserv.o net.o utils.o random.o
 DESCRIPTORS_OBJ = descriptor_conv.o descriptor_pool.o descriptor_reduce.o
@@ -154,11 +154,11 @@ TESTS_OBJ = aux_tests.o
 OBJ := $(APIS_OBJ) $(CONSTRAINTS_OBJ) $(CORE_OBJ) $(DESCRIPTORS_OBJ) $(HARDWARE_CPU_OBJ) $(INITIALIZERS_OBJ) $(LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(REGULARIZERS_OBJ) $(TENSOR_OBJ) $(TESTS_OBJ)
 
 ifeq ($(CORE),1)  # CPU
-all: $(GPU_OBJ) $(OBJ) test_main example_mlp  example_conv example_test example_ae example_dae example_dae_class example_tensor example_load_save example_train_batch
+all: $(GPU_OBJ) $(OBJ) test_main example_mlp example_conv example_test example_ae example_dae example_dae_class example_tensor example_load_save example_train_batch
 endif
 
 ifeq ($(CORE),2)  # GPU
-all: $(GPU_OBJ) $(OBJ) test_main example_mlp  example_conv example_test example_ae example_dae example_dae_class example_tensor example_load_save example_train_batch
+all: $(GPU_OBJ) $(OBJ) test_main example_mlp example_conv example_test example_ae example_dae example_dae_class example_tensor example_load_save example_train_batch
 endif
 
 utils.o: $(SRC_PATH)/utils.cpp $(SRC_PATH)/utils.h $(SRC_PATH)/system_info.h
@@ -307,6 +307,9 @@ optim_adadelta.o: $(SRC_PATH)/optimizers/optim_adadelta.cpp $(SRC_PATH)/optimize
 
 eddl.o: $(SRC_PATH)/apis/eddl.cpp $(SRC_PATH)/apis/eddl.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/apis/eddl.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+eddlT.o: $(SRC_PATH)/apis/eddlT.cpp $(SRC_PATH)/apis/eddlT.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/apis/eddlT.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 layer.o: $(SRC_PATH)/layers/layer.cpp $(SRC_PATH)/layers/layer.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/layer.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
