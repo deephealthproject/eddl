@@ -12,6 +12,7 @@
 #include <iostream>
 
 #include "apis/eddl.h"
+#include "apis/eddlT.h"
 
 using namespace eddl;
 
@@ -54,22 +55,18 @@ int main(int argc, char **argv) {
 
 
     // Load dataset
-    tensor x_train = T_load("trX.bin");
-    tensor y_train = T_load("trY.bin");
-    tensor x_test = T_load("tsX.bin");
-    tensor y_test = T_load("tsY.bin");
+    tensor x_train = eddlT::load("trX.bin");
+    tensor y_train = eddlT::load("trY.bin");
+    tensor x_test = eddlT::load("tsX.bin");
+    tensor y_test = eddlT::load("tsY.bin");
 
     // Preprocessing
-    div(x_train, 255.0);
-    div(x_test, 255.0);
-
+    eddlT::div_(x_train, 255.0);
+    eddlT::div_(x_test, 255.0);
 
     // Prepare data
-    // Input/target data {x1, x2,...} => {y1, y2,...}
-    vector<Tensor *> tin{x_train->data};  // Get input from LTensor (LTensor->data)
-    vector<Tensor *> tout{y_train->data}; // Get input from LTensor (LTensor->data)
 
-    int num_samples = tin[0]->shape[0];  //arg1
+    int num_samples = x_train->shape[0];  //arg1
     int num_batches = num_samples / batch_size; //arg2
 
     // Set batch size
@@ -92,7 +89,7 @@ int main(int argc, char **argv) {
             // COMPS: wait for weights()
 
             // Train batch
-            train_batch(net, tin, tout, indices);  // Bind this function
+            train_batch(net, {x_train}, {y_train}, indices);  // Bind this function
 
             // COMPS: send grads()
         }

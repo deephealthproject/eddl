@@ -12,6 +12,7 @@
 #include <iostream>
 
 #include "apis/eddl.h"
+#include "apis/eddlT.h"
 
 using namespace eddl;
 
@@ -59,8 +60,8 @@ int main(int argc, char **argv){
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
     //CS_CPU(4) // 4 CPU threads
-    CS_CPU() // CPU with maximum threads availables
-    //CS_GPU({1}) // GPU with only one gpu
+    //CS_CPU() // CPU with maximum threads availables
+    CS_GPU({1}) // GPU with only one gpu
   );
 
   // plot the model
@@ -70,25 +71,28 @@ int main(int argc, char **argv){
   cout << summary(net) << endl;
 
   // Load and preprocess training data
-  tensor X=T_load("trX.bin");
-  tensor Y=T_load("trY.bin");
-  div(X,255.0);
+  // Load dataset
+  tensor x_train = eddlT::load("trX.bin");
+  tensor y_train = eddlT::load("trY.bin");
+  eddlT::div_(x_train, 255.0);
+
 
   // training, list of input and output tensors, batch, epochs
-  fit(net,{X},{Y},batch_size, epochs);
+  fit(net,{x_train},{y_train},batch_size, epochs);
 
   // Evaluate train
   std::cout << "Evaluate train:" << std::endl;
-  evaluate(net,{X},{Y});
+  evaluate(net,{x_train},{y_train});
 
   // Load and preprocess test data
-  tensor tX=T_load("tsX.bin");
-  tensor tY=T_load("tsY.bin");
-  div(tX,255.0);
+  tensor x_test = eddlT::load("tsX.bin");
+  tensor y_test = eddlT::load("tsY.bin");
+  eddlT::div_(x_test, 255.0);
+
 
   // Evaluate test
   std::cout << "Evaluate test:" << std::endl;
-  evaluate(net,{tX},{tY});
+  evaluate(net,{x_test},{y_test});
 
 }
 

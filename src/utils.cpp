@@ -41,7 +41,6 @@
 #endif
 
 
-
 float *get_fmem(int size, char *str){
     // Careful with memory overcommitment:
     // https://stackoverflow.com/questions/48585079/malloc-on-linux-without-overcommitting

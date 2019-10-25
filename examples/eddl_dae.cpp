@@ -12,6 +12,7 @@
 #include <iostream>
 
 #include "apis/eddl.h"
+#include "apis/eddlT.h"
 
 using namespace eddl;
 
@@ -55,9 +56,10 @@ int main(int argc, char **argv) {
     );
 
     // Load dataset
-    tensor x_train = T_load("trX.bin");
+    tensor x_train = eddlT::load("trX.bin");
     // Preprocessing
-    div(x_train, 255.0);
+    eddlT::div_(x_train, 255.0);
+
 
     // Train model
     fit(net, {x_train}, {x_train}, batch_size, epochs);

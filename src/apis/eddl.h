@@ -33,19 +33,9 @@
 #include "../layers/recurrent/layer_recurrent.h"
 
 
-namespace eddlT {
-    //#define tensor Tensor*
-    Tensor * create(const vector<int> &shape);
-    Tensor * create(const vector<int> &shape,float *ptr);
-    Tensor * create(const vector<int> &shape,int dev);
-    void div(Tensor *t, float f);
-    float * getptr(Tensor *t);
-    vector<int> getShape(Tensor *t);
-}
 
 namespace eddl {
 
-#define tensor LTensor*
 #define layer Layer*
 #define model Net*
 #define optimizer Optimizer*
@@ -54,25 +44,6 @@ namespace eddl {
 #define loss Loss*
 #define metric Metric*
 #define compserv CompServ*
-
-// ---- TENSOR ----
-    tensor T(const vector<int> &shape);//*
-    tensor T(const vector<int> &shape, float *ptr);
-
-    tensor T_load(string fname);
-    tensor T_fromCSV(string fname);
-
-    float *T_getptr(layer T);
-
-    vector<int> getShape(layer l);
-
-
-// ---- TENSOR OPERATIONS ----
-    void div(layer t, float v);
-    void set(layer t, float v);
-
-
-
 
 // ---- CORE LAYERS ----
     layer Softmax(layer parent);
@@ -258,11 +229,11 @@ namespace eddl {
 
     void plot(model m, string fname);
 
-    void fit(model m, const vector<LTensor *> &in, const vector<LTensor *> &out, int batch, int epochs);
+    void fit(model m, const vector<Tensor *> &in, const vector<Tensor *> &out, int batch, int epochs);
 
-    void evaluate(model m, const vector<LTensor *> &in, const vector<LTensor *> &out);
+    void evaluate(model m, const vector<Tensor *> &in, const vector<Tensor *> &out);
 
-    void predict(model m, const vector<LTensor *> &in, const vector<LTensor *> &out);
+    void predict(model m, const vector<Tensor *> &in, const vector<Tensor *> &out);
 
     model load_model(string fname); //Todo: Implement
     void save_model(model m, string fname); //Todo: Implement

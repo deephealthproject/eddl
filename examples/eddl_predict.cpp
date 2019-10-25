@@ -23,6 +23,7 @@
 #include <iostream>
 
 #include "apis/eddl.h"
+#include "apis/eddlT.h"
 
 
 using namespace eddl;
@@ -60,31 +61,32 @@ int main(int argc, char **argv) {
     );
 
     // Load dataset
-    tensor x_train = T_load("trX.bin");
-    tensor y_train = T_load("trY.bin");
-    tensor x_test = T_load("tsX.bin");
-    tensor y_test = T_load("tsY.bin");
+    tensor x_train = eddlT::load("trX.bin");
+    tensor y_train = eddlT::load("trY.bin");
+    tensor x_test = eddlT::load("tsX.bin");
+    tensor y_test = eddlT::load("tsY.bin");
 
     // Preprocessing
-    div(x_train, 255.0);
-    div(x_test, 255.0);
+    eddlT::div_(x_train, 255.0);
+    eddlT::div_(x_test, 255.0);
+
 
     // Train model
     fit(net, {x_train}, {y_train}, batch_size, epochs);
 
     ///  Predict *one* sample
     auto *X=new float[1*784];
-    tensor TX=T({1,784},X);
+    tensor TX=eddlT::create({1,784},X);
 
     auto *Y=new float[1*10];
-    tensor TY=T({1,10},Y);
+    tensor TY=eddlT::create({1,10},Y);
 
     predict(net,{TX},{TY});
 
     // The result is in float *Y
     // but in general you can get the pointer to
     // tensor data by:
-    float *result=T_getptr(TY);
+    float *result=eddlT::getptr(TY);
 
 
 }
