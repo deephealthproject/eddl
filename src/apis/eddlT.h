@@ -32,6 +32,15 @@ namespace eddlT{
   Tensor* eye(int size, int dev=DEV_CPU);
   Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
+
+  // Copy data        ********************************
+  void ToCPU_(Tensor *A);
+  void ToGPU_(Tensor *A);
+  Tensor * ToCPU(Tensor *A);
+  Tensor * ToGPU(Tensor *A);
+  Tensor* clone(Tensor *A);
+
+
   // Pointer functions ********************************
   float *getptr(Tensor *A);
 

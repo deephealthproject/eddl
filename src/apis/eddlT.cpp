@@ -64,6 +64,31 @@ namespace eddlT {
     return Tensor::randn(shape,dev);
   }
 
+  // Copy data        ********************************
+  void ToCPU_(Tensor *A)
+  {
+    A->ToCPU();
+  }
+  void ToGPU_(Tensor *A)
+  {
+    A->ToGPU();
+  }
+  Tensor * ToCPU(Tensor *A){
+    Tensor *B=A->clone();
+    B->ToCPU();
+    return B;
+  }
+  Tensor * ToGPU(Tensor *A)
+  {
+    Tensor *B=A->clone();
+    B->ToGPU();
+    return B;
+  }
+  Tensor* clone(Tensor *A)
+  {
+    return A->clone();
+  }
+
 
   // Pointer functions ********************************
   float *getptr(Tensor *A){
