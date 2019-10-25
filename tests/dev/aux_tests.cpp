@@ -274,4 +274,3 @@ TestResult run_tensor_op(Tensor* t_input, string op, int dev, int runs){
     result.tensor = t_input;
     return result;
 }
-
