@@ -48,6 +48,53 @@ public:
     string plot(int c) override;
 };
 
+class LNormMax : public LinLayer {
+public:
+    float epsilon;
+    static int total_layers;
+    vector<Layer *> layers;
+
+    LNormMax(Layer *parent, float epsilon,  string name, int dev);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    void reset() override;
+
+    string plot(int c) override;
+};
+
+
+class LNormMinMax : public LinLayer {
+public:
+    float epsilon;
+    static int total_layers;
+    vector<Layer *> layers;
+
+    LNormMinMax(Layer *parent, float epsilon,  string name, int dev);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    void reset() override;
+
+    string plot(int c) override;
+};
+
 /// BatchNormalization Layer
 class LBatchNorm : public LinLayer {
 public:

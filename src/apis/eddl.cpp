@@ -160,6 +160,16 @@ namespace eddl {
       return new LNorm(parent, epsilon, name, DEV_CPU);
     }
 
+    layer NormMax(layer parent, float epsilon, string name)
+    {
+      return new LNormMax(parent, epsilon, name, DEV_CPU);
+    }
+
+    layer NormMinMax(layer parent, float epsilon, string name)
+    {
+      return new LNormMinMax(parent, epsilon, name, DEV_CPU);
+    }
+
 
     layer Dropout(layer parent, float rate, string name) {
         return new LDropout(parent, rate, name, DEV_CPU);

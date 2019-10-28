@@ -99,6 +99,10 @@ namespace eddl {
                              string name = "");
     layer Norm(layer parent, float epsilon = 0.001f, string name = "");
 
+    layer NormMax(layer parent, float epsilon = 0.001f, string name = "");
+
+    layer NormMinMax(layer parent, float epsilon = 0.001f, string name = "");
+
     layer Dropout(layer parent, float rate, string name = ""); //Todo: Implement
 
 // ---- OPERATOR LAYERS ----

@@ -209,6 +209,8 @@ SET(CPP_SOURCES
         src/layers/core/layer_tensor.cpp
         src/layers/core/layer_transpose.cpp
         src/layers/normalization/layer_norm.cpp
+        src/layers/normalization/layer_normmax.cpp
+        src/layers/normalization/layer_normminmax.cpp
         src/layers/normalization/layer_batchnorm.cpp
         src/layers/generators/layer_generator.cpp
         src/layers/generators/layer_generators.h
