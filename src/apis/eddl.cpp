@@ -24,6 +24,12 @@ using namespace std;
 namespace eddl {
 
     // ---- CORE LAYERS ----
+
+
+    layer Activation(layer parent, string activation, string name) {
+        return new LActivation(parent, activation, name, DEV_CPU);
+    }
+
     layer Softmax(layer parent)
     {
       return new LActivation(parent,"softmax","",DEV_CPU);
@@ -36,23 +42,6 @@ namespace eddl {
     {
       return new LActivation(parent,"relu","",DEV_CPU);
     }
-
-    layer Activation(layer parent, string activation, string name) {
-        return new LActivation(parent, activation, name, DEV_CPU);
-    }
-
-
-    layer GlorotNormal(layer l,int seed)
-    {
-      l->init=new IGlorotNormal(seed);
-      return l;
-    }
-    layer GlorotUniform(layer l,int seed)
-    {
-      l->init=new IGlorotUniform(seed);
-      return l;
-    }
-
 
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
                const vector<int> &strides, string padding, int groups, const vector<int> &dilation_rate,
@@ -359,40 +348,17 @@ namespace eddl {
 
 
     // ---- INITIALIZERS ----
-    initializer Constant(float value) {
-        //Todo: Implement
-        return new IConstant(value);
+    layer GlorotNormal(layer l,int seed)
+    {
+      l->init=new IGlorotNormal(seed);
+      return l;
+    }
+    layer GlorotUniform(layer l,int seed)
+    {
+      l->init=new IGlorotUniform(seed);
+      return l;
     }
 
-    initializer Identity(float gain) {
-        //Todo: Implement
-        return new IIdentity(gain);
-    }
-
-    initializer GlorotNormal(float seed) {
-        //Todo: Implement
-        return new IGlorotNormal(seed);
-    }
-
-    initializer GlorotUniform(float seed) {
-        //Todo: Implement
-        return new IGlorotUniform(seed);
-    }
-
-    initializer RandomNormal(float mean, float stdev, int seed) {
-        //Todo: Implement
-        return new IRandomNormal(mean, stdev, seed);
-    }
-
-    initializer RandomUniform(float minval, float maxval, int seed) {
-        //Todo: Implement
-        return new IRandomUniform(minval, maxval, seed);
-    }
-
-    initializer Orthogonal(float gain, int seed) {
-        //Todo: Implement
-        return new IOrthogonal(gain, seed);
-    }
 
     // ---- REGULARIZERS ----
     layer L2(layer l,float l2){
@@ -452,7 +418,7 @@ namespace eddl {
         return new Net(in, out);
     }
 
-    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs, Initializer* init) {
+    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs) {
         vector<Loss *> l;
         vector<Metric *> m;
 
@@ -470,12 +436,7 @@ namespace eddl {
             cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
         }
 
-        // Assign default initializer
-        if (init== nullptr){
-            init = new IGlorotUniform();
-        }
-
-        net->build(o, l, m, cs, init);
+        net->build(o, l, m, cs);
     }
 
     string summary(model m) {

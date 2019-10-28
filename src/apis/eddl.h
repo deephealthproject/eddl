@@ -47,15 +47,12 @@ namespace eddl {
 
 // ---- CORE LAYERS ----
 
-    layer GlorotNormal(layer l,int seed=1234);
-    layer GlorotUniform(layer l,int seed=1234);
 
+
+    layer Activation(layer parent, string activation, string name = "");
     layer Softmax(layer parent);
     layer Sigmoid(layer parent);
     layer ReLu(layer parent);
-
-    layer Activation(layer parent, string activation, string name = "");
-
 
 
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
@@ -190,13 +187,9 @@ namespace eddl {
 
 
 // ---- INITIALIZERS ----
-    initializer Constant(float value); //Todo: Implement
-    initializer Identity(float gain); //Todo: Implement
-    initializer GlorotNormal(float seed); //Todo: Implement
-    initializer GlorotUniform(float seed); //Todo: Implement
-    initializer RandomNormal(float mean, float stdev, int seed); //Todo: Implement
-    initializer RandomUniform(float minval, float maxval, int seed); //Todo: Implement
-    initializer Orthogonal(float gain, int seed); //Todo: Implement
+
+    layer GlorotNormal(layer l,int seed=1234);
+    layer GlorotUniform(layer l,int seed=1234);
 
     // ---- REGULARIZERS ----
     layer L2(layer l,float l2);
@@ -223,7 +216,7 @@ namespace eddl {
 // ---- MODEL METHODS ----
     model Model(vlayer in, vlayer out);
 
-    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr, Initializer* init=nullptr);
+    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr);
 
     string summary(model m);
 
