@@ -59,9 +59,16 @@ make test
 # Getting started
 
 ```c++
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+
 #include "apis/eddl.h"
+#include "apis/eddlT.h"
 
 using namespace eddl;
+
 
 int main(int argc, char **argv) {
 
@@ -69,21 +76,21 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 10;
-    int batch_size = 1000;
+    int epochs = 100;
+    int batch_size = 100;
     int num_classes = 10;
 
     // Define network
     layer in = Input({784});
     layer l = in;  // Aux var
-    l = Activation(Dense(l, 1024), "relu");
-    l = Activation(Dense(l, 1024), "relu");
-    l = Activation(Dense(l, 1024), "relu");
+
+    l = BatchNormalization(Activation(L2(Dense(l, 1024),0.0001f), "relu"));
+    l = BatchNormalization(Activation(L2(Dense(l, 1024),0.0001f), "relu"));
+    l = BatchNormalization(Activation(L2(Dense(l, 1024),0.0001f), "relu"));
+
     layer out = Activation(Dense(l, num_classes), "softmax");
     model net = Model({in}, {out});
 
-    // View model
-    summary(net);
     plot(net, "model.pdf");
 
     // Build model
@@ -91,25 +98,31 @@ int main(int argc, char **argv) {
           sgd(0.01, 0.9), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_CPU(4) // CPU with 4 threads
+          CS_CPU() // CPU with maximum threads availables
     );
 
+    // View model
+    cout<<summary(net);
+
     // Load dataset
-    tensor x_train = T_load("trX.bin");
-    tensor y_train = T_load("trY.bin");
-    tensor x_test = T_load("tsX.bin");
-    tensor y_test = T_load("tsY.bin");
+    tensor x_train = eddlT::load("trX.bin");
+    tensor y_train = eddlT::load("trY.bin");
+    tensor x_test = eddlT::load("tsX.bin");
+    tensor y_test = eddlT::load("tsY.bin");
 
     // Preprocessing
-    div_(x_train, 255.0);
-    div_(x_test, 255.0);
+    eddlT::div_(x_train, 255.0);
+    eddlT::div_(x_test, 255.0);
+
 
     // Train model
-    fit(net, {x_train}, {y_train}, batch_size, epochs);
+    for(int i=0;i<epochs;i++) {
+      fit(net, {x_train}, {y_train}, batch_size, 1);
 
-    // Evaluate test
-    std::cout << "Evaluate test:" << std::endl;
-    evaluate(net, {x_test}, {y_test});
+      // Evaluate test
+      std::cout << "Evaluate test:\n";
+      evaluate(net, {x_test}, {y_test});
+    }
 }
 
 ```
