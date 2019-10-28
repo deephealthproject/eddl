@@ -131,7 +131,7 @@ endif
 
 GPU_LIBFLAGS := -lcudart -lcublas -lcurand
 GPU_CXX := $(cuda_path)bin/nvcc
-GPU_OBJ = gpu_tensor.o gpu_activations_kernels.o gpu_conv_kernels.o gpu_tensor_nn_kernels.o gpu_losses_kernels.o gpu_metrics_kernels.o gpu_pool_kernels.o gpu_core_kernels.o gpu_create_kernels.o gpu_generator_kernels.o gpu_math_kernels.o gpu_reduction_kernels.o gpu_comparison.o gpu_core.o gpu_create.o gpu_generator.o gpu_math.o gpu_reduction.o gpu_activations.o gpu_conv.o gpu_tensor_nn.o gpu_losses.o gpu_metrics.o gpu_pool.o
+GPU_OBJ = gpu_tensor.o gpu_activations_kernels.o gpu_conv_kernels.o gpu_tensor_nn_kernels.o gpu_losses_kernels.o gpu_metrics_kernels.o gpu_pool_kernels.o gpu_core_kernels.o gpu_create_kernels.o gpu_da_kernels.o gpu_generator_kernels.o gpu_math_kernels.o gpu_reduction_kernels.o gpu_comparison.o gpu_core.o gpu_create.o gpu_da.o gpu_generator.o gpu_math.o gpu_reduction.o gpu_activations.o gpu_conv.o gpu_tensor_nn.o gpu_losses.o gpu_metrics.o gpu_pool.o
 
 endif
 endif
@@ -527,6 +527,9 @@ gpu_core.o: $(SRC_PATH)/hardware/gpu/gpu_core.cu $(SRC_PATH)/hardware/gpu/gpu_hw
 gpu_create.o: $(SRC_PATH)/hardware/gpu/gpu_create.cu $(SRC_PATH)/hardware/gpu/gpu_hw.h
 	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/gpu_create.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
+gpu_da.o: $(SRC_PATH)/hardware/gpu/gpu_da.cu $(SRC_PATH)/hardware/gpu/gpu_hw.h
+	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/gpu_da.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
 gpu_generator.o: $(SRC_PATH)/hardware/gpu/gpu_generator.cu $(SRC_PATH)/hardware/gpu/gpu_hw.h
 	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/gpu_generator.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
@@ -564,6 +567,9 @@ gpu_core_kernels.o: $(SRC_PATH)/hardware/gpu/gpu_core_kernels.cu $(SRC_PATH)/har
 
 gpu_create_kernels.o: $(SRC_PATH)/hardware/gpu/gpu_create_kernels.cu $(SRC_PATH)/hardware/gpu/gpu_kernels.h
 	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/gpu_create_kernels.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+gpu_da_kernels.o: $(SRC_PATH)/hardware/gpu/gpu_da_kernels.cu $(SRC_PATH)/hardware/gpu/gpu_kernels.h
+	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/gpu_da_kernels.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 gpu_generator_kernels.o: $(SRC_PATH)/hardware/gpu/gpu_generator_kernels.cu $(SRC_PATH)/hardware/gpu/gpu_kernels.h
 	$(GPU_CXX) $(GPU_CXXFLAGS) $(GPU_LIBFLAGS) -c $(SRC_PATH)/hardware/gpu/gpu_generator_kernels.cu -I $(LIBS_PATH) -o $(BUILD_PATH)/$@

@@ -321,6 +321,8 @@ SET(CUDA_SOURCES
         src/hardware/gpu/gpu_core_kernels.cu
         src/hardware/gpu/gpu_create.cu
         src/hardware/gpu/gpu_create_kernels.cu
+        src/hardware/gpu/gpu_da.cu
+        src/hardware/gpu/gpu_da_kernels.cu
         src/hardware/gpu/gpu_generator.cu
         src/hardware/gpu/gpu_generator_kernels.cu
         src/hardware/gpu/gpu_math.cu

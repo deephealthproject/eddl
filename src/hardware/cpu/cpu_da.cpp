@@ -14,24 +14,20 @@
 
 // CPU: Data augmentation (in-place) ********************************************
 void cpu_shift_(Tensor *A, vector<int> shift, bool reshape, string mode, float constant) {
-    Tensor *B = A->clone();
-    for(int i=0; i<A->shape[0];i++) {
-        for(int j=0; j<A->shape[1];j++) {
+    Tensor *B = Tensor::full(A->getShape(), constant);
+
+    for(int i=0; i<B->shape[0];i++) {
+        for(int j=0; j<B->shape[1];j++) {
 
             vector<int> pos = {i - shift[0], j - shift[1]};
-            if (B->valid_indices(pos)){
-                A->set_({i, j}, B->get_(pos));
-            }else{
-
-                // TODO: SUPER INEFFICIENT!!! (TEMP)
-                if(mode=="constant"){
-                    A->set_({i, j}, constant);
-                }
-
-            }
+            if (A->valid_indices(pos)){
+                B->set_({i, j}, A->get_(pos));
+            }else{}
 
         }
     }
+
+    *A = *B;
 }
 
 void cpu_rotate_(Tensor *A, float angle, vector<int> axis, bool reshape, string mode, float constant){

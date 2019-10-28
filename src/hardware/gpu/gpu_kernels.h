@@ -26,6 +26,14 @@ __global__ void fill(float *aptr,float *bptr,int t,int aini,int at,int bini,int 
 __global__ void fill_(float* a, float v, long int size);
 __global__ void mask(float* a, float v, long int size);
 
+// GPU: Math (in-place)
+__global__ void shift_(float* a,int* shift, bool reshape, string mode, float constant);
+__global__ void rotate_(float* a,float angle, int* axis, bool reshape, string mode, float constant);
+__global__ void scale_(float* a,float factor, bool reshape, string mode, float constant);
+__global__ void flip_(float* a,int axis);
+__global__ void crop_(float* a,int* coords_from, int* coords_to);
+__global__ void cutout_(float* a,int* coords_from, int* coords_to);
+
 // GPU: Generator
 
 // GPU: Math (in-place)
