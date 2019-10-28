@@ -41,24 +41,24 @@ namespace eddl {
         return new LActivation(parent, activation, name, DEV_CPU);
     }
 
-    layer L2(layer l,float l2){
-      l->reg=new RL2(l2);
+
+    layer GlorotNormal(layer l,int seed)
+    {
+      l->init=new IGlorotNormal(seed);
       return l;
     }
-    layer L1(layer l,float l1){
-      l->reg=new RL1(l1);
-      return l;
-    }
-    layer L1L2(layer l,float l1,float l2){
-      l->reg=new RL1L2(l1,l2);
+    layer GlorotUniform(layer l,int seed)
+    {
+      l->init=new IGlorotUniform(seed);
       return l;
     }
 
+
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
                const vector<int> &strides, string padding, int groups, const vector<int> &dilation_rate,
-               bool use_bias, Regularizer *reg, string name) {
+               bool use_bias, string name) {
         LConv *l = new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU);
-        l->reg = reg;
+
         return l;
     }
 
@@ -69,9 +69,9 @@ namespace eddl {
                           DEV_CPU);
     }
 
-    layer Dense(layer parent, int ndim, bool use_bias, Regularizer *reg, string name) {
+    layer Dense(layer parent, int ndim, bool use_bias, string name) {
         LDense *l = new LDense(parent, ndim, use_bias, name, DEV_CPU);
-        l->reg = reg;
+
         return l;
     }
 
@@ -165,6 +165,12 @@ namespace eddl {
     layer BatchNormalization(layer parent, float momentum, float epsilon, bool affine, string name) {
         return new LBatchNorm(parent, momentum, epsilon, affine, name, DEV_CPU);
     }
+
+    layer Norm(layer parent, float epsilon, string name)
+    {
+      return new LNorm(parent, epsilon, name, DEV_CPU);
+    }
+
 
     layer Dropout(layer parent, float rate, string name) {
         return new LDropout(parent, rate, name, DEV_CPU);
@@ -389,16 +395,19 @@ namespace eddl {
     }
 
     // ---- REGULARIZERS ----
-    regularizer L1(float l1){
-        return new RL1(l1);
+    layer L2(layer l,float l2){
+      l->reg=new RL2(l2);
+      return l;
     }
-    regularizer L2(float l2){
-        return new RL2(l2);
+    layer L1(layer l,float l1){
+      l->reg=new RL1(l1);
+      return l;
+    }
+    layer L1L2(layer l,float l1,float l2){
+      l->reg=new RL1L2(l1,l2);
+      return l;
     }
 
-    regularizer L1L2(float l1, float l2){
-        return new RL1L2(l1, l2);
-    }
 
     // ---- COMPUTING SERVICES ----
     compserv CS_CPU(int th) {

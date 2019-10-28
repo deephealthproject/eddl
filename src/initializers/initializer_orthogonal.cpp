@@ -28,4 +28,7 @@ IOrthogonal::IOrthogonal(float gain, int seed) : Initializer("orthogonal") {
     this->seed = seed;
 
 }
-void IOrthogonal::apply(Tensor* params){}
+void IOrthogonal::apply(Tensor* params)
+{
+  msg("Orthogonalnot implemented","IOrthogonal:apply");
+}

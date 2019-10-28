@@ -27,4 +27,7 @@ IIdentity::IIdentity(float gain) : Initializer("identity") {
     // Todo: Implement
     this->gain = gain;
 }
-void IIdentity::apply(Tensor* params){}
+void IIdentity::apply(Tensor* params)
+{
+  msg("Identity not implemented","IIdentity::apply");    
+}

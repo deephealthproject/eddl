@@ -225,7 +225,7 @@ void Net::plot(string fname) {
 /////////////////////////////////////////
 void Net::initialize() {
     for (int i = 0; i != layers.size(); i++)
-        layers[i]->initialize(this->init);
+        layers[i]->initialize();
 }
 
 /////////////////////////////////////////

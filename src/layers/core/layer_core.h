@@ -166,7 +166,7 @@ public:
     // constructors and clones
     LReshape(Layer *parent, vector<int> shape, string name, int dev);
     ~LReshape() override;
-    
+
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
@@ -233,6 +233,30 @@ public:
 };
 
 
+
+/// Normalization Layer
+class LNorm : public LinLayer {
+public:
+    float epsilon;
+    static int total_layers;
+    vector<Layer *> layers;
+
+    LNorm(Layer *parent, float epsilon,  string name, int dev);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    void reset() override;
+
+    string plot(int c) override;
+};
 
 /// BatchNormalization Layer
 class LBatchNorm : public LinLayer {

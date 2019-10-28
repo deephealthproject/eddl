@@ -200,6 +200,7 @@ SET(CPP_SOURCES
         src/layers/conv/layer_transposed_conv.cpp
         src/layers/conv/layer_upsampling.cpp
         src/layers/core/layer_activation.cpp
+        src/layers/core/layer_norm.cpp
         src/layers/core/layer_batchnorm.cpp
         src/layers/core/layer_core.h
         src/layers/core/layer_dense.cpp

@@ -19,9 +19,19 @@ using namespace eddl;
 
 layer Block(layer l,int filters, vector<int> kernel, vector<int> stride)
 {
-  return MaxPool(BatchNormalization(Activation(L1(Conv(l, filters, kernel,stride),0.0001f),"relu")),{2,2});
-  //return MaxPool(BatchNormalization(Activation(Conv(l, filters, kernel,stride),"relu")),{2,2});
-  //return MaxPool(Activation(Conv(l, 4, {3,3}},stride),"relu"),{2,2});
+  return \
+  MaxPool(\
+    BatchNormalization(\
+      Activation(\
+        L1(\
+          GlorotUniform(\
+            Conv(l, filters, kernel,stride\
+            )\
+          ),0.0001f\
+        ),"relu"\
+      )\
+    ),{2,2}\
+  );
 }
 
 int main(int argc, char **argv){

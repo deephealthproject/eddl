@@ -46,25 +46,27 @@ namespace eddl {
 #define compserv CompServ*
 
 // ---- CORE LAYERS ----
+
+    layer GlorotNormal(layer l,int seed=1234);
+    layer GlorotUniform(layer l,int seed=1234);
+
     layer Softmax(layer parent);
     layer Sigmoid(layer parent);
     layer ReLu(layer parent);
 
     layer Activation(layer parent, string activation, string name = "");
 
-    layer L2(layer l,float l2);
-    layer L1(layer l,float l1);
-    layer L1L2(layer l,float l1,float l2);
+
 
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
                const vector<int> &strides = {1, 1}, string padding = "same", int groups = 1,
                const vector<int> &dilation_rate = {1, 1},
-               bool use_bias = true, Regularizer *reg=nullptr, string name = "");
+               bool use_bias = true, string name = "");
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding = "same",
                 const vector<int> &dilation_rate = {1, 1},
                 const vector<int> &strides = {1, 1}, bool use_bias = true, string name = ""); //Todo: Implement
-    layer Dense(layer parent, int ndim, bool use_bias = true, Regularizer *reg=nullptr, string name = "");
+    layer Dense(layer parent, int ndim, bool use_bias = true,  string name = "");
     layer Embedding(int input_dim, int output_dim, string name = ""); //Todo: Implement
     layer Input(const vector<int> &shape, string name = "");
 
@@ -97,6 +99,8 @@ namespace eddl {
 // ---- NORMALIZATION LAYERS ----
     layer BatchNormalization(layer parent, float momentum = 0.9f, float epsilon = 0.001f, bool affine = true,
                              string name = "");
+    layer Norm(layer parent, float epsilon = 0.001f, string name = "");
+
     layer Dropout(layer parent, float rate, string name = ""); //Todo: Implement
 
 // ---- OPERATOR LAYERS ----
@@ -195,9 +199,9 @@ namespace eddl {
     initializer Orthogonal(float gain, int seed); //Todo: Implement
 
     // ---- REGULARIZERS ----
-    regularizer L1(float l1=0.01f);
-    regularizer L2(float l2=0.01f);
-    regularizer L1L2(float l1=0.01f, float l2=0.01f);
+    layer L2(layer l,float l2);
+    layer L1(layer l,float l1);
+    layer L1L2(layer l,float l1,float l2);
 
 // ---- COMPUTING SERVICES ----
     compserv CS_CPU(int th=-1);
