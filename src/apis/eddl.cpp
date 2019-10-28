@@ -348,14 +348,35 @@ namespace eddl {
 
 
     // ---- INITIALIZERS ----
+
+
     layer GlorotNormal(layer l,int seed)
     {
       l->init=new IGlorotNormal(seed);
       return l;
     }
+
     layer GlorotUniform(layer l,int seed)
     {
       l->init=new IGlorotUniform(seed);
+      return l;
+    }
+
+    layer RandomNormal(layer l, float m,float s, float seed)
+    {
+      l->init=new IRandomNormal(m,s,seed);
+      return l;
+    }
+
+    layer RandomUniform(layer l, float min,float max, float seed)
+    {
+      l->init=new IRandomUniform(min,max,seed);
+      return l;
+    }
+
+    layer Constant(layer l, float v)
+    {
+      l->init=new IConstant(v);
       return l;
     }
 

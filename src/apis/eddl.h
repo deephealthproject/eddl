@@ -190,6 +190,9 @@ namespace eddl {
 
     layer GlorotNormal(layer l,int seed=1234);
     layer GlorotUniform(layer l,int seed=1234);
+    layer RandomNormal(layer l, float m=0.0,float s=0.1, float seed=1234);
+    layer RandomUniform(layer l, float min=0.0,float max=0.1, float seed=1234);
+    layer Constant(layer l, float v=0.1);
 
     // ---- REGULARIZERS ----
     layer L2(layer l,float l2);
