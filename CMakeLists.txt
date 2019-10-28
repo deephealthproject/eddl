@@ -200,8 +200,6 @@ SET(CPP_SOURCES
         src/layers/conv/layer_transposed_conv.cpp
         src/layers/conv/layer_upsampling.cpp
         src/layers/core/layer_activation.cpp
-        src/layers/core/layer_norm.cpp
-        src/layers/core/layer_batchnorm.cpp
         src/layers/core/layer_core.h
         src/layers/core/layer_dense.cpp
         src/layers/core/layer_drop.cpp
@@ -210,6 +208,8 @@ SET(CPP_SOURCES
         src/layers/core/layer_reshape.cpp
         src/layers/core/layer_tensor.cpp
         src/layers/core/layer_transpose.cpp
+        src/layers/normalization/layer_norm.cpp
+        src/layers/normalization/layer_batchnorm.cpp
         src/layers/generators/layer_generator.cpp
         src/layers/generators/layer_generators.h
         src/layers/generators/layer_gauss.cpp
