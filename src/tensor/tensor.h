@@ -108,11 +108,12 @@ public:
 
 
     // ***** Core (in-place) *****************************
-    int get_address_rowmajor(vector<int> indices);
     void fill_(float v);
-    void reshape_(vector<int> indices);
+    void reshape_(vector<int> shape);
+    int get_address_rowmajor(vector<int> indices);
     float get_(vector<int> indices);
     void set_(vector<int> indices, float value);
+    bool valid_indices(vector<int> indices);
 
     // ************************************************
     // ****** Tensor operations ***********************

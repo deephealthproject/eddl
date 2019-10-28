@@ -6,6 +6,8 @@
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
+#include <utility>
+
 #include "tensor.h"
 #include "../hardware/cpu/cpu_hw.h"
 
@@ -46,7 +48,7 @@ void Tensor::reshape_(vector<int> shape){
 
     // Update attributes
     this->ndim = shape.size();
-    this->shape = shape;
+    this->shape = vector<int>(shape);
 
     // Use eigen for 2 dimensions
     if (this->ndim == 2) {
@@ -64,24 +66,26 @@ void Tensor::reshape_(vector<int> shape){
 
 int Tensor::get_address_rowmajor(vector<int> indices){
     int address=0;
-    for(int i=0; i<this->ndim-1; i++){
-        int accum = 1;
-        for(int j=i+1; j<this->ndim; j++){
-            accum*=this->shape[j];
-        }
-    }
-    address += indices[this->ndim-1];
+    for(int i=0; i<this->ndim; i++){ address +=  indices[i] * this->stride[i];}  //*(indices.begin()+i)
     return address;
 }
 
 float Tensor::get_(vector<int> indices){
-    return this->ptr[get_address_rowmajor(indices)];
+    return this->ptr[get_address_rowmajor(std::move(indices))];
 }
 
 void Tensor::set_(vector<int> indices, float value){
-    this->ptr[get_address_rowmajor(indices)] = value;
+    this->ptr[get_address_rowmajor(std::move(indices))] = value;
 }
 
+bool Tensor::valid_indices(vector<int> indices){
+    for (int i=0; i<indices.size(); i++){
+        if (indices[i] <0 || indices[i] >= this->shape[i]){
+            return false;
+        }
+    }
+    return true;
+}
 
 // ***** Core (static) *****************************
 void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
