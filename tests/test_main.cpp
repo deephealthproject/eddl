@@ -324,6 +324,8 @@ int main(int argc, char **argv) {
     A->print();
     B->print();
     C->print();
+    A->add_(B);
+    A->print();
 //
 //    // *** [Summary] *****************************************
 //    float total_tests = total_ok + total_errors;

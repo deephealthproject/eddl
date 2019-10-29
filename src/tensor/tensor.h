@@ -151,9 +151,10 @@ public:
     void cutout_(vector<int> coords_from, vector<int> coords_to, float constant=0.0f);
     static Tensor* cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to, float constant=0.0f);
 
-    static Tensor* interpolate(float factor1, Tensor *A, float factor2, Tensor *B);
 
     // Math operations ********************************
+    static Tensor* interpolate(float factor1, Tensor *A, float factor2, Tensor *B);
+
     // Math operations: Pointwise ops (in-place)
     void abs_();
     static Tensor* abs(Tensor *A);

@@ -177,9 +177,3 @@ Tensor* Tensor::cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to
     t_new->cutout_(std::move(coords_from), std::move(coords_to), constant);
     return t_new;
 }
-
-Tensor* Tensor::interpolate(float factor1, Tensor *A, float factor2, Tensor *B){
-    A = A->clone();
-    Tensor::add(factor1, A, factor2, B, A, 0);
-    return A;
-}

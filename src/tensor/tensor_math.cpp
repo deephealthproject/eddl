@@ -87,8 +87,8 @@ void Tensor::add_(float v) {
 #endif
 }
 
-void add_(Tensor *A){
-
+void Tensor::add_(Tensor *A){
+    Tensor::add(1.0f, this, 1.0f, A, this, 0);
 }
 
 Tensor* Tensor::add(Tensor *A, Tensor *B){
@@ -1256,4 +1256,11 @@ Tensor* Tensor::trunc(Tensor *A){
     Tensor *t_new = A->clone();
     t_new->trunc_();
     return t_new;
+}
+
+
+Tensor* Tensor::interpolate(float factor1, Tensor *A, float factor2, Tensor *B){
+    Tensor* C = Tensor::zeros(A->getShape());
+    Tensor::add(factor1, A, factor2, B, C, 1);
+    return C;
 }
