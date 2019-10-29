@@ -280,6 +280,16 @@ namespace eddl {
         } else if (type == "categorical_accuracy" || type == "accuracy") {
             return new MCategoricalAccuracy();
         }
+        else if (type=="mean_absolute_error") {
+          return new MMeanAbsoluteError();
+        }
+        else if (type=="mean_relative_error") {
+          return new MMeanRelativeError();
+        }
+        else {
+          cout<<"Not supported metric: "<<type<<"\n";
+          exit(1);
+        }
         return nullptr;
     }
 
