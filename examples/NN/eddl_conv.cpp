@@ -19,19 +19,7 @@ using namespace eddl;
 
 layer Block(layer l,int filters, vector<int> kernel, vector<int> stride)
 {
-  return \
-  MaxPool(\
-    BatchNormalization(\
-      Activation(\
-        L1(\
-          GlorotUniform(\
-            Conv(l, filters, kernel,stride\
-            )\
-          ),0.0001f\
-        ),"relu"\
-      )\
-    ),{2,2}\
-  );
+  return MaxPool(Activation(Conv(l, filters, kernel,stride),"relu"),{2,2});
 }
 
 int main(int argc, char **argv){
@@ -46,9 +34,8 @@ int main(int argc, char **argv){
   // network
   layer in=Input({784});
   layer l=in;
+
   l=Reshape(l,{1,28,28});
-  l=UpSampling(l, vector<int>{2, 2});
-  l=MaxPool(l,{2,2});
   l=Block(l,16,{3,3},{1,1});
   l=Block(l,32,{3,3},{1,1});
   l=Block(l,64,{3,3},{1,1});
@@ -70,8 +57,8 @@ int main(int argc, char **argv){
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
     //CS_CPU(4) // 4 CPU threads
-    //CS_CPU() // CPU with maximum threads availables
-    CS_GPU({1}) // GPU with only one gpu
+    CS_CPU() // CPU with maximum threads availables
+    //CS_GPU({1}) // GPU with only one gpu
   );
 
   // plot the model

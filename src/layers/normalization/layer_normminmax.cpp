@@ -28,7 +28,7 @@ LNormMinMax::LNormMinMax(Layer *parent, float epsilon, string name, int dev) : L
     else if (parent->output->ndim == 4) {axis.push_back(1);axis.push_back(2);axis.push_back(3);}
     else msg("LNormMinMax only works over 2D or 4D tensors", "LNormMinMax");
 
-    if(name.empty()) this->name = "normmax" + to_string(++total_layers);
+    if(name.empty()) this->name = "normminmax" + to_string(++total_layers);
 
     this->epsilon = epsilon;
 
