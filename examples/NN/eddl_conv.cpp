@@ -65,7 +65,7 @@ int main(int argc, char **argv){
   plot(net,"model.pdf");
 
   // get some info from the network
-  cout << summary(net) << endl;
+  summary(net);
 
   // Load and preprocess training data
   // Load dataset

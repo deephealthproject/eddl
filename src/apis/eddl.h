@@ -47,9 +47,6 @@ namespace eddl {
 #define compserv CompServ*
 
 // ---- CORE LAYERS ----
-
-
-
     layer Activation(layer parent, string activation, string name = "");
     layer Softmax(layer parent);
     layer Sigmoid(layer parent);
@@ -79,6 +76,7 @@ namespace eddl {
 
 // ---- METRICS ----
     metric getMetric(string type);
+
 
 // ---- MERGE LAYERS ----
     layer Add(const vector<layer> &layers, string name = "");
@@ -226,7 +224,7 @@ namespace eddl {
 
     void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr);
 
-    string summary(model m);
+    void summary(model m);
 
     void load(model m, string fname);
 
@@ -240,24 +238,10 @@ namespace eddl {
 
     void predict(model m, const vector<Tensor *> &in, const vector<Tensor *> &out);
 
-    model load_model(string fname); //Todo: Implement
-    void save_model(model m, string fname); //Todo: Implement
-    void set_trainable(model m); //Todo: Implement
-    model zoo_models(string model_name); //Todo: Implement
-    bool exist(string name);
-
-// ---- LAYER METHODS ----
-    void set_trainable(layer l); //Todo: Implement
-    layer get_layer(model m, string layer_name); //Todo: Implement
-
 
 // ---- DATASETS ----
+    bool exist(string name);
     void download_mnist();
-
-// ---- MODELS FOR TESTING ----
-    model get_model_mlp(int batch_size);
-
-    model get_model_cnn(int batch_size);
 
 }
 #endif

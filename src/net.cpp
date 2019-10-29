@@ -556,7 +556,7 @@ void Net::split(int c, int todev) {
         // create new net
         snets.push_back(new Net(nin, nout));
 
-        //cout<<snets[i]->summary()<<"\n";
+        //snets[i]->summary()<<"\n";
         for (j = 0; j < snets[i]->lin.size(); j++)
             Xs[i].push_back(new Tensor(snets[i]->lin[j]->input->shape));
         for (j = 0; j < snets[i]->lout.size(); j++)
@@ -568,7 +568,7 @@ void Net::split(int c, int todev) {
         snets[i]->name=cname;
         snets[i]->build(optimizer->clone(), losses, metrics);
 
-        //cout<<summary();
+        //summary();
         snets[i]->plot("kk.pdf");
     }
 

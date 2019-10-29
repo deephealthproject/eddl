@@ -24,8 +24,6 @@ using namespace std;
 namespace eddl {
 
     // ---- CORE LAYERS ----
-
-
     layer Activation(layer parent, string activation, string name) {
         return new LActivation(parent, activation, name, DEV_CPU);
     }
@@ -88,29 +86,6 @@ namespace eddl {
         return new LTranspose(parent, dims, name, DEV_CPU);
     }
 
-
-    // ---- LOSSES ----
-    loss getLoss(string type) {
-        if (type == "mse" || type == "mean_squared_error") {
-            return new LMeanSquaredError();
-        } else if (type == "cross_entropy") {
-            return new LCrossEntropy();
-        } else if (type == "soft_cross_entropy") {
-            return new LSoftCrossEntropy();
-        }
-        return nullptr;
-    }
-
-
-    // ---- METRICS ----
-    metric getMetric(string type) {
-        if (type == "mse" || type == "mean_squared_error") {
-            return new MMeanSquaredError();
-        } else if (type == "categorical_accuracy" || type == "accuracy") {
-            return new MCategoricalAccuracy();
-        }
-        return nullptr;
-    }
 
 
     // ---- MERGE LAYERS ----
@@ -286,6 +261,28 @@ namespace eddl {
         return new LUniform(low, high, size, "", DEV_CPU);
     }
 
+    // ---- LOSSES ----
+    loss getLoss(string type) {
+        if (type == "mse" || type == "mean_squared_error") {
+            return new LMeanSquaredError();
+        } else if (type == "cross_entropy") {
+            return new LCrossEntropy();
+        } else if (type == "soft_cross_entropy") {
+            return new LSoftCrossEntropy();
+        }
+        return nullptr;
+    }
+
+
+    // ---- METRICS ----
+    metric getMetric(string type) {
+        if (type == "mse" || type == "mean_squared_error") {
+            return new MMeanSquaredError();
+        } else if (type == "categorical_accuracy" || type == "accuracy") {
+            return new MCategoricalAccuracy();
+        }
+        return nullptr;
+    }
 
     // ---- OPTIMIZERS ----
     optimizer adadelta(float lr, float rho, float epsilon, float weight_decay) {
@@ -358,8 +355,6 @@ namespace eddl {
 
 
     // ---- INITIALIZERS ----
-
-
     layer GlorotNormal(layer l,int seed)
     {
       l->init=new IGlorotNormal(seed);
@@ -424,7 +419,9 @@ namespace eddl {
         return new CompServ(csspec);
     }
 
-// ---- FINE-GRAINED METHODS ----
+
+
+    // ---- FINE-GRAINED METHODS ----
     vector<int> random_indices(int batch_size, int num_samples){
         vector<int> sind;
         for (int k = 0; k < batch_size; k++) sind.push_back(rand() % num_samples);
@@ -443,6 +440,8 @@ namespace eddl {
         net->tr_batches++;
         net->train_batch(in, out, indices);
     }
+
+
 
     // ---- MODEL METHODS ----
     model Model(vlayer in, vlayer out) {
@@ -470,8 +469,8 @@ namespace eddl {
         net->build(o, l, m, cs);
     }
 
-    string summary(model m) {
-        return m->summary();
+    void summary(model m) {
+        cout<<m->summary()<<"\n";
     }
 
     void load(model m, string fname) {
@@ -517,23 +516,8 @@ namespace eddl {
         net->predict(in, out);
     }
 
-    model load_model(string fname) {
-        //Todo: Implement
-        return nullptr;
-    }
 
-    void save_model(model m, string fname) {
-        //Todo: Implement
-    }
-
-    void set_trainable(model m) {
-        //Todo: Implement
-    }
-
-    model zoo_models(string model_name) {
-        //Todo: Implement
-        return nullptr;
-    }
+    // ---- DATASETS ----
 
     bool exist(string name) {
         if (FILE *file = fopen(name.c_str(), "r")) {
@@ -544,19 +528,8 @@ namespace eddl {
     }
 
 
-    // ---- LAYER METHODS ----
-    void set_trainable(layer l) {
-        //Todo: Implement
-
-    }
-
-    layer get_layer(model m, string layer_name) {
-        //Todo: Implement
-        return nullptr;
-    }
 
 
-    // ---- DATASETS ----
     void download_mnist() {
         // TODO: Too big, we should use the one in the PyEDDL
         // TODO: Need for "to_categorical" method
@@ -594,47 +567,5 @@ namespace eddl {
             }
 
         }
-    }
-
-
-    // ---- MODELS FOR TESTING ----
-    model get_model_mlp(int batch_size) {
-        // Temp. for debugging
-        // network
-        layer in = Input({batch_size, 784});
-        layer l = in;
-
-        for (int i = 0; i < 3; i++)
-            l = Activation(Dense(l, 1024), "relu");
-
-        layer out = Activation(Dense(l, 10), "softmax");
-
-        // net define input and output layers list
-        model net = Model({in}, {out});
-
-        return net;
-    }
-
-    model get_model_cnn(int batch_size) {
-        // Temp. for debugging
-        // network
-        layer in = Input({batch_size, 784});
-        layer l = in;
-
-        l = Reshape(l, {batch_size, 1, 28, 28});
-        l = MaxPool(Activation(Conv(l, 16, {3, 3}), "relu"), {2, 2});
-        l = MaxPool(Activation(Conv(l, 32, {3, 3}), "relu"), {2, 2});
-        l = MaxPool(Activation(Conv(l, 64, {3, 3}), "relu"), {2, 2});
-        l = MaxPool(Activation(Conv(l, 128, {3, 3}), "relu"), {2, 2});
-
-        l = Reshape(l, {batch_size, -1});
-
-        l = Activation(Dense(l, 32), "relu");
-
-        layer out = Activation(Dense(l, 10), "softmax");
-
-        // net define input and output layers list
-        model net = Model({in}, {out});
-        return net;
     }
 }

@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
     );
 
     // View model
-    cout<<summary(net);
+    summary(net);
 
 
     // Load dataset
