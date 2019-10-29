@@ -225,7 +225,7 @@ void Net::plot(string fname) {
 /////////////////////////////////////////
 void Net::initialize() {
     for (int i = 0; i != layers.size(); i++)
-        layers[i]->initialize(this->init);
+        layers[i]->initialize();
 }
 
 /////////////////////////////////////////
@@ -366,7 +366,7 @@ void Net::resize(int b)
 
 
 /////////////////////////////////////////
-void Net::build(Optimizer *opt, vloss lo, vmetrics me, Initializer* init) {
+void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
     fprintf(stdout, "Build net %s\n",name.c_str());
 
     if (lo.size() != lout.size())
@@ -413,9 +413,6 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, Initializer* init) {
 
     // set metrics
     this->metrics = vmetrics(me);
-
-    // set global initializer
-    this->init = init;
 
     // forward sort
     fts();
@@ -559,7 +556,7 @@ void Net::split(int c, int todev) {
         // create new net
         snets.push_back(new Net(nin, nout));
 
-        //cout<<snets[i]->summary()<<"\n";
+        //snets[i]->summary()<<"\n";
         for (j = 0; j < snets[i]->lin.size(); j++)
             Xs[i].push_back(new Tensor(snets[i]->lin[j]->input->shape));
         for (j = 0; j < snets[i]->lout.size(); j++)
@@ -569,9 +566,9 @@ void Net::split(int c, int todev) {
         char cname[100];
         sprintf(cname,"snet_%d",i);
         snets[i]->name=cname;
-        snets[i]->build(optimizer->clone(), losses, metrics, init);
+        snets[i]->build(optimizer->clone(), losses, metrics);
 
-        //cout<<summary();
+        //summary();
         snets[i]->plot("kk.pdf");
     }
 
@@ -659,8 +656,8 @@ void Net::applygrads() {
 }
 
 
-void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, Initializer* init){
-    build(opt, lo, me, init);
+void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs){
+    build(opt, lo, me);
     set_compserv(cs);
 }
 

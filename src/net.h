@@ -1,3 +1,4 @@
+
 /*
 * EDDL Library - European Distributed Deep Learning Library.
 * Version: 0.1
@@ -13,7 +14,6 @@
 #include <string>
 #include <vector>
 
-#include "initializers/initializer.h"
 #include "layers/layer.h"
 #include "optimizers/optim.h"
 #include "losses/loss.h"
@@ -38,7 +38,7 @@ void *train_batch_t(void *targs);
 
 class Net {
 private:
-    void build(Optimizer *opt, vloss lo, vmetrics me, Initializer* init);
+    void build(Optimizer *opt, vloss lo, vmetrics me);
 
     void set_compserv(CompServ *cs);
 
@@ -49,7 +49,6 @@ public:
     int tr_batches;
     vector<int> devsel;
     CompServ *cs;
-    Initializer *init;
 
     vlayer layers;
     vlayer lin;
@@ -100,7 +99,7 @@ public:
 
     Layer *getLayer(string name);
 
-    void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, Initializer* init); //
+    void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs); //
 
     void fit(vtensor tin, vtensor tout, int batch_size, int epochs);
 

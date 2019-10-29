@@ -88,6 +88,7 @@ Layer *LDense::share(int c, int bs, vector<Layer *> p) {
     if (use_bias) n->params.push_back(n->bias);
 
     n->reg=reg;
+    n->init=init;
 
     return n;
 }
@@ -95,7 +96,9 @@ Layer *LDense::share(int c, int bs, vector<Layer *> p) {
 Layer *LDense::clone(int c, int bs, vector<Layer *> p, int todev) {
     LDense *n = new LDense(p[0], ndim, use_bias, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
+
     n->reg=reg;
+    n->init=init;
 
     return n;
 }

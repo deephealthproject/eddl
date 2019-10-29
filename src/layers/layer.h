@@ -43,6 +43,7 @@ public:
     vector<Layer *> child;
 
     Regularizer *reg;
+    Initializer *init;
 
     int mode;
     int dev;
@@ -54,7 +55,7 @@ public:
     virtual ~Layer();
 
 
-    void initialize(Initializer *init);
+    void initialize();
 
 
     void save(FILE *fe);

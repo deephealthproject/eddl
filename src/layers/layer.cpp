@@ -29,7 +29,9 @@ Layer::Layer(string name, int dev) {
     this->dev = dev;
     lin = lout = 0;
     delta_bp = 0;
-    this->reg = nullptr;
+
+    reg = nullptr;
+    init=new IGlorotNormal(1234);
 }
 
 Layer::~Layer()
@@ -39,7 +41,7 @@ Layer::~Layer()
   if (target!=nullptr) delete target;
 }
 
-void Layer::initialize(Initializer *init) {
+void Layer::initialize() {
     for (int i = 0; i != params.size(); i++) {
         init->apply(params[i]);
     }
