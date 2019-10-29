@@ -27,13 +27,15 @@ int main(int argc, char **argv){
   download_mnist();
 
   // Settings
-  int epochs = 5;
+  int epochs = 20;
   int batch_size = 100;
   int num_classes = 10;
 
   // network
   layer in=Input({784});
   layer l=in;
+
+  l=GaussianNoise(l,0.3);
 
   l=Reshape(l,{1,28,28});
   l=Block(l,16,{3,3},{1,1});
@@ -57,8 +59,8 @@ int main(int argc, char **argv){
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
     //CS_CPU(4) // 4 CPU threads
-    CS_CPU() // CPU with maximum threads availables
-    //CS_GPU({1}) // GPU with only one gpu
+    //CS_CPU() // CPU with maximum threads availables
+    CS_GPU({1}) // GPU with only one gpu
   );
 
   // plot the model
@@ -74,17 +76,18 @@ int main(int argc, char **argv){
   eddlT::div_(x_train, 255.0);
 
 
-  // training, list of input and output tensors, batch, epochs
-  fit(net,{x_train},{y_train},batch_size, epochs);
-
-  // Evaluate train
-  std::cout << "Evaluate train:" << std::endl;
-  evaluate(net,{x_train},{y_train});
-
   // Load and preprocess test data
   tensor x_test = eddlT::load("tsX.bin");
   tensor y_test = eddlT::load("tsY.bin");
   eddlT::div_(x_test, 255.0);
+
+  for(int i=0;i<epochs;i++) {
+    // training, list of input and output tensors, batch, epochs
+    fit(net,{x_train},{y_train},batch_size, 1);
+    // Evaluate train
+    std::cout << "Evaluate train:" << std::endl;
+    evaluate(net,{x_train},{y_train});
+  }
 
 
   // Evaluate test

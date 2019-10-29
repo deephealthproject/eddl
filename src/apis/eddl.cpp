@@ -27,7 +27,6 @@ namespace eddl {
     layer Activation(layer parent, string activation, string name) {
         return new LActivation(parent, activation, name, DEV_CPU);
     }
-
     layer Softmax(layer parent)
     {
       return new LActivation(parent,"softmax","",DEV_CPU);

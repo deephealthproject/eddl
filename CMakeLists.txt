@@ -266,6 +266,8 @@ SET(CPP_SOURCES
         src/metrics/metric.h
         src/metrics/metric_categorical_acc.cpp
         src/metrics/metric_mean_squared_error.cpp
+        src/metrics/metric_mean_absolute_error.cpp
+        src/metrics/metric_mean_relative_error.cpp
         src/optimizers/optim.cpp
         src/optimizers/optim.h
         src/optimizers/optim_adadelta.cpp
