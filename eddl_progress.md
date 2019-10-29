@@ -72,16 +72,16 @@
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| Abs | ✅ | ❌ |
+| Abs | ✅ | ✅ |
 | Diff | ✅ | ✅ |
 | Div | ✅ | ✅ |
 | Exp | ✅ | ✅ |
 | Log | ✅ | ✅ |
-| Log10 | ✅ | ❌|
-| Log2 | ✅ | ❌ |
+| Log10 | ✅ | ✅ |
+| Log2 | ✅ | ✅ |
 | Mult | ✅ | ✅|
-| Pow | ❌ | ❌ |
-| Sqrt | ❌ | ❌ |
+| Pow |  ✅ | ✅ |
+| Sqrt | ✅ | ✅ |
 | Sum | ✅ | ✅ |
 
 
@@ -112,13 +112,13 @@
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| Constant | ❌ | ❌ |
-| GlorotNormal | ❌ | ❌ |
-| GlorotUniform | ❌ | ❌ |
+| Constant |  ✅ | ✅ |
+| GlorotNormal |  ✅ | ✅ |
+| GlorotUniform |  ✅ | ✅ |
 | Identity | ❌ | ❌ |
 | Orthogonal | ❌ | ❌ |
-| RandomNormal | ❌ | ❌ |
-| RandomUniform | ❌ | ❌ |
+| RandomNormal |  ✅ | ✅ |
+| RandomUniform |  ✅ | ✅ |
 
 
 ---
