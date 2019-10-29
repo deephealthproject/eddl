@@ -39,7 +39,21 @@ void cpu_scale_(Tensor *A, float factor, bool reshape, string mode, float consta
 }
 
 void cpu_flip_(Tensor *A, int axis){
+    Tensor *B = A->clone();
 
+    for(int i=0; i<B->shape[0];i++) {
+        for(int j=0; j<B->shape[1];j++) {
+
+            vector<int> pos = {i, j};
+            pos[axis] = (B->shape[axis]-1) - pos[axis];
+            if (A->valid_indices(pos)){
+                B->set_({i, j}, A->get_(pos));
+            }else{}
+
+        }
+    }
+
+    *A = *B;
 }
 
 void cpu_crop_(Tensor *A, vector<int> coords_from, vector<int> coords_to){

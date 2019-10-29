@@ -95,7 +95,7 @@ Tensor* Tensor::scale(Tensor *A, float factor, bool reshape, string mode, float 
 
 void Tensor::flip_(int axis) {
     if (isCPU()) {
-        // TODO: Implement
+        cpu_flip_(this, axis);
     }
 #ifdef cGPU
     else if (isGPU())

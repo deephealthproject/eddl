@@ -255,10 +255,10 @@ TestResult run_tensor_op(Tensor* t_input, string op, int dev, int runs){
         else if(op=="min"){ t_input->min(); }
 
         // Data augmentation
-        else if(op=="shift"){ t_input->shift_({-1, -1}); }
+        else if(op=="shift"){ t_input->shift_({1, 1}); }
         else if(op=="rotate"){ t_input->rotate_(90.0f, {1, 0}); }
-        else if(op=="flip_h"){ t_input->flip_(1);}
         else if(op=="flip_v"){ t_input->flip_(0); }
+        else if(op=="flip_h"){ t_input->flip_(1);}
         else if(op=="scale"){ t_input->scale_(2.0f);}
         else if(op=="crop"){ t_input->crop_({2,2}, {5, 5}); }
         else if(op=="cutout"){ t_input->cutout_({2,2}, {5, 5});}

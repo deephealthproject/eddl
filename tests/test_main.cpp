@@ -302,9 +302,11 @@ int main(int argc, char **argv) {
 //    }
 //
     // *** [Data augmentation] *****************************************
-    vector<string> data_aug = {"shift"};//, "rotate", "flip_h", "flip_v", "scale", "crop", "cut_out"};
+    vector<string> data_aug = {"flip_v", "flip_h"}; //, "shift", "flip_h", "flip_v", "scale", "crop", "cut_out",  "rotate"};
     for (auto op:data_aug){
-        t_input = Tensor::ones({3, 3}, DEV_CPU);
+//        t_input = Tensor::ones({5, 5}, DEV_CPU);
+        t_input = Tensor::range(1.0, 9.0f, 1.0f, DEV_CPU);
+        t_input->reshape_({3,3});
         res_small_cpu = run_tensor_op(t_input, op, DEV_CPU, 1);
         res_small_cpu.tensor->print();
 //        res_small_gpu = run_tensor_op(t_input, op, DEV_GPU, 1);
