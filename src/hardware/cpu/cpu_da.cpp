@@ -86,10 +86,40 @@ void cpu_flip_(Tensor *A, int axis){
     *A = *B;
 }
 
-void cpu_crop_(Tensor *A, vector<int> coords_from, vector<int> coords_to){
+Tensor* cpu_crop(Tensor *A, vector<int> coords_from, vector<int> coords_to, bool reshape, float constant){
+    Tensor *B;
+    vector<int> new_shape;
 
+    // If "True", return a smaller tensor. Else, fill the non-cropped region
+    if(reshape) {
+        for(int i=0; i<A->ndim; i++){
+            new_shape.push_back(coords_to[i] - coords_from[i] + 1);
+        }
+    } else { new_shape = A->shape; }
+
+    B = Tensor::full(new_shape, constant);
+    for(int Ai=coords_from[0], Bi=0; Ai<=coords_to[0]; Ai++, Bi++) {
+        for(int Aj=coords_from[1], Bj=0; Aj<=coords_to[1]; Aj++, Bj++) {
+
+            if (A->valid_indices({Ai, Aj})){
+                B->set_({Bi, Bj}, A->get_({Ai, Aj}));
+            }else{}
+
+        }
+    }
+
+    return B;
 }
 
-void cpu_cutout_(Tensor *A, vector<int> coords_from, vector<int> coords_to){
+void cpu_cutout_(Tensor *A, vector<int> coords_from, vector<int> coords_to, float constant){
+    for(int i=coords_from[0]; i<=coords_to[0];i++) {
+        for(int j=coords_from[1]; j<=coords_to[1];j++) {
 
+            // Fill values in region
+            if (A->valid_indices({i, j})){
+                A->set_({i, j}, constant);
+            }
+
+        }
+    }
 }

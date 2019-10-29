@@ -137,7 +137,7 @@ public:
     void rotate_(float angle, vector<int> axis, bool reshape=false, string mode="constant", float constant=0.0f);  // TODO: Implement
     static Tensor* rotate(Tensor *A, float angle, vector<int> axis, bool reshape=false, string mode="constant", float constant=0.0f);
 
-//    void scale_(float factor, bool reshape=false, string mode="constant", float constant=0.0f);  // TODO: Implement
+//    void scale_(float factor, bool reshape=false, string mode="constant", float constant=0.0f);
     static Tensor* scalef(Tensor *A, float factor, bool reshape=true, string mode="constant", float constant=0.0f);
     static Tensor* scalef(Tensor *A, vector<float> factor, bool reshape=true, string mode="constant", float constant=0.0f);
     static Tensor* scale(Tensor *A, vector<int> new_shape, bool reshape=true, string mode="constant", float constant=0.0f);
@@ -145,11 +145,11 @@ public:
     void flip_(int axis=0);
     static Tensor* flip(Tensor *A, int axis=0);
 
-    void crop_(vector<int> coords_from, vector<int> coords_to);  // TODO: Implement
-    static Tensor* crop(Tensor *A, vector<int> coords_from, vector<int> coords_to);
+//    void crop_(vector<int> coords_from, vector<int> coords_to, bool reshape=false, float constant=0.0f);
+    static Tensor* crop(Tensor *A, vector<int> coords_from, vector<int> coords_to, bool reshape=false, float constant=0.0f);
 
-    void cutout_(vector<int> coords_from, vector<int> coords_to);  // TODO: Implement
-    static Tensor* cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to);
+    void cutout_(vector<int> coords_from, vector<int> coords_to, float constant=0.0f);
+    static Tensor* cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to, float constant=0.0f);
 
     // Math operations ********************************
     // Math operations: Pointwise ops (in-place)

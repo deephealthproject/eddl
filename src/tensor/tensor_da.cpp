@@ -136,12 +136,12 @@ Tensor* Tensor::flip(Tensor *A, int axis) {
     return t_new;
 }
 
-void Tensor::crop_(vector<int> coords_from, vector<int> coords_to) {
-    if (isCPU()) {
-        // TODO: Implement
+Tensor* Tensor::crop(Tensor *A, vector<int> coords_from, vector<int> coords_to, bool reshape, float constant) {
+    if (A->isCPU()) {
+        return cpu_crop(A, std::move(coords_from), std::move(coords_to), reshape, constant);
     }
 #ifdef cGPU
-    else if (isGPU())
+    else if (A->isGPU())
       {
         msg("Only implemented for CPU Tensors", "Tensor::crop_");
       }
@@ -153,15 +153,10 @@ void Tensor::crop_(vector<int> coords_from, vector<int> coords_to) {
 #endif
 }
 
-Tensor* Tensor::crop(Tensor *A, vector<int> coords_from, vector<int> coords_to) {
-    Tensor *t_new = A->clone();
-    t_new->crop_(coords_from, coords_to);
-    return t_new;
-}
 
-void Tensor::cutout_(vector<int> coords_from, vector<int> coords_to) {
+void Tensor::cutout_(vector<int> coords_from, vector<int> coords_to, float constant) {
     if (isCPU()) {
-        // TODO: Implement
+        cpu_cutout_(this, std::move(coords_from), std::move(coords_to), constant);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -176,8 +171,8 @@ void Tensor::cutout_(vector<int> coords_from, vector<int> coords_to) {
 #endif
 }
 
-Tensor* Tensor::cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to) {
+Tensor* Tensor::cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to, float constant) {
     Tensor *t_new = A->clone();
-    t_new->cutout_(coords_from, coords_to);
+    t_new->cutout_(coords_from, coords_to, constant);
     return t_new;
 }
