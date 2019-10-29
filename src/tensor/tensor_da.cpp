@@ -10,6 +10,7 @@
 #include <cmath>
 #include <limits>
 #include <iostream>
+#include <utility>
 
 #include "tensor.h"
 #include "../hardware/cpu/cpu_hw.h"
@@ -26,7 +27,7 @@ using namespace std;
 
 void Tensor::shift_(vector<int> shift, bool reshape, string mode, float constant) {
     if (isCPU()) {
-        cpu_shift_(this, shift, reshape, mode, constant);
+        cpu_shift_(this, std::move(shift), reshape, std::move(mode), constant);
     }
 #ifdef cGPU
     else if (isGPU())
@@ -43,7 +44,7 @@ void Tensor::shift_(vector<int> shift, bool reshape, string mode, float constant
 
 Tensor* Tensor::shift(Tensor *A, vector<int> shift, bool reshape, string mode, float constant){
     Tensor *t_new = A->clone();
-    t_new->shift_(shift, reshape, mode, constant);
+    t_new->shift_(std::move(shift), reshape, std::move(mode), constant);
     return t_new;
 }
 
@@ -66,7 +67,7 @@ void Tensor::rotate_(float angle, vector<int> axis, bool reshape, string mode, f
 
 Tensor* Tensor::rotate(Tensor *A, float angle, vector<int> axis, bool reshape, string mode, float constant) {
     Tensor *t_new = A->clone();
-    t_new->rotate_(angle, axis, reshape, mode, constant);
+    t_new->rotate_(angle, std::move(axis), reshape, std::move(mode), constant);
     return t_new;
 }
 
@@ -93,12 +94,12 @@ Tensor* Tensor::scalef(Tensor *A, float factor, bool reshape, string mode, float
 Tensor* Tensor::scalef(Tensor *A, vector<float> factor, bool reshape, string mode, float constant){
     vector<int> new_shape(A->getShape());
     for(int i=0; i<new_shape.size(); i++){ new_shape[i] *= factor[i]; }
-    return Tensor::scale(A, new_shape, reshape, mode, constant);
+    return Tensor::scale(A, new_shape, reshape, std::move(mode), constant);
 }
 
 Tensor* Tensor::scale(Tensor *A, vector<int> new_shape, bool reshape, string mode, float constant) {
     if (A->isCPU()) {
-        return cpu_scale(A, new_shape, reshape, mode, constant);
+        return cpu_scale(A, std::move(new_shape), reshape, std::move(mode), constant);
     }
 #ifdef cGPU
     else if (A->isGPU())
@@ -173,6 +174,12 @@ void Tensor::cutout_(vector<int> coords_from, vector<int> coords_to, float const
 
 Tensor* Tensor::cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to, float constant) {
     Tensor *t_new = A->clone();
-    t_new->cutout_(coords_from, coords_to, constant);
+    t_new->cutout_(std::move(coords_from), std::move(coords_to), constant);
     return t_new;
+}
+
+Tensor* Tensor::interpolate(float factor1, Tensor *A, float factor2, Tensor *B){
+    A = A->clone();
+    Tensor::add(factor1, A, factor2, B, A, 0);
+    return A;
 }

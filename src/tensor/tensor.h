@@ -151,6 +151,8 @@ public:
     void cutout_(vector<int> coords_from, vector<int> coords_to, float constant=0.0f);
     static Tensor* cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to, float constant=0.0f);
 
+    static Tensor* interpolate(float factor1, Tensor *A, float factor2, Tensor *B);
+
     // Math operations ********************************
     // Math operations: Pointwise ops (in-place)
     void abs_();
@@ -160,8 +162,9 @@ public:
     static Tensor* acos(Tensor *A);
 
     void add_(float v);
+    void add_(Tensor *A);
     static Tensor* add(Tensor *A, Tensor *B);
-    static void add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
+    static Tensor * add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
     static void add(Tensor *A, Tensor *B, Tensor *C);
     static void inc(Tensor *A, Tensor *B);
 

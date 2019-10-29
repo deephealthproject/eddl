@@ -87,13 +87,17 @@ void Tensor::add_(float v) {
 #endif
 }
 
+void add_(Tensor *A){
+
+}
+
 Tensor* Tensor::add(Tensor *A, Tensor *B){
     Tensor *t_new = A->clone();
     add(1.0f, A, 1.0f, B, t_new, 0);
     return t_new;
  }
 
-void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
+Tensor * Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
     ///////////////////////////////////////
     //// sum C=(sca*A)+(scb*B)
     //// or C+=(sca*A)+(scb*B) if incC is 1
