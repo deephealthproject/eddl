@@ -34,8 +34,38 @@ void cpu_rotate_(Tensor *A, float angle, vector<int> axis, bool reshape, string 
 
 }
 
-void cpu_scale_(Tensor *A, float factor, bool reshape, string mode, float constant){
+Tensor* cpu_scale(Tensor *A, vector<int> new_shape, bool reshape, string mode, float constant){
+    Tensor *B;
+    vector<int>offsets(A->ndim, 0);
 
+    // Resize keeping the original size (e.g.: if zoom-out, add zeros, else "crop")
+    if(reshape) { B = Tensor::full(new_shape, constant);
+    } else {
+        B = Tensor::full(A->getShape(), constant);
+
+        // Compute offset to center the inner matrix (zoom-out)
+        for(int i=0; i<offsets.size(); i++){
+            offsets[i] = A->shape[i]/2.0f - new_shape[i]/2.0f;
+        }
+    }
+
+
+
+    for(int i=0; i<B->shape[0];i++) {
+        for(int j=0; j<B->shape[1];j++) {
+            // Interpolate indices
+            int Ai = (i * A->shape[0]) / new_shape[0];
+            int Aj = (j * A->shape[1]) / new_shape[1];
+
+            vector<int> pos = {Ai, Aj};
+            if (A->valid_indices(pos)){
+                B->set_({i + offsets[0] , j + offsets[1]}, A->get_(pos));
+            }else{}
+
+        }
+    }
+
+    return B;
 }
 
 void cpu_flip_(Tensor *A, int axis){

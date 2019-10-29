@@ -42,7 +42,7 @@ void cpu_rand_normal(Tensor *A, float m, float s, bool fast_math);  // TODO: Don
 // CPU: Math (in-place)
 void cpu_shift_(Tensor *A, vector<int> shift, bool reshape, string mode, float constant);
 void cpu_rotate_(Tensor *A, float angle, vector<int> axis, bool reshape, string mode, float constant);
-void cpu_scale_(Tensor *A, float factor, bool reshape, string mode, float constant);
+Tensor* cpu_scale(Tensor *A, vector<int> new_shape, bool reshape, string mode, float constant);
 void cpu_flip_(Tensor *A, int axis);
 void cpu_crop_(Tensor *A, vector<int> coords_from, vector<int> coords_to);
 void cpu_cutout_(Tensor *A, vector<int> coords_from, vector<int> coords_to);

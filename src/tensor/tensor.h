@@ -131,16 +131,18 @@ public:
 
 
     // ***** Data augmentation *****************************
-    void shift_(vector<int> shift, bool reshape=false, string mode="constant", float constant=0.0f);  // TODO: Implement
+    void shift_(vector<int> shift, bool reshape=false, string mode="constant", float constant=0.0f);
     static Tensor* shift(Tensor *A, vector<int> shift, bool reshape=false, string mode="constant", float constant=0.0f);
 
     void rotate_(float angle, vector<int> axis, bool reshape=false, string mode="constant", float constant=0.0f);  // TODO: Implement
     static Tensor* rotate(Tensor *A, float angle, vector<int> axis, bool reshape=false, string mode="constant", float constant=0.0f);
 
-    void scale_(float factor, bool reshape=false, string mode="constant", float constant=0.0f);  // TODO: Implement
-    static Tensor* scale(Tensor *A, float factor, bool reshape=false, string mode="constant", float constant=0.0f);
+//    void scale_(float factor, bool reshape=false, string mode="constant", float constant=0.0f);  // TODO: Implement
+    static Tensor* scalef(Tensor *A, float factor, bool reshape=true, string mode="constant", float constant=0.0f);
+    static Tensor* scalef(Tensor *A, vector<float> factor, bool reshape=true, string mode="constant", float constant=0.0f);
+    static Tensor* scale(Tensor *A, vector<int> new_shape, bool reshape=true, string mode="constant", float constant=0.0f);
 
-    void flip_(int axis=0);  // TODO: Implement
+    void flip_(int axis=0);
     static Tensor* flip(Tensor *A, int axis=0);
 
     void crop_(vector<int> coords_from, vector<int> coords_to);  // TODO: Implement

@@ -70,12 +70,38 @@ Tensor* Tensor::rotate(Tensor *A, float angle, vector<int> axis, bool reshape, s
     return t_new;
 }
 
-void Tensor::scale_(float factor, bool reshape, string mode, float constant) {
-    if (isCPU()) {
-        // TODO: Implement
+//void Tensor::scale_(float factor, bool reshape, string mode, float constant) {
+//    if (isCPU()) {
+//        // TODO: Implement
+//    }
+//#ifdef cGPU
+//    else if (isGPU())
+//      {
+//        msg("Only implemented for CPU Tensors", "Tensor::scale_");
+//      }
+//#endif
+//#ifdef cFPGA
+//    else {
+//
+//    }
+//#endif
+//}
+Tensor* Tensor::scalef(Tensor *A, float factor, bool reshape, string mode, float constant) {
+    return Tensor::scalef(A, vector<float>(A->ndim, factor), reshape, mode, constant);
+}
+
+Tensor* Tensor::scalef(Tensor *A, vector<float> factor, bool reshape, string mode, float constant){
+    vector<int> new_shape(A->getShape());
+    for(int i=0; i<new_shape.size(); i++){ new_shape[i] *= factor[i]; }
+    return Tensor::scale(A, new_shape, reshape, mode, constant);
+}
+
+Tensor* Tensor::scale(Tensor *A, vector<int> new_shape, bool reshape, string mode, float constant) {
+    if (A->isCPU()) {
+        return cpu_scale(A, new_shape, reshape, mode, constant);
     }
 #ifdef cGPU
-    else if (isGPU())
+    else if (A->isGPU())
       {
         msg("Only implemented for CPU Tensors", "Tensor::scale_");
       }
@@ -85,12 +111,6 @@ void Tensor::scale_(float factor, bool reshape, string mode, float constant) {
 
     }
 #endif
-}
-
-Tensor* Tensor::scale(Tensor *A, float factor, bool reshape, string mode, float constant) {
-    Tensor *t_new = A->clone();
-    t_new->scale_(factor, reshape, mode, constant);
-    return t_new;
 }
 
 void Tensor::flip_(int axis) {

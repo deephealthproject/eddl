@@ -39,9 +39,9 @@ void print_cpu_gpu_correctness(string title, Tensor* t_cpu, Tensor* t_gpu, float
 }
 
 void print_results_ref(string title, TestResult res_small_cpu, TestResult res_small_gpu, Tensor* t_sol, float epsilon=0.01f){
-        pretty_res(title + " small (CPU correctness)", check_tensors(res_small_cpu.tensor, t_sol, epsilon));
-        pretty_res(title + " small (GPU correctness)", check_tensors(res_small_gpu.tensor, t_sol, epsilon));
-        print_cpu_gpu_correctness(title, res_small_cpu.tensor, res_small_gpu.tensor, epsilon);
+    pretty_res(title + " small (CPU correctness)", check_tensors(res_small_cpu.tensor, t_sol, epsilon));
+    pretty_res(title + " small (GPU correctness)", check_tensors(res_small_gpu.tensor, t_sol, epsilon));
+    print_cpu_gpu_correctness(title, res_small_cpu.tensor, res_small_gpu.tensor, epsilon);
 }
 
 void print_results(string title, TestResult res_cpu, TestResult res_gpu){
@@ -302,15 +302,13 @@ int main(int argc, char **argv) {
 //    }
 //
     // *** [Data augmentation] *****************************************
-    vector<string> data_aug = {"flip_v", "flip_h"}; //, "shift", "flip_h", "flip_v", "scale", "crop", "cut_out",  "rotate"};
+    vector<string> data_aug = {"scale"}; //, "shift", "flip_h", "flip_v", "scale", "crop", "cut_out",  "rotate"};
     for (auto op:data_aug){
-//        t_input = Tensor::ones({5, 5}, DEV_CPU);
-        t_input = Tensor::range(1.0, 9.0f, 1.0f, DEV_CPU);
-        t_input->reshape_({3,3});
+        t_input = Tensor::range(1.0, 25.0f, 1.0f, DEV_CPU);
+        t_input->reshape_({5,5});
         res_small_cpu = run_tensor_op(t_input, op, DEV_CPU, 1);
-        res_small_cpu.tensor->print();
-//        res_small_gpu = run_tensor_op(t_input, op, DEV_GPU, 1);
-//        print_results("[Big] " + op, res_small_cpu, res_small_gpu);
+        print_results(op, res_small_cpu, res_small_cpu);
+
     }
 //
 //    // *** [Summary] *****************************************
