@@ -144,7 +144,7 @@ CORE_OBJ = compserv.o net.o utils.o random.o
 DESCRIPTORS_OBJ = descriptor_conv.o descriptor_pool.o descriptor_reduce.o
 HARDWARE_CPU_OBJ = cpu_comparison.o cpu_core.o cpu_create.o cpu_da.o cpu_generator.o cpu_math.o cpu_reduction.o cpu_activations.o cpu_conv.o cpu_losses.o cpu_metrics.o cpu_pool.o cpu_tensor_nn.o
 INITIALIZERS_OBJ = initializer_indentity.o initializer_random_uniform.o initializer_glorot_uniform.o initializer_orthogonal.o initializer_random_normal.o initializer_constant.o initializer_glorot_normal.o initializer.o
-LAYERS_OBJ = layer_lstm.o layer_input.o layer_conv.o layer_mean.o layer_log10.o layer_reshape.o layer_log.o layer_mult.o layer_maxpool.o layer_embedding.o layer_globalavgpool.o layer_upsampling.o layer_add.o layer_normmax.o layer_normminmax.o layer_norm.o layer_batchnorm.o layer_div.o layer_log2.o layer_gaussian.o layer_average.o layer.o layer_globalmaxpool.o layer_reduction.o layer_sum.o layer_sum_op.o layer_gauss.o layer_transposed_conv.o layer_activation.o layer_operator.o layer_concat.o layer_maximum.o layer_diff.o layer_var.o layer_drop.o layer_pool.o layer_exp.o layer_rnn.o layer_min.o layer_pow.o layer_dense.o layer_sqrt.o layer_tensor.o layer_minimum.o layer_abs.o layer_avgpool.o layer_matmul.o layer_uniform.o layer_max.o layer_subtract.o layer_generator.o layer_transpose.o
+LAYERS_OBJ = layer_crop.o layer_cutout.o layer_flip.o layer_rotate.o layer_scale.o layer_shift.o layer_lstm.o layer_input.o layer_conv.o layer_mean.o layer_log10.o layer_reshape.o layer_log.o layer_mult.o layer_maxpool.o layer_embedding.o layer_globalavgpool.o layer_upsampling.o layer_add.o layer_normmax.o layer_normminmax.o layer_norm.o layer_batchnorm.o layer_div.o layer_log2.o layer_gaussian.o layer_average.o layer.o layer_globalmaxpool.o layer_reduction.o layer_sum.o layer_sum_op.o layer_gauss.o layer_transposed_conv.o layer_activation.o layer_operator.o layer_concat.o layer_maximum.o layer_diff.o layer_var.o layer_drop.o layer_pool.o layer_exp.o layer_rnn.o layer_min.o layer_pow.o layer_dense.o layer_sqrt.o layer_tensor.o layer_minimum.o layer_abs.o layer_avgpool.o layer_matmul.o layer_uniform.o layer_max.o layer_subtract.o layer_generator.o layer_transpose.o
 LOSSES_OBJ = loss_mean_squared_error.o loss_soft_cross_entropy.o loss.o loss_cross_entropy.o
 METRICS_OBJ = metric_categorical_acc.o metric.o metric_mean_squared_error.o
 OPTIMIZERS_OBJ = optim_adam.o optim.o optim_nadam.o optim_adagrad.o optim_sgd.o optim_rmsprop.o optim_adamax.o optim_adadelta.o
@@ -153,7 +153,7 @@ TENSOR_OBJ = tensor.o tensor_comparison.o tensor_core.o tensor_create.o tensor_d
 TESTS_OBJ = aux_tests.o
 
 # Join groups
-OBJ := $(APIS_OBJ) $(CONSTRAINTS_OBJ) $(CORE_OBJ) $(DESCRIPTORS_OBJ) $(HARDWARE_CPU_OBJ) $(INITIALIZERS_OBJ) $(LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(REGULARIZERS_OBJ) $(TENSOR_OBJ) $(TESTS_OBJ)
+OBJ := $(APIS_OBJ) $(CONSTRAINTS_OBJ) $(CORE_OBJ) $(DA_OBJ) $(DESCRIPTORS_OBJ) $(HARDWARE_CPU_OBJ) $(INITIALIZERS_OBJ) $(LAYERS_OBJ) $(LOSSES_OBJ) $(METRICS_OBJ) $(OPTIMIZERS_OBJ) $(REGULARIZERS_OBJ) $(TENSOR_OBJ) $(TESTS_OBJ)
 
 ifeq ($(CORE),1)  # CPU
 all: $(GPU_OBJ) $(OBJ) test_main example_mlp example_conv example_ae example_dae example_dae_class example_tensor example_load_save example_train_batch
@@ -350,7 +350,6 @@ layer_normminmax.o: $(SRC_PATH)/layers/normalization/layer_normminmax.cpp $(SRC_
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/normalization/layer_normminmax.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 
-
 layer_transpose.o: $(SRC_PATH)/layers/core/layer_transpose.cpp $(SRC_PATH)/layers/core/layer_core.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/core/layer_transpose.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
@@ -368,6 +367,24 @@ layer_tensor.o: $(SRC_PATH)/layers/core/layer_tensor.cpp $(SRC_PATH)/layers/core
 
 layer_input.o: $(SRC_PATH)/layers/core/layer_input.cpp $(SRC_PATH)/layers/core/layer_core.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/core/layer_input.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+layer_crop.o: $(SRC_PATH)/layers/da/layer_crop.cpp $(SRC_PATH)/layers/da/layer_da.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/da/layer_crop.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+layer_cutout.o: $(SRC_PATH)/layers/da/layer_cutout.cpp $(SRC_PATH)/layers/da/layer_da.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/da/layer_cutout.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+layer_flip.o: $(SRC_PATH)/layers/da/layer_flip.cpp $(SRC_PATH)/layers/da/layer_da.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/da/layer_flip.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+layer_rotate.o: $(SRC_PATH)/layers/da/layer_rotate.cpp $(SRC_PATH)/layers/da/layer_da.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/da/layer_rotate.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+layer_scale.o: $(SRC_PATH)/layers/da/layer_scale.cpp $(SRC_PATH)/layers/da/layer_da.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/da/layer_scale.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+layer_shift.o: $(SRC_PATH)/layers/da/layer_shift.cpp $(SRC_PATH)/layers/da/layer_da.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/da/layer_shift.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 layer_concat.o: $(SRC_PATH)/layers/merge/layer_concat.cpp $(SRC_PATH)/layers/merge/layer_merge.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/layers/merge/layer_concat.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@

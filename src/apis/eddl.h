@@ -24,6 +24,7 @@
 #include "../layers/layer.h"
 #include "../layers/conv/layer_conv.h"
 #include "../layers/core/layer_core.h"
+#include "../layers/da/layer_da.h"
 #include "../layers/generators/layer_generators.h"
 #include "../layers/merge/layer_merge.h"
 #include "../layers/noise/layer_noise.h"
@@ -70,6 +71,14 @@ namespace eddl {
     layer Reshape(layer parent, const vector<int> &shape, string name = "");
 
     layer Transpose(layer parent, const vector<int> &dims, string name = ""); //Todo: Implement
+
+// ---- DATA AUGMENTATION ----
+    layer Shift(layer parent, vector<int> shift, string da_mode="nearest", float constant=0.0f, string name="");  //Todo: Implement
+    layer Rotate(layer parent, float angle, vector<int> axis, bool reshape, string da_mode="nearest", float constant=0.0f, string name="");  //Todo: Implement
+    layer Scale(layer parent, vector<int> new_shape, bool reshape, string da_mode="nearest", float constant=0.0f, string name="");  //Todo: Implement
+    layer Flip(layer parent, int axis=0, string name="");  //Todo: Implement
+    layer Crop(layer parent, bool reshape, float constant=0.0f, string name="");  //Todo: Implement
+    layer Cutout(layer parent, bool reshape, float constant=0.0f, string name="");  //Todo: Implement
 
 // ---- LOSSES ----
     loss getLoss(string type);
