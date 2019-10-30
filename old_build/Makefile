@@ -146,7 +146,7 @@ HARDWARE_CPU_OBJ = cpu_comparison.o cpu_core.o cpu_create.o cpu_da.o cpu_generat
 INITIALIZERS_OBJ = initializer_indentity.o initializer_random_uniform.o initializer_glorot_uniform.o initializer_orthogonal.o initializer_random_normal.o initializer_constant.o initializer_glorot_normal.o initializer.o
 LAYERS_OBJ = layer_crop.o layer_cutout.o layer_flip.o layer_rotate.o layer_scale.o layer_shift.o layer_lstm.o layer_input.o layer_conv.o layer_mean.o layer_log10.o layer_reshape.o layer_log.o layer_mult.o layer_maxpool.o layer_embedding.o layer_globalavgpool.o layer_upsampling.o layer_add.o layer_normmax.o layer_normminmax.o layer_norm.o layer_batchnorm.o layer_div.o layer_log2.o layer_gaussian.o layer_average.o layer.o layer_globalmaxpool.o layer_reduction.o layer_sum.o layer_sum_op.o layer_gauss.o layer_transposed_conv.o layer_activation.o layer_operator.o layer_concat.o layer_maximum.o layer_diff.o layer_var.o layer_drop.o layer_pool.o layer_exp.o layer_rnn.o layer_min.o layer_pow.o layer_dense.o layer_sqrt.o layer_tensor.o layer_minimum.o layer_abs.o layer_avgpool.o layer_matmul.o layer_uniform.o layer_max.o layer_subtract.o layer_generator.o layer_transpose.o
 LOSSES_OBJ = loss_mean_squared_error.o loss_soft_cross_entropy.o loss.o loss_cross_entropy.o
-METRICS_OBJ = metric_categorical_acc.o metric.o metric_mean_squared_error.o
+METRICS_OBJ = metric.o metric_categorical_acc.o metric_mean_absolute_error.o metric_mean_relative_error.o metric_mean_squared_error.o
 OPTIMIZERS_OBJ = optim_adam.o optim.o optim_nadam.o optim_adagrad.o optim_sgd.o optim_rmsprop.o optim_adamax.o optim_adadelta.o
 REGULARIZERS_OBJ = regularizer_l1.o regularizer_l2.o regularizer_l1_l2.o regularizer.o
 TENSOR_OBJ = tensor.o tensor_comparison.o tensor_core.o tensor_create.o tensor_da.o tensor_generator.o tensor_math.o tensor_reduction.o tensor_serialization.o tensor_activations.o tensor_conv.o tensor_core_nn.o tensor_losses.o tensor_metrics.o tensor_pool.o
@@ -500,11 +500,17 @@ loss.o: $(SRC_PATH)/losses/loss.cpp $(SRC_PATH)/losses/loss.h
 loss_cross_entropy.o: $(SRC_PATH)/losses/loss_cross_entropy.cpp $(SRC_PATH)/losses/loss.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/losses/loss_cross_entropy.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
+metric.o: $(SRC_PATH)/metrics/metric.cpp $(SRC_PATH)/metrics/metric.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/metrics/metric.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
 metric_categorical_acc.o: $(SRC_PATH)/metrics/metric_categorical_acc.cpp $(SRC_PATH)/metrics/metric.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/metrics/metric_categorical_acc.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
-metric.o: $(SRC_PATH)/metrics/metric.cpp $(SRC_PATH)/metrics/metric.h
-	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/metrics/metric.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+metric_mean_absolute_error.o: $(SRC_PATH)/metrics/metric_mean_absolute_error.cpp $(SRC_PATH)/metrics/metric.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/metrics/metric_mean_absolute_error.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
+
+metric_mean_relative_error.o: $(SRC_PATH)/metrics/metric_mean_relative_error.cpp $(SRC_PATH)/metrics/metric.h
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/metrics/metric_mean_relative_error.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
 
 metric_mean_squared_error.o: $(SRC_PATH)/metrics/metric_mean_squared_error.cpp $(SRC_PATH)/metrics/metric.h
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/metrics/metric_mean_squared_error.cpp -I $(LIBS_PATH) -o $(BUILD_PATH)/$@
