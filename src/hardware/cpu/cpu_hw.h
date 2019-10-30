@@ -46,6 +46,12 @@ Tensor* cpu_scale(Tensor *A, vector<int> new_shape, bool reshape, string mode, f
 Tensor* cpu_flip(Tensor *A, int axis);
 Tensor* cpu_crop(Tensor *A, vector<int> coords_from, vector<int> coords_to, bool reshape, float constant);
 Tensor* cpu_cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to, float constant);
+Tensor* cpu_shift_gen(Tensor *A, vector<int> shift, string mode, float constant);
+Tensor* cpu_rotate_gen(Tensor *A, float angle, vector<int> axis, bool reshape, string mode, float constant);
+Tensor* cpu_scale_gen(Tensor *A, vector<int> new_shape, bool reshape, string mode, float constant);
+Tensor* cpu_flip_gen(Tensor *A, int axis);
+Tensor* cpu_crop_gen(Tensor *A, vector<int> coords_from, vector<int> coords_to, bool reshape, float constant);
+Tensor* cpu_cutout_gen(Tensor *A, vector<int> coords_from, vector<int> coords_to, float constant);
 
 // CPU: Math (in-place)
 void cpu_abs_(Tensor *A);
