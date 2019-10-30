@@ -302,30 +302,32 @@ int main(int argc, char **argv) {
 //    }
 //
 //    // *** [Data augmentation] *****************************************
-//    vector<string> data_aug = {"shift", "flip_h", "flip_v", "scale", "crop", "cutout"}; //, "shift", "flip_h", "flip_v", "scale", "crop", "cut_out",  "rotate"};
-//    for (auto op:data_aug){
-//        t_input = Tensor::range(1.0, 25.0f, 1.0f, DEV_CPU);
-//        t_input->reshape_({5,5});
-//
-//        res_small_cpu = run_tensor_op(t_input, op, DEV_CPU, 1);
-//
-////        print_results(op, res_small_cpu, res_small_cpu);
-//        cout << "===================" << endl;
-//        cout << op << endl;
-//        cout << "===================" << endl;
-//        t_input->print();
-//        res_small_cpu.tensor->print();
-//
-//    }
+    vector<string> data_aug = {"shift", "flip_h", "flip_v", "scale", "crop", "cutout"}; //, "shift", "flip_h", "flip_v", "scale", "crop", "cut_out",  "rotate"};
+    for (auto op:data_aug){
+        t_input = Tensor::range(1.0, 25.0f, 1.0f, DEV_CPU);
+        t_input->reshape_({5,5});
 
-    Tensor* A = Tensor::full({10}, 100.0f);
-    Tensor* B = Tensor::full({10}, -100.0f);
-    Tensor* C = Tensor::interpolate(0.5f, A, 0.5f, B);
-    A->print();
-    B->print();
-    C->print();
-    A->add_(B);
-    A->print();
+        res_small_cpu = run_tensor_op(t_input, op, DEV_CPU, 1);
+
+//        print_results(op, res_small_cpu, res_small_cpu);
+        cout << "===================" << endl;
+        cout << op << endl;
+        cout << "===================" << endl;
+//        t_input->reshape_({5,5});
+        t_input->print();
+        res_small_cpu.tensor->print();
+
+    }
+
+
+//    Tensor* A = Tensor::full({10}, 100.0f);
+//    Tensor* B = Tensor::full({10}, -100.0f);
+//    Tensor* C = Tensor::interpolate(0.5f, A, 0.5f, B);
+//    A->print();
+//    B->print();
+//    C->print();
+//    A->add_(B);
+//    A->print();
 //
 //    // *** [Summary] *****************************************
 //    float total_tests = total_ok + total_errors;

@@ -13,7 +13,8 @@
 #include "cpu_hw.h"
 
 // CPU: Data augmentation (in-place) ********************************************
-void cpu_shift_(Tensor *A, vector<int> shift, bool reshape, string mode, float constant) {
+Tensor* cpu_shift(Tensor *A, vector<int> shift, string mode, float constant) {
+    // https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.shift.html
     Tensor *B = Tensor::full(A->getShape(), constant);
 
     for(int i=0; i<B->shape[0];i++) {
@@ -22,19 +23,21 @@ void cpu_shift_(Tensor *A, vector<int> shift, bool reshape, string mode, float c
             vector<int> pos = {i - shift[0], j - shift[1]};
             if (A->valid_indices(pos)){
                 B->set_({i, j}, A->get_(pos));
-            }else{}
+            }
 
         }
     }
 
-    *A = *B;
+    return B;
 }
 
-void cpu_rotate_(Tensor *A, float angle, vector<int> axis, bool reshape, string mode, float constant){
-
+Tensor* cpu_rotate(Tensor *A, float angle, vector<int> axis, bool reshape, string mode, float constant){
+    // https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.rotate.html
+    return A;
 }
 
 Tensor* cpu_scale(Tensor *A, vector<int> new_shape, bool reshape, string mode, float constant){
+    // https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.zoom.html
     Tensor *B;
     vector<int>offsets(A->ndim, 0);
 
@@ -49,8 +52,6 @@ Tensor* cpu_scale(Tensor *A, vector<int> new_shape, bool reshape, string mode, f
         }
     }
 
-
-
     for(int i=0; i<B->shape[0];i++) {
         for(int j=0; j<B->shape[1];j++) {
             // Interpolate indices
@@ -60,7 +61,7 @@ Tensor* cpu_scale(Tensor *A, vector<int> new_shape, bool reshape, string mode, f
             vector<int> pos = {Ai, Aj};
             if (A->valid_indices(pos)){
                 B->set_({i + offsets[0] , j + offsets[1]}, A->get_(pos));
-            }else{}
+            }
 
         }
     }
@@ -68,7 +69,8 @@ Tensor* cpu_scale(Tensor *A, vector<int> new_shape, bool reshape, string mode, f
     return B;
 }
 
-void cpu_flip_(Tensor *A, int axis){
+Tensor* cpu_flip(Tensor *A, int axis){
+    // https://docs.scipy.org/doc/numpy/reference/generated/numpy.flip.html
     Tensor *B = A->clone();
 
     for(int i=0; i<B->shape[0];i++) {
@@ -78,12 +80,12 @@ void cpu_flip_(Tensor *A, int axis){
             pos[axis] = (B->shape[axis]-1) - pos[axis];
             if (A->valid_indices(pos)){
                 B->set_({i, j}, A->get_(pos));
-            }else{}
+            }
 
         }
     }
 
-    *A = *B;
+    return B;
 }
 
 Tensor* cpu_crop(Tensor *A, vector<int> coords_from, vector<int> coords_to, bool reshape, float constant){
@@ -103,7 +105,7 @@ Tensor* cpu_crop(Tensor *A, vector<int> coords_from, vector<int> coords_to, bool
 
             if (A->valid_indices({Ai, Aj})){
                 B->set_({Bi, Bj}, A->get_({Ai, Aj}));
-            }else{}
+            }
 
         }
     }
@@ -111,15 +113,19 @@ Tensor* cpu_crop(Tensor *A, vector<int> coords_from, vector<int> coords_to, bool
     return B;
 }
 
-void cpu_cutout_(Tensor *A, vector<int> coords_from, vector<int> coords_to, float constant){
+Tensor* cpu_cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to, float constant){
+    Tensor *B = A->clone();
+
     for(int i=coords_from[0]; i<=coords_to[0];i++) {
         for(int j=coords_from[1]; j<=coords_to[1];j++) {
 
             // Fill values in region
-            if (A->valid_indices({i, j})){
-                A->set_({i, j}, constant);
+            if (B->valid_indices({i, j})){
+                B->set_({i, j}, constant);
             }
 
         }
     }
+
+    return B;
 }

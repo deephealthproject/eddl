@@ -261,7 +261,7 @@ TestResult run_tensor_op(Tensor* t_input, string op, int dev, int runs){
         else if(op=="flip_v"){ t_input = Tensor::flip(t_input, 0); }
         else if(op=="flip_h"){ t_input = Tensor::flip(t_input,  1);}
         else if(op=="scale"){ t_input = Tensor::scalef(t_input, {2.25f, 1.5f});}
-        else if(op=="crop"){ t_input = Tensor::crop(t_input, {1,1}, {3, 3}, true); }
+        else if(op=="crop"){ t_input = Tensor::crop(t_input, {1,1}, {3, 3}, false); }
         else if(op=="cutout"){ t_input = Tensor::cutout(t_input, {1, 1}, {3, 3}, 0.0f);}
 
         else{
