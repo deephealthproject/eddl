@@ -38,6 +38,8 @@ LGaussianNoise::LGaussianNoise(Layer *parent, float stdev, string name, int dev)
 LGaussianNoise::~LGaussianNoise()
 {
   delete noise;
+  delta=nullptr; // is destroyed by parent
+
 }
 
 // virtual
