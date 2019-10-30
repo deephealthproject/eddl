@@ -212,7 +212,7 @@ public:
 
     // constructors and clones
     LDropout(Layer *parent, float df, string name, int dev);
-    ~LDropout();
+    ~LDropout() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

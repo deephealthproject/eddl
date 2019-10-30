@@ -30,7 +30,7 @@ public:
     Tensor *noise;
 
     LGaussianNoise(Layer *parent, float stdev, string name, int dev);
-    ~LGaussianNoise();
+    ~LGaussianNoise() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
