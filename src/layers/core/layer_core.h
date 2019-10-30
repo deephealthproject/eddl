@@ -169,7 +169,6 @@ public:
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-
     // implementation
     void forward() override;
 
@@ -213,6 +212,7 @@ public:
 
     // constructors and clones
     LDropout(Layer *parent, float df, string name, int dev);
+    ~LDropout();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

@@ -61,11 +61,14 @@ int main(int argc, char **argv) {
     // Preprocessing
     eddlT::div_(x_train, 255.0);
 
+    summary(net);
+
+    delete net;
+
+    cout<<"OK delete net\n";
 
     // Train model
-    fit(net, {x_train}, {x_train}, batch_size, epochs);
-
-
+    //fit(net, {x_train}, {x_train}, batch_size, epochs);
 }
 
 

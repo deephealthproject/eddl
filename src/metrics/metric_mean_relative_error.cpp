@@ -15,7 +15,10 @@
 
 using namespace std;
 
-MMeanRelativeError::MMeanRelativeError() : Metric("mean_relative_error"){}
+MMeanRelativeError::MMeanRelativeError(float eps) : Metric("mean_relative_error")
+{
+  this->eps=eps;
+}
 
 float MMeanRelativeError::value(Tensor *T, Tensor *Y) {
     float f;
@@ -31,7 +34,7 @@ float MMeanRelativeError::value(Tensor *T, Tensor *Y) {
 
 
     aux2->abs_();
-    aux2->add_(1.0);
+    aux2->add_(eps);
 
     Tensor::el_div(aux1,aux2,aux1,0);
 

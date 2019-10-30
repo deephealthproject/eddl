@@ -35,6 +35,11 @@ LGaussianNoise::LGaussianNoise(Layer *parent, float stdev, string name, int dev)
 }
 
 
+LGaussianNoise::~LGaussianNoise()
+{
+  delete noise;
+}
+
 // virtual
 void LGaussianNoise::resize(int batch){
   output->resize(batch);
@@ -59,16 +64,12 @@ Layer *LGaussianNoise::share(int c, int bs, vector<Layer *> p) {
     LGaussianNoise *n = new LGaussianNoise(p[0], stdev, "share_" + to_string(c) + name, dev);
     n->orig = this;
 
-    // TODO: Implement
-
     return n;
 }
 
 Layer *LGaussianNoise::clone(int c, int bs, vector<Layer *> p, int todev) {
     LGaussianNoise *n = new LGaussianNoise(p[0], stdev, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }

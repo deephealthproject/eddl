@@ -117,7 +117,17 @@ Net::Net(vlayer in, vlayer out) {
     }
     build_randn_table();
 }
-
+Net::~Net()
+{
+  for(int i=0;i<snets.size();i++)
+    delete snets[i];
+    
+  for(int i=0;i<layers.size();i++) {
+    cout<<"deleting "<<layers[i]->name;
+    delete layers[i];
+    cout<<" ok\n";
+  }
+}
 
 /////////////////////////////////////////
 int Net::inNet(Layer *l) {
