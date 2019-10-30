@@ -452,16 +452,10 @@ void Net::set_compserv(CompServ *cs){
                 if (nthreads <= 0)
                     msg("Threads must be > 0", "Net.build");
 
-                cout << "set threads to " << nthreads << "\n";
-
                 Eigen::initParallel();
                 Eigen::setNbThreads(nthreads);
 
                 snets.push_back(this);
-
-                int n = Eigen::nbThreads( );
-                cout << "---> threads = " << n << "\n";
-
             } else {
                 msg("Net and Layers device missmatch", "Net.build");
             }
