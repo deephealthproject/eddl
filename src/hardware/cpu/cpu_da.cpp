@@ -8,6 +8,7 @@
 */
 
 
+#include <iostream>
 #include <utility>
 
 #include "cpu_hw.h"
@@ -17,14 +18,19 @@ Tensor* cpu_shift(Tensor *A, vector<int> shift, string mode, float constant) {
     // https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.shift.html
     Tensor *B = Tensor::full(A->getShape(), constant);
 
-    for(int i=0; i<B->shape[0];i++) {
-        for(int j=0; j<B->shape[1];j++) {
+    for(int i=0; i< B->size; i++){
+        // Get indices
+        vector<int> B_pos = B->get_indices_rowmajor(i);
+        vector<int> A_pos(B_pos);
 
-            vector<int> pos = {i - shift[0], j - shift[1]};
-            if (A->valid_indices(pos)){
-                B->set_({i, j}, A->get_(pos));
-            }
+        // Compute positions
+        for(int j=0; j<shift.size(); j++){
+            A_pos[A_pos.size()-shift.size()+j] -= shift[j];
+        }
 
+        // Change values
+        if (A->valid_indices(A_pos)){
+            B->set_(B_pos, A->get_(A_pos));
         }
     }
 
@@ -39,30 +45,33 @@ Tensor* cpu_rotate(Tensor *A, float angle, vector<int> axis, bool reshape, strin
 Tensor* cpu_scale(Tensor *A, vector<int> new_shape, bool reshape, string mode, float constant){
     // https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.zoom.html
     Tensor *B;
-    vector<int>offsets(A->ndim, 0);
+    vector<int> A_pos(A->ndim, 0);
+    vector<int> B_pos;
+    int *offsets = new int[A->ndim];
 
     // Resize keeping the original size (e.g.: if zoom-out, add zeros, else "crop")
-    if(reshape) { B = Tensor::full(new_shape, constant);
+    if(reshape) {
+        B = Tensor::full(new_shape, constant);
     } else {
         B = Tensor::full(A->getShape(), constant);
 
         // Compute offset to center the inner matrix (zoom-out)
-        for(int i=0; i<offsets.size(); i++){
+        for(int i=0; i<A->ndim; i++){
             offsets[i] = A->shape[i]/2.0f - new_shape[i]/2.0f;
         }
     }
 
-    for(int i=0; i<B->shape[0];i++) {
-        for(int j=0; j<B->shape[1];j++) {
-            // Interpolate indices
-            int Ai = (i * A->shape[0]) / new_shape[0];
-            int Aj = (j * A->shape[1]) / new_shape[1];
+    for(int i=0; i< B->size; i++){
+        // Compute interpolated indices
+        B_pos = B->get_indices_rowmajor(i);
+        for(int j=0; j<A->ndim; j++){
+            A_pos[j] = (B_pos[j] * A->shape[j]) / new_shape[j];
+            B_pos[j] += offsets[j];
+        }
 
-            vector<int> pos = {Ai, Aj};
-            if (A->valid_indices(pos)){
-                B->set_({i + offsets[0] , j + offsets[1]}, A->get_(pos));
-            }
-
+        // Change values
+        if (A->valid_indices(A_pos)){
+            B->set_(B_pos, A->get_(A_pos));
         }
     }
 
@@ -73,15 +82,14 @@ Tensor* cpu_flip(Tensor *A, int axis){
     // https://docs.scipy.org/doc/numpy/reference/generated/numpy.flip.html
     Tensor *B = A->clone();
 
-    for(int i=0; i<B->shape[0];i++) {
-        for(int j=0; j<B->shape[1];j++) {
+    for(int i=0; i< B->size; i++) {
+        // Compute interpolated indices
+        vector<int> B_pos = B->get_indices_rowmajor(i);
+        vector<int> A_pos(B_pos);
 
-            vector<int> pos = {i, j};
-            pos[axis] = (B->shape[axis]-1) - pos[axis];
-            if (A->valid_indices(pos)){
-                B->set_({i, j}, A->get_(pos));
-            }
-
+        A_pos[axis] = (B->shape[axis]-1) - A_pos[axis];
+        if (A->valid_indices(A_pos)){
+            B->set_(B_pos, A->get_(A_pos));
         }
     }
 
@@ -115,6 +123,7 @@ Tensor* cpu_crop(Tensor *A, vector<int> coords_from, vector<int> coords_to, bool
 
 Tensor* cpu_cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to, float constant){
     Tensor *B = A->clone();
+
 
     for(int i=coords_from[0]; i<=coords_to[0];i++) {
         for(int j=coords_from[1]; j<=coords_to[1];j++) {

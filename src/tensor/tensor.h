@@ -111,6 +111,7 @@ public:
     void fill_(float v);
     bool valid_indices(vector<int> indices);
     int get_address_rowmajor(vector<int> indices);
+    vector<int> get_indices_rowmajor(int address);
     void reshape_(vector<int> shape);
     float get_(vector<int> indices);
     void set_(vector<int> indices, float value);

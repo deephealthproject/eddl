@@ -70,6 +70,14 @@ int Tensor::get_address_rowmajor(vector<int> indices){
     return address;
 }
 
+vector<int> Tensor::get_indices_rowmajor(int address){
+    vector<int> indices;
+    for(int i=0; i<this->shape.size(); i++){
+        indices.push_back(address / this->stride[i] % this->shape[i]);
+    }
+    return indices;
+}
+
 float Tensor::get_(vector<int> indices){
     return this->ptr[get_address_rowmajor(std::move(indices))];
 }
