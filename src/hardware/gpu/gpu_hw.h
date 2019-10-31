@@ -52,12 +52,12 @@ void gpu_range(Tensor *A, float start, float step);
 void gpu_eye(Tensor *A);
 
 // GPU: Math (in-place)
-void gpu_shift_(Tensor *A, vector<int> shift, bool reshape, string mode, float constant);
-void gpu_rotate_(Tensor *A, float angle, vector<int> axis, bool reshape, string mode, float constant);
-void gpu_scale_(Tensor *A, float factor, bool reshape, string mode, float constant);
-void gpu_flip_(Tensor *A, int axis);
-void gpu_crop_(Tensor *A, vector<int> coords_from, vector<int> coords_to);
-void gpu_cutout_(Tensor *A, vector<int> coords_from, vector<int> coords_to);
+Tensor* gpu_shift(Tensor *A, vector<int> shift, string mode, float constant);
+Tensor* gpu_rotate(Tensor *A, float angle, vector<int> axis, bool reshape, string mode, float constant);
+Tensor* gpu_scale(Tensor *A, vector<int> new_shape, bool reshape, string mode, float constant);
+Tensor* gpu_flip(Tensor *A, int axis);
+Tensor* gpu_crop(Tensor *A, vector<int> coords_from, vector<int> coords_to, bool reshape, float constant);
+Tensor* gpu_cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to, float constant);
 
 // GPU: Generator
 void gpu_rand_uniform(Tensor *A, float v);

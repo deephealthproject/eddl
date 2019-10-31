@@ -27,12 +27,12 @@ __global__ void fill_(float* a, float v, long int size);
 __global__ void mask(float* a, float v, long int size);
 
 // GPU: Math (in-place)
-__global__ void shift_(float* a,int* shift, bool reshape, string mode, float constant);
-__global__ void rotate_(float* a,float angle, int* axis, bool reshape, string mode, float constant);
-__global__ void scale_(float* a,float factor, bool reshape, string mode, float constant);
-__global__ void flip_(float* a,int axis);
-__global__ void crop_(float* a,int* coords_from, int* coords_to);
-__global__ void cutout_(float* a,int* coords_from, int* coords_to);
+__global__ void shift(float* a, float* b, int batch, int depth, int irows, int icols, int* shift, int mode, float constant);
+//__global__ void rotate_(float* a, int batch, int depth, int irows, int icols, float angle, int* axis, bool reshape, int mode, float constant);
+//__global__ void scale_(float* a, int batch, int depth, int irows, int icols, int orows, int ocols, float factor, bool reshape, int mode, float constant);
+//__global__ void flip_(float* a, int batch, int depth, int irows, int icols, int axis);
+//__global__ void crop_(float* a, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to);
+//__global__ void cutout_(float* a, int batch, int depth, int irows, int icols, int* coords_from, int* coords_to);
 
 // GPU: Generator
 

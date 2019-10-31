@@ -308,23 +308,25 @@ int main(int argc, char **argv) {
 //    vector<int> idxs = t_input->get_indices_rowmajor(5);
 
 //    // *** [Data augmentation] *****************************************
-    vector<string> data_aug = {"shift", "scale", "flip_h", "flip_v", "crop", "cutout"}; //, "shift", "flip_h", "flip_v", "scale", "crop", "cut_out",  "rotate"};
+    vector<string> data_aug = {"shift"}; //, "shift", "flip_h", "flip_v", "scale", "crop", "cut_out",  "rotate"};
     for (auto op:data_aug){
         t_input = Tensor::range(1.0, 25.0f, 1.0f, DEV_CPU);
         vector<int> shape({1, 1, 5, 5});
         t_input->reshape_(shape);
 
         res_small_cpu = run_tensor_op(t_input, op, DEV_CPU, 1);
+        res_small_gpu = run_tensor_op(t_input, op, DEV_GPU, 1);
+        print_cpu_gpu_correctness(op, res_small_cpu, res_small_gpu);
 
-//        print_results(op, res_small_cpu, res_small_cpu);
-        cout << "===================" << endl;
-        cout << op << endl;
-        cout << "===================" << endl;
-        t_input->reshape_({shape[shape.size()-2], shape[shape.size()-1]});
-        t_input->print();
+////        print_results(op, res_small_cpu, res_small_cpu);
+//        cout << "===================" << endl;
+//        cout << op << endl;
+//        cout << "===================" << endl;
+//        t_input->reshape_({shape[shape.size()-2], shape[shape.size()-1]});
+//        t_input->print();
+////        res_small_cpu.tensor->print();
+//        res_small_cpu.tensor->reshape_({res_small_cpu.tensor->shape[shape.size()-2], res_small_cpu.tensor->shape[shape.size()-1]});
 //        res_small_cpu.tensor->print();
-        res_small_cpu.tensor->reshape_({res_small_cpu.tensor->shape[shape.size()-2], res_small_cpu.tensor->shape[shape.size()-1]});
-        res_small_cpu.tensor->print();
 
     }
 

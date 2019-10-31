@@ -18,26 +18,28 @@
 
 
 // GPU: Math (in-place)
-__global__ void shift_(float* a,int* shift, bool reshape, string mode, float constant){
+__global__ void shift(float* a, float* b, int batch, int depth, int irows, int icols, int* shift, int mode, float constant){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
-}
+    if (thread_id_x < size){
+        int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
+        int B_stride[4] = A_stride;
 
-__global__ void rotate_(float* a,float angle, int* axis, bool reshape, string mode, float constant){
+        //--------------
+        int b = thread_id_x / this->stride[0] % batch;
+        int c = thread_id_x / this->stride[1] % depth;
+        int Bi = thread_id_x / this->stride[2] % irows;
+        int Bj = thread_id_x / this->stride[3] % icols;
+        //--------------
 
-}
+        int Ai = Bi - shift[0];
+        int Aj = Bj - shift[1];
 
-__global__ void scale_(float* a,float factor, bool reshape, string mode, float constant){
-
-}
-
-__global__ void flip_(float* a,int axis){
-
-}
-
-__global__ void crop_(float* a,int* coords_from, int* coords_to){
-
-}
-
-__global__ void cutout_(float* a,int* coords_from, int* coords_to){
+        if (Ai >= 0 && Ai < irows && Aj >= 0 && Aj < icols){
+            int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
+            int B_pos = b*B_stride[0] + c*B_stride[1] + Bi*B_stride[2] + Bj*B_stride[3];
+            B->ptr[B_pos] = A->ptr[A_pos];
+        }
+    }
 
 }
