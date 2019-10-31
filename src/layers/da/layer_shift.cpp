@@ -25,7 +25,7 @@ LShift::LShift(Layer *parent, vector<int> shift, string da_mode, float constant,
     // TODO: Implement
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
-    delta = parent->delta;
+    //delta = parent->delta;
 
     // Params
     this->shift = shift;

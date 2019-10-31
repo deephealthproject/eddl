@@ -25,7 +25,7 @@ LCrop::LCrop(Layer *parent, bool reshape, float constant, string name, int dev) 
     // TODO: Implement
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
-    delta = parent->delta;
+    //delta = parent->delta;
 
     this->reshape = reshape;
     this->constant = constant;

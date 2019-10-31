@@ -25,7 +25,7 @@ LCutout::LCutout(Layer *parent, bool reshape, float constant, string name, int d
     // TODO: Implement
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
-    delta = parent->delta;
+    //delta = parent->delta;
 
     // Params
     this->reshape = reshape;

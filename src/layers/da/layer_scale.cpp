@@ -25,7 +25,7 @@ LScale::LScale(Layer *parent, vector<int> new_shape, bool reshape, string da_mod
     // TODO: Implement
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
-    delta = parent->delta;
+    //delta = parent->delta;
 
     // Params
     this->new_shape = new_shape;
