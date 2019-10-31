@@ -46,7 +46,8 @@ void LShift::resize(int batch){
 
 void LShift::forward() {
     float rdn_factor = uniform(this->factor[0], this->factor[1]);
-    vector<int> shift = {this->input->shape[2]*rdn_factor, this->input->shape[3]*rdn_factor};
+    vector<int> shift = {(int)(this->input->shape[2]*rdn_factor), (int)(this->input->shape[3]*rdn_factor)};
+    //TODO: IMPLEMENT
     this->output = Tensor::shift(this->input, shift, this->da_mode, this->constant);
 }
 

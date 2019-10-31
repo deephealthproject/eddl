@@ -16,7 +16,11 @@
 // CPU: Data augmentation (2D Optimized) ********************************************
 Tensor* cpu_shift(Tensor *A, vector<int> shift, string mode, float constant) {
     // https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.shift.html
-    Tensor *B = Tensor::full(A->getShape(), constant);
+//    auto *B = new Tensor(A->getShape(), A->device);
+    auto *B = Tensor::full(A->getShape(), constant, A->device);
+//    auto *B = A->clone();
+
+//    auto *B = A;
 
     for(int b=0; b<B->shape[0]; b++) {
         for(int c=0; c<B->shape[1]; c++) {
@@ -26,18 +30,18 @@ Tensor* cpu_shift(Tensor *A, vector<int> shift, string mode, float constant) {
                     int Ai = Bi - shift[0];
                     int Aj = Bj - shift[1];
 
+                    int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
                     if (Ai >= 0 && Ai < A->shape[2] && Aj >= 0 && Aj < A->shape[3]){
                         int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
-                        int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
                         B->ptr[B_pos] = A->ptr[A_pos];
+                    }else{
+                        B->ptr[B_pos] = constant;
                     }
-
                 }
             }
 
         }
     }
-
     return B;
 }
 

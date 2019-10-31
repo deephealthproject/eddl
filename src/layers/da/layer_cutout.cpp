@@ -45,7 +45,7 @@ void LCutout::resize(int batch){
 
 void LCutout::forward() {
     float rdn_factor = uniform(this->factor[0], this->factor[1]);
-    vector<int> crop = {this->input->shape[2]*rdn_factor, this->input->shape[3]*rdn_factor};
+    vector<int> crop = {(int)(this->input->shape[2]*rdn_factor), (int)(this->input->shape[3]*rdn_factor)};
     //TODO: IMPLEMENT
     this->output = Tensor::cutout(this->input, {1,1,1,1}, {1,1,1,1}, this->constant);
 }

@@ -307,16 +307,30 @@ int main(int argc, char **argv) {
 //    t_input->reshape_({3, 3});
 //    vector<int> idxs = t_input->get_indices_rowmajor(5);
 
-//    // *** [Data augmentation] *****************************************
-    vector<string> data_aug = {"shift", "flip_h", "flip_v", "scale"}; //, "shift", "flip_h", "flip_v", "scale", "crop", "cutout",  "rotate"};
-    for (auto op:data_aug){
-        t_input = Tensor::range(1.0, 25.0f, 1.0f, DEV_CPU);
-        vector<int> shape({1, 1, 5, 5});
-        t_input->reshape_(shape);
+    // [Speed tests]
+    int MAX_TRIES = 10;
+    t_input = Tensor::ones({10, 10, 1000,1000}, DEV_CPU);
+    res_small_cpu = run_tensor_op(t_input, "shift", DEV_CPU, MAX_TRIES);
 
-        res_small_cpu = run_tensor_op(t_input, op, DEV_CPU, 1);
-        res_small_gpu = run_tensor_op(t_input, op, DEV_GPU, 1);
-        print_cpu_gpu_correctness(op, res_small_cpu.tensor, res_small_gpu.tensor);
+//    res_small_cpu.tensor->ToCPU();
+//    res_small_cpu.tensor->reshape_({50, 50});
+//    res_small_cpu.tensor->print();
+
+    cout << "Runs: " << MAX_TRIES << endl;
+    cout << "Total time: " << res_small_cpu.time << " seconds" << endl;
+    cout << "Avg time: " << res_small_cpu.time/MAX_TRIES << " seconds" << endl;
+
+//
+////    // *** [Data augmentation] *****************************************
+//    vector<string> data_aug = {"shift", "flip_h", "flip_v", "scale"}; //, "shift", "flip_h", "flip_v", "scale", "crop", "cutout",  "rotate"};
+//    for (auto op:data_aug){
+//        t_input = Tensor::range(1.0, 25.0f, 1.0f, DEV_CPU);
+//        vector<int> shape({1, 1, 5, 5});
+//        t_input->reshape_(shape);
+//
+//        res_small_cpu = run_tensor_op(t_input, op, DEV_CPU, 1);
+//        res_small_gpu = run_tensor_op(t_input, op, DEV_GPU, 1);
+//        print_cpu_gpu_correctness(op, res_small_cpu.tensor, res_small_gpu.tensor);
 
 ////        print_results(op, res_small_cpu, res_small_cpu);
 //        cout << "===================" << endl;
@@ -328,7 +342,7 @@ int main(int argc, char **argv) {
 //        res_small_cpu.tensor->reshape_({res_small_cpu.tensor->shape[shape.size()-2], res_small_cpu.tensor->shape[shape.size()-1]});
 //        res_small_cpu.tensor->print();
 
-    }
+//   }
 
 
 //    Tensor* A = Tensor::full({10}, 100.0f);

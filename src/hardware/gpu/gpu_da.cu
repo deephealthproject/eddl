@@ -100,10 +100,12 @@ Tensor* gpu_crop(Tensor *A, vector<int> coords_from, vector<int> coords_to, bool
         for(int i=0; i<A->ndim; i++){
             new_shape.push_back(coords_to[i] - coords_from[i] + 1);
         }
-    } else { new_shape = A->shape; }
-
-    B = Tensor::full(new_shape, constant);
-    setDims(B);
+        setDims(A);
+    } else {
+        new_shape = A->shape;
+        B = Tensor::full(new_shape, constant);
+        setDims(B);
+    }
 
     // Copy vector from host to device
     int *d_coords_from; cudaMalloc((int**)&d_coords_from, coords_from.size()*sizeof(int));

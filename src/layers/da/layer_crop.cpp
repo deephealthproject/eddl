@@ -44,7 +44,7 @@ void LCrop::resize(int batch){
 
 void LCrop::forward() {
   float rdn_factor = uniform(this->factor[0], this->factor[1]);
-  vector<int> crop = {this->input->shape[2]*rdn_factor, this->input->shape[3]*rdn_factor};
+  vector<int> crop = {(int)(this->input->shape[2]*rdn_factor), (int)(this->input->shape[3]*rdn_factor)};
   //TODO: IMPLEMENT
   this->output = Tensor::crop(this->input, {1,1,1,1}, {1,1,1,1}, this->reshape, this->constant);
 }
