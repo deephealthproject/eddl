@@ -20,28 +20,26 @@ Tensor* cpu_shift(Tensor *A, vector<int> shift, string mode, float constant) {
     auto *B = Tensor::full(A->getShape(), constant, A->device);
 //    auto *B = A->clone();
 
-//    auto *B = A;
-
+    #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
-        for(int c=0; c<B->shape[1]; c++) {
-
+        int pB=b*B->stride[0];
+        int pA=b*A->stride[0];
+        for(int c=0; c<B->shape[1]; c++,pA+=A->stride[1]) {
             for(int Bi=0; Bi<B->shape[2];Bi++) {
-                for(int Bj=0; Bj<B->shape[3];Bj++) {
-                    int Ai = Bi - shift[0];
-                    int Aj = Bj - shift[1];
-
-                    int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
-                    if (Ai >= 0 && Ai < A->shape[2] && Aj >= 0 && Aj < A->shape[3]){
-                        int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
-                        B->ptr[B_pos] = A->ptr[A_pos];
-                    }else{
-                        B->ptr[B_pos] = constant;
+                int Ai = Bi - shift[0];
+                if (Ai >= 0 && Ai < A->shape[2]) {
+                    int pA2=pA+Ai*A->stride[2]+(-shift[1]*A->stride[3]);
+                    for(int Bj=0; Bj<B->shape[3];Bj++,pB++,pA2++) {
+                        int Aj = Bj - shift[1];
+                        if (Aj >= 0 && Aj < A->shape[3]){
+                            B->ptr[pB] = A->ptr[pA2];
+                        }
                     }
-                }
+                }else pB+=B->shape[3];
             }
-
         }
     }
+
     return B;
 }
 
@@ -66,6 +64,7 @@ Tensor* cpu_scale(Tensor *A, vector<int> new_shape, bool reshape, string mode, f
         offsets[1] = A->shape[1]/2.0f - new_shape[3]/2.0f;
     }
 
+    #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
         for(int c=0; c<B->shape[1]; c++) {
 
@@ -94,6 +93,7 @@ Tensor* cpu_flip(Tensor *A, int axis){
     // https://docs.scipy.org/doc/numpy/reference/generated/numpy.flip.html
     Tensor *B = A->clone();
 
+    #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
         for(int c=0; c<B->shape[1]; c++) {
 
@@ -130,6 +130,7 @@ Tensor* cpu_crop(Tensor *A, vector<int> coords_from, vector<int> coords_to, bool
 
     B = Tensor::full(new_shape, constant);
 
+    #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
         for(int c=0; c<B->shape[1]; c++) {
 
@@ -153,6 +154,7 @@ Tensor* cpu_crop(Tensor *A, vector<int> coords_from, vector<int> coords_to, bool
 Tensor* cpu_cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to, float constant){
     Tensor *B = A->clone();
 
+    #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
         for(int c=0; c<B->shape[1]; c++) {
 
