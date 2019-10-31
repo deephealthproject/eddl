@@ -57,7 +57,8 @@ int main(int argc, char **argv) {
           sgd(0.01, 0.9), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_CPU(4) // CPU with 4 threads
+          //CS_CPU()
+          CS_GPU({1})
     );
 
     // Load dataset

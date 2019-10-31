@@ -11,6 +11,7 @@
 #include "../../src/tensor/tensor.h"
 #include "../../src/tensor/nn/tensor_nn.h"
 #include "../../src/layers/core/layer_core.h"
+#include "../../src/layers/normalization/layer_normalization.h"
 #include "../../src/descriptors/descriptors.h"
 #include "../../src/descriptors/descriptors.h"
 

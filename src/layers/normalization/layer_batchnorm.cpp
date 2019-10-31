@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "layer_core.h"
+#include "layer_normalization.h"
 #include "../reductions/layer_reductions.h"
 #include "../operators/layer_operators.h"
 

@@ -27,6 +27,7 @@
 #include "../layers/generators/layer_generators.h"
 #include "../layers/merge/layer_merge.h"
 #include "../layers/noise/layer_noise.h"
+#include "../layers/normalization/layer_normalization.h"
 #include "../layers/operators/layer_operators.h"
 #include "../layers/reductions/layer_reductions.h"
 #include "../layers/pool/layer_pool.h"
@@ -46,25 +47,21 @@ namespace eddl {
 #define compserv CompServ*
 
 // ---- CORE LAYERS ----
+    layer Activation(layer parent, string activation, string name = "");
     layer Softmax(layer parent);
     layer Sigmoid(layer parent);
     layer ReLu(layer parent);
 
-    layer Activation(layer parent, string activation, string name = "");
-
-    layer L2(layer l,float l2);
-    layer L1(layer l,float l1);
-    layer L1L2(layer l,float l1,float l2);
 
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
                const vector<int> &strides = {1, 1}, string padding = "same", int groups = 1,
                const vector<int> &dilation_rate = {1, 1},
-               bool use_bias = true, Regularizer *reg=nullptr, string name = "");
+               bool use_bias = true, string name = "");
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding = "same",
                 const vector<int> &dilation_rate = {1, 1},
                 const vector<int> &strides = {1, 1}, bool use_bias = true, string name = ""); //Todo: Implement
-    layer Dense(layer parent, int ndim, bool use_bias = true, Regularizer *reg=nullptr, string name = "");
+    layer Dense(layer parent, int ndim, bool use_bias = true,  string name = "");
     layer Embedding(int input_dim, int output_dim, string name = ""); //Todo: Implement
     layer Input(const vector<int> &shape, string name = "");
 
@@ -79,6 +76,7 @@ namespace eddl {
 
 // ---- METRICS ----
     metric getMetric(string type);
+
 
 // ---- MERGE LAYERS ----
     layer Add(const vector<layer> &layers, string name = "");
@@ -97,6 +95,12 @@ namespace eddl {
 // ---- NORMALIZATION LAYERS ----
     layer BatchNormalization(layer parent, float momentum = 0.9f, float epsilon = 0.001f, bool affine = true,
                              string name = "");
+    layer Norm(layer parent, float epsilon = 0.001f, string name = "");
+
+    layer NormMax(layer parent, float epsilon = 0.001f, string name = "");
+
+    layer NormMinMax(layer parent, float epsilon = 0.001f, string name = "");
+
     layer Dropout(layer parent, float rate, string name = ""); //Todo: Implement
 
 // ---- OPERATOR LAYERS ----
@@ -186,18 +190,17 @@ namespace eddl {
 
 
 // ---- INITIALIZERS ----
-    initializer Constant(float value); //Todo: Implement
-    initializer Identity(float gain); //Todo: Implement
-    initializer GlorotNormal(float seed); //Todo: Implement
-    initializer GlorotUniform(float seed); //Todo: Implement
-    initializer RandomNormal(float mean, float stdev, int seed); //Todo: Implement
-    initializer RandomUniform(float minval, float maxval, int seed); //Todo: Implement
-    initializer Orthogonal(float gain, int seed); //Todo: Implement
+
+    layer GlorotNormal(layer l,int seed=1234);
+    layer GlorotUniform(layer l,int seed=1234);
+    layer RandomNormal(layer l, float m=0.0,float s=0.1, float seed=1234);
+    layer RandomUniform(layer l, float min=0.0,float max=0.1, float seed=1234);
+    layer Constant(layer l, float v=0.1);
 
     // ---- REGULARIZERS ----
-    regularizer L1(float l1=0.01f);
-    regularizer L2(float l2=0.01f);
-    regularizer L1L2(float l1=0.01f, float l2=0.01f);
+    layer L2(layer l,float l2);
+    layer L1(layer l,float l1);
+    layer L1L2(layer l,float l1,float l2);
 
 // ---- COMPUTING SERVICES ----
     compserv CS_CPU(int th=-1);
@@ -214,14 +217,15 @@ namespace eddl {
     void set_mode(model net, int mode);
 
     void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
+    void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
 
 
 // ---- MODEL METHODS ----
     model Model(vlayer in, vlayer out);
 
-    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr, Initializer* init=nullptr);
+    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr);
 
-    string summary(model m);
+    void summary(model m);
 
     void load(model m, string fname);
 
@@ -235,24 +239,10 @@ namespace eddl {
 
     void predict(model m, const vector<Tensor *> &in, const vector<Tensor *> &out);
 
-    model load_model(string fname); //Todo: Implement
-    void save_model(model m, string fname); //Todo: Implement
-    void set_trainable(model m); //Todo: Implement
-    model zoo_models(string model_name); //Todo: Implement
-    bool exist(string name);
-
-// ---- LAYER METHODS ----
-    void set_trainable(layer l); //Todo: Implement
-    layer get_layer(model m, string layer_name); //Todo: Implement
-
 
 // ---- DATASETS ----
+    bool exist(string name);
     void download_mnist();
-
-// ---- MODELS FOR TESTING ----
-    model get_model_mlp(int batch_size);
-
-    model get_model_cnn(int batch_size);
 
 }
 #endif

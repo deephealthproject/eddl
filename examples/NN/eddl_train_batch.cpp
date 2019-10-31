@@ -44,14 +44,12 @@ int main(int argc, char **argv) {
           sgd(0.01, 0.9), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          //CS_GPU({1,1},10) // 2 GPUs with local_sync_batches=10
-          //CS_GPU({1}) // 1 GPU
-          CS_CPU(4) // 4 CPU threads
-          //CS_COMPSS("../config/compss/resources.xml")
+          //CS_CPU()
+          CS_GPU({1})
     );
 
     // View model
-    cout<<summary(net);
+    summary(net);
 
 
     // Load dataset
@@ -69,6 +67,9 @@ int main(int argc, char **argv) {
     int num_samples = x_train->shape[0];  //arg1
     int num_batches = num_samples / batch_size; //arg2
 
+    int test_samples = x_test->shape[0];  //arg1
+    int test_batches = test_samples / batch_size; //arg2
+
     // Set batch size
     resize_model(net, batch_size);  // Bind this function
 
@@ -81,7 +82,7 @@ int main(int argc, char **argv) {
 
         // For each batch
         for (int j = 0; j < num_batches; j++) {
-            fprintf(stdout, "Epoch %d/%d (batch %d/%d)\n", i + 1, epochs, j+1, num_batches);
+            fprintf(stdout, "Epoch %d/%d (batch %d/%d)\r", i + 1, epochs, j+1, num_batches);
 
             // Set random indices
             vector<int> indices = random_indices(batch_size, num_samples); // Should declared from python
@@ -93,6 +94,21 @@ int main(int argc, char **argv) {
 
             // COMPS: send grads()
         }
+        printf("\nEval\n");
+        // Eval for each batch
+        for (int j = 0; j < test_batches; j++) {
+            fprintf(stdout, "Epoch %d/%d (batch %d/%d)\r", i + 1, epochs, j+1, test_batches);
+
+            // Set random indices
+            vector<int> indices = random_indices(batch_size, num_samples); // Should declared from python
+
+            // COMPS: wait for weights()
+
+            eval_batch(net, {x_train}, {y_train}, indices);  // Bind this function
+
+            // COMPS: send grads()
+        }
+        printf("\n");
     }
 
 

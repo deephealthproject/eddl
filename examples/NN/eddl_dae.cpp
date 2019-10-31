@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 
     // Settings
     int epochs = 10;
-    int batch_size = 1000;
+    int batch_size = 100;
 
     // Define network
     layer in = Input({784});
@@ -52,7 +52,8 @@ int main(int argc, char **argv) {
           sgd(0.01, 0.9), // Optimizer
           {"mean_squared_error"}, // Losses
           {"mean_squared_error"}, // Metrics
-          CS_CPU(4) // CPU with 4 threads
+          CS_CPU()
+          //CS_GPU({1})
     );
 
     // Load dataset
@@ -60,11 +61,8 @@ int main(int argc, char **argv) {
     // Preprocessing
     eddlT::div_(x_train, 255.0);
 
-
     // Train model
     fit(net, {x_train}, {x_train}, batch_size, epochs);
-
-
 }
 
 

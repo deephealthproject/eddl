@@ -24,6 +24,9 @@ using namespace std;
 namespace eddl {
 
     // ---- CORE LAYERS ----
+    layer Activation(layer parent, string activation, string name) {
+        return new LActivation(parent, activation, name, DEV_CPU);
+    }
     layer Softmax(layer parent)
     {
       return new LActivation(parent,"softmax","",DEV_CPU);
@@ -37,28 +40,11 @@ namespace eddl {
       return new LActivation(parent,"relu","",DEV_CPU);
     }
 
-    layer Activation(layer parent, string activation, string name) {
-        return new LActivation(parent, activation, name, DEV_CPU);
-    }
-
-    layer L2(layer l,float l2){
-      l->reg=new RL2(l2);
-      return l;
-    }
-    layer L1(layer l,float l1){
-      l->reg=new RL1(l1);
-      return l;
-    }
-    layer L1L2(layer l,float l1,float l2){
-      l->reg=new RL1L2(l1,l2);
-      return l;
-    }
-
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
                const vector<int> &strides, string padding, int groups, const vector<int> &dilation_rate,
-               bool use_bias, Regularizer *reg, string name) {
+               bool use_bias, string name) {
         LConv *l = new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU);
-        l->reg = reg;
+
         return l;
     }
 
@@ -69,9 +55,9 @@ namespace eddl {
                           DEV_CPU);
     }
 
-    layer Dense(layer parent, int ndim, bool use_bias, Regularizer *reg, string name) {
+    layer Dense(layer parent, int ndim, bool use_bias, string name) {
         LDense *l = new LDense(parent, ndim, use_bias, name, DEV_CPU);
-        l->reg = reg;
+
         return l;
     }
 
@@ -99,29 +85,6 @@ namespace eddl {
         return new LTranspose(parent, dims, name, DEV_CPU);
     }
 
-
-    // ---- LOSSES ----
-    loss getLoss(string type) {
-        if (type == "mse" || type == "mean_squared_error") {
-            return new LMeanSquaredError();
-        } else if (type == "cross_entropy") {
-            return new LCrossEntropy();
-        } else if (type == "soft_cross_entropy") {
-            return new LSoftCrossEntropy();
-        }
-        return nullptr;
-    }
-
-
-    // ---- METRICS ----
-    metric getMetric(string type) {
-        if (type == "mse" || type == "mean_squared_error") {
-            return new MMeanSquaredError();
-        } else if (type == "categorical_accuracy" || type == "accuracy") {
-            return new MCategoricalAccuracy();
-        }
-        return nullptr;
-    }
 
 
     // ---- MERGE LAYERS ----
@@ -165,6 +128,22 @@ namespace eddl {
     layer BatchNormalization(layer parent, float momentum, float epsilon, bool affine, string name) {
         return new LBatchNorm(parent, momentum, epsilon, affine, name, DEV_CPU);
     }
+
+    layer Norm(layer parent, float epsilon, string name)
+    {
+      return new LNorm(parent, epsilon, name, DEV_CPU);
+    }
+
+    layer NormMax(layer parent, float epsilon, string name)
+    {
+      return new LNormMax(parent, epsilon, name, DEV_CPU);
+    }
+
+    layer NormMinMax(layer parent, float epsilon, string name)
+    {
+      return new LNormMinMax(parent, epsilon, name, DEV_CPU);
+    }
+
 
     layer Dropout(layer parent, float rate, string name) {
         return new LDropout(parent, rate, name, DEV_CPU);
@@ -281,6 +260,38 @@ namespace eddl {
         return new LUniform(low, high, size, "", DEV_CPU);
     }
 
+    // ---- LOSSES ----
+    loss getLoss(string type) {
+        if (type == "mse" || type == "mean_squared_error") {
+            return new LMeanSquaredError();
+        } else if (type == "cross_entropy") {
+            return new LCrossEntropy();
+        } else if (type == "soft_cross_entropy") {
+            return new LSoftCrossEntropy();
+        }
+        return nullptr;
+    }
+
+
+    // ---- METRICS ----
+    metric getMetric(string type) {
+        if (type == "mse" || type == "mean_squared_error") {
+            return new MMeanSquaredError();
+        } else if (type == "categorical_accuracy" || type == "accuracy") {
+            return new MCategoricalAccuracy();
+        }
+        else if (type=="mean_absolute_error") {
+          return new MMeanAbsoluteError();
+        }
+        else if (type=="mean_relative_error") {
+          return new MMeanRelativeError();
+        }
+        else {
+          cout<<"Not supported metric: "<<type<<"\n";
+          exit(1);
+        }
+        return nullptr;
+    }
 
     // ---- OPTIMIZERS ----
     optimizer adadelta(float lr, float rho, float epsilon, float weight_decay) {
@@ -353,52 +364,51 @@ namespace eddl {
 
 
     // ---- INITIALIZERS ----
-    initializer Constant(float value) {
-        //Todo: Implement
-        return new IConstant(value);
+    layer GlorotNormal(layer l,int seed)
+    {
+      l->init=new IGlorotNormal(seed);
+      return l;
     }
 
-    initializer Identity(float gain) {
-        //Todo: Implement
-        return new IIdentity(gain);
+    layer GlorotUniform(layer l,int seed)
+    {
+      l->init=new IGlorotUniform(seed);
+      return l;
     }
 
-    initializer GlorotNormal(float seed) {
-        //Todo: Implement
-        return new IGlorotNormal(seed);
+    layer RandomNormal(layer l, float m,float s, float seed)
+    {
+      l->init=new IRandomNormal(m,s,seed);
+      return l;
     }
 
-    initializer GlorotUniform(float seed) {
-        //Todo: Implement
-        return new IGlorotUniform(seed);
+    layer RandomUniform(layer l, float min,float max, float seed)
+    {
+      l->init=new IRandomUniform(min,max,seed);
+      return l;
     }
 
-    initializer RandomNormal(float mean, float stdev, int seed) {
-        //Todo: Implement
-        return new IRandomNormal(mean, stdev, seed);
+    layer Constant(layer l, float v)
+    {
+      l->init=new IConstant(v);
+      return l;
     }
 
-    initializer RandomUniform(float minval, float maxval, int seed) {
-        //Todo: Implement
-        return new IRandomUniform(minval, maxval, seed);
-    }
-
-    initializer Orthogonal(float gain, int seed) {
-        //Todo: Implement
-        return new IOrthogonal(gain, seed);
-    }
 
     // ---- REGULARIZERS ----
-    regularizer L1(float l1){
-        return new RL1(l1);
+    layer L2(layer l,float l2){
+      l->reg=new RL2(l2);
+      return l;
     }
-    regularizer L2(float l2){
-        return new RL2(l2);
+    layer L1(layer l,float l1){
+      l->reg=new RL1(l1);
+      return l;
+    }
+    layer L1L2(layer l,float l1,float l2){
+      l->reg=new RL1L2(l1,l2);
+      return l;
     }
 
-    regularizer L1L2(float l1, float l2){
-        return new RL1L2(l1, l2);
-    }
 
     // ---- COMPUTING SERVICES ----
     compserv CS_CPU(int th) {
@@ -418,7 +428,9 @@ namespace eddl {
         return new CompServ(csspec);
     }
 
-// ---- FINE-GRAINED METHODS ----
+
+
+    // ---- FINE-GRAINED METHODS ----
     vector<int> random_indices(int batch_size, int num_samples){
         vector<int> sind;
         for (int k = 0; k < batch_size; k++) sind.push_back(rand() % num_samples);
@@ -438,12 +450,16 @@ namespace eddl {
         net->train_batch(in, out, indices);
     }
 
+    void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices){
+        net->train_batch(in, out, indices,1);
+    }
+
     // ---- MODEL METHODS ----
     model Model(vlayer in, vlayer out) {
         return new Net(in, out);
     }
 
-    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs, Initializer* init) {
+    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs) {
         vector<Loss *> l;
         vector<Metric *> m;
 
@@ -461,16 +477,11 @@ namespace eddl {
             cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
         }
 
-        // Assign default initializer
-        if (init== nullptr){
-            init = new IGlorotUniform();
-        }
-
-        net->build(o, l, m, cs, init);
+        net->build(o, l, m, cs);
     }
 
-    string summary(model m) {
-        return m->summary();
+    void summary(model m) {
+        cout<<m->summary()<<"\n";
     }
 
     void load(model m, string fname) {
@@ -516,23 +527,8 @@ namespace eddl {
         net->predict(in, out);
     }
 
-    model load_model(string fname) {
-        //Todo: Implement
-        return nullptr;
-    }
 
-    void save_model(model m, string fname) {
-        //Todo: Implement
-    }
-
-    void set_trainable(model m) {
-        //Todo: Implement
-    }
-
-    model zoo_models(string model_name) {
-        //Todo: Implement
-        return nullptr;
-    }
+    // ---- DATASETS ----
 
     bool exist(string name) {
         if (FILE *file = fopen(name.c_str(), "r")) {
@@ -543,19 +539,8 @@ namespace eddl {
     }
 
 
-    // ---- LAYER METHODS ----
-    void set_trainable(layer l) {
-        //Todo: Implement
-
-    }
-
-    layer get_layer(model m, string layer_name) {
-        //Todo: Implement
-        return nullptr;
-    }
 
 
-    // ---- DATASETS ----
     void download_mnist() {
         // TODO: Too big, we should use the one in the PyEDDL
         // TODO: Need for "to_categorical" method
@@ -593,47 +578,5 @@ namespace eddl {
             }
 
         }
-    }
-
-
-    // ---- MODELS FOR TESTING ----
-    model get_model_mlp(int batch_size) {
-        // Temp. for debugging
-        // network
-        layer in = Input({batch_size, 784});
-        layer l = in;
-
-        for (int i = 0; i < 3; i++)
-            l = Activation(Dense(l, 1024), "relu");
-
-        layer out = Activation(Dense(l, 10), "softmax");
-
-        // net define input and output layers list
-        model net = Model({in}, {out});
-
-        return net;
-    }
-
-    model get_model_cnn(int batch_size) {
-        // Temp. for debugging
-        // network
-        layer in = Input({batch_size, 784});
-        layer l = in;
-
-        l = Reshape(l, {batch_size, 1, 28, 28});
-        l = MaxPool(Activation(Conv(l, 16, {3, 3}), "relu"), {2, 2});
-        l = MaxPool(Activation(Conv(l, 32, {3, 3}), "relu"), {2, 2});
-        l = MaxPool(Activation(Conv(l, 64, {3, 3}), "relu"), {2, 2});
-        l = MaxPool(Activation(Conv(l, 128, {3, 3}), "relu"), {2, 2});
-
-        l = Reshape(l, {batch_size, -1});
-
-        l = Activation(Dense(l, 32), "relu");
-
-        layer out = Activation(Dense(l, 10), "softmax");
-
-        // net define input and output layers list
-        model net = Model({in}, {out});
-        return net;
     }
 }
