@@ -25,7 +25,7 @@ LRotate::LRotate(Layer *parent, float angle, vector<int> axis, bool reshape, str
     // TODO: Implement
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
-    delta = parent->delta;
+    //delta = parent->delta;
 
     // Params
     this->angle = angle;
