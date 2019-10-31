@@ -15,7 +15,7 @@ endif()
 
 find_dependency(OpenMP)
 
-include("@EDDL_CONFIG_INSTALL_PATH@/EDDLTargets.cmake")
+include("@EDDL_CONFIG_INSTALL_PATH@/eddlTargets.cmake")
 
 SET(EDDL_LIBRARIES eddl)
 SET(EDDL_INCLUDE_DIR "@CMAKE_INSTALL_PREFIX@/include")

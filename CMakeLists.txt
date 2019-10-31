@@ -381,7 +381,7 @@ target_include_directories(eddl PUBLIC
 )
 target_include_directories(eddl PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen>
-    $<INSTALL_INTERFACE:include/third_party/eigen>
+    $<INSTALL_INTERFACE:include/eddl/third_party/eigen>
 )
 #target_compile_features(eddl PUBLIC cxx_std_11)
 
@@ -514,12 +514,12 @@ else()
 endif()
 
 install(TARGETS eddl
-        EXPORT EDDLTargets
+        EXPORT eddlTargets
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
         )
-install(EXPORT EDDLTargets DESTINATION ${EDDL_CONFIG_INSTALL_PATH})
+install(EXPORT eddlTargets DESTINATION ${EDDL_CONFIG_INSTALL_PATH})
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
         DESTINATION include/eddl
         FILES_MATCHING PATTERN "*.h")
@@ -537,11 +537,13 @@ foreach(f ${Eigen_directory_files})
 endforeach(f ${Eigen_directory_files})
 install(FILES
         ${Eigen_directory_files_to_install}
-        DESTINATION "include/third_party/eigen/Eigen"
+        DESTINATION "include/eddl/third_party/eigen/Eigen"
         )
-install(DIRECTORY ${ESCAPED_EIGEN_SOURCE_DIR}/src DESTINATION "include/third_party/eigen/Eigen" COMPONENT Devel FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY ${ESCAPED_EIGEN_SOURCE_DIR}/src DESTINATION "include/eddl/third_party/eigen/Eigen" COMPONENT Devel FILES_MATCHING PATTERN "*.h")
 
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/EDDLConfig.cmake.in ${CMAKE_BINARY_DIR}/cmake/EDDLConfig.cmake @ONLY)
-install(FILES ${CMAKE_BINARY_DIR}/cmake/EDDLConfig.cmake
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/eddlConfig.cmake.in ${CMAKE_BINARY_DIR}/cmake/eddlConfig.cmake @ONLY)
+install(FILES ${CMAKE_BINARY_DIR}/cmake/eddlConfig.cmake
         DESTINATION ${EDDL_CONFIG_INSTALL_PATH})
+
+message(STATUS "Install path: ${CMAKE_INSTALL_PREFIX}")
