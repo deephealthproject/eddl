@@ -450,7 +450,9 @@ namespace eddl {
         net->train_batch(in, out, indices);
     }
 
-
+    void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices){
+        net->train_batch(in, out, indices,1);
+    }
 
     // ---- MODEL METHODS ----
     model Model(vlayer in, vlayer out) {

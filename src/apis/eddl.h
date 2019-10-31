@@ -217,6 +217,7 @@ namespace eddl {
     void set_mode(model net, int mode);
 
     void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
+    void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
 
 
 // ---- MODEL METHODS ----
