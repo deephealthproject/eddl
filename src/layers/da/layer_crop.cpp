@@ -19,7 +19,7 @@ using namespace std;
 
 int LCrop::total_layers = 0;
 
-LCrop::LCrop(Layer *parent, bool reshape, float constant, string name, int dev) : LinLayer(name, dev) {
+LCrop::LCrop(Layer *parent, vector<float> factor, bool reshape, float constant, string name, int dev) : LinLayer(name, dev) {
     if(name.empty()) this->name = "crop" + to_string(++total_layers);
 
     // TODO: Implement
@@ -27,6 +27,7 @@ LCrop::LCrop(Layer *parent, bool reshape, float constant, string name, int dev) 
     output = new Tensor(input->getShape(), dev);
     //delta = parent->delta;
 
+    this->factor = factor;
     this->reshape = reshape;
     this->constant = constant;
 
@@ -42,16 +43,19 @@ void LCrop::resize(int batch){
 }
 
 void LCrop::forward() {
+  float rdn_factor = uniform(this->factor[0], this->factor[1]);
+  vector<int> crop = {this->input->shape[2]*rdn_factor, this->input->shape[3]*rdn_factor};
+  //TODO: IMPLEMENT
   this->output = Tensor::crop(this->input, {1,1,1,1}, {1,1,1,1}, this->reshape, this->constant);
 }
 
-void LCrop::backward() {
+void LCrop::backward(){
 
 }
 
 
 Layer *LCrop::share(int c, int bs, vector<Layer *> p) {
-    LCrop *n = new LCrop(p[0], this->reshape, this->constant, "share_" + to_string(c) + name, dev);
+    LCrop *n = new LCrop(p[0], this->factor, this->reshape, this->constant, "share_" + to_string(c) + name, dev);
     n->orig = this;
 
     // TODO: Implement
@@ -60,7 +64,7 @@ Layer *LCrop::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LCrop::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LCrop *n = new LCrop(p[0], this->reshape, this->constant, "clone_" + to_string(todev) + name, todev);
+    LCrop *n = new LCrop(p[0], this->factor, this->reshape, this->constant, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
 
     // TODO: Implement

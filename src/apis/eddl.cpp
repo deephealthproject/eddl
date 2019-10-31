@@ -86,27 +86,27 @@ namespace eddl {
     }
 
     // ---- DATA AUGMENTATION ----
-    layer Shift(layer parent, vector<int> shift, string da_mode, float constant, string name){
-        return new LShift(parent, shift, da_mode, constant, name, DEV_CPU);
+    layer Shift(layer parent, vector<float> factor, string da_mode, float constant, string name){
+        return new LShift(parent, factor, da_mode, constant, name, DEV_CPU);
     }
-    layer Rotate(layer parent, float angle, vector<int> axis, bool reshape, string da_mode, float constant, string name){
-        return new LRotate(parent, angle, axis, reshape, da_mode, constant, name, DEV_CPU);
+    layer Rotate(layer parent, vector<float> factor, vector<int> axis, bool reshape, string da_mode, float constant, string name){
+        return new LRotate(parent, factor, axis, reshape, da_mode, constant, name, DEV_CPU);
     }
 
-    layer Scale(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string name){
-        return new LScale(parent, new_shape, reshape, da_mode, constant, name, DEV_CPU);
+    layer Scale(layer parent, vector<float> factor, bool reshape, string da_mode, float constant, string name){
+        return new LScale(parent, factor, reshape, da_mode, constant, name, DEV_CPU);
     }
 
     layer Flip(layer parent, int axis, string name){
         return new LFlip(parent, axis, name, DEV_CPU);
     }
 
-    layer Crop(layer parent, bool reshape, float constant, string name){
-        return new LCrop(parent, reshape, constant, name, DEV_CPU);
+    layer Crop(layer parent, vector<float> factor, bool reshape, float constant, string name){
+        return new LCrop(parent, factor, reshape, constant, name, DEV_CPU);
     }
 
-    layer Cutout(layer parent, bool reshape, float constant, string name){
-        return new LCutout(parent, reshape, constant, name, DEV_CPU);
+    layer Cutout(layer parent, vector<float> factor, bool reshape, float constant, string name){
+        return new LCutout(parent, factor, reshape, constant, name, DEV_CPU);
     }
 
     // ---- MERGE LAYERS ----

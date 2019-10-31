@@ -34,6 +34,8 @@ bool check_tensors(Tensor* A, Tensor* B, float epsilon){
     A->ToCPU();
     B->ToCPU();
 
+    //A->print();
+    //B->print();
     return Tensor::equal(A, B, epsilon);
 }
 

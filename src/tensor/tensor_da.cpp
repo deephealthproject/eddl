@@ -32,7 +32,7 @@ Tensor* Tensor::shift(Tensor *A, vector<int> shift, string mode, float constant)
 #ifdef cGPU
     else if (A->isGPU())
       {
-        msg("Only implemented for CPU Tensors", "Tensor::shitf");
+        return gpu_shift(A, std::move(shift), std::move(mode), constant);
       }
 #endif
 #ifdef cFPGA
@@ -78,7 +78,7 @@ Tensor* Tensor::scale(Tensor *A, vector<int> new_shape, bool reshape, string mod
 #ifdef cGPU
     else if (A->isGPU())
       {
-        msg("Only implemented for CPU Tensors", "Tensor::scale");
+        return gpu_scale(A, new_shape, reshape, mode, constant);
       }
 #endif
 #ifdef cFPGA
@@ -96,7 +96,7 @@ Tensor* Tensor::flip(Tensor *A, int axis) {
 #ifdef cGPU
     else if (A->isGPU())
       {
-        msg("Only implemented for CPU Tensors", "Tensor::flip");
+        return gpu_flip(A, axis);
       }
 #endif
 #ifdef cFPGA
@@ -113,7 +113,7 @@ Tensor* Tensor::crop(Tensor *A, vector<int> coords_from, vector<int> coords_to, 
 #ifdef cGPU
     else if (A->isGPU())
       {
-        msg("Only implemented for CPU Tensors", "Tensor::crop_");
+        return gpu_crop(A, std::move(coords_from), std::move(coords_to), reshape, constant);
       }
 #endif
 #ifdef cFPGA
@@ -131,7 +131,7 @@ Tensor* Tensor::cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to
 #ifdef cGPU
     else if (A->isGPU())
       {
-        msg("Only implemented for CPU Tensors", "Tensor::cutout");
+        return gpu_cutout(A, std::move(coords_from), std::move(coords_to), constant);
       }
 #endif
 #ifdef cFPGA

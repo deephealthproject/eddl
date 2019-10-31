@@ -19,7 +19,7 @@ using namespace std;
 
 int LRotate::total_layers = 0;
 
-LRotate::LRotate(Layer *parent, float angle, vector<int> axis, bool reshape, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
+LRotate::LRotate(Layer *parent, vector<float> factor, vector<int> axis, bool reshape, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
     if(name.empty()) this->name = "rotate" + to_string(++total_layers);
 
     // TODO: Implement
@@ -28,7 +28,7 @@ LRotate::LRotate(Layer *parent, float angle, vector<int> axis, bool reshape, str
     //delta = parent->delta;
 
     // Params
-    this->angle = angle;
+    this->factor = factor;
     this->axis = axis;
     this->reshape = reshape;
     this->da_mode = da_mode;
@@ -46,7 +46,8 @@ void LRotate::resize(int batch){
 }
 
 void LRotate::forward() {
-    this->output = Tensor::rotate(this->input, this->angle, this->axis, this->reshape, this->da_mode, this->constant);
+    float rdn_angle = uniform(this->factor[0], this->factor[1]);
+    this->output = Tensor::rotate(this->input, rdn_angle, this->axis, this->reshape, this->da_mode, this->constant);
 }
 
 void LRotate::backward() {
@@ -55,7 +56,7 @@ void LRotate::backward() {
 
 
 Layer *LRotate::share(int c, int bs, vector<Layer *> p) {
-    LRotate *n = new LRotate(p[0], this->angle, this->axis, this->reshape, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
+    LRotate *n = new LRotate(p[0], this->factor, this->axis, this->reshape, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
     n->orig = this;
 
     // TODO: Implement
@@ -64,7 +65,7 @@ Layer *LRotate::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LRotate::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LRotate *n = new LRotate(p[0], this->angle, this->axis, this->reshape, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
+    LRotate *n = new LRotate(p[0], this->factor, this->axis, this->reshape, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
 
     // TODO: Implement

@@ -16,6 +16,7 @@
 #include <stdio.h>
 
 #include "../layer.h"
+#include "../../random.h"
 
 #define TRMODE 1
 #define TSMODE 0
@@ -26,11 +27,11 @@ using namespace std;
 class LShift : public LinLayer {
 public:
     static int total_layers;
-    vector<int> shift;
+    vector<float> factor;
     string da_mode;
     float constant;
 
-    LShift(Layer *parent, vector<int> shift, string da_mode, float constant, string name, int dev);
+    LShift(Layer *parent, vector<float> factor, string da_mode, float constant, string name, int dev);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -50,13 +51,13 @@ public:
 class LRotate : public LinLayer {
 public:
     static int total_layers;
-    float angle;
+    vector<float> factor;
     vector<int> axis;
     bool reshape;
     string da_mode;
     float constant;
 
-    LRotate(Layer *parent, float angle, vector<int> axis, bool reshape, string da_mode, float constant, string name, int dev);
+    LRotate(Layer *parent, vector<float> factor, vector<int> axis, bool reshape, string da_mode, float constant, string name, int dev);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -76,12 +77,12 @@ public:
 class LScale : public LinLayer {
 public:
     static int total_layers;
-    vector<int> new_shape;
+    vector<float> factor;
     bool reshape;
     string da_mode;
     float constant;
 
-    LScale(Layer *parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string name, int dev);
+    LScale(Layer *parent, vector<float> factor, bool reshape, string da_mode, float constant, string name, int dev);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -123,10 +124,11 @@ public:
 class LCrop : public LinLayer {
 public:
     static int total_layers;
+    vector<float> factor;
     bool reshape;
     float constant;
 
-    LCrop(Layer *parent, bool reshape, float constant, string name, int dev);
+    LCrop(Layer *parent, vector<float> factor, bool reshape, float constant, string name, int dev);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -146,10 +148,11 @@ public:
 class LCutout : public LinLayer {
 public:
     static int total_layers;
+    vector<float> factor;
     bool reshape;
     float constant;
 
-    LCutout(Layer *parent, bool reshape, float constant, string name, int dev);
+    LCutout(Layer *parent, vector<float> factor, bool reshape, float constant, string name, int dev);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

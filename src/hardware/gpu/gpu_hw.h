@@ -52,7 +52,7 @@ void gpu_range(Tensor *A, float start, float step);
 void gpu_eye(Tensor *A);
 
 // GPU: Math (in-place)
-Tensor* gpu_shift(Tensor *A, vector<int> shift, string mode, float constant);
+Tensor* gpu_shift(Tensor *A, vector<int> t_shift, string mode, float constant);
 Tensor* gpu_rotate(Tensor *A, float angle, vector<int> axis, bool reshape, string mode, float constant);
 Tensor* gpu_scale(Tensor *A, vector<int> new_shape, bool reshape, string mode, float constant);
 Tensor* gpu_flip(Tensor *A, int axis);

@@ -19,8 +19,9 @@ using namespace std;
 
 int LShift::total_layers = 0;
 
-LShift::LShift(Layer *parent, vector<int> shift, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
+LShift::LShift(Layer *parent, vector<float> factor, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
     if(name.empty()) this->name = "shift" + to_string(++total_layers);
+    // factor => range of shift (0.8, 1.2)
 
     // TODO: Implement
     input = parent->output;
@@ -28,7 +29,7 @@ LShift::LShift(Layer *parent, vector<int> shift, string da_mode, float constant,
     //delta = parent->delta;
 
     // Params
-    this->shift = shift;
+    this->factor = factor;
     this->da_mode = da_mode;
     this->constant = constant;
 
@@ -44,7 +45,9 @@ void LShift::resize(int batch){
 }
 
 void LShift::forward() {
-    this->output = Tensor::shift(this->input, this->shift, this->da_mode, this->constant);
+    float rdn_factor = uniform(this->factor[0], this->factor[1]);
+    vector<int> shift = {this->input->shape[2]*rdn_factor, this->input->shape[3]*rdn_factor};
+    this->output = Tensor::shift(this->input, shift, this->da_mode, this->constant);
 }
 
 void LShift::backward() {
@@ -53,7 +56,7 @@ void LShift::backward() {
 
 
 Layer *LShift::share(int c, int bs, vector<Layer *> p) {
-    LShift *n = new LShift(p[0], this->shift, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
+    LShift *n = new LShift(p[0], this->factor, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
     n->orig = this;
 
     // TODO: Implement
@@ -62,7 +65,7 @@ Layer *LShift::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LShift::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LShift *n = new LShift(p[0], this->shift, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
+    LShift *n = new LShift(p[0], this->factor, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
 
     // TODO: Implement
