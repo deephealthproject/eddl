@@ -27,7 +27,7 @@ using namespace std;
 
 Tensor* Tensor::shift(Tensor *A, vector<int> shift, string mode, float constant){
     if (A->isCPU()) {
-        return cpu_shift_gen(A, std::move(shift), std::move(mode), constant);
+        return cpu_shift(A, std::move(shift), std::move(mode), constant);
     }
 #ifdef cGPU
     else if (A->isGPU())
