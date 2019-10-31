@@ -39,13 +39,23 @@ void cpu_rand_signed_uniform(Tensor *A, float v);
 void cpu_rand_binary(Tensor *A, float v);
 void cpu_rand_normal(Tensor *A, float m, float s, bool fast_math);  // TODO: Don't like it
 
-// CPU: Math (in-place)
+// CPU: Data augmentation (2D Optimized) ********************************************
 Tensor* cpu_shift(Tensor *A, vector<int> shift, string mode, float constant);
 Tensor* cpu_rotate(Tensor *A, float angle, vector<int> axis, bool reshape, string mode, float constant);
 Tensor* cpu_scale(Tensor *A, vector<int> new_shape, bool reshape, string mode, float constant);
 Tensor* cpu_flip(Tensor *A, int axis);
 Tensor* cpu_crop(Tensor *A, vector<int> coords_from, vector<int> coords_to, bool reshape, float constant);
 Tensor* cpu_cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to, float constant);
+
+// CPU: Data augmentation (2D No-Optimized)[Temp] ********************************************
+Tensor* cpu_shift_no(Tensor *A, vector<int> shift, string mode, float constant);
+Tensor* cpu_rotate_no(Tensor *A, float angle, vector<int> axis, bool reshape, string mode, float constant);
+Tensor* cpu_scale_no(Tensor *A, vector<int> new_shape, bool reshape, string mode, float constant);
+Tensor* cpu_flip_no(Tensor *A, int axis);
+Tensor* cpu_crop_no(Tensor *A, vector<int> coords_from, vector<int> coords_to, bool reshape, float constant);
+Tensor* cpu_cutout_no(Tensor *A, vector<int> coords_from, vector<int> coords_to, float constant);
+
+// CPU: Data augmentation (Generic)[Temp] ********************************************
 Tensor* cpu_shift_gen(Tensor *A, vector<int> shift, string mode, float constant);
 Tensor* cpu_rotate_gen(Tensor *A, float angle, vector<int> axis, bool reshape, string mode, float constant);
 Tensor* cpu_scale_gen(Tensor *A, vector<int> new_shape, bool reshape, string mode, float constant);
