@@ -19,7 +19,7 @@
 #include "../../tensor/tensor.h"
 #include "../../descriptors/descriptors.h"
 
-void gpu_shift(Tensor *A, Tensor *B, vector<int> shift, int mode, float constant){
+void gpu_shift(Tensor *A, Tensor *B, vector<int> t_shift, int mode, float constant){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
@@ -78,7 +78,7 @@ void gpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_
     int *d_coords_to; cudaMalloc((int**)&d_coords_to, coords_to.size()*sizeof(int));
     cudaMemcpy(d_coords_to, coords_to.data(), coords_to.size()*sizeof(int), cudaMemcpyHostToDevice);
 
-    //crop<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], d_coords_from, coords_from.size(), d_coords_to, coords_to.size());
+    crop<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], d_coords_from, d_coords_to, constant);
     check_cuda(cudaDeviceSynchronize(),"crop");
 }
 
@@ -96,6 +96,6 @@ void gpu_cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coord
     int *d_coords_to; cudaMalloc((int**)&d_coords_to, coords_to.size()*sizeof(int));
     cudaMemcpy(d_coords_to, coords_to.data(), coords_to.size()*sizeof(int), cudaMemcpyHostToDevice);
 
-    cutout<<<dimGrid,dimBlock>>>(B->ptr, B->shape[0], B->shape[1], B->shape[2], B->shape[3], d_coords_from, coords_from.size(), d_coords_to, coords_to.size(), constant);
+    cutout<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[0], B->shape[1], B->shape[2], B->shape[3], d_coords_from, d_coords_to, constant);
     check_cuda(cudaDeviceSynchronize(),"cutout");
 }

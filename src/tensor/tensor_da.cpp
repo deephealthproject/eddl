@@ -32,7 +32,7 @@ void Tensor::shift(Tensor *A, Tensor *B, vector<int> shift, string mode, float c
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_shift(A, B, std::move(shift), std::move(mode), constant);
+        gpu_shift(A, B, std::move(shift), get_mode(std::move(mode)), constant);
       }
 #endif
 #ifdef cFPGA
@@ -68,7 +68,7 @@ void Tensor::scale(Tensor *A, Tensor *B, string mode, float constant) {
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_scale(A, B, std::move(mode), constant);
+        gpu_scale(A, B, get_mode(std::move(mode)), constant);
       }
 #endif
 #ifdef cFPGA
@@ -103,7 +103,7 @@ void Tensor::crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coo
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_crop(A, B, std::move(coords_from), std::move(coords_to), reshape, constant);
+        gpu_crop(A, B, std::move(coords_from), std::move(coords_to), constant);
       }
 #endif
 #ifdef cFPGA
