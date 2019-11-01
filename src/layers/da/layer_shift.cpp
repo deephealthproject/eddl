@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <utility>
 
 #include "layer_da.h"
 
@@ -21,16 +22,16 @@ int LShift::total_layers = 0;
 
 LShift::LShift(Layer *parent, vector<float> factor, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
     if(name.empty()) this->name = "shift" + to_string(++total_layers);
-    // factor => range of shift (0.8, 1.2)
+    // factor => range of shift (-0.1, +0.1)
 
     // TODO: Implement
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
-    //delta = parent->delta;
+    delta = parent->delta;
 
     // Params
-    this->factor = factor;
-    this->da_mode = da_mode;
+    this->factor = std::move(factor);
+    this->da_mode = std::move(da_mode);
     this->constant = constant;
 
     parent->addchild(this);
@@ -47,8 +48,7 @@ void LShift::resize(int batch){
 void LShift::forward() {
     float rdn_factor = uniform(this->factor[0], this->factor[1]);
     vector<int> shift = {(int)(this->input->shape[2]*rdn_factor), (int)(this->input->shape[3]*rdn_factor)};
-    //TODO: IMPLEMENT
-//    this->output = Tensor::shift(this->input, shift, this->da_mode, this->constant);
+    Tensor::shift(this->input, this->output, shift, this->da_mode, this->constant);
 }
 
 void LShift::backward() {

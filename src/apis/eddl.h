@@ -77,8 +77,8 @@ namespace eddl {
     layer Rotate(layer parent, float angle, vector<int> axis, bool reshape, string da_mode="nearest", float constant=0.0f, string name="");  //Todo: Implement
     layer Scale(layer parent, vector<float> factor, bool reshape, string da_mode="nearest", float constant=0.0f, string name="");  //Todo: Implement
     layer Flip(layer parent, int axis=0, string name="");  //Todo: Implement
-    layer Crop(layer parent, bool reshape, float constant=0.0f, string name="");  //Todo: Implement
-    layer Cutout(layer parent, bool reshape, float constant=0.0f, string name="");  //Todo: Implement
+    layer Crop(layer parent, vector<float> factor, bool reshape, float constant=0.0f, string name="");  //Todo: Implement
+    layer Cutout(layer parent, vector<float> factor, float constant=0.0f, string name="");  //Todo: Implement
 
 // ---- LOSSES ----
     loss getLoss(string type);

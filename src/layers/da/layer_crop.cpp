@@ -22,10 +22,15 @@ int LCrop::total_layers = 0;
 LCrop::LCrop(Layer *parent, vector<float> factor, bool reshape, float constant, string name, int dev) : LinLayer(name, dev) {
     if(name.empty()) this->name = "crop" + to_string(++total_layers);
 
-    // TODO: Implement
     input = parent->output;
-    output = new Tensor(input->getShape(), dev);
-    //delta = parent->delta;
+
+    if (reshape){
+        msg("Not implemented. Parameter discussion needed", "LCrop");  // Parameter discussion needed
+    }{
+        output = new Tensor(input->getShape(), dev);
+    }
+
+    delta = parent->delta;
 
     this->factor = factor;
     this->reshape = reshape;
@@ -43,10 +48,11 @@ void LCrop::resize(int batch){
 }
 
 void LCrop::forward() {
-  float rdn_factor = uniform(this->factor[0], this->factor[1]);
-  vector<int> crop = {(int)(this->input->shape[2]*rdn_factor), (int)(this->input->shape[3]*rdn_factor)};
-  //TODO: IMPLEMENT
-//  this->output = Tensor::crop(this->input, {1,1,1,1}, {1,1,1,1}, this->reshape, this->constant);
+    int rdn_x1 = (int)uniform(0, this->input->shape[2]);
+    int rdn_y1 = (int)uniform(0, this->input->shape[3]);
+    int rdn_x2 = (int)uniform((float)rdn_x1, this->input->shape[2]);
+    int rdn_y2 = (int)uniform((float)rdn_y1, this->input->shape[3]);
+    Tensor::crop(this->input, this->output, {rdn_x1, rdn_y1}, {rdn_x2, rdn_y2}, this->constant);
 }
 
 void LCrop::backward(){

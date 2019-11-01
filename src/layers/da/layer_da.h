@@ -149,10 +149,9 @@ class LCutout : public LinLayer {
 public:
     static int total_layers;
     vector<float> factor;
-    bool reshape;
     float constant;
 
-    LCutout(Layer *parent, vector<float> factor, bool reshape, float constant, string name, int dev);
+    LCutout(Layer *parent, vector<float> factor, float constant, string name, int dev);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

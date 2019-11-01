@@ -25,7 +25,7 @@ LRotate::LRotate(Layer *parent, vector<float> factor, vector<int> axis, bool res
     // TODO: Implement
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
-    //delta = parent->delta;
+    delta = parent->delta;
 
     // Params
     this->factor = factor;
@@ -46,8 +46,9 @@ void LRotate::resize(int batch){
 }
 
 void LRotate::forward() {
+    // TODO: NOT IMPLEMENTED
     float rdn_angle = uniform(this->factor[0], this->factor[1]);
-//    this->output = Tensor::rotate(this->input, rdn_angle, this->axis, this->reshape, this->da_mode, this->constant);
+    Tensor::rotate(this->input, this->output, rdn_angle, {2,3}, this->da_mode, this->constant);
 }
 
 void LRotate::backward() {

@@ -21,12 +21,16 @@ int LScale::total_layers = 0;
 
 LScale::LScale(Layer *parent, vector<float> factor, bool reshape, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
     if(name.empty()) this->name = "scale" + to_string(++total_layers);
-    // factor => range of scaling (0.8, 1.2)
 
-    // TODO: Implement
     input = parent->output;
-    output = new Tensor(input->getShape(), dev);
-    //delta = parent->delta;
+    delta = parent->delta;
+
+    if (reshape){
+        msg("Not implemented. Parameter discussion needed", "LScale");  // Parameter discussion needed
+    }{
+        msg("Not implemented. Parameter discussion needed", "LScale");  // Parameter discussion needed
+        output = new Tensor(input->getShape(), dev);
+    }
 
     // Params
     this->factor = factor;
@@ -46,8 +50,8 @@ void LScale::resize(int batch){
 
 void LScale::forward() {
     float rdn_factor = uniform(this->factor[0], this->factor[1]);
-    vector<int> new_shape = {(int)(this->input->shape[2]*rdn_factor), (int)(this->input->shape[3]*rdn_factor)};
-//    this->output = Tensor::scale(this->input, new_shape, this->reshape, this->da_mode, this->constant);
+    vector<int> shift = {(int)(this->input->shape[2]*rdn_factor), (int)(this->input->shape[3]*rdn_factor)};
+    Tensor::scale(this->input, this->output, this->da_mode, this->constant);
 }
 
 void LScale::backward() {

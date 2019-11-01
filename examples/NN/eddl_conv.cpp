@@ -38,6 +38,14 @@ int main(int argc, char **argv){
   l=GaussianNoise(l,0.3);
 
   l=Reshape(l,{1,28,28});
+
+  // Data augmentation
+    l = Shift(l, {-0.1, +0.1});
+//    l = Scale(l, {-0.1, +0.1}, true); // [disabled]reshape=true! I need to discuss i few things about the parameters
+    l = Flip(l, 1);
+    l = Crop(l, {-0.1, +0.1}, false);  // reshape=False! I need to discuss i few things about the parameters
+    l = Cutout(l, {-0.1, +0.1});
+
   l=Block(l,16,{3,3},{1,1});
   l=Block(l,32,{3,3},{1,1});
   l=Block(l,64,{3,3},{1,1});

@@ -105,8 +105,8 @@ namespace eddl {
         return new LCrop(parent, factor, reshape, constant, name, DEV_CPU);
     }
 
-    layer Cutout(layer parent, vector<float> factor, bool reshape, float constant, string name){
-        return new LCutout(parent, factor, reshape, constant, name, DEV_CPU);
+    layer Cutout(layer parent, vector<float> factor, float constant, string name){
+        return new LCutout(parent, factor, constant, name, DEV_CPU);
     }
 
     // ---- MERGE LAYERS ----

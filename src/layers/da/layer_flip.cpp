@@ -25,7 +25,7 @@ LFlip::LFlip(Layer *parent, int axis, string name, int dev) : LinLayer(name, dev
     // TODO: Implement
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
-    //delta = parent->delta;
+    delta = parent->delta;
 
     //Params
     this->axis = axis;
@@ -42,8 +42,7 @@ void LFlip::resize(int batch){
 }
 
 void LFlip::forward() {
-//    this->output = Tensor::flip(this->input, this->axis);
-
+    Tensor::flip(this->input, this->output, this->axis);
 }
 
 void LFlip::backward() {

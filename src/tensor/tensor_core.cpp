@@ -21,11 +21,11 @@ using namespace std;
 
 // ***** Core (in-place) *****************************
 void Tensor::fill_(float v) {
-    if (isCPU()) {
+    if (this->isCPU()) {
         cpu_fill_(this, v);
     }
 #ifdef cGPU
-    else if (isGPU())
+    else if (this->isGPU())
       {
         gpu_fill_(this,v);
       }
