@@ -47,7 +47,7 @@ void LRotate::resize(int batch){
 
 void LRotate::forward() {
     float rdn_angle = uniform(this->factor[0], this->factor[1]);
-    this->output = Tensor::rotate(this->input, rdn_angle, this->axis, this->reshape, this->da_mode, this->constant);
+//    this->output = Tensor::rotate(this->input, rdn_angle, this->axis, this->reshape, this->da_mode, this->constant);
 }
 
 void LRotate::backward() {

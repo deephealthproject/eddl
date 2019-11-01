@@ -25,14 +25,14 @@
 using namespace std;
 
 
-Tensor* Tensor::shift(Tensor *A, vector<int> shift, string mode, float constant){
+void Tensor::shift(Tensor *A, Tensor *B, vector<int> shift, string mode, float constant){
     if (A->isCPU()) {
-        return cpu_shift(A, std::move(shift), std::move(mode), constant);
+        cpu_shift(A, B, std::move(shift), get_mode(std::move(mode)), constant);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        return gpu_shift(A, std::move(shift), std::move(mode), constant);
+        gpu_shift(A, B, std::move(shift), std::move(mode), constant);
       }
 #endif
 #ifdef cFPGA
@@ -44,9 +44,9 @@ Tensor* Tensor::shift(Tensor *A, vector<int> shift, string mode, float constant)
 
 
 
-Tensor* Tensor::rotate(Tensor *A, float angle, vector<int> axis, bool reshape, string mode, float constant) {
+void Tensor::rotate(Tensor *A, Tensor *B, float angle, vector<int> axis, string mode, float constant) {
     if (A->isCPU()) {
-        return rotate(A, angle, std::move(axis), reshape, std::move(mode), constant);
+        cpu_rotate(A, B, angle, std::move(axis), get_mode(std::move(mode)), constant);
     }
 #ifdef cGPU
     else if (A->isGPU())
@@ -61,24 +61,14 @@ Tensor* Tensor::rotate(Tensor *A, float angle, vector<int> axis, bool reshape, s
 #endif
 }
 
-Tensor* Tensor::scalef(Tensor *A, float factor, bool reshape, string mode, float constant) {
-    return Tensor::scalef(A, vector<float>(A->ndim, factor), reshape, mode, constant);
-}
-
-Tensor* Tensor::scalef(Tensor *A, vector<float> factor, bool reshape, string mode, float constant){
-    vector<int> new_shape(A->getShape());
-    for(int i=0; i<new_shape.size(); i++){ new_shape[i] *= factor[i]; }
-    return Tensor::scale(A, new_shape, reshape, std::move(mode), constant);
-}
-
-Tensor* Tensor::scale(Tensor *A, vector<int> new_shape, bool reshape, string mode, float constant) {
+void Tensor::scale(Tensor *A, Tensor *B, string mode, float constant) {
     if (A->isCPU()) {
-        return cpu_scale(A, std::move(new_shape), reshape, std::move(mode), constant);
+        cpu_scale(A, B, get_mode(std::move(mode)), constant);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        return gpu_scale(A, new_shape, reshape, mode, constant);
+        gpu_scale(A, B, std::move(mode), constant);
       }
 #endif
 #ifdef cFPGA
@@ -89,14 +79,14 @@ Tensor* Tensor::scale(Tensor *A, vector<int> new_shape, bool reshape, string mod
 }
 
 
-Tensor* Tensor::flip(Tensor *A, int axis) {
+void Tensor::flip(Tensor *A, Tensor *B, int axis) {
     if (A->isCPU()) {
-        return cpu_flip(A, axis);
+        cpu_flip(A, B, axis);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        return gpu_flip(A, axis);
+        gpu_flip(A, B, axis);
       }
 #endif
 #ifdef cFPGA
@@ -106,14 +96,14 @@ Tensor* Tensor::flip(Tensor *A, int axis) {
 #endif
 }
 
-Tensor* Tensor::crop(Tensor *A, vector<int> coords_from, vector<int> coords_to, bool reshape, float constant) {
+void Tensor::crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant) {
     if (A->isCPU()) {
-        return cpu_crop(A, std::move(coords_from), std::move(coords_to), reshape, constant);
+        cpu_crop(A, B, std::move(coords_from), std::move(coords_to), constant);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        return gpu_crop(A, std::move(coords_from), std::move(coords_to), reshape, constant);
+        gpu_crop(A, B, std::move(coords_from), std::move(coords_to), reshape, constant);
       }
 #endif
 #ifdef cFPGA
@@ -124,14 +114,14 @@ Tensor* Tensor::crop(Tensor *A, vector<int> coords_from, vector<int> coords_to, 
 }
 
 
-Tensor* Tensor::cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to, float constant) {
+void Tensor::cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant) {
     if (A->isCPU()) {
-        return cpu_cutout(A, std::move(coords_from), std::move(coords_to), constant);
+        cpu_cutout(A, B, std::move(coords_from), std::move(coords_to), constant);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        return gpu_cutout(A, std::move(coords_from), std::move(coords_to), constant);
+        gpu_cutout(A, B, std::move(coords_from), std::move(coords_to), constant);
       }
 #endif
 #ifdef cFPGA

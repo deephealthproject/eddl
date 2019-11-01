@@ -47,7 +47,7 @@ void LScale::resize(int batch){
 void LScale::forward() {
     float rdn_factor = uniform(this->factor[0], this->factor[1]);
     vector<int> new_shape = {(int)(this->input->shape[2]*rdn_factor), (int)(this->input->shape[3]*rdn_factor)};
-    this->output = Tensor::scale(this->input, new_shape, this->reshape, this->da_mode, this->constant);
+//    this->output = Tensor::scale(this->input, new_shape, this->reshape, this->da_mode, this->constant);
 }
 
 void LScale::backward() {

@@ -70,6 +70,7 @@ public:
     int gpu_device;
     mutex *tsem;  // Multithreading. Tensor semaphore
 
+
     // Constructors
     Tensor();
     explicit Tensor(const vector<int> &shape, int dev=DEV_CPU);
@@ -100,6 +101,7 @@ public:
 
     // Core
     vector<int> getShape();
+    static int get_mode(string mode);
 
     // Serialization
     void save(string s);
@@ -132,14 +134,12 @@ public:
 
 
     // ***** Data augmentation *****************************
-    static Tensor* shift(Tensor *A, vector<int> shift, string mode="constant", float constant=0.0f);
-    static Tensor* rotate(Tensor *A, float angle, vector<int> axis, bool reshape=false, string mode="constant", float constant=0.0f);
-    static Tensor* scalef(Tensor *A, float factor, bool reshape=true, string mode="constant", float constant=0.0f);
-    static Tensor* scalef(Tensor *A, vector<float> factor, bool reshape=true, string mode="constant", float constant=0.0f);
-    static Tensor* scale(Tensor *A, vector<int> new_shape, bool reshape=true, string mode="constant", float constant=0.0f);
-    static Tensor* flip(Tensor *A, int axis=0);
-    static Tensor* crop(Tensor *A, vector<int> coords_from, vector<int> coords_to, bool reshape=false, float constant=0.0f);
-    static Tensor* cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to, float constant=0.0f);
+    static void shift(Tensor *A,Tensor *B, vector<int> shift, string mode="constant", float constant=0.0f);
+    static void rotate(Tensor *A, Tensor *B, float angle, vector<int> axis, string mode="constant", float constant=0.0f);
+    static void scale(Tensor *A, Tensor *B, string mode="constant", float constant=0.0f);
+    static void flip(Tensor *A, Tensor *B, int axis=0);
+    static void crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant=0.0f);
+    static void cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant=0.0f);
 
 
     // Math operations ********************************

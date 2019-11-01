@@ -254,3 +254,29 @@ void Tensor::print() {
 #endif
     cout << "\n";
 }
+
+int Tensor::get_mode(string mode){
+    if(mode == "constant"){
+        // (k k k k | a b c d | k k k k)
+        // The input is extended by filling all values beyond the edge with the same constant value, defined by the cval parameter.
+        return 0;
+    }else if(mode == "reflect"){
+        // (d c b a | a b c d | d c b a)
+        // The input is extended by reflecting about the edge of the last pixel.
+        return 1;
+    }else if(mode == "nearest"){
+        // (a a a a | a b c d | d d d d)
+        // The input is extended by replicating the last pixel.
+        return 2;
+    }else if(mode == "mirror"){
+        // (d c b | a b c d | c b a)
+        // The input is extended by reflecting about the center of the last pixel.
+        return 3;
+    }else if(mode == "wrap"){
+        // (a b c d | a b c d | a b c d)
+        // The input is extended by wrapping around to the opposite edge.
+        return 4;
+    }else {  // constant
+        return 0;
+    }
+}

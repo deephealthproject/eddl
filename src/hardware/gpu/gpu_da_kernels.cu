@@ -38,15 +38,18 @@ __global__ void shift(float* A, float* B, int batch, int depth, int irows, int i
 
         if (Ai >= 0 && Ai < irows && Aj >= 0 && Aj < icols){
             int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
-            //int B_pos = b*B_stride[0] + c*B_stride[1] + Bi*B_stride[2] + Bj*B_stride[3];
             B[thread_id_x] = A[A_pos];
+        }else{
+            if(mode==0){ // constant
+                B[thread_id_x] = constant;
+            }
         }
     }
 
 }
 
 
-__global__ void scale(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* offsets, int mode, float constant){
+__global__ void scale(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int mode, float constant){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*orows*ocols;
 
@@ -68,8 +71,11 @@ __global__ void scale(float* A, float* B, int batch, int depth, int irows, int i
 
         if (Ai >= 0 && Ai < irows && Aj >= 0 && Aj < icols){
             int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
-            //int B_pos = b*B_stride[0] + c*B_stride[1] + (Bi+ offsets[0])*B_stride[2] + (Bj+ offsets[1])*B_stride[3];
             B[thread_id_x] = A[A_pos];
+        }else{
+            if(mode==0){ // constant
+                B->ptr[B_pos] = constant;
+            }
         }
     }
 
@@ -100,7 +106,6 @@ __global__ void flip(float* A, float* B, int batch, int depth, int irows, int ic
 
         if (Ai >= 0 && Ai < irows && Aj >= 0 && Aj < icols){
             int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
-            //int B_pos = b*B_stride[0] + c*B_stride[1] + Bi*B_stride[2] + Bj*B_stride[3];
             B[thread_id_x] = A[A_pos];
         }
     }

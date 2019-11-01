@@ -40,28 +40,12 @@ void cpu_rand_binary(Tensor *A, float v);
 void cpu_rand_normal(Tensor *A, float m, float s, bool fast_math);  // TODO: Don't like it
 
 // CPU: Data augmentation (2D Optimized) ********************************************
-Tensor* cpu_shift(Tensor *A, vector<int> shift, string mode, float constant);
-Tensor* cpu_rotate(Tensor *A, float angle, vector<int> axis, bool reshape, string mode, float constant);
-Tensor* cpu_scale(Tensor *A, vector<int> new_shape, bool reshape, string mode, float constant);
-Tensor* cpu_flip(Tensor *A, int axis);
-Tensor* cpu_crop(Tensor *A, vector<int> coords_from, vector<int> coords_to, bool reshape, float constant);
-Tensor* cpu_cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to, float constant);
-
-// CPU: Data augmentation (2D No-Optimized)[Temp] ********************************************
-Tensor* cpu_shift_no(Tensor *A, vector<int> shift, string mode, float constant);
-Tensor* cpu_rotate_no(Tensor *A, float angle, vector<int> axis, bool reshape, string mode, float constant);
-Tensor* cpu_scale_no(Tensor *A, vector<int> new_shape, bool reshape, string mode, float constant);
-Tensor* cpu_flip_no(Tensor *A, int axis);
-Tensor* cpu_crop_no(Tensor *A, vector<int> coords_from, vector<int> coords_to, bool reshape, float constant);
-Tensor* cpu_cutout_no(Tensor *A, vector<int> coords_from, vector<int> coords_to, float constant);
-
-// CPU: Data augmentation (Generic)[Temp] ********************************************
-Tensor* cpu_shift_gen(Tensor *A, vector<int> shift, string mode, float constant);
-Tensor* cpu_rotate_gen(Tensor *A, float angle, vector<int> axis, bool reshape, string mode, float constant);
-Tensor* cpu_scale_gen(Tensor *A, vector<int> new_shape, bool reshape, string mode, float constant);
-Tensor* cpu_flip_gen(Tensor *A, int axis);
-Tensor* cpu_crop_gen(Tensor *A, vector<int> coords_from, vector<int> coords_to, bool reshape, float constant);
-Tensor* cpu_cutout_gen(Tensor *A, vector<int> coords_from, vector<int> coords_to, float constant);
+void cpu_shift(Tensor *A, Tensor *B, vector<int> shift, int mode, float constant);
+void cpu_rotate(Tensor *A, Tensor *B,float angle, vector<int> axis, int mode, float constant);
+void cpu_scale(Tensor *A, Tensor *B, int mode, float constant);
+void cpu_flip(Tensor *A, Tensor *B, int axis);
+void cpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant);
+void cpu_cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant);
 
 // CPU: Math (in-place)
 void cpu_abs_(Tensor *A);

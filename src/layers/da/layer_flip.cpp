@@ -42,7 +42,7 @@ void LFlip::resize(int batch){
 }
 
 void LFlip::forward() {
-    this->output = Tensor::flip(this->input, this->axis);
+//    this->output = Tensor::flip(this->input, this->axis);
 
 }
 

@@ -54,7 +54,7 @@ void print_results(string title, TestResult res_cpu, TestResult res_gpu){
 
 int main(int argc, char **argv) {
     TestResult res_small_cpu, res_small_gpu, res_big_cpu, res_big_gpu;
-    Tensor *t_input, *t_input_sol, *t_weights, *t_input_big, *t_weights_big;
+    Tensor *t_input, *t_input_sol, *t_weights, *t_input_big, *t_weights_big, *t_output;
     Tensor *t_input_cpu, *t_input_gpu;
     string act;
 
@@ -306,32 +306,44 @@ int main(int argc, char **argv) {
 //    t_input = Tensor::range(1.0, 9.0f, 1.0f, DEV_CPU);
 //    t_input->reshape_({3, 3});
 //    vector<int> idxs = t_input->get_indices_rowmajor(5);
-
-    // [Speed tests]
-    int MAX_TRIES = 10;
-    t_input = Tensor::ones({10, 10, 1000,1000}, DEV_CPU);
-    res_small_cpu = run_tensor_op(t_input, "shift", DEV_CPU, MAX_TRIES);
-
-//    res_small_cpu.tensor->ToCPU();
-//    res_small_cpu.tensor->reshape_({50, 50});
-//    res_small_cpu.tensor->print();
-
-    cout << "Runs: " << MAX_TRIES << endl;
-    cout << "Total time: " << res_small_cpu.time << " seconds" << endl;
-    cout << "Avg time: " << res_small_cpu.time/MAX_TRIES << " seconds" << endl;
+//
+//    // [Speed tests]
+//    int MAX_TRIES = 10;
+//    t_input = Tensor::ones({10, 10, 1000,1000}, DEV_CPU);
+//    res_small_cpu = run_tensor_op(t_input, "shift", DEV_CPU, MAX_TRIES);
+//
+////    res_small_cpu.tensor->ToCPU();
+////    res_small_cpu.tensor->reshape_({50, 50});
+////    res_small_cpu.tensor->print();
+//
+//    cout << "Runs: " << MAX_TRIES << endl;
+//    cout << "Total time: " << res_small_cpu.time << " seconds" << endl;
+//    cout << "Avg time: " << res_small_cpu.time/MAX_TRIES << " seconds" << endl;
 
 //
 ////    // *** [Data augmentation] *****************************************
-//    vector<string> data_aug = {"shift", "flip_h", "flip_v", "scale"}; //, "shift", "flip_h", "flip_v", "scale", "crop", "cutout",  "rotate"};
-//    for (auto op:data_aug){
-//        t_input = Tensor::range(1.0, 25.0f, 1.0f, DEV_CPU);
-//        vector<int> shape({1, 1, 5, 5});
-//        t_input->reshape_(shape);
-//
-//        res_small_cpu = run_tensor_op(t_input, op, DEV_CPU, 1);
-//        res_small_gpu = run_tensor_op(t_input, op, DEV_GPU, 1);
-//        print_cpu_gpu_correctness(op, res_small_cpu.tensor, res_small_gpu.tensor);
+    vector<string> data_aug = {"shift", "flip_h", "flip_v", "scale", "crop", "cutout"}; //, "shift", "flip_h", "flip_v", "scale", "crop", "cutout",  "rotate"};
+    for (auto op:data_aug){
+        t_input = Tensor::range(1.0, 100.0f, 1.0f, DEV_CPU);
+        vector<int> shape({1, 1, 10, 10});
+        t_input->reshape_(shape);
 
+        // Reshapes
+        if(op=="scale") {
+            t_output = new Tensor({1, 1, 5, 5}, t_input->device);
+//        }else if(op=="crop") {
+//            t_output = new Tensor({1, 1, 3, 3}, t_input->device);
+        }else if(op=="cutout") {
+            t_output = t_input->clone();
+        } else {
+            t_output = new Tensor(t_input->getShape(), t_input->device);
+        }
+
+//
+        res_small_cpu = run_tensor_da(t_input, t_output, op, DEV_CPU, 1);
+        res_small_gpu = run_tensor_da(t_input, t_output, op, DEV_GPU, 1);
+        print_cpu_gpu_correctness(op, res_small_cpu.tensor, res_small_gpu.tensor);
+//
 ////        print_results(op, res_small_cpu, res_small_cpu);
 //        cout << "===================" << endl;
 //        cout << op << endl;
@@ -342,7 +354,7 @@ int main(int argc, char **argv) {
 //        res_small_cpu.tensor->reshape_({res_small_cpu.tensor->shape[shape.size()-2], res_small_cpu.tensor->shape[shape.size()-1]});
 //        res_small_cpu.tensor->print();
 
-//   }
+   }
 
 
 //    Tensor* A = Tensor::full({10}, 100.0f);

@@ -29,7 +29,7 @@ __global__ void mask(float* a, float v, long int size);
 // GPU: Math (in-place)
 __global__ void shift(float* A, float* B, int batch, int depth, int irows, int icols, int* shift, int mode, float constant);
 //__global__ void rotate_(float* a, int batch, int depth, int irows, int icols, float angle, int* axis, bool reshape, int mode, float constant);
-__global__ void scale(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* offsets, int mode, float constant);
+__global__ void scale(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int mode, float constant);
 __global__ void flip(float* A, float* B, int batch, int depth, int irows, int icols, int axis);
 __global__ void crop(float* A, float* B, int batch, int depth, int irows, int icols, int* coords_from, int coords_from_size, int* coords_to, int coords_to_size);
 __global__ void cutout(float* B, int batch, int depth, int irows, int icols, int* coords_from, int coords_from_size, int* coords_to, int coords_to_size, float constant);

@@ -257,14 +257,39 @@ TestResult run_tensor_op(Tensor* t_input, string op, int dev, int runs){
         else if(op=="max"){ t_output->max(); }
         else if(op=="min"){ t_output->min(); }
 
-        // Data augmentation
-        else if(op=="shift"){ t_output = Tensor::shift(t_output, {1, 1}); }
-        else if(op=="rotate"){ t_output = Tensor::rotate(t_output, 90.0f, {1, 0}); }
-        else if(op=="flip_v"){ t_output = Tensor::flip(t_output, 0); }
-        else if(op=="flip_h"){ t_output = Tensor::flip(t_output,  1);}
-        else if(op=="scale"){ t_output = Tensor::scalef(t_output, 1.5f);}
-        else if(op=="crop"){ t_output = Tensor::crop(t_output, {1,1}, {3, 3}, false); }
-        else if(op=="cutout"){ t_output = Tensor::cutout(t_output, {1, 1}, {3, 3}, 0.0f);}
+        else{
+            std::cout << "Unknown operator" << std::endl;
+        }
+    }
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
+    TestResult result{};
+    result.time = elapsed_secs;
+    result.tensor = t_output;
+    return result;
+}
+
+TestResult run_tensor_da(Tensor* t_input, Tensor* t_output, string op, int dev, int runs){
+    // Clone input tensor
+    t_input = t_input->clone();
+    t_output = t_output->clone();
+
+    // Move to device
+    if (dev == DEV_GPU){
+        t_input->ToGPU();
+        t_output->ToGPU();
+    }
+
+    clock_t begin = clock();
+    for(int i=0; i<runs; i++){
+        if(op=="shift"){ Tensor::shift(t_input, t_output, {1, 1}); }
+        else if(op=="rotate"){ Tensor::rotate(t_input, t_output, 90.0f, {1, 0}); }
+        else if(op=="flip_v"){ Tensor::flip(t_input, t_output, 0); }
+        else if(op=="flip_h"){ Tensor::flip(t_input, t_output,  1);}
+        else if(op=="scale"){ Tensor::scale(t_input, t_output);}
+        else if(op=="crop"){ Tensor::crop(t_input, t_output, {1,1}, {3, 3}, 0.0f); }
+        else if(op=="cutout"){ Tensor::cutout(t_input, t_output, {1, 1}, {3, 3}, 0.0f);}
 
         else{
             std::cout << "Unknown operator" << std::endl;
