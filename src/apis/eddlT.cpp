@@ -99,7 +99,7 @@ namespace eddlT {
   {
     A->fill_(v);
   }
-  
+
 // Pointer functions ********************************
   float *getptr(Tensor *A){
     return A->ptr;
@@ -116,6 +116,8 @@ namespace eddlT {
 
   // Load from file ***********************************
   Tensor *load(string fname){
+    fprintf(stderr,"Reading %s ",fname.c_str());
+
     FILE *fe = fopen(fname.c_str(), "rb");
     if (fe == nullptr) {
         fprintf(stderr, "%s not found\n", fname.c_str());
@@ -129,6 +131,11 @@ namespace eddlT {
         int read = fread(&v, sizeof(int), 1, fe);
         shape.push_back(v);
     }
+
+    int i;
+    for (i = 0; i < ndim-1; ++i)
+      fprintf(stderr,"%dx",shape[i]);
+    fprintf(stderr,"%d\n",shape[i]);
 
     Tensor *t=new Tensor(shape,DEV_CPU);
     t->load(fe);

@@ -243,6 +243,7 @@ namespace eddl {
 // ---- DATASETS ----
     bool exist(string name);
     void download_mnist();
+    void download_cifar10();
 
 }
 #endif

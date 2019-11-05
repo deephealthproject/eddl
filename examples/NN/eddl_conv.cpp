@@ -17,14 +17,37 @@
 using namespace eddl;
 
 
+
+layer RC(layer l,int filters, vector<int> kernel, vector<int> stride)
+{
+  return ReLu(Conv(l, filters, kernel,stride));
+}
+
+layer RCRC(layer l,int filters, vector<int> kernel, vector<int> stride)
+{
+  return ReLu(Conv(ReLu(Conv(l, filters, kernel,stride)), filters, kernel,stride));
+}
+
+layer GB(layer l)
+{
+  return GaussianNoise(BatchNormalization(l),0.3);
+}
+
+
 layer Block(layer l,int filters, vector<int> kernel, vector<int> stride)
 {
-  return MaxPool(Activation(Conv(l, filters, kernel,stride),"relu"),{2,2});
+  return MaxPool(GB(RCRC(l,filters,kernel,stride)));
+}
+
+
+layer ResBlock(layer l,int filters, vector<int> kernel, vector<int> stride)
+{
+  return GB(Sum(RC(l,filters,kernel,{2,2}),MaxPool(RCRC(l, filters, kernel,stride))));
 }
 
 int main(int argc, char **argv){
   // download MNIST data
-  download_mnist();
+  download_cifar10();
 
   // Settings
   int epochs = 20;
@@ -32,20 +55,18 @@ int main(int argc, char **argv){
   int num_classes = 10;
 
   // network
-  layer in=Input({784});
+  layer in=Input({3,32,32});
   layer l=in;
 
-  l=GaussianNoise(l,0.3);
-
-  l=Reshape(l,{1,28,28});
-  l=Block(l,16,{3,3},{1,1});
   l=Block(l,32,{3,3},{1,1});
-  l=Block(l,64,{3,3},{1,1});
-  l=Block(l,128,{3,3},{1,1});
+  l=ResBlock(l,64,{3,3},{1,1});
+  l=ResBlock(l,128,{3,3},{1,1});
+  l=ResBlock(l,256,{3,3},{1,1});
+  l=ResBlock(l,512,{3,3},{1,1});
 
   l=Reshape(l,{-1});
 
-  l=Activation(Dense(l,64),"relu");
+  l=Activation(Dense(l,128),"relu");
 
   layer out=Activation(Dense(l,num_classes),"softmax");
 
@@ -71,28 +92,28 @@ int main(int argc, char **argv){
 
   // Load and preprocess training data
   // Load dataset
-  tensor x_train = eddlT::load("trX.bin");
-  tensor y_train = eddlT::load("trY.bin");
+  tensor x_train = eddlT::load("cifar_trX.bin");
+  tensor y_train = eddlT::load("cifar_trY.bin");
   eddlT::div_(x_train, 255.0);
 
 
   // Load and preprocess test data
-  tensor x_test = eddlT::load("tsX.bin");
-  tensor y_test = eddlT::load("tsY.bin");
+  tensor x_test = eddlT::load("cifar_tsX.bin");
+  tensor y_test = eddlT::load("cifar_tsY.bin");
   eddlT::div_(x_test, 255.0);
 
   for(int i=0;i<epochs;i++) {
     // training, list of input and output tensors, batch, epochs
     fit(net,{x_train},{y_train},batch_size, 1);
     // Evaluate train
-    std::cout << "Evaluate train:" << std::endl;
-    evaluate(net,{x_train},{y_train});
+    std::cout << "Evaluate test:" << std::endl;
+    evaluate(net,{x_test},{y_test});
   }
 
 
   // Evaluate test
-  std::cout << "Evaluate test:" << std::endl;
-  evaluate(net,{x_test},{y_test});
+  //std::cout << "Evaluate test:" << std::endl;
+  //evaluate(net,{x_test},{y_test});
 
 }
 
