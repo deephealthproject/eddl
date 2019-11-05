@@ -42,7 +42,7 @@ layer Block(layer l,int filters, vector<int> kernel, vector<int> stride)
 
 layer ResBlock(layer l,int filters, vector<int> kernel, vector<int> stride)
 {
-  return GB(Sum(RC(l,filters,kernel,{2,2}),MaxPool(RCRC(l, filters, kernel,stride))));
+  return GB(Sum(RC(l,filters,{1,1},{2,2}),MaxPool(RCRC(l, filters, kernel,stride))));
 }
 
 int main(int argc, char **argv){
