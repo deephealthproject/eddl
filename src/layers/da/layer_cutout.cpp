@@ -19,7 +19,7 @@ using namespace std;
 
 int LCutout::total_layers = 0;
 
-LCutout::LCutout(Layer *parent, vector<float> factor, float constant, string name, int dev) : LinLayer(name, dev) {
+LCutout::LCutout(Layer *parent, vector<int> from_coords, vector<int> to_coords, float constant, string name, int dev) : LinLayer(name, dev) {
     if(name.empty()) this->name = "cutout" + to_string(++total_layers);
 
     input = parent->output;
@@ -27,7 +27,8 @@ LCutout::LCutout(Layer *parent, vector<float> factor, float constant, string nam
     delta = parent->delta;
 
     // Params
-    this->factor = factor;
+    this->from_coords = from_coords;
+    this->to_coords = to_coords;
     this->constant = constant;
 
     parent->addchild(this);
@@ -42,11 +43,7 @@ void LCutout::resize(int batch){
 }
 
 void LCutout::forward() {
-    int rdn_x1 = (int)uniform(0, this->input->shape[2]);
-    int rdn_y1 = (int)uniform(0, this->input->shape[3]);
-    int rdn_x2 = (int)uniform((float)rdn_x1, this->input->shape[2]);
-    int rdn_y2 = (int)uniform((float)rdn_y1, this->input->shape[3]);
-    Tensor::cutout(this->input, this->output, {rdn_x1, rdn_y1}, {rdn_x2, rdn_y2}, this->constant);
+    Tensor::cutout(this->input, this->output, this->from_coords, this->to_coords, this->constant);
 }
 
 void LCutout::backward() {
@@ -55,7 +52,7 @@ void LCutout::backward() {
 
 
 Layer *LCutout::share(int c, int bs, vector<Layer *> p) {
-    LCutout *n = new LCutout(p[0], this->factor, this->constant, "share_" + to_string(c) + name, dev);
+    LCutout *n = new LCutout(p[0], this->from_coords, this->to_coords, this->constant, "share_" + to_string(c) + name, dev);
     n->orig = this;
 
     // TODO: Implement
@@ -64,7 +61,7 @@ Layer *LCutout::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LCutout::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LCutout *n = new LCutout(p[0], this->factor, this->constant, "clone_" + to_string(todev) + name, todev);
+    LCutout *n = new LCutout(p[0], this->from_coords, this->to_coords, this->constant, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
 
     // TODO: Implement

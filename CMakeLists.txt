@@ -210,11 +210,19 @@ SET(CPP_SOURCES
         src/layers/core/layer_transpose.cpp
         src/layers/da/layer_da.h
         src/layers/da/layer_crop.cpp
+        src/layers/da/layer_crop_scale.cpp
+        src/layers/da/layer_crop_random.cpp
+        src/layers/da/layer_crop_scale_random.cpp
         src/layers/da/layer_cutout.cpp
+        src/layers/da/layer_cutout_random.cpp
         src/layers/da/layer_flip.cpp
+        src/layers/da/layer_flip_random.cpp
         src/layers/da/layer_rotate.cpp
+        src/layers/da/layer_rotate_random.cpp
         src/layers/da/layer_scale.cpp
+        src/layers/da/layer_scale_random.cpp
         src/layers/da/layer_shift.cpp
+        src/layers/da/layer_shift_random.cpp
         src/layers/normalization/layer_norm.cpp
         src/layers/normalization/layer_normmax.cpp
         src/layers/normalization/layer_normminmax.cpp

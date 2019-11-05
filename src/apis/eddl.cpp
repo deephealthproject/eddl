@@ -85,28 +85,61 @@ namespace eddl {
         return new LTranspose(parent, dims, name, DEV_CPU);
     }
 
-    // ---- DATA AUGMENTATION ----
-    layer Shift(layer parent, vector<float> factor, string da_mode, float constant, string name){
-        return new LShift(parent, factor, da_mode, constant, name, DEV_CPU);
+    // ---- TRANSFORMATIONS ----
+    layer Shift(layer parent, vector<int> shift, string da_mode, float constant, string name){
+        return new LShift(parent, shift, da_mode, constant, name, DEV_CPU);
     }
-    layer Rotate(layer parent, vector<float> factor, vector<int> axis, bool reshape, string da_mode, float constant, string name){
-        return new LRotate(parent, factor, axis, reshape, da_mode, constant, name, DEV_CPU);
+    layer Rotate(layer parent, float angle, vector<int> axis, bool reshape, string da_mode, float constant, string name){
+        return new LRotate(parent, angle, axis, reshape, da_mode, constant, name, DEV_CPU);
     }
 
-    layer Scale(layer parent, vector<float> factor, bool reshape, string da_mode, float constant, string name){
-        return new LScale(parent, factor, reshape, da_mode, constant, name, DEV_CPU);
+    layer Scale(layer parent, vector<int> shape, bool reshape, string da_mode, float constant, string name){
+        return new LScale(parent, shape, reshape, da_mode, constant, name, DEV_CPU);
     }
 
     layer Flip(layer parent, int axis, string name){
         return new LFlip(parent, axis, name, DEV_CPU);
     }
 
-    layer Crop(layer parent, vector<float> factor, bool reshape, float constant, string name){
-        return new LCrop(parent, factor, reshape, constant, name, DEV_CPU);
+    layer Crop(layer parent, vector<int> from_coords, vector<int> to_coords, bool reshape, float constant, string name){
+        return new LCrop(parent, from_coords, to_coords, reshape, constant, name, DEV_CPU);
     }
 
-    layer Cutout(layer parent, vector<float> factor, float constant, string name){
-        return new LCutout(parent, factor, constant, name, DEV_CPU);
+    layer CropAndScale(layer parent, vector<int> from_coords, vector<int> to_coords, float constant, string name){
+        return new LCropAndScale(parent, from_coords, to_coords, constant, name, DEV_CPU);
+    }
+
+    layer Cutout(layer parent, vector<int> from_coords, vector<int> to_coords, float constant, string name){
+        return new LCutout(parent, from_coords, to_coords, constant, name, DEV_CPU);
+    }
+
+    // ---- DATA AUGMENTATION ----
+    layer ShiftRandom(layer parent, vector<float> factor_x, vector<float> factor_y, string da_mode, float constant, string name){
+        return new LShiftRandom(parent, factor_x, factor_y, da_mode, constant, name, DEV_CPU);
+    }
+
+    layer RotateRandom(layer parent, vector<float> factor, vector<int> axis, string da_mode, float constant, string name){
+        return new LRotateRandom(parent, factor, axis, da_mode, constant, name, DEV_CPU);
+    }
+
+    layer ScaleRandom(layer parent, vector<float> factor, string da_mode, float constant, string name){
+        return new LScaleRandom(parent, factor, da_mode, constant, name, DEV_CPU);
+    }
+
+    layer FlipRandom(layer parent, int axis, string name){
+        return new LFlipRandom(parent, axis, name, DEV_CPU);
+    }
+
+    layer CropRandom(layer parent, vector<float> factor_x, vector<float> factor_y, float constant, string name){
+        return new LCropRandom(parent, factor_x, factor_y, constant, name, DEV_CPU);
+    }
+
+    layer CropAndScaleRandom(layer parent, vector<float> factor_x, vector<float> factor_y, string name){
+        return new LCropAndScaleRandom(parent, factor_x, factor_y, name, DEV_CPU);
+    }
+
+    layer CutoutRandom(layer parent, vector<float> factor_x, vector<float> factor_y, float constant, string name){
+        return new LCutoutRandom(parent, factor_x, factor_y, constant, name, DEV_CPU);
     }
 
     // ---- MERGE LAYERS ----

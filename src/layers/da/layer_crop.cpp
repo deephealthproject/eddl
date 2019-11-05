@@ -19,20 +19,21 @@ using namespace std;
 
 int LCrop::total_layers = 0;
 
-LCrop::LCrop(Layer *parent, vector<float> factor, bool reshape, float constant, string name, int dev) : LinLayer(name, dev) {
+LCrop::LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool reshape, float constant, string name, int dev) : LinLayer(name, dev) {
     if(name.empty()) this->name = "crop" + to_string(++total_layers);
 
     input = parent->output;
+    delta = parent->delta;
 
     if (reshape){
-        msg("Not implemented. Parameter discussion needed", "LCrop");  // Parameter discussion needed
+        output = new Tensor({input->shape[0], input->shape[1], to_coords[0]-from_coords[0]+1, to_coords[1]-from_coords[1]+1}, dev);
     }{
         output = new Tensor(input->getShape(), dev);
     }
 
-    delta = parent->delta;
-
-    this->factor = factor;
+    // Params
+    this->from_coords = from_coords;
+    this->to_coords = to_coords;
     this->reshape = reshape;
     this->constant = constant;
 
@@ -48,11 +49,7 @@ void LCrop::resize(int batch){
 }
 
 void LCrop::forward() {
-    int rdn_x1 = (int)uniform(0, this->input->shape[2]);
-    int rdn_y1 = (int)uniform(0, this->input->shape[3]);
-    int rdn_x2 = (int)uniform((float)rdn_x1, this->input->shape[2]);
-    int rdn_y2 = (int)uniform((float)rdn_y1, this->input->shape[3]);
-    Tensor::crop(this->input, this->output, {rdn_x1, rdn_y1}, {rdn_x2, rdn_y2}, this->constant);
+    Tensor::crop(this->input, this->output, this->from_coords, this->to_coords, this->constant);
 }
 
 void LCrop::backward(){
@@ -61,7 +58,7 @@ void LCrop::backward(){
 
 
 Layer *LCrop::share(int c, int bs, vector<Layer *> p) {
-    LCrop *n = new LCrop(p[0], this->factor, this->reshape, this->constant, "share_" + to_string(c) + name, dev);
+    LCrop *n = new LCrop(p[0], this->from_coords, this->to_coords, this->reshape, this->constant, "share_" + to_string(c) + name, dev);
     n->orig = this;
 
     // TODO: Implement
@@ -70,7 +67,7 @@ Layer *LCrop::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LCrop::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LCrop *n = new LCrop(p[0], this->factor, this->reshape, this->constant, "clone_" + to_string(todev) + name, todev);
+    LCrop *n = new LCrop(p[0], this->from_coords, this->to_coords, this->reshape, this->constant, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
 
     // TODO: Implement

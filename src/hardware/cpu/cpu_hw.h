@@ -39,13 +39,23 @@ void cpu_rand_signed_uniform(Tensor *A, float v);
 void cpu_rand_binary(Tensor *A, float v);
 void cpu_rand_normal(Tensor *A, float m, float s, bool fast_math);  // TODO: Don't like it
 
-// CPU: Data augmentation (2D Optimized) ********************************************
+// CPU: Data transformations (2D Optimized) ********************************************
 void cpu_shift(Tensor *A, Tensor *B, vector<int> shift, int mode, float constant);
 void cpu_rotate(Tensor *A, Tensor *B,float angle, vector<int> axis, int mode, float constant);
-void cpu_scale(Tensor *A, Tensor *B, int mode, float constant);
+void cpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant);
 void cpu_flip(Tensor *A, Tensor *B, int axis);
 void cpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant);
+void cpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant);
 void cpu_cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant);
+
+// CPU: Data augmentations (2D Optimized) ********************************************
+void cpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int mode, float constant);
+void cpu_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> axis, int mode, float constant);
+void cpu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant);
+void cpu_flip_random(Tensor *A, Tensor *B, int axis);
+void cpu_crop_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant);
+void cpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant);
+void cpu_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant);
 
 // CPU: Math (in-place)
 void cpu_abs_(Tensor *A);

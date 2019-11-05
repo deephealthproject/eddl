@@ -19,88 +19,98 @@ using namespace eddl;
 
 layer Block(layer l,int filters, vector<int> kernel, vector<int> stride)
 {
-  return MaxPool(Activation(Conv(l, filters, kernel,stride),"relu"),{2,2});
+    return MaxPool(Activation(Conv(l, filters, kernel,stride),"relu"),{2,2});
 }
 
 int main(int argc, char **argv){
-  // download MNIST data
-  download_mnist();
+    // download MNIST data
+    download_mnist();
 
-  // Settings
-  int epochs = 20;
-  int batch_size = 100;
-  int num_classes = 10;
+    // Settings
+    int epochs = 20;
+    int batch_size = 100;
+    int num_classes = 10;
 
-  // network
-  layer in=Input({784});
-  layer l=in;
+    // network
+    layer in=Input({784});
+    layer l=in;
 
-  l=GaussianNoise(l,0.3);
+    l=GaussianNoise(l,0.3);
 
-  l=Reshape(l,{1,28,28});
+    l=Reshape(l,{1,28,28});
 
-  // Data augmentation
-    l = Shift(l, {-0.1, +0.1});
-//    l = Scale(l, {-0.1, +0.1}, true); // [disabled]reshape=true! I need to discuss i few things about the parameters
+    // Transformations
+    l = Shift(l, {2, 2});  // In pixels
+    l = Scale(l, {30, 30}, true); // In pixels
+    // Not implemented => l = Rotate(l, 15, false); // Degrees
     l = Flip(l, 1);
-    l = Crop(l, {-0.1, +0.1}, false);  // reshape=False! I need to discuss i few things about the parameters
-    l = Cutout(l, {-0.1, +0.1});
+    l = Crop(l, {0, 0}, {23, 23}, false);  // In pixels
+    l = CropAndScale(l, {0, 0}, {23, 23}, false);  // In pixels
+    l = Cutout(l, {0, 0}, {5, 5}); // In pixels
 
-  l=Block(l,16,{3,3},{1,1});
-  l=Block(l,32,{3,3},{1,1});
-  l=Block(l,64,{3,3},{1,1});
-  l=Block(l,128,{3,3},{1,1});
+    // Data augmentation
+    l = ShiftRandom(l, {-0.1f, +0.1f}, {-0.1f, +0.1f});
+    l = ScaleRandom(l, {0.8f, 1.2f});
+    l = FlipRandom(l, 1);
+    l = CropRandom(l, {0.8f, 0.1f}, {0.8, 1.0f});  // Crop with padding
+    l = CropAndScaleRandom(l, {0.8f, 0.1f}, {0.8, 1.0f});  // Crop and rescale
+    l = CutoutRandom(l, {0.1f, 0.3f}, {0.1, 0.3f});
 
-  l=Reshape(l,{-1});
+    l=Block(l,16,{3,3},{1,1});
+    l=Block(l,32,{3,3},{1,1});
+    l=Block(l,64,{3,3},{1,1});
+    l=Block(l,128,{3,3},{1,1});
 
-  l=Activation(Dense(l,64),"relu");
+    l=Reshape(l,{-1});
 
-  layer out=Activation(Dense(l,num_classes),"softmax");
+    l=Activation(Dense(l,64),"relu");
 
-  // net define input and output layers list
-  model net=Model({in},{out});
+    layer out=Activation(Dense(l,num_classes),"softmax");
 
-
-  // Build model
-  build(net,
-    sgd(0.01, 0.9), // Optimizer
-    {"soft_cross_entropy"}, // Losses
-    {"categorical_accuracy"}, // Metrics
-    //CS_CPU(4) // 4 CPU threads
-    CS_CPU() // CPU with maximum threads availables
-    //CS_GPU({1}) // GPU with only one gpu
-  );
-
-  // plot the model
-  plot(net,"model.pdf");
-
-  // get some info from the network
-  summary(net);
-
-  // Load and preprocess training data
-  // Load dataset
-  tensor x_train = eddlT::load("trX.bin");
-  tensor y_train = eddlT::load("trY.bin");
-  eddlT::div_(x_train, 255.0);
+    // net define input and output layers list
+    model net=Model({in},{out});
 
 
-  // Load and preprocess test data
-  tensor x_test = eddlT::load("tsX.bin");
-  tensor y_test = eddlT::load("tsY.bin");
-  eddlT::div_(x_test, 255.0);
+    // Build model
+    build(net,
+          sgd(0.01, 0.9), // Optimizer
+          {"soft_cross_entropy"}, // Losses
+          {"categorical_accuracy"}, // Metrics
+            //CS_CPU(4) // 4 CPU threads
+          CS_CPU() // CPU with maximum threads availables
+            //CS_GPU({1}) // GPU with only one gpu
+    );
 
-  for(int i=0;i<epochs;i++) {
-    // training, list of input and output tensors, batch, epochs
-    fit(net,{x_train},{y_train},batch_size, 1);
-    // Evaluate train
-    std::cout << "Evaluate train:" << std::endl;
-    evaluate(net,{x_train},{y_train});
-  }
+    // plot the model
+    plot(net,"model.pdf");
+
+    // get some info from the network
+    summary(net);
+
+    // Load and preprocess training data
+    // Load dataset
+    tensor x_train = eddlT::load("trX.bin");
+    tensor y_train = eddlT::load("trY.bin");
+    eddlT::div_(x_train, 255.0);
 
 
-  // Evaluate test
-  std::cout << "Evaluate test:" << std::endl;
-  evaluate(net,{x_test},{y_test});
+    // Load and preprocess test data
+    tensor x_test = eddlT::load("tsX.bin");
+    tensor y_test = eddlT::load("tsY.bin");
+    eddlT::div_(x_test, 255.0);
+
+    for(int i=0;i<epochs;i++) {
+        // training, list of input and output tensors, batch, epochs
+        fit(net,{x_train},{y_train},batch_size, 1);
+        // Evaluate train
+        std::cout << "Evaluate train:" << std::endl;
+        evaluate(net,{x_train},{y_train});
+    }
+
+
+    // Evaluate test
+    std::cout << "Evaluate test:" << std::endl;
+    evaluate(net,{x_test},{y_test});
 
 }
 

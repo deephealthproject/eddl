@@ -11,26 +11,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
-#include <utility>
 
 #include "layer_da.h"
 
 
 using namespace std;
 
-int LShift::total_layers = 0;
+int LFlipRandom::total_layers = 0;
 
-LShift::LShift(Layer *parent, vector<int> shift, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
-    if(name.empty()) this->name = "shift" + to_string(++total_layers);
+LFlipRandom::LFlipRandom(Layer *parent, int axis, string name, int dev) : LinLayer(name, dev) {
+    if(name.empty()) this->name = "flip_random" + to_string(++total_layers);
 
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
     delta = parent->delta;
 
     // Params
-    this->shift = std::move(shift);
-    this->da_mode = std::move(da_mode);
-    this->constant = constant;
+    this->axis = axis;
 
     parent->addchild(this);
     addparent(parent);
@@ -39,21 +36,21 @@ LShift::LShift(Layer *parent, vector<int> shift, string da_mode, float constant,
 
 
 // virtual
-void LShift::resize(int batch){
+void LFlipRandom::resize(int batch){
   output->resize(batch);
 }
 
-void LShift::forward() {
-    Tensor::shift(this->input, this->output, this->shift, this->da_mode, this->constant);
+void LFlipRandom::forward() {
+    Tensor::flip_random(this->input, this->output, this->axis);
 }
 
-void LShift::backward() {
+void LFlipRandom::backward() {
 
 }
 
 
-Layer *LShift::share(int c, int bs, vector<Layer *> p) {
-    LShift *n = new LShift(p[0], this->shift, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
+Layer *LFlipRandom::share(int c, int bs, vector<Layer *> p) {
+    LFlipRandom *n = new LFlipRandom(p[0], this->axis, "share_" + to_string(c) + name, dev);
     n->orig = this;
 
     // TODO: Implement
@@ -61,8 +58,8 @@ Layer *LShift::share(int c, int bs, vector<Layer *> p) {
     return n;
 }
 
-Layer *LShift::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LShift *n = new LShift(p[0], this->shift, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
+Layer *LFlipRandom::clone(int c, int bs, vector<Layer *> p, int todev) {
+    LFlipRandom *n = new LFlipRandom(p[0], this->axis, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
 
     // TODO: Implement
@@ -71,7 +68,7 @@ Layer *LShift::clone(int c, int bs, vector<Layer *> p, int todev) {
 }
 
 
-string LShift::plot(int c) {
+string LFlipRandom::plot(int c) {
     string s;
 
     if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=bisque4,shape=box]";

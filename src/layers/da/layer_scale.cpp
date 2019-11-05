@@ -19,22 +19,22 @@ using namespace std;
 
 int LScale::total_layers = 0;
 
-LScale::LScale(Layer *parent, vector<float> factor, bool reshape, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
+LScale::LScale(Layer *parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
     if(name.empty()) this->name = "scale" + to_string(++total_layers);
 
-    input = parent->output;
-    delta = parent->delta;
+    this->input = parent->output;
+    this->delta = parent->delta;
 
     if (reshape){
-        msg("Not implemented. Parameter discussion needed", "LScale");  // Parameter discussion needed
-    }{
-        msg("Not implemented. Parameter discussion needed", "LScale");  // Parameter discussion needed
+        output = new Tensor({this->input->shape[0], this->input->shape[1], new_shape[0], new_shape[1]}, dev);
+    }else{
         output = new Tensor(input->getShape(), dev);
     }
 
     // Params
-    this->factor = factor;
+    this->new_shape = new_shape;
     this->reshape = reshape;
+    this->constant = constant;
     this->da_mode = da_mode;
 
     parent->addchild(this);
@@ -49,9 +49,7 @@ void LScale::resize(int batch){
 }
 
 void LScale::forward() {
-    float rdn_factor = uniform(this->factor[0], this->factor[1]);
-    vector<int> shift = {(int)(this->input->shape[2]*rdn_factor), (int)(this->input->shape[3]*rdn_factor)};
-    Tensor::scale(this->input, this->output, this->da_mode, this->constant);
+    Tensor::scale(this->input, this->output, this->new_shape, this->da_mode, this->constant);
 }
 
 void LScale::backward() {
@@ -60,7 +58,7 @@ void LScale::backward() {
 
 
 Layer *LScale::share(int c, int bs, vector<Layer *> p) {
-    LScale *n = new LScale(p[0], this->factor, this->reshape, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
+    LScale *n = new LScale(p[0], this->new_shape, this->reshape, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
     n->orig = this;
 
     // TODO: Implement
@@ -69,7 +67,7 @@ Layer *LScale::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LScale::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LScale *n = new LScale(p[0], this->factor, this->reshape, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
+    LScale *n = new LScale(p[0], this->new_shape, this->reshape, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
 
     // TODO: Implement

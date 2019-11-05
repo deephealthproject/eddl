@@ -17,45 +17,41 @@
 
 using namespace std;
 
-int LRotate::total_layers = 0;
+int LCutoutRandom::total_layers = 0;
 
-LRotate::LRotate(Layer *parent, float angle, vector<int> axis, bool reshape, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
-    if(name.empty()) this->name = "rotate" + to_string(++total_layers);
+LCutoutRandom::LCutoutRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, float constant, string name, int dev) : LinLayer(name, dev) {
+    if(name.empty()) this->name = "cutout_random" + to_string(++total_layers);
 
-    // TODO: Implement
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
     delta = parent->delta;
 
     // Params
-    this->angle = angle;
-    this->axis = axis;
-    this->reshape = reshape;
-    this->da_mode = da_mode;
+    this->factor_x = std::move(factor_x);
+    this->factor_y = std::move(factor_y);
     this->constant = constant;
 
     parent->addchild(this);
     addparent(parent);
-
 }
 
 
 // virtual
-void LRotate::resize(int batch){
+void LCutoutRandom::resize(int batch){
   output->resize(batch);
 }
 
-void LRotate::forward() {
-    Tensor::rotate(this->input, this->output, angle, {2,3}, this->da_mode, this->constant);
+void LCutoutRandom::forward() {
+    Tensor::cutout_random(this->input, this->output, this->factor_x, this->factor_y, this->constant);
 }
 
-void LRotate::backward() {
+void LCutoutRandom::backward() {
 
 }
 
 
-Layer *LRotate::share(int c, int bs, vector<Layer *> p) {
-    LRotate *n = new LRotate(p[0], this->angle, this->axis, this->reshape, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
+Layer *LCutoutRandom::share(int c, int bs, vector<Layer *> p) {
+    LCutoutRandom *n = new LCutoutRandom(p[0], this->factor_x, this->factor_y, this->constant, "share_" + to_string(c) + name, dev);
     n->orig = this;
 
     // TODO: Implement
@@ -63,8 +59,8 @@ Layer *LRotate::share(int c, int bs, vector<Layer *> p) {
     return n;
 }
 
-Layer *LRotate::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LRotate *n = new LRotate(p[0], this->angle, this->axis, this->reshape, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
+Layer *LCutoutRandom::clone(int c, int bs, vector<Layer *> p, int todev) {
+    LCutoutRandom *n = new LCutoutRandom(p[0], this->factor_x, this->factor_y, this->constant, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
 
     // TODO: Implement
@@ -73,7 +69,7 @@ Layer *LRotate::clone(int c, int bs, vector<Layer *> p, int todev) {
 }
 
 
-string LRotate::plot(int c) {
+string LCutoutRandom::plot(int c) {
     string s;
 
     if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=bisque4,shape=box]";
