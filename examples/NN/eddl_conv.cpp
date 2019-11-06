@@ -18,11 +18,6 @@ using namespace eddl;
 
 
 
-layer RC(layer l,int filters, vector<int> kernel, vector<int> stride)
-{
-  return ReLu(Conv(l, filters, kernel,stride));
-}
-
 layer RCRC(layer l,int filters, vector<int> kernel, vector<int> stride)
 {
   return ReLu(Conv(ReLu(Conv(l, filters, kernel,stride)), filters, kernel,stride));
@@ -34,15 +29,20 @@ layer GB(layer l)
 }
 
 
-layer Block(layer l,int filters, vector<int> kernel, vector<int> stride)
+layer Block(layer l,int filters)
 {
-  return MaxPool(GB(RCRC(l,filters,kernel,stride)));
+  return MaxPool(GB(RCRC(l,filters,{3,3},{1,1})));
 }
 
 
-layer ResBlock(layer l,int filters, vector<int> kernel, vector<int> stride)
+layer ResBlock(layer l,int filters)
 {
-  return GB(Sum(RC(l,filters,{1,1},{2,2}),MaxPool(RCRC(l, filters, kernel,stride))));
+  layer in=l;
+
+  layer l1=ReLu(Conv(l,filters,{1,1},{2,2}));
+  layer l2=MaxPool(RCRC(l,filters,{3,3},{1,1}),{2,2});
+  l=GB(Sum(l1,l2));
+  return l;
 }
 
 int main(int argc, char **argv){
@@ -58,11 +58,11 @@ int main(int argc, char **argv){
   layer in=Input({3,32,32});
   layer l=in;
 
-  l=Block(l,32,{3,3},{1,1});
-  l=ResBlock(l,64,{3,3},{1,1});
-  l=ResBlock(l,128,{3,3},{1,1});
-  l=ResBlock(l,256,{3,3},{1,1});
-  l=ResBlock(l,512,{3,3},{1,1});
+  l=Block(l,32);
+  l=ResBlock(l,64);
+  l=ResBlock(l,128);
+  l=ResBlock(l,256);
+  l=ResBlock(l,512);
 
   l=Reshape(l,{-1});
 
