@@ -111,8 +111,6 @@ namespace eddlT {
   }
 
 
-
-
   // Core inplace  **********************************
   void fill_(Tensor *A,float v)
   {
