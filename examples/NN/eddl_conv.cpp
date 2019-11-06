@@ -46,11 +46,11 @@ layer ResBlock(layer l,int filters)
 }
 
 int main(int argc, char **argv){
-  // download MNIST data
+  // download CIFAR data
   download_cifar10();
 
   // Settings
-  int epochs = 20;
+  int epochs = 100;
   int batch_size = 100;
   int num_classes = 10;
 
