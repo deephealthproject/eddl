@@ -99,7 +99,7 @@ int main(int argc, char **argv){
   tensor img=eddlT::select(x_train,0);
 
 
-  eddlT::save_img(img,"img.png");
+  eddlT::save_png(img,"img.png");
 
   // Load and preprocess test data
   tensor x_test = eddlT::load("cifar_tsX.bin");
