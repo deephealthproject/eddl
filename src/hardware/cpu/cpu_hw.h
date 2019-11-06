@@ -41,7 +41,7 @@ void cpu_rand_normal(Tensor *A, float m, float s, bool fast_math);  // TODO: Don
 
 // CPU: Data transformations (2D Optimized) ********************************************
 void cpu_shift(Tensor *A, Tensor *B, vector<int> shift, int mode, float constant);
-void cpu_rotate(Tensor *A, Tensor *B,float angle, vector<int> axis, int mode, float constant);
+void cpu_rotate(Tensor *A, Tensor *B, float angle, vector<int> axis, int mode, float constant);
 void cpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant);
 void cpu_flip(Tensor *A, Tensor *B, int axis);
 void cpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant);

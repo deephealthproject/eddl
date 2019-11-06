@@ -20,6 +20,16 @@
 #include "../../descriptors/descriptors.h"
 
 
+int* get_block_dim(int N, int blockSize){
+  int* res = new int[2];
+  int blocks = (N + blockSize - 1) / blockSize;
+  if (N<blockSize) { blockSize = N; }
+
+   res[0] = blocks;
+   res[1] = blockSize;
+  return res;
+}
+
 
 void gpu_copy_to_gpu(float *nptr,Tensor *A){
   int device=A->gpu_device;

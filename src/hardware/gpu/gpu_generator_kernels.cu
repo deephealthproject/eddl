@@ -13,5 +13,18 @@
 #include <stdlib.h>
 #include <iostream>
 #include <cuda.h>
+#include <curand_kernel.h>
+#include <curand.h>
 
 #include "gpu_kernels.h"
+
+
+__global__ void uniform_array(float* array, int size, unsigned long seed) {
+    long int thread_id_x = blockDim.x*blockIdx.x* + threadIdx.x;
+
+    if (thread_id_x < size) {
+        curandState state;
+        curand_init(seed, thread_id_x, 0, &state);  // opt. => seed=clock64()
+        array[thread_id_x] = curand_uniform(&state);
+    }
+}

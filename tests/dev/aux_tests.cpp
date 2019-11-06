@@ -287,6 +287,7 @@ TestResult run_tensor_da(Tensor* t_input, Tensor* t_output, string op, int dev, 
         else if(op=="flip_h"){ Tensor::flip(t_input, t_output,  1);}
         else if(op=="scale"){ Tensor::scale(t_input, t_output, t_output->getShape());}
         else if(op=="crop"){ Tensor::crop(t_input, t_output, {1,1}, {3, 3}, 0.0f); }
+        else if(op=="crop_scale"){ Tensor::crop_scale(t_input, t_output, {1,1}, {3, 3}, 0.0f); }
         else if(op=="cutout"){ Tensor::cutout(t_input, t_output, {1, 1}, {3, 3}, 0.0f);}
 
         else{

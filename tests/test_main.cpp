@@ -322,7 +322,7 @@ int main(int argc, char **argv) {
 
 //
 ////    // *** [Data augmentation] *****************************************
-    vector<string> data_aug = {"shift", "flip_h", "flip_v", "scale", "crop", "cutout", }; //, "shift", "flip_h", "flip_v", "scale", "crop", "cutout",  "rotate"};
+    vector<string> data_aug = {"shift", "flip_h", "flip_v", "scale", "crop", "crop_scale", "cutout", }; //, "shift", "flip_h", "flip_v", "scale", "crop", "cutout",  "rotate"};
     for (auto op:data_aug){
         t_input = Tensor::range(1.0, 25.0f, 1.0f, DEV_CPU);
         vector<int> shape({1, 1, 5, 5});
@@ -342,6 +342,7 @@ int main(int argc, char **argv) {
 //
         res_small_cpu = run_tensor_da(t_input, t_output, op, DEV_CPU, 1);
         res_small_gpu = run_tensor_da(t_input, t_output, op, DEV_GPU, 1);
+        res_small_cpu.tensor->print();
         print_cpu_gpu_correctness(op, res_small_cpu.tensor, res_small_gpu.tensor);
        //  t_input->reshape_({t_input->shape[2], t_input->shape[3]});
        //  t_input->print();

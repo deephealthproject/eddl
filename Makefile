@@ -1730,6 +1730,87 @@ src/layers/da/layer_crop.cpp.s:
 	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_crop.cpp.s
 .PHONY : src/layers/da/layer_crop.cpp.s
 
+src/layers/da/layer_crop_random.o: src/layers/da/layer_crop_random.cpp.o
+
+.PHONY : src/layers/da/layer_crop_random.o
+
+# target to build an object file
+src/layers/da/layer_crop_random.cpp.o:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_crop_random.cpp.o
+.PHONY : src/layers/da/layer_crop_random.cpp.o
+
+src/layers/da/layer_crop_random.i: src/layers/da/layer_crop_random.cpp.i
+
+.PHONY : src/layers/da/layer_crop_random.i
+
+# target to preprocess a source file
+src/layers/da/layer_crop_random.cpp.i:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_crop_random.cpp.i
+.PHONY : src/layers/da/layer_crop_random.cpp.i
+
+src/layers/da/layer_crop_random.s: src/layers/da/layer_crop_random.cpp.s
+
+.PHONY : src/layers/da/layer_crop_random.s
+
+# target to generate assembly for a file
+src/layers/da/layer_crop_random.cpp.s:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_crop_random.cpp.s
+.PHONY : src/layers/da/layer_crop_random.cpp.s
+
+src/layers/da/layer_crop_scale.o: src/layers/da/layer_crop_scale.cpp.o
+
+.PHONY : src/layers/da/layer_crop_scale.o
+
+# target to build an object file
+src/layers/da/layer_crop_scale.cpp.o:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_crop_scale.cpp.o
+.PHONY : src/layers/da/layer_crop_scale.cpp.o
+
+src/layers/da/layer_crop_scale.i: src/layers/da/layer_crop_scale.cpp.i
+
+.PHONY : src/layers/da/layer_crop_scale.i
+
+# target to preprocess a source file
+src/layers/da/layer_crop_scale.cpp.i:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_crop_scale.cpp.i
+.PHONY : src/layers/da/layer_crop_scale.cpp.i
+
+src/layers/da/layer_crop_scale.s: src/layers/da/layer_crop_scale.cpp.s
+
+.PHONY : src/layers/da/layer_crop_scale.s
+
+# target to generate assembly for a file
+src/layers/da/layer_crop_scale.cpp.s:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_crop_scale.cpp.s
+.PHONY : src/layers/da/layer_crop_scale.cpp.s
+
+src/layers/da/layer_crop_scale_random.o: src/layers/da/layer_crop_scale_random.cpp.o
+
+.PHONY : src/layers/da/layer_crop_scale_random.o
+
+# target to build an object file
+src/layers/da/layer_crop_scale_random.cpp.o:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_crop_scale_random.cpp.o
+.PHONY : src/layers/da/layer_crop_scale_random.cpp.o
+
+src/layers/da/layer_crop_scale_random.i: src/layers/da/layer_crop_scale_random.cpp.i
+
+.PHONY : src/layers/da/layer_crop_scale_random.i
+
+# target to preprocess a source file
+src/layers/da/layer_crop_scale_random.cpp.i:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_crop_scale_random.cpp.i
+.PHONY : src/layers/da/layer_crop_scale_random.cpp.i
+
+src/layers/da/layer_crop_scale_random.s: src/layers/da/layer_crop_scale_random.cpp.s
+
+.PHONY : src/layers/da/layer_crop_scale_random.s
+
+# target to generate assembly for a file
+src/layers/da/layer_crop_scale_random.cpp.s:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_crop_scale_random.cpp.s
+.PHONY : src/layers/da/layer_crop_scale_random.cpp.s
+
 src/layers/da/layer_cutout.o: src/layers/da/layer_cutout.cpp.o
 
 .PHONY : src/layers/da/layer_cutout.o
@@ -1756,6 +1837,33 @@ src/layers/da/layer_cutout.s: src/layers/da/layer_cutout.cpp.s
 src/layers/da/layer_cutout.cpp.s:
 	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_cutout.cpp.s
 .PHONY : src/layers/da/layer_cutout.cpp.s
+
+src/layers/da/layer_cutout_random.o: src/layers/da/layer_cutout_random.cpp.o
+
+.PHONY : src/layers/da/layer_cutout_random.o
+
+# target to build an object file
+src/layers/da/layer_cutout_random.cpp.o:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_cutout_random.cpp.o
+.PHONY : src/layers/da/layer_cutout_random.cpp.o
+
+src/layers/da/layer_cutout_random.i: src/layers/da/layer_cutout_random.cpp.i
+
+.PHONY : src/layers/da/layer_cutout_random.i
+
+# target to preprocess a source file
+src/layers/da/layer_cutout_random.cpp.i:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_cutout_random.cpp.i
+.PHONY : src/layers/da/layer_cutout_random.cpp.i
+
+src/layers/da/layer_cutout_random.s: src/layers/da/layer_cutout_random.cpp.s
+
+.PHONY : src/layers/da/layer_cutout_random.s
+
+# target to generate assembly for a file
+src/layers/da/layer_cutout_random.cpp.s:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_cutout_random.cpp.s
+.PHONY : src/layers/da/layer_cutout_random.cpp.s
 
 src/layers/da/layer_flip.o: src/layers/da/layer_flip.cpp.o
 
@@ -1784,6 +1892,33 @@ src/layers/da/layer_flip.cpp.s:
 	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_flip.cpp.s
 .PHONY : src/layers/da/layer_flip.cpp.s
 
+src/layers/da/layer_flip_random.o: src/layers/da/layer_flip_random.cpp.o
+
+.PHONY : src/layers/da/layer_flip_random.o
+
+# target to build an object file
+src/layers/da/layer_flip_random.cpp.o:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_flip_random.cpp.o
+.PHONY : src/layers/da/layer_flip_random.cpp.o
+
+src/layers/da/layer_flip_random.i: src/layers/da/layer_flip_random.cpp.i
+
+.PHONY : src/layers/da/layer_flip_random.i
+
+# target to preprocess a source file
+src/layers/da/layer_flip_random.cpp.i:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_flip_random.cpp.i
+.PHONY : src/layers/da/layer_flip_random.cpp.i
+
+src/layers/da/layer_flip_random.s: src/layers/da/layer_flip_random.cpp.s
+
+.PHONY : src/layers/da/layer_flip_random.s
+
+# target to generate assembly for a file
+src/layers/da/layer_flip_random.cpp.s:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_flip_random.cpp.s
+.PHONY : src/layers/da/layer_flip_random.cpp.s
+
 src/layers/da/layer_rotate.o: src/layers/da/layer_rotate.cpp.o
 
 .PHONY : src/layers/da/layer_rotate.o
@@ -1810,6 +1945,33 @@ src/layers/da/layer_rotate.s: src/layers/da/layer_rotate.cpp.s
 src/layers/da/layer_rotate.cpp.s:
 	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_rotate.cpp.s
 .PHONY : src/layers/da/layer_rotate.cpp.s
+
+src/layers/da/layer_rotate_random.o: src/layers/da/layer_rotate_random.cpp.o
+
+.PHONY : src/layers/da/layer_rotate_random.o
+
+# target to build an object file
+src/layers/da/layer_rotate_random.cpp.o:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_rotate_random.cpp.o
+.PHONY : src/layers/da/layer_rotate_random.cpp.o
+
+src/layers/da/layer_rotate_random.i: src/layers/da/layer_rotate_random.cpp.i
+
+.PHONY : src/layers/da/layer_rotate_random.i
+
+# target to preprocess a source file
+src/layers/da/layer_rotate_random.cpp.i:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_rotate_random.cpp.i
+.PHONY : src/layers/da/layer_rotate_random.cpp.i
+
+src/layers/da/layer_rotate_random.s: src/layers/da/layer_rotate_random.cpp.s
+
+.PHONY : src/layers/da/layer_rotate_random.s
+
+# target to generate assembly for a file
+src/layers/da/layer_rotate_random.cpp.s:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_rotate_random.cpp.s
+.PHONY : src/layers/da/layer_rotate_random.cpp.s
 
 src/layers/da/layer_scale.o: src/layers/da/layer_scale.cpp.o
 
@@ -1838,6 +2000,33 @@ src/layers/da/layer_scale.cpp.s:
 	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_scale.cpp.s
 .PHONY : src/layers/da/layer_scale.cpp.s
 
+src/layers/da/layer_scale_random.o: src/layers/da/layer_scale_random.cpp.o
+
+.PHONY : src/layers/da/layer_scale_random.o
+
+# target to build an object file
+src/layers/da/layer_scale_random.cpp.o:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_scale_random.cpp.o
+.PHONY : src/layers/da/layer_scale_random.cpp.o
+
+src/layers/da/layer_scale_random.i: src/layers/da/layer_scale_random.cpp.i
+
+.PHONY : src/layers/da/layer_scale_random.i
+
+# target to preprocess a source file
+src/layers/da/layer_scale_random.cpp.i:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_scale_random.cpp.i
+.PHONY : src/layers/da/layer_scale_random.cpp.i
+
+src/layers/da/layer_scale_random.s: src/layers/da/layer_scale_random.cpp.s
+
+.PHONY : src/layers/da/layer_scale_random.s
+
+# target to generate assembly for a file
+src/layers/da/layer_scale_random.cpp.s:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_scale_random.cpp.s
+.PHONY : src/layers/da/layer_scale_random.cpp.s
+
 src/layers/da/layer_shift.o: src/layers/da/layer_shift.cpp.o
 
 .PHONY : src/layers/da/layer_shift.o
@@ -1864,6 +2053,33 @@ src/layers/da/layer_shift.s: src/layers/da/layer_shift.cpp.s
 src/layers/da/layer_shift.cpp.s:
 	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_shift.cpp.s
 .PHONY : src/layers/da/layer_shift.cpp.s
+
+src/layers/da/layer_shift_random.o: src/layers/da/layer_shift_random.cpp.o
+
+.PHONY : src/layers/da/layer_shift_random.o
+
+# target to build an object file
+src/layers/da/layer_shift_random.cpp.o:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_shift_random.cpp.o
+.PHONY : src/layers/da/layer_shift_random.cpp.o
+
+src/layers/da/layer_shift_random.i: src/layers/da/layer_shift_random.cpp.i
+
+.PHONY : src/layers/da/layer_shift_random.i
+
+# target to preprocess a source file
+src/layers/da/layer_shift_random.cpp.i:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_shift_random.cpp.i
+.PHONY : src/layers/da/layer_shift_random.cpp.i
+
+src/layers/da/layer_shift_random.s: src/layers/da/layer_shift_random.cpp.s
+
+.PHONY : src/layers/da/layer_shift_random.s
+
+# target to generate assembly for a file
+src/layers/da/layer_shift_random.cpp.s:
+	$(MAKE) -f CMakeFiles/eddl.dir/build.make CMakeFiles/eddl.dir/src/layers/da/layer_shift_random.cpp.s
+.PHONY : src/layers/da/layer_shift_random.cpp.s
 
 src/layers/generators/layer_gauss.o: src/layers/generators/layer_gauss.cpp.o
 
@@ -4288,21 +4504,45 @@ help:
 	@echo "... src/layers/da/layer_crop.o"
 	@echo "... src/layers/da/layer_crop.i"
 	@echo "... src/layers/da/layer_crop.s"
+	@echo "... src/layers/da/layer_crop_random.o"
+	@echo "... src/layers/da/layer_crop_random.i"
+	@echo "... src/layers/da/layer_crop_random.s"
+	@echo "... src/layers/da/layer_crop_scale.o"
+	@echo "... src/layers/da/layer_crop_scale.i"
+	@echo "... src/layers/da/layer_crop_scale.s"
+	@echo "... src/layers/da/layer_crop_scale_random.o"
+	@echo "... src/layers/da/layer_crop_scale_random.i"
+	@echo "... src/layers/da/layer_crop_scale_random.s"
 	@echo "... src/layers/da/layer_cutout.o"
 	@echo "... src/layers/da/layer_cutout.i"
 	@echo "... src/layers/da/layer_cutout.s"
+	@echo "... src/layers/da/layer_cutout_random.o"
+	@echo "... src/layers/da/layer_cutout_random.i"
+	@echo "... src/layers/da/layer_cutout_random.s"
 	@echo "... src/layers/da/layer_flip.o"
 	@echo "... src/layers/da/layer_flip.i"
 	@echo "... src/layers/da/layer_flip.s"
+	@echo "... src/layers/da/layer_flip_random.o"
+	@echo "... src/layers/da/layer_flip_random.i"
+	@echo "... src/layers/da/layer_flip_random.s"
 	@echo "... src/layers/da/layer_rotate.o"
 	@echo "... src/layers/da/layer_rotate.i"
 	@echo "... src/layers/da/layer_rotate.s"
+	@echo "... src/layers/da/layer_rotate_random.o"
+	@echo "... src/layers/da/layer_rotate_random.i"
+	@echo "... src/layers/da/layer_rotate_random.s"
 	@echo "... src/layers/da/layer_scale.o"
 	@echo "... src/layers/da/layer_scale.i"
 	@echo "... src/layers/da/layer_scale.s"
+	@echo "... src/layers/da/layer_scale_random.o"
+	@echo "... src/layers/da/layer_scale_random.i"
+	@echo "... src/layers/da/layer_scale_random.s"
 	@echo "... src/layers/da/layer_shift.o"
 	@echo "... src/layers/da/layer_shift.i"
 	@echo "... src/layers/da/layer_shift.s"
+	@echo "... src/layers/da/layer_shift_random.o"
+	@echo "... src/layers/da/layer_shift_random.i"
+	@echo "... src/layers/da/layer_shift_random.s"
 	@echo "... src/layers/generators/layer_gauss.o"
 	@echo "... src/layers/generators/layer_gauss.i"
 	@echo "... src/layers/generators/layer_gauss.s"

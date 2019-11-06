@@ -29,6 +29,7 @@ extern cublasHandle_t hcublas[64];
 extern curandGenerator_t random_generator[64];
 
 // GPU: Temp
+int* get_block_dim(int N, int blockSize);
 
 // GPU: Comparison
 int gpu_equal(Tensor *A, Tensor *B);
@@ -54,7 +55,7 @@ void gpu_eye(Tensor *A);
 // GPU: Transformations
 void gpu_shift(Tensor *A, Tensor *B, vector<int> t_shift, int mode, float constant);
 void gpu_rotate(Tensor *A, Tensor *B,float angle, vector<int> axis, int mode, float constant);
-void gpu_scale(Tensor *A, Tensor *B, int mode, float constant);
+void gpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant);
 void gpu_flip(Tensor *A, Tensor *B, int axis);
 void gpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant);
 void gpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant);

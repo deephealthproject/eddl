@@ -139,8 +139,8 @@ void cpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_
 
 
 void cpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant){
-    int A_wc = coords_to[0]-coords_from[0]+1;
-    int A_hc = coords_to[0]-coords_from[1]+1;
+    int A_hc = coords_to[0]-coords_from[0]+1;
+    int A_wc = coords_to[1]-coords_from[1]+1;
 
     #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
@@ -150,8 +150,8 @@ void cpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> c
                 for(int Bj=0; Bj<B->shape[3]; Bj++) {
 
                     // Interpolate indices
-                    int Ai = (Bi * A_wc) / B->shape[2] + coords_from[0];
-                    int Aj = (Bj * A_hc) / B->shape[3] + coords_from[1];
+                    int Ai = (Bi * A_hc) / B->shape[2] + coords_from[0];
+                    int Aj = (Bj * A_wc) / B->shape[3] + coords_from[1];
 
                     int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
                     int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
