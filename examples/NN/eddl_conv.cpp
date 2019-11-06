@@ -96,6 +96,10 @@ int main(int argc, char **argv){
   tensor y_train = eddlT::load("cifar_trY.bin");
   eddlT::div_(x_train, 255.0);
 
+  tensor img=eddlT::select(x_train,0);
+
+
+  eddlT::save_img(img,"img.png");
 
   // Load and preprocess test data
   tensor x_test = eddlT::load("cifar_tsX.bin");
