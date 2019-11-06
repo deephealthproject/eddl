@@ -13,8 +13,11 @@
 #include <cstdlib>
 #include <iostream>
 
+
 #include "eddlT.h"
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "../stb/stb_image_write.h"
 
 using namespace std;
 
@@ -93,6 +96,22 @@ namespace eddlT {
     return A->clone();
   }
 
+  Tensor* select(Tensor *A,int ind)
+  {
+    if (!A->isCPU()) {
+      msg("select only in CPU tensors");
+    }
+    vector<int> shape=A->getShape();
+    shape[0]=1;
+    Tensor *B=new Tensor(shape);
+
+    Tensor::select(A,B,{ind},0,1);
+
+    return B;
+  }
+
+
+
 
   // Fill            **********************************
   void fill_(Tensor *A,float v)
@@ -116,8 +135,6 @@ namespace eddlT {
 
   // Load from file ***********************************
   Tensor *load(string fname){
-    fprintf(stderr,"Reading %s ",fname.c_str());
-
     FILE *fe = fopen(fname.c_str(), "rb");
     if (fe == nullptr) {
         fprintf(stderr, "%s not found\n", fname.c_str());
@@ -132,14 +149,33 @@ namespace eddlT {
         shape.push_back(v);
     }
 
-    int i;
-    for (i = 0; i < ndim-1; ++i)
-      fprintf(stderr,"%dx",shape[i]);
-    fprintf(stderr,"%d\n",shape[i]);
-
     Tensor *t=new Tensor(shape,DEV_CPU);
     t->load(fe);
     return t;
+  }
+
+  void save_png(Tensor* A,string fname)
+  {
+    unsigned char* data=(unsigned char *)malloc(A->size);
+
+    Tensor *B=A->clone();
+    Tensor *C=A->clone();
+
+    B->normalize_(0.0,255.0);
+    for(int i=0;i<A->size;i+=A->shape[1]) {
+      for(int j=0;j<A->shape[1];j++)
+        C->ptr[i+j]=B->ptr[(i/A->shape[1])+(j*A->shape[2]*A->shape[3])];
+    }
+
+    for(int i=0;i<A->size;i++)
+      data[i]=C->ptr[i];
+
+    stbi_write_png(fname.c_str(),A->shape[3],A->shape[2],A->shape[1],data,A->shape[3]*A->shape[1]);
+
+    delete B;
+    delete C;
+    free(data);
+
   }
 
 
