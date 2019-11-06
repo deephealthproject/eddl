@@ -51,13 +51,22 @@ void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
 void gpu_range(Tensor *A, float start, float step);
 void gpu_eye(Tensor *A);
 
-// GPU: Math (in-place)
+// GPU: Transformations
 void gpu_shift(Tensor *A, Tensor *B, vector<int> t_shift, int mode, float constant);
 void gpu_rotate(Tensor *A, Tensor *B,float angle, vector<int> axis, int mode, float constant);
 void gpu_scale(Tensor *A, Tensor *B, int mode, float constant);
 void gpu_flip(Tensor *A, Tensor *B, int axis);
 void gpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant);
+void gpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant);
 void gpu_cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant);
+
+void gpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int mode, float constant);
+void gpu_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> axis, int mode, float constant);
+void gpu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant);
+void gpu_flip_random(Tensor *A, Tensor *B, int axis);
+void gpu_crop_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant);
+void gpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant);
+void gpu_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant);
 
 // GPU: Generator
 void gpu_rand_uniform(Tensor *A, float v);

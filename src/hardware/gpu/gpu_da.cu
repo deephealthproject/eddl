@@ -82,6 +82,24 @@ void gpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_
     check_cuda(cudaDeviceSynchronize(),"crop");
 }
 
+void gpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(B);
+
+    // Copy vector from host to device
+    int *d_coords_from; cudaMalloc((int**)&d_coords_from, coords_from.size()*sizeof(int));
+    cudaMemcpy(d_coords_from, coords_from.data(), coords_from.size()*sizeof(int), cudaMemcpyHostToDevice);
+
+    // Copy vector from host to device
+    int *d_coords_to; cudaMalloc((int**)&d_coords_to, coords_to.size()*sizeof(int));
+    cudaMemcpy(d_coords_to, coords_to.data(), coords_to.size()*sizeof(int), cudaMemcpyHostToDevice);
+
+    crop_scale<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], d_coords_from, d_coords_to, constant);
+    check_cuda(cudaDeviceSynchronize(),"crop_scale");
+}
+
 void gpu_cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant){
     int device=A->gpu_device;
     cudaSetDevice(device);
@@ -98,4 +116,117 @@ void gpu_cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coord
 
     cutout<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[0], B->shape[1], B->shape[2], B->shape[3], d_coords_from, d_coords_to, constant);
     check_cuda(cudaDeviceSynchronize(),"cutout");
+}
+
+
+void gpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int mode, float constant){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(B);
+
+    // Copy vector from host to device
+    float *d_factor_x; cudaMalloc((float**)&d_factor_x, 2*sizeof(float));
+    cudaMemcpy(d_factor_x, factor_x.data(), 2*sizeof(float), cudaMemcpyHostToDevice);
+
+    // Copy vector from host to device
+    float *d_factor_y; cudaMalloc((float**)&d_factor_y, 2*sizeof(float));
+    cudaMemcpy(d_factor_y, factor_y.data(), 2*sizeof(float), cudaMemcpyHostToDevice);
+
+    shift_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], d_shift, mode, constant);
+    check_cuda(cudaDeviceSynchronize(),"shift_random");
+}
+
+void gpu_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> axis, int mode, float constant){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(B);
+
+    // Copy vector from host to device
+    float *d_factor; cudaMalloc((float**)&d_factor, 2*sizeof(float));
+    cudaMemcpy(d_factor, factor.data(), 2*sizeof(float), cudaMemcpyHostToDevice);
+
+//    rotate_random<<<dimGrid,dimBlock>>>(A->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(),"rotate_random");
+
+}
+
+void gpu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(B);
+
+    // Copy vector from host to device
+    float *d_factor; cudaMalloc((float**)&d_factor, 2*sizeof(float));
+    cudaMemcpy(d_factor, factor.data(), 2*sizeof(float), cudaMemcpyHostToDevice);
+
+    scale_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], mode, constant);
+    check_cuda(cudaDeviceSynchronize(),"scale_random");
+}
+
+void gpu_flip_random(Tensor *A, Tensor *B, int axis){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(B);
+
+    flip_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], axis);
+    check_cuda(cudaDeviceSynchronize(),"flip_random");
+}
+
+void gpu_crop_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(B);
+
+    // Copy vector from host to device
+    float *d_factor_x; cudaMalloc((float**)&d_factor_x, 2*sizeof(float));
+    cudaMemcpy(d_factor_x, factor_x.data(), 2*sizeof(float), cudaMemcpyHostToDevice);
+
+    // Copy vector from host to device
+    float *d_factor_y; cudaMalloc((float**)&d_factor_y, 2*sizeof(float));
+    cudaMemcpy(d_factor_y, factor_y.data(), 2*sizeof(float), cudaMemcpyHostToDevice);
+
+    crop_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], d_coords_from, d_coords_to, constant);
+    check_cuda(cudaDeviceSynchronize(),"crop_random");
+}
+
+
+void gpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(B);
+
+    // Copy vector from host to device
+    float *d_factor_x; cudaMalloc((float**)&d_factor_x, 2*sizeof(float));
+    cudaMemcpy(d_factor_x, factor_x.data(), 2*sizeof(float), cudaMemcpyHostToDevice);
+
+    // Copy vector from host to device
+    float *d_factor_y; cudaMalloc((float**)&d_factor_y, 2*sizeof(float));
+    cudaMemcpy(d_factor_y, factor_y.data(), 2*sizeof(float), cudaMemcpyHostToDevice);
+
+    crop_scale_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], d_coords_from, d_coords_to, constant);
+    check_cuda(cudaDeviceSynchronize(),"crop_scale_random");
+}
+
+void gpu_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(B);
+
+    // Copy vector from host to device
+    int *d_coords_from; cudaMalloc((int**)&d_coords_from, coords_from.size()*sizeof(int));
+    cudaMemcpy(d_coords_from, coords_from.data(), coords_from.size()*sizeof(int), cudaMemcpyHostToDevice);
+
+    // Copy vector from host to device
+    int *d_coords_to; cudaMalloc((int**)&d_coords_to, coords_to.size()*sizeof(int));
+    cudaMemcpy(d_coords_to, coords_to.data(), coords_to.size()*sizeof(int), cudaMemcpyHostToDevice);
+
+    cutout_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[0], B->shape[1], B->shape[2], B->shape[3], d_coords_from, d_coords_to, constant);
+    check_cuda(cudaDeviceSynchronize(),"cutout_random");
 }

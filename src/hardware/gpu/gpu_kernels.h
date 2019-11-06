@@ -26,13 +26,24 @@ __global__ void fill(float *aptr,float *bptr,int t,int aini,int at,int bini,int 
 __global__ void fill_(float* a, float v, long int size);
 __global__ void mask(float* a, float v, long int size);
 
-// GPU: Math (in-place)
+// GPU: Transformations
 __global__ void shift(float* A, float* B, int batch, int depth, int irows, int icols, int* shift, int mode, float constant);
-//__global__ void rotate_(float* a, int batch, int depth, int irows, int icols, float angle, int* axis, bool reshape, int mode, float constant);
+__global__ void rotate(float* a, int batch, int depth, int irows, int icols, float angle, int* axis, bool reshape, int mode, float constant);
 __global__ void scale(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int mode, float constant);
 __global__ void flip(float* A, float* B, int batch, int depth, int irows, int icols, int axis);
 __global__ void crop(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, float constant);
+__global__ void crop_scale(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, float constant);
 __global__ void cutout(float* A, float* B, int batch, int depth, int irows, int icols, int* coords_from, int* coords_to, float constant);
+
+// GPU: Data augmentation
+__global__ void shift_random(float* A, float* B, int batch, int depth, int irows, int icols, float* factor_x, float* factor_y, int mode, float constant, float* rdn_x, float* rdn_y);
+__global__ void rotate_random(float* A, float* B, int batch, int depth, int irows, int icols, float* factor, int* axis, int mode, float constant, float* rdn);
+__global__ void scale_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor, int mode, float constant, float* rdn);
+__global__ void flip_random(float* A, float* B, int batch, int depth, int irows, int icols, int axis, float* rdn);
+__global__ void crop_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float constant, float* rdn);
+__global__ void crop_scale_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float constant, float* rdn);
+__global__ void cutout_random(float* A, float* B, int batch, int depth, int irows, int icols, float constant, float* rdn);
+
 
 // GPU: Generator
 
