@@ -41,7 +41,7 @@ void Tensor::reshape_(vector<int> shape){
 
     // Check if the new size is compatible
     if(new_size!=this->size){
-        msg("Tensors in different devices", "Tensor::reshape_");
+        msg("Not compatible shapes", "Tensor::reshape_");
     }
 
     // Update attributes
@@ -198,4 +198,3 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
     }
     //B->tsem->unlock();
 }
-

@@ -42,8 +42,9 @@ namespace eddlT{
   Tensor* clone(Tensor *A);
   Tensor* select(Tensor *A, int i);
 
-  // Fill            **********************************
+  // Core inplace    **********************************
   void fill_(Tensor *A,float v);
+  void reshape_(Tensor *A, vector<int> indices);
 
   // Pointer functions ********************************
   float *getptr(Tensor *A);

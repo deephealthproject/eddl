@@ -113,10 +113,15 @@ namespace eddlT {
 
 
 
-  // Fill            **********************************
+  // Core inplace  **********************************
   void fill_(Tensor *A,float v)
   {
     A->fill_(v);
+  }
+
+  void reshape_(Tensor *A, vector<int> indices)
+  {
+    A->reshape_(indices);
   }
 
 // Pointer functions ********************************
@@ -156,6 +161,10 @@ namespace eddlT {
 
   void save_png(Tensor* A,string fname)
   {
+    if (A->ndim!=4) {
+      msg("Tensors should be 4D: 1xCxHxW","save_png");
+    }
+
     unsigned char* data=(unsigned char *)malloc(A->size);
 
     Tensor *B=A->clone();
