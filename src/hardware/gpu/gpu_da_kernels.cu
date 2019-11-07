@@ -228,8 +228,8 @@ __global__ void shift_random(float* A, float* B, int batch, int depth, int irows
         //--------------
         //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
 
-        int shift_x = (int)(icols * rnd[b]);
-        int shift_y = (int)(irows * rnd[b+1]);
+        int shift_x = (int)(icols * ((factor_x[1]-factor_x[0]) * rnd[b] + factor_x[0]));
+        int shift_y = (int)(irows * ((factor_y[1]-factor_y[0]) * rnd[b+1] + factor_y[0]));
 
         int Ai = Bi - shift_x;
         int Aj = Bj - shift_y;
@@ -273,7 +273,7 @@ __global__ void scale_random(float* A, float* B, int batch, int depth, int irows
         //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
 
         // TODO: Center image
-        float scale = rnd[b];
+        float scale = (factor[1]-factor[0]) * rnd[b] + factor[0];
         int new_shape_x = (int)(icols * scale);
         int new_shape_y = (int)(irows * scale);
         
@@ -330,7 +330,7 @@ __global__ void flip_random(float* A, float* B, int batch, int depth, int irows,
 }
 
 
-__global__ void crop_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float constant, float* rnd){
+__global__ void crop_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor_x, float* factor_y, float constant, float* rnd){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*irows*icols;
 
@@ -355,10 +355,10 @@ __global__ void crop_random(float* A, float* B, int batch, int depth, int irows,
         offsets[1] = icols/2.0f - ocols/2.0f+1;
 
         // Compute random coordinates
-        int x1 = (int)(icols * rnd[b]);
-        int x2 = (int)(icols * rnd[b+1]);
-        int y1 = (int)(irows * rnd[b+2]);
-        int y2 = (int)(irows * rnd[b+3]);
+        int x1 = (int)(icols * (factor_x[1]-factor_x[0]) * rnd[b] + factor_x[0]);
+        int x2 = (int)(icols * (factor_x[1]-factor_x[0]) * rnd[b+1] + factor_x[0]);
+        int y1 = (int)(irows * (factor_y[1]-factor_y[0]) * rnd[b+2] + factor_y[0]);
+        int y2 = (int)(irows * (factor_y[1]-factor_y[0]) * rnd[b+3] + factor_y[0]);
 
         int coords_from_x = min(x1, x2);
         int coords_to_x = max(x1, x2);
@@ -383,7 +383,7 @@ __global__ void crop_random(float* A, float* B, int batch, int depth, int irows,
 }
 
 
-__global__ void crop_scale_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float constant, float* rnd) {
+__global__ void crop_scale_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor_x, float* factor_y, float constant, float* rnd) {
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*irows*icols;
 
@@ -398,10 +398,10 @@ __global__ void crop_scale_random(float* A, float* B, int batch, int depth, int 
         int Bj = thread_id_x / B_stride[3] % ocols;
 
         // Compute random coordinates
-        int x1 = (int)(icols * rnd[b]);
-        int x2 = (int)(icols * rnd[b+1]);
-        int y1 = (int)(irows * rnd[b+2]);
-        int y2 = (int)(irows * rnd[b+3]);
+        int x1 = (int)(icols * (factor_x[1]-factor_x[0]) * rnd[b] + factor_x[0]);
+        int x2 = (int)(icols * (factor_x[1]-factor_x[0]) * rnd[b+1] + factor_x[0]);
+        int y1 = (int)(irows * (factor_y[1]-factor_y[0]) * rnd[b+2] + factor_y[0]);
+        int y2 = (int)(irows * (factor_y[1]-factor_y[0]) * rnd[b+3] + factor_y[0]);
 
         int coords_from_x = min(x1, x2);
         int coords_to_x = max(x1, x2);
@@ -420,7 +420,7 @@ __global__ void crop_scale_random(float* A, float* B, int batch, int depth, int 
     }
 }
 
-__global__ void cutout_random(float* A, float* B, int batch, int depth, int irows, int icols, float constant, float* rnd){
+__global__ void cutout_random(float* A, float* B, int batch, int depth, int irows, int icols, float* factor_x, float* factor_y, float constant, float* rnd){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch*depth*irows*icols;
 
@@ -436,10 +436,10 @@ __global__ void cutout_random(float* A, float* B, int batch, int depth, int irow
         //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
 
         // Compute random coordinates
-        int x1 = (int)(icols * rnd[b]);
-        int x2 = (int)(icols * rnd[b+1]);
-        int y1 = (int)(irows * rnd[b+2]);
-        int y2 = (int)(irows * rnd[b+3]);
+        int x1 = (int)(icols * (factor_x[1]-factor_x[0]) * rnd[b] + factor_x[0]);
+        int x2 = (int)(icols * (factor_x[1]-factor_x[0]) * rnd[b+1] + factor_x[0]);
+        int y1 = (int)(irows * (factor_y[1]-factor_y[0]) * rnd[b+2] + factor_y[0]);
+        int y2 = (int)(irows * (factor_y[1]-factor_y[0]) * rnd[b+3] + factor_y[0]);
 
         int coords_from_x = min(x1, x2);
         int coords_to_x = max(x1, x2);

@@ -218,7 +218,7 @@ void gpu_crop_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float>
     uniform_array<<<t_bdim[0], t_bdim[1]>>>(d_rnd, rnd_size, 42);
 
     setDims(B);
-    crop_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], constant, d_rnd);
+    crop_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], d_factor_x, d_factor_y, constant, d_rnd);
     check_cuda(cudaDeviceSynchronize(),"crop_random");
 }
 
@@ -242,7 +242,7 @@ void gpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<
     uniform_array<<<t_bdim[0], t_bdim[1]>>>(d_rnd, rnd_size, 42);
     
     setDims(B);
-    crop_scale_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], constant, d_rnd);
+    crop_scale_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], d_factor_x, d_factor_y, constant, d_rnd);
     check_cuda(cudaDeviceSynchronize(),"crop_scale_random");
 }
 
@@ -265,6 +265,6 @@ void gpu_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<floa
     uniform_array<<<t_bdim[0], t_bdim[1]>>>(d_rnd, rnd_size, 42);
     
     setDims(B);
-    cutout_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[0], B->shape[1], B->shape[2], B->shape[3], constant, d_rnd);
+    cutout_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[0], B->shape[1], B->shape[2], B->shape[3], d_factor_x, d_factor_y, constant, d_rnd);
     check_cuda(cudaDeviceSynchronize(),"cutout_random");
 }
