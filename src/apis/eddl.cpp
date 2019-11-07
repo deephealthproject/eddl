@@ -505,7 +505,9 @@ namespace eddl {
         net->train_batch(in, out, indices);
     }
 
-
+    void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices){
+        net->train_batch(in, out, indices,1);
+    }
 
     // ---- MODEL METHODS ----
     model Model(vlayer in, vlayer out) {
@@ -624,6 +626,45 @@ namespace eddl {
                 exit(1);
             }
             cmd = "wget https://www.dropbox.com/s/q0tnbjvaenb4tjs/tsY.bin";
+            status = system(cmd.c_str());
+            if (status < 0) {
+                msg("wget must be installed", "eddl.download_mnist");
+                exit(1);
+            }
+
+        }
+    }
+
+    void download_cifar10() {
+        // TODO: Too big, we should use the one in the PyEDDL
+        // TODO: Need for "to_categorical" method
+        string cmd;
+        string trX = "cifar_trX.bin";
+        string trY = "cifar_trY.bin";
+        string tsX = "cifar_tsX.bin";
+        string tsY = "cifar_tsY.bin";
+
+        if ((!exist(trX)) || (!exist(trY)) || (!exist(tsX)) || (!exist(tsY))) {
+            cmd = "wget https://www.dropbox.com/s/wap282xox5ew02d/cifar_trX.bin";
+            int status = system(cmd.c_str());
+            if (status < 0) {
+                msg("wget must be installed", "eddl.download_mnist");
+                exit(1);
+            }
+
+            cmd = "wget https://www.dropbox.com/s/yxhw99cu1ktiwxq/cifar_trY.bin";
+            status = system(cmd.c_str());
+            if (status < 0) {
+                msg("wget must be installed", "eddl.download_mnist");
+                exit(1);
+            }
+            cmd = "wget https://www.dropbox.com/s/dh9vqxe9vt7scrp/cifar_tsX.bin";
+            status = system(cmd.c_str());
+            if (status < 0) {
+                msg("wget must be installed", "eddl.download_mnist");
+                exit(1);
+            }
+            cmd = "wget https://www.dropbox.com/s/gdmsve6mbu82ndp/cifar_tsY.bin";
             status = system(cmd.c_str());
             if (status < 0) {
                 msg("wget must be installed", "eddl.download_mnist");

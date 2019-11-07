@@ -117,7 +117,13 @@ Net::Net(vlayer in, vlayer out) {
     }
     build_randn_table();
 }
+Net::~Net()
+{
+  for(int i=0;i<snets.size();i++)
+    for(int j=0;j<snets[i]->layers.size();j++)
+      delete snets[i]->layers[j];
 
+}
 
 /////////////////////////////////////////
 int Net::inNet(Layer *l) {
@@ -366,6 +372,13 @@ void Net::resize(int b)
 
 
 /////////////////////////////////////////
+
+void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs){
+    build(opt, lo, me);
+    set_compserv(cs);
+}
+
+
 void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
     fprintf(stdout, "Build net %s\n",name.c_str());
 
@@ -384,7 +397,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
             if (dev == -1) dev = layers[i]->dev;
             else {
                 if (layers[i]->dev != dev)
-                    msg("Net with layers in different devices", "Net.build");
+                  msg("Net with layers in different devices", "Net.build");
             }
         }
     }
@@ -432,25 +445,17 @@ void Net::set_compserv(CompServ *cs){
         else if (cs->local_fpgas.size() > 0) todev = DEV_FPGA;
         else todev = DEV_CPU;
 
-        // split net in devices
         if (todev == DEV_CPU) {
             if (dev == DEV_CPU) {
-                // split on multiple threads
-                int nthreads = cs->local_threads;
 
+                int nthreads = cs->local_threads;
                 if (nthreads <= 0)
                     msg("Threads must be > 0", "Net.build");
-
-                cout << "set threads to " << nthreads << "\n";
 
                 Eigen::initParallel();
                 Eigen::setNbThreads(nthreads);
 
-                split(1, DEV_CPU);
-
-                int n = Eigen::nbThreads( );
-                cout << "---> threads = " << n << "\n";
-
+                snets.push_back(this);
             } else {
                 msg("Net and Layers device missmatch", "Net.build");
             }
@@ -488,6 +493,14 @@ void Net::set_compserv(CompServ *cs){
     } else {
         msg("Distributed version not yet implemented", "Net.build");
     }
+
+    // create input and output tensors (X,Y)
+    for (int i = 0; i < snets.size(); i++) {
+      for (int j = 0; j < snets[i]->lin.size(); j++)
+          Xs[i].push_back(new Tensor(snets[i]->lin[j]->input->shape));
+      for (int j = 0; j < snets[i]->lout.size(); j++)
+          Ys[i].push_back(new Tensor(snets[i]->lout[j]->output->shape));
+    }
 }
 
 void Net::split(int c, int todev) {
@@ -497,6 +510,7 @@ void Net::split(int c, int todev) {
     vlayer nin;
     vlayer nout;
     int ind;
+    vlayer par;
 
     int bs=1;
     int m=0;
@@ -509,30 +523,22 @@ void Net::split(int c, int todev) {
         nout.clear();
 
         if (i == c - 1) bs += m;
+
         // set inputs
         for (j = 0; j < lin.size(); j++)  {
-            vlayer par;
-
-            if (todev == DEV_CPU) nin.push_back(lin[j]->share(i, bs, par));
-            else nin.push_back(lin[j]->clone(c, bs, par, todev + devsel[i]));
+            nin.push_back(lin[j]->clone(c, bs, par, todev + devsel[i]));
             nlayers.push_back(nin[j]);
         }
+
+        // special layers that are not input of net but has not parents
         for (j = 0; j < layers.size(); j++)
-          if ((layers[j]->lin==0)&&(!isIn(layers[j],lin,ind))) {
-            vlayer par;
+          if ((layers[j]->lin==0)&&(!isIn(layers[j],lin,ind)))
+            nlayers.push_back(layers[j]->clone(c, bs, par, todev + devsel[i]));
 
-            if (todev == DEV_CPU) {
-              Layer *n=layers[j]->share(i, bs, par);
-              nlayers.push_back(n);
-              Tensor::copy(layers[j]->output,n->output);
-              cout<<n->name<<" "<<n->output->sum_abs()<<"\n";
-            }
-            else nlayers.push_back(layers[j]->clone(c, bs, par, todev + devsel[i]));
-        }
 
+        // rest of layers
         for (k = 0; k < layers.size(); k++) {
             for (j = 0; j < layers.size(); j++) {
-
                 if (!isInorig(layers[j], nlayers, ind)) {
                     vlayer par;
                     for (l = 0; l < layers[j]->parent.size(); l++) {
@@ -540,8 +546,7 @@ void Net::split(int c, int todev) {
                         else par.push_back(nlayers[ind]);
                     }
                     if (l == layers[j]->parent.size()) {
-                        if (todev == DEV_CPU) nlayers.push_back(layers[j]->share(i, bs, par));
-                        else nlayers.push_back(layers[j]->clone(i, bs, par, todev + devsel[i]));
+                        nlayers.push_back(layers[j]->clone(i, bs, par, todev + devsel[i]));
                     }
                 }
 
@@ -556,12 +561,6 @@ void Net::split(int c, int todev) {
         // create new net
         snets.push_back(new Net(nin, nout));
 
-        //snets[i]->summary()<<"\n";
-        for (j = 0; j < snets[i]->lin.size(); j++)
-            Xs[i].push_back(new Tensor(snets[i]->lin[j]->input->shape));
-        for (j = 0; j < snets[i]->lout.size(); j++)
-            Ys[i].push_back(new Tensor(snets[i]->lout[j]->output->shape));
-
         // build new net
         char cname[100];
         sprintf(cname,"snet_%d",i);
@@ -571,24 +570,14 @@ void Net::split(int c, int todev) {
         //summary();
         snets[i]->plot("kk.pdf");
     }
-
-/*
-    for (int j = 0; j < layers.size(); j++)
-        for (int k = 0; k < layers[j]->params.size(); k++) {
-            for (int i = 0; i < snets.size(); i++) {
-                Tensor::copy(layers[j]->params[k], snets[i]->layers[j]->params[k]);
-            }
-        }
-*/
 }
 
-void Net::setmode(int m) {
-    for (int i = 0; i < layers.size(); i++)
-        layers[i]->setmode(m);
 
-    if (snets.size())
-        for (int i = 0; i != snets.size(); i++)
-            snets[i]->setmode(m);
+
+void Net::setmode(int m) {
+  for (int i = 0; i < snets.size(); i++)
+    for (int j = 0; j < snets[i]->layers.size(); j++)
+      snets[i]->layers[j]->setmode(m);
 }
 
 /////////////////////////////////////////
@@ -656,10 +645,6 @@ void Net::applygrads() {
 }
 
 
-void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs){
-    build(opt, lo, me);
-    set_compserv(cs);
-}
 
 void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     int i, j, k, n;

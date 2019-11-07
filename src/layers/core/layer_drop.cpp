@@ -35,6 +35,10 @@ LDropout::LDropout(Layer *parent, float df, string name, int dev) : LinLayer(nam
     addparent(parent);
 }
 
+LDropout::~LDropout()
+{
+  delete mask;
+}
 
 // virtual
 void LDropout::resize(int batch){

@@ -40,9 +40,11 @@ namespace eddlT{
   Tensor * ToCPU(Tensor *A);
   Tensor * ToGPU(Tensor *A);
   Tensor* clone(Tensor *A);
+  Tensor* select(Tensor *A, int i);
 
-  // Fill            **********************************
+  // Core inplace    **********************************
   void fill_(Tensor *A,float v);
+  void reshape_(Tensor *A, vector<int> indices);
 
   // Pointer functions ********************************
   float *getptr(Tensor *A);
@@ -53,6 +55,8 @@ namespace eddlT{
 
   // Load from file ***********************************
   Tensor *load(string fname);
+
+  void save_png(Tensor* A,string fname);
 
   // Math ops       ***********************************
 

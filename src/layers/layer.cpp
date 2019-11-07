@@ -39,6 +39,15 @@ Layer::~Layer()
   if (output!=nullptr) delete output;
   if (delta!=nullptr) delete delta;
   if (target!=nullptr) delete target;
+
+  //params if any
+  for (int i=0;i<params.size();i++)
+     delete params[i];
+
+  //gradients if any
+  for (int i=0;i<gradients.size();i++)
+    delete gradients[i];
+
 }
 
 void Layer::initialize() {

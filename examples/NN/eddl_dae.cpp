@@ -52,8 +52,8 @@ int main(int argc, char **argv) {
           sgd(0.01, 0.9), // Optimizer
           {"mean_squared_error"}, // Losses
           {"mean_squared_error"}, // Metrics
-          //CS_CPU()
-          CS_GPU({1})
+          CS_CPU()
+          //CS_GPU({1})
     );
 
     // Load dataset
@@ -61,11 +61,8 @@ int main(int argc, char **argv) {
     // Preprocessing
     eddlT::div_(x_train, 255.0);
 
-
     // Train model
     fit(net, {x_train}, {x_train}, batch_size, epochs);
-
-
 }
 
 

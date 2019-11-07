@@ -165,7 +165,7 @@ Tensor* Tensor::clone(){
 
 Tensor::~Tensor() {
     if (isCPU()) {
-        delete ptr;
+      delete ptr;
     }
 #ifdef cGPU
     else if (isGPU())

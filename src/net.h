@@ -67,6 +67,7 @@ public:
     vtensor Ys[MAX_THREADS];
 
     Net(vlayer in, vlayer out);
+    ~Net();
 
     void initialize();
     void reset();

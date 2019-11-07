@@ -39,7 +39,8 @@ public:
 
 class MMeanRelativeError : public Metric {
 public:
-    MMeanRelativeError();
+    MMeanRelativeError(float eps=0.001);
+    float eps;
 
     float value(Tensor *T, Tensor *Y) override;
 };
