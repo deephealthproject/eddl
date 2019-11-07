@@ -57,6 +57,24 @@ int main(int argc, char **argv){
   // network
   layer in=Input({3,32,32});
   layer l=in;
+//
+//    // Transformations
+//    l = Shift(l, {2, 2});  // In pixels
+//    l = Scale(l, {30, 30}, true); // In pixels
+//    // Not implemented => l = Rotate(l, 15, false); // Degrees
+//    l = Flip(l, 1);
+//    l = Crop(l, {0, 0}, {23, 23}, false);  // In pixels
+//    l = CropAndScale(l, {0, 0}, {23, 23}, false);  // In pixels
+//    l = Cutout(l, {0, 0}, {5, 5}); // In pixels
+//
+//    // Data augmentation
+//    l = ShiftRandom(l, {-0.1f, +0.1f}, {-0.1f, +0.1f});
+//    l = ScaleRandom(l, {0.8f, 1.2f});
+//    l = FlipRandom(l, 1);
+//    l = CropRandom(l, {0.8f, 0.1f}, {0.8, 1.0f});  // Crop with padding
+//    l = CropAndScaleRandom(l, {0.8f, 0.1f}, {0.8, 1.0f});  // Crop and rescale
+//    l = CutoutRandom(l, {0.1f, 0.3f}, {0.1, 0.3f});
+
 
   l=Block(l,32);
   l=ResBlock(l,64);
