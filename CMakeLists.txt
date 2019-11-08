@@ -504,8 +504,8 @@ if(BUILD_EXAMPLES)
     set(CMAKE_FOLDER examples)
     ## MNIST EXAMPLE
     add_executable(mnist_mlp "${EXAMPLES_DIR}/NN/1_MNIST/1_mnist_mlp.cpp")
-    add_executable(mnist_mlp_regularizers "${EXAMPLES_DIR}/NN/1_MNIST/2_mnist_mlp_initializers.cpp")
-    add_executable(mnist_mlp_initializers "${EXAMPLES_DIR}/NN/1_MNIST/3_mnist_mlp_regularizers.cpp")
+    add_executable(mnist_mlp_initializers "${EXAMPLES_DIR}/NN/1_MNIST/2_mnist_mlp_initializers.cpp")
+    add_executable(mnist_mlp_regularizers "${EXAMPLES_DIR}/NN/1_MNIST/3_mnist_mlp_regularizers.cpp")
     add_executable(mnist_mlp_da "${EXAMPLES_DIR}/NN/1_MNIST/4_mnist_mlp_da.cpp")
     add_executable(mnist_mlp_train_batch "${EXAMPLES_DIR}/NN/1_MNIST/5_mnist_mlp_train_batch.cpp")
     ####
