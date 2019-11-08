@@ -17,6 +17,7 @@
 namespace eddlT{
 
   #define tensor Tensor*
+  #define tshape vector<int>
 
   // Creation ops ***********************************
   Tensor* create(const vector<int> &shape);
@@ -49,9 +50,10 @@ namespace eddlT{
   // Pointer functions ********************************
   float *getptr(Tensor *A);
 
-  // Print functions   ********************************
+  // Other functions   ********************************
   void print(Tensor *A);
   void info(Tensor *A);
+  tshape getShape(Tensor *A);
 
   // Load from file ***********************************
   Tensor *load(string fname);

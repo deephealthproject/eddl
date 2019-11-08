@@ -109,7 +109,7 @@ namespace eddlT {
     shape[0]=1;
     Tensor *B=new Tensor(shape);
 
-    
+
     Tensor::select(A,B,{ind},0,1);
 
     return B;
@@ -139,6 +139,10 @@ namespace eddlT {
   void info(Tensor *A)
   {
     A->info();
+  }
+  tshape getShape(Tensor *A)
+  {
+    return A->getShape();
   }
 
   // Load from file ***********************************

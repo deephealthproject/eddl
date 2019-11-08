@@ -47,6 +47,8 @@ public:
     int dev;
     int batch_size;
     int tr_batches;
+    int inferenced_samples;
+    
     vector<int> devsel;
     CompServ *cs;
 
@@ -59,6 +61,8 @@ public:
     vloss losses;
     vmetrics metrics;
     verr fiterr;
+    verr total_loss;
+    verr total_metric;
 
     Optimizer *optimizer;
     vector<Net *> snets;
@@ -96,7 +100,6 @@ public:
 
     void setmode(int m);
     void sync_weights();
-    void clean_fiterr();
 
     Layer *getLayer(string name);
 
@@ -105,10 +108,12 @@ public:
     void fit(vtensor tin, vtensor tout, int batch_size, int epochs);
 
     void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);
-    void train_batch_ni(vector<Tensor *> in, vector<Tensor *> out);
 
     void evaluate(vtensor tin, vtensor tout);
     void predict(vtensor tin, vtensor tout);
+
+    void reset_loss();
+    void print_loss(int b);
 
 };
 

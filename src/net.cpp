@@ -115,6 +115,11 @@ Net::Net(vlayer in, vlayer out) {
     for (int i = 0; i < lout.size(); i++) {
         walk_back(lout[i]);
     }
+
+    for (int i = 0; i < lout.size(); i++) {
+        total_loss.push_back(0.0);
+        total_metric.push_back(0.0);
+    }
     build_randn_table();
 }
 Net::~Net()
@@ -680,13 +685,6 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     for (i = 0; i < batch_size; i++)
         sind.push_back(0);
 
-    // Store errors of each output layer
-    verr total_loss;
-    verr total_metric;
-    for (i = 0; i < tout.size(); i++) {
-        total_loss.push_back(0.0);
-        total_metric.push_back(0.0);
-    }
 
     // Start training
     setmode(TRMODE);
@@ -701,11 +699,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
         high_resolution_clock::time_point e1 = high_resolution_clock::now();
         fprintf(stdout, "Epoch %d\n", i + 1);
 
-        // Reset errors
-        for (j = 0; j < tout.size(); j++){
-            total_loss[j] = 0.0;
-            total_metric[j] = 0.0;
-        }
+        reset_loss();
 
         // For each batch
         for (j = 0; j < num_batches; j++) {
@@ -715,26 +709,18 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 
             // Train batch
             tr_batches++;
+
             train_batch(tin, tout, sind);
 
-            // Print errors
-            int p = 0;
-            fprintf(stdout, "batch %d ", j + 1);
-            for (k = 0; k < tout.size(); k++, p += 2) {
-                total_loss[k] += fiterr[p];  // loss
-                total_metric[k] += fiterr[p + 1];  // metric
 
-                fprintf(stdout, "%s(%s=%1.3f,%s=%1.3f) ", lout[k]->name.c_str(),
-                        losses[k]->name.c_str(), total_loss[k] / (batch_size * (j + 1)),
-                        metrics[k]->name.c_str(), total_metric[k] / (batch_size * (j + 1)));
-
-                fiterr[p] = fiterr[p + 1] = 0.0;
-            }
+            print_loss(j);
 
             high_resolution_clock::time_point e2 = high_resolution_clock::now();
             duration<double> epoch_time_span = e2 - e1;
             fprintf(stdout, "%1.3f secs/batch\r", epoch_time_span.count()/(j+1));
             fflush(stdout);
+
+
         }
         high_resolution_clock::time_point e2 = high_resolution_clock::now();
         duration<double> epoch_time_span = e2 - e1;
@@ -743,37 +729,33 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     fflush(stdout);
 }
 
-
-void Net::train_batch_ni(vector<Tensor *> X, vector<Tensor *> Y) {
-    vind sind;
-
-    // Check shape
-    if (X.size() != lin.size()){
-        msg("input tensor list does not match", "Net.train_batch");
-    }
-
-    if (Y.size() != lout.size()) {
-        msg("output tensor list does not match", "Net.train_batch");
-    }
-
-    for (int i = 0; i < lin.size(); i++) {
-        if (!Tensor::eqsize(lin[i]->input, X[i]))
-            msg("input tensor shapes does not match", "Net.train_batch");
-    }
-
-    for (int i = 0; i < lin.size(); i++){
-        if (!Tensor::eqsize(lout[i]->output, Y[i]))
-            msg("output tensor shapes does not match", "Net.train_batch");
-    }
-
-    // Create indices
-    for (int i = 0; i < batch_size; i++)
-        sind.push_back(i);
-
-
-    train_batch(X, Y, sind);
+void Net::reset_loss()
+{
+  // Reset errors
+  for (int j = 0; j < lout.size(); j++){
+      total_loss[j] = 0.0;
+      total_metric[j] = 0.0;
+  }
+  inferenced_samples=0;
 }
 
+void Net::print_loss(int b)
+{
+  int p = 0;
+
+  fprintf(stdout, "batch %d ", b + 1);
+  for (int k = 0; k < lout.size(); k++, p += 2) {
+      total_loss[k] += fiterr[p];  // loss
+      total_metric[k] += fiterr[p + 1];  // metric
+      fiterr[p] = fiterr[p + 1] = 0.0;
+      fprintf(stdout, "%s(%s=%1.3f,%s=%1.3f) ", lout[k]->name.c_str(),
+              losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
+              metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+
+  }
+
+
+}
 
 /////////////////////////////////////////
 void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
@@ -782,13 +764,15 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
     pthread_t thr[100];
     struct tdata td[100];
 
+
+    if (batch_size!=sind.size()) resize(sind.size());
+
     int comp=snets.size();
 
     if (batch_size<comp)
       comp=batch_size;
 
     int thread_batch_size=batch_size / comp;
-
 
     // Check indices
     if (sind.size() == 0) msg("error void index","Net::train_batch");
@@ -833,7 +817,6 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
     // If training (eval==0), apply gradients
     if (!eval) {
         if (snets[0]->dev == DEV_CPU) {
-            // shared gradients...
             snets[0]->applygrads();
         }
         // In case of multiple GPUS or FPGA synchronize params
@@ -843,11 +826,21 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
     }
 
     // Sum all errors
-    for (int i = 0; i < comp; i++) {
-        for (int j = 0; j < 2 * lout.size(); j++) {
-            fiterr[j] += snets[i]->fiterr[j];
-        }
+    if (snets[0]->dev != DEV_CPU)
+      for (int i = 0; i < comp; i++) {
+          for (int j = 0; j < 2 * lout.size(); j++) {
+              fiterr[j] += snets[i]->fiterr[j];
+          }
+      }
+
+    int p=0;
+    for (int k = 0; k < lout.size(); k++, p += 2) {
+          total_loss[k] += fiterr[p];  // loss
+          total_metric[k] += fiterr[p + 1];  // metric
+          fiterr[p] = fiterr[p + 1] = 0.0;
     }
+    inferenced_samples+=batch_size;
+
 }
 
 
@@ -869,12 +862,6 @@ void Net::sync_weights() {
         }
 }
 
-void Net::clean_fiterr() {
-    int k, p;
-    for (k = p = 0; k < lout.size(); k++, p += 2) {
-        fiterr[p] = fiterr[p + 1] = 0.0;
-    }
-}
 ///////////////////////////////////////////
 
 void Net::evaluate(vtensor tin, vtensor tout) {
