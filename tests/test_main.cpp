@@ -325,8 +325,8 @@ int main(int argc, char **argv) {
     vector<string> data_aug = {//"shift", "flip_h", "flip_v", "scale", "crop", "crop_scale", "cutout",
                                "shift_random", "flip_h_random", "flip_v_random", "scale_random", "crop_random", "crop_scale_random", "cutout_random" }; //, "shift", "flip_h", "flip_v", "scale", "crop", "cutout",  "rotate"};
     for (auto op:data_aug){
-        t_input = Tensor::range(1.0, 25.0f, 1.0f, DEV_CPU);
-        vector<int> shape({1, 1, 5, 5});
+        t_input = Tensor::range(1.0, 100.0f, 1.0f, DEV_CPU);
+        vector<int> shape({1, 1, 10, 10});
         t_input->reshape_(shape);
 
         // Reshapes
@@ -353,7 +353,7 @@ int main(int argc, char **argv) {
         cout << "===================" << endl;
 
         // Print CPU ********
-        t_input->reshape_({shape[shape.size()-2], shape[shape.size()-1]});
+        t_input->reshape_({t_input->shape[2], t_input->shape[3]});
         t_input->print();
         //        res_small_cpu.tensor->print();
         res_small_cpu.tensor->reshape_({res_small_cpu.tensor->shape[2], res_small_cpu.tensor->shape[3]});

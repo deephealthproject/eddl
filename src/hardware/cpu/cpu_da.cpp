@@ -237,25 +237,27 @@ void cpu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, floa
 
 
         // Center crop (if the if the crop is smaller than B)
-        offsets[0] = (A->shape[2] - new_shape_y)/2.0f;
-        offsets[1] = (A->shape[3] - new_shape_x)/2.0f;
+        offsets[0] = (new_shape_y - A->shape[2])/2.0f + 1;
+        offsets[1] = (new_shape_x - A->shape[3])/2.0f + 1;
 
         for(int c=0; c<B->shape[1]; c++) {
-            for(int Ai=0; Ai<A->shape[2];Ai++) {
-                for(int Aj=0; Aj<A->shape[3];Aj++) {
+            for(int Bi=0; Bi<A->shape[2];Bi++) {
+                for(int Bj=0; Bj<A->shape[3];Bj++) {
                     // Interpolate indices
-//                    // TODO: FIX
-//                    int Bi_big = (Ai * new_shape_y) / A->shape[2];
-//                    int Bj_big = (Aj * new_shape_x) / A->shape[3];
-//                    int Bi = Bi_big + offsets[0];
-//                    int Bj = Bj_big + offsets[1];
-//
-//                    int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
-//                    if (Bi_big >= offsets[0] && Bi_big < B->shape[2] && Bj_big >= 0 && Bj < B->shape[3]){
-//                        B->ptr[A_pos] = A->ptr[A_pos];
+                    // Compute big size
+                    int Bi_big = Bi + offsets[0];
+                    int Bj_big = Bj + offsets[1];
+                    int Ai = (Bi_big * A->shape[2]) / new_shape_y;
+                    int Aj = (Bj_big * A->shape[3]) / new_shape_x;
+
+                    // Check the window from which to look the big tensor
+                    int A_pos = b*B->stride[0] + c*B->stride[1] + Ai*B->stride[2] + Aj*B->stride[3];  // Convert windows of the big tensor into the small window
+                    int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];  // Convert windows of the big tensor into the small window
+//                    if (Bi_big > offsets[0] && Bi_big <= offsets[0] + B->shape[2] && Bj_big > offsets[1] && Bj_big <= offsets[1] + B->shape[3]){
+                    B->ptr[B_pos] = A->ptr[A_pos];
 //                    }else{
 //                        if(mode==0){ // constant
-//                            B->ptr[A_pos] = constant;
+//                            B->ptr[B_pos] = constant;
 //                        }
 //                    }
 
