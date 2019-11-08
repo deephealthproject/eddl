@@ -732,9 +732,11 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 void Net::reset_loss()
 {
   // Reset errors
-  for (int j = 0; j < lout.size(); j++){
+  int p=0;
+  for (int j = 0; j < lout.size(); j++,p+=2){
       total_loss[j] = 0.0;
       total_metric[j] = 0.0;
+      fiterr[p] = fiterr[p + 1] = 0.0;
   }
   inferenced_samples=0;
 }
@@ -893,36 +895,22 @@ void Net::evaluate(vtensor tin, vtensor tout) {
     for (k=0;k<batch_size;k++)
       sind.push_back(0);
 
-    verr errors;
-    for (i = 0; i < tout.size(); i++) {
-        errors.push_back(0.0);
-        errors.push_back(0.0);
-    }
-    // Start eval
-    int p=0;
-    for (j = 0; j < 2 * tout.size(); j++,p+=2) {fiterr[p] = fiterr[p + 1] = 0.0;errors[j] = 0.0;}
 
+    // Start eval
     setmode(TSMODE);
+    reset_loss();
     for (j = 0; j < n / batch_size; j++) {
 
         for (k=0;k<batch_size;k++)
           sind[k]=(j*batch_size)+k;
 
         train_batch(tin, tout, sind, 1);
-        p = 0;
-        for (k = 0; k < tout.size(); k++, p += 2) {
-            errors[p] += fiterr[p];
-            errors[p + 1] += fiterr[p + 1];
-            fiterr[p] = fiterr[p + 1] = 0.0;
-        }
-    }
 
-    p = 0;
-    for (k = 0; k < tout.size(); k++, p += 2)
-        fprintf(stdout, "%s(%s=%1.3f,%s=%1.3f) ", lout[k]->name.c_str(), losses[k]->name.c_str(), errors[p] / n,
-                metrics[k]->name.c_str(), errors[p + 1] / n);
+        print_loss(j);
+        fprintf(stdout, "\r");
+        fflush(stdout);
+    }
     fprintf(stdout, "\n");
-    fflush(stdout);
 
 }
 
