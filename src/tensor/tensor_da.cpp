@@ -98,12 +98,12 @@ void Tensor::flip(Tensor *A, Tensor *B, int axis) {
 
 void Tensor::crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant) {
     if (A->isCPU()) {
-        cpu_crop(A, B, std::move(coords_from), std::move(coords_to), constant);
+        cpu_crop(A, B, std::move(coords_from), std::move(coords_to), constant, false);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_crop(A, B, std::move(coords_from), std::move(coords_to), constant);
+        gpu_crop(A, B, std::move(coords_from), std::move(coords_to), constant, false);
       }
 #endif
 #ifdef cFPGA
@@ -113,9 +113,9 @@ void Tensor::crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coo
 #endif
 }
 
-void Tensor::crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant) {
+void Tensor::crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, string mode, float constant) {
     if (A->isCPU()) {
-        cpu_crop_scale(A, B, std::move(coords_from), std::move(coords_to), constant);
+        cpu_crop_scale(A, B, std::move(coords_from), std::move(coords_to), get_mode(std::move(mode)), constant);
     }
 #ifdef cGPU
     else if (A->isGPU())
@@ -133,12 +133,12 @@ void Tensor::crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<in
 
 void Tensor::cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant) {
     if (A->isCPU()) {
-        cpu_cutout(A, B, std::move(coords_from), std::move(coords_to), constant);
+        cpu_crop(A, B, std::move(coords_from), std::move(coords_to), constant, true);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_cutout(A, B, std::move(coords_from), std::move(coords_to), constant);
+        cpu_crop(A, B, std::move(coords_from), std::move(coords_to), constant, true);
       }
 #endif
 #ifdef cFPGA
@@ -226,12 +226,12 @@ void Tensor::flip_random(Tensor *A, Tensor *B, int axis) {
 
 void Tensor::crop_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant) {
     if (A->isCPU()) {
-        cpu_crop_random(A, B, std::move(factor_x), std::move(factor_y), constant);
+        cpu_crop_random(A, B, std::move(factor_x), std::move(factor_y), constant, false);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_crop_random(A, B, std::move(factor_x), std::move(factor_y), constant);
+        gpu_crop_random(A, B, std::move(factor_x), std::move(factor_y), constant, false);
       }
 #endif
 #ifdef cFPGA
@@ -241,14 +241,14 @@ void Tensor::crop_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<fl
 #endif
 }
 
-void Tensor::crop_scale_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant) {
+void Tensor::crop_scale_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, string mode, float constant) {
     if (A->isCPU()) {
-        cpu_crop_scale_random(A, B, std::move(factor_x), std::move(factor_y), constant);
+        cpu_crop_scale_random(A, B, std::move(factor_x), std::move(factor_y), get_mode(std::move(mode)), constant);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        cpu_crop_scale_random(A, B, std::move(factor_x), std::move(factor_y), constant);
+        cpu_crop_scale_random(A, B, std::move(factor_x), std::move(factor_y), get_mode(std::move(mode)), constant);
       }
 #endif
 #ifdef cFPGA
@@ -260,12 +260,12 @@ void Tensor::crop_scale_random(Tensor *A, Tensor *B, vector<float> factor_x, vec
 
 void Tensor::cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant) {
     if (A->isCPU()) {
-        cpu_cutout_random(A, B, std::move(factor_x), std::move(factor_y), constant);
+        cpu_crop_random(A, B, std::move(factor_x), std::move(factor_y), constant, true);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_cutout_random(A, B, std::move(factor_x), std::move(factor_y), constant);
+        cpu_crop_random(A, B, std::move(factor_x), std::move(factor_y), constant, true);
       }
 #endif
 #ifdef cFPGA

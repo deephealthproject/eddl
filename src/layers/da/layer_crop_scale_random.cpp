@@ -20,10 +20,11 @@ using namespace std;
 
 int LCropAndScaleRandom::total_layers = 0;
 
-LCropAndScaleRandom::LCropAndScaleRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, string name, int dev) : LCropRandom(parent, std::move(factor_x), std::move(factor_y), 0.0f, name, dev) {
+LCropAndScaleRandom::LCropAndScaleRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, string da_mode, string name, int dev) : LCropRandom(parent, std::move(factor_x), std::move(factor_y), 0.0f, name, dev) {
     if(name.empty()) this->name = "crop_scale" + to_string(++total_layers);
+    this->da_mode=da_mode;
 }
 
 void LCropAndScaleRandom::forward() {
-    Tensor::crop_scale_random(this->input, this->output, this->factor_x, this->factor_y, this->constant);
+    Tensor::crop_scale_random(this->input, this->output, this->factor_x, this->factor_y, this->da_mode, this->constant);
 }

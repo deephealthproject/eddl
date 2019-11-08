@@ -322,8 +322,10 @@ int main(int argc, char **argv) {
 
 //
 ////    // *** [Data augmentation] *****************************************
-    vector<string> data_aug = {//"shift", "flip_h", "flip_v", "scale", "crop", "crop_scale", "cutout",
-                               "shift_random", "flip_h_random", "flip_v_random", "scale_random", "crop_random", "crop_scale_random", "cutout_random" }; //, "shift", "flip_h", "flip_v", "scale", "crop", "cutout",  "rotate"};
+    vector<string> data_aug = {//"crop", "cutout",
+            "shift", "flip_h", "flip_v", "scale", "crop", "crop_scale", "cutout",
+            "shift_random", "flip_h_random", "flip_v_random", "scale_random", "crop_random", "crop_scale_random", "cutout_random"
+    };
     for (auto op:data_aug){
         t_input = Tensor::range(1.0, 100.0f, 1.0f, DEV_CPU);
         vector<int> shape({1, 1, 10, 10});
@@ -331,11 +333,11 @@ int main(int argc, char **argv) {
 
         // Reshapes
         if(op=="scale") {
-            t_output = new Tensor({1, 1, 5, 5}, t_input->device);
+            t_output = new Tensor({1, 1, 10, 10}, t_input->device);
        }else if(op=="crop") {
            t_output = new Tensor({1, 1, 3, 3}, t_input->device);
-        }else if(op=="cutout") {
-            t_output = t_input->clone();
+//        }else if(op=="cutout") {
+//            t_output = t_input->clone();
         } else {
             t_output = new Tensor(t_input->getShape(), t_input->device);
         }

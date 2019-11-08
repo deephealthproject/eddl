@@ -105,8 +105,8 @@ namespace eddl {
         return new LCrop(parent, from_coords, to_coords, reshape, constant, name, DEV_CPU);
     }
 
-    layer CropAndScale(layer parent, vector<int> from_coords, vector<int> to_coords, float constant, string name){
-        return new LCropAndScale(parent, from_coords, to_coords, constant, name, DEV_CPU);
+    layer CropAndScale(layer parent, vector<int> from_coords, vector<int> to_coords, string da_mode, float constant, string name){
+        return new LCropAndScale(parent, from_coords, to_coords, da_mode, constant, name, DEV_CPU);
     }
 
     layer Cutout(layer parent, vector<int> from_coords, vector<int> to_coords, float constant, string name){
@@ -134,8 +134,8 @@ namespace eddl {
         return new LCropRandom(parent, factor_x, factor_y, constant, name, DEV_CPU);
     }
 
-    layer CropAndScaleRandom(layer parent, vector<float> factor_x, vector<float> factor_y, string name){
-        return new LCropAndScaleRandom(parent, factor_x, factor_y, name, DEV_CPU);
+    layer CropAndScaleRandom(layer parent, vector<float> factor_x, vector<float> factor_y, string da_mode, string name){
+        return new LCropAndScaleRandom(parent, factor_x, factor_y, name, da_mode, DEV_CPU);
     }
 
     layer CutoutRandom(layer parent, vector<float> factor_x, vector<float> factor_y, float constant, string name){

@@ -15,6 +15,120 @@
 #include "cpu_hw.h"
 #include "../../random.h"
 
+void cpu_single_shift(int b, Tensor *A, Tensor *B, vector<int> shift, int mode, float constant){
+    for(int c=0; c<B->shape[1]; c++) {
+        for(int Bi=0; Bi<B->shape[2];Bi++) {
+            for(int Bj=0; Bj<B->shape[3];Bj++) {
+
+                int Ai = Bi - shift[0];
+                int Aj = Bj - shift[1];
+
+                int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
+                if (Ai >= 0 && Ai < A->shape[2] && Aj >= 0 && Aj < A->shape[3]){
+                    int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
+                    B->ptr[B_pos] = A->ptr[A_pos];
+                }else{
+                    if(mode==0){ // constant
+                        B->ptr[B_pos] = constant;
+                    }
+                }
+
+            }
+        }
+    }
+}
+
+void cpu_single_scale(int b, int* offsets, Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant){
+
+    for(int c=0; c<B->shape[1]; c++) {
+        for(int Bi=0; Bi<B->shape[2];Bi++) {
+            for(int Bj=0; Bj<B->shape[3];Bj++) {
+
+                // Interpolate indices
+                int Ai = ((Bi+offsets[0]) * A->shape[2]) / new_shape[0];
+                int Aj = ((Bj+offsets[1]) * A->shape[3]) / new_shape[1];
+
+                int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
+                if (Ai >= 0 && Ai < A->shape[2] && Aj >= 0 && Aj < A->shape[3]){
+                    int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
+                    B->ptr[B_pos] = A->ptr[A_pos];
+                }else{
+                    if(mode==0){ // constant
+                        B->ptr[B_pos] = constant;
+                    }
+                }
+
+            }
+        }
+    }
+}
+
+void cpu_single_flip(int b, bool apply, Tensor *A, Tensor *B, int axis){
+
+    for(int c=0; c<B->shape[1]; c++) {
+        for(int Bi=0; Bi<B->shape[2];Bi++) {
+            for(int Bj=0; Bj<B->shape[3];Bj++) {
+                int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
+
+                if(apply){
+                    int pos[2] = {Bi, Bj}; pos[axis] = (B->shape[axis+2]-1) - pos[axis];
+                    int Ai = pos[0]; int Aj = pos[1];
+                    int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
+                    B->ptr[B_pos] = A->ptr[A_pos];
+                }else{
+                    B->ptr[B_pos] = A->ptr[B_pos];
+                }
+
+            }
+        }
+    }
+}
+
+void cpu_single_crop(int b, int* offsets, Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant, bool inverse){
+
+    for(int c=0; c<B->shape[1]; c++) {
+        for(int Bi=0; Bi<B->shape[2];Bi++) {
+            for(int Bj=0; Bj<B->shape[3];Bj++) {
+
+                // Compute coordinates
+                int Ai = Bi + offsets[0];  // Start from the (0,0) of the cropping area
+                int Aj = Bj + offsets[1];
+
+                bool inRegion = Ai >= coords_from[0] && Ai <= coords_to[0] && Aj >= coords_from[1] && Aj <= coords_to[1];
+                int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];  // We always walk through the whole B tensor
+
+                if ((inRegion && !inverse) || (!inRegion && inverse)){
+                    int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
+                    B->ptr[B_pos] = A->ptr[A_pos];
+                }else{
+                    B->ptr[B_pos] = constant;
+                }
+
+            }
+        }
+    }
+}
+
+void cpu_single_crop_scale(int b, Tensor* A, Tensor* B, vector<int> coords_from, vector<int> coords_to, int mode, float constant){
+    int A_hc = coords_to[0]-coords_from[0]+1;
+    int A_wc = coords_to[1]-coords_from[1]+1;
+
+    for(int c=0; c<B->shape[1]; c++) {
+        for(int Bi=0; Bi<B->shape[2]; Bi++) {
+            for(int Bj=0; Bj<B->shape[3]; Bj++) {
+
+                // Interpolate indices
+                int Ai = (Bi * A_hc) / B->shape[2] + coords_from[0];
+                int Aj = (Bj * A_wc) / B->shape[3] + coords_from[1];
+
+                int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
+                int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
+
+                B->ptr[B_pos] = A->ptr[A_pos];
+            }
+        }
+    }
+}
 
 // CPU: Data augmentation (2D Optimized) ********************************************
 void cpu_shift(Tensor *A, Tensor *B, vector<int> shift, int mode, float constant) {
@@ -22,28 +136,7 @@ void cpu_shift(Tensor *A, Tensor *B, vector<int> shift, int mode, float constant
 
     #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
-
-        for(int c=0; c<B->shape[1]; c++) {
-            for(int Bi=0; Bi<B->shape[2];Bi++) {
-                for(int Bj=0; Bj<B->shape[3];Bj++) {
-
-                    int Ai = Bi - shift[0];
-                    int Aj = Bj - shift[1];
-
-                    int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
-                    if (Ai >= 0 && Ai < A->shape[2] && Aj >= 0 && Aj < A->shape[3]){
-                        int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
-                        B->ptr[B_pos] = A->ptr[A_pos];
-                    }else{
-                        if(mode==0){ // constant
-                            B->ptr[B_pos] = constant;
-                        }
-                    }
-
-                }
-            }
-        }
-
+        cpu_single_shift(b, A, B, shift, mode, constant);
     }
 }
 
@@ -55,32 +148,20 @@ void cpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float cons
     // https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.zoom.html
     // I use "new_shape" because I might want to keep the shape of B, but thinking of it as a bigger/smaller matrix
     // If the new_shape is smaller than B, performs a downscale with padding
+    // For cases:
+    // A=5x5; B=10x10; new_size=10x10 => Normal zoom
+    // A=5x5; B=5x5; new_size=5x5 => Normal zoom-out
+    // A=10x10; B=10x10; new_size=5x5 => Zoom-out centered
+    // A=5x5; B=5x5; new_size=10x10 => Zoom in window
+
+    // Center crop (if the if the crop is smaller than B)
+    int offsets[2] = {0, 0};
+    offsets[0] = (new_shape[0] - B->shape[2])/2.0f;
+    offsets[1] = (new_shape[1] - B->shape[3])/2.0f;
 
     #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
-
-        for(int c=0; c<B->shape[1]; c++) {
-            for(int Bi=0; Bi<B->shape[2];Bi++) {
-                for(int Bj=0; Bj<B->shape[3];Bj++) {
-
-                    // Interpolate indices
-                    int Ai = (Bi * A->shape[2]) / new_shape[0];
-                    int Aj = (Bj * A->shape[3]) / new_shape[1];
-
-                    int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
-                    if (Ai >= 0 && Ai < A->shape[2] && Aj >= 0 && Aj < A->shape[3]){
-                        int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
-                        B->ptr[B_pos] = A->ptr[A_pos];
-                    }else{
-                        if(mode==0){ // constant
-                            B->ptr[B_pos] = constant;
-                        }
-                    }
-
-                }
-            }
-        }
-
+        cpu_single_scale(b, offsets, A, B, new_shape, mode, constant);
     }
 }
 
@@ -89,100 +170,33 @@ void cpu_flip(Tensor *A, Tensor *B, int axis){
 
     #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
-
-        for(int c=0; c<B->shape[1]; c++) {
-            for(int Bi=0; Bi<B->shape[2];Bi++) {
-                for(int Bj=0; Bj<B->shape[3];Bj++) {
-
-                    int pos[2] = {Bi, Bj}; pos[axis] = (B->shape[axis+2]-1) - pos[axis];
-                    int Ai = pos[0]; int Aj = pos[1];
-
-                    if (Ai >= 0 && Ai < A->shape[2] && Aj >= 0 && Aj < A->shape[3]){
-                        int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
-                        int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
-                        B->ptr[B_pos] = A->ptr[A_pos];
-                    }
-
-                }
-            }
-        }
-
+        cpu_single_flip(b, true, A, B, axis);
     }
 }
 
-void cpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant){
+void cpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant, bool inverse){
+    // Two cases:
+    // -> A=10x10; B=3x3; crop_size=3x3 => Normal crop
+    // -> A=10x10; B=10x10; crop_size=3x3 => Crop with padding (inverse of cutout)
+    // Inverse => For cutout
+
     int offsets[2] = {0, 0};
-    // Center crop (if the if the crop is smaller than B)
-    offsets[0] = (B->shape[2] - (coords_to[0]-coords_from[0]+1))/2.0f;
-    offsets[1] = (B->shape[3] - (coords_to[1]-coords_from[1]+1))/2.0f;
+    if(!Tensor::eqsize(A, B)){
+        offsets[0] = coords_from[0];
+        offsets[1] = coords_from[1];
+    }
 
-    //#pragma omp parallel for
+    #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
-
-        for(int c=0; c<B->shape[1]; c++) {
-            for(int Ai=coords_from[0], Bi=0; Ai<=coords_to[0]; Ai++, Bi++) {
-                for(int Aj=coords_from[1], Bj=0; Aj<=coords_to[1]; Aj++, Bj++) {
-
-                    int B_pos = b*B->stride[0] + c*B->stride[1] + (Bi+offsets[0])*B->stride[2] + (Bj+offsets[1])*B->stride[3];
-                    if (Ai >= 0 && Ai < A->shape[2] && Aj >= 0 && Aj < A->shape[3]){
-                        int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
-                        B->ptr[B_pos] = A->ptr[A_pos];
-                    }else{
-                        B->ptr[B_pos] = constant;
-                    }
-
-                }
-            }
-        }
-
+        cpu_single_crop(b, offsets, A, B, coords_from, coords_to, constant, inverse);
     }
 }
 
 
-void cpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant){
-    int A_hc = coords_to[0]-coords_from[0]+1;
-    int A_wc = coords_to[1]-coords_from[1]+1;
-
+void cpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, int mode, float constant){
     #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
-
-        for(int c=0; c<B->shape[1]; c++) {
-            for(int Bi=0; Bi<B->shape[2]; Bi++) {
-                for(int Bj=0; Bj<B->shape[3]; Bj++) {
-
-                    // Interpolate indices
-                    int Ai = (Bi * A_hc) / B->shape[2] + coords_from[0];
-                    int Aj = (Bj * A_wc) / B->shape[3] + coords_from[1];
-
-                    int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
-                    int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
-
-                    B->ptr[B_pos] = A->ptr[A_pos];
-                }
-            }
-        }
-
-    }
-}
-
-void cpu_cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant){
-
-    #pragma omp parallel for
-    for(int b=0; b<B->shape[0]; b++) {
-
-        for(int c=0; c<B->shape[1]; c++) {
-            for(int Bi=coords_from[0]; Bi<=coords_to[0];Bi++) {
-                for(int Bj=coords_from[1]; Bj<=coords_to[1];Bj++) {
-
-                    if (Bi >= 0 && Bi < A->shape[2] && Bj >= 0 && Bj < A->shape[3]){
-                        int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
-                        B->ptr[B_pos] = constant;
-                    }
-
-                }
-            }
-        }
-
+        cpu_single_crop_scale(b, A, B, coords_from, coords_to, mode, constant);
     }
 }
 
@@ -196,26 +210,7 @@ void cpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float
         int shift_x = (int)(A->shape[3] * uniform(factor_x[0], factor_x[1]));
         int shift_y = (int)(A->shape[2] * uniform(factor_y[0], factor_y[1]));
 
-        for(int c=0; c<B->shape[1]; c++) {
-            for(int Bi=0; Bi<B->shape[2];Bi++) {
-                for(int Bj=0; Bj<B->shape[3];Bj++) {
-                    int Ai = Bi - shift_y;
-                    int Aj = Bj - shift_x;
-
-                    int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
-                    if (Ai >= 0 && Ai < A->shape[2] && Aj >= 0 && Aj < A->shape[3]){
-                        int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
-                        B->ptr[B_pos] = A->ptr[A_pos];
-                    }else{
-                        if(mode==0){ // constant
-                            B->ptr[B_pos] = constant;
-                        }
-                    }
-
-                }
-            }
-        }
-
+        cpu_single_shift(b, A, B, {shift_x, shift_y}, mode, constant);
     }
 }
 
@@ -228,43 +223,18 @@ void cpu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, floa
     // I use "new_shape" because I might want to keep the shape of B, but thinking of it as a bigger/smaller matrix
     // If the factor is less than 1.0f, performs a downscale with padding
     int offsets[2] = {0, 0};
+
     #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
-        // TODO: Center image
         float scale = uniform(factor[0], factor[1]);
         int new_shape_x = (int)(A->shape[3] * scale);
         int new_shape_y = (int)(A->shape[2] * scale);
 
-
         // Center crop (if the if the crop is smaller than B)
-        offsets[0] = (new_shape_y - A->shape[2])/2.0f + 1;
-        offsets[1] = (new_shape_x - A->shape[3])/2.0f + 1;
+        offsets[0] = (new_shape_y - A->shape[2])/2.0f;
+        offsets[1] = (new_shape_x - A->shape[3])/2.0f;
 
-        for(int c=0; c<B->shape[1]; c++) {
-            for(int Bi=0; Bi<A->shape[2];Bi++) {
-                for(int Bj=0; Bj<A->shape[3];Bj++) {
-                    // Interpolate indices
-                    // Compute big size
-                    int Bi_big = Bi + offsets[0];
-                    int Bj_big = Bj + offsets[1];
-                    int Ai = (Bi_big * A->shape[2]) / new_shape_y;
-                    int Aj = (Bj_big * A->shape[3]) / new_shape_x;
-
-                    // Check the window from which to look the big tensor
-                    int A_pos = b*B->stride[0] + c*B->stride[1] + Ai*B->stride[2] + Aj*B->stride[3];  // Convert windows of the big tensor into the small window
-                    int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];  // Convert windows of the big tensor into the small window
-//                    if (Bi_big > offsets[0] && Bi_big <= offsets[0] + B->shape[2] && Bj_big > offsets[1] && Bj_big <= offsets[1] + B->shape[3]){
-                    B->ptr[B_pos] = A->ptr[A_pos];
-//                    }else{
-//                        if(mode==0){ // constant
-//                            B->ptr[B_pos] = constant;
-//                        }
-//                    }
-
-                }
-            }
-        }
-
+        cpu_single_scale(b, offsets, A, B, {new_shape_x, new_shape_y}, mode, constant);
     }
 }
 
@@ -274,36 +244,12 @@ void cpu_flip_random(Tensor *A, Tensor *B, int axis){
     #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
         bool apply = uniform(0.0f, 1.0f) >= 0.5f;
-
-
-        for(int c=0; c<B->shape[1]; c++) {
-            for(int Bi=0; Bi<B->shape[2];Bi++) {
-                for(int Bj=0; Bj<B->shape[3];Bj++) {
-
-                    if (apply){
-                        // Apply randomly
-                        int pos[2] = {Bi, Bj}; pos[axis] = (B->shape[axis+2]-1) - pos[axis];
-                        int Ai = pos[0]; int Aj = pos[1];
-
-                        if (Ai >= 0 && Ai < A->shape[2] && Aj >= 0 && Aj < A->shape[3]){
-                            int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
-                            int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
-                            B->ptr[B_pos] = A->ptr[A_pos];
-                        }
-                    }else{
-                        int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
-                        B->ptr[B_pos] = A->ptr[B_pos];
-                    }
-
-                }
-            }
-        }
-
+        cpu_single_flip(b, apply, A, B, axis);
     }
 }
 
 
-void cpu_crop_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant){
+void cpu_crop_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant, bool inverse){
     // Performs a crop with padding (Keeps the original size)
     int offsets[2] = {0, 0};
 
@@ -311,104 +257,37 @@ void cpu_crop_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float>
     for(int b=0; b<B->shape[0]; b++) {
 
         // Compute random coordinates
-        int x1 = (int)(A->shape[3] * uniform(factor_x[0], factor_x[1]));
-        int x2 = (int)(A->shape[3] * uniform(factor_x[0], factor_x[1]));
-        int y1 = (int)(A->shape[2] * uniform(factor_y[0], factor_y[1]));
-        int y2 = (int)(A->shape[2] * uniform(factor_y[0], factor_y[1]));
+        int w = (int)(A->shape[3] * uniform(factor_x[0], factor_x[1]));
+        int h = (int)(A->shape[2] * uniform(factor_y[0], factor_y[1]));
+        int x = (int)((A->shape[3]-w) * uniform(0.0f, 1.0f));
+        int y = (int)((A->shape[2]-h) * uniform(0.0f, 1.0f));
 
-        int coords_from_x = std::min(x1, x2);
-        int coords_to_x = std::max(x1, x2);
-        int coords_from_y = std::min(y1, y2);
-        int coords_to_y = std::max(y1, y2);
+        int coords_from_x = x;
+        int coords_to_x = x+w;
+        int coords_from_y = y;
+        int coords_to_y = y+h;
 
-//        // Center crop (if the if the crop is smaller than B)
-//        offsets[0] = (B->shape[2] - (coords_to_y-coords_from_y+1))/2.0f;
-//        offsets[1] = (B->shape[3] - (coords_to_x-coords_from_x+1))/2.0f;
-
-        for(int c=0; c<B->shape[1]; c++) {
-            for(int Bi=0; Bi<B->shape[2]; Bi++) {
-                for(int Bj=0; Bj<B->shape[3]; Bj++) {
-
-                    int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
-                    if (Bi >= coords_from_y && Bi <= coords_to_y && Bj >= coords_from_x && Bj <= coords_to_x){
-                        B->ptr[B_pos] = A->ptr[B_pos];
-                    }else{
-                        B->ptr[B_pos] = constant;
-                    }
-
-                }
-            }
-        }
-
+        cpu_single_crop(b, offsets, A, B, {coords_from_x, coords_from_y}, {coords_to_x, coords_to_y}, constant, inverse);
     }
 }
 
-void cpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant){
+void cpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int mode, float constant){
     #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
 
         // Compute random coordinates
-        int x1 = (int)(A->shape[3] * uniform(factor_x[0], factor_x[1]));
-        int x2 = (int)(A->shape[3] * uniform(factor_x[0], factor_x[1]));
-        int y1 = (int)(A->shape[2] * uniform(factor_y[0], factor_y[1]));
-        int y2 = (int)(A->shape[2] * uniform(factor_y[0], factor_y[1]));
+        int w = (int)(A->shape[3] * uniform(factor_x[0], factor_x[1]));
+        int h = (int)(A->shape[2] * uniform(factor_y[0], factor_y[1]));
+        int x = (int)((A->shape[3]-w) * uniform(0.0f, 1.0f));
+        int y = (int)((A->shape[2]-h) * uniform(0.0f, 1.0f));
 
-        int coords_from_x = std::min(x1, x2);
-        int coords_to_x = std::max(x1, x2);
-        int coords_from_y = std::min(y1, y2);
-        int coords_to_y = std::max(y1, y2);
+        int coords_from_x = x;
+        int coords_to_x = x+w;
+        int coords_from_y = y;
+        int coords_to_y = y+h;
 
-        int A_wc = coords_to_x-coords_from_x+1;
-        int A_hc = coords_to_y-coords_from_y+1;
-
-        for(int c=0; c<B->shape[1]; c++) {
-            for(int Bi=0; Bi<B->shape[2]; Bi++) {
-                for(int Bj=0; Bj<B->shape[3]; Bj++) {
-                    // Interpolate indices
-                    int Ai = (Bi * A_hc) / B->shape[2] + coords_from_y;
-                    int Aj = (Bj * A_wc) / B->shape[3] + coords_from_x;
-
-                    int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
-                    int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
-
-                    B->ptr[B_pos] = A->ptr[A_pos];
-                }
-            }
-        }
-
+        cpu_single_crop_scale(b, A, B, {coords_from_x, coords_from_y}, {coords_to_x, coords_to_y}, mode, constant);
     }
 }
 
 
-void cpu_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant){
-    #pragma omp parallel for
-    for(int b=0; b<B->shape[0]; b++) {
-
-        // Compute random coordinates
-        int x1 = (int)(A->shape[3] * uniform(factor_x[0], factor_x[1]));
-        int x2 = (int)(A->shape[3] * uniform(factor_x[0], factor_x[1]));
-        int y1 = (int)(A->shape[2] * uniform(factor_y[0], factor_y[1]));
-        int y2 = (int)(A->shape[2] * uniform(factor_y[0], factor_y[1]));
-
-        int coords_from_x = std::min(x1, x2);
-        int coords_to_x = std::max(x1, x2);
-        int coords_from_y = std::min(y1, y2);
-        int coords_to_y = std::max(y1, y2);
-
-        for(int c=0; c<B->shape[1]; c++) {
-            for(int Bi=0; Bi<=B->shape[2]; Bi++) {
-                for(int Bj=0; Bj<=B->shape[3]; Bj++) {
-
-                    int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
-                    if (Bi >= coords_from_y && Bi <= coords_to_y && Bj >= coords_from_x && Bj <= coords_to_x){
-                        B->ptr[B_pos] = constant;
-                    } else {
-                        B->ptr[B_pos] = A->ptr[B_pos];
-                    }
-
-                }
-            }
-        }
-
-    }
-}

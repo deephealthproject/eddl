@@ -78,7 +78,7 @@ namespace eddl {
     layer Scale(layer parent, vector<int> shape, bool reshape, string da_mode="nearest", float constant=0.0f, string name="");
     layer Flip(layer parent, int axis=0, string name="");
     layer Crop(layer parent, vector<int> from_coords, vector<int> to_coords, bool reshape, float constant=0.0f, string name="");
-    layer CropAndScale(layer parent, vector<int> from_coords, vector<int> to_coords, float constant=0.0f, string name="");
+    layer CropAndScale(layer parent, vector<int> from_coords, vector<int> to_coords, string da_mode="nearest", float constant=0.0f, string name="");
     layer Cutout(layer parent, vector<int> from_coords, vector<int> to_coords, float constant=0.0f, string name="");
 
     // ---- DATA AUGMENTATION ----
@@ -87,7 +87,7 @@ namespace eddl {
     layer ScaleRandom(layer parent, vector<float> factor, string da_mode="nearest", float constant=0.0f, string name="");
     layer FlipRandom(layer parent, int axis, string name="");
     layer CropRandom(layer parent, vector<float> factor_x, vector<float> factor_y, float constant=0.0f, string name="");
-    layer CropAndScaleRandom(layer parent, vector<float> factor_x, vector<float> factor_y, string name="");
+    layer CropAndScaleRandom(layer parent, vector<float> factor_x, vector<float> factor_y, string da_mode="nearest", string name="");
     layer CutoutRandom(layer parent, vector<float> factor_x, vector<float> factor_y, float constant=0.0f, string name="");
 
 // ---- LOSSES ----

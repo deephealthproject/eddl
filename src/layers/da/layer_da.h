@@ -148,8 +148,9 @@ public:
 class LCropAndScale : public LCrop {
 public:
     static int total_layers;
+    string da_mode;
 
-    LCropAndScale(Layer *parent, vector<int> from_coords, vector<int> to_coords, float constant, string name, int dev);
+    LCropAndScale(Layer *parent, vector<int> from_coords, vector<int> to_coords, string da_mode, float constant, string name, int dev);
 
     void forward() override;
 
@@ -304,8 +305,9 @@ public:
 class LCropAndScaleRandom : public LCropRandom {
 public:
     static int total_layers;
+    string da_mode;
 
-    LCropAndScaleRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, string name, int dev);
+    LCropAndScaleRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, string da_mode, string name, int dev);
 
     void forward() override;
 };
