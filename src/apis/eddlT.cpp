@@ -19,6 +19,10 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "../stb/stb_image_write.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb/stb_image.h"
+
+
 using namespace std;
 
 ////////////////////////////////////////////////////////
@@ -105,6 +109,7 @@ namespace eddlT {
     shape[0]=1;
     Tensor *B=new Tensor(shape);
 
+    
     Tensor::select(A,B,{ind},0,1);
 
     return B;
@@ -156,6 +161,33 @@ namespace eddlT {
     t->load(fe);
     return t;
   }
+
+
+  Tensor * load_png(string fname)
+  {
+
+    int w,h,n;
+
+    int res = stbi_info(fname.c_str(), &w, &h, &n);
+    if (!res) {
+      msg("error opening file","load_png");
+    }
+
+    unsigned char *data;
+    data = stbi_load(fname.c_str(), &w, &h, &n, 0);
+
+    Tensor *A=new Tensor({1,n,h,w});
+
+    for(int i=0;i<A->size;i+=A->shape[1]) {
+      for(int j=0;j<A->shape[1];j++)
+        A->ptr[(i/A->shape[1])+(j*A->shape[2]*A->shape[3])]=data[i+j];
+    }
+
+    free(data);
+
+    return A;
+  }
+
 
   void save_png(Tensor* A,string fname)
   {

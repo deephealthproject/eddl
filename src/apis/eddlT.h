@@ -57,6 +57,7 @@ namespace eddlT{
   Tensor *load(string fname);
 
   void save_png(Tensor* A,string fname);
+  Tensor * load_png(string fname);
 
   // Math ops       ***********************************
 

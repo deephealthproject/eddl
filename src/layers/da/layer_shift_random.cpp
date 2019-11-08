@@ -45,7 +45,11 @@ void LShiftRandom::resize(int batch){
 }
 
 void LShiftRandom::forward() {
+  if (TRMODE) {
     Tensor::shift_random(this->input, this->output, this->factor_x, this->factor_y, this->da_mode, this->constant);
+  }
+  else
+    Tensor::copy(input,output);
 }
 
 void LShiftRandom::backward() {
