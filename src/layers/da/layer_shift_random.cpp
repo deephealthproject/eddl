@@ -46,14 +46,6 @@ void LShiftRandom::resize(int batch){
 
 void LShiftRandom::forward() {
   if (TRMODE) {
-    //Tensor::copy(input,output);
-    cout<<"factor:\n";
-    for(int i=0;i<factor_x.size();i++) {
-      cout<<factor_x[i]<<" ";
-      cout<<factor_y[i]<<" ";
-      }
-    cout<<"\n";  
-
     Tensor::shift_random(input, output, factor_x, factor_y);
   }
   else
