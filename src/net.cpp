@@ -354,7 +354,7 @@ void Net::resize(int b)
     m = batch_size % c;
   }
 
-  cout<<"Resizing net to batch_size="<<b<<"\n";
+  //cout<<"Resizing net to batch_size="<<b<<"\n";
 
   for(i=0; i<c; i++) {
     Xs[i].clear();
@@ -753,8 +753,7 @@ void Net::print_loss(int b)
               metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
 
   }
-
-
+  fflush(stdout);
 }
 
 /////////////////////////////////////////

@@ -582,7 +582,15 @@ namespace eddl {
         net->predict(in, out);
     }
 
+    void print_loss(model m, int batch){
+      m->print_loss(batch);
+    }
 
+    void reset_loss(model m)
+    {
+      m->reset_loss();
+    }
+    
     // ---- DATASETS ----
 
     bool exist(string name) {

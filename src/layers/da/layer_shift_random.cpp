@@ -28,9 +28,9 @@ LShiftRandom::LShiftRandom(Layer *parent, vector<float> factor_x, vector<float> 
     delta = parent->delta;
 
     // Params
-    this->factor_x = std::move(factor_x);
-    this->factor_y = std::move(factor_y);
-    this->da_mode = std::move(da_mode);
+    this->factor_x = factor_x;
+    this->factor_y = factor_y;
+    this->da_mode = da_mode;
     this->constant = constant;
 
     parent->addchild(this);
@@ -46,7 +46,15 @@ void LShiftRandom::resize(int batch){
 
 void LShiftRandom::forward() {
   if (TRMODE) {
-    Tensor::shift_random(this->input, this->output, this->factor_x, this->factor_y, this->da_mode, this->constant);
+    //Tensor::copy(input,output);
+    cout<<"factor:\n";
+    for(int i=0;i<factor_x.size();i++) {
+      cout<<factor_x[i]<<" ";
+      cout<<factor_y[i]<<" ";
+      }
+    cout<<"\n";  
+
+    Tensor::shift_random(input, output, factor_x, factor_y);
   }
   else
     Tensor::copy(input,output);

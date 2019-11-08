@@ -258,6 +258,8 @@ namespace eddl {
 
     void predict(model m, const vector<Tensor *> &in, const vector<Tensor *> &out);
 
+    void print_loss(model m, int batch);
+    void reset_loss(model m);
 
 // ---- DATASETS ----
     bool exist(string name);
