@@ -42,6 +42,11 @@ LScale::LScale(Layer *parent, vector<int> new_shape, bool reshape, string da_mod
 
 }
 
+LScale::~LScale()
+{
+  delta=nullptr;
+}
+
 
 // virtual
 void LScale::resize(int batch){

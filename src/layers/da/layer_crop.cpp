@@ -41,7 +41,10 @@ LCrop::LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool
     addparent(parent);
 
 }
-
+LCrop::~LCrop()
+{
+  delta=nullptr;
+}
 
 // virtual
 void LCrop::resize(int batch){

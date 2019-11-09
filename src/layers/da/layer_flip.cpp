@@ -35,7 +35,10 @@ LFlip::LFlip(Layer *parent, int axis, string name, int dev) : LinLayer(name, dev
 
 }
 
-
+LFlip::~LFlip()
+{
+  delta=nullptr;
+}
 // virtual
 void LFlip::resize(int batch){
   output->resize(batch);

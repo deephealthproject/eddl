@@ -24,6 +24,11 @@ LCropAndScale::LCropAndScale(Layer *parent, vector<int> from_coords, vector<int>
     this->da_mode=da_mode;
 }
 
+LCropAndScale::~LCropAndScale()
+{
+  delta=nullptr;
+}
+
 void LCropAndScale::forward() {
-    Tensor::crop_scale(this->input, this->output, this->from_coords, this->to_coords, this->da_mode, this->constant);
+    //Tensor::crop_scale(this->input, this->output, this->from_coords, this->to_coords, this->da_mode, this->constant);
 }

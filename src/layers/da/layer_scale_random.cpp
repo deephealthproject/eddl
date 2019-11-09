@@ -36,6 +36,10 @@ LScaleRandom::LScaleRandom(Layer *parent, vector<float> factor, string da_mode, 
 
 }
 
+LScaleRandom::~LScaleRandom()
+{
+  delta=nullptr;
+}
 
 // virtual
 void LScaleRandom::resize(int batch){

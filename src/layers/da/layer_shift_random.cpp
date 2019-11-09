@@ -38,6 +38,10 @@ LShiftRandom::LShiftRandom(Layer *parent, vector<float> factor_x, vector<float> 
 
 }
 
+LShiftRandom::~LShiftRandom()
+{
+  delta=nullptr;
+}
 
 // virtual
 void LShiftRandom::resize(int batch){

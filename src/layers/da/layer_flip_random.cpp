@@ -34,6 +34,10 @@ LFlipRandom::LFlipRandom(Layer *parent, int axis, string name, int dev) : LinLay
 
 }
 
+LFlipRandom::~LFlipRandom()
+{
+  delta=nullptr;
+}
 
 // virtual
 void LFlipRandom::resize(int batch){

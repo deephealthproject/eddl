@@ -34,6 +34,10 @@ LCropRandom::LCropRandom(Layer *parent, vector<float> factor_x, vector<float> fa
     parent->addchild(this);
     addparent(parent);
 }
+LCropRandom::~LCropRandom()
+{
+  delta=nullptr;
+}
 
 
 // virtual

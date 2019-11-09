@@ -37,6 +37,10 @@ LShift::LShift(Layer *parent, vector<int> shift, string da_mode, float constant,
 
 }
 
+LShift::~LShift()
+{
+  delta=nullptr;
+}
 
 // virtual
 void LShift::resize(int batch){

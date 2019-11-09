@@ -25,6 +25,11 @@ LCropAndScaleRandom::LCropAndScaleRandom(Layer *parent, vector<float> factor_x, 
     this->da_mode=da_mode;
 }
 
+LCropAndScaleRandom::~LCropAndScaleRandom()
+{
+  delta=nullptr;
+}
+
 void LCropAndScaleRandom::forward() {
-    Tensor::crop_scale_random(this->input, this->output, this->factor_x, this->factor_y, this->da_mode, this->constant);
+    //Tensor::crop_scale_random(this->input, this->output, this->factor_x, this->factor_y, this->da_mode, this->constant);
 }

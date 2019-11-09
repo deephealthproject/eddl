@@ -35,7 +35,10 @@ LCutoutRandom::LCutoutRandom(Layer *parent, vector<float> factor_x, vector<float
     addparent(parent);
 }
 
-
+LCutoutRandom::~LCutoutRandom()
+{
+  delta=nullptr;
+}
 // virtual
 void LCutoutRandom::resize(int batch){
   output->resize(batch);

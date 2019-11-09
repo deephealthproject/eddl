@@ -39,6 +39,10 @@ LRotate::LRotate(Layer *parent, float angle, vector<int> axis, bool reshape, str
 
 }
 
+LRotate::~LRotate()
+{
+  delta=nullptr;
+}
 
 // virtual
 void LRotate::resize(int batch){

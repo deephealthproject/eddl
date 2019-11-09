@@ -37,6 +37,10 @@ LRotateRandom::LRotateRandom(Layer *parent, vector<float> factor, vector<int> ax
 
 }
 
+LRotateRandom::~LRotateRandom()
+{
+  delta=nullptr;
+}
 
 // virtual
 void LRotateRandom::resize(int batch){

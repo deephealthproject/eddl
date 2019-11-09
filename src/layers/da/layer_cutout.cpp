@@ -36,7 +36,10 @@ LCutout::LCutout(Layer *parent, vector<int> from_coords, vector<int> to_coords, 
 
 }
 
-
+LCutout::~LCutout()
+{
+  delta=nullptr;
+}
 // virtual
 void LCutout::resize(int batch){
   output->resize(batch);
