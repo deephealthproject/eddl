@@ -65,8 +65,10 @@ void gpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float
 void gpu_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> axis, int mode, float constant);
 void gpu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant);
 void gpu_flip_random(Tensor *A, Tensor *B, int axis);
-void gpu_crop_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant, bool inverse);
-void gpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int mode, float constant);
+void gpu_crop_random(Tensor *A, Tensor *B);
+void gpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant);
+void gpu_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant);
+
 
 // GPU: Generator
 void gpu_rand_uniform(Tensor *A, float v);

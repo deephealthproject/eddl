@@ -292,11 +292,9 @@ public:
 class LCropRandom : public LinLayer {
 public:
     static int total_layers;
-    vector<float> factor_x;
-    vector<float> factor_y;
-    float constant;
+    vector<int> new_shape;
 
-    LCropRandom(Layer *parent,  vector<float> factor_x, vector<float> factor_y, float constant, string name, int dev);
+    LCropRandom(Layer *parent,  vector<int> new_shape, string name, int dev);
     ~LCropRandom();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
@@ -314,15 +312,27 @@ public:
 
 
 /// Crop Layer
-class LCropAndScaleRandom : public LCropRandom {
+class LCropAndScaleRandom : public LinLayer {
 public:
     static int total_layers;
+    vector<float> factor;
     string da_mode;
 
-    LCropAndScaleRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, string da_mode, string name, int dev);
+    LCropAndScaleRandom(Layer *parent, vector<float> factor, string da_mode, string name, int dev);
     ~LCropAndScaleRandom();
 
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void resize(int batch) override;
+
     void forward() override;
+
+    void backward() override;
+
+    string plot(int c) override;
 };
 
 

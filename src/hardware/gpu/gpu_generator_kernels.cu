@@ -24,6 +24,7 @@ __global__ void uniform_array(float* array, int size, unsigned long seed) {
 
     if (thread_id_x < size) {
         curandState state;
+        if(seed==0){ seed = clock64();}
         curand_init(seed, thread_id_x, 0, &state);  // opt. => seed=clock64()
         array[thread_id_x] = curand_uniform(&state);
     }

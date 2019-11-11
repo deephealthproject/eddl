@@ -19,17 +19,15 @@ using namespace std;
 
 int LCropRandom::total_layers = 0;
 
-LCropRandom::LCropRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, float constant, string name, int dev) : LinLayer(name, dev) {
+LCropRandom::LCropRandom(Layer *parent, vector<int> new_shape, string name, int dev) : LinLayer(name, dev) {
     if(name.empty()) this->name = "crop_random" + to_string(++total_layers);
 
     input = parent->output;
-    output = new Tensor(input->getShape(), dev);
+    output = new Tensor({input->shape[0], input->shape[1], new_shape[0], new_shape[1]}, dev);
     delta = parent->delta;
 
     // Params
-    this->factor_x = std::move(factor_x);
-    this->factor_y = std::move(factor_y);
-    this->constant = constant;
+    this->new_shape = std::move(new_shape);
 
     parent->addchild(this);
     addparent(parent);
@@ -46,7 +44,7 @@ void LCropRandom::resize(int batch){
 }
 
 void LCropRandom::forward() {
-    Tensor::crop_random(this->input, this->output, this->factor_x, this->factor_y, this->constant);
+    Tensor::crop_random(this->input, this->output);
 }
 
 void LCropRandom::backward(){
@@ -55,7 +53,7 @@ void LCropRandom::backward(){
 
 
 Layer *LCropRandom::share(int c, int bs, vector<Layer *> p) {
-    LCropRandom *n = new LCropRandom(p[0], this->factor_x, this->factor_y, this->constant, "share_" + to_string(c) + name, dev);
+    LCropRandom *n = new LCropRandom(p[0], this->new_shape, "share_" + to_string(c) + name, dev);
     n->orig = this;
 
     // TODO: Implement
@@ -64,7 +62,7 @@ Layer *LCropRandom::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LCropRandom::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LCropRandom *n = new LCropRandom(p[0], this->factor_x, this->factor_y, this->constant, "clone_" + to_string(todev) + name, todev);
+    LCropRandom *n = new LCropRandom(p[0], this->new_shape, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
 
     // TODO: Implement

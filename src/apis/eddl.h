@@ -75,7 +75,7 @@ namespace eddl {
     // ---- TRANSFORMATIONS ----
     layer Shift(layer parent, vector<int> shift, string da_mode="nearest", float constant=0.0f, string name="");
     layer Rotate(layer parent, float angle, vector<int> axis, bool reshape, string da_mode="nearest", float constant=0.0f, string name="");  //Todo: Implement
-    layer Scale(layer parent, vector<int> shape, bool reshape, string da_mode="nearest", float constant=0.0f, string name="");
+    layer Scale(layer parent, vector<int> new_shape, bool reshape, string da_mode="nearest", float constant=0.0f, string name="");
     layer Flip(layer parent, int axis=0, string name="");
     layer Crop(layer parent, vector<int> from_coords, vector<int> to_coords, bool reshape, float constant=0.0f, string name="");
     layer CropAndScale(layer parent, vector<int> from_coords, vector<int> to_coords, string da_mode="nearest", float constant=0.0f, string name="");
@@ -86,8 +86,8 @@ namespace eddl {
     layer RotateRandom(layer parent, vector<float> factor, vector<int> axis, string da_mode="nearest", float constant=0.0f, string name="");
     layer ScaleRandom(layer parent, vector<float> factor, string da_mode="nearest", float constant=0.0f, string name="");
     layer FlipRandom(layer parent, int axis, string name="");
-    layer CropRandom(layer parent, vector<float> factor_x, vector<float> factor_y, float constant=0.0f, string name="");
-    layer CropAndScaleRandom(layer parent, vector<float> factor_x, vector<float> factor_y, string da_mode="nearest", string name="");
+    layer CropRandom(layer parent, vector<int> new_shape, string name="");
+    layer CropAndScaleRandom(layer parent, vector<float> factor, string da_mode="nearest", string name="");
     layer CutoutRandom(layer parent, vector<float> factor_x, vector<float> factor_y, float constant=0.0f, string name="");
 
 // ---- LOSSES ----

@@ -39,8 +39,9 @@ __global__ void shift_random(float* A, float* B, int batch, int depth, int irows
 __global__ void rotate_random(float* A, float* B, int batch, int depth, int irows, int icols, float* factor, int* axis, int mode, float constant, float* rnd);
 __global__ void scale_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor, int mode, float constant, float* rnd);
 __global__ void flip_random(float* A, float* B, int batch, int depth, int irows, int icols, int axis, float* rnd);
-__global__ void crop_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor_x, float* factor_y, float constant, bool inverse, float* rnd);
-__global__ void crop_scale_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor_x, float* factor_y, int mode, float constant, float* rnd);
+__global__ void crop_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* rnd);
+__global__ void crop_scale_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor, int mode, float constant, float* rnd);
+__global__ void cutout_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor_x, float* factor_y, float constant, float* rnd);
 
 // GPU: Generator
 __global__ void uniform_array(float* array, int size, unsigned long seed);

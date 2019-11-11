@@ -93,8 +93,8 @@ namespace eddl {
         return new LRotate(parent, angle, axis, reshape, da_mode, constant, name, DEV_CPU);
     }
 
-    layer Scale(layer parent, vector<int> shape, bool reshape, string da_mode, float constant, string name){
-        return new LScale(parent, shape, reshape, da_mode, constant, name, DEV_CPU);
+    layer Scale(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string name){
+        return new LScale(parent, new_shape, reshape, da_mode, constant, name, DEV_CPU);
     }
 
     layer Flip(layer parent, int axis, string name){
@@ -130,12 +130,12 @@ namespace eddl {
         return new LFlipRandom(parent, axis, name, DEV_CPU);
     }
 
-    layer CropRandom(layer parent, vector<float> factor_x, vector<float> factor_y, float constant, string name){
-        return new LCropRandom(parent, factor_x, factor_y, constant, name, DEV_CPU);
+    layer CropRandom(layer parent, vector<int> new_shape, string name){
+        return new LCropRandom(parent, new_shape, name, DEV_CPU);
     }
 
-    layer CropAndScaleRandom(layer parent, vector<float> factor_x, vector<float> factor_y, string da_mode, string name){
-        return new LCropAndScaleRandom(parent, factor_x, factor_y, name, da_mode, DEV_CPU);
+    layer CropAndScaleRandom(layer parent, vector<float> factor, string da_mode, string name){
+        return new LCropAndScaleRandom(parent, factor, name, da_mode, DEV_CPU);
     }
 
     layer CutoutRandom(layer parent, vector<float> factor_x, vector<float> factor_y, float constant, string name){

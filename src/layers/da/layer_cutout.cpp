@@ -40,6 +40,7 @@ LCutout::~LCutout()
 {
   delta=nullptr;
 }
+
 // virtual
 void LCutout::resize(int batch){
   output->resize(batch);
