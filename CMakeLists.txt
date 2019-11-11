@@ -502,12 +502,14 @@ endif(BUILD_TESTS)
 if(BUILD_EXAMPLES)
     SET(EXAMPLES_DIR "examples")
     set(CMAKE_FOLDER examples)
-    ## MNIST EXAMPLE
+    ## MNIST EXAMPLES
     add_executable(mnist_mlp "${EXAMPLES_DIR}/NN/1_MNIST/1_mnist_mlp.cpp")
     add_executable(mnist_mlp_initializers "${EXAMPLES_DIR}/NN/1_MNIST/2_mnist_mlp_initializers.cpp")
     add_executable(mnist_mlp_regularizers "${EXAMPLES_DIR}/NN/1_MNIST/3_mnist_mlp_regularizers.cpp")
     add_executable(mnist_mlp_da "${EXAMPLES_DIR}/NN/1_MNIST/4_mnist_mlp_da.cpp")
     add_executable(mnist_mlp_train_batch "${EXAMPLES_DIR}/NN/1_MNIST/5_mnist_mlp_train_batch.cpp")
+    ## CIFAR10 EXAMPLES
+    add_executable(cifar_conv "${EXAMPLES_DIR}/NN/2_CIFAR10/1_cifar_conv.cpp")
     ####
     add_executable(example_ae "${EXAMPLES_DIR}/NN/eddl_ae.cpp")
     add_executable(example_conv "${EXAMPLES_DIR}/NN/eddl_conv.cpp")
@@ -524,6 +526,8 @@ if(BUILD_EXAMPLES)
     target_link_libraries(mnist_mlp_regularizers eddl)
     target_link_libraries(mnist_mlp_da eddl)
     target_link_libraries(mnist_mlp_train_batch eddl)
+    ## CIFAR10 EXAMPLES
+    target_link_libraries(cifar_conv eddl)
     ####
     target_link_libraries(example_ae eddl)
     target_link_libraries(example_conv eddl)
