@@ -87,7 +87,7 @@ namespace eddl {
     layer ScaleRandom(layer parent, vector<float> factor, string da_mode="nearest", float constant=0.0f, string name="");
     layer FlipRandom(layer parent, int axis, string name="");
     layer CropRandom(layer parent, vector<float> factor_x, vector<float> factor_y, float constant=0.0f, string name="");
-    layer CropAndScaleRandom(layer parent, vector<float> factor_x, vector<float> factor_y, string da_mode="nearest", string name="");
+    layer CropAndScaleRandom(layer parent, vector<float> factor, string da_mode="nearest", string name="");
     layer CutoutRandom(layer parent, vector<float> factor_x, vector<float> factor_y, float constant=0.0f, string name="");
 
 // ---- LOSSES ----

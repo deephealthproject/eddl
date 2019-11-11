@@ -352,7 +352,7 @@ __global__ void crop_random(float* A, float* B, int batch, int depth, int irows,
     }
 }
 
-__global__ void crop_scale_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor_x, float* factor_y, int mode, float constant, float* rnd) {
+__global__ void crop_scale_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor, int mode, float constant, float* rnd) {
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*irows*icols;
 
@@ -367,8 +367,9 @@ __global__ void crop_scale_random(float* A, float* B, int batch, int depth, int 
         int Bj = thread_id_x / B_stride[3] % ocols;
 
         // Compute random coordinates
-        int w = (int)(icols * ((factor_x[1]-factor_x[0]) * rnd[b] + factor_x[0]));
-        int h = (int)(irows * ((factor_y[1]-factor_y[0]) * rnd[b+1] + factor_y[0]));
+        float scale = ((factor[1]-factor[0]) * rnd[b] + factor[0]);
+        int w = irows * scale;
+        int h = icols * scale;
         int x = (int)((icols-w) * rnd[b+2]);
         int y = (int)((irows-h) * rnd[b+3]);
 

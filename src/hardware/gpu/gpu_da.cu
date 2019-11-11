@@ -214,17 +214,13 @@ void gpu_crop_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float>
 }
 
 
-void gpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int mode, float constant){
+void gpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     // Copy vector from host to device
-    float *d_factor_x; cudaMalloc((float**)&d_factor_x, 2*sizeof(float));
-    cudaMemcpy(d_factor_x, factor_x.data(), 2*sizeof(float), cudaMemcpyHostToDevice);
-
-    // Copy vector from host to device
-    float *d_factor_y; cudaMalloc((float**)&d_factor_y, 2*sizeof(float));
-    cudaMemcpy(d_factor_y, factor_y.data(), 2*sizeof(float), cudaMemcpyHostToDevice);
+    float *d_factor; cudaMalloc((float**)&d_factor, 2*sizeof(float));
+    cudaMemcpy(d_factor, factor.data(), 2*sizeof(float), cudaMemcpyHostToDevice);
 
     // Generate random numbers
     int rnd_size = A->shape[0] * 4;  // Batch x dims (x,y,...)
@@ -233,6 +229,6 @@ void gpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<
     uniform_array<<<t_bdim[0], t_bdim[1]>>>(d_rnd, rnd_size, 0);
     
     setDims(B);
-    crop_scale_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], d_factor_x, d_factor_y, mode, constant, d_rnd);
+    crop_scale_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], d_factor, mode, constant, d_rnd);
     check_cuda(cudaDeviceSynchronize(), "crop_scale_random");
 }

@@ -323,7 +323,7 @@ int main(int argc, char **argv) {
 //
 ////    // *** [Data augmentation] *****************************************
     vector<string> data_aug = {
-            //"shift", "flip_h", "flip_v", "scale", "crop", "crop_scale", "cutout",
+            "shift", "flip_h", "flip_v", "scale", "crop", "crop_scale", "cutout",
             "shift_random", "flip_h_random", "flip_v_random", "scale_random", "crop_random", "crop_scale_random", "cutout_random"
     };
     for (auto op:data_aug){

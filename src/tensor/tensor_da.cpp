@@ -241,14 +241,14 @@ void Tensor::crop_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<fl
 #endif
 }
 
-void Tensor::crop_scale_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, string mode, float constant) {
+void Tensor::crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, string mode, float constant) {
     if (A->isCPU()) {
-        cpu_crop_scale_random(A, B, std::move(factor_x), std::move(factor_y), get_mode(std::move(mode)), constant);
+        cpu_crop_scale_random(A, B, std::move(factor), get_mode(std::move(mode)), constant);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_crop_scale_random(A, B, std::move(factor_x), std::move(factor_y), get_mode(std::move(mode)), constant);
+        gpu_crop_scale_random(A, B, std::move(factor), get_mode(std::move(mode)), constant);
       }
 #endif
 #ifdef cFPGA

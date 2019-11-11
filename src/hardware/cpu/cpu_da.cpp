@@ -272,13 +272,14 @@ void cpu_crop_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float>
     }
 }
 
-void cpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int mode, float constant){
+void cpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant){
     #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
 
         // Compute random coordinates
-        int w = (int)(A->shape[3] * uniform(factor_x[0], factor_x[1]));
-        int h = (int)(A->shape[2] * uniform(factor_y[0], factor_y[1]));
+        float scale = uniform(factor[0], factor[1]);
+        int w = (int)(A->shape[3] * scale);
+        int h = (int)(A->shape[2] * scale);
         int x = (int)((A->shape[3]-w) * uniform(0.0f, 1.0f));
         int y = (int)((A->shape[2]-h) * uniform(0.0f, 1.0f));
 

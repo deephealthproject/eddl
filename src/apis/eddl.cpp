@@ -134,8 +134,8 @@ namespace eddl {
         return new LCropRandom(parent, factor_x, factor_y, constant, name, DEV_CPU);
     }
 
-    layer CropAndScaleRandom(layer parent, vector<float> factor_x, vector<float> factor_y, string da_mode, string name){
-        return new LCropAndScaleRandom(parent, factor_x, factor_y, name, da_mode, DEV_CPU);
+    layer CropAndScaleRandom(layer parent, vector<float> factor, string da_mode, string name){
+        return new LCropAndScaleRandom(parent, factor, name, da_mode, DEV_CPU);
     }
 
     layer CutoutRandom(layer parent, vector<float> factor_x, vector<float> factor_y, float constant, string name){

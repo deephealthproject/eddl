@@ -148,7 +148,7 @@ public:
     static void scale_random(Tensor *A, Tensor *B, vector<float> factor, string mode="constant", float constant=0.0f);
     static void flip_random(Tensor *A, Tensor *B, int axis);
     static void crop_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant=0.0f);
-    static void crop_scale_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, string mode="nearest", float constant=0.0f);
+    static void crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, string mode="nearest", float constant=0.0f);
     static void cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant=0.0f);
 
     // Math operations ********************************
