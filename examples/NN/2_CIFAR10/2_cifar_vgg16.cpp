@@ -18,10 +18,17 @@ using namespace eddl;
 
 //////////////////////////////////
 // cifar_conv.cpp:
-// A very basic Conv for cifar10
+// VGG-16
 // Using fit for training
 //////////////////////////////////
-
+layer Block1(layer l,int filters) {
+  return ReLu(Conv(l,filters,{1,1},{1,1}));
+}
+layer Block3_2(layer l,int filters) {
+  l=ReLu(Conv(l,filters,{3,3},{1,1}));
+  l=ReLu(Conv(l,filters,{3,3},{1,1}));
+  return l;
+}
 
 int main(int argc, char **argv){
 
@@ -37,14 +44,14 @@ int main(int argc, char **argv){
   layer in=Input({3,32,32});
   layer l=in;
 
-  l=MaxPool(ReLu(Conv(l,32,{3,3},{1,1})),{2,2});
-  l=MaxPool(ReLu(Conv(l,64,{3,3},{1,1})),{2,2});
-  l=MaxPool(ReLu(Conv(l,128,{3,3},{1,1})),{2,2});
-  l=MaxPool(ReLu(Conv(l,256,{3,3},{1,1})),{2,2});
+  l=MaxPool(Block3_2(l,64));
+  l=MaxPool(Block3_2(l,128));
+  l=MaxPool(Block1(Block3_2(l,256),256));
+  l=MaxPool(Block1(Block3_2(l,512),512));
+  l=MaxPool(Block1(Block3_2(l,512),512));
 
   l=Reshape(l,{-1});
-
-  l=Activation(Dense(l,128),"relu");
+  l=Activation(Dense(l,512),"relu");
 
   layer out=Activation(Dense(l,num_classes),"softmax");
 
@@ -57,8 +64,8 @@ int main(int argc, char **argv){
     sgd(0.01, 0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    CS_CPU() // CPU with maximum threads availables
-    //CS_GPU({1}) // GPU with only one gpu
+    //CS_CPU() // CPU with maximum threads availables
+    CS_GPU({1}) // GPU with only one gpu
   );
 
   // plot the model

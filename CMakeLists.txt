@@ -508,8 +508,10 @@ if(BUILD_EXAMPLES)
     add_executable(mnist_mlp_regularizers "${EXAMPLES_DIR}/NN/1_MNIST/3_mnist_mlp_regularizers.cpp")
     add_executable(mnist_mlp_da "${EXAMPLES_DIR}/NN/1_MNIST/4_mnist_mlp_da.cpp")
     add_executable(mnist_mlp_train_batch "${EXAMPLES_DIR}/NN/1_MNIST/5_mnist_mlp_train_batch.cpp")
+    add_executable(mnist_auto_encoder "${EXAMPLES_DIR}/NN/1_MNIST/6_mnist_auto_encoder.cpp")
     ## CIFAR10 EXAMPLES
     add_executable(cifar_conv "${EXAMPLES_DIR}/NN/2_CIFAR10/1_cifar_conv.cpp")
+    add_executable(cifar_vgg16 "${EXAMPLES_DIR}/NN/2_CIFAR10/2_cifar_vgg16.cpp")
     ####
     add_executable(example_ae "${EXAMPLES_DIR}/NN/eddl_ae.cpp")
     add_executable(example_conv "${EXAMPLES_DIR}/NN/eddl_conv.cpp")
@@ -526,8 +528,10 @@ if(BUILD_EXAMPLES)
     target_link_libraries(mnist_mlp_regularizers eddl)
     target_link_libraries(mnist_mlp_da eddl)
     target_link_libraries(mnist_mlp_train_batch eddl)
+    target_link_libraries(mnist_auto_encoder eddl)
     ## CIFAR10 EXAMPLES
     target_link_libraries(cifar_conv eddl)
+    target_link_libraries(cifar_vgg16 eddl)
     ####
     target_link_libraries(example_ae eddl)
     target_link_libraries(example_conv eddl)
