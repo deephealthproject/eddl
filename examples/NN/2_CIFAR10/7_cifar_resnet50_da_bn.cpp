@@ -28,16 +28,16 @@ layer ResBlock(layer l, int filters,int nconv,int half) {
   layer in=l;
 
   if (half)
-      l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{2,2})));
+      l=ReLu(BatchNormalization(Conv(l,filters,{1,1},{2,2})));
   else
-      l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
+      l=ReLu(BatchNormalization(Conv(l,filters,{1,1},{1,1})));
 
 
-  for(int i=0;i<nconv-1;i++)
-    l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
+  l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
+  l=ReLu(BatchNormalization(Conv(l,4*filters,{1,1},{1,1})));
 
   if (half)
-    return Sum(BatchNormalization(Conv(in,filters,{1,1},{2,2})),l);
+    return Sum(BatchNormalization(Conv(in,4*filters,{1,1},{2,2})),l);
   else
     return Sum(l,in);
 }
@@ -49,7 +49,7 @@ int main(int argc, char **argv){
 
   // Settings
   int epochs = 25;
-  int batch_size = 100;
+  int batch_size = 32;
   int num_classes = 10;
 
   // network
@@ -64,17 +64,17 @@ int main(int argc, char **argv){
   // Resnet-18
   l=ReLu(BatchNormalization(Conv(l,64,{3,3},{1,1})));
 
-  l=ResBlock(l, 64,2,1);//<<<-- output half size
-  l=ResBlock(l, 64,2,0);
+  for(int i=0;i<3;i++)
+    l=ResBlock(l, 64,2,i==0);
 
-  l=ResBlock(l, 128,2,1);//<<<-- output half size
-  l=ResBlock(l, 128,2,0);
+  for(int i=0;i<4;i++)
+    l=ResBlock(l, 128,2,i==0);
 
-  l=ResBlock(l, 256,2,1);//<<<-- output half size
-  l=ResBlock(l, 256,2,0);
+  for(int i=0;i<6;i++)
+    l=ResBlock(l, 256,2,i==0);
 
-  l=ResBlock(l, 512,2,1);//<<<-- output half size
-  l=ResBlock(l, 512,2,0);
+  for(int i=0;i<3;i++)
+    l=ResBlock(l, 512,2,i==0);
 
   l=Reshape(l,{-1});
   l=Activation(Dense(l,512),"relu");
