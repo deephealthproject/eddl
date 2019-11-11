@@ -126,15 +126,11 @@ __global__ void flip(float* A, float* B, int batch, int depth, int irows, int ic
 }
 
 
-__global__ void crop(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, float constant, bool inverse){
+__global__ void crop(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int* offsets, float constant, bool inverse){
    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
    long int ops = batch * depth*irows*icols;
 
    if (thread_id_x < ops){
-       int offsets[2] = {0, 0};
-       offsets[0] = irows/2.0f - orows/2.0f+1;
-       offsets[1] = icols/2.0f - ocols/2.0f+1;
-
        int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
        int B_stride[4] = {depth*orows*ocols, orows*ocols, ocols, 1};
 

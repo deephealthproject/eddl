@@ -334,8 +334,8 @@ int main(int argc, char **argv) {
         // Reshapes
         if(op=="scale") {
             t_output = new Tensor({1, 1, 10, 10}, t_input->device);
-//        }else if(op=="crop") {
-//            t_output = new Tensor({1, 1, 3, 3}, t_input->device);
+        }else if(op=="crop") {
+            t_output = new Tensor({1, 1, 3, 3}, t_input->device);
 //        }else if(op=="cutout") {
 //            t_output = t_input->clone();
         } else {

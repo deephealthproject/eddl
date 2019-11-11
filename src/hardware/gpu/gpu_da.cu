@@ -81,7 +81,16 @@ void gpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_
     int *d_coords_to; cudaMalloc((int**)&d_coords_to, coords_to.size()*sizeof(int));
     cudaMemcpy(d_coords_to, coords_to.data(), coords_to.size()*sizeof(int), cudaMemcpyHostToDevice);
 
-    crop<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], d_coords_from, d_coords_to, constant, inverse);
+    // Compute offsets
+    int offsets[2] = {0, 0};
+    if(!Tensor::eqsize(A, B)){
+        offsets[0] = coords_from[0];
+        offsets[1] = coords_from[1];
+    }
+    int *d_offsets; cudaMalloc((int**)&d_offsets, 2*sizeof(int));
+    cudaMemcpy(d_offsets, offsets, 2*sizeof(int), cudaMemcpyHostToDevice);
+
+    crop<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], B->shape[2], B->shape[3], d_coords_from, d_coords_to, d_offsets, constant, inverse);
     check_cuda(cudaDeviceSynchronize(),"crop");
 }
 
