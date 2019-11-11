@@ -195,7 +195,7 @@ string Net::summary() {
     return ss.str();
 }
 
-void Net::plot(string fname) {
+void Net::plot(string fname,string mode) {
     ofstream out("tmp.dot");
     int ind;
     string type = fname.substr(fname.find('.') + 1);
@@ -203,7 +203,7 @@ void Net::plot(string fname) {
 
 
     out << "digraph Model {\n";
-    out << "rankdir=LR;\n";
+    out << "rankdir="<<mode<<";\n";
 
     // plot layers
     for (int i = 0; i != layers.size(); i++)
@@ -577,7 +577,7 @@ void Net::split(int c, int todev) {
         snets[i]->build(optimizer->clone(), losses, metrics);
 
         //summary();
-        snets[i]->plot("kk.pdf");
+        snets[i]->plot("kk.pdf","LR");
     }
 }
 

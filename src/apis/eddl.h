@@ -250,7 +250,7 @@ namespace eddl {
 
     void save(model m, string fname);
 
-    void plot(model m, string fname);
+    void plot(model m, string fname, string mode="LR");
 
     void fit(model m, const vector<Tensor *> &in, const vector<Tensor *> &out, int batch, int epochs);
 

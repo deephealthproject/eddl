@@ -48,7 +48,7 @@ public:
     int batch_size;
     int tr_batches;
     int inferenced_samples;
-    
+
     vector<int> devsel;
     CompServ *cs;
 
@@ -96,7 +96,7 @@ public:
     void resize(int batch);
 
     string summary();
-    void plot(string fname);
+    void plot(string fname,string mode);
 
     void setmode(int m);
     void sync_weights();

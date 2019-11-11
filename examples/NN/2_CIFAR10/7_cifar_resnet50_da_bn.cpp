@@ -95,7 +95,7 @@ int main(int argc, char **argv){
   );
 
   // plot the model
-  plot(net,"model.pdf");
+  plot(net,"model.pdf","TB");
 
   // get some info from the network
   summary(net);
