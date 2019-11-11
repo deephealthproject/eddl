@@ -17,12 +17,30 @@
 using namespace eddl;
 
 //////////////////////////////////
-// cifar_conv_da.cpp:
-// A very basic Conv for cifar10
-// Data augmentation
+// cifar_resnet_da_bn.cpp:
+// Resnet18 with
+// BatchNormalization
+// Data Augmentation
 // Using fit for training
 //////////////////////////////////
 
+layer ResBlock(layer l, int filters,int nconv,int half) {
+  layer in=l;
+
+  if (half)
+      l=BatchNormalization(ReLu(Conv(l,filters,{3,3},{2,2})));
+  else
+      l=BatchNormalization(ReLu(Conv(l,filters,{3,3},{1,1})));
+
+
+  for(int i=0;i<nconv-1;i++)
+    l=BatchNormalization(ReLu(Conv(l,filters,{3,3},{1,1})));
+
+  if (half)
+    return Sum(BatchNormalization(Conv(in,filters,{1,1},{2,2})),l);
+  else
+    return Sum(l,in);
+}
 
 int main(int argc, char **argv){
 
@@ -31,42 +49,35 @@ int main(int argc, char **argv){
 
   // Settings
   int epochs = 25;
-  int batch_size = 100;
+  int batch_size = 64;
   int num_classes = 10;
 
   // network
   layer in=Input({3,32,32});
   layer l=in;
 
-  //    // Transformations
-  //    l = Shift(l, {2, 2});  // In pixels
-  //    l = Scale(l, {30, 30}, true); // In pixels
-  //    // Not implemented => l = Rotate(l, 15, false); // Degrees
-  //    l = Flip(l, 1);
-  //    l = Crop(l, {0, 0}, {23, 23}, false);  // In pixels
-  //    l = CropAndScale(l, {0, 0}, false);  // In pixels
-  //    l = Cutout(l, {0, 0}, {5, 5}); // In pixels
-
-
   // Data augmentation
   l = FlipRandom(l, 1);
   l = ShiftRandom(l, {-0.1f, +0.1f}, {-0.1f, +0.1f});
   l = ScaleRandom(l, {0.9f, 1.1f});
-  l = CropRandom(l, {28, 28});  //In pixels  // TODO: Needs a fix!
 
-  ///----
-  //l = CropAndScaleRandom(l, {0.8f, 1.0f});  // Crop and rescale  // TODO: check!
-  //l = CutoutRandom(l, {0.0f, 0.05f}, {0.0, 0.05f});
+  // Resnet-18
+  l=BatchNormalization(ReLu(Conv(l,64,{3,3},{1,1})));
 
+  l=ResBlock(l, 64,2,1);//<<<-- output half size
+  l=ResBlock(l, 64,2,0);
 
-  l=MaxPool(ReLu(Conv(l,32,{3,3},{1,1})),{2,2});
-  l=MaxPool(ReLu(Conv(l,64,{3,3},{1,1})),{2,2});
-  l=MaxPool(ReLu(Conv(l,128,{3,3},{1,1})),{2,2});
-  l=MaxPool(ReLu(Conv(l,256,{3,3},{1,1})),{2,2});
+  l=ResBlock(l, 128,2,1);//<<<-- output half size
+  l=ResBlock(l, 128,2,0);
+
+  l=ResBlock(l, 256,2,1);//<<<-- output half size
+  l=ResBlock(l, 256,2,0);
+
+  l=ResBlock(l, 512,2,1);//<<<-- output half size
+  l=ResBlock(l, 512,2,0);
 
   l=Reshape(l,{-1});
-
-  l=Activation(Dense(l,128),"relu");
+  l=Activation(Dense(l,512),"relu");
 
   layer out=Activation(Dense(l,num_classes),"softmax");
 

@@ -17,8 +17,8 @@
 using namespace eddl;
 
 //////////////////////////////////
-// cifar_conv.cpp:
-// Resnet
+// cifar_resnet.cpp:
+// Resnet18
 // Using fit for training
 //////////////////////////////////
 
@@ -56,17 +56,17 @@ int main(int argc, char **argv){
 
   l=ReLu(Conv(l,64,{3,3},{1,1}));
 
-  l=ResBlock(l, 64,2,1);
-  l=ResBlock(l, 64,2,0); //<<<-- output half size
+  l=ResBlock(l, 64,2,1);//<<<-- output half size
+  l=ResBlock(l, 64,2,0);
 
-  l=ResBlock(l, 128,2,1);
-  l=ResBlock(l, 128,2,0); //<<<-- output half size
+  l=ResBlock(l, 128,2,1);//<<<-- output half size
+  l=ResBlock(l, 128,2,0);
 
-  l=ResBlock(l, 256,2,1);
-  l=ResBlock(l, 256,2,0); //<<<-- output half size
+  l=ResBlock(l, 256,2,1);//<<<-- output half size
+  l=ResBlock(l, 256,2,0);
 
-  l=ResBlock(l, 512,2,1);
-  l=ResBlock(l, 512,2,0); //<<<-- output half size
+  l=ResBlock(l, 512,2,1);//<<<-- output half size
+  l=ResBlock(l, 512,2,0);
 
   l=Reshape(l,{-1});
   l=Activation(Dense(l,512),"relu");

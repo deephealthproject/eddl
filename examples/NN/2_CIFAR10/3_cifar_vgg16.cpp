@@ -17,7 +17,7 @@
 using namespace eddl;
 
 //////////////////////////////////
-// cifar_conv.cpp:
+// cifar_vgg16.cpp:
 // VGG-16
 // Using fit for training
 //////////////////////////////////
