@@ -35,6 +35,25 @@
 | Upsampling | ✅ | ✅ |
 
 
+
+## Data augmentation layers
+
+| Functionality | CPU | GPU | Comments |
+| ------------- |------| -----| ---------|
+| Crop | ✅ | ✅ | |
+| Crop (random) | ✅ | ✅ | |
+| Crop & Scale (random) | ✅ | ✅ | |
+| Cutout | ✅ | ✅ | |
+| Cutout (random) | ✅ | ✅ | |
+| Flip | ✅ | ✅ | |
+| Flip (random) | ✅ | ✅ | |
+| Rotate | ❌ | ❌ | |
+| Rotate (random) | ❌ | ❌ | |
+| Scale | ✅ | ✅ | |
+| Scale (random) | ✅ | ✅ | |
+| Shift | ✅ | ✅ | |
+| Shift (random) | ✅ | ✅ | |
+
 ## Pooling layers
 
 | Functionality | CPU | GPU | Comments |

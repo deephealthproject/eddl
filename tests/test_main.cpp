@@ -323,6 +323,7 @@ int main(int argc, char **argv) {
 //
 ////    // *** [Data augmentation] *****************************************
     vector<string> data_aug = {
+            //"crop", "crop_random"
             "shift", "flip_h", "flip_v", "scale", "crop", "crop_scale", "cutout",
             "shift_random", "flip_h_random", "flip_v_random", "scale_random", "crop_random", "crop_scale_random", "cutout_random"
     };
@@ -334,7 +335,7 @@ int main(int argc, char **argv) {
         // Reshapes
         if(op=="scale") {
             t_output = new Tensor({1, 1, 10, 10}, t_input->device);
-        }else if(op=="crop") {
+        }else if(op=="crop" || op=="crop_random") {
             t_output = new Tensor({1, 1, 3, 3}, t_input->device);
 //        }else if(op=="cutout") {
 //            t_output = t_input->clone();
@@ -344,7 +345,7 @@ int main(int argc, char **argv) {
 
         // Test for correctness
         res_small_cpu = run_tensor_da(t_input, t_output, op, DEV_CPU, 1);
-        res_small_gpu = run_tensor_da(t_input, t_output, op, DEV_GPU, 1);
+        //res_small_gpu = run_tensor_da(t_input, t_output, op, DEV_GPU, 1);
         //res_small_cpu.tensor->print();
         //print_cpu_gpu_correctness(op, res_small_cpu.tensor, res_small_gpu.tensor);
         //print_results(op, res_small_cpu, res_small_cpu);
@@ -355,18 +356,18 @@ int main(int argc, char **argv) {
         cout << "===================" << endl;
 
         // Print CPU ********
-//        t_input->reshape_({t_input->shape[2], t_input->shape[3]});
-//        t_input->print();
-//        //        res_small_cpu.tensor->print();
-//        res_small_cpu.tensor->reshape_({res_small_cpu.tensor->shape[2], res_small_cpu.tensor->shape[3]});
-//        res_small_cpu.tensor->print();
-
-        // Print GPU ******
         t_input->reshape_({t_input->shape[2], t_input->shape[3]});
         t_input->print();
-        res_small_gpu.tensor->reshape_({res_small_gpu.tensor->shape[2], res_small_gpu.tensor->shape[3]});
-        res_small_gpu.tensor->ToCPU();
-        res_small_gpu.tensor->print();
+        //        res_small_cpu.tensor->print();
+        res_small_cpu.tensor->reshape_({res_small_cpu.tensor->shape[2], res_small_cpu.tensor->shape[3]});
+        res_small_cpu.tensor->print();
+
+        // Print GPU ******
+//        t_input->reshape_({t_input->shape[2], t_input->shape[3]});
+//        t_input->print();
+//        res_small_gpu.tensor->reshape_({res_small_gpu.tensor->shape[2], res_small_gpu.tensor->shape[3]});
+//        res_small_gpu.tensor->ToCPU();
+//        res_small_gpu.tensor->print();
     }
 
 

@@ -224,14 +224,14 @@ void Tensor::flip_random(Tensor *A, Tensor *B, int axis) {
 #endif
 }
 
-void Tensor::crop_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant) {
+void Tensor::crop_random(Tensor *A, Tensor *B) {
     if (A->isCPU()) {
-        cpu_crop_random(A, B, std::move(factor_x), std::move(factor_y), constant, false);
+        cpu_crop_random(A, B);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_crop_random(A, B, std::move(factor_x), std::move(factor_y), constant, false);
+        gpu_crop_random(A, B);
       }
 #endif
 #ifdef cFPGA
@@ -260,12 +260,12 @@ void Tensor::crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, strin
 
 void Tensor::cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant) {
     if (A->isCPU()) {
-        cpu_crop_random(A, B, std::move(factor_x), std::move(factor_y), constant, true);
+        cpu_cutout_random(A, B, std::move(factor_x), std::move(factor_y), constant);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_crop_random(A, B, std::move(factor_x), std::move(factor_y), constant, true);
+        gpu_cutout_random(A, B, std::move(factor_x), std::move(factor_y), constant);
       }
 #endif
 #ifdef cFPGA

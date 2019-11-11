@@ -295,7 +295,7 @@ TestResult run_tensor_da(Tensor* t_input, Tensor* t_output, string op, int dev, 
         else if(op=="flip_v_random"){ Tensor::flip_random(t_input, t_output, 0); }
         else if(op=="flip_h_random"){ Tensor::flip_random(t_input, t_output,  1);}
         else if(op=="scale_random"){ Tensor::scale_random(t_input, t_output, {2.0f, 2.0f});}
-        else if(op=="crop_random"){ Tensor::crop_random(t_input, t_output, {0.5f, 1.0f}, {0.5f, 1.0f});}
+        else if(op=="crop_random"){ Tensor::crop_random(t_input, t_output);}
         else if(op=="crop_scale_random"){ Tensor::crop_scale_random(t_input, t_output, {0.5f, 1.0f});}
         else if(op=="cutout_random"){ Tensor::cutout_random(t_input, t_output, {0.1f, 0.5f}, {0.1f, 0.5f});}
 
