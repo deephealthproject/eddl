@@ -18,7 +18,7 @@ using namespace eddl;
 
 //////////////////////////////////
 // cifar_resnet.cpp:
-// Resnet18
+// Resnet18 without BatchNorm
 // Using fit for training
 //////////////////////////////////
 

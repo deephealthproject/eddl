@@ -19,7 +19,7 @@ using namespace eddl;
 //////////////////////////////////
 // cifar_resnet_da_bn.cpp:
 // Resnet18 with
-// BatchNormalization
+// BatchNorm
 // Data Augmentation
 // Using fit for training
 //////////////////////////////////
@@ -49,7 +49,7 @@ int main(int argc, char **argv){
 
   // Settings
   int epochs = 25;
-  int batch_size = 64;
+  int batch_size = 100;
   int num_classes = 10;
 
   // network
