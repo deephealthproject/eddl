@@ -512,6 +512,8 @@ if(BUILD_EXAMPLES)
     ## CIFAR10 EXAMPLES
     add_executable(cifar_conv "${EXAMPLES_DIR}/NN/2_CIFAR10/1_cifar_conv.cpp")
     add_executable(cifar_vgg16 "${EXAMPLES_DIR}/NN/2_CIFAR10/2_cifar_vgg16.cpp")
+    add_executable(cifar_vgg16_bn "${EXAMPLES_DIR}/NN/2_CIFAR10/3_cifar_vgg16_bn.cpp")
+    add_executable(cifar_resnet "${EXAMPLES_DIR}/NN/2_CIFAR10/4_cifar_resnet.cpp")
     ####
     add_executable(example_ae "${EXAMPLES_DIR}/NN/eddl_ae.cpp")
     add_executable(example_conv "${EXAMPLES_DIR}/NN/eddl_conv.cpp")
@@ -532,6 +534,8 @@ if(BUILD_EXAMPLES)
     ## CIFAR10 EXAMPLES
     target_link_libraries(cifar_conv eddl)
     target_link_libraries(cifar_vgg16 eddl)
+    target_link_libraries(cifar_vgg16_bn eddl)
+    target_link_libraries(cifar_resnet eddl)
     ####
     target_link_libraries(example_ae eddl)
     target_link_libraries(example_conv eddl)

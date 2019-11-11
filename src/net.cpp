@@ -386,9 +386,9 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs){
       if (snets[0]->dev == DEV_CPU)
         cout << "Net running on CPU\n";
       else if (snets[0]->dev < DEV_FPGA)
-        cout << "Net running on GPU " << dev - DEV_GPU << "\n";
+        cout << "Net running on GPU " << snets[0]->dev - DEV_GPU << "\n";
       else
-        cout << "Net running on FPGA " << dev - DEV_FPGA << "\n";
+        cout << "Net running on FPGA " << snets[0]->dev - DEV_FPGA << "\n";
     }
 
 }
