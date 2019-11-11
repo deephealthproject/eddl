@@ -71,12 +71,12 @@ int main(int argc, char **argv){
     l = ShiftRandom(l, {-0.1f, +0.1f}, {-0.1f, +0.1f});
     l = ScaleRandom(l, {0.8f, 1.2f});
     l = FlipRandom(l, 1);
-    l = CropRandom(l, {32, 32});  //In pixels  // TODO: Needs a fix!
+    l = CropRandom(l, {28, 28});  //In pixels  // TODO: Needs a fix!
     l = CropAndScaleRandom(l, {0.8f, 0.1f});  // Crop and rescale  // TODO: check!
     l = CutoutRandom(l, {0.1f, 0.3f}, {0.1, 0.3f});
 
 
-  l=Block(l,28);
+  l=Block(l,32);
   l=ResBlock(l,64);
   l=ResBlock(l,128);
   l=ResBlock(l,256);
@@ -98,8 +98,8 @@ int main(int argc, char **argv){
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
     //CS_CPU(4) // 4 CPU threads
-    //CS_CPU() // CPU with maximum threads availables
-    CS_GPU({1}) // GPU with only one gpu
+    CS_CPU() // CPU with maximum threads availables
+    //CS_GPU({1}) // GPU with only one gpu
   );
 
   // plot the model
