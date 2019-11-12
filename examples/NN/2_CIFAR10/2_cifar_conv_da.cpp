@@ -41,7 +41,7 @@ int main(int argc, char **argv){
   l = FlipRandom(l, 1);
   l = ShiftRandom(l, {-0.1f, +0.1f}, {-0.1f, +0.1f});
   l = ScaleRandom(l, {0.9f, 1.1f});
-  
+
   l=MaxPool(ReLu(Conv(l,32,{3,3},{1,1})),{2,2});
   l=MaxPool(ReLu(Conv(l,64,{3,3},{1,1})),{2,2});
   l=MaxPool(ReLu(Conv(l,128,{3,3},{1,1})),{2,2});
@@ -62,8 +62,8 @@ int main(int argc, char **argv){
     sgd(0.01, 0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    //CS_CPU() // CPU with maximum threads availables
-    CS_GPU({1}) // GPU with only one gpu
+    CS_CPU() // CPU with maximum threads availables
+    //CS_GPU({1}) // GPU with only one gpu
   );
 
   // plot the model

@@ -23,10 +23,10 @@ using namespace eddl;
 //////////////////////////////////
 
 layer Block1(layer l,int filters) {
-  return BatchNormalization(ReLu(Conv(l,filters,{1,1},{1,1})));
+  return ReLu(BatchNormalization(Conv(l,filters,{1,1},{1,1})));
 }
 layer Block3_2(layer l,int filters) {
-  l=BatchNormalization(ReLu(Conv(l,filters,{3,3},{1,1})));
+  l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
   l=BatchNormalization(ReLu(Conv(l,filters,{3,3},{1,1})));
   return l;
 }
@@ -53,7 +53,7 @@ int main(int argc, char **argv){
   l=MaxPool(Block1(Block3_2(l,512),512));
 
   l=Reshape(l,{-1});
-  l=Activation(Dense(l,512),"relu");
+  l=ReLu(BatchNormalization(Dense(l,512)));
 
   layer out=Activation(Dense(l,num_classes),"softmax");
 
