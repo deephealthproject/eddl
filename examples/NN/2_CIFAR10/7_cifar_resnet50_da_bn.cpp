@@ -49,7 +49,7 @@ int main(int argc, char **argv){
 
   // Settings
   int epochs = 25;
-  int batch_size = 32;
+  int batch_size = 32;  // <--- lower batch to fit low mem gpu
   int num_classes = 10;
 
   // network
@@ -61,7 +61,7 @@ int main(int argc, char **argv){
   l = ShiftRandom(l, {-0.1f, +0.1f}, {-0.1f, +0.1f});
   l = ScaleRandom(l, {0.9f, 1.1f});
 
-  // Resnet-18
+  // Resnet-50
   l=ReLu(BatchNormalization(Conv(l,64,{3,3},{1,1})));
 
   for(int i=0;i<3;i++)
@@ -74,7 +74,7 @@ int main(int argc, char **argv){
     l=ResBlock(l, 256,i==0);
 
   for(int i=0;i<3;i++)
-    l=ResBlock(l, 256,i==0);
+    l=ResBlock(l, 256,i==0); // <-- should be 512 
 
   l=Reshape(l,{-1});
   l=ReLu(BatchNormalization(Dense(l,512)));
