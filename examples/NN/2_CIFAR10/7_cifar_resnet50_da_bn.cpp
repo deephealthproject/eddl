@@ -17,7 +17,7 @@
 using namespace eddl;
 
 //////////////////////////////////
-// cifar_resnet_da_bn.cpp:
+// cifar_resnet50_da_bn.cpp:
 // Resnet18 with
 // BatchNorm
 // Data Augmentation
@@ -74,7 +74,7 @@ int main(int argc, char **argv){
     l=ResBlock(l, 256,i==0);
 
   for(int i=0;i<3;i++)
-    l=ResBlock(l, 256,i==0); // <-- should be 512 
+    l=ResBlock(l, 256,i==0); // <-- should be 512
 
   l=Reshape(l,{-1});
   l=ReLu(BatchNormalization(Dense(l,512)));
