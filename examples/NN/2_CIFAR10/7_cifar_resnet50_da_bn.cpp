@@ -24,7 +24,7 @@ using namespace eddl;
 // Using fit for training
 //////////////////////////////////
 
-layer ResBlock(layer l, int filters,int nconv,int half) {
+layer ResBlock(layer l, int filters,int half) {
   layer in=l;
 
   if (half)
@@ -65,16 +65,16 @@ int main(int argc, char **argv){
   l=ReLu(BatchNormalization(Conv(l,64,{3,3},{1,1})));
 
   for(int i=0;i<3;i++)
-    l=ResBlock(l, 64,2,i==0);
+    l=ResBlock(l, 64,i==0);
 
   for(int i=0;i<4;i++)
-    l=ResBlock(l, 128,2,i==0);
+    l=ResBlock(l, 128,i==0);
 
   for(int i=0;i<6;i++)
-    l=ResBlock(l, 256,2,i==0);
+    l=ResBlock(l, 256,i==0);
 
   for(int i=0;i<3;i++)
-    l=ResBlock(l, 512,2,i==0);
+    l=ResBlock(l, 256,i==0);
 
   l=Reshape(l,{-1});
   l=Activation(Dense(l,512),"relu");

@@ -16,7 +16,13 @@
 
 using namespace eddl;
 
-// AUTOENCODER
+//////////////////////////////////
+// mnist_auto_encoder.cpp:
+// A very basic MLP for mnist
+// Using train_batch for training
+// and eval_batch fot test
+//////////////////////////////////
+
 int main(int argc, char **argv) {
 
     // Download dataset
