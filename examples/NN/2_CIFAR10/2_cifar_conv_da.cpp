@@ -23,7 +23,6 @@ using namespace eddl;
 // Using fit for training
 //////////////////////////////////
 
-
 int main(int argc, char **argv){
 
   // download CIFAR data
@@ -38,27 +37,11 @@ int main(int argc, char **argv){
   layer in=Input({3,32,32});
   layer l=in;
 
-  //    // Transformations
-  //    l = Shift(l, {2, 2});  // In pixels
-  //    l = Scale(l, {30, 30}, true); // In pixels
-  //    // Not implemented => l = Rotate(l, 15, false); // Degrees
-  //    l = Flip(l, 1);
-  //    l = Crop(l, {0, 0}, {23, 23}, false);  // In pixels
-  //    l = CropAndScale(l, {0, 0}, false);  // In pixels
-  //    l = Cutout(l, {0, 0}, {5, 5}); // In pixels
-
-
   // Data augmentation
   l = FlipRandom(l, 1);
   l = ShiftRandom(l, {-0.1f, +0.1f}, {-0.1f, +0.1f});
   l = ScaleRandom(l, {0.9f, 1.1f});
-  l = CropRandom(l, {28, 28});  //In pixels  // TODO: Needs a fix!
-
-  ///----
-  //l = CropAndScaleRandom(l, {0.8f, 1.0f});  // Crop and rescale  // TODO: check!
-  //l = CutoutRandom(l, {0.0f, 0.05f}, {0.0, 0.05f});
-
-
+  
   l=MaxPool(ReLu(Conv(l,32,{3,3},{1,1})),{2,2});
   l=MaxPool(ReLu(Conv(l,64,{3,3},{1,1})),{2,2});
   l=MaxPool(ReLu(Conv(l,128,{3,3},{1,1})),{2,2});
