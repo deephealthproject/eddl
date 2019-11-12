@@ -77,7 +77,7 @@ int main(int argc, char **argv){
     l=ResBlock(l, 256,i==0);
 
   l=Reshape(l,{-1});
-  l=Activation(Dense(l,512),"relu");
+  l=ReLu(BatchNormalization(Dense(l,512)));
 
   layer out=Activation(Dense(l,num_classes),"softmax");
 
