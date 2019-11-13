@@ -57,7 +57,7 @@ void msg(string s, string s2);
 
 class Tensor {
 
-private:
+public:
     static Tensor* load_from_bin(const string& filename);
     static Tensor* load_from_onnx();
     static Tensor* load_from_img(const string& filename, const string& format);
@@ -66,7 +66,7 @@ private:
     void save2onnx();
     void save2img(const string& filename, const string& format);
 
-public:
+
     int device;
     int ndim;
     int size;

@@ -16,7 +16,6 @@
 
 #include "eddlT.h"
 
-
 using namespace std;
 
 ////////////////////////////////////////////////////////
@@ -139,6 +138,23 @@ namespace eddlT {
   tshape getShape(Tensor *A)
   {
     return A->getShape();
+  }
+
+  // Load from file ***********************************
+  Tensor *load(string fname){
+    return Tensor::load_from_bin(fname);
+  }
+
+  Tensor * load_png(string fname)
+  {
+    return Tensor::load_from_img(fname,"png");
+  }
+
+
+  void save_png(Tensor* A,string fname)
+  {
+
+
   }
 
 

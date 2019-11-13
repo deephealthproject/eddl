@@ -62,6 +62,9 @@ namespace eddlT{
   void save_png(Tensor* A,string fname);
   Tensor * load_png(string fname);
 
+  void save_png(Tensor* A,string fname);
+  Tensor * load_png(string fname);
+
   // Math ops       ***********************************
 
   void abs_(Tensor *A);
