@@ -77,8 +77,8 @@ int main(int argc, char **argv){
   l=ResBlock(l, 256,2,1);//<<<-- output half size
   l=ResBlock(l, 256,2,0);
 
-  l=ResBlock(l, 512,2,1);//<<<-- output half size
-  l=ResBlock(l, 512,2,0);
+  l=ResBlock(l, 256,2,1);//<<<-- output half size
+  l=ResBlock(l, 256,2,0);
 
   l=Reshape(l,{-1});
   l=ReLu(BG(Dense(l,512)));
