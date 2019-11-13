@@ -38,11 +38,11 @@ int main(int argc, char **argv) {
     model gen = Model({gin},{});
 
     build(gen,
-          sgd(0.001, 0.0), // Optimizer
+          sgd(0.01, 0.0), // Optimizer
           {}, // Losses
           {}, // Metrics
-          //CS_CPU()
-          CS_GPU({1})
+          CS_CPU()
+          //CS_GPU({1})
     );
 
 
@@ -56,11 +56,11 @@ int main(int argc, char **argv) {
 
     model disc = Model({din},{dout});
     build(disc,
-            sgd(0.0001, 0.0), // Optimizer
+            sgd(0.001, 0.0), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
-          //CS_CPU()
-          CS_GPU({1})
+          CS_CPU()
+          //CS_GPU({1})
     );
 
     summary(gen);
@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
 
     // Training
     int i,j;
-    int num_batches=1000;
+    int num_batches=100;
     int epochs=1000;
     int batch_size = 100;
 
@@ -108,7 +108,7 @@ int main(int argc, char **argv) {
 
         // Fake
         forward(gen,batch_size);
-        forward(disc,{getOutput(gout)});
+        forward(disc,{getTensor(gout)});
 
         reset_grads(disc);
         backward(disc,{zeros});
@@ -120,21 +120,23 @@ int main(int argc, char **argv) {
 
         // Update Gen
         forward(gen,batch_size);
-        forward(disc,{getOutput(gout)});
+        forward(disc,{getTensor(gout)});
 
         reset_grads(disc);
         backward(disc,{ones});
 
         reset_grads(gen);
-        copyGrad(din,gout);
+        copyTensor(getGrad(din),getGrad(gout));
 
         backward(gen);
         update(gen);
 
       }
       printf("\n");
+
+      // Generate some num_samples
       forward(gen,batch_size);
-      tensor output=getOutput(gout);
+      tensor output=getTensor(gout);
 
       tensor img=eddlT::select(output,0);
 
@@ -150,16 +152,8 @@ int main(int argc, char **argv) {
 
     }
 
-  // Generate some num_samples
 
-  forward(gen,batch_size);
-  tensor output=getOutput(gout);
 
-  tensor img=eddlT::select(output,0);
-
-  eddlT::reshape_(img,{1,1,28,28});
-
-  eddlT::save_png(img,"img.png");
 
 
 }

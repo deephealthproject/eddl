@@ -255,8 +255,10 @@ namespace eddl {
 
     void update(model m);
     void compute_loss(model m);
-    void copyGrad(layer l1,layer l2);
-    Tensor* getOutput(layer l);
+
+    void copyTensor(Tensor *t1,Tensor *t2);
+    Tensor* getTensor(layer l);
+    Tensor* getGrad(layer l);
     //Tensor* getInput(layer l);
 
 

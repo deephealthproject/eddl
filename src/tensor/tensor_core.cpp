@@ -232,8 +232,14 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
     //B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
         cpu_select(A, B, sind, ini, end);
-    } else {
-        msg("unsuppoted select between devices", "Tensor::select");
+    }
+    else if ((A->isGPU()) && (B->isCPU())) {
+        Tensor *C=A->clone();
+        A->ToCPU();
+        cpu_select(A, B, sind, ini, end);
+        delete A;
+    }else {
+        msg("unsuppoted select", "Tensor::select");
     }
     //B->tsem->unlock();
 }
