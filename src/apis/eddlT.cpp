@@ -116,7 +116,11 @@ namespace eddlT {
   {
     A->fill_(v);
   }
-
+  void set_(Tensor *A,vector<int> indices, float value)
+  {
+    A->set_(indices,value);
+  }
+  
   void reshape_(Tensor *A, vector<int> indices)
   {
     A->reshape_(indices);

@@ -31,8 +31,8 @@ int main(int argc, char **argv) {
     layer gin=GaussGenerator(0.0, 1.0, {30});
     layer l=gin;
 
-    l=ReLu(Dense(l,256));
-    l=ReLu(Dense(l,512));
+    l=ReLu(Dense(l,1024));
+    l=ReLu(Dense(l,1024));
     layer gout=Sigmoid(Dense(l,784));
 
     model gen = Model({gin},{});
@@ -79,12 +79,12 @@ int main(int argc, char **argv) {
     int batch_size = 100;
 
     tensor batch=eddlT::create({batch_size,784});
-    tensor ones=eddlT::ones({batch_size,2});
-    tensor zeros=eddlT::ones({batch_size,2});
+    tensor real=eddlT::zeros({batch_size,2});
+    tensor fake=eddlT::zeros({batch_size,2});
 
     for(int i=0;i<batch_size;i++) {
-      ones->ptr[2*i]=0;
-      zeros->ptr[2*i+1]=0;
+      eddlT::set_(real,{i,0},1.0);
+      eddlT::set_(fake,{i,1},1.0);
     }
 
     for(i=0;i<epochs;i++) {
@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
         forward(disc,{batch});
 
         reset_grads(disc);
-        backward(disc,{ones});
+        backward(disc,{real});
         update(disc);
 
         compute_loss(disc);
@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
         forward(disc,{getTensor(gout)});
 
         reset_grads(disc);
-        backward(disc,{zeros});
+        backward(disc,{fake});
         update(disc);
 
         compute_loss(disc);
@@ -119,11 +119,10 @@ int main(int argc, char **argv) {
         printf("\r");
 
         // Update Gen
-        forward(gen,batch_size);
         forward(disc,{getTensor(gout)});
 
         reset_grads(disc);
-        backward(disc,{ones});
+        backward(disc,{real});
 
         reset_grads(gen);
         copyTensor(getGrad(din),getGrad(gout));

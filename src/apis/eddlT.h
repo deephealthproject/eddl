@@ -46,6 +46,7 @@ namespace eddlT{
 
   // Core inplace    **********************************
   void fill_(Tensor *A,float v);
+  void set_(Tensor *A,vector<int> indices, float value);
   void reshape_(Tensor *A, vector<int> indices);
 
   // Pointer functions ********************************
