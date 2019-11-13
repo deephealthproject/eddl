@@ -30,6 +30,9 @@ Layer::Layer(string name, int dev) {
     lin = lout = 0;
     delta_bp = 0;
 
+    orig=nullptr;
+    net=nullptr;
+
     reg = nullptr;
     init=new IGlorotNormal(1234);
 }

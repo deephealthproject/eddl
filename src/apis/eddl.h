@@ -238,6 +238,27 @@ namespace eddl {
     void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
     void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
 
+    void next_batch(vector<Tensor *> in,vector<Tensor *> out);
+
+    void forward(model m,vector<Tensor *> in);
+    void forward(model m);
+    void forward(model m,int b);
+
+    void print_loss(model m, int batch);
+
+    void reset_loss(model m);
+    void reset_grads(model m);
+
+
+    void backward(model m,vector<Tensor *> target);
+    void backward(model net);
+
+    void update(model m);
+    void compute_loss(model m);
+    void copyGrad(layer l1,layer l2);
+    Tensor* getOutput(layer l);
+    //Tensor* getInput(layer l);
+
 
 // ---- MODEL METHODS ----
     model Model(vlayer in, vlayer out);
@@ -245,7 +266,7 @@ namespace eddl {
     void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr);
 
     void setlogfile(model net,string fname);
-    
+
     void summary(model m);
 
     void load(model m, string fname);
@@ -260,8 +281,7 @@ namespace eddl {
 
     void predict(model m, const vector<Tensor *> &in, const vector<Tensor *> &out);
 
-    void print_loss(model m, int batch);
-    void reset_loss(model m);
+
 
 // ---- DATASETS ----
     bool exist(string name);

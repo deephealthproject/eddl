@@ -114,7 +114,10 @@ namespace eddlT {
 
     return B;
   }
-
+  void copyTensor(Tensor *A,Tensor *B)
+  {
+    Tensor::copy(A,B);
+  }
 
   // Core inplace  **********************************
   void fill_(Tensor *A,float v)

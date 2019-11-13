@@ -26,11 +26,8 @@ using namespace std;
 /////////////////////////////////////////
 /////////////////////////////////////////
 // Operator layer
-class GeneratorLayer : public Layer {
+class GeneratorLayer : public LinLayer {
 public:
-
-    int binary;
-    float val;
 
     GeneratorLayer(string name, int dev);
 
@@ -49,13 +46,13 @@ public:
     float mean;
     float stdev;
 
-    Tensor *mask;
-
     LGauss(float mean, float stdev, vector<int> size, string name, int dev);
 
     void forward() override;
 
     void backward() override;
+
+    void resize(int b) override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

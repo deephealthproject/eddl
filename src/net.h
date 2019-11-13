@@ -85,7 +85,7 @@ public:
 
     void forward();
     void delta();
-    void loss();
+    void calcloss();
     void backward();
     void applygrads();
 
@@ -118,6 +118,13 @@ public:
 
     void reset_loss();
     void print_loss(int b);
+
+    void forward(vector<Tensor *> in);
+    void backward(vector<Tensor *> target);
+    void reset_grads();
+    void update();
+    void compute_loss();
+
 
 };
 

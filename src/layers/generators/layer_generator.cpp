@@ -17,8 +17,8 @@
 
 using namespace std;
 
-GeneratorLayer::GeneratorLayer(string name, int dev) : Layer(name, dev) {
-    binary=0;
+GeneratorLayer::GeneratorLayer(string name, int dev) : LinLayer(name, dev) {
+
 }
 
 

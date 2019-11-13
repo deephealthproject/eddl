@@ -42,6 +42,7 @@ namespace eddlT{
   Tensor * ToGPU(Tensor *A);
   Tensor* clone(Tensor *A);
   Tensor* select(Tensor *A, int i);
+  void copyTensor(Tensor *A,Tensor *B);
 
   // Core inplace    **********************************
   void fill_(Tensor *A,float v);

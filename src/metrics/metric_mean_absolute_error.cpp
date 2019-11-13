@@ -19,7 +19,7 @@ MMeanAbsoluteError::MMeanAbsoluteError() : Metric("mean_absolute_error"){}
 
 float MMeanAbsoluteError::value(Tensor *T, Tensor *Y) {
     float f;
-
+    int size=T->size/T->shape[0];
     // batch error: add((T-Y)^2)
     Tensor *aux1 = new Tensor(T->getShape(), T->device);
 
@@ -27,7 +27,7 @@ float MMeanAbsoluteError::value(Tensor *T, Tensor *Y) {
 
     aux1->abs_();
 
-    f = aux1->sum()/T->shape[0];
+    f = aux1->sum()/size;
 
 
     delete aux1;

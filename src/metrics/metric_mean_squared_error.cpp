@@ -20,12 +20,13 @@ MMeanSquaredError::MMeanSquaredError() : Metric("mean_squared_error"){}
 float MMeanSquaredError::value(Tensor *T, Tensor *Y) {
     float f;
     // batch error: add((T-Y)^2)
+    int size=T->size/T->shape[0];
+
     Tensor *aux1 = new Tensor(T->getShape(), T->device);
 
     Tensor::add(1.0, T, -1.0, Y, aux1, 0);
     Tensor::el_mult(aux1, aux1, aux1, 0);
-    f = aux1->sum()/T->shape[0];
-
+    f = aux1->sum()/size;
 
     delete aux1;
     return f;

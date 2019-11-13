@@ -21,11 +21,13 @@
 #include "../tensor/nn/tensor_nn.h"
 #include "../regularizers/regularizer.h"
 
+
 #define TRMODE 1
 #define TSMODE 0
 
 using namespace std;
 
+class Net;
 
 class Layer {
 public:
@@ -35,6 +37,7 @@ public:
     Tensor *target;
     Tensor *delta;
     Layer *orig;
+    Net *net;
 
     vector<Tensor *> params;
     vector<Tensor *> gradients;

@@ -509,6 +509,155 @@ namespace eddl {
         net->train_batch(in, out, indices,1);
     }
 
+    void next_batch(vector<Tensor *> in,vector<Tensor *> out)
+     {
+      int i,n;
+      int batch_size;
+
+      batch_size=out[0]->shape[0];
+      n=in[0]->shape[0];
+      vector<int> sind(batch_size);
+      for (i = 0; i < batch_size; i++) sind[i] = rand() % n;
+      for (i = 0; i<in.size();i++)
+        Tensor::select(in[i], out[i], sind, 0, batch_size);
+    }
+
+    void forward(model net,vector<Tensor *> in)
+    {
+
+      net->forward(in);
+
+
+    }
+
+
+
+    void forward(model net,int b)
+    {
+      net->resize(b);
+      net->forward({});
+
+    }
+    void forward(model net)
+    {
+      net->forward({});
+    }
+
+    void print_loss(model m, int batch){
+      m->print_loss(batch);
+    }
+
+    void reset_loss(model m)
+    {
+      m->reset_loss();
+    }
+
+    void reset_grads(model net)
+    {
+      net->reset_grads();
+    }
+    void backward(model net,vector<Tensor *> target)
+    {
+      net->backward(target);
+    }
+
+
+    void backward(model net)
+    {
+      net->backward({});
+    }
+
+    void compute_loss(model net)
+    {
+      net->compute_loss();
+    }
+
+    void update(model net)
+    {
+      net->update();
+    }
+
+    void copyGrad(layer l1,layer l2) {
+      if (l1->net==nullptr)
+        msg("layer not in graph","copyGrad");
+      if (l2->net==nullptr)
+        msg("layer not in graph","copyGrad");
+
+      if (l1->net->snets[0]->dev!=l1->net->snets[0]->dev)
+        msg("layers in different devices","copyGrad");
+
+      int c=l1->net->snets.size();
+      if (c>1)
+        msg("copyGrad not supported for multiGPU","copyGrad");
+
+      c=l2->net->snets.size();
+      if (c>1)
+        msg("copyGrad not supported for multiGPU","copyGrad");
+
+      //
+      if (l1->net->snets[0]->dev==DEV_CPU) {
+        Tensor::copy(l1->delta,l2->delta);
+      }
+      else {
+        Net *s1=l1->net->snets[0];
+        Net *s2=l2->net->snets[0];
+        Layer *sl1;
+        Layer *sl2;
+        int j;
+
+        for (j = 0; j < s1->layers.size(); j++)
+          if (s1->layers[j]->orig==l1) {
+              //cout<<s1->layers[j]->name<<"\n";
+              sl1=s1->layers[j];
+              break;
+          }
+        if (j==s1->layers.size())
+          msg("layer not found","copyGrad");
+
+        for (j = 0; j < s2->layers.size(); j++)
+          if (s2->layers[j]->orig==l2) {
+              //cout<<s2->layers[j]->name<<"\n";
+              sl2=s2->layers[j];
+              break;
+          }
+
+        if (j==s2->layers.size())
+          msg("layer not found","copyGrad");
+
+        Tensor::copy(sl1->delta,sl2->delta);
+      }
+    }
+
+    Tensor* getOutput(layer l1) {
+      int j;
+      if (l1->net==nullptr)
+        msg("layer not in graph","getOutput");
+
+      int c=l1->net->snets.size();
+      if (c>1)
+        msg("not supported for multiGPU","Net.getOutput");
+
+      //
+      if (l1->net->snets[0]->dev==DEV_CPU) {
+        return l1->output;
+      }
+      else {
+        Net *s1=l1->net->snets[0];
+        Layer *sl1;
+
+        for (j = 0; j < s1->layers.size(); j++)
+          if (s1->layers[j]->orig==l1) {
+              //cout<<"\n"<<s1->layers[j]->name<<"---"<<l1->name<<"\n";
+              sl1=s1->layers[j];
+              Tensor::copy(sl1->output,l1->output);
+              break;
+          }
+        if (j==s1->layers.size())
+          msg("layer not found","getOutput");
+        return l1->output;
+      }
+    }
+
     // ---- MODEL METHODS ----
     model Model(vlayer in, vlayer out) {
         return new Net(in, out);
@@ -539,7 +688,7 @@ namespace eddl {
     {
       net->setlogfile(fname);
     }
-    
+
     void summary(model m) {
         cout<<m->summary()<<"\n";
     }
@@ -587,14 +736,6 @@ namespace eddl {
         net->predict(in, out);
     }
 
-    void print_loss(model m, int batch){
-      m->print_loss(batch);
-    }
-
-    void reset_loss(model m)
-    {
-      m->reset_loss();
-    }
 
     // ---- DATASETS ----
 
