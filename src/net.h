@@ -48,7 +48,8 @@ public:
     int batch_size;
     int tr_batches;
     int inferenced_samples;
-    
+    int trmode;
+
     vector<int> devsel;
     CompServ *cs;
 
@@ -63,6 +64,8 @@ public:
     verr fiterr;
     verr total_loss;
     verr total_metric;
+    FILE *flog_tr;
+    FILE *flog_ts;
 
     Optimizer *optimizer;
     vector<Net *> snets;
@@ -77,6 +80,7 @@ public:
     void reset();
     void save(FILE *fe);
     void load(FILE *fe);
+    void setlogfile(string fname);
 
 
     void forward();
@@ -96,7 +100,7 @@ public:
     void resize(int batch);
 
     string summary();
-    void plot(string fname);
+    void plot(string fname,string mode);
 
     void setmode(int m);
     void sync_weights();

@@ -17,17 +17,27 @@
 using namespace eddl;
 
 //////////////////////////////////
-// cifar_conv.cpp:
-// VGG-16
+// cifar_resnet.cpp:
+// Resnet18 without BatchNorm
 // Using fit for training
 //////////////////////////////////
-layer Block1(layer l,int filters) {
-  return ReLu(Conv(l,filters,{1,1},{1,1}));
-}
-layer Block3_2(layer l,int filters) {
-  l=ReLu(Conv(l,filters,{3,3},{1,1}));
-  l=ReLu(Conv(l,filters,{3,3},{1,1}));
-  return l;
+
+layer ResBlock(layer l, int filters,int nconv,int half) {
+  layer in=l;
+
+  if (half)
+      l=ReLu(Conv(l,filters,{3,3},{2,2}));
+  else
+      l=ReLu(Conv(l,filters,{3,3},{1,1}));
+
+
+  for(int i=0;i<nconv-1;i++)
+    l=ReLu(Conv(l,filters,{3,3},{1,1}));
+
+  if (half)
+    return Sum(Conv(in,filters,{1,1},{2,2}),l);
+  else
+    return Sum(l,in);
 }
 
 int main(int argc, char **argv){
@@ -44,11 +54,19 @@ int main(int argc, char **argv){
   layer in=Input({3,32,32});
   layer l=in;
 
-  l=MaxPool(Block3_2(l,64));
-  l=MaxPool(Block3_2(l,128));
-  l=MaxPool(Block1(Block3_2(l,256),256));
-  l=MaxPool(Block1(Block3_2(l,512),512));
-  l=MaxPool(Block1(Block3_2(l,512),512));
+  l=ReLu(Conv(l,64,{3,3},{1,1}));
+
+  l=ResBlock(l, 64,2,1);//<<<-- output half size
+  l=ResBlock(l, 64,2,0);
+
+  l=ResBlock(l, 128,2,1);//<<<-- output half size
+  l=ResBlock(l, 128,2,0);
+
+  l=ResBlock(l, 256,2,1);//<<<-- output half size
+  l=ResBlock(l, 256,2,0);
+
+  l=ResBlock(l, 512,2,1);//<<<-- output half size
+  l=ResBlock(l, 512,2,0);
 
   l=Reshape(l,{-1});
   l=Activation(Dense(l,512),"relu");

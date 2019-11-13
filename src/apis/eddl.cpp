@@ -535,6 +535,11 @@ namespace eddl {
         net->build(o, l, m, cs);
     }
 
+    void setlogfile(model net,string fname)
+    {
+      net->setlogfile(fname);
+    }
+    
     void summary(model m) {
         cout<<m->summary()<<"\n";
     }
@@ -566,8 +571,8 @@ namespace eddl {
 
     }
 
-    void plot(model m, string fname) {
-        m->plot(fname);
+    void plot(model m, string fname,string mode) {
+        m->plot(fname,mode);
     }
 
     void fit(model net, const vector<Tensor *> &in, const vector<Tensor *> &out, int batch, int epochs) {
@@ -590,7 +595,7 @@ namespace eddl {
     {
       m->reset_loss();
     }
-    
+
     // ---- DATASETS ----
 
     bool exist(string name) {

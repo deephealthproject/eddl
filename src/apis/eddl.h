@@ -244,13 +244,15 @@ namespace eddl {
 
     void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr);
 
+    void setlogfile(model net,string fname);
+    
     void summary(model m);
 
     void load(model m, string fname);
 
     void save(model m, string fname);
 
-    void plot(model m, string fname);
+    void plot(model m, string fname, string mode="LR");
 
     void fit(model m, const vector<Tensor *> &in, const vector<Tensor *> &out, int batch, int epochs);
 

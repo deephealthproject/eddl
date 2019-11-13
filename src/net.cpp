@@ -106,6 +106,8 @@ Net::Net(vlayer in, vlayer out) {
     optimizer = nullptr;
     name="model";
     tr_batches=0;
+    flog_tr=nullptr;
+    flog_ts=nullptr;
 
     // Walk through the pointers of all layers, to get a plain
     // vector with all the layers
@@ -125,8 +127,10 @@ Net::Net(vlayer in, vlayer out) {
 Net::~Net()
 {
   for(int i=0;i<snets.size();i++)
-    for(int j=0;j<snets[i]->layers.size();j++)
+    for(int j=0;j<snets[i]->layers.size();j++) {
+      //cout<<"delete "<<nets[i]->layers[j]->name<<"\n";
       delete snets[i]->layers[j];
+    }
 
 }
 
@@ -195,7 +199,7 @@ string Net::summary() {
     return ss.str();
 }
 
-void Net::plot(string fname) {
+void Net::plot(string fname,string mode) {
     ofstream out("tmp.dot");
     int ind;
     string type = fname.substr(fname.find('.') + 1);
@@ -203,7 +207,7 @@ void Net::plot(string fname) {
 
 
     out << "digraph Model {\n";
-    out << "rankdir=LR;\n";
+    out << "rankdir="<<mode<<";\n";
 
     // plot layers
     for (int i = 0; i != layers.size(); i++)
@@ -231,6 +235,19 @@ void Net::plot(string fname) {
 
     system(cmd.c_str());
 
+}
+
+/////////////////////////////////////////
+void Net::setlogfile(string fname)
+{
+  string str=fname+"_tr.log";
+  string sts=fname+"_ts.log";
+
+  flog_tr=fopen(str.c_str(),"wt");
+  if (flog_tr==nullptr) msg("error creating tr log file","Net.setlogfile");
+
+  flog_ts=fopen(sts.c_str(),"wt");
+  if (flog_ts==nullptr) msg("error creating ts log file","Net.setlogfile");
 }
 
 /////////////////////////////////////////
@@ -386,9 +403,9 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs){
       if (snets[0]->dev == DEV_CPU)
         cout << "Net running on CPU\n";
       else if (snets[0]->dev < DEV_FPGA)
-        cout << "Net running on GPU " << dev - DEV_GPU << "\n";
+        cout << "Net running on GPU " << snets[0]->dev - DEV_GPU << "\n";
       else
-        cout << "Net running on FPGA " << dev - DEV_FPGA << "\n";
+        cout << "Net running on FPGA " << snets[0]->dev - DEV_FPGA << "\n";
     }
 
 }
@@ -577,13 +594,14 @@ void Net::split(int c, int todev) {
         snets[i]->build(optimizer->clone(), losses, metrics);
 
         //summary();
-        snets[i]->plot("kk.pdf");
+        snets[i]->plot("kk.pdf","LR");
     }
 }
 
 
 
 void Net::setmode(int m) {
+  trmode=m;
   for (int i = 0; i < snets.size(); i++)
     for (int j = 0; j < snets[i]->layers.size(); j++)
       snets[i]->layers[j]->setmode(m);
@@ -693,7 +711,6 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     // Start training
     setmode(TRMODE);
 
-
     // Set some parameters
     int num_batches = n / batch_size;
 
@@ -715,7 +732,6 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             tr_batches++;
 
             train_batch(tin, tout, sind);
-
 
             print_loss(j);
 
@@ -758,8 +774,25 @@ void Net::print_loss(int b)
               losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
               metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
 
+      if ((flog_tr!=nullptr)&&(trmode))
+        fprintf(flog_tr, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
+                metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+
+      if ((flog_ts!=nullptr)&&(!trmode))
+        fprintf(flog_ts, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
+                metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+
   }
   fflush(stdout);
+  if ((flog_tr!=nullptr)&&(trmode)) {
+    fprintf(flog_tr, "\n");
+    fflush(flog_tr);
+  }
+  if ((flog_ts!=nullptr)&&(!trmode)) {
+    fprintf(flog_ts, "\n");
+    fflush(flog_ts);
+  }
+
 }
 
 /////////////////////////////////////////
@@ -778,6 +811,9 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
       comp=batch_size;
 
     int thread_batch_size=batch_size / comp;
+
+    if (eval) setmode(TSMODE);
+    else setmode(TRMODE);
 
     // Check indices
     if (sind.size() == 0) msg("error void index","Net::train_batch");
