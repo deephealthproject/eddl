@@ -37,23 +37,7 @@ LTensor::~LTensor()
 
 // From file
 LTensor::LTensor(string fname) : LinLayer("ltensor" + to_string(total_layers), DEV_CPU) {
-  FILE *fe = fopen(fname.c_str(), "rb");
-  if (fe == nullptr) {
-      fprintf(stderr, "%s not found\n", fname.c_str());
-      exit(1);
-  }
-
-  vector<int> shape;
-  int ndim,v;
-  int read = fread(&ndim, sizeof(int), 1, fe);
-  for (int i = 0; i < ndim; ++i) {
-      int read = fread(&v, sizeof(int), 1, fe);
-      shape.push_back(v);
-  }
-
-  Tensor *t=new Tensor(shape,DEV_CPU);
-  cout << "loading file with tensor:" << shape << "\n";
-  t->load(fe);
+  Tensor *t = Tensor::load(fname, "bin");
   data = input = output = t;
 }
 

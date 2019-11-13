@@ -64,6 +64,33 @@ void Tensor::reshape_(vector<int> shape){
     }
 }
 
+Tensor* Tensor::permute(vector<int> axis){
+    // Compute new shape
+    vector<int> new_shape;
+    for(int i=0; i<this->ndim; i++){
+        new_shape.push_back(this->shape[axis[i]]);
+    }
+
+    // Create new tensor
+    auto* B = new Tensor(new_shape, DEV_CPU);
+
+    // Fill tensor
+    vector<int> B_idxs(this->ndim);
+    for(int A_pos=0; A_pos<this->size; A_pos++){
+        vector<int> A_idxs = this->get_indices_rowmajor(A_pos);
+
+        // Compute indices for B
+        for(int i=0; i<this->ndim; i++){
+            B_idxs[i] = A_idxs[axis[i]];
+        }
+
+        // Set value
+        B->set_(B_idxs, this->ptr[A_pos]);
+
+    }
+    return B;
+}
+
 int Tensor::get_address_rowmajor(vector<int> indices){
     int address=0;
     for(int i=0; i<this->ndim; i++){ address +=  indices[i] * this->stride[i];}  //*(indices.begin()+i)
