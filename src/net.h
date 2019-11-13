@@ -48,6 +48,7 @@ public:
     int batch_size;
     int tr_batches;
     int inferenced_samples;
+    int trmode;
 
     vector<int> devsel;
     CompServ *cs;
@@ -63,7 +64,8 @@ public:
     verr fiterr;
     verr total_loss;
     verr total_metric;
-    FILE *flog;
+    FILE *flog_tr;
+    FILE *flog_ts;
 
     Optimizer *optimizer;
     vector<Net *> snets;

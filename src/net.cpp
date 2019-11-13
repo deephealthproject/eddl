@@ -106,7 +106,8 @@ Net::Net(vlayer in, vlayer out) {
     optimizer = nullptr;
     name="model";
     tr_batches=0;
-    flog=nullptr;
+    flog_tr=nullptr;
+    flog_ts=nullptr;
 
     // Walk through the pointers of all layers, to get a plain
     // vector with all the layers
@@ -239,8 +240,14 @@ void Net::plot(string fname,string mode) {
 /////////////////////////////////////////
 void Net::setlogfile(string fname)
 {
-  flog=fopen(fname.c_str(),"wt");
-  if (flog==nullptr) msg("error creating log file","Net.setlogfile");
+  string str=fname+"_tr.log";
+  string sts=fname+"_ts.log";
+
+  flog_tr=fopen(str.c_str(),"wt");
+  if (flog_tr==nullptr) msg("error creating tr log file","Net.setlogfile");
+
+  flog_ts=fopen(sts.c_str(),"wt");
+  if (flog_ts==nullptr) msg("error creating ts log file","Net.setlogfile");
 }
 
 /////////////////////////////////////////
@@ -594,6 +601,7 @@ void Net::split(int c, int todev) {
 
 
 void Net::setmode(int m) {
+  trmode=m;
   for (int i = 0; i < snets.size(); i++)
     for (int j = 0; j < snets[i]->layers.size(); j++)
       snets[i]->layers[j]->setmode(m);
@@ -768,15 +776,23 @@ void Net::print_loss(int b)
               losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
               metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
 
-      if (flog!=nullptr)
-        fprintf(flog, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
+      if ((flog_tr!=nullptr)&&(trmode))
+        fprintf(flog_tr, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
+                metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+
+      if ((flog_ts!=nullptr)&&(!trmode))
+        fprintf(flog_ts, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
                 metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
 
   }
   fflush(stdout);
-  if (flog!=nullptr) {
-    fprintf(flog, "\n");
-    fflush(flog);
+  if ((flog_tr!=nullptr)&&(trmode)) {
+    fprintf(flog_tr, "\n");
+    fflush(flog_tr);
+  }
+  if ((flog_ts!=nullptr)&&(!trmode)) {
+    fprintf(flog_ts, "\n");
+    fflush(flog_ts);
   }
 
 }
