@@ -153,7 +153,7 @@ namespace eddlT {
 
   void save_png(Tensor* A,string fname)
   {
-
+    A->save2img(fname, "png");
 
   }
 
