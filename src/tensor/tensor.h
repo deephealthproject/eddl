@@ -10,6 +10,8 @@
 #ifndef EDDL_TENSOR_H
 #define EDDL_TENSOR_H
 
+#include <iostream>
+#include <fstream>
 #include <stdio.h>
 #include <vector>
 #include <string>
@@ -54,6 +56,15 @@ void msg(string s, string s2);
 
 
 class Tensor {
+
+private:
+    static Tensor* load_from_bin(const string& filename);
+    static Tensor* load_from_onnx();
+    static Tensor* load_from_img(const string& filename, const string& format);
+
+    void save2bin(const string& filename);
+    void save2onnx();
+    void save2img(const string& filename, const string& format);
 
 public:
     int device;
@@ -104,10 +115,8 @@ public:
     static int get_mode(string mode);
 
     // Serialization
-    void save(string s);
-    void save(FILE *fe);
-    void load(FILE *fe);
-
+    static Tensor* load(const string& filename, const string& format="bin");
+    void save(const string& filename, const string& format="bin");
 
     // ***** Core (in-place) *****************************
     void fill_(float v);
@@ -117,6 +126,10 @@ public:
     void reshape_(vector<int> shape);
     float get_(vector<int> indices);
     void set_(vector<int> indices, float value);
+
+    // ***** Core (static) *****************************
+    Tensor* permute(vector<int> axis);
+
 
     // ************************************************
     // ****** Tensor operations ***********************

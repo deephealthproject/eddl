@@ -20,43 +20,43 @@ using namespace eddl;
 
 layer RCRC(layer l,int filters, vector<int> kernel, vector<int> stride)
 {
-  return ReLu(Conv(ReLu(Conv(l, filters, kernel,stride)), filters, kernel,stride));
+    return ReLu(Conv(ReLu(Conv(l, filters, kernel,stride)), filters, kernel,stride));
 }
 
 layer GB(layer l)
 {
-  return GaussianNoise(BatchNormalization(l),0.3);
+    return GaussianNoise(BatchNormalization(l),0.3);
 }
 
 
 layer Block(layer l,int filters)
 {
-  return MaxPool(GB(RCRC(l,filters,{3,3},{1,1})));
+    return MaxPool(GB(RCRC(l,filters,{3,3},{1,1})));
 }
 
 
 layer ResBlock(layer l,int filters)
 {
-  layer in=l;
+    layer in=l;
 
-  layer l1=ReLu(Conv(l,filters,{1,1},{2,2}));
-  layer l2=MaxPool(RCRC(l,filters,{3,3},{1,1}),{2,2});
-  l=GB(Sum(l1,l2));
-  return l;
+    layer l1=ReLu(Conv(l,filters,{1,1},{2,2}));
+    layer l2=MaxPool(RCRC(l,filters,{3,3},{1,1}),{2,2});
+    l=GB(Sum(l1,l2));
+    return l;
 }
 
 int main(int argc, char **argv){
-  // download CIFAR data
-  download_cifar10();
+    // download CIFAR data
+    download_cifar10();
 
-  // Settings
-  int epochs = 100;
-  int batch_size = 100;
-  int num_classes = 10;
+    // Settings
+    int epochs = 100;
+    int batch_size = 100;
+    int num_classes = 10;
 
-  // network
-  layer in=Input({3,32,32});
-  layer l=in;
+    // network
+    layer in=Input({3,32,32});
+    layer l=in;
 //
 //    // Transformations
 //    l = Shift(l, {2, 2});  // In pixels
@@ -67,6 +67,8 @@ int main(int argc, char **argv){
 //    l = CropAndScale(l, {0, 0}, false);  // In pixels
 //    l = Cutout(l, {0, 0}, {5, 5}); // In pixels
 //
+
+
     // Data augmentation
     l = ShiftRandom(l, {-0.1f, +0.1f}, {-0.1f, +0.1f});
     l = ScaleRandom(l, {0.8f, 1.2f});
@@ -76,66 +78,88 @@ int main(int argc, char **argv){
     l = CutoutRandom(l, {0.1f, 0.3f}, {0.1, 0.3f});
 
 
-  l=Block(l,32);
-  l=ResBlock(l,64);
-  l=ResBlock(l,128);
-  l=ResBlock(l,256);
-  l=ResBlock(l,512);
+    l=Block(l,32);
+    l=ResBlock(l,64);
+    l=ResBlock(l,128);
+    l=ResBlock(l,256);
+    l=ResBlock(l,512);
 
-  l=Reshape(l,{-1});
+    l=Reshape(l,{-1});
 
-  l=Activation(Dense(l,128),"relu");
+    l=Activation(Dense(l,128),"relu");
 
-  layer out=Activation(Dense(l,num_classes),"softmax");
+    layer out=Activation(Dense(l,num_classes),"softmax");
 
-  // net define input and output layers list
-  model net=Model({in},{out});
-
-
-  // Build model
-  build(net,
-    sgd(0.01, 0.9), // Optimizer
-    {"soft_cross_entropy"}, // Losses
-    {"categorical_accuracy"}, // Metrics
-    //CS_CPU(4) // 4 CPU threads
-    CS_CPU() // CPU with maximum threads availables
-    //CS_GPU({1}) // GPU with only one gpu
-  );
-
-  // plot the model
-  plot(net,"model.pdf");
-
-  // get some info from the network
-  summary(net);
-
-  // Load and preprocess training data
-  // Load dataset
-  tensor x_train = eddlT::load("cifar_trX.bin");
-  tensor y_train = eddlT::load("cifar_trY.bin");
-  eddlT::div_(x_train, 255.0);
-
-  tensor img=eddlT::select(x_train,0);
+    // net define input and output layers list
+    model net=Model({in},{out});
 
 
-  eddlT::save_png(img,"img.png");
+    // Build model
+    build(net,
+          sgd(0.01, 0.9), // Optimizer
+          {"soft_cross_entropy"}, // Losses
+          {"categorical_accuracy"}, // Metrics
+            //CS_CPU(4) // 4 CPU threads
+          CS_CPU() // CPU with maximum threads availables
+            //CS_GPU({1}) // GPU with only one gpu
+    );
 
-  // Load and preprocess test data
-  tensor x_test = eddlT::load("cifar_tsX.bin");
-  tensor y_test = eddlT::load("cifar_tsY.bin");
-  eddlT::div_(x_test, 255.0);
+    // plot the model
+    plot(net,"model.pdf");
 
-  for(int i=0;i<epochs;i++) {
-    // training, list of input and output tensors, batch, epochs
-    fit(net,{x_train},{y_train},batch_size, 1);
-    // Evaluate train
-    std::cout << "Evaluate test:" << std::endl;
-    evaluate(net,{x_test},{y_test});
-  }
+    // get some info from the network
+    summary(net);
+
+    // Load and preprocess training data
+    // Load dataset
+    tensor x_train = Tensor::load("cifar_trX.bin");
+    tensor y_train = Tensor::load("cifar_trY.bin");
+    eddlT::div_(x_train, 255.0);
 
 
-  // Evaluate test
-  //std::cout << "Evaluate test:" << std::endl;
-  //evaluate(net,{x_test},{y_test});
+    for(int i =0; i<10; i++){
+        Tensor* img=eddlT::select(x_train, i);
+        Tensor* img2=eddlT::select(x_train, i);
+//        tensor img2= new Tensor({1,3,32,20});
+
+        // Data augmentation
+        Tensor::shift_random(img, img2, {-0.1f, +0.1f}, {-0.1f, +0.1f}, "constant", 0.0f);
+        Tensor::scale_random(img, img2, {1.0f, 2.0f});
+        Tensor::flip_random(img, img2, 1);
+        Tensor::crop_random(img, img2);  //In pixels  // TODO: Needs a fix!
+        Tensor::crop_scale_random(img, img2, {0.8f, 1.0f});  // Crop and rescale  // TODO: check!
+        Tensor::cutout_random(img, img2, {0.1f, 0.3f}, {0.1, 0.3f});
+
+
+        img2->save("images/cifar_" + to_string(i) + ".png", "png");
+        cout << "Image #" << i << " saved!" << endl;
+
+    }
+//
+//    tensor img=eddlT::select(x_train,0);
+//
+//    img->save("test_tensor.bin", "bin");
+//    tensor img2 = Tensor::load("test_tensor.bin", "bin");
+//
+//    eddlT::save_png(img,"img.png");
+//
+//    // Load and preprocess test data
+//    tensor x_test = eddlT::load("cifar_tsX.bin");
+//    tensor y_test = eddlT::load("cifar_tsY.bin");
+//    eddlT::div_(x_test, 255.0);
+//
+//    for(int i=0;i<epochs;i++) {
+//        // training, list of input and output tensors, batch, epochs
+//        fit(net,{x_train},{y_train},batch_size, 1);
+//        // Evaluate train
+//        std::cout << "Evaluate test:" << std::endl;
+//        evaluate(net,{x_test},{y_test});
+//    }
+//
+
+    // Evaluate test
+    //std::cout << "Evaluate test:" << std::endl;
+    //evaluate(net,{x_test},{y_test});
 
 }
 
