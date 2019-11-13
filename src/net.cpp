@@ -711,7 +711,6 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     // Start training
     setmode(TRMODE);
 
-
     // Set some parameters
     int num_batches = n / batch_size;
 
@@ -733,7 +732,6 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
             tr_batches++;
 
             train_batch(tin, tout, sind);
-
 
             print_loss(j);
 
@@ -813,6 +811,9 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
       comp=batch_size;
 
     int thread_batch_size=batch_size / comp;
+
+    if (eval) setmode(TSMODE);
+    else setmode(TRMODE);
 
     // Check indices
     if (sind.size() == 0) msg("error void index","Net::train_batch");

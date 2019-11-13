@@ -47,8 +47,6 @@ int main(int argc, char **argv) {
     model net = Model({in}, {out});
 
     // View model
-
-
     summary(net);
     plot(net, "model.pdf");
 
@@ -57,7 +55,6 @@ int main(int argc, char **argv) {
           sgd(0.001, 0.9), // Optimizer
           {"mean_squared_error"}, // Losses
           {"mean_squared_error"}, // Metrics
-          //CS_CPU(4) // CPU with 4 threads
           //CS_CPU()
           CS_GPU({1})
     );
