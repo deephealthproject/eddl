@@ -106,6 +106,7 @@ Net::Net(vlayer in, vlayer out) {
     optimizer = nullptr;
     name="model";
     tr_batches=0;
+    flog=nullptr;
 
     // Walk through the pointers of all layers, to get a plain
     // vector with all the layers
@@ -125,8 +126,10 @@ Net::Net(vlayer in, vlayer out) {
 Net::~Net()
 {
   for(int i=0;i<snets.size();i++)
-    for(int j=0;j<snets[i]->layers.size();j++)
+    for(int j=0;j<snets[i]->layers.size();j++) {
+      //cout<<"delete "<<nets[i]->layers[j]->name<<"\n";
       delete snets[i]->layers[j];
+    }
 
 }
 
@@ -231,6 +234,13 @@ void Net::plot(string fname,string mode) {
 
     system(cmd.c_str());
 
+}
+
+/////////////////////////////////////////
+void Net::setlogfile(string fname)
+{
+  flog=fopen(fname.c_str(),"wt");
+  if (flog==nullptr) msg("error creating log file","Net.setlogfile");
 }
 
 /////////////////////////////////////////
@@ -758,8 +768,17 @@ void Net::print_loss(int b)
               losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
               metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
 
+      if (flog!=nullptr)
+        fprintf(flog, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
+                metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+
   }
   fflush(stdout);
+  if (flog!=nullptr) {
+    fprintf(flog, "\n");
+    fflush(flog);
+  }
+
 }
 
 /////////////////////////////////////////

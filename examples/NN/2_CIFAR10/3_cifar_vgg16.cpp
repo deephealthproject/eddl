@@ -68,6 +68,8 @@ int main(int argc, char **argv){
     CS_GPU({1}) // GPU with only one gpu
   );
 
+  setlogfile(net,"vgg16.log");
+  
   // plot the model
   plot(net,"model.pdf");
 

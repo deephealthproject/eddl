@@ -24,20 +24,24 @@ using namespace eddl;
 // Using fit for training
 //////////////////////////////////
 
+layer BG(layer l) {
+  return GaussianNoise(BatchNormalization(l),0.3);
+}
+
 layer ResBlock(layer l, int filters,int half) {
   layer in=l;
 
   if (half)
-      l=ReLu(BatchNormalization(Conv(l,filters,{1,1},{2,2})));
+      l=ReLu(BG(Conv(l,filters,{1,1},{2,2})));
   else
-      l=ReLu(BatchNormalization(Conv(l,filters,{1,1},{1,1})));
+      l=ReLu(BG(Conv(l,filters,{1,1},{1,1})));
 
 
-  l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
-  l=ReLu(BatchNormalization(Conv(l,4*filters,{1,1},{1,1})));
+  l=ReLu(BG(Conv(l,filters,{3,3},{1,1})));
+  l=ReLu(BG(Conv(l,4*filters,{1,1},{1,1})));
 
   if (half)
-    return Sum(BatchNormalization(Conv(in,4*filters,{1,1},{2,2})),l);
+    return Sum(BG(Conv(in,4*filters,{1,1},{2,2})),l);
   else
     return Sum(l,in);
 }
@@ -62,7 +66,7 @@ int main(int argc, char **argv){
   l = ScaleRandom(l, {0.9f, 1.1f});
 
   // Resnet-50
-  l=ReLu(BatchNormalization(Conv(l,64,{3,3},{1,1})));
+  l=ReLu(BG(Conv(l,64,{3,3},{1,1})));
 
   for(int i=0;i<3;i++)
     l=ResBlock(l, 64,i==0);
@@ -77,7 +81,7 @@ int main(int argc, char **argv){
     l=ResBlock(l, 256,i==0); // <-- should be 512
 
   l=Reshape(l,{-1});
-  l=ReLu(BatchNormalization(Dense(l,512)));
+  l=ReLu(BG(Dense(l,512)));
 
   layer out=Activation(Dense(l,num_classes),"softmax");
 

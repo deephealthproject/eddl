@@ -63,6 +63,7 @@ public:
     verr fiterr;
     verr total_loss;
     verr total_metric;
+    FILE *flog;
 
     Optimizer *optimizer;
     vector<Net *> snets;
@@ -77,6 +78,7 @@ public:
     void reset();
     void save(FILE *fe);
     void load(FILE *fe);
+    void setlogfile(string fname);
 
 
     void forward();

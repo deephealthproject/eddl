@@ -535,6 +535,11 @@ namespace eddl {
         net->build(o, l, m, cs);
     }
 
+    void setlogfile(model net,string fname)
+    {
+      net->setlogfile(fname);
+    }
+    
     void summary(model m) {
         cout<<m->summary()<<"\n";
     }

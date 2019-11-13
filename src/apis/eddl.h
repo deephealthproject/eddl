@@ -244,6 +244,8 @@ namespace eddl {
 
     void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr);
 
+    void setlogfile(model net,string fname);
+    
     void summary(model m);
 
     void load(model m, string fname);
