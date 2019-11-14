@@ -220,6 +220,9 @@ void Net::walk_back(Layer *l) {
 
     if (!inNet(l)) {
       //cout<<l->name<<"  BACK\n";
+      if (l->orig!=nullptr) l->net=l->orig->net;
+      else l->net=this;
+      
       layers.push_back(l);
     }
     for (int i = 0; i < l->parent.size(); i++)

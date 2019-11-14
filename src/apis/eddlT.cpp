@@ -95,9 +95,6 @@ namespace eddlT {
 
   Tensor* select(Tensor *A,int ind)
   {
-    if (!A->isCPU()) {
-      msg("select only in CPU tensors");
-    }
     vector<int> shape=A->getShape();
     shape[0]=1;
     Tensor *B=new Tensor(shape);
@@ -120,7 +117,7 @@ namespace eddlT {
   {
     A->set_(indices,value);
   }
-  
+
   void reshape_(Tensor *A, vector<int> indices)
   {
     A->reshape_(indices);

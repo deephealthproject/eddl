@@ -576,7 +576,7 @@ namespace eddl {
     {
       net->update();
     }
-    
+
     void copyTensor(Tensor *t1,Tensor *t2)
     {
       Tensor::copy(t1,t2);
@@ -603,9 +603,7 @@ namespace eddl {
 
         for (j = 0; j < s1->layers.size(); j++)
           if (s1->layers[j]->orig==l1) {
-              //cout<<"\n"<<s1->layers[j]->name<<"---"<<l1->name<<"\n";
               sl1=s1->layers[j];
-              //Tensor::copy(sl1->output,l1->output);
               break;
           }
         if (j==s1->layers.size())
