@@ -27,7 +27,7 @@ using namespace std;
 // ********* LOAD FUNCTIONS *********
 Tensor* Tensor::load(const string& filename, const string& format) {
 
-    if(format=="png") { // Images
+    if(format=="png" || format=="jpg") { // Images
         return Tensor::load_from_img(filename, format);
     }else if(format=="bin" || format=="onnx"){
         // Open file stream
@@ -88,10 +88,25 @@ Tensor* Tensor::load_from_onnx(std::ifstream &ifs){
 };
 
 Tensor* Tensor::load_from_img(const string &filename, const string& format){
-    msg("Not implemented", "Tensor::load_from_img");
+    int t_width, t_height, t_channels, t_size;
+    unsigned char *pixels = stbi_load(filename.c_str(), &t_width, &t_height, &t_channels, STBI_rgb_alpha);
 
-    // Return new tensor
-    return new Tensor();
+    // Cast pointer
+    t_size = t_width * t_height * t_channels;
+    auto* t_data = new float[t_size];
+    for(int i=0; i<t_size; i++){ t_data[i]= (float)pixels[i]; }
+
+    // Free image
+    stbi_image_free(pixels);
+
+    // Create tensor //
+    auto t = new Tensor({1, t_width, t_height, t_channels}, t_data, DEV_CPU);
+
+    // Re-order axis
+    cout << "OLD => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << ")"<< endl;
+    t = t->permute({0, 3, 2, 1}); // Data must be presented as CxHxW
+    cout << "NEW => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << ")"<< endl;
+    return t;
 }
 
 
@@ -154,8 +169,11 @@ void Tensor::save2img(const string& filename, const string& format){
     }
 
     // Re-order axis
-    Tensor *t = this->permute({0, 2, 3, 1}); // Data must be presented as WxHxC => [(ARGB), (ARGB), (ARGB),...]
+    Tensor *t = this;
+    cout << "OLD => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << ")"<< endl;
+    t = t->permute({0, 2, 3, 1}); // Data must be presented as WxHxC => [(ARGB), (ARGB), (ARGB),...]
     t->ToCPU();  // Just in case
+    cout << "NEW => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << ")"<< endl;
 
     // Normalize image (for RGB must fall between 0 and 255)
     t->normalize_(0.0f, 255.0f);

@@ -323,24 +323,24 @@ void Net::reset() {
         layers[i]->reset();
 }
 
-void Net::save(string filename){
+void Net::save(const string& filename, const string& format){
     // Open file stream
     std::ofstream ofs(filename, std::ios::out | std::ios::binary);
 
     for (int i = 0; i != layers.size(); i++){
-        layers[i]->save(ofs);
+        layers[i]->save(ofs, format);
     }
 
     // Close file stream
     ofs.close();
 }
 
-void Net::load(string filename){
+void Net::load(const string& filename, const string& format){
     // Open file stream
     std::ifstream ifs(filename, std::ios::in | std::ios::binary);
 
     for (int i = 0; i != layers.size(); i++){
-        layers[i]->load(ifs);
+        layers[i]->load(ifs, format);
     }
 
     // Close file stream

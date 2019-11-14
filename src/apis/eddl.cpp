@@ -679,11 +679,11 @@ namespace eddl {
         cout<<m->summary()<<"\n";
     }
 
-    void load(model m, string fname) {
+    void load(model m, const string&  fname) {
         m->load(fname);
     }
 
-    void save(model m, string fname) {
+    void save(model m, const string&  fname) {
         m->save(fname);
     }
 

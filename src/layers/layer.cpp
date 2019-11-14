@@ -90,15 +90,15 @@ vector<int> Layer::getShape()
     return output->getShape();
 }
 
-void Layer::save(std::ofstream &ofs){
+void Layer::save(std::ofstream &ofs, const string& format){
     for (int i = 0; i != params.size(); i++){
-        params[i]->savefs(ofs);
+        params[i]->savefs(ofs, format);
     }
 }
 
-void Layer::load(std::ifstream &ifs){
+void Layer::load(std::ifstream &ifs, const string& format){
     for (int i = 0; i != params.size(); i++){
-        params[i]->loadfs(ifs);
+        params[i]->loadfs(ifs, format);
     }
 }
 

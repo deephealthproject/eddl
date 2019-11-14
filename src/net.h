@@ -78,8 +78,8 @@ public:
 
     void initialize();
     void reset();
-    void save(string filename);
-    void load(string filename);
+    void save(const string&  filename, const string&  format="bin");
+    void load(const string&  filename, const string&  format="bin");
     void setlogfile(string fname);
 
 
