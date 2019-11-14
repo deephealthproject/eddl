@@ -99,8 +99,9 @@ int main(int argc, char **argv) {
     }
 
 // STILL EXPERIMENTAL
-/*
+
     for(i=0;i<epochs;i++) {
+
       reset_loss(disc);
       fprintf(stdout, "Epoch %d/%d (%d batches)\n", i + 1, epochs,num_batches);
       for(j=0;j<num_batches;j++)  {
@@ -111,17 +112,14 @@ int main(int argc, char **argv) {
         // Real
         forward(disc,{batch});
 
-        dout->output->print();
-        getchar();
-
         reset_grads(disc);
-        //backward(disc,{real});
-        backward(disc,myloss,dout);
+        backward(disc,{real});
+        //backward(disc,myloss,dout);
         //backward(disc,myloss2,dout);
 
         update(disc);
 
-/*
+
         compute_loss(disc);
         print_loss(disc,j);
         printf("\r");
@@ -150,9 +148,10 @@ int main(int argc, char **argv) {
 
         backward(gen);
         update(gen);
-        */
+
 
       }
+
       printf("\n");
 
       // Generate some num_samples
