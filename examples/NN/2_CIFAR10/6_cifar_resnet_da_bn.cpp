@@ -83,7 +83,7 @@ int main(int argc, char **argv){
   l=Reshape(l,{-1});
   l=ReLu(BG(Dense(l,512)));
 
-  layer out=Activation(Dense(l,num_classes),"softmax");
+  layer out=Softmax(Dense(l,num_classes));
 
   // net define input and output layers list
   model net=Model({in},{out});
@@ -99,7 +99,7 @@ int main(int argc, char **argv){
   );
 
   // plot the model
-  plot(net,"model.pdf");
+  plot(net,"model.pdf","TB");
 
   // get some info from the network
   summary(net);

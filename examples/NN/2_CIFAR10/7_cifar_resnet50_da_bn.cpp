@@ -24,6 +24,28 @@ using namespace eddl;
 // Using fit for training
 //////////////////////////////////
 
+layer BG(layer l) {
+  return GaussianNoise(BatchNormalization(l),0.3);
+}
+
+layer ResBlock(layer l, int filters,int half) {
+  layer in=l;
+
+  if (half)
+      l=ReLu(BG(Conv(l,filters,{1,1},{2,2})));
+  else
+      l=ReLu(BG(Conv(l,filters,{1,1},{1,1})));
+
+
+  l=ReLu(BG(Conv(l,filters,{3,3},{1,1})));
+  l=ReLu(BG(Conv(l,4*filters,{1,1},{1,1})));
+
+  if (half)
+    return Sum(BG(Conv(in,4*filters,{1,1},{2,2})),l);
+  else
+    return Sum(l,in);
+}
+
 int main(int argc, char **argv){
 
   // download CIFAR data
