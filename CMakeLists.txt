@@ -286,12 +286,14 @@ SET(CPP_SOURCES
         src/losses/loss_cross_entropy.cpp
         src/losses/loss_mean_squared_error.cpp
         src/losses/loss_soft_cross_entropy.cpp
+        src/losses/loss_min.cpp
         src/metrics/metric.cpp
         src/metrics/metric.h
         src/metrics/metric_categorical_acc.cpp
         src/metrics/metric_mean_squared_error.cpp
         src/metrics/metric_mean_absolute_error.cpp
         src/metrics/metric_mean_relative_error.cpp
+        src/metrics/metric_sum.cpp
         src/optimizers/optim.cpp
         src/optimizers/optim.h
         src/optimizers/optim_adadelta.cpp
