@@ -20,6 +20,8 @@
 #include "utils.h"
 #include "random.h"
 
+#include "layers/core/layer_core.h"
+
 #ifdef cGPU
 #include "hardware/gpu/gpu_tensor.h"
 #endif
@@ -171,9 +173,11 @@ Net::Net(vlayer in, vlayer out) {
     for (int i = 0; i < lin.size(); i++) {
         walk(lin[i]);
     }
+    /*
     for (int i = 0; i < lout.size(); i++) {
         walk_back(lout[i]);
     }
+    */
 
     for (int i = 0; i < lout.size(); i++) {
         total_loss.push_back(0.0);
@@ -222,7 +226,7 @@ void Net::walk_back(Layer *l) {
       //cout<<l->name<<"  BACK\n";
       if (l->orig!=nullptr) l->net=l->orig->net;
       else l->net=this;
-      
+
       layers.push_back(l);
     }
     for (int i = 0; i < l->parent.size(); i++)
@@ -928,17 +932,61 @@ void Net::backward(vector<Tensor *> target)
       }
   }
 
-  if (snets[0]->dev != DEV_CPU)
-    for (int i = 0; i < comp; i++) {
-        for (int j = 0; j < 2 * lout.size(); j++) {
-            fiterr[j] += snets[i]->fiterr[j];
-        }
-    }
+}
 
-  inferenced_samples+=batch_size;
+void Net::backward(Layer* (*f)(Layer *),Layer *out)
+{
+  int comp=snets.size();
+  if (batch_size<comp)
+    comp=batch_size;
+
+
+  Layer *input=new LInput(new Tensor(out->output->getShape()),"lossnet_input",DEV_CPU);
+  Layer *fout=(*f)(input);
+
+  Net *lossnet=new Net({input},{fout});
+
+  lossnet->build(optimizer,{new LMin()},{new MSum()},cs);
+
+  Net *n=out->net;
+  Net *sn=out->net->snets[0];
+
+  int i;
+  Layer *sout=nullptr;
+  for(i=0;i<sn->layers.size();i++)
+   if (sn->layers[i]->orig==out) {
+      sout=sn->layers[i];
+      break;
+   }
+  if (sout==nullptr)
+    msg("layer not found in subgrap","Net::backward(loss_func)");
+
+  sout->output->print();
+  sout->output->info();
+
+  lossnet->reset_loss();
+  lossnet->forward({sout->output});
+
+  lossnet->reset_grads();
+  lossnet->backward({});
+  lossnet->compute_loss();
+
+  lossnet->print_loss(1);
+
+  //Tensor::copy(input->delta,sout->delta);
+  //sn->backward({});
+
+  getchar();
+
+  delete lossnet;
+
+  // copy delta to out and call backward of orig net...
+
+
 
 
 }
+
 
 void Net::reset_grads()
 {
@@ -985,6 +1033,7 @@ void Net::compute_loss()
   int comp=snets.size();
   if (batch_size<comp)
     comp=batch_size;
+
   for (int i = 0; i < comp; i++) {
       // Thread params
       td[i].net = snets[i];
@@ -1005,6 +1054,16 @@ void Net::compute_loss()
           exit(-1);
       }
   }
+
+  if (snets[0]->dev != DEV_CPU)
+    for (int i = 0; i < comp; i++) {
+        for (int j = 0; j < 2 * lout.size(); j++) {
+            fiterr[j] += snets[i]->fiterr[j];
+        }
+    }
+
+    inferenced_samples+=batch_size;
+
 }
 
 

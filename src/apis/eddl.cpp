@@ -24,8 +24,8 @@ using namespace std;
 namespace eddl {
 
     // ---- CORE LAYERS ----
-    layer Activation(layer parent, string activation, string name) {
-        return new LActivation(parent, activation, name, DEV_CPU);
+    layer Activation(layer parent, string activation, float param, string name) {
+        return new LActivation(parent, activation, name, DEV_CPU,param);
     }
     layer Softmax(layer parent)
     {
@@ -38,6 +38,15 @@ namespace eddl {
     layer ReLu(layer parent)
     {
       return new LActivation(parent,"relu","",DEV_CPU);
+    }
+    layer LReLu(layer parent,float param)
+    {
+      return new LActivation(parent,"lrelu","",DEV_CPU,param);
+    }
+
+    layer Tanh(layer parent)
+    {
+      return new LActivation(parent,"tanh","",DEV_CPU);
     }
 
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
@@ -565,6 +574,11 @@ namespace eddl {
     void backward(model net)
     {
       net->backward({});
+    }
+
+    void backward(model net,Layer* (*f)(Layer *),Layer *out)
+    {
+      net->backward(f,out);
     }
 
     void compute_loss(model net)

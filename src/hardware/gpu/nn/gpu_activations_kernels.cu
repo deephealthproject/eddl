@@ -39,6 +39,28 @@ __global__ void d_relu(float *d,float *i,float *pd,long int size)
 
 }
 
+__global__ void lrelu(float *a,float *b, float param, long int size)
+{
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+  if (thread_id_x < size){
+    if (a[thread_id_x]>0.0) b[thread_id_x]=a[thread_id_x];
+    else b[thread_id_x]=param*a[thread_id_x];
+   }
+}
+
+__global__ void d_lrelu(float *d,float *i,float *pd, float param, long int size)
+{
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+  if (thread_id_x < size){
+    if (i[thread_id_x]>0.0) pd[thread_id_x]=d[thread_id_x];
+    else pd[thread_id_x]=param*d[thread_id_x];
+   }
+
+}
+
+
 
 __global__ void sigmoid(float *a,float *b,long int size)
 {
@@ -58,6 +80,30 @@ __global__ void d_sigmoid(float *d,float *i,float *pd,long int size)
    }
 
 }
+
+
+__global__ void tanh(float *a,float *b,long int size)
+{
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+  if (thread_id_x < size){
+    float p=expf(a[thread_id_x]);
+    float n=expf(-a[thread_id_x]);
+    b[thread_id_x]=(p-n)/(p+n);
+  }
+}
+
+__global__ void d_tanh(float *d,float *i,float *pd,long int size)
+{
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+  if (thread_id_x < size){
+    pd[thread_id_x]+=d[thread_id_x]*(1-(i[thread_id_x]*i[thread_id_x]));
+   }
+
+}
+
+
 
 __global__ void softmax(float* E,float* N,float* auxE ,long int sample_ndim, long int n_vals)
 {

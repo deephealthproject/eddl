@@ -56,6 +56,14 @@ public:
     float value(Tensor *T, Tensor *Y) override;
 };
 
+class LMin : public Loss {
+public:
+    LMin();
+
+    void delta(Tensor *T, Tensor *Y, Tensor *D) override;
+    float value(Tensor *T, Tensor *Y) override;
+};
+
 
 // TODO: Implement
 //void mean_squared_error(Tensor *T, Tensor *Y, Tensor *D);

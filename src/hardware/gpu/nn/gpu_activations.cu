@@ -45,6 +45,28 @@ void gpu_d_relu(Tensor *D,Tensor *I,Tensor *PD) {
 }
 
 
+void gpu_lrelu(Tensor *A,Tensor *B,float param){
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  setDims(A);
+
+  lrelu<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,param,A->size);
+  check_cuda(cudaDeviceSynchronize(),"gpu_relu");
+}
+
+
+void gpu_d_lrelu(Tensor *D,Tensor *I,Tensor *PD,float param) {
+  int device=D->gpu_device;
+  cudaSetDevice(device);
+
+  setDims(D)
+
+  d_lrelu<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,param,D->size);
+  check_cuda(cudaDeviceSynchronize(),"gpu_d_relu");
+}
+
+
 void gpu_sigmoid(Tensor *A,Tensor *B){
   int device=A->gpu_device;
   cudaSetDevice(device);
@@ -64,6 +86,27 @@ void gpu_d_sigmoid(Tensor *D,Tensor *I,Tensor *PD){
   d_sigmoid<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,D->size);
   check_cuda(cudaDeviceSynchronize(),"gpu_d_sigmoid");
 }
+
+void gpu_tanh(Tensor *A,Tensor *B){
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  setDims(A);
+
+  tanh<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->size);
+  check_cuda(cudaDeviceSynchronize(),"gpu_tanh");
+}
+
+void gpu_d_tanh(Tensor *D,Tensor *I,Tensor *PD){
+  int device=D->gpu_device;
+  cudaSetDevice(device);
+
+  setDims(D)
+
+  d_tanh<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,D->size);
+  check_cuda(cudaDeviceSynchronize(),"gpu_d_tanh");
+}
+
 
 void gpu_softmax(Tensor *A,Tensor *B){
 

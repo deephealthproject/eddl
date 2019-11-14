@@ -30,6 +30,22 @@ void cpu_d_relu(Tensor *D, Tensor *I, Tensor *PD){
   }
 }
 
+void cpu_lrelu(Tensor *A, Tensor *B,float param){
+  #pragma omp parallel for
+  for (int i = 0; i < A->size; i++) {
+    if (A->ptr[i] > 0.0) B->ptr[i] = A->ptr[i];
+    else B->ptr[i] = param*A->ptr[i];;
+  }
+}
+
+void cpu_d_lrelu(Tensor *D, Tensor *I, Tensor *PD,float param){
+  #pragma omp parallel for
+  for (int i = 0; i < D->size; i++) {
+    if (I->ptr[i] > 0.0) PD->ptr[i] = D->ptr[i];
+    else PD->ptr[i] = param*D->ptr[i];
+  }
+}
+
 void cpu_sigmoid(Tensor *A, Tensor *B){
   #pragma omp parallel for
   for (int i = 0; i < A->size; i++)
@@ -40,6 +56,21 @@ void cpu_d_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
   #pragma omp parallel for
   for (int i = 0; i < D->size; i++)
     PD->ptr[i] = D->ptr[i]*((1-I->ptr[i])*I->ptr[i]);
+}
+
+void cpu_tanh(Tensor *A, Tensor *B){
+  #pragma omp parallel for
+  for (int i = 0; i < A->size; i++) {
+    float p=std::exp(A->ptr[i]);
+    float n=std::exp(-A->ptr[i]);
+    B->ptr[i] = (p-n)/(p+n);
+  }
+}
+
+void cpu_d_tanh(Tensor *D, Tensor *I, Tensor *PD){
+  #pragma omp parallel for
+  for (int i = 0; i < D->size; i++)
+    PD->ptr[i] = D->ptr[i]*(1-(I->ptr[i]*I->ptr[i]));
 }
 
 

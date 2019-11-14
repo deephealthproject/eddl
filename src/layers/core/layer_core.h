@@ -138,8 +138,9 @@ class LActivation : public LinLayer {
 public:
     string act;
     static int total_layers;
+    float param;
 
-    LActivation(Layer *parent, string act, string name, int dev);
+    LActivation(Layer *parent, string act, string name, int dev,float param=0.01);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
