@@ -171,10 +171,10 @@ void Tensor::save2img(const string& filename, const string& format){
     // Re-order axis
     Tensor *t = this;
     cout << "OLD => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << ")"<< endl;
-    t = t->permute({0, 2, 3, 1}); // Data must be presented as WxHxC => [(ARGB), (ARGB), (ARGB),...]
+    t = t->permute({0, 3, 2, 1}); // Data must be presented as: [(ARGB), (ARGB), (ARGB),...] // (1, C, H, W) => (1, W, H, C)
     t->ToCPU();  // Just in case
     cout << "NEW => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << ")"<< endl;
-
+    t->info();
     // Normalize image (for RGB must fall between 0 and 255)
     t->normalize_(0.0f, 255.0f);
 
