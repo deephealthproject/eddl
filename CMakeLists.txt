@@ -329,10 +329,13 @@ SET(CPP_SOURCES
         src/tensor/nn/tensor_metrics.cpp
         src/tensor/nn/tensor_pool.cpp
         src/tensor/nn/tensor_core_nn.cpp
-        src/compserv.cpp
-        src/compserv.h
-        src/net.cpp
-        src/net.h
+        src/net/compserv.cpp
+        src/net/compserv.h
+        src/net/net.cpp
+        src/net/net_build.cpp
+        src/net/net_api.cpp
+        src/net/net_func.cpp
+        src/net/net.h
         src/system_info.h
         src/utils.cpp
         src/utils.h

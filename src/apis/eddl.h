@@ -15,7 +15,7 @@
 #include <thread>
 #include <pthread.h>
 
-#include "../net.h"
+#include "../net/net.h"
 #include "../initializers/initializer.h"
 #include "../regularizers/regularizer.h"
 #include "../losses/loss.h"
