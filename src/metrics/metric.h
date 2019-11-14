@@ -61,4 +61,12 @@ public:
     float value(Tensor *T, Tensor *Y) override;
 };
 
+class MSum : public Metric {
+public:
+    MSum();
+
+    float value(Tensor *T, Tensor *Y) override;
+};
+
+
 #endif
