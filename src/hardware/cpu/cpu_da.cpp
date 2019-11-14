@@ -302,7 +302,7 @@ void cpu_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<floa
     // Performs a crop with padding (Keeps the original size)
     int offsets[2] = {0, 0};
 
-#pragma omp parallel for
+    #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
 
         // Compute random coordinates

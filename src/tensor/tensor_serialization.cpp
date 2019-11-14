@@ -89,7 +89,7 @@ Tensor* Tensor::load_from_onnx(std::ifstream &ifs){
 
 Tensor* Tensor::load_from_img(const string &filename, const string& format){
     int t_width, t_height, t_channels, t_size;
-    unsigned char *pixels = stbi_load(filename.c_str(), &t_width, &t_height, &t_channels, STBI_rgb_alpha);
+    unsigned char *pixels = stbi_load(filename.c_str(), &t_width, &t_height, &t_channels, STBI_rgb);
 
     // Cast pointer
     t_size = t_width * t_height * t_channels;
@@ -103,9 +103,9 @@ Tensor* Tensor::load_from_img(const string &filename, const string& format){
     auto t = new Tensor({1, t_width, t_height, t_channels}, t_data, DEV_CPU);
 
     // Re-order axis
-    cout << "OLD => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << ")"<< endl;
+//    cout << "OLD => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << "), (" << t->ptr[3]  << ", " <<  t->ptr[4]  << ", " <<  t->ptr[5]  << ")" << endl;
     t = t->permute({0, 3, 2, 1}); // Data must be presented as CxHxW
-    cout << "NEW => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << ")"<< endl;
+//    cout << "NEW => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << "), (" << t->ptr[3]  << ", " <<  t->ptr[4]  << ", " <<  t->ptr[5]  << ")" << endl;
     return t;
 }
 
@@ -165,16 +165,16 @@ void Tensor::save2onnx(std::ofstream &ofs){
 
 void Tensor::save2img(const string& filename, const string& format){
     if (this->ndim!=4) {
-        msg("Tensors should be 4D: 1xCxHxW","save_png");
+        msg("Tensors should be 4D: 1xCxHxW","Tensor::save2img");
     }
 
     // Re-order axis
     Tensor *t = this;
-    cout << "OLD => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << ")"<< endl;
+//    cout << "OLD => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << "), (" << t->ptr[3]  << ", " <<  t->ptr[4]  << ", " <<  t->ptr[5]  << ")" << endl;
     t = t->permute({0, 3, 2, 1}); // Data must be presented as: [(ARGB), (ARGB), (ARGB),...] // (1, C, H, W) => (1, W, H, C)
     t->ToCPU();  // Just in case
-    cout << "NEW => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << ")"<< endl;
-    t->info();
+//    cout << "NEW => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << "), (" << t->ptr[3]  << ", " <<  t->ptr[4]  << ", " <<  t->ptr[5]  << ")" << endl;
+
     // Normalize image (for RGB must fall between 0 and 255)
     t->normalize_(0.0f, 255.0f);
 
