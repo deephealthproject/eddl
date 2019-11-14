@@ -28,11 +28,13 @@ int main(int argc, char **argv) {
 
 
     // Define Generator
-    layer gin=GaussGenerator(0.0, 1.0, {30});
+    layer gin=GaussGenerator(0.0, 1.0, {100});
     layer l=gin;
 
+    l=ReLu(Dense(l,256));
+    l=ReLu(Dense(l,512));
     l=ReLu(Dense(l,1024));
-    l=ReLu(Dense(l,1024));
+
     layer gout=Sigmoid(Dense(l,784));
 
     model gen = Model({gin},{});
@@ -41,8 +43,8 @@ int main(int argc, char **argv) {
           sgd(0.01, 0.0), // Optimizer
           {}, // Losses
           {}, // Metrics
-          CS_CPU()
-          //CS_GPU({1})
+          //CS_CPU()
+          CS_GPU({1})
     );
 
 
@@ -50,17 +52,19 @@ int main(int argc, char **argv) {
     // Define Discriminator
     layer din=Input({784});
     l = din;
-    l = ReLu(Dense(l, 512));
-    l = ReLu(Dense(l, 256));
-    layer dout = Softmax(Dense(l, 2));
+    l = Dropout(ReLu(Dense(l, 1024)),0.3);
+    l = Dropout(ReLu(Dense(l, 512)),0.3);
+    l = Dropout(ReLu(Dense(l, 256)),0.3);
+
+    layer dout = Sigmoid(Dense(l, 1));
 
     model disc = Model({din},{dout});
     build(disc,
             sgd(0.001, 0.0), // Optimizer
-          {"soft_cross_entropy"}, // Losses
-          {"accuracy"}, // Metrics
-          CS_CPU()
-          //CS_GPU({1})
+          {"mse"}, // Losses
+          {"mse"}, // Metrics
+          //CS_CPU()
+          CS_GPU({1})
     );
 
     summary(gen);
@@ -79,13 +83,9 @@ int main(int argc, char **argv) {
     int batch_size = 100;
 
     tensor batch=eddlT::create({batch_size,784});
-    tensor real=eddlT::zeros({batch_size,2});
-    tensor fake=eddlT::zeros({batch_size,2});
+    tensor real=eddlT::ones({batch_size,1});
+    tensor fake=eddlT::zeros({batch_size,1});
 
-    for(int i=0;i<batch_size;i++) {
-      eddlT::set_(real,{i,0},1.0);
-      eddlT::set_(fake,{i,1},1.0);
-    }
 
     for(i=0;i<epochs;i++) {
       reset_loss(disc);
@@ -102,9 +102,11 @@ int main(int argc, char **argv) {
         backward(disc,{real});
         update(disc);
 
+
         compute_loss(disc);
         print_loss(disc,j);
         printf("\r");
+
 
         // Fake
         forward(gen,batch_size);
@@ -135,19 +137,24 @@ int main(int argc, char **argv) {
 
       // Generate some num_samples
       forward(gen,batch_size);
+
       tensor output=getTensor(gout);
 
       tensor img=eddlT::select(output,0);
-
       eddlT::reshape_(img,{1,1,28,28});
-
       eddlT::save_png(img,"img.png");
 
+      tensor img1=eddlT::select(output,5);
+      eddlT::reshape_(img1,{1,1,28,28});
+      eddlT::save_png(img1,"img1.png");
+
       tensor img2=eddlT::select(batch,0);
-
       eddlT::reshape_(img2,{1,1,28,28});
-
       eddlT::save_png(img2,"img2.png");
+
+      tensor img3=eddlT::select(batch,5);
+      eddlT::reshape_(img3,{1,1,28,28});
+      eddlT::save_png(img3,"img3.png");
 
     }
 
