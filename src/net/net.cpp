@@ -17,13 +17,13 @@
 #include <thread>
 #include "net.h"
 #include <pthread.h>
-#include "utils.h"
-#include "random.h"
+#include "../utils.h"
+#include "../random.h"
 
-#include "layers/core/layer_core.h"
+#include "../layers/core/layer_core.h"
 
 #ifdef cGPU
-#include "hardware/gpu/gpu_tensor.h"
+#include "../hardware/gpu/gpu_tensor.h"
 #endif
 
 #define VERBOSE 0
