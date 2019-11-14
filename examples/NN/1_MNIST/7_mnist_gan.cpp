@@ -141,13 +141,13 @@ int main(int argc, char **argv) {
 
       eddlT::reshape_(img,{1,1,28,28});
 
-      eddlT::save_png(img,"img.png");
+      eddlT::save(img, "img.png", "png");
 
       tensor img2=eddlT::select(batch,0);
 
       eddlT::reshape_(img2,{1,1,28,28});
 
-      eddlT::save_png(img2,"img2.png");
+      eddlT::save(img2,"img2.png", "png");
 
     }
 

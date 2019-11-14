@@ -68,7 +68,6 @@ int main(int argc, char **argv){
 //    l = Cutout(l, {0, 0}, {5, 5}); // In pixels
 //
 
-
     // Data augmentation
     l = ShiftRandom(l, {-0.1f, +0.1f}, {-0.1f, +0.1f});
     l = ScaleRandom(l, {0.8f, 1.2f});

@@ -78,8 +78,8 @@ public:
 
     void initialize();
     void reset();
-    void save(FILE *fe);
-    void load(FILE *fe);
+    void save(string filename);
+    void load(string filename);
     void setlogfile(string fname);
 
 

@@ -103,13 +103,13 @@ void *backward_t(void *t) {
 
 void *calcloss_t(void *t)
 {
-  auto *targs = (tdata *) t;
+    auto *targs = (tdata *) t;
 
-  Net *net = targs->net;
+    Net *net = targs->net;
 
-  net->calcloss();
+    net->calcloss();
 
-  return nullptr;
+    return nullptr;
 }
 
 /////////////////////////////////////////
@@ -184,11 +184,11 @@ Net::Net(vlayer in, vlayer out) {
 
 Net::~Net()
 {
-  for(int i=0;i<snets.size();i++)
-    for(int j=0;j<snets[i]->layers.size();j++) {
-      //cout<<"delete "<<nets[i]->layers[j]->name<<"\n";
-      delete snets[i]->layers[j];
-    }
+    for(int i=0;i<snets.size();i++)
+        for(int j=0;j<snets[i]->layers.size();j++) {
+            //cout<<"delete "<<nets[i]->layers[j]->name<<"\n";
+            delete snets[i]->layers[j];
+        }
 
 }
 
@@ -205,13 +205,13 @@ int Net::inNet(Layer *l) {
 void Net::walk(Layer *l) {
     // If this layer is not in the network, add it, as well as all its children (recursively)
     if (!inNet(l)) {
-      //cout<<l->name<<"\n";
-      if (l->orig!=nullptr) l->net=l->orig->net;
-      else l->net=this;
+        //cout<<l->name<<"\n";
+        if (l->orig!=nullptr) l->net=l->orig->net;
+        else l->net=this;
 
-      layers.push_back(l);
-      for (int i = 0; i < l->child.size(); i++)
-          walk(l->child[i]);
+        layers.push_back(l);
+        for (int i = 0; i < l->child.size(); i++)
+            walk(l->child[i]);
     }
 }
 /////////////////////////////////////////
@@ -219,8 +219,8 @@ void Net::walk_back(Layer *l) {
     // If this layer is not in the network, add it, as well as all its children (recursively)
 
     if (!inNet(l)) {
-      //cout<<l->name<<"  BACK\n";
-      layers.push_back(l);
+        //cout<<l->name<<"  BACK\n";
+        layers.push_back(l);
     }
     for (int i = 0; i < l->parent.size(); i++)
         walk_back(l->parent[i]);
@@ -241,7 +241,7 @@ string Net::summary() {
     std::stringstream ss;
 
     for (int i = 0; i < vfts.size(); i++) {
-          ss << vfts[i]->name.c_str() << " ";
+        ss << vfts[i]->name.c_str() << " ";
     }
 
 
@@ -286,7 +286,7 @@ void Net::plot(string fname,string mode) {
     //plot links
     for (int i = 0; i != layers.size(); i++)
         for (int j = 0; j < layers[i]->child.size(); j++)
-              out << layers[i]->name << "->" << layers[i]->child[j]->name << "\n";
+            out << layers[i]->name << "->" << layers[i]->child[j]->name << "\n";
 
     out << "}\n";
 
@@ -301,14 +301,14 @@ void Net::plot(string fname,string mode) {
 /////////////////////////////////////////
 void Net::setlogfile(string fname)
 {
-  string str=fname+"_tr.log";
-  string sts=fname+"_ts.log";
+    string str=fname+"_tr.log";
+    string sts=fname+"_ts.log";
 
-  flog_tr=fopen(str.c_str(),"wt");
-  if (flog_tr==nullptr) msg("error creating tr log file","Net.setlogfile");
+    flog_tr=fopen(str.c_str(),"wt");
+    if (flog_tr==nullptr) msg("error creating tr log file","Net.setlogfile");
 
-  flog_ts=fopen(sts.c_str(),"wt");
-  if (flog_ts==nullptr) msg("error creating ts log file","Net.setlogfile");
+    flog_ts=fopen(sts.c_str(),"wt");
+    if (flog_ts==nullptr) msg("error creating ts log file","Net.setlogfile");
 }
 
 /////////////////////////////////////////
@@ -323,16 +323,28 @@ void Net::reset() {
         layers[i]->reset();
 }
 
-void Net::save(FILE *fe)
-{
-  for (int i = 0; i != layers.size(); i++)
-    layers[i]->save(fe);
+void Net::save(string filename){
+    // Open file stream
+    std::ofstream ofs(filename, std::ios::out | std::ios::binary);
+
+    for (int i = 0; i != layers.size(); i++){
+        layers[i]->save(ofs);
+    }
+
+    // Close file stream
+    ofs.close();
 }
 
-void Net::load(FILE *fe)
-{
-  for (int i = 0; i != layers.size(); i++)
-    layers[i]->load(fe);
+void Net::load(string filename){
+    // Open file stream
+    std::ifstream ifs(filename, std::ios::in | std::ios::binary);
+
+    for (int i = 0; i != layers.size(); i++){
+        layers[i]->load(ifs);
+    }
+
+    // Close file stream
+    ifs.close();
 }
 
 
@@ -372,11 +384,11 @@ void Net::fts() {
     }
     //fprintf(stdout,"\n");
     if (VERBOSE) {
-      cout<<"Forward sort:";
-      for (i = 0; i < vfts.size(); i++)
-        cout<<vfts[i]->name<<"-->";
-      cout<<"\n";
-      //getchar();
+        cout<<"Forward sort:";
+        for (i = 0; i < vfts.size(); i++)
+            cout<<vfts[i]->name<<"-->";
+        cout<<"\n";
+        //getchar();
     }
 }
 
@@ -421,12 +433,12 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs){
     set_compserv(cs);
 
     if (cs->type == "local") {
-      if (snets[0]->dev == DEV_CPU)
-        cout << "Net running on CPU\n";
-      else if (snets[0]->dev < DEV_FPGA)
-        cout << "Net running on GPU " << snets[0]->dev - DEV_GPU << "\n";
-      else
-        cout << "Net running on FPGA " << snets[0]->dev - DEV_FPGA << "\n";
+        if (snets[0]->dev == DEV_CPU)
+            cout << "Net running on CPU\n";
+        else if (snets[0]->dev < DEV_FPGA)
+            cout << "Net running on GPU " << snets[0]->dev - DEV_GPU << "\n";
+        else
+            cout << "Net running on FPGA " << snets[0]->dev - DEV_FPGA << "\n";
     }
 
 }
@@ -450,7 +462,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
             if (dev == -1) dev = layers[i]->dev;
             else {
                 if (layers[i]->dev != dev)
-                  msg("Net with layers in different devices", "Net.build");
+                    msg("Net with layers in different devices", "Net.build");
             }
         }
     }
@@ -543,10 +555,10 @@ void Net::set_compserv(CompServ *cs){
 
     // create input and output tensors (X,Y)
     for (int i = 0; i < snets.size(); i++) {
-      for (int j = 0; j < snets[i]->lin.size(); j++)
-          Xs[i].push_back(new Tensor(snets[i]->lin[j]->input->shape));
-      for (int j = 0; j < snets[i]->lout.size(); j++)
-          Ys[i].push_back(new Tensor(snets[i]->lout[j]->output->shape));
+        for (int j = 0; j < snets[i]->lin.size(); j++)
+            Xs[i].push_back(new Tensor(snets[i]->lin[j]->input->shape));
+        for (int j = 0; j < snets[i]->lout.size(); j++)
+            Ys[i].push_back(new Tensor(snets[i]->lout[j]->output->shape));
     }
 }
 
@@ -579,8 +591,8 @@ void Net::split(int c, int todev) {
 
         // special layers that are not input of net but has not parents
         for (j = 0; j < layers.size(); j++)
-          if ((layers[j]->lin==0)&&(!isIn(layers[j],lin,ind)))
-            nlayers.push_back(layers[j]->clone(c, bs, par, todev + devsel[i]));
+            if ((layers[j]->lin==0)&&(!isIn(layers[j],lin,ind)))
+                nlayers.push_back(layers[j]->clone(c, bs, par, todev + devsel[i]));
 
 
         // rest of layers
@@ -598,7 +610,7 @@ void Net::split(int c, int todev) {
                 }
 
             }
-          }
+        }
 
         // set outputs
         for (j = 0; j < lout.size(); j++)
@@ -622,48 +634,48 @@ void Net::split(int c, int todev) {
 
 void Net::resize(int b)
 {
-  int i,j;
+    int i,j;
 
-  if (batch_size==b) return;
+    if (batch_size==b) return;
 
-  batch_size=b;
+    batch_size=b;
 
-  int c=snets.size();
-  int bs,m;
+    int c=snets.size();
+    int bs,m;
 
-  if (batch_size<c) {
-    printf("=====> Warning: batch_size (%d) lower than compserv resources (%d)\n",batch_size,c);
-    bs=1;
-    m=0;
-    c=batch_size;
-  }
-  else {
-    bs = batch_size / c;
-    m = batch_size % c;
-  }
+    if (batch_size<c) {
+        printf("=====> Warning: batch_size (%d) lower than compserv resources (%d)\n",batch_size,c);
+        bs=1;
+        m=0;
+        c=batch_size;
+    }
+    else {
+        bs = batch_size / c;
+        m = batch_size % c;
+    }
 
-  //cout<<"Resizing net to batch_size="<<b<<"\n";
+    //cout<<"Resizing net to batch_size="<<b<<"\n";
 
-  for (j = 0; j < layers.size(); j++) {
-      layers[j]->resize(batch_size);
-  }
+    for (j = 0; j < layers.size(); j++) {
+        layers[j]->resize(batch_size);
+    }
 
-  for(i=0; i<c; i++) {
-    Xs[i].clear();
-    Ys[i].clear();
+    for(i=0; i<c; i++) {
+        Xs[i].clear();
+        Ys[i].clear();
 
-    if (i==c-1) bs+=m;
-    snets[i]->batch_size=bs;
-    for (j = 0; j < snets[i]->layers.size(); j++) {
-        snets[i]->layers[j]->resize(bs);
-      }
+        if (i==c-1) bs+=m;
+        snets[i]->batch_size=bs;
+        for (j = 0; j < snets[i]->layers.size(); j++) {
+            snets[i]->layers[j]->resize(bs);
+        }
 
-    for (j = 0; j < snets[i]->lin.size(); j++)
-        Xs[i].push_back(new Tensor(snets[i]->lin[j]->input->shape));
+        for (j = 0; j < snets[i]->lin.size(); j++)
+            Xs[i].push_back(new Tensor(snets[i]->lin[j]->input->shape));
 
-    for (j = 0; j < snets[i]->lout.size(); j++)
-        Ys[i].push_back(new Tensor(snets[i]->lout[j]->output->shape));
-  }
+        for (j = 0; j < snets[i]->lout.size(); j++)
+            Ys[i].push_back(new Tensor(snets[i]->lout[j]->output->shape));
+    }
 
 
 }
@@ -679,10 +691,10 @@ void Net::forward() {
     for (int i = 0; i < vfts.size(); i++) {
         vfts[i]->forward();
         if (VERBOSE) {
-          cout << vfts[i]->name << "\n";
-          fprintf(stdout, "  %s In:%f\n", vfts[i]->name.c_str(), vfts[i]->input->sum());
-          fprintf(stdout, "  %s Out:%f\n", vfts[i]->name.c_str(), vfts[i]->output->sum());
-          //getchar();
+            cout << vfts[i]->name << "\n";
+            fprintf(stdout, "  %s In:%f\n", vfts[i]->name.c_str(), vfts[i]->input->sum());
+            fprintf(stdout, "  %s Out:%f\n", vfts[i]->name.c_str(), vfts[i]->output->sum());
+            //getchar();
         }
     }
 }
@@ -693,7 +705,7 @@ void Net::backward() {
 
         vbts[i]->backward();
         if (VERBOSE) cout<<"BACK: "<<vbts[i]->name<<"delta:"<<vbts[i]->delta->sum()<<"\n";
-      }
+    }
 
 }
 
@@ -737,48 +749,48 @@ void Net::applygrads() {
 
 void Net::reset_loss()
 {
-  // Reset errors
-  int p=0;
-  for (int j = 0; j < lout.size(); j++,p+=2){
-      total_loss[j] = 0.0;
-      total_metric[j] = 0.0;
-      fiterr[p] = fiterr[p + 1] = 0.0;
-  }
-  inferenced_samples=0;
+    // Reset errors
+    int p=0;
+    for (int j = 0; j < lout.size(); j++,p+=2){
+        total_loss[j] = 0.0;
+        total_metric[j] = 0.0;
+        fiterr[p] = fiterr[p + 1] = 0.0;
+    }
+    inferenced_samples=0;
 }
 
 void Net::print_loss(int b)
 {
-  int p = 0;
+    int p = 0;
 
-  for (int k = 0; k < lout.size(); k++, p += 2) {
+    for (int k = 0; k < lout.size(); k++, p += 2) {
 
-      total_loss[k] += fiterr[p];  // loss
-      total_metric[k] += fiterr[p + 1];  // metric
-      fiterr[p] = fiterr[p + 1] = 0.0;
+        total_loss[k] += fiterr[p];  // loss
+        total_metric[k] += fiterr[p + 1];  // metric
+        fiterr[p] = fiterr[p + 1] = 0.0;
 
-      fprintf(stdout, "%s(%s=%1.3f,%s=%1.3f) ", lout[k]->name.c_str(),
-              losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
-              metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
-
-      if ((flog_tr!=nullptr)&&(trmode))
-        fprintf(flog_tr, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
+        fprintf(stdout, "%s(%s=%1.3f,%s=%1.3f) ", lout[k]->name.c_str(),
+                losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
                 metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
 
-      if ((flog_ts!=nullptr)&&(!trmode))
-        fprintf(flog_ts, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
-                metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+        if ((flog_tr!=nullptr)&&(trmode))
+            fprintf(flog_tr, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
+                    metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
 
-  }
-  fflush(stdout);
-  if ((flog_tr!=nullptr)&&(trmode)) {
-    fprintf(flog_tr, "\n");
-    fflush(flog_tr);
-  }
-  if ((flog_ts!=nullptr)&&(!trmode)) {
-    fprintf(flog_ts, "\n");
-    fflush(flog_ts);
-  }
+        if ((flog_ts!=nullptr)&&(!trmode))
+            fprintf(flog_ts, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
+                    metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+
+    }
+    fflush(stdout);
+    if ((flog_tr!=nullptr)&&(trmode)) {
+        fprintf(flog_tr, "\n");
+        fflush(flog_tr);
+    }
+    if ((flog_ts!=nullptr)&&(!trmode)) {
+        fprintf(flog_ts, "\n");
+        fflush(flog_ts);
+    }
 
 }
 
@@ -790,252 +802,252 @@ void Net::print_loss(int b)
 //////// SIMPLE atomic ops
 
 void Net::setmode(int m) {
-  trmode=m;
-  for (int i = 0; i < snets.size(); i++)
-    for (int j = 0; j < snets[i]->layers.size(); j++)
-      snets[i]->layers[j]->setmode(m);
+    trmode=m;
+    for (int i = 0; i < snets.size(); i++)
+        for (int j = 0; j < snets[i]->layers.size(); j++)
+            snets[i]->layers[j]->setmode(m);
 }
 
 
 void Net::forward(vector<Tensor *> in)
 {
-  void *status;
-  int rc;
-  pthread_t thr[100];
-  struct tdata td[100];
+    void *status;
+    int rc;
+    pthread_t thr[100];
+    struct tdata td[100];
 
 
-  int comp=snets.size();
+    int comp=snets.size();
 
-  if (in.size()) {
-    if (in.size()!=lin.size())
-      msg("size missmatch in list of tensors","Net.forward(vtensor)");
+    if (in.size()) {
+        if (in.size()!=lin.size())
+            msg("size missmatch in list of tensors","Net.forward(vtensor)");
 
-    if (batch_size!=in[0]->shape[0]) {
-      resize(in[0]->shape[0]);
+        if (batch_size!=in[0]->shape[0]) {
+            resize(in[0]->shape[0]);
+        }
+
+        if (batch_size<comp)
+            comp=batch_size;
+
+        int thread_batch_size=batch_size / comp;
+
+        // Split data for each network
+        for (int i = 0; i < comp; i++) {
+            int start = i * thread_batch_size;
+            int end = start + Xs[i][0]->shape[0];
+            vector<int> sind(batch_size);
+            for(int k=0;k<batch_size;k++) sind[k]=k;
+
+            // Copy samples
+            for (int j = 0; j < in.size(); j++) {
+                Tensor::select(in[j], Xs[i][j], sind, start, end);
+                Tensor::copy(Xs[i][j], snets[i]->lin[j]->input);
+            }
+        }
     }
 
     if (batch_size<comp)
-      comp=batch_size;
+        comp=batch_size;
 
-    int thread_batch_size=batch_size / comp;
-
-    // Split data for each network
     for (int i = 0; i < comp; i++) {
-        int start = i * thread_batch_size;
-        int end = start + Xs[i][0]->shape[0];
-        vector<int> sind(batch_size);
-        for(int k=0;k<batch_size;k++) sind[k]=k;
+        // Thread params
+        td[i].net = snets[i];
+        td[i].eval = 0;
 
-        // Copy samples
-          for (int j = 0; j < in.size(); j++) {
-            Tensor::select(in[j], Xs[i][j], sind, start, end);
-            Tensor::copy(Xs[i][j], snets[i]->lin[j]->input);
+        // Call thread
+        rc = pthread_create(&thr[i], nullptr, forward_t, (void *) (&td[i]));
+        if (rc) {
+            fprintf(stderr, "Error:unable to create thread %d", rc);
+            exit(-1);
         }
     }
-  }
 
-  if (batch_size<comp)
-    comp=batch_size;
-
-  for (int i = 0; i < comp; i++) {
-      // Thread params
-      td[i].net = snets[i];
-      td[i].eval = 0;
-
-      // Call thread
-      rc = pthread_create(&thr[i], nullptr, forward_t, (void *) (&td[i]));
-      if (rc) {
-          fprintf(stderr, "Error:unable to create thread %d", rc);
-          exit(-1);
-      }
-  }
-
-  // Wait until all threads have finished
-  for (int i = 0; i < comp; i++) {
-      rc = pthread_join(thr[i], &status);
-      if (rc) {
-          cout << "Error:unable to join," << rc << endl;
-          exit(-1);
-      }
-  }
+    // Wait until all threads have finished
+    for (int i = 0; i < comp; i++) {
+        rc = pthread_join(thr[i], &status);
+        if (rc) {
+            cout << "Error:unable to join," << rc << endl;
+            exit(-1);
+        }
+    }
 
 }
 
 void Net::backward(vector<Tensor *> target)
 {
-  void *status;
-  int rc;
-  pthread_t thr[100];
-  struct tdata td[100];
+    void *status;
+    int rc;
+    pthread_t thr[100];
+    struct tdata td[100];
 
 
-  int comp=snets.size();
+    int comp=snets.size();
 
-  if (target.size()) {
-    if (target.size()!=lout.size())
-      msg("size missmatch in list of targets","Net.backward(vtensor)");
+    if (target.size()) {
+        if (target.size()!=lout.size())
+            msg("size missmatch in list of targets","Net.backward(vtensor)");
 
-    if (batch_size!=target[0]->shape[0])
-      msg("bakcward step with different batch_size than forward","Net.backward(vtensor)");
+        if (batch_size!=target[0]->shape[0])
+            msg("bakcward step with different batch_size than forward","Net.backward(vtensor)");
 
+
+        if (batch_size<comp)
+            comp=batch_size;
+
+        int thread_batch_size=batch_size / comp;
+
+        // Split data for each network
+        for (int i = 0; i < comp; i++) {
+            int start = i * thread_batch_size;
+            int end = start + Xs[i][0]->shape[0];
+            vector<int> sind(batch_size);
+            for(int k=0;k<batch_size;k++) sind[k]=k;
+            // Copy samples
+            // Copy targets
+            for (int j = 0; j < target.size(); j++) {
+                Tensor::select(target[j], Ys[i][j], sind, start, end);
+                Tensor::copy(Ys[i][j], snets[i]->lout[j]->target);
+            }
+        }
+    }
 
     if (batch_size<comp)
-      comp=batch_size;
+        comp=batch_size;
 
-    int thread_batch_size=batch_size / comp;
-
-    // Split data for each network
     for (int i = 0; i < comp; i++) {
-        int start = i * thread_batch_size;
-        int end = start + Xs[i][0]->shape[0];
-        vector<int> sind(batch_size);
-        for(int k=0;k<batch_size;k++) sind[k]=k;
-        // Copy samples
-        // Copy targets
-        for (int j = 0; j < target.size(); j++) {
-            Tensor::select(target[j], Ys[i][j], sind, start, end);
-            Tensor::copy(Ys[i][j], snets[i]->lout[j]->target);
-        }
-    }
-  }
+        // Thread params
+        td[i].net = snets[i];
+        td[i].eval = 0;
 
-  if (batch_size<comp)
-    comp=batch_size;
-
-  for (int i = 0; i < comp; i++) {
-      // Thread params
-      td[i].net = snets[i];
-      td[i].eval = 0;
-
-      // Call thread
-      rc = pthread_create(&thr[i], nullptr, backward_t, (void *) (&td[i]));
-      if (rc) {
-          fprintf(stderr, "Error:unable to create thread %d", rc);
-          exit(-1);
-      }
-  }
-
-  // Wait until all threads have finished
-  for (int i = 0; i < comp; i++) {
-      rc = pthread_join(thr[i], &status);
-      if (rc) {
-          cout << "Error:unable to join," << rc << endl;
-          exit(-1);
-      }
-  }
-
-  if (snets[0]->dev != DEV_CPU)
-    for (int i = 0; i < comp; i++) {
-        for (int j = 0; j < 2 * lout.size(); j++) {
-            fiterr[j] += snets[i]->fiterr[j];
+        // Call thread
+        rc = pthread_create(&thr[i], nullptr, backward_t, (void *) (&td[i]));
+        if (rc) {
+            fprintf(stderr, "Error:unable to create thread %d", rc);
+            exit(-1);
         }
     }
 
-  inferenced_samples+=batch_size;
+    // Wait until all threads have finished
+    for (int i = 0; i < comp; i++) {
+        rc = pthread_join(thr[i], &status);
+        if (rc) {
+            cout << "Error:unable to join," << rc << endl;
+            exit(-1);
+        }
+    }
+
+    if (snets[0]->dev != DEV_CPU)
+        for (int i = 0; i < comp; i++) {
+            for (int j = 0; j < 2 * lout.size(); j++) {
+                fiterr[j] += snets[i]->fiterr[j];
+            }
+        }
+
+    inferenced_samples+=batch_size;
 
 
 }
 
 void Net::reset_grads()
 {
-  void *status;
-  int rc;
-  pthread_t thr[100];
-  struct tdata td[100];
+    void *status;
+    int rc;
+    pthread_t thr[100];
+    struct tdata td[100];
 
 
-  int comp=snets.size();
-  if (batch_size<comp)
-    comp=batch_size;
+    int comp=snets.size();
+    if (batch_size<comp)
+        comp=batch_size;
 
-  for (int i = 0; i < comp; i++) {
-      // Thread params
-      td[i].net = snets[i];
-      td[i].eval = 0;
+    for (int i = 0; i < comp; i++) {
+        // Thread params
+        td[i].net = snets[i];
+        td[i].eval = 0;
 
-      // Call thread
-      rc = pthread_create(&thr[i], nullptr, reset_t, (void *) (&td[i]));
-      if (rc) {
-          fprintf(stderr, "Error:unable to create thread %d", rc);
-          exit(-1);
-      }
-  }
-  // Wait until all threads have finished
-  for (int i = 0; i < comp; i++) {
-      rc = pthread_join(thr[i], &status);
-      if (rc) {
-          cout << "Error:unable to join," << rc << endl;
-          exit(-1);
-      }
-  }
+        // Call thread
+        rc = pthread_create(&thr[i], nullptr, reset_t, (void *) (&td[i]));
+        if (rc) {
+            fprintf(stderr, "Error:unable to create thread %d", rc);
+            exit(-1);
+        }
+    }
+    // Wait until all threads have finished
+    for (int i = 0; i < comp; i++) {
+        rc = pthread_join(thr[i], &status);
+        if (rc) {
+            cout << "Error:unable to join," << rc << endl;
+            exit(-1);
+        }
+    }
 }
 
 void Net::compute_loss()
 {
-  void *status;
-  int rc;
-  pthread_t thr[100];
-  struct tdata td[100];
+    void *status;
+    int rc;
+    pthread_t thr[100];
+    struct tdata td[100];
 
 
-  int comp=snets.size();
-  if (batch_size<comp)
-    comp=batch_size;
-  for (int i = 0; i < comp; i++) {
-      // Thread params
-      td[i].net = snets[i];
-      td[i].eval = 0;
+    int comp=snets.size();
+    if (batch_size<comp)
+        comp=batch_size;
+    for (int i = 0; i < comp; i++) {
+        // Thread params
+        td[i].net = snets[i];
+        td[i].eval = 0;
 
-      // Call thread
-      rc = pthread_create(&thr[i], nullptr, calcloss_t, (void *) (&td[i]));
-      if (rc) {
-          fprintf(stderr, "Error:unable to create thread %d", rc);
-          exit(-1);
-      }
-  }
-  // Wait until all threads have finished
-  for (int i = 0; i < comp; i++) {
-      rc = pthread_join(thr[i], &status);
-      if (rc) {
-          cout << "Error:unable to join," << rc << endl;
-          exit(-1);
-      }
-  }
+        // Call thread
+        rc = pthread_create(&thr[i], nullptr, calcloss_t, (void *) (&td[i]));
+        if (rc) {
+            fprintf(stderr, "Error:unable to create thread %d", rc);
+            exit(-1);
+        }
+    }
+    // Wait until all threads have finished
+    for (int i = 0; i < comp; i++) {
+        rc = pthread_join(thr[i], &status);
+        if (rc) {
+            cout << "Error:unable to join," << rc << endl;
+            exit(-1);
+        }
+    }
 }
 
 
 void Net::update()
 {
-  void *status;
-  int rc;
-  pthread_t thr[100];
-  struct tdata td[100];
+    void *status;
+    int rc;
+    pthread_t thr[100];
+    struct tdata td[100];
 
 
-  int comp=snets.size();
-  if (batch_size<comp)
-    comp=batch_size;
-  for (int i = 0; i < comp; i++) {
-      // Thread params
-      td[i].net = snets[i];
-      td[i].eval = 0;
+    int comp=snets.size();
+    if (batch_size<comp)
+        comp=batch_size;
+    for (int i = 0; i < comp; i++) {
+        // Thread params
+        td[i].net = snets[i];
+        td[i].eval = 0;
 
-      // Call thread
-      rc = pthread_create(&thr[i], nullptr, update_t, (void *) (&td[i]));
-      if (rc) {
-          fprintf(stderr, "Error:unable to create thread %d", rc);
-          exit(-1);
-      }
-  }
-  // Wait until all threads have finished
-  for (int i = 0; i < comp; i++) {
-      rc = pthread_join(thr[i], &status);
-      if (rc) {
-          cout << "Error:unable to join," << rc << endl;
-          exit(-1);
-      }
-  }
+        // Call thread
+        rc = pthread_create(&thr[i], nullptr, update_t, (void *) (&td[i]));
+        if (rc) {
+            fprintf(stderr, "Error:unable to create thread %d", rc);
+            exit(-1);
+        }
+    }
+    // Wait until all threads have finished
+    for (int i = 0; i < comp; i++) {
+        rc = pthread_join(thr[i], &status);
+        if (rc) {
+            cout << "Error:unable to join," << rc << endl;
+            exit(-1);
+        }
+    }
 }
 
 
@@ -1131,7 +1143,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
     int comp=snets.size();
 
     if (batch_size<comp)
-      comp=batch_size;
+        comp=batch_size;
 
     int thread_batch_size=batch_size / comp;
 
@@ -1185,23 +1197,23 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
         }
         // In case of multiple GPUS or FPGA synchronize params
         if ((snets[0]->dev != DEV_CPU) && (comp > 1) && (tr_batches%cs->lsb==0)) {
-          sync_weights();
+            sync_weights();
         }
     }
 
     // Sum all errors
     if (snets[0]->dev != DEV_CPU)
-      for (int i = 0; i < comp; i++) {
-          for (int j = 0; j < 2 * lout.size(); j++) {
-              fiterr[j] += snets[i]->fiterr[j];
-          }
-      }
+        for (int i = 0; i < comp; i++) {
+            for (int j = 0; j < 2 * lout.size(); j++) {
+                fiterr[j] += snets[i]->fiterr[j];
+            }
+        }
 
     int p=0;
     for (int k = 0; k < lout.size(); k++, p += 2) {
-          total_loss[k] += fiterr[p];  // loss
-          total_metric[k] += fiterr[p + 1];  // metric
-          fiterr[p] = fiterr[p + 1] = 0.0;
+        total_loss[k] += fiterr[p];  // loss
+        total_metric[k] += fiterr[p + 1];  // metric
+        fiterr[p] = fiterr[p + 1] = 0.0;
     }
     inferenced_samples+=batch_size;
 
@@ -1256,7 +1268,7 @@ void Net::evaluate(vtensor tin, vtensor tout) {
     // Create internal variables
     vind sind;
     for (k=0;k<batch_size;k++)
-      sind.push_back(0);
+        sind.push_back(0);
 
 
     // Start eval
@@ -1265,7 +1277,7 @@ void Net::evaluate(vtensor tin, vtensor tout) {
     for (j = 0; j < n / batch_size; j++) {
 
         for (k=0;k<batch_size;k++)
-          sind[k]=(j*batch_size)+k;
+            sind[k]=(j*batch_size)+k;
 
         train_batch(tin, tout, sind, 1);
 
@@ -1293,7 +1305,7 @@ void Net::predict(vtensor tin, vtensor tout) {
     // Check data consistency
     n = tin[0]->shape[0];
     if (n!=1)
-      msg("Predict only one sample","Net.predict");
+        msg("Predict only one sample","Net.predict");
 
     for (i = 1; i < tin.size(); i++)
         if (tin[i]->shape[0] != n)

@@ -60,9 +60,8 @@ public:
 
     void initialize();
 
-
-    void save(FILE *fe);
-    void load(FILE *fe);
+    void save(std::ofstream &ofs);
+    void load(std::ifstream &ifs);
 
     virtual void info();
 

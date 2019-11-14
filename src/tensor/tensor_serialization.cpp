@@ -26,48 +26,68 @@ using namespace std;
 
 // ********* LOAD FUNCTIONS *********
 Tensor* Tensor::load(const string& filename, const string& format) {
-    // Choose format
-    if(format=="bin") { return Tensor::load_from_bin(filename); }
-    else if(format=="onnx"){ return Tensor::load_from_onnx(); }
-    else{ return Tensor::load_from_img(filename, format); }
+
+    if(format=="png") { // Images
+        return Tensor::load_from_img(filename, format);
+    }else if(format=="bin" || format=="onnx"){
+        // Open file stream
+        std::ifstream ifs(filename, std::ios::in | std::ios::binary);
+
+        // Save
+        Tensor* t = Tensor::loadfs(ifs, format);
+
+        // Close file stream
+        ifs.close();
+
+        return t;
+    }else{
+        msg("Not implemented", "Tensor::save");
+    }
 }
 
-Tensor* Tensor::load_from_bin(const string& filename){
+Tensor* Tensor::loadfs(std::ifstream &ifs, const string& format) {
+
+    // Choose format
+    if(format=="bin") {
+        return Tensor::load_from_bin(ifs);
+    } else if(format=="onnx"){
+        return Tensor::load_from_onnx(ifs);
+    }else{
+        msg("Not implemented", "Tensor::load");
+    }
+
+}
+
+Tensor* Tensor::load_from_bin(std::ifstream &ifs){
     int r_ndim;
 
-    // Open file stream
-    std::ifstream ifp(filename, std::ios::in | std::ios::binary);
-
     // Load number of dimensions
-    ifp.read(reinterpret_cast<char *>(&r_ndim),  sizeof(int));
+    ifs.read(reinterpret_cast<char *>(&r_ndim),  sizeof(int));
 
     // Load dimensions
     vector<int> r_shape(r_ndim);
-    ifp.read(reinterpret_cast<char *>(r_shape.data()), r_ndim * sizeof(int));
+    ifs.read(reinterpret_cast<char *>(r_shape.data()), r_ndim * sizeof(int));
 
     // Compute total size
     int r_size = 1;
     for(int i=0; i<r_ndim; i++){ r_size *= r_shape[i]; }
 
     // Load content (row-major)
-    float *r_ptr = new float[r_size];
-    ifp.read(reinterpret_cast<char*>(r_ptr), r_size * sizeof(float));
-
-    // Close file stream
-    ifp.close();
+    auto *r_ptr = new float[r_size];
+    ifs.read(reinterpret_cast<char*>(r_ptr), r_size * sizeof(float));
 
     // Return new tensor
     return new Tensor(r_shape, r_ptr, DEV_CPU);
 }
 
-Tensor* Tensor::load_from_onnx(){
+Tensor* Tensor::load_from_onnx(std::ifstream &ifs){
     msg("Not implemented", "Tensor::load_from_onnx");
 
     // Return new tensor
     return new Tensor();
 };
 
-Tensor* Tensor::load_from_img(const string& filename, const string& format){
+Tensor* Tensor::load_from_img(const string &filename, const string& format){
     msg("Not implemented", "Tensor::load_from_img");
 
     // Return new tensor
@@ -77,34 +97,53 @@ Tensor* Tensor::load_from_img(const string& filename, const string& format){
 
 // ********* SAVE FUNCTIONS *********
 void Tensor::save(const string& filename, const string& format) {
+
+    if(format=="png") { // Images
+        save2img(filename, format);
+    }else if(format=="bin" || format=="onnx"){
+        // Open file stream
+        std::ofstream ofs(filename, std::ios::out | std::ios::binary);
+
+        // Save
+        Tensor::savefs(ofs, format);
+
+        // Close file stream
+        ofs.close();
+    }else{
+        msg("Not implemented", "Tensor::save");
+    }
+}
+
+void Tensor::savefs(std::ofstream &ofs, const string& format) {
     if (!isCPU()){
         msg("Only save CPU Tensors", "Tensor::save");
     }
 
     // Choose format
-    if(format=="bin") { save2bin(filename); }
-    else if(format=="onnx"){ save2onnx(); }
-    else{ save2img(filename, format); }
+    if(format=="bin") {
+        save2bin(ofs);
+    } else if(format=="onnx"){
+        save2onnx(ofs);
+    }else{
+        msg("Not implemented", "Tensor::save");
+    }
+
 }
 
-void Tensor::save2bin(const string& filename){
-    // Open file stream
-    std::fstream ofp(filename, std::ios::out | std::ios::binary);
+
+void Tensor::save2bin(std::ofstream &ofs){
 
     // Save number of dimensions
-    ofp.write(reinterpret_cast<const char *>(&this->ndim), sizeof(int));
+    ofs.write(reinterpret_cast<const char *>(&this->ndim), sizeof(int));
 
     // Save dimensions
-    ofp.write(reinterpret_cast<const char *>(this->shape.data()), this->shape.size() * sizeof(int));
+    ofs.write(reinterpret_cast<const char *>(this->shape.data()), this->shape.size() * sizeof(int));
 
     // Save content (row-major)
-    ofp.write(reinterpret_cast<const char *>(this->ptr), this->size * sizeof(float));
-
-    // Close file stream
-    ofp.close();
+    ofs.write(reinterpret_cast<const char *>(this->ptr), this->size * sizeof(float));
 }
 
-void Tensor::save2onnx(){
+void Tensor::save2onnx(std::ofstream &ofs){
     msg("Not implemented", "Tensor::save2onnx");
 };
 
@@ -116,6 +155,7 @@ void Tensor::save2img(const string& filename, const string& format){
 
     // Re-order axis
     Tensor *t = this->permute({0, 2, 3, 1}); // Data must be presented as WxHxC => [(ARGB), (ARGB), (ARGB),...]
+    t->ToCPU();  // Just in case
 
     // Normalize image (for RGB must fall between 0 and 255)
     t->normalize_(0.0f, 255.0f);

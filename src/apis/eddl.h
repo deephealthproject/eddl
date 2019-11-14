@@ -225,7 +225,7 @@ namespace eddl {
     compserv CS_CPU(int th=-1);
     compserv CS_GPU(const vector<int> &g,int lsb=1);
     compserv CS_FGPA(const vector<int> &f,int lsb=1);
-    compserv CS_COMPSS(char* path);
+    compserv CS_COMPSS(string filename);
 
 
 // ---- FINE-GRAINED METHODS ----
