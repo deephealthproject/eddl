@@ -14,10 +14,10 @@
 #include <string>
 #include <vector>
 
-#include "layers/layer.h"
-#include "optimizers/optim.h"
-#include "losses/loss.h"
-#include "metrics/metric.h"
+#include "../layers/layer.h"
+#include "../optimizers/optim.h"
+#include "../losses/loss.h"
+#include "../metrics/metric.h"
 #include "compserv.h"
 
 using namespace std;
@@ -31,8 +31,10 @@ typedef vector<int> vind;
 typedef vector<Loss *> vloss;
 typedef vector<Metric *> vmetrics;
 
-void *train_batch_t(void *targs);
 
+/////////////////////////////////////////
+int isIn(Layer *l, vlayer vl, int &ind);
+int isInorig(Layer *l, vlayer vl, int &ind);
 
 #define MAX_THREADS 1024
 
@@ -94,6 +96,7 @@ public:
     void walk(Layer *l); //
     void walk_back(Layer *l); //
 
+
     void fts();
     void bts();
 
@@ -119,8 +122,10 @@ public:
     void reset_loss();
     void print_loss(int b);
 
+    void run_snets(void *(*F)(void *t));
     void forward(vector<Tensor *> in);
     void backward(vector<Tensor *> target);
+    void backward(Layer* (*f)(Layer *),Layer *out);
     void reset_grads();
     void update();
     void compute_loss();

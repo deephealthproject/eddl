@@ -286,12 +286,14 @@ SET(CPP_SOURCES
         src/losses/loss_cross_entropy.cpp
         src/losses/loss_mean_squared_error.cpp
         src/losses/loss_soft_cross_entropy.cpp
+        src/losses/loss_min.cpp
         src/metrics/metric.cpp
         src/metrics/metric.h
         src/metrics/metric_categorical_acc.cpp
         src/metrics/metric_mean_squared_error.cpp
         src/metrics/metric_mean_absolute_error.cpp
         src/metrics/metric_mean_relative_error.cpp
+        src/metrics/metric_sum.cpp
         src/optimizers/optim.cpp
         src/optimizers/optim.h
         src/optimizers/optim_adadelta.cpp
@@ -327,10 +329,13 @@ SET(CPP_SOURCES
         src/tensor/nn/tensor_metrics.cpp
         src/tensor/nn/tensor_pool.cpp
         src/tensor/nn/tensor_core_nn.cpp
-        src/compserv.cpp
-        src/compserv.h
-        src/net.cpp
-        src/net.h
+        src/net/compserv.cpp
+        src/net/compserv.h
+        src/net/net.cpp
+        src/net/net_build.cpp
+        src/net/net_api.cpp
+        src/net/net_func.cpp
+        src/net/net.h
         src/system_info.h
         src/utils.cpp
         src/utils.h

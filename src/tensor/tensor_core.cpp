@@ -236,9 +236,9 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
     }
     else if ((A->isGPU()) && (B->isCPU())) {
         Tensor *C=A->clone();
-        A->ToCPU();
-        cpu_select(A, B, sind, ini, end);
-        delete A;
+        C->ToCPU();
+        cpu_select(C, B, sind, ini, end);
+        delete C;
     }else {
         msg("unsuppoted select", "Tensor::select");
     }

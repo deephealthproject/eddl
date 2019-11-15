@@ -15,7 +15,7 @@
 #include <thread>
 #include <pthread.h>
 
-#include "../net.h"
+#include "../net/net.h"
 #include "../initializers/initializer.h"
 #include "../regularizers/regularizer.h"
 #include "../losses/loss.h"
@@ -35,7 +35,6 @@
 #include "../layers/recurrent/layer_recurrent.h"
 
 
-
 namespace eddl {
 
 #define layer Layer*
@@ -48,10 +47,12 @@ namespace eddl {
 #define compserv CompServ*
 
 // ---- CORE LAYERS ----
-    layer Activation(layer parent, string activation, string name = "");
+    layer Activation(layer parent, string activation, float param=0.01, string name = "");
     layer Softmax(layer parent);
     layer Sigmoid(layer parent);
     layer ReLu(layer parent);
+    layer LReLu(layer parent,float param=0.01);
+    layer Tanh(layer parent);
 
 
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
@@ -91,7 +92,9 @@ namespace eddl {
     layer CutoutRandom(layer parent, vector<float> factor_x, vector<float> factor_y, float constant=0.0f, string name="");
 
 // ---- LOSSES ----
-    loss getLoss(string type);
+    Loss* getLoss(string type);
+
+
 
 // ---- METRICS ----
     metric getMetric(string type);
@@ -251,6 +254,7 @@ namespace eddl {
 
 
     void backward(model m,vector<Tensor *> target);
+    void backward(model net,Layer* (*f)(Layer *),Layer *out);
     void backward(model net);
 
     void update(model m);

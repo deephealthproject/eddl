@@ -116,6 +116,8 @@ void Tensor::ToCPU(int dev){
 
         gpu_copy_from_gpu(this, cpu_ptr);
         this->ptr = cpu_ptr;
+        gpu_delete_tensor(gpu_device,gpu_ptr);
+
       }
 #endif
 #ifdef cFPGA
@@ -141,6 +143,7 @@ void Tensor::ToGPU(int dev){
 
         this->ptr = gpu_ptr;
         gpu_copy_to_gpu(cpu_ptr, this);
+        delete cpu_ptr;
     }
     else if (isGPU())
       {

@@ -24,8 +24,8 @@ using namespace std;
 namespace eddl {
 
     // ---- CORE LAYERS ----
-    layer Activation(layer parent, string activation, string name) {
-        return new LActivation(parent, activation, name, DEV_CPU);
+    layer Activation(layer parent, string activation, float param, string name) {
+        return new LActivation(parent, activation, name, DEV_CPU,param);
     }
     layer Softmax(layer parent)
     {
@@ -38,6 +38,15 @@ namespace eddl {
     layer ReLu(layer parent)
     {
       return new LActivation(parent,"relu","",DEV_CPU);
+    }
+    layer LReLu(layer parent,float param)
+    {
+      return new LActivation(parent,"lrelu","",DEV_CPU,param);
+    }
+
+    layer Tanh(layer parent)
+    {
+      return new LActivation(parent,"tanh","",DEV_CPU);
     }
 
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
@@ -566,6 +575,11 @@ namespace eddl {
       net->backward({});
     }
 
+    void backward(model net,Layer* (*f)(Layer *),Layer *out)
+    {
+      net->backward(f,out);
+    }
+
     void compute_loss(model net)
     {
       net->compute_loss();
@@ -575,7 +589,7 @@ namespace eddl {
     {
       net->update();
     }
-    
+
     void copyTensor(Tensor *t1,Tensor *t2)
     {
       Tensor::copy(t1,t2);
@@ -602,9 +616,7 @@ namespace eddl {
 
         for (j = 0; j < s1->layers.size(); j++)
           if (s1->layers[j]->orig==l1) {
-              //cout<<"\n"<<s1->layers[j]->name<<"---"<<l1->name<<"\n";
               sl1=s1->layers[j];
-              //Tensor::copy(sl1->output,l1->output);
               break;
           }
         if (j==s1->layers.size())
