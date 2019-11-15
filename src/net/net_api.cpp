@@ -109,6 +109,93 @@ void *update_t(void *t) {
 }
 /////////////////////////////////////////
 
+void collectTensor(Layer *l,string tname)
+{
+  Net *sn=l->net;
+  if (sn->snets[0]->dev==DEV_CPU) return;
+
+  int i,j,comp;
+
+  comp=sn->snets.size();
+
+  if (sn->batch_size<comp)
+    comp=sn->batch_size;
+
+  int thread_batch_size=sn->batch_size / comp;
+
+  vector<int> sind(sn->batch_size);
+  for(int k=0;k<sn->batch_size;k++) sind[k]=k;
+
+  for(i=0;i<sn->snets.size();i++) {
+    Layer *sl=nullptr;
+
+    for(j=0;j<sn->snets[i]->layers.size();j++) {
+     if (sn->snets[i]->layers[j]->orig==l) {
+         sl=sn->snets[i]->layers[j];
+         break;
+     }
+   }
+    if (sl==nullptr) {
+      cout<<"LAYER:"<<l->name<<"\n";
+      msg("layer not found in subgrap","Net.collectTensor");
+    }
+
+    int start = i * thread_batch_size;
+    int end = start + sl->output->shape[0];
+
+    if (tname=="output")
+      Tensor::deselect(sl->output, l->output, sind, start, end);
+    else if (tname=="grad")
+      Tensor::deselect(sl->delta, l->delta, sind, start, end);
+  }
+
+}
+
+
+void distributeTensor(Layer *l,string tname)
+{
+  Net *sn=l->net;
+  if (sn->snets[0]->dev==DEV_CPU) return;
+
+  int i,j,comp;
+
+  comp=sn->snets.size();
+
+  if (sn->batch_size<comp)
+    comp=sn->batch_size;
+
+  int thread_batch_size=sn->batch_size / comp;
+
+  vector<int> sind(sn->batch_size);
+  for(int k=0;k<sn->batch_size;k++) sind[k]=k;
+
+
+  for(i=0;i<sn->snets.size();i++) {
+    Layer *sl=nullptr;
+
+    for(j=0;j<sn->snets[i]->layers.size();j++)
+     if (sn->snets[i]->layers[j]->orig==l) {
+         sl=sn->snets[i]->layers[j];
+         break;
+     }
+
+    if (sl==nullptr) {
+      cout<<l->name<<"\n";
+      msg("layer not found in subgrap","Net.distributeTensor");
+    }
+
+    int start = i * thread_batch_size;
+    int end = start + sl->output->shape[0];
+
+    if (tname=="output")
+      Tensor::select(l->output, sl->output, sind, start, end);
+    else
+      Tensor::select(l->delta, sl->delta, sind, start, end);
+
+  }
+}
+
+
 /////////////////////////////////////////
 // "a ring to rule them all"
 void Net::run_snets(void *(*F)(void *t))
@@ -156,83 +243,6 @@ void Net::setmode(int m) {
 }
 
 
-void Net::collectTensor(Layer *l,string tname)
-{
-  if (snets[0]->dev==DEV_CPU) return;
-
-  int i,j,comp;
-
-  comp=snets.size();
-
-  if (batch_size<comp)
-    comp=batch_size;
-
-  int thread_batch_size=batch_size / comp;
-
-  vector<int> sind(batch_size);
-  for(int k=0;k<batch_size;k++) sind[k]=k;
-
-  for(i=0;i<snets.size();i++) {
-    Layer *sl=nullptr;
-    for(j=0;j<snets[i]->layers.size();j++)
-     if (snets[i]->layers[j]->orig==l) {
-         sl=snets[i]->layers[j];
-         break;
-     }
-    if (sl==nullptr)
-      msg("layer not found in subgrap","Net.collectTensor");
-
-    int start = i * thread_batch_size;
-    int end = start + sl->output->shape[0];
-
-    if (tname=="output")
-      Tensor::deselect(sl->output, l->output, sind, start, end);
-    else if (tname=="grad")
-      Tensor::deselect(sl->delta, l->delta, sind, start, end);
-  }
-
-}
-
-
-void Net::distributeTensor(Layer *l)
-{
-  if (snets[0]->dev==DEV_CPU) return;
-
-  int i,j,comp;
-
-  comp=snets.size();
-
-  if (batch_size<comp)
-    comp=batch_size;
-
-  int thread_batch_size=batch_size / comp;
-
-  vector<int> sind(batch_size);
-  for(int k=0;k<batch_size;k++) sind[k]=k;
-
-  for(i=0;i<snets.size();i++) {
-    Layer *sl=nullptr;
-
-    for(j=0;j<snets[i]->layers.size();j++)
-     if (snets[i]->layers[j]->orig==l) {
-         sl=snets[i]->layers[j];
-         break;
-     }
-
-    if (sl==nullptr) {
-      cout<<l->name<<"\n";
-      msg("layer not found in subgrap","Net.distributeTensor");
-    }
-
-    int start = i * thread_batch_size;
-    int end = start + sl->output->shape[0];
-
-    Tensor::select(l->output, sl->output, sind, start, end);
-
-  }
-}
-
-
 //////////////////////////////////
 // API functions
 
@@ -247,7 +257,6 @@ void Net::forward(vector<Tensor*> in)
       resize(in[0]->shape[0]);
     }
 
-    // Collect for potentially distributed tensors (data parallelism)
     for (int i = 0; i < in.size(); i++) {
       Tensor::copy(in[i],lin[i]->output);
     }
@@ -335,47 +344,33 @@ void Net::backward(vector<Tensor *> target)
 
 void Net::backward(Layer* (*f)(Layer *),Layer *out)
 {
-  int comp=snets.size();
-  if (batch_size<comp)
-    comp=batch_size;
-
 
   Layer *input=new LInput(new Tensor(out->output->getShape()),"lossnet_input",DEV_CPU);
   Layer *fout=(*f)(input);
 
   Net *lossnet=new Net({input},{fout});
 
-  lossnet->build(optimizer,{new LMin()},{new MSum()},cs);
+  lossnet->build(optimizer->clone(),{new LMin()},{new MSum()},cs);
 
-  Net *n=out->net;
-  Net *sn=out->net->snets[0];
-
-  int i;
-  Layer *sout=nullptr;
-  for(i=0;i<sn->layers.size();i++)
-   if (sn->layers[i]->orig==out) {
-      sout=sn->layers[i];
-      break;
-   }
-  if (sout==nullptr)
-    msg("layer not found in subgrap","Net::backward(loss_func)");
-
-  sout->output->print();
-  sout->output->info();
+  collectTensor(out);
+  Tensor::copy(out->output,input->output);
+  distributeTensor(input);
 
   lossnet->reset_loss();
-  lossnet->forward({sout});
+  lossnet->forward();
 
   lossnet->reset_grads();
-  lossnet->backward({});
+  lossnet->backward();
   lossnet->compute_loss();
 
   lossnet->print_loss(1);
 
-  //Tensor::copy(input->delta,sout->delta);
-  //sn->backward({});
+  collectTensor(input,"grad");
+  Tensor::copy(input->delta,out->delta);
+  distributeTensor(out,"grad");
 
-  getchar();
+  //Tensor::copy(input->delta,sout->delta);
+  out->net->backward();
 
   delete lossnet;
 
@@ -383,6 +378,10 @@ void Net::backward(Layer* (*f)(Layer *),Layer *out)
 
 }
 
+void Net::backward()
+{
+  run_snets(backward_t);
+}
 
 void Net::reset_loss()
 {

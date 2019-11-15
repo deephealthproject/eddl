@@ -112,9 +112,6 @@ public:
 
     // API
     void run_snets(void *(*F)(void *t));
-    void collectTensor(Layer *l,string tname="output");
-    void distributeTensor(Layer *l);
-
     void forward(vector<Layer *> in);
     void forward(vector<Tensor*> in);
     void forward();
@@ -122,6 +119,7 @@ public:
     void print_loss(int b);
     void backward(vector<Tensor *> target);
     void backward(Layer* (*f)(Layer *),Layer *out);
+    void backward();
     void reset_grads();
     void update();
     void compute_loss();
@@ -136,5 +134,8 @@ public:
 
 
 };
+
+void collectTensor(Layer *l,string tname="output");
+void distributeTensor(Layer *l,string tname="output");
 
 #endif  //EDDL_NET_H

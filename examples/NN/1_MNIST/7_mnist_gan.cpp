@@ -21,10 +21,16 @@ using namespace eddl;
 // A very basic GAN for mnist
 //////////////////////////////////
 
-layer myloss(layer out)
+layer real_loss(layer out)
 {
 
-  return Log(Sum(out,0.0001));
+  return Mult(Log(Sum(out,0.0001)),-1);
+}
+
+
+layer fake_loss(layer out)
+{
+  return Mult(Log(Sum(Diff(1,out),0.0001)),-1);
 }
 
 
@@ -50,8 +56,8 @@ int main(int argc, char **argv) {
           sgd(0.01, 0.0), // Optimizer
           {}, // Losses
           {}, // Metrics
-          CS_CPU()
-            //CS_GPU({1})
+          //CS_CPU()
+          CS_GPU({1})
     );
 
 
@@ -63,15 +69,15 @@ int main(int argc, char **argv) {
     l = LReLu(Dense(l, 512));
     l = LReLu(Dense(l, 256));
 
-    layer dout = Softmax(Dense(l, 2));
+    layer dout = Sigmoid(Dense(l, 1));
 
     model disc = Model({din},{dout});
     build(disc,
             sgd(0.001, 0.0), // Optimizer
           {"mse"}, // Losses
           {"mse"}, // Metrics
-          CS_CPU()
-          //CS_GPU({1})
+          //CS_CPU()
+          CS_GPU({1})
     );
 
     summary(gen);
@@ -91,13 +97,14 @@ int main(int argc, char **argv) {
     int batch_size = 100;
 
     tensor batch=eddlT::create({batch_size,784});
-    tensor real=eddlT::zeros({batch_size,2});
-    tensor fake=eddlT::zeros({batch_size,2});
-
+    tensor real=eddlT::ones({batch_size,1});
+    tensor fake=eddlT::zeros({batch_size,1});
+/*
     for(int i=0;i<batch_size;i++) {
       eddlT::set_(real,{i,1},1.0);
       eddlT::set_(fake,{i,0},1.0);
     }
+*/
 
 // STILL EXPERIMENTAL
 
@@ -116,8 +123,8 @@ int main(int argc, char **argv) {
 
 
         reset_grads(disc);
-        backward(disc,{real});
-        //backward(disc,myloss,dout);
+        //backward(disc,{real});
+        backward(disc,real_loss,dout);
         //backward(disc,myloss2,dout);
 
         update(disc);
@@ -129,11 +136,15 @@ int main(int argc, char **argv) {
 
 
         // Fake
+        cout<<"OK\n";
         forward(gen,batch_size);
+        cout<<"OK\n";
         forward(disc,{gout});
-
+        cout<<"OK\n";
         reset_grads(disc);
-        backward(disc,{fake});
+        cout<<"OK\n";
+        //backward(disc,{fake});
+        backward(disc,fake_loss,dout);
         update(disc);
 
         compute_loss(disc);
@@ -144,15 +155,31 @@ int main(int argc, char **argv) {
         forward(disc,{gout});
 
         reset_grads(disc);
-        backward(disc,{real});
+        backward(disc,real_loss,dout);
 
         reset_grads(gen);
-        //copyTensor(getGrad(din),getGrad(gout));
+        copyGrad(din,gout);
 
         backward(gen);
         update(gen);
 
+        // Generate some num_samples
+        forward(gen,batch_size);
 
+
+
+        tensor output=getTensor(gout);
+
+        tensor img=eddlT::select(output,0);
+
+        eddlT::reshape_(img,{1,1,28,28});
+        eddlT::save(img,"img.png","png");
+
+        tensor img1=eddlT::select(output,5);
+        eddlT::reshape_(img1,{1,1,28,28});
+        eddlT::save(img1,"img1.png","png");
+
+      
       }
 
       printf("\n");
@@ -166,30 +193,30 @@ int main(int argc, char **argv) {
 
       tensor gimg=eddlT::select(input,0);
       eddlT::reshape_(gimg,{1,1,32,32});
-      eddlT::save_png(gimg,"gimg.png");
+      eddlT::save(gimg,"gimg.png","png");
 
       tensor gimg2=eddlT::select(input,5);
       eddlT::reshape_(gimg2,{1,1,32,32});
-      eddlT::save_png(gimg2,"gimg2.png");
+      eddlT::save(gimg2,"gimg2.png","png");
 
       tensor output=getTensor(gout);
 
       tensor img=eddlT::select(output,0);
 
       eddlT::reshape_(img,{1,1,28,28});
-      eddlT::save_png(img,"img.png");
+      eddlT::save(img,"img.png","png");
 
       tensor img1=eddlT::select(output,5);
       eddlT::reshape_(img1,{1,1,28,28});
-      eddlT::save_png(img1,"img1.png");
+      eddlT::save(img1,"img1.png","png");
 
       tensor img2=eddlT::select(batch,0);
       eddlT::reshape_(img2,{1,1,28,28});
-      eddlT::save_png(img2,"img2.png");
+      eddlT::save(img2,"img2.png","png");
 
       tensor img3=eddlT::select(batch,5);
       eddlT::reshape_(img3,{1,1,28,28});
-      eddlT::save_png(img3,"img3.png");
+      eddlT::save(img3,"img3.png","png");
 
     }
 

@@ -589,18 +589,28 @@ namespace eddl {
       net->update();
     }
 
-    void copyTensor(Tensor *t1,Tensor *t2)
+    void copyTensor(Layer *l1,Layer *l2)
     {
-      Tensor::copy(t1,t2);
+      collectTensor(l1);
+      Tensor::copy(l1->output,l2->output);
+      distributeTensor(l2);
     }
 
+    void copyGrad(Layer *l1,Layer *l2)
+    {
+      collectTensor(l1,"grad");
+      Tensor::copy(l1->delta,l2->delta);
+      distributeTensor(l2,"grad");
+    }
+
+
     Tensor* getTensor(layer l1) {
-      l1->net->collectTensor(l1);
+      collectTensor(l1);
       return l1->output;
     }
 
     Tensor* getGrad(layer l1) {
-      l1->net->collectTensor(l1,"grad");
+      collectTensor(l1,"grad");
       return l1->delta;
     }
 
