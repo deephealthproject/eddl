@@ -51,7 +51,8 @@ public:
     vtensor mT;
 
     explicit SGD(float lr=0.01f, float momentum=0.0f, float weight_decay=0.0f, bool nesterov=false);
-
+    ~SGD();
+    
     Optimizer *clone() override;
 
     void setlayers(vlayer l) override;

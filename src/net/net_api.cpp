@@ -192,33 +192,8 @@ void Net::forward(vector<Tensor *> in)
         }
     }
   }
+
   run_snets(forward_t);
-
-  /*if (batch_size<comp)
-    comp=batch_size;
-
-  for (int i = 0; i < comp; i++) {
-      // Thread params
-      td[i].net = snets[i];
-      td[i].eval = 0;
-
-      // Call thread
-      rc = pthread_create(&thr[i], nullptr, forward_t, (void *) (&td[i]));
-      if (rc) {
-          fprintf(stderr, "Error:unable to create thread %d", rc);
-          exit(-1);
-      }
-  }
-
-  // Wait until all threads have finished
-  for (int i = 0; i < comp; i++) {
-      rc = pthread_join(thr[i], &status);
-      if (rc) {
-          cout << "Error:unable to join," << rc << endl;
-          exit(-1);
-      }
-  }
-*/
 }
 
 void Net::backward(vector<Tensor *> target)
@@ -260,32 +235,6 @@ void Net::backward(vector<Tensor *> target)
   }
 
   run_snets(backward_t);
-/*
-  if (batch_size<comp)
-    comp=batch_size;
-
-  for (int i = 0; i < comp; i++) {
-      // Thread params
-      td[i].net = snets[i];
-      td[i].eval = 0;
-
-      // Call thread
-      rc = pthread_create(&thr[i], nullptr, backward_t, (void *) (&td[i]));
-      if (rc) {
-          fprintf(stderr, "Error:unable to create thread %d", rc);
-          exit(-1);
-      }
-  }
-
-  // Wait until all threads have finished
-  for (int i = 0; i < comp; i++) {
-      rc = pthread_join(thr[i], &status);
-      if (rc) {
-          cout << "Error:unable to join," << rc << endl;
-          exit(-1);
-      }
-  }
-*/
 }
 
 void Net::backward(Layer* (*f)(Layer *),Layer *out)
@@ -342,73 +291,16 @@ void Net::backward(Layer* (*f)(Layer *),Layer *out)
 void Net::reset_grads()
 {
   run_snets(reset_t);
-  /*
-  int comp=snets.size();
-  if (batch_size<comp)
-    comp=batch_size;
-
-  for (int i = 0; i < comp; i++) {
-      // Thread params
-      td[i].net = snets[i];
-      td[i].eval = 0;
-
-      // Call thread
-      rc = pthread_create(&thr[i], nullptr, reset_t, (void *) (&td[i]));
-      if (rc) {
-          fprintf(stderr, "Error:unable to create thread %d", rc);
-          exit(-1);
-      }
-  }
-  // Wait until all threads have finished
-  for (int i = 0; i < comp; i++) {
-      rc = pthread_join(thr[i], &status);
-      if (rc) {
-          cout << "Error:unable to join," << rc << endl;
-          exit(-1);
-      }
-  }
-  */
 }
 
 void Net::compute_loss()
 {
   run_snets(calcloss_t);
 
-  /*
-  void *status;
-  int rc;
-  pthread_t thr[100];
-  struct tdata td[100];
-
-
   int comp=snets.size();
   if (batch_size<comp)
     comp=batch_size;
 
-  for (int i = 0; i < comp; i++) {
-      // Thread params
-      td[i].net = snets[i];
-      td[i].eval = 0;
-
-      // Call thread
-      rc = pthread_create(&thr[i], nullptr, calcloss_t, (void *) (&td[i]));
-      if (rc) {
-          fprintf(stderr, "Error:unable to create thread %d", rc);
-          exit(-1);
-      }
-  }
-  // Wait until all threads have finished
-  for (int i = 0; i < comp; i++) {
-      rc = pthread_join(thr[i], &status);
-      if (rc) {
-          cout << "Error:unable to join," << rc << endl;
-          exit(-1);
-      }
-  }
-  */
-  int comp=snets.size();
-  if (batch_size<comp)
-    comp=batch_size;
   if (snets[0]->dev != DEV_CPU)
     for (int i = 0; i < comp; i++) {
         for (int j = 0; j < 2 * lout.size(); j++) {
@@ -423,38 +315,6 @@ void Net::compute_loss()
 void Net::update()
 {
   run_snets(update_t);
-
-  /*
-  void *status;
-  int rc;
-  pthread_t thr[100];
-  struct tdata td[100];
-
-
-  int comp=snets.size();
-  if (batch_size<comp)
-    comp=batch_size;
-  for (int i = 0; i < comp; i++) {
-      // Thread params
-      td[i].net = snets[i];
-      td[i].eval = 0;
-
-      // Call thread
-      rc = pthread_create(&thr[i], nullptr, update_t, (void *) (&td[i]));
-      if (rc) {
-          fprintf(stderr, "Error:unable to create thread %d", rc);
-          exit(-1);
-      }
-  }
-  // Wait until all threads have finished
-  for (int i = 0; i < comp; i++) {
-      rc = pthread_join(thr[i], &status);
-      if (rc) {
-          cout << "Error:unable to join," << rc << endl;
-          exit(-1);
-      }
-  }
-  */
 }
 
 
@@ -577,28 +437,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
       }
 
     run_snets(train_batch_t);
-/*
-        // Thread params
-        td[i].net = snets[i];
-        td[i].eval = eval;
 
-        // Call thread
-        rc = pthread_create(&thr[i], nullptr, train_batch_t, (void *) (&td[i]));
-        if (rc) {
-            fprintf(stderr, "Error:unable to create thread %d", rc);
-            exit(-1);
-        }
-    }
-
-    // Wait until all threads have finished
-    for (int i = 0; i < comp; i++) {
-        rc = pthread_join(thr[i], &status);
-        if (rc) {
-            cout << "Error:unable to join," << rc << endl;
-            exit(-1);
-        }
-    }
-*/
     // If training (eval==0), apply gradients
     if (!eval) {
         if (snets[0]->dev == DEV_CPU) {
@@ -610,21 +449,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
         }
     }
 
-    // Sum all errors
-    if (snets[0]->dev != DEV_CPU)
-      for (int i = 0; i < comp; i++) {
-          for (int j = 0; j < 2 * lout.size(); j++) {
-              fiterr[j] += snets[i]->fiterr[j];
-          }
-      }
-
-    int p=0;
-    for (int k = 0; k < lout.size(); k++, p += 2) {
-          total_loss[k] += fiterr[p];  // loss
-          total_metric[k] += fiterr[p + 1];  // metric
-          fiterr[p] = fiterr[p + 1] = 0.0;
-    }
-    inferenced_samples+=batch_size;
+   compute_loss();
 
 }
 

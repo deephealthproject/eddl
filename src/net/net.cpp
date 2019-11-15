@@ -104,6 +104,12 @@ Net::~Net()
       delete snets[i]->layers[j];
     }
 
+  for (int i = 0; i < lout.size(); i++) {
+    delete losses[i];
+    delete metrics[i];
+  }
+  delete optimizer;
+
 }
 
 /////////////////////////////////////////

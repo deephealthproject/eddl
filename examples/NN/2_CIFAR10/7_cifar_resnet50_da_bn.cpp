@@ -104,6 +104,7 @@ int main(int argc, char **argv){
   // get some info from the network
   summary(net);
 
+
   // Load and preprocess training data
   tensor x_train = eddlT::load("cifar_trX.bin");
   tensor y_train = eddlT::load("cifar_trY.bin");
