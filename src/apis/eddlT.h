@@ -57,14 +57,9 @@ namespace eddlT{
   void info(Tensor *A);
   tshape getShape(Tensor *A);
 
-  // Load from file ***********************************
-  Tensor *load(string fname);
-
-  void save_png(Tensor* A,string fname);
-  Tensor * load_png(string fname);
-
-  void save_png(Tensor* A,string fname);
-  Tensor * load_png(string fname);
+  // Serialization ***********************************
+  Tensor* load(string fname, string format="bin");
+  void save(Tensor* A, string fname, string format="bin");
 
   // Math ops       ***********************************
 

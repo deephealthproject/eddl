@@ -26,96 +26,154 @@ using namespace std;
 
 // ********* LOAD FUNCTIONS *********
 Tensor* Tensor::load(const string& filename, const string& format) {
-    // Choose format
-    if(format=="bin") { return Tensor::load_from_bin(filename); }
-    else if(format=="onnx"){ return Tensor::load_from_onnx(); }
-    else{ return Tensor::load_from_img(filename, format); }
+
+    if(format=="png" || format=="jpg") { // Images
+        return Tensor::load_from_img(filename, format);
+    }else if(format=="bin" || format=="onnx"){
+        // Open file stream
+        std::ifstream ifs(filename, std::ios::in | std::ios::binary);
+
+        // Save
+        Tensor* t = Tensor::loadfs(ifs, format);
+
+        // Close file stream
+        ifs.close();
+
+        return t;
+    }else{
+        msg("Not implemented", "Tensor::save");
+    }
 }
 
-Tensor* Tensor::load_from_bin(const string& filename){
+Tensor* Tensor::loadfs(std::ifstream &ifs, const string& format) {
+
+    // Choose format
+    if(format=="bin") {
+        return Tensor::load_from_bin(ifs);
+    } else if(format=="onnx"){
+        return Tensor::load_from_onnx(ifs);
+    }else{
+        msg("Not implemented", "Tensor::load");
+    }
+
+}
+
+Tensor* Tensor::load_from_bin(std::ifstream &ifs){
     int r_ndim;
 
-    // Open file stream
-    std::ifstream ifp(filename, std::ios::in | std::ios::binary);
-
     // Load number of dimensions
-    ifp.read(reinterpret_cast<char *>(&r_ndim),  sizeof(int));
+    ifs.read(reinterpret_cast<char *>(&r_ndim),  sizeof(int));
 
     // Load dimensions
     vector<int> r_shape(r_ndim);
-    ifp.read(reinterpret_cast<char *>(r_shape.data()), r_ndim * sizeof(int));
+    ifs.read(reinterpret_cast<char *>(r_shape.data()), r_ndim * sizeof(int));
 
     // Compute total size
     int r_size = 1;
     for(int i=0; i<r_ndim; i++){ r_size *= r_shape[i]; }
 
     // Load content (row-major)
-    float *r_ptr = new float[r_size];
-    ifp.read(reinterpret_cast<char*>(r_ptr), r_size * sizeof(float));
-
-    // Close file stream
-    ifp.close();
+    auto *r_ptr = new float[r_size];
+    ifs.read(reinterpret_cast<char*>(r_ptr), r_size * sizeof(float));
 
     // Return new tensor
     return new Tensor(r_shape, r_ptr, DEV_CPU);
 }
 
-Tensor* Tensor::load_from_onnx(){
+Tensor* Tensor::load_from_onnx(std::ifstream &ifs){
     msg("Not implemented", "Tensor::load_from_onnx");
 
     // Return new tensor
     return new Tensor();
 };
 
-Tensor* Tensor::load_from_img(const string& filename, const string& format){
-    msg("Not implemented", "Tensor::load_from_img");
+Tensor* Tensor::load_from_img(const string &filename, const string& format){
+    int t_width, t_height, t_channels, t_size;
+    unsigned char *pixels = stbi_load(filename.c_str(), &t_width, &t_height, &t_channels, STBI_rgb);
 
-    // Return new tensor
-    return new Tensor();
+    // Cast pointer
+    t_size = t_width * t_height * t_channels;
+    auto* t_data = new float[t_size];
+    for(int i=0; i<t_size; i++){ t_data[i]= (float)pixels[i]; }
+
+    // Free image
+    stbi_image_free(pixels);
+
+    // Create tensor //
+    auto t = new Tensor({1, t_width, t_height, t_channels}, t_data, DEV_CPU);
+
+    // Re-order axis
+//    cout << "OLD => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << "), (" << t->ptr[3]  << ", " <<  t->ptr[4]  << ", " <<  t->ptr[5]  << ")" << endl;
+    t = t->permute({0, 3, 2, 1}); // Data must be presented as CxHxW
+//    cout << "NEW => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << "), (" << t->ptr[3]  << ", " <<  t->ptr[4]  << ", " <<  t->ptr[5]  << ")" << endl;
+    return t;
 }
 
 
 // ********* SAVE FUNCTIONS *********
 void Tensor::save(const string& filename, const string& format) {
+
+    if(format=="png") { // Images
+        save2img(filename, format);
+    }else if(format=="bin" || format=="onnx"){
+        // Open file stream
+        std::ofstream ofs(filename, std::ios::out | std::ios::binary);
+
+        // Save
+        Tensor::savefs(ofs, format);
+
+        // Close file stream
+        ofs.close();
+    }else{
+        msg("Not implemented", "Tensor::save");
+    }
+}
+
+void Tensor::savefs(std::ofstream &ofs, const string& format) {
     if (!isCPU()){
         msg("Only save CPU Tensors", "Tensor::save");
     }
 
     // Choose format
-    if(format=="bin") { save2bin(filename); }
-    else if(format=="onnx"){ save2onnx(); }
-    else{ save2img(filename, format); }
+    if(format=="bin") {
+        save2bin(ofs);
+    } else if(format=="onnx"){
+        save2onnx(ofs);
+    }else{
+        msg("Not implemented", "Tensor::save");
+    }
+
 }
 
-void Tensor::save2bin(const string& filename){
-    // Open file stream
-    std::fstream ofp(filename, std::ios::out | std::ios::binary);
+
+void Tensor::save2bin(std::ofstream &ofs){
 
     // Save number of dimensions
-    ofp.write(reinterpret_cast<const char *>(&this->ndim), sizeof(int));
+    ofs.write(reinterpret_cast<const char *>(&this->ndim), sizeof(int));
 
     // Save dimensions
-    ofp.write(reinterpret_cast<const char *>(this->shape.data()), this->shape.size() * sizeof(int));
+    ofs.write(reinterpret_cast<const char *>(this->shape.data()), this->shape.size() * sizeof(int));
 
     // Save content (row-major)
-    ofp.write(reinterpret_cast<const char *>(this->ptr), this->size * sizeof(float));
-
-    // Close file stream
-    ofp.close();
+    ofs.write(reinterpret_cast<const char *>(this->ptr), this->size * sizeof(float));
 }
 
-void Tensor::save2onnx(){
+void Tensor::save2onnx(std::ofstream &ofs){
     msg("Not implemented", "Tensor::save2onnx");
 };
 
 
 void Tensor::save2img(const string& filename, const string& format){
     if (this->ndim!=4) {
-        msg("Tensors should be 4D: 1xCxHxW","save_png");
+        msg("Tensors should be 4D: 1xCxHxW","Tensor::save2img");
     }
 
     // Re-order axis
-    Tensor *t = this->permute({0, 2, 3, 1}); // Data must be presented as WxHxC => [(ARGB), (ARGB), (ARGB),...]
+    Tensor *t = this;
+//    cout << "OLD => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << "), (" << t->ptr[3]  << ", " <<  t->ptr[4]  << ", " <<  t->ptr[5]  << ")" << endl;
+    t = t->permute({0, 3, 2, 1}); // Data must be presented as: [(ARGB), (ARGB), (ARGB),...] // (1, C, H, W) => (1, W, H, C)
+    t->ToCPU();  // Just in case
+//    cout << "NEW => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << "), (" << t->ptr[3]  << ", " <<  t->ptr[4]  << ", " <<  t->ptr[5]  << ")" << endl;
 
     // Normalize image (for RGB must fall between 0 and 255)
     t->normalize_(0.0f, 255.0f);

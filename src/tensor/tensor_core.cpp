@@ -65,6 +65,7 @@ void Tensor::reshape_(vector<int> shape){
 }
 
 Tensor* Tensor::permute(vector<int> axis){
+    // TODO: Too inefficient
     // Compute new shape
     vector<int> new_shape;
     for(int i=0; i<this->ndim; i++){

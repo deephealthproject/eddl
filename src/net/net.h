@@ -80,8 +80,8 @@ public:
 
     void initialize();
     void reset();
-    void save(FILE *fe);
-    void load(FILE *fe);
+    void save(const string&  filename, const string&  format="bin");
+    void load(const string&  filename, const string&  format="bin");
     void setlogfile(string fname);
 
 
