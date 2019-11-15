@@ -61,9 +61,9 @@ void Net::do_backward() {
 }
 
 void Net::do_delta() {
-    for (int i = 0; i < lout.size(); i++)
+    for (int i = 0; i < lout.size(); i++) {
         losses[i]->delta(lout[i]->target, lout[i]->output, lout[i]->delta);
-
+      }
 }
 
 void Net::do_calcloss() {

@@ -50,11 +50,12 @@ string LInput::plot(int c) {
 
 
 void LInput::forward() {
-    
+
 }
 
 
 void LInput::backward() {
+
 }
 
 Layer *LInput::share(int c, int bs, vector<Layer *> p) {

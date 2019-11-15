@@ -120,6 +120,7 @@ public:
     void backward(vector<Tensor *> target);
     void backward(Layer* (*f)(Layer *),Layer *out);
     void backward();
+    void delta();
     void reset_grads();
     void update();
     void compute_loss();

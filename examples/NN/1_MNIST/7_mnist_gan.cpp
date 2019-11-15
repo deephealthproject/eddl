@@ -23,13 +23,14 @@ using namespace eddl;
 
 layer real_loss(layer out)
 {
-
+  // -log( D_out + epsilon )
   return Mult(Log(Sum(out,0.0001)),-1);
 }
 
 
 layer fake_loss(layer out)
 {
+  //-log( 1 - D_out + epsilon )
   return Mult(Log(Sum(Diff(1,out),0.0001)),-1);
 }
 
@@ -53,7 +54,7 @@ int main(int argc, char **argv) {
     model gen = Model({gin},{});
 
     build(gen,
-          sgd(0.01, 0.0), // Optimizer
+          sgd(0.001, 0.0), // Optimizer
           {}, // Losses
           {}, // Metrics
           //CS_CPU()
@@ -92,19 +93,11 @@ int main(int argc, char **argv) {
 
     // Training
     int i,j;
-    int num_batches=1000;
+    int num_batches=100;
     int epochs=1000;
     int batch_size = 100;
 
     tensor batch=eddlT::create({batch_size,784});
-    tensor real=eddlT::ones({batch_size,1});
-    tensor fake=eddlT::zeros({batch_size,1});
-/*
-    for(int i=0;i<batch_size;i++) {
-      eddlT::set_(real,{i,1},1.0);
-      eddlT::set_(fake,{i,0},1.0);
-    }
-*/
 
 // STILL EXPERIMENTAL
 
@@ -119,16 +112,9 @@ int main(int argc, char **argv) {
 
         // Real
         forward(disc,{batch});
-
-
-
         reset_grads(disc);
-        //backward(disc,{real});
         backward(disc,real_loss,dout);
-        //backward(disc,myloss2,dout);
-
         update(disc);
-
 
         compute_loss(disc);
         print_loss(disc,j);
@@ -136,20 +122,17 @@ int main(int argc, char **argv) {
 
 
         // Fake
-        cout<<"OK\n";
         forward(gen,batch_size);
-        cout<<"OK\n";
         forward(disc,{gout});
-        cout<<"OK\n";
+
         reset_grads(disc);
-        cout<<"OK\n";
-        //backward(disc,{fake});
         backward(disc,fake_loss,dout);
         update(disc);
 
         compute_loss(disc);
         print_loss(disc,j);
         printf("\r");
+
 
         // Update Gen
         forward(disc,{gout});
@@ -162,24 +145,11 @@ int main(int argc, char **argv) {
 
         backward(gen);
         update(gen);
-
-        // Generate some num_samples
-        forward(gen,batch_size);
-
+        
+        cout<<"\n====\n";
 
 
-        tensor output=getTensor(gout);
-
-        tensor img=eddlT::select(output,0);
-
-        eddlT::reshape_(img,{1,1,28,28});
-        eddlT::save(img,"img.png","png");
-
-        tensor img1=eddlT::select(output,5);
-        eddlT::reshape_(img1,{1,1,28,28});
-        eddlT::save(img1,"img1.png","png");
-
-      
+       //getchar();
       }
 
       printf("\n");
