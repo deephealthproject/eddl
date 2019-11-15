@@ -63,7 +63,6 @@ void Net::calcloss() {
         // metric value
         fiterr[p + 1] = metrics[i]->value(lout[i]->target, lout[i]->output);
     }
-    inferenced_samples++;
 }
 
 void Net::applygrads() {
@@ -111,7 +110,7 @@ void Net::print_loss(int b)
     fprintf(flog_tr, "\n");
     fflush(flog_tr);
   }
-  
+
   if ((flog_ts!=nullptr)&&(!trmode)) {
     fprintf(flog_ts, "\n");
     fflush(flog_ts);
