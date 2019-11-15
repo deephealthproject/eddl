@@ -68,7 +68,6 @@ int main(int argc, char **argv){
 //    l = Cutout(l, {0, 0}, {5, 5}); // In pixels
 //
 
-
     // Data augmentation
     l = ShiftRandom(l, {-0.1f, +0.1f}, {-0.1f, +0.1f});
     l = ScaleRandom(l, {0.8f, 1.2f});
@@ -116,26 +115,26 @@ int main(int argc, char **argv){
     tensor y_train = Tensor::load("cifar_trY.bin");
     eddlT::div_(x_train, 255.0);
 
-
-    for(int i =0; i<10; i++){
-        Tensor* img=eddlT::select(x_train, i);
-        Tensor* img2=eddlT::select(x_train, i);
-//        tensor img2= new Tensor({1,3,32,20});
-
-        // Data augmentation
-        Tensor::shift_random(img, img2, {-0.1f, +0.1f}, {-0.1f, +0.1f}, "constant", 0.0f);
-        Tensor::scale_random(img, img2, {1.0f, 2.0f});
-        Tensor::flip_random(img, img2, 1);
-        Tensor::crop_random(img, img2);  //In pixels  // TODO: Needs a fix!
-        Tensor::crop_scale_random(img, img2, {0.8f, 1.0f});  // Crop and rescale  // TODO: check!
-        Tensor::cutout_random(img, img2, {0.1f, 0.3f}, {0.1, 0.3f});
-
-
-        img2->save("images/cifar_" + to_string(i) + ".png", "png");
-        cout << "Image #" << i << " saved!" << endl;
-
-    }
 //
+//    for(int i =0; i<10; i++){
+//        Tensor* img=eddlT::select(x_train, i);
+//        Tensor* img2=eddlT::select(x_train, i);
+////        tensor img2= new Tensor({1,3,32,20});
+//
+//        // Data augmentation
+//        Tensor::shift_random(img, img2, {-0.1f, +0.1f}, {-0.1f, +0.1f}, "constant", 0.0f);
+//        Tensor::scale_random(img, img2, {1.0f, 2.0f});
+//        Tensor::flip_random(img, img2, 1);
+//        Tensor::crop_random(img, img2);  //In pixels  // TODO: Needs a fix!
+//        Tensor::crop_scale_random(img, img2, {0.8f, 1.0f});  // Crop and rescale  // TODO: check!
+//        Tensor::cutout_random(img, img2, {0.1f, 0.3f}, {0.1, 0.3f});
+//
+//
+//        img2->save("images/cifar_" + to_string(i) + ".png", "png");
+//        cout << "Image #" << i << " saved!" << endl;
+//
+//    }
+////
 //    tensor img=eddlT::select(x_train,0);
 //
 //    img->save("test_tensor.bin", "bin");

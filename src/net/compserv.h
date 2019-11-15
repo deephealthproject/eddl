@@ -32,7 +32,7 @@ public:
     CompServ(int threads, const vector<int> &g, const vector<int> &f,int lsb=1);
 
     // for Distributed
-    explicit CompServ(FILE *csspec);
+    explicit CompServ(string filename);
 
 
 };

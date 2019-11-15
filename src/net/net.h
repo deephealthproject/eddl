@@ -77,8 +77,7 @@ public:
 
     Net(vlayer in, vlayer out);
     ~Net();
-
-    void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs); //
+    
     void fts();
     void bts();
     void split(int c, int todev);

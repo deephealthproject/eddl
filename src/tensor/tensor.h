@@ -56,17 +56,18 @@ void msg(string s, string s2);
 
 
 class Tensor {
+private:
+    // Load methods
+    static Tensor* load_from_bin(std::ifstream &ifs);
+    static Tensor* load_from_onnx(std::ifstream &ifs);
+    static Tensor* load_from_img(const string &filename, const string& format);
+
+    // Save methods
+    void save2bin(std::ofstream &ofs);
+    void save2onnx(std::ofstream &ofs);
+    void save2img(const string &filename, const string& format);
 
 public:
-    static Tensor* load_from_bin(const string& filename);
-    static Tensor* load_from_onnx();
-    static Tensor* load_from_img(const string& filename, const string& format);
-
-    void save2bin(const string& filename);
-    void save2onnx();
-    void save2img(const string& filename, const string& format);
-
-
     int device;
     int ndim;
     int size;
@@ -115,7 +116,9 @@ public:
     static int get_mode(string mode);
 
     // Serialization
+    static Tensor* loadfs(std::ifstream &ifs, const string& format="bin");
     static Tensor* load(const string& filename, const string& format="bin");
+    void savefs(std::ofstream &ofs, const string& format="bin");
     void save(const string& filename, const string& format="bin");
 
     // ***** Core (in-place) *****************************

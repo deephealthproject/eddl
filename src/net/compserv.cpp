@@ -33,6 +33,6 @@ CompServ::CompServ(int t, const vector<int> &g, const vector<int> &f,int lsb) {
 }
 
 // for Distributed
-CompServ::CompServ(FILE *csspec) {
+CompServ::CompServ(string filename) {
      //TODO: Implement
 }

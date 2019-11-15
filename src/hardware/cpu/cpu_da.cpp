@@ -137,7 +137,7 @@ void cpu_single_crop_scale(int b, Tensor* A, Tensor* B, vector<int> coords_from,
 void cpu_shift(Tensor *A, Tensor *B, vector<int> shift, int mode, float constant) {
     // https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.shift.html
 
-#pragma omp parallel for
+    #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
         cpu_single_shift(b, A, B, shift, mode, constant);
     }
@@ -302,7 +302,7 @@ void cpu_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<floa
     // Performs a crop with padding (Keeps the original size)
     int offsets[2] = {0, 0};
 
-#pragma omp parallel for
+    #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
 
         // Compute random coordinates

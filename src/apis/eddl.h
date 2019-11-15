@@ -228,7 +228,7 @@ namespace eddl {
     compserv CS_CPU(int th=-1);
     compserv CS_GPU(const vector<int> &g,int lsb=1);
     compserv CS_FGPA(const vector<int> &f,int lsb=1);
-    compserv CS_COMPSS(char* path);
+    compserv CS_COMPSS(string filename);
 
 
 // ---- FINE-GRAINED METHODS ----
@@ -276,9 +276,9 @@ namespace eddl {
 
     void summary(model m);
 
-    void load(model m, string fname);
+    void load(model m, const string& fname);
 
-    void save(model m, string fname);
+    void save(model m, const string& fname);
 
     void plot(model m, string fname, string mode="LR");
 

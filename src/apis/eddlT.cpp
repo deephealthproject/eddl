@@ -141,23 +141,14 @@ namespace eddlT {
     return A->getShape();
   }
 
-  // Load from file ***********************************
-  Tensor *load(string fname){
-    return Tensor::load_from_bin(fname);
-  }
+    // Serialization       ***********************************
+    Tensor* load(string fname, string format){
+        return Tensor::load(fname, format);
+    }
 
-  Tensor * load_png(string fname)
-  {
-    return Tensor::load_from_img(fname,"png");
-  }
-
-
-  void save_png(Tensor* A,string fname)
-  {
-    A->save2img(fname, "png");
-
-  }
-
+    void save(Tensor* A, string fname, string format){
+        return A->save(fname, format);
+    }
 
   // Math ops       ***********************************
   void abs_(Tensor *A) {

@@ -487,9 +487,8 @@ namespace eddl {
         return new CompServ(0, {}, f,lsb);
     }
 
-    compserv CS_COMPSS(char* path) {
-        FILE* csspec = fopen(path , "r");
-        return new CompServ(csspec);
+    compserv CS_COMPSS(string filename) {
+        return new CompServ(filename);
     }
 
 
@@ -642,31 +641,12 @@ namespace eddl {
         cout<<m->summary()<<"\n";
     }
 
-    void load(model m, string fname) {
-        FILE *fe = fopen(fname.c_str(), "rb");
-        if (fe == nullptr) {
-            fprintf(stderr, "Not able to read from %s \n", fname.c_str());
-            exit(1);
-        }
-
-        fprintf(stderr, "reading bin file\n");
-        m->load(fe);
-        fclose(fe);
+    void load(model m, const string&  fname) {
+        m->load(fname);
     }
 
-    void save(model m, string fname) {
-        FILE *fe = fopen(fname.c_str(), "wb");
-        if (fe == nullptr) {
-            fprintf(stderr, "Not able to write to %s \n", fname.c_str());
-            exit(1);
-        }
-
-        fprintf(stderr, "writting bin file\n");
-
-        m->save(fe);
-
-        fclose(fe);
-
+    void save(model m, const string&  fname) {
+        m->save(fname);
     }
 
     void plot(model m, string fname,string mode) {
