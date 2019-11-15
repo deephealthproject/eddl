@@ -36,7 +36,7 @@ void Net::do_initialize() {
 }
 
 /////////////////////////////////////////
-void Net::do_reset() {
+void Net::do_reset_grads() {
     for (int i = 0; i != layers.size(); i++)
         layers[i]->reset();
 }
@@ -66,7 +66,7 @@ void Net::do_delta() {
       }
 }
 
-void Net::do_calcloss() {
+void Net::do_compute_loss() {
     int p = 0;
     for (int i = 0; i < lout.size(); i++, p += 2) {
         // loss value

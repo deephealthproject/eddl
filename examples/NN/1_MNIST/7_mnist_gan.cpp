@@ -21,17 +21,16 @@ using namespace eddl;
 // A very basic GAN for mnist
 //////////////////////////////////
 
-layer real_loss(layer out)
+layer vreal_loss(vector<layer> in)
 {
   // -log( D_out + epsilon )
-  return Mult(Log(Sum(out,0.0001)),-1);
+  return Mult(Log(Sum(in[0],0.0001)),-1);
 }
 
-
-layer fake_loss(layer out)
+layer vfake_loss(vector<layer> in)
 {
-  //-log( 1 - D_out + epsilon )
-  return Mult(Log(Sum(Diff(1,out),0.0001)),-1);
+  // -log( 1 - D_out + epsilon )
+  return Mult(Log(Sum(Diff(1,in[0]),0.0001)),-1);
 }
 
 
@@ -42,23 +41,23 @@ int main(int argc, char **argv) {
 
 
     // Define Generator
-    layer gin=GaussGenerator(0.0, 1, {1024});
+    layer gin=GaussGenerator(0.0, 1, {100});
     layer l=gin;
 
-    l=LReLu(Dense(l,256));
-    l=LReLu(Dense(l,512));
-    l=LReLu(Dense(l,1024));
+    l=ReLu(Dense(l,256));
+    l=ReLu(Dense(l,512));
+    l=ReLu(Dense(l,1024));
 
     layer gout=Tanh(Dense(l,784));
 
     model gen = Model({gin},{});
 
     build(gen,
-          sgd(0.001, 0.0), // Optimizer
+          sgd(0.0001, 0.9), // Optimizer
           {}, // Losses
           {}, // Metrics
-          //CS_CPU()
-          CS_GPU({1})
+          CS_CPU()
+          //CS_GPU({1})
     );
 
 
@@ -66,19 +65,19 @@ int main(int argc, char **argv) {
     // Define Discriminator
     layer din=Input({784});
     l = din;
-    l = LReLu(Dense(l, 1024));
-    l = LReLu(Dense(l, 512));
-    l = LReLu(Dense(l, 256));
+    l = Dropout(ReLu(Dense(l, 1024)),0.3);
+    l = Dropout(ReLu(Dense(l, 512)),0.3);
+    l = Dropout(ReLu(Dense(l, 1024)),0.3);
 
     layer dout = Sigmoid(Dense(l, 1));
 
     model disc = Model({din},{});
     build(disc,
-            sgd(0.001, 0.0), // Optimizer
+            sgd(0.0001, 0.9), // Optimizer
           {}, // Losses
           {}, // Metrics
-          //CS_CPU()
-          CS_GPU({1})
+          CS_CPU()
+          //CS_GPU({1})
     );
 
     summary(gen);
@@ -95,11 +94,15 @@ int main(int argc, char **argv) {
     int i,j;
     int num_batches=100;
     int epochs=1000;
-    int batch_size = 100;
+    int batch_size = 10;
 
     tensor batch=eddlT::create({batch_size,784});
 
 // STILL EXPERIMENTAL
+
+
+    loss rl=newloss(vreal_loss,{dout},"real_loss");
+    loss fl=newloss(vfake_loss,{dout},"fake_loss");
 
     for(i=0;i<epochs;i++) {
 
@@ -112,41 +115,28 @@ int main(int argc, char **argv) {
 
         // Real
         forward(disc,{batch});
-        reset_grads(disc);
-        backward(disc,real_loss,dout);
+        compute_loss(rl);
+        backward(disc);
         update(disc);
-
-        compute_loss(disc);
-        print_loss(disc,j);
-        printf("\r");
-
 
         // Fake
         forward(gen,batch_size);
         forward(disc,{gout});
-
-        reset_grads(disc);
-        backward(disc,fake_loss,dout);
+        compute_loss(fl);
+        backward(disc);
         update(disc);
-
-        compute_loss(disc);
-        print_loss(disc,j);
-        printf("\r");
 
 
         // Update Gen
+        forward(gen,batch_size);
         forward(disc,{gout});
-
-        reset_grads(disc);
-        backward(disc,real_loss,dout);
-
-        reset_grads(gen);
+        compute_loss(rl);
+        backward(disc);
         copyGrad(din,gout);
-
         backward(gen);
         update(gen);
 
-        cout<<"\n====\n";
+        printf("\r");
 
 
        //getchar();
@@ -156,19 +146,6 @@ int main(int argc, char **argv) {
 
       // Generate some num_samples
       forward(gen,batch_size);
-
-
-
-      tensor input=getTensor(gin);
-
-      tensor gimg=eddlT::select(input,0);
-      eddlT::reshape_(gimg,{1,1,32,32});
-      eddlT::save(gimg,"gimg.png","png");
-
-      tensor gimg2=eddlT::select(input,5);
-      eddlT::reshape_(gimg2,{1,1,32,32});
-      eddlT::save(gimg2,"gimg2.png","png");
-
       tensor output=getTensor(gout);
 
       tensor img=eddlT::select(output,0);
@@ -180,13 +157,6 @@ int main(int argc, char **argv) {
       eddlT::reshape_(img1,{1,1,28,28});
       eddlT::save(img1,"img1.png","png");
 
-      tensor img2=eddlT::select(batch,0);
-      eddlT::reshape_(img2,{1,1,28,28});
-      eddlT::save(img2,"img2.png","png");
-
-      tensor img3=eddlT::select(batch,5);
-      eddlT::reshape_(img3,{1,1,28,28});
-      eddlT::save(img3,"img3.png","png");
 
     }
 

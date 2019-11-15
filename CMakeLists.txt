@@ -332,6 +332,8 @@ SET(CPP_SOURCES
         src/tensor/nn/tensor_core_nn.cpp
         src/net/compserv.cpp
         src/net/compserv.h
+        src/net/netloss.cpp
+        src/net/netloss.h
         src/net/net.cpp
         src/net/net_build.cpp
         src/net/net_api.cpp

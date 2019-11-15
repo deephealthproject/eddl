@@ -16,6 +16,7 @@
 #include <pthread.h>
 
 #include "../net/net.h"
+#include "../net/netloss.h"
 #include "../initializers/initializer.h"
 #include "../regularizers/regularizer.h"
 #include "../losses/loss.h"
@@ -42,9 +43,8 @@ namespace eddl {
 #define optimizer Optimizer*
 #define initializer Initializer*
 #define regularizer Regularizer*
-#define loss Loss*
-#define metric Metric*
 #define compserv CompServ*
+#define loss NetLoss *
 
 // ---- CORE LAYERS ----
     layer Activation(layer parent, string activation, float param=0.01, string name = "");
@@ -94,10 +94,13 @@ namespace eddl {
 // ---- LOSSES ----
     Loss* getLoss(string type);
 
+    loss newloss(Layer* (*f)(vector<Layer *>),vector<Layer *> in,string name);
+
+
 
 
 // ---- METRICS ----
-    metric getMetric(string type);
+    Metric* getMetric(string type);
 
 
 // ---- MERGE LAYERS ----
@@ -251,19 +254,19 @@ namespace eddl {
     void print_loss(model m, int batch);
 
     void reset_loss(model m);
-    void reset_grads(model m);
+    void reset_grad(model m);
 
 
     void backward(model m,vector<Tensor *> target);
-    void backward(model net,Layer* (*f)(Layer *),Layer *out);
     void backward(model net);
 
+    void compute_loss(loss L);
+
     void update(model m);
-    void compute_loss(model m);
 
     void copyTensor(Layer *l1,Layer *l2);
     void copyGrad(Layer *l1,Layer *l2);
-    
+
     Tensor* getTensor(layer l);
     Tensor* getGrad(layer l);
     //Tensor* getInput(layer l);

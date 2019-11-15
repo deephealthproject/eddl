@@ -40,9 +40,9 @@ void *train_batch_t(void *t) {
     auto *targs = (tdata *) t;
 
     Net *net = targs->net;
-    net->do_reset();
+    net->do_reset_grads();
     net->do_forward();
-    net->do_calcloss();
+    net->do_compute_loss();
 
     if (!targs->eval) {
         net->do_delta();
@@ -50,9 +50,9 @@ void *train_batch_t(void *t) {
         if (net->dev > DEV_CPU)
             net->do_applygrads();
     }
-
     return nullptr;
 }
+
 /////////////////////////////////////////
 void *forward_t(void *t) {
     auto *targs = (tdata *) t;
@@ -65,12 +65,12 @@ void *forward_t(void *t) {
 }
 
 /////////////////////////////////////////
-void *reset_t(void *t) {
+void *reset_grads_t(void *t) {
     auto *targs = (tdata *) t;
 
     Net *net = targs->net;
 
-    net->do_reset();
+    net->do_reset_grads();
 
     return nullptr;
 }
@@ -92,18 +92,19 @@ void *backward_t(void *t) {
 
     Net *net = targs->net;
 
+    net->do_delta();
     net->do_backward();
 
     return nullptr;
 }
 
-void *calcloss_t(void *t)
+void *compute_loss_t(void *t)
 {
   auto *targs = (tdata *) t;
 
   Net *net = targs->net;
 
-  net->do_calcloss();
+  net->do_compute_loss();
 
   return nullptr;
 }
@@ -348,51 +349,12 @@ void Net::backward(vector<Tensor *> target)
         }
     }
   }
-  run_snets(delta_t);
+
   run_snets(backward_t);
-}
-
-void Net::backward(Layer* (*f)(Layer *),Layer *out)
-{
-
-  Layer *input=new LInput(new Tensor(out->output->getShape()),"lossnet_input",DEV_CPU);
-  Layer *fout=(*f)(input);
-
-  Net *lossnet=new Net({input},{fout});
-
-  lossnet->build(optimizer->clone(),{new LMin()},{new MSum()},cs);
-
-  lossnet->reset_loss();
-  lossnet->forward({out});
-
-  lossnet->reset_grads();
-  lossnet->delta();
-  lossnet->backward();
-  lossnet->compute_loss();
-
-  cout<<"\n";
-  lossnet->print_loss(1);
-  cout<<"\n";
-
-
-  collectTensor(input,"grad");
-  Tensor::copy(input->delta,out->delta);
-  distributeTensor(out,"grad");
-
-
-  //Tensor::copy(input->delta,sout->delta);
-  out->net->backward();
-
-  delete lossnet;
-
-  // copy delta to out and call backward of orig net...
+  compute_loss();
 
 }
 
-void Net::delta()
-{
-  run_snets(delta_t);
-}
 
 void Net::backward()
 {
@@ -449,12 +411,13 @@ void Net::print_loss(int b)
 
 void Net::reset_grads()
 {
-  run_snets(reset_t);
+  do_reset_grads();
+  run_snets(reset_grads_t);
 }
 
 void Net::compute_loss()
 {
-  run_snets(calcloss_t);
+  run_snets(compute_loss_t);
 
   int comp=snets.size();
   if (batch_size<comp)
@@ -472,6 +435,11 @@ void Net::compute_loss()
 
 
 void Net::update()
+{
+  run_snets(update_t);
+}
+
+void Net::delta()
 {
   run_snets(update_t);
 }
@@ -715,7 +683,7 @@ void Net::predict(vtensor tin, vtensor tout) {
     for (int j = 0; j < tin.size(); j++)
         Tensor::copy(tin[j], snets[0]->lin[j]->input);
 
-    snets[0]->do_reset();
+    snets[0]->do_reset_grads();
     snets[0]->forward();
 
     for (int j = 0; j < tout.size(); j++) {

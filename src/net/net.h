@@ -102,10 +102,10 @@ public:
 
     //Func
     void do_initialize();
-    void do_reset();
+    void do_reset_grads();
     void do_forward();
     void do_delta();
-    void do_calcloss();
+    void do_compute_loss();
     void do_backward();
     void do_applygrads();
 

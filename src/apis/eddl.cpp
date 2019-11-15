@@ -325,7 +325,7 @@ namespace eddl {
     }
 
     // ---- LOSSES ----
-    loss getLoss(string type) {
+    Loss* getLoss(string type) {
         if (type == "mse" || type == "mean_squared_error") {
             return new LMeanSquaredError();
         } else if (type == "cross_entropy") {
@@ -336,9 +336,13 @@ namespace eddl {
         return nullptr;
     }
 
+    loss newloss(Layer* (*f)(vector<Layer *>),vector<Layer *> in,string name)
+    {
+      return new NetLoss((*f),in,name);
+    }
 
     // ---- METRICS ----
-    metric getMetric(string type) {
+    Metric* getMetric(string type) {
         if (type == "mse" || type == "mean_squared_error") {
             return new MMeanSquaredError();
         } else if (type == "categorical_accuracy" || type == "accuracy") {
@@ -532,21 +536,25 @@ namespace eddl {
 
     void forward(model net,vector<Layer*> in)
     {
+      net->reset_grads();
       net->forward(in);
     }
     void forward(model net,vector<Tensor*> in)
     {
+      net->reset_grads();
       net->forward(in);
     }
 
     void forward(model net,int b)
     {
       net->resize(b);
+      net->reset_grads();
       net->forward();
 
     }
     void forward(model net)
     {
+      net->reset_grads();
       net->forward();
     }
 
@@ -574,14 +582,9 @@ namespace eddl {
       net->backward({});
     }
 
-    void backward(model net,Layer* (*f)(Layer *),Layer *out)
+    void compute_loss(loss L)
     {
-      net->backward(f,out);
-    }
-
-    void compute_loss(model net)
-    {
-      net->compute_loss();
+      L->compute();
     }
 
     void update(model net)
