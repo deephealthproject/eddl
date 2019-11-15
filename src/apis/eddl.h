@@ -276,9 +276,9 @@ namespace eddl {
 
     void summary(model m);
 
-    void load(model m, const string& fname);
+    void load(model m, const string& fname, const string& format="bin");
 
-    void save(model m, const string& fname);
+    void save(model m, const string& fname, const string& format="bin");
 
     void plot(model m, string fname, string mode="LR");
 

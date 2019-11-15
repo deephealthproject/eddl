@@ -77,13 +77,15 @@ public:
 
     Net(vlayer in, vlayer out);
     ~Net();
-    
+
+    void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs);
     void fts();
     void bts();
     void split(int c, int todev);
     int inNet(Layer *l);
     void walk(Layer *l);
     void walk_back(Layer *l);
+
 
     void resize(int batch);
 
@@ -93,8 +95,8 @@ public:
     void setmode(int m);
     void sync_weights();
 
-    void save(FILE *fe);
-    void load(FILE *fe);
+    void save(const string& filename, const string& format);
+    void load(const string& filename, const string& format);
     void setlogfile(string fname);
 
 

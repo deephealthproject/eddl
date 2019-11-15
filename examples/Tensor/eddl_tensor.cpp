@@ -47,7 +47,8 @@ int main(int argc, char **argv) {
 
 
     // Open image
-    Tensor* t1 = Tensor::load("/Users/salvacarrion/Desktop/cow100.jpg", "jpg");
+    cout<<"AQUI\n";
+    Tensor* t1 = Tensor::load("./test2.jpg", "jpg");
 //    float* ptr = new float[3*4*2]{
 //        255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f,
 //        128.0f, 128.0f, 128.0f, 128.0f, 128.0f, 128.0f, 128.0f, 128.0f,
@@ -55,6 +56,7 @@ int main(int argc, char **argv) {
 //    Tensor* t1 = new Tensor({1, 3, 4, 2}, ptr, DEV_CPU);
     Tensor* t2 = t1->clone();
     t2->info();
+      cout<<"AQUI\n";
 
 //     *************************************************
 //     ***** Make color/light transformations **********
@@ -114,6 +116,6 @@ int main(int argc, char **argv) {
 //    t1 = t2->clone();
 
     // Save result
-    t2->save("/Users/salvacarrion/Desktop/test2.png", "png");
+    t2->save("./test2b.png", "png");
     cout << "Image saved!" << endl;
 }

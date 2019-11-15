@@ -641,12 +641,12 @@ namespace eddl {
         cout<<m->summary()<<"\n";
     }
 
-    void load(model m, const string&  fname) {
-        m->load(fname);
+    void load(model m, const string&  fname, const string& format) {
+        m->load(fname,format);
     }
 
-    void save(model m, const string&  fname) {
-        m->save(fname);
+    void save(model m, const string&  fname, const string& format) {
+        m->save(fname,format);
     }
 
     void plot(model m, string fname,string mode) {
