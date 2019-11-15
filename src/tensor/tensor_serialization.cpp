@@ -99,13 +99,18 @@ Tensor* Tensor::load_from_img(const string &filename, const string& format){
     // Free image
     stbi_image_free(pixels);
 
-    // Create tensor //
-    auto t = new Tensor({1, t_width, t_height, t_channels}, t_data, DEV_CPU);
+    // Create tensor
+    auto t = new Tensor({1, t_channels, t_height, t_width}, DEV_CPU);
 
-    // Re-order axis
-//    cout << "OLD => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << "), (" << t->ptr[3]  << ", " <<  t->ptr[4]  << ", " <<  t->ptr[5]  << ")" << endl;
-    t = t->permute({0, 3, 2, 1}); // Data must be presented as CxHxW
-//    cout << "NEW => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << "), (" << t->ptr[3]  << ", " <<  t->ptr[4]  << ", " <<  t->ptr[5]  << ")" << endl;
+    // TODO: Temp! Check permute correctness
+    // Re-order components (careful with t[a]=t[b], collisions may appear if both are the same)
+    for(int i=0; i<t->size; i+=t->shape[1]) { // Jump RGB blocks [(rgb), (rgb),....]
+        for(int j=0; j<t->shape[1]; j++){  // Walk RGB block [R, G, B]
+            int pos = (i/t->shape[1])+(j*t->shape[2]*t->shape[3]);  // (index in plane)+(jump whole plane: HxW)
+            t->ptr[pos]=t_data[i+j];
+        }
+    }
+    //t = t->permute({0, 3, 2, 1}); // Data must be presented as CxHxW
     return t;
 }
 
@@ -113,7 +118,7 @@ Tensor* Tensor::load_from_img(const string &filename, const string& format){
 // ********* SAVE FUNCTIONS *********
 void Tensor::save(const string& filename, const string& format) {
 
-    if(format=="png") { // Images
+    if(format=="png" || format=="bmp") { // Images
         save2img(filename, format);
     }else if(format=="bin" || format=="onnx"){
         // Open file stream
@@ -169,24 +174,35 @@ void Tensor::save2img(const string& filename, const string& format){
     }
 
     // Re-order axis
-    Tensor *t = this;
-//    cout << "OLD => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << "), (" << t->ptr[3]  << ", " <<  t->ptr[4]  << ", " <<  t->ptr[5]  << ")" << endl;
-    t = t->permute({0, 3, 2, 1}); // Data must be presented as: [(ARGB), (ARGB), (ARGB),...] // (1, C, H, W) => (1, W, H, C)
+    Tensor *t = this->clone();  // Important if permute is not used
     t->ToCPU();  // Just in case
-//    cout << "NEW => (" << t->ptr[0]  << ", " <<  t->ptr[1]  << ", " <<  t->ptr[2]  << "), (" << t->ptr[3]  << ", " <<  t->ptr[4]  << ", " <<  t->ptr[5]  << ")" << endl;
+
+    // TODO: Temp! Check permute correctness
+    // Re-order components (careful with t[a]=t[b], collisions may appear if both are the same)
+    for(int i=0; i<t->size; i+=t->shape[1]) { // Jump RGB blocks [(rgb), (rgb),....]
+        for(int j=0; j<t->shape[1]; j++){  // Walk RGB block [R, G, B]
+            int pos = (i/t->shape[1])+(j*t->shape[2]*t->shape[3]);  // (index in plane)+(jump whole plane: HxW)
+            t->ptr[i+j]=this->ptr[pos];
+        }
+    }
+    //t = t->permute({0, 3, 2, 1}); // Data must be presented as CxHxW
 
     // Normalize image (for RGB must fall between 0 and 255)
     t->normalize_(0.0f, 255.0f);
 
     // TODO: I don't see the need to cast this (but if i remove it, it doesn't work)
     // Cast pointer
+
     auto* data= new uint8_t[this->size];
     for(int i=0;i<this->size;i++){ data[i]=t->ptr[i]; }
 
     // Save image
-    if(format=="png"){
-        //  // (w, h, c, data, w*channels) // w*channels => stride_in_bytes
+    if(format=="png") {
+        //(w, h, c, data, w*channels) // w*channels => stride_in_bytes
         stbi_write_png(filename.c_str(), this->shape[3], this->shape[2], this->shape[1], data, this->shape[3] * this->shape[1]);
+    }else if(format=="bmp"){
+        //(w, h, c, data, w*channels) // w*channels => stride_in_bytes
+        stbi_write_bmp(filename.c_str(), this->shape[3], this->shape[2], this->shape[1], data);
     }else{
         msg("Format not implemented", "Tensor::save2img");
     }

@@ -72,37 +72,17 @@ int main(int argc, char **argv) {
       fit(net, {x_train}, {y_train}, batch_size, 1);
     }
 
-    // Save model
-    net->save("mymodel2.bin", "bin"); // TODO: FIX
-    cout << "Model saved!" << endl;
-
-    // Load model
-    net->load("mymodel.bin", "bin");  // TODO: FIX
+//    // Save model
+//    net->save("mymodel2.bin", "bin"); // TODO: FIX
+//    cout << "Model saved!" << endl;
+//
+//    // Load model
+//    net->load("mymodel.bin", "bin");  // TODO: FIX
 
     // Evaluate test
-//    std::cout << "Evaluate test:\n";
-//    evaluate(net, {x_test}, {y_test});
+    std::cout << "Evaluate test:\n";
+    evaluate(net, {x_test}, {y_test});
 
-//
-//    // Open image
-//    Tensor* t1 = Tensor::load("/Users/salvacarrion/Desktop/cow100.jpg", "jpg");
-//    Tensor* t2 = t1->clone();
-//    t2->info();
-//
-//    // Make some transformation
-////    t2->add_(100);
-////    t2->clampmax_(255);
-////
-//    Tensor::shift(t1, t2, {10, 10});
-////    Tensor::scale_random(t1, t2, {1.0f, 2.0f});
-////    Tensor::flip_random(t1, t2, 1);
-////    Tensor::crop_random(t1, t2);  //In pixels  // TODO: Needs a fix!
-////    Tensor::crop_scale_random(t1, t2, {0.5f, 1.0f});  // Crop and rescale  // TODO: check!
-////    Tensor::cutout_random(t1, t2, {0.1f, 0.5f}, {0.1, 0.5f});
-//
-//    // Save result
-//    t2->save("/Users/salvacarrion/Desktop/test2.png", "png");
-//    cout << "Image saved!" << endl;
 }
 
 

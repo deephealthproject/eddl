@@ -16,7 +16,6 @@
 #include "../../random.h"
 
 void cpu_single_shift(int b, Tensor *A, Tensor *B, vector<int> shift, int mode, float constant){
-
     for(int c=0; c<B->shape[1]; c++) {
         for(int Bi=0; Bi<B->shape[2];Bi++) {
             for(int Bj=0; Bj<B->shape[3];Bj++) {
