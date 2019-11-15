@@ -29,8 +29,19 @@ using namespace std::chrono;
 /////////////////////////////////////////////////////////////////
 ///// NET LEVEL FUNCS
 /////////////////////////////////////////////////////////////////
+/////////////////////////////////////////
+void Net::do_initialize() {
+    for (int i = 0; i != layers.size(); i++)
+        layers[i]->initialize();
+}
 
-void Net::forward() {
+/////////////////////////////////////////
+void Net::do_reset() {
+    for (int i = 0; i != layers.size(); i++)
+        layers[i]->reset();
+}
+
+void Net::do_forward() {
     for (int i = 0; i < vfts.size(); i++) {
         vfts[i]->forward();
         if (VERBOSE) {
@@ -41,7 +52,7 @@ void Net::forward() {
     }
 }
 
-void Net::backward() {
+void Net::do_backward() {
     for (int i = 0; i < vbts.size(); i++) {
         vbts[i]->backward();
         if (VERBOSE) cout<<"BACK: "<<vbts[i]->name<<"delta:"<<vbts[i]->delta->sum()<<"\n";
@@ -49,13 +60,13 @@ void Net::backward() {
 
 }
 
-void Net::delta() {
+void Net::do_delta() {
     for (int i = 0; i < lout.size(); i++)
         losses[i]->delta(lout[i]->target, lout[i]->output, lout[i]->delta);
 
 }
 
-void Net::calcloss() {
+void Net::do_calcloss() {
     int p = 0;
     for (int i = 0; i < lout.size(); i++, p += 2) {
         // loss value
@@ -65,58 +76,10 @@ void Net::calcloss() {
     }
 }
 
-void Net::applygrads() {
+void Net::do_applygrads() {
     optimizer->applygrads(batch_size);
 }
 
-
-void Net::reset_loss()
-{
-  // Reset errors
-  int p=0;
-  for (int j = 0; j < lout.size(); j++,p+=2){
-      total_loss[j] = 0.0;
-      total_metric[j] = 0.0;
-      fiterr[p] = fiterr[p + 1] = 0.0;
-  }
-  inferenced_samples=0;
-}
-
-void Net::print_loss(int b)
-{
-  int p = 0;
-
-  for (int k = 0; k < lout.size(); k++, p += 2) {
-      total_loss[k] += fiterr[p];  // loss
-      total_metric[k] += fiterr[p + 1];  // metric
-      fiterr[p] = fiterr[p + 1] = 0.0;
-
-      fprintf(stdout, "%s(%s=%1.3f,%s=%1.3f) ", lout[k]->name.c_str(),
-              losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
-              metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
-
-      if ((flog_tr!=nullptr)&&(trmode))
-        fprintf(flog_tr, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
-                metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
-
-      if ((flog_ts!=nullptr)&&(!trmode))
-        fprintf(flog_ts, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
-                metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
-
-  }
-  fflush(stdout);
-
-  if ((flog_tr!=nullptr)&&(trmode)) {
-    fprintf(flog_tr, "\n");
-    fflush(flog_tr);
-  }
-
-  if ((flog_ts!=nullptr)&&(!trmode)) {
-    fprintf(flog_ts, "\n");
-    fflush(flog_ts);
-  }
-
-}
 
 
 

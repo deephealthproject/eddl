@@ -220,7 +220,7 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
 
 void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
     ///////////////////////////////////////
-    /// Select from A to B
+    /// Select from A to B, A is bigger
     //////////////////////////////////////
 
     if ((A->size / A->shape[0]) != (B->size / B->shape[0])) {
@@ -234,11 +234,84 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
         cpu_select(A, B, sind, ini, end);
     }
     else if ((A->isGPU()) && (B->isCPU())) {
-        Tensor *C=A->clone();
-        C->ToCPU();
-        cpu_select(C, B, sind, ini, end);
-        delete C;
-    }else {
+        Tensor *Ac=A->clone();
+        Ac->ToCPU();
+
+        cpu_select(Ac, B, sind, ini, end);
+
+        delete Ac;
+    }else if ((A->isCPU()) && (B->isGPU())) {
+        Tensor *Bc=B->clone();
+        Bc->ToCPU();
+        cpu_select(A, Bc, sind, ini, end);
+
+        Tensor::copy(Bc,B);
+
+        delete Bc;
+    }
+    else if ((A->isGPU()) && (B->isGPU())) {
+        Tensor *Ac=A->clone();
+        Ac->ToCPU();
+
+        Tensor *Bc=B->clone();
+        Bc->ToCPU();
+
+        cpu_select(Ac, Bc, sind, ini, end);
+        Tensor::copy(Bc,B);
+
+        delete Ac;
+        delete Bc;
+    }
+    else {
+        msg("unsuppoted select", "Tensor::select");
+    }
+    //B->tsem->unlock();
+}
+void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
+    ///////////////////////////////////////
+    /// deSelect from A to B, B is bigger
+    //////////////////////////////////////
+
+    if ((A->size / A->shape[0]) != (B->size / B->shape[0])) {
+        A->info();
+        B->info();
+        msg("Incompatible shape", "Tensor::select");
+    }
+
+    //B->tsem->lock();
+    if ((A->isCPU()) && (B->isCPU())) {
+        cpu_deselect(A, B, sind, ini, end);
+    }
+    else if ((A->isGPU()) && (B->isCPU())) {
+        Tensor *Ac=A->clone();
+        Ac->ToCPU();
+
+        cpu_deselect(Ac, B, sind, ini, end);
+
+        delete Ac;
+    }else if ((A->isCPU()) && (B->isGPU())) {
+        Tensor *Bc=B->clone();
+        Bc->ToCPU();
+        cpu_deselect(A, Bc, sind, ini, end);
+
+        Tensor::copy(Bc,B);
+
+        delete Bc;
+    }
+    else if ((A->isGPU()) && (B->isGPU())) {
+        Tensor *Ac=A->clone();
+        Ac->ToCPU();
+
+        Tensor *Bc=B->clone();
+        Bc->ToCPU();
+
+        cpu_deselect(Ac, Bc, sind, ini, end);
+        Tensor::copy(Bc,B);
+
+        delete Ac;
+        delete Bc;
+    }
+    else {
         msg("unsuppoted select", "Tensor::select");
     }
     //B->tsem->unlock();

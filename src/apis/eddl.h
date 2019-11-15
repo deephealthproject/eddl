@@ -243,6 +243,7 @@ namespace eddl {
 
     void next_batch(vector<Tensor *> in,vector<Tensor *> out);
 
+    void forward(model m,vector<Layer *> in);
     void forward(model m,vector<Tensor *> in);
     void forward(model m);
     void forward(model m,int b);

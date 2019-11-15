@@ -226,17 +226,6 @@ void Net::setlogfile(string fname)
   if (flog_ts==nullptr) msg("error creating ts log file","Net.setlogfile");
 }
 
-/////////////////////////////////////////
-void Net::initialize() {
-    for (int i = 0; i != layers.size(); i++)
-        layers[i]->initialize();
-}
-
-/////////////////////////////////////////
-void Net::reset() {
-    for (int i = 0; i != layers.size(); i++)
-        layers[i]->reset();
-}
 
 void Net::save(FILE *fe)
 {

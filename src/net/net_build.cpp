@@ -165,7 +165,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
     // backward sort
     bts();
     // random params
-    initialize();
+    do_initialize();
 }
 
 void Net::set_compserv(CompServ *cs){

@@ -531,25 +531,24 @@ namespace eddl {
         Tensor::select(in[i], out[i], sind, 0, batch_size);
     }
 
-    void forward(model net,vector<Tensor *> in)
+    void forward(model net,vector<Layer*> in)
     {
-
       net->forward(in);
-
-
     }
-
-
+    void forward(model net,vector<Tensor*> in)
+    {
+      net->forward(in);
+    }
 
     void forward(model net,int b)
     {
       net->resize(b);
-      net->forward({});
+      net->forward();
 
     }
     void forward(model net)
     {
-      net->forward({});
+      net->forward();
     }
 
     void print_loss(model m, int batch){
@@ -596,66 +595,17 @@ namespace eddl {
       Tensor::copy(t1,t2);
     }
 
-
-
     Tensor* getTensor(layer l1) {
-      int j;
-      if (l1->net==nullptr)
-        msg("layer not in graph","getTensor");
-
-      int c=l1->net->snets.size();
-      if (c>1)
-        msg("not supported for multiGPU","Net.getTensor");
-
-      //
-      if (l1->net->snets[0]->dev==DEV_CPU) {
-        return l1->output;
-      }
-      else {
-        Net *s1=l1->net->snets[0];
-        Layer *sl1;
-
-        for (j = 0; j < s1->layers.size(); j++)
-          if (s1->layers[j]->orig==l1) {
-              sl1=s1->layers[j];
-              break;
-          }
-        if (j==s1->layers.size())
-          msg("layer not found","getTensor");
-        return sl1->output;
-      }
+      l1->net->collectTensor(l1);
+      return l1->output;
     }
-
 
     Tensor* getGrad(layer l1) {
-      int j;
-      if (l1->net==nullptr)
-        msg("layer not in graph","getGrad");
-
-      int c=l1->net->snets.size();
-      if (c>1)
-        msg("not supported for multiGPU","Net.getGrad");
-
-      //
-      if (l1->net->snets[0]->dev==DEV_CPU) {
-        return l1->delta;
-      }
-      else {
-        Net *s1=l1->net->snets[0];
-        Layer *sl1;
-
-        for (j = 0; j < s1->layers.size(); j++)
-          if (s1->layers[j]->orig==l1) {
-              //cout<<"\n"<<s1->layers[j]->name<<"---"<<l1->name<<"\n";
-              sl1=s1->layers[j];
-              //Tensor::copy(sl1->output,l1->output);
-              break;
-          }
-        if (j==s1->layers.size())
-          msg("layer not found","getGrad");
-        return sl1->delta;
-      }
+      l1->net->collectTensor(l1,"grad");
+      return l1->delta;
     }
+
+
 
     // ---- MODEL METHODS ----
     model Model(vlayer in, vlayer out) {

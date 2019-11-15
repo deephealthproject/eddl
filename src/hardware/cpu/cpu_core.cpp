@@ -64,3 +64,17 @@ cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end)
             B->ptr[pb] = A->ptr[p];
     }
 }
+
+void
+cpu_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end)
+{
+    int s = A->size / A->shape[0];
+
+    #pragma omp parallel for
+    for (int i = ini; i < end; i++) {
+        int p  = sind[i] * s;
+        int pb = (i - ini) * s;
+        for (int j = 0; j < s; j++, p++, pb++)
+            B->ptr[p] = A->ptr[pb];
+    }
+}

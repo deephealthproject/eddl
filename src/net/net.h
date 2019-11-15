@@ -78,27 +78,13 @@ public:
     Net(vlayer in, vlayer out);
     ~Net();
 
-    void initialize();
-    void reset();
-    void save(FILE *fe);
-    void load(FILE *fe);
-    void setlogfile(string fname);
-
-
-    void forward();
-    void delta();
-    void calcloss();
-    void backward();
-    void applygrads();
-
-    void split(int c, int todev);
-    int inNet(Layer *l); //
-    void walk(Layer *l); //
-    void walk_back(Layer *l); //
-
-
+    void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs); //
     void fts();
     void bts();
+    void split(int c, int todev);
+    int inNet(Layer *l);
+    void walk(Layer *l);
+    void walk_back(Layer *l);
 
     void resize(int batch);
 
@@ -108,27 +94,44 @@ public:
     void setmode(int m);
     void sync_weights();
 
-    Layer *getLayer(string name);
+    void save(FILE *fe);
+    void load(FILE *fe);
+    void setlogfile(string fname);
 
-    void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs); //
 
-    void fit(vtensor tin, vtensor tout, int batch_size, int epochs);
+    //Func
+    void do_initialize();
+    void do_reset();
+    void do_forward();
+    void do_delta();
+    void do_calcloss();
+    void do_backward();
+    void do_applygrads();
 
-    void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);
 
-    void evaluate(vtensor tin, vtensor tout);
-    void predict(vtensor tin, vtensor tout);
+    // API
+    void run_snets(void *(*F)(void *t));
+    void collectTensor(Layer *l,string tname="output");
+    void distributeTensor(Layer *l);
 
+    void forward(vector<Layer *> in);
+    void forward(vector<Tensor*> in);
+    void forward();
     void reset_loss();
     void print_loss(int b);
-
-    void run_snets(void *(*F)(void *t));
-    void forward(vector<Tensor *> in);
     void backward(vector<Tensor *> target);
     void backward(Layer* (*f)(Layer *),Layer *out);
     void reset_grads();
     void update();
     void compute_loss();
+
+    void fit(vtensor tin, vtensor tout, int batch_size, int epochs);
+    void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);
+    void evaluate(vtensor tin, vtensor tout);
+    void predict(vtensor tin, vtensor tout);
+
+
+
 
 
 };

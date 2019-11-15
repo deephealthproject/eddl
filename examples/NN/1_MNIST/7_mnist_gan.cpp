@@ -27,6 +27,7 @@ layer myloss(layer out)
   return Log(Sum(out,0.0001));
 }
 
+
 int main(int argc, char **argv) {
 
     // Download dataset
@@ -112,6 +113,8 @@ int main(int argc, char **argv) {
         // Real
         forward(disc,{batch});
 
+
+
         reset_grads(disc);
         backward(disc,{real});
         //backward(disc,myloss,dout);
@@ -127,7 +130,7 @@ int main(int argc, char **argv) {
 
         // Fake
         forward(gen,batch_size);
-        forward(disc,{getTensor(gout)});
+        forward(disc,{gout});
 
         reset_grads(disc);
         backward(disc,{fake});
@@ -138,13 +141,13 @@ int main(int argc, char **argv) {
         printf("\r");
 
         // Update Gen
-        forward(disc,{getTensor(gout)});
+        forward(disc,{gout});
 
         reset_grads(disc);
         backward(disc,{real});
 
         reset_grads(gen);
-        copyTensor(getGrad(din),getGrad(gout));
+        //copyTensor(getGrad(din),getGrad(gout));
 
         backward(gen);
         update(gen);

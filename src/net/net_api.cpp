@@ -40,15 +40,15 @@ void *train_batch_t(void *t) {
     auto *targs = (tdata *) t;
 
     Net *net = targs->net;
-    net->reset();
-    net->forward();
-    net->calcloss();
+    net->do_reset();
+    net->do_forward();
+    net->do_calcloss();
 
     if (!targs->eval) {
-        net->delta();
-        net->backward();
+        net->do_delta();
+        net->do_backward();
         if (net->dev > DEV_CPU)
-            net->applygrads();
+            net->do_applygrads();
     }
 
     return nullptr;
@@ -59,7 +59,7 @@ void *forward_t(void *t) {
 
     Net *net = targs->net;
 
-    net->forward();
+    net->do_forward();
 
     return nullptr;
 }
@@ -70,7 +70,7 @@ void *reset_t(void *t) {
 
     Net *net = targs->net;
 
-    net->reset();
+    net->do_reset();
 
     return nullptr;
 }
@@ -81,8 +81,8 @@ void *backward_t(void *t) {
 
     Net *net = targs->net;
 
-    net->delta();
-    net->backward();
+    net->do_delta();
+    net->do_backward();
 
     return nullptr;
 }
@@ -93,7 +93,7 @@ void *calcloss_t(void *t)
 
   Net *net = targs->net;
 
-  net->calcloss();
+  net->do_calcloss();
 
   return nullptr;
 }
@@ -103,7 +103,7 @@ void *update_t(void *t) {
     auto *targs = (tdata *) t;
 
     Net *net = targs->net;
-    net->applygrads();
+    net->do_applygrads();
 
     return nullptr;
 }
@@ -156,14 +156,88 @@ void Net::setmode(int m) {
 }
 
 
-void Net::forward(vector<Tensor *> in)
+void Net::collectTensor(Layer *l,string tname)
 {
-  void *status;
-  int rc;
-  pthread_t thr[100];
-  struct tdata td[100];
+  if (snets[0]->dev==DEV_CPU) return;
 
-  int comp=snets.size();
+  int i,j,comp;
+
+  comp=snets.size();
+
+  if (batch_size<comp)
+    comp=batch_size;
+
+  int thread_batch_size=batch_size / comp;
+
+  vector<int> sind(batch_size);
+  for(int k=0;k<batch_size;k++) sind[k]=k;
+
+  for(i=0;i<snets.size();i++) {
+    Layer *sl=nullptr;
+    for(j=0;j<snets[i]->layers.size();j++)
+     if (snets[i]->layers[j]->orig==l) {
+         sl=snets[i]->layers[j];
+         break;
+     }
+    if (sl==nullptr)
+      msg("layer not found in subgrap","Net.collectTensor");
+
+    int start = i * thread_batch_size;
+    int end = start + sl->output->shape[0];
+
+    if (tname=="output")
+      Tensor::deselect(sl->output, l->output, sind, start, end);
+    else if (tname=="grad")
+      Tensor::deselect(sl->delta, l->delta, sind, start, end);
+  }
+
+}
+
+
+void Net::distributeTensor(Layer *l)
+{
+  if (snets[0]->dev==DEV_CPU) return;
+
+  int i,j,comp;
+
+  comp=snets.size();
+
+  if (batch_size<comp)
+    comp=batch_size;
+
+  int thread_batch_size=batch_size / comp;
+
+  vector<int> sind(batch_size);
+  for(int k=0;k<batch_size;k++) sind[k]=k;
+
+  for(i=0;i<snets.size();i++) {
+    Layer *sl=nullptr;
+
+    for(j=0;j<snets[i]->layers.size();j++)
+     if (snets[i]->layers[j]->orig==l) {
+         sl=snets[i]->layers[j];
+         break;
+     }
+
+    if (sl==nullptr) {
+      cout<<l->name<<"\n";
+      msg("layer not found in subgrap","Net.distributeTensor");
+    }
+
+    int start = i * thread_batch_size;
+    int end = start + sl->output->shape[0];
+
+    Tensor::select(l->output, sl->output, sind, start, end);
+
+  }
+}
+
+
+//////////////////////////////////
+// API functions
+
+void Net::forward(vector<Tensor*> in)
+{
 
   if (in.size()) {
     if (in.size()!=lin.size())
@@ -173,28 +247,50 @@ void Net::forward(vector<Tensor *> in)
       resize(in[0]->shape[0]);
     }
 
-    if (batch_size<comp)
-      comp=batch_size;
-
-    int thread_batch_size=batch_size / comp;
-
-    // Split data for each network
-    for (int i = 0; i < comp; i++) {
-        int start = i * thread_batch_size;
-        int end = start + Xs[i][0]->shape[0];
-        vector<int> sind(batch_size);
-        for(int k=0;k<batch_size;k++) sind[k]=k;
-
-        // Copy samples
-          for (int j = 0; j < in.size(); j++) {
-            Tensor::select(in[j], Xs[i][j], sind, start, end);
-            Tensor::copy(Xs[i][j], snets[i]->lin[j]->input);
-        }
+    // Collect for potentially distributed tensors (data parallelism)
+    for (int i = 0; i < in.size(); i++) {
+      Tensor::copy(in[i],lin[i]->output);
     }
+
+    // Distribute to snets inputs
+    for (int i = 0; i < in.size(); i++)
+      distributeTensor(lin[i]);
+
   }
 
   run_snets(forward_t);
 }
+
+void Net::forward(vector<Layer *> in)
+{
+
+  if (in.size()) {
+    if (in.size()!=lin.size())
+      msg("size missmatch in list of tensors","Net.forward(vtensor)");
+
+    if (batch_size!=in[0]->output->shape[0]) {
+      resize(in[0]->output->shape[0]);
+    }
+
+    // Collect for potentially distributed tensors (data parallelism)
+    for (int i = 0; i < in.size(); i++) {
+      collectTensor(in[i]);
+      Tensor::copy(in[i]->output,lin[i]->output);
+    }
+
+    // Distribute to snets inputs
+    for (int i = 0; i < in.size(); i++)
+      distributeTensor(lin[i]);
+  }
+
+  run_snets(forward_t);
+}
+
+void Net::forward()
+{
+  run_snets(forward_t);
+}
+
 
 void Net::backward(vector<Tensor *> target)
 {
@@ -222,7 +318,7 @@ void Net::backward(vector<Tensor *> target)
     // Split data for each network
     for (int i = 0; i < comp; i++) {
         int start = i * thread_batch_size;
-        int end = start + Xs[i][0]->shape[0];
+        int end = start + Ys[i][0]->shape[0];
         vector<int> sind(batch_size);
         for(int k=0;k<batch_size;k++) sind[k]=k;
         // Copy samples
@@ -268,7 +364,7 @@ void Net::backward(Layer* (*f)(Layer *),Layer *out)
   sout->output->info();
 
   lossnet->reset_loss();
-  lossnet->forward({sout->output});
+  lossnet->forward({sout});
 
   lossnet->reset_grads();
   lossnet->backward({});
@@ -287,6 +383,54 @@ void Net::backward(Layer* (*f)(Layer *),Layer *out)
 
 }
 
+
+void Net::reset_loss()
+{
+  // Reset errors
+  int p=0;
+  for (int j = 0; j < lout.size(); j++,p+=2){
+      total_loss[j] = 0.0;
+      total_metric[j] = 0.0;
+      fiterr[p] = fiterr[p + 1] = 0.0;
+  }
+  inferenced_samples=0;
+}
+
+void Net::print_loss(int b)
+{
+  int p = 0;
+
+  for (int k = 0; k < lout.size(); k++, p += 2) {
+      total_loss[k] += fiterr[p];  // loss
+      total_metric[k] += fiterr[p + 1];  // metric
+      fiterr[p] = fiterr[p + 1] = 0.0;
+
+      fprintf(stdout, "%s(%s=%1.3f,%s=%1.3f) ", lout[k]->name.c_str(),
+              losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
+              metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+
+      if ((flog_tr!=nullptr)&&(trmode))
+        fprintf(flog_tr, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
+                metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+
+      if ((flog_ts!=nullptr)&&(!trmode))
+        fprintf(flog_ts, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
+                metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+
+  }
+  fflush(stdout);
+
+  if ((flog_tr!=nullptr)&&(trmode)) {
+    fprintf(flog_tr, "\n");
+    fflush(flog_tr);
+  }
+
+  if ((flog_ts!=nullptr)&&(!trmode)) {
+    fprintf(flog_ts, "\n");
+    fflush(flog_ts);
+  }
+
+}
 
 void Net::reset_grads()
 {
@@ -398,58 +542,58 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 
 /////////////////////////////////////////
 void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
-    void *status;
-    int rc;
-    pthread_t thr[100];
-    struct tdata td[100];
+  void *status;
+  int rc;
+  pthread_t thr[100];
+  struct tdata td[100];
 
 
-    if (batch_size!=sind.size()) resize(sind.size());
+  if (batch_size!=sind.size()) resize(sind.size());
 
-    int comp=snets.size();
+  int comp=snets.size();
 
-    if (batch_size<comp)
-      comp=batch_size;
+  if (batch_size<comp)
+    comp=batch_size;
 
-    int thread_batch_size=batch_size / comp;
+  int thread_batch_size=batch_size / comp;
 
-    if (eval) setmode(TSMODE);
-    else setmode(TRMODE);
+  if (eval) setmode(TSMODE);
+  else setmode(TRMODE);
 
-    // Check indices
-    if (sind.size() == 0) msg("error void index","Net::train_batch");
-    // Split data for each network
-    for (int i = 0; i < comp; i++) {
-        int start = i * thread_batch_size;
-        int end = start + Xs[i][0]->shape[0];
+  // Check indices
+  if (sind.size() == 0) msg("error void index","Net::train_batch");
+  // Split data for each network
+  for (int i = 0; i < comp; i++) {
+    int start = i * thread_batch_size;
+    int end = start + Xs[i][0]->shape[0];
 
-        // Copy samples
-        for (int j = 0; j < X.size(); j++) {
-            Tensor::select(X[j], Xs[i][j], sind, start, end);
-            Tensor::copy(Xs[i][j], snets[i]->lin[j]->input);
-        }
-
-        // Copy targets
-        for (int j = 0; j < Y.size(); j++) {
-            Tensor::select(Y[j], Ys[i][j], sind, start, end);
-            Tensor::copy(Ys[i][j], snets[i]->lout[j]->target);
-        }
-      }
-
-    run_snets(train_batch_t);
-
-    // If training (eval==0), apply gradients
-    if (!eval) {
-        if (snets[0]->dev == DEV_CPU) {
-            snets[0]->applygrads();
-        }
-        // In case of multiple GPUS or FPGA synchronize params
-        if ((snets[0]->dev != DEV_CPU) && (comp > 1) && (tr_batches%cs->lsb==0)) {
-          sync_weights();
-        }
+    // Copy samples
+    for (int j = 0; j < X.size(); j++) {
+        Tensor::select(X[j], Xs[i][j], sind, start, end);
+        Tensor::copy(Xs[i][j], snets[i]->lin[j]->input);
     }
 
-   compute_loss();
+    // Copy targets
+    for (int j = 0; j < Y.size(); j++) {
+        Tensor::select(Y[j], Ys[i][j], sind, start, end);
+        Tensor::copy(Ys[i][j], snets[i]->lout[j]->target);
+    }
+  }
+
+  run_snets(train_batch_t);
+
+  // If training (eval==0), apply gradients
+  if (!eval) {
+      if (snets[0]->dev == DEV_CPU) {
+        snets[0]->do_applygrads();
+    }
+    // In case of multiple GPUS or FPGA synchronize params
+    if ((snets[0]->dev != DEV_CPU) && (comp > 1) && (tr_batches%cs->lsb==0)) {
+      sync_weights();
+    }
+  }
+
+  compute_loss();
 
 }
 
@@ -556,7 +700,7 @@ void Net::predict(vtensor tin, vtensor tout) {
     for (int j = 0; j < tin.size(); j++)
         Tensor::copy(tin[j], snets[0]->lin[j]->input);
 
-    snets[0]->reset();
+    snets[0]->do_reset();
     snets[0]->forward();
 
     for (int j = 0; j < tout.size(); j++) {
