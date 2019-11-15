@@ -72,11 +72,11 @@ int main(int argc, char **argv) {
 
     layer dout = Sigmoid(Dense(l, 1));
 
-    model disc = Model({din},{dout});
+    model disc = Model({din},{});
     build(disc,
             sgd(0.001, 0.0), // Optimizer
-          {"mse"}, // Losses
-          {"mse"}, // Metrics
+          {}, // Losses
+          {}, // Metrics
           //CS_CPU()
           CS_GPU({1})
     );
@@ -145,7 +145,7 @@ int main(int argc, char **argv) {
 
         backward(gen);
         update(gen);
-        
+
         cout<<"\n====\n";
 
 
