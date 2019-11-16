@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
 
     // Training
     int i,j;
-    int num_batches=100;
+    int num_batches=1000;
     int epochs=1000;
     int batch_size = 100;
 

@@ -52,7 +52,7 @@ public:
 
     explicit SGD(float lr=0.01f, float momentum=0.0f, float weight_decay=0.0f, bool nesterov=false);
     ~SGD();
-    
+
     Optimizer *clone() override;
 
     void setlayers(vlayer l) override;
@@ -71,18 +71,22 @@ public:
     float epsilon;
     float weight_decay;
     bool amsgrad;
+    int t;
 
     vtensor mT;
+    vtensor vT;
+    vtensor mCap;
+    vtensor vCap;
 
     explicit Adam(float lr=0.01f, float beta_1=0.9f, float beta_2=0.999f, float epsilon=1e-8f, float weight_decay=0.0f, bool amsgrad=false);
 
-//    Optimizer *clone();
-//
-//    void setlayers(vlayer l);
-//
-//    void applygrads(int batch);
-//
-//    void change(const vector<float> &p);
+    Optimizer *clone();
+
+    void setlayers(vlayer l);
+
+    void applygrads(int batch);
+
+    void change(vector<float> &p);
 };
 
 

@@ -187,8 +187,9 @@ namespace eddl {
 
 // ---- OPTIMIZERS ----
     optimizer adadelta(float lr, float rho, float epsilon, float weight_decay); //Todo: Implement
-    optimizer adam(float lr, float beta_1, float beta_2, float epsilon, float weight_decay,
-                   bool amsgrad); //Todo: Implement
+
+    optimizer adam(float lr=0.01, float beta_1=0.9, float beta_2=0.999, float epsilon=0.000001, float weight_decay=0,
+                   bool amsgrad=false); //Todo: Implement
     optimizer adagrad(float lr, float epsilon, float weight_decay); //Todo: Implement
     optimizer adamax(float lr, float beta_1, float beta_2, float epsilon, float weight_decay); //Todo: Implement
     optimizer nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule_decay); //Todo: Implement
