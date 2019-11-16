@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
     layer gout=Tanh(Dense(l,784));
 
     model gen = Model({gin},{});
-    optimizer gopt=sgd(0.01, 0.9);
+    optimizer gopt=adam(0.001);
 
     build(gen,
           gopt, // Optimizer
@@ -73,7 +73,8 @@ int main(int argc, char **argv) {
     layer dout = Sigmoid(Dense(l, 1));
 
     model disc = Model({din},{});
-    optimizer dopt=sgd(0.001, 0.9);
+    optimizer dopt=adam(0.001);
+    
     build(disc,
           dopt, // Optimizer
           {}, // Losses

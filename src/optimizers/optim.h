@@ -79,7 +79,8 @@ public:
     vtensor vCap;
 
     explicit Adam(float lr=0.01f, float beta_1=0.9f, float beta_2=0.999f, float epsilon=1e-8f, float weight_decay=0.0f, bool amsgrad=false);
-
+    ~Adam();
+    
     Optimizer *clone();
 
     void setlayers(vlayer l);

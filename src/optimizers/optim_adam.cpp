@@ -28,6 +28,13 @@ Adam::Adam(float lr, float beta_1, float beta_2, float epsilon, float weight_dec
 
 }
 
+Adam::~Adam() {
+  mT.clear();
+  vT.clear();
+  mCap.clear();
+  vCap.clear();
+}
+
 void Adam::change(vector<float> &p) {
 
 }
