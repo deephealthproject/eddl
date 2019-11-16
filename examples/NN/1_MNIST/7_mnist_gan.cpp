@@ -39,6 +39,7 @@ int main(int argc, char **argv) {
     // Download dataset
     download_mnist();
 
+    // Oprimizer
 
     // Define Generator
     layer gin=GaussGenerator(0.0, 1, {100});
@@ -51,15 +52,15 @@ int main(int argc, char **argv) {
     layer gout=Tanh(Dense(l,784));
 
     model gen = Model({gin},{});
+    optimizer gopt=sgd(0.01, 0.9);
 
     build(gen,
-          sgd(0.01, 0.0), // Optimizer
+          gopt, // Optimizer
           {}, // Losses
           {}, // Metrics
           CS_CPU()
           //CS_GPU({1})
     );
-
 
 
     // Define Discriminator
@@ -72,8 +73,9 @@ int main(int argc, char **argv) {
     layer dout = Sigmoid(Dense(l, 1));
 
     model disc = Model({din},{});
+    optimizer dopt=sgd(0.001, 0.9);
     build(disc,
-            sgd(0.01, 0.0), // Optimizer
+          dopt, // Optimizer
           {}, // Losses
           {}, // Metrics
           CS_CPU()
@@ -85,7 +87,7 @@ int main(int argc, char **argv) {
 
     // Load dataset
     tensor x_train = eddlT::load("trX.bin");
-    // Preprocessing
+    // Preprocessing [-1,1]
     eddlT::div_(x_train, 128.0);
     eddlT::sub_(x_train,1.0);
 
@@ -138,7 +140,7 @@ int main(int argc, char **argv) {
         backward(gen);
         update(gen);
 
-        printf("Batch %d -- Dr=%1.3f  Df=%1.3f  Gr=%1.3f\r",j+1,dr,df,gr);
+        printf("Batch %d -- Total Loss=%1.3f  -- Dr=%1.3f  Df=%1.3f  Gr=%1.3f\r",j+1,dr+df+gr,dr,df,gr);
 
         fflush(stdout);
 

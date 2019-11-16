@@ -16,7 +16,7 @@
 #include "../layers/core/layer_core.h"
 
 
-NetLoss::NetLoss(Layer* (*f)(vector<Layer *>),vector<Layer *>in,string name)
+NetLoss::NetLoss(Layer* (*f)(vector<Layer *>),vector<Layer *> in,string name)
 {
  this->name=name;
 
@@ -38,13 +38,11 @@ NetLoss::NetLoss(Layer* (*f)(vector<Layer *>),vector<Layer *>in,string name)
 float NetLoss::compute()
 {
 
-   graph->reset_loss();
    graph->reset();
    graph->reset_grads();
    graph->forward(input);
    graph->delta();
    graph->backward();
-   graph->compute_loss();
 
    value=fout->output->sum()/fout->output->shape[0];
 
