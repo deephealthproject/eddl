@@ -80,6 +80,11 @@ void Layer::reset() {
     delta->fill_(0.0);
 }
 
+void Layer::zeroGrads() {
+  for(int i=0;i<gradients.size();i++)
+    gradients[i]->fill_(0.0);
+}
+
 void Layer::setmode(int m) {
 
     mode = m;

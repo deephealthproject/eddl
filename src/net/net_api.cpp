@@ -40,6 +40,7 @@ void *train_batch_t(void *t) {
     auto *targs = (tdata *) t;
 
     Net *net = targs->net;
+    net->do_reset();
     net->do_reset_grads();
     net->do_forward();
     net->do_compute_loss();
@@ -65,6 +66,15 @@ void *forward_t(void *t) {
 }
 
 /////////////////////////////////////////
+void *reset_t(void *t) {
+    auto *targs = (tdata *) t;
+
+    Net *net = targs->net;
+
+    net->do_reset();
+
+    return nullptr;
+}
 void *reset_grads_t(void *t) {
     auto *targs = (tdata *) t;
 
@@ -260,6 +270,7 @@ void Net::setmode(int m) {
 void Net::forward(vector<Tensor*> in)
 {
 
+  reset();
   if (in.size()) {
     if (in.size()!=lin.size())
       msg("size missmatch in list of tensors","Net.forward(vtensor)");
@@ -283,7 +294,7 @@ void Net::forward(vector<Tensor*> in)
 
 void Net::forward(vector<Layer *> in)
 {
-
+  reset();
   if (in.size()) {
     if (in.size()!=lin.size())
       msg("size missmatch in list of tensors","Net.forward(vtensor)");
@@ -308,6 +319,7 @@ void Net::forward(vector<Layer *> in)
 
 void Net::forward()
 {
+  reset();
   run_snets(forward_t);
 }
 
@@ -413,6 +425,12 @@ void Net::reset_grads()
 {
   do_reset_grads();
   run_snets(reset_grads_t);
+}
+
+void Net::reset()
+{
+  do_reset();
+  run_snets(reset_t);
 }
 
 void Net::compute_loss()

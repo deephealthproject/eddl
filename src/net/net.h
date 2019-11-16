@@ -102,6 +102,7 @@ public:
 
     //Func
     void do_initialize();
+    void do_reset();
     void do_reset_grads();
     void do_forward();
     void do_delta();
@@ -121,6 +122,7 @@ public:
     void backward(Layer* (*f)(Layer *),Layer *out);
     void backward();
     void delta();
+    void reset();
     void reset_grads();
     void update();
     void compute_loss();

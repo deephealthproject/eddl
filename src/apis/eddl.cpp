@@ -536,25 +536,25 @@ namespace eddl {
 
     void forward(model net,vector<Layer*> in)
     {
-      net->reset_grads();
+      net->reset();
       net->forward(in);
     }
     void forward(model net,vector<Tensor*> in)
     {
-      net->reset_grads();
+      net->reset();
       net->forward(in);
     }
 
     void forward(model net,int b)
     {
       net->resize(b);
-      net->reset_grads();
+      net->reset();
       net->forward();
 
     }
     void forward(model net)
     {
-      net->reset_grads();
+      net->reset();
       net->forward();
     }
 
@@ -571,6 +571,7 @@ namespace eddl {
     {
       net->reset_grads();
     }
+    
     void backward(model net,vector<Tensor *> target)
     {
       net->backward(target);

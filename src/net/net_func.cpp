@@ -36,9 +36,14 @@ void Net::do_initialize() {
 }
 
 /////////////////////////////////////////
-void Net::do_reset_grads() {
+void Net::do_reset() {
     for (int i = 0; i != layers.size(); i++)
         layers[i]->reset();
+}
+
+void Net::do_reset_grads() {
+    for (int i = 0; i != layers.size(); i++)
+        layers[i]->zeroGrads();
 }
 
 void Net::do_forward() {

@@ -113,21 +113,25 @@ int main(int argc, char **argv) {
         // get random batch
         next_batch({x_train},{batch});
 
+        // Discriminator
+        reset_grads(disc);
         // Real
         forward(disc,{batch});
         compute_loss(rl);
         backward(disc);
-        update(disc);
+        //update(disc);
 
         // Fake
         forward(gen,batch_size);
         forward(disc,{gout});
         compute_loss(fl);
         backward(disc);
+
         update(disc);
 
 
         // Update Gen
+        reset_grads(gen);
         forward(gen,batch_size);
         forward(disc,{gout});
         compute_loss(rl);
@@ -135,6 +139,7 @@ int main(int argc, char **argv) {
         copyGrad(din,gout);
         backward(gen);
         update(gen);
+
 
         printf("\r");
 

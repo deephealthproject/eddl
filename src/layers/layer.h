@@ -60,6 +60,7 @@ public:
 
     void initialize();
 
+
     void save(std::ofstream &ofs, const string& format);
     void load(std::ifstream &ifs, const string& format);
 
@@ -77,10 +78,10 @@ public:
 
 
     //virtual
-    virtual void reset();
 
     virtual void resize(int batch);
-
+    virtual void reset();
+    virtual void zeroGrads();
     virtual string plot(int c) { return ""; }
 
     virtual void addchild(Layer *l) {}
