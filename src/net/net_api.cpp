@@ -34,7 +34,6 @@ struct tdata {
 };
 
 
-
 /////////////////////////////////////////
 void *train_batch_t(void *t) {
     auto *targs = (tdata *) t;
@@ -48,8 +47,7 @@ void *train_batch_t(void *t) {
     if (!targs->eval) {
         net->do_delta();
         net->do_backward();
-        if (net->dev > DEV_CPU)
-            net->do_applygrads();
+        net->do_applygrads();
     }
     return nullptr;
 }
@@ -393,7 +391,7 @@ void Net::print_loss(int b)
       total_loss[k] += fiterr[p];  // loss
       total_metric[k] += fiterr[p + 1];  // metric
       fiterr[p] = fiterr[p + 1] = 0.0;
-
+      fprintf(stdout,"Batch %d ",b);
       fprintf(stdout, "%s(%s=%1.3f,%s=%1.3f) ", lout[k]->name.c_str(),
               losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
               metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
@@ -585,9 +583,6 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
 
   // If training (eval==0), apply gradients
   if (!eval) {
-      if (snets[0]->dev == DEV_CPU) {
-        snets[0]->do_applygrads();
-    }
     // In case of multiple GPUS or FPGA synchronize params
     if ((snets[0]->dev != DEV_CPU) && (comp > 1) && (tr_batches%cs->lsb==0)) {
       sync_weights();
