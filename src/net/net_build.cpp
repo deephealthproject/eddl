@@ -316,8 +316,6 @@ void Net::resize(int b)
   int c=snets.size();
   int bs,m;
 
-  cout<<"Resizing "<<name<<" to "<<batch_size<<"\n";
-
   if (batch_size<c) {
     printf("=====> Warning: batch_size (%d) lower than compserv resources (%d)\n",batch_size,c);
     bs=1;
