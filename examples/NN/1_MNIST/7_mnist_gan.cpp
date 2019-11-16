@@ -112,17 +112,17 @@ int main(int argc, char **argv) {
 
         // get random batch
         next_batch({x_train},{batch});
+        // generate with generator
+        forward(gen,batch_size);
 
-        // Discriminator
+        // Train Discriminator
         reset_grads(disc);
+
         // Real
         forward(disc,{batch});
         compute_loss(rl);
         backward(disc);
-        //update(disc);
-
         // Fake
-        forward(gen,batch_size);
         forward(disc,{gout});
         compute_loss(fl);
         backward(disc);
@@ -130,9 +130,8 @@ int main(int argc, char **argv) {
         update(disc);
 
 
-        // Update Gen
+        // Train Gen
         reset_grads(gen);
-        forward(gen,batch_size);
         forward(disc,{gout});
         compute_loss(rl);
         backward(disc);
