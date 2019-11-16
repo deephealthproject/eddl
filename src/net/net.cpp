@@ -22,8 +22,6 @@
 
 #include "../layers/core/layer_core.h"
 
-#define VERBOSE 0
-
 
 
 ostream &operator<<(ostream &os, const vector<int> shape) {

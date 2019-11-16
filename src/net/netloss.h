@@ -30,7 +30,7 @@ public:
     Layer* fout;
 
     NetLoss(Layer* (*f)(vector<Layer *>),vector<Layer *> in,string name);
-    void compute();
+    float compute();
 
 };
 

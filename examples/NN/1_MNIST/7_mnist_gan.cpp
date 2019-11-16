@@ -44,16 +44,16 @@ int main(int argc, char **argv) {
     layer gin=GaussGenerator(0.0, 1, {100});
     layer l=gin;
 
-    l=ReLu(Dense(l,256));
-    l=ReLu(Dense(l,512));
-    l=ReLu(Dense(l,1024));
+    l=LReLu(Dense(l,256));
+    l=LReLu(Dense(l,512));
+    l=LReLu(Dense(l,1024));
 
     layer gout=Tanh(Dense(l,784));
 
     model gen = Model({gin},{});
 
     build(gen,
-          sgd(0.0001, 0.9), // Optimizer
+          sgd(0.01, 0.0), // Optimizer
           {}, // Losses
           {}, // Metrics
           CS_CPU()
@@ -65,15 +65,15 @@ int main(int argc, char **argv) {
     // Define Discriminator
     layer din=Input({784});
     l = din;
-    l = Dropout(ReLu(Dense(l, 1024)),0.3);
-    l = Dropout(ReLu(Dense(l, 512)),0.3);
-    l = Dropout(ReLu(Dense(l, 1024)),0.3);
+    l = LReLu(Dense(l, 1024));
+    l = LReLu(Dense(l, 512));
+    l = LReLu(Dense(l, 256));
 
     layer dout = Sigmoid(Dense(l, 1));
 
     model disc = Model({din},{});
     build(disc,
-            sgd(0.0001, 0.9), // Optimizer
+            sgd(0.01, 0.0), // Optimizer
           {}, // Losses
           {}, // Metrics
           CS_CPU()
@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
     int i,j;
     int num_batches=100;
     int epochs=1000;
-    int batch_size = 10;
+    int batch_size = 100;
 
     tensor batch=eddlT::create({batch_size,784});
 
@@ -110,40 +110,38 @@ int main(int argc, char **argv) {
       fprintf(stdout, "Epoch %d/%d (%d batches)\n", i + 1, epochs,num_batches);
       for(j=0;j<num_batches;j++)  {
 
-        // get random batch
+        // get a batch from real images
         next_batch({x_train},{batch});
-        // generate with generator
+        // generate a batch with generator
         forward(gen,batch_size);
 
         // Train Discriminator
-        reset_grads(disc);
-
+        zeroGrads(disc);
         // Real
         forward(disc,{batch});
-        compute_loss(rl);
+        float dr=compute_loss(rl);
         backward(disc);
+
         // Fake
         forward(disc,{gout});
-        compute_loss(fl);
+        float df=compute_loss(fl);
         backward(disc);
 
         update(disc);
 
-
         // Train Gen
-        reset_grads(gen);
+        zeroGrads(gen);
         forward(disc,{gout});
-        compute_loss(rl);
+        float gr=compute_loss(rl);
         backward(disc);
         copyGrad(din,gout);
         backward(gen);
         update(gen);
 
+        printf("Batch %d -- Dr=%1.3f  Df=%1.3f  Gr=%1.3f\r",j+1,dr,df,gr);
 
-        printf("\r");
+        fflush(stdout);
 
-
-       //getchar();
       }
 
       printf("\n");

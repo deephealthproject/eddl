@@ -37,8 +37,9 @@ void Net::do_initialize() {
 
 /////////////////////////////////////////
 void Net::do_reset() {
-    for (int i = 0; i != layers.size(); i++)
+    for (int i = 0; i != layers.size(); i++) {
         layers[i]->reset();
+      }
 }
 
 void Net::do_reset_grads() {
@@ -62,7 +63,6 @@ void Net::do_backward() {
         vbts[i]->backward();
         if (VERBOSE) cout<<"BACK: "<<vbts[i]->name<<"delta:"<<vbts[i]->delta->sum()<<"\n";
       }
-
 }
 
 void Net::do_delta() {

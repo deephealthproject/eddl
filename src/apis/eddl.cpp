@@ -567,11 +567,11 @@ namespace eddl {
       m->reset_loss();
     }
 
-    void reset_grads(model net)
+    void zeroGrads(model net)
     {
       net->reset_grads();
     }
-    
+
     void backward(model net,vector<Tensor *> target)
     {
       net->backward(target);
@@ -583,9 +583,9 @@ namespace eddl {
       net->backward({});
     }
 
-    void compute_loss(loss L)
+    float compute_loss(loss L)
     {
-      L->compute();
+      return L->compute();
     }
 
     void update(model net)

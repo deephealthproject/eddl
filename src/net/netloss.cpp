@@ -35,10 +35,11 @@ NetLoss::NetLoss(Layer* (*f)(vector<Layer *>),vector<Layer *>in,string name)
 
 }
 
-void NetLoss::compute()
+float NetLoss::compute()
 {
 
    graph->reset_loss();
+   graph->reset();
    graph->reset_grads();
    graph->forward(input);
    graph->delta();
@@ -47,19 +48,16 @@ void NetLoss::compute()
 
    value=fout->output->sum()/fout->output->shape[0];
 
-   printf("%s: %1.3f -- ",name.c_str(),value);
-   fflush(stdout);
+   //printf("%s: %1.3f -- ",name.c_str(),value);
+   //fflush(stdout);
 
    for(int i=0;i<ginput.size();i++) {
      collectTensor(ginput[i],"grad");
-     Tensor::inc(ginput[i]->delta,input[i]->delta);
+     Tensor::copy(ginput[i]->delta,input[i]->delta);
      distributeTensor(input[i],"grad");
    }
-/*
-   for(int i=0;i<ginput.size();i++) {
-     input[i]->net->backward();
-   }
-*/
+
+   return value;
 
 }
 

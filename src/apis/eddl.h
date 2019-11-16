@@ -254,12 +254,12 @@ namespace eddl {
     void print_loss(model m, int batch);
 
     void reset_loss(model m);
-    void reset_grads(model m);
+    void zeroGrads(model m);
 
     void backward(model m,vector<Tensor *> target);
     void backward(model net);
 
-    void compute_loss(loss L);
+    float compute_loss(loss L);
 
     void update(model m);
 
