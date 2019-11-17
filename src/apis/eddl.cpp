@@ -558,6 +558,12 @@ namespace eddl {
       net->forward();
     }
 
+    void clamp(model m,float min,float max)
+    {
+      m->clamp(min,max);
+    }
+
+
     void print_loss(model m, int batch){
       m->print_loss(batch);
     }

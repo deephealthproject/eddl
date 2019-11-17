@@ -76,6 +76,8 @@ public:
     Tensor* getBias();
     Tensor* setBias(Tensor bias);
 
+    void clamp(float min,float max);
+
 
     //virtual
 

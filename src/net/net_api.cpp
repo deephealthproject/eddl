@@ -261,6 +261,12 @@ void Net::setmode(int m) {
       snets[i]->layers[j]->setmode(m);
 }
 
+void Net::clamp(float min,float max)
+ {
+   for (int i = 0; i < snets.size(); i++)
+     for (int j = 0; j < snets[i]->layers.size(); j++)
+       snets[i]->layers[j]->clamp(min,max);
+}
 
 //////////////////////////////////
 // API functions

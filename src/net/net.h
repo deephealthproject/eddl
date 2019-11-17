@@ -126,6 +126,8 @@ public:
     void reset_grads();
     void update();
     void compute_loss();
+    void clamp(float min,float max);
+
 
     void fit(vtensor tin, vtensor tout, int batch_size, int epochs);
     void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);

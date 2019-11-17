@@ -59,6 +59,13 @@ void Layer::initialize() {
     }
 }
 
+void Layer::clamp(float min,float max)
+{
+  for (int i = 0; i != params.size(); i++) {
+      params[i]->clamp_(min,max);
+  }
+}
+
 
 void Layer::resize(int batch)
 {

@@ -252,6 +252,8 @@ namespace eddl {
     void forward(model m);
     void forward(model m,int b);
 
+    void clamp(model m,float min,float max);
+
     void print_loss(model m, int batch);
 
     void reset_loss(model m);
