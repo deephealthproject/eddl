@@ -193,7 +193,7 @@ namespace eddl {
     optimizer adagrad(float lr, float epsilon, float weight_decay); //Todo: Implement
     optimizer adamax(float lr, float beta_1, float beta_2, float epsilon, float weight_decay); //Todo: Implement
     optimizer nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule_decay); //Todo: Implement
-    optimizer rmsprop(float lr, float rho, float epsilon, float weight_decay); //Todo: Implement
+    optimizer rmsprop(float lr=0.01, float rho=0.9, float epsilon=0.00001, float weight_decay=0.0); //Todo: Implement
     optimizer sgd(float lr = 0.01f, float momentum = 0.0f, float weight_decay = 0.0f, bool nesterov = false);
 
 

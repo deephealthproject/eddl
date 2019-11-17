@@ -80,7 +80,7 @@ public:
 
     explicit Adam(float lr=0.01f, float beta_1=0.9f, float beta_2=0.999f, float epsilon=1e-8f, float weight_decay=0.0f, bool amsgrad=false);
     ~Adam();
-    
+
     Optimizer *clone();
 
     void setlayers(vlayer l);
@@ -184,17 +184,20 @@ public:
     float epsilon;
     float weight_decay;
 
-    vtensor mT;
+    vtensor gT;
+    vtensor gT1;
 
     explicit RMSProp(float lr=0.01f, float rho=0.9f, float epsilon=1e-8f, float weight_decay=0.0f);
 
-//    Optimizer *clone();
-//
-//    void setlayers(vlayer l);
-//
-//    void applygrads(int batch);
-//
-//    void change(const vector<float> &p);
+    ~RMSProp();
+    
+    Optimizer *clone();
+
+    void setlayers(vlayer l);
+
+    void applygrads(int batch);
+
+    void change(vector<float> &p);
 };
 #endif
 

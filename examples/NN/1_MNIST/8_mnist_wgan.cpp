@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
   layer gout=Tanh(Dense(l,784));
 
   model gen = Model({gin},{});
-  optimizer gopt=adam(0.001);
+  optimizer gopt=rmsprop(0.001);
 
   build(gen,
     gopt, // Optimizer
@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
   layer dout = Dense(l, 1);
 
   model disc = Model({din},{});
-  optimizer dopt=adam(0.001);
+  optimizer dopt=rmsprop(0.001);
 
   build(disc,
     dopt, // Optimizer
