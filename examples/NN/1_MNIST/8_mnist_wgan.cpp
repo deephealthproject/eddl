@@ -112,7 +112,6 @@ int main(int argc, char **argv) {
 
   for(i=0;i<epochs;i++) {
     float dr,df;
-    reset_loss(disc);
     fprintf(stdout, "Epoch %d/%d (%d batches)\n", i + 1, epochs,num_batches);
     for(j=0;j<num_batches;j++)  {
 
