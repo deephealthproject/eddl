@@ -86,7 +86,6 @@ int main(int argc, char **argv) {
   summary(gen);
   summary(disc);
 
-  getchar();
 
   // Load dataset
   tensor x_train = eddlT::load("trX.bin");
