@@ -35,6 +35,10 @@ NetLoss::NetLoss(Layer* (*f)(vector<Layer *>),vector<Layer *> in,string name)
 
 }
 
+NetLoss::~NetLoss() {
+  delete graph;
+}
+
 float NetLoss::compute()
 {
 

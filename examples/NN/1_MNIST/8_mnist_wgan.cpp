@@ -141,6 +141,7 @@ int main(int argc, char **argv) {
 
       // Train Gen
       zeroGrads(gen);
+      forward(gen,batch_size);
       forward(disc,{gout});
       float gr=compute_loss(rl);
       backward(disc);
