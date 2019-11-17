@@ -39,7 +39,6 @@ int main(int argc, char **argv) {
   // Download dataset
   download_mnist();
 
-  // Oprimizer
 
   // Define Generator
   layer gin=GaussGenerator(0.0, 1, {100});
@@ -56,6 +55,9 @@ int main(int argc, char **argv) {
 
   build(gen,gopt); // Default CS_CPU
 
+  summary(gen);
+
+
   // Define Discriminator
   layer din=Input({784});
   l = din;
@@ -70,7 +72,6 @@ int main(int argc, char **argv) {
 
   build(disc,dopt); // Default CS_CPU
 
-  summary(gen);
   summary(disc);
 
 
@@ -89,12 +90,12 @@ int main(int argc, char **argv) {
 
   tensor batch=eddlT::create({batch_size,784});
 
-  // STILL EXPERIMENTAL
 
   // Wasserstein GAN params:
   int critic=5;
   float clip=0.01;
 
+  // losses
   loss rl=newloss(vreal_loss,{dout},"real_loss");
   loss fl=newloss(vfake_loss,{dout},"fake_loss");
 

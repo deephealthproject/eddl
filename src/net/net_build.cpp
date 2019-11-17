@@ -109,8 +109,12 @@ void Net::bts() {
 void Net::toCPU(int t){
     CompServ *cs=new CompServ(t, {}, {},0);
 
-    //build(opt, lo, me);
-    snets.empty();
+    for (int i = 0; i < snets.size(); i++) {
+      Xs[i].clear();
+      Ys[i].clear();
+    }
+
+    snets.clear();
 
     set_compserv(cs);
 
@@ -126,8 +130,12 @@ void Net::toCPU(int t){
 void Net::toGPU(vector<int> &g,int lsb){
     CompServ *cs=new CompServ(0, g, {},lsb);
 
-    //build(opt, lo, me);
-    snets.empty();
+    for (int i = 0; i < snets.size(); i++) {
+      Xs[i].clear();
+      Ys[i].clear();
+    }
+    
+    snets.clear();
 
     set_compserv(cs);
 
