@@ -24,13 +24,13 @@ using namespace eddl;
 layer vreal_loss(vector<layer> in)
 {
   // -log( D_out + epsilon )
-  return Mult(Log(Sum(in[0],0.0001)),-1);
+  return Mult(in[0],-1);
 }
 
 layer vfake_loss(vector<layer> in)
 {
   // -log( 1 - D_out + epsilon )
-  return Mult(Log(Sum(Diff(1,in[0]),0.0001)),-1);
+  return Mult(in[0],1);
 }
 
 
@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
   l = LReLu(Dense(l, 512));
   l = LReLu(Dense(l, 256));
 
-  layer dout = Sigmoid(Dense(l, 1));
+  layer dout = Dense(l, 1);
 
   model disc = Model({din},{});
   optimizer dopt=adam(0.001);
@@ -86,6 +86,8 @@ int main(int argc, char **argv) {
   summary(gen);
   summary(disc);
 
+  getchar();
+
   // Load dataset
   tensor x_train = eddlT::load("trX.bin");
   // Preprocessing [-1,1]
@@ -95,7 +97,7 @@ int main(int argc, char **argv) {
 
   // Training
   int i,j;
-  int num_batches=1000;
+  int num_batches=100;
   int epochs=1000;
   int batch_size = 100;
 
