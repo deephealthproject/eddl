@@ -106,6 +106,40 @@ void Net::bts() {
 /////////////////////////////////////////
 //// BUILD FUNCS
 /////////////////////////////////////////
+void Net::toCPU(int t){
+    CompServ *cs=new CompServ(t, {}, {},0);
+
+    //build(opt, lo, me);
+    snets.empty();
+
+    set_compserv(cs);
+
+    if (cs->type == "local") {
+      if (snets[0]->dev == DEV_CPU)
+        cout << "Net running on CPU\n";
+      else if (snets[0]->dev < DEV_FPGA)
+        cout << "Net running on GPU " << snets[0]->dev - DEV_GPU << "\n";
+      else
+        cout << "Net running on FPGA " << snets[0]->dev - DEV_FPGA << "\n";
+    }
+}
+void Net::toGPU(vector<int> &g,int lsb){
+    CompServ *cs=new CompServ(0, g, {},lsb);
+
+    //build(opt, lo, me);
+    snets.empty();
+
+    set_compserv(cs);
+
+    if (cs->type == "local") {
+      if (snets[0]->dev == DEV_CPU)
+        cout << "Net running on CPU\n";
+      else if (snets[0]->dev < DEV_FPGA)
+        cout << "Net running on GPU " << snets[0]->dev - DEV_GPU << "\n";
+      else
+        cout << "Net running on FPGA " << snets[0]->dev - DEV_FPGA << "\n";
+    }
+}
 
 void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs){
     build(opt, lo, me);

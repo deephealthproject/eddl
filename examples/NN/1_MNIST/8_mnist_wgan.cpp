@@ -54,14 +54,7 @@ int main(int argc, char **argv) {
   model gen = Model({gin},{});
   optimizer gopt=rmsprop(0.001);
 
-  build(gen,
-    gopt, // Optimizer
-    {}, // Losses
-    {}, // Metrics
-    CS_CPU()
-    //CS_GPU({1})
-  );
-
+  build(gen,gopt); // Default CS_CPU
 
   // Define Discriminator
   layer din=Input({784});
@@ -75,13 +68,7 @@ int main(int argc, char **argv) {
   model disc = Model({din},{});
   optimizer dopt=rmsprop(0.001);
 
-  build(disc,
-    dopt, // Optimizer
-    {}, // Losses
-    {}, // Metrics
-    CS_CPU()
-    //CS_GPU({1})
-  );
+  build(disc,dopt); // Default CS_CPU
 
   summary(gen);
   summary(disc);

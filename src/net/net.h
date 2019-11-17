@@ -79,6 +79,9 @@ public:
     ~Net();
 
     void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs);
+    void toGPU(vector<int> &g,int lsb);
+    void toCPU(int t);
+
     void fts();
     void bts();
     void split(int c, int todev);

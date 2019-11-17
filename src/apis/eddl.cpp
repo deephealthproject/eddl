@@ -631,6 +631,15 @@ namespace eddl {
         return new Net(in, out);
     }
 
+    void build(model net, optimizer o, CompServ *cs) {
+        // Assign default computing service
+        if (cs== nullptr){
+            cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
+        }
+
+        net->build(o, {}, {}, cs);
+    }
+
     void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs) {
         vector<Loss *> l;
         vector<Metric *> m;
@@ -650,6 +659,14 @@ namespace eddl {
         }
 
         net->build(o, l, m, cs);
+    }
+    void toGPU(model net, vector<int> g,int lsb)
+    {
+      net->toGPU(g,lsb);
+    }
+    void toCPU(model net, int t)
+    {
+      net->toCPU(t);
     }
 
     void setlogfile(model net,string fname)
