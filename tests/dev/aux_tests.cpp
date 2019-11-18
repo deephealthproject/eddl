@@ -282,7 +282,7 @@ TestResult run_tensor_da(Tensor* t_input, Tensor* t_output, string op, int dev, 
     clock_t begin = clock();
     for(int i=0; i<runs; i++){
         if(op=="shift"){ Tensor::shift(t_input, t_output, {-1, -1}); }
-        else if(op=="rotate"){ Tensor::rotate(t_input, t_output, 90.0f, {1, 0}); }
+        else if(op=="rotate"){ Tensor::rotate(t_input, t_output, 30.0f); }
         else if(op=="flip_v"){ Tensor::flip(t_input, t_output, 0); }
         else if(op=="flip_h"){ Tensor::flip(t_input, t_output,  1);}
         else if(op=="scale"){ Tensor::scale(t_input, t_output, {5, 5});}
@@ -291,7 +291,7 @@ TestResult run_tensor_da(Tensor* t_input, Tensor* t_output, string op, int dev, 
         else if(op=="cutout"){ Tensor::cutout(t_input, t_output, {1, 1}, {3, 3});}
 
         else if(op=="shift_random"){ Tensor::shift_random(t_input, t_output, {-0.5f, +0.5f}, {-0.5f, +0.5f}); }
-        else if(op=="rotate_random"){ Tensor::rotate_random(t_input, t_output, {-90.0f, +90.0f}, {0, 1}); }
+        else if(op=="rotate_random"){ Tensor::rotate_random(t_input, t_output, {-90.0f, +90.0f}); }
         else if(op=="flip_v_random"){ Tensor::flip_random(t_input, t_output, 0); }
         else if(op=="flip_h_random"){ Tensor::flip_random(t_input, t_output,  1);}
         else if(op=="scale_random"){ Tensor::scale_random(t_input, t_output, {2.0f, 2.0f});}

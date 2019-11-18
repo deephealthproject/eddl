@@ -19,7 +19,7 @@ using namespace std;
 
 int LRotateRandom::total_layers = 0;
 
-LRotateRandom::LRotateRandom(Layer *parent, vector<float> factor, vector<int> axis, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
+LRotateRandom::LRotateRandom(Layer *parent, vector<float> factor, vector<int> offset_center, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
     if(name.empty()) this->name = "rotate_random" + to_string(++total_layers);
 
     input = parent->output;
@@ -28,7 +28,7 @@ LRotateRandom::LRotateRandom(Layer *parent, vector<float> factor, vector<int> ax
 
     // Params
     this->factor = factor;
-    this->axis = axis;
+    this->offset_center = offset_center;
     this->da_mode = da_mode;
     this->constant = constant;
 
@@ -48,7 +48,7 @@ void LRotateRandom::resize(int batch){
 }
 
 void LRotateRandom::forward() {
-    Tensor::rotate_random(this->input, this->output, this->factor, this->axis, this->da_mode, this->constant);
+    Tensor::rotate_random(this->input, this->output, this->factor, this->offset_center, this->da_mode, this->constant);
 }
 
 void LRotateRandom::backward() {
@@ -57,7 +57,7 @@ void LRotateRandom::backward() {
 
 
 Layer *LRotateRandom::share(int c, int bs, vector<Layer *> p) {
-    LRotateRandom *n = new LRotateRandom(p[0], this->factor, this->axis, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
+    LRotateRandom *n = new LRotateRandom(p[0], this->factor, this->offset_center, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
     n->orig = this;
 
     // TODO: Implement
@@ -66,7 +66,7 @@ Layer *LRotateRandom::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LRotateRandom::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LRotateRandom *n = new LRotateRandom(p[0], this->factor, this->axis, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
+    LRotateRandom *n = new LRotateRandom(p[0], this->factor, this->offset_center, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
 
     // TODO: Implement

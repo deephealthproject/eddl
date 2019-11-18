@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
 
     // Open image
     cout<<"AQUI\n";
-    Tensor* t1 = Tensor::load("./test2.jpg", "jpg");
+    Tensor* t1 = Tensor::load("images/cow.jpg", "jpg");
 //    float* ptr = new float[3*4*2]{
 //        255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f,
 //        128.0f, 128.0f, 128.0f, 128.0f, 128.0f, 128.0f, 128.0f, 128.0f,
@@ -56,39 +56,39 @@ int main(int argc, char **argv) {
 //    Tensor* t1 = new Tensor({1, 3, 4, 2}, ptr, DEV_CPU);
     Tensor* t2 = t1->clone();
     t2->info();
-      cout<<"AQUI\n";
+    cout<<"AQUI\n";
 
 //     *************************************************
 //     ***** Make color/light transformations **********
 //     *************************************************
-    t1->add_(100);
-    t1->clampmax_(255);
+//    t1->add_(100);
+//    t1->clampmax_(255);
 //
 //     *************************************************
 //     ***** Make standard transformations *************
 //     *************************************************
 
-    Tensor::shift(t1, t2, {10, 30});
-    t1 = t2->clone();
-
-    // Tensor::rotate(t1, t2, 30.0f, {0, 1});
-    //    t1 = t2->clone();
-
-    float scale=1.25f;
-    Tensor::scale(t1, t2, {(int)(t2->shape[2]*scale), (int)(t2->shape[3]*scale)});
-    t1 = t2->clone();
-
-    Tensor::flip(t1, t2, 1);
-    t1 = t2->clone();
-
-//    Tensor::crop(t1, t2, {10, 0}, {60, 80}); // Note: The final size depends on the size of t2
+//    Tensor::shift(t1, t2, {50, 20});
 //    t1 = t2->clone();
 
-    Tensor::crop_scale(t1, t2, {0, 0}, {80, 80});
+    Tensor::rotate(t1, t2, 30.0f, {0, 0});
     t1 = t2->clone();
-
-    Tensor::cutout(t1, t2, {50, 50}, {60, 100});
-    t1 = t2->clone();
+//
+//    float scale=1.25f;
+//    Tensor::scale(t1, t2, {(int)(t2->shape[2]*scale), (int)(t2->shape[3]*scale)});
+//    t1 = t2->clone();
+//
+//    Tensor::flip(t1, t2, 1);
+//    t1 = t2->clone();
+//
+////    Tensor::crop(t1, t2, {10, 0}, {60, 80}); // Note: The final size depends on the size of t2
+////    t1 = t2->clone();
+//
+//    Tensor::crop_scale(t1, t2, {0, 0}, {400, 400});
+//    t1 = t2->clone();
+//
+//    Tensor::cutout(t1, t2, {50, 50}, {100, 150});
+//    t1 = t2->clone();
 
 
     // *************************************************
@@ -116,6 +116,6 @@ int main(int argc, char **argv) {
 //    t1 = t2->clone();
 
     // Save result
-    t2->save("./test2b.png", "png");
+    t2->save("images/new_cow.png", "png");
     cout << "Image saved!" << endl;
 }

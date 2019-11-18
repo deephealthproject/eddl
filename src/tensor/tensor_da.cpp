@@ -43,15 +43,14 @@ void Tensor::shift(Tensor *A, Tensor *B, vector<int> shift, string mode, float c
 }
 
 
-
-void Tensor::rotate(Tensor *A, Tensor *B, float angle, vector<int> axis, string mode, float constant) {
+void Tensor::rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, string mode, float constant) {
     if (A->isCPU()) {
-        cpu_rotate(A, B, angle, std::move(axis), get_mode(std::move(mode)), constant);
+        cpu_rotate(A, B, angle, std::move(offset_center), get_mode(std::move(mode)), constant);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_rotate(A, B, angle, std::move(axis), get_mode(std::move(mode)), constant);
+        gpu_rotate(A, B, angle, std::move(offset_center), get_mode(std::move(mode)), constant);
       }
 #endif
 #ifdef cFPGA
@@ -170,16 +169,14 @@ void Tensor::shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<f
 
 
 
-void Tensor::rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> axis, string mode, float constant) {
+void Tensor::rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center, string mode, float constant) {
     if (A->isCPU()) {
-        msg("Not implemented for CPU", "Tensor::rotate_random");
-        //cpu_rotate_random(A, B,  std::move(factor), std::move(axis), get_mode(std::move(mode)), constant);
+        cpu_rotate_random(A, B,  std::move(factor), std::move(offset_center), get_mode(std::move(mode)), constant);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        msg("Not implemented for GPU", "Tensor::rotate_random");
-        //cpu_rotate_random(A, B,  std::move(factor), std::move(axis), get_mode(std::move(mode)), constant);
+        cpu_rotate_random(A, B,  std::move(factor), std::move(offset_center), get_mode(std::move(mode)), constant);
       }
 #endif
 #ifdef cFPGA

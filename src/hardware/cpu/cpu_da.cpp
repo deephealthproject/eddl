@@ -38,6 +38,34 @@ void cpu_single_shift(int b, Tensor *A, Tensor *B, vector<int> shift, int mode, 
     }
 }
 
+void cpu_single_rotate(int b, Tensor *A, Tensor *B, float angle, vector<int> offset_center, int mode, float constant){
+    float side_a = A->shape[2]/2.0f;
+    float side_b = A->shape[3]/2.0f;
+    int center[2] = {(int)side_a+offset_center[0], (int)side_b+offset_center[1]};
+    float angle_rad = (float)((-angle) * M_PI/180.0f);  // Convert to radians
+
+
+    for(int c=0; c<B->shape[1]; c++) {
+        for (int Bi = 0; Bi < B->shape[2]; Bi++) {
+            for (int Bj = 0; Bj < B->shape[3]; Bj++) {
+                int Bi_c = Bi - center[0];
+                int Bj_c = Bj - center[1];
+
+                int Ai = std::sinf(angle_rad) * Bj_c + std::cosf(angle_rad) * Bi_c + center[0];
+                int Aj = std::cosf(angle_rad) * Bj_c - std::sinf(angle_rad) * Bi_c + center[1];
+
+                int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
+                if (Ai >= 0 && Ai < A->shape[2] && Aj >= 0 && Aj < A->shape[3]){
+                    int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
+                    B->ptr[B_pos] = A->ptr[A_pos];;
+                }else{
+                    B->ptr[B_pos] = constant;
+                }
+            }
+        }
+    }
+}
+
 void cpu_single_scale(int b, int* offsets, Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant){
 
     for(int c=0; c<B->shape[1]; c++) {
@@ -142,8 +170,13 @@ void cpu_shift(Tensor *A, Tensor *B, vector<int> shift, int mode, float constant
     }
 }
 
-void cpu_rotate(Tensor *A, Tensor *B, float angle, vector<int> axis, int mode, float constant){
+void cpu_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, int mode, float constant){
     // https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.rotate.html
+
+    #pragma omp parallel for
+    for(int b=0; b<B->shape[0]; b++) {
+        cpu_single_rotate(b, A, B, angle, offset_center, mode, constant);
+    }
 }
 
 void cpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant){
@@ -161,7 +194,7 @@ void cpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float cons
     offsets[0] = (new_shape[0] - B->shape[2])/2.0f;
     offsets[1] = (new_shape[1] - B->shape[3])/2.0f;
 
-#pragma omp parallel for
+    #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
         cpu_single_scale(b, offsets, A, B, new_shape, mode, constant);
     }
@@ -170,7 +203,7 @@ void cpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float cons
 void cpu_flip(Tensor *A, Tensor *B, int axis){
     // https://docs.scipy.org/doc/numpy/reference/generated/numpy.flip.html
 
-#pragma omp parallel for
+    #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
         cpu_single_flip(b, true, A, B, axis);
     }
@@ -188,7 +221,7 @@ void cpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_
         offsets[1] = coords_from[1];
     }
 
-#pragma omp parallel for
+    #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
         cpu_single_crop(b, offsets, A, B, coords_from, coords_to, constant, inverse);
     }
@@ -196,7 +229,8 @@ void cpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_
 
 
 void cpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, int mode, float constant){
-#pragma omp parallel for
+
+    #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
         cpu_single_crop_scale(b, A, B, coords_from, coords_to, mode, constant);
     }
@@ -207,7 +241,7 @@ void cpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> c
 void cpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int mode, float constant) {
     // https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.shift.html
 
-#pragma omp parallel for
+    #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
         int shift_y = (int)(A->shape[2] * uniform(factor_y[0], factor_y[1]));
         int shift_x = (int)(A->shape[3] * uniform(factor_x[0], factor_x[1]));
@@ -216,8 +250,13 @@ void cpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float
     }
 }
 
-void cpu_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> axis, int mode, float constant){
+void cpu_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center, int mode, float constant){
     // https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.rotate.html
+    #pragma omp parallel for
+    for(int b=0; b<B->shape[0]; b++) {
+        float angle =  uniform(factor[0], factor[1]);
+        cpu_single_rotate(b, A, B, angle, offset_center, mode, constant);
+    }
 }
 
 void cpu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant){
@@ -226,7 +265,7 @@ void cpu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, floa
     // If the factor is less than 1.0f, performs a downscale with padding
     int offsets[2] = {0, 0};
 
-#pragma omp parallel for
+    #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
         float scale = uniform(factor[0], factor[1]);
         int new_shape_y = (int)(A->shape[2] * scale);
@@ -243,7 +282,7 @@ void cpu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, floa
 void cpu_flip_random(Tensor *A, Tensor *B, int axis){
     // https://docs.scipy.org/doc/numpy/reference/generated/numpy.flip.html
 
-#pragma omp parallel for
+    #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
         bool apply = uniform(0.0f, 1.0f) >= 0.5f;
         cpu_single_flip(b, apply, A, B, axis);
@@ -255,7 +294,7 @@ void cpu_crop_random(Tensor *A, Tensor *B){
     // Performs a crop with padding (Keeps the original size)
     int offsets[2] = {0, 0};
 
-#pragma omp parallel for
+    #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
 
         // Compute random coordinates
@@ -277,7 +316,8 @@ void cpu_crop_random(Tensor *A, Tensor *B){
 }
 
 void cpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant){
-#pragma omp parallel for
+
+    #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
 
         // Compute random coordinates

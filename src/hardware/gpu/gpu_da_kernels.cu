@@ -47,13 +47,36 @@ __global__ void shift(float* A, float* B, int batch, int depth, int irows, int i
 
 }
 
-__global__ void rotate(float* A, float* B, int batch, int depth, int irows, int icols, float angle, int* axis, bool reshape, int mode, float constant){
+__global__ void rotate(float* A, float* B, int batch, int depth, int irows, int icols, float angle, int* center, int mode, float constant){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*irows*icols;
 
     // Not implemented
     if (thread_id_x < ops){
-        B[thread_id_x] = constant;
+        int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
+        int *B_stride = A_stride;
+
+        //--------------
+        int b = thread_id_x / B_stride[0] % batch;
+        int c = thread_id_x / B_stride[1] % depth;
+        int Bi = thread_id_x / B_stride[2] % irows;
+        int Bj = thread_id_x / B_stride[3] % icols;
+        //--------------
+        //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
+
+        int Bi_c = Bi - center[0];
+        int Bj_c = Bj - center[1];
+        int Ai = sinf(angle_rad) * Bj_c + cosf(angle_rad) * Bi_c + center[0];
+        int Aj = cosf(angle_rad) * Bj_c - sinf(angle_rad) * Bi_c + center[1];
+
+        if (Ai >= 0 && Ai < irows && Aj >= 0 && Aj < icols){
+            int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
+            B[thread_id_x] = A[A_pos];
+        }else{
+            if(mode==0){ // constant
+                B[thread_id_x] = constant;
+            }
+        }
     }
 }
 
@@ -223,13 +246,37 @@ __global__ void shift_random(float* A, float* B, int batch, int depth, int irows
 
 }
 
-__global__ void rotate_random(float* A, float* B, int batch, int depth, int irows, int icols, float* factor, int* axis, int mode, float constant, float* rnd){
+__global__ void rotate_random(float* A, float* B, int batch, int depth, int irows, int icols, float* factor, int* center, int mode, float constant, float* rnd){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*irows*icols;
 
     // TODO: Implement
     if (thread_id_x < ops){
-        B[thread_id_x] = constant;
+        int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
+        int *B_stride = A_stride;
+
+        //--------------
+        int b = thread_id_x / B_stride[0] % batch;
+        int c = thread_id_x / B_stride[1] % depth;
+        int Bi = thread_id_x / B_stride[2] % irows;
+        int Bj = thread_id_x / B_stride[3] % icols;
+        //--------------
+        //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
+
+        int Bi_c = Bi - center[0];
+        int Bj_c = Bj - center[1];
+        float angle_rad = -1.0f * ((angle_rad[1]-angle_rad[0]) * rnd[b] + angle_rad[0])));
+        int Ai = sinf(angle_rad) * Bj_c + cosf(angle_rad) * Bi_c + center[0];
+        int Aj = cosf(angle_rad) * Bj_c - sinf(angle_rad) * Bi_c + center[1];
+
+        if (Ai >= 0 && Ai < irows && Aj >= 0 && Aj < icols){
+            int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
+            B[thread_id_x] = A[A_pos];
+        }else{
+            if(mode==0){ // constant
+                B[thread_id_x] = constant;
+            }
+        }
     }
 }
 

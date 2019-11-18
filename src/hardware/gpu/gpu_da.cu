@@ -33,13 +33,22 @@ void gpu_shift(Tensor *A, Tensor *B, vector<int> t_shift, int mode, float consta
     check_cuda(cudaDeviceSynchronize(), "shift");
 }
 
-void gpu_rotate(Tensor *A, Tensor *B, float angle, vector<int> axis, int mode, float constant){
+void gpu_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, int mode, float constant){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
-    setDims(B);
+    // Compute angle (radians) and center
+    float side_a = A->shape[2]/2.0f;
+    float side_b = A->shape[3]/2.0f;
+    int center[2] = {(int)side_a+offset_center[0], (int)side_b+offset_center[1]};
+    float angle_rad = (float)((-angle) * M_PI/180.0f);  // Convert to radians
 
-//    rotate<<<dimGrid,dimBlock>>>(A->ptr, A->size);
+    // Copy vector from host to device
+    int *d_center; cudaMalloc((int**)&d_center, 2*sizeof(int));
+    cudaMemcpy(d_center, center, 2*sizeof(int), cudaMemcpyHostToDevice);
+
+    setDims(B);
+    rotate<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], angle_rad, d_center, mode, constant);
     check_cuda(cudaDeviceSynchronize(), "rotate");
 
 }
@@ -48,7 +57,7 @@ void gpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float cons
     int device=A->gpu_device;
     cudaSetDevice(device);
 
- // Copy vector from host to device
+    // Copy vector from host to device
     int *d_new_shape; cudaMalloc((int**)&d_new_shape, new_shape.size()*sizeof(int));
     cudaMemcpy(d_new_shape, new_shape.data(), new_shape.size()*sizeof(int), cudaMemcpyHostToDevice);
 
@@ -136,13 +145,22 @@ void gpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float
     check_cuda(cudaDeviceSynchronize(), "shift_random");
 }
 
-void gpu_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> axis, int mode, float constant){
+void gpu_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center, int mode, float constant){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     // Copy vector from host to device
     float *d_factor; cudaMalloc((float**)&d_factor, 2*sizeof(float));
     cudaMemcpy(d_factor, factor.data(), 2*sizeof(float), cudaMemcpyHostToDevice);
+
+    // Compute angle (radians) and center
+    float side_a = A->shape[2]/2.0f;
+    float side_b = A->shape[3]/2.0f;
+    int center[2] = {(int)side_a+offset_center[0], (int)side_b+offset_center[1]};
+
+    // Copy vector from host to device
+    int *d_center; cudaMalloc((int**)&d_center, 2*sizeof(int));
+    cudaMemcpy(d_center, center, 2*sizeof(int), cudaMemcpyHostToDevice);
 
     // Generate random numbers
     int rnd_size = A->shape[0] * 1;  // Batch x dims (x,y,...)
@@ -151,7 +169,7 @@ void gpu_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> a
     uniform_array<<<t_bdim[0], t_bdim[1]>>>(d_rnd, rnd_size, 0);
 
     setDims(B);
-    //rotate_random<<<dimGrid,dimBlock>>>(A->ptr, A->size);
+    rotate_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], d_center, mode, constant, rnd);
     check_cuda(cudaDeviceSynchronize(), "rotate_random");
 
 }
