@@ -33,7 +33,7 @@ layer vreal_loss(vector<layer> in)
 layer vfake_loss(layer in)
 {
   // minimizes for fake images
-  return ReduceMean(in);
+  return in;
 }
 
 
