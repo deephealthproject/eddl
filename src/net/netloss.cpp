@@ -66,7 +66,7 @@ float NetLoss::compute()
    graph->reset_grads();
    graph->forward(input);
    graph->delta();
-   graph->backward();
+   //graph->backward();
 
    collectTensor(fout);
 

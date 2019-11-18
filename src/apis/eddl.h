@@ -264,6 +264,7 @@ namespace eddl {
 
     void backward(model m,vector<Tensor *> target);
     void backward(model net);
+    void backward(loss l);
 
     float compute_loss(loss L);
 

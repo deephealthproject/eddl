@@ -551,7 +551,7 @@ namespace eddl {
         exit(1);
       }
 
-      
+
       return out;
 
     }
@@ -628,6 +628,11 @@ namespace eddl {
     void backward(model net)
     {
       net->backward({});
+    }
+
+    void backward(loss l)
+    {
+      l->graph->backward();
     }
 
     float compute_loss(loss L)

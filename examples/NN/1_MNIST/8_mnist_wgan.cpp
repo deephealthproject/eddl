@@ -122,10 +122,12 @@ int main(int argc, char **argv) {
         // Real
         forward(disc,{batch});
         dr=compute_loss(rl);
+        backward(rl);
 
         // Fake
         forward(disc,detach(forward(gen,batch_size)));
         df=compute_loss(fl);
+        backward(fl);
         update(disc);
 
         clamp(disc,-clip,clip);
@@ -135,6 +137,7 @@ int main(int argc, char **argv) {
       zeroGrads(gen);
       forward(disc,forward(gen,batch_size));
       float gr=compute_loss(rl);
+      backward(rl);
 
       update(gen);
 
