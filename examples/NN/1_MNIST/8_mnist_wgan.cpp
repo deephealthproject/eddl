@@ -23,13 +23,11 @@ using namespace eddl;
 
 layer vreal_loss(vector<layer> in)
 {
-  // -log( D_out + epsilon )
   return Mult(in[0],-1);
 }
 
 layer vfake_loss(vector<layer> in)
 {
-  // -log( 1 - D_out + epsilon )
   return Mult(in[0],1);
 }
 
@@ -53,7 +51,9 @@ int main(int argc, char **argv) {
   model gen = Model({gin},{});
   optimizer gopt=rmsprop(0.001);
 
-  build(gen,gopt); // Default CS_CPU
+  build(gen,gopt); // By defatul CS_CPU
+
+  toGPU(gen); // move toGPU
 
   summary(gen);
 
@@ -70,7 +70,9 @@ int main(int argc, char **argv) {
   model disc = Model({din},{});
   optimizer dopt=rmsprop(0.001);
 
-  build(disc,dopt); // Default CS_CPU
+  build(disc,dopt); // By defatul CS_CPU
+  
+  toGPU(disc); // move toGPU
 
   summary(disc);
 

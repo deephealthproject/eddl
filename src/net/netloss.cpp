@@ -48,6 +48,8 @@ float NetLoss::compute()
    graph->delta();
    graph->backward();
 
+   collectTensor(fout);
+
    value=fout->output->sum()/fout->output->shape[0];
 
    //printf("%s: %1.3f -- ",name.c_str(),value);
