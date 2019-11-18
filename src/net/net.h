@@ -60,6 +60,7 @@ public:
     vlayer lout;
     vlayer vfts;
     vlayer vbts;
+    vlayer netinput;
 
     vloss losses;
     vmetrics metrics;

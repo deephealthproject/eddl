@@ -248,12 +248,14 @@ namespace eddl {
 
     void next_batch(vector<Tensor *> in,vector<Tensor *> out);
 
-    void forward(model m,vector<Layer *> in);
-    void forward(model m,vector<Tensor *> in);
-    void forward(model m);
-    void forward(model m,int b);
+    vlayer forward(model m,vector<Layer *> in);
+    vlayer forward(model m,vector<Tensor *> in);
+    vlayer forward(model m);
+    vlayer forward(model m,int b);
 
     void clamp(model m,float min,float max);
+    layer detach(layer l);
+    vlayer detach(vlayer l);
 
     void print_loss(model m, int batch);
 

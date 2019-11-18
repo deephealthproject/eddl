@@ -29,6 +29,7 @@ Layer::Layer(string name, int dev) {
     this->dev = dev;
     lin = lout = 0;
     delta_bp = 0;
+    detached=false;
 
     orig=nullptr;
     net=nullptr;
@@ -66,6 +67,10 @@ void Layer::clamp(float min,float max)
   }
 }
 
+void Layer::setdetach()
+{
+  detached=true;
+}
 
 void Layer::resize(int batch)
 {
@@ -85,6 +90,7 @@ void Layer::detach(Layer *l)
 
 void Layer::reset() {
     delta->fill_(0.0);
+    detached=false;
 }
 
 void Layer::zeroGrads() {

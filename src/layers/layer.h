@@ -52,6 +52,7 @@ public:
     int dev;
     int lin, lout;
     int delta_bp;
+    bool detached;
 
     Layer(string name, int dev);
     // Destructor
@@ -77,7 +78,7 @@ public:
     Tensor* setBias(Tensor bias);
 
     void clamp(float min,float max);
-
+    void setdetach();
 
     //virtual
 

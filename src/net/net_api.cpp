@@ -274,6 +274,8 @@ void Net::clamp(float min,float max)
 void Net::forward(vector<Tensor*> in)
 {
 
+  netinput.clear();
+
   reset();
   if (in.size()) {
     if (in.size()!=lin.size())
@@ -284,7 +286,7 @@ void Net::forward(vector<Tensor*> in)
     }
 
     for (int i = 0; i < in.size(); i++) {
-      Tensor::copy(in[i],lin[i]->output);
+        Tensor::copy(in[i],lin[i]->output);
     }
 
     // Distribute to snets inputs
@@ -298,6 +300,8 @@ void Net::forward(vector<Tensor*> in)
 
 void Net::forward(vector<Layer *> in)
 {
+  netinput=in;
+
   reset();
   if (in.size()) {
     if (in.size()!=lin.size())
@@ -311,19 +315,19 @@ void Net::forward(vector<Layer *> in)
     for (int i = 0; i < in.size(); i++) {
       collectTensor(in[i]);
       Tensor::copy(in[i]->output,lin[i]->output);
+      distributeTensor(lin[i]);
     }
 
-    // Distribute to snets inputs
-    for (int i = 0; i < in.size(); i++)
-      distributeTensor(lin[i]);
   }
 
   run_snets(forward_t);
+
 }
 
 void Net::forward()
 {
   reset();
+
   run_snets(forward_t);
 }
 
@@ -374,7 +378,19 @@ void Net::backward(vector<Tensor *> target)
 
 void Net::backward()
 {
+
+
   run_snets(backward_t);
+
+  for(int i=0;i<netinput.size();i++) {
+    if (netinput[i]->detached==false) {
+      collectTensor(lin[i],"grad");
+      Tensor::copy(lin[i]->delta,netinput[i]->delta);
+      distributeTensor(netinput[i],"grad");
+      netinput[i]->net->backward();
+    }
+  }
+
 }
 
 void Net::reset_loss()

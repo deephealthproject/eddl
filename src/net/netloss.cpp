@@ -72,14 +72,16 @@ float NetLoss::compute()
 
    value=fout->output->sum()/fout->output->shape[0];
 
-   //printf("%s = %f\n",name.c_str(),value);
-   //getchar();
-
+/*
    for(int i=0;i<ginput.size();i++) {
      collectTensor(ginput[i],"grad");
      Tensor::copy(ginput[i]->delta,input[i]->delta);
      distributeTensor(input[i],"grad");
    }
+*/
+   /*for(int i=0;i<input.size();i++) {
+     input[i]->net->backward();
+   }*/
 
    return value;
 

@@ -537,28 +537,54 @@ namespace eddl {
         Tensor::select(in[i], out[i], sind, 0, batch_size);
     }
 
-    void forward(model net,vector<Layer*> in)
+    vlayer getOut(model net)
     {
-      net->reset();
-      net->forward(in);
+      if (net->lout.size()) return net->lout;
+
+      vlayer out;
+      for(int i=0;i<net->layers.size();i++)
+       if(net->layers[i]->child.size()==0)
+         out.push_back(net->layers[i]);
+
+      if (out.size()==0) {
+        cout<<"Forwar over net "<<net->name<<"without outputs\n";
+        exit(1);
+      }
+
+      
+      return out;
+
     }
-    void forward(model net,vector<Tensor*> in)
+    vlayer forward(model net,vector<Layer*> in)
     {
       net->reset();
       net->forward(in);
+
+      return getOut(net);
+    }
+    vlayer forward(model net,vector<Tensor*> in)
+    {
+      net->reset();
+      net->forward(in);
+
+      return getOut(net);
     }
 
-    void forward(model net,int b)
+    vlayer forward(model net,int b)
     {
       net->resize(b);
       net->reset();
       net->forward();
 
+      return getOut(net);
+
     }
-    void forward(model net)
+    vlayer forward(model net)
     {
       net->reset();
       net->forward();
+
+      return getOut(net);
     }
 
     void clamp(model m,float min,float max)
@@ -566,6 +592,18 @@ namespace eddl {
       m->clamp(min,max);
     }
 
+    layer detach(layer l)
+    {
+      l->setdetach();
+      return l;
+    }
+
+    vlayer detach(vlayer l)
+    {
+      for(int i=0;i<l.size();i++)
+        l[i]->setdetach();
+      return l;
+    }
 
     void print_loss(model m, int batch){
       m->print_loss(batch);

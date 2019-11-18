@@ -21,7 +21,7 @@ using namespace eddl;
 // Wasserstein GAN for mnist
 //////////////////////////////////
 
-// loss with an vector of layers
+// loss with a vector of layers
 layer vreal_loss(vector<layer> in)
 {
   // maximize for real images (mimize -1 x Value)
@@ -112,24 +112,20 @@ int main(int argc, char **argv) {
     fprintf(stdout, "Epoch %d/%d (%d batches)\n", i + 1, epochs,num_batches);
     for(j=0;j<num_batches;j++)  {
 
-      for(int k=0;k<critic;k++) {
+      for(int k=0;k<5;k++) {
         // get a batch from real images
         next_batch({x_train},{batch});
         // generate a batch with generator
-        forward(gen,batch_size);
 
         // Train Discriminator
         zeroGrads(disc);
         // Real
         forward(disc,{batch});
         dr=compute_loss(rl);
-        backward(disc);
 
         // Fake
-        forward(disc,{gout});
+        forward(disc,detach(forward(gen,batch_size)));
         df=compute_loss(fl);
-        backward(disc);
-
         update(disc);
 
         clamp(disc,-clip,clip);
@@ -137,16 +133,12 @@ int main(int argc, char **argv) {
 
       // Train Gen
       zeroGrads(gen);
-      forward(gen,batch_size);
-      forward(disc,{gout});
+      forward(disc,forward(gen,batch_size));
       float gr=compute_loss(rl);
-      backward(disc);
-      copyGrad(din,gout);
-      backward(gen);
+
       update(gen);
 
       printf("Batch %d -- Total Loss=%1.3f  -- Dr=%1.3f  Df=%1.3f  Gr=%1.3f\r",j+1,dr+df+gr,dr,df,gr);
-
       fflush(stdout);
 
     }
