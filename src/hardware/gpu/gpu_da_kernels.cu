@@ -47,7 +47,7 @@ __global__ void shift(float* A, float* B, int batch, int depth, int irows, int i
 
 }
 
-__global__ void rotate(float* A, float* B, int batch, int depth, int irows, int icols, float angle, int* center, int mode, float constant){
+__global__ void rotate(float* A, float* B, int batch, int depth, int irows, int icols, float angle_rad, int* center, int mode, float constant){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*irows*icols;
 
@@ -265,7 +265,7 @@ __global__ void rotate_random(float* A, float* B, int batch, int depth, int irow
 
         int Bi_c = Bi - center[0];
         int Bj_c = Bj - center[1];
-        float angle_rad = -1.0f * ((angle_rad[1]-angle_rad[0]) * rnd[b] + angle_rad[0])));
+        float angle_rad = -1.0f * ((factor[1]-factor[0]) * rnd[b] + factor[0]);
         int Ai = sinf(angle_rad) * Bj_c + cosf(angle_rad) * Bi_c + center[0];
         int Aj = cosf(angle_rad) * Bj_c - sinf(angle_rad) * Bi_c + center[1];
 

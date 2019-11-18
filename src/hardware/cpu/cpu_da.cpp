@@ -51,8 +51,8 @@ void cpu_single_rotate(int b, Tensor *A, Tensor *B, float angle, vector<int> off
                 int Bi_c = Bi - center[0];
                 int Bj_c = Bj - center[1];
 
-                int Ai = std::sinf(angle_rad) * Bj_c + std::cosf(angle_rad) * Bi_c + center[0];
-                int Aj = std::cosf(angle_rad) * Bj_c - std::sinf(angle_rad) * Bi_c + center[1];
+                int Ai = ::sinf(angle_rad) * Bj_c + ::cosf(angle_rad) * Bi_c + center[0];
+                int Aj = ::cosf(angle_rad) * Bj_c - ::sinf(angle_rad) * Bi_c + center[1];
 
                 int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
                 if (Ai >= 0 && Ai < A->shape[2] && Aj >= 0 && Aj < A->shape[3]){

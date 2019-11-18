@@ -169,7 +169,7 @@ void gpu_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> o
     uniform_array<<<t_bdim[0], t_bdim[1]>>>(d_rnd, rnd_size, 0);
 
     setDims(B);
-    rotate_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], d_center, mode, constant, rnd);
+    rotate_random<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], d_factor, d_center, mode, constant, d_rnd);
     check_cuda(cudaDeviceSynchronize(), "rotate_random");
 
 }
