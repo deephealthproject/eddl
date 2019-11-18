@@ -340,7 +340,10 @@ namespace eddl {
     {
       return new NetLoss((*f),in,name);
     }
-
+    loss newloss(Layer* (*f)(Layer *),Layer *in,string name)
+    {
+      return new NetLoss((*f),in,name);
+    }
     // ---- METRICS ----
     Metric* getMetric(string type) {
         if (type == "mse" || type == "mean_squared_error") {

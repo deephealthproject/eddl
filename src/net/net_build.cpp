@@ -134,7 +134,7 @@ void Net::toGPU(vector<int> &g,int lsb){
       Xs[i].clear();
       Ys[i].clear();
     }
-    
+
     snets.clear();
 
     set_compserv(cs);
@@ -176,16 +176,16 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
     // check devices
     dev = -1;
     int ind;
+
+
     for (int i = 0; i < layers.size(); i++){
-        // do not consider input layers, since they are always on CPU
-        if (!isIn(layers[i], lin, ind)) {
-            if (dev == -1) dev = layers[i]->dev;
-            else {
-                if (layers[i]->dev != dev)
-                  msg("Net with layers in different devices", "Net.build");
-            }
+        if (dev == -1) dev = layers[i]->dev;
+        else {
+            if (layers[i]->dev != dev)
+              msg("Net with layers in different devices", "Net.build");
         }
     }
+
 
     // set optimizer
     optimizer = opt;

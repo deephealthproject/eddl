@@ -21,14 +21,19 @@ using namespace eddl;
 // Wasserstein GAN for mnist
 //////////////////////////////////
 
+// loss with an vector of layers
 layer vreal_loss(vector<layer> in)
 {
+  // maximize for real images (mimize -1 x Value)
   return Mult(in[0],-1);
 }
 
-layer vfake_loss(vector<layer> in)
+// OR:
+// loss with an unique layer
+layer vfake_loss(layer in)
 {
-  return Mult(in[0],1);
+  // minimizes for fake images
+  return in;
 }
 
 
@@ -71,7 +76,7 @@ int main(int argc, char **argv) {
   optimizer dopt=rmsprop(0.001);
 
   build(disc,dopt); // By defatul CS_CPU
-  
+
   toGPU(disc); // move toGPU
 
   summary(disc);
@@ -86,7 +91,7 @@ int main(int argc, char **argv) {
 
   // Training
   int i,j;
-  int num_batches=100;
+  int num_batches=1000;
   int epochs=1000;
   int batch_size = 100;
 
@@ -99,7 +104,8 @@ int main(int argc, char **argv) {
 
   // losses
   loss rl=newloss(vreal_loss,{dout},"real_loss");
-  loss fl=newloss(vfake_loss,{dout},"fake_loss");
+  loss fl=newloss(vfake_loss,dout,"fake_loss");
+
 
   for(i=0;i<epochs;i++) {
     float dr,df;

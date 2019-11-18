@@ -95,6 +95,7 @@ namespace eddl {
     Loss* getLoss(string type);
 
     loss newloss(Layer* (*f)(vector<Layer *>),vector<Layer *> in,string name);
+    loss newloss(Layer* (*f)(Layer *),Layer *in,string name);
 
 
 
