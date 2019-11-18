@@ -161,11 +161,14 @@ string Net::summary() {
     ss << "\n";
     for (int i = 0; i < vfts.size(); i++) {
         ss << vfts[i]->name << ": ";
+        cout<<vfts[i]->name<<"\n";
 
         vector<int> si = vfts[i]->input->getShape();
-        si.erase(si.begin());
+        if (vfts[i]->input->ndim>1)
+          si.erase(si.begin());
         vector<int> so = vfts[i]->output->getShape();
-        so.erase(so.begin());
+        if (vfts[i]->output->ndim>1) 
+          so.erase(so.begin());
         ss << si << "-->" << so << "\n";
 
     }

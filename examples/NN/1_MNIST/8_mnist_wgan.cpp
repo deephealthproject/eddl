@@ -62,7 +62,6 @@ int main(int argc, char **argv) {
 
   summary(gen);
 
-
   // Define Discriminator
   layer din=Input({784});
   l = din;
@@ -81,7 +80,6 @@ int main(int argc, char **argv) {
 
   summary(disc);
 
-
   // Load dataset
   tensor x_train = eddlT::load("trX.bin");
   // Preprocessing [-1,1]
@@ -93,7 +91,7 @@ int main(int argc, char **argv) {
   int i,j;
   int num_batches=1000;
   int epochs=1000;
-  int batch_size = 100;
+  int batch_size = 10;
 
   tensor batch=eddlT::create({batch_size,784});
 
