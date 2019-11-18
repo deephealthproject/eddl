@@ -46,6 +46,8 @@ ReduceDescriptor::ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool
     }
   }
 
+
+
   int dev=A->device;
 
   I=A;
@@ -101,20 +103,22 @@ void ReduceDescriptor::build_index() {
 
     }
     //////
-
-
-
 }
 
 
 void ReduceDescriptor::resize(int b)
 {
+  int i;
 
-  O->resize(b);
-  D->resize(b);
-  if ((m==2)||(m==3))
-    S->resize(b);
+  for(i=0;i<axis.size();i++)
+    if (axis[i]==0) break;
 
+  if (i==axis.size()) {
+    O->resize(b);
+    D->resize(b);
+    if ((m==2)||(m==3))
+      S->resize(b);
+  }
   ind=nullptr;
   build_index();
 }
