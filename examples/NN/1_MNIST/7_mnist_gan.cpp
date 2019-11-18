@@ -54,13 +54,8 @@ int main(int argc, char **argv) {
     model gen = Model({gin},{});
     optimizer gopt=adam(0.001);
 
-    build(gen,
-          gopt, // Optimizer
-          {}, // Losses
-          {}, // Metrics
-          CS_CPU()
-          //CS_GPU({1})
-    );
+    build(gen,gopt); // CS_CPU by default
+    toGPU(gen); // GPU {1} by default
 
 
     // Define Discriminator
@@ -74,14 +69,9 @@ int main(int argc, char **argv) {
 
     model disc = Model({din},{});
     optimizer dopt=adam(0.001);
-    
-    build(disc,
-          dopt, // Optimizer
-          {}, // Losses
-          {}, // Metrics
-          CS_CPU()
-          //CS_GPU({1})
-    );
+
+    build(disc,dopt); // CS_CPU by default
+    toGPU(disc); // GPU {1} by default
 
     summary(gen);
     summary(disc);
@@ -101,9 +91,6 @@ int main(int argc, char **argv) {
 
     tensor batch=eddlT::create({batch_size,784});
 
-// STILL EXPERIMENTAL
-
-
     loss rl=newloss(vreal_loss,{dout},"real_loss");
     loss fl=newloss(vfake_loss,{dout},"fake_loss");
 
@@ -115,30 +102,26 @@ int main(int argc, char **argv) {
 
         // get a batch from real images
         next_batch({x_train},{batch});
-        // generate a batch with generator
-        forward(gen,batch_size);
 
         // Train Discriminator
         zeroGrads(disc);
         // Real
         forward(disc,{batch});
         float dr=compute_loss(rl);
-        backward(disc);
+        backward(rl);
 
         // Fake
-        forward(disc,{gout});
+        forward(disc,detach(forward(gen,batch_size)));
         float df=compute_loss(fl);
-        backward(disc);
-
+        backward(fl);
         update(disc);
 
         // Train Gen
         zeroGrads(gen);
-        forward(disc,{gout});
+        forward(disc,forward(gen,batch_size));
         float gr=compute_loss(rl);
-        backward(disc);
-        copyGrad(din,gout);
-        backward(gen);
+        backward(rl);
+
         update(gen);
 
         printf("Batch %d -- Total Loss=%1.3f  -- Dr=%1.3f  Df=%1.3f  Gr=%1.3f\r",j+1,dr+df+gr,dr,df,gr);
