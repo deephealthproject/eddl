@@ -45,7 +45,8 @@ void LCrossEntropy::delta(Tensor *T, Tensor *Y, Tensor *D) {
     Tensor::el_div(T, Y, aux1, 0);
 
 
-    Tensor::add(1, aux1, -1, aux2, D, 0);
+    Tensor::add(-1, aux1, 1, aux2, D, 0);
+    D->div_(D->shape[0]);
 
     delete aux1;
     delete aux2;

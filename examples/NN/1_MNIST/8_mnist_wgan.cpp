@@ -25,7 +25,7 @@ using namespace eddl;
 layer vreal_loss(vector<layer> in)
 {
   // maximize for real images (mimize -1 x Value)
-  return Mult(in[0],-1);
+  return ReduceMean(Mult(in[0],-1));
 }
 
 // OR:
@@ -33,7 +33,7 @@ layer vreal_loss(vector<layer> in)
 layer vfake_loss(layer in)
 {
   // minimizes for fake images
-  return in;
+  return ReduceMean(in);
 }
 
 
@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
 
   build(gen,gopt); // By defatul CS_CPU
 
-  //toGPU(gen); // move toGPU
+  toGPU(gen); // move toGPU
 
   summary(gen);
 
@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
 
   build(disc,dopt); // By defatul CS_CPU
 
-  //toGPU(disc); // move toGPU
+  toGPU(disc); // move toGPU
 
   summary(disc);
 
@@ -110,7 +110,7 @@ int main(int argc, char **argv) {
     fprintf(stdout, "Epoch %d/%d (%d batches)\n", i + 1, epochs,num_batches);
     for(j=0;j<num_batches;j++)  {
 
-      for(int k=0;k<5;k++) {
+      for(int k=0;k<critic;k++) {
         // get a batch from real images
         next_batch({x_train},{batch});
         // generate a batch with generator

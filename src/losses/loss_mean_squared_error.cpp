@@ -22,6 +22,7 @@ LMeanSquaredError::LMeanSquaredError() : Loss("mean_squared_error"){}
 void LMeanSquaredError::delta(Tensor *T, Tensor *Y, Tensor *D) {
     //delta: (T-Y)
     Tensor::add(1.0, T, -1.0, Y, D, 0);
+    D->div_(D->shape[0]);
 }
 
 float LMeanSquaredError::value(Tensor *T, Tensor *Y) {

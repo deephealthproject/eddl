@@ -24,13 +24,13 @@ using namespace eddl;
 layer vreal_loss(vector<layer> in)
 {
   // -log( D_out + epsilon )
-  return Mult(Log(Sum(in[0],0.0001)),-1);
+  return ReduceMean(Mult(Log(Sum(in[0],0.0001)),-1));
 }
 
 layer vfake_loss(vector<layer> in)
 {
   // -log( 1 - D_out + epsilon )
-  return Mult(Log(Sum(Diff(1,in[0]),0.0001)),-1);
+  return ReduceMean(Mult(Log(Sum(Diff(1,in[0]),0.0001)),-1));
 }
 
 
