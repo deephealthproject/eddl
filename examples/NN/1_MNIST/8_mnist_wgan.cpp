@@ -21,6 +21,7 @@ using namespace eddl;
 // Wasserstein GAN for mnist
 //////////////////////////////////
 
+
 // loss with a vector of layers
 layer vreal_loss(vector<layer> in)
 {

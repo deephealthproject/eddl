@@ -198,28 +198,17 @@ void MLayer::addparent(Layer *l) {
 }
 
 
-///////////////////////////////////////
-/// OP OVERLOAD
-Layer* operator+(Layer &l1,Layer &l2) {
-    return  new LSum(&l1, &l2,"",l1.dev);
-}
 
-Layer* operator+(Layer &l,float f){
-    return new LSum(&l, f,"",l.dev);
-}
 
-Layer* operator+(float f,Layer &l){
-    return new LSum(&l, f,"",l.dev);
-}
 
-Layer* operator*(Layer &l1,Layer &l2) {
-    return  new LMult(&l1, &l2,"", l1.dev);
-}
 
-Layer* operator*(Layer &l,float f){
-    return new LMult(&l, f,"", l.dev);
-}
 
-Layer* operator*(float f,Layer &l){
-    return new LMult(&l, f,"", l.dev);
-}
+
+
+
+
+
+
+
+
+/////
