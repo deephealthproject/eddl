@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
 
     // Open image
     cout<<"AQUI\n";
-    Tensor* t1 = Tensor::load("images/fprint3.pgm");
+    Tensor* t1 = Tensor::load("images/cow.bin");
 //    float* ptr = new float[3*4*2]{
 //        255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f,
 //        128.0f, 128.0f, 128.0f, 128.0f, 128.0f, 128.0f, 128.0f, 128.0f,
@@ -116,6 +116,6 @@ int main(int argc, char **argv) {
 //    t1 = t2->clone();
 
     // Save result
-    t2->save("images/new_cow.tga");
+    t2->save("images/new_cow.jpg");
     cout << "Image saved!" << endl;
 }

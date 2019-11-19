@@ -54,7 +54,7 @@ Tensor* Tensor::load(const string& filename, string format) {
         t = Tensor::loadfs(ifs, format);
 
     }else{
-        msg("Format not implemented", "Tensor::load");
+        msg("Format not implemented: *.'" + format + "'", "Tensor::load");
     }
 
     // Close file stream and return tensor
@@ -70,7 +70,7 @@ Tensor* Tensor::loadfs(std::ifstream &ifs, string format) {
     } else if(format=="onnx"){
         return Tensor::load_from_onnx(ifs);
     }else{
-        msg("Not implemented", "Tensor::load");
+        msg("Format not implemented: *.'" + format + "'", "Tensor::load");
     }
 
 }
@@ -154,7 +154,7 @@ void Tensor::save(const string& filename, string format) {
         // Close file stream
         ofs.close();
     }else{
-        msg("Not implemented", "Tensor::save");
+        msg("Format not implemented: *.'" + format + "'", "Tensor::save");
     }
 }
 
@@ -169,7 +169,7 @@ void Tensor::savefs(std::ofstream &ofs, string format) {
     } else if(format=="onnx"){
         save2onnx(ofs);
     }else{
-        msg("Not implemented", "Tensor::save");
+        msg("Format not implemented: *.'" + format + "'", "Tensor::save");
     }
 
 }
