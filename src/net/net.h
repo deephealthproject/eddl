@@ -97,7 +97,7 @@ public:
     void plot(string fname,string mode);
 
     void setmode(int m);
-    void sync_weights();
+
 
     void save(const string& filename, const string& format);
     void load(const string& filename, const string& format);
@@ -114,6 +114,8 @@ public:
     void do_backward();
     void do_applygrads();
 
+    void sync_weights();
+    void copyTensor(Layer *l1,Layer *l2,string name="output");
 
     // API
     void run_snets(void *(*F)(void *t));

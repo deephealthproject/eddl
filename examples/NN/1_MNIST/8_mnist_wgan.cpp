@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 
   build(gen,gopt); // By defatul CS_CPU
 
-  toGPU(gen); // move toGPU
+  //toGPU(gen); // move toGPU
 
   summary(gen);
 
@@ -73,11 +73,12 @@ int main(int argc, char **argv) {
   layer dout = Dense(l, 1);
 
   model disc = Model({din},{});
+
   optimizer dopt=rmsprop(0.001);
 
-  build(disc,dopt); // By defatul CS_CPU
+  build(disc,dopt,CS_CPU()); // By defatul CS_CPU
 
-  toGPU(disc); // move toGPU
+  //toGPU(disc); // move toGPU
 
   summary(disc);
 
@@ -101,9 +102,11 @@ int main(int argc, char **argv) {
   int critic=5;
   float clip=0.01;
 
+
   // losses
   loss rl=newloss(vreal_loss,{dout},"real_loss");
   loss fl=newloss(vfake_loss,dout,"fake_loss");
+
 
 
   for(i=0;i<epochs;i++) {

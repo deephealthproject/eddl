@@ -109,6 +109,119 @@ void Net::sync_weights() {
 }
 
 
+void collectTensor(Layer *l,string tname)
+{
+  Net *sn=l->net;
+  if (sn->snets[0]->dev==DEV_CPU) return;
+
+  int i,j,comp;
+
+  comp=sn->snets.size();
+
+  if (sn->batch_size<comp)
+    comp=sn->batch_size;
+
+  int thread_batch_size=sn->batch_size / comp;
+
+  vector<int> sind(sn->batch_size);
+  for(int k=0;k<sn->batch_size;k++) sind[k]=k;
+
+  for(i=0;i<sn->snets.size();i++) {
+    Layer *sl=nullptr;
+
+    for(j=0;j<sn->snets[i]->layers.size();j++) {
+     if (sn->snets[i]->layers[j]->orig==l) {
+         sl=sn->snets[i]->layers[j];
+         break;
+     }
+   }
+    if (sl==nullptr) {
+      cout<<"LAYER:"<<l->name<<"\n";
+      msg("layer not found in subgrap","Net.collectTensor");
+    }
+
+    int start = i * thread_batch_size;
+    int end = start + sl->output->shape[0];
+
+    if (tname=="output")
+      Tensor::deselect(sl->output, l->output, sind, start, end);
+    else if (tname=="grad")
+      Tensor::deselect(sl->delta, l->delta, sind, start, end);
+  }
+
+}
+
+
+void distributeTensor(Layer *l,string tname)
+{
+  Net *sn=l->net;
+  if (sn->snets[0]->dev==DEV_CPU) return;
+
+  int i,j,comp;
+
+  comp=sn->snets.size();
+
+  if (sn->batch_size<comp)
+    comp=sn->batch_size;
+
+  int thread_batch_size=sn->batch_size / comp;
+
+  vector<int> sind(sn->batch_size);
+  for(int k=0;k<sn->batch_size;k++) sind[k]=k;
+
+
+  for(i=0;i<sn->snets.size();i++) {
+    Layer *sl=nullptr;
+
+    for(j=0;j<sn->snets[i]->layers.size();j++)
+     if (sn->snets[i]->layers[j]->orig==l) {
+         sl=sn->snets[i]->layers[j];
+         break;
+     }
+
+    if (sl==nullptr) {
+      cout<<l->name<<"\n";
+      msg("layer not found in subgrap","Net.distributeTensor");
+    }
+
+    int start = i * thread_batch_size;
+    int end = start + sl->output->shape[0];
+
+    if (tname=="output")
+      Tensor::select(l->output, sl->output, sind, start, end);
+    else
+      Tensor::select(l->delta, sl->delta, sind, start, end);
+
+  }
+}
+
+
+void Net::copyTensor(Layer *l1,Layer *l2,string name){
+
+  Layer *sl1;
+  Layer *sl2;
+
+  if (snets[0]->dev==DEV_CPU) {
+    sl1=l1;
+    sl2=l2;
+  }
+  else {
+    for(int i=0;i<snets.size();i++) {
+      for(int j=0;j<snets[i]->layers.size();j++) {
+        if (snets[i]->layers[j]->orig==l1)
+        sl1=snets[i]->layers[j];
+      }
+      for(int j=0;j<snets[i]->layers.size();j++) {
+        if (snets[i]->layers[j]->orig==l2)
+        sl2=snets[i]->layers[j];
+      }
+    }
+  }
+
+  if (name=="output") Tensor::copy(sl1->output,sl2->output);
+  else if (name=="grad") Tensor::copy(sl1->delta,sl2->delta);
+}
+
 
 
 

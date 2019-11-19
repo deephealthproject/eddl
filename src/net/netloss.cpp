@@ -30,9 +30,8 @@ NetLoss::NetLoss(Layer* (*f)(vector<Layer *>),vector<Layer *> in,string name)
  graph=new Net(ginput,{fout});
 
  Net *sn=in[0]->net;
-
+ 
  graph->build(sn->optimizer->clone(),{new LMin()},{new MSum()},sn->cs);
-
 
 }
 

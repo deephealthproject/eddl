@@ -281,7 +281,7 @@ namespace eddl {
 // ---- MODEL METHODS ----
     model Model(vlayer in, vlayer out);
 
-    void build(model net, optimizer o=sgd(0.001,0.0), CompServ *cs=CS_CPU());
+    void build(model net, optimizer o=sgd(0.001,0.0), CompServ *cs=nullptr);
     void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr);
     void toGPU(model net, vector<int> g={1},int lsb=1);
     void toCPU(model net, int t=std::thread::hardware_concurrency());
