@@ -9,11 +9,7 @@
 
 #include "tensor.h"
 #include "../hardware/cpu/cpu_hw.h"
-
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "../stb/stb_image_write.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include "../stb/stb_image.h"
+#include "utils.h"
 
 #ifdef cGPU
 #include "../hardware/gpu/gpu_tensor.h"
@@ -22,30 +18,51 @@
 #endif
 
 
+// Image stuff
+#define STBI_WINDOWS_UTF8
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "../stb/stb_image_write.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "../stb/stb_image.h"
+
+#define STB_DEFINE
+#include "../stb/stb.h"
+
 using namespace std;
 
 // ********* LOAD FUNCTIONS *********
-Tensor* Tensor::load(const string& filename, const string& format) {
-
-    if(format=="png" || format=="jpg") { // Images
-        return Tensor::load_from_img(filename, format);
-    }else if(format=="bin" || format=="onnx"){
-        // Open file stream
-        std::ifstream ifs(filename, std::ios::in | std::ios::binary);
-
-        // Save
-        Tensor* t = Tensor::loadfs(ifs, format);
-
-        // Close file stream
-        ifs.close();
-
-        return t;
-    }else{
-        msg("Not implemented", "Tensor::save");
+Tensor* Tensor::load(const string& filename, string format) {
+    // Infer format from filename
+    if(format.empty()){
+        format = get_extension(filename);
     }
+
+    // Check if file exists (open file stream)
+    std::ifstream ifs(filename.c_str(), std::ios::in | std::ios::binary);
+    if (!ifs.good()){
+        msg("File not found. Check the file name and try again.", "Tensor::load");
+    }
+    // Load tensor
+    Tensor* t;
+    if(format=="jpg" || format=="jpeg" || format=="png" || format=="bmp" ||
+       format=="hdr" || format=="psd" || format=="tga" || format=="gif" ||
+       format=="pic"  || format=="pgm"  || format=="ppm") { // Images
+        t = Tensor::load_from_img(filename, format);
+    }else if(format=="bin" || format=="onnx"){
+        t = Tensor::loadfs(ifs, format);
+
+    }else{
+        msg("Format not implemented", "Tensor::load");
+    }
+
+    // Close file stream and return tensor
+    ifs.close();
+    return t;
 }
 
-Tensor* Tensor::loadfs(std::ifstream &ifs, const string& format) {
+Tensor* Tensor::loadfs(std::ifstream &ifs, string format) {
 
     // Choose format
     if(format=="bin") {
@@ -87,9 +104,12 @@ Tensor* Tensor::load_from_onnx(std::ifstream &ifs){
     return new Tensor();
 };
 
-Tensor* Tensor::load_from_img(const string &filename, const string& format){
+Tensor* Tensor::load_from_img(const string &filename, string format){
     int t_width, t_height, t_channels, t_size;
-    unsigned char *pixels = stbi_load(filename.c_str(), &t_width, &t_height, &t_channels, STBI_rgb);
+
+    // IMPORTANT! There might be problems if the image is grayscale, a png with 3 components,...
+    // Set number of channels to read
+    unsigned char *pixels = stbi_load(filename.c_str(), &t_width, &t_height, &t_channels, t_channels);
 
     // Cast pointer
     t_size = t_width * t_height * t_channels;
@@ -116,9 +136,13 @@ Tensor* Tensor::load_from_img(const string &filename, const string& format){
 
 
 // ********* SAVE FUNCTIONS *********
-void Tensor::save(const string& filename, const string& format) {
+void Tensor::save(const string& filename, string format) {
+    // Infer format from filename
+    if(format.empty()){
+        format = get_extension(filename);
+    }
 
-    if(format=="png" || format=="bmp") { // Images
+    if(format=="png" || format=="bmp" || format=="tga" || format=="jpg" || format=="jpeg" || format=="hdr") { // Images
         save2img(filename, format);
     }else if(format=="bin" || format=="onnx"){
         // Open file stream
@@ -134,7 +158,7 @@ void Tensor::save(const string& filename, const string& format) {
     }
 }
 
-void Tensor::savefs(std::ofstream &ofs, const string& format) {
+void Tensor::savefs(std::ofstream &ofs, string format) {
     if (!isCPU()){
         msg("Only save CPU Tensors", "Tensor::save");
     }
@@ -168,7 +192,7 @@ void Tensor::save2onnx(std::ofstream &ofs){
 };
 
 
-void Tensor::save2img(const string& filename, const string& format){
+void Tensor::save2img(const string& filename, string format){
     if (this->ndim!=4) {
         msg("Tensors should be 4D: 1xCxHxW","Tensor::save2img");
     }
@@ -198,11 +222,15 @@ void Tensor::save2img(const string& filename, const string& format){
 
     // Save image
     if(format=="png") {
-        //(w, h, c, data, w*channels) // w*channels => stride_in_bytes
         stbi_write_png(filename.c_str(), this->shape[3], this->shape[2], this->shape[1], data, this->shape[3] * this->shape[1]);
     }else if(format=="bmp"){
-        //(w, h, c, data, w*channels) // w*channels => stride_in_bytes
         stbi_write_bmp(filename.c_str(), this->shape[3], this->shape[2], this->shape[1], data);
+    }else if(format=="tga"){
+        stbi_write_tga(filename.c_str(), this->shape[3], this->shape[2], this->shape[1], data);
+    }else if(format=="jpg" || format=="jpeg"){
+        stbi_write_jpg(filename.c_str(), this->shape[3], this->shape[2], this->shape[1], data, 100);
+//    }else if(format=="hdr"){
+//        stbi_write_hdr(filename.c_str(), this->shape[3], this->shape[2], this->shape[1], data);
     }else{
         msg("Format not implemented", "Tensor::save2img");
     }

@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
 
     // Open image
     cout<<"AQUI\n";
-    Tensor* t1 = Tensor::load("images/cow.jpg", "jpg");
+    Tensor* t1 = Tensor::load("images/fprint3.pgm");
 //    float* ptr = new float[3*4*2]{
 //        255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f,
 //        128.0f, 128.0f, 128.0f, 128.0f, 128.0f, 128.0f, 128.0f, 128.0f,
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
 //    Tensor::shift(t1, t2, {50, 20});
 //    t1 = t2->clone();
 
-    Tensor::rotate(t1, t2, 30.0f, {0, 0});
+    Tensor::rotate_random(t1, t2, {-90.0f, +90.0f}, {0, 0});
     t1 = t2->clone();
 //
 //    float scale=1.25f;
@@ -116,6 +116,6 @@ int main(int argc, char **argv) {
 //    t1 = t2->clone();
 
     // Save result
-    t2->save("images/new_cow.png", "png");
+    t2->save("images/new_cow.tga");
     cout << "Image saved!" << endl;
 }
