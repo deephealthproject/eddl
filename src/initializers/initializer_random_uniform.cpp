@@ -30,4 +30,9 @@ IRandomUniform::IRandomUniform(float minval, float maxval, int seed) : Initializ
     this->seed = seed;
 
 }
-void IRandomUniform::apply(Tensor* params){}
+void IRandomUniform::apply(Tensor* params)
+{
+  params->rand_uniform(1.0);
+  params->mult_(maxval-minval);
+  params->add_(minval);
+}

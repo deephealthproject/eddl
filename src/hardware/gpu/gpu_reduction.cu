@@ -99,7 +99,6 @@ void gpu_reduction(ReduceDescriptor *RD){
   int fast=0;
   if (RD->factor*RD->index.size()<RD->red_size) fast=1;
 
-
   if ((fast)&&((RD->m==0)&&(RD->keepdims))) {//mean with keepdims=true (BN)
 
     setDims(RD->O);

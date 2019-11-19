@@ -55,15 +55,11 @@ void Conv2D_grad(ConvolDescriptor *D) {
 
     D->gK->tsem->lock();
     if (D->I->isCPU()) {
-        D->gK->fill_(0.0);
-        D->gbias->fill_(0.0);
         cpu_conv2D_grad(D);
     }
 #ifdef cGPU
     else if (D->I->isGPU())
       {
-         D->gK->fill_(0.0);
-         D->gbias->fill_(0.0);
          gpu_conv2D_grad(D);
       }
 #endif
@@ -101,4 +97,3 @@ void Conv2D_back(ConvolDescriptor *D) {
 #endif
     D->ID->tsem->unlock();
 }
-

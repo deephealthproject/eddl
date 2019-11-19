@@ -35,6 +35,25 @@
 | Upsampling | ✅ | ✅ |
 
 
+
+## Data augmentation layers
+
+| Functionality | CPU | GPU | Comments |
+| ------------- |------| -----| ---------|
+| Crop | ✅ | ✅ | |
+| Crop (random) | ✅ | ✅ | |
+| Crop & Scale (random) | ✅ | ✅ | |
+| Cutout | ✅ | ✅ | |
+| Cutout (random) | ✅ | ✅ | |
+| Flip | ✅ | ✅ | |
+| Flip (random) | ✅ | ✅ | |
+| Rotate | ❌ | ❌ | |
+| Rotate (random) | ❌ | ❌ | |
+| Scale | ✅ | ✅ | |
+| Scale (random) | ✅ | ✅ | |
+| Shift | ✅ | ✅ | |
+| Shift (random) | ✅ | ✅ | |
+
 ## Pooling layers
 
 | Functionality | CPU | GPU | Comments |
@@ -72,16 +91,27 @@
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
+<<<<<<< HEAD
 | Abs | ✅ | ✅ |
+=======
+| Abs |  ✅ | ✅ |
+>>>>>>> f7d50a37a1dda7c8d55283fe6a9cc66084675c3c
 | Diff | ✅ | ✅ |
 | Div | ✅ | ✅ |
 | Exp | ✅ | ✅ |
 | Log | ✅ | ✅ |
 | Log10 | ✅ | ✅ |
+<<<<<<< HEAD
 | Log2 | ✅ | ✅ |
 | Mult | ✅ | ✅|
 | Pow |  ✅ | ✅ |
 | Sqrt | ✅ | ✅ |
+=======
+| Log2 |  ✅ | ✅ |
+| Mult | ✅ | ✅|
+| Pow |  ✅ | ✅ |
+| Sqrt |  ✅ | ✅ |
+>>>>>>> f7d50a37a1dda7c8d55283fe6a9cc66084675c3c
 | Sum | ✅ | ✅ |
 
 

@@ -10,6 +10,7 @@
 #include <cmath>
 #include <limits>
 #include <iostream>
+#include <utility>
 
 #include "tensor.h"
 #include "../hardware/cpu/cpu_hw.h"
@@ -24,14 +25,14 @@
 using namespace std;
 
 
-void Tensor::shift_(vector<int> shift, bool reshape, string mode, float constant) {
-    if (isCPU()) {
-        cpu_shift_(this, shift, reshape, mode, constant);
+void Tensor::shift(Tensor *A, Tensor *B, vector<int> shift, string mode, float constant){
+    if (A->isCPU()) {
+        cpu_shift(A, B, std::move(shift), get_mode(std::move(mode)), constant);
     }
 #ifdef cGPU
-    else if (isGPU())
+    else if (A->isGPU())
       {
-        msg("Only implemented for CPU Tensors", "Tensor::shitf_");
+        gpu_shift(A, B, std::move(shift), get_mode(std::move(mode)), constant);
       }
 #endif
 #ifdef cFPGA
@@ -41,20 +42,16 @@ void Tensor::shift_(vector<int> shift, bool reshape, string mode, float constant
 #endif
 }
 
-Tensor* Tensor::shift(Tensor *A, vector<int> shift, bool reshape, string mode, float constant){
-    Tensor *t_new = A->clone();
-    t_new->shift_(shift, reshape, mode, constant);
-    return t_new;
-}
 
-void Tensor::rotate_(float angle, vector<int> axis, bool reshape, string mode, float constant) {
-    if (isCPU()) {
-        // TODO: Implement
+
+void Tensor::rotate(Tensor *A, Tensor *B, float angle, vector<int> axis, string mode, float constant) {
+    if (A->isCPU()) {
+        cpu_rotate(A, B, angle, std::move(axis), get_mode(std::move(mode)), constant);
     }
 #ifdef cGPU
-    else if (isGPU())
+    else if (A->isGPU())
       {
-        msg("Only implemented for CPU Tensors", "Tensor::rotate_");
+        gpu_rotate(A, B, angle, std::move(axis), get_mode(std::move(mode)), constant);
       }
 #endif
 #ifdef cFPGA
@@ -64,20 +61,14 @@ void Tensor::rotate_(float angle, vector<int> axis, bool reshape, string mode, f
 #endif
 }
 
-Tensor* Tensor::rotate(Tensor *A, float angle, vector<int> axis, bool reshape, string mode, float constant) {
-    Tensor *t_new = A->clone();
-    t_new->rotate_(angle, axis, reshape, mode, constant);
-    return t_new;
-}
-
-void Tensor::scale_(float factor, bool reshape, string mode, float constant) {
-    if (isCPU()) {
-        // TODO: Implement
+void Tensor::scale(Tensor *A, Tensor *B, vector<int> new_shape, string mode, float constant) {
+    if (A->isCPU()) {
+        cpu_scale(A, B, std::move(new_shape), get_mode(std::move(mode)), constant);
     }
 #ifdef cGPU
-    else if (isGPU())
+    else if (A->isGPU())
       {
-        msg("Only implemented for CPU Tensors", "Tensor::scale_");
+        gpu_scale(A, B, std::move(new_shape), get_mode(std::move(mode)), constant);
       }
 #endif
 #ifdef cFPGA
@@ -87,20 +78,15 @@ void Tensor::scale_(float factor, bool reshape, string mode, float constant) {
 #endif
 }
 
-Tensor* Tensor::scale(Tensor *A, float factor, bool reshape, string mode, float constant) {
-    Tensor *t_new = A->clone();
-    t_new->scale_(factor, reshape, mode, constant);
-    return t_new;
-}
 
-void Tensor::flip_(int axis) {
-    if (isCPU()) {
-        // TODO: Implement
+void Tensor::flip(Tensor *A, Tensor *B, int axis) {
+    if (A->isCPU()) {
+        cpu_flip(A, B, axis);
     }
 #ifdef cGPU
-    else if (isGPU())
+    else if (A->isGPU())
       {
-        msg("Only implemented for CPU Tensors", "Tensor::flip_");
+        gpu_flip(A, B, axis);
       }
 #endif
 #ifdef cFPGA
@@ -110,20 +96,14 @@ void Tensor::flip_(int axis) {
 #endif
 }
 
-Tensor* Tensor::flip(Tensor *A, int axis) {
-    Tensor *t_new = A->clone();
-    t_new->flip_(axis);
-    return t_new;
-}
-
-void Tensor::crop_(vector<int> coords_from, vector<int> coords_to) {
-    if (isCPU()) {
-        // TODO: Implement
+void Tensor::crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant) {
+    if (A->isCPU()) {
+        cpu_crop(A, B, std::move(coords_from), std::move(coords_to), constant, false);
     }
 #ifdef cGPU
-    else if (isGPU())
+    else if (A->isGPU())
       {
-        msg("Only implemented for CPU Tensors", "Tensor::crop_");
+        gpu_crop(A, B, std::move(coords_from), std::move(coords_to), constant, false);
       }
 #endif
 #ifdef cFPGA
@@ -133,20 +113,14 @@ void Tensor::crop_(vector<int> coords_from, vector<int> coords_to) {
 #endif
 }
 
-Tensor* Tensor::crop(Tensor *A, vector<int> coords_from, vector<int> coords_to) {
-    Tensor *t_new = A->clone();
-    t_new->crop_(coords_from, coords_to);
-    return t_new;
-}
-
-void Tensor::cutout_(vector<int> coords_from, vector<int> coords_to) {
-    if (isCPU()) {
-        // TODO: Implement
+void Tensor::crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, string mode, float constant) {
+    if (A->isCPU()) {
+        cpu_crop_scale(A, B, std::move(coords_from), std::move(coords_to), get_mode(std::move(mode)), constant);
     }
 #ifdef cGPU
-    else if (isGPU())
+    else if (A->isGPU())
       {
-        msg("Only implemented for CPU Tensors", "Tensor::cutout_");
+        gpu_crop_scale(A, B, std::move(coords_from), std::move(coords_to), get_mode(std::move(mode)), constant);
       }
 #endif
 #ifdef cFPGA
@@ -156,8 +130,147 @@ void Tensor::cutout_(vector<int> coords_from, vector<int> coords_to) {
 #endif
 }
 
-Tensor* Tensor::cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to) {
-    Tensor *t_new = A->clone();
-    t_new->cutout_(coords_from, coords_to);
-    return t_new;
+
+void Tensor::cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant) {
+    if (A->isCPU()) {
+        cpu_crop(A, B, std::move(coords_from), std::move(coords_to), constant, true);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+        gpu_crop(A, B, std::move(coords_from), std::move(coords_to), constant, true);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+
+
+
+void Tensor::shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, string mode, float constant){
+    if (A->isCPU()) {
+        cpu_shift_random(A, B, std::move(factor_x), std::move(factor_y), get_mode(std::move(mode)), constant);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+        gpu_shift_random(A, B, std::move(factor_x), std::move(factor_y), get_mode(std::move(mode)), constant);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+
+
+void Tensor::rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> axis, string mode, float constant) {
+    if (A->isCPU()) {
+        msg("Not implemented for CPU", "Tensor::rotate_random");
+        //cpu_rotate_random(A, B,  std::move(factor), std::move(axis), get_mode(std::move(mode)), constant);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+        msg("Not implemented for GPU", "Tensor::rotate_random");
+        //cpu_rotate_random(A, B,  std::move(factor), std::move(axis), get_mode(std::move(mode)), constant);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+void Tensor::scale_random(Tensor *A, Tensor *B, vector<float> factor, string mode, float constant) {
+    if (A->isCPU()) {
+        cpu_scale_random(A, B, std::move(factor), get_mode(std::move(mode)), constant);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+        gpu_scale_random(A, B, std::move(factor), get_mode(std::move(mode)), constant);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+
+void Tensor::flip_random(Tensor *A, Tensor *B, int axis) {
+    if (A->isCPU()) {
+        cpu_flip_random(A, B, axis);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+        gpu_flip_random(A, B, axis);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+void Tensor::crop_random(Tensor *A, Tensor *B) {
+    if (A->isCPU()) {
+        cpu_crop_random(A, B);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+        gpu_crop_random(A, B);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+void Tensor::crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, string mode, float constant) {
+    if (A->isCPU()) {
+        cpu_crop_scale_random(A, B, std::move(factor), get_mode(std::move(mode)), constant);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+        gpu_crop_scale_random(A, B, std::move(factor), get_mode(std::move(mode)), constant);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+void Tensor::cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant) {
+    if (A->isCPU()) {
+        cpu_cutout_random(A, B, std::move(factor_x), std::move(factor_y), constant);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+        gpu_cutout_random(A, B, std::move(factor_x), std::move(factor_y), constant);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
 }

@@ -22,7 +22,7 @@ int LRSum::total_layers = 0;
 
 LRSum::LRSum(Layer *l, vector<int> axis, bool keepdims, string name, int dev): ReductionLayer(name, dev) {
     // TODO: Implement
-    if(name.empty()) this->name = "reduction_max" + to_string(++total_layers);
+    if(name.empty()) this->name = "reduction_sum" + to_string(++total_layers);
 
     input=l->output;
 

@@ -13,8 +13,8 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "eddlT.h"
 
+#include "eddlT.h"
 
 using namespace std;
 
@@ -58,7 +58,7 @@ namespace eddlT {
     return Tensor::linspace(start,end,steps,dev);
   }
   Tensor* logspace(float start, float end, int steps, float base, int dev){
-    return Tensor::logspace(start,end,steps,dev);
+    return Tensor::logspace(start,end,steps,base,dev);
   }
   Tensor* eye(int size, int dev){
     return Tensor::eye(size,dev);
@@ -68,8 +68,62 @@ namespace eddlT {
     return Tensor::randn(shape,dev);
   }
 
+  // Copy data        ********************************
+  void ToCPU_(Tensor *A)
+  {
+    A->ToCPU();
+  }
+  void ToGPU_(Tensor *A)
+  {
+    A->ToGPU();
+  }
+  Tensor * ToCPU(Tensor *A){
+    Tensor *B=A->clone();
+    B->ToCPU();
+    return B;
+  }
+  Tensor * ToGPU(Tensor *A)
+  {
+    Tensor *B=A->clone();
+    B->ToGPU();
+    return B;
+  }
+  Tensor* clone(Tensor *A)
+  {
+    return A->clone();
+  }
 
-  // Pointer functions ********************************
+  Tensor* select(Tensor *A,int ind)
+  {
+    vector<int> shape=A->getShape();
+    shape[0]=1;
+    Tensor *B=new Tensor(shape);
+
+    Tensor::select(A,B,{ind},0,1);
+
+    return B;
+  }
+  void copyTensor(Tensor *A,Tensor *B)
+  {
+    Tensor::copy(A,B);
+  }
+
+  // Core inplace  **********************************
+  void fill_(Tensor *A,float v)
+  {
+    A->fill_(v);
+  }
+  void set_(Tensor *A,vector<int> indices, float value)
+  {
+    A->set_(indices,value);
+  }
+
+  void reshape_(Tensor *A, vector<int> indices)
+  {
+    A->reshape_(indices);
+  }
+
+// Pointer functions ********************************
   float *getptr(Tensor *A){
     return A->ptr;
   }
@@ -82,31 +136,21 @@ namespace eddlT {
   {
     A->info();
   }
-
-  // Load from file ***********************************
-  Tensor *load(string fname){
-    FILE *fe = fopen(fname.c_str(), "rb");
-    if (fe == nullptr) {
-        fprintf(stderr, "%s not found\n", fname.c_str());
-        exit(1);
-    }
-
-    vector<int> shape;
-    int ndim,v;
-    int read = fread(&ndim, sizeof(int), 1, fe);
-    for (int i = 0; i < ndim; ++i) {
-        int read = fread(&v, sizeof(int), 1, fe);
-        shape.push_back(v);
-    }
-
-    Tensor *t=new Tensor(shape,DEV_CPU);
-    t->load(fe);
-    return t;
+  tshape getShape(Tensor *A)
+  {
+    return A->getShape();
   }
 
+    // Serialization       ***********************************
+    Tensor* load(string fname, string format){
+        return Tensor::load(fname, format);
+    }
+
+    void save(Tensor* A, string fname, string format){
+        return A->save(fname, format);
+    }
 
   // Math ops       ***********************************
-
   void abs_(Tensor *A) {
     A->abs_();
   }
@@ -450,4 +494,3 @@ namespace eddlT {
 
 
 }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            

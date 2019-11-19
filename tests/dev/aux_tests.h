@@ -21,6 +21,7 @@ TestResult run_activation(Tensor* t_input, string act, int dev, int runs=1);
 TestResult run_batchnorm(Tensor* t_input, int dev, int runs=1);
 TestResult run_upsampling(Tensor* t_input, vector<int> size, int dev, int runs=1);
 TestResult run_tensor_op(Tensor* t_input, string op, int dev, int runs=1);
+TestResult run_tensor_da(Tensor* t_input, Tensor* t_output, string op, int dev, int runs=1);
 TestResult run_tensor_create(string op, int dev, int runs=1);
 
 #endif //EDDL_AUX_TESTS_H

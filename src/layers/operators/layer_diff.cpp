@@ -90,7 +90,6 @@ LDiff::LDiff(float k, Layer *l, string name, int dev): OperatorLayer(name, dev) 
 
 void LDiff::forward(){
 
-
     if (binary) {
       Tensor::add(1.0, tin[0], -1.0, tin[1], output, 0);
     }

@@ -17,6 +17,7 @@
 namespace eddlT{
 
   #define tensor Tensor*
+  #define tshape vector<int>
 
   // Creation ops ***********************************
   Tensor* create(const vector<int> &shape);
@@ -26,22 +27,39 @@ namespace eddlT{
   Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
   Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
   Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
-  Tensor* arange(float start, float end, float step=1.0f, int dev=DEV_CPU);
-  Tensor* range(float start, float end, float step=1.0f, int dev=DEV_CPU);
-  Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
-  Tensor* logspace(float start, float end, int steps=100, float base=10.0f, int dev=DEV_CPU);
+  Tensor* arange(float start, float end, float step, int dev=DEV_CPU);
+  Tensor* range(float start, float end, float step, int dev=DEV_CPU);
+  Tensor* linspace(float start, float end, int steps, int dev=DEV_CPU);
+  Tensor* logspace(float start, float end, int steps, float base, int dev=DEV_CPU);
   Tensor* eye(int size, int dev=DEV_CPU);
   Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
+
+
+  // Copy data     c   ********************************
+  void ToCPU_(Tensor *A);
+  void ToGPU_(Tensor *A);
+  Tensor * ToCPU(Tensor *A);
+  Tensor * ToGPU(Tensor *A);
+  Tensor* clone(Tensor *A);
+  Tensor* select(Tensor *A, int i);
+  void copyTensor(Tensor *A,Tensor *B);
+
+  // Core inplace    **********************************
+  void fill_(Tensor *A,float v);
+  void set_(Tensor *A,vector<int> indices, float value);
+  void reshape_(Tensor *A, vector<int> indices);
 
   // Pointer functions ********************************
   float *getptr(Tensor *A);
 
-  // Print functions   ********************************
+  // Other functions   ********************************
   void print(Tensor *A);
   void info(Tensor *A);
+  tshape getShape(Tensor *A);
 
-  // Load from file ***********************************
-  Tensor *load(string fname);
+  // Serialization ***********************************
+  Tensor* load(string fname, string format="bin");
+  void save(Tensor* A, string fname, string format="bin");
 
   // Math ops       ***********************************
 
@@ -124,8 +142,8 @@ namespace eddlT{
   void neg_(Tensor *A);
   Tensor* neg(Tensor *A);
 
-  void normalize_(Tensor *A,float min=0.0f, float max=1.0f);
-  Tensor* normalize(Tensor *A, float min=0.0f, float max=1.0f);
+  void normalize_(Tensor *A,float min, float max);
+  Tensor* normalize(Tensor *A, float min, float max);
 
   void pow_(Tensor *A,float exp);
    Tensor* pow(Tensor *A, float exp);

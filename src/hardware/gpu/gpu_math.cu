@@ -518,8 +518,11 @@ float gpu_sum(Tensor *A){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
+
     thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
-    return thrust::reduce(dev_ptr, dev_ptr + A->size);
+    float sum=thrust::reduce(dev_ptr, dev_ptr + A->size);
+
+    return sum;
 }
 
 float gpu_sum_abs(Tensor *A){
@@ -527,7 +530,7 @@ float gpu_sum_abs(Tensor *A){
     cudaSetDevice(device);
 
     thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
-//    return thrust::transform_reduce(dev_ptr, dev_ptr + A->size, thrust::plus<float>, 0.0f, sum_abs_value);
+    //return thrust::transform_reduce(dev_ptr, dev_ptr + A->size, thrust::plus<float>, 0.0f, sum_abs_value);
     return 0.0f;
 }
 

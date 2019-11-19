@@ -15,7 +15,6 @@
 #include <stdio.h>
 
 #include "../layer.h"
-#include "../../regularizers/regularizer.h"
 
 #define TRMODE 1
 #define TSMODE 0
@@ -111,7 +110,6 @@ public:
     static int total_layers;
     int ndim;
     bool use_bias;  // TODO: Implement
-    Regularizer *reg;
 
     LDense(Layer *parent, int ndim, bool use_bias, string name, int dev);
 
@@ -140,8 +138,9 @@ class LActivation : public LinLayer {
 public:
     string act;
     static int total_layers;
+    float param;
 
-    LActivation(Layer *parent, string act, string name, int dev);
+    LActivation(Layer *parent, string act, string name, int dev,float param=0.01);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -166,11 +165,10 @@ public:
     // constructors and clones
     LReshape(Layer *parent, vector<int> shape, string name, int dev);
     ~LReshape() override;
-    
+
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
 
     // implementation
     void forward() override;
@@ -215,6 +213,7 @@ public:
 
     // constructors and clones
     LDropout(Layer *parent, float df, string name, int dev);
+    ~LDropout() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -233,35 +232,6 @@ public:
 };
 
 
-
-/// BatchNormalization Layer
-class LBatchNorm : public LinLayer {
-public:
-    float momentum;
-    float epsilon;
-    bool affine;
-    LTensor *mean;
-    LTensor *variance;
-
-    static int total_layers;
-    vector<Layer *> layers;
-
-    LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev);
-
-    Layer *share(int c, int bs, vector<Layer *> p) override;
-
-    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
-    void forward() override;
-
-    void backward() override;
-
-    void resize(int batch) override;
-
-    void reset() override;
-
-    string plot(int c) override;
-};
 
 
 #endif //EDDL_LAYER_CORE_H

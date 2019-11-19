@@ -29,41 +29,73 @@ Layer::Layer(string name, int dev) {
     this->dev = dev;
     lin = lout = 0;
     delta_bp = 0;
-    this->reg = nullptr;
+    detached=false;
+
+    orig=nullptr;
+    net=nullptr;
+
+    reg = nullptr;
+    init=new IGlorotNormal(1234);
 }
 
 Layer::~Layer()
 {
-  if (output!=nullptr) delete output;
-  if (delta!=nullptr) delete delta;
-  if (target!=nullptr) delete target;
+    if (output!=nullptr) delete output;
+    if (delta!=nullptr) delete delta;
+    if (target!=nullptr) delete target;
+
+    //params if any
+    for (int i=0;i<params.size();i++)
+        delete params[i];
+
+    //gradients if any
+    for (int i=0;i<gradients.size();i++)
+        delete gradients[i];
+
 }
 
-void Layer::initialize(Initializer *init) {
+void Layer::initialize() {
     for (int i = 0; i != params.size(); i++) {
         init->apply(params[i]);
     }
 }
 
+void Layer::clamp(float min,float max)
+{
+  for (int i = 0; i != params.size(); i++) {
+      params[i]->clamp_(min,max);
+  }
+}
+
+void Layer::setdetach()
+{
+  detached=true;
+}
 
 void Layer::resize(int batch)
 {
-     if (output!=nullptr) output->resize(batch);
-     if (delta!=nullptr) delta->resize(batch);
-     if (target!=nullptr) target->resize(batch);
+    if (output!=nullptr) output->resize(batch);
+    if (delta!=nullptr) delta->resize(batch);
+    if (target!=nullptr) target->resize(batch);
 }
 
 void Layer::detach(Layer *l)
 {
-  for(int i=0;i<child.size();i++)
-    if(child[i]==l) {
-      child.erase(child.begin() + i);
-      lout--;
-    }
+    for(int i=0;i<child.size();i++)
+        if(child[i]==l) {
+            child.erase(child.begin() + i);
+            lout--;
+        }
 }
 
 void Layer::reset() {
     delta->fill_(0.0);
+    detached=false;
+}
+
+void Layer::zeroGrads() {
+  for(int i=0;i<gradients.size();i++)
+    gradients[i]->fill_(0.0);
 }
 
 void Layer::setmode(int m) {
@@ -73,19 +105,19 @@ void Layer::setmode(int m) {
 
 vector<int> Layer::getShape()
 {
-  return output->getShape();
+    return output->getShape();
 }
 
-void Layer::save(FILE *fe)
-{
-  for (int i = 0; i != params.size(); i++)
-    params[i]->save(fe);
+void Layer::save(std::ofstream &ofs, const string& format){
+    for (int i = 0; i != params.size(); i++){
+        params[i]->savefs(ofs, format);
+    }
 }
 
-void Layer::load(FILE *fe)
-{
-  for (int i = 0; i != params.size(); i++)
-    params[i]->load(fe);
+void Layer::load(std::ifstream &ifs, const string& format){
+    for (int i = 0; i != params.size(); i++){
+        params[i]->loadfs(ifs, format);
+    }
 }
 
 void Layer::info() {
@@ -173,11 +205,11 @@ Layer* operator+(Layer &l1,Layer &l2) {
 }
 
 Layer* operator+(Layer &l,float f){
-  return new LSum(&l, f,"",l.dev);
+    return new LSum(&l, f,"",l.dev);
 }
 
 Layer* operator+(float f,Layer &l){
-  return new LSum(&l, f,"",l.dev);
+    return new LSum(&l, f,"",l.dev);
 }
 
 Layer* operator*(Layer &l1,Layer &l2) {
@@ -185,9 +217,9 @@ Layer* operator*(Layer &l1,Layer &l2) {
 }
 
 Layer* operator*(Layer &l,float f){
-  return new LMult(&l, f,"", l.dev);
+    return new LMult(&l, f,"", l.dev);
 }
 
 Layer* operator*(float f,Layer &l){
-  return new LMult(&l, f,"", l.dev);
+    return new LMult(&l, f,"", l.dev);
 }

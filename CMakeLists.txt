@@ -19,7 +19,8 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "")
 
 # SET BUILD TYPE (RELEASE/DEBUG)
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release)
+#    set(CMAKE_BUILD_TYPE Debug)
+     set(CMAKE_BUILD_TYPE Release)
 endif()
 
 # SET COMPILER FLAGS
@@ -46,6 +47,15 @@ endif()
 
 # SET STATIC/DYNAMIC RUNTIME
 set(EDDL_SHARED OFF CACHE BOOL "Whether to build a static or dynamic library")
+
+# Set default install directories
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    if (WIN32)
+        set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "Installation Directory" FORCE)
+    else()
+        set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Installation Directory" FORCE)
+    endif()
+endif()
 
 # SHOW OPTIONS
 message(STATUS "Build type: " ${CMAKE_BUILD_TYPE} )
@@ -200,7 +210,6 @@ SET(CPP_SOURCES
         src/layers/conv/layer_transposed_conv.cpp
         src/layers/conv/layer_upsampling.cpp
         src/layers/core/layer_activation.cpp
-        src/layers/core/layer_batchnorm.cpp
         src/layers/core/layer_core.h
         src/layers/core/layer_dense.cpp
         src/layers/core/layer_drop.cpp
@@ -209,6 +218,25 @@ SET(CPP_SOURCES
         src/layers/core/layer_reshape.cpp
         src/layers/core/layer_tensor.cpp
         src/layers/core/layer_transpose.cpp
+        src/layers/da/layer_da.h
+        src/layers/da/layer_crop.cpp
+        src/layers/da/layer_crop_scale.cpp
+        src/layers/da/layer_crop_random.cpp
+        src/layers/da/layer_crop_scale_random.cpp
+        src/layers/da/layer_cutout.cpp
+        src/layers/da/layer_cutout_random.cpp
+        src/layers/da/layer_flip.cpp
+        src/layers/da/layer_flip_random.cpp
+        src/layers/da/layer_rotate.cpp
+        src/layers/da/layer_rotate_random.cpp
+        src/layers/da/layer_scale.cpp
+        src/layers/da/layer_scale_random.cpp
+        src/layers/da/layer_shift.cpp
+        src/layers/da/layer_shift_random.cpp
+        src/layers/normalization/layer_norm.cpp
+        src/layers/normalization/layer_normmax.cpp
+        src/layers/normalization/layer_normminmax.cpp
+        src/layers/normalization/layer_batchnorm.cpp
         src/layers/generators/layer_generator.cpp
         src/layers/generators/layer_generators.h
         src/layers/generators/layer_gauss.cpp
@@ -259,10 +287,14 @@ SET(CPP_SOURCES
         src/losses/loss_cross_entropy.cpp
         src/losses/loss_mean_squared_error.cpp
         src/losses/loss_soft_cross_entropy.cpp
+        src/losses/loss_min.cpp
         src/metrics/metric.cpp
         src/metrics/metric.h
         src/metrics/metric_categorical_acc.cpp
         src/metrics/metric_mean_squared_error.cpp
+        src/metrics/metric_mean_absolute_error.cpp
+        src/metrics/metric_mean_relative_error.cpp
+        src/metrics/metric_sum.cpp
         src/optimizers/optim.cpp
         src/optimizers/optim.h
         src/optimizers/optim_adadelta.cpp
@@ -298,10 +330,15 @@ SET(CPP_SOURCES
         src/tensor/nn/tensor_metrics.cpp
         src/tensor/nn/tensor_pool.cpp
         src/tensor/nn/tensor_core_nn.cpp
-        src/compserv.cpp
-        src/compserv.h
-        src/net.cpp
-        src/net.h
+        src/net/compserv.cpp
+        src/net/compserv.h
+        src/net/netloss.cpp
+        src/net/netloss.h
+        src/net/net.cpp
+        src/net/net_build.cpp
+        src/net/net_api.cpp
+        src/net/net_func.cpp
+        src/net/net.h
         src/system_info.h
         src/utils.cpp
         src/utils.h
@@ -321,6 +358,8 @@ SET(CUDA_SOURCES
         src/hardware/gpu/gpu_core_kernels.cu
         src/hardware/gpu/gpu_create.cu
         src/hardware/gpu/gpu_create_kernels.cu
+        src/hardware/gpu/gpu_da.cu
+        src/hardware/gpu/gpu_da_kernels.cu
         src/hardware/gpu/gpu_generator.cu
         src/hardware/gpu/gpu_generator_kernels.cu
         src/hardware/gpu/gpu_math.cu
@@ -372,7 +411,7 @@ target_include_directories(eddl PUBLIC
 )
 target_include_directories(eddl PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen>
-    $<INSTALL_INTERFACE:include/third_party/eigen>
+    $<INSTALL_INTERFACE:include/eddl/third_party/eigen>
 )
 #target_compile_features(eddl PUBLIC cxx_std_11)
 
@@ -471,15 +510,51 @@ endif(BUILD_TESTS)
 if(BUILD_EXAMPLES)
     SET(EXAMPLES_DIR "examples")
     set(CMAKE_FOLDER examples)
-    add_executable(example_ae "${EXAMPLES_DIR}/NN/eddl_ae.cpp")
-    add_executable(example_conv "${EXAMPLES_DIR}/NN/eddl_conv.cpp")
-    add_executable(example_dae "${EXAMPLES_DIR}/NN/eddl_dae.cpp")
-    add_executable(example_dae_class "${EXAMPLES_DIR}/NN/eddl_dae_class.cpp")
-    add_executable(example_load_save "${EXAMPLES_DIR}/NN/eddl_load_save.cpp")
-    add_executable(example_mlp "${EXAMPLES_DIR}/NN/eddl_mlp.cpp")
-    add_executable(example_predict "${EXAMPLES_DIR}/NN/eddl_predict.cpp")
-    add_executable(example_train_batch "${EXAMPLES_DIR}/NN/eddl_train_batch.cpp")
+    ## MNIST EXAMPLES
+    add_executable(mnist_mlp "${EXAMPLES_DIR}/NN/1_MNIST/1_mnist_mlp.cpp")
+    add_executable(mnist_mlp_initializers "${EXAMPLES_DIR}/NN/1_MNIST/2_mnist_mlp_initializers.cpp")
+    add_executable(mnist_mlp_regularizers "${EXAMPLES_DIR}/NN/1_MNIST/3_mnist_mlp_regularizers.cpp")
+    add_executable(mnist_mlp_da "${EXAMPLES_DIR}/NN/1_MNIST/4_mnist_mlp_da.cpp")
+    add_executable(mnist_mlp_train_batch "${EXAMPLES_DIR}/NN/1_MNIST/5_mnist_mlp_train_batch.cpp")
+    add_executable(mnist_auto_encoder "${EXAMPLES_DIR}/NN/1_MNIST/6_mnist_auto_encoder.cpp")
+    add_executable(mnist_gan "${EXAMPLES_DIR}/NN/1_MNIST/7_mnist_gan.cpp")
+    add_executable(mnist_wgan "${EXAMPLES_DIR}/NN/1_MNIST/8_mnist_wgan.cpp")
+    ## CIFAR10 EXAMPLES
+    add_executable(cifar_conv "${EXAMPLES_DIR}/NN/2_CIFAR10/1_cifar_conv.cpp")
+    add_executable(cifar_conv_da "${EXAMPLES_DIR}/NN/2_CIFAR10/2_cifar_conv_da.cpp")
+    add_executable(cifar_vgg16 "${EXAMPLES_DIR}/NN/2_CIFAR10/3_cifar_vgg16.cpp")
+    add_executable(cifar_vgg16_bn "${EXAMPLES_DIR}/NN/2_CIFAR10/4_cifar_vgg16_bn.cpp")
+    add_executable(cifar_resnet "${EXAMPLES_DIR}/NN/2_CIFAR10/5_cifar_resnet.cpp")
+    add_executable(cifar_resnet_da_bn "${EXAMPLES_DIR}/NN/2_CIFAR10/6_cifar_resnet_da_bn.cpp")
+    add_executable(cifar_resnet50 "${EXAMPLES_DIR}/NN/2_CIFAR10/7_cifar_resnet50_da_bn.cpp")
+    #### OTHER
+    add_executable(example_ae "${EXAMPLES_DIR}/NN/other/eddl_ae.cpp")
+    add_executable(example_conv "${EXAMPLES_DIR}/NN/other/eddl_conv.cpp")
+    add_executable(example_dae "${EXAMPLES_DIR}/NN/other/eddl_dae.cpp")
+    add_executable(example_dae_class "${EXAMPLES_DIR}/NN/other/eddl_dae_class.cpp")
+    add_executable(example_load_save "${EXAMPLES_DIR}/NN/other/eddl_load_save.cpp")
+    add_executable(example_mlp "${EXAMPLES_DIR}/NN/other/eddl_mlp.cpp")
+    add_executable(example_predict "${EXAMPLES_DIR}/NN/other/eddl_predict.cpp")
+    add_executable(example_train_batch "${EXAMPLES_DIR}/NN/other/eddl_train_batch.cpp")
     add_executable(example_tensor "${EXAMPLES_DIR}/Tensor/eddl_tensor.cpp")
+    ## MNIST EXAMPLES
+    target_link_libraries(mnist_mlp eddl)
+    target_link_libraries(mnist_mlp_initializers eddl)
+    target_link_libraries(mnist_mlp_regularizers eddl)
+    target_link_libraries(mnist_mlp_da eddl)
+    target_link_libraries(mnist_mlp_train_batch eddl)
+    target_link_libraries(mnist_auto_encoder eddl)
+    target_link_libraries(mnist_gan eddl)
+    target_link_libraries(mnist_wgan eddl)
+    ## CIFAR10 EXAMPLES
+    target_link_libraries(cifar_conv eddl)
+    target_link_libraries(cifar_conv_da eddl)
+    target_link_libraries(cifar_vgg16 eddl)
+    target_link_libraries(cifar_vgg16_bn eddl)
+    target_link_libraries(cifar_resnet eddl)
+    target_link_libraries(cifar_resnet_da_bn eddl)
+    target_link_libraries(cifar_resnet50 eddl)
+    #### OTHER
     target_link_libraries(example_ae eddl)
     target_link_libraries(example_conv eddl)
     target_link_libraries(example_dae eddl)
@@ -498,16 +573,19 @@ endif(BUILD_EXAMPLES)
 
 
 # [INSTALL] Install the EDDL library
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "..." FORCE)
+if (WIN32)
+    SET(EDDL_CONFIG_INSTALL_PATH ${CMAKE_INSTALL_PREFIX})
+else()
+    SET(EDDL_CONFIG_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/lib/cmake/eddl)
 endif()
+
 install(TARGETS eddl
-        EXPORT EDDLTargets
+        EXPORT eddlTargets
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
         )
-install(EXPORT EDDLTargets DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(EXPORT eddlTargets DESTINATION ${EDDL_CONFIG_INSTALL_PATH})
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
         DESTINATION include/eddl
         FILES_MATCHING PATTERN "*.h")
@@ -525,11 +603,13 @@ foreach(f ${Eigen_directory_files})
 endforeach(f ${Eigen_directory_files})
 install(FILES
         ${Eigen_directory_files_to_install}
-        DESTINATION "include/third_party/eigen/Eigen"
+        DESTINATION "include/eddl/third_party/eigen/Eigen"
         )
-install(DIRECTORY ${ESCAPED_EIGEN_SOURCE_DIR}/src DESTINATION "include/third_party/eigen/Eigen" COMPONENT Devel FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY ${ESCAPED_EIGEN_SOURCE_DIR}/src DESTINATION "include/eddl/third_party/eigen/Eigen" COMPONENT Devel FILES_MATCHING PATTERN "*.h")
 
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/EDDLConfig.cmake.in ${CMAKE_BINARY_DIR}/cmake/EDDLConfig.cmake @ONLY)
-install(FILES ${CMAKE_BINARY_DIR}/cmake/EDDLConfig.cmake
-        DESTINATION ${CMAKE_INSTALL_PREFIX})
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/eddlConfig.cmake.in ${CMAKE_BINARY_DIR}/cmake/eddlConfig.cmake @ONLY)
+install(FILES ${CMAKE_BINARY_DIR}/cmake/eddlConfig.cmake
+        DESTINATION ${EDDL_CONFIG_INSTALL_PATH})
+
+message(STATUS "Install path: ${CMAKE_INSTALL_PREFIX}")

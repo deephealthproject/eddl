@@ -28,7 +28,7 @@ void gpu_rand_uniform(Tensor *A, float v){
 
   check_cuda(cudaDeviceSynchronize(),"gpu_rand_uniform");
 
-  gpu_mult_(A, v);
+  //gpu_mult_(A, v);
 
   check_cuda(cudaDeviceSynchronize(),"gpu_rand_uniform");
 

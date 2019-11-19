@@ -87,13 +87,17 @@ void Tensor::add_(float v) {
 #endif
 }
 
+void Tensor::add_(Tensor *A){
+    Tensor::add(1.0f, this, 1.0f, A, this, 0);
+}
+
 Tensor* Tensor::add(Tensor *A, Tensor *B){
     Tensor *t_new = A->clone();
     add(1.0f, A, 1.0f, B, t_new, 0);
     return t_new;
  }
 
-void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
+Tensor * Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
     ///////////////////////////////////////
     //// sum C=(sca*A)+(scb*B)
     //// or C+=(sca*A)+(scb*B) if incC is 1
@@ -1252,4 +1256,11 @@ Tensor* Tensor::trunc(Tensor *A){
     Tensor *t_new = A->clone();
     t_new->trunc_();
     return t_new;
+}
+
+
+Tensor* Tensor::interpolate(float factor1, Tensor *A, float factor2, Tensor *B){
+    Tensor* C = Tensor::zeros(A->getShape());
+    Tensor::add(factor1, A, factor2, B, C, 1);
+    return C;
 }
