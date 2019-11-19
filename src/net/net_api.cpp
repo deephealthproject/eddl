@@ -369,7 +369,7 @@ void Net::backward(vector<Tensor *> target)
         }
     }
   }
-
+  tr_batches++;
   run_snets(backward_t);
   compute_loss();
 
@@ -379,7 +379,7 @@ void Net::backward(vector<Tensor *> target)
 void Net::backward()
 {
 
-
+  tr_batches++;
   run_snets(backward_t);
 
   for(int i=0;i<netinput.size();i++) {
@@ -475,6 +475,15 @@ void Net::compute_loss()
 void Net::update()
 {
   run_snets(update_t);
+
+  int comp=snets.size();
+
+  if (batch_size<comp)
+    comp=batch_size;
+
+  if ((snets[0]->dev != DEV_CPU) && (comp > 1) && (tr_batches%cs->lsb==0)) {
+    sync_weights();
+  }
 }
 
 void Net::delta()
@@ -615,24 +624,6 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
 
 }
 
-
-/////////////////////////////////////////
-void Net::sync_weights() {
-    for (int j = 0; j < layers.size(); j++)
-        for (int k = 0; k < layers[j]->params.size(); k++) {
-            // Taking average
-            layers[j]->params[k]->fill_(0.0);
-            for (int i = 0; i < snets.size(); i++) {
-                Tensor::inc(snets[i]->layers[j]->params[k], layers[j]->params[k]);
-            }
-            layers[j]->params[k]->div_(snets.size());
-
-            // copy-back to devices
-            for (int i = 0; i < snets.size(); i++) {
-                Tensor::copy(layers[j]->params[k], snets[i]->layers[j]->params[k]);
-            }
-        }
-}
 
 ///////////////////////////////////////////
 void Net::evaluate(vtensor tin, vtensor tout) {
