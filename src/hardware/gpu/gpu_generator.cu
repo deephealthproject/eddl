@@ -16,8 +16,38 @@
 #include "gpu_kernels.h"
 #include "gpu_hw.h"
 
+/* we need these includes for CUDA's random number stuff */
+#include <curand.h>
+#include <curand_kernel.h>
+
 #include "../../tensor/tensor.h"
 #include "../../descriptors/descriptors.h"
+
+
+
+float* gpu_get_uniforms(int N){
+    /* CUDA's random number library uses curandState_t to keep track of the seed value
+     we will store a random state for every thread  */
+  curandState_t* states;
+
+  /* allocate space on the GPU for the random states */
+  cudaMalloc((void**) &states, N * sizeof(curandState_t));
+
+  /* invoke the GPU to initialize all of the random states */
+  init<<<N, 1>>>(time(0), states);
+
+  /* allocate an array of unsigned ints on the CPU and GPU */
+  float* gpu_nums;
+  cudaMalloc((void**) &gpu_nums, N * sizeof(float));
+
+  /* invoke the kernel to get some random numbers */
+  random_uniform<<<N, 1>>>(states, gpu_nums);
+
+  /* free the memory we allocated for the states and numbers */
+  cudaFree(states);
+  // cudaFree(gpu_nums);
+  return gpu_nums;
+}
 
 
 void gpu_rand_uniform(Tensor *A, float v){
@@ -56,7 +86,7 @@ void gpu_rand_normal(Tensor *A, float m, float s){
   cudaSetDevice(device);
 
   if (A->size%2) {
-    gpu_fill_(A,0.0);
+    gpu_fill_(A, 0.0);
     check_curand(curandGenerateNormal(random_generator[device],A->ptr,A->size-1,m,s),"gpu_rand_normal");
   }
   else

@@ -14,6 +14,9 @@
 
 #include <cuda.h>
 
+/* we need these includes for CUDA's random number stuff */
+#include <curand.h>
+#include <curand_kernel.h>
 
 // GPU: Comparison
 
@@ -44,7 +47,8 @@ __global__ void crop_scale_random(float* A, float* B, int batch, int depth, int 
 __global__ void cutout_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor_x, float* factor_y, float constant, float* rnd);
 
 // GPU: Generator
-__global__ void uniform_array(float* array, int size, unsigned long seed);
+__global__ void init(unsigned int seed, curandState_t* states);
+__global__ void random_uniform(curandState_t* states, float* numbers);
 
 // GPU: Math (in-place)
 __global__ void abs_(float* a, long int size);

@@ -71,6 +71,7 @@ void gpu_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<floa
 
 
 // GPU: Generator
+float* gpu_get_uniforms(int N);
 void gpu_rand_uniform(Tensor *A, float v);
 void gpu_rand_signed_uniform(Tensor *A, float v);
 void gpu_rand_binary(Tensor *A, float v);
