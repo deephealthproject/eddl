@@ -127,7 +127,7 @@ void Net::walk(Layer *l) {
     if (!inNet(l)) {
       if (l->orig!=nullptr) l->net=l->orig->net;
       else l->net=this;
-      
+
       layers.push_back(l);
       for (int i = 0; i < l->child.size(); i++)
           walk(l->child[i]);
@@ -155,14 +155,7 @@ string Net::summary() {
     std::stringstream ss;
 
     for (int i = 0; i < vfts.size(); i++) {
-          ss << vfts[i]->name.c_str() << " ";
-    }
-
-
-    ss << "\n";
-    for (int i = 0; i < vfts.size(); i++) {
         ss << vfts[i]->name << ": ";
-        cout<<vfts[i]->name<<"\n";
 
         vector<int> si = vfts[i]->input->getShape();
         if (vfts[i]->input->ndim>1)

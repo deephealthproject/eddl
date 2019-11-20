@@ -120,10 +120,12 @@ void ReduceDescriptor::resize(int b)
 {
   int i;
 
-  for(i=0;i<axis.size();i++)
+  for(i=0;i<axis.size();i++){
     if (axis[i]==0) break;
+  }
 
-  if (i==axis.size()) {
+
+  if ((keepdims)||(i==axis.size())) {
     O->resize(b);
     D->resize(b);
     if ((m==2)||(m==3))
