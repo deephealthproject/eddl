@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 
   build(gen,gopt); // By defatul CS_CPU
 
-  //toGPU(gen); // move toGPU
+  toGPU(gen); // move toGPU
 
   summary(gen);
 
@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
 
   build(disc,dopt); // By defatul CS_CPU
 
-  //toGPU(disc); // move toGPU
+  toGPU(disc); // move toGPU
 
   summary(disc);
 

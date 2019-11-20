@@ -24,7 +24,7 @@ using namespace eddl;
 layer vreal_loss(vector<layer> in)
 {
   // -log( D_out + epsilon )
-  return ReduceMean(Mult(Log(Sum(in[0],0.0001)),-1));
+  return Mult(Log(Sum(in[0],0.0001)),-1);
 }
 
 layer vfake_loss(vector<layer> in)
@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
     // Oprimizer
 
     // Define Generator
-    layer gin=GaussGenerator(0.0, 1, {100});
+    layer gin=GaussGenerator(0.0, 1, {25});
     layer l=gin;
 
     l=LReLu(Dense(l,256));
@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
     layer gout=Tanh(Dense(l,784));
 
     model gen = Model({gin},{});
-    optimizer gopt=adam(0.001);
+    optimizer gopt=adam(0.0001);
 
     build(gen,gopt); // CS_CPU by default
     toGPU(gen); // GPU {1} by default
@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
     layer dout = Sigmoid(Dense(l, 1));
 
     model disc = Model({din},{});
-    optimizer dopt=adam(0.001);
+    optimizer dopt=adam(0.0001);
 
     build(disc,dopt); // CS_CPU by default
     toGPU(disc); // GPU {1} by default
@@ -96,8 +96,8 @@ int main(int argc, char **argv) {
 
     for(i=0;i<epochs;i++) {
 
-      reset_loss(disc);
       fprintf(stdout, "Epoch %d/%d (%d batches)\n", i + 1, epochs,num_batches);
+      float dr,df,gr;
       for(j=0;j<num_batches;j++)  {
 
         // get a batch from real images
@@ -109,6 +109,7 @@ int main(int argc, char **argv) {
         forward(disc,{batch});
         float dr=compute_loss(rl);
         backward(rl);
+
 
         // Fake
         forward(disc,detach(forward(gen,batch_size)));
@@ -125,7 +126,6 @@ int main(int argc, char **argv) {
         update(gen);
 
         printf("Batch %d -- Total Loss=%1.3f  -- Dr=%1.3f  Df=%1.3f  Gr=%1.3f\r",j+1,dr+df+gr,dr,df,gr);
-
         fflush(stdout);
 
       }
