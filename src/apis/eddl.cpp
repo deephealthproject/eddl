@@ -749,10 +749,6 @@ namespace eddl {
         net->evaluate(in, out);
     }
 
-    void predict(model net, const vector<Tensor *> &in, const vector<Tensor *> &out) {
-        net->predict(in, out);
-    }
-
 
     // ---- DATASETS ----
 

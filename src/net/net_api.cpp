@@ -30,7 +30,6 @@ using namespace std::chrono;
 //// THREADS
 struct tdata {
     Net *net;
-    int eval;
 };
 
 
@@ -44,11 +43,22 @@ void *train_batch_t(void *t) {
     net->do_forward();
     net->do_compute_loss();
 
-    if (!targs->eval) {
-        net->do_delta();
-        net->do_backward();
-        net->do_applygrads();
-    }
+    net->do_delta();
+    net->do_backward();
+    net->do_applygrads();
+
+    return nullptr;
+}
+
+void *eval_batch_t(void *t) {
+    auto *targs = (tdata *) t;
+
+    Net *net = targs->net;
+    net->do_reset();
+    net->do_reset_grads();
+    net->do_forward();
+    net->do_compute_loss();
+
     return nullptr;
 }
 
@@ -146,7 +156,6 @@ void Net::run_snets(void *(*F)(void *t))
   for (int i = 0; i < comp; i++) {
     // Thread params
     td[i].net = snets[i];
-    td[i].eval = 0;
 
     rc = pthread_create(&thr[i], nullptr, (*F), (void *) (&td[i]));
     if (rc) {
@@ -519,7 +528,10 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
     }
   }
 
-  run_snets(train_batch_t);
+  if (eval)
+    run_snets(eval_batch_t);
+  else
+    run_snets(train_batch_t);
 
   // If training (eval==0), apply gradients
   if (!eval) {
@@ -583,51 +595,6 @@ void Net::evaluate(vtensor tin, vtensor tout) {
     fprintf(stdout, "\n");
 
 }
-
-///////////////////////////////////////////
-void Net::predict(vtensor tin, vtensor tout) {
-
-    int i, j, k, n;
-    setmode(TSMODE);
-
-    // Check list shape
-    if (tin.size() != lin.size())
-        msg("input tensor list does not match with defined input layers", "Net.predict");
-    if (tout.size() != lout.size())
-        msg("output tensor list does not match with defined output layers", "Net.predict");
-
-    // Check data consistency
-    n = tin[0]->shape[0];
-    if (n!=1)
-      msg("Predict only one sample","Net.predict");
-
-    for (i = 1; i < tin.size(); i++)
-        if (tin[i]->shape[0] != n)
-            msg("different number of samples in input tensor", "Net.predict");
-
-    for (i = 1; i < tout.size(); i++)
-        if (tout[i]->shape[0] != n)
-            msg("different number of samples in output tensor", "Net.predict");
-
-
-    if (batch_size!=1) resize(1);
-
-    printf("Predict...\n");
-
-    // Copy samples
-    for (int j = 0; j < tin.size(); j++)
-        Tensor::copy(tin[j], snets[0]->lin[j]->input);
-
-    snets[0]->do_reset_grads();
-    snets[0]->forward();
-
-    for (int j = 0; j < tout.size(); j++) {
-        Tensor::copy(snets[0]->lout[j]->output,tout[j]);
-    }
-
-}
-
-
 
 
 
