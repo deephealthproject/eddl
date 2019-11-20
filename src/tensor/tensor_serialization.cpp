@@ -105,32 +105,39 @@ Tensor* Tensor::load_from_onnx(std::ifstream &ifs){
 };
 
 Tensor* Tensor::load_from_img(const string &filename, string format){
-    int t_width, t_height, t_channels, t_size;
+    Tensor* t = nullptr;
 
-    // IMPORTANT! There might be problems if the image is grayscale, a png with 3 components,...
-    // Set number of channels to read
-    unsigned char *pixels = stbi_load(filename.c_str(), &t_width, &t_height, &t_channels, t_channels);
+    try {
+        int t_width, t_height, t_channels, t_size;
 
-    // Cast pointer
-    t_size = t_width * t_height * t_channels;
-    auto* t_data = new float[t_size];
-    for(int i=0; i<t_size; i++){ t_data[i]= (float)pixels[i]; }
+        // IMPORTANT! There might be problems if the image is grayscale, a png with 3 components,...
+        // Set number of channels to read
+        unsigned char *pixels = stbi_load(filename.c_str(), &t_width, &t_height, &t_channels, t_channels);
 
-    // Free image
-    stbi_image_free(pixels);
+        // Cast pointer
+        t_size = t_width * t_height * t_channels;
+        auto* t_data = new float[t_size];
+        for(int i=0; i<t_size; i++){ t_data[i]= (float)pixels[i]; }
 
-    // Create tensor
-    auto t = new Tensor({1, t_channels, t_height, t_width}, DEV_CPU);
+        // Free image
+        stbi_image_free(pixels);
 
-    // TODO: Temp! Check permute correctness
-    // Re-order components (careful with t[a]=t[b], collisions may appear if both are the same)
-    for(int i=0; i<t->size; i+=t->shape[1]) { // Jump RGB blocks [(rgb), (rgb),....]
-        for(int j=0; j<t->shape[1]; j++){  // Walk RGB block [R, G, B]
-            int pos = (i/t->shape[1])+(j*t->shape[2]*t->shape[3]);  // (index in plane)+(jump whole plane: HxW)
-            t->ptr[pos]=t_data[i+j];
+        // Create tensor
+        t = new Tensor({1, t_channels, t_height, t_width}, DEV_CPU);
+
+        // TODO: Temp! Check permute correctness
+        // Re-order components (careful with t[a]=t[b], collisions may appear if both are the same)
+        for(int i=0; i<t->size; i+=t->shape[1]) { // Jump RGB blocks [(rgb), (rgb),....]
+            for(int j=0; j<t->shape[1]; j++){  // Walk RGB block [R, G, B]
+                int pos = (i/t->shape[1])+(j*t->shape[2]*t->shape[3]);  // (index in plane)+(jump whole plane: HxW)
+                t->ptr[pos]=t_data[i+j];
+            }
         }
+        //t = t->permute({0, 3, 2, 1}); // Data must be presented as CxHxW
+    } catch(const std::bad_array_new_length &e) {
+        msg("There was an error opening the image", "Tensor::load_from_img");
     }
-    //t = t->permute({0, 3, 2, 1}); // Data must be presented as CxHxW
+
     return t;
 }
 

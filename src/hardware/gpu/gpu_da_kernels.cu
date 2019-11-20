@@ -118,7 +118,7 @@ __global__ void scale(float* A, float* B, int batch, int depth, int irows, int i
 
 }
 
-__global__ void flip(float* A, float* B, int batch, int depth, int irows, int icols, int axis, bool apply){
+__global__ void flip(float* A, float* B, int batch, int depth, int irows, int icols, int axis){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*irows*icols;
 
@@ -135,14 +135,10 @@ __global__ void flip(float* A, float* B, int batch, int depth, int irows, int ic
         //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
         int B_pos = b*B_stride[0] + c*B_stride[1] + Bi*B_stride[2] + Bj*B_stride[3];
 
-        if(apply){
-            int pos[2] = {Bi, Bj}; pos[axis] = (irows-1) - pos[axis];
-            int Ai = pos[0]; int Aj = pos[1];
-            int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
-            B[B_pos] = A[A_pos];
-        }else{
-            B[B_pos] = A[B_pos];
-        }
+        int pos[2] = {Bi, Bj}; pos[axis] = (irows-1) - pos[axis];
+        int Ai = pos[0]; int Aj = pos[1];
+        int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
+        B[B_pos] = A[A_pos];
 
     }
 }

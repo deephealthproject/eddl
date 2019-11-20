@@ -33,7 +33,7 @@ __global__ void mask(float* a, float v, long int size);
 __global__ void shift(float* A, float* B, int batch, int depth, int irows, int icols, int* shift, int mode, float constant);
 __global__ void rotate(float* A, float* B, int batch, int depth, int irows, int icols, float angle_rad, int* center, int mode, float constant);
 __global__ void scale(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* new_shape, int mode, float constant);
-__global__ void flip(float* A, float* B, int batch, int depth, int irows, int icols, int axis, bool apply);
+__global__ void flip(float* A, float* B, int batch, int depth, int irows, int icols, int axis);
 __global__ void crop(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int* offsets, float constant, bool inverse);
 __global__ void crop_scale(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int mode, float constant);
 
