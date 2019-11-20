@@ -91,25 +91,31 @@ void Net::do_applygrads() {
 
 /////////////////////////////////////////
 void Net::sync_weights() {
-
+    cout<<"\nSync weights...\n";
     for (int j = 0; j < layers.size(); j++)
         for (int k = 0; k < layers[j]->params.size(); k++) {
             // Taking average
             layers[j]->params[k]->fill_(0.0);
-            for (int i = 0; i < snets.size(); i++) {
-                Tensor::inc(snets[i]->layers[j]->params[k], layers[j]->params[k]);
-            }
-            layers[j]->params[k]->div_(snets.size());
 
-            // copy-back to devices
-            for (int i = 0; i < snets.size(); i++) {
-                Tensor::copy(layers[j]->params[k], snets[i]->layers[j]->params[k]);
+            if (!Tensor::eqsize(layers[j]->params[k],snets[0]->layers[j]->params[k])) {
+              // combine BN statistics
+            }
+            else {
+              for (int i = 0; i < snets.size(); i++) {
+                  Tensor::inc(snets[i]->layers[j]->params[k], layers[j]->params[k]);
+              }
+              layers[j]->params[k]->div_(snets.size());
+
+              // copy-back to devices
+              for (int i = 0; i < snets.size(); i++) {
+                  Tensor::copy(layers[j]->params[k], snets[i]->layers[j]->params[k]);
+              }
             }
         }
 }
 
 
-void collectTensor(Layer *l,string tname)
+void collectTensor(Layer *l,string tname,int p)
 {
   Net *sn=l->net;
   if (sn->snets[0]->dev==DEV_CPU) return;
@@ -147,12 +153,14 @@ void collectTensor(Layer *l,string tname)
       Tensor::deselect(sl->output, l->output, sind, start, end);
     else if (tname=="grad")
       Tensor::deselect(sl->delta, l->delta, sind, start, end);
+    else if (tname=="param")
+      Tensor::deselect(sl->params[p], l->params[p], sind, start, end);
   }
 
 }
 
 
-void distributeTensor(Layer *l,string tname)
+void distributeTensor(Layer *l,string tname,int p)
 {
   Net *sn=l->net;
   if (sn->snets[0]->dev==DEV_CPU) return;
@@ -189,8 +197,10 @@ void distributeTensor(Layer *l,string tname)
 
     if (tname=="output")
       Tensor::select(l->output, sl->output, sind, start, end);
-    else
+    else if (tname=="grad")
       Tensor::select(l->delta, sl->delta, sind, start, end);
+    else if (tname=="param")
+      Tensor::select(l->params[p], sl->params[p], sind, start, end);
 
   }
 }

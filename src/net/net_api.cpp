@@ -390,7 +390,7 @@ void Net::update()
   if (batch_size<comp)
     comp=batch_size;
 
-  if ((snets[0]->dev != DEV_CPU) && (comp > 1) && (tr_batches%cs->lsb==0)) {
+  if ((snets[0]->dev != DEV_CPU) && (comp > 1) && (tr_batches%cs->lsb==1)) {
     sync_weights();
   }
 }
@@ -547,6 +547,8 @@ void Net::evaluate(vtensor tin, vtensor tout) {
 
     // Check data consistency
     n = tin[0]->shape[0];
+
+
     for (i = 1; i < tin.size(); i++)
         if (tin[i]->shape[0] != n)
             msg("different number of samples in input tensor", "Net.evaluate");
@@ -555,8 +557,6 @@ void Net::evaluate(vtensor tin, vtensor tout) {
         if (tout[i]->shape[0] != n)
             msg("different number of samples in output tensor", "Net.evaluate");
 
-
-    if (n<batch_size) resize(n);
 
     printf("Evaluate with batch size %d\n",batch_size);
 

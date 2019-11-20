@@ -145,8 +145,8 @@ public:
 
 };
 
-void collectTensor(Layer *l,string tname="output");
-void distributeTensor(Layer *l,string tname="output");
+void collectTensor(Layer *l,string tname="output",int p=0);
+void distributeTensor(Layer *l,string tname="output",int p=0);
 void copyTensor(Layer *l1,Layer *l2,string name="output");
 
 #endif  //EDDL_NET_H
