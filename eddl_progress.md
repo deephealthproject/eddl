@@ -91,7 +91,6 @@
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-
 | Abs |  ✅ | ✅ |
 | Diff | ✅ | ✅ |
 | Div | ✅ | ✅ |
