@@ -300,8 +300,6 @@ namespace eddl {
 
     void evaluate(model m, const vector<Tensor *> &in, const vector<Tensor *> &out);
 
-    void predict(model m, const vector<Tensor *> &in, const vector<Tensor *> &out);
-
 
 
 // ---- DATASETS ----
