@@ -38,11 +38,14 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
     input=parent->output;
 
     if (momentum!=0.0) {
-      mean=new LTensor(input->getShape(),dev);
+        mean=new LTensor(input->getShape(),dev);
         mean->output->fill_(0.0);
 
-      variance=new LTensor(input->getShape(),dev);
+        variance=new LTensor(input->getShape(),dev);
         variance->output->fill_(1.0);
+
+        //params.push_back(mean->output);
+        //params.push_back(variance->output);
     }
 
     // create a sub-graph
@@ -103,6 +106,8 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
     output=div->output;
     delta=div->delta;
+
+
 
     parent->addchild(this);
     addparent(parent);
