@@ -137,7 +137,7 @@ void collectTensor(Layer *l,string tname)
    }
     if (sl==nullptr) {
       cout<<"LAYER:"<<l->name<<"\n";
-      msg("layer not found in subgrap","Net.collectTensor");
+      msg("layer not found in subgrap","collectTensor");
     }
 
     int start = i * thread_batch_size;
@@ -181,7 +181,7 @@ void distributeTensor(Layer *l,string tname)
 
     if (sl==nullptr) {
       cout<<l->name<<"\n";
-      msg("layer not found in subgrap","Net.distributeTensor");
+      msg("layer not found in subgrap","distributeTensor");
     }
 
     int start = i * thread_batch_size;
@@ -196,30 +196,54 @@ void distributeTensor(Layer *l,string tname)
 }
 
 
-void Net::copyTensor(Layer *l1,Layer *l2,string name){
+void copyTensor(Layer *l1,Layer *l2,string name){
 
   Layer *sl1;
   Layer *sl2;
+  int i,j;
+  Net *sn1;
+  Net *sn2;
 
-  if (snets[0]->dev==DEV_CPU) {
-    sl1=l1;
-    sl2=l2;
+  sn1=l1->net;
+  sn2=l2->net;
+
+  if (sn1->snets.size()!=sn2->snets.size()) {
+    msg("Error copying tensors from graphs in diffrent CS","Net.copyTensor");
   }
-  else {
-    for(int i=0;i<snets.size();i++) {
-      for(int j=0;j<snets[i]->layers.size();j++) {
-        if (snets[i]->layers[j]->orig==l1)
-        sl1=snets[i]->layers[j];
+
+  int size=sn1->snets.size();
+
+  for(i=0;i<size;i++) {
+      //l1
+      if (sn1->snets[i]->dev==DEV_CPU) {
+        sl1=l1;
       }
-      for(int j=0;j<snets[i]->layers.size();j++) {
-        if (snets[i]->layers[j]->orig==l2)
-        sl2=snets[i]->layers[j];
+      else {
+        for(j=0;j<sn1->snets[i]->layers.size();j++) {
+          if (sn1->snets[i]->layers[j]->orig==l1) {
+            sl1=sn1->snets[i]->layers[j];
+            break;
+          }
+        }
       }
+
+      //l2
+      if (sn2->snets[0]->dev==DEV_CPU) {
+        sl2=l2;
+      }
+      else {
+          for(j=0;j<sn2->snets[i]->layers.size();j++) {
+            if (sn2->snets[i]->layers[j]->orig==l2) {
+              sl2=sn2->snets[i]->layers[j];
+              break;
+            }
+          }
+        }
+
+      if (name=="output") Tensor::copy(sl1->output,sl2->output);
+      else if (name=="grad") Tensor::copy(sl1->delta,sl2->delta);
     }
-  }
 
-  if (name=="output") Tensor::copy(sl1->output,sl2->output);
-  else if (name=="grad") Tensor::copy(sl1->delta,sl2->delta);
 }
 
 

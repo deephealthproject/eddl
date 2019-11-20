@@ -684,6 +684,9 @@ namespace eddl {
         if (cs== nullptr){
             cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
         }
+        if (o== nullptr){
+            o = new SGD(0.001,0.9);
+        }
 
         net->build(o, {}, {}, cs);
     }

@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
 
   optimizer dopt=rmsprop(0.001);
 
-  build(disc,dopt,CS_CPU()); // By defatul CS_CPU
+  build(disc,dopt); // By defatul CS_CPU
 
   //toGPU(disc); // move toGPU
 

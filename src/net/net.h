@@ -115,7 +115,6 @@ public:
     void do_applygrads();
 
     void sync_weights();
-    void copyTensor(Layer *l1,Layer *l2,string name="output");
 
     // API
     void run_snets(void *(*F)(void *t));
@@ -148,5 +147,6 @@ public:
 
 void collectTensor(Layer *l,string tname="output");
 void distributeTensor(Layer *l,string tname="output");
+void copyTensor(Layer *l1,Layer *l2,string name="output");
 
 #endif  //EDDL_NET_H
