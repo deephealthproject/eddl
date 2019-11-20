@@ -91,27 +91,17 @@
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-<<<<<<< HEAD
-| Abs | ✅ | ✅ |
-=======
+
 | Abs |  ✅ | ✅ |
->>>>>>> f7d50a37a1dda7c8d55283fe6a9cc66084675c3c
 | Diff | ✅ | ✅ |
 | Div | ✅ | ✅ |
 | Exp | ✅ | ✅ |
 | Log | ✅ | ✅ |
 | Log10 | ✅ | ✅ |
-<<<<<<< HEAD
-| Log2 | ✅ | ✅ |
-| Mult | ✅ | ✅|
-| Pow |  ✅ | ✅ |
-| Sqrt | ✅ | ✅ |
-=======
 | Log2 |  ✅ | ✅ |
 | Mult | ✅ | ✅|
 | Pow |  ✅ | ✅ |
 | Sqrt |  ✅ | ✅ |
->>>>>>> f7d50a37a1dda7c8d55283fe6a9cc66084675c3c
 | Sum | ✅ | ✅ |
 
 
@@ -180,8 +170,8 @@
 | ------------- |------| -----| ---------|
 | Adadelta | ❌ | ❌ |
 | Adagrad | ❌ | ❌ |
-| Adam | ❌ | ❌ |
+| Adam | ✅ | ✅ |
 | Adamax | ❌ | ❌ |
 | Nadam | ❌ | ❌ |
-| RMSProp | ❌ | ❌ |
+| RMSProp |✅ | ✅ |
 | SGD | ✅ | ✅ |
