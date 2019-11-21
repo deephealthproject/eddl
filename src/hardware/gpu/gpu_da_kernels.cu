@@ -16,53 +16,42 @@
 
 #include "gpu_kernels.h"
 
-__global__ void shift(float* A, float* B, int batch, int depth, int irows, int icols, int* shift, int mode, float constant){
-    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
-    long int ops = batch * depth*irows*icols;
-
-    if (thread_id_x < ops){
-        int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
-        int *B_stride = A_stride;
+__device__ void gpu_single_shift(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, int* shift, int mode, float constant){
+    int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
+    int *B_stride = A_stride;
 
         //--------------
-        int b = thread_id_x / B_stride[0] % batch;
-        int c = thread_id_x / B_stride[1] % depth;
-        int Bi = thread_id_x / B_stride[2] % irows;
-        int Bj = thread_id_x / B_stride[3] % icols;
+    int b = thread_id_x / B_stride[0] % batch;
+    int c = thread_id_x / B_stride[1] % depth;
+    int Bi = thread_id_x / B_stride[2] % irows;
+    int Bj = thread_id_x / B_stride[3] % icols;
         //--------------
         //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
 
-        int Ai = Bi - shift[0];
-        int Aj = Bj - shift[1];
+    int Ai = Bi - shift[0];
+    int Aj = Bj - shift[1];
 
-        if (Ai >= 0 && Ai < irows && Aj >= 0 && Aj < icols){
-            int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
-            B[thread_id_x] = A[A_pos];
-        }else{
+    if (Ai >= 0 && Ai < irows && Aj >= 0 && Aj < icols){
+        int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
+        B[thread_id_x] = A[A_pos];
+    }else{
             if(mode==0){ // constant
                 B[thread_id_x] = constant;
             }
         }
     }
 
-}
-
-__global__ void rotate(float* A, float* B, int batch, int depth, int irows, int icols, float angle_rad, int* center, int mode, float constant){
-    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
-    long int ops = batch * depth*irows*icols;
-
-    // Not implemented
-    if (thread_id_x < ops){
+    __device__ void gpu_single_rotate(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, float angle_rad, int* center, int mode, float constant){
         int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
         int *B_stride = A_stride;
 
-        //--------------
+    //--------------
         int b = thread_id_x / B_stride[0] % batch;
         int c = thread_id_x / B_stride[1] % depth;
         int Bi = thread_id_x / B_stride[2] % irows;
         int Bj = thread_id_x / B_stride[3] % icols;
-        //--------------
-        //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
+    //--------------
+    //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
 
         int Bi_c = Bi - center[0];
         int Bj_c = Bj - center[1];
@@ -73,107 +62,169 @@ __global__ void rotate(float* A, float* B, int batch, int depth, int irows, int 
             int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
             B[thread_id_x] = A[A_pos];
         }else{
-            if(mode==0){ // constant
-                B[thread_id_x] = constant;
-            }
+        if(mode==0){ // constant
+            B[thread_id_x] = constant;
         }
     }
 }
+
+
+__device__ void gpu_single_scale(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* new_shape, int mode, float constant){
+    int offsets[2] = {0, 0};
+    offsets[0] = (new_shape[0] - orows)/2.0f;
+    offsets[1] = (new_shape[1] - ocols)/2.0f;
+
+    int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
+    int B_stride[4] = {depth*orows*ocols, orows*ocols, ocols, 1};
+
+    //--------------
+    int b = thread_id_x / B_stride[0] % batch;
+    int c = thread_id_x / B_stride[1] % depth;
+    int Bi = thread_id_x / B_stride[2] % orows;
+    int Bj = thread_id_x / B_stride[3] % ocols;
+    //--------------
+    //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
+
+    // Interpolate indices
+    if(mode==2) { // Nearest
+        int Ai = ((Bi + offsets[0]) * irows) / new_shape[0];
+        int Aj = ((Bj + offsets[1]) * icols) / new_shape[1];
+
+        int B_pos = b * B_stride[0] + c * B_stride[1] + Bi * B_stride[2] + Bj * B_stride[3];
+        if (Ai >= 0 && Ai < irows && Aj >= 0 && Aj < icols) {
+            int A_pos = b * A_stride[0] + c * A_stride[1] + Ai * A_stride[2] + Aj * A_stride[3];
+            B[B_pos] = A[A_pos];
+        } else {
+            B[B_pos] = constant;  // Equivalent to constant
+        }
+    }
+}
+
+
+
+__device__ void gpu_single_flip(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, int axis){
+    int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
+    int *B_stride = A_stride;
+
+    //--------------
+    int b = thread_id_x / B_stride[0] % batch;
+    int c = thread_id_x / B_stride[1] % depth;
+    int Bi = thread_id_x / B_stride[2] % irows;
+    int Bj = thread_id_x / B_stride[3] % icols;
+    //--------------
+    //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
+    int B_pos = b*B_stride[0] + c*B_stride[1] + Bi*B_stride[2] + Bj*B_stride[3];
+
+    int pos[2] = {Bi, Bj}; pos[axis] = (irows-1) - pos[axis];
+    int Ai = pos[0]; int Aj = pos[1];
+    int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
+    B[B_pos] = A[A_pos];
+}
+
+
+__device__ void gpu_single_crop(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int* offsets, float constant, bool inverse){
+ int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
+ int B_stride[4] = {depth*orows*ocols, orows*ocols, ocols, 1};
+
+   //--------------
+ int b = thread_id_x / B_stride[0] % batch;
+ int c = thread_id_x / B_stride[1] % depth;
+ int Bi = thread_id_x / B_stride[2] % orows;
+ int Bj = thread_id_x / B_stride[3] % ocols;
+
+   // Compute coordinates
+   int Ai = Bi + offsets[0];  // Start from the (0,0) of the cropping area
+   int Aj = Bj + offsets[1];
+
+   bool inRegion = Ai >= coords_from[0] && Ai <= coords_to[0] && Aj >= coords_from[1] && Aj <= coords_to[1];
+   int B_pos = b*B_stride[0] + c*B_stride[1] + Bi*B_stride[2] + Bj*B_stride[3];  // We always walk through the whole B tensor
+
+   if ((inRegion && !inverse) || (!inRegion && inverse)){
+     int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
+     B[B_pos] = A[A_pos];
+ }else{
+     B[B_pos] = constant;
+ }
+
+}
+
+
+__device__ void gpu_single_crop_scale(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int mode, float constant){
+    int A_wc = coords_to[0]-coords_from[0]+1;
+    int A_hc = coords_to[0]-coords_from[1]+1;
+
+    int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
+    int B_stride[4] = {depth*orows*ocols, orows*ocols, ocols, 1};
+
+    //--------------
+    int b = thread_id_x / B_stride[0] % batch;
+    int c = thread_id_x / B_stride[1] % depth;
+    int Bi = thread_id_x / B_stride[2] % orows;
+    int Bj = thread_id_x / B_stride[3] % ocols;
+
+    // Interpolate indices
+    if(mode==2) { // Nearest
+        int Ai = (Bi * A_hc) / orows + coords_from[0];
+        int Aj = (Bj * A_wc) / ocols + coords_from[1];
+
+        int A_pos = b * A_stride[0] + c * A_stride[1] + Ai * A_stride[2] + Aj * A_stride[3];
+        int B_pos = b * B_stride[0] + c * B_stride[1] + Bi * B_stride[2] + Bj * B_stride[3];
+
+        B[B_pos] = A[A_pos];
+    }
+}
+
+
+__global__ void shift(float* A, float* B, int batch, int depth, int irows, int icols, int* shift, int mode, float constant){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+    long int ops = batch * depth*irows*icols;
+
+    if (thread_id_x < ops){
+        gpu_single_shift(thread_id_x, A, B, batch, depth, irows, icols, shift, mode, constant);
+    }
+
+}
+
+
+__global__ void rotate(float* A, float* B, int batch, int depth, int irows, int icols, float angle_rad, int* center, int mode, float constant){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+    long int ops = batch * depth*irows*icols;
+
+    // Not implemented
+    if (thread_id_x < ops){
+       gpu_single_rotate(thread_id_x, A, B, batch, depth, irows, icols, angle_rad, center, mode, constant);
+   }
+}
+
 
 __global__ void scale(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* new_shape, int mode, float constant){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*orows*ocols;
 
     if (thread_id_x < ops){
-        int offsets[2] = {0, 0};
-        offsets[0] = (new_shape[0] - orows)/2.0f;
-        offsets[1] = (new_shape[1] - ocols)/2.0f;
-
-        int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
-        int B_stride[4] = {depth*orows*ocols, orows*ocols, ocols, 1};
-
-        //--------------
-        int b = thread_id_x / B_stride[0] % batch;
-        int c = thread_id_x / B_stride[1] % depth;
-        int Bi = thread_id_x / B_stride[2] % orows;
-        int Bj = thread_id_x / B_stride[3] % ocols;
-        //--------------
-        //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
-
-        // Interpolate indices
-        if(mode==2) { // Nearest
-            int Ai = ((Bi + offsets[0]) * irows) / new_shape[0];
-            int Aj = ((Bj + offsets[1]) * icols) / new_shape[1];
-
-            int B_pos = b * B_stride[0] + c * B_stride[1] + Bi * B_stride[2] + Bj * B_stride[3];
-            if (Ai >= 0 && Ai < irows && Aj >= 0 && Aj < icols) {
-                int A_pos = b * A_stride[0] + c * A_stride[1] + Ai * A_stride[2] + Aj * A_stride[3];
-                B[B_pos] = A[A_pos];
-            } else {
-                B[B_pos] = constant;  // Equivalent to constant
-            }
-        }
-
-    }
+      gpu_single_scale(thread_id_x, A, B, batch, depth, irows, icols, orows, ocols, new_shape, mode, constant);
+  }
 
 }
+
 
 __global__ void flip(float* A, float* B, int batch, int depth, int irows, int icols, int axis){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*irows*icols;
 
     if (thread_id_x < ops){
-        int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
-        int *B_stride = A_stride;
-
-        //--------------
-        int b = thread_id_x / B_stride[0] % batch;
-        int c = thread_id_x / B_stride[1] % depth;
-        int Bi = thread_id_x / B_stride[2] % irows;
-        int Bj = thread_id_x / B_stride[3] % icols;
-        //--------------
-        //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
-        int B_pos = b*B_stride[0] + c*B_stride[1] + Bi*B_stride[2] + Bj*B_stride[3];
-
-        int pos[2] = {Bi, Bj}; pos[axis] = (irows-1) - pos[axis];
-        int Ai = pos[0]; int Aj = pos[1];
-        int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
-        B[B_pos] = A[A_pos];
-
+        gpu_single_flip(thread_id_x, A, B, batch, depth, irows, icols, axis);
     }
 }
 
 
 __global__ void crop(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int* offsets, float constant, bool inverse){
-   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
-   long int ops = batch * depth*irows*icols;
+ long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+ long int ops = batch * depth*irows*icols;
 
-   if (thread_id_x < ops){
-       int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
-       int B_stride[4] = {depth*orows*ocols, orows*ocols, ocols, 1};
-
-       //--------------
-       int b = thread_id_x / B_stride[0] % batch;
-       int c = thread_id_x / B_stride[1] % depth;
-       int Bi = thread_id_x / B_stride[2] % orows;
-       int Bj = thread_id_x / B_stride[3] % ocols;
-
-       // Compute coordinates
-       int Ai = Bi + offsets[0];  // Start from the (0,0) of the cropping area
-       int Aj = Bj + offsets[1];
-
-       bool inRegion = Ai >= coords_from[0] && Ai <= coords_to[0] && Aj >= coords_from[1] && Aj <= coords_to[1];
-       int B_pos = b*B_stride[0] + c*B_stride[1] + Bi*B_stride[2] + Bj*B_stride[3];  // We always walk through the whole B tensor
-
-       if ((inRegion && !inverse) || (!inRegion && inverse)){
-           int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
-           B[B_pos] = A[A_pos];
-       }else{
-           B[B_pos] = constant;
-       }
-
-       
-   }
+ if (thread_id_x < ops){     
+    gpu_single_crop(thread_id_x, A, B, batch, depth, irows, icols, orows, ocols, coords_from, coords_to, offsets, constant, inverse);
+}
 }
 
 
@@ -182,28 +233,7 @@ __global__ void crop_scale(float* A, float* B, int batch, int depth, int irows, 
     long int ops = batch * depth*irows*icols;
 
     if (thread_id_x < ops){
-        int A_wc = coords_to[0]-coords_from[0]+1;
-        int A_hc = coords_to[0]-coords_from[1]+1;
-
-        int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
-        int B_stride[4] = {depth*orows*ocols, orows*ocols, ocols, 1};
-
-        //--------------
-        int b = thread_id_x / B_stride[0] % batch;
-        int c = thread_id_x / B_stride[1] % depth;
-        int Bi = thread_id_x / B_stride[2] % orows;
-        int Bj = thread_id_x / B_stride[3] % ocols;
-
-        // Interpolate indices
-        if(mode==2) { // Nearest
-            int Ai = (Bi * A_hc) / orows + coords_from[0];
-            int Aj = (Bj * A_wc) / ocols + coords_from[1];
-
-            int A_pos = b * A_stride[0] + c * A_stride[1] + Ai * A_stride[2] + Aj * A_stride[3];
-            int B_pos = b * B_stride[0] + c * B_stride[1] + Bi * B_stride[2] + Bj * B_stride[3];
-
-            B[B_pos] = A[A_pos];
-        }
+        gpu_single_crop_scale(thread_id_x, A, B, batch, depth, irows, icols, orows, ocols, coords_from, coords_to, mode, constant);
     }
 }
 
@@ -213,31 +243,13 @@ __global__ void shift_random(float* A, float* B, int batch, int depth, int irows
     long int ops = batch * depth*irows*icols;
 
     if (thread_id_x < ops){
-        int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
-        int *B_stride = A_stride;
-
-        //--------------
-        int b = thread_id_x / B_stride[0] % batch;
-        int c = thread_id_x / B_stride[1] % depth;
-        int Bi = thread_id_x / B_stride[2] % irows;
-        int Bj = thread_id_x / B_stride[3] % icols;
-        //--------------
-        //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
-
-        int shift_x = (int)(icols * ((factor_x[1]-factor_x[0]) * rnd[b] + factor_x[0]));
+        int b = thread_id_x / (depth*irows*icols) % batch;
+        
         int shift_y = (int)(irows * ((factor_y[1]-factor_y[0]) * rnd[b+1] + factor_y[0]));
+        int shift_x = (int)(icols * ((factor_x[1]-factor_x[0]) * rnd[b] + factor_x[0]));
+        int shift[2] = {shift_y, shift_x};
 
-        int Ai = Bi - shift_y;
-        int Aj = Bj - shift_x;
-
-        if (Ai >= 0 && Ai < irows && Aj >= 0 && Aj < icols){
-            int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
-            B[thread_id_x] = A[A_pos];
-        }else{
-            if(mode==0){ // constant
-                B[thread_id_x] = constant;
-            }
-        }
+        gpu_single_shift(thread_id_x, A, B, batch, depth, irows, icols, shift, mode, constant);
     }
 
 }
@@ -248,31 +260,11 @@ __global__ void rotate_random(float* A, float* B, int batch, int depth, int irow
 
     // TODO: Implement
     if (thread_id_x < ops){
-        int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
-        int *B_stride = A_stride;
+        int b = thread_id_x / (depth*irows*icols) % batch;
 
-        //--------------
-        int b = thread_id_x / B_stride[0] % batch;
-        int c = thread_id_x / B_stride[1] % depth;
-        int Bi = thread_id_x / B_stride[2] % irows;
-        int Bj = thread_id_x / B_stride[3] % icols;
-        //--------------
-        //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
-
-        int Bi_c = Bi - center[0];
-        int Bj_c = Bj - center[1];
         float angle_rad = -1.0f * ((factor[1]-factor[0]) * rnd[b] + factor[0]);
-        int Ai = sinf(angle_rad) * Bj_c + cosf(angle_rad) * Bi_c + center[0];
-        int Aj = cosf(angle_rad) * Bj_c - sinf(angle_rad) * Bi_c + center[1];
 
-        if (Ai >= 0 && Ai < irows && Aj >= 0 && Aj < icols){
-            int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
-            B[thread_id_x] = A[A_pos];
-        }else{
-            if(mode==0){ // constant
-                B[thread_id_x] = constant;
-            }
-        }
+        gpu_single_rotate(thread_id_x, A, B, batch, depth, irows, icols, angle_rad, center, mode, constant);
     }
 }
 
@@ -281,71 +273,30 @@ __global__ void scale_random(float* A, float* B, int batch, int depth, int irows
     long int ops = batch * depth*orows*ocols;
 
     if (thread_id_x < ops){
-        int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
-        int B_stride[4] = {depth*orows*ocols, orows*ocols, ocols, 1};
-
-        //--------------
-        int b = thread_id_x / B_stride[0] % batch;
-        int c = thread_id_x / B_stride[1] % depth;
-        int Bi = thread_id_x / B_stride[2] % orows;
-        int Bj = thread_id_x / B_stride[3] % ocols;
-        //--------------
-        //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
+        int b = thread_id_x / (depth*orows*ocols) % batch;
 
         float scale = (factor[1]-factor[0]) * rnd[b] + factor[0];
-        int new_shape_x = (int)(icols * scale);
         int new_shape_y = (int)(irows * scale);
+        int new_shape_x = (int)(icols * scale);
+        int new_shape[2] = {new_shape_y, new_shape_x};
 
-        // Center crop (if the if the crop is smaller than B)
-        int offsets[2] = {0, 0};
-        offsets[0] = (new_shape_y - orows)/2.0f;
-        offsets[1] = (new_shape_x - ocols)/2.0f;
-
-        // Interpolate indices
-        if(mode==2) { // Nearest
-            int Ai = ((Bi + offsets[0]) * irows) / new_shape_y;
-            int Aj = ((Bj + offsets[1]) * icols) / new_shape_x;
-
-            int B_pos = b * B_stride[0] + c * B_stride[1] + Bi * B_stride[2] + Bj * B_stride[3];
-            if (Ai >= 0 && Ai < irows && Aj >= 0 && Aj < icols) {
-                int A_pos = b * A_stride[0] + c * A_stride[1] + Ai * A_stride[2] + Aj * A_stride[3];
-                B[B_pos] = A[A_pos];
-            } else {
-                B[B_pos] = constant;  // Equivalent to constant
-            }
-        }
+        gpu_single_scale(thread_id_x, A, B, batch, depth, irows, icols, orows, ocols, new_shape, mode, constant);
     }
 
 }
+
 
 __global__ void flip_random(float* A, float* B, int batch, int depth, int irows, int icols, int axis, float* rnd){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*irows*icols;
 
     if (thread_id_x < ops){
-        int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
-        int *B_stride = A_stride;
-
         //--------------
-        int b = thread_id_x / B_stride[0] % batch;
-        int c = thread_id_x / B_stride[1] % depth;
-        int Bi = thread_id_x / B_stride[2] % irows;
-        int Bj = thread_id_x / B_stride[3] % icols;
-        //--------------
-        //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
+        int b = thread_id_x / (depth*irows*icols) % batch;
 
-        bool apply = rnd[b] >= 0.5f;
-        int B_pos = b*B_stride[0] + c*B_stride[1] + Bi*B_stride[2] + Bj*B_stride[3];
-
-        if(apply){
-            int pos[2] = {Bi, Bj}; pos[axis] = (irows-1) - pos[axis];
-            int Ai = pos[0]; int Aj = pos[1];
-            int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
-            B[B_pos] = A[A_pos];
-        }else{
-            B[B_pos] = A[B_pos];
+        if(rnd[b] >= 0.5f){  // Apply?
+            gpu_single_flip(thread_id_x, A, B, batch, depth, irows, icols, axis);
         }
-
     }
 }
 
@@ -355,16 +306,7 @@ __global__ void crop_random(float* A, float* B, int batch, int depth, int irows,
     long int ops = batch * depth*irows*icols;
 
     if (thread_id_x < ops){
-        int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
-        int B_stride[4] = {depth*orows*ocols, orows*ocols, ocols, 1};
-
-        //--------------
-        int b = thread_id_x / B_stride[0] % batch;
-        int c = thread_id_x / B_stride[1] % depth;
-        int Bi = thread_id_x / B_stride[2] % orows;
-        int Bj = thread_id_x / B_stride[3] % ocols;
-        // printf("A={%d, %d, %d, %d}\n", b, c, Ai, Aj);
-        // printf("B={%d, %d, %d, %d}\n", b, c, Bi, Bj);
+        int b = thread_id_x / (depth*orows*ocols) % batch;
 
         // Compute random coordinates
         int w = icols;
@@ -373,33 +315,27 @@ __global__ void crop_random(float* A, float* B, int batch, int depth, int irows,
         int y = (int)((irows-h) * rnd[b+1]);
 
         int coords_from_x = x;
-        //int coords_to_x = x+w;
+        int coords_to_x = x+w;
         int coords_from_y = y;
-        //int coords_to_y = y+h;
+        int coords_to_y = y+h;
 
-        // Compute coordinates
-        int Ai = Bi + coords_from_y;  // Start from the (0,0) of the cropping area
-        int Aj = Bj + coords_from_x;
+        int offsets[2] = {0, 0};
+        int coords_from[2] = {coords_from_y, coords_from_x};
+        int coords_to[2] = {coords_to_y, coords_to_x};
 
-        int B_pos = b*B_stride[0] + c*B_stride[1] + Bi*B_stride[2] + Bj*B_stride[3];  // We always walk through the whole B tensor
-        int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
-        B[B_pos] = A[A_pos];
+
+        gpu_single_crop(thread_id_x, A, B, batch, depth, irows, icols, orows, ocols, coords_from, coords_to, offsets, 0.0f, false);
     }
 }
+
 
 __global__ void crop_scale_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor, int mode, float constant, float* rnd) {
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*irows*icols;
 
     if (thread_id_x < ops){
-        int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
-        int B_stride[4] = {depth*orows*ocols, orows*ocols, ocols, 1};
-
         //--------------
-        int b = thread_id_x / B_stride[0] % batch;
-        int c = thread_id_x / B_stride[1] % depth;
-        int Bi = thread_id_x / B_stride[2] % orows;
-        int Bj = thread_id_x / B_stride[3] % ocols;
+        int b = thread_id_x / (depth*orows*ocols) % batch;
 
         // Compute random coordinates
         float scale = ((factor[1]-factor[0]) * rnd[b] + factor[0]);
@@ -413,43 +349,24 @@ __global__ void crop_scale_random(float* A, float* B, int batch, int depth, int 
         int coords_from_y = y;
         int coords_to_y = y+h;
 
-        int A_hc = coords_to_y-coords_from_y+1;
-        int A_wc = coords_to_x-coords_from_x+1;
+        int coords_from[2] = {coords_from_y, coords_from_x};
+        int coords_to[2] = {coords_to_y, coords_to_x};
 
-        // Interpolate indices
-        if(mode==2) { // Nearest
-            int Ai = (Bi * A_hc) / orows + coords_from_y;
-            int Aj = (Bj * A_wc) / ocols + coords_from_x;
-
-            int A_pos = b * A_stride[0] + c * A_stride[1] + Ai * A_stride[2] + Aj * A_stride[3];
-            int B_pos = b * B_stride[0] + c * B_stride[1] + Bi * B_stride[2] + Bj * B_stride[3];
-
-            B[B_pos] = A[A_pos];
-        }
+        gpu_single_crop_scale(thread_id_x, A, B, batch, depth, irows, icols, orows, ocols, coords_from, coords_to, mode, constant);
     }
 }
+
 
 __global__ void cutout_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor_x, float* factor_y, float constant, float* rnd){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*irows*icols;
 
     if (thread_id_x < ops){
-        int offsets[2] = {0, 0};
-
-        int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
-        int B_stride[4] = {depth*orows*ocols, orows*ocols, ocols, 1};
-
-        //--------------
-        int b = thread_id_x / B_stride[0] % batch;
-        int c = thread_id_x / B_stride[1] % depth;
-        int Bi = thread_id_x / B_stride[2] % orows;
-        int Bj = thread_id_x / B_stride[3] % ocols;
-        // printf("A={%d, %d, %d, %d}\n", b, c, Ai, Aj);
-        // printf("B={%d, %d, %d, %d}\n", b, c, Bi, Bj);
+        int b = thread_id_x / (depth*orows*ocols) % batch;
 
         // Compute random coordinates
-        int w = (int)(icols * ((factor_x[1]-factor_x[0]) * rnd[b] + factor_x[0]));
-        int h = (int)(irows * ((factor_y[1]-factor_y[0]) * rnd[b+1] + factor_y[0]));
+        int w = icols;
+        int h = ocols;
         int x = (int)((icols-w) * rnd[b]);
         int y = (int)((irows-h) * rnd[b+1]);
 
@@ -458,19 +375,10 @@ __global__ void cutout_random(float* A, float* B, int batch, int depth, int irow
         int coords_from_y = y;
         int coords_to_y = y+h;
 
-        // Compute coordinates
-        int Ai = Bi + offsets[0];  // Start from the (0,0) of the cropping area
-        int Aj = Bj + offsets[1];
+        int offsets[2] = {0, 0};
+        int coords_from[2] = {coords_from_y, coords_from_x};
+        int coords_to[2] = {coords_to_y, coords_to_x};
 
-        bool inRegion = Ai >= coords_from_y && Ai <= coords_to_y && Aj >= coords_from_x && Aj <= coords_to_x;
-        int B_pos = b*B_stride[0] + c*B_stride[1] + Bi*B_stride[2] + Bj*B_stride[3];  // We always walk through the whole B tensor
-
-        if (inRegion){
-            int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
-            B[B_pos] = A[A_pos];
-        }else{
-            B[B_pos] = constant;
-        }
-
+        gpu_single_crop(thread_id_x, A, B, batch, depth, irows, icols, orows, ocols, coords_from, coords_to, offsets, constant, true);
     }
 }

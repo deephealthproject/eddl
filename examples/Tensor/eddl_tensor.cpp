@@ -52,15 +52,14 @@ int main(int argc, char **argv) {
     //t0->reshape_({1, 1, 100, 100});
 
     Tensor *t0 = Tensor::load("images/cow.jpg");
-//    t0->ToGPU();
+    t0->ToGPU();
+    t0->info();
 //    float* ptr = new float[3*4*2]{
 //        255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f,
 //        128.0f, 128.0f, 128.0f, 128.0f, 128.0f, 128.0f, 128.0f, 128.0f,
 //        1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
 //    Tensor* t1 = new Tensor({1, 3, 4, 2}, ptr, DEV_CPU);
     Tensor *t1 = t0->clone();
-    Tensor *t2 = t0->clone();
-    t2->info();
 
 //     *************************************************
 //     ***** Make color/light transformations **********
@@ -71,31 +70,34 @@ int main(int argc, char **argv) {
 //     *************************************************
 //     ***** Make standard transformations *************
 //     *************************************************
-//
-//    t1 = t0;
-//    Tensor::shift(t1, t2, {10, 30});
-//    t1 = t2->clone();
-//
-//    float scale=1.5f;
-//    Tensor::scale(t1, t2, {(int)(t2->shape[2]*scale), (int)(t2->shape[3]*scale)});
-//    t1 = t2->clone();
-//
-//    Tensor::flip(t1, t2, 1);
-//    t1 = t2->clone();
-//
-//    t2 = new Tensor({1, 3, 200, 400}, t0->device);
-//    Tensor::crop(t1, t2, {0, 0}, {200, 400}); // Note: The final size depends on the size of t2
-//    t1 = t2->clone();
-//
-//    Tensor::crop_scale(t1, t2, {10, 20}, {175, 380});
-//    t1 = t2->clone();
-//
-//    Tensor::cutout(t1, t2, {50, 50}, {80, 80});
-//    t1 = t2->clone();
-//
-//    t2->ToCPU();
-//    t2->save("images/new_cow.jpg");
-//    cout << "Image saved!" << endl;
+
+   // t1 = t0;
+   // Tensor::shift(t1, t2, {10, 30});
+   // t1 = t2->clone();
+
+   // Tensor::rotate(t1, t2, 30.0f);
+   // t1 = t2->clone();
+
+   // float scale=1.5f;
+   // Tensor::scale(t1, t2, {(int)(t2->shape[2]*scale), (int)(t2->shape[3]*scale)});
+   // t1 = t2->clone();
+
+   // Tensor::flip(t1, t2, 1);
+   // t1 = t2->clone();
+
+   // t2 = new Tensor({1, 3, 200, 400}, t0->device);
+   // Tensor::crop(t1, t2, {0, 0}, {200, 400}); // Note: The final size depends on the size of t2
+   // t1 = t2->clone();
+
+   // Tensor::crop_scale(t1, t2, {10, 20}, {175, 380});
+   // t1 = t2->clone();
+
+   // Tensor::cutout(t1, t2, {80, 80}, {100, 200});
+   // t1 = t2->clone();
+
+   // t2->ToCPU();
+   // t2->save("images/new_cow_single.jpg");
+   // cout << "Image saved!" << endl;
 
 
 //     *************************************************
@@ -103,25 +105,27 @@ int main(int argc, char **argv) {
 //     *************************************************
     for (int i = 1; i <= 10; i++) {
         t1 = t0;
+        Tensor *t2 = t0->clone();
 
-        Tensor::shift_random(t1, t2, {-0.3f, +0.3f}, {-0.3f, 0.3f});
-        t1 = t2->clone();
 
-        Tensor::rotate_random(t1, t2, {-30.0f, +30.0f});
-        t1 = t2->clone();
+        // Tensor::shift_random(t1, t2, {-0.3f, +0.3f}, {-0.3f, 0.3f});
+        // t1 = t2->clone();
 
-        Tensor::scale_random(t1, t2, {0.5f, 2.0f});
-        t1 = t2->clone();
+        // Tensor::rotate_random(t1, t2, {-30.0f, +30.0f});
+        // t1 = t2->clone();
 
-        Tensor::flip_random(t1, t2, 1);
-        t1 = t2->clone();
+        // Tensor::scale_random(t1, t2, {0.5f, 2.0f});
+        // t1 = t2->clone();
 
-        t2 = new Tensor({1, 3, 300, 400}, t0->device);
-        Tensor::crop_random(t1, t2);  //In pixels
-        t1 = t2->clone();
+        // Tensor::flip_random(t1, t2, 1);
+        // t1 = t2->clone();
 
-        Tensor::crop_scale_random(t1, t2, {0.8f, 1.0f});
-        t1 = t2->clone();
+        // t2 = new Tensor({1, 3, 300, 400}, t0->device);
+        // Tensor::crop_random(t1, t2);  //In pixels
+        // t1 = t2->clone();
+
+        // Tensor::crop_scale_random(t1, t2, {0.8f, 1.0f});
+        // t1 = t2->clone();
 
         Tensor::cutout_random(t1, t2, {0.3f, 0.3f}, {0.3, 0.3f});
         t1 = t2->clone();
