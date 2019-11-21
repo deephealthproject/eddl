@@ -112,7 +112,7 @@ Tensor* Tensor::load_from_img(const string &filename, string format){
 
         // IMPORTANT! There might be problems if the image is grayscale, a png with 3 components,...
         // Set number of channels to read
-        unsigned char *pixels = stbi_load(filename.c_str(), &t_width, &t_height, &t_channels, t_channels);
+        unsigned char *pixels = stbi_load(filename.c_str(), &t_width, &t_height, &t_channels, STBI_default);
 
         // Cast pointer
         t_size = t_width * t_height * t_channels;
