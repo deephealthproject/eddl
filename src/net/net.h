@@ -60,6 +60,7 @@ public:
     vlayer lout;
     vlayer vfts;
     vlayer vbts;
+    vlayer netinput;
 
     vloss losses;
     vmetrics metrics;
@@ -96,7 +97,7 @@ public:
     void plot(string fname,string mode);
 
     void setmode(int m);
-    void sync_weights();
+
 
     void save(const string& filename, string format="");
     void load(const string& filename, string format="");
@@ -113,6 +114,7 @@ public:
     void do_backward();
     void do_applygrads();
 
+    void sync_weights();
 
     // API
     void run_snets(void *(*F)(void *t));
@@ -143,7 +145,8 @@ public:
 
 };
 
-void collectTensor(Layer *l,string tname="output");
-void distributeTensor(Layer *l,string tname="output");
+void collectTensor(Layer *l,string tname="output",int p=0);
+void distributeTensor(Layer *l,string tname="output",int p=0);
+void copyTensor(Layer *l1,Layer *l2,string name="output");
 
 #endif  //EDDL_NET_H

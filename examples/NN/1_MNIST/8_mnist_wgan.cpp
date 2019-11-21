@@ -21,16 +21,20 @@ using namespace eddl;
 // Wasserstein GAN for mnist
 //////////////////////////////////
 
+
+// loss with a vector of layers
 layer vreal_loss(vector<layer> in)
 {
-  // -log( D_out + epsilon )
-  return Mult(in[0],-1);
+  // maximize for real images (mimize -1 x Value)
+  return ReduceMean(Mult(in[0],-1));
 }
 
-layer vfake_loss(vector<layer> in)
+// OR:
+// loss with an unique layer
+layer vfake_loss(layer in)
 {
-  // -log( 1 - D_out + epsilon )
-  return Mult(in[0],1);
+  // minimizes for fake images
+  return ReduceMean(in);
 }
 
 
@@ -53,10 +57,11 @@ int main(int argc, char **argv) {
   model gen = Model({gin},{});
   optimizer gopt=rmsprop(0.001);
 
-  build(gen,gopt); // Default CS_CPU
+  build(gen,gopt); // By defatul CS_CPU
+
+  toGPU(gen); // move toGPU
 
   summary(gen);
-
 
   // Define Discriminator
   layer din=Input({784});
@@ -68,12 +73,14 @@ int main(int argc, char **argv) {
   layer dout = Dense(l, 1);
 
   model disc = Model({din},{});
+
   optimizer dopt=rmsprop(0.001);
 
-  build(disc,dopt); // Default CS_CPU
+  build(disc,dopt); // By defatul CS_CPU
+
+  toGPU(disc); // move toGPU
 
   summary(disc);
-
 
   // Load dataset
   tensor x_train = eddlT::load("trX.bin");
@@ -84,9 +91,9 @@ int main(int argc, char **argv) {
 
   // Training
   int i,j;
-  int num_batches=100;
+  int num_batches=1000;
   int epochs=1000;
-  int batch_size = 100;
+  int batch_size = 10;
 
   tensor batch=eddlT::create({batch_size,784});
 
@@ -95,9 +102,12 @@ int main(int argc, char **argv) {
   int critic=5;
   float clip=0.01;
 
+
   // losses
   loss rl=newloss(vreal_loss,{dout},"real_loss");
-  loss fl=newloss(vfake_loss,{dout},"fake_loss");
+  loss fl=newloss(vfake_loss,dout,"fake_loss");
+
+
 
   for(i=0;i<epochs;i++) {
     float dr,df;
@@ -108,20 +118,18 @@ int main(int argc, char **argv) {
         // get a batch from real images
         next_batch({x_train},{batch});
         // generate a batch with generator
-        forward(gen,batch_size);
 
         // Train Discriminator
         zeroGrads(disc);
         // Real
         forward(disc,{batch});
         dr=compute_loss(rl);
-        backward(disc);
+        backward(rl);
 
         // Fake
-        forward(disc,{gout});
+        forward(disc,detach(forward(gen,batch_size)));
         df=compute_loss(fl);
-        backward(disc);
-
+        backward(fl);
         update(disc);
 
         clamp(disc,-clip,clip);
@@ -129,16 +137,13 @@ int main(int argc, char **argv) {
 
       // Train Gen
       zeroGrads(gen);
-      forward(gen,batch_size);
-      forward(disc,{gout});
+      forward(disc,forward(gen,batch_size));
       float gr=compute_loss(rl);
-      backward(disc);
-      copyGrad(din,gout);
-      backward(gen);
+      backward(rl);
+
       update(gen);
 
       printf("Batch %d -- Total Loss=%1.3f  -- Dr=%1.3f  Df=%1.3f  Gr=%1.3f\r",j+1,dr+df+gr,dr,df,gr);
-
       fflush(stdout);
 
     }

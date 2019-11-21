@@ -30,10 +30,29 @@ NetLoss::NetLoss(Layer* (*f)(vector<Layer *>),vector<Layer *> in,string name)
  graph=new Net(ginput,{fout});
 
  Net *sn=in[0]->net;
+ 
  graph->build(sn->optimizer->clone(),{new LMin()},{new MSum()},sn->cs);
 
+}
+
+NetLoss::NetLoss(Layer* (*f)(Layer *),Layer * in,string name)
+{
+ this->name=name;
+
+ input.push_back(in);
+
+ ginput.push_back(new LInput(new Tensor(in->output->getShape()),"graph_input",DEV_CPU));
+
+ fout=(*f)(ginput[0]);
+
+ graph=new Net(ginput,{fout});
+
+ Net *sn=in->net;
+
+ graph->build(sn->optimizer->clone(),{new LMin()},{new MSum()},sn->cs);
 
 }
+
 
 NetLoss::~NetLoss() {
   delete graph;
@@ -46,18 +65,9 @@ float NetLoss::compute()
    graph->reset_grads();
    graph->forward(input);
    graph->delta();
-   graph->backward();
 
+   collectTensor(fout);
    value=fout->output->sum()/fout->output->shape[0];
-
-   //printf("%s: %1.3f -- ",name.c_str(),value);
-   //fflush(stdout);
-
-   for(int i=0;i<ginput.size();i++) {
-     collectTensor(ginput[i],"grad");
-     Tensor::copy(ginput[i]->delta,input[i]->delta);
-     distributeTensor(input[i],"grad");
-   }
 
    return value;
 

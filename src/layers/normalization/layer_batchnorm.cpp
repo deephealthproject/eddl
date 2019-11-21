@@ -38,11 +38,14 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
     input=parent->output;
 
     if (momentum!=0.0) {
-      mean=new LTensor(input->getShape(),dev);
+        mean=new LTensor(input->getShape(),dev);
         mean->output->fill_(0.0);
 
-      variance=new LTensor(input->getShape(),dev);
+        variance=new LTensor(input->getShape(),dev);
         variance->output->fill_(1.0);
+
+        //params.push_back(mean->output);
+        //params.push_back(variance->output);
     }
 
     // create a sub-graph
@@ -104,6 +107,8 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
     output=div->output;
     delta=div->delta;
 
+
+
     parent->addchild(this);
     addparent(parent);
 
@@ -120,10 +125,10 @@ void LBatchNorm::resize(int batch){
   if (target!=nullptr) target->resize(batch);
 
   if (momentum!=0.0) {
-    mean->resize(batch);
+      mean->resize(batch);
       mean->output->fill_(0.0);
 
-    variance->resize(batch);
+      variance->resize(batch);
       variance->output->fill_(1.0);
   }
 }
@@ -137,10 +142,7 @@ void LBatchNorm::reset()
 void LBatchNorm::forward() {
   if (mode==TRMODE) {
     for(int i=0;i<layers.size();i++) {
-      //cout<<layers[i]->name<<":"<<layers[i]->input->sum()<<"\n";
       layers[i]->forward();
-      //cout<<layers[i]->name<<":"<<layers[i]->input->sum()<<"\n";
-      //cout<<layers[i]->name<<":"<<layers[i]->output->sum()<<"\n";
     }
     if (momentum!=0.0) {
       Tensor::copy(layers[9]->output,mean->output);

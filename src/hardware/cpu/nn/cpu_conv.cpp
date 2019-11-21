@@ -45,6 +45,7 @@ void im2col(int b,ConvolDescriptor *D,int col2im)
   int kr2=D->kr/2;
   int kc2=D->kc/2;
 
+  if (kc2==0) kc2=-1;
 
   int orsize=D->r*D->c;
 

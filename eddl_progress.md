@@ -169,8 +169,8 @@
 | ------------- |------| -----| ---------|
 | Adadelta | ❌ | ❌ |
 | Adagrad | ❌ | ❌ |
-| Adam | ❌ | ❌ |
+| Adam | ✅ | ✅ |
 | Adamax | ❌ | ❌ |
 | Nadam | ❌ | ❌ |
-| RMSProp | ❌ | ❌ |
+| RMSProp |✅ | ✅ |
 | SGD | ✅ | ✅ |

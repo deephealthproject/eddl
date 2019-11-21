@@ -19,8 +19,8 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "")
 
 # SET BUILD TYPE (RELEASE/DEBUG)
 if(NOT CMAKE_BUILD_TYPE)
-#    set(CMAKE_BUILD_TYPE Debug)
-     set(CMAKE_BUILD_TYPE Release)
+    #set(CMAKE_BUILD_TYPE Debug)
+    set(CMAKE_BUILD_TYPE Release)
 endif()
 
 # SET COMPILER FLAGS
@@ -538,7 +538,6 @@ if(BUILD_EXAMPLES)
     add_executable(example_dae_class "${EXAMPLES_DIR}/NN/other/eddl_dae_class.cpp")
     add_executable(example_load_save "${EXAMPLES_DIR}/NN/other/eddl_load_save.cpp")
     add_executable(example_mlp "${EXAMPLES_DIR}/NN/other/eddl_mlp.cpp")
-    add_executable(example_predict "${EXAMPLES_DIR}/NN/other/eddl_predict.cpp")
     add_executable(example_train_batch "${EXAMPLES_DIR}/NN/other/eddl_train_batch.cpp")
     add_executable(example_tensor "${EXAMPLES_DIR}/Tensor/eddl_tensor.cpp")
     ## MNIST EXAMPLES
@@ -565,7 +564,6 @@ if(BUILD_EXAMPLES)
     target_link_libraries(example_dae_class eddl)
     target_link_libraries(example_load_save eddl)
     target_link_libraries(example_mlp eddl)
-    target_link_libraries(example_predict eddl)
     target_link_libraries(example_train_batch eddl)
     target_link_libraries(example_tensor eddl)
     # Temp

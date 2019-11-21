@@ -82,7 +82,7 @@ void Adam::applygrads(int batch) {
 
             Tensor::el_div(mCap[p],vCap[p],mCap[p],0);
 
-            Tensor::add(lr / batch, mCap[p],1.0,layers[i]->params[j], layers[i]->params[j], 0);
+            Tensor::add(-lr, mCap[p],1.0,layers[i]->params[j], layers[i]->params[j], 0);
         }
     }
 

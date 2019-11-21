@@ -21,6 +21,8 @@ using namespace std;
 ////////////////////////////////////////////////////////
 ///// EDDL is a wrapper class to ease and define the API
 ////////////////////////////////////////////////////////
+
+
 namespace eddl {
 
     // ---- CORE LAYERS ----
@@ -340,7 +342,10 @@ namespace eddl {
     {
       return new NetLoss((*f),in,name);
     }
-
+    loss newloss(Layer* (*f)(Layer *),Layer *in,string name)
+    {
+      return new NetLoss((*f),in,name);
+    }
     // ---- METRICS ----
     Metric* getMetric(string type) {
         if (type == "mse" || type == "mean_squared_error") {
@@ -534,28 +539,54 @@ namespace eddl {
         Tensor::select(in[i], out[i], sind, 0, batch_size);
     }
 
-    void forward(model net,vector<Layer*> in)
+    vlayer getOut(model net)
     {
-      net->reset();
-      net->forward(in);
+      if (net->lout.size()) return net->lout;
+
+      vlayer out;
+      for(int i=0;i<net->layers.size();i++)
+       if(net->layers[i]->child.size()==0)
+         out.push_back(net->layers[i]);
+
+      if (out.size()==0) {
+        cout<<"Forwar over net "<<net->name<<"without outputs\n";
+        exit(1);
+      }
+
+
+      return out;
+
     }
-    void forward(model net,vector<Tensor*> in)
+    vlayer forward(model net,vector<Layer*> in)
     {
       net->reset();
       net->forward(in);
+
+      return getOut(net);
+    }
+    vlayer forward(model net,vector<Tensor*> in)
+    {
+      net->reset();
+      net->forward(in);
+
+      return getOut(net);
     }
 
-    void forward(model net,int b)
+    vlayer forward(model net,int b)
     {
       net->resize(b);
       net->reset();
       net->forward();
 
+      return getOut(net);
+
     }
-    void forward(model net)
+    vlayer forward(model net)
     {
       net->reset();
       net->forward();
+
+      return getOut(net);
     }
 
     void clamp(model m,float min,float max)
@@ -563,6 +594,18 @@ namespace eddl {
       m->clamp(min,max);
     }
 
+    layer detach(layer l)
+    {
+      l->setdetach();
+      return l;
+    }
+
+    vlayer detach(vlayer l)
+    {
+      for(int i=0;i<l.size();i++)
+        l[i]->setdetach();
+      return l;
+    }
 
     void print_loss(model m, int batch){
       m->print_loss(batch);
@@ -587,6 +630,11 @@ namespace eddl {
     void backward(model net)
     {
       net->backward({});
+    }
+
+    void backward(loss l)
+    {
+      l->graph->backward();
     }
 
     float compute_loss(loss L)
@@ -635,6 +683,9 @@ namespace eddl {
         // Assign default computing service
         if (cs== nullptr){
             cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
+        }
+        if (o== nullptr){
+            o = new SGD(0.001,0.9);
         }
 
         net->build(o, {}, {}, cs);
@@ -696,10 +747,6 @@ namespace eddl {
 
     void evaluate(model net, const vector<Tensor *> &in, const vector<Tensor *> &out) {
         net->evaluate(in, out);
-    }
-
-    void predict(model net, const vector<Tensor *> &in, const vector<Tensor *> &out) {
-        net->predict(in, out);
     }
 
 

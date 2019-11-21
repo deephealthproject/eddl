@@ -52,6 +52,7 @@ public:
     int dev;
     int lin, lout;
     int delta_bp;
+    bool detached;
 
     Layer(string name, int dev);
     // Destructor
@@ -77,7 +78,7 @@ public:
     Tensor* setBias(Tensor bias);
 
     void clamp(float min,float max);
-
+    void setdetach();
 
     //virtual
 
@@ -98,17 +99,9 @@ public:
 
     virtual Layer *clone(int c, int bs, vector<Layer *> p, int todev) { return nullptr; }
 
-
-
 };
 
-Layer* operator+(Layer &l1,Layer &l2);
-Layer* operator+(Layer &l1,float l2);
-Layer* operator+(float f,Layer &l);
 
-Layer* operator*(Layer &l1,Layer &l2);
-Layer* operator*(Layer &l1,float l2);
-Layer* operator*(float f,Layer &l);
 
 /////////////////////////////////////////
 /////////////////////////////////////////

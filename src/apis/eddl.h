@@ -95,6 +95,7 @@ namespace eddl {
     Loss* getLoss(string type);
 
     loss newloss(Layer* (*f)(vector<Layer *>),vector<Layer *> in,string name);
+    loss newloss(Layer* (*f)(Layer *),Layer *in,string name);
 
 
 
@@ -247,12 +248,14 @@ namespace eddl {
 
     void next_batch(vector<Tensor *> in,vector<Tensor *> out);
 
-    void forward(model m,vector<Layer *> in);
-    void forward(model m,vector<Tensor *> in);
-    void forward(model m);
-    void forward(model m,int b);
+    vlayer forward(model m,vector<Layer *> in);
+    vlayer forward(model m,vector<Tensor *> in);
+    vlayer forward(model m);
+    vlayer forward(model m,int b);
 
     void clamp(model m,float min,float max);
+    layer detach(layer l);
+    vlayer detach(vlayer l);
 
     void print_loss(model m, int batch);
 
@@ -261,6 +264,7 @@ namespace eddl {
 
     void backward(model m,vector<Tensor *> target);
     void backward(model net);
+    void backward(loss l);
 
     float compute_loss(loss L);
 
@@ -277,7 +281,7 @@ namespace eddl {
 // ---- MODEL METHODS ----
     model Model(vlayer in, vlayer out);
 
-    void build(model net, optimizer o, CompServ *cs=nullptr);
+    void build(model net, optimizer o=nullptr, CompServ *cs=nullptr);
     void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr);
     void toGPU(model net, vector<int> g={1},int lsb=1);
     void toCPU(model net, int t=std::thread::hardware_concurrency());
@@ -295,8 +299,6 @@ namespace eddl {
     void fit(model m, const vector<Tensor *> &in, const vector<Tensor *> &out, int batch, int epochs);
 
     void evaluate(model m, const vector<Tensor *> &in, const vector<Tensor *> &out);
-
-    void predict(model m, const vector<Tensor *> &in, const vector<Tensor *> &out);
 
 
 

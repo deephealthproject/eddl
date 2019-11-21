@@ -70,7 +70,7 @@ void RMSProp::applygrads(int batch) {
 
             Tensor::copy(layers[i]->gradients[j],gT1[p]);
 
-            Tensor::add(lr / batch, gT[p],1.0,layers[i]->params[j], layers[i]->params[j], 0);
+            Tensor::add(-lr, gT[p],1.0,layers[i]->params[j], layers[i]->params[j], 0);
         }
     }
 

@@ -22,7 +22,7 @@ using namespace std;
 LMin::LMin() : Loss("min"){}
 
 void LMin::delta(Tensor *T, Tensor *Y, Tensor *D) {
-    D->fill_(-1);
+    D->fill_(1);
 }
 
 float LMin::value(Tensor *T, Tensor *Y) {

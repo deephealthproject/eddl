@@ -75,6 +75,8 @@ Net::Net(vlayer in, vlayer out) {
     flog_tr=nullptr;
     flog_ts=nullptr;
 
+
+
     // Walk through the pointers of all layers, to get a plain
     // vector with all the layers
     for (int i = 0; i < lin.size(); i++) {
@@ -123,7 +125,6 @@ int Net::inNet(Layer *l) {
 void Net::walk(Layer *l) {
     // If this layer is not in the network, add it, as well as all its children (recursively)
     if (!inNet(l)) {
-      //cout<<l->name<<"\n";
       if (l->orig!=nullptr) l->net=l->orig->net;
       else l->net=this;
 
@@ -154,18 +155,14 @@ string Net::summary() {
     std::stringstream ss;
 
     for (int i = 0; i < vfts.size(); i++) {
-          ss << vfts[i]->name.c_str() << " ";
-    }
-
-
-    ss << "\n";
-    for (int i = 0; i < vfts.size(); i++) {
         ss << vfts[i]->name << ": ";
 
         vector<int> si = vfts[i]->input->getShape();
-        si.erase(si.begin());
+        if (vfts[i]->input->ndim>1)
+          si.erase(si.begin());
         vector<int> so = vfts[i]->output->getShape();
-        so.erase(so.begin());
+        if (vfts[i]->output->ndim>1)
+          so.erase(so.begin());
         ss << si << "-->" << so << "\n";
 
     }
