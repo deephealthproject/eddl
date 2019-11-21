@@ -60,6 +60,8 @@ int main(int argc, char **argv) {
 //        1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
 //    Tensor* t1 = new Tensor({1, 3, 4, 2}, ptr, DEV_CPU);
     Tensor *t1 = t0->clone();
+    Tensor *t2 = t0->clone();
+
 
 //     *************************************************
 //     ***** Make color/light transformations **********
@@ -78,7 +80,7 @@ int main(int argc, char **argv) {
    // Tensor::rotate(t1, t2, 30.0f);
    // t1 = t2->clone();
 
-   // float scale=1.5f;
+   // float scale=1.25f;
    // Tensor::scale(t1, t2, {(int)(t2->shape[2]*scale), (int)(t2->shape[3]*scale)});
    // t1 = t2->clone();
 
@@ -104,31 +106,32 @@ int main(int argc, char **argv) {
 //     ***** Make random transformations ***************
 //     *************************************************
     for (int i = 1; i <= 10; i++) {
-        t1 = t0;
-        Tensor *t2 = t0->clone();
+        t1 = t0->clone();
+        t2 = t0->clone();
+        //t1->info();
 
 
-        // Tensor::shift_random(t1, t2, {-0.3f, +0.3f}, {-0.3f, 0.3f});
-        // t1 = t2->clone();
+        Tensor::shift_random(t1, t2, {-0.3f, +0.3f}, {-0.3f, 0.3f});
+        t1 = t2->clone();
 
         // Tensor::rotate_random(t1, t2, {-30.0f, +30.0f});
         // t1 = t2->clone();
 
-        // Tensor::scale_random(t1, t2, {0.5f, 2.0f});
-        // t1 = t2->clone();
+        Tensor::scale_random(t1, t2, {0.5f, 2.0f});
+        t1 = t2->clone();
 
-        // Tensor::flip_random(t1, t2, 1);
-        // t1 = t2->clone();
+        Tensor::flip_random(t1, t2, 1);
+        t1 = t2->clone();
 
-        // t2 = new Tensor({1, 3, 300, 400}, t0->device);
-        // Tensor::crop_random(t1, t2);  //In pixels
-        // t1 = t2->clone();
+        t2 = new Tensor({1, 3, 300, 400}, t0->device);
+        Tensor::crop_random(t1, t2);  //In pixels
+        t1 = t2->clone();
 
         // Tensor::crop_scale_random(t1, t2, {0.8f, 1.0f});
         // t1 = t2->clone();
 
-        Tensor::cutout_random(t1, t2, {0.3f, 0.3f}, {0.3, 0.3f});
-        t1 = t2->clone();
+        // Tensor::cutout_random(t1, t2, {0.3f, 0.3f}, {0.3, 0.3f});
+        // t1 = t2->clone();
 
         // Save result
         t2->ToCPU();
