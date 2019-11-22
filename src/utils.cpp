@@ -149,3 +149,11 @@ unsigned long get_free_mem() {
     return -1;
 }
 #endif
+
+string get_extension(string filename){
+    std::string::size_type idx = filename.rfind('.');
+    if(idx != std::string::npos){
+        return filename.substr(idx+1);
+    }
+    return "";
+}

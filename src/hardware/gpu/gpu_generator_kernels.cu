@@ -19,13 +19,19 @@
 #include "gpu_kernels.h"
 
 
-__global__ void uniform_array(float* array, int size, unsigned long seed) {
-    long int thread_id_x = blockDim.x*blockIdx.x* + threadIdx.x;
+/* this GPU kernel function is used to initialize the random states */
+__global__ void init(unsigned int seed, curandState_t* states) {
 
-    if (thread_id_x < size) {
-        curandState state;
-        if(seed==0){ seed = clock64();}
-        curand_init(seed, thread_id_x, 0, &state);  // opt. => seed=clock64()
-        array[thread_id_x] = curand_uniform(&state);
-    }
+  /* we have to initialize the state */
+  curand_init((unsigned int)clock64(), /* the seed can be the same for each core, here we pass the time in from the CPU */
+              blockIdx.x, /* the sequence number should be different for each core (unless you want all
+                             cores to get the same sequence of numbers for some reason - use thread id! */
+              0, /* the offset is how much extra we advance in the sequence for each call, can be 0 */
+              &states[blockIdx.x]);
+}
+
+/* this GPU kernel takes an array of states, and an array of ints, and puts a random int into each */
+__global__ void random_uniform(curandState_t* states, float* numbers) {
+  /* curand works like rand - except that it takes a state as a parameter */
+  numbers[blockIdx.x] = curand_uniform(&states[blockIdx.x]);
 }

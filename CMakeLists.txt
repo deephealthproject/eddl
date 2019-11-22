@@ -162,6 +162,7 @@ include_directories(src/losses)
 include_directories(src/metrics)
 include_directories(src/optimizers)
 include_directories(src/regularizers)
+include_directories(src/stb)
 include_directories(src/tensor)
 include_directories(src/descriptors)
 # Temp
@@ -313,6 +314,9 @@ SET(CPP_SOURCES
         src/regularizers/regularizer_l1.cpp
         src/regularizers/regularizer_l1_l2.cpp
         src/regularizers/regularizer_l2.cpp
+        src/stb/stb.h
+        src/stb/stb_image.h
+        src/stb/stb_image_write.h
         src/tensor/tensor.h
         src/tensor/tensor.cpp
         src/tensor/tensor_comparison.cpp

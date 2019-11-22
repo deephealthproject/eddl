@@ -58,8 +58,8 @@ namespace eddlT{
   tshape getShape(Tensor *A);
 
   // Serialization ***********************************
-  Tensor* load(string fname, string format="bin");
-  void save(Tensor* A, string fname, string format="bin");
+  Tensor* load(string fname, string format="");
+  void save(Tensor* A, string fname, string format="");
 
   // Math ops       ***********************************
 

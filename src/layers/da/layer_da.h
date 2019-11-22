@@ -53,12 +53,11 @@ class LRotate : public LinLayer {
 public:
     static int total_layers;
     float angle;
-    vector<int> axis;
-    bool reshape;
+    vector<int> offset_center;
     string da_mode;
     float constant;
 
-    LRotate(Layer *parent, float angle, vector<int> axis, bool reshape, string da_mode, float constant, string name, int dev);
+    LRotate(Layer *parent, float angle, vector<int> offset_center, string da_mode, float constant, string name, int dev);
     ~LRotate();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
@@ -219,11 +218,11 @@ class LRotateRandom : public LinLayer {
 public:
     static int total_layers;
     vector<float> factor;
-    vector<int> axis;
+    vector<int> offset_center;
     string da_mode;
     float constant;
 
-    LRotateRandom(Layer *parent, vector<float> factor, vector<int> axis, string da_mode, float constant, string name, int dev);
+    LRotateRandom(Layer *parent, vector<float> factor, vector<int> offset_center, string da_mode, float constant, string name, int dev);
     ~LRotateRandom();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;

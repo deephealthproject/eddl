@@ -7,11 +7,14 @@
 * All rights reserved
 */
 
+#ifndef EDDL_UTILS_H
+#define EDDL_UTILS_H
+
+#include <string>
 #include <cstdio>
 #include <cstdint> // uint64_t
 
-#ifndef EDDL_UTILS_H
-#define EDDL_UTILS_H
+using namespace std;
 
 
 float *get_fmem(int size,char *str);
@@ -19,5 +22,7 @@ float *get_fmem(int size,char *str);
 char *humanSize(uint64_t bytes);
 
 unsigned long get_free_mem();
+
+string get_extension(string filename);
 
 #endif //EDDL_UTILS_H

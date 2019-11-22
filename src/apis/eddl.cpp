@@ -100,8 +100,8 @@ namespace eddl {
     layer Shift(layer parent, vector<int> shift, string da_mode, float constant, string name){
         return new LShift(parent, shift, da_mode, constant, name, DEV_CPU);
     }
-    layer Rotate(layer parent, float angle, vector<int> axis, bool reshape, string da_mode, float constant, string name){
-        return new LRotate(parent, angle, axis, reshape, da_mode, constant, name, DEV_CPU);
+    layer Rotate(layer parent, float angle, vector<int> offset_center, string da_mode, float constant, string name){
+        return new LRotate(parent, angle, offset_center, da_mode, constant, name, DEV_CPU);
     }
 
     layer Scale(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string name){
@@ -129,8 +129,8 @@ namespace eddl {
         return new LShiftRandom(parent, factor_x, factor_y, da_mode, constant, name, DEV_CPU);
     }
 
-    layer RotateRandom(layer parent, vector<float> factor, vector<int> axis, string da_mode, float constant, string name){
-        return new LRotateRandom(parent, factor, axis, da_mode, constant, name, DEV_CPU);
+    layer RotateRandom(layer parent, vector<float> factor, vector<int> offset_center, string da_mode, float constant, string name){
+        return new LRotateRandom(parent, factor, offset_center, da_mode, constant, name, DEV_CPU);
     }
 
     layer ScaleRandom(layer parent, vector<float> factor, string da_mode, float constant, string name){
@@ -729,11 +729,11 @@ namespace eddl {
         cout<<m->summary()<<"\n";
     }
 
-    void load(model m, const string&  fname, const string& format) {
+    void load(model m, const string&  fname, string format) {
         m->load(fname,format);
     }
 
-    void save(model m, const string&  fname, const string& format) {
+    void save(model m, const string&  fname, string format) {
         m->save(fname,format);
     }
 

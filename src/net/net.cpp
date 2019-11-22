@@ -222,7 +222,7 @@ void Net::setlogfile(string fname)
 }
 
 
-void Net::save(const string& filename, const string& format){
+void Net::save(const string& filename, string format){
     // Open file stream
     std::ofstream ofs(filename, std::ios::out | std::ios::binary);
 
@@ -234,7 +234,7 @@ void Net::save(const string& filename, const string& format){
     ofs.close();
 }
 
-void Net::load(const string& filename, const string& format){
+void Net::load(const string& filename, string format){
     // Open file stream
     std::ifstream ifs(filename, std::ios::in | std::ios::binary);
 

@@ -62,8 +62,8 @@ public:
     void initialize();
 
 
-    void save(std::ofstream &ofs, const string& format);
-    void load(std::ifstream &ifs, const string& format);
+    void save(std::ofstream &ofs, string format="");
+    void load(std::ifstream &ifs, string format="");
 
     virtual void info();
 

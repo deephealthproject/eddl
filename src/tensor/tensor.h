@@ -60,12 +60,12 @@ private:
     // Load methods
     static Tensor* load_from_bin(std::ifstream &ifs);
     static Tensor* load_from_onnx(std::ifstream &ifs);
-    static Tensor* load_from_img(const string &filename, const string& format);
+    static Tensor* load_from_img(const string &filename, string format);
 
     // Save methods
     void save2bin(std::ofstream &ofs);
     void save2onnx(std::ofstream &ofs);
-    void save2img(const string &filename, const string& format);
+    void save2img(const string &filename, string format);
 
 public:
     int device;
@@ -116,10 +116,10 @@ public:
     static int get_mode(string mode);
 
     // Serialization
-    static Tensor* loadfs(std::ifstream &ifs, const string& format="bin");
-    static Tensor* load(const string& filename, const string& format="bin");
-    void savefs(std::ofstream &ofs, const string& format="bin");
-    void save(const string& filename, const string& format="bin");
+    static Tensor* loadfs(std::ifstream &ifs, string format="");
+    static Tensor* load(const string& filename, string format="");
+    void savefs(std::ofstream &ofs, string format="");
+    void save(const string& filename, string format="");
 
     // ***** Core (in-place) *****************************
     void fill_(float v);
@@ -151,7 +151,7 @@ public:
 
     // ***** Transformations *****************************
     static void shift(Tensor *A,Tensor *B, vector<int> shift, string mode="constant", float constant=0.0f);
-    static void rotate(Tensor *A, Tensor *B, float angle, vector<int> axis, string mode="constant", float constant=0.0f);
+    static void rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center={0,0}, string mode="constant", float constant=0.0f);
     static void scale(Tensor *A, Tensor *B, vector<int> new_shape, string mode="nearest", float constant=0.0f);
     static void flip(Tensor *A, Tensor *B, int axis=0);
     static void crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant=0.0f);
@@ -160,7 +160,7 @@ public:
 
     // ***** Data augmentation *****************************
     static void shift_random(Tensor *A,Tensor *B, vector<float> factor_x, vector<float> factor_y, string mode="constant", float constant=0.0f);
-    static void rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> axis, string mode="constant", float constant=0.0f);
+    static void rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center={0,0}, string mode="constant", float constant=0.0f);
     static void scale_random(Tensor *A, Tensor *B, vector<float> factor, string mode="nearest", float constant=0.0f);
     static void flip_random(Tensor *A, Tensor *B, int axis);
     static void crop_random(Tensor *A, Tensor *B);
