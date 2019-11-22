@@ -103,6 +103,7 @@ public:
     bool affine;
     LTensor *mean;
     LTensor *variance;
+    bool init;
 
     static int total_layers;
     vector<Layer *> layers;

@@ -34,6 +34,7 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
     this->epsilon = epsilon;
     this->affine = affine;
 
+    init=true;
     //
     input=parent->output;
 
@@ -118,18 +119,71 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 // virtual
 void LBatchNorm::resize(int batch){
 
-  if ((momentum!=0.0)&&(batch==mean->output->shape[0])) return;
+  if (batch==layers[0]->output->shape[0]) return;
 
   for(int i=0;i<layers.size();i++) layers[i]->resize(batch);
 
   if (target!=nullptr) target->resize(batch);
 
-  if (momentum!=0.0) {
-      mean->resize(batch);
-      mean->output->fill_(0.0);
 
+  if (momentum!=0.0) {
+    if (!init) {
+      Tensor *nmean=new Tensor(mean->output->getShape(),dev);
+      Tensor *nvar=new Tensor(variance->output->getShape(),dev);
+
+      Tensor::copy(mean->output,nmean);
+      Tensor::copy(variance->output,nvar);
+
+      mean->resize(batch);
       variance->resize(batch);
+
+      int msize=mean->output->shape[0];
+      int nsize=nmean->shape[0];
+
+      if (msize>nsize) {
+        //from nmean to mean with deselect
+        vector<int> sind(msize);
+        int start,end;
+        for(int i=0;i<msize;i++) sind[i]=i;
+        for(int i=0;i<msize/nsize;i++) {
+            start = i * nsize;
+            end = start + nsize;
+            Tensor::deselect(nmean, mean->output, sind, start, end);
+            Tensor::deselect(nvar, variance->output, sind, start, end);
+        }
+        if (msize%nsize) {
+          Tensor::deselect(nmean, mean->output, sind, end, end+(msize%nsize));
+          Tensor::deselect(nvar, variance->output, sind,end, end+(msize%nsize));
+        }
+      }
+      else {
+        //from nmean to mean with select
+        vector<int> sind(nsize);
+        int start,end;
+        for(int i=0;i<nsize;i++) sind[i]=i;
+        for(int i=0;i<nsize/msize;i++) {
+            start = i * msize;
+            end = start + msize;
+            Tensor::select(nmean, mean->output, sind, start, end);
+            Tensor::select(nvar, variance->output, sind, start, end);
+        }
+        if (nsize%msize) {
+          Tensor::select(nmean, mean->output, sind, end, end+(nsize%msize));
+          Tensor::select(nvar, variance->output, sind,end, end+(nsize%msize));
+        }
+
+      }
+
+
+      delete nmean;
+      delete nvar;
+    }
+    else {
+      mean->resize(batch);
+      variance->resize(batch);
+      mean->output->fill_(0.0);
       variance->output->fill_(1.0);
+    }
   }
 }
 
@@ -140,6 +194,7 @@ void LBatchNorm::reset()
 }
 
 void LBatchNorm::forward() {
+  init=false;
   if (mode==TRMODE) {
     for(int i=0;i<layers.size();i++) {
       layers[i]->forward();

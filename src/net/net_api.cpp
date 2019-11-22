@@ -453,6 +453,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     // Set some parameters
     int num_batches = n / batch_size;
 
+
     // Train network
     fprintf(stdout, "%d epochs of %d batches of size %d\n", epochs, num_batches, batch_size);
     for (i = 0; i < epochs; i++) {
@@ -568,6 +569,7 @@ void Net::evaluate(vtensor tin, vtensor tout) {
     for (i = 1; i < tout.size(); i++)
         if (tout[i]->shape[0] != n)
             msg("different number of samples in output tensor", "Net.evaluate");
+
 
 
     printf("Evaluate with batch size %d\n",batch_size);
