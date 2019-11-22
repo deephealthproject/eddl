@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
    // Tensor::crop(t1, t2, {0, 0}, {200, 400}); // Note: The final size depends on the size of t2
    // t1 = t2->clone();
 
-   // Tensor::crop_scale(t1, t2, {10, 20}, {175, 380});
+   // Tensor::crop_scale(t1, t2, {20, 50}, {100, 150});
    // t1 = t2->clone();
 
    // Tensor::cutout(t1, t2, {80, 80}, {100, 200});
@@ -110,12 +110,11 @@ int main(int argc, char **argv) {
         t2 = t0->clone();
         //t1->info();
 
-
         Tensor::shift_random(t1, t2, {-0.3f, +0.3f}, {-0.3f, 0.3f});
         t1 = t2->clone();
 
-        // Tensor::rotate_random(t1, t2, {-30.0f, +30.0f});
-        // t1 = t2->clone();
+        Tensor::rotate_random(t1, t2, {-30.0f, +30.0f});
+        t1 = t2->clone();
 
         Tensor::scale_random(t1, t2, {0.5f, 2.0f});
         t1 = t2->clone();
@@ -123,15 +122,15 @@ int main(int argc, char **argv) {
         Tensor::flip_random(t1, t2, 1);
         t1 = t2->clone();
 
-        t2 = new Tensor({1, 3, 300, 400}, t0->device);
+        t2 = new Tensor({1, 3, 100, 300}, t0->device);
         Tensor::crop_random(t1, t2);  //In pixels
         t1 = t2->clone();
 
-        // Tensor::crop_scale_random(t1, t2, {0.8f, 1.0f});
-        // t1 = t2->clone();
+        Tensor::crop_scale_random(t1, t2, {0.5f, 1.0f});
+        t1 = t2->clone();
 
-        // Tensor::cutout_random(t1, t2, {0.3f, 0.3f}, {0.3, 0.3f});
-        // t1 = t2->clone();
+        Tensor::cutout_random(t1, t2, {0.1f, 0.3f}, {0.1, 0.3f});
+        t1 = t2->clone();
 
         // Save result
         t2->ToCPU();

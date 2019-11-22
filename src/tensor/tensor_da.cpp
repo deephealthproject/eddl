@@ -228,7 +228,7 @@ void Tensor::rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<in
 #ifdef cGPU
     else if (A->isGPU())
       {
-        cpu_rotate_random(A, B,  std::move(factor), std::move(offset_center), get_mode(std::move(mode)), constant);
+        gpu_rotate_random(A, B,  std::move(factor), std::move(offset_center), get_mode(std::move(mode)), constant);
       }
 #endif
 #ifdef cFPGA
