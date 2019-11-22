@@ -180,7 +180,7 @@ public:
     void add_(float v);
     void add_(Tensor *A);
     static Tensor* add(Tensor *A, Tensor *B);
-    static Tensor * add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
+    static void add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
     static void add(Tensor *A, Tensor *B, Tensor *C);
     static void inc(Tensor *A, Tensor *B);
 

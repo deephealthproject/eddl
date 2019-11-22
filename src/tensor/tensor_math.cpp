@@ -97,13 +97,14 @@ Tensor* Tensor::add(Tensor *A, Tensor *B){
     return t_new;
  }
 
-Tensor * Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
+void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
     ///////////////////////////////////////
     //// sum C=(sca*A)+(scb*B)
     //// or C+=(sca*A)+(scb*B) if incC is 1
     //// Dimensions and types must be compatible
     ///////////////////////////////////////
     int aux = 0;
+
 
     if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::add_");
     if ((!eqsize(A, B)) || (!eqsize(A, C))) {
@@ -115,7 +116,7 @@ Tensor * Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int 
 
     C->tsem->lock();
     if (A->isCPU()) {
-        cpu_add(scA, A, scB, B, C, incC);
+      cpu_add(scA, A, scB, B, C, incC);
     }
 #ifdef cGPU
     else if (A->isGPU())
@@ -128,6 +129,7 @@ Tensor * Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int 
 
     }
 #endif
+
     C->tsem->unlock();
 }
 void Tensor::add(Tensor *A, Tensor *B, Tensor *C) {
