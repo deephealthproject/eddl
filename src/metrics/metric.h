@@ -37,6 +37,22 @@ public:
     float value(Tensor *T, Tensor *Y) override;
 };
 
+class MMeanRelativeError : public Metric {
+public:
+    MMeanRelativeError(float eps=0.001);
+    float eps;
+
+    float value(Tensor *T, Tensor *Y) override;
+};
+
+class MMeanAbsoluteError : public Metric {
+public:
+    MMeanAbsoluteError();
+
+    float value(Tensor *T, Tensor *Y) override;
+};
+
+
 
 class MCategoricalAccuracy : public Metric {
 public:
@@ -44,5 +60,13 @@ public:
 
     float value(Tensor *T, Tensor *Y) override;
 };
+
+class MSum : public Metric {
+public:
+    MSum();
+
+    float value(Tensor *T, Tensor *Y) override;
+};
+
 
 #endif

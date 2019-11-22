@@ -75,8 +75,8 @@ Numpy-like operations over a raw-tensor object
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| save | ✅ | ✅ |
-| load | ✅ | ✅ |
+| save | ✅ | ✅ | bin, onnx, png, jpg |
+| load | ✅ | ✅ | bin, onnx, png, jpg |
 
 
 ---

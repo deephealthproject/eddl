@@ -10,6 +10,8 @@
 #ifndef EDDL_TENSOR_H
 #define EDDL_TENSOR_H
 
+#include <iostream>
+#include <fstream>
 #include <stdio.h>
 #include <vector>
 #include <string>
@@ -54,6 +56,16 @@ void msg(string s, string s2);
 
 
 class Tensor {
+private:
+    // Load methods
+    static Tensor* load_from_bin(std::ifstream &ifs);
+    static Tensor* load_from_onnx(std::ifstream &ifs);
+    static Tensor* load_from_img(const string &filename, string format);
+
+    // Save methods
+    void save2bin(std::ofstream &ofs);
+    void save2onnx(std::ofstream &ofs);
+    void save2img(const string &filename, string format);
 
 public:
     int device;
@@ -69,6 +81,7 @@ public:
     // Aux variables
     int gpu_device;
     mutex *tsem;  // Multithreading. Tensor semaphore
+
 
     // Constructors
     Tensor();
@@ -100,19 +113,26 @@ public:
 
     // Core
     vector<int> getShape();
+    static int get_mode(string mode);
 
     // Serialization
-    void save(string s);
-    void save(FILE *fe);
-    void load(FILE *fe);
-
+    static Tensor* loadfs(std::ifstream &ifs, string format="");
+    static Tensor* load(const string& filename, string format="");
+    void savefs(std::ofstream &ofs, string format="");
+    void save(const string& filename, string format="");
 
     // ***** Core (in-place) *****************************
-    int get_address_rowmajor(vector<int> indices);
     void fill_(float v);
-    void reshape_(vector<int> indices);
+    bool valid_indices(vector<int> indices);
+    int get_address_rowmajor(vector<int> indices);
+    vector<int> get_indices_rowmajor(int address);
+    void reshape_(vector<int> shape);
     float get_(vector<int> indices);
     void set_(vector<int> indices, float value);
+
+    // ***** Core (static) *****************************
+    Tensor* permute(vector<int> axis);
+
 
     // ************************************************
     // ****** Tensor operations ***********************
@@ -129,26 +149,27 @@ public:
       static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
 
+    // ***** Transformations *****************************
+    static void shift(Tensor *A,Tensor *B, vector<int> shift, string mode="constant", float constant=0.0f);
+    static void rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center={0,0}, string mode="constant", float constant=0.0f);
+    static void scale(Tensor *A, Tensor *B, vector<int> new_shape, string mode="nearest", float constant=0.0f);
+    static void flip(Tensor *A, Tensor *B, int axis=0);
+    static void crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant=0.0f);
+    static void crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, string mode="nearest", float constant=0.0f);
+    static void cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant=0.0f);
+
     // ***** Data augmentation *****************************
-    void shift_(vector<int> shift, bool reshape=false, string mode="constant", float constant=0.0f);  // TODO: Implement
-    static Tensor* shift(Tensor *A, vector<int> shift, bool reshape=false, string mode="constant", float constant=0.0f);
-
-    void rotate_(float angle, vector<int> axis, bool reshape=false, string mode="constant", float constant=0.0f);  // TODO: Implement
-    static Tensor* rotate(Tensor *A, float angle, vector<int> axis, bool reshape=false, string mode="constant", float constant=0.0f);
-
-    void scale_(float factor, bool reshape=false, string mode="constant", float constant=0.0f);  // TODO: Implement
-    static Tensor* scale(Tensor *A, float factor, bool reshape=false, string mode="constant", float constant=0.0f);
-
-    void flip_(int axis=0);  // TODO: Implement
-    static Tensor* flip(Tensor *A, int axis=0);
-
-    void crop_(vector<int> coords_from, vector<int> coords_to);  // TODO: Implement
-    static Tensor* crop(Tensor *A, vector<int> coords_from, vector<int> coords_to);
-
-    void cutout_(vector<int> coords_from, vector<int> coords_to);  // TODO: Implement
-    static Tensor* cutout(Tensor *A, vector<int> coords_from, vector<int> coords_to);
+    static void shift_random(Tensor *A,Tensor *B, vector<float> factor_x, vector<float> factor_y, string mode="constant", float constant=0.0f);
+    static void rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center={0,0}, string mode="constant", float constant=0.0f);
+    static void scale_random(Tensor *A, Tensor *B, vector<float> factor, string mode="nearest", float constant=0.0f);
+    static void flip_random(Tensor *A, Tensor *B, int axis);
+    static void crop_random(Tensor *A, Tensor *B);
+    static void crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, string mode="nearest", float constant=0.0f);
+    static void cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant=0.0f);
 
     // Math operations ********************************
+    static Tensor* interpolate(float factor1, Tensor *A, float factor2, Tensor *B);
+
     // Math operations: Pointwise ops (in-place)
     void abs_();
     static Tensor* abs(Tensor *A);
@@ -157,8 +178,9 @@ public:
     static Tensor* acos(Tensor *A);
 
     void add_(float v);
+    void add_(Tensor *A);
     static Tensor* add(Tensor *A, Tensor *B);
-    static void add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
+    static Tensor * add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
     static void add(Tensor *A, Tensor *B, Tensor *C);
     static void inc(Tensor *A, Tensor *B);
 
@@ -310,6 +332,7 @@ public:
     static void copy(Tensor *A, Tensor *B);
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
     static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
+    static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
 
     // Generators (In-place) *************************************
     // Rethink names

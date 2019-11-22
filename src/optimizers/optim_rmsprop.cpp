@@ -23,3 +23,56 @@ RMSProp::RMSProp(float lr, float rho, float epsilon, float weight_decay) : Optim
     this->weight_decay = weight_decay;
 
 }
+
+RMSProp::~RMSProp() {
+  gT1.clear();
+  gT.clear();
+}
+
+void RMSProp::change(vector<float> &p) {
+
+}
+
+Optimizer *RMSProp::clone() {
+    return new RMSProp(lr, rho, epsilon, weight_decay);
+}
+
+void RMSProp::setlayers(vlayer l) {
+    layers = l;
+
+    // create momemtum tensors
+    for (int i = 0; i < layers.size(); i++)
+        for (int j = 0; j < layers[i]->gradients.size(); j++) {
+            gT1.push_back(new Tensor(layers[i]->gradients[j]->getShape(), layers[i]->dev));
+            gT1.back()->fill_(0.0);
+            gT.push_back(new Tensor(layers[i]->gradients[j]->getShape(), layers[i]->dev));
+            gT.back()->fill_(0.0);
+        }
+
+}
+
+void RMSProp::applygrads(int batch) {
+
+    int p = 0;
+    for (int i = 0; i < layers.size(); i++) {
+        for (int j = 0; j < layers[i]->gradients.size(); j++, p++) {
+            Tensor::copy(layers[i]->gradients[j],gT[p]);
+            gT[p]->sqr_();
+            gT[p]->mult_(1.0-rho);
+
+            gT1[p]->sqr_();
+            gT1[p]->mult_(rho);
+            Tensor::add(1.0,gT1[p],1.0,gT[p],gT[p],0);
+
+            gT[p]->add_(epsilon);
+            gT[p]->sqrt_();
+            Tensor::el_div(layers[i]->gradients[j],gT[p],gT[p],0);
+
+            Tensor::copy(layers[i]->gradients[j],gT1[p]);
+
+            Tensor::add(-lr, gT[p],1.0,layers[i]->params[j], layers[i]->params[j], 0);
+        }
+    }
+
+
+}

@@ -30,4 +30,7 @@ IRandomNormal::IRandomNormal(float mean, float stdev, int seed) : Initializer("r
     this->seed = seed;
 
 }
-void IRandomNormal::apply(Tensor* params){}
+void IRandomNormal::apply(Tensor* params)
+{
+  params->rand_normal(mean,stdev);
+}

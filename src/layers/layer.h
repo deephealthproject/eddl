@@ -21,11 +21,13 @@
 #include "../tensor/nn/tensor_nn.h"
 #include "../regularizers/regularizer.h"
 
+
 #define TRMODE 1
 #define TSMODE 0
 
 using namespace std;
 
+class Net;
 
 class Layer {
 public:
@@ -35,6 +37,7 @@ public:
     Tensor *target;
     Tensor *delta;
     Layer *orig;
+    Net *net;
 
     vector<Tensor *> params;
     vector<Tensor *> gradients;
@@ -43,22 +46,24 @@ public:
     vector<Layer *> child;
 
     Regularizer *reg;
+    Initializer *init;
 
     int mode;
     int dev;
     int lin, lout;
     int delta_bp;
+    bool detached;
 
     Layer(string name, int dev);
     // Destructor
     virtual ~Layer();
 
 
-    void initialize(Initializer *init);
+    void initialize();
 
 
-    void save(FILE *fe);
-    void load(FILE *fe);
+    void save(std::ofstream &ofs, string format="");
+    void load(std::ifstream &ifs, string format="");
 
     virtual void info();
 
@@ -72,12 +77,14 @@ public:
     Tensor* getBias();
     Tensor* setBias(Tensor bias);
 
+    void clamp(float min,float max);
+    void setdetach();
 
     //virtual
-    virtual void reset();
 
     virtual void resize(int batch);
-
+    virtual void reset();
+    virtual void zeroGrads();
     virtual string plot(int c) { return ""; }
 
     virtual void addchild(Layer *l) {}
@@ -92,17 +99,9 @@ public:
 
     virtual Layer *clone(int c, int bs, vector<Layer *> p, int todev) { return nullptr; }
 
-
-
 };
 
-Layer* operator+(Layer &l1,Layer &l2);
-Layer* operator+(Layer &l1,float l2);
-Layer* operator+(float f,Layer &l);
 
-Layer* operator*(Layer &l1,Layer &l2);
-Layer* operator*(Layer &l1,float l2);
-Layer* operator*(float f,Layer &l);
 
 /////////////////////////////////////////
 /////////////////////////////////////////

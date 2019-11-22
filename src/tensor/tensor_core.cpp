@@ -6,6 +6,8 @@
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
+#include <utility>
+
 #include "tensor.h"
 #include "../hardware/cpu/cpu_hw.h"
 
@@ -19,11 +21,11 @@ using namespace std;
 
 // ***** Core (in-place) *****************************
 void Tensor::fill_(float v) {
-    if (isCPU()) {
+    if (this->isCPU()) {
         cpu_fill_(this, v);
     }
 #ifdef cGPU
-    else if (isGPU())
+    else if (this->isGPU())
       {
         gpu_fill_(this,v);
       }
@@ -41,12 +43,12 @@ void Tensor::reshape_(vector<int> shape){
 
     // Check if the new size is compatible
     if(new_size!=this->size){
-        msg("Tensors in different devices", "Tensor::reshape_");
+        msg("Not compatible shapes", "Tensor::reshape_");
     }
 
     // Update attributes
     this->ndim = shape.size();
-    this->shape = shape;
+    this->shape = vector<int>(shape);
 
     // Use eigen for 2 dimensions
     if (this->ndim == 2) {
@@ -62,26 +64,64 @@ void Tensor::reshape_(vector<int> shape){
     }
 }
 
+Tensor* Tensor::permute(vector<int> axis){
+    // TODO: Too inefficient
+    // Compute new shape
+    vector<int> new_shape;
+    for(int i=0; i<this->ndim; i++){
+        new_shape.push_back(this->shape[axis[i]]);
+    }
+
+    // Create new tensor
+    auto* B = new Tensor(new_shape, DEV_CPU);
+
+    // Fill tensor
+    vector<int> B_idxs(this->ndim);
+    for(int A_pos=0; A_pos<this->size; A_pos++){
+        vector<int> A_idxs = this->get_indices_rowmajor(A_pos);
+
+        // Compute indices for B
+        for(int i=0; i<this->ndim; i++){
+            B_idxs[i] = A_idxs[axis[i]];
+        }
+
+        // Set value
+        B->set_(B_idxs, this->ptr[A_pos]);
+
+    }
+    return B;
+}
+
 int Tensor::get_address_rowmajor(vector<int> indices){
     int address=0;
-    for(int i=0; i<this->ndim-1; i++){
-        int accum = 1;
-        for(int j=i+1; j<this->ndim; j++){
-            accum*=this->shape[j];
-        }
-    }
-    address += indices[this->ndim-1];
+    for(int i=0; i<this->ndim; i++){ address +=  indices[i] * this->stride[i];}  //*(indices.begin()+i)
     return address;
 }
 
+vector<int> Tensor::get_indices_rowmajor(int address){
+    vector<int> indices;
+    for(int i=0; i<this->shape.size(); i++){
+        indices.push_back(address / this->stride[i] % this->shape[i]);
+    }
+    return indices;
+}
+
 float Tensor::get_(vector<int> indices){
-    return this->ptr[get_address_rowmajor(indices)];
+    return this->ptr[get_address_rowmajor(std::move(indices))];
 }
 
 void Tensor::set_(vector<int> indices, float value){
-    this->ptr[get_address_rowmajor(indices)] = value;
+    this->ptr[get_address_rowmajor(std::move(indices))] = value;
 }
 
+bool Tensor::valid_indices(vector<int> indices){
+    for (int i=0; i<indices.size(); i++){
+        if (indices[i] <0 || indices[i] >= this->shape[i]){
+            return false;
+        }
+    }
+    return true;
+}
 
 // ***** Core (static) *****************************
 void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
@@ -181,7 +221,7 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
 
 void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
     ///////////////////////////////////////
-    /// Select from A to B
+    /// Select from A to B, A is bigger
     //////////////////////////////////////
 
     if ((A->size / A->shape[0]) != (B->size / B->shape[0])) {
@@ -193,9 +233,87 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
     //B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
         cpu_select(A, B, sind, ini, end);
-    } else {
-        msg("unsuppoted select between devices", "Tensor::select");
+    }
+    else if ((A->isGPU()) && (B->isCPU())) {
+        Tensor *Ac=A->clone();
+        Ac->ToCPU();
+
+        cpu_select(Ac, B, sind, ini, end);
+
+        delete Ac;
+    }else if ((A->isCPU()) && (B->isGPU())) {
+        Tensor *Bc=B->clone();
+        Bc->ToCPU();
+        cpu_select(A, Bc, sind, ini, end);
+
+        Tensor::copy(Bc,B);
+
+        delete Bc;
+    }
+    else if ((A->isGPU()) && (B->isGPU())) {
+        Tensor *Ac=A->clone();
+        Ac->ToCPU();
+
+        Tensor *Bc=B->clone();
+        Bc->ToCPU();
+
+        cpu_select(Ac, Bc, sind, ini, end);
+        Tensor::copy(Bc,B);
+
+        delete Ac;
+        delete Bc;
+    }
+    else {
+        msg("unsuppoted select", "Tensor::select");
     }
     //B->tsem->unlock();
 }
+void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
+    ///////////////////////////////////////
+    /// deSelect from A to B, B is bigger
+    //////////////////////////////////////
 
+    if ((A->size / A->shape[0]) != (B->size / B->shape[0])) {
+        A->info();
+        B->info();
+        msg("Incompatible shape", "Tensor::select");
+    }
+
+    //B->tsem->lock();
+    if ((A->isCPU()) && (B->isCPU())) {
+        cpu_deselect(A, B, sind, ini, end);
+    }
+    else if ((A->isGPU()) && (B->isCPU())) {
+        Tensor *Ac=A->clone();
+        Ac->ToCPU();
+
+        cpu_deselect(Ac, B, sind, ini, end);
+
+        delete Ac;
+    }else if ((A->isCPU()) && (B->isGPU())) {
+        Tensor *Bc=B->clone();
+        Bc->ToCPU();
+        cpu_deselect(A, Bc, sind, ini, end);
+
+        Tensor::copy(Bc,B);
+
+        delete Bc;
+    }
+    else if ((A->isGPU()) && (B->isGPU())) {
+        Tensor *Ac=A->clone();
+        Ac->ToCPU();
+
+        Tensor *Bc=B->clone();
+        Bc->ToCPU();
+
+        cpu_deselect(Ac, Bc, sind, ini, end);
+        Tensor::copy(Bc,B);
+
+        delete Ac;
+        delete Bc;
+    }
+    else {
+        msg("unsuppoted select", "Tensor::select");
+    }
+    //B->tsem->unlock();
+}

@@ -69,11 +69,7 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev) : Lin
 
 LReshape::~LReshape()
 {
-  delete output;
-  delete delta;
-
-  parent[0]->output=parent[0]->delta=output=delta=nullptr;
-
+  output=delta=nullptr;
 }
 
 // virtual
@@ -81,6 +77,7 @@ void LReshape::resize(int batch){
   ls[0]=batch;
   output->resize(batch, parent[0]->output);
   delta->resize(batch, parent[0]->delta);
+  if (target!=nullptr) target->resize(batch);
 }
 
 void LReshape::forward() {

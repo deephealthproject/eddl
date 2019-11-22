@@ -14,6 +14,9 @@
 
 #include <cuda.h>
 
+/* we need these includes for CUDA's random number stuff */
+#include <curand.h>
+#include <curand_kernel.h>
 
 // GPU: Comparison
 
@@ -26,7 +29,26 @@ __global__ void fill(float *aptr,float *bptr,int t,int aini,int at,int bini,int 
 __global__ void fill_(float* a, float v, long int size);
 __global__ void mask(float* a, float v, long int size);
 
+// GPU: Transformations
+__global__ void shift(float* A, float* B, int batch, int depth, int irows, int icols, int* shift, int mode, float constant);
+__global__ void rotate(float* A, float* B, int batch, int depth, int irows, int icols, float angle_rad, int* center, int mode, float constant);
+__global__ void scale(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* new_shape, int mode, float constant);
+__global__ void flip(float* A, float* B, int batch, int depth, int irows, int icols, int axis);
+__global__ void crop(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int* offsets, float constant, bool inverse);
+__global__ void crop_scale(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int mode, float constant);
+
+// GPU: Data augmentation
+__global__ void shift_random(float* A, float* B, int batch, int depth, int irows, int icols, float* factor_x, float* factor_y, int mode, float constant, float* rnd);
+__global__ void rotate_random(float* A, float* B, int batch, int depth, int irows, int icols, float* factor, int* offset_center, int mode, float constant, float* rnd);
+__global__ void scale_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor, int mode, float constant, float* rnd);
+__global__ void flip_random(float* A, float* B, int batch, int depth, int irows, int icols, int axis, float* rnd);
+__global__ void crop_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* rnd);
+__global__ void crop_scale_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor, int mode, float constant, float* rnd);
+__global__ void cutout_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor_x, float* factor_y, float constant, float* rnd);
+
 // GPU: Generator
+__global__ void init(unsigned int seed, curandState_t* states);
+__global__ void random_uniform(curandState_t* states, float* numbers);
 
 // GPU: Math (in-place)
 __global__ void abs_(float* a, long int size);

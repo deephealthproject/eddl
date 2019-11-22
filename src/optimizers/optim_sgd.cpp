@@ -24,6 +24,10 @@ SGD::SGD(float lr, float momentum, float weight_decay, bool nesterov) : Optimize
 
 }
 
+SGD::~SGD() {
+  mT.clear();
+}
+
 void SGD::change(vector<float> &p) {
     lr = p[0];
     mu = p[1];
@@ -50,15 +54,10 @@ void SGD::applygrads(int batch) {
     int p = 0;
 
     for (int i = 0; i < layers.size(); i++) {
-        //printf("=====\n%s\n=====\n",layers[i]->name.c_str());
-
         for (int j = 0; j < layers[i]->gradients.size(); j++, p++) {
-            //layers[i]->params[j]->info();
-            Tensor::add(lr / batch, layers[i]->gradients[j], mu, mT[p], mT[p], 0);
-            Tensor::add(1.0, layers[i]->params[j], 1.0, mT[p], layers[i]->params[j], 0);
+            Tensor::add(lr , layers[i]->gradients[j], mu, mT[p], mT[p], 0);
+            Tensor::add(1.0, layers[i]->params[j], -1.0, mT[p], layers[i]->params[j], 0);
         }
-        //printf("\n\n");
     }
-    //getchar();
 
 }

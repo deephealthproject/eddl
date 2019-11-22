@@ -20,18 +20,21 @@ using namespace std;
 LMeanSquaredError::LMeanSquaredError() : Loss("mean_squared_error"){}
 
 void LMeanSquaredError::delta(Tensor *T, Tensor *Y, Tensor *D) {
-    //delta: (T-Y)
-    Tensor::add(1.0, T, -1.0, Y, D, 0);
+    //delta: (Y-T)
+    Tensor::add(-1.0, T, 1.0, Y, D, 0);
+    D->div_(D->shape[0]);
 }
 
 float LMeanSquaredError::value(Tensor *T, Tensor *Y) {
     float f;
     // batch error: add((T-Y)^2)
     Tensor *aux1;
+    int size=T->size/T->shape[0];
+
     aux1 = new Tensor(T->getShape(), T->device);
     Tensor::add(1.0, T, -1.0, Y, aux1, 0);
     Tensor::el_mult(aux1, aux1, aux1, 0);
-    f = aux1->sum();
+    f = aux1->sum()/size;
 
     delete aux1;
 

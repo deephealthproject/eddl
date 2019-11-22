@@ -26,4 +26,7 @@ IConstant::IConstant(float value) : Initializer("constant") {
     this->value = value;
 }
 
-void IConstant::apply(Tensor* params){}
+void IConstant::apply(Tensor* params)
+{
+  params->fill_(value);
+}

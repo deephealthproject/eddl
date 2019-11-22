@@ -23,7 +23,18 @@ ReduceDescriptor::ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool
   this->axis=axis;
   this->keepdims=keepdims;
   ind=nullptr;
-  factor=10;
+  factor=100;
+
+  if (axis.size()>=A->ndim)
+    msg("axis must be lower than tensor dim","ReduceDescriptor");
+
+  for(int i=0;i<axis.size();i++)
+    if (axis[i]>=A->ndim) {
+      cout<<"axis "<<axis[i]<<"> dim="<<A->ndim<<"\n";
+      exit(1);
+    }
+
+
 
   // Select mode
   if (mode=="mean") m=0;
@@ -45,6 +56,7 @@ ReduceDescriptor::ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool
           os.push_back(A->shape[i]);
     }
   }
+
 
   int dev=A->device;
 
@@ -101,20 +113,24 @@ void ReduceDescriptor::build_index() {
 
     }
     //////
-
-
-
 }
 
 
 void ReduceDescriptor::resize(int b)
 {
+  int i;
 
-  O->resize(b);
-  D->resize(b);
-  if ((m==2)||(m==3))
-    S->resize(b);
+  for(i=0;i<axis.size();i++){
+    if (axis[i]==0) break;
+  }
 
+
+  if ((keepdims)||(i==axis.size())) {
+    O->resize(b);
+    D->resize(b);
+    if ((m==2)||(m==3))
+      S->resize(b);
+  }
   ind=nullptr;
   build_index();
 }

@@ -26,18 +26,30 @@ LGauss::LGauss(float mean, float stdev, vector<int> size, string name, int dev):
 
     this->mean=mean;
     this->stdev=stdev;
+    this->size=size;
+
+    size.insert(size.begin(),1);
+
+    input=output=new Tensor(size,dev);
+    delta=new Tensor(size,dev);
 
     ////////////
 
 }
 
 void LGauss::forward(){
-    // TODO: Implement
+    output->rand_normal(mean, stdev);
 }
 
 void LGauss::backward(){
-  // TODO: Implement
+
 }
+
+void LGauss::resize(int b){
+    output->resize(b);
+    delta->resize(b);
+}
+
 
 Layer *LGauss::share(int c, int bs, vector<Layer *> p) {
     // TODO: Implement

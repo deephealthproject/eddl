@@ -18,12 +18,13 @@ using namespace std;
 
 int LActivation::total_layers = 0;
 
-LActivation::LActivation(Layer *parent, string act, string name, int dev) : LinLayer(name, dev) {
+LActivation::LActivation(Layer *parent, string act, string name, int dev, float param) : LinLayer(name, dev) {
 
     // Set default name
     if(name.empty()) this->name = "activation" + to_string(++total_layers);
 
     this->act = act;
+    this->param=param;
 
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
@@ -49,6 +50,12 @@ void LActivation::forward() {
     else if (act == "sigmoid") {
         Sigmoid(this->input, this->output);
     }
+    else if (act == "lrelu") {
+        LReLu(this->input, this->output,param);
+    }
+    else if (act == "tanh") {
+        Tanh(this->input, this->output);
+    }
 }
 
 
@@ -66,6 +73,11 @@ void LActivation::backward() {
             else if (act == "sigmoid") {
               D_Sigmoid(delta, output, parent[0]->delta);
             }
+            else if (act == "lrelu") {
+              D_LReLu(delta, input, parent[0]->delta,param);
+            }
+            else if (act == "tanh")
+                D_Tanh(delta, output, parent[0]->delta);
         }
     }
 }
@@ -93,8 +105,8 @@ Layer *LActivation::clone(int c, int bs, vector<Layer *> p, int todev) {
 string LActivation::plot(int c) {
     string s;
 
-    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=LightBlue,shape=box]";
-    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=LightSalmon,shape=box]";
+    if (c) s = name + " [label=" + "\"" + act+ "_" + name + "\",style=filled,fontsize=12,fillcolor=LightBlue,shape=box]";
+    else s = name + " [label=" + "\"" + act + "_" + name + "\",style=filled,fontsize=12,fillcolor=LightSalmon,shape=box]";
 
     return s;
 }

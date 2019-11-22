@@ -35,6 +35,25 @@
 | Upsampling | ✅ | ✅ |
 
 
+
+## Data augmentation layers
+
+| Functionality | CPU | GPU | Comments |
+| ------------- |------| -----| ---------|
+| Crop | ✅ | ✅ | |
+| Crop (random) | ✅ | ✅ | |
+| Crop & Scale (random) | ✅ | ✅ | |
+| Cutout | ✅ | ✅ | |
+| Cutout (random) | ✅ | ✅ | |
+| Flip | ✅ | ✅ | |
+| Flip (random) | ✅ | ✅ | |
+| Rotate | ❌ | ❌ | |
+| Rotate (random) | ❌ | ❌ | |
+| Scale | ✅ | ✅ | |
+| Scale (random) | ✅ | ✅ | |
+| Shift | ✅ | ✅ | |
+| Shift (random) | ✅ | ✅ | |
+
 ## Pooling layers
 
 | Functionality | CPU | GPU | Comments |
@@ -72,16 +91,16 @@
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| Abs | ✅ | ✅ |
+| Abs |  ✅ | ✅ |
 | Diff | ✅ | ✅ |
 | Div | ✅ | ✅ |
 | Exp | ✅ | ✅ |
 | Log | ✅ | ✅ |
 | Log10 | ✅ | ✅ |
-| Log2 | ✅ | ✅ |
+| Log2 |  ✅ | ✅ |
 | Mult | ✅ | ✅|
 | Pow |  ✅ | ✅ |
-| Sqrt | ✅ | ✅ |
+| Sqrt |  ✅ | ✅ |
 | Sum | ✅ | ✅ |
 
 
@@ -150,8 +169,8 @@
 | ------------- |------| -----| ---------|
 | Adadelta | ❌ | ❌ |
 | Adagrad | ❌ | ❌ |
-| Adam | ❌ | ❌ |
+| Adam | ✅ | ✅ |
 | Adamax | ❌ | ❌ |
 | Nadam | ❌ | ❌ |
-| RMSProp | ❌ | ❌ |
+| RMSProp |✅ | ✅ |
 | SGD | ✅ | ✅ |

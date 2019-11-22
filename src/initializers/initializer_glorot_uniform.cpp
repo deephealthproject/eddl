@@ -31,11 +31,21 @@ IGlorotUniform::IGlorotUniform(int seed) : Initializer("glorot_uniform") {
     this->seed = seed;
 }
 void IGlorotUniform::apply(Tensor* params) {
+
     if (params->ndim == 1)
         params->rand_signed_uniform(0.1f);
-    else if (params->ndim == 2)
-        params->rand_normal(0.0f, ::sqrtf(2.0f / (float)params->shape[0]));
-    else
-        params->rand_normal(0.0f, ::sqrtf(2.0f / ((float)params->size / params->shape[0])));
+    else if (params->ndim == 2) {
+        params->rand_signed_uniform(1.0);
+        float limits=sqrtf(6.0f / (params->shape[0]+params->shape[1]));
+        params->mult_(limits);
+      }
+    else if (params->ndim == 4) { // only fan_in
+        params->rand_signed_uniform(1.0);
+        float limits=sqrtf(3.0f / (params->shape[1]+params->shape[2]+params->shape[3]));
+        params->mult_(limits);
+    }
+    else {
+      params->rand_signed_uniform(0.1f);
+    }
 
 }
