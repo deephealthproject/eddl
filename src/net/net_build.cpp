@@ -354,6 +354,7 @@ void Net::resize(int b)
   if (batch_size==b) return;
 
   batch_size=b;
+  cout<<"Resizing Net to batch_size="<<batch_size<<"\n";
 
   int c=snets.size();
   int bs,m;
@@ -372,6 +373,7 @@ void Net::resize(int b)
   for (j = 0; j < layers.size(); j++) {
       layers[j]->resize(batch_size);
   }
+
 
   for(i=0; i<c; i++) {
     Xs[i].clear();
