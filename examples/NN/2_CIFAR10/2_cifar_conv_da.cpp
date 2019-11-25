@@ -25,70 +25,74 @@ using namespace eddl;
 
 int main(int argc, char **argv){
 
-  // download CIFAR data
-  download_cifar10();
+    // download CIFAR data
+    download_cifar10();
 
-  // Settings
-  int epochs = 25;
-  int batch_size = 100;
-  int num_classes = 10;
+    // Settings
+    int epochs = 25;
+    int batch_size = 100;
+    int num_classes = 10;
 
-  // network
-  layer in=Input({3,32,32});
-  layer l=in;
+    // network
+    layer in=Input({3,32,32});
+    layer l=in;
 
-  // Data augmentation
-  l = FlipRandom(l, 1);
-  l = ShiftRandom(l, {-0.1f, +0.1f}, {-0.1f, +0.1f});
-  l = ScaleRandom(l, {0.9f, 1.1f});
+    // Data augmentation
+    l = ShiftRandom(l, {-0.2f, +0.2f}, {-0.2f, +0.2f});
+//    l = RotateRandom(l, {-30.0f, +30.0f});
+//    l = ScaleRandom(l, {0.8f, 1.5f});
+//    l = FlipRandom(l, 1);
+//    l = CropRandom(l, {28, 28});
+//    l = CropAndScaleRandom(l, {0.8f, 1.0f});
+//    l = CutoutRandom(l, {0.0f, 0.3f}, {0.0f, 0.3f});
 
-  l=MaxPool(ReLu(Conv(l,32,{3,3},{1,1})),{2,2});
-  l=MaxPool(ReLu(Conv(l,64,{3,3},{1,1})),{2,2});
-  l=MaxPool(ReLu(Conv(l,128,{3,3},{1,1})),{2,2});
-  l=MaxPool(ReLu(Conv(l,256,{3,3},{1,1})),{2,2});
+    l=MaxPool(ReLu(Conv(l,32,{3,3},{1,1})),{2,2});
+    l=MaxPool(ReLu(Conv(l,64,{3,3},{1,1})),{2,2});
+    l=MaxPool(ReLu(Conv(l,128,{3,3},{1,1})),{2,2});
+    l=MaxPool(ReLu(Conv(l,256,{3,3},{1,1})),{2,2});
 
-  l=Reshape(l,{-1});
+    l=Reshape(l,{-1});
 
-  l=Activation(Dense(l,128),"relu");
+    l=Activation(Dense(l,128),"relu");
 
-  layer out=Activation(Dense(l,num_classes),"softmax");
+    layer out=Activation(Dense(l,num_classes),"softmax");
 
-  // net define input and output layers list
-  model net=Model({in},{out});
+    // net define input and output layers list
+    model net=Model({in},{out});
 
 
-  // Build model
-  build(net,
-    sgd(0.01, 0.9), // Optimizer
-    {"soft_cross_entropy"}, // Losses
-    {"categorical_accuracy"}, // Metrics
-    CS_CPU() // CPU with maximum threads availables
-    //CS_GPU({1}) // GPU with only one gpu
-  );
+    // Build model
+    build(net,
+          sgd(0.01, 0.9), // Optimizer
+          {"soft_cross_entropy"}, // Losses
+          {"categorical_accuracy"}, // Metrics
+          CS_CPU() // CPU with maximum threads availables
+          //  CS_GPU({1}) // GPU with only one gpu
+    );
 
-  // plot the model
-  plot(net,"model.pdf");
+    // plot the model
+    plot(net,"model.pdf");
 
-  // get some info from the network
-  summary(net);
+    // get some info from the network
+    summary(net);
 
-  // Load and preprocess training data
-  tensor x_train = eddlT::load("cifar_trX.bin");
-  tensor y_train = eddlT::load("cifar_trY.bin");
-  eddlT::div_(x_train, 255.0);
+    // Load and preprocess training data
+    tensor x_train = eddlT::load("cifar_trX.bin");
+    tensor y_train = eddlT::load("cifar_trY.bin");
+    eddlT::div_(x_train, 255.0);
 
-  // Load and preprocess test data
-  tensor x_test = eddlT::load("cifar_tsX.bin");
-  tensor y_test = eddlT::load("cifar_tsY.bin");
-  eddlT::div_(x_test, 255.0);
+    // Load and preprocess test data
+    tensor x_test = eddlT::load("cifar_tsX.bin");
+    tensor y_test = eddlT::load("cifar_tsY.bin");
+    eddlT::div_(x_test, 255.0);
 
-  for(int i=0;i<epochs;i++) {
-    // training, list of input and output tensors, batch, epochs
-    fit(net,{x_train},{y_train},batch_size, 1);
-    // Evaluate train
-    std::cout << "Evaluate test:" << std::endl;
-    evaluate(net,{x_test},{y_test});
-  }
+    for(int i=0;i<epochs;i++) {
+        // training, list of input and output tensors, batch, epochs
+        fit(net,{x_train},{y_train},batch_size, 1);
+        // Evaluate train
+        std::cout << "Evaluate test:" << std::endl;
+        evaluate(net,{x_test},{y_test});
+    }
 
 
 }

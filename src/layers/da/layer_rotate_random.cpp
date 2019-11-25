@@ -48,7 +48,21 @@ void LRotateRandom::resize(int batch){
 }
 
 void LRotateRandom::forward() {
+    auto *A=new Tensor({1, input->shape[1], input->shape[2], input->shape[3]}, input->device);
+    int idx = (int)uniform(0.0f, (float)input->shape[0]-1.0f);
+    A->ToGPU();
+    Tensor::select(input, A, {idx}, 0, 1);
+    A->ToCPU();
+    A->save("images/test_da_" + to_string(idx) + "_0.jpg");
+
+    // Method
     Tensor::rotate_random(this->input, this->output, this->factor, this->offset_center, this->da_mode, this->constant);
+
+    auto *B=new Tensor({1, output->shape[1], output->shape[2], output->shape[3]}, output->device);
+    B->ToGPU();
+    Tensor::select(output, B, {idx}, 0, 1);
+    B->ToCPU();
+    B->save("images/test_da_" + to_string(idx) + "_1.jpg");
 }
 
 void LRotateRandom::backward() {
