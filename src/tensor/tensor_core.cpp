@@ -17,6 +17,10 @@
 #include "../hardware/gpu/nn/gpu_nn.h"
 #endif
 
+#ifdef cFPGA
+#include "../hardware/fpga/tensor_hls_op.h"
+#endifº
+
 using namespace std;
 
 // ***** Core (in-place) *****************************
@@ -31,9 +35,10 @@ void Tensor::fill_(float v) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (isFPGA())
+      {
+        tensor_op_hls(this, v,FPGASET); 
+      }
 #endif
 }
 
@@ -188,6 +193,19 @@ void Tensor::copy(Tensor *A, Tensor *B) {
             gpu_copy_from_gpu(A,B->ptr);
           }
 #endif
+#ifdef cFPGA
+        else if ((A->isFPGA())&&(B->isFPGA())) {
+          fpga_copy_fpga(A,B);
+        }
+        else if ((A->isCPU())&&(B->isFPGA()))
+          {
+            fpga_copy_to_fpga(A->ptr, B);
+          }
+        else if ((A->isFPGA())&&(B->isCPU()))
+          {
+            fpga_copy_from_fpga(A,B->ptr);
+          }
+#endif
     else {
         fprintf(stderr, "(%d %d)\n", A->device, B->device);
         msg("unsupported copy between devices", "Tensor::copy");
@@ -214,7 +232,7 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
 #endif
     else {
         fprintf(stderr, "(%d %d)\n", A->device, B->device);
-        msg("unsupported copy between devices", "Tensor::copy");
+        msg("What THE HELL", "Tensor::copy");
     }
     B->tsem->unlock();
 }

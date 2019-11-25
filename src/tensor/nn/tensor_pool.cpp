@@ -38,7 +38,7 @@ void MPool2D(PoolDescriptor *D) {
 #endif
 #ifdef cFPGA
     else {
-
+       msg("Mpool not implemented for FPGA yet\n");
     }
 #endif
     D->O->tsem->unlock();

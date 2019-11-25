@@ -232,7 +232,7 @@ namespace eddl {
 // ---- COMPUTING SERVICES ----
     compserv CS_CPU(int th=-1);
     compserv CS_GPU(const vector<int> &g,int lsb=1);
-    compserv CS_FGPA(const vector<int> &f,int lsb=1);
+    compserv CS_FPGA(const vector<int> &f,int lsb=1);
     compserv CS_COMPSS(string filename);
 
 

@@ -15,6 +15,9 @@
 #include "../../hardware/gpu/nn/gpu_nn.h"
 #endif
 
+#ifdef cFPGA
+#include "../../hardware/fpga/tensor_hls_op.h"
+#endif
 
 // Cross-Entropy: C=-(A*log(B)+(1-A)*log_(1-B))
 void cent(Tensor *A, Tensor *B, Tensor *C) {
@@ -32,9 +35,10 @@ void cent(Tensor *A, Tensor *B, Tensor *C) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA())
+      {
+         fpga_cent(A,B,C); 
+      }
 #endif
     C->tsem->unlock();
 }

@@ -18,10 +18,16 @@
 #include "../hardware/gpu/nn/gpu_nn.h"
 #endif
 
+#ifdef cFPGA
+#include "../hardware/fpga/tensor_hls_op.h"
+#endif
+
+
 using namespace std;
 
 // TODO: Don't like here
 int initcuda[MAX_GPUS] = {0, 0, 0, 0, 0, 0, 0, 0};
+int initfpga[MAX_FPGAS] = {0, 0, 0, 0, 0, 0, 0, 0};
 int linpos;
 extern ostream &operator<<(ostream &os, const vector<int> shape);
 void msg(string s, string s2) {
@@ -87,8 +93,19 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
 #endif
 #ifdef cFPGA
     else {
-        // create FPGA Tensor
-      }
+        //printf("Creating FPGA tensor\n");
+        fpga_device = device -DEV_FPGA;
+        //gpu_device=device-DEV_GPU;
+        if (!initfpga[fpga_device])
+          { 
+           printf("Initializing FPGA device\n");
+           fpga_init(/*fpga_device*/);
+	   printf("Xilinx OpenCL\n");
+           initfpga[fpga_device]=1;
+         }
+        //printf("Creating FPGA tensor\n");
+        fpga_create_tensor(this, fpga_device);
+        }
 #endif
 
     tsem = new mutex();
@@ -121,8 +138,9 @@ void Tensor::ToCPU(int dev){
       }
 #endif
 #ifdef cFPGA
-    else {
-
+    if (isFPGA()){
+        fprintf(stderr, "Not compiled for FPGA\n");
+        exit(0);
     }
 #endif
 }
@@ -151,8 +169,9 @@ void Tensor::ToGPU(int dev){
       }
 #endif
 #ifdef cFPGA
-    else {
-
+    if (isFPGA()) {
+       printf("Should I be here?\n"); 
+       exit(0);
     }
 #endif
 }
@@ -179,6 +198,7 @@ Tensor::~Tensor() {
 #ifdef cFPGA
     else {
       // delete FPGA Tensor
+      fpga_delete_tensor(this);
     }
 #endif
     delete tsem;
@@ -251,9 +271,30 @@ void Tensor::print() {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (isFPGA()) 
+      {
+        float *v= get_fmem(size,"Tensor::Tensor");
+        //cudaMemcpy(v,ptr,size*sizeof(float),cudaMemcpyDeviceToHost);
+        fpga_copy_from_fpga(this, v); 
+        if (ndim==2)
+          {
+            int i,j,p=0;
+            for(i=0;i<shape[0];++i)
+              {
+                for(j=0;j<shape[1];++j,++p)
+                  printf("%f ",v[p]);
+                  printf("\n");
+              }
+          }
+        else
+          {
+            int i;
+            for(i=0;i<size;++i)
+              printf("%f ",v[i]);
+              printf("\n");
+          }
+          delete v;
+      }
 #endif
     cout << "\n";
 }

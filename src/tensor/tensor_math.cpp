@@ -20,6 +20,9 @@
 #include "../hardware/gpu/nn/gpu_nn.h"
 #endif
 
+#ifdef cFPGA
+#include "../hardware/fpga/tensor_hls_op.h"
+#endif
 
 using namespace std;
 
@@ -36,7 +39,7 @@ void Tensor::abs_() {
 #endif
 #ifdef cFPGA
     else {
-
+       msg("Tensor ABS not implemented for FPGA yet\n");
     }
 #endif
 }
@@ -59,7 +62,7 @@ void Tensor::acos_(){
 #endif
 #ifdef cFPGA
     else {
-
+       msg("acos not implemented for FPGA yet\n");
     }
 #endif
 }
@@ -81,9 +84,10 @@ void Tensor::add_(float v) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (isFPGA())
+      {
+        tensor_op_hls(this,v,FPGASUM);
+      }
 #endif
 }
 
@@ -125,9 +129,11 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA())
+      {
+        //msg("Not implemented for FPGA yet", "Tensor::add");
+        fpga_tensor_sum6(scA, A, scB, B, C, incC);
+      }
 #endif
 
     C->tsem->unlock();
@@ -158,9 +164,15 @@ void Tensor::inc(Tensor *A, Tensor *B) {
         delete n;
     }
 #endif
-    else {
-        fprintf(stderr, "(%d %d)\n", A->device, B->device);
-        msg("unsupported inc between devices", "Tensor::inc");
+#ifdef cFPGA
+    else if ((A->isFPGA())&&(B->isFPGA())) {
+        Tensor::add(1,A,1,B,B,0); 
+    }
+#endif
+    else
+    {
+        fprintf(stderr,"(%d %d)\n",A->device,B->device);
+        msg("unsupported copy between devices","Tensor::inc");
     }
 }
 
@@ -176,7 +188,7 @@ void Tensor::asin_(){
 #endif
 #ifdef cFPGA
     else {
-
+       msg("Not ready for FPGA yet");
     }
 #endif
 }
@@ -199,7 +211,7 @@ void Tensor::atan_(){
 #endif
 #ifdef cFPGA
     else {
-
+        msg("atan not ready for FPGA yet");
     }
 #endif
 }
@@ -222,7 +234,7 @@ void Tensor::ceil_(){
 #endif
 #ifdef cFPGA
     else {
-
+       msg("ceil not ready for FPGA yet");
     }
 #endif
 }
@@ -245,7 +257,7 @@ void Tensor::clamp_(float min, float max){
 #endif
 #ifdef cFPGA
     else {
-
+      msg("clamp no ready for FPGA yet");
     }
 #endif
 }
@@ -283,7 +295,7 @@ void Tensor::cos_(){
 #endif
 #ifdef cFPGA
     else {
-
+       msg("cos ready for FPGA yet");
     }
 #endif
 }
@@ -306,7 +318,7 @@ void Tensor::cosh_(){
 #endif
 #ifdef cFPGA
     else {
-
+        msg("cosh ready for FPGA yet");
     }
 #endif
 }
@@ -332,7 +344,7 @@ void Tensor::inv_() {
   #endif
   #ifdef cFPGA
   else {
-
+      msg("div not ready for FPGA yet");
   }
   #endif
 }
@@ -365,9 +377,10 @@ void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA())
+      {
+        fpga_el_div_mult(A,B,C,incC, 0);
+      }
 #endif
     C->tsem->unlock();
 }
@@ -384,7 +397,7 @@ void Tensor::exp_() {
 #endif
 #ifdef cFPGA
     else {
-
+        msg("exp not ready for FPGA yet");
     }
 #endif
 }
@@ -408,7 +421,7 @@ void Tensor::floor_(){
 #endif
 #ifdef cFPGA
     else {
-
+        msg("floor not ready for FPGA yet");
     }
 #endif
 }
@@ -432,7 +445,7 @@ void Tensor::log_() {
 #endif
 #ifdef cFPGA
     else {
-
+       msg("Log not ready for FPGA yet");
     }
 #endif
 }
@@ -455,7 +468,7 @@ void Tensor::log2_() {
 #endif
 #ifdef cFPGA
     else {
-
+        msg("Log2 not ready for FPGA yet");
     }
 #endif
 }
@@ -479,7 +492,7 @@ void Tensor::log10_() {
 #endif
 #ifdef cFPGA
     else {
-
+        msg("Log10 not ready for FPGA yet"); 
     }
 #endif
 }
@@ -503,7 +516,7 @@ void Tensor::logn_(float n) {
 #endif
 #ifdef cFPGA
     else {
-
+        msg("Log10 not ready for FPGA yet");
     }
 #endif
 }
@@ -526,7 +539,7 @@ float Tensor::max(){
 #endif
 #ifdef cFPGA
     else {
-
+        msg("Max not ready for FPGA yet");
     }
 #endif
     return -1.0f;  // Temp
@@ -544,7 +557,7 @@ float Tensor::min(){
 #endif
 #ifdef cFPGA
     else {
-
+        msg("min not ready for FPGA yet");
     }
 #endif
     return -1.0f;  // Temp
@@ -563,7 +576,7 @@ void Tensor::mod_(float v){
 #endif
 #ifdef cFPGA
     else {
-
+        msg("mod not ready for FPGA yet");
     }
 #endif
 }
@@ -586,7 +599,7 @@ void Tensor::mult_(float v) {
 #endif
 #ifdef cFPGA
     else {
-
+        tensor_op_hls(this, v,FPGAMULT);
     }
 #endif
 }
@@ -639,7 +652,7 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
 #endif
 #ifdef cFPGA
     else {
-
+       fpga_mult2D(A,tA,B,tB,C,incC);
     }
 #endif
     C->tsem->unlock();
@@ -672,8 +685,8 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
 #endif
 #ifdef cFPGA
     else {
-
-    }
+        fpga_el_div_mult(A,B,C,incC, 1);
+     }
 #endif
     C->tsem->unlock();
 }
@@ -700,9 +713,10 @@ void Tensor::normalize_(float min, float max){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (isFPGA())
+      {
+        fpga_tensor_normalize(this, min, max);
+      }
 #endif
 }
 
@@ -724,7 +738,7 @@ void Tensor::pow_(float exp) {
 #endif
 #ifdef cFPGA
     else {
-
+        msg("pow not ready for FPGA yet");
     }
 #endif
 }
@@ -748,7 +762,7 @@ void Tensor::powb_(float base) {
 #endif
 #ifdef cFPGA
     else {
-
+        msg("powb not ready for FPGA yet");
     }
 #endif
 }
@@ -771,7 +785,7 @@ void Tensor::reciprocal_() {
 #endif
 #ifdef cFPGA
     else {
-
+        msg("reciprocal not ready for FPGA yet");
     }
 #endif
 }
@@ -794,7 +808,7 @@ void Tensor::remainder_(float v) {
 #endif
 #ifdef cFPGA
     else {
-
+        msg("reminder not ready for FPGA yet");
     }
 #endif
 }
@@ -817,7 +831,7 @@ void Tensor::round_(){
 #endif
 #ifdef cFPGA
     else {
-
+        msg("Round not ready for FPGA yet");
     }
 #endif
 }
@@ -840,7 +854,7 @@ void Tensor::rsqrt_(){
 #endif
 #ifdef cFPGA
     else {
-
+       msg("rsqrt not ready for FPGA yet");
     }
 #endif
 }
@@ -863,7 +877,7 @@ void Tensor::sigmoid_(){
 #endif
 #ifdef cFPGA
     else {
-
+       msg("sigmoid not ready for FPGA yet");
     }
 #endif
 }
@@ -886,7 +900,7 @@ void Tensor::sign_(){
 #endif
 #ifdef cFPGA
     else {
-
+        msg("Sign not ready for FPGA yet");
     }
 #endif
 }
@@ -918,7 +932,7 @@ void Tensor::sign(Tensor *A, Tensor *B) {
 #endif
 #ifdef cFPGA
     else {
-
+       msg("sign not ready for FPGA yet");
     }
 #endif
     B->tsem->unlock();
@@ -937,7 +951,7 @@ void Tensor::sin_(){
 #endif
 #ifdef cFPGA
     else {
-
+        msg("sin not ready for FPGA yet");
     }
 #endif
 }
@@ -960,7 +974,7 @@ void Tensor::sinh_(){
 #endif
 #ifdef cFPGA
     else {
-
+        msg("sinh not ready for FPGA yet");
     }
 #endif
 }
@@ -985,9 +999,10 @@ void Tensor::sqr_() {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (isFPGA())
+     {
+        fpga_tensor_operation(this,0,FPGASQR);
+     }
 #endif
 }
 
@@ -1009,9 +1024,10 @@ void Tensor::sqrt_() {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (isFPGA())
+      {
+        tensor_op_hls(this,0,FPGASQRT); 
+      }
 #endif
 }
 
@@ -1041,8 +1057,9 @@ float Tensor::sum() {
     }
 #endif
 #ifdef cFPGA
-    else {
-
+    else if (isFPGA())
+    {
+      return fpga_total_sum(this);
     }
 #endif
     return 0;
@@ -1074,7 +1091,7 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_sum2D_rowwise(A,B,C);        
     }
 #endif
     C->tsem->unlock();
@@ -1104,9 +1121,10 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA())
+     {
+       fpga_reduce_sum2D(A,B,axis,incB);
+     } 
 #endif
     B->tsem->unlock();
 }
@@ -1132,7 +1150,7 @@ void Tensor::reduceTosum(Tensor *A, Tensor *B, int axis) {
 #endif
 #ifdef cFPGA
     else {
-
+    
     }
 #endif
     B->tsem->unlock();
@@ -1164,7 +1182,7 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
 #endif
 #ifdef cFPGA
     else {
-
+        msg("Sum2Dcolwise not ready for FPGA yet");
     }
 #endif
     C->tsem->unlock();
@@ -1182,7 +1200,7 @@ float Tensor::sum_abs() {
 #endif
 #ifdef cFPGA
     else {
-
+         msg("sumabs not ready for FPGA yet");
     }
 #endif
     return 0;
@@ -1202,7 +1220,7 @@ void Tensor::tan_(){
 #endif
 #ifdef cFPGA
     else {
-
+        msg("Tan not ready for FPGA yet");
     }
 #endif
 }
@@ -1225,7 +1243,7 @@ void Tensor::tanh_(){
 #endif
 #ifdef cFPGA
     else {
-
+        msg("tanh not ready for FPGA yet");
     }
 #endif
 }
@@ -1249,7 +1267,7 @@ void Tensor::trunc_(){
 #endif
 #ifdef cFPGA
     else {
-
+        msg("trunc not ready for FPGA yet");
     }
 #endif
 }

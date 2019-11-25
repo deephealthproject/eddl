@@ -30,7 +30,7 @@ Tensor* raw_range(float start, float step, int size, int dev){
 #endif
 #ifdef cFPGA
     else {
-
+        msg("raw range not implemented for FPGA yet\n");
     }
 #endif
     return t;

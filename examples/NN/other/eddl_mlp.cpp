@@ -31,9 +31,11 @@ int main(int argc, char **argv) {
     layer in = Input({784});
     layer l = in;  // Aux var
 
-    l = BatchNormalization(Activation(L2(Dense(l, 1024),0.0001f), "relu"));
-    l = BatchNormalization(Activation(L2(Dense(l, 1024),0.0001f), "relu"));
-    l = BatchNormalization(Activation(L2(Dense(l, 1024),0.0001f), "relu"));
+
+
+    l = BatchNormalization(Activation(L2(Dense(l, 1024, DEV_FPGA),0.0001f), "relu"));
+    l = BatchNormalization(Activation(L2(Dense(l, 1024, DEV_FPGA),0.0001f), "relu"));
+    l = BatchNormalization(Activation(L2(Dense(l, 1024, DEV_FPGA),0.0001f), "relu"));
     //l = BatchNormalization(Activation(Dense(l, 1024, true, L2(0.0001f)), "relu"));
 
     layer out = Activation(Dense(l, num_classes), "softmax");
@@ -47,9 +49,9 @@ int main(int argc, char **argv) {
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           //CS_GPU({1,1},10) // 2 GPUs with local_sync_batches=10
-          //CS_GPU({1}) // 1 GPU
+          CS_FPGA({1}) // 1 FPGA
           //CS_CPU(4) // 4 CPU threads
-          CS_CPU() // CPU with maximum threads availables
+          //CS_CPU() // CPU with maximum threads availables
           //CS_COMPSS("../config/compss/resources.xml")
     );
 

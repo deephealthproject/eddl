@@ -34,8 +34,10 @@ void reduction(ReduceDescriptor *RD){
       }
     #endif
     #ifdef cFPGA
-        else {
-
+        else if (RD->I->isFPGA())
+        { 
+            msg("reduction not implemented for FPGA\n");        
+//          tensor_copy_from_fpga( 
         }
     #endif
 }
@@ -55,7 +57,7 @@ void reduction_back(ReduceDescriptor *RD)
   #endif
   #ifdef cFPGA
       else {
-
+        msg("reduction back not implemented for FPGA\n");
       }
   #endif
 }

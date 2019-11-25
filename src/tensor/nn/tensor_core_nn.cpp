@@ -15,6 +15,10 @@
 #include "../../hardware/gpu/nn/gpu_nn.h"
 #endif
 
+#ifdef cFPGA
+#include "../../hardware/fpga/tensor_hls_op.h"
+#endif
+
 // Resizing tensors
 void Tensor::resize(int b, float *fptr){
 
@@ -56,9 +60,18 @@ void Tensor::resize(int b, float *fptr){
         }
 #endif
 #ifdef cFPGA
-    else {
-        // create FPGA Tensor
-      }
+    else if (isFPGA())
+        {
+         // if (fptr==nullptr) {
+            fpga_delete_tensor(this);
+            fpga_create_tensor(this,fpga_device);
+         // }
+         // else {
+         //   //fpga_ptr=fptr;
+         //   printf("WARNING\n");
+         // } 
+ 
+        }
 #endif
 
 }

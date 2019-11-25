@@ -16,6 +16,9 @@
 #include "../hardware/gpu/nn/gpu_nn.h"
 #endif
 
+#ifdef cFPGA
+#include "../hardware/fpga/tensor_hls_op.h" 
+#endif
 
 using namespace std;
 
@@ -30,9 +33,10 @@ void Tensor::rand_uniform(float v) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (isFPGA())
+      {
+        tensor_op_hls(this,0,FPGAGAUSS);
+      }
 #endif
 
 }
@@ -49,9 +53,10 @@ void Tensor::rand_signed_uniform(float v) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if(isFPGA())
+     {
+        tensor_op_hls(this,0,FPGAGAUSS);
+     }
 #endif
 
 
@@ -70,7 +75,7 @@ void Tensor::rand_binary(float v) {
 #endif
 #ifdef cFPGA
     else {
-
+        cout<< "Rand binary not implemented in FPGA\n"; exit(1);
     }
 #endif
 
@@ -88,8 +93,8 @@ void Tensor::rand_normal(float m, float s, bool fast_math) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
+    else if (isFPGA()){
+       tensor_op_hls(this,0,FPGAGAUSS);
     }
 #endif
 

@@ -15,6 +15,9 @@
 #include "../../hardware/gpu/nn/gpu_nn.h"
 #endif
 
+#ifdef cFPGA
+#include "../../hardware/fpga/tensor_hls_op.h"
+#endif
 
 // ReLU
 void ReLu(Tensor *A, Tensor *B) {
@@ -32,9 +35,10 @@ void ReLu(Tensor *A, Tensor *B) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA())
+     {
+     fpga_tensor_operation(A, B, FPGARELU);
+     }
 #endif
 
     B->tsem->unlock();
@@ -57,9 +61,10 @@ void D_ReLu(Tensor *D, Tensor *I, Tensor *PD) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (D->isFPGA())
+      {
+      fpga_relu_soft_d(D, I, PD, FPGARELU);
+      }
 #endif
     PD->tsem->unlock();
 }
@@ -130,7 +135,7 @@ void Sigmoid(Tensor *A, Tensor *B) {
 #endif
 #ifdef cFPGA
     else {
-
+	msg("Sigmoid Not implemented in FPGA yet\n");
     }
 #endif
 
@@ -155,7 +160,7 @@ void D_Sigmoid(Tensor *D, Tensor *I, Tensor *PD) {
 #endif
 #ifdef cFPGA
     else {
-
+        msg("Sigmoid Not implemented in FPGA yet\n");
     }
 #endif
     PD->tsem->unlock();
@@ -228,9 +233,10 @@ void Softmax(Tensor *A, Tensor *B) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA())
+      {
+        fpga_tensor_operation(A, B, FPGASOFTM);
+      }
 #endif
 
     B->tsem->unlock();
@@ -259,8 +265,9 @@ void D_Softmax(Tensor *D, Tensor *I, Tensor *PD) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
+    else if (D->isFPGA())
+    {
+       fpga_relu_soft_d(D, I, PD, FPGASOFTM); 
     }
 #endif
 
