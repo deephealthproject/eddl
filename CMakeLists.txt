@@ -415,7 +415,7 @@ target_include_directories(eddl PUBLIC
 )
 target_include_directories(eddl PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen>
-    $<INSTALL_INTERFACE:include/eddl/third_party/eigen>
+    $<INSTALL_INTERFACE:include>
 )
 #target_compile_features(eddl PUBLIC cxx_std_11)
 
@@ -605,9 +605,9 @@ foreach(f ${Eigen_directory_files})
 endforeach(f ${Eigen_directory_files})
 install(FILES
         ${Eigen_directory_files_to_install}
-        DESTINATION "include/eddl/third_party/eigen/Eigen"
+        DESTINATION "include/Eigen"
         )
-install(DIRECTORY ${ESCAPED_EIGEN_SOURCE_DIR}/src DESTINATION "include/eddl/third_party/eigen/Eigen" COMPONENT Devel FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY ${ESCAPED_EIGEN_SOURCE_DIR}/src DESTINATION "include/Eigen" COMPONENT Devel FILES_MATCHING PATTERN "*.h")
 
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/eddlConfig.cmake.in ${CMAKE_BINARY_DIR}/cmake/eddlConfig.cmake @ONLY)
