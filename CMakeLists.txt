@@ -8,9 +8,9 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # USER OPTIONS *******************************
 option(BUILD_PYTHON "Compile python binding" OFF)
-option(BUILD_TESTS "Compile tests" OFF)
+option(BUILD_TESTS "Compile tests" ON)
 option(BUILD_EXAMPLES "Compile examples" ON)
-SET(BUILD_TARGET "CPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
+SET(BUILD_TARGET "FPGA" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
 set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
 
 # PROPERTIES *******************************
@@ -22,7 +22,7 @@ if(NOT CMAKE_BUILD_TYPE)
     #set(CMAKE_BUILD_TYPE Debug)
     set(CMAKE_BUILD_TYPE Release)
 endif()
-
+set(CMAKE_CXX_FLAGS "-lOpenCL") 
 # SET COMPILER FLAGS
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
     #set(CMAKE_CXX_FLAGS "-march=native ${CMAKE_CXX_FLAGS}") // This is a bad idea
@@ -42,7 +42,8 @@ elseif(BUILD_TARGET STREQUAL "GPU")
     set(EDDL_WITH_CUDA ON CACHE BOOL "Enable CUDA support if checked")
 elseif(BUILD_TARGET STREQUAL "FPGA")
     message("Compiling for FPGA...")
-    message(FATAL_ERROR "FPGA not implemented, CMake will exit." )
+    set(EDDL_WITH_FPGA ON)
+    #message(FATAL_ERROR "FPGA not implemented, CMake will exit." )
 endif()
 
 # SET STATIC/DYNAMIC RUNTIME
@@ -191,6 +192,10 @@ SET(CPP_SOURCES
         src/hardware/cpu/nn/cpu_metrics.cpp
         src/hardware/cpu/nn/cpu_pool.cpp
         src/hardware/cpu/nn/cpu_tensor_nn.cpp
+        src/hardware/fpga/tensor_hls_op.cpp
+        src/hardware/fpga/tensor_hls_op.h
+        src/hardware/fpga/libs/xcl2.cpp
+        src/hardware/fpga/libs/xcl2.hpp
         src/initializers/initializer.cpp
         src/initializers/initializer.h
         src/initializers/initializer_constant.cpp
@@ -409,6 +414,10 @@ if(EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
     target_include_directories(eddl PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
     add_compile_definitions(cGPU)
 endif()
+if (EDDL_WITH_FPGA)
+ add_compile_definitions(cFPGA)
+endif()
+
 target_include_directories(eddl PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
     $<INSTALL_INTERFACE:include>
