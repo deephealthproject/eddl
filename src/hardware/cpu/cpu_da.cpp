@@ -74,6 +74,7 @@ void cpu_single_rotate(int b, Tensor *A, Tensor *B, float angle, vector<int> off
 void cpu_single_scale(int b, int* offsets, Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant){
 
     for(int c=0; c<B->shape[1]; c++) {
+
         for(int Bi=0; Bi<B->shape[2];Bi++) {
             for(int Bj=0; Bj<B->shape[3];Bj++) {
 
@@ -268,7 +269,6 @@ void cpu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, floa
     // https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.zoom.html
     // I use "new_shape" because I might want to keep the shape of B, but thinking of it as a bigger/smaller matrix
     // If the factor is less than 1.0f, performs a downscale with padding
-    int offsets[2] = {0, 0};
 
     #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
@@ -277,6 +277,7 @@ void cpu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, floa
         int new_shape_x = (int)(A->shape[3] * scale);
 
         // Center crop (if the if the crop is smaller than B)
+        int offsets[2] = {0, 0};
         offsets[0] = (new_shape_y - A->shape[2])/2.0f;
         offsets[1] = (new_shape_x - A->shape[3])/2.0f;
 
@@ -297,7 +298,6 @@ void cpu_flip_random(Tensor *A, Tensor *B, int axis){
 
 void cpu_crop_random(Tensor *A, Tensor *B){
     // Performs a crop with padding (Keeps the original size)
-    int offsets[2] = {0, 0};
 
     #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
@@ -313,6 +313,7 @@ void cpu_crop_random(Tensor *A, Tensor *B){
         int coords_from_y = y;
         int coords_to_y = y+h;
 
+        int offsets[2] = {0, 0};
         offsets[0] = coords_from_y;
         offsets[1] = coords_from_x;
 
@@ -344,7 +345,6 @@ void cpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode,
 
 void cpu_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant){
     // Performs a crop with padding (Keeps the original size)
-    int offsets[2] = {0, 0};
 
     #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
@@ -360,6 +360,7 @@ void cpu_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<floa
         int coords_from_y = y;
         int coords_to_y = y+h;
 
+        int offsets[2] = {0, 0};
         cpu_single_crop(b, offsets, A, B, {coords_from_y, coords_from_x}, {coords_to_y, coords_to_x}, constant, true);
     }
 }

@@ -93,8 +93,8 @@ public:
     ~Tensor();
 
     // Copy data
-    void ToCPU(int dev=DEV_CPU);
-    void ToGPU(int dev=DEV_GPU);
+    void toCPU(int dev=DEV_CPU);
+    void toGPU(int dev=DEV_GPU);
     Tensor* clone();
 
     // Resize
@@ -132,7 +132,6 @@ public:
 
     // ***** Core (static) *****************************
     Tensor* permute(vector<int> axis);
-
 
     // ************************************************
     // ****** Tensor operations ***********************
@@ -333,6 +332,7 @@ public:
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
     static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
     static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
+    static void tile(Tensor *A, Tensor *B);
 
     // Generators (In-place) *************************************
     // Rethink names

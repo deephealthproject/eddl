@@ -56,19 +56,15 @@ void LCutout::backward() {
 
 
 Layer *LCutout::share(int c, int bs, vector<Layer *> p) {
-    LCutout *n = new LCutout(p[0], this->from_coords, this->to_coords, this->constant, "share_" + to_string(c) + name, dev);
+    auto *n = new LCutout(p[0], this->from_coords, this->to_coords, this->constant, "share_" + to_string(c) + name, dev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }
 
 Layer *LCutout::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LCutout *n = new LCutout(p[0], this->from_coords, this->to_coords, this->constant, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LCutout(p[0], this->from_coords, this->to_coords, this->constant, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }

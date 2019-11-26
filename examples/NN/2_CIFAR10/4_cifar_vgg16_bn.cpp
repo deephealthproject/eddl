@@ -86,10 +86,11 @@ int main(int argc, char **argv){
   tensor y_test = eddlT::load("cifar_tsY.bin");
   eddlT::div_(x_test, 255.0);
 
+
   for(int i=0;i<epochs;i++) {
     // training, list of input and output tensors, batch, epochs
     fit(net,{x_train},{y_train},batch_size, 1);
-    // Evaluate train
+    // Evaluate test
     std::cout << "Evaluate test:" << std::endl;
     evaluate(net,{x_test},{y_test});
   }

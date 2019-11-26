@@ -57,19 +57,15 @@ void LRotateRandom::backward() {
 
 
 Layer *LRotateRandom::share(int c, int bs, vector<Layer *> p) {
-    LRotateRandom *n = new LRotateRandom(p[0], this->factor, this->offset_center, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
+    auto *n = new LRotateRandom(p[0], this->factor, this->offset_center, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }
 
 Layer *LRotateRandom::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LRotateRandom *n = new LRotateRandom(p[0], this->factor, this->offset_center, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LRotateRandom(p[0], this->factor, this->offset_center, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }

@@ -312,7 +312,7 @@ int main(int argc, char **argv) {
 //    t_input = Tensor::ones({10, 10, 1000,1000}, DEV_CPU);
 //    res_small_cpu = run_tensor_op(t_input, "shift", DEV_CPU, MAX_TRIES);
 //
-////    res_small_cpu.tensor->ToCPU();
+////    res_small_cpu.tensor->toCPU();
 ////    res_small_cpu.tensor->reshape_({50, 50});
 ////    res_small_cpu.tensor->print();
 //
@@ -366,7 +366,7 @@ int main(int argc, char **argv) {
         t_input->reshape_({t_input->shape[2], t_input->shape[3]});
         t_input->print();
         res_small_gpu.tensor->reshape_({res_small_gpu.tensor->shape[2], res_small_gpu.tensor->shape[3]});
-        res_small_gpu.tensor->ToCPU();
+        res_small_gpu.tensor->toCPU();
         res_small_gpu.tensor->print();
     }
 

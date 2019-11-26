@@ -311,14 +311,14 @@ public:
 
 
 /// Crop Layer
-class LCropAndScaleRandom : public LinLayer {
+class LCropScaleRandom : public LinLayer {
 public:
     static int total_layers;
     vector<float> factor;
     string da_mode;
 
-    LCropAndScaleRandom(Layer *parent, vector<float> factor, string da_mode, string name, int dev);
-    ~LCropAndScaleRandom();
+    LCropScaleRandom(Layer *parent, vector<float> factor, string da_mode, string name, int dev);
+    ~LCropScaleRandom();
 
 
     Layer *share(int c, int bs, vector<Layer *> p) override;

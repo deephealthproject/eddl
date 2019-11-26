@@ -21,7 +21,7 @@ int LCropAndScale::total_layers = 0;
 
 LCropAndScale::LCropAndScale(Layer *parent, vector<int> from_coords, vector<int> to_coords, string da_mode, float constant, string name, int dev) : LCrop(parent, from_coords, to_coords, false, constant, name, dev) {
     if(name.empty()) this->name = "crop_scale" + to_string(++total_layers);
-    this->da_mode=da_mode;
+    this->da_mode=std::move(da_mode);
 }
 
 LCropAndScale::~LCropAndScale()
@@ -30,5 +30,5 @@ LCropAndScale::~LCropAndScale()
 }
 
 void LCropAndScale::forward() {
-    //Tensor::crop_scale(this->input, this->output, this->from_coords, this->to_coords, this->da_mode, this->constant);
+    Tensor::crop_scale(this->input, this->output, this->from_coords, this->to_coords, this->da_mode, this->constant);
 }

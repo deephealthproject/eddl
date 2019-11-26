@@ -57,19 +57,15 @@ void LShift::backward() {
 
 
 Layer *LShift::share(int c, int bs, vector<Layer *> p) {
-    LShift *n = new LShift(p[0], this->shift, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
+    auto *n = new LShift(p[0], this->shift, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }
 
 Layer *LShift::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LShift *n = new LShift(p[0], this->shift, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LShift(p[0], this->shift, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }

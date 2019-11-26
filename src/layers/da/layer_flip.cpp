@@ -54,19 +54,15 @@ void LFlip::backward() {
 
 
 Layer *LFlip::share(int c, int bs, vector<Layer *> p) {
-    LFlip *n = new LFlip(p[0], this->axis, "share_" + to_string(c) + name, dev);
+    auto *n = new LFlip(p[0], this->axis, "share_" + to_string(c) + name, dev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }
 
 Layer *LFlip::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LFlip *n = new LFlip(p[0], this->axis, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LFlip(p[0], this->axis, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }

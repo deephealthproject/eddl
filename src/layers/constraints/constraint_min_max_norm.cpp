@@ -13,10 +13,10 @@
 
 CMinMaxNorm::CMinMaxNorm(float min_value, float max_value, float rate, int axis) : Constraint("min_max_norm") {
     // Todo: Implement
-    this->min_value;
-    this->max_value;
-    this->rate;
-    this->axis;
+    // this->min_value;
+    // this->max_value;
+    // this->rate;
+    // this->axis;
 }
 
 float CMinMaxNorm::apply(Tensor* T) { return 0; }

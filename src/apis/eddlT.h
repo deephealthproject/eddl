@@ -36,10 +36,10 @@ namespace eddlT{
 
 
   // Copy data     c   ********************************
-  void ToCPU_(Tensor *A);
-  void ToGPU_(Tensor *A);
-  Tensor * ToCPU(Tensor *A);
-  Tensor * ToGPU(Tensor *A);
+  void toCPU_(Tensor *A);
+  void toGPU_(Tensor *A);
+  Tensor * toCPU(Tensor *A);
+  Tensor * toGPU(Tensor *A);
   Tensor* clone(Tensor *A);
   Tensor* select(Tensor *A, int i);
   void copyTensor(Tensor *A,Tensor *B);

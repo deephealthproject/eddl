@@ -206,7 +206,7 @@ void Tensor::save2img(const string& filename, string format){
 
     // Re-order axis
     Tensor *t = this->clone();  // Important if permute is not used
-    t->ToCPU();  // Just in case
+    t->toCPU();  // Just in case
 
     // TODO: Temp! Check permute correctness
     // Re-order components (careful with t[a]=t[b], collisions may appear if both are the same)

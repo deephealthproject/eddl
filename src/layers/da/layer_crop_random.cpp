@@ -53,19 +53,15 @@ void LCropRandom::backward(){
 
 
 Layer *LCropRandom::share(int c, int bs, vector<Layer *> p) {
-    LCropRandom *n = new LCropRandom(p[0], this->new_shape, "share_" + to_string(c) + name, dev);
+    auto *n = new LCropRandom(p[0], this->new_shape, "share_" + to_string(c) + name, dev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }
 
 Layer *LCropRandom::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LCropRandom *n = new LCropRandom(p[0], this->new_shape, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LCropRandom(p[0], this->new_shape, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }

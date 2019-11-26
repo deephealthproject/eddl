@@ -56,19 +56,15 @@ void LScaleRandom::backward() {
 
 
 Layer *LScaleRandom::share(int c, int bs, vector<Layer *> p) {
-    LScaleRandom *n = new LScaleRandom(p[0], this->factor, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
+    auto *n = new LScaleRandom(p[0], this->factor, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }
 
 Layer *LScaleRandom::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LScaleRandom *n = new LScaleRandom(p[0], this->factor, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LScaleRandom(p[0], this->factor, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }
