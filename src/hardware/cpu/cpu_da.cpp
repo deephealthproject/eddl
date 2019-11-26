@@ -1,11 +1,12 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.1
+* Version: 0.2
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
+
 
 
 #include <iostream>
@@ -14,6 +15,10 @@
 
 #include "cpu_hw.h"
 #include "../../random.h"
+
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
 
 void cpu_single_shift(int b, Tensor *A, Tensor *B, vector<int> shift, int mode, float constant){
     for(int c=0; c<B->shape[1]; c++) {
