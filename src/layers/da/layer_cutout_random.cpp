@@ -45,21 +45,7 @@ void LCutoutRandom::resize(int batch){
 }
 
 void LCutoutRandom::forward() {
-    auto *A=new Tensor({1, input->shape[1], input->shape[2], input->shape[3]}, input->device);
-    int idx = (int)uniform(0.0f, (float)input->shape[0]-1.0f);
-    A->toGPU();
-    Tensor::select(input, A, {idx}, 0, 1);
-    A->toCPU();
-    A->save("images/test_da_" + to_string(idx) + "_0.jpg");
-
-    // Method
     Tensor::cutout_random(this->input, this->output, this->factor_x, this->factor_y, this->constant);
-
-    auto *B=new Tensor({1, output->shape[1], output->shape[2], output->shape[3]}, output->device);
-    B->toGPU();
-    Tensor::select(output, B, {idx}, 0, 1);
-    B->toCPU();
-    B->save("images/test_da_" + to_string(idx) + "_1.jpg");
 }
 
 void LCutoutRandom::backward() {
