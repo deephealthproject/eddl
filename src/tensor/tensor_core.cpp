@@ -258,6 +258,7 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
         Bc->toCPU();
 
         cpu_select(Ac, Bc, sind, ini, end);
+
         Tensor::copy(Bc,B);
 
         delete Ac;
@@ -317,3 +318,49 @@ void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) 
     }
     //B->tsem->unlock();
 }
+
+void Tensor::tile(Tensor *A, Tensor *B)
+{
+
+  int Asize=A->shape[0];
+  int Bsize=B->shape[0];
+
+
+  if (Bsize>Asize) {
+    vector<int> sind(Bsize);
+    int start,end;
+    for(int i=0;i<Bsize;i++) sind[i]=i;
+    for(int i=0;i<Bsize/Asize;i++) {
+        start = i * Asize;
+        end = start + Asize;
+        Tensor::deselect(A, B, sind, start, end);
+    }
+    if (Bsize%Asize) {
+      Tensor::deselect(A, B, sind, end, end+(Bsize%Asize));
+    }
+  }
+  else {
+    vector<int> sind(Bsize);
+    for(int i=0;i<Bsize;i++) sind[i]=i;
+    Tensor::select(A, B, sind, 0, Bsize);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  ///

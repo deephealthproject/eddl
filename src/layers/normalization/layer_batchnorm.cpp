@@ -128,52 +128,14 @@ void LBatchNorm::resize(int batch){
 
   if (momentum!=0.0) {
     if (!init) {
-      Tensor *nmean=new Tensor(mean->output->getShape(),dev);
-      Tensor *nvar=new Tensor(variance->output->getShape(),dev);
-
-      Tensor::copy(mean->output,nmean);
-      Tensor::copy(variance->output,nvar);
+      Tensor *nmean=mean->output->clone();
+      Tensor *nvar=variance->output->clone();
 
       mean->resize(batch);
       variance->resize(batch);
 
-      int msize=mean->output->shape[0];
-      int nsize=nmean->shape[0];
-
-      if (msize>nsize) {
-        //from nmean to mean with deselect
-        vector<int> sind(msize);
-        int start,end;
-        for(int i=0;i<msize;i++) sind[i]=i;
-        for(int i=0;i<msize/nsize;i++) {
-            start = i * nsize;
-            end = start + nsize;
-            Tensor::deselect(nmean, mean->output, sind, start, end);
-            Tensor::deselect(nvar, variance->output, sind, start, end);
-        }
-        if (msize%nsize) {
-          Tensor::deselect(nmean, mean->output, sind, end, end+(msize%nsize));
-          Tensor::deselect(nvar, variance->output, sind,end, end+(msize%nsize));
-        }
-      }
-      else {
-        //from nmean to mean with select
-        vector<int> sind(nsize);
-        int start,end;
-        for(int i=0;i<nsize;i++) sind[i]=i;
-        for(int i=0;i<nsize/msize;i++) {
-            start = i * msize;
-            end = start + msize;
-            Tensor::select(nmean, mean->output, sind, start, end);
-            Tensor::select(nvar, variance->output, sind, start, end);
-        }
-        if (nsize%msize) {
-          Tensor::select(nmean, mean->output, sind, end, end+(nsize%msize));
-          Tensor::select(nvar, variance->output, sind,end, end+(nsize%msize));
-        }
-
-      }
-
+      Tensor::tile(nmean,mean->output);
+      Tensor::tile(nvar,variance->output);
 
       delete nmean;
       delete nvar;
