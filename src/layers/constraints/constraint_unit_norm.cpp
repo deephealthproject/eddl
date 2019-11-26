@@ -12,7 +12,7 @@
 
 CUnitNorm::CUnitNorm(int axis) : Constraint("unit_norm") {
     // Todo: Implement
-    this->axis;
+    // this->axis;
 }
 
 float CUnitNorm::apply(Tensor* T) { return 0; }
