@@ -167,10 +167,18 @@ void LBatchNorm::forward() {
     }
   }
   else {
-    Tensor::copy(mean->output,layers[0]->output);
+    if (momentum!=0.0)
+      Tensor::copy(mean->output,layers[0]->output);
+    else layers[0]->forward();
+
     layers[1]->forward();
 
-    Tensor::copy(variance->output,layers[3]->output);
+    if (momentum!=0.0)
+      Tensor::copy(variance->output,layers[3]->output);
+    else {
+      layers[2]->forward();
+      layers[3]->forward();
+    }
     layers[4]->forward();
     layers[5]->forward();
     layers[6]->forward();
