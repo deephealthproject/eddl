@@ -36,7 +36,7 @@ LConcat::LConcat(vector<Layer *> parent, string name, int dev) : MLayer(name, de
         } else if (ndim == 4) {
             for (int i = 0; i < parent.size() - 1; ++i) {
                 if (parent[i]->output->shape[0] != parent[i + 1]->output->shape[0])
-                    msg("Error: LConcat layers with different size in dim 1");
+                    msg("Error: LConcat layers with different size in dim 1, batch size");
                 else if (parent[i]->output->shape[2] != parent[i + 1]->output->shape[2])
                     msg("Error: LConcat layers with different size in dim 3, rows of 4D");
                 else if (parent[i]->output->shape[3] != parent[i + 1]->output->shape[3])

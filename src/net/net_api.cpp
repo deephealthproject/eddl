@@ -453,7 +453,8 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     // Set some parameters
     int num_batches = n / batch_size;
 
-
+    num_batches=10;
+    
     // Train network
     fprintf(stdout, "%d epochs of %d batches of size %d\n", epochs, num_batches, batch_size);
     for (i = 0; i < epochs; i++) {
