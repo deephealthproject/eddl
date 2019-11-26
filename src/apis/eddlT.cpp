@@ -69,20 +69,20 @@ namespace eddlT {
   }
 
   // Copy data        ********************************
-  void ToCPU_(Tensor *A)
+  void toCPU_(Tensor *A)
   {
       A->toCPU();
   }
-  void ToGPU_(Tensor *A)
+  void toGPU_(Tensor *A)
   {
       A->toGPU();
   }
-  Tensor * ToCPU(Tensor *A){
+  Tensor * toCPU(Tensor *A){
     Tensor *B=A->clone();
       B->toCPU();
     return B;
   }
-  Tensor * ToGPU(Tensor *A)
+  Tensor * toGPU(Tensor *A)
   {
     Tensor *B=A->clone();
       B->toGPU();

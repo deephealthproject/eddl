@@ -107,7 +107,7 @@ void Tensor::toCPU(int dev){
       {
         this->device = dev;
 
-        float *cpu_ptr = get_fmem(size, "Tensor::ToCPU");
+        float *cpu_ptr = get_fmem(size, "Tensor::toCPU");
         float *gpu_ptr = ptr;
 
         if (ndim == 2) {
