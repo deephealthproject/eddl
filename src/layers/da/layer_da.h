@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.1
+* Version: 0.2
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -311,14 +311,14 @@ public:
 
 
 /// Crop Layer
-class LCropAndScaleRandom : public LinLayer {
+class LCropScaleRandom : public LinLayer {
 public:
     static int total_layers;
     vector<float> factor;
     string da_mode;
 
-    LCropAndScaleRandom(Layer *parent, vector<float> factor, string da_mode, string name, int dev);
-    ~LCropAndScaleRandom();
+    LCropScaleRandom(Layer *parent, vector<float> factor, string da_mode, string name, int dev);
+    ~LCropScaleRandom();
 
 
     Layer *share(int c, int bs, vector<Layer *> p) override;

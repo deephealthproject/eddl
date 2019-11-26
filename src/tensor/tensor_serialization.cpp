@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.1
+* Version: 0.2
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -206,7 +206,7 @@ void Tensor::save2img(const string& filename, string format){
 
     // Re-order axis
     Tensor *t = this->clone();  // Important if permute is not used
-    t->ToCPU();  // Just in case
+    t->toCPU();  // Just in case
 
     // TODO: Temp! Check permute correctness
     // Re-order components (careful with t[a]=t[b], collisions may appear if both are the same)

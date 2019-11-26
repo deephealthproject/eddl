@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.1
+* Version: 0.2
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -36,10 +36,10 @@ namespace eddlT{
 
 
   // Copy data     c   ********************************
-  void ToCPU_(Tensor *A);
-  void ToGPU_(Tensor *A);
-  Tensor * ToCPU(Tensor *A);
-  Tensor * ToGPU(Tensor *A);
+  void toCPU_(Tensor *A);
+  void toGPU_(Tensor *A);
+  Tensor * toCPU(Tensor *A);
+  Tensor * toGPU(Tensor *A);
   Tensor* clone(Tensor *A);
   Tensor* select(Tensor *A, int i);
   void copyTensor(Tensor *A,Tensor *B);

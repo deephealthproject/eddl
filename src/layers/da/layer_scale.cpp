@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.1
+* Version: 0.2
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -63,19 +63,15 @@ void LScale::backward() {
 
 
 Layer *LScale::share(int c, int bs, vector<Layer *> p) {
-    LScale *n = new LScale(p[0], this->new_shape, this->reshape, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
+    auto *n = new LScale(p[0], this->new_shape, this->reshape, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }
 
 Layer *LScale::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LScale *n = new LScale(p[0], this->new_shape, this->reshape, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LScale(p[0], this->new_shape, this->reshape, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }

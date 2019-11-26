@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.1
+* Version: 0.2
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -103,7 +103,7 @@ __device__ void gpu_single_scale(long int thread_id_x, float* A, float* B, int b
 
 
 
-__device__ void gpu_single_flip(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, int axis){
+__device__ void gpu_single_flip(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, int axis, bool apply){
     int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
     int *B_stride = A_stride;
 
@@ -115,10 +115,14 @@ __device__ void gpu_single_flip(long int thread_id_x, float* A, float* B, int ba
     //--------------
     //printf("{%d, %d, %d, %d}\n", b, c, Bi, Bj);
 
-    int pos[2] = {Bi, Bj}; pos[axis] = (irows-1) - pos[axis];
-    int Ai = pos[0]; int Aj = pos[1];
-    int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
-    B[thread_id_x] = A[A_pos];
+    if(apply){
+        int pos[2] = {Bi, Bj}; pos[axis] = (irows-1) - pos[axis];
+        int Ai = pos[0]; int Aj = pos[1];
+        int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
+        B[thread_id_x] = A[A_pos];
+    }else{
+        B[thread_id_x] = A[thread_id_x];
+    }
 }
 
 
@@ -208,7 +212,7 @@ __global__ void flip(float* A, float* B, int batch, int depth, int irows, int ic
     long int ops = batch * depth*irows*icols;
 
     if (thread_id_x < ops){
-        gpu_single_flip(thread_id_x, A, B, batch, depth, irows, icols, axis);
+        gpu_single_flip(thread_id_x, A, B, batch, depth, irows, icols, axis, true);
     }
 }
 
@@ -290,9 +294,8 @@ __global__ void flip_random(float* A, float* B, int batch, int depth, int irows,
         //--------------
         int b = thread_id_x / (depth*irows*icols) % batch;
 
-        if(rnd[b] >= 0.5f){  // Apply?
-            gpu_single_flip(thread_id_x, A, B, batch, depth, irows, icols, axis);
-        }
+        bool apply = rnd[b] >= 0.5f;
+        gpu_single_flip(thread_id_x, A, B, batch, depth, irows, icols, axis, apply);
     }
 }
 

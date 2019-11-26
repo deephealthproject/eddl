@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.1
+* Version: 0.2
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -88,7 +88,7 @@ namespace eddl {
     layer ScaleRandom(layer parent, vector<float> factor, string da_mode="nearest", float constant=0.0f, string name="");
     layer FlipRandom(layer parent, int axis, string name="");
     layer CropRandom(layer parent, vector<int> new_shape, string name="");
-    layer CropAndScaleRandom(layer parent, vector<float> factor, string da_mode="nearest", string name="");
+    layer CropScaleRandom(layer parent, vector<float> factor, string da_mode= "nearest", string name= "");
     layer CutoutRandom(layer parent, vector<float> factor_x, vector<float> factor_y, float constant=0.0f, string name="");
 
 // ---- LOSSES ----

@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.1
+* Version: 0.2
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -49,11 +49,7 @@ void LShiftRandom::resize(int batch){
 }
 
 void LShiftRandom::forward() {
-  if (TRMODE) {
     Tensor::shift_random(input, output, factor_x, factor_y);
-  }
-  else
-    Tensor::copy(input,output);
 }
 
 void LShiftRandom::backward() {
@@ -65,16 +61,12 @@ Layer *LShiftRandom::share(int c, int bs, vector<Layer *> p) {
     LShiftRandom *n = new LShiftRandom(p[0], this->factor_x, this->factor_y, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
     n->orig = this;
 
-    // TODO: Implement
-
     return n;
 }
 
 Layer *LShiftRandom::clone(int c, int bs, vector<Layer *> p, int todev) {
     LShiftRandom *n = new LShiftRandom(p[0], this->factor_x, this->factor_y, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }

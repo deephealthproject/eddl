@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.1
+* Version: 0.2
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -58,19 +58,15 @@ void LRotate::backward() {
 
 
 Layer *LRotate::share(int c, int bs, vector<Layer *> p) {
-    LRotate *n = new LRotate(p[0], this->angle, this->offset_center, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
+    auto *n = new LRotate(p[0], this->angle, this->offset_center, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }
 
 Layer *LRotate::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LRotate *n = new LRotate(p[0], this->angle, this->offset_center, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LRotate(p[0], this->angle, this->offset_center, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }

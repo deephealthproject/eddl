@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.1
+* Version: 0.2
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
     //t0->reshape_({1, 1, 100, 100});
 
     Tensor *t0 = Tensor::load("images/cow.jpg");
-    t0->ToGPU();
+    t0->toGPU();
     t0->info();
 //    float* ptr = new float[3*4*2]{
 //        255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f,
@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
    // Tensor::cutout(t1, t2, {80, 80}, {100, 200});
    // t1 = t2->clone();
 
-   // t2->ToCPU();
+   // t2->toCPU();
    // t2->save("images/new_cow_single.jpg");
    // cout << "Image saved!" << endl;
 
@@ -133,7 +133,7 @@ int main(int argc, char **argv) {
         t1 = t2->clone();
 
         // Save result
-        t2->ToCPU();
+        t2->toCPU();
         t2->save("images/new_cow_" + to_string(i) + ".jpg");
         cout << "Image saved! #" << i << endl;
     }

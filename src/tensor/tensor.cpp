@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.1
+* Version: 0.2
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -101,13 +101,13 @@ Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape, nullptr, dev){}
 Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr,T->device) {}
 
 
-void Tensor::ToCPU(int dev){
+void Tensor::toCPU(int dev){
 #ifdef cGPU
     if (isGPU())
       {
         this->device = dev;
 
-        float *cpu_ptr = get_fmem(size, "Tensor::ToCPU");
+        float *cpu_ptr = get_fmem(size, "Tensor::toCPU");
         float *gpu_ptr = ptr;
 
         if (ndim == 2) {
@@ -127,7 +127,7 @@ void Tensor::ToCPU(int dev){
 #endif
 }
 
-void Tensor::ToGPU(int dev){
+void Tensor::toGPU(int dev){
 #ifdef cGPU
     if (isCPU()) {
         this->device = dev;

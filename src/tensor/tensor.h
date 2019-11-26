@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.1
+* Version: 0.2
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -93,8 +93,8 @@ public:
     ~Tensor();
 
     // Copy data
-    void ToCPU(int dev=DEV_CPU);
-    void ToGPU(int dev=DEV_GPU);
+    void toCPU(int dev=DEV_CPU);
+    void toGPU(int dev=DEV_GPU);
     Tensor* clone();
 
     // Resize
@@ -132,7 +132,6 @@ public:
 
     // ***** Core (static) *****************************
     Tensor* permute(vector<int> axis);
-
 
     // ************************************************
     // ****** Tensor operations ***********************
@@ -180,7 +179,7 @@ public:
     void add_(float v);
     void add_(Tensor *A);
     static Tensor* add(Tensor *A, Tensor *B);
-    static Tensor * add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
+    static void add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
     static void add(Tensor *A, Tensor *B, Tensor *C);
     static void inc(Tensor *A, Tensor *B);
 
