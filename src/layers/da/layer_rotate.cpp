@@ -58,19 +58,15 @@ void LRotate::backward() {
 
 
 Layer *LRotate::share(int c, int bs, vector<Layer *> p) {
-    LRotate *n = new LRotate(p[0], this->angle, this->offset_center, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
+    auto *n = new LRotate(p[0], this->angle, this->offset_center, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }
 
 Layer *LRotate::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LRotate *n = new LRotate(p[0], this->angle, this->offset_center, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LRotate(p[0], this->angle, this->offset_center, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }

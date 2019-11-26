@@ -47,18 +47,18 @@ void LCutoutRandom::resize(int batch){
 void LCutoutRandom::forward() {
     auto *A=new Tensor({1, input->shape[1], input->shape[2], input->shape[3]}, input->device);
     int idx = (int)uniform(0.0f, (float)input->shape[0]-1.0f);
-    A->ToGPU();
+    A->toGPU();
     Tensor::select(input, A, {idx}, 0, 1);
-    A->ToCPU();
+    A->toCPU();
     A->save("images/test_da_" + to_string(idx) + "_0.jpg");
 
     // Method
     Tensor::cutout_random(this->input, this->output, this->factor_x, this->factor_y, this->constant);
 
     auto *B=new Tensor({1, output->shape[1], output->shape[2], output->shape[3]}, output->device);
-    B->ToGPU();
+    B->toGPU();
     Tensor::select(output, B, {idx}, 0, 1);
-    B->ToCPU();
+    B->toCPU();
     B->save("images/test_da_" + to_string(idx) + "_1.jpg");
 }
 
@@ -68,19 +68,15 @@ void LCutoutRandom::backward() {
 
 
 Layer *LCutoutRandom::share(int c, int bs, vector<Layer *> p) {
-    LCutoutRandom *n = new LCutoutRandom(p[0], this->factor_x, this->factor_y, this->constant, "share_" + to_string(c) + name, dev);
+    auto *n = new LCutoutRandom(p[0], this->factor_x, this->factor_y, this->constant, "share_" + to_string(c) + name, dev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }
 
 Layer *LCutoutRandom::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LCutoutRandom *n = new LCutoutRandom(p[0], this->factor_x, this->factor_y, this->constant, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LCutoutRandom(p[0], this->factor_x, this->factor_y, this->constant, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }

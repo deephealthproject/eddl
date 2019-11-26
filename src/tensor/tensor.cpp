@@ -101,7 +101,7 @@ Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape, nullptr, dev){}
 Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr,T->device) {}
 
 
-void Tensor::ToCPU(int dev){
+void Tensor::toCPU(int dev){
 #ifdef cGPU
     if (isGPU())
       {
@@ -127,7 +127,7 @@ void Tensor::ToCPU(int dev){
 #endif
 }
 
-void Tensor::ToGPU(int dev){
+void Tensor::toGPU(int dev){
 #ifdef cGPU
     if (isCPU()) {
         this->device = dev;

@@ -43,7 +43,7 @@ int main(int argc, char **argv){
 //    l = ScaleRandom(l, {0.85f, 2.0f});
 //    l = FlipRandom(l, 1);
 //    l = CropRandom(l, {28, 28});
-    l = CropAndScaleRandom(l, {0.8f, 1.0f});
+    l = CropScaleRandom(l, {0.5f, 1.0f});
 //    l = CutoutRandom(l, {0.0f, 0.3f}, {0.0f, 0.3f});
 
     l=MaxPool(ReLu(Conv(l,32,{3,3},{1,1})),{2,2});
