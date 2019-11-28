@@ -19,6 +19,11 @@
 #include "../../tensor/tensor.h"
 #include "../../descriptors/descriptors.h"
 
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
+
+
 void gpu_shift(Tensor *A, Tensor *B, vector<int> t_shift, int mode, float constant){
     int device=A->gpu_device;
     cudaSetDevice(device);
