@@ -53,8 +53,8 @@ void im2col(int b,ConvolDescriptor *D,int col2im)
   int irsize=D->ir*D->ic;
 
   k=0;
-  py=-D->padr;
-  px=-D->padc;
+  py=-D->padrt;
+  px=-D->padcl;
 
 
   float *ptrI=&(D->matI(0,0));
@@ -74,8 +74,8 @@ void im2col(int b,ConvolDescriptor *D,int col2im)
 
       }
     px+=D->sc;
-    if (px>=D->ic+D->padc-kc2-1) {
-      px=-D->padc;
+    if (px>=D->ic+D->padcl-kc2-1) {
+      px=-D->padcl;
       py+=D->sr;
     }
   }

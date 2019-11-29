@@ -41,7 +41,7 @@ __global__ void  gpu_deltabias_k(float *D, int batch, int r,int c,int nk,float *
 }
 
 
-__global__ void gpu_im2col_k(float* I, float *ptrI,int batch,int irows,int icols, int idepth, float* K, int nk, int kr,int kc, float* O,int orows,int ocols,int sr,int sc,int pad,int col2im)
+__global__ void gpu_im2col_k(float* I, float *ptrI,int batch,int irows,int icols, int idepth, float* K, int nk, int kr,int kc, float* O,int orows,int ocols,int sr,int sc,int padrt,int padrb,int padcl,int padcr,int col2im)
 {
   long int ops=batch*orows*ocols*kr*kc*idepth;
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
@@ -65,8 +65,8 @@ __global__ void gpu_im2col_k(float* I, float *ptrI,int batch,int irows,int icols
     int oy=r/ocols;
     int ox=r%ocols;
 
-    ix=(ox*sc)-pad;
-    iy=(oy*sr)-pad;
+    ix=(ox*sc)-padcl;
+    iy=(oy*sr)-padrt;
     iz=c/(kr*kc);
 
     c=c%(kr*kc);

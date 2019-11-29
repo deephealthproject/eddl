@@ -25,8 +25,8 @@ void cpu_mpool2D(PoolDescriptor *D)
   int p=0;
   for(int b=0;b<D->I->shape[0];b++){
     for(k=0;k<D->iz;k++) {
-      for(i=-D->padr;i<=D->ir+D->padr-D->kr;i+=D->sr) {
-        for(j=-D->padc;j<=D->ic+D->padc-D->kc;j+=D->sc,p++) {
+      for(i=-D->padrt;i<=D->ir+D->padrb-D->kr;i+=D->sr) {
+        for(j=-D->padcl;j<=D->ic+D->padcr-D->kc;j+=D->sc,p++) {
            float max=get_pixel(b,j,i,k,D,isize,irsize);
            D->indX->ptr[p]=j;
            D->indY->ptr[p]=i;
@@ -55,8 +55,8 @@ void cpu_mpool2D_back(PoolDescriptor *D)
   int p=0;
   for(int b=0;b<D->I->shape[0];b++){
     for(k=0;k<D->iz;k++) {
-      for(i=-D->padr;i<=D->ir+D->padr-D->kr;i+=D->sr) {
-        for(j=-D->padc;j<=D->ic+D->padc-D->kc;j+=D->sc,p++) {
+      for(i=-D->padrt;i<=D->ir+D->padrb-D->kr;i+=D->sr) {
+        for(j=-D->padcl;j<=D->ic+D->padcr-D->kc;j+=D->sc,p++) {
            int x=D->indX->ptr[p];
            int y=D->indY->ptr[p];
            add_pixel(b,x,y,k,D,isize,irsize,D->D->ptr[p]);

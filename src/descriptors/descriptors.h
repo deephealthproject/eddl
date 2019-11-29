@@ -57,8 +57,8 @@ public:
     int sr, sc;
     int ir, ic, iz;
     int r, c, z;
-    int padr, padc;
-    //float *ptr;
+    int padrt,padrb;
+    int padcl,padcr;
 
 
     Tensor *I; // Input map
