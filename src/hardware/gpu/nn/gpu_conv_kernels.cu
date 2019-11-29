@@ -66,7 +66,7 @@ __global__ void gpu_im2col_k(float* I, float *ptrI,int batch,int irows,int icols
     int ox=r%ocols;
 
     ix=(ox*sc)-padcl;
-    iy=(oy*sr)-padrb;
+    iy=(oy*sr)-padrt;
     iz=c/(kr*kc);
 
     c=c%(kr*kc);
