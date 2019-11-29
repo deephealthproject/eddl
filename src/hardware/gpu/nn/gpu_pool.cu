@@ -28,7 +28,7 @@ void gpu_mpool2D(PoolDescriptor *D){
     cudaSetDevice(device);
 
     setDims(D->O);
-    maxpool2d<<<dimGrid,dimBlock>>>(D->I->ptr, D->I->shape[0],D->ir,D->ic,D->iz,D->kr,D->kc,D->O->ptr,D->r,D->c,D->z, D->sr,D->sc,D->padr, D->padc, D->indX->ptr, D->indY->ptr);
+    maxpool2d<<<dimGrid,dimBlock>>>(D->I->ptr, D->I->shape[0],D->ir,D->ic,D->iz,D->kr,D->kc,D->O->ptr,D->r,D->c,D->z, D->sr,D->sc,D->padrt,D->padrb,D->padcl,D->padcr, D->indX->ptr, D->indY->ptr);
 
     check_cuda(cudaDeviceSynchronize(),"gpu_mpool");
 }
@@ -40,6 +40,6 @@ void gpu_mpool2D_back(PoolDescriptor *D){
 
     setDims(D->D)
     maxpool2d_back<<<dimGrid,dimBlock>>>(D->D->ptr, D->ID->ptr, D->I->shape[0],D->ir,D->ic,D->r,D->c,D->iz,D->indX->ptr,D->indY->ptr);
-    
+
     check_cuda(cudaDeviceSynchronize(),"gpu_mpool_back");
 }

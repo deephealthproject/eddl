@@ -18,7 +18,7 @@
 
 
 
-__global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padr, int padc, float* indX, float* indY) {
+__global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padrt, int padrb,int padcl, int padcr,float* indX, float* indY) {
 
     long int ops = batch * orows * ocols * odepth;
     long int thread_id_x = blockDim.x * blockIdx.x + threadIdx.x;
@@ -38,12 +38,12 @@ __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, i
         int ircd=irows*icols*idepth; // in size of batch
         int irc=irows*icols;  // in size of batch
 
-        int min_i = -padr;
-        int max_i = irows+padr-kr;
+        int min_i = -padrt;
+        int max_i = irows+padrt-kr;
         int i = min_i + inr;  // row
 
-        int min_j = -padc;
-        int max_j = icols+padc-kc;
+        int min_j = -padcl;
+        int max_j = icols+padcl-kc;
         int j = min_j + inc;  // column
 
         int b = ob;  // batch

@@ -57,7 +57,10 @@ public:
     int sr, sc;
     int ir, ic, iz;
     int r, c, z;
-    int padr, padc;
+    int padrt,padrb;
+    int padcl,padcr;
+
+    int padr,padc;
     //float *ptr;
 
 

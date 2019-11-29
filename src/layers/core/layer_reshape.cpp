@@ -23,6 +23,7 @@ int LReshape::total_layers = 0;
 
 LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev) : LinLayer(name, dev) {
     ls = shape;
+
     if(name.empty()) this->name = "reshape" + to_string(++total_layers);
 
 
@@ -45,6 +46,7 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev) : Lin
     }
 
     if (c == 1) {
+
         if (t > tin) {
             msg("Incompatible shape", "Reshape");
         } else if (tin % t) {
@@ -101,8 +103,10 @@ Layer *LReshape::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LReshape::clone(int c, int bs, vector<Layer *> p, int todev) {
+
     vector<int> shape = ls;
     shape[0] = bs;
+
 
     LReshape *n = new LReshape(p[0], shape, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
