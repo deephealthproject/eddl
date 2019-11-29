@@ -220,20 +220,14 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
 }
 
 
-Tensor* Tensor::select(vector<vector<int>> indices){
-    vector<int> s;
-    for(int i=0; i<indices.size(); i++){
-        s.push_back(indices[i][1] - indices[i][0] + 1);
-    }
-    auto* t = new Tensor(s, this->device);
-
-    if (isCPU()) {
-        cpu_select(this, t, indices);
+void Tensor::select(Tensor *A, Tensor* B, vector<vector<int>> indices){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_select(A, B, std::move(indices));
     }
 #ifdef cGPU
-    else if (isGPU())
+    else if (A->isGPU() && B->isGPU())
       {
-        gpu_select(this, t, indices);
+        gpu_select(A, B, std::move(indices));
       }
 #endif
 #ifdef cFPGA
@@ -242,7 +236,6 @@ Tensor* Tensor::select(vector<vector<int>> indices){
     }
 #endif
 
-    return t;
 }
 
 void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {

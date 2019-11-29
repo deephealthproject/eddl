@@ -330,7 +330,7 @@ public:
     static void transpose(Tensor *A, Tensor *B, vector<int> dims);
     static void copy(Tensor *A, Tensor *B);
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
-    Tensor* select(vector<vector<int>> indices);
+    static void select(Tensor *A, Tensor *B, vector<vector<int>> indices);
     static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
     static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
     static void tile(Tensor *A, Tensor *B);

@@ -381,7 +381,7 @@ int main(int argc, char **argv) {
     res_small_cpu.tensor->print();
     res_small_gpu.tensor->print();
 
-    //print_cpu_gpu_correctness("select", res_small_cpu.tensor, res_small_gpu.tensor);
+    print_cpu_gpu_correctness("select", res_small_cpu.tensor, res_small_gpu.tensor);
 
     int asd = 33;
 
