@@ -19,6 +19,7 @@ PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st,
     if (ksize.size() != 2) msg("Pooling Kernels must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
     if (stride.size() != 2) msg("Strides must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
     if (pad.size() != 2) msg("Padding must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
+
 }
 
 PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, string p) {
@@ -29,8 +30,13 @@ PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, str
     stride = st;
 
     if (p == "same") {
-        pad.push_back(ksize[0] / 2);
-        pad.push_back(ksize[1] / 2);
+      pad.push_back(ksize[1] / 2);
+      pad.push_back(ksize[1] / 2);
+      if (ksize[1]%2==0) pad[1]--;
+
+      pad.push_back(ksize[2] / 2);
+      pad.push_back(ksize[2] / 2);
+      if (ksize[2]%2==0) pad[2]--;
     } else if (p == "none") {
         pad.push_back(0);
         pad.push_back(0);
@@ -53,14 +59,21 @@ void PoolDescriptor::build(Tensor *A) {
     ir = A->shape[2];
     ic = A->shape[3];
 
-    padr = pad[0];
-    padc = pad[1];
+    if (pad.size()==4) {
+      padrt = pad[0];
+      padrb = pad[1];
+
+      padcl = pad[2];
+      padcl = pad[3];
+    }
+    else {
+      padrt=padrb=padr=pad[0];
+      padcl=padcr=padc=pad[1];
+    }
 
     z = iz;
-    r = (ir - kr + 2 * padr) / sr + 1;
-    //if (kr%2==0) r--;
-    c = (ic - kc + 2 * padc) / sc + 1;
-    //if (kc%2==0) c--;
+    r = (ir - kr + padrt + padrb) / sr + 1;
+    c = (ic - kc + padcl + padcr) / sc + 1;
 
     if ((r <= 0) || (c <= 0))
         msg("Invalid output shape", "PoolDescriptor::build");

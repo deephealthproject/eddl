@@ -7,55 +7,86 @@
 
 using namespace eddl;
 
+
+
+layer Block(layer l,int filters, vector<int> kernel, vector<int> stride)
+{
+  return MaxPool(ReLu(Conv(l,filters, kernel,stride)));
+}
+
 int main(int argc, char** argv)
 {
 
-    // Define Network without Conv 3x3
-    layer in_3x3 = Input({ 3, 767, 1022 });
-    layer out_3x3 = Conv(in_3x3, 1, { 3,3 });
-    model net_3x3 = Model({ in_3x3 }, {}); //no output, no losses
+  // download MNIST data
+    download_mnist();
 
-    // Define Network with Conv 1x1
-    layer in_1x1 = Input({ 3, 767, 1022 });
-    layer out_1x1 = Conv(in_1x1, 1, { 1,1 });
-    model net_1x1 = Model({ in_1x1 }, {}); //no output, no losses
+    // Settings
+    int epochs = 20;
+    int batch_size = 100;
+    int num_classes = 10;
+
+    // network
+    layer in=Input({784});
+    layer l=in;
+
+    l=Reshape(l,{1,28,28});
+
+    l=Block(l,16,{2,2},{1,1});
+    l=Block(l,32,{2,2},{1,1});
+    l=Block(l,64,{2,2},{1,1});
+    l=Block(l,128,{2,2},{1,1});
+
+    l=Reshape(l,{-1});
+
+    l=Activation(Dense(l,64),"relu");
+
+    layer out=Activation(Dense(l,num_classes),"softmax");
+
+    // net define input and output layers list
+    model net=Model({in},{out});
+
 
     // Build model
-    build(net_3x3);
-    //toGPU(net3x3);
+    build(net,
+          sgd(0.01, 0.9), // Optimizer
+          {"soft_cross_entropy"}, // Losses
+          {"categorical_accuracy"}, // Metrics
+            //CS_CPU(4) // 4 CPU threads
+          CS_CPU() // CPU with maximum threads availables
+            //CS_GPU({1}) // GPU with only one gpu
+    );
 
-    // Build model
-    build(net_1x1);
-    //toGPU(net1x1);
+    // plot the model
+    plot(net,"model.pdf");
 
-    summary(net_3x3);
-    summary(net_1x1);
+    // get some info from the network
+    summary(net);
 
+    getchar();
+
+    // Load and preprocess training data
     // Load dataset
-    tensor x_train = eddlT::load("ISIC_0000000.jpg", "jpg");
-    tensor y_train = eddlT::load("ISIC_0000000_segmentation.png", "png");
+    tensor x_train = eddlT::load("trX.bin");
+    tensor y_train = eddlT::load("trY.bin");
+    eddlT::div_(x_train, 255.0);
 
-    // Preprocessing
-    eddlT::div_(x_train, 255.);
-    eddlT::div_(y_train, 255.);
 
-    // 3x3
-    forward(net_3x3,{x_train});
-    tensor img_3x3 = getTensor(out_3x3);
-    img_3x3 = eddlT::select(img_3x3, 0);
+    // Load and preprocess test data
+    tensor x_test = eddlT::load("tsX.bin");
+    tensor y_test = eddlT::load("tsY.bin");
+    eddlT::div_(x_test, 255.0);
 
-    cout << "Saving 'img_conv_3x3.png'...\n";
-    eddlT::reshape_(img_3x3, { 1, 1, 767, 1022 });
-    eddlT::save(img_3x3, "img_conv_3x3.png", "png");
+    for(int i=0;i<epochs;i++) {
+        // training, list of input and output tensors, batch, epochs
+        fit(net,{x_train},{y_train},batch_size, 1);
+        // Evaluate train
+        std::cout << "Evaluate train:" << std::endl;
+        evaluate(net,{x_train},{y_train});
+    }
 
-    //1x1
-    forward(net_1x1,{x_train});
-    tensor img_1x1 = getTensor(out_1x1);
-    img_1x1 = eddlT::select(img_1x1, 0);
 
-    cout << "Saving 'img_conv_1x1.png'...\n";
-    eddlT::reshape_(img_1x1, { 1, 1, 767, 1022 });
-    eddlT::save(img_1x1, "img_conv_1x1.png", "png");
-
+    // Evaluate test
+    std::cout << "Evaluate test:" << std::endl;
+    evaluate(net,{x_test},{y_test});
 
 }
