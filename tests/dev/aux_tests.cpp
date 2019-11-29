@@ -362,6 +362,11 @@ TestResult run_tensor_create(string op, int dev, int runs){
 TestResult run_tensor_select(Tensor* t_input, string op, int dev, int runs){
     Tensor *t_output = nullptr;
 
+ // Move to device
+    if (dev == DEV_GPU){
+        t_input->toGPU();
+    }
+
     clock_t begin = clock();
     for(int i=0; i<runs; i++){
         // Math operations

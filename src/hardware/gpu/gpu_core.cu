@@ -104,19 +104,18 @@ void gpu_select(Tensor *A, Tensor *B, vector<vector<int>> indices){
     cudaSetDevice(device);
 
     // Prepare indices
-    int* cpu_indices = new int[4*2];
+    int* cpu_min_indices = new int[4];
     for(int i=0; i<indices.size(); i++){
-        cpu_indices[i+0] = indices[i][0]
-        cpu_indices[i+1] = indices[i][1]
+        cpu_min_indices[i] = indices[i][0];
     }
 
     // Copy indices from host to device
-    int *gpu_indices; cudaMalloc((int**)&gpu_indices, 4*2*sizeof(int));
-    cudaMemcpy(gpu_indices, cpu_indices, 4*2*sizeof(int), cudaMemcpyHostToDevice);
+    int *gpu_min_indices; cudaMalloc((int**)&gpu_min_indices, 4*sizeof(int));
+    cudaMemcpy(gpu_min_indices, cpu_min_indices, 4*sizeof(int), cudaMemcpyHostToDevice);
 
-    setDims(A);
-    select<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], gpu_indices);
-    check_cuda(cudaDeviceSynchronize(),"select");
+    setDims(B);
+    select<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[0], B->shape[1], B->shape[2], B->shape[3], gpu_min_indices);
+    check_cuda(cudaDeviceSynchronize(), "select");
 }
 
 void gpu_fill_(Tensor *A, float v) {
