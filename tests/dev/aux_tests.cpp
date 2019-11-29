@@ -358,3 +358,24 @@ TestResult run_tensor_create(string op, int dev, int runs){
     result.tensor = t_input;
     return result;
 }
+
+TestResult run_tensor_select(Tensor* t_input, string op, int dev, int runs){
+    Tensor *t_output = nullptr;
+
+    clock_t begin = clock();
+    for(int i=0; i<runs; i++){
+        // Math operations
+        if(op=="select"){
+            t_output =  t_input->select({{0, 0}, {1, 1}, {0, 2}, {0, 2}});
+        } else {
+            std::cout << "Unknown operator" << std::endl;
+        }
+    }
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
+    TestResult result{};
+    result.time = elapsed_secs;
+    result.tensor = t_output;
+    return result;
+}

@@ -40,6 +40,7 @@ Numpy-like operations over a raw-tensor object
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
+| select | ❌ | ❌ |
 | cat | ❌ | ❌ |
 | chunk | ❌ | ❌ |
 | gather | ❌ | ❌ |
@@ -51,8 +52,8 @@ Numpy-like operations over a raw-tensor object
 | transpose | ✅ | ✅ |
 | unsqueeze | ❌ | ❌ |
 | where | ❌ | ❌ |
-| get | ❌ | ❌ |
-| set | ❌ | ❌ |
+| get | ✅ | ✅ | slow
+| set | ✅ | ✅ | slow
 
 
 ---
@@ -75,8 +76,8 @@ Numpy-like operations over a raw-tensor object
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| save | ✅ | ✅ | bin, onnx, png, jpg |
-| load | ✅ | ✅ | bin, onnx, png, jpg |
+| save | ✅ | ✅ | bin, png, bmp, tga, jpg |
+| load | ✅ | ✅ | bin, png, bmp, tga, jpg, gif,... |
 
 
 ---

@@ -136,16 +136,16 @@ public:
     // ************************************************
     // ****** Tensor operations ***********************
     // ************************************************
-      // Creation ops ***********************************
-      static Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
-      static Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
-      static Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
-      static Tensor* arange(float start, float end, float step=1.0f, int dev=DEV_CPU);
-      static Tensor* range(float start, float end, float step=1.0f, int dev=DEV_CPU);
-      static Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
-      static Tensor* logspace(float start, float end, int steps=100, float base=10.0f, int dev=DEV_CPU);
-      static Tensor* eye(int size, int dev=DEV_CPU);
-      static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
+    // Creation ops ***********************************
+    static Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
+    static Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
+    static Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
+    static Tensor* arange(float start, float end, float step=1.0f, int dev=DEV_CPU);
+    static Tensor* range(float start, float end, float step=1.0f, int dev=DEV_CPU);
+    static Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
+    static Tensor* logspace(float start, float end, int steps=100, float base=10.0f, int dev=DEV_CPU);
+    static Tensor* eye(int size, int dev=DEV_CPU);
+    static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
 
     // ***** Transformations *****************************
@@ -330,6 +330,7 @@ public:
     static void transpose(Tensor *A, Tensor *B, vector<int> dims);
     static void copy(Tensor *A, Tensor *B);
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
+    Tensor* select(vector<vector<int>> indices);
     static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
     static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
     static void tile(Tensor *A, Tensor *B);

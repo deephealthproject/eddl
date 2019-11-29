@@ -99,6 +99,26 @@ void gpu_mask(Tensor *A,float v) {
 }
 
 
+void gpu_select(Tensor *A, Tensor *B, vector<vector<int>> indices){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    // Prepare indices
+    int* cpu_indices = new int[4*2];
+    for(int i=0; i<indices.size(); i++){
+        cpu_indices[i+0] = indices[i][0]
+        cpu_indices[i+1] = indices[i][1]
+    }
+
+    // Copy indices from host to device
+    int *gpu_indices; cudaMalloc((int**)&gpu_indices, 4*2*sizeof(int));
+    cudaMemcpy(gpu_indices, cpu_indices, 4*2*sizeof(int), cudaMemcpyHostToDevice);
+
+    setDims(A);
+    select<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], A->shape[2], A->shape[3], gpu_indices);
+    check_cuda(cudaDeviceSynchronize(),"select");
+}
+
 void gpu_fill_(Tensor *A, float v) {
     int device=A->gpu_device;
     cudaSetDevice(device);

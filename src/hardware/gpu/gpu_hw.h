@@ -37,6 +37,7 @@ int gpu_equal(Tensor *A, Tensor *B);
 // GPU: Core
 void gpu_fill_(Tensor *A, float v);
 void gpu_mask(Tensor *A,float v);
+void gpu_select(Tensor *A, Tensor *B, vector<vector<int>> indices);
 
 void gpu_copy_to_gpu(float *nptr,Tensor *B);
 void gpu_copy_from_gpu(Tensor *A,float *nptr);
