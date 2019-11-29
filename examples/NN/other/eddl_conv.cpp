@@ -28,13 +28,13 @@ int main(int argc, char** argv)
     // network
     layer in=Input({784});
     layer l=in;
-
     l=Reshape(l,{1,28,28});
 
     l=Block(l,16,{2,2},{1,1});
     l=Block(l,32,{2,2},{1,1});
     l=Block(l,64,{2,2},{1,1});
     l=Block(l,128,{2,2},{1,1});
+
 
     l=Reshape(l,{-1});
 
@@ -45,15 +45,14 @@ int main(int argc, char** argv)
     // net define input and output layers list
     model net=Model({in},{out});
 
-
     // Build model
     build(net,
           sgd(0.01, 0.9), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
             //CS_CPU(4) // 4 CPU threads
-          CS_CPU() // CPU with maximum threads availables
-            //CS_GPU({1}) // GPU with only one gpu
+            //CS_CPU() // CPU with maximum threads availables
+            CS_GPU({1}) // GPU with only one gpu
     );
 
     // plot the model
@@ -62,8 +61,7 @@ int main(int argc, char** argv)
     // get some info from the network
     summary(net);
 
-    getchar();
-
+  
     // Load and preprocess training data
     // Load dataset
     tensor x_train = eddlT::load("trX.bin");

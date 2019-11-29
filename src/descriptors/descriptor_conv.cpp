@@ -35,7 +35,7 @@ ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vec
 
         pad.push_back(ksize[2] / 2);
         pad.push_back(ksize[2] / 2);
-        if (ksize[2]%2==0) pad[2]--;
+        if (ksize[2]%2==0) pad[3]--;
 
     } else if (p == "none") {
         pad.push_back(0);
@@ -52,7 +52,6 @@ ConvolDescriptor::ConvolDescriptor(const vector<int> &ks, const vector<int> &st,
 
     if (ksize.size() != 3) msg("Kernels must have 3 dimensions", "ConvolDescriptor::ConvolDescriptor");
     if (stride.size() != 2) msg("Strides must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor");
-    if (pad.size() != 2) msg("Padding must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor");
 }
 
 void ConvolDescriptor::build(Tensor *A) {
@@ -78,7 +77,7 @@ void ConvolDescriptor::build(Tensor *A) {
       padrb = pad[1];
 
       padcl = pad[2];
-      padcl = pad[3];
+      padcr = pad[3];
     }
     else {
       padrt=padrb=padr=pad[0];
@@ -88,6 +87,9 @@ void ConvolDescriptor::build(Tensor *A) {
     z = nk;
     r = (ir - kr + padrt + padrb) / sr + 1;
     c = (ic - kc + padcl + padcr) / sc + 1;
+
+    //cout<<z<<"x"<<r<<"x"<<c<<"\n";
+    //getchar();
 
     if ((r <= 0) || (c <= 0))
         msg("Invalid output shape", "ConvolDescriptor::build");
