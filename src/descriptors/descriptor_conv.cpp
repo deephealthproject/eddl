@@ -40,6 +40,8 @@ ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vec
     } else if (p == "none") {
         pad.push_back(0);
         pad.push_back(0);
+        pad.push_back(0);
+        pad.push_back(0);
     } else msg("Incorrect padding type", "ConvolDescriptor::ConvolDescriptor");
 
 }
@@ -72,17 +74,12 @@ void ConvolDescriptor::build(Tensor *A) {
     ir = A->shape[2];
     ic = A->shape[3];
 
-    if (pad.size()==4) {
-      padrt = pad[0];
-      padrb = pad[1];
+    padrt = pad[0];
+    padrb = pad[1];
 
-      padcl = pad[2];
-      padcr = pad[3];
-    }
-    else {
-      padrt=padrb=padr=pad[0];
-      padcl=padcr=padc=pad[1];
-    }
+    padcl = pad[2];
+    padcr = pad[3];
+
 
     z = nk;
     r = (ir - kr + padrt + padrb) / sr + 1;

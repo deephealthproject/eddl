@@ -8,6 +8,10 @@
 using namespace eddl;
 
 
+layer FMP(layer l)
+{
+  return MaxPool(l, {2,2},{1,1},"same");
+}
 
 layer Block(layer l,int filters, vector<int> kernel, vector<int> stride)
 {
@@ -31,6 +35,7 @@ int main(int argc, char** argv)
     l=Reshape(l,{1,28,28});
 
     l=Block(l,16,{2,2},{1,1});
+    l=FMP(l);
     l=Block(l,32,{2,2},{1,1});
     l=Block(l,64,{2,2},{1,1});
     l=Block(l,128,{2,2},{1,1});
@@ -60,8 +65,8 @@ int main(int argc, char** argv)
 
     // get some info from the network
     summary(net);
+  getchar();
 
-  
     // Load and preprocess training data
     // Load dataset
     tensor x_train = eddlT::load("trX.bin");

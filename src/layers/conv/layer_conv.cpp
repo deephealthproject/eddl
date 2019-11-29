@@ -82,8 +82,7 @@ void LConv::backward() {
 }
 
 Layer *LConv::share(int c, int bs, vector<Layer *> p) {
-    LConv *n = new LConv(p[0], {cd->ksize[0], cd->ksize[1], cd->ksize[2]}, {cd->stride[0], cd->stride[1]},
-                         {cd->pad[0], cd->pad[1]}, "share_" + to_string(c) + name, dev);
+    LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad, "share_" + to_string(c) + name, dev);
     n->orig = this;
 
     //share params
