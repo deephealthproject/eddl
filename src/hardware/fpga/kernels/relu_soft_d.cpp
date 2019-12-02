@@ -28,7 +28,7 @@ void relu_soft_d(
         int kernel_id
         )
 {
-
+#pragma HLS INLINE
 #pragma HLS INTERFACE m_axi port=D offset=slave bundle=gmem
 #pragma HLS INTERFACE m_axi port=I offset=slave bundle=gmem
 #pragma HLS INTERFACE m_axi port=PD offset=slave bundle=gmem
@@ -39,7 +39,7 @@ void relu_soft_d(
 #pragma HLS INTERFACE s_axilite port=kernel_id bundle=control
 #pragma HLS INTERFACE s_axilite port=return bundle=control
    switch (kernel_id) {
-       case 9: relu_d(D, I, PD, tam); break;
+       case 9: /*relu_d(D, I, PD, tam);*/ break;
        case 10: softmax_d(D, I, PD, tam); break;
    }
 

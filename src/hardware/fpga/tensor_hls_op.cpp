@@ -67,7 +67,7 @@ void verify(Tensor *T) {
 void fpga_init(){ // initialize only once
    
     cl_int err;
-    std::string binaryFile = "/home/carherlu/DEEPHEALTH/prova2/eddl/src/hardware/fpga/kernels/xclbin/tensor_op.sw_emu.xilinx_u200_xdma_201830_2.xclbin";
+    std::string binaryFile = "/home/carherlu/DEEPHEALTH/LASTVERSION/eddl/src/hardware/fpga/kernels/xclbin/tensor_op.hw.xilinx_u200_xdma_201830_2.xclbin";
     unsigned fileBufSize;
     std::vector<cl::Device> devices = xcl::get_xil_devices();
     cl::Device device = devices[0];
@@ -80,12 +80,12 @@ void fpga_init(){ // initialize only once
     OCL_CHECK(err, program = cl::Program(context, devices, bins, NULL, &err));
     OCL_CHECK(err, tensor_op= cl::Kernel(program,"tensor_op", &err));
     OCL_CHECK(err, multitensor_op = cl::Kernel(program,"multitensor_op", &err));
-    OCL_CHECK(err, kernel_sum6 = cl::Kernel(program,"kernel_sum6", &err));
+    //OCL_CHECK(err, kernel_sum6 = cl::Kernel(program,"kernel_sum6", &err));
     OCL_CHECK(err, mult2D = cl::Kernel(program,"kernel_mult2D", &err));
     OCL_CHECK(err, sum2D_rowwise = cl::Kernel(program,"kernel_sum2D_rowwise", &err));
-    OCL_CHECK(err, kernel_cent = cl::Kernel(program,"kernel_cent", &err)); 
-    OCL_CHECK(err, relu_soft_d = cl::Kernel(program,"relu_soft_d", &err));
-    OCL_CHECK(err, reduce_sum2D = cl::Kernel(program,"reduce_sum2D", &err));
+    //OCL_CHECK(err, kernel_cent = cl::Kernel(program,"kernel_cent", &err)); 
+    //OCL_CHECK(err, relu_soft_d = cl::Kernel(program,"relu_soft_d", &err));
+    //OCL_CHECK(err, reduce_sum2D = cl::Kernel(program,"reduce_sum2D", &err));
     OCL_CHECK(err, kernel_accuracy = cl::Kernel(program,"kernel_accuracy", &err));
     OCL_CHECK(err, kernel_total_sum = cl::Kernel(program,"kernel_total_sum", &err));
     OCL_CHECK(err, el_div = cl::Kernel(program,"el_div", &err));
@@ -98,7 +98,7 @@ void fpga_create_tensor(Tensor *T, int dev)
     cl_int err;
     int size = T->size;
     //cl::Buffer buf; 
-    printf("Creating Buffer at ref %d -- size %d\n", 0, size);
+    //printf("Creating Buffer at ref %d -- size %d\n", 0, size);
 
     OCL_CHECK(err,T->fpga_ptr = cl::Buffer(context,CL_MEM_READ_WRITE, size*sizeof(float), NULL, &err));
 
@@ -127,7 +127,6 @@ void close_fpga(){
 void fpga_copy_fpga(Tensor *A, Tensor *B)
 {
     cl_int err;
-    printf("FPGA TO FPGA\n");
     OCL_CHECK(err, err= q.enqueueCopyBuffer((A->fpga_ptr), (B->fpga_ptr), 0, 0, A->size*sizeof(float)));
     q.finish();
 }
@@ -136,7 +135,6 @@ void fpga_copy_to_fpga(float *nptr, Tensor *A)
 {
     cl_int err;
     cl::Event blocking_event;
-    printf("Copy TO FPGA\n");
     OCL_CHECK(err, err= q.enqueueWriteBuffer((A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(float), nptr, nullptr, &blocking_event));
     q.finish();
     //blocking_event.wait();
@@ -149,9 +147,9 @@ void fpga_copy_to_fpga(float *nptr, Tensor *A)
 void fpga_copy_from_fpga(Tensor *A,float *nptr)
 {
     cl_int err;
-    printf("Copy from FPGA\n");
-    OCL_CHECK(err, err= q.enqueueReadBuffer((A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(float), nptr));
-    q.finish();
+    cl::Event event;
+    OCL_CHECK(err, err= q.enqueueReadBuffer((A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(float), nptr, nullptr, &event));
+    q.finish();;
 //    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_output},CL_MIGRATE_MEM_OBJECT_HOST));
 }
 
@@ -171,7 +169,7 @@ void tensor_op_hls(Tensor *A, float fp, int kernel_id)
 
     
     OCL_CHECK(err, err = q.enqueueTask(tensor_op, NULL, &task_end));
-    printf("Tensor with XX size %d in Buffer ref %d -- %d\n", A->size, 0/*A->fpga_ptr*/,kernel_id); 
+    //printf("Tensor with XX size %d in Buffer ref %d -- %d\n", A->size, 0/*A->fpga_ptr*/,kernel_id); 
     //verify(A);   
     q.finish();
 }

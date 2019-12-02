@@ -17,7 +17,6 @@ void set(float *tensor, float fp, int tam){
             //perform vector addition
             tensor[i] = fp; 
     }
-    printf("SET %f\n", fp);
 }
 
 void mult(float *tensor, float fp, int tam){

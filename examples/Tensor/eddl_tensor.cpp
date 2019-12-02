@@ -20,47 +20,48 @@ using namespace std;
 using namespace eddlT;
 
 int main(int argc, char **argv) {
-//    int dev = DEV_CPU;
-//
-//    tensor A=create({10,10});
-//    fill_(A,0.0);
-//
-//    tensor T=randn({10,10},dev);
-//
-//    print(T);
-//
-//    add_(A,T);
-//    print(A);
-//
-//    normalize_(T,0,1);
-//
-//    print(T);
-//
-//    tensor U=randn({10,3},dev);
-//
-//    print(U);
-//
-//    tensor V=mult2D(T,U);
-//
-//    info(V);
-//
-//    print(V);
+    int dev = DEV_FPGA;
 
+    tensor A=create({10,10}, dev);
+    fill_(A,0.0);
+
+    tensor T=randn({10,10},dev);
+
+    print(T);
+
+    add_(A,T);
+    print(A);
+
+    normalize_(T,0,1);
+
+    print(T);
+
+    tensor U=randn({10,3},dev);
+
+    print(U);
+
+    tensor V=mult2D(T,U);
+
+    info(V);
+
+    print(V);
+    
+    printf("TEST PASSED\n");
 
     // Open image
 //    Tensor *t0 = Tensor::full({1, 3, 500, 500}, 255.0f, DEV_CPU);
     //t0->reshape_({1, 1, 100, 100});
 
-    Tensor *t0 = Tensor::load("images/cow.jpg");
-    t0->ToGPU();
-    t0->info();
+//    Tensor *t0 = Tensor::load("images/cow.jpg");
+//    t0->ToGPU();
+//    t0->info();
 //    float* ptr = new float[3*4*2]{
 //        255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f, 255.0f,
 //        128.0f, 128.0f, 128.0f, 128.0f, 128.0f, 128.0f, 128.0f, 128.0f,
 //        1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
 //    Tensor* t1 = new Tensor({1, 3, 4, 2}, ptr, DEV_CPU);
-    Tensor *t1 = t0->clone();
-    Tensor *t2 = t0->clone();
+//    Tensor *t1 = t0->clone();
+//    Tensor *t2 = t0->clone();
 
 
 //     *************************************************
@@ -105,7 +106,7 @@ int main(int argc, char **argv) {
 //     *************************************************
 //     ***** Make random transformations ***************
 //     *************************************************
-    for (int i = 1; i <= 10; i++) {
+/*    for (int i = 1; i <= 10; i++) {
         t1 = t0->clone();
         t2 = t0->clone();
         //t1->info();
@@ -136,5 +137,5 @@ int main(int argc, char **argv) {
         t2->ToCPU();
         t2->save("images/new_cow_" + to_string(i) + ".jpg");
         cout << "Image saved! #" << i << endl;
-    }
+    }*/
 }

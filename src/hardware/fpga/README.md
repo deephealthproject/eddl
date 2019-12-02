@@ -4,12 +4,11 @@ Xilinx FPĜAs. For the generation of the bitstream Xilinx LICENSES of Vivado too
 
 The makefile required to compile the kernels is included in this folder. 
 
-To compile the kernels only type the following:
+To compile the kernels only type:
 
+make TARGET=hw_emu or make TARGET=sw_emu
 
-
-To compile a standalone FPGA kernels tests type: 
-
+to compile them for emulation of to create the FPGA bitstream
  
 
 

@@ -58,7 +58,7 @@ ReduceDescriptor::ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool
   }
 
 
-  int dev=A->device;
+  int dev=DEV_CPU;//A->device;
 
   I=A;
   O=new Tensor(os,dev);

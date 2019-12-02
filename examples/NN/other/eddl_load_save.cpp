@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
     eddlT::div_(x_test, 255.0);
 
 
-    save(net,"model1.bin");
+    //save(net,"model1.bin");
 
     // Train model
     fit(net, {x_train}, {y_train}, batch_size, epochs);

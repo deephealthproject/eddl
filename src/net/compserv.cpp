@@ -21,7 +21,6 @@ CompServ::CompServ(int t, const vector<int> &g, const vector<int> &f,int lsb) {
 
     if (t==-1) local_threads = Eigen::nbThreads();
     else local_threads = t;
-
     local_gpus = vector<int>(g.begin(), g.end());
     local_fpgas = vector<int>(f.begin(), f.end());
 

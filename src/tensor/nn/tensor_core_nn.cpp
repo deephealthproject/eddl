@@ -61,15 +61,15 @@ void Tensor::resize(int b, float *fptr){
 #endif
 #ifdef cFPGA
     else if (isFPGA())
-        {
-         // if (fptr==nullptr) {
-            fpga_delete_tensor(this);
+        { 
+          if (fptr==nullptr) {
+            //fpga_delete_tensor(this); //TODO delete buffer
             fpga_create_tensor(this,fpga_device);
-         // }
-         // else {
-         //   //fpga_ptr=fptr;
-         //   printf("WARNING\n");
-         // } 
+          }
+          else {
+            //fpga_ptr=fptr;
+            printf("WARNING\n");
+          } 
  
         }
 #endif

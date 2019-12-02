@@ -18,6 +18,10 @@
 #include "../hardware/gpu/nn/gpu_nn.h"
 #endif
 
+#ifdef cFPGA
+#include "../../hardware/fpga/tensor_hls_op.h"
+#endif
+
 
 using namespace std;
 
@@ -36,8 +40,27 @@ void reduction(ReduceDescriptor *RD){
     #ifdef cFPGA
         else if (RD->I->isFPGA())
         { 
-            msg("reduction not implemented for FPGA\n");        
-//          tensor_copy_from_fpga( 
+//         msg("reduction not implemented for FPGA\n");      
+           //Tensor *I; // input
+           //Tensor *O; // output
+           //Tensor *D; // delta
+           //Tensor *ID; // parent delta
+           //Tensor *S; // indexes for max,min...
+           printf("FPGA::REDUCTION\n");
+//           Tensor *nI=new Tensor(RD->I->getShape(),DEV_CPU);
+
+           ReduceDescriptor *nRD=new ReduceDescriptor(RD->I,RD->axis,"sum",RD->keepdims);
+           fpga_copy_from_fpga(RD->I, nRD->I->ptr);
+           fpga_copy_from_fpga(RD->O, nRD->O->ptr);
+           fpga_copy_from_fpga(RD->D, nRD->D->ptr); 
+           fpga_copy_from_fpga(RD->ID, nRD->ID->ptr);
+           fpga_copy_from_fpga(RD->S, nRD->S->ptr);  
+           cpu_reduction(nRD);
+           fpga_copy_to_fpga(nRD->I->ptr, RD->I); 
+           fpga_copy_to_fpga(nRD->O->ptr, RD->O);
+           fpga_copy_to_fpga(nRD->D->ptr, RD->D);
+           fpga_copy_to_fpga(nRD->ID->ptr, RD->ID);
+           fpga_copy_to_fpga(nRD->S->ptr, RD->S);
         }
     #endif
 }

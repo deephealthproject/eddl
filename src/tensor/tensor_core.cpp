@@ -195,7 +195,7 @@ void Tensor::copy(Tensor *A, Tensor *B) {
 #endif
 #ifdef cFPGA
         else if ((A->isFPGA())&&(B->isFPGA())) {
-          fpga_copy_fpga(A,B);
+            fpga_copy_fpga(A,B);
         }
         else if ((A->isCPU())&&(B->isFPGA()))
           {
@@ -232,7 +232,7 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
 #endif
     else {
         fprintf(stderr, "(%d %d)\n", A->device, B->device);
-        msg("What THE HELL", "Tensor::copy");
+        msg("Partial copy for FPGA not supported", "Tensor::copy");
     }
     B->tsem->unlock();
 }
