@@ -16,17 +16,29 @@ void cpu_reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map)
   int s=A->size/B->size;
 
   if (mode=="mean") {
-    for(i=0;i<B->size;i++)
-      B->ptr[i]=0.0;
-
+    B->fill_(0.0);
     for(i=0;i<A->size;i++)
       B->ptr[map[i]]+=A->ptr[i];
+    B->div_(s);
+  }
+  else if (mode=="variance") {
+    Tensor *C=B->clone();
+    C->fill_(0.0);
+    for(i=0;i<A->size;i++)
+      C->ptr[map[i]]+=A->ptr[i];
+    C->div_(s);
 
-    for(i=0;i<B->size;i++)
-      B->ptr[i]/=s;
+    B->fill_(0.0);
+    for(i=0;i<A->size;i++) {
+      float fv=A->ptr[i]-C->ptr[map[i]];
+      B->ptr[map[i]]+=fv*fv;
+    }
+    B->div_(s);
+
+    delete C;
   }
   else {
-    cout<<"mode: "<<mode<<"not yet implemented\n";
+    cout<<"mode: "<<mode<<" not yet implemented\n";
     exit(1);
   }
 }
@@ -47,7 +59,7 @@ void cpu_reduce_op(Tensor *A, Tensor *B,string op,vector<int> axis,int* map)
     else if (op=="div")
       A->ptr[i]/=B->ptr[map[i]];
     else {
-      cout<<"op: "<<op<<"not yet implemented\n";
+      cout<<"op: "<<op<<" not yet implemented\n";
       exit(1);
     }
   }
@@ -76,11 +88,6 @@ void cpu_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
     }
 }
 
-void cpu_reduceTosum(Tensor *A, Tensor *B, int axis){
-    for (int i = 0; i < B->size; i++)
-        for (int j = 0; j < A->shape[axis]; j++)
-            B->ptr[i] += A->ptr[j];
-}
 
 void cpu_reduction(ReduceDescriptor *RD){
 

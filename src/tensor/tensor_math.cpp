@@ -1111,35 +1111,6 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
     B->tsem->unlock();
 }
 
-void Tensor::reduceTosum(Tensor *A, Tensor *B, int axis) {
-    //
-    // Sum all the axis of A in B
-    //
-    // TODO: Review cost (l1/l2)
-    B->tsem->lock();
-
-    if (A->device != B->device) msg("Tensors in different devices", "Tensor::transpose");
-
-    B->fill_(0.0);
-    if (A->isCPU()) {
-        cpu_reduceTosum(A, B, axis);
-    }
-#ifdef cGPU
-    else if (A->isGPU())
-      {
-
-      }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-    B->tsem->unlock();
-
-}
-
-
 void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
     ///////////////////////////////////////
     //// sum2D_colwise C=A.colwise+B

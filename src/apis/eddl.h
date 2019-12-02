@@ -121,6 +121,9 @@ namespace eddl {
 // ---- NORMALIZATION LAYERS ----
     layer BatchNormalization(layer parent, float momentum = 0.9f, float epsilon = 0.001f, bool affine = true,
                              string name = "");
+
+    layer BatchNormalization2D(layer parent, float momentum = 0.9f, float epsilon = 0.001f, bool affine = true,
+                              string name = "");
     layer Norm(layer parent, float epsilon = 0.001f, string name = "");
 
     layer NormMax(layer parent, float epsilon = 0.001f, string name = "");

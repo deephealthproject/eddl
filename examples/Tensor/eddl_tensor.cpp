@@ -22,24 +22,25 @@ using namespace eddlT;
 
 int main(int argc, char **argv) {
 
+  int dev=DEV_GPU;
 
-  Tensor *A=new Tensor({2,3,5,2},DEV_CPU);
+  Tensor *A=new Tensor({2,3,5,2},dev);
 
   A->fill_(2.0);
 
   vector<int> axis={0,3};
-  int *map=get_reduction_map(A, axis);
+  int *map=Tensor::get_reduction_map(A, axis);
 
   for(int i=0;i<A->size;i++)
     printf("%d ",map[i]);
   printf("\n");
 
-  Tensor *B=new Tensor({3,5},DEV_CPU);
-  reduce_mean(A,B,axis);
+  Tensor *B=new Tensor({3,5},dev);
+  Tensor::reduce_mean(A,B,axis);
 
   B->print();
 
-  reduce_mult(A,B,axis);
+  Tensor::reduce_mult(A,B,axis);
 
   A->print();
 

@@ -8,6 +8,7 @@
 */
 
 
+#include "tensor.h"
 #include "tensor_reduction.h"
 #include "../hardware/cpu/cpu_hw.h"
 
@@ -21,7 +22,7 @@
 
 using namespace std;
 
-int *get_reduction_map(Tensor *A, vector<int> axis)
+int * Tensor::get_reduction_map(Tensor *A, vector<int> axis)
 {
   int *redmap;
 
@@ -80,7 +81,7 @@ int *get_reduction_map(Tensor *A, vector<int> axis)
 }
 
 
-void reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map)
+void Tensor::reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map)
 {
   int i,j;
 
@@ -104,23 +105,26 @@ void reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map)
       cpu_reduce(A,B,mode,axis,map);
     }
   #ifdef cGPU
-  else if (A->GPU()) {
+  else if (A->isGPU()) {
       gpu_reduce(A,B,mode,axis,map);
     }
     #endif
 }
 
-void reduce_mean(Tensor *A, Tensor *B,vector<int> axis,int* map)
+void Tensor::reduce_mean(Tensor *A, Tensor *B,vector<int> axis,int* map)
 {
   reduce(A,B,"mean",axis,map);
 }
-
-void reduce_max(Tensor *A, Tensor *B,vector<int> axis,int* map)
+void Tensor::reduce_variance(Tensor *A, Tensor *B,vector<int> axis,int* map)
+{
+  reduce(A,B,"variance",axis,map);
+}
+void Tensor::reduce_max(Tensor *A, Tensor *B,vector<int> axis,int* map)
 {
   reduce(A,B,"max",axis,map);
 }
 
-void reduce_min(Tensor *A, Tensor *B,vector<int> axis,int* map)
+void Tensor::reduce_min(Tensor *A, Tensor *B,vector<int> axis,int* map)
 {
   reduce(A,B,"min",axis,map);
 }
@@ -129,7 +133,7 @@ void reduce_min(Tensor *A, Tensor *B,vector<int> axis,int* map)
 ////////////////////////////////////////////////////////
 /////// REDUCE OPERATORS
 ////////////////////////////////////////////////////////
-void reduce_op(Tensor *A, Tensor *B,string op,vector<int> axis,int* map)
+void Tensor::reduce_op(Tensor *A, Tensor *B,string op,vector<int> axis,int* map)
 {
   int i,j;
 
@@ -153,24 +157,24 @@ void reduce_op(Tensor *A, Tensor *B,string op,vector<int> axis,int* map)
       cpu_reduce_op(A,B,op,axis,map);
     }
   #ifdef cGPU
-  else if (A->GPU()) {
-      //gpu_reduce(A,B,mode,axis,map);
+  else if (A->isGPU()) {
+      gpu_reduce_op(A,B,op,axis,map);
     }
   #endif
 }
-void reduce_sum(Tensor *A, Tensor *B,vector<int> axis,int* map)
+void Tensor::reduce_sum(Tensor *A, Tensor *B,vector<int> axis,int* map)
 {
   reduce_op(A,B,"sum",axis,map);
 }
-void reduce_diff(Tensor *A, Tensor *B,vector<int> axis,int* map)
+void Tensor::reduce_diff(Tensor *A, Tensor *B,vector<int> axis,int* map)
 {
   reduce_op(A,B,"diff",axis,map);
 }
-void reduce_mult(Tensor *A, Tensor *B,vector<int> axis,int* map)
+void Tensor::reduce_mult(Tensor *A, Tensor *B,vector<int> axis,int* map)
 {
   reduce_op(A,B,"mult",axis,map);
 }
-void reduce_div(Tensor *A, Tensor *B,vector<int> axis,int* map)
+void Tensor::reduce_div(Tensor *A, Tensor *B,vector<int> axis,int* map)
 {
   reduce_op(A,B,"div",axis,map);
 }

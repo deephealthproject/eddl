@@ -368,13 +368,3 @@ __global__ void reduce_sum2D(float *a,float *b,long int rows,long int cols,long 
   }
 
 }
-
-__global__ void reduceToSum(float *a, float *b, long int b_size, int a_axis_ndim){
-    long int thread_id_x = threadIdx.x+(blockDim.x*blockIdx.x);
-
-    if (thread_id_x < b_size){
-        for (int j = 0; j < a_axis_ndim; j++)
-            b[thread_id_x] += a[j];
-    }
-
-}
