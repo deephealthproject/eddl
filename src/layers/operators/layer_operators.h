@@ -280,9 +280,12 @@ public:
 class LSelect : public OperatorLayer {
 public:
     static int total_layers;
-    vector<vector<int>> indices;
 
-    LSelect(Layer *l, vector<vector<int>> indices, string name, int dev);
+    vector<string> str_indices;
+    vector<vector<int>> idxs_range;
+    int* oi_addresses;
+
+    LSelect(Layer *l, vector<string> str_indices, string name, int dev);
 
     void forward() override;
 

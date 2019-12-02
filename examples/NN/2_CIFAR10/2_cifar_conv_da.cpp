@@ -38,14 +38,15 @@ int main(int argc, char **argv){
     layer l=in;
 
     // Data augmentation
-   l = ShiftRandom(l, {-0.2f, +0.2f}, {-0.2f, +0.2f});
-   l = RotateRandom(l, {-30.0f, +30.0f});
-   l = ScaleRandom(l, {0.85f, 2.0f});
-   l = FlipRandom(l, 1);
-   l = CropRandom(l, {28, 28});
-   l = CropScaleRandom(l, {0.f, 1.0f});
-   l = CutoutRandom(l, {0.0f, 0.3f}, {0.0f, 0.3f});
+//   l = ShiftRandom(l, {-0.2f, +0.2f}, {-0.2f, +0.2f});
+//   l = RotateRandom(l, {-30.0f, +30.0f});
+//   l = ScaleRandom(l, {0.85f, 2.0f});
+//   l = FlipRandom(l, 1);
+//   l = CropRandom(l, {28, 28});
+//   l = CropScaleRandom(l, {0.f, 1.0f});
+//   l = CutoutRandom(l, {0.0f, 0.3f}, {0.0f, 0.3f});
 
+    l=Select(l, {"1", "5:26", "5:26"});
     l=MaxPool(ReLu(Conv(l,32,{3,3},{1,1})),{2,2});
     l=MaxPool(ReLu(Conv(l,64,{3,3},{1,1})),{2,2});
     l=MaxPool(ReLu(Conv(l,128,{3,3},{1,1})),{2,2});
@@ -66,12 +67,10 @@ int main(int argc, char **argv){
           sgd(0.01, 0.9), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          //CS_CPU() // CPU with maximum threads availables
-          CS_GPU({1}) // GPU with only one gpu
+          CS_CPU() // CPU with maximum threads availables
+          //CS_GPU({1}) // GPU with only one gpu
     );
 
-    delete net;
-    exit(1);
     
     // plot the model
     plot(net,"model.pdf");

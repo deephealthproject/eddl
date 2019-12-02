@@ -295,7 +295,7 @@ namespace eddl {
         return new LSum(l1, k, "", DEV_CPU);
     }
 
-    layer Select(layer l, vector<vector<int>> indices){
+    layer Select(layer l, vector<string> indices){
         return new LSelect(l, indices, "", DEV_CPU);
     }
 

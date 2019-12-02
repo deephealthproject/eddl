@@ -52,17 +52,17 @@ void cpu_fill(Tensor * A, int aini, int aend, Tensor * B, int bini, int bend, in
 }
 
 
-void cpu_select(Tensor *A, Tensor *B, vector<vector<int>> indices){
+void cpu_select(Tensor *A, Tensor *B, const int* indices){
     #pragma omp parallel for
-    for (int b=0; b<B->shape[0]; b++) {
-        for (int c=0; c < B->shape[1]; c++) {
-            for (int i=0; i < B->shape[2]; i++) {
-                for (int j=0; j < B->shape[3]; j++) {
-                    int A_pos = (b+indices[0][0])*A->stride[0] + (c+indices[1][0])*A->stride[1] + (i+indices[2][0])*A->stride[2] + (j+indices[3][0])*A->stride[3];
-                    int B_pos = b*B->stride[0] + c*B->stride[1] + i*B->stride[2] + j*B->stride[3];
-                    B->ptr[B_pos] = A->ptr[A_pos];
-                }
-            }
+    for (int b=0; b < B->shape[0]; b++) {  // walk batches
+        int A_str_batch = b * A->stride[0];
+        int B_str_batch = b * B->stride[0];
+
+        for (int i = 0; i < B->stride[0]; i++) {  // walk c,h,w
+            int A_pos = A_str_batch + indices[i];
+            int B_pos = B_str_batch + i;
+
+            B->ptr[B_pos] = A->ptr[A_pos];
         }
     }
 }

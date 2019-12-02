@@ -123,6 +123,38 @@ bool Tensor::valid_indices(vector<int> indices){
     return true;
 }
 
+
+// ***** Core (auxiliar) *****************************
+int* Tensor::ranges2indices(vector<vector<int>> ranges, int ignoreBatch){
+
+    // Compute output dimensions
+    vector<int> oshape = indices2shape(ranges);
+    vector<int> ostride = shape2stride(oshape);
+    int osize = shape2size(oshape);
+    int* addresses = new int[osize];  // Because the batch is 1 (default), then it's resized
+
+    // For each output address (0,1,2,3,...n), compute its indices
+    // Then add the minimum of each range, and compute the raw address
+    for(int i=0; i<osize; i++) {
+
+        // Extract indices
+        int A_pos = 0;
+        for(int d=0; d<ranges.size(); d++){
+            // Compute output indices at dimension d
+            int B_idx = (i/ostride[d]) % oshape[d];  // (52 / 32) % 32=> [1, 20]
+
+            // Compute input indices at dimension d
+            int A_idx = B_idx + ranges[d][0];  // B_index + A_start => [0, 0, 0] + [0, 5, 5]
+            A_pos += A_idx * this->stride[d+ignoreBatch];
+        }
+
+        // Save address translation
+        addresses[i] = A_pos;
+    }
+
+    return addresses;
+}
+
 // ***** Core (static) *****************************
 void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
     // Transpose
@@ -220,9 +252,9 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
 }
 
 
-void Tensor::select(Tensor *A, Tensor* B, vector<vector<int>> indices){
+void Tensor::select(Tensor *A, Tensor* B, int* indices){
     if (A->isCPU() && B->isCPU()) {
-        cpu_select(A, B, std::move(indices));
+        cpu_select(A, B, indices);
     }
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
@@ -364,22 +396,3 @@ void Tensor::tile(Tensor *A, Tensor *B)
         Tensor::select(A, B, sind, 0, Bsize);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-///

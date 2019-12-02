@@ -379,7 +379,8 @@ TestResult run_tensor_select(Tensor* t_input, string op, int dev, int runs){
             }
 
             t_output= new Tensor(output_shape, t_input->device);
-            Tensor::select(t_input, t_output, indices);
+            //Tensor::select(t_input, t_output, indices);
+
         } else {
             std::cout << "Unknown operator" << std::endl;
         }

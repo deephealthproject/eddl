@@ -13,6 +13,7 @@
 
 #include "tensor/tensor.h"
 #include "dev/aux_tests.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -372,16 +373,19 @@ int main(int argc, char **argv) {
 
 
     // *** [CREATE::EYE] *********************************************
-    t_input = Tensor::range(1.0, 27.0f, 1.0f, DEV_CPU);
-    t_input->reshape_({1, 3, 3, 3});
+    vector<vector<int>> range = parse_indices({":1", "20:31", ":5", "3:"}, {10, 32, 10, 10});
+    int asda = 33;
 
-    res_small_cpu = run_tensor_select(t_input, "select", DEV_CPU, 1);
-    res_small_gpu = run_tensor_select(t_input, "select", DEV_GPU, 1);
-
-    res_small_cpu.tensor->print();
-    res_small_gpu.tensor->print();
-
-    print_cpu_gpu_correctness("select", res_small_cpu.tensor, res_small_gpu.tensor);
+//    t_input = Tensor::range(1.0, 27.0f, 1.0f, DEV_CPU);
+//    t_input->reshape_({1, 3, 3, 3});
+//
+//    res_small_cpu = run_tensor_select(t_input, "select", DEV_CPU, 1);
+//    res_small_gpu = run_tensor_select(t_input, "select", DEV_GPU, 1);
+//
+//    res_small_cpu.tensor->print();
+//    res_small_gpu.tensor->print();
+//
+//    print_cpu_gpu_correctness("select", res_small_cpu.tensor, res_small_gpu.tensor);
 
     int asd = 33;
 

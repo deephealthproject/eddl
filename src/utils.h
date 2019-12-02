@@ -13,9 +13,11 @@
 #include <string>
 #include <cstdio>
 #include <cstdint> // uint64_t
+#include "tensor/tensor.h"
 
 using namespace std;
 
+void msg(const string& text, const string& title="");
 
 float *get_fmem(int size,char *str);
 
@@ -24,5 +26,13 @@ char *humanSize(uint64_t bytes);
 unsigned long get_free_mem();
 
 string get_extension(string filename);
+
+vector<vector<int>> parse_indices(const vector<string>& str_indices, const vector<int>& shape);
+
+vector<int> indices2shape(vector<vector<int>> ranges);
+
+int shape2size(vector<int> shape);
+
+vector<int> shape2stride(const vector<int>& shape);
 
 #endif //EDDL_UTILS_H

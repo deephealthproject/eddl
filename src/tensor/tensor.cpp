@@ -24,11 +24,6 @@ using namespace std;
 int initcuda[MAX_GPUS] = {0, 0, 0, 0, 0, 0, 0, 0};
 int linpos;
 extern ostream &operator<<(ostream &os, const vector<int> shape);
-void msg(string s, string s2) {
-    cout << "\n" << s << " (" << s2 << ")\n";
-    exit(0);
-}
-void msg(string s) { msg(s, ""); }
 
 
 Tensor::Tensor() : device(DEV_CPU), ndim(0), size(0) {}
@@ -283,3 +278,5 @@ int Tensor::get_mode(string mode){
         return 0;
     }
 }
+
+

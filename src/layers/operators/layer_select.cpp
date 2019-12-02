@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <utility>
 
 #include "layer_operators.h"
 
@@ -29,34 +30,45 @@ int LSelect::total_layers = 0;
   @returns the absolute value of each element in l
 
   */
-LSelect::LSelect(Layer *l, vector<vector<int>> indices, string name, int dev): OperatorLayer(name, dev) {
+LSelect::LSelect(Layer *l, vector<string> str_indices, string name, int dev): OperatorLayer(name, dev) {
     // Set default name
     if(name.empty()) this->name = "select_" + to_string(++total_layers);
 
+    // Set input
     input=l->output;
 
-    vector<int> output_shape;
-    for(int i=0; i<indices.size(); i++){
-        output_shape.push_back(indices[i][1] - indices[i][0] + 1);
-    }
-    output = new Tensor(output_shape, dev);
-    delta=new Tensor(l->output->getShape(), dev);
+    // Get input shape and ranges of indices
+    this->str_indices = std::move(str_indices);
+    this->idxs_range = parse_indices(this->str_indices, vector<int>(input->shape.begin() + 1, input->shape.end()));
 
-    this->indices = indices;
+    // Get output shape (without batch)
+    vector<int> oshape = indices2shape(idxs_range);
+    oshape.insert(oshape.begin(), 1);  // Insert batch (1, default), the it's resized
+
+    // Set flow tensors
+    output=new Tensor(oshape, dev);
+    delta=new Tensor(input->shape, dev);
+
+    // Compute index translation (output=>input)
+    this->oi_addresses = this->input->ranges2indices(this->idxs_range);
 
     l->addchild(this);
     addparent(l);
 }
 
 void LSelect::forward(){
-    Tensor::select(this->input, this->output, this->indices);
+    Tensor::select(this->input, this->output, this->oi_addresses);
+    output->save("test_ss2.jpg");
 }
 
 void LSelect::backward(){
+    //Tensor::select_back(this->delta, this->parent->delta, this->indices);
 }
 
 void LSelect::resize(int b){
-  Layer::resize(b);
+    Layer::resize(b);
+
+
 }
 
 Layer *LSelect::share(int c, int bs, vector<Layer *> p) {
@@ -64,7 +76,7 @@ Layer *LSelect::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LSelect::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LSelect *n = new LSelect(p[0], this->indices, "share_" + to_string(c) + name, todev);
+    LSelect *n = new LSelect(p[0], this->str_indices, "share_" + to_string(c) + name, todev);
     n->orig = this;
     return n;
 }

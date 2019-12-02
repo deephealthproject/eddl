@@ -12,12 +12,14 @@
 
 #include <iostream>
 #include <fstream>
-#include <stdio.h>
+#include <cstdio>
 #include <vector>
 #include <string>
 #include <mutex>
 
 #include <Eigen/Dense>
+
+#include "../utils.h"
 
 
 #define DEV_CPU 0
@@ -51,9 +53,6 @@ using namespace std;
 // TODO: Remove this. Don't like here
 typedef Eigen::Matrix<float, -1, -1, Eigen::RowMajor> MatrixXRMf;
 typedef vector<int> tshape;
-void msg(string s);
-void msg(string s, string s2);
-
 
 class Tensor {
 private:
@@ -129,6 +128,9 @@ public:
     void reshape_(vector<int> shape);
     float get_(vector<int> indices);
     void set_(vector<int> indices, float value);
+
+    // ***** Core (auxiliar) *****************************
+    int* ranges2indices(vector<vector<int>> ranges, int ignoreBatch=1);
 
     // ***** Core (static) *****************************
     Tensor* permute(vector<int> axis);
@@ -330,7 +332,7 @@ public:
     static void transpose(Tensor *A, Tensor *B, vector<int> dims);
     static void copy(Tensor *A, Tensor *B);
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
-    static void select(Tensor *A, Tensor *B, vector<vector<int>> indices);
+    static void select(Tensor *A, Tensor *B, int* indices);
     static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
     static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
     static void tile(Tensor *A, Tensor *B);
