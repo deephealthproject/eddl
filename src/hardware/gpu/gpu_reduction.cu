@@ -25,7 +25,31 @@
 #include "../../tensor/tensor.h"
 #include "../../descriptors/descriptors.h"
 
+void gpu_reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map)
+{
+  int i,j,min,max,sum;
+  int s=A->size/B->size;
 
+  if (mode=="mean") {
+    B->fill_(0.0);
+
+    setDims(A);
+    reduce_mean<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,map,A->size);
+    check_cuda(cudaDeviceSynchronize(),"reduce_mean");
+
+    B->div_(s);
+
+  }
+  else {
+    cout<<"mode: "<<mode<<"not yet implemented\n";
+    exit(1);
+  }
+
+}
+void cpu_reduce_op(Tensor *A, Tensor *B,string op,vector<int> axis,int* map)
+{
+
+}
 
 void gpu_reduce_sum2D(Tensor *A,Tensor *B,int axis,int incB){
 

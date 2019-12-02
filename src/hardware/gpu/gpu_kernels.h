@@ -99,6 +99,8 @@ __global__ void sum_mat_col(float* a, float* b, float* c, long int cols, long in
 __global__ void reduce_sum2D(float *a,float *b,long int r,long int c,long int axis);
 __global__ void reduceToSum(float *a, float *b, long int b_size, int a_axis_ndim);
 
+__global__ void reduce_mean(float *A,float *B,int *map,int size);
+
 __global__ void reduction_kernel(float *I,float *O,float *S,int m, int keepdims,int d,int *ind,int rs);
 __global__ void reduction_back_kernel(float *I,float *O,float *S,int m, int keepdims,int d,int *ind,int rs);
 

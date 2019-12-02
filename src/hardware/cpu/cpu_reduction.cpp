@@ -10,6 +10,51 @@
 
 #include "cpu_hw.h"
 
+void cpu_reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map)
+{
+  int i,j,min,max,sum;
+  int s=A->size/B->size;
+
+  if (mode=="mean") {
+    for(i=0;i<B->size;i++)
+      B->ptr[i]=0.0;
+
+    for(i=0;i<A->size;i++)
+      B->ptr[map[i]]+=A->ptr[i];
+
+    for(i=0;i<B->size;i++)
+      B->ptr[i]/=s;
+  }
+  else {
+    cout<<"mode: "<<mode<<"not yet implemented\n";
+    exit(1);
+  }
+}
+
+
+void cpu_reduce_op(Tensor *A, Tensor *B,string op,vector<int> axis,int* map)
+{
+  int i,j,min,max,sum;
+  int s=A->size/B->size;
+
+  for(i=0;i<A->size;i++) {
+    if (op=="sum")
+      A->ptr[i]+=B->ptr[map[i]];
+    else if (op=="diff")
+      A->ptr[i]-=B->ptr[map[i]];
+    else if (op=="mult")
+      A->ptr[i]*=B->ptr[map[i]];
+    else if (op=="div")
+      A->ptr[i]/=B->ptr[map[i]];
+    else {
+      cout<<"op: "<<op<<"not yet implemented\n";
+      exit(1);
+    }
+  }
+}
+
+
+
 void cpu_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
     if (axis == 0) {
         if (!incB) for (int i = 0; i < A->shape[1]; ++i) B->ptr[i] = 0;

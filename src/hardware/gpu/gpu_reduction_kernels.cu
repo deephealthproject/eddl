@@ -15,6 +15,48 @@
 #include <cuda.h>
 
 #include "gpu_kernels.h"
+
+
+__global__ void reduce_mean(float *A,float *B,int *map,int size)
+{
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+  if (thread_id_x<size)
+    B[map[thread_id_x]]+=A[thread_id_x];
+}
+
+
+//dim3 dimGrid(RD->index.size());
+//dim3 dimBlock(1);
+__global__ void reduction_back_kernel(float *I,float *O,float *S,int m, int keepdims,int d,int *ind,int rs)
+{
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    int j;
+    float val=0;
+    int p;
+
+    // set in Delta
+    if (m>=2) {
+      int p=S[thread_id_x];
+      O[p]+=I[thread_id_x];
+    }
+    else {
+      p=rs*blockIdx.x;
+      if(keepdims) {
+        for(j=0;j<rs;j++,p++)
+          val+=I[ind[p]];
+      }
+      else val=I[thread_id_x];
+      if (m==0) val/=d;
+
+      p=rs*blockIdx.x;
+      for(j=0;j<rs;j++,p++)
+        O[ind[p]]+=val;
+    }
+}
+
+
 //dim3 dimGrid(RD->index.size());
 //dim3 dimBlock(1);
 __global__ void reduction_kernel(float *I,float *O,float *S,int m, int keepdims,int d,int *ind,int rs)

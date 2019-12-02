@@ -15,6 +15,18 @@
 
 using namespace std;
 
+int *get_reduction_map(Tensor *A, vector<int> axis);
+void reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map=nullptr);
+void reduce_mean(Tensor *A, Tensor *B,vector<int> axis,int* map=nullptr);
+void reduce_max(Tensor *A, Tensor *B,vector<int> axis,int* map=nullptr);
+void reduce_min(Tensor *A, Tensor *B,vector<int> axis,int* map=nullptr);
+
+void reduce_op(Tensor *A, Tensor *B,string op,vector<int> axis,int* map=nullptr);
+void reduce_sum(Tensor *A, Tensor *B,vector<int> axis,int* map=nullptr);
+void reduce_diff(Tensor *A, Tensor *B,vector<int> axis,int* map=nullptr);
+void reduce_mult(Tensor *A, Tensor *B,vector<int> axis,int* map=nullptr);
+void reduce_div(Tensor *A, Tensor *B,vector<int> axis,int* map=nullptr);
+
 
 void reduction(ReduceDescriptor *RD);
 void reduction_back(ReduceDescriptor *RD);
