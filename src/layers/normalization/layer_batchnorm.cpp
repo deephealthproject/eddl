@@ -119,7 +119,12 @@ void LBatchNorm::backward()
   // from http://proceedings.mlr.press/v37/ioffe15.pdf
   // still not affine transform
 
-  int m=delta->shape[0]*delta->shape[2]*delta->shape[3];
+  int m;
+  
+  if (input->ndim == 2)
+    m=delta->shape[0];
+  else
+    m=delta->shape[0]*delta->shape[2]*delta->shape[3];
 
   Tensor *dmean=new Tensor(bn_mean->getShape(),dev);
   Tensor *dvar=new Tensor(bn_var->getShape(),dev);
