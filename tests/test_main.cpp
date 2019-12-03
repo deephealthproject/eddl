@@ -386,7 +386,7 @@ int main(int argc, char **argv) {
 //    t_input->print();
 //    t_output->print();
     res_small_cpu = run_tensor_select(t_input, t_output, "select", oi_addresses, DEV_CPU, 1);
-    res_small_gpu = run_tensor_select(t_input, t_output, "select", oi_addresses, DEV_CPU, 1);
+    res_small_gpu = run_tensor_select(t_input, t_output, "select", oi_addresses, DEV_GPU, 1);
 
     res_small_cpu.tensor->print();
     res_small_gpu.tensor->print();
@@ -404,7 +404,7 @@ int main(int argc, char **argv) {
 //    t_input->print();
 //    t_output->print();
     res_small_cpu = run_tensor_select(t_input, t_output, "select_back", oi_addresses, DEV_CPU, 1);
-    res_small_gpu = run_tensor_select(t_input, t_output, "select_back", oi_addresses, DEV_CPU, 1);
+    res_small_gpu = run_tensor_select(t_input, t_output, "select_back", oi_addresses, DEV_GPU, 1);
 
     res_small_cpu.tensor->print();  // delta_parent
     res_small_gpu.tensor->print();
