@@ -30,12 +30,12 @@ int LSelect::total_layers = 0;
   @returns the absolute value of each element in l
 
   */
-LSelect::LSelect(Layer *l, vector<string> str_indices, string name, int dev): OperatorLayer(name, dev) {
+LSelect::LSelect(Layer *parent, vector<string> str_indices, string name, int dev): OperatorLayer(name, dev) {
     // Set default name
     if(name.empty()) this->name = "select_" + to_string(++total_layers);
 
     // Set input
-    input=l->output;
+    input=parent->output;
 
     // Get input shape and ranges of indices
     this->str_indices = std::move(str_indices);
@@ -47,28 +47,25 @@ LSelect::LSelect(Layer *l, vector<string> str_indices, string name, int dev): Op
 
     // Set flow tensors
     output=new Tensor(oshape, dev);
-    delta=new Tensor(input->shape, dev);
+    delta=new Tensor(output->shape, dev);
 
     // Compute index translation (output=>input)
     this->oi_addresses = this->input->ranges2indices(this->idxs_range);
 
-    l->addchild(this);
-    addparent(l);
+    parent->addchild(this);
+    addparent(parent);
 }
 
 void LSelect::forward(){
     Tensor::select(this->input, this->output, this->oi_addresses);
-    output->save("test_ss2.jpg");
 }
 
 void LSelect::backward(){
-    //Tensor::select_back(this->delta, this->parent->delta, this->indices);
+    Tensor::select_back(this->delta, this->parent[0]->delta, this->oi_addresses);
 }
 
 void LSelect::resize(int b){
     Layer::resize(b);
-
-
 }
 
 Layer *LSelect::share(int c, int bs, vector<Layer *> p) {

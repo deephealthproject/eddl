@@ -259,7 +259,25 @@ void Tensor::select(Tensor *A, Tensor* B, int* indices){
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
       {
-        gpu_select(A, B, std::move(indices));
+        gpu_select(A, B, indices);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+}
+
+void Tensor::select_back(Tensor *A, Tensor* B, int* indices){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_select_back(A, B, indices);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+      {
+        gpu_select_back(A, B, indices);
       }
 #endif
 #ifdef cFPGA

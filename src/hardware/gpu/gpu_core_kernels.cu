@@ -51,22 +51,34 @@ __global__ void mask(float* a, float v, long int size){
 
 }
 
-__global__ void select(float* A, float* B, int batch, int depth, int orows, int ocols, int* min_indices){
+
+__global__ void select(float* A, float* B, int batch, int depth, int orows, int ocols, int* A_stride, int* B_stride, int* indices){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
     long int size = batch * depth*orows*ocols;
 
     if (thread_id_x < size){
-        int B_stride[4] = {depth*orows*ocols, orows*ocols, ocols, 1};
-
-        //--------------
         int b = thread_id_x / B_stride[0] % batch;
-        int c = thread_id_x / B_stride[1] % depth;
-        int Bi = thread_id_x / B_stride[2] % orows;
-        int Bj = thread_id_x / B_stride[3] % ocols;
 
+        int A_str_batch = b * A_stride[0];
+        int B_str_batch = b * B_stride[0];
 
-        int A_pos = (b+min_indices[0])*B_stride[0] + (c+min_indices[1])*B_stride[1] + (Bi+min_indices[2])*B_stride[2] + (Bj+min_indices[3])*B_stride[3];
+        int i = thread_id_x % B_stride[0];
+        int A_pos = A_str_batch + indices[i];
+        int B_pos = B_str_batch + i;
+
         B[thread_id_x] = A[A_pos];
     }
+}
 
+__global__ void select_back(float* A, float* B, int batch, int depth, int orows, int ocols, int* A_stride, int* B_stride, int* indices){
+    int b = thread_id_x / B_stride[0] % batch;
+
+    int A_str_batch = b * A_stride[0];
+    int B_str_batch = b * B_stride[0];
+
+    int i = thread_id_x % B_stride[0];
+    int A_pos = A_str_batch + indices[i];
+    int B_pos = B_str_batch + i;
+
+    A[A_pos] += B[thread_id_x];
 }

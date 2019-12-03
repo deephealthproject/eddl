@@ -99,25 +99,6 @@ void gpu_mask(Tensor *A,float v) {
 }
 
 
-void gpu_select(Tensor *A, Tensor *B, vector<vector<int>> indices){
-    int device=A->gpu_device;
-    cudaSetDevice(device);
-
-    // Prepare indices
-    int* cpu_min_indices = new int[4];
-    for(int i=0; i<indices.size(); i++){
-        cpu_min_indices[i] = indices[i][0];
-    }
-
-    // Copy indices from host to device
-    int *gpu_min_indices; cudaMalloc((int**)&gpu_min_indices, 4*sizeof(int));
-    cudaMemcpy(gpu_min_indices, cpu_min_indices, 4*sizeof(int), cudaMemcpyHostToDevice);
-
-    setDims(B);
-    select<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[0], B->shape[1], B->shape[2], B->shape[3], gpu_min_indices);
-    check_cuda(cudaDeviceSynchronize(), "select");
-}
-
 void gpu_fill_(Tensor *A, float v) {
     int device=A->gpu_device;
     cudaSetDevice(device);
@@ -126,4 +107,55 @@ void gpu_fill_(Tensor *A, float v) {
 
     fill_<<<dimGrid,dimBlock>>>(A->ptr,v,A->size);
     check_cuda(cudaDeviceSynchronize(),"set");
+}
+
+
+void gpu_select(Tensor *A, Tensor *B, const int* indices){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    int n;
+    // Copy A stride from host to device
+    n = A->stride.size();
+    int *d_A_stride; cudaMalloc((int**)&d_A_stride, n*sizeof(int));
+    cudaMemcpy(d_A_stride, A->stride.data(), n*sizeof(int), cudaMemcpyHostToDevice);
+
+    // Copy B stride from host to device
+    n = B->stride.size();
+    int *d_B_stride; cudaMalloc((int**)&d_B_stride, n*sizeof(int));
+    cudaMemcpy(d_B_stride, B->stride.data(), n*sizeof(int), cudaMemcpyHostToDevice);
+
+    // Copy indices from host to device
+    n = B->size;
+    int *d_indices; cudaMalloc((int**)&d_indices, n*sizeof(int));
+    cudaMemcpy(d_indices, indices, n*sizeof(int), cudaMemcpyHostToDevice);
+
+    setDims(B);
+    select<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[0], B->shape[1], B->shape[2], B->shape[3], d_A_stride, d_B_stride, d_indices);
+    check_cuda(cudaDeviceSynchronize(), "select");
+}
+
+void gpu_select_back(Tensor *A, Tensor *B, const int* indices){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    int n;
+    // Copy A stride from host to device
+    n = A->stride.size();
+    int *d_A_stride; cudaMalloc((int**)&d_A_stride, n*sizeof(int));
+    cudaMemcpy(d_A_stride, A->stride.data(), n*sizeof(int), cudaMemcpyHostToDevice);
+
+    // Copy B stride from host to device
+    n = B->stride.size();
+    int *d_B_stride; cudaMalloc((int**)&d_B_stride, n*sizeof(int));
+    cudaMemcpy(d_B_stride, B->stride.data(), n*sizeof(int), cudaMemcpyHostToDevice);
+
+    // Copy indices from host to device
+    n = B->size;
+    int *d_indices; cudaMalloc((int**)&d_indices, n*sizeof(int));
+    cudaMemcpy(d_indices, indices, n*sizeof(int), cudaMemcpyHostToDevice);
+
+    setDims(B);
+    select_back<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[0], B->shape[1], B->shape[2], B->shape[3], d_A_stride, d_B_stride, d_indices);
+    check_cuda(cudaDeviceSynchronize(), "select_back");
 }

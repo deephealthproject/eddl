@@ -67,6 +67,21 @@ void cpu_select(Tensor *A, Tensor *B, const int* indices){
     }
 }
 
+void cpu_select_back(Tensor *A, Tensor *B, const int* indices){
+    #pragma omp parallel for
+    for (int b=0; b < B->shape[0]; b++) {  // walk batches
+        int A_str_batch = b * A->stride[0];
+        int B_str_batch = b * B->stride[0];
+
+        for (int i = 0; i < B->stride[0]; i++) {  // walk c,h,w
+            int A_pos = A_str_batch + indices[i];
+            int B_pos = B_str_batch + i;
+
+            A->ptr[A_pos] += B->ptr[B_pos];  // delta_parent += delta
+        }
+    }
+}
+
 void cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end)
 {
     int s = A->size / A->shape[0];
