@@ -359,28 +359,20 @@ TestResult run_tensor_create(string op, int dev, int runs){
     return result;
 }
 
-TestResult run_tensor_select(Tensor* t_input, string op, vector<string> idxs, int dev, int runs){
-    Tensor *t_output = nullptr;
-
+TestResult run_tensor_select(Tensor* t_input, Tensor* t_output, string op, int* oi_addresses, int dev, int runs){
     // Move to device
     if (dev == DEV_GPU){
         t_input->toGPU();
+        t_output->toGPU();
     }
 
     clock_t begin = clock();
     for(int i=0; i<runs; i++){
         // Math operations
-        if(op=="select"){
-            
-            // Get input shape and ranges of indices
-            vector<vector<int>>idxs_range = parse_indices(idxs, vector<int>(t_input->shape.begin(), t_input->shape.end()));
-            t_output=new Tensor(indices2shape(idxs_range), t_input->device);
-
-            // Compute index translation (output=>input)
-            int* oi_addresses = t_input->ranges2indices(idxs_range);
-
+        if(op=="select") {
             Tensor::select(t_input, t_output, oi_addresses);
-
+        }else if(op=="select_back") {
+            Tensor::select_back(t_input, t_output, oi_addresses);
         } else {
             std::cout << "Unknown operator" << std::endl;
         }

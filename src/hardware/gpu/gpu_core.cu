@@ -130,8 +130,8 @@ void gpu_select(Tensor *A, Tensor *B, const int* indices){
     int *d_indices; cudaMalloc((int**)&d_indices, n*sizeof(int));
     cudaMemcpy(d_indices, indices, n*sizeof(int), cudaMemcpyHostToDevice);
 
-    setDims(B);
-    select<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[0], B->shape[1], B->shape[2], B->shape[3], d_A_stride, d_B_stride, d_indices);
+    setDims(B);  // B is the small
+    select<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], d_A_stride, d_B_stride, d_indices);
     check_cuda(cudaDeviceSynchronize(), "select");
 }
 
@@ -155,7 +155,7 @@ void gpu_select_back(Tensor *A, Tensor *B, const int* indices){
     int *d_indices; cudaMalloc((int**)&d_indices, n*sizeof(int));
     cudaMemcpy(d_indices, indices, n*sizeof(int), cudaMemcpyHostToDevice);
 
-    setDims(B);
-    select_back<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[0], B->shape[1], B->shape[2], B->shape[3], d_A_stride, d_B_stride, d_indices);
+    setDims(A);  // A is the small
+    select_back<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], d_A_stride, d_B_stride, d_indices);
     check_cuda(cudaDeviceSynchronize(), "select_back");
 }

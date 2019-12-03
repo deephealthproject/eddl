@@ -55,7 +55,7 @@ void print_results(string title, TestResult res_cpu, TestResult res_gpu){
 
 int main(int argc, char **argv) {
     TestResult res_small_cpu, res_small_gpu, res_big_cpu, res_big_gpu;
-    Tensor *t_input, *t_input_sol, *t_weights, *t_input_big, *t_weights_big, *t_output;
+    Tensor *t_input, *t_input_sol, *t_weights, *t_input_big, *t_weights_big, *t_output, *t_aux;
     Tensor *t_input_cpu, *t_input_gpu;
     string act;
 
@@ -372,18 +372,45 @@ int main(int argc, char **argv) {
 //    }
 
 
-    // *** [CREATE::EYE] *********************************************
-   t_input = Tensor::ones({10, 10});
+    // *** [SELECT:forward] *********************************************
+    int *oi_addresses;
+    vector<string> idxs;
+    vector<vector<int>> idxs_range;
+
+    t_input = Tensor::range(1, 100, 1.0f);
+    t_input->reshape_({10, 10});
+    idxs_range = parse_indices({"1:6", "1:6"}, vector<int>(t_input->shape.begin(), t_input->shape.end()));
+    t_output = Tensor::zeros(indices2shape(idxs_range));
+    oi_addresses = t_input->ranges2indices(idxs_range, 0);
+
+//    t_input->print();
+//    t_output->print();
+    res_small_cpu = run_tensor_select(t_input, t_output, "select", oi_addresses, DEV_CPU, 1);
+    res_small_gpu = run_tensor_select(t_input, t_output, "select", oi_addresses, DEV_CPU, 1);
+
+    res_small_cpu.tensor->print();
+    res_small_gpu.tensor->print();
+
+    print_cpu_gpu_correctness("select", res_small_cpu.tensor, res_small_gpu.tensor);
 
 
-   vector<string> idxs = {":5", ":5"};
-   res_small_cpu = run_tensor_select(t_input, "select", idxs, DEV_CPU, 1);
-   res_small_gpu = run_tensor_select(t_input, "select", idxs, DEV_GPU, 1);
+    // *** [SELECT:backward] *********************************************
+    cout << "---------\n" << endl;
+    t_aux = Tensor::range(1, t_output->size, 1.0f);
+    t_aux->reshape_(t_output->shape);
+    t_output = Tensor::zeros(t_input->shape);
+    t_input = t_aux;
 
-   res_small_cpu.tensor->print();
-   res_small_gpu.tensor->print();
+//    t_input->print();
+//    t_output->print();
+    res_small_cpu = run_tensor_select(t_input, t_output, "select_back", oi_addresses, DEV_CPU, 1);
+    res_small_gpu = run_tensor_select(t_input, t_output, "select_back", oi_addresses, DEV_CPU, 1);
 
-   print_cpu_gpu_correctness("select", res_small_cpu.tensor, res_small_gpu.tensor);
+    res_small_cpu.tensor->print();  // delta_parent
+    res_small_gpu.tensor->print();
+
+    print_cpu_gpu_correctness("select_back", res_small_cpu.tensor, res_small_gpu.tensor);
+
 
     int asd = 33;
 
