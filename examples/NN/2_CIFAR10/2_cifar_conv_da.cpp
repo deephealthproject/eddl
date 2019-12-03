@@ -46,7 +46,7 @@ int main(int argc, char **argv){
 //   l = CropScaleRandom(l, {0.f, 1.0f});
 //   l = CutoutRandom(l, {0.0f, 0.3f}, {0.0f, 0.3f});
 
-    l=Select(l, {":", ":", ":"});
+    l=Select(l, {"1", ":", ":"});
     l=MaxPool(ReLu(Conv(l,32,{3,3},{1,1})),{2,2});
     l=MaxPool(ReLu(Conv(l,64,{3,3},{1,1})),{2,2});
     l=MaxPool(ReLu(Conv(l,128,{3,3},{1,1})),{2,2});
@@ -67,8 +67,8 @@ int main(int argc, char **argv){
           sgd(0.01, 0.9), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_CPU() // CPU with maximum threads availables
-          //CS_GPU({1}) // GPU with only one gpu
+          //CS_CPU() // CPU with maximum threads availables
+          CS_GPU({1}) // GPU with only one gpu
     );
 
     

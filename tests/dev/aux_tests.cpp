@@ -359,7 +359,7 @@ TestResult run_tensor_create(string op, int dev, int runs){
     return result;
 }
 
-TestResult run_tensor_select(Tensor* t_input, string op, int dev, int runs){
+TestResult run_tensor_select(Tensor* t_input, string op, vector<string> idxs, int dev, int runs){
     Tensor *t_output = nullptr;
 
     // Move to device
@@ -371,15 +371,15 @@ TestResult run_tensor_select(Tensor* t_input, string op, int dev, int runs){
     for(int i=0; i<runs; i++){
         // Math operations
         if(op=="select"){
-            vector<vector<int>> indices = {{0, 0}, {1, 1}, {0, 2}, {0, 2}};
+            
+            // Get input shape and ranges of indices
+            vector<vector<int>>idxs_range = parse_indices(idxs, vector<int>(t_input->shape.begin(), t_input->shape.end()));
+            t_output=new Tensor(indices2shape(idxs_range), t_input->device);
 
-            vector<int> output_shape;
-            for(int i=0; i<indices.size(); i++){
-                output_shape.push_back(indices[i][1] - indices[i][0] + 1);
-            }
+            // Compute index translation (output=>input)
+            int* oi_addresses = t_input->ranges2indices(idxs_range);
 
-            t_output= new Tensor(output_shape, t_input->device);
-            //Tensor::select(t_input, t_output, indices);
+            Tensor::select(t_input, t_output, oi_addresses);
 
         } else {
             std::cout << "Unknown operator" << std::endl;

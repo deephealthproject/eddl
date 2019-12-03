@@ -248,7 +248,6 @@ vector<int> shape2stride(const vector<int>& shape){
     vector<int> stride = {1};
 
     for(int i=shape.size()-1; i>0; i--){
-        cout << i<< endl;
         int s = shape[i];
         int s2 = stride[0];
         stride.insert(stride.begin(), s*s2);
