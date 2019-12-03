@@ -30,14 +30,18 @@ PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, str
     stride = st;
 
     if (p == "same") {
-      pad.push_back(ksize[1] / 2);
-      pad.push_back(ksize[1] / 2);
-      if (ksize[1]%2==0) pad[1]--;
 
-      pad.push_back(ksize[2] / 2);
-      pad.push_back(ksize[2] / 2);
-      if (ksize[2]%2==0) pad[3]--;
+      pad.push_back(ksize[0] / 2);
+      pad.push_back(ksize[0] / 2);
+      if (ksize[0]%2==0) pad[1]--;
+
+      pad.push_back(ksize[1] / 2);
+      pad.push_back(ksize[1] / 2);
+      if (ksize[1]%2==0) pad[3]--;
+
     } else if (p == "none") {
+        pad.push_back(0);
+        pad.push_back(0);
         pad.push_back(0);
         pad.push_back(0);
     } else msg("Incorrect padding type", "PoolDescriptor::PoolDescriptor");
@@ -59,17 +63,13 @@ void PoolDescriptor::build(Tensor *A) {
     ir = A->shape[2];
     ic = A->shape[3];
 
-    if (pad.size()==4) {
-      padrt = pad[0];
-      padrb = pad[1];
 
-      padcl = pad[2];
-      padcr = pad[3];
-    }
-    else {
-      padrt=padrb=padr=pad[0];
-      padcl=padcr=padc=pad[1];
-    }
+    padrt = pad[0];
+    padrb = pad[1];
+    padcl = pad[2];
+    padcr = pad[3];
+
+
 
     z = iz;
     r = (ir - kr + padrt + padrb) / sr + 1;

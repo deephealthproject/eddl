@@ -25,6 +25,109 @@
 #include "../../tensor/tensor.h"
 #include "../../descriptors/descriptors.h"
 
+void gpu_reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map)
+{
+  int device=A->gpu_device;
+  int *gmap;
+
+  cudaSetDevice(device);
+
+  int s=A->size/B->size;
+
+
+  check_cuda(cudaMalloc((void**)&(gmap),A->size*sizeof(int)),"create map");
+  check_cuda(cudaDeviceSynchronize(), "create");
+
+  check_cuda(cudaMemcpy(gmap,map,A->size*sizeof(int),cudaMemcpyHostToDevice),"copy map");
+  check_cuda(cudaDeviceSynchronize(), "copy");
+
+  if (mode=="mean") {
+    B->fill_(0.0);
+
+    setDims(A);
+    reduce_mean<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,gmap,A->size);
+    check_cuda(cudaDeviceSynchronize(),"reduce_mean");
+
+    B->div_(s);
+
+  }
+  else if (mode=="variance") {
+    Tensor *C=new Tensor(B->getShape(),B->device);
+
+    C->fill_(0.0);
+
+    setDims(A);
+    reduce_mean<<<dimGrid,dimBlock>>>(A->ptr,C->ptr,gmap,A->size);
+    check_cuda(cudaDeviceSynchronize(),"reduce_mean");
+
+    C->div_(s);
+
+    gpu_reduce_op(A,C,"diff",axis,map);
+    
+    A->sqr_();
+
+    B->fill_(0.0);
+
+    reduce_mean<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,gmap,A->size);
+    check_cuda(cudaDeviceSynchronize(),"reduce_mean_var");
+
+    B->div_(s);
+
+    delete C;
+
+  }
+  else {
+    cout<<"mode: "<<mode<<" not yet implemented\n";
+    exit(1);
+  }
+
+
+  check_cuda(cudaFree(gmap),"delete_map");
+
+}
+
+void gpu_reduce_op(Tensor *A, Tensor *B,string op,vector<int> axis,int* map)
+{
+  int device=A->gpu_device;
+  int *gmap;
+
+  cudaSetDevice(device);
+
+  check_cuda(cudaMalloc((void**)&(gmap),A->size*sizeof(int)),"create map");
+  check_cuda(cudaDeviceSynchronize(), "create");
+
+  check_cuda(cudaMemcpy(gmap,map,A->size*sizeof(int),cudaMemcpyHostToDevice),"copy map");
+  check_cuda(cudaDeviceSynchronize(), "copy");
+
+  if (op=="sum") {
+    setDims(A);
+    reduce_op_sum<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,gmap,A->size);
+    check_cuda(cudaDeviceSynchronize(),"reduce_mean");
+  }
+  else if (op=="diff") {
+    setDims(A);
+    reduce_op_diff<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,gmap,A->size);
+    check_cuda(cudaDeviceSynchronize(),"reduce_mean");
+  }
+  else if (op=="mult") {
+    setDims(A);
+    reduce_op_mult<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,gmap,A->size);
+    check_cuda(cudaDeviceSynchronize(),"reduce_mean");
+  }
+  else if (op=="div") {
+    setDims(A);
+    reduce_op_div<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,gmap,A->size);
+    check_cuda(cudaDeviceSynchronize(),"reduce_mean");
+  }
+  else {
+    cout<<"op: "<<op<<" not yet implemented\n";
+    exit(1);
+  }
+
+
+  check_cuda(cudaFree(gmap),"delete_map");
+
+}
 
 
 void gpu_reduce_sum2D(Tensor *A,Tensor *B,int axis,int incB){
@@ -42,16 +145,6 @@ void gpu_reduce_sum2D(Tensor *A,Tensor *B,int axis,int incB){
 }
 
 
-void gpu_reduceTosum(Tensor *A, Tensor *B, int axis){
-    int device=A->gpu_device;
-    cudaSetDevice(device);
-
-    setDims(B);
-
-    reduceToSum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, A->shape[axis]);
-
-    check_cuda(cudaDeviceSynchronize(),"reduceTosum");
-}
 
 void gpu_reduction(ReduceDescriptor *RD){
   int device=RD->I->gpu_device;

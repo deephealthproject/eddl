@@ -38,11 +38,11 @@ LRMax::LRMax(Layer *l, vector<int> axis, bool keepdims, string name, int dev): R
 }
 
 void LRMax::forward(){
-reduction(RD);
+  reduction(RD);
 }
 
 void LRMax::backward(){
-reduction_back(RD);
+  reduction_back(RD);
 }
 // virtual
 void LRMax::resize(int batch){

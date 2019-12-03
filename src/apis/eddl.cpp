@@ -195,6 +195,11 @@ namespace eddl {
         return new LBatchNorm(parent, momentum, epsilon, affine, name, DEV_CPU);
     }
 
+    layer BatchNormalization2D(layer parent, float momentum, float epsilon, bool affine, string name) {
+        return new LBatchNorm2D(parent, momentum, epsilon, affine, name, DEV_CPU);
+    }
+
+
     layer Norm(layer parent, float epsilon, string name)
     {
       return new LNorm(parent, epsilon, name, DEV_CPU);

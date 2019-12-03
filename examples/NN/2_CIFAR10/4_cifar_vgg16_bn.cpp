@@ -27,7 +27,7 @@ layer Block1(layer l,int filters) {
 }
 layer Block3_2(layer l,int filters) {
   l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
-  l=BatchNormalization(ReLu(Conv(l,filters,{3,3},{1,1})));
+  l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
   return l;
 }
 
@@ -45,6 +45,10 @@ int main(int argc, char **argv){
   // network
   layer in=Input({3,32,32});
   layer l=in;
+
+  // Data augmentation
+  l = CropScaleRandom(l, {0.8f, 1.0f});
+  l = Flip(l,1);
 
   l=MaxPool(Block3_2(l,64));
   l=MaxPool(Block3_2(l,128));
@@ -71,7 +75,7 @@ int main(int argc, char **argv){
   );
 
   // plot the model
-  plot(net,"model.pdf");
+  plot(net,"model.pdf","TB");  //Top Bottom plot
 
   // get some info from the network
   summary(net);

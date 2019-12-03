@@ -61,9 +61,8 @@ int main(int argc, char **argv){
   layer l=in;
 
   // Data augmentation
-  l = FlipRandom(l, 1);
-  l = ShiftRandom(l, {-0.2f, +0.2f}, {-0.2f, +0.2f});
-  l = ScaleRandom(l, {0.9f, 1.1f});
+  l = CropScaleRandom(l, {0.8f, 1.0f});
+  l = Flip(l,1);
 
   // Resnet-18
   l=ReLu(BG(Conv(l,64,{3,3},{1,1})));

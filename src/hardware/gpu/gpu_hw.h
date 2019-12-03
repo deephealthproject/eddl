@@ -134,8 +134,9 @@ void gpu_total_sum(Tensor *A, float *tot);
 float gpu_sum_abs(Tensor *A);
 
 // GPU: Reduction
+void gpu_reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map);
+void gpu_reduce_op(Tensor *A, Tensor *B,string op,vector<int> axis,int* map);
 void gpu_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
-void gpu_reduceTosum(Tensor *A, Tensor *B, int axis);
 void gpu_reduction(ReduceDescriptor *RD);
 void gpu_reduction_back(ReduceDescriptor *RD);
 //void gpu_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB);

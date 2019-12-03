@@ -15,11 +15,36 @@
 #include <limits>
 
 #include "apis/eddlT.h"
+#include "../../src/tensor/tensor_reduction.h"
 
 using namespace std;
 using namespace eddlT;
 
 int main(int argc, char **argv) {
+
+  int dev=DEV_GPU;
+
+  Tensor *A=new Tensor({2,3,5,2},dev);
+
+  A->fill_(2.0);
+
+  vector<int> axis={0,3};
+  int *map=Tensor::get_reduction_map(A, axis);
+
+  for(int i=0;i<A->size;i++)
+    printf("%d ",map[i]);
+  printf("\n");
+
+  Tensor *B=new Tensor({3,5},dev);
+  Tensor::reduce_mean(A,B,axis);
+
+  B->print();
+
+  Tensor::reduce_mult(A,B,axis);
+
+  A->print();
+
+  /*
 //    int dev = DEV_CPU;
 //
 //    tensor A=create({10,10});
@@ -137,4 +162,5 @@ int main(int argc, char **argv) {
         t2->save("images/new_cow_" + to_string(i) + ".jpg");
         cout << "Image saved! #" << i << endl;
     }
+    */
 }

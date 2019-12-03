@@ -60,9 +60,6 @@ public:
     int padrt,padrb;
     int padcl,padcr;
 
-    int padr,padc;
-    //float *ptr;
-
 
     Tensor *I; // Input map
     Tensor *ID;// Delta input map

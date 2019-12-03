@@ -113,8 +113,9 @@ float cpu_sum(Tensor *A);
 float cpu_sum_abs(Tensor *A);
 
 // CPU: Reduction
+void cpu_reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map);
+void cpu_reduce_op(Tensor *A, Tensor *B,string op,vector<int> axis,int* map);
 void cpu_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
-void cpu_reduceTosum(Tensor *A, Tensor *B, int axis);
 void cpu_reduction(ReduceDescriptor *RD);
 void cpu_reduction_back(ReduceDescriptor *RD);
 //void cpu_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB);

@@ -309,11 +309,19 @@ public:
 
     // Math operations: Reduction ops
     static void reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
-    static void reduceTosum(Tensor *A, Tensor *B, int axis);
-    static void reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims, Tensor *C, int incB);
-    static void delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims, Tensor *C,int incB);
-    static void reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
-    static void delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C, int incC);
+
+    static int *get_reduction_map(Tensor *A, vector<int> axis);
+    static void reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map=nullptr);
+    static void reduce_mean(Tensor *A, Tensor *B,vector<int> axis,int* map=nullptr);
+    static void reduce_variance(Tensor *A, Tensor *B,vector<int> axis,int* map=nullptr);
+    static void reduce_max(Tensor *A, Tensor *B,vector<int> axis,int* map=nullptr);
+    static void reduce_min(Tensor *A, Tensor *B,vector<int> axis,int* map=nullptr);
+
+    static void reduce_op(Tensor *A, Tensor *B,string op,vector<int> axis,int* map=nullptr);
+    static void reduce_sum(Tensor *A, Tensor *B,vector<int> axis,int* map=nullptr);
+    static void reduce_diff(Tensor *A, Tensor *B,vector<int> axis,int* map=nullptr);
+    static void reduce_mult(Tensor *A, Tensor *B,vector<int> axis,int* map=nullptr);
+    static void reduce_div(Tensor *A, Tensor *B,vector<int> axis,int* map=nullptr);
 
     // Math operations: Comparison ops
     static int eqsize(Tensor *A, Tensor *B);

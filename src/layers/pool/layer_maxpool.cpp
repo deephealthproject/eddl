@@ -61,7 +61,7 @@ void LMaxPool::backward() {
 }
 
 Layer *LMaxPool::share(int c, int bs, vector<Layer *> p) {
-    LMaxPool *n = new LMaxPool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, vector<int>{pd->padr, pd->padc},
+    LMaxPool *n = new LMaxPool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, pd->pad,
                            "share_" + to_string(c) + name, dev);
     n->orig = this;
 
