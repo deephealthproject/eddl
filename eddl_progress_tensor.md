@@ -143,9 +143,9 @@ Numpy-like operations over a raw-tensor object
 | argmin | ❌ | ❌ |
 | cumprod | ❌ | ❌ |
 | cumsum | ❌ | ❌ |
-| max | ❌ | ❌ |
-| min | ❌ | ❌ |
-| mean | ❌ | ❌ |
+| max | ✅ | ✅ |
+| min | ✅ | ✅ |
+| mean | ✅ | ✅ |
 | median | ❌ | ❌ |
 | mode | ❌ | ❌ |
 | norm | ❌ | ❌ |
