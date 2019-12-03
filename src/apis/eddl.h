@@ -173,6 +173,8 @@ namespace eddl {
 
     layer Sum(float k, layer l1);
 
+    layer Select(layer l, vector<string> indices);
+
 // ---- REDUCTION LAYERS ----
     layer ReduceMean(layer l, vector<int> axis = {0}, bool keepdims = false);
 

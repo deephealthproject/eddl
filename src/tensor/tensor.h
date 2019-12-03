@@ -12,12 +12,14 @@
 
 #include <iostream>
 #include <fstream>
-#include <stdio.h>
+#include <cstdio>
 #include <vector>
 #include <string>
 #include <mutex>
 
 #include <Eigen/Dense>
+
+#include "../utils.h"
 
 
 #define DEV_CPU 0
@@ -51,9 +53,6 @@ using namespace std;
 // TODO: Remove this. Don't like here
 typedef Eigen::Matrix<float, -1, -1, Eigen::RowMajor> MatrixXRMf;
 typedef vector<int> tshape;
-void msg(string s);
-void msg(string s, string s2);
-
 
 class Tensor {
 private:
@@ -130,22 +129,25 @@ public:
     float get_(vector<int> indices);
     void set_(vector<int> indices, float value);
 
+    // ***** Core (auxiliar) *****************************
+    int* ranges2indices(vector<vector<int>> ranges, int ignoreBatch=1);
+
     // ***** Core (static) *****************************
     Tensor* permute(vector<int> axis);
 
     // ************************************************
     // ****** Tensor operations ***********************
     // ************************************************
-      // Creation ops ***********************************
-      static Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
-      static Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
-      static Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
-      static Tensor* arange(float start, float end, float step=1.0f, int dev=DEV_CPU);
-      static Tensor* range(float start, float end, float step=1.0f, int dev=DEV_CPU);
-      static Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
-      static Tensor* logspace(float start, float end, int steps=100, float base=10.0f, int dev=DEV_CPU);
-      static Tensor* eye(int size, int dev=DEV_CPU);
-      static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
+    // Creation ops ***********************************
+    static Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
+    static Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
+    static Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
+    static Tensor* arange(float start, float end, float step=1.0f, int dev=DEV_CPU);
+    static Tensor* range(float start, float end, float step=1.0f, int dev=DEV_CPU);
+    static Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
+    static Tensor* logspace(float start, float end, int steps=100, float base=10.0f, int dev=DEV_CPU);
+    static Tensor* eye(int size, int dev=DEV_CPU);
+    static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
 
     // ***** Transformations *****************************
@@ -326,6 +328,8 @@ public:
     static void transpose(Tensor *A, Tensor *B, vector<int> dims);
     static void copy(Tensor *A, Tensor *B);
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
+    static void select(Tensor *A, Tensor *B, int* indices);
+    static void select_back(Tensor *A, Tensor *B, int* indices);
     static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
     static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
     static void tile(Tensor *A, Tensor *B);

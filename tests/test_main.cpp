@@ -13,6 +13,7 @@
 
 #include "tensor/tensor.h"
 #include "dev/aux_tests.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -54,7 +55,7 @@ void print_results(string title, TestResult res_cpu, TestResult res_gpu){
 
 int main(int argc, char **argv) {
     TestResult res_small_cpu, res_small_gpu, res_big_cpu, res_big_gpu;
-    Tensor *t_input, *t_input_sol, *t_weights, *t_input_big, *t_weights_big, *t_output;
+    Tensor *t_input, *t_input_sol, *t_weights, *t_input_big, *t_weights_big, *t_output, *t_aux;
     Tensor *t_input_cpu, *t_input_gpu;
     string act;
 
@@ -322,54 +323,96 @@ int main(int argc, char **argv) {
 
 //
 ////    // *** [Data augmentation] *****************************************
-    vector<string> data_aug = {
-            //"crop", "crop_random"
-            "shift", "rotate", "flip_h", "flip_v", "scale", "crop", "crop_scale", "cutout",
-            "shift_random", "rotate_random", "flip_h_random", "flip_v_random", "scale_random", "crop_random", "crop_scale_random", "cutout_random"
-    };
-    for (auto op:data_aug){
-        t_input = Tensor::range(1.0, 100.0f, 1.0f, DEV_CPU);
-        vector<int> shape({1, 1, 10, 10});
-        t_input->reshape_(shape);
-
-        // Reshapes
-        if(op=="scale") {
-            t_output = new Tensor({1, 1, 10, 10}, t_input->device);
-        }else if(op=="crop" || op=="crop_random") {
-            t_output = new Tensor({1, 1, 3, 3}, t_input->device);
-//        }else if(op=="cutout") {
-//            t_output = t_input->clone();
-        } else {
-            t_output = new Tensor(t_input->getShape(), t_input->device);
-        }
-
-        // Test for correctness
-        res_small_cpu = run_tensor_da(t_input, t_output, op, DEV_CPU, 1);
-        res_small_gpu = run_tensor_da(t_input, t_output, op, DEV_GPU, 1);
-//        res_small_cpu.tensor->print();
-        print_cpu_gpu_correctness(op, res_small_cpu.tensor, res_small_gpu.tensor);
-        //print_results(op, res_small_cpu, res_small_cpu);
-
-        // Prints
-        cout << "===================" << endl;
-        cout << op << endl;
-        cout << "===================" << endl;
-
-        // Print CPU ********
+//    vector<string> data_aug = {
+//            //"crop", "crop_random"
+//            "shift", "rotate", "flip_h", "flip_v", "scale", "crop", "crop_scale", "cutout",
+//            "shift_random", "rotate_random", "flip_h_random", "flip_v_random", "scale_random", "crop_random", "crop_scale_random", "cutout_random"
+//    };
+//    for (auto op:data_aug){
+//        t_input = Tensor::range(1.0, 100.0f, 1.0f, DEV_CPU);
+//        vector<int> shape({1, 1, 10, 10});
+//        t_input->reshape_(shape);
+//
+//        // Reshapes
+//        if(op=="scale") {
+//            t_output = new Tensor({1, 1, 10, 10}, t_input->device);
+//        }else if(op=="crop" || op=="crop_random") {
+//            t_output = new Tensor({1, 1, 3, 3}, t_input->device);
+////        }else if(op=="cutout") {
+////            t_output = t_input->clone();
+//        } else {
+//            t_output = new Tensor(t_input->getShape(), t_input->device);
+//        }
+//
+//        // Test for correctness
+//        res_small_cpu = run_tensor_da(t_input, t_output, op, DEV_CPU, 1);
+//        res_small_gpu = run_tensor_da(t_input, t_output, op, DEV_GPU, 1);
+////        res_small_cpu.tensor->print();
+//        print_cpu_gpu_correctness(op, res_small_cpu.tensor, res_small_gpu.tensor);
+//        //print_results(op, res_small_cpu, res_small_cpu);
+//
+//        // Prints
+//        cout << "===================" << endl;
+//        cout << op << endl;
+//        cout << "===================" << endl;
+//
+//        // Print CPU ********
+////        t_input->reshape_({t_input->shape[2], t_input->shape[3]});
+////        t_input->print();
+////        //        res_small_cpu.tensor->print();
+////        res_small_cpu.tensor->reshape_({res_small_cpu.tensor->shape[2], res_small_cpu.tensor->shape[3]});
+////        res_small_cpu.tensor->print();
+//
+//        // Print GPU ******
 //        t_input->reshape_({t_input->shape[2], t_input->shape[3]});
 //        t_input->print();
-//        //        res_small_cpu.tensor->print();
-//        res_small_cpu.tensor->reshape_({res_small_cpu.tensor->shape[2], res_small_cpu.tensor->shape[3]});
-//        res_small_cpu.tensor->print();
+//        res_small_gpu.tensor->reshape_({res_small_gpu.tensor->shape[2], res_small_gpu.tensor->shape[3]});
+//        res_small_gpu.tensor->toCPU();
+//        res_small_gpu.tensor->print();
+//    }
 
-        // Print GPU ******
-        t_input->reshape_({t_input->shape[2], t_input->shape[3]});
-        t_input->print();
-        res_small_gpu.tensor->reshape_({res_small_gpu.tensor->shape[2], res_small_gpu.tensor->shape[3]});
-        res_small_gpu.tensor->toCPU();
-        res_small_gpu.tensor->print();
-    }
 
+    // *** [SELECT:forward] *********************************************
+    int *oi_addresses;
+    vector<string> idxs;
+    vector<vector<int>> idxs_range;
+
+    t_input = Tensor::range(1, 100, 1.0f);
+    t_input->reshape_({10, 10});
+    idxs_range = parse_indices({"1:6", "1:6"}, vector<int>(t_input->shape.begin(), t_input->shape.end()));
+    t_output = Tensor::zeros(indices2shape(idxs_range));
+    oi_addresses = t_input->ranges2indices(idxs_range, 0);
+
+//    t_input->print();
+//    t_output->print();
+    res_small_cpu = run_tensor_select(t_input, t_output, "select", oi_addresses, DEV_CPU, 1);
+    res_small_gpu = run_tensor_select(t_input, t_output, "select", oi_addresses, DEV_GPU, 1);
+
+    res_small_cpu.tensor->print();
+    res_small_gpu.tensor->print();
+
+    print_cpu_gpu_correctness("select", res_small_cpu.tensor, res_small_gpu.tensor);
+
+
+    // *** [SELECT:backward] *********************************************
+    cout << "---------\n" << endl;
+    t_aux = Tensor::range(1, t_output->size, 1.0f);
+    t_aux->reshape_(t_output->shape);
+    t_output = Tensor::zeros(t_input->shape);
+    t_input = t_aux;
+
+//    t_input->print();
+//    t_output->print();
+    res_small_cpu = run_tensor_select(t_input, t_output, "select_back", oi_addresses, DEV_CPU, 1);
+    res_small_gpu = run_tensor_select(t_input, t_output, "select_back", oi_addresses, DEV_GPU, 1);
+
+    res_small_cpu.tensor->print();  // delta_parent
+    res_small_gpu.tensor->print();
+
+    print_cpu_gpu_correctness("select_back", res_small_cpu.tensor, res_small_gpu.tensor);
+
+
+    int asd = 33;
 
 //    Tensor* A = Tensor::full({10}, 100.0f);
 //    Tensor* B = Tensor::full({10}, -100.0f);

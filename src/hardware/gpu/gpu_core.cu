@@ -108,3 +108,54 @@ void gpu_fill_(Tensor *A, float v) {
     fill_<<<dimGrid,dimBlock>>>(A->ptr,v,A->size);
     check_cuda(cudaDeviceSynchronize(),"set");
 }
+
+
+void gpu_select(Tensor *A, Tensor *B, const int* indices){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    int n;
+    // Copy A stride from host to device
+    n = A->stride.size();
+    int *d_A_stride; cudaMalloc((int**)&d_A_stride, n*sizeof(int));
+    cudaMemcpy(d_A_stride, A->stride.data(), n*sizeof(int), cudaMemcpyHostToDevice);
+
+    // Copy B stride from host to device
+    n = B->stride.size();
+    int *d_B_stride; cudaMalloc((int**)&d_B_stride, n*sizeof(int));
+    cudaMemcpy(d_B_stride, B->stride.data(), n*sizeof(int), cudaMemcpyHostToDevice);
+
+    // Copy indices from host to device
+    n = B->size;
+    int *d_indices; cudaMalloc((int**)&d_indices, n*sizeof(int));
+    cudaMemcpy(d_indices, indices, n*sizeof(int), cudaMemcpyHostToDevice);
+
+    setDims(B);  // B is the small
+    select<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], d_A_stride, d_B_stride, d_indices);
+    check_cuda(cudaDeviceSynchronize(), "select");
+}
+
+void gpu_select_back(Tensor *A, Tensor *B, const int* indices){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    int n;
+    // Copy A stride from host to device
+    n = A->stride.size();
+    int *d_A_stride; cudaMalloc((int**)&d_A_stride, n*sizeof(int));
+    cudaMemcpy(d_A_stride, A->stride.data(), n*sizeof(int), cudaMemcpyHostToDevice);
+
+    // Copy B stride from host to device
+    n = B->stride.size();
+    int *d_B_stride; cudaMalloc((int**)&d_B_stride, n*sizeof(int));
+    cudaMemcpy(d_B_stride, B->stride.data(), n*sizeof(int), cudaMemcpyHostToDevice);
+
+    // Copy indices from host to device
+    n = B->size;
+    int *d_indices; cudaMalloc((int**)&d_indices, n*sizeof(int));
+    cudaMemcpy(d_indices, indices, n*sizeof(int), cudaMemcpyHostToDevice);
+
+    setDims(A);  // A is the small
+    select_back<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], d_A_stride, d_B_stride, d_indices);
+    check_cuda(cudaDeviceSynchronize(), "select_back");
+}

@@ -296,6 +296,10 @@ namespace eddl {
         return new LSum(l1, k, "", DEV_CPU);
     }
 
+    layer Select(layer l, vector<string> indices){
+        return new LSelect(l, indices, "", DEV_CPU);
+    }
+
     // ---- REDUCTION LAYERS ----
     layer ReduceMean(layer l, const vector<int> axis, bool keepdims) {
         return new LRMean(l, axis, keepdims, "", DEV_CPU);

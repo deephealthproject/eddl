@@ -276,4 +276,26 @@ public:
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 };*/
 
+/// Select Layer
+class LSelect : public OperatorLayer {
+public:
+    static int total_layers;
+
+    vector<string> str_indices;
+    vector<vector<int>> idxs_range;
+    int* oi_addresses;
+
+    LSelect(Layer *l, vector<string> str_indices, string name, int dev);
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int b) override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+};
+
 #endif //EDDL_LAYER_OPERATORS_H

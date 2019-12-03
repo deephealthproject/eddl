@@ -38,9 +38,15 @@ int main(int argc, char **argv){
     layer l=in;
 
     // Data augmentation
-    l = CropScaleRandom(l, {0.8f, 1.0f});
-    l = Flip(l,1);
+//   l = ShiftRandom(l, {-0.2f, +0.2f}, {-0.2f, +0.2f});
+//   l = RotateRandom(l, {-30.0f, +30.0f});
+//   l = ScaleRandom(l, {0.85f, 2.0f});
+//   l = FlipRandom(l, 1);
+//   l = CropRandom(l, {28, 28});
+//   l = CropScaleRandom(l, {0.f, 1.0f});
+//   l = CutoutRandom(l, {0.0f, 0.3f}, {0.0f, 0.3f});
 
+    // l=Select(l, {"1", "1:31", "1:31"});
     l=MaxPool(ReLu(Conv(l,32,{3,3},{1,1})),{2,2});
     l=MaxPool(ReLu(Conv(l,64,{3,3},{1,1})),{2,2});
     l=MaxPool(ReLu(Conv(l,128,{3,3},{1,1})),{2,2});
@@ -65,6 +71,7 @@ int main(int argc, char **argv){
           CS_GPU({1}) // GPU with only one gpu
     );
 
+    
     // plot the model
     plot(net,"model.pdf");
 
@@ -92,5 +99,3 @@ int main(int argc, char **argv){
 
 }
 
-
-///////////

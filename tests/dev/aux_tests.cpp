@@ -358,3 +358,30 @@ TestResult run_tensor_create(string op, int dev, int runs){
     result.tensor = t_input;
     return result;
 }
+
+TestResult run_tensor_select(Tensor* t_input, Tensor* t_output, string op, int* oi_addresses, int dev, int runs){
+    // Move to device
+    if (dev == DEV_GPU){
+        t_input->toGPU();
+        t_output->toGPU();
+    }
+
+    clock_t begin = clock();
+    for(int i=0; i<runs; i++){
+        // Math operations
+        if(op=="select") {
+            Tensor::select(t_input, t_output, oi_addresses);
+        }else if(op=="select_back") {
+            Tensor::select_back(t_input, t_output, oi_addresses);
+        } else {
+            std::cout << "Unknown operator" << std::endl;
+        }
+    }
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
+    TestResult result{};
+    result.time = elapsed_secs;
+    result.tensor = t_output;
+    return result;
+}

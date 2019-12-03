@@ -123,6 +123,38 @@ bool Tensor::valid_indices(vector<int> indices){
     return true;
 }
 
+
+// ***** Core (auxiliar) *****************************
+int* Tensor::ranges2indices(vector<vector<int>> ranges, int ignoreBatch){
+
+    // Compute output dimensions
+    vector<int> oshape = indices2shape(ranges);
+    vector<int> ostride = shape2stride(oshape);
+    int osize = shape2size(oshape);
+    int* addresses = new int[osize];  // Because the batch is 1 (default), then it's resized
+
+    // For each output address (0,1,2,3,...n), compute its indices
+    // Then add the minimum of each range, and compute the raw address
+    for(int i=0; i<osize; i++) {
+
+        // Extract indices
+        int A_pos = 0;
+        for(int d=0; d<ranges.size(); d++){
+            // Compute output indices at dimension d
+            int B_idx = (i/ostride[d]) % oshape[d];  // (52 / 32) % 32=> [1, 20]
+
+            // Compute input indices at dimension d
+            int A_idx = B_idx + ranges[d][0];  // B_index + A_start => [0, 0, 0] + [0, 5, 5]
+            A_pos += A_idx * this->stride[d+ignoreBatch];
+        }
+
+        // Save address translation
+        addresses[i] = A_pos;
+    }
+
+    return addresses;
+}
+
 // ***** Core (static) *****************************
 void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
     // Transpose
@@ -217,6 +249,43 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
         msg("unsupported copy between devices", "Tensor::copy");
     }
     B->tsem->unlock();
+}
+
+
+void Tensor::select(Tensor *A, Tensor* B, int* indices){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_select(A, B, indices);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+      {
+        gpu_select(A, B, indices);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+}
+
+void Tensor::select_back(Tensor *A, Tensor* B, int* indices){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_select_back(A, B, indices);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+      {
+        gpu_select_back(A, B, indices);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
 }
 
 void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
@@ -322,45 +391,26 @@ void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) 
 void Tensor::tile(Tensor *A, Tensor *B)
 {
 
-  int Asize=A->shape[0];
-  int Bsize=B->shape[0];
+    int Asize=A->shape[0];
+    int Bsize=B->shape[0];
 
 
-  if (Bsize>Asize) {
-    vector<int> sind(Bsize);
-    int start,end;
-    for(int i=0;i<Bsize;i++) sind[i]=i;
-    for(int i=0;i<Bsize/Asize;i++) {
-        start = i * Asize;
-        end = start + Asize;
-        Tensor::deselect(A, B, sind, start, end);
+    if (Bsize>Asize) {
+        vector<int> sind(Bsize);
+        int start,end;
+        for(int i=0;i<Bsize;i++) sind[i]=i;
+        for(int i=0;i<Bsize/Asize;i++) {
+            start = i * Asize;
+            end = start + Asize;
+            Tensor::deselect(A, B, sind, start, end);
+        }
+        if (Bsize%Asize) {
+            Tensor::deselect(A, B, sind, end, end+(Bsize%Asize));
+        }
     }
-    if (Bsize%Asize) {
-      Tensor::deselect(A, B, sind, end, end+(Bsize%Asize));
+    else {
+        vector<int> sind(Bsize);
+        for(int i=0;i<Bsize;i++) sind[i]=i;
+        Tensor::select(A, B, sind, 0, Bsize);
     }
-  }
-  else {
-    vector<int> sind(Bsize);
-    for(int i=0;i<Bsize;i++) sind[i]=i;
-    Tensor::select(A, B, sind, 0, Bsize);
-  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  ///

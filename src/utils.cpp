@@ -8,6 +8,7 @@
 * All rights reserved
 */
 
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <cmath>
@@ -18,6 +19,7 @@
 
 #include "system_info.h"
 #include <fstream>
+#include <utility>
 #include <string.h>
 
 #ifdef EDDL_LINUX
@@ -40,6 +42,15 @@
 #include <windows.h>
 #endif
 
+
+void msg(const string& text, const string& title) {
+    std::cout << text;
+    if(!title.empty()){
+        std::cout << " (" << title << ")";
+    }
+    std::cout << endl;
+    exit(0);
+}
 
 
 float *get_fmem(int size, char *str){
@@ -156,4 +167,91 @@ string get_extension(string filename){
         return filename.substr(idx+1);
     }
     return "";
+}
+
+vector<vector<int>> parse_indices(const vector<string>& str_indices, const vector<int>& shape){
+    string delimiter(":");
+    vector<vector<int>> ranges;
+
+    // Shapes must match
+    if(str_indices.size() != shape.size()){
+        msg( "The number of dimensions between the indices and the tensor shape must match", "parse_indices");
+    }
+
+    // Parse string indices
+    for(int i=0; i<str_indices.size(); i++){
+        int min, max;
+
+        // Remove whitespaces
+        string str = str_indices[i];
+        std::string::iterator end_pos = std::remove(str.begin(), str.end(), ' ');
+        str.erase(end_pos, str.end());
+
+        // Find delimiters
+        int pos = str.find(delimiter);
+        if(pos != string::npos){ // Found
+            if(str==delimiter){  // ":"
+                min = 0;
+                max = shape[i]-1;
+            }else{
+                if (pos==0){ // ":5"
+                    min = 0;
+                    max = std::stoi(str.substr(pos+delimiter.length(), shape[i]-1)) - 1;
+                }else if(pos==str.length()-1){  // "5:"
+                    min = std::stoi(str.substr(0, pos));
+                    max = shape[i]-1;
+                }else{  // "5:10"
+                    min = std::stoi(str.substr(0, pos));
+                    max = std::stoi(str.substr(pos+delimiter.length(), shape[i]-1)) - 1;
+                }
+            }
+        }else{  // Not found => "5"
+            min = std::stoi(str);
+            max = min;
+        }
+
+        ranges.push_back({min, max});
+    }
+
+
+    // Second check (negative values, max < min, or max > shape)
+    for(int i=0; i<ranges.size(); i++){
+        string common_str = "Invalid indices: '" + str_indices[i] + "'. ";
+        if(ranges[i][0] < 0 || ranges[i][1] < 0){
+            msg( common_str + "Indices must be greater than zero.", "parse_indices");
+        }else if(ranges[i][1] < ranges[i][0]){
+            msg(common_str + "The last index of the range must be greater or equal than the first.", "parse_indices");
+        } else if(ranges[i][1] >= shape[i]){
+            msg(common_str + "The last index of the range must fit in its dimension.", "parse_indices");
+        }
+    }
+    return ranges;
+}
+
+vector<int> indices2shape(vector<vector<int>> ranges){
+    vector<int> shape;
+    for(auto & range : ranges){
+        shape.push_back(range[1]-range[0]+1);
+    }
+    return shape;
+}
+
+int shape2size(vector<int> shape){
+    int size = 1;
+    for(int i=0; i<shape.size(); i++){
+        size *= shape[i];
+    }
+    return size;
+}
+
+vector<int> shape2stride(const vector<int>& shape){
+    vector<int> stride = {1};
+
+    for(int i=shape.size()-1; i>0; i--){
+        int s = shape[i];
+        int s2 = stride[0];
+        stride.insert(stride.begin(), s*s2);
+    }
+
+    return stride;
 }

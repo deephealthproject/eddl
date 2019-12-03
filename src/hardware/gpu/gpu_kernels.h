@@ -28,6 +28,8 @@ __global__ void eye(float* a, long int rows, long int cols);
 __global__ void fill(float *aptr,float *bptr,int t,int aini,int at,int bini,int bt,int tot,int inc);
 __global__ void fill_(float* a, float v, long int size);
 __global__ void mask(float* a, float v, long int size);
+__global__ void select(float* A, float* B, int batch, int* A_stride, int* B_stride, int* indices);
+__global__ void select_back(float* A, float* B, int batch, int* A_stride, int* B_stride, int* indices);
 
 // GPU: Transformations
 __global__ void shift(float* A, float* B, int batch, int depth, int irows, int icols, int* shift, int mode, float constant);

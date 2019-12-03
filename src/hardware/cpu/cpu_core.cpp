@@ -51,8 +51,38 @@ void cpu_fill(Tensor * A, int aini, int aend, Tensor * B, int bini, int bend, in
     }
 }
 
-void
-cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end)
+
+void cpu_select(Tensor *A, Tensor *B, const int* indices){
+    #pragma omp parallel for
+    for (int b=0; b < B->shape[0]; b++) {  // walk batches
+        int A_str_batch = b * A->stride[0];
+        int B_str_batch = b * B->stride[0];
+
+        for (int i = 0; i < B->stride[0]; i++) {  // walk c,h,w
+            int A_pos = A_str_batch + indices[i];
+            int B_pos = B_str_batch + i;
+
+            B->ptr[B_pos] = A->ptr[A_pos];
+        }
+    }
+}
+
+void cpu_select_back(Tensor *A, Tensor *B, const int* indices){
+    #pragma omp parallel for
+    for (int b=0; b < A->shape[0]; b++) {  // walk batches
+        int A_str_batch = b * A->stride[0];
+        int B_str_batch = b * B->stride[0];
+
+        for (int i = 0; i < A->stride[0]; i++) {  // walk stride
+            int A_pos = A_str_batch + i;
+            int B_pos = B_str_batch + indices[i];
+
+            B->ptr[B_pos] += A->ptr[A_pos];  // delta_parent += delta
+        }
+    }
+}
+
+void cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end)
 {
     int s = A->size / A->shape[0];
 
@@ -66,9 +96,7 @@ cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end)
     }
 }
 
-void
-cpu_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end)
-{
+void cpu_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end){
     int s = A->size / A->shape[0];
 
     #pragma omp parallel for
