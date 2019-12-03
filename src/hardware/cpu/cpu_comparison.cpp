@@ -21,4 +21,5 @@ int cpu_equal(Tensor *A, Tensor *B, float epsilon){
           return 0;
       }
   }
+    return 1;
 }
