@@ -23,10 +23,12 @@ int LBatchNorm::total_layers = 0;
 
 LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev) : LinLayer(name, dev) {
 
-    vector<int> axis;
-    if (parent->output->ndim == 2) axis.push_back(0);
-    else if (parent->output->ndim == 4) {axis.push_back(0);axis.push_back(2);axis.push_back(3);}
-    else msg("LBatchNorm only works over 2D or 4D tensors", "LBatchNorm");
+    input=parent->output;
+
+    if (input->ndim == 2) {axis.push_back(0);shape.push_back(input->shape[1]);}
+    else if (input->ndim == 4) {axis.push_back(0);axis.push_back(2);axis.push_back(3);shape.push_back(input->shape[1]);}
+    else msg("LBatchNorm only works over 1D (Debse) or 2D (Conv) tensors","LBatchNorm");
+
 
     if(name.empty()) this->name = "batchnorm" + to_string(++total_layers);
 
@@ -34,163 +36,147 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
     this->epsilon = epsilon;
     this->affine = affine;
 
-    init=true;
-    //
-    input=parent->output;
+    output=new Tensor(input->getShape(),dev);
+    delta=new Tensor(input->getShape(),dev);
+
+    bn_mean=new Tensor(shape,dev);
+    bn_var=new Tensor(shape,dev);
+    sd=new Tensor(shape,dev);
+
+
+    MD=new MapReduceDescriptor(input,axis);
 
     if (momentum!=0.0) {
-        mean=new LTensor(input->getShape(),dev);
-        mean->output->fill_(0.0);
+        mean=new Tensor(shape,dev);
+        mean->fill_(0.0);
 
-        variance=new LTensor(input->getShape(),dev);
-        variance->output->fill_(1.0);
-
-        //params.push_back(mean->output);
-        //params.push_back(variance->output);
+        variance=new Tensor(shape,dev);
+        variance->fill_(1.0);
     }
-
-    // create a sub-graph
-    LRMean *mean_x,*var;
-    LMult *mult;
-    LSum *veps;
-    LDiff *diff;
-    LSqrt *sd;
-    LDiv *div;
-
-    // mean
-    mean_x=new LRMean(parent, axis, true,this->name+"mean_x",dev);
-
-    // var
-    diff=new LDiff(parent, mean_x,this->name+"diff",dev);
-    mult=new LMult(diff,diff,this->name+"mult",dev);
-    var=new LRMean(mult, axis,true,this->name+"mean_mult",dev);
-    //sd
-    veps=new LSum(var,epsilon,this->name+"sum_eps",dev);
-    sd=new LSqrt(veps,this->name+"sqrt",dev);
-    // norm
-    div=new LDiv(diff,sd,this->name+"div",dev);
-
-    layers.push_back(mean_x); //0
-    layers.push_back(diff);  //1 --
-    layers.push_back(mult);  //2
-    layers.push_back(var);   //3
-    layers.push_back(veps);  //4 --
-    layers.push_back(sd);    //5 --
-    layers.push_back(div);   //6 --
-
-    // save statistics with momentum
-    if (momentum!=0.0) {
-      LMult *mx,*mm,*vx,*vm;
-      LSum *addm,*addv;
-
-      mx=new LMult(mean_x,(1.0-momentum),this->name+"mx",dev);
-      mm=new LMult(mean,momentum,this->name+"mm",dev);
-      addm=new LSum(mx,mm,this->name+"sum_m",dev);
-
-      vx=new LMult(var,(1-momentum),this->name+"sx",dev);
-      vm=new LMult(variance,momentum,this->name+"sm",dev);
-      addv=new LSum(vx,vm,this->name+"sum_sd",dev);
-
-      layers.push_back(mx);  //7
-      layers.push_back(mm);  //8
-      layers.push_back(addm);//9
-
-      layers.push_back(vx);  //10
-      layers.push_back(vm);  //11
-      layers.push_back(addv);//12
-    }
-
-    // detach from the main graph
-    parent->detach(mean_x);
-    parent->detach(diff);
-    ////////////////////////////
-
-    output=div->output;
-    delta=div->delta;
-
-
 
     parent->addchild(this);
     addparent(parent);
-
 }
 
 
 // virtual
 void LBatchNorm::resize(int batch){
-
-  if (batch==layers[0]->output->shape[0]) return;
-
-  for(int i=0;i<layers.size();i++) layers[i]->resize(batch);
-
-  if (target!=nullptr) target->resize(batch);
-
-
-  if (momentum!=0.0) {
-    if (!init) {
-      Tensor *nmean=mean->output->clone();
-      Tensor *nvar=variance->output->clone();
-
-      mean->resize(batch);
-      variance->resize(batch);
-
-      Tensor::tile(nmean,mean->output);
-      Tensor::tile(nvar,variance->output);
-
-      delete nmean;
-      delete nvar;
-    }
-    else {
-      mean->resize(batch);
-      variance->resize(batch);
-      mean->output->fill_(0.0);
-      variance->output->fill_(1.0);
-    }
+  if (batch!=output->shape[0]) {
+    output->resize(batch);
+    delta->resize(batch);
+    if (target!=nullptr) target->resize(batch);
+    delete MD;
+    MD=new MapReduceDescriptor(input,axis);
   }
-}
 
-void LBatchNorm::reset()
-{
-  for (int i = 0; i != layers.size(); i++)
-      layers[i]->reset();
+
 }
 
 void LBatchNorm::forward() {
-  init=false;
-  if (mode==TRMODE) {
-    for(int i=0;i<layers.size();i++) {
-      layers[i]->forward();
-    }
+
+
+  if (mode == TRMODE) {
+
+    Tensor::copy(input,output);
+
+    reduce_mean(output,bn_mean,MD);
+
+    reduce_diff(output,bn_mean,MD);
+
+    Tensor *osqr=output->clone();
+    osqr->sqr_();
+
+    reduce_mean(osqr,bn_var,MD);
+
     if (momentum!=0.0) {
-      Tensor::copy(layers[9]->output,mean->output);
-      Tensor::copy(layers[12]->output,variance->output);
+      Tensor::add(momentum, mean, (1.0-momentum), bn_mean,mean,0);
+      Tensor::add(momentum, variance, (1.0-momentum), bn_var,variance,0);
     }
+
+    Tensor::copy(bn_var,sd);
+
+    sd->add_(epsilon);
+    sd->sqrt_();
+
+    reduce_div(output,sd,MD);
+    delete osqr;
+
   }
-  else {
-    if (momentum!=0.0)
-      Tensor::copy(mean->output,layers[0]->output);
-    else layers[0]->forward();
+  else { // testmode
 
-    layers[1]->forward();
-
-    if (momentum!=0.0)
-      Tensor::copy(variance->output,layers[3]->output);
-    else {
-      layers[2]->forward();
-      layers[3]->forward();
-    }
-    layers[4]->forward();
-    layers[5]->forward();
-    layers[6]->forward();
+    reduce_diff(input,mean,MD);
+    Tensor::copy(variance,bn_var);
+    bn_var->add_(epsilon);
+    bn_var->sqrt_();
+    reduce_div(input,bn_var,MD);
+    Tensor::copy(input,output);
   }
 
 }
 
-void LBatchNorm::backward() {
+void LBatchNorm::backward()
+{
+  // from http://proceedings.mlr.press/v37/ioffe15.pdf
+  // still not affine transform
 
-  for(int i=layers.size()-1;i>=0;i--) {
-    layers[i]->backward();
-  }
+  int m=delta->shape[0]*delta->shape[2]*delta->shape[3];
+
+  Tensor *dmean=new Tensor(bn_mean->getShape(),dev);
+  Tensor *dvar=new Tensor(bn_var->getShape(),dev);
+
+  Tensor *X=input->clone();
+  Tensor *Tvar32=bn_var->clone();
+  Tensor *Tsqvar=bn_var->clone();
+  Tensor *dx_hat=delta->clone();
+
+  // No affine
+  //reduced_mult(Delta,bn_g,dx_hat,0,1);
+  //4 Var : dvar
+  Tsqvar->add_(epsilon);
+  Tsqvar->sqrt_();
+
+  Tvar32->add_(epsilon);
+  Tvar32->pow_(1.5);
+
+  X->div_(-1.0);
+  reduce_sum(X,bn_mean,MD);
+  X->div_(2.0);
+  reduce_div(X,Tvar32,MD);
+  Tensor::el_mult(X,dx_hat,X,0);
+  reduce_mean(X,dvar,MD);
+  dvar->mult_(m);
+
+
+  //5 Mean
+  reduce_div(dx_hat,Tsqvar,MD);
+  //dx_hat->mult_(-1);
+  reduce_mean(dx_hat,dmean,MD);
+  dmean->mult_(-m);
+  //Tensor::copy(delta, dx_hat);
+
+  //6 Delta
+  //reduce_div(dx_hat,Tsqvar,MD);
+  Tensor::copy(dx_hat,delta);
+
+  Tensor::copy(input,X);
+  X->mult_(2.0/m);
+  bn_mean->mult_(-2.0/m);
+  reduce_sum(X,bn_mean,MD);
+  reduce_mult(X,dvar,MD);
+  Tensor::inc(X,delta);
+  dmean->mult_(1.0/m);
+  reduce_sum(delta,dmean,MD);
+
+  Tensor::copy(delta,parent[0]->delta);
+
+
+delete X;
+delete Tvar32;
+delete Tsqvar;
+delete dx_hat;
+delete dvar;
+delete dmean;
+
 
 }
 

@@ -238,7 +238,6 @@ SET(CPP_SOURCES
         src/layers/normalization/layer_normmax.cpp
         src/layers/normalization/layer_normminmax.cpp
         src/layers/normalization/layer_batchnorm.cpp
-        src/layers/normalization/layer_batchnorm2D.cpp
         src/layers/generators/layer_generator.cpp
         src/layers/generators/layer_generators.h
         src/layers/generators/layer_gauss.cpp

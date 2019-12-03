@@ -101,36 +101,6 @@ public:
     float momentum;
     float epsilon;
     bool affine;
-    LTensor *mean;
-    LTensor *variance;
-    bool init;
-
-    static int total_layers;
-    vector<Layer *> layers;
-
-    LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev);
-
-    Layer *share(int c, int bs, vector<Layer *> p) override;
-
-    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
-    void forward() override;
-
-    void backward() override;
-
-    void resize(int batch) override;
-
-    void reset() override;
-
-    string plot(int c) override;
-};
-
-/// BatchNormalization Layer
-class LBatchNorm2D : public LinLayer {
-public:
-    float momentum;
-    float epsilon;
-    bool affine;
     Tensor *mean;
     Tensor *variance;
     Tensor *bn_mean;
@@ -138,7 +108,7 @@ public:
     Tensor *sd;
     Tensor *bn_E;
 
-    int *redmap;
+    MapReduceDescriptor *MD;
     bool init;
     vector<int> axis;
     vector<int> shape;
@@ -146,7 +116,7 @@ public:
     static int total_layers;
     vector<Layer *> layers;
 
-    LBatchNorm2D(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev);
+    LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

@@ -22,6 +22,16 @@
 
 using namespace std;
 
+class MapReduceDescriptor {
+public:
+   int *ind;
+   int *gind;
+
+
+   MapReduceDescriptor(Tensor *A,vector<int> axis);
+   ~MapReduceDescriptor();
+};
+
 class ReduceDescriptor {
 public:
    vector<int> axis;

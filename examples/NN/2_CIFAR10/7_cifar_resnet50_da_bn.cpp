@@ -24,8 +24,13 @@ using namespace eddl;
 // Using fit for training
 //////////////////////////////////
 
+layer BN(layer l)
+{
+  return BatchNormalization(l);
+}
+
 layer BG(layer l) {
-  return GaussianNoise(BatchNormalization(l),0.3);
+  return GaussianNoise(BN(l),0.3);
 }
 
 layer ResBlock(layer l, int filters,int half) {
@@ -93,8 +98,8 @@ int main(int argc, char **argv){
     sgd(0.01, 0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    CS_CPU() // CPU with maximum threads availables
-    //CS_GPU({1}) // GPU with only one gpu
+    //CS_CPU() // CPU with maximum threads availables
+    CS_GPU({1}) // GPU with only one gpu
   );
 
   // plot the model

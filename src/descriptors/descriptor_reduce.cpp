@@ -16,6 +16,18 @@
 #include "../hardware/gpu/gpu_hw.h"
 #endif
 
+
+MapReduceDescriptor::MapReduceDescriptor(Tensor *A,vector<int> axis)
+{
+  ind=get_reduction_map(A,axis);
+  gind=nullptr;
+}
+
+MapReduceDescriptor::~MapReduceDescriptor()
+{
+  free(ind);
+}
+
 ReduceDescriptor::ReduceDescriptor() {}
 
 ReduceDescriptor::ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool keepdims)

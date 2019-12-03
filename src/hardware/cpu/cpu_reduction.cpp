@@ -10,7 +10,7 @@
 
 #include "cpu_hw.h"
 
-void cpu_reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map)
+void cpu_reduce(Tensor *A, Tensor *B,string mode,int* map)
 {
   int i,j,min,max,sum;
   int s=A->size/B->size;
@@ -42,29 +42,47 @@ void cpu_reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map)
     exit(1);
   }
 }
+void cpu_reduce(Tensor *A, Tensor *B,string mode,MapReduceDescriptor *MD)
+{
+    cpu_reduce(A,B,mode,MD->ind);
+}
 
 
-void cpu_reduce_op(Tensor *A, Tensor *B,string op,vector<int> axis,int* map)
+void cpu_reduce_op(Tensor *A, Tensor *B,string op,int* map)
 {
   int i,j,min,max,sum;
   int s=A->size/B->size;
 
-  for(i=0;i<A->size;i++) {
-    if (op=="sum")
+  if (op=="sum") {
+    #pragma omp parallel for
+    for(i=0;i<A->size;i++)
       A->ptr[i]+=B->ptr[map[i]];
-    else if (op=="diff")
+  }
+  else if (op=="diff"){
+    #pragma omp parallel for
+    for(i=0;i<A->size;i++)
       A->ptr[i]-=B->ptr[map[i]];
-    else if (op=="mult")
+  }
+  else if (op=="mult"){
+    #pragma omp parallel for
+    for(i=0;i<A->size;i++)
       A->ptr[i]*=B->ptr[map[i]];
-    else if (op=="div")
+  }
+  else if (op=="div"){
+    #pragma omp parallel for
+    for(i=0;i<A->size;i++)
       A->ptr[i]/=B->ptr[map[i]];
-    else {
-      cout<<"op: "<<op<<" not yet implemented\n";
-      exit(1);
-    }
+  }
+  else {
+    cout<<"op: "<<op<<" not yet implemented\n";
+    exit(1);
   }
 }
 
+void cpu_reduce_op(Tensor *A, Tensor *B,string op,MapReduceDescriptor *MD)
+{
+  cpu_reduce_op(A,B,op,MD->ind);
+}
 
 
 void cpu_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {

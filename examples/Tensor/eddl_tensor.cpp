@@ -23,26 +23,38 @@ using namespace eddlT;
 int main(int argc, char **argv) {
 
   int dev=DEV_GPU;
+  vector<int> axis={0,2,3};
 
-  Tensor *A=new Tensor({2,3,5,2},dev);
+
+  Tensor *A=new Tensor({32,64,224,224},dev);
+  Tensor *B=new Tensor({64},dev);
+
 
   A->fill_(2.0);
+  int *map=get_reduction_map(A, axis);
 
-  vector<int> axis={0,3};
-  int *map=Tensor::get_reduction_map(A, axis);
-
-  for(int i=0;i<A->size;i++)
-    printf("%d ",map[i]);
-  printf("\n");
-
-  Tensor *B=new Tensor({3,5},dev);
-  Tensor::reduce_mean(A,B,axis);
-
+  reduce_mean(A,B,axis,map);
   B->print();
 
-  Tensor::reduce_mult(A,B,axis);
+  int devc=DEV_CPU;
+  Tensor *Ac=new Tensor({32,64,224,224},devc);
+  Tensor *Bc=new Tensor({64},devc);
 
-  A->print();
+  Ac->fill_(2.0);
+
+  reduce_mean(Ac,Bc,axis,map);
+  Bc->print();
+
+  B->toCPU();
+  if (!Tensor::equal(B,Bc,0.1)) {
+    fprintf(stderr,"Error not equal\n");
+  }
+
+  //B->print();
+
+  //reduce_mult(A,B,axis);
+
+  //A->print();
 
   /*
 //    int dev = DEV_CPU;

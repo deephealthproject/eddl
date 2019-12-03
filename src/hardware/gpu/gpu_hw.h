@@ -17,6 +17,7 @@
 #include <cublas_v2.h>
 
 #include "../../tensor/tensor.h"
+#include "../../tensor/tensor_reduction.h"
 #include "../../descriptors/descriptors.h"
 
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
@@ -132,8 +133,11 @@ void gpu_total_sum(Tensor *A, float *tot);
 float gpu_sum_abs(Tensor *A);
 
 // GPU: Reduction
-void gpu_reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map);
-void gpu_reduce_op(Tensor *A, Tensor *B,string op,vector<int> axis,int* map);
+void gpu_reduce(Tensor *A, Tensor *B,string mode,int* map);
+void gpu_reduce_op(Tensor *A, Tensor *B,string op,int* map);
+void gpu_reduce(Tensor *A, Tensor *B,string mode,MapReduceDescriptor *MD);
+void gpu_reduce_op(Tensor *A, Tensor *B,string op,MapReduceDescriptor *MD);
+
 void gpu_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
 void gpu_reduction(ReduceDescriptor *RD);
 void gpu_reduction_back(ReduceDescriptor *RD);
