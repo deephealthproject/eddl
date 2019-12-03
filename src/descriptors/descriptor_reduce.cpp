@@ -9,6 +9,7 @@
 
 
 #include "descriptors.h"
+#include "../tensor/tensor_reduction.h"
 
 
 #ifdef cGPU

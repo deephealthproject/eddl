@@ -19,6 +19,7 @@ using namespace std;
 
 void reduction(ReduceDescriptor *RD);
 void reduction_back(ReduceDescriptor *RD);
+
 int *get_reduction_map(Tensor *A, vector<int> axis);
 void reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map=nullptr);
 void reduce_mean(Tensor *A, Tensor *B,vector<int> axis,int* map=nullptr);
