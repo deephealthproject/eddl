@@ -86,7 +86,12 @@ void Tensor::add_(float v) {
 #ifdef cFPGA
     else if (isFPGA())
       {
-        tensor_op_hls(this,v,FPGASUM);
+        //tensor_op_hls(this,v,FPGASUM);
+        Tensor *nA=new Tensor(this->getShape(),DEV_CPU);
+        fpga_copy_from_fpga(this, nA->ptr);
+        cpu_add_(nA, v);
+        fpga_copy_to_fpga(nA->ptr, this);             
+        delete nA; 
       }
 #endif
 }
@@ -133,7 +138,7 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
       {
         //msg("Not implemented for FPGA yet", "Tensor::add");
         //fpga_tensor_sum6(scA, A, scB, B, C, incC);
-        printf("FPGA::ADD");
+        //printf("FPGA::ADD\n");
         Tensor *nA=new Tensor(A->getShape(),DEV_CPU);
         Tensor *nB=new Tensor(B->getShape(),DEV_CPU);
         Tensor *nC=new Tensor(C->getShape(),DEV_CPU);
@@ -144,6 +149,9 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
         fpga_copy_to_fpga(nA->ptr, A);
         fpga_copy_to_fpga(nB->ptr, B);
         fpga_copy_to_fpga(nC->ptr, C);
+        delete nA;
+        delete nB;
+        delete nC;
       }
 #endif
 
@@ -355,7 +363,7 @@ void Tensor::inv_() {
   #endif
   #ifdef cFPGA
   else {
-      msg("div not ready for FPGA yet");
+      msg("Inv not ready for FPGA yet");
   }
   #endif
 }
@@ -390,7 +398,20 @@ void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
 #ifdef cFPGA
     else if (A->isFPGA())
       {
-        fpga_el_div_mult(A,B,C,incC, 0);
+        //fpga_el_div_mult(A,B,C,incC, 0);
+        Tensor *nA=new Tensor(A->getShape(),DEV_CPU);
+        Tensor *nB=new Tensor(B->getShape(),DEV_CPU);
+        Tensor *nC=new Tensor(C->getShape(),DEV_CPU);
+        fpga_copy_from_fpga(A, nA->ptr);
+        fpga_copy_from_fpga(B, nB->ptr);
+        fpga_copy_from_fpga(C, nC->ptr);
+        cpu_el_div(nA, nB, nC, incC);
+        fpga_copy_to_fpga(nA->ptr, A);
+        fpga_copy_to_fpga(nB->ptr, B);
+        fpga_copy_to_fpga(nC->ptr, C);
+        delete nA;
+        delete nB;
+        delete nC;
       }
 #endif
     C->tsem->unlock();
@@ -611,11 +632,12 @@ void Tensor::mult_(float v) {
 #ifdef cFPGA
     else {
         //tensor_op_hls(this, v,FPGAMULT);
-        printf("FPGA::MULT");
+        //printf("FPGA::MULT\n");
         Tensor *nA=new Tensor(this->getShape(),DEV_CPU);
         fpga_copy_from_fpga(this, nA->ptr);
         cpu_mult_(nA, v);
         fpga_copy_to_fpga(nA->ptr, this);
+        delete nA;
     }
 #endif
 }
@@ -668,7 +690,20 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
 #endif
 #ifdef cFPGA
     else {
-       fpga_mult2D(A,tA,B,tB,C,incC);
+       //fpga_mult2D(A,tA,B,tB,C,incC);
+       Tensor *nA=new Tensor(A->getShape(),DEV_CPU);
+       Tensor *nB=new Tensor(B->getShape(),DEV_CPU);
+       Tensor *nC=new Tensor(C->getShape(),DEV_CPU);
+       fpga_copy_from_fpga(A, nA->ptr);
+       fpga_copy_from_fpga(B, nB->ptr);
+       fpga_copy_from_fpga(C, nC->ptr);
+       cpu_mult2D(nA, tA, nB, tB, nC, incC);
+       fpga_copy_to_fpga(nA->ptr, A);
+       fpga_copy_to_fpga(nB->ptr, B);
+       fpga_copy_to_fpga(nC->ptr, C);
+       delete nA;
+       delete nB;
+       delete nC; 
     }
 #endif
     C->tsem->unlock();
@@ -1017,7 +1052,12 @@ void Tensor::sqr_() {
 #ifdef cFPGA
     else if (isFPGA())
      {
-        fpga_tensor_operation(this,0,FPGASQR);
+        //tensor_op_hls(this, 0, FPGASQR);
+        Tensor *nA=new Tensor(this->getShape(),DEV_CPU);
+        fpga_copy_from_fpga(this, nA->ptr);
+        cpu_sqr_(nA);
+        fpga_copy_to_fpga(nA->ptr, this);
+        delete nA;
      }
 #endif
 }
@@ -1042,7 +1082,12 @@ void Tensor::sqrt_() {
 #ifdef cFPGA
     else if (isFPGA())
       {
-        tensor_op_hls(this,0,FPGASQRT); 
+        //tensor_op_hls(this,0,FPGASQRT); 
+        Tensor *nA=new Tensor(this->getShape(),DEV_CPU);
+        fpga_copy_from_fpga(this, nA->ptr);
+        cpu_sqrt_(nA);
+        fpga_copy_to_fpga(nA->ptr, this);
+        delete nA;
       }
 #endif
 }
@@ -1075,7 +1120,12 @@ float Tensor::sum() {
 #ifdef cFPGA
     else if (isFPGA())
     {
-      return fpga_total_sum(this);
+      //return fpga_total_sum(this);
+      Tensor *nA=new Tensor(this->getShape(),DEV_CPU);
+      fpga_copy_from_fpga(this, nA->ptr);
+      float aux= cpu_sum(nA);
+      delete nA;
+      return aux;
     }
 #endif
     return 0;
@@ -1107,7 +1157,20 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
 #endif
 #ifdef cFPGA
     else {
-        fpga_sum2D_rowwise(A,B,C);        
+        //fpga_sum2D_rowwise(A,B,C);        
+        Tensor *nA=new Tensor(A->getShape(),DEV_CPU);
+        Tensor *nB=new Tensor(B->getShape(),DEV_CPU);
+        Tensor *nC=new Tensor(C->getShape(),DEV_CPU);
+        fpga_copy_from_fpga(A, nA->ptr);
+        fpga_copy_from_fpga(B, nB->ptr);
+        fpga_copy_from_fpga(C, nC->ptr);
+        cpu_sum2D_rowwise(nA, nB, nC);
+        fpga_copy_to_fpga(nA->ptr, A);
+        fpga_copy_to_fpga(nB->ptr, B);
+        fpga_copy_to_fpga(nC->ptr, C);
+        delete nA;
+        delete nB;
+        delete nC;
     }
 #endif
     C->tsem->unlock();
@@ -1140,7 +1203,7 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
     else if (A->isFPGA())
      {
        //fpga_reduce_sum2D(A,B,axis,incB);
-       printf("FPGA::REDUCESUM2D");
+       //printf("FPGA::REDUCESUM2D\n");
        Tensor *nA=new Tensor(A->getShape(),DEV_CPU);
        Tensor *nB=new Tensor(B->getShape(),DEV_CPU);
        fpga_copy_from_fpga(A, nA->ptr);
@@ -1148,7 +1211,8 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
        cpu_reduce_sum2D(nA, nB, axis, incB);
        fpga_copy_to_fpga(nA->ptr, A);
        fpga_copy_to_fpga(nB->ptr, B);
-
+       delete nA;
+       delete nB;
      } 
 #endif
     B->tsem->unlock();

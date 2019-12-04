@@ -14,6 +14,7 @@
 //#include <thrust/functional.h>
 //#include <thrust/extrema.h>
 
+//#define DBG_FPGA
 
 cl::Context context;
 cl::CommandQueue q;
@@ -159,6 +160,10 @@ void tensor_op_hls(Tensor *A, float fp, int kernel_id)
     cl_int err;
     cl::Event task_end;
  
+    #ifdef DBG_FPGA 
+        printf("TENSOR_OP_HLS %d\n", kernel_id);
+    #endif
+ 
 //    printf("Tensor with XX size %d in Buffer ref %d -- %d\n", A->size, 0,kernel_id);
     
     OCL_CHECK(err, tensor_op= cl::Kernel(program,"tensor_op", &err));
@@ -178,7 +183,10 @@ void fpga_tensor_sum6(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int in
 {
     cl_int err;
     cl::Event event;
-    printf("sum6\n");
+    #ifdef DBG_FPGA 
+        printf("FPGA::SUM6\n");
+    #endif
+
     OCL_CHECK(err, err = kernel_sum6.setArg(0, scA));
     OCL_CHECK(err, err = kernel_sum6.setArg(1, (A->fpga_ptr)));
     OCL_CHECK(err, err = kernel_sum6.setArg(2, scB));
@@ -195,7 +203,10 @@ void fpga_tensor_normalize(Tensor *A, float min, float max)
 {
     cl_int err;
     cl::Event event;
-    printf("Normalize\n");
+    
+    #ifdef DBG_FPGA 
+        printf("FPGA::NORMALIZE\n");
+    #endif
     float min_ori = 0;//gpu_min(A);
     float max_ori = 1;//gpu_max(A);
 
@@ -216,7 +227,11 @@ void fpga_reduce_sum2D( Tensor *A, Tensor *B, int axis,int incB)
 {
     cl_int err;
     cl::Event event;
-    printf("reduceSum2D\n");
+
+    #ifdef DBG_FPGA 
+        printf("FPGA::REDUCESUM2D\n");
+    #endif
+
     OCL_CHECK(err, err = reduce_sum2D.setArg(0, (A->fpga_ptr)));
     OCL_CHECK(err, err = reduce_sum2D.setArg(1, (B->fpga_ptr)));
     OCL_CHECK(err, err = reduce_sum2D.setArg(2, A->shape[0]));
@@ -232,7 +247,11 @@ void fpga_reduce_sum2D( Tensor *A, Tensor *B, int axis,int incB)
 void fpga_el_div_mult(Tensor *A, Tensor *B, Tensor *C, int incC, int op) {
    cl_int err;
    cl::Event event;
-   printf("El DIV_MULT %d\n", op);
+   
+   #ifdef DBG_FPGA 
+        printf("FPGA::EL_VIV_MULT %d\n", op);
+   #endif
+
    OCL_CHECK(err, err = el_div.setArg(0, (A->fpga_ptr)));
    OCL_CHECK(err, err = el_div.setArg(1, (B->fpga_ptr)));
    OCL_CHECK(err, err = el_div.setArg(2, (C->fpga_ptr)));
@@ -255,6 +274,10 @@ void fpga_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C){
     
     cl_int err;
     cl::Event event;
+
+    #ifdef DBG_FPGA 
+        printf("FPGA::SUM2DROWWISE\n");
+    #endif
     
     OCL_CHECK(err, err = sum2D_rowwise.setArg(0, (A->fpga_ptr)));
     OCL_CHECK(err, err = sum2D_rowwise.setArg(1, (B->fpga_ptr)));
@@ -273,6 +296,11 @@ void fpga_mult2D(Tensor *A,int tA, Tensor *B, int tB, Tensor *C, int incC){
     /*if (incC != 0) {
        printf("WARNING:: Mult2D with inc not supported\n"); 
     }else printf("REGULAR MATMULT\n");*/
+
+    #ifdef DBG_FPGA 
+        printf("FPGA::MULT2D\n");
+    #endif
+
     OCL_CHECK(err, err = mult2D.setArg(0, (A->fpga_ptr)));
     OCL_CHECK(err, err = mult2D.setArg(1, (B->fpga_ptr)));
     OCL_CHECK(err, err = mult2D.setArg(2, (C->fpga_ptr)));
@@ -294,6 +322,10 @@ float fpga_total_sum (Tensor *A){
    cl_int err;
    cl::Event event, result_ready;
 
+   #ifdef DBG_FPGA 
+        printf("FPGA::TOTAL_SUM\n");
+    #endif
+
    float *sum = (float*) malloc(sizeof(float));
    OCL_CHECK(err, cl::Buffer a(context,CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY, sizeof(float) ,sum, &err));
 
@@ -312,6 +344,11 @@ float fpga_total_sum (Tensor *A){
 int fpga_accuracy (Tensor *A, Tensor *B){
    cl_int err;
    cl::Event event, result_ready;
+
+
+   #ifdef DBG_FPGA 
+        printf("FPGA::ACCURACY\n");
+    #endif
  
    int *acc = (int*) malloc(sizeof(int));
    *acc = 0;
@@ -335,7 +372,11 @@ int fpga_accuracy (Tensor *A, Tensor *B){
 void fpga_cent(Tensor *A, Tensor *B, Tensor *C){
     cl_int err; 
     cl::Event event;
-    printf("Cent\n");
+    
+    #ifdef DBG_FPGA 
+        printf("FPGA::CENT\n");
+    #endif
+
     OCL_CHECK(err, err = kernel_cent.setArg(0, (A->fpga_ptr)));
     OCL_CHECK(err, err = kernel_cent.setArg(1, (B->fpga_ptr)));
     OCL_CHECK(err, err = kernel_cent.setArg(2, (C->fpga_ptr)));
@@ -351,7 +392,11 @@ void fpga_relu_soft_d(Tensor *D, Tensor *I, Tensor *PD, int kernel_id){
     
     cl_int err;
     cl::Event event;
-    printf("relu_soft_d kid%d size %d\n", kernel_id, D->size);  
+
+    #ifdef DBG_FPGA 
+        printf("FPGA::RELU_SOFT\n", kernel_id);
+    #endif
+
   
     OCL_CHECK(err, err = relu_soft_d.setArg(0, (D->fpga_ptr)));
     OCL_CHECK(err, err = relu_soft_d.setArg(1, (I->fpga_ptr)));
@@ -361,7 +406,6 @@ void fpga_relu_soft_d(Tensor *D, Tensor *I, Tensor *PD, int kernel_id){
     
     OCL_CHECK(err, err = q.enqueueTask(relu_soft_d, NULL, &event));
     q.finish();
-    printf("OUT RELU\n", kernel_id, D->size);
 }
 
 
@@ -369,14 +413,17 @@ void fpga_tensor_operation(Tensor *A, Tensor *B, int kernel_id)
 {
     cl_int err;
     cl::Event event;
-    printf("relu or soft\n");
     int aux; 
     if (kernel_id == FPGARELU) 	{aux = A->size;}
     else {
 	if (kernel_id == FPGASOFTM) {aux = A->shape[0];}
-        else{printf("Tensor Operation not supported\n"); exit(1);} 
+        else{printf("Tensor Operation not supported %d\n", kernel_id); exit(1);} 
     }
-    
+   
+    #ifdef DBG_FPGA 
+        printf("FPGA::TENSOR_OPERATION %d\n", kernel_id);
+    #endif
+ 
     OCL_CHECK(err, err = multitensor_op.setArg(0, (A->fpga_ptr)));
     OCL_CHECK(err, err = multitensor_op.setArg(1, (B->fpga_ptr)));
     OCL_CHECK(err, err = multitensor_op.setArg(2, aux));

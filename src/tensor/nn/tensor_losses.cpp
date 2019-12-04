@@ -47,7 +47,10 @@ void cent(Tensor *A, Tensor *B, Tensor *C) {
          cpu_cent(nA,nB,nC);
          fpga_copy_to_fpga(nA->ptr, A);
          fpga_copy_to_fpga(nB->ptr, B);
-         fpga_copy_to_fpga(nC->ptr, C); 
+         fpga_copy_to_fpga(nC->ptr, C);
+         delete nA; 
+         delete nB;
+         delete nC; 
       }
 #endif
     C->tsem->unlock();

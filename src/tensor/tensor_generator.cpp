@@ -35,7 +35,12 @@ void Tensor::rand_uniform(float v) {
 #ifdef cFPGA
     else if (isFPGA())
       {
-        tensor_op_hls(this,0,FPGAGAUSS);
+        //tensor_op_hls(this,0,FPGAGAUSS);
+        Tensor *nA=new Tensor(this->getShape(),DEV_CPU);
+        fpga_copy_from_fpga(this, nA->ptr);
+        cpu_rand_uniform(nA, v);
+        fpga_copy_to_fpga(nA->ptr, this);
+        delete nA;
       }
 #endif
 
@@ -95,12 +100,12 @@ void Tensor::rand_normal(float m, float s, bool fast_math) {
 #ifdef cFPGA
     else if (isFPGA()){
        /*tensor_op_hls(this,0,FPGAGAUSS);*/
-       printf("FPGA::RAND");
+       //printf("FPGA::RAND\n");
        Tensor *n=new Tensor(this->getShape(),DEV_CPU);
        fpga_copy_from_fpga(this, n->ptr);
        cpu_rand_normal(n, m, s, fast_math);
        fpga_copy_to_fpga(n->ptr, this);
-                    
+       delete n;             
     }
 #endif
 
