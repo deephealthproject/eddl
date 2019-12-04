@@ -27,7 +27,7 @@ unsigned long get_free_mem();
 
 string get_extension(string filename);
 
-vector<vector<int>> parse_indices(const vector<string>& str_indices, const vector<int>& shape);
+vector<vector<int>> parse_indices(vector<string> str_indices, const vector<int>& shape);
 
 vector<int> indices2shape(vector<vector<int>> ranges);
 

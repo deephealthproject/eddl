@@ -251,6 +251,20 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
     B->tsem->unlock();
 }
 
+Tensor* Tensor::select(const vector<string>& indices){
+    Tensor* t = nullptr;
+
+    // Get range of indices
+    vector<vector<int>> ranges = parse_indices(indices, this->shape);
+    vector<int> t_shape = indices2shape(ranges);
+    int* addresses = ranges2indices(ranges, 0);
+
+    // Initialize tensor
+    t = new Tensor(t_shape, DEV_CPU);
+    Tensor::select(this, t, addresses);
+
+    return t;
+}
 
 void Tensor::select(Tensor *A, Tensor* B, int* indices){
     if (A->isCPU() && B->isCPU()) {

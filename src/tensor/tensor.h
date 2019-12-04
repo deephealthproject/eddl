@@ -59,12 +59,14 @@ private:
     // Load methods
     static Tensor* load_from_bin(std::ifstream &ifs);
     static Tensor* load_from_onnx(std::ifstream &ifs);
-    static Tensor* load_from_img(const string &filename, string format);
+    static Tensor* load_from_img(const string &filename, const string &format);
+    static Tensor* load_from_numpy(const string &filename, const string &format);
 
     // Save methods
     void save2bin(std::ofstream &ofs);
     void save2onnx(std::ofstream &ofs);
     void save2img(const string &filename, string format);
+    void save2numpy(const string &filename, string format);
 
 public:
     int device;
@@ -148,7 +150,6 @@ public:
     static Tensor* logspace(float start, float end, int steps=100, float base=10.0f, int dev=DEV_CPU);
     static Tensor* eye(int size, int dev=DEV_CPU);
     static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
-
 
     // ***** Transformations *****************************
     static void shift(Tensor *A,Tensor *B, vector<int> shift, string mode="constant", float constant=0.0f);
@@ -340,6 +341,7 @@ public:
     static void transpose(Tensor *A, Tensor *B, vector<int> dims);
     static void copy(Tensor *A, Tensor *B);
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
+    Tensor* select(const vector<string>& indices);
     static void select(Tensor *A, Tensor *B, int* indices);
     static void select_back(Tensor *A, Tensor *B, int* indices);
     static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);

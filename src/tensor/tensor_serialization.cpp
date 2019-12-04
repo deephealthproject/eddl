@@ -22,13 +22,16 @@
 #define STBI_WINDOWS_UTF8
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "../stb/stb_image_write.h"
+#include "stb/stb_image_write.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "../stb/stb_image.h"
+#include "stb/stb_image.h"
 
 #define STB_DEFINE
-#include "../stb/stb.h"
+#include "stb/stb.h"
+
+// Read/Write Numpy
+#include "cnpy/cnpy.h"
 
 using namespace std;
 
@@ -52,7 +55,8 @@ Tensor* Tensor::load(const string& filename, string format) {
         t = Tensor::load_from_img(filename, format);
     }else if(format=="bin" || format=="onnx"){
         t = Tensor::loadfs(ifs, format);
-
+    }else if(format=="npy" || format=="npz"){
+        t = Tensor::load_from_numpy(filename, format);
     }else{
         msg("Format not implemented: *.'" + format + "'", "Tensor::load");
     }
@@ -104,7 +108,8 @@ Tensor* Tensor::load_from_onnx(std::ifstream &ifs){
     return new Tensor();
 };
 
-Tensor* Tensor::load_from_img(const string &filename, string format){
+
+Tensor* Tensor::load_from_img(const string &filename, const string &format){
     Tensor* t = nullptr;
 
     try {
@@ -141,6 +146,29 @@ Tensor* Tensor::load_from_img(const string &filename, string format){
     return t;
 }
 
+Tensor* Tensor::load_from_numpy(const string &filename, const string &format){
+    Tensor* t = nullptr;
+
+    cnpy::NpyArray arr = cnpy::npy_load(filename);
+    auto* loaded_data = arr.data<float>();
+
+    // Get shape
+    vector<int> arr_shape;
+    for(unsigned long i : arr.shape){
+        arr_shape.push_back(i);
+    }
+
+    // Initialize tensor
+    t = new Tensor(arr_shape, DEV_CPU);
+
+    // TODO: Shouldn't be needed. Check.
+    // Fill tensor
+    for(int i=0; i<arr.num_vals; i++){
+        t->ptr[i] = loaded_data[i];
+    }
+
+    return t;
+}
 
 // ********* SAVE FUNCTIONS *********
 void Tensor::save(const string& filename, string format) {
@@ -160,6 +188,8 @@ void Tensor::save(const string& filename, string format) {
 
         // Close file stream
         ofs.close();
+    }else if(format=="npy" || format=="npz"){
+        save2numpy(filename, format);
     }else{
         msg("Format not implemented: *.'" + format + "'", "Tensor::save");
     }
@@ -208,18 +238,18 @@ void Tensor::save2img(const string& filename, string format){
     Tensor *t = this->clone();  // Important if permute is not used
     t->toCPU();  // Just in case
 
-    // TODO: Temp! Check permute correctness
-    // Re-order components (careful with t[a]=t[b], collisions may appear if both are the same)
-    for(int i=0; i<t->size; i+=t->shape[1]) { // Jump RGB blocks [(rgb), (rgb),....]
-        for(int j=0; j<t->shape[1]; j++){  // Walk RGB block [R, G, B]
-            int pos = (i/t->shape[1])+(j*t->shape[2]*t->shape[3]);  // (index in plane)+(jump whole plane: HxW)
-            t->ptr[i+j]=this->ptr[pos];
-        }
-    }
+//    // TODO: Temp! Check permute correctness
+//    // Re-order components (careful with t[a]=t[b], collisions may appear if both are the same)
+//    for(int i=0; i<t->size; i+=t->shape[1]) { // Jump RGB blocks [(rgb), (rgb),....]
+//        for(int j=0; j<t->shape[1]; j++){  // Walk RGB block [R, G, B]
+//            int pos = (i/t->shape[1])+(j*t->shape[2]*t->shape[3]);  // (index in plane)+(jump whole plane: HxW)
+//            t->ptr[i+j]=this->ptr[pos];
+//        }
+//    }
     //t = t->permute({0, 3, 2, 1}); // Data must be presented as CxHxW
 
-    // Normalize image (for RGB must fall between 0 and 255)
-    t->normalize_(0.0f, 255.0f);
+    // Normalize image (for RGB must fall between 0 and 255) => Not a good idea
+    //t->normalize_(0.0f, 255.0f);
 
     // TODO: I don't see the need to cast this (but if i remove it, it doesn't work)
     // Cast pointer
@@ -243,3 +273,12 @@ void Tensor::save2img(const string& filename, string format){
     }
 
 }
+
+void Tensor::save2numpy(const string &filename, string format){
+    vector<size_t> t_shape;
+    for(auto &s : this->shape){
+        t_shape.push_back(s);
+    }
+    cnpy::npy_save(filename, this->ptr, t_shape, "w");
+}
+
