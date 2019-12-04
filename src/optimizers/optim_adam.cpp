@@ -36,7 +36,8 @@ Adam::~Adam() {
 }
 
 void Adam::change(vector<float> &p) {
-
+  if (p.size()>0) lr = p[0];
+  cout<<"Optimizer Adam set new lr="<<lr<<"\n";
 }
 
 Optimizer *Adam::clone() {

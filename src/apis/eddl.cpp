@@ -730,6 +730,11 @@ namespace eddl {
       net->setlogfile(fname);
     }
 
+    void setlr(model net,vector<float>p)
+    {
+      net->setlr(p);
+    }
+
     void summary(model m) {
         cout<<m->summary()<<"\n";
     }

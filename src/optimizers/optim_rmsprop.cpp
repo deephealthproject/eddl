@@ -30,7 +30,9 @@ RMSProp::~RMSProp() {
 }
 
 void RMSProp::change(vector<float> &p) {
-
+  if (p.size()>0) lr = p[0];
+  if (p.size()>1) rho = p[1];
+  cout<<"Optimizer RMSProp set new lr="<<lr<<" rho="<<rho<<"\n";
 }
 
 Optimizer *RMSProp::clone() {

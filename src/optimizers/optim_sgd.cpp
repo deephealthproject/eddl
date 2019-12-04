@@ -29,8 +29,10 @@ SGD::~SGD() {
 }
 
 void SGD::change(vector<float> &p) {
-    lr = p[0];
-    mu = p[1];
+
+    if (p.size()>0) lr = p[0];
+    if (p.size()>1) mu = p[1];
+    cout<<"Optimizer SGD set new lr="<<lr<<" mu="<<mu<<"\n";
 }
 
 Optimizer *SGD::clone() {
