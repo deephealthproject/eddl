@@ -169,13 +169,20 @@ string get_extension(string filename){
     return "";
 }
 
-vector<vector<int>> parse_indices(const vector<string>& str_indices, const vector<int>& shape){
+vector<vector<int>> parse_indices(vector<string> str_indices, const vector<int>& shape){
     string delimiter(":");
     vector<vector<int>> ranges;
 
     // Shapes must match
     if(str_indices.size() != shape.size()){
-        msg( "The number of dimensions between the indices and the tensor shape must match", "parse_indices");
+        int diff = shape.size() - str_indices.size();
+        if(diff>=0){
+            for(int i=0; i<diff; i++){
+                str_indices.emplace_back(":");
+            }
+        }else{
+            msg( "The number of dimensions of the indices cannot be greater than the shape of the tensor to match", "parse_indices");
+        }
     }
 
     // Parse string indices

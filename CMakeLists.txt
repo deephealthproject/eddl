@@ -162,8 +162,9 @@ include_directories(src/losses)
 include_directories(src/metrics)
 include_directories(src/optimizers)
 include_directories(src/regularizers)
-include_directories(src/stb)
 include_directories(src/tensor)
+include_directories(src/tensor/stb)
+include_directories(src/tensor/cnpy)
 include_directories(src/descriptors)
 # Temp
 include_directories(tests)
@@ -315,9 +316,11 @@ SET(CPP_SOURCES
         src/regularizers/regularizer_l1.cpp
         src/regularizers/regularizer_l1_l2.cpp
         src/regularizers/regularizer_l2.cpp
-        src/stb/stb.h
-        src/stb/stb_image.h
-        src/stb/stb_image_write.h
+        src/tensor/stb/stb.h
+        src/tensor/stb/stb_image.h
+        src/tensor/stb/stb_image_write.h
+        src/tensor/cnpy/cnpy.h
+        src/tensor/cnpy/cnpy.cpp
         src/tensor/tensor.h
         src/tensor/tensor.cpp
         src/tensor/tensor_comparison.cpp
@@ -446,6 +449,10 @@ if(EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
     )
 endif()
 
+# ZLIB
+find_package(ZLIB REQUIRED)
+include_directories(${ZLIB_INCLUDE_DIRS})
+target_link_libraries(eddl PRIVATE ${ZLIB_LIBRARIES})
 
 # pthreads setup for windows os
 # The following commands should be removed when pthread linux
