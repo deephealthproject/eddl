@@ -539,6 +539,8 @@ if(BUILD_EXAMPLES)
     add_executable(cifar_resnet "${EXAMPLES_DIR}/NN/2_CIFAR10/5_cifar_resnet.cpp")
     add_executable(cifar_resnet_da_bn "${EXAMPLES_DIR}/NN/2_CIFAR10/6_cifar_resnet_da_bn.cpp")
     add_executable(cifar_resnet50 "${EXAMPLES_DIR}/NN/2_CIFAR10/7_cifar_resnet50_da_bn.cpp")
+    ## Drive segmentation EXAMPLES
+    add_executable(drive_seg "${EXAMPLES_DIR}/NN/3_DRIVE/1_drive_seg.cpp")
     #### OTHER
     add_executable(example_ae "${EXAMPLES_DIR}/NN/other/eddl_ae.cpp")
     add_executable(example_conv "${EXAMPLES_DIR}/NN/other/eddl_conv.cpp")
@@ -565,6 +567,8 @@ if(BUILD_EXAMPLES)
     target_link_libraries(cifar_resnet eddl)
     target_link_libraries(cifar_resnet_da_bn eddl)
     target_link_libraries(cifar_resnet50 eddl)
+    ## DRIVE SEG EXAMPLES
+    target_link_libraries(drive_seg eddl)
     #### OTHER
     target_link_libraries(example_ae eddl)
     target_link_libraries(example_conv eddl)

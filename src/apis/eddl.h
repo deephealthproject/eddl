@@ -293,6 +293,7 @@ namespace eddl {
 
     void setlogfile(model net,string fname);
     void setlr(model net,vector<float>p);
+
     void summary(model m);
 
     void load(model m, const string& fname, string format="");
