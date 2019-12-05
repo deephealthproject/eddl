@@ -196,6 +196,8 @@ namespace eddl {
     }
     layer GroupNormalization(layer parent, int groups, float momentum, float epsilon, bool affine, string name) {
 
+        msg("GroupNorm still requieres LayerNorm to be implemented","GroupNormalization");
+
         vector<int> shape=parent->output->getShape();
 
         if (shape[1]%groups) {
@@ -206,7 +208,7 @@ namespace eddl {
 
         layer l=Reshape(parent,{groups,1,-1});
 
-        l=BatchNormalization(l);
+        //l=LayerNormalization(l);
 
         return Reshape(l,{shape[1],shape[2],shape[3]});
     }
