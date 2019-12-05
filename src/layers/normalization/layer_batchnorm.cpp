@@ -27,7 +27,10 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
     if (input->ndim == 2) {axis.push_back(0);shape.push_back(input->shape[1]);}
     else if (input->ndim == 4) {axis.push_back(0);axis.push_back(2);axis.push_back(3);shape.push_back(input->shape[1]);}
-    else msg("LBatchNorm only works over 1D (Debse) or 2D (Conv) tensors","LBatchNorm");
+    else {
+      input->info();
+      msg("LBatchNorm only works over 1D (Dense) or 2D (Conv) tensors","LBatchNorm");
+    }
 
 
     if(name.empty()) this->name = "batchnorm" + to_string(++total_layers);
@@ -120,7 +123,7 @@ void LBatchNorm::backward()
   // still not affine transform
 
   int m;
-  
+
   if (input->ndim == 2)
     m=delta->shape[0];
   else
