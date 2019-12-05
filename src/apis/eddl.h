@@ -14,6 +14,7 @@
 #include <vector>
 #include <thread>
 #include <pthread.h>
+#include <functional>
 
 #include "../net/net.h"
 #include "../net/netloss.h"
@@ -94,9 +95,9 @@ namespace eddl {
 // ---- LOSSES ----
     Loss* getLoss(string type);
 
-    loss newloss(Layer* (*f)(vector<Layer *>),vector<Layer *> in,string name);
-    loss newloss(Layer* (*f)(Layer *),Layer *in,string name);
 
+    loss newloss(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name);
+    loss newloss(const std::function<Layer*(Layer*)>& f, Layer *in, string name);
 
 
 
