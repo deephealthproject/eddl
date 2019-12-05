@@ -16,7 +16,7 @@
 #include "../layers/core/layer_core.h"
 
 
-NetLoss::NetLoss(Layer* (*f)(vector<Layer *>),vector<Layer *> in,string name)
+NetLoss::NetLoss(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name)
 {
  this->name=name;
 
@@ -25,7 +25,7 @@ NetLoss::NetLoss(Layer* (*f)(vector<Layer *>),vector<Layer *> in,string name)
  for(int i=0;i<in.size();i++)
   ginput.push_back(new LInput(new Tensor(in[i]->output->getShape()),"graph_input"+i,DEV_CPU));
 
- fout=(*f)(ginput);
+ fout=f(ginput);
 
  graph=new Net(ginput,{fout});
 
@@ -35,7 +35,7 @@ NetLoss::NetLoss(Layer* (*f)(vector<Layer *>),vector<Layer *> in,string name)
 
 }
 
-NetLoss::NetLoss(Layer* (*f)(Layer *),Layer * in,string name)
+NetLoss::NetLoss(const std::function<Layer*(Layer*)>& f, Layer *in, string name)
 {
  this->name=name;
 
@@ -43,7 +43,7 @@ NetLoss::NetLoss(Layer* (*f)(Layer *),Layer * in,string name)
 
  ginput.push_back(new LInput(new Tensor(in->output->getShape()),"graph_input",DEV_CPU));
 
- fout=(*f)(ginput[0]);
+ fout=f(ginput[0]);
 
  graph=new Net(ginput,{fout});
 

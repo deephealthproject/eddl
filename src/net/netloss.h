@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <functional>
 
 
 #include "net.h"
@@ -29,8 +30,8 @@ public:
     vector <Layer *>ginput;
     Layer* fout;
 
-    NetLoss(Layer* (*f)(vector<Layer *>),vector<Layer *> in,string name);
-    NetLoss(Layer* (*f)(Layer *),Layer * in,string name);
+    NetLoss(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name);
+    NetLoss(const std::function<Layer*(Layer*)>& f, Layer *in, string name);
     ~NetLoss();
     float compute();
 

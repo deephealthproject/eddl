@@ -361,13 +361,13 @@ namespace eddl {
         return nullptr;
     }
 
-    loss newloss(Layer* (*f)(vector<Layer *>),vector<Layer *> in,string name)
+    loss newloss(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name)
     {
-      return new NetLoss((*f),in,name);
+      return new NetLoss(f,in,name);
     }
-    loss newloss(Layer* (*f)(Layer *),Layer *in,string name)
+    loss newloss(const std::function<Layer*(Layer*)>& f, Layer *in, string name)
     {
-      return new NetLoss((*f),in,name);
+      return new NetLoss(f,in,name);
     }
     // ---- METRICS ----
     Metric* getMetric(string type) {
