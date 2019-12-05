@@ -198,6 +198,10 @@ namespace eddl {
 
         vector<int> shape=parent->output->getShape();
 
+        if (shape[1]%groups) {
+          msg("Invalid group value","GroupNormalization");
+        }
+
         if (shape.size()!=4) msg("GroupNorm only for conv tensors","GroupNormalization");
 
         layer l=Reshape(parent,{groups,1,-1});
