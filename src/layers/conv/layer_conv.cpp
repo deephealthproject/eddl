@@ -97,6 +97,7 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
     n->params.push_back(n->cd->bias);
 
     n->reg=reg;
+    n->init=init;
 
     return n;
 }
@@ -106,6 +107,8 @@ Layer *LConv::clone(int c, int bs, vector<Layer *> p, int todev) {
     n->orig = this;
 
     n->reg=reg;
+    n->init=init;
+
     return n;
 }
 
