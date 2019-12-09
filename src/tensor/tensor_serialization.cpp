@@ -238,14 +238,14 @@ void Tensor::save2img(const string& filename, string format){
     Tensor *t = this->clone();  // Important if permute is not used
     t->toCPU();  // Just in case
 
-//    // TODO: Temp! Check permute correctness
-//    // Re-order components (careful with t[a]=t[b], collisions may appear if both are the same)
-//    for(int i=0; i<t->size; i+=t->shape[1]) { // Jump RGB blocks [(rgb), (rgb),....]
-//        for(int j=0; j<t->shape[1]; j++){  // Walk RGB block [R, G, B]
-//            int pos = (i/t->shape[1])+(j*t->shape[2]*t->shape[3]);  // (index in plane)+(jump whole plane: HxW)
-//            t->ptr[i+j]=this->ptr[pos];
-//        }
-//    }
+    // TODO: Temp! Check permute correctness
+    // Re-order components (careful with t[a]=t[b], collisions may appear if both are the same)
+    for(int i=0; i<t->size; i+=t->shape[1]) { // Jump RGB blocks [(rgb), (rgb),....]
+        for(int j=0; j<t->shape[1]; j++){  // Walk RGB block [R, G, B]
+            int pos = (i/t->shape[1])+(j*t->shape[2]*t->shape[3]);  // (index in plane)+(jump whole plane: HxW)
+            t->ptr[i+j]=this->ptr[pos];
+        }
+    }
     //t = t->permute({0, 3, 2, 1}); // Data must be presented as CxHxW
 
     // Normalize image (for RGB must fall between 0 and 255) => Not a good idea

@@ -79,7 +79,8 @@ namespace eddl {
     layer Rotate(layer parent, float angle, vector<int> offset_center={0, 0}, string da_mode="nearest", float constant=0.0f, string name="");  //Todo: Implement
     layer Scale(layer parent, vector<int> new_shape, bool reshape, string da_mode="nearest", float constant=0.0f, string name="");
     layer Flip(layer parent, int axis=0, string name="");
-    layer Crop(layer parent, vector<int> from_coords, vector<int> to_coords, bool reshape, float constant=0.0f, string name="");
+    layer Crop(layer parent, vector<int> from_coords, vector<int> to_coords, bool reshape=true, float constant=0.0f, string name="");
+    layer Crop(layer parent, vector<int> size, bool reshape=true, float constant=0.0f, string name="");
     layer CropAndScale(layer parent, vector<int> from_coords, vector<int> to_coords, string da_mode="nearest", float constant=0.0f, string name="");
     layer Cutout(layer parent, vector<int> from_coords, vector<int> to_coords, float constant=0.0f, string name="");
 
