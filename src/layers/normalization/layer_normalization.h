@@ -23,6 +23,9 @@
 
 using namespace std;
 
+void BN_forward(Tensor *input,Tensor *output, MapReduceDescriptor *MD, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float momentum, float epsilon,int trmode);
+void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, MapReduceDescriptor *MD, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float epsilon);
+
 
 /// Normalization Layer
 class LNorm : public LinLayer {
@@ -105,8 +108,6 @@ public:
     Tensor *variance;
     Tensor *bn_mean;
     Tensor *bn_var;
-    Tensor *sd;
-    Tensor *bn_E;
 
     MapReduceDescriptor *MD;
     bool init;
@@ -117,6 +118,82 @@ public:
     vector<Layer *> layers;
 
     LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    string plot(int c) override;
+};
+
+/// LayerNormalization Layer
+class LLayerNorm : public LinLayer {
+public:
+    float momentum;
+    float epsilon;
+    bool affine;
+    Tensor *mean;
+    Tensor *variance;
+    Tensor *bn_mean;
+    Tensor *bn_var;
+    Tensor *sd;
+    Tensor *bn_E;
+
+
+    MapReduceDescriptor *MD;
+    bool init;
+    vector<int> axis;
+    vector<int> shape;
+
+    static int total_layers;
+    vector<Layer *> layers;
+
+    LLayerNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    string plot(int c) override;
+};
+
+/// GroupNormalization Layer
+class LGroupNorm : public LinLayer {
+public:
+    float momentum;
+    float epsilon;
+    int groups;
+    int N,C,H,W;
+    bool affine;
+    Tensor *mean;
+    Tensor *variance;
+    Tensor *bn_mean;
+    Tensor *bn_var;
+    Tensor *sd;
+    Tensor *bn_E;
+
+
+    MapReduceDescriptor *MD;
+    bool init;
+    vector<int> axis;
+    vector<int> shape;
+
+    static int total_layers;
+    vector<Layer *> layers;
+
+    LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool affine, string name, int dev);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

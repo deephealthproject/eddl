@@ -207,23 +207,11 @@ namespace eddl {
     layer BatchNormalization(layer parent, float momentum, float epsilon, bool affine, string name) {
         return new LBatchNorm(parent, momentum, epsilon, affine, name, DEV_CPU);
     }
+    layer LayerNormalization(layer parent, float momentum, float epsilon, bool affine, string name) {
+        return new LLayerNorm(parent, momentum, epsilon, affine, name, DEV_CPU);
+    }
     layer GroupNormalization(layer parent, int groups, float momentum, float epsilon, bool affine, string name) {
-
-        msg("GroupNorm still requieres LayerNorm to be implemented","GroupNormalization");
-
-        vector<int> shape=parent->output->getShape();
-
-        if (shape[1]%groups) {
-          msg("Invalid group value","GroupNormalization");
-        }
-
-        if (shape.size()!=4) msg("GroupNorm only for conv tensors","GroupNormalization");
-
-        layer l=Reshape(parent,{groups,1,-1});
-
-        //l=LayerNormalization(l);
-
-        return Reshape(l,{shape[1],shape[2],shape[3]});
+        return new LGroupNorm(parent, groups, momentum, epsilon, affine, name, DEV_CPU);
     }
 
 
