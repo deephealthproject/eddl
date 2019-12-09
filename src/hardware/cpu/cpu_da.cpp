@@ -33,8 +33,12 @@ void cpu_single_shift(int b, Tensor *A, Tensor *B, vector<int> shift, int mode, 
                     int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
                     B->ptr[B_pos] = A->ptr[A_pos];
                 }else{
-                    if(mode==0){ // constant
+                    if(mode==0){  // Constant
                         B->ptr[B_pos] = constant;
+                    }else if(mode == 5){  // Original
+                        B->ptr[B_pos] = A->ptr[B_pos];
+                    }else{
+                        msg("Mode (" + to_string(mode) + ") not implemented", "Tensor::cpu_single_shift");
                     }
                 }
 
@@ -64,7 +68,13 @@ void cpu_single_rotate(int b, Tensor *A, Tensor *B, float angle, vector<int> off
                     int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
                     B->ptr[B_pos] = A->ptr[A_pos];;
                 }else{
-                    B->ptr[B_pos] = constant;
+                    if(mode==0){  // Constant
+                        B->ptr[B_pos] = constant;
+                    }else if(mode == 5){  // Original
+                        B->ptr[B_pos] = A->ptr[B_pos];
+                    }else{
+                        msg("Mode (" + to_string(mode) + ") not implemented", "Tensor::cpu_single_rotate");
+                    }
                 }
             }
         }
@@ -90,6 +100,8 @@ void cpu_single_scale(int b, int* offsets, Tensor *A, Tensor *B, vector<int> new
                     } else {
                         B->ptr[B_pos] = constant;  // Equivalent a constant
                     }
+                }else{
+                    msg("Mode (" + to_string(mode) + ") not implemented", "Tensor::cpu_single_scale");
                 }
 
             }
@@ -160,6 +172,8 @@ void cpu_single_crop_scale(int b, Tensor* A, Tensor* B, vector<int> coords_from,
                     int B_pos = b*B->stride[0] + c*B->stride[1] + Bi*B->stride[2] + Bj*B->stride[3];
 
                     B->ptr[B_pos] = A->ptr[A_pos];
+                }else{
+                    msg("Mode (" + to_string(mode) + ") not implemented", "Tensor::cpu_single_crop_scale");
                 }
             }
         }

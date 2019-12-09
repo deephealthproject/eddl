@@ -22,33 +22,42 @@ using namespace eddlT;
 
 int main(int argc, char **argv) {
 
-  int dev=DEV_GPU;
-  vector<int> axis={0,2,3};
+    string fname = "/Users/salvacarrion/Desktop/elephant.jpg";
+    Tensor* t1 = Tensor::load(fname);
+    Tensor* t2 = new Tensor(t1->shape);
 
-
-  Tensor *A=new Tensor({32,64,224,224},dev);
-  Tensor *B=new Tensor({64},dev);
-
-
-  A->fill_(2.0);
-  int *map=get_reduction_map(A, axis);
-
-  reduce_mean(A,B,axis,map);
-  B->print();
-
-  int devc=DEV_CPU;
-  Tensor *Ac=new Tensor({32,64,224,224},devc);
-  Tensor *Bc=new Tensor({64},devc);
-
-  Ac->fill_(2.0);
-
-  reduce_mean(Ac,Bc,axis,map);
-  Bc->print();
-
-  B->toCPU();
-  if (!Tensor::equal(B,Bc,0.1)) {
-    fprintf(stderr,"Error not equal\n");
-  }
+    t1->save("rotate1.jpg");
+    Tensor::rotate(t1, t2, 45, {0,0}, "origienal");
+    t2->save("rotate2.jpg");
+    int asd = 33;
+//
+//  int dev=DEV_GPU;
+//  vector<int> axis={0,2,3};
+//
+//
+//  Tensor *A=new Tensor({32,64,224,224},dev);
+//  Tensor *B=new Tensor({64},dev);
+//
+//
+//  A->fill_(2.0);
+//  int *map=get_reduction_map(A, axis);
+//
+//  reduce_mean(A,B,axis,map);
+//  B->print();
+//
+//  int devc=DEV_CPU;
+//  Tensor *Ac=new Tensor({32,64,224,224},devc);
+//  Tensor *Bc=new Tensor({64},devc);
+//
+//  Ac->fill_(2.0);
+//
+//  reduce_mean(Ac,Bc,axis,map);
+//  Bc->print();
+//
+//  B->toCPU();
+//  if (!Tensor::equal(B,Bc,0.1)) {
+//    fprintf(stderr,"Error not equal\n");
+//  }
 
   //B->print();
 

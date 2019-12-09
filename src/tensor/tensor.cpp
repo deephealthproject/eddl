@@ -274,8 +274,12 @@ int Tensor::get_mode(string mode){
         // (a b c d | a b c d | a b c d)
         // The input is extended by wrapping around to the opposite edge.
         return 4;
+    }else if(mode == "original"){
+        // (o o o o | a b c d | o o o o)
+        // The input is extended by filling all values beyond the edge with the original values
+        return 5;
     }else {  // constant
-        return 0;
+        return -1;
     }
 }
 

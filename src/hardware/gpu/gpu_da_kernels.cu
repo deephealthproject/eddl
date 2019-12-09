@@ -35,8 +35,12 @@ __device__ void gpu_single_shift(long int thread_id_x, float* A, float* B, int b
         int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
         B[thread_id_x] = A[A_pos];
     }else{
-        if(mode==0){ // constant
+        if(mode==0){ // Constant
             B[thread_id_x] = constant;
+        }else if(mode == 5){  // Original
+            B[thread_id_x] = A[thread_id_x];
+        }else{
+            printf("Mode (%d) not implemented (%s)", mode, "Tensor::gpu_single_shift");
         }
     }
 }
@@ -63,12 +67,15 @@ __device__ void gpu_single_rotate(long int thread_id_x, float* A, float* B, int 
         int A_pos = b*A_stride[0] + c*A_stride[1] + Ai*A_stride[2] + Aj*A_stride[3];
         B[thread_id_x] = A[A_pos];
     }else{
-        if(mode==0){ // constant
+        if(mode==0){ // Constant
             B[thread_id_x] = constant;
+        }else if(mode == 5){  // Original
+            B[thread_id_x] = A[thread_id_x];
+        }else{
+            printf("Mode (%d) not implemented (%s)\n", mode, "Tensor::gpu_single_rotate");
         }
     }
 }
-
 
 
 __device__ void gpu_single_scale(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* new_shape, int mode, float constant){
@@ -98,6 +105,8 @@ __device__ void gpu_single_scale(long int thread_id_x, float* A, float* B, int b
         } else {
             B[thread_id_x] = constant;  // Equivalent to constant
         }
+    }else{
+        printf("Mode (%d) not implemented (%s)\n", mode, "Tensor::gpu_single_scale");
     }
 }
 
@@ -170,6 +179,8 @@ __device__ void gpu_single_crop_scale(long int thread_id_x, float* A, float* B, 
 
         int A_pos = b * A_stride[0] + c * A_stride[1] + Ai * A_stride[2] + Aj * A_stride[3];
         B[thread_id_x] = A[A_pos];
+    }else{
+        printf("Mode (%d) not implemented (%s)\n", mode, "Tensor::gpu_single_crop_scale");
     }
 }
 
@@ -257,7 +268,6 @@ __global__ void rotate_random(float* A, float* B, int batch, int depth, int irow
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
     long int ops = batch * depth*irows*icols;
 
-    // TODO: Implement
     if (thread_id_x < ops){
         int b = thread_id_x / (depth*irows*icols) % batch;
 

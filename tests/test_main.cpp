@@ -411,10 +411,11 @@ int main(int argc, char **argv) {
 //
 //    print_cpu_gpu_correctness("select_back", res_small_cpu.tensor, res_small_gpu.tensor);
 
-//    string fname = "/Users/salvacarrion/Desktop/numpy datasets/test_imgs.npy";
-    t_input = Tensor::load("myarray.npy");
-    t_output = t_input->select({"1"});
-    t_output->save("mynewarray.npy");
+    string fname = "/Users/salvacarrion/Desktop/elephant.jpg";
+    t_input = Tensor::load(fname);
+    t_output = t_input->select({"0"});
+
+    t_output->save("mynewarray2img.jpg");
     int asd = 33;
 
 //    Tensor* A = Tensor::full({10}, 100.0f);
