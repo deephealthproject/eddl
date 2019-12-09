@@ -21,23 +21,25 @@ using namespace std;
 using namespace eddlT;
 
 int main(int argc, char **argv) {
-//    float ptr[12] = {1, 2, 3,  1, 2, 3,
-//                     1, 2, 3,  1, 2, 3};
-//    Tensor* t1 = new Tensor({1, 2, 2, 3}, ptr, DEV_CPU);
-//    Tensor* t2;
-//
-//    t1->print();
-//    t2 = Tensor::permute(t1, {0, 3, 1, 2});
-//    t2->print();
-//    int asd = 33;
+    Tensor* t1, *t2;
 
-    Tensor* t1 = Tensor::range(1, 16);
+    float ptr[12] = {1, 2, 3,  1, 2, 3,
+                     1, 2, 3,  1, 2, 3};
+    t1= new Tensor({1, 2, 2, 3}, ptr, DEV_CPU);
+
+    t1->print();
+    t2 = Tensor::permute(t1, {0, 3, 1, 2});
+    t2->print();
+    int asd = 33;
+
+    t1 = Tensor::range(1, 16);
+    t1->reshape_({1, 1, 4, 4});
+    t1->print();
+
+    t1 = Tensor::moveaxis(t1, 3, 2);
     t1->reshape_({4, 4});
     t1->print();
-
-    t1 = Tensor::moveaxis(t1, 0, -1);
-    t1->print();
-    int asd = 33;
+    asd = 33;
 //
 //    string fname = "/Users/salvacarrion/Desktop/elephant.jpg";
 //    Tensor* t1 = Tensor::load(fname);

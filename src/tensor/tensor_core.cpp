@@ -66,10 +66,14 @@ void Tensor::reshape_(vector<int> shape){
 
 
 Tensor* Tensor::permute(Tensor* t, const vector<int>& dims){
+    // Compute address translation
+    int* oi_addresses = permute_indices(t->shape, dims);
+
+    // Create new tensor
     vector<int> oshape = permute_shape(t->shape, dims);
     Tensor *new_t = new Tensor(oshape, t->device);
 
-    int* oi_addresses = permute_indices(new_t->shape, dims);
+    // Fill new tensor
     Tensor::select(t, new_t, oi_addresses);
     return new_t;
 }
