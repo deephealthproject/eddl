@@ -96,6 +96,7 @@ void LLayerNorm::resize(int batch){
 void LLayerNorm::forward() {
 
   Tensor *A;
+  /*
 
   if (input->ndim == 2) A=input->permute({1,0});
   else if (input->ndim == 4) A=input->permute({1,0,2,3});
@@ -104,7 +105,7 @@ void LLayerNorm::forward() {
 
   if (input->ndim == 2) A=output->permute({1,0});
   else if (input->ndim == 4) A=output->permute({1,0,2,3});
-
+*/
 }
 
 void LLayerNorm::backward()
@@ -113,7 +114,7 @@ void LLayerNorm::backward()
   Tensor *A;
   Tensor *B;
 
-
+/*
   if (input->ndim == 2) A=delta->permute({1,0});
   else if (input->ndim == 4) A=delta->permute({1,0,2,3});
 
@@ -135,7 +136,7 @@ void LLayerNorm::backward()
 
   delete B;
 
-
+*/
 }
 
 

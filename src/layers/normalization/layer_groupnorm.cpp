@@ -100,11 +100,12 @@ void LGroupNorm::resize(int batch){
 
 void LGroupNorm::forward() {
 
+/*
     Tensor::copy(input,output);
 
     output->reshape_({N*groups,C/groups,H,W});
     output->permute({1,0,2,3});
-
+*/
 
 
 }
@@ -113,7 +114,7 @@ void LGroupNorm::backward()
 {
 
   int m;
-
+/*
   delta->reshape_({N*groups,C/groups,H,W});
   delta->permute({1,0,2,3});
 
@@ -123,7 +124,7 @@ void LGroupNorm::backward()
   else
     m=delta->shape[0]*delta->shape[2]*delta->shape[3];
 
-
+*/
 }
 
 
