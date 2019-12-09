@@ -80,7 +80,7 @@ void LBatchNorm::forward() {
 
 void LBatchNorm::backward()
 {
-  BN_backward(input, delta,parent[0]->delta,MD,bn_mean,bn_var,mean,variance,epsilon);
+  BN_backward(input,delta, parent[0]->delta,MD,bn_mean,bn_var,mean,variance,epsilon);
 
 }
 
