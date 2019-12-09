@@ -64,33 +64,37 @@ void Tensor::reshape_(vector<int> shape){
     }
 }
 
-Tensor* Tensor::permute(vector<int> axis){
-    // TODO: Too inefficient
-    // Compute new shape
-    vector<int> new_shape;
-    for(int i=0; i<this->ndim; i++){
-        new_shape.push_back(this->shape[axis[i]]);
-    }
 
-    // Create new tensor
-    auto* B = new Tensor(new_shape, DEV_CPU);
+Tensor* Tensor::permute(Tensor* t, const vector<int>& dims){
+    vector<int> oshape = permute_shape(t->shape, dims);
+    Tensor *new_t = new Tensor(oshape, t->device);
 
-    // Fill tensor
-    vector<int> B_idxs(this->ndim);
-    for(int A_pos=0; A_pos<this->size; A_pos++){
-        vector<int> A_idxs = this->get_indices_rowmajor(A_pos);
-
-        // Compute indices for B
-        for(int i=0; i<this->ndim; i++){
-            B_idxs[i] = A_idxs[axis[i]];
-        }
-
-        // Set value
-        B->set_(B_idxs, this->ptr[A_pos]);
-
-    }
-    return B;
+    int* oi_addresses = permute_indices(new_t->shape, dims);
+    Tensor::select(t, new_t, oi_addresses);
+    return new_t;
 }
+
+Tensor* Tensor::moveaxis(Tensor* t, int source, int destination){
+    // Check values
+    if(source<-1 || destination <-1){
+        msg("Invalid axis", "Tensor::moveaxis");
+    }
+
+    // User "-1" as alias for the last dimension
+    if(source == -1){source = t->ndim-1; }
+    if(destination == -1){destination = t->ndim-1; }
+
+    // Build axes to permute [0, 3] => (0,1,2,3) => (3,1,2,0)
+    vector<int> dims;
+    for(int i=0; i<t->ndim;i++){ dims.emplace_back(i); }
+    dims[source] = destination;
+    dims[destination] = source;
+
+    // Permute tensor
+    Tensor* t2 = Tensor::permute(t, dims);
+    return t2;
+}
+
 
 int Tensor::get_address_rowmajor(vector<int> indices){
     int address=0;

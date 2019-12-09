@@ -21,26 +21,24 @@ using namespace std;
 using namespace eddlT;
 
 int main(int argc, char **argv) {
-    float ptr[12] = {1, 2, 3,  1, 2, 3,
-                     1, 2, 3,  1, 2, 3};
-    float ptr2[12] = {1, 2, 3,  1, 2, 3,
-                     1, 2, 3,  1, 2, 3};
-    Tensor* t1 = new Tensor({1, 2, 2, 3}, ptr, DEV_CPU);
-    Tensor* t2 = new Tensor({1, 3, 2, 2}, ptr2, DEV_CPU);
+//    float ptr[12] = {1, 2, 3,  1, 2, 3,
+//                     1, 2, 3,  1, 2, 3};
+//    Tensor* t1 = new Tensor({1, 2, 2, 3}, ptr, DEV_CPU);
+//    Tensor* t2;
+//
+//    t1->print();
+//    t2 = Tensor::permute(t1, {0, 3, 1, 2});
+//    t2->print();
+//    int asd = 33;
 
+    Tensor* t1 = Tensor::range(1, 16);
+    t1->reshape_({4, 4});
     t1->print();
 
-    int* oi_addresses = permute_indices(t1->shape, {0, 3, 1, 2});
-    for (int i =0; i<t1->size; i++){cout << oi_addresses[i] << ", ";}
-
-    cout << "\n";
-
-    for (int i =0; i<t1->size; i++){cout << t1->ptr[oi_addresses[i]] << ", ";}
-    cout << "\n";
-    Tensor::select(t1, t2, oi_addresses);
-    t2->print();
+    t1 = Tensor::moveaxis(t1, 0, -1);
+    t1->print();
     int asd = 33;
-
+//
 //    string fname = "/Users/salvacarrion/Desktop/elephant.jpg";
 //    Tensor* t1 = Tensor::load(fname);
 //    Tensor* t2 = new Tensor(t1->shape);

@@ -37,11 +37,13 @@ LPermute::LPermute(Layer *parent, vector<int> dims, string name, int dev): Opera
     // Set input
     input=parent->output;
 
-    // Compute index translation (output=>input)
-    this->oi_addresses = permute_indices(input->shape, dims);
+    // Temp input/output shape
+    vector<int> ishape = vector<int>(input->shape.begin() + 1, input->shape.end());
+    vector<int> oshape = permute_shape(ishape, dims);
+    oshape.insert(oshape.begin(), 1);  // Insert batch (1, default), the it's resized
 
-    // Get output shape
-    vector<int> oshape = permute_shape(input->shape, dims);
+    // Compute index translation (output=>input)
+    this->oi_addresses = permute_indices(ishape, dims);
 
     // Set flow tensors
     output=new Tensor(oshape, dev);

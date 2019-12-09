@@ -121,24 +121,25 @@ Tensor* Tensor::load_from_img(const string &filename, const string &format){
 
         // Cast pointer
         t_size = t_width * t_height * t_channels;
-        auto* t_data = new float[t_size];
-        for(int i=0; i<t_size; i++){ t_data[i]= (float)pixels[i]; }
+        auto *t_data = new float[t_size];
+        for (int i = 0; i < t_size; i++) { t_data[i] = (float) pixels[i]; }
 
         // Free image
         stbi_image_free(pixels);
 
-        // Create tensor
-        t = new Tensor({1, t_channels, t_height, t_width}, DEV_CPU);
-
         // TODO: Temp! Check permute correctness
         // Re-order components (careful with t[a]=t[b], collisions may appear if both are the same)
+        t = new Tensor({1, t_channels, t_height, t_width}, DEV_CPU);
         for(int i=0; i<t->size; i+=t->shape[1]) { // Jump RGB blocks [(rgb), (rgb),....]
             for(int j=0; j<t->shape[1]; j++){  // Walk RGB block [R, G, B]
                 int pos = (i/t->shape[1])+(j*t->shape[2]*t->shape[3]);  // (index in plane)+(jump whole plane: HxW)
                 t->ptr[pos]=t_data[i+j];
             }
         }
-        //t = t->permute({0, 3, 2, 1}); // Data must be presented as CxHxW
+
+//        t = new Tensor({1, t_width, t_height, t_channels}, t_data, DEV_CPU);
+//        t = Tensor::permute(t, {0, 3, 2, 1}); // Data must be presented as CxHxW
+
     } catch(const std::bad_array_new_length &e) {
         msg("There was an error opening the image", "Tensor::load_from_img");
     }
@@ -246,7 +247,7 @@ void Tensor::save2img(const string& filename, string format){
             t->ptr[i+j]=this->ptr[pos];
         }
     }
-    //t = t->permute({0, 3, 2, 1}); // Data must be presented as CxHxW
+//    t = Tensor::permute(t, {0, 2, 1, 3}); // Data must be presented as CxHxW
 
     // Normalize image (for RGB must fall between 0 and 255) => Not a good idea
     //t->normalize_(0.0f, 255.0f);

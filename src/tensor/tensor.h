@@ -135,7 +135,8 @@ public:
     int* ranges2indices(vector<vector<int>> ranges, int ignoreBatch=1);
 
     // ***** Core (static) *****************************
-    Tensor* permute(vector<int> axis);
+    static Tensor* permute(Tensor* t, const vector<int>& dims);
+    static Tensor* moveaxis(Tensor* t, int source, int destination);
 
     // ************************************************
     // ****** Tensor operations ***********************

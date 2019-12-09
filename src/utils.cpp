@@ -276,7 +276,7 @@ vector<int> permute_shape(const vector<int>& ishape, const vector<int>& dims){
     return oshape;
 }
 
-int* permute_indices(const vector<int>& ishape, const vector<int>& dims, int ignoreBatch){
+int* permute_indices(const vector<int>& ishape, const vector<int>& dims){
     int* addresses = nullptr;
     vector<int> oshape = permute_shape(ishape, dims);
 
@@ -299,15 +299,14 @@ int* permute_indices(const vector<int>& ishape, const vector<int>& dims, int ign
             // Extract indices
             int B_pos = 0;
             for(int d=0; d<ishape.size(); d++){
-                // Compute output indices at dimension d
-                int B_idx = (i/istride[dims[d]]) % ishape[dims[d]];  // (52 / 32) % 32=> [1, 20]
-                B_pos += B_idx * ostride[d];
+                // Compute output indices at dimension d, but permuted
+                int A_idx = (i/istride[dims[d]]) % ishape[dims[d]];  // (52 / 32) % 32=> [1, 20]
+                B_pos += A_idx * ostride[d];
             }
 
             // Save address translation
             addresses[B_pos] = i;
         }
-
     }
 
     return addresses;

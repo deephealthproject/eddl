@@ -37,6 +37,6 @@ vector<int> shape2stride(const vector<int>& shape);
 
 vector<int> permute_shape(const vector<int>& ishape, const vector<int>& dims);
 
-int* permute_indices(const vector<int>& ishape, const vector<int>& dims, int ignoreBatch=1);
+int* permute_indices(const vector<int>& ishape, const vector<int>& dims);
 
 #endif //EDDL_UTILS_H
