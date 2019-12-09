@@ -18,22 +18,42 @@
 
 using namespace std;
 
-int LBatchNorm::total_layers = 0;
+int LGroupNorm::total_layers = 0;
 
 
-LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev) : LinLayer(name, dev) {
+LGroupNorm::LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool affine, string name, int dev) : LinLayer(name, dev) {
 
     input=parent->output;
+    groups=g;
+
+    if (input->ndim != 4) {
+      input->info();
+      msg("LGroupNorm only works over 2D (Conv) tensors","LGroupNorm");
+    }
+
+    N=input->shape[0];
+    C=input->shape[1];
+    H=input->shape[2];
+    W=input->shape[3];
+
+    if (C%groups) msg("incorrect group value not channel divider","LGroupNorm");
+
+    input->reshape_({N*groups,C/groups,H,W});
+    input->permute({1,0,2,3});
 
     if (input->ndim == 2) {axis.push_back(0);shape.push_back(input->shape[1]);}
     else if (input->ndim == 4) {axis.push_back(0);axis.push_back(2);axis.push_back(3);shape.push_back(input->shape[1]);}
     else {
       input->info();
-      msg("LBatchNorm only works over 1D (Dense) or 2D (Conv) tensors","LBatchNorm");
+      msg("LGroupNorm only works over 1D (Dense) or 2D (Conv) tensors","LGroupNorm");
     }
 
+    MD=new MapReduceDescriptor(input,axis);
 
-    if(name.empty()) this->name = "batchnorm" + to_string(++total_layers);
+    input->permute({1,0,2,3});
+    input->reshape_({N,C,H,W});
+
+    if(name.empty()) this->name = "groupnorm" + to_string(++total_layers);
 
     this->momentum = momentum;
     this->epsilon = epsilon;
@@ -44,9 +64,7 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
     bn_mean=new Tensor(shape,dev);
     bn_var=new Tensor(shape,dev);
-
-
-    MD=new MapReduceDescriptor(input,axis);
+    sd=new Tensor(shape,dev);
 
     if (momentum!=0.0) {
         mean=new Tensor(shape,dev);
@@ -56,38 +74,62 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
         variance->fill_(1.0);
     }
 
+
     parent->addchild(this);
     addparent(parent);
 }
 
 
 // virtual
-void LBatchNorm::resize(int batch){
+void LGroupNorm::resize(int batch){
   if (batch!=output->shape[0]) {
     output->resize(batch);
     delta->resize(batch);
     if (target!=nullptr) target->resize(batch);
     delete MD;
+    N=batch;
+    input->reshape_({N*groups,C/groups,H,W});
+    input->permute({1,0,2,3});
     MD=new MapReduceDescriptor(input,axis);
+    input->permute({1,0,2,3});
+    input->reshape_({N,C,H,W});
   }
 
 
 }
 
-void LBatchNorm::forward() {
-  BN_forward(input,output,MD,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);
+void LGroupNorm::forward() {
+
+    Tensor::copy(input,output);
+
+    output->reshape_({N*groups,C/groups,H,W});
+    output->permute({1,0,2,3});
+
+
+
 }
 
-void LBatchNorm::backward()
+void LGroupNorm::backward()
 {
-  BN_backward(input, delta,parent[0]->delta,MD,bn_mean,bn_var,mean,variance,epsilon);
+
+  int m;
+
+  delta->reshape_({N*groups,C/groups,H,W});
+  delta->permute({1,0,2,3});
+
+
+  if (input->ndim == 2)
+    m=delta->shape[0];
+  else
+    m=delta->shape[0]*delta->shape[2]*delta->shape[3];
+
 
 }
 
 
 
-Layer *LBatchNorm::share(int c, int bs, vector<Layer *> p) {
-    LBatchNorm *n = new LBatchNorm(p[0], momentum, epsilon, affine, "share_" + to_string(c) + name, dev);
+Layer *LGroupNorm::share(int c, int bs, vector<Layer *> p) {
+    LGroupNorm *n = new LGroupNorm(p[0], groups, momentum, epsilon, affine, "share_" + to_string(c) + name, dev);
     n->orig = this;
 
     // TODO: Implement
@@ -95,8 +137,8 @@ Layer *LBatchNorm::share(int c, int bs, vector<Layer *> p) {
     return n;
 }
 
-Layer *LBatchNorm::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LBatchNorm *n = new LBatchNorm(p[0], momentum, epsilon, affine, "clone_" + to_string(todev) + name, todev);
+Layer *LGroupNorm::clone(int c, int bs, vector<Layer *> p, int todev) {
+    LGroupNorm *n = new LGroupNorm(p[0], groups, momentum, epsilon, affine, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
 
     // TODO: Implement
@@ -105,7 +147,7 @@ Layer *LBatchNorm::clone(int c, int bs, vector<Layer *> p, int todev) {
 }
 
 
-string LBatchNorm::plot(int c) {
+string LGroupNorm::plot(int c) {
     string s;
 
     if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=bisque4,shape=box]";

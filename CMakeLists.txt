@@ -235,10 +235,13 @@ SET(CPP_SOURCES
         src/layers/da/layer_scale_random.cpp
         src/layers/da/layer_shift.cpp
         src/layers/da/layer_shift_random.cpp
+        src/layers/normalization/bnorm.cpp
         src/layers/normalization/layer_norm.cpp
         src/layers/normalization/layer_normmax.cpp
         src/layers/normalization/layer_normminmax.cpp
         src/layers/normalization/layer_batchnorm.cpp
+        src/layers/normalization/layer_layernorm.cpp
+        src/layers/normalization/layer_groupnorm.cpp
         src/layers/generators/layer_generator.cpp
         src/layers/generators/layer_generators.h
         src/layers/generators/layer_gauss.cpp
