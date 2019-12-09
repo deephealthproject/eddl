@@ -49,12 +49,12 @@ void BN_forward(Tensor *input,Tensor *output, MapReduceDescriptor *MD, Tensor *b
 
   }
   else { // testmode
-    reduce_diff(input,mean,MD);
+    Tensor::copy(input,output);
+    reduce_diff(output,mean,MD);
     Tensor::copy(variance,bn_var);
     bn_var->add_(epsilon);
     bn_var->sqrt_();
-    reduce_div(input,bn_var,MD);
-    Tensor::copy(input,output);
+    reduce_div(output,bn_var,MD);
   }
 
 }
