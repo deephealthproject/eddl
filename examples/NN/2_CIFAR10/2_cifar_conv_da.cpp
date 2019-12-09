@@ -37,6 +37,8 @@ int main(int argc, char **argv){
     layer in=Input({3,32,32});
     layer l=in;
 
+    l = Permute(l, {0, 2, 1});
+
     // Data transformations
 //    l = Crop(l, {30, 30});
 

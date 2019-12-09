@@ -266,6 +266,7 @@ SET(CPP_SOURCES
         src/layers/operators/layer_pow.cpp
         src/layers/operators/layer_sqrt.cpp
         src/layers/operators/layer_select.cpp
+        src/layers/operators/layer_permute.cpp
         src/layers/operators/layer_sum.cpp
         src/layers/pool/layer_avgpool.cpp
         src/layers/pool/layer_globalavgpool.cpp

@@ -181,7 +181,7 @@ vector<vector<int>> parse_indices(vector<string> str_indices, const vector<int>&
                 str_indices.emplace_back(":");
             }
         }else{
-            msg( "The number of dimensions of the indices cannot be greater than the shape of the tensor to match", "parse_indices");
+            msg( "The number of dimensions of the indices cannot be greater than the shape of the tensor to match", "utils::parse_indices");
         }
     }
 
@@ -225,11 +225,11 @@ vector<vector<int>> parse_indices(vector<string> str_indices, const vector<int>&
     for(int i=0; i<ranges.size(); i++){
         string common_str = "Invalid indices: '" + str_indices[i] + "'. ";
         if(ranges[i][0] < 0 || ranges[i][1] < 0){
-            msg( common_str + "Indices must be greater than zero.", "parse_indices");
+            msg( common_str + "Indices must be greater than zero.", "utils::parse_indices");
         }else if(ranges[i][1] < ranges[i][0]){
-            msg(common_str + "The last index of the range must be greater or equal than the first.", "parse_indices");
+            msg(common_str + "The last index of the range must be greater or equal than the first.", "utils::parse_indices");
         } else if(ranges[i][1] >= shape[i]){
-            msg(common_str + "The last index of the range must fit in its dimension.", "parse_indices");
+            msg(common_str + "The last index of the range must fit in its dimension.", "utils::parse_indices");
         }
     }
     return ranges;
@@ -261,4 +261,54 @@ vector<int> shape2stride(const vector<int>& shape){
     }
 
     return stride;
+}
+
+vector<int> permute_shape(const vector<int>& ishape, const vector<int>& dims){
+    vector<int> oshape;
+    if(dims.size()!=ishape.size()){
+        msg("Dimensions do not match", "utils::permute_indices");
+    }else{
+        for(auto &d : dims){
+            oshape.emplace_back(ishape[d]);
+        }
+    }
+
+    return oshape;
+}
+
+int* permute_indices(const vector<int>& ishape, const vector<int>& dims, int ignoreBatch){
+    int* addresses = nullptr;
+    vector<int> oshape = permute_shape(ishape, dims);
+
+    // Compute size
+    int isize = shape2size(ishape);
+    int osize = shape2size(oshape);
+
+    // Check if the shapes are compatible
+    if (ishape.size() != oshape.size() || isize!=osize){
+        msg("Incompatible dimensions", "utils::permute_indices");
+    }else{
+        vector<int> istride = shape2stride(ishape);
+        vector<int> ostride = shape2stride(oshape);
+        addresses = new int[isize];
+
+        // For each output address (0,1,2,3,...n), compute its indices
+        // Then add the minimum of each range, and compute the raw address
+        for(int i=0; i<isize; i++) {
+
+            // Extract indices
+            int B_pos = 0;
+            for(int d=0; d<ishape.size(); d++){
+                // Compute output indices at dimension d
+                int B_idx = (i/istride[dims[d]]) % ishape[dims[d]];  // (52 / 32) % 32=> [1, 20]
+                B_pos += B_idx * ostride[d];
+            }
+
+            // Save address translation
+            addresses[B_pos] = i;
+        }
+
+    }
+
+    return addresses;
 }

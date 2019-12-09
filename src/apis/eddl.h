@@ -96,10 +96,8 @@ namespace eddl {
 // ---- LOSSES ----
     Loss* getLoss(string type);
 
-
     loss newloss(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name);
     loss newloss(const std::function<Layer*(Layer*)>& f, Layer *in, string name);
-
 
 
 // ---- METRICS ----
@@ -177,6 +175,8 @@ namespace eddl {
     layer Sum(float k, layer l1);
 
     layer Select(layer l, vector<string> indices);
+
+    layer Permute(layer l, vector<int> dims);
 
 // ---- REDUCTION LAYERS ----
     layer ReduceMean(layer l, vector<int> axis = {0}, bool keepdims = false);

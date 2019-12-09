@@ -331,6 +331,10 @@ namespace eddl {
         return new LSelect(l, indices, "", DEV_CPU);
     }
 
+    layer Permute(layer l, vector<int> dims){
+        return new LPermute(l, dims, "", DEV_CPU);
+    }
+
     // ---- REDUCTION LAYERS ----
     layer ReduceMean(layer l, const vector<int> axis, bool keepdims) {
         return new LRMean(l, axis, keepdims, "", DEV_CPU);
