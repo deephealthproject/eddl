@@ -75,6 +75,9 @@ Tensor* Tensor::permute(Tensor* t, const vector<int>& dims){
 
     // Fill new tensor
     Tensor::select(t, new_t, addresses);
+
+    delete addresses;
+
     return new_t;
 }
 

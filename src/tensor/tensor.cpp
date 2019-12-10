@@ -282,5 +282,3 @@ int Tensor::get_mode(string mode){
         return -1;
     }
 }
-
-

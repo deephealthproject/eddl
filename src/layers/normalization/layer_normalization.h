@@ -144,6 +144,7 @@ public:
     Tensor *bn_var;
     Tensor *sd;
     Tensor *bn_E;
+    int* addresses;
 
 
     MapReduceDescriptor *MD;
@@ -175,7 +176,7 @@ public:
     float momentum;
     float epsilon;
     int groups;
-    int N,C,H,W;
+    int N,CH,H,W;
     bool affine;
     Tensor *mean;
     Tensor *variance;
