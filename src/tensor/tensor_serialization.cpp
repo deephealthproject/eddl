@@ -127,18 +127,9 @@ Tensor* Tensor::load_from_img(const string &filename, const string &format){
         // Free image
         stbi_image_free(pixels);
 
-        // TODO: Temp! Check permute correctness
-        // Re-order components (careful with t[a]=t[b], collisions may appear if both are the same)
-        t = new Tensor({1, t_channels, t_height, t_width}, DEV_CPU);
-        for(int i=0; i<t->size; i+=t->shape[1]) { // Jump RGB blocks [(rgb), (rgb),....]
-            for(int j=0; j<t->shape[1]; j++){  // Walk RGB block [R, G, B]
-                int pos = (i/t->shape[1])+(j*t->shape[2]*t->shape[3]);  // (index in plane)+(jump whole plane: HxW)
-                t->ptr[pos]=t_data[i+j];
-            }
-        }
-
-//        t = new Tensor({1, t_width, t_height, t_channels}, t_data, DEV_CPU);
-//        t = Tensor::permute(t, {0, 3, 2, 1}); // Data must be presented as CxHxW
+        // Re-order components. Data received as WxHxC, and has to be presented as CxHxW
+        t = new Tensor({1, t_width, t_height, t_channels}, t_data, DEV_CPU);
+        t = Tensor::permute(t, {0, 3, 2, 1});
 
     } catch(const std::bad_array_new_length &e) {
         msg("There was an error opening the image", "Tensor::load_from_img");
@@ -239,22 +230,14 @@ void Tensor::save2img(const string& filename, string format){
     Tensor *t = this->clone();  // Important if permute is not used
     t->toCPU();  // Just in case
 
-    // TODO: Temp! Check permute correctness
-    // Re-order components (careful with t[a]=t[b], collisions may appear if both are the same)
-    for(int i=0; i<t->size; i+=t->shape[1]) { // Jump RGB blocks [(rgb), (rgb),....]
-        for(int j=0; j<t->shape[1]; j++){  // Walk RGB block [R, G, B]
-            int pos = (i/t->shape[1])+(j*t->shape[2]*t->shape[3]);  // (index in plane)+(jump whole plane: HxW)
-            t->ptr[i+j]=this->ptr[pos];
-        }
-    }
-//    t = Tensor::permute(t, {0, 2, 1, 3}); // Data must be presented as CxHxW
+    // Re-order components. Data received as CxHxW, and has to be presented as WxHxC
+    t = Tensor::permute(t, {0, 3, 2, 1});
 
     // Normalize image (for RGB must fall between 0 and 255) => Not a good idea
-    //t->normalize_(0.0f, 255.0f);
+    t->normalize_(0.0f, 255.0f);
 
     // TODO: I don't see the need to cast this (but if i remove it, it doesn't work)
     // Cast pointer
-
     auto* data= new uint8_t[this->size];
     for(int i=0;i<this->size;i++){ data[i]=t->ptr[i]; }
 

@@ -39,19 +39,19 @@ int main(int argc, char **argv) {
     t2 = t1->select({":", "1:3"});
     t2->print();
 
-    t1 = Tensor::moveaxis(t1, 3, 2);
+    t1 = Tensor::moveaxis(t1, 0, 1);
     t1->reshape_({4, 4});
     t1->print();
     int aasd = 33;
 
-//    string fname = "/Users/salvacarrion/Desktop/elephant.jpg";
-//    Tensor* t1 = Tensor::load(fname);
-//    Tensor* t2 = new Tensor(t1->shape);
-//
-//    t1->save("rotate1.jpg");
-//    Tensor::rotate(t1, t2, 45, {0,0}, "original");
-//    t2->save("rotate2.jpg");
-//    int asd = 33;
+    string fname = "/Users/salvacarrion/Desktop/elephant.jpg";
+    t1 = Tensor::load(fname);
+    t2 = new Tensor(t1->shape);
+
+    t1->save("rotate1.jpg");
+    Tensor::rotate(t1, t2, 45, {0,0}, "original");
+    t2->save("rotate2.jpg");
+    int as33d = 33;
 //
 //  int dev=DEV_GPU;
 //  vector<int> axis={0,2,3};
