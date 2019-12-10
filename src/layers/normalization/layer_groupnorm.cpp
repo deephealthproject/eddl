@@ -38,8 +38,8 @@ LGroupNorm::LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool
 
     if (C%groups) msg("incorrect group value not channel divider","LGroupNorm");
 
-    input->reshape_({N*groups,C/groups,H,W});
-    input->permute({1,0,2,3});
+  //  input->reshape_({N*groups,C/groups,H,W});
+    //input->permute({1,0,2,3});
 
     if (input->ndim == 2) {axis.push_back(0);shape.push_back(input->shape[1]);}
     else if (input->ndim == 4) {axis.push_back(0);axis.push_back(2);axis.push_back(3);shape.push_back(input->shape[1]);}
@@ -50,8 +50,8 @@ LGroupNorm::LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool
 
     MD=new MapReduceDescriptor(input,axis);
 
-    input->permute({1,0,2,3});
-    input->reshape_({N,C,H,W});
+  //input->permute({1,0,2,3});
+    //input->reshape_({N,C,H,W});
 
     if(name.empty()) this->name = "groupnorm" + to_string(++total_layers);
 
@@ -88,11 +88,11 @@ void LGroupNorm::resize(int batch){
     if (target!=nullptr) target->resize(batch);
     delete MD;
     N=batch;
-    input->reshape_({N*groups,C/groups,H,W});
-    input->permute({1,0,2,3});
+    //input->reshape_({N*groups,C/groups,H,W});
+    //input->permute({1,0,2,3});
     MD=new MapReduceDescriptor(input,axis);
-    input->permute({1,0,2,3});
-    input->reshape_({N,C,H,W});
+    //input->permute({1,0,2,3});
+    //input->reshape_({N,C,H,W});
   }
 
 
