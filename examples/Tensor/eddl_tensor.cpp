@@ -33,14 +33,17 @@ int main(int argc, char **argv) {
     int asd = 33;
 
     t1 = Tensor::range(1, 16);
-    t1->reshape_({1, 1, 4, 4});
+    t1->reshape_({4, 4});
     t1->print();
+
+    t2 = t1->select({":", "1:3"});
+    t2->print();
 
     t1 = Tensor::moveaxis(t1, 3, 2);
     t1->reshape_({4, 4});
     t1->print();
-    asd = 33;
-//
+    int aasd = 33;
+
 //    string fname = "/Users/salvacarrion/Desktop/elephant.jpg";
 //    Tensor* t1 = Tensor::load(fname);
 //    Tensor* t2 = new Tensor(t1->shape);

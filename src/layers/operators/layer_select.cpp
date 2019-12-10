@@ -34,39 +34,46 @@ LSelect::LSelect(Layer *parent, vector<string> str_indices, string name, int dev
     // Set default name
     if(name.empty()) this->name = "select_" + to_string(++total_layers);
 
+    // Set defaults
+    this->str_indices = std::move(str_indices);
+
     // Set input
     input=parent->output;
 
-    // Get input shape and ranges of indices
-    this->str_indices = std::move(str_indices);
-    this->idxs_range = parse_indices(this->str_indices, vector<int>(input->shape.begin() + 1, input->shape.end()));
+    // Compute range of indices (with fake batch)
+    vector<string> idxs_temp = this->str_indices;
+    idxs_temp.insert(idxs_temp.begin(), ":");
+    this->idxs_range = parse_indices(idxs_temp, input->shape);
 
     // Get output shape (without batch)
     vector<int> oshape = indices2shape(idxs_range);
-    oshape.insert(oshape.begin(), 1);  // Insert batch (1, default), the it's resized
 
     // Set flow tensors
     output=new Tensor(oshape, dev);
     delta=new Tensor(output->shape, dev);
 
-    // Compute index translation (output=>input)
-    this->oi_addresses = this->input->ranges2indices(this->idxs_range);
-
     parent->addchild(this);
     addparent(parent);
 }
 
+void LSelect::resize(int b){
+    Layer::resize(b);
+
+    // Update batch of range
+    this->idxs_range[0][1] = b-1;
+
+    // Compute index translation (output=>input)
+    this->addresses = this->input->ranges2indices(this->idxs_range);
+}
+
 void LSelect::forward(){
-    Tensor::select(this->input, this->output, this->oi_addresses);
+    Tensor::select(this->input, this->output, this->addresses);
 }
 
 void LSelect::backward(){
-    Tensor::select_back(this->delta, this->parent[0]->delta, this->oi_addresses);
+    Tensor::select_back(this->delta, this->parent[0]->delta, this->addresses);
 }
 
-void LSelect::resize(int b){
-    Layer::resize(b);
-}
 
 Layer *LSelect::share(int c, int bs, vector<Layer *> p) {
     return clone(c,bs,p,dev);

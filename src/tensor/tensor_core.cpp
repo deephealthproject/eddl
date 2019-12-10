@@ -66,15 +66,15 @@ void Tensor::reshape_(vector<int> shape){
 
 
 Tensor* Tensor::permute(Tensor* t, const vector<int>& dims){
-    // Compute address translation
-    int* oi_addresses = permute_indices(t->shape, dims);
-
     // Create new tensor
     vector<int> oshape = permute_shape(t->shape, dims);
-    Tensor *new_t = new Tensor(oshape, t->device);
+    auto *new_t = new Tensor(oshape, t->device);
+
+    // Compute address translation
+    int* addresses = permute_indices(t->shape, dims);
 
     // Fill new tensor
-    Tensor::select(t, new_t, oi_addresses);
+    Tensor::select(t, new_t, addresses);
     return new_t;
 }
 
@@ -133,7 +133,9 @@ bool Tensor::valid_indices(vector<int> indices){
 
 
 // ***** Core (auxiliar) *****************************
-int* Tensor::ranges2indices(vector<vector<int>> ranges, int ignoreBatch){
+int* Tensor::ranges2indices(vector<vector<int>> ranges){
+    // Returns an array with the linear positions of the ranges to perform fast translations
+    // [0:2, 5] {H=10, W=7}=> ([0,1], [5]) => (0*7+5),(1*7)+5,...
 
     // Compute output dimensions
     vector<int> oshape = indices2shape(ranges);
@@ -153,7 +155,7 @@ int* Tensor::ranges2indices(vector<vector<int>> ranges, int ignoreBatch){
 
             // Compute input indices at dimension d
             int A_idx = B_idx + ranges[d][0];  // B_index + A_start => [0, 0, 0] + [0, 5, 5]
-            A_pos += A_idx * this->stride[d+ignoreBatch];
+            A_pos += A_idx * this->stride[d];
         }
 
         // Save address translation
@@ -265,7 +267,7 @@ Tensor* Tensor::select(const vector<string>& indices){
     // Get range of indices
     vector<vector<int>> ranges = parse_indices(indices, this->shape);
     vector<int> t_shape = indices2shape(ranges);
-    int* addresses = ranges2indices(ranges, 0);
+    int* addresses = ranges2indices(ranges);
 
     // Initialize tensor
     t = new Tensor(t_shape, DEV_CPU);

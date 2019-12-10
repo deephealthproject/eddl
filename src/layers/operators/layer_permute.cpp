@@ -34,35 +34,44 @@ LPermute::LPermute(Layer *parent, vector<int> dims, string name, int dev): Opera
     // Set default name
     if(name.empty()) this->name = "permute_" + to_string(++total_layers);
 
+    // Set defaults
+    this->dims = dims;
+
     // Set input
     input=parent->output;
 
-    // Temp input/output shape
-    vector<int> ishape = vector<int>(input->shape.begin() + 1, input->shape.end());
+    // Compute output shape (without batch)
+    vector<int> ishape(input->shape.begin()+1, input->shape.end());
     vector<int> oshape = permute_shape(ishape, dims);
-    oshape.insert(oshape.begin(), 1);  // Insert batch (1, default), the it's resized
-
-    // Compute index translation (output=>input)
-    this->oi_addresses = permute_indices(ishape, dims);
+    oshape.insert(oshape.begin(), 1); // Add default batch (later is resized)
 
     // Set flow tensors
     output=new Tensor(oshape, dev);
-    delta=new Tensor(output->shape, dev);
+    delta=new Tensor(oshape, dev);
 
     parent->addchild(this);
     addparent(parent);
 }
 
+void LPermute::resize(int b){
+    Layer::resize(b);
+
+    // Add batch dimension and leave it without permute
+    vector<int> dims_batch = {0};
+    for(auto &d : this->dims){
+        dims_batch.emplace_back(d + 1);
+    }
+
+    // Compute index translation (output=>input)
+    this->addresses = permute_indices(input->shape, dims_batch);
+}
+
 void LPermute::forward(){
-    Tensor::select(this->input, this->output, this->oi_addresses);
+    Tensor::select(this->input, this->output, this->addresses);
 }
 
 void LPermute::backward(){
-    Tensor::select_back(this->delta, this->parent[0]->delta, this->oi_addresses);
-}
-
-void LPermute::resize(int b){
-    Layer::resize(b);
+    Tensor::select_back(this->delta, this->parent[0]->delta, this->addresses);
 }
 
 Layer *LPermute::share(int c, int bs, vector<Layer *> p) {

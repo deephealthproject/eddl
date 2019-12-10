@@ -283,7 +283,7 @@ public:
 
     vector<string> str_indices;
     vector<vector<int>> idxs_range;
-    int* oi_addresses;
+    int* addresses;
 
     LSelect(Layer *l, vector<string> str_indices, string name, int dev);
 
@@ -306,7 +306,7 @@ public:
 
     vector<int> dims;
     vector<vector<int>> idxs_range;
-    int* oi_addresses;
+    int* addresses;
 
     LPermute(Layer *l, vector<int> dims, string name, int dev);
 

@@ -132,7 +132,7 @@ public:
     void set_(vector<int> indices, float value);
 
     // ***** Core (auxiliar) *****************************
-    int* ranges2indices(vector<vector<int>> ranges, int ignoreBatch=1);
+    int* ranges2indices(vector<vector<int>> ranges);
 
     // ***** Core (static) *****************************
     static Tensor* permute(Tensor* t, const vector<int>& dims);
