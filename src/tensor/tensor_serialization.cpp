@@ -127,7 +127,7 @@ Tensor* Tensor::load_from_img(const string &filename, const string &format){
         // Free image
         stbi_image_free(pixels);
 
-        // Re-order components. Data received as WxHxC, and has to be presented as CxHxW
+        // Re-order components. Data received as 1xWxHxC, and has to be presented as 1xCxHxW
         t = new Tensor({1, t_width, t_height, t_channels}, t_data, DEV_CPU);
         t = Tensor::permute(t, {0, 3, 2, 1});
 
@@ -226,12 +226,9 @@ void Tensor::save2img(const string& filename, string format){
         msg("Tensors should be 4D: 1xCxHxW","Tensor::save2img");
     }
 
-    // Re-order axis
-    Tensor *t = this->clone();  // Important if permute is not used
+    // Re-order components. Data received as 1xCxHxW, and has to be presented as 1xWxHxC
+    Tensor *t = Tensor::permute(this, {0, 3, 2, 1});
     t->toCPU();  // Just in case
-
-    // Re-order components. Data received as CxHxW, and has to be presented as WxHxC
-    t = Tensor::permute(t, {0, 3, 2, 1});
 
     // Normalize image (for RGB must fall between 0 and 255) => Not a good idea
     t->normalize_(0.0f, 255.0f);
