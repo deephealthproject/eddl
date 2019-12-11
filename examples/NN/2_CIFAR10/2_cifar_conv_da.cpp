@@ -37,7 +37,7 @@ int main(int argc, char **argv){
     layer in=Input({3,32,32});
     layer l=in;
 
-    l = Permute(l, {0, 2, 1});
+//    l = Permute(l, {0, 1, 2});
 //    l = Select(l, {":", ":15", ":15"});
 
     // Data transformations

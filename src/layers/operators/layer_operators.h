@@ -280,12 +280,9 @@ public:
 class LSelect : public OperatorLayer {
 public:
     static int total_layers;
+    SelDescriptor *sd;
 
-    vector<string> str_indices;
-    vector<vector<int>> idxs_range;
-    int* addresses;
-
-    LSelect(Layer *l, vector<string> str_indices, string name, int dev);
+    LSelect(Layer *l, vector<string> indices, string name, int dev);
 
     void forward() override;
 
@@ -304,9 +301,7 @@ class LPermute : public OperatorLayer {
 public:
     static int total_layers;
 
-    vector<int> dims;
-    vector<vector<int>> idxs_range;
-    int* addresses;
+    PermuteDescriptor *sd;
 
     LPermute(Layer *l, vector<int> dims, string name, int dev);
 

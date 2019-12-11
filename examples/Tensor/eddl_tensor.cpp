@@ -21,6 +21,7 @@ using namespace std;
 using namespace eddlT;
 
 int main(int argc, char **argv) {
+
     Tensor* t1, *t2;
 
     float ptr[12] = {1, 2, 3,  1, 2, 3,
