@@ -20,7 +20,7 @@
 #include <Eigen/Dense>
 
 #include "../utils.h"
-
+#include "../descriptors/tensor_descriptors.h"
 
 #define DEV_CPU 0
 
@@ -130,9 +130,6 @@ public:
     void reshape_(vector<int> shape);
     float get_(vector<int> indices);
     void set_(vector<int> indices, float value);
-
-    // ***** Core (auxiliar) *****************************
-    int* ranges2indices(vector<vector<int>> ranges);
 
     // ***** Core (static) *****************************
     static Tensor* permute(Tensor* t, const vector<int>& dims);
@@ -331,8 +328,8 @@ public:
     static void copy(Tensor *A, Tensor *B);
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
     Tensor* select(const vector<string>& indices);
-    static void select(Tensor *A, Tensor *B, int* indices);
-    static void select_back(Tensor *A, Tensor *B, int* indices);
+    static void select(Tensor *A, Tensor *B, SelDescriptor *sd);
+    static void select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
     static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
     static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
     static void tile(Tensor *A, Tensor *B);

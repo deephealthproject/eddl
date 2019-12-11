@@ -30,16 +30,25 @@ int LPermute::total_layers = 0;
   @returns the absolute value of each element in l
 
   */
-LPermute::LPermute(Layer *parent, vector<int> dims, string name, int dev): OperatorLayer(name, dev) {
+LPermute::LPermute(Layer *parent, vector<int> dims, bool hasBatch, string name, int dev): OperatorLayer(name, dev) {
     // Set default name
     if(name.empty()) this->name = "permute_" + to_string(++total_layers);
 
     // Set input
     input=parent->output;
 
+    // Add batch to dims (if needed)
+    vector<int> dims_batch;
+    if(hasBatch){
+        dims_batch = dims;
+    }else{
+        dims_batch = {0};
+        for(auto &d : dims){ dims_batch.emplace_back(d + 1); }
+    }
+
     // Build descriptor
-    sd = new PermuteDescriptor(dims);
-    sd->build(input);
+    sd = new PermuteDescriptor(dims_batch);
+    sd->build(input->shape);
 
     // Set flow tensors
     output=new Tensor(sd->oshape, dev);
@@ -55,11 +64,11 @@ void LPermute::resize(int b){
 }
 
 void LPermute::forward(){
-    Tensor::select(this->input, this->output, sd->addresses);
+    Tensor::select(this->input, this->output, sd);
 }
 
 void LPermute::backward(){
-    Tensor::select_back(this->delta, this->parent[0]->delta, sd->addresses);
+    Tensor::select_back(this->delta, this->parent[0]->delta, sd);
 }
 
 Layer *LPermute::share(int c, int bs, vector<Layer *> p) {
@@ -67,7 +76,7 @@ Layer *LPermute::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LPermute::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LPermute(p[0], sd->dims, "share_" + to_string(c) + name, todev);
+    auto *n = new LPermute(p[0], sd->dims, true, "share_" + to_string(c) + name, todev);
     n->orig = this;
     return n;
 }

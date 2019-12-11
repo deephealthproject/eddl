@@ -19,7 +19,7 @@ using namespace std;
 
 void msg(const string& text, const string& title="");
 
-float *get_fmem(int size,char *str);
+float *get_fmem(int size, char *str);
 
 char *humanSize(uint64_t bytes);
 
@@ -38,5 +38,7 @@ vector<int> shape2stride(const vector<int>& shape);
 vector<int> permute_shape(const vector<int>& ishape, const vector<int>& dims);
 
 int* permute_indices(const vector<int>& ishape, const vector<int>& dims);
+
+int* ranges2indices(vector<int> ishape, vector<vector<int>> ranges);
 
 #endif //EDDL_UTILS_H

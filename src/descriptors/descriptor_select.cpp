@@ -8,26 +8,21 @@
 */
 
 
-#include "descriptors.h"
-#include "../tensor/tensor_reduction.h"
+#include "tensor_descriptors.h"
 #include "../utils.h"
 
-SelDescriptor::SelDescriptor(const vector<string>& indices){
-    this->indices = vector<string>(indices);  // Without batch
+SelDescriptor::SelDescriptor(){}
+
+SelDescriptor::SelDescriptor(const vector<string>& indices) : TensorDescriptor() {
+    this->indices = vector<string>(indices);
 }
 
-void SelDescriptor::build(Tensor *A){
-    this->input = A;
-
-    // Compute range of indices (add batch)
-    vector<string> temp_idxs(this->indices);
-    temp_idxs.insert(temp_idxs.begin(), ":");
-
+void SelDescriptor::build(vector<int> ishape){
     // Compute ranges
-    this->idxs_range = parse_indices(temp_idxs, this->input->shape);
+    this->idxs_range = parse_indices(this->indices, ishape);
 
     // Get input/output shapes
-    this->ishape = vector<int>(this->input->shape);
+    this->ishape = ishape;
     this->oshape = indices2shape(this->idxs_range);
 }
 
@@ -39,19 +34,10 @@ void SelDescriptor::resize(int b){
     this->ishape[0] = b;
     this->oshape[0] = b;
 
-    // Compute index translation (output=>input)
-    this->addresses = this->input->ranges2indices(this->idxs_range);
+    build_indices();
 }
 
-
-
-
-
-
-
-
-
-
-
-
-////
+void SelDescriptor::build_indices(){
+    // Compute index translation (output=>input)
+    this->addresses = ranges2indices(this->ishape, this->idxs_range);
+}

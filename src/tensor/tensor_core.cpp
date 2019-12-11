@@ -66,17 +66,16 @@ void Tensor::reshape_(vector<int> shape){
 
 
 Tensor* Tensor::permute(Tensor* t, const vector<int>& dims){
-    // Create new tensor
-    vector<int> oshape = permute_shape(t->shape, dims);
-    auto *new_t = new Tensor(oshape, t->device);
+    // Build descriptor
+    auto *sd = new PermuteDescriptor(dims);
+    sd->build(t->shape);
+    sd->build_indices();
 
-    // Compute address translation
-    int* addresses = permute_indices(t->shape, dims);
+    // Initialize new tensor
+    auto *new_t = new Tensor(sd->oshape, t->device);
 
     // Fill new tensor
-    Tensor::select(t, new_t, addresses);
-
-    delete addresses;
+    Tensor::select(t, new_t, sd);
 
     return new_t;
 }
@@ -133,41 +132,6 @@ bool Tensor::valid_indices(vector<int> indices){
     }
     return true;
 }
-
-
-// ***** Core (auxiliar) *****************************
-int* Tensor::ranges2indices(vector<vector<int>> ranges){
-    // Returns an array with the linear positions of the ranges to perform fast translations
-    // [0:2, 5] {H=10, W=7}=> ([0,1], [5]) => (0*7+5),(1*7)+5,...
-
-    // Compute output dimensions
-    vector<int> oshape = indices2shape(ranges);
-    vector<int> ostride = shape2stride(oshape);
-    int osize = shape2size(oshape);
-    int* addresses = new int[osize];  // Because the batch is 1 (default), then it's resized
-
-    // For each output address (0,1,2,3,...n), compute its indices
-    // Then add the minimum of each range, and compute the raw address
-    for(int i=0; i<osize; i++) {
-
-        // Extract indices
-        int A_pos = 0;
-        for(int d=0; d<ranges.size(); d++){
-            // Compute output indices at dimension d
-            int B_idx = (i/ostride[d]) % oshape[d];  // (52 / 32) % 32=> [1, 20]
-
-            // Compute input indices at dimension d
-            int A_idx = B_idx + ranges[d][0];  // B_index + A_start => [0, 0, 0] + [0, 5, 5]
-            A_pos += A_idx * this->stride[d];
-        }
-
-        // Save address translation
-        addresses[i] = A_pos;
-    }
-
-    return addresses;
-}
-
 // ***** Core (static) *****************************
 void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
     // Transpose
@@ -267,26 +231,26 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
 Tensor* Tensor::select(const vector<string>& indices){
     Tensor* t = nullptr;
 
-    // Get range of indices
-    vector<vector<int>> ranges = parse_indices(indices, this->shape);
-    vector<int> t_shape = indices2shape(ranges);
-    int* addresses = ranges2indices(ranges);
+    auto *sd = new SelDescriptor(indices);
+    sd->build(this->shape);
+    sd->build_indices();
 
     // Initialize tensor
-    t = new Tensor(t_shape, DEV_CPU);
-    Tensor::select(this, t, addresses);
+    t = new Tensor(sd->oshape, this->device);
 
+    // Perform select
+    Tensor::select(this, t, sd);
     return t;
 }
 
-void Tensor::select(Tensor *A, Tensor* B, int* indices){
+void Tensor::select(Tensor *A, Tensor* B, SelDescriptor *sd){
     if (A->isCPU() && B->isCPU()) {
-        cpu_select(A, B, indices);
+        cpu_select(A, B, sd);
     }
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
       {
-        gpu_select(A, B, indices);
+        gpu_select(A, B, sd);
       }
 #endif
 #ifdef cFPGA
@@ -297,14 +261,14 @@ void Tensor::select(Tensor *A, Tensor* B, int* indices){
 
 }
 
-void Tensor::select_back(Tensor *A, Tensor* B, int* indices){
+void Tensor::select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
     if (A->isCPU() && B->isCPU()) {
-        cpu_select_back(A, B, indices);
+        cpu_select_back(A, B, sd);
     }
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
       {
-        gpu_select_back(A, B, indices);
+        gpu_select_back(A, B, sd);
       }
 #endif
 #ifdef cFPGA

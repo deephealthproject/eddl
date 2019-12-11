@@ -52,17 +52,17 @@ void cpu_fill(Tensor * A, int aini, int aend, Tensor * B, int bini, int bend, in
 }
 
 
-void cpu_select(Tensor *A, Tensor *B, const int* indices){
+void cpu_select(Tensor *A, Tensor *B, SelDescriptor *sd){
     #pragma omp parallel for
     for (int i = 0; i < B->size; i++) {
-        B->ptr[i] = A->ptr[indices[i]];
+        B->ptr[i] = A->ptr[sd->addresses[i]];
     }
 }
 
-void cpu_select_back(Tensor *A, Tensor *B, const int* indices){
+void cpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
     #pragma omp parallel for
     for (int i = 0; i < A->size; i++) {  // walk stride
-        B->ptr[indices[i]] += A->ptr[i];  // delta_parent += delta
+        B->ptr[sd->addresses[i]] += A->ptr[i];  // delta_parent += delta
     }
 }
 

@@ -110,30 +110,38 @@ void gpu_fill_(Tensor *A, float v) {
 }
 
 
-void gpu_select(Tensor *A, Tensor *B, const int* indices){
+void gpu_select(Tensor *A, Tensor *B, SelDescriptor *sd){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     // Copy indices from host to device
-    int n = B->size;
-    int *d_indices; cudaMalloc((int**)&d_indices, n*sizeof(int));
-    cudaMemcpy(d_indices, indices, n*sizeof(int), cudaMemcpyHostToDevice);
+    if(sd->gpu_addresses== nullptr){
+        check_cuda(cudaMalloc((void**)&(sd->gpu_addresses), B->size*sizeof(int)), "create address mapping");
+        check_cuda(cudaDeviceSynchronize(), "create");
+
+        check_cuda(cudaMemcpy(sd->gpu_addresses, sd->addresses, B->size*sizeof(int), cudaMemcpyHostToDevice), "copy address mapping");
+        check_cuda(cudaDeviceSynchronize(), "copy");
+    }
 
     setDims(B);  // B is the small
-    select<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, d_indices);
+    select<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, sd->gpu_addresses);
     check_cuda(cudaDeviceSynchronize(), "select");
 }
 
-void gpu_select_back(Tensor *A, Tensor *B, const int* indices){
+void gpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     // Copy indices from host to device
-    int n = B->size;
-    int *d_indices; cudaMalloc((int**)&d_indices, n*sizeof(int));
-    cudaMemcpy(d_indices, indices, n*sizeof(int), cudaMemcpyHostToDevice);
+    if(sd->gpu_addresses== nullptr){
+        check_cuda(cudaMalloc((void**)&(sd->gpu_addresses), A->size*sizeof(int)), "create address mapping");
+        check_cuda(cudaDeviceSynchronize(), "create");
+
+        check_cuda(cudaMemcpy(sd->gpu_addresses, sd->addresses, A->size*sizeof(int), cudaMemcpyHostToDevice), "copy address mapping");
+        check_cuda(cudaDeviceSynchronize(), "copy");
+    }
 
     setDims(A);  // A is the small
-    select_back<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, d_indices);
+    select_back<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, sd->gpu_addresses);
     check_cuda(cudaDeviceSynchronize(), "select_back");
 }

@@ -7,8 +7,8 @@
 * All rights reserved
 */
 
-#ifndef EDDL_CONV_DESCRIPTOR_H
-#define EDDL_CONV_DESCRIPTOR_H
+#ifndef EDDL_DESCRIPTORS_H
+#define EDDL_DESCRIPTORS_H
 
 #include <stdio.h>
 #include <vector>
@@ -120,37 +120,4 @@ public:
     void resize(int b);
 };
 
-class SelDescriptor {
-public:
-    Tensor *input;
-    vector<int> ishape;
-    vector<int> oshape;
-    vector<vector<int>> idxs_range;
-    int* addresses = nullptr;
-
-    vector<string> indices;
-
-    SelDescriptor(const vector<string>& indices);
-
-    void build(Tensor *A);
-    void resize(int b);
-};
-
-class PermuteDescriptor {
-public:
-    Tensor *input;
-    vector<int> ishape;
-    vector<int> oshape;
-    vector<vector<int>> idxs_range;
-    int* addresses = nullptr;
-
-    vector<int> dims;
-    vector<int> dims_batch;
-
-    PermuteDescriptor(const vector<int>& dims);
-
-    void build(Tensor *A);
-    void resize(int b);
-};
-
-#endif //EDDL_CONV_DESCRIPTOR_H
+#endif //EDDL_DESCRIPTORS_H

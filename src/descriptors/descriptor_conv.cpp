@@ -139,7 +139,7 @@ void ConvolDescriptor::resize(int b)
 
     if (I->isCPU()) {
         delete ptrI;
-        ptrI=get_fmem(b * r * c * kr * kc * kz,"ConvolDescriptor::build");
+        ptrI=get_fmem(b * r * c * kr * kc * kz, "ConvolDescriptor::build");
     }
 #ifdef cGPU
     else if (I->isGPU()) {
@@ -148,9 +148,3 @@ void ConvolDescriptor::resize(int b)
 #endif
 
 }
-
-
-
-
-
-////

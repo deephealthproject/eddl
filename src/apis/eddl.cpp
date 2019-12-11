@@ -316,11 +316,11 @@ namespace eddl {
     }
 
     layer Select(layer l, vector<string> indices){
-        return new LSelect(l, indices, "", DEV_CPU);
+        return new LSelect(l, indices, false, "", DEV_CPU);
     }
 
     layer Permute(layer l, vector<int> dims){
-        return new LPermute(l, dims, "", DEV_CPU);
+        return new LPermute(l, dims, false, "", DEV_CPU);
     }
 
     // ---- REDUCTION LAYERS ----

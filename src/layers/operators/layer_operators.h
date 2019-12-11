@@ -282,7 +282,7 @@ public:
     static int total_layers;
     SelDescriptor *sd;
 
-    LSelect(Layer *l, vector<string> indices, string name, int dev);
+    LSelect(Layer *l, vector<string> indices, bool hasBatch, string name, int dev);
 
     void forward() override;
 
@@ -303,7 +303,7 @@ public:
 
     PermuteDescriptor *sd;
 
-    LPermute(Layer *l, vector<int> dims, string name, int dev);
+    LPermute(Layer *l, vector<int> dims, bool hasBatch, string name, int dev);
 
     void forward() override;
 

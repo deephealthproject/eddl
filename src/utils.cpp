@@ -311,3 +311,37 @@ int* permute_indices(const vector<int>& ishape, const vector<int>& dims){
 
     return addresses;
 }
+
+int* ranges2indices(vector<int> ishape, vector<vector<int>> ranges){
+    // Returns an array with the linear positions of the ranges to perform fast translations
+    // [0:2, 5] {H=10, W=7}=> ([0,1], [5]) => (0*7+5),(1*7)+5,...
+
+    // Compute output dimensions
+    vector<int> istride = shape2stride(ishape);
+
+    vector<int> oshape = indices2shape(ranges);
+    vector<int> ostride = shape2stride(oshape);
+    int osize = shape2size(oshape);
+    int* addresses = new int[osize];  // Because the batch is 1 (default), then it's resized
+
+    // For each output address (0,1,2,3,...n), compute its indices
+    // Then add the minimum of each range, and compute the raw address
+    for(int i=0; i<osize; i++) {
+
+        // Extract indices
+        int A_pos = 0;
+        for(int d=0; d<ranges.size(); d++){
+            // Compute output indices at dimension d
+            int B_idx = (i/ostride[d]) % oshape[d];  // (52 / 32) % 32=> [1, 20]
+
+            // Compute input indices at dimension d
+            int A_idx = B_idx + ranges[d][0];  // B_index + A_start => [0, 0, 0] + [0, 5, 5]
+            A_pos += A_idx * istride[d];
+        }
+
+        // Save address translation
+        addresses[i] = A_pos;
+    }
+
+    return addresses;
+}
