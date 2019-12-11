@@ -142,14 +142,11 @@ public:
     Tensor *variance;
     Tensor *bn_mean;
     Tensor *bn_var;
-    Tensor *sd;
-    Tensor *bn_E;
-    int* addresses;
+
     PermuteDescriptor *PD;
     PermuteDescriptor *PD2;
-
-
     MapReduceDescriptor *MD;
+
     bool init;
     vector<int> axis;
     vector<int> shape;
@@ -184,12 +181,11 @@ public:
     Tensor *variance;
     Tensor *bn_mean;
     Tensor *bn_var;
-    Tensor *sd;
-    Tensor *bn_E;
+
     PermuteDescriptor *PD;
     PermuteDescriptor *PD2;
-
     MapReduceDescriptor *MD;
+    
     bool init;
     vector<int> axis;
     vector<int> shape;

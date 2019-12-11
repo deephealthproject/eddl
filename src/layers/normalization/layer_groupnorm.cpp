@@ -66,7 +66,6 @@ LGroupNorm::LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool
 
     bn_mean=new Tensor(shape,dev);
     bn_var=new Tensor(shape,dev);
-    sd=new Tensor(shape,dev);
 
     if (momentum!=0.0) {
         mean=new Tensor(shape,dev);
@@ -113,7 +112,6 @@ void LGroupNorm::resize(int batch){
 
     bn_mean->resize(N*groups);
     bn_var->resize(N*groups);
-    sd->resize(N*groups);
     mean->resize(N*groups);
     variance->resize(N*groups);
 
@@ -173,12 +171,13 @@ void LGroupNorm::backward()
 
   A=new Tensor(PD->oshape,dev);
   A->fill_(0.0);
-  
+
   BN_backward(C,B,A,MD,bn_mean,bn_var,mean,variance,epsilon);
 
   delete B;
 
   B=new Tensor(PD2->oshape,dev);
+
   Tensor::select(A,B, PD2);
   B->reshape_({N,CH,H,W});
 

@@ -62,7 +62,6 @@ LLayerNorm::LLayerNorm(Layer *parent, float momentum, float epsilon, bool affine
 
     bn_mean=new Tensor(shape,dev);
     bn_var=new Tensor(shape,dev);
-    sd=new Tensor(shape,dev);
 
     if (momentum!=0.0) {
         mean=new Tensor(shape,dev);
@@ -104,7 +103,6 @@ void LLayerNorm::resize(int batch){
 
     bn_mean->resize(batch);
     bn_var->resize(batch);
-    sd->resize(batch);
     mean->resize(batch);
     variance->resize(batch);
 
