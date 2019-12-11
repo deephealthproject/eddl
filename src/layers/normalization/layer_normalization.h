@@ -145,6 +145,8 @@ public:
     Tensor *sd;
     Tensor *bn_E;
     int* addresses;
+    PermuteDescriptor *PD;
+    PermuteDescriptor *PD2;
 
 
     MapReduceDescriptor *MD;

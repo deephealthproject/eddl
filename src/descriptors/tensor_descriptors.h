@@ -43,6 +43,7 @@ public:
 
     SelDescriptor();
     SelDescriptor(const vector<string>& indices);
+    ~SelDescriptor();
 
     virtual void build(vector<int> ishape);
     virtual void resize(int b);
@@ -54,7 +55,7 @@ public:
     vector<int> dims;
 
     PermuteDescriptor(const vector<int>& dims);
-
+    
     void build(vector<int> ishape);
     void resize(int b);
     void build_indices();

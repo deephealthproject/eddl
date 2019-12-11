@@ -26,12 +26,20 @@ LLayerNorm::LLayerNorm(Layer *parent, float momentum, float epsilon, bool affine
     input=parent->output;
 
     Tensor *A;
-/*
-    if (input->ndim == 2) addresses = permute_indices(input->shape, dims_batch);
-    else if (input->ndim == 4) addresses = permute_indices(input->shape, dims_batch);
 
-    Tensor::select(this->input, A, addresses);
-*/
+    if (input->ndim == 2) PD=new PermuteDescriptor({1,0});
+    else PD=new PermuteDescriptor({1,0,2,3});
+
+    if (input->ndim == 2) PD2=new PermuteDescriptor({1,0});
+    else PD2=new PermuteDescriptor({1,0,2,3});
+
+    PD->build(input->shape);
+
+    A=new Tensor(PD->oshape,dev);
+
+    PD2->build(A->getShape());
+
+
     if (input->ndim == 2) {axis.push_back(0);shape.push_back(A->shape[1]);}
     else if (input->ndim == 4) {axis.push_back(0);axis.push_back(2);axis.push_back(3);shape.push_back(A->shape[1]);}
     else {
@@ -40,7 +48,6 @@ LLayerNorm::LLayerNorm(Layer *parent, float momentum, float epsilon, bool affine
     }
 
     MD=new MapReduceDescriptor(A,axis);
-
 
     delete A;
 
@@ -76,13 +83,23 @@ void LLayerNorm::resize(int batch){
     output->resize(batch);
     delta->resize(batch);
     if (target!=nullptr) target->resize(batch);
+
     delete MD;
+    delete PD;
+    delete PD2;
 
-    Tensor *A;
+    if (input->ndim == 2) PD=new PermuteDescriptor({1,0});
+    else PD=new PermuteDescriptor({1,0,2,3});
 
-    if (input->ndim == 2) A=Tensor::permute(input,{1,0});
-    else if (input->ndim == 4) A=Tensor::permute(input,{1,0,2,3});
+    if (input->ndim == 2) PD2=new PermuteDescriptor({1,0});
+    else PD2=new PermuteDescriptor({1,0,2,3});
 
+    PD->build(input->shape);
+
+    Tensor *A=new Tensor(PD->oshape,dev);
+    A=new Tensor(PD->oshape,dev);
+
+    PD2->build(A->getShape());
 
     MD=new MapReduceDescriptor(A,axis);
 
@@ -102,19 +119,14 @@ void LLayerNorm::forward() {
   Tensor *A;
   Tensor *B;
 
-  if (input->ndim == 2) A=Tensor::permute(input,{1,0});
-  else if (input->ndim == 4) A=Tensor::permute(input,{1,0,2,3});
+  A=new Tensor(PD->oshape,dev);
 
+  Tensor::select(input,A, PD);
   B=new Tensor(A->getShape(),A->device);
 
   BN_forward(A,B,MD,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);
 
-  delete A;
-
-  if (input->ndim == 2) A=Tensor::permute(B,{1,0});
-  else if (input->ndim == 4) A=Tensor::permute(B,{1,0,2,3});
-
-  Tensor::copy(A,output);
+  Tensor::select(B,output, PD2);
 
   delete A;
   delete B;
@@ -128,24 +140,19 @@ void LLayerNorm::backward()
   Tensor *C;
 
 
-  if (input->ndim == 2) A=Tensor::permute(delta,{1,0});
-  else if (input->ndim == 4) A=Tensor::permute(delta,{1,0,2,3});
+  A=new Tensor(PD->oshape,dev);
+  Tensor::select(delta,A, PD);
 
   C=new Tensor(A->getShape(),A->device);
 
-  if (input->ndim == 2) B=Tensor::permute(input,{1,0});
-  else if (input->ndim == 4) B=Tensor::permute(input,{1,0,2,3});
+  B=new Tensor(PD->oshape,dev);
+  Tensor::select(input,B, PD);
 
   BN_backward(B,A,C,MD,bn_mean,bn_var,mean,variance,epsilon);
 
+  Tensor::select(C,parent[0]->delta, PD2);
+
   delete A;
-  delete B;
-
-  if (input->ndim == 2) B=Tensor::permute(C,{1,0});
-  else if (input->ndim == 4) B=Tensor::permute(C,{1,0,2,3});
-
-  Tensor::copy(B,parent[0]->delta);
-
   delete B;
   delete C;
 

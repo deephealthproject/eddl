@@ -11,9 +11,17 @@
 #include "tensor_descriptors.h"
 #include "../utils.h"
 
-SelDescriptor::SelDescriptor(){}
+SelDescriptor::SelDescriptor()
+{
+
+}
+SelDescriptor::~SelDescriptor()
+{
+  if (addresses==nullptr) delete addresses;
+}
 
 SelDescriptor::SelDescriptor(const vector<string>& indices) : TensorDescriptor() {
+    addresses=nullptr;
     this->indices = vector<string>(indices);
 }
 
@@ -24,6 +32,7 @@ void SelDescriptor::build(vector<int> ishape){
     // Get input/output shapes
     this->ishape = ishape;
     this->oshape = indices2shape(this->idxs_range);
+    this->addresses = ranges2indices(this->ishape, this->idxs_range);
 }
 
 void SelDescriptor::resize(int b){
@@ -34,6 +43,7 @@ void SelDescriptor::resize(int b){
     this->ishape[0] = b;
     this->oshape[0] = b;
 
+    delete addresses;
     build_indices();
 }
 
