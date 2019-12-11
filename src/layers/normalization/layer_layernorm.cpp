@@ -97,7 +97,6 @@ void LLayerNorm::resize(int batch){
     PD->build(input->shape);
 
     Tensor *A=new Tensor(PD->oshape,dev);
-    A=new Tensor(PD->oshape,dev);
 
     PD2->build(A->getShape());
 
@@ -143,14 +142,22 @@ void LLayerNorm::backward()
   A=new Tensor(PD->oshape,dev);
   Tensor::select(delta,A, PD);
 
-  C=new Tensor(A->getShape(),A->device);
+
 
   B=new Tensor(PD->oshape,dev);
   Tensor::select(input,B, PD);
 
+  C=new Tensor(A->getShape(),A->device);
+  C->fill_(0.0);
+
   BN_backward(B,A,C,MD,bn_mean,bn_var,mean,variance,epsilon);
 
-  Tensor::select(C,parent[0]->delta, PD2);
+  delete A;
+
+  A=new Tensor(delta->getShape(),dev);
+  Tensor::select(C,A, PD2);
+
+  Tensor::inc(A,parent[0]->delta);
 
   delete A;
   delete B;

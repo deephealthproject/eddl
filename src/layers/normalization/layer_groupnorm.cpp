@@ -38,21 +38,17 @@ LGroupNorm::LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool
 
     if (CH%groups) msg("incorrect group value not channel divider","LGroupNorm");
 
-
     Tensor *A=input->clone();
     A->reshape_({N*groups,CH/groups,H,W});
 
-    Tensor *B;
-    if (input->ndim == 2) B=Tensor::permute(A,{1,0});
-    else if (input->ndim == 4) B=Tensor::permute(A,{1,0,2,3});
+    PD=new PermuteDescriptor({1,0,2,3});
+    PD->build(A->shape);
 
+    PD2=new PermuteDescriptor({1,0,2,3});
+    Tensor *B=new Tensor(PD->oshape,dev);
+    PD2->build(B->getShape());
 
-    if (input->ndim == 2) {axis.push_back(0);shape.push_back(B->shape[1]);}
-    else if (input->ndim == 4) {axis.push_back(0);axis.push_back(2);axis.push_back(3);shape.push_back(B->shape[1]);}
-    else {
-      input->info();
-      msg("LGroupNorm only works over 1D (Dense) or 2D (Conv) tensors","LGroupNorm");
-    }
+    axis.push_back(0);axis.push_back(2);axis.push_back(3);shape.push_back(B->shape[1]);
 
     MD=new MapReduceDescriptor(B,axis);
 
@@ -96,17 +92,31 @@ void LGroupNorm::resize(int batch){
 
     N=batch;
 
+    delete PD;
+    delete PD2;
+
     Tensor *A=input->clone();
     A->reshape_({N*groups,CH/groups,H,W});
 
-    Tensor *B;
-    if (input->ndim == 2) B=Tensor::permute(A,{1,0});
-    else if (input->ndim == 4) B=Tensor::permute(A,{1,0,2,3});
+    PD=new PermuteDescriptor({1,0,2,3});
+    PD->build(A->shape);
+
+    PD2=new PermuteDescriptor({1,0,2,3});
+    Tensor *B=new Tensor(PD->oshape,dev);
+    PD2->build(B->getShape());
 
     MD=new MapReduceDescriptor(B,axis);
 
     delete A;
     delete B;
+
+
+    bn_mean->resize(N*groups);
+    bn_var->resize(N*groups);
+    sd->resize(N*groups);
+    mean->resize(N*groups);
+    variance->resize(N*groups);
+
 
   }
 }
@@ -120,17 +130,15 @@ void LGroupNorm::forward() {
   A=input->clone();
   A->reshape_({N*groups,CH/groups,H,W});
 
-  if (input->ndim == 2) B=Tensor::permute(A,{1,0});
-  else if (input->ndim == 4) B=Tensor::permute(A,{1,0,2,3});
+  B=new Tensor(PD->oshape,dev);
+  C=new Tensor(PD->oshape,dev);
 
-  C=new Tensor(B->getShape(),B->device);
+  Tensor::select(A,B, PD);
 
   BN_forward(B,C,MD,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);
 
-  delete A;
-  delete B;
+  Tensor::select(C,A, PD2);
 
-  A=Tensor::permute(C,{1,0,2,3});
   A->reshape_({N,CH,H,W});
 
   Tensor::copy(A,output);
@@ -151,38 +159,34 @@ void LGroupNorm::backward()
 
   A=delta->clone();
   A->reshape_({N*groups,CH/groups,H,W});
-
-  if (input->ndim == 2) B=Tensor::permute(A,{1,0});
-  else if (input->ndim == 4) B=Tensor::permute(A,{1,0,2,3});
-
+  B=new Tensor(PD->oshape,dev);
+  Tensor::select(A,B, PD);
 
   delete A;
 
   A=input->clone();
   A->reshape_({N*groups,CH/groups,H,W});
-
-  if (input->ndim == 2) C=Tensor::permute(A,{1,0});
-  else if (input->ndim == 4) C=Tensor::permute(A,{1,0,2,3});
+  C=new Tensor(PD->oshape,dev);
+  Tensor::select(A,C, PD);
 
   delete A;
 
-  A=new Tensor(C->getShape(),C->device);
-
+  A=new Tensor(PD->oshape,dev);
+  A->fill_(0.0);
+  
   BN_backward(C,B,A,MD,bn_mean,bn_var,mean,variance,epsilon);
 
-
   delete B;
-  delete C;
 
-  if (input->ndim == 2) B=Tensor::permute(A,{1,0});
-  else if (input->ndim == 4) B=Tensor::permute(A,{1,0,2,3});
-
+  B=new Tensor(PD2->oshape,dev);
+  Tensor::select(A,B, PD2);
   B->reshape_({N,CH,H,W});
 
-  Tensor::copy(B,parent[0]->delta);
+  Tensor::inc(B,parent[0]->delta);
 
   delete A;
   delete B;
+  delete C;
 
 }
 

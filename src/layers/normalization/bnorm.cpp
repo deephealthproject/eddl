@@ -117,7 +117,7 @@ void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, MapReduceDescripto
   dmean->mult_(1.0/m);
   reduce_sum(delta,dmean,MD);
 
-  Tensor::copy(delta,pdelta);
+  Tensor::inc(delta,pdelta);
 
 
   delete X;

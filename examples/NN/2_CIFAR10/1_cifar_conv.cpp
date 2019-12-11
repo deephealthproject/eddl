@@ -24,9 +24,9 @@ using namespace eddl;
 
 layer Normalization(layer l)
 {
-  //return BatchNormalization(l);
-  return LayerNormalization(l);
-  //return GroupNormalization(l,8);
+  return BatchNormalization(l);
+  //return LayerNormalization(l);
+//  return GroupNormalization(l,8);
 
 }
 

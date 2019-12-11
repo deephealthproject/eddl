@@ -186,7 +186,8 @@ public:
     Tensor *bn_var;
     Tensor *sd;
     Tensor *bn_E;
-
+    PermuteDescriptor *PD;
+    PermuteDescriptor *PD2;
 
     MapReduceDescriptor *MD;
     bool init;
