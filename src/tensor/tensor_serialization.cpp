@@ -7,9 +7,11 @@
 * All rights reserved
 */
 
+#include <utility>
+
 #include "tensor.h"
 #include "../hardware/cpu/cpu_hw.h"
-#include "utils.h"
+#include "../utils.h"
 
 #ifdef cGPU
 #include "../hardware/gpu/gpu_tensor.h"
@@ -36,35 +38,22 @@
 using namespace std;
 
 // ********* LOAD FUNCTIONS *********
-Tensor* Tensor::load(const string& filename, string format) {
+Tensor* Tensor::load(const string& filename, string format){
     // Infer format from filename
     if(format.empty()){
         format = get_extension(filename);
     }
 
-    // Check if file exists (open file stream)
-    std::ifstream ifs(filename.c_str(), std::ios::in | std::ios::binary);
-    if (!ifs.good()){
-        msg("File not found. Check the file name and try again.", "Tensor::load");
-    }
-    // Load tensor
-    Tensor* t;
-    if(format=="jpg" || format=="jpeg" || format=="png" || format=="bmp" ||
-       format=="hdr" || format=="psd" || format=="tga" || format=="gif" ||
-       format=="pic"  || format=="pgm"  || format=="ppm") { // Images
-        t = Tensor::load_from_img(filename, format);
-    }else if(format=="bin" || format=="onnx"){
-        t = Tensor::loadfs(ifs, format);
-    }else if(format=="npy" || format=="npz"){
-        t = Tensor::load_from_numpy(filename, format);
-    }else{
-        msg("Format not implemented: *.'" + format + "'", "Tensor::load");
+    // Check source type
+    if(format=="npy" || format=="npz"){
+        msg("Numpy files need a source type to be specified: 'Tensor::loadt<type>(filename)'");
     }
 
-    // Close file stream and return tensor
-    ifs.close();
-    return t;
+    // Default type to be ignored
+    // Ignore IDE warnings (some times they have problems with templates)
+    return Tensor::load<float>(filename, std::move(format));
 }
+
 
 Tensor* Tensor::loadfs(std::ifstream &ifs, string format) {
 
@@ -121,50 +110,18 @@ Tensor* Tensor::load_from_img(const string &filename, const string &format){
 
         // Cast pointer
         t_size = t_width * t_height * t_channels;
-        auto* t_data = new float[t_size];
-        for(int i=0; i<t_size; i++){ t_data[i]= (float)pixels[i]; }
+        auto *t_data = new float[t_size];
+        for (int i = 0; i < t_size; i++) { t_data[i] = (float) pixels[i]; }
 
         // Free image
         stbi_image_free(pixels);
 
-        // Create tensor
-        t = new Tensor({1, t_channels, t_height, t_width}, DEV_CPU);
+        // Re-order components. Data received as 1xWxHxC, and has to be presented as 1xCxHxW
+        t = new Tensor({1, t_width, t_height, t_channels}, t_data, DEV_CPU);
+        t = Tensor::permute(t, {0, 3, 2, 1});
 
-        // TODO: Temp! Check permute correctness
-        // Re-order components (careful with t[a]=t[b], collisions may appear if both are the same)
-        for(int i=0; i<t->size; i+=t->shape[1]) { // Jump RGB blocks [(rgb), (rgb),....]
-            for(int j=0; j<t->shape[1]; j++){  // Walk RGB block [R, G, B]
-                int pos = (i/t->shape[1])+(j*t->shape[2]*t->shape[3]);  // (index in plane)+(jump whole plane: HxW)
-                t->ptr[pos]=t_data[i+j];
-            }
-        }
-        //t = t->permute({0, 3, 2, 1}); // Data must be presented as CxHxW
     } catch(const std::bad_array_new_length &e) {
         msg("There was an error opening the image", "Tensor::load_from_img");
-    }
-
-    return t;
-}
-
-Tensor* Tensor::load_from_numpy(const string &filename, const string &format){
-    Tensor* t = nullptr;
-
-    cnpy::NpyArray arr = cnpy::npy_load(filename);
-    auto* loaded_data = arr.data<float>();
-
-    // Get shape
-    vector<int> arr_shape;
-    for(unsigned long i : arr.shape){
-        arr_shape.push_back(i);
-    }
-
-    // Initialize tensor
-    t = new Tensor(arr_shape, DEV_CPU);
-
-    // TODO: Shouldn't be needed. Check.
-    // Fill tensor
-    for(int i=0; i<arr.num_vals; i++){
-        t->ptr[i] = loaded_data[i];
     }
 
     return t;
@@ -230,42 +187,46 @@ void Tensor::save2onnx(std::ofstream &ofs){
 
 
 void Tensor::save2img(const string& filename, string format){
-    if (this->ndim!=4) {
-        msg("Tensors should be 4D: 1xCxHxW","Tensor::save2img");
+    if (this->ndim < 2 || this->ndim > 4){
+        msg("Tensors should be 2D (HxW), 3D (CxHxW) or 4D (1xCxHxW)","Tensor::save2img");
+    } else if ((this->ndim == 3 || this->ndim == 4) && (this->ndim < 1 || this->ndim > 4)) {
+        msg("3D and 4D tensors must contain a number of channels in the range [1, 4]","Tensor::save2img");
+    } else if (this->ndim == 4 && this->shape[0] != 1) {
+        msg("4D tensor must be shaped as (1xCxHxW)","Tensor::save2img");
     }
 
-    // Re-order axis
-    Tensor *t = this->clone();  // Important if permute is not used
+    // Clone tensor and copy to CPU
+    Tensor *t = this->clone();
     t->toCPU();  // Just in case
 
-//    // TODO: Temp! Check permute correctness
-//    // Re-order components (careful with t[a]=t[b], collisions may appear if both are the same)
-//    for(int i=0; i<t->size; i+=t->shape[1]) { // Jump RGB blocks [(rgb), (rgb),....]
-//        for(int j=0; j<t->shape[1]; j++){  // Walk RGB block [R, G, B]
-//            int pos = (i/t->shape[1])+(j*t->shape[2]*t->shape[3]);  // (index in plane)+(jump whole plane: HxW)
-//            t->ptr[i+j]=this->ptr[pos];
-//        }
-//    }
-    //t = t->permute({0, 3, 2, 1}); // Data must be presented as CxHxW
+    // Un/Squeeze dimensions for 2D and 4D
+    if (t->ndim == 4){ // CxHxW
+        t->squeeze_();  // Careful with: 1x3x32x1 => 3x32
+    }
+    if(t->ndim == 2){ // 1xHxW
+        t->unsqueeze_();
+    }
+
+    // Re-order components. From CxHxW  => WxHxC
+    t = Tensor::permute(t, {2, 1, 0});  // Performs clone
 
     // Normalize image (for RGB must fall between 0 and 255) => Not a good idea
-    //t->normalize_(0.0f, 255.0f);
+    t->normalize_(0.0f, 255.0f);
 
     // TODO: I don't see the need to cast this (but if i remove it, it doesn't work)
     // Cast pointer
-
-    auto* data= new uint8_t[this->size];
-    for(int i=0;i<this->size;i++){ data[i]=t->ptr[i]; }
+    auto* data= new uint8_t[t->size];
+    for(int i=0;i<t->size;i++){ data[i]=t->ptr[i]; }
 
     // Save image
     if(format=="png") {
-        stbi_write_png(filename.c_str(), this->shape[3], this->shape[2], this->shape[1], data, this->shape[3] * this->shape[1]);
+        stbi_write_png(filename.c_str(), t->shape[0], t->shape[1], t->shape[2], data, t->shape[0] * t->shape[2]);  // width x channels
     }else if(format=="bmp"){
-        stbi_write_bmp(filename.c_str(), this->shape[3], this->shape[2], this->shape[1], data);
+        stbi_write_bmp(filename.c_str(), t->shape[0], t->shape[1], t->shape[2], data);
     }else if(format=="tga"){
-        stbi_write_tga(filename.c_str(), this->shape[3], this->shape[2], this->shape[1], data);
+        stbi_write_tga(filename.c_str(), t->shape[0], t->shape[1], t->shape[2], data);
     }else if(format=="jpg" || format=="jpeg"){
-        stbi_write_jpg(filename.c_str(), this->shape[3], this->shape[2], this->shape[1], data, 100);
+        stbi_write_jpg(filename.c_str(), t->shape[0], t->shape[1], t->shape[2], data, 100);
 //    }else if(format=="hdr"){
 //        stbi_write_hdr(filename.c_str(), this->shape[3], this->shape[2], this->shape[1], data);
     }else{

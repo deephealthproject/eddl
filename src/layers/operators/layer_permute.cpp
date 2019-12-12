@@ -18,36 +18,36 @@
 
 using namespace std;
 
-int LSelect::total_layers = 0;
+int LPermute::total_layers = 0;
 
 /**
   @brief Computes the absolute value of a Layer
 
   @param l a Layer.
-  @param name a name for the operation (predefined as 'abs+TotaLSelectLayers')
+  @param name a name for the operation (predefined as 'abs+TotaLPermuteLayers')
   @param dev which computing service utilize
 
   @returns the absolute value of each element in l
 
   */
-LSelect::LSelect(Layer *parent, vector<string> indices, bool hasBatch, string name, int dev): OperatorLayer(name, dev) {
+LPermute::LPermute(Layer *parent, vector<int> dims, bool hasBatch, string name, int dev): OperatorLayer(name, dev) {
     // Set default name
-    if(name.empty()) this->name = "select_" + to_string(++total_layers);
+    if(name.empty()) this->name = "permute_" + to_string(++total_layers);
 
     // Set input
     input=parent->output;
 
-    // Add batch to indices (if needed)
-    vector<string> indices_batch;
+    // Add batch to dims (if needed)
+    vector<int> dims_batch;
     if(hasBatch){
-        indices_batch = indices;
+        dims_batch = dims;
     }else{
-        indices_batch = vector<string>(indices);
-        indices_batch.insert(indices_batch.begin(), ":");
+        dims_batch = {0};
+        for(auto &d : dims){ dims_batch.emplace_back(d + 1); }
     }
 
     // Build descriptor
-    sd = new SelDescriptor(indices_batch);
+    sd = new PermuteDescriptor(dims_batch);
     sd->build(input->shape);
 
     // Set flow tensors
@@ -58,26 +58,25 @@ LSelect::LSelect(Layer *parent, vector<string> indices, bool hasBatch, string na
     addparent(parent);
 }
 
-void LSelect::resize(int b){
+void LPermute::resize(int b){
     Layer::resize(b);
     sd->resize(b);
 }
 
-void LSelect::forward(){
+void LPermute::forward(){
     Tensor::select(this->input, this->output, sd);
 }
 
-void LSelect::backward(){
+void LPermute::backward(){
     Tensor::select_back(this->delta, this->parent[0]->delta, sd);
 }
 
-
-Layer *LSelect::share(int c, int bs, vector<Layer *> p) {
+Layer *LPermute::share(int c, int bs, vector<Layer *> p) {
     return clone(c,bs,p,dev);
 }
 
-Layer *LSelect::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LSelect(p[0], sd->indices, true, "share_" + to_string(c) + name, todev);
+Layer *LPermute::clone(int c, int bs, vector<Layer *> p, int todev) {
+    auto *n = new LPermute(p[0], sd->dims, true, "share_" + to_string(c) + name, todev);
     n->orig = this;
     return n;
 }

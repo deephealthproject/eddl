@@ -112,3 +112,5 @@ Tensor* Tensor::randn(const vector<int> &shape, int dev){
     t->rand_normal(0.0f, 1.0f, false);
     return t;
 }
+
+

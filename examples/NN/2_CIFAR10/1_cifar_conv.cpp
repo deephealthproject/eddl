@@ -26,7 +26,7 @@ layer Normalization(layer l)
 {
   return BatchNormalization(l);
   //return LayerNormalization(l);
-  //return GroupNormalization(l,8);
+  //return GroupNormalization(l,8); // reduce batch_size and learning rate
 
 }
 
@@ -61,7 +61,7 @@ int main(int argc, char **argv){
 
   // Build model
   build(net,
-    sgd(0.01, 0.9), // Optimizer
+    sgd(0.001, 0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
     CS_CPU() // CPU with maximum threads availables

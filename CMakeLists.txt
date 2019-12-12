@@ -269,6 +269,7 @@ SET(CPP_SOURCES
         src/layers/operators/layer_pow.cpp
         src/layers/operators/layer_sqrt.cpp
         src/layers/operators/layer_select.cpp
+        src/layers/operators/layer_permute.cpp
         src/layers/operators/layer_sum.cpp
         src/layers/pool/layer_avgpool.cpp
         src/layers/pool/layer_globalavgpool.cpp
@@ -314,6 +315,8 @@ SET(CPP_SOURCES
         src/descriptors/descriptor_conv.cpp
         src/descriptors/descriptor_pool.cpp
         src/descriptors/descriptor_reduce.cpp
+        src/descriptors/descriptor_select.cpp
+        src/descriptors/descriptor_permute.cpp
         src/regularizers/regularizer.h
         src/regularizers/regularizer.cpp
         src/regularizers/regularizer_l1.cpp
@@ -545,6 +548,9 @@ if(BUILD_EXAMPLES)
     add_executable(cifar_resnet50 "${EXAMPLES_DIR}/NN/2_CIFAR10/7_cifar_resnet50_da_bn.cpp")
     ## Drive segmentation EXAMPLES
     add_executable(drive_seg "${EXAMPLES_DIR}/NN/3_DRIVE/1_drive_seg.cpp")
+    # Tensor
+    add_executable(tensor_manipulation "${EXAMPLES_DIR}/Tensor/eddl_tensor.cpp")
+    add_executable(tensor_image "${EXAMPLES_DIR}/Tensor/eddl_image.cpp")
     #### OTHER
     add_executable(example_ae "${EXAMPLES_DIR}/NN/other/eddl_ae.cpp")
     add_executable(example_conv "${EXAMPLES_DIR}/NN/other/eddl_conv.cpp")
@@ -553,7 +559,6 @@ if(BUILD_EXAMPLES)
     add_executable(example_load_save "${EXAMPLES_DIR}/NN/other/eddl_load_save.cpp")
     add_executable(example_mlp "${EXAMPLES_DIR}/NN/other/eddl_mlp.cpp")
     add_executable(example_train_batch "${EXAMPLES_DIR}/NN/other/eddl_train_batch.cpp")
-    add_executable(example_tensor "${EXAMPLES_DIR}/Tensor/eddl_tensor.cpp")
     ## MNIST EXAMPLES
     target_link_libraries(mnist_mlp eddl)
     target_link_libraries(mnist_mlp_initializers eddl)
@@ -574,6 +579,9 @@ if(BUILD_EXAMPLES)
     target_link_libraries(cifar_resnet50 eddl)
     ## DRIVE SEG EXAMPLES
     target_link_libraries(drive_seg eddl)
+    # Tensor
+    target_link_libraries(tensor_manipulation eddl)
+    target_link_libraries(tensor_image eddl)
     #### OTHER
     target_link_libraries(example_ae eddl)
     target_link_libraries(example_conv eddl)
@@ -582,7 +590,6 @@ if(BUILD_EXAMPLES)
     target_link_libraries(example_load_save eddl)
     target_link_libraries(example_mlp eddl)
     target_link_libraries(example_train_batch eddl)
-    target_link_libraries(example_tensor eddl)
     # Temp
     add_executable(test_main "tests/test_main.cpp")
     target_link_libraries(test_main eddl)

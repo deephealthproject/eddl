@@ -142,11 +142,11 @@ public:
     Tensor *variance;
     Tensor *bn_mean;
     Tensor *bn_var;
-    Tensor *sd;
-    Tensor *bn_E;
 
-
+    PermuteDescriptor *PD;
+    PermuteDescriptor *PD2;
     MapReduceDescriptor *MD;
+
     bool init;
     vector<int> axis;
     vector<int> shape;
@@ -175,17 +175,17 @@ public:
     float momentum;
     float epsilon;
     int groups;
-    int N,C,H,W;
+    int N,CH,H,W;
     bool affine;
     Tensor *mean;
     Tensor *variance;
     Tensor *bn_mean;
     Tensor *bn_var;
-    Tensor *sd;
-    Tensor *bn_E;
 
-
+    PermuteDescriptor *PD;
+    PermuteDescriptor *PD2;
     MapReduceDescriptor *MD;
+    
     bool init;
     vector<int> axis;
     vector<int> shape;

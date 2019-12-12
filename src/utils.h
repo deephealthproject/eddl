@@ -10,16 +10,15 @@
 #ifndef EDDL_UTILS_H
 #define EDDL_UTILS_H
 
-#include <string>
-#include <cstdio>
 #include <cstdint> // uint64_t
-#include "tensor/tensor.h"
+#include <vector>
+
 
 using namespace std;
 
 void msg(const string& text, const string& title="");
 
-float *get_fmem(int size,char *str);
+float *get_fmem(int size, char *str);
 
 char *humanSize(uint64_t bytes);
 
@@ -34,5 +33,11 @@ vector<int> indices2shape(vector<vector<int>> ranges);
 int shape2size(vector<int> shape);
 
 vector<int> shape2stride(const vector<int>& shape);
+
+vector<int> permute_shape(const vector<int>& ishape, const vector<int>& dims);
+
+int* permute_indices(const vector<int>& ishape, const vector<int>& dims);
+
+int* ranges2indices(vector<int> ishape, vector<vector<int>> ranges);
 
 #endif //EDDL_UTILS_H

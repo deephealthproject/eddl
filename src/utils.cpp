@@ -8,19 +8,17 @@
 * All rights reserved
 */
 
+#include <fstream>  // for the linux stuff
 #include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <cmath>
+#include <cstdio>
+#include <cstdlib>
 #include <new>      // included for std::bad_alloc
-
-#include "utils.h"
-#include <random>
+#include <string>
+#include <limits>
+#include <algorithm>
 
 #include "system_info.h"
-#include <fstream>
-#include <utility>
-#include <string.h>
+#include "utils.h"
 
 #ifdef EDDL_LINUX
 #include "sys/mman.h"
@@ -181,7 +179,7 @@ vector<vector<int>> parse_indices(vector<string> str_indices, const vector<int>&
                 str_indices.emplace_back(":");
             }
         }else{
-            msg( "The number of dimensions of the indices cannot be greater than the shape of the tensor to match", "parse_indices");
+            msg( "The number of dimensions of the indices cannot be greater than the shape of the tensor to match", "utils::parse_indices");
         }
     }
 
@@ -225,11 +223,11 @@ vector<vector<int>> parse_indices(vector<string> str_indices, const vector<int>&
     for(int i=0; i<ranges.size(); i++){
         string common_str = "Invalid indices: '" + str_indices[i] + "'. ";
         if(ranges[i][0] < 0 || ranges[i][1] < 0){
-            msg( common_str + "Indices must be greater than zero.", "parse_indices");
+            msg( common_str + "Indices must be greater than zero.", "utils::parse_indices");
         }else if(ranges[i][1] < ranges[i][0]){
-            msg(common_str + "The last index of the range must be greater or equal than the first.", "parse_indices");
+            msg(common_str + "The last index of the range must be greater or equal than the first.", "utils::parse_indices");
         } else if(ranges[i][1] >= shape[i]){
-            msg(common_str + "The last index of the range must fit in its dimension.", "parse_indices");
+            msg(common_str + "The last index of the range must fit in its dimension.", "utils::parse_indices");
         }
     }
     return ranges;
@@ -261,4 +259,87 @@ vector<int> shape2stride(const vector<int>& shape){
     }
 
     return stride;
+}
+
+vector<int> permute_shape(const vector<int>& ishape, const vector<int>& dims){
+    vector<int> oshape;
+    if(dims.size()!=ishape.size()){
+        msg("Dimensions do not match", "utils::permute_indices");
+    }else{
+        for(auto &d : dims){
+            oshape.emplace_back(ishape[d]);
+        }
+    }
+
+    return oshape;
+}
+
+int* permute_indices(const vector<int>& ishape, const vector<int>& dims){
+    int* addresses = nullptr;
+    vector<int> oshape = permute_shape(ishape, dims);
+
+    // Compute size
+    int isize = shape2size(ishape);
+    int osize = shape2size(oshape);
+
+    // Check if the shapes are compatible
+    if (ishape.size() != oshape.size() || isize!=osize){
+        msg("Incompatible dimensions", "utils::permute_indices");
+    }else{
+        vector<int> istride = shape2stride(ishape);
+        vector<int> ostride = shape2stride(oshape);
+        addresses = new int[isize];
+
+        // For each output address (0,1,2,3,...n), compute its indices
+        // Then add the minimum of each range, and compute the raw address
+        for(int i=0; i<isize; i++) {
+
+            // Extract indices
+            int B_pos = 0;
+            for(int d=0; d<ishape.size(); d++){
+                // Compute output indices at dimension d, but permuted
+                int A_idx = (i/istride[dims[d]]) % ishape[dims[d]];  // (52 / 32) % 32=> [1, 20]
+                B_pos += A_idx * ostride[d];
+            }
+
+            // Save address translation
+            addresses[B_pos] = i;
+        }
+    }
+
+    return addresses;
+}
+
+int* ranges2indices(vector<int> ishape, vector<vector<int>> ranges){
+    // Returns an array with the linear positions of the ranges to perform fast translations
+    // [0:2, 5] {H=10, W=7}=> ([0,1], [5]) => (0*7+5),(1*7)+5,...
+
+    // Compute output dimensions
+    vector<int> istride = shape2stride(ishape);
+
+    vector<int> oshape = indices2shape(ranges);
+    vector<int> ostride = shape2stride(oshape);
+    int osize = shape2size(oshape);
+    int* addresses = new int[osize];  // Because the batch is 1 (default), then it's resized
+
+    // For each output address (0,1,2,3,...n), compute its indices
+    // Then add the minimum of each range, and compute the raw address
+    for(int i=0; i<osize; i++) {
+
+        // Extract indices
+        int A_pos = 0;
+        for(int d=0; d<ranges.size(); d++){
+            // Compute output indices at dimension d
+            int B_idx = (i/ostride[d]) % oshape[d];  // (52 / 32) % 32=> [1, 20]
+
+            // Compute input indices at dimension d
+            int A_idx = B_idx + ranges[d][0];  // B_index + A_start => [0, 0, 0] + [0, 5, 5]
+            A_pos += A_idx * istride[d];
+        }
+
+        // Save address translation
+        addresses[i] = A_pos;
+    }
+
+    return addresses;
 }

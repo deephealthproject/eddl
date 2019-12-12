@@ -37,6 +37,12 @@ int main(int argc, char **argv){
     layer in=Input({3,32,32});
     layer l=in;
 
+//    l = Permute(l, {0, 1, 2});
+//    l = Select(l, {":", ":15", ":15"});
+
+    // Data transformations
+//    l = Crop(l, {30, 30});
+
     // Data augmentation
 //   l = ShiftRandom(l, {-0.2f, +0.2f}, {-0.2f, +0.2f});
 //   l = RotateRandom(l, {-30.0f, +30.0f});
@@ -67,8 +73,8 @@ int main(int argc, char **argv){
           sgd(0.01, 0.9), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          //CS_CPU() // CPU with maximum threads availables
-          CS_GPU({1}) // GPU with only one gpu
+          CS_CPU() // CPU with maximum threads availables
+          //CS_GPU({1}) // GPU with only one gpu
     );
 
     

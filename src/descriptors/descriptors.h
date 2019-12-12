@@ -7,8 +7,8 @@
 * All rights reserved
 */
 
-#ifndef EDDL_CONV_DESCRIPTOR_H
-#define EDDL_CONV_DESCRIPTOR_H
+#ifndef EDDL_DESCRIPTORS_H
+#define EDDL_DESCRIPTORS_H
 
 #include <stdio.h>
 #include <vector>
@@ -120,4 +120,4 @@ public:
     void resize(int b);
 };
 
-#endif //EDDL_CONV_DESCRIPTOR_H
+#endif //EDDL_DESCRIPTORS_H

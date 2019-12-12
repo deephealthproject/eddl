@@ -280,12 +280,30 @@ public:
 class LSelect : public OperatorLayer {
 public:
     static int total_layers;
+    SelDescriptor *sd;
 
-    vector<string> str_indices;
-    vector<vector<int>> idxs_range;
-    int* oi_addresses;
+    LSelect(Layer *l, vector<string> indices, bool hasBatch, string name, int dev);
 
-    LSelect(Layer *l, vector<string> str_indices, string name, int dev);
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int b) override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+};
+
+
+/// Permute Layer
+class LPermute : public OperatorLayer {
+public:
+    static int total_layers;
+
+    PermuteDescriptor *sd;
+
+    LPermute(Layer *l, vector<int> dims, bool hasBatch, string name, int dev);
 
     void forward() override;
 

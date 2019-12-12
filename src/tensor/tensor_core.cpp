@@ -37,7 +37,13 @@ void Tensor::fill_(float v) {
 #endif
 }
 
-void Tensor::reshape_(vector<int> shape){
+//Tensor* Tensor::fill(Tensor *A, float v){
+//    Tensor *t_new = A->clone();
+//    t_new->fill_(v);
+//    return t_new;
+//}
+
+void Tensor::reshape_(const vector<int> &shape){
     int new_size = 1;
     for(auto i : shape) new_size *= i;
 
@@ -64,33 +70,77 @@ void Tensor::reshape_(vector<int> shape){
     }
 }
 
-Tensor* Tensor::permute(vector<int> axis){
-    // TODO: Too inefficient
-    // Compute new shape
-    vector<int> new_shape;
-    for(int i=0; i<this->ndim; i++){
-        new_shape.push_back(this->shape[axis[i]]);
-    }
-
-    // Create new tensor
-    auto* B = new Tensor(new_shape, DEV_CPU);
-
-    // Fill tensor
-    vector<int> B_idxs(this->ndim);
-    for(int A_pos=0; A_pos<this->size; A_pos++){
-        vector<int> A_idxs = this->get_indices_rowmajor(A_pos);
-
-        // Compute indices for B
-        for(int i=0; i<this->ndim; i++){
-            B_idxs[i] = A_idxs[axis[i]];
-        }
-
-        // Set value
-        B->set_(B_idxs, this->ptr[A_pos]);
-
-    }
-    return B;
+Tensor* Tensor::reshape(Tensor *A, const vector<int> &shape){
+    Tensor *t_new = A->clone();
+    t_new->reshape_(shape);
+    return t_new;
 }
+
+void Tensor::squeeze_(){
+    // Remove single dimension entries from the array
+    vector<int> new_shape;
+    for(auto &d : this->shape){
+        if(d>1){
+            new_shape.push_back(d);
+        }
+    }
+    this->reshape_(new_shape);
+}
+
+Tensor* Tensor::squeeze(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->squeeze_();
+    return t_new;
+}
+
+void Tensor::unsqueeze_(){
+    vector<int> new_shape(this->shape);
+    new_shape.insert(new_shape.begin(), 1); // Add one dimension to the beginning
+    this->reshape_(new_shape);
+}
+
+Tensor* Tensor::unsqueeze(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->unsqueeze_();
+    return t_new;
+}
+
+Tensor* Tensor::permute(Tensor* t, const vector<int>& dims){
+    // Build descriptor
+    auto *sd = new PermuteDescriptor(dims);
+    sd->build(t->shape);
+    sd->build_indices();
+
+    // Initialize new tensor
+    auto *new_t = new Tensor(sd->oshape, t->device);
+
+    // Fill new tensor
+    Tensor::select(t, new_t, sd);
+
+    return new_t;
+}
+
+Tensor* Tensor::moveaxis(Tensor* t, int source, int destination){
+    // Check values
+    if(source<-1 || destination <-1){
+        msg("Invalid axis", "Tensor::moveaxis");
+    }
+
+    // User "-1" as alias for the last dimension
+    if(source == -1){source = t->ndim-1; }
+    if(destination == -1){destination = t->ndim-1; }
+
+    // Build axes to permute [0, 3] => (0,1,2,3) => (3,1,2,0)
+    vector<int> dims;
+    for(int i=0; i<t->ndim;i++){ dims.emplace_back(i); }
+    dims[source] = destination;
+    dims[destination] = source;
+
+    // Permute tensor
+    Tensor* t2 = Tensor::permute(t, dims);
+    return t2;
+}
+
 
 int Tensor::get_address_rowmajor(vector<int> indices){
     int address=0;
@@ -100,6 +150,7 @@ int Tensor::get_address_rowmajor(vector<int> indices){
 
 vector<int> Tensor::get_indices_rowmajor(int address){
     vector<int> indices;
+    indices.reserve(this->shape.size());
     for(int i=0; i<this->shape.size(); i++){
         indices.push_back(address / this->stride[i] % this->shape[i]);
     }
@@ -122,39 +173,6 @@ bool Tensor::valid_indices(vector<int> indices){
     }
     return true;
 }
-
-
-// ***** Core (auxiliar) *****************************
-int* Tensor::ranges2indices(vector<vector<int>> ranges, int ignoreBatch){
-
-    // Compute output dimensions
-    vector<int> oshape = indices2shape(ranges);
-    vector<int> ostride = shape2stride(oshape);
-    int osize = shape2size(oshape);
-    int* addresses = new int[osize];  // Because the batch is 1 (default), then it's resized
-
-    // For each output address (0,1,2,3,...n), compute its indices
-    // Then add the minimum of each range, and compute the raw address
-    for(int i=0; i<osize; i++) {
-
-        // Extract indices
-        int A_pos = 0;
-        for(int d=0; d<ranges.size(); d++){
-            // Compute output indices at dimension d
-            int B_idx = (i/ostride[d]) % oshape[d];  // (52 / 32) % 32=> [1, 20]
-
-            // Compute input indices at dimension d
-            int A_idx = B_idx + ranges[d][0];  // B_index + A_start => [0, 0, 0] + [0, 5, 5]
-            A_pos += A_idx * this->stride[d+ignoreBatch];
-        }
-
-        // Save address translation
-        addresses[i] = A_pos;
-    }
-
-    return addresses;
-}
-
 // ***** Core (static) *****************************
 void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
     // Transpose
@@ -254,26 +272,26 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
 Tensor* Tensor::select(const vector<string>& indices){
     Tensor* t = nullptr;
 
-    // Get range of indices
-    vector<vector<int>> ranges = parse_indices(indices, this->shape);
-    vector<int> t_shape = indices2shape(ranges);
-    int* addresses = ranges2indices(ranges, 0);
+    auto *sd = new SelDescriptor(indices);
+    sd->build(this->shape);
+    sd->build_indices();
 
     // Initialize tensor
-    t = new Tensor(t_shape, DEV_CPU);
-    Tensor::select(this, t, addresses);
+    t = new Tensor(sd->oshape, this->device);
 
+    // Perform select
+    Tensor::select(this, t, sd);
     return t;
 }
 
-void Tensor::select(Tensor *A, Tensor* B, int* indices){
+void Tensor::select(Tensor *A, Tensor* B, SelDescriptor *sd){
     if (A->isCPU() && B->isCPU()) {
-        cpu_select(A, B, indices);
+        cpu_select(A, B, sd);
     }
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
       {
-        gpu_select(A, B, indices);
+        gpu_select(A, B, sd);
       }
 #endif
 #ifdef cFPGA
@@ -284,14 +302,14 @@ void Tensor::select(Tensor *A, Tensor* B, int* indices){
 
 }
 
-void Tensor::select_back(Tensor *A, Tensor* B, int* indices){
+void Tensor::select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
     if (A->isCPU() && B->isCPU()) {
-        cpu_select_back(A, B, indices);
+        cpu_select_back(A, B, sd);
     }
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
       {
-        gpu_select_back(A, B, indices);
+        gpu_select_back(A, B, sd);
       }
 #endif
 #ifdef cFPGA

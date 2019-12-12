@@ -116,6 +116,19 @@ namespace eddl {
         return new LCrop(parent, from_coords, to_coords, reshape, constant, name, DEV_CPU);
     }
 
+    layer Crop(layer parent, vector<int> size, bool reshape, float constant, string name){
+        // Compute center
+        int center_y = (int)parent->output->shape[2]/2;
+        int center_x = (int)parent->output->shape[3]/2;
+
+        // Get coordinates
+        int y1 = center_y - size[0]/2;
+        int x1 = center_x - size[1]/2;
+        int y2 = y1 + size[0] - 1;
+        int x2 = x1 + size[1] - 1;
+        return new LCrop(parent, {y1, x1}, {y2, x2}, reshape, constant, name, DEV_CPU);
+    }
+
     layer CropAndScale(layer parent, vector<int> from_coords, vector<int> to_coords, string da_mode, float constant, string name){
         return new LCropAndScale(parent, from_coords, to_coords, da_mode, constant, name, DEV_CPU);
     }
@@ -303,7 +316,11 @@ namespace eddl {
     }
 
     layer Select(layer l, vector<string> indices){
-        return new LSelect(l, indices, "", DEV_CPU);
+        return new LSelect(l, indices, false, "", DEV_CPU);
+    }
+
+    layer Permute(layer l, vector<int> dims){
+        return new LPermute(l, dims, false, "", DEV_CPU);
     }
 
     // ---- REDUCTION LAYERS ----
