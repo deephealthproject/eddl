@@ -8,6 +8,7 @@
 * All rights reserved
 */
 
+#include <fstream>  // for the linux stuff
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
