@@ -9,18 +9,13 @@
 */
 
 #include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <cmath>
+#include <cstdio>
+#include <cstdlib>
 #include <new>      // included for std::bad_alloc
-
-#include "utils.h"
-#include <random>
+#include <string>
 
 #include "system_info.h"
-#include <fstream>
-#include <utility>
-#include <string.h>
+#include "utils.h"
 
 #ifdef EDDL_LINUX
 #include "sys/mman.h"
