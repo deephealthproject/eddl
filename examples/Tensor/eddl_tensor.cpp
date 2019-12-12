@@ -21,38 +21,50 @@ using namespace std;
 using namespace eddlT;
 
 int main(int argc, char **argv) {
-
+//
     Tensor* t1, *t2;
+    string fname = "datasets/drive/numpy/x_train.npy";
+    t1 = Tensor::load<uint8_t>(fname);
+    t1->info();
+    cout << "Max: " << t1->max() << endl;
+    cout << "Min: " << t1->min() << endl;
+    t2 = t1->select({"0"});
+    t2->info();
+//    t2->unsqueeze_();
+    t2 = Tensor::permute(t2, {0, 3, 1, 2});
+    t2->info();
+    t2->save("numpy_ds.jpg");
+    int asd = 3;
 
-    float ptr[12] = {1, 2, 3,  1, 2, 3,
-                     1, 2, 3,  1, 2, 3};
-    t1= new Tensor({1, 2, 2, 3}, ptr, DEV_CPU);
-
-    t1->print();
-    t2 = Tensor::permute(t1, {0, 3, 1, 2});
-    t2->print();
-    int asd = 33;
-
-    t1 = Tensor::range(1, 16);
-    t1->reshape_({4, 4});
-    t1->print();
-
-    t2 = t1->select({":", "1:3"});
-    t2->print();
-
-    t1 = Tensor::moveaxis(t1, 0, 1);
-    t1->reshape_({4, 4});
-    t1->print();
-    int aasd = 33;
-
-    string fname = "/Users/salvacarrion/Desktop/elephant.jpg";
-    t1 = Tensor::load(fname);
-    t2 = new Tensor(t1->shape);
-
-    t1->save("rotate1.jpg");
-    Tensor::rotate(t1, t2, 45, {0,0}, "original");
-    t2->save("rotate2.jpg");
-    int as33d = 33;
+//    float ptr[12] = {1, 2, 3,  1, 2, 3,
+//                     1, 2, 3,  1, 2, 3};
+//    t1= new Tensor({1, 2, 2, 3}, ptr, DEV_CPU);
+//
+//    t1->print();
+//    t2 = Tensor::permute(t1, {0, 3, 1, 2});
+//    t2->print();
+//    int asd = 33;
+//
+//    t1 = Tensor::range(1, 16);
+//    t1->reshape_({4, 4});
+//    t1->print();
+//
+//    t2 = t1->select({":", "1:3"});
+//    t2->print();
+//
+//    t1 = Tensor::moveaxis(t1, 0, 1);
+//    t1->reshape_({4, 4});
+//    t1->print();
+//    int aasd = 33;
+//
+//    string fname = "/Users/salvacarrion/Desktop/elephant.jpg";
+//    t1 = Tensor::load(fname);
+//    t2 = new Tensor(t1->shape);
+//
+//    t1->save("rotate1.jpg");
+//    Tensor::rotate(t1, t2, 45, {0,0}, "original");
+//    t2->save("rotate2.jpg");
+//    int as33d = 33;
 //
 //  int dev=DEV_GPU;
 //  vector<int> axis={0,2,3};

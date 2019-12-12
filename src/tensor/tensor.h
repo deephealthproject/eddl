@@ -22,6 +22,9 @@
 #include "../utils.h"
 #include "../descriptors/tensor_descriptors.h"
 
+// Read/Write Numpy
+#include "cnpy/cnpy.h"
+
 #define DEV_CPU 0
 
 #define DEV_GPU 1000
@@ -60,7 +63,7 @@ private:
     static Tensor* load_from_bin(std::ifstream &ifs);
     static Tensor* load_from_onnx(std::ifstream &ifs);
     static Tensor* load_from_img(const string &filename, const string &format);
-    static Tensor* load_from_numpy(const string &filename, const string &format);
+    template<typename T> static Tensor* load_from_numpy(const string &filename, const string &format);
 
     // Save methods
     void save2bin(std::ofstream &ofs);
@@ -119,21 +122,36 @@ public:
     // Serialization
     static Tensor* loadfs(std::ifstream &ifs, string format="");
     static Tensor* load(const string& filename, string format="");
+    template<typename T> static Tensor* load(const string& filename, string format="");
+
     void savefs(std::ofstream &ofs, string format="");
     void save(const string& filename, string format="");
 
-    // ***** Core (in-place) *****************************
+    // ***** Core *****************************
+//    void permute_(const vector<int>& dims);
+    static Tensor* permute(Tensor* t, const vector<int>& dims);
+
+//    void moveaxis_(const vector<int>& dims);
+    static Tensor* moveaxis(Tensor* t, int source, int destination);
+
     void fill_(float v);
+//    static Tensor* fill(Tensor *A, float v);
+
+    void reshape_(const vector<int> &shape);
+    static Tensor* reshape(Tensor *A, const vector<int> &shape);
+
+    void squeeze_();
+    static Tensor* squeeze(Tensor *A);
+
+    void unsqueeze_();
+    static Tensor* unsqueeze(Tensor *A);
+
     bool valid_indices(vector<int> indices);
     int get_address_rowmajor(vector<int> indices);
     vector<int> get_indices_rowmajor(int address);
-    void reshape_(vector<int> shape);
     float get_(vector<int> indices);
     void set_(vector<int> indices, float value);
 
-    // ***** Core (static) *****************************
-    static Tensor* permute(Tensor* t, const vector<int>& dims);
-    static Tensor* moveaxis(Tensor* t, int source, int destination);
 
     // ************************************************
     // ****** Tensor operations ***********************
@@ -345,5 +363,60 @@ public:
 };
 
 
+
+template<typename T>
+Tensor* Tensor::load_from_numpy(const string &filename, const string &format){
+    Tensor* t = nullptr;
+
+    cnpy::NpyArray arr = cnpy::npy_load(filename);
+    auto* loaded_data = arr.data<T>();
+
+    // Get shape
+    vector<int> arr_shape;
+    for(unsigned long i : arr.shape){
+        arr_shape.push_back(i);
+    }
+
+    // Initialize tensor
+    t = new Tensor(arr_shape, DEV_CPU);
+
+    // Fill tensor
+    for(int i=0; i<arr.num_vals; i++){
+        t->ptr[i] = (float)loaded_data[i];
+    }
+
+    return t;
+}
+
+template<typename T>
+Tensor* Tensor::load(const string& filename, string format){
+    // Infer format from filename
+    if(format.empty()){
+        format = get_extension(filename);
+    }
+
+    // Check if file exists (open file stream)
+    std::ifstream ifs(filename.c_str(), std::ios::in | std::ios::binary);
+    if (!ifs.good()){
+        msg("File not found. Check the file name and try again.", "Tensor::load");
+    }
+    // Load tensor
+    Tensor* t;
+    if(format=="jpg" || format=="jpeg" || format=="png" || format=="bmp" ||
+       format=="hdr" || format=="psd" || format=="tga" || format=="gif" ||
+       format=="pic"  || format=="pgm"  || format=="ppm") { // Images
+        t = Tensor::load_from_img(filename, format);
+    }else if(format=="bin" || format=="onnx"){
+        t = Tensor::loadfs(ifs, format);
+    }else if(format=="npy" || format=="npz"){
+        t = Tensor::load_from_numpy<T>(filename, format);
+    }else{
+        msg("Format not implemented: *.'" + format + "'", "Tensor::load");
+    }
+
+    // Close file stream and return tensor
+    ifs.close();
+    return t;
+}
 
 #endif //EDDL_TENSOR_H

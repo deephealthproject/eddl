@@ -37,7 +37,13 @@ void Tensor::fill_(float v) {
 #endif
 }
 
-void Tensor::reshape_(vector<int> shape){
+//Tensor* Tensor::fill(Tensor *A, float v){
+//    Tensor *t_new = A->clone();
+//    t_new->fill_(v);
+//    return t_new;
+//}
+
+void Tensor::reshape_(const vector<int> &shape){
     int new_size = 1;
     for(auto i : shape) new_size *= i;
 
@@ -64,6 +70,40 @@ void Tensor::reshape_(vector<int> shape){
     }
 }
 
+Tensor* Tensor::reshape(Tensor *A, const vector<int> &shape){
+    Tensor *t_new = A->clone();
+    t_new->reshape_(shape);
+    return t_new;
+}
+
+void Tensor::squeeze_(){
+    // Remove single dimension entries from the array
+    vector<int> new_shape;
+    for(auto &d : this->shape){
+        if(d>1){
+            new_shape.push_back(d);
+        }
+    }
+    this->reshape_(new_shape);
+}
+
+Tensor* Tensor::squeeze(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->squeeze_();
+    return t_new;
+}
+
+void Tensor::unsqueeze_(){
+    vector<int> new_shape(this->shape);
+    new_shape.insert(new_shape.begin(), 1); // Add one dimension to the beginning
+    this->reshape_(new_shape);
+}
+
+Tensor* Tensor::unsqueeze(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->unsqueeze_();
+    return t_new;
+}
 
 Tensor* Tensor::permute(Tensor* t, const vector<int>& dims){
     // Build descriptor
@@ -110,6 +150,7 @@ int Tensor::get_address_rowmajor(vector<int> indices){
 
 vector<int> Tensor::get_indices_rowmajor(int address){
     vector<int> indices;
+    indices.reserve(this->shape.size());
     for(int i=0; i<this->shape.size(); i++){
         indices.push_back(address / this->stride[i] % this->shape[i]);
     }
