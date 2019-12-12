@@ -10,10 +10,13 @@
 #ifndef EDDL_UTILS_H
 #define EDDL_UTILS_H
 
-#include <string>
-#include <cstdio>
 #include <cstdint> // uint64_t
-//#include "tensor/tensor.h"
+#include <iostream>
+#include <fstream>
+#include <cstdio>
+#include <vector>
+#include <string>
+
 
 using namespace std;
 
