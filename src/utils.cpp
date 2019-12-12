@@ -14,6 +14,8 @@
 #include <cstdlib>
 #include <new>      // included for std::bad_alloc
 #include <string>
+#include <limits>
+#include <algorithm>
 
 #include "system_info.h"
 #include "utils.h"
