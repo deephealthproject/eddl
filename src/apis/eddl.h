@@ -46,6 +46,7 @@ namespace eddl {
 #define regularizer Regularizer*
 #define compserv CompServ*
 #define loss NetLoss *
+#define metric NetLoss *
 
 // ---- CORE LAYERS ----
     layer Activation(layer parent, string activation, float param=0.01, string name = "");
@@ -102,7 +103,8 @@ namespace eddl {
 
 // ---- METRICS ----
     Metric* getMetric(string type);
-
+    loss newmetric(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name);
+    loss newmetric(const std::function<Layer*(Layer*)>& f, Layer *in, string name);
 
 // ---- MERGE LAYERS ----
     layer Add(const vector<layer> &layers, string name = "");
@@ -278,6 +280,7 @@ namespace eddl {
     void backward(loss l);
 
     float compute_loss(loss L);
+    float compute_metric(loss L);
 
     void update(model m);
 

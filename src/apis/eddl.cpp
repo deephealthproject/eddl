@@ -394,6 +394,15 @@ namespace eddl {
         return nullptr;
     }
 
+    loss newmetric(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name)
+    {
+      return new NetLoss(f,in,name);
+    }
+    loss newmetric(const std::function<Layer*(Layer*)>& f, Layer *in, string name)
+    {
+      return new NetLoss(f,in,name);
+    }
+
     // ---- OPTIMIZERS ----
     optimizer adadelta(float lr, float rho, float epsilon, float weight_decay) {
         //Todo: Implement
@@ -666,6 +675,11 @@ namespace eddl {
     }
 
     float compute_loss(loss L)
+    {
+      return L->compute();
+    }
+
+    float compute_metric(loss L)
     {
       return L->compute();
     }
