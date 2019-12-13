@@ -30,7 +30,7 @@ NetLoss::NetLoss(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> 
  graph=new Net(ginput,{fout});
 
  Net *sn=in[0]->net;
- 
+
  graph->build(sn->optimizer->clone(),{new LMin()},{new MSum()},sn->cs);
 
 }

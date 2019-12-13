@@ -901,7 +901,7 @@ void Tensor::sign(Tensor *A, Tensor *B) {
     ///////////////////////////////////////
     /// Get sign (+-) of all values
     //////////////////////////////////////
-    B->tsem->lock();
+    //B->tsem->lock();
 
     if (!Tensor::eqsize(A, B))
         msg("Tensors with different shape", "Tensor::sign");
@@ -913,7 +913,8 @@ void Tensor::sign(Tensor *A, Tensor *B) {
 #ifdef cGPU
     else if (A->isGPU())
       {
-
+        Tensor::copy(A,B);
+        gpu_sign_(B);
       }
 #endif
 #ifdef cFPGA
@@ -921,7 +922,7 @@ void Tensor::sign(Tensor *A, Tensor *B) {
 
     }
 #endif
-    B->tsem->unlock();
+    //B->tsem->unlock();
 
 }
 
