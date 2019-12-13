@@ -356,6 +356,8 @@ SET(CPP_SOURCES
         src/system_info.h
         src/utils.cpp
         src/utils.h
+        src/helpers.cpp
+        src/helpers.h
         src/random.cpp
         src/random.h
         # Temp
@@ -551,6 +553,7 @@ if(BUILD_EXAMPLES)
     # Tensor
     add_executable(tensor_manipulation "${EXAMPLES_DIR}/Tensor/eddl_tensor.cpp")
     add_executable(tensor_image "${EXAMPLES_DIR}/Tensor/eddl_image.cpp")
+    add_executable(tensor_io "${EXAMPLES_DIR}/Tensor/eddl_io.cpp")
     #### OTHER
     add_executable(example_ae "${EXAMPLES_DIR}/NN/other/eddl_ae.cpp")
     add_executable(example_conv "${EXAMPLES_DIR}/NN/other/eddl_conv.cpp")
@@ -582,6 +585,7 @@ if(BUILD_EXAMPLES)
     # Tensor
     target_link_libraries(tensor_manipulation eddl)
     target_link_libraries(tensor_image eddl)
+    target_link_libraries(tensor_io eddl)
     #### OTHER
     target_link_libraries(example_ae eddl)
     target_link_libraries(example_conv eddl)

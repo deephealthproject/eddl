@@ -8,6 +8,7 @@
 * All rights reserved
 */
 
+#include <iterator>
 #include <fstream>  // for the linux stuff
 #include <iostream>
 #include <cstdio>
@@ -16,6 +17,9 @@
 #include <string>
 #include <limits>
 #include <algorithm>
+#include <sstream>
+#include <vector>
+#include <string>
 
 #include "system_info.h"
 #include "utils.h"
@@ -342,4 +346,8 @@ int* ranges2indices(vector<int> ishape, vector<vector<int>> ranges){
     }
 
     return addresses;
+}
+
+bool is_number(const std::string& s){
+    return !s.empty() && std::find_if(s.begin(), s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
 }
