@@ -18,8 +18,8 @@ using namespace std;
 int main(int argc, char **argv) {
 
     // Paths
-    string fname = "../examples/images/elephant.jpg";  // Some image
-    string output = "images/";  // Create this folder!
+    string fname = "../examples/data/elephant.jpg";  // Some image
+    string output = "output/";  // Create this folder!
 
     // Load image
     Tensor *t1 = Tensor::load(fname);

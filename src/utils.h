@@ -40,4 +40,6 @@ int* permute_indices(const vector<int>& ishape, const vector<int>& dims);
 
 int* ranges2indices(vector<int> ishape, vector<vector<int>> ranges);
 
+bool is_number(const std::string& s);
+
 #endif //EDDL_UTILS_H

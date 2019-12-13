@@ -60,17 +60,18 @@ typedef vector<int> tshape;
 class Tensor {
 private:
     // Load methods
-
+    static Tensor* load_from_bin(std::ifstream &ifs);
     static Tensor* load_from_onnx(std::ifstream &ifs);
     static Tensor* load_from_img(const string &filename, const string &format);
-
     template<typename T> static Tensor* load_from_numpy(const string &filename, const string &format);
+    static Tensor* load_from_txt(std::ifstream &ifs, char delimiter, bool header);
 
     // Save methods
-
+    void save2bin(std::ofstream &ofs);
     void save2onnx(std::ofstream &ofs);
     void save2img(const string &filename, string format);
     void save2numpy(const string &filename, string format);
+    void save2txt(std::ofstream &ofs, const char delimiter, const vector<string> &header);
 
 public:
     int device;
@@ -93,10 +94,7 @@ public:
     explicit Tensor(const vector<int> &shape, int dev=DEV_CPU);
     Tensor(const vector<int> &shape, float *fptr, int dev=DEV_CPU);
     Tensor(const vector<int> &shape, Tensor *T);
-    static Tensor* load_from_csv(const string &fname);
-    void save2bin(std::ofstream &ofs);
-    static Tensor* load_from_bin(std::ifstream &ifs);
-    
+
     // Destructors
     ~Tensor();
 
@@ -127,9 +125,11 @@ public:
     static Tensor* loadfs(std::ifstream &ifs, string format="");
     static Tensor* load(const string& filename, string format="");
     template<typename T> static Tensor* load(const string& filename, string format="");
+    static Tensor* load_from_txt(const string& filename, const char delimiter=',', bool header=true);
 
     void savefs(std::ofstream &ofs, string format="");
     void save(const string& filename, string format="");
+    void save2txt(const string& filename, const char delimiter=',', const vector<string> &header={});
 
     // ***** Core *****************************
 //    void permute_(const vector<int>& dims);
@@ -414,6 +414,8 @@ Tensor* Tensor::load(const string& filename, string format){
         t = Tensor::loadfs(ifs, format);
     }else if(format=="npy" || format=="npz"){
         t = Tensor::load_from_numpy<T>(filename, format);
+    }else if(format=="csv" || format=="tsv"){
+        t = Tensor::loadfs(ifs, format);
     }else{
         msg("Format not implemented: *.'" + format + "'", "Tensor::load");
     }
