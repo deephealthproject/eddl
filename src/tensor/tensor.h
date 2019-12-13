@@ -60,13 +60,14 @@ typedef vector<int> tshape;
 class Tensor {
 private:
     // Load methods
-    static Tensor* load_from_bin(std::ifstream &ifs);
+
     static Tensor* load_from_onnx(std::ifstream &ifs);
     static Tensor* load_from_img(const string &filename, const string &format);
+
     template<typename T> static Tensor* load_from_numpy(const string &filename, const string &format);
 
     // Save methods
-    void save2bin(std::ofstream &ofs);
+
     void save2onnx(std::ofstream &ofs);
     void save2img(const string &filename, string format);
     void save2numpy(const string &filename, string format);
@@ -92,7 +93,10 @@ public:
     explicit Tensor(const vector<int> &shape, int dev=DEV_CPU);
     Tensor(const vector<int> &shape, float *fptr, int dev=DEV_CPU);
     Tensor(const vector<int> &shape, Tensor *T);
-
+    static Tensor* load_from_csv(const string &fname);
+    void save2bin(std::ofstream &ofs);
+    static Tensor* load_from_bin(std::ifstream &ifs);
+    
     // Destructors
     ~Tensor();
 

@@ -59,6 +59,8 @@ namespace eddlT{
 
   // Serialization ***********************************
   Tensor* load(string fname, string format="");
+  Tensor* load_from_csv(string fname);
+
   void save(Tensor* A, string fname, string format="");
 
   // Math ops       ***********************************

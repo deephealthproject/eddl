@@ -38,6 +38,31 @@
 using namespace std;
 
 // ********* LOAD FUNCTIONS *********
+Tensor* Tensor::load_from_csv(const string & fname)
+{
+  FILE *fe = fopen(fname.c_str(), "rt");
+  if (fe == nullptr) {
+      fprintf(stderr, "%s not found\n", fname.c_str());
+      exit(1);
+  }
+
+  vector<int> shape;
+  int ndim,v;
+
+  fscanf(fe,"%d",&ndim);
+  for(int i=0;i<ndim;i++) {
+    fscanf(fe,"%d",&v);
+    shape.push_back(v);
+  }
+
+  Tensor *n=new Tensor(shape,DEV_CPU);
+
+  for (int i = 0; i < n->size; ++i)
+      fscanf(fe,"%f ",&(n->ptr[i]));
+
+  return n;
+}
+
 Tensor* Tensor::load(const string& filename, string format){
     // Infer format from filename
     if(format.empty()){
@@ -242,4 +267,3 @@ void Tensor::save2numpy(const string &filename, string format){
     }
     cnpy::npy_save(filename, this->ptr, t_shape, "w");
 }
-

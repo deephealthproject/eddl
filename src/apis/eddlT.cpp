@@ -146,6 +146,10 @@ namespace eddlT {
         return Tensor::load(fname, format);
     }
 
+    Tensor* load_from_csv(string fname) {
+      return Tensor::load_from_csv(fname);
+    }
+
     void save(Tensor* A, string fname, string format){
         return A->save(fname, format);
     }
