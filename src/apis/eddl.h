@@ -48,8 +48,24 @@ namespace eddl {
 #define loss NetLoss *
 #define metric NetLoss *
 
-// ---- CORE LAYERS ----
+    // ---- CORE LAYERS ----
+
+    /**
+     *  @brief Solves non-linear equation with Newton method.
+     *
+     *  @details
+     *   Applies an activation function to the given layer
+     *
+     *  @see   https://en.wikipedia.org/wiki/Activation_function
+     *
+     *  @param parent  Parent layer
+     *  @param activation Name of the activation function
+     *  @param param   Value to apply to the activation function
+     *  @param name  Name of the layer
+     *  @return     Activation layer
+     */
     layer Activation(layer parent, string activation, float param=0.01, string name = "");
+
     layer Softmax(layer parent);
     layer Sigmoid(layer parent);
     layer ReLu(layer parent);

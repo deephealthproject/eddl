@@ -11,6 +11,9 @@
 /[Bb]uild*
 /[Bb]in*
 
+# Documentation
+/docs/doxygen/build
+
 # Other files
 *.dot
 *.pdf
