@@ -43,7 +43,7 @@ bool Tensor::allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_n
 #ifdef cGPU
     else if (A->isGPU())
           {
-            msg("Equal only for CPU Tensors", "Tensor::greater");
+            return gpu_allclose(A, B, rtol, atol, equal_nan);
           }
 #endif
 #ifdef cFPGA
@@ -64,7 +64,7 @@ void Tensor::isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bo
 #ifdef cGPU
     else if (A->isGPU())
           {
-            msg("Equal only for CPU Tensors", "Tensor::greater");
+            gpu_isclose(A, B, C, rtol, atol, equal_nan);
           }
 #endif
 #ifdef cFPGA
@@ -84,7 +84,7 @@ void Tensor::greater(Tensor *A, Tensor *B, Tensor *C){
 #ifdef cGPU
     else if (A->isGPU())
           {
-            msg("Equal only for CPU Tensors", "Tensor::greater");
+            gpu_greater(A, B, C);
           }
 #endif
 #ifdef cFPGA
@@ -103,7 +103,7 @@ void Tensor::greater_equal(Tensor *A, Tensor *B, Tensor *C){
 #ifdef cGPU
     else if (A->isGPU())
           {
-            msg("Equal only for CPU Tensors", "Tensor::greater");
+           gpu_greater_equal(A, B, C);
           }
 #endif
 #ifdef cFPGA
@@ -122,7 +122,7 @@ void Tensor::less(Tensor *A, Tensor *B, Tensor *C){
 #ifdef cGPU
     else if (A->isGPU())
           {
-            msg("Equal only for CPU Tensors", "Tensor::greater");
+            gpu_less(A, B, C);
           }
 #endif
 #ifdef cFPGA
@@ -141,7 +141,7 @@ void Tensor::less_equal(Tensor *A, Tensor *B, Tensor *C){
 #ifdef cGPU
     else if (A->isGPU())
           {
-            msg("Equal only for CPU Tensors", "Tensor::greater");
+            gpu_less_equal(A, B, C);
           }
 #endif
 #ifdef cFPGA
@@ -160,7 +160,7 @@ void Tensor::equal(Tensor *A, Tensor *B, Tensor *C){
 #ifdef cGPU
     else if (A->isGPU())
           {
-            msg("Equal only for CPU Tensors", "Tensor::greater");
+            gpu_equal(A, B, C);
           }
 #endif
 #ifdef cFPGA
@@ -179,7 +179,7 @@ void Tensor::not_equal(Tensor *A, Tensor *B, Tensor *C){
 #ifdef cGPU
     else if (A->isGPU())
           {
-            msg("Equal only for CPU Tensors", "Tensor::greater");
+            gpu_not_equal(A, B, C);
           }
 #endif
 #ifdef cFPGA

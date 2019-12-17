@@ -23,30 +23,46 @@ using namespace eddlT;
 int main(int argc, char **argv) {
     vector<int> shape = {5, 5};
 
-    Tensor* t1 = Tensor::range(1.0, 25.0f, 1);
+    int device = DEV_CPU;
+
+    Tensor* t1 = Tensor::range(1.0, 25.0f, 1, device);
     t1->reshape_(shape);
     t1->print();
 
-    Tensor* t2 = Tensor::range(1.0, 25.0f, 1);
+    Tensor* t2 = Tensor::range(1.0, 25.0f, 1, device);
     t2->reshape_(shape);
     t2->print();
 
-    Tensor* t3 = new Tensor(shape);
+    Tensor* t3 = new Tensor(shape, device);
 
+    cout << "allclose" << endl;
     cout << Tensor::allclose(t1, t2) << endl;
+
+    cout << "isclose" << endl;
     Tensor::isclose(t1, t2, t3);
     t3->print();
 
+    cout << "greater" << endl;
     Tensor::greater(t1, t2, t3);
     t3->print();
+
+    cout << "greater_equal" << endl;
     Tensor::greater_equal(t1, t2, t3);
     t3->print();
+
+    cout << "less" << endl;
     Tensor::less(t1, t2, t3);
     t3->print();
+
+    cout << "less_equal" << endl;
     Tensor::less_equal(t1, t2, t3);
     t3->print();
+
+    cout << "equal" << endl;
     Tensor::equal(t1, t2, t3);
     t3->print();
+
+    cout << "not_equal" << endl;
     Tensor::not_equal(t1, t2, t3);
     t3->print();
     int asdas=33;

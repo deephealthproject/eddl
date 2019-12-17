@@ -32,9 +32,6 @@ extern curandGenerator_t random_generator[64];
 // GPU: Temp
 int* get_block_dim(int N, int blockSize);
 
-// GPU: Comparison
-int gpu_equal(Tensor *A, Tensor *B);
-
 // GPU: Core
 void gpu_fill_(Tensor *A, float v);
 void gpu_mask(Tensor *A,float v);
@@ -110,7 +107,7 @@ void gpu_sigmoid_(Tensor *A);
 void gpu_sign_(Tensor *A);
 void gpu_sin_(Tensor *A);
 void gpu_sinh_(Tensor *A);
-void gpu_sqr_(Tensor *A);
+void gpu_sqr_(Tensorl *A);
 void gpu_sqrt_(Tensor *A);
 void gpu_tan_(Tensor *A);
 void gpu_tanh_(Tensor *A);
@@ -148,5 +145,15 @@ void gpu_reduction_back(ReduceDescriptor *RD);
 //void gpu_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
 //void gpu_delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC);
 
+// CPU: Comparisons
+bool gpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan);
+void gpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool equal_nan);
+
+void gpu_greater(Tensor *A, Tensor *B, Tensor *C);
+void gpu_greater_equal(Tensor *A, Tensor *B, Tensor *C);
+void gpu_less(Tensor *A, Tensor *B, Tensor *C);
+void gpu_less_equal(Tensor *A, Tensor *B, Tensor *C);
+void gpu_equal(Tensor *A, Tensor *B, Tensor *C);
+void gpu_not_equal(Tensor *A, Tensor *B, Tensor *C);
 
 #endif //EDDL_GPU_HW_H
