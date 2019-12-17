@@ -23,18 +23,27 @@ using namespace eddlT;
 int main(int argc, char **argv) {
 //
     Tensor* t1, *t2;
-    string fname = "datasets/drive/numpy/x_train.npy";
-    t1 = Tensor::load<uint8_t>(fname);
+    string fname = "../examples/data/";
+
+    // Load generic txt (csv, csv, tsv,...)
+    t1 = Tensor::load_from_txt("/Users/salvacarrion/Desktop/trX.txt", ' ', 0); // false=No header
     t1->info();
-    cout << "Max: " << t1->max() << endl;
-    cout << "Min: " << t1->min() << endl;
-    t2 = t1->select({"0"});
-    t2->info();
-//    t2->unsqueeze_();
-    t2 = Tensor::permute(t2, {0, 3, 1, 2});
-    t2->info();
-    t2->save("numpy_ds.jpg");
-    int asd = 3;
+    cout << "Tensor loaded! (txt)" << endl;
+    //t1->print();
+    int asd = 33;
+//
+//    string fname = "datasets/drive/numpy/x_train.npy";
+//    t1 = Tensor::load<uint8_t>(fname);
+//    t1->info();
+//    cout << "Max: " << t1->max() << endl;
+//    cout << "Min: " << t1->min() << endl;
+//    t2 = t1->select({"0"});
+//    t2->info();
+////    t2->unsqueeze_();
+//    t2 = Tensor::permute(t2, {0, 3, 1, 2});
+//    t2->info();
+//    t2->save("numpy_ds.jpg");
+//    int asd = 3;
 
 //    float ptr[12] = {1, 2, 3,  1, 2, 3,
 //                     1, 2, 3,  1, 2, 3};

@@ -64,7 +64,7 @@ private:
     static Tensor* load_from_onnx(std::ifstream &ifs);
     static Tensor* load_from_img(const string &filename, const string &format);
     template<typename T> static Tensor* load_from_numpy(const string &filename, const string &format);
-    static Tensor* load_from_txt(std::ifstream &ifs, char delimiter, bool header);
+    static Tensor* load_from_txt(std::ifstream &ifs, char delimiter, int headerRows);
 
     // Save methods
     void save2bin(std::ofstream &ofs);
@@ -125,7 +125,7 @@ public:
     static Tensor* loadfs(std::ifstream &ifs, string format="");
     static Tensor* load(const string& filename, string format="");
     template<typename T> static Tensor* load(const string& filename, string format="");
-    static Tensor* load_from_txt(const string& filename, const char delimiter=',', bool header=true);
+    static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
 
     void savefs(std::ofstream &ofs, string format="");
     void save(const string& filename, string format="");
@@ -414,7 +414,7 @@ Tensor* Tensor::load(const string& filename, string format){
         t = Tensor::loadfs(ifs, format);
     }else if(format=="npy" || format=="npz"){
         t = Tensor::load_from_numpy<T>(filename, format);
-    }else if(format=="csv" || format=="tsv"){
+    }else if(format=="csv" || format=="tsv" || format=="txt"){
         t = Tensor::loadfs(ifs, format);
     }else{
         msg("Format not implemented: *.'" + format + "'", "Tensor::load");
