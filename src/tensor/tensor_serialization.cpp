@@ -8,7 +8,6 @@
 */
 
 #include <utility>
-#include <filesystem>
 
 #include "tensor.h"
 #include "../hardware/cpu/cpu_hw.h"

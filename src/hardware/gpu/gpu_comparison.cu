@@ -26,7 +26,7 @@ void gpu_logical_and(Tensor *A, Tensor *B, Tensor *C){
 
     setDims(A);
 
-    logical_and<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    glogical_and<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "logical_and");
 }
 
@@ -36,7 +36,7 @@ void gpu_logical_or(Tensor *A, Tensor *B, Tensor *C){
 
     setDims(A);
 
-    logical_or<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    glogical_or<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "logical_or");
 }
 
@@ -46,7 +46,7 @@ void gpu_logical_not(Tensor *A, Tensor *B){
 
     setDims(A);
 
-    logical_not<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    glogical_not<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "logical_not");
 }
 
@@ -56,7 +56,7 @@ void gpu_logical_xor(Tensor *A, Tensor *B, Tensor *C){
 
     setDims(A);
 
-    logical_xor<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    glogical_xor<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "logical_xor");
 }
 
@@ -68,9 +68,9 @@ bool gpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
     setDims(A);
 
     bool close = true;
-    allclose<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, close);
+    glogical_allclose<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, rtol, atol, equal_nan, close);
     check_cuda(cudaDeviceSynchronize(), "allclose");
-    return close
+    return close;
 }
 
 void gpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool equal_nan){
@@ -79,7 +79,7 @@ void gpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool e
 
     setDims(A);
 
-    isclose<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    glogical_isclose<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, rtol, atol, equal_nan, A->size);
     check_cuda(cudaDeviceSynchronize(), "isclose");
 }
 
@@ -89,7 +89,7 @@ void gpu_greater(Tensor *A, Tensor *B, Tensor *C){
 
     setDims(A);
 
-    greater<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    glogical_greater<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "greater");
 }
 
@@ -99,7 +99,7 @@ void gpu_greater_equal(Tensor *A, Tensor *B, Tensor *C){
 
     setDims(A);
 
-    greater_equal<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    glogical_greater_equal<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "greater_equal");
 }
 
@@ -109,7 +109,7 @@ void gpu_less(Tensor *A, Tensor *B, Tensor *C){
 
     setDims(A);
 
-    less<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    glogical_less<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "less");
 }
 
@@ -119,7 +119,7 @@ void gpu_less_equal(Tensor *A, Tensor *B, Tensor *C){
 
     setDims(A);
 
-    less_equal<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    glogical_less_equal<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "less_equal");
 }
 
@@ -129,7 +129,7 @@ void gpu_equal(Tensor *A, Tensor *B, Tensor *C){
 
     setDims(A);
 
-    equal<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    glogical_equal<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "equal");
 }
 
@@ -139,6 +139,6 @@ void gpu_not_equal(Tensor *A, Tensor *B, Tensor *C){
 
     setDims(A);
 
-    not_equal<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    glogical_not_equal<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "not_equal");
 }

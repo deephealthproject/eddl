@@ -107,7 +107,7 @@ void gpu_sigmoid_(Tensor *A);
 void gpu_sign_(Tensor *A);
 void gpu_sin_(Tensor *A);
 void gpu_sinh_(Tensor *A);
-void gpu_sqr_(Tensorl *A);
+void gpu_sqr_(Tensor *A);
 void gpu_sqrt_(Tensor *A);
 void gpu_tan_(Tensor *A);
 void gpu_tanh_(Tensor *A);

@@ -24,7 +24,7 @@ using namespace eddlT;
 int main(int argc, char **argv) {
     vector<int> shape = {5, 5};
 
-    int device = DEV_CPU;
+    int device = DEV_GPU;
 //    cout << "CAncel " << omp_get_cancellation() << endl;
 
     Tensor* t1 = Tensor::range(1.0, 25.0f, 1, device);
