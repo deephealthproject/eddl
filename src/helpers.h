@@ -23,7 +23,7 @@ public:
     {
         return m_data.size();
     }
-    void readNextRow(std::istream& str, char &delimiter)
+    void readNextRow(std::istream& str, const char &delimiter)
     {
         std::string         line;
         std::getline(str, line);
@@ -32,22 +32,20 @@ public:
         std::string         cell;
 
         m_data.clear();
-        while(std::getline(lineStream, cell, delimiter))
-        {
+        while(std::getline(lineStream, cell, delimiter)) {
             m_data.push_back(cell);
         }
         // This checks for a trailing comma with no data after it.
-        if (!lineStream && cell.empty())
-        {
-            // If there was a trailing comma then add an empty element.
-            m_data.push_back("");
-        }
+//        if (!lineStream && cell.empty()){
+//            // If there was a trailing comma then add an empty element.
+//            m_data.push_back("");
+//        }
     }
 private:
     std::vector<std::string>    m_data;
 };
 
-std::istream& get_next_row(std::istream& str, CSVRow& data, char &delimiter)
+std::istream& get_next_row(std::istream& str, CSVRow& data, const char &delimiter)
 {
     data.readNextRow(str, delimiter);
     return str;
@@ -61,7 +59,7 @@ public:
     typedef CSVRow*                     pointer;
     typedef CSVRow&                     reference;
 
-    CSVIterator(std::istream& str, char delimiter=',')  :m_str(str.good()?&str:NULL) { ++(*this); m_delimiter=delimiter; }
+    CSVIterator(std::istream& str, char delimiter=',')  :m_str(str.good()?&str:NULL) { m_delimiter=delimiter;  ++(*this); }
     CSVIterator()                   :m_str(NULL) {}
 
     // Pre Increment
@@ -76,7 +74,7 @@ public:
 private:
     std::istream*       m_str;
     CSVRow              m_row;
-    char              m_delimiter;
+    char                m_delimiter;
 };
 
 

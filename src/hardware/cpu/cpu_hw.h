@@ -18,9 +18,6 @@
 #define MIN_FLOAT -std::numeric_limits<float>::max()
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
 
-// CPU: Comparison
-int cpu_equal(Tensor *A, Tensor *B, float epsilon);
-
 // CPU: Core (static)
 void cpu_transpose(Tensor *A, Tensor *B);
 void cpu_copy(Tensor *A, Tensor *B);
@@ -106,7 +103,6 @@ void cpu_sign2(Tensor *A, Tensor *B); // TODO: Remove
 void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
 void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
 
-
 // CPU: Should be reductions
 float cpu_max(Tensor *A);
 float cpu_min(Tensor *A);
@@ -126,6 +122,26 @@ void cpu_reduction_back(ReduceDescriptor *RD);
 //void cpu_delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB);
 //void cpu_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
 //void cpu_delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC);
+
+// CPU: Logic functions: Comparisons
+void cpu_logical_and(Tensor *A, Tensor *B, Tensor *C);
+void cpu_logical_or(Tensor *A, Tensor *B, Tensor *C);
+void cpu_logical_not(Tensor *A, Tensor *B);
+void cpu_logical_xor(Tensor *A, Tensor *B, Tensor *C);
+
+// CPU: Logic functions: Comparisons
+bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan);
+void cpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool equal_nan);
+void cpu_greater(Tensor *A, Tensor *B, Tensor *C);
+void cpu_greater_equal(Tensor *A, Tensor *B, Tensor *C);
+void cpu_less(Tensor *A, Tensor *B, Tensor *C);
+void cpu_less_equal(Tensor *A, Tensor *B, Tensor *C);
+void cpu_equal(Tensor *A, Tensor *B, Tensor *C);
+void cpu_not_equal(Tensor *A, Tensor *B, Tensor *C);
+
+// Legacy
+int cpu_equal2(Tensor *A, Tensor *B, float epsilon);
+
 
 
 #endif //EDDL_CPU_HW_H

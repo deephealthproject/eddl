@@ -13,3 +13,107 @@
 #include <stdlib.h>
 #include <iostream>
 #include <cuda.h>
+
+
+__global__ void glogical_and(float *A, float *B, float *C, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        C[thread_id_x] = (bool)A[thread_id_x] & (bool)B[thread_id_x];
+    }
+}
+
+__global__ void glogical_or(float *A, float *B, float *C, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        C[thread_id_x] = (bool)A[thread_id_x] | (bool)B[thread_id_x];
+    }
+}
+
+__global__ void glogical_not(float *A, float *B, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        B[thread_id_x] = !((bool)A[thread_id_x]);
+    }
+}
+
+__global__ void glogical_xor(float *A, float *B, float *C, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        C[thread_id_x] = (bool)A[thread_id_x] ^ (bool)B[thread_id_x];
+    }
+}
+
+
+__global__  void glogical_allclose(float *A, float *B, float rtol, float atol, bool equal_nan, int size, bool &allclose){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    // if(!allclose) return;  // Abort if there is a result
+
+    if (thread_id_x < size && allclose){
+        bool close = fabsf(A[thread_id_x] - B[thread_id_x]) <= (atol + rtol * fabsf(B[thread_id_x]));
+        if (!close){
+            allclose = false;
+            // return;
+        }
+    }
+}
+
+__global__  void glogical_isclose(float *A, float *B, float *C, float rtol, float atol, bool equal_nan, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        C[thread_id_x] = fabsf(A[thread_id_x] - B[thread_id_x]) <= (atol + rtol * fabsf(B[thread_id_x]));
+    }
+}
+
+__global__  void glogical_greater(float *A, float *B, float *C, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        C[thread_id_x] = A[thread_id_x] > B[thread_id_x];
+    }
+}
+
+__global__  void glogical_greater_equal(float *A, float *B, float *C, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        C[thread_id_x] = A[thread_id_x] >= B[thread_id_x];
+    }
+}
+
+__global__  void glogical_less(float *A, float *B, float *C, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        C[thread_id_x] = A[thread_id_x] < B[thread_id_x];
+    }
+}
+
+__global__  void glogical_less_equal(float *A, float *B, float *C, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        C[thread_id_x] = A[thread_id_x] <= B[thread_id_x];
+    }
+}
+
+__global__  void glogical_equal(float *A, float *B, float *C, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        C[thread_id_x] = A[thread_id_x] == B[thread_id_x];
+    }
+}
+
+__global__  void glogical_not_equal(float *A, float *B, float *C, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        C[thread_id_x] = A[thread_id_x] != B[thread_id_x];
+    }
+}

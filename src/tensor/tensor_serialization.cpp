@@ -64,10 +64,11 @@ Tensor* Tensor::loadfs(std::ifstream &ifs, string format) {
     } else if(format=="onnx"){
         return Tensor::load_from_onnx(ifs);
     } else if(format=="csv" || format=="tsv" || format=="txt"){
-        char delimiter = ',';
-        if (format=="tsv") {delimiter = '\t'; }
-        else if (format=="txt") {delimiter = ' '; }
-        return Tensor::load_from_txt(ifs, delimiter, true);
+        char delimiter;
+        if (format=="csv") {delimiter = ','; }
+        else if (format=="tsv") {delimiter = '\t'; }
+        else { delimiter = ' '; }
+        return Tensor::load_from_txt(ifs, delimiter, 1);
     }else{
         msg("Format not implemented: *.'" + format + "'", "Tensor::load");
     }
@@ -133,30 +134,29 @@ Tensor* Tensor::load_from_img(const string &filename, const string &format){
     return t;
 }
 
-Tensor* Tensor::load_from_txt(std::ifstream &ifs, char delimiter, bool header){
+Tensor* Tensor::load_from_txt(std::ifstream &ifs, char delimiter, int headerRows){
     Tensor* t = nullptr;
     string line;
     vector<float> values;
 
     try {
-        // Build iterator
         CSVIterator it(ifs, delimiter);
+        headerRows = headerRows>=0 ? headerRows : 0;  // Avoid things like -3
 
-        // If header is present, consume one line
-        if(header){
-            it++;
-            cout << "Ignoring first row as header" << endl;
-        }
-
-        // Get shape
-        int cols = it->size();
         int rows = 0;
+        int cols = it->size();
 
         // Parse lines
-        for(; it != CSVIterator(); ++it, ++rows){
-            for(int i = 0; i< cols; i++){
-                float cell = std::stof((*it)[i]);
-                values.push_back(cell);
+        for(int i=0; it != CSVIterator(); ++it, ++i){
+            if((i+1)>headerRows){
+                rows++;  // Increment rows
+                for(int j = 0; j < cols; j++){
+                    float cell = std::stof((*it)[j]);
+                    values.push_back(cell);
+                }
+            }else{
+                // If header is present, consume one line
+                cout << "Ignoring row #" << (i+1) << " as header" << endl;
             }
         }
 
@@ -170,7 +170,7 @@ Tensor* Tensor::load_from_txt(std::ifstream &ifs, char delimiter, bool header){
     return t;
 }
 
-Tensor* Tensor::load_from_txt(const string& filename, const char delimiter, bool header){
+Tensor* Tensor::load_from_txt(const string& filename, const char delimiter, int headerRows){
     Tensor *t = nullptr;
 
     // Check if file exists (open file stream)
@@ -180,17 +180,22 @@ Tensor* Tensor::load_from_txt(const string& filename, const char delimiter, bool
     }
 
     // Load tensor
-    t = Tensor::load_from_txt(ifs, delimiter, header);
+    t = Tensor::load_from_txt(ifs, delimiter, headerRows);
 
     // Close file stream and return tensor
     ifs.close();
-
     return t;
 }
 
 
 // ********* SAVE FUNCTIONS *********
 void Tensor::save(const string& filename, string format) {
+    // Check if the folder exists
+    string folder = filename.substr(0, filename.find_last_of("\\/"));
+    if(!pathExists(folder)){
+        msg("The file could not be saved. Check if the directory exists or if you have permissions to write in it.", "Tensor::save");
+    }
+
     // Infer format from filename
     if(format.empty()){
         format = get_extension(filename);
@@ -198,7 +203,7 @@ void Tensor::save(const string& filename, string format) {
 
     if(format=="png" || format=="bmp" || format=="tga" || format=="jpg" || format=="jpeg" || format=="hdr") { // Images
         save2img(filename, format);
-    }else if(format=="bin" || format=="onnx" || format=="csv" || format=="tsv"){
+    }else if(format=="bin" || format=="onnx" || format=="csv" || format=="tsv" || format=="txt"){
         // Open file stream, save tensor and close filesteam
         std::ofstream ofs(filename, std::ios::out | std::ios::binary);
         Tensor::savefs(ofs, format);
@@ -220,10 +225,11 @@ void Tensor::savefs(std::ofstream &ofs, string format) {
         save2bin(ofs);
     } else if(format=="onnx"){
         save2onnx(ofs);
-    } else if(format=="csv" || format=="tsv"){
-        char delimiter = ',';
-        if (format=="tsv") {delimiter = '\t'; }
-        else if (format=="txt") {delimiter = ' '; }
+    } else if(format=="csv" || format=="tsv" || format=="txt"){
+        char delimiter;
+        if (format=="csv") {delimiter = ','; }
+        else if (format=="tsv") {delimiter = '\t'; }
+        else { delimiter = ' '; }
         save2txt(ofs, delimiter, {});
     }else{
         msg("Format not implemented: *.'" + format + "'", "Tensor::save");
@@ -334,6 +340,12 @@ void Tensor::save2txt(std::ofstream &ofs, const char delimiter, const vector<str
 }
 
 void Tensor::save2txt(const string& filename, const char delimiter, const vector<string> &header){
+    // Check if the folder exists
+    string folder = filename.substr(0, filename.find_last_of("\\/"));
+    if(!pathExists(folder)){
+        msg("The file could not be saved. Check if the directory exists or if you have permissions to write in it.", "Tensor::save");
+    }
+
     // Open file stream
     std::ofstream ofs(filename, std::ios::out | std::ios::binary);
 

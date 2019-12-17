@@ -13,6 +13,7 @@
 #include <string>
 #include <ctime>
 #include <limits>
+//#include <omp.h>
 
 #include "apis/eddlT.h"
 #include "../../src/tensor/tensor_reduction.h"
@@ -21,20 +22,93 @@ using namespace std;
 using namespace eddlT;
 
 int main(int argc, char **argv) {
-//
-    Tensor* t1, *t2;
-    string fname = "datasets/drive/numpy/x_train.npy";
-    t1 = Tensor::load<uint8_t>(fname);
-    t1->info();
-    cout << "Max: " << t1->max() << endl;
-    cout << "Min: " << t1->min() << endl;
-    t2 = t1->select({"0"});
-    t2->info();
-//    t2->unsqueeze_();
-    t2 = Tensor::permute(t2, {0, 3, 1, 2});
-    t2->info();
-    t2->save("numpy_ds.jpg");
-    int asd = 3;
+    vector<int> shape = {5, 5};
+
+    int device = DEV_GPU;
+//    cout << "CAncel " << omp_get_cancellation() << endl;
+
+    Tensor* t1 = Tensor::range(1.0, 25.0f, 1, device);
+    t1->reshape_(shape);
+    t1->print();
+
+    Tensor* t2 = Tensor::range(1.0, 25.0f, 1, device);
+    t2->reshape_(shape);
+    t2->print();
+
+    Tensor* t3 = new Tensor(shape, device);
+
+    cout << "allclose" << endl;
+    cout << Tensor::allclose(t1, t2) << endl;
+
+    cout << "isclose" << endl;
+    Tensor::isclose(t1, t2, t3);
+    t3->print();
+
+    cout << "greater" << endl;
+    Tensor::greater(t1, t2, t3);
+    t3->print();
+
+    cout << "greater_equal" << endl;
+    Tensor::greater_equal(t1, t2, t3);
+    t3->print();
+
+    cout << "less" << endl;
+    Tensor::less(t1, t2, t3);
+    t3->print();
+
+    cout << "less_equal" << endl;
+    Tensor::less_equal(t1, t2, t3);
+    t3->print();
+
+    cout << "equal" << endl;
+    Tensor::equal(t1, t2, t3);
+    t3->print();
+
+    cout << "not_equal" << endl;
+    Tensor::not_equal(t1, t2, t3);
+    t3->print();
+
+
+    cout << "------------" << endl;
+    t1->fill_(1.0);
+    t2->fill_(0.0);
+
+    t1->round_();
+    t2->round_();
+
+    t1->print();
+    t2->print();
+
+    cout << "logical_and" << endl;
+    Tensor::logical_and(t1, t2, t3);
+    t3->print();
+
+    cout << "logical_not" << endl;
+    Tensor::logical_not(t1, t3);
+    t3->print();
+
+    cout << "logical_or" << endl;
+    Tensor::logical_or(t1, t2, t3);
+    t3->print();
+
+    cout << "logical_xor" << endl;
+    Tensor::logical_xor(t1, t2, t3);
+    t3->print();
+
+    int asdas=33;
+
+//    string fname = "datasets/drive/numpy/x_train.npy";
+//    t1 = Tensor::load<uint8_t>(fname);
+//    t1->info();
+//    cout << "Max: " << t1->max() << endl;
+//    cout << "Min: " << t1->min() << endl;
+//    t2 = t1->select({"0"});
+//    t2->info();
+////    t2->unsqueeze_();
+//    t2 = Tensor::permute(t2, {0, 3, 1, 2});
+//    t2->info();
+//    t2->save("numpy_ds.jpg");
+//    int asd = 3;
 
 //    float ptr[12] = {1, 2, 3,  1, 2, 3,
 //                     1, 2, 3,  1, 2, 3};

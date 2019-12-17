@@ -45,12 +45,12 @@ int main(int argc, char **argv) {
     cout << "Tensor loaded! (csv)" << endl;
 
     // Load TSV (Presumes a one row-header, and '\t' as delimiter)
-    t1 = Tensor::load(fname + "iris.csv");
+    t1 = Tensor::load(fname + "iris.tsv");
     t1->info();
     cout << "Tensor loaded! (tsv)" << endl;
 
-    // Load generic txt (csv, csv, tsv,...)  // TODO: There is a minor bug (dimension)
-    t1 = Tensor::load_from_txt(fname + "iris.txt", ' ', false); // false=No header
+    // Load generic txt (csv, csv, tsv,...)
+    t1 = Tensor::load_from_txt(fname + "iris.txt", ' ', 0); // false=No header
     t1->info();
     cout << "Tensor loaded! (txt)" << endl;
 
