@@ -29,7 +29,10 @@ void cpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool e
 }
 
 void cpu_greater(Tensor *A, Tensor *B, Tensor *C){
-
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; ++i){
+        C->ptr[i] = A->ptr[i] > B->ptr[i];
+    }
 }
 
 void cpu_greater_equal(Tensor *A, Tensor *B, Tensor *C){
