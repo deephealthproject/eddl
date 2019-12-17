@@ -123,10 +123,15 @@ void cpu_reduction_back(ReduceDescriptor *RD);
 //void cpu_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
 //void cpu_delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC);
 
-// CPU: Comparisons
+// CPU: Logic functions: Comparisons
+void cpu_logical_and(Tensor *A, Tensor *B, Tensor *C);
+void cpu_logical_or(Tensor *A, Tensor *B, Tensor *C);
+void cpu_logical_not(Tensor *A, Tensor *B);
+void cpu_logical_xor(Tensor *A, Tensor *B, Tensor *C);
+
+// CPU: Logic functions: Comparisons
 bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan);
 void cpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool equal_nan);
-
 void cpu_greater(Tensor *A, Tensor *B, Tensor *C);
 void cpu_greater_equal(Tensor *A, Tensor *B, Tensor *C);
 void cpu_less(Tensor *A, Tensor *B, Tensor *C);

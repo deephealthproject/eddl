@@ -13,6 +13,9 @@ option(BUILD_EXAMPLES "Compile examples" ON)
 SET(BUILD_TARGET "CPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
 set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
 
+# OPENMP OPTIONS *******************************
+set(MP_CANCELLATION true)
+
 # PROPERTIES *******************************
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "")
@@ -442,7 +445,7 @@ set_target_properties(eddl PROPERTIES
 
 
 # OpenMP
-find_package(OpenMP)
+find_package(OPENMP REQUIRED)
 if (OPENMP_FOUND)
     target_link_libraries(eddl PRIVATE OpenMP::OpenMP_CXX)
 endif()

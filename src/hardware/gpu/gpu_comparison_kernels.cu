@@ -14,6 +14,40 @@
 #include <iostream>
 #include <cuda.h>
 
+
+__global__ void gpu_logical_and(float *A, float *B, float *C, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        C[thread_id_x] = (bool)A[thread_id_x] & (bool)B[thread_id_x];
+    }
+}
+
+__global__ void gpu_logical_or(float *A, float *B, float *C, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        C[thread_id_x] = (bool)A[thread_id_x] | (bool)B[thread_id_x];
+    }
+}
+
+__global__ void gpu_logical_not(float *A, float *B, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        B[thread_id_x] = !((bool)A[thread_id_x]);
+    }
+}
+
+__global__ void gpu_logical_xor(float *A, float *B, float *C, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        C[thread_id_x] = (bool)A[thread_id_x] ^ (bool)B[thread_id_x];
+    }
+}
+
+
 __global__  void gpu_allclose(float *A, float *B, float rtol, float atol, bool equal_nan, int size, bool &allclose){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 

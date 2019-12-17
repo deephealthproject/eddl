@@ -13,6 +13,7 @@
 #include <string>
 #include <ctime>
 #include <limits>
+//#include <omp.h>
 
 #include "apis/eddlT.h"
 #include "../../src/tensor/tensor_reduction.h"
@@ -24,6 +25,7 @@ int main(int argc, char **argv) {
     vector<int> shape = {5, 5};
 
     int device = DEV_CPU;
+//    cout << "CAncel " << omp_get_cancellation() << endl;
 
     Tensor* t1 = Tensor::range(1.0, 25.0f, 1, device);
     t1->reshape_(shape);
@@ -65,6 +67,34 @@ int main(int argc, char **argv) {
     cout << "not_equal" << endl;
     Tensor::not_equal(t1, t2, t3);
     t3->print();
+
+
+    cout << "------------" << endl;
+    t1->fill_(1.0);
+    t2->fill_(0.0);
+
+    t1->round_();
+    t2->round_();
+
+    t1->print();
+    t2->print();
+
+    cout << "logical_and" << endl;
+    Tensor::logical_and(t1, t2, t3);
+    t3->print();
+
+    cout << "logical_not" << endl;
+    Tensor::logical_not(t1, t3);
+    t3->print();
+
+    cout << "logical_or" << endl;
+    Tensor::logical_or(t1, t2, t3);
+    t3->print();
+
+    cout << "logical_xor" << endl;
+    Tensor::logical_xor(t1, t2, t3);
+    t3->print();
+
     int asdas=33;
 
 //    string fname = "datasets/drive/numpy/x_train.npy";

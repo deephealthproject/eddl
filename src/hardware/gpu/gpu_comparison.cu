@@ -20,6 +20,47 @@
 #include "../../descriptors/descriptors.h"
 
 
+void gpu_logical_and(Tensor *A, Tensor *B, Tensor *C){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    logical_and<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "logical_and");
+}
+
+void gpu_logical_or(Tensor *A, Tensor *B, Tensor *C){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    logical_or<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "logical_or");
+}
+
+void gpu_logical_not(Tensor *A, Tensor *B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    logical_not<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "logical_not");
+}
+
+void gpu_logical_xor(Tensor *A, Tensor *B, Tensor *C){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    logical_xor<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "logical_xor");
+}
+
+
 bool gpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
     int device=A->gpu_device;
     cudaSetDevice(device);

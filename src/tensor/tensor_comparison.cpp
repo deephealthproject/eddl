@@ -34,6 +34,83 @@ void checkCompatibility(Tensor *A, Tensor *B, Tensor *C, const string &title){
 }
 
 
+void Tensor::logical_and(Tensor *A, Tensor *B, Tensor *C){
+    checkCompatibility(A, B, C, "Tensor::logical_and");
+
+    if (A->isCPU()) {
+        cpu_logical_and(A, B, C);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+          {
+            gpu_logical_and(A, B, C);
+          }
+#endif
+#ifdef cFPGA
+    else {
+          msg("Equal only for CPU Tensors", "Tensor::greater");
+        }
+#endif
+}
+
+void Tensor::logical_or(Tensor *A, Tensor *B, Tensor *C){
+    checkCompatibility(A, B, C, "Tensor::logical_or");
+
+    if (A->isCPU()) {
+        cpu_logical_or(A, B, C);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+          {
+            gpu_logical_or(A, B, C);
+          }
+#endif
+#ifdef cFPGA
+    else {
+          msg("Equal only for CPU Tensors", "Tensor::greater");
+        }
+#endif
+}
+
+void Tensor::logical_not(Tensor *A, Tensor *B){
+    checkCompatibility(A, B, "Tensor::logical_not");
+
+    if (A->isCPU()) {
+        cpu_logical_not(A, B);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+          {
+            gpu_logical_not(A, B);
+          }
+#endif
+#ifdef cFPGA
+    else {
+          msg("Equal only for CPU Tensors", "Tensor::greater");
+        }
+#endif
+}
+
+void Tensor::logical_xor(Tensor *A, Tensor *B, Tensor *C){
+    checkCompatibility(A, B, C, "Tensor::logical_xor");
+
+    if (A->isCPU()) {
+        cpu_logical_xor(A, B, C);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+          {
+            gpu_logical_xor(A, B, C);
+          }
+#endif
+#ifdef cFPGA
+    else {
+          msg("Equal only for CPU Tensors", "Tensor::greater");
+        }
+#endif
+}
+
+
 bool Tensor::allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
     checkCompatibility(A, B, "Tensor::allclose");
 

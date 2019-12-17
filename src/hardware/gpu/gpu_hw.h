@@ -145,10 +145,15 @@ void gpu_reduction_back(ReduceDescriptor *RD);
 //void gpu_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
 //void gpu_delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC);
 
-// CPU: Comparisons
+// Logic operations: Comparison ops
+void gpu_logical_and(Tensor *A, Tensor *B, Tensor *C);
+void gpu_logical_or(Tensor *A, Tensor *B, Tensor *C);
+void gpu_logical_not(Tensor *A, Tensor *B);
+void gpu_logical_xor(Tensor *A, Tensor *B, Tensor *C);
+
+// Logic operations: Comparison ops
 bool gpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan);
 void gpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool equal_nan);
-
 void gpu_greater(Tensor *A, Tensor *B, Tensor *C);
 void gpu_greater_equal(Tensor *A, Tensor *B, Tensor *C);
 void gpu_less(Tensor *A, Tensor *B, Tensor *C);

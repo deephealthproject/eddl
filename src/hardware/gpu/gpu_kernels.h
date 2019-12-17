@@ -116,16 +116,21 @@ __global__ void reduction_kernel_keep_inc(float *r, float *I, int *ind, int size
 __global__ void reduction_kernel_sum(float *I,float *O,int m, int d,int *ind,int rs);
 
 
-// GPU: Comparison
-__global__  bool gpu_allclose(float *A, float *B, float rtol, float atol, bool equal_nan, int size, bool &close);
-__global__  void gpu_isclose(float *A, float *B, float *C, float rtol, float atol, bool equal_nan, int size);
+// Logic operations: Logic
+__global__ void gpu_logical_and(float *A, float *B, float *C, int size);
+__global__ void gpu_logical_or(float *A, float *B, float *C, int size);
+__global__ void gpu_logical_not(float *A, float *B, int size);
+__global__ void gpu_logical_xor(float *A, float *B, float *C, int size);
 
-__global__  void gpu_greater(float *A, float *B, float *C, int size);
-__global__  void gpu_greater_equal(float *A, float *B, float *C, int size);
-__global__  void gpu_less(float *A, float *B, float *C, int size);
-__global__  void gpu_less_equal(float *A, float *B, float *C, int size);
-__global__  void gpu_equal(float *A, float *B, float *C, int size);
-__global__  void gpu_not_equal(float *A, float *B, float *C, int size);
+// Logic operations: Comparison ops
+__global__ bool gpu_allclose(float *A, float *B, float rtol, float atol, bool equal_nan, int size, bool &close);
+__global__ void gpu_isclose(float *A, float *B, float *C, float rtol, float atol, bool equal_nan, int size);
+__global__ void gpu_greater(float *A, float *B, float *C, int size);
+__global__ void gpu_greater_equal(float *A, float *B, float *C, int size);
+__global__ void gpu_less(float *A, float *B, float *C, int size);
+__global__ void gpu_less_equal(float *A, float *B, float *C, int size);
+__global__ void gpu_equal(float *A, float *B, float *C, int size);
+__global__ void gpu_not_equal(float *A, float *B, float *C, int size);
 
 
 

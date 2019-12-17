@@ -10,15 +10,53 @@
 
 #include "cpu_hw.h"
 
+// CPU: Logic functions: Comparisons
+void cpu_logical_and(Tensor *A, Tensor *B, Tensor *C){
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; ++i){
+        C->ptr[i] = (bool)A->ptr[i] & (bool)B->ptr[i];
+    }
+}
+
+void cpu_logical_or(Tensor *A, Tensor *B, Tensor *C){
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; ++i){
+        C->ptr[i] = (bool)A->ptr[i] | (bool)B->ptr[i];
+    }
+}
+
+void cpu_logical_not(Tensor *A, Tensor *B){
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; ++i){
+        B->ptr[i] = !((bool)A->ptr[i]);  // why not use "~"
+    }
+}
+
+void cpu_logical_xor(Tensor *A, Tensor *B, Tensor *C){
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; ++i){
+        C->ptr[i] = (bool)A->ptr[i] ^ (bool)B->ptr[i];
+    }
+}
+
+
+// CPU: Logic functions: Comparisons
+
 bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
+    bool allclose = true;
+
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         bool close = ::fabsf(A->ptr[i] - B->ptr[i]) <= (atol + rtol * ::fabsf(B->ptr[i]));
         if (!close){
-            return false;
+            #pragma omp critical
+            {
+                allclose = false;
+            }
+            #pragma omp cancel for
         }
     }
-    return true;
+    return allclose;
 }
 
 void cpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool equal_nan){
