@@ -34,7 +34,7 @@ bool check_tensors(Tensor* A, Tensor* B, float epsilon){
     A->toCPU();
     B->toCPU();
 
-    return Tensor::equal(A, B, epsilon);
+    return Tensor::equal2(A, B, epsilon);
 }
 
 TestResult run_mpool(Tensor* t_input, int dev, int runs){

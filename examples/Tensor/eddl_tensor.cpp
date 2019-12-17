@@ -21,17 +21,36 @@ using namespace std;
 using namespace eddlT;
 
 int main(int argc, char **argv) {
-//
-    Tensor* t1, *t2;
-    string fname = "../examples/data/";
+    vector<int> shape = {5, 5};
 
-    // Load generic txt (csv, csv, tsv,...)
-    t1 = Tensor::load_from_txt("/Users/salvacarrion/Desktop/trX.txt", ' ', 0); // false=No header
-    t1->info();
-    cout << "Tensor loaded! (txt)" << endl;
-    //t1->print();
-    int asd = 33;
-//
+    Tensor* t1 = Tensor::range(1.0, 25.0f, 1);
+    t1->reshape_(shape);
+    t1->print();
+
+    Tensor* t2 = Tensor::range(1.0, 25.0f, 1);
+    t2->reshape_(shape);
+    t2->print();
+
+    Tensor* t3 = new Tensor(shape);
+
+    cout << Tensor::allclose(t1, t2) << endl;
+    Tensor::isclose(t1, t2, t3);
+    t3->print();
+
+    Tensor::greater(t1, t2, t3);
+    t3->print();
+    Tensor::greater_equal(t1, t2, t3);
+    t3->print();
+    Tensor::less(t1, t2, t3);
+    t3->print();
+    Tensor::less_equal(t1, t2, t3);
+    t3->print();
+    Tensor::equal(t1, t2, t3);
+    t3->print();
+    Tensor::not_equal(t1, t2, t3);
+    t3->print();
+    int asdas=33;
+
 //    string fname = "datasets/drive/numpy/x_train.npy";
 //    t1 = Tensor::load<uint8_t>(fname);
 //    t1->info();

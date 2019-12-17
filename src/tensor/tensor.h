@@ -331,10 +331,21 @@ public:
     // Math operations: Reduction ops
     static void reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
 
-
     // Math operations: Comparison ops
+    static bool allclose(Tensor *A, Tensor *B, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns true or false
+    static void isclose(Tensor *A, Tensor *B, Tensor *C, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns a boolean tensor
+
+    // Element-wise
+    static void greater(Tensor *A, Tensor *B, Tensor *C);
+    static void greater_equal(Tensor *A, Tensor *B, Tensor *C);
+    static void less(Tensor *A, Tensor *B, Tensor *C);
+    static void less_equal(Tensor *A, Tensor *B, Tensor *C);
+    static void equal(Tensor *A, Tensor *B, Tensor *C);
+    static void not_equal(Tensor *A, Tensor *B, Tensor *C);
+
+    // Legacy
     static int eqsize(Tensor *A, Tensor *B);
-    static int equal(Tensor *A, Tensor *B, float epsilon=1e-3);
+    static int equal2(Tensor *A, Tensor *B, float epsilon=1e-3);
 
     // Math operations: Other ops
     static int cross(Tensor *A, Tensor *B); // TODO
