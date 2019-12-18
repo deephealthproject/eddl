@@ -119,12 +119,14 @@ void Net::toCPU(int t){
     set_compserv(cs);
 
     if (cs->type == "local") {
-      if (snets[0]->dev == DEV_CPU)
-        cout << "Net running on CPU\n";
-      else if (snets[0]->dev < DEV_FPGA)
-        cout << "Net running on GPU " << snets[0]->dev - DEV_GPU << "\n";
-      else
-        cout << "Net running on FPGA " << snets[0]->dev - DEV_FPGA << "\n";
+      if (VERBOSE)  {
+        if (snets[0]->dev == DEV_CPU)
+          cout << "Net running on CPU\n";
+        else if (snets[0]->dev < DEV_FPGA)
+          cout << "Net running on GPU " << snets[0]->dev - DEV_GPU << "\n";
+        else
+          cout << "Net running on FPGA " << snets[0]->dev - DEV_FPGA << "\n";
+      }
     }
 }
 void Net::toGPU(vector<int> &g,int lsb){
@@ -139,6 +141,7 @@ void Net::toGPU(vector<int> &g,int lsb){
 
     set_compserv(cs);
 
+    if (VERBOSE) {
     if (cs->type == "local") {
       if (snets[0]->dev == DEV_CPU)
         cout << "Net running on CPU\n";
@@ -147,12 +150,14 @@ void Net::toGPU(vector<int> &g,int lsb){
       else
         cout << "Net running on FPGA " << snets[0]->dev - DEV_FPGA << "\n";
     }
+  }
 }
 
 void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs){
     build(opt, lo, me);
     set_compserv(cs);
 
+  if (VERBOSE) {
     if (cs->type == "local") {
       if (snets[0]->dev == DEV_CPU)
         cout << "Net running on CPU\n";
@@ -161,11 +166,12 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs){
       else
         cout << "Net running on FPGA " << snets[0]->dev - DEV_FPGA << "\n";
     }
+  }
 }
 
 
 void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
-    fprintf(stdout, "Build net %s\n",name.c_str());
+    if (VERBOSE) cout<<"Build net "<<name<<"\n";
 
     if (lo.size() != lout.size())
         msg("Loss list size does not match output list", "Net.build");
@@ -248,18 +254,19 @@ void Net::set_compserv(CompServ *cs){
           msg("GPU list on ComputingService is larger than available devices","Net.set_compserv");
         }
 
-        fprintf(stderr,"Selecting GPUs from CS_GPU\n");
+        if (VERBOSE) cout<<"Selecting GPUs from CS_GPU\n";
+
         for(int i=0;i<cs->local_gpus.size();i++)
           if (cs->local_gpus[i]) {
             devsel.push_back(i);
-            fprintf(stderr,"GPU(%d) ",i);
+            if (VERBOSE) cout<<"GPU ("<<i<<")\n";
           }
 
-        fprintf(stderr,"\n");
+
         if (!devsel.size())
           msg("No gpu selected","Net.set_compserv");
 
-        cout<<"split into "<<devsel.size()<<" GPUs devices\n";
+          if (VERBOSE) cout<<"split into "<<devsel.size()<<" GPUs devices\n";
         split(devsel.size(),DEV_GPU);
 #endif
         } else {
@@ -292,7 +299,7 @@ void Net::split(int c, int todev) {
     int m=0;
 
     for (i = 0; i < c; i++) {
-        cout << "Split " << i << "\n";
+          if (VERBOSE) cout << "Split " << i << "\n";
 
         nlayers.clear();
         nin.clear();
@@ -354,7 +361,7 @@ void Net::resize(int b)
   if (batch_size==b) return;
 
   batch_size=b;
-  cout<<"Resizing Net to batch_size="<<batch_size<<"\n";
+  if (VERBOSE) cout<<"Resizing Net to batch_size="<<batch_size<<"\n";
 
   int c=snets.size();
   int bs,m;

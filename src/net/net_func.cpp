@@ -124,15 +124,21 @@ void collectTensor(Layer *l,string tname,int p)
 
   comp=sn->snets.size();
 
-  if (sn->batch_size<comp)
-    comp=sn->batch_size;
+  if ((l->output->ndim==1)&&(comp>1)) {
+    cout<<"Warning "<<l->name<<" samples lower than Computing Service\n";
+    cout<<"Normally it means that you have used some reduction layer that avoids data parallelism\n";
+    comp=1;
+  }
+  else if (l->output->shape[0]<comp) {
+    comp=l->output->shape[0];
+  }
 
-  int thread_batch_size=sn->batch_size / comp;
+  int thread_batch_size=l->output->shape[0] / comp;
 
-  vector<int> sind(sn->batch_size);
-  for(int k=0;k<sn->batch_size;k++) sind[k]=k;
+  vector<int> sind(l->output->shape[0]);
+  for(int k=0;k<l->output->shape[0];k++) sind[k]=k;
 
-  for(i=0;i<sn->snets.size();i++) {
+  for(i=0;i<comp;i++) {
     Layer *sl=nullptr;
 
     for(j=0;j<sn->snets[i]->layers.size();j++) {
@@ -155,6 +161,7 @@ void collectTensor(Layer *l,string tname,int p)
       Tensor::deselect(sl->delta, l->delta, sind, start, end);
     else if (tname=="param")
       Tensor::deselect(sl->params[p], l->params[p], sind, start, end);
+
   }
 
 }
