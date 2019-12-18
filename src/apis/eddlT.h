@@ -13,6 +13,7 @@
 
 
 #include "../tensor/tensor.h"
+#include "../tensor/tensor_reduction.h"
 
 namespace eddlT{
 
@@ -196,6 +197,12 @@ namespace eddlT{
 
   void trunc_(Tensor *A);
   Tensor* trunc(Tensor *A);
+
+  //reductions
+  tensor reduce_mean(tensor A,vector<int> axis);
+  tensor reduce_variance(tensor A,vector<int> axis);
+
+
 
 }
 

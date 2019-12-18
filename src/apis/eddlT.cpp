@@ -493,4 +493,38 @@ namespace eddlT {
 
 
 
+  /// reductions
+  tensor reduce_mean(tensor A,vector<int> axis)
+  {
+     vector<int> shape=A->getShape();
+     vector<int> s;
+
+     for(int i=0;i<A->ndim;i++) {
+       if (find(axis.begin(), axis.end(), i) == axis.end())
+           s.push_back(A->shape[i]);
+     }
+     tensor B=new Tensor(s,A->device);
+
+     reduce_mean(A, B,axis);
+
+     return B;
+  }
+  tensor reduce_variance(tensor A,vector<int> axis)
+  {
+     vector<int> shape=A->getShape();
+     vector<int> s;
+
+     for(int i=0;i<A->ndim;i++) {
+       if (find(axis.begin(), axis.end(), i) == axis.end())
+           s.push_back(A->shape[i]);
+     }
+     tensor B=new Tensor(s,A->device);
+
+     reduce_variance(A, B,axis);
+
+     return B;
+  }
+
+
+
 }
