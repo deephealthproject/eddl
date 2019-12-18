@@ -445,7 +445,7 @@ set_target_properties(eddl PROPERTIES
 
 
 # OpenMP
-find_package(OpenMP REQUIRED)
+find_package(OpenMP)
 if (OPENMP_FOUND)
     target_link_libraries(eddl PRIVATE OpenMP::OpenMP_CXX)
 endif()

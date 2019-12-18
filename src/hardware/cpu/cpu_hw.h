@@ -32,7 +32,7 @@ void cpu_d_repeat(Tensor *D, Tensor *A, vector<int> size);
 
 // CPU: Create
 void cpu_range(Tensor *A, float min, float step);
-void cpu_eye(Tensor *A);
+void cpu_eye(Tensor *A, int offset);
 
 // CPU: Generator
 void cpu_rand_uniform(Tensor *A, float v);

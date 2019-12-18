@@ -303,7 +303,7 @@ public:
 
     PermuteDescriptor *sd;
 
-    LPermute(Layer *l, vector<int> dims, bool hasBatch, string name, int dev);
+    LPermute(Layer *l, vector<int> dims, string name, int dev);
 
     void forward() override;
 

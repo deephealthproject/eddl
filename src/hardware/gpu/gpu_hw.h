@@ -50,7 +50,7 @@ void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
 
 // GPU: Create (static)
 void gpu_range(Tensor *A, float start, float step);
-void gpu_eye(Tensor *A);
+void gpu_eye(Tensor *A, int offset);
 
 // GPU: Data transformations (2D Optimized) ********************************************
 void gpu_shift(Tensor *A, Tensor *B, vector<int> t_shift, int mode, float constant);

@@ -59,6 +59,12 @@ typedef vector<int> tshape;
 
 class Tensor {
 private:
+    void updateDevice(int dev);
+    void updateShape(const vector<int> &shape);
+    void updateSize();
+    void updateStrides();
+    void updateData(float* ptr);
+
     // Load methods
     static Tensor* load_from_bin(std::ifstream &ifs);
     static Tensor* load_from_onnx(std::ifstream &ifs);
@@ -120,6 +126,7 @@ public:
     // Core
     vector<int> getShape();
     static int get_mode(string mode);
+    static bool isSquared(Tensor *A);
 
     // Serialization
     static Tensor* loadfs(std::ifstream &ifs, string format="");
@@ -132,17 +139,16 @@ public:
     void save2txt(const string& filename, const char delimiter=',', const vector<string> &header={});
 
     // ***** Core *****************************
-//    void permute_(const vector<int>& dims);
     static Tensor* permute(Tensor* t, const vector<int>& dims);
-
-//    void moveaxis_(const vector<int>& dims);
     static Tensor* moveaxis(Tensor* t, int source, int destination);
+    static Tensor* swapaxis(Tensor* t, int axis1, int axis2);
 
     void fill_(float v);
 //    static Tensor* fill(Tensor *A, float v);
 
-    void reshape_(const vector<int> &shape);
+    void reshape_(const vector<int> &new_shape);
     static Tensor* reshape(Tensor *A, const vector<int> &shape);
+    static Tensor* flatten(Tensor *A);
 
     void squeeze_();
     static Tensor* squeeze(Tensor *A);
@@ -168,7 +174,9 @@ public:
     static Tensor* range(float start, float end, float step=1.0f, int dev=DEV_CPU);
     static Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
     static Tensor* logspace(float start, float end, int steps=100, float base=10.0f, int dev=DEV_CPU);
-    static Tensor* eye(int size, int dev=DEV_CPU);
+    static Tensor* eye(int rows, int offset=0, int dev=DEV_CPU);
+    static Tensor* identity(int rows, int dev=DEV_CPU);
+    static Tensor* diag(Tensor* A, int k=0, int dev=DEV_CPU);
     static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
     // ***** Transformations *****************************
@@ -355,7 +363,6 @@ public:
     static int cross(Tensor *A, Tensor *B); // TODO
     static int diag(Tensor *A); // TODO
     static int einsum(string subscripts, Tensor *A); // TODO
-    static int flatten(Tensor *A); // TODO
     static int flip(Tensor *A);  // TODO
     static int trace(Tensor *A);
     static int dot(Tensor *A);  // TODO
@@ -408,7 +415,7 @@ Tensor* Tensor::load_from_numpy(const string &filename, const string &format){
 }
 
 template<typename T>
-Tensor* Tensor::load(const string& filename, string format){
+Tensor* Tensor:: load(const string& filename, string format){
     // Infer format from filename
     if(format.empty()){
         format = get_extension(filename);

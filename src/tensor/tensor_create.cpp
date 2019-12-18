@@ -87,15 +87,15 @@ Tensor* Tensor::logspace(float start, float end, int steps, float base, int dev)
     return t;
 }
 
-Tensor* Tensor::eye(int size, int dev){
-    auto t = new Tensor(vector<int>{size, size}, dev);
+Tensor* Tensor::eye(int rows, int offset, int dev){
+    auto t = new Tensor(vector<int>{rows, rows}, dev);
     if (t->isCPU()) {
-        cpu_eye(t);
+        cpu_eye(t, offset);
     }
 #ifdef cGPU
     else if (t->isGPU())
       {
-        gpu_eye(t);
+        gpu_eye(t, offset);
       }
 #endif
 #ifdef cFPGA
@@ -105,6 +105,37 @@ Tensor* Tensor::eye(int size, int dev){
 #endif
     return t;
 
+}
+
+Tensor* Tensor::identity(int rows, int dev){
+    return Tensor::eye(rows, 0, dev);
+}
+
+
+Tensor* Tensor::diag(Tensor* A, int k, int dev){
+    msg("Not implemented", "Tensor::diag");
+
+    if(!Tensor::isSquared(A)){
+        msg("The matrix must be square", "Tensor::diag");
+    }
+    auto new_t = new Tensor({A->shape[0]}, dev);
+//
+//    if (new_t->isCPU()) {
+//        cpu_diag(new_t, k);
+//    }
+//#ifdef cGPU
+//    else if (t->isGPU())
+//      {
+//        gpu_diag(new_t, k);
+//      }
+//#endif
+//#ifdef cFPGA
+//    else {
+//
+//    }
+//#endif
+
+    return new_t;
 }
 
 Tensor* Tensor::randn(const vector<int> &shape, int dev){

@@ -43,9 +43,18 @@ void Tensor::fill_(float v) {
 //    return t_new;
 //}
 
-void Tensor::reshape_(const vector<int> &shape){
-    int new_size = 1;
-    for(auto i : shape) new_size *= i;
+void Tensor::reshape_(const vector<int> &new_shape){
+    int new_size = 1;  // For checking
+    vector<int> final_shape;
+
+    // Compute new shape (infer if necessary)
+    for(auto d : new_shape) {
+        if(d==-1){  // Infer the remaining dimensions
+            d = this->size/new_size;
+        }
+        final_shape.push_back(d);
+        new_size *= d;
+    }
 
     // Check if the new size is compatible
     if(new_size!=this->size){
@@ -53,21 +62,10 @@ void Tensor::reshape_(const vector<int> &shape){
     }
 
     // Update attributes
-    this->ndim = shape.size();
-    this->shape = vector<int>(shape);
-
-    // Use eigen for 2 dimensions
-    if (this->ndim == 2) {
-        this->ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(ptr, this->shape[1], this->shape[0]);
-    }
-
-    // Update strides
-    this->stride = vector<int>();
-    int s=this->size;
-    for(int i=0;i<ndim;i++) {
-        s/=shape[i];
-        this->stride.push_back(s);
-    }
+    updateShape(final_shape);
+    updateSize();
+    updateStrides();
+    updateData(this->ptr);  // Due to the Eigen mapping
 }
 
 Tensor* Tensor::reshape(Tensor *A, const vector<int> &shape){
@@ -75,6 +73,13 @@ Tensor* Tensor::reshape(Tensor *A, const vector<int> &shape){
     t_new->reshape_(shape);
     return t_new;
 }
+
+Tensor* Tensor::flatten(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->reshape_({-1});
+    return t_new;
+};
+
 
 void Tensor::squeeze_(){
     // Remove single dimension entries from the array
@@ -130,11 +135,31 @@ Tensor* Tensor::moveaxis(Tensor* t, int source, int destination){
     if(source == -1){source = t->ndim-1; }
     if(destination == -1){destination = t->ndim-1; }
 
+    // Build axes to permute [1 => 3] => (0,1,2,3) => (0,2,3,1)
+    vector<int> dims;
+    dims.reserve(t->ndim);
+    for(int i=0; i<t->ndim;i++){
+        dims.push_back(i);
+    }
+    dims.erase(dims.begin()+source);  // Remove axis
+    dims.insert(dims.begin() + destination, source);  // Insert at final position
+
+    // Permute tensor
+    Tensor* t2 = Tensor::permute(t, dims);
+    return t2;
+}
+
+Tensor* Tensor::swapaxis(Tensor* t, int axis1, int axis2){
+    // Check values
+    if(axis1<-1 || axis2 <-1 || axis1 == axis2){
+        msg("Invalid axis", "Tensor::swapaxis");
+    }
+
     // Build axes to permute [0, 3] => (0,1,2,3) => (3,1,2,0)
     vector<int> dims;
     for(int i=0; i<t->ndim;i++){ dims.emplace_back(i); }
-    dims[source] = destination;
-    dims[destination] = source;
+    dims[axis1] = axis2;
+    dims[axis2] = axis1;
 
     // Permute tensor
     Tensor* t2 = Tensor::permute(t, dims);

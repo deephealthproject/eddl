@@ -45,46 +45,12 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
     }
 #endif
 
-    this->device = dev;
-    this->ndim = shape.size();
-    this->shape = shape;
-
-    size = 1;
-    for (int i = 0; i < ndim; ++i) size *= shape[i];
-
-    int s=size;
-    for(int i=0;i<ndim;i++) {
-        s/=shape[i];
-        stride.push_back(s);
-    }
-
-    if (isCPU()) {
-        if (fptr==nullptr) ptr = get_fmem(size,"Tensor::Tensor");
-        else  ptr=fptr;
-
-        if (ndim == 2) {
-            ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(ptr, shape[1], shape[0]);
-        }
-    }
-#ifdef cGPU
-    else if (isGPU())
-        {
-          gpu_device=device-DEV_GPU;
-          if (!initcuda[gpu_device])
-            {
-              gpu_init(gpu_device);
-              initcuda[gpu_device]=1;
-            }
-          if (fptr==nullptr) ptr=gpu_create_tensor(gpu_device,size);
-          else ptr=fptr;
-
-        }
-#endif
-#ifdef cFPGA
-    else {
-        // create FPGA Tensor
-      }
-#endif
+    // Update values
+    updateDevice(dev);
+    updateShape(shape);
+    updateSize();
+    updateStrides();
+    updateData(fptr);
 
     tsem = new mutex();
 }
@@ -95,6 +61,70 @@ Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape, nullptr, dev){}
 // From shape and Tensor (sharing ptr)
 Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr,T->device) {}
 
+
+void Tensor::updateDevice(int dev){
+    this->device = dev;
+}
+
+void Tensor::updateShape(const vector<int> &shape){
+    this->shape = vector<int>(shape);
+    this->ndim = this->shape.size();
+}
+
+void Tensor::updateSize() {
+    this->size = 1;
+
+    for(auto &d : this->shape) {
+        this->size *= d;
+    }
+}
+
+void Tensor::updateStrides() {
+    this->stride.clear();  // Remove all elements
+
+    int new_size = this->size;
+    for(int i=0;i<ndim;i++) {
+        new_size /= shape[i];
+        this->stride.push_back(new_size);
+    }
+}
+
+void Tensor::updateData(float *fptr){
+
+    if (isCPU()) {
+        // If null => Reserve memory
+        // else => point to data
+        if (fptr==nullptr) { this->ptr = get_fmem(this->size,"Tensor::Tensor"); }
+        else { this-> ptr = fptr; };
+
+        // For 2 dimensions, map to data to Eigen for efficiency
+        // Efficient operations will be done over ptr2, which also points to ptr
+        if (this->ndim == 2) {
+            this->ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(this->ptr, this->shape[1], this->shape[0]);
+        }
+    }
+#ifdef cGPU
+    else if (isGPU())
+        {
+          gpu_device=this->device-DEV_GPU;
+          if (!initcuda[gpu_device]){
+              gpu_init(gpu_device);
+              initcuda[gpu_device]=1;
+          }
+
+          // If null => Reserve memory
+          // else => point to data  | CAREFUL! This pointer MUST be a GPU pointer. We cannot check it.
+          if (this->fptr == nullptr) { this->ptr = gpu_create_tensor(gpu_device, this->size); }
+          else { this->ptr = fptr; }
+
+        }
+#endif
+#ifdef cFPGA
+    else {
+        // create FPGA Tensor
+      }
+#endif
+}
 
 void Tensor::toCPU(int dev){
 #ifdef cGPU
@@ -281,4 +311,15 @@ int Tensor::get_mode(string mode){
     }else {  // constant
         return -1;
     }
+}
+
+
+bool Tensor::isSquared(Tensor *A){
+    int last_dim = A->shape[0];
+    for(int i=0; i<A->ndim; i++){
+        if(last_dim!=A->shape[i]){
+            return false;
+        }
+    }
+    return true;
 }

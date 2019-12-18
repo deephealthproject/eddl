@@ -31,12 +31,12 @@ void gpu_range(Tensor *A, float start, float step) {
 }
 
 
-void gpu_eye(Tensor *A) {
+void gpu_eye(Tensor *A, int offset) {
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     setDims(A);
 
-    eye<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], A->shape[1]);
+    eye<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], A->shape[1], offset);
     check_cuda(cudaDeviceSynchronize(), "eye");
 }

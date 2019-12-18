@@ -320,7 +320,7 @@ namespace eddl {
     }
 
     layer Permute(layer l, vector<int> dims){
-        return new LPermute(l, dims, false, "", DEV_CPU);
+        return new LPermute(l, dims, "", DEV_CPU);
     }
 
     // ---- REDUCTION LAYERS ----
