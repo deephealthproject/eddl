@@ -22,7 +22,7 @@
 
 // GPU: Create
 __global__ void range(float* a, float start, float step, long int size);
-__global__ void eye(float* a, long int rows, long int cols);
+__global__ void eye(float* a, long int rows, long int cols, int offset);
 
 // GPU: Core (static)
 __global__ void fill(float *aptr,float *bptr,int t,int aini,int at,int bini,int bt,int tot,int inc);
