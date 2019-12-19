@@ -29,6 +29,6 @@ __global__ void eye(float* a, long int rows, long int cols, int offset) {
     long int thread_id_x = blockDim.x*blockIdx.x + threadIdx.x;
 
     if (thread_id_x < ops)
-        if ((thread_id_x/rows + offset) == (thread_id_x%cols){ a[thread_id_x] = 1.0f; }
+        if ((thread_id_x/rows + offset) == (thread_id_x%cols)){ a[thread_id_x] = 1.0f; }
         else { a[thread_id_x] = 0.0f; }
 }
