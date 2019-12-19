@@ -9,6 +9,45 @@
 
 
 #include "cpu_hw.h"
+#include <limits>
+
+// CPU: Logic functions: Comparisons
+void cpu_isfinite(Tensor *A, Tensor* B){
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; ++i){
+        B->ptr[i] = std::isfinite(A->ptr[i]);
+    }
+}
+
+void cpu_isinf(Tensor *A, Tensor* B){
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; ++i){
+        B->ptr[i] = std::isinf(A->ptr[i]);
+    }
+}
+
+void cpu_isnan(Tensor *A, Tensor* B){
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; ++i){
+        B->ptr[i] = std::isnan(A->ptr[i]);
+    }
+}
+
+
+void cpu_isneginf(Tensor *A, Tensor* B){
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; ++i){
+        B->ptr[i] = std::isinf(A->ptr[i]) && A->ptr[i] < 0.0f;
+    }
+}
+
+void cpu_isposinf(Tensor *A, Tensor* B){
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; ++i){
+        B->ptr[i] = std::isinf(A->ptr[i]) && A->ptr[i] > 0.0f;
+    }
+}
+
 
 // CPU: Logic functions: Comparisons
 void cpu_logical_and(Tensor *A, Tensor *B, Tensor *C){

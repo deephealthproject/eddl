@@ -236,12 +236,11 @@ Not yet...
 
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
-| isfinite      | ❌    |  ❌    |  Test element-wise for finiteness (not infinity or not Not a Number).                |
-| isinf      | ❌    |  ❌    |                  Test element-wise for positive or negative infinity.   |
-| isnan      | ❌    |  ❌    |                   Test element-wise for NaN and return result as a boolean array.   |
-| isnat      | ❌    |  ❌    |                   Test element-wise for NaT (not a time) and return result as a boolean array.   |
-| isneginf      | ❌    |  ❌    |                   Test element-wise for negative infinity, return result as bool array.   |
-| isposinf      | ❌    |  ❌    |                   	Test element-wise for positive infinity, return result as bool array.   |
+| isfinite      | ✅    |  ✅    |  Test element-wise for finiteness (not infinity or not Not a Number).                |
+| isinf         | ✅    |  ✅    |                  Test element-wise for positive or negative infinity.   |
+| isnan         | ✅    |  ✅    |                   Test element-wise for NaN and return result as a boolean array.   |
+| isneginf      | ✅    |  ✅    |                   Test element-wise for negative infinity, return result as bool array.   |
+| isposinf      | ✅    |  ✅    |                   	Test element-wise for positive infinity, return result as bool array.   |
 
 
 ### Logical operations

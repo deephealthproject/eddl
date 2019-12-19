@@ -339,13 +339,20 @@ public:
     // Math operations: Reduction ops
     static void reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
 
-    // Logic operations: Comparison ops
+    // Logic funcions: Logical ops
+    static void isfinite(Tensor *A, Tensor* B);
+    static void isinf(Tensor *A, Tensor* B);
+    static void isnan(Tensor *A, Tensor* B);
+    static void isneginf(Tensor *A, Tensor* B);
+    static void isposinf(Tensor *A, Tensor* B);
+
+    // Logic funcions: Logical ops
     static void logical_and(Tensor *A, Tensor *B, Tensor *C);
     static void logical_or(Tensor *A, Tensor *B, Tensor *C);
     static void logical_not(Tensor *A, Tensor *B);
     static void logical_xor(Tensor *A, Tensor *B, Tensor *C);
 
-    // Logic operations: Comparison ops
+    // Logic funcions: Comparison ops
     static bool allclose(Tensor *A, Tensor *B, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns true or false
     static void isclose(Tensor *A, Tensor *B, Tensor *C, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns a boolean tensor
     static void greater(Tensor *A, Tensor *B, Tensor *C);

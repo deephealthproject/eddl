@@ -20,6 +20,59 @@
 #include "../../descriptors/descriptors.h"
 
 
+// CPU: Logic functions: Comparisons
+void gpu_isfinite(Tensor *A, Tensor* B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_isfinite<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "gpu_isfinite");
+}
+
+void gpu_isinf(Tensor *A, Tensor* B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_isinf<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "gpu_isinf");
+}
+
+void gpu_isnan(Tensor *A, Tensor* B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_isnan<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "gpu_isnan");
+}
+
+void gpu_isneginf(Tensor *A, Tensor* B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_isneginf<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "gpu_isneginf");
+}
+
+void gpu_isposinf(Tensor *A, Tensor* B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_isposinf<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "gpu_isposinf");
+}
+
+
+// CPU: Logic functions: Comparisons
 void gpu_logical_and(Tensor *A, Tensor *B, Tensor *C){
     int device=A->gpu_device;
     cudaSetDevice(device);

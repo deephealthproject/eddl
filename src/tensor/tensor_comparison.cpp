@@ -34,6 +34,105 @@ void checkCompatibility(Tensor *A, Tensor *B, Tensor *C, const string &title){
 }
 
 
+// Logic funcions: Logical ops
+void Tensor::isfinite(Tensor *A, Tensor* B){
+    checkCompatibility(A, B, "Tensor::isfinite");
+
+    if (A->isCPU()) {
+        cpu_isfinite(A, B);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+          {
+          gpu_isfinite(A, B);
+          }
+#endif
+#ifdef cFPGA
+    else {
+          msg("Equal only for CPU Tensors", "Tensor::isfinite");
+        }
+#endif
+}
+
+void Tensor::isinf(Tensor *A, Tensor* B){
+    checkCompatibility(A, B, "Tensor::isinf");
+
+    if (A->isCPU()) {
+        cpu_isinf(A, B);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+          {
+          gpu_isinf(A, B);
+          }
+#endif
+#ifdef cFPGA
+    else {
+          msg("Equal only for CPU Tensors", "Tensor::isinf");
+        }
+#endif
+}
+
+void Tensor::isnan(Tensor *A, Tensor* B){
+    checkCompatibility(A, B, "Tensor::isnan");
+
+    if (A->isCPU()) {
+        cpu_isnan(A, B);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+          {
+          gpu_isnan(A, B);
+          }
+#endif
+#ifdef cFPGA
+    else {
+          msg("Equal only for CPU Tensors", "Tensor::isnan");
+        }
+#endif
+}
+
+void Tensor::isneginf(Tensor *A, Tensor* B){
+    checkCompatibility(A, B, "Tensor::isneginf");
+
+    if (A->isCPU()) {
+        cpu_isneginf(A, B);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+          {
+          gpu_isneginf(A, B);
+          }
+#endif
+#ifdef cFPGA
+    else {
+          msg("Equal only for CPU Tensors", "Tensor::isneginf");
+        }
+#endif
+}
+
+void Tensor::isposinf(Tensor *A, Tensor* B){
+    checkCompatibility(A, B, "Tensor::isposinf");
+
+    if (A->isCPU()) {
+        cpu_isposinf(A, B);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+          {
+          gpu_isposinf(A, B);
+          }
+#endif
+#ifdef cFPGA
+    else {
+          msg("Equal only for CPU Tensors", "Tensor::isposinf");
+        }
+#endif
+}
+
+
+// Logic funcions: Logical ops
+
 void Tensor::logical_and(Tensor *A, Tensor *B, Tensor *C){
     checkCompatibility(A, B, C, "Tensor::logical_and");
 

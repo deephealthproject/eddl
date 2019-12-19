@@ -14,6 +14,46 @@
 #include <iostream>
 #include <cuda.h>
 
+__global__ void gpu_isfinite(float *A, float *B, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        B[thread_id_x] = isfinite(A[thread_id_x]);
+    }
+}
+
+__global__ void gpu_isinf(float *A, float *B, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        B[thread_id_x] = isinf(A[thread_id_x]);
+    }
+}
+
+__global__ void gpu_isnan(float *A, float *B, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        B[thread_id_x] = isnan(A[thread_id_x]);
+    }
+}
+
+__global__ void gpu_isneginf(float *A, float *B, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        B[thread_id_x] = isinf(A->ptr[thread_id_x]) && A->ptr[thread_id_x] < 0.0f;
+    }
+}
+
+__global__ void gpu_isposinf(float *A, float *B, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        B[thread_id_x] = isinf(A->ptr[thread_id_x]) && A->ptr[thread_id_x] > 0.0f;
+    }
+}
+
 
 __global__ void glogical_and(float *A, float *B, float *C, int size){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;

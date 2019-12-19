@@ -13,6 +13,8 @@
 #include <string>
 #include <ctime>
 #include <limits>
+#include <cmath>
+
 //#include <omp.h>
 
 #include "apis/eddlT.h"
@@ -27,20 +29,33 @@ int main(int argc, char **argv) {
     int device = DEV_GPU;
 //    cout << "CAncel " << omp_get_cancellation() << endl;
 
-    Tensor *t1 = Tensor::ones({3, 4, 5});
+    Tensor *t1 = Tensor::ones({5, 1});
+    Tensor *t2 = Tensor::full({5, 1}, 5);
     t1->print();
-    t1->info();
-    Tensor::swapaxis(t1, 0, 2);
+    t2->print();
 
-    t1->reshape_({2, 2, -1});
+    t1->set_({0, 0}, 12); // isfinite
+    t1->set_({1, 0}, INFINITY); // isinf
+    t1->set_({2, 0}, NAN); // isnan
+    t1->set_({3, 0}, -INFINITY); // isneginf
+    t1->set_({4, 0}, +INFINITY); // isposinf
     t1->print();
-    t1->info();
 
-    t1 = Tensor::flatten(t1);
-    t1->print();
-    t1->info();
+    cout << "isfinite" << endl;
+    Tensor::isfinite(t1, t2); t2->print();
 
-    cout << Tensor::isSquared(t1) << endl;
+    cout << "isinf" << endl;
+    Tensor::isinf(t1, t2); t2->print();
+
+    cout << "isnan" << endl;
+    Tensor::isnan(t1, t2); t2->print();
+
+    cout << "isneginf" << endl;
+    Tensor::isneginf(t1, t2); t2->print();
+
+    cout << "isposinf" << endl;
+    Tensor::isposinf(t1, t2); t2->print();
+
     int asd =3;
 //
 //    Tensor* t1 = Tensor::range(1.0, 25.0f, 1, device);
