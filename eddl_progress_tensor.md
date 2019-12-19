@@ -205,6 +205,7 @@ Not yet...
 | matmul      | ❌    |   ❌   |           Matrix product of two arrays.                                                   |
 | tensordot      | ❌    |   ❌   |     Compute tensor dot product along specified axes for arrays >= 1-D.                                                         |
 | eigensum      | ❌    |   ❌   |   Evaluates the Einstein summation convention on the operands                                                           |
+| interpolate | ✅ | ✅ |  Interpolate two tensors: `c*A + (1-c)*B` |
 
 
 ### Norms and other numbers
@@ -351,16 +352,15 @@ Not yet...
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| clone | ✅ | ✅ | Clone a tensor (same device) |
-| copy | ✅ | ✅ |  Copy data from Tensor A to B |
 | toCPU | ✅ | ✅ | Clone a tensor to the CPU |
 | toGPU | ✅ | ✅ | Clone a tensor to the GPU |
 | isCPU | ✅ | ✅ | Check if the tensor if in CPU |
 | isGPU | ✅ | ✅ | Check if the tensor if in GPU |
 | isFPGA | - | - |  Check if the tensor if in FPGA |
+| isSquared | ✅ | ✅ | Check if all dimensions in the tensors are the same |
+| copy | ✅ | ✅ |  Copy data from Tensor A to B |
+| clone | ✅ | ✅ | Clone a tensor (same device) |
 | info | ✅ | ✅ | Print shape, device and size information |
 | print | ✅ | ✅ | Prints the tensor values |
-| isSquared | ✅ | ✅ | Check if all dimensions in the tensors are the same |
 | valid_indices | ✅ | ✅ | Check if the given indices are valid for this tensor |
 | get_address_rowmajor | ✅ | ✅ |  Translate a set of indices to their corresponding address (row-major) |
-| interpolate | ✅ | ✅ |  Interpolate two tensors: `c*A + (1-c)*B` |
