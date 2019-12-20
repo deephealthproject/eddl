@@ -52,12 +52,9 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
         mean=new Tensor(shape,dev);
         mean->fill_(0.0);
 
-        params.push_back(mean);
-
         variance=new Tensor(shape,dev);
         variance->fill_(1.0);
 
-        params.push_back(variance);
     }
 
     parent->addchild(this);
