@@ -76,15 +76,20 @@ void LBatchNorm::resize(int batch){
 }
 
 void LBatchNorm::save(std::ofstream &ofs, string format){
+  // Save momentum TODO
+  if (momentum!=0) {
     mean->savefs(ofs, format);
     variance->savefs(ofs, format);
-    // Save momentum TODO
+  }
 }
 
 void LBatchNorm::load(std::ifstream &ifs, string format){
-    mean->loadfs(ifs, format);
-    variance->loadfs(ifs, format);
     // load momentum TODO
+    if (momentum!=0) {
+      mean->loadfs(ifs, format);
+      variance->loadfs(ifs, format);
+    }
+
 }
 
 
