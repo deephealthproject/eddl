@@ -76,6 +76,7 @@ void RMSProp::applygrads(int batch) {
             Tensor::add(-lr, gT[p],1.0,layers[i]->params[j], layers[i]->params[j], 0);
         }
     }
+    else p+=layers[i]->gradients.size();
 
 
 }

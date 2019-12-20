@@ -61,6 +61,7 @@ void SGD::applygrads(int batch) {
             Tensor::add(lr , layers[i]->gradients[j], mu, mT[p], mT[p], 0);
             Tensor::add(1.0, layers[i]->params[j], -1.0, mT[p], layers[i]->params[j], 0);
         }
-    }
+      }
+      else p+=layers[i]->gradients.size();
 
 }
