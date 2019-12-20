@@ -189,8 +189,6 @@ Tensor* Tensor::clone(){
 }
 
 
-
-
 Tensor::~Tensor() {
     if (isCPU()) {
       delete ptr;
@@ -220,18 +218,18 @@ vector<int> Tensor::getShape() {
 }
 
 void Tensor::info() {
-    int i;
+    int cols = 15;
 
-    fprintf(stdout, "DIM=%d\n", ndim);
-    fprintf(stdout, "(");
-    for (i = 0; i < ndim - 1; i++)
-        fprintf(stdout, "%d,", shape[i]);
-    fprintf(stdout, "%d)\n", shape[i]);
-
-    fprintf(stdout, "Total bytes=%ld\n", size * sizeof(float));
-    if (isCPU()) fprintf(stdout, "Device=CPU\n");
-    else if (isGPU()) fprintf(stdout, "Device=GPU (%d)\n", gpu_device);
-    else fprintf(stdout, "Device=FPGA\n");
+    cout << setw(cols) << left << "class: "        << "Tensor" << endl;
+    cout << setw(cols) << left << "ndim: "         << this->ndim << endl;
+    cout << setw(cols) << left << "shape: "        << "(" << printVector<int>(this->shape) << ")" << endl;
+    cout << setw(cols) << left << "strides: "      << "(" << printVector<int>(this->stride) <<  ")" << endl;
+    cout << setw(cols) << left << "itemsize: "     << this->size << endl;
+    cout << setw(cols) << left << "contiguous: "   << true << endl; // for future
+    cout << setw(cols) << left << "order: "        << 'C' << endl;  // C=>C order, F=>Fortran order
+    cout << setw(cols) << left << "data pointer: " << &this->ptr << endl;
+    cout << setw(cols) << left << "type: "         << "float" << " (" << sizeof(float) << " bytes)" << endl;
+    cout << setw(cols) << left << "device: "         << this->getStrDevice() << " (code = " << this->device << ")" << endl;
 }
 
 void Tensor::print() {
@@ -281,6 +279,13 @@ void Tensor::print() {
     }
 #endif
     cout << "\n";
+}
+
+string Tensor::getStrDevice(){
+    if ((this->device >= DEV_CPU) && (this->device < DEV_GPU)) { return "CPU"; }
+    else if ((device >= DEV_GPU) && (this->device < DEV_FPGA)) { return "GPU"; }
+    else if (this->device >= DEV_FPGA) { return "FPGA"; }
+    return "unknown";
 }
 
 int Tensor::get_mode(string mode){

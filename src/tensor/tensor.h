@@ -94,7 +94,6 @@ public:
     int gpu_device;
     mutex *tsem;  // Multithreading. Tensor semaphore
 
-
     // Constructors
     Tensor();
     explicit Tensor(const vector<int> &shape, int dev=DEV_CPU);
@@ -122,6 +121,7 @@ public:
     // View methods
     void info();
     void print();
+    string getStrDevice();
 
     // Core
     vector<int> getShape();

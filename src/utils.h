@@ -44,4 +44,14 @@ bool is_number(const std::string& s);
 
 bool pathExists(const std::string &s);
 
+template<typename T>
+string printVector(vector<T> myvector){
+    string temp = "";
+    for(int i = 0; i<myvector.size()-1; i++){
+        temp += to_string(myvector[i]) + ", ";
+    }
+    temp += to_string(myvector[myvector.size()-1]);
+    return temp;
+}
+
 #endif //EDDL_UTILS_H

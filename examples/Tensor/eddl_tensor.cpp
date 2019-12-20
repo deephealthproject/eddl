@@ -30,6 +30,8 @@ int main(int argc, char **argv) {
 //    cout << "CAncel " << omp_get_cancellation() << endl;
 
     Tensor *t1 = Tensor::ones({5, 1});
+    t1->info();
+
     Tensor *t2 = Tensor::full({5, 1}, 5);
     t1->print();
     t2->print();

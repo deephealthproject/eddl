@@ -94,7 +94,8 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs){
     ifs.read(reinterpret_cast<char*>(r_ptr), r_size * sizeof(float));
 
     // Return new tensor
-    return new Tensor(r_shape, r_ptr, DEV_CPU);
+    auto *t1 = new Tensor(r_shape, r_ptr, DEV_CPU);
+    return t1;
 }
 
 Tensor* Tensor::load_from_onnx(std::ifstream &ifs){
