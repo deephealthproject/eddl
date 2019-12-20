@@ -153,7 +153,7 @@ void Net::walk_back(Layer *l) {
 /////////////////////////////////////////
 string Net::summary() {
     std::stringstream ss;
-
+    ss << "---------------------------------------------" << endl;
     for (auto & vft : vfts) {
         // Get input/output shapes
         vector<int> ishape(vft->input->shape);
@@ -173,6 +173,7 @@ string Net::summary() {
         ss << setw(10) << left << ostr;
         ss << endl;
     }
+    ss << "---------------------------------------------" << endl;
 
     return ss.str();
 }

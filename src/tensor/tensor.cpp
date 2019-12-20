@@ -219,7 +219,7 @@ vector<int> Tensor::getShape() {
 
 void Tensor::info() {
     int cols = 15;
-
+    cout << "-------------------------------" << endl;
     cout << setw(cols) << left << "class: "        << "Tensor" << endl;
     cout << setw(cols) << left << "ndim: "         << this->ndim << endl;
     cout << setw(cols) << left << "shape: "        << "(" << printVector<int>(this->shape) << ")" << endl;
@@ -230,6 +230,7 @@ void Tensor::info() {
     cout << setw(cols) << left << "data pointer: " << &this->ptr << endl;
     cout << setw(cols) << left << "type: "         << "float" << " (" << sizeof(float) << " bytes)" << endl;
     cout << setw(cols) << left << "device: "         << this->getStrDevice() << " (code = " << this->device << ")" << endl;
+    cout << "-------------------------------" << endl;
 }
 
 void Tensor::print() {
