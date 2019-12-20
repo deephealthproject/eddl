@@ -154,17 +154,24 @@ void Net::walk_back(Layer *l) {
 string Net::summary() {
     std::stringstream ss;
 
-    for (int i = 0; i < vfts.size(); i++) {
-        ss << vfts[i]->name << ": ";
+    for (auto & vft : vfts) {
+        // Get input/output shapes
+        vector<int> ishape(vft->input->shape);
+        vector<int> oshape(vft->output->shape);
 
-        vector<int> si = vfts[i]->input->getShape();
-        if (vfts[i]->input->ndim>1)
-          si.erase(si.begin());
-        vector<int> so = vfts[i]->output->getShape();
-        if (vfts[i]->output->ndim>1)
-          so.erase(so.begin());
-        ss << si << "-->" << so << "\n";
+        // Remove batch (if has)
+        if (ishape.size() > 1) { ishape.erase(ishape.begin(), ishape.begin() + 1); }
+        if (oshape.size() > 1) { oshape.erase(oshape.begin(), oshape.begin() + 1); }
 
+        // Prepare strings to print
+        string istr = "(" + printVector(ishape) + ")";
+        string ostr = "(" + printVector(oshape) + ")";
+
+        ss << setw(15) << left << vft->name << "|  ";
+        ss << setw(10) << left << istr;
+        ss << setw(8) << left << "=>";
+        ss << setw(10) << left << ostr;
+        ss << endl;
     }
 
     return ss.str();

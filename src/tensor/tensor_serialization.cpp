@@ -95,6 +95,9 @@ Tensor* Tensor::load_from_bin(std::ifstream &ifs){
 
     // Return new tensor
     auto *t1 = new Tensor(r_shape, r_ptr, DEV_CPU);
+//    cout << "-------------------------------" << endl;
+//    t1->info();
+//    cout << "-------------------------------" << endl;
     return t1;
 }
 
