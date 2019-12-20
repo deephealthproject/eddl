@@ -92,6 +92,12 @@ void LBatchNorm::load(std::ifstream &ifs, string format){
 
 }
 
+void LBatchNorm::copy(Layer *l2)
+{
+  Tensor::copy(mean,((LBatchNorm*)l2)->mean);
+  Tensor::copy(variance,((LBatchNorm*)l2)->variance);
+}
+
 
 void LBatchNorm::forward() {
   BN_forward(input,output,MD,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);

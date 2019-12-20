@@ -80,7 +80,10 @@ public:
     void clamp(float min,float max);
     void setdetach();
 
+
     //virtual
+
+    virtual void copy(Layer *l2);
 
     virtual void resize(int batch);
     virtual void set_trainable(bool value);

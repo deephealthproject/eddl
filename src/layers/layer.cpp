@@ -121,7 +121,9 @@ void Layer::save(std::ofstream &ofs, string format){
 
 void Layer::load(std::ifstream &ifs, string format){
     for (int i = 0; i != params.size(); i++){
-        params[i]->loadfs(ifs, format);
+        Tensor* t=params[i]->loadfs(ifs, format);
+        Tensor::copy(t,params[i]);
+        delete t;
     }
 }
 
@@ -168,6 +170,13 @@ Tensor* Layer::getBias(){
 
 Tensor* Layer::setBias(Tensor bias){
     return nullptr;
+}
+
+
+void Layer::copy(Layer *l2)
+{
+  for(int i=0;i<params.size();i++)
+    Tensor::copy(params[i],l2->params[i]);
 }
 
 ////////////////////////////////////

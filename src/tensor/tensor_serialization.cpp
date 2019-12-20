@@ -59,7 +59,7 @@ Tensor* Tensor::load(const string& filename, string format){
 Tensor* Tensor::loadfs(std::ifstream &ifs, string format) {
 
     // Choose format
-    if(format=="bin") {
+    if (format=="bin") {
         return Tensor::load_from_bin(ifs);
     } else if(format=="onnx"){
         return Tensor::load_from_onnx(ifs);

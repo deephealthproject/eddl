@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 1;
+    int epochs = 10;
     int batch_size = 100;
     int num_classes = 10;
 
@@ -31,9 +31,9 @@ int main(int argc, char **argv) {
     layer in = Input({784});
     layer l = in;  // Aux var
 
-    l = ReLu(Dense(l, 1024));
-    l = ReLu(Dense(l, 1024));
-    l = ReLu(Dense(l, 1024));
+    l = BatchNormalization(ReLu(Dense(l, 1024)));
+    l = BatchNormalization(ReLu(Dense(l, 1024)));
+    l = BatchNormalization(ReLu(Dense(l, 1024)));
 
     layer out = Activation(Dense(l, num_classes), "softmax");
     model net = Model({in}, {out});
@@ -46,8 +46,8 @@ int main(int argc, char **argv) {
           rmsprop(0.01), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-            //CS_GPU({1}) // one GPU
-          CS_CPU() // CPU with maximum threads availables
+          CS_GPU({1}) // one GPU
+          //CS_CPU() // CPU with maximum threads availables
     );
 
     // View model

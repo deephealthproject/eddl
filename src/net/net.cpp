@@ -235,6 +235,23 @@ void Net::save(const string& filename, string format){
     // Open file stream
     std::ofstream ofs(filename, std::ios::out | std::ios::binary);
 
+    // Copy from CS devices to layers
+    if (snets[0]->dev!=DEV_CPU) {
+      sync_weights();
+      for(int j=0;j<layers.size();j++)
+        snets[0]->layers[j]->copy(layers[j]);
+    }
+
+    // Copy value to CS devices layers
+    for(int i=0; i!=snets.size(); i++)
+      for(int j=0;j<layers.size();j++)
+        layers[j]->copy(snets[i]->layers[j]);
+
+    // Copy value to CS devices layers
+    for(int i=0; i!=snets.size(); i++)
+      for(int j=0;j<layers.size();j++)
+        layers[j]->copy(snets[i]->layers[j]);
+
     for (int i = 0; i != layers.size(); i++){
         layers[i]->save(ofs, format);
     }
@@ -249,6 +266,14 @@ void Net::load(const string& filename, string format){
 
     for (int i = 0; i != layers.size(); i++){
         layers[i]->load(ifs, format);
+    }
+
+
+    // Copy to CS devices layers
+    if (snets[0]->dev!=DEV_CPU) {
+      for(int i=0; i!=snets.size(); i++)
+        for(int j=0;j<layers.size();j++)
+          layers[j]->copy(snets[i]->layers[j]);
     }
 
     // Close file stream
