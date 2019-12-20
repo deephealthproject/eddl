@@ -86,8 +86,14 @@ void LBatchNorm::save(std::ofstream &ofs, string format){
 void LBatchNorm::load(std::ifstream &ifs, string format){
     // load momentum TODO
     if (momentum!=0) {
-      mean->loadfs(ifs, format);
-      variance->loadfs(ifs, format);
+      Tensor *t=mean->loadfs(ifs, format);
+      Tensor::copy(t,mean);
+      delete t;
+      
+      Tensor *t=variance->loadfs(ifs, format);
+      Tensor::copy(t,variance);
+      delete t;
+
     }
 
 }
