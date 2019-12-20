@@ -38,6 +38,7 @@ public:
     Tensor *delta;
     Layer *orig;
     Net *net;
+    bool trainable;
 
     vector<Tensor *> params;
     vector<Tensor *> gradients;
@@ -62,8 +63,7 @@ public:
     void initialize();
 
 
-    void save(std::ofstream &ofs, string format="");
-    void load(std::ifstream &ifs, string format="");
+
 
     virtual void info();
 
@@ -83,6 +83,11 @@ public:
     //virtual
 
     virtual void resize(int batch);
+    virtual void set_trainable(bool value);
+
+    virtual void save(std::ofstream &ofs, string format="");
+    virtual void load(std::ifstream &ifs, string format="");
+
     virtual void reset();
     virtual void zeroGrads();
     virtual string plot(int c) { return ""; }

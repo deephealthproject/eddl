@@ -70,14 +70,15 @@ void LConv::forward() {
 void LConv::backward() {
 
     //get gradients with provided delta
-    Conv2D_grad(this->cd);
+    if (trainable) Conv2D_grad(this->cd);
+    
     // backprop delta
     if (this->parent.size()) {
         Conv2D_back(this->cd);
     }
 
     // Regularizer
-    if(reg!= nullptr) {reg->apply(cd->K);}
+    if (trainable) if(reg!= nullptr) {reg->apply(cd->K);}
 
 }
 

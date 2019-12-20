@@ -83,6 +83,16 @@ void LActivation::backward() {
 }
 
 
+void LActivation::save(std::ofstream &ofs, string format){
+    // Save act
+    // Save param for "lrelu"
+}
+
+void LActivation::load(std::ifstream &ifs, string format){
+  // Load act
+  // Load param for "lrelu"
+}
+
 Layer *LActivation::share(int c, int bs, vector<Layer *> p) {
 
     LActivation *n = new LActivation(p[0], act, "share_" + to_string(c) + name, dev);

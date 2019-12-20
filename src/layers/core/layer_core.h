@@ -146,6 +146,9 @@ public:
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
+    void save(std::ofstream &ofs, string format) override;
+    void load(std::ifstream &ifs, string format) override;
+
     void forward() override;
 
     void backward() override;

@@ -320,7 +320,7 @@ namespace eddl {
     }
 
     layer Permute(layer l, vector<int> dims){
-        return new LPermute(l, dims, "", DEV_CPU);
+        //return new LPermute(l, dims, false, "", DEV_CPU);
     }
 
     // ---- REDUCTION LAYERS ----
@@ -473,6 +473,13 @@ namespace eddl {
     }
 
 
+    // --- LAYERS METHODS ----
+    void set_trainable(layer l, bool val)
+    {
+      l->set_trainable(val);
+    }
+
+
     // ---- INITIALIZERS ----
     layer GlorotNormal(layer l,int seed)
     {
@@ -572,6 +579,7 @@ namespace eddl {
       n=in[0]->shape[0];
       vector<int> sind(batch_size);
       for (i = 0; i < batch_size; i++) sind[i] = rand() % n;
+
       for (i = 0; i<in.size();i++)
         Tensor::select(in[i], out[i], sind, 0, batch_size);
     }

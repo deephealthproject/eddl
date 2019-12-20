@@ -59,9 +59,11 @@ void LDense::forward() {
 void LDense::backward() {
 
     //get gradients with provided delta
+    if (trainable) {
+      Tensor::mult2D(input, 1, delta, 0, gW, 1);
+      if (use_bias) Tensor::reduce_sum2D(delta, gbias, 0, 1);
+    }
 
-    Tensor::mult2D(input, 1, delta, 0, gW, 1);
-    if (use_bias) Tensor::reduce_sum2D(delta, gbias, 0, 1);
     // backprop delta
     if (parent.size()) {
         //1: note that increment parent delta
@@ -69,7 +71,7 @@ void LDense::backward() {
     }
 
     // Regularizer
-    if(reg != nullptr) {reg->apply(this->W);}
+    if (trainable) if(reg != nullptr) {reg->apply(this->W);}
 }
 
 

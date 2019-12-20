@@ -253,6 +253,9 @@ namespace eddl {
     layer RandomUniform(layer l, float min=0.0,float max=0.1, float seed=1234);
     layer Constant(layer l, float v=0.1);
 
+    // --- LAYERS METHODS ----
+    void set_trainable(layer l, bool val);
+
     // ---- REGULARIZERS ----
     layer L2(layer l,float l2);
     layer L1(layer l,float l1);

@@ -128,6 +128,8 @@ public:
     void backward() override;
 
     void resize(int batch) override;
+    void save(std::ofstream &ofs, string format) override;
+    void load(std::ifstream &ifs, string format) override;
 
     string plot(int c) override;
 };
@@ -185,7 +187,7 @@ public:
     PermuteDescriptor *PD;
     PermuteDescriptor *PD2;
     MapReduceDescriptor *MD;
-    
+
     bool init;
     vector<int> axis;
     vector<int> shape;

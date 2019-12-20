@@ -56,7 +56,8 @@ void RMSProp::setlayers(vlayer l) {
 void RMSProp::applygrads(int batch) {
 
     int p = 0;
-    for (int i = 0; i < layers.size(); i++) {
+    for (int i = 0; i < layers.size(); i++)
+      if (layers[i]->trainable) {
         for (int j = 0; j < layers[i]->gradients.size(); j++, p++) {
             Tensor::copy(layers[i]->gradients[j],gT[p]);
             gT[p]->sqr_();

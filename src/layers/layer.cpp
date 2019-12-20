@@ -79,6 +79,11 @@ void Layer::resize(int batch)
     if (target!=nullptr) target->resize(batch);
 }
 
+void Layer::set_trainable(bool value)
+{
+  trainable=value;
+}
+
 void Layer::detach(Layer *l)
 {
     for(int i=0;i<child.size();i++)

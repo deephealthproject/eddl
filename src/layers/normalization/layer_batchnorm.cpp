@@ -52,8 +52,12 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
         mean=new Tensor(shape,dev);
         mean->fill_(0.0);
 
+        params.push_back(mean);
+
         variance=new Tensor(shape,dev);
         variance->fill_(1.0);
+
+        params.push_back(variance);
     }
 
     parent->addchild(this);
@@ -73,6 +77,19 @@ void LBatchNorm::resize(int batch){
 
 
 }
+
+void LBatchNorm::save(std::ofstream &ofs, string format){
+    mean->savefs(ofs, format);
+    variance->savefs(ofs, format);
+    // Save momentum TODO
+}
+
+void LBatchNorm::load(std::ifstream &ifs, string format){
+    mean->loadfs(ifs, format);
+    variance->loadfs(ifs, format);
+    // load momentum TODO
+}
+
 
 void LBatchNorm::forward() {
   BN_forward(input,output,MD,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);

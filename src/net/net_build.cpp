@@ -157,6 +157,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs){
     build(opt, lo, me);
     set_compserv(cs);
 
+
   if (VERBOSE) {
     if (cs->type == "local") {
       if (snets[0]->dev == DEV_CPU)
@@ -192,7 +193,9 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
         }
     }
 
-
+    for(int i=0;i<layers.size();i++)
+      layers[i]->set_trainable(true);
+      
     // set optimizer
     optimizer = opt;
     optimizer->setlayers(layers);

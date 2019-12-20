@@ -67,7 +67,8 @@ void Adam::applygrads(int batch) {
     int p = 0;
     t++;
 
-    for (int i = 0; i < layers.size(); i++) {
+    for (int i = 0; i < layers.size(); i++)
+      if (layers[i]->trainable) {
         for (int j = 0; j < layers[i]->gradients.size(); j++, p++) {
             Tensor::add(beta_1,mT[p],(1-beta_1),layers[i]->gradients[j],mT[p],0);
             layers[i]->gradients[j]->sqr_();
