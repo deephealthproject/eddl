@@ -8,6 +8,7 @@
 */
 
 #include <iostream>
+#include <iomanip>
 
 #include "tensor.h"
 #include "../utils.h"
