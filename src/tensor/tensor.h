@@ -82,7 +82,7 @@ private:
 public:
     int device;
     int ndim;
-    int size;
+    long int size;
     vector<int> shape;
     vector<int> stride;
 

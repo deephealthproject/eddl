@@ -18,7 +18,7 @@ using namespace std;
 
 void msg(const string& text, const string& title="");
 
-float *get_fmem(int size, char *str);
+float *get_fmem(long int size, char *str);
 
 char *humanSize(uint64_t bytes);
 
