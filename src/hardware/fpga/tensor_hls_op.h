@@ -62,7 +62,8 @@ int fpga_accuracy (Tensor *A, Tensor *B);
 float fpga_total_sum (Tensor *A);
 void fpga_el_div_mult(Tensor *A, Tensor *B, Tensor *C, int incC, int op); 
 void fpga_tensor_normalize(Tensor *A, float max, float min);
-
+void fpga_gemx_mult2D(Tensor *A,int tA, Tensor *B, int tB, Tensor *C, int incC);
+void fpga_gemx_mult2D_CPU(Tensor *A,int tA, Tensor *B, int tB, Tensor *C, int incC);
 void verify(Tensor *T);
 void verify2(cl::Buffer &buffer, int tam); 
 //int load_file_to_memory(const char *filename, char **result);

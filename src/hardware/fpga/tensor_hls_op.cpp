@@ -7,6 +7,7 @@
 #include "tensor_hls_op.h"
 #include "../../tensor/tensor.h"
 #include "../../descriptors/descriptors.h"
+#include "gemx_wrapper.h"
 
 //#include <thrust/device_ptr.h>
 //#include <thrust/transform.h>
@@ -14,7 +15,7 @@
 //#include <thrust/functional.h>
 //#include <thrust/extrema.h>
 
-//#define DBG_FPGA
+#define DBG_FPGA
 
 cl::Context context;
 cl::CommandQueue q;
@@ -32,6 +33,7 @@ cl::Kernel kernel_accuracy;
 cl::Kernel kernel_total_sum;
 cl::Kernel kernel_normalize;
 cl::Kernel el_div;
+cl::Kernel kernel_gemx;
 
 //cl::Buffer buffer; 
 
@@ -68,7 +70,9 @@ void verify(Tensor *T) {
 void fpga_init(){ // initialize only once
    
     cl_int err;
-    std::string binaryFile = "/home/carherlu/DEEPHEALTH/LASTVERSION/eddl/src/hardware/fpga/kernels/xclbin/tensor_op.hw.xilinx_u200_xdma_201830_2.xclbin";
+    //std::string binaryFile = "/home/carherlu/DEEPHEALTH/LASTVERSION/eddl/src/hardware/fpga/kernels/xclbin/tensor_op.hw.xilinx_u200_xdma_201830_2.xclbin";
+    std::string binaryFile = "/home/carherlu/DEEPHEALTH/LASTVERSION/eddl/src/hardware/fpga/eddl-gemx.xclbin"; 
+    //std::string binaryFile = "/home/carherlu/DEEPHEALTH/gemx/gemx/fpga_kernels_gemx.hw.xilinx_u200_xdma_201830_2.xclbin";
     unsigned fileBufSize;
     std::vector<cl::Device> devices = xcl::get_xil_devices();
     cl::Device device = devices[0];
@@ -79,7 +83,7 @@ void fpga_init(){ // initialize only once
     
     devices.resize(1);
     OCL_CHECK(err, program = cl::Program(context, devices, bins, NULL, &err));
-    OCL_CHECK(err, tensor_op= cl::Kernel(program,"tensor_op", &err));
+    /*OCL_CHECK(err, tensor_op= cl::Kernel(program,"tensor_op", &err));
     OCL_CHECK(err, multitensor_op = cl::Kernel(program,"multitensor_op", &err));
     //OCL_CHECK(err, kernel_sum6 = cl::Kernel(program,"kernel_sum6", &err));
     OCL_CHECK(err, mult2D = cl::Kernel(program,"kernel_mult2D", &err));
@@ -90,7 +94,9 @@ void fpga_init(){ // initialize only once
     OCL_CHECK(err, kernel_accuracy = cl::Kernel(program,"kernel_accuracy", &err));
     OCL_CHECK(err, kernel_total_sum = cl::Kernel(program,"kernel_total_sum", &err));
     OCL_CHECK(err, el_div = cl::Kernel(program,"el_div", &err));
-    OCL_CHECK(err, kernel_normalize = cl::Kernel(program,"kernel_normalize", &err));
+    OCL_CHECK(err, kernel_normalize = cl::Kernel(program,"kernel_normalize", &err));*/
+    kernel_gemx = clCreateKernel(program(), "gemxKernel_0", &err);
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
 
 }
 
@@ -437,62 +443,84 @@ void fpga_tensor_operation(Tensor *A, Tensor *B, int kernel_id)
     q.finish();
 }
 
-void fpga_reduction(ReduceDescriptor *RD){
-    float val,sum;
-    int ind;
-    int d;
-    int i,j,k,l,s;
 
-    // [MEAN]: Compute items to be reduced
-    if (RD->m==0) {
-       d=1;
-       for(i=0;i<RD->axis.size();i++){
-           d *= RD->I->shape[RD->axis[i]];
-       }
-    }
-    //reduce
-   for(i=0;i<RD->index.size();i++)
-   {
-       sum=0;
-        for(j=0;j<RD->index[i].size();j++) {
-            float v=RD->I->ptr[RD->index[i][j]];
-           if (RD->m==2) {
-               if (j==0) {val=v;ind=RD->index[i][j];}
-               else if (v>val) {
-                   val=v;
-                   ind=RD->index[i][j];
-               }
-           }
-           else if (RD->m==3) {
-             if (j==0) {val=v;ind=RD->index[i][j];}
-             else if (v<val) {
-                 val=v;
-                 ind=RD->index[i][j];
-             }
-           }
-           else sum+=v;
-       }
-       // set in Output
-       if (RD->m<2) { // mean or sum
-           if (RD->m==0) sum/=d;
-           if (RD->keepdims) {
-               for(j=0;j<RD->index[i].size();j++) {
-                   RD->O->ptr[RD->index[i][j]]=sum;
-                 }
-           }
-           else RD->O->ptr[i]=sum;
-       }
-       else { // max or min
-           if (RD->keepdims) {
-               for(j=0;j<RD->index[i].size();j++) {
-                   RD->O->ptr[RD->index[i][j]]=val;
-                   RD->S->ptr[RD->index[i][j]]=ind;
-               }
-           }
-           else {
-               RD->O->ptr[i]=val;
-               RD->S->ptr[i]=ind;
-           }
-       }
-    }// i
+void fpga_gemx_mult2D_CPU(Tensor *A,int tA, Tensor *B, int tB, Tensor *C, int incC) {
+   
+    cl_int ret;
+    cl::Event event;
+   
+    gemx_setup(A->shape[0]/*rows_a*/,A->shape[1] /*cols_a*/,B->shape[1] /*cols_b*/, A->shape[1]/*cols_a*/,B->shape[1] /*cols_b*/, B->shape[1]/*cols_b*/, B->shape[1]/*cols_b*/);
+
+    cl::Buffer instr_buffer;
+    OCL_CHECK(ret, instr_buffer = cl::Buffer(context,CL_MEM_READ_WRITE ,gemx_instr_buffer_size() , nullptr, &ret));
+
+    OCL_CHECK(ret, ret= q.enqueueWriteBuffer(instr_buffer, CL_TRUE, 0,gemx_instr_buffer_size() , gemx_instr_buffer(), nullptr, &event));    
+
+    OCL_CHECK(ret, ret= q.enqueueWriteBuffer(instr_buffer, CL_TRUE, gemx_page_A() * 4096 ,A->shape[0] * A->shape[1] * sizeof(float) , A->ptr, nullptr, &event)); 
+    OCL_CHECK(ret, ret= q.enqueueWriteBuffer(instr_buffer, CL_TRUE, gemx_page_B() * 4096 ,B->shape[0] * B->shape[1] * sizeof(float) , B->ptr, nullptr, &event)); 
+
+    OCL_CHECK(ret, ret = kernel_gemx.setArg(0, instr_buffer));
+    OCL_CHECK(ret, ret = kernel_gemx.setArg(1, instr_buffer));
+    OCL_CHECK(ret, ret = q.enqueueTask(kernel_gemx, NULL, &event));
+    event.wait();
+    OCL_CHECK(ret, ret = q.enqueueReadBuffer(instr_buffer, CL_TRUE, gemx_page_C() * 4096, A->shape[0] * B->shape[1] * sizeof(float), C->ptr));
+    q.finish();
 }
+
+void fpga_gemx_mult2D(Tensor *A,int tA, Tensor *B, int tB, Tensor *C, int incC) {
+
+    cl_int ret;
+    cl::Event event;
+   
+    printf("GEMX \n"); 
+    gemx_setup(A->shape[0]/*rows_a*/,A->shape[1] /*cols_a*/,B->shape[1] /*cols_b*/, A->shape[1]/*cols_a*/,B->shape[1] /*cols_b*/, B->shape[1]/*cols_b*/, B->shape[1]/*cols_b*/);
+
+    cl::Buffer instr_buffer;
+    OCL_CHECK(ret, instr_buffer = cl::Buffer(context,CL_MEM_READ_WRITE ,gemx_instr_buffer_size() , nullptr, &ret));
+
+    OCL_CHECK(ret, ret= q.enqueueWriteBuffer(instr_buffer, CL_TRUE, 0,gemx_instr_buffer_size() , gemx_instr_buffer(), nullptr, &event));    
+//    OCL_CHECK(ret, ret = q.enqueueMigrateMemObjects({instr_buffer},CL_MIGRATE_MEM_OBJECT_HOST, NULL, &event));
+    printf("AFTER MIGRATE %d %d\n", gemx_instr_buffer_size(), gemx_instr_buffer());
+
+//    clEnqueueMigrateMemObjects(command_queue, 1, &instr_buffer, 0, 0, NULL, &event);
+
+    OCL_CHECK(ret, ret = q.enqueueCopyBuffer(A->fpga_ptr, instr_buffer, 0, gemx_page_A() * 4096, A->shape[0] * A->shape[1] * sizeof(float)));
+    OCL_CHECK(ret, ret = q.enqueueCopyBuffer(B->fpga_ptr, instr_buffer, 0, gemx_page_B() * 4096, B->shape[0] * B->shape[1] * sizeof(float)));
+
+    printf("AFTER COPY BUFFER \n");
+
+//    OCL_CHECK(ret, ret= q.enqueueWriteBuffer(instr_buffer,CL_TRUE, 0, gemx_instr_buffer_size(), gemx_instr_buffer(), nullptr, nullptr));
+    A->print();
+
+    OCL_CHECK(ret, ret = kernel_gemx.setArg(0, instr_buffer));
+    OCL_CHECK(ret, ret = kernel_gemx.setArg(1, instr_buffer));
+
+    printf("AFTER SETTING ARGS \n");
+    //ret = clSetKernelArg(kernel_gemx(), 0, sizeof(cl_mem), (void *)&instr_buffer);
+    //if (ret != CL_SUCCESS) {printf("Error setting argument\n");}
+
+    //ret = clSetKernelArg(kernel_gemx(), 1, sizeof(cl_mem), (void *)&instr_buffer);
+    //if (ret != CL_SUCCESS) {printf("Error setting argument\n");}
+
+    OCL_CHECK(ret, ret = q.enqueueTask(kernel_gemx, NULL, &event));
+    printf("AFTER ENQUEUE TASK \n");
+
+    C->print();
+    float ptr[64][64];
+    OCL_CHECK(ret, ret = q.enqueueReadBuffer(instr_buffer, CL_TRUE, gemx_page_A() * 4096, A->shape[0] * B->shape[1] * sizeof(float), ptr));
+    OCL_CHECK(ret, ret= q.enqueueCopyBuffer(instr_buffer,C->fpga_ptr, gemx_page_C() * 4096, 0, A->shape[0] * B->shape[1] * sizeof(float)));
+    printf("AFTER COPYBUFFER \n");
+    q.finish();
+    C->print();
+    printf("EL %f %f\n", ptr[0][0], ptr[1][0]);
+    printf("EL %f %f\n", ptr[0][0], ptr[1][0]);
+//      ret = clEnqueueCopyBuffer(q(), instr_buffer,(cl_mem)C->fpga_ptr(), gemx_page_C() * 4096, 0, A->shape[0] * B->shape[1] * sizeof(float), 0, NULL, &event);
+ //   if (ret != CL_SUCCESS) {printf("Error setting argument\n");}
+ //   ret = clWaitForEvents(1, &event);
+ //   if (ret != CL_SUCCESS) {printf("Error setting argument\n");}
+
+
+ //   clReleaseMemObject(instr_buffer);
+
+}
+

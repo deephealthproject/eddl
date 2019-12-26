@@ -698,6 +698,7 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
        fpga_copy_from_fpga(B, nB->ptr);
        fpga_copy_from_fpga(C, nC->ptr);
        cpu_mult2D(nA, tA, nB, tB, nC, incC);
+       //fpga_gemx_mult2D_CPU(nA,tA, nB, tB,nC, incC);
        fpga_copy_to_fpga(nA->ptr, A);
        fpga_copy_to_fpga(nB->ptr, B);
        fpga_copy_to_fpga(nC->ptr, C);
