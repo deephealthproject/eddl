@@ -89,8 +89,7 @@ void LBatchNorm::load(std::ifstream &ifs, string format){
       Tensor *t=mean->loadfs(ifs, format);
       Tensor::copy(t,mean);
       delete t;
-      
-      Tensor *t=variance->loadfs(ifs, format);
+      t=variance->loadfs(ifs, format);
       Tensor::copy(t,variance);
       delete t;
 
