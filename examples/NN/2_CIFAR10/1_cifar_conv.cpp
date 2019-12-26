@@ -24,9 +24,10 @@ using namespace eddl;
 
 layer Normalization(layer l)
 {
+  //return l;
   return BatchNormalization(l);
   //return LayerNormalization(l);
-  //return GroupNormalization(l,8); // reduce batch_size and learning rate
+  //return GroupNormalization(l,32); // reduce batch_size and learning rate
 
 }
 
@@ -61,11 +62,11 @@ int main(int argc, char **argv){
 
   // Build model
   build(net,
-    sgd(0.001, 0.9), // Optimizer
+    sgd(0.01, 0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    CS_CPU() // CPU with maximum threads availables
-    //CS_GPU({1}) // GPU with only one gpu
+    //CS_CPU() // CPU with maximum threads availables
+    CS_GPU({1}) // GPU with only one gpu
   );
 
   // plot the model

@@ -58,7 +58,7 @@ int main(int argc, char **argv){
 
   // Settings
   int epochs = 25;
-  int batch_size = 32;  // <--- lower batch to fit low mem gpu
+  int batch_size = 100;  
   int num_classes = 10;
 
   // network
