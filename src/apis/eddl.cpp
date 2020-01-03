@@ -702,7 +702,7 @@ namespace eddl {
 
       int h=parent->output->shape[2];
       int w=parent->output->shape[3];
-      return MaxPool(parent, {h,w}, {1,1});
+      return MaxPool(parent, {h,w}, {1,1},"none","gpool");
     }
 
     // Recurrent Layers

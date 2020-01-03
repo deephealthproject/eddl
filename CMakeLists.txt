@@ -275,8 +275,6 @@ SET(CPP_SOURCES
         src/layers/operators/layer_permute.cpp
         src/layers/operators/layer_sum.cpp
         src/layers/pool/layer_avgpool.cpp
-        src/layers/pool/layer_globalavgpool.cpp
-        src/layers/pool/layer_globalmaxpool.cpp
         src/layers/pool/layer_maxpool.cpp
         src/layers/pool/layer_pool.cpp
         src/layers/pool/layer_pool.h
