@@ -553,9 +553,6 @@ namespace eddl {
         return sind;
     }
 
-    void resize_model(model net, int batch_size){
-        net->resize(batch_size);
-    }
 
     void set_mode(model net, int mode){
         net->setmode(mode);

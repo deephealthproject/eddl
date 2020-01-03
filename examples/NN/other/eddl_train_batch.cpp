@@ -70,8 +70,6 @@ int main(int argc, char **argv) {
     int test_samples = x_test->shape[0];  //arg1
     int test_batches = test_samples / batch_size; //arg2
 
-    // Set batch size
-    resize_model(net, batch_size);  // Bind this function
 
     // Start training
     set_mode(net, TRMODE);  // Bind this function
