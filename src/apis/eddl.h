@@ -275,10 +275,12 @@ namespace eddl {
 
     void set_mode(model net, int mode);
 
-    void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
-    void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
 
     void next_batch(vector<Tensor *> in,vector<Tensor *> out);
+    void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out);
+    void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
+    void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out);
+    void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
 
     vlayer forward(model m,vector<Layer *> in);
     vlayer forward(model m,vector<Tensor *> in);

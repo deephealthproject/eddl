@@ -566,7 +566,25 @@ namespace eddl {
         net->train_batch(in, out, indices);
     }
 
+    void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out){
+        net->tr_batches++;
+        vector<int> indices;
+
+        for(int i=0;i<in[0]->shape[0];i++) indices.push_back(i);
+
+        net->train_batch(in, out, indices);
+    }
+
+
+
     void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices){
+        net->train_batch(in, out, indices,1);
+    }
+
+    void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out){
+        vector<int> indices;
+        for(int i=0;i<in[0]->shape[0];i++) indices.push_back(i);
+
         net->train_batch(in, out, indices,1);
     }
 
