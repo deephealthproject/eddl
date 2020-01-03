@@ -174,6 +174,7 @@ namespace eddl {
   void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices){
       net->train_batch(in, out, indices,1);
   }
+
   void next_batch(vector<Tensor *> in,vector<Tensor *> out)
    {
     int i,n;
@@ -187,6 +188,7 @@ namespace eddl {
     for (i = 0; i<in.size();i++)
       Tensor::select(in[i], out[i], sind, 0, batch_size);
   }
+
   void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out){
       net->tr_batches++;
       vector<int> indices;
@@ -265,6 +267,7 @@ namespace eddl {
   void print_loss(model m, int batch){
     m->print_loss(batch);
   }
+  
   // model constraints
   void clamp(model m,float min,float max)
   {

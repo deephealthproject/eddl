@@ -415,7 +415,7 @@ void Net::update()
 
 void Net::delta()
 {
-  run_snets(update_t);
+  run_snets(delta_t);
 }
 
 
