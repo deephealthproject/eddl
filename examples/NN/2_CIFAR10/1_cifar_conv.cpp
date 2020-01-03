@@ -48,7 +48,10 @@ int main(int argc, char **argv){
   l=MaxPool(ReLu(Normalization(Conv(l,32,{3,3},{1,1}))),{2,2});
   l=MaxPool(ReLu(Normalization(Conv(l,64,{3,3},{1,1}))),{2,2});
   l=MaxPool(ReLu(Normalization(Conv(l,128,{3,3},{1,1}))),{2,2});
-  l=MaxPool(ReLu(Normalization(Conv(l,256,{3,3},{1,1}))),{2,2});
+  //l=MaxPool(ReLu(Normalization(Conv(l,256,{3,3},{1,1}))),{2,2});
+
+  l=GlobalMaxPool(l);
+
 
   l=Reshape(l,{-1});
 
@@ -65,8 +68,8 @@ int main(int argc, char **argv){
     sgd(0.01, 0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    //CS_CPU() // CPU with maximum threads availables
-    CS_GPU({1}) // GPU with only one gpu
+    CS_CPU() // CPU with maximum threads availables
+    //CS_GPU({1}) // GPU with only one gpu
   );
 
   // plot the model

@@ -159,7 +159,7 @@ namespace eddl {
   layer Embedding(int input_dim, int output_dim, string name = ""); //Todo: Implement
   layer Transpose(layer parent, const vector<int> &dims, string name = ""); //Todo: Implement
 
-  // Transformation
+  // Transformation Layers
   layer Shift(layer parent, vector<int> shift, string da_mode="nearest", float constant=0.0f, string name="");
   layer Rotate(layer parent, float angle, vector<int> offset_center={0, 0}, string da_mode="nearest", float constant=0.0f, string name="");  //Todo: Implement
   layer Scale(layer parent, vector<int> new_shape, bool reshape, string da_mode="nearest", float constant=0.0f, string name="");
@@ -169,7 +169,7 @@ namespace eddl {
   layer CropAndScale(layer parent, vector<int> from_coords, vector<int> to_coords, string da_mode="nearest", float constant=0.0f, string name="");
   layer Cutout(layer parent, vector<int> from_coords, vector<int> to_coords, float constant=0.0f, string name="");
 
-  // Data augmentation
+  // Data augmentation Layers
   layer ShiftRandom(layer parent, vector<float> factor_x, vector<float> factor_y, string da_mode="nearest", float constant=0.0f, string name="");
   layer RotateRandom(layer parent, vector<float> factor, vector<int> offset_center={0, 0}, string da_mode="nearest", float constant=0.0f, string name="");
   layer ScaleRandom(layer parent, vector<float> factor, string da_mode="nearest", float constant=0.0f, string name="");
@@ -251,6 +251,7 @@ namespace eddl {
   void set_trainable(layer l, bool val);
   void copyTensor(Layer *l1,Layer *l2);
   void copyGrad(Layer *l1,Layer *l2);
+  vlayer getOut(model net);
   Tensor* getTensor(layer l);
   Tensor* getGrad(layer l);
 
