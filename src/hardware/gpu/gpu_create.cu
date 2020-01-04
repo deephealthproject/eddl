@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -31,12 +31,12 @@ void gpu_range(Tensor *A, float start, float step) {
 }
 
 
-void gpu_eye(Tensor *A) {
+void gpu_eye(Tensor *A, int offset) {
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     setDims(A);
 
-    eye<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], A->shape[1]);
+    eye<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], A->shape[1], offset);
     check_cuda(cudaDeviceSynchronize(), "eye");
 }

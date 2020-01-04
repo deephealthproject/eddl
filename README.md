@@ -27,8 +27,8 @@ To build `eddl`, clone or download this repository and then, from within the rep
 ```bash
 mkdir build
 cd build
-cmake ..
-make
+cmake .. -DBUILD_TARGET=GPU
+make -j$(nproc)
 ```
 
 Compiler flags and options:
@@ -38,6 +38,7 @@ Compiler flags and options:
 - `-DBUILD_EXAMPLES=ON`: Compiles examples
 - `-DBUILD_TARGET=CPU`: Compiles for {`CPU`, `GPU` or `FPGA`} (uppercase)
 
+> `make -j [N]` is to compile using N parallel jobs 
 
 # Windows specific installation
 

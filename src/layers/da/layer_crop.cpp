@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -27,7 +27,7 @@ LCrop::LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool
 
     if (reshape){
         output = new Tensor({input->shape[0], input->shape[1], to_coords[0]-from_coords[0]+1, to_coords[1]-from_coords[1]+1}, dev);
-    }{
+    }else{
         output = new Tensor(input->getShape(), dev);
     }
 
@@ -61,19 +61,15 @@ void LCrop::backward(){
 
 
 Layer *LCrop::share(int c, int bs, vector<Layer *> p) {
-    LCrop *n = new LCrop(p[0], this->from_coords, this->to_coords, this->reshape, this->constant, "share_" + to_string(c) + name, dev);
+    auto *n = new LCrop(p[0], this->from_coords, this->to_coords, this->reshape, this->constant, "share_" + to_string(c) + name, dev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }
 
 Layer *LCrop::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LCrop *n = new LCrop(p[0], this->from_coords, this->to_coords, this->reshape, this->constant, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LCrop(p[0], this->from_coords, this->to_coords, this->reshape, this->constant, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }

@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -37,10 +37,22 @@ int main(int argc, char **argv){
     layer in=Input({3,32,32});
     layer l=in;
 
-    // Data augmentation
-    l = CropScaleRandom(l, {0.8f, 1.0f});
-    l = Flip(l,1);
+//    l = Permute(l, {0, 1, 2});
+//    l = Select(l, {":", ":15", ":15"});
 
+    // Data transformations
+//    l = Crop(l, {30, 30});
+
+    // Data augmentation
+//   l = ShiftRandom(l, {-0.2f, +0.2f}, {-0.2f, +0.2f});
+//   l = RotateRandom(l, {-30.0f, +30.0f});
+//   l = ScaleRandom(l, {0.85f, 2.0f});
+//   l = FlipRandom(l, 1);
+//   l = CropRandom(l, {28, 28});
+//   l = CropScaleRandom(l, {0.f, 1.0f});
+//   l = CutoutRandom(l, {0.0f, 0.3f}, {0.0f, 0.3f});
+
+    // l=Select(l, {"1", "1:31", "1:31"});
     l=MaxPool(ReLu(Conv(l,32,{3,3},{1,1})),{2,2});
     l=MaxPool(ReLu(Conv(l,64,{3,3},{1,1})),{2,2});
     l=MaxPool(ReLu(Conv(l,128,{3,3},{1,1})),{2,2});
@@ -61,10 +73,11 @@ int main(int argc, char **argv){
           sgd(0.01, 0.9), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          //CS_CPU() // CPU with maximum threads availables
-          CS_GPU({1}) // GPU with only one gpu
+          CS_CPU() // CPU with maximum threads availables
+          //CS_GPU({1}) // GPU with only one gpu
     );
 
+    
     // plot the model
     plot(net,"model.pdf");
 
@@ -92,5 +105,3 @@ int main(int argc, char **argv){
 
 }
 
-
-///////////

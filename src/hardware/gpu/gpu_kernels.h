@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -22,12 +22,14 @@
 
 // GPU: Create
 __global__ void range(float* a, float start, float step, long int size);
-__global__ void eye(float* a, long int rows, long int cols);
+__global__ void eye(float* a, long int rows, long int cols, int offset);
 
 // GPU: Core (static)
 __global__ void fill(float *aptr,float *bptr,int t,int aini,int at,int bini,int bt,int tot,int inc);
 __global__ void fill_(float* a, float v, long int size);
 __global__ void mask(float* a, float v, long int size);
+__global__ void select(float* A, float* B, int size, int* indices);
+__global__ void select_back(float* A, float* B, int size, int* indices);
 
 // GPU: Transformations
 __global__ void shift(float* A, float* B, int batch, int depth, int irows, int icols, int* shift, int mode, float constant);
@@ -97,7 +99,12 @@ __global__ void sum_mat_col(float* a, float* b, float* c, long int cols, long in
 
 // GPU: Reduction
 __global__ void reduce_sum2D(float *a,float *b,long int r,long int c,long int axis);
-__global__ void reduceToSum(float *a, float *b, long int b_size, int a_axis_ndim);
+
+__global__ void reduce_mean(float *A,float *B,int *map,int size);
+__global__ void reduce_op_sum(float *A,float *B,int *map,int size);
+__global__ void reduce_op_diff(float *A,float *B,int *map,int size);
+__global__ void reduce_op_mult(float *A,float *B,int *map,int size);
+__global__ void reduce_op_div(float *A,float *B,int *map,int size);
 
 __global__ void reduction_kernel(float *I,float *O,float *S,int m, int keepdims,int d,int *ind,int rs);
 __global__ void reduction_back_kernel(float *I,float *O,float *S,int m, int keepdims,int d,int *ind,int rs);
@@ -109,8 +116,28 @@ __global__ void reduction_kernel_keep_inc(float *r, float *I, int *ind, int size
 __global__ void reduction_kernel_sum(float *I,float *O,int m, int d,int *ind,int rs);
 
 
+// CPU: Logic functions: Comparisons
+__global__ void gpu_isfinite(float *A, float *B, int size);
+__global__ void gpu_isinf(float *A, float *B, int size);
+__global__ void gpu_isnan(float *A, float *B, int size);
+__global__ void gpu_isneginf(float *A, float *B, int size);
+__global__ void gpu_isposinf(float *A, float *B, int size);
 
+// CPU: Logic functions: Comparisons
+__global__ void glogical_and(float *A, float *B, float *C, int size);
+__global__ void glogical_or(float *A, float *B, float *C, int size);
+__global__ void glogical_not(float *A, float *B, int size);
+__global__ void glogical_xor(float *A, float *B, float *C, int size);
 
+// Logic operations: Comparison ops
+__global__ void glogical_allclose(float *A, float *B, float rtol, float atol, bool equal_nan, int size, bool &close);
+__global__ void glogical_isclose(float *A, float *B, float *C, float rtol, float atol, bool equal_nan, int size);
+__global__ void glogical_greater(float *A, float *B, float *C, int size);
+__global__ void glogical_greater_equal(float *A, float *B, float *C, int size);
+__global__ void glogical_less(float *A, float *B, float *C, int size);
+__global__ void glogical_less_equal(float *A, float *B, float *C, int size);
+__global__ void glogical_equal(float *A, float *B, float *C, int size);
+__global__ void glogical_not_equal(float *A, float *B, float *C, int size);
 
 
 

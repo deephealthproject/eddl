@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -9,6 +9,81 @@
 
 
 #include "cpu_hw.h"
+
+void cpu_reduce(Tensor *A, Tensor *B,string mode,int* map)
+{
+  int i,j,min,max,sum;
+  int s=A->size/B->size;
+
+  if (mode=="mean") {
+    B->fill_(0.0);
+    for(i=0;i<A->size;i++)
+      B->ptr[map[i]]+=A->ptr[i];
+    B->div_(s);
+  }
+  else if (mode=="variance") {
+    Tensor *C=B->clone();
+    C->fill_(0.0);
+    for(i=0;i<A->size;i++)
+      C->ptr[map[i]]+=A->ptr[i];
+    C->div_(s);
+
+    B->fill_(0.0);
+    for(i=0;i<A->size;i++) {
+      float fv=A->ptr[i]-C->ptr[map[i]];
+      B->ptr[map[i]]+=fv*fv;
+    }
+    B->div_(s);
+
+    delete C;
+  }
+  else {
+    cout<<"mode: "<<mode<<" not yet implemented\n";
+    exit(1);
+  }
+}
+void cpu_reduce(Tensor *A, Tensor *B,string mode,MapReduceDescriptor *MD)
+{
+    cpu_reduce(A,B,mode,MD->ind);
+}
+
+
+void cpu_reduce_op(Tensor *A, Tensor *B,string op,int* map)
+{
+  int i,j,min,max,sum;
+  int s=A->size/B->size;
+
+  if (op=="sum") {
+    #pragma omp parallel for
+    for(i=0;i<A->size;i++)
+      A->ptr[i]+=B->ptr[map[i]];
+  }
+  else if (op=="diff"){
+    #pragma omp parallel for
+    for(i=0;i<A->size;i++)
+      A->ptr[i]-=B->ptr[map[i]];
+  }
+  else if (op=="mult"){
+    #pragma omp parallel for
+    for(i=0;i<A->size;i++)
+      A->ptr[i]*=B->ptr[map[i]];
+  }
+  else if (op=="div"){
+    #pragma omp parallel for
+    for(i=0;i<A->size;i++)
+      A->ptr[i]/=B->ptr[map[i]];
+  }
+  else {
+    cout<<"op: "<<op<<" not yet implemented\n";
+    exit(1);
+  }
+}
+
+void cpu_reduce_op(Tensor *A, Tensor *B,string op,MapReduceDescriptor *MD)
+{
+  cpu_reduce_op(A,B,op,MD->ind);
+}
+
 
 void cpu_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
     if (axis == 0) {
@@ -31,11 +106,6 @@ void cpu_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
     }
 }
 
-void cpu_reduceTosum(Tensor *A, Tensor *B, int axis){
-    for (int i = 0; i < B->size; i++)
-        for (int j = 0; j < A->shape[axis]; j++)
-            B->ptr[i] += A->ptr[j];
-}
 
 void cpu_reduction(ReduceDescriptor *RD){
 

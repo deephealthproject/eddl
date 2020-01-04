@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -37,9 +37,24 @@ void Tensor::fill_(float v) {
 #endif
 }
 
-void Tensor::reshape_(vector<int> shape){
-    int new_size = 1;
-    for(auto i : shape) new_size *= i;
+//Tensor* Tensor::fill(Tensor *A, float v){
+//    Tensor *t_new = A->clone();
+//    t_new->fill_(v);
+//    return t_new;
+//}
+
+void Tensor::reshape_(const vector<int> &new_shape){
+    int new_size = 1;  // For checking
+    vector<int> final_shape;
+
+    // Compute new shape (infer if necessary)
+    for(auto d : new_shape) {
+        if(d==-1){  // Infer the remaining dimensions
+            d = this->size/new_size;
+        }
+        final_shape.push_back(d);
+        new_size *= d;
+    }
 
     // Check if the new size is compatible
     if(new_size!=this->size){
@@ -47,50 +62,110 @@ void Tensor::reshape_(vector<int> shape){
     }
 
     // Update attributes
-    this->ndim = shape.size();
-    this->shape = vector<int>(shape);
-
-    // Use eigen for 2 dimensions
-    if (this->ndim == 2) {
-        this->ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(ptr, this->shape[1], this->shape[0]);
-    }
-
-    // Update strides
-    this->stride = vector<int>();
-    int s=this->size;
-    for(int i=0;i<ndim;i++) {
-        s/=shape[i];
-        this->stride.push_back(s);
-    }
+    updateShape(final_shape);
+    updateSize();
+    updateStrides();
+    updateData(this->ptr);  // Due to the Eigen mapping
 }
 
-Tensor* Tensor::permute(vector<int> axis){
-    // TODO: Too inefficient
-    // Compute new shape
+Tensor* Tensor::reshape(Tensor *A, const vector<int> &shape){
+    Tensor *t_new = A->clone();
+    t_new->reshape_(shape);
+    return t_new;
+}
+
+Tensor* Tensor::flatten(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->reshape_({-1});
+    return t_new;
+};
+
+
+void Tensor::squeeze_(){
+    // Remove single dimension entries from the array
     vector<int> new_shape;
-    for(int i=0; i<this->ndim; i++){
-        new_shape.push_back(this->shape[axis[i]]);
-    }
-
-    // Create new tensor
-    auto* B = new Tensor(new_shape, DEV_CPU);
-
-    // Fill tensor
-    vector<int> B_idxs(this->ndim);
-    for(int A_pos=0; A_pos<this->size; A_pos++){
-        vector<int> A_idxs = this->get_indices_rowmajor(A_pos);
-
-        // Compute indices for B
-        for(int i=0; i<this->ndim; i++){
-            B_idxs[i] = A_idxs[axis[i]];
+    for(auto &d : this->shape){
+        if(d>1){
+            new_shape.push_back(d);
         }
-
-        // Set value
-        B->set_(B_idxs, this->ptr[A_pos]);
-
     }
-    return B;
+    this->reshape_(new_shape);
 }
+
+Tensor* Tensor::squeeze(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->squeeze_();
+    return t_new;
+}
+
+void Tensor::unsqueeze_(){
+    vector<int> new_shape(this->shape);
+    new_shape.insert(new_shape.begin(), 1); // Add one dimension to the beginning
+    this->reshape_(new_shape);
+}
+
+Tensor* Tensor::unsqueeze(Tensor *A){
+    Tensor *t_new = A->clone();
+    t_new->unsqueeze_();
+    return t_new;
+}
+
+Tensor* Tensor::permute(Tensor* t, const vector<int>& dims){
+    // Build descriptor
+    auto *sd = new PermuteDescriptor(dims);
+    sd->build(t->shape);
+    sd->build_indices();
+
+    // Initialize new tensor
+    auto *new_t = new Tensor(sd->oshape, t->device);
+
+    // Fill new tensor
+    Tensor::select(t, new_t, sd);
+
+    return new_t;
+}
+
+Tensor* Tensor::moveaxis(Tensor* t, int source, int destination){
+    // Check values
+    if(source<-1 || destination <-1){
+        msg("Invalid axis", "Tensor::moveaxis");
+    }
+
+    // User "-1" as alias for the last dimension
+    if(source == -1){source = t->ndim-1; }
+    if(destination == -1){destination = t->ndim-1; }
+
+    // Build axes to permute [1 => 3] => (0,1,2,3) => (0,2,3,1)
+    vector<int> dims;
+    dims.reserve(t->ndim);
+    for(int i=0; i<t->ndim;i++){
+        dims.push_back(i);
+    }
+    dims.erase(dims.begin()+source);  // Remove axis
+    dims.insert(dims.begin() + destination, source);  // Insert at final position
+
+    // Permute tensor
+    Tensor* t2 = Tensor::permute(t, dims);
+    return t2;
+}
+
+Tensor* Tensor::swapaxis(Tensor* t, int axis1, int axis2){
+    // Check values
+    if(axis1<-1 || axis2 <-1 || axis1 == axis2){
+        msg("Invalid axis", "Tensor::swapaxis");
+    }
+
+    // Build axes to permute [0, 3] => (0,1,2,3) => (3,1,2,0)
+    vector<int> dims;
+    for(int i=0; i<t->ndim;i++){ dims.emplace_back(i); }
+    dims[axis1] = axis2;
+    dims[axis2] = axis1;
+
+    // Permute tensor
+    Tensor* t2 = Tensor::permute(t, dims);
+    return t2;
+}
+
 
 int Tensor::get_address_rowmajor(vector<int> indices){
     int address=0;
@@ -100,6 +175,7 @@ int Tensor::get_address_rowmajor(vector<int> indices){
 
 vector<int> Tensor::get_indices_rowmajor(int address){
     vector<int> indices;
+    indices.reserve(this->shape.size());
     for(int i=0; i<this->shape.size(); i++){
         indices.push_back(address / this->stride[i] % this->shape[i]);
     }
@@ -122,7 +198,6 @@ bool Tensor::valid_indices(vector<int> indices){
     }
     return true;
 }
-
 // ***** Core (static) *****************************
 void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
     // Transpose
@@ -217,6 +292,57 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
         msg("unsupported copy between devices", "Tensor::copy");
     }
     B->tsem->unlock();
+}
+
+Tensor* Tensor::select(const vector<string>& indices){
+    Tensor* t = nullptr;
+
+    auto *sd = new SelDescriptor(indices);
+    sd->build(this->shape);
+    sd->build_indices();
+
+    // Initialize tensor
+    t = new Tensor(sd->oshape, this->device);
+
+    // Perform select
+    Tensor::select(this, t, sd);
+    return t;
+}
+
+void Tensor::select(Tensor *A, Tensor* B, SelDescriptor *sd){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_select(A, B, sd);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+      {
+        gpu_select(A, B, sd);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+}
+
+void Tensor::select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_select_back(A, B, sd);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+      {
+        gpu_select_back(A, B, sd);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
 }
 
 void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
@@ -322,45 +448,26 @@ void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) 
 void Tensor::tile(Tensor *A, Tensor *B)
 {
 
-  int Asize=A->shape[0];
-  int Bsize=B->shape[0];
+    int Asize=A->shape[0];
+    int Bsize=B->shape[0];
 
 
-  if (Bsize>Asize) {
-    vector<int> sind(Bsize);
-    int start,end;
-    for(int i=0;i<Bsize;i++) sind[i]=i;
-    for(int i=0;i<Bsize/Asize;i++) {
-        start = i * Asize;
-        end = start + Asize;
-        Tensor::deselect(A, B, sind, start, end);
+    if (Bsize>Asize) {
+        vector<int> sind(Bsize);
+        int start,end;
+        for(int i=0;i<Bsize;i++) sind[i]=i;
+        for(int i=0;i<Bsize/Asize;i++) {
+            start = i * Asize;
+            end = start + Asize;
+            Tensor::deselect(A, B, sind, start, end);
+        }
+        if (Bsize%Asize) {
+            Tensor::deselect(A, B, sind, end, end+(Bsize%Asize));
+        }
     }
-    if (Bsize%Asize) {
-      Tensor::deselect(A, B, sind, end, end+(Bsize%Asize));
+    else {
+        vector<int> sind(Bsize);
+        for(int i=0;i<Bsize;i++) sind[i]=i;
+        Tensor::select(A, B, sind, 0, Bsize);
     }
-  }
-  else {
-    vector<int> sind(Bsize);
-    for(int i=0;i<Bsize;i++) sind[i]=i;
-    Tensor::select(A, B, sind, 0, Bsize);
-  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  ///

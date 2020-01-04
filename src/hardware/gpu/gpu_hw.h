@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es), (jmaronasm@gmail.com)
@@ -17,6 +17,7 @@
 #include <cublas_v2.h>
 
 #include "../../tensor/tensor.h"
+#include "../../tensor/tensor_reduction.h"
 #include "../../descriptors/descriptors.h"
 
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
@@ -31,12 +32,11 @@ extern curandGenerator_t random_generator[64];
 // GPU: Temp
 int* get_block_dim(int N, int blockSize);
 
-// GPU: Comparison
-int gpu_equal(Tensor *A, Tensor *B);
-
 // GPU: Core
 void gpu_fill_(Tensor *A, float v);
 void gpu_mask(Tensor *A,float v);
+void gpu_select(Tensor *A, Tensor *B, SelDescriptor *sd);
+void gpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 
 void gpu_copy_to_gpu(float *nptr,Tensor *B);
 void gpu_copy_from_gpu(Tensor *A,float *nptr);
@@ -50,7 +50,7 @@ void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
 
 // GPU: Create (static)
 void gpu_range(Tensor *A, float start, float step);
-void gpu_eye(Tensor *A);
+void gpu_eye(Tensor *A, int offset);
 
 // GPU: Data transformations (2D Optimized) ********************************************
 void gpu_shift(Tensor *A, Tensor *B, vector<int> t_shift, int mode, float constant);
@@ -132,8 +132,12 @@ void gpu_total_sum(Tensor *A, float *tot);
 float gpu_sum_abs(Tensor *A);
 
 // GPU: Reduction
+void gpu_reduce(Tensor *A, Tensor *B,string mode,int* map);
+void gpu_reduce_op(Tensor *A, Tensor *B,string op,int* map);
+void gpu_reduce(Tensor *A, Tensor *B,string mode,MapReduceDescriptor *MD);
+void gpu_reduce_op(Tensor *A, Tensor *B,string op,MapReduceDescriptor *MD);
+
 void gpu_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
-void gpu_reduceTosum(Tensor *A, Tensor *B, int axis);
 void gpu_reduction(ReduceDescriptor *RD);
 void gpu_reduction_back(ReduceDescriptor *RD);
 //void gpu_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB);
@@ -141,5 +145,27 @@ void gpu_reduction_back(ReduceDescriptor *RD);
 //void gpu_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
 //void gpu_delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC);
 
+// CPU: Logic functions: Comparisons
+void gpu_isfinite(Tensor *A, Tensor* B);
+void gpu_isinf(Tensor *A, Tensor* B);
+void gpu_isnan(Tensor *A, Tensor* B);
+void gpu_isneginf(Tensor *A, Tensor* B);
+void gpu_isposinf(Tensor *A, Tensor* B);
+
+// CPU: Logic functions: Comparisons
+void gpu_logical_and(Tensor *A, Tensor *B, Tensor *C);
+void gpu_logical_or(Tensor *A, Tensor *B, Tensor *C);
+void gpu_logical_not(Tensor *A, Tensor *B);
+void gpu_logical_xor(Tensor *A, Tensor *B, Tensor *C);
+
+// Logic operations: Comparison ops
+bool gpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan);
+void gpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool equal_nan);
+void gpu_greater(Tensor *A, Tensor *B, Tensor *C);
+void gpu_greater_equal(Tensor *A, Tensor *B, Tensor *C);
+void gpu_less(Tensor *A, Tensor *B, Tensor *C);
+void gpu_less_equal(Tensor *A, Tensor *B, Tensor *C);
+void gpu_equal(Tensor *A, Tensor *B, Tensor *C);
+void gpu_not_equal(Tensor *A, Tensor *B, Tensor *C);
 
 #endif //EDDL_GPU_HW_H

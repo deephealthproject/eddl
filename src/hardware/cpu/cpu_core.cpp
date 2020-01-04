@@ -1,6 +1,6 @@
 /*
  * EDDL Library - European Distributed Deep Learning Library.
- * Version: 0.2
+ * Version: 0.3
  * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
  * Date: October 2019
  * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -51,8 +51,22 @@ void cpu_fill(Tensor * A, int aini, int aend, Tensor * B, int bini, int bend, in
     }
 }
 
-void
-cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end)
+
+void cpu_select(Tensor *A, Tensor *B, SelDescriptor *sd){
+    #pragma omp parallel for
+    for (int i = 0; i < B->size; i++) {
+        B->ptr[i] = A->ptr[sd->addresses[i]];
+    }
+}
+
+void cpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; i++) {  // walk stride
+        B->ptr[sd->addresses[i]] += A->ptr[i];  // delta_parent += delta
+    }
+}
+
+void cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end)
 {
     int s = A->size / A->shape[0];
 
@@ -66,9 +80,7 @@ cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end)
     }
 }
 
-void
-cpu_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end)
-{
+void cpu_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end){
     int s = A->size / A->shape[0];
 
     #pragma omp parallel for

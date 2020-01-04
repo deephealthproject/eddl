@@ -11,6 +11,9 @@
 /[Bb]uild*
 /[Bb]in*
 
+# Documentation
+/docs/doxygen/build
+
 # Other files
 *.dot
 *.pdf
@@ -23,6 +26,8 @@ old_build/test_*
 cmake-build-debug
 cmake-build-release
 
+# Exclude (allow)
+!examples/data/*.*
 
 # ==========================================
 # C++ ======================================

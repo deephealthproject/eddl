@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -17,39 +17,52 @@
 #include "gpu_kernels.h"
 
 
-__global__ void fill_(float* a, float v, long int size)
-{
-
+__global__ void fill_(float* a, float v, long int size){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
-    if (thread_id_x < size)
+    if (thread_id_x < size){
         a[thread_id_x]=v;
+    }
+}
+
+__global__ void fill(float *aptr,float *bptr,int t,int aini,int at,int bini,int bt,int tot,int inc){
+    int i=blockIdx.x;
+    int j=threadIdx.x;
+    int k=blockIdx.y;
+
+    int ap=(i*at)+((aini+j)*t)+k;
+    int bp=(i*bt)+((bini+j)*t)+k;
+
+    if (bp<tot){
+        if (inc) {
+            bptr[bp] += aptr[ap];
+        } else { bptr[bp]=aptr[ap];}
+    }
 
 }
 
-__global__ void fill(float *aptr,float *bptr,int t,int aini,int at,int bini,int bt,int tot,int inc)
-{
-  int i=blockIdx.x;
-  int j=threadIdx.x;
-  int k=blockIdx.y;
 
-  int ap=(i*at)+((aini+j)*t)+k;
-  int bp=(i*bt)+((bini+j)*t)+k;
+__global__ void mask(float* a, float v, long int size){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
-  if (bp<tot)
-    if (inc) bptr[bp]+=aptr[ap];
-    else bptr[bp]=aptr[ap];
-
+    if (thread_id_x < size){
+        a[thread_id_x]=a[thread_id_x]<v;
+    }
 }
 
 
-__global__ void mask(float* a, float v, long int size)
-{
+__global__ void select(float* A, float* B, int size, int* indices){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 
- long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
-
- if (thread_id_x < size)
-   a[thread_id_x]=a[thread_id_x]<v;
-
+    if (thread_id_x < size){
+        B[thread_id_x] = A[indices[thread_id_x]];
+    }
 }
 
+__global__ void select_back(float* A, float* B, int size, int* indices){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        B[indices[thread_id_x]] += A[thread_id_x];
+    }
+}

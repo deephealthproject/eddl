@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -13,6 +13,7 @@
 
 
 #include "../tensor/tensor.h"
+#include "../tensor/tensor_reduction.h"
 
 namespace eddlT{
 
@@ -59,6 +60,7 @@ namespace eddlT{
 
   // Serialization ***********************************
   Tensor* load(string fname, string format="");
+
   void save(Tensor* A, string fname, string format="");
 
   // Math ops       ***********************************
@@ -195,6 +197,12 @@ namespace eddlT{
 
   void trunc_(Tensor *A);
   Tensor* trunc(Tensor *A);
+
+  //reductions
+  tensor reduce_mean(tensor A,vector<int> axis);
+  tensor reduce_variance(tensor A,vector<int> axis);
+
+
 
 }
 

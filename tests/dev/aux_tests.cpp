@@ -34,7 +34,7 @@ bool check_tensors(Tensor* A, Tensor* B, float epsilon){
     A->toCPU();
     B->toCPU();
 
-    return Tensor::equal(A, B, epsilon);
+    return Tensor::equal2(A, B, epsilon);
 }
 
 TestResult run_mpool(Tensor* t_input, int dev, int runs){
@@ -356,5 +356,35 @@ TestResult run_tensor_create(string op, int dev, int runs){
     TestResult result{};
     result.time = elapsed_secs;
     result.tensor = t_input;
+    return result;
+}
+
+TestResult run_tensor_select(Tensor* t_input, Tensor* t_output, string op, int dev, int runs){
+    // Move to device
+    if (dev == DEV_GPU){
+        t_input->toGPU();
+        t_output->toGPU();
+    }
+
+    auto *sd = new SelDescriptor({":3", "2:6"});
+    sd->build(t_input->shape);
+
+    clock_t begin = clock();
+    for(int i=0; i<runs; i++){
+        // Math operations
+        if(op=="select") {
+            Tensor::select(t_input, t_output, sd);
+        }else if(op=="select_back") {
+            Tensor::select_back(t_input, t_output, sd);
+        } else {
+            std::cout << "Unknown operator" << std::endl;
+        }
+    }
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
+    TestResult result{};
+    result.time = elapsed_secs;
+    result.tensor = t_output;
     return result;
 }

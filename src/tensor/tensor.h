@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -12,13 +12,18 @@
 
 #include <iostream>
 #include <fstream>
-#include <stdio.h>
+#include <cstdio>
 #include <vector>
 #include <string>
 #include <mutex>
 
 #include <Eigen/Dense>
 
+#include "../utils.h"
+#include "../descriptors/tensor_descriptors.h"
+
+// Read/Write Numpy
+#include "cnpy/cnpy.h"
 
 #define DEV_CPU 0
 
@@ -51,26 +56,33 @@ using namespace std;
 // TODO: Remove this. Don't like here
 typedef Eigen::Matrix<float, -1, -1, Eigen::RowMajor> MatrixXRMf;
 typedef vector<int> tshape;
-void msg(string s);
-void msg(string s, string s2);
-
 
 class Tensor {
 private:
+    void updateDevice(int dev);
+    void updateShape(const vector<int> &shape);
+    void updateSize();
+    void updateStrides();
+    void updateData(float* ptr);
+
     // Load methods
     static Tensor* load_from_bin(std::ifstream &ifs);
     static Tensor* load_from_onnx(std::ifstream &ifs);
-    static Tensor* load_from_img(const string &filename, string format);
+    static Tensor* load_from_img(const string &filename, const string &format);
+    template<typename T> static Tensor* load_from_numpy(const string &filename, const string &format);
+    static Tensor* load_from_txt(std::ifstream &ifs, char delimiter, int headerRows);
 
     // Save methods
     void save2bin(std::ofstream &ofs);
     void save2onnx(std::ofstream &ofs);
     void save2img(const string &filename, string format);
+    void save2numpy(const string &filename, string format);
+    void save2txt(std::ofstream &ofs, const char delimiter, const vector<string> &header);
 
 public:
     int device;
     int ndim;
-    int size;
+    long int size;
     vector<int> shape;
     vector<int> stride;
 
@@ -81,7 +93,6 @@ public:
     // Aux variables
     int gpu_device;
     mutex *tsem;  // Multithreading. Tensor semaphore
-
 
     // Constructors
     Tensor();
@@ -110,43 +121,63 @@ public:
     // View methods
     void info();
     void print();
+    string getStrDevice();
 
     // Core
     vector<int> getShape();
     static int get_mode(string mode);
+    static bool isSquared(Tensor *A);
 
     // Serialization
     static Tensor* loadfs(std::ifstream &ifs, string format="");
     static Tensor* load(const string& filename, string format="");
+    template<typename T> static Tensor* load(const string& filename, string format="");
+    static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
+
     void savefs(std::ofstream &ofs, string format="");
     void save(const string& filename, string format="");
+    void save2txt(const string& filename, const char delimiter=',', const vector<string> &header={});
 
-    // ***** Core (in-place) *****************************
+    // ***** Core *****************************
+    static Tensor* permute(Tensor* t, const vector<int>& dims);
+    static Tensor* moveaxis(Tensor* t, int source, int destination);
+    static Tensor* swapaxis(Tensor* t, int axis1, int axis2);
+
     void fill_(float v);
+//    static Tensor* fill(Tensor *A, float v);
+
+    void reshape_(const vector<int> &new_shape);
+    static Tensor* reshape(Tensor *A, const vector<int> &shape);
+    static Tensor* flatten(Tensor *A);
+
+    void squeeze_();
+    static Tensor* squeeze(Tensor *A);
+
+    void unsqueeze_();
+    static Tensor* unsqueeze(Tensor *A);
+
     bool valid_indices(vector<int> indices);
     int get_address_rowmajor(vector<int> indices);
     vector<int> get_indices_rowmajor(int address);
-    void reshape_(vector<int> shape);
     float get_(vector<int> indices);
     void set_(vector<int> indices, float value);
 
-    // ***** Core (static) *****************************
-    Tensor* permute(vector<int> axis);
 
     // ************************************************
     // ****** Tensor operations ***********************
     // ************************************************
-      // Creation ops ***********************************
-      static Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
-      static Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
-      static Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
-      static Tensor* arange(float start, float end, float step=1.0f, int dev=DEV_CPU);
-      static Tensor* range(float start, float end, float step=1.0f, int dev=DEV_CPU);
-      static Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
-      static Tensor* logspace(float start, float end, int steps=100, float base=10.0f, int dev=DEV_CPU);
-      static Tensor* eye(int size, int dev=DEV_CPU);
-      static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
-
+    // Creation ops ***********************************
+    static Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
+    static Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
+    static Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
+    static Tensor* arange(float start, float end, float step=1.0f, int dev=DEV_CPU);
+    static Tensor* range(float start, float end, float step=1.0f, int dev=DEV_CPU);
+    static Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
+    static Tensor* logspace(float start, float end, int steps=100, float base=10.0f, int dev=DEV_CPU);
+    static Tensor* eye(int rows, int offset=0, int dev=DEV_CPU);
+    static Tensor* identity(int rows, int dev=DEV_CPU);
+    static Tensor* diag(Tensor* A, int k=0, int dev=DEV_CPU);
+    static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
     // ***** Transformations *****************************
     static void shift(Tensor *A,Tensor *B, vector<int> shift, string mode="constant", float constant=0.0f);
@@ -307,21 +338,38 @@ public:
 
     // Math operations: Reduction ops
     static void reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
-    static void reduceTosum(Tensor *A, Tensor *B, int axis);
-    static void reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims, Tensor *C, int incB);
-    static void delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims, Tensor *C,int incB);
-    static void reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
-    static void delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C, int incC);
 
-    // Math operations: Comparison ops
+    // Logic funcions: Logical ops
+    static void isfinite(Tensor *A, Tensor* B);
+    static void isinf(Tensor *A, Tensor* B);
+    static void isnan(Tensor *A, Tensor* B);
+    static void isneginf(Tensor *A, Tensor* B);
+    static void isposinf(Tensor *A, Tensor* B);
+
+    // Logic funcions: Logical ops
+    static void logical_and(Tensor *A, Tensor *B, Tensor *C);
+    static void logical_or(Tensor *A, Tensor *B, Tensor *C);
+    static void logical_not(Tensor *A, Tensor *B);
+    static void logical_xor(Tensor *A, Tensor *B, Tensor *C);
+
+    // Logic funcions: Comparison ops
+    static bool allclose(Tensor *A, Tensor *B, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns true or false
+    static void isclose(Tensor *A, Tensor *B, Tensor *C, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns a boolean tensor
+    static void greater(Tensor *A, Tensor *B, Tensor *C);
+    static void greater_equal(Tensor *A, Tensor *B, Tensor *C);
+    static void less(Tensor *A, Tensor *B, Tensor *C);
+    static void less_equal(Tensor *A, Tensor *B, Tensor *C);
+    static void equal(Tensor *A, Tensor *B, Tensor *C);
+    static void not_equal(Tensor *A, Tensor *B, Tensor *C);
+
+    // Legacy
     static int eqsize(Tensor *A, Tensor *B);
-    static int equal(Tensor *A, Tensor *B, float epsilon=1e-3);
+    static int equal2(Tensor *A, Tensor *B, float epsilon=1e-3);
 
     // Math operations: Other ops
     static int cross(Tensor *A, Tensor *B); // TODO
     static int diag(Tensor *A); // TODO
     static int einsum(string subscripts, Tensor *A); // TODO
-    static int flatten(Tensor *A); // TODO
     static int flip(Tensor *A);  // TODO
     static int trace(Tensor *A);
     static int dot(Tensor *A);  // TODO
@@ -330,6 +378,9 @@ public:
     static void transpose(Tensor *A, Tensor *B, vector<int> dims);
     static void copy(Tensor *A, Tensor *B);
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
+    Tensor* select(const vector<string>& indices);
+    static void select(Tensor *A, Tensor *B, SelDescriptor *sd);
+    static void select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
     static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
     static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
     static void tile(Tensor *A, Tensor *B);
@@ -345,5 +396,62 @@ public:
 };
 
 
+
+template<typename T>
+Tensor* Tensor::load_from_numpy(const string &filename, const string &format){
+    Tensor* t = nullptr;
+
+    cnpy::NpyArray arr = cnpy::npy_load(filename);
+    auto* loaded_data = arr.data<T>();
+
+    // Get shape
+    vector<int> arr_shape;
+    for(unsigned long i : arr.shape){
+        arr_shape.push_back(i);
+    }
+
+    // Initialize tensor
+    t = new Tensor(arr_shape, DEV_CPU);
+
+    // Fill tensor
+    for(int i=0; i<arr.num_vals; i++){
+        t->ptr[i] = (float)loaded_data[i];
+    }
+
+    return t;
+}
+
+template<typename T>
+Tensor* Tensor:: load(const string& filename, string format){
+    // Infer format from filename
+    if(format.empty()){
+        format = get_extension(filename);
+    }
+
+    // Check if file exists (open file stream)
+    std::ifstream ifs(filename.c_str(), std::ios::in | std::ios::binary);
+    if (!ifs.good()){
+        msg("File not found. Check the file name and try again.", "Tensor::load");
+    }
+    // Load tensor
+    Tensor* t;
+    if(format=="jpg" || format=="jpeg" || format=="png" || format=="bmp" ||
+       format=="hdr" || format=="psd" || format=="tga" || format=="gif" ||
+       format=="pic"  || format=="pgm"  || format=="ppm") { // Images
+        t = Tensor::load_from_img(filename, format);
+    }else if(format=="bin" || format=="onnx"){
+        t = Tensor::loadfs(ifs, format);
+    }else if(format=="npy" || format=="npz"){
+        t = Tensor::load_from_numpy<T>(filename, format);
+    }else if(format=="csv" || format=="tsv" || format=="txt"){
+        t = Tensor::loadfs(ifs, format);
+    }else{
+        msg("Format not implemented: *.'" + format + "'", "Tensor::load");
+    }
+
+    // Close file stream and return tensor
+    ifs.close();
+    return t;
+}
 
 #endif //EDDL_TENSOR_H

@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -8,9 +8,10 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <string>
 #include <chrono>
@@ -153,19 +154,27 @@ void Net::walk_back(Layer *l) {
 /////////////////////////////////////////
 string Net::summary() {
     std::stringstream ss;
+    ss << "---------------------------------------------" << endl;
+    for (auto & vft : vfts) {
+        // Get input/output shapes
+        vector<int> ishape(vft->input->shape);
+        vector<int> oshape(vft->output->shape);
 
-    for (int i = 0; i < vfts.size(); i++) {
-        ss << vfts[i]->name << ": ";
+        // Remove batch (if has)
+        if (ishape.size() > 1) { ishape.erase(ishape.begin(), ishape.begin() + 1); }
+        if (oshape.size() > 1) { oshape.erase(oshape.begin(), oshape.begin() + 1); }
 
-        vector<int> si = vfts[i]->input->getShape();
-        if (vfts[i]->input->ndim>1)
-          si.erase(si.begin());
-        vector<int> so = vfts[i]->output->getShape();
-        if (vfts[i]->output->ndim>1)
-          so.erase(so.begin());
-        ss << si << "-->" << so << "\n";
+        // Prepare strings to print
+        string istr = "(" + printVector(ishape) + ")";
+        string ostr = "(" + printVector(oshape) + ")";
 
+        ss << setw(15) << left << vft->name << "|  ";
+        ss << setw(10) << left << istr;
+        ss << setw(8) << left << "=>";
+        ss << setw(10) << left << ostr;
+        ss << endl;
     }
+    ss << "---------------------------------------------" << endl;
 
     return ss.str();
 }
@@ -226,6 +235,23 @@ void Net::save(const string& filename, string format){
     // Open file stream
     std::ofstream ofs(filename, std::ios::out | std::ios::binary);
 
+    // Copy from CS devices to layers
+    if (snets[0]->dev!=DEV_CPU) {
+      sync_weights();
+      for(int j=0;j<layers.size();j++)
+        snets[0]->layers[j]->copy(layers[j]);
+    }
+
+    // Copy value to CS devices layers
+    for(int i=0; i!=snets.size(); i++)
+      for(int j=0;j<layers.size();j++)
+        layers[j]->copy(snets[i]->layers[j]);
+
+    // Copy value to CS devices layers
+    for(int i=0; i!=snets.size(); i++)
+      for(int j=0;j<layers.size();j++)
+        layers[j]->copy(snets[i]->layers[j]);
+
     for (int i = 0; i != layers.size(); i++){
         layers[i]->save(ofs, format);
     }
@@ -240,6 +266,14 @@ void Net::load(const string& filename, string format){
 
     for (int i = 0; i != layers.size(); i++){
         layers[i]->load(ifs, format);
+    }
+
+
+    // Copy to CS devices layers
+    if (snets[0]->dev!=DEV_CPU) {
+      for(int i=0; i!=snets.size(); i++)
+        for(int j=0;j<layers.size();j++)
+          layers[j]->copy(snets[i]->layers[j]);
     }
 
     // Close file stream

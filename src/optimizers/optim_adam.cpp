@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -36,7 +36,8 @@ Adam::~Adam() {
 }
 
 void Adam::change(vector<float> &p) {
-
+  if (p.size()>0) lr = p[0];
+  cout<<"Optimizer Adam set new lr="<<lr<<"\n";
 }
 
 Optimizer *Adam::clone() {
@@ -66,7 +67,8 @@ void Adam::applygrads(int batch) {
     int p = 0;
     t++;
 
-    for (int i = 0; i < layers.size(); i++) {
+    for (int i = 0; i < layers.size(); i++)
+      if (layers[i]->trainable) {
         for (int j = 0; j < layers[i]->gradients.size(); j++, p++) {
             Tensor::add(beta_1,mT[p],(1-beta_1),layers[i]->gradients[j],mT[p],0);
             layers[i]->gradients[j]->sqr_();
@@ -85,6 +87,7 @@ void Adam::applygrads(int batch) {
             Tensor::add(-lr, mCap[p],1.0,layers[i]->params[j], layers[i]->params[j], 0);
         }
     }
+    else p+=layers[i]->gradients.size();
 
 
 }

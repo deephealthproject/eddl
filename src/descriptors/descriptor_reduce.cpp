@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -9,12 +9,25 @@
 
 
 #include "descriptors.h"
+#include "../tensor/tensor_reduction.h"
 
 
 #ifdef cGPU
 #include "../hardware/gpu/gpu_tensor.h"
 #include "../hardware/gpu/gpu_hw.h"
 #endif
+
+
+MapReduceDescriptor::MapReduceDescriptor(Tensor *A,vector<int> axis)
+{
+  ind=get_reduction_map(A,axis);
+  gind=nullptr;
+}
+
+MapReduceDescriptor::~MapReduceDescriptor()
+{
+  free(ind);
+}
 
 ReduceDescriptor::ReduceDescriptor() {}
 

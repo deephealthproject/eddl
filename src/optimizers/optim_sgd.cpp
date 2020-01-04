@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -29,8 +29,10 @@ SGD::~SGD() {
 }
 
 void SGD::change(vector<float> &p) {
-    lr = p[0];
-    mu = p[1];
+
+    if (p.size()>0) lr = p[0];
+    if (p.size()>1) mu = p[1];
+    //cout<<"Optimizer SGD set new lr="<<lr<<" mu="<<mu<<"\n";
 }
 
 Optimizer *SGD::clone() {
@@ -53,11 +55,13 @@ void SGD::applygrads(int batch) {
 
     int p = 0;
 
-    for (int i = 0; i < layers.size(); i++) {
+    for (int i = 0; i < layers.size(); i++)
+      if (layers[i]->trainable) {
         for (int j = 0; j < layers[i]->gradients.size(); j++, p++) {
             Tensor::add(lr , layers[i]->gradients[j], mu, mT[p], mT[p], 0);
             Tensor::add(1.0, layers[i]->params[j], -1.0, mT[p], layers[i]->params[j], 0);
         }
-    }
+      }
+      else p+=layers[i]->gradients.size();
 
 }

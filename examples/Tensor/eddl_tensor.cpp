@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -13,13 +13,201 @@
 #include <string>
 #include <ctime>
 #include <limits>
+#include <cmath>
+
+//#include <omp.h>
 
 #include "apis/eddlT.h"
+#include "../../src/tensor/tensor_reduction.h"
 
 using namespace std;
 using namespace eddlT;
 
 int main(int argc, char **argv) {
+    vector<int> shape = {5, 5};
+
+    int device = DEV_GPU;
+//    cout << "CAncel " << omp_get_cancellation() << endl;
+
+    Tensor *t1 = Tensor::ones({5, 1});
+    t1->info();
+
+    Tensor *t2 = Tensor::full({5, 1}, 5);
+    t1->print();
+    t2->print();
+
+    t1->set_({0, 0}, 12); // isfinite
+    t1->set_({1, 0}, INFINITY); // isinf
+    t1->set_({2, 0}, NAN); // isnan
+    t1->set_({3, 0}, -INFINITY); // isneginf
+    t1->set_({4, 0}, +INFINITY); // isposinf
+    t1->print();
+
+    cout << "isfinite" << endl;
+    Tensor::isfinite(t1, t2); t2->print();
+
+    cout << "isinf" << endl;
+    Tensor::isinf(t1, t2); t2->print();
+
+    cout << "isnan" << endl;
+    Tensor::isnan(t1, t2); t2->print();
+
+    cout << "isneginf" << endl;
+    Tensor::isneginf(t1, t2); t2->print();
+
+    cout << "isposinf" << endl;
+    Tensor::isposinf(t1, t2); t2->print();
+
+    int asd =3;
+//
+//    Tensor* t1 = Tensor::range(1.0, 25.0f, 1, device);
+//    t1->reshape_(shape);
+//    t1->print();
+//
+//    Tensor* t2 = Tensor::range(1.0, 25.0f, 1, device);
+//    t2->reshape_(shape);
+//    t2->print();
+//
+//    Tensor* t3 = new Tensor(shape, device);
+//
+//    cout << "allclose" << endl;
+//    cout << Tensor::allclose(t1, t2) << endl;
+//
+//    cout << "isclose" << endl;
+//    Tensor::isclose(t1, t2, t3);
+//    t3->print();
+//
+//    cout << "greater" << endl;
+//    Tensor::greater(t1, t2, t3);
+//    t3->print();
+//
+//    cout << "greater_equal" << endl;
+//    Tensor::greater_equal(t1, t2, t3);
+//    t3->print();
+//
+//    cout << "less" << endl;
+//    Tensor::less(t1, t2, t3);
+//    t3->print();
+//
+//    cout << "less_equal" << endl;
+//    Tensor::less_equal(t1, t2, t3);
+//    t3->print();
+//
+//    cout << "equal" << endl;
+//    Tensor::equal(t1, t2, t3);
+//    t3->print();
+//
+//    cout << "not_equal" << endl;
+//    Tensor::not_equal(t1, t2, t3);
+//    t3->print();
+//
+//
+//    cout << "------------" << endl;
+//    t1->fill_(1.0);
+//    t2->fill_(0.0);
+//
+//    t1->round_();
+//    t2->round_();
+//
+//    t1->print();
+//    t2->print();
+//
+//    cout << "logical_and" << endl;
+//    Tensor::logical_and(t1, t2, t3);
+//    t3->print();
+//
+//    cout << "logical_not" << endl;
+//    Tensor::logical_not(t1, t3);
+//    t3->print();
+//
+//    cout << "logical_or" << endl;
+//    Tensor::logical_or(t1, t2, t3);
+//    t3->print();
+//
+//    cout << "logical_xor" << endl;
+//    Tensor::logical_xor(t1, t2, t3);
+//    t3->print();
+//
+//    int asdas=33;
+
+//    string fname = "datasets/drive/numpy/x_train.npy";
+//    t1 = Tensor::load<uint8_t>(fname);
+//    t1->info();
+//    cout << "Max: " << t1->max() << endl;
+//    cout << "Min: " << t1->min() << endl;
+//    t2 = t1->select({"0"});
+//    t2->info();
+////    t2->unsqueeze_();
+//    t2 = Tensor::permute(t2, {0, 3, 1, 2});
+//    t2->info();
+//    t2->save("numpy_ds.jpg");
+//    int asd = 3;
+
+//    float ptr[12] = {1, 2, 3,  1, 2, 3,
+//                     1, 2, 3,  1, 2, 3};
+//    t1= new Tensor({1, 2, 2, 3}, ptr, DEV_CPU);
+//
+//    t1->print();
+//    t2 = Tensor::permute(t1, {0, 3, 1, 2});
+//    t2->print();
+//    int asd = 33;
+//
+//    t1 = Tensor::range(1, 16);
+//    t1->reshape_({4, 4});
+//    t1->print();
+//
+//    t2 = t1->select({":", "1:3"});
+//    t2->print();
+//
+//    t1 = Tensor::moveaxis(t1, 0, 1);
+//    t1->reshape_({4, 4});
+//    t1->print();
+//    int aasd = 33;
+//
+//    string fname = "/Users/salvacarrion/Desktop/elephant.jpg";
+//    t1 = Tensor::load(fname);
+//    t2 = new Tensor(t1->shape);
+//
+//    t1->save("rotate1.jpg");
+//    Tensor::rotate(t1, t2, 45, {0,0}, "original");
+//    t2->save("rotate2.jpg");
+//    int as33d = 33;
+//
+//  int dev=DEV_GPU;
+//  vector<int> axis={0,2,3};
+//
+//
+//  Tensor *A=new Tensor({32,64,224,224},dev);
+//  Tensor *B=new Tensor({64},dev);
+//
+//
+//  A->fill_(2.0);
+//  int *map=get_reduction_map(A, axis);
+//
+//  reduce_mean(A,B,axis,map);
+//  B->print();
+//
+//  int devc=DEV_CPU;
+//  Tensor *Ac=new Tensor({32,64,224,224},devc);
+//  Tensor *Bc=new Tensor({64},devc);
+//
+//  Ac->fill_(2.0);
+//
+//  reduce_mean(Ac,Bc,axis,map);
+//  Bc->print();
+//
+//  B->toCPU();
+//  if (!Tensor::equal(B,Bc,0.1)) {
+//    fprintf(stderr,"Error not equal\n");
+//  }
+
+  //B->print();
+
+  //reduce_mult(A,B,axis);
+
+  //A->print();
+
+  /*
 //    int dev = DEV_CPU;
 //
 //    tensor A=create({10,10});
@@ -137,4 +325,5 @@ int main(int argc, char **argv) {
         t2->save("images/new_cow_" + to_string(i) + ".jpg");
         cout << "Image saved! #" << i << endl;
     }
+    */
 }

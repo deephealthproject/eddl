@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -22,6 +22,9 @@
 #define TSMODE 0
 
 using namespace std;
+
+void BN_forward(Tensor *input,Tensor *output, MapReduceDescriptor *MD, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float momentum, float epsilon,int trmode);
+void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, MapReduceDescriptor *MD, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float epsilon);
 
 
 /// Normalization Layer
@@ -101,9 +104,15 @@ public:
     float momentum;
     float epsilon;
     bool affine;
-    LTensor *mean;
-    LTensor *variance;
+    Tensor *mean;
+    Tensor *variance;
+    Tensor *bn_mean;
+    Tensor *bn_var;
+
+    MapReduceDescriptor *MD;
     bool init;
+    vector<int> axis;
+    vector<int> shape;
 
     static int total_layers;
     vector<Layer *> layers;
@@ -119,11 +128,89 @@ public:
     void backward() override;
 
     void resize(int batch) override;
-
-    void reset() override;
+    void save(std::ofstream &ofs, string format) override;
+    void load(std::ifstream &ifs, string format) override;
+    void copy(Layer *l2) override;
 
     string plot(int c) override;
 };
+
+/// LayerNormalization Layer
+class LLayerNorm : public LinLayer {
+public:
+    float momentum;
+    float epsilon;
+    bool affine;
+    Tensor *mean;
+    Tensor *variance;
+    Tensor *bn_mean;
+    Tensor *bn_var;
+
+    PermuteDescriptor *PD;
+    PermuteDescriptor *PD2;
+    MapReduceDescriptor *MD;
+
+    bool init;
+    vector<int> axis;
+    vector<int> shape;
+
+    static int total_layers;
+    vector<Layer *> layers;
+
+    LLayerNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    string plot(int c) override;
+};
+
+/// GroupNormalization Layer
+class LGroupNorm : public LinLayer {
+public:
+    float momentum;
+    float epsilon;
+    int groups;
+    int N,CH,H,W;
+    bool affine;
+    Tensor *mean;
+    Tensor *variance;
+    Tensor *bn_mean;
+    Tensor *bn_var;
+
+    PermuteDescriptor *PD;
+    PermuteDescriptor *PD2;
+    MapReduceDescriptor *MD;
+
+    bool init;
+    vector<int> axis;
+    vector<int> shape;
+
+    static int total_layers;
+    vector<Layer *> layers;
+
+    LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool affine, string name, int dev);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    string plot(int c) override;
+};
+
 
 
 #endif //EDDL_LAYER_NORMALIZATION_H

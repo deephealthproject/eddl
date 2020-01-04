@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -366,15 +366,5 @@ __global__ void reduce_sum2D(float *a,float *b,long int rows,long int cols,long 
     else
       atomicAdd(&(b[thread_id_x/cols]),a[thread_id_x]);
   }
-
-}
-
-__global__ void reduceToSum(float *a, float *b, long int b_size, int a_axis_ndim){
-    long int thread_id_x = threadIdx.x+(blockDim.x*blockIdx.x);
-
-    if (thread_id_x < b_size){
-        for (int j = 0; j < a_axis_ndim; j++)
-            b[thread_id_x] += a[j];
-    }
 
 }

@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -79,6 +79,11 @@ void Layer::resize(int batch)
     if (target!=nullptr) target->resize(batch);
 }
 
+void Layer::set_trainable(bool value)
+{
+  trainable=value;
+}
+
 void Layer::detach(Layer *l)
 {
     for(int i=0;i<child.size();i++)
@@ -116,7 +121,9 @@ void Layer::save(std::ofstream &ofs, string format){
 
 void Layer::load(std::ifstream &ifs, string format){
     for (int i = 0; i != params.size(); i++){
-        params[i]->loadfs(ifs, format);
+        Tensor* t=params[i]->loadfs(ifs, format);
+        Tensor::copy(t,params[i]);
+        delete t;
     }
 }
 
@@ -163,6 +170,13 @@ Tensor* Layer::getBias(){
 
 Tensor* Layer::setBias(Tensor bias){
     return nullptr;
+}
+
+
+void Layer::copy(Layer *l2)
+{
+  for(int i=0;i<params.size();i++)
+    Tensor::copy(params[i],l2->params[i]);
 }
 
 ////////////////////////////////////

@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -11,20 +11,20 @@
 #define EDDL_CPU_HW_H
 
 #include "../../tensor/tensor.h"
+#include "../../tensor/tensor_reduction.h"
 #include "../../descriptors/descriptors.h"
 
 #define MAX_FLOAT std::numeric_limits<float>::max()
 #define MIN_FLOAT -std::numeric_limits<float>::max()
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
 
-// CPU: Comparison
-int cpu_equal(Tensor *A, Tensor *B, float epsilon);
-
 // CPU: Core (static)
 void cpu_transpose(Tensor *A, Tensor *B);
 void cpu_copy(Tensor *A, Tensor *B);
 void cpu_fill_(Tensor *A, float v);
 void cpu_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
+void cpu_select(Tensor *A, Tensor *B, SelDescriptor *sd);
+void cpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
 void cpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
 void cpu_repeat(Tensor *A, Tensor *B, vector<int> size);
@@ -32,7 +32,7 @@ void cpu_d_repeat(Tensor *D, Tensor *A, vector<int> size);
 
 // CPU: Create
 void cpu_range(Tensor *A, float min, float step);
-void cpu_eye(Tensor *A);
+void cpu_eye(Tensor *A, int offset);
 
 // CPU: Generator
 void cpu_rand_uniform(Tensor *A, float v);
@@ -103,7 +103,6 @@ void cpu_sign2(Tensor *A, Tensor *B); // TODO: Remove
 void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
 void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
 
-
 // CPU: Should be reductions
 float cpu_max(Tensor *A);
 float cpu_min(Tensor *A);
@@ -111,14 +110,45 @@ float cpu_sum(Tensor *A);
 float cpu_sum_abs(Tensor *A);
 
 // CPU: Reduction
+void cpu_reduce(Tensor *A, Tensor *B,string mode,int* map);
+void cpu_reduce_op(Tensor *A, Tensor *B,string op,int* map);
+void cpu_reduce(Tensor *A, Tensor *B,string mode,MapReduceDescriptor *MD);
+void cpu_reduce_op(Tensor *A, Tensor *B,string op,MapReduceDescriptor *MD);
+
 void cpu_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
-void cpu_reduceTosum(Tensor *A, Tensor *B, int axis);
 void cpu_reduction(ReduceDescriptor *RD);
 void cpu_reduction_back(ReduceDescriptor *RD);
 //void cpu_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB);
 //void cpu_delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB);
 //void cpu_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
 //void cpu_delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC);
+
+// CPU: Logic functions: Comparisons
+void cpu_isfinite(Tensor *A, Tensor* B);
+void cpu_isinf(Tensor *A, Tensor* B);
+void cpu_isnan(Tensor *A, Tensor* B);
+void cpu_isneginf(Tensor *A, Tensor* B);
+void cpu_isposinf(Tensor *A, Tensor* B);
+
+// CPU: Logic functions: Comparisons
+void cpu_logical_and(Tensor *A, Tensor *B, Tensor *C);
+void cpu_logical_or(Tensor *A, Tensor *B, Tensor *C);
+void cpu_logical_not(Tensor *A, Tensor *B);
+void cpu_logical_xor(Tensor *A, Tensor *B, Tensor *C);
+
+// CPU: Logic functions: Comparisons
+bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan);
+void cpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool equal_nan);
+void cpu_greater(Tensor *A, Tensor *B, Tensor *C);
+void cpu_greater_equal(Tensor *A, Tensor *B, Tensor *C);
+void cpu_less(Tensor *A, Tensor *B, Tensor *C);
+void cpu_less_equal(Tensor *A, Tensor *B, Tensor *C);
+void cpu_equal(Tensor *A, Tensor *B, Tensor *C);
+void cpu_not_equal(Tensor *A, Tensor *B, Tensor *C);
+
+// Legacy
+int cpu_equal2(Tensor *A, Tensor *B, float epsilon);
+
 
 
 #endif //EDDL_CPU_HW_H

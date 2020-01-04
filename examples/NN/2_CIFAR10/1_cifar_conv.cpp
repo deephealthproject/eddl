@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -22,6 +22,14 @@ using namespace eddl;
 // Using fit for training
 //////////////////////////////////
 
+layer Normalization(layer l)
+{
+  //return l;
+  return BatchNormalization(l);
+  //return LayerNormalization(l);
+  //return GroupNormalization(l,32); // reduce batch_size and learning rate
+
+}
 
 int main(int argc, char **argv){
 
@@ -37,10 +45,13 @@ int main(int argc, char **argv){
   layer in=Input({3,32,32});
   layer l=in;
 
-  l=MaxPool(ReLu(Conv(l,32,{3,3},{1,1})),{2,2});
-  l=MaxPool(ReLu(Conv(l,64,{3,3},{1,1})),{2,2});
-  l=MaxPool(ReLu(Conv(l,128,{3,3},{1,1})),{2,2});
-  l=MaxPool(ReLu(Conv(l,256,{3,3},{1,1})),{2,2});
+  l=MaxPool(ReLu(Normalization(Conv(l,32,{3,3},{1,1}))),{2,2});
+  l=MaxPool(ReLu(Normalization(Conv(l,64,{3,3},{1,1}))),{2,2});
+  l=MaxPool(ReLu(Normalization(Conv(l,128,{3,3},{1,1}))),{2,2});
+  //l=MaxPool(ReLu(Normalization(Conv(l,256,{3,3},{1,1}))),{2,2});
+
+  l=GlobalMaxPool(l);
+
 
   l=Reshape(l,{-1});
 
@@ -87,6 +98,3 @@ int main(int argc, char **argv){
 
 
 }
-
-
-///////////

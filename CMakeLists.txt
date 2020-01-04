@@ -13,6 +13,9 @@ option(BUILD_EXAMPLES "Compile examples" ON)
 SET(BUILD_TARGET "CPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
 set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
 
+# OPENMP OPTIONS *******************************
+set(MP_CANCELLATION true)
+
 # PROPERTIES *******************************
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "")
@@ -162,8 +165,9 @@ include_directories(src/losses)
 include_directories(src/metrics)
 include_directories(src/optimizers)
 include_directories(src/regularizers)
-include_directories(src/stb)
 include_directories(src/tensor)
+include_directories(src/tensor/stb)
+include_directories(src/tensor/cnpy)
 include_directories(src/descriptors)
 # Temp
 include_directories(tests)
@@ -234,10 +238,13 @@ SET(CPP_SOURCES
         src/layers/da/layer_scale_random.cpp
         src/layers/da/layer_shift.cpp
         src/layers/da/layer_shift_random.cpp
+        src/layers/normalization/bnorm.cpp
         src/layers/normalization/layer_norm.cpp
         src/layers/normalization/layer_normmax.cpp
         src/layers/normalization/layer_normminmax.cpp
         src/layers/normalization/layer_batchnorm.cpp
+        src/layers/normalization/layer_layernorm.cpp
+        src/layers/normalization/layer_groupnorm.cpp
         src/layers/generators/layer_generator.cpp
         src/layers/generators/layer_generators.h
         src/layers/generators/layer_gauss.cpp
@@ -264,10 +271,10 @@ SET(CPP_SOURCES
         src/layers/operators/layer_operators.h
         src/layers/operators/layer_pow.cpp
         src/layers/operators/layer_sqrt.cpp
+        src/layers/operators/layer_select.cpp
+        src/layers/operators/layer_permute.cpp
         src/layers/operators/layer_sum.cpp
         src/layers/pool/layer_avgpool.cpp
-        src/layers/pool/layer_globalavgpool.cpp
-        src/layers/pool/layer_globalmaxpool.cpp
         src/layers/pool/layer_maxpool.cpp
         src/layers/pool/layer_pool.cpp
         src/layers/pool/layer_pool.h
@@ -309,14 +316,18 @@ SET(CPP_SOURCES
         src/descriptors/descriptor_conv.cpp
         src/descriptors/descriptor_pool.cpp
         src/descriptors/descriptor_reduce.cpp
+        src/descriptors/descriptor_select.cpp
+        src/descriptors/descriptor_permute.cpp
         src/regularizers/regularizer.h
         src/regularizers/regularizer.cpp
         src/regularizers/regularizer_l1.cpp
         src/regularizers/regularizer_l1_l2.cpp
         src/regularizers/regularizer_l2.cpp
-        src/stb/stb.h
-        src/stb/stb_image.h
-        src/stb/stb_image_write.h
+        src/tensor/stb/stb.h
+        src/tensor/stb/stb_image.h
+        src/tensor/stb/stb_image_write.h
+        src/tensor/cnpy/cnpy.h
+        src/tensor/cnpy/cnpy.cpp
         src/tensor/tensor.h
         src/tensor/tensor.cpp
         src/tensor/tensor_comparison.cpp
@@ -346,6 +357,8 @@ SET(CPP_SOURCES
         src/system_info.h
         src/utils.cpp
         src/utils.h
+        src/helpers.cpp
+        src/helpers.h
         src/random.cpp
         src/random.h
         # Temp
@@ -430,7 +443,7 @@ set_target_properties(eddl PROPERTIES
 
 
 # OpenMP
-find_package(OpenMP)
+find_package(OpenMP REQUIRED)
 if (OPENMP_FOUND)
     target_link_libraries(eddl PRIVATE OpenMP::OpenMP_CXX)
 endif()
@@ -445,6 +458,10 @@ if(EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
     )
 endif()
 
+# ZLIB
+find_package(ZLIB REQUIRED)
+include_directories(${ZLIB_INCLUDE_DIRS})
+target_link_libraries(eddl PRIVATE ${ZLIB_LIBRARIES})
 
 # pthreads setup for windows os
 # The following commands should be removed when pthread linux
@@ -528,9 +545,16 @@ if(BUILD_EXAMPLES)
     add_executable(cifar_conv_da "${EXAMPLES_DIR}/NN/2_CIFAR10/2_cifar_conv_da.cpp")
     add_executable(cifar_vgg16 "${EXAMPLES_DIR}/NN/2_CIFAR10/3_cifar_vgg16.cpp")
     add_executable(cifar_vgg16_bn "${EXAMPLES_DIR}/NN/2_CIFAR10/4_cifar_vgg16_bn.cpp")
+    add_executable(cifar_vgg16_gn "${EXAMPLES_DIR}/NN/2_CIFAR10/4_cifar_vgg16_gn.cpp")
     add_executable(cifar_resnet "${EXAMPLES_DIR}/NN/2_CIFAR10/5_cifar_resnet.cpp")
     add_executable(cifar_resnet_da_bn "${EXAMPLES_DIR}/NN/2_CIFAR10/6_cifar_resnet_da_bn.cpp")
     add_executable(cifar_resnet50 "${EXAMPLES_DIR}/NN/2_CIFAR10/7_cifar_resnet50_da_bn.cpp")
+    ## Drive segmentation EXAMPLES
+    add_executable(drive_seg "${EXAMPLES_DIR}/NN/3_DRIVE/1_drive_seg.cpp")
+    # Tensor
+    add_executable(tensor_manipulation "${EXAMPLES_DIR}/Tensor/eddl_tensor.cpp")
+    add_executable(tensor_image "${EXAMPLES_DIR}/Tensor/eddl_image.cpp")
+    add_executable(tensor_io "${EXAMPLES_DIR}/Tensor/eddl_io.cpp")
     #### OTHER
     add_executable(example_ae "${EXAMPLES_DIR}/NN/other/eddl_ae.cpp")
     add_executable(example_conv "${EXAMPLES_DIR}/NN/other/eddl_conv.cpp")
@@ -539,7 +563,6 @@ if(BUILD_EXAMPLES)
     add_executable(example_load_save "${EXAMPLES_DIR}/NN/other/eddl_load_save.cpp")
     add_executable(example_mlp "${EXAMPLES_DIR}/NN/other/eddl_mlp.cpp")
     add_executable(example_train_batch "${EXAMPLES_DIR}/NN/other/eddl_train_batch.cpp")
-    add_executable(example_tensor "${EXAMPLES_DIR}/Tensor/eddl_tensor.cpp")
     ## MNIST EXAMPLES
     target_link_libraries(mnist_mlp eddl)
     target_link_libraries(mnist_mlp_initializers eddl)
@@ -554,9 +577,16 @@ if(BUILD_EXAMPLES)
     target_link_libraries(cifar_conv_da eddl)
     target_link_libraries(cifar_vgg16 eddl)
     target_link_libraries(cifar_vgg16_bn eddl)
+    target_link_libraries(cifar_vgg16_gn eddl)
     target_link_libraries(cifar_resnet eddl)
     target_link_libraries(cifar_resnet_da_bn eddl)
     target_link_libraries(cifar_resnet50 eddl)
+    ## DRIVE SEG EXAMPLES
+    target_link_libraries(drive_seg eddl)
+    # Tensor
+    target_link_libraries(tensor_manipulation eddl)
+    target_link_libraries(tensor_image eddl)
+    target_link_libraries(tensor_io eddl)
     #### OTHER
     target_link_libraries(example_ae eddl)
     target_link_libraries(example_conv eddl)
@@ -565,7 +595,6 @@ if(BUILD_EXAMPLES)
     target_link_libraries(example_load_save eddl)
     target_link_libraries(example_mlp eddl)
     target_link_libraries(example_train_batch eddl)
-    target_link_libraries(example_tensor eddl)
     # Temp
     add_executable(test_main "tests/test_main.cpp")
     target_link_libraries(test_main eddl)

@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -901,7 +901,7 @@ void Tensor::sign(Tensor *A, Tensor *B) {
     ///////////////////////////////////////
     /// Get sign (+-) of all values
     //////////////////////////////////////
-    B->tsem->lock();
+    //B->tsem->lock();
 
     if (!Tensor::eqsize(A, B))
         msg("Tensors with different shape", "Tensor::sign");
@@ -913,7 +913,8 @@ void Tensor::sign(Tensor *A, Tensor *B) {
 #ifdef cGPU
     else if (A->isGPU())
       {
-
+        Tensor::copy(A,B);
+        gpu_sign_(B);
       }
 #endif
 #ifdef cFPGA
@@ -921,7 +922,7 @@ void Tensor::sign(Tensor *A, Tensor *B) {
 
     }
 #endif
-    B->tsem->unlock();
+    //B->tsem->unlock();
 
 }
 
@@ -1110,35 +1111,6 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
 #endif
     B->tsem->unlock();
 }
-
-void Tensor::reduceTosum(Tensor *A, Tensor *B, int axis) {
-    //
-    // Sum all the axis of A in B
-    //
-    // TODO: Review cost (l1/l2)
-    B->tsem->lock();
-
-    if (A->device != B->device) msg("Tensors in different devices", "Tensor::transpose");
-
-    B->fill_(0.0);
-    if (A->isCPU()) {
-        cpu_reduceTosum(A, B, axis);
-    }
-#ifdef cGPU
-    else if (A->isGPU())
-      {
-
-      }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-    B->tsem->unlock();
-
-}
-
 
 void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
     ///////////////////////////////////////

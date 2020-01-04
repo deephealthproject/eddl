@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 
   build(gen,gopt); // By defatul CS_CPU
 
-  toGPU(gen); // move toGPU
+  //toGPU(gen); // move toGPU
 
   summary(gen);
 
@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
 
   build(disc,dopt); // By defatul CS_CPU
 
-  toGPU(disc); // move toGPU
+  //toGPU(disc); // move toGPU
 
   summary(disc);
 
@@ -93,7 +93,7 @@ int main(int argc, char **argv) {
   int i,j;
   int num_batches=1000;
   int epochs=1000;
-  int batch_size = 10;
+  int batch_size = 100;
 
   tensor batch=eddlT::create({batch_size,784});
 

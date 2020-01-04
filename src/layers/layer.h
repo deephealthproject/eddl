@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.2
+* Version: 0.3
 * copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: October 2019
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -38,6 +38,7 @@ public:
     Tensor *delta;
     Layer *orig;
     Net *net;
+    bool trainable;
 
     vector<Tensor *> params;
     vector<Tensor *> gradients;
@@ -62,8 +63,7 @@ public:
     void initialize();
 
 
-    void save(std::ofstream &ofs, string format="");
-    void load(std::ifstream &ifs, string format="");
+
 
     virtual void info();
 
@@ -80,9 +80,17 @@ public:
     void clamp(float min,float max);
     void setdetach();
 
+
     //virtual
 
+    virtual void copy(Layer *l2);
+
     virtual void resize(int batch);
+    virtual void set_trainable(bool value);
+
+    virtual void save(std::ofstream &ofs, string format="");
+    virtual void load(std::ifstream &ifs, string format="");
+
     virtual void reset();
     virtual void zeroGrads();
     virtual string plot(int c) { return ""; }
