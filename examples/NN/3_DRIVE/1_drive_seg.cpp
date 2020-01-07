@@ -83,39 +83,34 @@ int main(int argc, char **argv){
   model danet=Model({in1,in2},{});
   // Build model for DA
   build(danet);
-
-  summary(danet);
-
   // Perform DA in GPU
-  //toGPU(net_da);
+  toGPU(danet);
+  summary(danet);
 
 
   // Build SegNet
   layer in=Input({3,512,512});
-  layer out=SegNet(in);
+  layer out=Sigmoid(SegNet(in));
   model segnet=Model({in},{out});
   build(segnet,
-    sgd(0.01, 0.9), // Optimizer
+    sgd(0.0001, 0.9), // Optimizer
     {"mse"}, // Losses
     {"mse"} // Metrics
   );
-  //toGPU(net);
+  toGPU(segnet);
   summary(segnet);
 
   // Load and preprocess training data
   cout<<"Reading train numpy\n";
   tensor x_train_f = Tensor::load<unsigned char>("x_train.npy");
-  x_train_f->info();
-
   tensor x_train=Tensor::permute(x_train_f, {0,3,1,2});
-  x_train->info();
+  eddlT::div_(x_train,255.0);
   //permute
 
   cout<<"Reading test numpy\n";
   tensor y_train = Tensor::load<unsigned char>("y_train.npy");
-  y_train->info();
   eddlT::reshape_(y_train,{20,1,584,565});
-  y_train->info();
+  eddlT::div_(y_train,255.0);
 
   tensor xbatch = eddlT::create({batch_size,3,584,565});
   tensor ybatch = eddlT::create({batch_size,1,584,565});
@@ -127,13 +122,11 @@ int main(int argc, char **argv){
       next_batch({x_train,y_train},{xbatch,ybatch});
 
       // DA
-      forward(danet, {xbatch,ybatch});
+      forward(danet, (vector<Tensor *>){xbatch,ybatch});
 
       // get tensors from DA
       tensor xbatch_da = getTensor(img);
-      xbatch_da->info();
       tensor ybatch_da = getTensor(mask);
-      ybatch_da->info();
       // SegNet
       train_batch(segnet, {xbatch_da},{ybatch_da});
 
