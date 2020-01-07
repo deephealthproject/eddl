@@ -82,9 +82,9 @@ int main(int argc, char **argv){
   // Define DA model inputs
   model danet=Model({in1,in2},{});
   // Build model for DA
-  build(net_da);
+  build(danet);
 
-  summary(net_da);
+  summary(danet);
 
   // Perform DA in GPU
   //toGPU(net_da);
@@ -94,7 +94,7 @@ int main(int argc, char **argv){
   layer in=Input({3,512,512});
   layer out=SegNet(in);
   model segnet=Model({in},{out});
-  build(net,
+  build(segnet,
     sgd(0.01, 0.9), // Optimizer
     {"mse"}, // Losses
     {"mse"} // Metrics
@@ -127,7 +127,7 @@ int main(int argc, char **argv){
       next_batch({x_train,y_train},{xbatch,ybatch});
 
       // DA
-      forward(net_da, {xbatch,ybatch});
+      forward(danet, {xbatch,ybatch});
 
       // get tensors from DA
       tensor xbatch_da = getTensor(img);
@@ -135,9 +135,9 @@ int main(int argc, char **argv){
       tensor ybatch_da = getTensor(mask);
       ybatch_da->info();
       // SegNet
-      train_batch(net, {xbatch_da},{ybatch_da});
+      train_batch(segnet, {xbatch_da},{ybatch_da});
 
-      print_loss(net,j);
+      print_loss(segnet,j);
       printf("\r");
     }
     printf("\n");
