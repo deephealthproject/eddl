@@ -10,6 +10,7 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(BUILD_PYTHON "Compile python binding" OFF)
 option(BUILD_TESTS "Compile tests" ON)
 option(BUILD_EXAMPLES "Compile examples" ON)
+option(USE_GEMX "Set to ON to use GEMX" ON)
 SET(BUILD_TARGET "FPGA" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
 set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
 
@@ -67,6 +68,17 @@ message(STATUS "Build python: " ${BUILD_PYTHON} )
 message(STATUS "CUDA Enabled: " ${EDDL_WITH_CUDA} )
 message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS} )
 message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
+
+if (USE_GEMX)
+        add_definitions(-DGEMX_SUPPORT)
+set(SOURCE_FILES
+        ${FPGA_SOURCES}
+        src/hardware/fpga/gemx_wrapper.cpp
+        src/hardware/fpga/gemx_wrapper.h
+    )
+endif()
+
+
 
 # Add CUDA (if possible)
 if(EDDL_WITH_CUDA)
@@ -194,6 +206,8 @@ SET(CPP_SOURCES
         src/hardware/cpu/nn/cpu_tensor_nn.cpp
         src/hardware/fpga/tensor_hls_op.cpp
         src/hardware/fpga/tensor_hls_op.h
+        src/hardware/fpga/gemx_wrapper.cpp
+        src/hardware/fpga/gemx_wrapper.h
         src/hardware/fpga/libs/xcl2.cpp
         src/hardware/fpga/libs/xcl2.hpp
         src/initializers/initializer.cpp
@@ -393,7 +407,7 @@ SET(CUDA_SOURCES
         src/hardware/gpu/nn/gpu_tensor_nn.cu
         src/hardware/gpu/nn/gpu_tensor_nn_kernels.cu
         )
-SET(SOURCES ${CPP_SOURCES} ${CUDA_SOURCES})
+SET(SOURCES ${CPP_SOURCES} ${CUDA_SOURCES} ${FPGA_SOURCES})
 
 # SET TESTS ****************************
 SET(TEST_DIR "tests")
@@ -480,6 +494,49 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_package(Threads REQUIRED)
     target_link_libraries(eddl PRIVATE Threads::Threads)
 endif()
+
+# Handle GEMX
+if(USE_GEMX)
+    #find_package(OpenCL REQUIRED)
+    include_directories(${OpenCL_INCLUDE_DIR})
+    include_directories("${PROJECT_SOURCE_DIR}/gemx/gemx/src")
+    include_directories("${PROJECT_SOURCE_DIR}/gemx/gemx/src/host")
+    include_directories("${PROJECT_SOURCE_DIR}/gemx/gemx/src/kernel")
+    #include_directories("$ENV{XILINX_VIVADO}/include")
+    include_directories("/opt/Xilinx/Vivado/2018.3/include")
+    #target_link_libraries(nnsim PRIVATE ${OpenCL_LIBRARY})
+    #target_link_libraries(nnsim PRIVATE pthread)
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_dataType=float")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_dataEqIntType=int")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_XdataType=float")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_ddrWidth=16")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_XddrWidth=16")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_keepMacBits=0")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_argInstrWidth=1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_numKernels=1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_runGemv=0")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_runGemm=1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_runTransp=0")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_runSpmv=0")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_gemmMBlocks=4")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_gemmKBlocks=4")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_gemmNBlocks=4")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_splitMesh=1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_part=u200")
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_argPipeline=2")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_macBits=48")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_numInstr=16")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGEMX_instructionSizeBytes=64")
+
+    if(APPLE)
+        target_link_options(nnsim PUBLIC -framework opencl)
+    endif()
+endif()
+
 
 ## [BINDING] Create python binding
 #if(BUILD_PYTHON)
