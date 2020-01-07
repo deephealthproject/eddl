@@ -130,15 +130,24 @@ int main(int argc, char **argv){
     for(int j=0;j<num_batches;j++)  {
 
       next_batch({x_train,y_train},{xbatch,ybatch});
+      tensor yout = eddlT::select(ybatch,0);
 
+      yout->save("./outb.jpg");
       // DA
       forward(danet, (vector<Tensor *>){xbatch,ybatch});
 
       // get tensors from DA
       tensor xbatch_da = getTensor(img);
       tensor ybatch_da = getTensor(mask);
+
+
+
       // SegNet
       train_batch(segnet, {xbatch_da},{ybatch_da});
+
+      yout = eddlT::select(getTensor(out),0);
+
+      yout->save("./out.jpg");
 
       print_loss(segnet,j);
       printf("\r");
