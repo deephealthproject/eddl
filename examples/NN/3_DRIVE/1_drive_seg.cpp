@@ -19,7 +19,13 @@ using namespace eddl;
 //////////////////////////////////
 // Drive segmentation
 // https://drive.grand-challenge.org/DRIVE/
+// A Multi-GPU segmentation example
+// Data Augmentation graph
+// Segmentation graph
 //////////////////////////////////
+
+
+// from use case repo:
 layer SegNet(layer x)
 {
     x = ReLu(Conv(x, 64, { 3,3 }, { 1, 1 }, "same"));
@@ -67,29 +73,32 @@ int main(int argc, char **argv){
 
   // Settings
   int epochs = 25;
-  int batch_size =1;
+  int batch_size =8;
 
-  // network for Data Augmentation
+  // Network for Data Augmentation
+  // also images are downscale to 256x256
   layer in1=Input({3,584,565});
   layer in2=Input({1,584,565});
 
-  layer l=Concat({in1,in2});
-  l=Crop(l,{512,512});
-  l=CropScaleRandom(l, {0.8f, 1.0f});
-  layer img=Select(l,{"0:3"});
-  layer mask=Select(l,{"3"});
+  layer l=Concat({in1,in2});   // Cat image and mask
+  l=CropScaleRandom(l, {0.8f, 1.0f}); // Random Crop and Scale to orig size
+  l=Crop(l,{512,512});         // Crop to work with sizes power 2
+  l=Scale(l,{256,256},true);   // Downscale
+  layer img=Select(l,{"0:3"}); // UnCat [0-2] image
+  layer mask=Select(l,{"3"});  // UnCat [3] mask
+  // Both, image and mask, have the same augmentation
 
   // Define DA model inputs
   model danet=Model({in1,in2},{});
   // Build model for DA
   build(danet);
-  // Perform DA in GPU
-  toGPU(danet);
+  // Perform DA in Multi-GPU
+  toGPU(danet,{1,1});
   summary(danet);
 
 
   // Build SegNet
-  layer in=Input({3,512,512});
+  layer in=Input({3,256,256});
   layer out=Sigmoid(SegNet(in));
   model segnet=Model({in},{out});
   build(segnet,
@@ -97,7 +106,8 @@ int main(int argc, char **argv){
     {"mse"}, // Losses
     {"mse"} // Metrics
   );
-  toGPU(segnet);
+  // Train on multi-gpu with sync weights every 10 batches:
+  toGPU(segnet,{1,1},10);
   summary(segnet);
 
   // Load and preprocess training data
