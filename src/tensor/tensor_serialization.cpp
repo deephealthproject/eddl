@@ -259,10 +259,11 @@ void Tensor::save2onnx(std::ofstream &ofs){
 void Tensor::save2img(const string& filename, string format){
     if (this->ndim < 2 || this->ndim > 4){
         msg("Tensors should be 2D (HxW), 3D (CxHxW) or 4D (1xCxHxW)","Tensor::save2img");
-    } else if ((this->ndim == 3 || this->ndim == 4) && (this->ndim < 1 || this->ndim > 4)) {
-        msg("3D and 4D tensors must contain a number of channels in the range [1, 4]","Tensor::save2img");
+    } else if ((this->ndim == 3 && (this->shape[0] < 1 || this->shape[0] > 4)) ||
+               (this->ndim == 4 && (this->shape[1] < 1 || this->shape[1] > 4))) {
+        msg("3D and 4D tensors must contain a number of channels in the range [1, 4]", "Tensor::save2img");
     } else if (this->ndim == 4 && this->shape[0] != 1) {
-        msg("4D tensor must be shaped as (1xCxHxW)","Tensor::save2img");
+        msg("4D tensor must be shaped as (1xCxHxW)", "Tensor::save2img");
     }
 
     // Clone tensor and copy to CPU
@@ -279,6 +280,7 @@ void Tensor::save2img(const string& filename, string format){
 
     // Re-order components. From CxHxW  => WxHxC
     t = Tensor::permute(t, {2, 1, 0});  // Performs clone
+//    t = Tensor::permute(t, {1, 0, 2});  // Performs clone
 
     // Normalize image (for RGB must fall between 0 and 255) => Not a good idea
     t->normalize_(0.0f, 255.0f);
@@ -288,21 +290,27 @@ void Tensor::save2img(const string& filename, string format){
     auto* data= new uint8_t[t->size];
     for(int i=0;i<t->size;i++){ data[i]=t->ptr[i]; }
 
+    // Components
+    int width = t->shape[0];
+    int height = t->shape[1];
+    int channels = t->shape[2];
+
     // Save image
     if(format=="png") {
-        stbi_write_png(filename.c_str(), t->shape[0], t->shape[1], t->shape[2], data, t->shape[0] * t->shape[2]);  // width x channels
+        stbi_write_png(filename.c_str(), width, height, channels, data, width * channels);  // width x channels
     }else if(format=="bmp"){
-        stbi_write_bmp(filename.c_str(), t->shape[0], t->shape[1], t->shape[2], data);
+        stbi_write_bmp(filename.c_str(), width, height, channels, data);
     }else if(format=="tga"){
-        stbi_write_tga(filename.c_str(), t->shape[0], t->shape[1], t->shape[2], data);
+        stbi_write_tga(filename.c_str(), width, height, channels, data);
     }else if(format=="jpg" || format=="jpeg"){
-        stbi_write_jpg(filename.c_str(), t->shape[0], t->shape[1], t->shape[2], data, 100);
+        stbi_write_jpg(filename.c_str(), width, height, channels, data, 100);
 //    }else if(format=="hdr"){
 //        stbi_write_hdr(filename.c_str(), this->shape[3], this->shape[2], this->shape[1], data);
     }else{
         msg("Format not implemented", "Tensor::save2img");
     }
 
+    delete t;
 }
 
 void Tensor::save2numpy(const string &filename, string format){
