@@ -84,13 +84,8 @@ int main(int argc, char **argv){
   download_drive();
 
   // Settings
-<<<<<<< HEAD
   int epochs = 100000;
   int batch_size =4;
-=======
-  int epochs = 5;
-  int batch_size =8;
->>>>>>> bf6d881b3345e3863380f78e1b3f8a8a1a051e0e
 
   // Network for Data Augmentation
   layer in1=Input({3,584,584});
@@ -164,11 +159,7 @@ int main(int argc, char **argv){
       yout = eddlT::select(ybatch_da,0);
 
       yout->save("./outbda.jpg");
-<<<<<<< HEAD
       delete yout;
-=======
->>>>>>> bf6d881b3345e3863380f78e1b3f8a8a1a051e0e
-
 
       // SegNet
 
