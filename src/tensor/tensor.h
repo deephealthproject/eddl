@@ -120,7 +120,7 @@ public:
 
     // View methods
     void info();
-    void print();
+    void print(bool asInt=false);
     string getStrDevice();
 
     // Core

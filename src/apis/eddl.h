@@ -716,6 +716,7 @@ namespace eddl {
     *  @return     (void) The binary files of CIFAR-10
   */
   void download_cifar10();
+  void download_drive();
 
 }
 #endif

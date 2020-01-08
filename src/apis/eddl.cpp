@@ -881,29 +881,54 @@ namespace eddl {
         cmd = "wget https://www.dropbox.com/s/wap282xox5ew02d/cifar_trX.bin";
         int status = system(cmd.c_str());
         if (status < 0) {
-          msg("wget must be installed", "eddl.download_mnist");
+          msg("wget must be installed", "eddl.download_cifar10");
           exit(1);
         }
 
         cmd = "wget https://www.dropbox.com/s/yxhw99cu1ktiwxq/cifar_trY.bin";
         status = system(cmd.c_str());
         if (status < 0) {
-          msg("wget must be installed", "eddl.download_mnist");
+          msg("wget must be installed", "eddl.download_cifar10");
           exit(1);
         }
         cmd = "wget https://www.dropbox.com/s/dh9vqxe9vt7scrp/cifar_tsX.bin";
         status = system(cmd.c_str());
         if (status < 0) {
-          msg("wget must be installed", "eddl.download_mnist");
+          msg("wget must be installed", "eddl.download_cifar10");
           exit(1);
         }
         cmd = "wget https://www.dropbox.com/s/gdmsve6mbu82ndp/cifar_tsY.bin";
         status = system(cmd.c_str());
         if (status < 0) {
-          msg("wget must be installed", "eddl.download_mnist");
+          msg("wget must be installed", "eddl.download_cifar10");
           exit(1);
         }
 
       }
     }
-  }
+
+    void download_drive() {
+      // TODO: Too big, we should use the one in the PyEDDL
+      string cmd;
+      string trX = "drive_x.npy";
+      string trY = "drive_y.npy";
+
+      if ((!exist(trX)) || (!exist(trY)) ) {
+        cmd = "wget https://www.dropbox.com/s/sbd8eu32adcf5oi/drive_x.npy";
+        int status = system(cmd.c_str());
+        if (status < 0) {
+          msg("wget must be installed", "eddl.download_drive");
+          exit(1);
+        }
+
+        cmd = "wget https://www.dropbox.com/s/qp0j8oiqzf6tc1a/drive_y.npy";
+        status = system(cmd.c_str());
+        if (status < 0) {
+          msg("wget must be installed", "eddl.download_drive");
+          exit(1);
+        }
+      }
+    }
+
+
+  }//namespace
