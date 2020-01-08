@@ -75,7 +75,7 @@ int main(int argc, char **argv){
   download_drive();
 
   // Settings
-  int epochs = 25;
+  int epochs = 5;
   int batch_size =8;
 
   // Network for Data Augmentation
@@ -145,6 +145,9 @@ int main(int argc, char **argv){
       tensor xbatch_da = getTensor(img);
       tensor ybatch_da = getTensor(mask);
 
+      yout = eddlT::select(ybatch_da,0);
+
+      yout->save("./outbda.jpg");
 
 
       // SegNet
