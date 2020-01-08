@@ -71,14 +71,17 @@ layer SegNet(layer x)
 
 int main(int argc, char **argv){
 
+  // Download Dataset
+  download_drive();
+
   // Settings
   int epochs = 25;
   int batch_size =8;
 
   // Network for Data Augmentation
   // also images are downscale to 256x256
-  layer in1=Input({3,584,565});
-  layer in2=Input({1,584,565});
+  layer in1=Input({3,584,584});
+  layer in2=Input({1,584,584});
 
   layer l=Concat({in1,in2});   // Cat image and mask
   l=CropScaleRandom(l, {0.8f, 1.0f}); // Random Crop and Scale to orig size
@@ -112,18 +115,20 @@ int main(int argc, char **argv){
 
   // Load and preprocess training data
   cout<<"Reading train numpy\n";
-  tensor x_train_f = Tensor::load<unsigned char>("x_train.npy");
+  tensor x_train_f = Tensor::load<unsigned char>("drive_x.npy");
   tensor x_train=Tensor::permute(x_train_f, {0,3,1,2});
+  x_train->info();
   eddlT::div_(x_train,255.0);
   //permute
 
   cout<<"Reading test numpy\n";
-  tensor y_train = Tensor::load<unsigned char>("y_train.npy");
-  eddlT::reshape_(y_train,{20,1,584,565});
+  tensor y_train = Tensor::load<unsigned char>("drive_y.npy");
+  y_train->info();
+  eddlT::reshape_(y_train,{20,1,584,584});
   eddlT::div_(y_train,255.0);
 
-  tensor xbatch = eddlT::create({batch_size,3,584,565});
-  tensor ybatch = eddlT::create({batch_size,1,584,565});
+  tensor xbatch = eddlT::create({batch_size,3,584,584});
+  tensor ybatch = eddlT::create({batch_size,1,584,584});
 
   int num_batches=4;
   for(int i=0;i<epochs;i++) {

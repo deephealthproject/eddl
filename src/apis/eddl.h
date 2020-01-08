@@ -280,6 +280,7 @@ namespace eddl {
   bool exist(string name);
   void download_mnist();
   void download_cifar10();
+  void download_drive();
 
 }
 #endif
