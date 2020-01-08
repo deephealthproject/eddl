@@ -112,11 +112,11 @@ int main(int argc, char **argv){
   layer out=Sigmoid(UNetWithPadding(in));
   model segnet=Model({in},{out});
   build(segnet,
-    sgd(0.0000001, 0.9), // Optimizer
+    adam(0.00001), // Optimizer
     {"mse"}, // Losses
     {"mse"} // Metrics
   );
-  // Train on multi-gpu with sync weights every 10 batches:
+  // Train on multi-gpu with sync weights every 100 batches:
   toGPU(segnet,{1,1},100);
   summary(segnet);
   plot(segnet,"segnet.pdf");
