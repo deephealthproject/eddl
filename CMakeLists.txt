@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.9.2)
 
 PROJECT(eddl LANGUAGES CXX)
 
+cmake_policy(SET CMP0074 NEW) # Suppress warning for zlib_ROOT variable
+
 # SET C++ COMPILER STANDARD
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -441,11 +443,15 @@ set_target_properties(eddl PROPERTIES
     CUDA_SEPARABLE_COMPILATION ON
     CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 
-
 # OpenMP
 find_package(OpenMP REQUIRED)
-if (OPENMP_FOUND)
-    target_link_libraries(eddl PRIVATE OpenMP::OpenMP_CXX)
+if (OpenMP_FOUND)
+    target_link_libraries(eddl PUBLIC OpenMP::OpenMP_CXX)
+    if (${OpenMP_CXX_VERSION_MAJOR})
+        set(OpenMP_VERSION_MAJOR ${OpenMP_CXX_VERSION_MAJOR} CACHE INTERNAL "" FORCE)
+    endif()
+    target_compile_definitions(eddl PUBLIC OpenMP_VERSION_MAJOR=${OpenMP_VERSION_MAJOR})
+    message(STATUS "Found OpenMP, version ${OpenMP_VERSION_MAJOR}")
 endif()
 
 
@@ -459,9 +465,12 @@ if(EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
 endif()
 
 # ZLIB
+set(ZLIB_ROOT "" CACHE PATH "Path of zlib install dir. Field not required if detected by CMake.")
 find_package(ZLIB REQUIRED)
-include_directories(${ZLIB_INCLUDE_DIRS})
-target_link_libraries(eddl PRIVATE ${ZLIB_LIBRARIES})
+if (ZLIB_FOUND)
+    target_include_directories(eddl PUBLIC ${ZLIB_INCLUDE_DIRS})
+    target_link_libraries(eddl PRIVATE ${ZLIB_LIBRARIES})
+endif()
 
 # pthreads setup for windows os
 # The following commands should be removed when pthread linux
@@ -637,7 +646,6 @@ install(FILES
         DESTINATION "include/Eigen"
         )
 install(DIRECTORY ${ESCAPED_EIGEN_SOURCE_DIR}/src DESTINATION "include/Eigen" COMPONENT Devel FILES_MATCHING PATTERN "*.h")
-
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/eddlConfig.cmake.in ${CMAKE_BINARY_DIR}/cmake/eddlConfig.cmake @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/cmake/eddlConfig.cmake

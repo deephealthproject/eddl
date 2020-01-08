@@ -14,6 +14,8 @@ if (${EDDL_WITH_CUDA})
 endif()
 
 find_dependency(OpenMP)
+set(ZLIB_ROOT "@ZLIB_ROOT@")
+find_dependency(ZLIB)
 
 include("@EDDL_CONFIG_INSTALL_PATH@/eddlTargets.cmake")
 
