@@ -26,48 +26,57 @@ using namespace eddl;
 
 
 // from use case repo:
-layer SegNet(layer x)
+layer UNetWithPadding(layer x)
 {
-    x = ReLu(Conv(x, 64, { 3,3 }, { 1, 1 }, "same"));
-    x = ReLu(Conv(x, 64, { 3,3 }, { 1, 1 }, "same"));
-    x = MaxPool(x, { 2,2 }, { 2,2 });
-    x = ReLu(Conv(x, 128, { 3,3 }, { 1, 1 }, "same"));
-    x = ReLu(Conv(x, 128, { 3,3 }, { 1, 1 }, "same"));
-    x = MaxPool(x, { 2,2 }, { 2,2 });
-    x = ReLu(Conv(x, 256, { 3,3 }, { 1, 1 }, "same"));
-    x = ReLu(Conv(x, 256, { 3,3 }, { 1, 1 }, "same"));
-    x = ReLu(Conv(x, 256, { 3,3 }, { 1, 1 }, "same"));
-    x = MaxPool(x, { 2,2 }, { 2,2 });
-    x = ReLu(Conv(x, 512, { 3,3 }, { 1, 1 }, "same"));
-    x = ReLu(Conv(x, 512, { 3,3 }, { 1, 1 }, "same"));
-    x = ReLu(Conv(x, 512, { 3,3 }, { 1, 1 }, "same"));
-    x = MaxPool(x, { 2,2 }, { 2,2 });
-    x = ReLu(Conv(x, 512, { 3,3 }, { 1, 1 }, "same"));
-    x = ReLu(Conv(x, 512, { 3,3 }, { 1, 1 }, "same"));
-    x = ReLu(Conv(x, 512, { 3,3 }, { 1, 1 }, "same"));
-    x = MaxPool(x, { 2,2 }, { 2,2 });
+    layer x2;
+    layer x3;
+    layer x4;
+    layer x5;
 
-    x = UpSampling(x, { 2,2 });
-    x = ReLu(Conv(x, 512, { 3,3 }, { 1, 1 }, "same"));
-    x = ReLu(Conv(x, 512, { 3,3 }, { 1, 1 }, "same"));
-    x = ReLu(Conv(x, 512, { 3,3 }, { 1, 1 }, "same"));
-    x = UpSampling(x, { 2,2 });
-    x = ReLu(Conv(x, 512, { 3,3 }, { 1, 1 }, "same"));
-    x = ReLu(Conv(x, 512, { 3,3 }, { 1, 1 }, "same"));
-    x = ReLu(Conv(x, 256, { 3,3 }, { 1, 1 }, "same"));
-    x = UpSampling(x, { 2,2 });
-    x = ReLu(Conv(x, 256, { 3,3 }, { 1, 1 }, "same"));
-    x = ReLu(Conv(x, 256, { 3,3 }, { 1, 1 }, "same"));
-    x = ReLu(Conv(x, 128, { 3,3 }, { 1, 1 }, "same"));
-    x = UpSampling(x, { 2,2 });
-    x = ReLu(Conv(x, 128, { 3,3 }, { 1, 1 }, "same"));
-    x = ReLu(Conv(x, 64, { 3,3 }, { 1, 1 }, "same"));
-    x = UpSampling(x, { 2,2 });
-    x = ReLu(Conv(x, 64, { 3,3 }, { 1, 1 }, "same"));
-    x = Conv(x, 1, { 3,3 }, { 1,1 }, "same");
+    int depth=32;
+
+    // Concat is still buggy on GPU
+    // using Sum instead
+
+    x = LReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
+    x = LReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
+    x2 = MaxPool(x, { 2,2 }, { 2,2 });
+    x2 = LReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
+    x2 = LReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
+    x3 = MaxPool(x2, { 2,2 }, { 2,2 });
+    x3 = LReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
+    x3 = LReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
+    x4 = MaxPool(x3, { 2,2 }, { 2,2 });
+    x4 = LReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x4 = LReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x5 = MaxPool(x4, { 2,2 }, { 2,2 });
+    x5 = LReLu(Conv(x5, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x5 = LReLu(Conv(x5, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x5 = Conv(UpSampling(x5, { 2,2 }), 8*depth, { 2,2 }, { 1, 1 }, "same");
+
+    x4 = Sum(x4,x5);
+    x4 = LReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x4 = LReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x4 = Conv(UpSampling(x4, { 2,2 }), 4*depth, { 2,2 }, { 1, 1 }, "same");
+
+    x3 = Sum( x3, x4 );
+    x3 = LReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
+    x3 = LReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
+    x3 = Conv(UpSampling(x3, { 2,2 }), 2*depth, { 2,2 }, { 1, 1 }, "same");
+
+    x2 = Sum(x2,x3);
+    x2 = LReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
+    x2 = LReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
+    x2 = Conv(UpSampling(x2, { 2,2 }), depth, { 2,2 }, { 1, 1 }, "same");
+
+    x = Sum(x,x2);
+    x = LReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
+    x = LReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
+    x = Conv(x, 1, { 1,1 });
 
     return x;
 }
+
 
 int main(int argc, char **argv){
 
@@ -75,18 +84,21 @@ int main(int argc, char **argv){
   download_drive();
 
   // Settings
+<<<<<<< HEAD
+  int epochs = 100000;
+  int batch_size =4;
+=======
   int epochs = 5;
   int batch_size =8;
+>>>>>>> bf6d881b3345e3863380f78e1b3f8a8a1a051e0e
 
   // Network for Data Augmentation
-  // also images are downscale to 256x256
   layer in1=Input({3,584,584});
   layer in2=Input({1,584,584});
 
   layer l=Concat({in1,in2});   // Cat image and mask
-  l=CropScaleRandom(l, {0.8f, 1.0f}); // Random Crop and Scale to orig size
+  l=CropScaleRandom(l, {0.9f, 1.0f}); // Random Crop and Scale to orig size
   l=Crop(l,{512,512});         // Crop to work with sizes power 2
-  l=Scale(l,{256,256},true);   // Downscale
   layer img=Select(l,{"0:3"}); // UnCat [0-2] image
   layer mask=Select(l,{"3"});  // UnCat [3] mask
   // Both, image and mask, have the same augmentation
@@ -96,22 +108,23 @@ int main(int argc, char **argv){
   // Build model for DA
   build(danet);
   // Perform DA in Multi-GPU
-  toGPU(danet,{1,1});
+  //toGPU(danet,{1,1});
   summary(danet);
 
 
   // Build SegNet
-  layer in=Input({3,256,256});
-  layer out=Sigmoid(SegNet(in));
+  layer in=Input({3,512,512});
+  layer out=Sigmoid(UNetWithPadding(in));
   model segnet=Model({in},{out});
   build(segnet,
-    sgd(0.0001, 0.9), // Optimizer
+    sgd(0.0000001, 0.9), // Optimizer
     {"mse"}, // Losses
     {"mse"} // Metrics
   );
   // Train on multi-gpu with sync weights every 10 batches:
-  toGPU(segnet,{1,1},10);
+  toGPU(segnet,{1,1},100);
   summary(segnet);
+  plot(segnet,"segnet.pdf");
 
   // Load and preprocess training data
   cout<<"Reading train numpy\n";
@@ -130,14 +143,17 @@ int main(int argc, char **argv){
   tensor xbatch = eddlT::create({batch_size,3,584,584});
   tensor ybatch = eddlT::create({batch_size,1,584,584});
 
-  int num_batches=4;
+  int num_batches=1000;
   for(int i=0;i<epochs;i++) {
+    reset_loss(segnet);
     for(int j=0;j<num_batches;j++)  {
 
       next_batch({x_train,y_train},{xbatch,ybatch});
       tensor yout = eddlT::select(ybatch,0);
 
       yout->save("./outb.jpg");
+      delete yout;
+
       // DA
       forward(danet, (vector<Tensor *>){xbatch,ybatch});
 
@@ -148,17 +164,30 @@ int main(int argc, char **argv){
       yout = eddlT::select(ybatch_da,0);
 
       yout->save("./outbda.jpg");
+<<<<<<< HEAD
+      delete yout;
+=======
+>>>>>>> bf6d881b3345e3863380f78e1b3f8a8a1a051e0e
 
 
       // SegNet
+
       train_batch(segnet, {xbatch_da},{ybatch_da});
 
       yout = eddlT::select(getTensor(out),0);
 
+
+
+      //yout->print();
       yout->save("./out.jpg");
 
+
+
       print_loss(segnet,j);
+      printf("  sum=%f",yout->sum());
       printf("\r");
+
+      delete yout;
     }
     printf("\n");
   }
