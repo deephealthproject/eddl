@@ -280,10 +280,7 @@ void Tensor::save2img(const string& filename, string format){
     }
 
     // Re-order components. From CxHxW  => HxWxC
-    t->info();
     t = Tensor::permute(t, {1, 2, 0});  // Performs clone
-    t->info();
-    t->print(true, false);
 
     // Normalize image (for RGB must fall between 0 and 255) => Not a good idea
     t->normalize_(0.0f, 255.0f);
