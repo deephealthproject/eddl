@@ -1238,3 +1238,4 @@ Tensor* Tensor::interpolate(float factor1, Tensor *A, float factor2, Tensor *B){
     Tensor::add(factor1, A, factor2, B, C, 1);
     return C;
 }
+

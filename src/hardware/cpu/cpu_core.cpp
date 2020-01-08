@@ -66,6 +66,13 @@ void cpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
     }
 }
 
+void cpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
+    #pragma omp parallel for
+    for (int i = 0; i < B->size; i++) {
+        A->ptr[sd->addresses[i]] = B->ptr[i];
+    }
+}
+
 void cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end)
 {
     int s = A->size / A->shape[0];

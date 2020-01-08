@@ -120,7 +120,7 @@ public:
 
     // View methods
     void info();
-    void print(bool asInt=false);
+    void print(bool asInt=false, bool raw=false);
     string getStrDevice();
 
     // Core
@@ -375,11 +375,15 @@ public:
     static int dot(Tensor *A);  // TODO
 
     // Indexing, Slicing, Joining, Mutating Ops *******
+    Tensor* select(const vector<string>& indices);
+    static void select(Tensor *A, Tensor *B, SelDescriptor *sd);
+
+    void set_select(const vector<string>& indices, Tensor *A);
+    static void set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
+
     static void transpose(Tensor *A, Tensor *B, vector<int> dims);
     static void copy(Tensor *A, Tensor *B);
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
-    Tensor* select(const vector<string>& indices);
-    static void select(Tensor *A, Tensor *B, SelDescriptor *sd);
     static void select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
     static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
     static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);

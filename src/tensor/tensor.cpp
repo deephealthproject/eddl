@@ -234,7 +234,8 @@ void Tensor::info() {
     cout << "-------------------------------" << endl;
 }
 
-void Tensor::print(bool asInt) {
+
+void Tensor::print(bool asInt, bool raw) {
     int opened = 0;
     int closed = 0;
 
@@ -249,7 +250,15 @@ void Tensor::print(bool asInt) {
 
     // ***** Shitty code to prettify the output *******
     std::stringstream buffer;
+
     for (int i = 0; i < aux->size; ++i) {
+
+        if(raw){
+            // Print number
+            if(asInt) {  buffer << (int)aux->ptr[i] << " "; }
+            else {  buffer << aux->ptr[i] << " "; }
+
+        }else{
 
         // Open brackets
         opened = 0;
@@ -282,6 +291,8 @@ void Tensor::print(bool asInt) {
                 else if (closed == 3) { buffer << "\n\n"; }
                 else if (closed > 3) { buffer << "\n\n\n"; }
             }
+        }
+
         }
 
     }

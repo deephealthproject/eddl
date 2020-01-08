@@ -121,7 +121,6 @@ Tensor* Tensor::permute(Tensor* t, const vector<int>& dims){
 
     // Fill new tensor
     Tensor::select(t, new_t, sd);
-
     return new_t;
 }
 
@@ -343,6 +342,37 @@ void Tensor::select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
     }
 #endif
 
+}
+
+
+void Tensor::set_select(const vector<string>& indices, Tensor *A){
+    auto *sd = new SelDescriptor(indices);
+    sd->build(this->shape);
+    sd->build_indices();
+
+    // Check if the dimensions of the selection and the tensor are compatibles
+    if(sd->oshape==A->shape){
+        Tensor::set_select(this, A, sd);
+    }else{
+        msg("Incompatible dimensions", "Tensor::set_select");
+    }
+}
+
+void Tensor::set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_set_select(A, B, sd);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+      {
+        gpu_set_select(A, B, sd);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
 }
 
 void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
