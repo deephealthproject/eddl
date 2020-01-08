@@ -87,6 +87,7 @@ int main(int argc, char **argv){
   int epochs = 100000;
   int batch_size =4;
 
+  //////////////////////////////////////////////////////////////
   // Network for Data Augmentation
   layer in1=Input({3,584,584});
   layer in2=Input({1,584,584});
@@ -100,27 +101,29 @@ int main(int argc, char **argv){
 
   // Define DA model inputs
   model danet=Model({in1,in2},{});
+
   // Build model for DA
   build(danet);
-  // Perform DA in Multi-GPU
+  // Perform DA in CPU, concat is ok in CPU
   //toGPU(danet,{1,1});
   summary(danet);
 
-
+  //////////////////////////////////////////////////////////////
   // Build SegNet
   layer in=Input({3,512,512});
   layer out=Sigmoid(UNetWithPadding(in));
   model segnet=Model({in},{out});
   build(segnet,
-    sgd(0.0000001, 0.9), // Optimizer
+    adam(0.00001), // Optimizer
     {"mse"}, // Losses
     {"mse"} // Metrics
   );
-  // Train on multi-gpu with sync weights every 10 batches:
+  // Train on multi-gpu with sync weights every 100 batches:
   toGPU(segnet,{1,1},100);
   summary(segnet);
   plot(segnet,"segnet.pdf");
 
+  //////////////////////////////////////////////////////////////
   // Load and preprocess training data
   cout<<"Reading train numpy\n";
   tensor x_train_f = Tensor::load<unsigned char>("drive_x.npy");
@@ -138,14 +141,17 @@ int main(int argc, char **argv){
   tensor xbatch = eddlT::create({batch_size,3,584,584});
   tensor ybatch = eddlT::create({batch_size,1,584,584});
 
+
+  //////////////////////////////////////////////////////////////
+  // Training
   int num_batches=1000;
   for(int i=0;i<epochs;i++) {
     reset_loss(segnet);
     for(int j=0;j<num_batches;j++)  {
 
       next_batch({x_train,y_train},{xbatch,ybatch});
-      tensor yout = eddlT::select(ybatch,0);
 
+      tensor yout = eddlT::select(ybatch,0);
       yout->save("./outb.jpg");
       delete yout;
 
@@ -157,27 +163,18 @@ int main(int argc, char **argv){
       tensor ybatch_da = getTensor(mask);
 
       yout = eddlT::select(ybatch_da,0);
-
       yout->save("./outbda.jpg");
       delete yout;
 
       // SegNet
-
       train_batch(segnet, {xbatch_da},{ybatch_da});
-
-      yout = eddlT::select(getTensor(out),0);
-
-
-
-      //yout->print();
-      yout->save("./out.jpg");
-
-
 
       print_loss(segnet,j);
       printf("  sum=%f",yout->sum());
       printf("\r");
 
+      yout = eddlT::select(getTensor(out),0);
+      yout->save("./out.jpg");
       delete yout;
     }
     printf("\n");
