@@ -47,7 +47,7 @@ int main(int argc, char **argv){
   layer l=in;
 
   // Data augmentation
-  l = CropScaleRandom(l, {0.8f, 1.0f});
+  l = RandomCropScale(l, {0.8f, 1.0f});
   l = Flip(l,1);
 
   l=MaxPool(Block3_2(l,64));

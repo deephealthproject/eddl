@@ -93,7 +93,7 @@ int main(int argc, char **argv){
   layer in2=Input({1,584,584});
 
   layer l=Concat({in1,in2});   // Cat image and mask
-  l=CropScaleRandom(l, {0.9f, 1.0f}); // Random Crop and Scale to orig size
+  l= RandomCropScale(l, {0.9f, 1.0f}); // Random Crop and Scale to orig size
   l=Crop(l,{512,512});         // Crop to work with sizes power 2
   layer img=Select(l,{"0:3"}); // UnCat [0-2] image
   layer mask=Select(l,{"3"});  // UnCat [3] mask

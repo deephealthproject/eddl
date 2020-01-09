@@ -40,683 +40,696 @@
 // EDDL namespace defines the API
 namespace eddl {
 
-  #define layer Layer*
-  #define model Net*
-  #define optimizer Optimizer*
-  #define initializer Initializer*
-  #define regularizer Regularizer*
-  #define compserv CompServ*
-  #define loss NetLoss *
-  #define metric NetLoss *
+#define layer Layer*
+#define model Net*
+#define optimizer Optimizer*
+#define initializer Initializer*
+#define regularizer Regularizer*
+#define compserv CompServ*
+#define loss NetLoss *
+#define metric NetLoss *
 
-  ///////////////////////////////////////
-  //  MODEL METHODS
-  ///////////////////////////////////////
+    ///////////////////////////////////////
+    //  MODEL METHODS
+    ///////////////////////////////////////
 
-  // Creation
-  model Model(vlayer in, vlayer out);
-  void build(model net, optimizer o=nullptr, CompServ *cs=nullptr);
-  void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr);
+    // Creation
+    model Model(vlayer in, vlayer out);
+    void build(model net, optimizer o=nullptr, CompServ *cs=nullptr);
+    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr);
 
-  // Computing services
-  void toGPU(model net, vector<int> g={1},int lsb=1);
-  void toCPU(model net, int t=std::thread::hardware_concurrency());
-  compserv CS_CPU(int th=-1);
-  compserv CS_GPU(const vector<int> &g,int lsb=1);
-  compserv CS_FGPA(const vector<int> &f,int lsb=1);
-  compserv CS_COMPSS(string filename);
-
-
-  // Info and logs
-  void setlogfile(model net,string fname);
-  /**
-    *  @brief  Prints a summary representation of your model.
-    *
-    *  @param m  Model to train
-    *  @return     (void) Prints the model
-  */
-  void summary(model m);
-  /**
-    *  @brief  Plots a representation of your model.
-    *
-    *  @param m  Model to plot
-    *  @param fname  Where the plot is saved
-    *  @return     (void) Plots the model
-  */
-  void plot(model m, string fname, string mode="LR");
-
-  // Serialization
-  /**
-    *  @brief  Load weights to reinstantiate your model.
-    *
-    *  @param m  Model
-    *  @param fname  Where are the model weights
-    *  @return     (void) Load the weights
-  */
-  void load(model m, const string& fname, string format="bin");
-  /**
-    *  @brief  Save weights of a model.
-    *
-    *  @param m  Model
-    *  @param fname  Where the model weights will be saved
-    *  @return     (void) Save the weights
-  */
-  void save(model m, const string& fname, string format="bin");
-
-  // Optimizer
-  /**
-    *  @brief  Changes the learning rate and hyperparameters of the model optimizer.
-    *
-    *  @param net  Model
-    *  @param p  Vector with the learning rate and hyperparameters of the model
-    *  @return     (void) Changes model optimizer settings
-  */
-  void setlr(model net,vector<float>p);
-  optimizer adadelta(float lr, float rho, float epsilon, float weight_decay); //Todo: Implement
-  /**
-    *  @brief Adam optimizer.
-    *
-    *  @see   https://arxiv.org/abs/1412.6980v8
-    *
-    *  @param lr  Learning rate
-    *  @param beta_1  Coefficients used for computing running averages of gradient and its square
-    *  @param beta_2  Coefficients used for computing running averages of gradient and its square
-    *  @param epsilon   Term added to the denominator to improve numerical stability
-    *  @param weight_decay   Weight decay (L2 penalty)
-    *  @param amsgrad   Whether to apply the AMSGrad variant of this algorithm from the paper "On the Convergence of Adam and Beyond".
-    *  @return     Adam optimizer
-  */
-  optimizer adam(float lr=0.01, float beta_1=0.9, float beta_2=0.999, float epsilon=0.000001, float weight_decay=0,bool amsgrad=false); //Todo: Implement
-  optimizer adagrad(float lr, float epsilon, float weight_decay); //Todo: Implement
-  optimizer adamax(float lr, float beta_1, float beta_2, float epsilon, float weight_decay); //Todo: Implement
-  optimizer nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule_decay); //Todo: Implement
-  /**
-    *  @brief RMSProp optimizer.
-    *
-    *  @details
-    *   It is recommended to leave the parameters of this optimizer at their default values (except the learning rate, which can be freely tuned).
-    *
-    *   @see  http://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf
-    *
-    *  @param lr  Learning rate
-    *  @param rho  Smoothing constant
-    *  @param epsilon   Term added to the denominator to improve numerical stability
-    *  @param weight_decay   Weight decay (L2 penalty)
-    *  @return     RMSProp optimizer
-  */
-  optimizer rmsprop(float lr=0.01, float rho=0.9, float epsilon=0.00001, float weight_decay=0.0); //Todo: Implement
-  /**
-    *  @brief Stochastic gradient descent optimizer.
-    *
-    *  @details
-    *   Includes support for momentum, learning rate decay, and Nesterov momentum
-    *
-    *  @param lr  Learning rate
-    *  @param momentum  Momentum factor
-    *  @param weight_decay   Value to apply to the activation function
-    *  @param nesterov   Boolean. Whether to apply Nesterov momentum
-    *  @return     Stochastic gradient descent optimizer
-  */
-  optimizer sgd(float lr = 0.01f, float momentum = 0.0f, float weight_decay = 0.0f, bool nesterov = false);
-
-  // Training and Evaluation
-  // Coarse methods
-  /**
-    *  @brief Trains the model for a fixed number of epochs (iterations on a dataset).
-    *
-    *  @param m  Model to train
-    *  @param in  Input data (features)
-    *  @param out  Output data (labels)
-    *  @param batch  Number of samples per gradient update
-    *  @param epochs  Number of epochs to train the model. An epoch is an iteration over the entire data provided
-    *  @return     (void) Trains the model
-  */
-  void fit(model m, const vector<Tensor *> &in, const vector<Tensor *> &out, int batch, int epochs);
-  /**
-    *  @brief Returns the loss value & metrics values for the model in test mode.
-    *
-    *  @param m  Model to train
-    *  @param in  Input data (features)
-    *  @param out  Output data (labels)
-    *  @return     (void) Evaluates the model
-  */
-  void evaluate(model m, const vector<Tensor *> &in, const vector<Tensor *> &out);
-
-  // Finer methods
-  vector<int> random_indices(int batch_size, int num_samples);
-  void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
-  void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
-  void next_batch(vector<Tensor *> in,vector<Tensor *> out);
-  void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out);
-  void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out);
-
-  // Finest methods
-  void set_mode(model net, int mode);
-  void reset_loss(model m);
-  vlayer forward(model m,vector<Layer *> in);
-  vlayer forward(model m,vector<Tensor *> in);
-  vlayer forward(model m);
-  vlayer forward(model m,int b);
-  void zeroGrads(model m);
-  void backward(model m,vector<Tensor *> target);
-  void backward(model net);
-  void backward(loss l);
-  void update(model m);
-  void print_loss(model m, int batch);
-
-  // model constraints
-  /**
-    *  @brief Model parameters values clipping.
-    *
-    *  @param m  Model
-    *  @param min  Minimum value
-    *  @param max   Maximum value
-    *  @return     (void) Performs model clamp between min and max
-  */
-  void clamp(model m,float min,float max);
-
-  // loss and metrics methods
-  float compute_loss(loss L);
-  float compute_metric(loss L);
-  Loss* getLoss(string type);
-  loss newloss(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name);
-  loss newloss(const std::function<Layer*(Layer*)>& f, Layer *in, string name);
-  Metric* getMetric(string type);
-  loss newmetric(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name);
-  loss newmetric(const std::function<Layer*(Layer*)>& f, Layer *in, string name);
-
-  // graph connections
-  layer detach(layer l);
-  vlayer detach(vlayer l);
+    // Computing services
+    void toGPU(model net, vector<int> g={1},int lsb=1);
+    void toCPU(model net, int t=std::thread::hardware_concurrency());
+    compserv CS_CPU(int th=-1);
+    compserv CS_GPU(const vector<int> &g,int lsb=1);
+    compserv CS_FGPA(const vector<int> &f,int lsb=1);
+    compserv CS_COMPSS(string filename);
 
 
-  ///////////////////////////////////////
-  //  LAYERS
-  ///////////////////////////////////////
+    // Info and logs
+    void setlogfile(model net,string fname);
+    /**
+      *  @brief  Prints a summary representation of your model.
+      *
+      *  @param m  Model to train
+      *  @return     (void) Prints the model
+    */
+    void summary(model m);
+    /**
+      *  @brief  Plots a representation of your model.
+      *
+      *  @param m  Model to plot
+      *  @param fname  Where the plot is saved
+      *  @return     (void) Plots the model
+    */
+    void plot(model m, string fname, string mode="LR");
 
-  // Core Layers
-  /**
-    *  @brief Solves non-linear equation with Newton method.
-    *
-    *  @details
-    *   Applies an activation function to the given layer
-    *
-    *  @see   https://en.wikipedia.org/wiki/Activation_function
-    *
-    *  @param parent  Parent layer
-    *  @param activation Name of the activation function
-    *  @param param   Value to apply to the activation function
-    *  @param name  Name of the layer
-    *  @return     Activation layer
-  */
-  layer Activation(layer parent, string activation, float param=0.01, string name = "");
+    // Serialization
+    /**
+      *  @brief  Load weights to reinstantiate your model.
+      *
+      *  @param m  Model
+      *  @param fname  Where are the model weights
+      *  @return     (void) Load the weights
+    */
+    void load(model m, const string& fname, string format="bin");
+    /**
+      *  @brief  Save weights of a model.
+      *
+      *  @param m  Model
+      *  @param fname  Where the model weights will be saved
+      *  @return     (void) Save the weights
+    */
+    void save(model m, const string& fname, string format="bin");
 
-  /**
-    *  @brief Applies a Softmax activation function to the given layer.
-    *
-    *  @see   https://en.wikipedia.org/wiki/Softmax_function
-    *
-    *  @param parent  Parent layer
-    *  @return     Output of Softmax transformation
-  */
-  layer Softmax(layer parent);
+    // Optimizer
+    /**
+      *  @brief  Changes the learning rate and hyperparameters of the model optimizer.
+      *
+      *  @param net  Model
+      *  @param p  Vector with the learning rate and hyperparameters of the model
+      *  @return     (void) Changes model optimizer settings
+    */
+    void setlr(model net,vector<float>p);
+    optimizer adadelta(float lr, float rho, float epsilon, float weight_decay); //Todo: Implement
+    /**
+      *  @brief Adam optimizer.
+      *
+      *  @see   https://arxiv.org/abs/1412.6980v8
+      *
+      *  @param lr  Learning rate
+      *  @param beta_1  Coefficients used for computing running averages of gradient and its square
+      *  @param beta_2  Coefficients used for computing running averages of gradient and its square
+      *  @param epsilon   Term added to the denominator to improve numerical stability
+      *  @param weight_decay   Weight decay (L2 penalty)
+      *  @param amsgrad   Whether to apply the AMSGrad variant of this algorithm from the paper "On the Convergence of Adam and Beyond".
+      *  @return     Adam optimizer
+    */
+    optimizer adam(float lr=0.01, float beta_1=0.9, float beta_2=0.999, float epsilon=0.000001, float weight_decay=0,bool amsgrad=false); //Todo: Implement
+    optimizer adagrad(float lr, float epsilon, float weight_decay); //Todo: Implement
+    optimizer adamax(float lr, float beta_1, float beta_2, float epsilon, float weight_decay); //Todo: Implement
+    optimizer nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule_decay); //Todo: Implement
+    /**
+      *  @brief RMSProp optimizer.
+      *
+      *  @details
+      *   It is recommended to leave the parameters of this optimizer at their default values (except the learning rate, which can be freely tuned).
+      *
+      *   @see  http://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf
+      *
+      *  @param lr  Learning rate
+      *  @param rho  Smoothing constant
+      *  @param epsilon   Term added to the denominator to improve numerical stability
+      *  @param weight_decay   Weight decay (L2 penalty)
+      *  @return     RMSProp optimizer
+    */
+    optimizer rmsprop(float lr=0.01, float rho=0.9, float epsilon=0.00001, float weight_decay=0.0); //Todo: Implement
+    /**
+      *  @brief Stochastic gradient descent optimizer.
+      *
+      *  @details
+      *   Includes support for momentum, learning rate decay, and Nesterov momentum
+      *
+      *  @param lr  Learning rate
+      *  @param momentum  Momentum factor
+      *  @param weight_decay   Value to apply to the activation function
+      *  @param nesterov   Boolean. Whether to apply Nesterov momentum
+      *  @return     Stochastic gradient descent optimizer
+    */
+    optimizer sgd(float lr = 0.01f, float momentum = 0.0f, float weight_decay = 0.0f, bool nesterov = false);
 
-  /**
-    *  @brief Applies a Sigmoid activation function to the given layer.
-    *
-    *  @see   https://en.wikipedia.org/wiki/Sigmoid_function
-    *
-    *  @param parent  Parent layer
-    *  @return     Output of Sigmoid activation
-  */
-  layer Sigmoid(layer parent);
+    // Training and Evaluation
+    // Coarse methods
+    /**
+      *  @brief Trains the model for a fixed number of epochs (iterations on a dataset).
+      *
+      *  @param m  Model to train
+      *  @param in  Input data (features)
+      *  @param out  Output data (labels)
+      *  @param batch  Number of samples per gradient update
+      *  @param epochs  Number of epochs to train the model. An epoch is an iteration over the entire data provided
+      *  @return     (void) Trains the model
+    */
+    void fit(model m, const vector<Tensor *> &in, const vector<Tensor *> &out, int batch, int epochs);
+    /**
+      *  @brief Returns the loss value & metrics values for the model in test mode.
+      *
+      *  @param m  Model to train
+      *  @param in  Input data (features)
+      *  @param out  Output data (labels)
+      *  @return     (void) Evaluates the model
+    */
+    void evaluate(model m, const vector<Tensor *> &in, const vector<Tensor *> &out);
 
-  /**
-    *  @brief Applies a Rectified Linear Unit activation function to the given layer.
-    *
-    *  @see   https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
-    *
-    *  @param parent  Parent layer
-    *  @return     Output of ReLu activation
-  */
-  layer ReLu(layer parent);
+    // Finer methods
+    vector<int> random_indices(int batch_size, int num_samples);
+    void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
+    void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
+    void next_batch(vector<Tensor *> in,vector<Tensor *> out);
+    void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out);
+    void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out);
 
-  /**
-    *  @brief Applies the Leaky version of a Rectified Linear Unit activation function to the given layer.
-    *
-    *  @see   https://en.wikipedia.org/wiki/Rectifier_(neural_networks)#Leaky_ReLUs
-    *
-    *  @param parent  Parent layer
-    *  @param param  Negative slope coefficient
-    *  @return     Output of Leaky ReLu activation
-  */
-  layer LReLu(layer parent,float param=0.01);
+    // Finest methods
+    void set_mode(model net, int mode);
+    void reset_loss(model m);
+    vlayer forward(model m,vector<Layer *> in);
+    vlayer forward(model m,vector<Tensor *> in);
+    vlayer forward(model m);
+    vlayer forward(model m,int b);
+    void zeroGrads(model m);
+    void backward(model m,vector<Tensor *> target);
+    void backward(model net);
+    void backward(loss l);
+    void update(model m);
+    void print_loss(model m, int batch);
 
-  /**
-    *  @brief Applies the Hyperbolic tangent activation function to the given layer.
-    *
-    *  @see   https://en.wikipedia.org/wiki/Hyperbolic_function
-    *
-    *  @param parent  Parent layer
-    *  @return     Output of hyperbolic activation
-  */
-  layer Tanh(layer parent);
-  /**
-    *  @brief Convolution layer.
-    *
-    *  @param parent  Parent layer
-    *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
-    *  @param kernel_size  Vector of 2 integers, specifying the height and width of the 2D convolution window.
-    *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
-    *  @param padding  One of "none", "valid" or "same"
-    *  @param groups  Number of blocked connections from input channels to output channels
-    *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
-    *  @param use_bias  Boolean, whether the layer uses a bias vector.
-    *  @param name  A name for the operation
-    *  @return     Convolution layer
-  */
-  layer Conv(layer parent, int filters, const vector<int> &kernel_size,
-    const vector<int> &strides = {1, 1}, string padding = "same", int groups = 1,
-    const vector<int> &dilation_rate = {1, 1},
-    bool use_bias = true, string name = "");
-  /**
-    *  @brief Regular densely-connected NN layer.
-    *
-    *  @param parent  Parent layer
-    *  @param ndim  Positive integer, dimensionality of the output space
-    *  @param use_bias  Boolean, whether the layer uses a bias vector.
-    *  @param name  A name for the operation
-    *  @return     Densely-connected NN layer
-  */
-  layer Dense(layer parent, int ndim, bool use_bias = true,  string name = "");
-  /**
-    *  @brief Applies Dropout to a layer.
-    *
-    *  @details
-    *   Dropout consists in randomly setting a fraction rate of input units to 0 at each update during training time, which helps prevent overfitting.
-    *
-    *  @param parent  Parent layer
-    *  @param rate  Between 0 and 1. Fraction of the input units to drop
-    *  @param name  A name for the operation
-    *  @return     Layer with Dropout
-  */
-  layer Dropout(layer parent, float rate, string name = "");
-  /**
-    *  @brief Used to initialize an input to a model.
-    *
-    *  @param shape  A shape vector (integer), not including the batch size. For instance, shape=(32,) indicates that the expected input will be batches of 32-dimensional vectors
-    *  @param name  A name for the operation
-    *  @return     Input layer
-  */
-  layer Input(const vector<int> &shape, string name = "");
-  /**
-    *  @brief Upsampling layer.
-    *
-    *  @details
-    *   Repeats the rows and columns of the data.
-    *
-    *  @param parent  Parent layer
-    *  @param size  Vector of 2 integers. The upsampling factors for rows and columns
-    *  @param interpolation  A string, one of nearest or bilinear
-    *  @param name  A name for the operation
-    *  @return     Output layer after upsampling operation
-  */
-  layer UpSampling(layer parent, const vector<int> &size, string interpolation = "nearest", string name = ""); //Todo: Implement
-  /**
-    *  @brief Reshapes a Layer to a certain shape.
-    *
-    *  @param parent  Parent layer
-    *  @param shape  Target shape. Vector of integers. Does not include the batch axis
-    *  @param name  A name for the operation
-    *  @return     Output of reshape operation
-  */
-  layer Reshape(layer parent, const vector<int> &shape, string name = "");
-  layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
-    const vector<int> &output_padding, string padding = "same",
-    const vector<int> &dilation_rate = {1, 1},
-    const vector<int> &strides = {1, 1}, bool use_bias = true, string name = ""); //Todo: Implement
-  layer Embedding(int input_dim, int output_dim, string name = ""); //Todo: Implement
-  /**
-    *  @brief Transposes a Layer.
-    *
-    *  @param parent  Parent layer
-    *  @param dims  Vector of integers with the transpose dimensions
-    *  @param name  A name for the operation
-    *  @return     Output of transpose operation
-  */
-  layer Transpose(layer parent, const vector<int> &dims, string name = ""); //Todo: Implement
+    // model constraints
+    /**
+      *  @brief Model parameters values clipping.
+      *
+      *  @param m  Model
+      *  @param min  Minimum value
+      *  @param max   Maximum value
+      *  @return     (void) Performs model clamp between min and max
+    */
+    void clamp(model m,float min,float max);
 
-  // Transformation Layers
-  layer Shift(layer parent, vector<int> shift, string da_mode="nearest", float constant=0.0f, string name="");
-  layer Rotate(layer parent, float angle, vector<int> offset_center={0, 0}, string da_mode="nearest", float constant=0.0f, string name="");
-  layer Scale(layer parent, vector<int> new_shape, bool reshape, string da_mode="nearest", float constant=0.0f, string name="");
-  layer Flip(layer parent, int axis=0, string name="");
-  layer Crop(layer parent, vector<int> from_coords, vector<int> to_coords, bool reshape=true, float constant=0.0f, string name="");
-  layer Crop(layer parent, vector<int> size, bool reshape=true, float constant=0.0f, string name="");
-  layer CropAndScale(layer parent, vector<int> from_coords, vector<int> to_coords, string da_mode="nearest", float constant=0.0f, string name="");
-  layer Cutout(layer parent, vector<int> from_coords, vector<int> to_coords, float constant=0.0f, string name="");
+    // loss and metrics methods
+    float compute_loss(loss L);
+    float compute_metric(loss L);
+    Loss* getLoss(string type);
+    loss newloss(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name);
+    loss newloss(const std::function<Layer*(Layer*)>& f, Layer *in, string name);
+    Metric* getMetric(string type);
+    loss newmetric(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name);
+    loss newmetric(const std::function<Layer*(Layer*)>& f, Layer *in, string name);
 
-  // Data augmentation Layers
-  layer ShiftRandom(layer parent, vector<float> factor_x, vector<float> factor_y, string da_mode="nearest", float constant=0.0f, string name="");
-  layer RotateRandom(layer parent, vector<float> factor, vector<int> offset_center={0, 0}, string da_mode="nearest", float constant=0.0f, string name="");
-  layer ScaleRandom(layer parent, vector<float> factor, string da_mode="nearest", float constant=0.0f, string name="");
-  layer FlipRandom(layer parent, int axis, string name="");
-  layer CropRandom(layer parent, vector<int> new_shape, string name="");
-  layer CropScaleRandom(layer parent, vector<float> factor, string da_mode= "nearest", string name= "");
-  layer CutoutRandom(layer parent, vector<float> factor_x, vector<float> factor_y, float constant=0.0f, string name="");
-
-  // Merge Layers
-  /**
-    *  @brief Layer that adds a list of layer inputs.
-    *
-    *  @details
-    *   It takes as input a list of layers, all of the same shape, and returns a single tensor (also of the same shape).
-    *
-    *  @param layers  List of layers
-    *  @param name  A name for the operation
-    *  @return     Output of add operation with all input layers
-  */
-  layer Add(const vector<layer> &layers, string name = "");
-  /**
-    *  @brief Layer that averages a list of layer inputs.
-    *
-    *  @details
-    *   It takes as input a list of layers, all of the same shape, and returns a single tensor (also of the same shape).
-    *
-    *  @param layers  List of layers
-    *  @param name  A name for the operation
-    *  @return     Output of average operation with all input layers
-  */
-  layer Average(const vector<layer> &layers, string name = ""); //Todo: Implement
-
-  /**
-    *  @brief Layer that concatenates a list of inputs.
-    *
-    *  @details
-    *   It takes as input a list of layers and returns a single tensor, the concatenation of all inputs.
-    *
-    *  @param layers  List of layers
-    *  @param name  A name for the operation
-    *  @return     Output of concatenation operation with all input layers
-  */
-  layer Concat(const vector<layer> &layers, string name = "");
-  layer MatMul(const vector<layer> &layers, string name = ""); //Todo: Implement
-  layer Maximum(const vector<layer> &layers, string name = ""); //Todo: Implement
-  layer Minimum(const vector<layer> &layers, string name = ""); //Todo: Implement
-  layer Subtract(const vector<layer> &layers, string name = ""); //Todo: Implement
+    // graph connections
+    layer detach(layer l);
+    vlayer detach(vlayer l);
 
 
-  // Noise Layers
-  /**
-    *  @brief Apply additive zero-centered Gaussian noise.
-    *
-    *  @details
-    *   This is useful to mitigate overfitting (you could see it as a form of random data augmentation).
-    *   Gaussian Noise (GS) is a natural choice as corruption process for real valued inputs.
-    *   As it is a regularization layer, it is only active at training time.
-    *
-    *  @param parent  Parent layer
-    *  @param stddev  Standard deviation of the noise distribution
-    *  @param name  A name for the operation
-    *  @return     The parent after apply the GaussianNoise layer
-  */
-  layer GaussianNoise(layer parent, float stddev, string name = ""); //Todo: Implement
+    ///////////////////////////////////////
+    //  LAYERS
+    ///////////////////////////////////////
 
-  // Normalization
-  /**
-    *  @brief Batch normalization layer.
-    *
-    *  @details
-    *   Normalize the activations of the previous layer at each batch, i.e. applies a transformation that maintains the mean activation close to 0 and the activation standard deviation close to 1.
-    *
-    *  @see   https://arxiv.org/abs/1502.03167
-    *
-    *  @param parent  Parent layer
-    *  @param momentum  Momentum for the moving mean and the moving variance
-    *  @param epsilon  Small float added to variance to avoid dividing by zero
-    *  @param affine  A boolean value that when set to True, this module has learnable affine parameters
-    *  @param name  A name for the operation
-    *  @return     Parent layer after the normalization
-  */
-  layer BatchNormalization(layer parent, float momentum = 0.9f, float epsilon = 0.001f, bool affine = true,string name = "");
+    // Core Layers
+    /**
+      *  @brief Solves non-linear equation with Newton method.
+      *
+      *  @details
+      *   Applies an activation function to the given layer
+      *
+      *  @see   https://en.wikipedia.org/wiki/Activation_function
+      *
+      *  @param parent  Parent layer
+      *  @param activation Name of the activation function
+      *  @param param   Value to apply to the activation function
+      *  @param name  Name of the layer
+      *  @return     Activation layer
+    */
+    layer Activation(layer parent, string activation, float param=0.01, string name = "");
 
-  /**
-    *  @brief Layer normalization layer.
-    *
-    *  @details
-    *   Applies Layer Normalization over a input.
-    *
-    *  @see   https://arxiv.org/abs/1607.06450
-    *
-    *  @param parent  Parent layer
-    *  @param momentum  Momentum for the moving mean and the moving variance
-    *  @param epsilon  Value added to the denominator for numerical stability
-    *  @param affine  A boolean value that when set to True, this module has learnable affine parameters
-    *  @param name  A name for the operation
-    *  @return     Parent layer after the normalization
-  */
-  layer LayerNormalization(layer parent, float momentum = 0.9f, float epsilon = 0.001f, bool affine = true,string name = "");
+    /**
+      *  @brief Applies a Softmax activation function to the given layer.
+      *
+      *  @see   https://en.wikipedia.org/wiki/Softmax_function
+      *
+      *  @param parent  Parent layer
+      *  @return     Output of Softmax transformation
+    */
+    layer Softmax(layer parent);
 
-  /**
-    *  @brief Group normalization layer.
-    *
-    *  @details
-    *   Divides the channels into groups and computes within each group the mean and variance for normalization. The computation is independent of batch sizes.
-    *
-    *  @see   https://arxiv.org/abs/1803.08494
-    *
-    *  @param parent  Parent layer
-    *  @param groups  Number of groups in which the channels will be divided
-    *  @param momentum  Momentum for the moving mean and the moving variance
-    *  @param epsilon  Value added to the denominator for numerical stability
-    *  @param affine  A boolean value that when set to True, this module has learnable affine parameters
-    *  @param name  A name for the operation
-    *  @return     Parent layer after the normalization
-  */
-  layer GroupNormalization(layer parent, int groups, float momentum = 0.9f, float epsilon = 0.001f, bool affine = true,string name = "");
-  layer Norm(layer parent, float epsilon = 0.001f, string name = "");
-  layer NormMax(layer parent, float epsilon = 0.001f, string name = "");
-  layer NormMinMax(layer parent, float epsilon = 0.001f, string name = "");
+    /**
+      *  @brief Applies a Sigmoid activation function to the given layer.
+      *
+      *  @see   https://en.wikipedia.org/wiki/Sigmoid_function
+      *
+      *  @param parent  Parent layer
+      *  @return     Output of Sigmoid activation
+    */
+    layer Sigmoid(layer parent);
 
+    /**
+      *  @brief Applies a Rectified Linear Unit activation function to the given layer.
+      *
+      *  @see   https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
+      *
+      *  @param parent  Parent layer
+      *  @return     Output of ReLu activation
+    */
+    layer ReLu(layer parent);
 
-  //  Operator Layers
-  layer Abs(layer l);
-  layer Diff(layer l1, layer l2);
-  layer Diff(layer l1, float k);
-  /**
-    *  @brief Layer that computes the difference of a float number and a layer.
-    *
-    *  @param k  Number
-    *  @param l1  Parent layer
-    *  @return     Parent layer l1 after computing his difference with k
-  */
-  layer Diff(float k, layer l1);
-  layer Div(layer l1, layer l2);
-  layer Div(layer l1, float k);
-  layer Div(float k, layer l1);
-  layer Exp(layer l);
-  /**
-    *  @brief Layer that computes the logarithm of a layer.
-    *
-    *  @param l  Parent layer
-    *  @return     Parent layer l after computing his logarithm
-  */
-  layer Log(layer l);
-  layer Log2(layer l);
-  layer Log10(layer l);
-  layer Mult(layer l1, layer l2);
-  /**
-    *  @brief Layer that computes the multiplication of a float number and a layer.
-    *
-    *  @param l1  Parent layer
-    *  @param k  Number
-    *  @return     Parent layer l1 after computing his multiplication with k
-  */
-  layer Mult(layer l1, float k);
-  layer Mult(float k,layer l1);
-  layer Pow(layer l1, layer l2);
-  layer Pow(layer l1, float k);
-  layer Sqrt(layer l);
-  /**
-    *  @brief Layer that computes the sum of two layers.
-    *
-    *  @param l1  Layer
-    *  @param l2  Layer
-    *  @return     The result after computing the sum between layers l1 and l2
-  */
-  layer Sum(layer l1, layer l2);
-  /**
-    *  @brief Layer that computes the sum of a float number and a layer.
-    *
-    *  @param l1  Parent layer
-    *  @param k  Number
-    *  @return     Parent layer l1 after computing his sum with k
-  */
-  layer Sum(layer l1, float k);
-  layer Sum(float k, layer l1);
-  layer Select(layer l, vector<string> indices);
-  layer Permute(layer l, vector<int> dims);
+    /**
+      *  @brief Applies the Leaky version of a Rectified Linear Unit activation function to the given layer.
+      *
+      *  @see   https://en.wikipedia.org/wiki/Rectifier_(neural_networks)#Leaky_ReLUs
+      *
+      *  @param parent  Parent layer
+      *  @param param  Negative slope coefficient
+      *  @return     Output of Leaky ReLu activation
+    */
+    layer LReLu(layer parent,float param=0.01);
 
-  // Reduction Layers
-  layer ReduceMean(layer l, vector<int> axis = {0}, bool keepdims = false);
-  layer ReduceVar(layer l, vector<int> axis = {0}, bool keepdims = false);
-  layer ReduceSum(layer l, vector<int> axis = {0}, bool keepdims = false);
-  layer ReduceMax(layer l, vector<int> axis = {0}, bool keepdims = false);
-  layer ReduceMin(layer l, vector<int> axis = {0}, bool keepdims = false);
+    /**
+      *  @brief Applies the Hyperbolic tangent activation function to the given layer.
+      *
+      *  @see   https://en.wikipedia.org/wiki/Hyperbolic_function
+      *
+      *  @param parent  Parent layer
+      *  @return     Output of hyperbolic activation
+    */
+    layer Tanh(layer parent);
+    /**
+      *  @brief Convolution layer.
+      *
+      *  @param parent  Parent layer
+      *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+      *  @param kernel_size  Vector of 2 integers, specifying the height and width of the 2D convolution window.
+      *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
+      *  @param padding  One of "none", "valid" or "same"
+      *  @param groups  Number of blocked connections from input channels to output channels
+      *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
+      *  @param use_bias  Boolean, whether the layer uses a bias vector.
+      *  @param name  A name for the operation
+      *  @return     Convolution layer
+    */
+    layer Conv(layer parent, int filters, const vector<int> &kernel_size,
+               const vector<int> &strides = {1, 1}, string padding = "same", int groups = 1,
+               const vector<int> &dilation_rate = {1, 1},
+               bool use_bias = true, string name = "");
+    /**
+      *  @brief Regular densely-connected NN layer.
+      *
+      *  @param parent  Parent layer
+      *  @param ndim  Positive integer, dimensionality of the output space
+      *  @param use_bias  Boolean, whether the layer uses a bias vector.
+      *  @param name  A name for the operation
+      *  @return     Densely-connected NN layer
+    */
+    layer Dense(layer parent, int ndim, bool use_bias = true,  string name = "");
+    /**
+      *  @brief Applies Dropout to a layer.
+      *
+      *  @details
+      *   Dropout consists in randomly setting a fraction rate of input units to 0 at each update during training time, which helps prevent overfitting.
+      *
+      *  @param parent  Parent layer
+      *  @param rate  Between 0 and 1. Fraction of the input units to drop
+      *  @param name  A name for the operation
+      *  @return     Layer with Dropout
+    */
+    layer Dropout(layer parent, float rate, string name = "");
+    /**
+      *  @brief Used to initialize an input to a model.
+      *
+      *  @param shape  A shape vector (integer), not including the batch size. For instance, shape=(32,) indicates that the expected input will be batches of 32-dimensional vectors
+      *  @param name  A name for the operation
+      *  @return     Input layer
+    */
+    layer Input(const vector<int> &shape, string name = "");
+    /**
+      *  @brief Upsampling layer.
+      *
+      *  @details
+      *   Repeats the rows and columns of the data.
+      *
+      *  @param parent  Parent layer
+      *  @param size  Vector of 2 integers. The upsampling factors for rows and columns
+      *  @param interpolation  A string, one of nearest or bilinear
+      *  @param name  A name for the operation
+      *  @return     Output layer after upsampling operation
+    */
+    layer UpSampling(layer parent, const vector<int> &size, string interpolation = "nearest", string name = ""); //Todo: Implement
+    /**
+      *  @brief Reshapes a Layer to a certain shape.
+      *
+      *  @param parent  Parent layer
+      *  @param shape  Target shape. Vector of integers. Does not include the batch axis
+      *  @param name  A name for the operation
+      *  @return     Output of reshape operation
+    */
+    layer Reshape(layer parent, const vector<int> &shape, string name = "");
+    layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
+                const vector<int> &output_padding, string padding = "same",
+                const vector<int> &dilation_rate = {1, 1},
+                const vector<int> &strides = {1, 1}, bool use_bias = true, string name = ""); //Todo: Implement
+    layer Embedding(int input_dim, int output_dim, string name = ""); //Todo: Implement
+    /**
+      *  @brief Transposes a Layer.
+      *
+      *  @param parent  Parent layer
+      *  @param dims  Vector of integers with the transpose dimensions
+      *  @param name  A name for the operation
+      *  @return     Output of transpose operation
+    */
+    layer Transpose(layer parent, string name = "");
 
-  // Generator Layers
-  layer GaussGenerator(float mean, float stdev, vector<int> size);
-  layer UniformGenerator(float low, float high, vector<int> size);
-
-  // Pooling Layers
-  /**
-    *  @brief Average pooling operation.
-    *
-    *  @param parent  Parent layer
-    *  @param pool_size  Size of the average pooling windows
-    *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
-    *  @param padding  One of "none", "valid" or "same" (case-insensitive).
-    *  @param name  A name for the operation
-    *  @return     The result after apply the average pooling operation over the parent layer
-  */
-  layer AveragePool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2},string padding = "none", string name = "");
-  /**
-    *  @brief Global Max pooling operation.
-    *
-    *  @param parent  Parent layer
-    *  @param name  A name for the operation
-    *  @return     The result after apply the global max pooling operation over the parent layer
-  */
-  layer GlobalMaxPool(layer parent, string name = ""); //Todo: Implement
-  /**
-    *  @brief Global Average pooling operation.
-    *
-    *  @param parent  Parent layer
-    *  @param name  A name for the operation
-    *  @return     The result after apply the global average pooling operation over the parent layer
-  */
-  layer GlobalAveragePool(layer parent, string name = ""); //Todo: Implement
-  /**
-    *  @brief Max pooling operation.
-    *
-    *  @param parent  Parent layer
-    *  @param pool_size  Size of the max pooling windows
-    *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
-    *  @param padding  One of "none", "valid" or "same" (case-insensitive).
-    *  @param name  A name for the operation
-    *  @return     The result after apply the max pooling operation over the parent layer
-  */
-  layer MaxPool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2}, string padding = "none", string name = "");
-
-  // Recurrent Layers
-  layer RNN(layer parent, int units, int num_layers, bool use_bias = true, float dropout = .0f, bool bidirectional = false, string name = "");
-  layer LSTM(layer parent, int units, int num_layers, bool use_bias = true, float dropout = .0f, bool bidirectional = false, string name = "");
+    // Transformation Layers
+    layer Affine(layer parent, float angle=0, float translate=0, float scale=0, float shear=0, string name="");  // TODO: Implement
+    layer Crop(layer parent, vector<int> from_coords, vector<int> to_coords, bool reshape=true, float constant=0.0f, string name="");
+    layer CenteredCrop(layer parent, vector<int> size, bool reshape=true, float constant=0.0f, string name="");
+    layer ColorJitter(layer parent, float brightness=0, float contrast=0, float saturation=0, float hue=0, string name="");  // TODO: Implement
+    layer CropScale(layer parent, vector<int> from_coords, vector<int> to_coords, string da_mode="nearest", float constant=0.0f, string name="");
+    layer Cutout(layer parent, vector<int> from_coords, vector<int> to_coords, float constant=0.0f, string name="");
+    layer Flip(layer parent, int axis=0, string name="");
+    layer Grayscale(layer parent,  string name="");  // TODO: Implement
+    layer HorizontalFlip(layer parent, string name="");
+    layer Pad(layer parent, vector<int> padding, float constant=0.0f, string name=""); // TODO: Implement
+    layer Rotate(layer parent, float angle, vector<int> offset_center={0, 0}, string da_mode="nearest", float constant=0.0f, string name="");
+    layer Scale(layer parent, vector<int> new_shape, bool reshape, string da_mode="nearest", float constant=0.0f, string name="");
+    layer Shift(layer parent, vector<int> shift, string da_mode="nearest", float constant=0.0f, string name="");
+    layer VerticalFlip(layer parent, string name="");
+    layer Normalize(layer parent, string name="");  // TODO: Implement
 
 
-  // Layers Methods
-  void set_trainable(layer l, bool val);
-  void copyTensor(Layer *l1,Layer *l2);
-  void copyGrad(Layer *l1,Layer *l2);
-  vlayer getOut(model net);
-  Tensor* getTensor(layer l);
-  Tensor* getGrad(layer l);
+    // Data augmentation Layers
+    layer RandomAffine(layer parent, vector<float> angle, vector<float> translate, vector<float> scale, vector<float> shear, string name="");  // TODO: Implement
+    layer RandomCrop(layer parent, vector<int> new_shape, string name= "");
+    layer RandomCenteredCrop(layer parent, vector<int> new_shape, string name= "");  // TODO: Implement
+    layer RandomCropScale(layer parent, vector<float> factor, string da_mode= "nearest", string name= "");
+    layer RandomCutout(layer parent, vector<float> factor_x, vector<float> factor_y, float constant= 0.0f, string name= "");
+    layer RandomFlip(layer parent, int axis, string name= "");
+    layer RandomGrayscale(layer parent, string name= "");
+    layer RandomHorizontalFlip(layer parent, string name= "");
+    layer RandomRotation(layer parent, vector<float> factor, vector<int> offset_center= {0, 0}, string da_mode= "nearest", float constant= 0.0f, string name= "");
+    layer RandomScale(layer parent, vector<float> factor, string da_mode= "nearest", float constant= 0.0f, string name= "");
+    layer RandomShift(layer parent, vector<float> factor_x, vector<float> factor_y, string da_mode= "nearest", float constant= 0.0f, string name= "");
+    layer RandomVerticalFlip(layer parent, string name= "");
+
+    // Merge Layers
+    /**
+      *  @brief Layer that adds a list of layer inputs.
+      *
+      *  @details
+      *   It takes as input a list of layers, all of the same shape, and returns a single tensor (also of the same shape).
+      *
+      *  @param layers  List of layers
+      *  @param name  A name for the operation
+      *  @return     Output of add operation with all input layers
+    */
+    layer Add(const vector<layer> &layers, string name = "");
+    /**
+      *  @brief Layer that averages a list of layer inputs.
+      *
+      *  @details
+      *   It takes as input a list of layers, all of the same shape, and returns a single tensor (also of the same shape).
+      *
+      *  @param layers  List of layers
+      *  @param name  A name for the operation
+      *  @return     Output of average operation with all input layers
+    */
+    layer Average(const vector<layer> &layers, string name = ""); //Todo: Implement
+
+    /**
+      *  @brief Layer that concatenates a list of inputs.
+      *
+      *  @details
+      *   It takes as input a list of layers and returns a single tensor, the concatenation of all inputs.
+      *
+      *  @param layers  List of layers
+      *  @param name  A name for the operation
+      *  @return     Output of concatenation operation with all input layers
+    */
+    layer Concat(const vector<layer> &layers, string name = "");
+    layer MatMul(const vector<layer> &layers, string name = "");
+    layer Maximum(const vector<layer> &layers, string name = "");
+    layer Minimum(const vector<layer> &layers, string name = "");
+    layer Subtract(const vector<layer> &layers, string name = "");
 
 
-  ///////////////////////////////////////
-  //  INITIALIZERS
-  ///////////////////////////////////////
-  /**
-    *  @brief Glorot normal initializer, also called Xavier normal initializer.
-    *
-    *  @details
-    *   It draws samples from a truncated normal distribution centered on 0 with stddev = sqrt(2 / (fan_in + fan_out)) where fan_in is the number of input units in the weight tensor and fan_out is the number of output units in the weight tensor.
-    *
-    *  @param l  Parent layer to initialize
-    *  @param seed   Used to seed the random generator
-    *  @return     The layer l initialized with the Glorot normal
-  */
-  layer GlorotNormal(layer l,int seed=1234);
-  /**
-    *  @brief Glorot uniform initializer, also called Xavier uniform initializer.
-    *
-    *  @details
-    *   It draws samples from a uniform distribution within [-limit, limit] where limit is sqrt(6 / (fan_in + fan_out)) where fan_in is the number of input units in the weight tensor and fan_out is the number of output units in the weight tensor.
-    *
-    *  @param l  Parent layer to initialize
-    *  @param seed   Used to seed the random generator
-    *  @return     The layer l initialized with the Glorot uniform
-  */
-  layer GlorotUniform(layer l,int seed=1234);
-  /**
-    *  @brief Random normal initializer.
-    *
-    *  @param l  Parent layer to initialize
-    *  @param m  Mean of the normal distribution to draw samples
-    *  @param s  Standard deviation of the normal distribution to draw samples
-    *  @param seed   Used to seed the random generator
-    *  @return     The layer l initialized with a random normal distribution
-  */
-  layer RandomNormal(layer l, float m=0.0,float s=0.1, float seed=1234);
-  layer RandomUniform(layer l, float min=0.0,float max=0.1, float seed=1234);
-  /**
-    *  @brief Initializer that generates tensors initialized to a constant value.
-    *
-    *  @param l  Parent layer to initialize
-    *  @param v   Value of the generator
-    *  @return     The layer l initialized with a constant value
-  */
-  layer Constant(layer l, float v=0.1);
+    // Noise Layers
+    /**
+      *  @brief Apply additive zero-centered Gaussian noise.
+      *
+      *  @details
+      *   This is useful to mitigate overfitting (you could see it as a form of random data augmentation).
+      *   Gaussian Noise (GS) is a natural choice as corruption process for real valued inputs.
+      *   As it is a regularization layer, it is only active at training time.
+      *
+      *  @param parent  Parent layer
+      *  @param stddev  Standard deviation of the noise distribution
+      *  @param name  A name for the operation
+      *  @return     The parent after apply the GaussianNoise layer
+    */
+    layer GaussianNoise(layer parent, float stddev, string name = "");
+
+    // Normalization
+    /**
+      *  @brief Batch normalization layer.
+      *
+      *  @details
+      *   Normalize the activations of the previous layer at each batch, i.e. applies a transformation that maintains the mean activation close to 0 and the activation standard deviation close to 1.
+      *
+      *  @see   https://arxiv.org/abs/1502.03167
+      *
+      *  @param parent  Parent layer
+      *  @param momentum  Momentum for the moving mean and the moving variance
+      *  @param epsilon  Small float added to variance to avoid dividing by zero
+      *  @param affine  A boolean value that when set to True, this module has learnable affine parameters
+      *  @param name  A name for the operation
+      *  @return     Parent layer after the normalization
+    */
+    layer BatchNormalization(layer parent, float momentum = 0.9f, float epsilon = 0.001f, bool affine = true,string name = "");
+
+    /**
+      *  @brief Layer normalization layer.
+      *
+      *  @details
+      *   Applies Layer Normalization over a input.
+      *
+      *  @see   https://arxiv.org/abs/1607.06450
+      *
+      *  @param parent  Parent layer
+      *  @param momentum  Momentum for the moving mean and the moving variance
+      *  @param epsilon  Value added to the denominator for numerical stability
+      *  @param affine  A boolean value that when set to True, this module has learnable affine parameters
+      *  @param name  A name for the operation
+      *  @return     Parent layer after the normalization
+    */
+    layer LayerNormalization(layer parent, float momentum = 0.9f, float epsilon = 0.001f, bool affine = true,string name = "");
+
+    /**
+      *  @brief Group normalization layer.
+      *
+      *  @details
+      *   Divides the channels into groups and computes within each group the mean and variance for normalization. The computation is independent of batch sizes.
+      *
+      *  @see   https://arxiv.org/abs/1803.08494
+      *
+      *  @param parent  Parent layer
+      *  @param groups  Number of groups in which the channels will be divided
+      *  @param momentum  Momentum for the moving mean and the moving variance
+      *  @param epsilon  Value added to the denominator for numerical stability
+      *  @param affine  A boolean value that when set to True, this module has learnable affine parameters
+      *  @param name  A name for the operation
+      *  @return     Parent layer after the normalization
+    */
+    layer GroupNormalization(layer parent, int groups, float momentum = 0.9f, float epsilon = 0.001f, bool affine = true,string name = "");
+    layer Norm(layer parent, float epsilon = 0.001f, string name = "");
+    layer NormMax(layer parent, float epsilon = 0.001f, string name = "");
+    layer NormMinMax(layer parent, float epsilon = 0.001f, string name = "");
 
 
-  ///////////////////////////////////////
-  //  REGULARIZERS
-  ///////////////////////////////////////
-  layer L2(layer l,float l2);
-  layer L1(layer l,float l1);
-  layer L1L2(layer l,float l1,float l2);
+    //  Operator Layers
+    layer Abs(layer l);
+    layer Diff(layer l1, layer l2);
+    layer Diff(layer l1, float k);
+    /**
+      *  @brief Layer that computes the difference of a float number and a layer.
+      *
+      *  @param k  Number
+      *  @param l1  Parent layer
+      *  @return     Parent layer l1 after computing his difference with k
+    */
+    layer Diff(float k, layer l1);
+    layer Div(layer l1, layer l2);
+    layer Div(layer l1, float k);
+    layer Div(float k, layer l1);
+    layer Exp(layer l);
+    /**
+      *  @brief Layer that computes the logarithm of a layer.
+      *
+      *  @param l  Parent layer
+      *  @return     Parent layer l after computing his logarithm
+    */
+    layer Log(layer l);
+    layer Log2(layer l);
+    layer Log10(layer l);
+    layer Mult(layer l1, layer l2);
+    /**
+      *  @brief Layer that computes the multiplication of a float number and a layer.
+      *
+      *  @param l1  Parent layer
+      *  @param k  Number
+      *  @return     Parent layer l1 after computing his multiplication with k
+    */
+    layer Mult(layer l1, float k);
+    layer Mult(float k,layer l1);
+    layer Pow(layer l1, layer l2);
+    layer Pow(layer l1, float k);
+    layer Sqrt(layer l);
+    /**
+      *  @brief Layer that computes the sum of two layers.
+      *
+      *  @param l1  Layer
+      *  @param l2  Layer
+      *  @return     The result after computing the sum between layers l1 and l2
+    */
+    layer Sum(layer l1, layer l2);
+    /**
+      *  @brief Layer that computes the sum of a float number and a layer.
+      *
+      *  @param l1  Parent layer
+      *  @param k  Number
+      *  @return     Parent layer l1 after computing his sum with k
+    */
+    layer Sum(layer l1, float k);
+    layer Sum(float k, layer l1);
+    layer Select(layer l, vector<string> indices, string name="");
+    layer Permute(layer l, vector<int> dims, string name="");
+
+    // Reduction Layers
+    layer ReduceMean(layer l, vector<int> axis = {0}, bool keepdims = false);
+    layer ReduceVar(layer l, vector<int> axis = {0}, bool keepdims = false);
+    layer ReduceSum(layer l, vector<int> axis = {0}, bool keepdims = false);
+    layer ReduceMax(layer l, vector<int> axis = {0}, bool keepdims = false);
+    layer ReduceMin(layer l, vector<int> axis = {0}, bool keepdims = false);
+
+    // Generator Layers
+    layer GaussGenerator(float mean, float stdev, vector<int> size);
+    layer UniformGenerator(float low, float high, vector<int> size);
+
+    // Pooling Layers
+    /**
+      *  @brief Average pooling operation.
+      *
+      *  @param parent  Parent layer
+      *  @param pool_size  Size of the average pooling windows
+      *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
+      *  @param padding  One of "none", "valid" or "same" (case-insensitive).
+      *  @param name  A name for the operation
+      *  @return     The result after apply the average pooling operation over the parent layer
+    */
+    layer AveragePool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2},string padding = "none", string name = "");
+    /**
+      *  @brief Global Max pooling operation.
+      *
+      *  @param parent  Parent layer
+      *  @param name  A name for the operation
+      *  @return     The result after apply the global max pooling operation over the parent layer
+    */
+    layer GlobalMaxPool(layer parent, string name = ""); //Todo: Implement
+    /**
+      *  @brief Global Average pooling operation.
+      *
+      *  @param parent  Parent layer
+      *  @param name  A name for the operation
+      *  @return     The result after apply the global average pooling operation over the parent layer
+    */
+    layer GlobalAveragePool(layer parent, string name = ""); //Todo: Implement
+    /**
+      *  @brief Max pooling operation.
+      *
+      *  @param parent  Parent layer
+      *  @param pool_size  Size of the max pooling windows
+      *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
+      *  @param padding  One of "none", "valid" or "same" (case-insensitive).
+      *  @param name  A name for the operation
+      *  @return     The result after apply the max pooling operation over the parent layer
+    */
+    layer MaxPool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2}, string padding = "none", string name = "");
+
+    // Recurrent Layers
+    layer RNN(layer parent, int units, int num_layers, bool use_bias = true, float dropout = .0f, bool bidirectional = false, string name = "");
+    layer LSTM(layer parent, int units, int num_layers, bool use_bias = true, float dropout = .0f, bool bidirectional = false, string name = "");
 
 
-  ///////////////////////////////////////
-  //  DATASETS
-  ///////////////////////////////////////
-  bool exist(string name);
-  /**
-    *  @brief Downloads MNIST Dataset.
-    *
-    *  @see   http://yann.lecun.com/exdb/mnist/
-    *
-    *  @return     (void) The binary files of MNIST
-  */
-  void download_mnist();
-  /**
-    *  @brief Downloads CIFAR-10 Dataset.
-    *
-    *  @see   https://www.cs.toronto.edu/~kriz/cifar.html
-    *
-    *  @return     (void) The binary files of CIFAR-10
-  */
-  void download_cifar10();
-  void download_drive();
+    // Layers Methods
+    void set_trainable(layer l, bool val);
+    void copyTensor(Layer *l1,Layer *l2);
+    void copyGrad(Layer *l1,Layer *l2);
+    vlayer getOut(model net);
+    Tensor* getTensor(layer l);
+    Tensor* getGrad(layer l);
+
+
+    ///////////////////////////////////////
+    //  INITIALIZERS
+    ///////////////////////////////////////
+    /**
+      *  @brief Glorot normal initializer, also called Xavier normal initializer.
+      *
+      *  @details
+      *   It draws samples from a truncated normal distribution centered on 0 with stddev = sqrt(2 / (fan_in + fan_out)) where fan_in is the number of input units in the weight tensor and fan_out is the number of output units in the weight tensor.
+      *
+      *  @param l  Parent layer to initialize
+      *  @param seed   Used to seed the random generator
+      *  @return     The layer l initialized with the Glorot normal
+    */
+    layer GlorotNormal(layer l,int seed=1234);
+    /**
+      *  @brief Glorot uniform initializer, also called Xavier uniform initializer.
+      *
+      *  @details
+      *   It draws samples from a uniform distribution within [-limit, limit] where limit is sqrt(6 / (fan_in + fan_out)) where fan_in is the number of input units in the weight tensor and fan_out is the number of output units in the weight tensor.
+      *
+      *  @param l  Parent layer to initialize
+      *  @param seed   Used to seed the random generator
+      *  @return     The layer l initialized with the Glorot uniform
+    */
+    layer GlorotUniform(layer l,int seed=1234);
+    /**
+      *  @brief Random normal initializer.
+      *
+      *  @param l  Parent layer to initialize
+      *  @param m  Mean of the normal distribution to draw samples
+      *  @param s  Standard deviation of the normal distribution to draw samples
+      *  @param seed   Used to seed the random generator
+      *  @return     The layer l initialized with a random normal distribution
+    */
+    layer RandomNormal(layer l, float m=0.0,float s=0.1, float seed=1234);
+    layer RandomUniform(layer l, float min=0.0,float max=0.1, float seed=1234);
+    /**
+      *  @brief Initializer that generates tensors initialized to a constant value.
+      *
+      *  @param l  Parent layer to initialize
+      *  @param v   Value of the generator
+      *  @return     The layer l initialized with a constant value
+    */
+    layer Constant(layer l, float v=0.1);
+
+
+    ///////////////////////////////////////
+    //  REGULARIZERS
+    ///////////////////////////////////////
+    layer L2(layer l,float l2);
+    layer L1(layer l,float l1);
+    layer L1L2(layer l,float l1,float l2);
+
+
+    ///////////////////////////////////////
+    //  DATASETS
+    ///////////////////////////////////////
+    bool exist(string name);
+    /**
+      *  @brief Downloads MNIST Dataset.
+      *
+      *  @see   http://yann.lecun.com/exdb/mnist/
+      *
+      *  @return     (void) The binary files of MNIST
+    */
+    void download_mnist();
+    /**
+      *  @brief Downloads CIFAR-10 Dataset.
+      *
+      *  @see   https://www.cs.toronto.edu/~kriz/cifar.html
+      *
+      *  @return     (void) The binary files of CIFAR-10
+    */
+    void download_cifar10();
+    void download_drive();
 
 }
 #endif

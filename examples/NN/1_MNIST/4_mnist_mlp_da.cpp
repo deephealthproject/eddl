@@ -42,8 +42,8 @@ int main(int argc, char **argv) {
 
     // Data augmentation
     //l = CropScaleRandom(l, {0.9f, 1.0f});
-    l = ShiftRandom(l, {-0.1,0.1},{-0.1,0.1});
-    l = RotateRandom(l,{-10,10});
+    l = RandomShift(l, {-0.1, 0.1}, {-0.1, 0.1});
+    l = RandomRotation(l, {-10, 10});
 
     // Come back to 1D tensor for fully connected:
     l=Reshape(l,{-1});

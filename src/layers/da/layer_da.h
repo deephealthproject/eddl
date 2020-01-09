@@ -149,13 +149,13 @@ public:
 };
 
 
-class LCropAndScale : public LCrop {
+class LCropScale : public LCrop {
 public:
     static int total_layers;
     string da_mode;
 
-    LCropAndScale(Layer *parent, vector<int> from_coords, vector<int> to_coords, string da_mode, float constant, string name, int dev);
-    ~LCropAndScale();
+    LCropScale(Layer *parent, vector<int> from_coords, vector<int> to_coords, string da_mode, float constant, string name, int dev);
+    ~LCropScale();
 
     void forward() override;
 

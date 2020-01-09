@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
     t3->mult_(0.5f);
     t3->clampmax_(255.0f);
     t1->set_select({":", ":", "100:200", "300:400"}, t3);
-
+e
     t4 = new Tensor({1, 3, 50, 50});
     Tensor::scale(t2, t4, {50, 50});
     Tensor* t5 = t4->clone();
