@@ -22,7 +22,7 @@ Numpy-like operations over a raw-tensor object
 | ------------- | ---- | ---- | -------- |
 | empty         | ✅    | ✅    |   Return a new array of given shape and type, without initializing entries.       |
 | eye           | ✅    | ✅    |   Return a 2-D array with ones on the diagonal and zeros elsewhere.       |
-| identity           | ✅    | ✅    |    Return the identity array (eye with offset=0).      |
+| identity      | ✅    | ✅    |    Return the identity array (eye with offset=0).      |
 | ones          | ✅    | ✅    |    Return a new array of given shape and type, filled with ones.      |
 | zeros         | ✅    | ✅    |     Return a new array of given shape and type, filled with zeros.     |
 | full          | ✅    | ✅    |   Return a new array of given shape and type, filled with "value".       |
@@ -32,8 +32,8 @@ Numpy-like operations over a raw-tensor object
 
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
-| clone          | ✅    | ✅    | Creates an identical (but different) tensor from another                           |
-| copy | ✅ | ✅ |  Copy data from Tensor A to B |
+| clone         | ✅    | ✅    | Creates an identical (but different) tensor from another                           |
+| copy          | ✅ | ✅ |  Copy data from Tensor A to B |
 
 
 ### Numerical ranges
@@ -113,7 +113,7 @@ Numpy-like operations over a raw-tensor object
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- | ---- | ---- | -------- |
-| tile      | ❌    | ❌    |  	Construct an array by repeating A the number of times given by reps.   |
+| tile        | ❌    | ❌    |  	Construct an array by repeating A the number of times given by reps.   |
 | repeat      | ❌    | ❌    |  Repeat elements of an array.  |
 
 
@@ -169,7 +169,7 @@ Not yet...
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
 | select          | ✅    | ✅    | Returns an array with the selected indices. `Tensor::select(k); k=vector of strings ({"0", ":5", ":", "3:6"})`. _TODO: Accept masks_   |
-| set_select          | ❌    | ❌    | Sets the elements in the array using the selected indices        `Tensor::set_select({"0", ":5", ":", "3:6"}, k); //k=float or Tensor                           |
+| set_select          | ✅    | ✅    | Sets the elements in the array using the selected indices        `Tensor::set_select({"0", ":5", ":", "3:6"}, k); //k=float or Tensor                           |
 | get | ✅ | ✅ | slow |
 | set | ✅ | ✅ | slow |
 

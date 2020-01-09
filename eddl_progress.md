@@ -7,7 +7,6 @@
 | ❌ | Todo |
 
 
----
 # Layers
 ---
 
@@ -15,66 +14,72 @@
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| Tensor | ✅ | ✅ | |
-| Dense | ✅ | ✅ | |
-| Activation | 🔵 | 🔵 | Sigmoid, LReLu ...
-| BatchNorm | ✅ | ✅ |
-| Embedding | ❌ | ❌ |
-| Input | ✅ | ✅ | |
-| Reshape | ✅ | ✅ | |
-| Transpose | ❌ | ❌ |
-| Drop | ✅ | ✅ |
+| Dense | ✅ | ✅ | Just your regular densely-connected NN layer. |
+| Activation | ✅ | ✅ | Applies an activation function to an output: ReLu, LReLu, Softmax, Sigmoid, Tanh |
+| Dropout | ✅ | ✅ | Applies Dropout to the input. |
+| Flatten | 🔵 | 🔵 | Flattens the input. Does not affect the batch size. (Wrapper for Reshape) |
+| Input | ✅ | ✅ | Used to instantiate a EDDL tensor. |
+| Reshape | ✅ | ✅ | Reshapes an output to a certain shape. |
+| Permute | ✅ | ✅ | Permutes the dimensions of the input according to a given pattern. |
+| Embedding | ❌ | ❌ | |
+| Transpose | ✅ | ✅ | |
 
 
 ## Convolutional layers
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| Conv2D | ✅ | ✅ | Dilated, Groups...
-| Conv2DT | ❌ | ❌ |
-| Upsampling | ✅ | ✅ |
-
+| Conv2D | ✅ | ✅ | Dilated, Groups... |
+| Conv2DT | ❌ | ❌ | |
+| UpSampling | ✅ | ✅ | |
 
 
 ## Data augmentation layers
 
+Image transformations with random values define in a range
+
+| Functionality | CPU | GPU | Comments |
+| ------------- |------| -----| ---------|
+| Crop (random) | ✅ | ✅ | |
+| Crop & Scale (random) | ✅ | ✅ | |
+| Cutout (random) | ✅ | ✅ | |
+| Flip (random) | ✅ | ✅ | |
+| Rotate (random) |  ✅ | ✅ | |
+| Scale (random) | ✅ | ✅ | |
+| Shift (random) | ✅ | ✅ | |
+
+
+## Data transformation
+
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
 | Crop | ✅ | ✅ | |
-| Crop (random) | ✅ | ✅ | |
-| Crop & Scale (random) | ✅ | ✅ | |
+| Crop & Scale | ✅ | ✅ | |
 | Cutout | ✅ | ✅ | |
-| Cutout (random) | ✅ | ✅ | |
 | Flip | ✅ | ✅ | |
-| Flip (random) | ✅ | ✅ | |
-| Rotate | ❌ | ❌ | |
-| Rotate (random) | ❌ | ❌ | |
+| Rotate|  ✅ | ✅ | |
 | Scale | ✅ | ✅ | |
-| Scale (random) | ✅ | ✅ | |
 | Shift | ✅ | ✅ | |
-| Shift (random) | ✅ | ✅ | |
-
-## Pooling layers
-
-| Functionality | CPU | GPU | Comments |
-| ------------- |------| -----| ---------|
-| AvgPool | ❌ | ❌ |
-| GlobalMaxPool | ❌ | ❌ |
-| MaxPool | ✅ | ✅ |
 
 
 ## Merge layers
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| Add | ✅ | ✅ |
-| Average | ❌ | ❌ |
-| Concat | ✅ | ✅ |
-| MatMul | ❌ | ❌ |
-| Max | ❌ | ❌ |
-| Merge | ❌ | ❌ |
-| Min | ❌ | ❌ |
-| Substract | ❌ | ❌ |
+| Add | ✅ | ✅ | Layer that adds a list of inputs. |
+| Substract | ✅ | ✅ | Layer that subtracts two inputs. |
+| MatMul | ✅ | ✅ | Layer that multiplies (element-wise) a list of inputs. |
+| Average | ✅ | ✅ | Layer that averages a list of inputs. |
+| Concat | ✅ | ✅ | Layer that concatenates a list of inputs. |
+| Max | ✅ | ✅ | Layer that computes the maximum (element-wise) a list of inputs. |
+| Min | ✅ | ✅ | Layer that computes the minimum (element-wise) a list of inputs. |
+
+
+## Normalization
+
+| Functionality | CPU | GPU | Comments |
+| ------------- |------| -----| ---------|
+| BatchNorm | ✅ | ✅ | Batch normalization layer (Ioffe and Szegedy, 2014).  |
 
 
 ## Noise layers
@@ -85,36 +90,42 @@
 | Uniform | ❌| ❌ | still test properly
 
 
-## Operators layers
-
-> **Note:** Do not confuse with raw-tensor operations
+## Pooling layers
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| Abs |  ✅ | ✅ |
-| Diff | ✅ | ✅ |
-| Div | ✅ | ✅ |
-| Exp | ✅ | ✅ |
-| Log | ✅ | ✅ |
-| Log10 | ✅ | ✅ |
-| Log2 |  ✅ | ✅ |
-| Mult | ✅ | ✅|
-| Pow |  ✅ | ✅ |
-| Sqrt |  ✅ | ✅ |
-| Sum | ✅ | ✅ |
+| AvgPool | ❌ | ❌ |
+| GlobalMaxPool | ❌ | ❌ |
+| MaxPool | ✅ | ✅ |
+
+
+## Operators layers
+
+| Functionality | CPU | GPU | Comments |
+| ------------- |------| -----| ---------|
+| Abs |  ✅ | ✅ | |
+| Diff | ✅ | ✅ | |
+| Div | ✅ | ✅ | |
+| Exp | ✅ | ✅ | |
+| Log | ✅ | ✅ | |
+| Log2 |  ✅ | ✅ | |
+| Log10 | ✅ | ✅ | |
+| Mult | ✅ | ✅| |
+| Pow |  ✅ | ✅ | |
+| Select |  ✅ | ✅ | |
+| Sqrt |  ✅ | ✅ | |
+| Sum | ✅ | ✅ | |
 
 
 ## Reduction layers
 
-> **Note:** Do not confuse with raw-tensor reductions
-
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| Mean | ✅| ✅ |
-| Var | ✅| ✅ |
-| Sum | ✅| ✅ |
-| Max | ✅| ✅ |
-| Min | ✅| ✅ |
+| Max | ✅| ✅ | |
+| Mean | ✅| ✅ | |
+| Min | ✅| ✅ | |
+| Sum | ✅| ✅ | |
+| Var | ✅| ✅ | |
 
 
 ## Recurrent layers
@@ -125,52 +136,58 @@
 | RNN | ❌ | ❌ |
 
 
----
 # Initializers
----
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| Constant |  ✅ | ✅ |
-| GlorotNormal |  ✅ | ✅ |
-| GlorotUniform |  ✅ | ✅ |
-| Identity | ❌ | ❌ |
-| Orthogonal | ❌ | ❌ |
-| RandomNormal |  ✅ | ✅ |
-| RandomUniform |  ✅ | ✅ |
+| Constant |  ✅ | ✅ | |
+| GlorotNormal |  ✅ | ✅ | |
+| GlorotUniform |  ✅ | ✅ | |
+| Identity | ❌ | ❌ | |
+| Orthogonal | ❌ | ❌ | |
+| RandomNormal |  ✅ | ✅ | |
+| RandomUniform |  ✅ | ✅ | |
 
 
----
+# Constraints
+
+| Functionality | CPU | GPU | Comments |
+| ------------- |------| -----| ---------|
+| MaxNorm |  ❌ | ❌ | |
+| MinMaxNorm |  ❌ | ❌ | |
+| NonNeg |  ❌ | ❌ | |
+| UnitNorm |  ❌ | ❌ | |
+
+
 # Loss functions
----
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| CrossEntropy | ✅ | ✅ |
-| MSE | ✅ | ✅ |
-| SoftCE | ✅ | ✅ |
+| CrossEntropy | ✅ | ✅ | |
+| MSE | ✅ | ✅ | |
+| Min | ✅ | ✅ | |
+| SoftCE | ✅ | ✅ | |
 
 
----
 # Metric functions
----
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| CategoricalAcc | ✅ | ✅ |
-| MSE | ✅ | ✅ |
+| CategoricalAcc | ✅ | ✅ | |
+| MSA | ✅ | ✅ | |
+| MRE | ✅ | ✅ | |
+| MSE | ✅ | ✅ | |
+| MSum | ✅ | ✅ | |
 
 
----
 # Optimizers
----
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| Adadelta | ❌ | ❌ |
-| Adagrad | ❌ | ❌ |
+| Adadelta |✅ | ✅ | |
+| Adagrad | ✅ | ✅ | |
 | Adam | ✅ | ✅ |
-| Adamax | ❌ | ❌ |
-| Nadam | ❌ | ❌ |
+| Adaax | ✅ | ✅ | |
+| Nadam | ✅ | ✅ | |
 | RMSProp |✅ | ✅ |
 | SGD | ✅ | ✅ |
