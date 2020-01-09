@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.9.2)
 
 PROJECT(eddl LANGUAGES CXX)
 
-cmake_policy(SET CMP0074 NEW) # Suppress warning for zlib_ROOT variable
+if (${CMAKE_VERSION} VERSION_GREATER "3.12")
+    cmake_policy(SET CMP0074 NEW) # Suppress warning for zlib_ROOT variable
+endif()
 
 # SET C++ COMPILER STANDARD
 SET(CMAKE_CXX_STANDARD 11)
