@@ -44,13 +44,13 @@ int main(int argc, char **argv){
 //    l = Crop(l, {30, 30});
 
     // Data augmentation
-//   l = ShiftRandom(l, {-0.2f, +0.2f}, {-0.2f, +0.2f});
-//   l = RotateRandom(l, {-30.0f, +30.0f});
-//   l = ScaleRandom(l, {0.85f, 2.0f});
-//   l = FlipRandom(l, 1);
-//   l = CropRandom(l, {28, 28});
-//   l = CropScaleRandom(l, {0.f, 1.0f});
-//   l = CutoutRandom(l, {0.0f, 0.3f}, {0.0f, 0.3f});
+//   l = RandomShift(l, {-0.2f, +0.2f}, {-0.2f, +0.2f});
+//   l = RandomRotation(l, {-30.0f, +30.0f});
+//   l = RandomScale(l, {0.85f, 2.0f});
+//   l = RandomFlip(l, 1);
+//   l = RandomCrop(l, {28, 28});
+//   l = RandomCropScale(l, {0.f, 1.0f});
+//   l = RandomCutout(l, {0.0f, 0.3f}, {0.0f, 0.3f});
 
     // l=Select(l, {"1", "1:31", "1:31"});
     l=MaxPool(ReLu(Conv(l,32,{3,3},{1,1})),{2,2});

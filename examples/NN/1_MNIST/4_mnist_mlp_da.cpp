@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     l=Reshape(l,{1,28,28});
 
     // Data augmentation
-    //l = CropScaleRandom(l, {0.9f, 1.0f});
+    //l = RandomCropScale(l, {0.9f, 1.0f});
     l = RandomShift(l, {-0.1, 0.1}, {-0.1, 0.1});
     l = RandomRotation(l, {-10, 10});
 

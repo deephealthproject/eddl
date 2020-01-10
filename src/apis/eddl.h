@@ -397,7 +397,7 @@ namespace eddl {
     layer Grayscale(layer parent,  string name="");  // TODO: Implement
     layer HorizontalFlip(layer parent, string name="");
     layer Pad(layer parent, vector<int> padding, float constant=0.0f, string name=""); // TODO: Implement
-    layer Rotate(layer parent, float angle, vector<int> offset_center={0, 0}, string da_mode="nearest", float constant=0.0f, string name="");
+    layer Rotate(layer parent, float angle, vector<int> offset_center={0, 0}, string da_mode="original", float constant=0.0f, string name="");
     layer Scale(layer parent, vector<int> new_shape, bool reshape, string da_mode="nearest", float constant=0.0f, string name="");
     layer Shift(layer parent, vector<int> shift, string da_mode="nearest", float constant=0.0f, string name="");
     layer VerticalFlip(layer parent, string name="");
@@ -413,7 +413,7 @@ namespace eddl {
     layer RandomFlip(layer parent, int axis, string name= "");
     layer RandomGrayscale(layer parent, string name= "");
     layer RandomHorizontalFlip(layer parent, string name= "");
-    layer RandomRotation(layer parent, vector<float> factor, vector<int> offset_center= {0, 0}, string da_mode= "nearest", float constant= 0.0f, string name= "");
+    layer RandomRotation(layer parent, vector<float> factor, vector<int> offset_center= {0, 0}, string da_mode= "original", float constant= 0.0f, string name= "");
     layer RandomScale(layer parent, vector<float> factor, string da_mode= "nearest", float constant= 0.0f, string name= "");
     layer RandomShift(layer parent, vector<float> factor_x, vector<float> factor_y, string da_mode= "nearest", float constant= 0.0f, string name= "");
     layer RandomVerticalFlip(layer parent, string name= "");

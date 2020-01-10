@@ -117,6 +117,11 @@ Apply data transformations with random parametrization.
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
 | BatchNorm | ✅ | ✅ | Batch normalization layer (Ioffe and Szegedy, 2014).  |
+| LayerNormalization | ✅ | ✅ | Layer normalization layer (Ba et al., 2016)  |
+| GroupNormalization | ✅ | ✅ | Group normalization layer (Yuxin Wu and Kaiming He, 2018).  |
+| Norm | ✅ | ✅ |   |
+| NormMax | ✅ | ✅ |   |
+| NormMinMax | ✅ | ✅ |   |
 
 
 ## Noise layers
@@ -124,7 +129,7 @@ Apply data transformations with random parametrization.
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
 | GaussianNoise | ✅ | ✅ | Apply additive zero-centered Gaussian noise. |
-| UniformNoise | ❌| ❌ | Apply additive zero-centered uniform noise.
+| UniformNoise | ✅ | ✅ | Apply additive zero-centered uniform noise.
 
 
 ## Pooling layers
@@ -132,7 +137,8 @@ Apply data transformations with random parametrization.
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
 | AvgPool | ❌ | ❌ | Average max pooling operation |
-| GlobalMaxPool | ❌ | ❌ | Global max pooling operation |
+| GlobalMaxPool | ✅ | ✅ | Global max pooling operation |
+| GlobalAveragePool | ❌ | ❌ | Global average pooling operation |
 | MaxPool | ✅ | ✅ | Max pooling operation |
 
 
@@ -174,15 +180,24 @@ Apply data transformations with random parametrization.
 | RNN | ❌ | ❌ | Fully-connected RNN where the output is to be fed back to input. |
 
 
+## Regularizer layers
+
+| Functionality | CPU | GPU | Comments |
+| ------------- |------| -----| ---------|
+| L1 | ✅ | ✅ | Lasso Regression |
+| L2 | ✅ | ✅ | Ridge Regression |
+| L1L2 | ✅ | ✅ |  |
+
+
 # Initializers
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| Constant |  ✅ | ✅ | Initializer that generates tensors initialized to a constant value |
-| GlorotNormal |  ✅ | ✅ | Glorot normal initializer, also called Xavier normal initializer. |
-| GlorotUniform |  ✅ | ✅ | Glorot uniform initializer, also called Xavier uniform initializer. |
-| HeNormal |  ❌ | ❌ | _He_ normal initializer. |
-| HeUniform |  ❌ | ❌ | _He_ uniform initializer. |
+| Constant | ✅ | ✅ | Initializer that generates tensors initialized to a constant value |
+| GlorotNormal | ✅ | ✅ | Glorot normal initializer, also called Xavier normal initializer. |
+| GlorotUniform | ✅ | ✅ | Glorot uniform initializer, also called Xavier uniform initializer. |
+| HeNormal | ❌ | ❌ | _He_ normal initializer. |
+| HeUniform | ❌ | ❌ | _He_ uniform initializer. |
 | Identity | ❌ | ❌ | Initializer that generates the identity matrix. |
 | LeCunUniform | ❌ | ❌ | LeCun uniform initializer. |
 | LeCunNormal | ❌ | ❌ | LeCun normal initializer. |
@@ -227,16 +242,17 @@ Apply data transformations with random parametrization.
 | MSE | ✅ | ✅ | Mean Squared Error |
 | MAE | ✅ | ✅ | Mean Absolute Error  |
 | MRE | ✅ | ✅ | Mean Relative Error |
+| Sum | ✅ | ✅ | Sum Error |
 
 
 # Optimizers
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| Adadelta |✅ | ✅ | Adadelta optimizer. |
-| Adagrad | ✅ | ✅ | Adagrad optimizer. |
+| Adadelta |❌ | ❌ | Adadelta optimizer. |
+| Adagrad | ❌ | ❌ | Adagrad optimizer. |
 | Adam | ✅ | ✅ | Adam optimizer. |
-| Adamax | ✅ | ✅ | Adamax optimizer from Adam paper's Section 7.  |
-| Nadam | ✅ | ✅ | Nesterov Adam optimizer. |
+| Adamax | ❌ | ❌ | Adamax optimizer from Adam paper's Section 7.  |
+| Nadam | ❌ | ❌ | Nesterov Adam optimizer. |
 | RMSProp |✅ | ✅ | RMSProp optimizer.  |
 | SGD | ✅ | ✅ | Stochastic gradient descent optimizer. |

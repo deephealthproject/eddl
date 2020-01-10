@@ -4,9 +4,15 @@
 
 -----------------
 
+**Documentation:**
+
+- [Available features](https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md)
+- [Available Tensor features](https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md)
+- [Doyxigen documentation](http://imagelab.ing.unimore.it/eddl/)
+
+
 **EDDL** is an open source library for numerical computation tailored to the healthcare domain.
 > More information: [https://deephealth-project.eu/](https://deephealth-project.eu/)
-
 
 # Requirements
 
