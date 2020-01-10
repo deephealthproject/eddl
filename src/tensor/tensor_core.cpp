@@ -375,6 +375,25 @@ void Tensor::set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
 #endif
 }
 
+
+void Tensor::set_select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_set_select_back(A, B, sd);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+      {
+        gpu_set_select_back(A, B, sd);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+}
+
 void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
     ///////////////////////////////////////
     /// Select from A to B, A is bigger

@@ -26,6 +26,7 @@ void cpu_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int 
 void cpu_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
+void cpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
 void cpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
 void cpu_repeat(Tensor *A, Tensor *B, vector<int> size);

@@ -164,3 +164,22 @@ void gpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
     set_select<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, sd->gpu_addresses);
     check_cuda(cudaDeviceSynchronize(), "set_select");
 }
+
+
+void gpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    // Copy indices from host to device
+    if(sd->gpu_addresses== nullptr){
+        check_cuda(cudaMalloc((void**)&(sd->gpu_addresses), B->size*sizeof(int)), "create address mapping");
+        check_cuda(cudaDeviceSynchronize(), "create");
+
+        check_cuda(cudaMemcpy(sd->gpu_addresses, sd->addresses, B->size*sizeof(int), cudaMemcpyHostToDevice), "copy address mapping");
+        check_cuda(cudaDeviceSynchronize(), "copy");
+    }
+
+    setDims(A);  // B is the small
+    set_select_back<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, sd->gpu_addresses);
+    check_cuda(cudaDeviceSynchronize(), "set_select_back");
+}

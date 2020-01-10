@@ -380,6 +380,7 @@ public:
 
     void set_select(const vector<string>& indices, Tensor *A);
     static void set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
+    static void set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 
     static void transpose(Tensor *A, Tensor *B, vector<int> dims);
     static void copy(Tensor *A, Tensor *B);
