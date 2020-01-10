@@ -179,7 +179,7 @@ void gpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
         check_cuda(cudaDeviceSynchronize(), "copy");
     }
 
-    setDims(A);  // B is the small
+    setDims(B);  // B is the small
     set_select_back<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, sd->gpu_addresses);
     check_cuda(cudaDeviceSynchronize(), "set_select_back");
 }

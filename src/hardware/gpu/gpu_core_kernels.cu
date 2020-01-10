@@ -79,6 +79,6 @@ __global__ void set_select_back(float* A, float* B, int size, int* indices){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (thread_id_x < size){
-        A[thread_id_x] = B[indices[thread_id_x]];
+        B[thread_id_x] += A[indices[thread_id_x]];
     }
 }

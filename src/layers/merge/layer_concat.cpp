@@ -95,6 +95,8 @@ LConcat::LConcat(vector<Layer *> parent, string name, int dev) : MLayer(name, de
 void LConcat::forward() {
     // Copy all parent->output (tensor) to a section of this output (tensor)
     for (int i = 0; i < this->parent.size(); ++i) {
+        // cout << this->name << endl;
+        // this->parent[i]->output->info();
         Tensor::set_select(this->output, this->parent[i]->output, this->sd[i]);
     }
 }

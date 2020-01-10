@@ -51,22 +51,22 @@ layer UNetWithPadding(layer x)
     x5 = LReLu(Conv(x5, 8*depth, { 3,3 }, { 1, 1 }, "same"));
     x5 = Conv(UpSampling(x5, { 2,2 }), 8*depth, { 2,2 }, { 1, 1 }, "same");
 
-    x4 = Concat({x4,x5});
+    x4 = Concat({x4,x5}, "my_concat_1");
     x4 = LReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
     x4 = LReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
     x4 = Conv(UpSampling(x4, { 2,2 }), 4*depth, { 2,2 }, { 1, 1 }, "same");
 
-    x3 = Concat({x3,x4});
+    x3 = Concat({x3,x4}, "my_concat_2");
     x3 = LReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
     x3 = LReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
     x3 = Conv(UpSampling(x3, { 2,2 }), 2*depth, { 2,2 }, { 1, 1 }, "same");
 
-    x2 = Concat({x2,x3});
+    x2 = Concat({x2,x3},"my_concat_3");
     x2 = LReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
     x2 = LReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
     x2 = Conv(UpSampling(x2, { 2,2 }), depth, { 2,2 }, { 1, 1 }, "same");
 
-    x = Concat({x,x2});
+    x = Concat({x,x2}, "my_concat_4");
     x = LReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
     x = LReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
     x = Conv(x, 1, { 1,1 });
@@ -115,21 +115,21 @@ int main(int argc, char **argv){
     {"mse"} // Metrics
   );
   // Train on multi-gpu with sync weights every 100 batches:
-//  toGPU(segnet,{1,1},100);
+  toGPU(segnet,{1,1},100);
   summary(segnet);
   plot(segnet,"segnet.pdf");
 
   //////////////////////////////////////////////////////////////
   // Load and preprocess training data
   cout<<"Reading train numpy\n";
-  tensor x_train_f = Tensor::load<unsigned char>("drive_x.npy");
+  tensor x_train_f = Tensor::load<uint8_t>("drive_x.npy");
   tensor x_train=Tensor::permute(x_train_f, {0,3,1,2});
   x_train->info();
   eddlT::div_(x_train,255.0);
   //permute
 
   cout<<"Reading test numpy\n";
-  tensor y_train = Tensor::load<unsigned char>("drive_y.npy");
+  tensor y_train = Tensor::load<uint8_t>("drive_y.npy");
   y_train->info();
   eddlT::reshape_(y_train,{20,1,584,584});
   eddlT::div_(y_train,255.0);
@@ -147,9 +147,14 @@ int main(int argc, char **argv){
 
       next_batch({x_train,y_train},{xbatch,ybatch});
 
-      tensor yout = eddlT::select(ybatch,0);
-      yout->save("./outb.jpg");
-      delete yout;
+
+      // tensor xout = eddlT::select(xbatch,0);
+      // xout->save("./0.tr_out_prev.jpg");
+      // delete xout;
+
+      // tensor yout = eddlT::select(ybatch,0);
+      // yout->save("./0.ts_out_prev.jpg");
+      // delete yout;
 
       // DA
       forward(danet, (vector<Tensor *>){xbatch,ybatch});
@@ -158,18 +163,22 @@ int main(int argc, char **argv){
       tensor xbatch_da = getTensor(img);
       tensor ybatch_da = getTensor(mask);
 
-      yout = eddlT::select(ybatch_da,0);
-      yout->save("./outbda.jpg");
-      delete yout;
+      // xout = eddlT::select(xbatch_da,0);
+      // xout->save("./1.tr_out_after.jpg");
+      // delete xout;
+
+      // yout = eddlT::select(ybatch_da,0);
+      // yout->save("./1.ts_out_after.jpg");
+      // delete yout;
 
       // SegNet
       train_batch(segnet, {xbatch_da},{ybatch_da});
 
-      print_loss(segnet,j);
-      printf("  sum=%f",yout->sum());
-      printf("\r");
+      print_loss(segnet, j);
+      // printf("  sum=%f",yout->sum());
+      // printf("\r");
 
-      yout = eddlT::select(getTensor(out),0);
+      tensor yout = eddlT::select(getTensor(out),0);
       yout->save("./out.jpg");
       delete yout;
     }
