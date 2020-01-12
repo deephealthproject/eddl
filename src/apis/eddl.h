@@ -497,13 +497,35 @@ namespace eddl {
     layer ColorJitter(layer parent, float brightness=0, float contrast=0, float saturation=0, float hue=0, string name="");  // TODO: Implement
     layer CropScale(layer parent, vector<int> from_coords, vector<int> to_coords, string da_mode="nearest", float constant=0.0f, string name="");
     layer Cutout(layer parent, vector<int> from_coords, vector<int> to_coords, float constant=0.0f, string name="");
+    /**
+      *  @brief Flip the given image at `axis=n`.
+      *
+      *  @param parent  Parent layer
+      *  @param axis  Flip axis
+      *  @param name  A name for the operation
+      *  @return     Output of flip transformation
+    */
     layer Flip(layer parent, int axis=0, string name="");
     layer Grayscale(layer parent,  string name="");  // TODO: Implement
+    /**
+      *  @brief Horizontally flip the given image.
+      *
+      *  @param parent  Parent layer
+      *  @param name  A name for the operation
+      *  @return     Output of horizontal flip transformation
+    */
     layer HorizontalFlip(layer parent, string name="");
     layer Pad(layer parent, vector<int> padding, float constant=0.0f, string name=""); // TODO: Implement
     layer Rotate(layer parent, float angle, vector<int> offset_center={0, 0}, string da_mode="original", float constant=0.0f, string name="");
     layer Scale(layer parent, vector<int> new_shape, bool reshape, string da_mode="nearest", float constant=0.0f, string name="");
     layer Shift(layer parent, vector<int> shift, string da_mode="nearest", float constant=0.0f, string name="");
+    /**
+      *  @brief Vertically flip the given image.
+      *
+      *  @param parent  Parent layer
+      *  @param name  A name for the operation
+      *  @return     Output of vertical flip transformation
+    */
     layer VerticalFlip(layer parent, string name="");
     layer Normalize(layer parent, string name="");  // TODO: Implement
 
@@ -525,12 +547,34 @@ namespace eddl {
     layer RandomCenteredCrop(layer parent, vector<int> new_shape, string name= "");  // TODO: Implement
     layer RandomCropScale(layer parent, vector<float> factor, string da_mode= "nearest", string name= "");
     layer RandomCutout(layer parent, vector<float> factor_x, vector<float> factor_y, float constant= 0.0f, string name= "");
+    /**
+      *  @brief Flip the given image at `axis=n` randomly with a given probability.
+      *
+      *  @param parent  Parent layer
+      *  @param axis  Flip axis
+      *  @param name  A name for the operation
+      *  @return     Output of random flip transformation
+    */
     layer RandomFlip(layer parent, int axis, string name= "");
     layer RandomGrayscale(layer parent, string name= "");
+    /**
+      *  @brief Horizontally flip the given image randomly with a given probability.
+      *
+      *  @param parent  Parent layer
+      *  @param name  A name for the operation
+      *  @return     Output of random horizontal flip transformation
+    */
     layer RandomHorizontalFlip(layer parent, string name= "");
     layer RandomRotation(layer parent, vector<float> factor, vector<int> offset_center= {0, 0}, string da_mode= "original", float constant= 0.0f, string name= "");
     layer RandomScale(layer parent, vector<float> factor, string da_mode= "nearest", float constant= 0.0f, string name= "");
     layer RandomShift(layer parent, vector<float> factor_x, vector<float> factor_y, string da_mode= "nearest", float constant= 0.0f, string name= "");
+    /**
+      *  @brief Vertically flip the given image randomly with a given probability.
+      *
+      *  @param parent  Parent layer
+      *  @param name  A name for the operation
+      *  @return     Output of random vertical flip transformation
+    */
     layer RandomVerticalFlip(layer parent, string name= "");
 
     // Merge Layers
