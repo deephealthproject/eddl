@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
 
     // Paths
     string fname = "../examples/data/";
-    string output = "output/";  // Create this folder!
+    string output = "./output/";  // Create this folder!
 
     // Default tensor
     Tensor *t1 = nullptr;

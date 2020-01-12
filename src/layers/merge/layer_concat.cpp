@@ -20,48 +20,69 @@ using namespace std;
 int LConcat::total_layers = 0;
 
 LConcat::LConcat(vector<Layer *> parent, string name, int dev) : MLayer(name, dev) {
-    if (parent.size() == 0) msg("Error: LConcat layer with empty list");
+    if(name.empty()) {this->name = "concat" + to_string(++total_layers); }
 
-    ndim = parent[0]->output->ndim;
+    // Perform layer checks
+    if (parent.empty()) { msg("Error: LConcat layer with empty list"); }
+    this->ndim = parent[0]->output->ndim;
 
     if (parent.size() > 1) {
-        for (int i = 0; i < parent.size() - 1; ++i)
-            if (ndim != parent[i]->output->ndim)
+        // All layers need to have the same number of dimensions
+        for (int i = 0; i < parent.size() - 1; ++i) {
+            if (ndim != parent[i]->output->ndim){
                 msg("Error: LConcat layers with different tensor dims");
+            }
+        }
 
+        // Check that all dimensions except depth (d=1), match
         if (ndim == 2) {
-            for (int i = 0; i < parent.size() - 1; ++i)
-                if (parent[i]->output->shape[0] != parent[i + 1]->output->shape[0])
+            for (int i = 0; i < parent.size() - 1; ++i){
+                if (parent[i]->output->shape[0] != parent[i + 1]->output->shape[0]){
                     msg("Error: LConcat layers with different size in dim 1");
+                }
+            }
         } else if (ndim == 4) {
             for (int i = 0; i < parent.size() - 1; ++i) {
-                if (parent[i]->output->shape[0] != parent[i + 1]->output->shape[0])
+                if (parent[i]->output->shape[0] != parent[i + 1]->output->shape[0]){
                     msg("Error: LConcat layers with different size in dim 1, batch size");
-                else if (parent[i]->output->shape[2] != parent[i + 1]->output->shape[2])
+                } else if (parent[i]->output->shape[2] != parent[i + 1]->output->shape[2]){
                     msg("Error: LConcat layers with different size in dim 3, rows of 4D");
-                else if (parent[i]->output->shape[3] != parent[i + 1]->output->shape[3])
+                } else if (parent[i]->output->shape[3] != parent[i + 1]->output->shape[3]){
                     msg("Error: LConcat layers with different size in dim 4, cols of 4D");
+                }
             }
         } else {
             msg("Error: LConcat layers of 2D or 4D tensors");
         }
     }
 
-    if(name.empty()) this->name = "concat" + to_string(++total_layers);
-
-    input = parent[0]->output;
+    // Sum depth dimensions to know the final dimension [2+2+6=10]
     int t = 0;
     for (int i = 0; i < parent.size(); ++i) {
         t += parent[i]->output->shape[1];
         index.push_back(t);
     }
 
+    // Set new shape
     vector<int> shape = parent[0]->output->getShape();
     shape[1] = t;
 
+    input = parent[0]->output;
     output = new Tensor(shape, dev);
     delta = new Tensor(shape, dev);
 
+    // Create a descriptor for each layer address translation
+    int temp = 0;
+    for (int i = 0; i < parent.size(); ++i) {
+        auto *aux = new SelDescriptor({":", to_string(temp)+":"+to_string(temp+parent[i]->output->shape[1])});
+        temp += parent[i]->output->shape[1];
+
+        aux->build(this->output->shape);
+        aux->build_indices();
+        this->sd.push_back(aux);
+    }
+
+    // Set childs
     for (int i = 0; i < parent.size(); ++i) {
         parent[i]->addchild(this);
         addparent(parent[i]);
@@ -72,27 +93,23 @@ LConcat::LConcat(vector<Layer *> parent, string name, int dev) : MLayer(name, de
 
 // virtual
 void LConcat::forward() {
-    int ini = 0;
-    for (int i = 0; i < parent.size(); ++i) {
-        Tensor::fill(parent[i]->output, 0, parent[i]->output->shape[1], output, ini, index[i], 0);
-        ini = index[i];
+    // Copy all parent->output (tensor) to a section of this output (tensor)
+    for (int i = 0; i < this->parent.size(); ++i) {
+        // cout << this->name << endl;
+        // this->parent[i]->output->info();
+        Tensor::set_select(this->output, this->parent[i]->output, this->sd[i]);
     }
 }
 
 
 void LConcat::backward() {
-
-    if (parent.size()) {
-        int ini = 0;
-        for (int i = 0; i < parent.size(); ++i) {
-            Tensor::fill(delta, ini, index[i], parent[i]->delta, 0, parent[i]->output->shape[1], 1);
-            ini = index[i];
-        }
+    for (int i = 0; i < parent.size(); ++i) {
+        Tensor::set_select_back(this->delta, parent[i]->delta, this->sd[i]);
     }
 }
 
 void LConcat::resize(int batch){
-  Layer::resize(batch);
+    Layer::resize(batch);
 }
 
 Layer *LConcat::share(int c, int bs, vector<Layer *> p) {

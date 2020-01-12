@@ -184,7 +184,7 @@ void Tensor::toGPU(int dev){
 }
 
 Tensor* Tensor::clone(){
-    Tensor* t_new = new Tensor(this->shape, this->device);
+    auto* t_new = new Tensor(this->shape, this->device);
     Tensor::copy(this, t_new);
     return t_new;
 }
@@ -192,12 +192,12 @@ Tensor* Tensor::clone(){
 
 Tensor::~Tensor() {
     if (isCPU()) {
-      delete ptr;
+        delete ptr;
     }
 #ifdef cGPU
     else if (isGPU())
       {
-        gpu_delete_tensor(gpu_device,ptr);
+        gpu_delete_tensor(gpu_device, ptr);
       }
 #endif
 #ifdef cFPGA
@@ -234,53 +234,80 @@ void Tensor::info() {
     cout << "-------------------------------" << endl;
 }
 
-void Tensor::print() {
 
-    if (isCPU()) {
-        if (ndim == 1)
-            for (int i = 0; i < shape[0]; ++i)
-                printf("%f ", ptr[i]);
-        else if (ndim == 2) {
-            cout << (*ptr2).transpose() << "\n";
-        } else {
-            int i;
-            for (i = 0; i < size; ++i)
-                printf("%f ", ptr[i]);
-            printf("\n");
+void Tensor::print(bool asInt, bool raw) {
+    int opened = 0;
+    int closed = 0;
+
+    // Clone to CPU (if needed)
+    Tensor *aux = nullptr;
+    if (this->isCPU()) {
+        aux = this;
+    }else{
+        aux = new Tensor(this->shape, DEV_CPU);
+        Tensor::copy(this, aux);
+    }
+
+    // ***** Shitty code to prettify the output *******
+    std::stringstream buffer;
+
+    for (int i = 0; i < aux->size; ++i) {
+
+        if(raw){
+            // Print number
+            if(asInt) {  buffer << (int)aux->ptr[i] << " "; }
+            else {  buffer << aux->ptr[i] << " "; }
+
+        }else{
+
+        // Open brackets
+        opened = 0;
+        for (int j = 0; j < aux->ndim-1; ++j) {
+            if(i%aux->stride[j]==0){
+                if(!opened && closed==1){ if(ndim==2){ buffer << "\n"; } else { buffer << " "; } }
+                buffer << "[";
+                opened += 1;
+            }
         }
-    }
-#ifdef cGPU
-    else if (isGPU())
-      {
-        gpu_set_device(gpu_device);
-        float *v= get_fmem(size,"Tensor::Tensor");
-        cudaMemcpy(v,ptr,size*sizeof(float),cudaMemcpyDeviceToHost);
-        if (ndim==2)
-          {
-            int i,j,p=0;
-            for(i=0;i<shape[0];++i)
-              {
-                for(j=0;j<shape[1];++j,++p)
-                  printf("%f ",v[p]);
-                  printf("\n");
-              }
-          }
-        else
-          {
-            int i;
-            for(i=0;i<size;++i)
-              printf("%f ",v[i]);
-              printf("\n");
-          }
-          delete v;
-      }
-#endif
-#ifdef cFPGA
-    else {
+
+        // Print number
+        if(asInt) {  buffer << (int)aux->ptr[i]; }
+        else {  buffer << aux->ptr[i]; }
+
+        // Close brackets
+        closed = 0;
+        for (int j = 0; j < aux->ndim-1; ++j) {
+            if((i+1)%aux->stride[j]==0) {
+                buffer << "]";
+                closed += 1;
+            }
+        }
+
+        // Break lines
+        if (i+1 < aux->size){
+            if(!closed){ buffer << " ";}
+            else{
+                if (closed == 2 ) {  buffer << "\n"; }
+                else if (closed == 3) { buffer << "\n\n"; }
+                else if (closed > 3) { buffer << "\n\n\n"; }
+            }
+        }
+
+        }
 
     }
-#endif
-    cout << "\n";
+
+    // Print to buffer
+    if(aux->ndim>1){
+        cout << "[\n" << buffer.str() << "\n]" << endl;  // For readability
+    }else{
+        cout << "[" << buffer.str() << "]" << endl;
+    }
+
+    // Free memory
+    if (!this->isCPU()) {
+        delete aux;
+    }
 }
 
 string Tensor::getStrDevice(){

@@ -19,70 +19,170 @@ using namespace eddl;
 //////////////////////////////////
 // Drive segmentation
 // https://drive.grand-challenge.org/DRIVE/
+// A Multi-GPU segmentation example
+// Data Augmentation graph
+// Segmentation graph
 //////////////////////////////////
+
+
+// from use case repo:
+layer UNetWithPadding(layer x)
+{
+    layer x2;
+    layer x3;
+    layer x4;
+    layer x5;
+
+    int depth=32;
+
+    x = LReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
+    x = LReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
+    x2 = MaxPool(x, { 2,2 }, { 2,2 });
+    x2 = LReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
+    x2 = LReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
+    x3 = MaxPool(x2, { 2,2 }, { 2,2 });
+    x3 = LReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
+    x3 = LReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
+    x4 = MaxPool(x3, { 2,2 }, { 2,2 });
+    x4 = LReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x4 = LReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x5 = MaxPool(x4, { 2,2 }, { 2,2 });
+    x5 = LReLu(Conv(x5, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x5 = LReLu(Conv(x5, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x5 = Conv(UpSampling(x5, { 2,2 }), 8*depth, { 2,2 }, { 1, 1 }, "same");
+
+    x4 = Concat({x4,x5}, "my_concat_1");
+    x4 = LReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x4 = LReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x4 = Conv(UpSampling(x4, { 2,2 }), 4*depth, { 2,2 }, { 1, 1 }, "same");
+
+    x3 = Concat({x3,x4}, "my_concat_2");
+    x3 = LReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
+    x3 = LReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
+    x3 = Conv(UpSampling(x3, { 2,2 }), 2*depth, { 2,2 }, { 1, 1 }, "same");
+
+    x2 = Concat({x2,x3},"my_concat_3");
+    x2 = LReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
+    x2 = LReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
+    x2 = Conv(UpSampling(x2, { 2,2 }), depth, { 2,2 }, { 1, 1 }, "same");
+
+    x = Concat({x,x2}, "my_concat_4");
+    x = LReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
+    x = LReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
+    x = Conv(x, 1, { 1,1 });
+
+    return x;
+}
 
 
 int main(int argc, char **argv){
 
-  // download CIFAR data
-  //download_cifar10();
+  // Download Dataset
+  download_drive();
 
   // Settings
-  int epochs = 25;
-  int batch_size = 100;
+  int epochs = 100000;
+  int batch_size =2;
 
+  //////////////////////////////////////////////////////////////
+  // Network for Data Augmentation
+  layer in1=Input({3,584,584});
+  layer in2=Input({1,584,584});
 
-  // network
-  /*
-  layer in=Input({3,32,32});
-  layer l=in;
+  layer l=Concat({in1,in2});   // Cat image and mask
+  l= RandomCropScale(l, {0.9f, 1.0f}); // Random Crop and Scale to orig size
+  l=CenteredCrop(l,{512,512});         // Crop to work with sizes power 2
+  layer img=Select(l,{"0:3"}); // UnCat [0-2] image
+  layer mask=Select(l,{"3"});  // UnCat [3] mask
+  // Both, image and mask, have the same augmentation
 
+  // Define DA model inputs
+  model danet=Model({in1,in2},{});
 
-  layer out=Activation(Dense(l,num_classes),"softmax");
+  // Build model for DA
+  build(danet);
+  toGPU(danet,{1,1});
+  summary(danet);
 
-  // net define input and output layers list
-  model net=Model({in},{out});
-
-
-  // Build model
-  build(net,
-    sgd(0.01, 0.9), // Optimizer
-    {"soft_cross_entropy"}, // Losses
-    {"categorical_accuracy"}, // Metrics
-    //CS_CPU() // CPU with maximum threads availables
-    CS_GPU({1}) // GPU with only one gpu
+  //////////////////////////////////////////////////////////////
+  // Build SegNet
+  layer in=Input({3,512,512});
+  layer out=Sigmoid(UNetWithPadding(in));
+  model segnet=Model({in},{out});
+  build(segnet,
+    adam(0.00001), // Optimizer
+    {"mse"}, // Losses
+    {"mse"} // Metrics
   );
+  // Train on multi-gpu with sync weights every 100 batches:
+  toGPU(segnet,{1,1},100);
+  summary(segnet);
+  plot(segnet,"segnet.pdf");
 
-  // plot the model
-  plot(net,"model.pdf");
+  //////////////////////////////////////////////////////////////
+  // Load and preprocess training data
+  cout<<"Reading train numpy\n";
+  tensor x_train_f = Tensor::load<uint8_t>("drive_x.npy");
+  tensor x_train=Tensor::permute(x_train_f, {0,3,1,2});
+  x_train->info();
+  eddlT::div_(x_train,255.0);
+  //permute
 
-  // get some info from the network
-  summary(net);
-*/
-// Load and preprocess training data
-cout<<"Reading train numpy\n";
-tensor x_train = eddlT::load("x_train.npy");
-cout<<"Reading test numpy\n";
-tensor y_train = eddlT::load("y_train.npy");
+  cout<<"Reading test numpy\n";
+  tensor y_train = Tensor::load<uint8_t>("drive_y.npy");
+  y_train->info();
+  eddlT::reshape_(y_train,{20,1,584,584});
+  eddlT::div_(y_train,255.0);
 
-x_train->info();
-x_train->print();
-getchar();
-
-y_train->info();
-
-y_train->print();
-getchar();
+  tensor xbatch = eddlT::create({batch_size,3,584,584});
+  tensor ybatch = eddlT::create({batch_size,1,584,584});
 
 
-eddlT::reshape_(y_train,{20,1,584,565});
-y_train->info();
+  //////////////////////////////////////////////////////////////
+  // Training
+  int num_batches=1000;
+  for(int i=0;i<epochs;i++) {
+    reset_loss(segnet);
+    for(int j=0;j<num_batches;j++)  {
 
-tensor t_output = y_train->select({"0", ":", ":", ":"});
+      next_batch({x_train,y_train},{xbatch,ybatch});
 
-t_output->info();
-t_output->print();
-//t_output->save("np_select.png");
 
+      // tensor xout = eddlT::select(xbatch,0);
+      // xout->save("./0.tr_out_prev.jpg");
+      // delete xout;
+
+      // tensor yout = eddlT::select(ybatch,0);
+      // yout->save("./0.ts_out_prev.jpg");
+      // delete yout;
+
+      // DA
+      forward(danet, (vector<Tensor *>){xbatch,ybatch});
+
+      // get tensors from DA
+      tensor xbatch_da = getTensor(img);
+      tensor ybatch_da = getTensor(mask);
+
+      // xout = eddlT::select(xbatch_da,0);
+      // xout->save("./1.tr_out_after.jpg");
+      // delete xout;
+
+      // yout = eddlT::select(ybatch_da,0);
+      // yout->save("./1.ts_out_after.jpg");
+      // delete yout;
+
+      // SegNet
+      train_batch(segnet, {xbatch_da},{ybatch_da});
+
+      print_loss(segnet, j);
+      // printf("  sum=%f",yout->sum());
+      // printf("\r");
+
+      tensor yout = eddlT::select(getTensor(out),0);
+      yout->save("./out.jpg");
+      delete yout;
+    }
+    printf("\n");
+  }
 
 }

@@ -151,6 +151,7 @@ class LConcat : public MLayer {
 public:
     int ndim;
     vector<int> index;
+    vector<SelDescriptor *> sd;  // TODO: Re-think for a more memory-efficient way
     static int total_layers;
 
     // constructors and clones

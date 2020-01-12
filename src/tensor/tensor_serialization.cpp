@@ -118,6 +118,7 @@ Tensor* Tensor::load_from_img(const string &filename, const string &format){
         unsigned char *pixels = stbi_load(filename.c_str(), &t_width, &t_height, &t_channels, STBI_default);
 
         // Cast pointer
+        // Data in row-major
         t_size = t_width * t_height * t_channels;
         auto *t_data = new float[t_size];
         for (int i = 0; i < t_size; i++) { t_data[i] = (float) pixels[i]; }
@@ -125,9 +126,9 @@ Tensor* Tensor::load_from_img(const string &filename, const string &format){
         // Free image
         stbi_image_free(pixels);
 
-        // Re-order components. Data received as 1xWxHxC, and has to be presented as 1xCxHxW
-        t = new Tensor({1, t_width, t_height, t_channels}, t_data, DEV_CPU);
-        t = Tensor::permute(t, {0, 3, 2, 1});
+        // Re-order components. Data received as HxWxC, and has to be presented as CxHxW
+        t = new Tensor({t_height, t_width, t_channels}, t_data, DEV_CPU);
+        t = Tensor::permute(t, {2, 0, 1});
 
     } catch(const std::bad_array_new_length &e) {
         msg("There was an error opening the image", "Tensor::load_from_img");
@@ -259,10 +260,11 @@ void Tensor::save2onnx(std::ofstream &ofs){
 void Tensor::save2img(const string& filename, string format){
     if (this->ndim < 2 || this->ndim > 4){
         msg("Tensors should be 2D (HxW), 3D (CxHxW) or 4D (1xCxHxW)","Tensor::save2img");
-    } else if ((this->ndim == 3 || this->ndim == 4) && (this->ndim < 1 || this->ndim > 4)) {
-        msg("3D and 4D tensors must contain a number of channels in the range [1, 4]","Tensor::save2img");
+    } else if ((this->ndim == 3 && (this->shape[0] < 1 || this->shape[0] > 4)) ||
+               (this->ndim == 4 && (this->shape[1] < 1 || this->shape[1] > 4))) {
+        msg("3D and 4D tensors must contain a number of channels in the range [1, 4]", "Tensor::save2img");
     } else if (this->ndim == 4 && this->shape[0] != 1) {
-        msg("4D tensor must be shaped as (1xCxHxW)","Tensor::save2img");
+        msg("4D tensor must be shaped as (1xCxHxW)", "Tensor::save2img");
     }
 
     // Clone tensor and copy to CPU
@@ -277,32 +279,39 @@ void Tensor::save2img(const string& filename, string format){
         t->unsqueeze_();
     }
 
-    // Re-order components. From CxHxW  => WxHxC
-    t = Tensor::permute(t, {2, 1, 0});  // Performs clone
+    // Re-order components. From CxHxW  => HxWxC
+    t = Tensor::permute(t, {1, 2, 0});  // Performs clone
 
     // Normalize image (for RGB must fall between 0 and 255) => Not a good idea
     t->normalize_(0.0f, 255.0f);
 
     // TODO: I don't see the need to cast this (but if i remove it, it doesn't work)
     // Cast pointer
+    // Data in row-major!!!
     auto* data= new uint8_t[t->size];
     for(int i=0;i<t->size;i++){ data[i]=t->ptr[i]; }
 
+    // Components
+    int height = t->shape[0];
+    int width = t->shape[1];
+    int channels = t->shape[2];
+
     // Save image
     if(format=="png") {
-        stbi_write_png(filename.c_str(), t->shape[0], t->shape[1], t->shape[2], data, t->shape[0] * t->shape[2]);  // width x channels
+        stbi_write_png(filename.c_str(), width, height, channels, data, width * channels);  // width x channels
     }else if(format=="bmp"){
-        stbi_write_bmp(filename.c_str(), t->shape[0], t->shape[1], t->shape[2], data);
+        stbi_write_bmp(filename.c_str(), width, height, channels, data);
     }else if(format=="tga"){
-        stbi_write_tga(filename.c_str(), t->shape[0], t->shape[1], t->shape[2], data);
+        stbi_write_tga(filename.c_str(), width, height, channels, data);
     }else if(format=="jpg" || format=="jpeg"){
-        stbi_write_jpg(filename.c_str(), t->shape[0], t->shape[1], t->shape[2], data, 100);
+        stbi_write_jpg(filename.c_str(), width, height, channels, data, 100);
 //    }else if(format=="hdr"){
 //        stbi_write_hdr(filename.c_str(), this->shape[3], this->shape[2], this->shape[1], data);
     }else{
         msg("Format not implemented", "Tensor::save2img");
     }
 
+    delete t;
 }
 
 void Tensor::save2numpy(const string &filename, string format){

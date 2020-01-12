@@ -30,6 +30,8 @@ __global__ void fill_(float* a, float v, long int size);
 __global__ void mask(float* a, float v, long int size);
 __global__ void select(float* A, float* B, int size, int* indices);
 __global__ void select_back(float* A, float* B, int size, int* indices);
+__global__ void set_select(float* A, float* B, int size, int* indices);
+__global__ void set_select_back(float* A, float* B, int size, int* indices);
 
 // GPU: Transformations
 __global__ void shift(float* A, float* B, int batch, int depth, int irows, int icols, int* shift, int mode, float constant);

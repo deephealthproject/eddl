@@ -66,7 +66,7 @@ int main(int argc, char **argv){
   layer l=in;
 
   // Data augmentation
-  l = CropScaleRandom(l, {0.8f, 1.0f});
+  l = RandomCropScale(l, {0.8f, 1.0f});
   l = Flip(l,1);
 
   // Resnet-50

@@ -134,8 +134,8 @@ pipeline {
                         stage('Update documentation') {
                             steps {
 								timeout(15) {
-									bat 'cd doc\\doxygen && doxygen'
-									bat 'powershell -Command "(gc %EDDL_DOXYGEN_INPUT_COMMANDS%) -replace \'@local_dir\', \'doc\\html\' | Out-File commands_out.txt"'
+									bat 'cd docs\\doxygen && doxygen'
+									bat 'powershell -Command "(gc %EDDL_DOXYGEN_INPUT_COMMANDS%) -replace \'@local_dir\', \'docs\\build\\html\' | Out-File commands_out.txt"'
 									bat 'winscp /ini:nul /script:commands_out.txt'
 								}
                             }

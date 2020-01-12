@@ -221,6 +221,10 @@ vector<vector<int>> parse_indices(vector<string> str_indices, const vector<int>&
             max = min;
         }
 
+        // Negative indices // len + (-x)
+        if(min<0) { min = shape[i] + min ; }
+        if(max<0) { max = shape[i] + max; }
+
         ranges.push_back({min, max});
     }
 
