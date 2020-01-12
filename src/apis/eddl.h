@@ -54,12 +54,44 @@ namespace eddl {
     ///////////////////////////////////////
 
     // Creation
+    /**
+      *  @brief Model instance.
+      *
+      *  @param in  Vector with model input layers, typically Input({...})
+      *  @param out  Vector with the ouputs of the model. Example: {Sigmoid(MyModel())}
+      *  @return     Model instance
+    */
     model Model(vlayer in, vlayer out);
     void build(model net, optimizer o=nullptr, CompServ *cs=nullptr);
+    /**
+      *  @brief Tell the model which optimizer, losses, metrics and computing services use.
+      *
+      *  @param net  Model
+      *  @param o  Optimizer
+      *  @param lo  Vector with losses
+      *  @param me  Vector with metrics
+      *  @param cs  Computing service
+      *  @return     (void)
+    */
     void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr);
 
     // Computing services
+    /**
+      *  @brief Assign model operations to the GPU.
+      *
+      *  @param net  Model
+      *  @param g  Vector with gpu ids to allocate the model
+      *  @param lsb  Number of batches to sync model weights
+      *  @return     (void)
+    */
     void toGPU(model net, vector<int> g={1},int lsb=1);
+    /**
+      *  @brief Assign model operations to the CPU.
+      *
+      *  @param net  Model
+      *  @param t  CPU Threads
+      *  @return     (void)
+    */
     void toCPU(model net, int t=std::thread::hardware_concurrency());
     compserv CS_CPU(int th=-1);
     compserv CS_GPU(const vector<int> &g,int lsb=1);
@@ -191,17 +223,50 @@ namespace eddl {
     void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out);
 
     // Finest methods
+    /**
+      *  @brief Set model mode.
+      *
+      *  @param net  Model
+      *  @param mode  Train 1, Test 0
+      *  @return     (void)
+    */
     void set_mode(model net, int mode);
+    /**
+      *  @brief Resets model loss.
+      *
+      *  @param net  Model
+      *  @return     (void)
+    */
     void reset_loss(model m);
     vlayer forward(model m,vector<Layer *> in);
     vlayer forward(model m,vector<Tensor *> in);
     vlayer forward(model m);
     vlayer forward(model m,int b);
+    /**
+      *  @brief Set model gradients to zero.
+      *
+      *  @param net  Model
+      *  @return     (void)
+    */
     void zeroGrads(model m);
+    /**
+      *  @brief Calculates the gradient by passing it's argument (1x1 unit tensor by default) through the backward graph.
+      *
+      *  @param net  Model
+      *  @param target  Targets
+      *  @return     (void)
+    */
     void backward(model m,vector<Tensor *> target);
     void backward(model net);
     void backward(loss l);
     void update(model m);
+    /**
+      *  @brief Prints model loss at some batch.
+      *
+      *  @param net  Model
+      *  @param batch  Batch number
+      *  @return     (void)
+    */
     void print_loss(model m, int batch);
 
     // model constraints
@@ -218,9 +283,37 @@ namespace eddl {
     // loss and metrics methods
     float compute_loss(loss L);
     float compute_metric(loss L);
+    /**
+      *  @brief Get Loss by his name.
+      *
+      *  @param type  Loss name/type
+      *  @return     Selected Loss
+    */
     Loss* getLoss(string type);
+    /**
+      *  @brief Create new Loss.
+      *
+      *  @param f  Loss function
+      *  @param in  Loss input
+      *  @param name  Loss name
+      *  @return     Created Loss
+    */
     loss newloss(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name);
+    /**
+      *  @brief Create new Loss.
+      *
+      *  @param f  Loss function
+      *  @param in  Loss input
+      *  @param name  Loss name
+      *  @return     Created Loss
+    */
     loss newloss(const std::function<Layer*(Layer*)>& f, Layer *in, string name);
+    /**
+      *  @brief Get Metric by his name.
+      *
+      *  @param type  Metric name/type
+      *  @return     Selected Metric
+    */
     Metric* getMetric(string type);
     loss newmetric(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name);
     loss newmetric(const std::function<Layer*(Layer*)>& f, Layer *in, string name);
@@ -387,6 +480,17 @@ namespace eddl {
     layer Transpose(layer parent, string name = "");
 
     // Transformation Layers
+    /**
+      *  @brief Affine transformation of the image keeping center invariant: rotate+translate+scale+shear.
+      *
+      *  @param parent  Parent layer
+      *  @param angle  Angle factor
+      *  @param translate  Translate factor
+      *  @param scale  Scaling factor
+      *  @param shear  Shear factor
+      *  @param name  A name for the operation
+      *  @return     Output of affine transformation
+    */
     layer Affine(layer parent, float angle=0, float translate=0, float scale=0, float shear=0, string name="");  // TODO: Implement
     layer Crop(layer parent, vector<int> from_coords, vector<int> to_coords, bool reshape=true, float constant=0.0f, string name="");
     layer CenteredCrop(layer parent, vector<int> size, bool reshape=true, float constant=0.0f, string name="");
@@ -405,6 +509,17 @@ namespace eddl {
 
 
     // Data augmentation Layers
+    /**
+      *  @brief Random affine transformation of the image keeping center invariant: rotate+translate+scale+shear.
+      *
+      *  @param parent  Parent layer
+      *  @param angle  Angle factor range
+      *  @param translate  Translate factor range
+      *  @param scale  Scaling factor range
+      *  @param shear  Shear factor range
+      *  @param name  A name for the operation
+      *  @return     Output of affine transformation
+    */
     layer RandomAffine(layer parent, vector<float> angle, vector<float> translate, vector<float> scale, vector<float> shear, string name="");  // TODO: Implement
     layer RandomCrop(layer parent, vector<int> new_shape, string name= "");
     layer RandomCenteredCrop(layer parent, vector<int> new_shape, string name= "");  // TODO: Implement
@@ -729,6 +844,13 @@ namespace eddl {
       *  @return     (void) The binary files of CIFAR-10
     */
     void download_cifar10();
+    /**
+      *  @brief Downloads DRIVE Dataset.
+      *
+      *  @see   https://drive.grand-challenge.org/
+      *
+      *  @return     (void) The numpy files of DRIVE
+    */
     void download_drive();
 
 }
