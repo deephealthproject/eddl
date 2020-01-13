@@ -37,6 +37,7 @@ int main(int argc, char **argv) {
     path1 = "/Users/salvacarrion/Documents/Programming/C++/eddl/cmake-build-debug/output/output.jpg";
     path2 = "/Users/salvacarrion/Desktop/elephant2.jpg";
 
+
     t1 = Tensor::load(path1);
     t1->unsqueeze_();
 

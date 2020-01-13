@@ -125,6 +125,10 @@ void cpu_reduction_back(ReduceDescriptor *RD);
 //void cpu_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
 //void cpu_delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC);
 
+// CPU: Logic functions: Truth value testing
+bool cpu_all(Tensor *A);
+bool cpu_any(Tensor *A);
+
 // CPU: Logic functions: Comparisons
 void cpu_isfinite(Tensor *A, Tensor* B);
 void cpu_isinf(Tensor *A, Tensor* B);

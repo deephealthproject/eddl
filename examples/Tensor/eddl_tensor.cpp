@@ -58,6 +58,15 @@ int main(int argc, char **argv) {
     cout << "isposinf" << endl;
     Tensor::isposinf(t1, t2); t2->print();
 
+
+    t1 = Tensor::ones({3, 3});
+    t1->print();
+    cout << "All? " << Tensor::all(t1) << endl;
+
+    t1 = Tensor::zeros({3, 3});
+    t1->print();
+    cout << "Any? " << Tensor::any(t1) << endl;
+
     int asd =3;
 //
 //    Tensor* t1 = Tensor::range(1.0, 25.0f, 1, device);

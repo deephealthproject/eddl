@@ -118,20 +118,24 @@ __global__ void reduction_kernel_keep_inc(float *r, float *I, int *ind, int size
 __global__ void reduction_kernel_sum(float *I,float *O,int m, int d,int *ind,int rs);
 
 
-// CPU: Logic functions: Comparisons
+// GPU: Truth value testing
+__global__ void glogical_all(float *A, int size, bool &result);
+__global__ void glogical_any(float *A, int size, bool &result);
+
+// GPU: Logic functions: Comparisons
 __global__ void gpu_isfinite(float *A, float *B, int size);
 __global__ void gpu_isinf(float *A, float *B, int size);
 __global__ void gpu_isnan(float *A, float *B, int size);
 __global__ void gpu_isneginf(float *A, float *B, int size);
 __global__ void gpu_isposinf(float *A, float *B, int size);
 
-// CPU: Logic functions: Comparisons
+// GPU: Logic functions: Comparisons
 __global__ void glogical_and(float *A, float *B, float *C, int size);
 __global__ void glogical_or(float *A, float *B, float *C, int size);
 __global__ void glogical_not(float *A, float *B, int size);
 __global__ void glogical_xor(float *A, float *B, float *C, int size);
 
-// Logic operations: Comparison ops
+// GPU: Logic operations: Comparison ops
 __global__ void glogical_allclose(float *A, float *B, float rtol, float atol, bool equal_nan, int size, bool &close);
 __global__ void glogical_isclose(float *A, float *B, float *C, float rtol, float atol, bool equal_nan, int size);
 __global__ void glogical_greater(float *A, float *B, float *C, int size);

@@ -174,9 +174,11 @@ public:
     static Tensor* range(float start, float end, float step=1.0f, int dev=DEV_CPU);
     static Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
     static Tensor* logspace(float start, float end, int steps=100, float base=10.0f, int dev=DEV_CPU);
+    static Tensor* geomspace(float start, float end, int steps=100, int dev=DEV_CPU);
     static Tensor* eye(int rows, int offset=0, int dev=DEV_CPU);
     static Tensor* identity(int rows, int dev=DEV_CPU);
     static Tensor* diag(Tensor* A, int k=0, int dev=DEV_CPU);
+    static Tensor* randu(const vector<int> &shape, int dev=DEV_CPU);
     static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
     // ***** Transformations *****************************
@@ -338,6 +340,10 @@ public:
 
     // Math operations: Reduction ops
     static void reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
+
+    // Logic funcions: Truth value testing
+    static bool all(Tensor *A);
+    static bool any(Tensor *A);
 
     // Logic funcions: Logical ops
     static void isfinite(Tensor *A, Tensor* B);

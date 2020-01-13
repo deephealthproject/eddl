@@ -87,6 +87,11 @@ Tensor* Tensor::logspace(float start, float end, int steps, float base, int dev)
     return t;
 }
 
+Tensor* Tensor::geomspace(float start, float end, int steps, int dev){
+    return Tensor::logspace(std::log10f(start), std::log10f(end), steps, 10.0f, dev);
+}
+
+
 Tensor* Tensor::eye(int rows, int offset, int dev){
     auto t = new Tensor(vector<int>{rows, rows}, dev);
     if (t->isCPU()) {
@@ -136,6 +141,12 @@ Tensor* Tensor::diag(Tensor* A, int k, int dev){
 //#endif
 
     return new_t;
+}
+
+Tensor* Tensor::randu(const vector<int> &shape, int dev){
+    auto t = new Tensor(shape, dev);
+    t->rand_uniform(1.0f);
+    return t;
 }
 
 Tensor* Tensor::randn(const vector<int> &shape, int dev){

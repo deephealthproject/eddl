@@ -361,7 +361,6 @@ SET(CPP_SOURCES
         src/system_info.h
         src/utils.cpp
         src/utils.h
-        src/helpers.cpp
         src/helpers.h
         src/random.cpp
         src/random.h
@@ -446,7 +445,7 @@ set_target_properties(eddl PROPERTIES
     CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 
 # OpenMP
-find_package(OpenMP REQUIRED)
+find_package(OpenMP)
 if (OpenMP_FOUND)
     target_link_libraries(eddl PUBLIC OpenMP::OpenMP_CXX)
     if (${OpenMP_CXX_VERSION_MAJOR})
