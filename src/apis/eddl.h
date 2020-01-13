@@ -492,10 +492,63 @@ namespace eddl {
       *  @return     Output of affine transformation
     */
     layer Affine(layer parent, float angle=0, float translate=0, float scale=0, float shear=0, string name="");  // TODO: Implement
+    /**
+      *  @brief Crops the given image at `[(top, left), (bottom, right)]`.
+      *
+      *  @param parent  Parent layer
+      *  @param from_coords  Vector (top, left) coordinates
+      *  @param to_coords  Vector (bottom, right) coordinates
+      *  @param reshape  If True, the output shape will be new_shape (classical scale; recommended). If False, the output shape will be the input shape (scale<100%: scale + padding; scale >100%: crop + scale)
+      *  @param constant  Erasing value
+      *  @param name  A name for the operation
+      *  @return     Output of crop transformation
+    */
     layer Crop(layer parent, vector<int> from_coords, vector<int> to_coords, bool reshape=true, float constant=0.0f, string name="");
+    /**
+      *  @brief Crops the given image at the center with size (width, height).
+      *
+      *  @param parent  Parent layer
+      *  @param size  Vector (height, width) size
+      *  @param reshape  If True, the output shape will be new_shape (classical scale; recommended). If False, the output shape will be the input shape (scale<100%: scale + padding; scale >100%: crop + scale)
+      *  @param constant  Erasing value
+      *  @param name  A name for the operation
+      *  @return     Output of center crop transformation
+    */
     layer CenteredCrop(layer parent, vector<int> size, bool reshape=true, float constant=0.0f, string name="");
+    /**
+      *  @brief Randomly change the brightness, contrast and saturation of an image.
+      *
+      *  @param parent  Parent layer
+      *  @param brightness  How much to jitter brightness. brightness_factor is chosen uniformly from [max(0, 1 - brightness), 1 + brightness] or the given [min, max]. Should be non negative numbers
+      *  @param contrast  How much to jitter contrast. contrast_factor is chosen uniformly from [max(0, 1 - contrast), 1 + contrast] or the given [min, max]. Should be non negative numbers
+      *  @param saturation  How much to jitter saturation. saturation_factor is chosen uniformly from [max(0, 1 - saturation), 1 + saturation] or the given [min, max]. Should be non negative numbers
+      *  @param hue  How much to jitter hue. hue_factor is chosen uniformly from [-hue, hue] or the given [min, max]. Should have 0<= hue <= 0.5 or -0.5 <= min <= max <= 0.5
+      *  @param name  A name for the operation
+      *  @return     Output of color jitter transformation
+    */
     layer ColorJitter(layer parent, float brightness=0, float contrast=0, float saturation=0, float hue=0, string name="");  // TODO: Implement
+    /**
+      *  @brief Crop the given image at `[(top, left), (bottom, right)]` and scale it to the parent size.
+      *
+      *  @param parent  Parent layer
+      *  @param from_coords  Vector (top, left) coordinates
+      *  @param to_coords  Vector (bottom, right) coordinates
+      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirrror", "reflect", "wrap", "original")
+      *  @param constant  Fill value for area outside the rotated image, it is used for all channels respectively
+      *  @param name  A name for the operation
+      *  @return     Output of crop scale transformation
+    */
     layer CropScale(layer parent, vector<int> from_coords, vector<int> to_coords, string da_mode="nearest", float constant=0.0f, string name="");
+    /**
+      *  @brief Selects a rectangle region in an image at `[(top, left), (bottom, right)]` and erases its pixels using a constant value.
+      *
+      *  @param parent  Parent layer
+      *  @param from_coords  Vector (top, left) coordinates
+      *  @param to_coords  Vector (bottom, right) coordinates
+      *  @param constant  Erasing value
+      *  @param name  A name for the operation
+      *  @return     Output of cutout transformation
+    */
     layer Cutout(layer parent, vector<int> from_coords, vector<int> to_coords, float constant=0.0f, string name="");
     /**
       *  @brief Flip the given image at `axis=n`.
@@ -516,8 +569,37 @@ namespace eddl {
     */
     layer HorizontalFlip(layer parent, string name="");
     layer Pad(layer parent, vector<int> padding, float constant=0.0f, string name=""); // TODO: Implement
+    /**
+      *  @brief Rotate the image by angle.
+      *
+      *  @param parent  Parent layer
+      *  @param angle  In degrees counter clockwise order
+      *  @param offset_center  Optional center of rotation. Default is the center of the image
+      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirrror", "reflect", "wrap", "original")
+      *  @param constant  Fill value for area outside the rotated image, it is used for all channels respectively.
+      *  @return     Output of rotate transformation
+    */
     layer Rotate(layer parent, float angle, vector<int> offset_center={0, 0}, string da_mode="original", float constant=0.0f, string name="");
-    layer Scale(layer parent, vector<int> new_shape, bool reshape, string da_mode="nearest", float constant=0.0f, string name="");
+    /**
+      *  @brief Resize the input image to the given size. `[height, width]`.
+      *
+      *  @param parent  Parent layer
+      *  @param new_shape  Vector with layer/images desired new shape
+      *  @param reshape  If True, the output shape will be new_shape (classical scale; recommended). If False, the output shape will be the input shape (scale<100%: scale + padding; scale >100%: crop + scale)
+      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirrror", "reflect", "wrap", "original")
+      *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively.
+      *  @return     Output of scale transformation
+    */
+    layer Scale(layer parent, vector<int> new_shape, bool reshape=true, string da_mode="nearest", float constant=0.0f, string name="");
+    /**
+      *  @brief Shift the input image `[a, b]`.
+      *
+      *  @param parent  Parent layer
+      *  @param shift  Vector of maximum absolute fraction for horizontal and vertical translations
+      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirrror", "reflect", "wrap", "original")
+      *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively.
+      *  @return     Output of scale transformation
+    */
     layer Shift(layer parent, vector<int> shift, string da_mode="nearest", float constant=0.0f, string name="");
     /**
       *  @brief Vertically flip the given image.
@@ -527,6 +609,13 @@ namespace eddl {
       *  @return     Output of vertical flip transformation
     */
     layer VerticalFlip(layer parent, string name="");
+    /**
+      *  @brief Normalize an image with mean and standard deviation.
+      *
+      *  @param parent  Parent layer
+      *  @param name  A name for the operation
+      *  @return     Output of normalize transformation
+    */
     layer Normalize(layer parent, string name="");  // TODO: Implement
 
 
@@ -543,9 +632,44 @@ namespace eddl {
       *  @return     Output of affine transformation
     */
     layer RandomAffine(layer parent, vector<float> angle, vector<float> translate, vector<float> scale, vector<float> shear, string name="");  // TODO: Implement
+    /**
+      *  @brief Crop the given image at a random location with size `[height, width]`.
+      *
+      *  @param parent  Parent layer
+      *  @param new_shape  Vector (height, width) size
+      *  @param name  A name for the operation
+      *  @return     Output of random crop transformation
+    */
     layer RandomCrop(layer parent, vector<int> new_shape, string name= "");
+    /**
+      *  @brief Crops the given image at the center with size (width, height).
+      *
+      *  @param parent  Parent layer
+      *  @param new_shape  Vector (height, width) size
+      *  @param name  A name for the operation
+      *  @return     Output of random center crop transformation
+    */
     layer RandomCenteredCrop(layer parent, vector<int> new_shape, string name= "");  // TODO: Implement
+    /**
+      *  @brief Crop the given image randomly by the size in a range `[a, b]` by and scale it to the parent size.
+      *
+      *  @param parent  Parent layer
+      *  @param factor  Factor Range for random crop
+      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirrror", "reflect", "wrap", "original")
+      *  @param name  A name for the operation
+      *  @return     Output of random crop scale transformation
+    */
     layer RandomCropScale(layer parent, vector<float> factor, string da_mode= "nearest", string name= "");
+    /**
+      *  @brief Randomly selects a rectangle region in an image and erases its pixels. The random region is defined by the range `[(min_x, max_x), (min_y, max_y)]`, where these are relative values.
+      *
+      *  @param parent  Parent layer
+      *  @param factor_x  Vector of factor fraction for horizontal size
+      *  @param factor_y  Vector of factor fraction for vertical size
+      *  @param constant  Erasing value
+      *  @param name  A name for the operation
+      *  @return     Output of random cutout transformation
+    */
     layer RandomCutout(layer parent, vector<float> factor_x, vector<float> factor_y, float constant= 0.0f, string name= "");
     /**
       *  @brief Flip the given image at `axis=n` randomly with a given probability.
@@ -565,8 +689,37 @@ namespace eddl {
       *  @return     Output of random horizontal flip transformation
     */
     layer RandomHorizontalFlip(layer parent, string name= "");
+    /**
+      *  @brief Rotate the image randomly by an angle defined in a range `[a, b]`.
+      *
+      *  @param parent  Parent layer
+      *  @param factor  Range In degrees counter clockwise order
+      *  @param offset_center  Optional center of rotation. Default is the center of the image
+      *  @param da_mode  One of "original"
+      *  @param constant  Fill value for area outside the rotated image, it is used for all channels respectively.
+      *  @return     Output of rotate transformation
+    */
     layer RandomRotation(layer parent, vector<float> factor, vector<int> offset_center= {0, 0}, string da_mode= "original", float constant= 0.0f, string name= "");
+    /**
+      *  @brief Resize the input image randomly by the size in a range `[a, b]`.
+      *
+      *  @param parent  Parent layer
+      *  @param factor  Vector of factor size range new shape
+      *  @param da_mode  One of "nearest"
+      *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively.
+      *  @return     Output of scale transformation
+    */
     layer RandomScale(layer parent, vector<float> factor, string da_mode= "nearest", float constant= 0.0f, string name= "");
+    /**
+      *  @brief Shift the input image randomly in range `[a, b]`.
+      *
+      *  @param parent  Parent layer
+      *  @param factor_x  Vector of factor fraction for horizontal translations
+      *  @param factor_y  Vector of factor fraction for vertical translations
+      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirrror", "reflect", "wrap", "original")
+      *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively.
+      *  @return     Output of scale transformation
+    */
     layer RandomShift(layer parent, vector<float> factor_x, vector<float> factor_y, string da_mode= "nearest", float constant= 0.0f, string name= "");
     /**
       *  @brief Vertically flip the given image randomly with a given probability.
