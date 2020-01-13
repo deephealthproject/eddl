@@ -11,6 +11,7 @@
 #include <iterator>
 #include <fstream>  // for the linux stuff
 #include <iostream>
+#include <cctype>
 #include <cstdio>
 #include <cstdlib>
 #include <new>      // included for std::bad_alloc
