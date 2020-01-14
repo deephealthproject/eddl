@@ -88,7 +88,7 @@ Tensor* Tensor::logspace(float start, float end, int steps, float base, int dev)
 }
 
 Tensor* Tensor::geomspace(float start, float end, int steps, int dev){
-    return Tensor::logspace(std::log10f(start), std::log10f(end), steps, 10.0f, dev);
+  return Tensor::logspace(::log10f(start), ::log10f(end), steps, 10.0f, dev);
 }
 
 
@@ -154,5 +154,3 @@ Tensor* Tensor::randn(const vector<int> &shape, int dev){
     t->rand_normal(0.0f, 1.0f, false);
     return t;
 }
-
-
