@@ -55,27 +55,27 @@ void cpu_fill(Tensor * A, int aini, int aend, Tensor * B, int bini, int bend, in
 void cpu_select(Tensor *A, Tensor *B, SelDescriptor *sd){
     #pragma omp parallel for
     for (int i = 0; i < B->size; i++) {
-        B->ptr[i] = A->ptr[sd->addresses[i]];
+        B->ptr[i] = A->ptr[sd->cpu_addresses[i]];
     }
 }
 
 void cpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
     #pragma omp parallel for
     for (int i = 0; i < A->size; i++) {  // walk stride
-        B->ptr[sd->addresses[i]] += A->ptr[i];  // delta_parent += delta
+        B->ptr[sd->cpu_addresses[i]] += A->ptr[i];  // delta_parent += delta
     }
 }
 
 void cpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
     #pragma omp parallel for
     for (int i = 0; i < B->size; i++) {
-        A->ptr[sd->addresses[i]] = B->ptr[i];
+        A->ptr[sd->cpu_addresses[i]] = B->ptr[i];
     }
 }
 void cpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
     #pragma omp parallel for
     for (int i = 0; i < B->size; i++) {
-        B->ptr[i] += A->ptr[sd->addresses[i]];
+        B->ptr[i] += A->ptr[sd->cpu_addresses[i]];
     }
 }
 

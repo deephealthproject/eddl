@@ -31,6 +31,7 @@ extern curandGenerator_t random_generator[64];
 
 // GPU: Temp
 int* get_block_dim(int N, int blockSize);
+void copy_cpu2gpu(float cpu_addresses, float gpu_addresses, int size, bool delete_cpu);
 
 // GPU: Core
 void gpu_fill_(Tensor *A, float v);

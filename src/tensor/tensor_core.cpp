@@ -112,7 +112,7 @@ Tensor* Tensor::unsqueeze(Tensor *A){
 
 Tensor* Tensor::permute(Tensor* t, const vector<int>& dims){
     // Build descriptor
-    auto *sd = new PermuteDescriptor(dims);
+    auto *sd = new PermuteDescriptor(dims, t->device);
     sd->build(t->shape);
     sd->build_indices();
 
@@ -296,7 +296,7 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
 Tensor* Tensor::select(const vector<string>& indices){
     Tensor* t = nullptr;
 
-    auto *sd = new SelDescriptor(indices);
+    auto *sd = new SelDescriptor(indices, this->device);
     sd->build(this->shape);
     sd->build_indices();
 
@@ -346,7 +346,7 @@ void Tensor::select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
 
 
 void Tensor::set_select(const vector<string>& indices, Tensor *A){
-    auto *sd = new SelDescriptor(indices);
+    auto *sd = new SelDescriptor(indices, this->device);
     sd->build(this->shape);
     sd->build_indices();
 

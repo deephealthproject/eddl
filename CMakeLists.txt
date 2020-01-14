@@ -320,6 +320,7 @@ SET(CPP_SOURCES
         src/descriptors/descriptor_conv.cpp
         src/descriptors/descriptor_pool.cpp
         src/descriptors/descriptor_reduce.cpp
+        src/descriptors/descriptor_tensor.cpp
         src/descriptors/descriptor_select.cpp
         src/descriptors/descriptor_permute.cpp
         src/regularizers/regularizer.h
