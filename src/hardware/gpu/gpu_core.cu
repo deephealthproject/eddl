@@ -34,6 +34,7 @@ void copy_cpu2gpu(int* cpu_addresses, int* gpu_addresses, int size, bool delete_
     check_cuda(cudaMalloc((void**)&(gpu_addresses), size), "create address mapping");
     check_cuda(cudaDeviceSynchronize(), "create");
 
+
     check_cuda(cudaMemcpy(gpu_addresses, cpu_addresses, size, cudaMemcpyHostToDevice), "copy address mapping");
     check_cuda(cudaDeviceSynchronize(), "copy");
 
@@ -124,9 +125,14 @@ void gpu_select(Tensor *A, Tensor *B, SelDescriptor *sd){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
-    // Copy indices from host to device
-    if(sd->gpu_addresses == nullptr){
-        copy_cpu2gpu(sd->cpu_addresses, sd->gpu_addresses, B->size*sizeof(int), true);
+     if(sd->gpu_addresses == nullptr){
+        // copy_cpu2gpu(sd->cpu_addresses, sd->gpu_addresses, B->size*sizeof(int), true);
+
+        check_cuda(cudaMalloc((void**)&(sd->gpu_addresses), B->size*sizeof(int)), "create address mapping");
+        check_cuda(cudaDeviceSynchronize(), "create");
+
+        check_cuda(cudaMemcpy(sd->gpu_addresses, sd->cpu_addresses, B->size*sizeof(int), cudaMemcpyHostToDevice), "copy address mapping");
+        check_cuda(cudaDeviceSynchronize(), "copy");
     }
 
 
@@ -141,7 +147,13 @@ void gpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
 
     // Copy indices from host to device
     if(sd->gpu_addresses == nullptr){
-        copy_cpu2gpu(sd->cpu_addresses, sd->gpu_addresses, A->size*sizeof(int), true);
+        // copy_cpu2gpu(sd->cpu_addresses, sd->gpu_addresses, A->size*sizeof(int), true);
+
+        check_cuda(cudaMalloc((void**)&(sd->gpu_addresses), A->size*sizeof(int)), "create address mapping");
+        check_cuda(cudaDeviceSynchronize(), "create");
+
+        check_cuda(cudaMemcpy(sd->gpu_addresses, sd->cpu_addresses, A->size*sizeof(int), cudaMemcpyHostToDevice), "copy address mapping");
+        check_cuda(cudaDeviceSynchronize(), "copy");
     }
 
 
@@ -157,7 +169,13 @@ void gpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
 
     // Copy indices from host to device
     if(sd->gpu_addresses == nullptr){
-        copy_cpu2gpu(sd->cpu_addresses, sd->gpu_addresses, B->size*sizeof(int), true);
+        // copy_cpu2gpu(sd->cpu_addresses, sd->gpu_addresses, B->size*sizeof(int), true);
+
+        check_cuda(cudaMalloc((void**)&(sd->gpu_addresses), B->size*sizeof(int)), "create address mapping");
+        check_cuda(cudaDeviceSynchronize(), "create");
+
+        check_cuda(cudaMemcpy(sd->gpu_addresses, sd->cpu_addresses, B->size*sizeof(int), cudaMemcpyHostToDevice), "copy address mapping");
+        check_cuda(cudaDeviceSynchronize(), "copy");
     }
 
     setDims(B);  // B is the small
@@ -172,10 +190,16 @@ void gpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
 
     // Copy indices from host to device
     if(sd->gpu_addresses == nullptr){
-        copy_cpu2gpu(sd->cpu_addresses, sd->gpu_addresses, B->size*sizeof(int), true);
+        // copy_cpu2gpu(sd->cpu_addresses, sd->gpu_addresses, B->size*sizeof(int), true);
+
+        check_cuda(cudaMalloc((void**)&(sd->gpu_addresses), B->size*sizeof(int)), "create address mapping");
+        check_cuda(cudaDeviceSynchronize(), "create");
+
+        check_cuda(cudaMemcpy(sd->gpu_addresses, sd->cpu_addresses, B->size*sizeof(int), cudaMemcpyHostToDevice), "copy address mapping");
+        check_cuda(cudaDeviceSynchronize(), "copy");
     }
 
     setDims(B);  // B is the small
-    set_select_back<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, sd->gpu_addresses);
+    set_select_back<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, sd->gpu_addresses);
     check_cuda(cudaDeviceSynchronize(), "set_select_back");
 }
