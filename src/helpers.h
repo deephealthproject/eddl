@@ -45,7 +45,7 @@ private:
     std::vector<std::string>    m_data;
 };
 
-std::istream& get_next_row(std::istream& str, CSVRow& data, const char &delimiter)
+static std::istream& get_next_row(std::istream& str, CSVRow& data, const char &delimiter)
 {
     data.readNextRow(str, delimiter);
     return str;
