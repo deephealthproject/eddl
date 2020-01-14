@@ -185,12 +185,17 @@ float* gpu_create_tensor(int dev,int size)
 }
 
 
-void gpu_delete_tensor(int dev,float* p)
+void gpu_delete_tensor(int dev, float* p)
 {
     cudaSetDevice(dev);
     check_cuda(cudaFree(p),"delete_tensor");
 }
 
+void gpu_delete_tensor_int(int dev, int* p)
+{
+    cudaSetDevice(dev);
+    check_cuda(cudaFree(p),"delete_tensor_int");
+}
 
 int gpu_devices()
 {
