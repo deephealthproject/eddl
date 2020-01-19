@@ -24,7 +24,8 @@ LCutout::LCutout(Layer *parent, vector<int> from_coords, vector<int> to_coords, 
 
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
-    delta = parent->delta;
+    delta=parent->delta;
+
 
     // Params
     this->from_coords = from_coords;
@@ -42,9 +43,7 @@ LCutout::~LCutout()
 }
 
 // virtual
-void LCutout::resize(int batch){
-  output->resize(batch);
-}
+
 
 void LCutout::forward() {
     Tensor::cutout(this->input, this->output, this->from_coords, this->to_coords, this->constant);

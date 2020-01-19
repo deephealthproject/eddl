@@ -23,7 +23,8 @@ LScale::LScale(Layer *parent, vector<int> new_shape, bool reshape, string da_mod
     if(name.empty()) this->name = "scale" + to_string(++total_layers);
 
     this->input = parent->output;
-    this->delta = parent->delta;
+    delta=parent->delta;
+
 
     if (reshape){
         output = new Tensor({this->input->shape[0], this->input->shape[1], new_shape[0], new_shape[1]}, dev);
@@ -49,9 +50,7 @@ LScale::~LScale()
 
 
 // virtual
-void LScale::resize(int batch){
-  output->resize(batch);
-}
+
 
 void LScale::forward() {
     Tensor::scale(this->input, this->output, this->new_shape, this->da_mode, this->constant);

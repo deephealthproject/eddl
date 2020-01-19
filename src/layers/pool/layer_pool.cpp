@@ -40,4 +40,5 @@ LPool::LPool(Layer *parent, PoolDescriptor *D, string name, int dev) : LinLayer(
 
 void LPool::resize(int batch){
   pd->resize(batch);
+  if (target!=nullptr) target->resize(batch);
 }

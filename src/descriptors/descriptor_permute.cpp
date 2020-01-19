@@ -34,6 +34,7 @@ void PermuteDescriptor::resize(int b){
 
     // Build indices
     this->build_indices();
+
 }
 
 void PermuteDescriptor::build_indices(){

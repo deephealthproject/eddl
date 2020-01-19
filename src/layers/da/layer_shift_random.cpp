@@ -25,7 +25,8 @@ LShiftRandom::LShiftRandom(Layer *parent, vector<float> factor_x, vector<float> 
 
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
-    delta = parent->delta;
+    delta=parent->delta;
+
 
     // Params
     this->factor_x = factor_x;
@@ -44,9 +45,7 @@ LShiftRandom::~LShiftRandom()
 }
 
 // virtual
-void LShiftRandom::resize(int batch){
-  output->resize(batch);
-}
+
 
 void LShiftRandom::forward() {
     Tensor::shift_random(input, output, factor_x, factor_y);

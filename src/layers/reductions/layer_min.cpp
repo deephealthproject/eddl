@@ -47,6 +47,7 @@ reduction_back(RD);
 // virtual
 void LRMin::resize(int batch){
     RD->resize(batch);
+    if (target!=nullptr) target->resize(batch);
 }
 
 

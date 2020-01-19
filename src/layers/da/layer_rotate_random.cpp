@@ -24,7 +24,8 @@ LRotateRandom::LRotateRandom(Layer *parent, vector<float> factor, vector<int> of
 
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
-    delta = parent->delta;
+    delta=parent->delta;
+
 
     // Params
     this->factor = factor;
@@ -43,9 +44,7 @@ LRotateRandom::~LRotateRandom()
 }
 
 // virtual
-void LRotateRandom::resize(int batch){
-  output->resize(batch);
-}
+
 
 void LRotateRandom::forward() {
     Tensor::rotate_random(this->input, this->output, this->factor, this->offset_center, this->da_mode, this->constant);

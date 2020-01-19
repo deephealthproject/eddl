@@ -74,6 +74,7 @@ void Layer::setdetach()
 
 void Layer::resize(int batch)
 {
+    //cout<<name<<" resizing\n";
     if (output!=nullptr) output->resize(batch);
     if (delta!=nullptr) delta->resize(batch);
     if (target!=nullptr) target->resize(batch);

@@ -38,7 +38,7 @@ public:
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void resize(int batch) override;
+    
 
     void forward() override;
 
@@ -64,7 +64,7 @@ public:
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void resize(int batch) override;
+
 
     void forward() override;
 
@@ -90,7 +90,7 @@ public:
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void resize(int batch) override;
+
 
     void forward() override;
 
@@ -113,7 +113,7 @@ public:
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void resize(int batch) override;
+
 
     void forward() override;
 
@@ -139,7 +139,7 @@ public:
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void resize(int batch) override;
+
 
     void forward() override;
 
@@ -176,7 +176,7 @@ public:
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void resize(int batch) override;
+
 
     void forward() override;
 
@@ -203,7 +203,7 @@ public:
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void resize(int batch) override;
+
 
     void forward() override;
 
@@ -229,7 +229,7 @@ public:
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void resize(int batch) override;
+
 
     void forward() override;
 
@@ -254,7 +254,7 @@ public:
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void resize(int batch) override;
+
 
     void forward() override;
 
@@ -277,7 +277,7 @@ public:
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void resize(int batch) override;
+
 
     void forward() override;
 
@@ -300,7 +300,7 @@ public:
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void resize(int batch) override;
+
 
     void forward() override;
 
@@ -325,7 +325,7 @@ public:
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void resize(int batch) override;
+
 
     void forward() override;
 
@@ -345,12 +345,12 @@ public:
 
     LCutoutRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, float constant, string name, int dev);
     ~LCutoutRandom();
-    
+
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    void resize(int batch) override;
+
 
     void forward() override;
 

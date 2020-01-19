@@ -127,8 +127,6 @@ public:
 
     string plot(int c) override { return ""; }
 
-    void resize(int batch) override {}
-
     void forward() override {}
 
     void backward() override {}
@@ -154,8 +152,6 @@ public:
     //virtual
 
     string plot(int c) override { return ""; }
-
-    void resize(int batch) override {}
 
     void forward() override {}
 

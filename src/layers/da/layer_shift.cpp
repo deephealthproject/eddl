@@ -25,7 +25,8 @@ LShift::LShift(Layer *parent, vector<int> shift, string da_mode, float constant,
 
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
-    delta = parent->delta;
+    delta=parent->delta;
+
 
     // Params
     this->shift = std::move(shift);
@@ -43,9 +44,7 @@ LShift::~LShift()
 }
 
 // virtual
-void LShift::resize(int batch){
-  output->resize(batch);
-}
+
 
 void LShift::forward() {
     Tensor::shift(this->input, this->output, this->shift, this->da_mode, this->constant);

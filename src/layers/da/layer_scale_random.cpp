@@ -24,7 +24,8 @@ LScaleRandom::LScaleRandom(Layer *parent, vector<float> factor, string da_mode, 
 
     this->input = parent->output;
     this->output = new Tensor(input->getShape(), dev);
-    this->delta = parent->delta;
+    delta=parent->delta;
+
 
     // Params
     this->factor = std::move(factor);
@@ -42,9 +43,7 @@ LScaleRandom::~LScaleRandom()
 }
 
 // virtual
-void LScaleRandom::resize(int batch){
-  output->resize(batch);
-}
+
 
 void LScaleRandom::forward() {
     Tensor::scale_random(this->input, this->output, this->factor, this->da_mode, this->constant);

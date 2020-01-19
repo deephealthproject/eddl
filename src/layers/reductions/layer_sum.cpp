@@ -47,6 +47,7 @@ reduction_back(RD);
 // virtual
 void LRSum::resize(int batch){
     RD->resize(batch);
+    if (target!=nullptr) target->resize(batch);
 }
 
 

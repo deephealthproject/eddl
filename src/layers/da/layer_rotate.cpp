@@ -25,7 +25,8 @@ LRotate::LRotate(Layer *parent, float angle, vector<int> offset_center, string d
     // TODO: Implement
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
-    delta = parent->delta;
+    delta=parent->delta;
+
 
     // Params
     this->angle = angle;
@@ -44,9 +45,7 @@ LRotate::~LRotate()
 }
 
 // virtual
-void LRotate::resize(int batch){
-  output->resize(batch);
-}
+
 
 void LRotate::forward() {
     Tensor::rotate(this->input, this->output, angle, this->offset_center, this->da_mode, this->constant);

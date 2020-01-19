@@ -61,6 +61,7 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev) : LinLaye
 // virtual
 void LConv::resize(int batch){
     cd->resize(batch);
+    if (target!=nullptr) target->resize(batch);
 }
 
 void LConv::forward() {
@@ -71,7 +72,7 @@ void LConv::backward() {
 
     //get gradients with provided delta
     if (trainable) Conv2D_grad(this->cd);
-    
+
     // backprop delta
     if (this->parent.size()) {
         Conv2D_back(this->cd);

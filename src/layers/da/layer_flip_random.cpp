@@ -24,7 +24,8 @@ LFlipRandom::LFlipRandom(Layer *parent, int axis, string name, int dev) : LinLay
 
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
-    delta = parent->delta;
+    delta=parent->delta;
+
 
     // Params
     this->axis = axis;
@@ -40,9 +41,7 @@ LFlipRandom::~LFlipRandom()
 }
 
 // virtual
-void LFlipRandom::resize(int batch){
-  output->resize(batch);
-}
+
 
 void LFlipRandom::forward() {
     Tensor::flip_random(this->input, this->output, this->axis);

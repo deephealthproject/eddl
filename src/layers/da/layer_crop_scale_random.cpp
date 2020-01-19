@@ -25,7 +25,8 @@ LCropScaleRandom::LCropScaleRandom(Layer *parent, vector<float> factor, string d
 
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
-    delta = parent->delta;
+    delta=parent->delta;
+
 
     // Params
     this->factor=std::move(factor);
@@ -41,9 +42,7 @@ LCropScaleRandom::~LCropScaleRandom()
 }
 
 // virtual
-void LCropScaleRandom::resize(int batch){
-    output->resize(batch);
-}
+
 
 void LCropScaleRandom::forward() {
     Tensor::crop_scale_random(this->input, this->output, this->factor, this->da_mode);

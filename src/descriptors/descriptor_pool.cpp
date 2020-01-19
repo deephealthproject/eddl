@@ -89,4 +89,5 @@ void PoolDescriptor::resize(int b) {
 
   O->resize(b);
   D->resize(b);
+  
 }

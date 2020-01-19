@@ -24,7 +24,7 @@ LCropRandom::LCropRandom(Layer *parent, vector<int> new_shape, string name, int 
 
     input = parent->output;
     output = new Tensor({input->shape[0], input->shape[1], new_shape[0], new_shape[1]}, dev);
-    delta = parent->delta;
+    delta=parent->delta;
 
     // Params
     this->new_shape = std::move(new_shape);
@@ -39,9 +39,7 @@ LCropRandom::~LCropRandom()
 
 
 // virtual
-void LCropRandom::resize(int batch){
-  output->resize(batch);
-}
+
 
 void LCropRandom::forward() {
     Tensor::crop_random(this->input, this->output);
