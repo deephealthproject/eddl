@@ -37,7 +37,7 @@ void add_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsi
   D->ID->ptr[p]+=val;
 }
 
-void im2col(int b,ConvolDescriptor *D,int col2im)
+void im2col(int b,ConvolDescriptor *D,float *ptrI,int col2im)
 {
   int i,j,k;
   int pz,py,px,y,x;
@@ -57,11 +57,9 @@ void im2col(int b,ConvolDescriptor *D,int col2im)
   px=-D->padcl;
 
 
-  float *ptrI=&(D->matI(0,0));
   for(j=0;j<D->matI.rows();j++) {
     k=j;
-    //fprintf(stderr,"%d %d\n",py,px);
-    //getchar();
+
     for(i=0;i<D->matI.cols();i++,k+=orsize) {
        pz=i/ksize;
        y=py+(i%ksize)/D->kc;
@@ -93,21 +91,29 @@ void cpu_conv2D(ConvolDescriptor *D)
   // Map memory to Eigen
   new(&D->matK) Eigen::Map<Eigen::MatrixXf>(D->K->ptr, D->kr * D->kc * D->kz, D->nk);
 
-  for(int b=0;b<D->I->shape[0];b++,ptrO+=osize,ptrI+=isize){
-    new (&(D->matI)) Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
-    new (&(D->matO)) Eigen::Map<Eigen::MatrixXf>(ptrO,D->r*D->c,D->z);
-    im2col(b,D,0);
-    D->matO=D->matI*D->matK;
+  #pragma omp parallel for
+  for(int b=0;b<D->I->shape[0];b++){
+
+    float *ptrO=D->O->ptr+(b*osize);
+    float *ptrI=D->ptrI+(b*isize);
+
+    Eigen::Map<Eigen::MatrixXf> matI=Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
+    Eigen::Map<Eigen::MatrixXf> matO=Eigen::Map<Eigen::MatrixXf>(ptrO,D->r*D->c,D->z);
+
+    im2col(b,D,ptrI,0);
+
+    matO=matI*D->matK;
   }// batch
 
   //bias
-
-  ptrO=D->O->ptr;
-  for(int b=0;b<D->O->shape[0];b++)
+  #pragma omp parallel for
+  for(int b=0;b<D->O->shape[0];b++) {
+    float *ptrO=D->O->ptr+(b*osize);
     for(int z=0;z<D->O->shape[1];z++)
       for(int r=0;r<D->O->shape[2];r++)
         for(int c=0;c<D->O->shape[3];c++,ptrO++)
             (*ptrO)+=D->bias->ptr[z];
+  }
 
 }
 
@@ -117,27 +123,32 @@ void cpu_conv2D_grad(ConvolDescriptor *D)
   int osize=D->z*D->r*D->c;
   int isize=D->r*D->c*D->kc*D->kr*D->kz;//r*c,kr*kc*kz
 
-  float *ptrD=D->D->ptr;
-  float *ptrI=D->ptrI;
-
   // Map memory to Eigen
   new(&D->matgK) Eigen::Map<Eigen::MatrixXf>(D->gK->ptr, D->kr * D->kc * D->kz, D->nk);
 
-  for(int b=0;b<D->I->shape[0];b++,ptrD+=osize,ptrI+=isize){
-    // re-using previous lowering
-    new (&(D->matI)) Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
-    new (&(D->matD)) Eigen::Map<Eigen::MatrixXf>(ptrD,D->r*D->c,D->z);
+  #pragma omp parallel for
+  for(int b=0;b<D->I->shape[0];b++){
 
-    D->matgK+=D->matI.transpose()*D->matD;
+    float *ptrD=D->D->ptr+(b*osize);
+    float *ptrI=D->ptrI+(b*isize);
+
+    Eigen::Map<Eigen::MatrixXf> matI=Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
+    Eigen::Map<Eigen::MatrixXf> matD=Eigen::Map<Eigen::MatrixXf>(ptrD,D->r*D->c,D->z);
+
+    D->matgK+=matI.transpose()*matD;
   }// batch
 
   //bias
-  ptrD=D->D->ptr;
-  for(int b=0;b<D->D->shape[0];b++)
+
+  #pragma omp parallel for
+  for(int b=0;b<D->D->shape[0];b++) {
+    float *ptrD=D->D->ptr+(b*osize);
     for(int z=0;z<D->D->shape[1];z++)
       for(int r=0;r<D->D->shape[2];r++)
         for(int c=0;c<D->D->shape[3];c++,ptrD++)
-            D->gbias->ptr[z]+=(*ptrD);
+            D->gbias->ptr[z]+=(*ptrD); 
+
+    }
 
 }
 
@@ -153,12 +164,18 @@ void cpu_conv2D_back(ConvolDescriptor *D)
   new(&D->matK) Eigen::Map<Eigen::MatrixXf>(D->K->ptr, D->kr * D->kc * D->kz, D->nk);
   new (&(D->matI)) Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
 
-  for(int b=0;b<D->I->shape[0];b++,ptrD+=osize){
-    new (&(D->matD)) Eigen::Map<Eigen::MatrixXf>(ptrD,D->r*D->c,D->z);
+  #pragma omp parallel for
+  for(int b=0;b<D->I->shape[0];b++){
 
-    D->matI=D->matD*D->matK.transpose();
+    float *ptrD=D->D->ptr+(b*osize);
+    float *ptrI=D->ptrI+(b*isize);
 
-    im2col(b,D,1);
+    Eigen::Map<Eigen::MatrixXf> matI=Eigen::Map<Eigen::MatrixXf>(ptrI,D->r*D->c,D->kz*D->kr*D->kc);
+    Eigen::Map<Eigen::MatrixXf> matD=Eigen::Map<Eigen::MatrixXf>(ptrD,D->r*D->c,D->z);
+
+    matI=matD*D->matK.transpose();
+
+    im2col(b,D,ptrI,1);
 
   }// batch
 }
