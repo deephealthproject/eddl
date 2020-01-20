@@ -18,12 +18,15 @@
 
 void cpu_mpool2D(PoolDescriptor *D)
 {
-  int i,j,k,ki,kj;
+
   int isize=D->ir*D->ic*D->iz;
   int irsize=D->ir*D->ic;
 
-  int p=0;
+
+  #pragma omp parallel for
   for(int b=0;b<D->I->shape[0];b++){
+    int p=b*D->size;
+    int i,j,k,ki,kj;
     for(k=0;k<D->iz;k++) {
       for(i=-D->padrt;i<=D->ir+D->padrb-D->kr;i+=D->sr) {
         for(j=-D->padcl;j<=D->ic+D->padcr-D->kc;j+=D->sc,p++) {
@@ -48,12 +51,13 @@ void cpu_mpool2D(PoolDescriptor *D)
 
 void cpu_mpool2D_back(PoolDescriptor *D)
 {
-  int i,j,k,ki,kj;
   int isize=D->ir*D->ic*D->iz;
   int irsize=D->ir*D->ic;
 
-  int p=0;
+  #pragma omp parallel for
   for(int b=0;b<D->I->shape[0];b++){
+    int p=b*D->size;
+    int i,j,k,ki,kj;
     for(k=0;k<D->iz;k++) {
       for(i=-D->padrt;i<=D->ir+D->padrb-D->kr;i+=D->sr) {
         for(j=-D->padcl;j<=D->ic+D->padcr-D->kc;j+=D->sc,p++) {
