@@ -126,7 +126,7 @@ void cpu_conv2D_grad(ConvolDescriptor *D)
   // Map memory to Eigen
   new(&D->matgK) Eigen::Map<Eigen::MatrixXf>(D->gK->ptr, D->kr * D->kc * D->kz, D->nk);
 
-  #pragma omp parallel for
+  //#pragma omp parallel for
   for(int b=0;b<D->I->shape[0];b++){
 
     float *ptrD=D->D->ptr+(b*osize);
@@ -140,7 +140,7 @@ void cpu_conv2D_grad(ConvolDescriptor *D)
 
   //bias
 
-  #pragma omp parallel for 
+  //#pragma omp parallel for 
   for(int b=0;b<D->D->shape[0];b++) {
     float *ptrD=D->D->ptr+(b*osize);
     for(int z=0;z<D->D->shape[1];z++)
