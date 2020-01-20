@@ -81,6 +81,11 @@ void PoolDescriptor::build(Tensor *A) {
     O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
     D = new Tensor(O->getShape(), A->device);
 
+    size=0;
+    for(int k=0;k<iz;k++)
+      for(int i=-padrt;i<=ir+padrb-kr;i+=sr)
+        for(int j=-padcl;j<=ic+padcr-kc;j+=sc,size++) {}
+
 
 }
 
@@ -89,5 +94,5 @@ void PoolDescriptor::resize(int b) {
 
   O->resize(b);
   D->resize(b);
-  
+
 }

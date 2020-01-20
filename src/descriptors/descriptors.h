@@ -70,6 +70,7 @@ public:
     int r, c, z;
     int padrt,padrb;
     int padcl,padcr;
+    int size;
 
 
     Tensor *I; // Input map

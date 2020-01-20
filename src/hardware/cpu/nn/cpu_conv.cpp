@@ -140,13 +140,13 @@ void cpu_conv2D_grad(ConvolDescriptor *D)
 
   //bias
 
-  #pragma omp parallel for
+  #pragma omp parallel for 
   for(int b=0;b<D->D->shape[0];b++) {
     float *ptrD=D->D->ptr+(b*osize);
     for(int z=0;z<D->D->shape[1];z++)
       for(int r=0;r<D->D->shape[2];r++)
         for(int c=0;c<D->D->shape[3];c++,ptrD++)
-            D->gbias->ptr[z]+=(*ptrD); 
+            D->gbias->ptr[z]+=(*ptrD);
 
     }
 
