@@ -51,6 +51,10 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev) : LinLaye
 
     gradients.push_back(cd->gK);
     gradients.push_back(cd->gbias);
+	
+	distributed_training = false;
+	cd->acc_gK = nullptr;
+	cd->acc_gbias = nullptr;
 
     parent->addchild(this);
     addparent(parent);
@@ -83,6 +87,29 @@ void LConv::backward() {
 
 }
 
+void LConv::update_weights(Tensor* w, Tensor* bias) {
+	Tensor::copy( w, cd->K );
+	if ( bias != nullptr ) Tensor::copy( bias, cd->bias );
+}
+
+void LConv::accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias) {
+	cd->K->add_( gw );
+	if ( gbias != nullptr ) cd->bias->add_( gbias );
+}
+
+void LConv::reset_accumulated_gradients() {
+	cd->acc_gK->fill_(0.0);
+	cd->acc_gbias->fill_(0.0);
+}
+
+void LConv::apply_accumulated_gradients() {
+	cd->K->add_( cd->acc_gK );
+	cd->bias->add_( cd->acc_gbias );
+
+	// Regularizer
+	if(reg!= nullptr) {reg->apply(cd->K);}
+}
+
 Layer *LConv::share(int c, int bs, vector<Layer *> p) {
     LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad, "share_" + to_string(c) + name, dev);
     n->orig = this;
@@ -90,6 +117,7 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
     //share params
     for (int i = 0; i < n->params.size(); i++) delete n->params[i];
     n->params.clear();
+	n->acc_gradients.clear();
 
     n->cd->K = cd->K;
     n->cd->bias = cd->bias;
@@ -97,6 +125,14 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
 
     n->params.push_back(n->cd->K);
     n->params.push_back(n->cd->bias);
+
+	if ( distributed_training ) {
+		n->cd->acc_gK  = cd->acc_gK;
+		n->cd->acc_gbias  = cd->acc_gbias;
+
+		n->acc_gradients.push_back(n->cd->acc_gK);
+		n->acc_gradients.push_back(n->cd->acc_gbias);
+	}
 
     n->reg=reg;
     n->init=init;
@@ -122,4 +158,16 @@ string LConv::plot(int c) {
     else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";
 
     return s;
+}
+
+void LConv::reset_name_counter() {
+	total_layers = 0;
+}
+
+void LConv::enable_distributed() {
+	distributed_training = true;
+	cd->enable_distributed();
+
+	acc_gradients.push_back(cd->acc_gK);
+	acc_gradients.push_back(cd->acc_gbias);
 }

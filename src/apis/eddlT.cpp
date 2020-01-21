@@ -25,6 +25,10 @@ namespace eddlT {
 
 
   // Creation ops ***********************************
+  Tensor* create(const vector<int> &shape, float *ptr , int dev)
+  {
+    return new Tensor(shape, ptr ,dev);
+  }
   Tensor* create(const vector<int> &shape, int dev)
   {
     return new Tensor(shape,dev);

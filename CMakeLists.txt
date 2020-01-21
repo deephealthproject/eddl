@@ -365,6 +365,12 @@ SET(CPP_SOURCES
         src/helpers.h
         src/random.cpp
         src/random.h
+    	# ONNX
+    	src/serialization/onnx/eddl_onnx_import.cpp
+    	src/serialization/onnx/eddl_onnx_export.cpp
+    	src/serialization/onnx/eddl_onnx.h
+    	src/serialization/onnx/onnx.pb.cc
+    	src/serialization/onnx/onnx.pb.h
         # Temp
         tests/test_tensor.cpp
         tests/dev/aux_tests.cpp
@@ -498,6 +504,17 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
     find_package(Threads REQUIRED)
     target_link_libraries(eddl PRIVATE Threads::Threads)
+endif()
+
+# Protocol buffers
+include(FindProtobuf)
+if(Protobuf_FOUND)
+	find_package(Protobuf REQUIRED)
+	add_compile_definitions(cPROTO)
+	include_directories(${PROTOBUF_INCLUDE_DIR})
+	target_link_libraries(eddl PRIVATE ${PROTOBUF_LIBRARIES})
+else() 
+	message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
 endif()
 
 ## [BINDING] Create python binding
