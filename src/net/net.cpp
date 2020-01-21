@@ -236,11 +236,9 @@ void Net::save(const string& filename, string format){
     std::ofstream ofs(filename, std::ios::out | std::ios::binary);
 
     // Copy from CS devices to layers
-    if (snets[0]->dev!=DEV_CPU) {
+    if (snets[0]->dev!=DEV_CPU) 
       sync_weights();
-      for(int j=0;j<layers.size();j++)
-        snets[0]->layers[j]->copy(layers[j]);
-    }
+
 
     for (int i = 0; i != layers.size(); i++){
         layers[i]->save(ofs, format);
