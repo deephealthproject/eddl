@@ -242,16 +242,6 @@ void Net::save(const string& filename, string format){
         snets[0]->layers[j]->copy(layers[j]);
     }
 
-    // Copy value to CS devices layers
-    for(int i=0; i!=snets.size(); i++)
-      for(int j=0;j<layers.size();j++)
-        layers[j]->copy(snets[i]->layers[j]);
-
-    // Copy value to CS devices layers
-    for(int i=0; i!=snets.size(); i++)
-      for(int j=0;j<layers.size();j++)
-        layers[j]->copy(snets[i]->layers[j]);
-
     for (int i = 0; i != layers.size(); i++){
         layers[i]->save(ofs, format);
     }
