@@ -61,7 +61,7 @@ void Net::do_forward() {
 void Net::do_backward() {
     for (int i = 0; i < vbts.size(); i++) {
         vbts[i]->backward();
-        if (VERBOSE) cout<<"BACK: "<<vbts[i]->name<<"delta:"<<vbts[i]->delta->sum()<<"\n";
+        if (VERBOSE) cout<<"BACK: "<<vbts[i]->name<<" delta:"<<vbts[i]->delta->sum()<<"\n";
       }
     if (VERBOSE) getchar();
 }
@@ -69,7 +69,7 @@ void Net::do_backward() {
 void Net::do_delta() {
     for (int i = 0; i < lout.size(); i++) {
         losses[i]->delta(lout[i]->target, lout[i]->output, lout[i]->delta);
-        if (VERBOSE) cout<<"Delta: "<<vbts[i]->name<<"delta:"<<vbts[i]->delta->sum()<<"\n";
+        if (VERBOSE) cout<<"Delta: "<<vbts[i]->name<<" delta:"<<vbts[i]->delta->sum()<<"\n";
       }
     if (VERBOSE) getchar();
 }

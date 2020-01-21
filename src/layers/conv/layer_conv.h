@@ -27,6 +27,7 @@ using namespace std;
 class LConv : public LinLayer {
 public:
     static int total_layers;
+	bool distributed_training;
 
     ConvolDescriptor *cd;
 
@@ -51,7 +52,19 @@ public:
 
     void resize(int batch) override;
 
+	void update_weights(Tensor* w, Tensor* bias=nullptr) override;
+
+	void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
+
+	void reset_accumulated_gradients() override;
+
+	void apply_accumulated_gradients() override;
+
     string plot(int c) override;
+
+	static void reset_name_counter();
+
+	void enable_distributed() override;
 
 };
 

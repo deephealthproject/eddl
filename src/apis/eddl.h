@@ -40,14 +40,14 @@
 // EDDL namespace defines the API
 namespace eddl {
 
-#define layer Layer*
-#define model Net*
-#define optimizer Optimizer*
-#define initializer Initializer*
-#define regularizer Regularizer*
-#define compserv CompServ*
-#define loss NetLoss *
-#define metric NetLoss *
+typedef Layer* layer;
+typedef Net* model;
+typedef Optimizer* optimizer;
+typedef Initializer* initializer;
+typedef Regularizer* regularizer;
+typedef CompServ* compserv;
+typedef NetLoss * loss;
+typedef NetLoss * metric;
 
     ///////////////////////////////////////
     //  MODEL METHODS
@@ -62,7 +62,7 @@ namespace eddl {
       *  @return     Model instance
     */
     model Model(vlayer in, vlayer out);
-    void build(model net, optimizer o=nullptr, CompServ *cs=nullptr);
+    void build(model net, optimizer o=nullptr, CompServ *cs=nullptr, bool init_weigths=true);
     /**
       *  @brief Tell the model which optimizer, losses, metrics and computing services use.
       *
@@ -73,7 +73,7 @@ namespace eddl {
       *  @param cs  Computing service
       *  @return     (void)
     */
-    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr);
+    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr, bool init_weights=true);
 
     // Computing services
     /**
