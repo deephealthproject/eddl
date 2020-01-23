@@ -6,7 +6,7 @@ dependencies:
   - git
   - graphviz
   - wget
-  - gcc_linux-64
+# - gcc_linux-64
   - cmake
   - openmp
   - eigen
@@ -14,3 +14,5 @@ dependencies:
   - zlib
   - gtest
   - benchmark
+  - protobuf
+  - libprotobuf

@@ -2,15 +2,9 @@
 #define EDDL_EDDL_ONNX_H
 
 
-/* 2020-01-10
-#undef model
-#undef layer
-#undef initializer
-*/
 #include "../../net/net.h"
 #include <string>
 #include <vector>
-#include "onnx.pb.h"
 #include "../../layers/layer.h"
 #include <map>
 #include "../../layers/core/layer_core.h"
@@ -18,6 +12,9 @@
 #include "../../layers/pool/layer_pool.h"
 #include "../../layers/merge/layer_merge.h"
 #include "../../layers/normalization/layer_normalization.h"
+#if defined(cPROTO)
+#   include "onnx.pb.h"
+#endif
 
 
 namespace eddl{
@@ -31,7 +28,9 @@ namespace eddl{
 	
 	Net* import_net_from_onnx_string(std::string* model_string);
 
+#if defined(cPROTO)
 	Net* build_net_onnx(onnx::ModelProto model);
+#endif
 
 	// Exporting module
 	//----------------------------------------------------------------------------------------
@@ -46,6 +45,7 @@ namespace eddl{
 	std::string* serialize_net_to_onnx_string(Net* net, bool gradients=false);
 
 	// Builds the onnx model from the net
+#if defined(cPROTO)
 	onnx::ModelProto build_onnx_model( Net *net, bool gradients );
 
 	// Builds the graph of the ModelProto from the net
@@ -72,6 +72,7 @@ namespace eddl{
 	void build_concat_node( LConcat *layer, onnx::GraphProto *graph );
 
 	void build_batchnorm_node( LBatchNorm *layer, onnx::GraphProto *graph );
+#endif
 
 	// Distributed Module
 	// ---------------------------------------------------------------------------------------
@@ -82,14 +83,10 @@ namespace eddl{
 	void apply_grads_from_onnx(Net* net, std::string* model_string);
     void apply_grads_from_onnx_pointer( Net* net, void * ptr_onnx, size_t count );
 
+#if defined(cPROTO)
 	map<string, vector<Tensor*> > get_tensors_from_onnx(onnx::ModelProto model);
+#endif
 }
 
-
-/* 2020-01-10
-#define model	Net*
-#define layer	Layer*
-#define initializer Initializer*
-*/
 
 #endif //EDDL_EDDL_ONNX_H
