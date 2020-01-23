@@ -1,0 +1,16 @@
+name: eddl-env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - git
+  - graphviz
+  - wget
+  - gcc
+  - cmake
+  - openmp
+  - eigen
+  - cudatoolkit
+  - zlib
+  - gtest
+  - benchmark

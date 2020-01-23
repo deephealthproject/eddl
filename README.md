@@ -4,15 +4,110 @@
 
 -----------------
 
+**EDDL** is an open source library for numerical computation tailored to the healthcare domain.
+
 **Documentation:**
 
 - [Available features](https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md)
 - [Available Tensor features](https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md)
 - [Doyxigen documentation](http://imagelab.ing.unimore.it/eddl/)
 
+> More information about DeepHealth: [https://deephealth-project.eu/](https://deephealth-project.eu/)
 
-**EDDL** is an open source library for numerical computation tailored to the healthcare domain.
-> More information: [https://deephealth-project.eu/](https://deephealth-project.eu/)
+
+## Prerequisites
+
+- CMake 3.9.2 or higher
+- A modern compiler with C++11 support
+- Anaconda/Miniconda (_not a prerequite but recommended_)
+
+
+### Linux
+
+```
+sudo apt-get install build-essential gcc cmake
+sudo apt-get install conda  # optional
+```
+
+### Mac OS
+
+```
+brew install gcc cmake
+brew cask install anaconda  # optional
+```
+
+
+## Download
+
+To clone all third_party submodules use:
+
+```bash
+git clone --recurse-submodules https://github.com/deephealthproject/eddl.git
+```
+
+> Note: Use the flag `-j$(num_cores)` to speed up the download
+
+## Installation
+
+### Conda
+
+The required libraries are easier to install if you use using the conda package manager:
+
+Create and activate the environment:
+
+```
+conda env create -f environment.yml
+conda activate eddl-env
+```
+
+# From source
+
+Build from source:
+
+```
+cd eddl/
+mkdir build
+cd build
+cmake ..
+make -j$(num_cores)
+```
+
+> Note: These steps are for Linux and Mac OS
+> To known the number of logical cores type: `nproc` (linux) or `sysctl -n hw.logicalcpu` (mac os)
+
+### Backend support
+
+#### GPU (CUDA) support 
+
+If you have CUDA installed, you can build EDDL with GPU support by adding `-DBUILD_TARGET=GPU` to your cmake options.
+
+#### CPU (MKL) support
+
+EDDL can leverage Intel's MKL library to speed up computation on the CPU. 
+
+To use MKL, include the following cmake option: 
+
+```
+-DMKL=TRUE
+```
+
+If CMake is unable to find MKL automatically, try setting MKL_ROOT, such as:
+
+```
+-DMKL_ROOT="/path/to/MKL"
+```
+
+### Additional flags
+
+#### Eigen3
+
+At the core of many numerical operations, we use [Eigen3](http://eigen.tuxfamily.org/index.php?title=Main_Page).
+If CMake is unable to find Eigen3 automatically, try setting `EIGEN3_INCLUDE_DIR`, such as:
+
+```
+-DEIGEN3_INCLUDE_DIR=/path/to/eigen
+```
+
 
 # Requirements
 
@@ -39,10 +134,8 @@ make -j$(nproc)
 
 Compiler flags and options:
 
-- `-DBUILD_PYTHON=ON`: Compiles Python binding
-- `-DBUILD_TESTS=ON`: Compiles tests
-- `-DBUILD_EXAMPLES=ON`: Compiles examples
 - `-DBUILD_TARGET=CPU`: Compiles for {`CPU`, `GPU` or `FPGA`} (uppercase)
+- `-DBUILD_EXAMPLES=ON`: Compiles examples
 
 > `make -j [N]` is to compile using N parallel jobs 
 
