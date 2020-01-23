@@ -8,18 +8,18 @@
 
 **Documentation:**
 
-- [Available features](https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md)
+- [Available NN features](https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md)
 - [Available Tensor features](https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md)
 - [Doyxigen documentation](http://imagelab.ing.unimore.it/eddl/)
 
-> More information about DeepHealth: [https://deephealth-project.eu/](https://deephealth-project.eu/)
+> More information about DeepHealth go to: [deephealth-project.eu](https://deephealth-project.eu/)
 
 
 ## Prerequisites
 
 - CMake 3.9.2 or higher
 - A modern compiler with C++11 support
-- Anaconda/Miniconda (_not a Prerequisite but recommended_)
+- Anaconda/Miniconda (_not a prerequisite but recommended_)
 
 
 ### Linux
@@ -37,7 +37,7 @@ brew cask install anaconda  # optional
 ```
 
 
-## Download
+## Source code
 
 To clone all third_party submodules use:
 
@@ -60,7 +60,7 @@ conda env create -f environment.yml
 conda activate eddl-env
 ```
 
-### Compile it from source
+### Compilation
 
 Build from source:
 
@@ -68,7 +68,7 @@ Build from source:
 cd eddl/
 mkdir build
 cd build
-cmake ..
+cmake .. -DBUILD_TARGET=CPU  # {CPU, GPU, FPGA}
 make -j$(num_cores)
 ```
 
@@ -142,7 +142,7 @@ If CMake is unable to find MKL automatically, try setting MKL_ROOT, such as:
 
 ### CUDA
 
-If CMake is unable to find CUDA automatically, try setting `EIGEN3_INCLUDE_DIR`, such as:
+If CMake is unable to find CUDA automatically, try setting `CUDA_TOOLKIT_ROOT_DIR`, such as:
 
 ```bash
 -DCUDA_TOOLKIT_ROOT_DIR=/path/to/cuda
