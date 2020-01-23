@@ -7,6 +7,7 @@
 * All rights reserved
 */
 
+#include <stdexcept>
 
 #include "descriptors.h"
 #include "../tensor/tensor_reduction.h"
@@ -43,8 +44,7 @@ ReduceDescriptor::ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool
 
   for(int i=0;i<axis.size();i++)
     if (axis[i]>=A->ndim) {
-      cout<<"axis "<<axis[i]<<"> dim="<<A->ndim<<"\n";
-      exit(1);
+      throw std::runtime_error("axis " + std::to_string(axis[i]) + " > dim=" + std::to_string(A->ndim));
     }
 
 

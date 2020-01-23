@@ -12,6 +12,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
+#include <stdexcept>
 
 #include "eddl.h"
 
@@ -372,8 +373,7 @@ namespace eddl {
             return new MMeanRelativeError();
         }
         else {
-            cout<<"Not supported metric: "<<type<<"\n";
-            exit(1);
+            throw std::invalid_argument("unsupported metric: " + type);
         }
         return nullptr;
     }
@@ -845,8 +845,7 @@ namespace eddl {
                 out.push_back(net->layers[i]);
 
         if (out.size()==0) {
-            cout<<"Forwar over net "<<net->name<<"without outputs\n";
-            exit(1);
+            throw std::runtime_error("forward over net " + net->name + " without outputs");
         }
 
 
@@ -953,28 +952,24 @@ namespace eddl {
         if ((!exist(trX)) || (!exist(trY)) || (!exist(tsX)) || (!exist(tsY))) {
             cmd = "wget https://www.dropbox.com/s/khrb3th2z6owd9t/trX.bin";
             int status = system(cmd.c_str());
-            if (status < 0) {
+            if (status != 0) {
                 msg("wget must be installed", "eddl.download_mnist");
-                exit(1);
             }
 
             cmd = "wget https://www.dropbox.com/s/m82hmmrg46kcugp/trY.bin";
             status = system(cmd.c_str());
-            if (status < 0) {
+            if (status != 0) {
                 msg("wget must be installed", "eddl.download_mnist");
-                exit(1);
             }
             cmd = "wget https://www.dropbox.com/s/7psutd4m4wna2d5/tsX.bin";
             status = system(cmd.c_str());
-            if (status < 0) {
+            if (status != 0) {
                 msg("wget must be installed", "eddl.download_mnist");
-                exit(1);
             }
             cmd = "wget https://www.dropbox.com/s/q0tnbjvaenb4tjs/tsY.bin";
             status = system(cmd.c_str());
-            if (status < 0) {
+            if (status != 0) {
                 msg("wget must be installed", "eddl.download_mnist");
-                exit(1);
             }
         }
     }
@@ -991,28 +986,24 @@ namespace eddl {
         if ((!exist(trX)) || (!exist(trY)) || (!exist(tsX)) || (!exist(tsY))) {
             cmd = "wget https://www.dropbox.com/s/wap282xox5ew02d/cifar_trX.bin";
             int status = system(cmd.c_str());
-            if (status < 0) {
+            if (status != 0) {
                 msg("wget must be installed", "eddl.download_cifar10");
-                exit(1);
             }
 
             cmd = "wget https://www.dropbox.com/s/yxhw99cu1ktiwxq/cifar_trY.bin";
             status = system(cmd.c_str());
-            if (status < 0) {
+            if (status != 0) {
                 msg("wget must be installed", "eddl.download_cifar10");
-                exit(1);
             }
             cmd = "wget https://www.dropbox.com/s/dh9vqxe9vt7scrp/cifar_tsX.bin";
             status = system(cmd.c_str());
-            if (status < 0) {
+            if (status != 0) {
                 msg("wget must be installed", "eddl.download_cifar10");
-                exit(1);
             }
             cmd = "wget https://www.dropbox.com/s/gdmsve6mbu82ndp/cifar_tsY.bin";
             status = system(cmd.c_str());
-            if (status < 0) {
+            if (status != 0) {
                 msg("wget must be installed", "eddl.download_cifar10");
-                exit(1);
             }
 
         }
@@ -1027,16 +1018,14 @@ namespace eddl {
         if ((!exist(trX)) || (!exist(trY)) ) {
             cmd = "wget https://www.dropbox.com/s/sbd8eu32adcf5oi/drive_x.npy";
             int status = system(cmd.c_str());
-            if (status < 0) {
+            if (status != 0) {
                 msg("wget must be installed", "eddl.download_drive");
-                exit(1);
             }
 
             cmd = "wget https://www.dropbox.com/s/qp0j8oiqzf6tc1a/drive_y.npy";
             status = system(cmd.c_str());
-            if (status < 0) {
+            if (status != 0) {
                 msg("wget must be installed", "eddl.download_drive");
-                exit(1);
             }
         }
     }
