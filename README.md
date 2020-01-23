@@ -60,7 +60,7 @@ conda env create -f environment.yml
 conda activate eddl-env
 ```
 
-# From source
+### From source
 
 Build from source:
 
@@ -75,13 +75,13 @@ make -j$(num_cores)
 > Note: These steps are for Linux and Mac OS
 > To known the number of logical cores type: `nproc` (linux) or `sysctl -n hw.logicalcpu` (mac os)
 
-### Backend support
+## Backend support
 
-#### GPU (CUDA) support 
+### GPU (CUDA) support 
 
 If you have CUDA installed, you can build EDDL with GPU support by adding `-DBUILD_TARGET=GPU` to your cmake options.
 
-#### CPU (MKL) support
+### CPU (MKL) support
 
 EDDL can leverage Intel's MKL library to speed up computation on the CPU. 
 
@@ -97,9 +97,17 @@ If CMake is unable to find MKL automatically, try setting MKL_ROOT, such as:
 -DMKL_ROOT="/path/to/MKL"
 ```
 
-### Additional flags
+## Additional flags
 
-#### Eigen3
+### C++ compiler
+
+If you have problems with the default g++ compiler, try setting `EIGEN3_INCLUDE_DIR`, such as:
+
+```
+-DCMAKE_CXX_COMPILER=/path/to/c++compiler
+```
+
+### Eigen3
 
 At the core of many numerical operations, we use [Eigen3](http://eigen.tuxfamily.org/index.php?title=Main_Page).
 If CMake is unable to find Eigen3 automatically, try setting `EIGEN3_INCLUDE_DIR`, such as:
@@ -108,38 +116,15 @@ If CMake is unable to find Eigen3 automatically, try setting `EIGEN3_INCLUDE_DIR
 -DEIGEN3_INCLUDE_DIR=/path/to/eigen
 ```
 
+### CUDA
 
-# Requirements
+If CMake is unable to find CUDA automatically, try setting `EIGEN3_INCLUDE_DIR`, such as:
 
-- CMake 3.9.2 or higher
-- A modern compiler with C++11 support
-
-To clone all third_party submodules use:
-
-```bash
-git clone --recurse-submodules -j8 https://github.com/deephealthproject/eddl.git
+```
+-DCUDA_TOOLKIT_ROOT_DIR=/path/to/cuda
 ```
 
-
-# Installation
-
-To build `eddl`, clone or download this repository and then, from within the repository, run:
-
-```bash
-mkdir build
-cd build
-cmake .. -DBUILD_TARGET=GPU
-make -j$(nproc)
-```
-
-Compiler flags and options:
-
-- `-DBUILD_TARGET=CPU`: Compiles for {`CPU`, `GPU` or `FPGA`} (uppercase)
-- `-DBUILD_EXAMPLES=ON`: Compiles examples
-
-> `make -j [N]` is to compile using N parallel jobs 
-
-# Windows specific installation
+## Windows specific installation
 
 Default for `Visual Studio 15 2017` build envrionment is x86, while EDDLL requires x64. This can be changed by typing `cmake -A x64 .` as cmake command.
 
@@ -147,7 +132,7 @@ On Windows, the POSIX threads library is required. Path to this library can be s
 The PThreads library can be found at [https://sourceforge.net/projects/pthreads4w/](https://sourceforge.net/projects/pthreads4w/).
 
 
-# Tests
+## Tests
 
 To execute all unit tests, go to your build folder and run the following command:
 
@@ -156,7 +141,7 @@ make test
 ```
 
 
-# Getting started
+## Getting started
 
 ```c++
 
@@ -230,7 +215,7 @@ int main(int argc, char **argv) {
 You can find more examples in the _examples_ folder.
 
 
-# Continuous build status
+## Continuous build status
 
 | System  |  Compiler  | Status |
 |:-------:|:----------:|:------:|
@@ -242,11 +227,11 @@ You can find more examples in the _examples_ folder.
 Documentation available [here](http://imagelab.ing.unimore.it/eddl/).
 
 
-# Python wrapper
+## Python wrapper
 
 If you are not a C++ fan, try [PyEDDL](https://github.com/deephealthproject/pyeddl), a python wrapper for this library.
 
-# FAQs
+## FAQs
 
 - **When I run an example from `examples/` I get `segmentation fault (core dumped)`**:
     - **CPU**: This is probably because your processor does not support
