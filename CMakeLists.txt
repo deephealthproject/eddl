@@ -12,8 +12,8 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # USER OPTIONS *******************************
 set(BUILD_TARGET "CPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
-option(BUILD_TESTS "Compile tests" OFF)
 option(BUILD_EXAMPLES "Compile examples" ON)
+option(BUILD_TESTS "Compile tests" OFF)
 option(BUILD_SHARED_LIB "Whether to build a static or dynamic library" OFF)
 
 # Double checks (restricted args)

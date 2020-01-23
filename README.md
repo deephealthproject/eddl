@@ -19,19 +19,19 @@
 
 - CMake 3.9.2 or higher
 - A modern compiler with C++11 support
-- Anaconda/Miniconda (_not a prerequite but recommended_)
+- Anaconda/Miniconda (_not a Prerequisite but recommended_)
 
 
 ### Linux
 
-```
+```bash
 sudo apt-get install build-essential gcc cmake
 sudo apt-get install conda  # optional
 ```
 
 ### Mac OS
 
-```
+```bash
 brew install gcc cmake
 brew cask install anaconda  # optional
 ```
@@ -55,16 +55,16 @@ The required libraries are easier to install if you use using the conda package 
 
 Create and activate the environment:
 
-```
+```bash
 conda env create -f environment.yml
 conda activate eddl-env
 ```
 
-### From source
+### Compile it from source
 
 Build from source:
 
-```
+```bash
 cd eddl/
 mkdir build
 cd build
@@ -77,25 +77,32 @@ make -j$(num_cores)
 
 ## Backend support
 
+### CPU support
+
+By default the EDDL is build for CPU. If you have any problem and want to compile for CPU, try adding `BUILD_TARGET=CPU` to your cmake options.
+
+```bash
+-DBUILD_TARGET=CPU
+```
+
 ### GPU (CUDA) support 
 
-If you have CUDA installed, you can build EDDL with GPU support by adding `-DBUILD_TARGET=GPU` to your cmake options.
+If you have CUDA installed, you can build EDDL with GPU support by adding `BUILD_TARGET=GPU` to your cmake options.
 
-### CPU (MKL) support
-
-EDDL can leverage Intel's MKL library to speed up computation on the CPU. 
-
-To use MKL, include the following cmake option: 
-
-```
--DMKL=TRUE
+```bash
+-DBUILD_TARGET=GPU
 ```
 
-If CMake is unable to find MKL automatically, try setting MKL_ROOT, such as:
+### FPGA support 
 
+If available, you can build EDDL with FPGA support by adding `BUILD_TARGET=FPGA` to your cmake options.
+
+```bash
+-DBUILD_TARGET=FPGA
 ```
--DMKL_ROOT="/path/to/MKL"
-```
+
+> Not yet implemented
+
 
 ## Additional flags
 
@@ -103,7 +110,7 @@ If CMake is unable to find MKL automatically, try setting MKL_ROOT, such as:
 
 If you have problems with the default g++ compiler, try setting `EIGEN3_INCLUDE_DIR`, such as:
 
-```
+```bash
 -DCMAKE_CXX_COMPILER=/path/to/c++compiler
 ```
 
@@ -112,16 +119,61 @@ If you have problems with the default g++ compiler, try setting `EIGEN3_INCLUDE_
 At the core of many numerical operations, we use [Eigen3](http://eigen.tuxfamily.org/index.php?title=Main_Page).
 If CMake is unable to find Eigen3 automatically, try setting `EIGEN3_INCLUDE_DIR`, such as:
 
-```
+```bash
 -DEIGEN3_INCLUDE_DIR=/path/to/eigen
+```
+
+
+### Intel MKL
+
+EDDL can leverage Intel's MKL library to speed up computation on the CPU. 
+
+To use MKL, include the following cmake option: 
+
+```bash
+-DMKL=TRUE
+```
+
+If CMake is unable to find MKL automatically, try setting MKL_ROOT, such as:
+
+```bash
+-DMKL_ROOT="/path/to/MKL"
 ```
 
 ### CUDA
 
 If CMake is unable to find CUDA automatically, try setting `EIGEN3_INCLUDE_DIR`, such as:
 
-```
+```bash
 -DCUDA_TOOLKIT_ROOT_DIR=/path/to/cuda
+```
+
+## Examples
+
+To compile the examples, use the setting `BUILD_EXAMPLES`, such as:
+
+```bash
+-DBUILD_EXAMPLES=ON
+```
+
+> Notes: The examples can be found in the folder `targets/`
+
+
+## Tests
+
+To compile the tests, use the setting `BUILD_TESTS`, such as:
+
+```bash
+-DBUILD_TESTS=ON
+```
+
+
+## Shared library
+
+To compile the EDDL as a shared library, use the setting `BUILD_SHARED_LIB`, such as:
+
+```bash
+-DBUILD_SHARED_LIB=ON
 ```
 
 ## Windows specific installation
@@ -132,19 +184,9 @@ On Windows, the POSIX threads library is required. Path to this library can be s
 The PThreads library can be found at [https://sourceforge.net/projects/pthreads4w/](https://sourceforge.net/projects/pthreads4w/).
 
 
-## Tests
-
-To execute all unit tests, go to your build folder and run the following command:
-
-```bash
-make test
-```
-
-
 ## Getting started
 
 ```c++
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
