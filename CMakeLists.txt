@@ -312,16 +312,9 @@ endif()
 
 # [TESTS] Generate a test executable
 if(BUILD_TESTS)
-    eddl_update_third_party(googletest)
-    set(CMAKE_FOLDER third_party/googletest)
-    add_subdirectory(third_party/googletest)
-    SET(UNITTEST_NAME "${PROJECT_NAME}_tests")
-    set(CMAKE_FOLDER "")
-    add_executable(${UNITTEST_NAME} ${TESTS})
-    target_include_directories(${UNITTEST_NAME} PUBLIC ${gtest_SOURCE_DIR}/include)
-    target_link_libraries(${UNITTEST_NAME} eddl gtest gtest_main)
-    add_test(UnitTests ${UNITTEST_NAME})  # To do "make test"
     enable_testing()
+    find_package(GTest REQUIRED)
+    target_link_libraries(eddl PRIVATE ${GTEST_INCLUDE_DIRS})
 endif(BUILD_TESTS)
 
 
