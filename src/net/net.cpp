@@ -268,18 +268,17 @@ void Net::load(const string& filename, string format){
     ifs.close();
 }
 
+void Net::reset_accumulated_gradients(){
+	for(Layer* l : layers){
+		l->reset_accumulated_gradients();
+	}
+}
 
-
-
-
-
-
-
-
-
-
-
-
+void Net::apply_accumulated_gradients(){
+	for(Layer * l : layers){
+		l->apply_accumulated_gradients();
+	}
+}
 
 
 

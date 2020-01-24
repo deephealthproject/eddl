@@ -40,7 +40,7 @@ int isInorig(Layer *l, vlayer vl, int &ind);
 
 class Net {
 private:
-    void build(Optimizer *opt, vloss lo, vmetrics me);
+	void build(Optimizer *opt, vloss lo, vmetrics me, bool initialize=true);
 
     void set_compserv(CompServ *cs);
 
@@ -79,8 +79,8 @@ public:
     Net(vlayer in, vlayer out);
     ~Net();
 
-    void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs);
-    void toGPU(vector<int> &g,int lsb);
+    void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize=true);
+	void toGPU(vector<int> &g,int lsb);
     void toCPU(int t);
 
     void fts();
@@ -92,6 +92,8 @@ public:
 
 
     void resize(int batch);
+
+	void enable_distributed();
 
     string summary();
     void plot(string fname,string mode);
@@ -113,6 +115,9 @@ public:
     void do_compute_loss();
     void do_backward();
     void do_applygrads();
+
+	void reset_accumulated_gradients();
+	void apply_accumulated_gradients();
 
     void sync_weights();
 

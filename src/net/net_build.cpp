@@ -153,8 +153,8 @@ void Net::toGPU(vector<int> &g,int lsb){
   }
 }
 
-void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs){
-    build(opt, lo, me);
+void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize){
+	build(opt, lo, me, initialize);
     set_compserv(cs);
 
 
@@ -171,7 +171,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs){
 }
 
 
-void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
+void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     if (VERBOSE) cout<<"Build net "<<name<<"\n";
 
     if (lo.size() != lout.size())
@@ -216,7 +216,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
     // backward sort
     bts();
     // random params
-    do_initialize();
+    if(initialize) do_initialize();
 }
 
 void Net::set_compserv(CompServ *cs){
@@ -406,7 +406,11 @@ void Net::resize(int b)
 
 }
 
-
+void Net::enable_distributed(){
+	for(Layer* l : layers){
+		l->enable_distributed();
+	}
+}
 
 
 

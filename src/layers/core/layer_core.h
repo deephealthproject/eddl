@@ -110,6 +110,7 @@ public:
     static int total_layers;
     int ndim;
     bool use_bias;  // TODO: Implement
+	bool distributed_training;
 
     LDense(Layer *parent, int ndim, bool use_bias, string name, int dev);
 
@@ -120,16 +121,33 @@ public:
     // Params
     Tensor *W;
     Tensor *gW;
+	Tensor *acc_gW;
     Tensor *bias;
     Tensor *gbias;
+	Tensor *acc_gbias;
 
     void forward() override;
 
     void backward() override;
 
+	// Sets the weights to the values of the parameter w
+	void update_weights(Tensor* w, Tensor* bias=nullptr) override;
+
+	// Adds the values of gw to the current weights of the layer
+	void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
+
+	// Sets to 0.0 the tensors with the accumulated gradients for W and bias
+	void reset_accumulated_gradients() override;
+
+	void apply_accumulated_gradients() override;
+
     void resize(int batch) override;
 
     string plot(int c) override;
+
+	static void reset_name_counter();
+
+	void enable_distributed() override;
 
 };
 

@@ -148,3 +148,11 @@ void ConvolDescriptor::resize(int b)
 #endif
 
 }
+
+void ConvolDescriptor::enable_distributed() {
+	// Create and initialize the tensors for accumulating gradients in distributed training
+	acc_gK = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
+	acc_gK->fill_(0.0);
+	acc_gbias = new Tensor(vector<int>{nk}, I->device);
+	acc_gbias->fill_(0.0);
+}
