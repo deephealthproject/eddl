@@ -1,4 +1,4 @@
-name: eddl-env
+name: eddl
 channels:
   - conda-forge
   - defaults
@@ -9,6 +9,7 @@ dependencies:
   - gcc
   - cmake
   - openmp
+  - blas
   - eigen
   - cudatoolkit
   - zlib

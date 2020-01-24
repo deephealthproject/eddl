@@ -57,7 +57,7 @@ Create and activate the environment:
 
 ```bash
 conda env create -f environment.yml
-conda activate eddl-env
+conda activate eddl
 ```
 
 ### Compilation
@@ -72,7 +72,7 @@ cmake .. -DBUILD_TARGET=CPU  # {CPU, GPU, FPGA}
 make -j$(num_cores)
 ```
 
-> Note: These steps are for Linux and Mac OS
+> Note: These steps are for Linux
 > To known the number of logical cores type: `nproc` (linux) or `sysctl -n hw.logicalcpu` (mac os)
 
 ## Backend support
@@ -117,10 +117,10 @@ If you have problems with the default g++ compiler, try setting `EIGEN3_INCLUDE_
 ### Eigen3
 
 At the core of many numerical operations, we use [Eigen3](http://eigen.tuxfamily.org/index.php?title=Main_Page).
-If CMake is unable to find Eigen3 automatically, try setting `EIGEN3_INCLUDE_DIR`, such as:
+If CMake is unable to find Eigen3 automatically, try setting `Eigen3_DIR`, such as:
 
 ```bash
--DEIGEN3_INCLUDE_DIR=/path/to/eigen
+-DEigen3_DIR=/path/to/eigen
 ```
 
 

@@ -12,6 +12,7 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # USER OPTIONS *******************************
 set(BUILD_TARGET "CPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
+option(MKL "Use Intel MKL" OFF)
 option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_TESTS "Compile tests" OFF)
 option(BUILD_SHARED_LIB "Whether to build a static or dynamic library" OFF)
@@ -138,58 +139,66 @@ endmacro()
 
 # SET SOURCES *******************************
 SET(SOURCE_DIR "src")
+
+# C++ files
 file(GLOB CPP_HEADER_FILES_TOP
-    ${PROJECT_SOURCE_DIR}/*.cpp
-)
+        ${PROJECT_SOURCE_DIR}/src/*.h
+        )
 file(GLOB CPP_SOURCE_FILES_TOP
-    ${PROJECT_SOURCE_DIR}/*.cpp
-)
+        ${PROJECT_SOURCE_DIR}/src/*.cpp
+        )
 file(GLOB_RECURSE CPP_HEADER_FILES_NESTED
-    ${PROJECT_SOURCE_DIR}/src/apis/*.h
-    ${PROJECT_SOURCE_DIR}/src/descriptors/*.h
-    ${PROJECT_SOURCE_DIR}/src/hardware/cpu/*.h
-    ${PROJECT_SOURCE_DIR}/src/initializers/*.h
-    ${PROJECT_SOURCE_DIR}/src/layers/*.h
-    ${PROJECT_SOURCE_DIR}/src/losses/*.h
-    ${PROJECT_SOURCE_DIR}/src/metrics/*.h
-    ${PROJECT_SOURCE_DIR}/src/net/*.h
-    ${PROJECT_SOURCE_DIR}/src/optimizers/*.h
-    ${PROJECT_SOURCE_DIR}/src/regularizers/*.h
-    ${PROJECT_SOURCE_DIR}/src/tensor/*.h
-)
+        ${PROJECT_SOURCE_DIR}/src/apis/*.h
+        ${PROJECT_SOURCE_DIR}/src/descriptors/*.h
+        ${PROJECT_SOURCE_DIR}/src/hardware/cpu/*.h
+        ${PROJECT_SOURCE_DIR}/src/initializers/*.h
+        ${PROJECT_SOURCE_DIR}/src/layers/*.h
+        ${PROJECT_SOURCE_DIR}/src/losses/*.h
+        ${PROJECT_SOURCE_DIR}/src/metrics/*.h
+        ${PROJECT_SOURCE_DIR}/src/net/*.h
+        ${PROJECT_SOURCE_DIR}/src/optimizers/*.h
+        ${PROJECT_SOURCE_DIR}/src/regularizers/*.h
+        ${PROJECT_SOURCE_DIR}/src/tensor/*.h
+        )
 
 file(GLOB_RECURSE CPP_SOURCE_FILES_NESTED
-    ${PROJECT_SOURCE_DIR}/src/apis/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/descriptors/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/hardware/cpu/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/initializers/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/layers/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/losses/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/metrics/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/net/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/optimizers/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/regularizers/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/tensor/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/apis/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/descriptors/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/hardware/cpu/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/initializers/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/layers/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/losses/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/metrics/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/net/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/optimizers/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/regularizers/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/tensor/*.cpp
 )
+SET(CPP_HEADER_FILES ${CPP_HEADER_FILES_TOP} ${CPP_HEADER_FILES_NESTED})
+SET(CPP_SOURCE_FILES ${CPP_SOURCE_FILES_TOP} ${CPP_SOURCE_FILES_NESTED})
+SET(CPP_SOURCES ${CPP_HEADER_FILES} ${CPP_SOURCE_FILES})
 
+
+# CUDA files
 file(GLOB_RECURSE CUDA_HEADER_FILES
         ${PROJECT_SOURCE_DIR}/src/hardware/gpu/*.h
         )
 file(GLOB_RECURSE CUDA_CU_FILES
         ${PROJECT_SOURCE_DIR}/src/hardware/gpu/*.cu
         )
-
-SET(CPP_HEADER_FILES ${CPP_HEADER_FILES_TOP} ${CPP_HEADER_FILES_NESTED})
-SET(CPP_SOURCE_FILES ${CPP_SOURCE_FILES_TOP} ${CPP_SOURCE_FILES_NESTED})
-
-SET(CPP_SOURCES ${CPP_HEADER_FILES} ${CPP_SOURCE_FILES})
 SET(CUDA_SOURCES ${CUDA_HEADER_FILES} ${CUDA_CU_FILES})
 
-# SET TESTS ****************************
-#SET(TEST_DIR "tests")
-#SET(TESTS
-#    "${TEST_DIR}/test_tensor.cpp"
-#    )
+
+# ONNX files
+file(GLOB_RECURSE ONNX_HEADER_FILES
+    ${PROJECT_SOURCE_DIR}src/serialization/onnx/*.h
+)
+file(GLOB_RECURSE ONNX_SOURCES_FILES
+    ${PROJECT_SOURCE_DIR}src/serialization/onnx/*.cpp
+    ${PROJECT_SOURCE_DIR}src/serialization/onnx/*.cc
+)
+SET(ONNX_SOURCES ${ONNX_HEADER_FILES} ${ONNX_SOURCES_FILES})
+
 
 # [LIBRARY] EDDL LIBRARY *********************
 if(BUILD_SHARED_LIB)
@@ -198,20 +207,9 @@ else(BUILD_SHARED_LIB)
     add_library(eddl STATIC "")
 endif(BUILD_SHARED_LIB)
 
-target_sources(eddl PRIVATE ${CPP_SOURCES})
+target_sources(eddl PRIVATE ${CPP_SOURCES} ${ONNX_SOURCES})
 target_include_directories(eddl PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-        $<INSTALL_INTERFACE:include>
-        )
-
-# Link external libraries
-if(USE_CUDA AND CMAKE_CUDA_COMPILER)
-    target_sources(eddl PRIVATE ${CUDA_SOURCES})
-    target_include_directories(eddl PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
-    add_compile_definitions(cGPU)
-endif()
-target_include_directories(eddl PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen>
         $<INSTALL_INTERFACE:include>
         )
 
@@ -219,12 +217,10 @@ target_include_directories(eddl PUBLIC
 set_target_properties(eddl PROPERTIES
         OUTPUT_NAME_DEBUG "eddld"
         OUTPUT_NAME_RELEASE "eddl"
-        POSITION_INDEPENDENT_CODE ON
-        CUDA_SEPARABLE_COMPILATION ON
-        CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+)
 
 # Eigen3
-find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+find_package(Eigen3 3.3 REQUIRED)
 target_link_libraries (eddl PUBLIC Eigen3::Eigen)
 
 # OpenMP
@@ -240,13 +236,31 @@ if (OpenMP_FOUND)
     set(OMP_CANCELLATION true)  # https://www.openmp.org/spec-html/5.0/openmpse59.html
 endif()
 
+# enable Intel-MKL (only for Intel compilers)
+# NB requires correct specification of BLA_VENDOR, e.g.
+#   export BLA_VENDOR=Intel10_64lp_seq
+if (MKL AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+    find_package(BLAS)
+    target_include_directories(${BLAS_INCLUDE_DIRS})
+    set(PROJECT_LIBS ${BLAS_LIBRARIES})
+    add_definitions(-DEIGEN_USE_MKL_ALL)
+endif()
+
 # CUDA
 if(USE_CUDA AND CMAKE_CUDA_COMPILER)
+    target_sources(eddl PRIVATE ${CUDA_SOURCES})
+    target_include_directories(eddl PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
     target_link_libraries(eddl
             PRIVATE cublas
             PRIVATE cudart
             PRIVATE curand
             )
+    add_compile_definitions(cGPU)
+
+    # Target properties
+    set_target_properties(eddl PROPERTIES
+            CUDA_SEPARABLE_COMPILATION ON
+            CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 endif()
 
 # ZLIB
@@ -256,6 +270,18 @@ if (ZLIB_FOUND)
     target_include_directories(eddl PUBLIC ${ZLIB_INCLUDE_DIRS})
     target_link_libraries(eddl PRIVATE ${ZLIB_LIBRARIES})
 endif()
+
+
+# ONNX
+include(FindProtobuf)
+find_package(Protobuf REQUIRED)
+if(Protobuf_FOUND)
+    target_include_directories(eddl PUBLIC ${PROTOBUF_INCLUDE_DIR})
+    add_compile_definitions(cPROTO)
+else()
+    message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
+endif()
+
 
 # pthreads setup for windows os
 # The following commands should be removed when pthread linux
@@ -387,24 +413,6 @@ install(EXPORT eddlTargets DESTINATION ${EDDL_CONFIG_INSTALL_PATH})
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
         DESTINATION include/eddl
         FILES_MATCHING PATTERN "*.h")
-
-
-## [INSTALL] Install Eigen files
-#include("${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen/cmake/RegexUtils.cmake")
-#test_escape_string_as_regex()
-#escape_string_as_regex(ESCAPED_EIGEN_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen/Eigen")
-#file(GLOB Eigen_directory_files "${ESCAPED_EIGEN_SOURCE_DIR}/*")
-##message(STATUS ${Eigen_directory_files})
-#foreach(f ${Eigen_directory_files})
-#    if(NOT f MATCHES "\\.txt" AND NOT f MATCHES "${ESCAPED_EIGEN_SOURCE_DIR}/[.].+" AND NOT f MATCHES "${ESCAPED_EIGEN_SOURCE_DIR}/src")
-#        list(APPEND Eigen_directory_files_to_install ${f})
-#    endif()
-#endforeach(f ${Eigen_directory_files})
-#install(FILES
-#        ${Eigen_directory_files_to_install}
-#        DESTINATION "include/Eigen"
-#        )
-#install(DIRECTORY ${ESCAPED_EIGEN_SOURCE_DIR}/src DESTINATION "include/Eigen" COMPONENT Devel FILES_MATCHING PATTERN "*.h")
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/eddlConfig.cmake.in ${CMAKE_BINARY_DIR}/cmake/eddlConfig.cmake @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/cmake/eddlConfig.cmake
