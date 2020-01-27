@@ -19,21 +19,18 @@
 
 - CMake 3.9.2 or higher
 - A modern compiler with C++11 support
-- Anaconda/Miniconda (_not a prerequisite but recommended_)
-
+- Anaconda/Miniconda ([download](https://docs.conda.io/en/latest/miniconda.html)): Not a prerequisite but recommended
 
 ### Linux
 
 ```bash
 sudo apt-get install build-essential gcc cmake
-sudo apt-get install conda  # optional
 ```
 
 ### Mac OS
 
 ```bash
 brew install gcc cmake
-brew cask install anaconda  # optional
 ```
 
 
@@ -56,6 +53,7 @@ The required libraries are easier to install if you use using the conda package 
 Create and activate the environment:
 
 ```bash
+cd eddl/
 conda env create -f environment.yml
 conda activate eddl
 ```
@@ -65,11 +63,10 @@ conda activate eddl
 Build from source:
 
 ```bash
-cd eddl/
 mkdir build
 cd build
 cmake .. -DBUILD_TARGET=CPU  # {CPU, GPU, FPGA}
-make -j$(num_cores)
+make -j 4  # num_cores
 ```
 
 > Note: These steps are for Linux

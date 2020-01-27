@@ -6,7 +6,6 @@ dependencies:
   - git
   - graphviz
   - wget
-  - gcc
   - cmake
   - openmp
   - blas
