@@ -34,7 +34,7 @@ namespace eddl {
         return new Net(in, out);
     }
 
-    void build(model net, optimizer o, CompServ *cs) {
+    void build(model net, optimizer o, CompServ *cs, bool init_weights) {
         // Assign default computing service
         if (cs== nullptr){
             cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
@@ -43,10 +43,10 @@ namespace eddl {
             o = new SGD(0.001,0.9);
         }
 
-        net->build(o, {}, {}, cs);
+        net->build(o, {}, {}, cs, init_weights);
     }
 
-    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs) {
+    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs, bool init_weights) {
         vector<Loss *> l;
         vector<Metric *> m;
 
@@ -64,7 +64,7 @@ namespace eddl {
             cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
         }
 
-        net->build(o, l, m, cs);
+        net->build(o, l, m, cs, init_weights);
     }
 
     // Computing services

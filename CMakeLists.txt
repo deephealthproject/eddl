@@ -11,23 +11,29 @@ SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # USER OPTIONS *******************************
-option(BUILD_PYTHON "Compile python binding" OFF)
-option(BUILD_TESTS "Compile tests" OFF)
+set(BUILD_TARGET "CPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
+option(MKL "Use Intel MKL" OFF)
 option(BUILD_EXAMPLES "Compile examples" ON)
-SET(BUILD_TARGET "CPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
+option(BUILD_TESTS "Compile tests" OFF)
+option(BUILD_SHARED_LIB "Whether to build a static or dynamic library" OFF)
+
+# Double checks (restricted args)
 set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
 
-# OPENMP OPTIONS *******************************
-set(MP_CANCELLATION true)
+# More variables
+SET(EXAMPLES_DIR "${PROJECT_SOURCE_DIR}/examples")
 
 # PROPERTIES *******************************
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "")
+set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "targets")
 
 # SET BUILD TYPE (RELEASE/DEBUG)
-if(NOT CMAKE_BUILD_TYPE)
-    #set(CMAKE_BUILD_TYPE Debug)
-    set(CMAKE_BUILD_TYPE Release)
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
+    set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE
+            STRING "Choose the type of build." FORCE)
+    # Set the possible values of build type for cmake-gui
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
 # SET COMPILER FLAGS
@@ -37,23 +43,17 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 ${CMAKE_CXX_FLAGS_RELEASE}")
 endif()
 
-# CUDA FLAGS
-# Is this the best approach?
-#set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr -lcudart -lcublas -lcurand")
-
 # Device specific setup
-if(BUILD_TARGET STREQUAL "CPU")
+string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
+if(${BUILD_TARGET} STREQUAL "CPU")
     message("Compiling for CPU...")
-elseif(BUILD_TARGET STREQUAL "GPU")
+elseif(${BUILD_TARGET} STREQUAL "GPU" OR ${BUILD_TARGET} STREQUAL "CUDA")
     message("Compiling for GPU...")
-    set(EDDL_WITH_CUDA ON CACHE BOOL "Enable CUDA support if checked")
-elseif(BUILD_TARGET STREQUAL "FPGA")
+    set(USE_CUDA ON CACHE BOOL "Enable CUDA support if checked")
+elseif(${BUILD_TARGET} STREQUAL "FPGA")
     message("Compiling for FPGA...")
     message(FATAL_ERROR "FPGA not implemented, CMake will exit." )
 endif()
-
-# SET STATIC/DYNAMIC RUNTIME
-set(EDDL_SHARED OFF CACHE BOOL "Whether to build a static or dynamic library")
 
 # Set default install directories
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -65,17 +65,21 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif()
 
 # SHOW OPTIONS
+message(STATUS "===========================================" )
+message(STATUS "===========================================" )
 message(STATUS "Build type: " ${CMAKE_BUILD_TYPE} )
 message(STATUS "Build target: " ${BUILD_TARGET} )
 message(STATUS "Build tests: " ${BUILD_TESTS} )
 message(STATUS "Build examples: " ${BUILD_EXAMPLES} )
 message(STATUS "Build python: " ${BUILD_PYTHON} )
-message(STATUS "CUDA Enabled: " ${EDDL_WITH_CUDA} )
+message(STATUS "CUDA Enabled: " ${USE_CUDA} )
 message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS} )
 message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
+message(STATUS "===========================================" )
+message(STATUS "===========================================" )
 
 # Add CUDA (if possible)
-if(EDDL_WITH_CUDA)
+if(USE_CUDA)
     include(CheckLanguage)
     check_language(CUDA)
     if(CMAKE_CUDA_COMPILER)
@@ -92,27 +96,27 @@ endif()
 
 # Microsoft Visual C++ - set static/dynamic runtime
 if(MSVC)
-    if(EDDL_SHARED)
+    if(BUILD_SHARED_LIB)
         message(STATUS "Setting dinamic runtime for MSVC")
         foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
             string(REGEX REPLACE "/MT" "/MD" ${flag_var} "${${flag_var}}")
         endforeach(flag_var)
-        if (EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
+        if (USE_CUDA AND CMAKE_CUDA_COMPILER)
             foreach(flag_var CMAKE_CUDA_FLAGS_DEBUG CMAKE_CUDA_FLAGS_RELEASE CMAKE_CUDA_FLAGS_MINSIZEREL CMAKE_CUDA_FLAGS_RELWITHDEBINFO)
                 string(REGEX REPLACE "-MT" "-MD" ${flag_var} "${${flag_var}}")
             endforeach(flag_var)
         endif()
-    else(EDDL_SHARED)
+    else(BUILD_SHARED_LIB)
         message(STATUS "Setting static runtime for MSVC")
         foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
             string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
         endforeach(flag_var)
-        if (EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
+        if (USE_CUDA AND CMAKE_CUDA_COMPILER)
             foreach(flag_var CMAKE_CUDA_FLAGS_DEBUG CMAKE_CUDA_FLAGS_RELEASE CMAKE_CUDA_FLAGS_MINSIZEREL CMAKE_CUDA_FLAGS_RELWITHDEBINFO)
                 string(REGEX REPLACE "-MD" "-MT" ${flag_var} "${${flag_var}}")
             endforeach(flag_var)
         endif()
-    endif(EDDL_SHARED)
+    endif(BUILD_SHARED_LIB)
 
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
@@ -121,329 +125,103 @@ endif()
 # [MACRO] Download submodules
 macro(eddl_update_third_party SUBMODULE)
     if(GIT_FOUND AND IS_DIRECTORY "${PROJECT_SOURCE_DIR}/.git")
-    # Update submodule as needed
+        # Update submodule as needed
         message(STATUS "${SUBMODULE} update")
         execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive third_party/${SUBMODULE}
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                        RESULT_VARIABLE GIT_SUBMOD_RESULT)
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                RESULT_VARIABLE GIT_SUBMOD_RESULT)
         if(NOT GIT_SUBMOD_RESULT EQUAL "0")
             message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout ${SUBMODULE} submodule")
         endif()
-endif()
+    endif()
 endmacro()
-
-# ERROR! ==============================================>
-#
-# I need this to work in CLion in order to debug
-#error: could not lock config file /Users/salvacarrion/Documents/Programming/C++/eddl/.git/modules/third_party/eigen/config: File exists
-#fatal: could not set 'core.worktree' to '../../../../third_party/eigen'
-#CMake Error at CMakeLists.txt:117 (message):
-#git submodule update --init failed with 1, please checkout eigen submodule
-#Call Stack (most recent call first):
-#CMakeLists.txt:124 (eddl_update_third_party)
-#
-## UPDATE THIRD_PARTY MANDATORY MODULES
-#find_package(Git QUIET)
-#eddl_update_third_party(eigen)
-#include_directories(third_party/eigen)
-#<==============================================
-
-
-# Add the given directories to those the compiler uses to search for include files
-include_directories(src)
-include_directories(src/apis)
-include_directories(src/hardware/cpu)
-include_directories(src/hardware/cpu/nn)
-include_directories(src/hardware/gpu)
-include_directories(src/hardware/gpu/nn)
-include_directories(src/initializers)
-include_directories(src/layers)
-include_directories(src/layers/conv)
-include_directories(src/layers/core)
-include_directories(src/layers/merge)
-include_directories(src/layers/noise)
-include_directories(src/layers/operators)
-include_directories(src/layers/pool)
-include_directories(src/layers/recurrent)
-include_directories(src/losses)
-include_directories(src/metrics)
-include_directories(src/optimizers)
-include_directories(src/regularizers)
-include_directories(src/tensor)
-include_directories(src/tensor/stb)
-include_directories(src/tensor/cnpy)
-include_directories(src/descriptors)
-# Temp
-include_directories(tests)
-include_directories(tests/dev)
 
 
 # SET SOURCES *******************************
 SET(SOURCE_DIR "src")
-SET(CPP_SOURCES
-        src/apis/eddl.cpp
-        src/apis/eddl.h
-        src/apis/eddlT.cpp
-        src/apis/eddlT.h
-        src/hardware/cpu/cpu_hw.h
-        src/hardware/cpu/cpu_comparison.cpp
-        src/hardware/cpu/cpu_core.cpp
-        src/hardware/cpu/cpu_create.cpp
-        src/hardware/cpu/cpu_da.cpp
-        src/hardware/cpu/cpu_generator.cpp
-        src/hardware/cpu/cpu_math.cpp
-        src/hardware/cpu/cpu_reduction.cpp
-        src/hardware/cpu/nn/cpu_activations.cpp
-        src/hardware/cpu/nn/cpu_conv.cpp
-        src/hardware/cpu/nn/cpu_losses.cpp
-        src/hardware/cpu/nn/cpu_metrics.cpp
-        src/hardware/cpu/nn/cpu_pool.cpp
-        src/hardware/cpu/nn/cpu_tensor_nn.cpp
-        src/initializers/initializer.cpp
-        src/initializers/initializer.h
-        src/initializers/initializer_constant.cpp
-        src/initializers/initializer_glorot_normal.cpp
-        src/initializers/initializer_glorot_uniform.cpp
-        src/initializers/initializer_indentity.cpp
-        src/initializers/initializer_orthogonal.cpp
-        src/initializers/initializer_random_normal.cpp
-        src/initializers/initializer_random_uniform.cpp
-        src/layers/constraints/constraint.cpp
-        src/layers/constraints/constraint.h
-        src/layers/constraints/constraint_max_norm.cpp
-        src/layers/constraints/constraint_min_max_norm.cpp
-        src/layers/constraints/constraint_non_neg.cpp
-        src/layers/constraints/constraint_unit_norm.cpp
-        src/layers/conv/layer_conv.cpp
-        src/layers/conv/layer_conv.h
-        src/layers/conv/layer_transposed_conv.cpp
-        src/layers/conv/layer_upsampling.cpp
-        src/layers/core/layer_activation.cpp
-        src/layers/core/layer_core.h
-        src/layers/core/layer_dense.cpp
-        src/layers/core/layer_drop.cpp
-        src/layers/core/layer_embedding.cpp
-        src/layers/core/layer_input.cpp
-        src/layers/core/layer_reshape.cpp
-        src/layers/core/layer_tensor.cpp
-        src/layers/core/layer_transpose.cpp
-        src/layers/da/layer_da.h
-        src/layers/da/layer_crop.cpp
-        src/layers/da/layer_crop_scale.cpp
-        src/layers/da/layer_crop_random.cpp
-        src/layers/da/layer_crop_scale_random.cpp
-        src/layers/da/layer_cutout.cpp
-        src/layers/da/layer_cutout_random.cpp
-        src/layers/da/layer_flip.cpp
-        src/layers/da/layer_flip_random.cpp
-        src/layers/da/layer_rotate.cpp
-        src/layers/da/layer_rotate_random.cpp
-        src/layers/da/layer_scale.cpp
-        src/layers/da/layer_scale_random.cpp
-        src/layers/da/layer_shift.cpp
-        src/layers/da/layer_shift_random.cpp
-        src/layers/normalization/bnorm.cpp
-        src/layers/normalization/layer_norm.cpp
-        src/layers/normalization/layer_normmax.cpp
-        src/layers/normalization/layer_normminmax.cpp
-        src/layers/normalization/layer_batchnorm.cpp
-        src/layers/normalization/layer_layernorm.cpp
-        src/layers/normalization/layer_groupnorm.cpp
-        src/layers/generators/layer_generator.cpp
-        src/layers/generators/layer_generators.h
-        src/layers/generators/layer_gauss.cpp
-        src/layers/generators/layer_uniform.cpp
-        src/layers/merge/layer_add.cpp
-        src/layers/merge/layer_average.cpp
-        src/layers/merge/layer_concat.cpp
-        src/layers/merge/layer_matmul.cpp
-        src/layers/merge/layer_maximum.cpp
-        src/layers/merge/layer_merge.h
-        src/layers/merge/layer_minimum.cpp
-        src/layers/merge/layer_subtract.cpp
-        src/layers/noise/layer_gaussian.cpp
-        src/layers/noise/layer_noise.h
-        src/layers/operators/layer_abs.cpp
-        src/layers/operators/layer_diff.cpp
-        src/layers/operators/layer_div.cpp
-        src/layers/operators/layer_exp.cpp
-        src/layers/operators/layer_log.cpp
-        src/layers/operators/layer_log10.cpp
-        src/layers/operators/layer_log2.cpp
-        src/layers/operators/layer_mult.cpp
-        src/layers/operators/layer_operator.cpp
-        src/layers/operators/layer_operators.h
-        src/layers/operators/layer_pow.cpp
-        src/layers/operators/layer_sqrt.cpp
-        src/layers/operators/layer_select.cpp
-        src/layers/operators/layer_permute.cpp
-        src/layers/operators/layer_sum.cpp
-        src/layers/pool/layer_avgpool.cpp
-        src/layers/pool/layer_maxpool.cpp
-        src/layers/pool/layer_pool.cpp
-        src/layers/pool/layer_pool.h
-        src/layers/recurrent/layer_lstm.cpp
-        src/layers/recurrent/layer_recurrent.h
-        src/layers/recurrent/layer_rnn.cpp
-        src/layers/reductions/layer_mean.cpp
-        src/layers/reductions/layer_reduction.cpp
-        src/layers/reductions/layer_reductions.h
-        src/layers/reductions/layer_var.cpp
-        src/layers/reductions/layer_sum.cpp
-        src/layers/reductions/layer_max.cpp
-        src/layers/reductions/layer_min.cpp
-        src/layers/layer.cpp
-        src/layers/layer.h
-        src/losses/loss.cpp
-        src/losses/loss.h
-        src/losses/loss_cross_entropy.cpp
-        src/losses/loss_mean_squared_error.cpp
-        src/losses/loss_soft_cross_entropy.cpp
-        src/losses/loss_min.cpp
-        src/metrics/metric.cpp
-        src/metrics/metric.h
-        src/metrics/metric_categorical_acc.cpp
-        src/metrics/metric_mean_squared_error.cpp
-        src/metrics/metric_mean_absolute_error.cpp
-        src/metrics/metric_mean_relative_error.cpp
-        src/metrics/metric_sum.cpp
-        src/optimizers/optim.cpp
-        src/optimizers/optim.h
-        src/optimizers/optim_adadelta.cpp
-        src/optimizers/optim_adagrad.cpp
-        src/optimizers/optim_adam.cpp
-        src/optimizers/optim_adamax.cpp
-        src/optimizers/optim_nadam.cpp
-        src/optimizers/optim_rmsprop.cpp
-        src/optimizers/optim_sgd.cpp
-        src/descriptors/descriptors.h
-        src/descriptors/descriptor_conv.cpp
-        src/descriptors/descriptor_pool.cpp
-        src/descriptors/descriptor_reduce.cpp
-        src/descriptors/descriptor_tensor.cpp
-        src/descriptors/descriptor_select.cpp
-        src/descriptors/descriptor_permute.cpp
-        src/regularizers/regularizer.h
-        src/regularizers/regularizer.cpp
-        src/regularizers/regularizer_l1.cpp
-        src/regularizers/regularizer_l1_l2.cpp
-        src/regularizers/regularizer_l2.cpp
-        src/tensor/stb/stb.h
-        src/tensor/stb/stb_image.h
-        src/tensor/stb/stb_image_write.h
-        src/tensor/cnpy/cnpy.h
-        src/tensor/cnpy/cnpy.cpp
-        src/tensor/tensor.h
-        src/tensor/tensor.cpp
-        src/tensor/tensor_comparison.cpp
-        src/tensor/tensor_core.cpp
-        src/tensor/tensor_create.cpp
-        src/tensor/tensor_da.cpp
-        src/tensor/tensor_generator.cpp
-        src/tensor/tensor_math.cpp
-        src/tensor/tensor_reduction.cpp
-        src/tensor/tensor_serialization.cpp
-        src/tensor/nn/tensor_nn.h
-        src/tensor/nn/tensor_activations.cpp
-        src/tensor/nn/tensor_conv.cpp
-        src/tensor/nn/tensor_losses.cpp
-        src/tensor/nn/tensor_metrics.cpp
-        src/tensor/nn/tensor_pool.cpp
-        src/tensor/nn/tensor_core_nn.cpp
-        src/net/compserv.cpp
-        src/net/compserv.h
-        src/net/netloss.cpp
-        src/net/netloss.h
-        src/net/net.cpp
-        src/net/net_build.cpp
-        src/net/net_api.cpp
-        src/net/net_func.cpp
-        src/net/net.h
-        src/system_info.h
-        src/utils.cpp
-        src/utils.h
-        src/helpers.h
-        src/random.cpp
-        src/random.h
-        # Temp
-        tests/test_tensor.cpp
-        tests/dev/aux_tests.cpp
-        tests/dev/aux_tests.h
-        tests/dev/aux_tests.h
-        )
-SET(CUDA_SOURCES
-        src/hardware/gpu/gpu_hw.h
-        src/hardware/gpu/gpu_comparison.cu
-        src/hardware/gpu/gpu_comparison_kernels.cu
-        src/hardware/gpu/gpu_core.cu
-        src/hardware/gpu/gpu_core_kernels.cu
-        src/hardware/gpu/gpu_create.cu
-        src/hardware/gpu/gpu_create_kernels.cu
-        src/hardware/gpu/gpu_da.cu
-        src/hardware/gpu/gpu_da_kernels.cu
-        src/hardware/gpu/gpu_generator.cu
-        src/hardware/gpu/gpu_generator_kernels.cu
-        src/hardware/gpu/gpu_math.cu
-        src/hardware/gpu/gpu_math_kernels.cu
-        src/hardware/gpu/gpu_reduction.cu
-        src/hardware/gpu/gpu_reduction_kernels.cu
-        src/hardware/gpu/gpu_tensor.cu
-        src/hardware/gpu/gpu_tensor.h
-        src/hardware/gpu/gpu_kernels.h
-        src/hardware/gpu/nn/gpu_nn.h
-        src/hardware/gpu/nn/gpu_nn_kernels.h
-        src/hardware/gpu/nn/gpu_activations.cu
-        src/hardware/gpu/nn/gpu_activations_kernels.cu
-        src/hardware/gpu/nn/gpu_conv.cu
-        src/hardware/gpu/nn/gpu_conv_kernels.cu
-        src/hardware/gpu/nn/gpu_losses.cu
-        src/hardware/gpu/nn/gpu_losses_kernels.cu
-        src/hardware/gpu/nn/gpu_metrics.cu
-        src/hardware/gpu/nn/gpu_metrics_kernels.cu
-        src/hardware/gpu/nn/gpu_pool.cu
-        src/hardware/gpu/nn/gpu_pool_kernels.cu
-        src/hardware/gpu/nn/gpu_tensor_nn.cu
-        src/hardware/gpu/nn/gpu_tensor_nn_kernels.cu
-        )
-SET(SOURCES ${CPP_SOURCES} ${CUDA_SOURCES})
 
-# SET TESTS ****************************
-SET(TEST_DIR "tests")
-SET(TESTS
-    "${TEST_DIR}/test_tensor.cpp"
-    )
+# C++ files
+file(GLOB CPP_HEADER_FILES_TOP
+        ${PROJECT_SOURCE_DIR}/src/*.h
+        )
+file(GLOB CPP_SOURCE_FILES_TOP
+        ${PROJECT_SOURCE_DIR}/src/*.cpp
+        )
+file(GLOB_RECURSE CPP_HEADER_FILES_NESTED
+        ${PROJECT_SOURCE_DIR}/src/apis/*.h
+        ${PROJECT_SOURCE_DIR}/src/descriptors/*.h
+        ${PROJECT_SOURCE_DIR}/src/hardware/cpu/*.h
+        ${PROJECT_SOURCE_DIR}/src/initializers/*.h
+        ${PROJECT_SOURCE_DIR}/src/layers/*.h
+        ${PROJECT_SOURCE_DIR}/src/losses/*.h
+        ${PROJECT_SOURCE_DIR}/src/metrics/*.h
+        ${PROJECT_SOURCE_DIR}/src/net/*.h
+        ${PROJECT_SOURCE_DIR}/src/optimizers/*.h
+        ${PROJECT_SOURCE_DIR}/src/regularizers/*.h
+        ${PROJECT_SOURCE_DIR}/src/tensor/*.h
+        )
+
+file(GLOB_RECURSE CPP_SOURCE_FILES_NESTED
+        ${PROJECT_SOURCE_DIR}/src/apis/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/descriptors/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/hardware/cpu/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/initializers/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/layers/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/losses/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/metrics/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/net/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/optimizers/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/regularizers/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/tensor/*.cpp
+)
+SET(CPP_HEADER_FILES ${CPP_HEADER_FILES_TOP} ${CPP_HEADER_FILES_NESTED})
+SET(CPP_SOURCE_FILES ${CPP_SOURCE_FILES_TOP} ${CPP_SOURCE_FILES_NESTED})
+SET(CPP_SOURCES ${CPP_HEADER_FILES} ${CPP_SOURCE_FILES})
+
+
+# CUDA files
+file(GLOB_RECURSE CUDA_HEADER_FILES
+        ${PROJECT_SOURCE_DIR}/src/hardware/gpu/*.h
+        )
+file(GLOB_RECURSE CUDA_CU_FILES
+        ${PROJECT_SOURCE_DIR}/src/hardware/gpu/*.cu
+        )
+SET(CUDA_SOURCES ${CUDA_HEADER_FILES} ${CUDA_CU_FILES})
+
+
+# ONNX files
+file(GLOB_RECURSE ONNX_HEADER_FILES
+    ${PROJECT_SOURCE_DIR}src/serialization/onnx/*.h
+)
+file(GLOB_RECURSE ONNX_SOURCES_FILES
+    ${PROJECT_SOURCE_DIR}src/serialization/onnx/*.cpp
+    ${PROJECT_SOURCE_DIR}src/serialization/onnx/*.cc
+)
+SET(ONNX_SOURCES ${ONNX_HEADER_FILES} ${ONNX_SOURCES_FILES})
 
 
 # [LIBRARY] EDDL LIBRARY *********************
-if(EDDL_SHARED)
+if(BUILD_SHARED_LIB)
     add_library(eddl SHARED "")
-else(EDDL_SHARED)
+else(BUILD_SHARED_LIB)
     add_library(eddl STATIC "")
-endif(EDDL_SHARED)
-target_sources(eddl PRIVATE ${CPP_SOURCES})
-if(EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
-    target_sources(eddl PRIVATE ${CUDA_SOURCES})
-    target_include_directories(eddl PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
-    add_compile_definitions(cGPU)
-endif()
-target_include_directories(eddl PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-    $<INSTALL_INTERFACE:include>
-)
-target_include_directories(eddl PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen>
-    $<INSTALL_INTERFACE:include>
-)
-#target_compile_features(eddl PUBLIC cxx_std_11)
+endif(BUILD_SHARED_LIB)
 
+target_sources(eddl PRIVATE ${CPP_SOURCES} ${ONNX_SOURCES})
+target_include_directories(eddl PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+        $<INSTALL_INTERFACE:include>
+        )
 
 # Target properties
 set_target_properties(eddl PROPERTIES
-    OUTPUT_NAME_DEBUG "eddld"
-    OUTPUT_NAME_RELEASE "eddl"
-    POSITION_INDEPENDENT_CODE ON
-    CUDA_SEPARABLE_COMPILATION ON
-    CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+        OUTPUT_NAME_DEBUG "eddld"
+        OUTPUT_NAME_RELEASE "eddl"
+)
+
+# Eigen3
+find_package(Eigen3 3.3 REQUIRED)
+target_link_libraries (eddl PUBLIC Eigen3::Eigen)
 
 # OpenMP
 find_package(OpenMP)
@@ -454,16 +232,35 @@ if (OpenMP_FOUND)
     endif()
     target_compile_definitions(eddl PUBLIC OpenMP_VERSION_MAJOR=${OpenMP_VERSION_MAJOR})
     message(STATUS "Found OpenMP, version ${OpenMP_VERSION_MAJOR}")
+
+    set(OMP_CANCELLATION true)  # https://www.openmp.org/spec-html/5.0/openmpse59.html
 endif()
 
+# enable Intel-MKL (only for Intel compilers)
+# NB requires correct specification of BLA_VENDOR, e.g.
+#   export BLA_VENDOR=Intel10_64lp_seq
+if (MKL AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+    find_package(BLAS)
+    target_include_directories(${BLAS_INCLUDE_DIRS})
+    set(PROJECT_LIBS ${BLAS_LIBRARIES})
+    add_definitions(-DEIGEN_USE_MKL_ALL)
+endif()
 
 # CUDA
-if(EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
+if(USE_CUDA AND CMAKE_CUDA_COMPILER)
+    target_sources(eddl PRIVATE ${CUDA_SOURCES})
+    target_include_directories(eddl PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
     target_link_libraries(eddl
-        PRIVATE cublas
-        PRIVATE cudart
-        PRIVATE curand
-    )
+            PRIVATE cublas
+            PRIVATE cudart
+            PRIVATE curand
+            )
+    add_compile_definitions(cGPU)
+
+    # Target properties
+    set_target_properties(eddl PROPERTIES
+            CUDA_SEPARABLE_COMPILATION ON
+            CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 endif()
 
 # ZLIB
@@ -474,6 +271,18 @@ if (ZLIB_FOUND)
     target_link_libraries(eddl PRIVATE ${ZLIB_LIBRARIES})
 endif()
 
+
+# ONNX
+include(FindProtobuf)
+find_package(Protobuf REQUIRED)
+if(Protobuf_FOUND)
+    target_include_directories(eddl PUBLIC ${PROTOBUF_INCLUDE_DIR})
+    add_compile_definitions(cPROTO)
+else()
+    message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
+endif()
+
+
 # pthreads setup for windows os
 # The following commands should be removed when pthread linux
 # specific calls will be replaced by thread c++ standard calls
@@ -483,11 +292,11 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
         message(ERROR ": pthreds install path must be specified under Windows")
     endif()
     target_link_libraries(eddl PRIVATE debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3d.lib"
-                               PRIVATE debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib"
-                               PRIVATE debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib")
+            PRIVATE debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib"
+            PRIVATE debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib")
     target_link_libraries(eddl PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib"
-                               PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib"
-                               PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")
+            PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib"
+            PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")
     target_include_directories(eddl PUBLIC "${EDDL_PTHREADS_INSTALL_PATH}/include")
 endif()
 
@@ -500,120 +309,84 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     target_link_libraries(eddl PRIVATE Threads::Threads)
 endif()
 
-## [BINDING] Create python binding
-#if(BUILD_PYTHON)
-#    eddl_update_third_party(pybind11)
-#    set(CMAKE_FOLDER 3party/pybind11)
-#    add_subdirectory(third_party/pybind11)
-#    set(CMAKE_FOLDER "")
-#    SET(C_LIB_NAME "_C")
-#    pybind11_add_module(${C_LIB_NAME} ${SOURCES} "${SOURCE_DIR}/binding.cpp")
-#    # can we just link the library instead of adding all the sources and linking pthreads again?
-#    # target_link_libraries(${C_LIB_NAME} PRIVATE eddl)
-#    if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-#        target_link_libraries(${C_LIB_NAME} PRIVATE "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib")
-#        target_link_libraries(${C_LIB_NAME} PRIVATE "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib")
-#        target_link_libraries(${C_LIB_NAME} PRIVATE "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")
-#        target_include_directories(${C_LIB_NAME} PUBLIC "${EDDL_PTHREADS_INSTALL_PATH}/include")
-#    endif()
-#    if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-#        target_link_libraries(${C_LIB_NAME} PRIVATE Threads::Threads)
-#    endif()
-#endif(BUILD_PYTHON)
-##unset(BUILD_PYTHON CACHE)
 
 # [TESTS] Generate a test executable
 if(BUILD_TESTS)
-    eddl_update_third_party(googletest)
-    set(CMAKE_FOLDER third_party/googletest)
-    add_subdirectory(third_party/googletest)
-    SET(UNITTEST_NAME "${PROJECT_NAME}_tests")
-    set(CMAKE_FOLDER "")
-    add_executable(${UNITTEST_NAME} ${TESTS})
-    target_include_directories(${UNITTEST_NAME} PUBLIC ${gtest_SOURCE_DIR}/include)
-    target_link_libraries(${UNITTEST_NAME} eddl gtest gtest_main)
-    add_test(UnitTests ${UNITTEST_NAME})  # To do "make test"
     enable_testing()
+    find_package(GTest REQUIRED)
+    target_link_libraries(eddl PRIVATE ${GTEST_INCLUDE_DIRS})
 endif(BUILD_TESTS)
-#unset(BUILD_TESTS CACHE)
 
 
 # [EXAMPLES] Generate a few test executables
 if(BUILD_EXAMPLES)
-    SET(EXAMPLES_DIR "examples")
-    set(CMAKE_FOLDER examples)
-    ## MNIST EXAMPLES
-    add_executable(mnist_mlp "${EXAMPLES_DIR}/NN/1_MNIST/1_mnist_mlp.cpp")
-    add_executable(mnist_mlp_initializers "${EXAMPLES_DIR}/NN/1_MNIST/2_mnist_mlp_initializers.cpp")
-    add_executable(mnist_mlp_regularizers "${EXAMPLES_DIR}/NN/1_MNIST/3_mnist_mlp_regularizers.cpp")
-    add_executable(mnist_mlp_da "${EXAMPLES_DIR}/NN/1_MNIST/4_mnist_mlp_da.cpp")
-    add_executable(mnist_mlp_train_batch "${EXAMPLES_DIR}/NN/1_MNIST/5_mnist_mlp_train_batch.cpp")
-    add_executable(mnist_auto_encoder "${EXAMPLES_DIR}/NN/1_MNIST/6_mnist_auto_encoder.cpp")
-    add_executable(mnist_gan "${EXAMPLES_DIR}/NN/1_MNIST/7_mnist_gan.cpp")
-    add_executable(mnist_wgan "${EXAMPLES_DIR}/NN/1_MNIST/8_mnist_wgan.cpp")
-    add_executable(mnist_conv "${EXAMPLES_DIR}/NN/1_MNIST/9_mnist_conv.cpp")
-    ## CIFAR10 EXAMPLES
-    add_executable(cifar_conv "${EXAMPLES_DIR}/NN/2_CIFAR10/1_cifar_conv.cpp")
-    add_executable(cifar_conv_da "${EXAMPLES_DIR}/NN/2_CIFAR10/2_cifar_conv_da.cpp")
-    add_executable(cifar_vgg16 "${EXAMPLES_DIR}/NN/2_CIFAR10/3_cifar_vgg16.cpp")
-    add_executable(cifar_vgg16_bn "${EXAMPLES_DIR}/NN/2_CIFAR10/4_cifar_vgg16_bn.cpp")
-    add_executable(cifar_vgg16_gn "${EXAMPLES_DIR}/NN/2_CIFAR10/4_cifar_vgg16_gn.cpp")
-    add_executable(cifar_resnet "${EXAMPLES_DIR}/NN/2_CIFAR10/5_cifar_resnet.cpp")
-    add_executable(cifar_resnet_da_bn "${EXAMPLES_DIR}/NN/2_CIFAR10/6_cifar_resnet_da_bn.cpp")
-    add_executable(cifar_resnet50 "${EXAMPLES_DIR}/NN/2_CIFAR10/7_cifar_resnet50_da_bn.cpp")
-    ## Drive segmentation EXAMPLES
-    add_executable(drive_seg "${EXAMPLES_DIR}/NN/3_DRIVE/1_drive_seg.cpp")
-    # Tensor
-    add_executable(tensor_manipulation "${EXAMPLES_DIR}/Tensor/eddl_tensor.cpp")
-    add_executable(tensor_image "${EXAMPLES_DIR}/Tensor/eddl_image.cpp")
-    add_executable(tensor_io "${EXAMPLES_DIR}/Tensor/eddl_io.cpp")
-    #### OTHER
-    add_executable(example_ae "${EXAMPLES_DIR}/NN/other/eddl_ae.cpp")
-    add_executable(example_conv "${EXAMPLES_DIR}/NN/other/eddl_conv.cpp")
-    add_executable(example_dae "${EXAMPLES_DIR}/NN/other/eddl_dae.cpp")
-    add_executable(example_dae_class "${EXAMPLES_DIR}/NN/other/eddl_dae_class.cpp")
-    add_executable(example_load_save "${EXAMPLES_DIR}/NN/other/eddl_load_save.cpp")
-    add_executable(example_mlp "${EXAMPLES_DIR}/NN/other/eddl_mlp.cpp")
-    add_executable(example_train_batch "${EXAMPLES_DIR}/NN/other/eddl_train_batch.cpp")
-    ## MNIST EXAMPLES
+    # EXAMPLES: MNIST ****************************************************
+    add_executable(mnist_mlp "${EXAMPLES_DIR}/nn/1_mnist/1_mnist_mlp.cpp")
     target_link_libraries(mnist_mlp eddl)
+
+    add_executable(mnist_mlp_initializers "${EXAMPLES_DIR}/nn/1_mnist/2_mnist_mlp_initializers.cpp")
     target_link_libraries(mnist_mlp_initializers eddl)
+
+    add_executable(mnist_mlp_regularizers "${EXAMPLES_DIR}/nn/1_mnist/3_mnist_mlp_regularizers.cpp")
     target_link_libraries(mnist_mlp_regularizers eddl)
+
+    add_executable(mnist_mlp_da "${EXAMPLES_DIR}/nn/1_mnist/4_mnist_mlp_da.cpp")
     target_link_libraries(mnist_mlp_da eddl)
+
+    add_executable(mnist_mlp_train_batch "${EXAMPLES_DIR}/nn/1_mnist/5_mnist_mlp_train_batch.cpp")
     target_link_libraries(mnist_mlp_train_batch eddl)
+
+    add_executable(mnist_auto_encoder "${EXAMPLES_DIR}/nn/1_mnist/6_mnist_auto_encoder.cpp")
     target_link_libraries(mnist_auto_encoder eddl)
+
+    add_executable(mnist_gan "${EXAMPLES_DIR}/nn/1_mnist/7_mnist_gan.cpp")
     target_link_libraries(mnist_gan eddl)
+
+    add_executable(mnist_wgan "${EXAMPLES_DIR}/nn/1_mnist/8_mnist_wgan.cpp")
     target_link_libraries(mnist_wgan eddl)
+
+    add_executable(mnist_conv "${EXAMPLES_DIR}/nn/1_mnist/9_mnist_conv.cpp")
     target_link_libraries(mnist_conv eddl)
-    ## CIFAR10 EXAMPLES
+
+    # EXAMPLES: CIFAR10 ****************************************************
+    add_executable(cifar_conv "${EXAMPLES_DIR}/nn/2_cifar10/1_cifar_conv.cpp")
     target_link_libraries(cifar_conv eddl)
+
+    add_executable(cifar_conv_da "${EXAMPLES_DIR}/nn/2_cifar10/2_cifar_conv_da.cpp")
     target_link_libraries(cifar_conv_da eddl)
+
+    add_executable(cifar_vgg16 "${EXAMPLES_DIR}/nn/2_cifar10/3_cifar_vgg16.cpp")
     target_link_libraries(cifar_vgg16 eddl)
+
+    add_executable(cifar_vgg16_bn "${EXAMPLES_DIR}/nn/2_cifar10/4_cifar_vgg16_bn.cpp")
     target_link_libraries(cifar_vgg16_bn eddl)
+
+    add_executable(cifar_vgg16_gn "${EXAMPLES_DIR}/nn/2_cifar10/4_cifar_vgg16_gn.cpp")
     target_link_libraries(cifar_vgg16_gn eddl)
+
+    add_executable(cifar_resnet "${EXAMPLES_DIR}/nn/2_cifar10/5_cifar_resnet.cpp")
     target_link_libraries(cifar_resnet eddl)
+
+    add_executable(cifar_resnet_da_bn "${EXAMPLES_DIR}/nn/2_cifar10/6_cifar_resnet_da_bn.cpp")
     target_link_libraries(cifar_resnet_da_bn eddl)
+
+    add_executable(cifar_resnet50 "${EXAMPLES_DIR}/nn/2_cifar10/7_cifar_resnet50_da_bn.cpp")
     target_link_libraries(cifar_resnet50 eddl)
-    ## DRIVE SEG EXAMPLES
+
+    # EXAMPLES: Drive segmentation ****************************************************
+    add_executable(drive_seg "${EXAMPLES_DIR}/nn/3_drive/1_drive_seg.cpp")
     target_link_libraries(drive_seg eddl)
-    # Tensor
+
+    # EXAMPLES: Tensor ****************************************************
+    add_executable(tensor_manipulation "${EXAMPLES_DIR}/tensor/eddl_tensor.cpp")
     target_link_libraries(tensor_manipulation eddl)
+
+    add_executable(tensor_image "${EXAMPLES_DIR}/tensor/eddl_image.cpp")
     target_link_libraries(tensor_image eddl)
+
+    add_executable(tensor_io "${EXAMPLES_DIR}/tensor/eddl_io.cpp")
     target_link_libraries(tensor_io eddl)
-    #### OTHER
-    target_link_libraries(example_ae eddl)
-    target_link_libraries(example_conv eddl)
-    target_link_libraries(example_dae eddl)
-    target_link_libraries(example_dae_class eddl)
-    target_link_libraries(example_load_save eddl)
-    target_link_libraries(example_mlp eddl)
-    target_link_libraries(example_train_batch eddl)
-    # Temp
-    add_executable(test_main "tests/test_main.cpp")
-    target_link_libraries(test_main eddl)
-    set(CMAKE_FOLDER "")
 endif(BUILD_EXAMPLES)
-#unset(BUILD_EXAMPLES CACHE)
 
 
 # [INSTALL] Install the EDDL library
@@ -633,23 +406,6 @@ install(EXPORT eddlTargets DESTINATION ${EDDL_CONFIG_INSTALL_PATH})
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
         DESTINATION include/eddl
         FILES_MATCHING PATTERN "*.h")
-
-# [INSTALL] Install Eigen files
-include("${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen/cmake/RegexUtils.cmake")
-test_escape_string_as_regex()
-escape_string_as_regex(ESCAPED_EIGEN_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen/Eigen")
-file(GLOB Eigen_directory_files "${ESCAPED_EIGEN_SOURCE_DIR}/*")
-#message(STATUS ${Eigen_directory_files})
-foreach(f ${Eigen_directory_files})
-    if(NOT f MATCHES "\\.txt" AND NOT f MATCHES "${ESCAPED_EIGEN_SOURCE_DIR}/[.].+" AND NOT f MATCHES "${ESCAPED_EIGEN_SOURCE_DIR}/src")
-        list(APPEND Eigen_directory_files_to_install ${f})
-    endif()
-endforeach(f ${Eigen_directory_files})
-install(FILES
-        ${Eigen_directory_files_to_install}
-        DESTINATION "include/Eigen"
-        )
-install(DIRECTORY ${ESCAPED_EIGEN_SOURCE_DIR}/src DESTINATION "include/Eigen" COMPONENT Devel FILES_MATCHING PATTERN "*.h")
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/eddlConfig.cmake.in ${CMAKE_BINARY_DIR}/cmake/eddlConfig.cmake @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/cmake/eddlConfig.cmake

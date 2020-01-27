@@ -79,6 +79,8 @@ public:
     Tensor *bias; // bias
     Tensor *gK;// gradient filters
     Tensor *gbias;// gradient bias
+	Tensor *acc_gK;// Accumulated gradients for kernels
+	Tensor *acc_gbias;// Accumulated gradients for bias
     Tensor *D; // Delta
     Tensor *O; // Outputmap
 
@@ -106,6 +108,7 @@ public:
 
     void build(Tensor *A);
     void resize(int b);
+	void enable_distributed();
 };
 
 

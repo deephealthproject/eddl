@@ -42,6 +42,7 @@ public:
 
     vector<Tensor *> params;
     vector<Tensor *> gradients;
+	vector<Tensor *> acc_gradients;
 
     vector<Layer *> parent;
     vector<Layer *> child;
@@ -102,10 +103,20 @@ public:
     virtual void forward() {}
 
     virtual void backward() {}
+	
+	virtual void update_weights(Tensor* w, Tensor* bias) {}
+
+	virtual void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias) {}
+
+	virtual void reset_accumulated_gradients() {}
+
+	virtual void apply_accumulated_gradients() {}
 
     virtual Layer *share(int c, int bs, vector<Layer *> p) { return nullptr; }
 
     virtual Layer *clone(int c, int bs, vector<Layer *> p, int todev) { return nullptr; }
+
+	virtual void enable_distributed() {}
 
 };
 
@@ -131,9 +142,19 @@ public:
 
     void backward() override {}
 
+	void update_weights(Tensor* w, Tensor* bias) override {}
+
+	void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias) override {}
+
+	void reset_accumulated_gradients() override {}
+
+	void apply_accumulated_gradients() override {}
+
     Layer *share(int c, int bs, vector<Layer *> p) override { return nullptr; }
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override { return nullptr; }
+
+	void enable_distributed() override {};
 
 };
 

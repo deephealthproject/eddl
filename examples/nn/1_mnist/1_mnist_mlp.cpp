@@ -16,6 +16,11 @@
 
 using namespace eddl;
 
+//////////////////////////////////
+// mnist_mlp.cpp:
+// A very basic MLP for mnist
+// Using fit for training
+//////////////////////////////////
 
 int main(int argc, char **argv) {
 
@@ -23,7 +28,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 10;
+    int epochs = 1;
     int batch_size = 100;
     int num_classes = 10;
 
@@ -31,9 +36,9 @@ int main(int argc, char **argv) {
     layer in = Input({784});
     layer l = in;  // Aux var
 
-    l = BatchNormalization(ReLu(Dense(l, 1024)));
-    l = BatchNormalization(ReLu(Dense(l, 1024)));
-    l = BatchNormalization(ReLu(Dense(l, 1024)));
+    l = ReLu(Dense(l, 1024));
+    l = ReLu(Dense(l, 1024));
+    l = ReLu(Dense(l, 1024));
 
     layer out = Activation(Dense(l, num_classes), "softmax");
     model net = Model({in}, {out});
@@ -46,8 +51,8 @@ int main(int argc, char **argv) {
           rmsprop(0.01), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
-          //CS_CPU() // CPU with maximum threads availables
+          //CS_GPU({1}) // one GPU
+          CS_CPU() // CPU with maximum threads availables
     );
 
     // View model
@@ -63,34 +68,10 @@ int main(int argc, char **argv) {
     eddlT::div_(x_train, 255.0);
     eddlT::div_(x_test, 255.0);
 
-
-    // Save model before the training
-    cout << "Saving untrained model..." << endl;
-    save(net,"model_untrained.bin");
-
     // Train model
-    cout << "Training model..." << endl;
     fit(net, {x_train}, {y_train}, batch_size, epochs);
 
-    // Save model after the training
-    cout << "Saving trained model..." << endl;
-    save(net,"model_trained.bin");
-
-    // Evaluate model before the training
-    cout << "Loading untrained model..." << endl;
-    load(net,"model_untrained.bin");
-    cout << "Evaluating untrained model..." << endl;
+    // Evaluate
     evaluate(net, {x_test}, {y_test});
-
-    // Evaluate model after the training
-    cout << "Loading trained model..." << endl;
-    load(net,"model_trained.bin");
-    cout << "Evaluating trained model..." << endl;
-    evaluate(net, {x_test}, {y_test});
-
-
 
 }
-
-
-///////////
