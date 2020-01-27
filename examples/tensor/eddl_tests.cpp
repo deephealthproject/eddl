@@ -28,40 +28,30 @@ int main(int argc, char **argv) {
     Tensor* t1 = nullptr;
     Tensor* t2 = nullptr;
     Tensor* t3 = nullptr;
-    Tensor* t4 = nullptr;
 
-    string path1;
-    string path2;
+    string path1 = "../examples/data/elephant.jpg";
     string output = "./output/";
 
-    path1 = "/Users/salvacarrion/Documents/Programming/C++/eddl/cmake-build-debug/output/output.jpg";
-    path2 = "/Users/salvacarrion/Desktop/elephant2.jpg";
-
-
+    // Load image
     t1 = Tensor::load(path1);
     t1->unsqueeze_();
+    t1->save(output + "output1.jpg");
 
-    t2 = Tensor::load(path2);
-    t2->unsqueeze_();
+    // Downscale
+    t2 = Tensor::zeros({1, 3, 100, 100});
+    Tensor::scale(t1, t2, {100, 100});
+    t2->save(output + "output2.jpg");
+    t1->set_select({":", ":", "100:200", "300:400"}, t2);  // "Paste" t2 in t1
 
-
-    t1->set_select({":", "-150:-50", "400:400"}, t2);
-
+    // Rotate
     t3 = t2->clone();
-    Tensor::rotate(t2, t3, 60.0f);
+    Tensor::rotate(t2, t3, 60.0f, {0,0}, "original");
     t3->mult_(0.5f);
     t3->clampmax_(255.0f);
-    t1->set_select({":", ":", "100:200", "300:400"}, t3);
-e
-    t4 = new Tensor({1, 3, 50, 50});
-    Tensor::scale(t2, t4, {50, 50});
-    Tensor* t5 = t4->clone();
-    Tensor::rotate(t5, t4, -200.0f);
-    t4->mult_(1.75f);
-    t4->clampmax_(255.0f);
-    t1->set_select({":", ":", "300:350", "300:350"}, t4);
+    t1->set_select({":", ":", "-150:-50", "-150:-50"}, t3);  // "Paste" t3 in t1
 
 
+    // Save original
     t1->save(output + "output.jpg");
     int asdasd = 33;
 }

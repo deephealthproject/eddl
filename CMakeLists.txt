@@ -386,6 +386,9 @@ if(BUILD_EXAMPLES)
 
     add_executable(tensor_io "${EXAMPLES_DIR}/tensor/eddl_io.cpp")
     target_link_libraries(tensor_io eddl)
+
+    add_executable(tensor_test "${EXAMPLES_DIR}/tensor/eddl_tests.cpp")
+    target_link_libraries(tensor_test eddl)
 endif(BUILD_EXAMPLES)
 
 
