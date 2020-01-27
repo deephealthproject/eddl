@@ -17,26 +17,55 @@ using namespace std;
 
 int main(int argc, char **argv) {
 
+    Tensor* t1 = nullptr;
+    Tensor* t2 = nullptr;
+    Tensor* t3 = nullptr;
+
     // Paths
     string fname = "../examples/data/elephant.jpg";  // Some image
     string output = "output/";  // Create this folder!
 
     // Load image
-    Tensor *t1 = Tensor::load(fname);
-    t1->info();
+    t1 = Tensor::load(fname);
+    t1->unsqueeze_();
+    t1->save(output + "original.jpg");
+    cout << "Image saved! (Original)" << endl;
 
-    // Where to save the image
-    Tensor *t2 = new Tensor(t1->shape);
+    // Downscale
+    t2 = Tensor::zeros({1, 3, 100, 100});
+    Tensor::scale(t1, t2, {100, 100});
+    t1->set_select({":", ":", "100:200", "300:400"}, t2);  // "Paste" t2 in t1
+    t2->save(output + "example_scale_resize.jpg");
+    cout << "Image saved! (Scale resize)" << endl;
 
-    // Perform some manipulations ************************
+    // Rotate
+    t3 = t2->clone();
+    Tensor::rotate(t2, t3, 60.0f, {0,0}, "original");
+    t3->mult_(0.5f);
+    t3->clampmax_(255.0f);
+    t1->set_select({":", ":", "-150:-50", "-150:-50"}, t3);  // "Paste" t3 in t1
+
+    // Save original
+    t1->save(output + "original_modified.jpg");
+    cout << "Image saved! (Original modified)" << endl;
+
+
+    // ***************************************************
+    // Perform more manipulations ************************
+    // ***************************************************
+    // Load original
+    t1 = Tensor::load(fname);
+    t1->unsqueeze_();
+    t2 = new Tensor(t1->shape);
+
     // [Shift] - Mode = constant
     Tensor::shift(t1, t2, {50, 100}, "constant", 0.0f);  // {y_offset, x_offset}
-    t2->save(output + "example_shift_mC.png");
+    t2->save(output + "example_shift_mode_C.png");
     cout << "Image saved! (shift 1)" << endl;
 
     // [Shift] - Mode = constant
     Tensor::shift(t1, t2, {50, 100}, "original");  // {y_offset, x_offset}
-    t2->save(output + "example_shift_mO.bmp");
+    t2->save(output + "example_shift_mode_O.bmp");
     cout << "Image saved! (shift 2)" << endl;
 
     // [Rotate]
@@ -46,8 +75,8 @@ int main(int argc, char **argv) {
 
     // [Scale]
     Tensor::scale(t1, t2, {200, 200}); // {height, width}
-    t2->save(output + "example_scale.jpg");
-    cout << "Image saved! (scale)" << endl;
+    t2->save(output + "example_scale_keep_size.jpg");
+    cout << "Image saved! (scale keep)" << endl;
 
     // [Flip]
     Tensor::flip(t1, t2, 0); // axis {vertical=0; horizontal=1}
@@ -56,8 +85,14 @@ int main(int argc, char **argv) {
 
     // [Crop]
     Tensor::crop(t1, t2, {0, 250}, {200, 450}); // from: {y, x}; to: {y, x}
-    t2->save(output + "example_crop.jpg");
-    cout << "Image saved! (crop)" << endl;
+    t2->save(output + "example_crop_keep_size.jpg");
+    cout << "Image saved! (crop keep)" << endl;
+
+    // [Crop]
+    t3 = Tensor::zeros({1, 3, 200, 200});
+    Tensor::crop(t1, t3, {0, 250}, {200, 450}); // from: {y, x}; to: {y, x}
+    t3->save(output + "example_crop_resize.jpg");
+    cout << "Image saved! (crop resize)" << endl;
 
     // [CropScale]
     Tensor::crop_scale(t1, t2, {0, 250}, {200, 450}); // from: {y, x}; to: {y, x}
@@ -75,6 +110,5 @@ int main(int argc, char **argv) {
     t2->clamp_(0.0f, 255.0f);  // Clamp values
     t2->save(output + "example_brightness.jpg");
     cout << "Image saved! (brightness)" << endl;
-
 
 }

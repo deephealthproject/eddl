@@ -378,8 +378,8 @@ if(BUILD_EXAMPLES)
     target_link_libraries(drive_seg eddl)
 
     # EXAMPLES: Tensor ****************************************************
-    add_executable(tensor_manipulation "${EXAMPLES_DIR}/tensor/eddl_tensor.cpp")
-    target_link_libraries(tensor_manipulation eddl)
+    add_executable(tensor_ops "${EXAMPLES_DIR}/tensor/eddl_ops.cpp")
+    target_link_libraries(tensor_ops eddl)
 
     add_executable(tensor_image "${EXAMPLES_DIR}/tensor/eddl_image.cpp")
     target_link_libraries(tensor_image eddl)
@@ -387,8 +387,8 @@ if(BUILD_EXAMPLES)
     add_executable(tensor_io "${EXAMPLES_DIR}/tensor/eddl_io.cpp")
     target_link_libraries(tensor_io eddl)
 
-    add_executable(tensor_test "${EXAMPLES_DIR}/tensor/eddl_tests.cpp")
-    target_link_libraries(tensor_test eddl)
+    add_executable(tensor_tests_dev "${EXAMPLES_DIR}/tensor/eddl_tests_dev.cpp")
+    target_link_libraries(tensor_tests_dev eddl)
 endif(BUILD_EXAMPLES)
 
 
