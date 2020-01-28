@@ -278,6 +278,7 @@ find_package(Protobuf REQUIRED)
 if(Protobuf_FOUND)
     target_include_directories(eddl PUBLIC ${PROTOBUF_INCLUDE_DIR})
     add_compile_definitions(cPROTO)
+	target_link_libraries(eddl PRIVATE ${PROTOBUF_LIBRARIES})
 else()
     message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
 endif()
@@ -389,6 +390,9 @@ if(BUILD_EXAMPLES)
 
     add_executable(tensor_tests_dev "${EXAMPLES_DIR}/tensor/eddl_tests_dev.cpp")
     target_link_libraries(tensor_tests_dev eddl)
+	# EXAMPLES: ONNX ******************************************************************
+	add_executable(onnx_import_export "${EXAMPLES_DIR}/onnx/1_onnx_file.cpp")
+	target_link_libraries(onnx_import_export eddl)
 endif(BUILD_EXAMPLES)
 
 
