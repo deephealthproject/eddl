@@ -12,10 +12,11 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # USER OPTIONS *******************************
 set(BUILD_TARGET "CPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
-option(MKL "Use Intel MKL" OFF)
 option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_TESTS "Compile tests" OFF)
 option(BUILD_SHARED_LIB "Whether to build a static or dynamic library" OFF)
+option(BUILD_HPC "High risk of segmentation fault. Use it carefully" OFF)
+option(MKL "Use Intel MKL" OFF)
 
 # Double checks (restricted args)
 set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
@@ -54,8 +55,12 @@ else()  # if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
         set(RELEASE_OPT_LEVEL "fast")
     endif()
 
+    if (BUILD_HPC)
+        set(CMAKE_CXX_HPC_FLAGS "-march=native")
+    endif()
+
     set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fno-omit-frame-pointer")
-    set(CMAKE_CXX_FLAGS_RELEASE "-funroll-loops -O${RELEASE_OPT_LEVEL} -march=native")
+    set(CMAKE_CXX_FLAGS_RELEASE "-funroll-loops -O${RELEASE_OPT_LEVEL} ${CMAKE_CXX_HPC_FLAGS}")
 endif()
 
 
@@ -88,6 +93,8 @@ message(STATUS "Build target: " ${BUILD_TARGET} )
 message(STATUS "Build tests: " ${BUILD_TESTS} )
 message(STATUS "Build examples: " ${BUILD_EXAMPLES} )
 message(STATUS "Build python: " ${BUILD_PYTHON} )
+message(STATUS "Build HPC: " ${BUILD_HPC} )
+message(STATUS "Use Intel-MKL: " ${MKL} )
 message(STATUS "C++ compiler: " ${CMAKE_CXX_COMPILER_ID} )
 message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS})
 message(STATUS "C++ flags (release): " ${CMAKE_CXX_FLAGS_RELEASE})
