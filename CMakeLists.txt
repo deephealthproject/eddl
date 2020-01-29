@@ -59,7 +59,7 @@ else()  # if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
     else()
         # Danger: You can increase the performance but depends on
         set(CMAKE_CXX_HPC_FLAGS "-march=native -fno-signed-zeros -fno-trapping-math -funroll-loops -frename-registers")
-        set(RELEASE_OPT_LEVEL "fast")
+        set(RELEASE_OPT_LEVEL "fast")  # -Ofast enables -ffast-math
     endif()
 
     set(CMAKE_CXX_FLAGS_DEBUG "-g -Og")
