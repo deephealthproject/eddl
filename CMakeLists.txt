@@ -15,7 +15,7 @@ set(BUILD_TARGET "CPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
 option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_TESTS "Compile tests" OFF)
 option(BUILD_SHARED_LIB "Whether to build a static or dynamic library" OFF)
-option(BUILD_HPC "High risk of segmentation fault. Use it carefully" OFF)
+option(BUILD_HPC "Use aggressive flags that might break the code. Use it carefully." OFF)
 option(MKL "Use Intel MKL" OFF)
 
 # Double checks (restricted args)
@@ -34,8 +34,10 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # SET COMPILER FLAGS *******************************
+# Read: https://wiki.gentoo.org/wiki/GCC_optimization
+
 # Common
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DEIGEN_FAST_MATH")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DEIGEN_FAST_MATH -pipe")
 
 # Windows32
 if(WIN32)
@@ -47,19 +49,20 @@ if(MSVC)  # Microsoft Visual C++
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W1 /MP")   # Enable parallel compilation
 
 else()  # if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fno-finite-math-only -Wall -Wno-missing-braces")
+    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -fno-finite-math-only -Wall -Wno-missing-braces")
 
-    # Default optimization level
-    if (NOT RELEASE_OPT_LEVEL)
-        set(RELEASE_OPT_LEVEL "fast")
+    # Read: https://stackoverflow.com/questions/14492436/g-optimization-beyond-o3-ofast
+    if (NOT BUILD_HPC)
+        set(CMAKE_CXX_HPC_FLAGS "-mtune=native")
+        set(RELEASE_OPT_LEVEL "3")  # O3 might break things
+    else()
+        # Danger: You can increase the performance but depends on
+        set(CMAKE_CXX_HPC_FLAGS "-march=native -fno-signed-zeros -fno-trapping-math -funroll-loops -frename-registers")
+        set(RELEASE_OPT_LEVEL "fast")  # -Ofast enables -ffast-math
     endif()
 
-    if (BUILD_HPC)
-        set(CMAKE_CXX_HPC_FLAGS "-march=native")
-    endif()
-
-    set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fno-omit-frame-pointer")
-    set(CMAKE_CXX_FLAGS_RELEASE "-funroll-loops -O${RELEASE_OPT_LEVEL} ${CMAKE_CXX_HPC_FLAGS}")
+    set(CMAKE_CXX_FLAGS_DEBUG "-g -Og")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O${RELEASE_OPT_LEVEL} ${CMAKE_CXX_HPC_FLAGS}")
 endif()
 
 
