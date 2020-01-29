@@ -28,20 +28,35 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "targets")
 
 # SET BUILD TYPE (RELEASE/DEBUG)
-if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-    message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
-    set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE
-            STRING "Choose the type of build." FORCE)
-    # Set the possible values of build type for cmake-gui
-    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release")
 endif()
 
-# SET COMPILER FLAGS
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
-    #set(CMAKE_CXX_FLAGS "-march=native ${CMAKE_CXX_FLAGS}") // This is a bad idea
-	#    set(CMAKE_CXX_FLAGS_DEBUG "-g ${CMAKE_CXX_FLAGS_DEBUG}")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 ${CMAKE_CXX_FLAGS_RELEASE}")
+# SET COMPILER FLAGS *******************************
+# Common
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DEIGEN_FAST_MATH")
+
+# Windows32
+if(WIN32)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNOMINMAX")   # Disable min/max macros in windef.h
 endif()
+
+# Compiler-specific options
+if(MSVC)  # Microsoft Visual C++
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W1 /MP")   # Enable parallel compilation
+
+else()  # if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fno-finite-math-only -Wall -Wno-missing-braces")
+
+    # Default optimization level
+    if (NOT RELEASE_OPT_LEVEL)
+        set(RELEASE_OPT_LEVEL "fast")
+    endif()
+
+    set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fno-omit-frame-pointer")
+    set(CMAKE_CXX_FLAGS_RELEASE "-funroll-loops -O${RELEASE_OPT_LEVEL}")
+endif()
+
 
 # Device specific setup
 string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
@@ -72,8 +87,11 @@ message(STATUS "Build target: " ${BUILD_TARGET} )
 message(STATUS "Build tests: " ${BUILD_TESTS} )
 message(STATUS "Build examples: " ${BUILD_EXAMPLES} )
 message(STATUS "Build python: " ${BUILD_PYTHON} )
+message(STATUS "C++ compiler: " ${CMAKE_CXX_COMPILER_ID} )
+message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS})
+message(STATUS "C++ flags (release): " ${CMAKE_CXX_FLAGS_RELEASE})
+message(STATUS "C++ flags (debug): " ${CMAKE_CXX_FLAGS_DEBUG})
 message(STATUS "CUDA Enabled: " ${USE_CUDA} )
-message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS_DEBUG} )
 message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )
@@ -394,6 +412,13 @@ if(BUILD_EXAMPLES)
 	# EXAMPLES: ONNX ******************************************************************
 	add_executable(onnx_import_export "${EXAMPLES_DIR}/onnx/1_onnx_file.cpp")
 	target_link_libraries(onnx_import_export eddl)
+
+	add_executable(onnx_export "${EXAMPLES_DIR}/onnx/2_onnx_save_net_to_file.cpp")
+	target_link_libraries(onnx_export eddl)
+
+	add_executable(onnx_import "${EXAMPLES_DIR}/onnx/3_onnx_import_net_from_file.cpp")
+	target_link_libraries(onnx_import eddl)
+	
 endif(BUILD_EXAMPLES)
 
 
