@@ -39,7 +39,7 @@ endif()
 # SET COMPILER FLAGS
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
     #set(CMAKE_CXX_FLAGS "-march=native ${CMAKE_CXX_FLAGS}") // This is a bad idea
-    set(CMAKE_CXX_FLAGS_DEBUG "-g ${CMAKE_CXX_FLAGS_DEBUG}")
+	#    set(CMAKE_CXX_FLAGS_DEBUG "-g ${CMAKE_CXX_FLAGS_DEBUG}")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 ${CMAKE_CXX_FLAGS_RELEASE}")
 endif()
 
@@ -73,7 +73,7 @@ message(STATUS "Build tests: " ${BUILD_TESTS} )
 message(STATUS "Build examples: " ${BUILD_EXAMPLES} )
 message(STATUS "Build python: " ${BUILD_PYTHON} )
 message(STATUS "CUDA Enabled: " ${USE_CUDA} )
-message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS} )
+message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS_DEBUG} )
 message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )
@@ -191,11 +191,11 @@ SET(CUDA_SOURCES ${CUDA_HEADER_FILES} ${CUDA_CU_FILES})
 
 # ONNX files
 file(GLOB_RECURSE ONNX_HEADER_FILES
-    ${PROJECT_SOURCE_DIR}src/serialization/onnx/*.h
+    ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.h
 )
 file(GLOB_RECURSE ONNX_SOURCES_FILES
-    ${PROJECT_SOURCE_DIR}src/serialization/onnx/*.cpp
-    ${PROJECT_SOURCE_DIR}src/serialization/onnx/*.cc
+    ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.cc
 )
 SET(ONNX_SOURCES ${ONNX_HEADER_FILES} ${ONNX_SOURCES_FILES})
 
@@ -276,9 +276,10 @@ endif()
 include(FindProtobuf)
 find_package(Protobuf REQUIRED)
 if(Protobuf_FOUND)
-    target_include_directories(eddl PUBLIC ${PROTOBUF_INCLUDE_DIR})
     add_compile_definitions(cPROTO)
+    target_include_directories(eddl PUBLIC ${PROTOBUF_INCLUDE_DIR})
 	target_link_libraries(eddl PRIVATE ${PROTOBUF_LIBRARIES})
+	message("Protobuf path: ${PROTOBUF_LIBRARIES} ${PROTOBUF_INCLUDE_DIR}")
 else()
     message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
 endif()

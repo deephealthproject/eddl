@@ -33,8 +33,17 @@ int main(int argc, char **argv) {
     int batch_size = 100;
     int num_classes = 10;
 
-	string path("example.onnx");
-	Net* net = import_net_from_onnx_file(path);
+    // Define network
+    layer in = Input({784});
+    layer l = in;  // Aux var
+
+  	l=Reshape(l,{-1});
+    l = ReLu(Dense(l, 1024));
+    l = ReLu(Dense(l, 1024));
+    l = ReLu(Dense(l, 1024));
+
+    layer out = Activation(Dense(l, num_classes), "softmax");
+    model net = Model({in}, {out});
 
     // Build model
     build(net,
@@ -43,11 +52,8 @@ int main(int argc, char **argv) {
           {"categorical_accuracy"}, // Metrics
           //CS_GPU({1}) // one GPU
           CS_CPU(4), // CPU with maximum threads availables
-		  false       // Parameter that indicates that the weights of the net must not be initialized to random values.
+		  true       // Parameter that indicates that the weights of the net must be initialized to random values.
     );
-
-	//Resize model
-	net->resize(batch_size); //Since we don't use "fit", we need to resize the net manually to a correct batch size
 
     // View model
     summary(net);
@@ -63,9 +69,20 @@ int main(int argc, char **argv) {
     eddlT::div_(x_train, 255.0);
     eddlT::div_(x_test, 255.0);
 
+    // Train model
+    fit(net, {x_train}, {y_train}, batch_size, epochs);
+
     // Evaluate
     evaluate(net, {x_test}, {y_test});
 
+	
+
+	// Export
+	string path("trained_model.onnx");
+	save_net_to_onnx_file(net, path);
+
+	cout << "Saved net to onnx file" << endl;
+	
 	return 0;
 }
 
