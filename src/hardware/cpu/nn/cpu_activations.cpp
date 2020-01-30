@@ -30,7 +30,7 @@ void cpu_d_relu(Tensor *D, Tensor *I, Tensor *PD){
   }
 }
 
-void cpu_lrelu(Tensor *A, Tensor *B,float param){
+void cpu_leaky_relu(Tensor *A, Tensor *B,float param){
   #pragma omp parallel for
   for (int i = 0; i < A->size; i++) {
     if (A->ptr[i] > 0.0) B->ptr[i] = A->ptr[i];
@@ -38,7 +38,7 @@ void cpu_lrelu(Tensor *A, Tensor *B,float param){
   }
 }
 
-void cpu_d_lrelu(Tensor *D, Tensor *I, Tensor *PD,float param){
+void cpu_d_leaky_relu(Tensor *D, Tensor *I, Tensor *PD,float param){
   #pragma omp parallel for
   for (int i = 0; i < D->size; i++) {
     if (I->ptr[i] > 0.0) PD->ptr[i] = D->ptr[i];

@@ -28,8 +28,8 @@ int accuracy(Tensor *A, Tensor *B);
 void ReLu(Tensor *A, Tensor *B);
 void D_ReLu(Tensor *D, Tensor *I, Tensor *PD);
 
-void LReLu(Tensor *A, Tensor *B,float param);
-void D_LReLu(Tensor *D, Tensor *I, Tensor *PD,float param);
+void LeakyReLu(Tensor *A, Tensor *B,float param);
+void D_LeakyReLu(Tensor *D, Tensor *I, Tensor *PD,float param);
 
 //ELU
 void ELu(Tensor *A, Tensor *B, float param);

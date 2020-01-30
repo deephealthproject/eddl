@@ -355,32 +355,40 @@ namespace eddl {
     layer Activation(layer parent, string activation, float param, string name) {
         return new LActivation(parent, activation, name, DEV_CPU,param);
     }
-    layer Softmax(layer parent)
-    {
+
+    layer Softmax(layer parent){
         return new LActivation(parent,"softmax","",DEV_CPU);
     }
-    layer Sigmoid(layer parent)
-    {
+
+    layer Sigmoid(layer parent){
         return new LActivation(parent,"sigmoid","",DEV_CPU);
     }
-    layer ReLu(layer parent)
-    {
+
+    layer ReLu(layer parent){
         return new LActivation(parent,"relu","",DEV_CPU);
     }
-    layer LReLu(layer parent,float param)
-    {
-        return new LActivation(parent,"lrelu","",DEV_CPU,param);
+
+    layer LeakyReLu(layer parent, float param){
+        return new LActivation(parent,"leaky_relu","",DEV_CPU,param);
     }
-    layer ELu(layer parent,float param)
-    {
+
+    layer Elu(layer parent,float param){
         return new LActivation(parent,"elu","",DEV_CPU,param);
     }
-    layer Tanh(layer parent)
-    {
+
+    layer Selu(layer parent){
+        return new LActivation(parent,"selu","",DEV_CPU);
+    }
+
+    layer Exponential(layer parent){
+        return new LActivation(parent,"exp","",DEV_CPU);
+    }
+
+    layer Tanh(layer parent){
         return new LActivation(parent,"tanh","",DEV_CPU);
     }
-    layer Linear(layer parent,float param)
-    {
+
+    layer Linear(layer parent,float param){
         return new LActivation(parent,"linear","",DEV_CPU,param);
     }
 

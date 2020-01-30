@@ -23,8 +23,8 @@
 __global__ void relu(float *a,float *b,long int size);
 __global__ void d_relu(float *d,float *i,float *pd,long int size);
 
-__global__ void lrelu(float *a,float *b,float param, long int size);
-__global__ void d_lrelu(float *d,float *i,float *pd,float param, long int size);
+__global__ void leaky_relu(float *a,float *b,float param, long int size);
+__global__ void d_leaky_relu(float *d,float *i,float *pd,float param, long int size);
 
 __global__ void elu(float *a,float *b,float param, long int size);
 __global__ void d_elu(float *d,float *i,float *pd,float param, long int size);
