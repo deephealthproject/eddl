@@ -21,7 +21,7 @@ int LActivation::total_layers = 0;
 LActivation::LActivation(Layer *parent, string act, string name, int dev, float param) : LinLayer(name, dev) {
 
     // Set default name
-    if(name.empty()) this->name = "activation" + to_string(++total_layers);
+    if(name.empty()) this->name = "activation_" + act + to_string(++total_layers);
 
     this->act = act;
     this->param=param;

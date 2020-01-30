@@ -109,13 +109,13 @@ void gpu_d_softplus(Tensor *D,Tensor *I,Tensor *PD){
 }
 
 void gpu_softsign(Tensor *A,Tensor *B){
-    int device=D->gpu_device;
+    int device=A->gpu_device;
     cudaSetDevice(device);
 
-    setDims(D)
+    setDims(A)
 
-    d_softsign<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,D->size);
-    check_cuda(cudaDeviceSynchronize(),"gpu_d_softsign");
+    softsign<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->size);
+    check_cuda(cudaDeviceSynchronize(),"gpu_softsign");
 }
 
 void gpu_d_softsign(Tensor *D,Tensor *I,Tensor *PD){
