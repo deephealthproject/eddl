@@ -164,10 +164,6 @@ macro(eddl_update_third_party SUBMODULE)
     endif()
 endmacro()
 
-
-# SET SOURCES *******************************
-SET(SOURCE_DIR "src")
-
 # C++ files
 file(GLOB CPP_HEADER_FILES_TOP
         ${PROJECT_SOURCE_DIR}/src/*.h
@@ -455,3 +451,16 @@ install(FILES ${CMAKE_BINARY_DIR}/cmake/eddlConfig.cmake
         DESTINATION ${EDDL_CONFIG_INSTALL_PATH})
 
 message(STATUS "Install path: ${CMAKE_INSTALL_PREFIX}")
+
+#Experimental script
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
+file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "#!/usr/bin/bash\n")
+set(SCRIPT_CPP_FLAGS "CPPFLAGS=\"-g -O3 -fopenmp -I${PROJECT_SOURCE_DIR}/src\"")
+file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "${SCRIPT_CPP_FLAGS}\n")
+file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "LDFLAGS=\"-g\"\n")
+set(SCRIPT_LD_LIBS "LDLIBS=\"-fopenmp -lpthread ${CMAKE_INSTALL_PREFIX}/lib/libeddl.a -lz \"\n")
+file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc ${SCRIPT_LD_LIBS})
+file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "g++ \$CPPFLAGS -c \$1\n")
+file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "g++ -o \$\{1%.cpp} \$LDFLAGS \$\{1%.cpp}.o \$LDLIBS\n")
+
+
