@@ -168,7 +168,7 @@ string Net::summary() {
         string istr = "(" + printVector(ishape) + ")";
         string ostr = "(" + printVector(oshape) + ")";
 
-        ss << setw(15) << left << vft->name << "|  ";
+        ss << setw(30) << left << vft->name << "|  ";
         ss << setw(10) << left << istr;
         ss << setw(8) << left << "=>";
         ss << setw(10) << left << ostr;

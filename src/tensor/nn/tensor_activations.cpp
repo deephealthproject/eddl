@@ -225,7 +225,7 @@ void Softsign(Tensor *A, Tensor *B) {
 #ifdef cGPU
     else if (A->isGPU())
       {
-      gpu_softsign(A,B ,param);
+      gpu_softsign(A,B);
       }
 #endif
 #ifdef cFPGA
