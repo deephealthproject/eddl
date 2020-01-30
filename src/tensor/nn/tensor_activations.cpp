@@ -65,18 +65,18 @@ void D_ReLu(Tensor *D, Tensor *I, Tensor *PD) {
 }
 
 // LeakyReLU
-void LReLu(Tensor *A, Tensor *B,float param) {
-    if (A->device != B->device) msg("Tensors in different devices", "Tensor::ReLu");
-    if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::ReLu");
+void LeakyReLu(Tensor *A, Tensor *B,float param) {
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::LeakyReLu");
+    if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::LeakyReLu");
 
     B->tsem->lock();
     if (A->isCPU()) {
-        cpu_lrelu(A, B,param);
+        cpu_leaky_relu(A, B,param);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-      gpu_lrelu(A,B,param);
+      gpu_leaky_relu(A,B,param);
       }
 #endif
 #ifdef cFPGA
@@ -89,18 +89,18 @@ void LReLu(Tensor *A, Tensor *B,float param) {
 }
 
 // RELU Derivative, always increment over parent delta
-void D_LReLu(Tensor *D, Tensor *I, Tensor *PD,float param) {
+void D_LeakyReLu(Tensor *D, Tensor *I, Tensor *PD,float param) {
     if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_ReLu");
     if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_ReLu");
 
     PD->tsem->lock();
     if (D->isCPU()) {
-        cpu_d_lrelu(D, I, PD,param);
+        cpu_d_leaky_relu(D, I, PD,param);
     }
 #ifdef cGPU
     else if (D->isGPU())
       {
-        gpu_d_lrelu(D,I,PD,param);
+        gpu_d_leaky_relu(D,I,PD,param);
 
       }
 #endif
@@ -159,6 +159,7 @@ void D_ELu(Tensor *D, Tensor *I, Tensor *PD, float param) {
 #endif
     PD->tsem->unlock();
 }
+
 
 // Linear
 void Linear(Tensor *A, Tensor *B, float param) {

@@ -383,7 +383,7 @@ typedef NetLoss * metric;
       *  @param param  Negative slope coefficient
       *  @return     Output of Leaky ReLu activation
     */
-    layer LReLu(layer parent,float param=0.01);
+    layer LeakyReLu(layer parent, float param=0.01);
 
     /**
       *  @brief Applies the Exponential Linear Unit activation function to the given layer.
@@ -392,7 +392,23 @@ typedef NetLoss * metric;
 	  *  @param param ELu coefficient
       *  @return     Output of ELu activation
     */
-    layer ELu(layer parent, float param=1.0);
+    layer Elu(layer parent, float param=1.0);
+
+    /**
+      *  @brief Applies the Scaled Exponential Linear Unit activation function to the given layer.
+      *
+      *  @param parent  Parent layer
+      *  @return     Output of Selu activation
+    */
+    layer Selu(layer parent);
+
+    /**
+    *  @brief Applies the Exponential (base e) activation function to the given layer.
+    *
+    *  @param parent  Parent layer
+    *  @return     Output of Exponential activation
+    */
+    layer Exponential(layer parent);
 
     /**
       *  @brief Applies the Linear activation function to the given layer.
