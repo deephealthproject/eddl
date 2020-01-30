@@ -357,3 +357,4 @@ bool Tensor::isSquared(Tensor *A){
     }
     return true;
 }
+

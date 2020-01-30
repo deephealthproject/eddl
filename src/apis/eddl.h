@@ -445,6 +445,7 @@ typedef NetLoss * metric;
       *  @return     Output of hyperbolic activation
     */
     layer Tanh(layer parent);
+
     /**
       *  @brief Convolution layer.
       *
@@ -463,6 +464,7 @@ typedef NetLoss * metric;
                const vector<int> &strides = {1, 1}, string padding = "same", int groups = 1,
                const vector<int> &dilation_rate = {1, 1},
                bool use_bias = true, string name = "");
+
     /**
       *  @brief Regular densely-connected NN layer.
       *
@@ -473,6 +475,7 @@ typedef NetLoss * metric;
       *  @return     Densely-connected NN layer
     */
     layer Dense(layer parent, int ndim, bool use_bias = true,  string name = "");
+
     /**
       *  @brief Applies Dropout to a layer.
       *
@@ -485,6 +488,7 @@ typedef NetLoss * metric;
       *  @return     Layer with Dropout
     */
     layer Dropout(layer parent, float rate, string name = "");
+
     /**
       *  @brief Used to initialize an input to a model.
       *
@@ -493,6 +497,7 @@ typedef NetLoss * metric;
       *  @return     Input layer
     */
     layer Input(const vector<int> &shape, string name = "");
+
     /**
       *  @brief Upsampling layer.
       *
@@ -505,9 +510,10 @@ typedef NetLoss * metric;
       *  @param name  A name for the operation
       *  @return     Output layer after upsampling operation
     */
-    layer UpSampling(layer parent, const vector<int> &size, string interpolation = "nearest", string name = ""); //Todo: Implement
+    layer UpSampling(layer parent, const vector<int> &size, string interpolation = "nearest", string name = "");
+
     /**
-      *  @brief Reshapes a Layer to a certain shape.
+      *  @brief Reshapes an output to a certain shape.
       *
       *  @param parent  Parent layer
       *  @param shape  Target shape. Vector of integers. Does not include the batch axis
@@ -515,11 +521,22 @@ typedef NetLoss * metric;
       *  @return     Output of reshape operation
     */
     layer Reshape(layer parent, const vector<int> &shape, string name = "");
+
+    /**
+      *  @brief Flattens the input. Does not affect the batch size.
+      *
+      *  @param parent  Parent layer
+      *  @param name  A name for the operation
+      *  @return     Output of reshape operation
+    */
+    layer Flatten(layer parent, string name = "");
+
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding = "same",
                 const vector<int> &dilation_rate = {1, 1},
                 const vector<int> &strides = {1, 1}, bool use_bias = true, string name = ""); //Todo: Implement
     layer Embedding(int input_dim, int output_dim, string name = ""); //Todo: Implement
+
     /**
       *  @brief Transposes a Layer.
       *

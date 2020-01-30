@@ -27,4 +27,38 @@ int main(int argc, char **argv) {
 
     cout << "Tests for development. Ignore." << endl;
 
+    Tensor t1 = *Tensor::full({5,5}, 1.0f);
+    Tensor t2 = *Tensor::full({5,5}, 2.0f);
+    Tensor t3;
+
+    t1.print();
+    t2.print();
+
+    t3 = ((t1 / t1) + (t2 * t2));
+
+    // Tensor op Scalar
+    t3 = t3 + 10; t3.print();
+    t3 = t3 - 10; t3.print();
+    t3 = t3 * 10; t3.print();
+    t3 = t3 / 10; t3.print();
+
+    // Scalar op Tensor
+    t3 = 10 + t3; t3.print();
+    t3 = 10 - t3; t3.print();
+    t3 = 10 * t3; t3.print();
+    t3 = 10 / t3; t3.print();
+
+    // Tensor op= Tensor
+    t3 += t2; t3.print();
+    t3 -= t2; t3.print();
+    t3 *= t2; t3.print();
+    t3 /= t2; t3.print();
+
+    // Tensor op= Scalar
+    t3 += 5; t3.print();
+    t3 -= 5; t3.print();
+    t3 *= 5; t3.print();
+    t3 /= 5; t3.print();
+
+    int asda = 33;
 }

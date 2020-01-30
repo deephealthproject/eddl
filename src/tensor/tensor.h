@@ -128,7 +128,8 @@ public:
     static int get_mode(string mode);
     static bool isSquared(Tensor *A);
 
-    // Serialization
+
+    // Serialization *****************************
     static Tensor* loadfs(std::ifstream &ifs, string format="");
     static Tensor* load(const string& filename, string format="");
     template<typename T> static Tensor* load(const string& filename, string format="");
@@ -137,6 +138,7 @@ public:
     void savefs(std::ofstream &ofs, string format="");
     void save(const string& filename, string format="");
     void save2txt(const string& filename, const char delimiter=',', const vector<string> &header={});
+
 
     // ***** Core *****************************
     static Tensor* permute(Tensor* t, const vector<int>& dims);
@@ -195,6 +197,7 @@ public:
     static void rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center={0,0}, string mode="constant", float constant=0.0f);
     static void scale_random(Tensor *A, Tensor *B, vector<float> factor, string mode="nearest", float constant=0.0f);
     static void flip_random(Tensor *A, Tensor *B, int axis);
+
     static void crop_random(Tensor *A, Tensor *B);
     static void crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, string mode="nearest", float constant=0.0f);
     static void cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant=0.0f);
@@ -240,11 +243,13 @@ public:
     void cosh_();
     static Tensor* cosh(Tensor *A);
 
-    void inv_();
 
     void div_(float v);
     static Tensor* div(Tensor *A, float v);
+    static Tensor* div(Tensor *A, Tensor *B);
     static void el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
+
+    void inv_(float v=1.0f);
 
     void exp_();
     static Tensor* exp(Tensor *A);
@@ -272,6 +277,7 @@ public:
 
     void mult_(float v);
     static Tensor* mult(Tensor *A, float v);
+    static Tensor* mult(Tensor *A, Tensor *B);
     static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
     static void el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
 
@@ -404,6 +410,39 @@ public:
     void rand_signed_uniform(float v);
     void rand_normal(float m, float s, bool fast_math=true);
     void rand_binary(float v);
+
+    // ***** Overload operators *****************************
+    // Tensor and Tensor (Element wise)
+    friend Tensor& operator+ (Tensor &A, Tensor &B);
+    friend Tensor& operator- (Tensor &A, Tensor &B);
+    friend Tensor& operator* (Tensor &A, Tensor &B);
+    friend Tensor& operator/ (Tensor &A, Tensor &B);
+
+    // Tensor op= Tensor
+    friend void operator+= (Tensor &A, Tensor &B);
+    friend void operator-= (Tensor &A, Tensor &B);
+    friend void operator*= (Tensor &A, Tensor &B);
+    friend void operator/= (Tensor &A, Tensor &B);
+
+    // Tensor op= scalar
+    friend void operator+= (Tensor &A, float v);
+    friend void operator-= (Tensor &A, float v);
+    friend void operator*= (Tensor &A, float v);
+    friend void operator/= (Tensor &A, float v);
+
+    // Tensor and scalar
+    friend Tensor& operator+ (Tensor &A, float v);
+    friend Tensor& operator- (Tensor &A, float v);
+    friend Tensor& operator* (Tensor &A, float v);
+    friend Tensor& operator/ (Tensor &A, float v);
+
+    // scalar and Tensor
+    friend Tensor& operator+ (float v, Tensor &A);
+    friend Tensor& operator- (float v, Tensor &A);
+    friend Tensor& operator* (float v, Tensor &A);
+    friend Tensor& operator/ (float v, Tensor &A);
+
+
 };
 
 

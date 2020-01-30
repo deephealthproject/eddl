@@ -96,7 +96,7 @@ Layer *LReshape::share(int c, int bs, vector<Layer *> p) {
     vector<int> shape = ls;
     shape[0] = bs;
 
-    LReshape *n = new LReshape(p[0], shape, "share_" + to_string(c) + name, dev);
+    auto *n = new LReshape(p[0], shape, "share_" + to_string(c) + name, dev);
     n->orig = this;
 
     return n;
@@ -108,7 +108,7 @@ Layer *LReshape::clone(int c, int bs, vector<Layer *> p, int todev) {
     shape[0] = bs;
 
 
-    LReshape *n = new LReshape(p[0], shape, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LReshape(p[0], shape, "clone_" + to_string(todev) + name, todev);
     n->orig = this;
 
     return n;

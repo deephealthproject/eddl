@@ -445,6 +445,10 @@ namespace eddl {
         return new LReshape(parent, s, name, DEV_CPU);
     }
 
+    layer Flatten(layer parent, string name){
+        return Reshape(parent, {-1}, name);
+    }
+
     layer Transpose(layer parent, string name) {
         vector<int> dims;
         int ndims = parent->output->ndim;

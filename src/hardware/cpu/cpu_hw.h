@@ -70,7 +70,7 @@ void cpu_clamp_(Tensor *A, float min, float max);
 void cpu_cos_(Tensor *A);
 void cpu_cosh_(Tensor *A);
 void cpu_exp_(Tensor *A);
-void cpu_inv_(Tensor *A);
+void cpu_inv_(Tensor *A, float v);
 void cpu_floor_(Tensor *A);
 void cpu_log_(Tensor *A);
 void cpu_log2_(Tensor *A);

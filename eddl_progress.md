@@ -16,7 +16,7 @@
 | ------------- |------| -----| ---------|
 | Dense | ✅ | ✅ | Just your regular densely-connected NN layer. |
 | Dropout | ✅ | ✅ | Applies Dropout to the input. |
-| Flatten | 🔵 | 🔵 | Flattens the input. Does not affect the batch size. (Wrapper for Reshape) |
+| Flatten | ✅ | ✅ | Flattens the input. Does not affect the batch size. (Wrapper for Reshape) |
 | Input | ✅ | ✅ | Used to instantiate a EDDL tensor. |
 | Reshape | ✅ | ✅ | Reshapes an output to a certain shape. |
 | Permute | ✅ | ✅ | Permutes the dimensions of the input according to a given pattern. |

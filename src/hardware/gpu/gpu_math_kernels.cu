@@ -148,12 +148,11 @@ __global__ void mod_(float* a, long int size, float v){
         a[thread_id_x]=fmodf(a[thread_id_x], v);
 }
 
-__global__ void inv_(float* a, long int size){
-
+__global__ void inv_(float* a, float v, long int size){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x < size)
-        a[thread_id_x] = 1.0f/a[thread_id_x];
+        a[thread_id_x] = v/a[thread_id_x];
 }
 
 __global__ void mult_(float* a, long int size, float v){

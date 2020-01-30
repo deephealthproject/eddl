@@ -53,7 +53,7 @@ int main(int argc, char **argv){
   l=GlobalMaxPool(l);
 
 
-  l=Reshape(l,{-1});
+  l=Flatten(l);
 
   l=Activation(Dense(l,128),"relu");
 

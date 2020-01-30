@@ -28,8 +28,6 @@ float MMeanRelativeError::value(Tensor *T, Tensor *Y) {
     Tensor *aux2 = T->clone();
 
     Tensor::add(1.0, T, -1.0, Y, aux1, 0);
-
-
     aux1->abs_();
 
 
