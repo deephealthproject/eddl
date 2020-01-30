@@ -31,6 +31,10 @@ void D_ReLu(Tensor *D, Tensor *I, Tensor *PD);
 void LReLu(Tensor *A, Tensor *B,float param);
 void D_LReLu(Tensor *D, Tensor *I, Tensor *PD,float param);
 
+//ELU
+void ELu(Tensor *A, Tensor *B, float param);
+void D_ELu(Tensor *D, Tensor *I, Tensor *PD, float param);
+
 // Sigmoid
 void Sigmoid(Tensor *A, Tensor *B);
 void D_Sigmoid(Tensor *D, Tensor *I, Tensor *PD);
@@ -43,6 +47,9 @@ void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
 void Tanh(Tensor *A, Tensor *B);
 void D_Tanh(Tensor *D, Tensor *I, Tensor *PD);
 
+//Linear
+void Linear(Tensor *A, Tensor *B, float param);
+void D_Linear(Tensor *D, Tensor *I, Tensor *PD, float param);
 
 // ***** Deep Learning *****************************
 // Conv2D

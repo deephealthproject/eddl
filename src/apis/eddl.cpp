@@ -371,10 +371,17 @@ namespace eddl {
     {
         return new LActivation(parent,"lrelu","",DEV_CPU,param);
     }
-
+    layer ELu(layer parent,float param)
+    {
+        return new LActivation(parent,"elu","",DEV_CPU,param);
+    }
     layer Tanh(layer parent)
     {
         return new LActivation(parent,"tanh","",DEV_CPU);
+    }
+    layer Linear(layer parent,float param)
+    {
+        return new LActivation(parent,"linear","",DEV_CPU,param);
     }
 
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,

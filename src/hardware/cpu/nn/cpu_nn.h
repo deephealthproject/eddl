@@ -23,12 +23,16 @@ void cpu_relu(Tensor *A, Tensor *B);
 void cpu_d_relu(Tensor *D, Tensor *I, Tensor *PD);
 void cpu_lrelu(Tensor *A, Tensor *B, float param);
 void cpu_d_lrelu(Tensor *D, Tensor *I, Tensor *PD, float param);
+void cpu_elu(Tensor *A, Tensor *B, float param);
+void cpu_d_elu(Tensor *D, Tensor *I, Tensor *PD, float param);
 void cpu_sigmoid(Tensor *A, Tensor *B);
 void cpu_d_sigmoid(Tensor *D, Tensor *I, Tensor *PD);
 void cpu_tanh(Tensor *A, Tensor *B);
 void cpu_d_tanh(Tensor *D, Tensor *I, Tensor *PD);
 void cpu_softmax(Tensor *A, Tensor *B);
 void cpu_d_softmax(Tensor *D, Tensor *I, Tensor *PD);
+void cpu_linear(Tensor *A, Tensor *B, float param);
+void cpu_d_linear(Tensor *D, Tensor *I, Tensor *PD, float param);
 
 // Losses
 void cpu_cent(Tensor *A, Tensor *B, Tensor *C);

@@ -386,6 +386,24 @@ typedef NetLoss * metric;
     layer LReLu(layer parent,float param=0.01);
 
     /**
+      *  @brief Applies the Exponential Linear Unit activation function to the given layer.
+      *
+      *  @param parent  Parent layer
+	  *  @param param ELu coefficient
+      *  @return     Output of ELu activation
+    */
+    layer ELu(layer parent, float param=1.0);
+
+    /**
+      *  @brief Applies the Linear activation function to the given layer.
+      *
+      *  @param parent  Parent layer
+	  *  @param param Linear coefficient
+      *  @return     Output of Linear activation
+    */
+    layer Linear(layer parent, float param=1.0);
+
+    /**
       *  @brief Applies the Hyperbolic tangent activation function to the given layer.
       *
       *  @see   https://en.wikipedia.org/wiki/Hyperbolic_function

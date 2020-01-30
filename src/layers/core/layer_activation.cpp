@@ -53,8 +53,14 @@ void LActivation::forward() {
     else if (act == "lrelu") {
         LReLu(this->input, this->output,param);
     }
+    else if (act == "elu") {
+        ELu(this->input, this->output,param);
+    }
     else if (act == "tanh") {
         Tanh(this->input, this->output);
+    }
+    else if (act == "linear") {
+        Linear(this->input, this->output, param);
     }
 }
 
@@ -76,8 +82,15 @@ void LActivation::backward() {
             else if (act == "lrelu") {
               D_LReLu(delta, input, parent[0]->delta,param);
             }
-            else if (act == "tanh")
+            else if (act == "elu") {
+              D_ELu(delta, input, parent[0]->delta,param);
+            }
+            else if (act == "tanh") {
                 D_Tanh(delta, output, parent[0]->delta);
+            }
+            else if (act == "linear") {
+                D_Linear(delta, input, parent[0]->delta, param);
+            }
         }
     }
 }

@@ -60,8 +60,45 @@ __global__ void d_lrelu(float *d,float *i,float *pd, float param, long int size)
 
 }
 
+__global__ void elu(float *a,float *b, float param, long int size)
+{
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
+  if (thread_id_x < size){
+    if (a[thread_id_x]>0.0) b[thread_id_x]=a[thread_id_x];
+    else b[thread_id_x]=param*(expf(a[thread_id_x]) - 1);
+   }
+}
 
+__global__ void d_elu(float *d,float *i,float *pd, float param, long int size)
+{
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+  if (thread_id_x < size){
+    if (i[thread_id_x]>0.0) pd[thread_id_x]=d[thread_id_x];
+    else pd[thread_id_x]=(param*expf(i[thread_id_x])) * d[thread_id_x];
+   }
+
+}
+
+__global__ void linear(float *a,float *b, float param, long int size)
+{
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+  if (thread_id_x < size){
+    b[thread_id_x] = param * a[thread_id_x]);
+   }
+}
+
+__global__ void d_linear(float *d,float *i,float *pd, float param, long int size)
+{
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+  if (thread_id_x < size){
+    pd[thread_id_x] = param * d[thread_id_x];
+   }
+
+}
 __global__ void sigmoid(float *a,float *b,long int size)
 {
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;

@@ -26,12 +26,17 @@ __global__ void d_relu(float *d,float *i,float *pd,long int size);
 __global__ void lrelu(float *a,float *b,float param, long int size);
 __global__ void d_lrelu(float *d,float *i,float *pd,float param, long int size);
 
+__global__ void elu(float *a,float *b,float param, long int size);
+__global__ void d_elu(float *d,float *i,float *pd,float param, long int size);
+
 __global__ void sigmoid(float *a,float *b,long int size);
 __global__ void d_sigmoid(float *d,float *i,float *pd,long int size);
 
 __global__ void tanh(float *a,float *b,long int size);
 __global__ void d_tanh(float *d,float *i,float *pd,long int size);
 
+__global__ void linear(float *a,float *b,float param, long int size);
+__global__ void d_linear(float *d,float *i,float *pd,float param, long int size);
 
 __global__ void softmax(float* E,float* N,float* auxE ,long int sample_ndim, long int n_vals);
 
