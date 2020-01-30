@@ -36,25 +36,43 @@ LActivation::LActivation(Layer *parent, string act, string name, int dev, float 
 }
 // virtual
 void LActivation::resize(int batch){
-  Layer::resize(batch);
+    Layer::resize(batch);
 }
 
 
 void LActivation::forward() {
 
-    if (act == "relu")
+    if (act == "relu") {
         ReLu(this->input, this->output);
-    else if (act == "softmax") {
+
+    } else if (act == "elu") {
+        ELu(this->input, this->output, this->param);
+
+    } else if (act == "selu") {
+        // https://mlfromscratch.com/activation-functions-explained/#selu
+        float alpha = 1.6732632423543772848170429916717f;
+        float scale = 1.0507009873554804934193349852946f;
+
+        ELu(this->input, this->output, alpha);
+        this->output->mult_(scale);
+
+    } else if (act == "exp") {
+        this->output = Tensor::exp(this->input);
+
+    } else if (act == "softmax") {
         Softmax(this->input, this->output);
-    }
-    else if (act == "sigmoid") {
+
+    } else if (act == "sigmoid") {
         Sigmoid(this->input, this->output);
-    }
-    else if (act == "lrelu") {
-        LReLu(this->input, this->output,param);
-    }
-    else if (act == "tanh") {
+
+    } else if (act == "leaky_relu") {
+        LeakyReLu(this->input, this->output, this->param);
+
+    } else if (act == "tanh") {
         Tanh(this->input, this->output);
+
+    }  else if (act == "linear") {
+        Linear(this->input, this->output, this->param);
     }
 }
 
@@ -66,18 +84,39 @@ void LActivation::backward() {
         if (delta_bp) {
             Tensor::inc(delta, parent[0]->delta);
         } else {
-            if (act == "relu")
+            if (act == "relu") {
                 D_ReLu(delta, input, parent[0]->delta);
-            else if (act == "softmax")
+
+            } else if (act == "elu") {
+                D_ELu(delta, input, parent[0]->delta, param);
+
+            } else if (act == "selu") {
+                // https://mlfromscratch.com/activation-functions-explained/#selu
+                float alpha = 1.6732632423543772848170429916717f;
+                float scale = 1.0507009873554804934193349852946f;
+
+                 D_ELu(delta, input, parent[0]->delta, alpha);
+                this->output->mult_(scale);
+
+            } else if (act == "exp") {
+                // TODO: Review
+                Tensor::el_mult(delta, output, parent[0]->delta, 0);
+
+            } else if (act == "softmax") {
                 D_Softmax(delta, output, parent[0]->delta);
-            else if (act == "sigmoid") {
-              D_Sigmoid(delta, output, parent[0]->delta);
-            }
-            else if (act == "lrelu") {
-              D_LReLu(delta, input, parent[0]->delta,param);
-            }
-            else if (act == "tanh")
+
+            } else if (act == "sigmoid") {
+                D_Sigmoid(delta, output, parent[0]->delta);
+
+            } else if (act == "leaky_relu") {
+                D_LeakyReLu(delta, input, parent[0]->delta,param);
+
+            }  else if (act == "tanh") {
                 D_Tanh(delta, output, parent[0]->delta);
+
+            }  else if (act == "linear") {
+                D_Linear(delta, input, parent[0]->delta, param);
+            }
         }
     }
 }
@@ -89,8 +128,8 @@ void LActivation::save(std::ofstream &ofs, string format){
 }
 
 void LActivation::load(std::ifstream &ifs, string format){
-  // Load act
-  // Load param for "lrelu"
+    // Load act
+    // Load param for "lrelu"
 }
 
 Layer *LActivation::share(int c, int bs, vector<Layer *> p) {

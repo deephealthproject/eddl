@@ -12,10 +12,11 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # USER OPTIONS *******************************
 set(BUILD_TARGET "CPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
-option(MKL "Use Intel MKL" OFF)
 option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_TESTS "Compile tests" OFF)
 option(BUILD_SHARED_LIB "Whether to build a static or dynamic library" OFF)
+option(BUILD_HPC "Use aggressive flags that might break the code. Use it carefully." OFF)
+option(MKL "Use Intel MKL" OFF)
 
 # Double checks (restricted args)
 set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
@@ -28,20 +29,42 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "targets")
 
 # SET BUILD TYPE (RELEASE/DEBUG)
-if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-    message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
-    set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE
-            STRING "Choose the type of build." FORCE)
-    # Set the possible values of build type for cmake-gui
-    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release")
 endif()
 
-# SET COMPILER FLAGS
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
-    #set(CMAKE_CXX_FLAGS "-march=native ${CMAKE_CXX_FLAGS}") // This is a bad idea
-    set(CMAKE_CXX_FLAGS_DEBUG "-g ${CMAKE_CXX_FLAGS_DEBUG}")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 ${CMAKE_CXX_FLAGS_RELEASE}")
+# SET COMPILER FLAGS *******************************
+# Read: https://wiki.gentoo.org/wiki/GCC_optimization
+
+# Common
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DEIGEN_FAST_MATH -pipe")
+
+# Windows32
+if(WIN32)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNOMINMAX")   # Disable min/max macros in windef.h
 endif()
+
+# Compiler-specific options
+if(MSVC)  # Microsoft Visual C++
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W1 /MP")   # Enable parallel compilation
+
+else()  # if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
+    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -fno-finite-math-only -Wall -Wno-missing-braces")
+
+    # Read: https://stackoverflow.com/questions/14492436/g-optimization-beyond-o3-ofast
+    if (NOT BUILD_HPC)
+        set(CMAKE_CXX_HPC_FLAGS "-mtune=native")
+        set(RELEASE_OPT_LEVEL "3")  # O3 might break things
+    else()
+        # Danger: You can increase the performance but depends on
+        set(CMAKE_CXX_HPC_FLAGS "-march=native -fno-signed-zeros -fno-trapping-math -funroll-loops -frename-registers")
+        set(RELEASE_OPT_LEVEL "fast")  # -Ofast enables -ffast-math
+    endif()
+
+    set(CMAKE_CXX_FLAGS_DEBUG "-g -Og")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O${RELEASE_OPT_LEVEL} ${CMAKE_CXX_HPC_FLAGS}")
+endif()
+
 
 # Device specific setup
 string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
@@ -72,8 +95,13 @@ message(STATUS "Build target: " ${BUILD_TARGET} )
 message(STATUS "Build tests: " ${BUILD_TESTS} )
 message(STATUS "Build examples: " ${BUILD_EXAMPLES} )
 message(STATUS "Build python: " ${BUILD_PYTHON} )
+message(STATUS "Build HPC: " ${BUILD_HPC} )
+message(STATUS "Use Intel-MKL: " ${MKL} )
+message(STATUS "C++ compiler: " ${CMAKE_CXX_COMPILER_ID} )
+message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS})
+message(STATUS "C++ flags (release): " ${CMAKE_CXX_FLAGS_RELEASE})
+message(STATUS "C++ flags (debug): " ${CMAKE_CXX_FLAGS_DEBUG})
 message(STATUS "CUDA Enabled: " ${USE_CUDA} )
-message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS} )
 message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )
@@ -136,10 +164,6 @@ macro(eddl_update_third_party SUBMODULE)
     endif()
 endmacro()
 
-
-# SET SOURCES *******************************
-SET(SOURCE_DIR "src")
-
 # C++ files
 file(GLOB CPP_HEADER_FILES_TOP
         ${PROJECT_SOURCE_DIR}/src/*.h
@@ -191,11 +215,11 @@ SET(CUDA_SOURCES ${CUDA_HEADER_FILES} ${CUDA_CU_FILES})
 
 # ONNX files
 file(GLOB_RECURSE ONNX_HEADER_FILES
-    ${PROJECT_SOURCE_DIR}src/serialization/onnx/*.h
+    ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.h
 )
 file(GLOB_RECURSE ONNX_SOURCES_FILES
-    ${PROJECT_SOURCE_DIR}src/serialization/onnx/*.cpp
-    ${PROJECT_SOURCE_DIR}src/serialization/onnx/*.cc
+    ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.cc
 )
 SET(ONNX_SOURCES ${ONNX_HEADER_FILES} ${ONNX_SOURCES_FILES})
 
@@ -276,8 +300,10 @@ endif()
 include(FindProtobuf)
 find_package(Protobuf REQUIRED)
 if(Protobuf_FOUND)
-    target_include_directories(eddl PUBLIC ${PROTOBUF_INCLUDE_DIR})
     add_compile_definitions(cPROTO)
+    target_include_directories(eddl PUBLIC ${PROTOBUF_INCLUDE_DIR})
+	target_link_libraries(eddl PRIVATE ${PROTOBUF_LIBRARIES})
+	message("Protobuf path: ${PROTOBUF_LIBRARIES} ${PROTOBUF_INCLUDE_DIR}")
 else()
     message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
 endif()
@@ -389,6 +415,16 @@ if(BUILD_EXAMPLES)
 
     add_executable(tensor_tests_dev "${EXAMPLES_DIR}/tensor/eddl_tests_dev.cpp")
     target_link_libraries(tensor_tests_dev eddl)
+	# EXAMPLES: ONNX ******************************************************************
+	add_executable(onnx_import_export "${EXAMPLES_DIR}/onnx/1_onnx_file.cpp")
+	target_link_libraries(onnx_import_export eddl)
+
+	add_executable(onnx_export "${EXAMPLES_DIR}/onnx/2_onnx_save_net_to_file.cpp")
+	target_link_libraries(onnx_export eddl)
+
+	add_executable(onnx_import "${EXAMPLES_DIR}/onnx/3_onnx_import_net_from_file.cpp")
+	target_link_libraries(onnx_import eddl)
+	
 endif(BUILD_EXAMPLES)
 
 
@@ -415,3 +451,16 @@ install(FILES ${CMAKE_BINARY_DIR}/cmake/eddlConfig.cmake
         DESTINATION ${EDDL_CONFIG_INSTALL_PATH})
 
 message(STATUS "Install path: ${CMAKE_INSTALL_PREFIX}")
+
+#Experimental script
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
+file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "#!/usr/bin/bash\n")
+set(SCRIPT_CPP_FLAGS "CPPFLAGS=\"-g -O3 -fopenmp -I${PROJECT_SOURCE_DIR}/src\"")
+file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "${SCRIPT_CPP_FLAGS}\n")
+file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "LDFLAGS=\"-g\"\n")
+set(SCRIPT_LD_LIBS "LDLIBS=\"-fopenmp -lpthread ${CMAKE_INSTALL_PREFIX}/lib/libeddl.a -lz \"\n")
+file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc ${SCRIPT_LD_LIBS})
+file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "g++ \$CPPFLAGS -c \$1\n")
+file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "g++ -o \$\{1%.cpp} \$LDFLAGS \$\{1%.cpp}.o \$LDLIBS\n")
+
+

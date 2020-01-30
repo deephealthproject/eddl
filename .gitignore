@@ -224,4 +224,5 @@ CMakeFiles/
 /doc/*.tmp
 /doc/doxygen/*.pdf
 /doc/doxygen/doxygen_log.txt
-
+tags
+scripts

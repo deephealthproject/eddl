@@ -45,27 +45,68 @@ void gpu_d_relu(Tensor *D,Tensor *I,Tensor *PD) {
 }
 
 
-void gpu_lrelu(Tensor *A,Tensor *B,float param){
+void gpu_leaky_relu(Tensor *A,Tensor *B,float param){
   int device=A->gpu_device;
   cudaSetDevice(device);
 
   setDims(A);
 
-  lrelu<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,param,A->size);
-  check_cuda(cudaDeviceSynchronize(),"gpu_relu");
+  leaky_relu<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,param,A->size);
+  check_cuda(cudaDeviceSynchronize(),"gpu_leaky_relu");
 }
 
 
-void gpu_d_lrelu(Tensor *D,Tensor *I,Tensor *PD,float param) {
+void gpu_d_leaky_relu(Tensor *D,Tensor *I,Tensor *PD,float param) {
   int device=D->gpu_device;
   cudaSetDevice(device);
 
   setDims(D)
 
-  d_lrelu<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,param,D->size);
-  check_cuda(cudaDeviceSynchronize(),"gpu_d_relu");
+  d_leaky_relu<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,param,D->size);
+  check_cuda(cudaDeviceSynchronize(),"gpu_d_leaky_relu");
 }
 
+void gpu_elu(Tensor *A,Tensor *B,float param){
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  setDims(A);
+
+  elu<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,param,A->size);
+  check_cuda(cudaDeviceSynchronize(),"gpu_elu");
+}
+
+
+void gpu_d_elu(Tensor *D,Tensor *I,Tensor *PD,float param) {
+  int device=D->gpu_device;
+  cudaSetDevice(device);
+
+  setDims(D)
+
+  d_elu<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,param,D->size);
+  check_cuda(cudaDeviceSynchronize(),"gpu_d_elu");
+}
+
+void gpu_linear(Tensor *A,Tensor *B,float param){
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  setDims(A);
+
+  linear<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,param,A->size);
+  check_cuda(cudaDeviceSynchronize(),"gpu_linear");
+}
+
+
+void gpu_d_linear(Tensor *D,Tensor *I,Tensor *PD,float param) {
+  int device=D->gpu_device;
+  cudaSetDevice(device);
+
+  setDims(D)
+
+  d_linear<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,param,D->size);
+  check_cuda(cudaDeviceSynchronize(),"gpu_d_linear");
+}
 
 void gpu_sigmoid(Tensor *A,Tensor *B){
   int device=A->gpu_device;
