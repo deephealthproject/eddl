@@ -59,6 +59,12 @@ void LActivation::forward() {
     } else if (act == "exp") {
         this->output = Tensor::exp(this->input);
 
+    } else if (act == "softplus") {
+        Softplus(this->input, this->output);
+
+    } else if (act == "softsign") {
+        Softsign(this->input, this->output);
+
     } else if (act == "softmax") {
         Softmax(this->input, this->output);
 
@@ -101,6 +107,12 @@ void LActivation::backward() {
             } else if (act == "exp") {
                 // TODO: Review
                 Tensor::el_mult(delta, output, parent[0]->delta, 0);
+
+            } else if (act == "softplus") {
+                D_softplus(delta, output, parent[0]->delta);
+
+            } else if (act == "softsign") {
+                D_softsign(delta, output, parent[0]->delta);
 
             } else if (act == "softmax") {
                 D_Softmax(delta, output, parent[0]->delta);

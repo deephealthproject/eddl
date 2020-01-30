@@ -384,6 +384,14 @@ namespace eddl {
         return new LActivation(parent,"exp","",DEV_CPU);
     }
 
+    layer Softplus(layer parent){
+        return new LActivation(parent,"softplus","",DEV_CPU);
+    }
+
+    layer Softsign(layer parent){
+        return new LActivation(parent,"softsign","",DEV_CPU);
+    }
+
     layer Tanh(layer parent){
         return new LActivation(parent,"tanh","",DEV_CPU);
     }

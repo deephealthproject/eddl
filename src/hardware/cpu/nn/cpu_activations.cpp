@@ -62,6 +62,35 @@ void cpu_d_elu(Tensor *D, Tensor *I, Tensor *PD, float param){
   }
 }
 
+void cpu_softplus(Tensor *A, Tensor *B){
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; i++) {
+        B->ptr[i] = ::logf(::expf(A->ptr[i])+ 1);
+    }
+}
+
+void cpu_d_softplus(Tensor *D, Tensor *I, Tensor *PD){
+    #pragma omp parallel for
+    for (int i = 0; i < D->size; i++) {
+        PD->ptr[i] = D->ptr[i] * 1/(1+::expf(-I->ptr[i]));
+    }
+}
+
+void cpu_softsign(Tensor *A, Tensor *B){
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; i++) {
+        B->ptr[i] = A->ptr[i] / (::abs(A->ptr[i]) + 1);
+    }
+}
+
+void cpu_d_softsign(Tensor *D, Tensor *I, Tensor *PD){
+    #pragma omp parallel for
+    for (int i = 0; i < D->size; i++) {
+        float d = 1 + ::abs(I->ptr[i]);
+        PD->ptr[i] = D->ptr[i] * 1/(d*d);
+    }
+}
+
 void cpu_linear(Tensor *A, Tensor *B, float param){
   #pragma omp parallel for
   for (int i = 0; i < A->size; i++) {

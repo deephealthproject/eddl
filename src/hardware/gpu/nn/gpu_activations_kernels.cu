@@ -81,6 +81,39 @@ __global__ void d_elu(float *d,float *i,float *pd, float param, long int size)
 
 }
 
+__global__ void softplus(float *a,float *b,long int size){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < size){
+        b[thread_id_x] = logf(expf(a[thread_id_x] + 1));
+    }
+}
+
+__global__ void d_softplus(float *d,float *i,float *pd,long int size){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < size){
+        pd[thread_id_x] = d[thread_id_x] * (1/(1 + expf(-i[thread_id_x])));
+    }
+}
+
+__global__ void softsign(float *a,float *b,long int size){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < size){
+        b[thread_id_x] = a[thread_id_x] / (abs(a[thread_id_x] + 1));
+    }
+}
+
+__global__ void d_softsign(float *d,float *i,float *pd,long int size){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x < size){
+        float d = 1 + abs(i[thread_id_x]);
+        pd[thread_id_x] = d[thread_id_x] * (1/(d*d)));
+    }
+}
+
 __global__ void linear(float *a,float *b, float param, long int size)
 {
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;

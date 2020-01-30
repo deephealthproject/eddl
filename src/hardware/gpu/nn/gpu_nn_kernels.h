@@ -29,6 +29,12 @@ __global__ void d_leaky_relu(float *d,float *i,float *pd,float param, long int s
 __global__ void elu(float *a,float *b,float param, long int size);
 __global__ void d_elu(float *d,float *i,float *pd,float param, long int size);
 
+__global__ void softplus(float *a,float *b,long int size);
+__global__ void d_softplus(float *d,float *i,float *pd,long int size);
+
+__global__ void softsign(float *a,float *b,long int size);
+__global__ void d_softsign(float *d,float *i,float *pd,long int size);
+
 __global__ void sigmoid(float *a,float *b,long int size);
 __global__ void d_sigmoid(float *d,float *i,float *pd,long int size);
 

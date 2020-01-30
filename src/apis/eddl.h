@@ -411,6 +411,23 @@ typedef NetLoss * metric;
     layer Exponential(layer parent);
 
     /**
+    *  @brief Applies the Softplus activation function to the given layer.
+    *
+    *  @param parent  Parent layer
+    *  @return     Output of Exponential activation
+    */
+    layer Softplus(layer parent);
+
+
+    /**
+    *  @brief Applies the Softsign activation function to the given layer.
+    *
+    *  @param parent  Parent layer
+    *  @return     Output of Exponential activation
+    */
+    layer Softsign(layer parent);
+
+    /**
       *  @brief Applies the Linear activation function to the given layer.
       *
       *  @param parent  Parent layer

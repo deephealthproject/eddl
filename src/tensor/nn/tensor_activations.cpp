@@ -112,6 +112,7 @@ void D_LeakyReLu(Tensor *D, Tensor *I, Tensor *PD,float param) {
     PD->tsem->unlock();
 }
 
+
 // ELU
 void ELu(Tensor *A, Tensor *B, float param) {
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::ELu");
@@ -160,6 +161,105 @@ void D_ELu(Tensor *D, Tensor *I, Tensor *PD, float param) {
     PD->tsem->unlock();
 }
 
+
+
+// Softplus
+void Softplus(Tensor *A, Tensor *B) {
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::Softplus");
+    if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::Softplus");
+
+    B->tsem->lock();
+    if (A->isCPU()) {
+        cpu_softplus(A, B);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+      gpu_softplus(A, B);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+    B->tsem->unlock();
+}
+
+// Softplus Derivative
+void D_softplus(Tensor *D, Tensor *I, Tensor *PD) {
+    if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_softplus");
+    if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_softplus");
+
+    PD->tsem->lock();
+    if (D->isCPU()) {
+        cpu_d_softplus(D, I, PD);
+    }
+#ifdef cGPU
+    else if (D->isGPU())
+      {
+        gpu_d_softplus(D, I, PD);
+
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+    PD->tsem->unlock();
+}
+
+
+
+// Softsign
+void Softsign(Tensor *A, Tensor *B) {
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::Softsign");
+    if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::Softsign");
+
+    B->tsem->lock();
+    if (A->isCPU()) {
+        cpu_softsign(A, B);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+      gpu_softsign(A,B ,param);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+    B->tsem->unlock();
+}
+
+// Softsign Derivative
+void D_softsign(Tensor *D, Tensor *I, Tensor *PD) {
+    if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_softsign");
+    if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_softsign");
+
+    PD->tsem->lock();
+    if (D->isCPU()) {
+        cpu_d_softsign(D, I, PD);
+    }
+#ifdef cGPU
+    else if (D->isGPU())
+      {
+        gpu_d_softsign(D, I, PD);
+
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+    PD->tsem->unlock();
+}
 
 // Linear
 void Linear(Tensor *A, Tensor *B, float param) {

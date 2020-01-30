@@ -87,6 +87,48 @@ void gpu_d_elu(Tensor *D,Tensor *I,Tensor *PD,float param) {
   check_cuda(cudaDeviceSynchronize(),"gpu_d_elu");
 }
 
+
+void gpu_softplus(Tensor *A,Tensor *B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    softplus<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->size);
+    check_cuda(cudaDeviceSynchronize(),"gpu_softplus");
+}
+
+void gpu_d_softplus(Tensor *D,Tensor *I,Tensor *PD){
+    int device=D->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(D)
+
+    d_softplus<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,D->size);
+    check_cuda(cudaDeviceSynchronize(),"gpu_d_softplus");
+}
+
+void gpu_softsign(Tensor *A,Tensor *B){
+    int device=D->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(D)
+
+    d_softsign<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,D->size);
+    check_cuda(cudaDeviceSynchronize(),"gpu_d_softsign");
+}
+
+void gpu_d_softsign(Tensor *D,Tensor *I,Tensor *PD){
+    int device=D->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(D)
+
+    d_softsign<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,D->size);
+    check_cuda(cudaDeviceSynchronize(),"gpu_d_softsign");
+}
+
+
 void gpu_linear(Tensor *A,Tensor *B,float param){
   int device=A->gpu_device;
   cudaSetDevice(device);

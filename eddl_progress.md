@@ -38,8 +38,8 @@
 | Softmax | ✅ | ✅ | Softmax activation function. |
 | Selu |  ✅ | ✅ | Scaled Exponential Linear Unit (SELU). |
 | Sigmoid | ✅ | ✅ | Sigmoid activation function. |
-| Softplus | ❌ | ❌ | Softplus activation function. |
-| Softsign | ❌ | ❌ | Softsign activation function. |
+| Softplus | ✅ | ✅ | Softplus activation function. |
+| Softsign | ✅ | ✅ | Softsign activation function. |
 | Tanh | ✅ | ✅ | Hyperbolic tangent activation function. |
 | ThresholdedReLU | ❌ | ❌ | Thresholded Rectified Linear Unit. |
 
