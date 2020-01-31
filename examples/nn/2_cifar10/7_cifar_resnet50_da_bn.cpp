@@ -58,7 +58,7 @@ int main(int argc, char **argv){
 
   // Settings
   int epochs = 25;
-  int batch_size = 100;  
+  int batch_size = 200;
   int num_classes = 10;
 
   // network
@@ -99,7 +99,7 @@ int main(int argc, char **argv){
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
     //CS_CPU() // CPU with maximum threads availables
-    CS_GPU({1}) // GPU with only one gpu
+    CS_GPU({1})// GPU with only one gpu
   );
 
   // plot the model
@@ -107,6 +107,7 @@ int main(int argc, char **argv){
 
   // get some info from the network
   summary(net);
+
 
 
   // Load and preprocess training data

@@ -42,9 +42,9 @@ namespace eddl {
 		return initializers;
 	}
 
-	//Creates a map containing the name of the node as a key, and the value is a vector containing the nodes that have this node as a input. 
+	//Creates a map containing the name of the node as a key, and the value is a vector containing the nodes that have this node as a input.
 	map<string, vector<onnx::NodeProto*>> initialize_input_node_map(vector<onnx::NodeProto> &nodes){
-		map<string, vector<onnx::NodeProto*>> input_node_map; 
+		map<string, vector<onnx::NodeProto*>> input_node_map;
 		for( int j = 0; j < nodes.size(); j++){
 			onnx::NodeProto node = nodes[j];
 			for ( int i = 0; i < node.input_size(); i++ ) {
@@ -80,8 +80,8 @@ namespace eddl {
 		queue<onnx::NodeProto*> nodeQueue;
 		for(int i = 0; i<inputs->size(); i++){
 			onnx::ValueInfoProto nameContainer = (*inputs_onnx)[i];
-			string name = nameContainer.name(); 
-			(*output_node_map)[name] = (*inputs)[i]; 
+			string name = nameContainer.name();
+			(*output_node_map)[name] = (*inputs)[i];
 			vector<onnx::NodeProto*> v = (*input_node_map)[name];
 			for(onnx::NodeProto* layer: (*input_node_map)[name]){
 				nodeQueue.push(layer);
@@ -112,15 +112,15 @@ namespace eddl {
 
 	//Converts a raw onnx value tensor and writes it to a vector of that value type.
 	template <class T>
-	bool TryConvertingTensorRawValues( const onnx::TensorProto& onnx_tensor, vector<T> &field) { 
+	bool TryConvertingTensorRawValues( const onnx::TensorProto& onnx_tensor, vector<T> &field) {
 		if (!onnx_tensor.has_raw_data()) {
 			return false;
-		}   
+		}
 		size_t raw_size = onnx_tensor.raw_data().size();
 		if(raw_size % sizeof(T) != 0){
 			return false;
 		}
-		
+
 		size_t num_elements = raw_size / sizeof(T);
 		printf("Converting tensor values\n");
 		const void* src_ptr = static_cast<const void*>(onnx_tensor.raw_data().data());
@@ -128,14 +128,14 @@ namespace eddl {
 		void* target_ptr = static_cast<void*>(field.data());
 		memcpy(target_ptr, src_ptr, raw_size);
 		printf("Tensor values converted succesfully\n");
-		return true; 
+		return true;
 	}
 
 	//Parses the values of the onnx tensor to a c++ vector of that type
 	vector<float> parseTensorValues(onnx::TensorProto t){
 		int data_type = t.data_type(); //Only works for non raw data for now
 		vector<float> values;
-		switch(data_type){ 
+		switch(data_type){
 			case onnx::TensorProto::UNDEFINED:
 				//TODO: Make this
 				break;
@@ -232,18 +232,18 @@ namespace eddl {
 		for(onnx::TensorProto tensor : tensors){
 			vector<int> dims;
 			for(int i = 0; i < tensor.dims_size(); i++) {
-				dims.push_back(tensor.dims(i));	
+				dims.push_back(tensor.dims(i));
 			}
 			vector<float> values = parseTensorValues(tensor);
-			string tensorName = tensor.name(); 
-			
-			
+			string tensorName = tensor.name();
+
+
 			values_map[tensorName] = values;
 			dims_map[tensorName] = dims;
 
-			
+
 		}
-		return;	
+		return;
 	}
 
 	//Parses one TensorProto pointer (Input or output) to eddl Tensor pointer
@@ -261,7 +261,7 @@ namespace eddl {
 	//Converts one vector of TensorProto pointers (Input or output)
 	//to one vector of eddl Tensor pointers.
 	vector<Layer*> parse_IO_tensors(vector<onnx::ValueInfoProto> io_onnx) {
-		vector<Layer*> io;	
+		vector<Layer*> io;
 		onnx::TypeProto::Tensor tensor;
 		int dev = DEV_CPU;
 
@@ -278,12 +278,12 @@ namespace eddl {
 		}
 		return io;
 	}
-	
+
 	//Returns a vector with the input names of the net
 	vector<onnx::ValueInfoProto> get_inputs(onnx::GraphProto graph){
-		set<string> input_names;	  
+		set<string> input_names;
 		set<string> initializer_names;//We make the substraction of both sets to find the true inputs
-			
+
 		for(int i = 0; i < graph.input_size(); i++){ //Construct set of input names
 			input_names.insert(graph.input(i).name());
 		}
@@ -298,7 +298,7 @@ namespace eddl {
 		true_inputs.shrink_to_fit();
 
 		vector<onnx::ValueInfoProto> returnVector; // This is for returning the tensor, but we need the names
-		for(int i = 0; i < graph.input_size(); i++){ 
+		for(int i = 0; i < graph.input_size(); i++){
 			onnx::ValueInfoProto auxInfoProto = graph.input(i);
 			if(count(true_inputs.begin(), true_inputs.end(), auxInfoProto.name())){ //If the name is a true input
 				returnVector.push_back(auxInfoProto); //Push it to input vector
@@ -307,11 +307,11 @@ namespace eddl {
 		return returnVector;
 	}
 
-	
+
 	//Returns a vector containing the output names of the net
 	vector<string> get_outputs(onnx::GraphProto graph){
-		vector<string> output_names;	
-			
+		vector<string> output_names;
+
 		for(int i = 0; i < graph.output_size(); i++){ //Construct set of output names
 			output_names.push_back(graph.output(i).name());
 		}
@@ -344,7 +344,7 @@ namespace eddl {
 				cerr << "Failed to parse model." << endl;
 				//return;
 			}
-		}	
+		}
 		return build_net_onnx(model);
 	}
 
@@ -362,7 +362,7 @@ namespace eddl {
 		}
 		return build_net_onnx(model);
 	}
-	
+
 	//Imports a net from a c++ string passed as argument.
 	Net* import_net_from_onnx_string(string* model_string){
 		// Verify that the version of the library that we linked against is
@@ -384,7 +384,7 @@ namespace eddl {
 	Net* build_net_onnx(onnx::ModelProto model){
 
 		long long int ir_version = model.ir_version();
-		// We have to check if the imported net has the 
+		// We have to check if the imported net has the
 		// version we created this importer for.
 		if(ir_version != 0x00000006) {
 			cerr << "Ir_version < 6" << endl;
@@ -399,21 +399,21 @@ namespace eddl {
 		int counter = 0;
 		onnx::GraphProto graph = model.graph(); //Get the graph of the model.
 		//Model needs input in the constructor, so we start with that.
-			
+
 		vector<onnx::ValueInfoProto> inputs_onnx = get_inputs(graph); //Get the inputs
-		
+
 		vector<Layer*> inputs =  parse_IO_tensors(inputs_onnx); //Parse ONNX inputs to EDDL inputs
 
 		vector<onnx::TensorProto> initializers = get_initializers(graph); // Retrieves the initializers from the graph.
 																		  // The weight for the layers can be found in the initializers.
-		
-		map<string, vector<float>> map_init_values; 
+
+		map<string, vector<float>> map_init_values;
 		map<string, vector<int>>   map_init_dims;
 		get_initializers_maps(initializers, map_init_values, map_init_dims);// Creates 2 maps
 																			//  Key: Input Name . Value: Weights
 																			//  Key: Input Name . Value: Dims
 		vector<onnx::NodeProto> nodes = get_graph_nodes(graph);
-		//The methodology is the following: 
+		//The methodology is the following:
 		//We create three maps:
 		//map <string input, vector<onnx::NodeProto *> > input_node_map. The input will point towards the nodes that have this input
 		//map <string output, Layer* parent > output_node_map. To know from which (parent) node comes each input (The input is the output of the parent node)
@@ -421,7 +421,7 @@ namespace eddl {
 		//
 		//The algorithm is the following:
 		//	1-We check the inputs of each node.
-		//		For each input we insert the input string as a key and the Node(s) that use it as a value in the input_node_map. 
+		//		For each input we insert the input string as a key and the Node(s) that use it as a value in the input_node_map.
 		//		If that input is already on use, we will append the node to the existing vector
 		//	2-We check the outputs of each node. //NOT REQUIRED
 		//		For each output we insert the output string as a key and the Node that generates it as a value in the outputs_map //NOT REQUIRED
@@ -434,7 +434,7 @@ namespace eddl {
 		//		6.2-If they are not  --> continue
 		//		6.3-Else:
 		//				Create the EDDL layer
-		//				Add the nodes that use its outputs to the queue 
+		//				Add the nodes that use its outputs to the queue
 		//To create each EDDL layer:
 		//	1-Get its parent(s) by accessing to output_node_map using this node's input(s) as key(s)
 		//	2-Get its weights from 'initializers'
@@ -442,19 +442,19 @@ namespace eddl {
 		//
 		//  We need another map for storing the constant nodes, who are always active
 		//  We design this map as map<string, onnx::NodeProto> and called constant_node_map
-		
+
 		map<string, Layer*> 			output_node_map;
 
 		//1 2 and 3: Initialize maps
 
 		map<string, vector<onnx::NodeProto*>> 	input_node_map = initialize_input_node_map(nodes);
-		
+
 		//4 and 5: Create queue of NodeProto
 
 		map<string, onnx::NodeProto*> constant_node_map =  initialize_constant_nodes( nodes);
-		
+
 		queue<onnx::NodeProto *> nodeQueue = process_inputs(&inputs, &inputs_onnx, &input_node_map, &output_node_map);
-		
+
 		map<string, ONNX_LAYERS> map_layers = create_enum_map();
 		//6 - While the queue is not empty:
 		while(!nodeQueue.empty()){
@@ -494,8 +494,8 @@ namespace eddl {
 			//vector<Layer *> parents; //Not required because inputs are ordered.
 			vector<float> weights;
 			vector<int> dims;
-			// We have to know which layer to create. For it, I suggest 
-			// a map <String-Enumeration> for creating a switch, where 
+			// We have to know which layer to create. For it, I suggest
+			// a map <String-Enumeration> for creating a switch, where
 			// we call the constructor of that layer
 			string layer_type_name = node->op_type();
 			ONNX_LAYERS layer_type = map_layers[layer_type_name];
@@ -512,11 +512,11 @@ namespace eddl {
 						vector<int> pads;
 						bool explicit_padding = true;
 						vector<float> *bias;
-						
+
 						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
 							onnx::AttributeProto attribute = node->attribute(j);
 							string attr_name = attribute.name();
-							if (!attr_name.compare("auto_pad")) { 
+							if (!attr_name.compare("auto_pad")) {
 								if(!attribute.s().compare("NOTSET")) continue;
 								if(!attribute.s().compare("VALID"))
 									explicit_padding=false;
@@ -526,7 +526,7 @@ namespace eddl {
 
 							}
 							else if (!attr_name.compare("group")) { //We don't know if this exists in eddl
-								
+
 							}
 							else if (!attr_name.compare("kernel_shape")) { //
 								for( int h = 0; h<attribute.ints_size(); h++){
@@ -565,11 +565,11 @@ namespace eddl {
 
 						filters = dims[0];
 						kernel_shape.insert(kernel_shape.begin(), filters); //Add number of filters to kernel shape
-						string name = node->name(); 
+						string name = node->name();
 
 						ConvolDescriptor* convol_descriptor = new ConvolDescriptor(kernel_shape, strides, pads);
 
-						actual_layer = new LConv(parent, convol_descriptor, name, dev);
+						actual_layer = new LConv(parent, convol_descriptor, name, dev,0);
 
 						if(node->input_size() > 2){
 							string bias_name = node->input(2);
@@ -586,7 +586,7 @@ namespace eddl {
 						delete(weights_tensor);
 						break;
 					}
-					
+
 				case ONNX_LAYERS::DENSE:
 					{
 						int ndim;
@@ -620,15 +620,15 @@ namespace eddl {
 						string bias_name;
 						vector<float> *weights;
 						vector<int> dims;
-						
+
 						for(int i = 0; i < 2; i++){
 							string input = node->input(i);
 							if(!map_init_values.count(input)) { // parent
-								parent_name = node->input(0); 
+								parent_name = node->input(0);
 								parent = output_node_map[input];
 							}
 							else { // weights
-								weights_name = node->input(i);	
+								weights_name = node->input(i);
 								weights = new vector<float>(map_init_values[input]);
 								dims = map_init_dims[input];
 								ndim = dims.size();
@@ -639,14 +639,14 @@ namespace eddl {
 							bias_name = node->input(2);
 							bias = new vector<float>(map_init_values[bias_name]);
 							bias_dims = map_init_dims[bias_name];
-							
+
 						}
 
-						
+
 						string name = node->name();
 						Tensor * input_size = parent->output;
 						LDense* dense = new LDense(parent, dims[1], use_bias, name, dev);
-						
+
 						Tensor* weights_tensor = eddlT::create(dims, weights->data(), dev);
 						Tensor::copy(weights_tensor, dense->W );
 						delete(weights_tensor);
@@ -658,7 +658,7 @@ namespace eddl {
 						actual_layer = dense;
 						break;
 					}
-					
+
 				case ONNX_LAYERS::RESHAPE:
 					{
 
@@ -678,11 +678,11 @@ namespace eddl {
 						shape.insert(shape.begin(), 1); //Default batch size = 1
 						string name = node->name();
 						vector<int> parent_shape = parent->output->shape;
-						
+
 						actual_layer= new LReshape(parent, shape, name, dev);
 						break;
 					}
-					
+
 				case ONNX_LAYERS::RELU:
 					{
 						string parent_name = node->input(0);
@@ -712,7 +712,7 @@ namespace eddl {
 						float param = 0.0; //We don't use it in relu
 						actual_layer = new LActivation(parent, "softmax", name, dev, param);
 						break;
-						
+
 					}
 				case ONNX_LAYERS::CONCAT:
 					{
@@ -729,7 +729,7 @@ namespace eddl {
 						string parent_name;
 						for ( int j = 0; j < node->input_size(); j++) {
 							parent_name = node->input(j);
-							parents.push_back(output_node_map[parent_name]); 
+							parents.push_back(output_node_map[parent_name]);
 						}
 						for(Layer* parent: parents){
 							for(int dim: parent->output->shape){
@@ -737,7 +737,7 @@ namespace eddl {
 						}
 						string name = node->name();
 						actual_layer = new LConcat(parents, name, dev);
-						
+
 						break;
 					}
 				case ONNX_LAYERS::MAXPOOL:
@@ -750,7 +750,7 @@ namespace eddl {
 						int ceil_mode = 0;
 						vector<int> dilations;
 						int storage_order = 0;
-						
+
 						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
 							onnx::AttributeProto attribute = node->attribute(j);
 							string attr_name = attribute.name();
@@ -759,26 +759,26 @@ namespace eddl {
 								if(!attribute.s().compare("VALID"))
 									explicit_padding=false;
 							}
-							else if (!attr_name.compare("ceil_mode")) { 
+							else if (!attr_name.compare("ceil_mode")) {
 
 							}
 							else if (!attr_name.compare("dilations")) {
-								
+
 							}
-							else if (!attr_name.compare("kernel_shape")) { 
+							else if (!attr_name.compare("kernel_shape")) {
 								for( int h = 0; h<attribute.ints_size(); h++){
 									kernel_shape.push_back(attribute.ints(h));
 								}
 							}
-							else if (!attr_name.compare("pads")) { 
+							else if (!attr_name.compare("pads")) {
 								for(int h = 0; h < 4; h++){
 									pads.push_back(attribute.ints(h));
 								}
 							}
-							else if (!attr_name.compare("storage_order")) { 
-							
+							else if (!attr_name.compare("storage_order")) {
+
 							}
-							else if (!attr_name.compare("strides")) { 
+							else if (!attr_name.compare("strides")) {
 								for(int h = 0; h < attribute.ints_size(); h++){
 									strides.push_back(attribute.ints(h));
 								}
@@ -798,12 +798,12 @@ namespace eddl {
 						Layer* parent = output_node_map[parent_name];
 						vector<int> parent_shape = parent->output->shape;
 
-						string name = node->name(); 
-						
+						string name = node->name();
+
 						actual_layer = new LMaxPool(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev);
 						break;
 					}
-				
+
 				default:
 					cerr << "FATAL: LAYER NOT RECOGNIZED WITH TYPE " << layer_type <<   endl;
 					nodeQueue.pop();
@@ -823,7 +823,7 @@ namespace eddl {
 		}
 		vector<Layer *> input_layers;
 		for( Layer* layer : inputs) input_layers.push_back(layer);
-		
+
 		vector<string> output_names = get_outputs(graph);
 		vector<Layer *> output_layers;
 		for( int i = 0; i < output_names.size(); i++ ) {
@@ -855,17 +855,17 @@ namespace eddl {
 			vector<Tensor*> layer_tensors = tensors[l->name];
 			if(conv = dynamic_cast<LConv*>(l) ){
 				if(layer_tensors.size() > 1)
-					conv->update_weights(layer_tensors[0], layer_tensors[1]);	
-				else{ 
+					conv->update_weights(layer_tensors[0], layer_tensors[1]);
+				else{
 					cerr << "EDDL has not implemented convolutional without bias " << endl;
 					//conv.update_weights(layer_tensors[0]);
 				}
-				
+
 			}
 			else if(dense = dynamic_cast<LDense*>( l ) ){
 				if(layer_tensors.size() > 1)
-					dense->update_weights(layer_tensors[0], layer_tensors[1]);	
-				else 
+					dense->update_weights(layer_tensors[0], layer_tensors[1]);
+				else
 					dense->update_weights(layer_tensors[0]);
 			}
 			else cerr << "not implemented layer type" << endl;
@@ -874,9 +874,9 @@ namespace eddl {
 		map<string, vector<Tensor*> >::iterator it;
 		vector<Tensor*> delete_tensors;
 		for( it = tensors.begin(); it !=tensors.end(); ++it){
-			delete_tensors=it->second;		
+			delete_tensors=it->second;
 			for(int i = 0; i < delete_tensors.size(); ++i){
-				delete delete_tensors[i];	
+				delete delete_tensors[i];
 			}
 		}
 	}
@@ -902,17 +902,17 @@ namespace eddl {
 			vector<Tensor*> layer_tensors = tensors[l->name];
 			if(conv = dynamic_cast<LConv*>(l) ){
 				if(layer_tensors.size() > 1)
-					conv->update_weights(layer_tensors[0], layer_tensors[1]);	
-				else{ 
+					conv->update_weights(layer_tensors[0], layer_tensors[1]);
+				else{
 					cerr << "EDDL has not implemented convolutional without bias " << endl;
 					//conv.update_weights(layer_tensors[0]);
 				}
-				
+
 			}
 			else if(dense = dynamic_cast<LDense*>( l ) ){
 				if(layer_tensors.size() > 1)
-					dense->update_weights(layer_tensors[0], layer_tensors[1]);	
-				else 
+					dense->update_weights(layer_tensors[0], layer_tensors[1]);
+				else
 					dense->update_weights(layer_tensors[0]);
 			}
 			else cerr << "not implemented layer type" << endl;
@@ -921,9 +921,9 @@ namespace eddl {
 		map<string, vector<Tensor*> >::iterator it;
 		vector<Tensor*> delete_tensors;
 		for( it = tensors.begin(); it !=tensors.end(); ++it){
-			delete_tensors=it->second;		
+			delete_tensors=it->second;
 			for(int i = 0; i < delete_tensors.size(); ++i){
-				delete delete_tensors[i];	
+				delete delete_tensors[i];
 			}
 		}
     }
@@ -950,18 +950,18 @@ namespace eddl {
 			vector<Tensor*> layer_tensors = tensors[l->name];
 			if(conv = dynamic_cast<LConv*>(l) ){
 				if(layer_tensors.size() > 1) {
-					conv->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);	
-				} else{ 
+					conv->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
+				} else{
 					cerr << "EDDL has not implemented convolutional without bias " << endl;
 					//conv.update_weights(layer_tensors[0]);
 				}
-				
+
 			}
 			else if(dense = dynamic_cast<LDense*>( l ) ){
 				if(layer_tensors.size() > 1){
-					dense->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);	
+					dense->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
 				}
-				else 
+				else
 				{
 					dense->accumulate_accumulated_gradients(layer_tensors[0]);
 				}
@@ -972,9 +972,9 @@ namespace eddl {
 		map<string, vector<Tensor*> >::iterator it;
 		vector<Tensor*> delete_tensors;
 		for( it = tensors.begin(); it !=tensors.end(); ++it){
-			delete_tensors=it->second;		
+			delete_tensors=it->second;
 			for(int i = 0; i < delete_tensors.size(); ++i){
-				delete delete_tensors[i];	
+				delete delete_tensors[i];
 			}
 		}
 	}
@@ -997,17 +997,17 @@ namespace eddl {
 			vector<Tensor*> layer_tensors = tensors[l->name];
 			if(conv = dynamic_cast<LConv*>(l) ){
 				if(layer_tensors.size() > 1)
-					conv->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);	
-				else{ 
+					conv->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
+				else{
 					cerr << "EDDL has not implemented convolutional without bias " << endl;
 					//conv.update_weights(layer_tensors[0]);
 				}
-				
+
 			}
 			else if(dense = dynamic_cast<LDense*>( l ) ){
 				if(layer_tensors.size() > 1)
-					dense->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);	
-				else 
+					dense->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
+				else
 					dense->accumulate_accumulated_gradients(layer_tensors[0]);
 			}
 			else cerr << "not implemented layer type" << endl;
@@ -1016,9 +1016,9 @@ namespace eddl {
 		map<string, vector<Tensor*> >::iterator it;
 		vector<Tensor*> delete_tensors;
 		for( it = tensors.begin(); it !=tensors.end(); ++it){
-			delete_tensors=it->second;		
+			delete_tensors=it->second;
 			for(int i = 0; i < delete_tensors.size(); ++i){
-				delete delete_tensors[i];	
+				delete delete_tensors[i];
 			}
 		}
 
@@ -1032,16 +1032,16 @@ namespace eddl {
 
 		onnx::GraphProto graph = model.graph(); //Get the graph of the model.
 		//Model needs input and output in the constructor, so we start with that.
-			
+
 		vector<onnx::TensorProto> initializers = get_initializers(graph); // Retrieves the initializers from the graph.
 																		  // The weight for the layers can be found in the initializers.
-		map<string, vector<float>> map_init_values; 
+		map<string, vector<float>> map_init_values;
 		map<string, vector<int>>   map_init_dims;
 		get_initializers_maps(initializers, map_init_values, map_init_dims); // Creates 2 maps
 																			//  Key: Input Name . Value: Weights
 																			//  Key: Input Name . Value: Dims
 		vector<onnx::NodeProto> nodes = get_graph_nodes(graph);
-		 
+
 		map<string, ONNX_LAYERS> map_layers = create_enum_map();
 		int dev = DEV_CPU;//TODO: Check what device to use
 
@@ -1050,7 +1050,7 @@ namespace eddl {
 			ONNX_LAYERS layer_type = map_layers[layer_type_name];
 			string name = node.name();
 
-			switch (layer_type) { 
+			switch (layer_type) {
 				case ONNX_LAYERS::CONV:
 					{
 
@@ -1069,12 +1069,12 @@ namespace eddl {
 							vector<int> bias_shape;
 							bias_shape.push_back(bias->size());
 							conv_tensors.push_back(eddlT::create(bias_shape, bias->data(), dev));
-						} 
+						}
 
 						tensors[name] = conv_tensors;
 						break;
 					}
-					
+
 				case ONNX_LAYERS::DENSE:
 					{
 
@@ -1097,7 +1097,7 @@ namespace eddl {
 
 						break;
 					}
-					
+
 				default:
 					//cout << "The layer with type " << layer_type_name << " has no trainable parameters " << endl;
 					continue;
@@ -1118,7 +1118,7 @@ namespace eddl {
 		cerr << "Not compiled for ONNX. Missing protobuf. Returning nullptr" << endl;
 		return nullptr;
 	}
-	
+
 	Net* import_net_from_onnx_string(std::string* model_string){
 		cerr << "Not compiled for ONNX. Missing protobuf. Returning nullptr" << endl;
 		return nullptr;

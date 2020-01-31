@@ -84,7 +84,7 @@ typedef NetLoss * metric;
       *  @param lsb  Number of batches to sync model weights
       *  @return     (void)
     */
-    void toGPU(model net, vector<int> g={1},int lsb=1);
+    void toGPU(model net, vector<int> g={1},int lsb=1,string mem="full_mem");
     /**
       *  @brief Assign model operations to the CPU.
       *
@@ -94,7 +94,7 @@ typedef NetLoss * metric;
     */
     void toCPU(model net, int t=std::thread::hardware_concurrency());
     compserv CS_CPU(int th=-1);
-    compserv CS_GPU(const vector<int> &g,int lsb=1);
+    compserv CS_GPU(const vector<int> &g,int lsb=1,string mem="full_mem");
     compserv CS_FGPA(const vector<int> &f,int lsb=1);
     compserv CS_COMPSS(string filename);
 
@@ -1120,3 +1120,4 @@ typedef NetLoss * metric;
 
 }
 #endif
+                                                                                                                                                                                                                                        

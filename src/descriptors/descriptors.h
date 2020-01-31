@@ -71,6 +71,7 @@ public:
     int padrt,padrb;
     int padcl,padcr;
     int size;
+    bool lowmem;
 
 
     Tensor *I; // Input map
@@ -79,8 +80,8 @@ public:
     Tensor *bias; // bias
     Tensor *gK;// gradient filters
     Tensor *gbias;// gradient bias
-	Tensor *acc_gK;// Accumulated gradients for kernels
-	Tensor *acc_gbias;// Accumulated gradients for bias
+  	Tensor *acc_gK;// Accumulated gradients for kernels
+  	Tensor *acc_gbias;// Accumulated gradients for bias
     Tensor *D; // Delta
     Tensor *O; // Outputmap
 
@@ -102,9 +103,9 @@ public:
 
     ConvolDescriptor();
 
-    ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p);
+    ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p, bool lm=false);
 
-    ConvolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p);
+    ConvolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, bool lm=false);
 
     void build(Tensor *A);
     void resize(int b);

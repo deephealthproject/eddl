@@ -170,6 +170,26 @@ void gpu_d_sigmoid(Tensor *D,Tensor *I,Tensor *PD){
   check_cuda(cudaDeviceSynchronize(),"gpu_d_sigmoid");
 }
 
+void gpu_hard_sigmoid(Tensor *A,Tensor *B){
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  setDims(A);
+
+  hard_sigmoid<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->size);
+  check_cuda(cudaDeviceSynchronize(),"gpu_hard_sigmoid");
+}
+
+void gpu_d_hard_sigmoid(Tensor *D,Tensor *I,Tensor *PD){
+  int device=D->gpu_device;
+  cudaSetDevice(device);
+
+  setDims(D)
+
+  d_hard_sigmoid<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,D->size);
+  check_cuda(cudaDeviceSynchronize(),"gpu_d_hard_sigmoid");
+}
+
 void gpu_tanh(Tensor *A,Tensor *B){
   int device=A->gpu_device;
   cudaSetDevice(device);

@@ -22,14 +22,14 @@ int LConv::total_layers = 0;
 // constructors and clones
 
 LConv::LConv(Layer *parent, const vector<int> &ks, const vector<int> &st,
-             const vector<int> &p, string name, int dev) : LConv(parent, new ConvolDescriptor(ks, st, p), name, dev) {}
+             const vector<int> &p, string name, int dev, int mem) : LConv(parent, new ConvolDescriptor(ks, st, p), name, dev,mem) {}
 
 LConv::LConv(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
-int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev) : LConv(parent, new ConvolDescriptor(filters, kernel_size, strides, padding), name, dev) {
+int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) : LConv(parent, new ConvolDescriptor(filters, kernel_size, strides, padding), name, dev, mem) {
     // TODO: Implement (Fix initialization)
 };
 
-LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev) : LinLayer(name, dev) {
+LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) : LinLayer(name, dev) {
     if (parent->output->ndim != 4) msg("LConv only works over 4D tensors", "LConv::LConv");
 
     // Check dev with tensor dev
@@ -38,6 +38,8 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev) : LinLaye
     if(name.empty()) this->name = "conv" + to_string(++total_layers);
 
     cd = D;
+    mem_level=mem;
+    if (mem_level>0) D->lowmem=true;
 
     input = parent->output;
     cd->build(input);
@@ -51,10 +53,10 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev) : LinLaye
 
     gradients.push_back(cd->gK);
     gradients.push_back(cd->gbias);
-	
-	distributed_training = false;
-	cd->acc_gK = nullptr;
-	cd->acc_gbias = nullptr;
+
+  	distributed_training = false;
+  	cd->acc_gK = nullptr;
+  	cd->acc_gbias = nullptr;
 
     parent->addchild(this);
     addparent(parent);
@@ -111,7 +113,7 @@ void LConv::apply_accumulated_gradients() {
 }
 
 Layer *LConv::share(int c, int bs, vector<Layer *> p) {
-    LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad, "share_" + to_string(c) + name, dev);
+    LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad, "share_" + to_string(c) + name, dev,mem_level);
     n->orig = this;
 
     //share params
@@ -141,11 +143,12 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LConv::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad, "clone_" + to_string(todev) + name, todev);
+    LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad, "clone_" + to_string(todev) + name, todev, mem_level);
     n->orig = this;
 
     n->reg=reg;
     n->init=init;
+
 
     return n;
 }
