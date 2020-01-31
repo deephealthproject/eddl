@@ -71,6 +71,9 @@ void LActivation::forward() {
     } else if (act == "sigmoid") {
         Sigmoid(this->input, this->output);
 
+    } else if (act == "hard_sigmoid") {
+        HardSigmoid(this->input, this->output);
+
     } else if (act == "leaky_relu") {
         LeakyReLu(this->input, this->output, this->param);
 
@@ -119,6 +122,9 @@ void LActivation::backward() {
 
             } else if (act == "sigmoid") {
                 D_Sigmoid(delta, output, parent[0]->delta);
+
+            } else if (act == "hard_sigmoid") {
+                D_HardSigmoid(delta, input, parent[0]->delta);
 
             } else if (act == "leaky_relu") {
                 D_LeakyReLu(delta, input, parent[0]->delta,param);

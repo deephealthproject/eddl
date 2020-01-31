@@ -47,6 +47,10 @@ void D_softsign(Tensor *D, Tensor *I, Tensor *PD);
 void Sigmoid(Tensor *A, Tensor *B);
 void D_Sigmoid(Tensor *D, Tensor *I, Tensor *PD);
 
+// Hard Sigmoid
+void HardSigmoid(Tensor *A, Tensor *B);
+void D_HardSigmoid(Tensor *D, Tensor *I, Tensor *PD);
+
 // Softmax
 void Softmax(Tensor *A, Tensor *B);
 void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
