@@ -1,4 +1,4 @@
-# Tensor Routines
+R# Tensor Routines
 
 Numpy-like operations over a raw-tensor object
 
@@ -99,7 +99,7 @@ Numpy-like operations over a raw-tensor object
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- | ---- | ---- | -------- |
-| concatenate      | ❌    | ❌    |  Join a sequence of arrays along an existing axis.    |
+| concatenate      |  ✅    | ✅      |  Join a sequence of arrays along an existing axis.    |
 | stack      | ❌    | ❌    |  Join a sequence of arrays along a new axis.    |
 
 
