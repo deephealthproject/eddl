@@ -105,3 +105,37 @@ void cpu_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end){
             B->ptr[p] = A->ptr[pb];
     }
 }
+
+void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative){
+
+    // Initial offsets
+    unsigned int dest_offset = 0;
+    unsigned int *src_offset = new unsigned int[t.size()]();  // zeros
+
+    // If we haven't walked throught the entire new_tensor, keep walking
+    while(dest_offset < A->size) {
+
+        // Walk through all the tensors to concat one axis (once)
+        for (unsigned int i = 0; i < t.size(); i++) {
+            unsigned int size = t[i]->stride[axis] * t[i]->shape[axis];
+
+            // Copy n bytes from src to dest
+            float *dest = A->ptr + dest_offset;
+            float *src = t[i]->ptr + src_offset[i];
+
+            if(derivative){
+                for (unsigned int k = 0; k < size; k++) {
+                    *(src+k) += *(dest+k);
+                }
+            }else{
+                memcpy(dest, src, sizeof(float) * size);
+            }
+
+            // Step stride
+            dest_offset += size;
+            src_offset[i] += size;
+        }
+    }
+
+}
+
