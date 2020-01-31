@@ -18,17 +18,18 @@ using namespace std;
 
 int LActivation::total_layers = 0;
 
-LActivation::LActivation(Layer *parent, string act, string name, int dev, float param) : LinLayer(name, dev) {
+LActivation::LActivation(Layer *parent, string act, string name, int dev, float param, int mem) : LinLayer(name, dev) {
 
     // Set default name
     if(name.empty()) this->name = "activation_" + act + to_string(++total_layers);
 
     this->act = act;
     this->param=param;
+    mem_level=mem;
 
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
-    delta = new Tensor(output->getShape(), dev);
+    if (mem_level<2) delta = new Tensor(output->getShape(), dev);
     delta_bp = 0;
 
     parent->addchild(this);
@@ -90,6 +91,7 @@ void LActivation::backward() {
 
 
     if (parent.size()) {
+        if (parent[0]->mem_level==2) parent[0]->mem_delta();
         if (delta_bp) {
             Tensor::inc(delta, parent[0]->delta);
         } else {
@@ -136,6 +138,7 @@ void LActivation::backward() {
                 D_Linear(delta, input, parent[0]->delta, param);
             }
         }
+      if (mem_level==2) free_delta();
     }
 }
 
@@ -161,7 +164,8 @@ Layer *LActivation::share(int c, int bs, vector<Layer *> p) {
 
 Layer *LActivation::clone(int c, int bs, vector<Layer *> p, int todev) {
 
-    LActivation *n = new LActivation(p[0], act, "clone_" + to_string(todev) + name, todev);
+
+    LActivation *n = new LActivation(p[0], act, "clone_" + to_string(todev) + name, todev, param, mem_level);
     n->orig = this;
     n->delta_bp = delta_bp;
 

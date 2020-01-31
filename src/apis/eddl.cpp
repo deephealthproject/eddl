@@ -411,7 +411,7 @@ namespace eddl {
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
                const vector<int> &strides, string padding, int groups, const vector<int> &dilation_rate,
                bool use_bias, string name) {
-        LConv *l = new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU,0);
+        LConv *l = new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU);
 
         return l;
     }

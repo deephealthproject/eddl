@@ -83,6 +83,9 @@ public:
     void setdetach();
 
     void setmem_level(int mem);
+    void mem_delta();
+    void free_delta();
+
 
     //virtual
 

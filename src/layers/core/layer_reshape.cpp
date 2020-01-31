@@ -21,11 +21,11 @@ using namespace std;
 
 int LReshape::total_layers = 0;
 
-LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev) : LinLayer(name, dev) {
+LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev, int mem) : LinLayer(name, dev) {
     ls = shape;
 
     if(name.empty()) this->name = "reshape" + to_string(++total_layers);
-
+    mem_level=mem;
 
     input = parent->output;
 
@@ -63,7 +63,7 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev) : Lin
 
     // sharing the pointers to data
     output = new Tensor(ls, parent->output);
-    delta = new Tensor(ls, parent->delta);
+    if (mem_level<2) delta = new Tensor(ls, parent->delta);
 
     parent->addchild(this);
     addparent(parent);
@@ -78,12 +78,13 @@ LReshape::~LReshape()
 void LReshape::resize(int batch){
   ls[0]=batch;
   output->resize(batch, parent[0]->output);
-  delta->resize(batch, parent[0]->delta);
+  if (mem_level<2) delta->resize(batch, parent[0]->delta);
   if (target!=nullptr) target->resize(batch);
 }
 
 void LReshape::forward() {
-
+  if (parent[0]->mem_level==2) parent[0]->mem_delta();
+  delta = new Tensor(ls, parent[0]->delta);
 }
 
 
@@ -108,7 +109,7 @@ Layer *LReshape::clone(int c, int bs, vector<Layer *> p, int todev) {
     shape[0] = bs;
 
 
-    auto *n = new LReshape(p[0], shape, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LReshape(p[0], shape, "clone_" + to_string(todev) + name, todev,mem_level);
     n->orig = this;
 
     return n;

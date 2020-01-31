@@ -30,7 +30,7 @@ public:
     PoolDescriptor *pd;
 
     // constructors
-    LPool(Layer *parent, PoolDescriptor *cd, string name, int dev);
+    LPool(Layer *parent, PoolDescriptor *cd, string name, int dev, int mem=0);
 
     void resize(int batch) override;
 };
@@ -40,11 +40,11 @@ class LMaxPool : public LPool {
 public:
 
     // constructors and clones
-    LMaxPool(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name, int d);
+    LMaxPool(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name, int d, int mem=0);
 
-    LMaxPool(Layer *parent, const vector<int> &ks, const vector<int> &st, const vector<int> &p, string name, int dev);
+    LMaxPool(Layer *parent, const vector<int> &ks, const vector<int> &st, const vector<int> &p, string name, int dev,int mem=0);
 
-    LMaxPool(Layer *parent, PoolDescriptor *cd, string name, int dev);
+    LMaxPool(Layer *parent, PoolDescriptor *cd, string name, int dev,int mem=0);
 
     // Params
     Tensor *indX, *indY;

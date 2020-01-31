@@ -11,10 +11,11 @@
 #include "descriptors.h"
 
 PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st,
-                               const vector<int> &p) {
+                               const vector<int> &p, int mem) {
     ksize = vector<int>(ks.begin(), ks.end());
     stride = vector<int>(st.begin(), st.end());
     pad = vector<int>(p.begin(), p.end());
+    mem_level=mem;
 
     if (ksize.size() != 2) msg("Pooling Kernels must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
     if (stride.size() != 2) msg("Strides must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
@@ -22,12 +23,13 @@ PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st,
 
 }
 
-PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, string p) {
+PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, string p, int mem) {
     if (ks.size() != 2) msg("Pooling Kernels must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
     if (st.size() != 2) msg("Strides must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
 
     ksize = ks;
     stride = st;
+    mem_level=mem;
 
     if (p == "same") {
 
@@ -79,7 +81,7 @@ void PoolDescriptor::build(Tensor *A) {
         msg("Invalid output shape", "PoolDescriptor::build");
 
     O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
-    D = new Tensor(O->getShape(), A->device);
+    if (mem_level<2) D = new Tensor(O->getShape(), A->device);
 
     size=0;
     for(int k=0;k<iz;k++)
@@ -93,6 +95,6 @@ void PoolDescriptor::resize(int b) {
   if (b==O->shape[0]) return;
 
   O->resize(b);
-  D->resize(b);
+  if (mem_level<2) D->resize(b);
 
 }

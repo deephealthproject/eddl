@@ -325,7 +325,6 @@ void Net::split(int c, int todev) {
         for (j = 0; j < layers.size(); j++)
           if ((layers[j]->lin==0)&&(!isIn(layers[j],lin,ind))) {
             nlayers.push_back(layers[j]->clone(c, bs, par, todev + devsel[i]));
-            // set mem level for layer
           }
 
         // rest of layers
@@ -339,7 +338,6 @@ void Net::split(int c, int todev) {
                     }
                     if (l == layers[j]->parent.size()) {
                         nlayers.push_back(layers[j]->clone(i, bs, par, todev + devsel[i]));
-                        // set mem level for layer
                     }
                 }
 

@@ -28,7 +28,7 @@ public:
     static int total_layers;
 
 
-    LAdd(vector<Layer *> in, string name, int dev);
+    LAdd(vector<Layer *> in, string name, int dev,int mem=0);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -155,7 +155,7 @@ public:
     static int total_layers;
 
     // constructors and clones
-    LConcat(vector<Layer *> in, string name, int dev);
+    LConcat(vector<Layer *> in, string name, int dev,int mem=0);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

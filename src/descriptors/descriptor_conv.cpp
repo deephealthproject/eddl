@@ -19,7 +19,7 @@
 
 ConvolDescriptor::ConvolDescriptor() {}
 
-ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p, bool lm) {
+ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p, int mem) {
     if (ks.size() != 2) { msg("Kernels must have 3 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
     if (st.size() != 2) { msg("Strides must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
 
@@ -27,7 +27,7 @@ ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vec
     ksize = vector<int>(ks);
     ksize.insert(ksize.begin(), 1, filters);
     stride = vector<int>(st.begin(), st.end());
-    lowmem=lm;
+    mem_level=mem;
 
     if (p == "same") {
         pad.push_back(ksize[1] / 2);
@@ -48,11 +48,11 @@ ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vec
 }
 
 ConvolDescriptor::ConvolDescriptor(const vector<int> &ks, const vector<int> &st,
-                                   const vector<int> &p, bool lm) {
+                                   const vector<int> &p, int mem) {
     ksize = vector<int>(ks.begin(), ks.end());
     stride = vector<int>(st.begin(), st.end());
     pad = vector<int>(p.begin(), p.end());
-    lowmem=lm;
+    mem_level=mem;
 
     if (ksize.size() != 3) msg("Kernels must have 3 dimensions", "ConvolDescriptor::ConvolDescriptor");
     if (stride.size() != 2) msg("Strides must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor");
@@ -94,7 +94,7 @@ void ConvolDescriptor::build(Tensor *A) {
         msg("Invalid output shape", "ConvolDescriptor::build");
 
     O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
-    D = new Tensor(O->getShape(), A->device);
+    if (mem_level<2) D = new Tensor(O->getShape(), A->device);
 
     // Params
     K = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
@@ -113,7 +113,7 @@ void ConvolDescriptor::build(Tensor *A) {
 #ifdef cGPU
     else if (I->isGPU()) {
 
-      if (lowmem) {
+      if (mem_level) {
         // Lowering
         gpuIB=new Tensor(vector<int>{r*c,kc*kr*kz}, I->device);
       }
@@ -144,7 +144,7 @@ void ConvolDescriptor::resize(int b)
     if (b==O->shape[0]) return;
 
     O->resize(b);
-    D->resize(b);
+    if (mem_level<2) D->resize(b);
 
     if (I->isCPU()) {
         delete ptrI;
@@ -152,7 +152,7 @@ void ConvolDescriptor::resize(int b)
     }
 #ifdef cGPU
     else if (I->isGPU()) {
-      if (!lowmem)
+      if (!mem_level)
         gpuIB->resize(b*r*c);
     }
 #endif

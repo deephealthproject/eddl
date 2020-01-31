@@ -117,7 +117,7 @@ public:
     static int total_layers;
     vector<Layer *> layers;
 
-    LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev);
+    LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev,int mem=0);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

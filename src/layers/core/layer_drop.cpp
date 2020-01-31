@@ -18,16 +18,17 @@ using namespace std;
 
 int LDropout::total_layers = 0;
 
-LDropout::LDropout(Layer *parent, float df, string name, int dev) : LinLayer(name, dev) {
+LDropout::LDropout(Layer *parent, float df, string name, int dev, int mem) : LinLayer(name, dev) {
 
     if(name.empty()) this->name = "dropout" + to_string(++total_layers);
 
     // df: drop factor is the probability to delete (drop) an activation
     this->df = df;
+    mem_level=mem;
 
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
-    delta = new Tensor(input->getShape(), dev);
+    if (mem_level<2) delta = new Tensor(input->getShape(), dev);
 
     mask = new Tensor(input->getShape(), dev);
 
@@ -61,8 +62,10 @@ void LDropout::forward() {
 void LDropout::backward() {
 
     if (parent.size()) {
+        if (parent[0]->mem_level==2) parent[0]->mem_delta();
         Tensor::el_mult(delta, mask, parent[0]->delta, 1);
     }
+    if (mem_level==2) free_delta();
 }
 
 
@@ -76,7 +79,7 @@ Layer *LDropout::share(int c, int bs, vector<Layer *> p) {
 
 Layer *LDropout::clone(int c, int bs, vector<Layer *> p, int todev) {
 
-    LDropout *n = new LDropout(p[0], df, "clone_" + to_string(todev) + name, todev);
+    LDropout *n = new LDropout(p[0], df, "clone_" + to_string(todev) + name, todev, mem_level);
     n->orig = this;
 
     return n;

@@ -71,7 +71,7 @@ public:
     int padrt,padrb;
     int padcl,padcr;
     int size;
-    bool lowmem;
+    int mem_level; // see CS
 
 
     Tensor *I; // Input map
@@ -103,9 +103,9 @@ public:
 
     ConvolDescriptor();
 
-    ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p, bool lm=false);
+    ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p, int mem=0);
 
-    ConvolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, bool lm=false);
+    ConvolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem=0);
 
     void build(Tensor *A);
     void resize(int b);
@@ -116,10 +116,11 @@ public:
 class PoolDescriptor : public ConvolDescriptor {
 public:
     Tensor *indX, *indY; // indexes
+    int mem_level; // see CS
 
-    PoolDescriptor(const vector<int> &ks, const vector<int> &st, string p);
+    PoolDescriptor(const vector<int> &ks, const vector<int> &st, string p, int mem=0);
 
-    PoolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p);
+    PoolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem=0);
 
     void build(Tensor *A);
     void resize(int b);

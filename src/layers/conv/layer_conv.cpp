@@ -22,10 +22,10 @@ int LConv::total_layers = 0;
 // constructors and clones
 
 LConv::LConv(Layer *parent, const vector<int> &ks, const vector<int> &st,
-             const vector<int> &p, string name, int dev, int mem) : LConv(parent, new ConvolDescriptor(ks, st, p), name, dev,mem) {}
+             const vector<int> &p, string name, int dev, int mem) : LConv(parent, new ConvolDescriptor(ks, st, p, mem), name, dev, mem) {}
 
 LConv::LConv(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
-int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) : LConv(parent, new ConvolDescriptor(filters, kernel_size, strides, padding), name, dev, mem) {
+int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) : LConv(parent, new ConvolDescriptor(filters, kernel_size, strides, padding, mem), name, dev, mem) {
     // TODO: Implement (Fix initialization)
 };
 
@@ -39,14 +39,13 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
 
     cd = D;
     mem_level=mem;
-    if (mem_level>0) D->lowmem=true;
 
     input = parent->output;
     cd->build(input);
 
     output = cd->O;
-    delta = cd->D;
-    cd->ID = parent->delta;
+    if (mem_level<2) delta=cd->D;
+    if (parent->mem_level<2) cd->ID = parent->delta;
 
     params.push_back(cd->K);
     params.push_back(cd->bias);
@@ -76,6 +75,13 @@ void LConv::forward() {
 
 void LConv::backward() {
 
+    if (parent[0]->mem_level==2) {
+      parent[0]->mem_delta();
+      cd->ID=parent[0]->delta;
+    }
+
+    if (mem_level==2) cd->D=delta;
+
     //get gradients with provided delta
     if (trainable) Conv2D_grad(this->cd);
 
@@ -83,6 +89,8 @@ void LConv::backward() {
     if (this->parent.size()) {
         Conv2D_back(this->cd);
     }
+
+    if (mem_level==2) free_delta();
 
     // Regularizer
     if (trainable) if(reg!= nullptr) {reg->apply(cd->K);}

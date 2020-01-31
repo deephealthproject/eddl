@@ -19,12 +19,13 @@ using namespace std;
 
 int LConcat::total_layers = 0;
 
-LConcat::LConcat(vector<Layer *> parent, string name, int dev) : MLayer(name, dev) {
+LConcat::LConcat(vector<Layer *> parent, string name, int dev,int mem) : MLayer(name, dev) {
     if(name.empty()) {this->name = "concat" + to_string(++total_layers); }
 
     // Perform layer checks
     if (parent.empty()) { msg("Error: LConcat layer with empty list"); }
     this->ndim = parent[0]->output->ndim;
+    mem_level=mem;
 
     if (parent.size() > 1) {
         // All layers need to have the same number of dimensions
@@ -69,7 +70,7 @@ LConcat::LConcat(vector<Layer *> parent, string name, int dev) : MLayer(name, de
 
     input = parent[0]->output;
     output = new Tensor(shape, dev);
-    delta = new Tensor(shape, dev);
+    if (mem_level<2) delta = new Tensor(shape, dev);
 
     // Create a descriptor for each layer address translation
     int temp = 0;
@@ -104,8 +105,10 @@ void LConcat::forward() {
 
 void LConcat::backward() {
     for (int i = 0; i < parent.size(); ++i) {
+        if (parent[i]->mem_level==2) parent[i]->mem_delta();
         Tensor::set_select_back(this->delta, parent[i]->delta, this->sd[i]);
     }
+    if (mem_level==2) free_delta();
 }
 
 void LConcat::resize(int batch){
@@ -122,7 +125,7 @@ Layer *LConcat::share(int c, int bs, vector<Layer *> p) {
 
 Layer *LConcat::clone(int c, int bs, vector<Layer *> p, int todev) {
 
-    LConcat *n = new LConcat(p, "clone_" + to_string(todev) + name, todev);
+    LConcat *n = new LConcat(p, "clone_" + to_string(todev) + name, todev,mem_level);
     n->orig = this;
 
     return n;

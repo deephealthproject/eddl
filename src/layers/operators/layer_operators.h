@@ -241,8 +241,8 @@ class LSum : public OperatorLayer {
 public:
     static int total_layers;
 
-    LSum(Layer *l1, Layer *l2, string name, int dev);
-    LSum(Layer *l, float k, string name, int dev);
+    LSum(Layer *l1, Layer *l2, string name, int dev,int mem=0);
+    LSum(Layer *l, float k, string name, int dev,int mem=0);
 
     void forward() override;
 

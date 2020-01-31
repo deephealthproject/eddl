@@ -69,7 +69,7 @@ void gpu_conv2D(ConvolDescriptor *D) {
   D->gpuO->ptr=D->O->ptr;
   D->gpuI->ptr=D->gpuIB->ptr;
 
-  if (D->lowmem) {
+  if (D->mem_level) {
     for(int b=0;b<D->I->shape[0];b++,D->gpuO->ptr+=osize) {
       gpu_im2col_low(D,0,b);
       gpu_mult2D(D->gpuK,0,D->gpuI,1,D->gpuO,0);
@@ -105,7 +105,7 @@ void gpu_conv2D_grad(ConvolDescriptor *D){
   D->gpuD->ptr=D->D->ptr;
   D->gpuI->ptr=D->gpuIB->ptr;
 
-  if (D->lowmem) {
+  if (D->mem_level) {
     for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize){
       gpu_im2col_low(D,0,b);
       gpu_mult2D(D->gpuD,0,D->gpuI,0,D->gpugK,1);
@@ -136,7 +136,7 @@ void gpu_conv2D_back(ConvolDescriptor *D){
   D->gpuD->ptr=D->D->ptr;
   D->gpuI->ptr=D->gpuIB->ptr;
 
-  if (D->lowmem) {
+  if (D->mem_level) {
     for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize) {
         gpu_mult2D(D->gpuD, 1, D->gpuK, 0, D->gpuI, 0);
         gpu_im2col_low(D,1,b);

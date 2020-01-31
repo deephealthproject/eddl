@@ -569,7 +569,7 @@ namespace eddl {
 
 						ConvolDescriptor* convol_descriptor = new ConvolDescriptor(kernel_shape, strides, pads);
 
-						actual_layer = new LConv(parent, convol_descriptor, name, dev,0);
+						actual_layer = new LConv(parent, convol_descriptor, name, dev);
 
 						if(node->input_size() > 2){
 							string bias_name = node->input(2);

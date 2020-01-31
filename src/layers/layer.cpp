@@ -71,6 +71,17 @@ void Layer::setdetach()
 {
   detached=true;
 }
+void Layer::mem_delta()
+{
+  if (delta==nullptr) {
+    delta=new Tensor(output->getShape(),output->device);
+    delta->fill_(0.0);
+  }
+}
+void Layer::free_delta()
+{
+  if (delta!=nullptr) {delete delta;delta=nullptr;}
+}
 
   void Layer::setmem_level(int mem)
 {
@@ -100,7 +111,7 @@ void Layer::detach(Layer *l)
 }
 
 void Layer::reset() {
-    delta->fill_(0.0);
+    //if (mem_level<2) delta->fill_(0.0);
     detached=false;
 }
 

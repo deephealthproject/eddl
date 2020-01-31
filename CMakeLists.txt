@@ -31,6 +31,7 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "targets")
 # SET BUILD TYPE (RELEASE/DEBUG)
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
+    #set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
 # SET COMPILER FLAGS *******************************
@@ -424,7 +425,7 @@ if(BUILD_EXAMPLES)
 
 	add_executable(onnx_import "${EXAMPLES_DIR}/onnx/3_onnx_import_net_from_file.cpp")
 	target_link_libraries(onnx_import eddl)
-	
+
 endif(BUILD_EXAMPLES)
 
 
@@ -462,5 +463,3 @@ set(SCRIPT_LD_LIBS "LDLIBS=\"-fopenmp -lpthread ${CMAKE_INSTALL_PREFIX}/lib/libe
 file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc ${SCRIPT_LD_LIBS})
 file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "g++ \$CPPFLAGS -c \$1\n")
 file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "g++ -o \$\{1%.cpp} \$LDFLAGS \$\{1%.cpp}.o \$LDLIBS\n")
-
-
