@@ -51,6 +51,7 @@ public:
     int tr_batches;
     int inferenced_samples;
     int trmode;
+		int mem_level; // see Computing Service
 
     vector<int> devsel;
     CompServ *cs;
@@ -80,7 +81,7 @@ public:
     ~Net();
 
     void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize=true);
-	void toGPU(vector<int> &g,int lsb);
+		void toGPU(vector<int> &g,int lsb,int mem);
     void toCPU(int t);
 
     void fts();

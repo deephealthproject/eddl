@@ -39,6 +39,7 @@ public:
     Layer *orig;
     Net *net;
     bool trainable;
+    int mem_level; // See CS
 
     vector<Tensor *> params;
     vector<Tensor *> gradients;
@@ -81,6 +82,7 @@ public:
     void clamp(float min,float max);
     void setdetach();
 
+    void setmem_level(int mem);
 
     //virtual
 
@@ -103,7 +105,7 @@ public:
     virtual void forward() {}
 
     virtual void backward() {}
-	
+
 	virtual void update_weights(Tensor* w, Tensor* bias) {}
 
 	virtual void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias) {}

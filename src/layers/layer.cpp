@@ -72,7 +72,12 @@ void Layer::setdetach()
   detached=true;
 }
 
-void Layer::resize(int batch)
+  void Layer::setmem_level(int mem)
+{
+  mem_level=mem;
+}
+
+  void Layer::resize(int batch)
 {
     //cout<<name<<" resizing\n";
     if (output!=nullptr) output->resize(batch);

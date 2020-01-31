@@ -68,9 +68,14 @@ namespace eddl {
     }
 
     // Computing services
-    void toGPU(model net, vector<int> g,int lsb)
+    void toGPU(model net, vector<int> g,int lsb,string mem)
     {
-        net->toGPU(g,lsb);
+      if (mem=="low_mem") net->toGPU(g,lsb,2);
+      else if (mem=="mid_mem") net->toGPU(g,lsb,1);
+      else if (mem=="full_mem") net->toGPU(g,lsb,0);
+      else msg("Error mem param","toGPU");
+
+
     }
     void toCPU(model net, int t)
     {
@@ -80,8 +85,11 @@ namespace eddl {
         return new CompServ(th, {}, {},0);
     }
 
-    compserv CS_GPU(const vector<int> &g,int lsb) {
-        return new CompServ(0, g, {},lsb);
+    compserv CS_GPU(const vector<int> &g,int lsb,string mem) {
+        if (mem=="low_mem") return new CompServ(0, g, {},lsb,2);
+        else if (mem=="mid_mem") return new CompServ(0, g, {},lsb,1);
+        else if (mem=="full_mem") return new CompServ(0, g, {},lsb,0);
+        else msg("Error mem param","CS_GPU");
     }
 
     compserv CS_FGPA(const vector<int> &f,int lsb) {
@@ -403,7 +411,7 @@ namespace eddl {
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
                const vector<int> &strides, string padding, int groups, const vector<int> &dilation_rate,
                bool use_bias, string name) {
-        LConv *l = new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU);
+        LConv *l = new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU,0);
 
         return l;
     }

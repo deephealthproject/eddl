@@ -28,8 +28,17 @@ public:
     vector<int> local_fpgas;
     int lsb; //local sync batches
 
+
+
+    // memory requirements level
+    // 0: full memory. better performance in terms of speed
+    // 1: mid memory. some memory improvements to save memory
+    // 2: low memory. save memory as much as possible
+    int mem_level;
+
+
     // for local
-    CompServ(int threads, const vector<int> &g, const vector<int> &f,int lsb=1);
+    CompServ(int threads, const vector<int> &g, const vector<int> &f,int lsb=1, int mem=0);
 
     // for Distributed
     explicit CompServ(string filename);

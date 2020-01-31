@@ -56,6 +56,7 @@ __global__ void accuracy(float* T, float* N,float* acc,long int cols, long int t
 __global__ void gpu_addbias_k(float *O, int b, int r,int c,int nk,float *bias);
 __global__ void gpu_deltabias_k(float *D, int batch, int r,int c,int nk,float *bias);
 __global__ void gpu_im2col_k(float* I, float *ptrI, int b,int irows,int icols, int idepth, float* K, int nk, int kr,int kc, float* O,int orows,int ocols,int sr,int sc,int padrt,int padrb,int padcl,int padcr,int col2im);
+__global__ void gpu_im2col_k_low(float* I, int b, float *ptrI, int irows,int icols, int idepth, float* K, int nk, int kr,int kc, float* O,int orows,int ocols,int sr,int sc,int padrt,int padrb,int padcl,int padcr,int col2im);
 
 // GPU: Pool
 __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padrt,int padrb,int padcl,int padcr, float* indX, float* indY);
