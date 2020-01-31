@@ -387,6 +387,9 @@ public:
     static int dot(Tensor *A);  // TODO
 
     // Indexing, Slicing, Joining, Mutating Ops *******
+    static Tensor* concat(const vector<Tensor*> t, int axis=0);
+    static void concat_back(Tensor *A, const vector<Tensor*> t, int axis);
+
     Tensor* select(const vector<string>& indices);
     static void select(Tensor *A, Tensor *B, SelDescriptor *sd);
 

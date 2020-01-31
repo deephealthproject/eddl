@@ -30,7 +30,7 @@
 | ------------- |------| -----| ---------|
 | ELU | ✅ | ✅ | Exponential linear unit. |
 | Exponential |  ✅ | ✅ | Exponential (base e) activation function. |
-| HardSigmoid | ❌ | ❌ | Hard sigmoid activation function. |
+| HardSigmoid | ✅ | ✅ | Hard sigmoid activation function. |
 | LeakyReLu | ✅ | ✅ | Leaky version of a Rectified Linear Unit.  |
 | Linear | ✅ | ✅ | Linear (i.e. identity) activation function.  |
 | PReLU | ❌ | ❌ | Parametric Rectified Linear Unit.   |

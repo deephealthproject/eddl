@@ -21,14 +21,21 @@
 // CPU: Core (static)
 void cpu_transpose(Tensor *A, Tensor *B);
 void cpu_copy(Tensor *A, Tensor *B);
+
 void cpu_fill_(Tensor *A, float v);
 void cpu_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
+
 void cpu_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
+
 void cpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
+
 void cpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
 void cpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
+
+void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative);
+
 void cpu_repeat(Tensor *A, Tensor *B, vector<int> size);
 void cpu_d_repeat(Tensor *D, Tensor *A, vector<int> size);
 
