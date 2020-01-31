@@ -151,6 +151,26 @@ __global__ void d_sigmoid(float *d,float *i,float *pd,long int size)
 
 }
 
+__global__ void hard_sigmoid(float *a,float *b,long int size)
+{
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+  if (thread_id_x < size){
+    if (a[thread_id_x] > 2.5) b[thread_id_x] = 1.0;
+    else if (a[thread_id_x] < -2.5) b[thread_id_x] = 0.0;
+    else b[thread_id_x] = (a[thread_id_x] * 0.2) + 0.5;
+  }
+}
+
+__global__ void d_hard_sigmoid(float *d,float *i,float *pd,long int size)
+{
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+  if (thread_id_x < size){
+    if (i[thread_id_x] < -2.5 || i[thread_id_x] > 2.5) pd[thread_id_x] = 0.0;
+    else pd[thread_id_x] = 0.2 * d[thread_id_x];
+   }
+}
 
 __global__ void tanh(float *a,float *b,long int size)
 {

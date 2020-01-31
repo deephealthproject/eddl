@@ -38,6 +38,9 @@ __global__ void d_softsign(float *d,float *i,float *pd,long int size);
 __global__ void sigmoid(float *a,float *b,long int size);
 __global__ void d_sigmoid(float *d,float *i,float *pd,long int size);
 
+__global__ void hard_sigmoid(float *a,float *b,long int size);
+__global__ void d_hard_sigmoid(float *d,float *i,float *pd,long int size);
+
 __global__ void tanh(float *a,float *b,long int size);
 __global__ void d_tanh(float *d,float *i,float *pd,long int size);
 

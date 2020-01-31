@@ -357,7 +357,55 @@ void D_Sigmoid(Tensor *D, Tensor *I, Tensor *PD) {
     PD->tsem->unlock();
 }
 
-// Sigmoid
+// Hard Sigmoid
+void HardSigmoid(Tensor *A, Tensor *B) {
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::HardSigmoid");
+    if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::HardSigmoid");
+
+    B->tsem->lock();
+    if (A->isCPU()) {
+        cpu_hard_sigmoid(A, B);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+      gpu_hard_sigmoid(A,B);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+    B->tsem->unlock();
+}
+
+// Hard Sigmoid Derivative
+void D_HardSigmoid(Tensor *D, Tensor *I, Tensor *PD) {
+    if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_HardSigmoid");
+    if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_HardSigmoid");
+
+    PD->tsem->lock();
+    if (D->isCPU()) {
+        cpu_d_hard_sigmoid(D, I, PD);
+    }
+#ifdef cGPU
+    else if (D->isGPU())
+      {
+        gpu_d_hard_sigmoid(D,I,PD);
+
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+    PD->tsem->unlock();
+}
+
+// Tanh
 void Tanh(Tensor *A, Tensor *B) {
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::Tanh");
     if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::Tanh");
@@ -381,10 +429,10 @@ void Tanh(Tensor *A, Tensor *B) {
     B->tsem->unlock();
 }
 
-// Sigmoid Derivative, always increment over parent delta
+// Tanh Derivative
 void D_Tanh(Tensor *D, Tensor *I, Tensor *PD) {
-    if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_Sigmoid");
-    if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_Sigmoid");
+    if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_Tanh");
+    if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_Tanh");
 
     PD->tsem->lock();
     if (D->isCPU()) {

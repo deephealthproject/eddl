@@ -37,6 +37,9 @@ void cpu_d_softsign(Tensor *D, Tensor *I, Tensor *PD);
 void cpu_sigmoid(Tensor *A, Tensor *B);
 void cpu_d_sigmoid(Tensor *D, Tensor *I, Tensor *PD);
 
+void cpu_hard_sigmoid(Tensor *A, Tensor *B);
+void cpu_d_hard_sigmoid(Tensor *D, Tensor *I, Tensor *PD);
+
 void cpu_tanh(Tensor *A, Tensor *B);
 void cpu_d_tanh(Tensor *D, Tensor *I, Tensor *PD);
 
