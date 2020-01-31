@@ -372,10 +372,6 @@ namespace eddl {
         return new LActivation(parent,"sigmoid","",DEV_CPU);
     }
 
-    layer HardSigmoid(layer parent){
-        return new LActivation(parent,"hard_sigmoid","",DEV_CPU);
-    }
-
     layer ReLu(layer parent){
         return new LActivation(parent,"relu","",DEV_CPU);
     }
@@ -1000,3 +996,4 @@ namespace eddl {
 
 
 }//namespace
+                                                                                                              
