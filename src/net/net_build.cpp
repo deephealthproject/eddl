@@ -129,7 +129,7 @@ void Net::toCPU(int t){
       }
     }
 }
-void Net::toGPU(vector<int> &g,int lsb,int mem){
+void Net::toGPU(vector<int> g,int lsb,int mem){
     CompServ *cs=new CompServ(0, g, {},lsb,mem);
 
     for (int i = 0; i < snets.size(); i++) {

@@ -38,7 +38,7 @@ public:
 
 
     // for local
-    CompServ(int threads, const vector<int> &g, const vector<int> &f,int lsb=1, int mem=0);
+    CompServ(int threads, const vector<int> g, const vector<int> &f,int lsb=1, int mem=0);
 
     // for Distributed
     explicit CompServ(string filename);

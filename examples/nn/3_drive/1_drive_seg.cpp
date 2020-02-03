@@ -16,7 +16,7 @@
 
 using namespace eddl;
 
-#define USE_CONCAT 0
+#define USE_CONCAT 1
 
 //////////////////////////////////
 // Drive segmentation
@@ -90,7 +90,7 @@ int main(int argc, char **argv){
 
   // Settings
   int epochs = 100000;
-  int batch_size =10;
+  int batch_size =8;
 
   //////////////////////////////////////////////////////////////
   // Network for Data Augmentation
@@ -109,7 +109,7 @@ int main(int argc, char **argv){
 
   // Build model for DA
   build(danet);
-  //toGPU(danet,{1});
+  toGPU(danet,"low_mem");   // only in GPU 0 with low_mem setup
   summary(danet);
 
   //////////////////////////////////////////////////////////////
@@ -123,7 +123,7 @@ int main(int argc, char **argv){
     {"mse"} // Metrics
   );
   // Train on multi-gpu with sync weights every 100 batches:
-  toGPU(segnet,{1},1,"low_mem");
+  toGPU(segnet,{1,1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
   summary(segnet);
   plot(segnet,"segnet.pdf");
 

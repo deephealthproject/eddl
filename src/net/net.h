@@ -81,7 +81,7 @@ public:
     ~Net();
 
     void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize=true);
-		void toGPU(vector<int> &g,int lsb,int mem);
+		void toGPU(vector<int> g,int lsb,int mem);
     void toCPU(int t);
 
     void fts();
