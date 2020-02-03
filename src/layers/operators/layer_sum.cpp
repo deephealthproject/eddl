@@ -40,7 +40,7 @@ LSum::LSum(Layer *l1, Layer *l2, string name, int dev,int mem) : OperatorLayer(n
     mem_level=mem;
 
     output = new Tensor(l1->output->getShape(), dev);
-    if (mem_level<2) delta = new Tensor(l1->output->getShape(), dev);
+    if (!mem_level) delta = new Tensor(l1->output->getShape(), dev);
 
     l1->addchild(this);
     l2->addchild(this);
@@ -68,7 +68,7 @@ LSum::LSum(Layer *l, float k, string name, int dev,int mem) : OperatorLayer(name
     mem_level=mem;
 
     output = new Tensor(l->output->getShape(), dev);
-    if (mem_level<2) delta = new Tensor(l->output->getShape(), dev);
+    if (!mem_level) delta = new Tensor(l->output->getShape(), dev);
 
     l->addchild(this);
     addparent(l);
@@ -84,14 +84,14 @@ void LSum::forward() {
 }
 
 void LSum::backward() {
-    if (parent[0]->mem_level==2) parent[0]->mem_delta();
+    if (parent[0]->mem_level)  parent[0]->mem_delta();
     Tensor::inc(delta, parent[0]->delta);
     if (binary) {
-        if (parent[1]->mem_level==2) parent[1]->mem_delta();
+        if (parent[1]->mem_level)  parent[1]->mem_delta();
         Tensor::inc(delta, parent[1]->delta);
       }
 
-    if (mem_level==2) free_delta();
+    if (mem_level)  free_delta();
 }
 
 Layer *LSum::share(int c, int bs, vector<Layer *> p) {

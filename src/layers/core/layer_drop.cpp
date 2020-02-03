@@ -28,7 +28,7 @@ LDropout::LDropout(Layer *parent, float df, string name, int dev, int mem) : Lin
 
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
-    if (mem_level<2) delta = new Tensor(input->getShape(), dev);
+    if (!mem_level) delta = new Tensor(input->getShape(), dev);
 
     mask = new Tensor(input->getShape(), dev);
 
@@ -62,10 +62,10 @@ void LDropout::forward() {
 void LDropout::backward() {
 
     if (parent.size()) {
-        if (parent[0]->mem_level==2) parent[0]->mem_delta();
+        if (parent[0]->mem_level)  parent[0]->mem_delta();
         Tensor::el_mult(delta, mask, parent[0]->delta, 1);
     }
-    if (mem_level==2) free_delta();
+    if (mem_level)  free_delta();
 }
 
 

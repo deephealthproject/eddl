@@ -94,7 +94,7 @@ void ConvolDescriptor::build(Tensor *A) {
         msg("Invalid output shape", "ConvolDescriptor::build");
 
     O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
-    if (mem_level<2) D = new Tensor(O->getShape(), A->device);
+    if (!mem_level) D = new Tensor(O->getShape(), A->device);
 
     // Params
     K = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
@@ -113,7 +113,7 @@ void ConvolDescriptor::build(Tensor *A) {
 #ifdef cGPU
     else if (I->isGPU()) {
 
-      if (mem_level) {
+      if (mem_level>1) {
         // Lowering
         gpuIB=new Tensor(vector<int>{r*c,kc*kr*kz}, I->device);
       }
@@ -144,7 +144,7 @@ void ConvolDescriptor::resize(int b)
     if (b==O->shape[0]) return;
 
     O->resize(b);
-    if (mem_level<2) D->resize(b);
+    if (!mem_level) D->resize(b);
 
     if (I->isCPU()) {
         delete ptrI;
@@ -152,7 +152,7 @@ void ConvolDescriptor::resize(int b)
     }
 #ifdef cGPU
     else if (I->isGPU()) {
-      if (!mem_level)
+      if (mem_level<2)
         gpuIB->resize(b*r*c);
     }
 #endif

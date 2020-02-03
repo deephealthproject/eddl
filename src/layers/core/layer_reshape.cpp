@@ -63,7 +63,7 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev, int m
 
     // sharing the pointers to data
     output = new Tensor(ls, parent->output);
-    if (mem_level<2) delta = new Tensor(ls, parent->delta);
+    if (!mem_level) delta = new Tensor(ls, parent->delta);
 
     parent->addchild(this);
     addparent(parent);
@@ -78,13 +78,16 @@ LReshape::~LReshape()
 void LReshape::resize(int batch){
   ls[0]=batch;
   output->resize(batch, parent[0]->output);
-  if (mem_level<2) delta->resize(batch, parent[0]->delta);
+  if (!mem_level) delta->resize(batch, parent[0]->delta);
   if (target!=nullptr) target->resize(batch);
 }
 
 void LReshape::forward() {
-  if (parent[0]->mem_level==2) parent[0]->mem_delta();
-  delta = new Tensor(ls, parent[0]->delta);
+  if (parent[0]->mem_level)  {
+      parent[0]->mem_delta();
+      delta = new Tensor(ls, parent[0]->delta);
+  }
+
 }
 
 

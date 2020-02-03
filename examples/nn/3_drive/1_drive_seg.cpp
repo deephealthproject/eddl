@@ -99,7 +99,7 @@ int main(int argc, char **argv){
 
   layer l=Concat({in1,in2});   // Cat image and mask
   l= RandomCropScale(l, {0.9f, 1.0f}); // Random Crop and Scale to orig size
-  l=CenteredCrop(l,{512,512});         // Crop to work with sizes power 2
+  l= CenteredCrop(l,{512,512});         // Crop to work with sizes power 2
   layer img=Select(l,{"0:3"}); // UnCat [0-2] image
   layer mask=Select(l,{"3"});  // UnCat [3] mask
   // Both, image and mask, have the same augmentation
@@ -109,7 +109,7 @@ int main(int argc, char **argv){
 
   // Build model for DA
   build(danet);
-  toGPU(danet,"low_mem");   // only in GPU 0 with low_mem setup
+  //toGPU(danet,"low_mem");   // only in GPU 0 with low_mem setup
   summary(danet);
 
   //////////////////////////////////////////////////////////////
@@ -123,7 +123,7 @@ int main(int argc, char **argv){
     {"mse"} // Metrics
   );
   // Train on multi-gpu with sync weights every 100 batches:
-  toGPU(segnet,{1,1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
+  toGPU(segnet,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
   summary(segnet);
   plot(segnet,"segnet.pdf");
 

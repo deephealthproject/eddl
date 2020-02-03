@@ -29,7 +29,7 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev, int
 
     input = parent->output;
     output = new Tensor(vector<int>{input->shape[0], ndim}, dev);
-    if (mem_level<2) delta = new Tensor(output->getShape(), dev);
+    if (!mem_level) delta = new Tensor(output->getShape(), dev);
 
     W = new Tensor(vector<int>{input->shape[1], ndim}, dev);
     if (use_bias) bias = new Tensor(vector<int>{ndim}, dev);
@@ -70,12 +70,12 @@ void LDense::backward() {
 
     // backprop delta
     if (parent.size()) {
-        if (parent[0]->mem_level==2) parent[0]->mem_delta();
+        if (parent[0]->mem_level)  parent[0]->mem_delta();
         //1: note that increment parent delta
         Tensor::mult2D(delta, 0, W, 1, parent[0]->delta, 1);
     }
 
-    if (mem_level==2) free_delta();
+    if (mem_level)  free_delta();
 
     // Regularizer
     if (trainable) if(reg != nullptr) {reg->apply(this->W);}

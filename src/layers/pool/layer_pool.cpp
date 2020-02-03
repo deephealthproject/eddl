@@ -32,8 +32,8 @@ LPool::LPool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem) : 
     pd->build(input);
 
     output = pd->O;
-    if (mem_level<2) delta = pd->D;
-    if (parent->mem_level<2) pd->ID = parent->delta;
+    if (!mem_level) delta = pd->D;
+    if (!parent->mem_level) pd->ID = parent->delta;
 
     parent->addchild(this);
     addparent(parent);

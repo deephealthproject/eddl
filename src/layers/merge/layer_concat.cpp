@@ -71,7 +71,7 @@ LConcat::LConcat(vector<Layer *> parent, unsigned int axis, string name, int dev
 
     input = parent[0]->output;
     output = new Tensor(shape, dev);
-    if (mem_level<2) delta = new Tensor(shape, dev);
+    if (!mem_level) delta = new Tensor(shape, dev);
 
     // Create a descriptor for each layer address translation
     int temp = 0;
@@ -104,7 +104,7 @@ void LConcat::forward() {
 
     Tensor::copy(aux,output);
     delete aux;
-    
+
 }
 
 
@@ -112,14 +112,14 @@ void LConcat::backward() {
     // Get delta tensors
     vector<Tensor*> deltas;
     for (auto & p : this->parent) {
-        if (p->mem_level==2) p->mem_delta();
+        if (p->mem_level)  p->mem_delta();
         deltas.push_back(p->delta);
     }
 
     // Perform concat (back)
     Tensor::concat_back(this->delta, deltas, this->axis);
 
-    if (mem_level==2) free_delta();
+    if (mem_level)  free_delta();
 }
 
 void LConcat::resize(int batch){

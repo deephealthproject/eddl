@@ -111,7 +111,7 @@ void Layer::detach(Layer *l)
 }
 
 void Layer::reset() {
-    if (mem_level<2) delta->fill_(0.0);
+    if ((!mem_level)&&(delta!=nullptr)) delta->fill_(0.0);
     detached=false;
 }
 

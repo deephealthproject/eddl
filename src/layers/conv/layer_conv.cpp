@@ -44,7 +44,7 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
     cd->build(input);
 
     output = cd->O;
-    if (mem_level<2) delta=cd->D;
+    if (!mem_level) delta=cd->D;
     if (parent->mem_level<2) cd->ID = parent->delta;
 
     params.push_back(cd->K);
@@ -75,12 +75,12 @@ void LConv::forward() {
 
 void LConv::backward() {
 
-    if (parent[0]->mem_level==2) {
+    if (parent[0]->mem_level)  {
       parent[0]->mem_delta();
       cd->ID=parent[0]->delta;
     }
 
-    if (mem_level==2) cd->D=delta;
+    if (mem_level)  cd->D=delta;
 
     //get gradients with provided delta
     if (trainable) Conv2D_grad(this->cd);
@@ -90,7 +90,7 @@ void LConv::backward() {
         Conv2D_back(this->cd);
     }
 
-    if (mem_level==2) free_delta();
+    if (mem_level)  free_delta();
 
     // Regularizer
     if (trainable) if(reg!= nullptr) {reg->apply(cd->K);}

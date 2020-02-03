@@ -28,7 +28,7 @@ LUpSampling::LUpSampling(Layer *parent, const vector<int> &size, string interpol
 
     input = parent->output;
     output = new Tensor(vector<int>{input->shape[0], input->shape[1], input->shape[2]*size[0], input->shape[3]*size[1]}, dev);
-    if (mem_level<2) delta = new Tensor(output->getShape(), dev);
+    if (!mem_level) delta = new Tensor(output->getShape(), dev);
 
     parent->addchild(this);
     addparent(parent);
@@ -46,9 +46,9 @@ void LUpSampling::forward() {
 }
 
 void LUpSampling::backward() {
-    if (parent[0]->mem_level==2) parent[0]->mem_delta();
+    if (parent[0]->mem_level)  parent[0]->mem_delta();
     d_repeat_nn(delta, parent[0]->delta, this->size);
-    if (mem_level==2) free_delta();
+    if (mem_level)  free_delta();
 }
 
 Layer *LUpSampling::share(int c, int bs, vector<Layer *> p) {

@@ -57,15 +57,15 @@ void LMaxPool::forward() {
 
 void LMaxPool::backward() {
     // backprop delta
-    if (parent[0]->mem_level==2) {
+    if (parent[0]->mem_level)  {
       parent[0]->mem_delta();
       pd->ID=parent[0]->delta;
     }
     if (parent.size()) {
-        if (mem_level==2) pd->D=delta;
+        if (mem_level)  pd->D=delta;
         MPool2D_back(this->pd);
     }
-    if (mem_level==2) free_delta();
+    if (mem_level) free_delta();
 }
 
 Layer *LMaxPool::share(int c, int bs, vector<Layer *> p) {

@@ -37,7 +37,7 @@ LAdd::LAdd(vector<Layer *> parent, string name, int dev, int mem) : MLayer(name,
     mem_level=mem;
 
     output = new Tensor(parent[0]->output->getShape(), dev);
-    if (mem_level<2) delta = new Tensor(parent[0]->output->getShape(), dev);
+    if (!mem_level) delta = new Tensor(parent[0]->output->getShape(), dev);
 
     for (int i = 0; i < parent.size(); ++i) {
         parent[i]->addchild(this);
@@ -67,11 +67,11 @@ void LAdd::forward() {
 
 void LAdd::backward() {
     for (int i = 0; i < parent.size(); ++i) {
-      if (parent[i]->mem_level==2) parent[i]->mem_delta();
+      if (parent[i]->mem_level)  parent[i]->mem_delta();
         Tensor::inc(delta, parent[i]->delta);
       }
 
-    if (mem_level==2) free_delta();
+    if (mem_level)  free_delta();
 }
 
 void LAdd::resize(int batch){

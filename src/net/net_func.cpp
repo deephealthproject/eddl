@@ -72,7 +72,7 @@ void Net::do_backward() {
 
 void Net::do_delta() {
     for (int i = 0; i < lout.size(); i++) {
-        if (lout[i]->mem_level==2) lout[i]->mem_delta();
+        if (lout[i]->mem_level)  lout[i]->mem_delta();
         losses[i]->delta(lout[i]->target, lout[i]->output, lout[i]->delta);
         if (VERBOSE) cout<<"Delta: "<<vbts[i]->name<<" delta:"<<vbts[i]->delta->sum()<<"\n";
       }
