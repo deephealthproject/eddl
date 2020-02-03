@@ -293,7 +293,7 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
     B->tsem->unlock();
 }
 
-Tensor* Tensor::concat(const vector<Tensor*> t, int axis){
+Tensor* Tensor::concat(const vector<Tensor*> t, unsigned int axis){
     // Check number of vectors to concat
     if(t.size()<2){
         msg("Concat requires a minimum of two tensors", "Tensor::concat");
@@ -355,7 +355,7 @@ Tensor* Tensor::concat(const vector<Tensor*> t, int axis){
     return new_tensor;
 }
 
-void Tensor::concat_back(Tensor *A, const vector<Tensor*> t, int axis){
+void Tensor::concat_back(Tensor *A, const vector<Tensor*> t, unsigned int axis){
     // Check number of vectors to concat
     if(t.size()<2){
         msg("Concat back requires a minimum of two tensors", "Tensor::concat_back");

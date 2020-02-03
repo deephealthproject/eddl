@@ -150,12 +150,13 @@ public:
 class LConcat : public MLayer {
 public:
     int ndim;
+    unsigned int axis;
     vector<int> index;
     vector<SelDescriptor *> sd;  // TODO: Re-think for a more memory-efficient way
     static int total_layers;
 
     // constructors and clones
-    LConcat(vector<Layer *> in, string name, int dev,int mem=0);
+    LConcat(vector<Layer *> in, unsigned int axis, string name, int dev,int mem=0);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

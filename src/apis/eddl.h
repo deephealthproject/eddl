@@ -832,7 +832,7 @@ typedef NetLoss * metric;
       *  @param name  A name for the operation
       *  @return     Output of concatenation operation with all input layers
     */
-    layer Concat(const vector<layer> &layers, string name = "");
+    layer Concat(const vector<layer> &layers, unsigned int axis=1, string name = "");
     layer MatMul(const vector<layer> &layers, string name = "");
     layer Maximum(const vector<layer> &layers, string name = "");
     layer Minimum(const vector<layer> &layers, string name = "");

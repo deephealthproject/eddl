@@ -571,8 +571,8 @@ namespace eddl {
         return new LAverage(layers, name, DEV_CPU);
     }
 
-    layer Concat(const vector<layer> &layers, string name) {
-        return new LConcat(layers, name, DEV_CPU);
+    layer Concat(const vector<layer> &layers, unsigned int axis, string name) {
+        return new LConcat(layers, axis, name, DEV_CPU);
     }
 
     layer MatMul(const vector<layer> &layers, string name) {
