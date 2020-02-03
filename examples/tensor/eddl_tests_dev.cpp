@@ -62,13 +62,12 @@ int main(int argc, char **argv) {
 //    t3 *= 5;
 //    t3 /= 5;
 //
-
-    int device = DEV_CPU;
+    int device = DEV_GPU;
 
     // Concat
-    Tensor* t5 = Tensor::ones({3, 3, 2}, device); t5->print();
-    Tensor* t6 = Tensor::full({3, 1, 2}, 5, device); t6->print();
-    Tensor* t7 = Tensor::full({3, 2, 2}, 7, device); t7->print();
+    Tensor* t5 = Tensor::range(1, 0+3*3*2, 1.0f, device); t5->reshape_({3, 3, 2}); t5->print();
+    Tensor* t6 = Tensor::range(11, 10+3*1*2, 1.0f, device); t6->reshape_({3, 1, 2}); t6->print();
+    Tensor* t7 = Tensor::range(101, 100+3*2*2, 1.0f, device); t7->reshape_({3, 2, 2}); t7->print();
 
     // Concat
     Tensor* t8 = Tensor::concat({t5, t6, t7}, 1);
