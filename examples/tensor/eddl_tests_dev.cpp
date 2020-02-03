@@ -63,18 +63,20 @@ int main(int argc, char **argv) {
 //    t3 /= 5;
 //
 
+    int device = DEV_CPU;
+
     // Concat
-    Tensor* t5 = Tensor::ones({3, 3, 2}); t5->print();
-    Tensor* t6 = Tensor::zeros({3, 1, 2}); t6->print();
-    Tensor* t7 = Tensor::full({3, 2, 2}, 7); t7->print();
+    Tensor* t5 = Tensor::ones({3, 3, 2}, device); t5->print();
+    Tensor* t6 = Tensor::full({3, 1, 2}, 5, device); t6->print();
+    Tensor* t7 = Tensor::full({3, 2, 2}, 7, device); t7->print();
 
     // Concat
     Tensor* t8 = Tensor::concat({t5, t6, t7}, 1);
     t8->print();
 
-    Tensor::concat_back(t8, {t5, t6, t7}, 1);
-    t5->print();
-    t6->print();
-    t7->print();
+    // Tensor::concat_back(t8, {t5, t6, t7}, 1);
+    // t5->print();
+    // t6->print();
+    // t7->print();
     int asda = 33;
 }

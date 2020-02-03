@@ -82,3 +82,20 @@ __global__ void set_select_back(float* A, float* B, int size, int* indices){
         B[thread_id_x] += A[indices[thread_id_x]];
     }
 }
+
+
+
+__global__ void concat(float *dest, float *src, unsigned int src_size, unsigned int src_stride_size, unsigned int dest_stride, bool derivative){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < src_size){
+        unsigned int i = thread_id_x / src_stride_size;  // Stride index in source
+        unsigned int j = i * dest_stride;  // Offset in dest
+        unsigned int k = thread_id_x % src_stride_size;  // Index in stride
+
+        if(derivative){ src[k] += dest[k + j]; }
+        else{ dest[k + j] = src[k]; }
+    }
+
+
+}

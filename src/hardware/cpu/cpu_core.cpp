@@ -107,33 +107,28 @@ void cpu_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end){
 }
 
 void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative){
+ // Walk through all the tensors to concat one axis (once)
+    unsigned int offset = 0;
+    unsigned int size = 0;
+    int steps = A->stride[axis] * A->shape[axis];  // Equivalent to A->stride[axis-1], but without the negative index problem
 
-    // Initial offsets
-    unsigned int dest_offset = 0;
-    unsigned int *src_offset = new unsigned int[t.size()]();  // zeros
+    // Walk through each tensor
+    for (unsigned int i = 0; i < t.size(); i++) {
+        offset += size;
+        size = t[i]->stride[axis] * t[i]->shape[axis];
 
-    // If we haven't walked throught the entire new_tensor, keep walking
-    while(dest_offset < A->size) {
+        // Copy n bytes from src to dest
+        float *dest = A->ptr + offset;
+        float *src = t[i]->ptr;
 
-        // Walk through all the tensors to concat one axis (once)
-        for (unsigned int i = 0; i < t.size(); i++) {
-            unsigned int size = t[i]->stride[axis] * t[i]->shape[axis];
+        // Jump n steps
+        for (int j = 0; j < A->size; j+=steps) {
 
-            // Copy n bytes from src to dest
-            float *dest = A->ptr + dest_offset;
-            float *src = t[i]->ptr + src_offset[i];
-
-            if(derivative){
-                for (unsigned int k = 0; k < size; k++) {
-                    *(src+k) += *(dest+k);
-                }
-            }else{
-                memcpy(dest, src, sizeof(float) * size);
+            // Walk stride
+            for (unsigned int k = 0; k < size; k++) {
+                if(derivative){ *(src + k) += *(dest + k + j); }
+                else{ *(dest + k + j) = *(src + k); }
             }
-
-            // Step stride
-            dest_offset += size;
-            src_offset[i] += size;
         }
     }
 

@@ -203,3 +203,29 @@ void gpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
     set_select_back<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, sd->gpu_addresses);
     check_cuda(cudaDeviceSynchronize(), "set_select_back");
 }
+
+void gpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    // Walk through all the tensors to concat one axis (once)
+    unsigned int offset = 0;
+    unsigned int size = 0;
+    int steps = A->stride[axis] * A->shape[axis];  // Equivalent to A->stride[axis-1], but without the negative index problem
+
+    // Walk through each tensor
+    for (unsigned int i = 0; i < t.size(); i++) {
+        offset += size;
+        size = t[i]->stride[axis] * t[i]->shape[axis];
+
+        // Copy n bytes from src to dest
+        float *dest = A->ptr + offset;
+        float *src = t[i]->ptr;
+
+
+        setDims(t[i]);
+        concat<<<dimGrid,dimBlock>>>(dest, src, t[i]->size, size, steps, derivative);
+        check_cuda(cudaDeviceSynchronize(),"gpu_concat");
+
+    }
+}

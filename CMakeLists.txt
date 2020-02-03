@@ -222,7 +222,8 @@ file(GLOB_RECURSE ONNX_SOURCES_FILES
     ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.cpp
     ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.cc
 )
-SET(ONNX_SOURCES ${ONNX_HEADER_FILES} ${ONNX_SOURCES_FILES})
+# SET(ONNX_SOURCES ${ONNX_HEADER_FILES} ${ONNX_SOURCES_FILES})
+SET(ONNX_SOURCES "")
 
 
 # [LIBRARY] EDDL LIBRARY *********************
@@ -298,16 +299,16 @@ endif()
 
 
 # ONNX
-include(FindProtobuf)
-find_package(Protobuf REQUIRED)
-if(Protobuf_FOUND)
-    add_compile_definitions(cPROTO)
-    target_include_directories(eddl PUBLIC ${PROTOBUF_INCLUDE_DIR})
-	target_link_libraries(eddl PRIVATE ${PROTOBUF_LIBRARIES})
-	message("Protobuf path: ${PROTOBUF_LIBRARIES} ${PROTOBUF_INCLUDE_DIR}")
-else()
-    message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
-endif()
+# include(FindProtobuf)
+# find_package(Protobuf REQUIRED)
+# if(Protobuf_FOUND)
+#     add_compile_definitions(cPROTO)
+#     target_include_directories(eddl PUBLIC ${PROTOBUF_INCLUDE_DIR})
+# 	target_link_libraries(eddl PRIVATE ${PROTOBUF_LIBRARIES})
+# 	message("Protobuf path: ${PROTOBUF_LIBRARIES} ${PROTOBUF_INCLUDE_DIR}")
+# else()
+#     message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
+# endif()
 
 
 # pthreads setup for windows os
@@ -416,15 +417,16 @@ if(BUILD_EXAMPLES)
 
     add_executable(tensor_tests_dev "${EXAMPLES_DIR}/tensor/eddl_tests_dev.cpp")
     target_link_libraries(tensor_tests_dev eddl)
+
 	# EXAMPLES: ONNX ******************************************************************
-	add_executable(onnx_import_export "${EXAMPLES_DIR}/onnx/1_onnx_file.cpp")
-	target_link_libraries(onnx_import_export eddl)
+	# add_executable(onnx_import_export "${EXAMPLES_DIR}/onnx/1_onnx_file.cpp")
+	# target_link_libraries(onnx_import_export eddl)
 
-	add_executable(onnx_export "${EXAMPLES_DIR}/onnx/2_onnx_save_net_to_file.cpp")
-	target_link_libraries(onnx_export eddl)
+	# add_executable(onnx_export "${EXAMPLES_DIR}/onnx/2_onnx_save_net_to_file.cpp")
+	# target_link_libraries(onnx_export eddl)
 
-	add_executable(onnx_import "${EXAMPLES_DIR}/onnx/3_onnx_import_net_from_file.cpp")
-	target_link_libraries(onnx_import eddl)
+	# add_executable(onnx_import "${EXAMPLES_DIR}/onnx/3_onnx_import_net_from_file.cpp")
+	# target_link_libraries(onnx_import eddl)
 
 endif(BUILD_EXAMPLES)
 
@@ -453,13 +455,13 @@ install(FILES ${CMAKE_BINARY_DIR}/cmake/eddlConfig.cmake
 
 message(STATUS "Install path: ${CMAKE_INSTALL_PREFIX}")
 
-#Experimental script
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
-file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "#!/usr/bin/bash\n")
-set(SCRIPT_CPP_FLAGS "CPPFLAGS=\"-g -O3 -fopenmp -I${PROJECT_SOURCE_DIR}/src\"")
-file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "${SCRIPT_CPP_FLAGS}\n")
-file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "LDFLAGS=\"-g\"\n")
-set(SCRIPT_LD_LIBS "LDLIBS=\"-fopenmp -lpthread ${CMAKE_INSTALL_PREFIX}/lib/libeddl.a -lz \"\n")
-file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc ${SCRIPT_LD_LIBS})
-file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "g++ \$CPPFLAGS -c \$1\n")
-file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "g++ -o \$\{1%.cpp} \$LDFLAGS \$\{1%.cpp}.o \$LDLIBS\n")
+# #Experimental script
+# file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
+# file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "#!/usr/bin/bash\n")
+# set(SCRIPT_CPP_FLAGS "CPPFLAGS=\"-g -O3 -fopenmp -I${PROJECT_SOURCE_DIR}/src\"")
+# file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "${SCRIPT_CPP_FLAGS}\n")
+# file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "LDFLAGS=\"-g\"\n")
+# set(SCRIPT_LD_LIBS "LDLIBS=\"-fopenmp -lpthread ${CMAKE_INSTALL_PREFIX}/lib/libeddl.a -lz \"\n")
+# file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc ${SCRIPT_LD_LIBS})
+# file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "g++ \$CPPFLAGS -c \$1\n")
+# file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "g++ -o \$\{1%.cpp} \$LDFLAGS \$\{1%.cpp}.o \$LDLIBS\n")

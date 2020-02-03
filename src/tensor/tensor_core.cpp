@@ -412,7 +412,7 @@ void Tensor::concat_back(Tensor *A, const vector<Tensor*> t, int axis){
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_concat_back(A, t, axis, true);
+        gpu_concat(A, t, axis, true);
       }
 #endif
 #ifdef cFPGA
