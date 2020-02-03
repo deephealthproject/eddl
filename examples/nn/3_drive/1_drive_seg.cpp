@@ -16,6 +16,8 @@
 
 using namespace eddl;
 
+#define USE_CONCAT 0
+
 //////////////////////////////////
 // Drive segmentation
 // https://drive.grand-challenge.org/DRIVE/
@@ -23,6 +25,7 @@ using namespace eddl;
 // Data Augmentation graph
 // Segmentation graph
 //////////////////////////////////
+
 
 
 // from use case repo:
@@ -34,6 +37,7 @@ layer UNetWithPadding(layer x)
     layer x5;
 
     int depth=32;
+
 
     x = LeakyReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
     x = LeakyReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
@@ -51,22 +55,26 @@ layer UNetWithPadding(layer x)
     x5 = LeakyReLu(Conv(x5, 8*depth, { 3,3 }, { 1, 1 }, "same"));
     x5 = Conv(UpSampling(x5, { 2,2 }), 8*depth, { 2,2 }, { 1, 1 }, "same");
 
-    x4 = Concat({x4,x5});
+    if (USE_CONCAT) x4 = Concat({x4,x5});
+    else x4 = Sum(x4,x5);
     x4 = LeakyReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
     x4 = LeakyReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
     x4 = Conv(UpSampling(x4, { 2,2 }), 4*depth, { 2,2 }, { 1, 1 }, "same");
 
-    x3 = Concat({x3,x4});
+    if (USE_CONCAT) x3 = Concat({x3,x4});
+    else x3 = Sum(x3,x4);
     x3 = LeakyReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
     x3 = LeakyReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
     x3 = Conv(UpSampling(x3, { 2,2 }), 2*depth, { 2,2 }, { 1, 1 }, "same");
 
-    x2 = Concat({x2,x3});
+    if (USE_CONCAT) x2 = Concat({x2,x3});
+    else x2 = Sum(x2,x3);
     x2 = LeakyReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
     x2 = LeakyReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
     x2 = Conv(UpSampling(x2, { 2,2 }), depth, { 2,2 }, { 1, 1 }, "same");
 
-    x = Concat({x,x2});
+    if (USE_CONCAT) x = Concat({x,x2});
+    else x = Sum(x,x2);
     x = LeakyReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
     x = LeakyReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
     x = Conv(x, 1, { 1,1 });
@@ -82,7 +90,7 @@ int main(int argc, char **argv){
 
   // Settings
   int epochs = 100000;
-  int batch_size =1;
+  int batch_size =10;
 
   //////////////////////////////////////////////////////////////
   // Network for Data Augmentation
@@ -115,7 +123,7 @@ int main(int argc, char **argv){
     {"mse"} // Metrics
   );
   // Train on multi-gpu with sync weights every 100 batches:
-  toGPU(segnet,{1});
+  toGPU(segnet,{1},1,"low_mem");
   summary(segnet);
   plot(segnet,"segnet.pdf");
 

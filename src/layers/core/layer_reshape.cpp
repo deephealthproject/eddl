@@ -90,6 +90,8 @@ void LReshape::forward() {
 
 void LReshape::backward() {
 
+  //free_delta();
+
 }
 
 

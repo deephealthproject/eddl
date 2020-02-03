@@ -209,13 +209,14 @@ void gpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative
     cudaSetDevice(device);
 
     // Walk through all the tensors to concat one axis (once)
-    unsigned int offset = 0;
+    //unsigned int offset = 0;
     unsigned int size = 0;
     int steps = A->stride[axis] * A->shape[axis];  // Equivalent to A->stride[axis-1], but without the negative index problem
 
     // Walk through each tensor
+    #pragma omp parallel for
     for (unsigned int i = 0; i < t.size(); i++) {
-        offset += size;
+        int offset = i*size;
         size = t[i]->stride[axis] * t[i]->shape[axis];
 
         // Copy n bytes from src to dest
