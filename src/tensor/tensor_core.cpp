@@ -293,7 +293,7 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
     B->tsem->unlock();
 }
 
-Tensor* Tensor::concat(const vector<Tensor*> t, unsigned int axis){
+Tensor* Tensor::concat(const vector<Tensor*> t, unsigned int axis, Tensor* output){
     // Check number of vectors to concat
     if(t.size()<2){
         msg("Concat requires a minimum of two tensors", "Tensor::concat");
@@ -336,14 +336,24 @@ Tensor* Tensor::concat(const vector<Tensor*> t, unsigned int axis){
     new_shape[axis] +=  new_axis; // new_shape[axis] had the shape of the first tensor
 
     // Create new tensor
-    auto* new_tensor = new Tensor(new_shape, t[0]->device);
-    if (new_tensor->isCPU()) {
-        cpu_concat(new_tensor, t, axis, false);
+    if(output==nullptr){
+        output = new Tensor(new_shape, t[0]->device);
+    }else{
+        // Check dimensions
+        if(output->shape!=new_shape){
+            msg("The dimension of the output tensor is incorrect", "Tensor::concat");
+        }else if(output->device != t[0]->device){
+            msg("The output tensor and the input ones must be on the same device", "Tensor::concat");
+        }
+    }
+
+    if (output->isCPU()) {
+        cpu_concat(output, t, axis, false);
     }
 #ifdef cGPU
     else if (new_tensor->isGPU())
       {
-        gpu_concat(new_tensor, t, axis, false);
+        gpu_concat(output, t, axis, false);
       }
 #endif
 #ifdef cFPGA
@@ -352,7 +362,7 @@ Tensor* Tensor::concat(const vector<Tensor*> t, unsigned int axis){
     }
 #endif
 
-    return new_tensor;
+    return output;
 }
 
 void Tensor::concat_back(Tensor *A, const vector<Tensor*> t, unsigned int axis){

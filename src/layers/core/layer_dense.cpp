@@ -41,9 +41,9 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev, int
     gradients.push_back(gW);
     if (use_bias) gradients.push_back(gbias);
 
-	distributed_training = false;
-	acc_gW = nullptr;
-	acc_gbias = nullptr;
+    distributed_training = false;
+    acc_gW = nullptr;
+    acc_gbias = nullptr;
 
     parent->addchild(this);
     addparent(parent);
@@ -52,7 +52,7 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev, int
 
 // virtual
 void  LDense::resize(int batch){
-  Layer::resize(batch);
+    Layer::resize(batch);
 }
 
 void LDense::forward() {
@@ -64,8 +64,8 @@ void LDense::backward() {
 
     //get gradients with provided delta
     if (trainable) {
-      Tensor::mult2D(input, 1, delta, 0, gW, 1);
-      if (use_bias) Tensor::reduce_sum2D(delta, gbias, 0, 1);
+        Tensor::mult2D(input, 1, delta, 0, gW, 1);
+        if (use_bias) Tensor::reduce_sum2D(delta, gbias, 0, 1);
     }
 
     // backprop delta
@@ -75,36 +75,36 @@ void LDense::backward() {
         Tensor::mult2D(delta, 0, W, 1, parent[0]->delta, 1);
     }
 
-    if (mem_level)  free_delta();
+    if (mem_level) free_delta();
 
     // Regularizer
     if (trainable) if(reg != nullptr) {reg->apply(this->W);}
 }
 
 void LDense::update_weights(Tensor* w, Tensor* bias) {
-	Tensor::copy( w, this->W );
-	if ( bias != nullptr ) Tensor::copy( bias, this->bias );
+    Tensor::copy( w, this->W );
+    if ( bias != nullptr ) Tensor::copy( bias, this->bias );
 }
 
 void LDense::accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias) {
-	W->add_( gw );
-	if ( gbias != nullptr ) bias->add_( gbias );
+    W->add_( gw );
+    if ( gbias != nullptr ) bias->add_( gbias );
 
-	// Regularizer
-	if(reg != nullptr) { reg->apply(this->W); }
+    // Regularizer
+    if(reg != nullptr) { reg->apply(this->W); }
 }
 
 void LDense::reset_accumulated_gradients() {
-	acc_gW->fill_(0.0);
-	if (use_bias) acc_gbias->fill_(0.0);
+    acc_gW->fill_(0.0);
+    if (use_bias) acc_gbias->fill_(0.0);
 }
 
 void LDense::apply_accumulated_gradients() {
-	W->add_( acc_gW );
-	if ( use_bias ) bias->add_( acc_gbias );
+    W->add_( acc_gW );
+    if ( use_bias ) bias->add_( acc_gbias );
 
-	// Regularizer
-	if(reg != nullptr) { reg->apply(this->W); }
+    // Regularizer
+    if(reg != nullptr) { reg->apply(this->W); }
 }
 
 
@@ -120,10 +120,10 @@ Layer *LDense::share(int c, int bs, vector<Layer *> p) {
     n->W = params[0];
     if (use_bias) n->bias = params[1];
 
-	if ( distributed_training ) {
-		n->acc_gW = this->acc_gradients[0];
-		if ( use_bias ) n->acc_gbias = this->acc_gradients[1];
-	}
+    if ( distributed_training ) {
+        n->acc_gW = this->acc_gradients[0];
+        if ( use_bias ) n->acc_gbias = this->acc_gradients[1];
+    }
 
     n->params.push_back(n->W);
     if (use_bias) n->params.push_back(n->bias);
@@ -155,22 +155,22 @@ string LDense::plot(int c) {
 }
 
 void LDense::reset_name_counter(){
-	total_layers=0;
+    total_layers=0;
 }
 
 void LDense::enable_distributed(){
-	distributed_training = true;
+    distributed_training = true;
 
-	if ( distributed_training ) {
-		// Tensors with the accumulation of the gradients
-		acc_gW = new Tensor(vector<int>{input->shape[1], ndim}, dev);
-		acc_gW->fill_(0.0);
-		acc_gradients.push_back(acc_gW);
+    if ( distributed_training ) {
+        // Tensors with the accumulation of the gradients
+        acc_gW = new Tensor(vector<int>{input->shape[1], ndim}, dev);
+        acc_gW->fill_(0.0);
+        acc_gradients.push_back(acc_gW);
 
-		if (use_bias) {
-			acc_gbias = new Tensor(vector<int>{ndim}, dev);
-			acc_gbias->fill_(0.0);
-			acc_gradients.push_back(acc_gbias);
-		}
-	}
+        if (use_bias) {
+            acc_gbias = new Tensor(vector<int>{ndim}, dev);
+            acc_gbias->fill_(0.0);
+            acc_gradients.push_back(acc_gbias);
+        }
+    }
 }
