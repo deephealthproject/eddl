@@ -95,7 +95,7 @@ void Tensor::updateData(float *fptr){
     if (isCPU()) {
         // If null => Reserve memory
         // else => point to data
-        if (fptr==nullptr) { this->ptr = get_fmem(this->size,"Tensor::Tensor"); }
+        if (fptr==nullptr) { this->ptr = get_fmem(this->size,"Tensor::updateData"); }
         else { this-> ptr = fptr; };
 
         // For 2 dimensions, map to data to Eigen for efficiency
@@ -189,6 +189,14 @@ Tensor* Tensor::clone(){
     return t_new;
 }
 
+void Tensor::reallocate(vector<int> &s, Tensor* old_t){
+    // Update values
+    updateDevice(old_t->device);
+    updateShape(s);
+    updateSize();
+    updateStrides();
+    updateData(old_t->ptr);
+}
 
 Tensor::~Tensor() {
     if (isCPU()) {

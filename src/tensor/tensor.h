@@ -107,6 +107,7 @@ public:
     void toCPU(int dev=DEV_CPU);
     void toGPU(int dev=DEV_GPU);
     Tensor* clone();
+    void reallocate(vector<int> &s, Tensor* old_t);
 
     // Resize
     void resize(int b, float *fptr);
@@ -387,7 +388,7 @@ public:
     static int dot(Tensor *A);  // TODO
 
     // Indexing, Slicing, Joining, Mutating Ops *******
-    static Tensor* concat(const vector<Tensor*> t, unsigned int axis=0);
+    static Tensor* concat(const vector<Tensor*> t, unsigned int axis=0, Tensor* output=nullptr);
     static void concat_back(Tensor *A, const vector<Tensor*> t, unsigned int axis);
 
     Tensor* select(const vector<string>& indices);

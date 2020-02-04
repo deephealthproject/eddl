@@ -100,11 +100,7 @@ void LConcat::forward() {
     for (auto & p : this->parent) { outputs.push_back(p->output); }
 
     // Perform concat
-    Tensor *aux=Tensor::concat(outputs, this->axis);
-
-    Tensor::copy(aux,output);
-    delete aux;
-
+    Tensor::concat(outputs, this->axis, this->output);
 }
 
 

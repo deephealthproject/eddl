@@ -85,7 +85,7 @@ void LReshape::resize(int batch){
 void LReshape::forward() {
   if (parent[0]->mem_level)  {
       parent[0]->mem_delta();
-      delta = new Tensor(ls, parent[0]->delta);
+      delta->reallocate(ls, parent[0]->delta);
   }
 
 }
