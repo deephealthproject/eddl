@@ -10,8 +10,7 @@
 
 #include "descriptors.h"
 
-PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st,
-                               const vector<int> &p, int mem) {
+PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem) {
     ksize = vector<int>(ks.begin(), ks.end());
     stride = vector<int>(st.begin(), st.end());
     pad = vector<int>(p.begin(), p.end());
@@ -32,21 +31,20 @@ PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, str
     mem_level=mem;
 
     if (p == "same") {
-
       pad.push_back(ksize[0] / 2);
       pad.push_back(ksize[0] / 2);
-      if (ksize[0]%2==0) pad[1]--;
+      if (ksize[0] % 2 == 0) pad[1]--;
 
       pad.push_back(ksize[1] / 2);
       pad.push_back(ksize[1] / 2);
-      if (ksize[1]%2==0) pad[3]--;
+      if (ksize[1] % 2 == 0) pad[3]--;
 
     } else if (p == "none") {
-        pad.push_back(0);
-        pad.push_back(0);
-        pad.push_back(0);
-        pad.push_back(0);
-    } else msg("Incorrect padding type", "PoolDescriptor::PoolDescriptor");
+        this->pad = {0, 0, 0, 0};
+
+    } else {
+        msg("Incorrect padding type", "PoolDescriptor::PoolDescriptor");
+    }
 }
 
 
@@ -72,29 +70,26 @@ void PoolDescriptor::build(Tensor *A) {
     padcr = pad[3];
 
 
-
     z = iz;
     r = (ir - kr + padrt + padrb) / sr + 1;
     c = (ic - kc + padcl + padcr) / sc + 1;
 
-    if ((r <= 0) || (c <= 0))
+    if ((r <= 0) || (c <= 0)) {
         msg("Invalid output shape", "PoolDescriptor::build");
+    }
 
     O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
-    if (!mem_level) D = new Tensor(O->getShape(), A->device);
+    if (!mem_level) { D = new Tensor(O->shape, A->device); }
 
     size=0;
-    for(int k=0;k<iz;k++)
-      for(int i=-padrt;i<=ir+padrb-kr;i+=sr)
-        for(int j=-padcl;j<=ic+padcr-kc;j+=sc,size++) {}
-
-
+//    for(int k=0;k<iz;k++)
+//      for(int i=-padrt;i<=ir+padrb-kr;i+=sr)
+//        for(int j=-padcl;j<=ic+padcr-kc;j+=sc,size++) {}
 }
 
 void PoolDescriptor::resize(int b) {
-  if (b==O->shape[0]) return;
+  if (b == O->shape[0]) return;
 
   O->resize(b);
-  if (!mem_level) D->resize(b);
-
+  if (!mem_level) { D->resize(b); }
 }

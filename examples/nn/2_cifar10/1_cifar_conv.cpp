@@ -45,9 +45,9 @@ int main(int argc, char **argv){
   layer in=Input({3,32,32});
   layer l=in;
 
-  l=MaxPool(ReLu(Normalization(Conv(l,32,{3,3},{1,1}))),{2,2});
-  l=MaxPool(ReLu(Normalization(Conv(l,64,{3,3},{1,1}))),{2,2});
-  l=MaxPool(ReLu(Normalization(Conv(l,128,{3,3},{1,1}))),{2,2});
+  l=AveragePool(ReLu(Normalization(Conv(l,32,{3,3},{1,1}))),{2,2});
+  l=AveragePool(ReLu(Normalization(Conv(l,64,{3,3},{1,1}))),{2,2});
+  l=AveragePool(ReLu(Normalization(Conv(l,128,{3,3},{1,1}))),{2,2});
   //l=MaxPool(ReLu(Normalization(Conv(l,256,{3,3},{1,1}))),{2,2});
 
   l=GlobalMaxPool(l);

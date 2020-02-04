@@ -18,8 +18,75 @@
 using namespace std;
 
 
-// ---- AVERAGE POOL ----
-LAveragePool::LAveragePool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name, int dev) : LAveragePool(parent, new PoolDescriptor(pool_size, strides, padding), name, dev) {}
-LAveragePool::LAveragePool(Layer *parent, PoolDescriptor *D, string name, int dev) : LPool(parent, D, name, dev) {
-    // TODO: Implement
+// ---- MAXPOOL2D ----
+// constructors and clones
+
+// constructors and clones
+LAveragePool::LAveragePool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name, int dev, int mem) : LAveragePool(parent, new PoolDescriptor(pool_size, strides, padding, mem), name, dev, mem) {}
+
+LAveragePool::LAveragePool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, string name, int dev, int mem) : LAveragePool(parent, new PoolDescriptor(pool_size, strides, padding, mem), name, dev, mem) {}
+
+LAveragePool::LAveragePool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem) : LPool(parent, D, name, dev, mem) {
+    // Params
+    mem_level=mem;
+    D->indX = new Tensor(D->O->getShape(), dev);
+    D->indY = new Tensor(D->O->getShape(), dev);
+}
+
+
+void LAveragePool::resize(int batch){
+    //cout<<"Resize "<<name<<"\n";
+
+    LPool::resize(batch);
+
+    delete pd->indX;
+    delete pd->indY;
+
+    pd->indX = new Tensor(pd->O->getShape(), dev);
+    pd->indY = new Tensor(pd->O->getShape(), dev);
+
+}
+
+void LAveragePool::forward() {
+    AvgPool2D(this->pd);
+}
+
+void LAveragePool::backward() {
+    // backprop delta
+    if (parent[0]->mem_level)  {
+        parent[0]->mem_delta();
+        pd->ID=parent[0]->delta;
+    }
+
+    if (parent.size()) {
+        if (mem_level)  pd->D=delta;
+        AvgPool2D_back(this->pd);
+    }
+
+    if (mem_level) free_delta();
+}
+
+Layer *LAveragePool::share(int c, int bs, vector<Layer *> p) {
+    auto *n = new LAveragePool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, pd->pad,
+                               "share_" + to_string(c) + name, dev);
+    n->orig = this;
+
+    return n;
+}
+
+Layer *LAveragePool::clone(int c, int bs, vector<Layer *> p, int todev) {
+    auto *n = new LAveragePool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, pd->pad,
+                               "clone_" + to_string(todev) + name, todev,mem_level);
+    n->orig = this;
+
+    return n;
+}
+
+string LAveragePool::plot(int c) {
+    string s;
+
+    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=gray,shape=box]";
+    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=gray75,shape=box]";
+
+    return s;
 }

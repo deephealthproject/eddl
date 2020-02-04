@@ -60,9 +60,13 @@ void cpu_conv2D(ConvolDescriptor *D);
 void cpu_conv2D_grad(ConvolDescriptor *D);
 void cpu_conv2D_back(ConvolDescriptor *D);
 
-// Pool
+// MaxPool
 void cpu_mpool2D(PoolDescriptor*D);
 void cpu_mpool2D_back(PoolDescriptor *D);
+
+// AvgPool
+void cpu_avgpool2D(PoolDescriptor*D);
+void cpu_avgpool2D_back(PoolDescriptor *D);
 
 // Tensor (special functions that deal with 4D tensors)
 void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size);

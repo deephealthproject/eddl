@@ -22,16 +22,12 @@ using namespace std;
 // constructors and clones
 
 // constructors and clones
-LMaxPool::LMaxPool(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name,
-                   int dev, int mem) : LMaxPool(parent, new PoolDescriptor(ks, st, p, mem), name, dev, mem) {}
+LMaxPool::LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name, int dev, int mem) : LMaxPool(parent, new PoolDescriptor(pool_size, strides, padding, mem), name, dev, mem) {}
 
-LMaxPool::LMaxPool(Layer *parent, const vector<int> &ks, const vector<int> &st,
-               const vector<int> &p, string name, int dev, int mem) : LMaxPool(parent, new PoolDescriptor(ks, st, p, mem), name, dev, mem) {}
+LMaxPool::LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, string name, int dev, int mem) : LMaxPool(parent, new PoolDescriptor(pool_size, strides, padding, mem), name, dev, mem) {}
 
 LMaxPool::LMaxPool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem) : LPool(parent, D, name, dev, mem) {
     // Params
-
-
     mem_level=mem;
     D->indX = new Tensor(D->O->getShape(), dev);
     D->indY = new Tensor(D->O->getShape(), dev);

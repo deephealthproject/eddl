@@ -73,6 +73,11 @@ void Conv2D_back(ConvolDescriptor *D);
 void MPool2D(PoolDescriptor *D);
 void MPool2D_back(PoolDescriptor *D);
 
+
+// AvgPool
+void AvgPool2D(PoolDescriptor *D);
+void AvgPool2D_back(PoolDescriptor *D);
+
 // ***** Tensor operations *****************************
 void repeat_nn(Tensor *A, Tensor *B, vector<int> size);
 void d_repeat_nn(Tensor *D, Tensor *P, vector<int> size);

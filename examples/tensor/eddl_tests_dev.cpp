@@ -17,18 +17,24 @@
 
 //#include <omp.h>
 
-#include "apis/eddlT.h"
-#include "../../src/tensor/tensor_reduction.h"
+#include "../src/initializers/initializer.h"
+#include "../src/tensor/tensor.h"
+#include "../src/tensor/tensor_reduction.h"
+#include "../src/tensor/nn/tensor_nn.h"
+#include "../src/regularizers/regularizer.h"
+#include "../src/tensor/nn/tensor_nn.h"
+#include "../src/hardware/cpu/nn/cpu_nn.h"
 
 using namespace std;
-using namespace eddlT;
 
 int main(int argc, char **argv) {
-
     cout << "Tests for development. Ignore." << endl;
-//
-//    Tensor t1 = *Tensor::full({5,5}, 1.0f);
-//    Tensor t2 = *Tensor::full({5,5}, 2.0f);
+
+    int device = DEV_CPU;
+
+    // Overload operations
+//    Tensor t1 = *Tensor::full({5,5}, 1.0f, device);
+//    Tensor t2 = *Tensor::full({5,5}, 2.0f, device);
 //    Tensor t3 = ((t1 / t1) + (t2 * t2)) + 10;
 //
 //    t1.print();
@@ -62,20 +68,34 @@ int main(int argc, char **argv) {
 //    t3 *= 5;
 //    t3 /= 5;
 //
-    int device = DEV_CPU;
 
-    // Concat
-    Tensor* t5 = Tensor::range(1, 0+3*2*2, 1.0f, device); t5->reshape_({3, 2, 2}); t5->print();
-    Tensor* t6 = Tensor::range(11, 10+3*2*2, 1.0f, device); t6->reshape_({3, 2, 2}); t6->print();
-    Tensor* t7 = Tensor::range(101, 100+3*2*2, 1.0f, device); t7->reshape_({3, 2, 2}); t7->print();
+    // Test concat
+//    Tensor* t5 = Tensor::range(1, 0+3*2*2, 1.0f, device); t5->reshape_({3, 2, 2}); t5->print();
+//    Tensor* t6 = Tensor::range(11, 10+3*2*2, 1.0f, device); t6->reshape_({3, 2, 2}); t6->print();
+//    Tensor* t7 = Tensor::range(101, 100+3*2*2, 1.0f, device); t7->reshape_({3, 2, 2}); t7->print();
+//
+//    // Concat
+//    Tensor* t8 = Tensor::concat({t5, t6, t7}, 2);
+//    t8->print();
+//
+//     Tensor::concat_back(t8, {t5, t6, t7}, 2);
+//     t5->print();
+//     t6->print();
+//     t7->print();
 
-    // Concat
-    Tensor* t8 = Tensor::concat({t5, t6, t7}, 2);
-    t8->print();
+    // Test average pooling
+    float ptr[4*4] = {31, 15, 28, 184, 0, 100, 70, 38, 12, 12, 7, 2, 12, 12 ,45, 6};
+    auto* t1 = new Tensor({1, 1, 4, 4}, ptr, device);
 
-     Tensor::concat_back(t8, {t5, t6, t7}, 2);
-     t5->print();
-     t6->print();
-     t7->print();
+    auto* pd = new PoolDescriptor({2, 2}, {2,2}, "none");
+    pd->build(t1);
+    pd->indX = new Tensor(pd->O->getShape(), device);
+    pd->indY = new Tensor(pd->O->getShape(), device);
+
+    // Forward
+    AvgPool2D(pd);
+
+    // Print
+    pd->O->print();
     int asda = 33;
 }

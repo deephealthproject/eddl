@@ -796,7 +796,6 @@ namespace eddl {
     // Pooling Layers
     layer AveragePool(layer parent, const vector<int> &pool_size, const vector<int> &strides, string padding,
                       string name) {
-        //TODO: Implement
         return new LAveragePool(parent, pool_size, strides, padding, name, DEV_CPU);
     }
     layer GlobalAveragePool(layer parent, string name) {

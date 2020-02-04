@@ -90,7 +90,7 @@ int main(int argc, char **argv){
 
   // Settings
   int epochs = 100000;
-  int batch_size =8;
+  int batch_size =2;
 
   //////////////////////////////////////////////////////////////
   // Network for Data Augmentation
@@ -123,7 +123,7 @@ int main(int argc, char **argv){
     {"mse"} // Metrics
   );
   // Train on multi-gpu with sync weights every 100 batches:
-  toGPU(segnet,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
+  //toGPU(segnet,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
   summary(segnet);
   plot(segnet,"segnet.pdf");
 
