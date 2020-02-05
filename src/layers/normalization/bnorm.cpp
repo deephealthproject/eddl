@@ -65,10 +65,11 @@ void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, MapReduceDescripto
 
   int m;
 
-  if (delta->ndim == 2)
-    m=delta->shape[0];
-  else
-    m=delta->shape[0]*delta->shape[2]*delta->shape[3];
+  if (delta->ndim == 2) {
+      m = delta->shape[0];
+  }else {
+      m = delta->shape[0] * delta->shape[2] * delta->shape[3];
+  }
 
   Tensor *dmean=new Tensor(bn_mean->getShape(),bn_mean->device);
   Tensor *dvar=new Tensor(bn_var->getShape(),bn_var->device);

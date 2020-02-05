@@ -38,12 +38,19 @@ LRSum::LRSum(Layer *l, vector<int> axis, bool keepdims, string name, int dev, in
 }
 
 void LRSum::forward(){
-reduction(RD);
+    reduction(RD);
 }
 
 void LRSum::backward(){
-reduction_back(RD);
+    // Reserve parent's delta
+    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
+
+    reduction_back(RD);
+
+// Delete this delta
+    if (mem_level) { free_delta(); }
 }
+
 // virtual
 void LRSum::resize(int batch){
     RD->resize(batch);
@@ -52,10 +59,10 @@ void LRSum::resize(int batch){
 
 
 Layer *LRSum::share(int c, int bs, vector<Layer *> p) {
-  LRSum *n;
-  n = new LRSum(p[0], RD->axis, RD->keepdims, "share_" + to_string(c) + name, this->dev, this->mem_level);
-  n->orig = this;
-  return n;
+    LRSum *n;
+    n = new LRSum(p[0], RD->axis, RD->keepdims, "share_" + to_string(c) + name, this->dev, this->mem_level);
+    n->orig = this;
+    return n;
 }
 
 Layer *LRSum::clone(int c, int bs, vector<Layer *> p, int todev) {

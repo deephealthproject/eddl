@@ -107,18 +107,26 @@ void LDiff::forward(){
 }
 
 void LDiff::backward(){
+    // Reserve parent's delta
+    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
+
     if (binary) {
         Tensor::inc(delta,parent[0]->delta);
         delta->mult_(-1.0);
         Tensor::inc(delta,parent[1]->delta);
     }
     else {
-      if (left) Tensor::inc(delta,parent[0]->delta);
-      else {
+      if (left) {
+          Tensor::inc(delta, parent[0]->delta);
+      } else {
           delta->mult_(-1.0);
           Tensor::inc(delta,parent[0]->delta);
         }
     }
+
+    // Delete this delta
+    if (mem_level) { free_delta(); }
+
 }
 
 Layer *LDiff::share(int c, int bs, vector<Layer *> p) {

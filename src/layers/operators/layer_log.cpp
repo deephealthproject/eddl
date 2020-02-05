@@ -46,6 +46,9 @@ void LLog::forward() {
 }
 
 void LLog::backward() {
+    // Reserve parent's delta
+    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
+
   Tensor::el_div(delta,parent[0]->output, parent[0]->delta, 1);
 }
 

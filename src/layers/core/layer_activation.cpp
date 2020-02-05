@@ -90,61 +90,61 @@ void LActivation::forward(){
 
 
 void LActivation::backward(){
+    // Reserve parent's delta
+    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
 
+    if (delta_bp){
+        Tensor::inc(delta, parent[0]->delta);
+    }else {
+        if (act == "relu"){
+            D_ReLu(delta, input, parent[0]->delta);
 
-    if (parent.size()){
-        if (parent[0]->mem_level)  parent[0]->mem_delta();
-        if (delta_bp){
-            Tensor::inc(delta, parent[0]->delta);
-        }else {
-            if (act == "relu"){
-                D_ReLu(delta, input, parent[0]->delta);
+        }else if (act == "elu"){
+            float alpha = this->params[0];
+            D_ELu(delta, input, parent[0]->delta, alpha);
 
-            }else if (act == "elu"){
-                float alpha = this->params[0];
-                D_ELu(delta, input, parent[0]->delta, alpha);
+        }else if (act == "selu"){
+            // https://mlfromscratch.com/activation-functions-explained/#selu
+            float alpha = this->params[0];
+            float scale = this->params[1];
 
-            }else if (act == "selu"){
-                // https://mlfromscratch.com/activation-functions-explained/#selu
-                float alpha = this->params[0];
-                float scale = this->params[1];
+            D_ELu(delta, input, parent[0]->delta, alpha);
+            this->output->mult_(scale);
 
-                 D_ELu(delta, input, parent[0]->delta, alpha);
-                this->output->mult_(scale);
+        }else if (act == "exp"){
+            // TODO: Review
+            Tensor::el_mult(delta, output, parent[0]->delta, 0);
 
-            }else if (act == "exp"){
-                // TODO: Review
-                Tensor::el_mult(delta, output, parent[0]->delta, 0);
+        }else if (act == "softplus"){
+            D_softplus(delta, output, parent[0]->delta);
 
-            }else if (act == "softplus"){
-                D_softplus(delta, output, parent[0]->delta);
+        }else if (act == "softsign"){
+            D_softsign(delta, output, parent[0]->delta);
 
-            }else if (act == "softsign"){
-                D_softsign(delta, output, parent[0]->delta);
+        }else if (act == "softmax"){
+            D_Softmax(delta, output, parent[0]->delta);
 
-            }else if (act == "softmax"){
-                D_Softmax(delta, output, parent[0]->delta);
+        }else if (act == "sigmoid"){
+            D_Sigmoid(delta, output, parent[0]->delta);
 
-            }else if (act == "sigmoid"){
-                D_Sigmoid(delta, output, parent[0]->delta);
+        }else if (act == "hard_sigmoid"){
+            D_HardSigmoid(delta, input, parent[0]->delta);
 
-            }else if (act == "hard_sigmoid"){
-                D_HardSigmoid(delta, input, parent[0]->delta);
+        }else if (act == "leaky_relu"){
+            float alpha = this->params[0];
+            D_LeakyReLu(delta, input, parent[0]->delta, alpha);
 
-            }else if (act == "leaky_relu"){
-                float alpha = this->params[0];
-                D_LeakyReLu(delta, input, parent[0]->delta, alpha);
+        }else if (act == "tanh"){
+            D_Tanh(delta, output, parent[0]->delta);
 
-            }else if (act == "tanh"){
-                D_Tanh(delta, output, parent[0]->delta);
-
-            }else if (act == "linear"){
-                float alpha = this->params[0];
-                D_Linear(delta, input, parent[0]->delta, alpha);
-            }
+        }else if (act == "linear"){
+            float alpha = this->params[0];
+            D_Linear(delta, input, parent[0]->delta, alpha);
         }
-      if (mem_level)  free_delta();
     }
+
+    // Delete this delta
+    if (mem_level) { free_delta(); }
 }
 
 

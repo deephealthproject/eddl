@@ -50,15 +50,17 @@ void LGaussianNoise::resize(int batch){
 }
 
 void LGaussianNoise::forward() {
+    // Reserve parent's delta
+    if (parent[0]->mem_level) {
+        parent[0]->mem_delta();
+        delta=parent[0]->delta;
+    }
+
   if (mode == TRMODE) {
       noise->rand_normal(0.0, stdev);
       Tensor::add(1.0, input, 1.0, noise, output, 0);
   } else {
       Tensor::copy(input, output);
-  }
-  if (parent[0]->mem_level)  {
-    parent[0]->mem_delta();
-    delta=parent[0]->delta;
   }
 }
 

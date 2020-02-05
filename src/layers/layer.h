@@ -80,11 +80,11 @@ public:
     Tensor* setBias(Tensor bias);
 
     void clamp(float min,float max);
-    void setdetach();
+    void set_detach();
 
-    void setmem_level(int mem);
-    void mem_delta();
-    void free_delta();
+    void set_mem_level(int mem);
+    virtual void mem_delta();
+    virtual void free_delta();
 
 
     //virtual

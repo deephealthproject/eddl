@@ -98,6 +98,9 @@ void LDiv::forward() {
 }
 
 void LDiv::backward() {
+    // Reserve parent's delta
+    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
+
     if (binary) {
         Tensor::el_div(delta, parent[1]->output, delta, 0);
         Tensor::inc(delta, parent[0]->delta);

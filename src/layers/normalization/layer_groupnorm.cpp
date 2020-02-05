@@ -149,6 +149,8 @@ void LGroupNorm::forward() {
 
 void LGroupNorm::backward()
 {
+    // Reserve parent's delta
+    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
 
   Tensor *A;
   Tensor *B;
@@ -186,6 +188,9 @@ void LGroupNorm::backward()
   delete A;
   delete B;
   delete C;
+
+    // Delete this delta
+    if (mem_level) { free_delta(); }
 
 }
 

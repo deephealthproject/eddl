@@ -43,7 +43,7 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
     cd->build(input);
 
     output = cd->O;
-    if (!mem_level) delta=cd->D;
+    if (!mem_level) { delta=cd->D; }
     if (parent->mem_level<2) cd->ID = parent->delta;
 
     params.push_back(cd->K);
@@ -58,7 +58,6 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
 
     parent->addchild(this);
     addparent(parent);
-
 }
 
 
@@ -73,27 +72,26 @@ void LConv::forward() {
 }
 
 void LConv::backward() {
-
+    // Reserve parent's delta
     if (parent[0]->mem_level)  {
       parent[0]->mem_delta();
       cd->ID=parent[0]->delta;
     }
-
-    if (mem_level) cd->D=delta;
+    if (mem_level) { cd->D=delta; }
 
     //get gradients with provided delta
-    if (trainable) Conv2D_grad(this->cd);
+    if (trainable) { Conv2D_grad(this->cd); }
 
     // backprop delta
     if (this->parent.size()) {
         Conv2D_back(this->cd);
     }
 
-    if (mem_level)  free_delta();
-
     // Regularizer
     if (trainable) if(reg!= nullptr) {reg->apply(cd->K);}
 
+    // Free delta
+    if (mem_level) { free_delta(); }
 }
 
 void LConv::update_weights(Tensor* w, Tensor* bias) {

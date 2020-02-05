@@ -63,20 +63,19 @@ void Layer::initialize() {
 
 void Layer::clamp(float min,float max)
 {
-  for (int i = 0; i != params.size(); i++) {
-      params[i]->clamp_(min,max);
-  }
+    for (int i = 0; i != params.size(); i++) {
+        params[i]->clamp_(min,max);
+    }
 }
 
-void Layer::setdetach()
-{
-  detached=true;
+void Layer::set_detach(){
+    detached=true;
 }
-void Layer::mem_delta()
-{
+
+void Layer::mem_delta(){
     // Reserve space for the parent's delta
     if(this->delta != nullptr){
-        //msg("Memory leak! The parent's delta shouldn't be reserved: " + this->name, "Layer::reserve_delta");
+        msg("Memory leak! The parent's delta shouldn't be reserved: " + this->name, "Layer::reserve_delta");
     }else{
         this->delta = new Tensor(this->output->shape, this->output->device);
     }
@@ -91,13 +90,11 @@ void Layer::free_delta(){
     }
 }
 
-  void Layer::setmem_level(int mem)
-{
-  mem_level=mem;
+void Layer::set_mem_level(int mem){
+    mem_level=mem;
 }
 
-  void Layer::resize(int batch)
-{
+void Layer::resize(int batch){
     //cout<<name<<" resizing\n";
     if (output!=nullptr) output->resize(batch);
     if (delta!=nullptr) delta->resize(batch);
@@ -106,7 +103,7 @@ void Layer::free_delta(){
 
 void Layer::set_trainable(bool value)
 {
-  trainable=value;
+    trainable=value;
 }
 
 void Layer::detach(Layer *l)
@@ -124,8 +121,8 @@ void Layer::reset() {
 }
 
 void Layer::zeroGrads() {
-  for(int i=0;i<gradients.size();i++)
-    gradients[i]->fill_(0.0);
+    for(int i=0;i<gradients.size();i++)
+        gradients[i]->fill_(0.0);
 }
 
 void Layer::setmode(int m) {
@@ -200,8 +197,8 @@ Tensor* Layer::setBias(Tensor bias){
 
 void Layer::copy(Layer *l2)
 {
-  for(int i=0;i<params.size();i++)
-    Tensor::copy(params[i],l2->params[i]);
+    for(int i=0;i<params.size();i++)
+        Tensor::copy(params[i],l2->params[i]);
 }
 
 ////////////////////////////////////

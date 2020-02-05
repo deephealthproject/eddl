@@ -390,14 +390,14 @@ namespace eddl {
     // graph connections
     layer detach(layer l)
     {
-        l->setdetach();
+        l->set_detach();
         return l;
     }
 
     vlayer detach(vlayer l)
     {
         for(int i=0;i<l.size();i++)
-            l[i]->setdetach();
+            l[i]->set_detach();
         return l;
     }
 

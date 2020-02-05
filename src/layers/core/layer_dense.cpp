@@ -59,6 +59,8 @@ void LDense::forward() {
 }
 
 void LDense::backward() {
+    // Reserve parent's delta
+    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
 
     //get gradients with provided delta
     if (trainable) {
@@ -66,17 +68,15 @@ void LDense::backward() {
         if (use_bias) Tensor::reduce_sum2D(delta, gbias, 0, 1);
     }
 
-    // backprop delta
-    if (parent.size()) {
-        if (parent[0]->mem_level)  parent[0]->mem_delta();
-        //1: note that increment parent delta
-        Tensor::mult2D(delta, 0, W, 1, parent[0]->delta, 1);
-    }
-
-    if (mem_level) free_delta();
+    if (parent[0]->mem_level)  parent[0]->mem_delta();
+    //1: note that increment parent delta
+    Tensor::mult2D(delta, 0, W, 1, parent[0]->delta, 1);
 
     // Regularizer
     if (trainable) if(reg != nullptr) {reg->apply(this->W);}
+
+    // Delete this delta
+    if (mem_level) { free_delta(); }
 }
 
 void LDense::update_weights(Tensor* w, Tensor* bias) {

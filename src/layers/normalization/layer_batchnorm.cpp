@@ -27,8 +27,8 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
     if (input->ndim == 2) {axis.push_back(0);shape.push_back(input->shape[1]);}
     else if (input->ndim == 4) {axis.push_back(0);axis.push_back(2);axis.push_back(3);shape.push_back(input->shape[1]);}
     else {
-      input->info();
-      msg("LBatchNorm only works over 1D (Dense) or 2D (Conv) tensors","LBatchNorm");
+        input->info();
+        msg("LBatchNorm only works over 1D (Dense) or 2D (Conv) tensors","LBatchNorm");
     }
 
 
@@ -63,34 +63,34 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
 // virtual
 void LBatchNorm::resize(int batch){
-  if (batch!=output->shape[0]) {
-    output->resize(batch);
-    if (!mem_level) delta->resize(batch);
-    if (target!=nullptr) target->resize(batch);
-    delete MD;
-    MD=new MapReduceDescriptor(input,axis);
-  }
+    if (batch!=output->shape[0]) {
+        output->resize(batch);
+        if (!mem_level) delta->resize(batch);
+        if (target!=nullptr) target->resize(batch);
+        delete MD;
+        MD=new MapReduceDescriptor(input,axis);
+    }
 
 
 }
 
 void LBatchNorm::save(std::ofstream &ofs, string format){
-  // Save momentum TODO
-  if (momentum!=0) {
-    mean->savefs(ofs, format);
-    variance->savefs(ofs, format);
-  }
+    // Save momentum TODO
+    if (momentum!=0) {
+        mean->savefs(ofs, format);
+        variance->savefs(ofs, format);
+    }
 }
 
 void LBatchNorm::load(std::ifstream &ifs, string format){
     // load momentum TODO
     if (momentum!=0) {
-      Tensor *t=mean->loadfs(ifs, format);
-      Tensor::copy(t,mean);
-      delete t;
-      t=variance->loadfs(ifs, format);
-      Tensor::copy(t,variance);
-      delete t;
+        Tensor *t=mean->loadfs(ifs, format);
+        Tensor::copy(t,mean);
+        delete t;
+        t=variance->loadfs(ifs, format);
+        Tensor::copy(t,variance);
+        delete t;
 
     }
 
@@ -98,21 +98,23 @@ void LBatchNorm::load(std::ifstream &ifs, string format){
 
 void LBatchNorm::copy(Layer *l2)
 {
-  Tensor::copy(mean,((LBatchNorm*)l2)->mean);
-  Tensor::copy(variance,((LBatchNorm*)l2)->variance);
+    Tensor::copy(mean,((LBatchNorm*)l2)->mean);
+    Tensor::copy(variance,((LBatchNorm*)l2)->variance);
 }
 
 
 void LBatchNorm::forward() {
-  BN_forward(input,output,MD,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);
+    BN_forward(input,output,MD,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);
 }
 
-void LBatchNorm::backward()
-{
-  if (parent[0]->mem_level)  parent[0]->mem_delta();
-  BN_backward(input,delta, parent[0]->delta,MD,bn_mean,bn_var,mean,variance,epsilon);
-  if (mem_level)  free_delta();
+void LBatchNorm::backward(){
+    // Reserve parent's delta
+    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
 
+    BN_backward(input,delta, parent[0]->delta,MD,bn_mean,bn_var,mean,variance,epsilon);
+
+    // Delete this delta
+    if (mem_level) { free_delta(); }
 }
 
 

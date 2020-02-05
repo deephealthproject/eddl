@@ -37,7 +37,7 @@ void LTranspose::resize(int batch){
 }
 
 void LTranspose::forward() {
-   Tensor::transpose(input,output,dims);
+   Tensor::transpose(input, output,dims);
 }
 
 

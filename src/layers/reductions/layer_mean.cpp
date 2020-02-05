@@ -62,7 +62,13 @@ void LRMean::forward(){
 }
 
 void LRMean::backward(){
+    // Reserve parent's delta
+    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
+
     reduction_back(RD);
+
+    // Delete this delta
+    if (mem_level) { free_delta(); }
 }
 
 // virtual
@@ -73,10 +79,10 @@ void LRMean::resize(int batch){
 
 
 Layer *LRMean::share(int c, int bs, vector<Layer *> p) {
-  LRMean *n;
-  n = new LRMean(p[0], RD->axis, RD->keepdims, "share_" + to_string(c) + name, this->dev, this->mem_level);
-  n->orig = this;
-  return n;
+    LRMean *n;
+    n = new LRMean(p[0], RD->axis, RD->keepdims, "share_" + to_string(c) + name, this->dev, this->mem_level);
+    n->orig = this;
+    return n;
 }
 
 Layer *LRMean::clone(int c, int bs, vector<Layer *> p, int todev) {

@@ -38,12 +38,19 @@ LRMin::LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev, in
 }
 
 void LRMin::forward(){
-reduction(RD);
+    reduction(RD);
 }
 
 void LRMin::backward(){
-reduction_back(RD);
+    // Reserve parent's delta
+    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
+
+    reduction_back(RD);
+
+// Delete this delta
+    if (mem_level) { free_delta(); }
 }
+
 // virtual
 void LRMin::resize(int batch){
     RD->resize(batch);
@@ -52,10 +59,10 @@ void LRMin::resize(int batch){
 
 
 Layer *LRMin::share(int c, int bs, vector<Layer *> p) {
-  LRMin *n;
-  n = new LRMin(p[0], RD->axis, RD->keepdims, "share_" + to_string(c) + name, this->dev, this->mem_level);
-  n->orig = this;
-  return n;
+    LRMin *n;
+    n = new LRMin(p[0], RD->axis, RD->keepdims, "share_" + to_string(c) + name, this->dev, this->mem_level);
+    n->orig = this;
+    return n;
 }
 
 Layer *LRMin::clone(int c, int bs, vector<Layer *> p, int todev) {

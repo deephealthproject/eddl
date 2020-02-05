@@ -70,29 +70,27 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev, int m
 
 LReshape::~LReshape()
 {
-  output=delta=nullptr;
+    output=delta=nullptr;
 }
 
 // virtual
 void LReshape::resize(int batch){
-  ls[0]=batch;
-  output->resize(batch, parent[0]->output);
-  if (!mem_level) delta->resize(batch, parent[0]->delta);
-  if (target!=nullptr) target->resize(batch);
+    ls[0]=batch;
+    output->resize(batch, parent[0]->output);
+    if (!mem_level) delta->resize(batch, parent[0]->delta);
+    if (target!=nullptr) target->resize(batch);
 }
 
 void LReshape::forward() {
-  if (parent[0]->mem_level)  {
-      parent[0]->mem_delta();
-      delta->reallocate(ls, parent[0]->delta);
-  }
-
+    // Reserve parent's delta
+    if (parent[0]->mem_level) {
+        parent[0]->mem_delta();
+        delta->reallocate(ls, parent[0]->delta);
+    }
 }
 
 
 void LReshape::backward() {
-
-  //free_delta();
 
 }
 

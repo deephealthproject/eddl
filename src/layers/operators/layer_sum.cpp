@@ -82,14 +82,17 @@ void LSum::forward() {
 }
 
 void LSum::backward() {
-    if (parent[0]->mem_level)  parent[0]->mem_delta();
+    // Reserve parent's delta
+    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
+
     Tensor::inc(delta, parent[0]->delta);
     if (binary) {
         if (parent[1]->mem_level)  parent[1]->mem_delta();
         Tensor::inc(delta, parent[1]->delta);
       }
 
-    if (mem_level)  free_delta();
+    // Delete this delta
+    if (mem_level) { free_delta(); }
 }
 
 Layer *LSum::share(int c, int bs, vector<Layer *> p) {
