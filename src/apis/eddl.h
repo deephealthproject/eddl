@@ -456,7 +456,7 @@ typedef NetLoss * metric;
       *  @param parent  Parent layer
       *  @return     Output of hyperbolic activation
     */
-    layer Tanh(layer parent);
+    layer Tanh(layer parent, string name="");
 
     /**
       *  @brief Convolution layer.
