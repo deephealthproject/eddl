@@ -276,3 +276,8 @@ If you are not a C++ fan, try [PyEDDL](https://github.com/deephealthproject/pyed
     - **CPU**: This is probably because your processor does not support
     AVX instructions. Try to compile the source with the optimization flags: `OPT=2` or `OPT=3` (uppercase).
     - **GPU**: Make sure you are using the computing service: `CS_GPU`.
+- **Protobuf doesn't work/compilation error(temporal fix)**: 
+    1) Make sure you have `protbuf` and `libprotobuf` installed
+    2) Go to `src/serialization/onnx/` and delete these files: `onnx.pb.cc` and `onnx.pb.cc`.
+    3) Rebuild them using `protoc --cpp_out=. onnx.proto` (you need to be at `src/serialization/onnx/`)
+ 
