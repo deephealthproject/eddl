@@ -351,7 +351,7 @@ Tensor* Tensor::concat(const vector<Tensor*> t, unsigned int axis, Tensor* outpu
         cpu_concat(output, t, axis, false);
     }
 #ifdef cGPU
-    else if (new_tensor->isGPU())
+    else if (output->isGPU())
       {
         gpu_concat(output, t, axis, false);
       }
