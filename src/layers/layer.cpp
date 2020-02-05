@@ -46,13 +46,14 @@ Layer::~Layer()
     if (target!=nullptr) delete target;
 
     //params if any
-    for (int i=0;i<params.size();i++)
+    for (int i=0;i<params.size();i++){
         delete params[i];
+    }
 
     //gradients if any
-    for (int i=0;i<gradients.size();i++)
+    for (int i=0;i<gradients.size();i++){
         delete gradients[i];
-
+    }
 }
 
 void Layer::initialize() {
@@ -61,8 +62,7 @@ void Layer::initialize() {
     }
 }
 
-void Layer::clamp(float min,float max)
-{
+void Layer::clamp(float min, float max){
     for (int i = 0; i != params.size(); i++) {
         params[i]->clamp_(min,max);
     }
@@ -101,37 +101,36 @@ void Layer::resize(int batch){
     if (target!=nullptr) target->resize(batch);
 }
 
-void Layer::set_trainable(bool value)
-{
+void Layer::set_trainable(bool value){
     trainable=value;
 }
 
 void Layer::detach(Layer *l)
 {
-    for(int i=0;i<child.size();i++)
+    for(int i=0;i<child.size();i++){
         if(child[i]==l) {
             child.erase(child.begin() + i);
             lout--;
         }
+    }
 }
 
 void Layer::reset() {
-    if ((!mem_level)&&(delta!=nullptr)) delta->fill_(0.0);
+    if ((!mem_level) && (delta!=nullptr)) { delta->fill_(0.0); }
     detached=false;
 }
 
 void Layer::zeroGrads() {
-    for(int i=0;i<gradients.size();i++)
+    for(int i=0;i<gradients.size();i++){
         gradients[i]->fill_(0.0);
+    }
 }
 
 void Layer::setmode(int m) {
-
     mode = m;
 }
 
-vector<int> Layer::getShape()
-{
+vector<int> Layer::getShape(){
     return output->getShape();
 }
 
@@ -154,24 +153,27 @@ void Layer::info() {
     cout << "Layer " << name << "\n";
     if (parent.size()) {
         cout << "Parent layers:\n";
-        for (int i = 0; i < parent.size(); i++)
+        for (int i = 0; i < parent.size(); i++){
             cout << parent[i]->name << "\n";
-    } else cout << "No parent layers\n";
+        }
+    } else { cout << "No parent layers\n"; }
 
     if (child.size()) {
         cout << "Child layers:\n";
-        for (int i = 0; i != child.size(); i++)
+        for (int i = 0; i != child.size(); i++){
             cout << child[i]->name << "\n";
-    } else cout << "No child layers\n";
+        }
+    } else { cout << "No child layers\n"; }
 
     cout << "Input tensor:\n";
     input->info();
 
     if (params.size()) {
         cout << "Params:\n";
-        for (int i = 0; i < params.size(); i++)
+        for (int i = 0; i < params.size(); i++){
             params[i]->info();
-    } else cout << "No params\n";
+        }
+    } else { cout << "No params\n"; }
 
     cout << "Output tensor:\n";
     output->info();
@@ -195,10 +197,10 @@ Tensor* Layer::setBias(Tensor bias){
 }
 
 
-void Layer::copy(Layer *l2)
-{
-    for(int i=0;i<params.size();i++)
+void Layer::copy(Layer *l2){
+    for(int i=0;i<params.size();i++){
         Tensor::copy(params[i],l2->params[i]);
+    }
 }
 
 ////////////////////////////////////

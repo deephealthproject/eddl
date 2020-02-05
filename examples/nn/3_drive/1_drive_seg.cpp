@@ -38,7 +38,6 @@ layer UNetWithPadding(layer x)
 
     int depth=32;
 
-
     x = LeakyReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
     x = LeakyReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
     x2 = MaxPool(x, { 2,2 }, { 2,2 });
@@ -123,7 +122,7 @@ int main(int argc, char **argv){
     {"mse"} // Metrics
   );
   // Train on multi-gpu with sync weights every 100 batches:
-  //toGPU(segnet,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
+  toGPU(segnet,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
   summary(segnet);
   plot(segnet,"segnet.pdf");
 

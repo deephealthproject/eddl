@@ -67,10 +67,11 @@ int main(int argc, char **argv){
   build(net,
     sgd(0.01, 0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
-    {"categorical_accuracy"}, // Metrics
+    {"categorical_accuracy"} // Metrics
     //CS_CPU() // CPU with maximum threads availables
-    CS_GPU({1}) // GPU with only one gpu
+  //  CS_GPU({1}) // GPU with only one gpu
   );
+    toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 
   // plot the model
   plot(net,"model.pdf");

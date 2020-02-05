@@ -19,7 +19,6 @@ using namespace std;
 int LActivation::total_layers = 0;
 
 LActivation::LActivation(Layer *parent, string act, vector<float> params, string name, int dev, int mem) : LinLayer(name, dev, mem){
-
     // Set default name
     if(name.empty()) this->name = act + to_string(++total_layers);
 
