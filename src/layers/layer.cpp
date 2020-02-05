@@ -76,7 +76,7 @@ void Layer::mem_delta()
 {
     // Reserve space for the parent's delta
     if(this->delta != nullptr){
-        msg("Memory leak! The parent's delta shouldn't be reserved", "Layer::reserve_delta");
+        //msg("Memory leak! The parent's delta shouldn't be reserved: " + this->name, "Layer::reserve_delta");
     }else{
         this->delta = new Tensor(this->output->shape, this->output->device);
     }
