@@ -139,7 +139,7 @@ __global__ void maxpool2d_back(float* D, float* ID, int batch, int irows, int ic
 //
 //// AvgPool
 //// TODO: [Temp!] Review not tested
-//__global__ void avgpool2d(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padrt, int padrb,int padcl, int padcr,float* indX, float* indY) {
+__global__ void avgpool2d(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padrt, int padrb,int padcl, int padcr,float* indX, float* indY) {
 //
 //    long int ops = batch * orows * ocols * odepth;
 //    long int thread_id_x = blockDim.x * blockIdx.x + threadIdx.x;
@@ -200,11 +200,11 @@ __global__ void maxpool2d_back(float* D, float* ID, int batch, int irows, int ic
 //        }
 //    }
 //
-//}
+}
 //
 //// TODO: [Temp!] Review not tested
-//__global__ void avgpool2d_back(float* D, float* ID, int batch, int irows, int icols, int orows, int ocols, int depth, float* indX, float* indY)
-//{
+__global__ void avgpool2d_back(float* D, float* ID, int batch, int irows, int icols, int orows, int ocols, int depth, float* indX, float* indY)
+{
 //    int size=orows * ocols * depth;
 //    int rsize=orows * ocols;
 //
@@ -234,4 +234,4 @@ __global__ void maxpool2d_back(float* D, float* ID, int batch, int irows, int ic
 //
 //
 //    }
-//}
+}
