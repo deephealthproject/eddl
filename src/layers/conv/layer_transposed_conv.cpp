@@ -26,7 +26,7 @@ LConvT::LConvT(Layer *parent, int filters, const vector<int> &kernel_size,
     // TODO: Implement (Fix initialization)
 };
 
-LConvT::LConvT(Layer *parent, ConvolDescriptor *cd, string name, int dev, int mem) : LinLayer(name, dev) {
+LConvT::LConvT(Layer *parent, ConvolDescriptor *cd, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     // TODO: Implement (Fix initialization)
     if(name.empty()) this->name = "convt" + to_string(++total_layers);
 }

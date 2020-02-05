@@ -19,7 +19,7 @@ using namespace std;
 
 int LScaleRandom::total_layers = 0;
 
-LScaleRandom::LScaleRandom(Layer *parent, vector<float> factor, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
+LScaleRandom::LScaleRandom(Layer *parent, vector<float> factor, string da_mode, float constant, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if(name.empty()) this->name = "scale_random" + to_string(++total_layers);
 
     this->input = parent->output;

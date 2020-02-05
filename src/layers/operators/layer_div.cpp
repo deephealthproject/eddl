@@ -30,7 +30,7 @@ int LDiv::total_layers = 0;
   @returns the result of l1/l2 element-wise
 
   */
-LDiv::LDiv(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev) {
+LDiv::LDiv(Layer *l1, Layer *l2, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "div_" + to_string(++total_layers);
     binary = 1;
 
@@ -56,7 +56,7 @@ LDiv::LDiv(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev
   @returns the result of l/k element-wise over l
 
   */
-LDiv::LDiv(Layer *l, float k, string name, int dev) : OperatorLayer(name, dev) {
+LDiv::LDiv(Layer *l, float k, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "div_" + to_string(++total_layers);
     val = k;
     left=1;
@@ -69,7 +69,7 @@ LDiv::LDiv(Layer *l, float k, string name, int dev) : OperatorLayer(name, dev) {
     addparent(l);
 }
 
-LDiv::LDiv(float k, Layer *l, string name, int dev) : OperatorLayer(name, dev) {
+LDiv::LDiv(float k, Layer *l, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "div_" + to_string(++total_layers);
     val = k;
     left=0;

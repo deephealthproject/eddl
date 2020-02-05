@@ -19,7 +19,7 @@ using namespace std;
 
 int LFlip::total_layers = 0;
 
-LFlip::LFlip(Layer *parent, int axis, string name, int dev) : LinLayer(name, dev) {
+LFlip::LFlip(Layer *parent, int axis, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if(name.empty()) this->name = "flip" + to_string(++total_layers);
 
     // TODO: Implement

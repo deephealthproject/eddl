@@ -30,14 +30,13 @@ int LSum::total_layers = 0;
   @returns the result of l1+l2 element-wise
 
   */
-LSum::LSum(Layer *l1, Layer *l2, string name, int dev,int mem) : OperatorLayer(name, dev) {
+LSum::LSum(Layer *l1, Layer *l2, string name, int dev,int mem) : OperatorLayer(name, dev, mem) {
 
 
     if(name.empty()) this->name = "sum" + to_string(++total_layers);
     binary = 1;
 
     input=l1->output;
-    mem_level=mem;
 
     output = new Tensor(l1->output->getShape(), dev);
     if (!mem_level) delta = new Tensor(l1->output->getShape(), dev);
@@ -59,13 +58,12 @@ LSum::LSum(Layer *l1, Layer *l2, string name, int dev,int mem) : OperatorLayer(n
   @returns the result of l+k element-wise over l
 
   */
-LSum::LSum(Layer *l, float k, string name, int dev,int mem) : OperatorLayer(name, dev) {
+LSum::LSum(Layer *l, float k, string name, int dev,int mem) : OperatorLayer(name, dev, mem) {
 
     if(name.empty()) this->name = "sum" + to_string(++total_layers);
     val = k;
 
     input=l->output;
-    mem_level=mem;
 
     output = new Tensor(l->output->getShape(), dev);
     if (!mem_level) delta = new Tensor(l->output->getShape(), dev);

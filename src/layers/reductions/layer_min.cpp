@@ -20,7 +20,7 @@ using namespace std;
 
 int LRMin::total_layers = 0;
 
-LRMin::LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev): ReductionLayer(name, dev) {
+LRMin::LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem) : ReductionLayer(name, dev, mem) {
     // TODO: Implement
     if(name.empty()) this->name = "reduction_min" + to_string(++total_layers);
 

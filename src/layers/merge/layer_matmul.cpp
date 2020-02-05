@@ -19,7 +19,7 @@ using namespace std;
 
 int LMatMul::total_layers = 0;
 
-LMatMul::LMatMul(vector<Layer *> parent, string name, int dev) : MLayer(name, dev) {
+LMatMul::LMatMul(vector<Layer *> parent, string name, int dev, int mem) : MLayer(name, dev, mem) {
     if (parent.size() == 0) msg("Error: LMatMul layer with empty list");
 
     if (parent.size() > 1)

@@ -19,7 +19,7 @@ using namespace std;
 
 int LMinimum::total_layers = 0;
 
-LMinimum::LMinimum(vector<Layer *> parent, string name, int dev) : MLayer(name, dev) {
+LMinimum::LMinimum(vector<Layer *> parent, string name, int dev, int mem) : MLayer(name, dev, mem) {
     if (parent.size() == 0) msg("Error: LMinimum layer with empty list");
 
     if (parent.size() > 1)

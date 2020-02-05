@@ -19,7 +19,7 @@ using namespace std;
 
 int LCropRandom::total_layers = 0;
 
-LCropRandom::LCropRandom(Layer *parent, vector<int> new_shape, string name, int dev) : LinLayer(name, dev) {
+LCropRandom::LCropRandom(Layer *parent, vector<int> new_shape, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if(name.empty()) this->name = "crop_random" + to_string(++total_layers);
 
     input = parent->output;

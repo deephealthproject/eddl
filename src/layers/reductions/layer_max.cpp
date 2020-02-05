@@ -20,7 +20,7 @@ using namespace std;
 
 int LRMax::total_layers = 0;
 
-LRMax::LRMax(Layer *l, vector<int> axis, bool keepdims, string name, int dev): ReductionLayer(name, dev) {
+LRMax::LRMax(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem) : ReductionLayer(name, dev, mem) {
     // TODO: Implement
     if(name.empty()) this->name = "reduction_max" + to_string(++total_layers);
 

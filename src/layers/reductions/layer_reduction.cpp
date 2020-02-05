@@ -17,7 +17,7 @@
 
 using namespace std;
 
-ReductionLayer::ReductionLayer(string name, int dev) : Layer(name, dev) {
+ReductionLayer::ReductionLayer(string name, int dev, int mem) : Layer(name, dev, mem) {
     binary=0;
 }
 

@@ -22,7 +22,7 @@ int LAdd::total_layers = 0;
 
 
 
-LAdd::LAdd(vector<Layer *> parent, string name, int dev, int mem) : MLayer(name, dev) {
+LAdd::LAdd(vector<Layer *> parent, string name, int dev, int mem) : MLayer(name, dev, mem) {
     if (parent.size() == 0) msg("Error: LAdd layer with empty list");
 
     if (parent.size() > 1)
@@ -34,7 +34,6 @@ LAdd::LAdd(vector<Layer *> parent, string name, int dev, int mem) : MLayer(name,
             }
 
     input = parent[0]->output;
-    mem_level=mem;
 
     output = new Tensor(parent[0]->output->getShape(), dev);
     if (!mem_level) delta = new Tensor(parent[0]->output->getShape(), dev);

@@ -30,7 +30,7 @@ int LLog10::total_layers = 0;
   @returns the result of the logarithm with base 10 operation over l
 
   */
-LLog10::LLog10(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
+LLog10::LLog10(Layer *l, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "log10_" + to_string(++total_layers);
 
     input=l->output;

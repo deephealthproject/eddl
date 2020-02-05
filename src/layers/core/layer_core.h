@@ -32,9 +32,9 @@ public:
     LTensor(string fname);
     ~LTensor() override;
 
-    LTensor(vector<int> shape, int dev);
+    LTensor(vector<int> shape, int dev, int mem=0);
 
-    LTensor(const vector<int> shape, float *fptr,int dev);
+    LTensor(const vector<int> shape, float *fptr,int dev, int mem=0);
 
     LTensor *fromCSV(string fname);
 

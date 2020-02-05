@@ -29,7 +29,7 @@ int groups, const vector<int> &dilation_rate, bool use_bias, string name, int de
     // TODO: Implement (Fix initialization)
 };
 
-LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) : LinLayer(name, dev) {
+LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if (parent->output->ndim != 4) msg("LConv only works over 4D tensors", "LConv::LConv");
 
     // Check dev with tensor dev
@@ -38,7 +38,6 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
     if(name.empty()) this->name = "conv" + to_string(++total_layers);
 
     cd = D;
-    mem_level=mem;
 
     input = parent->output;
     cd->build(input);

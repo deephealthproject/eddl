@@ -21,11 +21,10 @@ using namespace std;
 
 int LReshape::total_layers = 0;
 
-LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev, int mem) : LinLayer(name, dev) {
+LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     ls = shape;
 
     if(name.empty()) this->name = "reshape" + to_string(++total_layers);
-    mem_level=mem;
 
     input = parent->output;
 

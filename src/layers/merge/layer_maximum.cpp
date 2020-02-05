@@ -19,7 +19,7 @@ using namespace std;
 
 int LMaximum::total_layers = 0;
 
-LMaximum::LMaximum(vector<Layer *> parent, string name, int dev) : MLayer(name, dev) {
+LMaximum::LMaximum(vector<Layer *> parent, string name, int dev, int mem) : MLayer(name, dev, mem) {
     if (parent.size() == 0) msg("Error: LMaximum layer with empty list");
 
     if (parent.size() > 1)

@@ -19,7 +19,7 @@ using namespace std;
 
 int LSubtract::total_layers = 0;
 
-LSubtract::LSubtract(vector<Layer *> parent, string name, int dev) : MLayer(name, dev) {
+LSubtract::LSubtract(vector<Layer *> parent, string name, int dev, int mem) : MLayer(name, dev, mem) {
     if (parent.size() == 0) msg("Error: LSubtract layer with empty list");
 
     if (parent.size() > 1)

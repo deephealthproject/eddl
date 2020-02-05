@@ -18,14 +18,13 @@ using namespace std;
 
 int LActivation::total_layers = 0;
 
-LActivation::LActivation(Layer *parent, string act, string name, int dev, float param, int mem) : LinLayer(name, dev) {
+LActivation::LActivation(Layer *parent, string act, string name, int dev, float param, int mem) : LinLayer(name, dev, mem) {
 
     // Set default name
-    if(name.empty()) this->name = "activation_" + act + to_string(++total_layers);
+    if(name.empty()) this->name = act + to_string(++total_layers);
 
     this->act = act;
     this->param=param;
-    mem_level=mem;
 
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
@@ -176,8 +175,8 @@ Layer *LActivation::clone(int c, int bs, vector<Layer *> p, int todev) {
 string LActivation::plot(int c) {
     string s;
 
-    if (c) s = name + " [label=" + "\"" + act+ "_" + name + "\",style=filled,fontsize=12,fillcolor=LightBlue,shape=box]";
-    else s = name + " [label=" + "\"" + act + "_" + name + "\",style=filled,fontsize=12,fillcolor=LightSalmon,shape=box]";
+    if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=LightBlue,shape=box]";
+    else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=LightSalmon,shape=box]";
 
     return s;
 }

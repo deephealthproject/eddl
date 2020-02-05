@@ -30,7 +30,7 @@ int LSelect::total_layers = 0;
   @returns the absolute value of each element in l
 
   */
-LSelect::LSelect(Layer *parent, vector<string> indices, bool hasBatch, string name, int dev): OperatorLayer(name, dev) {
+LSelect::LSelect(Layer *parent, vector<string> indices, bool hasBatch, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     // Set default name
     if(name.empty()) this->name = "select_" + to_string(++total_layers);
 

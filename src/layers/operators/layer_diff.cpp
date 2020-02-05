@@ -30,7 +30,7 @@ int LDiff::total_layers = 0;
   @returns the result of l1-l2 element-wise
 
   */
-LDiff::LDiff(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev) {
+LDiff::LDiff(Layer *l1, Layer *l2, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "diff_" + to_string(++total_layers);
     binary=1;
 
@@ -58,7 +58,7 @@ LDiff::LDiff(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, de
   @returns the result of l-k element-wise over l
 
   */
-LDiff::LDiff(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
+LDiff::LDiff(Layer *l, float k, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "diff" + to_string(++total_layers);
     val=k;
     left=1;
@@ -73,7 +73,7 @@ LDiff::LDiff(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) 
     addparent(l);
 }
 
-LDiff::LDiff(float k, Layer *l, string name, int dev): OperatorLayer(name, dev) {
+LDiff::LDiff(float k, Layer *l, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "diff" + to_string(++total_layers);
     val=k;
     left=0;

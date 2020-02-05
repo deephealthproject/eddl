@@ -20,7 +20,7 @@ using namespace std;
 
 int LAverage::total_layers = 0;
 
-LAverage::LAverage(vector<Layer *> parent, string name, int dev) : MLayer(name, dev) {
+LAverage::LAverage(vector<Layer *> parent, string name, int dev, int mem) : MLayer(name, dev, mem) {
     if (parent.size() == 0) msg("Error: LAverage layer with empty list");
 
     if (parent.size() > 1)

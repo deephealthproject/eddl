@@ -32,14 +32,12 @@ int LUniform::total_layers = 0;
 
   */
 
-LUniform::LUniform(float low, float high, vector<int> size, string name, int dev): GeneratorLayer(name, dev) {
+LUniform::LUniform(float low, float high, vector<int> size, string name, int dev, int mem) : GeneratorLayer(name, dev, mem) {
     // TODO: Implement
     if(name.empty()) this->name = "generator_uniform" + to_string(++total_layers);
 
     this->low=low;
     this->high=high;
-
-    ////////////
 
 }
 

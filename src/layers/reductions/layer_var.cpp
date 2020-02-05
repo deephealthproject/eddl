@@ -21,7 +21,7 @@ using namespace std;
 int LRVar::total_layers = 0;
 
 
-LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev): ReductionLayer(name, dev) {
+LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem) : ReductionLayer(name, dev, mem) {
     if(name.empty()) this->name = "reduction_var" + to_string(++total_layers);
 
     input=l->output;

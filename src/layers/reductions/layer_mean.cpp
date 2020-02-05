@@ -41,7 +41,7 @@ int LRMean::total_layers = 0;
 
   */
 
-LRMean::LRMean(Layer *l, vector <int> axis, bool keepdims, string name, int dev): ReductionLayer(name, dev) {
+LRMean::LRMean(Layer *l, vector <int> axis, bool keepdims, string name, int dev, int mem) : ReductionLayer(name, dev, mem) {
     if(name.empty()) this->name = "reduction_mean" + to_string(++total_layers);
 
     input=l->output;

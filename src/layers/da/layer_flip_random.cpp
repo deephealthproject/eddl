@@ -19,7 +19,7 @@ using namespace std;
 
 int LFlipRandom::total_layers = 0;
 
-LFlipRandom::LFlipRandom(Layer *parent, int axis, string name, int dev) : LinLayer(name, dev) {
+LFlipRandom::LFlipRandom(Layer *parent, int axis, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if(name.empty()) this->name = "flip_random" + to_string(++total_layers);
 
     input = parent->output;

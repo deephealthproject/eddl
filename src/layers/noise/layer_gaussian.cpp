@@ -19,10 +19,9 @@ using namespace std;
 
 int LGaussianNoise::total_layers = 0;
 
-LGaussianNoise::LGaussianNoise(Layer *parent, float stdev, string name, int dev,int mem) : LinLayer(name, dev) {
+LGaussianNoise::LGaussianNoise(Layer *parent, float stdev, string name, int dev,int mem) : LinLayer(name, dev, mem) {
     if(name.empty()) this->name = "gaussiannoise" + to_string(++total_layers);
     this->stdev = stdev;
-    mem_level=mem;
 
     // TODO: Implement
     input = parent->output;

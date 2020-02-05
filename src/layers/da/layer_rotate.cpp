@@ -19,7 +19,7 @@ using namespace std;
 
 int LRotate::total_layers = 0;
 
-LRotate::LRotate(Layer *parent, float angle, vector<int> offset_center, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
+LRotate::LRotate(Layer *parent, float angle, vector<int> offset_center, string da_mode, float constant, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if(name.empty()) this->name = "rotate" + to_string(++total_layers);
 
     input = parent->output;

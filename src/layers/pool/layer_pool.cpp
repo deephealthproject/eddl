@@ -20,11 +20,9 @@ using namespace std;
 
 int LPool::total_layers = 0;
 
-LPool::LPool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem) : LinLayer(name, dev) {
+LPool::LPool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if (parent->output->ndim != 4) msg("LPool only works over 4D tensors", "LPool::LPool");
     if(name.empty()) this->name = "pool" + to_string(++total_layers);
-
-    mem_level=mem;
 
     pd = D;
 

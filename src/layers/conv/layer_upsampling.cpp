@@ -19,10 +19,9 @@ using namespace std;
 
 int LUpSampling::total_layers = 0;
 
-LUpSampling::LUpSampling(Layer *parent, const vector<int> &size, string interpolation, string name, int dev, int mem) : LinLayer(name, dev) {
+LUpSampling::LUpSampling(Layer *parent, const vector<int> &size, string interpolation, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     this->size = size;
     this->interpolation = interpolation;
-    mem_level=mem;
 
     if(name.empty()) this->name = "upsampling" + to_string(++total_layers);
 

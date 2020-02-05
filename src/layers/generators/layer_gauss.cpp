@@ -20,14 +20,13 @@ using namespace std;
 
 int LGauss::total_layers = 0;
 
-LGauss::LGauss(float mean, float stdev, vector<int> size, string name, int dev, int mem): GeneratorLayer(name, dev) {
+LGauss::LGauss(float mean, float stdev, vector<int> size, string name, int dev, int mem): GeneratorLayer(name, dev, mem) {
     // TODO: Implement
     if(name.empty()) this->name = "generator_gauss" + to_string(++total_layers);
 
     this->mean=mean;
     this->stdev=stdev;
     this->size=size;
-    mem_level=mem;
 
     size.insert(size.begin(),1);
 

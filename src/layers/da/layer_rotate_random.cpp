@@ -19,7 +19,7 @@ using namespace std;
 
 int LRotateRandom::total_layers = 0;
 
-LRotateRandom::LRotateRandom(Layer *parent, vector<float> factor, vector<int> offset_center, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
+LRotateRandom::LRotateRandom(Layer *parent, vector<float> factor, vector<int> offset_center, string da_mode, float constant, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if(name.empty()) this->name = "rotate_random" + to_string(++total_layers);
 
     input = parent->output;

@@ -30,7 +30,7 @@ int LLog2::total_layers = 0;
   @returns the result of the logarithm with base 2 operation over l
 
   */
-LLog2::LLog2(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
+LLog2::LLog2(Layer *l, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "log2_" + to_string(++total_layers);
 
     input=l->output;

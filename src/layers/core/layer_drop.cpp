@@ -18,13 +18,12 @@ using namespace std;
 
 int LDropout::total_layers = 0;
 
-LDropout::LDropout(Layer *parent, float df, string name, int dev, int mem) : LinLayer(name, dev) {
+LDropout::LDropout(Layer *parent, float df, string name, int dev, int mem) : LinLayer(name, dev, mem) {
 
     if(name.empty()) this->name = "dropout" + to_string(++total_layers);
 
     // df: drop factor is the probability to delete (drop) an activation
     this->df = df;
-    mem_level=mem;
 
     input = parent->output;
     output = new Tensor(input->getShape(), dev);

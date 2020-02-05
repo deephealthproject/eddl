@@ -19,7 +19,7 @@ using namespace std;
 
 int LMult::total_layers = 0;
 
-LMult::LMult(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev) {
+LMult::LMult(Layer *l1, Layer *l2, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "mult_" + to_string(++total_layers);
     binary = 1;
 
@@ -45,7 +45,7 @@ LMult::LMult(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, d
   @returns the result of l+k element-wise over l
 
   */
-LMult::LMult(Layer *l, float k, string name, int dev) : OperatorLayer(name, dev) {
+LMult::LMult(Layer *l, float k, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "mult_" + to_string(++total_layers);
     val = k;
 

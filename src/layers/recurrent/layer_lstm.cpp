@@ -22,7 +22,7 @@ using namespace std;
 
 int LLSTM::total_layers = 0;
 
-LLSTM::LLSTM(Layer *parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev) : LinLayer(name, dev) {
+LLSTM::LLSTM(Layer *parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev, int mem) : LinLayer(name, dev, mem) {
 
     this->units = units;
     this->num_layers = num_layers;

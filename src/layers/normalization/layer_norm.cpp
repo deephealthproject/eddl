@@ -21,7 +21,7 @@ using namespace std;
 int LNorm::total_layers = 0;
 
 
-LNorm::LNorm(Layer *parent, float epsilon, string name, int dev) : LinLayer(name, dev) {
+LNorm::LNorm(Layer *parent, float epsilon, string name, int dev, int mem) : LinLayer(name, dev, mem) {
 
     vector<int> axis;
     if (parent->output->ndim == 2) axis.push_back(1);

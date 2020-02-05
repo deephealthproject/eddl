@@ -19,7 +19,7 @@ using namespace std;
 
 int LCrop::total_layers = 0;
 
-LCrop::LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool reshape, float constant, string name, int dev) : LinLayer(name, dev) {
+LCrop::LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool reshape, float constant, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if(name.empty()) this->name = "crop" + to_string(++total_layers);
 
     input = parent->output;

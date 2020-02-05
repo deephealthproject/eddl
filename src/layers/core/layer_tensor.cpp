@@ -25,7 +25,7 @@ int LTensor::total_layers = 0;
 extern ostream &operator<<(ostream &os, const vector<int> shape);
 
 // From shape
-LTensor::LTensor(const vector<int> shape, int dev) : LinLayer("ltensor" + to_string(total_layers++), dev) {
+LTensor::LTensor(const vector<int> shape, int dev, int mem) : LinLayer("ltensor" + to_string(total_layers++), dev) {
     data = input = output = new Tensor(shape, dev);
     delta = new Tensor(shape, dev);
 }
@@ -68,7 +68,7 @@ LTensor * LTensor::fromCSV(string fname) {
 
 
 // From shape, ptr (sharing) and device
-LTensor::LTensor(const vector<int> shape, float *fptr,int dev) : LinLayer("ltensor" + to_string(total_layers), dev) {
+LTensor::LTensor(const vector<int> shape, float *fptr,int dev, int mem) : LinLayer("ltensor" + to_string(total_layers), dev) {
     data = input = output = new Tensor(shape, fptr, dev);
     delta = new Tensor(shape, dev);
 }

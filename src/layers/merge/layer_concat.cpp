@@ -19,13 +19,12 @@ using namespace std;
 
 int LConcat::total_layers = 0;
 
-LConcat::LConcat(vector<Layer *> parent, unsigned int axis, string name, int dev,int mem) : MLayer(name, dev) {
+LConcat::LConcat(vector<Layer *> parent, unsigned int axis, string name, int dev,int mem) : MLayer(name, dev, mem) {
     if(name.empty()) {this->name = "concat" + to_string(++total_layers); }
 
     // Perform layer checks
     if (parent.empty()) { msg("Error: LConcat layer with empty list"); }
     this->ndim = parent[0]->output->ndim;
-    this->mem_level=mem;
     this->axis = axis;
 
     if (parent.size() > 1) {

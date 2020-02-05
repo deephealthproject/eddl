@@ -21,7 +21,7 @@ using namespace std;
 int LNormMax::total_layers = 0;
 
 
-LNormMax::LNormMax(Layer *parent, float epsilon, string name, int dev) : LinLayer(name, dev) {
+LNormMax::LNormMax(Layer *parent, float epsilon, string name, int dev, int mem) : LinLayer(name, dev, mem) {
 
     vector<int> axis;
     if (parent->output->ndim == 2) axis.push_back(1);

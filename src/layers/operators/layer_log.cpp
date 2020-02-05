@@ -29,7 +29,7 @@ int LLog::total_layers = 0;
   @returns the result of the logarithm operation over l
 
   */
-LLog::LLog(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
+LLog::LLog(Layer *l, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "log_" + to_string(++total_layers);
 
     input=l->output;

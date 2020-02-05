@@ -21,7 +21,7 @@ using namespace std;
 int LGroupNorm::total_layers = 0;
 
 
-LGroupNorm::LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool affine, string name, int dev) : LinLayer(name, dev) {
+LGroupNorm::LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool affine, string name, int dev, int mem) : LinLayer(name, dev, mem) {
 
     input=parent->output;
     groups=g;

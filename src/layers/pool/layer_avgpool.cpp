@@ -31,7 +31,6 @@ LAveragePool::LAveragePool(Layer *parent, PoolDescriptor *D, string name, int de
     msg("Not implemented", "LAveragePool");
 
     // Params
-    mem_level=mem;
     D->indX = new Tensor(D->O->getShape(), dev);
     D->indY = new Tensor(D->O->getShape(), dev);
 }

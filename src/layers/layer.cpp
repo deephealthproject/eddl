@@ -22,11 +22,12 @@ using namespace std;
 ///// BASE LAYER CLASS
 ////////////////////////////////////
 
-Layer::Layer(string name, int dev) {
+Layer::Layer(string name, int dev, int mem) {
     mode = TRMODE;
     target = delta = input = output = nullptr;
     this->name = name;
     this->dev = dev;
+    this->mem_level = mem;
     lin = lout = 0;
     delta_bp = 0;
     detached=false;
@@ -206,7 +207,7 @@ void Layer::copy(Layer *l2)
 ////////////////////////////////////
 ///// LINEAR LAYERS
 ////////////////////////////////////
-LinLayer::LinLayer(string name, int dev) : Layer(name, dev) {}
+LinLayer::LinLayer(string name, int dev, int mem) : Layer(name, dev, mem) {}
 
 void LinLayer::addchild(Layer *l) {
     child.push_back(l);
@@ -223,7 +224,7 @@ void LinLayer::addparent(Layer *l) {
 ////////////////////////////////////
 ///// Multiple LAYERS
 ////////////////////////////////////
-MLayer::MLayer(string name, int dev) : Layer(name, dev) {}
+MLayer::MLayer(string name, int dev, int mem) : Layer(name, dev, mem) {}
 
 void MLayer::addchild(Layer *l) {
     child.push_back(l);
@@ -234,19 +235,3 @@ void MLayer::addparent(Layer *l) {
     parent.push_back(l);
     lin++;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////

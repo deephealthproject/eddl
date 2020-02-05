@@ -20,7 +20,7 @@ using namespace std;
 
 int LShiftRandom::total_layers = 0;
 
-LShiftRandom::LShiftRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
+LShiftRandom::LShiftRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, string da_mode, float constant, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if(name.empty()) this->name = "shift_random" + to_string(++total_layers);
 
     input = parent->output;

@@ -29,7 +29,7 @@ int LExp::total_layers = 0;
   @returns the result of e^l
 
   */
-LExp::LExp(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
+LExp::LExp(Layer *l, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "exp_" + to_string(++total_layers);
 
     input=l->output;

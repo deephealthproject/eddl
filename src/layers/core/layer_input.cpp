@@ -19,10 +19,9 @@ using namespace std;
 
 int LInput::total_layers = 0;
 
-LInput::LInput(Tensor *in, string name, int dev, int mem) : LinLayer(name, dev) {
+LInput::LInput(Tensor *in, string name, int dev, int mem) : LinLayer(name, dev, 0) {
     if(name.empty()) this->name = "input" + to_string(++total_layers);
     input = output = in;
-    mem_level=0;
     delta = new Tensor(input->getShape(), dev);
 }
 

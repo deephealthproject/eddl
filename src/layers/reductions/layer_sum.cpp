@@ -20,7 +20,7 @@ using namespace std;
 
 int LRSum::total_layers = 0;
 
-LRSum::LRSum(Layer *l, vector<int> axis, bool keepdims, string name, int dev): ReductionLayer(name, dev) {
+LRSum::LRSum(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem) : ReductionLayer(name, dev, mem) {
     // TODO: Implement
     if(name.empty()) this->name = "reduction_sum" + to_string(++total_layers);
 

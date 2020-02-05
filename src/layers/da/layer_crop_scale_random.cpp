@@ -20,7 +20,7 @@ using namespace std;
 
 int LCropScaleRandom::total_layers = 0;
 
-LCropScaleRandom::LCropScaleRandom(Layer *parent, vector<float> factor, string da_mode, string name, int dev) : LinLayer(name, dev) {
+LCropScaleRandom::LCropScaleRandom(Layer *parent, vector<float> factor, string da_mode, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if(name.empty()) this->name = "crop_scale" + to_string(++total_layers);
 
     input = parent->output;

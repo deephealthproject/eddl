@@ -20,7 +20,7 @@ using namespace std;
 
 int LShift::total_layers = 0;
 
-LShift::LShift(Layer *parent, vector<int> shift, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
+LShift::LShift(Layer *parent, vector<int> shift, string da_mode, float constant, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if(name.empty()) this->name = "shift" + to_string(++total_layers);
 
     input = parent->output;

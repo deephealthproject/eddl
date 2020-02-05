@@ -21,7 +21,7 @@ using namespace std;
 int LLayerNorm::total_layers = 0;
 
 
-LLayerNorm::LLayerNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev) : LinLayer(name, dev) {
+LLayerNorm::LLayerNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem) : LinLayer(name, dev, mem) {
 
     input=parent->output;
 
