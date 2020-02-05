@@ -56,8 +56,8 @@ void LMaxPool::backward() {
       parent[0]->mem_delta();
       pd->ID=parent[0]->delta;
     }
-
     if (mem_level) { pd->D=delta; }
+
     MPool2D_back(this->pd);
 
     // Delete this delta

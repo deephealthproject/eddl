@@ -82,12 +82,14 @@ void LSum::forward() {
 }
 
 void LSum::backward() {
-    // Reserve parent's delta
+    // Reserve parent's delta 1
     if (parent[0]->mem_level) { parent[0]->mem_delta(); }
 
     Tensor::inc(delta, parent[0]->delta);
     if (binary) {
-        if (parent[1]->mem_level)  parent[1]->mem_delta();
+        // Reserve parent's delta 2
+        if (parent[1]->mem_level) { parent[1]->mem_delta(); }  // TODO: Review!!
+
         Tensor::inc(delta, parent[1]->delta);
       }
 

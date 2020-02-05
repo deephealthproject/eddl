@@ -62,7 +62,7 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev, int m
 
     // sharing the pointers to data
     output = new Tensor(ls, parent->output);
-    if (!mem_level) delta = new Tensor(ls, parent->delta);
+    if (!mem_level) { delta = new Tensor(ls, parent->delta); }
 
     parent->addchild(this);
     addparent(parent);
