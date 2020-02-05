@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <stdexcept>
 
 #include "tensor.h"
 #include "../utils.h"
@@ -35,14 +36,12 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
      */
 #ifndef cGPU
     if ((dev > DEV_CPU)&&(dev<DEV_FPGA)) {
-        fprintf(stderr, "Not compiled for GPU\n");
-        exit(0);
+        throw std::runtime_error("Not compiled for GPU");
     }
 #endif
 #ifndef cFPGA
     if (dev >= DEV_FPGA) {
-        fprintf(stderr, "Not compiled for FPGA\n");
-        exit(0);
+        throw std::runtime_error("Not compiled for FPGA");
     }
 #endif
 

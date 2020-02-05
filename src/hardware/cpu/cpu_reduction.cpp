@@ -7,6 +7,7 @@
 * All rights reserved
 */
 
+#include <stdexcept>
 
 #include "cpu_hw.h"
 
@@ -38,8 +39,7 @@ void cpu_reduce(Tensor *A, Tensor *B,string mode,int* map)
     delete C;
   }
   else {
-    cout<<"mode: "<<mode<<" not yet implemented\n";
-    exit(1);
+    throw std::invalid_argument("mode: " + mode + " not yet implemented");
   }
 }
 void cpu_reduce(Tensor *A, Tensor *B,string mode,MapReduceDescriptor *MD)
@@ -74,8 +74,7 @@ void cpu_reduce_op(Tensor *A, Tensor *B,string op,int* map)
       A->ptr[i]/=B->ptr[map[i]];
   }
   else {
-    cout<<"op: "<<op<<" not yet implemented\n";
-    exit(1);
+    throw std::invalid_argument("op: " + op + " not yet implemented");
   }
 }
 

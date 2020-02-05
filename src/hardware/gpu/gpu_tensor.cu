@@ -9,6 +9,8 @@
 
 
 #include <stdio.h>
+#include <stdexcept>
+
 #include "gpu_tensor.h"
 #include "gpu_kernels.h"
 
@@ -67,8 +69,7 @@ static const char *_curandGetErrorEnum(curandStatus_t error){
         case CURAND_STATUS_LENGTH_NOT_MULTIPLE:
             return "CURAND_STATUS_LENGTH_NOT_MULTIPLE";
         default:
-            fprintf(stderr,"Not all curand errors here %d\n",error);
-            exit(-1);
+            throw std::invalid_argument("unknown curand error: " + std::to_string(error));
     }
 
 }
@@ -77,8 +78,7 @@ void check_cublas(cublasStatus_t status, const char *f)
 {
     if ( status!=  CUBLAS_STATUS_SUCCESS)
     {
-        fprintf(stderr,"Error in cublas execution in %s\n",f);
-        exit(1);
+        throw std::runtime_error("error in cublas execution in " + std::string(f));
     }
 }
 
@@ -86,8 +86,7 @@ void check_curand(curandStatus_t status, const char *f)
 {
     if ( status!=  CURAND_STATUS_SUCCESS)
     {
-        fprintf(stderr,"Error in curand execution in %s\n",_curandGetErrorEnum(status));
-        exit(1);
+        throw std::runtime_error("error in curand execution in " + std::string(_curandGetErrorEnum(status)));
     }
 }
 
@@ -96,8 +95,7 @@ void check_cuda(cudaError_t err,const char *msg)
 {
     if(err!=cudaSuccess)
     {
-        fprintf(stderr,"Cuda Error %d in %s\n",err,msg);
-        exit(0);
+        throw std::runtime_error("cuda error " + std::to_string(err) + " in " + std::string(msg));
     }
 
 }
@@ -117,8 +115,7 @@ void gpu_init(int device)
 
     if (device>nDevices)
     {
-        fprintf(stderr,"Error. GPU %d not available. Number of available GPU is %d. Further information running nvidia-smi\n",device,nDevices);
-        exit(-1);
+        throw std::runtime_error("GPU " + std::to_string(device) + " not available. Number of available GPUs is " + std::to_string(nDevices) + ". Further information running nvidia-smi");
     }
 
     fprintf(stderr,"Selecting GPU device %d\n",device);
@@ -142,8 +139,7 @@ void gpu_init(int device)
 
     if ( bstatus!=  CUBLAS_STATUS_SUCCESS)
     {
-        fprintf(stderr,"Problem in cuBlas Create\n");
-        exit(1);
+        throw std::runtime_error("problem in cublas create");
 
     }
     fprintf(stderr,"CuBlas initialized on GPU device %d, %s\n",device,prop.name);
@@ -151,23 +147,19 @@ void gpu_init(int device)
     bstatus = cublasSetAtomicsMode(hcublas[device],CUBLAS_ATOMICS_NOT_ALLOWED);
     if ( bstatus!=  CUBLAS_STATUS_SUCCESS)
     {
-        fprintf(stderr,"Problem in cuBlas execution getting: NOT IMPLEMENTED \n");
-        exit(1);
-
+	throw std::runtime_error("problem in cublas execution getting: NOT IMPLEMENTED");
     }
 
     // CURAND
     rstatus=curandCreateGenerator(&(random_generator[device]),CURAND_RNG_PSEUDO_MRG32K3A);
     if (rstatus != CURAND_STATUS_SUCCESS)
     {
-        fprintf(stderr,"Error creating random numbers on gpu\n");
-        exit(-1);
+        throw std::runtime_error("error creating random numbers on gpu");
     }
     rstatus=curandSetPseudoRandomGeneratorSeed(random_generator[device],1234);
 
     if (rstatus != CURAND_STATUS_SUCCESS) {
-        fprintf(stderr,"Error seeting the seed for program\n");
-        exit(-1);
+        throw std::runtime_error("error setting the seed for program");
     }
     fprintf(stderr,"CuRand initialized on GPU device %d, %s\n",device,prop.name);
 

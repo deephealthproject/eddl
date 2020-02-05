@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <stdexcept>
 
 #include "layer_core.h"
 #include "../merge/layer_merge.h"  // TODO: Review dependency (LADD)
@@ -45,8 +46,7 @@ LTensor::LTensor(string fname) : LinLayer("ltensor" + to_string(total_layers), D
 LTensor * LTensor::fromCSV(string fname) {
   FILE *fe = fopen(fname.c_str(), "rt");
   if (fe == nullptr) {
-      fprintf(stderr, "%s not found\n", fname.c_str());
-      exit(1);
+      throw std::runtime_error(fname + " not found");
   }
   vector<int> shape;
   int ndim,v;
