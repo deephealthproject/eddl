@@ -27,6 +27,9 @@ LAveragePool::LAveragePool(Layer *parent, const vector<int> &pool_size, const ve
 LAveragePool::LAveragePool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, string name, int dev, int mem) : LAveragePool(parent, new PoolDescriptor(pool_size, strides, padding, mem), name, dev, mem) {}
 
 LAveragePool::LAveragePool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem) : LPool(parent, D, name, dev, mem) {
+    // TODO: Implement (Temporal)
+    msg("Not implemented", "LAveragePool");
+
     // Params
     mem_level=mem;
     D->indX = new Tensor(D->O->getShape(), dev);

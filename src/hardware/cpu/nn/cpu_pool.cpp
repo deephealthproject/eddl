@@ -70,6 +70,7 @@ void cpu_mpool2D_back(PoolDescriptor *D)
 
 }
 
+// TODO: [Temp!] Review not tested
 void cpu_avgpool2D(PoolDescriptor *D){
     int isize=D->ir*D->ic*D->iz;
     int irsize=D->ir*D->ic;
@@ -101,6 +102,7 @@ void cpu_avgpool2D(PoolDescriptor *D){
     }// batch
 }
 
+// TODO: [Temp!] Review not tested
 void cpu_avgpool2D_back(PoolDescriptor *D){
     int isize=D->ir*D->ic*D->iz;
     int irsize=D->ir*D->ic;
@@ -115,6 +117,7 @@ void cpu_avgpool2D_back(PoolDescriptor *D){
                 for(j=-D->padcl; j<=D->ic+D->padcr-D->kc; j+=D->sc, p++) {  // left-right (Input)
 
                     // Compute previous coordinate
+                    // TODO: Missing padding
                     int i2=i*D->sr;
                     int j2=j*D->sc;
 

@@ -63,9 +63,13 @@ void gpu_conv2D(ConvolDescriptor *D);
 void gpu_conv2D_grad(ConvolDescriptor *D);
 void gpu_conv2D_back(ConvolDescriptor *D);
 
-// Pool
+// MaxPool
 void gpu_mpool2D(PoolDescriptor *D);
 void gpu_mpool2D_back(PoolDescriptor *D);
+
+// AvgPool
+void gpu_avgpool2D(PoolDescriptor *D);
+void gpu_avgpool2D_back(PoolDescriptor *D);
 
 // Tensor
 void gpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size);
