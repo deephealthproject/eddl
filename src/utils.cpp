@@ -22,6 +22,7 @@
 #include <vector>
 #include <string>
 #include <sys/stat.h>
+#include <stdexcept>
 
 #include "system_info.h"
 #include "utils.h"
@@ -48,12 +49,11 @@
 
 
 void msg(const string& text, const string& title) {
-    std::cout << text;
+    string s(text);
     if(!title.empty()){
-        std::cout << " (" << title << ")";
+	s += " (" + title + ")";
     }
-    std::cout << endl;
-    exit(0);
+    throw std::runtime_error(s);
 }
 
 
@@ -87,8 +87,7 @@ float *get_fmem(long int size, char *str){
     // Not enough free memory
     if (error) {
         delete ptr;
-        fprintf(stderr, "Error allocating %s in %s\n", humanSize(size*sizeof(float)), str);
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("Error allocating " + string(humanSize(size*sizeof(float))) + " in " + string(str));
     }
 
     return ptr;
@@ -145,8 +144,7 @@ unsigned long get_free_mem() {
 
     struct vm_statistics64 vm_stat{};
     if (host_statistics64(host_port, HOST_VM_INFO64, (host_info64_t)&vm_stat, &host_size) != KERN_SUCCESS) {
-        fprintf(stderr,"Failed to fetch vm statistics");
-        exit(EXIT_FAILURE);
+        throw std::invalid_argument("Failed to fetch vm statistics");
     }
     unsigned long mem_free = (vm_stat.free_count +vm_stat.inactive_count) * pagesize;
     //fprintf(stderr,"%s Free\n",humanSize(mem_free));

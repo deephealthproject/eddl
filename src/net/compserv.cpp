@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
+#include <stdexcept>
 
 #include "compserv.h"
 
@@ -28,8 +29,7 @@ CompServ::CompServ(int t, const vector<int> g, const vector<int> &f,int lsb, int
     this->lsb=lsb;
 
     if (lsb<0) {
-      fprintf(stderr,"Error creating CS with lsb<0 in CompServ::CompServ");
-      exit(EXIT_FAILURE);
+      throw std::runtime_error("Error creating CS with lsb<0 in CompServ::CompServ");
     }
 
     mem_level=mem;

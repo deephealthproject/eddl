@@ -18,6 +18,8 @@
 #include <thrust/functional.h>
 #include <thrust/extrema.h>
 
+#include <stdexcept>
+
 #include "gpu_tensor.h"
 #include "gpu_kernels.h"
 #include "gpu_hw.h"
@@ -77,8 +79,7 @@ void gpu_reduce(Tensor *A, Tensor *B,string mode,int* map)
 
   }
   else {
-    cout<<"mode: "<<mode<<" not yet implemented\n";
-    exit(1);
+    throw std::invalid_argument("mode: " + mode + " not yet implemented");
   }
 
 
@@ -138,8 +139,7 @@ void gpu_reduce(Tensor *A, Tensor *B,string mode,MapReduceDescriptor *MD)
 
   }
   else {
-    cout<<"mode: "<<mode<<" not yet implemented\n";
-    exit(1);
+    throw std::invalid_argument("mode: " + mode + " not yet implemented");
   }
 
 }
@@ -179,8 +179,7 @@ void gpu_reduce_op(Tensor *A, Tensor *B,string op,int *map)
     check_cuda(cudaDeviceSynchronize(),"reduce_mean");
   }
   else {
-    cout<<"op: "<<op<<" not yet implemented\n";
-    exit(1);
+    throw std::invalid_argument("op: " + op + " not yet implemented");
   }
 
 
@@ -224,8 +223,7 @@ void gpu_reduce_op(Tensor *A, Tensor *B,string op,MapReduceDescriptor *MD)
     check_cuda(cudaDeviceSynchronize(),"reduce_mean");
   }
   else {
-    cout<<"op: "<<op<<" not yet implemented\n";
-    exit(1);
+    throw std::invalid_argument("op: " + op + " not yet implemented");
   }
 
 }
