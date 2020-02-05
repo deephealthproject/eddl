@@ -24,7 +24,7 @@ LShiftRandom::LShiftRandom(Layer *parent, vector<float> factor_x, vector<float> 
     if(name.empty()) this->name = "shift_random" + to_string(++total_layers);
 
     input = parent->output;
-    output = new Tensor(input->getShape(), dev);
+    output = new Tensor(input->shape, dev);
     delta=parent->delta;
 
 

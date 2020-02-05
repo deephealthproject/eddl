@@ -29,7 +29,7 @@ LScale::LScale(Layer *parent, vector<int> new_shape, bool reshape, string da_mod
     if (reshape){
         output = new Tensor({this->input->shape[0], this->input->shape[1], new_shape[0], new_shape[1]}, dev);
     }else{
-        output = new Tensor(input->getShape(), dev);
+        output = new Tensor(input->shape, dev);
     }
 
     // Params

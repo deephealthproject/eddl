@@ -23,7 +23,7 @@ LRotate::LRotate(Layer *parent, float angle, vector<int> offset_center, string d
     if(name.empty()) this->name = "rotate" + to_string(++total_layers);
 
     input = parent->output;
-    output = new Tensor(input->getShape(), dev);
+    output = new Tensor(input->shape, dev);
     delta=parent->delta;
 
     // Params

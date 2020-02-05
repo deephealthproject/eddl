@@ -31,8 +31,8 @@ LAveragePool::LAveragePool(Layer *parent, PoolDescriptor *D, string name, int de
     msg("Not implemented", "LAveragePool");
 
     // Params
-    D->indX = new Tensor(D->O->getShape(), dev);
-    D->indY = new Tensor(D->O->getShape(), dev);
+    D->indX = new Tensor(D->O->shape, dev);
+    D->indY = new Tensor(D->O->shape, dev);
 }
 
 
@@ -44,8 +44,8 @@ void LAveragePool::resize(int batch){
     delete pd->indX;
     delete pd->indY;
 
-    pd->indX = new Tensor(pd->O->getShape(), dev);
-    pd->indY = new Tensor(pd->O->getShape(), dev);
+    pd->indX = new Tensor(pd->O->shape, dev);
+    pd->indY = new Tensor(pd->O->shape, dev);
 
 }
 

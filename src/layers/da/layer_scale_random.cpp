@@ -23,7 +23,7 @@ LScaleRandom::LScaleRandom(Layer *parent, vector<float> factor, string da_mode, 
     if(name.empty()) this->name = "scale_random" + to_string(++total_layers);
 
     this->input = parent->output;
-    this->output = new Tensor(input->getShape(), dev);
+    this->output = new Tensor(input->shape, dev);
     delta=parent->delta;
 
 

@@ -36,8 +36,8 @@ LDiv::LDiv(Layer *l1, Layer *l2, string name, int dev, int mem) : OperatorLayer(
 
     input=l1->output;
 
-    output = new Tensor(l1->output->getShape(), dev);
-    delta = new Tensor(l1->output->getShape(), dev);
+    output = new Tensor(l1->output->shape, dev);
+    if (!mem_level) { delta = new Tensor(l1->output->shape, dev);  }
 
     l1->addchild(this);
     l2->addchild(this);
@@ -62,8 +62,8 @@ LDiv::LDiv(Layer *l, float k, string name, int dev, int mem) : OperatorLayer(nam
     left=1;
 
     input=l->output;
-    output = new Tensor(l->output->getShape(), dev);
-    delta = new Tensor(l->output->getShape(), dev);
+    output = new Tensor(l->output->shape, dev);
+    if (!mem_level) { delta = new Tensor(l->output->shape, dev);  }
 
     l->addchild(this);
     addparent(l);
@@ -75,8 +75,8 @@ LDiv::LDiv(float k, Layer *l, string name, int dev, int mem) : OperatorLayer(nam
     left=0;
 
     input=l->output;
-    output = new Tensor(l->output->getShape(), dev);
-    delta = new Tensor(l->output->getShape(), dev);
+    output = new Tensor(l->output->shape, dev);
+    if (!mem_level) { delta = new Tensor(l->output->shape, dev);  }
 
     l->addchild(this);
     addparent(l);

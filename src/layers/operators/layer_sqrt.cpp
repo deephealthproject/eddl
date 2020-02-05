@@ -33,8 +33,8 @@ int LSqrt::total_layers = 0;
       if(name.empty()) this->name = "sqrt_" + to_string(++total_layers);
 
       input=l->output;
-      output = new Tensor(l->output->getShape(), dev);
-      delta = new Tensor(l->output->getShape(), dev);
+      output = new Tensor(l->output->shape, dev);
+      if (!mem_level) { delta = new Tensor(l->output->shape, dev);  }
 
       l->addchild(this);
       addparent(l);

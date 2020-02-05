@@ -29,7 +29,7 @@ LCrop::LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool
     if (reshape){
         output = new Tensor({input->shape[0], input->shape[1], to_coords[0]-from_coords[0]+1, to_coords[1]-from_coords[1]+1}, dev);
     }else{
-        output = new Tensor(input->getShape(), dev);
+        output = new Tensor(input->shape, dev);
     }
 
     // Params

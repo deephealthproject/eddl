@@ -79,7 +79,7 @@ void LConv::backward() {
       cd->ID=parent[0]->delta;
     }
 
-    if (mem_level)  cd->D=delta;
+    if (mem_level) cd->D=delta;
 
     //get gradients with provided delta
     if (trainable) Conv2D_grad(this->cd);

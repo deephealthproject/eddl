@@ -24,7 +24,7 @@ LFlip::LFlip(Layer *parent, int axis, string name, int dev, int mem) : LinLayer(
 
     // TODO: Implement
     input = parent->output;
-    output = new Tensor(input->getShape(), dev);
+    output = new Tensor(input->shape, dev);
     delta=parent->delta;
 
 

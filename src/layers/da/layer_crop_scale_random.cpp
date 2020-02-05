@@ -24,7 +24,7 @@ LCropScaleRandom::LCropScaleRandom(Layer *parent, vector<float> factor, string d
     if(name.empty()) this->name = "crop_scale" + to_string(++total_layers);
 
     input = parent->output;
-    output = new Tensor(input->getShape(), dev);
+    output = new Tensor(input->shape, dev);
     delta=parent->delta;
 
 

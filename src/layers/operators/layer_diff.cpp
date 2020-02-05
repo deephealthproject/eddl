@@ -38,8 +38,8 @@ LDiff::LDiff(Layer *l1, Layer *l2, string name, int dev, int mem) : OperatorLaye
     tin.push_back(l1->output);
     tin.push_back(l2->output);
 
-    output = new Tensor(l1->output->getShape(), dev);
-    delta = new Tensor(l1->output->getShape(), dev);
+    output = new Tensor(l1->output->shape, dev);
+    if (!mem_level) { delta = new Tensor(l1->output->shape, dev);  }
 
     l1->addchild(this);
     l2->addchild(this);
@@ -66,8 +66,8 @@ LDiff::LDiff(Layer *l, float k, string name, int dev, int mem) : OperatorLayer(n
     input=l->output;
 
 
-    output = new Tensor(l->output->getShape(), dev);
-    delta = new Tensor(l->output->getShape(), dev);
+    output = new Tensor(l->output->shape, dev);
+    if (!mem_level) { delta = new Tensor(l->output->shape, dev);  }
 
     l->addchild(this);
     addparent(l);
@@ -81,8 +81,8 @@ LDiff::LDiff(float k, Layer *l, string name, int dev, int mem) : OperatorLayer(n
     input=l->output;
 
 
-    output = new Tensor(l->output->getShape(), dev);
-    delta = new Tensor(l->output->getShape(), dev);
+    output = new Tensor(l->output->shape, dev);
+    if (!mem_level) { delta = new Tensor(l->output->shape, dev);  }
 
     l->addchild(this);
     addparent(l);

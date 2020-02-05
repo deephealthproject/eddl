@@ -23,7 +23,7 @@ LCutout::LCutout(Layer *parent, vector<int> from_coords, vector<int> to_coords, 
     if(name.empty()) this->name = "cutout" + to_string(++total_layers);
 
     input = parent->output;
-    output = new Tensor(input->getShape(), dev);
+    output = new Tensor(input->shape, dev);
     delta=parent->delta;
 
 

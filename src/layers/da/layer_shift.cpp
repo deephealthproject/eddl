@@ -24,7 +24,7 @@ LShift::LShift(Layer *parent, vector<int> shift, string da_mode, float constant,
     if(name.empty()) this->name = "shift" + to_string(++total_layers);
 
     input = parent->output;
-    output = new Tensor(input->getShape(), dev);
+    output = new Tensor(input->shape, dev);
     delta=parent->delta;
 
 

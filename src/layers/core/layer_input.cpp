@@ -22,7 +22,7 @@ int LInput::total_layers = 0;
 LInput::LInput(Tensor *in, string name, int dev, int mem) : LinLayer(name, dev, 0) {
     if(name.empty()) this->name = "input" + to_string(++total_layers);
     input = output = in;
-    delta = new Tensor(input->getShape(), dev);
+    if (!mem_level) { delta = new Tensor(output->shape, dev); }
 }
 
 LInput::~LInput()

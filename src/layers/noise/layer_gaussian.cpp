@@ -25,9 +25,9 @@ LGaussianNoise::LGaussianNoise(Layer *parent, float stdev, string name, int dev,
 
     // TODO: Implement
     input = parent->output;
-    output = new Tensor(input->getShape(), dev);
+    output = new Tensor(input->shape, dev);
     if (!mem_level) delta = parent->delta;
-    noise = new Tensor(input->getShape(), dev);
+    noise = new Tensor(input->shape, dev);
 
     parent->addchild(this);
     addparent(parent);

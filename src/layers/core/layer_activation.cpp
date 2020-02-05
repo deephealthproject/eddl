@@ -27,8 +27,8 @@ LActivation::LActivation(Layer *parent, string act, string name, int dev, float 
     this->param=param;
 
     input = parent->output;
-    output = new Tensor(input->getShape(), dev);
-    if (!mem_level) delta = new Tensor(output->getShape(), dev);
+    output = new Tensor(input->shape, dev);
+    if (!mem_level) { delta = new Tensor(output->shape, dev); }
     delta_bp = 0;
 
     parent->addchild(this);

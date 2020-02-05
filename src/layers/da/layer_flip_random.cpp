@@ -23,7 +23,7 @@ LFlipRandom::LFlipRandom(Layer *parent, int axis, string name, int dev, int mem)
     if(name.empty()) this->name = "flip_random" + to_string(++total_layers);
 
     input = parent->output;
-    output = new Tensor(input->getShape(), dev);
+    output = new Tensor(input->shape, dev);
     delta=parent->delta;
 
 

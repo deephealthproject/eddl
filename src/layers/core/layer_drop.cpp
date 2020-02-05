@@ -26,10 +26,10 @@ LDropout::LDropout(Layer *parent, float df, string name, int dev, int mem) : Lin
     this->df = df;
 
     input = parent->output;
-    output = new Tensor(input->getShape(), dev);
-    if (!mem_level) delta = new Tensor(input->getShape(), dev);
+    output = new Tensor(input->shape, dev);
+    if (!mem_level) { delta = new Tensor(input->shape, dev); }
 
-    mask = new Tensor(input->getShape(), dev);
+    mask = new Tensor(input->shape, dev);
 
     parent->addchild(this);
     addparent(parent);
@@ -44,7 +44,7 @@ LDropout::~LDropout()
 void LDropout::resize(int batch){
   Layer::resize(batch);
   delete mask;
-  mask = new Tensor(input->getShape(), dev);
+  mask = new Tensor(input->shape, dev);
 }
 
 void LDropout::forward() {
