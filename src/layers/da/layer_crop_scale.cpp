@@ -19,7 +19,7 @@ using namespace std;
 
 int LCropScale::total_layers = 0;
 
-LCropScale::LCropScale(Layer *parent, vector<int> from_coords, vector<int> to_coords, string da_mode, float constant, string name, int dev, int mem) : LCrop(parent, from_coords, to_coords, false, constant, name, dev) {
+LCropScale::LCropScale(Layer *parent, vector<int> from_coords, vector<int> to_coords, string da_mode, float constant, string name, int dev, int mem) : LCrop(parent, from_coords, to_coords, false, constant, name, dev, mem) {
     if(name.empty()) this->name = "crop_scale" + to_string(++total_layers);
     this->da_mode=std::move(da_mode);
     delta=parent->delta;

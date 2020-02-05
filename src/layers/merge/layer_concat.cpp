@@ -19,7 +19,7 @@ using namespace std;
 
 int LConcat::total_layers = 0;
 
-LConcat::LConcat(vector<Layer *> parent, unsigned int axis, string name, int dev,int mem) : MLayer(name, dev, mem) {
+LConcat::LConcat(vector<Layer *> parent, unsigned int axis, string name, int dev, int mem) : MLayer(name, dev, mem) {
     if(name.empty()) {this->name = "concat" + to_string(++total_layers); }
 
     // Perform layer checks
@@ -123,7 +123,7 @@ void LConcat::resize(int batch){
 
 Layer *LConcat::share(int c, int bs, vector<Layer *> p) {
 
-    auto *n = new LConcat(p, this->axis, "share_" + to_string(c) + name, dev);
+    auto *n = new LConcat(p, this->axis, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

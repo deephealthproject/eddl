@@ -32,10 +32,10 @@ LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev, in
     this->keepdims=keepdims;
 
     // create a sub-graph
-    LRMean *m1=new LRMean(this, axis, true,this->name+"mean_keepdims",dev);
-    LDiff *diff=new LDiff(this, m1,this->name+"diff",dev);
-    LMult *mult=new LMult(diff,diff,this->name+"mult",dev);
-    LRMean *m2=new LRMean(mult, axis,keepdims,this->name+"mean_red",dev);
+    LRMean *m1=new LRMean(this, axis, true,this->name+"mean_keepdims", this->dev, this->mem_level);
+    LDiff *diff=new LDiff(this, m1,this->name+"diff", this->dev, this->mem_level);
+    LMult *mult=new LMult(diff,diff,this->name+"mult", this->dev, this->mem_level);
+    LRMean *m2=new LRMean(mult, axis,keepdims,this->name+"mean_red", this->dev, this->mem_level);
     layers.push_back(m1);
     layers.push_back(diff);
     layers.push_back(mult);
@@ -82,14 +82,14 @@ void LRVar::reset()
 
 Layer *LRVar::share(int c, int bs, vector<Layer *> p) {
   LRVar *n;
-  n = new LRVar(p[0], axis, keepdims, "share_" + to_string(c) + name, dev);
+  n = new LRVar(p[0], axis, keepdims, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
   n->orig = this;
   return n;
 }
 
 Layer *LRVar::clone(int c, int bs, vector<Layer *> p, int todev) {
     LRVar *n;
-    n = new LRVar(p[0], axis, keepdims, "clone_" + to_string(c) + name, todev);
+    n = new LRVar(p[0], axis, keepdims, "clone_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
     return n;
 }

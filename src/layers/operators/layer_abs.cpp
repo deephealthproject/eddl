@@ -65,7 +65,7 @@ Layer *LAbs::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LAbs::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LAbs *n = new LAbs(p[0], "share_" + to_string(c) + name, todev);
+    LAbs *n = new LAbs(p[0], "share_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
 
     return n;

@@ -108,7 +108,7 @@ void LDense::apply_accumulated_gradients() {
 
 
 Layer *LDense::share(int c, int bs, vector<Layer *> p) {
-    LDense *n = new LDense(p[0], ndim, use_bias, "share_" + to_string(c) + name, dev);
+    LDense *n = new LDense(p[0], ndim, use_bias, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     //share params
@@ -133,7 +133,7 @@ Layer *LDense::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LDense::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LDense *n = new LDense(p[0], ndim, use_bias, "clone_" + to_string(todev) + name, todev, mem_level);
+    LDense *n = new LDense(p[0], ndim, use_bias, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     n->reg=reg;

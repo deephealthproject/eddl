@@ -32,7 +32,7 @@ public:
     int binary;
     float val;
 
-    OperatorLayer(string name, int dev, int mem=0);
+    OperatorLayer(string name, int dev, int mem);
 
     void addchild(Layer *l) override;
 
@@ -50,7 +50,7 @@ public:
 
     Tensor *mask;
 
-    LAbs(Layer *l, string name, int dev, int mem=0);
+    LAbs(Layer *l, string name, int dev, int mem);
 
     void forward() override;
 
@@ -70,9 +70,9 @@ public:
     int left;
     vector<Tensor *> tin;
 
-    LDiff(Layer *l1, Layer *l2, string name, int dev, int mem=0);
-    LDiff(Layer *l, float k, string name, int dev, int mem=0);
-    LDiff(float k, Layer *l, string name, int dev, int mem=0);
+    LDiff(Layer *l1, Layer *l2, string name, int dev, int mem);
+    LDiff(Layer *l, float k, string name, int dev, int mem);
+    LDiff(float k, Layer *l, string name, int dev, int mem);
 
     void forward() override;
 
@@ -89,9 +89,9 @@ public:
     static int total_layers;
     int left;
 
-    LDiv(Layer *l1, Layer *l2, string name, int dev, int mem=0);
-    LDiv(Layer *l, float k, string name, int dev, int mem=0);
-    LDiv(float k, Layer *l,string name, int dev, int mem=0);
+    LDiv(Layer *l1, Layer *l2, string name, int dev, int mem);
+    LDiv(Layer *l, float k, string name, int dev, int mem);
+    LDiv(float k, Layer *l,string name, int dev, int mem);
 
     void forward() override;
 
@@ -107,7 +107,7 @@ class LExp : public OperatorLayer {
 public:
     static int total_layers;
 
-    LExp(Layer *l, string name, int dev, int mem=0);
+    LExp(Layer *l, string name, int dev, int mem);
 
     void forward() override;
 
@@ -123,7 +123,7 @@ class LLog : public OperatorLayer {
 public:
     static int total_layers;
 
-    LLog(Layer *l, string name, int dev, int mem=0);
+    LLog(Layer *l, string name, int dev, int mem);
 
     void forward() override;
 
@@ -139,7 +139,7 @@ class LLog2 : public OperatorLayer {
 public:
     static int total_layers;
 
-    LLog2(Layer *l, string name, int dev, int mem=0);
+    LLog2(Layer *l, string name, int dev, int mem);
 
     void forward() override;
 
@@ -155,7 +155,7 @@ class LLog10 : public OperatorLayer {
 public:
     static int total_layers;
 
-    LLog10(Layer *l, string name, int dev, int mem=0);
+    LLog10(Layer *l, string name, int dev, int mem);
 
     void forward() override;
 
@@ -174,8 +174,8 @@ public:
     vector<int> axis;
     bool keepdims;
 
-    LMean(Layer *l, vector<int> &axis, bool keepdims, string name, int dev, int mem=0);
-    LMean(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem=0);
+    LMean(Layer *l, vector<int> &axis, bool keepdims, string name, int dev, int mem);
+    LMean(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem);
 
     void forward() override;
 
@@ -191,8 +191,8 @@ class LMult : public OperatorLayer {
 public:
     static int total_layers;
 
-    LMult(Layer *l1, Layer *l2, string name, int dev, int mem=0);
-    LMult(Layer *l, float k, string name, int dev, int mem=0);
+    LMult(Layer *l1, Layer *l2, string name, int dev, int mem);
+    LMult(Layer *l, float k, string name, int dev, int mem);
 
     void forward() override;
 
@@ -208,8 +208,8 @@ class LPow : public OperatorLayer {
 public:
     static int total_layers;
 
-    LPow(Layer *l1, Layer *l2, string name, int dev, int mem=0);
-    LPow(Layer *l, float k, string name, int dev, int mem=0);
+    LPow(Layer *l1, Layer *l2, string name, int dev, int mem);
+    LPow(Layer *l, float k, string name, int dev, int mem);
 
     void forward() override;
 
@@ -225,7 +225,7 @@ class LSqrt : public OperatorLayer {
 public:
     static int total_layers;
 
-    LSqrt(Layer *l, string name, int dev, int mem=0);
+    LSqrt(Layer *l, string name, int dev, int mem);
 
     void forward() override;
 
@@ -241,8 +241,8 @@ class LSum : public OperatorLayer {
 public:
     static int total_layers;
 
-    LSum(Layer *l1, Layer *l2, string name, int dev,int mem=0);
-    LSum(Layer *l, float k, string name, int dev,int mem=0);
+    LSum(Layer *l1, Layer *l2, string name, int dev, int mem);
+    LSum(Layer *l, float k, string name, int dev, int mem);
 
     void forward() override;
 
@@ -264,8 +264,8 @@ public:
     int rsize;
     vector<Layer *> layers;
 
-    LVar(Layer *l, vector<int> &axis, bool keepdims, string name, int dev, int mem=0);
-    LVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem=0);
+    LVar(Layer *l, vector<int> &axis, bool keepdims, string name, int dev, int mem);
+    LVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem);
 
     void forward() override;
 
@@ -282,7 +282,7 @@ public:
     static int total_layers;
     SelDescriptor *sd;
 
-    LSelect(Layer *l, vector<string> indices, bool hasBatch, string name, int dev, int mem=0);
+    LSelect(Layer *l, vector<string> indices, bool hasBatch, string name, int dev, int mem);
 
     void forward() override;
 
@@ -303,7 +303,7 @@ public:
 
     PermuteDescriptor *sd;
 
-    LPermute(Layer *l, vector<int> dims, string name, int dev, int mem=0);
+    LPermute(Layer *l, vector<int> dims, string name, int dev, int mem);
 
     void forward() override;
 

@@ -55,7 +55,7 @@ Layer *LGauss::share(int c, int bs, vector<Layer *> p) {
 Layer *LGauss::clone(int c, int bs, vector<Layer *> p, int todev) {
     // TODO: Implement
     LGauss *n;
-    n = new LGauss(mean, stdev, size, "clone_" + to_string(c) + name, todev);
+    n = new LGauss(mean, stdev, size, "clone_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
     return n;
 }

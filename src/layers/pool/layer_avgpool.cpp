@@ -69,8 +69,7 @@ void LAveragePool::backward() {
 }
 
 Layer *LAveragePool::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LAveragePool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, pd->pad,
-                               "share_" + to_string(c) + name, dev);
+    auto *n = new LAveragePool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, pd->pad, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

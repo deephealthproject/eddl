@@ -57,14 +57,14 @@ void LShiftRandom::backward() {
 
 
 Layer *LShiftRandom::share(int c, int bs, vector<Layer *> p) {
-    LShiftRandom *n = new LShiftRandom(p[0], this->factor_x, this->factor_y, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
+    LShiftRandom *n = new LShiftRandom(p[0], this->factor_x, this->factor_y, this->da_mode, this->constant, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LShiftRandom::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LShiftRandom *n = new LShiftRandom(p[0], this->factor_x, this->factor_y, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
+    LShiftRandom *n = new LShiftRandom(p[0], this->factor_x, this->factor_y, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     return n;

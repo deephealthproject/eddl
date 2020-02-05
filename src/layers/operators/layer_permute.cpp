@@ -75,7 +75,7 @@ Layer *LPermute::clone(int c, int bs, vector<Layer *> p, int todev) {
     vector<int> dims_batch = vector<int>(sd->dims.begin()+1, sd->dims.end());
     for(auto &d : dims_batch){ d-=1; }
 
-    auto *n = new LPermute(p[0], dims_batch, "share_" + to_string(c) + name, todev);
+    auto *n = new LPermute(p[0], dims_batch, "share_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
     return n;
 }

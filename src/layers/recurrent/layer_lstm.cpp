@@ -45,7 +45,7 @@ void LLSTM::backward() {
 
 
 Layer *LLSTM::share(int c, int bs, vector<Layer *> p) {
-    LLSTM *n = new LLSTM(p[0], units, num_layers, use_bias, dropout, bidirectional, "share_" + to_string(c) + name, dev);
+    LLSTM *n = new LLSTM(p[0], units, num_layers, use_bias, dropout, bidirectional, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement
@@ -54,7 +54,7 @@ Layer *LLSTM::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LLSTM::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LLSTM *n = new LLSTM(p[0], units, num_layers, use_bias, dropout, bidirectional, "clone_" + to_string(todev) + name, todev);
+    LLSTM *n = new LLSTM(p[0], units, num_layers, use_bias, dropout, bidirectional, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

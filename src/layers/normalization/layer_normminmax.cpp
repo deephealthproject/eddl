@@ -39,14 +39,14 @@ LNormMinMax::LNormMinMax(Layer *parent, float epsilon, string name, int dev, int
 
 
     // max
-    Layer *max=new LRMax(parent, axis, true,this->name+"max",dev);
-    Layer *min=new LRMin(parent, axis, true,this->name+"max",dev);
-    Layer *maxmin= new LDiff(max,min,this->name+"maxmin",dev);
-    Layer *dmin=new LDiff(parent,min,this->name+"dmin",dev);
+    Layer *max=new LRMax(parent, axis, true,this->name+"max", this->dev, this->mem_level);
+    Layer *min=new LRMin(parent, axis, true,this->name+"max", this->dev, this->mem_level);
+    Layer *maxmin= new LDiff(max,min,this->name+"maxmin", this->dev, this->mem_level);
+    Layer *dmin=new LDiff(parent,min,this->name+"dmin", this->dev, this->mem_level);
 
-    Layer *meps=new LSum(maxmin,epsilon,this->name+"sum_eps",dev);
+    Layer *meps=new LSum(maxmin,epsilon,this->name+"sum_eps", this->dev, this->mem_level);
     // norm
-    Layer *div=new LDiv(dmin,meps,this->name+"div",dev);
+    Layer *div=new LDiv(dmin,meps,this->name+"div", this->dev, this->mem_level);
 
     layers.push_back(max);
     layers.push_back(min);
@@ -102,7 +102,7 @@ void LNormMinMax::backward() {
 
 
 Layer *LNormMinMax::share(int c, int bs, vector<Layer *> p) {
-    LNormMinMax *n = new LNormMinMax(p[0], epsilon, "share_" + to_string(c) + name, dev);
+    LNormMinMax *n = new LNormMinMax(p[0], epsilon, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement
@@ -111,7 +111,7 @@ Layer *LNormMinMax::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LNormMinMax::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LNormMinMax *n = new LNormMinMax(p[0], epsilon, "clone_" + to_string(todev) + name, todev);
+    LNormMinMax *n = new LNormMinMax(p[0], epsilon, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

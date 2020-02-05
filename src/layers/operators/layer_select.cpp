@@ -77,7 +77,7 @@ Layer *LSelect::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LSelect::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LSelect(p[0], sd->indices, true, "share_" + to_string(c) + name, todev);
+    auto *n = new LSelect(p[0], sd->indices, true, "share_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
     return n;
 }

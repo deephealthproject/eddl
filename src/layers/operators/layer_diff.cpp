@@ -124,12 +124,12 @@ void LDiff::backward(){
 Layer *LDiff::share(int c, int bs, vector<Layer *> p) {
   LDiff *n;
   if (binary)
-      n = new LDiff(p[0], p[1], "share_" + to_string(c) + name, dev);
+      n = new LDiff(p[0], p[1], "share_" + to_string(c) + this->name, this->dev, this->mem_level);
   else {
     if (left)
-      n = new LDiff(p[0], val, "share_" + to_string(c) + name, dev);
+      n = new LDiff(p[0], val, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     else
-      n = new LDiff(val, p[0], "share_" + to_string(c) + name, dev);
+      n = new LDiff(val, p[0], "share_" + to_string(c) + this->name, this->dev, this->mem_level);
   }
   n->orig = this;
   return n;
@@ -138,12 +138,12 @@ Layer *LDiff::share(int c, int bs, vector<Layer *> p) {
 Layer *LDiff::clone(int c, int bs, vector<Layer *> p, int todev) {
     LDiff *n;
     if (binary)
-        n = new LDiff(p[0], p[1], "clone_" + to_string(c) + name, todev);
+        n = new LDiff(p[0], p[1], "clone_" + to_string(c) + name, todev, this->mem_level);
         else {
           if (left)
-            n = new LDiff(p[0], val, "clone_" + to_string(c) + name, todev);
+            n = new LDiff(p[0], val, "clone_" + to_string(c) + name, todev, this->mem_level);
           else
-            n = new LDiff(val, p[0], "clone_" + to_string(c) + name, todev);
+            n = new LDiff(val, p[0], "clone_" + to_string(c) + name, todev, this->mem_level);
         }
     n->orig = this;
     return n;

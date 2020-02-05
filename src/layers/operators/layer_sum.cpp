@@ -30,7 +30,7 @@ int LSum::total_layers = 0;
   @returns the result of l1+l2 element-wise
 
   */
-LSum::LSum(Layer *l1, Layer *l2, string name, int dev,int mem) : OperatorLayer(name, dev, mem) {
+LSum::LSum(Layer *l1, Layer *l2, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
 
 
     if(name.empty()) this->name = "sum" + to_string(++total_layers);
@@ -58,7 +58,7 @@ LSum::LSum(Layer *l1, Layer *l2, string name, int dev,int mem) : OperatorLayer(n
   @returns the result of l+k element-wise over l
 
   */
-LSum::LSum(Layer *l, float k, string name, int dev,int mem) : OperatorLayer(name, dev, mem) {
+LSum::LSum(Layer *l, float k, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
 
     if(name.empty()) this->name = "sum" + to_string(++total_layers);
     val = k;

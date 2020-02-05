@@ -34,7 +34,7 @@ public:
     float val;
     ReduceDescriptor *RD;
 
-    ReductionLayer(string name, int dev, int mem=0);
+    ReductionLayer(string name, int dev, int mem);
 
     void addchild(Layer *l) override;
 
@@ -52,7 +52,7 @@ public:
     static int total_layers;
 
 
-    LRMean(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem=0);
+    LRMean(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem);
 
     void forward() override;
 
@@ -75,7 +75,7 @@ public:
 
     vector<Layer *> layers;
 
-    LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem=0);
+    LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem);
 
     void forward() override;
 
@@ -95,7 +95,7 @@ class LRSum : public ReductionLayer {
 public:
     static int total_layers;
 
-    LRSum(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem=0);
+    LRSum(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem);
 
     void forward() override;
 
@@ -114,7 +114,7 @@ public:
     static int total_layers;
 
 
-    LRMax(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem=0);
+    LRMax(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem);
 
     void forward() override;
 
@@ -132,7 +132,7 @@ class LRMin : public ReductionLayer {
 public:
     static int total_layers;
 
-    LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem=0);
+    LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem);
 
     void forward() override;
 

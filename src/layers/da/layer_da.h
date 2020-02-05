@@ -31,7 +31,7 @@ public:
     string da_mode;
     float constant;
 
-    LShift(Layer *parent, vector<int> shift, string da_mode, float constant, string name, int dev, int mem=0);
+    LShift(Layer *parent, vector<int> shift, string da_mode, float constant, string name, int dev, int mem);
     ~LShift();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
@@ -57,7 +57,7 @@ public:
     string da_mode;
     float constant;
 
-    LRotate(Layer *parent, float angle, vector<int> offset_center, string da_mode, float constant, string name, int dev, int mem=0);
+    LRotate(Layer *parent, float angle, vector<int> offset_center, string da_mode, float constant, string name, int dev, int mem);
     ~LRotate();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
@@ -83,7 +83,7 @@ public:
     string da_mode;
     float constant;
 
-    LScale(Layer *parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string name, int dev, int mem=0);
+    LScale(Layer *parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string name, int dev, int mem);
     ~LScale();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
@@ -106,7 +106,7 @@ public:
     static int total_layers;
     int axis;
 
-    LFlip(Layer *parent, int axis, string name, int dev, int mem=0);
+    LFlip(Layer *parent, int axis, string name, int dev, int mem);
     ~LFlip();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
@@ -132,7 +132,7 @@ public:
     bool reshape;
     float constant;
 
-    LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool reshape, float constant, string name, int dev, int mem=0);
+    LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool reshape, float constant, string name, int dev, int mem);
     ~LCrop();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
@@ -154,7 +154,7 @@ public:
     static int total_layers;
     string da_mode;
 
-    LCropScale(Layer *parent, vector<int> from_coords, vector<int> to_coords, string da_mode, float constant, string name, int dev, int mem=0);
+    LCropScale(Layer *parent, vector<int> from_coords, vector<int> to_coords, string da_mode, float constant, string name, int dev, int mem);
     ~LCropScale();
 
     void forward() override;
@@ -169,7 +169,7 @@ public:
     vector<int> to_coords;
     float constant;
 
-    LCutout(Layer *parent, vector<int> from_coords, vector<int> to_coords, float constant, string name, int dev, int mem=0);
+    LCutout(Layer *parent, vector<int> from_coords, vector<int> to_coords, float constant, string name, int dev, int mem);
     ~LCutout();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
@@ -196,7 +196,7 @@ public:
     string da_mode;
     float constant;
 
-    LShiftRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, string da_mode, float constant, string name, int dev, int mem=0);
+    LShiftRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, string da_mode, float constant, string name, int dev, int mem);
     ~LShiftRandom();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
@@ -222,7 +222,7 @@ public:
     string da_mode;
     float constant;
 
-    LRotateRandom(Layer *parent, vector<float> factor, vector<int> offset_center, string da_mode, float constant, string name, int dev, int mem=0);
+    LRotateRandom(Layer *parent, vector<float> factor, vector<int> offset_center, string da_mode, float constant, string name, int dev, int mem);
     ~LRotateRandom();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
@@ -247,7 +247,7 @@ public:
     string da_mode;
     float constant;
 
-    LScaleRandom(Layer *parent, vector<float> factor, string da_mode, float constant, string name, int dev, int mem=0);
+    LScaleRandom(Layer *parent, vector<float> factor, string da_mode, float constant, string name, int dev, int mem);
     ~LScaleRandom();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
@@ -270,7 +270,7 @@ public:
     static int total_layers;
     int axis;
 
-    LFlipRandom(Layer *parent, int axis, string name, int dev, int mem=0);
+    LFlipRandom(Layer *parent, int axis, string name, int dev, int mem);
     ~LFlipRandom();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
@@ -293,7 +293,7 @@ public:
     static int total_layers;
     vector<int> new_shape;
 
-    LCropRandom(Layer *parent,  vector<int> new_shape, string name, int dev, int mem=0);
+    LCropRandom(Layer *parent,  vector<int> new_shape, string name, int dev, int mem);
     ~LCropRandom();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
@@ -317,7 +317,7 @@ public:
     vector<float> factor;
     string da_mode;
 
-    LCropScaleRandom(Layer *parent, vector<float> factor, string da_mode, string name, int dev, int mem=0);
+    LCropScaleRandom(Layer *parent, vector<float> factor, string da_mode, string name, int dev, int mem);
     ~LCropScaleRandom();
 
 
@@ -343,7 +343,7 @@ public:
     vector<float> factor_y;
     float constant;
 
-    LCutoutRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, float constant, string name, int dev, int mem=0);
+    LCutoutRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, float constant, string name, int dev, int mem);
     ~LCutoutRandom();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;

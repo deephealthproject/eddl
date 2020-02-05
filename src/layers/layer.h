@@ -57,7 +57,7 @@ public:
     int delta_bp;
     bool detached;
 
-    Layer(string name, int dev, int mem=0);
+    Layer(string name, int dev, int mem);
     // Destructor
     virtual ~Layer();
 
@@ -133,7 +133,7 @@ public:
 class LinLayer : public Layer {
 public:
 
-    LinLayer(string name, int dev, int mem=0);
+    LinLayer(string name, int dev, int mem);
 
     void addchild(Layer *l) override;
 
@@ -169,7 +169,7 @@ public:
 class MLayer : public Layer {
 public:
 
-    MLayer(string name, int dev, int mem=0);
+    MLayer(string name, int dev, int mem);
 
     void addchild(Layer *l) override;
 

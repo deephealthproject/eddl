@@ -118,7 +118,7 @@ void LBatchNorm::backward()
 
 
 Layer *LBatchNorm::share(int c, int bs, vector<Layer *> p) {
-    LBatchNorm *n = new LBatchNorm(p[0], momentum, epsilon, affine, "share_" + to_string(c) + name, dev);
+    LBatchNorm *n = new LBatchNorm(p[0], momentum, epsilon, affine, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

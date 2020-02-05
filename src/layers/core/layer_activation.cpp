@@ -18,123 +18,129 @@ using namespace std;
 
 int LActivation::total_layers = 0;
 
-LActivation::LActivation(Layer *parent, string act, string name, int dev, float param, int mem) : LinLayer(name, dev, mem) {
+LActivation::LActivation(Layer *parent, string act, vector<float> params, string name, int dev, int mem) : LinLayer(name, dev, mem){
 
     // Set default name
     if(name.empty()) this->name = act + to_string(++total_layers);
 
     this->act = act;
-    this->param=param;
+    this->params = params;
 
     input = parent->output;
     output = new Tensor(input->shape, dev);
-    if (!mem_level) { delta = new Tensor(output->shape, dev); }
+    if (!mem_level){ delta = new Tensor(output->shape, dev); }
     delta_bp = 0;
 
     parent->addchild(this);
     addparent(parent);
 }
+
 // virtual
 void LActivation::resize(int batch){
     Layer::resize(batch);
 }
 
+void LActivation::forward(){
 
-void LActivation::forward() {
-
-    if (act == "relu") {
+    if (act == "relu"){
         ReLu(this->input, this->output);
 
-    } else if (act == "elu") {
-        ELu(this->input, this->output, this->param);
+    }else if (act == "elu"){
+        float alpha = this->params[0];
+        ELu(this->input, this->output, alpha);
 
-    } else if (act == "selu") {
+    }else if (act == "selu"){
         // https://mlfromscratch.com/activation-functions-explained/#selu
-        float alpha = 1.6732632423543772848170429916717f;
-        float scale = 1.0507009873554804934193349852946f;
+        float alpha = this->params[0];
+        float scale = this->params[1];
 
         ELu(this->input, this->output, alpha);
         this->output->mult_(scale);
 
-    } else if (act == "exp") {
+    }else if (act == "exp"){
         this->output = Tensor::exp(this->input);
 
-    } else if (act == "softplus") {
+    }else if (act == "softplus"){
         Softplus(this->input, this->output);
 
-    } else if (act == "softsign") {
+    }else if (act == "softsign"){
         Softsign(this->input, this->output);
 
-    } else if (act == "softmax") {
+    }else if (act == "softmax"){
         Softmax(this->input, this->output);
 
-    } else if (act == "sigmoid") {
+    }else if (act == "sigmoid"){
         Sigmoid(this->input, this->output);
 
-    } else if (act == "hard_sigmoid") {
+    }else if (act == "hard_sigmoid"){
         HardSigmoid(this->input, this->output);
 
-    } else if (act == "leaky_relu") {
-        LeakyReLu(this->input, this->output, this->param);
+    }else if (act == "leaky_relu"){
+        float alpha = this->params[0];
+        LeakyReLu(this->input, this->output, alpha);
 
-    } else if (act == "tanh") {
+    }else if (act == "tanh"){
         Tanh(this->input, this->output);
 
-    }  else if (act == "linear") {
-        Linear(this->input, this->output, this->param);
+    }else if (act == "linear"){
+        float alpha = this->params[0];
+        Linear(this->input, this->output, alpha);
     }
 }
 
 
-void LActivation::backward() {
+void LActivation::backward(){
 
 
-    if (parent.size()) {
+    if (parent.size()){
         if (parent[0]->mem_level)  parent[0]->mem_delta();
-        if (delta_bp) {
+        if (delta_bp){
             Tensor::inc(delta, parent[0]->delta);
-        } else {
-            if (act == "relu") {
+        }else {
+            if (act == "relu"){
                 D_ReLu(delta, input, parent[0]->delta);
 
-            } else if (act == "elu") {
-                D_ELu(delta, input, parent[0]->delta, param);
+            }else if (act == "elu"){
+                float alpha = this->params[0];
+                D_ELu(delta, input, parent[0]->delta, alpha);
 
-            } else if (act == "selu") {
+            }else if (act == "selu"){
                 // https://mlfromscratch.com/activation-functions-explained/#selu
-                float alpha = 1.6732632423543772848170429916717f;
-                float scale = 1.0507009873554804934193349852946f;
+                float alpha = this->params[0];
+                float scale = this->params[1];
 
                  D_ELu(delta, input, parent[0]->delta, alpha);
                 this->output->mult_(scale);
 
-            } else if (act == "exp") {
+            }else if (act == "exp"){
                 // TODO: Review
                 Tensor::el_mult(delta, output, parent[0]->delta, 0);
 
-            } else if (act == "softplus") {
+            }else if (act == "softplus"){
                 D_softplus(delta, output, parent[0]->delta);
 
-            } else if (act == "softsign") {
+            }else if (act == "softsign"){
                 D_softsign(delta, output, parent[0]->delta);
 
-            } else if (act == "softmax") {
+            }else if (act == "softmax"){
                 D_Softmax(delta, output, parent[0]->delta);
 
-            } else if (act == "sigmoid") {
+            }else if (act == "sigmoid"){
                 D_Sigmoid(delta, output, parent[0]->delta);
 
-            } else if (act == "hard_sigmoid") {
+            }else if (act == "hard_sigmoid"){
                 D_HardSigmoid(delta, input, parent[0]->delta);
 
-            } else if (act == "leaky_relu") {
-                D_LeakyReLu(delta, input, parent[0]->delta,param);
+            }else if (act == "leaky_relu"){
+                float alpha = this->params[0];
+                D_LeakyReLu(delta, input, parent[0]->delta, alpha);
 
-            }  else if (act == "tanh") {
+            }else if (act == "tanh"){
                 D_Tanh(delta, output, parent[0]->delta);
 
-            }  else if (act == "linear") {
-                D_Linear(delta, input, parent[0]->delta, param);
+            }else if (act == "linear"){
+                float alpha = this->params[0];
+                D_Linear(delta, input, parent[0]->delta, alpha);
             }
         }
       if (mem_level)  free_delta();
@@ -152,19 +158,18 @@ void LActivation::load(std::ifstream &ifs, string format){
     // Load param for "lrelu"
 }
 
-Layer *LActivation::share(int c, int bs, vector<Layer *> p) {
-
-    LActivation *n = new LActivation(p[0], act, "share_" + to_string(c) + name, dev);
+Layer *LActivation::share(int c, int bs, vector<Layer *> p){
+    LActivation *n = new LActivation(p[0], this->act, this->params, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
     n->delta_bp = delta_bp;
 
     return n;
 }
 
-Layer *LActivation::clone(int c, int bs, vector<Layer *> p, int todev) {
+Layer *LActivation::clone(int c, int bs, vector<Layer *> p, int todev){
 
 
-    LActivation *n = new LActivation(p[0], act, "clone_" + to_string(todev) + name, todev, param, mem_level);
+    LActivation *n = new LActivation(p[0], this->act, this->params, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
     n->delta_bp = delta_bp;
 
@@ -172,7 +177,7 @@ Layer *LActivation::clone(int c, int bs, vector<Layer *> p, int todev) {
 }
 
 
-string LActivation::plot(int c) {
+string LActivation::plot(int c){
     string s;
 
     if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=LightBlue,shape=box]";

@@ -34,7 +34,7 @@ public:
     static int total_layers;
     vector<Layer *> layers;
 
-    LNorm(Layer *parent, float epsilon,  string name, int dev, int mem=0);
+    LNorm(Layer *parent, float epsilon,  string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -57,7 +57,7 @@ public:
     static int total_layers;
     vector<Layer *> layers;
 
-    LNormMax(Layer *parent, float epsilon,  string name, int dev, int mem=0);
+    LNormMax(Layer *parent, float epsilon,  string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -81,7 +81,7 @@ public:
     static int total_layers;
     vector<Layer *> layers;
 
-    LNormMinMax(Layer *parent, float epsilon,  string name, int dev, int mem=0);
+    LNormMinMax(Layer *parent, float epsilon,  string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -117,7 +117,7 @@ public:
     static int total_layers;
     vector<Layer *> layers;
 
-    LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev,int mem=0);
+    LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -157,7 +157,7 @@ public:
     static int total_layers;
     vector<Layer *> layers;
 
-    LLayerNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem=0);
+    LLayerNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -196,7 +196,7 @@ public:
     static int total_layers;
     vector<Layer *> layers;
 
-    LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool affine, string name, int dev, int mem=0);
+    LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool affine, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

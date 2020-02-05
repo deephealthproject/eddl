@@ -124,12 +124,12 @@ void LDiv::backward() {
 Layer *LDiv::share(int c, int bs, vector<Layer *> p) {
   LDiv *n;
   if (binary)
-      n = new LDiv(p[0], p[1], "share_" + to_string(c) + name, dev);
+      n = new LDiv(p[0], p[1], "share_" + to_string(c) + this->name, this->dev, this->mem_level);
   else {
     if (left)
-      n = new LDiv(p[0], val, "share_" + to_string(c) + name, dev);
+      n = new LDiv(p[0], val, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     else
-      n = new LDiv(val, p[0], "share_" + to_string(c) + name, dev);
+      n = new LDiv(val, p[0], "share_" + to_string(c) + this->name, this->dev, this->mem_level);
   }
   n->orig = this;
   return n;
@@ -138,12 +138,12 @@ Layer *LDiv::share(int c, int bs, vector<Layer *> p) {
 Layer *LDiv::clone(int c, int bs, vector<Layer *> p, int todev) {
     LDiv *n;
     if (binary)
-        n = new LDiv(p[0], p[1], "clone_" + to_string(c) + name, todev);
+        n = new LDiv(p[0], p[1], "clone_" + to_string(c) + name, todev, this->mem_level);
         else {
           if (left)
-            n = new LDiv(p[0], val, "clone_" + to_string(c) + name, todev);
+            n = new LDiv(p[0], val, "clone_" + to_string(c) + name, todev, this->mem_level);
           else
-            n = new LDiv(val, p[0], "clone_" + to_string(c) + name, todev);
+            n = new LDiv(val, p[0], "clone_" + to_string(c) + name, todev, this->mem_level);
         }
     n->orig = this;
     return n;

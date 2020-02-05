@@ -78,7 +78,7 @@ void LAdd::resize(int batch){
 }
 
 Layer *LAdd::share(int c, int bs, vector<Layer *> p) {
-    LAdd *n = new LAdd(p, "share_" + to_string(c) + name, dev);
+    LAdd *n = new LAdd(p, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

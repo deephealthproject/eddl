@@ -41,11 +41,11 @@ LNormMax::LNormMax(Layer *parent, float epsilon, string name, int dev, int mem) 
     LDiv *div;
 
     // max
-    max=new LRMax(parent, axis, true,this->name+"max",dev);
+    max=new LRMax(parent, axis, true,this->name+"max", this->dev, this->mem_level);
 
-    meps=new LSum(max,epsilon,this->name+"sum_eps",dev);
+    meps=new LSum(max,epsilon,this->name+"sum_eps", this->dev, this->mem_level);
     // norm
-    div=new LDiv(parent,meps,this->name+"div",dev);
+    div=new LDiv(parent,meps,this->name+"div", this->dev, this->mem_level);
 
     layers.push_back(max);
     layers.push_back(meps);
@@ -97,7 +97,7 @@ void LNormMax::backward() {
 
 
 Layer *LNormMax::share(int c, int bs, vector<Layer *> p) {
-    LNormMax *n = new LNormMax(p[0], epsilon, "share_" + to_string(c) + name, dev);
+    LNormMax *n = new LNormMax(p[0], epsilon, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement
@@ -106,7 +106,7 @@ Layer *LNormMax::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LNormMax::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LNormMax *n = new LNormMax(p[0], epsilon, "clone_" + to_string(todev) + name, todev);
+    LNormMax *n = new LNormMax(p[0], epsilon, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

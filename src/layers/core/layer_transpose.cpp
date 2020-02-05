@@ -58,7 +58,7 @@ string LTranspose::plot(int c) {
 
 Layer *LTranspose::clone(int c, int bs, vector<Layer *> p, int todev) {
   LTranspose *n;
-  n = new LTranspose(p[0], dims, "share_" + to_string(c) + name, todev);
+  n = new LTranspose(p[0], dims, "share_" + to_string(c) + name, todev, this->mem_level);
   n->orig = this;
   return n;
 }

@@ -45,17 +45,17 @@ LNorm::LNorm(Layer *parent, float epsilon, string name, int dev, int mem) : LinL
     LDiv *div;
 
     // mean
-    mean_x=new LRMean(parent, axis, true,this->name+"mean_x",dev);
+    mean_x=new LRMean(parent, axis, true,this->name+"mean_x", this->dev, this->mem_level);
 
     // var
-    diff=new LDiff(parent, mean_x,this->name+"diff",dev);
-    mult=new LMult(diff,diff,this->name+"mult",dev);
-    var=new LRMean(mult, axis,true,this->name+"mean_mult",dev);
+    diff=new LDiff(parent, mean_x,this->name+"diff", this->dev, this->mem_level);
+    mult=new LMult(diff,diff,this->name+"mult", this->dev, this->mem_level);
+    var=new LRMean(mult, axis,true,this->name+"mean_mult", this->dev, this->mem_level);
     //sd
-    veps=new LSum(var,epsilon,this->name+"sum_eps",dev);
-    sd=new LSqrt(veps,this->name+"sqrt",dev);
+    veps=new LSum(var,epsilon,this->name+"sum_eps", this->dev, this->mem_level);
+    sd=new LSqrt(veps,this->name+"sqrt", this->dev, this->mem_level);
     // norm
-    div=new LDiv(diff,sd,this->name+"div",dev);
+    div=new LDiv(diff,sd,this->name+"div", this->dev, this->mem_level);
 
     layers.push_back(mean_x); //0
     layers.push_back(diff);  //1 --
@@ -110,7 +110,7 @@ void LNorm::backward() {
 
 
 Layer *LNorm::share(int c, int bs, vector<Layer *> p) {
-    LNorm *n = new LNorm(p[0], epsilon, "share_" + to_string(c) + name, dev);
+    LNorm *n = new LNorm(p[0], epsilon, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement
@@ -119,7 +119,7 @@ Layer *LNorm::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LNorm::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LNorm *n = new LNorm(p[0], epsilon, "clone_" + to_string(todev) + name, todev);
+    LNorm *n = new LNorm(p[0], epsilon, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

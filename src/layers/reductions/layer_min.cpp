@@ -53,14 +53,14 @@ void LRMin::resize(int batch){
 
 Layer *LRMin::share(int c, int bs, vector<Layer *> p) {
   LRMin *n;
-  n = new LRMin(p[0], RD->axis, RD->keepdims, "share_" + to_string(c) + name,dev);
+  n = new LRMin(p[0], RD->axis, RD->keepdims, "share_" + to_string(c) + name, this->dev, this->mem_level);
   n->orig = this;
   return n;
 }
 
 Layer *LRMin::clone(int c, int bs, vector<Layer *> p, int todev) {
     LRMin *n;
-    n = new LRMin(p[0],RD->axis, RD->keepdims, "clone_" + to_string(c) + name, todev);
+    n = new LRMin(p[0],RD->axis, RD->keepdims, "clone_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
     return n;
 }

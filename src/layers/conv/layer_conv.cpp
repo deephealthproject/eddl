@@ -150,7 +150,7 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LConv::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad, "clone_" + to_string(todev) + name, todev, mem_level);
+    LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     n->reg=reg;

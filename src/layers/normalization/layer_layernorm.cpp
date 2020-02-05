@@ -166,7 +166,7 @@ void LLayerNorm::backward()
 
 
 Layer *LLayerNorm::share(int c, int bs, vector<Layer *> p) {
-    LLayerNorm *n = new LLayerNorm(p[0], momentum, epsilon, affine, "share_" + to_string(c) + name, dev);
+    LLayerNorm *n = new LLayerNorm(p[0], momentum, epsilon, affine, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement
@@ -175,7 +175,7 @@ Layer *LLayerNorm::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LLayerNorm::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LLayerNorm *n = new LLayerNorm(p[0], momentum, epsilon, affine, "clone_" + to_string(todev) + name, todev);
+    LLayerNorm *n = new LLayerNorm(p[0], momentum, epsilon, affine, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

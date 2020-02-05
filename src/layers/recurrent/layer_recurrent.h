@@ -33,7 +33,7 @@ public:
     bool bidirectional;
     static int total_layers;
 
-    LRNN(Layer *parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev, int mem=0);
+    LRNN(Layer *parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -57,7 +57,7 @@ public:
     bool bidirectional;
     static int total_layers;
 
-    LLSTM(Layer *parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev, int mem=0);
+    LLSTM(Layer *parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
