@@ -149,6 +149,18 @@ if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
+# ONNX
+include(FindProtobuf)
+find_package(Protobuf REQUIRED)
+if(Protobuf_FOUND)
+    add_compile_definitions(cPROTO)
+	#protobuf_generate_cpp(onnx.pb.cc onnx.pb.h onnx.proto) #Generate protobuf files #Doesn't work
+	#EXEC_PROGRAM(${PROTOBUF_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
+	message("-- Protobuf path: ${PROTOBUF_LIBRARIES} ${PROTOBUF_INCLUDE_DIR}")
+else()
+    message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
+endif()
+
 
 # [MACRO] Download submodules
 macro(eddl_update_third_party SUBMODULE)
@@ -295,17 +307,10 @@ if (ZLIB_FOUND)
     target_link_libraries(eddl PRIVATE ${ZLIB_LIBRARIES})
 endif()
 
-
-# ONNX
-include(FindProtobuf)
-find_package(Protobuf REQUIRED)
+#Onnx link
 if(Protobuf_FOUND)
-    add_compile_definitions(cPROTO)
     target_include_directories(eddl PUBLIC ${PROTOBUF_INCLUDE_DIR})
 	target_link_libraries(eddl PRIVATE ${PROTOBUF_LIBRARIES})
-	message("Protobuf path: ${PROTOBUF_LIBRARIES} ${PROTOBUF_INCLUDE_DIR}")
-else()
-    message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
 endif()
 
 
@@ -453,14 +458,17 @@ install(FILES ${CMAKE_BINARY_DIR}/cmake/eddlConfig.cmake
 message(STATUS "Install path: ${CMAKE_INSTALL_PREFIX}")
 
 #Experimental script
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/temp)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
-file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "#!/usr/bin/bash\n")
+file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/temp/eddlc "#!/usr/bin/bash\n")
 set(SCRIPT_CPP_FLAGS "CPPFLAGS=\"-g -O3 -fopenmp -I${PROJECT_SOURCE_DIR}/src\"")
-file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "${SCRIPT_CPP_FLAGS}\n")
-file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "LDFLAGS=\"-g\"\n")
+file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/temp/eddlc "${SCRIPT_CPP_FLAGS}\n")
+file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/temp/eddlc "LDFLAGS=\"-g\"\n")
 set(SCRIPT_LD_LIBS "LDLIBS=\"-fopenmp -lpthread ${CMAKE_INSTALL_PREFIX}/lib/libeddl.a -lz \"\n")
-file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc ${SCRIPT_LD_LIBS})
-file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "g++ \$CPPFLAGS -c \$1\n")
-file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/eddlc "g++ -o \$\{1%.cpp} \$LDFLAGS \$\{1%.cpp}.o \$LDLIBS\n")
+file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/temp/eddlc ${SCRIPT_LD_LIBS})
+file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/temp/eddlc "g++ \$CPPFLAGS -c \$1\n")
+file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/temp/eddlc "g++ -o \$\{1%.cpp} \$LDFLAGS \$\{1%.cpp}.o \$LDLIBS\n")
+
+install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/temp/eddlc DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/scripts/ )
 
 
