@@ -68,9 +68,9 @@ Regardless of your platform, install:
 Then, on Ubuntu/Debian install:
 
 ```
-sudo apt-get install build-essential git graphviz wget zlib cmake  # Utilities
+sudo apt-get install build-essential git graphviz wget zlib1g-dev cmake  # Utilities
 sudo apt-get install libblas-dev liblapack-dev  # BLAS + LAPACK
-sudo apt-get libeigen3-dev  # Eigen3
+sudo apt-get install libeigen3-dev  # Eigen3
 sudo apt-get install libgtest-dev  # Google tests
 ```
 
@@ -217,6 +217,27 @@ Default for `Visual Studio 15 2017` build environment is x86, while EDDL require
 
 On Windows, the POSIX threads library is required. Path to this library can be specified to cmake as follows: `env PTHREADS_ROOT=path_to_pthreads cmake -A x64 .`
 The PThreads library can be found at [https://sourceforge.net/projects/pthreads4w/](https://sourceforge.net/projects/pthreads4w/).
+
+
+### Docker
+
+To build the image, run the following command from the `eddl/` folder:
+
+```
+docker build -t eddl .
+```
+
+Then, you can execute it using:
+
+```
+docker run -it eddl /bin/bash
+```
+
+Or mount it, if you want to **edit the code** in the host machine:
+
+```
+docker run -it -v $(pwd):/eddl/ eddl /bin/bash
+```
 
 
 ## Getting started
