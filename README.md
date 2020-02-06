@@ -1,4 +1,4 @@
-<p align="center">
+<p style="text-align: center;">
   <img src="https://raw.githubusercontent.com/salvacarrion/salvacarrion.github.io/master/assets/hot-linking/logo-eddl.png" alt="EDDL" height="140" width="300">
 </p>
 
@@ -6,92 +6,136 @@
 
 **EDDL** is an open source library for numerical computation tailored to the healthcare domain.
 
-**Documentation:**
+For more information about DeepHealth project go to: [deephealth-project.eu](https://deephealth-project.eu/)
 
+**Continuous build status:**
+
+| System  |  Compiler  | Status |
+|:-------:|:----------:|:------:|
+| Windows (CPU) | VS 15.9.11 | [![Build Status](https://jenkins-master-deephealth-unix01.ing.unimore.it/badge/job/DeepHealth/job/eddl/job/master/windows_end?)](https://jenkins-master-deephealth-unix01.ing.unimore.it/job/DeepHealth/job/eddl/job/master/)      |
+| Linux (CPU)   | GCC 5.5.0  | [![Build Status](https://jenkins-master-deephealth-unix01.ing.unimore.it/badge/job/DeepHealth/job/eddl/job/master/linux_end?)](https://jenkins-master-deephealth-unix01.ing.unimore.it/job/DeepHealth/job/eddl/job/master/)        |
+| Windows (GPU) | VS 15.9.11 | [![Build Status](https://jenkins-master-deephealth-unix01.ing.unimore.it/badge/job/DeepHealth/job/eddl/job/master/windows_gpu_end?)](https://jenkins-master-deephealth-unix01.ing.unimore.it/job/DeepHealth/job/eddl/job/master/)  |
+| Linux (GPU)   | GCC 5.5.0  | [![Build Status](https://jenkins-master-deephealth-unix01.ing.unimore.it/badge/job/DeepHealth/job/eddl/job/master/linux_gpu_end?)](https://jenkins-master-deephealth-unix01.ing.unimore.it/job/DeepHealth/job/eddl/job/master/)    |
+
+
+**Documentation:**
 - [Available NN features](https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md)
 - [Available Tensor features](https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md)
 - [Doyxigen documentation](http://imagelab.ing.unimore.it/eddl/)
 
-> More information about DeepHealth go to: [deephealth-project.eu](https://deephealth-project.eu/)
 
-
-## Prerequisites
-
-- CMake 3.9.2 or higher
-- A modern compiler with C++11 support
-- Anaconda/Miniconda ([download](https://docs.conda.io/en/latest/miniconda.html)): Not a prerequisite but recommended
-
-### Linux
-
-```bash
-sudo apt-get install build-essential gcc cmake
-```
-
-### Mac OS
-
-```bash
-brew install gcc cmake
-```
-
-
-## Source code
-
-To clone all third_party submodules use:
-
-```bash
-git clone --recurse-submodules https://github.com/deephealthproject/eddl.git
-```
-
-> Note: Use the flag `-j$(num_cores)` to speed up the download
 
 ## Installation
 
-### Conda
 
-The required libraries are easier to install if you use using the conda package manager:
+### Download source code
 
-Create and activate the environment:
+To get the source, download one of the release .tar.gz or .zip packages in the release page:
 
 ```bash
-cd eddl/
+git clone https://github.com/deephealthproject/eddl.git
+```
+
+
+### Prerequisites
+
+To build EDDL from source, the following tools are needed:
+
+- C++11-standard-compliant compiler
+- CMake >= 3.9.2
+- CUDA Toolkit >= 8.0
+- Eigen3
+- BLAS
+- LAPACK
+- graphviz
+- wget
+- zlib
+- Protobuf
+- Google tests
+- Google Benchmark
+
+These dependencies can be installed either manually or using a conda package manager (recommended).
+
+
+#### Manual management of dependencies
+
+Regardless of your platform, install:
+
+- CUDA: https://developer.nvidia.com/cuda-toolkit
+- Google benchmark: https://github.com/google/benchmark
+- Protobuf: https://github.com/protocolbuffers/protobuf/blob/master/src/README.md
+
+Then, on Ubuntu/Debian install:
+
+```
+sudo apt-get install build-essential git graphviz wget zlib cmake  # Utilities
+sudo apt-get install libblas-dev liblapack-dev  # BLAS + LAPACK
+sudo apt-get libeigen3-dev  # Eigen3
+sudo apt-get install libgtest-dev  # Google tests
+```
+
+Or, on MacOS install: 
+
+```
+brew install git graphviz wget zlib cmake  # Utilities
+brew install openblas lapack # BLAS + LAPACK
+brew install eigen 
+# Install Google Tests: https://github.com/google/googletest
+```
+
+
+#### Anaconda package manager
+
+The required libraries are easier to install if you use using a [anaconda package manager](https://docs.conda.io/en/latest/miniconda.html)). 
+Once conda is installed in your system, you can use the `environment.yml` file inside the `eddl/`folder to install the requirements.
+
+To create and activate the conda environment use the following commands:
+
+```bash
 conda env create -f environment.yml
 conda activate eddl
 ```
 
-### Compilation
+> Note:
+> If the conda envoriment misses some dependency, please write an issue and complete the installation manually
 
-Build from source:
+
+### Install
+
+To build and install the EDDL library from source, execute the following:
 
 ```bash
 mkdir build
 cd build
 cmake .. -DBUILD_TARGET=CPU  # {CPU, GPU, FPGA}
 make -j 4  # num_cores
+sudo make install
 ```
 
-> Note: These steps are for Linux
+> Note:
 > To known the number of logical cores type: `nproc` (linux) or `sysctl -n hw.logicalcpu` (mac os)
 
-## Backend support
 
-### CPU support
+### Building flags
 
+
+#### Backend support
+
+**CPU support:**
 By default the EDDL is build for CPU. If you have any problem and want to compile for CPU, try adding `BUILD_TARGET=CPU` to your cmake options.
 
 ```bash
 -DBUILD_TARGET=CPU
 ```
 
-### GPU (CUDA) support 
-
+**GPU (CUDA) support:** 
 If you have CUDA installed, you can build EDDL with GPU support by adding `BUILD_TARGET=GPU` to your cmake options.
 
 ```bash
 -DBUILD_TARGET=GPU
 ```
 
-### FPGA support 
-
+**FPGA support:**
 If available, you can build EDDL with FPGA support by adding `BUILD_TARGET=FPGA` to your cmake options.
 
 ```bash
@@ -101,18 +145,18 @@ If available, you can build EDDL with FPGA support by adding `BUILD_TARGET=FPGA`
 > Not yet implemented
 
 
-## Additional flags
+#### Additional flags
 
-### C++ compiler
+These flags can enable additional features of the EDDL or help you troubleshooting the installation.
 
+**C++ compiler::**
 If you have problems with the default g++ compiler, try setting `EIGEN3_INCLUDE_DIR`, such as:
 
 ```bash
 -DCMAKE_CXX_COMPILER=/path/to/c++compiler
 ```
 
-### Eigen3
-
+**Eigen3:**
 At the core of many numerical operations, we use [Eigen3](http://eigen.tuxfamily.org/index.php?title=Main_Page).
 If CMake is unable to find Eigen3 automatically, try setting `Eigen3_DIR`, such as:
 
@@ -120,9 +164,7 @@ If CMake is unable to find Eigen3 automatically, try setting `Eigen3_DIR`, such 
 -DEigen3_DIR=/path/to/eigen
 ```
 
-
-### Intel MKL
-
+**Intel MKL:**
 EDDL can leverage Intel's MKL library to speed up computation on the CPU. 
 
 To use MKL, include the following cmake option: 
@@ -137,43 +179,39 @@ If CMake is unable to find MKL automatically, try setting MKL_ROOT, such as:
 -DMKL_ROOT="/path/to/MKL"
 ```
 
-### CUDA
-
+**CUDA:**
 If CMake is unable to find CUDA automatically, try setting `CUDA_TOOLKIT_ROOT_DIR`, such as:
 
 ```bash
 -DCUDA_TOOLKIT_ROOT_DIR=/path/to/cuda
 ```
 
-## Examples
-
+**Build examples:**
 To compile the examples, use the setting `BUILD_EXAMPLES`, such as:
 
 ```bash
 -DBUILD_EXAMPLES=ON
 ```
 
-> Notes: The examples can be found in the folder `targets/`
+> Notes: The examples can be found in `build/targets/`
 
 
-## Tests
-
+**Build tests:**
 To compile the tests, use the setting `BUILD_TESTS`, such as:
 
 ```bash
 -DBUILD_TESTS=ON
 ```
 
-
-## Shared library
-
+**Build shared library:**
 To compile the EDDL as a shared library, use the setting `BUILD_SHARED_LIB`, such as:
 
 ```bash
 -DBUILD_SHARED_LIB=ON
 ```
 
-## Windows specific installation
+
+### Windows specific installation
 
 Default for `Visual Studio 15 2017` build envrionment is x86, while EDDLL requires x64. This can be changed by typing `cmake -A x64 .` as cmake command.
 
@@ -183,7 +221,7 @@ The PThreads library can be found at [https://sourceforge.net/projects/pthreads4
 
 ## Getting started
 
-```c++
+```C++
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
@@ -193,14 +231,13 @@ The PThreads library can be found at [https://sourceforge.net/projects/pthreads4
 
 using namespace eddl;
 
-
 int main(int argc, char **argv) {
 
-    // Download dataset
+    // Download mnist
     download_mnist();
 
     // Settings
-    int epochs = 100;
+    int epochs = 1;
     int batch_size = 100;
     int num_classes = 10;
 
@@ -208,25 +245,28 @@ int main(int argc, char **argv) {
     layer in = Input({784});
     layer l = in;  // Aux var
 
-    l = BatchNormalization(Activation(L2(Dense(l, 1024),0.0001f), "relu"));
-    l = BatchNormalization(Activation(L2(Dense(l, 1024),0.0001f), "relu"));
-    l = BatchNormalization(Activation(L2(Dense(l, 1024),0.0001f), "relu"));
+    l = LeakyReLu(Dense(l, 1024));
+    l = LeakyReLu(Dense(l, 1024));
+    l = LeakyReLu(Dense(l, 1024));
 
     layer out = Activation(Dense(l, num_classes), "softmax");
     model net = Model({in}, {out});
 
+    // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
     // Build model
     build(net,
-          sgd(0.01, 0.9), // Optimizer
+          rmsprop(0.01), // Optimizer
           {"soft_cross_entropy"}, // Losses
-          {"categorical_accuracy"}, // Metrics
-          CS_CPU() // CPU with maximum threads availables
+          {"categorical_accuracy"} // Metrics
+          //CS_GPU({1}) // one GPU
+          //CS_CPU() // CPU with maximum threads availables
     );
+    toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 
     // View model
-    cout<<summary(net);
+    summary(net);
 
     // Load dataset
     tensor x_train = eddlT::load("trX.bin");
@@ -238,37 +278,21 @@ int main(int argc, char **argv) {
     eddlT::div_(x_train, 255.0);
     eddlT::div_(x_test, 255.0);
 
-
     // Train model
-    for(int i=0;i<epochs;i++) {
-      fit(net, {x_train}, {y_train}, batch_size, 1);
+    fit(net, {x_train}, {y_train}, batch_size, epochs);
 
-      // Evaluate test
-      std::cout << "Evaluate test:\n";
-      evaluate(net, {x_test}, {y_test});
-    }
+    // Evaluate
+    evaluate(net, {x_test}, {y_test});
 }
-
 ```
 
-You can find more examples in the _examples_ folder.
-
-
-## Continuous build status
-
-| System  |  Compiler  | Status |
-|:-------:|:----------:|:------:|
-| Windows (CPU) | VS 15.9.11 | [![Build Status](https://jenkins-master-deephealth-unix01.ing.unimore.it/badge/job/DeepHealth/job/eddl/job/master/windows_end?)](https://jenkins-master-deephealth-unix01.ing.unimore.it/job/DeepHealth/job/eddl/job/master/)      |
-| Linux (CPU)   | GCC 5.5.0  | [![Build Status](https://jenkins-master-deephealth-unix01.ing.unimore.it/badge/job/DeepHealth/job/eddl/job/master/linux_end?)](https://jenkins-master-deephealth-unix01.ing.unimore.it/job/DeepHealth/job/eddl/job/master/)        |
-| Windows (GPU) | VS 15.9.11 | [![Build Status](https://jenkins-master-deephealth-unix01.ing.unimore.it/badge/job/DeepHealth/job/eddl/job/master/windows_gpu_end?)](https://jenkins-master-deephealth-unix01.ing.unimore.it/job/DeepHealth/job/eddl/job/master/)  |
-| Linux (GPU)   | GCC 5.5.0  | [![Build Status](https://jenkins-master-deephealth-unix01.ing.unimore.it/badge/job/DeepHealth/job/eddl/job/master/linux_gpu_end?)](https://jenkins-master-deephealth-unix01.ing.unimore.it/job/DeepHealth/job/eddl/job/master/)    |
-
-Documentation available [here](http://imagelab.ing.unimore.it/eddl/).
+You can find more examples in  `examples/`.
 
 
 ## Python wrapper
 
 If you are not a C++ fan, try [PyEDDL](https://github.com/deephealthproject/pyeddl), a python wrapper for this library.
+
 
 ## FAQs
 
@@ -280,14 +304,3 @@ If you are not a C++ fan, try [PyEDDL](https://github.com/deephealthproject/pyed
     1) Make sure you have `protbuf` and `libprotobuf` installed
     2) Go to `src/serialization/onnx/` and delete these files: `onnx.pb.cc` and `onnx.pb.cc`.
     3) Rebuild them using `protoc --cpp_out=. onnx.proto` (you need to be at `src/serialization/onnx/`)
-- **Could not find a package (NAME)**:
-    - If using conda, activate the environment: `conda activate eddl`
-    - Else, install the packages manually:
-        ```
-        # Linux
-        sudo apt-get install git graphviz wget cmake openmp blas eigen cudatoolkit zlib gtest benchmark protobuf libprotobuf
-        
-        # MacOS
-        brew install git graphviz wget cmake openblas eigen zlib
-        # install openmp gtest benchmark protobuf libprotobuf
-        ```
