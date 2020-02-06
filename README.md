@@ -97,12 +97,12 @@ conda activate eddl
 ```
 
 > Note:
-> If the conda envoriment misses some dependency, please write an issue and complete the installation manually
+> If the conda environment misses some dependency, please write an issue and complete the installation manually
 
 
-### Install
+### Installation
 
-To build and install the EDDL library from source, execute the following:
+To build and install the EDDL library from source, execute the following commands inside the `eddl/` folder:
 
 ```bash
 mkdir build
@@ -213,7 +213,7 @@ To compile the EDDL as a shared library, use the setting `BUILD_SHARED_LIB`, suc
 
 ### Windows specific installation
 
-Default for `Visual Studio 15 2017` build envrionment is x86, while EDDLL requires x64. This can be changed by typing `cmake -A x64 .` as cmake command.
+Default for `Visual Studio 15 2017` build environment is x86, while EDDL requires x64. This can be changed by typing `cmake -A x64 .` as cmake command.
 
 On Windows, the POSIX threads library is required. Path to this library can be specified to cmake as follows: `env PTHREADS_ROOT=path_to_pthreads cmake -A x64 .`
 The PThreads library can be found at [https://sourceforge.net/projects/pthreads4w/](https://sourceforge.net/projects/pthreads4w/).
