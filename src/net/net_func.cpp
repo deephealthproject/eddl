@@ -60,19 +60,20 @@ void Net::do_forward() {
 
 void Net::do_backward() {
     for (int i = 0; i < vbts.size(); i++) {
+        // Reserve parent's delta (if reseved, ignored)
+        //vbts[i]->mem_delta_parent();
+
+        // Do backward
         vbts[i]->backward();
-        
-        if (vbts[i]->mem_level<2)
-          if (VERBOSE) cout<<"BACK: "<<vbts[i]->name<<" delta:"<<vbts[i]->delta->sum()<<"\n";
-        else
-          if (VERBOSE) cout<<"BACK: "<<vbts[i]->name<<" delta:\n";
+
+        // Delete this delta
+        //vbts[i]->free_delta();
       }
-    if (VERBOSE) getchar();
 }
 
 void Net::do_delta() {
     for (int i = 0; i < lout.size(); i++) {
-        if (lout[i]->mem_level)  lout[i]->mem_delta();
+        lout[i]->mem_delta();
         losses[i]->delta(lout[i]->target, lout[i]->output, lout[i]->delta);
         if (VERBOSE) cout<<"Delta: "<<vbts[i]->name<<" delta:"<<vbts[i]->delta->sum()<<"\n";
       }

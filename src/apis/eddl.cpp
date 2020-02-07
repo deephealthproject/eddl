@@ -110,8 +110,11 @@ namespace eddl {
     {
         net->toCPU(t);
     }
-    compserv CS_CPU(int th){
-        return new CompServ(th, {}, {},0);
+    compserv CS_CPU(int th, string mem){
+        if (mem=="low_mem") return new CompServ(th, {}, {},0, 2);
+        else if (mem=="mid_mem") return new CompServ(th, {}, {},0, 1);
+        else if (mem=="full_mem") return new CompServ(th, {}, {},0, 0);
+        else msg("Error mem param","CS_CPU");
     }
 
     // GPU
@@ -121,6 +124,7 @@ namespace eddl {
         else if (mem=="full_mem") return new CompServ(0, g, {},lsb,0);
         else msg("Error mem param","CS_GPU");
     }
+
     compserv CS_GPU(const vector<int> g,string mem){
         if (mem=="low_mem") return new CompServ(0, g, {},1,2);
         else if (mem=="mid_mem") return new CompServ(0, g, {},1,1);
@@ -388,16 +392,15 @@ namespace eddl {
 
 
     // graph connections
-    layer detach(layer l)
-    {
+    layer detach(layer l){
         l->set_detach();
         return l;
     }
 
-    vlayer detach(vlayer l)
-    {
-        for(int i=0;i<l.size();i++)
+    vlayer detach(vlayer l){
+        for(int i=0;i<l.size();i++){
             l[i]->set_detach();
+        }
         return l;
     }
 
@@ -472,9 +475,7 @@ namespace eddl {
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
                const vector<int> &strides, string padding, int groups, const vector<int> &dilation_rate,
                bool use_bias, string name){
-        LConv *l = new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
-
-        return l;
+        return new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
@@ -484,9 +485,7 @@ namespace eddl {
     }
 
     layer Dense(layer parent, int ndim, bool use_bias, string name){
-        LDense *l = new LDense(parent, ndim, use_bias, name, DEV_CPU, 0);
-
-        return l;
+        return new LDense(parent, ndim, use_bias, name, DEV_CPU, 0);
     }
 
     layer Dropout(layer parent, float rate, string name){
@@ -670,8 +669,7 @@ namespace eddl {
     }
 
 
-    layer Norm(layer parent, float epsilon, string name)
-    {
+    layer Norm(layer parent, float epsilon, string name){
         return new LNorm(parent, epsilon, name, DEV_CPU, 0);
     }
 

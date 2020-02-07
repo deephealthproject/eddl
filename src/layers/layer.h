@@ -64,9 +64,6 @@ public:
 
     void initialize();
 
-
-
-
     virtual void info();
 
     void setmode(int m);
@@ -83,12 +80,13 @@ public:
     void set_detach();
 
     void set_mem_level(int mem);
+
+    virtual void mem_delta_parent();
     virtual void mem_delta();
     virtual void free_delta();
 
 
     //virtual
-
     virtual void copy(Layer *l2);
 
     virtual void resize(int batch);

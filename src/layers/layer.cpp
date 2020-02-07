@@ -72,14 +72,18 @@ void Layer::set_detach(){
     detached=true;
 }
 
+void Layer::mem_delta_parent(){
+    for(auto &p : this->parent){
+        p->mem_delta();
+    }
+}
+
 void Layer::mem_delta(){
     // Reserve space for the parent's delta
-    if(this->delta != nullptr){
-        msg("Memory leak! The parent's delta shouldn't be reserved: " + this->name, "Layer::reserve_delta");
-    }else{
+    if(this->delta == nullptr){
         this->delta = new Tensor(this->output->shape, this->output->device);
+//        std::cout << "Booked delta for: " + this->name << std::endl;
     }
-
 }
 
 void Layer::free_delta(){
@@ -87,6 +91,7 @@ void Layer::free_delta(){
         // The Tensor destructor takes into account the device details
         delete this->delta;
         this->delta = nullptr;  // Ensure nullptr
+//        std::cout << "Deleted delta for: " + this->name << std::endl;
     }
 }
 

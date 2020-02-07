@@ -63,6 +63,7 @@ typedef NetLoss * metric;
     */
     model Model(vlayer in, vlayer out);
     void build(model net, optimizer o=nullptr, CompServ *cs=nullptr, bool init_weigths=true);
+
     /**
       *  @brief Tell the model which optimizer, losses, metrics and computing services use.
       *
@@ -84,9 +85,9 @@ typedef NetLoss * metric;
       *  @param lsb  Number of batches to sync model weights
       *  @return     (void)
     */
-    void toGPU(model net, vector<int> g,int lsb);
-    void toGPU(model net, vector<int> g,string mem);
-    void toGPU(model net, vector<int> g,int lsb, string mem);
+    void toGPU(model net, vector<int> g, int lsb);
+    void toGPU(model net, vector<int> g, string mem);
+    void toGPU(model net, vector<int> g, int lsb, string mem);
     void toGPU(model net, vector<int> g);
     void toGPU(model net, string mem);
     void toGPU(model net);
@@ -99,7 +100,7 @@ typedef NetLoss * metric;
       *  @return     (void)
     */
     void toCPU(model net, int t=std::thread::hardware_concurrency());
-    compserv CS_CPU(int th=-1);
+    compserv CS_CPU(int th=-1, string mem="full_mem");
 
     compserv CS_GPU();
     compserv CS_GPU(const vector<int> g);
