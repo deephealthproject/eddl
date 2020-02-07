@@ -81,7 +81,7 @@ void Layer::mem_delta_parent(){
 void Layer::mem_delta(){
     // Reserve space for the parent's delta
     if(this->delta == nullptr){
-        this->delta = new Tensor(this->output->shape, this->output->device);
+        this->delta = Tensor::zeros(this->output->shape, this->output->device);
 //        std::cout << "Booked delta for: " + this->name << std::endl;
     }
 }
