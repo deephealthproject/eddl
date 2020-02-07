@@ -45,8 +45,7 @@ public:
 
     // Params are in ConvolDescriptor
 
-//    void mem_delta() override;
-//    void free_delta() override;
+    void mem_delta_parent() override;
 
     // implementation
     void forward() override;

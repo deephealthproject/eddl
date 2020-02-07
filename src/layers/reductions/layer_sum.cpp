@@ -42,13 +42,7 @@ void LRSum::forward(){
 }
 
 void LRSum::backward(){
-    // Reserve parent's delta
-    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
-
     reduction_back(RD);
-
-// Delete this delta
-    if (mem_level) { free_delta(); }
 }
 
 // virtual

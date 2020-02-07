@@ -66,14 +66,8 @@ void LAdd::forward() {
 
 void LAdd::backward() {
     for (int i = 0; i < parent.size(); ++i) {
-        // Reserve parent's delta
-        if (parent[i]->mem_level) { parent[i]->mem_delta(); }
-
         Tensor::inc(delta, parent[i]->delta);
       }
-
-    // Delete this delta
-    if (mem_level) { free_delta(); }
 }
 
 void LAdd::resize(int batch){

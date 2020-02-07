@@ -20,7 +20,7 @@
 CompServ::CompServ(int t, const vector<int> g, const vector<int> &f,int lsb, int mem) {
     type = "local";
 
-    if (t==-1) local_threads = Eigen::nbThreads();
+    if (t==-1) local_threads = Eigen::nbThreads(); // TODO: Review => std::thread::hardware_concurrency()???
     else local_threads = t;
 
     local_gpus = vector<int>(g.begin(), g.end());

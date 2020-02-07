@@ -50,14 +50,8 @@ void LAbs::forward(){
 }
 
 void LAbs::backward(){
-    // Reserve parent's delta
-    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
-
     Tensor::sign(parent[0]->output,mask);
     Tensor::el_mult(delta,mask,parent[0]->delta,1);
-
-    // Delete this delta
-    if (mem_level) { free_delta(); }
 }
 
 void LAbs::resize(int b)

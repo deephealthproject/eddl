@@ -87,7 +87,6 @@ void LNormMax::forward() {
 }
 
 void LNormMax::backward() {
-
   for(int i=layers.size()-1;i>=0;i--) {
     layers[i]->backward();
   }

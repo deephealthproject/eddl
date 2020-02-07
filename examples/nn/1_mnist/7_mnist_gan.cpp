@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
     optimizer gopt=adam(0.0001);
 
     build(gen,gopt); // CS_CPU by default
-    toGPU(gen); // GPU {1} by default
+    //toGPU(gen); // GPU {1} by default
 
 
     // Define Discriminator
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
     optimizer dopt=adam(0.0001);
 
     build(disc,dopt); // CS_CPU by default
-    toGPU(disc); // GPU {1} by default
+    //toGPU(disc); // GPU {1} by default
 
     summary(gen);
     summary(disc);

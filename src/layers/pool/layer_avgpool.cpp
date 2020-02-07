@@ -54,17 +54,7 @@ void LAveragePool::forward() {
 }
 
 void LAveragePool::backward() {
-    // Reserve parent's delta
-    if (parent[0]->mem_level) {
-        parent[0]->mem_delta();
-        pd->ID=parent[0]->delta;
-    }
-    if (mem_level) { pd->D=delta; }
-
     AvgPool2D_back(this->pd);
-
-    // Delete this delta
-    if (mem_level) { free_delta(); }
 }
 
 Layer *LAveragePool::share(int c, int bs, vector<Layer *> p) {

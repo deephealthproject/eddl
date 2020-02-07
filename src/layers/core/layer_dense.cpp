@@ -27,7 +27,7 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev, int
 
     input = parent->output;
     output = new Tensor(vector<int>{input->shape[0], ndim}, dev);
-    if (!mem_level) { delta = new Tensor(output->shape, dev); }
+    if (mem_level  == 0 ){ delta = new Tensor(output->shape, dev); }
 
     W = new Tensor(vector<int>{input->shape[1], ndim}, dev);
     if (use_bias) bias = new Tensor(vector<int>{ndim}, dev);
@@ -59,24 +59,17 @@ void LDense::forward() {
 }
 
 void LDense::backward() {
-    // Reserve parent's delta
-    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
-
     //get gradients with provided delta
     if (trainable) {
         Tensor::mult2D(input, 1, delta, 0, gW, 1);
         if (use_bias) Tensor::reduce_sum2D(delta, gbias, 0, 1);
     }
 
-    if (parent[0]->mem_level)  parent[0]->mem_delta();
     //1: note that increment parent delta
     Tensor::mult2D(delta, 0, W, 1, parent[0]->delta, 1);
 
     // Regularizer
     if (trainable) if(reg != nullptr) {reg->apply(this->W);}
-
-    // Delete this delta
-    if (mem_level) { free_delta(); }
 }
 
 void LDense::update_weights(Tensor* w, Tensor* bias) {

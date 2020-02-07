@@ -60,14 +60,16 @@ void Net::do_forward() {
 
 void Net::do_backward() {
     for (int i = 0; i < vbts.size(); i++) {
-        // Reserve parent's delta (if reseved, ignored)
-        //vbts[i]->mem_delta_parent();
+//        std::cout << vbts[i]->name << std::endl;
+
+        // Reserve parent's delta (if reserved, ignored)
+        vbts[i]->mem_delta_parent();
 
         // Do backward
         vbts[i]->backward();
 
         // Delete this delta
-        //vbts[i]->free_delta();
+        vbts[i]->free_delta();
       }
 }
 

@@ -131,9 +131,6 @@ void LLayerNorm::forward() {
 
 void LLayerNorm::backward()
 {
-    // Reserve parent's delta
-    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
-
     Tensor *A;
     Tensor *B;
     Tensor *C;
@@ -162,10 +159,6 @@ void LLayerNorm::backward()
     delete A;
     delete B;
     delete C;
-
-    // Delete this delta
-    if (mem_level) { free_delta(); }
-
 }
 
 

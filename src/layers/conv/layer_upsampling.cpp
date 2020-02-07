@@ -45,13 +45,7 @@ void LUpSampling::forward() {
 }
 
 void LUpSampling::backward() {
-    // Reserve parent's delta
-    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
-
     d_repeat_nn(delta, parent[0]->delta, this->size);
-
-    // Delete this delta
-    if (mem_level) { free_delta(); }
 }
 
 Layer *LUpSampling::share(int c, int bs, vector<Layer *> p) {

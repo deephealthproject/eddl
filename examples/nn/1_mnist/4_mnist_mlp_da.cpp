@@ -41,8 +41,8 @@ int main(int argc, char **argv) {
     l=Reshape(l,{1,28,28});
     // Data augmentation
     //l = RandomCropScale(l, {0.9f, 1.0f});
-    l = RandomShift(l, {-0.1, 0.1}, {-0.1, 0.1});
-    l = RandomRotation(l, {-10, 10});
+//    l = RandomShift(l, {-0.1, 0.1}, {-0.1, 0.1});
+//    l = RandomRotation(l, {-10, 10});
     // Come back to 1D tensor for fully connected:
     l=Reshape(l,{-1});
     l = ReLu(GaussianNoise(LayerNormalization(Dense(l, 1024)),0.3));

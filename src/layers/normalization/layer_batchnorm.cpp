@@ -108,13 +108,7 @@ void LBatchNorm::forward() {
 }
 
 void LBatchNorm::backward(){
-    // Reserve parent's delta
-    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
-
     BN_backward(input,delta, parent[0]->delta,MD,bn_mean,bn_var,mean,variance,epsilon);
-
-    // Delete this delta
-    if (mem_level) { free_delta(); }
 }
 
 

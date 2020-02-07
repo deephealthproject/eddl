@@ -67,14 +67,8 @@ void LMatMul::forward() {
 void LMatMul::backward() {
     // TODO: Implement
     for (int i = 0; i < parent.size(); ++i){
-        // Reserve parent's delta
-        if (parent[i]->mem_level) { parent[i]->mem_delta(); }
-
         Tensor::inc(delta, parent[i]->delta);
     }
-
-    // Delete this delta
-    if (mem_level) { free_delta(); }
 }
 
 Layer *LMatMul::share(int c, int bs, vector<Layer *> p) {

@@ -67,18 +67,20 @@ void LConv::resize(int batch){
     if (target!=nullptr) target->resize(batch);
 }
 
+void LConv::mem_delta_parent(){
+    // Reserve parent's delta
+    if (parent[0]->mem_level) {
+        parent[0]->mem_delta();
+        cd->ID=parent[0]->delta;
+    }
+    if (mem_level) { cd->D=delta; }
+}
+
 void LConv::forward() {
     Conv2D(this->cd);
 }
 
 void LConv::backward() {
-    // Reserve parent's delta
-    if (parent[0]->mem_level)  {
-      parent[0]->mem_delta();
-      cd->ID=parent[0]->delta;
-    }
-    if (mem_level) { cd->D=delta; }
-
     //get gradients with provided delta
     if (trainable) { Conv2D_grad(this->cd); }
 
@@ -89,9 +91,6 @@ void LConv::backward() {
 
     // Regularizer
     if (trainable) if(reg!= nullptr) {reg->apply(cd->K);}
-
-    // Free delta
-    if (mem_level) { free_delta(); }
 }
 
 void LConv::update_weights(Tensor* w, Tensor* bias) {

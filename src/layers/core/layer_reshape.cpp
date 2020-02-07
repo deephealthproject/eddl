@@ -81,12 +81,25 @@ void LReshape::resize(int batch){
     if (target!=nullptr) target->resize(batch);
 }
 
-void LReshape::forward() {
-    // Reserve parent's delta
-    if (parent[0]->mem_level) {
+
+void LReshape::mem_delta() {
+    // Reserve parent's delta AND assign it to this layer
+    if (parent[0]->mem_level)  {
         parent[0]->mem_delta();
-        delta->reallocate(ls, parent[0]->delta);
+
+        // Same delta as parent, but changing the view
+        if(delta == nullptr){
+            delta = new Tensor(ls, parent[0]->delta);  // Just in case
+        }else{
+            delta->reallocate(ls, parent[0]->delta); // Constructor builds this tensor
+        }
     }
+}
+
+void LReshape::free_delta() { }
+
+void LReshape::forward() {
+
 }
 
 

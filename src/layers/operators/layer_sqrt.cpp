@@ -46,9 +46,6 @@ int LSqrt::total_layers = 0;
   }
 
   void LSqrt::backward() {
-      // Reserve parent's delta
-      if (parent[0]->mem_level) { parent[0]->mem_delta(); }
-
     Tensor::el_div(delta, output, delta, 0);
     delta->div_(2.0);
     Tensor::inc(delta, parent[0]->delta);

@@ -47,9 +47,6 @@ void LExp::forward() {
 }
 
 void LExp::backward() {
-    // Reserve parent's delta
-    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
-
   Tensor::el_mult(delta, output, parent[0]->delta, 1);
 }
 

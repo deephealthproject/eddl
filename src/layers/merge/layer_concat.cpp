@@ -107,18 +107,12 @@ void LConcat::backward() {
     // Get delta tensors
     vector<Tensor*> deltas;
     for (int i=0; i<this->parent.size(); i++) {
-        // Reserve parent's delta
-        if (parent[i]->mem_level) { parent[i]->mem_delta(); }
-
         // Store pointer of delta i
         deltas.push_back(parent[i]->delta);
     }
 
     // Perform concat (back)
     Tensor::concat_back(this->delta, deltas, this->axis);
-
-    // Delete this delta
-    if (mem_level) { free_delta(); }
 }
 
 void LConcat::resize(int batch){

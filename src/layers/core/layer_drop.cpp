@@ -59,18 +59,11 @@ void LDropout::forward() {
 }
 
 void LDropout::backward() {
-    // Reserve parent's delta
-    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
-
     Tensor::el_mult(delta, mask, parent[0]->delta, 1);
-
-    // Delete this delta
-    if (mem_level) { free_delta(); }
 }
 
 
 Layer *LDropout::share(int c, int bs, vector<Layer *> p) {
-
     LDropout *n = new LDropout(p[0], df, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 

@@ -27,7 +27,7 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
 
     input = parent->output;
     output = new Tensor(input->shape, dev);
-    if (!mem_level){ delta = new Tensor(output->shape, dev); }
+    if (mem_level  == 0 ){ delta = new Tensor(output->shape, dev); }
     delta_bp = 0;
 
     parent->addchild(this);
@@ -89,9 +89,6 @@ void LActivation::forward(){
 
 
 void LActivation::backward(){
-    // Reserve parent's delta
-    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
-
     if (delta_bp){
         Tensor::inc(delta, parent[0]->delta);
     }else {
@@ -142,8 +139,6 @@ void LActivation::backward(){
         }
     }
 
-    // Delete this delta
-    if (mem_level) { free_delta(); }
 }
 
 

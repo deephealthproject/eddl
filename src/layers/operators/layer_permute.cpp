@@ -63,9 +63,6 @@ void LPermute::forward(){
 }
 
 void LPermute::backward(){
-    // Reserve parent's delta
-    if (parent[0]->mem_level) { parent[0]->mem_delta(); }
-
     Tensor::select_back(this->delta, this->parent[0]->delta, sd);
 }
 

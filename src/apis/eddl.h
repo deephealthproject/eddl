@@ -100,7 +100,7 @@ typedef NetLoss * metric;
       *  @return     (void)
     */
     void toCPU(model net, int t=std::thread::hardware_concurrency());
-    compserv CS_CPU(int th=-1, string mem="full_mem");
+    compserv CS_CPU(int th=-1, string mem="low_mem");
 
     compserv CS_GPU();
     compserv CS_GPU(const vector<int> g);

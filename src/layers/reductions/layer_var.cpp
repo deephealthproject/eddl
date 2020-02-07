@@ -70,7 +70,7 @@ void LRVar::forward(){
 }
 
 void LRVar::backward(){
-  for(int i=layers.size()-1;i>=0;i--) layers[i]->backward();
+  for(int i=layers.size()-1;i>=0;i--) { layers[i]->backward(); }
 }
 
 

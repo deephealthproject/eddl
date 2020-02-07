@@ -49,13 +49,19 @@ void LGaussianNoise::resize(int batch){
   if (target!=nullptr) target->resize(batch);
 }
 
-void LGaussianNoise::forward() {
-    // Reserve parent's delta
+
+void LGaussianNoise::mem_delta() {
+    // Reserve parent's delta AND assign it to this layer
     if (parent[0]->mem_level) {
         parent[0]->mem_delta();
+
         delta=parent[0]->delta;
     }
+}
 
+void LGaussianNoise::free_delta() { }
+
+void LGaussianNoise::forward() {
   if (mode == TRMODE) {
       noise->rand_normal(0.0, stdev);
       Tensor::add(1.0, input, 1.0, noise, output, 0);
