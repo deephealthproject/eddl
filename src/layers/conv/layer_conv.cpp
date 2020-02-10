@@ -39,12 +39,11 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
 
     input = parent->output;
     cd = D;
-
     cd->build(input);
 
     output = cd->O;
-    delta = cd->D;
-    cd->ID = parent->delta;
+//    delta = cd->D;
+//    cd->ID = parent->delta;
 
     params.push_back(cd->K);
     params.push_back(cd->bias);
@@ -73,12 +72,15 @@ void LConv::mem_delta(){
         if (parent[0]->mem_level) {
             parent[0]->mem_delta();
             cd->ID = parent[0]->delta;
+
+            cd->D = new Tensor(cd->O->shape, cd->O->device);
+            delta = cd->D;
+
+            if(this->verbosity_level >= 2) {
+                std::cout << "Booked delta for: " + this->name << std::endl;
+            }
         }
 
-        if (mem_level) {
-            cd->D = delta;
-            std::cout << "Booked delta for: " + this->name << std::endl;
-        }
     }
 }
 

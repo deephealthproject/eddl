@@ -74,16 +74,16 @@ public:
     int mem_level; // see CS
 
 
-    Tensor *I; // Input map
-    Tensor *ID;// Delta input map
-    Tensor *K; // filters
-    Tensor *bias; // bias
-    Tensor *gK;// gradient filters
-    Tensor *gbias;// gradient bias
-  	Tensor *acc_gK;// Accumulated gradients for kernels
-  	Tensor *acc_gbias;// Accumulated gradients for bias
-    Tensor *D; // Delta
-    Tensor *O; // Outputmap
+    Tensor *I= nullptr; // Input map
+    Tensor *ID= nullptr;// Delta input map
+    Tensor *K= nullptr; // filters
+    Tensor *bias= nullptr; // bias
+    Tensor *gK= nullptr;// gradient filters
+    Tensor *gbias= nullptr;// gradient bias
+  	Tensor *acc_gK= nullptr;// Accumulated gradients for kernels
+  	Tensor *acc_gbias= nullptr;// Accumulated gradients for bias
+    Tensor *D = nullptr; // Delta
+    Tensor *O= nullptr; // Outputmap
 
     // CPU implementation
     float *ptrI;

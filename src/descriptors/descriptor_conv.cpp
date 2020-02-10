@@ -94,7 +94,7 @@ void ConvolDescriptor::build(Tensor *A) {
     }
 
     O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
-    if (!mem_level) { D = new Tensor(O->shape, A->device); }
+//    if (!mem_level) { D = new Tensor(O->shape, A->device); }
 
     // Params
     K = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
@@ -144,7 +144,7 @@ void ConvolDescriptor::resize(int b)
     if (b==O->shape[0]) return;
 
     O->resize(b);
-    if (!mem_level) D->resize(b);
+//    if (!mem_level) D->resize(b);
 
     if (I->isCPU()) {
         delete ptrI;
