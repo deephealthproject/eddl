@@ -19,12 +19,8 @@ using namespace std;
 
 int LScale::total_layers = 0;
 
-LScale::LScale(Layer *parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LScale::LScale(Layer *parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "scale" + to_string(++total_layers);
-
-    this->input = parent->output;
-    delta=parent->delta;
-
 
     if (reshape){
         output = new Tensor({this->input->shape[0], this->input->shape[1], new_shape[0], new_shape[1]}, dev);
@@ -42,14 +38,6 @@ LScale::LScale(Layer *parent, vector<int> new_shape, bool reshape, string da_mod
     addparent(parent);
 
 }
-
-LScale::~LScale()
-{
-  delta=nullptr;
-}
-
-
-// virtual
 
 
 void LScale::forward() {

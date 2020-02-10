@@ -19,13 +19,10 @@ using namespace std;
 
 int LScaleRandom::total_layers = 0;
 
-LScaleRandom::LScaleRandom(Layer *parent, vector<float> factor, string da_mode, float constant, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LScaleRandom::LScaleRandom(Layer *parent, vector<float> factor, string da_mode, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "scale_random" + to_string(++total_layers);
 
-    this->input = parent->output;
-    this->output = new Tensor(input->shape, dev);
-    delta=parent->delta;
-
+    output = new Tensor(input->shape, dev);
 
     // Params
     this->factor = std::move(factor);
@@ -37,12 +34,6 @@ LScaleRandom::LScaleRandom(Layer *parent, vector<float> factor, string da_mode, 
 
 }
 
-LScaleRandom::~LScaleRandom()
-{
-  delta=nullptr;
-}
-
-// virtual
 
 
 void LScaleRandom::forward() {

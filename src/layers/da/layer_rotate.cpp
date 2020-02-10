@@ -19,12 +19,10 @@ using namespace std;
 
 int LRotate::total_layers = 0;
 
-LRotate::LRotate(Layer *parent, float angle, vector<int> offset_center, string da_mode, float constant, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LRotate::LRotate(Layer *parent, float angle, vector<int> offset_center, string da_mode, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "rotate" + to_string(++total_layers);
 
-    input = parent->output;
     output = new Tensor(input->shape, dev);
-    delta=parent->delta;
 
     // Params
     this->angle = angle;
@@ -36,13 +34,6 @@ LRotate::LRotate(Layer *parent, float angle, vector<int> offset_center, string d
     addparent(parent);
 
 }
-
-LRotate::~LRotate()
-{
-  delta=nullptr;
-}
-
-// virtual
 
 
 void LRotate::forward() {

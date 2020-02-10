@@ -69,7 +69,7 @@ void Net::do_backward() {
         vbts[i]->backward();
 
         // Delete this delta
-        vbts[i]->free_delta();
+        if(vbts[i]->mem_level) { vbts[i]->free_delta(); }
       }
 }
 

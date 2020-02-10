@@ -26,48 +26,55 @@ LGaussianNoise::LGaussianNoise(Layer *parent, float stdev, string name, int dev,
     // TODO: Implement
     input = parent->output;
     output = new Tensor(input->shape, dev);
-    if (!mem_level) { delta = parent->delta; }
+    delta = parent->delta;
     noise = new Tensor(input->shape, dev);
 
     parent->addchild(this);
     addparent(parent);
-
 }
 
 
 LGaussianNoise::~LGaussianNoise()
 {
-  delete noise;
-  delta=nullptr; // is destroyed by parent
+    delete noise;
+    delta=nullptr; // is destroyed by parent
 
 }
 
 // virtual
 void LGaussianNoise::resize(int batch){
-  output->resize(batch);
-  noise->resize(batch);
-  if (target!=nullptr) target->resize(batch);
+    output->resize(batch);
+    noise->resize(batch);
+    if (target!=nullptr) target->resize(batch);
 }
 
 
 void LGaussianNoise::mem_delta() {
-    // Reserve parent's delta AND assign it to this layer
-    if (parent[0]->mem_level) {
-        parent[0]->mem_delta();
+    if(this->delta == nullptr) {
 
-        delta=parent[0]->delta;
+        // Reserve parent's delta AND assign it to this layer
+        if (parent[0]->mem_level) {
+            parent[0]->mem_delta();
+
+            delta = parent[0]->delta;
+        }
     }
 }
 
-void LGaussianNoise::free_delta() { }
+void LGaussianNoise::free_delta() {
+    // Not really needed, but I like to keep all the methods the same (ease the robustness of "copy-paste")
+    if(this->delta != nullptr) {
+        delta = nullptr;
+    }
+}
 
 void LGaussianNoise::forward() {
-  if (mode == TRMODE) {
-      noise->rand_normal(0.0, stdev);
-      Tensor::add(1.0, input, 1.0, noise, output, 0);
-  } else {
-      Tensor::copy(input, output);
-  }
+    if (mode == TRMODE) {
+        noise->rand_normal(0.0, stdev);
+        Tensor::add(1.0, input, 1.0, noise, output, 0);
+    } else {
+        Tensor::copy(input, output);
+    }
 }
 
 void LGaussianNoise::backward() {

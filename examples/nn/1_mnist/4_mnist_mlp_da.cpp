@@ -40,9 +40,10 @@ int main(int argc, char **argv) {
     // Data augmentation assumes 3D tensors... images:
     l=Reshape(l,{1,28,28});
     // Data augmentation
-    //l = RandomCropScale(l, {0.9f, 1.0f});
-//    l = RandomShift(l, {-0.1, 0.1}, {-0.1, 0.1});
-//    l = RandomRotation(l, {-10, 10});
+    l = RandomCropScale(l, {0.9f, 1.0f});
+    l = RandomShift(l, {-0.1, 0.1}, {-0.1, 0.1});
+    l = RandomRotation(l, {-10, 10});
+
     // Come back to 1D tensor for fully connected:
     l=Reshape(l,{-1});
     l = ReLu(GaussianNoise(LayerNormalization(Dense(l, 1024)),0.3));
@@ -63,7 +64,7 @@ int main(int argc, char **argv) {
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           //CS_GPU({1}) // one GPU
-          CS_CPU() // CPU with maximum threads availables
+          CS_CPU(-1, "low_mem") // CPU with maximum threads availabçles
     );
 
     // View model

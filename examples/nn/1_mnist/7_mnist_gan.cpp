@@ -53,8 +53,8 @@ int main(int argc, char **argv) {
 
     model gen = Model({gin},{});
     optimizer gopt=adam(0.0001);
-
-    build(gen,gopt); // CS_CPU by default
+    compserv gcs = CS_CPU(-1, "low_mem");
+    build(gen,gopt, gcs); // CS_CPU by default
     //toGPU(gen); // GPU {1} by default
 
 
@@ -69,8 +69,8 @@ int main(int argc, char **argv) {
 
     model disc = Model({din},{});
     optimizer dopt=adam(0.0001);
-
-    build(disc,dopt); // CS_CPU by default
+    compserv dcs = CS_CPU(-1, "low_mem");
+    build(disc, dopt, dcs);
     //toGPU(disc); // GPU {1} by default
 
     summary(gen);

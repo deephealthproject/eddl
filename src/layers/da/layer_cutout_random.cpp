@@ -19,13 +19,10 @@ using namespace std;
 
 int LCutoutRandom::total_layers = 0;
 
-LCutoutRandom::LCutoutRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, float constant, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LCutoutRandom::LCutoutRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "cutout_random" + to_string(++total_layers);
 
-    input = parent->output;
     output = new Tensor(input->shape, dev);
-    delta=parent->delta;
-
 
     // Params
     this->factor_x = std::move(factor_x);
@@ -35,12 +32,6 @@ LCutoutRandom::LCutoutRandom(Layer *parent, vector<float> factor_x, vector<float
     parent->addchild(this);
     addparent(parent);
 }
-
-LCutoutRandom::~LCutoutRandom()
-{
-  delta=nullptr;
-}
-// virtual
 
 
 void LCutoutRandom::forward() {

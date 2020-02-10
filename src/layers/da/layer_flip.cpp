@@ -19,14 +19,10 @@ using namespace std;
 
 int LFlip::total_layers = 0;
 
-LFlip::LFlip(Layer *parent, int axis, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LFlip::LFlip(Layer *parent, int axis, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "flip" + to_string(++total_layers);
 
-    // TODO: Implement
-    input = parent->output;
     output = new Tensor(input->shape, dev);
-    delta=parent->delta;
-
 
     //Params
     this->axis = axis;
@@ -35,12 +31,6 @@ LFlip::LFlip(Layer *parent, int axis, string name, int dev, int mem) : LinLayer(
     addparent(parent);
 
 }
-
-LFlip::~LFlip()
-{
-  delta=nullptr;
-}
-// virtual
 
 
 void LFlip::forward() {

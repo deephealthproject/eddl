@@ -19,13 +19,10 @@ using namespace std;
 
 int LFlipRandom::total_layers = 0;
 
-LFlipRandom::LFlipRandom(Layer *parent, int axis, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LFlipRandom::LFlipRandom(Layer *parent, int axis, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "flip_random" + to_string(++total_layers);
 
-    input = parent->output;
     output = new Tensor(input->shape, dev);
-    delta=parent->delta;
-
 
     // Params
     this->axis = axis;
@@ -34,13 +31,6 @@ LFlipRandom::LFlipRandom(Layer *parent, int axis, string name, int dev, int mem)
     addparent(parent);
 
 }
-
-LFlipRandom::~LFlipRandom()
-{
-  delta=nullptr;
-}
-
-// virtual
 
 
 void LFlipRandom::forward() {

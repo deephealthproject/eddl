@@ -27,7 +27,7 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
 
     input = parent->output;
     output = new Tensor(input->shape, dev);
-    if (mem_level  == 0 ){ delta = new Tensor(output->shape, dev); }
+    delta = new Tensor(output->shape, dev);
     delta_bp = 0;
 
     parent->addchild(this);

@@ -19,13 +19,10 @@ using namespace std;
 
 int LCrop::total_layers = 0;
 
-LCrop::LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool reshape, float constant, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LCrop::LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool reshape, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "crop" + to_string(++total_layers);
 
-    input = parent->output;
-    delta=parent->delta;
-
-
+    // Reshape if needed (TODO: builds output tensor twice... First parent, then here)
     if (reshape){
         output = new Tensor({input->shape[0], input->shape[1], to_coords[0]-from_coords[0]+1, to_coords[1]-from_coords[1]+1}, dev);
     }else{
@@ -42,12 +39,6 @@ LCrop::LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool
     addparent(parent);
 
 }
-LCrop::~LCrop()
-{
-  delta=nullptr;
-}
-
-// virtual
 
 
 void LCrop::forward() {

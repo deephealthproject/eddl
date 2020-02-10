@@ -23,8 +23,21 @@
 
 using namespace std;
 
+class LDataAugmentation : public LinLayer {
+public:
+    LDataAugmentation(Layer *parent, string name, int dev, int mem);
+
+    ~LDataAugmentation();
+
+    void mem_delta() override;
+    void free_delta() override;
+
+//    void resize(int batch) override;
+
+};
+
 /// Shift Layer
-class LShift : public LinLayer {
+class LShift : public LDataAugmentation {
 public:
     static int total_layers;
     vector<int> shift;
@@ -32,13 +45,10 @@ public:
     float constant;
 
     LShift(Layer *parent, vector<int> shift, string da_mode, float constant, string name, int dev, int mem);
-    ~LShift();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
-    
 
     void forward() override;
 
@@ -49,7 +59,7 @@ public:
 
 
 /// Rotate Layer
-class LRotate : public LinLayer {
+class LRotate : public LDataAugmentation {
 public:
     static int total_layers;
     float angle;
@@ -58,13 +68,10 @@ public:
     float constant;
 
     LRotate(Layer *parent, float angle, vector<int> offset_center, string da_mode, float constant, string name, int dev, int mem);
-    ~LRotate();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
-
 
     void forward() override;
 
@@ -75,7 +82,7 @@ public:
 
 
 /// Scale Layer
-class LScale : public LinLayer {
+class LScale : public LDataAugmentation {
 public:
     static int total_layers;
     vector<int> new_shape;
@@ -84,13 +91,10 @@ public:
     float constant;
 
     LScale(Layer *parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string name, int dev, int mem);
-    ~LScale();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
-
 
     void forward() override;
 
@@ -101,19 +105,16 @@ public:
 
 
 /// Flip Layer
-class LFlip : public LinLayer {
+class LFlip : public LDataAugmentation {
 public:
     static int total_layers;
     int axis;
 
     LFlip(Layer *parent, int axis, string name, int dev, int mem);
-    ~LFlip();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
-
 
     void forward() override;
 
@@ -124,7 +125,7 @@ public:
 
 
 /// Crop Layer
-class LCrop : public LinLayer {
+class LCrop : public LDataAugmentation {
 public:
     static int total_layers;
     vector<int> from_coords;
@@ -133,13 +134,10 @@ public:
     float constant;
 
     LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool reshape, float constant, string name, int dev, int mem);
-    ~LCrop();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
-
 
     void forward() override;
 
@@ -155,14 +153,13 @@ public:
     string da_mode;
 
     LCropScale(Layer *parent, vector<int> from_coords, vector<int> to_coords, string da_mode, float constant, string name, int dev, int mem);
-    ~LCropScale();
 
     void forward() override;
 
 };
 
 /// Cutout Layer
-class LCutout : public LinLayer {
+class LCutout : public LDataAugmentation {
 public:
     static int total_layers;
     vector<int> from_coords;
@@ -170,13 +167,10 @@ public:
     float constant;
 
     LCutout(Layer *parent, vector<int> from_coords, vector<int> to_coords, float constant, string name, int dev, int mem);
-    ~LCutout();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
-
 
     void forward() override;
 
@@ -188,7 +182,7 @@ public:
 
 
 /// Shift Layer
-class LShiftRandom : public LinLayer {
+class LShiftRandom : public LDataAugmentation {
 public:
     static int total_layers;
     vector<float> factor_x;
@@ -197,13 +191,10 @@ public:
     float constant;
 
     LShiftRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, string da_mode, float constant, string name, int dev, int mem);
-    ~LShiftRandom();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
-
 
     void forward() override;
 
@@ -214,7 +205,7 @@ public:
 
 
 /// Rotate Layer
-class LRotateRandom : public LinLayer {
+class LRotateRandom : public LDataAugmentation {
 public:
     static int total_layers;
     vector<float> factor;
@@ -223,13 +214,10 @@ public:
     float constant;
 
     LRotateRandom(Layer *parent, vector<float> factor, vector<int> offset_center, string da_mode, float constant, string name, int dev, int mem);
-    ~LRotateRandom();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
-
 
     void forward() override;
 
@@ -240,7 +228,7 @@ public:
 
 
 /// Scale Layer
-class LScaleRandom : public LinLayer {
+class LScaleRandom : public LDataAugmentation {
 public:
     static int total_layers;
     vector<float> factor;
@@ -248,13 +236,10 @@ public:
     float constant;
 
     LScaleRandom(Layer *parent, vector<float> factor, string da_mode, float constant, string name, int dev, int mem);
-    ~LScaleRandom();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
-
 
     void forward() override;
 
@@ -265,19 +250,16 @@ public:
 
 
 /// Flip Layer
-class LFlipRandom : public LinLayer {
+class LFlipRandom : public LDataAugmentation {
 public:
     static int total_layers;
     int axis;
 
     LFlipRandom(Layer *parent, int axis, string name, int dev, int mem);
-    ~LFlipRandom();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
-
 
     void forward() override;
 
@@ -288,19 +270,16 @@ public:
 
 
 /// Crop Layer
-class LCropRandom : public LinLayer {
+class LCropRandom : public LDataAugmentation {
 public:
     static int total_layers;
     vector<int> new_shape;
 
     LCropRandom(Layer *parent,  vector<int> new_shape, string name, int dev, int mem);
-    ~LCropRandom();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
-
 
     void forward() override;
 
@@ -311,21 +290,17 @@ public:
 
 
 /// Crop Layer
-class LCropScaleRandom : public LinLayer {
+class LCropScaleRandom : public LDataAugmentation {
 public:
     static int total_layers;
     vector<float> factor;
     string da_mode;
 
     LCropScaleRandom(Layer *parent, vector<float> factor, string da_mode, string name, int dev, int mem);
-    ~LCropScaleRandom();
-
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
-
 
     void forward() override;
 
@@ -336,7 +311,7 @@ public:
 
 
 /// Cutout Layer
-class LCutoutRandom : public LinLayer {
+class LCutoutRandom : public LDataAugmentation {
 public:
     static int total_layers;
     vector<float> factor_x;
@@ -344,13 +319,10 @@ public:
     float constant;
 
     LCutoutRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, float constant, string name, int dev, int mem);
-    ~LCutoutRandom();
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-
-
 
     void forward() override;
 

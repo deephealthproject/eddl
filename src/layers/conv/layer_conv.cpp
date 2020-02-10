@@ -25,7 +25,7 @@ LConv::LConv(Layer *parent, const vector<int> &ks, const vector<int> &st,
              const vector<int> &p, string name, int dev, int mem) : LConv(parent, new ConvolDescriptor(ks, st, p, mem), name, dev, mem) {}
 
 LConv::LConv(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
-int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) : LConv(parent, new ConvolDescriptor(filters, kernel_size, strides, padding, mem), name, dev, mem) {
+             int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) : LConv(parent, new ConvolDescriptor(filters, kernel_size, strides, padding, mem), name, dev, mem) {
     // TODO: Implement (Fix initialization)
 };
 
@@ -37,14 +37,14 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
     // Set default name
     if(name.empty()) this->name = "conv" + to_string(++total_layers);
 
+    input = parent->output;
     cd = D;
 
-    input = parent->output;
     cd->build(input);
 
     output = cd->O;
-    if (!mem_level) { delta=cd->D; }
-    if (parent->mem_level<2) cd->ID = parent->delta;
+    delta = cd->D;
+    cd->ID = parent->delta;
 
     params.push_back(cd->K);
     params.push_back(cd->bias);
@@ -52,9 +52,9 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
     gradients.push_back(cd->gK);
     gradients.push_back(cd->gbias);
 
-  	distributed_training = false;
-  	cd->acc_gK = nullptr;
-  	cd->acc_gbias = nullptr;
+    distributed_training = false;
+    cd->acc_gK = nullptr;
+    cd->acc_gbias = nullptr;
 
     parent->addchild(this);
     addparent(parent);
@@ -67,13 +67,14 @@ void LConv::resize(int batch){
     if (target!=nullptr) target->resize(batch);
 }
 
-void LConv::mem_delta_parent(){
+void LConv::mem_delta(){
     // Reserve parent's delta
     if (parent[0]->mem_level) {
         parent[0]->mem_delta();
         cd->ID=parent[0]->delta;
     }
-    if (mem_level) { cd->D=delta; }
+
+    if (mem_level) cd->D=delta;
 }
 
 void LConv::forward() {
@@ -94,26 +95,26 @@ void LConv::backward() {
 }
 
 void LConv::update_weights(Tensor* w, Tensor* bias) {
-	Tensor::copy( w, cd->K );
-	if ( bias != nullptr ) Tensor::copy( bias, cd->bias );
+    Tensor::copy( w, cd->K );
+    if ( bias != nullptr ) Tensor::copy( bias, cd->bias );
 }
 
 void LConv::accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias) {
-	cd->K->add_( gw );
-	if ( gbias != nullptr ) cd->bias->add_( gbias );
+    cd->K->add_( gw );
+    if ( gbias != nullptr ) cd->bias->add_( gbias );
 }
 
 void LConv::reset_accumulated_gradients() {
-	cd->acc_gK->fill_(0.0);
-	cd->acc_gbias->fill_(0.0);
+    cd->acc_gK->fill_(0.0);
+    cd->acc_gbias->fill_(0.0);
 }
 
 void LConv::apply_accumulated_gradients() {
-	cd->K->add_( cd->acc_gK );
-	cd->bias->add_( cd->acc_gbias );
+    cd->K->add_( cd->acc_gK );
+    cd->bias->add_( cd->acc_gbias );
 
-	// Regularizer
-	if(reg!= nullptr) {reg->apply(cd->K);}
+    // Regularizer
+    if(reg!= nullptr) {reg->apply(cd->K);}
 }
 
 Layer *LConv::share(int c, int bs, vector<Layer *> p) {
@@ -123,7 +124,7 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
     //share params
     for (int i = 0; i < n->params.size(); i++) delete n->params[i];
     n->params.clear();
-	n->acc_gradients.clear();
+    n->acc_gradients.clear();
 
     n->cd->K = cd->K;
     n->cd->bias = cd->bias;
@@ -132,13 +133,13 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
     n->params.push_back(n->cd->K);
     n->params.push_back(n->cd->bias);
 
-	if ( distributed_training ) {
-		n->cd->acc_gK  = cd->acc_gK;
-		n->cd->acc_gbias  = cd->acc_gbias;
+    if ( distributed_training ) {
+        n->cd->acc_gK  = cd->acc_gK;
+        n->cd->acc_gbias  = cd->acc_gbias;
 
-		n->acc_gradients.push_back(n->cd->acc_gK);
-		n->acc_gradients.push_back(n->cd->acc_gbias);
-	}
+        n->acc_gradients.push_back(n->cd->acc_gK);
+        n->acc_gradients.push_back(n->cd->acc_gbias);
+    }
 
     n->reg=reg;
     n->init=init;
@@ -168,13 +169,13 @@ string LConv::plot(int c) {
 }
 
 void LConv::reset_name_counter() {
-	total_layers = 0;
+    total_layers = 0;
 }
 
 void LConv::enable_distributed() {
-	distributed_training = true;
-	cd->enable_distributed();
+    distributed_training = true;
+    cd->enable_distributed();
 
-	acc_gradients.push_back(cd->acc_gK);
-	acc_gradients.push_back(cd->acc_gbias);
+    acc_gradients.push_back(cd->acc_gK);
+    acc_gradients.push_back(cd->acc_gbias);
 }

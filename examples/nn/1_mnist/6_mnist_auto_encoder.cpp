@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
           sgd(0.001, 0.9), // Optimizer
           {"mean_squared_error"}, // Losses
           {"mean_squared_error"}, // Metrics
-          CS_CPU()
+          CS_CPU(-1, "low_mem")
           //CS_GPU({1})
     );
 
@@ -68,6 +68,3 @@ int main(int argc, char **argv) {
     fit(net, {x_train}, {x_train}, batch_size, epochs);
 
 }
-
-
-///////////

@@ -20,13 +20,10 @@ using namespace std;
 
 int LCropScaleRandom::total_layers = 0;
 
-LCropScaleRandom::LCropScaleRandom(Layer *parent, vector<float> factor, string da_mode, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LCropScaleRandom::LCropScaleRandom(Layer *parent, vector<float> factor, string da_mode, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "crop_scale" + to_string(++total_layers);
 
-    input = parent->output;
     output = new Tensor(input->shape, dev);
-    delta=parent->delta;
-
 
     // Params
     this->factor=std::move(factor);
@@ -35,13 +32,6 @@ LCropScaleRandom::LCropScaleRandom(Layer *parent, vector<float> factor, string d
     parent->addchild(this);
     addparent(parent);
 }
-
-LCropScaleRandom::~LCropScaleRandom()
-{
-    delta=nullptr;
-}
-
-// virtual
 
 
 void LCropScaleRandom::forward() {

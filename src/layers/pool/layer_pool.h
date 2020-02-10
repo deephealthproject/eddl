@@ -32,7 +32,7 @@ public:
     // constructors
     LPool(Layer *parent, PoolDescriptor *cd, string name, int dev, int mem);
 
-    void mem_delta_parent() override;
+    void mem_delta() override;
 
     void resize(int batch) override;
 };

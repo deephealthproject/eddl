@@ -43,9 +43,7 @@ public:
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    // Params are in ConvolDescriptor
-
-    void mem_delta_parent() override;
+    void mem_delta() override;
 
     // implementation
     void forward() override;

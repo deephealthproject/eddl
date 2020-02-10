@@ -39,8 +39,7 @@ Layer::Layer(string name, int dev, int mem) {
     init=new IGlorotNormal(1234);
 }
 
-Layer::~Layer()
-{
+Layer::~Layer(){
     if (output!=nullptr) delete output;
     if (delta!=nullptr) delete delta;
     if (target!=nullptr) delete target;
@@ -74,7 +73,7 @@ void Layer::set_detach(){
 
 void Layer::mem_delta_parent(){
     for(auto &p : this->parent){
-        p->mem_delta();
+        if(p->mem_level) { p->mem_delta(); }
     }
 }
 
@@ -100,7 +99,7 @@ void Layer::set_mem_level(int mem){
 }
 
 void Layer::resize(int batch){
-    //cout<<name<<" resizing\n";
+//    cout<<name<<" resizing\n";
     if (output!=nullptr) output->resize(batch);
     if (delta!=nullptr) delta->resize(batch);
     if (target!=nullptr) target->resize(batch);

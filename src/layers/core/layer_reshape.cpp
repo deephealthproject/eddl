@@ -62,7 +62,7 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev, int m
 
     // sharing the pointers to data
     output = new Tensor(ls, parent->output);
-    if (!mem_level) { delta = new Tensor(ls, parent->delta); }
+    delta = new Tensor(ls, parent->delta);
 
     parent->addchild(this);
     addparent(parent);
@@ -77,26 +77,34 @@ LReshape::~LReshape()
 void LReshape::resize(int batch){
     ls[0]=batch;
     output->resize(batch, parent[0]->output);
-    if (!mem_level) delta->resize(batch, parent[0]->delta);
+    delta->resize(batch, parent[0]->delta);
     if (target!=nullptr) target->resize(batch);
 }
 
 
 void LReshape::mem_delta() {
+    // Note: Tricky function when full_mem! (until future changes)
     // Reserve parent's delta AND assign it to this layer
     if (parent[0]->mem_level)  {
         parent[0]->mem_delta();
 
-        // Same delta as parent, but changing the view
-        if(delta == nullptr){
-            delta = new Tensor(ls, parent[0]->delta);  // Just in case
+        // Problem: Delta is always created, regardless of the low_mem
+        if (delta == nullptr) { // For future use!
+            // When low_mem enabled, we need to build it here (the first time) as the "parent->delta" can be "nullptr"
+            //delta = new Tensor(ls, parent[0]->delta);
         }else{
-            delta->reallocate(ls, parent[0]->delta); // Constructor builds this tensor
+            // If "delta" exists, update only its "ptr"
+//            delta->deleteData();
+            delta->reallocate(parent[0]->delta, &ls);  //  "&ls" is needed until delta is taken out of the constructor
         }
     }
 }
 
-void LReshape::free_delta() { }
+
+void LReshape::free_delta() {
+    // Special case:
+    // If we make "delta == nullptr", it will build another tensor in "mem_delta" instead of reallocating it
+}
 
 void LReshape::forward() {
 
@@ -124,7 +132,7 @@ Layer *LReshape::clone(int c, int bs, vector<Layer *> p, int todev) {
     shape[0] = bs;
 
 
-    auto *n = new LReshape(p[0], shape, "clone_" + to_string(todev) + name, todev,mem_level);
+    auto *n = new LReshape(p[0], shape, "clone_" + to_string(todev) + name, todev, mem_level);
     n->orig = this;
 
     return n;

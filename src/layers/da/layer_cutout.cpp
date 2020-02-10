@@ -19,13 +19,10 @@ using namespace std;
 
 int LCutout::total_layers = 0;
 
-LCutout::LCutout(Layer *parent, vector<int> from_coords, vector<int> to_coords, float constant, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LCutout::LCutout(Layer *parent, vector<int> from_coords, vector<int> to_coords, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "cutout" + to_string(++total_layers);
 
-    input = parent->output;
     output = new Tensor(input->shape, dev);
-    delta=parent->delta;
-
 
     // Params
     this->from_coords = from_coords;
@@ -36,13 +33,6 @@ LCutout::LCutout(Layer *parent, vector<int> from_coords, vector<int> to_coords, 
     addparent(parent);
 
 }
-
-LCutout::~LCutout()
-{
-  delta=nullptr;
-}
-
-// virtual
 
 
 void LCutout::forward() {

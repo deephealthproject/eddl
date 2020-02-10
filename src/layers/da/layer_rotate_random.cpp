@@ -19,13 +19,10 @@ using namespace std;
 
 int LRotateRandom::total_layers = 0;
 
-LRotateRandom::LRotateRandom(Layer *parent, vector<float> factor, vector<int> offset_center, string da_mode, float constant, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LRotateRandom::LRotateRandom(Layer *parent, vector<float> factor, vector<int> offset_center, string da_mode, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "rotate_random" + to_string(++total_layers);
 
-    input = parent->output;
     output = new Tensor(input->shape, dev);
-    delta=parent->delta;
-
 
     // Params
     this->factor = factor;
@@ -37,13 +34,6 @@ LRotateRandom::LRotateRandom(Layer *parent, vector<float> factor, vector<int> of
     addparent(parent);
 
 }
-
-LRotateRandom::~LRotateRandom()
-{
-  delta=nullptr;
-}
-
-// virtual
 
 
 void LRotateRandom::forward() {

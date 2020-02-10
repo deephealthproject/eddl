@@ -24,30 +24,30 @@ LPool::LPool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem) : 
     if (parent->output->ndim != 4) msg("LPool only works over 4D tensors", "LPool::LPool");
     if(name.empty()) this->name = "pool" + to_string(++total_layers);
 
+    input = parent->output;
     pd = D;
 
-    input = parent->output;
     pd->build(input);
 
     output = pd->O;
-    // Why check?
-    if (!mem_level) { delta = pd->D; }
-    if (!parent->mem_level) { pd->ID = parent->delta; }
+    delta = pd->D;
+    pd->ID = parent->delta;
 
     parent->addchild(this);
     addparent(parent);
 
 }
 
-
-void LPool::mem_delta_parent(){
+void LPool::mem_delta(){
     // Reserve parent's delta
     if (parent[0]->mem_level) {
         parent[0]->mem_delta();
         pd->ID=parent[0]->delta;
     }
-    if (mem_level) { pd->D=delta; }
+
+    if (mem_level) pd->D=delta;
 }
+
 
 void LPool::resize(int batch){
   pd->resize(batch);
