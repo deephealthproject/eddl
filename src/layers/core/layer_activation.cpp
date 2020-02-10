@@ -27,17 +27,12 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
 
     input = parent->output;
     output = new Tensor(input->shape, dev);
-    delta = new Tensor(output->shape, dev);
     delta_bp = 0;
 
     parent->addchild(this);
     addparent(parent);
 }
 
-// virtual
-void LActivation::resize(int batch){
-    Layer::resize(batch);
-}
 
 void LActivation::forward(){
 

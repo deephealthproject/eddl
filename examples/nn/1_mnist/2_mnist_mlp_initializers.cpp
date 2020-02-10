@@ -43,6 +43,7 @@ int main(int argc, char **argv) {
 
     layer out = Activation(Dense(l, num_classes), "softmax");
     model net = Model({in}, {out});
+    net->verbosity_level = 0;
 
     // dot from graphviz should be installed:
     plot(net, "model.pdf");

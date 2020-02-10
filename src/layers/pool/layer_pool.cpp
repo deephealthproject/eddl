@@ -39,17 +39,22 @@ LPool::LPool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem) : 
 }
 
 void LPool::mem_delta(){
-    // Reserve parent's delta
-    if (parent[0]->mem_level) {
-        parent[0]->mem_delta();
-        pd->ID=parent[0]->delta;
-    }
+    if(this->delta == nullptr) {
+        // Reserve parent's delta
+        if (parent[0]->mem_level) {
+            parent[0]->mem_delta();
+            pd->ID = parent[0]->delta;
+        }
 
-    if (mem_level) pd->D=delta;
+        if (mem_level) {
+            pd->D = delta;
+            std::cout << "Booked delta for: " + this->name << std::endl;
+        }
+    }
 }
 
 
 void LPool::resize(int batch){
-  pd->resize(batch);
-  if (target!=nullptr) target->resize(batch);
+    pd->resize(batch);
+    if (target!=nullptr) target->resize(batch);
 }

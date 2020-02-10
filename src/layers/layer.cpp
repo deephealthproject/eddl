@@ -81,7 +81,10 @@ void Layer::mem_delta(){
     // Reserve space for the parent's delta
     if(this->delta == nullptr){
         this->delta = Tensor::zeros(this->output->shape, this->output->device);
-//        std::cout << "Booked delta for: " + this->name << std::endl;
+
+        if(this->verbosity_level >= 2){
+            std::cout << "Booked delta for: " + this->name << std::endl;
+        }
     }
 }
 
@@ -90,7 +93,10 @@ void Layer::free_delta(){
         // The Tensor destructor takes into account the device details
         delete this->delta;
         this->delta = nullptr;  // Ensure nullptr
-//        std::cout << "Deleted delta for: " + this->name << std::endl;
+
+        if(this->verbosity_level >= 2){
+            std::cout << "Deleted delta for: " + this->name << std::endl;
+        }
     }
 }
 
@@ -101,7 +107,7 @@ void Layer::set_mem_level(int mem){
 void Layer::resize(int batch){
 //    cout<<name<<" resizing\n";
     if (output!=nullptr) output->resize(batch);
-    if (delta!=nullptr) delta->resize(batch);
+//    if (delta!=nullptr) { if (!mem_level) delta->resize(batch); }
     if (target!=nullptr) target->resize(batch);
 }
 
@@ -109,8 +115,7 @@ void Layer::set_trainable(bool value){
     trainable=value;
 }
 
-void Layer::detach(Layer *l)
-{
+void Layer::detach(Layer *l){
     for(int i=0;i<child.size();i++){
         if(child[i]==l) {
             child.erase(child.begin() + i);

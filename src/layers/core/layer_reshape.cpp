@@ -62,7 +62,6 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev, int m
 
     // sharing the pointers to data
     output = new Tensor(ls, parent->output);
-    delta = new Tensor(ls, parent->delta);
 
     parent->addchild(this);
     addparent(parent);
@@ -77,33 +76,37 @@ LReshape::~LReshape()
 void LReshape::resize(int batch){
     ls[0]=batch;
     output->resize(batch, parent[0]->output);
-    delta->resize(batch, parent[0]->delta);
     if (target!=nullptr) target->resize(batch);
 }
 
 
 void LReshape::mem_delta() {
-    // Note: Tricky function when full_mem! (until future changes)
-    // Reserve parent's delta AND assign it to this layer
-    if (parent[0]->mem_level)  {
-        parent[0]->mem_delta();
+    if (delta == nullptr) { // For future use!
+        // Reserve parent's delta AND assign it to this layer
+        if (parent[0]->mem_level) {
+            parent[0]->mem_delta();
 
-        // Problem: Delta is always created, regardless of the low_mem
-        if (delta == nullptr) { // For future use!
-            // When low_mem enabled, we need to build it here (the first time) as the "parent->delta" can be "nullptr"
-            //delta = new Tensor(ls, parent[0]->delta);
-        }else{
-            // If "delta" exists, update only its "ptr"
-//            delta->deleteData();
-            delta->reallocate(parent[0]->delta, &ls);  //  "&ls" is needed until delta is taken out of the constructor
+            // Problem: Delta is always created, regardless of the low_mem
+            delta = new Tensor(ls, parent[0]->delta);
+
+            if(this->verbosity_level >= 2){
+                std::cout << "Booked delta for: " + this->name << std::endl;
+            }
         }
     }
 }
 
 
 void LReshape::free_delta() {
-    // Special case:
-    // If we make "delta == nullptr", it will build another tensor in "mem_delta" instead of reallocating it
+    if(this->delta != nullptr) {
+        delta->ptr = nullptr;
+        delete delta;
+        delta = nullptr;
+
+        if(this->verbosity_level >= 2){
+            std::cout << "Deleted delta for: " + this->name << std::endl;
+        }
+    }
 }
 
 void LReshape::forward() {

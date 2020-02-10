@@ -653,7 +653,7 @@ namespace eddl {
 
     // Noise Layers
     layer GaussianNoise(layer parent, float stdev, string name){
-        return new LGaussianNoise(parent, stdev, name, DEV_CPU, 0);
+        return parent;// new LGaussianNoise(parent, stdev, name, DEV_CPU, 0);
     }
 
 
@@ -662,7 +662,7 @@ namespace eddl {
         return new LBatchNorm(parent, momentum, epsilon, affine, name, DEV_CPU, 0);
     }
     layer LayerNormalization(layer parent, float momentum, float epsilon, bool affine, string name){
-        return new LLayerNorm(parent, momentum, epsilon, affine, name, DEV_CPU, 0);
+        return parent; //new LLayerNorm(parent, momentum, epsilon, affine, name, DEV_CPU, 0);
     }
     layer GroupNormalization(layer parent, int groups, float momentum, float epsilon, bool affine, string name){
         return new LGroupNorm(parent, groups, momentum, epsilon, affine, name, DEV_CPU, 0);

@@ -56,11 +56,11 @@ public:
     int lin, lout;
     int delta_bp;
     bool detached;
+    unsigned int verbosity_level = 0;
 
     Layer(string name, int dev, int mem);
     // Destructor
     virtual ~Layer();
-
 
     void initialize();
 

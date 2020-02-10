@@ -38,23 +38,24 @@ int main(int argc, char **argv) {
     layer l = in;  // Aux var
 
     // Data augmentation assumes 3D tensors... images:
-    l=Reshape(l,{1,28,28});
+//    l=Reshape(l,{1,28,28});
     // Data augmentation
-    l = RandomCropScale(l, {0.9f, 1.0f});
-    l = RandomShift(l, {-0.1, 0.1}, {-0.1, 0.1});
-    l = RandomRotation(l, {-10, 10});
+//    l = RandomCropScale(l, {0.9f, 1.0f});
+//    l = RandomShift(l, {-0.1, 0.1}, {-0.1, 0.1});
+//    l = RandomRotation(l, {-10, 10});
 
     // Come back to 1D tensor for fully connected:
-    l=Reshape(l,{-1});
+//    l=Reshape(l,{-1});
     l = ReLu(GaussianNoise(LayerNormalization(Dense(l, 1024)),0.3));
     l = ReLu(GaussianNoise(LayerNormalization(Dense(l, 1024)),0.3));
     l = ReLu(GaussianNoise(LayerNormalization(Dense(l, 1024)),0.3));
     //l = ReLu(Dense(l, 1024));
     //l = ReLu(Dense(l, 1024));
- cout<<"OK1\n";
+
     layer out = Activation(Dense(l, num_classes), "softmax");
     model net = Model({in}, {out});
- cout<<"OK1\n";
+    net->verbosity_level = 0;
+
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
 

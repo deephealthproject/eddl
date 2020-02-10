@@ -19,10 +19,9 @@ using namespace std;
 
 int LInput::total_layers = 0;
 
-LInput::LInput(Tensor *in, string name, int dev, int mem) : LinLayer(name, dev, 0) {
+LInput::LInput(Tensor *in, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if(name.empty()) this->name = "input" + to_string(++total_layers);
     input = output = in;
-    delta = new Tensor(output->shape, dev);
 }
 
 LInput::~LInput()
@@ -34,10 +33,6 @@ LInput::~LInput()
 
 }
 
-// virtual
-void LInput::resize(int batch){
-  Layer::resize(batch);
-}
 
 string LInput::plot(int c) {
     string s;

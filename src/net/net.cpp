@@ -75,8 +75,7 @@ Net::Net(vlayer in, vlayer out) {
     tr_batches=0;
     flog_tr=nullptr;
     flog_ts=nullptr;
-
-
+    unsigned int verbosity_level = 0;
 
     // Walk through the pointers of all layers, to get a plain
     // vector with all the layers

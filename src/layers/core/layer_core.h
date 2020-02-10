@@ -75,8 +75,6 @@ public:
 
     void backward() override;
 
-    void resize(int batch) override;
-
     string plot(int c) override;
 
 };
@@ -141,8 +139,6 @@ public:
 
 	void apply_accumulated_gradients() override;
 
-    void resize(int batch) override;
-
     string plot(int c) override;
 
 	static void reset_name_counter();
@@ -170,8 +166,6 @@ public:
     void forward() override;
 
     void backward() override;
-
-    void resize(int batch) override;
 
     string plot(int c) override;
 

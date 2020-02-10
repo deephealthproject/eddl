@@ -27,7 +27,6 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev, int
 
     input = parent->output;
     output = new Tensor(vector<int>{input->shape[0], ndim}, dev);
-    delta = new Tensor(output->shape, dev);
 
     W = new Tensor(vector<int>{input->shape[1], ndim}, dev);
     if (use_bias) bias = new Tensor(vector<int>{ndim}, dev);
@@ -47,11 +46,6 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev, int
     addparent(parent);
 }
 
-
-// virtual
-void  LDense::resize(int batch){
-    Layer::resize(batch);
-}
 
 void LDense::forward() {
     Tensor::mult2D(input, 0, W, 0, output, 0);

@@ -37,14 +37,16 @@ int main(int argc, char **argv) {
     layer l = in;  // Aux var
 
     l = Reshape(l,{1,28,28});
-    l = MaxPool(ReLu(Conv(l,32,{3,3},{1,1})),{2,2});
-    l = MaxPool(ReLu(Conv(l,64,{3,3},{1,1})),{2,2});
-    l = MaxPool(ReLu(Conv(l,128,{3,3},{1,1})),{2,2});
-    l = MaxPool(ReLu(Conv(l,256,{3,3},{1,1})),{2,2});
+    l = ReLu(Conv(l,1,{3,3},{1,1}));
+//    l = MaxPool(ReLu(Conv(l,32,{3,3},{1,1})),{2,2});
+//    l = MaxPool(ReLu(Conv(l,64,{3,3},{1,1})),{2,2});
+//    l = MaxPool(ReLu(Conv(l,128,{3,3},{1,1})),{2,2});
+//    l = MaxPool(ReLu(Conv(l,256,{3,3},{1,1})),{2,2});
     l = Reshape(l,{-1});
 
     layer out = Activation(Dense(l, num_classes), "softmax");
     model net = Model({in}, {out});
+    net->verbosity_level = 0;
 
     // dot from graphviz should be installed:
     plot(net, "model.pdf");

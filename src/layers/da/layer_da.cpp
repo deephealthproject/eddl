@@ -35,6 +35,10 @@ void LDataAugmentation::mem_delta(){
         parent[0]->mem_delta();
 
         delta=parent[0]->delta;
+
+        if(this->verbosity_level >= 2){
+            std::cout << "Booked delta for: " + this->name << std::endl;
+        }
     }
 }
 
@@ -42,6 +46,10 @@ void LDataAugmentation::free_delta(){
     // Not really needed, but I like to keep all the methods the same (ease the robustness of "copy-paste")
     if(this->delta != nullptr) {
         delta = nullptr;
+
+        if(this->verbosity_level >= 2){
+            std::cout << "Deleted delta for: " + this->name << std::endl;
+        }
     }
 }
 
