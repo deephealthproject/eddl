@@ -73,8 +73,8 @@ void LConv::mem_delta(){
             parent[0]->mem_delta();
             cd->ID = parent[0]->delta;
 
-            cd->D = new Tensor(cd->O->shape, cd->O->device);
-            delta = cd->D;
+            delta = Tensor::zeros(cd->O->shape, cd->O->device);
+            cd->D = delta;
 
             if(this->verbosity_level >= 2) {
                 std::cout << "Booked delta for: " + this->name << std::endl;

@@ -45,8 +45,8 @@ void LPool::mem_delta(){
             parent[0]->mem_delta();
             pd->ID = parent[0]->delta;
 
-            pd->D = new Tensor(pd->O->shape, pd->O->device);
-            delta = pd->D;
+            delta = Tensor::zeros(pd->O->shape, pd->O->device);
+            pd->D = delta;
 
             if(this->verbosity_level >= 2) {
                 std::cout << "Booked delta for: " + this->name << std::endl;
