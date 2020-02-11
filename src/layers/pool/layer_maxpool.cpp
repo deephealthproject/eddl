@@ -22,15 +22,13 @@ using namespace std;
 // constructors and clones
 
 // constructors and clones
-LMaxPool::LMaxPool(Layer *parent, const vector<int> &ks, const vector<int> &st, string p, string name,
-                   int dev) : LMaxPool(parent, new PoolDescriptor(ks, st, p), name, dev) {}
+LMaxPool::LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name, int dev, int mem) : LMaxPool(parent, new PoolDescriptor(pool_size, strides, padding, mem), name, dev, mem) {}
 
-LMaxPool::LMaxPool(Layer *parent, const vector<int> &ks, const vector<int> &st,
-               const vector<int> &p, string name, int dev) : LMaxPool(parent, new PoolDescriptor(ks, st, p), name, dev) {}
+LMaxPool::LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, string name, int dev, int mem) : LMaxPool(parent, new PoolDescriptor(pool_size, strides, padding, mem), name, dev, mem) {}
 
-LMaxPool::LMaxPool(Layer *parent, PoolDescriptor *D, string name, int dev) : LPool(parent, D, name, dev) {
+LMaxPool::LMaxPool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem) : LPool(parent, D, name, dev, mem) {
     // Params
-
+    mem_level=mem;
     D->indX = new Tensor(D->O->getShape(), dev);
     D->indY = new Tensor(D->O->getShape(), dev);
 }
@@ -55,9 +53,15 @@ void LMaxPool::forward() {
 
 void LMaxPool::backward() {
     // backprop delta
+    if (parent[0]->mem_level)  {
+      parent[0]->mem_delta();
+      pd->ID=parent[0]->delta;
+    }
     if (parent.size()) {
+        if (mem_level)  pd->D=delta;
         MPool2D_back(this->pd);
     }
+    if (mem_level) free_delta();
 }
 
 Layer *LMaxPool::share(int c, int bs, vector<Layer *> p) {
@@ -70,7 +74,7 @@ Layer *LMaxPool::share(int c, int bs, vector<Layer *> p) {
 
 Layer *LMaxPool::clone(int c, int bs, vector<Layer *> p, int todev) {
     LMaxPool *n = new LMaxPool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, pd->pad,
-                           "clone_" + to_string(todev) + name, todev);
+                           "clone_" + to_string(todev) + name, todev,mem_level);
     n->orig = this;
 
     return n;

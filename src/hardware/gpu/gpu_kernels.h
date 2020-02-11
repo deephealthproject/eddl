@@ -32,6 +32,7 @@ __global__ void select(float* A, float* B, int size, int* indices);
 __global__ void select_back(float* A, float* B, int size, int* indices);
 __global__ void set_select(float* A, float* B, int size, int* indices);
 __global__ void set_select_back(float* A, float* B, int size, int* indices);
+__global__ void concat(float *dest, float *src, unsigned int src_size, unsigned int src_stride, unsigned int dest_stride, bool derivative);
 
 // GPU: Transformations
 __global__ void shift(float* A, float* B, int batch, int depth, int irows, int icols, int* shift, int mode, float constant);
@@ -71,7 +72,7 @@ __global__ void log2_(float* a, long int size);
 __global__ void log10_(float* a, long int size);
 __global__ void logn_(float* a, long int size, float n);
 __global__ void mod_(float* a, long int size, float v);
-__global__ void inv_(float* a, long int size);
+__global__ void inv_(float* a, float v, long int size);
 __global__ void mult_(float* a, long int size, float v);
 __global__ void normalize_(float* a, long int size, float min_ori, float max_ori, float min, float max);
 __global__ void pow_(float* a, long int size, float exp);

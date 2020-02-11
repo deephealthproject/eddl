@@ -36,9 +36,9 @@ int main(int argc, char **argv) {
     layer in = Input({784});
     layer l = in;  // Aux var
 
-    l = ReLu(Dense(l, 1024));
-    l = ReLu(Dense(l, 1024));
-    l = ReLu(Dense(l, 1024));
+    l = LeakyReLu(Dense(l, 1024));
+    l = LeakyReLu(Dense(l, 1024));
+    l = LeakyReLu(Dense(l, 1024));
 
     layer out = Activation(Dense(l, num_classes), "softmax");
     model net = Model({in}, {out});

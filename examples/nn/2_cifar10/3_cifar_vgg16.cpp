@@ -65,8 +65,10 @@ int main(int argc, char **argv){
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
     //CS_CPU() // CPU with maximum threads availables
-    CS_GPU({1}) // GPU with only one gpu
+    CS_GPU({1},"low_mem") // GPU with only one gpu and "low_mem"
   );
+
+
 
   setlogfile(net,"vgg16");
 

@@ -39,6 +39,42 @@ public:
 };
 
 
+class LMeanAbsoluteError : public Loss {
+public:
+    LMeanAbsoluteError();
+
+    void delta(Tensor *T, Tensor *Y, Tensor *D) override;
+    float value(Tensor *T, Tensor *Y) override;
+};
+
+
+class LMeanRelativeError : public Loss {
+public:
+    LMeanRelativeError();
+
+    void delta(Tensor *T, Tensor *Y, Tensor *D) override;
+    float value(Tensor *T, Tensor *Y) override;
+};
+
+
+class LMeanSquaredLogarithmicError : public Loss {
+public:
+    LMeanSquaredLogarithmicError();
+
+    void delta(Tensor *T, Tensor *Y, Tensor *D) override;
+    float value(Tensor *T, Tensor *Y) override;
+};
+
+
+class LHinge : public Loss {
+public:
+    LHinge();
+
+    void delta(Tensor *T, Tensor *Y, Tensor *D) override;
+    float value(Tensor *T, Tensor *Y) override;
+};
+
+
 class LCrossEntropy : public Loss {
 public:
     LCrossEntropy();
@@ -46,7 +82,6 @@ public:
     void delta(Tensor *T, Tensor *Y, Tensor *D) override;
     float value(Tensor *T, Tensor *Y) override;
 };
-
 
 class LSoftCrossEntropy : public Loss {
 public:

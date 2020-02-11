@@ -71,8 +71,31 @@ void Layer::setdetach()
 {
   detached=true;
 }
+void Layer::mem_delta()
+{
+    // Reserve space for the parent's delta
+    if(this->delta != nullptr){
+        msg("Memory leak! The parent's delta shouldn't be reserved", "Layer::reserve_delta");
+    }else{
+        this->delta = new Tensor(this->output->shape, this->output->device);
+    }
 
-void Layer::resize(int batch)
+}
+
+void Layer::free_delta(){
+    if(this->delta != nullptr){
+        // The Tensor destructor takes into account the device details
+        delete this->delta;
+        this->delta = nullptr;  // Ensure nullptr
+    }
+}
+
+  void Layer::setmem_level(int mem)
+{
+  mem_level=mem;
+}
+
+  void Layer::resize(int batch)
 {
     //cout<<name<<" resizing\n";
     if (output!=nullptr) output->resize(batch);
@@ -95,7 +118,7 @@ void Layer::detach(Layer *l)
 }
 
 void Layer::reset() {
-    delta->fill_(0.0);
+    if ((!mem_level)&&(delta!=nullptr)) delta->fill_(0.0);
     detached=false;
 }
 

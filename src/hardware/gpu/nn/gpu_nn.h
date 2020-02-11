@@ -26,14 +26,23 @@
 void gpu_relu(Tensor *A,Tensor *B);
 void gpu_d_relu(Tensor *D,Tensor *I,Tensor *PD);
 
-void gpu_lrelu(Tensor *A,Tensor *B,float param);
-void gpu_d_lrelu(Tensor *D,Tensor *I,Tensor *PD,float param);
+void gpu_leaky_relu(Tensor *A,Tensor *B,float param);
+void gpu_d_leaky_relu(Tensor *D,Tensor *I,Tensor *PD,float param);
 
 void gpu_elu(Tensor *A,Tensor *B,float param);
 void gpu_d_elu(Tensor *D,Tensor *I,Tensor *PD,float param);
 
+void gpu_softplus(Tensor *A,Tensor *B);
+void gpu_d_softplus(Tensor *D,Tensor *I,Tensor *PD);
+
+void gpu_softsign(Tensor *A,Tensor *B);
+void gpu_d_softsign(Tensor *D,Tensor *I,Tensor *PD);
+
 void gpu_sigmoid(Tensor *A,Tensor *B);
 void gpu_d_sigmoid(Tensor *D,Tensor *I,Tensor *PD);
+
+void gpu_hard_sigmoid(Tensor *A,Tensor *B);
+void gpu_d_hard_sigmoid(Tensor *D,Tensor *I,Tensor *PD);
 
 void gpu_tanh(Tensor *A,Tensor *B);
 void gpu_d_tanh(Tensor *D,Tensor *I,Tensor *PD);
@@ -54,9 +63,13 @@ void gpu_conv2D(ConvolDescriptor *D);
 void gpu_conv2D_grad(ConvolDescriptor *D);
 void gpu_conv2D_back(ConvolDescriptor *D);
 
-// Pool
+// MaxPool
 void gpu_mpool2D(PoolDescriptor *D);
 void gpu_mpool2D_back(PoolDescriptor *D);
+
+// AvgPool
+void gpu_avgpool2D(PoolDescriptor *D);
+void gpu_avgpool2D_back(PoolDescriptor *D);
 
 // Tensor
 void gpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size);

@@ -63,12 +63,11 @@ void Tensor::resize(int b, float *fptr){
 
 }
 
-void Tensor::resize(int b)
-{
+void Tensor::resize(int b) {
   resize(b,(float *)nullptr);
 }
-void Tensor::resize(int b, Tensor *T)
-{
+
+void Tensor::resize(int b, Tensor *T) {
   resize(b,T->ptr);
 }
 

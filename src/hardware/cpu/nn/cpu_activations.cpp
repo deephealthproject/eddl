@@ -30,7 +30,7 @@ void cpu_d_relu(Tensor *D, Tensor *I, Tensor *PD){
   }
 }
 
-void cpu_lrelu(Tensor *A, Tensor *B,float param){
+void cpu_leaky_relu(Tensor *A, Tensor *B,float param){
   #pragma omp parallel for
   for (int i = 0; i < A->size; i++) {
     if (A->ptr[i] > 0.0) B->ptr[i] = A->ptr[i];
@@ -38,7 +38,7 @@ void cpu_lrelu(Tensor *A, Tensor *B,float param){
   }
 }
 
-void cpu_d_lrelu(Tensor *D, Tensor *I, Tensor *PD,float param){
+void cpu_d_leaky_relu(Tensor *D, Tensor *I, Tensor *PD,float param){
   #pragma omp parallel for
   for (int i = 0; i < D->size; i++) {
     if (I->ptr[i] > 0.0) PD->ptr[i] = D->ptr[i];
@@ -60,6 +60,35 @@ void cpu_d_elu(Tensor *D, Tensor *I, Tensor *PD, float param){
     if (I->ptr[i] > 0.0) PD->ptr[i] = D->ptr[i];
     else PD->ptr[i] = D->ptr[i] * (param * ::expf(I->ptr[i]));
   }
+}
+
+void cpu_softplus(Tensor *A, Tensor *B){
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; i++) {
+        B->ptr[i] = ::logf(1 + ::expf(A->ptr[i]));
+    }
+}
+
+void cpu_d_softplus(Tensor *D, Tensor *I, Tensor *PD){
+    #pragma omp parallel for
+    for (int i = 0; i < D->size; i++) {
+        PD->ptr[i] = D->ptr[i] * 1/(1 + ::expf(-I->ptr[i]));
+    }
+}
+
+void cpu_softsign(Tensor *A, Tensor *B){
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; i++) {
+        B->ptr[i] = A->ptr[i] / (1 + ::abs(A->ptr[i]));
+    }
+}
+
+void cpu_d_softsign(Tensor *D, Tensor *I, Tensor *PD){
+    #pragma omp parallel for
+    for (int i = 0; i < D->size; i++) {
+        float denom = 1 + ::abs(I->ptr[i]);
+        PD->ptr[i] = D->ptr[i] * 1/(denom*denom);
+    }
 }
 
 void cpu_linear(Tensor *A, Tensor *B, float param){
@@ -86,6 +115,22 @@ void cpu_d_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
   #pragma omp parallel for
   for (int i = 0; i < D->size; i++)
     PD->ptr[i] = D->ptr[i]*((1-I->ptr[i])*I->ptr[i]);
+}
+
+void cpu_hard_sigmoid(Tensor *A, Tensor *B){
+  #pragma omp parallel for
+  for (int i = 0; i < A->size; i++) {
+    if (A->ptr[i] > 2.5) B->ptr[i] = 1.0;
+    else if (A->ptr[i] < -2.5) B->ptr[i] = 0.0;
+    else B->ptr[i] = (0.2 * A->ptr[i]) + 0.5;
+  }
+}
+
+void cpu_d_hard_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
+  #pragma omp parallel for
+  for (int i = 0; i < D->size; i++)
+    if (I->ptr[i] < -2.5 || I->ptr[i] > 2.5) PD->ptr[i] = 0;
+    else PD->ptr[i] = D->ptr[i] * 0.2;
 }
 
 void cpu_tanh(Tensor *A, Tensor *B){

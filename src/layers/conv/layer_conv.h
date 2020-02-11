@@ -32,12 +32,12 @@ public:
     ConvolDescriptor *cd;
 
     // constructors and clones
-    LConv(Layer *parent, const vector<int> &ks, const vector<int> &st, const vector<int> &p, string name, int dev);
+    LConv(Layer *parent, const vector<int> &ks, const vector<int> &st, const vector<int> &p, string name, int dev, int mem=0);
 
     LConv(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
-          int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev);
+          int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem=0);
 
-    LConv(Layer *parent, ConvolDescriptor *cd, string name, int dev);
+    LConv(Layer *parent, ConvolDescriptor *cd, string name, int dev, int mem=0);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -76,9 +76,9 @@ public:
     // constructors and clones
     LConvT(Layer *parent, int filters, const vector<int> &kernel_size,
            const vector<int> &output_padding, string padding, const vector<int> &dilation_rate,
-           const vector<int> &strides, bool use_bias, string name, int dev);
+           const vector<int> &strides, bool use_bias, string name, int dev,int mem=0);
 
-    LConvT(Layer *parent, ConvolDescriptor *cd, string name, int dev);
+    LConvT(Layer *parent, ConvolDescriptor *cd, string name, int dev,int mem=0);
 
 //    Layer *share(int c, int bs, vector<Layer *> p) override;
 //
@@ -103,7 +103,7 @@ public:
     static int total_layers;
 
     // constructors and clones
-    LUpSampling(Layer *parent, const vector<int> &size, string interpolation, string name, int dev);
+    LUpSampling(Layer *parent, const vector<int> &size, string interpolation, string name, int dev,int mem=0);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

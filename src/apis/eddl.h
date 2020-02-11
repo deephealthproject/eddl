@@ -84,7 +84,13 @@ typedef NetLoss * metric;
       *  @param lsb  Number of batches to sync model weights
       *  @return     (void)
     */
-    void toGPU(model net, vector<int> g={1},int lsb=1);
+    void toGPU(model net, vector<int> g,int lsb);
+    void toGPU(model net, vector<int> g,string mem);
+    void toGPU(model net, vector<int> g,int lsb, string mem);
+    void toGPU(model net, vector<int> g);
+    void toGPU(model net, string mem);
+    void toGPU(model net);
+    //void toGPU(model net, string mem);
     /**
       *  @brief Assign model operations to the CPU.
       *
@@ -94,7 +100,13 @@ typedef NetLoss * metric;
     */
     void toCPU(model net, int t=std::thread::hardware_concurrency());
     compserv CS_CPU(int th=-1);
-    compserv CS_GPU(const vector<int> &g,int lsb=1);
+
+    compserv CS_GPU();
+    compserv CS_GPU(const vector<int> g);
+    compserv CS_GPU(const vector<int> g,int lsb);
+    compserv CS_GPU(const vector<int> g,string mem);
+    compserv CS_GPU(const vector<int> g,int lsb,string mem);
+
     compserv CS_FGPA(const vector<int> &f,int lsb=1);
     compserv CS_COMPSS(string filename);
 
@@ -383,7 +395,7 @@ typedef NetLoss * metric;
       *  @param param  Negative slope coefficient
       *  @return     Output of Leaky ReLu activation
     */
-    layer LReLu(layer parent,float param=0.01);
+    layer LeakyReLu(layer parent, float param=0.01);
 
     /**
       *  @brief Applies the Exponential Linear Unit activation function to the given layer.
@@ -392,7 +404,40 @@ typedef NetLoss * metric;
 	  *  @param param ELu coefficient
       *  @return     Output of ELu activation
     */
-    layer ELu(layer parent, float param=1.0);
+    layer Elu(layer parent, float param=1.0);
+
+    /**
+      *  @brief Applies the Scaled Exponential Linear Unit activation function to the given layer.
+      *
+      *  @param parent  Parent layer
+      *  @return     Output of Selu activation
+    */
+    layer Selu(layer parent);
+
+    /**
+    *  @brief Applies the Exponential (base e) activation function to the given layer.
+    *
+    *  @param parent  Parent layer
+    *  @return     Output of Exponential activation
+    */
+    layer Exponential(layer parent);
+
+    /**
+    *  @brief Applies the Softplus activation function to the given layer.
+    *
+    *  @param parent  Parent layer
+    *  @return     Output of Exponential activation
+    */
+    layer Softplus(layer parent);
+
+
+    /**
+    *  @brief Applies the Softsign activation function to the given layer.
+    *
+    *  @param parent  Parent layer
+    *  @return     Output of Exponential activation
+    */
+    layer Softsign(layer parent);
 
     /**
       *  @brief Applies the Linear activation function to the given layer.
@@ -412,6 +457,7 @@ typedef NetLoss * metric;
       *  @return     Output of hyperbolic activation
     */
     layer Tanh(layer parent);
+
     /**
       *  @brief Convolution layer.
       *
@@ -430,6 +476,7 @@ typedef NetLoss * metric;
                const vector<int> &strides = {1, 1}, string padding = "same", int groups = 1,
                const vector<int> &dilation_rate = {1, 1},
                bool use_bias = true, string name = "");
+
     /**
       *  @brief Regular densely-connected NN layer.
       *
@@ -440,6 +487,7 @@ typedef NetLoss * metric;
       *  @return     Densely-connected NN layer
     */
     layer Dense(layer parent, int ndim, bool use_bias = true,  string name = "");
+
     /**
       *  @brief Applies Dropout to a layer.
       *
@@ -452,6 +500,7 @@ typedef NetLoss * metric;
       *  @return     Layer with Dropout
     */
     layer Dropout(layer parent, float rate, string name = "");
+
     /**
       *  @brief Used to initialize an input to a model.
       *
@@ -460,6 +509,7 @@ typedef NetLoss * metric;
       *  @return     Input layer
     */
     layer Input(const vector<int> &shape, string name = "");
+
     /**
       *  @brief Upsampling layer.
       *
@@ -472,9 +522,10 @@ typedef NetLoss * metric;
       *  @param name  A name for the operation
       *  @return     Output layer after upsampling operation
     */
-    layer UpSampling(layer parent, const vector<int> &size, string interpolation = "nearest", string name = ""); //Todo: Implement
+    layer UpSampling(layer parent, const vector<int> &size, string interpolation = "nearest", string name = "");
+
     /**
-      *  @brief Reshapes a Layer to a certain shape.
+      *  @brief Reshapes an output to a certain shape.
       *
       *  @param parent  Parent layer
       *  @param shape  Target shape. Vector of integers. Does not include the batch axis
@@ -482,11 +533,22 @@ typedef NetLoss * metric;
       *  @return     Output of reshape operation
     */
     layer Reshape(layer parent, const vector<int> &shape, string name = "");
+
+    /**
+      *  @brief Flattens the input. Does not affect the batch size.
+      *
+      *  @param parent  Parent layer
+      *  @param name  A name for the operation
+      *  @return     Output of reshape operation
+    */
+    layer Flatten(layer parent, string name = "");
+
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding = "same",
                 const vector<int> &dilation_rate = {1, 1},
                 const vector<int> &strides = {1, 1}, bool use_bias = true, string name = ""); //Todo: Implement
     layer Embedding(int input_dim, int output_dim, string name = ""); //Todo: Implement
+
     /**
       *  @brief Transposes a Layer.
       *
@@ -782,7 +844,7 @@ typedef NetLoss * metric;
       *  @param name  A name for the operation
       *  @return     Output of concatenation operation with all input layers
     */
-    layer Concat(const vector<layer> &layers, string name = "");
+    layer Concat(const vector<layer> &layers, unsigned int axis=1, string name = "");
     layer MatMul(const vector<layer> &layers, string name = "");
     layer Maximum(const vector<layer> &layers, string name = "");
     layer Minimum(const vector<layer> &layers, string name = "");

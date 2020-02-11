@@ -19,14 +19,16 @@ using namespace std;
 
 int LUpSampling::total_layers = 0;
 
-LUpSampling::LUpSampling(Layer *parent, const vector<int> &size, string interpolation, string name, int dev) : LinLayer(name, dev) {
+LUpSampling::LUpSampling(Layer *parent, const vector<int> &size, string interpolation, string name, int dev, int mem) : LinLayer(name, dev) {
     this->size = size;
     this->interpolation = interpolation;
+    mem_level=mem;
+
     if(name.empty()) this->name = "upsampling" + to_string(++total_layers);
 
     input = parent->output;
     output = new Tensor(vector<int>{input->shape[0], input->shape[1], input->shape[2]*size[0], input->shape[3]*size[1]}, dev);
-    delta = new Tensor(output->getShape(), dev);
+    if (!mem_level) delta = new Tensor(output->getShape(), dev);
 
     parent->addchild(this);
     addparent(parent);
@@ -44,7 +46,9 @@ void LUpSampling::forward() {
 }
 
 void LUpSampling::backward() {
+    if (parent[0]->mem_level)  parent[0]->mem_delta();
     d_repeat_nn(delta, parent[0]->delta, this->size);
+    if (mem_level)  free_delta();
 }
 
 Layer *LUpSampling::share(int c, int bs, vector<Layer *> p) {
@@ -56,7 +60,7 @@ Layer *LUpSampling::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LUpSampling::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LUpSampling *n = new LUpSampling(p[0], this->size, this->interpolation, "clone_" + to_string(todev) + name, todev);
+    LUpSampling *n = new LUpSampling(p[0], this->size, this->interpolation, "clone_" + to_string(todev) + name, todev, mem_level);
     n->orig = this;
 
     return n;

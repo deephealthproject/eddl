@@ -105,3 +105,33 @@ void cpu_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end){
             B->ptr[p] = A->ptr[pb];
     }
 }
+
+void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative){
+  // Walk through all the tensors to concat one axis (once)
+    unsigned int offset = 0;
+    unsigned int src_stride = 0;
+    int steps = A->stride[axis] * A->shape[axis];  // Equivalent to A->stride[axis-1], but without the negative index problem
+
+    // Walk through each tensor
+    for (unsigned int i = 0; i < t.size(); i++) {
+        offset += src_stride;
+        src_stride = t[i]->stride[axis] * t[i]->shape[axis];
+
+        // Copy n bytes from src to dest
+        float *dest = A->ptr + offset;
+        float *src = t[i]->ptr;
+
+        // Walk tensor i
+        #pragma omp parallel for
+        for (int j = 0; j < t[i]->size; j++) {
+            unsigned int k = j % src_stride;  // Pos (index) in the stride (src)
+            unsigned int stride_idx = j / src_stride;  // Index of the stride (src/dst)
+            unsigned int dest_offset = stride_idx * steps;  // Offset in dest
+
+            if(derivative){ src[j] += dest[dest_offset + k]; }
+            else{ dest[dest_offset + k] = src[j]; }
+        }
+    }
+
+}
+

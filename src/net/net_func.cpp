@@ -51,7 +51,7 @@ void Net::do_forward() {
     for (int i = 0; i < vfts.size(); i++) {
         vfts[i]->forward();
         if (VERBOSE) {
-          cout << vfts[i]->name << "\n";
+          cout << vfts[i]->name << " mem="<<vfts[i]->mem_level<<"\n";
           fprintf(stdout, "  %s In:%f\n", vfts[i]->name.c_str(), vfts[i]->input->sum());
           fprintf(stdout, "  %s Out:%f\n", vfts[i]->name.c_str(), vfts[i]->output->sum());
         }
@@ -61,13 +61,18 @@ void Net::do_forward() {
 void Net::do_backward() {
     for (int i = 0; i < vbts.size(); i++) {
         vbts[i]->backward();
-        if (VERBOSE) cout<<"BACK: "<<vbts[i]->name<<" delta:"<<vbts[i]->delta->sum()<<"\n";
+        
+        if (vbts[i]->mem_level<2)
+          if (VERBOSE) cout<<"BACK: "<<vbts[i]->name<<" delta:"<<vbts[i]->delta->sum()<<"\n";
+        else
+          if (VERBOSE) cout<<"BACK: "<<vbts[i]->name<<" delta:\n";
       }
     if (VERBOSE) getchar();
 }
 
 void Net::do_delta() {
     for (int i = 0; i < lout.size(); i++) {
+        if (lout[i]->mem_level)  lout[i]->mem_delta();
         losses[i]->delta(lout[i]->target, lout[i]->output, lout[i]->delta);
         if (VERBOSE) cout<<"Delta: "<<vbts[i]->name<<" delta:"<<vbts[i]->delta->sum()<<"\n";
       }

@@ -43,3 +43,24 @@ void gpu_mpool2D_back(PoolDescriptor *D){
 
     check_cuda(cudaDeviceSynchronize(),"gpu_mpool_back");
 }
+
+
+void gpu_avgpool2D(PoolDescriptor *D){
+    int device=D->I->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(D->O);
+    avgpool2d<<<dimGrid,dimBlock>>>(D->I->ptr, D->I->shape[0],D->ir,D->ic,D->iz,D->kr,D->kc,D->O->ptr,D->r,D->c,D->z, D->sr,D->sc,D->padrt,D->padrb,D->padcl,D->padcr, D->indX->ptr, D->indY->ptr);
+
+    check_cuda(cudaDeviceSynchronize(),"gpu_avgpool");
+}
+
+void gpu_avgpool2D_back(PoolDescriptor *D){
+    int device=D->I->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(D->D)
+    avgpool2d_back<<<dimGrid,dimBlock>>>(D->D->ptr, D->ID->ptr, D->I->shape[0],D->ir,D->ic,D->r,D->c,D->iz,D->indX->ptr,D->indY->ptr);
+
+    check_cuda(cudaDeviceSynchronize(),"gpu_avgpool_back");
+}

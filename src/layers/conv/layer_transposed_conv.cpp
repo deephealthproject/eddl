@@ -22,11 +22,11 @@ int LConvT::total_layers = 0;
 // ---- TRANSPOSED CONVOLUTION ----
 LConvT::LConvT(Layer *parent, int filters, const vector<int> &kernel_size,
     const vector<int> &output_padding, string padding, const vector<int> &dilation_rate,
-    const vector<int> &strides, bool use_bias, string name, int dev) : LConvT(parent, new ConvolDescriptor(filters, kernel_size, strides, padding), name, dev) {
+    const vector<int> &strides, bool use_bias, string name, int dev,int mem) : LConvT(parent, new ConvolDescriptor(filters, kernel_size, strides, padding,mem), name, dev, mem) {
     // TODO: Implement (Fix initialization)
 };
 
-LConvT::LConvT(Layer *parent, ConvolDescriptor *cd, string name, int dev) : LinLayer(name, dev) {
+LConvT::LConvT(Layer *parent, ConvolDescriptor *cd, string name, int dev, int mem) : LinLayer(name, dev) {
     // TODO: Implement (Fix initialization)
     if(name.empty()) this->name = "convt" + to_string(++total_layers);
 }

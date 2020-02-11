@@ -16,6 +16,8 @@
 
 using namespace eddl;
 
+#define USE_CONCAT 1
+
 //////////////////////////////////
 // Drive segmentation
 // https://drive.grand-challenge.org/DRIVE/
@@ -23,6 +25,7 @@ using namespace eddl;
 // Data Augmentation graph
 // Segmentation graph
 //////////////////////////////////
+
 
 
 // from use case repo:
@@ -35,40 +38,45 @@ layer UNetWithPadding(layer x)
 
     int depth=32;
 
-    x = LReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
-    x = LReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
+
+    x = LeakyReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
+    x = LeakyReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
     x2 = MaxPool(x, { 2,2 }, { 2,2 });
-    x2 = LReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
-    x2 = LReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
+    x2 = LeakyReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
+    x2 = LeakyReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
     x3 = MaxPool(x2, { 2,2 }, { 2,2 });
-    x3 = LReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
-    x3 = LReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
+    x3 = LeakyReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
+    x3 = LeakyReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
     x4 = MaxPool(x3, { 2,2 }, { 2,2 });
-    x4 = LReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
-    x4 = LReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x4 = LeakyReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x4 = LeakyReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
     x5 = MaxPool(x4, { 2,2 }, { 2,2 });
-    x5 = LReLu(Conv(x5, 8*depth, { 3,3 }, { 1, 1 }, "same"));
-    x5 = LReLu(Conv(x5, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x5 = LeakyReLu(Conv(x5, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x5 = LeakyReLu(Conv(x5, 8*depth, { 3,3 }, { 1, 1 }, "same"));
     x5 = Conv(UpSampling(x5, { 2,2 }), 8*depth, { 2,2 }, { 1, 1 }, "same");
 
-    x4 = Concat({x4,x5}, "my_concat_1");
-    x4 = LReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
-    x4 = LReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    if (USE_CONCAT) x4 = Concat({x4,x5});
+    else x4 = Sum(x4,x5);
+    x4 = LeakyReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
+    x4 = LeakyReLu(Conv(x4, 8*depth, { 3,3 }, { 1, 1 }, "same"));
     x4 = Conv(UpSampling(x4, { 2,2 }), 4*depth, { 2,2 }, { 1, 1 }, "same");
 
-    x3 = Concat({x3,x4}, "my_concat_2");
-    x3 = LReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
-    x3 = LReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
+    if (USE_CONCAT) x3 = Concat({x3,x4});
+    else x3 = Sum(x3,x4);
+    x3 = LeakyReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
+    x3 = LeakyReLu(Conv(x3, 4*depth, { 3,3 }, { 1, 1 }, "same"));
     x3 = Conv(UpSampling(x3, { 2,2 }), 2*depth, { 2,2 }, { 1, 1 }, "same");
 
-    x2 = Concat({x2,x3},"my_concat_3");
-    x2 = LReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
-    x2 = LReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
+    if (USE_CONCAT) x2 = Concat({x2,x3});
+    else x2 = Sum(x2,x3);
+    x2 = LeakyReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
+    x2 = LeakyReLu(Conv(x2, 2*depth, { 3,3 }, { 1, 1 }, "same"));
     x2 = Conv(UpSampling(x2, { 2,2 }), depth, { 2,2 }, { 1, 1 }, "same");
 
-    x = Concat({x,x2}, "my_concat_4");
-    x = LReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
-    x = LReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
+    if (USE_CONCAT) x = Concat({x,x2});
+    else x = Sum(x,x2);
+    x = LeakyReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
+    x = LeakyReLu(Conv(x, depth, { 3,3 }, { 1, 1 }, "same"));
     x = Conv(x, 1, { 1,1 });
 
     return x;
@@ -82,7 +90,7 @@ int main(int argc, char **argv){
 
   // Settings
   int epochs = 100000;
-  int batch_size =1;
+  int batch_size =2;
 
   //////////////////////////////////////////////////////////////
   // Network for Data Augmentation
@@ -91,7 +99,7 @@ int main(int argc, char **argv){
 
   layer l=Concat({in1,in2});   // Cat image and mask
   l= RandomCropScale(l, {0.9f, 1.0f}); // Random Crop and Scale to orig size
-  l=CenteredCrop(l,{512,512});         // Crop to work with sizes power 2
+  l= CenteredCrop(l,{512,512});         // Crop to work with sizes power 2
   layer img=Select(l,{"0:3"}); // UnCat [0-2] image
   layer mask=Select(l,{"3"});  // UnCat [3] mask
   // Both, image and mask, have the same augmentation
@@ -101,7 +109,7 @@ int main(int argc, char **argv){
 
   // Build model for DA
   build(danet);
-  toGPU(danet,{1,1});
+  //toGPU(danet,"low_mem");   // only in GPU 0 with low_mem setup
   summary(danet);
 
   //////////////////////////////////////////////////////////////
@@ -115,7 +123,7 @@ int main(int argc, char **argv){
     {"mse"} // Metrics
   );
   // Train on multi-gpu with sync weights every 100 batches:
-  toGPU(segnet,{1,1},100);
+  //toGPU(segnet,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
   summary(segnet);
   plot(segnet,"segnet.pdf");
 
@@ -176,7 +184,7 @@ int main(int argc, char **argv){
 
       print_loss(segnet, j);
       // printf("  sum=%f",yout->sum());
-      // printf("\r");
+      printf("\r");
 
       tensor yout = eddlT::select(getTensor(out),0);
       yout->save("./out.jpg");

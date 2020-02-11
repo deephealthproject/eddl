@@ -88,3 +88,51 @@ __global__ void gpu_im2col_k(float* I, float *ptrI,int batch,int irows,int icols
   }
 
 }
+
+__global__ void gpu_im2col_k_low(float* I, int b, float *ptrI,int irows,int icols, int idepth, float* K, int nk, int kr,int kc, float* O,int orows,int ocols,int sr,int sc,int padrt,int padrb,int padcl,int padcr,int col2im)
+{
+  long int ops=orows*ocols*kr*kc*idepth;
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+
+  if (thread_id_x < ops) {
+    int iz,ix,iy;
+
+    int ksize=kr*kc*idepth;
+
+    int im=b;
+    int ioffset=im*irows*icols*idepth;
+
+
+    int tx=thread_id_x%(ksize*orows*ocols);
+
+
+    int r=tx/ksize;
+    int c=tx%ksize;
+
+    int oy=r/ocols;
+    int ox=r%ocols;
+
+    ix=(ox*sc)-padcl;
+    iy=(oy*sr)-padrt;
+    iz=c/(kr*kc);
+
+    c=c%(kr*kc);
+
+    iy+=c/kc;
+    ix+=c%kc;
+
+    if ((ix>=0)&&(ix<icols)&&(iy>=0)&&(iy<irows)) {
+      int p=iz*(irows*icols)+(iy*icols)+ix;
+      if (col2im)
+        atomicAdd(&(I[p+ioffset]),ptrI[thread_id_x]);
+      else
+      	ptrI[thread_id_x]=I[p+ioffset];
+    }
+    else
+      if (!col2im)
+        ptrI[thread_id_x]=0;
+
+  }
+
+}

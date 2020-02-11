@@ -22,14 +22,14 @@ int LConv::total_layers = 0;
 // constructors and clones
 
 LConv::LConv(Layer *parent, const vector<int> &ks, const vector<int> &st,
-             const vector<int> &p, string name, int dev) : LConv(parent, new ConvolDescriptor(ks, st, p), name, dev) {}
+             const vector<int> &p, string name, int dev, int mem) : LConv(parent, new ConvolDescriptor(ks, st, p, mem), name, dev, mem) {}
 
 LConv::LConv(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
-int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev) : LConv(parent, new ConvolDescriptor(filters, kernel_size, strides, padding), name, dev) {
+int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) : LConv(parent, new ConvolDescriptor(filters, kernel_size, strides, padding, mem), name, dev, mem) {
     // TODO: Implement (Fix initialization)
 };
 
-LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev) : LinLayer(name, dev) {
+LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) : LinLayer(name, dev) {
     if (parent->output->ndim != 4) msg("LConv only works over 4D tensors", "LConv::LConv");
 
     // Check dev with tensor dev
@@ -38,23 +38,24 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev) : LinLaye
     if(name.empty()) this->name = "conv" + to_string(++total_layers);
 
     cd = D;
+    mem_level=mem;
 
     input = parent->output;
     cd->build(input);
 
     output = cd->O;
-    delta = cd->D;
-    cd->ID = parent->delta;
+    if (!mem_level) delta=cd->D;
+    if (parent->mem_level<2) cd->ID = parent->delta;
 
     params.push_back(cd->K);
     params.push_back(cd->bias);
 
     gradients.push_back(cd->gK);
     gradients.push_back(cd->gbias);
-	
-	distributed_training = false;
-	cd->acc_gK = nullptr;
-	cd->acc_gbias = nullptr;
+
+  	distributed_training = false;
+  	cd->acc_gK = nullptr;
+  	cd->acc_gbias = nullptr;
 
     parent->addchild(this);
     addparent(parent);
@@ -74,6 +75,13 @@ void LConv::forward() {
 
 void LConv::backward() {
 
+    if (parent[0]->mem_level)  {
+      parent[0]->mem_delta();
+      cd->ID=parent[0]->delta;
+    }
+
+    if (mem_level)  cd->D=delta;
+
     //get gradients with provided delta
     if (trainable) Conv2D_grad(this->cd);
 
@@ -81,6 +89,8 @@ void LConv::backward() {
     if (this->parent.size()) {
         Conv2D_back(this->cd);
     }
+
+    if (mem_level)  free_delta();
 
     // Regularizer
     if (trainable) if(reg!= nullptr) {reg->apply(cd->K);}
@@ -111,7 +121,7 @@ void LConv::apply_accumulated_gradients() {
 }
 
 Layer *LConv::share(int c, int bs, vector<Layer *> p) {
-    LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad, "share_" + to_string(c) + name, dev);
+    LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad, "share_" + to_string(c) + name, dev,mem_level);
     n->orig = this;
 
     //share params
@@ -141,11 +151,12 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LConv::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad, "clone_" + to_string(todev) + name, todev);
+    LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad, "clone_" + to_string(todev) + name, todev, mem_level);
     n->orig = this;
 
     n->reg=reg;
     n->init=init;
+
 
     return n;
 }

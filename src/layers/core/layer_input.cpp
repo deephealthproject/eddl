@@ -19,9 +19,10 @@ using namespace std;
 
 int LInput::total_layers = 0;
 
-LInput::LInput(Tensor *in, string name, int dev) : LinLayer(name, dev) {
+LInput::LInput(Tensor *in, string name, int dev, int mem) : LinLayer(name, dev) {
     if(name.empty()) this->name = "input" + to_string(++total_layers);
     input = output = in;
+    mem_level=0;
     delta = new Tensor(input->getShape(), dev);
 }
 
@@ -72,7 +73,7 @@ Layer *LInput::clone(int c, int bs, vector<Layer *> p, int todev) {
     vector<int> shape = input->getShape();
     shape[0] = bs;
 
-    LInput *n = new LInput(new Tensor(shape, todev), "clone_" + to_string(todev) + name, todev);
+    LInput *n = new LInput(new Tensor(shape, todev), "clone_" + to_string(todev) + name, todev, mem_level);
     n->orig = this;
 
     return n;

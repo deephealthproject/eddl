@@ -53,7 +53,7 @@ int main(int argc, char **argv){
   l=GlobalMaxPool(l);
 
 
-  l=Reshape(l,{-1});
+  l=Flatten(l);
 
   l=Activation(Dense(l,128),"relu");
 
@@ -68,8 +68,8 @@ int main(int argc, char **argv){
     sgd(0.01, 0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    CS_CPU() // CPU with maximum threads availables
-    //CS_GPU({1}) // GPU with only one gpu
+    //CS_CPU() // CPU with maximum threads availables
+    CS_GPU({1}) // GPU with only one gpu
   );
 
   // plot the model

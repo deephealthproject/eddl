@@ -20,10 +20,11 @@ using namespace std;
 
 int LTranspose::total_layers = 0;
 
-LTranspose::LTranspose(Layer *parent, vector<int> dims, string name, int dev) : LinLayer(name, dev) {
+LTranspose::LTranspose(Layer *parent, vector<int> dims, string name, int dev, int mem) : LinLayer(name, dev) {
     if(name.empty()) this->name = "transpose" + to_string(++total_layers);
     this->dims = dims;
-
+    mem_level=mem;
+    
     input=parent->output;
     output=new Tensor(input->getShape(),dev);
     delta=new Tensor(input->getShape(),dev);

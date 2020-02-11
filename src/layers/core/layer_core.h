@@ -64,7 +64,7 @@ class LInput : public LinLayer {
 public:
     static int total_layers;
 
-    LInput(Tensor *in, string name, int dev);
+    LInput(Tensor *in, string name, int dev,int mem=0);
     ~LInput() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
@@ -88,7 +88,7 @@ public:
     int output_dim;
     static int total_layers;
 
-    LEmbedding(int input_dim, int output_dim, string name, int dev);
+    LEmbedding(int input_dim, int output_dim, string name, int dev,int mem=0);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -112,7 +112,7 @@ public:
     bool use_bias;  // TODO: Implement
 	bool distributed_training;
 
-    LDense(Layer *parent, int ndim, bool use_bias, string name, int dev);
+    LDense(Layer *parent, int ndim, bool use_bias, string name, int dev,int mem=0);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -158,7 +158,7 @@ public:
     static int total_layers;
     float param;
 
-    LActivation(Layer *parent, string act, string name, int dev,float param=0.01);
+    LActivation(Layer *parent, string act, string name, int dev,float param=0.01,int mem=0);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -184,7 +184,7 @@ public:
     vector<int> ls;
 
     // constructors and clones
-    LReshape(Layer *parent, vector<int> shape, string name, int dev);
+    LReshape(Layer *parent, vector<int> shape, string name, int dev,int mem=0);
     ~LReshape() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
@@ -210,7 +210,7 @@ public:
     vector<int> rdims;
 
     // constructors and clones
-    LTranspose(Layer *parent, vector<int> dims, string name, int dev);
+    LTranspose(Layer *parent, vector<int> dims, string name, int dev,int mem=0);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -233,7 +233,7 @@ public:
     static int total_layers;
 
     // constructors and clones
-    LDropout(Layer *parent, float df, string name, int dev);
+    LDropout(Layer *parent, float df, string name, int dev,int mem=0);
     ~LDropout() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;

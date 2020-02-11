@@ -40,6 +40,7 @@ void gpu_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
+void gpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative);
 
 void gpu_copy_to_gpu(float *nptr,Tensor *B);
 void gpu_copy_from_gpu(Tensor *A,float *nptr);
@@ -81,7 +82,7 @@ void gpu_rand_binary(Tensor *A, float v);
 void gpu_rand_normal(Tensor *A, float m, float s);
 
 // GPU: Math (in-place)
-void gpu_inv_(Tensor *A);
+void gpu_inv_(Tensor *A, float v);
 void gpu_abs_(Tensor *A);
 void gpu_acos_(Tensor *A);
 void gpu_add_(Tensor *A, float v);

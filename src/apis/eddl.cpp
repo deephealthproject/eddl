@@ -12,6 +12,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
+#include <stdexcept>
 
 #include "eddl.h"
 
@@ -68,10 +69,43 @@ namespace eddl {
     }
 
     // Computing services
+
+    // GPU
+    void toGPU(model net)
+    {
+      net->toGPU({1},1,0);
+    }
+    void toGPU(model net, vector<int> g)
+    {
+      net->toGPU(g,1,0);
+    }
     void toGPU(model net, vector<int> g,int lsb)
     {
-        net->toGPU(g,lsb);
+      net->toGPU(g,lsb,0);
     }
+    void toGPU(model net, vector<int> g,string mem)
+    {
+      if (mem=="low_mem") net->toGPU(g,1,2);
+      else if (mem=="mid_mem") net->toGPU(g,1,1);
+      else if (mem=="full_mem") net->toGPU(g,1,0);
+      else msg("Error mem param","toGPU");
+    }
+    void toGPU(model net, string mem)
+    {
+      if (mem=="low_mem") net->toGPU({1},1,2);
+      else if (mem=="mid_mem") net->toGPU({1},1,1);
+      else if (mem=="full_mem") net->toGPU({1},1,0);
+      else msg("Error mem param","toGPU");
+    }
+    void toGPU(model net, vector<int> g,int lsb,string mem)
+    {
+      if (mem=="low_mem") net->toGPU(g,lsb,2);
+      else if (mem=="mid_mem") net->toGPU(g,lsb,1);
+      else if (mem=="full_mem") net->toGPU(g,lsb,0);
+      else msg("Error mem param","toGPU");
+    }
+
+    // CPU
     void toCPU(model net, int t)
     {
         net->toCPU(t);
@@ -80,10 +114,32 @@ namespace eddl {
         return new CompServ(th, {}, {},0);
     }
 
-    compserv CS_GPU(const vector<int> &g,int lsb) {
-        return new CompServ(0, g, {},lsb);
+    // GPU
+    compserv CS_GPU(const vector<int> g,int lsb,string mem) {
+        if (mem=="low_mem") return new CompServ(0, g, {},lsb,2);
+        else if (mem=="mid_mem") return new CompServ(0, g, {},lsb,1);
+        else if (mem=="full_mem") return new CompServ(0, g, {},lsb,0);
+        else msg("Error mem param","CS_GPU");
+    }
+    compserv CS_GPU(const vector<int> g,string mem) {
+        if (mem=="low_mem") return new CompServ(0, g, {},1,2);
+        else if (mem=="mid_mem") return new CompServ(0, g, {},1,1);
+        else if (mem=="full_mem") return new CompServ(0, g, {},1,0);
+        else msg("Error mem param","CS_GPU");
+    }
+    compserv CS_GPU(const vector<int> g,int lsb) {
+       return new CompServ(0, g, {},lsb,0);
+    }
+    compserv CS_GPU(const vector<int> g) {
+       return new CompServ(0, g, {},1,0);
+    }
+  
+    compserv CS_GPU() {
+       return new CompServ(0, {1}, {},1,0);
     }
 
+
+    //fpga
     compserv CS_FGPA(const vector<int> &f,int lsb) {
         return new CompServ(0, {}, f,lsb);
     }
@@ -317,8 +373,7 @@ namespace eddl {
             return new MMeanRelativeError();
         }
         else {
-            cout<<"Not supported metric: "<<type<<"\n";
-            exit(1);
+            throw std::invalid_argument("unsupported metric: " + type);
         }
         return nullptr;
     }
@@ -355,32 +410,48 @@ namespace eddl {
     layer Activation(layer parent, string activation, float param, string name) {
         return new LActivation(parent, activation, name, DEV_CPU,param);
     }
-    layer Softmax(layer parent)
-    {
+
+    layer Softmax(layer parent){
         return new LActivation(parent,"softmax","",DEV_CPU);
     }
-    layer Sigmoid(layer parent)
-    {
+
+    layer Sigmoid(layer parent){
         return new LActivation(parent,"sigmoid","",DEV_CPU);
     }
-    layer ReLu(layer parent)
-    {
+
+    layer ReLu(layer parent){
         return new LActivation(parent,"relu","",DEV_CPU);
     }
-    layer LReLu(layer parent,float param)
-    {
-        return new LActivation(parent,"lrelu","",DEV_CPU,param);
+
+    layer LeakyReLu(layer parent, float param){
+        return new LActivation(parent,"leaky_relu","",DEV_CPU,param);
     }
-    layer ELu(layer parent,float param)
-    {
+
+    layer Elu(layer parent,float param){
         return new LActivation(parent,"elu","",DEV_CPU,param);
     }
-    layer Tanh(layer parent)
-    {
+
+    layer Selu(layer parent){
+        return new LActivation(parent,"selu","",DEV_CPU);
+    }
+
+    layer Exponential(layer parent){
+        return new LActivation(parent,"exp","",DEV_CPU);
+    }
+
+    layer Softplus(layer parent){
+        return new LActivation(parent,"softplus","",DEV_CPU);
+    }
+
+    layer Softsign(layer parent){
+        return new LActivation(parent,"softsign","",DEV_CPU);
+    }
+
+    layer Tanh(layer parent){
         return new LActivation(parent,"tanh","",DEV_CPU);
     }
-    layer Linear(layer parent,float param)
-    {
+
+    layer Linear(layer parent,float param){
         return new LActivation(parent,"linear","",DEV_CPU,param);
     }
 
@@ -427,6 +498,10 @@ namespace eddl {
         tshape s = vector<int>(shape.begin(), shape.end());
         s.insert(s.begin(), 1);
         return new LReshape(parent, s, name, DEV_CPU);
+    }
+
+    layer Flatten(layer parent, string name){
+        return Reshape(parent, {-1}, name);
     }
 
     layer Transpose(layer parent, string name) {
@@ -543,8 +618,8 @@ namespace eddl {
         return new LAverage(layers, name, DEV_CPU);
     }
 
-    layer Concat(const vector<layer> &layers, string name) {
-        return new LConcat(layers, name, DEV_CPU);
+    layer Concat(const vector<layer> &layers, unsigned int axis, string name) {
+        return new LConcat(layers, axis, name, DEV_CPU);
     }
 
     layer MatMul(const vector<layer> &layers, string name) {
@@ -721,7 +796,6 @@ namespace eddl {
     // Pooling Layers
     layer AveragePool(layer parent, const vector<int> &pool_size, const vector<int> &strides, string padding,
                       string name) {
-        //TODO: Implement
         return new LAveragePool(parent, pool_size, strides, padding, name, DEV_CPU);
     }
     layer GlobalAveragePool(layer parent, string name) {
@@ -770,8 +844,7 @@ namespace eddl {
                 out.push_back(net->layers[i]);
 
         if (out.size()==0) {
-            cout<<"Forwar over net "<<net->name<<"without outputs\n";
-            exit(1);
+            throw std::runtime_error("forward over net " + net->name + " without outputs");
         }
 
 
@@ -878,28 +951,24 @@ namespace eddl {
         if ((!exist(trX)) || (!exist(trY)) || (!exist(tsX)) || (!exist(tsY))) {
             cmd = "wget https://www.dropbox.com/s/khrb3th2z6owd9t/trX.bin";
             int status = system(cmd.c_str());
-            if (status < 0) {
+            if (status != 0) {
                 msg("wget must be installed", "eddl.download_mnist");
-                exit(1);
             }
 
             cmd = "wget https://www.dropbox.com/s/m82hmmrg46kcugp/trY.bin";
             status = system(cmd.c_str());
-            if (status < 0) {
+            if (status != 0) {
                 msg("wget must be installed", "eddl.download_mnist");
-                exit(1);
             }
             cmd = "wget https://www.dropbox.com/s/7psutd4m4wna2d5/tsX.bin";
             status = system(cmd.c_str());
-            if (status < 0) {
+            if (status != 0) {
                 msg("wget must be installed", "eddl.download_mnist");
-                exit(1);
             }
             cmd = "wget https://www.dropbox.com/s/q0tnbjvaenb4tjs/tsY.bin";
             status = system(cmd.c_str());
-            if (status < 0) {
+            if (status != 0) {
                 msg("wget must be installed", "eddl.download_mnist");
-                exit(1);
             }
         }
     }
@@ -916,28 +985,24 @@ namespace eddl {
         if ((!exist(trX)) || (!exist(trY)) || (!exist(tsX)) || (!exist(tsY))) {
             cmd = "wget https://www.dropbox.com/s/wap282xox5ew02d/cifar_trX.bin";
             int status = system(cmd.c_str());
-            if (status < 0) {
+            if (status != 0) {
                 msg("wget must be installed", "eddl.download_cifar10");
-                exit(1);
             }
 
             cmd = "wget https://www.dropbox.com/s/yxhw99cu1ktiwxq/cifar_trY.bin";
             status = system(cmd.c_str());
-            if (status < 0) {
+            if (status != 0) {
                 msg("wget must be installed", "eddl.download_cifar10");
-                exit(1);
             }
             cmd = "wget https://www.dropbox.com/s/dh9vqxe9vt7scrp/cifar_tsX.bin";
             status = system(cmd.c_str());
-            if (status < 0) {
+            if (status != 0) {
                 msg("wget must be installed", "eddl.download_cifar10");
-                exit(1);
             }
             cmd = "wget https://www.dropbox.com/s/gdmsve6mbu82ndp/cifar_tsY.bin";
             status = system(cmd.c_str());
-            if (status < 0) {
+            if (status != 0) {
                 msg("wget must be installed", "eddl.download_cifar10");
-                exit(1);
             }
 
         }
@@ -952,16 +1017,14 @@ namespace eddl {
         if ((!exist(trX)) || (!exist(trY)) ) {
             cmd = "wget https://www.dropbox.com/s/sbd8eu32adcf5oi/drive_x.npy";
             int status = system(cmd.c_str());
-            if (status < 0) {
+            if (status != 0) {
                 msg("wget must be installed", "eddl.download_drive");
-                exit(1);
             }
 
             cmd = "wget https://www.dropbox.com/s/qp0j8oiqzf6tc1a/drive_y.npy";
             status = system(cmd.c_str());
-            if (status < 0) {
+            if (status != 0) {
                 msg("wget must be installed", "eddl.download_drive");
-                exit(1);
             }
         }
     }

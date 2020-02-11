@@ -63,6 +63,7 @@ void LAverage::forward() {
     for (int i = 0; i < parent.size(); ++i)
         Tensor::inc(parent[i]->output, output);
 
+
 }
 
 void LAverage::backward() {

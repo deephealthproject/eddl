@@ -45,9 +45,9 @@ int main(int argc, char **argv) {
     layer gin=GaussGenerator(0.0, 1, {25});
     layer l=gin;
 
-    l=LReLu(Dense(l,256));
-    l=LReLu(Dense(l,512));
-    l=LReLu(Dense(l,1024));
+    l=LeakyReLu(Dense(l,256));
+    l=LeakyReLu(Dense(l,512));
+    l=LeakyReLu(Dense(l,1024));
 
     layer gout=Tanh(Dense(l,784));
 
@@ -61,9 +61,9 @@ int main(int argc, char **argv) {
     // Define Discriminator
     layer din=Input({784});
     l = din;
-    l = LReLu(Dense(l, 1024));
-    l = LReLu(Dense(l, 512));
-    l = LReLu(Dense(l, 256));
+    l = LeakyReLu(Dense(l, 1024));
+    l = LeakyReLu(Dense(l, 512));
+    l = LeakyReLu(Dense(l, 256));
 
     layer dout = Sigmoid(Dense(l, 1));
 

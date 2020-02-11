@@ -22,7 +22,7 @@ void MPool2D(PoolDescriptor *D) {
     //// MPool2D
     //// Dimensions must be compatible
     //// A is input 4D Tensor, Batch x Channels x Rows x Cols
-    //// D is a ConvolDescriptor
+    //// D is a PoolDescriptor
     /////////////////////////////////////////////////////////////////////
     if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::MPool2D");
 
@@ -49,7 +49,7 @@ void MPool2D_back(PoolDescriptor *D) {
     //// MPool2D
     //// Dimensions must be compatible
     //// A is input 4D Tensor, Batch x Channels x Rows x Cols
-    //// D is a ConvolDescriptor
+    //// D is a PoolDescriptor
     /////////////////////////////////////////////////////////////////////
     if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::MPool2D_back");
 
@@ -61,6 +61,62 @@ void MPool2D_back(PoolDescriptor *D) {
     else if (D->I->isGPU())
       {
         gpu_mpool2D_back(D);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+    D->ID->tsem->unlock();
+}
+
+
+
+void AvgPool2D(PoolDescriptor *D) {
+    /////////////////////////////////////////////////////////////////////
+    //// AvgPool2D
+    //// Dimensions must be compatible
+    //// A is input 4D Tensor, Batch x Channels x Rows x Cols
+    //// D is a PoolDescriptor
+    /////////////////////////////////////////////////////////////////////
+    if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::AvgPool2D");
+
+    D->O->tsem->lock();
+    if (D->I->isCPU()) {
+        cpu_avgpool2D(D);
+    }
+#ifdef cGPU
+    else if (D->I->isGPU())
+      {
+        gpu_avgpool2D(D);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+    D->O->tsem->unlock();
+}
+
+void AvgPool2D_back(PoolDescriptor *D) {
+    /////////////////////////////////////////////////////////////////////
+    //// AvgPool2D_back
+    //// Dimensions must be compatible
+    //// A is input 4D Tensor, Batch x Channels x Rows x Cols
+    //// D is a PoolDescriptor
+    /////////////////////////////////////////////////////////////////////
+    if ((D->I->ndim != 4)) msg("Tensors are not 4D", "Tensor::AvgPool2D_back");
+
+    D->ID->tsem->lock();
+    if (D->I->isCPU()) {
+        cpu_avgpool2D_back(D);
+    }
+#ifdef cGPU
+    else if (D->I->isGPU())
+      {
+        gpu_avgpool2D_back(D);
       }
 #endif
 #ifdef cFPGA

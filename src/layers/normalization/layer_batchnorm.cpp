@@ -21,9 +21,10 @@ using namespace std;
 int LBatchNorm::total_layers = 0;
 
 
-LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev) : LinLayer(name, dev) {
+LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem) : LinLayer(name, dev) {
 
     input=parent->output;
+    mem_level=mem;
 
     if (input->ndim == 2) {axis.push_back(0);shape.push_back(input->shape[1]);}
     else if (input->ndim == 4) {axis.push_back(0);axis.push_back(2);axis.push_back(3);shape.push_back(input->shape[1]);}
@@ -40,7 +41,7 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
     this->affine = affine;
 
     output=new Tensor(input->getShape(),dev);
-    delta=new Tensor(input->getShape(),dev);
+    if (!mem_level) delta=new Tensor(input->getShape(),dev);
 
     bn_mean=new Tensor(shape,dev);
     bn_var=new Tensor(shape,dev);
@@ -66,7 +67,7 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 void LBatchNorm::resize(int batch){
   if (batch!=output->shape[0]) {
     output->resize(batch);
-    delta->resize(batch);
+    if (!mem_level) delta->resize(batch);
     if (target!=nullptr) target->resize(batch);
     delete MD;
     MD=new MapReduceDescriptor(input,axis);
@@ -110,7 +111,9 @@ void LBatchNorm::forward() {
 
 void LBatchNorm::backward()
 {
+  if (parent[0]->mem_level)  parent[0]->mem_delta();
   BN_backward(input,delta, parent[0]->delta,MD,bn_mean,bn_var,mean,variance,epsilon);
+  if (mem_level)  free_delta();
 
 }
 
@@ -126,7 +129,7 @@ Layer *LBatchNorm::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LBatchNorm::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LBatchNorm *n = new LBatchNorm(p[0], momentum, epsilon, affine, "clone_" + to_string(todev) + name, todev);
+    LBatchNorm *n = new LBatchNorm(p[0], momentum, epsilon, affine, "clone_" + to_string(todev) + name, todev,mem_level);
     n->orig = this;
 
     // TODO: Implement

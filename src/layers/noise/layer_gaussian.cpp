@@ -19,14 +19,15 @@ using namespace std;
 
 int LGaussianNoise::total_layers = 0;
 
-LGaussianNoise::LGaussianNoise(Layer *parent, float stdev, string name, int dev) : LinLayer(name, dev) {
+LGaussianNoise::LGaussianNoise(Layer *parent, float stdev, string name, int dev,int mem) : LinLayer(name, dev) {
     if(name.empty()) this->name = "gaussiannoise" + to_string(++total_layers);
     this->stdev = stdev;
+    mem_level=mem;
 
     // TODO: Implement
     input = parent->output;
     output = new Tensor(input->getShape(), dev);
-    delta = parent->delta;
+    if (!mem_level) delta = parent->delta;
     noise = new Tensor(input->getShape(), dev);
 
     parent->addchild(this);
@@ -56,6 +57,10 @@ void LGaussianNoise::forward() {
   } else {
       Tensor::copy(input, output);
   }
+  if (parent[0]->mem_level)  {
+    parent[0]->mem_delta();
+    delta=parent[0]->delta;
+  }
 }
 
 void LGaussianNoise::backward() {
@@ -71,7 +76,7 @@ Layer *LGaussianNoise::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LGaussianNoise::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LGaussianNoise *n = new LGaussianNoise(p[0], stdev, "clone_" + to_string(todev) + name, todev);
+    LGaussianNoise *n = new LGaussianNoise(p[0], stdev, "clone_" + to_string(todev) + name, todev, mem_level);
     n->orig = this;
 
     return n;

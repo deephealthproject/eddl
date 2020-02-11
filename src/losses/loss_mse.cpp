@@ -29,12 +29,12 @@ float LMeanSquaredError::value(Tensor *T, Tensor *Y) {
     float f;
     // batch error: add((T-Y)^2)
     Tensor *aux1;
-    //int size=T->size/T->shape[0];
+    int size=T->size/T->shape[0];  // batch is divided in print_loss
 
     aux1 = new Tensor(T->getShape(), T->device);
     Tensor::add(1.0, T, -1.0, Y, aux1, 0);
     Tensor::el_mult(aux1, aux1, aux1, 0);
-    f = aux1->sum()/T->shape[0];
+    f = aux1->sum()/size;
 
     delete aux1;
 

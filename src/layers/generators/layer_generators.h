@@ -46,13 +46,11 @@ public:
     float mean;
     float stdev;
 
-    LGauss(float mean, float stdev, vector<int> size, string name, int dev);
+    LGauss(float mean, float stdev, vector<int> size, string name, int dev, int mem=0);
 
     void forward() override;
 
     void backward() override;
-
-    void resize(int b) override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

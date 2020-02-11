@@ -293,6 +293,146 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
     B->tsem->unlock();
 }
 
+Tensor* Tensor::concat(const vector<Tensor*> t, unsigned int axis, Tensor* output){
+    // Check number of vectors to concat
+    if(t.size()<2){
+        msg("Concat requires a minimum of two tensors", "Tensor::concat");
+    }
+
+    // Temp variables
+    vector<int> new_shape = t[0]->shape;
+    int new_axis = 0;
+
+    // Walk through each tensor to check for compatibility issues (from 1 to n)
+    for(int i=1; i<t.size(); i++){
+
+        // Check device
+        if(t[0]->device != t[i]->device){
+            msg("All tensors must be on the same device", "Tensor::concat");
+        }
+
+        // Check dimensions
+        if(t[0]->ndim != t[i]->ndim){
+            msg("The number of dimensions of all tensors must match (" +
+                to_string(t[0]->ndim) +  "!=" + to_string(t[i]->ndim) + ")", "Tensor::concat");
+        }
+
+
+        // Check that all dimensions match except the one to concat
+        for(int j=0; j<t[0]->shape.size(); j++) {
+
+            // Check current dimension
+            if (j!=axis && t[0]->shape[j] != t[i]->shape[j]) {
+                msg("The dimensions across of all tensors must match (" +
+                    to_string(t[0]->shape[j]) +  "!=" + to_string(t[i]->shape[j]) + ")", "Tensor::concat");
+            }
+        }
+
+        // Sum dimension
+        new_axis += t[i]->shape[axis];
+    }
+
+    // Update final shape
+    new_shape[axis] +=  new_axis; // new_shape[axis] had the shape of the first tensor
+
+    // Create new tensor
+    if(output==nullptr){
+        output = new Tensor(new_shape, t[0]->device);
+    }else{
+        // Check dimensions
+        if(output->shape!=new_shape){
+            msg("The dimension of the output tensor is incorrect", "Tensor::concat");
+        }else if(output->device != t[0]->device){
+            msg("The output tensor and the input ones must be on the same device", "Tensor::concat");
+        }
+    }
+
+    if (output->isCPU()) {
+        cpu_concat(output, t, axis, false);
+    }
+#ifdef cGPU
+    else if (output->isGPU())
+      {
+        gpu_concat(output, t, axis, false);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+    return output;
+}
+
+void Tensor::concat_back(Tensor *A, const vector<Tensor*> t, unsigned int axis){
+    // Check number of vectors to concat
+    if(t.size()<2){
+        msg("Concat back requires a minimum of two tensors", "Tensor::concat_back");
+    }
+
+    // Temp variables
+    vector<int> new_shape = t[0]->shape;
+    int new_axis = 0;
+
+    // Walk through each tensor to check for compatibility issues (from 1 to n)
+    for(int i=1; i<t.size(); i++){
+
+        // Check device
+        if(t[0]->device != t[i]->device){
+            msg("All tensors must be on the same device", "Tensor::concat_back");
+        }
+
+        // Check dimensions
+        if(t[0]->ndim != t[i]->ndim){
+            msg("The number of dimensions of all tensors must match (" +
+                to_string(t[0]->ndim) +  "!=" + to_string(t[i]->ndim) + ")", "Tensor::concat_back");
+        }
+
+
+        // Check that all dimensions match except the one to concat
+        for(int j=0; j<t[0]->shape.size(); j++) {
+
+            // Check current dimension
+            if (j!=axis && t[0]->shape[j] != t[i]->shape[j]) {
+                msg("The dimensions across of all tensors must match (" +
+                    to_string(t[0]->shape[j]) +  "!=" + to_string(t[i]->shape[j]) + ")", "Tensor::concat_back");
+            }
+        }
+
+        // Sum dimension
+        new_axis += t[i]->shape[axis];
+    }
+
+    // Check input shape
+    new_shape[axis] +=  new_axis;
+    if(new_shape!=A->shape){
+        msg("Mismatched shape between output tensor and input tensors", "Tensor::concat_back");
+    }
+
+    // Check device (again)
+    if(A->device != t[0]->device){
+        msg("All tensors must be on the same device", "Tensor::concat_back");
+    }
+
+    // Perform operations
+    if (A->isCPU()) {
+        cpu_concat(A, t, axis, true);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+        gpu_concat(A, t, axis, true);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+
 Tensor* Tensor::select(const vector<string>& indices){
     Tensor* t = nullptr;
 

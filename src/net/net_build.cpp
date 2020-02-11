@@ -129,8 +129,8 @@ void Net::toCPU(int t){
       }
     }
 }
-void Net::toGPU(vector<int> &g,int lsb){
-    CompServ *cs=new CompServ(0, g, {},lsb);
+void Net::toGPU(vector<int> g,int lsb,int mem){
+    CompServ *cs=new CompServ(0, g, {},lsb,mem);
 
     for (int i = 0; i < snets.size(); i++) {
       Xs[i].clear();
@@ -195,7 +195,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
 
     for(int i=0;i<layers.size();i++)
       layers[i]->set_trainable(true);
-      
+
     // set optimizer
     optimizer = opt;
     optimizer->setlayers(layers);
@@ -222,6 +222,10 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
 void Net::set_compserv(CompServ *cs){
     int todev;
     this->cs=cs;
+
+    mem_level=cs->mem_level;
+    for(int i=0;i<layers.size();i++)
+      layers[i]->setmem_level(mem_level);
 
     if (cs->type == "local") {
 
@@ -317,10 +321,11 @@ void Net::split(int c, int todev) {
         }
 
         // special layers that are not input of net but has not parents
+        // for instance noise generators in GANs
         for (j = 0; j < layers.size(); j++)
-          if ((layers[j]->lin==0)&&(!isIn(layers[j],lin,ind)))
+          if ((layers[j]->lin==0)&&(!isIn(layers[j],lin,ind))) {
             nlayers.push_back(layers[j]->clone(c, bs, par, todev + devsel[i]));
-
+          }
 
         // rest of layers
         for (k = 0; k < layers.size(); k++) {
