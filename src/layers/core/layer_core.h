@@ -50,8 +50,6 @@ public:
 
     void backward() override {}
 
-    void resize(int batch) override;
-
     string plot(int c) override { return ""; }
 
     LTensor operator+(LTensor L);
@@ -95,8 +93,6 @@ public:
     void forward() override;
 
     void backward() override;
-
-    void resize(int batch) override;
 
     string plot(int c) override;
 
@@ -212,13 +208,10 @@ public:
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-//
-//
-//    // implementation
+
     void forward() override;
-//
+
     void backward() override;
-    void resize(int batch) override;
 
     string plot(int c) override;
 

@@ -27,17 +27,12 @@ LUpSampling::LUpSampling(Layer *parent, const vector<int> &size, string interpol
 
     input = parent->output;
     output = new Tensor(vector<int>{input->shape[0], input->shape[1], input->shape[2]*size[0], input->shape[3]*size[1]}, dev);
-    delta = new Tensor(output->shape, dev);
+//    delta = new Tensor(output->shape, dev);
 
     parent->addchild(this);
     addparent(parent);
 }
 
-
-
-void LUpSampling::resize(int batch){
-    Layer::resize(batch);
-}
 
 void LUpSampling::forward() {
     //Repeats the rows and columns of the data by size[0] and size[1] respectively.

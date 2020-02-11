@@ -31,7 +31,7 @@ LGauss::LGauss(float mean, float stdev, vector<int> size, string name, int dev, 
     size.insert(size.begin(),1);
 
     input=output=new Tensor(size, dev);
-    delta=new Tensor(size, dev);
+//    delta=new Tensor(size, dev);
 }
 
 void LGauss::forward(){

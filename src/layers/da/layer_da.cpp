@@ -52,10 +52,3 @@ void LDataAugmentation::free_delta(){
         }
     }
 }
-
-//void LDataAugmentation::resize(int batch) {
-//    output->resize(batch);
-//    if (target!=nullptr) target->resize(batch);
-//
-//    // Ignore delta, as delta depends on another layer
-//}

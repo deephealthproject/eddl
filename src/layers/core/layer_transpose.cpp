@@ -32,10 +32,6 @@ LTranspose::LTranspose(Layer *parent, vector<int> dims, string name, int dev, in
     addparent(parent);
 }
 
-void LTranspose::resize(int batch){
-  Layer::resize(batch);
-}
-
 void LTranspose::forward() {
    Tensor::transpose(input, output,dims);
 }

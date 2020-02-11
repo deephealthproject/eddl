@@ -27,7 +27,7 @@ LDropout::LDropout(Layer *parent, float df, string name, int dev, int mem) : Lin
 
     input = parent->output;
     output = new Tensor(input->shape, dev);
-    if (!mem_level) { delta = new Tensor(input->shape, dev); }
+    //    delta = new Tensor(output->shape, dev);
 
     mask = new Tensor(input->shape, dev);
 

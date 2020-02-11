@@ -46,7 +46,6 @@ void LAveragePool::resize(int batch){
 
     pd->indX = new Tensor(pd->O->shape, dev);
     pd->indY = new Tensor(pd->O->shape, dev);
-
 }
 
 void LAveragePool::forward() {

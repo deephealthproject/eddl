@@ -27,6 +27,7 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev, int
 
     input = parent->output;
     output = new Tensor(vector<int>{input->shape[0], ndim}, dev);
+//    delta = new Tensor(output->shape, dev);
 
     W = new Tensor(vector<int>{input->shape[1], ndim}, dev);
     if (use_bias) bias = new Tensor(vector<int>{ndim}, dev);
@@ -91,7 +92,6 @@ void LDense::apply_accumulated_gradients() {
     // Regularizer
     if(reg != nullptr) { reg->apply(this->W); }
 }
-
 
 
 Layer *LDense::share(int c, int bs, vector<Layer *> p) {

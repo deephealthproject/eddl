@@ -98,10 +98,6 @@ LTensor::LTensor(Layer *l) : LinLayer("ltensor" + to_string(total_layers), l->de
     delta = l->delta;
 }
 
-void LTensor::resize(int batch){
-  Layer::resize(batch);
-}
-
 
 /// OP OVERLOAD
 LTensor LTensor::operator+(LTensor L) {

@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     model gen = Model({gin},{});
     optimizer gopt=adam(0.0001);
     compserv gcs = CS_CPU(-1, "low_mem");
-    build(gen,gopt, gcs); // CS_CPU by default
+    build(gen, gopt, gcs); // CS_CPU by default
     //toGPU(gen); // GPU {1} by default
 
 

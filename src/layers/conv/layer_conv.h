@@ -116,8 +116,6 @@ public:
 
     void backward() override;
 
-    void resize(int batch) override;
-
     string plot(int c) override;
 
 };
