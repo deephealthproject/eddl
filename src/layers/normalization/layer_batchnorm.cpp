@@ -39,7 +39,7 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
     this->affine = affine;
 
     output=new Tensor(input->getShape(),dev);
-    if (!mem_level) delta=new Tensor(input->getShape(),dev);
+//    if (!mem_level) delta=new Tensor(input->getShape(),dev);
 
     bn_mean=new Tensor(shape,dev);
     bn_var=new Tensor(shape,dev);
@@ -65,7 +65,7 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 void LBatchNorm::resize(int batch){
     if (batch!=output->shape[0]) {
         output->resize(batch);
-        if (!mem_level) delta->resize(batch);
+//        if (!mem_level) delta->resize(batch);
         if (target!=nullptr) target->resize(batch);
         delete MD;
         MD=new MapReduceDescriptor(input,axis);

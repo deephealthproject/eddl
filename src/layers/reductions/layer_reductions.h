@@ -83,6 +83,9 @@ public:
 
     void backward() override;
 
+    void mem_delta() override;
+    void free_delta() override;
+
     void resize(int b) override;
 
     void reset() override;

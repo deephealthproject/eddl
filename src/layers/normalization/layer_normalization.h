@@ -44,6 +44,9 @@ public:
 
     void backward() override;
 
+    void mem_delta() override;
+    void free_delta() override;
+
     void resize(int batch) override;
 
     void reset() override;
@@ -66,6 +69,9 @@ public:
     void forward() override;
 
     void backward() override;
+
+    void mem_delta() override;
+    void free_delta() override;
 
     void resize(int batch) override;
 
@@ -90,6 +96,9 @@ public:
     void forward() override;
 
     void backward() override;
+
+    void mem_delta() override;
+    void free_delta() override;
 
     void resize(int batch) override;
 

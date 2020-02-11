@@ -62,7 +62,7 @@ LGroupNorm::LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool
     this->affine = affine;
 
     output=new Tensor(input->getShape(),dev);
-    delta=new Tensor(input->getShape(),dev);
+//    delta=new Tensor(input->getShape(),dev);
 
     bn_mean=new Tensor(shape,dev);
     bn_var=new Tensor(shape,dev);
@@ -85,7 +85,7 @@ LGroupNorm::LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool
 void LGroupNorm::resize(int batch){
   if (batch!=output->shape[0]) {
     output->resize(batch);
-    delta->resize(batch);
+//    delta->resize(batch);
     if (target!=nullptr) target->resize(batch);
     delete MD;
 

@@ -26,7 +26,7 @@ LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev, in
 
     input=l->output;
     output=l->output;
-    delta=l->delta;
+//    delta=l->delta;
 
     this->axis=axis;
     this->keepdims=keepdims;
@@ -44,15 +44,52 @@ LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev, in
     // detach from the main graph
     detach(m1);
     detach(diff);
-    ////////////////////////////
 
     output=m2->output;
-    delta=m2->delta;
+//    delta=m2->delta;
 
     l->addchild(this);
     addparent(l);
 
 }
+
+
+void LRVar::mem_delta() {
+    if(this->delta == nullptr) {
+
+        // Reserve parent's delta AND assign it to this layer
+        if (parent[0]->mem_level) {
+            parent[0]->mem_delta();  // Reserve delta for parent
+
+            // Reserve delta for subops // TODO: Don't like it
+            for(auto &l : layers){
+                l->mem_delta(); // Reserve delta for m2
+            }
+            delta=layers[layers.size()-1]->delta; // [m1, diff, mult, m2]
+
+            if(this->verbosity_level >= 2){
+                std::cout << "Booked delta for: " + this->name << std::endl;
+            }
+        }
+    }
+}
+
+void LRVar::free_delta() {
+    // Not really needed, but I like to keep all the methods the same (ease the robustness of "copy-paste")
+    if(this->delta != nullptr) {
+
+        // Reserve delta for subops // TODO: Don't like it
+        for(auto &l : layers){
+            l->free_delta(); // Reserve delta for m2
+        }
+        delta= nullptr;
+
+        if(this->verbosity_level >= 2){
+            std::cout << "Deleted delta for: " + this->name << std::endl;
+        }
+    }
+}
+
 
 void LRVar::resize(int b)
 {
