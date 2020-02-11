@@ -70,7 +70,7 @@ LConcat::LConcat(vector<Layer *> parent, unsigned int axis, string name, int dev
 
     input = parent[0]->output;
     output = new Tensor(shape, dev);
-    if (!mem_level) { delta = new Tensor(output->shape, dev);  }  // NOT parent[0]->output
+//    if (!mem_level) { delta = new Tensor(output->shape, dev);  }  // NOT parent[0]->output
 
     // Create a descriptor for each layer address translation
     int temp = 0;

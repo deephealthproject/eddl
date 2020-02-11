@@ -37,7 +37,7 @@ LAbs::LAbs(Layer *l, string name, int dev, int mem) : OperatorLayer(name, dev, m
 
     mask=new Tensor(l->output->getShape(),dev);
     output=new Tensor(l->output->getShape(),dev);
-    delta=new Tensor(l->output->getShape(),dev);
+//    delta=new Tensor(l->output->getShape(),dev);
 
     l->addchild(this);
     addparent(l);

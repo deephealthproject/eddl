@@ -49,8 +49,8 @@ LRMean::LRMean(Layer *l, vector <int> axis, bool keepdims, string name, int dev,
     RD=new ReduceDescriptor(input,axis,"mean",keepdims);
 
     output=RD->O;
-    delta=RD->D;
-    RD->ID = l->delta;
+//    delta=RD->D;
+//    RD->ID = l->delta;
 
     l->addchild(this);
     addparent(l);

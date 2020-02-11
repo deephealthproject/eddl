@@ -304,8 +304,7 @@ void Net::backward(vector<Tensor *> target)
 }
 
 
-void Net::backward()
-{
+void Net::backward(){
 
   tr_batches++;
   run_snets(backward_t);

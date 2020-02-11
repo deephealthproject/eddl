@@ -29,8 +29,8 @@ LRMax::LRMax(Layer *l, vector<int> axis, bool keepdims, string name, int dev, in
     RD=new ReduceDescriptor(input,axis,"max",keepdims);
 
     output=RD->O;
-    delta=RD->D;
-    RD->ID = l->delta;
+//    delta=RD->D;
+//    RD->ID = l->delta;
 
     l->addchild(this);
     addparent(l);

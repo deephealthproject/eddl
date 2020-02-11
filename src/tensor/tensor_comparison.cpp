@@ -403,8 +403,9 @@ void Tensor::not_equal(Tensor *A, Tensor *B, Tensor *C){
 int Tensor::eqsize(Tensor *A, Tensor *B) {
     if (A->ndim != B->ndim) return 0;
 
-    for (int i = 0; i < A->ndim; i++)
+    for (int i = 0; i < A->ndim; i++){
         if (A->shape[i] != B->shape[i]) return 0;
+    }
 
     return 1;
 }

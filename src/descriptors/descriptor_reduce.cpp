@@ -75,7 +75,7 @@ ReduceDescriptor::ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool
 
   I=A;
   O=new Tensor(os,dev);
-  D=new Tensor(os,dev);
+//  D=new Tensor(os,dev);
 
   if ((m==2)||(m==3))
    S=new Tensor(os,dev);
@@ -140,7 +140,7 @@ void ReduceDescriptor::resize(int b)
 
   if ((keepdims)||(i==axis.size())) {
     O->resize(b);
-    D->resize(b);
+//    D->resize(b);
     if ((m==2)||(m==3))
       S->resize(b);
   }

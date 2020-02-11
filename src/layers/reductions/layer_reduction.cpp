@@ -22,6 +22,26 @@ ReductionLayer::ReductionLayer(string name, int dev, int mem) : Layer(name, dev,
 }
 
 
+
+void ReductionLayer::mem_delta(){
+    if(this->delta == nullptr) {
+        // Reserve parent's delta
+        if (parent[0]->mem_level) {
+            parent[0]->mem_delta();
+            RD->ID = parent[0]->delta;
+
+            delta = Tensor::zeros(RD->O->shape, RD->O->device);
+            RD->D = delta;
+
+            if(this->verbosity_level >= 2) {
+                std::cout << "Booked delta for: " + this->name << std::endl;
+            }
+        }
+
+    }
+}
+
+
 void ReductionLayer::addchild(Layer *l) {
     child.push_back(l);
     lout++;

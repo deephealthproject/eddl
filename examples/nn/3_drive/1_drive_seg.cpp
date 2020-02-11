@@ -119,10 +119,12 @@ int main(int argc, char **argv){
   build(segnet,
     adam(0.00001), // Optimizer
     {"mse"}, // Losses
-    {"mse"} // Metrics
-  );
+    {"mse"}, // Metrics
+    CS_CPU(-1, "low_mem")
+    //CS_GPU({1}, "low_mem")
+    );
   // Train on multi-gpu with sync weights every 100 batches:
-  toGPU(segnet,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
+//  toGPU(segnet,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
   summary(segnet);
   plot(segnet,"segnet.pdf");
 

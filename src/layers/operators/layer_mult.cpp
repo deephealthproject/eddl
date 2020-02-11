@@ -26,7 +26,7 @@ LMult::LMult(Layer *l1, Layer *l2, string name, int dev, int mem) : OperatorLaye
     input=l1->output;
 
     output = new Tensor(l1->output->shape, dev);
-    if (!mem_level) { delta = new Tensor(l1->output->shape, dev);  }
+//    if (!mem_level) { delta = new Tensor(l1->output->shape, dev);  }
 
     l1->addchild(this);
     l2->addchild(this);
@@ -51,7 +51,7 @@ LMult::LMult(Layer *l, float k, string name, int dev, int mem) : OperatorLayer(n
 
     input=l->output;
     output = new Tensor(l->output->shape, dev);
-    if (!mem_level) { delta = new Tensor(l->output->shape, dev);  }
+//    if (!mem_level) { delta = new Tensor(l->output->shape, dev);  }
 
     l->addchild(this);
     addparent(l);

@@ -52,7 +52,7 @@ LSelect::LSelect(Layer *parent, vector<string> indices, bool hasBatch, string na
 
     // Set flow tensors
     output=new Tensor(sd->oshape, dev);
-    delta=new Tensor(sd->oshape, dev);
+//    delta=new Tensor(sd->oshape, dev);
 
     parent->addchild(this);
     addparent(parent);

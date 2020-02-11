@@ -36,6 +36,8 @@ public:
 
     ReductionLayer(string name, int dev, int mem);
 
+    void mem_delta() override;
+
     void addchild(Layer *l) override;
 
     void addparent(Layer *l) override;

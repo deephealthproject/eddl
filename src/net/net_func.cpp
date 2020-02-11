@@ -268,7 +268,12 @@ void copyTensor(Layer *l1,Layer *l2,string name){
         }
 
         if (name=="output") Tensor::copy(sl1->output,sl2->output);
-        else if (name=="grad") Tensor::copy(sl1->delta,sl2->delta);
+        else if (name=="grad") {
+            // TODO: REVIEW
+            sl1->mem_delta();
+            sl2->mem_delta();
+            Tensor::copy(sl1->delta, sl2->delta);
+        }
     }
 
 }

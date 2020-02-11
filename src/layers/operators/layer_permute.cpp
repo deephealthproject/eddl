@@ -47,7 +47,7 @@ LPermute::LPermute(Layer *parent, vector<int> dims, string name, int dev, int me
 
     // Set flow tensors
     output=new Tensor(sd->oshape, dev);
-    delta=new Tensor(sd->oshape, dev);
+//    delta=new Tensor(sd->oshape, dev);
 
     parent->addchild(this);
     addparent(parent);

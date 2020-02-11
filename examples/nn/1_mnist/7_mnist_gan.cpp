@@ -52,6 +52,7 @@ int main(int argc, char **argv) {
     layer gout=Tanh(Dense(l,784));
 
     model gen = Model({gin},{});
+    gen->verbosity_level = 0;
     optimizer gopt=adam(0.0001);
     compserv gcs = CS_CPU(-1, "low_mem");
     build(gen, gopt, gcs); // CS_CPU by default
@@ -68,6 +69,7 @@ int main(int argc, char **argv) {
     layer dout = Sigmoid(Dense(l, 1));
 
     model disc = Model({din},{});
+    disc->verbosity_level = 0;
     optimizer dopt=adam(0.0001);
     compserv dcs = CS_CPU(-1, "low_mem");
     build(disc, dopt, dcs);
