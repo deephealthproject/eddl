@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
 
     layer out = Softmax(Dense(l, num_classes));
     model net = Model({in}, {out});
-    net->verbosity_level = 0;
+    net->verbosity_level = 2;
 
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
@@ -52,8 +52,8 @@ int main(int argc, char **argv) {
           rmsprop(0.01), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          //CS_GPU({1}, "low_mem") // one GPU
-          CS_CPU(-1, "low_mem") // CPU with maximum threads availables
+          CS_GPU({1}, "full_mem") // one GPU
+          //CS_CPU(-1, "full_mem") // CPU with maximum threads availables
     );
     //toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 

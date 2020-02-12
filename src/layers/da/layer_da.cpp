@@ -30,11 +30,11 @@ LDataAugmentation::~LDataAugmentation(){
 
 
 void LDataAugmentation::mem_delta(){
-    // Reserve parent's delta AND assign it to this layer
-    if (parent[0]->mem_level) {
+    if (this->delta == nullptr) {
+        // Reserve parent's delta AND assign it to this layer
         parent[0]->mem_delta();
 
-        delta=parent[0]->delta;
+        delta = parent[0]->delta;
 
         if(this->verbosity_level >= 2){
             std::cout << "Booked delta for: " + this->name << std::endl;

@@ -81,17 +81,15 @@ void LReshape::resize(int batch){
 
 
 void LReshape::mem_delta() {
-    if (delta == nullptr) { // For future use!
+    if (this->delta == nullptr) {
         // Reserve parent's delta AND assign it to this layer
-        if (parent[0]->mem_level) {
-            parent[0]->mem_delta();
+        parent[0]->mem_delta();
 
-            // Problem: Delta is always created, regardless of the low_mem
-            delta = new Tensor(ls, parent[0]->delta);
+        // Problem: Delta is always created, regardless of the low_mem
+        delta = new Tensor(ls, parent[0]->delta);
 
-            if(this->verbosity_level >= 2){
-                std::cout << "Booked delta for: " + this->name << std::endl;
-            }
+        if(this->verbosity_level >= 2){
+            std::cout << "Booked delta for: " + this->name << std::endl;
         }
     }
 }

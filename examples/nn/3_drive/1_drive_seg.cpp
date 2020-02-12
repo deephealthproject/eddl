@@ -121,7 +121,7 @@ int main(int argc, char **argv){
     {"mse"}, // Losses
     {"mse"}, // Metrics
     //CS_CPU(-1, "low_mem")
-    CS_GPU({1}, "low_mem")
+    CS_GPU({1}, "full_mem")
     );
   // Train on multi-gpu with sync weights every 100 batches:
 //  toGPU(segnet,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup

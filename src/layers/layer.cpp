@@ -73,7 +73,7 @@ void Layer::set_detach(){
 
 void Layer::mem_delta_parent(){
     for(auto &p : this->parent){
-        if(p->mem_level) { p->mem_delta(); }
+        p->mem_delta();
     }
 }
 

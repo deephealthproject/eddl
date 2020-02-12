@@ -58,18 +58,16 @@ void LRVar::mem_delta() {
     if(this->delta == nullptr) {
 
         // Reserve parent's delta AND assign it to this layer
-        if (parent[0]->mem_level) {
-            parent[0]->mem_delta();  // Reserve delta for parent
+        parent[0]->mem_delta();  // Reserve delta for parent
 
-            // Reserve delta for subops // TODO: Don't like it
-            for(auto &l : layers){
-                l->mem_delta(); // Reserve delta for m2
-            }
-            delta=layers[layers.size()-1]->delta; // [m1, diff, mult, m2]
+        // Reserve delta for subops // TODO: Don't like it
+        for(auto &l : layers){
+            l->mem_delta(); // Reserve delta for m2
+        }
+        delta=layers[layers.size()-1]->delta; // [m1, diff, mult, m2]
 
-            if(this->verbosity_level >= 2){
-                std::cout << "Booked delta for: " + this->name << std::endl;
-            }
+        if(this->verbosity_level >= 2){
+            std::cout << "Booked delta for: " + this->name << std::endl;
         }
     }
 }

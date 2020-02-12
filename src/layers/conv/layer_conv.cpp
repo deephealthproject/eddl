@@ -69,18 +69,15 @@ void LConv::resize(int batch){
 void LConv::mem_delta(){
     if(this->delta == nullptr) {
         // Reserve parent's delta
-        if (parent[0]->mem_level) {
-            parent[0]->mem_delta();
-            cd->ID = parent[0]->delta;
+        parent[0]->mem_delta();
+        cd->ID = parent[0]->delta;
 
-            delta = Tensor::zeros(cd->O->shape, cd->O->device);
-            cd->D = delta;
+        delta = Tensor::zeros(cd->O->shape, cd->O->device);
+        cd->D = delta;
 
-            if(this->verbosity_level >= 2) {
-                std::cout << "Booked delta for: " + this->name << std::endl;
-            }
+        if(this->verbosity_level >= 2) {
+            std::cout << "Booked delta for: " + this->name << std::endl;
         }
-
     }
 }
 

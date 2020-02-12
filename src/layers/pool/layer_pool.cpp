@@ -41,18 +41,15 @@ LPool::LPool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem) : 
 void LPool::mem_delta(){
     if(this->delta == nullptr) {
         // Reserve parent's delta
-        if (parent[0]->mem_level) {
-            parent[0]->mem_delta();
-            pd->ID = parent[0]->delta;
+        parent[0]->mem_delta();
+        pd->ID = parent[0]->delta;
 
-            delta = Tensor::zeros(pd->O->shape, pd->O->device);
-            pd->D = delta;
+        delta = Tensor::zeros(pd->O->shape, pd->O->device);
+        pd->D = delta;
 
-            if(this->verbosity_level >= 2) {
-                std::cout << "Booked delta for: " + this->name << std::endl;
-            }
+        if(this->verbosity_level >= 2) {
+            std::cout << "Booked delta for: " + this->name << std::endl;
         }
-
     }
 }
 
