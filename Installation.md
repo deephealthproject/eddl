@@ -2,6 +2,14 @@
 
 ## Installation
 
+### Download source code
+
+To get the source, download one of the release .tar.gz or .zip packages in the release page:
+
+```bash
+git clone https://github.com/deephealthproject/eddl.git
+```
+
 
 ### Prerequisites
 
@@ -65,16 +73,6 @@ brew install openblas lapack # BLAS + LAPACK
 brew install eigen
 # Install Google Tests: https://github.com/google/googletest
 ```
-
-
-### Download source code
-
-To get the source, download one of the release .tar.gz or .zip packages in the release page:
-
-```bash
-git clone https://github.com/deephealthproject/eddl.git
-```
-
 
 
 ## Compilation
