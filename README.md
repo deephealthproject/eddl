@@ -79,25 +79,34 @@ using namespace eddl;
 
 int main(int argc, char **argv) {
 
-    // Download dataset
+    // Download mnist
     download_mnist();
 
     // Settings
-    int epochs = 100;
-    int batch_size = 100;
+    int epochs = 25;
+    int batch_size = 128;
     int num_classes = 10;
 
     // Define network
     layer in = Input({784});
-    layer l = in;  // Aux var
+    layer l = in;  
 
-    l = BatchNormalization(Activation(L2(Dense(l, 1024),0.0001f), "relu"));
-    l = BatchNormalization(Activation(L2(Dense(l, 1024),0.0001f), "relu"));
-    l = BatchNormalization(Activation(L2(Dense(l, 1024),0.0001f), "relu"));
+    // Convert to 3D for Data Augmentation
+    l=Reshape(l,{1,28,28});
+    
+    // Data augmentation
+    l = RandomCropScale(l, {0.9f, 1.0f});
 
+    // Come back to 1D tensor for fully connected:
+    l=Reshape(l,{-1});
+    l = ReLu(GaussianNoise(BatchNormalization(Dense(l, 1024)),0.3));
+    l = ReLu(GaussianNoise(BatchNormalization(Dense(l, 1024)),0.3));
+    l = ReLu(GaussianNoise(BatchNormalization(Dense(l, 1024)),0.3));
+  
     layer out = Activation(Dense(l, num_classes), "softmax");
     model net = Model({in}, {out});
 
+    // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
     // Build model
@@ -105,11 +114,14 @@ int main(int argc, char **argv) {
           sgd(0.01, 0.9), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_CPU() // CPU with maximum threads availables
+          CS_GPU({1}) // one GPU
+          //CS_CPU(-1) // CPU with maximum threads availables
     );
 
     // View model
-    cout<<summary(net);
+    summary(net);
+
+    setlogfile(net,"mnist_bn_da");
 
     // Load dataset
     tensor x_train = eddlT::load("trX.bin");
@@ -123,13 +135,10 @@ int main(int argc, char **argv) {
 
 
     // Train model
-    for(int i=0;i<epochs;i++) {
-      fit(net, {x_train}, {y_train}, batch_size, 1);
-
-      // Evaluate test
-      std::cout << "Evaluate test:\n";
-      evaluate(net, {x_test}, {y_test});
-    }
+    fit(net, {x_train}, {y_train}, batch_size, epochs);
+    // Evaluate
+    printf("Evaluate:\n");
+    evaluate(net, {x_test}, {y_test});
 }
 
 ```
