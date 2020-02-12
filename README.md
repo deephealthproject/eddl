@@ -26,15 +26,7 @@ For more information about DeepHealth project go to: [deephealth-project.eu](htt
 
 
 ## Installation
-
-
-### Download source code
-
-To get the source, download one of the release .tar.gz or .zip packages in the release page:
-
-```bash
-git clone https://github.com/deephealthproject/eddl.git
-```
+===============
 
 
 ### Prerequisites
@@ -55,6 +47,23 @@ To build EDDL from source, the following tools are needed:
 - Google Benchmark
 
 These dependencies can be installed either manually or using a conda package manager (recommended).
+
+
+
+#### Anaconda package manager (recommended)
+
+The required libraries are easier to install if you use using a [anaconda package manager](https://docs.conda.io/en/latest/miniconda.html)). 
+Once conda is installed in your system, you can use the `environment.yml` file inside the `eddl/`folder to install the requirements.
+
+To create and activate the conda environment use the following commands:
+
+```bash
+conda env create -f environment.yml
+conda activate eddl
+```
+
+> Note:
+> If the conda environment misses some dependency, please write an issue and complete the installation manually
 
 
 #### Manual management of dependencies
@@ -84,23 +93,19 @@ brew install eigen
 ```
 
 
-#### Anaconda package manager
+### Download source code
 
-The required libraries are easier to install if you use using a [anaconda package manager](https://docs.conda.io/en/latest/miniconda.html)). 
-Once conda is installed in your system, you can use the `environment.yml` file inside the `eddl/`folder to install the requirements.
-
-To create and activate the conda environment use the following commands:
+To get the source, download one of the release .tar.gz or .zip packages in the release page:
 
 ```bash
-conda env create -f environment.yml
-conda activate eddl
+git clone https://github.com/deephealthproject/eddl.git
 ```
 
-> Note:
-> If the conda environment misses some dependency, please write an issue and complete the installation manually
 
 
-### Installation
+## Compilation
+===============
+
 
 To build and install the EDDL library from source, execute the following commands inside the `eddl/` folder:
 
@@ -241,6 +246,8 @@ docker run -it -v $(pwd):/eddl/ eddl /bin/bash
 
 
 ## Getting started
+===================
+
 
 ```C++
 #include <stdio.h>
