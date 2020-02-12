@@ -28,6 +28,14 @@ For more information about DeepHealth project go to: [deephealth-project.eu](htt
 ## Installation
 
 
+### Download source code
+
+To get the source, download one of the release .tar.gz or .zip packages in the release page:
+
+```bash
+git clone https://github.com/deephealthproject/eddl.git
+```
+
 ### Prerequisites
 
 To build EDDL from source, the following tools are needed:
@@ -89,15 +97,6 @@ brew install git graphviz wget zlib cmake  # Utilities
 brew install openblas lapack # BLAS + LAPACK
 brew install eigen
 # Install Google Tests: https://github.com/google/googletest
-```
-
-
-### Download source code
-
-To get the source, download one of the release .tar.gz or .zip packages in the release page:
-
-```bash
-git clone https://github.com/deephealthproject/eddl.git
 ```
 
 
