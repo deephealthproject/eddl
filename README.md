@@ -45,7 +45,7 @@ sudo make install
 
 
 
-**Or step by step:** [here](Installtion.md)
+**Or step by step:** [here](Installation.md)
 
 
 ## Getting started
