@@ -11,10 +11,10 @@ SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # USER OPTIONS *******************************
-set(BUILD_TARGET "CPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
+set(BUILD_TARGET "GPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
 option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_TESTS "Compile tests" OFF)
-option(BUILD_SHARED_LIB "Whether to build a static or dynamic library" OFF)
+option(BUILD_SHARED_LIB "Whether to build a static or dynamic library" ON)
 option(BUILD_HPC "Use aggressive flags that might break the code. Use it carefully." OFF)
 option(MKL "Use Intel MKL" OFF)
 
