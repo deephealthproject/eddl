@@ -47,9 +47,11 @@ sudo make install
 
 You will need a [docker engine](https://docs.docker.com/install/)
 
-To build the image, run the following command from the `eddl/` folder:
+To build the image, run the following commands:
 
 ```
+git clone https://github.com/deephealthproject/eddl.git
+cd eddl
 docker build -t eddl .
 ```
 
