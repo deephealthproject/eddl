@@ -26,7 +26,6 @@ For more information about DeepHealth project go to: [deephealth-project.eu](htt
 
 
 ## Installation
-===============
 
 
 ### Prerequisites
@@ -52,7 +51,7 @@ These dependencies can be installed either manually or using a conda package man
 
 #### Anaconda package manager (recommended)
 
-The required libraries are easier to install if you use using a [anaconda package manager](https://docs.conda.io/en/latest/miniconda.html)). 
+The required libraries are easier to install if you use using a [anaconda package manager](https://docs.conda.io/en/latest/miniconda.html)).
 Once conda is installed in your system, you can use the `environment.yml` file inside the `eddl/`folder to install the requirements.
 
 To create and activate the conda environment use the following commands:
@@ -83,12 +82,12 @@ sudo apt-get install libeigen3-dev  # Eigen3
 sudo apt-get install libgtest-dev  # Google tests
 ```
 
-Or, on MacOS install: 
+Or, on MacOS install:
 
 ```
 brew install git graphviz wget zlib cmake  # Utilities
 brew install openblas lapack # BLAS + LAPACK
-brew install eigen 
+brew install eigen
 # Install Google Tests: https://github.com/google/googletest
 ```
 
@@ -104,7 +103,6 @@ git clone https://github.com/deephealthproject/eddl.git
 
 
 ## Compilation
-===============
 
 
 To build and install the EDDL library from source, execute the following commands inside the `eddl/` folder:
@@ -133,7 +131,7 @@ By default the EDDL is build for CPU. If you have any problem and want to compil
 -DBUILD_TARGET=CPU
 ```
 
-**GPU (CUDA) support:** 
+**GPU (CUDA) support:**
 If you have CUDA installed, you can build EDDL with GPU support by adding `BUILD_TARGET=GPU` to your cmake options.
 
 ```bash
@@ -170,9 +168,9 @@ If CMake is unable to find Eigen3 automatically, try setting `Eigen3_DIR`, such 
 ```
 
 **Intel MKL:**
-EDDL can leverage Intel's MKL library to speed up computation on the CPU. 
+EDDL can leverage Intel's MKL library to speed up computation on the CPU.
 
-To use MKL, include the following cmake option: 
+To use MKL, include the following cmake option:
 
 ```bash
 -DMKL=TRUE
@@ -246,8 +244,8 @@ docker run -it -v $(pwd):/eddl/ eddl /bin/bash
 
 
 ## Getting started
-===================
 
+You can find examples in  `examples/`.
 
 ```C++
 #include <stdio.h>
@@ -314,7 +312,7 @@ int main(int argc, char **argv) {
 }
 ```
 
-You can find more examples in  `examples/`.
+
 
 
 ## Python wrapper
@@ -328,7 +326,7 @@ If you are not a C++ fan, try [PyEDDL](https://github.com/deephealthproject/pyed
     - **CPU**: This is probably because your processor does not support
     AVX instructions. Try to compile the source with the optimization flags: `OPT=2` or `OPT=3` (uppercase).
     - **GPU**: Make sure you are using the computing service: `CS_GPU`.
-- **Protobuf doesn't work/compilation error(temporal fix)**: 
+- **Protobuf doesn't work/compilation error(temporal fix)**:
     1) Make sure you have `protbuf` and `libprotobuf` installed
     2) Go to `src/serialization/onnx/` and delete these files: `onnx.pb.cc` and `onnx.pb.cc`.
     3) Rebuild them using `protoc --cpp_out=. onnx.proto` (you need to be at `src/serialization/onnx/`)
