@@ -27,6 +27,24 @@ For more information about DeepHealth project go to: [deephealth-project.eu](htt
 
 ## Installation
 
+**Try this:**
+
+You will need a [anaconda package manager](https://docs.conda.io/en/latest/miniconda.html)).
+
+```bash
+git clone https://github.com/deephealthproject/eddl.git
+cd eddl
+conda env create -f environment.yml
+conda activate eddl
+mkdir build
+cd build
+cmake .. -DBUILD_TARGET=CPU  # {CPU, GPU, FPGA}
+make -j 4  # num_cores
+sudo make install
+```
+
+
+**Or step by step:**
 
 ### Download source code
 
