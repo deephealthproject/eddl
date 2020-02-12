@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     model gen = Model({gin},{});
     gen->verbosity_level = 0;
     optimizer gopt=adam(0.0001);
-    compserv gcs = CS_GPU({1}, "full_mem");
+    compserv gcs = CS_GPU({1}, "low_mem");
     build(gen, gopt, gcs); // CS_CPU by default
     //toGPU(gen); // GPU {1} by default
 
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
     model disc = Model({din},{});
     disc->verbosity_level = 0;
     optimizer dopt=adam(0.0001);
-    compserv dcs = CS_GPU({1}, "full_mem");
+    compserv dcs = CS_GPU({1}, "low_mem");
     build(disc, dopt, dcs);
     //toGPU(disc); // GPU {1} by default
 

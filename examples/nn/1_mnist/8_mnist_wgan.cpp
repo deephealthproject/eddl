@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
 
     model gen = Model({gin},{});
     optimizer gopt=rmsprop(0.001);
-    compserv gcs = CS_CPU(-1, "low_mem");
+    compserv gcs = CS_GPU({1}, "low_mem");
 
     build(gen, gopt, gcs); // By defatul CS_CPU
 
@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
 
     model disc = Model({din},{});
     optimizer dopt=rmsprop(0.001);
-    compserv dcs = CS_CPU(-1, "low_mem");
+    compserv dcs = CS_GPU({1}, "low_mem");
     build(disc ,dopt, dcs); // By defatul CS_CPU
 
     //toGPU(disc); // move toGPU
@@ -166,11 +166,4 @@ int main(int argc, char **argv) {
 
     }
 
-
-
-
-
 }
-
-
-///////////

@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
           sgd(0.001, 0.9), // Optimizer
           {"mean_squared_error"}, // Losses
           {"mean_squared_error"}, // Metrics
-          CS_GPU({1}, "full_mem")
+          CS_GPU({1}, "low_mem")
           //CS_CPU(-1, "low_mem")
     );
 

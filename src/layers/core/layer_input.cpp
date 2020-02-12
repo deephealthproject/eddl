@@ -43,6 +43,13 @@ string LInput::plot(int c) {
     return s;
 }
 
+void LInput::free_delta(){
+  // DO NOT DELETE DELTA
+  // There will be problems with network concatenation
+  // [Input1]->[Net1]=>[Input2]->[Net2]->[Cost. func]
+  // "=>" is a copyTensor(delta2, delta1)
+  // If delta2 is deleted after the backward of Input2, there will be nothing to copy
+}
 
 void LInput::forward() {
 
