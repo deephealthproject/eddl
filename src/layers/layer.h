@@ -56,16 +56,13 @@ public:
     int lin, lout;
     int delta_bp;
     bool detached;
+    unsigned int verbosity_level = 0;
 
-    Layer(string name, int dev);
+    Layer(string name, int dev, int mem);
     // Destructor
     virtual ~Layer();
 
-
     void initialize();
-
-
-
 
     virtual void info();
 
@@ -80,15 +77,16 @@ public:
     Tensor* setBias(Tensor bias);
 
     void clamp(float min,float max);
-    void setdetach();
+    void set_detach();
 
-    void setmem_level(int mem);
-    void mem_delta();
-    void free_delta();
+    void set_mem_level(int mem);
+
+    virtual void mem_delta_parent();
+    virtual void mem_delta();
+    virtual void free_delta();
 
 
     //virtual
-
     virtual void copy(Layer *l2);
 
     virtual void resize(int batch);
@@ -133,7 +131,7 @@ public:
 class LinLayer : public Layer {
 public:
 
-    LinLayer(string name, int dev);
+    LinLayer(string name, int dev, int mem);
 
     void addchild(Layer *l) override;
 
@@ -169,7 +167,7 @@ public:
 class MLayer : public Layer {
 public:
 
-    MLayer(string name, int dev);
+    MLayer(string name, int dev, int mem);
 
     void addchild(Layer *l) override;
 

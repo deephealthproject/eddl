@@ -22,7 +22,7 @@ int LAdd::total_layers = 0;
 
 
 
-LAdd::LAdd(vector<Layer *> parent, string name, int dev, int mem) : MLayer(name, dev) {
+LAdd::LAdd(vector<Layer *> parent, string name, int dev, int mem) : MLayer(name, dev, mem) {
     if (parent.size() == 0) msg("Error: LAdd layer with empty list");
 
     if (parent.size() > 1)
@@ -34,10 +34,9 @@ LAdd::LAdd(vector<Layer *> parent, string name, int dev, int mem) : MLayer(name,
             }
 
     input = parent[0]->output;
-    mem_level=mem;
 
-    output = new Tensor(parent[0]->output->getShape(), dev);
-    if (!mem_level) delta = new Tensor(parent[0]->output->getShape(), dev);
+    output = new Tensor(parent[0]->output->shape, dev);
+//    if (!mem_level) { delta = new Tensor(parent[0]->output->shape, dev); }
 
     for (int i = 0; i < parent.size(); ++i) {
         parent[i]->addchild(this);
@@ -67,19 +66,12 @@ void LAdd::forward() {
 
 void LAdd::backward() {
     for (int i = 0; i < parent.size(); ++i) {
-      if (parent[i]->mem_level)  parent[i]->mem_delta();
         Tensor::inc(delta, parent[i]->delta);
       }
-
-    if (mem_level)  free_delta();
-}
-
-void LAdd::resize(int batch){
-  Layer::resize(batch);
 }
 
 Layer *LAdd::share(int c, int bs, vector<Layer *> p) {
-    LAdd *n = new LAdd(p, "share_" + to_string(c) + name, dev);
+    LAdd *n = new LAdd(p, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
@@ -92,9 +84,3 @@ Layer *LAdd::clone(int c, int bs, vector<Layer *> p, int todev) {
 
     return n;
 }
-
-
-
-
-
-///////////////

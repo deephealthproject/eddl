@@ -35,8 +35,7 @@ void Tensor::resize(int b, float *fptr){
         if (fptr==nullptr) {
           free(ptr);
           ptr = get_fmem(size,"Tensor::resize");
-        }
-        else {
+        } else {
           ptr=fptr;
         }
         if (ndim == 2) {

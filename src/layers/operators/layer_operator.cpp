@@ -17,7 +17,7 @@
 
 using namespace std;
 
-OperatorLayer::OperatorLayer(string name, int dev) : Layer(name, dev) {
+OperatorLayer::OperatorLayer(string name, int dev, int mem) : Layer(name, dev, mem) {
     binary=0;
 }
 

@@ -30,17 +30,16 @@ int LSum::total_layers = 0;
   @returns the result of l1+l2 element-wise
 
   */
-LSum::LSum(Layer *l1, Layer *l2, string name, int dev,int mem) : OperatorLayer(name, dev) {
+LSum::LSum(Layer *l1, Layer *l2, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
 
 
     if(name.empty()) this->name = "sum" + to_string(++total_layers);
     binary = 1;
 
     input=l1->output;
-    mem_level=mem;
 
-    output = new Tensor(l1->output->getShape(), dev);
-    if (!mem_level) delta = new Tensor(l1->output->getShape(), dev);
+    output = new Tensor(l1->output->shape, dev);
+//    if (!mem_level) { delta = new Tensor(l1->output->shape, dev); }
 
     l1->addchild(this);
     l2->addchild(this);
@@ -59,16 +58,15 @@ LSum::LSum(Layer *l1, Layer *l2, string name, int dev,int mem) : OperatorLayer(n
   @returns the result of l+k element-wise over l
 
   */
-LSum::LSum(Layer *l, float k, string name, int dev,int mem) : OperatorLayer(name, dev) {
+LSum::LSum(Layer *l, float k, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
 
     if(name.empty()) this->name = "sum" + to_string(++total_layers);
     val = k;
 
     input=l->output;
-    mem_level=mem;
 
-    output = new Tensor(l->output->getShape(), dev);
-    if (!mem_level) delta = new Tensor(l->output->getShape(), dev);
+    output = new Tensor(l->output->shape, dev);
+//    if (!mem_level) { delta = new Tensor(l->output->shape, dev); }
 
     l->addchild(this);
     addparent(l);
@@ -84,14 +82,10 @@ void LSum::forward() {
 }
 
 void LSum::backward() {
-    if (parent[0]->mem_level)  parent[0]->mem_delta();
     Tensor::inc(delta, parent[0]->delta);
     if (binary) {
-        if (parent[1]->mem_level)  parent[1]->mem_delta();
         Tensor::inc(delta, parent[1]->delta);
       }
-
-    if (mem_level)  free_delta();
 }
 
 Layer *LSum::share(int c, int bs, vector<Layer *> p) {

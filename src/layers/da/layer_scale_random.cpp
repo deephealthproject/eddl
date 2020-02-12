@@ -19,13 +19,10 @@ using namespace std;
 
 int LScaleRandom::total_layers = 0;
 
-LScaleRandom::LScaleRandom(Layer *parent, vector<float> factor, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
+LScaleRandom::LScaleRandom(Layer *parent, vector<float> factor, string da_mode, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "scale_random" + to_string(++total_layers);
 
-    this->input = parent->output;
-    this->output = new Tensor(input->getShape(), dev);
-    delta=parent->delta;
-
+    output = new Tensor(input->shape, dev);
 
     // Params
     this->factor = std::move(factor);
@@ -37,12 +34,6 @@ LScaleRandom::LScaleRandom(Layer *parent, vector<float> factor, string da_mode, 
 
 }
 
-LScaleRandom::~LScaleRandom()
-{
-  delta=nullptr;
-}
-
-// virtual
 
 
 void LScaleRandom::forward() {
@@ -55,14 +46,14 @@ void LScaleRandom::backward() {
 
 
 Layer *LScaleRandom::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LScaleRandom(p[0], this->factor, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
+    auto *n = new LScaleRandom(p[0], this->factor, this->da_mode, this->constant, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LScaleRandom::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LScaleRandom(p[0], this->factor, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LScaleRandom(p[0], this->factor, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     return n;

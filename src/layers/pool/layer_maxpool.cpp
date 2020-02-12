@@ -28,9 +28,8 @@ LMaxPool::LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int
 
 LMaxPool::LMaxPool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem) : LPool(parent, D, name, dev, mem) {
     // Params
-    mem_level=mem;
-    D->indX = new Tensor(D->O->getShape(), dev);
-    D->indY = new Tensor(D->O->getShape(), dev);
+    D->indX = new Tensor(D->O->shape, dev);
+    D->indY = new Tensor(D->O->shape, dev);
 }
 
 
@@ -42,8 +41,8 @@ void LMaxPool::resize(int batch){
   delete pd->indX;
   delete pd->indY;
 
-  pd->indX = new Tensor(pd->O->getShape(), dev);
-  pd->indY = new Tensor(pd->O->getShape(), dev);
+  pd->indX = new Tensor(pd->O->shape, dev);
+  pd->indY = new Tensor(pd->O->shape, dev);
 
 }
 
@@ -52,21 +51,11 @@ void LMaxPool::forward() {
 }
 
 void LMaxPool::backward() {
-    // backprop delta
-    if (parent[0]->mem_level)  {
-      parent[0]->mem_delta();
-      pd->ID=parent[0]->delta;
-    }
-    if (parent.size()) {
-        if (mem_level)  pd->D=delta;
-        MPool2D_back(this->pd);
-    }
-    if (mem_level) free_delta();
+    MPool2D_back(this->pd);
 }
 
 Layer *LMaxPool::share(int c, int bs, vector<Layer *> p) {
-    LMaxPool *n = new LMaxPool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, pd->pad,
-                           "share_" + to_string(c) + name, dev);
+    LMaxPool *n = new LMaxPool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, pd->pad, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

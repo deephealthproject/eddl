@@ -19,17 +19,14 @@ using namespace std;
 
 int LCrop::total_layers = 0;
 
-LCrop::LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool reshape, float constant, string name, int dev) : LinLayer(name, dev) {
+LCrop::LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool reshape, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "crop" + to_string(++total_layers);
 
-    input = parent->output;
-    delta=parent->delta;
-
-
+    // Reshape if needed (TODO: builds output tensor twice... First parent, then here)
     if (reshape){
         output = new Tensor({input->shape[0], input->shape[1], to_coords[0]-from_coords[0]+1, to_coords[1]-from_coords[1]+1}, dev);
     }else{
-        output = new Tensor(input->getShape(), dev);
+        output = new Tensor(input->shape, dev);
     }
 
     // Params
@@ -42,12 +39,6 @@ LCrop::LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool
     addparent(parent);
 
 }
-LCrop::~LCrop()
-{
-  delta=nullptr;
-}
-
-// virtual
 
 
 void LCrop::forward() {
@@ -60,14 +51,14 @@ void LCrop::backward(){
 
 
 Layer *LCrop::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LCrop(p[0], this->from_coords, this->to_coords, this->reshape, this->constant, "share_" + to_string(c) + name, dev);
+    auto *n = new LCrop(p[0], this->from_coords, this->to_coords, this->reshape, this->constant, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LCrop::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LCrop(p[0], this->from_coords, this->to_coords, this->reshape, this->constant, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LCrop(p[0], this->from_coords, this->to_coords, this->reshape, this->constant, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     return n;

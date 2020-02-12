@@ -30,7 +30,7 @@ int LDiff::total_layers = 0;
   @returns the result of l1-l2 element-wise
 
   */
-LDiff::LDiff(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, dev) {
+LDiff::LDiff(Layer *l1, Layer *l2, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "diff_" + to_string(++total_layers);
     binary=1;
 
@@ -38,8 +38,8 @@ LDiff::LDiff(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, de
     tin.push_back(l1->output);
     tin.push_back(l2->output);
 
-    output = new Tensor(l1->output->getShape(), dev);
-    delta = new Tensor(l1->output->getShape(), dev);
+    output = new Tensor(l1->output->shape, dev);
+//    if (!mem_level) { delta = new Tensor(l1->output->shape, dev);  }
 
     l1->addchild(this);
     l2->addchild(this);
@@ -58,22 +58,21 @@ LDiff::LDiff(Layer *l1, Layer *l2, string name, int dev): OperatorLayer(name, de
   @returns the result of l-k element-wise over l
 
   */
-LDiff::LDiff(Layer *l, float k, string name, int dev): OperatorLayer(name, dev) {
+LDiff::LDiff(Layer *l, float k, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "diff" + to_string(++total_layers);
     val=k;
     left=1;
 
     input=l->output;
 
-
-    output = new Tensor(l->output->getShape(), dev);
-    delta = new Tensor(l->output->getShape(), dev);
+    output = new Tensor(l->output->shape, dev);
+//    if (!mem_level) { delta = new Tensor(l->output->shape, dev);  }
 
     l->addchild(this);
     addparent(l);
 }
 
-LDiff::LDiff(float k, Layer *l, string name, int dev): OperatorLayer(name, dev) {
+LDiff::LDiff(float k, Layer *l, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "diff" + to_string(++total_layers);
     val=k;
     left=0;
@@ -81,8 +80,8 @@ LDiff::LDiff(float k, Layer *l, string name, int dev): OperatorLayer(name, dev) 
     input=l->output;
 
 
-    output = new Tensor(l->output->getShape(), dev);
-    delta = new Tensor(l->output->getShape(), dev);
+    output = new Tensor(l->output->shape, dev);
+//    if (!mem_level) { delta = new Tensor(l->output->shape, dev);  }
 
     l->addchild(this);
     addparent(l);
@@ -108,28 +107,29 @@ void LDiff::forward(){
 
 void LDiff::backward(){
     if (binary) {
-        Tensor::inc(delta,parent[0]->delta);
+        Tensor::inc(delta, parent[0]->delta);
         delta->mult_(-1.0);
-        Tensor::inc(delta,parent[1]->delta);
-    }
-    else {
-      if (left) Tensor::inc(delta,parent[0]->delta);
-      else {
+        Tensor::inc(delta, parent[1]->delta);
+    } else {
+      if (left) {
+          Tensor::inc(delta, parent[0]->delta);
+      } else {
           delta->mult_(-1.0);
-          Tensor::inc(delta,parent[0]->delta);
+          Tensor::inc(delta, parent[0]->delta);
         }
     }
+
 }
 
 Layer *LDiff::share(int c, int bs, vector<Layer *> p) {
   LDiff *n;
   if (binary)
-      n = new LDiff(p[0], p[1], "share_" + to_string(c) + name, dev);
+      n = new LDiff(p[0], p[1], "share_" + to_string(c) + this->name, this->dev, this->mem_level);
   else {
     if (left)
-      n = new LDiff(p[0], val, "share_" + to_string(c) + name, dev);
+      n = new LDiff(p[0], val, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     else
-      n = new LDiff(val, p[0], "share_" + to_string(c) + name, dev);
+      n = new LDiff(val, p[0], "share_" + to_string(c) + this->name, this->dev, this->mem_level);
   }
   n->orig = this;
   return n;
@@ -138,12 +138,12 @@ Layer *LDiff::share(int c, int bs, vector<Layer *> p) {
 Layer *LDiff::clone(int c, int bs, vector<Layer *> p, int todev) {
     LDiff *n;
     if (binary)
-        n = new LDiff(p[0], p[1], "clone_" + to_string(c) + name, todev);
+        n = new LDiff(p[0], p[1], "clone_" + to_string(c) + name, todev, this->mem_level);
         else {
           if (left)
-            n = new LDiff(p[0], val, "clone_" + to_string(c) + name, todev);
+            n = new LDiff(p[0], val, "clone_" + to_string(c) + name, todev, this->mem_level);
           else
-            n = new LDiff(val, p[0], "clone_" + to_string(c) + name, todev);
+            n = new LDiff(val, p[0], "clone_" + to_string(c) + name, todev, this->mem_level);
         }
     n->orig = this;
     return n;

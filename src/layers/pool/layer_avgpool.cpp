@@ -31,9 +31,8 @@ LAveragePool::LAveragePool(Layer *parent, PoolDescriptor *D, string name, int de
     msg("Not implemented", "LAveragePool");
 
     // Params
-    mem_level=mem;
-    D->indX = new Tensor(D->O->getShape(), dev);
-    D->indY = new Tensor(D->O->getShape(), dev);
+    D->indX = new Tensor(D->O->shape, dev);
+    D->indY = new Tensor(D->O->shape, dev);
 }
 
 
@@ -45,9 +44,8 @@ void LAveragePool::resize(int batch){
     delete pd->indX;
     delete pd->indY;
 
-    pd->indX = new Tensor(pd->O->getShape(), dev);
-    pd->indY = new Tensor(pd->O->getShape(), dev);
-
+    pd->indX = new Tensor(pd->O->shape, dev);
+    pd->indY = new Tensor(pd->O->shape, dev);
 }
 
 void LAveragePool::forward() {
@@ -55,23 +53,11 @@ void LAveragePool::forward() {
 }
 
 void LAveragePool::backward() {
-    // backprop delta
-    if (parent[0]->mem_level)  {
-        parent[0]->mem_delta();
-        pd->ID=parent[0]->delta;
-    }
-
-    if (parent.size()) {
-        if (mem_level)  pd->D=delta;
-        AvgPool2D_back(this->pd);
-    }
-
-    if (mem_level) free_delta();
+    AvgPool2D_back(this->pd);
 }
 
 Layer *LAveragePool::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LAveragePool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, pd->pad,
-                               "share_" + to_string(c) + name, dev);
+    auto *n = new LAveragePool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, pd->pad, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

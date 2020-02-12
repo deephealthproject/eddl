@@ -19,13 +19,12 @@ using namespace std;
 
 int LConcat::total_layers = 0;
 
-LConcat::LConcat(vector<Layer *> parent, unsigned int axis, string name, int dev,int mem) : MLayer(name, dev) {
+LConcat::LConcat(vector<Layer *> parent, unsigned int axis, string name, int dev, int mem) : MLayer(name, dev, mem) {
     if(name.empty()) {this->name = "concat" + to_string(++total_layers); }
 
     // Perform layer checks
     if (parent.empty()) { msg("Error: LConcat layer with empty list"); }
     this->ndim = parent[0]->output->ndim;
-    this->mem_level=mem;
     this->axis = axis;
 
     if (parent.size() > 1) {
@@ -71,7 +70,7 @@ LConcat::LConcat(vector<Layer *> parent, unsigned int axis, string name, int dev
 
     input = parent[0]->output;
     output = new Tensor(shape, dev);
-    if (!mem_level) delta = new Tensor(shape, dev);
+//    if (!mem_level) { delta = new Tensor(output->shape, dev);  }  // NOT parent[0]->output
 
     // Create a descriptor for each layer address translation
     int temp = 0;
@@ -107,24 +106,18 @@ void LConcat::forward() {
 void LConcat::backward() {
     // Get delta tensors
     vector<Tensor*> deltas;
-    for (auto & p : this->parent) {
-        if (p->mem_level)  p->mem_delta();
-        deltas.push_back(p->delta);
+    for (int i=0; i<this->parent.size(); i++) {
+        // Store pointer of delta i
+        deltas.push_back(parent[i]->delta);
     }
 
     // Perform concat (back)
     Tensor::concat_back(this->delta, deltas, this->axis);
-
-    if (mem_level)  free_delta();
-}
-
-void LConcat::resize(int batch){
-    Layer::resize(batch);
 }
 
 Layer *LConcat::share(int c, int bs, vector<Layer *> p) {
 
-    auto *n = new LConcat(p, this->axis, "share_" + to_string(c) + name, dev);
+    auto *n = new LConcat(p, this->axis, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

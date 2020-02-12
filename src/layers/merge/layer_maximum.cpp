@@ -19,7 +19,7 @@ using namespace std;
 
 int LMaximum::total_layers = 0;
 
-LMaximum::LMaximum(vector<Layer *> parent, string name, int dev) : MLayer(name, dev) {
+LMaximum::LMaximum(vector<Layer *> parent, string name, int dev, int mem) : MLayer(name, dev, mem) {
     if (parent.size() == 0) msg("Error: LMaximum layer with empty list");
 
     if (parent.size() > 1)
@@ -34,8 +34,8 @@ LMaximum::LMaximum(vector<Layer *> parent, string name, int dev) : MLayer(name, 
 
     input = parent[0]->output;
 
-    output = new Tensor(parent[0]->output->getShape(), dev);
-    delta = new Tensor(parent[0]->output->getShape(), dev);
+    output = new Tensor(parent[0]->output->shape, dev);
+//    if (!mem_level) { delta = new Tensor(parent[0]->output->shape, dev);  }
 
     for (int i = 0; i < parent.size(); ++i) {
         parent[i]->addchild(this);
@@ -66,12 +66,13 @@ void LMaximum::forward() {
 
 void LMaximum::backward() {
     // TODO: Implement
-    for (int i = 0; i < parent.size(); ++i)
+    for (int i = 0; i < parent.size(); ++i){
         Tensor::inc(delta, parent[i]->delta);
+    }
 }
 
 Layer *LMaximum::share(int c, int bs, vector<Layer *> p) {
-    LMaximum *n = new LMaximum(p, "share_" + to_string(c) + name, dev);
+    LMaximum *n = new LMaximum(p, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
@@ -79,14 +80,8 @@ Layer *LMaximum::share(int c, int bs, vector<Layer *> p) {
 
 
 Layer *LMaximum::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LMaximum *n = new LMaximum(p, "share_" + to_string(c) + name, todev);
+    LMaximum *n = new LMaximum(p, "share_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
 
     return n;
 }
-
-
-
-
-
-///////////////

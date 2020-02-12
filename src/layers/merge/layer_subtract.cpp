@@ -19,7 +19,7 @@ using namespace std;
 
 int LSubtract::total_layers = 0;
 
-LSubtract::LSubtract(vector<Layer *> parent, string name, int dev) : MLayer(name, dev) {
+LSubtract::LSubtract(vector<Layer *> parent, string name, int dev, int mem) : MLayer(name, dev, mem) {
     if (parent.size() == 0) msg("Error: LSubtract layer with empty list");
 
     if (parent.size() > 1)
@@ -34,8 +34,8 @@ LSubtract::LSubtract(vector<Layer *> parent, string name, int dev) : MLayer(name
 
     input = parent[0]->output;
 
-    output = new Tensor(parent[0]->output->getShape(), dev);
-    delta = new Tensor(parent[0]->output->getShape(), dev);
+    output = new Tensor(parent[0]->output->shape, dev);
+//    if (!mem_level) { delta = new Tensor(parent[0]->output->shape, dev);  }
 
     for (int i = 0; i < parent.size(); ++i) {
         parent[i]->addchild(this);
@@ -66,12 +66,13 @@ void LSubtract::forward() {
 
 void LSubtract::backward() {
     // TODO: Implement
-    for (int i = 0; i < parent.size(); ++i)
+    for (int i = 0; i < parent.size(); ++i){
         Tensor::inc(delta, parent[i]->delta);
+    }
 }
 
 Layer *LSubtract::share(int c, int bs, vector<Layer *> p) {
-    LSubtract *n = new LSubtract(p, "share_" + to_string(c) + name, dev);
+    LSubtract *n = new LSubtract(p, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
@@ -79,7 +80,7 @@ Layer *LSubtract::share(int c, int bs, vector<Layer *> p) {
 
 
 Layer *LSubtract::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LSubtract *n = new LSubtract(p, "share_" + to_string(c) + name, todev);
+    LSubtract *n = new LSubtract(p, "share_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
 
     return n;

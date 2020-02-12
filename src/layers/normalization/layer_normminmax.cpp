@@ -21,7 +21,7 @@ using namespace std;
 int LNormMinMax::total_layers = 0;
 
 
-LNormMinMax::LNormMinMax(Layer *parent, float epsilon, string name, int dev) : LinLayer(name, dev) {
+LNormMinMax::LNormMinMax(Layer *parent, float epsilon, string name, int dev, int mem) : LinLayer(name, dev, mem) {
 
     vector<int> axis;
     if (parent->output->ndim == 2) axis.push_back(1);
@@ -39,14 +39,14 @@ LNormMinMax::LNormMinMax(Layer *parent, float epsilon, string name, int dev) : L
 
 
     // max
-    Layer *max=new LRMax(parent, axis, true,this->name+"max",dev);
-    Layer *min=new LRMin(parent, axis, true,this->name+"max",dev);
-    Layer *maxmin= new LDiff(max,min,this->name+"maxmin",dev);
-    Layer *dmin=new LDiff(parent,min,this->name+"dmin",dev);
+    Layer *max=new LRMax(parent, axis, true,this->name+"max", this->dev, this->mem_level);
+    Layer *min=new LRMin(parent, axis, true,this->name+"max", this->dev, this->mem_level);
+    Layer *maxmin= new LDiff(max,min,this->name+"maxmin", this->dev, this->mem_level);
+    Layer *dmin=new LDiff(parent,min,this->name+"dmin", this->dev, this->mem_level);
 
-    Layer *meps=new LSum(maxmin,epsilon,this->name+"sum_eps",dev);
+    Layer *meps=new LSum(maxmin,epsilon,this->name+"sum_eps", this->dev, this->mem_level);
     // norm
-    Layer *div=new LDiv(dmin,meps,this->name+"div",dev);
+    Layer *div=new LDiv(dmin,meps,this->name+"div", this->dev, this->mem_level);
 
     layers.push_back(max);
     layers.push_back(min);
@@ -63,11 +63,49 @@ LNormMinMax::LNormMinMax(Layer *parent, float epsilon, string name, int dev) : L
     ////////////////////////////
 
     output=div->output;
-    delta=div->delta;
+//    delta=div->delta;
 
     parent->addchild(this);
     addparent(parent);
 
+}
+
+
+
+void LNormMinMax::mem_delta() {
+    // TEMPORAL!
+    if(this->delta == nullptr) {
+
+        // Reserve parent's delta AND assign it to this layer
+        parent[0]->mem_delta();  // Reserve delta for parent
+
+        // Reserve delta for subops // TODO: Don't like it
+        for(auto &l : layers){
+            l->mem_delta(); // Reserve delta for m2
+        }
+        delta=layers[layers.size()-1]->delta; // Last operation
+
+        if(this->verbosity_level >= 2){
+            std::cout << "Booked delta for: " + this->name << std::endl;
+        }
+    }
+}
+
+void LNormMinMax::free_delta() {
+    // TEMPORAL!
+    // Not really needed, but I like to keep all the methods the same (ease the robustness of "copy-paste")
+    if(this->delta != nullptr) {
+
+        // Reserve delta for subops // TODO: Don't like it
+        for(auto &l : layers){
+            l->free_delta(); // Reserve delta for m2
+        }
+        delta = nullptr;
+
+        if(this->verbosity_level >= 2){
+            std::cout << "Deleted delta for: " + this->name << std::endl;
+        }
+    }
 }
 
 
@@ -92,7 +130,6 @@ void LNormMinMax::forward() {
 }
 
 void LNormMinMax::backward() {
-
   for(int i=layers.size()-1;i>=0;i--) {
     layers[i]->backward();
   }
@@ -102,7 +139,7 @@ void LNormMinMax::backward() {
 
 
 Layer *LNormMinMax::share(int c, int bs, vector<Layer *> p) {
-    LNormMinMax *n = new LNormMinMax(p[0], epsilon, "share_" + to_string(c) + name, dev);
+    LNormMinMax *n = new LNormMinMax(p[0], epsilon, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement
@@ -111,7 +148,7 @@ Layer *LNormMinMax::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LNormMinMax::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LNormMinMax *n = new LNormMinMax(p[0], epsilon, "clone_" + to_string(todev) + name, todev);
+    LNormMinMax *n = new LNormMinMax(p[0], epsilon, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

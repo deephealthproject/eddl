@@ -30,7 +30,9 @@ public:
     PoolDescriptor *pd;
 
     // constructors
-    LPool(Layer *parent, PoolDescriptor *cd, string name, int dev, int mem=0);
+    LPool(Layer *parent, PoolDescriptor *cd, string name, int dev, int mem);
+
+    void mem_delta() override;
 
     void resize(int batch) override;
 };
@@ -40,11 +42,11 @@ class LMaxPool : public LPool {
 public:
 
     // constructors and clones
-    LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name, int dev, int mem=0);
+    LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name, int dev, int mem);
 
-    LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, string name, int dev,int mem=0);
+    LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, string name, int dev, int mem);
 
-    LMaxPool(Layer *parent, PoolDescriptor *cd, string name, int dev,int mem=0);
+    LMaxPool(Layer *parent, PoolDescriptor *cd, string name, int dev, int mem);
 
     // Params
     Tensor *indX, *indY;
@@ -71,11 +73,11 @@ public:
     Tensor *indX, *indY;
 
     // constructors and clones
-    LAveragePool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name, int dev, int mem=0);
+    LAveragePool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name, int dev, int mem);
 
-    LAveragePool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, string name, int dev, int mem=0);
+    LAveragePool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, string name, int dev, int mem);
 
-    LAveragePool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem=0);
+    LAveragePool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem);
 
     // implementation
     void forward() override;

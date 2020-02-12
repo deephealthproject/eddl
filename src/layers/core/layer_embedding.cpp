@@ -19,18 +19,13 @@ using namespace std;
 
 int LEmbedding::total_layers = 0;
 
-LEmbedding::LEmbedding(int input_dim, int output_dim, string name, int dev, int mem): LinLayer(name, dev) {
+LEmbedding::LEmbedding(int input_dim, int output_dim, string name, int dev, int mem): LinLayer(name, dev, mem) {
     // TODO: Implement
     if(name.empty()) this->name = "embedding" + to_string(++total_layers);
     this->input_dim = input_dim;
     this->output_dim = output_dim;
 }
 
-
-// virtual ...
-void LEmbedding::resize(int batch){
-  Layer::resize(batch);
-}
 
 string LEmbedding::plot(int c) {
     string s;
@@ -54,7 +49,7 @@ void LEmbedding::backward() {
 
 Layer *LEmbedding::share(int c, int bs, vector<Layer *> p) {
     // TODO: Implement
-    LEmbedding *n = new LEmbedding(input_dim, output_dim, "share_" + to_string(c) + name, dev);
+    LEmbedding *n = new LEmbedding(input_dim, output_dim, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
@@ -62,7 +57,7 @@ Layer *LEmbedding::share(int c, int bs, vector<Layer *> p) {
 
 Layer *LEmbedding::clone(int c, int bs, vector<Layer *> p, int todev) {
     // TODO: Implement
-    LEmbedding *n = new LEmbedding(input_dim, output_dim, "clone_" + to_string(todev) + name, todev);
+    LEmbedding *n = new LEmbedding(input_dim, output_dim, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     return n;

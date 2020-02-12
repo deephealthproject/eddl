@@ -107,7 +107,8 @@ public:
     void toCPU(int dev=DEV_CPU);
     void toGPU(int dev=DEV_GPU);
     Tensor* clone();
-    void reallocate(vector<int> &s, Tensor* old_t);
+    void deleteData();
+    void reallocate(Tensor* old_t, vector<int> *s = nullptr);
 
     // Resize
     void resize(int b, float *fptr);

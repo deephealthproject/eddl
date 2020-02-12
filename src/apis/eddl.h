@@ -63,6 +63,7 @@ typedef NetLoss * metric;
     */
     model Model(vlayer in, vlayer out);
     void build(model net, optimizer o=nullptr, CompServ *cs=nullptr, bool init_weigths=true);
+
     /**
       *  @brief Tell the model which optimizer, losses, metrics and computing services use.
       *
@@ -84,9 +85,9 @@ typedef NetLoss * metric;
       *  @param lsb  Number of batches to sync model weights
       *  @return     (void)
     */
-    void toGPU(model net, vector<int> g,int lsb);
-    void toGPU(model net, vector<int> g,string mem);
-    void toGPU(model net, vector<int> g,int lsb, string mem);
+    void toGPU(model net, vector<int> g, int lsb);
+    void toGPU(model net, vector<int> g, string mem);
+    void toGPU(model net, vector<int> g, int lsb, string mem);
     void toGPU(model net, vector<int> g);
     void toGPU(model net, string mem);
     void toGPU(model net);
@@ -99,13 +100,10 @@ typedef NetLoss * metric;
       *  @return     (void)
     */
     void toCPU(model net, int t=std::thread::hardware_concurrency());
-    compserv CS_CPU(int th=-1);
+    compserv CS_CPU(int th=-1, string mem="low_mem");
 
-    compserv CS_GPU();
-    compserv CS_GPU(const vector<int> g);
-    compserv CS_GPU(const vector<int> g,int lsb);
-    compserv CS_GPU(const vector<int> g,string mem);
-    compserv CS_GPU(const vector<int> g,int lsb,string mem);
+    compserv CS_GPU(const vector<int> g={1}, string mem="low_mem");
+    compserv CS_GPU(const vector<int> g={1}, int lsb=1, string mem="low_mem");
 
     compserv CS_FGPA(const vector<int> &f,int lsb=1);
     compserv CS_COMPSS(string filename);
@@ -350,11 +348,11 @@ typedef NetLoss * metric;
       *
       *  @param parent  Parent layer
       *  @param activation Name of the activation function
-      *  @param param   Value to apply to the activation function
+      *  @param params   Vector of floats representing the different params of the activation function
       *  @param name  Name of the layer
       *  @return     Activation layer
     */
-    layer Activation(layer parent, string activation, float param=0.01, string name = "");
+    layer Activation(layer parent, string activation, vector<float> params={}, string name="");
 
     /**
       *  @brief Applies a Softmax activation function to the given layer.
@@ -364,7 +362,7 @@ typedef NetLoss * metric;
       *  @param parent  Parent layer
       *  @return     Output of Softmax transformation
     */
-    layer Softmax(layer parent);
+    layer Softmax(layer parent, string name="");
 
     /**
       *  @brief Applies a Sigmoid activation function to the given layer.
@@ -374,7 +372,7 @@ typedef NetLoss * metric;
       *  @param parent  Parent layer
       *  @return     Output of Sigmoid activation
     */
-    layer Sigmoid(layer parent);
+    layer Sigmoid(layer parent, string name="");
 
     /**
       *  @brief Applies a Rectified Linear Unit activation function to the given layer.
@@ -384,7 +382,7 @@ typedef NetLoss * metric;
       *  @param parent  Parent layer
       *  @return     Output of ReLu activation
     */
-    layer ReLu(layer parent);
+    layer ReLu(layer parent, string name="");
 
     /**
       *  @brief Applies the Leaky version of a Rectified Linear Unit activation function to the given layer.
@@ -392,19 +390,19 @@ typedef NetLoss * metric;
       *  @see   https://en.wikipedia.org/wiki/Rectifier_(neural_networks)#Leaky_ReLUs
       *
       *  @param parent  Parent layer
-      *  @param param  Negative slope coefficient
+      *  @param alpha  Negative slope coefficient
       *  @return     Output of Leaky ReLu activation
     */
-    layer LeakyReLu(layer parent, float param=0.01);
+    layer LeakyReLu(layer parent, float alpha=0.01, string name="");
 
     /**
       *  @brief Applies the Exponential Linear Unit activation function to the given layer.
       *
       *  @param parent  Parent layer
-	  *  @param param ELu coefficient
+	  *  @param alpha ELu coefficient
       *  @return     Output of ELu activation
     */
-    layer Elu(layer parent, float param=1.0);
+    layer Elu(layer parent, float alpha=1.0, string name="");
 
     /**
       *  @brief Applies the Scaled Exponential Linear Unit activation function to the given layer.
@@ -412,7 +410,7 @@ typedef NetLoss * metric;
       *  @param parent  Parent layer
       *  @return     Output of Selu activation
     */
-    layer Selu(layer parent);
+    layer Selu(layer parent, string name="");
 
     /**
     *  @brief Applies the Exponential (base e) activation function to the given layer.
@@ -420,7 +418,7 @@ typedef NetLoss * metric;
     *  @param parent  Parent layer
     *  @return     Output of Exponential activation
     */
-    layer Exponential(layer parent);
+    layer Exponential(layer parent, string name="");
 
     /**
     *  @brief Applies the Softplus activation function to the given layer.
@@ -428,7 +426,7 @@ typedef NetLoss * metric;
     *  @param parent  Parent layer
     *  @return     Output of Exponential activation
     */
-    layer Softplus(layer parent);
+    layer Softplus(layer parent, string name="");
 
 
     /**
@@ -437,16 +435,16 @@ typedef NetLoss * metric;
     *  @param parent  Parent layer
     *  @return     Output of Exponential activation
     */
-    layer Softsign(layer parent);
+    layer Softsign(layer parent, string name="");
 
     /**
       *  @brief Applies the Linear activation function to the given layer.
       *
       *  @param parent  Parent layer
-	  *  @param param Linear coefficient
+	  *  @param alpha Linear coefficient
       *  @return     Output of Linear activation
     */
-    layer Linear(layer parent, float param=1.0);
+    layer Linear(layer parent, float alpha=1.0, string name="");
 
     /**
       *  @brief Applies the Hyperbolic tangent activation function to the given layer.
@@ -456,7 +454,7 @@ typedef NetLoss * metric;
       *  @param parent  Parent layer
       *  @return     Output of hyperbolic activation
     */
-    layer Tanh(layer parent);
+    layer Tanh(layer parent, string name="");
 
     /**
       *  @brief Convolution layer.

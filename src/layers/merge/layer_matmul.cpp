@@ -19,7 +19,7 @@ using namespace std;
 
 int LMatMul::total_layers = 0;
 
-LMatMul::LMatMul(vector<Layer *> parent, string name, int dev) : MLayer(name, dev) {
+LMatMul::LMatMul(vector<Layer *> parent, string name, int dev, int mem) : MLayer(name, dev, mem) {
     if (parent.size() == 0) msg("Error: LMatMul layer with empty list");
 
     if (parent.size() > 1)
@@ -34,8 +34,8 @@ LMatMul::LMatMul(vector<Layer *> parent, string name, int dev) : MLayer(name, de
 
     input = parent[0]->output;
 
-    output = new Tensor(parent[0]->output->getShape(), dev);
-    delta = new Tensor(parent[0]->output->getShape(), dev);
+    output = new Tensor(parent[0]->output->shape, dev);
+//    if (!mem_level) { delta = new Tensor(parent[0]->output->shape, dev);  }
 
     for (int i = 0; i < parent.size(); ++i) {
         parent[i]->addchild(this);
@@ -66,12 +66,13 @@ void LMatMul::forward() {
 
 void LMatMul::backward() {
     // TODO: Implement
-    for (int i = 0; i < parent.size(); ++i)
+    for (int i = 0; i < parent.size(); ++i){
         Tensor::inc(delta, parent[i]->delta);
+    }
 }
 
 Layer *LMatMul::share(int c, int bs, vector<Layer *> p) {
-    LMatMul *n = new LMatMul(p, "share_" + to_string(c) + name, dev);
+    LMatMul *n = new LMatMul(p, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
@@ -79,14 +80,9 @@ Layer *LMatMul::share(int c, int bs, vector<Layer *> p) {
 
 
 Layer *LMatMul::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LMatMul *n = new LMatMul(p, "share_" + to_string(c) + name, todev);
+    LMatMul *n = new LMatMul(p, "share_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
-
-
-
-
-///////////////

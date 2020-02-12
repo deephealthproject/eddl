@@ -20,27 +20,41 @@ using namespace std;
 
 int LPool::total_layers = 0;
 
-LPool::LPool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem) : LinLayer(name, dev) {
+LPool::LPool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if (parent->output->ndim != 4) msg("LPool only works over 4D tensors", "LPool::LPool");
     if(name.empty()) this->name = "pool" + to_string(++total_layers);
 
-    mem_level=mem;
-
+    input = parent->output;
     pd = D;
 
-    input = parent->output;
     pd->build(input);
 
     output = pd->O;
-    if (!mem_level) delta = pd->D;
-    if (!parent->mem_level) pd->ID = parent->delta;
+//    delta = pd->D;
+//    pd->ID = parent->delta;
 
     parent->addchild(this);
     addparent(parent);
 
 }
 
+void LPool::mem_delta(){
+    if(this->delta == nullptr) {
+        // Reserve parent's delta
+        parent[0]->mem_delta();
+        pd->ID = parent[0]->delta;
+
+        delta = Tensor::zeros(pd->O->shape, pd->O->device);
+        pd->D = delta;
+
+        if(this->verbosity_level >= 2) {
+            std::cout << "Booked delta for: " + this->name << std::endl;
+        }
+    }
+}
+
+
 void LPool::resize(int batch){
-  pd->resize(batch);
-  if (target!=nullptr) target->resize(batch);
+    pd->resize(batch);
+    if (target!=nullptr) target->resize(batch);
 }

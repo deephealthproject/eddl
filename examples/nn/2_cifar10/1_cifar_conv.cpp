@@ -25,7 +25,7 @@ using namespace eddl;
 layer Normalization(layer l)
 {
   //return l;
-  return BatchNormalization(l);
+  return l;//BatchNormalization(l);
   //return LayerNormalization(l);
   //return GroupNormalization(l,32); // reduce batch_size and learning rate
 
@@ -68,9 +68,10 @@ int main(int argc, char **argv){
     sgd(0.01, 0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    //CS_CPU() // CPU with maximum threads availables
-    CS_GPU({1}) // GPU with only one gpu
+     CS_GPU({1}, "low_mem") // GPU with only one gpu
+     //CS_CPU(-1, "low_mem") // CPU with maximum threads availables
   );
+//    toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 
   // plot the model
   plot(net,"model.pdf");

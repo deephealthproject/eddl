@@ -20,13 +20,10 @@ using namespace std;
 
 int LCropScaleRandom::total_layers = 0;
 
-LCropScaleRandom::LCropScaleRandom(Layer *parent, vector<float> factor, string da_mode, string name, int dev) : LinLayer(name, dev) {
+LCropScaleRandom::LCropScaleRandom(Layer *parent, vector<float> factor, string da_mode, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "crop_scale" + to_string(++total_layers);
 
-    input = parent->output;
-    output = new Tensor(input->getShape(), dev);
-    delta=parent->delta;
-
+    output = new Tensor(input->shape, dev);
 
     // Params
     this->factor=std::move(factor);
@@ -35,13 +32,6 @@ LCropScaleRandom::LCropScaleRandom(Layer *parent, vector<float> factor, string d
     parent->addchild(this);
     addparent(parent);
 }
-
-LCropScaleRandom::~LCropScaleRandom()
-{
-    delta=nullptr;
-}
-
-// virtual
 
 
 void LCropScaleRandom::forward() {
@@ -54,14 +44,14 @@ void LCropScaleRandom::backward() {
 
 
 Layer *LCropScaleRandom::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LCropScaleRandom(p[0], this->factor, this->da_mode, "share_" + to_string(c) + name, dev);
+    auto *n = new LCropScaleRandom(p[0], this->factor, this->da_mode, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LCropScaleRandom::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LCropScaleRandom(p[0], this->factor, this->da_mode, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LCropScaleRandom(p[0], this->factor, this->da_mode, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     return n;
