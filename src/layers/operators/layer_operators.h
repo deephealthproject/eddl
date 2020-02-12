@@ -40,7 +40,6 @@ public:
 
     string plot(int c) override;
 
-
 };
 
 /// Abs Layer

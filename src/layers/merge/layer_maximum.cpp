@@ -85,9 +85,3 @@ Layer *LMaximum::clone(int c, int bs, vector<Layer *> p, int todev) {
 
     return n;
 }
-
-
-
-
-
-///////////////

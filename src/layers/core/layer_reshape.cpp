@@ -99,6 +99,7 @@ void LReshape::mem_delta() {
 
 void LReshape::free_delta() {
     if(this->delta != nullptr) {
+        // Do not delete its delta directly (It's pointer points to parent's delta)
         delta->ptr = nullptr;
         delete delta;
         delta = nullptr;

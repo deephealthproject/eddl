@@ -115,10 +115,6 @@ void LConcat::backward() {
     Tensor::concat_back(this->delta, deltas, this->axis);
 }
 
-void LConcat::resize(int batch){
-    Layer::resize(batch);
-}
-
 Layer *LConcat::share(int c, int bs, vector<Layer *> p) {
 
     auto *n = new LConcat(p, this->axis, "share_" + to_string(c) + this->name, this->dev, this->mem_level);

@@ -45,6 +45,7 @@ void LDataAugmentation::mem_delta(){
 void LDataAugmentation::free_delta(){
     // Not really needed, but I like to keep all the methods the same (ease the robustness of "copy-paste")
     if(this->delta != nullptr) {
+        // Do not delete delta (points to parent)
         delta = nullptr;
 
         if(this->verbosity_level >= 2){

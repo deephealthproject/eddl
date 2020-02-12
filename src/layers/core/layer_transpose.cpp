@@ -26,7 +26,7 @@ LTranspose::LTranspose(Layer *parent, vector<int> dims, string name, int dev, in
 
     input=parent->output;
     output=new Tensor(input->getShape(),dev);
-    delta=new Tensor(input->getShape(),dev);
+//    delta=new Tensor(input->getShape(),dev);
 
     parent->addchild(this);
     addparent(parent);

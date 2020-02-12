@@ -38,8 +38,6 @@ public:
 
     void backward() override;
 
-    void resize(int batch) override;
-
     string plot(int c) override;
 
 };
@@ -99,8 +97,6 @@ public:
     void forward() override;
 
     void backward() override;
-
-    void resize(int batch) override;
 
     string plot(int c) override;
 
@@ -164,15 +160,12 @@ public:
 
     // Params
 
-
     // implementation
     void forward() override;
 
     void backward() override;
 
     string plot(int c) override;
-
-    void resize(int batch) override;
 
 };
 

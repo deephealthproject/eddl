@@ -70,10 +70,6 @@ void LAdd::backward() {
       }
 }
 
-void LAdd::resize(int batch){
-  Layer::resize(batch);
-}
-
 Layer *LAdd::share(int c, int bs, vector<Layer *> p) {
     LAdd *n = new LAdd(p, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
@@ -88,9 +84,3 @@ Layer *LAdd::clone(int c, int bs, vector<Layer *> p, int todev) {
 
     return n;
 }
-
-
-
-
-
-///////////////
