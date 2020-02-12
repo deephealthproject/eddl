@@ -280,18 +280,26 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 1;
-    int batch_size = 100;
+    int epochs = 25;
+    int batch_size = 128;
     int num_classes = 10;
 
     // Define network
     layer in = Input({784});
-    layer l = in;  // Aux var
+    layer l = in;  
 
-    l = LeakyReLu(Dense(l, 1024));
-    l = LeakyReLu(Dense(l, 1024));
-    l = LeakyReLu(Dense(l, 1024));
+    // Convert to 3D for Data Augmentation
+    l=Reshape(l,{1,28,28});
+    
+    // Data augmentation
+    l = RandomCropScale(l, {0.9f, 1.0f});
 
+    // Come back to 1D tensor for fully connected:
+    l=Reshape(l,{-1});
+    l = ReLu(GaussianNoise(BatchNormalization(Dense(l, 1024)),0.3));
+    l = ReLu(GaussianNoise(BatchNormalization(Dense(l, 1024)),0.3));
+    l = ReLu(GaussianNoise(BatchNormalization(Dense(l, 1024)),0.3));
+  
     layer out = Activation(Dense(l, num_classes), "softmax");
     model net = Model({in}, {out});
 
@@ -300,16 +308,17 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          rmsprop(0.01), // Optimizer
+          sgd(0.01, 0.9), // Optimizer
           {"soft_cross_entropy"}, // Losses
-          {"categorical_accuracy"} // Metrics
-          //CS_GPU({1}) // one GPU
-          //CS_CPU() // CPU with maximum threads availables
+          {"categorical_accuracy"}, // Metrics
+          CS_GPU({1}) // one GPU
+          //CS_CPU(-1) // CPU with maximum threads availables
     );
-    toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 
     // View model
     summary(net);
+
+    setlogfile(net,"mnist_bn_da");
 
     // Load dataset
     tensor x_train = eddlT::load("trX.bin");
@@ -321,10 +330,11 @@ int main(int argc, char **argv) {
     eddlT::div_(x_train, 255.0);
     eddlT::div_(x_test, 255.0);
 
+
     // Train model
     fit(net, {x_train}, {y_train}, batch_size, epochs);
-
     // Evaluate
+    printf("Evaluate:\n");
     evaluate(net, {x_test}, {y_test});
 }
 ```
