@@ -49,7 +49,7 @@ These dependencies can be installed either manually or using a conda package man
 
 
 
-#### Anaconda package manager (recommended)
+### Anaconda package manager (recommended)
 
 The required libraries are easier to install if you use using a [anaconda package manager](https://docs.conda.io/en/latest/miniconda.html)).
 Once conda is installed in your system, you can use the `environment.yml` file inside the `eddl/`folder to install the requirements.
@@ -65,7 +65,7 @@ conda activate eddl
 > If the conda environment misses some dependency, please write an issue and complete the installation manually
 
 
-#### Manual management of dependencies
+### Manual management of dependencies
 
 Regardless of your platform, install:
 
