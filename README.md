@@ -45,7 +45,7 @@ sudo make install
 
 ### **Docker:**
 
-You will need an [docker engine](https://docs.docker.com/install/)
+You will need a [docker engine](https://docs.docker.com/install/)
 
 To build the image, run the following command from the `eddl/` folder:
 
