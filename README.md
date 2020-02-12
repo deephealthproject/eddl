@@ -27,7 +27,7 @@ For more information about DeepHealth project go to: [deephealth-project.eu](htt
 
 ## Installation
 
-**Try this:**
+### **Conda:**
 
 You will need an [anaconda package manager](https://docs.conda.io/en/latest/miniconda.html)
 
@@ -43,14 +43,37 @@ make -j 4  # num_cores
 sudo make install
 ```
 
+### **Docker:**
+
+You will need an [docker engine](https://docs.docker.com/install/)
+
+To build the image, run the following command from the `eddl/` folder:
+
+```
+docker build -t eddl .
+```
+
+Then, you can execute it using:
+
+```
+docker run -it eddl /bin/bash
+```
+
+Or mount it, if you want to **edit the code** in the host machine:
+
+```
+docker run -it -v $(pwd):/eddl/ eddl /bin/bash
+```
 
 
-**Or step by step:** [here](Installation.md)
+### **Step by step installation:**
+
+If something fails follow the instructions [here](Installation.md)
 
 
-## Getting started
+## Getting started with eddl
 
-You can find examples in  `examples/`.
+You can find more examples in  `examples/`.
 
 ```C++
 #include <stdio.h>

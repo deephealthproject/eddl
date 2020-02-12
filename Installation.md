@@ -197,25 +197,6 @@ On Windows, the POSIX threads library is required. Path to this library can be s
 The PThreads library can be found at [https://sourceforge.net/projects/pthreads4w/](https://sourceforge.net/projects/pthreads4w/).
 
 
-### Docker
-
-To build the image, run the following command from the `eddl/` folder:
-
-```
-docker build -t eddl .
-```
-
-Then, you can execute it using:
-
-```
-docker run -it eddl /bin/bash
-```
-
-Or mount it, if you want to **edit the code** in the host machine:
-
-```
-docker run -it -v $(pwd):/eddl/ eddl /bin/bash
-```
 
 
 ## FAQs
