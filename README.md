@@ -29,7 +29,7 @@ For more information about DeepHealth project go to: [deephealth-project.eu](htt
 
 **Try this:**
 
-You will need a [anaconda package manager](https://docs.conda.io/en/latest/miniconda.html)).
+You will need a [anaconda package manager](https://docs.conda.io/en/latest/miniconda.html)
 
 ```bash
 git clone https://github.com/deephealthproject/eddl.git
