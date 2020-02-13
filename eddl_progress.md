@@ -41,7 +41,7 @@
 | Softplus | ✅ | ✅ | Softplus activation function. |
 | Softsign | ✅ | ✅ | Softsign activation function. |
 | Tanh | ✅ | ✅ | Hyperbolic tangent activation function. |
-| ThresholdedReLU | ❌ | ❌ | Thresholded Rectified Linear Unit. |
+| ThresholdedReLU | ✅ | ✅ | Thresholded Rectified Linear Unit. |
 
 
 ## Convolutional layers
