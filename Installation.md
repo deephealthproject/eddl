@@ -109,7 +109,6 @@ docker run -it -v $(pwd):/eddl/ eddl /bin/bash
 
 ## Compilation
 
-
 To build and install the EDDL library from source, execute the following commands inside the `eddl/` folder:
 
 ```bash
