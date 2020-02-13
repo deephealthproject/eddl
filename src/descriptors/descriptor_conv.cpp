@@ -82,7 +82,6 @@ void ConvolDescriptor::build(Tensor *A) {
     padcl = pad[2];
     padcr = pad[3];
 
-
     z = nk;
     r = (ir - kr + padrt + padrb) / sr + 1;
     c = (ic - kc + padcl + padcr) / sc + 1;
@@ -90,11 +89,12 @@ void ConvolDescriptor::build(Tensor *A) {
     //cout<<z<<"x"<<r<<"x"<<c<<"\n";
     //getchar();
 
-    if ((r <= 0) || (c <= 0))
+    if ((r <= 0) || (c <= 0)){
         msg("Invalid output shape", "ConvolDescriptor::build");
+    }
 
     O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
-    if (!mem_level) D = new Tensor(O->getShape(), A->device);
+//    if (!mem_level) { D = new Tensor(O->shape, A->device); }
 
     // Params
     K = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
@@ -144,7 +144,7 @@ void ConvolDescriptor::resize(int b)
     if (b==O->shape[0]) return;
 
     O->resize(b);
-    if (!mem_level) D->resize(b);
+//    if (!mem_level) D->resize(b);
 
     if (I->isCPU()) {
         delete ptrI;
@@ -160,9 +160,9 @@ void ConvolDescriptor::resize(int b)
 }
 
 void ConvolDescriptor::enable_distributed() {
-	// Create and initialize the tensors for accumulating gradients in distributed training
-	acc_gK = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
-	acc_gK->fill_(0.0);
-	acc_gbias = new Tensor(vector<int>{nk}, I->device);
-	acc_gbias->fill_(0.0);
+    // Create and initialize the tensors for accumulating gradients in distributed training
+    acc_gK = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
+    acc_gK->fill_(0.0);
+    acc_gbias = new Tensor(vector<int>{nk}, I->device);
+    acc_gbias->fill_(0.0);
 }

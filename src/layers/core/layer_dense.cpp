@@ -18,18 +18,16 @@ using namespace std;
 
 int LDense::total_layers = 0;
 
-LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev, int mem) : LinLayer(name, dev) {
+LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if (parent->output->ndim != 2) msg("LDense only works over 2D tensors", "LDense");
 
     if(name.empty()) this->name = "dense" + to_string(++total_layers);
     this->ndim = ndim;
     this->use_bias = use_bias;
-    mem_level=mem;
-
 
     input = parent->output;
     output = new Tensor(vector<int>{input->shape[0], ndim}, dev);
-    if (!mem_level) delta = new Tensor(output->getShape(), dev);
+//    delta = new Tensor(output->shape, dev);
 
     W = new Tensor(vector<int>{input->shape[1], ndim}, dev);
     if (use_bias) bias = new Tensor(vector<int>{ndim}, dev);
@@ -50,32 +48,20 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev, int
 }
 
 
-// virtual
-void  LDense::resize(int batch){
-    Layer::resize(batch);
-}
-
 void LDense::forward() {
     Tensor::mult2D(input, 0, W, 0, output, 0);
     if (use_bias) Tensor::sum2D_rowwise(output, bias, output);
 }
 
 void LDense::backward() {
-
     //get gradients with provided delta
     if (trainable) {
         Tensor::mult2D(input, 1, delta, 0, gW, 1);
         if (use_bias) Tensor::reduce_sum2D(delta, gbias, 0, 1);
     }
 
-    // backprop delta
-    if (parent.size()) {
-        if (parent[0]->mem_level)  parent[0]->mem_delta();
-        //1: note that increment parent delta
-        Tensor::mult2D(delta, 0, W, 1, parent[0]->delta, 1);
-    }
-
-    if (mem_level) free_delta();
+    //1: note that increment parent delta
+    Tensor::mult2D(delta, 0, W, 1, parent[0]->delta, 1);
 
     // Regularizer
     if (trainable) if(reg != nullptr) {reg->apply(this->W);}
@@ -108,9 +94,8 @@ void LDense::apply_accumulated_gradients() {
 }
 
 
-
 Layer *LDense::share(int c, int bs, vector<Layer *> p) {
-    LDense *n = new LDense(p[0], ndim, use_bias, "share_" + to_string(c) + name, dev);
+    LDense *n = new LDense(p[0], ndim, use_bias, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     //share params
@@ -135,7 +120,7 @@ Layer *LDense::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LDense::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LDense *n = new LDense(p[0], ndim, use_bias, "clone_" + to_string(todev) + name, todev, mem_level);
+    LDense *n = new LDense(p[0], ndim, use_bias, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     n->reg=reg;

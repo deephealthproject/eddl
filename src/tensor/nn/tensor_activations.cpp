@@ -42,7 +42,9 @@ void ReLu(Tensor *A, Tensor *B) {
 
 // RELU Derivative, always increment over parent delta
 void D_ReLu(Tensor *D, Tensor *I, Tensor *PD) {
-    if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_ReLu");
+    if ((D->device != I->device) || (D->device != PD->device)) {
+        msg("Tensors in different devices", "Tensor::D_ReLu");
+    }
     if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_ReLu");
 
     PD->tsem->lock();

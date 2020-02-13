@@ -20,25 +20,20 @@ using namespace std;
 
 int LTranspose::total_layers = 0;
 
-LTranspose::LTranspose(Layer *parent, vector<int> dims, string name, int dev, int mem) : LinLayer(name, dev) {
+LTranspose::LTranspose(Layer *parent, vector<int> dims, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if(name.empty()) this->name = "transpose" + to_string(++total_layers);
     this->dims = dims;
-    mem_level=mem;
-    
+
     input=parent->output;
     output=new Tensor(input->getShape(),dev);
-    delta=new Tensor(input->getShape(),dev);
+//    delta=new Tensor(input->getShape(),dev);
 
     parent->addchild(this);
     addparent(parent);
 }
 
-void LTranspose::resize(int batch){
-  Layer::resize(batch);
-}
-
 void LTranspose::forward() {
-   Tensor::transpose(input,output,dims);
+   Tensor::transpose(input, output,dims);
 }
 
 
@@ -59,7 +54,7 @@ string LTranspose::plot(int c) {
 
 Layer *LTranspose::clone(int c, int bs, vector<Layer *> p, int todev) {
   LTranspose *n;
-  n = new LTranspose(p[0], dims, "share_" + to_string(c) + name, todev);
+  n = new LTranspose(p[0], dims, "share_" + to_string(c) + name, todev, this->mem_level);
   n->orig = this;
   return n;
 }

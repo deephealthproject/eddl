@@ -19,7 +19,7 @@ using namespace std;
 
 int LRNN::total_layers = 0;
 
-LRNN::LRNN(Layer *parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev) : LinLayer(name, dev) {
+LRNN::LRNN(Layer *parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev, int mem) : LinLayer(name, dev, mem) {
 
     this->units = units;
     this->num_layers = num_layers;
@@ -42,7 +42,7 @@ void LRNN::backward() {
 
 
 Layer *LRNN::share(int c, int bs, vector<Layer *> p) {
-    LRNN *n = new LRNN(p[0], units, num_layers, use_bias, dropout, bidirectional, "share_" + to_string(c) + name, dev);
+    LRNN *n = new LRNN(p[0], units, num_layers, use_bias, dropout, bidirectional, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement
@@ -51,7 +51,7 @@ Layer *LRNN::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LRNN::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LRNN *n = new LRNN(p[0], units, num_layers, use_bias, dropout, bidirectional, "clone_" + to_string(todev) + name, todev);
+    LRNN *n = new LRNN(p[0], units, num_layers, use_bias, dropout, bidirectional, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

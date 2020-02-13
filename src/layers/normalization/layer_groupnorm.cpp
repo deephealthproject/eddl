@@ -21,7 +21,7 @@ using namespace std;
 int LGroupNorm::total_layers = 0;
 
 
-LGroupNorm::LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool affine, string name, int dev) : LinLayer(name, dev) {
+LGroupNorm::LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool affine, string name, int dev, int mem) : LinLayer(name, dev, mem) {
 
     input=parent->output;
     groups=g;
@@ -62,7 +62,7 @@ LGroupNorm::LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool
     this->affine = affine;
 
     output=new Tensor(input->getShape(),dev);
-    delta=new Tensor(input->getShape(),dev);
+//    delta=new Tensor(input->getShape(),dev);
 
     bn_mean=new Tensor(shape,dev);
     bn_var=new Tensor(shape,dev);
@@ -85,7 +85,7 @@ LGroupNorm::LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool
 void LGroupNorm::resize(int batch){
   if (batch!=output->shape[0]) {
     output->resize(batch);
-    delta->resize(batch);
+//    delta->resize(batch);
     if (target!=nullptr) target->resize(batch);
     delete MD;
 
@@ -149,7 +149,6 @@ void LGroupNorm::forward() {
 
 void LGroupNorm::backward()
 {
-
   Tensor *A;
   Tensor *B;
   Tensor *C;
@@ -186,13 +185,12 @@ void LGroupNorm::backward()
   delete A;
   delete B;
   delete C;
-
 }
 
 
 
 Layer *LGroupNorm::share(int c, int bs, vector<Layer *> p) {
-    LGroupNorm *n = new LGroupNorm(p[0], groups, momentum, epsilon, affine, "share_" + to_string(c) + name, dev);
+    LGroupNorm *n = new LGroupNorm(p[0], groups, momentum, epsilon, affine, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement
@@ -201,7 +199,7 @@ Layer *LGroupNorm::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LGroupNorm::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LGroupNorm *n = new LGroupNorm(p[0], groups, momentum, epsilon, affine, "clone_" + to_string(todev) + name, todev);
+    LGroupNorm *n = new LGroupNorm(p[0], groups, momentum, epsilon, affine, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

@@ -41,7 +41,7 @@ int LRMean::total_layers = 0;
 
   */
 
-LRMean::LRMean(Layer *l, vector <int> axis, bool keepdims, string name, int dev): ReductionLayer(name, dev) {
+LRMean::LRMean(Layer *l, vector <int> axis, bool keepdims, string name, int dev, int mem) : ReductionLayer(name, dev, mem) {
     if(name.empty()) this->name = "reduction_mean" + to_string(++total_layers);
 
     input=l->output;
@@ -49,8 +49,8 @@ LRMean::LRMean(Layer *l, vector <int> axis, bool keepdims, string name, int dev)
     RD=new ReduceDescriptor(input,axis,"mean",keepdims);
 
     output=RD->O;
-    delta=RD->D;
-    RD->ID = l->delta;
+//    delta=RD->D;
+//    RD->ID = l->delta;
 
     l->addchild(this);
     addparent(l);
@@ -73,15 +73,15 @@ void LRMean::resize(int batch){
 
 
 Layer *LRMean::share(int c, int bs, vector<Layer *> p) {
-  LRMean *n;
-  n = new LRMean(p[0], RD->axis, RD->keepdims, "share_" + to_string(c) + name,dev);
-  n->orig = this;
-  return n;
+    LRMean *n;
+    n = new LRMean(p[0], RD->axis, RD->keepdims, "share_" + to_string(c) + name, this->dev, this->mem_level);
+    n->orig = this;
+    return n;
 }
 
 Layer *LRMean::clone(int c, int bs, vector<Layer *> p, int todev) {
     LRMean *n;
-    n = new LRMean(p[0],RD->axis, RD->keepdims, "clone_" + to_string(c) + name, todev);
+    n = new LRMean(p[0],RD->axis, RD->keepdims, "clone_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
     return n;
 }

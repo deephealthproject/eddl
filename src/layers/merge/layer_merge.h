@@ -28,7 +28,7 @@ public:
     static int total_layers;
 
 
-    LAdd(vector<Layer *> in, string name, int dev,int mem=0);
+    LAdd(vector<Layer *> in, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -37,8 +37,6 @@ public:
     void forward() override;
 
     void backward() override;
-
-    void resize(int batch) override;
 
     string plot(int c) override;
 
@@ -50,7 +48,7 @@ public:
     static int total_layers;
 
 
-    LSubtract(vector<Layer *> in, string name, int dev);
+    LSubtract(vector<Layer *> in, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -70,7 +68,7 @@ public:
     static int total_layers;
 
 
-    LMatMul(vector<Layer *> in, string name, int dev);
+    LMatMul(vector<Layer *> in, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -90,7 +88,7 @@ public:
     static int total_layers;
 
 
-    LAverage(vector<Layer *> in, string name, int dev);
+    LAverage(vector<Layer *> in, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -99,8 +97,6 @@ public:
     void forward() override;
 
     void backward() override;
-
-    void resize(int batch) override;
 
     string plot(int c) override;
 
@@ -112,7 +108,7 @@ public:
     static int total_layers;
 
 
-    LMaximum(vector<Layer *> in, string name, int dev);
+    LMaximum(vector<Layer *> in, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -132,7 +128,7 @@ public:
     static int total_layers;
 
 
-    LMinimum(vector<Layer *> in, string name, int dev);
+    LMinimum(vector<Layer *> in, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -156,7 +152,7 @@ public:
     static int total_layers;
 
     // constructors and clones
-    LConcat(vector<Layer *> in, unsigned int axis, string name, int dev,int mem=0);
+    LConcat(vector<Layer *> in, unsigned int axis, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -164,15 +160,12 @@ public:
 
     // Params
 
-
     // implementation
     void forward() override;
 
     void backward() override;
 
     string plot(int c) override;
-
-    void resize(int batch) override;
 
 };
 

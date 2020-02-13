@@ -19,13 +19,10 @@ using namespace std;
 
 int LCutoutRandom::total_layers = 0;
 
-LCutoutRandom::LCutoutRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, float constant, string name, int dev) : LinLayer(name, dev) {
+LCutoutRandom::LCutoutRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "cutout_random" + to_string(++total_layers);
 
-    input = parent->output;
-    output = new Tensor(input->getShape(), dev);
-    delta=parent->delta;
-
+    output = new Tensor(input->shape, dev);
 
     // Params
     this->factor_x = std::move(factor_x);
@@ -35,12 +32,6 @@ LCutoutRandom::LCutoutRandom(Layer *parent, vector<float> factor_x, vector<float
     parent->addchild(this);
     addparent(parent);
 }
-
-LCutoutRandom::~LCutoutRandom()
-{
-  delta=nullptr;
-}
-// virtual
 
 
 void LCutoutRandom::forward() {
@@ -53,14 +44,14 @@ void LCutoutRandom::backward() {
 
 
 Layer *LCutoutRandom::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LCutoutRandom(p[0], this->factor_x, this->factor_y, this->constant, "share_" + to_string(c) + name, dev);
+    auto *n = new LCutoutRandom(p[0], this->factor_x, this->factor_y, this->constant, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LCutoutRandom::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LCutoutRandom(p[0], this->factor_x, this->factor_y, this->constant, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LCutoutRandom(p[0], this->factor_x, this->factor_y, this->constant, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     return n;

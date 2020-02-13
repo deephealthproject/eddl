@@ -45,6 +45,7 @@ int main(int argc, char **argv) {
 
     layer out = Activation(Dense(l, num_classes), "softmax");
     model net = Model({in}, {out});
+    net->verbosity_level = 0;
 
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
@@ -54,8 +55,8 @@ int main(int argc, char **argv) {
           rmsprop(0.01), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          //CS_GPU({1}) // one GPU
-          CS_CPU() // CPU with maximum threads availables
+          CS_GPU({1}, "low_mem") // one GPU
+          //CS_CPU(-1, "low_mem") // CPU with maximum threads availables
     );
 
     // View model

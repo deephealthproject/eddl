@@ -30,12 +30,12 @@ int LLog2::total_layers = 0;
   @returns the result of the logarithm with base 2 operation over l
 
   */
-LLog2::LLog2(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
+LLog2::LLog2(Layer *l, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "log2_" + to_string(++total_layers);
 
     input=l->output;
-    output = new Tensor(l->output->getShape(), dev);
-    delta = new Tensor(l->output->getShape(), dev);
+    output = new Tensor(l->output->shape, dev);
+//    if (!mem_level) { delta = new Tensor(l->output->shape, dev);  }
 
     l->addchild(this);
     addparent(l);
@@ -49,7 +49,6 @@ void LLog2::forward() {
 void LLog2::backward() {
   delta->div_(log(2));
   Tensor::el_div(delta,parent[0]->output, parent[0]->delta, 1);
-
 }
 
 Layer *LLog2::share(int c, int bs, vector<Layer *> p) {
@@ -58,7 +57,7 @@ Layer *LLog2::share(int c, int bs, vector<Layer *> p) {
 
 Layer *LLog2::clone(int c, int bs, vector<Layer *> p, int todev) {
   LLog *n;
-  n = new LLog(p[0], "share_" + to_string(c) + name, todev);
+  n = new LLog(p[0], "share_" + to_string(c) + name, todev, this->mem_level);
   n->orig = this;
   return n;
 }

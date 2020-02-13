@@ -21,7 +21,7 @@ using namespace std;
 int LLayerNorm::total_layers = 0;
 
 
-LLayerNorm::LLayerNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev) : LinLayer(name, dev) {
+LLayerNorm::LLayerNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem) : LinLayer(name, dev, mem) {
 
     input=parent->output;
 
@@ -58,7 +58,7 @@ LLayerNorm::LLayerNorm(Layer *parent, float momentum, float epsilon, bool affine
     this->affine = affine;
 
     output=new Tensor(input->getShape(),dev);
-    delta=new Tensor(input->getShape(),dev);
+//    delta=new Tensor(input->getShape(),dev);
 
     bn_mean=new Tensor(shape,dev);
     bn_var=new Tensor(shape,dev);
@@ -80,7 +80,7 @@ LLayerNorm::LLayerNorm(Layer *parent, float momentum, float epsilon, bool affine
 void LLayerNorm::resize(int batch){
     if (batch!=output->shape[0]) {
         output->resize(batch);
-        delta->resize(batch);
+//        delta->resize(batch);
         if (target!=nullptr) target->resize(batch);
 
         delete MD;
@@ -131,7 +131,6 @@ void LLayerNorm::forward() {
 
 void LLayerNorm::backward()
 {
-
     Tensor *A;
     Tensor *B;
     Tensor *C;
@@ -160,13 +159,12 @@ void LLayerNorm::backward()
     delete A;
     delete B;
     delete C;
-
 }
 
 
 
 Layer *LLayerNorm::share(int c, int bs, vector<Layer *> p) {
-    LLayerNorm *n = new LLayerNorm(p[0], momentum, epsilon, affine, "share_" + to_string(c) + name, dev);
+    LLayerNorm *n = new LLayerNorm(p[0], momentum, epsilon, affine, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement
@@ -175,7 +173,7 @@ Layer *LLayerNorm::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LLayerNorm::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LLayerNorm *n = new LLayerNorm(p[0], momentum, epsilon, affine, "clone_" + to_string(todev) + name, todev);
+    LLayerNorm *n = new LLayerNorm(p[0], momentum, epsilon, affine, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

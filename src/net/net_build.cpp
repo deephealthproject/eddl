@@ -185,16 +185,21 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     int ind;
 
 
-    for (int i = 0; i < layers.size(); i++){
-        if (dev == -1) dev = layers[i]->dev;
-        else {
-            if (layers[i]->dev != dev)
-              msg("Net with layers in different devices", "Net.build");
-        }
-    }
+    for(int i=0; i<layers.size(); i++){
 
-    for(int i=0;i<layers.size();i++)
-      layers[i]->set_trainable(true);
+        // Set device // TODO: Rewrite this
+        if (dev == -1) {
+            dev = layers[i]->dev;
+        } else {
+            if (layers[i]->dev != dev) {
+                msg("Net with layers in different devices", "Net.build");
+            }
+        }
+
+        // Set params
+        layers[i]->set_trainable(true);
+        layers[i]->verbosity_level = this->verbosity_level;
+    }
 
     // set optimizer
     optimizer = opt;
@@ -225,7 +230,7 @@ void Net::set_compserv(CompServ *cs){
 
     mem_level=cs->mem_level;
     for(int i=0;i<layers.size();i++)
-      layers[i]->setmem_level(mem_level);
+        layers[i]->set_mem_level(mem_level);
 
     if (cs->type == "local") {
 
@@ -416,14 +421,3 @@ void Net::enable_distributed(){
 		l->enable_distributed();
 	}
 }
-
-
-
-
-
-
-
-
-
-
-//////
