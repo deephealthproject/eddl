@@ -439,14 +439,14 @@ if(BUILD_EXAMPLES)
     target_link_libraries(tensor_tests_dev eddl)
 
 	# EXAMPLES: ONNX ******************************************************************
-	# add_executable(onnx_import_export "${EXAMPLES_DIR}/onnx/1_onnx_file.cpp")
-	# target_link_libraries(onnx_import_export eddl)
+	 add_executable(onnx_import_export "${EXAMPLES_DIR}/onnx/1_onnx_file.cpp")
+	 target_link_libraries(onnx_import_export eddl)
 
-	# add_executable(onnx_export "${EXAMPLES_DIR}/onnx/2_onnx_save_net_to_file.cpp")
-	# target_link_libraries(onnx_export eddl)
+	 add_executable(onnx_export "${EXAMPLES_DIR}/onnx/2_onnx_save_net_to_file.cpp")
+	 target_link_libraries(onnx_export eddl)
 
-	# add_executable(onnx_import "${EXAMPLES_DIR}/onnx/3_onnx_import_net_from_file.cpp")
-	# target_link_libraries(onnx_import eddl)
+	 add_executable(onnx_import "${EXAMPLES_DIR}/onnx/3_onnx_import_net_from_file.cpp")
+	 target_link_libraries(onnx_import eddl)
 
 endif(BUILD_EXAMPLES)
 
