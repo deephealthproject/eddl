@@ -22,6 +22,9 @@ void add_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsi
 void cpu_relu(Tensor *A, Tensor *B);
 void cpu_d_relu(Tensor *D, Tensor *I, Tensor *PD);
 
+void cpu_thresholded_relu(Tensor *A, Tensor *B, float param);
+void cpu_d_thresholded_relu(Tensor *D, Tensor *I, Tensor *PD, float param);
+
 void cpu_leaky_relu(Tensor *A, Tensor *B, float param);
 void cpu_d_leaky_relu(Tensor *D, Tensor *I, Tensor *PD, float param);
 

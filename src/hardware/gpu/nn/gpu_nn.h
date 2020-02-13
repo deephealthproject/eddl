@@ -26,6 +26,9 @@
 void gpu_relu(Tensor *A,Tensor *B);
 void gpu_d_relu(Tensor *D,Tensor *I,Tensor *PD);
 
+void gpu_thresholded_relu(Tensor *A,Tensor *B,float param);
+void gpu_d_thresholded_relu(Tensor *D,Tensor *I,Tensor *PD,float param);
+
 void gpu_leaky_relu(Tensor *A,Tensor *B,float param);
 void gpu_d_leaky_relu(Tensor *D,Tensor *I,Tensor *PD,float param);
 

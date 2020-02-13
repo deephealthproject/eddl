@@ -1,8 +1,17 @@
+# Installation
+
+If you are installing from source, you will need a C++11 compiler. Also, we highly recommend installing an [Anaconda environment](https://docs.conda.io/en/latest/miniconda.html). 
+You will get a high-quality BLAS library (MKL) and you get controlled dependency versions regardless of your Linux distro.
+
+If you want to compile with CUDA support, install
+
+- NVIDIA CUDA 9 or above
+- NVIDIA cuDNN v7 or above
+
+Once you have [Anaconda](https://docs.conda.io/en/latest/miniconda.html) installed, here are the instructions.
 
 
-## Installation
-
-### Download source code
+## Download source code
 
 To get the source, download one of the release .tar.gz or .zip packages in the release page:
 
@@ -11,7 +20,7 @@ git clone https://github.com/deephealthproject/eddl.git
 ```
 
 
-### Prerequisites
+## Prerequisites
 
 To build EDDL from source, the following tools are needed:
 
@@ -29,7 +38,6 @@ To build EDDL from source, the following tools are needed:
 - Google Benchmark
 
 These dependencies can be installed either manually or using a conda package manager (recommended).
-
 
 
 ### Anaconda package manager (recommended)
@@ -75,8 +83,31 @@ brew install eigen
 ```
 
 
-## Compilation
+### Docker image
 
+You will need a [docker engine](https://docs.docker.com/install/)
+
+To build the EDDL from the docker image, go to the `eddl` folder and run:
+
+```
+docker build -t eddl .
+```
+
+Then, you can execute this line to launch a shell in the image:
+
+```
+docker run -it eddl /bin/bash
+```
+
+Or mount it, if you want to **edit the code** from the host machine:
+
+```
+docker run -it -v $(pwd):/eddl/ eddl /bin/bash
+```
+
+
+
+## Compilation
 
 To build and install the EDDL library from source, execute the following commands inside the `eddl/` folder:
 
@@ -85,7 +116,7 @@ mkdir build
 cd build
 cmake .. -DBUILD_TARGET=CPU  # {CPU, GPU, FPGA}
 make -j 4  # num_cores
-sudo make install
+make install
 ```
 
 > Note:
@@ -93,7 +124,6 @@ sudo make install
 
 
 ### Building flags
-
 
 #### Backend support
 
@@ -193,8 +223,6 @@ Default for `Visual Studio 15 2017` build environment is x86, while EDDL require
 
 On Windows, the POSIX threads library is required. Path to this library can be specified to cmake as follows: `env PTHREADS_ROOT=path_to_pthreads cmake -A x64 .`
 The PThreads library can be found at [https://sourceforge.net/projects/pthreads4w/](https://sourceforge.net/projects/pthreads4w/).
-
-
 
 
 ## FAQs

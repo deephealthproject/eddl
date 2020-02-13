@@ -415,6 +415,11 @@ namespace eddl {
         return new LActivation(parent,"relu", params, name, DEV_CPU, 0);
     }
 
+    layer ThresholdedReLu(layer parent, float alpha, string name){
+        vector<float> params = {alpha};
+        return new LActivation(parent,"thresholded_relu", params, name, DEV_CPU, 0);
+    }
+
     layer LeakyReLu(layer parent, float alpha, string name){
         vector<float> params = {alpha};
         return new LActivation(parent, "leaky_relu", params, name, DEV_CPU, 0);

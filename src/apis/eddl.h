@@ -385,6 +385,15 @@ typedef NetLoss * metric;
     layer ReLu(layer parent, string name="");
 
     /**
+      *  @brief Applies the Thresholded version of a Rectified Linear Unit activation function to the given layer.
+      *
+      *  @param parent  Parent layer
+      *  @param alpha  Threshold value
+      *  @return     Output of Thresholded ReLu activation
+    */
+    layer ThresholdedReLu(layer parent, float alpha=1.0, string name="");
+
+    /**
       *  @brief Applies the Leaky version of a Rectified Linear Unit activation function to the given layer.
       *
       *  @see   https://en.wikipedia.org/wiki/Rectifier_(neural_networks)#Leaky_ReLUs

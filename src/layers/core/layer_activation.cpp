@@ -39,6 +39,10 @@ void LActivation::forward(){
     if (act == "relu"){
         ReLu(this->input, this->output);
 
+    }else if (act == "thresholded_relu"){
+        float alpha = this->params[0];
+        ThresholdedReLu(this->input, this->output, alpha);
+
     }else if (act == "elu"){
         float alpha = this->params[0];
         ELu(this->input, this->output, alpha);
@@ -89,6 +93,10 @@ void LActivation::backward(){
     }else {
         if (act == "relu"){
             D_ReLu(delta, input, parent[0]->delta);
+
+        }else if (act == "thresholded_relu"){
+            float alpha = this->params[0];
+            D_ThresholdedReLu(delta, input, parent[0]->delta, alpha);
 
         }else if (act == "elu"){
             float alpha = this->params[0];

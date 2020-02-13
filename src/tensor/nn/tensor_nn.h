@@ -35,6 +35,10 @@ void D_LeakyReLu(Tensor *D, Tensor *I, Tensor *PD,float param);
 void ELu(Tensor *A, Tensor *B, float param);
 void D_ELu(Tensor *D, Tensor *I, Tensor *PD, float param);
 
+//Thresholded ReLu
+void ThresholdedReLu(Tensor *A, Tensor *B, float param);
+void D_ThresholdedReLu(Tensor *D, Tensor *I, Tensor *PD, float param);
+
 // Softplus
 void Softplus(Tensor *A, Tensor *B);
 void D_softplus(Tensor *D, Tensor *I, Tensor *PD);
