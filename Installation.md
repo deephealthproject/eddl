@@ -83,6 +83,30 @@ brew install eigen
 ```
 
 
+### Docker image
+
+You will need a [docker engine](https://docs.docker.com/install/)
+
+To build the EDDL from the docker image, go to the `eddl` folder and run:
+
+```
+docker build -t eddl .
+```
+
+Then, you can execute this line to launch a shell in the image:
+
+```
+docker run -it eddl /bin/bash
+```
+
+Or mount it, if you want to **edit the code** from the host machine:
+
+```
+docker run -it -v $(pwd):/eddl/ eddl /bin/bash
+```
+
+
+
 ## Compilation
 
 
