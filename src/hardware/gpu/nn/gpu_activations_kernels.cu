@@ -39,6 +39,29 @@ __global__ void d_relu(float *d,float *i,float *pd,long int size)
 
 }
 
+
+__global__ void thresholded_relu(float *a,float *b, float param, long int size)
+{
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+  if (thread_id_x < size){
+    if (a[thread_id_x]>param) b[thread_id_x]=a[thread_id_x];
+    else b[thread_id_x]=0.0;
+   }
+}
+
+__global__ void d_thresholded_relu(float *d,float *i,float *pd, float param, long int size)
+{
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+  if (thread_id_x < size){
+    if (i[thread_id_x]>param) pd[thread_id_x]=d[thread_id_x];
+    else pd[thread_id_x]=0.0;
+   }
+
+}
+
+
 __global__ void leaky_relu(float *a,float *b, float param, long int size)
 {
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;

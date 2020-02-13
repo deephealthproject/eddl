@@ -45,6 +45,28 @@ void gpu_d_relu(Tensor *D,Tensor *I,Tensor *PD) {
 }
 
 
+void gpu_thresholded_relu(Tensor *A,Tensor *B,float param){
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  setDims(A);
+
+  thresholded_relu<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,param,A->size);
+  check_cuda(cudaDeviceSynchronize(),"gpu_thresholded_relu");
+}
+
+
+void gpu_d_thresholded_relu(Tensor *D,Tensor *I,Tensor *PD,float param) {
+  int device=D->gpu_device;
+  cudaSetDevice(device);
+
+  setDims(D)
+
+  d_thresholded_relu<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,param,D->size);
+  check_cuda(cudaDeviceSynchronize(),"gpu_d_thresholded_relu");
+}
+
+
 void gpu_leaky_relu(Tensor *A,Tensor *B,float param){
   int device=A->gpu_device;
   cudaSetDevice(device);

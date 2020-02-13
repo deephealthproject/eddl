@@ -66,6 +66,54 @@ void D_ReLu(Tensor *D, Tensor *I, Tensor *PD) {
     PD->tsem->unlock();
 }
 
+// ThresholdedReLu
+void ThresholdedReLu(Tensor *A, Tensor *B,float param) {
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::ThresholdedReLu");
+    if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::ThresholdedReLu");
+
+    B->tsem->lock();
+    if (A->isCPU()) {
+        cpu_thresholded_relu(A, B,param);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+      gpu_thresholded_relu(A,B,param);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+    B->tsem->unlock();
+}
+
+// ThresholdedReLu Derivative
+void D_ThresholdedReLu(Tensor *D, Tensor *I, Tensor *PD,float param) {
+    if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_ThresholdedReLu");
+    if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_ThresholdedReLu");
+
+    PD->tsem->lock();
+    if (D->isCPU()) {
+        cpu_d_thresholded_relu(D, I, PD,param);
+    }
+#ifdef cGPU
+    else if (D->isGPU())
+      {
+        gpu_d_thresholded_relu(D,I,PD,param);
+
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+    PD->tsem->unlock();
+}
+
 // LeakyReLU
 void LeakyReLu(Tensor *A, Tensor *B,float param) {
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::LeakyReLu");
