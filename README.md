@@ -27,50 +27,47 @@ For more information about DeepHealth project go to: [deephealth-project.eu](htt
 
 ## Installation
 
-### **Conda:**
+### Package managers (comming soon)
 
-You will need an [anaconda package manager](https://docs.conda.io/en/latest/miniconda.html)
+On Ubuntu/Debian run:
 
-```bash
-git clone https://github.com/deephealthproject/eddl.git
-cd eddl
-conda env create -f environment.yml
-conda activate eddl
-mkdir build
-cd build
-cmake .. -DBUILD_TARGET=CPU  # {CPU, GPU, FPGA}
-make -j 4  # num_cores
-sudo make install
+```
+sudo apt-get install eddl
 ```
 
-### **Docker:**
+On MacOS run:
+
+```
+brew install eddl
+```
+
+
+### Build from source
+
+If you are installing from source, follow the instructions [here](Installation.md).
+
+
+### Docker image
 
 You will need a [docker engine](https://docs.docker.com/install/)
 
-To build the image, run the following commands:
+To build the EDDL from the docker image, go to the `eddl` folder and run:
 
 ```
-git clone https://github.com/deephealthproject/eddl.git
-cd eddl
 docker build -t eddl .
 ```
 
-Then, you can execute it using:
+Then, you can execute this line to launch a shell in the image:
 
 ```
 docker run -it eddl /bin/bash
 ```
 
-Or mount it, if you want to **edit the code** in the host machine:
+Or mount it, if you want to **edit the code** from the host machine:
 
 ```
 docker run -it -v $(pwd):/eddl/ eddl /bin/bash
 ```
-
-
-### **Step by step installation:**
-
-If something fails follow the instructions [here](Installation.md)
 
 
 ## Getting started with eddl
