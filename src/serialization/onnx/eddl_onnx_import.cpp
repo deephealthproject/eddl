@@ -331,7 +331,7 @@ namespace eddl {
 
 
 	//Imports a net stored in a onnx file
-	Net* import_net_from_onnx_file(std::string path) {
+	Net* import_net_from_onnx_file(std::string path, int mem) {
 		// Verify that the version of the library that we linked against is
 		// compatible with the version of the headers we compiled against.
 		GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -345,11 +345,11 @@ namespace eddl {
 				//return;
 			}
 		}
-		return build_net_onnx(model);
+		return build_net_onnx(model, mem);
 	}
 
 	//Imports a net from a pointer passed as argument
-	Net* import_net_from_onnx_pointer(void* serialized_model, size_t size){
+	Net* import_net_from_onnx_pointer(void* serialized_model, size_t size, int mem){
 		// Verify that the version of the library that we linked against is
 		// compatible with the version of the headers we compiled against.
 		GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -360,11 +360,11 @@ namespace eddl {
 			}
 			else if (verbose >= 2) cout << "Model parsed succesfuly" << endl;
 		}
-		return build_net_onnx(model);
+		return build_net_onnx(model, mem);
 	}
 
 	//Imports a net from a c++ string passed as argument.
-	Net* import_net_from_onnx_string(string* model_string){
+	Net* import_net_from_onnx_string(string* model_string, int mem){
 		// Verify that the version of the library that we linked against is
 		// compatible with the version of the headers we compiled against.
 		GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -375,13 +375,13 @@ namespace eddl {
 			}
 			else if (verbose >= 2) cout << "Model parsed succesfuly" << endl;
 		}
-		return build_net_onnx(model);
+		return build_net_onnx(model, mem);
 	}
 
 
 
 	//Builds a eddl Net from an instance of the onnx container for model
-	Net* build_net_onnx(onnx::ModelProto model){
+	Net* build_net_onnx(onnx::ModelProto model, int mem){
 
 		long long int ir_version = model.ir_version();
 		// We have to check if the imported net has the
@@ -569,7 +569,7 @@ namespace eddl {
 
 						ConvolDescriptor* convol_descriptor = new ConvolDescriptor(kernel_shape, strides, pads);
 
-						actual_layer = new LConv(parent, convol_descriptor, name, dev);
+						actual_layer = new LConv(parent, convol_descriptor, name, dev, mem);
 
 						if(node->input_size() > 2){
 							string bias_name = node->input(2);
@@ -645,7 +645,7 @@ namespace eddl {
 
 						string name = node->name();
 						Tensor * input_size = parent->output;
-						LDense* dense = new LDense(parent, dims[1], use_bias, name, dev);
+						LDense* dense = new LDense(parent, dims[1], use_bias, name, dev, mem);
 
 						Tensor* weights_tensor = eddlT::create(dims, weights->data(), dev);
 						Tensor::copy(weights_tensor, dense->W );
@@ -679,7 +679,7 @@ namespace eddl {
 						string name = node->name();
 						vector<int> parent_shape = parent->output->shape;
 
-						actual_layer= new LReshape(parent, shape, name, dev);
+						actual_layer= new LReshape(parent, shape, name, dev, mem);
 						break;
 					}
 
@@ -689,8 +689,8 @@ namespace eddl {
 						Layer *parent = output_node_map[parent_name];
 
 						string name = node->name();
-						float param = 0.0; //We don't use it in relu
-						actual_layer = new LActivation(parent, "relu", name, dev, param);
+						vector<float> param; //We don't use it in relu
+						actual_layer = new LActivation(parent, "relu", param, name, dev, mem);
 						break;
 					}
 				case ONNX_LAYERS::SOFTMAX:
@@ -709,14 +709,14 @@ namespace eddl {
 						}
 
 						string name = node->name();
-						float param = 0.0; //We don't use it in relu
-						actual_layer = new LActivation(parent, "softmax", name, dev, param);
+						vector<float> param; //We don't use it in softmax
+						actual_layer = new LActivation(parent, "softmax", param, name, dev, mem);
 						break;
 
 					}
 				case ONNX_LAYERS::CONCAT:
 					{
-						int axis;
+						int axis = 1;
 						for ( int j = 0; j < node->attribute_size(); j++) {
 							onnx::AttributeProto attribute = node->attribute(j);
 							string attr_name = attribute.name();
@@ -736,7 +736,7 @@ namespace eddl {
 							}
 						}
 						string name = node->name();
-						actual_layer = new LConcat(parents, name, dev);
+						actual_layer = new LConcat(parents, axis, name, dev, mem);
 
 						break;
 					}
@@ -800,7 +800,7 @@ namespace eddl {
 
 						string name = node->name();
 
-						actual_layer = new LMaxPool(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev);
+						actual_layer = new LMaxPool(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
 						break;
 					}
 
@@ -828,7 +828,6 @@ namespace eddl {
 		vector<Layer *> output_layers;
 		for( int i = 0; i < output_names.size(); i++ ) {
 			output_layers.push_back(output_node_map[output_names[i]]);
-
 		}
 		return new Net(input_layers, output_layers);
 	}

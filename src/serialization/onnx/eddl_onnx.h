@@ -22,14 +22,14 @@ namespace eddl{
 	//Importing module
 	//------------------------------------------------------------------------------
 
-	Net* import_net_from_onnx_file(std::string path);
+	Net* import_net_from_onnx_file(std::string path, int mem=0);
 
-	Net* import_net_from_onnx_pointer(void* serialized_model, size_t model_size); 
+	Net* import_net_from_onnx_pointer(void* serialized_model, size_t model_size, int mem=0); 
 	
-	Net* import_net_from_onnx_string(std::string* model_string);
+	Net* import_net_from_onnx_string(std::string* model_string, int mem=0);
 
 #if defined(cPROTO)
-	Net* build_net_onnx(onnx::ModelProto model);
+	Net* build_net_onnx(onnx::ModelProto model, int mem);
 #endif
 
 	// Exporting module

@@ -234,8 +234,8 @@ file(GLOB_RECURSE ONNX_SOURCES_FILES
     ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.cpp
     ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.cc
 )
-# SET(ONNX_SOURCES ${ONNX_HEADER_FILES} ${ONNX_SOURCES_FILES})
-SET(ONNX_SOURCES "")
+SET(ONNX_SOURCES ${ONNX_HEADER_FILES} ${ONNX_SOURCES_FILES})
+# SET(ONNX_SOURCES "")
 
 
 # [LIBRARY] EDDL LIBRARY *********************
@@ -310,10 +310,10 @@ if (ZLIB_FOUND)
 endif()
 
 #Onnx link
-#if(Protobuf_FOUND)
-#    target_include_directories(eddl PUBLIC ${PROTOBUF_INCLUDE_DIR})
-#	target_link_libraries(eddl PRIVATE ${PROTOBUF_LIBRARIES})
-#endif()
+if(Protobuf_FOUND)
+    target_include_directories(eddl PUBLIC ${PROTOBUF_INCLUDE_DIR})
+	target_link_libraries(eddl PRIVATE ${PROTOBUF_LIBRARIES})
+endif()
 
 # ONNX
 # include(FindProtobuf)
@@ -439,8 +439,8 @@ if(BUILD_EXAMPLES)
     target_link_libraries(tensor_tests_dev eddl)
 
 	# EXAMPLES: ONNX ******************************************************************
-	 add_executable(onnx_import_export "${EXAMPLES_DIR}/onnx/1_onnx_file.cpp")
-	 target_link_libraries(onnx_import_export eddl)
+	# add_executable(onnx_pointer "${EXAMPLES_DIR}/onnx/1_onnx_pointer.cpp")
+	# target_link_libraries(onnx_pointer eddl)
 
 	 add_executable(onnx_export "${EXAMPLES_DIR}/onnx/2_onnx_save_net_to_file.cpp")
 	 target_link_libraries(onnx_export eddl)

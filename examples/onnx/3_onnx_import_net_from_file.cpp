@@ -33,9 +33,10 @@ int main(int argc, char **argv) {
     int batch_size = 100;
     int num_classes = 10;
 
-	string path("example.onnx");
+	string path("trained_model.onnx");
 	Net* net = import_net_from_onnx_file(path);
 
+	std::cout << "Output size list = " << net->lout.size() << endl;
     // Build model
     build(net,
           rmsprop(0.01), // Optimizer
