@@ -27,7 +27,7 @@ For more information about DeepHealth project go to: [deephealth-project.eu](htt
 
 ## Installation
 
-### Package managers (comming soon)
+### Package managers (coming soon)
 
 On Ubuntu/Debian run:
 
