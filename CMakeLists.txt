@@ -12,7 +12,7 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # USER OPTIONS *******************************
 set(BUILD_TARGET "GPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
-option(BUILD_EXAMPLES "Compile examples" ON)
+option(BUILD_EXAMPLES "Compile examples" OFF)
 option(BUILD_TESTS "Compile tests" OFF)
 option(BUILD_SHARED_LIB "Whether to build a static or dynamic library" ON)
 option(BUILD_HPC "Use aggressive flags that might break the code. Use it carefully." OFF)
@@ -357,11 +357,11 @@ endif()
 
 
 # [TESTS] Generate a test executable
-if(BUILD_TESTS)
-    enable_testing()
-    find_package(GTest REQUIRED)
-    target_link_libraries(eddl PRIVATE ${GTEST_INCLUDE_DIRS})
-endif(BUILD_TESTS)
+#if(BUILD_TESTS)
+#    enable_testing()
+#    find_package(GTest REQUIRED)
+#    target_link_libraries(eddl PRIVATE ${GTEST_INCLUDE_DIRS})
+#endif(BUILD_TESTS)
 
 
 # [EXAMPLES] Generate a few test executables
