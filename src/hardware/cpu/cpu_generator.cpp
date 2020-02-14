@@ -34,9 +34,7 @@ cpu_rand_binary(Tensor * A, float v)
         else A->ptr[i] = 0.0;
 }
 
-void
-cpu_rand_normal(Tensor * A, float m, float s, bool fast_math)
-{
+void cpu_rand_normal(Tensor * A, float m, float s, bool fast_math) {
     int r = rand();
 
     if (fast_math) {

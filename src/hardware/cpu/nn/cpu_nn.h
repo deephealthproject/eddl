@@ -21,14 +21,36 @@ void add_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsi
 // Activations
 void cpu_relu(Tensor *A, Tensor *B);
 void cpu_d_relu(Tensor *D, Tensor *I, Tensor *PD);
-void cpu_lrelu(Tensor *A, Tensor *B, float param);
-void cpu_d_lrelu(Tensor *D, Tensor *I, Tensor *PD, float param);
+
+void cpu_thresholded_relu(Tensor *A, Tensor *B, float param);
+void cpu_d_thresholded_relu(Tensor *D, Tensor *I, Tensor *PD, float param);
+
+void cpu_leaky_relu(Tensor *A, Tensor *B, float param);
+void cpu_d_leaky_relu(Tensor *D, Tensor *I, Tensor *PD, float param);
+
+void cpu_elu(Tensor *A, Tensor *B, float param);
+void cpu_d_elu(Tensor *D, Tensor *I, Tensor *PD, float param);
+
+void cpu_softplus(Tensor *A, Tensor *B);
+void cpu_d_softplus(Tensor *D, Tensor *I, Tensor *PD);
+
+void cpu_softsign(Tensor *A, Tensor *B);
+void cpu_d_softsign(Tensor *D, Tensor *I, Tensor *PD);
+
 void cpu_sigmoid(Tensor *A, Tensor *B);
 void cpu_d_sigmoid(Tensor *D, Tensor *I, Tensor *PD);
+
+void cpu_hard_sigmoid(Tensor *A, Tensor *B);
+void cpu_d_hard_sigmoid(Tensor *D, Tensor *I, Tensor *PD);
+
 void cpu_tanh(Tensor *A, Tensor *B);
 void cpu_d_tanh(Tensor *D, Tensor *I, Tensor *PD);
+
 void cpu_softmax(Tensor *A, Tensor *B);
 void cpu_d_softmax(Tensor *D, Tensor *I, Tensor *PD);
+
+void cpu_linear(Tensor *A, Tensor *B, float param);
+void cpu_d_linear(Tensor *D, Tensor *I, Tensor *PD, float param);
 
 // Losses
 void cpu_cent(Tensor *A, Tensor *B, Tensor *C);
@@ -41,9 +63,13 @@ void cpu_conv2D(ConvolDescriptor *D);
 void cpu_conv2D_grad(ConvolDescriptor *D);
 void cpu_conv2D_back(ConvolDescriptor *D);
 
-// Pool
+// MaxPool
 void cpu_mpool2D(PoolDescriptor*D);
 void cpu_mpool2D_back(PoolDescriptor *D);
+
+// AvgPool
+void cpu_avgpool2D(PoolDescriptor*D);
+void cpu_avgpool2D_back(PoolDescriptor *D);
 
 // Tensor (special functions that deal with 4D tensors)
 void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size);

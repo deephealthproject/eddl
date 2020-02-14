@@ -29,7 +29,7 @@ using namespace std;
 class GeneratorLayer : public LinLayer {
 public:
 
-    GeneratorLayer(string name, int dev);
+    GeneratorLayer(string name, int dev, int mem);
 
     void addchild(Layer *l) override;
 
@@ -46,13 +46,11 @@ public:
     float mean;
     float stdev;
 
-    LGauss(float mean, float stdev, vector<int> size, string name, int dev);
+    LGauss(float mean, float stdev, vector<int> size, string name, int dev, int mem);
 
     void forward() override;
 
     void backward() override;
-
-    void resize(int b) override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -69,7 +67,7 @@ public:
 
     Tensor *mask;
 
-    LUniform(float low, float high, vector<int> size, string name, int dev);
+    LUniform(float low, float high, vector<int> size, string name, int dev, int mem);
 
     void forward() override;
 

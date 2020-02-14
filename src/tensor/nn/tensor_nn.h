@@ -28,12 +28,32 @@ int accuracy(Tensor *A, Tensor *B);
 void ReLu(Tensor *A, Tensor *B);
 void D_ReLu(Tensor *D, Tensor *I, Tensor *PD);
 
-void LReLu(Tensor *A, Tensor *B,float param);
-void D_LReLu(Tensor *D, Tensor *I, Tensor *PD,float param);
+void LeakyReLu(Tensor *A, Tensor *B,float param);
+void D_LeakyReLu(Tensor *D, Tensor *I, Tensor *PD,float param);
+
+//ELU
+void ELu(Tensor *A, Tensor *B, float param);
+void D_ELu(Tensor *D, Tensor *I, Tensor *PD, float param);
+
+//Thresholded ReLu
+void ThresholdedReLu(Tensor *A, Tensor *B, float param);
+void D_ThresholdedReLu(Tensor *D, Tensor *I, Tensor *PD, float param);
+
+// Softplus
+void Softplus(Tensor *A, Tensor *B);
+void D_softplus(Tensor *D, Tensor *I, Tensor *PD);
+
+// Softsign
+void Softsign(Tensor *A, Tensor *B);
+void D_softsign(Tensor *D, Tensor *I, Tensor *PD);
 
 // Sigmoid
 void Sigmoid(Tensor *A, Tensor *B);
 void D_Sigmoid(Tensor *D, Tensor *I, Tensor *PD);
+
+// Hard Sigmoid
+void HardSigmoid(Tensor *A, Tensor *B);
+void D_HardSigmoid(Tensor *D, Tensor *I, Tensor *PD);
 
 // Softmax
 void Softmax(Tensor *A, Tensor *B);
@@ -43,6 +63,9 @@ void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
 void Tanh(Tensor *A, Tensor *B);
 void D_Tanh(Tensor *D, Tensor *I, Tensor *PD);
 
+//Linear
+void Linear(Tensor *A, Tensor *B, float param);
+void D_Linear(Tensor *D, Tensor *I, Tensor *PD, float param);
 
 // ***** Deep Learning *****************************
 // Conv2D
@@ -53,6 +76,11 @@ void Conv2D_back(ConvolDescriptor *D);
 // MaxPool
 void MPool2D(PoolDescriptor *D);
 void MPool2D_back(PoolDescriptor *D);
+
+
+// AvgPool
+void AvgPool2D(PoolDescriptor *D);
+void AvgPool2D_back(PoolDescriptor *D);
 
 // ***** Tensor operations *****************************
 void repeat_nn(Tensor *A, Tensor *B, vector<int> size);

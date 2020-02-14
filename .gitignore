@@ -13,6 +13,9 @@
 
 # Documentation
 /docs/doxygen/build
+/docs/source/_build
+/docs/source/_static
+/docs/source/_templates
 
 # Other files
 *.dot
@@ -221,3 +224,4 @@ CMakeFiles/
 /doc/*.tmp
 /doc/doxygen/*.pdf
 /doc/doxygen/doxygen_log.txt
+tags

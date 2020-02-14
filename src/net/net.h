@@ -40,105 +40,112 @@ int isInorig(Layer *l, vlayer vl, int &ind);
 
 class Net {
 private:
-    void build(Optimizer *opt, vloss lo, vmetrics me);
+	void build(Optimizer *opt, vloss lo, vmetrics me, bool initialize=true);
 
-    void set_compserv(CompServ *cs);
+	void set_compserv(CompServ *cs);
 
 public:
-    string name;
-    int dev;
-    int batch_size;
-    int tr_batches;
-    int inferenced_samples;
-    int trmode;
+	string name;
+	int dev;
+	int batch_size;
+	int tr_batches;
+	int inferenced_samples;
+	int trmode;
+	int mem_level; // see Computing Service
+	unsigned int verbosity_level = 0;
 
-    vector<int> devsel;
-    CompServ *cs;
+	vector<int> devsel;
+	CompServ *cs;
 
-    vlayer layers;
-    vlayer lin;
-    vlayer lout;
-    vlayer vfts;
-    vlayer vbts;
-    vlayer netinput;
+	vlayer layers;
+	vlayer lin;
+	vlayer lout;
+	vlayer vfts;
+	vlayer vbts;
+	vlayer netinput;
 
-    vloss losses;
-    vmetrics metrics;
-    verr fiterr;
-    verr total_loss;
-    verr total_metric;
-    FILE *flog_tr;
-    FILE *flog_ts;
+	vloss losses;
+	vmetrics metrics;
+	verr fiterr;
+	verr total_loss;
+	verr total_metric;
+	FILE *flog_tr;
+	FILE *flog_ts;
 
-    Optimizer *optimizer;
-    vector<Net *> snets;
+	Optimizer *optimizer;
+	vector<Net *> snets;
 
-    vtensor Xs[MAX_THREADS];
-    vtensor Ys[MAX_THREADS];
+	vtensor Xs[MAX_THREADS];
+	vtensor Ys[MAX_THREADS];
 
-    Net(vlayer in, vlayer out);
-    ~Net();
+	Net(vlayer in, vlayer out);
+	~Net();
 
-    void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs);
-    void toGPU(vector<int> &g,int lsb);
-    void toCPU(int t);
+	void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize=true);
+	void toGPU(vector<int> g,int lsb,int mem);
+	void toCPU(int t);
 
-    void fts();
-    void bts();
-    void split(int c, int todev);
-    int inNet(Layer *l);
-    void walk(Layer *l);
-    void walk_back(Layer *l);
-
-
-    void resize(int batch);
-
-    string summary();
-    void plot(string fname,string mode);
-
-    void setmode(int m);
+	void fts();
+	void bts();
+	void split(int c, int todev);
+	int inNet(Layer *l);
+	void walk(Layer *l);
+	void walk_back(Layer *l);
 
 
-    void save(const string& filename, string format="");
-    void load(const string& filename, string format="");
-    void setlogfile(string fname);
+	void resize(int batch);
+
+	void enable_distributed();
+
+	string summary();
+	void plot(string fname,string mode);
+
+	void setmode(int m);
 
 
-    //Func
-    void do_initialize();
-    void do_reset();
-    void do_reset_grads();
-    void do_forward();
-    void do_delta();
-    void do_compute_loss();
-    void do_backward();
-    void do_applygrads();
-
-    void sync_weights();
-
-    // API
-    void run_snets(void *(*F)(void *t));
-    void forward(vector<Layer *> in);
-    void forward(vector<Tensor*> in);
-    void forward();
-    void reset_loss();
-    void print_loss(int b);
-    void backward(vector<Tensor *> target);
-    void backward(Layer* (*f)(Layer *),Layer *out);
-    void backward();
-    void delta();
-    void reset();
-    void reset_grads();
-    void update();
-    void compute_loss();
-    void clamp(float min,float max);
-    void setlr(vector <float> p);
+	void save(const string& filename, string format="");
+	void load(const string& filename, string format="");
+	void setlogfile(string fname);
 
 
-    void fit(vtensor tin, vtensor tout, int batch_size, int epochs);
-    void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);
-    void evaluate(vtensor tin, vtensor tout);
-    void predict(vtensor tin, vtensor tout);
+	//Func
+	void do_initialize();
+	void do_reset();
+	void do_reset_grads();
+	void do_forward();
+	void do_delta();
+	void do_compute_loss();
+	void do_backward();
+	void do_applygrads();
+
+	void reset_accumulated_gradients();
+	void apply_accumulated_gradients();
+
+	void sync_weights();
+
+	// API
+	void run_snets(void *(*F)(void *t));
+	void forward(vector<Layer *> in);
+	void forward(vector<Tensor*> in);
+	void forward();
+	void reset_loss();
+	void print_loss(int b);
+	void backward(vector<Tensor *> target);
+	void backward(Layer* (*f)(Layer *),Layer *out);
+	void backward();
+	void delta();
+	void reset();
+	void reset_grads();
+	void update();
+	void compute_loss();
+	void clamp(float min,float max);
+	void setlr(vector <float> p);
+
+
+	void fit(vtensor tin, vtensor tout, int batch_size, int epochs);
+	void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);
+	void evaluate(vtensor tin, vtensor tout);
+	void predict(vtensor tin, vtensor tout);
 
 
 

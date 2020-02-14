@@ -27,22 +27,23 @@ using namespace std;
 class LConv : public LinLayer {
 public:
     static int total_layers;
+	bool distributed_training;
 
     ConvolDescriptor *cd;
 
     // constructors and clones
-    LConv(Layer *parent, const vector<int> &ks, const vector<int> &st, const vector<int> &p, string name, int dev);
+    LConv(Layer *parent, const vector<int> &ks, const vector<int> &st, const vector<int> &p, string name, int dev, int mem);
 
     LConv(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
-          int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev);
+          int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem);
 
-    LConv(Layer *parent, ConvolDescriptor *cd, string name, int dev);
+    LConv(Layer *parent, ConvolDescriptor *cd, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
-    // Params are in ConvolDescriptor
+    void mem_delta() override;
 
     // implementation
     void forward() override;
@@ -51,7 +52,19 @@ public:
 
     void resize(int batch) override;
 
+	void update_weights(Tensor* w, Tensor* bias=nullptr) override;
+
+	void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
+
+	void reset_accumulated_gradients() override;
+
+	void apply_accumulated_gradients() override;
+
     string plot(int c) override;
+
+	static void reset_name_counter();
+
+	void enable_distributed() override;
 
 };
 
@@ -63,9 +76,9 @@ public:
     // constructors and clones
     LConvT(Layer *parent, int filters, const vector<int> &kernel_size,
            const vector<int> &output_padding, string padding, const vector<int> &dilation_rate,
-           const vector<int> &strides, bool use_bias, string name, int dev);
+           const vector<int> &strides, bool use_bias, string name, int dev, int mem);
 
-    LConvT(Layer *parent, ConvolDescriptor *cd, string name, int dev);
+    LConvT(Layer *parent, ConvolDescriptor *cd, string name, int dev, int mem);
 
 //    Layer *share(int c, int bs, vector<Layer *> p) override;
 //
@@ -90,7 +103,7 @@ public:
     static int total_layers;
 
     // constructors and clones
-    LUpSampling(Layer *parent, const vector<int> &size, string interpolation, string name, int dev);
+    LUpSampling(Layer *parent, const vector<int> &size, string interpolation, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -102,8 +115,6 @@ public:
     void forward() override;
 
     void backward() override;
-
-    void resize(int batch) override;
 
     string plot(int c) override;
 

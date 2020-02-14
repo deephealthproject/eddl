@@ -19,13 +19,10 @@ using namespace std;
 
 int LRotate::total_layers = 0;
 
-LRotate::LRotate(Layer *parent, float angle, vector<int> offset_center, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
+LRotate::LRotate(Layer *parent, float angle, vector<int> offset_center, string da_mode, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "rotate" + to_string(++total_layers);
 
-    // TODO: Implement
-    input = parent->output;
-    output = new Tensor(input->getShape(), dev);
-    delta = parent->delta;
+    output = new Tensor(input->shape, dev);
 
     // Params
     this->angle = angle;
@@ -38,15 +35,6 @@ LRotate::LRotate(Layer *parent, float angle, vector<int> offset_center, string d
 
 }
 
-LRotate::~LRotate()
-{
-  delta=nullptr;
-}
-
-// virtual
-void LRotate::resize(int batch){
-  output->resize(batch);
-}
 
 void LRotate::forward() {
     Tensor::rotate(this->input, this->output, angle, this->offset_center, this->da_mode, this->constant);
@@ -58,14 +46,14 @@ void LRotate::backward() {
 
 
 Layer *LRotate::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LRotate(p[0], this->angle, this->offset_center, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
+    auto *n = new LRotate(p[0], this->angle, this->offset_center, this->da_mode, this->constant, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LRotate::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LRotate(p[0], this->angle, this->offset_center, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LRotate(p[0], this->angle, this->offset_center, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     return n;

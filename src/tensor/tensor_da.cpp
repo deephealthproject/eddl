@@ -35,7 +35,7 @@ void Tensor::shift(Tensor *A, Tensor *B, vector<int> shift, string mode, float c
     // Check dimensions
     if(A->shape!=B->shape){
         msg("Incompatible dimensions", "Tensor::shift");
-    } else if (A->ndim != 4){
+    } else if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::shift");
     }
 
@@ -60,7 +60,7 @@ void Tensor::rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center
     // Check dimensions
     if(A->shape!=B->shape){
         msg("Incompatible dimensions", "Tensor::rotate");
-    } else if (A->ndim != 4){
+    } else if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::rotate");
     }
 
@@ -88,7 +88,7 @@ void Tensor::scale(Tensor *A, Tensor *B, vector<int> new_shape, string mode, flo
     }
 
     // Check dimensions
-    if (A->ndim != 4){
+    if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::scale");
     }
 
@@ -118,7 +118,7 @@ void Tensor::flip(Tensor *A, Tensor *B, int axis) {
     // Check dimensions
     if(A->shape!=B->shape){
         msg("Incompatible dimensions", "Tensor::flip");
-    } else if (A->ndim != 4){
+    } else if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::flip");
     }
 
@@ -149,7 +149,7 @@ void Tensor::crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coo
     }
 
     // Check dimensions
-    if (A->ndim != 4){
+    if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::crop");
     }
 
@@ -180,7 +180,7 @@ void Tensor::crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<in
     }
 
     // Check dimensions
-    if (A->ndim != 4){
+    if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::crop_scale");
     }
 
@@ -214,7 +214,7 @@ void Tensor::cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> c
     // Check dimensions
     if(A->shape!=B->shape){
         msg("Incompatible dimensions", "Tensor::cutout");
-    } else if (A->ndim != 4){
+    } else if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::cutout");
     }
 
@@ -249,7 +249,7 @@ void Tensor::shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<f
     // Check dimensions
     if(A->shape!=B->shape){
         msg("Incompatible dimensions", "Tensor::shift_random");
-    } else if (A->ndim != 4){
+    } else if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::shift_random");
     }
 
@@ -275,7 +275,7 @@ void Tensor::rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<in
     // Check dimensions
     if(A->shape!=B->shape){
         msg("Incompatible dimensions", "Tensor::rotate_random");
-    } else if (A->ndim != 4){
+    } else if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::rotate_random");
     }
 
@@ -302,7 +302,7 @@ void Tensor::scale_random(Tensor *A, Tensor *B, vector<float> factor, string mod
     }
 
     // Check dimensions
-    if (A->ndim != 4){
+    if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::scale_random");
     }
 
@@ -332,7 +332,7 @@ void Tensor::flip_random(Tensor *A, Tensor *B, int axis) {
     // Check dimensions
     if(A->shape!=B->shape){
         msg("Incompatible dimensions", "Tensor::flip_random");
-    } else if (A->ndim != 4){
+    } else if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::flip_random");
     }
 
@@ -354,7 +354,7 @@ void Tensor::flip_random(Tensor *A, Tensor *B, int axis) {
 
 void Tensor::crop_random(Tensor *A, Tensor *B) {
     // Check dimensions
-    if (A->ndim != 4){
+    if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::crop_random");
     }
 
@@ -382,7 +382,7 @@ void Tensor::crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, strin
     }
 
     // Check dimensions
-    if (A->ndim != 4){
+    if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::crop_scale_random");
     }
 
@@ -414,7 +414,7 @@ void Tensor::cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<
     // Check dimensions
     if(A->shape!=B->shape){
         msg("Incompatible dimensions", "Tensor::cutout_random");
-    } else if (A->ndim != 4){
+    } else if (A->ndim != 4 || B->ndim != 4){
         msg("This method requires two 4D tensors", "Tensor::cutout_random");
     }
 

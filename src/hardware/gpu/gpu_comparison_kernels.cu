@@ -14,6 +14,33 @@
 #include <iostream>
 #include <cuda.h>
 
+// GPU: Truth value testing
+__global__ void glogical_all(float *A, int size, bool &result){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    // if(!result) return;  // Abort if there is a result
+
+    if (thread_id_x < size && result){
+        if (A[thread_id_x] != 1.0f){
+            result = false;
+            // return;
+        }
+    }
+}
+
+__global__ void glogical_any(float *A, int size, bool &result){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    // if(result) return;  // Abort if there is a result
+
+    if (thread_id_x < size && !result){
+        if (A[thread_id_x] == 1.0f){
+            result = true;
+            // return;
+        }
+    }
+}
+
 __global__ void gpu_isfinite(float *A, float *B, int size){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 

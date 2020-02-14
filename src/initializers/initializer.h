@@ -87,4 +87,25 @@ public:
     void apply(Tensor *params) override;
 };
 
+class ITruncateNormal : public Initializer {
+public:
+    float mean;
+    float stdev;
+    int seed;
+
+    explicit ITruncateNormal(float mean, float stdev, int seed=-1);
+    void apply(Tensor *params) override;
+};
+
+class IVarianceScaling : public Initializer {
+public:
+    float scale;
+    string mode;
+    string distribution;
+    int seed;
+
+    explicit IVarianceScaling(float scale, string mode, string distribution, int seed=-1);
+    void apply(Tensor *params) override;
+};
+
 #endif //EDDL_INITIALIZER_H

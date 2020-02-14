@@ -21,7 +21,7 @@ using namespace std;
 int LNorm::total_layers = 0;
 
 
-LNorm::LNorm(Layer *parent, float epsilon, string name, int dev) : LinLayer(name, dev) {
+LNorm::LNorm(Layer *parent, float epsilon, string name, int dev, int mem) : LinLayer(name, dev, mem) {
 
     vector<int> axis;
     if (parent->output->ndim == 2) axis.push_back(1);
@@ -45,17 +45,17 @@ LNorm::LNorm(Layer *parent, float epsilon, string name, int dev) : LinLayer(name
     LDiv *div;
 
     // mean
-    mean_x=new LRMean(parent, axis, true,this->name+"mean_x",dev);
+    mean_x=new LRMean(parent, axis, true,this->name+"mean_x", this->dev, this->mem_level);
 
     // var
-    diff=new LDiff(parent, mean_x,this->name+"diff",dev);
-    mult=new LMult(diff,diff,this->name+"mult",dev);
-    var=new LRMean(mult, axis,true,this->name+"mean_mult",dev);
+    diff=new LDiff(parent, mean_x,this->name+"diff", this->dev, this->mem_level);
+    mult=new LMult(diff,diff,this->name+"mult", this->dev, this->mem_level);
+    var=new LRMean(mult, axis,true,this->name+"mean_mult", this->dev, this->mem_level);
     //sd
-    veps=new LSum(var,epsilon,this->name+"sum_eps",dev);
-    sd=new LSqrt(veps,this->name+"sqrt",dev);
+    veps=new LSum(var,epsilon,this->name+"sum_eps", this->dev, this->mem_level);
+    sd=new LSqrt(veps,this->name+"sqrt", this->dev, this->mem_level);
     // norm
-    div=new LDiv(diff,sd,this->name+"div",dev);
+    div=new LDiv(diff,sd,this->name+"div", this->dev, this->mem_level);
 
     layers.push_back(mean_x); //0
     layers.push_back(diff);  //1 --
@@ -71,11 +71,48 @@ LNorm::LNorm(Layer *parent, float epsilon, string name, int dev) : LinLayer(name
     ////////////////////////////
 
     output=div->output;
-    delta=div->delta;
+//    delta=div->delta;
 
     parent->addchild(this);
     addparent(parent);
 
+}
+
+
+void LNorm::mem_delta() {
+    // TEMPORAL!
+    if(this->delta == nullptr) {
+
+        // Reserve parent's delta AND assign it to this layer
+        parent[0]->mem_delta();  // Reserve delta for parent
+
+        // Reserve delta for subops // TODO: Don't like it
+        for(auto &l : layers){
+            l->mem_delta(); // Reserve delta for m2
+        }
+        delta=layers[layers.size()-1]->delta; // Last operation
+
+        if(this->verbosity_level >= 2){
+            std::cout << "Booked delta for: " + this->name << std::endl;
+        }
+    }
+}
+
+void LNorm::free_delta() {
+    // TEMPORAL!
+    // Not really needed, but I like to keep all the methods the same (ease the robustness of "copy-paste")
+    if(this->delta != nullptr) {
+
+        // Reserve delta for subops // TODO: Don't like it
+        for(auto &l : layers){
+            l->free_delta(); // Reserve delta for m2
+        }
+        delta = nullptr;
+
+        if(this->verbosity_level >= 2){
+            std::cout << "Deleted delta for: " + this->name << std::endl;
+        }
+    }
 }
 
 
@@ -100,7 +137,6 @@ void LNorm::forward() {
 }
 
 void LNorm::backward() {
-
   for(int i=layers.size()-1;i>=0;i--) {
     layers[i]->backward();
   }
@@ -110,7 +146,7 @@ void LNorm::backward() {
 
 
 Layer *LNorm::share(int c, int bs, vector<Layer *> p) {
-    LNorm *n = new LNorm(p[0], epsilon, "share_" + to_string(c) + name, dev);
+    LNorm *n = new LNorm(p[0], epsilon, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement
@@ -119,7 +155,7 @@ Layer *LNorm::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LNorm::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LNorm *n = new LNorm(p[0], epsilon, "clone_" + to_string(todev) + name, todev);
+    LNorm *n = new LNorm(p[0], epsilon, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

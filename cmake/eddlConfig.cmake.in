@@ -1,6 +1,6 @@
 include(CMakeFindDependencyMacro)
 
-SET(EDDL_WITH_CUDA @EDDL_WITH_CUDA@)
+SET(USE_CUDA @USE_CUDA@)
 
 # pthreads setup for linux os
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
@@ -9,10 +9,11 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_dependency(Threads)
 endif()
 
-if (${EDDL_WITH_CUDA})
+if (${USE_CUDA})
     enable_language(CUDA)
 endif()
 
+find_dependency(Eigen3)
 find_dependency(OpenMP)
 set(ZLIB_ROOT "@ZLIB_ROOT@")
 find_dependency(ZLIB)

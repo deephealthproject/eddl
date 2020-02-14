@@ -70,16 +70,20 @@ public:
     int r, c, z;
     int padrt,padrb;
     int padcl,padcr;
+    int size;
+    int mem_level; // see CS
 
 
-    Tensor *I; // Input map
-    Tensor *ID;// Delta input map
-    Tensor *K; // filters
-    Tensor *bias; // bias
-    Tensor *gK;// gradient filters
-    Tensor *gbias;// gradient bias
-    Tensor *D; // Delta
-    Tensor *O; // Outputmap
+    Tensor *I= nullptr; // Input map
+    Tensor *ID= nullptr;// Delta input map
+    Tensor *K= nullptr; // filters
+    Tensor *bias= nullptr; // bias
+    Tensor *gK= nullptr;// gradient filters
+    Tensor *gbias= nullptr;// gradient bias
+  	Tensor *acc_gK= nullptr;// Accumulated gradients for kernels
+  	Tensor *acc_gbias= nullptr;// Accumulated gradients for bias
+    Tensor *D = nullptr; // Delta
+    Tensor *O= nullptr; // Outputmap
 
     // CPU implementation
     float *ptrI;
@@ -99,22 +103,24 @@ public:
 
     ConvolDescriptor();
 
-    ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p);
+    ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p, int mem=0);
 
-    ConvolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p);
+    ConvolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem=0);
 
     void build(Tensor *A);
     void resize(int b);
+	void enable_distributed();
 };
 
 
 class PoolDescriptor : public ConvolDescriptor {
 public:
     Tensor *indX, *indY; // indexes
+    int mem_level; // see CS
 
-    PoolDescriptor(const vector<int> &ks, const vector<int> &st, string p);
+    PoolDescriptor(const vector<int> &ks, const vector<int> &st, string p, int mem=0);
 
-    PoolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p);
+    PoolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem=0);
 
     void build(Tensor *A);
     void resize(int b);

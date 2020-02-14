@@ -15,15 +15,16 @@
 #include "../tensor/tensor.h"
 #include "../tensor/tensor_reduction.h"
 
-namespace eddlT{
+typedef Tensor* tensor;
+typedef vector<int> tshape;
 
-  #define tensor Tensor*
-  #define tshape vector<int>
+namespace eddlT{
 
   // Creation ops ***********************************
   Tensor* create(const vector<int> &shape);
   Tensor* create(const vector<int> &shape, int dev);
   Tensor* create(const vector<int> &shape, float *ptr);
+  Tensor* create(const vector<int> &shape, float *ptr, int dev);
 
   Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
   Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);

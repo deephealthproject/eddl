@@ -30,7 +30,7 @@ int LPermute::total_layers = 0;
   @returns the absolute value of each element in l
 
   */
-LPermute::LPermute(Layer *parent, vector<int> dims, string name, int dev): OperatorLayer(name, dev) {
+LPermute::LPermute(Layer *parent, vector<int> dims, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     // Set default name
     if(name.empty()) this->name = "permute_" + to_string(++total_layers);
 
@@ -47,7 +47,7 @@ LPermute::LPermute(Layer *parent, vector<int> dims, string name, int dev): Opera
 
     // Set flow tensors
     output=new Tensor(sd->oshape, dev);
-    delta=new Tensor(sd->oshape, dev);
+//    delta=new Tensor(sd->oshape, dev);
 
     parent->addchild(this);
     addparent(parent);
@@ -75,7 +75,7 @@ Layer *LPermute::clone(int c, int bs, vector<Layer *> p, int todev) {
     vector<int> dims_batch = vector<int>(sd->dims.begin()+1, sd->dims.end());
     for(auto &d : dims_batch){ d-=1; }
 
-    auto *n = new LPermute(p[0], dims_batch, "share_" + to_string(c) + name, todev);
+    auto *n = new LPermute(p[0], dims_batch, "share_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
     return n;
 }

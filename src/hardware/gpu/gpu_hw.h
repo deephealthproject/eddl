@@ -31,6 +31,7 @@ extern curandGenerator_t random_generator[64];
 
 // GPU: Temp
 int* get_block_dim(int N, int blockSize);
+void copy_cpu2gpu(void* cpu_addresses, void* gpu_addresses, int size, bool delete_cpu);
 
 // GPU: Core
 void gpu_fill_(Tensor *A, float v);
@@ -39,6 +40,7 @@ void gpu_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
+void gpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative);
 
 void gpu_copy_to_gpu(float *nptr,Tensor *B);
 void gpu_copy_from_gpu(Tensor *A,float *nptr);
@@ -80,7 +82,7 @@ void gpu_rand_binary(Tensor *A, float v);
 void gpu_rand_normal(Tensor *A, float m, float s);
 
 // GPU: Math (in-place)
-void gpu_inv_(Tensor *A);
+void gpu_inv_(Tensor *A, float v);
 void gpu_abs_(Tensor *A);
 void gpu_acos_(Tensor *A);
 void gpu_add_(Tensor *A, float v);
@@ -147,20 +149,24 @@ void gpu_reduction_back(ReduceDescriptor *RD);
 //void gpu_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
 //void gpu_delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC);
 
-// CPU: Logic functions: Comparisons
+// GPU: Logic functions: Comparisons
 void gpu_isfinite(Tensor *A, Tensor* B);
 void gpu_isinf(Tensor *A, Tensor* B);
 void gpu_isnan(Tensor *A, Tensor* B);
 void gpu_isneginf(Tensor *A, Tensor* B);
 void gpu_isposinf(Tensor *A, Tensor* B);
 
-// CPU: Logic functions: Comparisons
+// GPU: Logic functions: Comparisons
 void gpu_logical_and(Tensor *A, Tensor *B, Tensor *C);
 void gpu_logical_or(Tensor *A, Tensor *B, Tensor *C);
 void gpu_logical_not(Tensor *A, Tensor *B);
 void gpu_logical_xor(Tensor *A, Tensor *B, Tensor *C);
 
-// Logic operations: Comparison ops
+// GPU: Logic functions: Truth value testing
+bool gpu_all(Tensor *A);
+bool gpu_any(Tensor *A);
+
+// GPU: Logic operations: Comparison ops
 bool gpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan);
 void gpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool equal_nan);
 void gpu_greater(Tensor *A, Tensor *B, Tensor *C);

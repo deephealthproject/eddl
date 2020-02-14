@@ -42,7 +42,7 @@ void Tensor::abs_() {
 }
 
 Tensor* Tensor::abs(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->abs_();
     return t_new;
 }
@@ -65,7 +65,7 @@ void Tensor::acos_(){
 }
 
 Tensor* Tensor::acos(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->acos_();
     return t_new;
  }
@@ -92,7 +92,7 @@ void Tensor::add_(Tensor *A){
 }
 
 Tensor* Tensor::add(Tensor *A, Tensor *B){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     add(1.0f, A, 1.0f, B, t_new, 0);
     return t_new;
  }
@@ -182,7 +182,7 @@ void Tensor::asin_(){
 }
 
 Tensor* Tensor::asin(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->asin_();
     return t_new;
  }
@@ -205,7 +205,7 @@ void Tensor::atan_(){
 }
 
 Tensor* Tensor::atan(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->atan_();
     return t_new;
  }
@@ -228,7 +228,7 @@ void Tensor::ceil_(){
 }
 
 Tensor* Tensor::ceil(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->ceil_();
     return t_new;
  }
@@ -251,7 +251,7 @@ void Tensor::clamp_(float min, float max){
 }
 
 Tensor* Tensor::clamp(Tensor *A, float min, float max){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->clamp_(min, max);
     return t_new;
  }
@@ -259,14 +259,14 @@ Tensor* Tensor::clamp(Tensor *A, float min, float max){
 void Tensor::clampmax_(float max){ clamp_(MIN_FLOAT, max); }
 
 Tensor* Tensor::clampmax(Tensor *A, float max){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->clampmax_(max);
     return t_new;
 }
 
 void Tensor::clampmin_(float min){ clamp_(min, MAX_FLOAT); }
 Tensor* Tensor::clampmin(Tensor *A, float min){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->clampmin_(min);
     return t_new;
 }
@@ -289,7 +289,7 @@ void Tensor::cos_(){
 }
 
 Tensor* Tensor::cos(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->cos_();
     return t_new;
 }
@@ -312,7 +312,7 @@ void Tensor::cosh_(){
 }
 
 Tensor* Tensor::cosh(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->cosh_();
     return t_new;
 }
@@ -320,14 +320,14 @@ Tensor* Tensor::cosh(Tensor *A){
 
 void Tensor::div_(float v) { mult_(1.0f / v); }
 
-void Tensor::inv_() {
+void Tensor::inv_(float v) {
   if (isCPU()) {
-      cpu_inv_(this);
+      cpu_inv_(this, v);
   }
   #ifdef cGPU
   else if (isGPU())
     {
-      gpu_inv_(this);
+      gpu_inv_(this, v);
     }
   #endif
   #ifdef cFPGA
@@ -339,8 +339,14 @@ void Tensor::inv_() {
 
 
 Tensor* Tensor::div(Tensor *A, float v){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->div_(v);
+    return t_new;
+}
+
+Tensor* Tensor::div(Tensor *A, Tensor *B){
+    auto *t_new = new Tensor(A->shape, A->device);
+    Tensor::el_div(A, B, t_new, 0);
     return t_new;
 }
 
@@ -391,7 +397,7 @@ void Tensor::exp_() {
 
 
 Tensor* Tensor::exp(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->exp_();
     return t_new;
 }
@@ -414,7 +420,7 @@ void Tensor::floor_(){
 }
 
 Tensor* Tensor::floor(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->floor_();
     return t_new;
 }
@@ -438,7 +444,7 @@ void Tensor::log_() {
 }
 
 Tensor* Tensor::log(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->log_();
     return t_new;
 }
@@ -461,7 +467,7 @@ void Tensor::log2_() {
 }
 
 Tensor* Tensor::log2(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->log2_();
     return t_new;
 }
@@ -485,7 +491,7 @@ void Tensor::log10_() {
 }
 
 Tensor* Tensor::log10(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->log10_();
     return t_new;
 }
@@ -509,7 +515,7 @@ void Tensor::logn_(float n) {
 }
 
 Tensor* Tensor::logn(Tensor *A, float n){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->logn_(n);
     return t_new;
 }
@@ -569,7 +575,7 @@ void Tensor::mod_(float v){
 }
 
 Tensor* Tensor::mod(Tensor *A, float v){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->mod_(v);
     return t_new;
 };
@@ -592,8 +598,15 @@ void Tensor::mult_(float v) {
 }
 
 Tensor* Tensor::mult(Tensor *A, float v){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->mult_(v);
+    return t_new;
+}
+
+
+Tensor* Tensor::mult(Tensor *A, Tensor *B){
+    auto *t_new = new Tensor(A->shape, A->device);
+    Tensor::el_mult(A, B, t_new, 0);
     return t_new;
 }
 
@@ -681,7 +694,7 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
 void Tensor::neg_(){ mult_(-1.0f); }
 
 Tensor* Tensor::neg(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->neg_();
     return t_new;
 };
@@ -730,7 +743,7 @@ void Tensor::pow_(float exp) {
 }
 
 Tensor* Tensor::pow(Tensor *A, float exp){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->pow_(exp);
     return t_new;
 }
@@ -754,7 +767,7 @@ void Tensor::powb_(float base) {
 }
 
 Tensor* Tensor::powb(Tensor *A, float base){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->powb_(base);
     return t_new;
 }
@@ -777,7 +790,7 @@ void Tensor::reciprocal_() {
 }
 
 Tensor* Tensor::reciprocal(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->reciprocal_();
     return t_new;
 }
@@ -800,7 +813,7 @@ void Tensor::remainder_(float v) {
 }
 
 Tensor* Tensor::remainder(Tensor *A, float v){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->remainder_(v);
     return t_new;
 }
@@ -823,7 +836,7 @@ void Tensor::round_(){
 }
 
 Tensor* Tensor::round(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->round_();
     return t_new;
 }
@@ -846,7 +859,7 @@ void Tensor::rsqrt_(){
 }
 
 Tensor* Tensor::rsqrt(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->rsqrt_();
     return t_new;
 }
@@ -869,7 +882,7 @@ void Tensor::sigmoid_(){
 }
 
 Tensor* Tensor::sigmoid(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->sigmoid_();
     return t_new;
 }
@@ -892,7 +905,7 @@ void Tensor::sign_(){
 }
 
 Tensor* Tensor::sign(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->sign_();
     return t_new;
 }
@@ -944,7 +957,7 @@ void Tensor::sin_(){
 }
 
 Tensor* Tensor::sin(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->sin_();
     return t_new;
 }
@@ -967,7 +980,7 @@ void Tensor::sinh_(){
 }
 
 Tensor* Tensor::sinh(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->sinh_();
     return t_new;
 }
@@ -993,7 +1006,7 @@ void Tensor::sqr_() {
 }
 
 Tensor* Tensor::sqr(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->sqr_();
     return t_new;
 }
@@ -1017,7 +1030,7 @@ void Tensor::sqrt_() {
 }
 
 Tensor* Tensor::sqrt(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->sqrt_();
     return t_new;
 }
@@ -1026,7 +1039,7 @@ Tensor* Tensor::sqrt(Tensor *A){
 void Tensor::sub_(float v) { add_(-v); }
 
 Tensor* Tensor::sub(Tensor *A, Tensor *B){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     add(1.0f, A, -1.0f, B, t_new, 0);
     return t_new;
 }
@@ -1180,7 +1193,7 @@ void Tensor::tan_(){
 }
 
 Tensor* Tensor::tan(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->tan_();
     return t_new;
 }
@@ -1203,7 +1216,7 @@ void Tensor::tanh_(){
 }
 
 Tensor* Tensor::tanh(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->tanh_();
     return t_new;
 }
@@ -1227,7 +1240,7 @@ void Tensor::trunc_(){
 }
 
 Tensor* Tensor::trunc(Tensor *A){
-    Tensor *t_new = A->clone();
+    auto *t_new = new Tensor(A->shape, A->device);
     t_new->trunc_();
     return t_new;
 }
@@ -1239,3 +1252,108 @@ Tensor* Tensor::interpolate(float factor1, Tensor *A, float factor2, Tensor *B){
     return C;
 }
 
+// ***** Overload operators *****************************
+// Tensor and Tensor (Element wise)  ********************
+Tensor& operator+ (Tensor &A, Tensor &B) {
+    Tensor* t = Tensor::add(&A, &B);
+    return (*t);
+}
+
+Tensor& operator- (Tensor &A, Tensor &B) {
+    Tensor* t = Tensor::sub(&A, &B);
+    return (*t);
+}
+
+Tensor& operator* (Tensor &A, Tensor &B) {
+    Tensor* t = Tensor::mult(&A, &B);
+    return (*t);
+}
+
+
+Tensor& operator/ (Tensor &A, Tensor &B) {
+    Tensor* t = Tensor::div(&A, &B);
+    return (*t);
+}
+
+
+// Tensor op= Tensor (Element wise)  ********************
+void operator+= (Tensor &A, Tensor &B) {
+    Tensor::add(1.0f, &A, 1.0f, &B, &A, 0);
+}
+
+void operator-= (Tensor &A, Tensor &B) {
+    Tensor::add(1.0f, &A, -1.0f, &B, &A, 0);
+}
+
+void operator*= (Tensor &A, Tensor &B) {
+    Tensor::el_mult(&A, &B, &A, 0);
+}
+
+void operator/= (Tensor &A, Tensor &B) {
+    Tensor::el_div(&A, &B, &A, 0);
+}
+
+// Tensor op= Scalar  ********************
+void operator+= (Tensor &A, float v) {
+    A.add_(v);
+}
+
+void operator-= (Tensor &A, float v) {
+    A.sub_(v);
+}
+
+void operator*= (Tensor &A, float v) {
+    A.mult_(v);
+}
+
+void operator/= (Tensor &A, float v) {
+    A.div_(v);
+}
+
+// Tensor and scalar *******************
+Tensor& operator+ (Tensor &A, float v) {
+    Tensor* t = A.clone();
+    t->add_(v);
+    return (*t);
+}
+
+Tensor& operator- (Tensor &A, float v) {
+    Tensor* t = A.clone();
+    t->add_(-v);
+    return (*t);
+}
+
+Tensor& operator* (Tensor &A, float v) {
+    Tensor* t = A.clone();
+    t->mult_(v);
+    return (*t);
+}
+
+Tensor& operator/ (Tensor &A, float v) {
+    Tensor* t = A.clone();
+    t->div_(v);
+    return (*t);
+}
+
+
+// Scalar and Tensor *******************
+Tensor& operator+ (float v, Tensor &A) {
+    return A + v;
+}
+
+Tensor& operator- (float v, Tensor &A) {
+    Tensor* t = A.clone();
+    t->neg_();
+    t->add_(v);
+    return (*t);
+}
+
+Tensor& operator* (float v, Tensor &A) {
+    return A * v;
+}
+
+Tensor& operator/ (float v, Tensor &A) {
+    Tensor* t = A.clone();
+    t->inv_(v);
+    return (*t);
+}

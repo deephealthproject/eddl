@@ -29,7 +29,7 @@ int LAbs::total_layers = 0;
   @returns the absolute value of each element in l
 
   */
-LAbs::LAbs(Layer *l, string name, int dev): OperatorLayer(name, dev) {
+LAbs::LAbs(Layer *l, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     // Set default name
     if(name.empty()) this->name = "abs_" + to_string(++total_layers);
 
@@ -37,8 +37,7 @@ LAbs::LAbs(Layer *l, string name, int dev): OperatorLayer(name, dev) {
 
     mask=new Tensor(l->output->getShape(),dev);
     output=new Tensor(l->output->getShape(),dev);
-    delta=new Tensor(l->output->getShape(),dev);
-
+//    delta=new Tensor(l->output->getShape(),dev);
 
     l->addchild(this);
     addparent(l);
@@ -66,7 +65,7 @@ Layer *LAbs::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LAbs::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LAbs *n = new LAbs(p[0], "share_" + to_string(c) + name, todev);
+    LAbs *n = new LAbs(p[0], "share_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
 
     return n;

@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <stdexcept>
 
 #include "tensor.h"
 #include "../utils.h"
@@ -35,14 +36,12 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
      */
 #ifndef cGPU
     if ((dev > DEV_CPU)&&(dev<DEV_FPGA)) {
-        fprintf(stderr, "Not compiled for GPU\n");
-        exit(0);
+        throw std::runtime_error("Not compiled for GPU");
     }
 #endif
 #ifndef cFPGA
     if (dev >= DEV_FPGA) {
-        fprintf(stderr, "Not compiled for FPGA\n");
-        exit(0);
+        throw std::runtime_error("Not compiled for FPGA");
     }
 #endif
 
@@ -90,13 +89,20 @@ void Tensor::updateStrides() {
     }
 }
 
+void Tensor::deleteData(){
+    if(this->ptr != nullptr){
+        delete this->ptr;
+        this->ptr = nullptr;
+    }
+}
+
 void Tensor::updateData(float *fptr){
 
     if (isCPU()) {
         // If null => Reserve memory
         // else => point to data
-        if (fptr==nullptr) { this->ptr = get_fmem(this->size,"Tensor::Tensor"); }
-        else { this-> ptr = fptr; };
+        if (fptr==nullptr) { this->ptr = get_fmem(this->size,"Tensor::updateData"); }
+        else { this->ptr = fptr; };
 
         // For 2 dimensions, map to data to Eigen for efficiency
         // Efficient operations will be done over ptr2, which also points to ptr
@@ -189,6 +195,17 @@ Tensor* Tensor::clone(){
     return t_new;
 }
 
+void Tensor::reallocate(Tensor* old_t, vector<int> *s){
+    // Update values
+    if(s != nullptr){
+        updateDevice(old_t->device);
+        updateShape(*s);
+        updateSize();
+        updateStrides();
+    }
+
+    updateData(old_t->ptr);
+}
 
 Tensor::~Tensor() {
     if (isCPU()) {
@@ -260,38 +277,38 @@ void Tensor::print(bool asInt, bool raw) {
 
         }else{
 
-        // Open brackets
-        opened = 0;
-        for (int j = 0; j < aux->ndim-1; ++j) {
-            if(i%aux->stride[j]==0){
-                if(!opened && closed==1){ if(ndim==2){ buffer << "\n"; } else { buffer << " "; } }
-                buffer << "[";
-                opened += 1;
+            // Open brackets
+            opened = 0;
+            for (int j = 0; j < aux->ndim-1; ++j) {
+                if(i%aux->stride[j]==0){
+                    if(!opened && closed==1){ if(ndim==2){ buffer << "\n"; } else { buffer << " "; } }
+                    buffer << "[";
+                    opened += 1;
+                }
             }
-        }
 
-        // Print number
-        if(asInt) {  buffer << (int)aux->ptr[i]; }
-        else {  buffer << aux->ptr[i]; }
+            // Print number
+            if(asInt) {  buffer << (int)aux->ptr[i]; }
+            else {  buffer << aux->ptr[i]; }
 
-        // Close brackets
-        closed = 0;
-        for (int j = 0; j < aux->ndim-1; ++j) {
-            if((i+1)%aux->stride[j]==0) {
-                buffer << "]";
-                closed += 1;
+            // Close brackets
+            closed = 0;
+            for (int j = 0; j < aux->ndim-1; ++j) {
+                if((i+1)%aux->stride[j]==0) {
+                    buffer << "]";
+                    closed += 1;
+                }
             }
-        }
 
-        // Break lines
-        if (i+1 < aux->size){
-            if(!closed){ buffer << " ";}
-            else{
-                if (closed == 2 ) {  buffer << "\n"; }
-                else if (closed == 3) { buffer << "\n\n"; }
-                else if (closed > 3) { buffer << "\n\n\n"; }
+            // Break lines
+            if (i+1 < aux->size){
+                if(!closed){ buffer << " ";}
+                else{
+                    if (closed == 2 ) {  buffer << "\n"; }
+                    else if (closed == 3) { buffer << "\n\n"; }
+                    else if (closed > 3) { buffer << "\n\n\n"; }
+                }
             }
-        }
 
         }
 
@@ -357,3 +374,4 @@ bool Tensor::isSquared(Tensor *A){
     }
     return true;
 }
+

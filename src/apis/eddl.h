@@ -40,29 +40,71 @@
 // EDDL namespace defines the API
 namespace eddl {
 
-#define layer Layer*
-#define model Net*
-#define optimizer Optimizer*
-#define initializer Initializer*
-#define regularizer Regularizer*
-#define compserv CompServ*
-#define loss NetLoss *
-#define metric NetLoss *
+typedef Layer* layer;
+typedef Net* model;
+typedef Optimizer* optimizer;
+typedef Initializer* initializer;
+typedef Regularizer* regularizer;
+typedef CompServ* compserv;
+typedef NetLoss * loss;
+typedef NetLoss * metric;
 
     ///////////////////////////////////////
     //  MODEL METHODS
     ///////////////////////////////////////
 
     // Creation
+    /**
+      *  @brief Model instance.
+      *
+      *  @param in  Vector with model input layers, typically Input({...})
+      *  @param out  Vector with the ouputs of the model. Example: {Sigmoid(MyModel())}
+      *  @return     Model instance
+    */
     model Model(vlayer in, vlayer out);
-    void build(model net, optimizer o=nullptr, CompServ *cs=nullptr);
-    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr);
+    void build(model net, optimizer o=nullptr, CompServ *cs=nullptr, bool init_weigths=true);
+
+    /**
+      *  @brief Tell the model which optimizer, losses, metrics and computing services use.
+      *
+      *  @param net  Model
+      *  @param o  Optimizer
+      *  @param lo  Vector with losses
+      *  @param me  Vector with metrics
+      *  @param cs  Computing service
+      *  @return     (void)
+    */
+    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr, bool init_weights=true);
 
     // Computing services
-    void toGPU(model net, vector<int> g={1},int lsb=1);
+    /**
+      *  @brief Assign model operations to the GPU.
+      *
+      *  @param net  Model
+      *  @param g  Vector with gpu ids to allocate the model
+      *  @param lsb  Number of batches to sync model weights
+      *  @return     (void)
+    */
+    void toGPU(model net, vector<int> g, int lsb);
+    void toGPU(model net, vector<int> g, string mem);
+    void toGPU(model net, vector<int> g, int lsb, string mem);
+    void toGPU(model net, vector<int> g);
+    void toGPU(model net, string mem);
+    void toGPU(model net);
+    //void toGPU(model net, string mem);
+    /**
+      *  @brief Assign model operations to the CPU.
+      *
+      *  @param net  Model
+      *  @param t  CPU Threads
+      *  @return     (void)
+    */
     void toCPU(model net, int t=std::thread::hardware_concurrency());
-    compserv CS_CPU(int th=-1);
-    compserv CS_GPU(const vector<int> &g,int lsb=1);
+    compserv CS_CPU(int th=-1, string mem="low_mem");
+
+    compserv CS_GPU(const vector<int> g={1}, string mem="low_mem");
+    compserv CS_GPU(const vector<int> g={1}, int lsb=1, string mem="low_mem");
+
     compserv CS_FGPA(const vector<int> &f,int lsb=1);
     compserv CS_COMPSS(string filename);
 
@@ -191,17 +233,50 @@ namespace eddl {
     void eval_batch(model net, vector<Tensor *> in, vector<Tensor *> out);
 
     // Finest methods
+    /**
+      *  @brief Set model mode.
+      *
+      *  @param net  Model
+      *  @param mode  Train 1, Test 0
+      *  @return     (void)
+    */
     void set_mode(model net, int mode);
+    /**
+      *  @brief Resets model loss.
+      *
+      *  @param net  Model
+      *  @return     (void)
+    */
     void reset_loss(model m);
     vlayer forward(model m,vector<Layer *> in);
     vlayer forward(model m,vector<Tensor *> in);
     vlayer forward(model m);
     vlayer forward(model m,int b);
+    /**
+      *  @brief Set model gradients to zero.
+      *
+      *  @param net  Model
+      *  @return     (void)
+    */
     void zeroGrads(model m);
+    /**
+      *  @brief Calculates the gradient by passing it's argument (1x1 unit tensor by default) through the backward graph.
+      *
+      *  @param net  Model
+      *  @param target  Targets
+      *  @return     (void)
+    */
     void backward(model m,vector<Tensor *> target);
     void backward(model net);
     void backward(loss l);
     void update(model m);
+    /**
+      *  @brief Prints model loss at some batch.
+      *
+      *  @param net  Model
+      *  @param batch  Batch number
+      *  @return     (void)
+    */
     void print_loss(model m, int batch);
 
     // model constraints
@@ -218,9 +293,37 @@ namespace eddl {
     // loss and metrics methods
     float compute_loss(loss L);
     float compute_metric(loss L);
+    /**
+      *  @brief Get Loss by his name.
+      *
+      *  @param type  Loss name/type
+      *  @return     Selected Loss
+    */
     Loss* getLoss(string type);
+    /**
+      *  @brief Create new Loss.
+      *
+      *  @param f  Loss function
+      *  @param in  Loss input
+      *  @param name  Loss name
+      *  @return     Created Loss
+    */
     loss newloss(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name);
+    /**
+      *  @brief Create new Loss.
+      *
+      *  @param f  Loss function
+      *  @param in  Loss input
+      *  @param name  Loss name
+      *  @return     Created Loss
+    */
     loss newloss(const std::function<Layer*(Layer*)>& f, Layer *in, string name);
+    /**
+      *  @brief Get Metric by his name.
+      *
+      *  @param type  Metric name/type
+      *  @return     Selected Metric
+    */
     Metric* getMetric(string type);
     loss newmetric(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name);
     loss newmetric(const std::function<Layer*(Layer*)>& f, Layer *in, string name);
@@ -245,11 +348,11 @@ namespace eddl {
       *
       *  @param parent  Parent layer
       *  @param activation Name of the activation function
-      *  @param param   Value to apply to the activation function
+      *  @param params   Vector of floats representing the different params of the activation function
       *  @param name  Name of the layer
       *  @return     Activation layer
     */
-    layer Activation(layer parent, string activation, float param=0.01, string name = "");
+    layer Activation(layer parent, string activation, vector<float> params={}, string name="");
 
     /**
       *  @brief Applies a Softmax activation function to the given layer.
@@ -259,7 +362,7 @@ namespace eddl {
       *  @param parent  Parent layer
       *  @return     Output of Softmax transformation
     */
-    layer Softmax(layer parent);
+    layer Softmax(layer parent, string name="");
 
     /**
       *  @brief Applies a Sigmoid activation function to the given layer.
@@ -269,7 +372,7 @@ namespace eddl {
       *  @param parent  Parent layer
       *  @return     Output of Sigmoid activation
     */
-    layer Sigmoid(layer parent);
+    layer Sigmoid(layer parent, string name="");
 
     /**
       *  @brief Applies a Rectified Linear Unit activation function to the given layer.
@@ -279,7 +382,16 @@ namespace eddl {
       *  @param parent  Parent layer
       *  @return     Output of ReLu activation
     */
-    layer ReLu(layer parent);
+    layer ReLu(layer parent, string name="");
+
+    /**
+      *  @brief Applies the Thresholded version of a Rectified Linear Unit activation function to the given layer.
+      *
+      *  @param parent  Parent layer
+      *  @param alpha  Threshold value
+      *  @return     Output of Thresholded ReLu activation
+    */
+    layer ThresholdedReLu(layer parent, float alpha=1.0, string name="");
 
     /**
       *  @brief Applies the Leaky version of a Rectified Linear Unit activation function to the given layer.
@@ -287,10 +399,61 @@ namespace eddl {
       *  @see   https://en.wikipedia.org/wiki/Rectifier_(neural_networks)#Leaky_ReLUs
       *
       *  @param parent  Parent layer
-      *  @param param  Negative slope coefficient
+      *  @param alpha  Negative slope coefficient
       *  @return     Output of Leaky ReLu activation
     */
-    layer LReLu(layer parent,float param=0.01);
+    layer LeakyReLu(layer parent, float alpha=0.01, string name="");
+
+    /**
+      *  @brief Applies the Exponential Linear Unit activation function to the given layer.
+      *
+      *  @param parent  Parent layer
+	  *  @param alpha ELu coefficient
+      *  @return     Output of ELu activation
+    */
+    layer Elu(layer parent, float alpha=1.0, string name="");
+
+    /**
+      *  @brief Applies the Scaled Exponential Linear Unit activation function to the given layer.
+      *
+      *  @param parent  Parent layer
+      *  @return     Output of Selu activation
+    */
+    layer Selu(layer parent, string name="");
+
+    /**
+    *  @brief Applies the Exponential (base e) activation function to the given layer.
+    *
+    *  @param parent  Parent layer
+    *  @return     Output of Exponential activation
+    */
+    layer Exponential(layer parent, string name="");
+
+    /**
+    *  @brief Applies the Softplus activation function to the given layer.
+    *
+    *  @param parent  Parent layer
+    *  @return     Output of Exponential activation
+    */
+    layer Softplus(layer parent, string name="");
+
+
+    /**
+    *  @brief Applies the Softsign activation function to the given layer.
+    *
+    *  @param parent  Parent layer
+    *  @return     Output of Exponential activation
+    */
+    layer Softsign(layer parent, string name="");
+
+    /**
+      *  @brief Applies the Linear activation function to the given layer.
+      *
+      *  @param parent  Parent layer
+	  *  @param alpha Linear coefficient
+      *  @return     Output of Linear activation
+    */
+    layer Linear(layer parent, float alpha=1.0, string name="");
 
     /**
       *  @brief Applies the Hyperbolic tangent activation function to the given layer.
@@ -300,7 +463,8 @@ namespace eddl {
       *  @param parent  Parent layer
       *  @return     Output of hyperbolic activation
     */
-    layer Tanh(layer parent);
+    layer Tanh(layer parent, string name="");
+
     /**
       *  @brief Convolution layer.
       *
@@ -319,6 +483,7 @@ namespace eddl {
                const vector<int> &strides = {1, 1}, string padding = "same", int groups = 1,
                const vector<int> &dilation_rate = {1, 1},
                bool use_bias = true, string name = "");
+
     /**
       *  @brief Regular densely-connected NN layer.
       *
@@ -329,6 +494,7 @@ namespace eddl {
       *  @return     Densely-connected NN layer
     */
     layer Dense(layer parent, int ndim, bool use_bias = true,  string name = "");
+
     /**
       *  @brief Applies Dropout to a layer.
       *
@@ -341,6 +507,7 @@ namespace eddl {
       *  @return     Layer with Dropout
     */
     layer Dropout(layer parent, float rate, string name = "");
+
     /**
       *  @brief Used to initialize an input to a model.
       *
@@ -349,6 +516,7 @@ namespace eddl {
       *  @return     Input layer
     */
     layer Input(const vector<int> &shape, string name = "");
+
     /**
       *  @brief Upsampling layer.
       *
@@ -361,9 +529,10 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     Output layer after upsampling operation
     */
-    layer UpSampling(layer parent, const vector<int> &size, string interpolation = "nearest", string name = ""); //Todo: Implement
+    layer UpSampling(layer parent, const vector<int> &size, string interpolation = "nearest", string name = "");
+
     /**
-      *  @brief Reshapes a Layer to a certain shape.
+      *  @brief Reshapes an output to a certain shape.
       *
       *  @param parent  Parent layer
       *  @param shape  Target shape. Vector of integers. Does not include the batch axis
@@ -371,11 +540,22 @@ namespace eddl {
       *  @return     Output of reshape operation
     */
     layer Reshape(layer parent, const vector<int> &shape, string name = "");
+
+    /**
+      *  @brief Flattens the input. Does not affect the batch size.
+      *
+      *  @param parent  Parent layer
+      *  @param name  A name for the operation
+      *  @return     Output of reshape operation
+    */
+    layer Flatten(layer parent, string name = "");
+
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding = "same",
                 const vector<int> &dilation_rate = {1, 1},
                 const vector<int> &strides = {1, 1}, bool use_bias = true, string name = ""); //Todo: Implement
     layer Embedding(int input_dim, int output_dim, string name = ""); //Todo: Implement
+
     /**
       *  @brief Transposes a Layer.
       *
@@ -387,35 +567,254 @@ namespace eddl {
     layer Transpose(layer parent, string name = "");
 
     // Transformation Layers
+    /**
+      *  @brief Affine transformation of the image keeping center invariant: rotate+translate+scale+shear.
+      *
+      *  @param parent  Parent layer
+      *  @param angle  Angle factor
+      *  @param translate  Translate factor
+      *  @param scale  Scaling factor
+      *  @param shear  Shear factor
+      *  @param name  A name for the operation
+      *  @return     Output of affine transformation
+    */
     layer Affine(layer parent, float angle=0, float translate=0, float scale=0, float shear=0, string name="");  // TODO: Implement
+    /**
+      *  @brief Crops the given image at `[(top, left), (bottom, right)]`.
+      *
+      *  @param parent  Parent layer
+      *  @param from_coords  Vector (top, left) coordinates
+      *  @param to_coords  Vector (bottom, right) coordinates
+      *  @param reshape  If True, the output shape will be new_shape (classical scale; recommended). If False, the output shape will be the input shape (scale<100%: scale + padding; scale >100%: crop + scale)
+      *  @param constant  Erasing value
+      *  @param name  A name for the operation
+      *  @return     Output of crop transformation
+    */
     layer Crop(layer parent, vector<int> from_coords, vector<int> to_coords, bool reshape=true, float constant=0.0f, string name="");
+    /**
+      *  @brief Crops the given image at the center with size (width, height).
+      *
+      *  @param parent  Parent layer
+      *  @param size  Vector (height, width) size
+      *  @param reshape  If True, the output shape will be new_shape (classical scale; recommended). If False, the output shape will be the input shape (scale<100%: scale + padding; scale >100%: crop + scale)
+      *  @param constant  Erasing value
+      *  @param name  A name for the operation
+      *  @return     Output of center crop transformation
+    */
     layer CenteredCrop(layer parent, vector<int> size, bool reshape=true, float constant=0.0f, string name="");
+    /**
+      *  @brief Randomly change the brightness, contrast and saturation of an image.
+      *
+      *  @param parent  Parent layer
+      *  @param brightness  How much to jitter brightness. brightness_factor is chosen uniformly from [max(0, 1 - brightness), 1 + brightness] or the given [min, max]. Should be non negative numbers
+      *  @param contrast  How much to jitter contrast. contrast_factor is chosen uniformly from [max(0, 1 - contrast), 1 + contrast] or the given [min, max]. Should be non negative numbers
+      *  @param saturation  How much to jitter saturation. saturation_factor is chosen uniformly from [max(0, 1 - saturation), 1 + saturation] or the given [min, max]. Should be non negative numbers
+      *  @param hue  How much to jitter hue. hue_factor is chosen uniformly from [-hue, hue] or the given [min, max]. Should have 0<= hue <= 0.5 or -0.5 <= min <= max <= 0.5
+      *  @param name  A name for the operation
+      *  @return     Output of color jitter transformation
+    */
     layer ColorJitter(layer parent, float brightness=0, float contrast=0, float saturation=0, float hue=0, string name="");  // TODO: Implement
+    /**
+      *  @brief Crop the given image at `[(top, left), (bottom, right)]` and scale it to the parent size.
+      *
+      *  @param parent  Parent layer
+      *  @param from_coords  Vector (top, left) coordinates
+      *  @param to_coords  Vector (bottom, right) coordinates
+      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirrror", "reflect", "wrap", "original")
+      *  @param constant  Fill value for area outside the rotated image, it is used for all channels respectively
+      *  @param name  A name for the operation
+      *  @return     Output of crop scale transformation
+    */
     layer CropScale(layer parent, vector<int> from_coords, vector<int> to_coords, string da_mode="nearest", float constant=0.0f, string name="");
+    /**
+      *  @brief Selects a rectangle region in an image at `[(top, left), (bottom, right)]` and erases its pixels using a constant value.
+      *
+      *  @param parent  Parent layer
+      *  @param from_coords  Vector (top, left) coordinates
+      *  @param to_coords  Vector (bottom, right) coordinates
+      *  @param constant  Erasing value
+      *  @param name  A name for the operation
+      *  @return     Output of cutout transformation
+    */
     layer Cutout(layer parent, vector<int> from_coords, vector<int> to_coords, float constant=0.0f, string name="");
+    /**
+      *  @brief Flip the given image at `axis=n`.
+      *
+      *  @param parent  Parent layer
+      *  @param axis  Flip axis
+      *  @param name  A name for the operation
+      *  @return     Output of flip transformation
+    */
     layer Flip(layer parent, int axis=0, string name="");
     layer Grayscale(layer parent,  string name="");  // TODO: Implement
+    /**
+      *  @brief Horizontally flip the given image.
+      *
+      *  @param parent  Parent layer
+      *  @param name  A name for the operation
+      *  @return     Output of horizontal flip transformation
+    */
     layer HorizontalFlip(layer parent, string name="");
     layer Pad(layer parent, vector<int> padding, float constant=0.0f, string name=""); // TODO: Implement
+    /**
+      *  @brief Rotate the image by angle.
+      *
+      *  @param parent  Parent layer
+      *  @param angle  In degrees counter clockwise order
+      *  @param offset_center  Optional center of rotation. Default is the center of the image
+      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirrror", "reflect", "wrap", "original")
+      *  @param constant  Fill value for area outside the rotated image, it is used for all channels respectively.
+      *  @return     Output of rotate transformation
+    */
     layer Rotate(layer parent, float angle, vector<int> offset_center={0, 0}, string da_mode="original", float constant=0.0f, string name="");
-    layer Scale(layer parent, vector<int> new_shape, bool reshape, string da_mode="nearest", float constant=0.0f, string name="");
+    /**
+      *  @brief Resize the input image to the given size. `[height, width]`.
+      *
+      *  @param parent  Parent layer
+      *  @param new_shape  Vector with layer/images desired new shape
+      *  @param reshape  If True, the output shape will be new_shape (classical scale; recommended). If False, the output shape will be the input shape (scale<100%: scale + padding; scale >100%: crop + scale)
+      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirrror", "reflect", "wrap", "original")
+      *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively.
+      *  @return     Output of scale transformation
+    */
+    layer Scale(layer parent, vector<int> new_shape, bool reshape=true, string da_mode="nearest", float constant=0.0f, string name="");
+    /**
+      *  @brief Shift the input image `[a, b]`.
+      *
+      *  @param parent  Parent layer
+      *  @param shift  Vector of maximum absolute fraction for horizontal and vertical translations
+      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirrror", "reflect", "wrap", "original")
+      *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively.
+      *  @return     Output of scale transformation
+    */
     layer Shift(layer parent, vector<int> shift, string da_mode="nearest", float constant=0.0f, string name="");
+    /**
+      *  @brief Vertically flip the given image.
+      *
+      *  @param parent  Parent layer
+      *  @param name  A name for the operation
+      *  @return     Output of vertical flip transformation
+    */
     layer VerticalFlip(layer parent, string name="");
+    /**
+      *  @brief Normalize an image with mean and standard deviation.
+      *
+      *  @param parent  Parent layer
+      *  @param name  A name for the operation
+      *  @return     Output of normalize transformation
+    */
     layer Normalize(layer parent, string name="");  // TODO: Implement
 
 
     // Data augmentation Layers
+    /**
+      *  @brief Random affine transformation of the image keeping center invariant: rotate+translate+scale+shear.
+      *
+      *  @param parent  Parent layer
+      *  @param angle  Angle factor range
+      *  @param translate  Translate factor range
+      *  @param scale  Scaling factor range
+      *  @param shear  Shear factor range
+      *  @param name  A name for the operation
+      *  @return     Output of affine transformation
+    */
     layer RandomAffine(layer parent, vector<float> angle, vector<float> translate, vector<float> scale, vector<float> shear, string name="");  // TODO: Implement
+    /**
+      *  @brief Crop the given image at a random location with size `[height, width]`.
+      *
+      *  @param parent  Parent layer
+      *  @param new_shape  Vector (height, width) size
+      *  @param name  A name for the operation
+      *  @return     Output of random crop transformation
+    */
     layer RandomCrop(layer parent, vector<int> new_shape, string name= "");
+    /**
+      *  @brief Crops the given image at the center with size (width, height).
+      *
+      *  @param parent  Parent layer
+      *  @param new_shape  Vector (height, width) size
+      *  @param name  A name for the operation
+      *  @return     Output of random center crop transformation
+    */
     layer RandomCenteredCrop(layer parent, vector<int> new_shape, string name= "");  // TODO: Implement
+    /**
+      *  @brief Crop the given image randomly by the size in a range `[a, b]` by and scale it to the parent size.
+      *
+      *  @param parent  Parent layer
+      *  @param factor  Factor Range for random crop
+      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirrror", "reflect", "wrap", "original")
+      *  @param name  A name for the operation
+      *  @return     Output of random crop scale transformation
+    */
     layer RandomCropScale(layer parent, vector<float> factor, string da_mode= "nearest", string name= "");
+    /**
+      *  @brief Randomly selects a rectangle region in an image and erases its pixels. The random region is defined by the range `[(min_x, max_x), (min_y, max_y)]`, where these are relative values.
+      *
+      *  @param parent  Parent layer
+      *  @param factor_x  Vector of factor fraction for horizontal size
+      *  @param factor_y  Vector of factor fraction for vertical size
+      *  @param constant  Erasing value
+      *  @param name  A name for the operation
+      *  @return     Output of random cutout transformation
+    */
     layer RandomCutout(layer parent, vector<float> factor_x, vector<float> factor_y, float constant= 0.0f, string name= "");
+    /**
+      *  @brief Flip the given image at `axis=n` randomly with a given probability.
+      *
+      *  @param parent  Parent layer
+      *  @param axis  Flip axis
+      *  @param name  A name for the operation
+      *  @return     Output of random flip transformation
+    */
     layer RandomFlip(layer parent, int axis, string name= "");
     layer RandomGrayscale(layer parent, string name= "");
+    /**
+      *  @brief Horizontally flip the given image randomly with a given probability.
+      *
+      *  @param parent  Parent layer
+      *  @param name  A name for the operation
+      *  @return     Output of random horizontal flip transformation
+    */
     layer RandomHorizontalFlip(layer parent, string name= "");
+    /**
+      *  @brief Rotate the image randomly by an angle defined in a range `[a, b]`.
+      *
+      *  @param parent  Parent layer
+      *  @param factor  Range In degrees counter clockwise order
+      *  @param offset_center  Optional center of rotation. Default is the center of the image
+      *  @param da_mode  One of "original"
+      *  @param constant  Fill value for area outside the rotated image, it is used for all channels respectively.
+      *  @return     Output of rotate transformation
+    */
     layer RandomRotation(layer parent, vector<float> factor, vector<int> offset_center= {0, 0}, string da_mode= "original", float constant= 0.0f, string name= "");
+    /**
+      *  @brief Resize the input image randomly by the size in a range `[a, b]`.
+      *
+      *  @param parent  Parent layer
+      *  @param factor  Vector of factor size range new shape
+      *  @param da_mode  One of "nearest"
+      *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively.
+      *  @return     Output of scale transformation
+    */
     layer RandomScale(layer parent, vector<float> factor, string da_mode= "nearest", float constant= 0.0f, string name= "");
+    /**
+      *  @brief Shift the input image randomly in range `[a, b]`.
+      *
+      *  @param parent  Parent layer
+      *  @param factor_x  Vector of factor fraction for horizontal translations
+      *  @param factor_y  Vector of factor fraction for vertical translations
+      *  @param da_mode  One of "nearest", "constant", (ToDo: "mirrror", "reflect", "wrap", "original")
+      *  @param constant  Fill value for area outside the resized image, it is used for all channels respectively.
+      *  @return     Output of scale transformation
+    */
     layer RandomShift(layer parent, vector<float> factor_x, vector<float> factor_y, string da_mode= "nearest", float constant= 0.0f, string name= "");
+    /**
+      *  @brief Vertically flip the given image randomly with a given probability.
+      *
+      *  @param parent  Parent layer
+      *  @param name  A name for the operation
+      *  @return     Output of random vertical flip transformation
+    */
     layer RandomVerticalFlip(layer parent, string name= "");
 
     // Merge Layers
@@ -452,7 +851,7 @@ namespace eddl {
       *  @param name  A name for the operation
       *  @return     Output of concatenation operation with all input layers
     */
-    layer Concat(const vector<layer> &layers, string name = "");
+    layer Concat(const vector<layer> &layers, unsigned int axis=1, string name = "");
     layer MatMul(const vector<layer> &layers, string name = "");
     layer Maximum(const vector<layer> &layers, string name = "");
     layer Minimum(const vector<layer> &layers, string name = "");
@@ -729,6 +1128,13 @@ namespace eddl {
       *  @return     (void) The binary files of CIFAR-10
     */
     void download_cifar10();
+    /**
+      *  @brief Downloads DRIVE Dataset.
+      *
+      *  @see   https://drive.grand-challenge.org/
+      *
+      *  @return     (void) The numpy files of DRIVE
+    */
     void download_drive();
 
 }

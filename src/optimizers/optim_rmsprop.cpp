@@ -61,7 +61,7 @@ void RMSProp::applygrads(int batch) {
         for (int j = 0; j < layers[i]->gradients.size(); j++, p++) {
             Tensor::copy(layers[i]->gradients[j],gT[p]);
             gT[p]->sqr_();
-            gT[p]->mult_(1.0-rho);
+            gT[p]->mult_(1.0f-rho);
 
             gT1[p]->sqr_();
             gT1[p]->mult_(rho);
@@ -72,8 +72,12 @@ void RMSProp::applygrads(int batch) {
             Tensor::el_div(layers[i]->gradients[j],gT[p],gT[p],0);
 
             Tensor::copy(layers[i]->gradients[j],gT1[p]);
-
+			
             Tensor::add(-lr, gT[p],1.0,layers[i]->params[j], layers[i]->params[j], 0);
+
+			if (layers[i]->acc_gradients.size() > 0) {
+				Tensor::add(-lr, gT[p],1.0,layers[i]->acc_gradients[j], layers[i]->acc_gradients[j], 0);
+			}
         }
     }
     else p+=layers[i]->gradients.size();

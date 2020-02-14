@@ -19,12 +19,10 @@ using namespace std;
 
 int LRotateRandom::total_layers = 0;
 
-LRotateRandom::LRotateRandom(Layer *parent, vector<float> factor, vector<int> offset_center, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
+LRotateRandom::LRotateRandom(Layer *parent, vector<float> factor, vector<int> offset_center, string da_mode, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "rotate_random" + to_string(++total_layers);
 
-    input = parent->output;
-    output = new Tensor(input->getShape(), dev);
-    delta = parent->delta;
+    output = new Tensor(input->shape, dev);
 
     // Params
     this->factor = factor;
@@ -37,15 +35,6 @@ LRotateRandom::LRotateRandom(Layer *parent, vector<float> factor, vector<int> of
 
 }
 
-LRotateRandom::~LRotateRandom()
-{
-  delta=nullptr;
-}
-
-// virtual
-void LRotateRandom::resize(int batch){
-  output->resize(batch);
-}
 
 void LRotateRandom::forward() {
     Tensor::rotate_random(this->input, this->output, this->factor, this->offset_center, this->da_mode, this->constant);
@@ -57,14 +46,14 @@ void LRotateRandom::backward() {
 
 
 Layer *LRotateRandom::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LRotateRandom(p[0], this->factor, this->offset_center, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
+    auto *n = new LRotateRandom(p[0], this->factor, this->offset_center, this->da_mode, this->constant, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LRotateRandom::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LRotateRandom(p[0], this->factor, this->offset_center, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LRotateRandom(p[0], this->factor, this->offset_center, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     return n;

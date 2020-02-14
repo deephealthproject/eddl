@@ -19,7 +19,7 @@
 
 ConvolDescriptor::ConvolDescriptor() {}
 
-ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p) {
+ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p, int mem) {
     if (ks.size() != 2) { msg("Kernels must have 3 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
     if (st.size() != 2) { msg("Strides must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
 
@@ -27,6 +27,7 @@ ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vec
     ksize = vector<int>(ks);
     ksize.insert(ksize.begin(), 1, filters);
     stride = vector<int>(st.begin(), st.end());
+    mem_level=mem;
 
     if (p == "same") {
         pad.push_back(ksize[1] / 2);
@@ -47,10 +48,11 @@ ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vec
 }
 
 ConvolDescriptor::ConvolDescriptor(const vector<int> &ks, const vector<int> &st,
-                                   const vector<int> &p) {
+                                   const vector<int> &p, int mem) {
     ksize = vector<int>(ks.begin(), ks.end());
     stride = vector<int>(st.begin(), st.end());
     pad = vector<int>(p.begin(), p.end());
+    mem_level=mem;
 
     if (ksize.size() != 3) msg("Kernels must have 3 dimensions", "ConvolDescriptor::ConvolDescriptor");
     if (stride.size() != 2) msg("Strides must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor");
@@ -80,7 +82,6 @@ void ConvolDescriptor::build(Tensor *A) {
     padcl = pad[2];
     padcr = pad[3];
 
-
     z = nk;
     r = (ir - kr + padrt + padrb) / sr + 1;
     c = (ic - kc + padcl + padcr) / sc + 1;
@@ -88,11 +89,12 @@ void ConvolDescriptor::build(Tensor *A) {
     //cout<<z<<"x"<<r<<"x"<<c<<"\n";
     //getchar();
 
-    if ((r <= 0) || (c <= 0))
+    if ((r <= 0) || (c <= 0)){
         msg("Invalid output shape", "ConvolDescriptor::build");
+    }
 
     O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
-    D = new Tensor(O->getShape(), A->device);
+//    if (!mem_level) { D = new Tensor(O->shape, A->device); }
 
     // Params
     K = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
@@ -110,8 +112,15 @@ void ConvolDescriptor::build(Tensor *A) {
     }
 #ifdef cGPU
     else if (I->isGPU()) {
-      // Big tensor with all the lowering
-      gpuIB=new Tensor(vector<int>{A->shape[0]*r*c,kc*kr*kz}, I->device);
+
+      if (mem_level>1) {
+        // Lowering
+        gpuIB=new Tensor(vector<int>{r*c,kc*kr*kz}, I->device);
+      }
+      else {
+        // Big tensor with all the batch for lowering
+        gpuIB=new Tensor(vector<int>{A->shape[0]*r*c,kc*kr*kz}, I->device);
+      }
 
       // Tensor with variable shared ptr, delete create ptr
       gpuI=new Tensor(vector<int>{r*c,kc*kr*kz}, I->device);
@@ -135,7 +144,7 @@ void ConvolDescriptor::resize(int b)
     if (b==O->shape[0]) return;
 
     O->resize(b);
-    D->resize(b);
+//    if (!mem_level) D->resize(b);
 
     if (I->isCPU()) {
         delete ptrI;
@@ -143,8 +152,17 @@ void ConvolDescriptor::resize(int b)
     }
 #ifdef cGPU
     else if (I->isGPU()) {
-      gpuIB->resize(b*r*c);
+      if (mem_level<2)
+        gpuIB->resize(b*r*c);
     }
 #endif
 
+}
+
+void ConvolDescriptor::enable_distributed() {
+    // Create and initialize the tensors for accumulating gradients in distributed training
+    acc_gK = new Tensor(vector<int>{nk, kz, kr, kc}, I->device);
+    acc_gK->fill_(0.0);
+    acc_gbias = new Tensor(vector<int>{nk}, I->device);
+    acc_gbias->fill_(0.0);
 }

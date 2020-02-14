@@ -21,11 +21,10 @@ using namespace std;
 
 int LReshape::total_layers = 0;
 
-LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev) : LinLayer(name, dev) {
+LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     ls = shape;
 
     if(name.empty()) this->name = "reshape" + to_string(++total_layers);
-
 
     input = parent->output;
 
@@ -63,7 +62,6 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev) : Lin
 
     // sharing the pointers to data
     output = new Tensor(ls, parent->output);
-    delta = new Tensor(ls, parent->delta);
 
     parent->addchild(this);
     addparent(parent);
@@ -71,15 +69,43 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev) : Lin
 
 LReshape::~LReshape()
 {
-  output=delta=nullptr;
+    output=delta=nullptr;
 }
 
 // virtual
 void LReshape::resize(int batch){
-  ls[0]=batch;
-  output->resize(batch, parent[0]->output);
-  delta->resize(batch, parent[0]->delta);
-  if (target!=nullptr) target->resize(batch);
+    ls[0]=batch;
+    output->resize(batch, parent[0]->output);
+    if (target!=nullptr) target->resize(batch);
+}
+
+
+void LReshape::mem_delta() {
+    if (this->delta == nullptr) {
+        // Reserve parent's delta AND assign it to this layer
+        parent[0]->mem_delta();
+
+        // Problem: Delta is always created, regardless of the low_mem
+        delta = new Tensor(ls, parent[0]->delta);
+
+        if(this->verbosity_level >= 2){
+            std::cout << "Booked delta for: " + this->name << std::endl;
+        }
+    }
+}
+
+
+void LReshape::free_delta() {
+    if(this->delta != nullptr) {
+        // Do not delete its delta directly (It's pointer points to parent's delta)
+        delta->ptr = nullptr;
+        delete delta;
+        delta = nullptr;
+
+        if(this->verbosity_level >= 2){
+            std::cout << "Deleted delta for: " + this->name << std::endl;
+        }
+    }
 }
 
 void LReshape::forward() {
@@ -96,7 +122,7 @@ Layer *LReshape::share(int c, int bs, vector<Layer *> p) {
     vector<int> shape = ls;
     shape[0] = bs;
 
-    LReshape *n = new LReshape(p[0], shape, "share_" + to_string(c) + name, dev);
+    auto *n = new LReshape(p[0], shape, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
@@ -108,7 +134,7 @@ Layer *LReshape::clone(int c, int bs, vector<Layer *> p, int todev) {
     shape[0] = bs;
 
 
-    LReshape *n = new LReshape(p[0], shape, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LReshape(p[0], shape, "clone_" + to_string(todev) + name, todev, mem_level);
     n->orig = this;
 
     return n;

@@ -20,12 +20,10 @@ using namespace std;
 
 int LShiftRandom::total_layers = 0;
 
-LShiftRandom::LShiftRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
+LShiftRandom::LShiftRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, string da_mode, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "shift_random" + to_string(++total_layers);
 
-    input = parent->output;
-    output = new Tensor(input->getShape(), dev);
-    delta = parent->delta;
+    output = new Tensor(input->shape, dev);
 
     // Params
     this->factor_x = factor_x;
@@ -38,15 +36,6 @@ LShiftRandom::LShiftRandom(Layer *parent, vector<float> factor_x, vector<float> 
 
 }
 
-LShiftRandom::~LShiftRandom()
-{
-  delta=nullptr;
-}
-
-// virtual
-void LShiftRandom::resize(int batch){
-  output->resize(batch);
-}
 
 void LShiftRandom::forward() {
     Tensor::shift_random(input, output, factor_x, factor_y);
@@ -58,14 +47,14 @@ void LShiftRandom::backward() {
 
 
 Layer *LShiftRandom::share(int c, int bs, vector<Layer *> p) {
-    LShiftRandom *n = new LShiftRandom(p[0], this->factor_x, this->factor_y, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
+    LShiftRandom *n = new LShiftRandom(p[0], this->factor_x, this->factor_y, this->da_mode, this->constant, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LShiftRandom::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LShiftRandom *n = new LShiftRandom(p[0], this->factor_x, this->factor_y, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
+    LShiftRandom *n = new LShiftRandom(p[0], this->factor_x, this->factor_y, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     return n;

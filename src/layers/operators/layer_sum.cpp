@@ -30,7 +30,7 @@ int LSum::total_layers = 0;
   @returns the result of l1+l2 element-wise
 
   */
-LSum::LSum(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev) {
+LSum::LSum(Layer *l1, Layer *l2, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
 
 
     if(name.empty()) this->name = "sum" + to_string(++total_layers);
@@ -38,8 +38,8 @@ LSum::LSum(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev
 
     input=l1->output;
 
-    output = new Tensor(l1->output->getShape(), dev);
-    delta = new Tensor(l1->output->getShape(), dev);
+    output = new Tensor(l1->output->shape, dev);
+//    if (!mem_level) { delta = new Tensor(l1->output->shape, dev); }
 
     l1->addchild(this);
     l2->addchild(this);
@@ -58,14 +58,15 @@ LSum::LSum(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev
   @returns the result of l+k element-wise over l
 
   */
-LSum::LSum(Layer *l, float k, string name, int dev) : OperatorLayer(name, dev) {
+LSum::LSum(Layer *l, float k, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
 
     if(name.empty()) this->name = "sum" + to_string(++total_layers);
     val = k;
 
     input=l->output;
-    output = new Tensor(l->output->getShape(), dev);
-    delta = new Tensor(l->output->getShape(), dev);
+
+    output = new Tensor(l->output->shape, dev);
+//    if (!mem_level) { delta = new Tensor(l->output->shape, dev); }
 
     l->addchild(this);
     addparent(l);
@@ -82,8 +83,9 @@ void LSum::forward() {
 
 void LSum::backward() {
     Tensor::inc(delta, parent[0]->delta);
-    if (binary)
+    if (binary) {
         Tensor::inc(delta, parent[1]->delta);
+      }
 }
 
 Layer *LSum::share(int c, int bs, vector<Layer *> p) {
@@ -93,9 +95,9 @@ Layer *LSum::share(int c, int bs, vector<Layer *> p) {
 Layer *LSum::clone(int c, int bs, vector<Layer *> p, int todev) {
     LSum *n;
     if (binary)
-        n = new LSum(p[0], p[1], "share_" + to_string(c) + name, todev);
+        n = new LSum(p[0], p[1], "share_" + to_string(c) + name, todev,mem_level);
     else
-        n = new LSum(p[0], val, "share_" + to_string(c) + name, todev);
+        n = new LSum(p[0], val, "share_" + to_string(c) + name, todev,mem_level);
     n->orig = this;
     return n;
 }

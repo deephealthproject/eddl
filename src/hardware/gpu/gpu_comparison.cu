@@ -113,6 +113,30 @@ void gpu_logical_xor(Tensor *A, Tensor *B, Tensor *C){
     check_cuda(cudaDeviceSynchronize(), "logical_xor");
 }
 
+// GPU: Logic functions: Truth value testing
+bool gpu_all(Tensor *A){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    bool result = true;
+    glogical_all<<<dimGrid,dimBlock>>>(A->ptr, A->size, result);
+    check_cuda(cudaDeviceSynchronize(), "all");
+    return result;
+}
+
+bool gpu_any(Tensor *A){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    bool result = false;
+    glogical_any<<<dimGrid,dimBlock>>>(A->ptr, A->size, result);
+    check_cuda(cudaDeviceSynchronize(), "any");
+    return result;
+}
 
 bool gpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
     int device=A->gpu_device;

@@ -29,12 +29,12 @@ int LSqrt::total_layers = 0;
 
   */
 
-  LSqrt::LSqrt(Layer *l, string name, int dev) : OperatorLayer(name, dev) {
+  LSqrt::LSqrt(Layer *l, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
       if(name.empty()) this->name = "sqrt_" + to_string(++total_layers);
 
       input=l->output;
-      output = new Tensor(l->output->getShape(), dev);
-      delta = new Tensor(l->output->getShape(), dev);
+      output = new Tensor(l->output->shape, dev);
+//      if (!mem_level) { delta = new Tensor(l->output->shape, dev);  }
 
       l->addchild(this);
       addparent(l);
@@ -53,14 +53,14 @@ int LSqrt::total_layers = 0;
 
   Layer *LSqrt::share(int c, int bs, vector<Layer *> p) {
     LSqrt *n;
-    n = new LSqrt(p[0], "share_" + to_string(c) + name, dev);
+    n = new LSqrt(p[0], "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
     return n;
   }
 
   Layer *LSqrt::clone(int c, int bs, vector<Layer *> p, int todev) {
     LSqrt *n;
-    n = new LSqrt(p[0], "clone_" + to_string(c) + name, todev);
+    n = new LSqrt(p[0], "clone_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
     return n;
   }

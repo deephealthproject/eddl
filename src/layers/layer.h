@@ -39,9 +39,11 @@ public:
     Layer *orig;
     Net *net;
     bool trainable;
+    int mem_level; // See CS
 
     vector<Tensor *> params;
     vector<Tensor *> gradients;
+	vector<Tensor *> acc_gradients;
 
     vector<Layer *> parent;
     vector<Layer *> child;
@@ -54,16 +56,13 @@ public:
     int lin, lout;
     int delta_bp;
     bool detached;
+    unsigned int verbosity_level = 0;
 
-    Layer(string name, int dev);
+    Layer(string name, int dev, int mem);
     // Destructor
     virtual ~Layer();
 
-
     void initialize();
-
-
-
 
     virtual void info();
 
@@ -78,11 +77,16 @@ public:
     Tensor* setBias(Tensor bias);
 
     void clamp(float min,float max);
-    void setdetach();
+    void set_detach();
+
+    void set_mem_level(int mem);
+
+    virtual void mem_delta_parent();
+    virtual void mem_delta();
+    virtual void free_delta();
 
 
     //virtual
-
     virtual void copy(Layer *l2);
 
     virtual void resize(int batch);
@@ -103,9 +107,19 @@ public:
 
     virtual void backward() {}
 
+	virtual void update_weights(Tensor* w, Tensor* bias) {}
+
+	virtual void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias) {}
+
+	virtual void reset_accumulated_gradients() {}
+
+	virtual void apply_accumulated_gradients() {}
+
     virtual Layer *share(int c, int bs, vector<Layer *> p) { return nullptr; }
 
     virtual Layer *clone(int c, int bs, vector<Layer *> p, int todev) { return nullptr; }
+
+	virtual void enable_distributed() {}
 
 };
 
@@ -117,7 +131,7 @@ public:
 class LinLayer : public Layer {
 public:
 
-    LinLayer(string name, int dev);
+    LinLayer(string name, int dev, int mem);
 
     void addchild(Layer *l) override;
 
@@ -127,15 +141,23 @@ public:
 
     string plot(int c) override { return ""; }
 
-    void resize(int batch) override {}
-
     void forward() override {}
 
     void backward() override {}
 
+	void update_weights(Tensor* w, Tensor* bias) override {}
+
+	void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias) override {}
+
+	void reset_accumulated_gradients() override {}
+
+	void apply_accumulated_gradients() override {}
+
     Layer *share(int c, int bs, vector<Layer *> p) override { return nullptr; }
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override { return nullptr; }
+
+	void enable_distributed() override {};
 
 };
 
@@ -145,7 +167,7 @@ public:
 class MLayer : public Layer {
 public:
 
-    MLayer(string name, int dev);
+    MLayer(string name, int dev, int mem);
 
     void addchild(Layer *l) override;
 
@@ -154,8 +176,6 @@ public:
     //virtual
 
     string plot(int c) override { return ""; }
-
-    void resize(int batch) override {}
 
     void forward() override {}
 

@@ -20,7 +20,7 @@ using namespace std;
 
 int LAverage::total_layers = 0;
 
-LAverage::LAverage(vector<Layer *> parent, string name, int dev) : MLayer(name, dev) {
+LAverage::LAverage(vector<Layer *> parent, string name, int dev, int mem) : MLayer(name, dev, mem) {
     if (parent.size() == 0) msg("Error: LAverage layer with empty list");
 
     if (parent.size() > 1)
@@ -35,8 +35,8 @@ LAverage::LAverage(vector<Layer *> parent, string name, int dev) : MLayer(name, 
 
     input = parent[0]->output;
 
-    output = new Tensor(parent[0]->output->getShape(), dev);
-    delta = new Tensor(parent[0]->output->getShape(), dev);
+    output = new Tensor(parent[0]->output->shape, dev);
+//    if (!mem_level) { delta = new Tensor(parent[0]->output->shape, dev); }
 
     for (int i = 0; i < parent.size(); ++i) {
         parent[i]->addchild(this);
@@ -63,21 +63,19 @@ void LAverage::forward() {
     for (int i = 0; i < parent.size(); ++i)
         Tensor::inc(parent[i]->output, output);
 
+
 }
 
 void LAverage::backward() {
     // TODO: Implement
-    for (int i = 0; i < parent.size(); ++i)
+    for (int i = 0; i < parent.size(); ++i){
         Tensor::inc(delta, parent[i]->delta);
-}
-
-void LAverage::resize(int batch){
-  Layer::resize(batch);
+    }
 }
 
 
 Layer *LAverage::share(int c, int bs, vector<Layer *> p) {
-    LAverage *n = new LAverage(p, "share_" + to_string(c) + name, dev);
+    LAverage *n = new LAverage(p, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
@@ -85,7 +83,7 @@ Layer *LAverage::share(int c, int bs, vector<Layer *> p) {
 
 
 Layer *LAverage::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LAverage *n = new LAverage(p, "share_" + to_string(c) + name, todev);
+    LAverage *n = new LAverage(p, "share_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
 
     return n;

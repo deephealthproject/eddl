@@ -32,9 +32,9 @@ public:
     LTensor(string fname);
     ~LTensor() override;
 
-    LTensor(vector<int> shape, int dev);
+    LTensor(vector<int> shape, int dev, int mem);
 
-    LTensor(const vector<int> shape, float *fptr,int dev);
+    LTensor(const vector<int> shape, float *fptr,int dev, int mem);
 
     LTensor *fromCSV(string fname);
 
@@ -50,8 +50,6 @@ public:
 
     void backward() override {}
 
-    void resize(int batch) override;
-
     string plot(int c) override { return ""; }
 
     LTensor operator+(LTensor L);
@@ -64,18 +62,18 @@ class LInput : public LinLayer {
 public:
     static int total_layers;
 
-    LInput(Tensor *in, string name, int dev);
+    LInput(Tensor *in, string name, int dev, int mem);
     ~LInput() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
+    void free_delta() override;
+
     void forward() override;
 
     void backward() override;
-
-    void resize(int batch) override;
 
     string plot(int c) override;
 
@@ -88,7 +86,7 @@ public:
     int output_dim;
     static int total_layers;
 
-    LEmbedding(int input_dim, int output_dim, string name, int dev);
+    LEmbedding(int input_dim, int output_dim, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -97,8 +95,6 @@ public:
     void forward() override;
 
     void backward() override;
-
-    void resize(int batch) override;
 
     string plot(int c) override;
 
@@ -110,8 +106,9 @@ public:
     static int total_layers;
     int ndim;
     bool use_bias;  // TODO: Implement
+	bool distributed_training;
 
-    LDense(Layer *parent, int ndim, bool use_bias, string name, int dev);
+    LDense(Layer *parent, int ndim, bool use_bias, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -120,16 +117,31 @@ public:
     // Params
     Tensor *W;
     Tensor *gW;
+	Tensor *acc_gW;
     Tensor *bias;
     Tensor *gbias;
+	Tensor *acc_gbias;
 
     void forward() override;
 
     void backward() override;
 
-    void resize(int batch) override;
+	// Sets the weights to the values of the parameter w
+	void update_weights(Tensor* w, Tensor* bias=nullptr) override;
+
+	// Adds the values of gw to the current weights of the layer
+	void accumulate_accumulated_gradients(Tensor* gw, Tensor* gbias=nullptr) override;
+
+	// Sets to 0.0 the tensors with the accumulated gradients for W and bias
+	void reset_accumulated_gradients() override;
+
+	void apply_accumulated_gradients() override;
 
     string plot(int c) override;
+
+	static void reset_name_counter();
+
+	void enable_distributed() override;
 
 };
 
@@ -138,9 +150,9 @@ class LActivation : public LinLayer {
 public:
     string act;
     static int total_layers;
-    float param;
+    vector<float> params;
 
-    LActivation(Layer *parent, string act, string name, int dev,float param=0.01);
+    LActivation(Layer *parent, string act, vector<float> params, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -153,8 +165,6 @@ public:
 
     void backward() override;
 
-    void resize(int batch) override;
-
     string plot(int c) override;
 
 };
@@ -166,7 +176,7 @@ public:
     vector<int> ls;
 
     // constructors and clones
-    LReshape(Layer *parent, vector<int> shape, string name, int dev);
+    LReshape(Layer *parent, vector<int> shape, string name, int dev, int mem);
     ~LReshape() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
@@ -174,6 +184,9 @@ public:
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
     // implementation
+    void mem_delta() override;
+    void free_delta() override;
+
     void forward() override;
 
     void backward() override;
@@ -192,18 +205,15 @@ public:
     vector<int> rdims;
 
     // constructors and clones
-    LTranspose(Layer *parent, vector<int> dims, string name, int dev);
+    LTranspose(Layer *parent, vector<int> dims, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
-//
-//
-//    // implementation
+
     void forward() override;
-//
+
     void backward() override;
-    void resize(int batch) override;
 
     string plot(int c) override;
 
@@ -215,7 +225,7 @@ public:
     static int total_layers;
 
     // constructors and clones
-    LDropout(Layer *parent, float df, string name, int dev);
+    LDropout(Layer *parent, float df, string name, int dev, int mem);
     ~LDropout() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;

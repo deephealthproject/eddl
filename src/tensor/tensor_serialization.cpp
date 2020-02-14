@@ -195,7 +195,7 @@ Tensor* Tensor::load_from_txt(const string& filename, const char delimiter, int 
 void Tensor::save(const string& filename, string format) {
     // Check if the folder exists
     string folder = filename.substr(0, filename.find_last_of("\\/"));
-    if(!pathExists(folder)){
+    if(folder != filename && !pathExists(folder)){
         msg("The file could not be saved. Check if the directory exists or if you have permissions to write in it.", "Tensor::save");
     }
 

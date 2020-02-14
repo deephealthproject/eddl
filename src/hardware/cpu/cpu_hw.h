@@ -21,14 +21,21 @@
 // CPU: Core (static)
 void cpu_transpose(Tensor *A, Tensor *B);
 void cpu_copy(Tensor *A, Tensor *B);
+
 void cpu_fill_(Tensor *A, float v);
 void cpu_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
+
 void cpu_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
+
 void cpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
+
 void cpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
 void cpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
+
+void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative);
+
 void cpu_repeat(Tensor *A, Tensor *B, vector<int> size);
 void cpu_d_repeat(Tensor *D, Tensor *A, vector<int> size);
 
@@ -70,7 +77,7 @@ void cpu_clamp_(Tensor *A, float min, float max);
 void cpu_cos_(Tensor *A);
 void cpu_cosh_(Tensor *A);
 void cpu_exp_(Tensor *A);
-void cpu_inv_(Tensor *A);
+void cpu_inv_(Tensor *A, float v);
 void cpu_floor_(Tensor *A);
 void cpu_log_(Tensor *A);
 void cpu_log2_(Tensor *A);
@@ -124,6 +131,10 @@ void cpu_reduction_back(ReduceDescriptor *RD);
 //void cpu_delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB);
 //void cpu_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
 //void cpu_delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC);
+
+// CPU: Logic functions: Truth value testing
+bool cpu_all(Tensor *A);
+bool cpu_any(Tensor *A);
 
 // CPU: Logic functions: Comparisons
 void cpu_isfinite(Tensor *A, Tensor* B);

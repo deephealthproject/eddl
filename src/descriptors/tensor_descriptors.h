@@ -23,27 +23,33 @@ using namespace std;
 
 class TensorDescriptor {
 public:
-    TensorDescriptor(){};
+    int device;
+
+    int* cpu_addresses;
+    int* gpu_addresses;
+    int* fpga_addresses;
+
+    TensorDescriptor(int dev=0);
+    ~TensorDescriptor();
 
     // Don't mark as pure virtual because not all methods use the same parameters
     virtual void build(){};
     virtual void resize(int b){};
+    void free_memory();
 };
 
-class SelDescriptor : public TensorDescriptor{
+class SelDescriptor : public TensorDescriptor {
 
 public:
     vector<int> ishape;
     vector<int> oshape;
     vector<vector<int>> idxs_range;
-    int* addresses = nullptr;
-    int* gpu_addresses = nullptr;
+
 
     vector<string> indices;
 
-    SelDescriptor();
-    SelDescriptor(const vector<string>& indices);
-    ~SelDescriptor();
+    SelDescriptor(int dev);
+    SelDescriptor(const vector<string>& indices, int dev=0);
 
     virtual void build(vector<int> ishape);
     virtual void resize(int b);
@@ -54,7 +60,7 @@ class PermuteDescriptor : public SelDescriptor {
 public:
     vector<int> dims;
 
-    PermuteDescriptor(const vector<int>& dims);
+    PermuteDescriptor(const vector<int>& dims, int dev=0);
     
     void build(vector<int> ishape);
     void resize(int b);

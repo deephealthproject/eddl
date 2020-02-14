@@ -19,12 +19,10 @@ using namespace std;
 
 int LCutout::total_layers = 0;
 
-LCutout::LCutout(Layer *parent, vector<int> from_coords, vector<int> to_coords, float constant, string name, int dev) : LinLayer(name, dev) {
+LCutout::LCutout(Layer *parent, vector<int> from_coords, vector<int> to_coords, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "cutout" + to_string(++total_layers);
 
-    input = parent->output;
-    output = new Tensor(input->getShape(), dev);
-    delta = parent->delta;
+    output = new Tensor(input->shape, dev);
 
     // Params
     this->from_coords = from_coords;
@@ -36,15 +34,6 @@ LCutout::LCutout(Layer *parent, vector<int> from_coords, vector<int> to_coords, 
 
 }
 
-LCutout::~LCutout()
-{
-  delta=nullptr;
-}
-
-// virtual
-void LCutout::resize(int batch){
-  output->resize(batch);
-}
 
 void LCutout::forward() {
     Tensor::cutout(this->input, this->output, this->from_coords, this->to_coords, this->constant);
@@ -56,14 +45,14 @@ void LCutout::backward() {
 
 
 Layer *LCutout::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LCutout(p[0], this->from_coords, this->to_coords, this->constant, "share_" + to_string(c) + name, dev);
+    auto *n = new LCutout(p[0], this->from_coords, this->to_coords, this->constant, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LCutout::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LCutout(p[0], this->from_coords, this->to_coords, this->constant, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LCutout(p[0], this->from_coords, this->to_coords, this->constant, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     return n;

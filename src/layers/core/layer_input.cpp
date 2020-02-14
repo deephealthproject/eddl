@@ -19,10 +19,9 @@ using namespace std;
 
 int LInput::total_layers = 0;
 
-LInput::LInput(Tensor *in, string name, int dev) : LinLayer(name, dev) {
+LInput::LInput(Tensor *in, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     if(name.empty()) this->name = "input" + to_string(++total_layers);
     input = output = in;
-    delta = new Tensor(input->getShape(), dev);
 }
 
 LInput::~LInput()
@@ -34,10 +33,6 @@ LInput::~LInput()
 
 }
 
-// virtual
-void LInput::resize(int batch){
-  Layer::resize(batch);
-}
 
 string LInput::plot(int c) {
     string s;
@@ -48,6 +43,13 @@ string LInput::plot(int c) {
     return s;
 }
 
+void LInput::free_delta(){
+  // DO NOT DELETE DELTA
+  // There will be problems with network concatenation
+  // [Input1]->[Net1]=>[Input2]->[Net2]->[Cost. func]
+  // "=>" is a copyTensor(delta2, delta1)
+  // If delta2 is deleted after the backward of Input2, there will be nothing to copy
+}
 
 void LInput::forward() {
 
@@ -62,7 +64,7 @@ Layer *LInput::share(int c, int bs, vector<Layer *> p) {
     vector<int> shape = input->getShape();
     shape[0] = bs;
 
-    LInput *n = new LInput(new Tensor(shape), "share_" + to_string(c) + name, dev);
+    LInput *n = new LInput(new Tensor(shape), "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
@@ -72,7 +74,7 @@ Layer *LInput::clone(int c, int bs, vector<Layer *> p, int todev) {
     vector<int> shape = input->getShape();
     shape[0] = bs;
 
-    LInput *n = new LInput(new Tensor(shape, todev), "clone_" + to_string(todev) + name, todev);
+    LInput *n = new LInput(new Tensor(shape, todev), "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     return n;

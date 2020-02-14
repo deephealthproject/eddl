@@ -75,9 +75,9 @@ void cpu_floor_(Tensor *A){
   for (int i = 0; i < A->size; ++i) A->ptr[i] = ::floorf(A->ptr[i]);
 }
 
-void cpu_inv_(Tensor *A){
-#pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) A->ptr[i] = 1/A->ptr[i];
+void cpu_inv_(Tensor *A, float v){
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; ++i) A->ptr[i] = v/A->ptr[i];
 }
 
 void cpu_log_(Tensor *A) {

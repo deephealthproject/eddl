@@ -107,6 +107,8 @@ public:
     void toCPU(int dev=DEV_CPU);
     void toGPU(int dev=DEV_GPU);
     Tensor* clone();
+    void deleteData();
+    void reallocate(Tensor* old_t, vector<int> *s = nullptr);
 
     // Resize
     void resize(int b, float *fptr);
@@ -128,7 +130,8 @@ public:
     static int get_mode(string mode);
     static bool isSquared(Tensor *A);
 
-    // Serialization
+
+    // Serialization *****************************
     static Tensor* loadfs(std::ifstream &ifs, string format="");
     static Tensor* load(const string& filename, string format="");
     template<typename T> static Tensor* load(const string& filename, string format="");
@@ -137,6 +140,7 @@ public:
     void savefs(std::ofstream &ofs, string format="");
     void save(const string& filename, string format="");
     void save2txt(const string& filename, const char delimiter=',', const vector<string> &header={});
+
 
     // ***** Core *****************************
     static Tensor* permute(Tensor* t, const vector<int>& dims);
@@ -174,9 +178,11 @@ public:
     static Tensor* range(float start, float end, float step=1.0f, int dev=DEV_CPU);
     static Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
     static Tensor* logspace(float start, float end, int steps=100, float base=10.0f, int dev=DEV_CPU);
+    static Tensor* geomspace(float start, float end, int steps=100, int dev=DEV_CPU);
     static Tensor* eye(int rows, int offset=0, int dev=DEV_CPU);
     static Tensor* identity(int rows, int dev=DEV_CPU);
     static Tensor* diag(Tensor* A, int k=0, int dev=DEV_CPU);
+    static Tensor* randu(const vector<int> &shape, int dev=DEV_CPU);
     static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
     // ***** Transformations *****************************
@@ -193,6 +199,7 @@ public:
     static void rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center={0,0}, string mode="constant", float constant=0.0f);
     static void scale_random(Tensor *A, Tensor *B, vector<float> factor, string mode="nearest", float constant=0.0f);
     static void flip_random(Tensor *A, Tensor *B, int axis);
+
     static void crop_random(Tensor *A, Tensor *B);
     static void crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, string mode="nearest", float constant=0.0f);
     static void cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant=0.0f);
@@ -238,11 +245,13 @@ public:
     void cosh_();
     static Tensor* cosh(Tensor *A);
 
-    void inv_();
 
     void div_(float v);
     static Tensor* div(Tensor *A, float v);
+    static Tensor* div(Tensor *A, Tensor *B);
     static void el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
+
+    void inv_(float v=1.0f);
 
     void exp_();
     static Tensor* exp(Tensor *A);
@@ -270,6 +279,7 @@ public:
 
     void mult_(float v);
     static Tensor* mult(Tensor *A, float v);
+    static Tensor* mult(Tensor *A, Tensor *B);
     static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
     static void el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
 
@@ -339,6 +349,10 @@ public:
     // Math operations: Reduction ops
     static void reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
 
+    // Logic funcions: Truth value testing
+    static bool all(Tensor *A);
+    static bool any(Tensor *A);
+
     // Logic funcions: Logical ops
     static void isfinite(Tensor *A, Tensor* B);
     static void isinf(Tensor *A, Tensor* B);
@@ -375,6 +389,9 @@ public:
     static int dot(Tensor *A);  // TODO
 
     // Indexing, Slicing, Joining, Mutating Ops *******
+    static Tensor* concat(const vector<Tensor*> t, unsigned int axis=0, Tensor* output=nullptr);
+    static void concat_back(Tensor *A, const vector<Tensor*> t, unsigned int axis);
+
     Tensor* select(const vector<string>& indices);
     static void select(Tensor *A, Tensor *B, SelDescriptor *sd);
 
@@ -398,6 +415,39 @@ public:
     void rand_signed_uniform(float v);
     void rand_normal(float m, float s, bool fast_math=true);
     void rand_binary(float v);
+
+    // ***** Overload operators *****************************
+    // Tensor and Tensor (Element wise)
+    friend Tensor& operator+ (Tensor &A, Tensor &B);
+    friend Tensor& operator- (Tensor &A, Tensor &B);
+    friend Tensor& operator* (Tensor &A, Tensor &B);
+    friend Tensor& operator/ (Tensor &A, Tensor &B);
+
+    // Tensor op= Tensor
+    friend void operator+= (Tensor &A, Tensor &B);
+    friend void operator-= (Tensor &A, Tensor &B);
+    friend void operator*= (Tensor &A, Tensor &B);
+    friend void operator/= (Tensor &A, Tensor &B);
+
+    // Tensor op= scalar
+    friend void operator+= (Tensor &A, float v);
+    friend void operator-= (Tensor &A, float v);
+    friend void operator*= (Tensor &A, float v);
+    friend void operator/= (Tensor &A, float v);
+
+    // Tensor and scalar
+    friend Tensor& operator+ (Tensor &A, float v);
+    friend Tensor& operator- (Tensor &A, float v);
+    friend Tensor& operator* (Tensor &A, float v);
+    friend Tensor& operator/ (Tensor &A, float v);
+
+    // scalar and Tensor
+    friend Tensor& operator+ (float v, Tensor &A);
+    friend Tensor& operator- (float v, Tensor &A);
+    friend Tensor& operator* (float v, Tensor &A);
+    friend Tensor& operator/ (float v, Tensor &A);
+
+
 };
 
 

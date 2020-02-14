@@ -17,8 +17,25 @@
 
 using namespace std;
 
-ReductionLayer::ReductionLayer(string name, int dev) : Layer(name, dev) {
+ReductionLayer::ReductionLayer(string name, int dev, int mem) : Layer(name, dev, mem) {
     binary=0;
+}
+
+
+
+void ReductionLayer::mem_delta(){
+    if(this->delta == nullptr) {
+        // Reserve parent's delta
+        parent[0]->mem_delta();
+        RD->ID = parent[0]->delta;
+
+        delta = Tensor::zeros(RD->O->shape, RD->O->device);
+        RD->D = delta;
+
+        if(this->verbosity_level >= 2) {
+            std::cout << "Booked delta for: " + this->name << std::endl;
+        }
+    }
 }
 
 

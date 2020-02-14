@@ -19,13 +19,10 @@ using namespace std;
 
 int LFlip::total_layers = 0;
 
-LFlip::LFlip(Layer *parent, int axis, string name, int dev) : LinLayer(name, dev) {
+LFlip::LFlip(Layer *parent, int axis, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "flip" + to_string(++total_layers);
 
-    // TODO: Implement
-    input = parent->output;
-    output = new Tensor(input->getShape(), dev);
-    delta = parent->delta;
+    output = new Tensor(input->shape, dev);
 
     //Params
     this->axis = axis;
@@ -35,14 +32,6 @@ LFlip::LFlip(Layer *parent, int axis, string name, int dev) : LinLayer(name, dev
 
 }
 
-LFlip::~LFlip()
-{
-  delta=nullptr;
-}
-// virtual
-void LFlip::resize(int batch){
-  output->resize(batch);
-}
 
 void LFlip::forward() {
     Tensor::flip(this->input, this->output, this->axis);
@@ -54,14 +43,14 @@ void LFlip::backward() {
 
 
 Layer *LFlip::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LFlip(p[0], this->axis, "share_" + to_string(c) + name, dev);
+    auto *n = new LFlip(p[0], this->axis, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LFlip::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LFlip(p[0], this->axis, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LFlip(p[0], this->axis, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     return n;

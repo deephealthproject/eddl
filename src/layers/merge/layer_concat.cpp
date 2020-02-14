@@ -19,12 +19,13 @@ using namespace std;
 
 int LConcat::total_layers = 0;
 
-LConcat::LConcat(vector<Layer *> parent, string name, int dev) : MLayer(name, dev) {
+LConcat::LConcat(vector<Layer *> parent, unsigned int axis, string name, int dev, int mem) : MLayer(name, dev, mem) {
     if(name.empty()) {this->name = "concat" + to_string(++total_layers); }
 
     // Perform layer checks
     if (parent.empty()) { msg("Error: LConcat layer with empty list"); }
     this->ndim = parent[0]->output->ndim;
+    this->axis = axis;
 
     if (parent.size() > 1) {
         // All layers need to have the same number of dimensions
@@ -69,7 +70,7 @@ LConcat::LConcat(vector<Layer *> parent, string name, int dev) : MLayer(name, de
 
     input = parent[0]->output;
     output = new Tensor(shape, dev);
-    delta = new Tensor(shape, dev);
+//    if (!mem_level) { delta = new Tensor(output->shape, dev);  }  // NOT parent[0]->output
 
     // Create a descriptor for each layer address translation
     int temp = 0;
@@ -93,28 +94,30 @@ LConcat::LConcat(vector<Layer *> parent, string name, int dev) : MLayer(name, de
 
 // virtual
 void LConcat::forward() {
-    // Copy all parent->output (tensor) to a section of this output (tensor)
-    for (int i = 0; i < this->parent.size(); ++i) {
-        // cout << this->name << endl;
-        // this->parent[i]->output->info();
-        Tensor::set_select(this->output, this->parent[i]->output, this->sd[i]);
-    }
+    // Get output tensors
+    vector<Tensor*> outputs;
+    for (auto & p : this->parent) { outputs.push_back(p->output); }
+
+    // Perform concat
+    Tensor::concat(outputs, this->axis, this->output);
 }
 
 
 void LConcat::backward() {
-    for (int i = 0; i < parent.size(); ++i) {
-        Tensor::set_select_back(this->delta, parent[i]->delta, this->sd[i]);
+    // Get delta tensors
+    vector<Tensor*> deltas;
+    for (int i=0; i<this->parent.size(); i++) {
+        // Store pointer of delta i
+        deltas.push_back(parent[i]->delta);
     }
-}
 
-void LConcat::resize(int batch){
-    Layer::resize(batch);
+    // Perform concat (back)
+    Tensor::concat_back(this->delta, deltas, this->axis);
 }
 
 Layer *LConcat::share(int c, int bs, vector<Layer *> p) {
 
-    LConcat *n = new LConcat(p, "share_" + to_string(c) + name, dev);
+    auto *n = new LConcat(p, this->axis, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
@@ -122,7 +125,7 @@ Layer *LConcat::share(int c, int bs, vector<Layer *> p) {
 
 Layer *LConcat::clone(int c, int bs, vector<Layer *> p, int todev) {
 
-    LConcat *n = new LConcat(p, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LConcat(p, this->axis, "clone_" + to_string(todev) + name, todev,mem_level);
     n->orig = this;
 
     return n;

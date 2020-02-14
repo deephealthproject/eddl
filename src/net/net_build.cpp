@@ -129,8 +129,8 @@ void Net::toCPU(int t){
       }
     }
 }
-void Net::toGPU(vector<int> &g,int lsb){
-    CompServ *cs=new CompServ(0, g, {},lsb);
+void Net::toGPU(vector<int> g,int lsb,int mem){
+    CompServ *cs=new CompServ(0, g, {},lsb,mem);
 
     for (int i = 0; i < snets.size(); i++) {
       Xs[i].clear();
@@ -153,8 +153,8 @@ void Net::toGPU(vector<int> &g,int lsb){
   }
 }
 
-void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs){
-    build(opt, lo, me);
+void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize){
+	build(opt, lo, me, initialize);
     set_compserv(cs);
 
 
@@ -171,7 +171,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs){
 }
 
 
-void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
+void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     if (VERBOSE) cout<<"Build net "<<name<<"\n";
 
     if (lo.size() != lout.size())
@@ -185,17 +185,22 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
     int ind;
 
 
-    for (int i = 0; i < layers.size(); i++){
-        if (dev == -1) dev = layers[i]->dev;
-        else {
-            if (layers[i]->dev != dev)
-              msg("Net with layers in different devices", "Net.build");
+    for(int i=0; i<layers.size(); i++){
+
+        // Set device // TODO: Rewrite this
+        if (dev == -1) {
+            dev = layers[i]->dev;
+        } else {
+            if (layers[i]->dev != dev) {
+                msg("Net with layers in different devices", "Net.build");
+            }
         }
+
+        // Set params
+        layers[i]->set_trainable(true);
+        layers[i]->verbosity_level = this->verbosity_level;
     }
 
-    for(int i=0;i<layers.size();i++)
-      layers[i]->set_trainable(true);
-      
     // set optimizer
     optimizer = opt;
     optimizer->setlayers(layers);
@@ -216,12 +221,16 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me) {
     // backward sort
     bts();
     // random params
-    do_initialize();
+    if(initialize) do_initialize();
 }
 
 void Net::set_compserv(CompServ *cs){
     int todev;
     this->cs=cs;
+
+    mem_level=cs->mem_level;
+    for(int i=0;i<layers.size();i++)
+        layers[i]->set_mem_level(mem_level);
 
     if (cs->type == "local") {
 
@@ -317,10 +326,11 @@ void Net::split(int c, int todev) {
         }
 
         // special layers that are not input of net but has not parents
+        // for instance noise generators in GANs
         for (j = 0; j < layers.size(); j++)
-          if ((layers[j]->lin==0)&&(!isIn(layers[j],lin,ind)))
+          if ((layers[j]->lin==0)&&(!isIn(layers[j],lin,ind))) {
             nlayers.push_back(layers[j]->clone(c, bs, par, todev + devsel[i]));
-
+          }
 
         // rest of layers
         for (k = 0; k < layers.size(); k++) {
@@ -406,15 +416,8 @@ void Net::resize(int b)
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-//////
+void Net::enable_distributed(){
+	for(Layer* l : layers){
+		l->enable_distributed();
+	}
+}

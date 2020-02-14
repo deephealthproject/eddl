@@ -20,7 +20,7 @@ using namespace std;
 
 int LRSum::total_layers = 0;
 
-LRSum::LRSum(Layer *l, vector<int> axis, bool keepdims, string name, int dev): ReductionLayer(name, dev) {
+LRSum::LRSum(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem) : ReductionLayer(name, dev, mem) {
     // TODO: Implement
     if(name.empty()) this->name = "reduction_sum" + to_string(++total_layers);
 
@@ -29,8 +29,8 @@ LRSum::LRSum(Layer *l, vector<int> axis, bool keepdims, string name, int dev): R
     RD=new ReduceDescriptor(input,axis,"sum",keepdims);
 
     output=RD->O;
-    delta=RD->D;
-    RD->ID = l->delta;
+//    delta=RD->D;
+//    RD->ID = l->delta;
 
     l->addchild(this);
     addparent(l);
@@ -38,28 +38,30 @@ LRSum::LRSum(Layer *l, vector<int> axis, bool keepdims, string name, int dev): R
 }
 
 void LRSum::forward(){
-reduction(RD);
+    reduction(RD);
 }
 
 void LRSum::backward(){
-reduction_back(RD);
+    reduction_back(RD);
 }
+
 // virtual
 void LRSum::resize(int batch){
     RD->resize(batch);
+    if (target!=nullptr) target->resize(batch);
 }
 
 
 Layer *LRSum::share(int c, int bs, vector<Layer *> p) {
-  LRSum *n;
-  n = new LRSum(p[0], RD->axis, RD->keepdims, "share_" + to_string(c) + name,dev);
-  n->orig = this;
-  return n;
+    LRSum *n;
+    n = new LRSum(p[0], RD->axis, RD->keepdims, "share_" + to_string(c) + name, this->dev, this->mem_level);
+    n->orig = this;
+    return n;
 }
 
 Layer *LRSum::clone(int c, int bs, vector<Layer *> p, int todev) {
     LRSum *n;
-    n = new LRSum(p[0],RD->axis, RD->keepdims, "clone_" + to_string(c) + name, todev);
+    n = new LRSum(p[0],RD->axis, RD->keepdims, "clone_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
     return n;
 }

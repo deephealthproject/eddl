@@ -16,7 +16,7 @@
 | ------------- |------| -----| ---------|
 | Dense | ✅ | ✅ | Just your regular densely-connected NN layer. |
 | Dropout | ✅ | ✅ | Applies Dropout to the input. |
-| Flatten | 🔵 | 🔵 | Flattens the input. Does not affect the batch size. (Wrapper for Reshape) |
+| Flatten | ✅ | ✅ | Flattens the input. Does not affect the batch size. (Wrapper for Reshape) |
 | Input | ✅ | ✅ | Used to instantiate a EDDL tensor. |
 | Reshape | ✅ | ✅ | Reshapes an output to a certain shape. |
 | Permute | ✅ | ✅ | Permutes the dimensions of the input according to a given pattern. |
@@ -28,20 +28,20 @@
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| ELU | ❌ | ❌ | Exponential linear unit. |
-| Exponential | ❌ | ❌ | Exponential (base e) activation function. |
-| HardSigmoid | ❌ | ❌ | Hard sigmoid activation function. |
+| ELU | ✅ | ✅ | Exponential linear unit. |
+| Exponential |  ✅ | ✅ | Exponential (base e) activation function. |
+| HardSigmoid | ✅ | ✅ | Hard sigmoid activation function. |
 | LeakyReLu | ✅ | ✅ | Leaky version of a Rectified Linear Unit.  |
-| Linear | ❌ | ❌ | Linear (i.e. identity) activation function.  |
+| Linear | ✅ | ✅ | Linear (i.e. identity) activation function.  |
 | PReLU | ❌ | ❌ | Parametric Rectified Linear Unit.   |
 | ReLu | ✅ | ✅ | Rectified Linear Unit. |
 | Softmax | ✅ | ✅ | Softmax activation function. |
-| Selu | ❌ | ❌ | Scaled Exponential Linear Unit (SELU). |
+| Selu |  ✅ | ✅ | Scaled Exponential Linear Unit (SELU). |
 | Sigmoid | ✅ | ✅ | Sigmoid activation function. |
-| Softplus | ❌ | ❌ | Softplus activation function. |
-| Softsign | ❌ | ❌ | Softsign activation function. |
+| Softplus | ✅ | ✅ | Softplus activation function. |
+| Softsign | ✅ | ✅ | Softsign activation function. |
 | Tanh | ✅ | ✅ | Hyperbolic tangent activation function. |
-| ThresholdedReLU | ❌ | ❌ | Thresholded Rectified Linear Unit. |
+| ThresholdedReLU | ✅ | ✅ | Thresholded Rectified Linear Unit. |
 
 
 ## Convolutional layers
@@ -86,7 +86,6 @@ Apply data transformations with random parametrization.
 | ------------- |------| -----| ---------|
 | RandomAffine | ❌ | ❌ | Random affine transformation of the image keeping center invariant: rotate+translate+scale+shear |
 | RandomCrop | ✅ | ✅ | Crop the given image at a random location with size `[height, width]`  |
-| RandomCenteredCrop | ❌ | ❌ | Crops the given image at the center with size (width, height)  |
 | RandomCropScale | ✅ | ✅ | Crop the given image randomly by the size in a range `[a, b]` by and scale it to the parent size |
 | RandomCutout | ✅ | ✅ | Randomly selects a rectangle region in an image and erases its pixels. The random region is defined by the range `[(min_x, max_x), (min_y, max_y)]`, where these are relative values |
 | RandomFlip | ✅ | ✅ | Flip the given image at `axis=n` randomly with a given probability. |
@@ -204,7 +203,7 @@ Apply data transformations with random parametrization.
 | Orthogonal | ❌ | ❌ | Initializer that generates a random orthogonal matrix.  |
 | RandomNormal |  ✅ | ✅ | Initializer that generates tensors with a normal distribution. |
 | RandomUniform |  ✅ | ✅ | Initializer that generates tensors with a uniform distribution.  |
-| TruncatedNormal |  ❌ | ❌ | Initializer that generates a truncated normal distribution.  |
+| TruncatedNormal | ✅ | ✅  | Initializer that generates a truncated normal distribution.  |
 | VarianceScaling |  ❌ | ❌ | Initializer capable of adapting its scale to the shape of weights.  |
 
 

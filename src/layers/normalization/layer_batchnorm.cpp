@@ -21,15 +21,14 @@ using namespace std;
 int LBatchNorm::total_layers = 0;
 
 
-LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev) : LinLayer(name, dev) {
-
+LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     input=parent->output;
 
     if (input->ndim == 2) {axis.push_back(0);shape.push_back(input->shape[1]);}
     else if (input->ndim == 4) {axis.push_back(0);axis.push_back(2);axis.push_back(3);shape.push_back(input->shape[1]);}
     else {
-      input->info();
-      msg("LBatchNorm only works over 1D (Dense) or 2D (Conv) tensors","LBatchNorm");
+        input->info();
+        msg("LBatchNorm only works over 1D (Dense) or 2D (Conv) tensors","LBatchNorm");
     }
 
 
@@ -40,7 +39,7 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
     this->affine = affine;
 
     output=new Tensor(input->getShape(),dev);
-    delta=new Tensor(input->getShape(),dev);
+//    if (!mem_level) delta=new Tensor(input->getShape(),dev);
 
     bn_mean=new Tensor(shape,dev);
     bn_var=new Tensor(shape,dev);
@@ -64,34 +63,34 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
 // virtual
 void LBatchNorm::resize(int batch){
-  if (batch!=output->shape[0]) {
-    output->resize(batch);
-    delta->resize(batch);
-    if (target!=nullptr) target->resize(batch);
-    delete MD;
-    MD=new MapReduceDescriptor(input,axis);
-  }
+    if (batch!=output->shape[0]) {
+        output->resize(batch);
+//        if (!mem_level) delta->resize(batch);
+        if (target!=nullptr) target->resize(batch);
+        delete MD;
+        MD=new MapReduceDescriptor(input,axis);
+    }
 
 
 }
 
 void LBatchNorm::save(std::ofstream &ofs, string format){
-  // Save momentum TODO
-  if (momentum!=0) {
-    mean->savefs(ofs, format);
-    variance->savefs(ofs, format);
-  }
+    // Save momentum TODO
+    if (momentum!=0) {
+        mean->savefs(ofs, format);
+        variance->savefs(ofs, format);
+    }
 }
 
 void LBatchNorm::load(std::ifstream &ifs, string format){
     // load momentum TODO
     if (momentum!=0) {
-      Tensor *t=mean->loadfs(ifs, format);
-      Tensor::copy(t,mean);
-      delete t;
-      t=variance->loadfs(ifs, format);
-      Tensor::copy(t,variance);
-      delete t;
+        Tensor *t=mean->loadfs(ifs, format);
+        Tensor::copy(t,mean);
+        delete t;
+        t=variance->loadfs(ifs, format);
+        Tensor::copy(t,variance);
+        delete t;
 
     }
 
@@ -99,25 +98,23 @@ void LBatchNorm::load(std::ifstream &ifs, string format){
 
 void LBatchNorm::copy(Layer *l2)
 {
-  Tensor::copy(mean,((LBatchNorm*)l2)->mean);
-  Tensor::copy(variance,((LBatchNorm*)l2)->variance);
+    Tensor::copy(mean,((LBatchNorm*)l2)->mean);
+    Tensor::copy(variance,((LBatchNorm*)l2)->variance);
 }
 
 
 void LBatchNorm::forward() {
-  BN_forward(input,output,MD,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);
+    BN_forward(input,output,MD,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);
 }
 
-void LBatchNorm::backward()
-{
-  BN_backward(input,delta, parent[0]->delta,MD,bn_mean,bn_var,mean,variance,epsilon);
-
+void LBatchNorm::backward(){
+    BN_backward(input,delta, parent[0]->delta,MD,bn_mean,bn_var,mean,variance,epsilon);
 }
 
 
 
 Layer *LBatchNorm::share(int c, int bs, vector<Layer *> p) {
-    LBatchNorm *n = new LBatchNorm(p[0], momentum, epsilon, affine, "share_" + to_string(c) + name, dev);
+    LBatchNorm *n = new LBatchNorm(p[0], momentum, epsilon, affine, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement
@@ -126,7 +123,7 @@ Layer *LBatchNorm::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LBatchNorm::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LBatchNorm *n = new LBatchNorm(p[0], momentum, epsilon, affine, "clone_" + to_string(todev) + name, todev);
+    LBatchNorm *n = new LBatchNorm(p[0], momentum, epsilon, affine, "clone_" + to_string(todev) + name, todev,mem_level);
     n->orig = this;
 
     // TODO: Implement

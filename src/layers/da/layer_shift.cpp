@@ -20,12 +20,10 @@ using namespace std;
 
 int LShift::total_layers = 0;
 
-LShift::LShift(Layer *parent, vector<int> shift, string da_mode, float constant, string name, int dev) : LinLayer(name, dev) {
+LShift::LShift(Layer *parent, vector<int> shift, string da_mode, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "shift" + to_string(++total_layers);
 
-    input = parent->output;
-    output = new Tensor(input->getShape(), dev);
-    delta = parent->delta;
+    output = new Tensor(input->shape, dev);
 
     // Params
     this->shift = std::move(shift);
@@ -37,15 +35,7 @@ LShift::LShift(Layer *parent, vector<int> shift, string da_mode, float constant,
 
 }
 
-LShift::~LShift()
-{
-  delta=nullptr;
-}
 
-// virtual
-void LShift::resize(int batch){
-  output->resize(batch);
-}
 
 void LShift::forward() {
     Tensor::shift(this->input, this->output, this->shift, this->da_mode, this->constant);
@@ -57,14 +47,14 @@ void LShift::backward() {
 
 
 Layer *LShift::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LShift(p[0], this->shift, this->da_mode, this->constant, "share_" + to_string(c) + name, dev);
+    auto *n = new LShift(p[0], this->shift, this->da_mode, this->constant, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LShift::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LShift(p[0], this->shift, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev);
+    auto *n = new LShift(p[0], this->shift, this->da_mode, this->constant, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     return n;

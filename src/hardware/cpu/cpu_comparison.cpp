@@ -11,6 +11,39 @@
 #include "cpu_hw.h"
 #include <limits>
 
+// CPU: Logic functions: Truth value testing
+bool cpu_all(Tensor *A){
+    bool res = true;
+
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; ++i){
+        if (A->ptr[i] != 1.0f){
+            #pragma omp critical
+            {
+                res = false;
+            }
+            #pragma omp cancel for
+        }
+    }
+    return res;
+}
+
+bool cpu_any(Tensor *A){
+    bool res = false;
+
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; ++i){
+        if (A->ptr[i] == 1.0f){
+            #pragma omp critical
+            {
+                res = true;
+            }
+            #pragma omp cancel for
+        }
+    }
+    return res;
+}
+
 // CPU: Logic functions: Comparisons
 void cpu_isfinite(Tensor *A, Tensor* B){
     #pragma omp parallel for
@@ -92,10 +125,7 @@ bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
             {
                 allclose = false;
             }
-/*#if OpenMP_VERSION_MAJOR >= 4
             #pragma omp cancel for
-#endif // OpenMP_VERSION_MAJOR >= 4
-*/
         }
     }
     return allclose;

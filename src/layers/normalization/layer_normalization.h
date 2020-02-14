@@ -34,7 +34,7 @@ public:
     static int total_layers;
     vector<Layer *> layers;
 
-    LNorm(Layer *parent, float epsilon,  string name, int dev);
+    LNorm(Layer *parent, float epsilon,  string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -43,6 +43,9 @@ public:
     void forward() override;
 
     void backward() override;
+
+    void mem_delta() override;
+    void free_delta() override;
 
     void resize(int batch) override;
 
@@ -57,7 +60,7 @@ public:
     static int total_layers;
     vector<Layer *> layers;
 
-    LNormMax(Layer *parent, float epsilon,  string name, int dev);
+    LNormMax(Layer *parent, float epsilon,  string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -66,6 +69,9 @@ public:
     void forward() override;
 
     void backward() override;
+
+    void mem_delta() override;
+    void free_delta() override;
 
     void resize(int batch) override;
 
@@ -81,7 +87,7 @@ public:
     static int total_layers;
     vector<Layer *> layers;
 
-    LNormMinMax(Layer *parent, float epsilon,  string name, int dev);
+    LNormMinMax(Layer *parent, float epsilon,  string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -90,6 +96,9 @@ public:
     void forward() override;
 
     void backward() override;
+
+    void mem_delta() override;
+    void free_delta() override;
 
     void resize(int batch) override;
 
@@ -117,7 +126,7 @@ public:
     static int total_layers;
     vector<Layer *> layers;
 
-    LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev);
+    LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -157,7 +166,7 @@ public:
     static int total_layers;
     vector<Layer *> layers;
 
-    LLayerNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev);
+    LLayerNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -196,7 +205,7 @@ public:
     static int total_layers;
     vector<Layer *> layers;
 
-    LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool affine, string name, int dev);
+    LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool affine, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

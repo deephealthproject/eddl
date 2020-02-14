@@ -20,7 +20,7 @@ using namespace std;
 
 int LRMin::total_layers = 0;
 
-LRMin::LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev): ReductionLayer(name, dev) {
+LRMin::LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem) : ReductionLayer(name, dev, mem) {
     // TODO: Implement
     if(name.empty()) this->name = "reduction_min" + to_string(++total_layers);
 
@@ -29,8 +29,8 @@ LRMin::LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev): R
     RD=new ReduceDescriptor(input,axis,"min",keepdims);
 
     output=RD->O;
-    delta=RD->D;
-    RD->ID = l->delta;
+//    delta=RD->D;
+//    RD->ID = l->delta;
 
     l->addchild(this);
     addparent(l);
@@ -38,28 +38,30 @@ LRMin::LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev): R
 }
 
 void LRMin::forward(){
-reduction(RD);
+    reduction(RD);
 }
 
 void LRMin::backward(){
-reduction_back(RD);
+    reduction_back(RD);
 }
+
 // virtual
 void LRMin::resize(int batch){
     RD->resize(batch);
+    if (target!=nullptr) target->resize(batch);
 }
 
 
 Layer *LRMin::share(int c, int bs, vector<Layer *> p) {
-  LRMin *n;
-  n = new LRMin(p[0], RD->axis, RD->keepdims, "share_" + to_string(c) + name,dev);
-  n->orig = this;
-  return n;
+    LRMin *n;
+    n = new LRMin(p[0], RD->axis, RD->keepdims, "share_" + to_string(c) + name, this->dev, this->mem_level);
+    n->orig = this;
+    return n;
 }
 
 Layer *LRMin::clone(int c, int bs, vector<Layer *> p, int todev) {
     LRMin *n;
-    n = new LRMin(p[0],RD->axis, RD->keepdims, "clone_" + to_string(c) + name, todev);
+    n = new LRMin(p[0],RD->axis, RD->keepdims, "clone_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
     return n;
 }

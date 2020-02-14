@@ -12,20 +12,23 @@
 
 void cpu_transpose(Tensor * A, Tensor * B) {
     #pragma omp parallel for
-    for (int i = 0; i < A->size; i++)
+    for (int i = 0; i < A->size; i++){
         B->ptr[i] = A->ptr[i];
+    }
 }
 
 void cpu_copy(Tensor * A, Tensor * B){
     #pragma omp parallel for
-    for (int i = 0; i < A->size; i++)
+    for (int i = 0; i < A->size; i++){
         B->ptr[i] = A->ptr[i];
+    }
 }
 
 void cpu_fill_(Tensor *A, float v){
     #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i)
+    for (int i = 0; i < A->size; ++i){
         A->ptr[i] = v;
+    }
 }
 
 void cpu_fill(Tensor * A, int aini, int aend, Tensor * B, int bini, int bend, int inc){
@@ -55,35 +58,33 @@ void cpu_fill(Tensor * A, int aini, int aend, Tensor * B, int bini, int bend, in
 void cpu_select(Tensor *A, Tensor *B, SelDescriptor *sd){
     #pragma omp parallel for
     for (int i = 0; i < B->size; i++) {
-        B->ptr[i] = A->ptr[sd->addresses[i]];
+        B->ptr[i] = A->ptr[sd->cpu_addresses[i]];
     }
 }
 
 void cpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
     #pragma omp parallel for
     for (int i = 0; i < A->size; i++) {  // walk stride
-        B->ptr[sd->addresses[i]] += A->ptr[i];  // delta_parent += delta
+        B->ptr[sd->cpu_addresses[i]] += A->ptr[i];  // delta_parent += delta
     }
 }
 
 void cpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
     #pragma omp parallel for
     for (int i = 0; i < B->size; i++) {
-        A->ptr[sd->addresses[i]] = B->ptr[i];
+        A->ptr[sd->cpu_addresses[i]] = B->ptr[i];
     }
 }
 void cpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
     #pragma omp parallel for
     for (int i = 0; i < B->size; i++) {
-        B->ptr[i] += A->ptr[sd->addresses[i]];
+        B->ptr[i] += A->ptr[sd->cpu_addresses[i]];
     }
 }
 
 
-void cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end)
-{
+void cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end){
     int s = A->size / A->shape[0];
-
 
     #pragma omp parallel for
     for (int i = ini; i < end; i++) {
@@ -105,3 +106,32 @@ void cpu_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end){
             B->ptr[p] = A->ptr[pb];
     }
 }
+
+void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative){
+  // Walk through all the tensors to concat one axis (once)
+    unsigned int offset = 0;
+    unsigned int src_stride = 0;
+    int steps = A->stride[axis] * A->shape[axis];  // Equivalent to A->stride[axis-1], but without the negative index problem
+
+    // Walk through each tensor
+    for (unsigned int i = 0; i < t.size(); i++) {
+        offset += src_stride;
+        src_stride = t[i]->stride[axis] * t[i]->shape[axis];
+
+        // Copy n bytes from src to dest
+        float *dest = A->ptr + offset;
+        float *src = t[i]->ptr;
+
+        // Walk tensor i
+        #pragma omp parallel for
+        for (int j = 0; j < t[i]->size; j++) {
+            unsigned int k = j % src_stride;  // Pos (index) in the stride (src)
+            unsigned int stride_idx = j / src_stride;  // Index of the stride (src/dst)
+            unsigned int dest_offset = stride_idx * steps;  // Offset in dest
+
+            if(derivative){ src[j] += dest[dest_offset + k]; }
+            else{ dest[dest_offset + k] = src[j]; }
+        }
+    }
+}
+

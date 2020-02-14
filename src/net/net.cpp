@@ -75,8 +75,7 @@ Net::Net(vlayer in, vlayer out) {
     tr_batches=0;
     flog_tr=nullptr;
     flog_ts=nullptr;
-
-
+    unsigned int verbosity_level = 0;
 
     // Walk through the pointers of all layers, to get a plain
     // vector with all the layers
@@ -168,7 +167,7 @@ string Net::summary() {
         string istr = "(" + printVector(ishape) + ")";
         string ostr = "(" + printVector(oshape) + ")";
 
-        ss << setw(15) << left << vft->name << "|  ";
+        ss << setw(30) << left << vft->name << "|  ";
         ss << setw(10) << left << istr;
         ss << setw(8) << left << "=>";
         ss << setw(10) << left << ostr;
@@ -236,21 +235,9 @@ void Net::save(const string& filename, string format){
     std::ofstream ofs(filename, std::ios::out | std::ios::binary);
 
     // Copy from CS devices to layers
-    if (snets[0]->dev!=DEV_CPU) {
+    if (snets[0]->dev!=DEV_CPU) 
       sync_weights();
-      for(int j=0;j<layers.size();j++)
-        snets[0]->layers[j]->copy(layers[j]);
-    }
 
-    // Copy value to CS devices layers
-    for(int i=0; i!=snets.size(); i++)
-      for(int j=0;j<layers.size();j++)
-        layers[j]->copy(snets[i]->layers[j]);
-
-    // Copy value to CS devices layers
-    for(int i=0; i!=snets.size(); i++)
-      for(int j=0;j<layers.size();j++)
-        layers[j]->copy(snets[i]->layers[j]);
 
     for (int i = 0; i != layers.size(); i++){
         layers[i]->save(ofs, format);
@@ -280,18 +267,17 @@ void Net::load(const string& filename, string format){
     ifs.close();
 }
 
+void Net::reset_accumulated_gradients(){
+	for(Layer* l : layers){
+		l->reset_accumulated_gradients();
+	}
+}
 
-
-
-
-
-
-
-
-
-
-
-
+void Net::apply_accumulated_gradients(){
+	for(Layer * l : layers){
+		l->apply_accumulated_gradients();
+	}
+}
 
 
 

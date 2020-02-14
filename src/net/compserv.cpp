@@ -11,25 +11,38 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
+#include <stdexcept>
 
 #include "compserv.h"
 
 
 // for local
-CompServ::CompServ(int t, const vector<int> &g, const vector<int> &f,int lsb) {
+CompServ::CompServ(int t, const vector<int> g, const vector<int> &f,int lsb, int mem) {
     type = "local";
 
-    if (t==-1) local_threads = Eigen::nbThreads();
+    if (t==-1) local_threads = Eigen::nbThreads(); // TODO: Review => std::thread::hardware_concurrency()???
     else local_threads = t;
 
     local_gpus = vector<int>(g.begin(), g.end());
     local_fpgas = vector<int>(f.begin(), f.end());
 
     this->lsb=lsb;
+
     if (lsb<0) {
-      fprintf(stderr,"Error creating CS with lsb<0 in CompServ::CompServ");
+      throw std::runtime_error("Error creating CS with lsb<0 in CompServ::CompServ");
+    }
+
+    mem_level=mem;
+    if ((mem<0)||(mem>2)) {
+      fprintf(stderr,"Error creating CS with incorrect memory saving level param in CompServ::CompServ");
       exit(EXIT_FAILURE);
     }
+    else {
+      if (mem==1) fprintf(stderr,"CS with full memory setup\n");
+      if (mem==1) fprintf(stderr,"CS with mid memory setup\n");
+      if (mem==2) fprintf(stderr,"CS with low memory setup\n");
+    }
+
 }
 
 // for Distributed

@@ -19,14 +19,14 @@ using namespace std;
 
 int LMult::total_layers = 0;
 
-LMult::LMult(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev) {
+LMult::LMult(Layer *l1, Layer *l2, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "mult_" + to_string(++total_layers);
     binary = 1;
 
     input=l1->output;
 
-    output = new Tensor(l1->output->getShape(), dev);
-    delta = new Tensor(l1->output->getShape(), dev);
+    output = new Tensor(l1->output->shape, dev);
+//    if (!mem_level) { delta = new Tensor(l1->output->shape, dev);  }
 
     l1->addchild(this);
     l2->addchild(this);
@@ -45,13 +45,13 @@ LMult::LMult(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, d
   @returns the result of l+k element-wise over l
 
   */
-LMult::LMult(Layer *l, float k, string name, int dev) : OperatorLayer(name, dev) {
+LMult::LMult(Layer *l, float k, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "mult_" + to_string(++total_layers);
     val = k;
 
     input=l->output;
-    output = new Tensor(l->output->getShape(), dev);
-    delta = new Tensor(l->output->getShape(), dev);
+    output = new Tensor(l->output->shape, dev);
+//    if (!mem_level) { delta = new Tensor(l->output->shape, dev);  }
 
     l->addchild(this);
     addparent(l);
@@ -84,9 +84,9 @@ Layer *LMult::share(int c, int bs, vector<Layer *> p) {
 Layer *LMult::clone(int c, int bs, vector<Layer *> p, int todev) {
     LMult *n;
     if (binary)
-        n = new LMult(p[0], p[1], "share_" + to_string(c) + name, todev);
+        n = new LMult(p[0], p[1], "share_" + to_string(c) + name, todev, this->mem_level);
     else
-        n = new LMult(p[0], val, "share_" + to_string(c) + name, todev);
+        n = new LMult(p[0], val, "share_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
     return n;
 }

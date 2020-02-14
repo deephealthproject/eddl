@@ -1,4 +1,4 @@
-# Tensor Routines
+R# Tensor Routines
 
 Numpy-like operations over a raw-tensor object
 
@@ -44,7 +44,7 @@ Numpy-like operations over a raw-tensor object
 | range         | ✅    | ✅    | Return evenly spaced values within a given interval. `[0, n]`      |
 | linspace      | ✅    | ✅    | Return evenly spaced numbers over a specified interval.         |
 | logspace      | ✅    | ✅    | Return numbers spaced evenly on a log scale.         |
-| geomspace      | ❌    | ❌    | Return numbers spaced evenly on a log scale (a geometric progression).         |
+| geomspace      | ✅    | ✅    | Return numbers spaced evenly on a log scale (a geometric progression).         |
 
 
 ### Random
@@ -52,8 +52,8 @@ Numpy-like operations over a raw-tensor object
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- | ---- | ---- | -------- |
-| rand        | ❌    | ❌    | 	Return a matrix of random values with given shape.   |
-| randn        | ✅    | ✅    | 	Return a random matrix with data from the "standard normal" distribution.     |
+| randu        | ✅    | ✅     | 	Return a uniform random matrix with given shape.   |
+| randn        | ✅    | ✅    | 	Return a normal random matrix with data from the "standard normal" distribution.     |
 | rand_uniform        | 🔵    | 🔵    |     |
 | rand_signed_uniform        | 🔵    | 🔵    |     |
 | rand_normal        | 🔵    | 🔵    |     |
@@ -99,7 +99,7 @@ Numpy-like operations over a raw-tensor object
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- | ---- | ---- | -------- |
-| concatenate      | ❌    | ❌    |  Join a sequence of arrays along an existing axis.    |
+| concatenate      |  ✅    | ✅      |  Join a sequence of arrays along an existing axis.    |
 | stack      | ❌    | ❌    |  Join a sequence of arrays along a new axis.    |
 
 
@@ -229,8 +229,8 @@ Not yet...
 
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
-| all      | ❌    |  ❌    |  Test whether all array elements along a given axis evaluate to True.                        |
-| any      | ❌    |  ❌    |  Test whether any array element along a given axis evaluates to True                        |
+| all      | ✅    |  ✅    |  Test whether all array elements along a given axis evaluate to True.                        |
+| any      | ✅    |  ✅    |  Test whether any array element along a given axis evaluates to True                        |
 
 
 ### Array contents

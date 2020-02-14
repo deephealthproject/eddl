@@ -18,7 +18,7 @@ using namespace std;
 
 int LDropout::total_layers = 0;
 
-LDropout::LDropout(Layer *parent, float df, string name, int dev) : LinLayer(name, dev) {
+LDropout::LDropout(Layer *parent, float df, string name, int dev, int mem) : LinLayer(name, dev, mem) {
 
     if(name.empty()) this->name = "dropout" + to_string(++total_layers);
 
@@ -26,10 +26,10 @@ LDropout::LDropout(Layer *parent, float df, string name, int dev) : LinLayer(nam
     this->df = df;
 
     input = parent->output;
-    output = new Tensor(input->getShape(), dev);
-    delta = new Tensor(input->getShape(), dev);
+    output = new Tensor(input->shape, dev);
+    //    delta = new Tensor(output->shape, dev);
 
-    mask = new Tensor(input->getShape(), dev);
+    mask = new Tensor(input->shape, dev);
 
     parent->addchild(this);
     addparent(parent);
@@ -37,14 +37,14 @@ LDropout::LDropout(Layer *parent, float df, string name, int dev) : LinLayer(nam
 
 LDropout::~LDropout()
 {
-  delete mask;
+    delete mask;
 }
 
 // virtual
 void LDropout::resize(int batch){
-  Layer::resize(batch);
-  delete mask;
-  mask = new Tensor(input->getShape(), dev);
+    Layer::resize(batch);
+    delete mask;
+    mask = new Tensor(input->shape, dev);
 }
 
 void LDropout::forward() {
@@ -59,16 +59,12 @@ void LDropout::forward() {
 }
 
 void LDropout::backward() {
-
-    if (parent.size()) {
-        Tensor::el_mult(delta, mask, parent[0]->delta, 1);
-    }
+    Tensor::el_mult(delta, mask, parent[0]->delta, 1);
 }
 
 
 Layer *LDropout::share(int c, int bs, vector<Layer *> p) {
-
-    LDropout *n = new LDropout(p[0], df, "share_" + to_string(c) + name, dev);
+    LDropout *n = new LDropout(p[0], df, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
@@ -76,7 +72,7 @@ Layer *LDropout::share(int c, int bs, vector<Layer *> p) {
 
 Layer *LDropout::clone(int c, int bs, vector<Layer *> p, int todev) {
 
-    LDropout *n = new LDropout(p[0], df, "clone_" + to_string(todev) + name, todev);
+    LDropout *n = new LDropout(p[0], df, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     return n;

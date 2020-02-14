@@ -15,6 +15,7 @@
 #include <string>
 #include <chrono>
 #include <thread>
+#include <stdexcept>
 #include "net.h"
 #include <pthread.h>
 #include "../utils.h"
@@ -161,8 +162,7 @@ void Net::run_snets(void *(*F)(void *t))
 
     rc = pthread_create(&thr[i], nullptr, (*F), (void *) (&td[i]));
     if (rc) {
-        fprintf(stderr, "Error:unable to create thread %d", rc);
-        exit(-1);
+        throw std::runtime_error("unable to create thread " + std::to_string(rc));
     }
   }
 
@@ -170,8 +170,7 @@ void Net::run_snets(void *(*F)(void *t))
   for (int i = 0; i < comp; i++) {
     rc = pthread_join(thr[i], &status);
     if (rc) {
-        cout << "Error:unable to join," << rc << endl;
-        exit(-1);
+        throw std::runtime_error("unable to join thread " + std::to_string(rc));
     }
   }
 }
@@ -305,8 +304,7 @@ void Net::backward(vector<Tensor *> target)
 }
 
 
-void Net::backward()
-{
+void Net::backward(){
 
   tr_batches++;
   run_snets(backward_t);

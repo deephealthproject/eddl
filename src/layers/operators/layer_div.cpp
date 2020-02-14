@@ -30,14 +30,14 @@ int LDiv::total_layers = 0;
   @returns the result of l1/l2 element-wise
 
   */
-LDiv::LDiv(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev) {
+LDiv::LDiv(Layer *l1, Layer *l2, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "div_" + to_string(++total_layers);
     binary = 1;
 
     input=l1->output;
 
-    output = new Tensor(l1->output->getShape(), dev);
-    delta = new Tensor(l1->output->getShape(), dev);
+    output = new Tensor(l1->output->shape, dev);
+//    if (!mem_level) { delta = new Tensor(l1->output->shape, dev);  }
 
     l1->addchild(this);
     l2->addchild(this);
@@ -56,27 +56,27 @@ LDiv::LDiv(Layer *l1, Layer *l2, string name, int dev) : OperatorLayer(name, dev
   @returns the result of l/k element-wise over l
 
   */
-LDiv::LDiv(Layer *l, float k, string name, int dev) : OperatorLayer(name, dev) {
+LDiv::LDiv(Layer *l, float k, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "div_" + to_string(++total_layers);
     val = k;
     left=1;
 
     input=l->output;
-    output = new Tensor(l->output->getShape(), dev);
-    delta = new Tensor(l->output->getShape(), dev);
+    output = new Tensor(l->output->shape, dev);
+//    if (!mem_level) { delta = new Tensor(l->output->shape, dev);  }
 
     l->addchild(this);
     addparent(l);
 }
 
-LDiv::LDiv(float k, Layer *l, string name, int dev) : OperatorLayer(name, dev) {
+LDiv::LDiv(float k, Layer *l, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "div_" + to_string(++total_layers);
     val = k;
     left=0;
 
     input=l->output;
-    output = new Tensor(l->output->getShape(), dev);
-    delta = new Tensor(l->output->getShape(), dev);
+    output = new Tensor(l->output->shape, dev);
+//    if (!mem_level) { delta = new Tensor(l->output->shape, dev);  }
 
     l->addchild(this);
     addparent(l);
@@ -124,12 +124,12 @@ void LDiv::backward() {
 Layer *LDiv::share(int c, int bs, vector<Layer *> p) {
   LDiv *n;
   if (binary)
-      n = new LDiv(p[0], p[1], "share_" + to_string(c) + name, dev);
+      n = new LDiv(p[0], p[1], "share_" + to_string(c) + this->name, this->dev, this->mem_level);
   else {
     if (left)
-      n = new LDiv(p[0], val, "share_" + to_string(c) + name, dev);
+      n = new LDiv(p[0], val, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     else
-      n = new LDiv(val, p[0], "share_" + to_string(c) + name, dev);
+      n = new LDiv(val, p[0], "share_" + to_string(c) + this->name, this->dev, this->mem_level);
   }
   n->orig = this;
   return n;
@@ -138,12 +138,12 @@ Layer *LDiv::share(int c, int bs, vector<Layer *> p) {
 Layer *LDiv::clone(int c, int bs, vector<Layer *> p, int todev) {
     LDiv *n;
     if (binary)
-        n = new LDiv(p[0], p[1], "clone_" + to_string(c) + name, todev);
+        n = new LDiv(p[0], p[1], "clone_" + to_string(c) + name, todev, this->mem_level);
         else {
           if (left)
-            n = new LDiv(p[0], val, "clone_" + to_string(c) + name, todev);
+            n = new LDiv(p[0], val, "clone_" + to_string(c) + name, todev, this->mem_level);
           else
-            n = new LDiv(val, p[0], "clone_" + to_string(c) + name, todev);
+            n = new LDiv(val, p[0], "clone_" + to_string(c) + name, todev, this->mem_level);
         }
     n->orig = this;
     return n;
