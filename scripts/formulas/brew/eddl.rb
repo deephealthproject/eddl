@@ -1,18 +1,18 @@
-# Homebrew Formula for Google Test
+# Homebrew Formula for EDDL
 # Usage: brew install eddl
 
 class Eddl < Formula
-  desc "European Distributed Deep Learning (EDDL) Library"
+  desc "European Distributed Deep Learning Library (EDDL)"
   homepage "https://github.com/deephealthproject/eddl"
-  url "https://github.com/deephealthproject/eddl/archive/v0.3.1.tar.gz"
-  sha256 "f439f9cf01e95e0eb7af8ab1bf2dee5d390023aa8bb1514e34e063552865b7ee"
+  url ""
+  sha256 ""
 
   depends_on "cmake" => :build
-  depends_on "openblas" => :build
   depends_on "eigen" => :build
-  depends_on "zlib" => :build
   depends_on "graphviz" => :build
+  depends_on "openblas" => :build
   depends_on "wget" => :build
+  depends_on "zlib" => :build
 
   def install
     mkdir "build" do
@@ -22,5 +22,15 @@ class Eddl < Formula
   end
 
   test do
+    (testpath/"test.cpp").write <<~EOS
+      #include <iostream>
+      #include <eddl/tensor>
+      int main(){
+        Tensor *t1 = Tensor::ones({5, 1});
+        std::cout << t1->sum() << std::endl;
+      }
+    EOS
+    system ENV.cxx, "test.cpp", "-I#{include}/eddl", "-o", "test"
+    assert_equal "5", shell_output("./test").split
   end
 end
