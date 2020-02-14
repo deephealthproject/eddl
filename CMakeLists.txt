@@ -12,7 +12,7 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # USER OPTIONS *******************************
 set(BUILD_TARGET "GPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
-option(BUILD_EXAMPLES "Compile examples" ON)
+option(BUILD_EXAMPLES "Compile examples" OFF)
 option(BUILD_TESTS "Compile tests" OFF)
 option(BUILD_SHARED_LIB "Whether to build a static or dynamic library" ON)
 option(BUILD_HPC "Use aggressive flags that might break the code. Use it carefully." OFF)
@@ -70,13 +70,15 @@ endif()
 # Device specific setup
 string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
 if(${BUILD_TARGET} STREQUAL "CPU")
-    message("Compiling for CPU...")
+#    message("Compiling for CPU...")
 elseif(${BUILD_TARGET} STREQUAL "GPU" OR ${BUILD_TARGET} STREQUAL "CUDA")
-    message("Compiling for GPU...")
+#    message("Compiling for GPU...")
     set(USE_CUDA ON CACHE BOOL "Enable CUDA support if checked")
 elseif(${BUILD_TARGET} STREQUAL "FPGA")
-    message("Compiling for FPGA...")
+#    message("Compiling for FPGA...")
     message(FATAL_ERROR "FPGA not implemented, CMake will exit." )
+else()
+    message(FATAL_ERROR "Build target not implemented, CMake will exit." )
 endif()
 
 # Set default install directories
@@ -87,6 +89,25 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Installation Directory" FORCE)
     endif()
 endif()
+
+
+# Add CUDA (if possible)
+if(USE_CUDA)
+    include(CheckLanguage)
+    check_language(CUDA)
+    if(CMAKE_CUDA_COMPILER)
+        enable_language(CUDA)
+        if(NOT DEFINED CMAKE_CUDA_STANDARD)
+            set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr -D_MWAITXINTRIN_H_INCLUDED -D_FORCE_INLINES -D__STRICT_ANSI__")
+            set(CMAKE_CUDA_STANDARD 11)
+            set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+        endif()
+    else()
+        set(USE_CUDA OFF)
+        set(BUILD_TARGET "CPU")
+    endif()
+endif()
+
 
 # SHOW OPTIONS
 message(STATUS "===========================================" )
@@ -106,22 +127,6 @@ message(STATUS "CUDA Enabled: " ${USE_CUDA} )
 message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )
-
-# Add CUDA (if possible)
-if(USE_CUDA)
-    include(CheckLanguage)
-    check_language(CUDA)
-    if(CMAKE_CUDA_COMPILER)
-        enable_language(CUDA)
-        if(NOT DEFINED CMAKE_CUDA_STANDARD)
-            set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr -D_MWAITXINTRIN_H_INCLUDED -D_FORCE_INLINES -D__STRICT_ANSI__")
-            set(CMAKE_CUDA_STANDARD 11)
-            set(CMAKE_CUDA_STANDARD_REQUIRED ON)
-        endif()
-    else()
-        message(WARNING "No CUDA support")
-    endif()
-endif()
 
 # Microsoft Visual C++ - set static/dynamic runtime
 if(MSVC)
@@ -150,17 +155,17 @@ if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
-# ONNX
-include(FindProtobuf)
-find_package(Protobuf REQUIRED)
-if(Protobuf_FOUND)
-    add_compile_definitions(cPROTO)
-	#protobuf_generate_cpp(onnx.pb.cc onnx.pb.h onnx.proto) #Generate protobuf files #Doesn't work
-	#EXEC_PROGRAM(${PROTOBUF_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
-	message("-- Protobuf path: ${PROTOBUF_LIBRARIES} ${PROTOBUF_INCLUDE_DIR}")
-else()
-    message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
-endif()
+## ONNX
+#include(FindProtobuf)
+#find_package(Protobuf REQUIRED)
+#if(Protobuf_FOUND)
+#    add_compile_definitions(cPROTO)
+#	#protobuf_generate_cpp(onnx.pb.cc onnx.pb.h onnx.proto) #Generate protobuf files #Doesn't work
+#	#EXEC_PROGRAM(${PROTOBUF_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
+#	message("-- Protobuf path: ${PROTOBUF_LIBRARIES} ${PROTOBUF_INCLUDE_DIR}")
+#else()
+#    message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
+#endif()
 
 
 # [MACRO] Download submodules
@@ -235,7 +240,7 @@ file(GLOB_RECURSE ONNX_SOURCES_FILES
     ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.cc
 )
 SET(ONNX_SOURCES ${ONNX_HEADER_FILES} ${ONNX_SOURCES_FILES})
-# SET(ONNX_SOURCES "")
+SET(ONNX_SOURCES "")
 
 
 # [LIBRARY] EDDL LIBRARY *********************
@@ -310,10 +315,10 @@ if (ZLIB_FOUND)
 endif()
 
 #Onnx link
-if(Protobuf_FOUND)
-    target_include_directories(eddl PUBLIC ${PROTOBUF_INCLUDE_DIR})
-	target_link_libraries(eddl PRIVATE ${PROTOBUF_LIBRARIES})
-endif()
+#if(Protobuf_FOUND)
+#    target_include_directories(eddl PUBLIC ${PROTOBUF_INCLUDE_DIR})
+#	target_link_libraries(eddl PRIVATE ${PROTOBUF_LIBRARIES})
+#endif()
 
 # ONNX
 # include(FindProtobuf)
@@ -356,11 +361,11 @@ endif()
 
 
 # [TESTS] Generate a test executable
-if(BUILD_TESTS)
-    enable_testing()
-    find_package(GTest REQUIRED)
-    target_link_libraries(eddl PRIVATE ${GTEST_INCLUDE_DIRS})
-endif(BUILD_TESTS)
+#if(BUILD_TESTS)
+#    enable_testing()
+#    find_package(GTest REQUIRED)
+#    target_link_libraries(eddl PRIVATE ${GTEST_INCLUDE_DIRS})
+#endif(BUILD_TESTS)
 
 
 # [EXAMPLES] Generate a few test executables
@@ -433,16 +438,18 @@ if(BUILD_EXAMPLES)
 	# add_executable(onnx_pointer "${EXAMPLES_DIR}/onnx/1_onnx_pointer.cpp")
 	# target_link_libraries(onnx_pointer eddl)
 
-	 add_executable(onnx_export "${EXAMPLES_DIR}/onnx/2_onnx_save_net_to_file.cpp")
-	 target_link_libraries(onnx_export eddl)
-
-	 add_executable(onnx_import "${EXAMPLES_DIR}/onnx/3_onnx_import_net_from_file.cpp")
-	 target_link_libraries(onnx_import eddl)
+#	 add_executable(onnx_export "${EXAMPLES_DIR}/onnx/2_onnx_save_net_to_file.cpp")
+#	 target_link_libraries(onnx_export eddl)
+#
+#	 add_executable(onnx_import "${EXAMPLES_DIR}/onnx/3_onnx_import_net_from_file.cpp")
+#	 target_link_libraries(onnx_import eddl)
 
 endif(BUILD_EXAMPLES)
 
 
 # [INSTALL] Install the EDDL library
+message(STATUS "Install path: ${CMAKE_INSTALL_PREFIX}")
+
 if (WIN32)
     SET(EDDL_CONFIG_INSTALL_PATH ${CMAKE_INSTALL_PREFIX})
 else()
@@ -451,20 +458,23 @@ endif()
 
 install(TARGETS eddl
         EXPORT eddlTargets
-        RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin
+        INCLUDES DESTINATION include
         )
-install(EXPORT eddlTargets DESTINATION ${EDDL_CONFIG_INSTALL_PATH})
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
+install(EXPORT eddlTargets
+        DESTINATION ${EDDL_CONFIG_INSTALL_PATH}
+        )
+install(DIRECTORY src/
         DESTINATION include/eddl
         FILES_MATCHING PATTERN "*.h")
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/eddlConfig.cmake.in ${CMAKE_BINARY_DIR}/cmake/eddlConfig.cmake @ONLY)
-install(FILES ${CMAKE_BINARY_DIR}/cmake/eddlConfig.cmake
-        DESTINATION ${EDDL_CONFIG_INSTALL_PATH})
-
-message(STATUS "Install path: ${CMAKE_INSTALL_PREFIX}")
+# This allows to do: "find_package(eddl)"
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/eddlConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/cmake/eddlConfig.cmake @ONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/cmake/eddlConfig.cmake"
+        DESTINATION ${EDDL_CONFIG_INSTALL_PATH}
+        )
 
 #Experimental script
 #file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/temp)
