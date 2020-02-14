@@ -27,19 +27,9 @@ For more information about DeepHealth project go to: [deephealth-project.eu](htt
 
 ## Installation
 
-### Package managers (coming soon)
+### Package managers
 
-On Ubuntu/Debian run:
-
-```
-sudo apt-get install eddl
-```
-
-On MacOS run:
-
-```
-brew install eddl
-```
+> Coming soon...
 
 
 ### Build from source
