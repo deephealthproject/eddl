@@ -384,17 +384,8 @@ if(BUILD_EXAMPLES)
     add_executable(mnist_auto_encoder "${EXAMPLES_DIR}/nn/1_mnist/6_mnist_auto_encoder.cpp")
     target_link_libraries(mnist_auto_encoder eddl)
 
-    add_executable(mnist_gan "${EXAMPLES_DIR}/nn/1_mnist/7_mnist_gan.cpp")
-    target_link_libraries(mnist_gan eddl)
-
-    add_executable(mnist_wgan "${EXAMPLES_DIR}/nn/1_mnist/8_mnist_wgan.cpp")
-    target_link_libraries(mnist_wgan eddl)
-
-    add_executable(mnist_conv "${EXAMPLES_DIR}/nn/1_mnist/9_mnist_conv.cpp")
+    add_executable(mnist_conv "${EXAMPLES_DIR}/nn/1_mnist/7_mnist_conv.cpp")
     target_link_libraries(mnist_conv eddl)
-
-    add_executable(mnist_cgan "${EXAMPLES_DIR}/nn/1_mnist/10_mnist_cgan.cpp")
-    target_link_libraries(mnist_cgan eddl)
 
     # EXAMPLES: CIFAR10 ****************************************************
     add_executable(cifar_conv "${EXAMPLES_DIR}/nn/2_cifar10/1_cifar_conv.cpp")
