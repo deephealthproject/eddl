@@ -13,6 +13,7 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 # USER OPTIONS *******************************
 set(BUILD_TARGET "GPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
 option(BUILD_EXAMPLES "Compile examples" OFF)
+option(BUILD_PROTOBUF "Compile using Protobuf" ON)
 option(BUILD_TESTS "Compile tests" OFF)
 option(BUILD_SHARED_LIB "Whether to build a static or dynamic library" ON)
 option(BUILD_HPC "Use aggressive flags that might break the code. Use it carefully." OFF)
@@ -108,26 +109,6 @@ if(USE_CUDA)
     endif()
 endif()
 
-
-# SHOW OPTIONS
-message(STATUS "===========================================" )
-message(STATUS "===========================================" )
-message(STATUS "Build type: " ${CMAKE_BUILD_TYPE} )
-message(STATUS "Build target: " ${BUILD_TARGET} )
-message(STATUS "Build tests: " ${BUILD_TESTS} )
-message(STATUS "Build examples: " ${BUILD_EXAMPLES} )
-message(STATUS "Build python: " ${BUILD_PYTHON} )
-message(STATUS "Build HPC: " ${BUILD_HPC} )
-message(STATUS "Use Intel-MKL: " ${MKL} )
-message(STATUS "C++ compiler: " ${CMAKE_CXX_COMPILER_ID} )
-message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS})
-message(STATUS "C++ flags (release): " ${CMAKE_CXX_FLAGS_RELEASE})
-message(STATUS "C++ flags (debug): " ${CMAKE_CXX_FLAGS_DEBUG})
-message(STATUS "CUDA Enabled: " ${USE_CUDA} )
-message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
-message(STATUS "===========================================" )
-message(STATUS "===========================================" )
-
 # Microsoft Visual C++ - set static/dynamic runtime
 if(MSVC)
     if(BUILD_SHARED_LIB)
@@ -155,17 +136,19 @@ if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
-## ONNX
-#include(FindProtobuf)
-#find_package(Protobuf REQUIRED)
-#if(Protobuf_FOUND)
-#    add_compile_definitions(cPROTO)
-#	#protobuf_generate_cpp(onnx.pb.cc onnx.pb.h onnx.proto) #Generate protobuf files #Doesn't work
-#	#EXEC_PROGRAM(${PROTOBUF_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
-#	message("-- Protobuf path: ${PROTOBUF_LIBRARIES} ${PROTOBUF_INCLUDE_DIR}")
-#else()
-#    message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
-#endif()
+# ONNX
+if(BUILD_PROTOBUF)
+    include(FindProtobuf)
+    find_package(Protobuf REQUIRED)
+    if(Protobuf_FOUND)
+        add_compile_definitions(cPROTO)
+    	#protobuf_generate_cpp(onnx.pb.cc onnx.pb.h onnx.proto) #Generate protobuf files #Doesn't work
+    	EXEC_PROGRAM(${PROTOBUF_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
+    else()
+        SET(BUILD_PROTOBUF OFF)
+        message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
+    endif()
+endif()
 
 
 # [MACRO] Download submodules
@@ -181,6 +164,25 @@ macro(eddl_update_third_party SUBMODULE)
         endif()
     endif()
 endmacro()
+
+# SHOW OPTIONS
+message(STATUS "===========================================" )
+message(STATUS "===========================================" )
+message(STATUS "Build type: " ${CMAKE_BUILD_TYPE} )
+message(STATUS "Build target: " ${BUILD_TARGET} )
+message(STATUS "Build tests: " ${BUILD_TESTS} )
+message(STATUS "Build examples: " ${BUILD_EXAMPLES} )
+message(STATUS "Build Protobuf: " ${BUILD_PROTOBUF} )
+message(STATUS "Build HPC: " ${BUILD_HPC} )
+message(STATUS "Use Intel-MKL: " ${MKL} )
+message(STATUS "C++ compiler: " ${CMAKE_CXX_COMPILER_ID} )
+message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS})
+message(STATUS "C++ flags (release): " ${CMAKE_CXX_FLAGS_RELEASE})
+message(STATUS "C++ flags (debug): " ${CMAKE_CXX_FLAGS_DEBUG})
+message(STATUS "CUDA Enabled: " ${USE_CUDA} )
+message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
+message(STATUS "===========================================" )
+message(STATUS "===========================================" )
 
 # C++ files
 file(GLOB CPP_HEADER_FILES_TOP
@@ -232,15 +234,18 @@ SET(CUDA_SOURCES ${CUDA_HEADER_FILES} ${CUDA_CU_FILES})
 
 
 # ONNX files
-file(GLOB_RECURSE ONNX_HEADER_FILES
-    ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.h
-)
-file(GLOB_RECURSE ONNX_SOURCES_FILES
-    ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.cc
-)
-SET(ONNX_SOURCES ${ONNX_HEADER_FILES} ${ONNX_SOURCES_FILES})
 SET(ONNX_SOURCES "")
+if(BUILD_PROTOBUF)
+    file(GLOB_RECURSE ONNX_HEADER_FILES
+        ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.h
+    )
+    file(GLOB_RECURSE ONNX_SOURCES_FILES
+        ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.cc
+    )
+    SET(ONNX_SOURCES ${ONNX_HEADER_FILES} ${ONNX_SOURCES_FILES})
+endif()
+
 
 
 # [LIBRARY] EDDL LIBRARY *********************
@@ -314,23 +319,20 @@ if (ZLIB_FOUND)
     target_link_libraries(eddl PRIVATE ${ZLIB_LIBRARIES})
 endif()
 
-#Onnx link
-#if(Protobuf_FOUND)
-#    target_include_directories(eddl PUBLIC ${PROTOBUF_INCLUDE_DIR})
-#	target_link_libraries(eddl PRIVATE ${PROTOBUF_LIBRARIES})
-#endif()
 
 # ONNX
-# include(FindProtobuf)
-# find_package(Protobuf REQUIRED)
-# if(Protobuf_FOUND)
-#     add_compile_definitions(cPROTO)
-#     target_include_directories(eddl PUBLIC ${PROTOBUF_INCLUDE_DIR})
-# 	target_link_libraries(eddl PRIVATE ${PROTOBUF_LIBRARIES})
-# 	message("Protobuf path: ${PROTOBUF_LIBRARIES} ${PROTOBUF_INCLUDE_DIR}")
-# else()
-#     message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
-# endif()
+if(BUILD_PROTOBUF)
+    include(FindProtobuf)
+    find_package(Protobuf REQUIRED)
+    if(Protobuf_FOUND)
+        add_compile_definitions(cPROTO)
+        target_include_directories(eddl PUBLIC ${PROTOBUF_INCLUDE_DIR})
+    	target_link_libraries(eddl PRIVATE ${PROTOBUF_LIBRARIES})
+    	message("Protobuf path: ${PROTOBUF_LIBRARIES} ${PROTOBUF_INCLUDE_DIR}")
+    else()
+        message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
+    endif()
+endif()
 
 
 # pthreads setup for windows os
@@ -435,14 +437,16 @@ if(BUILD_EXAMPLES)
     target_link_libraries(tensor_tests_dev eddl)
 
 	# EXAMPLES: ONNX ******************************************************************
-	# add_executable(onnx_pointer "${EXAMPLES_DIR}/onnx/1_onnx_pointer.cpp")
-	# target_link_libraries(onnx_pointer eddl)
+    if(BUILD_PROTOBUF)
+    	add_executable(onnx_pointer "${EXAMPLES_DIR}/onnx/1_onnx_pointer.cpp")
+    	target_link_libraries(onnx_pointer eddl)
 
-#	 add_executable(onnx_export "${EXAMPLES_DIR}/onnx/2_onnx_save_net_to_file.cpp")
-#	 target_link_libraries(onnx_export eddl)
-#
-#	 add_executable(onnx_import "${EXAMPLES_DIR}/onnx/3_onnx_import_net_from_file.cpp")
-#	 target_link_libraries(onnx_import eddl)
+    	add_executable(onnx_export "${EXAMPLES_DIR}/onnx/2_onnx_save_net_to_file.cpp")
+    	target_link_libraries(onnx_export eddl)
+
+    	add_executable(onnx_import "${EXAMPLES_DIR}/onnx/3_onnx_import_net_from_file.cpp")
+    	target_link_libraries(onnx_import eddl)
+    endif()
 
 endif(BUILD_EXAMPLES)
 

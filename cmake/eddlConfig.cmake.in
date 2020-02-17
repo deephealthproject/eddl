@@ -1,10 +1,10 @@
 include(CMakeFindDependencyMacro)
 
 # VARIABLES
-SET(USE_CUDA @USE_CUDA@)
+SET(USE_CUDA "@USE_CUDA@")
 SET(OpenMP_FOUND "@OpenMP_FOUND@")
 SET(ZLIB_ROOT "@ZLIB_ROOT@")
-#SET(Protobuf_FOUND @Protobuf_FOUND@)
+SET(BUILD_PROTOBUF "@BUILD_PROTOBUF@")
 
 # THREADS (pthreads setup for linux os)
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
@@ -23,16 +23,16 @@ find_dependency(Eigen3)
 
 # OPENMP
 if (${OpenMP_FOUND})
-find_dependency(OpenMP)
+	find_dependency(OpenMP)
 endif()
 
 # ZLIB
 find_dependency(ZLIB)
 
 # PROTOBUF
-#if (${Protobuf_FOUND})
-#    find_dependency(Protobuf)
-#endif()
+if (${BUILD_PROTOBUF})
+    find_dependency(Protobuf)
+endif()
 
 include("@EDDL_CONFIG_INSTALL_PATH@/eddlTargets.cmake")
 
