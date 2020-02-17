@@ -2,9 +2,9 @@ include(CMakeFindDependencyMacro)
 
 # VARIABLES
 SET(USE_CUDA "@USE_CUDA@")
-SET(OpenMP_FOUND "@OpenMP_FOUND@")
-SET(ZLIB_ROOT "@ZLIB_ROOT@")
+SET(BUILD_OPENMP "@BUILD_OPENMP@")
 SET(BUILD_PROTOBUF "@BUILD_PROTOBUF@")
+SET(ZLIB_ROOT "@ZLIB_ROOT@")
 
 # THREADS (pthreads setup for linux os)
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
@@ -22,7 +22,7 @@ endif()
 find_dependency(Eigen3)
 
 # OPENMP
-if (${OpenMP_FOUND})
+if (${BUILD_OPENMP})
 	find_dependency(OpenMP)
 endif()
 
