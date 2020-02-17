@@ -25,7 +25,7 @@ For more information about DeepHealth project go to: [deephealth-project.eu](htt
 
 ## Build from source
 
-If you are installing from source, you will need a C++11 compiler. Also, we highly recommend installing an [Anaconda environment](https://docs.conda.io/en/latest/miniconda.html) or also you can use a docker image (see below).
+If you are installing from source, you will need a C++11 compiler. We highly recommend installing an [Anaconda environment](https://docs.conda.io/en/latest/miniconda.html) or also you can use a docker image (see below).
 
 If you want to compile with CUDA support, install
 
