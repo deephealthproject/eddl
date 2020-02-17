@@ -1,0 +1,68 @@
+
+Core
+-----------
+
+Activation
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. cpp:function:: LActivation::LActivation(Layer *parent, string act, vector<float> params, string name, int dev, int mem)
+
+
+forward
+"""""""""""""""""""""""""
+.. cpp:function:: void LActivation::forward()
+
+
+backward
+"""""""""""""""""""""""""
+.. cpp:function:: void LActivation::backward()
+
+
+save
+"""""""""""""""""""""""""
+.. cpp:function:: void LActivation::save(std::ofstream &ofs, string format)
+
+
+load
+"""""""""""""""""""""""""
+.. cpp:function:: void LActivation::load(std::ifstream &ifs, string format)
+
+
+share
+"""""""""""""""""""""""""
+.. cpp:function:: Layer *LActivation::share(int c, int bs, vector<Layer *> p)
+
+
+clone
+"""""""""""""""""""""""""
+.. cpp:function:: Layer *LActivation::clone(int c, int bs, vector<Layer *> p, int todev)
+
+
+plot
+"""""""""""""""""""""""""
+.. cpp:function:: 
+
+
+
+
+
+Dense
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Dropout
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Embedding
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Input
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Reshape
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Tensor
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Transpose
+^^^^^^^^^^^^^^^^^^^^^^^^^
