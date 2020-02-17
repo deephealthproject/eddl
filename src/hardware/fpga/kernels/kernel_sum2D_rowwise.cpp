@@ -7,10 +7,10 @@
 extern "C" {
 
 void kernel_sum2D_rowwise(
-         const float *A, 
-         const float *B, 
+         const float *A,
+         const float *B,
          float *C,
-         int dim0, 
+         int dim0,
          int dim1
         )
 {
@@ -26,11 +26,10 @@ void kernel_sum2D_rowwise(
 #pragma HLS INTERFACE s_axilite port=return bundle=control
 
       int p=0;
-
       for(int i=0;i<dim0;i++) {
         for(int j=0;j<dim1;j++,p++)
           C[p]= A[p]+B[j];
       }
 
 }
-} 
+}
