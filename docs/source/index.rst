@@ -12,18 +12,28 @@ The code is open source, and `available on github`_.
 
 
 .. toctree::
-   :maxdepth: 1
-   :caption: User Guide
+    :maxdepth: 1
+    :caption: Installation
 
-   user/installation.rst
+    installation/installation.rst
+    installation/build-options.rst
+    installation/faq.rst
 
 
 .. toctree::
-   :maxdepth: 2
-   :caption: API
+    :maxdepth: 1
+    :caption: Usage
 
-   api/layers/main.rst
-   api/regularizers/main.rst
+    usage/getting_started.rst
+
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Layers
+
+    layers/core.rst
+    layers/activations.rst
+    layers/data_augmentation.rst
 
 
 Indices and tables
