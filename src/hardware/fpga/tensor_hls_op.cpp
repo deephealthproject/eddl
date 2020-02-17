@@ -35,7 +35,7 @@ cl::Kernel kernel_normalize;
 cl::Kernel el_div;
 cl::Kernel kernel_gemx;
 
-//cl::Buffer buffer; 
+//cl::Buffer buffer;
 
 uint64_t get_duration_ns (const cl::Event &event) {
     cl_int err;
@@ -46,7 +46,7 @@ uint64_t get_duration_ns (const cl::Event &event) {
 }
 
 void verify2(cl::Buffer &buffer, int size) {
-    
+
     cl_int err;
     float *ptr = (float *) malloc (size*sizeof(float));
     OCL_CHECK(err, err = q.enqueueReadBuffer(buffer, CL_TRUE, 0, size*sizeof(int), ptr));
@@ -63,16 +63,17 @@ void verify(Tensor *T) {
     float *ptr = (float *) malloc (T->size*sizeof(float));
     OCL_CHECK(err, err = q.enqueueReadBuffer(T->fpga_ptr, CL_TRUE, 0, T->size*sizeof(int), ptr));
     for (int i=0; i<T->size; i++){
-	printf("ptr = %f \n", ptr[i]); 
+	printf("ptr = %f \n", ptr[i]);
     }
 }
 
 void fpga_init(){ // initialize only once
-   
+
     cl_int err;
     //std::string binaryFile = "/home/carherlu/DEEPHEALTH/LASTVERSION/eddl/src/hardware/fpga/kernels/xclbin/tensor_op.hw.xilinx_u200_xdma_201830_2.xclbin";
-    std::string binaryFile = "/home/carherlu/DEEPHEALTH/LASTVERSION/eddl/src/hardware/fpga/eddl-gemx.xclbin"; 
+    //std::string binaryFile = "/home/carherlu/DEEPHEALTH/LASTVERSION/eddl/src/hardware/fpga/eddl-gemx.xclbin";
     //std::string binaryFile = "/home/carherlu/DEEPHEALTH/gemx/gemx/fpga_kernels_gemx.hw.xilinx_u200_xdma_201830_2.xclbin";
+    std::string binaryFile = "/home/jorga20j/Escritorio/DeepHealthEDDL/eddl/src/hardware/fpga/kernels/xclbin/tensor_op.sw_emu.xilinx_u200_xdma_201830_2.xclbin";
     unsigned fileBufSize;
     std::vector<cl::Device> devices = xcl::get_xil_devices();
     cl::Device device = devices[0];
@@ -80,22 +81,22 @@ void fpga_init(){ // initialize only once
     OCL_CHECK(err, q = cl::CommandQueue(context, device, CL_QUEUE_PROFILING_ENABLE | CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, &err));
     char *fileBuf = xcl::read_binary_file(binaryFile, fileBufSize);
     cl::Program::Binaries bins{{fileBuf, fileBufSize}};
-    
+
     devices.resize(1);
     OCL_CHECK(err, program = cl::Program(context, devices, bins, NULL, &err));
-    /*OCL_CHECK(err, tensor_op= cl::Kernel(program,"tensor_op", &err));
+    /*OCL_CHECK(err, tensor_op= cl::Kernel(program,"tensor_op", &err));*/
     OCL_CHECK(err, multitensor_op = cl::Kernel(program,"multitensor_op", &err));
     //OCL_CHECK(err, kernel_sum6 = cl::Kernel(program,"kernel_sum6", &err));
-    OCL_CHECK(err, mult2D = cl::Kernel(program,"kernel_mult2D", &err));
+    //OCL_CHECK(err, mult2D = cl::Kernel(program,"kernel_mult2D", &err));
     OCL_CHECK(err, sum2D_rowwise = cl::Kernel(program,"kernel_sum2D_rowwise", &err));
-    //OCL_CHECK(err, kernel_cent = cl::Kernel(program,"kernel_cent", &err)); 
+    //OCL_CHECK(err, kernel_cent = cl::Kernel(program,"kernel_cent", &err));
     //OCL_CHECK(err, relu_soft_d = cl::Kernel(program,"relu_soft_d", &err));
-    //OCL_CHECK(err, reduce_sum2D = cl::Kernel(program,"reduce_sum2D", &err));
-    OCL_CHECK(err, kernel_accuracy = cl::Kernel(program,"kernel_accuracy", &err));
-    OCL_CHECK(err, kernel_total_sum = cl::Kernel(program,"kernel_total_sum", &err));
-    OCL_CHECK(err, el_div = cl::Kernel(program,"el_div", &err));
-    OCL_CHECK(err, kernel_normalize = cl::Kernel(program,"kernel_normalize", &err));*/
-    kernel_gemx = clCreateKernel(program(), "gemxKernel_0", &err);
+    OCL_CHECK(err, reduce_sum2D = cl::Kernel(program,"reduce_sum2D", &err));
+    //OCL_CHECK(err, kernel_accuracy = cl::Kernel(program,"kernel_accuracy", &err));
+    //OCL_CHECK(err, kernel_total_sum = cl::Kernel(program,"kernel_total_sum", &err));
+    //OCL_CHECK(err, el_div = cl::Kernel(program,"el_div", &err));
+    //OCL_CHECK(err, kernel_normalize = cl::Kernel(program,"kernel_normalize", &err));*/
+    //kernel_gemx = clCreateKernel(program(), "gemxKernel_0", &err);
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
 
 }
@@ -104,7 +105,7 @@ void fpga_create_tensor(Tensor *T, int dev)
 {
     cl_int err;
     int size = T->size;
-    //cl::Buffer buf; 
+    //cl::Buffer buf;
     //printf("Creating Buffer at ref %d -- size %d\n", 0, size);
 
     OCL_CHECK(err,T->fpga_ptr = cl::Buffer(context,CL_MEM_READ_WRITE, size*sizeof(float), NULL, &err));
@@ -147,7 +148,7 @@ void fpga_copy_to_fpga(float *nptr, Tensor *A)
     //blocking_event.wait();
     //printf("Copy Tensor with tam %d in Buffer ref %d -- %f\n", A->tam, A->fpga_ptr,*nptr);
 //    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({A->fpga_ptr},0/* 0 means from host*/));
-    
+
 }
 
 ///////////////////////////////////////////
@@ -165,23 +166,23 @@ void tensor_op_hls(Tensor *A, float fp, int kernel_id)
 {
     cl_int err;
     cl::Event task_end;
- 
-    #ifdef DBG_FPGA 
+
+    #ifdef DBG_FPGA
         printf("TENSOR_OP_HLS %d\n", kernel_id);
     #endif
- 
+
 //    printf("Tensor with XX size %d in Buffer ref %d -- %d\n", A->size, 0,kernel_id);
-    
+
     OCL_CHECK(err, tensor_op= cl::Kernel(program,"tensor_op", &err));
     OCL_CHECK(err, err = tensor_op.setArg(0, A->fpga_ptr));
     OCL_CHECK(err, err = tensor_op.setArg(1, fp));
     OCL_CHECK(err, err = tensor_op.setArg(2, A->size));
-    OCL_CHECK(err, err = tensor_op.setArg(3, kernel_id)); 
+    OCL_CHECK(err, err = tensor_op.setArg(3, kernel_id));
 
-    
+
     OCL_CHECK(err, err = q.enqueueTask(tensor_op, NULL, &task_end));
-    //printf("Tensor with XX size %d in Buffer ref %d -- %d\n", A->size, 0/*A->fpga_ptr*/,kernel_id); 
-    //verify(A);   
+    //printf("Tensor with XX size %d in Buffer ref %d -- %d\n", A->size, 0/*A->fpga_ptr*/,kernel_id);
+    //verify(A);
     q.finish();
 }
 
@@ -189,7 +190,7 @@ void fpga_tensor_sum6(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int in
 {
     cl_int err;
     cl::Event event;
-    #ifdef DBG_FPGA 
+    #ifdef DBG_FPGA
         printf("FPGA::SUM6\n");
     #endif
 
@@ -209,8 +210,8 @@ void fpga_tensor_normalize(Tensor *A, float min, float max)
 {
     cl_int err;
     cl::Event event;
-    
-    #ifdef DBG_FPGA 
+
+    #ifdef DBG_FPGA
         printf("FPGA::NORMALIZE\n");
     #endif
     float min_ori = 0;//gpu_min(A);
@@ -234,7 +235,7 @@ void fpga_reduce_sum2D( Tensor *A, Tensor *B, int axis,int incB)
     cl_int err;
     cl::Event event;
 
-    #ifdef DBG_FPGA 
+    #ifdef DBG_FPGA
         printf("FPGA::REDUCESUM2D\n");
     #endif
 
@@ -246,15 +247,15 @@ void fpga_reduce_sum2D( Tensor *A, Tensor *B, int axis,int incB)
     OCL_CHECK(err, err = reduce_sum2D.setArg(5, incB));
 
     OCL_CHECK(err, err = q.enqueueTask(reduce_sum2D, NULL, &event));
-    q.finish(); 
+    q.finish();
 
 }
 
 void fpga_el_div_mult(Tensor *A, Tensor *B, Tensor *C, int incC, int op) {
    cl_int err;
    cl::Event event;
-   
-   #ifdef DBG_FPGA 
+
+   #ifdef DBG_FPGA
         printf("FPGA::EL_VIV_MULT %d\n", op);
    #endif
 
@@ -277,33 +278,33 @@ void fpga_el_div_mult(Tensor *A, Tensor *B, Tensor *C, int incC, int op) {
 
 
 void fpga_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C){
-    
+
     cl_int err;
     cl::Event event;
 
-    #ifdef DBG_FPGA 
+    #ifdef DBG_FPGA
         printf("FPGA::SUM2DROWWISE\n");
     #endif
-    
+
     OCL_CHECK(err, err = sum2D_rowwise.setArg(0, (A->fpga_ptr)));
     OCL_CHECK(err, err = sum2D_rowwise.setArg(1, (B->fpga_ptr)));
     OCL_CHECK(err, err = sum2D_rowwise.setArg(2, (C->fpga_ptr)));
     OCL_CHECK(err, err = sum2D_rowwise.setArg(3, A->shape[0]));
-    OCL_CHECK(err, err = sum2D_rowwise.setArg(4, A->shape[1])); 
+    OCL_CHECK(err, err = sum2D_rowwise.setArg(4, A->shape[1]));
 
     OCL_CHECK(err, err = q.enqueueTask(sum2D_rowwise, NULL, &event));
     q.finish();
 }
 
 void fpga_mult2D(Tensor *A,int tA, Tensor *B, int tB, Tensor *C, int incC){
-   
-    cl_int err; 
+
+    cl_int err;
     cl::Event event;
     /*if (incC != 0) {
-       printf("WARNING:: Mult2D with inc not supported\n"); 
+       printf("WARNING:: Mult2D with inc not supported\n");
     }else printf("REGULAR MATMULT\n");*/
 
-    #ifdef DBG_FPGA 
+    #ifdef DBG_FPGA
         printf("FPGA::MULT2D\n");
     #endif
 
@@ -316,9 +317,9 @@ void fpga_mult2D(Tensor *A,int tA, Tensor *B, int tB, Tensor *C, int incC){
     OCL_CHECK(err, err = mult2D.setArg(6, B->shape[1]));
     OCL_CHECK(err, err = mult2D.setArg(7, tA));
     OCL_CHECK(err, err = mult2D.setArg(8, tB));
-    
+
     //printf("sizes A(%dx%d) B(%dx%d) C(%dx%d)\n", A->sizes[0], A->sizes[1], B->sizes[0], B->sizes[1],C->sizes[0], C->sizes[1]);
-    //OCL_CHECK(err, err = tensor_op.setArg(5, incC));  
+    //OCL_CHECK(err, err = tensor_op.setArg(5, incC));
     OCL_CHECK(err, err = q.enqueueTask(mult2D, NULL, &event));
  //   event.wait();
     q.finish();
@@ -328,7 +329,7 @@ float fpga_total_sum (Tensor *A){
    cl_int err;
    cl::Event event, result_ready;
 
-   #ifdef DBG_FPGA 
+   #ifdef DBG_FPGA
         printf("FPGA::TOTAL_SUM\n");
     #endif
 
@@ -352,14 +353,14 @@ int fpga_accuracy (Tensor *A, Tensor *B){
    cl::Event event, result_ready;
 
 
-   #ifdef DBG_FPGA 
+   #ifdef DBG_FPGA
         printf("FPGA::ACCURACY\n");
     #endif
- 
+
    int *acc = (int*) malloc(sizeof(int));
    *acc = 0;
    OCL_CHECK(err, cl::Buffer a(context,CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY, 4 ,acc, &err));
- 
+
    OCL_CHECK(err, err = kernel_accuracy.setArg(0, (A->fpga_ptr)));
    OCL_CHECK(err, err = kernel_accuracy.setArg(1, (B->fpga_ptr)));
    OCL_CHECK(err, err = kernel_accuracy.setArg(2, A->shape[0]));
@@ -368,18 +369,18 @@ int fpga_accuracy (Tensor *A, Tensor *B){
 
    OCL_CHECK(err, err = q.enqueueTask(kernel_accuracy, NULL, &event));
    event.wait();
- 
+
    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({a},CL_MIGRATE_MEM_OBJECT_HOST, NULL, &result_ready));
    result_ready.wait();
    return *acc;
-   
+
 }
 
 void fpga_cent(Tensor *A, Tensor *B, Tensor *C){
-    cl_int err; 
+    cl_int err;
     cl::Event event;
-    
-    #ifdef DBG_FPGA 
+
+    #ifdef DBG_FPGA
         printf("FPGA::CENT\n");
     #endif
 
@@ -387,29 +388,29 @@ void fpga_cent(Tensor *A, Tensor *B, Tensor *C){
     OCL_CHECK(err, err = kernel_cent.setArg(1, (B->fpga_ptr)));
     OCL_CHECK(err, err = kernel_cent.setArg(2, (C->fpga_ptr)));
     OCL_CHECK(err, err = kernel_cent.setArg(3, A->size));
-    
+
     OCL_CHECK(err, err = q.enqueueTask(kernel_cent, NULL, &event));
-  //  event.wait();  
+  //  event.wait();
     q.finish();
 
 }
 
 void fpga_relu_soft_d(Tensor *D, Tensor *I, Tensor *PD, int kernel_id){
-    
+
     cl_int err;
     cl::Event event;
 
-    #ifdef DBG_FPGA 
+    #ifdef DBG_FPGA
         printf("FPGA::RELU_SOFT\n", kernel_id);
     #endif
 
-  
+
     OCL_CHECK(err, err = relu_soft_d.setArg(0, (D->fpga_ptr)));
     OCL_CHECK(err, err = relu_soft_d.setArg(1, (I->fpga_ptr)));
     OCL_CHECK(err, err = relu_soft_d.setArg(2, (PD->fpga_ptr)));
     OCL_CHECK(err, err = relu_soft_d.setArg(3, D->size));
     OCL_CHECK(err, err = relu_soft_d.setArg(4, kernel_id));
-    
+
     OCL_CHECK(err, err = q.enqueueTask(relu_soft_d, NULL, &event));
     q.finish();
 }
@@ -419,23 +420,23 @@ void fpga_tensor_operation(Tensor *A, Tensor *B, int kernel_id)
 {
     cl_int err;
     cl::Event event;
-    int aux; 
+    int aux;
     if (kernel_id == FPGARELU) 	{aux = A->size;}
     else {
 	if (kernel_id == FPGASOFTM) {aux = A->shape[0];}
-        else{printf("Tensor Operation not supported %d\n", kernel_id); exit(1);} 
+        else{printf("Tensor Operation not supported %d\n", kernel_id); exit(1);}
     }
-   
-    #ifdef DBG_FPGA 
+
+    #ifdef DBG_FPGA
         printf("FPGA::TENSOR_OPERATION %d\n", kernel_id);
     #endif
- 
+
     OCL_CHECK(err, err = multitensor_op.setArg(0, (A->fpga_ptr)));
     OCL_CHECK(err, err = multitensor_op.setArg(1, (B->fpga_ptr)));
     OCL_CHECK(err, err = multitensor_op.setArg(2, aux));
     OCL_CHECK(err, err = multitensor_op.setArg(3, A->shape[1]));
-    OCL_CHECK(err, err = multitensor_op.setArg(4, kernel_id)); 
-    
+    OCL_CHECK(err, err = multitensor_op.setArg(4, kernel_id));
+
     // Launch the Kernel
     // For HLS kernels global and local size is always (1,1,1). So, it is recommended
     // to always use enqueueTask() for invoking HLS kernel
@@ -445,19 +446,19 @@ void fpga_tensor_operation(Tensor *A, Tensor *B, int kernel_id)
 
 
 void fpga_gemx_mult2D_CPU(Tensor *A,int tA, Tensor *B, int tB, Tensor *C, int incC) {
-   
+
     cl_int ret;
     cl::Event event;
-   
+
     gemx_setup(A->shape[0]/*rows_a*/,A->shape[1] /*cols_a*/,B->shape[1] /*cols_b*/, A->shape[1]/*cols_a*/,B->shape[1] /*cols_b*/, B->shape[1]/*cols_b*/, B->shape[1]/*cols_b*/);
 
     cl::Buffer instr_buffer;
     OCL_CHECK(ret, instr_buffer = cl::Buffer(context,CL_MEM_READ_WRITE ,gemx_instr_buffer_size() , nullptr, &ret));
 
-    OCL_CHECK(ret, ret= q.enqueueWriteBuffer(instr_buffer, CL_TRUE, 0,gemx_instr_buffer_size() , gemx_instr_buffer(), nullptr, &event));    
+    OCL_CHECK(ret, ret= q.enqueueWriteBuffer(instr_buffer, CL_TRUE, 0,gemx_instr_buffer_size() , gemx_instr_buffer(), nullptr, &event));
 
-    OCL_CHECK(ret, ret= q.enqueueWriteBuffer(instr_buffer, CL_TRUE, gemx_page_A() * 4096 ,A->shape[0] * A->shape[1] * sizeof(float) , A->ptr, nullptr, &event)); 
-    OCL_CHECK(ret, ret= q.enqueueWriteBuffer(instr_buffer, CL_TRUE, gemx_page_B() * 4096 ,B->shape[0] * B->shape[1] * sizeof(float) , B->ptr, nullptr, &event)); 
+    OCL_CHECK(ret, ret= q.enqueueWriteBuffer(instr_buffer, CL_TRUE, gemx_page_A() * 4096 ,A->shape[0] * A->shape[1] * sizeof(float) , A->ptr, nullptr, &event));
+    OCL_CHECK(ret, ret= q.enqueueWriteBuffer(instr_buffer, CL_TRUE, gemx_page_B() * 4096 ,B->shape[0] * B->shape[1] * sizeof(float) , B->ptr, nullptr, &event));
 
     OCL_CHECK(ret, ret = kernel_gemx.setArg(0, instr_buffer));
     OCL_CHECK(ret, ret = kernel_gemx.setArg(1, instr_buffer));
@@ -471,14 +472,14 @@ void fpga_gemx_mult2D(Tensor *A,int tA, Tensor *B, int tB, Tensor *C, int incC) 
 
     cl_int ret;
     cl::Event event;
-   
-    printf("GEMX \n"); 
+
+    printf("GEMX \n");
     gemx_setup(A->shape[0]/*rows_a*/,A->shape[1] /*cols_a*/,B->shape[1] /*cols_b*/, A->shape[1]/*cols_a*/,B->shape[1] /*cols_b*/, B->shape[1]/*cols_b*/, B->shape[1]/*cols_b*/);
 
     cl::Buffer instr_buffer;
     OCL_CHECK(ret, instr_buffer = cl::Buffer(context,CL_MEM_READ_WRITE ,gemx_instr_buffer_size() , nullptr, &ret));
 
-    OCL_CHECK(ret, ret= q.enqueueWriteBuffer(instr_buffer, CL_TRUE, 0,gemx_instr_buffer_size() , gemx_instr_buffer(), nullptr, &event));    
+    OCL_CHECK(ret, ret= q.enqueueWriteBuffer(instr_buffer, CL_TRUE, 0,gemx_instr_buffer_size() , gemx_instr_buffer(), nullptr, &event));
 //    OCL_CHECK(ret, ret = q.enqueueMigrateMemObjects({instr_buffer},CL_MIGRATE_MEM_OBJECT_HOST, NULL, &event));
     printf("AFTER MIGRATE %d %d\n", gemx_instr_buffer_size(), gemx_instr_buffer());
 
@@ -523,4 +524,3 @@ void fpga_gemx_mult2D(Tensor *A,int tA, Tensor *B, int tB, Tensor *C, int incC) 
  //   clReleaseMemObject(instr_buffer);
 
 }
-
