@@ -9,6 +9,7 @@
 
 
 #include "descriptors.h"
+#include <math.h>
 
 PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem) {
     ksize = vector<int>(ks.begin(), ks.end());
@@ -81,10 +82,19 @@ void PoolDescriptor::build(Tensor *A) {
     O = new Tensor(vector<int>{A->shape[0], z, r, c}, A->device);
 //    if (!mem_level) { D = new Tensor(O->shape, A->device); }
 
+
+    // Careful with the "size++" not "useless loop"
     size=0;
-//    for(int k=0;k<iz;k++)
-//      for(int i=-padrt;i<=ir+padrb-kr;i+=sr)
-//        for(int j=-padcl;j<=ic+padcr-kc;j+=sc,size++) {}
+    for(int k=0;k<iz;k++)
+      for(int i=-padrt;i<=ir+padrb-kr;i+=sr)
+        for(int j=-padcl;j<=ic+padcr-kc;j+=sc, size++) {}
+
+
+    // TODO: Why not do this? [max-min+1]
+//    int loop1 = iz;
+//    int loop2 = ceil((float)((ir+padrb-kr)-(-padrt)+1)/sr);
+//    int loop3 = ceil((float)((ic+padcr-kc)-(-padcl)+1)/sc);
+//    int size2 = loop1 * loop2 * loop3;
 }
 
 void PoolDescriptor::resize(int b) {
