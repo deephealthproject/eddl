@@ -82,9 +82,9 @@ void PoolDescriptor::build(Tensor *A) {
 //    if (!mem_level) { D = new Tensor(O->shape, A->device); }
 
     size=0;
-//    for(int k=0;k<iz;k++)
-//      for(int i=-padrt;i<=ir+padrb-kr;i+=sr)
-//        for(int j=-padcl;j<=ic+padcr-kc;j+=sc,size++) {}
+    for(int k=0;k<iz;k++)
+      for(int i=-padrt;i<=ir+padrb-kr;i+=sr)
+        for(int j=-padcl;j<=ic+padcr-kc;j+=sc,size++) {}
 }
 
 void PoolDescriptor::resize(int b) {
