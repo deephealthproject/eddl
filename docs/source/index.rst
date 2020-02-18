@@ -34,6 +34,27 @@ The code is open source, and `available on github`_.
     layers/core.rst
     layers/activations.rst
     layers/data_augmentation.rst
+    layers/convolutional.rst
+    layers/noise.rst
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Regularizers
+
+    regularizers/regularizers.rst
+   	
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Optimizers
+
+    optimizers/optimizers.rst
+
+
+    
+    
+    
+
 
 
 Indices and tables

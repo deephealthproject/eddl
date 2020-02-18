@@ -13,6 +13,44 @@ Example:
 
    layer Dense(layer parent, int ndim, bool use_bias = true,  string name = "");
 
+Embedding
+-----------
+
+Turns positive integers (indexes) into dense vectors of fixed size. 
+
+Example:
+
+.. code-block:: c++
+   :linenos:
+
+    layer Embedding(int input_dim, int output_dim, string name = "");
+
+
+Reshape
+--------
+
+Reshapes an output to a certain shape.
+
+Example:
+
+.. code-block:: c++
+   :linenos:
+
+    layer Reshape(layer parent, const vector<int> &shape, string name = "");
+
+
+Transpose
+----------
+
+Transposes a layer.
+
+Example:
+
+.. code-block:: c++
+   :linenos:
+
+    layer Transpose(layer parent, string name = "");
+
 
 Input
 --------
