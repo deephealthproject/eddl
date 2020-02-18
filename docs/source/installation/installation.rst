@@ -15,7 +15,7 @@
 Installation
 ============
 
-.. image:: ../_static/logos/conda.svg
+.. image:: ../_static/images/logos/conda.svg
 
 Using the Conda package
 -----------------------
@@ -27,7 +27,7 @@ A package for EDDL is available on the conda package manager.
     conda install -c conda-forge eddl
 
 
-.. image:: ../_static/logos/debian.svg
+.. image:: ../_static/images/logos/debian.svg
 
 Using the Debian package
 ------------------------
@@ -39,7 +39,7 @@ A package for EDDL is available on Debian.
     sudo apt-get install eddl
 
 
-.. image:: ../_static/logos/homebrew.svg
+.. image:: ../_static/images/logos/homebrew.svg
 
 Using the Homebrew package
 --------------------------
@@ -51,7 +51,7 @@ A package for EDDL is available on the homebrew package manager.
     brew install eddl
 
 
-.. image:: ../_static/logos/cmake.svg
+.. image:: ../_static/images/logos/cmake.svg
 
 From source with cmake
 ----------------------
