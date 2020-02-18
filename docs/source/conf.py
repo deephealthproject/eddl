@@ -18,9 +18,9 @@ sys.path.insert(0, os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'eddl'
+project = 'EDDL'
 copyright = '2020, eddl'
-author = 'eddl'
+author = 'Pattern Recognition and Human Language Translation Research Center.'
 
 
 # -- General configuration ---------------------------------------------------

@@ -145,7 +145,7 @@ if(BUILD_PROTOBUF)
         add_compile_definitions(cPROTO)
     	#protobuf_generate_cpp(onnx.pb.cc onnx.pb.h onnx.proto) #Generate protobuf files #Doesn't work
         # It seems that in some computers we the path appended to the file
-    	EXEC_PROGRAM(${PROTOBUF_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx.proto )
+    	EXEC_PROGRAM(${PROTOBUF_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
     else()
         SET(BUILD_PROTOBUF OFF)
         message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
