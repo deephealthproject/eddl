@@ -26,6 +26,12 @@ The code is open source, and `available on github`_.
 
     usage/getting_started.rst
 
+.. toctree::
+    :maxdepth: 1
+    :caption: Videotutorials
+
+    installation/videotutorials.rst
+
 
 .. toctree::
     :maxdepth: 1
@@ -52,10 +58,6 @@ The code is open source, and `available on github`_.
 
 
     
-    
-    
-
-
 
 Indices and tables
 ==================
