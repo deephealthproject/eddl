@@ -25,12 +25,15 @@ The code is open source, and `available on github`_.
     :caption: Usage
 
     usage/getting_started.rst
+    usage/intermediate.rst
+    usage/advanced.rst
 
 .. toctree::
     :maxdepth: 1
     :caption: Videotutorials
 
-    installation/videotutorials.rst
+    videotutorials/developers.rst
+    videotutorials/usage.rst
 
 
 .. toctree::
