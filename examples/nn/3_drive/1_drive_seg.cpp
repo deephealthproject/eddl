@@ -166,7 +166,7 @@ int main(int argc, char **argv){
       // delete yout;
 
       // DA
-      forward(danet, (vector<Tensor *>){xbatch,ybatch});
+      forward(danet, vector<Tensor *>{xbatch, ybatch});
 
       // get tensors from DA
       tensor xbatch_da = getTensor(img);
