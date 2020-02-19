@@ -40,7 +40,7 @@ void LScaleRandom::forward() {
   if (mode == TRMODE) {
     Tensor::scale_random(this->input, this->output, this->factor, this->da_mode, this->constant);
   } else {
-      Tensor::copy(input, output);
+    Tensor::copy(input, output);
   }
 }
 

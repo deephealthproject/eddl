@@ -36,9 +36,9 @@ LCropScaleRandom::LCropScaleRandom(Layer *parent, vector<float> factor, string d
 
 void LCropScaleRandom::forward() {
   if (mode == TRMODE) {
-  Tensor::crop_scale_random(this->input, this->output, this->factor, this->da_mode);
+    Tensor::crop_scale_random(this->input, this->output, this->factor, this->da_mode);
   } else {
-      Tensor::copy(input, output);
+    Tensor::copy(input, output);
   }
 }
 

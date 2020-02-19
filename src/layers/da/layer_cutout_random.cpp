@@ -38,7 +38,7 @@ void LCutoutRandom::forward() {
   if (mode == TRMODE) {
     Tensor::cutout_random(this->input, this->output, this->factor_x, this->factor_y, this->constant);
   } else {
-      Tensor::copy(input, output);
+    Tensor::copy(input, output);
   }
 }
 

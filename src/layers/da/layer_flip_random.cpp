@@ -37,7 +37,7 @@ void LFlipRandom::forward() {
   if (mode == TRMODE) {
     Tensor::flip_random(this->input, this->output, this->axis);
   } else {
-      Tensor::copy(input, output);
+    Tensor::copy(input, output);
   }
 }
 

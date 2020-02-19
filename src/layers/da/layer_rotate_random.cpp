@@ -40,7 +40,7 @@ void LRotateRandom::forward() {
   if (mode == TRMODE) {
     Tensor::rotate_random(this->input, this->output, this->factor, this->offset_center, this->da_mode, this->constant);
   } else {
-      Tensor::copy(input, output);
+    Tensor::copy(input, output);
   }
 }
 
