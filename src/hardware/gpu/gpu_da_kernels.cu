@@ -7,7 +7,8 @@
 * All rights reserved
 */
 
-
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -8,15 +8,6 @@
 
 For more information about DeepHealth project go to: [deephealth-project.eu](https://deephealth-project.eu/)
 
-**Continuous build status:**
-
-| System  |  Compiler  | Status |
-|:-------:|:----------:|:------:|
-| Windows (CPU) | VS 15.9.11 | [![Build Status](https://jenkins-master-deephealth-unix01.ing.unimore.it/badge/job/DeepHealth/job/eddl/job/master/windows_end?)](https://jenkins-master-deephealth-unix01.ing.unimore.it/job/DeepHealth/job/eddl/job/master/)      |
-| Linux (CPU)   | GCC 5.5.0  | [![Build Status](https://jenkins-master-deephealth-unix01.ing.unimore.it/badge/job/DeepHealth/job/eddl/job/master/linux_end?)](https://jenkins-master-deephealth-unix01.ing.unimore.it/job/DeepHealth/job/eddl/job/master/)        |
-| Windows (GPU) | VS 15.9.11 | [![Build Status](https://jenkins-master-deephealth-unix01.ing.unimore.it/badge/job/DeepHealth/job/eddl/job/master/windows_gpu_end?)](https://jenkins-master-deephealth-unix01.ing.unimore.it/job/DeepHealth/job/eddl/job/master/)  |
-| Linux (GPU)   | GCC 5.5.0  | [![Build Status](https://jenkins-master-deephealth-unix01.ing.unimore.it/badge/job/DeepHealth/job/eddl/job/master/linux_gpu_end?)](https://jenkins-master-deephealth-unix01.ing.unimore.it/job/DeepHealth/job/eddl/job/master/)    |
-
 
 **Documentation:**
 - [Available NN features](https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md)
@@ -32,9 +23,73 @@ For more information about DeepHealth project go to: [deephealth-project.eu](htt
 > Coming soon...
 
 
-### Build from source
+## Build from source
 
-If you are installing from source, follow the instructions [here](Installation.md).
+If you are installing from source, you will need a C++11 compiler. We highly recommend installing an [Anaconda environment](https://docs.conda.io/en/latest/miniconda.html) or also you can use a docker image (see below).
+
+If you want to compile with CUDA support, install
+
+- NVIDIA CUDA 9 or above
+
+
+
+### Conda
+
+
+You will need an [anaconda package manager](https://docs.conda.io/en/latest/miniconda.html)
+
+```bash
+git clone https://github.com/deephealthproject/eddl.git
+cd eddl
+conda env create -f environment.yml
+conda activate eddl
+mkdir build
+cd build
+cmake .. -DBUILD_TARGET=CPU  # {CPU, GPU, FPGA}
+make -j 4  # num_cores
+sudo make install
+```
+
+### DOCKER
+
+
+You will need a [docker engine](https://docs.docker.com/install/)
+
+To build the image, run the following command from the `eddl/` folder:
+
+```
+git clone https://github.com/deephealthproject/eddl.git
+cd eddl
+docker build -t eddl .
+```
+
+Then, you can execute it using:
+
+```
+docker run -it eddl /bin/bash
+```
+
+Or mount it, if you want to **edit the code** in the host machine:
+
+```
+docker run -it -v $(pwd):/eddl/ eddl /bin/bash
+```
+
+Finally you can compile the code:
+
+```bash
+mkdir build
+cd build
+cmake .. -DBUILD_TARGET=CPU  # {CPU, GPU, FPGA}
+make -j 4  # num_cores
+sudo make install
+```
+
+
+### **Step by step installation:**
+
+If something fails follow the instructions [here](Installation.md)
+
 
 
 ## Getting started with eddl

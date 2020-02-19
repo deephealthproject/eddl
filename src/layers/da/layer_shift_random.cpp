@@ -38,7 +38,11 @@ LShiftRandom::LShiftRandom(Layer *parent, vector<float> factor_x, vector<float> 
 
 
 void LShiftRandom::forward() {
+  if (mode == TRMODE) {
     Tensor::shift_random(input, output, factor_x, factor_y);
+  } else {
+    Tensor::copy(input, output);
+  }
 }
 
 void LShiftRandom::backward() {

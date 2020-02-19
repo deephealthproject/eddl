@@ -62,7 +62,7 @@ int main(int argc, char **argv){
 
   // Data augmentation
   l = RandomCropScale(l, {0.8f, 1.0f});
-  l = Flip(l,1);
+  l = RandomFlip(l,1);
 
   // Resnet-18
   l=ReLu(BG(Conv(l,64,{3,3},{1,1})));

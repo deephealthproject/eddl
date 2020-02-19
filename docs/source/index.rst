@@ -12,19 +12,55 @@ The code is open source, and `available on github`_.
 
 
 .. toctree::
-   :maxdepth: 1
-   :caption: User Guide
+    :maxdepth: 1
+    :caption: Installation
 
-   user/installation.rst
+    installation/installation.rst
+    installation/build-options.rst
+    installation/faq.rst
 
 
 .. toctree::
-   :maxdepth: 2
-   :caption: API
+    :maxdepth: 1
+    :caption: Usage
 
-   api/layers/main.rst
-   api/regularizers/main.rst
+    usage/getting_started.rst
+    usage/intermediate.rst
+    usage/advanced.rst
 
+.. toctree::
+    :maxdepth: 1
+    :caption: Videotutorials
+
+    videotutorials/developers.rst
+    videotutorials/usage.rst
+
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Layers
+
+    layers/core.rst
+    layers/activations.rst
+    layers/data_augmentation.rst
+    layers/convolutional.rst
+    layers/noise.rst
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Regularizers
+
+    regularizers/regularizers.rst
+   	
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Optimizers
+
+    optimizers/optimizers.rst
+
+
+    
 
 Indices and tables
 ==================

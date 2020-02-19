@@ -34,7 +34,11 @@ LFlipRandom::LFlipRandom(Layer *parent, int axis, string name, int dev, int mem)
 
 
 void LFlipRandom::forward() {
+  if (mode == TRMODE) {
     Tensor::flip_random(this->input, this->output, this->axis);
+  } else {
+    Tensor::copy(input, output);
+  }
 }
 
 void LFlipRandom::backward() {

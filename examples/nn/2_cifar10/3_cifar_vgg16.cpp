@@ -22,11 +22,11 @@ using namespace eddl;
 // Using fit for training
 //////////////////////////////////
 layer Block1(layer l,int filters) {
-  return ReLu(Conv(l,filters,{1,1},{1,1}));
+  return ReLu(BatchNormalization(Conv(l,filters,{1,1},{1,1})));
 }
 layer Block3_2(layer l,int filters) {
-  l=ReLu(Conv(l,filters,{3,3},{1,1}));
-  l=ReLu(Conv(l,filters,{3,3},{1,1}));
+  l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
+  l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
   return l;
 }
 
@@ -43,6 +43,10 @@ int main(int argc, char **argv){
   // network
   layer in=Input({3,32,32});
   layer l=in;
+
+  l = RandomCropScale(l, {0.8f, 1.0f});
+  l = RandomFlip(l,1);
+  l = RandomCutout(l, {0.1,0.3},{0.1,0.3});
 
   l=MaxPool(Block3_2(l,64));
   l=MaxPool(Block3_2(l,128));
@@ -61,10 +65,10 @@ int main(int argc, char **argv){
 
   // Build model
   build(net,
-    sgd(0.01, 0.9), // Optimizer
+    sgd(0.001, 0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    CS_GPU({1},"low_mem") // GPU with only one gpu and "low_mem"
+    CS_GPU({1,1},500,"full_mem") // GPU with only one gpu and "low_mem"
     //CS_CPU(-1, "low_mem")  // CPU with maximum threads availables
   );
 

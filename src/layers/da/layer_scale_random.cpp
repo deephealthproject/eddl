@@ -37,7 +37,11 @@ LScaleRandom::LScaleRandom(Layer *parent, vector<float> factor, string da_mode, 
 
 
 void LScaleRandom::forward() {
+  if (mode == TRMODE) {
     Tensor::scale_random(this->input, this->output, this->factor, this->da_mode, this->constant);
+  } else {
+    Tensor::copy(input, output);
+  }
 }
 
 void LScaleRandom::backward() {
