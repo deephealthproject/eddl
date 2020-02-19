@@ -37,12 +37,6 @@ int main(int argc, char **argv){
     layer in=Input({3,32,32});
     layer l=in;
 
-//    l = Permute(l, {0, 1, 2});
-//    l = Select(l, {":", ":15", ":15"});
-
-    // Data transformations
-//    l = Crop(l, {30, 30});
-
     // Data augmentation
 //   l = RandomShift(l, {-0.2f, +0.2f}, {-0.2f, +0.2f});
 //   l = RandomRotation(l, {-30.0f, +30.0f});
@@ -77,7 +71,7 @@ int main(int argc, char **argv){
           //CS_CPU(-1, "low_mem")  // CPU with maximum threads availables
     );
 
-    
+
     // plot the model
     plot(net,"model.pdf");
 
@@ -104,4 +98,3 @@ int main(int argc, char **argv){
 
 
 }
-

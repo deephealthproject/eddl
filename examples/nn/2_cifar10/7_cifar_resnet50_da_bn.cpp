@@ -67,7 +67,8 @@ int main(int argc, char **argv){
 
   // Data augmentation
   l = RandomCropScale(l, {0.8f, 1.0f});
-  l = Flip(l,1);
+  l = RandomFlip(l,1);
+  l = RandomCutout(l, {0.1,0.3},{0.1,0.3});
 
   // Resnet-50
   l=ReLu(BG(Conv(l,64,{3,3},{1,1})));
@@ -95,10 +96,10 @@ int main(int argc, char **argv){
 
   // Build model
   build(net,
-    sgd(0.01, 0.9), // Optimizer
+    adam(0.001), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    CS_GPU({1}, "low_mem")// GPU with only one gpu
+    CS_GPU({1,1}, 100, "full_mem")// GPU with only one gpu
     //CS_CPU(-1, "low_mem")  // CPU with maximum threads availables
   );
 
