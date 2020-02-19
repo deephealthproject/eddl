@@ -35,7 +35,11 @@ LCutoutRandom::LCutoutRandom(Layer *parent, vector<float> factor_x, vector<float
 
 
 void LCutoutRandom::forward() {
+  if (mode == TRMODE) {
     Tensor::cutout_random(this->input, this->output, this->factor_x, this->factor_y, this->constant);
+  } else {
+      Tensor::copy(input, output);
+  }
 }
 
 void LCutoutRandom::backward() {

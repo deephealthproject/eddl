@@ -33,7 +33,12 @@ LCropRandom::LCropRandom(Layer *parent, vector<int> new_shape, string name, int 
 
 
 void LCropRandom::forward() {
-    Tensor::crop_random(this->input, this->output);
+  if (mode == TRMODE) {
+      Tensor::crop_random(this->input, this->output);
+  } else {
+      Tensor::copy(input, output);
+  }
+
 }
 
 void LCropRandom::backward(){
