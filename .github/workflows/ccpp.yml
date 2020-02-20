@@ -9,9 +9,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Install utilities
+        run: sudo apt-get install -y cmake wget graphviz zlib1g-dev
+      - name: Install BLAS+LAPACK
+        run: sudo apt-get install -y libblas-dev liblapack-dev
+      - name: Install Eigen3
+        run: sudo apt-get install -y libeigen3-dev
+      - name: Make directory
+        run: mkdir build && cd build
       - name: Compile
-        run: |
-          mkdir build
-          cd build
-          cmake ..
-          make
+        run: cmake .. && make
