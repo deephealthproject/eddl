@@ -1,4 +1,4 @@
-name: CI
+name: C/C++ CI
 
 on: [push]
 
@@ -8,10 +8,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Run cmake
-      run: |
-        mkdir build
-        cd build
-        cmake ..
-        make
-
+      - uses: actions/checkout@v2
+      - name: Compile
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make
