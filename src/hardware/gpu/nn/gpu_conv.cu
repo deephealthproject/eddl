@@ -23,6 +23,7 @@
 #include "../../../descriptors/descriptors.h"
 
 
+int fast=1;
 
 void gpu_im2col(ConvolDescriptor *D, int col2im){
   int device=D->I->gpu_device;
@@ -69,6 +70,7 @@ void gpu_conv2D(ConvolDescriptor *D) {
   D->gpuO->ptr=D->O->ptr;
   D->gpuI->ptr=D->gpuIB->ptr;
 
+
   if (D->mem_level>1) {
     for(int b=0;b<D->I->shape[0];b++,D->gpuO->ptr+=osize) {
       gpu_im2col_low(D,0,b);
@@ -78,9 +80,18 @@ void gpu_conv2D(ConvolDescriptor *D) {
   else {
 
     gpu_im2col(D,0);
-
-    for(int b=0;b<D->I->shape[0];b++,D->gpuO->ptr+=osize,D->gpuI->ptr+=isize)
-      gpu_mult2D(D->gpuK,0,D->gpuI,1,D->gpuO,0);
+    if (fast) {
+      //D->gpuOB=new Tensor(vector<int>{D->z,D->I->shape[0]*D->r*D->c}, D->I->device);
+      gpu_mult2D(D->gpuK,0,D->gpuIB,1,D->gpuOB,0);
+      setDims(D->O);
+      gpu_traspose_batch_depth<<<dimGrid,dimBlock>>>(D->gpuOB->ptr, D->O->ptr, D->O->shape[0], D->z, D->r, D->c);
+      check_cuda(cudaDeviceSynchronize(),"gpu_batch_depth");
+    }
+    else {
+      gpu_im2col(D,0);
+      for(int b=0;b<D->I->shape[0];b++,D->gpuO->ptr+=osize,D->gpuI->ptr+=isize)
+        gpu_mult2D(D->gpuK,0,D->gpuI,1,D->gpuO,0);
+    }
 
   }
 
@@ -112,13 +123,20 @@ void gpu_conv2D_grad(ConvolDescriptor *D){
     }
   }
   else {
-    for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize,D->gpuI->ptr+=isize){
-      gpu_mult2D(D->gpuD,0,D->gpuI,0,D->gpugK,1);
+  if (fast) {
+      setDims(D->D);
+      gpu_traspose_batch_depth<<<dimGrid,dimBlock>>>(D->D->ptr, D->gpuOB->ptr, D->z, D->O->shape[0], D->r, D->c);
+      check_cuda(cudaDeviceSynchronize(),"gpu_batch_depth");
+
+      gpu_mult2D(D->gpuOB,0,D->gpuIB,0,D->gpugK,1);
+    }
+    else {
+      for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize,D->gpuI->ptr+=isize)
+        gpu_mult2D(D->gpuD,0,D->gpuI,0,D->gpugK,1);
     }
   }
 
   gpu_deltabias_k<<<D->D->shape[0],D->bias->shape[0]>>>(D->D->ptr, D->D->shape[0], D->r,D->c,D->nk,D->gbias->ptr);
-
   check_cuda(cudaDeviceSynchronize(),"gpu_deltabias");
 
 }
@@ -136,6 +154,7 @@ void gpu_conv2D_back(ConvolDescriptor *D){
   D->gpuD->ptr=D->D->ptr;
   D->gpuI->ptr=D->gpuIB->ptr;
 
+
   if (D->mem_level>1) {
     for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize) {
         gpu_mult2D(D->gpuD, 1, D->gpuK, 0, D->gpuI, 0);
@@ -143,11 +162,23 @@ void gpu_conv2D_back(ConvolDescriptor *D){
     }
   }
   else {
-    for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize,D->gpuI->ptr+=isize) {
-        gpu_mult2D(D->gpuD, 1, D->gpuK, 0, D->gpuI, 0);
+    if (fast) {
+      setDims(D->D);
+      gpu_traspose_batch_depth<<<dimGrid,dimBlock>>>(D->D->ptr, D->gpuOB->ptr,  D->z, D->O->shape[0],D->r, D->c);
+      check_cuda(cudaDeviceSynchronize(),"gpu_batch_depth");
+
+      gpu_mult2D(D->gpuOB, 1, D->gpuK, 0, D->gpuIB, 0);
+      D->gpuI->ptr=D->gpuIB->ptr;
+      gpu_im2col(D,1);
+      //delete D->gpuOB;
     }
-    D->gpuI->ptr=D->gpuIB->ptr;
-    gpu_im2col(D,1);
+    else{
+      for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize,D->gpuI->ptr+=isize) {
+          gpu_mult2D(D->gpuD, 1, D->gpuK, 0, D->gpuI, 0);
+      }
+      D->gpuI->ptr=D->gpuIB->ptr;
+      gpu_im2col(D,1);
+    }
   }
 
 
