@@ -23,7 +23,6 @@
 #include "../../../descriptors/descriptors.h"
 
 
-int fast=1;
 
 void gpu_im2col(ConvolDescriptor *D, int col2im){
   int device=D->I->gpu_device;
@@ -80,8 +79,7 @@ void gpu_conv2D(ConvolDescriptor *D) {
   else {
 
     gpu_im2col(D,0);
-    if (fast) {
-      //D->gpuOB=new Tensor(vector<int>{D->z,D->I->shape[0]*D->r*D->c}, D->I->device);
+    if (D->mem_level==0) {
       gpu_mult2D(D->gpuK,0,D->gpuIB,1,D->gpuOB,0);
       setDims(D->O);
       gpu_traspose_batch_depth<<<dimGrid,dimBlock>>>(D->gpuOB->ptr, D->O->ptr, D->O->shape[0], D->z, D->r, D->c);
@@ -123,7 +121,7 @@ void gpu_conv2D_grad(ConvolDescriptor *D){
     }
   }
   else {
-  if (fast) {
+    if (D->mem_level==0) {
       setDims(D->D);
       gpu_traspose_batch_depth<<<dimGrid,dimBlock>>>(D->D->ptr, D->gpuOB->ptr, D->z, D->O->shape[0], D->r, D->c);
       check_cuda(cudaDeviceSynchronize(),"gpu_batch_depth");
@@ -162,7 +160,7 @@ void gpu_conv2D_back(ConvolDescriptor *D){
     }
   }
   else {
-    if (fast) {
+    if (D->mem_level==0) {
       setDims(D->D);
       gpu_traspose_batch_depth<<<dimGrid,dimBlock>>>(D->D->ptr, D->gpuOB->ptr,  D->z, D->O->shape[0],D->r, D->c);
       check_cuda(cudaDeviceSynchronize(),"gpu_batch_depth");
@@ -170,7 +168,6 @@ void gpu_conv2D_back(ConvolDescriptor *D){
       gpu_mult2D(D->gpuOB, 1, D->gpuK, 0, D->gpuIB, 0);
       D->gpuI->ptr=D->gpuIB->ptr;
       gpu_im2col(D,1);
-      //delete D->gpuOB;
     }
     else{
       for(int b=0;b<D->I->shape[0];b++,D->gpuD->ptr+=osize,D->gpuI->ptr+=isize) {
