@@ -477,7 +477,7 @@ Tensor* Tensor::load_from_numpy(const string &filename, const string &format){
 }
 
 template<typename T>
-Tensor* Tensor:: load(const string& filename, string format){
+Tensor* Tensor::load(const string& filename, string format){
     // Infer format from filename
     if(format.empty()){
         format = get_extension(filename);

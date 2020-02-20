@@ -3,6 +3,7 @@ channels:
   - conda-forge
   - defaults
   - anaconda
+  - philbrik
 dependencies:
   - git >= 2.19.1
   - graphviz >= 2.38.0
