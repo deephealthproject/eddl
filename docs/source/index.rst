@@ -17,6 +17,7 @@ The code is open source, and `available on github`_.
 
     installation/installation.rst
     installation/build-options.rst
+    installation/troubleshoot.rst
     installation/faq.rst
 
 

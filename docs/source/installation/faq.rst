@@ -2,55 +2,42 @@ FAQ
 ===
 
 
-Segmentation fault (core dumped)
---------------------------------
+Is there a Python version?
+--------------------------
 
-- **CPU:** This is probably because your processor does not support AVX instructions.
-- **GPU:** Make sure you are using the computing service: `CS_GPU`.
-
-
-Protobuf problems
------------------
-
-If the ONNX function don't work, it might be due to protobuf. So please, check:
-
-1. Make sure you have ``protobuf`` and ``libprotobuf`` installed in standard paths
-
-2. If you are building the EDDL from source:
-
-    a. Make use of the cmake flag: ``BUILD_PROTOBUF=ON``
-    b. Go to ``src/serialization/onnx/`` and delete these files: ``onnx.pb.cc`` and ``onnx.pb.cc``.
-    c. Run ``protoc --cpp_out=. onnx.proto`` in the previous directory (``src/serialization/onnx/``) and make sure these files have been generated: ``onnx.pb.cc`` and ``onnx.pb.cc``
-
-.. note::
-   Additionally, we recommend to make use of the anaconda environment (see :doc:`installation` section for more details).
+Yes, the PyEDDL_ is the EDDL version for the Python lovers
 
 
-OpenMP
--------
+Can I contribute?
+------------------
 
-If you are using MacOS, we have noticed several problems with default c++ compiler. If one of those problems relate
-to ``OpenMP``, we recommend you to use the `clang` compiler. To do so, you can execute the following commands
-(or append them to ``.zprofile``):
-
-.. code:: bash
-
-    export CC=/usr/local/opt/llvm/bin/clang
-    export CXX=/usr/local/opt/llvm/bin/clang++
-    export LDFLAGS="-L/usr/local/opt/llvm/lib"
-    export CPPFLAGS="-I/usr/local/opt/llvm/include"
-
-If this doesn't fix your problem, you can disable OpenMP through the cmake flag ``BUILD_OPENMP=OFF``
+Yes, but first open a new issue to explain and discuss your contribution.
 
 
-Import/Export Numpy files
--------------------------
+Can I control the memory consumption?
+-------------------------------------
 
-(Theoretical) Numpy files include a version numbering for the format (independent of the Numpy version).
-So if a file it's written using a future format (>= 3.0) that is not backward compatible with the previous importers
-and we haven't updated our importer, we won't be able to import the numpy file properly.
-
-If this is your case, please, create a new issue on `github issue`_ and temporally save your numpy file using and older version format (use Numpy).
+Yes, we offer several memory levels to control the memory-speed trade-off. These levels are:
 
 
-.. _github issue: https://github.com/deephealthproject/eddl/issues
+- ``full_mem`` (default): No memory bound (highest speed at the expense of the memory requirements)
+- ``mid_mem``: Slight memory optimization (good trade-off memory-speed)
+- ``low_mem``: Optimized for hardware with restricted memory capabilities.
+
+
+Is it faster than PyTorch/TensorFlow/etc
+----------------------------------------
+
+Depends... Generally, there are many nuances so that a high-performance can be achieved (see benchmark section) and many of
+those nuances are strongly tied to the classical memory-speed trade-off. To sum up, matrix multiplications on the CPU
+are a 300% faster than their TensorFlow counterpart. Convolution times on GPU (no cuDNN) are slightly faster than on the
+EDDL than PyTorch (210ms vs. 246ms), and using cuDNN  will get the cuDNN performance.
+
+
+Is it more memory-efficient than PyTorch/TensorFlow/etc
+-------------------------------------------------------
+
+Depends on your memory setting (see the "Can I control the memory consumption?" answer).
+
+
+.. _PyEDDL: https://github.com/deephealthproject/pyeddl
