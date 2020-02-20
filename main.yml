@@ -1,0 +1,17 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Run cmake
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make
+
