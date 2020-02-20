@@ -97,6 +97,7 @@ public:
     Tensor *gpuI; // input
     Tensor *gpuIB; // input
     Tensor *gpuO; // output
+    Tensor *gpuOB; // output
     Tensor *gpuK; // kernels
     Tensor *gpugK; // gradient kernels
     Tensor *gpuD; // Delta
