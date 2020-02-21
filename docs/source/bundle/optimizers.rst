@@ -11,7 +11,7 @@ Example:
 .. code-block:: c++
    :linenos:
 
-       optimizer adadelta(float lr, float rho, float epsilon, float weight_decay);
+    optimizer adadelta(float lr, float rho, float epsilon, float weight_decay);
 
 
 Adam

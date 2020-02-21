@@ -1,12 +1,7 @@
 First example
 -------------
 
-.. raw:: html
-
-    <div style="position: relative; padding-bottom: 3em; text-align: center">
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/yZtYnqbcnSo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    </div>
-
+Copy this code to a new file, and let's name it ``main.cpp``:
 
 .. code:: c++
 
@@ -22,3 +17,6 @@ First example
     }
 
 This example simply sums all the elements of a tensor
+
+To compile it we are going to use CMake and the ``find_package(eddl)`` function.
+If you are not familiar with CMake, read the next section.
