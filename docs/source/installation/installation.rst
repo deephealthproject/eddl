@@ -29,6 +29,7 @@ A package for EDDL is available on the conda package manager.
 
 .. image:: ../_static/images/logos/debian.svg
 
+
 Using the Debian package
 ------------------------
 
@@ -38,8 +39,12 @@ A package for EDDL is available on Debian.
 
     sudo apt-get install eddl
 
+.. note::
+
+    Not yet available
 
 .. image:: ../_static/images/logos/homebrew.svg
+
 
 Using the Homebrew package
 --------------------------
@@ -48,6 +53,7 @@ A package for EDDL is available on the homebrew package manager.
 
 .. code::
 
+    brew tap salvacarrion/homebrew-tap
     brew install eddl
 
 

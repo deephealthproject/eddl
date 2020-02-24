@@ -42,7 +42,7 @@ Text: csv, tsv, txt,...
 load_from_txt
 ^^^^^^^^^^^^^
 
-
+Load data from a text file
 
 .. code-block:: c++
 
