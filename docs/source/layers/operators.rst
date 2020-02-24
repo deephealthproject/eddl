@@ -75,7 +75,7 @@ Example:
 
 
 Logarithm base 2
----------------
+-----------------
 
 Computes the logarithm of base 2 operation
 

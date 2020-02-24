@@ -25,7 +25,12 @@ For more information about DeepHealth project go to: [deephealth-project.eu](htt
 
 ### Package managers
 
-> Coming soon...
+#### Homebrew
+
+```
+brew tap salvacarrion/homebrew-tap
+brew install eddl
+```
 
 
 ## Build from source
