@@ -1,67 +1,53 @@
-Pooling
+Recurrent
 =============
 
-MaxPooling
-----------
+RNN
+---------------
 
-Max pooling operation
-
-Example:
-
-.. code-block:: c++
-   :linenos:
-
-    layer MaxPool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2}, string padding = "none", string name = "");
-
-
-
-GlobalMaxPooling
------------------
-
-Global max pooling operation
-
-Example:
-
-.. code-block:: c++
-   :linenos:
-
-    layer GlobalMaxPool(layer parent, string name = ""); //Todo: Implement
-
-
-
-AveragePooling
---------------
-
-Average pooling operation
+Fully-connected RNN where the output is to be fed back to input.
 
 .. note::
 
-    Not yet implemented.
+    Not yet implemented
 
 Example:
 
 .. code-block:: c++
    :linenos:
 
-    layer AveragePool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2},string padding = "none", string name = "");
+    layer RNN(layer parent, int units, int num_layers, bool use_bias = true, float dropout = .0f, bool bidirectional = false, string name = "");
 
 
+GRU
+---------------
 
-GlobalAveragePooling
---------------------
-
-Global average pooling operation
-
+Gated Recurrent Unit - Cho et al. 2014.
 
 .. note::
 
-    Not yet implemented.
+    Not yet implemented
 
 Example:
 
 .. code-block:: c++
    :linenos:
 
-    layer GlobalAveragePool(layer parent, string name = ""); //Todo: Implement
+    layer GRU(layer parent, int units, int num_layers, bool use_bias = true, float dropout = .0f, bool bidirectional = false, string name = "");
 
+
+LSTM
+---------------
+
+Long Short-Term Memory layer - Hochreiter 1997.
+
+.. note::
+
+    Not yet implemented
+
+Example:
+
+.. code-block:: c++
+   :linenos:
+
+    layer LSTM(layer parent, int units, int num_layers, bool use_bias = true, float dropout = .0f, bool bidirectional = false, string name = "");
 
