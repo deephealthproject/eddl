@@ -39,8 +39,11 @@ int main(int argc, char **argv) {
 
   	l=Reshape(l,{-1});
     l = ReLu(Dense(l, 1024));
+    l = BatchNormalization(l);
     l = ReLu(Dense(l, 1024));
+    l = BatchNormalization(l);
     l = ReLu(Dense(l, 1024));
+    l = BatchNormalization(l);
 
     layer out = Activation(Dense(l, num_classes), "softmax");
     model net = Model({in}, {out});
