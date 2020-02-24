@@ -51,6 +51,7 @@ Example:
 
     Tensor* clone();
     void reallocate(Tensor* old_t, vector<int> *s = nullptr);
+    static void copy(Tensor *A, Tensor *B);
     //more
 
 

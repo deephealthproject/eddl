@@ -18,7 +18,8 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    ...
+    static Tensor* interpolate(float factor1, Tensor *A, float factor2, Tensor *B);
+
 
 
 Norms and other numbers
