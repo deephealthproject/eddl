@@ -19,17 +19,18 @@ namespace eddl {
 
 	enum ONNX_LAYERS{       
 		RELU, 				// implemented
-		BATCHNORM,			// implementing
+		BATCHNORM,			// implemented
 		CONV,				// implemented
 		DENSE,				// implemented
-		DROP,               // implementing
+		DROP,               // implemented
 		//EMBEDDING,  		// Onnx doesn't support this
 		RESHAPE,            // implemented
 		TRANSPOSE,          // implementing
-		TRANSPOSED_CONV,	// implementing
-		UPSAMPLING,         // implementing
+		TRANSPOSED_CONV,	// not implemented in eddl
+		UPSAMPLING,         // deprecated in ONNX
 		SOFTMAX,			// implemented
 		MAXPOOL,			// implemented
+		AVGPOOL,            // implementing
 		CONCAT				// implemented
 	};
 
@@ -106,6 +107,7 @@ namespace eddl {
 		map_layers["Softmax"] = ONNX_LAYERS::SOFTMAX;
 		map_layers["MaxPool"] = ONNX_LAYERS::MAXPOOL;
 		map_layers["Concat"] = ONNX_LAYERS::CONCAT;
+		map_layers["AveragePool"] = ONNX_LAYERS::AVGPOOL;
 		return map_layers;
 	}
 
@@ -528,6 +530,9 @@ namespace eddl {
 						string variance_name = node->input(4); //Get weights and dims
 						vector<float>* variance_weights = new vector<float>(map_init_values[variance_name]);
 						vector<int> variance_dims = map_init_dims[variance_name];
+
+						cout << "Mean name = " << mean_name << endl;
+						cout << "Variance name = " << variance_name << endl;
 						
 						string name = node->name();
 
@@ -536,11 +541,11 @@ namespace eddl {
 						actual_layer = new LBatchNorm(parent, momentum, epsilon, affine, name, dev, mem);
 
 						Tensor* mean_tensor = eddlT::create(mean_dims, mean_weights->data(), dev);
-						Tensor::copy(mean_tensor, ((LBatchNorm *)(actual_layer))->bn_mean);
+						Tensor::copy(mean_tensor, ((LBatchNorm *)(actual_layer))->mean);
 						delete(mean_tensor);
 
 						Tensor* variance_tensor = eddlT::create(variance_dims, variance_weights->data(), dev);
-						Tensor::copy(variance_tensor, ((LBatchNorm *)(actual_layer))->bn_var);
+						Tensor::copy(variance_tensor, ((LBatchNorm *)(actual_layer))->variance);
 						delete(variance_tensor);
 
 					}
@@ -700,7 +705,88 @@ namespace eddl {
 						actual_layer = dense;
 						break;
 					}
+				case ONNX_LAYERS::DROP:
+					{
+						int seed=0;
+						float ratio=0.5;
+						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
+							onnx::AttributeProto attribute = node->attribute(j);
+							string attr_name = attribute.name();
+							if(!attr_name.compare("seed")) seed = attribute.i();
+							if(!attr_name.compare("ratio")) ratio = attribute.f();
+						}
+						
+						string parent_name = node->input(0); //Get parent
+						Layer* parent = output_node_map[parent_name];
+						vector<int> parent_shape = parent->output->shape;
 
+						string name = node->name();
+						actual_layer = new LDropout(parent, ratio, name, dev, mem);
+
+					}
+					break;
+
+				case ONNX_LAYERS::AVGPOOL:
+					{
+						int filters;
+						vector<int> kernel_shape;
+						vector<int> strides;
+						vector<int> pads;
+						bool explicit_padding = true;
+						int ceil_mode = 0;
+						int count_include_pad = 0;
+						vector<int> dilations;
+						int storage_order = 0;
+
+						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
+							onnx::AttributeProto attribute = node->attribute(j);
+							string attr_name = attribute.name();
+							if (!attr_name.compare("auto_pad")) { //We dont know if it is implemented
+								if(!attribute.s().compare("NOTSET")) continue;
+								if(!attribute.s().compare("VALID"))
+									explicit_padding=false;
+							}
+							else if (!attr_name.compare("ceil_mode")) {
+
+							}
+							else if (!attr_name.compare("count_include_pad")) {
+
+							}
+							else if (!attr_name.compare("kernel_shape")) {
+								for( int h = 0; h<attribute.ints_size(); h++){
+									kernel_shape.push_back(attribute.ints(h));
+								}
+							}
+							else if (!attr_name.compare("pads")) {
+								for(int h = 0; h < 4; h++){
+									pads.push_back(attribute.ints(h));
+								}
+							}
+							else if (!attr_name.compare("strides")) {
+								for(int h = 0; h < attribute.ints_size(); h++){
+									strides.push_back(attribute.ints(h));
+								}
+							}
+						}
+
+
+						if(!explicit_padding){ //We have to add 0 padding to the conv descriptor
+							pads.resize(4,0);
+							pads[0] = 0;
+							pads[1] = 0;
+							pads[2] = 0;
+							pads[3] = 0;
+						}
+
+						string parent_name = node->input(0); //Get parent
+						Layer* parent = output_node_map[parent_name];
+						vector<int> parent_shape = parent->output->shape;
+
+						string name = node->name();
+
+						actual_layer = new LAveragePool(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
+					}
+					break;
 				case ONNX_LAYERS::RESHAPE:
 					{
 
