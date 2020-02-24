@@ -16,7 +16,7 @@ Generating index arrays
 Example:
 
 .. code-block:: c++
-   :linenos:
+    :linenos:
 
     ...
 
@@ -24,11 +24,26 @@ Example:
 Indexing-like operations
 -------------------------
 
-...
+select
+^^^^^^
 
-Example:
+Returns an array with the selected indices.
+The indices must be specified as a vector of strings ({"0", ":5", ":", "3:6"}).
 
 .. code-block:: c++
-   :linenos:
+    :linenos:
 
-    ...
+    Tensor* select(const vector<string>& indices);
+
+
+set_select
+^^^^^^^^^^
+
+Sets the elements in the array using the selected indices.
+The indices must be specified as a vector of strings ({"0", ":5", ":", "3:6"}).
+
+.. code-block:: c++
+    :linenos:
+
+    void set_select(const vector<string>& indices, Tensor *A);
+    
