@@ -17,20 +17,20 @@ using namespace std;
 namespace eddl {
 #ifdef cPROTO
 
-	enum ONNX_LAYERS{
-		RELU,
-		BATCHNORM,
-		CONV,
-		DENSE,
-		DROP,
-		//EMBEDDING, //Onnx doesn't support this
-		RESHAPE,
-		TRANSPOSE,
-		TRANSPOSED_CONV,
-		UPSAMPLING,
-		SOFTMAX,
-		MAXPOOL,
-		CONCAT
+	enum ONNX_LAYERS{       
+		RELU, 				// implemented
+		BATCHNORM,			// implementing
+		CONV,				// implemented
+		DENSE,				// implemented
+		DROP,               // implementing
+		//EMBEDDING,  		// Onnx doesn't support this
+		RESHAPE,            // implemented
+		TRANSPOSE,          // implementing
+		TRANSPOSED_CONV,	// implementing
+		UPSAMPLING,         // implementing
+		SOFTMAX,			// implemented
+		MAXPOOL,			// implemented
+		CONCAT				// implemented
 	};
 
 
@@ -504,6 +504,48 @@ namespace eddl {
 			Layer *actual_layer;
 
 			switch (layer_type) { //Every case should create the corresponding layer and asign it to "actual_layer" variable
+
+				case ONNX_LAYERS::BATCHNORM:
+					{
+						double epsilon = 1e-05; //Default value
+						double momentum = 0.9;  //Default value
+						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
+							onnx::AttributeProto attribute = node->attribute(j);
+							string attr_name = attribute.name();
+							if(!attr_name.compare("epsilon")) epsilon = attribute.f();
+							if(!attr_name.compare("momentum")) momentum = attribute.f();
+						}
+						
+						string parent_name = node->input(0); //Get parent
+						Layer* parent = output_node_map[parent_name];
+						vector<int> parent_shape = parent->output->shape;
+
+
+						string mean_name = node->input(3); //Get weights and dims
+						vector<float>* mean_weights = new vector<float>(map_init_values[mean_name]);
+						vector<int> mean_dims = map_init_dims[mean_name];
+
+						string variance_name = node->input(4); //Get weights and dims
+						vector<float>* variance_weights = new vector<float>(map_init_values[variance_name]);
+						vector<int> variance_dims = map_init_dims[variance_name];
+						
+						string name = node->name();
+
+						bool affine = false; //Not implemented in eddl
+
+						actual_layer = new LBatchNorm(parent, momentum, epsilon, affine, name, dev, mem);
+
+						Tensor* mean_tensor = eddlT::create(mean_dims, mean_weights->data(), dev);
+						Tensor::copy(mean_tensor, ((LBatchNorm *)(actual_layer))->bn_mean);
+						delete(mean_tensor);
+
+						Tensor* variance_tensor = eddlT::create(variance_dims, variance_weights->data(), dev);
+						Tensor::copy(variance_tensor, ((LBatchNorm *)(actual_layer))->bn_var);
+						delete(variance_tensor);
+
+					}
+					break;
+
 				case ONNX_LAYERS::CONV:
 					{
 						int filters;
