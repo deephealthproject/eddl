@@ -59,6 +59,8 @@ namespace eddl{
 
 	void build_conv_node( LConv *layer, onnx::GraphProto *graph, bool gradients );
 
+	//void build_conv_transpose_node( LConvT *layer, onnx::GraphProto *graph, bool gradients );
+
 	void build_gemm_node( LDense *layer, onnx::GraphProto *graph, bool gradients );
 
 	void build_maxpool_node( LMaxPool *layer, onnx::GraphProto *graph );

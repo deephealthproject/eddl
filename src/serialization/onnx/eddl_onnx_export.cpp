@@ -114,6 +114,10 @@ namespace eddl {
 		{
 	    	build_conv_node( (LConv*)(LinLayer*)layer, graph, gradients );
 	    } 
+	    /*else if ( LConvT* t = dynamic_cast<LConvT*>( layer ) ) 
+		{
+	    	build_conv_transpose_node( (LConvT*)(LinLayer*)layer, graph, gradients );
+	    }*/ 
 		else if ( LDense *t = dynamic_cast<LDense*>( layer ) ) 
 		{
 	    	build_gemm_node( (LDense*)(LinLayer*)layer, graph, gradients );
@@ -150,8 +154,7 @@ namespace eddl {
 	    } 
 		else if ( LBatchNorm *t = dynamic_cast<LBatchNorm*>( layer ) ) 
 		{
-			cout << "BatchNorm is not implemented in the onnx export module." << endl;
-	    	//build_batchnorm_node( (LBatchNorm*)(LinLayer*)layer, graph );
+	    	build_batchnorm_node( (LBatchNorm*)(LinLayer*)layer, graph );
 	    } 
 		else 
 		{
@@ -246,6 +249,91 @@ namespace eddl {
 			//conv_b->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->cd->acc_gbias->ptr), sizeof(float) * layer->cd->acc_gbias->size );
 		}
 	}
+	/*
+	void build_conv_transpose_node( LConvT *layer, onnx::GraphProto *graph, bool gradients ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "ConvTranspose" );
+		node->set_name( layer->name );
+		// Set the inputs of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the input params names of the conv op
+		node->add_input( layer->name + "_W" );
+		node->add_input( layer->name + "_b" );
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+
+		////////////////////////// Attributes of the Conv operation //////////////////////////////////
+		// Attr dilations
+		onnx::AttributeProto* conv_dilations = node->add_attribute();
+		conv_dilations->set_name( "dilations" );
+		conv_dilations->set_type( onnx::AttributeProto::INTS );
+		vector<int> vdilations {1, 1}; // ?? Tenemos esto en EDDL
+		for ( int i : vdilations ) {
+			conv_dilations->add_ints( i );
+		}
+		//Attr group
+		onnx::AttributeProto* conv_group = node->add_attribute();
+		conv_group->set_name( "group" );
+		conv_group->set_type( onnx::AttributeProto::INT );
+		conv_group->set_i( 1 ); // ????????????????????????????????????????????????????
+		// Attr kernel_shape
+		onnx::AttributeProto* conv_kernel_shape = node->add_attribute();
+		conv_kernel_shape->set_name( "kernel_shape" );
+		conv_kernel_shape->set_type( onnx::AttributeProto::INTS );
+		conv_kernel_shape->add_ints( layer->cd->kr );
+		conv_kernel_shape->add_ints( layer->cd->kc );
+		// Attr pads
+		onnx::AttributeProto* conv_pads = node->add_attribute();
+		conv_pads->set_name( "pads" );
+		conv_pads->set_type( onnx::AttributeProto::INTS );
+		conv_pads->add_ints( layer->cd->padrt );
+		conv_pads->add_ints( layer->cd->padcl );
+		conv_pads->add_ints( layer->cd->padrb );
+		conv_pads->add_ints( layer->cd->padcr );
+		// Attr strides
+		onnx::AttributeProto* conv_strides = node->add_attribute();
+		conv_strides->set_name( "strides" );
+		conv_strides->set_type( onnx::AttributeProto::INTS );
+		conv_strides->add_ints( layer->cd->sr );
+		conv_strides->add_ints( layer->cd->sc );
+
+		// Check if we are exporting weights or accumulated gradients 
+		if ( !gradients ) {
+			// Weights input
+			onnx::TensorProto* conv_w = graph->add_initializer();
+			conv_w->set_name( layer->name + "_W" );
+			conv_w->set_data_type( onnx::TensorProto::FLOAT );	
+			conv_w->mutable_dims()->Add( layer->cd->K->shape.begin(), layer->cd->K->shape.end() ); // Set the shape of the weights
+			conv_w->mutable_float_data()->Add( layer->cd->K->ptr, layer->cd->K->ptr + layer->cd->K->size ); // Set the weights values
+			//conv_w->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->cd->K->ptr), sizeof(float) * layer->cd->K->size );
+			// Bias input
+			onnx::TensorProto* conv_b = graph->add_initializer();
+			conv_b->set_name( layer->name + "_b" );
+			conv_b->set_data_type( onnx::TensorProto::FLOAT );	
+			conv_b->mutable_dims()->Add( layer->cd->bias->shape.begin(), layer->cd->bias->shape.end() ); // Set the shape of the bias
+			conv_b->mutable_float_data()->Add( layer->cd->bias->ptr, layer->cd->bias->ptr + layer->cd->bias->size); // Set the bias values
+			//conv_b->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->cd->bias->ptr), sizeof(float) * layer->cd->bias->size );
+		} else {
+			// Accumulated gradients (Weights) input
+			onnx::TensorProto* conv_w = graph->add_initializer();
+			conv_w->set_name( layer->name + "_W" );
+			conv_w->set_data_type( onnx::TensorProto::FLOAT );	
+			conv_w->mutable_dims()->Add( layer->cd->acc_gK->shape.begin(), layer->cd->acc_gK->shape.end() ); // Set the accumulated gradiens shape (weights)
+			conv_w->mutable_float_data()->Add( layer->cd->acc_gK->ptr, layer->cd->acc_gK->ptr + layer->cd->acc_gK->size ); // Set the accumulated gradients values (weights) 
+			//conv_w->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->cd->acc_gK->ptr), sizeof(float) * layer->cd->acc_gK->size );
+			// Accumulated gradients (bias) input
+			onnx::TensorProto* conv_b = graph->add_initializer();
+			conv_b->set_name( layer->name + "_b" );
+			conv_b->set_data_type( onnx::TensorProto::FLOAT );	
+			conv_b->mutable_dims()->Add( layer->cd->acc_gbias->shape.begin(), layer->cd->acc_gbias->shape.end() ); // Set the accumulated gradients shape (bias)
+			conv_b->mutable_float_data()->Add( layer->cd->acc_gbias->ptr, layer->cd->acc_gbias->ptr + layer->cd->acc_gbias->size); // Set the accumulated gradients values (bias)
+			//conv_b->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->cd->acc_gbias->ptr), sizeof(float) * layer->cd->acc_gbias->size );
+		}
+	}
+	*/
 
 	void build_gemm_node( LDense *layer, onnx::GraphProto *graph, bool gradients) {
 		// Add an empty node to the graph
@@ -434,9 +522,10 @@ namespace eddl {
 		concat_axis->set_i( 1 );
 	}
 
-	/*void build_batchnorm_node( LBatchNorm *layer, onnx::GraphProto *graph ) {
+	void build_batchnorm_node( LBatchNorm *layer, onnx::GraphProto *graph ) {
 		// Add an empty node to the graph
 		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "BatchNormalization" );
 		node->set_name( layer->name );
 		// Set the inputs of the node from the parents of the layer
 		for ( Layer* parentl : layer->parent ) {
@@ -448,7 +537,6 @@ namespace eddl {
 		node->add_input( layer->name + "_variance" );
 		// Set the name of the output of the node to link with other nodes
 		node->add_output( layer->name );
-		node->set_op_type( "BatchNormalization" );
 		// Attr epsilon
 		onnx::AttributeProto* epsilon_attr = node->add_attribute();
 		epsilon_attr->set_name( "epsilon" );
@@ -481,27 +569,21 @@ namespace eddl {
 		for( int i = 0; i < n_features; ++i ) {
 			bias->add_float_data( 0 );
 		}
-		*/
-		/*
-		for( int i = 0; i < 10; ++i ) {
-			cout << *((float*)(layer->mean->output->ptr + i ))  <<  " ?= " <<  *((float*)(layer->mean->output->ptr + (1024 + i))) << endl;
-		}
-		*/
-		/*
+
 		// Mean input
 		onnx::TensorProto* mean = graph->add_initializer();
 		mean->set_name( layer->name + "_mean" );
 		mean->set_data_type( onnx::TensorProto::FLOAT );	
 		mean->add_dims( n_features );
-		mean->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->mean->output->ptr), sizeof(float) * n_features );
+		mean->mutable_float_data()->Add( layer->mean->ptr, layer->mean->ptr + layer->mean->size ); // Set the mean values
 
 		// variance input
 		onnx::TensorProto* variance = graph->add_initializer();
 		variance->set_name( layer->name + "_variance" );
 		variance->set_data_type( onnx::TensorProto::FLOAT );	
 		variance->add_dims( n_features );
-		variance->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->variance->output->ptr), sizeof(float) * n_features );
-	}*/
+		variance->mutable_float_data()->Add( layer->variance->ptr, layer->variance->ptr + layer->variance->size ); // Set the mean values
+	}
 	// End: Node builders
 	//----------------------------------------------------------------------------------------
 
