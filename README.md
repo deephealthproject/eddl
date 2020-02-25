@@ -13,9 +13,9 @@
 
 For more information about DeepHealth project go to: [deephealth-project.eu](https://deephealth-project.eu/)
 
-## Documentation: [here](https://salvacarrion.github.io/docseddl/)
-
 ## Installation [here](https://salvacarrion.github.io/docseddl/installation/installation.html)
+
+## Documentation [here](https://salvacarrion.github.io/docseddl/)
 
 ## Progress
 - [Deep-learning features](https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md)
