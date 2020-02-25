@@ -15,6 +15,8 @@ For more information about DeepHealth project go to: [deephealth-project.eu](htt
 
 ## Installation [here](https://salvacarrion.github.io/docseddl/installation/installation.html)
 
+## Getting started [here](https://salvacarrion.github.io/docseddl/usage/getting_started.html)
+
 ## Documentation [here](https://salvacarrion.github.io/docseddl/)
 
 ## Progress
