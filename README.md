@@ -23,27 +23,31 @@ For more information about DeepHealth project go to: [deephealth-project.eu](htt
 
 ## Installation
 
-### Package managers
+### Using the Conda package
 
-#### Homebrew
+```
+conda install -c salvacarrion eddl
+```
+
+### Using the Homebrew package
+
+A package for EDDL is available on the homebrew package manager.
 
 ```
 brew tap salvacarrion/homebrew-tap
 brew install eddl
 ```
 
+### From source with cmake
 
-## Build from source
+You can also install EDDL from source with cmake. You will need a C++11 compiler and we highly recommend installing an [Anaconda environment](https://docs.conda.io/en/latest/miniconda.html) or also you can use a docker image (see below).
 
-If you are installing from source, you will need a C++11 compiler. We highly recommend installing an [Anaconda environment](https://docs.conda.io/en/latest/miniconda.html) or also you can use a docker image (see below).
-
-If you want to compile with CUDA support, install
+If you want to compile with CUDA support, install:
 
 - NVIDIA CUDA 9 or above
 
 
-
-### Conda
+#### Conda environment
 
 
 You will need an [anaconda package manager](https://docs.conda.io/en/latest/miniconda.html)
@@ -60,7 +64,7 @@ make -j 4  # num_cores
 sudo make install
 ```
 
-### DOCKER
+### Using Docker
 
 
 You will need a [docker engine](https://docs.docker.com/install/)
@@ -96,13 +100,13 @@ sudo make install
 ```
 
 
-### **Step by step installation:**
+#### Step by step installation
 
 If something fails follow the instructions [here](Installation.md)
 
 
 
-## Getting started with eddl
+## Getting started with EDDL
 
 You can find more examples in  `examples/`.
 
