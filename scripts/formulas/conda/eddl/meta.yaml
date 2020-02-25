@@ -1,0 +1,60 @@
+{% set name = "eddl" %}
+{% set version = "0.4.2" %}
+{% set sha256 = "5b2182c4391d16540e29f50fe1ae00f977c09bb5e1ecd89fab82c598cc446b8a" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: https://github.com/deephealthproject/eddl/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True  # [win and vc<14]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - git
+  host:
+    - graphviz
+    - wget
+    - blas
+    - eigen
+    - cudatoolkit
+    - zlib
+    - gtest
+    - protobuf
+    - libprotobuf
+  run:
+    - graphviz
+    - wget
+    - blas
+    - eigen
+    - cudatoolkit
+    - zlib
+    - gtest
+    - protobuf
+    - libprotobuf
+
+test:
+  commands:
+    - test -d ${PREFIX}/include/eddl  # [unix]
+    - test -f ${PREFIX}/include/eddl/tensor/tensor.h  # [unix]
+    - test -f ${PREFIX}/lib/cmake/eddl/eddlConfig.cmake  # [unix]
+    - if exist %LIBRARY_PREFIX%\include\eddl\tensor\tensor.h (exit 0) else (exit 1)  # [win]
+    - if exist %LIBRARY_PREFIX%\lib\cmake\eddlConfig.cmake (exit 0) else (exit 1)  # [win]
+
+about:
+  home: https://github.com/deephealthproject/eddl
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'European Distributed Deep Learning (EDDL) Library'
+  description: 'Open source library deep-learning library'
+  doc_url: https://salvacarrion.github.io/docseddl/
+  dev_url: https://github.com/eddl-stack/eddl
