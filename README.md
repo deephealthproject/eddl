@@ -25,6 +25,8 @@ For more information about DeepHealth project go to: [deephealth-project.eu](htt
 
 ### Using the Conda package
 
+A package for EDDL is available on the conda package manager.
+
 ```
 conda install -c salvacarrion eddl
 ```
@@ -100,7 +102,7 @@ sudo make install
 ```
 
 
-#### Step by step installation
+### Step by step installation
 
 If something fails follow the instructions [here](Installation.md)
 
