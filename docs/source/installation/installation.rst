@@ -67,6 +67,8 @@ On Unix platforms, from the source directory:
 
 .. code::
 
+    git clone https://github.com/deephealthproject/eddl.git
+    cd eddl
     mkdir build
     cd build
     cmake -DCMAKE_INSTALL_PREFIX=path_to_prefix ..
@@ -76,6 +78,8 @@ On Windows platforms, from the source directory:
 
 .. code::
 
+    git clone https://github.com/deephealthproject/eddl.git
+    cd eddl
     mkdir build
     cd build
     cmake -G "NMake Makefiles" -DCMAKE_INSTALL_PREFIX=path_to_prefix ..
