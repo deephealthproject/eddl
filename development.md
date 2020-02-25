@@ -15,3 +15,8 @@ doxygen
 cd docs/source
 make html
 ```
+
+## Badges tool
+
+Generated using: [shields.io](https://shields.io/)
+

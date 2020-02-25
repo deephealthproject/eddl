@@ -120,6 +120,8 @@ void ConvolDescriptor::build(Tensor *A) {
       else {
         // Big tensor with all the batch for lowering
         gpuIB=new Tensor(vector<int>{A->shape[0]*r*c,kc*kr*kz}, I->device);
+        if (mem_level==0)
+          gpuOB=new Tensor(vector<int>{z,A->shape[0]*r*c}, I->device);
       }
 
       // Tensor with variable shared ptr, delete create ptr
@@ -128,8 +130,11 @@ void ConvolDescriptor::build(Tensor *A) {
 
       gpuO=new Tensor(vector<int>{z,r*c}, I->device);
       gpu_delete_tensor(gpuI->gpu_device,gpuO->ptr);
+
+      //gpu_delete_tensor(gpuI->gpu_device,gpuOB->ptr);
       gpuD=new Tensor(vector<int>{z,r*c}, I->device);
       gpu_delete_tensor(gpuI->gpu_device,gpuD->ptr);
+
 
       gpuK=new Tensor(vector<int>{z,kc*kr*kz}, I->device);
       gpu_delete_tensor(gpuI->gpu_device,gpuK->ptr);
@@ -154,6 +159,10 @@ void ConvolDescriptor::resize(int b)
     else if (I->isGPU()) {
       if (mem_level<2)
         gpuIB->resize(b*r*c);
+        if (mem_level==0) {
+          delete gpuOB;
+          gpuOB=new Tensor(vector<int>{z,b*r*c}, I->device);
+        }
     }
 #endif
 

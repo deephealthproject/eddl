@@ -2,34 +2,42 @@ FAQ
 ===
 
 
-Segmentation fault (core dumped)
---------------------------------
+Is there a Python version?
+--------------------------
 
-- **CPU:** This is probably because your processor does not support AVX instructions.
-- **GPU:** Make sure you are using the computing service: `CS_GPU`.
-
-
-Protobuf problems
------------------
-
-If the functions that make use protobuf of such the import/export of ONNX doesn't work:
-
-1) Make sure you have `protobuf` and `libprotobuf` installed
-2) In the source code, go to `src/serialization/onnx/` and delete these files: `onnx.pb.cc` and `onnx.pb.cc`.
-3) Rebuild them using `protoc --cpp_out=. onnx.proto` (you need to be at `src/serialization/onnx/`)
-4) Make use of the cmake flag: `BUILD_PROTOBUF=ON`
-
-.. note::
-   We recommend to use the anaconda environment
+Yes, the PyEDDL_ is the EDDL version for the Python lovers
 
 
-OpenMP
--------
-If you have problems on MacOS, use the ``clang`` by running or addition the following commands to ``.zprofile``
+Can I contribute?
+------------------
 
-.. code:: bash
+Yes, but first open a new issue to explain and discuss your contribution.
 
-    export CC=/usr/local/opt/llvm/bin/clang
-    export CXX=/usr/local/opt/llvm/bin/clang++
-    export LDFLAGS="-L/usr/local/opt/llvm/lib"
-    export CPPFLAGS="-I/usr/local/opt/llvm/include"
+
+Can I control the memory consumption?
+-------------------------------------
+
+Yes, we offer several memory levels to control the memory-speed trade-off. These levels are:
+
+
+- ``full_mem`` (default): No memory bound (highest speed at the expense of the memory requirements)
+- ``mid_mem``: Slight memory optimization (good trade-off memory-speed)
+- ``low_mem``: Optimized for hardware with restricted memory capabilities.
+
+
+Is it faster than PyTorch/TensorFlow/etc
+----------------------------------------
+
+Depends... Generally, there are many nuances so that a high-performance can be achieved (see benchmark section) and many of
+those nuances are strongly tied to the classical memory-speed trade-off. To sum up, matrix multiplications on the CPU
+are a 300% faster than their TensorFlow counterpart. Convolution times on GPU (no cuDNN) are slightly faster than on the
+EDDL than PyTorch (210ms vs. 246ms), and using cuDNN  will get the cuDNN performance.
+
+
+Is it more memory-efficient than PyTorch/TensorFlow/etc
+-------------------------------------------------------
+
+Depends on your memory setting (see the "Can I control the memory consumption?" answer).
+
+
+.. _PyEDDL: https://github.com/deephealthproject/pyeddl

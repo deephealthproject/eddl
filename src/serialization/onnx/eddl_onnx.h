@@ -72,6 +72,8 @@ namespace eddl{
 	void build_concat_node( LConcat *layer, onnx::GraphProto *graph );
 
 	void build_batchnorm_node( LBatchNorm *layer, onnx::GraphProto *graph );
+
+	void build_dropout_node( LDropout *layer, onnx::GraphProto *graph );
 #endif
 
 	// Distributed Module

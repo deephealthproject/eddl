@@ -150,8 +150,11 @@ namespace eddl {
 	    } 
 		else if ( LBatchNorm *t = dynamic_cast<LBatchNorm*>( layer ) ) 
 		{
-			cout << "BatchNorm is not implemented in the onnx export module." << endl;
-	    	//build_batchnorm_node( (LBatchNorm*)(LinLayer*)layer, graph );
+	    	build_batchnorm_node( (LBatchNorm*)(LinLayer*)layer, graph );
+	    } 
+	    else if ( LDropout *t = dynamic_cast<LDropout*>( layer ) ) 
+		{
+	    	build_dropout_node( (LDropout*)(LinLayer*)layer, graph );
 	    } 
 		else 
 		{
@@ -246,7 +249,7 @@ namespace eddl {
 			//conv_b->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->cd->acc_gbias->ptr), sizeof(float) * layer->cd->acc_gbias->size );
 		}
 	}
-
+	
 	void build_gemm_node( LDense *layer, onnx::GraphProto *graph, bool gradients) {
 		// Add an empty node to the graph
 		onnx::NodeProto* node = graph->add_node();
@@ -434,9 +437,10 @@ namespace eddl {
 		concat_axis->set_i( 1 );
 	}
 
-	/*void build_batchnorm_node( LBatchNorm *layer, onnx::GraphProto *graph ) {
+	void build_batchnorm_node( LBatchNorm *layer, onnx::GraphProto *graph ) {
 		// Add an empty node to the graph
 		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "BatchNormalization" );
 		node->set_name( layer->name );
 		// Set the inputs of the node from the parents of the layer
 		for ( Layer* parentl : layer->parent ) {
@@ -448,7 +452,6 @@ namespace eddl {
 		node->add_input( layer->name + "_variance" );
 		// Set the name of the output of the node to link with other nodes
 		node->add_output( layer->name );
-		node->set_op_type( "BatchNormalization" );
 		// Attr epsilon
 		onnx::AttributeProto* epsilon_attr = node->add_attribute();
 		epsilon_attr->set_name( "epsilon" );
@@ -481,27 +484,40 @@ namespace eddl {
 		for( int i = 0; i < n_features; ++i ) {
 			bias->add_float_data( 0 );
 		}
-		*/
-		/*
-		for( int i = 0; i < 10; ++i ) {
-			cout << *((float*)(layer->mean->output->ptr + i ))  <<  " ?= " <<  *((float*)(layer->mean->output->ptr + (1024 + i))) << endl;
-		}
-		*/
-		/*
+
 		// Mean input
 		onnx::TensorProto* mean = graph->add_initializer();
 		mean->set_name( layer->name + "_mean" );
 		mean->set_data_type( onnx::TensorProto::FLOAT );	
 		mean->add_dims( n_features );
-		mean->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->mean->output->ptr), sizeof(float) * n_features );
+		mean->mutable_float_data()->Add( layer->mean->ptr, layer->mean->ptr + layer->mean->size ); // Set the mean values
 
 		// variance input
 		onnx::TensorProto* variance = graph->add_initializer();
 		variance->set_name( layer->name + "_variance" );
 		variance->set_data_type( onnx::TensorProto::FLOAT );	
 		variance->add_dims( n_features );
-		variance->mutable_raw_data()->assign( reinterpret_cast<const char*>(layer->variance->output->ptr), sizeof(float) * n_features );
-	}*/
+		variance->mutable_float_data()->Add( layer->variance->ptr, layer->variance->ptr + layer->variance->size ); // Set the mean values
+	}
+
+	void build_dropout_node( LDropout *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Dropout" );
+		node->set_name( layer->name );
+		// Set the inputs of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+
+		// Attr ratio
+		onnx::AttributeProto* momentum_attr = node->add_attribute();
+		momentum_attr->set_name( "ratio" );
+		momentum_attr->set_type( onnx::AttributeProto::FLOAT );
+		momentum_attr->set_f( layer->df );
+	}
 	// End: Node builders
 	//----------------------------------------------------------------------------------------
 

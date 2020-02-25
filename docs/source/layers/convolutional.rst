@@ -1,5 +1,5 @@
-Convolutional Layers
-=====================
+Convolutions
+============
 
 Conv2D
 --------
@@ -20,14 +20,18 @@ Example:
 2D Upsampling 
 --------------
 
-Upsampling layer.
+Upsampling layer. Identical to the ``scale`` transformation, the only difference is that ``upsampling`` repeats its rows/columns *n* times, while scaling uses a proportion.
+
+.. note::
+
+    In future versions this function will call ``scale`` instead of ``repeat``
 
 Example:
 
 .. code-block:: c++
    :linenos:
 
-       layer UpSampling(layer parent, const vector<int> &size, string interpolation = "nearest", string name = "");
+   layer UpSampling(layer parent, const vector<int> &size, string interpolation = "nearest", string name = "");
 
 
 

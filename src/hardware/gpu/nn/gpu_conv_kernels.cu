@@ -18,6 +18,28 @@
 #include "../gpu_kernels.h"
 
 
+__global__ void  gpu_traspose_batch_depth(float *ptrB, float *ptr, int b,int z,int r, int c)
+{
+  long int ops=b*z*r*c;
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+
+  if (thread_id_x < ops) {
+    int bo=thread_id_x/(z*r*c);
+    int zom=thread_id_x%(z*r*c);
+    int zo=zom/(r*c);
+    int rom=zom%(r*c);
+    int ro=rom/c;
+    int co=rom%c;
+
+    int pos=(zo*(b*r*c))+(bo*(r*c))+(ro*c)+co;
+
+    ptr[thread_id_x]=ptrB[pos];
+
+  }
+
+}
+
 __global__ void  gpu_addbias_k(float *O, int batch, int r,int c,int nk,float *bias)
 {
   int size=nk*r*c;

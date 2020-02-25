@@ -591,6 +591,7 @@ typedef NetLoss * metric;
       *  @return     Output of crop transformation
     */
     layer Crop(layer parent, vector<int> from_coords, vector<int> to_coords, bool reshape=true, float constant=0.0f, string name="");
+
     /**
       *  @brief Crops the given image at the center with size (width, height).
       *
@@ -602,6 +603,7 @@ typedef NetLoss * metric;
       *  @return     Output of center crop transformation
     */
     layer CenteredCrop(layer parent, vector<int> size, bool reshape=true, float constant=0.0f, string name="");
+
     /**
       *  @brief Randomly change the brightness, contrast and saturation of an image.
       *
@@ -656,6 +658,7 @@ typedef NetLoss * metric;
     */
     layer HorizontalFlip(layer parent, string name="");
     layer Pad(layer parent, vector<int> padding, float constant=0.0f, string name=""); // TODO: Implement
+
     /**
       *  @brief Rotate the image by angle.
       *
@@ -667,6 +670,7 @@ typedef NetLoss * metric;
       *  @return     Output of rotate transformation
     */
     layer Rotate(layer parent, float angle, vector<int> offset_center={0, 0}, string da_mode="original", float constant=0.0f, string name="");
+
     /**
       *  @brief Resize the input image to the given size. `[height, width]`.
       *
@@ -678,6 +682,7 @@ typedef NetLoss * metric;
       *  @return     Output of scale transformation
     */
     layer Scale(layer parent, vector<int> new_shape, bool reshape=true, string da_mode="nearest", float constant=0.0f, string name="");
+
     /**
       *  @brief Shift the input image `[a, b]`.
       *
@@ -719,6 +724,7 @@ typedef NetLoss * metric;
       *  @return     Output of affine transformation
     */
     layer RandomAffine(layer parent, vector<float> angle, vector<float> translate, vector<float> scale, vector<float> shear, string name="");  // TODO: Implement
+
     /**
       *  @brief Crop the given image at a random location with size `[height, width]`.
       *
@@ -728,16 +734,8 @@ typedef NetLoss * metric;
       *  @return     Output of random crop transformation
     */
     layer RandomCrop(layer parent, vector<int> new_shape, string name= "");
-    /**
-      *  @brief Crops the given image at the center with size (width, height).
-      *
-      *  @param parent  Parent layer
-      *  @param new_shape  Vector (height, width) size
-      *  @param name  A name for the operation
-      *  @return     Output of random center crop transformation
-    */
-    layer RandomCenteredCrop(layer parent, vector<int> new_shape, string name= "");  // TODO: Implement
-    /**
+
+     /**
       *  @brief Crop the given image randomly by the size in a range `[a, b]` by and scale it to the parent size.
       *
       *  @param parent  Parent layer
@@ -767,7 +765,16 @@ typedef NetLoss * metric;
       *  @return     Output of random flip transformation
     */
     layer RandomFlip(layer parent, int axis, string name= "");
+
+    /**
+      *  @brief Converts the given image to grayscale a given probability.
+      *
+      *  @param parent  Parent layer
+      *  @param name  A name for the operation
+      *  @return     Output of random horizontal flip transformation
+    */
     layer RandomGrayscale(layer parent, string name= "");
+
     /**
       *  @brief Horizontally flip the given image randomly with a given probability.
       *
@@ -1068,6 +1075,7 @@ typedef NetLoss * metric;
       *  @return     The layer l initialized with the Glorot normal
     */
     layer GlorotNormal(layer l,int seed=1234);
+
     /**
       *  @brief Glorot uniform initializer, also called Xavier uniform initializer.
       *
@@ -1079,6 +1087,7 @@ typedef NetLoss * metric;
       *  @return     The layer l initialized with the Glorot uniform
     */
     layer GlorotUniform(layer l,int seed=1234);
+
     /**
       *  @brief Random normal initializer.
       *
@@ -1089,7 +1098,18 @@ typedef NetLoss * metric;
       *  @return     The layer l initialized with a random normal distribution
     */
     layer RandomNormal(layer l, float m=0.0,float s=0.1, float seed=1234);
+
+    /**
+      *  @brief Random uniform initializer.
+      *
+      *  @param l  Parent layer to initialize
+      *  @param m  Mean of the normal distribution to draw samples
+      *  @param s  Standard deviation of the normal distribution to draw samples
+      *  @param seed   Used to seed the random generator
+      *  @return     The layer l initialized with a random normal distribution
+    */
     layer RandomUniform(layer l, float min=0.0,float max=0.1, float seed=1234);
+
     /**
       *  @brief Initializer that generates tensors initialized to a constant value.
       *

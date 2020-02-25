@@ -15,11 +15,11 @@
 Development
 ===========
 
-Installing Miniconda
---------------------
 
 .. image:: ../_static/images/logos/conda.svg
 
+Installing Miniconda
+--------------------
 
 .. raw:: html
 

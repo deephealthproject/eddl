@@ -13,6 +13,10 @@
 
 # Documentation
 /docs/source/_build
+/docs/doxygen/build
+/docs/doxygen/html
+/docs/doxygen/latex
+
 
 # Other files
 *.dot
