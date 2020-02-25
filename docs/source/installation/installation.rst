@@ -24,7 +24,7 @@ A package for EDDL is available on the conda package manager.
 
 .. code::
 
-    conda install -c conda-forge eddl
+    conda install -c salvacarrion eddl
 
 
 .. image:: ../_static/images/logos/debian.svg

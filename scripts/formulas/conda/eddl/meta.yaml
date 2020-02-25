@@ -46,7 +46,7 @@ test:
     - test -d ${PREFIX}/include/eddl  # [unix]
     - test -f ${PREFIX}/include/eddl/tensor/tensor.h  # [unix]
     - test -f ${PREFIX}/lib/cmake/eddl/eddlConfig.cmake  # [unix]
-    - if exist %LIBRARY_PREFIX%\include\eddl\tensor\tensor.h (exit 0) else (exit 1)  # [win]
+    - if exist %LIBRARY_PREFIX%\include\tensor\tensor.h (exit 0) else (exit 1)  # [win]
     - if exist %LIBRARY_PREFIX%\lib\cmake\eddlConfig.cmake (exit 0) else (exit 1)  # [win]
 
 about:
