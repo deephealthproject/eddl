@@ -730,13 +730,12 @@ namespace eddl {
 						if(scales_dims[0] != 4){
 							cerr << "Dimensions of upsampling layer in onnx are wrong" << endl;
 						}
-						batch_scale = scales[0];
-						channel_scale = scales[1];
-						height_scale = scales[2];
-						width_scale = scales[3];
+						batch_scale = scales->at(0);
+						channel_scale = scales->at(1);
+						height_scale = scales->at(2);
+						width_scale = scales->at(3);
 						
 						delete(scales);
-						delete(scales_dims);
 
 						string name = node->name();
 
@@ -744,7 +743,7 @@ namespace eddl {
 						vector<int> size_vector;
 						size_vector.push_back(height_scale);
 						size_vector.push_back(width_scale);
-						actual_layer = new LDropout(parent, size_vector, interpolation_mode, name, dev, mem);
+						actual_layer = new LUpSampling(parent, size_vector, interpolation_mode, name, dev, mem);
 
 					}
 					break;
