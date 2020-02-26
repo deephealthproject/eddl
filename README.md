@@ -15,7 +15,7 @@
 
 Please note that EDDL is an ambitious project with few hands on it. Our short-term goal is to have an **stable** version with an easy installation over different platforms. Our second mid-term goal is to provide a good **coverage** of functionalities. And finally, our long-term goal is to improve the **performance** on the different devices.
 
-> Plans are only good intentions unless they immediately degenerate into hard work
+ *"Plans are only good intentions unless they immediately degenerate into hard work"*
 
 ## Installation [here](https://salvacarrion.github.io/docseddl/installation/installation.html)
 
