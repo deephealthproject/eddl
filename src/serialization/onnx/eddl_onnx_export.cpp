@@ -122,10 +122,18 @@ namespace eddl {
 		{
 	    	build_maxpool_node( (LMaxPool*)(LinLayer*)layer, graph );
 	    } 
+	    else if ( LAveragePool *t = dynamic_cast<LAveragePool*>( layer ) ) 
+		{
+	    	build_averagepool_node( (LAveragePool*)(LinLayer*)layer, graph );
+	    } 
 		else if ( LReshape *t = dynamic_cast<LReshape*>( layer ) ) 
 		{
 	    	build_reshape_node( (LReshape*)(LinLayer*)layer, graph );
 	    } 
+	    else if ( LUpSampling *t = dynamic_cast<LUpSampling*>( layer ) ) 
+		{
+	    	build_upsample_node( (LUpSampling*)(LinLayer*)layer, graph );
+	    }  
 		else if ( LActivation *t = dynamic_cast<LActivation*>( layer ) ) 
 		{
 	    	// Check the type of activation layer
@@ -361,6 +369,41 @@ namespace eddl {
 		max_pool_strides->add_ints( layer->pd->sc );
 	}
 
+	void build_averagepool_node( LAveragePool *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "AveragePool" );
+		node->set_name( layer->name );
+		// Set the inputs of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+
+		// Attr kernel_shape
+		onnx::AttributeProto* max_pool_ks = node->add_attribute();
+		max_pool_ks->set_name( "kernel_shape" );
+		max_pool_ks->set_type( onnx::AttributeProto::INTS );
+		for ( int i : layer->pd->ksize ) {
+			max_pool_ks->add_ints( i );
+		}
+		// Attr pads
+		onnx::AttributeProto* max_pool_pads = node->add_attribute();
+		max_pool_pads->set_name( "pads" );
+		max_pool_pads->set_type( onnx::AttributeProto::INTS );
+		max_pool_pads->add_ints( layer->pd->padrt );
+		max_pool_pads->add_ints( layer->pd->padcl );
+		max_pool_pads->add_ints( layer->pd->padrb );
+		max_pool_pads->add_ints( layer->pd->padcr );
+		// Attr strides
+		onnx::AttributeProto* max_pool_strides = node->add_attribute();
+		max_pool_strides->set_name( "strides" );
+		max_pool_strides->set_type( onnx::AttributeProto::INTS );
+		max_pool_strides->add_ints( layer->pd->sr );
+		max_pool_strides->add_ints( layer->pd->sc );
+	}
+
 	void build_reshape_node( LReshape *layer, onnx::GraphProto *graph ) {
 		// Add an empty node to the graph
 		onnx::NodeProto* node = graph->add_node();
@@ -517,6 +560,40 @@ namespace eddl {
 		momentum_attr->set_name( "ratio" );
 		momentum_attr->set_type( onnx::AttributeProto::FLOAT );
 		momentum_attr->set_f( layer->df );
+	}
+
+	void build_upsample_node( LUpSampling *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Upsample" );
+		node->set_name( layer->name );
+		// Set the inputs of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+
+		// Attr mode
+		onnx::AttributeProto* mode_attr = node->add_attribute();
+		mode_attr->set_name( "mode" );
+		mode_attr->set_type( onnx::AttributeProto::STRING );
+		mode_attr->set_s( layer->interpolation );
+
+		// Scales input
+		onnx::TensorProto* scales = graph->add_initializer();
+		scales->set_name( layer->name + "_scales" );
+		scales->set_data_type( onnx::TensorProto::FLOAT );	
+		scales->add_dims( 2 + layer->size.size() ); // (batch_size, channels, height, width)
+
+		// Add the scale factor for the first two dimensions
+		for( int i = 0; i < 2; ++i ) {
+			scales->add_float_data( 1 );
+		}	
+
+		for( int i = 0; i < layer->size.size(); ++i) {
+			scales->add_float_data( layer->size[i] );
+		}
 	}
 	// End: Node builders
 	//----------------------------------------------------------------------------------------
