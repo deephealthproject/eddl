@@ -17,7 +17,8 @@ using namespace std;
 namespace eddl {
 #ifdef cPROTO
 
-	enum ONNX_LAYERS{       
+	enum ONNX_LAYERS{
+		//TODO Comment in which section belongs each layer
 		RELU, 				// implemented
 		BATCHNORM,			// implemented
 		CONV,				// implemented
@@ -27,11 +28,11 @@ namespace eddl {
 		RESHAPE,            // implemented
 		TRANSPOSE,          // implementing
 		TRANSPOSED_CONV,	// not implemented in eddl
-		UPSAMPLING,         // deprecated in ONNX
+		UPSAMPLING,         // deprecated in ONNX, but works for EDDL
 		SOFTMAX,			// implemented
 		MAXPOOL,			// implemented
 		AVGPOOL,            // implementing
-		CONCAT				// implemented
+		CONCAT,				// implemented
 	};
 
 
@@ -567,7 +568,6 @@ namespace eddl {
 								if(!attribute.s().compare("NOTSET")) continue;
 								if(!attribute.s().compare("VALID"))
 									explicit_padding=false;
-								//TODO: Add new padding posibilities when the eddl supports them
 							}
 							else if (!attr_name.compare("dilations")) { //It isn't implemented in eddl
 
@@ -705,6 +705,50 @@ namespace eddl {
 						actual_layer = dense;
 						break;
 					}
+				case ONNX_LAYERS::UPSAMPLING:
+					{
+						string interpolation_mode;
+						float batch_scale;
+						float channel_scale;
+						float height_scale;
+						float width_scale;
+						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
+							onnx::AttributeProto attribute = node->attribute(j);
+							string attr_name = attribute.name();
+							if(!attr_name.compare("mode")) interpolation_mode = attribute.s();
+						}
+						
+						string parent_name = node->input(0); //Get parent
+						Layer* parent = output_node_map[parent_name];
+						vector<int> parent_shape = parent->output->shape;
+
+						
+						string scales_name = node->input(1); //Get scales and dims
+						vector<float>* scales = new vector<float>(map_init_values[scales_name]);
+						vector<int> scales_dims = map_init_dims[scales_name];
+						
+						if(scales_dims[0] != 4){
+							cerr << "Dimensions of upsampling layer in onnx are wrong" << endl;
+						}
+						batch_scale = scales[0];
+						channel_scale = scales[1];
+						height_scale = scales[2];
+						width_scale = scales[3];
+						
+						delete(scales);
+						delete(scales_dims);
+
+						string name = node->name();
+
+
+						vector<int> size_vector;
+						size_vector.push_back(height_scale);
+						size_vector.push_back(width_scale);
+						actual_layer = new LDropout(parent, size_vector, interpolation_mode, name, dev, mem);
+
+					}
+					break;
+
 				case ONNX_LAYERS::DROP:
 					{
 						int seed=0;
