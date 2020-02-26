@@ -571,6 +571,8 @@ namespace eddl {
 		for ( Layer* parentl : layer->parent ) {
 			node->add_input( parentl->name );
 		}
+		// Set the input with the scale values
+		node->add_input( layer->name + "_scales" );	
 		// Set the name of the output of the node to link with other nodes
 		node->add_output( layer->name );
 
