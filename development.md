@@ -20,3 +20,10 @@ make html
 
 Generated using: [shields.io](https://shields.io/)
 
+
+## Build conda package
+
+```
+cd scripts/formulas/conda/eddl
+conda build .
+```
