@@ -130,6 +130,10 @@ namespace eddl {
 		{
 	    	build_reshape_node( (LReshape*)(LinLayer*)layer, graph );
 	    } 
+	    else if ( LPermute *t = dynamic_cast<LPermute*>( layer ) ) 
+		{
+	    	build_permute_node( (LPermute*)(OperatorLayer*)layer, graph );
+	    } 
 	    else if ( LUpSampling *t = dynamic_cast<LUpSampling*>( layer ) ) 
 		{
 	    	build_upsample_node( (LUpSampling*)(LinLayer*)layer, graph );
@@ -500,6 +504,27 @@ namespace eddl {
 		// Set the target shape
 		for ( int i : layer->ls ) {
 			target_shape_tensor->add_int64_data( i );
+		}
+	}
+
+	void build_permute_node( LPermute *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Transpose" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+
+		// Attr perm
+		onnx::AttributeProto* alpha_attr = node->add_attribute();
+		alpha_attr->set_name( "perm" );
+		alpha_attr->set_type( onnx::AttributeProto::INTS );
+		for ( int i : layer->sd->dims ) {
+			alpha_attr->add_ints( i );
 		}
 	}
 

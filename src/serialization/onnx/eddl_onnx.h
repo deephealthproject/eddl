@@ -11,6 +11,7 @@
 #include "../../layers/conv/layer_conv.h"
 #include "../../layers/pool/layer_pool.h"
 #include "../../layers/merge/layer_merge.h"
+#include "../../layers/operators/layer_operators.h"
 #include "../../layers/normalization/layer_normalization.h"
 #if defined(cPROTO)
 #   include "onnx.pb.h"
@@ -66,6 +67,8 @@ namespace eddl{
 	void build_averagepool_node( LAveragePool *layer, onnx::GraphProto *graph );
 
 	void build_reshape_node( LReshape *layer, onnx::GraphProto *graph );
+
+	void build_permute_node( LPermute *layer, onnx::GraphProto *graph );
 
 	void build_relu_node( LActivation *layer, onnx::GraphProto *graph );
 
