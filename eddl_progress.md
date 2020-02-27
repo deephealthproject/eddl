@@ -27,20 +27,20 @@
 
 | Functionality | CPU | GPU | ONNX | Comments |
 | ------------- |------| -----|------| ---------|
-| ELU | ✔️ | ✔️ | ❌️ | Exponential linear unit. |
-| Exponential |  ✔️ | ✔️ | ❌️ | Exponential (base e) activation function. |
-| HardSigmoid | ✔️ | ✔️ | ❌️ | Hard sigmoid activation function. |
-| LeakyReLu | ✔️ | ✔️ | ❌️ | Leaky version of a Rectified Linear Unit.  |
-| Linear | ✔️ | ✔️ | ❌️ | Linear (i.e. identity) activation function.  |
+| ELU | ✔️ | ✔️ | ✔️ | Exponential linear unit. |
+| Exponential |  ✔️ | ✔️ | ✔️ | Exponential (base e) activation function. |
+| HardSigmoid | ✔️ | ✔️ | ✔️ | Hard sigmoid activation function. |
+| LeakyReLu | ✔️ | ✔️ | ✔️ | Leaky version of a Rectified Linear Unit.  |
+| Linear | ✔️ | ✔️ | ✔️ | Linear (i.e. identity) activation function.  |
 | PReLU | ❌️ | ❌️ | ❌️ | Parametric Rectified Linear Unit.   |
 | ReLu | ✔️ | ✔️ | ✔️ | Rectified Linear Unit. |
 | Softmax | ✔️ | ✔️ | ✔️ | Softmax activation function. |
-| Selu |  ✔️ | ✔️ | ❌️ | Scaled Exponential Linear Unit (SELU). |
-| Sigmoid | ✔️ | ✔️ | ❌️ | Sigmoid activation function. |
-| Softplus | ✔️ | ✔️ | ❌️ | Softplus activation function. |
-| Softsign | ✔️ | ✔️ | ❌️ | Softsign activation function. |
-| Tanh | ✔️ | ✔️ | ❌️ | Hyperbolic tangent activation function. |
-| ThresholdedReLU | ✔️ | ✔️ | ❌️ | Thresholded Rectified Linear Unit. |
+| Selu |  ✔️ | ✔️ | ✔️ | Scaled Exponential Linear Unit (SELU). |
+| Sigmoid | ✔️ | ✔️ | ✔️ | Sigmoid activation function. |
+| Softplus | ✔️ | ✔️ | ✔️ | Softplus activation function. |
+| Softsign | ✔️ | ✔️ | ✔️ | Softsign activation function. |
+| Tanh | ✔️ | ✔️ | ✔️ | Hyperbolic tangent activation function. |
+| ThresholdedReLU | ✔️ | ✔️ | ✔️ | Thresholded Rectified Linear Unit. |
 
 
 ## Convolutional layers
