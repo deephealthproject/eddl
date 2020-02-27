@@ -47,7 +47,7 @@
 
 | Functionality | CPU | GPU | ONNX | Comments |
 | ------------- |------| -----| ------|---------|
-| Conv2D | ✔️ | ✔️ | ✔️ | 2D convolution. |
+| Conv2D | ✔️ | ✔️ | ❌️ | 2D convolution. |
 | Conv2DT | ❌️ | ❌️ | ❌️ | Transposed convolution |
 | UpSampling | ✔️ | ✔️ | ❌️ | Practically the same as `Scale(mode="nearest")`. Instead of performing nearest interpolation, this works by repeating n times the elements of each axis `[2, 1] => [2, 2, 1, 1]`. |
 

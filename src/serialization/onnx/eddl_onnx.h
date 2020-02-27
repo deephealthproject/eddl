@@ -63,6 +63,8 @@ namespace eddl{
 
 	void build_maxpool_node( LMaxPool *layer, onnx::GraphProto *graph );
 
+	void build_averagepool_node( LAveragePool *layer, onnx::GraphProto *graph );
+
 	void build_reshape_node( LReshape *layer, onnx::GraphProto *graph );
 
 	void build_relu_node( LActivation *layer, onnx::GraphProto *graph );
@@ -74,6 +76,8 @@ namespace eddl{
 	void build_batchnorm_node( LBatchNorm *layer, onnx::GraphProto *graph );
 
 	void build_dropout_node( LDropout *layer, onnx::GraphProto *graph );
+
+	void build_upsample_node( LUpSampling *layer, onnx::GraphProto *graph );
 #endif
 
 	// Distributed Module

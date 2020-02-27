@@ -127,7 +127,7 @@ Example:
 
 
 
-Softplus
+Softsign
 ------------
 
 Softsign activation function.

@@ -43,6 +43,22 @@ to ``OpenMP``, we recommend you to use the `clang` compiler. To do so, you can e
 If this doesn't fix your problem, you can disable OpenMP through the cmake flag ``BUILD_OPENMP=OFF``
 
 
+
+(MacOS) Undefined symbols for architecture x86_64
+--------------------------------------------------
+
+This error might be due to a conflict with the default compilers. A simple workaround is to force the use ``CClang``
+(for instance) for C and C++, and then install the EDDL again:
+
+.. code::
+
+    # Set env variables
+    export CC=/usr/local/opt/llvm/bin/clang
+    export CXX=/usr/local/opt/llvm/bin/clang++
+    export LDFLAGS="-L/usr/local/opt/llvm/lib"
+    export CPPFLAGS="-I/usr/local/opt/llvm/include"
+
+
 Import/Export Numpy files
 -------------------------
 
