@@ -56,6 +56,10 @@ void HardSigmoid(Tensor *A, Tensor *B);
 void D_HardSigmoid(Tensor *D, Tensor *I, Tensor *PD);
 
 // Softmax
+void Exp(Tensor *A, Tensor *B);
+void D_Exp(Tensor *D, Tensor *I, Tensor *PD);
+
+// Exponential
 void Softmax(Tensor *A, Tensor *B);
 void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
 

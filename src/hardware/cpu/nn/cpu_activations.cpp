@@ -149,6 +149,19 @@ void cpu_d_hard_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
     else PD->ptr[i] = D->ptr[i] * 0.2;
 }
 
+void cpu_exp(Tensor *A, Tensor *B){
+  #pragma omp parallel for
+  for (int i = 0; i < A->size; i++) {
+    B->ptr[i] = std::exp(A->ptr[i]);
+  }
+}
+
+void cpu_d_exp(Tensor *D, Tensor *I, Tensor *PD){
+  #pragma omp parallel for
+  for (int i = 0; i < D->size; i++)
+    PD->ptr[i] = D->ptr[i] * I->ptr[i];
+}
+
 void cpu_tanh(Tensor *A, Tensor *B){
   #pragma omp parallel for
   for (int i = 0; i < A->size; i++) {

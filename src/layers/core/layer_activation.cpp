@@ -56,7 +56,7 @@ void LActivation::forward(){
         this->output->mult_(scale);
 
     }else if (act == "exp"){
-        this->output = Tensor::exp(this->input);
+        Exp(this->input, this->output);
 
     }else if (act == "softplus"){
         Softplus(this->input, this->output);
@@ -111,9 +111,8 @@ void LActivation::backward(){
             this->output->mult_(scale);
 
         }else if (act == "exp"){
-            // TODO: Review
-            Tensor::el_mult(delta, output, parent[0]->delta, 0);
-
+            D_Exp(delta, output, parent[0]->delta);
+            
         }else if (act == "softplus"){
             D_softplus(delta, output, parent[0]->delta);
 
