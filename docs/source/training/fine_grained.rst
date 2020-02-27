@@ -42,6 +42,8 @@ eval_batch
 set_mode
 ^^^^^^^^^^^^^^^^^
 
+.. doxygenfunction:: set_mode
+
 .. code-block:: c++
     
     void set_mode(model net, int mode);
@@ -49,6 +51,8 @@ set_mode
         
 reset_loss
 ^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: eddl::reset_loss(model m)
 
 .. code-block:: c++
     
@@ -68,6 +72,8 @@ forward
 zeroGrads
 ^^^^^^^^^^^^^^^^^
 
+.. doxygenfunction:: eddl::zeroGrads
+
 .. code-block:: c++
     
     void zeroGrads(model m);
@@ -76,6 +82,8 @@ zeroGrads
 
 backward
 ^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: eddl::backward(model, vector<Tensor *>)
 
 .. code-block:: c++
     
@@ -96,6 +104,8 @@ update
 print_loss       
 ^^^^^^^^^^^^^^^^^
 
+.. doxygenfunction:: eddl::print_loss
+
 .. code-block:: c++
     
     void print_loss(model m, int batch);
@@ -104,6 +114,8 @@ print_loss
 
 clamp
 ^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: eddl::clamp
 
 .. code-block:: c++
     
@@ -128,6 +140,8 @@ compute_metric
 getLoss
 ^^^^^^^^^^^^^^^^^
 
+.. doxygenfunction:: eddl::getLoss
+
 .. code-block:: c++
     
     Loss* getLoss(string type);
@@ -136,15 +150,23 @@ getLoss
 newloss
 ^^^^^^^^^^^^^^^^^
 
+.. doxygenfunction:: eddl::newloss(const std::function<Layer *Layer *>&, Layer *, string)
+
 .. code-block:: c++
     
     loss newloss(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name);
+    
+.. doxygenfunction:: eddl::newloss(const std::function<Layer *vector<Layer *>>&, vector<Layer *>, string)
+.. code-block:: c++
+
     loss newloss(const std::function<Layer*(Layer*)>& f, Layer *in, string name);
           
         
 
 getMetric
 ^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: eddl::getMetric
 
 .. code-block:: c++
     

@@ -4,7 +4,8 @@ Pooling
 MaxPooling
 ----------
 
-Max pooling operation
+.. doxygenfunction:: MaxPool
+
 
 Example:
 
@@ -18,7 +19,8 @@ Example:
 GlobalMaxPooling
 -----------------
 
-Global max pooling operation
+.. doxygenfunction:: GlobalMaxPool
+
 
 Example:
 
@@ -32,7 +34,7 @@ Example:
 AveragePooling
 --------------
 
-Average pooling operation
+.. doxygenfunction:: AveragePool
 
 .. note::
 
@@ -50,7 +52,7 @@ Example:
 GlobalAveragePooling
 --------------------
 
-Global average pooling operation
+.. doxygenfunction:: GlobalAveragePool
 
 
 .. note::

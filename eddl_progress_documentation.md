@@ -111,9 +111,9 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Softmax |     ❌️      |      ✔️       |          |
-| Sigmoid |     ❌️      |      ✔️       |          |
-| ReLu    |     ❌️      |      ✔️       |          |
+| Softmax |      ✔️      |      ✔️       | using breathe |
+| Sigmoid |      ✔️      |      ✔️       | using breathe |
+| ReLu    |      ✔️      |      ✔️       | using breathe |
 | Threshold ReLu |  ❌️  |      ✔️       |          |
 | Leaky ReLu |  ❌️      |      ✔️       |          |
 | ELu     |     ❌️      |      ✔️       |          |
@@ -122,7 +122,7 @@
 | Softplus |    ❌️      |      ✔️       |          |
 | Softsign |    ❌️      |      ✔️       |          |
 | Linear  |     ❌️      |      ✔️       |          |
-| Tanh    |     ❌️      |      ✔️       |          | 
+| Tanh    |      ✔️      |      ✔️       | using breathe |
 
 
 ## Data augmentation
@@ -182,26 +182,26 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Gaussian Noise |   ❌️ |      ✔️       |          |
+| Gaussian Noise |   ✔️  |      ✔️       | using breathe |
 
 
 ## Pooling
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| MaxPooling |    ❌️    |      ✔️       |          |
-| GlobalMaxPooling | ❌️ |      ✔️       |          |
-| AveragePooling |   ❌️ |      ✔️       | note: not yet implemented |
-| GlobalAveragePooling | ❌️|   ✔️       | note: not yet implemented |
+| MaxPooling |    ✔️     |      ✔️       | using breathe |
+| GlobalMaxPooling | ✔️  |      ✔️       | using breathe |
+| AveragePooling |   ✔️  |      ✔️       |  using breathe  <br/> note: not yet implemented |
+| GlobalAveragePooling | ✔️ |   ✔️       |  using breathe <br/> note: not yet implemented |
 
 
 ## Normalization
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| BatchNormalization |❌️|      ✔️       |          |
-| LayerNormalization |❌️|      ✔️       |          |
-| GroupNormalization |❌️|      ✔️       |          |
+| BatchNormalization |✔️ |      ✔️       | using breathe |
+| LayerNormalization |✔️ |      ✔️       | using breathe |
+| GroupNormalization |✔️ |      ✔️       | using breathe |
 
 
 ## Merge
@@ -292,19 +292,19 @@
 | next_batch |     ❌️   |       ✔️      |          |
 | train_batch |    ❌️   |       ✔️      |          |
 | eval_batch |     ❌️   |       ✔️      |          |
-| set_mode |       ❌️   |       ✔️      |          |
-| reset_loss |     ❌️   |       ✔️      |          |
+| set_mode |        ✔️   |       ✔️      | using breathe |
+| reset_loss |      ✔️   |       ✔️      | using breathe |
 | forward |        ❌️   |       ✔️      |          |
-| zeroGrads |      ❌️   |       ✔️      |          |
-| backward |       ❌️   |       ✔️      |          |
+| zeroGrads |       ✔️   |       ✔️      | using breathe |
+| backward |        ✔️   |       ✔️      | using breathe |
 | update  |        ❌️   |       ✔️      |          |
-| print_loss |     ❌️   |       ✔️      |          |
-| clamp   |        ❌️   |       ✔️      |          |
+| print_loss |      ✔️   |       ✔️      | using breathe |
+| clamp   |         ✔️   |       ✔️      | using breathe |
 | compute_loss |   ❌️   |       ✔️      |          |
 | compute_metric | ❌️   |       ✔️      |          |
-| getLoss |        ❌️   |       ✔️      |          |
-| newloss |        ❌️   |       ✔️      |          |
-| getMetric |      ❌️   |       ✔️      |          |
+| getLoss |         ✔️   |       ✔️      | using breathe |
+| newloss |         ✔️   |       ✔️      | using breathe |
+| getMetric |       ✔️   |       ✔️      | using breathe |
 | newmetric |      ❌️   |       ✔️      |          |
 | detach  |        ❌️   |       ✔️      |          |
 
