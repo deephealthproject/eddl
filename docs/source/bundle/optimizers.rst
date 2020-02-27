@@ -6,6 +6,16 @@ Adadelta
 
 Adadelta optimizer.
 
+Adadelta is a more robust extension of Adagrad that adapts learning rates based on a moving window of gradient updates, instead of accumulating all past gradients. This way, Adadelta continues learning even when many updates have been done.
+
+  Parameters:
+
+    - ``lr``: A float. Initial learning rate.
+    - ``rho``: A float. Adadelta decay factor, corresponding to fraction of gradient to keep at each time step.
+    - ``epsilon``: A float. Term added to the denominator to improve numerical stability 
+    - ``weight_decay``: A float. Weight decay (L2 penalty) 
+
+
 Example:
 
 .. code-block:: c++
@@ -17,7 +27,16 @@ Example:
 Adam
 -----
 
-Adadelta optimizer.
+Adam optimizer.
+
+  Parameters:
+
+    - ``lr``: A float. Initial learning rate.
+    - ``beta_1, beta_2``: Floats. coefficients used for computing running averages of gradient and its square.
+    - ``epsilon``: A float. Term added to the denominator to improve numerical stability 
+    - ``weight_decay``: A float. Weight decay (L2 penalty).
+    - ``amsgrad``: Boolean. Whether to use the AMSGrad variant of this algorithm.
+
 
 Example:
 
@@ -32,6 +51,12 @@ Adagrad
 
 Adagrad optimizer.
 
+  Parameters:
+
+    - ``lr``: A float. Initial learning rate.
+    - ``epsilon``: A float. Term added to the denominator to improve numerical stability 
+    - ``weight_decay``: A float. Weight decay (L2 penalty).
+
 Example:
 
 .. code-block:: c++
@@ -44,6 +69,13 @@ Adamax
 
 Adamax optimizer.
 
+  Parameters:
+
+    - ``lr``: A float. Initial learning rate.
+    - ``beta_1, beta_2``: Floats. coefficients used for computing running averages of gradient and its square.
+    - ``epsilon``: A float. Term added to the denominator to improve numerical stability 
+    - ``weight_decay``: A float. Weight decay (L2 penalty).
+
 Example:
 
 .. code-block:: c++
@@ -55,7 +87,16 @@ Example:
 Nadam
 ----------
 
-Nadam optimizer.
+Nesterov Adam optimizer.
+
+Much like Adam is essentially RMSprop with momentum, Nadam is RMSprop with Nesterov momentum.
+
+  Parameters:
+
+    - ``lr``: A float. Initial learning rate.
+    - ``beta_1, beta_2``: Floats. coefficients used for computing running averages of gradient and its square.
+    - ``epsilon``: A float. Term added to the denominator to improve numerical stability 
+    - ``schedule_decay``: A float.
 
 Example:
 
@@ -70,6 +111,14 @@ RMSProp
 
 RMSProp optimizer.
 
+  Parameters:
+
+    - ``lr``: A float. Initial learning rate.
+    - ``rho``: A float. Decay factor, corresponding to fraction of gradient to keep at each time step.
+    - ``epsilon``: A float. Term added to the denominator to improve numerical stability 
+    - ``weight_decay``: A float. Weight decay (L2 penalty).
+
+
 Example:
 
 .. code-block:: c++
@@ -82,6 +131,16 @@ SGD (Stochastic Gradient Descent)
 ----------------------------------
 
 SGD optimizer.
+
+Includes support for momentum, learning rate decay, and Nesterov momentum.
+
+  Parameters:
+
+    - ``lr``: A float. Initial learning rate.
+    - ``momentum``: A float. Parameter that accelerates SGD in the relevant direction and dampens oscillations.
+    - ``weight_decay``: A float. Weight decay (L2 penalty).
+    - ``nesterov``: Boolean. Whether to apply Nesterov momentum.
+
 
 Example:
 

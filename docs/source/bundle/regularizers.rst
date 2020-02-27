@@ -6,6 +6,7 @@ L1
 
 L1 regularizer.
 
+
 Example:
 
 .. code-block:: c++

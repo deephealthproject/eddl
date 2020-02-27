@@ -202,8 +202,8 @@ Apply data transformations with random parametrization.
 | Orthogonal | ❌️ | ❌️ | Initializer that generates a random orthogonal matrix.  |
 | RandomNormal |  ✔️ | ✔️ | Initializer that generates tensors with a normal distribution. |
 | RandomUniform |  ✔️ | ✔️ | Initializer that generates tensors with a uniform distribution.  |
-| TruncatedNormal | ✔️ | ✔️  | Initializer that generates a truncated normal distribution.  |
-| VarianceScaling |  ❌️ | ❌️ | Initializer capable of adapting its scale to the shape of weights.  |
+| TruncatedNormal | ❌️ | ❌️  | Initializer that generates a truncated normal distribution.  |
+| VarianceScaling | ❌️  | ❌️ | Initializer capable of adapting its scale to the shape of weights.  |
 
 
 # Constraints
