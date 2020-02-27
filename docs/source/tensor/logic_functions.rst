@@ -300,4 +300,3 @@ Return ``A != B`` element-wise.
 .. code-block:: c++
 
     static void not_equal(Tensor *A, Tensor *B, Tensor *C);
-
