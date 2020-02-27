@@ -19,7 +19,6 @@ namespace eddl {
 
 	enum ONNX_LAYERS{
 		//TODO Comment in which section belongs each layer
-		RELU, 				// implemented
 		BATCHNORM,			// implemented
 		CONV,				// implemented
 		DENSE,				// implemented
@@ -29,10 +28,12 @@ namespace eddl {
 		TRANSPOSE,          // implementing
 		TRANSPOSED_CONV,	// not implemented in eddl
 		UPSAMPLING,         // deprecated in ONNX, but works for EDDL
-		SOFTMAX,			// implemented
 		MAXPOOL,			// implemented
 		AVGPOOL,            // needs testing
-		CONCAT,				// implemented
+
+		// Activation layers
+		RELU, 				// implemented
+		SOFTMAX,			// implemented
 		SIGMOID,            // implemented
 		HARD_SIGMOID,       // implemented
 		TANH,               // implemented
@@ -43,7 +44,16 @@ namespace eddl {
 		ELU,                // implemented
 		SELU,               // implemented
 		SOFTPLUS,           // implemented
-		SOFTSIGN            // implemented
+		SOFTSIGN,           // implemented
+		// Merge layers
+		CONCAT,				// implemented
+		ADD,                // implemented
+		AVERAGE,            // implemented
+		MAT_MUL,            // implemented
+		MAX,				// implemented
+		MIN,                // implemented
+		SUB                // implemented
+
 	};
 
 
@@ -107,7 +117,6 @@ namespace eddl {
 	//Creates a map where the key is the onnx name for the layer type and the value is the constant value in the enumeration for onnx layer type.
 	map<string, ONNX_LAYERS> create_enum_map(){
 		map<string, ONNX_LAYERS> map_layers;
-		map_layers["Relu"] = ONNX_LAYERS::RELU;
 		map_layers["BatchNormalization"] = ONNX_LAYERS::BATCHNORM;
 		map_layers["Conv"] = ONNX_LAYERS::CONV;
 		map_layers["Gemm"] = ONNX_LAYERS::DENSE;
@@ -118,8 +127,9 @@ namespace eddl {
 		map_layers["Upsample"] = ONNX_LAYERS::UPSAMPLING;
 		map_layers["Softmax"] = ONNX_LAYERS::SOFTMAX;
 		map_layers["MaxPool"] = ONNX_LAYERS::MAXPOOL;
-		map_layers["Concat"] = ONNX_LAYERS::CONCAT;
 		map_layers["AveragePool"] = ONNX_LAYERS::AVGPOOL;
+		// Activation layers
+		map_layers["Relu"] = ONNX_LAYERS::RELU;
 		map_layers["Sigmoid"] = ONNX_LAYERS::SIGMOID;
 		map_layers["HardSigmoid"] = ONNX_LAYERS::HARD_SIGMOID;
 		map_layers["Tanh"] = ONNX_LAYERS::TANH;
@@ -131,6 +141,14 @@ namespace eddl {
 		map_layers["Selu"] = ONNX_LAYERS::SELU;
 		map_layers["Softsign"] = ONNX_LAYERS::SOFTSIGN;
 		map_layers["Softplus"] = ONNX_LAYERS::SOFTPLUS;
+		// Merge Layers
+		map_layers["Concat"] = ONNX_LAYERS::CONCAT;
+		map_layers["Add"] = ONNX_LAYERS::ADD;
+		map_layers["Sub"] = ONNX_LAYERS::SUB;
+		map_layers["Average"] = ONNX_LAYERS::AVERAGE;
+		map_layers["MatMul"] = ONNX_LAYERS::MAT_MUL;
+		map_layers["Max"] = ONNX_LAYERS::MAX;
+		map_layers["Min"] = ONNX_LAYERS::MIN;
 
 		return map_layers;
 	}
@@ -1075,12 +1093,86 @@ namespace eddl {
 							parent_name = node->input(j);
 							parents.push_back(output_node_map[parent_name]);
 						}
-						for(Layer* parent: parents){
-							for(int dim: parent->output->shape){
-							}
-						}
 						string name = node->name();
 						actual_layer = new LConcat(parents, axis, name, dev, mem);
+
+						break;
+					}
+				case ONNX_LAYERS::ADD:
+					{
+						vector<Layer *> parents;
+						string parent_name;
+						for ( int j = 0; j < node->input_size(); j++) {
+							parent_name = node->input(j);
+							parents.push_back(output_node_map[parent_name]);
+						}
+						string name = node->name();
+						actual_layer = new LAdd(parents, name, dev, mem);
+
+						break;
+					}
+				case ONNX_LAYERS::SUB:
+					{
+						vector<Layer *> parents;
+						string parent_name;
+						for ( int j = 0; j < node->input_size(); j++) {
+							parent_name = node->input(j);
+							parents.push_back(output_node_map[parent_name]);
+						}
+						string name = node->name();
+						actual_layer = new LSubtract(parents, name, dev, mem);
+
+						break;
+					}
+				case ONNX_LAYERS::AVERAGE:
+					{
+						vector<Layer *> parents;
+						string parent_name;
+						for ( int j = 0; j < node->input_size(); j++) {
+							parent_name = node->input(j);
+							parents.push_back(output_node_map[parent_name]);
+						}
+						string name = node->name();
+						actual_layer = new LAverage(parents, name, dev, mem);
+
+						break;
+					}
+				case ONNX_LAYERS::MAT_MUL:
+					{
+						vector<Layer *> parents;
+						string parent_name;
+						for ( int j = 0; j < node->input_size(); j++) {
+							parent_name = node->input(j);
+							parents.push_back(output_node_map[parent_name]);
+						}
+						string name = node->name();
+						actual_layer = new LMatMul(parents, name, dev, mem);
+
+						break;
+					}
+				case ONNX_LAYERS::MAX:
+					{
+						vector<Layer *> parents;
+						string parent_name;
+						for ( int j = 0; j < node->input_size(); j++) {
+							parent_name = node->input(j);
+							parents.push_back(output_node_map[parent_name]);
+						}
+						string name = node->name();
+						actual_layer = new LMaximum(parents, name, dev, mem);
+
+						break;
+					}
+				case ONNX_LAYERS::MIN:
+					{
+						vector<Layer *> parents;
+						string parent_name;
+						for ( int j = 0; j < node->input_size(); j++) {
+							parent_name = node->input(j);
+							parents.push_back(output_node_map[parent_name]);
+						}
+						string name = node->name();
+						actual_layer = new LMinimum(parents, name, dev, mem);
 
 						break;
 					}

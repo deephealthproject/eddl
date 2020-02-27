@@ -100,14 +100,14 @@ Apply data transformations with random parametrization.
 
 | Functionality | CPU | GPU | ONNX | Comments |
 | ------------- |------| -----| ------|---------|
-| Add | ✔️ | ✔️ | ❌️ | Layer that adds a list of inputs. |
-| Average | ✔️ | ✔️ | ❌️ | Layer that averages a list of inputs. |
+| Add | ✔️ | ✔️ | ✔️  | Layer that adds a list of inputs. |
+| Average | ✔️ | ✔️ | ✔️  | Layer that averages a list of inputs. |
 | Concatenate | ✔️ | ✔️ | ✔️ | Layer that concatenates a list of inputs. |
 | Dot |  ❌️ | ❌️ | ❌️ | Layer that computes a dot product between samples in two tensors.  |
-| Multiply | ✔️ | ✔️ | ❌️ | Layer that multiplies (element-wise) a list of inputs. |
-| Maximum | ✔️ | ✔️ | ❌️ | Layer that computes the maximum (element-wise) a list of inputs. |
-| Minimum | ✔️ | ✔️ | ❌️ | Layer that computes the minimum (element-wise) a list of inputs. |
-| Substract | ✔️ | ✔️ | ❌️ | Layer that subtracts two inputs. |
+| Multiply | ✔️ | ✔️ | ✔️  | Layer that multiplies (element-wise) a list of inputs. |
+| Maximum | ✔️ | ✔️ | ✔️  | Layer that computes the maximum (element-wise) a list of inputs. |
+| Minimum | ✔️ | ✔️ | ✔️  | Layer that computes the minimum (element-wise) a list of inputs. |
+| Substract | ✔️ | ✔️ | ✔️  | Layer that subtracts two inputs. |
 
 
 ## Normalization

@@ -200,6 +200,30 @@ namespace eddl {
 		{
 	    	build_concat_node( (LConcat*)(MLayer*)layer, graph );
 	    } 
+	    else if ( LAdd *t = dynamic_cast<LAdd*>( layer ) ) 
+		{
+	    	build_add_node( (LAdd*)(MLayer*)layer, graph );
+	    } 
+	    else if ( LSubtract *t = dynamic_cast<LSubtract*>( layer ) ) 
+		{
+	    	build_sub_node( (LSubtract*)(MLayer*)layer, graph );
+	    } 
+	    else if ( LAverage *t = dynamic_cast<LAverage*>( layer ) ) 
+		{
+	    	build_average_node( (LAverage*)(MLayer*)layer, graph );
+	    } 
+	    else if ( LMatMul *t = dynamic_cast<LMatMul*>( layer ) ) 
+		{
+	    	build_matmul_node( (LMatMul*)(MLayer*)layer, graph );
+	    } 
+	    else if ( LMaximum *t = dynamic_cast<LMaximum*>( layer ) ) 
+		{
+	    	build_max_node( (LMaximum*)(MLayer*)layer, graph );
+	    } 
+	    else if ( LMinimum *t = dynamic_cast<LMinimum*>( layer ) ) 
+		{
+	    	build_min_node( (LMinimum*)(MLayer*)layer, graph );
+	    } 
 		else if ( LBatchNorm *t = dynamic_cast<LBatchNorm*>( layer ) ) 
 		{
 	    	build_batchnorm_node( (LBatchNorm*)(LinLayer*)layer, graph );
@@ -518,7 +542,6 @@ namespace eddl {
 		node->add_output( layer->name );
 	}
 
-
 	void build_tanh_node( LActivation *layer, onnx::GraphProto *graph ) {
 		// Add an empty node to the graph
 		onnx::NodeProto* node = graph->add_node();
@@ -702,6 +725,84 @@ namespace eddl {
 		concat_axis->set_name( "axis" );
 		concat_axis->set_type( onnx::AttributeProto::INT );
 		concat_axis->set_i( 1 );
+	}
+
+	void build_add_node( LAdd *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Add" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+	}
+
+	void build_sub_node( LSubtract *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Sub" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+	}
+
+	void build_average_node( LAverage *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Average" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+	}
+
+	void build_matmul_node( LMatMul *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "MatMul" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+	}
+
+	void build_max_node( LMaximum *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Max" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+	}
+
+	void build_min_node( LMinimum *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Min" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
 	}
 
 	void build_batchnorm_node( LBatchNorm *layer, onnx::GraphProto *graph ) {
