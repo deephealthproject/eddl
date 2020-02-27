@@ -18,7 +18,7 @@
 | Flatten | ✔️ | ✔️ | ✔️ | Flattens the input. Does not affect the batch size. (Wrapper for Reshape) |
 | Input | ✔️ | ✔️ | ✔️ | Used to instantiate a EDDL tensor. |
 | Reshape | ✔️ | ✔️ | ✔️ | Reshapes an output to a certain shape. |
-| Permute | ✔️ | ✔️ | ❌️ | Permutes the dimensions of the input according to a given pattern. |
+| Permute | ✔️ | ✔️ | ✔️  | Permutes the dimensions of the input according to a given pattern. |
 | Embedding | ❌️ | ❌️ | ❌️ | Turns positive integers (indexes) into dense vectors of fixed size; (also known as mapping). e.g. `[[4], [20]] -> [[0.25, 0.1], [0.6, -0.2]]` |
 | Transpose | ✔️ | ✔️ | ❌️ | Permute the last two dimensions |
 
