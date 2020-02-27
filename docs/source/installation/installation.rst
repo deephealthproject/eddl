@@ -24,24 +24,9 @@ A package for EDDL is available on the conda package manager.
 
 .. code::
 
-    conda install -c salvacarrion eddl
+    conda install -c salvacarrion eddl  # CPU
+    conda install -c salvacarrion eddl-gpu  # GPU
 
-
-.. image:: ../_static/images/logos/debian.svg
-
-
-Using the Debian package
-------------------------
-
-A package for EDDL is available on Debian.
-
-.. code::
-
-    sudo apt-get install eddl
-
-.. note::
-
-    Not yet available
 
 .. image:: ../_static/images/logos/homebrew.svg
 
@@ -57,6 +42,8 @@ A package for EDDL is available on the homebrew package manager.
     brew install eddl
 
 .. note::
+
+    Only ``CPU`` support.
 
     If you get an error like ``Undefined symbols for architecture x86_64:``, it might be due to a conflict with
     the default compilers. A simple workaround is to force the use ``CClang`` (for instance) for C and C++,
