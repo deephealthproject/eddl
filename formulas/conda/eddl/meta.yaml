@@ -19,8 +19,8 @@ requirements:
   build:
     - {{ compiler('cxx') }}
     - cmake
+    #- llvm-openmp  # IMPORTANT!!! JUST FOR MAC OS. NOT COMPATIBLE WITH OTHER BUILDS. DISABLE IF NOT NEEDED
   host:
-    - llvm-openmp  # MacOS (OpenMP)
     - graphviz
     - wget
     - blas
