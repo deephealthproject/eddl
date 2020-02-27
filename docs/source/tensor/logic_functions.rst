@@ -15,7 +15,7 @@ Truth value testing
 all
 ^^^^^^^^^^^^^^
 
-Test whether all array elements along a given axis evaluate to True.
+Test whether all elements evaluate to True.
 
 .. code-block:: c++
 
@@ -25,7 +25,7 @@ Test whether all array elements along a given axis evaluate to True.
 any
 ^^^^^^^^^^^^^^
 
-Test whether any array element along a given axis evaluates to True
+Test whether any element evaluates to True
 
 .. code-block:: c++
 
@@ -42,6 +42,11 @@ isfinite
 
 Test element-wise for finiteness (not infinity or not Not a Number).
 
+  Parameters:
+
+  - ``*A``: Tensor to test.
+  - ``B``: Tensor to store the results of the test as booleans.
+
 .. code-block:: c++
 
     static void isfinite(Tensor *A, Tensor* B);
@@ -52,6 +57,11 @@ isinf
 
 Test element-wise for positive or negative infinity.
 
+  Parameters:
+
+  - ``*A``: Tensor to test.
+  - ``B``: Tensor to store the results of the test as booleans.
+
 .. code-block:: c++
 
     static void isinf(Tensor *A, Tensor* B);
@@ -60,7 +70,12 @@ Test element-wise for positive or negative infinity.
 isnan
 ^^^^^^^^^^^^^^
 
-Test element-wise for NaN and return result as a boolean array.
+Test element-wise for NaN.
+
+  Parameters:
+
+  - ``*A``: Tensor to test.
+  - ``B``: Tensor to store the results of the test as booleans.
 
 .. code-block:: c++
 
@@ -70,7 +85,12 @@ Test element-wise for NaN and return result as a boolean array.
 isneginf
 ^^^^^^^^^^^^^^
 
-Test element-wise for NaN and return result as a boolean array.
+Test element-wise for negative infinity.
+  
+  Parameters:
+
+  - ``*A``: Tensor to test.
+  - ``B``: Tensor to store the results of the test as booleans.
 
 .. code-block:: c++
 
@@ -80,7 +100,12 @@ Test element-wise for NaN and return result as a boolean array.
 isposinf
 ^^^^^^^^^^^^^^
 
-Test element-wise for positive infinity, return result as bool array.
+Test element-wise for positive infinity.
+
+  Parameters:
+
+  - ``*A``: Tensor to test.
+  - ``B``: Tensor to store the results of the test as booleans.
 
 .. code-block:: c++
 
@@ -95,7 +120,14 @@ Logical operations
 logical_and
 ^^^^^^^^^^^^^^
 
-Compute the truth value of x1 AND x2 element-wise.
+Compute the truth value of ``A and B`` element-wise.
+
+  Parameters:
+
+  - ``A``: Tensor.
+  - ``B``: Tensor.
+  - ``C``: Tensor to store the results of the operation.
+
 
 .. code-block:: c++
 
@@ -105,7 +137,13 @@ Compute the truth value of x1 AND x2 element-wise.
 logical_or
 ^^^^^^^^^^^^^^
 
-Compute the truth value of x1 OR x2 element-wise.
+Compute the truth value of ``A or B`` element-wise.
+
+  Parameters:
+
+  - ``A``: Tensor.
+  - ``B``: Tensor.
+  - ``C``: Tensor to store the results of the operation.
 
 .. code-block:: c++
 
@@ -115,8 +153,13 @@ Compute the truth value of x1 OR x2 element-wise.
 logical_not
 ^^^^^^^^^^^^^^
 
-Compute the truth value of NOT x element-wise.
+Compute the truth value of ``not A`` element-wise.
 
+  Parameters:
+
+  - ``A``: Tensor.
+  - ``B``: Tensor to store the results of the operation.
+ 
 .. code-block:: c++
 
     static void logical_not(Tensor *A, Tensor *B);
@@ -125,8 +168,14 @@ Compute the truth value of NOT x element-wise.
 logical_xor
 ^^^^^^^^^^^^^^
 
-Compute the truth value of x1 XOR x2, element-wise.
+Compute the truth value of ``A xor B``, element-wise.
 
+  Parameters:
+
+  - ``A``: Tensor.
+  - ``B``: Tensor.
+  - ``C``: Tensor to store the results of the operation.
+ 
 .. code-block:: c++
 
     static void logical_xor(Tensor *A, Tensor *B, Tensor *C);
@@ -160,8 +209,14 @@ Returns a boolean array where two arrays are element-wise equal within a toleran
 greater
 ^^^^^^^^^^^^^^
 
-Return the truth value of (x1 > x2) element-wise.
+Return the truth value of ``A > B`` element-wise.
 
+  Parameters:
+
+  - ``A``: Tensor.
+  - ``B``: Tensor.
+  - ``C``: Tensor to store the results of the operation.
+ 
 .. code-block:: c++
 
     static void greater(Tensor *A, Tensor *B, Tensor *C);
@@ -170,8 +225,14 @@ Return the truth value of (x1 > x2) element-wise.
 greater_equal
 ^^^^^^^^^^^^^^
 
-Return the truth value of (x1 >= x2) element-wise.
+Return the truth value of ``A >= B`` element-wise.
 
+  Parameters:
+
+  - ``A``: Tensor.
+  - ``B``: Tensor.
+  - ``C``: Tensor to store the results of the operation.
+ 
 .. code-block:: c++
 
     static void greater_equal(Tensor *A, Tensor *B, Tensor *C);
@@ -180,8 +241,14 @@ Return the truth value of (x1 >= x2) element-wise.
 less
 ^^^^^^^^^^^^^^
 
-Return the truth value of (x1 < x2) element-wise.
+Return the truth value of ``A < B`` element-wise.
 
+  Parameters:
+
+  - ``A``: Tensor.
+  - ``B``: Tensor.
+  - ``C``: Tensor to store the results of the operation.
+ 
 .. code-block:: c++
 
     static void less(Tensor *A, Tensor *B, Tensor *C);
@@ -190,8 +257,14 @@ Return the truth value of (x1 < x2) element-wise.
 less_equal
 ^^^^^^^^^^^^^^
 
-Return the truth value of (x1 =< x2) element-wise.
+Return the truth value of ``A =< B`` element-wise.
 
+  Parameters:
+
+  - ``A``: Tensor.
+  - ``B``: Tensor.
+  - ``C``: Tensor to store the results of the operation.
+ 
 .. code-block:: c++
 
     static void less_equal(Tensor *A, Tensor *B, Tensor *C);
@@ -200,8 +273,14 @@ Return the truth value of (x1 =< x2) element-wise.
 equal
 ^^^^^^^^^^^^^^
 
-Return (x1 == x2) element-wise.
+Return ``A == B`` element-wise.
 
+  Parameters:
+
+  - ``A``: Tensor.
+  - ``B``: Tensor.
+  - ``C``: Tensor to store the results of the operation.
+ 
 .. code-block:: c++
 
     static void equal(Tensor *A, Tensor *B, Tensor *C);
@@ -210,8 +289,14 @@ Return (x1 == x2) element-wise.
 not_equal
 ^^^^^^^^^^^^^^
 
-Return (x1 != x2) element-wise.
+Return ``A != B`` element-wise.
 
+  Parameters:
+
+  - ``A``: Tensor.
+  - ``B``: Tensor.
+  - ``C``: Tensor to store the results of the operation.
+ 
 .. code-block:: c++
 
     static void not_equal(Tensor *A, Tensor *B, Tensor *C);

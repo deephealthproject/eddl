@@ -523,12 +523,17 @@ empty ❌
 
 * note: section in progress
 
+### Generating index arrays
+
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
 | Generating index arrays |❌️|    ❌️   |          |
-| Indexing-like operations | 
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;select |❌️| ✔️ |   |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set_select |❌️| ✔️ |   |
+
+### Indexing-like operations 
+| Section | Explanation | Instructions | Comments |
+| :------ | :---------: | :----------: | :------- |
+| select  |      ✔️      |       ✔️      |          |
+| set_select |  ❌️      |       ✔️      | Confusing explanation |
 
 
 ## Input/Output Operations
@@ -538,17 +543,17 @@ empty ❌
 ### Input
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| loadfs  |      ❌️     | ✔️            |          |
-| load    |      ❌️     | ✔️            |          | 
-| load_from_txt |❌️     | ✔️            |          |
+| loadfs  |      ✔️      |       ✔️      |          |
+| load    |      ✔️      |       ✔️      |          | 
+| load_from_txt |✔️      |       ✔️      |          |
 
 ### Output
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| savefs  |      ❌️     |       ✔️      |          |
-| save    |      ❌️     |       ✔️      |          |
-| save2txt |     ❌️     |       ✔️      |          |
+| savefs  |       ✔️     |       ✔️      | Note: ONNX not yet implemented |
+| save    |       ✔️     |       ✔️      | Note: ONNX not yet implemented |
+| save2txt |      ✔️     |       ✔️      | Check parameter explanation |
 
 
 ## Linar algebra
@@ -570,27 +575,27 @@ empty ❌
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| all     |      ❌️     |       ✔️      |          |
-| any     |      ❌️     |       ✔️      |          |
+| all     |      ✔️      |       ✔️      |          |
+| any     |      ✔️      |       ✔️      |          |
 
 ### Array contents
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| isfinite |     ❌️     |       ✔️      |          |
-| isinf   |      ❌️     |       ✔️      |          |
-| isnan   |      ❌️     |       ✔️      |          |
-| isneginf |     ❌️     |       ✔️      |          |
-| isposinf |     ❌️     |       ✔️      |          |
+| isfinite |      ✔️     |       ✔️      |          |
+| isinf   |       ✔️     |       ✔️      |          |
+| isnan   |       ✔️     |       ✔️      |          |
+| isneginf |      ✔️     |       ✔️      |          |
+| isposinf |      ✔️     |       ✔️      |          |
 
 ### Logical operations
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| logical_and |   ❌️    |       ✔️      |          |
-| logical_or |    ❌️    |       ✔️      |          |
-| logical_not |   ❌️    |       ✔️      |          |
-| logical_xor |   ❌️    |       ✔️      |          |
+| logical_and |    ✔️    |       ✔️      | the explanation of the parameters needs to be improved |
+| logical_or |     ✔️    |       ✔️      | the explanation of the parameters needs to be improved |
+| logical_not |    ✔️    |       ✔️      | the explanation of the parameters needs to be improved |
+| logical_xor |    ✔️    |       ✔️      | the explanation of the parameters needs to be improved |
 
 ### Comparison
 
@@ -598,12 +603,12 @@ empty ❌
 | :------ | :---------: | :----------: | :------- |
 | allclose |     ❌️     |       ✔️      |          |
 | isclose |      ❌️     |       ✔️      |          |
-| greater |      ❌️     |       ✔️      |          |
-| greater_equal |❌️     |       ✔️      |          |
-| less    |      ❌️     |       ✔️      |          |
-| less_equal |   ❌️     |       ✔️      |          |
-| equal   |      ❌️     |       ✔️      |          |
-| not_equal |    ❌️     |       ✔️      |          |
+| greater |      ✔️      |       ✔️      | the explanation of the parameters needs to be improved |
+| greater_equal |✔️      |       ✔️      | the explanation of the parameters needs to be improved |
+| less    |      ✔️      |       ✔️      | the explanation of the parameters needs to be improved |
+| less_equal |   ✔️      |       ✔️      | the explanation of the parameters needs to be improved |
+| equal   |      ✔️      |       ✔️      | the explanation of the parameters needs to be improved |
+| not_equal |    ✔️      |       ✔️      | the explanation of the parameters needs to be improved |
 
 ## Masked array operations ❌️
 

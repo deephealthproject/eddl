@@ -27,8 +27,12 @@ Indexing-like operations
 select
 ^^^^^^
 
-Returns an array with the selected indices.
-The indices must be specified as a vector of strings ({"0", ":5", ":", "3:6"}).
+Returns an array with the selected indices of the tensor.
+
+  Parameters
+
+  - ``indices``: Vector of strings representing the indices to be selected. These indices must follow a Python-like syntax. Some examples: ``"0"``, ``":5``, ``":"``, ``"3:6``.
+
 
 .. code-block:: c++
     :linenos:
