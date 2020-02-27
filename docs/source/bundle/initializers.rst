@@ -94,6 +94,7 @@ Initializer that generates tensors initialized to a constant value.
 
     - ``l``: The layer whose weights must be initialized.
     - ``v``: A float. The constant value to initialize the tensor.
+
 Example:
 
 .. code-block:: c++
