@@ -133,16 +133,16 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| RandomCrop |    ❌️    |      ✔️       |          |
-| RandomCropScale | ❌️  |      ✔️       |          |
-| RandomCutout |    ❌️  |      ✔️       |          |
-| RandomFlip |      ❌️  |      ✔️       |          |
-| RandomGrayscale | ❌️  |      ✔️       | note: not yet implemented |
-| RandomHorizontalFlip | ❌️|   ✔️       |          |
-| RandomRotation |  ❌️  |      ✔️       |          |
-| RandomScale |     ❌️  |      ✔️       |          |
-| RandomShift |     ❌️  |      ✔️       |          |
-| RandomVerticalFlip |❌️|      ✔️       |          |
+| RandomCrop |    ✔️     |      ✔️       | with Breathe |
+| RandomCropScale | ✔️   |      ✔️       | with Breathe |
+| RandomCutout |    ✔️   |      ✔️       | with Breathe |
+| RandomFlip |      ✔️   |      ✔️       | with Breathe |
+| RandomGrayscale | ✔️   |      ✔️       | with Breathe <br /> note: not yet implemented |
+| RandomHorizontalFlip | ✔️ |   ✔️       | with Breathe |
+| RandomRotation |  ✔️   |      ✔️       | with Breathe |
+| RandomScale |     ✔️   |      ✔️       | with Breathe |
+| RandomShift |     ✔️   |      ✔️       | with Breathe |
+| RandomVerticalFlip |✔️ |      ✔️       | with Breathe |
 
 
 ## Data transformation

@@ -17,7 +17,8 @@ Ranges are defined using relative coordinates between 0 and 1.
 RandomCrop
 ----------
 
-Crop the given image at a random location with size `[height, width]`.
+
+.. doxygenfunction:: RandomCrop
 
 Example:
 
@@ -30,7 +31,9 @@ Example:
 RandomCropScale
 ---------------
 
-Crop the given image randomly by the size in a range `[a, b]` by and scale it to the parent size.
+
+.. doxygenfunction:: RandomCropScale
+
 Example:
 
 .. code-block:: c++
@@ -42,7 +45,8 @@ Example:
 RandomCutout
 ---------------
 
-Randomly selects a rectangle region in an image and erases its pixels. The random region is defined by the range `[(min_x, max_x), (min_y, max_y)]`, where these are relative values.
+
+.. doxygenfunction:: RandomCutout
 
 Example:
 
@@ -55,7 +59,8 @@ Example:
 RandomFlip
 ----------
 
-Flip the given image at `axis=n` randomly with a given probability.
+
+.. doxygenfunction:: RandomFlip
 
 Example:
 
@@ -68,7 +73,8 @@ Example:
 RandomGrayscale
 ----------------
 
-Converts the given image to grayscale a given probability.
+.. doxygenfunction:: RandomGrayscale
+
 
 .. note::
 
@@ -85,7 +91,8 @@ Example:
 RandomHorizontalFlip
 ---------------------
 
-Horizontally flip the given image randomly with a given probability.
+
+.. doxygenfunction:: RandomHorizontalFlip
 
 Example:
 
@@ -99,7 +106,8 @@ Example:
 RandomRotation
 --------------
 
-Resize the input image randomly by the size in a range `[a, b]`.
+
+.. doxygenfunction:: RandomRotation
 
 Example:
 
@@ -112,7 +120,8 @@ Example:
 RandomScale
 --------------
 
-Resize the input image randomly by the size in a range `[a, b]`.
+
+.. doxygenfunction:: RandomScale
 
 Example:
 
@@ -125,8 +134,8 @@ Example:
 RandomShift
 --------------
 
-Vertically flip the given image randomly with a given probability.
 
+.. doxygenfunction:: RandomShift
 
 Example:
 
@@ -139,7 +148,8 @@ Example:
 RandomVerticalFlip
 ---------------------
 
-Veritically flip the given image randomly with a given probability.
+
+.. doxygenfunction:: RandomVerticalFlip
 
 Example:
 
