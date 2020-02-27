@@ -32,6 +32,7 @@ conda activate
 conda install --use-local eddl
 
 # Test cpp example
+# rm -rf ./*; cmake ..; make; ./main
 cmake ..; make; ./main
 
 # Convert to platforms

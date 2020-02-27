@@ -24,8 +24,9 @@ A package for EDDL is available on the conda package manager.
 
 .. code::
 
-    conda install -c salvacarrion eddl  # CPU
-    conda install -c salvacarrion eddl-gpu  # GPU
+    conda install -c salvacarrion eddl             # CPU (without ONNX)
+    conda install -c salvacarrion eddl-gpu         # GPU (without ONNX)
+    conda install -c salvacarrion eddl-gpu-onnx    # GPU (with ONNX)
 
 
 .. image:: ../_static/images/logos/homebrew.svg
