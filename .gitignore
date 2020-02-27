@@ -10,6 +10,7 @@
 # Build
 /[Bb]uild*
 /[Bb]in*
+build/
 
 # Documentation
 /docs/source/_build

@@ -13,10 +13,11 @@ class Eddl < Formula
   depends_on "openblas" => :build
   depends_on "wget" => :build
   depends_on "zlib" => :build
+  depends_on "protobuf" => :build
 
   def install
     mkdir "build" do
-      system "cmake", "..", *std_cmake_args
+      system "cmake", "..", "-DBUILD_PROTOBUF=ON", "-DBUILD_EXAMPLES=OFF", *std_cmake_args
       system "make", "install", "PREFIX=#{prefix}"
     end
   end

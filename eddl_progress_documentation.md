@@ -418,11 +418,11 @@ empty ❌
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| zeros   |      ❌️     |       ✔️      |          |
-| ones    |      ❌️     |       ✔️      |          |
-| full    |      ❌️     |       ✔️      |          |
+| zeros   |      ✔️      |       ✔️      |          |
+| ones    |      ✔️      |       ✔️      |          |
+| full    |      ✔️      |       ✔️      |          |
 | eye     |      ❌️     |       ✔️      |          |
-| identity |     ❌️     |       ✔️      |          |
+| identity |     ✔️      |       ✔️      |          |
 
 ### From existing data
 
