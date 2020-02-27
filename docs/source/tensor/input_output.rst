@@ -54,12 +54,26 @@ Output
 -----------------------
 
 
-Example:
+savefs
+^^^^^^^^
 
 .. code-block:: c++
-   :linenos:
 
     void savefs(std::ofstream &ofs, string format="");
+
+
+save
+^^^^^^^^
+
+.. code-block:: c++
+
     void save(const string& filename, string format="");
+
+
+save2txt
+^^^^^^^^
+
+.. code-block:: c++
+
     void save2txt(const string& filename, const char delimiter=',', const vector<string> &header={});
 

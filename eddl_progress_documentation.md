@@ -456,18 +456,63 @@ empty ❌
 | :------ | :---------: | :----------: | :------- |
 | diag    |      ❌️     |       ✔️      |          |
 
+
 ## Manipulation
 
 * note: section in progress 
 
+### Constructor
+
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Constructor |    ❌️   |       ✔️      |          |
-| Changing array shape |❌️|     ✔️      |          |
-| Transpose-like operations |❌️ |   ✔️  |          |
-| Changing number of dimensions |❌️| ✔️ |          |
-| Joining arrays | ❌️  |        ✔️      |          |
-| Rearranging elements and transformations |❌️| ✔️  |    |
+| Tensor  |      ❌️     |       ✔️      |          |
+
+### Changing array shape
+
+| Section | Explanation | Instructions | Comments |
+| :------ | :---------: | :----------: | :------- |
+| reshape |      ❌️     |       ✔️      |          |
+| flatten |      ❌️     |       ✔️      |          |
+
+### Transpose-like operations
+
+| Section | Explanation | Instructions | Comments |
+| :------ | :---------: | :----------: | :------- |
+| permute |      ❌️     |       ✔️      |          |
+| moveaxis |     ❌️     |       ✔️      |          |
+| swapaxis |     ❌️     |       ✔️      |          |
+
+### Changing number of dimensions
+
+| Section | Explanation | Instructions | Comments |
+| :------ | :---------: | :----------: | :------- |
+| squeeze |      ❌️     |       ✔️      |          |
+| unsqueeze |    ❌️     |       ✔️      |          |
+
+### Joining arrays
+
+| Section | Explanation | Instructions | Comments |
+| :------ | :---------: | :----------: | :------- |
+| concat  |      ❌️     |       ✔️      |          |
+
+### Rearranging elements and transformations
+
+| Section | Explanation | Instructions | Comments |
+| :------ | :---------: | :----------: | :------- |
+| shift   |      ❌️     |       ✔️      |          |
+| rotate  |      ❌️     |       ✔️      |          |
+| scale   |      ❌️     |       ✔️      |          |
+| flip    |      ❌️     |       ✔️      |          |
+| crop    |      ❌️     |       ✔️      |          |
+| crop_scale |   ❌️     |       ✔️      |          |
+| cutout  |      ❌️     |       ✔️      |          |
+| shift_random | ❌️     |       ✔️      |          |
+| rotate_random |❌️     |       ✔️      |          |
+| scale_random | ❌️     |       ✔️      |          |
+| flip_random |  ❌️     |       ✔️      |          |
+| crop_random |  ❌️     |       ✔️      |          |
+| crop_scale_random| ❌️ |       ✔️      |          |
+| cutout_random |❌️     |       ✔️      |          |
 
 
 ## Binary operations ❌️
@@ -490,13 +535,20 @@ empty ❌
 
 * note: section in progress
 
+### Input
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Input   |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;loadfs |❌️ | ✔️ |   |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;load | ❌️| ✔️ |   |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;load_from_txt |❌️ | ✔️ |   |
-| Output  |      ❌️     |       ✔️      |          |
+| loadfs  |      ❌️     | ✔️            |          |
+| load    |      ❌️     | ✔️            |          | 
+| load_from_txt |❌️     | ✔️            |          |
+
+### Output
+
+| Section | Explanation | Instructions | Comments |
+| :------ | :---------: | :----------: | :------- |
+| savefs  |      ❌️     |       ✔️      |          |
+| save    |      ❌️     |       ✔️      |          |
+| save2txt |     ❌️     |       ✔️      |          |
 
 
 ## Linar algebra
