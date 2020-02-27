@@ -345,7 +345,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
     SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
     find_package(Threads REQUIRED)
-    target_link_libraries(eddl PRIVATE Threads::Threads)
+    target_link_libraries(eddl Threads::Threads)
 endif()
 
 
