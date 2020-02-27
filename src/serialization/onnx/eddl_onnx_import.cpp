@@ -30,7 +30,7 @@ namespace eddl {
 		UPSAMPLING,         // deprecated in ONNX, but works for EDDL
 		MAXPOOL,			// implemented
 		AVGPOOL,            // needs testing
-
+		PERMUTE,            // implemented
 		// Activation layers
 		RELU, 				// implemented
 		SOFTMAX,			// implemented
@@ -52,7 +52,9 @@ namespace eddl {
 		MAT_MUL,            // implemented
 		MAX,				// implemented
 		MIN,                // implemented
-		SUB                // implemented
+		SUB                 // implemented
+		
+
 
 	};
 
@@ -128,6 +130,7 @@ namespace eddl {
 		map_layers["Softmax"] = ONNX_LAYERS::SOFTMAX;
 		map_layers["MaxPool"] = ONNX_LAYERS::MAXPOOL;
 		map_layers["AveragePool"] = ONNX_LAYERS::AVGPOOL;
+		map_layers["Transpose"] = ONNX_LAYERS::PERMUTE;
 		// Activation layers
 		map_layers["Relu"] = ONNX_LAYERS::RELU;
 		map_layers["Sigmoid"] = ONNX_LAYERS::SIGMOID;
@@ -897,6 +900,24 @@ namespace eddl {
 						break;
 					}
 
+				case ONNX_LAYERS::PERMUTE:
+					{
+						vector<int> dims;
+						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
+							onnx::AttributeProto attribute = node->attribute(j);
+							string attr_name = attribute.name();
+							if(!attr_name.compare("perm")){
+								for(int h = 1; h < attribute.ints_size(); h++)
+									dims.push_back(attribute.ints(h));
+							}
+						}
+						string parent_name = node->input(0);
+						Layer *parent = output_node_map[parent_name];
+
+						string name = node->name();
+						actual_layer = new LPermute(parent, dims, name, dev, mem);
+						break;
+					}
 				case ONNX_LAYERS::RELU:
 					{
 						string parent_name = node->input(0);
