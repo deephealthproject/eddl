@@ -352,24 +352,24 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| GlorotNormal |    ❌️  |       ✔️      |          |
-| GlorotUniform |   ❌️  |       ✔️      |          |
-| RandomNormal |    ❌️  |       ✔️      |          |
-| RandomUniform |   ❌️  |       ✔️      |          |
-| Constant |        ❌️  |       ✔️      |          |
+| GlorotNormal |    ✔️  |       ✔️      |          |
+| GlorotUniform |   ✔️  |       ✔️      |          |
+| RandomNormal |    ✔️  |       ✔️      |          |
+| RandomUniform |   ✔️  |       ✔️      |          |
+| Constant |        ✔️  |       ✔️      |          |
 
 
 ## Optimizers
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Adadelta |     ❌️     |       ✔️      |          |
-| Adam    |      ❌️     |       ✔️      |          |
-| Adagrad |      ❌️     |       ✔️      |          |
-| Adamax  |      ❌️     |       ✔️      |          |
-| Nadam   |      ❌️     |       ✔️      |          |
-| RMSProp |      ❌️     |       ✔️      |          |
-| SGD (Stochastic Gradient Descent) |❌️| ✔️ |      |
+| Adadelta |     ✔️     |       ✔️      |          |
+| Adam    |      ✔️     |       ✔️      |          |
+| Adagrad |      ✔️     |       ✔️      |          |
+| Adamax  |      ✔️     |       ✔️      |          |
+| Nadam   |      ✔️     |       ✔️      |          |
+| RMSProp |      ✔️     |       ✔️      |          |
+| SGD (Stochastic Gradient Descent) |✔️| ✔️ |      |
 
 
 # Computing services
