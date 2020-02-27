@@ -69,9 +69,43 @@ namespace eddl{
 
 	void build_relu_node( LActivation *layer, onnx::GraphProto *graph );
 
+	void build_sigmoid_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_hard_sigmoid_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_tanh_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_exp_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_linear_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_leaky_relu_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_thresholded_relu_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_elu_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_selu_node( LActivation *layer, onnx::GraphProto *graph );
+
 	void build_softmax_node( LActivation *layer, onnx::GraphProto *graph );
 
+	void build_softsign_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_softplus_node( LActivation *layer, onnx::GraphProto *graph );
+
 	void build_concat_node( LConcat *layer, onnx::GraphProto *graph );
+
+	void build_add_node( LAdd *layer, onnx::GraphProto *graph );
+
+	void build_sub_node( LSubtract *layer, onnx::GraphProto *graph );
+
+	void build_average_node( LAverage *layer, onnx::GraphProto *graph );
+
+	void build_matmul_node( LMatMul *layer, onnx::GraphProto *graph );
+
+	void build_max_node( LMaximum *layer, onnx::GraphProto *graph );
+
+	void build_min_node( LMinimum *layer, onnx::GraphProto *graph );
 
 	void build_batchnorm_node( LBatchNorm *layer, onnx::GraphProto *graph );
 
