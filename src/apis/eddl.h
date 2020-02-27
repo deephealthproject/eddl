@@ -375,6 +375,14 @@ typedef NetLoss * metric;
     layer Sigmoid(layer parent, string name="");
 
     /**
+      *  @brief Applies a HardSigmoid activation function to the given layer.
+      *
+      *  @param parent  Parent layer
+      *  @return     Output of HardSigmoid activation
+    */
+    layer HardSigmoid(layer parent, string name="");
+
+    /**
       *  @brief Applies a Rectified Linear Unit activation function to the given layer.
       *
       *  @see   https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
