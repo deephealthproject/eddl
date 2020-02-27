@@ -252,7 +252,7 @@ set_target_properties(eddl PROPERTIES
 
 # Eigen3
 find_package(Eigen3 3.3 REQUIRED)
-target_link_libraries (eddl PUBLIC Eigen3::Eigen)
+target_link_libraries(eddl PUBLIC Eigen3::Eigen)
 
 # OpenMP
 if(BUILD_OPENMP)
@@ -345,7 +345,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
     SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
     find_package(Threads REQUIRED)
-    target_link_libraries(eddl Threads::Threads)
+    target_link_libraries(eddl PRIVATE Threads::Threads)
 endif()
 
 
