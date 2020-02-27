@@ -278,11 +278,35 @@
 
 # Training
 
+## Coarse training
+
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Coarse training |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Fit | ❌️| ✔️ |   |
-| Fine-grained training | ❌️|  ❌️      |          |
+| Fit     |      ❌️     |       ✔️      |          |
+
+
+## Fine-grained training
+| Section | Explanation | Instructions | Comments |
+| :------ | :---------: | :----------: | :------- |
+| random_indices | ❌️   |       ✔️      |          |
+| next_batch |     ❌️   |       ✔️      |          |
+| train_batch |    ❌️   |       ✔️      |          |
+| eval_batch |     ❌️   |       ✔️      |          |
+| set_mode |       ❌️   |       ✔️      |          |
+| reset_loss |     ❌️   |       ✔️      |          |
+| forward |        ❌️   |       ✔️      |          |
+| zeroGrads |      ❌️   |       ✔️      |          |
+| backward |       ❌️   |       ✔️      |          |
+| update  |        ❌️   |       ✔️      |          |
+| print_loss |     ❌️   |       ✔️      |          |
+| clamp   |        ❌️   |       ✔️      |          |
+| compute_loss |   ❌️   |       ✔️      |          |
+| compute_metric | ❌️   |       ✔️      |          |
+| getLoss |        ❌️   |       ✔️      |          |
+| newloss |        ❌️   |       ✔️      |          |
+| getMetric |      ❌️   |       ✔️      |          |
+| newmetric |      ❌️   |       ✔️      |          |
+| detach  |        ❌️   |       ✔️      |          |
 
 
 # Test & score
@@ -384,15 +408,53 @@ empty ❌
 
 * note: section in progress
 
+### Constructor
+
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Constructor |   ❌️    |       ✔️      |          |
-| Ones and zeros |❌️    |       ✔️      |          |
-| From existing data |❌️|       ✔️      |          |
-| Numerical ranges |  ❌️|       ✔️      |          |
-| Random  |           ❌️|       ✔️      |          |
-| Build matrices |    ❌️|       ✔️      |          |
+| Tensor  |     ❌️      |       ✔️      |          |
 
+### Ones and zeros
+
+| Section | Explanation | Instructions | Comments |
+| :------ | :---------: | :----------: | :------- |
+| zeros   |      ❌️     |       ✔️      |          |
+| ones    |      ❌️     |       ✔️      |          |
+| full    |      ❌️     |       ✔️      |          |
+| eye     |      ❌️     |       ✔️      |          |
+| identity |     ❌️     |       ✔️      |          |
+
+### From existing data
+
+| Section | Explanation | Instructions | Comments |
+| :------ | :---------: | :----------: | :------- |
+| clone   |      ❌️     |       ✔️      |          |
+| reallocate |   ❌️     |       ✔️      |          |
+| copy    |      ❌️     |       ✔️      |          |
+
+
+### Numerical ranges
+
+| Section | Explanation | Instructions | Comments |
+| :------ | :---------: | :----------: | :------- |
+| arange  |      ❌️     |       ✔️      |          |
+| range   |      ❌️     |       ✔️      |          |
+| linspace |     ❌️     |       ✔️      |          |
+| logspace |     ❌️     |       ✔️      |          |
+| geomspace |    ❌️     |       ✔️      |          |
+
+### Random
+
+| Section | Explanation | Instructions | Comments |
+| :------ | :---------: | :----------: | :------- |
+| randu   |      ❌️     |       ✔️      |          |
+| randn   |      ❌️     |       ✔️      |          |
+
+### Build matrices
+
+| Section | Explanation | Instructions | Comments |
+| :------ | :---------: | :----------: | :------- |
+| diag    |      ❌️     |       ✔️      |          |
 
 ## Manipulation
 
