@@ -95,6 +95,18 @@ namespace eddl{
 
 	void build_concat_node( LConcat *layer, onnx::GraphProto *graph );
 
+	void build_add_node( LAdd *layer, onnx::GraphProto *graph );
+
+	void build_sub_node( LSubtract *layer, onnx::GraphProto *graph );
+
+	void build_average_node( LAverage *layer, onnx::GraphProto *graph );
+
+	void build_matmul_node( LMatMul *layer, onnx::GraphProto *graph );
+
+	void build_max_node( LMaximum *layer, onnx::GraphProto *graph );
+
+	void build_min_node( LMinimum *layer, onnx::GraphProto *graph );
+
 	void build_batchnorm_node( LBatchNorm *layer, onnx::GraphProto *graph );
 
 	void build_dropout_node( LDropout *layer, onnx::GraphProto *graph );
