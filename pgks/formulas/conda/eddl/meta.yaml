@@ -19,6 +19,7 @@ requirements:
   build:
     - {{ compiler('cxx') }}
     - cmake
+    - llvm-openmp  # MacOS (OpenMP)
   host:
     - graphviz
     - wget
@@ -29,6 +30,8 @@ requirements:
     - gtest
     - protobuf
     - libprotobuf
+    - mkl >=2019  # From here and on, these are extra dependencies that might not be used
+    - mkl-include
   run:
     - graphviz
     - wget
@@ -39,6 +42,7 @@ requirements:
     - gtest
     - protobuf
     - libprotobuf
+    - mkl >=2018  # From here and on, these are extra dependencies that might not be used
 
 test:
   commands:
