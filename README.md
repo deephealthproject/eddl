@@ -4,7 +4,7 @@
 
 -----------------
 ![C/C++ CI](https://github.com/deephealthproject/eddl/workflows/C/C++%20CI/badge.svg)
-[![Documentation Status](https://readthedocs.org/projects/ansicolortags/badge/?version=latest)](https://salvacarrion.github.io/docseddl/)
+[![Documentation Status](https://readthedocs.org/projects/ansicolortags/badge/?version=latest)](https://deephealthproject.github.io/eddldocs/)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/deephealthproject/eddl)
 ![GitHub](https://img.shields.io/github/license/deephealthproject/eddl)
 
@@ -17,11 +17,11 @@ Please note that EDDL is an ambitious project with few hands on it. Our short-te
 
  *"Plans are only good intentions unless they immediately degenerate into hard work"*
 
-## Installation [here](https://salvacarrion.github.io/docseddl/installation/installation.html)
+## Installation [here](https://deephealthproject.github.io/eddldocs/installation/installation.html)
 
-## Getting started [here](https://salvacarrion.github.io/docseddl/usage/getting_started.html)
+## Getting started [here](https://deephealthproject.github.io/eddldocs/usage/getting_started.html)
 
-## Documentation [here](https://salvacarrion.github.io/docseddl/)
+## Documentation [here](https://deephealthproject.github.io/eddldocs/)
 
 ## Progress and coverage
 - [Deep-learning features](https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md)
