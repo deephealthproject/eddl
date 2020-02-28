@@ -10,14 +10,7 @@ Initializers
 GlorotNormal
 ------------
 
-Glorot normal initializer, also called Xavier normal initializer.
-
-
-
-  Parameters:
-
-  - ``l``: The layer whose weights must be initialized.
-  - ``seed``: An integer. Used to seed the random generator.
+.. doxygenfunction:: GlorotNormal
 
 Example:
 
@@ -30,13 +23,8 @@ Example:
 GlorotUniform
 -------------
 
-Glorot uniform initializer, also called Xavier uniform initializer.
-
-  Parameters:
-
-  - ``l``: The layer whose weights must be initialized.
-  - ``seed``: An integer. Used to seed the random generator.
-
+.. doxygenfunction:: GlorotUniform
+s
 Example:
 
 .. code-block:: c++
@@ -48,14 +36,7 @@ Example:
 RandomNormal
 -------------
 
-Random normal initializer.
-
-  Parameters:
-
-  - ``l``: The layer whose weights must be initialized.
-  - ``m``: A float. Mean of the random values to generate.
-  - ``s``: A float. Standard deviation of the random values to generate.
-  - ``seed``: An integer. Used to seed the random generator.
+.. doxygenfunction:: RandomNormal
 
 Example:
 
@@ -68,14 +49,7 @@ Example:
 RandomUniform
 -------------
 
-Random uniform initializer.
-
-  Parameters:
-
-    - ``l``: The layer whose weights must be initialized.
-    - ``min``: A float. Lower bound of the range of random  values to generate.
-    - ``max``: A float. Upper bound of the range of random values to generate.
-    - ``seed``: An integer. Used to seed the random generator.
+.. doxygenfunction:: RandomUniform
 
 Example:
 
@@ -88,12 +62,7 @@ Example:
 Constant
 -------------
 
-Initializer that generates tensors initialized to a constant value.
-
-  Parameters:
-
-    - ``l``: The layer whose weights must be initialized.
-    - ``v``: A float. The constant value to initialize the tensor.
+.. doxygenfunction:: Constant
 
 Example:
 

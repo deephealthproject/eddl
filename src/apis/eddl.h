@@ -154,10 +154,28 @@ typedef NetLoss * metric;
       *  @return     (void) Changes model optimizer settings
     */
     void setlr(model net,vector<float>p);
+
+
+    /**
+      *  @brief Adadelta optimizer.
+      *
+      *  @details
+      *   Adadelta is a more robust extension of Adagrad that adapts learning rates based on a moving window of gradient updates, instead of accumulating all past gradients. This way, Adadelta continues learning even when many updates have been done.
+      *
+      *  @see   https://arxiv.org/abs/1212.5701
+      *
+      *  @param lr  Learning rate
+      *  @param rho  Smoothing constant
+      *  @param epsilon   Term added to the denominator to improve numerical stability
+      *  @param weight_decay   Weight decay (L2 penalty)
+      *  @return    Adadelta optimizer
+    */
     optimizer adadelta(float lr, float rho, float epsilon, float weight_decay); //Todo: Implement
+
+
     /**
       *  @brief Adam optimizer.
-      *
+      *  @details Default parameters follow those provided in the original paper (See section).
       *  @see   https://arxiv.org/abs/1412.6980v8
       *
       *  @param lr  Learning rate
@@ -169,9 +187,56 @@ typedef NetLoss * metric;
       *  @return     Adam optimizer
     */
     optimizer adam(float lr=0.01, float beta_1=0.9, float beta_2=0.999, float epsilon=0.000001, float weight_decay=0,bool amsgrad=false); //Todo: Implement
+
+
+    /**
+      *  @brief Adagrad optimizer.
+      *
+      *  @details
+      *   Adagrad is an optimizer with parameter-specific learning rates, which are adapted relative to how frequently a parameter gets updated during training. The more updates a parameter receives, the smaller the learning rate.
+      *
+      *  @see   http://www.jmlr.org/papers/volume12/duchi11a/duchi11a.pdf
+      *
+      *  @param lr  Learning rate
+      *  @param rho  Smoothing constant
+      *  @param epsilon   Term added to the denominator to improve numerical stability
+      *  @param weight_decay   Weight decay (L2 penalty)
+      *  @return    Adagrad optimizer
+    */
     optimizer adagrad(float lr, float epsilon, float weight_decay); //Todo: Implement
+
+    /**
+      *  @brief Adamax optimizer.
+      *  @details
+      *   It is a variant of Adam based on the infinity norm. Default parameters follow those provided in the See section.
+      *  @see   https://arxiv.org/abs/1412.6980v8
+      *
+      *  @param lr  Learning rate
+      *  @param beta_1  Coefficients used for computing running averages of gradient and its square
+      *  @param beta_2  Coefficients used for computing running averages of gradient and its square
+      *  @param epsilon   Term added to the denominator to improve numerical stability
+      *  @param weight_decay   Weight decay (L2 penalty)
+      *  @return     Adamax optimizer
+    */
     optimizer adamax(float lr, float beta_1, float beta_2, float epsilon, float weight_decay); //Todo: Implement
+
+
+    /**
+      *  @brief Nadam optimizer.
+      *  @details
+      *   It is a variant of Adam based on the infinity norm. Default parameters follow those provided in the See section.
+      *  @see   https://arxiv.org/abs/1412.6980v8
+      *
+      *  @param lr  Learning rate
+      *  @param beta_1  Coefficients used for computing running averages of gradient and its square
+      *  @param beta_2  Coefficients used for computing running averages of gradient and its square
+      *  @param epsilon   Term added to the denominator to improve numerical stability
+      *  @param schedule_decay   Weight decay (L2 penalty)
+      *  @return     Nadam optimizer
+    */
     optimizer nadam(float lr, float beta_1, float beta_2, float epsilon, float schedule_decay); //Todo: Implement
+
+
     /**
       *  @brief RMSProp optimizer.
       *
@@ -187,6 +252,8 @@ typedef NetLoss * metric;
       *  @return     RMSProp optimizer
     */
     optimizer rmsprop(float lr=0.01, float rho=0.9, float epsilon=0.00001, float weight_decay=0.0); //Todo: Implement
+
+
     /**
       *  @brief Stochastic gradient descent optimizer.
       *
