@@ -195,6 +195,24 @@ __global__ void d_hard_sigmoid(float *d,float *i,float *pd,long int size)
    }
 }
 
+__global__ void exp(float *a,float *b,long int size)
+{
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+  if (thread_id_x < size){
+    b[thread_id_x] = expf(a[thread_id_x]);
+  }
+}
+
+__global__ void d_exp(float *d,float *i,float *pd,long int size)
+{
+  long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+  if (thread_id_x < size){
+    pd[thread_id_x] = d[thread_id_x] * i[thread_id_x];
+   }
+}
+
 __global__ void tanh(float *a,float *b,long int size)
 {
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;

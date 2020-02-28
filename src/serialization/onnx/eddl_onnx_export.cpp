@@ -122,10 +122,22 @@ namespace eddl {
 		{
 	    	build_maxpool_node( (LMaxPool*)(LinLayer*)layer, graph );
 	    } 
+	    else if ( LAveragePool *t = dynamic_cast<LAveragePool*>( layer ) ) 
+		{
+	    	build_averagepool_node( (LAveragePool*)(LinLayer*)layer, graph );
+	    } 
 		else if ( LReshape *t = dynamic_cast<LReshape*>( layer ) ) 
 		{
 	    	build_reshape_node( (LReshape*)(LinLayer*)layer, graph );
 	    } 
+	    else if ( LPermute *t = dynamic_cast<LPermute*>( layer ) ) 
+		{
+	    	build_permute_node( (LPermute*)(OperatorLayer*)layer, graph );
+	    } 
+	    else if ( LUpSampling *t = dynamic_cast<LUpSampling*>( layer ) ) 
+		{
+	    	build_upsample_node( (LUpSampling*)(LinLayer*)layer, graph );
+	    }  
 		else if ( LActivation *t = dynamic_cast<LActivation*>( layer ) ) 
 		{
 	    	// Check the type of activation layer
@@ -133,9 +145,53 @@ namespace eddl {
 			{
 	    		build_relu_node( (LActivation*)(LinLayer*)layer, graph );
 	    	} 
+	    	else if ( !((LActivation *)(layer))->act.compare( "sigmoid" ) ) 
+			{
+	    		build_sigmoid_node( (LActivation*)(LinLayer*)layer, graph );
+	    	} 
+	    	else if ( !((LActivation *)(layer))->act.compare( "hard_sigmoid" ) ) 
+			{
+	    		build_hard_sigmoid_node( (LActivation*)(LinLayer*)layer, graph );
+	    	} 
+	    	else if ( !((LActivation *)(layer))->act.compare( "tanh" ) ) 
+			{
+	    		build_tanh_node( (LActivation*)(LinLayer*)layer, graph );
+	    	} 
+	    	else if ( !((LActivation *)(layer))->act.compare( "exp" ) ) 
+			{
+	    		build_exp_node( (LActivation*)(LinLayer*)layer, graph );
+	    	} 
+	    	else if ( !((LActivation *)(layer))->act.compare( "linear" ) ) 
+			{
+	    		build_linear_node( (LActivation*)(LinLayer*)layer, graph );
+	    	} 
+	    	else if ( !((LActivation *)(layer))->act.compare( "leaky_relu" ) ) 
+			{
+	    		build_leaky_relu_node( (LActivation*)(LinLayer*)layer, graph );
+	    	} 
+	    	else if ( !((LActivation *)(layer))->act.compare( "thresholded_relu" ) ) 
+			{
+	    		build_thresholded_relu_node( (LActivation*)(LinLayer*)layer, graph );
+	    	} 
+	    	else if ( !((LActivation *)(layer))->act.compare( "elu" ) ) 
+			{
+	    		build_elu_node( (LActivation*)(LinLayer*)layer, graph );
+	    	} 
+	    	else if ( !((LActivation *)(layer))->act.compare( "selu" ) ) 
+			{
+	    		build_selu_node( (LActivation*)(LinLayer*)layer, graph );
+	    	} 
 			else if ( !((LActivation *)(layer))->act.compare( "softmax" ) ) 
 			{
 	    		build_softmax_node( (LActivation*)(LinLayer*)layer, graph );
+	    	} 
+	    	else if ( !((LActivation *)(layer))->act.compare( "softsign" ) ) 
+			{
+	    		build_softsign_node( (LActivation*)(LinLayer*)layer, graph );
+	    	} 
+	    	else if ( !((LActivation *)(layer))->act.compare( "softplus" ) ) 
+			{
+	    		build_softplus_node( (LActivation*)(LinLayer*)layer, graph );
 	    	} 
 			else 
 			{
@@ -147,6 +203,30 @@ namespace eddl {
 		else if ( LConcat *t = dynamic_cast<LConcat*>( layer ) ) 
 		{
 	    	build_concat_node( (LConcat*)(MLayer*)layer, graph );
+	    } 
+	    else if ( LAdd *t = dynamic_cast<LAdd*>( layer ) ) 
+		{
+	    	build_add_node( (LAdd*)(MLayer*)layer, graph );
+	    } 
+	    else if ( LSubtract *t = dynamic_cast<LSubtract*>( layer ) ) 
+		{
+	    	build_sub_node( (LSubtract*)(MLayer*)layer, graph );
+	    } 
+	    else if ( LAverage *t = dynamic_cast<LAverage*>( layer ) ) 
+		{
+	    	build_average_node( (LAverage*)(MLayer*)layer, graph );
+	    } 
+	    else if ( LMatMul *t = dynamic_cast<LMatMul*>( layer ) ) 
+		{
+	    	build_matmul_node( (LMatMul*)(MLayer*)layer, graph );
+	    } 
+	    else if ( LMaximum *t = dynamic_cast<LMaximum*>( layer ) ) 
+		{
+	    	build_max_node( (LMaximum*)(MLayer*)layer, graph );
+	    } 
+	    else if ( LMinimum *t = dynamic_cast<LMinimum*>( layer ) ) 
+		{
+	    	build_min_node( (LMinimum*)(MLayer*)layer, graph );
 	    } 
 		else if ( LBatchNorm *t = dynamic_cast<LBatchNorm*>( layer ) ) 
 		{
@@ -361,6 +441,41 @@ namespace eddl {
 		max_pool_strides->add_ints( layer->pd->sc );
 	}
 
+	void build_averagepool_node( LAveragePool *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "AveragePool" );
+		node->set_name( layer->name );
+		// Set the inputs of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+
+		// Attr kernel_shape
+		onnx::AttributeProto* max_pool_ks = node->add_attribute();
+		max_pool_ks->set_name( "kernel_shape" );
+		max_pool_ks->set_type( onnx::AttributeProto::INTS );
+		for ( int i : layer->pd->ksize ) {
+			max_pool_ks->add_ints( i );
+		}
+		// Attr pads
+		onnx::AttributeProto* max_pool_pads = node->add_attribute();
+		max_pool_pads->set_name( "pads" );
+		max_pool_pads->set_type( onnx::AttributeProto::INTS );
+		max_pool_pads->add_ints( layer->pd->padrt );
+		max_pool_pads->add_ints( layer->pd->padcl );
+		max_pool_pads->add_ints( layer->pd->padrb );
+		max_pool_pads->add_ints( layer->pd->padcr );
+		// Attr strides
+		onnx::AttributeProto* max_pool_strides = node->add_attribute();
+		max_pool_strides->set_name( "strides" );
+		max_pool_strides->set_type( onnx::AttributeProto::INTS );
+		max_pool_strides->add_ints( layer->pd->sr );
+		max_pool_strides->add_ints( layer->pd->sc );
+	}
+
 	void build_reshape_node( LReshape *layer, onnx::GraphProto *graph ) {
 		// Add an empty node to the graph
 		onnx::NodeProto* node = graph->add_node();
@@ -392,6 +507,27 @@ namespace eddl {
 		}
 	}
 
+	void build_permute_node( LPermute *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Transpose" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+
+		// Attr perm
+		onnx::AttributeProto* alpha_attr = node->add_attribute();
+		alpha_attr->set_name( "perm" );
+		alpha_attr->set_type( onnx::AttributeProto::INTS );
+		for ( int i : layer->sd->dims ) {
+			alpha_attr->add_ints( i );
+		}
+	}
+
 	void build_relu_node( LActivation *layer, onnx::GraphProto *graph ) {
 		// Add an empty node to the graph
 		onnx::NodeProto* node = graph->add_node();
@@ -405,10 +541,189 @@ namespace eddl {
 		node->add_output( layer->name );
 	}
 
+	void build_sigmoid_node( LActivation *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Sigmoid" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+	}
+
+	void build_hard_sigmoid_node( LActivation *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "HardSigmoid" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+	}
+
+	void build_tanh_node( LActivation *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Tanh" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+	}
+
+	void build_exp_node( LActivation *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Exp" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+	}
+
+	void build_linear_node( LActivation *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Linear" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+
+		// Attr alpha
+		onnx::AttributeProto* alpha_attr = node->add_attribute();
+		alpha_attr->set_name( "alpha" );
+		alpha_attr->set_type( onnx::AttributeProto::FLOAT );
+		alpha_attr->set_f( layer->params[0] );
+	}
+
+	void build_leaky_relu_node( LActivation *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "LeakyRelu" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+
+		// Attr alpha
+		onnx::AttributeProto* alpha_attr = node->add_attribute();
+		alpha_attr->set_name( "alpha" );
+		alpha_attr->set_type( onnx::AttributeProto::FLOAT );
+		alpha_attr->set_f( layer->params[0] );
+	}
+
+	void build_thresholded_relu_node( LActivation *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "ThresholdedRelu" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+
+		// Attr alpha
+		onnx::AttributeProto* alpha_attr = node->add_attribute();
+		alpha_attr->set_name( "alpha" );
+		alpha_attr->set_type( onnx::AttributeProto::FLOAT );
+		alpha_attr->set_f( layer->params[0] );
+	}
+
+	void build_elu_node( LActivation *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Elu" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+
+		// Attr alpha
+		onnx::AttributeProto* alpha_attr = node->add_attribute();
+		alpha_attr->set_name( "alpha" );
+		alpha_attr->set_type( onnx::AttributeProto::FLOAT );
+		alpha_attr->set_f( layer->params[0] );
+	}
+
+	void build_selu_node( LActivation *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Selu" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+
+		// Attr alpha
+		onnx::AttributeProto* alpha_attr = node->add_attribute();
+		alpha_attr->set_name( "alpha" );
+		alpha_attr->set_type( onnx::AttributeProto::FLOAT );
+		alpha_attr->set_f( layer->params[0] );
+
+		// Attr gamma
+		onnx::AttributeProto* gamma_attr = node->add_attribute();
+		gamma_attr->set_name( "gamma" );
+		gamma_attr->set_type( onnx::AttributeProto::FLOAT );
+		gamma_attr->set_f( layer->params[1] );
+	}
+
 	void build_softmax_node( LActivation *layer, onnx::GraphProto *graph ) {
 		// Add an empty node to the graph
 		onnx::NodeProto* node = graph->add_node();
 		node->set_op_type( "Softmax" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+	}
+
+	void build_softsign_node( LActivation *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Softsign" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+	}
+
+	void build_softplus_node( LActivation *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Softplus" );
 		node->set_name( layer->name );
 		// Set the inputs names of the node from the parents of the layer
 		for ( Layer* parentl : layer->parent ) {
@@ -435,6 +750,84 @@ namespace eddl {
 		concat_axis->set_name( "axis" );
 		concat_axis->set_type( onnx::AttributeProto::INT );
 		concat_axis->set_i( 1 );
+	}
+
+	void build_add_node( LAdd *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Add" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+	}
+
+	void build_sub_node( LSubtract *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Sub" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+	}
+
+	void build_average_node( LAverage *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Average" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+	}
+
+	void build_matmul_node( LMatMul *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "MatMul" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+	}
+
+	void build_max_node( LMaximum *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Max" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+	}
+
+	void build_min_node( LMinimum *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Min" );
+		node->set_name( layer->name );
+		// Set the inputs names of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
 	}
 
 	void build_batchnorm_node( LBatchNorm *layer, onnx::GraphProto *graph ) {
@@ -517,6 +910,42 @@ namespace eddl {
 		momentum_attr->set_name( "ratio" );
 		momentum_attr->set_type( onnx::AttributeProto::FLOAT );
 		momentum_attr->set_f( layer->df );
+	}
+
+	void build_upsample_node( LUpSampling *layer, onnx::GraphProto *graph ) {
+		// Add an empty node to the graph
+		onnx::NodeProto* node = graph->add_node();
+		node->set_op_type( "Upsample" );
+		node->set_name( layer->name );
+		// Set the inputs of the node from the parents of the layer
+		for ( Layer* parentl : layer->parent ) {
+			node->add_input( parentl->name );
+		}
+		// Set the input with the scale values
+		node->add_input( layer->name + "_scales" );	
+		// Set the name of the output of the node to link with other nodes
+		node->add_output( layer->name );
+
+		// Attr mode
+		onnx::AttributeProto* mode_attr = node->add_attribute();
+		mode_attr->set_name( "mode" );
+		mode_attr->set_type( onnx::AttributeProto::STRING );
+		mode_attr->set_s( layer->interpolation );
+
+		// Scales input
+		onnx::TensorProto* scales = graph->add_initializer();
+		scales->set_name( layer->name + "_scales" );
+		scales->set_data_type( onnx::TensorProto::FLOAT );	
+		scales->add_dims( 2 + layer->size.size() ); // (batch_size, channels, height, width)
+
+		// Add the scale factor for the first two dimensions
+		for( int i = 0; i < 2; ++i ) {
+			scales->add_float_data( 1 );
+		}	
+
+		for( int i = 0; i < layer->size.size(); ++i) {
+			scales->add_float_data( layer->size[i] );
+		}
 	}
 	// End: Node builders
 	//----------------------------------------------------------------------------------------

@@ -6,9 +6,6 @@
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
-//
-// Created by Salva Carrión on 26/09/2019.
-//
 
 #ifndef EDDL_TENSOR_NN_H
 #define EDDL_TENSOR_NN_H
@@ -56,6 +53,10 @@ void HardSigmoid(Tensor *A, Tensor *B);
 void D_HardSigmoid(Tensor *D, Tensor *I, Tensor *PD);
 
 // Softmax
+void Exp(Tensor *A, Tensor *B);
+void D_Exp(Tensor *D, Tensor *I, Tensor *PD);
+
+// Exponential
 void Softmax(Tensor *A, Tensor *B);
 void D_Softmax(Tensor *D, Tensor *I, Tensor *PD);
 

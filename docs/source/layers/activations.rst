@@ -4,7 +4,7 @@ Activations
 Softmax
 --------
 
-Applies a Softmax activation function to the given layer.
+.. doxygenfunction:: eddl::Softmax
 
 Example:
 
@@ -17,7 +17,7 @@ Example:
 Sigmoid
 --------
 
-Applies a Sigmoid activation function to the given layer.
+.. doxygenfunction:: eddl::Sigmoid
 
 Example:
 
@@ -30,7 +30,8 @@ Example:
 ReLu
 --------
 
-Rectified Linear Unit activation function to the given layer.
+.. doxygenfunction:: eddl::ReLu
+
 
 Example:
 
@@ -43,6 +44,7 @@ Example:
 
 Threshold ReLu
 ---------------
+
 
 Applies the Thresholded version of a Rectified Linear Unit activation function to the given layer.
 
@@ -59,6 +61,7 @@ Example:
 Leaky ReLu
 -----------
 
+
 Applies the Leaky version of a Rectified Linear Unit activation function to the given layer.
 
 Example:
@@ -74,7 +77,7 @@ Example:
 ELu
 --------
 
-Applies a Exponential Linear Unit activation function to the given layer.
+Applies the Exponential Linear Unit activation function to the given layer.
 
 Example:
 
@@ -86,7 +89,7 @@ Example:
 SeLu
 --------
 
-Applies the Scaled version of a Exponential Linear Unit activation function to the given layer.
+Applies the Scaled Exponential Linear Unit activation function to the given layer.
 
 Example:
 
@@ -99,7 +102,7 @@ Example:
 Exponential
 ------------
 
-Exponential (base e) activation function.
+Applies the Exponential (base e) activation function to the given layer.
 
 Example:
 
@@ -114,7 +117,7 @@ Example:
 Softplus
 ------------
 
-Softplus activation function.
+Applies the Softplus activation function to the given layer.
 
 Example:
 
@@ -127,10 +130,10 @@ Example:
 
 
 
-Softplus
+Softsign
 ------------
 
-Softsign activation function.
+Applies the Softsign activation function to the given layer.
 
 Example:
 
@@ -146,7 +149,7 @@ Example:
 Linear
 -------
 
-Linear activation function.
+Applies the Linear activation function to the given layer.
 
 Example:
 
@@ -160,7 +163,8 @@ Example:
 Tanh
 ------
 
-Hyperbolic tangent activation function.
+
+.. doxygenfunction:: eddl::Tanh
 
 Example:
 

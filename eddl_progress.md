@@ -18,7 +18,7 @@
 | Flatten | ✔️ | ✔️ | ✔️ | Flattens the input. Does not affect the batch size. (Wrapper for Reshape) |
 | Input | ✔️ | ✔️ | ✔️ | Used to instantiate a EDDL tensor. |
 | Reshape | ✔️ | ✔️ | ✔️ | Reshapes an output to a certain shape. |
-| Permute | ✔️ | ✔️ | ❌️ | Permutes the dimensions of the input according to a given pattern. |
+| Permute | ✔️ | ✔️ | ✔️  | Permutes the dimensions of the input according to a given pattern. |
 | Embedding | ❌️ | ❌️ | ❌️ | Turns positive integers (indexes) into dense vectors of fixed size; (also known as mapping). e.g. `[[4], [20]] -> [[0.25, 0.1], [0.6, -0.2]]` |
 | Transpose | ✔️ | ✔️ | ❌️ | Permute the last two dimensions |
 
@@ -27,27 +27,27 @@
 
 | Functionality | CPU | GPU | ONNX | Comments |
 | ------------- |------| -----|------| ---------|
-| ELU | ✔️ | ✔️ | ❌️ | Exponential linear unit. |
-| Exponential |  ✔️ | ✔️ | ❌️ | Exponential (base e) activation function. |
-| HardSigmoid | ✔️ | ✔️ | ❌️ | Hard sigmoid activation function. |
-| LeakyReLu | ✔️ | ✔️ | ❌️ | Leaky version of a Rectified Linear Unit.  |
-| Linear | ✔️ | ✔️ | ❌️ | Linear (i.e. identity) activation function.  |
+| ELU | ✔️ | ✔️ | ✔️ | Exponential linear unit. |
+| Exponential |  ✔️ | ✔️ | ✔️ | Exponential (base e) activation function. |
+| HardSigmoid | ✔️ | ✔️ | ✔️ | Hard sigmoid activation function. |
+| LeakyReLu | ✔️ | ✔️ | ✔️ | Leaky version of a Rectified Linear Unit.  |
+| Linear | ✔️ | ✔️ | ✔️ | Linear (i.e. identity) activation function.  |
 | PReLU | ❌️ | ❌️ | ❌️ | Parametric Rectified Linear Unit.   |
 | ReLu | ✔️ | ✔️ | ✔️ | Rectified Linear Unit. |
 | Softmax | ✔️ | ✔️ | ✔️ | Softmax activation function. |
-| Selu |  ✔️ | ✔️ | ❌️ | Scaled Exponential Linear Unit (SELU). |
-| Sigmoid | ✔️ | ✔️ | ❌️ | Sigmoid activation function. |
-| Softplus | ✔️ | ✔️ | ❌️ | Softplus activation function. |
-| Softsign | ✔️ | ✔️ | ❌️ | Softsign activation function. |
-| Tanh | ✔️ | ✔️ | ❌️ | Hyperbolic tangent activation function. |
-| ThresholdedReLU | ✔️ | ✔️ | ❌️ | Thresholded Rectified Linear Unit. |
+| Selu |  ✔️ | ✔️ | ✔️ | Scaled Exponential Linear Unit (SELU). |
+| Sigmoid | ✔️ | ✔️ | ✔️ | Sigmoid activation function. |
+| Softplus | ✔️ | ✔️ | ✔️ | Softplus activation function. |
+| Softsign | ✔️ | ✔️ | ✔️ | Softsign activation function. |
+| Tanh | ✔️ | ✔️ | ✔️ | Hyperbolic tangent activation function. |
+| ThresholdedReLU | ✔️ | ✔️ | ✔️ | Thresholded Rectified Linear Unit. |
 
 
 ## Convolutional layers
 
 | Functionality | CPU | GPU | ONNX | Comments |
 | ------------- |------| -----| ------|---------|
-| Conv2D | ✔️ | ✔️ | ✔️ | 2D convolution. |
+| Conv2D | ✔️ | ✔️ | ❌️ | 2D convolution. |
 | Conv2DT | ❌️ | ❌️ | ❌️ | Transposed convolution |
 | UpSampling | ✔️ | ✔️ | ❌️ | Practically the same as `Scale(mode="nearest")`. Instead of performing nearest interpolation, this works by repeating n times the elements of each axis `[2, 1] => [2, 2, 1, 1]`. |
 
@@ -100,14 +100,14 @@ Apply data transformations with random parametrization.
 
 | Functionality | CPU | GPU | ONNX | Comments |
 | ------------- |------| -----| ------|---------|
-| Add | ✔️ | ✔️ | ❌️ | Layer that adds a list of inputs. |
-| Average | ✔️ | ✔️ | ❌️ | Layer that averages a list of inputs. |
+| Add | ✔️ | ✔️ | ✔️  | Layer that adds a list of inputs. |
+| Average | ✔️ | ✔️ | ✔️  | Layer that averages a list of inputs. |
 | Concatenate | ✔️ | ✔️ | ✔️ | Layer that concatenates a list of inputs. |
 | Dot |  ❌️ | ❌️ | ❌️ | Layer that computes a dot product between samples in two tensors.  |
-| Multiply | ✔️ | ✔️ | ❌️ | Layer that multiplies (element-wise) a list of inputs. |
-| Maximum | ✔️ | ✔️ | ❌️ | Layer that computes the maximum (element-wise) a list of inputs. |
-| Minimum | ✔️ | ✔️ | ❌️ | Layer that computes the minimum (element-wise) a list of inputs. |
-| Substract | ✔️ | ✔️ | ❌️ | Layer that subtracts two inputs. |
+| Multiply | ✔️ | ✔️ | ✔️  | Layer that multiplies (element-wise) a list of inputs. |
+| Maximum | ✔️ | ✔️ | ✔️  | Layer that computes the maximum (element-wise) a list of inputs. |
+| Minimum | ✔️ | ✔️ | ✔️  | Layer that computes the minimum (element-wise) a list of inputs. |
+| Substract | ✔️ | ✔️ | ✔️  | Layer that subtracts two inputs. |
 
 
 ## Normalization
@@ -202,8 +202,8 @@ Apply data transformations with random parametrization.
 | Orthogonal | ❌️ | ❌️ | Initializer that generates a random orthogonal matrix.  |
 | RandomNormal |  ✔️ | ✔️ | Initializer that generates tensors with a normal distribution. |
 | RandomUniform |  ✔️ | ✔️ | Initializer that generates tensors with a uniform distribution.  |
-| TruncatedNormal | ✔️ | ✔️  | Initializer that generates a truncated normal distribution.  |
-| VarianceScaling |  ❌️ | ❌️ | Initializer capable of adapting its scale to the shape of weights.  |
+| TruncatedNormal | ❌️ | ❌️  | Initializer that generates a truncated normal distribution.  |
+| VarianceScaling | ❌️  | ❌️ | Initializer capable of adapting its scale to the shape of weights.  |
 
 
 # Constraints

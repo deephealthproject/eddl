@@ -29,7 +29,7 @@ author = 'Pattern Recognition and Human Language Translation Research Center.'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    #'breathe',
+    'breathe',
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.todo',
@@ -38,9 +38,9 @@ extensions = [
     'sphinx.ext.autosummary'
 ]
 
-# breathe_projects = {"eddl" : "../doxygen/build/xml/"}
+breathe_projects = {"eddl" : "../doxygen/build/xml/"}
 #
-# breathe_default_project = "eddl"
+breathe_default_project = "eddl"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

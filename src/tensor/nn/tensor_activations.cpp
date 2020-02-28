@@ -455,6 +455,54 @@ void D_HardSigmoid(Tensor *D, Tensor *I, Tensor *PD) {
     PD->tsem->unlock();
 }
 
+// Exponential
+void Exp(Tensor *A, Tensor *B) {
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::Exp");
+    if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::Exp");
+
+    B->tsem->lock();
+    if (A->isCPU()) {
+        cpu_exp(A, B);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+      {
+      gpu_exp(A,B);
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+    B->tsem->unlock();
+}
+
+// Exponential Derivative
+void D_Exp(Tensor *D, Tensor *I, Tensor *PD) {
+    if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_Exp");
+    if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_Exp");
+
+    PD->tsem->lock();
+    if (D->isCPU()) {
+        cpu_d_exp(D, I, PD);
+    }
+#ifdef cGPU
+    else if (D->isGPU())
+      {
+        gpu_d_exp(D,I,PD);
+
+      }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+    PD->tsem->unlock();
+}
+
 // Tanh
 void Tanh(Tensor *A, Tensor *B) {
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::Tanh");

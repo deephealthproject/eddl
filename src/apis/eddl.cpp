@@ -410,6 +410,11 @@ namespace eddl {
         return new LActivation(parent,"sigmoid", params, name, DEV_CPU, 0);
     }
 
+    layer HardSigmoid(layer parent, string name){
+        vector<float> params = {};
+        return new LActivation(parent,"hard_sigmoid", params, name, DEV_CPU, 0);
+    }
+
     layer ReLu(layer parent, string name){
         vector<float> params = {};
         return new LActivation(parent,"relu", params, name, DEV_CPU, 0);

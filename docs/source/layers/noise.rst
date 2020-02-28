@@ -4,7 +4,7 @@ Noise Layers
 Gaussian Noise
 ---------------
 
-Apply additive zero-centered Gaussian noise.
+.. doxygenfunction:: GaussianNoise
 
 Example:
 

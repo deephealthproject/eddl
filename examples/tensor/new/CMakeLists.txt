@@ -7,3 +7,6 @@ find_package(eddl)
 
 add_executable(main main.cpp)
 target_link_libraries(main eddl)
+
+add_executable(net net.cpp)
+target_link_libraries(net eddl)

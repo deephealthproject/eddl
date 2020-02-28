@@ -1,4 +1,4 @@
-{% set name = "eddl" %}
+{% set name = "eddl-cpu" %}  # If this is a package for GPU, use: "eddl-gpu"
 {% set version = "0.4.2" %}
 {% set sha256 = "5b2182c4391d16540e29f50fe1ae00f977c09bb5e1ecd89fab82c598cc446b8a" %}
 
@@ -19,27 +19,31 @@ requirements:
   build:
     - {{ compiler('cxx') }}
     - cmake
-    - git
+    #- llvm-openmp  # IMPORTANT!!! JUST FOR MAC OS. NOT COMPATIBLE WITH OTHER BUILDS. DISABLE IF NOT NEEDED
   host:
     - graphviz
     - wget
-    - blas
     - eigen
-    - cudatoolkit
     - zlib
     - gtest
     - protobuf
     - libprotobuf
+    - blas  # From here and on, these are extra dependencies that might not be used
+    - cudatoolkit
+    - mkl >=2019  
+    - mkl-include
   run:
     - graphviz
     - wget
-    - blas
     - eigen
-    - cudatoolkit
     - zlib
     - gtest
     - protobuf
     - libprotobuf
+    - blas  # From here and on, these are extra dependencies that might not be used
+    - cudatoolkit
+    - mkl >=2019  
+    - mkl-include
 
 test:
   commands:
@@ -54,7 +58,6 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: 'European Distributed Deep Learning (EDDL) Library'
-  description: 'Open source library deep-learning library'
-  doc_url: https://salvacarrion.github.io/docseddl/
-  dev_url: https://github.com/eddl-stack/eddl
+  summary: 'EDDL is an optimized tensor library for distributed deep learning with hardware transparency support for CPUs, GPUs and FPGAs'
+  doc_url: https://deephealthproject.github.io/eddldocs/
+  dev_url: https://github.com/deephealthproject/eddl

@@ -1,7 +1,3 @@
-//
-// Created by Salva Carrión on 13/12/2019.
-//
-
 #ifndef EDDL_HELPERS_H
 #define EDDL_HELPERS_H
 

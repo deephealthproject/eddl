@@ -252,7 +252,7 @@ set_target_properties(eddl PROPERTIES
 
 # Eigen3
 find_package(Eigen3 3.3 REQUIRED)
-target_link_libraries (eddl PUBLIC Eigen3::Eigen)
+target_link_libraries(eddl PUBLIC Eigen3::Eigen)
 
 # OpenMP
 if(BUILD_OPENMP)

@@ -4,7 +4,7 @@ Normalization
 BatchNormalization
 ------------------
 
-Normalize the activations of the previous layer at each batch, i.e. applies a transformation that maintains the mean activation close to 0 and the activation standard deviation close to 1.
+.. doxygenfunction:: BatchNormalization
 
 Example:
 
@@ -18,7 +18,7 @@ Example:
 LayerNormalization
 ------------------
 
-Applies Layer Normalization over a input.
+.. doxygenfunction:: LayerNormalization
 
 Example:
 
@@ -32,7 +32,7 @@ Example:
 GroupNormalization
 ------------------
 
-Divides the channels into groups and computes within each group the mean and variance for normalization. The computation is independent of batch sizes.
+.. doxygenfunction:: GroupNormalization
 
 Example:
 

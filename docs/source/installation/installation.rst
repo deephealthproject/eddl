@@ -21,27 +21,14 @@ Using the Conda package
 -----------------------
 
 A package for EDDL is available on the conda package manager.
+You can use one of the following lines according to your needs:
 
 .. code::
 
-    conda install -c salvacarrion eddl
+    conda install -c deephealth eddl-cpu            # CPU (without ONNX) | Linux, MacOS
+    conda install -c deephealth eddl-gpu            # GPU (without ONNX) | Linux
+    conda install -c deephealth eddl-gpu-onnx       # GPU (with ONNX)    | Linux
 
-
-.. image:: ../_static/images/logos/debian.svg
-
-
-Using the Debian package
-------------------------
-
-A package for EDDL is available on Debian.
-
-.. code::
-
-    sudo apt-get install eddl
-
-.. note::
-
-    Not yet available
 
 .. image:: ../_static/images/logos/homebrew.svg
 
@@ -50,11 +37,35 @@ Using the Homebrew package
 --------------------------
 
 A package for EDDL is available on the homebrew package manager.
+You need to run both lines, one to add the tap and the other to install the library.
 
 .. code::
 
-    brew tap salvacarrion/homebrew-tap
+    brew tap deephealthproject/homebrew-tap
     brew install eddl
+
+.. note::
+
+    Only ``CPU`` support.
+
+    If you get an error like ``Undefined symbols for architecture x86_64:``, it might be due to a conflict with
+    the default compilers. A simple workaround is to force the use ``CClang`` (for instance) for C and C++,
+    and then install the EDDL again:
+
+    .. code::
+
+        # Set env variables
+        export CC=/usr/local/opt/llvm/bin/clang
+        export CXX=/usr/local/opt/llvm/bin/clang++
+        export LDFLAGS="-L/usr/local/opt/llvm/lib"
+        export CPPFLAGS="-I/usr/local/opt/llvm/include"
+
+        # Add tap
+        brew tap deephealthproject/homebrew-tap
+
+        # Uninstall and install the EDDL
+        brew uninstall eddl
+        brew install eddl
 
 
 .. image:: ../_static/images/logos/cmake.svg
@@ -62,11 +73,22 @@ A package for EDDL is available on the homebrew package manager.
 From source with cmake
 ----------------------
 
-You can also install ``EDDL`` from source with cmake.
+You can also install ``EDDL`` from source with cmake. In order to manage the external dependencies we recommend to
+install Anaconda (see the :doc:`build-options` section for more details about external dependencies).
+
 On Unix platforms, from the source directory:
 
 .. code::
 
+    # Download source code
+    git clone https://github.com/deephealthproject/eddl.git
+    cd eddl/
+
+    # Install dependencies
+    conda env create -f environment.yml
+    conda activate eddl
+
+    # Build and install
     mkdir build
     cd build
     cmake -DCMAKE_INSTALL_PREFIX=path_to_prefix ..
@@ -76,6 +98,15 @@ On Windows platforms, from the source directory:
 
 .. code::
 
+    # Download source code
+    git clone https://github.com/deephealthproject/eddl.git
+    cd eddl/
+
+    # Install dependencies
+    conda env create -f environment.yml
+    conda activate eddl
+
+    # Build and install
     mkdir build
     cd build
     cmake -G "NMake Makefiles" -DCMAKE_INSTALL_PREFIX=path_to_prefix ..
@@ -88,6 +119,10 @@ this folder contains ``include`` and ``lib`` subfolders.
 
 See the :doc:`build-options` section for more details about cmake options.
 
+.. note::
+
+    You can ignore the flag ``-DCMAKE_INSTALL_PREFIX`` if you prefer to use the standard paths
+
 
 Including EDDL in your project
 ---------------------------------
@@ -98,5 +133,4 @@ installation mode you choose, you can add ``EDDL`` to your project using cmake:
 .. code::
 
     find_package(eddl REQUIRED)
-    target_include_directories(your_target PUBLIC ${eddl_INCLUDE_DIRS})
     target_link_libraries(your_target PUBLIC eddl)

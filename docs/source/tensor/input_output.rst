@@ -5,7 +5,7 @@ Input/Output Operations
 
     Section in progress
 
-    Read this: <https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md>
+    Read this: https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md
 
 
 Input
@@ -16,7 +16,12 @@ Input
 loadfs
 ^^^^^^^^^^^
 
-Load tensor from filestream
+Load tensor from filestream.
+
+  Parameters:
+
+  - ``&ifs``: Filestream
+  - ``format``: File format. Accepted formats are: bin, onnx, csv, tsv, txt.
 
 .. code-block:: c++
 
@@ -25,13 +30,17 @@ Load tensor from filestream
 load
 ^^^^^^^^^^^
 
-Load tensor from these filetypes:
+Load tensor from file.
 
-Images: jpg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm
+  Parameters:
 
-Numpy: npy, npz
+  - ``filename``: Name of the file to load the tensor from.
+  - ``format``: Filetype. The accepted filetypes are the following:
 
-Text: csv, tsv, txt,...
+    - Images: jpg, jpeg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm.
+    - Numpy: npy, npz
+    - Text: csv, tsv, txt
+    - Other: bin, onnx
 
 
 .. code-block:: c++
@@ -44,6 +53,12 @@ load_from_txt
 
 Load data from a text file
 
+  Parameters:
+  
+  - ``filename``: Name of the file to load the tensor from.
+  - ``delimiter``: Character used to separate the columns of the file.
+  - ``headerRows``: Number of top rows to avoid, generally because they correspond to the header.
+
 .. code-block:: c++
 
     static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
@@ -54,12 +69,61 @@ Output
 -----------------------
 
 
-Example:
+savefs
+^^^^^^^^
+
+Save tensor to a filestream.
+
+  Parameters:
+
+  - ``&ofs``: Filestream.
+  - ``format``: Format to use. The accepted formats are the following:
+
+    - Text: csv, tsv, txt
+    - Other: bin, onnx
 
 .. code-block:: c++
-   :linenos:
 
     void savefs(std::ofstream &ofs, string format="");
+
+.. note::
+    ONNX not yet implemented
+
+save
+^^^^^^^^
+
+Save tensor to a file.
+
+  Parameters:
+
+  - ``filename``: Name of the file to save the tensor to.
+  - ``format``: Filetype. The accepted filetypes are the following:
+
+    - Images: png, bmp, tga, jpg, jpeg, hdr.
+    - Numpy: npy, npz
+    - Text: csv, tsv, txt
+    - Other: bin, onnx
+
+.. code-block:: c++
+
     void save(const string& filename, string format="");
+
+.. note::
+    ONNX not yet implemented
+
+
+save2txt
+^^^^^^^^
+
+Save tensor to a text file.
+
+  Parameters:
+  
+  - ``filename``: Name of the file to save the tensor to.
+  - ``delimiter``: Character to use to separate the columns of the file.
+  - ``header``: Header rows.
+
+.. code-block:: c++
+
     void save2txt(const string& filename, const char delimiter=',', const vector<string> &header={});
 

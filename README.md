@@ -4,188 +4,28 @@
 
 -----------------
 ![C/C++ CI](https://github.com/deephealthproject/eddl/workflows/C/C++%20CI/badge.svg)
-[![Documentation Status](https://readthedocs.org/projects/ansicolortags/badge/?version=latest)](https://salvacarrion.github.io/docseddl/)
+[![Documentation Status](https://readthedocs.org/projects/ansicolortags/badge/?version=latest)](https://deephealthproject.github.io/eddldocs/)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/deephealthproject/eddl)
 ![GitHub](https://img.shields.io/github/license/deephealthproject/eddl)
 
 
-**EDDL** is an open source library for Distributed Deep Learning and Tensor Operations in C++. EDDL is developed inside the DeepHealth project.
+**EDDL** is an open source library for Distributed Deep Learning and Tensor Operations in C++ for **CPU**, **GPU** and **FPGA**. EDDL is developed inside the DeepHealth project. For more information about DeepHealth project go to: [deephealth-project.eu](https://deephealth-project.eu/)
 
-For more information about DeepHealth project go to: [deephealth-project.eu](https://deephealth-project.eu/)
+## Notice
 
-**Documentation:** [here](https://salvacarrion.github.io/docseddl/)
+Please note that EDDL is an ambitious project with few hands on it. Our short-term goal is to have an **stable** version with an easy installation over different platforms. Our second mid-term goal is to provide a good **coverage** of functionalities. And finally, our long-term goal is to improve the **performance** on the different devices.
 
-**Progress:**
+ *"Plans are only good intentions unless they immediately degenerate into hard work"*
+
+## Installation [here](https://deephealthproject.github.io/eddldocs/installation/installation.html)
+
+## Getting started [here](https://deephealthproject.github.io/eddldocs/usage/getting_started.html)
+
+## Documentation [here](https://deephealthproject.github.io/eddldocs/)
+
+## Progress and coverage
 - [Deep-learning features](https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md)
 - [Tensor features](https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md)
-
-
-
-## Installation
-
-### Using the Conda package
-
-A package for EDDL is available on the conda package manager.
-
-```
-conda install -c salvacarrion eddl
-```
-
-### Using the Homebrew package
-
-A package for EDDL is available on the homebrew package manager.
-
-```
-brew tap salvacarrion/homebrew-tap
-brew install eddl
-```
-
-### From source with cmake
-
-You can also install EDDL from source with cmake. You will need a C++11 compiler and we highly recommend installing an [Anaconda environment](https://docs.conda.io/en/latest/miniconda.html) or also you can use a docker image (see below).
-
-If you want to compile with CUDA support, install:
-
-- NVIDIA CUDA 9 or above
-
-
-#### Conda environment
-
-
-You will need an [anaconda package manager](https://docs.conda.io/en/latest/miniconda.html)
-
-```bash
-git clone https://github.com/deephealthproject/eddl.git
-cd eddl
-conda env create -f environment.yml
-conda activate eddl
-mkdir build
-cd build
-cmake .. -DBUILD_TARGET=CPU  # {CPU, GPU, FPGA}
-make -j 4  # num_cores
-sudo make install
-```
-
-### Using Docker
-
-
-You will need a [docker engine](https://docs.docker.com/install/)
-
-To build the image, run the following command from the `eddl/` folder:
-
-```
-git clone https://github.com/deephealthproject/eddl.git
-cd eddl
-docker build -t eddl .
-```
-
-Then, you can execute it using:
-
-```
-docker run -it eddl /bin/bash
-```
-
-Or mount it, if you want to **edit the code** in the host machine:
-
-```
-docker run -it -v $(pwd):/eddl/ eddl /bin/bash
-```
-
-Finally you can compile the code:
-
-```bash
-mkdir build
-cd build
-cmake .. -DBUILD_TARGET=CPU  # {CPU, GPU, FPGA}
-make -j 4  # num_cores
-sudo make install
-```
-
-
-### Step by step installation
-
-If something fails follow the instructions [here](Installation.md)
-
-
-
-## Getting started with EDDL
-
-You can find more examples in  `examples/`.
-
-```C++
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-
-#include "apis/eddl.h"
-#include "apis/eddlT.h"
-
-using namespace eddl;
-
-int main(int argc, char **argv) {
-
-    // Download mnist
-    download_mnist();
-
-    // Settings
-    int epochs = 25;
-    int batch_size = 128;
-    int num_classes = 10;
-
-    // Define network
-    layer in = Input({784});
-    layer l = in;  
-
-    // Convert to 3D for Data Augmentation
-    l=Reshape(l,{1,28,28});
-
-    // Data augmentation
-    l = RandomCropScale(l, {0.9f, 1.0f});
-
-    // Come back to 1D tensor for fully connected:
-    l=Reshape(l,{-1});
-    l = ReLu(GaussianNoise(BatchNormalization(Dense(l, 1024)),0.3));
-    l = ReLu(GaussianNoise(BatchNormalization(Dense(l, 1024)),0.3));
-    l = ReLu(GaussianNoise(BatchNormalization(Dense(l, 1024)),0.3));
-
-    layer out = Activation(Dense(l, num_classes), "softmax");
-    model net = Model({in}, {out});
-
-    // dot from graphviz should be installed:
-    plot(net, "model.pdf");
-
-    // Build model
-    build(net,
-          sgd(0.01, 0.9), // Optimizer
-          {"soft_cross_entropy"}, // Losses
-          {"categorical_accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
-          //CS_CPU(-1) // CPU with maximum threads availables
-    );
-
-    // View model
-    summary(net);
-
-    setlogfile(net,"mnist_bn_da");
-
-    // Load dataset
-    tensor x_train = eddlT::load("trX.bin");
-    tensor y_train = eddlT::load("trY.bin");
-    tensor x_test = eddlT::load("tsX.bin");
-    tensor y_test = eddlT::load("tsY.bin");
-
-    // Preprocessing
-    eddlT::div_(x_train, 255.0);
-    eddlT::div_(x_test, 255.0);
-
-
-    // Train model
-    fit(net, {x_train}, {y_train}, batch_size, epochs);
-    // Evaluate
-    printf("Evaluate:\n");
-    evaluate(net, {x_test}, {y_test});
-}
-```
 
 ## Python wrapper
 

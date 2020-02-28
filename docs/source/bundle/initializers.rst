@@ -1,10 +1,16 @@
 Initializers
 ============
 
+.. note::
+
+    Section in progress
+
+    Read this: https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#initializers
+
 GlorotNormal
 ------------
 
-Glorot normal initializer, also called Xavier normal initializer.
+.. doxygenfunction:: GlorotNormal
 
 Example:
 
@@ -17,8 +23,8 @@ Example:
 GlorotUniform
 -------------
 
-Glorot uniform initializer, also called Xavier uniform initializer.
-
+.. doxygenfunction:: GlorotUniform
+s
 Example:
 
 .. code-block:: c++
@@ -30,7 +36,7 @@ Example:
 RandomNormal
 -------------
 
-Random normal initializer.
+.. doxygenfunction:: RandomNormal
 
 Example:
 
@@ -43,7 +49,7 @@ Example:
 RandomUniform
 -------------
 
-Random uniform initializer.
+.. doxygenfunction:: RandomUniform
 
 Example:
 
@@ -56,7 +62,8 @@ Example:
 Constant
 -------------
 
-Initializer that generates tensors initialized to a constant value.
+.. doxygenfunction:: Constant
+
 Example:
 
 .. code-block:: c++
