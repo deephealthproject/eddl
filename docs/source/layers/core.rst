@@ -4,7 +4,7 @@ Core
 Dense
 --------
 
-Regular densely-connected NN layer.
+.. doxygenfunction:: Dense
 
 Example:
 
@@ -16,7 +16,7 @@ Example:
 Embedding
 -----------
 
-Turns positive integers (indexes) into dense vectors of fixed size. 
+.. doxygenfunction:: Embedding
 
 Example:
 
@@ -29,7 +29,7 @@ Example:
 Reshape
 --------
 
-Reshapes an output to a certain shape.
+.. doxygenfunction:: Reshape
 
 Example:
 
@@ -42,7 +42,7 @@ Example:
 Transpose
 ----------
 
-Transposes a layer.
+.. doxygenfunction:: Transpose
 
 Example:
 
@@ -55,7 +55,7 @@ Example:
 Input
 --------
 
-Used to initialize an input to a model.
+.. doxygenfunction:: Input
 
 Example:
 
@@ -69,7 +69,7 @@ Example:
 Dropout
 --------
 
-Used to initialize an input to a model.
+.. doxygenfunction:: Dropout
 
 Example:
 
