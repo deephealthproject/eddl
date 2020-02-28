@@ -6,9 +6,6 @@
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
-//
-// Created by Salva Carrión on 20/09/2019.
-//
 
 #ifndef EDDL_RANDOM_H
 #define EDDL_RANDOM_H

@@ -7,7 +7,7 @@
 Welcome to EDDL's documentation!
 ================================
 
-EDDL is an open source library for numerical computation tailored to the healthcare domain.
+EDDL is an optimized tensor library for distributed deep learning with hardware transparency support for CPUs, GPUs and FPGAs
 The code is open source, and `available on github`_.
 
 
