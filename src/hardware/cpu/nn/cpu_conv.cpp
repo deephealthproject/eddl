@@ -91,6 +91,7 @@ void cpu_conv2D(ConvolDescriptor *D)
 
     // Map memory to Eigen
     new(&D->matK) Eigen::Map<Eigen::MatrixXf>(D->K->ptr, D->kr * D->kc * D->kz, D->nk);
+    new(&D->matI) Eigen::Map<Eigen::MatrixXf>(D->ptrI, D->r*D->c,D->kz*D->kr*D->kc);
 
 #pragma omp parallel for
     for(int b=0;b<D->I->shape[0];b++){
