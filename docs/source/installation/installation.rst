@@ -21,12 +21,13 @@ Using the Conda package
 -----------------------
 
 A package for EDDL is available on the conda package manager.
+You can use one of the following lines according to your needs:
 
 .. code::
 
-    conda install -c salvacarrion eddl             # CPU (without ONNX)
-    conda install -c salvacarrion eddl-gpu         # GPU (without ONNX)
-    conda install -c salvacarrion eddl-gpu-onnx    # GPU (with ONNX)
+    conda install -c deephealth eddl-cpu            # CPU (without ONNX) | Linux, MacOS
+    conda install -c deephealth eddl-gpu            # GPU (without ONNX) | Linux
+    conda install -c deephealth eddl-gpu-onnx       # GPU (with ONNX)    | Linux
 
 
 .. image:: ../_static/images/logos/homebrew.svg
@@ -36,10 +37,11 @@ Using the Homebrew package
 --------------------------
 
 A package for EDDL is available on the homebrew package manager.
+You need to run both lines, one to add the tap and the other to install the library.
 
 .. code::
 
-    brew tap salvacarrion/homebrew-tap
+    brew tap deephealthproject/homebrew-tap
     brew install eddl
 
 .. note::
@@ -59,7 +61,7 @@ A package for EDDL is available on the homebrew package manager.
         export CPPFLAGS="-I/usr/local/opt/llvm/include"
 
         # Add tap
-        brew tap salvacarrion/homebrew-tap
+        brew tap deephealthproject/homebrew-tap
 
         # Uninstall and install the EDDL
         brew uninstall eddl
