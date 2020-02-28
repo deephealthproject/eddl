@@ -408,7 +408,7 @@ int main(int argc, char **argv) {
 
     print_cpu_gpu_correctness("select_back", res_small_cpu.tensor, res_small_gpu.tensor);
 
-    string fname = "/Users/salvacarrion/Desktop/elephant.jpg";
+    string fname = "~/Desktop/elephant.jpg";
     t_input = Tensor::load(fname);
     t_output = t_input->select({"0"});
 

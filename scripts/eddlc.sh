@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-CPPFLAGS="-g -O3 -fopenmp -I/Users/salvacarrion/Documents/Programming/C++/eddl/src"
+CPPFLAGS="-g -O3 -fopenmp -I ./eddl/src"
 LDFLAGS="-g"
 LDLIBS="-fopenmp -lpthread /usr/local/lib/libeddl.a -lz "
 g++ $CPPFLAGS -c $1

@@ -1,7 +1,3 @@
-//
-// Created by Salva Carrión on 11/10/2019.
-//
-
 #include <ctime>
 #include <iostream>
 #include <stdio.h>
