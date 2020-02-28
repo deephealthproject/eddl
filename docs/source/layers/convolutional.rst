@@ -4,12 +4,11 @@ Convolutions
 Conv2D
 --------
 
-2D Convolution layer.
+.. doxygenfunction:: eddl::Conv
 
 Example:
 
 .. code-block:: c++
-   :linenos:
 
    layer Conv(layer parent, int filters, const vector<int> &kernel_size,
                const vector<int> &strides = {1, 1}, string padding = "same", int groups = 1,
@@ -20,7 +19,7 @@ Example:
 2D Upsampling 
 --------------
 
-Upsampling layer. Identical to the ``scale`` transformation, the only difference is that ``upsampling`` repeats its rows/columns *n* times, while scaling uses a proportion.
+.. doxygenfunction:: eddl::UpSampling
 
 .. note::
 
@@ -38,7 +37,13 @@ Example:
 Convolutional Transpose
 ------------------------
 
-Transposed convolution layer.
+.. doxygenfunction:: eddl::UpSampling
+
+.. note::
+
+    **Not implemented yet**
+
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#convolutional-layers
 
 Example:
 

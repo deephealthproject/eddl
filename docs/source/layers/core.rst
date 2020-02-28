@@ -25,6 +25,12 @@ Example:
 
     layer Embedding(int input_dim, int output_dim, string name = "");
 
+.. note::
+
+    Not implemented yet
+
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers
+
 
 Reshape
 --------

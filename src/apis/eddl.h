@@ -427,6 +427,7 @@ typedef NetLoss * metric;
       *  @see   https://en.wikipedia.org/wiki/Softmax_function
       *
       *  @param parent  Parent layer
+      *  @param name  Name of the layer
       *  @return     Output of Softmax transformation
     */
     layer Softmax(layer parent, string name="");
@@ -437,6 +438,7 @@ typedef NetLoss * metric;
       *  @see   https://en.wikipedia.org/wiki/Sigmoid_function
       *
       *  @param parent  Parent layer
+      *  @param name  Name of the layer
       *  @return     Output of Sigmoid activation
     */
     layer Sigmoid(layer parent, string name="");
@@ -445,6 +447,7 @@ typedef NetLoss * metric;
       *  @brief Applies a HardSigmoid activation function to the given layer.
       *
       *  @param parent  Parent layer
+      *  @param name  Name of the layer
       *  @return     Output of HardSigmoid activation
     */
     layer HardSigmoid(layer parent, string name="");
@@ -455,6 +458,7 @@ typedef NetLoss * metric;
       *  @see   https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
       *
       *  @param parent  Parent layer
+      *  @param name  Name of the layer
       *  @return     Output of ReLu activation
     */
     layer ReLu(layer parent, string name="");
@@ -464,6 +468,7 @@ typedef NetLoss * metric;
       *
       *  @param parent  Parent layer
       *  @param alpha  Threshold value
+      *  @param name  Name of the layer
       *  @return     Output of Thresholded ReLu activation
     */
     layer ThresholdedReLu(layer parent, float alpha=1.0, string name="");
@@ -475,6 +480,7 @@ typedef NetLoss * metric;
       *
       *  @param parent  Parent layer
       *  @param alpha  Negative slope coefficient
+      *  @param name  Name of the layer
       *  @return     Output of Leaky ReLu activation
     */
     layer LeakyReLu(layer parent, float alpha=0.01, string name="");
@@ -483,7 +489,8 @@ typedef NetLoss * metric;
       *  @brief Applies the Exponential Linear Unit activation function to the given layer.
       *
       *  @param parent  Parent layer
-	  *  @param alpha ELu coefficient
+	    *  @param alpha ELu coefficient
+      *  @param name  Name of the layer
       *  @return     Output of ELu activation
     */
     layer Elu(layer parent, float alpha=1.0, string name="");
@@ -492,6 +499,7 @@ typedef NetLoss * metric;
       *  @brief Applies the Scaled Exponential Linear Unit activation function to the given layer.
       *
       *  @param parent  Parent layer
+      *  @param name  Name of the layer
       *  @return     Output of Selu activation
     */
     layer Selu(layer parent, string name="");
@@ -500,6 +508,7 @@ typedef NetLoss * metric;
     *  @brief Applies the Exponential (base e) activation function to the given layer.
     *
     *  @param parent  Parent layer
+    *  @param name  Name of the layer
     *  @return     Output of Exponential activation
     */
     layer Exponential(layer parent, string name="");
@@ -508,6 +517,7 @@ typedef NetLoss * metric;
     *  @brief Applies the Softplus activation function to the given layer.
     *
     *  @param parent  Parent layer
+    *  @param name  Name of the layer
     *  @return     Output of Exponential activation
     */
     layer Softplus(layer parent, string name="");
@@ -517,6 +527,7 @@ typedef NetLoss * metric;
     *  @brief Applies the Softsign activation function to the given layer.
     *
     *  @param parent  Parent layer
+    *  @param name  Name of the layer
     *  @return     Output of Exponential activation
     */
     layer Softsign(layer parent, string name="");
@@ -525,7 +536,8 @@ typedef NetLoss * metric;
       *  @brief Applies the Linear activation function to the given layer.
       *
       *  @param parent  Parent layer
-	  *  @param alpha Linear coefficient
+	    *  @param alpha Linear coefficient
+      *  @param name  Name of the layer
       *  @return     Output of Linear activation
     */
     layer Linear(layer parent, float alpha=1.0, string name="");
@@ -536,12 +548,13 @@ typedef NetLoss * metric;
       *  @see   https://en.wikipedia.org/wiki/Hyperbolic_function
       *
       *  @param parent  Parent layer
+      *  @param name  Name of the layer
       *  @return     Output of hyperbolic activation
     */
     layer Tanh(layer parent, string name="");
 
     /**
-      *  @brief Convolution layer.
+      *  @brief 2D Convolution layer.
       *
       *  @param parent  Parent layer
       *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
@@ -593,10 +606,10 @@ typedef NetLoss * metric;
     layer Input(const vector<int> &shape, string name = "");
 
     /**
-      *  @brief Upsampling layer.
+      *  @brief Upsampling layer. 
       *
       *  @details
-      *   Repeats the rows and columns of the data.
+      *   Identical to the ``scale`` transformation, the only difference is that ``upsampling`` repeats its rows/columns *n* times, while scaling uses a proportion.
       *
       *  @param parent  Parent layer
       *  @param size  Vector of 2 integers. The upsampling factors for rows and columns
@@ -625,6 +638,24 @@ typedef NetLoss * metric;
     */
     layer Flatten(layer parent, string name = "");
 
+
+    /**
+      *  @brief Transposed convolution layer (sometimes called Deconvolution). 
+      *
+      *  @details
+      *   The need for transposed convolutions generally arises from the desire to use a transformation going in the opposite direction of a normal convolution, i.e., from something that has the shape of the output of some convolution to something that has the shape of its input while maintaining a connectivity pattern that is compatible with said convolution.
+      *
+      *  @param parent  Parent layer
+      *  @param filters  the dimensionality of the output space (i.e. the number of output filters in the convolution).
+      *  @param kernel_size  the height and width of the 2D convolution window.
+      *  @param output_padding  the amount of padding along the height and width of the output tensor. The amount of output padding along a given dimension must be lower than the stride along that same dimension
+      *  @param padding  one of "valid" or "same"
+      *  @param dilation_rate  the dilation rate to use for dilated convolution. Spacing between kernel elements.
+      *  @param strides  the strides of the convolution along the height and width.
+      *  @param use_bias  Boolean, whether the layer uses a bias vector.
+      *  @param name  A name for the operation.
+      *  @return     Output layer after upsampling operation
+    */
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding = "same",
                 const vector<int> &dilation_rate = {1, 1},
@@ -644,7 +675,6 @@ typedef NetLoss * metric;
       *  @brief Transposes a Layer.
       *
       *  @param parent  Parent layer
-      *  @param dims  Vector of integers with the transpose dimensions
       *  @param name  A name for the operation
       *  @return     Output of transpose operation
     */
@@ -732,7 +762,16 @@ typedef NetLoss * metric;
       *  @return     Output of flip transformation
     */
     layer Flip(layer parent, int axis=0, string name="");
+
+    /**
+      *  @brief Convert image to grayscale..
+      *
+      *  @param parent  Parent layer
+      *  @param name  A name for the operation
+      *  @return     Output of grayscale transformation
+    */
     layer Grayscale(layer parent,  string name="");  // TODO: Implement
+
     /**
       *  @brief Horizontally flip the given image.
       *
@@ -741,6 +780,16 @@ typedef NetLoss * metric;
       *  @return     Output of horizontal flip transformation
     */
     layer HorizontalFlip(layer parent, string name="");
+
+    /**
+      *  @brief Pad the given image on all sides with the given “pad” value..
+      *
+      *  @param parent  Parent layer
+      *  @param padding  Padding on each border.
+      *  @param constant  pads with a constant value
+      *  @param name  A name for the operation
+      *  @return     Padded image
+    */
     layer Pad(layer parent, vector<int> padding, float constant=0.0f, string name=""); // TODO: Implement
 
     /**
@@ -939,13 +988,50 @@ typedef NetLoss * metric;
       *   It takes as input a list of layers and returns a single tensor, the concatenation of all inputs.
       *
       *  @param layers  List of layers
+      *  @param axis  Axis along which to concatenate.
       *  @param name  A name for the operation
       *  @return     Output of concatenation operation with all input layers
     */
     layer Concat(const vector<layer> &layers, unsigned int axis=1, string name = "");
+
     layer MatMul(const vector<layer> &layers, string name = "");
+
+    /**
+      *  @brief Layer that computes the maximum (element-wise) a list of inputs.
+      *
+      *  @details
+      *   It takes as input a list of tensors, all of the same shape, and returns a single tensor (also of the same shape).
+      *
+      *  @param layers  List of layers
+      *  @param name  A name for the operation
+      *  @return     Output of Maximum operation with all input layers
+    */
     layer Maximum(const vector<layer> &layers, string name = "");
+
+
+    /**
+      *  @brief Layer that computes the minimum (element-wise) a list of inputs.
+      *
+      *  @details
+      *   It takes as input a list of tensors, all of the same shape, and returns a single tensor (also of the same shape).
+      *
+      *  @param layers  List of layers
+      *  @param name  A name for the operation
+      *  @return     Output of Minimum operation with all input layers
+    */
     layer Minimum(const vector<layer> &layers, string name = "");
+
+
+    /**
+      *  @brief Layer that subtracts two inputs.
+      *
+      *  @details
+      *   It takes as input a list of tensors of size 2, both of the same shape, and returns a single tensor, (inputs[0] - inputs[1]), also of the same shape.
+      *
+      *  @param layers  List of layers
+      *  @param name  A name for the operation
+      *  @return     Output of Substract operation with all input layers
+    */
     layer Subtract(const vector<layer> &layers, string name = "");
 
 

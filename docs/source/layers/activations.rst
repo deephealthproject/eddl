@@ -9,7 +9,7 @@ Softmax
 Example:
 
 .. code-block:: c++
-   :linenos:
+   
 
    layer Softmax(layer parent, string name="");
 
@@ -22,7 +22,7 @@ Sigmoid
 Example:
 
 .. code-block:: c++
-   :linenos:
+   
 
    layer Sigmoid(layer parent, string name="");
 
@@ -36,7 +36,7 @@ ReLu
 Example:
 
 .. code-block:: c++
-   :linenos:
+   
 
    layer ReLu(layer parent, string name="");
 
@@ -46,12 +46,12 @@ Threshold ReLu
 ---------------
 
 
-Applies the Thresholded version of a Rectified Linear Unit activation function to the given layer.
+.. doxygenfunction:: eddl::ThresholdedReLu
 
 Example:
 
 .. code-block:: c++
-   :linenos:
+   
 
     layer ThresholdedReLu(layer parent, float alpha=1.0, string name="");
 
@@ -62,12 +62,12 @@ Leaky ReLu
 -----------
 
 
-Applies the Leaky version of a Rectified Linear Unit activation function to the given layer.
+.. doxygenfunction:: eddl::LeakyReLu
 
 Example:
 
 .. code-block:: c++
-   :linenos:
+   
 
     layer LeakyReLu(layer parent, float alpha=0.01, string name="");
 
@@ -77,24 +77,24 @@ Example:
 ELu
 --------
 
-Applies the Exponential Linear Unit activation function to the given layer.
+.. doxygenfunction:: eddl::Elu
 
 Example:
 
 .. code-block:: c++
-   :linenos:
+   
 
     layer Elu(layer parent, float alpha=1.0, string name="");
 
 SeLu
 --------
 
-Applies the Scaled Exponential Linear Unit activation function to the given layer.
+.. doxygenfunction:: eddl::Selu
 
 Example:
 
 .. code-block:: c++
-   :linenos:
+   
 
     layer Selu(layer parent, string name="");
 
@@ -102,12 +102,12 @@ Example:
 Exponential
 ------------
 
-Applies the Exponential (base e) activation function to the given layer.
+.. doxygenfunction:: eddl::Exponential
 
 Example:
 
 .. code-block:: c++
-   :linenos:
+   
 
     layer Exponential(layer parent, string name="");
 
@@ -117,12 +117,12 @@ Example:
 Softplus
 ------------
 
-Applies the Softplus activation function to the given layer.
+.. doxygenfunction:: eddl::Softplus
 
 Example:
 
 .. code-block:: c++
-   :linenos:
+   
 
     layer Softplus(layer parent, string name="");
 
@@ -133,12 +133,12 @@ Example:
 Softsign
 ------------
 
-Applies the Softsign activation function to the given layer.
+.. doxygenfunction:: eddl::Softsign
 
 Example:
 
 .. code-block:: c++
-   :linenos:
+   
 
     layer Softsign(layer parent, string name="");
 
@@ -149,12 +149,12 @@ Example:
 Linear
 -------
 
-Applies the Linear activation function to the given layer.
+.. doxygenfunction:: eddl::Linear
 
 Example:
 
 .. code-block:: c++
-   :linenos:
+   
 
     layer Linear(layer parent, float alpha=1.0, string name="");
 
@@ -169,6 +169,6 @@ Tanh
 Example:
 
 .. code-block:: c++
-   :linenos:
+   
 
     layer Tanh(layer parent, string name="");

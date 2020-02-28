@@ -13,10 +13,29 @@ Deterministic transformations.
     - ``original`` (for rotation): The input is extended by filling all values beyond the edge with the original values
 
 
+Affine
+-------
+
+.. doxygenfunction:: Affine
+
+.. note::
+
+    **Not implemented yet**
+
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations
+
+Example:
+
+.. code-block:: c++
+   :linenos:
+
+    layer Affine(layer parent, float angle=0, float translate=0, float scale=0, float shear=0, string name="");
+
+
 Crop
 ----
 
-Crops the given image at `[(top, left), (bottom, right)]`.
+.. doxygenfunction:: Crop
 
 Example:
 
@@ -29,7 +48,7 @@ Example:
 CenteredCrop
 ---------------
 
-Crops the given image at the center with size (width, height).
+.. doxygenfunction:: CenteredCrop
 
 Example:
 
@@ -42,11 +61,13 @@ Example:
 ColorJitter
 ---------------
 
-Randomly change the brightness, contrast and saturation of an image.
+.. doxygenfunction:: ColorJitter
 
 .. note::
 
-    Not yet implemented
+    **Not implemented yet**
+
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations
 
 Example:
 
@@ -59,7 +80,7 @@ Example:
 CropScale
 ---------------
 
-Crop the given image at `[(top, left), (bottom, right)]` and scale it to the parent size.
+.. doxygenfunction:: CropScale
 
 Example:
 
@@ -72,7 +93,7 @@ Example:
 Cutout
 -------
 
-Selects a rectangle region in an image at `[(top, left), (bottom, right)]` and erases its pixels using a constant value.
+.. doxygenfunction:: Cutout
 
 Example:
 
@@ -86,7 +107,7 @@ Example:
 Flip
 -------
 
-Flip the given image at `axis=n`.
+.. doxygenfunction:: Flip
 
 Example:
 
@@ -98,14 +119,16 @@ Example:
 Grayscale
 ---------
 
-Converts the image to gray scale
+.. doxygenfunction:: Grayscale
 
 Example:
 
 .. note::
 
-    Not yet implemented
+    **Not implemented yet**
 
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations
+    
 .. code-block:: c++
    :linenos:
 
@@ -115,7 +138,7 @@ Example:
 HorizontalFlip
 ---------------------
 
-Horizontally flip the given image.
+.. doxygenfunction:: HorizontalFlip
 
 Example:
 
@@ -128,11 +151,13 @@ Example:
 Pad
 --------------
 
-Pads the image
+.. doxygenfunction:: Pad
 
 .. note::
 
-    Not yet implemented
+    **Not implemented yet**
+
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations
 
 Example:
 
@@ -146,7 +171,7 @@ Example:
 Rotate
 -------
 
-Rotate the image by angle (degrees)
+.. doxygenfunction:: Rotate
 
 Example:
 
@@ -160,7 +185,7 @@ Example:
 Scale
 -------
 
-Resize the input image to the given size. `[height, width]`.
+.. doxygenfunction:: Scale
 
 Example:
 
@@ -173,7 +198,7 @@ Example:
 Shift
 -----------
 
-Shift the input image `[a, b]`.
+.. doxygenfunction:: Shift
 
 Example:
 
@@ -186,7 +211,7 @@ Example:
 VerticalFlip
 ---------------------
 
-Vertically flip the given image.
+.. doxygenfunction:: VerticalFlip
 
 Example:
 
@@ -199,11 +224,13 @@ Example:
 Normalize
 ---------
 
-Normalize an image with mean and standard deviation.
+.. doxygenfunction:: Normalize
 
 .. note::
 
-    Not yet implemented
+    **Not implemented yet**
+
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations
 
 Example:
 
