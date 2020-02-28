@@ -629,6 +629,15 @@ typedef NetLoss * metric;
                 const vector<int> &output_padding, string padding = "same",
                 const vector<int> &dilation_rate = {1, 1},
                 const vector<int> &strides = {1, 1}, bool use_bias = true, string name = ""); //Todo: Implement
+
+    /**
+      *  @brief Turns positive integers (indexes) into dense vectors of fixed size. eg. [[4], [20]] -> [[0.25, 0.1], [0.6, -0.2]]
+      *
+      *  @param input_dim  Size of the vocabulary, i.e. maximum integer index + 1
+      *  @param output_dim  Dimension of the dense embedding
+      *  @param name  A name for the operation
+      *  @return The embedded input
+    */
     layer Embedding(int input_dim, int output_dim, string name = ""); //Todo: Implement
 
     /**
