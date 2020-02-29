@@ -55,7 +55,7 @@ typedef NetLoss * metric;
 
     // Creation
     /**
-      *  @brief Model instance.
+      *  @brief Instantiates model, taking two vectors, one of input layers and another of output layers.
       *
       *  @param in  Vector with model input layers, typically Input({...})
       *  @param out  Vector with the ouputs of the model. Example: {Sigmoid(MyModel())}
@@ -110,6 +110,14 @@ typedef NetLoss * metric;
 
 
     // Info and logs
+
+    /**
+      *  @brief  Save the training outputs of a model to a filename
+      *
+      *  @param m  Model to train
+      *  @param fname  Name of the logfile 
+      *  @return     (void) Outputs log to the given file.
+    */
     void setlogfile(model net,string fname);
     /**
       *  @brief  Prints a summary representation of your model.
@@ -1103,27 +1111,54 @@ typedef NetLoss * metric;
       *  @return     Parent layer after the normalization
     */
     layer GroupNormalization(layer parent, int groups, float momentum = 0.9f, float epsilon = 0.001f, bool affine = true,string name = "");
+
+
     layer Norm(layer parent, float epsilon = 0.001f, string name = "");
     layer NormMax(layer parent, float epsilon = 0.001f, string name = "");
     layer NormMinMax(layer parent, float epsilon = 0.001f, string name = "");
 
 
     //  Operator Layers
+
+    /**
+      *  @brief Computes the element-wise absolute value of the given input tensor.
+      *
+      *  @param l  Parent layer
+      *  @return     Parent layer l after computing the element-wise absol
+    */
     layer Abs(layer l);
+
+    /**
+      *  @brief Layer that computes the difference of two layers.
+      *
+      *  @param l1  A layer
+      *  @param l2  A layer
+      *  @return     Difference between l1 and l2
+    */
     layer Diff(layer l1, layer l2);
     layer Diff(layer l1, float k);
-    /**
-      *  @brief Layer that computes the difference of a float number and a layer.
-      *
-      *  @param k  Number
-      *  @param l1  Parent layer
-      *  @return     Parent layer l1 after computing his difference with k
-    */
     layer Diff(float k, layer l1);
+
+    /**
+      *  @brief Layer that computes the element-wise division of two layers.
+      *
+      *  @param l1  A layer
+      *  @param l2  A layer
+      *  @return     Element-wise division of l1 and l2
+    */
     layer Div(layer l1, layer l2);
     layer Div(layer l1, float k);
     layer Div(float k, layer l1);
+
+    /**
+      *  @brief Returns a new tensor with the exponential of the elements of the input tensor input.
+      *
+      *  @param l  Parent layer
+      *  @return     The exponential of l
+    */
     layer Exp(layer l);
+
+
     /**
       *  @brief Layer that computes the logarithm of a layer.
       *
@@ -1131,21 +1166,52 @@ typedef NetLoss * metric;
       *  @return     Parent layer l after computing his logarithm
     */
     layer Log(layer l);
-    layer Log2(layer l);
-    layer Log10(layer l);
-    layer Mult(layer l1, layer l2);
+
     /**
-      *  @brief Layer that computes the multiplication of a float number and a layer.
+      *  @brief Layer that computes the logarithm to the base 2 of a layer.
       *
-      *  @param l1  Parent layer
-      *  @param k  Number
-      *  @return     Parent layer l1 after computing his multiplication with k
+      *  @param l  Parent layer
+      *  @return     Parent layer l after computing his logarithm to the base 2.
     */
+    layer Log2(layer l);
+
+    /**
+      *  @brief Layer that computes the logarithm to the base 10 of a layer.
+      *
+      *  @param l  Parent layer
+      *  @return     Parent layer l after computing his logarithm to the base 10.
+    */
+    layer Log10(layer l);
+
+    /**
+      *  @brief  Layer that computes the element-wise multiplication of two layers.
+      *
+      *  @param l1  A layer
+      *  @param l2  A layer
+      *  @return     Result of the element-wise multiplication of l1 and l2.
+    */
+    layer Mult(layer l1, layer l2);
     layer Mult(layer l1, float k);
     layer Mult(float k,layer l1);
+
+    /**
+      *  @brief  Layer that computes the element-wise power of two layers.
+      *
+      *  @param l1  A layer
+      *  @param l2  A layer
+      *  @return     Result of the element-wise power of l1 and l2.
+    */
     layer Pow(layer l1, layer l2);
     layer Pow(layer l1, float k);
+
+    /**
+      *  @brief  Layer that computes the square root of a layer.
+      *
+      *  @param l1  Parent layer
+      *  @return     Result of the square root of l1.
+    */
     layer Sqrt(layer l);
+
     /**
       *  @brief Layer that computes the sum of two layers.
       *
@@ -1154,6 +1220,7 @@ typedef NetLoss * metric;
       *  @return     The result after computing the sum between layers l1 and l2
     */
     layer Sum(layer l1, layer l2);
+
     /**
       *  @brief Layer that computes the sum of a float number and a layer.
       *
@@ -1163,7 +1230,25 @@ typedef NetLoss * metric;
     */
     layer Sum(layer l1, float k);
     layer Sum(float k, layer l1);
+
+    /**
+      *  @brief Returns a new tensor which indexes the input tensor using the entries in indices
+      *
+      *  @param l  Parent layer
+      *  @param indices  Vector of indices to be selected
+      *  @param name  A name for the operation
+      *  @return     A tensor with the selected elements
+    */
     layer Select(layer l, vector<string> indices, string name="");
+
+    /**
+      *  @brief Permutes the dimensions of the input according to a given pattern.
+      *
+      *  @param l  Parent layer
+      *  @param dims  Permutation pattern, does not include the samples dimension. 
+      *  @param name  A name for the operation
+      *  @return     The permuted tensor.
+    */
     layer Permute(layer l, vector<int> dims, string name="");
 
     // Reduction Layers
@@ -1218,7 +1303,33 @@ typedef NetLoss * metric;
     layer MaxPool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2}, string padding = "none", string name = "");
 
     // Recurrent Layers
+
+    /**
+      *  @brief Fully-connected RNN where the output is to be fed back to input.
+      *
+      *  @param parent  Parent layer
+      *  @param units  dimensionality of the output space.
+      *  @param num_layers  Number of RNN layers
+      *  @param use_bias  whether the layer uses a bias vector.
+      *  @param dropout  Fraction of the units to drop for the linear transformation of the inputs.
+      *  @param bidirectional  Wether the RNN is bidirectional or not.
+      *  @param name  A name for the operation
+      *  @return     The RNN layer
+    */
     layer RNN(layer parent, int units, int num_layers, bool use_bias = true, float dropout = .0f, bool bidirectional = false, string name = "");
+
+    /**
+      *  @brief Long Short-Term Memory layer - Hochreiter 1997.
+      *
+      *  @param parent  Parent layer
+      *  @param units  dimensionality of the output space.
+      *  @param num_layers  Number of RNN layers
+      *  @param use_bias  whether the layer uses a bias vector.
+      *  @param dropout  Fraction of the units to drop for the linear transformation of the inputs.
+      *  @param bidirectional  Wether the RNN is bidirectional or not.
+      *  @param name  A name for the operation
+      *  @return     The LSTM layer
+    */
     layer LSTM(layer parent, int units, int num_layers, bool use_bias = true, float dropout = .0f, bool bidirectional = false, string name = "");
 
 
@@ -1293,8 +1404,33 @@ typedef NetLoss * metric;
     ///////////////////////////////////////
     //  REGULARIZERS
     ///////////////////////////////////////
+
+    /**
+      *  @brief Regularizer for L2 regularization.
+      *
+      *  @param l  Parent layer to regularize.
+      *  @param l2   L2 regularization factor.
+      *  @return     The layer l regularized.
+    */
     layer L2(layer l,float l2);
+
+    /**
+      *  @brief Regularizer for L1 regularization.
+      *
+      *  @param l  Parent layer to regularize.
+      *  @param l1   L1 regularization factor.
+      *  @return     The layer l regularized.
+    */
     layer L1(layer l,float l1);
+
+    /**
+      *  @brief Regularizer for L1 and L2 regularization..
+      *
+      *  @param l  Parent layer to regularize.
+      *  @param l1   L1 regularization factor.
+      *  @param l2   L2 regularization factor.
+      *  @return     The layer l regularized.
+    */
     layer L1L2(layer l,float l1,float l2);
 
 

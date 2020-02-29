@@ -4,11 +4,13 @@ Recurrent
 RNN
 ---------------
 
-Fully-connected RNN where the output is to be fed back to input.
+.. doxygenfunction:: RNN
 
 .. note::
 
-    Not yet implemented
+    **Not implemented yet**
+
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers
 
 Example:
 
@@ -25,7 +27,9 @@ Gated Recurrent Unit - Cho et al. 2014.
 
 .. note::
 
-    Not yet implemented
+    **Not implemented yet**
+
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers
 
 Example:
 
@@ -38,11 +42,13 @@ Example:
 LSTM
 ---------------
 
-Long Short-Term Memory layer - Hochreiter 1997.
+.. doxygenfunction:: LSTM
 
 .. note::
 
-    Not yet implemented
+    **Not implemented yet**
+
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers
 
 Example:
 

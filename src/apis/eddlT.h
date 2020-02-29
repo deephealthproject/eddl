@@ -26,9 +26,36 @@ namespace eddlT{
     Tensor* create(const vector<int> &shape, float *ptr);
     Tensor* create(const vector<int> &shape, float *ptr, int dev);
 
+
+    /**
+    *   @brief Create a tensor of the specified shape and fill it with zeros.
+    *
+    *   @param shape Shape of the tensor to create.
+    *   @param dev  Device to use. The possible values are: ``DEV_CPU`` and ``DEV_GPU``.
+    *   @return The zero-initialized tensor
+    */
     Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
+
+    /**
+    *   @brief Create a tensor of the specified shape and fill it with ones.
+    *
+    *   @param shape Shape of the tensor to create.
+    *   @param dev  Device to use. The possible values are: ``DEV_CPU`` and ``DEV_GPU``.
+    *   @return The ones-initialized tensor
+    */
     Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
+
+    /**
+    *   @brief Create a tensor of the specified shape and fill it with a value.
+    *
+    *   @param shape Shape of the tensor to create.
+    *   @param value  Value to fill the tensor with.
+    *   @param dev  Device to use. The possible values are: ``DEV_CPU`` and ``DEV_GPU``.
+    *   @return The initialized tensor
+    */
     Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
+
+    
     Tensor* arange(float start, float end, float step, int dev=DEV_CPU);
     Tensor* range(float start, float end, float step, int dev=DEV_CPU);
     Tensor* linspace(float start, float end, int steps, int dev=DEV_CPU);

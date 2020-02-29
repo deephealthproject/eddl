@@ -27,7 +27,7 @@ Example:
 
 .. note::
 
-    Not implemented yet
+    **Not implemented yet**
 
     Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers
 
