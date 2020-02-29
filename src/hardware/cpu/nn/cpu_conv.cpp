@@ -108,6 +108,7 @@ void cpu_conv2D(ConvolDescriptor *D)
     }// batch
 
     //bias
+    if (D->use_bias) {
 #pragma omp parallel for
     for(int b=0;b<D->O->shape[0];b++) {
         float *ptrO=D->O->ptr+(b*osize);
@@ -116,6 +117,7 @@ void cpu_conv2D(ConvolDescriptor *D)
                 for(int c=0;c<D->O->shape[3];c++,ptrO++)
                     (*ptrO)+=D->bias->ptr[z];
     }
+  }
 
 }
 
@@ -143,6 +145,7 @@ void cpu_conv2D_grad(ConvolDescriptor *D)
     //bias
 
     //#pragma omp parallel for
+      if (D->use_bias) {
     for(int b=0;b<D->D->shape[0];b++) {
         float *ptrD=D->D->ptr+(b*osize);
         for(int z=0;z<D->D->shape[1];z++)
@@ -151,7 +154,7 @@ void cpu_conv2D_grad(ConvolDescriptor *D)
                     D->gbias->ptr[z]+=(*ptrD);
 
     }
-
+  }
 }
 
 void cpu_conv2D_back(ConvolDescriptor *D)

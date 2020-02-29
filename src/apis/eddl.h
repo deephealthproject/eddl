@@ -555,9 +555,8 @@ typedef NetLoss * metric;
       *  @return     Convolution layer
     */
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
-               const vector<int> &strides = {1, 1}, string padding = "same", int groups = 1,
-               const vector<int> &dilation_rate = {1, 1},
-               bool use_bias = true, string name = "");
+               const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
+               int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
 
     /**
       *  @brief Regular densely-connected NN layer.

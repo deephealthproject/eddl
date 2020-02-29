@@ -27,28 +27,32 @@ using namespace eddl;
 layer BN(layer l)
 {
   return BatchNormalization(l);
+  //return l;
 }
 
 layer BG(layer l) {
-  return GaussianNoise(BN(l),0.3);
+  //return GaussianNoise(BN(l),0.3);
+  return BN(l);
 }
 
-layer ResBlock(layer l, int filters,int half) {
+
+layer ResBlock(layer l, int filters,int half, int expand=0) {
   layer in=l;
 
-  if (half)
-      l=ReLu(BG(Conv(l,filters,{1,1},{2,2})));
-  else
-      l=ReLu(BG(Conv(l,filters,{1,1},{1,1})));
-
-
-  l=ReLu(BG(Conv(l,filters,{3,3},{1,1})));
-  l=ReLu(BG(Conv(l,4*filters,{1,1},{1,1})));
+  l=ReLu(BG(Conv(l,filters,{1,1},{1,1},"same",false)));
 
   if (half)
-    return Sum(BG(Conv(in,4*filters,{1,1},{2,2})),l);
+    l=ReLu(BG(Conv(l,filters,{3,3},{2,2},"same",false)));
   else
-    return Sum(l,in);
+    l=ReLu(BG(Conv(l,filters,{3,3},{1,1},"same",false)));
+
+  l=BG(Conv(l,4*filters,{1,1},{1,1},"same",false));
+
+  if (half)
+    return ReLu(Sum(BG(Conv(in,4*filters,{1,1},{2,2},"same",false)),l));
+  else
+    if (expand) return ReLu(Sum(BG(Conv(in,4*filters,{1,1},{1,1},"same",false)),l));
+    else return ReLu(Sum(in,l));
 }
 
 int main(int argc, char **argv){
@@ -57,8 +61,8 @@ int main(int argc, char **argv){
   download_cifar10();
 
   // Settings
-  int epochs = 25;
-  int batch_size = 100;
+  int epochs = 150;
+  int batch_size =128;
   int num_classes = 10;
 
   // network
@@ -66,15 +70,21 @@ int main(int argc, char **argv){
   layer l=in;
 
   // Data augmentation
+
   l = RandomCropScale(l, {0.8f, 1.0f});
-  l = RandomFlip(l,1);
-  l = RandomCutout(l, {0.1,0.3},{0.1,0.3});
+
+  // l = RandomShift(l,{-0.1,0.1},{-0.1,0.1});//CropScale(l, {0.8f, 1.0f});
+  l = RandomHorizontalFlip(l);
+  //l = RandomCutout(l, {0.1,0.3},{0.1,0.3});
 
   // Resnet-50
-  l=ReLu(BG(Conv(l,64,{3,3},{1,1})));
+
+  // For Imagenet size:
+
+  l=ReLu(BG(Conv(l,64,{3,3},{2,2},"same",false))); //{1,1}
 
   for(int i=0;i<3;i++)
-    l=ResBlock(l, 64,i==0);
+    l=ResBlock(l, 64, 0, i==0); // not half but expand the first
 
   for(int i=0;i<4;i++)
     l=ResBlock(l, 128,i==0);
@@ -83,10 +93,11 @@ int main(int argc, char **argv){
     l=ResBlock(l, 256,i==0);
 
   for(int i=0;i<3;i++)
-    l=ResBlock(l, 256,i==0); // <-- should be 512, check MAX_THR in gpu problem
+    l=ResBlock(l,512,i==0);
+
+  l=MaxPool(l,{2,2});  // should be avgpool
 
   l=Reshape(l,{-1});
-  l=ReLu(BG(Dense(l,512)));
 
   layer out=Activation(Dense(l,num_classes),"softmax");
 
@@ -96,11 +107,11 @@ int main(int argc, char **argv){
 
   // Build model
   build(net,
-    adam(0.001), // Optimizer
+	sgd(0.001,0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    CS_GPU({1,1}, 100, "full_mem")// GPU with only one gpu
-    //CS_CPU(-1, "low_mem")  // CPU with maximum threads availables
+	//CS_GPU({1,1},250,"full_mem")// GPU with only one gpu
+    CS_CPU(-1)  // CPU with maximum threads availables
   );
 
   // plot the model
@@ -121,13 +132,23 @@ int main(int argc, char **argv){
   tensor y_test = eddlT::load("cifar_tsY.bin");
   eddlT::div_(x_test, 255.0);
 
-  for(int i=0;i<epochs;i++) {
-    // training, list of input and output tensors, batch, epochs
-    fit(net,{x_train},{y_train},batch_size, 1);
-    // Evaluate test
-    std::cout << "Evaluate test:" << std::endl;
-    evaluate(net,{x_test},{y_test});
+
+  float lr=0.01;
+  for(int j=0;j<3;j++) {
+    lr/=10.0;
+
+    setlr(net,{lr,0.9});
+
+    for(int i=0;i<epochs;i++) {
+      // training, list of input and output tensors, batch, epochs
+      fit(net,{x_train},{y_train},batch_size, 1);
+
+      // Evaluate test
+      std::cout << "Evaluate test:" << std::endl;
+      evaluate(net,{x_test},{y_test});
+    }
   }
+
 
 
 }
