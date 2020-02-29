@@ -548,9 +548,9 @@ typedef NetLoss * metric;
       *  @param kernel_size  Vector of 2 integers, specifying the height and width of the 2D convolution window.
       *  @param strides  Vector of 2 integers, specifying the strides of the convolution along the height and width
       *  @param padding  One of "none", "valid" or "same"
+      *  @param use_bias  Boolean, whether the layer uses a bias vector.
       *  @param groups  Number of blocked connections from input channels to output channels
       *  @param dilation_rate  Vector of 2 integers, specifying the dilation rate to use for dilated convolution
-      *  @param use_bias  Boolean, whether the layer uses a bias vector.
       *  @param name  A name for the operation
       *  @return     Convolution layer
     */
