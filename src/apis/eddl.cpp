@@ -121,7 +121,7 @@ namespace eddl {
     compserv CS_GPU(const vector<int> g, string mem){
         return CS_GPU(g, 1, mem);
     }
-    
+
     compserv CS_GPU(const vector<int> g, int lsb, string mem){
         if (mem=="low_mem") return new CompServ(0, g, {}, lsb, 2);
         else if (mem=="mid_mem") return new CompServ(0, g, {}, lsb, 1);
@@ -438,7 +438,7 @@ namespace eddl {
     layer Selu(layer parent, string name){
         float alpha = 1.6732632423543772848170429916717f;
         float scale = 1.0507009873554804934193349852946f;
-        
+
         vector<float> params = {alpha, scale};
         return new LActivation(parent, "selu", params, name, DEV_CPU, 0);
     }
@@ -469,8 +469,8 @@ namespace eddl {
     }
 
     layer Conv(layer parent, int filters, const vector<int> &kernel_size,
-               const vector<int> &strides, string padding, int groups, const vector<int> &dilation_rate,
-               bool use_bias, string name){
+               const vector<int> &strides, string padding,  bool use_bias,
+               int groups, const vector<int> &dilation_rate,string name){
         return new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 

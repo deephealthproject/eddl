@@ -121,7 +121,7 @@ void LLayerNorm::forward() {
     Tensor::select(input,A, PD);
     B=new Tensor(A->getShape(),A->device);
 
-    BN_forward(A,B,MD,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);
+    BN_forward(A,B,MD,bn_mean,bn_var,mean,variance,momentum,epsilon,affine, bn_g,bn_b,mode==TRMODE);
 
     Tensor::select(B,output, PD2);
 
