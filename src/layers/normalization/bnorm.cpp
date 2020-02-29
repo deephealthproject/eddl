@@ -93,7 +93,7 @@ void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, MapReduceDescripto
 
   // Affine
   if (affine) {
-/*
+
     Tensor *A=new Tensor(delta->getShape(),delta->device);
     Tensor *b=new Tensor(bn_g->getShape(),bn_g->device);
     Tensor::el_mult(delta,opa,A,0);
@@ -108,7 +108,7 @@ void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, MapReduceDescripto
 
     delete A;
     delete b;
-    */
+
 
   }
 
