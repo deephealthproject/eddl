@@ -43,7 +43,7 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
     bn_mean=new Tensor(shape,dev);
     bn_var=new Tensor(shape,dev);
-
+/*
     if (affine) {
       bn_g=new Tensor(shape,dev);
       bn_g->fill_(1.0);
@@ -51,6 +51,7 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
       bn_b->fill_(0.0);
       opa=new Tensor(output->getShape(),dev); //output pre-affine
     }
+    */
 
 
     MD=new MapReduceDescriptor(input,axis);
