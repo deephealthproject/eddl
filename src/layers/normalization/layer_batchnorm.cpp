@@ -43,16 +43,23 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
     bn_mean=new Tensor(shape,dev);
     bn_var=new Tensor(shape,dev);
-/*
+
     if (affine) {
       bn_g=new Tensor(shape,dev);
       bn_g->fill_(1.0);
       bn_b=new Tensor(shape,dev);
       bn_b->fill_(0.0);
-      opa=new Tensor(output->getShape(),dev); //output pre-affine
-    }
-    */
 
+      gbn_g=new Tensor(shape,dev);
+      gbn_b=new Tensor(shape,dev);
+
+      opa=new Tensor(output->getShape(),dev); //output pre-affine
+
+      params.push_back(bn_g);
+      params.push_back(bn_b);
+      gradients.push_back(gbn_g);
+      gradients.push_back(gbn_b);
+    }
 
     MD=new MapReduceDescriptor(input,axis);
 
@@ -74,6 +81,7 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 void LBatchNorm::resize(int batch){
     if (batch!=output->shape[0]) {
         output->resize(batch);
+        opa->resize(batch);
 //        if (!mem_level) delta->resize(batch);
         if (target!=nullptr) target->resize(batch);
         delete MD;
@@ -113,11 +121,11 @@ void LBatchNorm::copy(Layer *l2)
 
 
 void LBatchNorm::forward() {
-    BN_forward(input,output,MD,bn_mean,bn_var,mean,variance,momentum,epsilon,affine,bn_g,bn_b,mode==TRMODE);
+    BN_forward(input,output,MD,bn_mean,bn_var,mean,variance,momentum,epsilon,affine,bn_g,bn_b,opa,mode==TRMODE);
 }
 
 void LBatchNorm::backward(){
-    BN_backward(input,delta, parent[0]->delta,MD,bn_mean,bn_var,mean,variance,epsilon);
+    BN_backward(input,delta, parent[0]->delta,MD,bn_mean,bn_var,mean,variance,epsilon,affine,bn_g,bn_b,gbn_g,gbn_b,opa);
 }
 
 

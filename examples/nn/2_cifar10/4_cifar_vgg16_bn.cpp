@@ -23,11 +23,11 @@ using namespace eddl;
 //////////////////////////////////
 
 layer Block1(layer l,int filters) {
-  return ReLu(BatchNormalization(Conv(l,filters,{1,1},{1,1})));
+  return ReLu(BatchNormalization(Conv(l,filters,{1,1},{1,1},"same",false)));
 }
 layer Block3_2(layer l,int filters) {
-  l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
-  l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
+  l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1},"same",false)));
+  l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1},"same",false)));
   return l;
 }
 

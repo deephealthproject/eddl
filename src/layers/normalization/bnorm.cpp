@@ -17,7 +17,7 @@
 
 using namespace std;
 
-void BN_forward(Tensor *input,Tensor *output, MapReduceDescriptor *MD, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float momentum, float epsilon, bool affine, Tensor *bn_g, Tensor *bn_b,int trmode)
+void BN_forward(Tensor *input,Tensor *output, MapReduceDescriptor *MD, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float momentum, float epsilon, bool affine, Tensor *bn_g, Tensor *bn_b,Tensor *opa, int trmode)
 {
 
   if (trmode) {
@@ -45,13 +45,10 @@ void BN_forward(Tensor *input,Tensor *output, MapReduceDescriptor *MD, Tensor *b
 
     reduce_div(output,sd,MD);
     if (affine) {
-      /*
       Tensor::copy(output,opa);
       reduce_mult(opa,bn_g,MD);
       Tensor::copy(opa,output);
       reduce_sum(output,bn_b,MD);
-      */
-
     }
     delete osqr;
     delete sd;
@@ -64,17 +61,17 @@ void BN_forward(Tensor *input,Tensor *output, MapReduceDescriptor *MD, Tensor *b
     bn_var->add_(epsilon);
     bn_var->sqrt_();
     reduce_div(output,bn_var,MD);
-    /*
+
     if (affine) {
       reduce_mult(output,bn_g,MD);
       reduce_sum(output,bn_b,MD);
     }
-    */
+
   }
 
 }
 
-void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, MapReduceDescriptor *MD, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float epsilon)
+void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, MapReduceDescriptor *MD, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float epsilon, bool affine, Tensor *bn_g, Tensor *bn_b, Tensor *gbn_g, Tensor* gbn_b,Tensor *opa)
 {
   // from http://proceedings.mlr.press/v37/ioffe15.pdf
 
@@ -93,10 +90,25 @@ void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, MapReduceDescripto
   Tensor *Tvar32=bn_var->clone();
   Tensor *Tsqvar=bn_var->clone();
   Tensor *dx_hat=delta->clone();
-  Tensor *A=new Tensor(delta->getShape(),delta->device);
+
 
   // Affine
+  if (affine) {
+    Tensor *A=new Tensor(delta->getShape(),delta->device);
+    Tensor *b=new Tensor(bn_g->getShape(),bn_g->device);
+    Tensor::el_mult(delta,opa,A,0);
+    reduce_mean(A,b,MD);
+    b->mult_(A->size/b->size);
+    Tensor::add(1,gbn_g,1,b,gbn_g,0);
 
+    //2 Beta
+    reduce_mean(delta,b,MD);
+    b->mult_(delta->size/b->size);
+    Tensor::add(1,gbn_b,1,b,gbn_b,0);
+
+    delete A;
+    delete b;
+  }
 
   //4 Var : dvar
   Tsqvar->add_(epsilon);
@@ -138,7 +150,6 @@ void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, MapReduceDescripto
 
 
   delete X;
-  delete A;
   delete Tvar32;
   delete Tsqvar;
   delete dx_hat;
