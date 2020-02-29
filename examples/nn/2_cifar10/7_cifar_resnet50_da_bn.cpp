@@ -81,7 +81,7 @@ int main(int argc, char **argv){
 
   // For Imagenet size:
 
-  l=ReLu(BG(Conv(l,64,{3,3},{2,2},"same",false))); //{1,1}
+  l=ReLu(BG(Conv(l,64,{3,3},{1,1},"same",false))); //{1,1}
 
   for(int i=0;i<3;i++)
     l=ResBlock(l, 64, 0, i==0); // not half but expand the first
@@ -95,7 +95,7 @@ int main(int argc, char **argv){
   for(int i=0;i<3;i++)
     l=ResBlock(l,512,i==0);
 
-  l=MaxPool(l,{2,2});  // should be avgpool
+  l=MaxPool(l,{4,4});  // should be avgpool
 
   l=Reshape(l,{-1});
 
@@ -110,8 +110,8 @@ int main(int argc, char **argv){
 	sgd(0.001,0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-	//CS_GPU({1,1},250,"full_mem")// GPU with only one gpu
-    CS_CPU(-1)  // CPU with maximum threads availables
+	CS_GPU({1,1},250,"full_mem")// GPU with only one gpu
+	//CS_CPU(-1)  // CPU with maximum threads availables
   );
 
   // plot the model
