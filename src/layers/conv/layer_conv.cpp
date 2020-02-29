@@ -25,7 +25,7 @@ LConv::LConv(Layer *parent, const vector<int> &ks, const vector<int> &st,
              const vector<int> &p, string name, int dev, int mem) : LConv(parent, new ConvolDescriptor(ks, st, p, mem), name, dev, mem) {}
 
 LConv::LConv(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
-             int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) : LConv(parent, new ConvolDescriptor(filters, kernel_size, strides, padding, mem), name, dev, mem) {
+             int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem) : LConv(parent, new ConvolDescriptor(filters, kernel_size, strides, padding, use_bias, mem), name, dev, mem) {
     // TODO: Implement (Fix initialization)
 };
 
@@ -129,6 +129,7 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
     for (int i = 0; i < n->params.size(); i++) delete n->params[i];
     n->params.clear();
     n->acc_gradients.clear();
+    n->cd->use_bias=cd->use_bias;
 
     n->cd->K = cd->K;
     n->cd->bias = cd->bias;
@@ -136,6 +137,7 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
 
     n->params.push_back(n->cd->K);
     n->params.push_back(n->cd->bias);
+
 
     if ( distributed_training ) {
         n->cd->acc_gK  = cd->acc_gK;
@@ -154,6 +156,7 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
 Layer *LConv::clone(int c, int bs, vector<Layer *> p, int todev) {
     LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
+    n->cd->use_bias=cd->use_bias;
 
     n->reg=reg;
     n->init=init;

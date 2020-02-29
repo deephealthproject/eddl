@@ -23,7 +23,7 @@
 
 using namespace std;
 
-void BN_forward(Tensor *input,Tensor *output, MapReduceDescriptor *MD, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float momentum, float epsilon,int trmode);
+void BN_forward(Tensor *input,Tensor *output, MapReduceDescriptor *MD, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float momentum, float epsilon, bool affine, Tensor *bn_g,Tensor *bn_b,int trmode);
 void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, MapReduceDescriptor *MD, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float epsilon);
 
 
@@ -117,6 +117,9 @@ public:
     Tensor *variance;
     Tensor *bn_mean;
     Tensor *bn_var;
+    Tensor *bn_g;
+    Tensor *bn_b;
+    Tensor *opa; //output pre-affine
 
     MapReduceDescriptor *MD;
     bool init;
@@ -154,6 +157,9 @@ public:
     Tensor *variance;
     Tensor *bn_mean;
     Tensor *bn_var;
+    Tensor *bn_g;
+    Tensor *bn_b;
+    Tensor *opa; //output pre-affine
 
     PermuteDescriptor *PD;
     PermuteDescriptor *PD2;
@@ -193,6 +199,9 @@ public:
     Tensor *variance;
     Tensor *bn_mean;
     Tensor *bn_var;
+    Tensor *bn_g;
+    Tensor *bn_b;
+    Tensor *opa; //output pre-affine
 
     PermuteDescriptor *PD;
     PermuteDescriptor *PD2;

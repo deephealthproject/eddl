@@ -19,7 +19,7 @@
 
 ConvolDescriptor::ConvolDescriptor() {}
 
-ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p, int mem) {
+ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p, bool ub, int mem) {
     if (ks.size() != 2) { msg("Kernels must have 3 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
     if (st.size() != 2) { msg("Strides must have 2 dimensions", "ConvolDescriptor::ConvolDescriptor"); }
 
@@ -27,6 +27,7 @@ ConvolDescriptor::ConvolDescriptor(int filters, const vector<int> &ks, const vec
     ksize = vector<int>(ks);
     ksize.insert(ksize.begin(), 1, filters);
     stride = vector<int>(st.begin(), st.end());
+    use_bias=ub;
     mem_level=mem;
 
     if (p == "same") {

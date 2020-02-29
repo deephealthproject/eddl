@@ -71,6 +71,7 @@ public:
     int padrt,padrb;
     int padcl,padcr;
     int size;
+    bool use_bias;
     int mem_level; // see CS
 
 
@@ -104,7 +105,7 @@ public:
 
     ConvolDescriptor();
 
-    ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p, int mem=0);
+    ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p, bool use_bias, int mem=0);
 
     ConvolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem=0);
 
