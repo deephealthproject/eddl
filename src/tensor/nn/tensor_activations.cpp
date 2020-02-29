@@ -467,7 +467,7 @@ void Exp(Tensor *A, Tensor *B) {
 #ifdef cGPU
     else if (A->isGPU())
       {
-      gpu_exp(A,B);
+	//gpu_exp(A,B);
       }
 #endif
 #ifdef cFPGA
@@ -491,7 +491,7 @@ void D_Exp(Tensor *D, Tensor *I, Tensor *PD) {
 #ifdef cGPU
     else if (D->isGPU())
       {
-        gpu_d_exp(D,I,PD);
+        //gpu_d_exp(D,I,PD);
 
       }
 #endif

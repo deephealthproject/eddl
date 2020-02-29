@@ -212,6 +212,7 @@ void gpu_d_hard_sigmoid(Tensor *D,Tensor *I,Tensor *PD){
   check_cuda(cudaDeviceSynchronize(),"gpu_d_hard_sigmoid");
 }
 
+/*
 void gpu_exp(Tensor *A,Tensor *B){
   int device=A->gpu_device;
   cudaSetDevice(device);
@@ -231,6 +232,7 @@ void gpu_d_exp(Tensor *D,Tensor *I,Tensor *PD){
   d_exp<<<dimGrid,dimBlock>>>(D->ptr,I->ptr,PD->ptr,D->size);
   check_cuda(cudaDeviceSynchronize(),"gpu_d_exp");
 }
+*/
 
 void gpu_tanh(Tensor *A,Tensor *B){
   int device=A->gpu_device;
