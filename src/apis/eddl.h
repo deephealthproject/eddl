@@ -115,7 +115,7 @@ typedef NetLoss * metric;
       *  @brief  Save the training outputs of a model to a filename
       *
       *  @param m  Model to train
-      *  @param fname  Name of the logfile 
+      *  @param fname  Name of the logfile
       *  @return     (void) Outputs log to the given file.
     */
     void setlogfile(model net,string fname);
@@ -613,7 +613,7 @@ typedef NetLoss * metric;
     layer Input(const vector<int> &shape, string name = "");
 
     /**
-      *  @brief Upsampling layer. 
+      *  @brief Upsampling layer.
       *
       *  @details
       *   Identical to the ``scale`` transformation, the only difference is that ``upsampling`` repeats its rows/columns *n* times, while scaling uses a proportion.
@@ -647,7 +647,7 @@ typedef NetLoss * metric;
 
 
     /**
-      *  @brief Transposed convolution layer (sometimes called Deconvolution). 
+      *  @brief Transposed convolution layer (sometimes called Deconvolution).
       *
       *  @details
       *   The need for transposed convolutions generally arises from the desire to use a transformation going in the opposite direction of a normal convolution, i.e., from something that has the shape of the output of some convolution to something that has the shape of its input while maintaining a connectivity pattern that is compatible with said convolution.
@@ -1244,7 +1244,7 @@ typedef NetLoss * metric;
       *  @brief Permutes the dimensions of the input according to a given pattern.
       *
       *  @param l  Parent layer
-      *  @param dims  Permutation pattern, does not include the samples dimension. 
+      *  @param dims  Permutation pattern, does not include the samples dimension.
       *  @param name  A name for the operation
       *  @return     The permuted tensor.
     */

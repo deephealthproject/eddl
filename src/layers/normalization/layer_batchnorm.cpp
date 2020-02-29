@@ -46,19 +46,20 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
     if (affine) {
       bn_g=new Tensor(shape,dev);
-      bn_g->fill_(1.0);
       bn_b=new Tensor(shape,dev);
-      bn_b->fill_(0.0);
 
       gbn_g=new Tensor(shape,dev);
       gbn_b=new Tensor(shape,dev);
 
       opa=new Tensor(output->getShape(),dev); //output pre-affine
 
+
       params.push_back(bn_g);
       params.push_back(bn_b);
+
       gradients.push_back(gbn_g);
       gradients.push_back(gbn_b);
+
     }
 
     MD=new MapReduceDescriptor(input,axis);
@@ -78,10 +79,15 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
 
 // virtual
+void LBatchNorm::initialize() {
+  params[0]->fill_(1.0);
+  params[1]->fill_(0.0);
+}
+
 void LBatchNorm::resize(int batch){
     if (batch!=output->shape[0]) {
         output->resize(batch);
-        opa->resize(batch);
+        if (affine) opa->resize(batch);
 //        if (!mem_level) delta->resize(batch);
         if (target!=nullptr) target->resize(batch);
         delete MD;

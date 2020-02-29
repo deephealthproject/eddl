@@ -123,6 +123,7 @@ public:
     Tensor *gbn_b;
     Tensor *opa; //output pre-affine
 
+
     MapReduceDescriptor *MD;
     bool init;
     vector<int> axis;
@@ -140,6 +141,8 @@ public:
     void forward() override;
 
     void backward() override;
+
+    void initialize() override;
 
     void resize(int batch) override;
     void save(std::ofstream &ofs, string format) override;

@@ -46,8 +46,7 @@ void BN_forward(Tensor *input,Tensor *output, MapReduceDescriptor *MD, Tensor *b
     reduce_div(output,sd,MD);
     if (affine) {
       Tensor::copy(output,opa);
-      reduce_mult(opa,bn_g,MD);
-      Tensor::copy(opa,output);
+      reduce_mult(output,bn_g,MD);
       reduce_sum(output,bn_b,MD);
     }
     delete osqr;
@@ -94,6 +93,7 @@ void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, MapReduceDescripto
 
   // Affine
   if (affine) {
+/*
     Tensor *A=new Tensor(delta->getShape(),delta->device);
     Tensor *b=new Tensor(bn_g->getShape(),bn_g->device);
     Tensor::el_mult(delta,opa,A,0);
@@ -108,6 +108,8 @@ void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, MapReduceDescripto
 
     delete A;
     delete b;
+    */
+
   }
 
   //4 Var : dvar

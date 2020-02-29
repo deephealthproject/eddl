@@ -62,7 +62,7 @@ public:
     // Destructor
     virtual ~Layer();
 
-    void initialize();
+    virtual void initialize();
 
     virtual void info();
 
