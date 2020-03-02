@@ -6,6 +6,8 @@ DRIVE
 
 The DRIVE database has been established to enable comparative studies on segmentation of blood vessels in retinal images
 
+.. doxygenfunction:: eddl::download_drive
+
 .. note::
 
     Source: `DRIVE dataset`_

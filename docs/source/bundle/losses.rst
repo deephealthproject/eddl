@@ -1,8 +1,11 @@
 Losses
 =============
 
+.. doxygenfunction:: eddl::getLoss
+
 Mean Squared Error
 ------------------
+
 
 Aliases: ``mse`` and ``categorical_accuracy``.
 

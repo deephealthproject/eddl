@@ -1,6 +1,8 @@
 Metrics
 =============
 
+.. doxygenfunction:: eddl::getMetric
+
 Mean Squared Error
 ------------------
 

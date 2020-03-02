@@ -6,6 +6,8 @@ Fine-grained training
 random_indices
 ^^^^^^^^^^^^^^^^^
 
+.. doxygenfunction:: eddl::random_indices(int,int)
+
 .. code-block:: c++
    
     vector<int> random_indices(int batch_size, int num_samples);
@@ -16,6 +18,8 @@ random_indices
 next_batch
 ^^^^^^^^^^^^^^^^^
 
+.. doxygenfunction:: eddl::next_batch(vector<Tensor *>, vector<Tensor *>)
+
 .. code-block:: c++
     
     void next_batch(vector<Tensor *> in,vector<Tensor *> out);
@@ -23,6 +27,10 @@ next_batch
 
 train_batch
 ^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: eddl::train_batch(model, vector<Tensor *>, vector<Tensor *>, vector<int>)
+
+.. doxygenfunction:: eddl::train_batch(model, vector<Tensor *>, vector<Tensor *>)
 
 .. code-block:: c++
     
@@ -32,6 +40,10 @@ train_batch
 
 eval_batch
 ^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: eddl::eval_batch(model, vector<Tensor *>, vector<Tensor *>, vector<int>)
+
+.. doxygenfunction:: eddl::eval_batch(model, vector<Tensor *>, vector<Tensor *>)
 
 .. code-block:: c++
 
@@ -60,6 +72,14 @@ reset_loss
           
 forward
 ^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: eddl::forward(model, vector<Layer *>)
+
+.. doxygenfunction:: eddl::forward(model, vector<Tensor *>)
+
+.. doxygenfunction:: eddl::forward(model)
+
+.. doxygenfunction:: eddl::forward(model, int)
 
 .. code-block:: c++
     
@@ -96,6 +116,8 @@ backward
 update
 ^^^^^^^^^^^^^^^^^
 
+.. doxygenfunction:: eddl::update(model)
+
 .. code-block:: c++
     
     void update(model m);
@@ -124,6 +146,8 @@ clamp
 compute_loss
 ^^^^^^^^^^^^^^^^^
 
+.. doxygenfunction:: eddl::compute_loss(loss)
+
 .. code-block:: c++
     
     float compute_loss(loss L);
@@ -131,6 +155,8 @@ compute_loss
 
 compute_metric
 ^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: eddl::compute_metric(loss)
 
 .. code-block:: c++
     
@@ -177,6 +203,10 @@ getMetric
 newmetric
 ^^^^^^^^^^^^^^^^^
 
+.. doxygenfunction:: eddl::newmetric(const std::function<Layer *Layer *>&, Layer *, string)
+
+.. doxygenfunction:: eddl::newmetric(const std::function<Layer *vector<Layer *>>&, vector<Layer *>, string)
+
 .. code-block:: c++
     
     loss newmetric(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name);
@@ -185,6 +215,10 @@ newmetric
         
 detach
 ^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: eddl::detach(layer)
+
+.. doxygenfunction:: eddl::detach(vlayer)
 
 .. code-block:: c++
     
