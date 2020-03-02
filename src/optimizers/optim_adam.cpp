@@ -49,7 +49,7 @@ void Adam::setlayers(vlayer l) {
 
     // create momemtum tensors
     for (int i = 0; i < layers.size(); i++)
-        for (int j = 0; j < layers[i]->gradients.size(); j++) {
+        for (int j = 0; j < layers[i]->get_trainable_params_count(); j++) {
             mT.push_back(new Tensor(layers[i]->gradients[j]->getShape(), layers[i]->dev));
             mT.back()->fill_(0.0);
             vT.push_back(new Tensor(layers[i]->gradients[j]->getShape(), layers[i]->dev));
@@ -69,7 +69,7 @@ void Adam::applygrads(int batch) {
 
     for (int i = 0; i < layers.size(); i++)
       if (layers[i]->trainable) {
-        for (int j = 0; j < layers[i]->gradients.size(); j++, p++) {
+        for (int j = 0; j < layers[i]->get_trainable_params_count(); j++, p++) {
             Tensor::add(beta_1,mT[p],(1-beta_1),layers[i]->gradients[j],mT[p],0);
             layers[i]->gradients[j]->sqr_();
             Tensor::add(beta_2,vT[p],(1-beta_2),layers[i]->gradients[j],vT[p],0);
@@ -87,7 +87,7 @@ void Adam::applygrads(int batch) {
             Tensor::add(-lr, mCap[p],1.0,layers[i]->params[j], layers[i]->params[j], 0);
         }
     }
-    else p+=layers[i]->gradients.size();
+    else p+=layers[i]->get_trainable_params_count();
 
 
 }

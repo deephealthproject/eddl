@@ -41,6 +41,11 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
     output=new Tensor(input->getShape(),dev);
 //    if (!mem_level) delta=new Tensor(input->getShape(),dev);
 
+    mean=new Tensor(shape,dev);
+    mean->fill_(0.0);
+    variance=new Tensor(shape,dev);
+    variance->fill_(1.0);
+
     bn_mean=new Tensor(shape,dev);
     bn_var=new Tensor(shape,dev);
 
@@ -53,35 +58,37 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
       opa=new Tensor(output->getShape(),dev); //output pre-affine
 
-
       params.push_back(bn_g);
       params.push_back(bn_b);
 
       gradients.push_back(gbn_g);
       gradients.push_back(gbn_b);
-
     }
+
+    // no trainable:
+    params.push_back(mean);
+    params.push_back(variance);
 
     MD=new MapReduceDescriptor(input,axis);
 
-    if (momentum!=0.0) {
-        mean=new Tensor(shape,dev);
-        mean->fill_(0.0);
-
-        variance=new Tensor(shape,dev);
-        variance->fill_(1.0);
-
-    }
 
     parent->addchild(this);
     addparent(parent);
 }
 
 
-// virtual
+// override functions:
+int LBatchNorm::get_trainable_params_count()
+{
+  if (affine) return 2;  // only 2 trainable params
+  else return 0;  // no trainable params
+}
+
 void LBatchNorm::initialize() {
-  params[0]->fill_(1.0);
-  params[1]->fill_(0.0);
+  if (affine) {
+    params[0]->fill_(1.0);
+    params[1]->fill_(0.0);
+  }
 }
 
 void LBatchNorm::resize(int batch){
@@ -93,37 +100,9 @@ void LBatchNorm::resize(int batch){
         delete MD;
         MD=new MapReduceDescriptor(input,axis);
     }
-
-
 }
 
-void LBatchNorm::save(std::ofstream &ofs, string format){
-    // Save momentum TODO
-    if (momentum!=0) {
-        mean->savefs(ofs, format);
-        variance->savefs(ofs, format);
-    }
-}
 
-void LBatchNorm::load(std::ifstream &ifs, string format){
-    // load momentum TODO
-    if (momentum!=0) {
-        Tensor *t=mean->loadfs(ifs, format);
-        Tensor::copy(t,mean);
-        delete t;
-        t=variance->loadfs(ifs, format);
-        Tensor::copy(t,variance);
-        delete t;
-
-    }
-
-}
-
-void LBatchNorm::copy(Layer *l2)
-{
-    Tensor::copy(mean,((LBatchNorm*)l2)->mean);
-    Tensor::copy(variance,((LBatchNorm*)l2)->variance);
-}
 
 
 void LBatchNorm::forward() {
