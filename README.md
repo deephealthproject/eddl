@@ -18,11 +18,11 @@ Please note that EDDL is an ambitious project with few hands on it. Our short-te
 
  *"Plans are only good intentions unless they immediately degenerate into hard work"*
 
-## Installation [here](https://deephealthproject.github.io/eddldocs/installation/installation.html)
+## Installation [here](https://deephealthproject.github.io/eddl/installation/installation.html)
 
-## Getting started [here](https://deephealthproject.github.io/eddldocs/usage/getting_started.html)
+## Getting started [here](https://deephealthproject.github.io/eddl/usage/getting_started.html)
 
-## Documentation [here](https://deephealthproject.github.io/eddldocs/)
+## Documentation [here](https://deephealthproject.github.io/eddl/)
 
 ## Progress and coverage
 - [Deep-learning features](https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md)
