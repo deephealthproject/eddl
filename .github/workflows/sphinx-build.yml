@@ -1,0 +1,14 @@
+name: Sphinx build
+
+on: [push]
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: ammaraskar/sphinx-action@master
+        with:
+          docs-folder: "docs/source/"
+          pre-build-command: "apt-get update -y && apt-get install -y doxygen && pip install breathe"
+          build-command: "make html"
