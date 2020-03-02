@@ -50,7 +50,7 @@ If this doesn't fix your problem, you can disable OpenMP through the cmake flag 
 This error might be due to a conflict with the default compilers. A simple workaround is to force the use ``CClang``
 (for instance) for C and C++, and then install the EDDL again:
 
-.. code::
+.. code:: bash
 
     # Set env variables
     export CC=/usr/local/opt/llvm/bin/clang

@@ -11,7 +11,7 @@ Copy this code to a new file, and let's name it ``main.cpp``:
 
     int main(int argc, char* argv[]){
         Tensor* t = Tensor::ones({5, 5, 5});
-        std::cout << "Tensor sum=" << t->sum() << res;
+        std::cout << "Tensor sum=" << t->sum() << std::endl;
 
         return 0;
     }
