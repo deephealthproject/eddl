@@ -1,0 +1,46 @@
+name: build-docs
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        persist-credentials: false
+
+    - name: set up python
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.5'
+
+    - name: Install dependencies
+      run: |
+        pip install sphinx
+        pip install sphinx_rtd_theme
+        pip install breathe
+        sudo apt -y install doxygen
+
+    - name: Build documentation
+      run: |
+        cd docs/source/
+        make clean
+        make html
+        rm _build/html/.buildinfo
+        touch _build/html/.nojekyll
+
+    # - uses: actions/upload-artifact@v1
+    #   with:
+    #     name: documentation
+    #     path: docs/source/_build/html/
+
+    - name: Deploy
+      uses: JamesIves/github-pages-deploy-action@releases/v3
+      with:
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        BRANCH: gh-pages # The branch the action should deploy to.
+        FOLDER: docs/source/_build/html/
