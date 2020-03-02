@@ -1,4 +1,4 @@
-name: build (cpu)
+name: build
 
 on: [push]
 
