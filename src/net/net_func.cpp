@@ -101,27 +101,22 @@ void Net::do_applygrads() {
 
 /////////////////////////////////////////
 void Net::sync_weights() {
-    cout<<"\nSync weights...\n";
+    //cout<<"\nSync weights...\n";
     for (int j = 0; j < layers.size(); j++)
         for (int k = 0; k < layers[j]->params.size(); k++) {
             // Taking average
             layers[j]->params[k]->fill_(0.0);
-
-            if (!Tensor::eqsize(layers[j]->params[k],snets[0]->layers[j]->params[k])) {
-                // combine BN statistics
+            for (int i = 0; i < snets.size(); i++) {
+                Tensor::inc(snets[i]->layers[j]->params[k], layers[j]->params[k]);
             }
-            else {
-                for (int i = 0; i < snets.size(); i++) {
-                    Tensor::inc(snets[i]->layers[j]->params[k], layers[j]->params[k]);
-                }
-                layers[j]->params[k]->div_(snets.size());
+            layers[j]->params[k]->div_(snets.size());
 
-                // copy-back to devices
-                for (int i = 0; i < snets.size(); i++) {
-                    Tensor::copy(layers[j]->params[k], snets[i]->layers[j]->params[k]);
-                }
+            // copy-back to devices
+            for (int i = 0; i < snets.size(); i++) {
+                Tensor::copy(layers[j]->params[k], snets[i]->layers[j]->params[k]);
             }
-        }
+
+    }
 }
 
 
@@ -277,4 +272,3 @@ void copyTensor(Layer *l1,Layer *l2,string name){
     }
 
 }
-

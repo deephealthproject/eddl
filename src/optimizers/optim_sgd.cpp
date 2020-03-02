@@ -44,7 +44,7 @@ void SGD::setlayers(vlayer l) {
 
     // create momemtum tensors
     for (int i = 0; i < layers.size(); i++)
-        for (int j = 0; j < layers[i]->gradients.size(); j++) {
+        for (int j = 0; j < layers[i]->get_trainable_params_count(); j++) {
             mT.push_back(new Tensor(layers[i]->gradients[j]->getShape(), layers[i]->dev));
             mT.back()->fill_(0.0);
         }
@@ -57,11 +57,11 @@ void SGD::applygrads(int batch) {
 
     for (int i = 0; i < layers.size(); i++)
       if (layers[i]->trainable) {
-        for (int j = 0; j < layers[i]->gradients.size(); j++, p++) {
+        for (int j = 0; j < layers[i]->get_trainable_params_count(); j++, p++) {
             Tensor::add(lr , layers[i]->gradients[j], mu, mT[p], mT[p], 0);
             Tensor::add(1.0, layers[i]->params[j], -1.0, mT[p], layers[i]->params[j], 0);
         }
       }
-      else p+=layers[i]->gradients.size();
+      else p+=layers[i]->get_trainable_params_count();
 
 }

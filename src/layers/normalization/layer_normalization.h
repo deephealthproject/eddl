@@ -145,9 +145,7 @@ public:
     void initialize() override;
 
     void resize(int batch) override;
-    void save(std::ofstream &ofs, string format) override;
-    void load(std::ifstream &ifs, string format) override;
-    void copy(Layer *l2) override;
+    int get_trainable_params_count() override;
 
     string plot(int c) override;
 };

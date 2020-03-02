@@ -96,6 +96,7 @@ public:
     virtual void load(std::ifstream &ifs, string format="");
 
     virtual void reset();
+    virtual int get_trainable_params_count();
     virtual void zeroGrads();
     virtual string plot(int c) { return ""; }
 

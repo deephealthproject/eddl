@@ -44,7 +44,7 @@ void RMSProp::setlayers(vlayer l) {
 
     // create momemtum tensors
     for (int i = 0; i < layers.size(); i++)
-        for (int j = 0; j < layers[i]->gradients.size(); j++) {
+        for (int j = 0; j < layers[i]->get_trainable_params_count(); j++) {
             gT1.push_back(new Tensor(layers[i]->gradients[j]->getShape(), layers[i]->dev));
             gT1.back()->fill_(0.0);
             gT.push_back(new Tensor(layers[i]->gradients[j]->getShape(), layers[i]->dev));
@@ -58,7 +58,7 @@ void RMSProp::applygrads(int batch) {
     int p = 0;
     for (int i = 0; i < layers.size(); i++)
       if (layers[i]->trainable) {
-        for (int j = 0; j < layers[i]->gradients.size(); j++, p++) {
+        for (int j = 0; j < layers[i]->get_trainable_params_count(); j++, p++) {
             Tensor::copy(layers[i]->gradients[j],gT[p]);
             gT[p]->sqr_();
             gT[p]->mult_(1.0f-rho);
@@ -72,15 +72,16 @@ void RMSProp::applygrads(int batch) {
             Tensor::el_div(layers[i]->gradients[j],gT[p],gT[p],0);
 
             Tensor::copy(layers[i]->gradients[j],gT1[p]);
-			
+
             Tensor::add(-lr, gT[p],1.0,layers[i]->params[j], layers[i]->params[j], 0);
 
-			if (layers[i]->acc_gradients.size() > 0) {
-				Tensor::add(-lr, gT[p],1.0,layers[i]->acc_gradients[j], layers[i]->acc_gradients[j], 0);
-			}
+      			/*if (layers[i]->acc_gradients.size() > 0) {
+        				Tensor::add(-lr, gT[p],1.0,layers[i]->acc_gradients[j], layers[i]->acc_gradients[j], 0);
+      			}
+            */
         }
     }
-    else p+=layers[i]->gradients.size();
+    else p+=layers[i]->get_trainable_params_count();
 
 
 }

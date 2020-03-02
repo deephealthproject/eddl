@@ -33,10 +33,8 @@ void BN_forward(Tensor *input,Tensor *output, MapReduceDescriptor *MD, Tensor *b
 
     reduce_mean(osqr,bn_var,MD);
 
-    if (momentum!=0.0) {
-      Tensor::add(momentum, mean, (1.0-momentum), bn_mean,mean,0);
-      Tensor::add(momentum, variance, (1.0-momentum), bn_var,variance,0);
-    }
+    Tensor::add(momentum, mean, (1.0-momentum), bn_mean,mean,0);
+    Tensor::add(momentum, variance, (1.0-momentum), bn_var,variance,0);
 
     Tensor *sd=bn_var->clone();
 
