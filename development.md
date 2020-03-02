@@ -1,19 +1,30 @@
 # Development
 
+## Requirements
+
+Use the conda environment, or install these additional packages:
+
+```
+sudo apt-get install -y doxygen
+pip install sphinx
+pip install sphinx_rtd_theme
+pip install breathe
+```
+
 ## Documentation
 
-1. Generate doxygen files
+### Doxygen
 
 ```
 cd docs/doxygen
 doxygen
 ```
 
-2. Generate sphinx files
+### Sphinx
 
 ```
 cd docs/source
-make html
+make clean; make html
 ```
 
 ## Badges tool

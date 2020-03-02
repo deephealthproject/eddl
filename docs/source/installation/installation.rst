@@ -23,11 +23,34 @@ Using the Conda package
 A package for EDDL is available on the conda package manager.
 You can use one of the following lines according to your needs:
 
-.. code::
+.. code:: bash
 
     conda install -c deephealth eddl-cpu            # CPU (without ONNX) | Linux, MacOS
     conda install -c deephealth eddl-gpu            # GPU (without ONNX) | Linux
     conda install -c deephealth eddl-gpu-onnx       # GPU (with ONNX)    | Linux
+
+
+Enabling ONNX features
+~~~~~~~~~~~~~~~~~~~~~
+
+If you want to enable the ONNX features, in addition to installing the ``eddl-gpu-onnx`` binary, you need to
+install ``protobuf`` manually:
+
+
+.. code:: bash
+
+    # Download source
+    git clone https://github.com/protocolbuffers/protobuf.git
+    cd protobuf/
+    git submodule update --init --recursive
+
+    # Build and install
+    ./autogen.sh
+    ./configure
+    make -j4
+    sudo make check -j4
+    sudo make install
+    ldconfig
 
 
 .. image:: ../_static/images/logos/homebrew.svg
@@ -39,7 +62,7 @@ Using the Homebrew package
 A package for EDDL is available on the homebrew package manager.
 You need to run both lines, one to add the tap and the other to install the library.
 
-.. code::
+.. code:: bash
 
     brew tap deephealthproject/homebrew-tap
     brew install eddl
@@ -52,7 +75,7 @@ You need to run both lines, one to add the tap and the other to install the libr
     the default compilers. A simple workaround is to force the use ``CClang`` (for instance) for C and C++,
     and then install the EDDL again:
 
-    .. code::
+    .. code:: bash
 
         # Set env variables
         export CC=/usr/local/opt/llvm/bin/clang
@@ -78,7 +101,7 @@ install Anaconda (see the :doc:`build-options` section for more details about ex
 
 On Unix platforms, from the source directory:
 
-.. code::
+.. code:: bash
 
     # Download source code
     git clone https://github.com/deephealthproject/eddl.git
@@ -96,7 +119,7 @@ On Unix platforms, from the source directory:
 
 On Windows platforms, from the source directory:
 
-.. code::
+.. code:: bash
 
     # Download source code
     git clone https://github.com/deephealthproject/eddl.git
@@ -130,7 +153,7 @@ Including EDDL in your project
 The different packages of ``EDDL`` are built with cmake, so whatever the
 installation mode you choose, you can add ``EDDL`` to your project using cmake:
 
-.. code::
+.. code:: cmake
 
     find_package(eddl REQUIRED)
     target_link_libraries(your_target PUBLIC eddl)
