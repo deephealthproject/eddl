@@ -48,6 +48,8 @@ void gpu_hard_sigmoid(Tensor *A,Tensor *B);
 void gpu_d_hard_sigmoid(Tensor *D,Tensor *I,Tensor *PD);
 
 
+void gpu_exp(Tensor *A,Tensor *B);
+void gpu_d_exp(Tensor *D,Tensor *I,Tensor *PD);
 
 void gpu_tanh(Tensor *A,Tensor *B);
 void gpu_d_tanh(Tensor *D,Tensor *I,Tensor *PD);
