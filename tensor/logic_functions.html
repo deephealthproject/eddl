@@ -1,0 +1,580 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Logic functions &mdash; EDDL  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Masked array operations" href="mask_ops.html" />
+    <link rel="prev" title="Linear algebra" href="linear_algebra.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> EDDL
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation/build-options.html">Build and configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation/troubleshoot.html">Troubleshoot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation/faq.html">FAQ</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage/getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/intermediate.html">Intermediate models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/advanced.html">Advanced models</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Videotutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../videotutorials/developers.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../videotutorials/usage.html">Showcase</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Layers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../layers/core.html">Core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/activations.html">Activations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/data_augmentation.html">Data augmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/data_transformation.html">Data transformation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/convolutional.html">Convolutions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/noise.html">Noise Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/pooling.html">Pooling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/merge.html">Merge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/generators.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/operators.html">Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/reduction.html">Reduction Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/rnn.html">Recurrent</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../model/model.html">Model</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Training</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../training/coarse.html">Coarse training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../training/fine_grained.html">Fine-grained training</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Test &amp; Score</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../test_score/test_score.html">Test &amp; Score</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Bundle</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/losses.html">Losses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/regularizers.html">Regularizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/initializers.html">Initializers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/optimizers.html">Optimizers</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Computing Services</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html">CPU</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#gpu">GPU</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#fpga">FPGA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#compss">COMPSS</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Datasets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../misc/misc.html">Miscellaneous</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tensor</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="create.html">Creation Routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manipulation.html">Manipulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="binary.html">Binary operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="indexing.html">Indexing routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="input_output.html">Input/Output Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="linear_algebra.html">Linear algebra</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Logic functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#truth-value-testing">Truth value testing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#all">all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#any">any</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#array-contents">Array contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#isfinite">isfinite</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#isinf">isinf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#isnan">isnan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#isneginf">isneginf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#isposinf">isposinf</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#logical-operations">Logical operations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#logical-and">logical_and</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logical-or">logical_or</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logical-not">logical_not</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logical-xor">logical_xor</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#comparison">Comparison</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#allclose">allclose</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#isclose">isclose</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#greater">greater</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#greater-equal">greater_equal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#less">less</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#less-equal">less_equal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#equal">equal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#not-equal">not_equal</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mask_ops.html">Masked array operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="math.html">Mathematical functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellaneous</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EDDL</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Logic functions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/tensor/logic_functions.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="logic-functions">
+<h1>Logic functions<a class="headerlink" href="#logic-functions" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Section in progress</p>
+<p>Read this: <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md">https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md</a></p>
+</div>
+<div class="section" id="truth-value-testing">
+<h2>Truth value testing<a class="headerlink" href="#truth-value-testing" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="all">
+<h3>all<a class="headerlink" href="#all" title="Permalink to this headline">¶</a></h3>
+<p>Test whether all elements evaluate to True.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">bool</span> <span class="nf">all</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="any">
+<h3>any<a class="headerlink" href="#any" title="Permalink to this headline">¶</a></h3>
+<p>Test whether any element evaluates to True</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">bool</span> <span class="nf">any</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="array-contents">
+<h2>Array contents<a class="headerlink" href="#array-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="isfinite">
+<h3>isfinite<a class="headerlink" href="#isfinite" title="Permalink to this headline">¶</a></h3>
+<p>Test element-wise for finiteness (not infinity or not Not a Number).</p>
+<blockquote>
+<div><p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">*A</span></code>: Tensor to test.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor to store the results of the test as booleans.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">isfinite</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="isinf">
+<h3>isinf<a class="headerlink" href="#isinf" title="Permalink to this headline">¶</a></h3>
+<p>Test element-wise for positive or negative infinity.</p>
+<blockquote>
+<div><p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">*A</span></code>: Tensor to test.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor to store the results of the test as booleans.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">isinf</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="isnan">
+<h3>isnan<a class="headerlink" href="#isnan" title="Permalink to this headline">¶</a></h3>
+<p>Test element-wise for NaN.</p>
+<blockquote>
+<div><p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">*A</span></code>: Tensor to test.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor to store the results of the test as booleans.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">isnan</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="isneginf">
+<h3>isneginf<a class="headerlink" href="#isneginf" title="Permalink to this headline">¶</a></h3>
+<p>Test element-wise for negative infinity.</p>
+<blockquote>
+<div><p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">*A</span></code>: Tensor to test.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor to store the results of the test as booleans.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">isneginf</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="isposinf">
+<h3>isposinf<a class="headerlink" href="#isposinf" title="Permalink to this headline">¶</a></h3>
+<p>Test element-wise for positive infinity.</p>
+<blockquote>
+<div><p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">*A</span></code>: Tensor to test.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor to store the results of the test as booleans.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">isposinf</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="logical-operations">
+<h2>Logical operations<a class="headerlink" href="#logical-operations" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="logical-and">
+<h3>logical_and<a class="headerlink" href="#logical-and" title="Permalink to this headline">¶</a></h3>
+<p>Compute the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">and</span> <span class="pre">B</span></code> element-wise.</p>
+<blockquote>
+<div><p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor to store the results of the operation.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">logical_and</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="logical-or">
+<h3>logical_or<a class="headerlink" href="#logical-or" title="Permalink to this headline">¶</a></h3>
+<p>Compute the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">or</span> <span class="pre">B</span></code> element-wise.</p>
+<blockquote>
+<div><p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor to store the results of the operation.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">logical_or</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="logical-not">
+<h3>logical_not<a class="headerlink" href="#logical-not" title="Permalink to this headline">¶</a></h3>
+<p>Compute the truth value of <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">A</span></code> element-wise.</p>
+<blockquote>
+<div><p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor to store the results of the operation.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">logical_not</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="logical-xor">
+<h3>logical_xor<a class="headerlink" href="#logical-xor" title="Permalink to this headline">¶</a></h3>
+<p>Compute the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">xor</span> <span class="pre">B</span></code>, element-wise.</p>
+<blockquote>
+<div><p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor to store the results of the operation.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">logical_xor</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="comparison">
+<h2>Comparison<a class="headerlink" href="#comparison" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="allclose">
+<h3>allclose<a class="headerlink" href="#allclose" title="Permalink to this headline">¶</a></h3>
+<p>Returns True if two arrays are element-wise equal within a tolerance.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">bool</span> <span class="nf">allclose</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="kt">float</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">equal_nan</span><span class="o">=</span><span class="nb">false</span><span class="p">);</span>  <span class="c1">// Returns true or false</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="isclose">
+<h3>isclose<a class="headerlink" href="#isclose" title="Permalink to this headline">¶</a></h3>
+<p>Returns a boolean array where two arrays are element-wise equal within a tolerance.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">isclose</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">,</span> <span class="kt">float</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="kt">float</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">equal_nan</span><span class="o">=</span><span class="nb">false</span><span class="p">);</span>  <span class="c1">// Returns a boolean tensor</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="greater">
+<h3>greater<a class="headerlink" href="#greater" title="Permalink to this headline">¶</a></h3>
+<p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">&gt;</span> <span class="pre">B</span></code> element-wise.</p>
+<blockquote>
+<div><p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor to store the results of the operation.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">greater</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="greater-equal">
+<h3>greater_equal<a class="headerlink" href="#greater-equal" title="Permalink to this headline">¶</a></h3>
+<p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">&gt;=</span> <span class="pre">B</span></code> element-wise.</p>
+<blockquote>
+<div><p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor to store the results of the operation.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">greater_equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="less">
+<h3>less<a class="headerlink" href="#less" title="Permalink to this headline">¶</a></h3>
+<p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">&lt;</span> <span class="pre">B</span></code> element-wise.</p>
+<blockquote>
+<div><p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor to store the results of the operation.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">less</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="less-equal">
+<h3>less_equal<a class="headerlink" href="#less-equal" title="Permalink to this headline">¶</a></h3>
+<p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">=&lt;</span> <span class="pre">B</span></code> element-wise.</p>
+<blockquote>
+<div><p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor to store the results of the operation.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">less_equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="equal">
+<h3>equal<a class="headerlink" href="#equal" title="Permalink to this headline">¶</a></h3>
+<p>Return <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">==</span> <span class="pre">B</span></code> element-wise.</p>
+<blockquote>
+<div><p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor to store the results of the operation.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="not-equal">
+<h3>not_equal<a class="headerlink" href="#not-equal" title="Permalink to this headline">¶</a></h3>
+<p>Return <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">!=</span> <span class="pre">B</span></code> element-wise.</p>
+<blockquote>
+<div><p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor to store the results of the operation.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">not_equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mask_ops.html" class="btn btn-neutral float-right" title="Masked array operations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="linear_algebra.html" class="btn btn-neutral float-left" title="Linear algebra" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, eddl
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

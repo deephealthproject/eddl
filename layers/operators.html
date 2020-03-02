@@ -1,0 +1,557 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Operators &mdash; EDDL  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Reduction Layers" href="reduction.html" />
+    <link rel="prev" title="Generators" href="generators.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> EDDL
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation/build-options.html">Build and configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation/troubleshoot.html">Troubleshoot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation/faq.html">FAQ</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage/getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/intermediate.html">Intermediate models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/advanced.html">Advanced models</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Videotutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../videotutorials/developers.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../videotutorials/usage.html">Showcase</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Layers</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="activations.html">Activations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_augmentation.html">Data augmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_transformation.html">Data transformation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convolutional.html">Convolutions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="noise.html">Noise Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pooling.html">Pooling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="merge.html">Merge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generators.html">Generators</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Operators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abs">Abs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#subtraction">Subtraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#division">Division</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exponent">Exponent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#logarithm-natural">Logarithm (natural)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#logarithm-base-2">Logarithm base 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#logarithm-base-10">Logarithm base 10</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multiplication">Multiplication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#power">Power</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sqrt">Sqrt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#addition">Addition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#select">Select</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#permute">Permute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reducemean">ReduceMean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reducevar">ReduceVar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reducesum">ReduceSum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reducemax">ReduceMax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reducemin">ReduceMin</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reduction.html">Reduction Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rnn.html">Recurrent</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../model/model.html">Model</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Training</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../training/coarse.html">Coarse training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../training/fine_grained.html">Fine-grained training</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Test &amp; Score</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../test_score/test_score.html">Test &amp; Score</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Bundle</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/losses.html">Losses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/regularizers.html">Regularizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/initializers.html">Initializers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/optimizers.html">Optimizers</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Computing Services</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html">CPU</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#gpu">GPU</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#fpga">FPGA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#compss">COMPSS</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Datasets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../misc/misc.html">Miscellaneous</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tensor</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/binary.html">Binary operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/indexing.html">Indexing routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/input_output.html">Input/Output Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/linear_algebra.html">Linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/logic_functions.html">Logic functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/mask_ops.html">Masked array operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/math.html">Mathematical functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/misc.html">Miscellaneous</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EDDL</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Operators</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/layers/operators.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="operators">
+<h1>Operators<a class="headerlink" href="#operators" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="abs">
+<h2>Abs<a class="headerlink" href="#abs" title="Permalink to this headline">¶</a></h2>
+<p>Computes the absolute operation</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Abs</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="subtraction">
+<h2>Subtraction<a class="headerlink" href="#subtraction" title="Permalink to this headline">¶</a></h2>
+<p>Computes the subtract operation</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Diff</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="n">layer</span> <span class="n">l2</span><span class="p">);</span>
+ <span class="n">layer</span> <span class="nf">Diff</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="kt">float</span> <span class="n">k</span><span class="p">);</span>
+ <span class="n">layer</span> <span class="nf">Diff</span><span class="p">(</span><span class="kt">float</span> <span class="n">k</span><span class="p">,</span> <span class="n">layer</span> <span class="n">l1</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="division">
+<h2>Division<a class="headerlink" href="#division" title="Permalink to this headline">¶</a></h2>
+<p>Computes the division operation</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Div</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="n">layer</span> <span class="n">l2</span><span class="p">);</span>
+ <span class="n">layer</span> <span class="nf">Div</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="kt">float</span> <span class="n">k</span><span class="p">);</span>
+ <span class="n">layer</span> <span class="nf">Div</span><span class="p">(</span><span class="kt">float</span> <span class="n">k</span><span class="p">,</span> <span class="n">layer</span> <span class="n">l1</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="exponent">
+<h2>Exponent<a class="headerlink" href="#exponent" title="Permalink to this headline">¶</a></h2>
+<p>Computes the exponent operation</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Exp</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="logarithm-natural">
+<h2>Logarithm (natural)<a class="headerlink" href="#logarithm-natural" title="Permalink to this headline">¶</a></h2>
+<p>Computes the natural logarithm operation</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Log</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="logarithm-base-2">
+<h2>Logarithm base 2<a class="headerlink" href="#logarithm-base-2" title="Permalink to this headline">¶</a></h2>
+<p>Computes the logarithm of base 2 operation</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Log2</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="logarithm-base-10">
+<h2>Logarithm base 10<a class="headerlink" href="#logarithm-base-10" title="Permalink to this headline">¶</a></h2>
+<p>Computes the logarithm of base 10 operation</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Abs</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="multiplication">
+<h2>Multiplication<a class="headerlink" href="#multiplication" title="Permalink to this headline">¶</a></h2>
+<p>Computes the product operation</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Mult</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="n">layer</span> <span class="n">l2</span><span class="p">);</span>
+ <span class="n">layer</span> <span class="nf">Mult</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="kt">float</span> <span class="n">k</span><span class="p">);</span>
+ <span class="n">layer</span> <span class="nf">Mult</span><span class="p">(</span><span class="kt">float</span> <span class="n">k</span><span class="p">,</span><span class="n">layer</span> <span class="n">l1</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="power">
+<h2>Power<a class="headerlink" href="#power" title="Permalink to this headline">¶</a></h2>
+<p>Computes the power operation</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Pow</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="n">layer</span> <span class="n">l2</span><span class="p">);</span>
+ <span class="n">layer</span> <span class="nf">Pow</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="kt">float</span> <span class="n">k</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="sqrt">
+<h2>Sqrt<a class="headerlink" href="#sqrt" title="Permalink to this headline">¶</a></h2>
+<p>Computes the power operation</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Sqrt</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="addition">
+<h2>Addition<a class="headerlink" href="#addition" title="Permalink to this headline">¶</a></h2>
+<p>Computes the power operation</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Sum</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="n">layer</span> <span class="n">l2</span><span class="p">);</span>
+ <span class="n">layer</span> <span class="nf">Sum</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="kt">float</span> <span class="n">k</span><span class="p">);</span>
+ <span class="n">layer</span> <span class="nf">Sum</span><span class="p">(</span><span class="kt">float</span> <span class="n">k</span><span class="p">,</span> <span class="n">layer</span> <span class="n">l1</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="select">
+<h2>Select<a class="headerlink" href="#select" title="Permalink to this headline">¶</a></h2>
+<p>Selects a subset of the output tensor using indices (similar to Numpy; the batch is ignored)</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Select</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">indices</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">);</span>
+ <span class="c1">// e.g.: Select(l, {&quot;-1&quot;, &quot;20:100&quot;, &quot;50:-10&quot;, &quot;:&quot;}</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="permute">
+<h2>Permute<a class="headerlink" href="#permute" title="Permalink to this headline">¶</a></h2>
+<p>Permute the axis of the output tensor (the batch is ignored)</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
+</div>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Permute</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">dims</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">);</span>
+ <span class="c1">// e.g.: Permute(l, {0, 3, 1, 2})</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="reducemean">
+<h2>ReduceMean<a class="headerlink" href="#reducemean" title="Permalink to this headline">¶</a></h2>
+<p>Reduced mean</p>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">ReduceMean</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">},</span> <span class="kt">bool</span> <span class="n">keepdims</span> <span class="o">=</span> <span class="nb">false</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="reducevar">
+<h2>ReduceVar<a class="headerlink" href="#reducevar" title="Permalink to this headline">¶</a></h2>
+<p>Reduced var</p>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">ReduceVar</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">},</span> <span class="kt">bool</span> <span class="n">keepdims</span> <span class="o">=</span> <span class="nb">false</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="reducesum">
+<h2>ReduceSum<a class="headerlink" href="#reducesum" title="Permalink to this headline">¶</a></h2>
+<p>Reduced sum</p>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">ReduceSum</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">},</span> <span class="kt">bool</span> <span class="n">keepdims</span> <span class="o">=</span> <span class="nb">false</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="reducemax">
+<h2>ReduceMax<a class="headerlink" href="#reducemax" title="Permalink to this headline">¶</a></h2>
+<p>Reduced max</p>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">ReduceMax</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">},</span> <span class="kt">bool</span> <span class="n">keepdims</span> <span class="o">=</span> <span class="nb">false</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="reducemin">
+<h2>ReduceMin<a class="headerlink" href="#reducemin" title="Permalink to this headline">¶</a></h2>
+<p>Reduced min</p>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">ReduceMin</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">},</span> <span class="kt">bool</span> <span class="n">keepdims</span> <span class="o">=</span> <span class="nb">false</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="reduction.html" class="btn btn-neutral float-right" title="Reduction Layers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="generators.html" class="btn btn-neutral float-left" title="Generators" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, eddl
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

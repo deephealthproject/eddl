@@ -1,0 +1,415 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Installation &mdash; EDDL  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Build and configuration" href="build-options.html" />
+    <link rel="prev" title="Welcome to EDDL’s documentation!" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> EDDL
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Installation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#using-the-conda-package">Using the Conda package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#enabling-onnx-features">Enabling ONNX features</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#using-the-homebrew-package">Using the Homebrew package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#from-source-with-cmake">From source with cmake</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#including-eddl-in-your-project">Including EDDL in your project</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="build-options.html">Build and configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshoot.html">Troubleshoot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage/getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/intermediate.html">Intermediate models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/advanced.html">Advanced models</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Videotutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../videotutorials/developers.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../videotutorials/usage.html">Showcase</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Layers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../layers/core.html">Core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/activations.html">Activations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/data_augmentation.html">Data augmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/data_transformation.html">Data transformation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/convolutional.html">Convolutions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/noise.html">Noise Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/pooling.html">Pooling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/merge.html">Merge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/generators.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/operators.html">Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/reduction.html">Reduction Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layers/rnn.html">Recurrent</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Model</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../model/model.html">Model</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Training</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../training/coarse.html">Coarse training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../training/fine_grained.html">Fine-grained training</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Test &amp; Score</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../test_score/test_score.html">Test &amp; Score</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Bundle</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/losses.html">Losses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/regularizers.html">Regularizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/initializers.html">Initializers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/optimizers.html">Optimizers</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Computing Services</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html">CPU</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#gpu">GPU</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#fpga">FPGA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bundle/computing_service.html#compss">COMPSS</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Datasets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/classification.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/segmentation.html">Segmentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../misc/misc.html">Miscellaneous</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tensor</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/create.html">Creation Routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/manipulation.html">Manipulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/binary.html">Binary operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/indexing.html">Indexing routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/input_output.html">Input/Output Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/linear_algebra.html">Linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/logic_functions.html">Logic functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/mask_ops.html">Masked array operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/math.html">Mathematical functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor/misc.html">Miscellaneous</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EDDL</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Installation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/installation/installation.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <style>
+.rst-content .section>img {
+    width: 30px;
+    margin-bottom: 0;
+    margin-top: 0;
+    margin-right: 15px;
+    margin-left: 15px;
+    float: left;
+}
+</style><div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<img alt="../_images/conda.svg" src="../_images/conda.svg" /><div class="section" id="using-the-conda-package">
+<h2>Using the Conda package<a class="headerlink" href="#using-the-conda-package" title="Permalink to this headline">¶</a></h2>
+<p>A package for EDDL is available on the conda package manager.
+You can use one of the following lines according to your needs:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install -c deephealth eddl-cpu            <span class="c1"># CPU (without ONNX) | Linux, MacOS</span>
+conda install -c deephealth eddl-gpu            <span class="c1"># GPU (without ONNX) | Linux</span>
+conda install -c deephealth eddl-gpu-onnx       <span class="c1"># GPU (with ONNX)    | Linux</span>
+</pre></div>
+</div>
+<div class="section" id="enabling-onnx-features">
+<h3>Enabling ONNX features<a class="headerlink" href="#enabling-onnx-features" title="Permalink to this headline">¶</a></h3>
+<p>If you want to enable the ONNX features, in addition to installing the <code class="docutils literal notranslate"><span class="pre">eddl-gpu-onnx</span></code> binary, you need to
+install <code class="docutils literal notranslate"><span class="pre">protobuf</span></code> manually:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download source</span>
+git clone https://github.com/protocolbuffers/protobuf.git
+<span class="nb">cd</span> protobuf/
+git submodule update --init --recursive
+
+<span class="c1"># Build and install</span>
+./autogen.sh
+./configure
+make -j4
+sudo make check -j4
+sudo make install
+ldconfig
+</pre></div>
+</div>
+<img alt="../_images/homebrew.svg" src="../_images/homebrew.svg" /></div>
+</div>
+<div class="section" id="using-the-homebrew-package">
+<h2>Using the Homebrew package<a class="headerlink" href="#using-the-homebrew-package" title="Permalink to this headline">¶</a></h2>
+<p>A package for EDDL is available on the homebrew package manager.
+You need to run both lines, one to add the tap and the other to install the library.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew tap deephealthproject/homebrew-tap
+brew install eddl
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only <code class="docutils literal notranslate"><span class="pre">CPU</span></code> support.</p>
+<p>If you get an error like <code class="docutils literal notranslate"><span class="pre">Undefined</span> <span class="pre">symbols</span> <span class="pre">for</span> <span class="pre">architecture</span> <span class="pre">x86_64:</span></code>, it might be due to a conflict with
+the default compilers. A simple workaround is to force the use <code class="docutils literal notranslate"><span class="pre">CClang</span></code> (for instance) for C and C++,
+and then install the EDDL again:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set env variables</span>
+<span class="nb">export</span> <span class="nv">CC</span><span class="o">=</span>/usr/local/opt/llvm/bin/clang
+<span class="nb">export</span> <span class="nv">CXX</span><span class="o">=</span>/usr/local/opt/llvm/bin/clang++
+<span class="nb">export</span> <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&quot;-L/usr/local/opt/llvm/lib&quot;</span>
+<span class="nb">export</span> <span class="nv">CPPFLAGS</span><span class="o">=</span><span class="s2">&quot;-I/usr/local/opt/llvm/include&quot;</span>
+
+<span class="c1"># Add tap</span>
+brew tap deephealthproject/homebrew-tap
+
+<span class="c1"># Uninstall and install the EDDL</span>
+brew uninstall eddl
+brew install eddl
+</pre></div>
+</div>
+</div>
+<img alt="../_images/cmake.svg" src="../_images/cmake.svg" /></div>
+<div class="section" id="from-source-with-cmake">
+<h2>From source with cmake<a class="headerlink" href="#from-source-with-cmake" title="Permalink to this headline">¶</a></h2>
+<p>You can also install <code class="docutils literal notranslate"><span class="pre">EDDL</span></code> from source with cmake. In order to manage the external dependencies we recommend to
+install Anaconda (see the <a class="reference internal" href="build-options.html"><span class="doc">Build and configuration</span></a> section for more details about external dependencies).</p>
+<p>On Unix platforms, from the source directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download source code</span>
+git clone https://github.com/deephealthproject/eddl.git
+<span class="nb">cd</span> eddl/
+
+<span class="c1"># Install dependencies</span>
+conda env create -f environment.yml
+conda activate eddl
+
+<span class="c1"># Build and install</span>
+mkdir build
+<span class="nb">cd</span> build
+cmake -DCMAKE_INSTALL_PREFIX<span class="o">=</span>path_to_prefix ..
+make install
+</pre></div>
+</div>
+<p>On Windows platforms, from the source directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download source code</span>
+git clone https://github.com/deephealthproject/eddl.git
+<span class="nb">cd</span> eddl/
+
+<span class="c1"># Install dependencies</span>
+conda env create -f environment.yml
+conda activate eddl
+
+<span class="c1"># Build and install</span>
+mkdir build
+<span class="nb">cd</span> build
+cmake -G <span class="s2">&quot;NMake Makefiles&quot;</span> -DCMAKE_INSTALL_PREFIX<span class="o">=</span>path_to_prefix ..
+nmake
+nmake install
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">path_to_prefix</span></code> is the absolute path to the folder where cmake searches for
+dependencies and installs libraries. <code class="docutils literal notranslate"><span class="pre">EDDL</span></code> installation from cmake assumes
+this folder contains <code class="docutils literal notranslate"><span class="pre">include</span></code> and <code class="docutils literal notranslate"><span class="pre">lib</span></code> subfolders.</p>
+<p>See the <a class="reference internal" href="build-options.html"><span class="doc">Build and configuration</span></a> section for more details about cmake options.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can ignore the flag <code class="docutils literal notranslate"><span class="pre">-DCMAKE_INSTALL_PREFIX</span></code> if you prefer to use the standard paths</p>
+</div>
+</div>
+<div class="section" id="including-eddl-in-your-project">
+<h2>Including EDDL in your project<a class="headerlink" href="#including-eddl-in-your-project" title="Permalink to this headline">¶</a></h2>
+<p>The different packages of <code class="docutils literal notranslate"><span class="pre">EDDL</span></code> are built with cmake, so whatever the
+installation mode you choose, you can add <code class="docutils literal notranslate"><span class="pre">EDDL</span></code> to your project using cmake:</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">find_package</span><span class="p">(</span><span class="s">eddl</span> <span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">your_target</span> <span class="s">PUBLIC</span> <span class="s">eddl</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="build-options.html" class="btn btn-neutral float-right" title="Build and configuration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral float-left" title="Welcome to EDDL’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, eddl
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
