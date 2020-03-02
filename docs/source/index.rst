@@ -53,6 +53,7 @@ The code is open source, and `available on github`_.
     layers/merge.rst
     layers/generators.rst
     layers/operators.rst
+    layers/reduction.rst
     layers/rnn.rst
 
 

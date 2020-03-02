@@ -133,7 +133,7 @@ void LGroupNorm::forward() {
 
   Tensor::select(A,B, PD);
 
-  BN_forward(B,C,MD,bn_mean,bn_var,mean,variance,momentum,epsilon,affine, bn_g,bn_b,mode==TRMODE);
+  //BN_forward(B,C,MD,bn_mean,bn_var,mean,variance,momentum,epsilon,affine, bn_g,bn_b,mode==TRMODE);
 
   Tensor::select(C,A, PD2);
 
@@ -171,7 +171,7 @@ void LGroupNorm::backward()
   A=new Tensor(PD->oshape,dev);
   A->fill_(0.0);
 
-  BN_backward(C,B,A,MD,bn_mean,bn_var,mean,variance,epsilon);
+  //BN_backward(C,B,A,MD,bn_mean,bn_var,mean,variance,epsilon);
 
   delete B;
 

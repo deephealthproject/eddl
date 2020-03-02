@@ -4,7 +4,7 @@ Regularizers
 L1
 ---
 
-L1 regularizer.
+.. doxygenfunction:: L1
 
 
 Example:
@@ -18,7 +18,7 @@ Example:
 L2
 ---
 
-L2 regularizer.
+.. doxygenfunction:: L2
 
 Example:
 
@@ -31,7 +31,7 @@ Example:
 L1L2
 -----
 
-L1L2 regularizer.
+.. doxygenfunction:: L1L2
 
 Example:
 

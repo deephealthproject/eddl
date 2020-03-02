@@ -27,7 +27,7 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer GlobalMaxPool(layer parent, string name = ""); //Todo: Implement
+    layer GlobalMaxPool(layer parent, string name = "");
 
 
 
@@ -38,7 +38,9 @@ AveragePooling
 
 .. note::
 
-    Not yet implemented.
+    **Not implemented yet**
+
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers
 
 Example:
 
@@ -57,13 +59,15 @@ GlobalAveragePooling
 
 .. note::
 
-    Not yet implemented.
+    **Not implemented yet**
+
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers
 
 Example:
 
 .. code-block:: c++
    :linenos:
 
-    layer GlobalAveragePool(layer parent, string name = ""); //Todo: Implement
+    layer GlobalAveragePool(layer parent, string name = "");
 
 

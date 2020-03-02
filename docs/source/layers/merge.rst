@@ -4,7 +4,7 @@ Merge
 Add
 ----
 
-It takes as input a list of layers, all of the same shape, and returns a single tensor (also of the same shape).
+.. doxygenfunction:: Add
 
 Example:
 
@@ -18,7 +18,7 @@ Example:
 Average
 -------
 
-It takes as input a list of layers, all of the same shape, and returns a single tensor (also of the same shape).
+.. doxygenfunction:: Average
 
 Example:
 
@@ -32,7 +32,7 @@ Example:
 Concat
 ------
 
-It takes as input a list of layers and returns a single tensor, the concatenation of all inputs at the ``axis=n``.
+.. doxygenfunction:: Concat
 
 Example:
 
@@ -60,7 +60,7 @@ Example:
 Maximum
 -------
 
-It takes as input a list of layers, all of the same shape, and returns a single tensor (also of the same shape).
+.. doxygenfunction:: Maximum
 
 Example:
 
@@ -74,7 +74,7 @@ Example:
 Minimum
 -------
 
-It takes as input a list of layers, all of the same shape, and returns a single tensor (also of the same shape).
+.. doxygenfunction:: Minimum
 
 Example:
 
@@ -88,7 +88,7 @@ Example:
 Subtract
 ---------
 
-It takes as input a list of layers, all of the same shape, and returns a single tensor (also of the same shape).
+.. doxygenfunction:: Subtract
 
 Example:
 

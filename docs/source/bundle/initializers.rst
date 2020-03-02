@@ -24,7 +24,7 @@ GlorotUniform
 -------------
 
 .. doxygenfunction:: GlorotUniform
-s
+
 Example:
 
 .. code-block:: c++

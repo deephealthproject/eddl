@@ -1,7 +1,7 @@
 Data augmentation
 =================
 
-This layers performs random transformations over the previous layer.
+This layers perform random transformations over the previous layer.
 Ranges are defined using relative coordinates between 0 and 1.
 
 .. note::
@@ -12,6 +12,27 @@ Ranges are defined using relative coordinates between 0 and 1.
 
     - ``constant``: The input is extended by filling all values beyond the edge with the same constant value, defined by the cval parameter.
     - ``original`` (for rotation): The input is extended by filling all values beyond the edge with the original values
+
+
+RandomAffine
+-------------
+
+
+.. doxygenfunction:: RandomAffine
+
+.. note::
+
+    **Not implemented yet**
+
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-augmentations
+
+Example:
+
+.. code-block:: c++
+   :linenos:
+
+    layer RandomAffine(layer parent, vector<float> angle, vector<float> translate, vector<float> scale, vector<float> shear, string name="");
+
 
 
 RandomCrop
@@ -78,7 +99,9 @@ RandomGrayscale
 
 .. note::
 
-    Not yet implemented
+    **Not implemented yet**
+
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-augmentations
 
 Example:
 

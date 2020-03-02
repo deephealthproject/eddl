@@ -93,7 +93,7 @@ void gpu_conv2D(ConvolDescriptor *D) {
 
   }
 
-  gpu_addbias_k<<<D->O->shape[0],D->bias->shape[0]>>>(D->O->ptr, D->O->shape[0], D->r,D->c,D->nk,D->bias->ptr);
+  if (D->use_bias) gpu_addbias_k<<<D->O->shape[0],D->bias->shape[0]>>>(D->O->ptr, D->O->shape[0], D->r,D->c,D->nk,D->bias->ptr);
 
   check_cuda(cudaDeviceSynchronize(),"gpu_addbias");
 
@@ -134,7 +134,7 @@ void gpu_conv2D_grad(ConvolDescriptor *D){
     }
   }
 
-  gpu_deltabias_k<<<D->D->shape[0],D->bias->shape[0]>>>(D->D->ptr, D->D->shape[0], D->r,D->c,D->nk,D->gbias->ptr);
+  if (D->use_bias) gpu_deltabias_k<<<D->D->shape[0],D->bias->shape[0]>>>(D->D->ptr, D->D->shape[0], D->r,D->c,D->nk,D->gbias->ptr);
   check_cuda(cudaDeviceSynchronize(),"gpu_deltabias");
 
 }

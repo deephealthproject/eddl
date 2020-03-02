@@ -4,15 +4,8 @@ Test & Score
 Evaluate model
 --------------
 
-Returns the loss value & metrics values for the model in test mode.
+.. doxygenfunction:: eddl::evaluate
 
-.. note::
-
-    Parameters:
-
-    - ``m``: Model
-    - ``in`` : Input data (features)
-    - ``out`` : Output data (labels)
 
 Example:
 

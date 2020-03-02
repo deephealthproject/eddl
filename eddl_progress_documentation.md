@@ -100,12 +100,12 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Dense   |    ❌️       |      ✔️       |          |
-| Embedding |  ❌️       |      ✔️       |          |
-| Reshape |    ❌️       |      ✔️       |          |
-| Transpose |  ❌️       |      ✔️       |          |
-| Input   |    ❌️       |      ✔️       |          |
-| Droput  |    ❌️       |      ✔️       |          |
+| Dense   |     ✔️       |      ✔️       | using breathe |
+| Embedding |   ✔️       |      ✔️       | using breathe |
+| Reshape |     ✔️       |      ✔️       | using breathe |
+| Transpose |   ✔️       |      ✔️       | using breathe |
+| Input   |     ✔️       |      ✔️       | using breathe |
+| Droput  |     ✔️       |      ✔️       | using breathe |
 
 ## Activations
 
@@ -114,14 +114,14 @@
 | Softmax |      ✔️      |      ✔️       | using breathe |
 | Sigmoid |      ✔️      |      ✔️       | using breathe |
 | ReLu    |      ✔️      |      ✔️       | using breathe |
-| Threshold ReLu |  ❌️  |      ✔️       |          |
-| Leaky ReLu |  ❌️      |      ✔️       |          |
-| ELu     |     ❌️      |      ✔️       |          |
-| SeLu    |     ❌️      |      ✔️       |          |
-| Exponential | ❌️      |      ✔️       |          |
-| Softplus |    ❌️      |      ✔️       |          |
-| Softsign |    ❌️      |      ✔️       |          |
-| Linear  |     ❌️      |      ✔️       |          |
+| Threshold ReLu |  ✔️   |      ✔️       | using breathe |
+| Leaky ReLu |  ✔️       |      ✔️       | using breathe |
+| ELu     |     ✔️       |      ✔️       | using breathe |
+| SeLu    |     ✔️       |      ✔️       | using breathe |
+| Exponential | ✔️       |      ✔️       | using breathe |
+| Softplus |    ✔️       |      ✔️       | using breathe |
+| Softsign |    ✔️       |      ✔️       | using breathe |
+| Linear  |     ✔️       |      ✔️       | using breathe |
 | Tanh    |      ✔️      |      ✔️       | using breathe |
 
 
@@ -153,29 +153,30 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Crop    |      ❌️     |      ✔️       |          |
-| CenteredCrop | ❌️     |      ✔️       |          |
-| ColorJitter |  ❌️     |      ✔️       | note: not yet implemented |
-| CropScale |    ❌️     |      ✔️       |          |
-| Cutout  |      ❌️     |      ✔️       |          |
-| Flip    |      ❌️     |      ✔️       |          |
-| Grayscale |    ❌️     |      ✔️       | note: not yet implemented |
-| HorizontalFlip | ❌️   |      ✔️       |          |
-| Pad     |      ❌️     |      ✔️       | note: not yet implemented |
-| Rotate  |      ❌️     |      ✔️       |          |
-| Scale   |      ❌️     |      ✔️       |          |
-| Shift   |      ❌️     |      ✔️       |          |
-| VerticalFlip | ❌️     |      ✔️       |          |
-| Normalize |    ❌️     |      ✔️       | note: not yet implemented |
+| Affine  |      ✔️      |      ✔️       | note: not yet implemented <br/> with Breathe |
+| Crop    |      ✔️      |      ✔️       | with Breathe |
+| CenteredCrop | ✔️      |      ✔️       | with Breathe |
+| ColorJitter |  ✔️      |      ✔️       | note: not yet implemented <br/> with Breathe |
+| CropScale |    ✔️      |      ✔️       | with Breathe |
+| Cutout  |      ✔️      |      ✔️       | with Breathe |
+| Flip    |      ✔️      |      ✔️       | with Breathe |
+| Grayscale |    ✔️      |      ✔️       | note: not yet implemented <br/> with Breathe |
+| HorizontalFlip | ✔️    |      ✔️       | with Breathe |
+| Pad     |      ✔️      |      ✔️       | note: not yet implemented <br/> with Breathe|
+| Rotate  |      ✔️      |      ✔️       | with Breathe |
+| Scale   |      ✔️      |      ✔️       | with Breathe |
+| Shift   |      ✔️      |      ✔️       | with Breathe |
+| VerticalFlip | ✔️      |      ✔️       | with Breathe |
+| Normalize |    ✔️      |      ✔️       | note: not yet implemented <br/> with Breathe  |
 
 
 ## Convolutions
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Conv2D  |     ❌️      |      ✔️       |          |
-| 2D Upsampling | ❌️    |      ✔️       | note about future versions |
-| Convolutional Transpose | ❌️|  ✔️     |          |
+| Conv2D  |     ✔️       |      ✔️       |          |
+| 2D Upsampling | ✔️     |      ✔️       | note about future versions |
+| Convolutional Transpose | ✔️ |  ✔️     |          |
 
 
 ## Noise Layers
@@ -208,13 +209,13 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Add     |     ❌️      |      ✔️       |          |
-| Average |     ❌️      |      ✔️       |          |
-| Concat  |     ❌️      |      ✔️       |          |
+| Add     |     ✔️       |      ✔️       | with Breathe |
+| Average |     ✔️       |      ✔️       | with Breathe |
+| Concat  |     ✔️       |      ✔️       | with Breathe |
 | MatMul  |     ❌️      |      ✔️       |          |
-| Maximum |     ❌️      |      ✔️       |          |
-| Minimum |     ❌️      |      ✔️       |          |
-| Subtract |    ❌️      |      ✔️       |          |
+| Maximum |     ✔️       |      ✔️       | with Breathe |
+| Minimum |     ✔️       |      ✔️       | with Breathe |
+| Subtract |    ✔️       |      ✔️       | with Breathe |
 
 
 ## Generators
@@ -229,19 +230,19 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Abs     |      ❌️     |      ✔️       |          |
-| Subtraction |  ❌️     |      ✔️       | three versions |
-| Division |     ❌️     |      ✔️       | three versions |
-| Exponent |     ❌️     |      ✔️       |          |
-| Logarithm (natural) |❌️|     ✔️       |          |
-| Logarithm base 2 | ❌️ |      ✔️       |          |
-| Logarithm base 10 |❌️ |      ✔️       |          |
-| Multiplication |   ❌️ |      ✔️       | three versions |
-| Power   |      ❌️     |      ✔       | two versions |
-| Sqrt    |      ❌️     |      ✔️       |          |
-| Addition |     ❌️     |      ✔️       | three versions (sum) |
-| Select  |      ❌️     |      ✔️       |          |
-| Permute |      ❌️     |      ✔️       |          |
+| Abs     |       ✔️     |      ✔️       | with Breathe |
+| Subtraction |   ✔️     |      ✔️       | with Breathe <br/> three versions <br/> not every version has its explanation in the .h |
+| Division |      ✔️     |      ✔️       | with Breathe <br/> three versions <br/> not every version has its explanation in the .h |
+| Exponent |      ✔️     |      ✔️       | with Breathe |
+| Logarithm (natural) | ✔️|     ✔️       | with Breathe |
+| Logarithm base 2 |  ✔️ |      ✔️       | with Breathe |
+| Logarithm base 10 | ✔️ |      ✔️       | with Breathe |
+| Multiplication |    ✔️ |      ✔️       | with Breathe <br/> three versions <br/> not every version has its explanation in the .h |
+| Power   |       ✔️     |      ✔       | with Breathe <br/> two versions <br/> not every version has its explanation in the .h |
+| Sqrt    |       ✔️     |      ✔️       | with Breathe |
+| Addition |      ✔️     |      ✔️       | with Breathe <br/> three versions (sum) <br/> not every version has its explanation in the .h |
+| Select  |       ✔️     |      ✔️       | with Breathe |
+| Permute |       ✔️     |      ✔️       | with Breathe |
 | ReduceMean |   ❌️     |      ✔️       |          |
 | ReduceVar |    ❌️     |      ✔️       |          |
 | ReduceSum |    ❌️     |      ✔️       |          |
@@ -253,9 +254,9 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| RNN     |      ❌️     |      ✔️       | note: not yet implemented |
-| GRU     |      ❌️     |      ✔️       | note: not yet implemented |
-| LSTM    |      ❌️     |      ✔️       | note: not yet implemented |
+| RNN     |      ✔️      |      ✔️       | note: not yet implemented <br/> with Breathe |
+| GRU     |      ❌️     |      ✔️       | note: not yet implemented <br/> with Breathe <br/> write comments in the .h |
+| LSTM    |      ✔️      |      ✔️       | note: not yet implemented <br/> with Breathe |
 
 
 # Model
@@ -343,33 +344,33 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| L1      |      ❌️     |       ✔️      |          | 
-| L2      |      ❌️     |       ✔️      |          |
-| L1L2    |      ❌️     |       ✔️      |          |
+| L1      |      ✔️      |       ✔️      | with Breathe | 
+| L2      |      ✔️      |       ✔️      | with Breathe |
+| L1L2    |      ✔️      |       ✔️      | with Breathe |
 
 
 ## Initializers
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| GlorotNormal |    ✔️  |       ✔️      |          |
-| GlorotUniform |   ✔️  |       ✔️      |          |
-| RandomNormal |    ✔️  |       ✔️      |          |
-| RandomUniform |   ✔️  |       ✔️      |          |
-| Constant |        ✔️  |       ✔️      |          |
+| GlorotNormal |    ✔️   |       ✔️      | with Breathe |
+| GlorotUniform |   ✔️   |       ✔️      | with Breathe |
+| RandomNormal |    ✔️   |       ✔️      | with Breathe |
+| RandomUniform |   ✔️   |       ✔️      | with Breathe |
+| Constant |        ✔️   |       ✔️      | with Breathe |
 
 
 ## Optimizers
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| Adadelta |     ✔️     |       ✔️      |          |
-| Adam    |      ✔️     |       ✔️      |          |
-| Adagrad |      ✔️     |       ✔️      |          |
-| Adamax  |      ✔️     |       ✔️      |          |
-| Nadam   |      ✔️     |       ✔️      |          |
-| RMSProp |      ✔️     |       ✔️      |          |
-| SGD (Stochastic Gradient Descent) |✔️| ✔️ |      |
+| Adadelta |     ✔️      |       ✔️      | with Breathe |
+| Adam    |      ✔️      |       ✔️      | with Breathe |
+| Adagrad |      ✔️      |       ✔️      | with Breathe |
+| Adamax  |      ✔️      |       ✔️      | with Breathe |
+| Nadam   |      ✔️      |       ✔️      | with Breathe |
+| RMSProp |      ✔️      |       ✔️      | with Breathe |
+| SGD (Stochastic Gradient Descent) |✔️| ✔️ | with Breathe |
 
 
 # Computing services
@@ -388,14 +389,14 @@
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| MNIST   |      ❌️     |       ✔️      |          |
-| CIFAR   |      ❌️     |       ✔️      |          |
+| MNIST   |      ❌️     |       ✔️      | with Breathe |
+| CIFAR   |      ❌️     |       ✔️      | with Breathe |
 
 ## Segmentation
 
 | Section | Explanation | Instructions | Comments |
 | :------ | :---------: | :----------: | :------- |
-| DRIVE   |      ❌️     |       ✔️      |          |
+| DRIVE   |      ❌️     |       ✔️      | with Breathe |
 
 
 # Micellaneous ❌️

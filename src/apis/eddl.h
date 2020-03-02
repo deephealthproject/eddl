@@ -55,7 +55,7 @@ typedef NetLoss * metric;
 
     // Creation
     /**
-      *  @brief Model instance.
+      *  @brief Instantiates model, taking two vectors, one of input layers and another of output layers.
       *
       *  @param in  Vector with model input layers, typically Input({...})
       *  @param out  Vector with the ouputs of the model. Example: {Sigmoid(MyModel())}
@@ -110,6 +110,14 @@ typedef NetLoss * metric;
 
 
     // Info and logs
+
+    /**
+      *  @brief  Save the training outputs of a model to a filename
+      *
+      *  @param m  Model to train
+      *  @param fname  Name of the logfile
+      *  @return     (void) Outputs log to the given file.
+    */
     void setlogfile(model net,string fname);
     /**
       *  @brief  Prints a summary representation of your model.
@@ -427,6 +435,7 @@ typedef NetLoss * metric;
       *  @see   https://en.wikipedia.org/wiki/Softmax_function
       *
       *  @param parent  Parent layer
+      *  @param name  Name of the layer
       *  @return     Output of Softmax transformation
     */
     layer Softmax(layer parent, string name="");
@@ -437,6 +446,7 @@ typedef NetLoss * metric;
       *  @see   https://en.wikipedia.org/wiki/Sigmoid_function
       *
       *  @param parent  Parent layer
+      *  @param name  Name of the layer
       *  @return     Output of Sigmoid activation
     */
     layer Sigmoid(layer parent, string name="");
@@ -445,6 +455,7 @@ typedef NetLoss * metric;
       *  @brief Applies a HardSigmoid activation function to the given layer.
       *
       *  @param parent  Parent layer
+      *  @param name  Name of the layer
       *  @return     Output of HardSigmoid activation
     */
     layer HardSigmoid(layer parent, string name="");
@@ -455,6 +466,7 @@ typedef NetLoss * metric;
       *  @see   https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
       *
       *  @param parent  Parent layer
+      *  @param name  Name of the layer
       *  @return     Output of ReLu activation
     */
     layer ReLu(layer parent, string name="");
@@ -464,6 +476,7 @@ typedef NetLoss * metric;
       *
       *  @param parent  Parent layer
       *  @param alpha  Threshold value
+      *  @param name  Name of the layer
       *  @return     Output of Thresholded ReLu activation
     */
     layer ThresholdedReLu(layer parent, float alpha=1.0, string name="");
@@ -475,6 +488,7 @@ typedef NetLoss * metric;
       *
       *  @param parent  Parent layer
       *  @param alpha  Negative slope coefficient
+      *  @param name  Name of the layer
       *  @return     Output of Leaky ReLu activation
     */
     layer LeakyReLu(layer parent, float alpha=0.01, string name="");
@@ -483,7 +497,8 @@ typedef NetLoss * metric;
       *  @brief Applies the Exponential Linear Unit activation function to the given layer.
       *
       *  @param parent  Parent layer
-	  *  @param alpha ELu coefficient
+	    *  @param alpha ELu coefficient
+      *  @param name  Name of the layer
       *  @return     Output of ELu activation
     */
     layer Elu(layer parent, float alpha=1.0, string name="");
@@ -492,6 +507,7 @@ typedef NetLoss * metric;
       *  @brief Applies the Scaled Exponential Linear Unit activation function to the given layer.
       *
       *  @param parent  Parent layer
+      *  @param name  Name of the layer
       *  @return     Output of Selu activation
     */
     layer Selu(layer parent, string name="");
@@ -500,6 +516,7 @@ typedef NetLoss * metric;
     *  @brief Applies the Exponential (base e) activation function to the given layer.
     *
     *  @param parent  Parent layer
+    *  @param name  Name of the layer
     *  @return     Output of Exponential activation
     */
     layer Exponential(layer parent, string name="");
@@ -508,6 +525,7 @@ typedef NetLoss * metric;
     *  @brief Applies the Softplus activation function to the given layer.
     *
     *  @param parent  Parent layer
+    *  @param name  Name of the layer
     *  @return     Output of Exponential activation
     */
     layer Softplus(layer parent, string name="");
@@ -517,6 +535,7 @@ typedef NetLoss * metric;
     *  @brief Applies the Softsign activation function to the given layer.
     *
     *  @param parent  Parent layer
+    *  @param name  Name of the layer
     *  @return     Output of Exponential activation
     */
     layer Softsign(layer parent, string name="");
@@ -525,7 +544,8 @@ typedef NetLoss * metric;
       *  @brief Applies the Linear activation function to the given layer.
       *
       *  @param parent  Parent layer
-	  *  @param alpha Linear coefficient
+	    *  @param alpha Linear coefficient
+      *  @param name  Name of the layer
       *  @return     Output of Linear activation
     */
     layer Linear(layer parent, float alpha=1.0, string name="");
@@ -536,12 +556,13 @@ typedef NetLoss * metric;
       *  @see   https://en.wikipedia.org/wiki/Hyperbolic_function
       *
       *  @param parent  Parent layer
+      *  @param name  Name of the layer
       *  @return     Output of hyperbolic activation
     */
     layer Tanh(layer parent, string name="");
 
     /**
-      *  @brief Convolution layer.
+      *  @brief 2D Convolution layer.
       *
       *  @param parent  Parent layer
       *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
@@ -595,7 +616,7 @@ typedef NetLoss * metric;
       *  @brief Upsampling layer.
       *
       *  @details
-      *   Repeats the rows and columns of the data.
+      *   Identical to the ``scale`` transformation, the only difference is that ``upsampling`` repeats its rows/columns *n* times, while scaling uses a proportion.
       *
       *  @param parent  Parent layer
       *  @param size  Vector of 2 integers. The upsampling factors for rows and columns
@@ -624,17 +645,43 @@ typedef NetLoss * metric;
     */
     layer Flatten(layer parent, string name = "");
 
+
+    /**
+      *  @brief Transposed convolution layer (sometimes called Deconvolution).
+      *
+      *  @details
+      *   The need for transposed convolutions generally arises from the desire to use a transformation going in the opposite direction of a normal convolution, i.e., from something that has the shape of the output of some convolution to something that has the shape of its input while maintaining a connectivity pattern that is compatible with said convolution.
+      *
+      *  @param parent  Parent layer
+      *  @param filters  the dimensionality of the output space (i.e. the number of output filters in the convolution).
+      *  @param kernel_size  the height and width of the 2D convolution window.
+      *  @param output_padding  the amount of padding along the height and width of the output tensor. The amount of output padding along a given dimension must be lower than the stride along that same dimension
+      *  @param padding  one of "valid" or "same"
+      *  @param dilation_rate  the dilation rate to use for dilated convolution. Spacing between kernel elements.
+      *  @param strides  the strides of the convolution along the height and width.
+      *  @param use_bias  Boolean, whether the layer uses a bias vector.
+      *  @param name  A name for the operation.
+      *  @return     Output layer after upsampling operation
+    */
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding = "same",
                 const vector<int> &dilation_rate = {1, 1},
                 const vector<int> &strides = {1, 1}, bool use_bias = true, string name = ""); //Todo: Implement
+
+    /**
+      *  @brief Turns positive integers (indexes) into dense vectors of fixed size. eg. [[4], [20]] -> [[0.25, 0.1], [0.6, -0.2]]
+      *
+      *  @param input_dim  Size of the vocabulary, i.e. maximum integer index + 1
+      *  @param output_dim  Dimension of the dense embedding
+      *  @param name  A name for the operation
+      *  @return The embedded input
+    */
     layer Embedding(int input_dim, int output_dim, string name = ""); //Todo: Implement
 
     /**
       *  @brief Transposes a Layer.
       *
       *  @param parent  Parent layer
-      *  @param dims  Vector of integers with the transpose dimensions
       *  @param name  A name for the operation
       *  @return     Output of transpose operation
     */
@@ -722,7 +769,16 @@ typedef NetLoss * metric;
       *  @return     Output of flip transformation
     */
     layer Flip(layer parent, int axis=0, string name="");
+
+    /**
+      *  @brief Convert image to grayscale..
+      *
+      *  @param parent  Parent layer
+      *  @param name  A name for the operation
+      *  @return     Output of grayscale transformation
+    */
     layer Grayscale(layer parent,  string name="");  // TODO: Implement
+
     /**
       *  @brief Horizontally flip the given image.
       *
@@ -731,6 +787,16 @@ typedef NetLoss * metric;
       *  @return     Output of horizontal flip transformation
     */
     layer HorizontalFlip(layer parent, string name="");
+
+    /**
+      *  @brief Pad the given image on all sides with the given “pad” value..
+      *
+      *  @param parent  Parent layer
+      *  @param padding  Padding on each border.
+      *  @param constant  pads with a constant value
+      *  @param name  A name for the operation
+      *  @return     Padded image
+    */
     layer Pad(layer parent, vector<int> padding, float constant=0.0f, string name=""); // TODO: Implement
 
     /**
@@ -929,13 +995,50 @@ typedef NetLoss * metric;
       *   It takes as input a list of layers and returns a single tensor, the concatenation of all inputs.
       *
       *  @param layers  List of layers
+      *  @param axis  Axis along which to concatenate.
       *  @param name  A name for the operation
       *  @return     Output of concatenation operation with all input layers
     */
     layer Concat(const vector<layer> &layers, unsigned int axis=1, string name = "");
+
     layer MatMul(const vector<layer> &layers, string name = "");
+
+    /**
+      *  @brief Layer that computes the maximum (element-wise) a list of inputs.
+      *
+      *  @details
+      *   It takes as input a list of tensors, all of the same shape, and returns a single tensor (also of the same shape).
+      *
+      *  @param layers  List of layers
+      *  @param name  A name for the operation
+      *  @return     Output of Maximum operation with all input layers
+    */
     layer Maximum(const vector<layer> &layers, string name = "");
+
+
+    /**
+      *  @brief Layer that computes the minimum (element-wise) a list of inputs.
+      *
+      *  @details
+      *   It takes as input a list of tensors, all of the same shape, and returns a single tensor (also of the same shape).
+      *
+      *  @param layers  List of layers
+      *  @param name  A name for the operation
+      *  @return     Output of Minimum operation with all input layers
+    */
     layer Minimum(const vector<layer> &layers, string name = "");
+
+
+    /**
+      *  @brief Layer that subtracts two inputs.
+      *
+      *  @details
+      *   It takes as input a list of tensors of size 2, both of the same shape, and returns a single tensor, (inputs[0] - inputs[1]), also of the same shape.
+      *
+      *  @param layers  List of layers
+      *  @param name  A name for the operation
+      *  @return     Output of Substract operation with all input layers
+    */
     layer Subtract(const vector<layer> &layers, string name = "");
 
 
@@ -1007,27 +1110,54 @@ typedef NetLoss * metric;
       *  @return     Parent layer after the normalization
     */
     layer GroupNormalization(layer parent, int groups, float momentum = 0.9f, float epsilon = 0.001f, bool affine = true,string name = "");
+
+
     layer Norm(layer parent, float epsilon = 0.001f, string name = "");
     layer NormMax(layer parent, float epsilon = 0.001f, string name = "");
     layer NormMinMax(layer parent, float epsilon = 0.001f, string name = "");
 
 
     //  Operator Layers
+
+    /**
+      *  @brief Computes the element-wise absolute value of the given input tensor.
+      *
+      *  @param l  Parent layer
+      *  @return     Parent layer l after computing the element-wise absol
+    */
     layer Abs(layer l);
+
+    /**
+      *  @brief Layer that computes the difference of two layers.
+      *
+      *  @param l1  A layer
+      *  @param l2  A layer
+      *  @return     Difference between l1 and l2
+    */
     layer Diff(layer l1, layer l2);
     layer Diff(layer l1, float k);
-    /**
-      *  @brief Layer that computes the difference of a float number and a layer.
-      *
-      *  @param k  Number
-      *  @param l1  Parent layer
-      *  @return     Parent layer l1 after computing his difference with k
-    */
     layer Diff(float k, layer l1);
+
+    /**
+      *  @brief Layer that computes the element-wise division of two layers.
+      *
+      *  @param l1  A layer
+      *  @param l2  A layer
+      *  @return     Element-wise division of l1 and l2
+    */
     layer Div(layer l1, layer l2);
     layer Div(layer l1, float k);
     layer Div(float k, layer l1);
+
+    /**
+      *  @brief Returns a new tensor with the exponential of the elements of the input tensor input.
+      *
+      *  @param l  Parent layer
+      *  @return     The exponential of l
+    */
     layer Exp(layer l);
+
+
     /**
       *  @brief Layer that computes the logarithm of a layer.
       *
@@ -1035,21 +1165,52 @@ typedef NetLoss * metric;
       *  @return     Parent layer l after computing his logarithm
     */
     layer Log(layer l);
-    layer Log2(layer l);
-    layer Log10(layer l);
-    layer Mult(layer l1, layer l2);
+
     /**
-      *  @brief Layer that computes the multiplication of a float number and a layer.
+      *  @brief Layer that computes the logarithm to the base 2 of a layer.
       *
-      *  @param l1  Parent layer
-      *  @param k  Number
-      *  @return     Parent layer l1 after computing his multiplication with k
+      *  @param l  Parent layer
+      *  @return     Parent layer l after computing his logarithm to the base 2.
     */
+    layer Log2(layer l);
+
+    /**
+      *  @brief Layer that computes the logarithm to the base 10 of a layer.
+      *
+      *  @param l  Parent layer
+      *  @return     Parent layer l after computing his logarithm to the base 10.
+    */
+    layer Log10(layer l);
+
+    /**
+      *  @brief  Layer that computes the element-wise multiplication of two layers.
+      *
+      *  @param l1  A layer
+      *  @param l2  A layer
+      *  @return     Result of the element-wise multiplication of l1 and l2.
+    */
+    layer Mult(layer l1, layer l2);
     layer Mult(layer l1, float k);
     layer Mult(float k,layer l1);
+
+    /**
+      *  @brief  Layer that computes the element-wise power of two layers.
+      *
+      *  @param l1  A layer
+      *  @param l2  A layer
+      *  @return     Result of the element-wise power of l1 and l2.
+    */
     layer Pow(layer l1, layer l2);
     layer Pow(layer l1, float k);
+
+    /**
+      *  @brief  Layer that computes the square root of a layer.
+      *
+      *  @param l1  Parent layer
+      *  @return     Result of the square root of l1.
+    */
     layer Sqrt(layer l);
+
     /**
       *  @brief Layer that computes the sum of two layers.
       *
@@ -1058,6 +1219,7 @@ typedef NetLoss * metric;
       *  @return     The result after computing the sum between layers l1 and l2
     */
     layer Sum(layer l1, layer l2);
+
     /**
       *  @brief Layer that computes the sum of a float number and a layer.
       *
@@ -1067,7 +1229,25 @@ typedef NetLoss * metric;
     */
     layer Sum(layer l1, float k);
     layer Sum(float k, layer l1);
+
+    /**
+      *  @brief Returns a new tensor which indexes the input tensor using the entries in indices
+      *
+      *  @param l  Parent layer
+      *  @param indices  Vector of indices to be selected
+      *  @param name  A name for the operation
+      *  @return     A tensor with the selected elements
+    */
     layer Select(layer l, vector<string> indices, string name="");
+
+    /**
+      *  @brief Permutes the dimensions of the input according to a given pattern.
+      *
+      *  @param l  Parent layer
+      *  @param dims  Permutation pattern, does not include the samples dimension.
+      *  @param name  A name for the operation
+      *  @return     The permuted tensor.
+    */
     layer Permute(layer l, vector<int> dims, string name="");
 
     // Reduction Layers
@@ -1122,7 +1302,33 @@ typedef NetLoss * metric;
     layer MaxPool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2}, string padding = "none", string name = "");
 
     // Recurrent Layers
+
+    /**
+      *  @brief Fully-connected RNN where the output is to be fed back to input.
+      *
+      *  @param parent  Parent layer
+      *  @param units  dimensionality of the output space.
+      *  @param num_layers  Number of RNN layers
+      *  @param use_bias  whether the layer uses a bias vector.
+      *  @param dropout  Fraction of the units to drop for the linear transformation of the inputs.
+      *  @param bidirectional  Wether the RNN is bidirectional or not.
+      *  @param name  A name for the operation
+      *  @return     The RNN layer
+    */
     layer RNN(layer parent, int units, int num_layers, bool use_bias = true, float dropout = .0f, bool bidirectional = false, string name = "");
+
+    /**
+      *  @brief Long Short-Term Memory layer - Hochreiter 1997.
+      *
+      *  @param parent  Parent layer
+      *  @param units  dimensionality of the output space.
+      *  @param num_layers  Number of RNN layers
+      *  @param use_bias  whether the layer uses a bias vector.
+      *  @param dropout  Fraction of the units to drop for the linear transformation of the inputs.
+      *  @param bidirectional  Wether the RNN is bidirectional or not.
+      *  @param name  A name for the operation
+      *  @return     The LSTM layer
+    */
     layer LSTM(layer parent, int units, int num_layers, bool use_bias = true, float dropout = .0f, bool bidirectional = false, string name = "");
 
 
@@ -1197,8 +1403,33 @@ typedef NetLoss * metric;
     ///////////////////////////////////////
     //  REGULARIZERS
     ///////////////////////////////////////
+
+    /**
+      *  @brief Regularizer for L2 regularization.
+      *
+      *  @param l  Parent layer to regularize.
+      *  @param l2   L2 regularization factor.
+      *  @return     The layer l regularized.
+    */
     layer L2(layer l,float l2);
+
+    /**
+      *  @brief Regularizer for L1 regularization.
+      *
+      *  @param l  Parent layer to regularize.
+      *  @param l1   L1 regularization factor.
+      *  @return     The layer l regularized.
+    */
     layer L1(layer l,float l1);
+
+    /**
+      *  @brief Regularizer for L1 and L2 regularization..
+      *
+      *  @param l  Parent layer to regularize.
+      *  @param l1   L1 regularization factor.
+      *  @param l2   L2 regularization factor.
+      *  @return     The layer l regularized.
+    */
     layer L1L2(layer l,float l1,float l2);
 
 

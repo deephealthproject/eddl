@@ -7,6 +7,8 @@ Constructor
 
 Instantiates model, taking two vectors, one of input layers and another of output layers.
 
+.. doxygenfunction:: eddl::Model
+
 Example:
 
 .. code-block:: c++
@@ -20,15 +22,10 @@ Build
 
 Tell the model which optimizer, losses, metrics and computing services use.
 
-.. note::
+.. doxygenfunction:: eddl::build(model, optimizer, CompServ *, bool)
 
-    Parameters:
+.. doxygenfunction:: eddl::build(model, optimizer, const vector<string>&, const vector<string>&, CompServ *, bool)
 
-    - ``net``: Model
-    - ``o`` : Optimizer
-    - ``lo`` : Vector with losses
-    - ``me`` : Vector with metrics
-    - ``cs`` : Computing service
 
 Example:
 
@@ -43,6 +40,8 @@ Summary
 ----------
 
 Prints a summary representation of your model.
+
+.. doxygenfunction:: eddl::summary
 
 Example:
 
@@ -75,6 +74,8 @@ Plot
 
 Plots a representation of your model.
 
+.. doxygenfunction:: eddl::plot
+
 Example:
 
 .. code-block:: c++
@@ -93,6 +94,8 @@ Load
 
 Load weights to reinstantiate your model.
 
+.. doxygenfunction:: eddl::load(model, string&, string)
+
 Example:
 
 .. code-block:: c++
@@ -107,6 +110,8 @@ Save
 
 Save weights of a model.
 
+.. doxygenfunction:: eddl::save(model, string&, string)
+
 Example:
 
 .. code-block:: c++
@@ -120,6 +125,8 @@ Learning rate (on the fly)
 --------------------------
 
 Changes the learning rate and hyperparameters of the model optimizer.
+
+.. doxygenfunction:: eddl::setlr(model, vector<float>)
 
 Example:
 
@@ -136,6 +143,8 @@ Logging
 
 Save the training outputs of a model to a filename
 
+.. doxygenfunction:: eddl::setlogfile(model, string)
+
 Example:
 
 .. code-block:: c++
@@ -150,6 +159,10 @@ Move to device
 ---------------
 
 Move the model to a specific device
+
+.. doxygenfunction:: eddl::toCPU
+
+.. doxygenfunction:: eddl::toGPU(model, vector<int>, int, string)
 
 Example:
 

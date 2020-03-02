@@ -23,11 +23,11 @@ using namespace eddl;
 //////////////////////////////////
 
 layer Block1(layer l,int filters) {
-  return ReLu(BatchNormalization(Conv(l,filters,{1,1},{1,1})));
+  return ReLu(BatchNormalization(Conv(l,filters,{1,1},{1,1},"same",false)));
 }
 layer Block3_2(layer l,int filters) {
-  l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
-  l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1})));
+  l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1},"same",false)));
+  l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1},"same",false)));
   return l;
 }
 
@@ -70,8 +70,8 @@ int main(int argc, char **argv){
     sgd(0.01, 0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    CS_GPU({1}, "low_mem") // GPU with only one gpu
-    //CS_CPU(-1, "low_mem")  // CPU with maximum threads availables
+    CS_GPU({1}, "full_mem") // GPU with only one gpu
+	//CS_CPU(-1, "low_mem")  // CPU with maximum threads availables
   );
 
   // plot the model

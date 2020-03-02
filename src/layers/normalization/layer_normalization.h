@@ -23,8 +23,8 @@
 
 using namespace std;
 
-void BN_forward(Tensor *input,Tensor *output, MapReduceDescriptor *MD, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float momentum, float epsilon, bool affine, Tensor *bn_g,Tensor *bn_b,int trmode);
-void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, MapReduceDescriptor *MD, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float epsilon);
+void BN_forward(Tensor *input,Tensor *output, MapReduceDescriptor *MD, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float momentum, float epsilon, bool affine, Tensor *bn_g, Tensor *bn_b, Tensor *opa, int trmode);
+void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, MapReduceDescriptor *MD, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float epsilon, bool affine, Tensor *bn_g, Tensor *bn_b, Tensor *gbn_g, Tensor* gbn_b, Tensor *opa);
 
 
 /// Normalization Layer
@@ -119,7 +119,10 @@ public:
     Tensor *bn_var;
     Tensor *bn_g;
     Tensor *bn_b;
+    Tensor *gbn_g;
+    Tensor *gbn_b;
     Tensor *opa; //output pre-affine
+
 
     MapReduceDescriptor *MD;
     bool init;
@@ -138,6 +141,8 @@ public:
     void forward() override;
 
     void backward() override;
+
+    void initialize() override;
 
     void resize(int batch) override;
     void save(std::ofstream &ofs, string format) override;
