@@ -3,10 +3,11 @@
 </p>
 
 -----------------
-![C/C++ CI](https://github.com/deephealthproject/eddl/workflows/C/C++%20CI/badge.svg)
-[![Documentation Status](https://readthedocs.org/projects/ansicolortags/badge/?version=latest)](https://deephealthproject.github.io/eddldocs/)
+![build](https://github.com/deephealthproject/eddl/workflows/build/badge.svg)
+[![Documentation Status](https://readthedocs.org/projects/ansicolortags/badge/?version=latest)](https://deephealthproject.github.io/eddl/)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/deephealthproject/eddl)
 ![GitHub](https://img.shields.io/github/license/deephealthproject/eddl)
+
 
 
 **EDDL** is an open source library for Distributed Deep Learning and Tensor Operations in C++ for **CPU**, **GPU** and **FPGA**. EDDL is developed inside the DeepHealth project. For more information about DeepHealth project go to: [deephealth-project.eu](https://deephealth-project.eu/)
