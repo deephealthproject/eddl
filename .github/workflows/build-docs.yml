@@ -27,7 +27,9 @@ jobs:
 
     - name: Build documentation
       run: |
-        cd docs/source/
+        cd docs/doxygen/
+        doxygen
+        cd ../source/
         make clean
         make html
         rm _build/html/.buildinfo
