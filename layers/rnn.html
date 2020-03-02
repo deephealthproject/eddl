@@ -236,10 +236,27 @@
 <h1>Recurrent<a class="headerlink" href="#recurrent" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="rnn">
 <h2>RNN<a class="headerlink" href="#rnn" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
-</div>
+<dl class="function">
+<dt id="_CPPv4N4eddl3RNNE5layeriibfb6string">
+<span id="_CPPv3N4eddl3RNNE5layeriibfb6string"></span><span id="_CPPv2N4eddl3RNNE5layeriibfb6string"></span><span id="eddl::RNN__layer.i.i.b.float.b.string"></span><span class="target" id="namespaceeddl_1a4ada06570b96030947e9c09296f8b78d"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RNN</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>units</em>, int <em>num_layers</em>, bool <em>use_bias</em> = true, float <em>dropout</em> = .0f, bool <em>bidirectional</em> = false, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3RNNE5layeriibfb6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Fully-connected RNN where the output is to be fed back to input. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The RNN layer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">units</span></code>: dimensionality of the output space. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">num_layers</span></code>: Number of RNN layers </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: whether the layer uses a bias vector. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dropout</span></code>: Fraction of the units to drop for the linear transformation of the inputs. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bidirectional</span></code>: Wether the RNN is bidirectional or not. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><strong>Not implemented yet</strong></p>
@@ -265,10 +282,27 @@
 </div>
 <div class="section" id="lstm">
 <h2>LSTM<a class="headerlink" href="#lstm" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
-</div>
+<dl class="function">
+<dt id="_CPPv4N4eddl4LSTME5layeriibfb6string">
+<span id="_CPPv3N4eddl4LSTME5layeriibfb6string"></span><span id="_CPPv2N4eddl4LSTME5layeriibfb6string"></span><span id="eddl::LSTM__layer.i.i.b.float.b.string"></span><span class="target" id="namespaceeddl_1a11d1aa3b0ab0b22451b6b69012e16465"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">LSTM</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>units</em>, int <em>num_layers</em>, bool <em>use_bias</em> = true, float <em>dropout</em> = .0f, bool <em>bidirectional</em> = false, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4LSTME5layeriibfb6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Long Short-Term Memory layer - Hochreiter 1997. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The LSTM layer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">units</span></code>: dimensionality of the output space. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">num_layers</span></code>: Number of RNN layers </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: whether the layer uses a bias vector. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dropout</span></code>: Fraction of the units to drop for the linear transformation of the inputs. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bidirectional</span></code>: Wether the RNN is bidirectional or not. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><strong>Not implemented yet</strong></p>

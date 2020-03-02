@@ -236,10 +236,28 @@
 <h1>Normalization<a class="headerlink" href="#normalization" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="batchnormalization">
 <h2>BatchNormalization<a class="headerlink" href="#batchnormalization" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
-</div>
+<dl class="function">
+<dt id="_CPPv4N4eddl18BatchNormalizationE5layerffb6string">
+<span id="_CPPv3N4eddl18BatchNormalizationE5layerffb6string"></span><span id="_CPPv2N4eddl18BatchNormalizationE5layerffb6string"></span><span id="eddl::BatchNormalization__layer.float.float.b.string"></span><span class="target" id="namespaceeddl_1a2754764eef4e371f2a68b6877ad165aa"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">BatchNormalization</code><span class="sig-paren">(</span>layer <em>parent</em>, float <em>momentum</em> = 0.9f, float <em>epsilon</em> = 0.001f, bool <em>affine</em> = true, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl18BatchNormalizationE5layerffb6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Batch normalization layer. </p>
+<p>Normalize the activations of the previous layer at each batch, i.e. applies a transformation that maintains the mean activation close to 0 and the activation standard deviation close to 1.</p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference external" href="https://arxiv.org/abs/1502.03167">https://arxiv.org/abs/1502.03167</a></p>
+</dd>
+<dt><strong>Return</strong></dt><dd><p>Parent layer after the normalization </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">momentum</span></code>: Momentum for the moving mean and the moving variance </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Small float added to variance to avoid dividing by zero </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">affine</span></code>: A boolean value that when set to True, this module has learnable affine parameters </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">BatchNormalization</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="kt">float</span> <span class="n">momentum</span> <span class="o">=</span> <span class="mf">0.9f</span><span class="p">,</span> <span class="kt">float</span> <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.001f</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">affine</span> <span class="o">=</span> <span class="nb">true</span><span class="p">,</span><span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
 </pre></div>
@@ -247,10 +265,28 @@
 </div>
 <div class="section" id="layernormalization">
 <h2>LayerNormalization<a class="headerlink" href="#layernormalization" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
-</div>
+<dl class="function">
+<dt id="_CPPv4N4eddl18LayerNormalizationE5layerffb6string">
+<span id="_CPPv3N4eddl18LayerNormalizationE5layerffb6string"></span><span id="_CPPv2N4eddl18LayerNormalizationE5layerffb6string"></span><span id="eddl::LayerNormalization__layer.float.float.b.string"></span><span class="target" id="namespaceeddl_1a3e71e1cb9dcac38f7331e71764c3afa5"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">LayerNormalization</code><span class="sig-paren">(</span>layer <em>parent</em>, float <em>momentum</em> = 0.9f, float <em>epsilon</em> = 0.001f, bool <em>affine</em> = true, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl18LayerNormalizationE5layerffb6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Layer normalization layer. </p>
+<p>Applies Layer Normalization over a input.</p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference external" href="https://arxiv.org/abs/1607.06450">https://arxiv.org/abs/1607.06450</a></p>
+</dd>
+<dt><strong>Return</strong></dt><dd><p>Parent layer after the normalization </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">momentum</span></code>: Momentum for the moving mean and the moving variance </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Value added to the denominator for numerical stability </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">affine</span></code>: A boolean value that when set to True, this module has learnable affine parameters </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">LayerNormalization</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="kt">float</span> <span class="n">momentum</span> <span class="o">=</span> <span class="mf">0.9f</span><span class="p">,</span> <span class="kt">float</span> <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.001f</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">affine</span> <span class="o">=</span> <span class="nb">true</span><span class="p">,</span><span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
 </pre></div>
@@ -258,10 +294,29 @@
 </div>
 <div class="section" id="groupnormalization">
 <h2>GroupNormalization<a class="headerlink" href="#groupnormalization" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
-</div>
+<dl class="function">
+<dt id="_CPPv4N4eddl18GroupNormalizationE5layeriffb6string">
+<span id="_CPPv3N4eddl18GroupNormalizationE5layeriffb6string"></span><span id="_CPPv2N4eddl18GroupNormalizationE5layeriffb6string"></span><span id="eddl::GroupNormalization__layer.i.float.float.b.string"></span><span class="target" id="namespaceeddl_1a673ae5f9942706da68ce2d72ec1e0dc8"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">GroupNormalization</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>groups</em>, float <em>momentum</em> = 0.9f, float <em>epsilon</em> = 0.001f, bool <em>affine</em> = true, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl18GroupNormalizationE5layeriffb6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Group normalization layer. </p>
+<p>Divides the channels into groups and computes within each group the mean and variance for normalization. The computation is independent of batch sizes.</p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference external" href="https://arxiv.org/abs/1803.08494">https://arxiv.org/abs/1803.08494</a></p>
+</dd>
+<dt><strong>Return</strong></dt><dd><p>Parent layer after the normalization </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">groups</span></code>: Number of groups in which the channels will be divided </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">momentum</span></code>: Momentum for the moving mean and the moving variance </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Value added to the denominator for numerical stability </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">affine</span></code>: A boolean value that when set to True, this module has learnable affine parameters </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">GroupNormalization</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="kt">int</span> <span class="n">groups</span><span class="p">,</span> <span class="kt">float</span> <span class="n">momentum</span> <span class="o">=</span> <span class="mf">0.9f</span><span class="p">,</span> <span class="kt">float</span> <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.001f</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">affine</span> <span class="o">=</span> <span class="nb">true</span><span class="p">,</span><span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
 </pre></div>

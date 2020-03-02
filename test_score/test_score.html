@@ -234,10 +234,23 @@
 <h1>Test &amp; Score<a class="headerlink" href="#test-score" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="evaluate-model">
 <h2>Evaluate model<a class="headerlink" href="#evaluate-model" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
-</div>
+<dl class="function">
+<dt id="_CPPv4N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorE">
+<span id="_CPPv3N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorE"></span><span id="_CPPv2N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorE"></span><span id="eddl::evaluate__model.vector:TensorP:CR.vector:TensorP:CR"></span><span class="target" id="namespaceeddl_1a66e45f3302765619424737649dae3c31"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">evaluate</code><span class="sig-paren">(</span>model <em>m</em>, <em class="property">const</em> vector&lt;Tensor *&gt; &amp;<em>in</em>, <em class="property">const</em> vector&lt;Tensor *&gt; &amp;<em>out</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the loss value &amp; metrics values for the model in test mode. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>(void) Evaluates the model </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model to train </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Input data (features) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">out</span></code>: Output data (labels) </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">evaluate</span><span class="p">(</span><span class="n">model</span> <span class="n">m</span><span class="p">,</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span> <span class="o">*&gt;</span> <span class="o">&amp;</span><span class="n">in</span><span class="p">,</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span> <span class="o">*&gt;</span> <span class="o">&amp;</span><span class="n">out</span><span class="p">);</span>

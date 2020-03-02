@@ -236,10 +236,29 @@
 <h1>Convolutions<a class="headerlink" href="#convolutions" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="conv2d">
 <h2>Conv2D<a class="headerlink" href="#conv2d" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
-</div>
+<dl class="function">
+<dt id="_CPPv4N4eddl4ConvE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string">
+<span id="_CPPv3N4eddl4ConvE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string"></span><span id="_CPPv2N4eddl4ConvE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string"></span><span id="eddl::Conv__layer.i.vector:i:CR.vector:i:CR.string.b.i.vector:i:CR.string"></span><span class="target" id="namespaceeddl_1a33316d05c2d6a103568dc4d49ab10e81"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Conv</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>filters</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>kernel_size</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>strides</em> = {1, 1}, string <em>padding</em> = &quot;same&quot;, bool <em>use_bias</em> = true, int <em>groups</em> = 1, <em class="property">const</em> vector&lt;int&gt; &amp;<em>dilation_rate</em> = {1, 1}, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4ConvE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>2D Convolution layer. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Convolution layer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filters</span></code>: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kernel_size</span></code>: Vector of 2 integers, specifying the height and width of the 2D convolution window. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strides</span></code>: Vector of 2 integers, specifying the strides of the convolution along the height and width </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">padding</span></code>: One of “none”, “valid” or “same” </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: Boolean, whether the layer uses a bias vector. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">groups</span></code>: Number of blocked connections from input channels to output channels </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dilation_rate</span></code>: Vector of 2 integers, specifying the dilation rate to use for dilated convolution </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="nf">Conv</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="kt">int</span> <span class="n">filters</span><span class="p">,</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">kernel_size</span><span class="p">,</span>
             <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">strides</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">},</span> <span class="n">string</span> <span class="n">padding</span> <span class="o">=</span> <span class="s">&quot;same&quot;</span><span class="p">,</span> <span class="kt">int</span> <span class="n">groups</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
@@ -250,10 +269,25 @@
 </div>
 <div class="section" id="d-upsampling">
 <h2>2D Upsampling<a class="headerlink" href="#d-upsampling" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
-</div>
+<dl class="function">
+<dt id="_CPPv4N4eddl10UpSamplingE5layerRK6vectorIiE6string6string">
+<span id="_CPPv3N4eddl10UpSamplingE5layerRK6vectorIiE6string6string"></span><span id="_CPPv2N4eddl10UpSamplingE5layerRK6vectorIiE6string6string"></span><span id="eddl::UpSampling__layer.vector:i:CR.string.string"></span><span class="target" id="namespaceeddl_1ad41b26a319f9f9b471742050aa9a92ea"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">UpSampling</code><span class="sig-paren">(</span>layer <em>parent</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>size</em>, string <em>interpolation</em> = &quot;nearest&quot;, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10UpSamplingE5layerRK6vectorIiE6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Upsampling layer. </p>
+<p>Identical to the <code class="docutils literal notranslate"><span class="pre">scale</span></code> transformation, the only difference is that <code class="docutils literal notranslate"><span class="pre">upsampling</span></code> repeats its rows/columns <em>n</em> times, while scaling uses a proportion.</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output layer after upsampling operation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">size</span></code>: Vector of 2 integers. The upsampling factors for rows and columns </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">interpolation</span></code>: A string, one of nearest or bilinear </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>In future versions this function will call <code class="docutils literal notranslate"><span class="pre">scale</span></code> instead of <code class="docutils literal notranslate"><span class="pre">repeat</span></code></p>
@@ -265,10 +299,25 @@
 </div>
 <div class="section" id="convolutional-transpose">
 <h2>Convolutional Transpose<a class="headerlink" href="#convolutional-transpose" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
-</div>
+<dl class="function">
+<dt id="_CPPv4N4eddl10UpSamplingE5layerRK6vectorIiE6string6string">
+<span id="_CPPv3N4eddl10UpSamplingE5layerRK6vectorIiE6string6string"></span><span id="_CPPv2N4eddl10UpSamplingE5layerRK6vectorIiE6string6string"></span><span class="target" id="namespaceeddl_1ad41b26a319f9f9b471742050aa9a92ea"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">UpSampling</code><span class="sig-paren">(</span>layer <em>parent</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>size</em>, string <em>interpolation</em> = &quot;nearest&quot;, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><br /></dt>
+<dd><p>Upsampling layer. </p>
+<p>Identical to the <code class="docutils literal notranslate"><span class="pre">scale</span></code> transformation, the only difference is that <code class="docutils literal notranslate"><span class="pre">upsampling</span></code> repeats its rows/columns <em>n</em> times, while scaling uses a proportion.</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output layer after upsampling operation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">size</span></code>: Vector of 2 integers. The upsampling factors for rows and columns </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">interpolation</span></code>: A string, one of nearest or bilinear </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><strong>Not implemented yet</strong></p>

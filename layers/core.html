@@ -239,10 +239,24 @@
 <h1>Core<a class="headerlink" href="#core" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="dense">
 <h2>Dense<a class="headerlink" href="#dense" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
-</div>
+<dl class="function">
+<dt id="_CPPv4N4eddl5DenseE5layerib6string">
+<span id="_CPPv3N4eddl5DenseE5layerib6string"></span><span id="_CPPv2N4eddl5DenseE5layerib6string"></span><span id="eddl::Dense__layer.i.b.string"></span><span class="target" id="namespaceeddl_1a6b8cc3b9e4c4452b07499ebe7ff140c8"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Dense</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>ndim</em>, bool <em>use_bias</em> = true, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5DenseE5layerib6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Regular densely-connected NN layer. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Densely-connected NN layer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ndim</span></code>: Positive integer, dimensionality of the output space </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: Boolean, whether the layer uses a bias vector. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="nf">Dense</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="kt">int</span> <span class="n">ndim</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">use_bias</span> <span class="o">=</span> <span class="nb">true</span><span class="p">,</span>  <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
 </pre></div>
@@ -250,10 +264,23 @@
 </div>
 <div class="section" id="embedding">
 <h2>Embedding<a class="headerlink" href="#embedding" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
-</div>
+<dl class="function">
+<dt id="_CPPv4N4eddl9EmbeddingEii6string">
+<span id="_CPPv3N4eddl9EmbeddingEii6string"></span><span id="_CPPv2N4eddl9EmbeddingEii6string"></span><span id="eddl::Embedding__i.i.string"></span><span class="target" id="namespaceeddl_1a77340f81e7096909ce779750ad6d7dda"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Embedding</code><span class="sig-paren">(</span>int <em>input_dim</em>, int <em>output_dim</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9EmbeddingEii6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Turns positive integers (indexes) into dense vectors of fixed size. eg. [[4], [20]] -&gt; [[0.25, 0.1], [0.6, -0.2]]. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The embedded input </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">input_dim</span></code>: Size of the vocabulary, i.e. maximum integer index + 1 </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_dim</span></code>: Dimension of the dense embedding </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Embedding</span><span class="p">(</span><span class="kt">int</span> <span class="n">input_dim</span><span class="p">,</span> <span class="kt">int</span> <span class="n">output_dim</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
 </pre></div>
@@ -266,10 +293,23 @@
 </div>
 <div class="section" id="reshape">
 <h2>Reshape<a class="headerlink" href="#reshape" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
-</div>
+<dl class="function">
+<dt id="_CPPv4N4eddl7ReshapeE5layerRK6vectorIiE6string">
+<span id="_CPPv3N4eddl7ReshapeE5layerRK6vectorIiE6string"></span><span id="_CPPv2N4eddl7ReshapeE5layerRK6vectorIiE6string"></span><span id="eddl::Reshape__layer.vector:i:CR.string"></span><span class="target" id="namespaceeddl_1ae8a8474d77c2b47db9ec5e3ba92bdfa3"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Reshape</code><span class="sig-paren">(</span>layer <em>parent</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7ReshapeE5layerRK6vectorIiE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Reshapes an output to a certain shape. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of reshape operation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Target shape. Vector of integers. Does not include the batch axis </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Reshape</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
 </pre></div>
@@ -277,10 +317,22 @@
 </div>
 <div class="section" id="transpose">
 <h2>Transpose<a class="headerlink" href="#transpose" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
-</div>
+<dl class="function">
+<dt id="_CPPv4N4eddl9TransposeE5layer6string">
+<span id="_CPPv3N4eddl9TransposeE5layer6string"></span><span id="_CPPv2N4eddl9TransposeE5layer6string"></span><span id="eddl::Transpose__layer.string"></span><span class="target" id="namespaceeddl_1aa444277bd317123977d17aa9e9ba97c2"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Transpose</code><span class="sig-paren">(</span>layer <em>parent</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9TransposeE5layer6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Transposes a Layer. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of transpose operation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Transpose</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
 </pre></div>
@@ -288,10 +340,22 @@
 </div>
 <div class="section" id="input">
 <h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
-</div>
+<dl class="function">
+<dt id="_CPPv4N4eddl5InputERK6vectorIiE6string">
+<span id="_CPPv3N4eddl5InputERK6vectorIiE6string"></span><span id="_CPPv2N4eddl5InputERK6vectorIiE6string"></span><span id="eddl::Input__vector:i:CR.string"></span><span class="target" id="namespaceeddl_1a9cebbef7cb8a8bffd972e6ee51a67420"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Input</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5InputERK6vectorIiE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Used to initialize an input to a model. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Input layer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: A shape vector (integer), not including the batch size. For instance, shape=(32,) indicates that the expected input will be batches of 32-dimensional vectors </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="nf">Input</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
 </pre></div>
@@ -299,10 +363,24 @@
 </div>
 <div class="section" id="dropout">
 <h2>Dropout<a class="headerlink" href="#dropout" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
-</div>
+<dl class="function">
+<dt id="_CPPv4N4eddl7DropoutE5layerf6string">
+<span id="_CPPv3N4eddl7DropoutE5layerf6string"></span><span id="_CPPv2N4eddl7DropoutE5layerf6string"></span><span id="eddl::Dropout__layer.float.string"></span><span class="target" id="namespaceeddl_1a9373985df806a5588af0ba8430c8724a"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Dropout</code><span class="sig-paren">(</span>layer <em>parent</em>, float <em>rate</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7DropoutE5layerf6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Applies Dropout to a layer. </p>
+<p>Dropout consists in randomly setting a fraction rate of input units to 0 at each update during training time, which helps prevent overfitting.</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Layer with Dropout </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rate</span></code>: Between 0 and 1. Fraction of the input units to drop </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="nf">Dropout</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="kt">float</span> <span class="n">rate</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
 </pre></div>

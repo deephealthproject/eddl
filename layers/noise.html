@@ -234,10 +234,24 @@
 <h1>Noise Layers<a class="headerlink" href="#noise-layers" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="gaussian-noise">
 <h2>Gaussian Noise<a class="headerlink" href="#gaussian-noise" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find file: /home/runner/work/eddl/eddl/docs/doxygen/build/xml/index.xml</p>
-</div>
+<dl class="function">
+<dt id="_CPPv4N4eddl13GaussianNoiseE5layerf6string">
+<span id="_CPPv3N4eddl13GaussianNoiseE5layerf6string"></span><span id="_CPPv2N4eddl13GaussianNoiseE5layerf6string"></span><span id="eddl::GaussianNoise__layer.float.string"></span><span class="target" id="namespaceeddl_1a7b4098437414a3799b5b53f697987c63"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">GaussianNoise</code><span class="sig-paren">(</span>layer <em>parent</em>, float <em>stddev</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl13GaussianNoiseE5layerf6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Apply additive zero-centered Gaussian noise. </p>
+<p>This is useful to mitigate overfitting (you could see it as a form of random data augmentation). Gaussian Noise (GS) is a natural choice as corruption process for real valued inputs. As it is a regularization layer, it is only active at training time.</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The parent after apply the GaussianNoise layer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stddev</span></code>: Standard deviation of the noise distribution </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">GaussianNoise</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="kt">float</span> <span class="n">stddev</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
 </pre></div>
