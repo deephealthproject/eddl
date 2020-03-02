@@ -1,6 +1,6 @@
 {% set name = "eddl-cpu" %}  # If this is a package for GPU, use: "eddl-gpu"
-{% set version = "0.4.2" %}
-{% set sha256 = "5b2182c4391d16540e29f50fe1ae00f977c09bb5e1ecd89fab82c598cc446b8a" %}
+{% set version = "0.4.3" %}
+{% set sha256 = "07492ae01d13a8b9c686ea5578dfc8740be751dc9b82d61ef669699054b9dd7f" %}
 
 package:
   name: {{ name|lower }}
