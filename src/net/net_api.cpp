@@ -293,6 +293,7 @@ void Net::backward(vector<Tensor *> target)
         // Copy targets
         for (int j = 0; j < target.size(); j++) {
             Tensor::select(target[j], Ys[i][j], sind, start, end);
+            snets[i]->lout[j]->check_target();
             Tensor::copy(Ys[i][j], snets[i]->lout[j]->target);
         }
     }
@@ -526,6 +527,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
     // Copy targets
     for (int j = 0; j < Y.size(); j++) {
         Tensor::select(Y[j], Ys[i][j], sind, start, end);
+        snets[i]->lout[j]->check_target();
         Tensor::copy(Ys[i][j], snets[i]->lout[j]->target);
     }
   }
