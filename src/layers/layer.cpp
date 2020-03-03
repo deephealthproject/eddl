@@ -71,6 +71,15 @@ void Layer::set_detach(){
     detached=true;
 }
 
+
+void Layer::check_target() {
+  if (target==nullptr) target=new Tensor(output->getShape(),dev);
+  else if (target->size!=output->size) {
+    delete target;
+    target=new Tensor(output->getShape(),dev);
+  }
+}
+
 void Layer::mem_delta_parent(){
     for(auto &p : this->parent){
         p->mem_delta();

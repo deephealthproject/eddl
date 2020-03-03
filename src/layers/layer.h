@@ -67,6 +67,7 @@ public:
     virtual void info();
 
     void setmode(int m);
+    void check_target();
     void detach(Layer *l);
     vector<int> getShape();
 
