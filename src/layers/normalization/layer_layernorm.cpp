@@ -27,6 +27,8 @@ LLayerNorm::LLayerNorm(Layer *parent, float momentum, float epsilon, bool affine
 
     Tensor *A;
 
+    affine=false;
+
     if (input->ndim == 2) PD=new PermuteDescriptor({1,0});
     else PD=new PermuteDescriptor({1,0,2,3});
 

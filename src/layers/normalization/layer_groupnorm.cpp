@@ -26,6 +26,9 @@ LGroupNorm::LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool
     input=parent->output;
     groups=g;
 
+
+    affine=false;
+
     if (input->ndim != 4) {
       input->info();
       msg("LGroupNorm only works over 2D (Conv) tensors","LGroupNorm");
@@ -49,7 +52,7 @@ LGroupNorm::LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool
     PD2->build(B->getShape());
 
     axis.push_back(0);axis.push_back(2);axis.push_back(3);
-    axis.push_back(B->shape[1]);
+    shape.push_back(B->shape[1]);
 
     MD=new MapReduceDescriptor(B,axis);
 
