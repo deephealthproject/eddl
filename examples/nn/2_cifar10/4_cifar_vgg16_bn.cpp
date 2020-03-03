@@ -22,12 +22,18 @@ using namespace eddl;
 // Using fit for training
 //////////////////////////////////
 
+
+layer Normalization(layer l)
+{
+  return GroupNormalization(l,4);
+}
+
 layer Block1(layer l,int filters) {
-  return ReLu(BatchNormalization(Conv(l,filters,{1,1},{1,1},"same",false)));
+  return ReLu(Normalization(Conv(l,filters,{1,1},{1,1},"same",false)));
 }
 layer Block3_2(layer l,int filters) {
-  l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1},"same",false)));
-  l=ReLu(BatchNormalization(Conv(l,filters,{3,3},{1,1},"same",false)));
+  l=ReLu(Normalization(Conv(l,filters,{3,3},{1,1},"same",false)));
+  l=ReLu(Normalization(Conv(l,filters,{3,3},{1,1},"same",false)));
   return l;
 }
 
@@ -39,7 +45,7 @@ int main(int argc, char **argv){
 
   // Settings
   int epochs = 25;
-  int batch_size = 100;
+  int batch_size = 4;
   int num_classes = 10;
 
   // network
@@ -59,7 +65,7 @@ int main(int argc, char **argv){
   l=Reshape(l,{-1});
   l=ReLu(BatchNormalization(Dense(l,512)));
 
-  layer out=Activation(Dense(l,num_classes),"softmax");
+  layer out=Softmax(Dense(l,num_classes));
 
   // net define input and output layers list
   model net=Model({in},{out});

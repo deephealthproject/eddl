@@ -76,12 +76,26 @@ LLayerNorm::LLayerNorm(Layer *parent, float momentum, float epsilon, bool affine
 }
 
 
+// override functions:
+int LLayerNorm::get_trainable_params_count()
+{
+  if (affine) return 2;  // only 2 trainable params
+  else return 0;  // no trainable params
+}
+
+void LLayerNorm::initialize() {
+  if (affine) {
+    params[0]->fill_(1.0);
+    params[1]->fill_(0.0);
+  }
+}
+
 // virtual
 void LLayerNorm::resize(int batch){
     if (batch!=output->shape[0]) {
         output->resize(batch);
 //        delta->resize(batch);
-        if (target!=nullptr) target->resize(batch);
+
 
         delete MD;
         delete PD;

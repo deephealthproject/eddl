@@ -117,7 +117,7 @@ void Layer::resize(int batch){
 //    cout<<name<<" resizing\n";
     if (output!=nullptr) output->resize(batch);
 //    if (delta!=nullptr) { if (!mem_level) delta->resize(batch); }
-    if (target!=nullptr) target->resize(batch);
+
 }
 
 void Layer::set_trainable(bool value){

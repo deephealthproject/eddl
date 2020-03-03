@@ -95,7 +95,6 @@ void LRVar::resize(int b)
 
   for(i=0;i<layers.size();i++) layers[i]->resize(b);
 
-  if (target!=nullptr) target->resize(b);
 }
 
 void LRVar::forward(){

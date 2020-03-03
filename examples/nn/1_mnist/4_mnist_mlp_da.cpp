@@ -38,17 +38,15 @@ int main(int argc, char **argv) {
     layer l = in;  // Aux var
 
     // Data augmentation assumes 3D tensors... images:
-//    l=Reshape(l,{1,28,28});
+    l=Reshape(l,{1,28,28});
     // Data augmentation
-//    l = RandomCropScale(l, {0.9f, 1.0f});
-//    l = RandomShift(l, {-0.1, 0.1}, {-0.1, 0.1});
-//    l = RandomRotation(l, {-10, 10});
+    l = RandomCropScale(l, {0.9f, 1.0f});
 
     // Come back to 1D tensor for fully connected:
-//    l=Reshape(l,{-1});
-    l = ReLu(GaussianNoise(LayerNormalization(Dense(l, 1024)),0.3));
-    l = ReLu(GaussianNoise(LayerNormalization(Dense(l, 1024)),0.3));
-    l = ReLu(GaussianNoise(LayerNormalization(Dense(l, 1024)),0.3));
+    l=Reshape(l,{-1});
+    l = ReLu(GaussianNoise(BatchNormalization(Dense(l, 1024)),0.3));
+    l = ReLu(GaussianNoise(BatchNormalization(Dense(l, 1024)),0.3));
+    l = ReLu(GaussianNoise(BatchNormalization(Dense(l, 1024)),0.3));
     //l = ReLu(Dense(l, 1024));
     //l = ReLu(Dense(l, 1024));
 

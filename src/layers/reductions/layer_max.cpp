@@ -48,7 +48,7 @@ void LRMax::backward(){
 // virtual
 void LRMax::resize(int batch){
     RD->resize(batch);
-    if (target!=nullptr) target->resize(batch);
+    
 }
 
 

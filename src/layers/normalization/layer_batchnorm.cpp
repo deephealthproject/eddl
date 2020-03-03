@@ -96,7 +96,7 @@ void LBatchNorm::resize(int batch){
         output->resize(batch);
         if (affine) opa->resize(batch);
 //        if (!mem_level) delta->resize(batch);
-        if (target!=nullptr) target->resize(batch);
+        
         delete MD;
         MD=new MapReduceDescriptor(input,axis);
     }

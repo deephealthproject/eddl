@@ -63,7 +63,7 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
 // virtual
 void LConv::resize(int batch){
     cd->resize(batch);
-    if (target!=nullptr) target->resize(batch);
+    
 }
 
 void LConv::mem_delta(){

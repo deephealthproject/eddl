@@ -48,9 +48,14 @@ LGroupNorm::LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool
     Tensor *B=new Tensor(PD->oshape,dev);
     PD2->build(B->getShape());
 
-    axis.push_back(0);axis.push_back(2);axis.push_back(3);shape.push_back(B->shape[1]);
+    axis.push_back(0);axis.push_back(2);axis.push_back(3);
+    axis.push_back(B->shape[1]);
 
     MD=new MapReduceDescriptor(B,axis);
+
+
+    if (affine) opa=new Tensor(B->getShape(),dev); //output pre-affine
+
 
     delete A;
     delete B;
@@ -64,29 +69,56 @@ LGroupNorm::LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool
     output=new Tensor(input->getShape(),dev);
 //    delta=new Tensor(input->getShape(),dev);
 
+    mean=new Tensor(shape,dev);
+    mean->fill_(0.0);
+    variance=new Tensor(shape,dev);
+    variance->fill_(1.0);
+
     bn_mean=new Tensor(shape,dev);
     bn_var=new Tensor(shape,dev);
 
-    if (momentum!=0.0) {
-        mean=new Tensor(shape,dev);
-        mean->fill_(0.0);
+    if (affine) {
+      bn_g=new Tensor(shape,dev);
+      bn_b=new Tensor(shape,dev);
 
-        variance=new Tensor(shape,dev);
-        variance->fill_(1.0);
+      gbn_g=new Tensor(shape,dev);
+      gbn_b=new Tensor(shape,dev);
+
+      params.push_back(bn_g);
+      params.push_back(bn_b);
+
+      gradients.push_back(gbn_g);
+      gradients.push_back(gbn_b);
     }
 
+    // no trainable:
+    params.push_back(mean);
+    params.push_back(variance);
 
     parent->addchild(this);
     addparent(parent);
 }
 
+// override functions:
+int LGroupNorm::get_trainable_params_count()
+{
+  if (affine) return 2;  // only 2 trainable params
+  else return 0;  // no trainable params
+}
+
+void LGroupNorm::initialize() {
+  if (affine) {
+    params[0]->fill_(1.0);
+    params[1]->fill_(0.0);
+  }
+}
 
 // virtual
 void LGroupNorm::resize(int batch){
   if (batch!=output->shape[0]) {
     output->resize(batch);
 //    delta->resize(batch);
-    if (target!=nullptr) target->resize(batch);
+
     delete MD;
 
     N=batch;
@@ -106,6 +138,11 @@ void LGroupNorm::resize(int batch){
 
     MD=new MapReduceDescriptor(B,axis);
 
+    if (affine) {
+      delete opa;
+      opa=new Tensor(B->getShape(),dev); //output pre-affine
+    }
+
     delete A;
     delete B;
 
@@ -114,7 +151,14 @@ void LGroupNorm::resize(int batch){
     bn_var->resize(N*groups);
     mean->resize(N*groups);
     variance->resize(N*groups);
+    if (affine) {
+      bn_g->resize(N*groups);
+      bn_b->resize(N*groups);
 
+      gbn_g->resize(N*groups);
+      gbn_b->resize(N*groups);
+
+    }
 
   }
 }
@@ -133,7 +177,7 @@ void LGroupNorm::forward() {
 
   Tensor::select(A,B, PD);
 
-  //BN_forward(B,C,MD,bn_mean,bn_var,mean,variance,momentum,epsilon,affine, bn_g,bn_b,mode==TRMODE);
+  BN_forward(B,C,MD,bn_mean,bn_var,mean,variance,momentum,epsilon,affine,bn_g,bn_b,opa,mode==TRMODE);
 
   Tensor::select(C,A, PD2);
 
@@ -171,7 +215,8 @@ void LGroupNorm::backward()
   A=new Tensor(PD->oshape,dev);
   A->fill_(0.0);
 
-  //BN_backward(C,B,A,MD,bn_mean,bn_var,mean,variance,epsilon);
+
+  BN_backward(C,B,A,MD,bn_mean,bn_var,mean,variance,epsilon,affine,bn_g,bn_b,gbn_g,gbn_b,opa);
 
   delete B;
 

@@ -24,10 +24,10 @@ using namespace eddl;
 
 layer Normalization(layer l)
 {
-  //return l;
-  return l;//BatchNormalization(l);
-  //return LayerNormalization(l);
-  //return GroupNormalization(l,32); // reduce batch_size and learning rate
+
+  return l;
+  //return BatchNormalization(l);
+
 
 }
 

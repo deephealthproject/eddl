@@ -48,7 +48,7 @@ void LRMin::backward(){
 // virtual
 void LRMin::resize(int batch){
     RD->resize(batch);
-    if (target!=nullptr) target->resize(batch);
+    
 }
 
 
