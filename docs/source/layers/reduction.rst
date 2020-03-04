@@ -5,6 +5,8 @@ Reduction Layers
 ReduceMean
 ---------------
 
+.. doxygenfunction:: ReduceMean
+
 Reduced mean
 
 Example:
@@ -17,6 +19,8 @@ Example:
 
 ReduceVar
 ---------------
+
+.. doxygenfunction:: ReduceVar
 
 Reduced var
 
@@ -31,6 +35,8 @@ Example:
 ReduceSum
 ---------------
 
+.. doxygenfunction:: ReduceSum
+
 Reduced sum
 
 Example:
@@ -44,6 +50,8 @@ Example:
 ReduceMax
 ---------------
 
+.. doxygenfunction:: ReduceMax
+
 Reduced max
 
 Example:
@@ -56,6 +64,8 @@ Example:
 
 ReduceMin
 ---------------
+
+.. doxygenfunction:: ReduceMin
 
 Reduced min
 

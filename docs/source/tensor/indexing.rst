@@ -27,6 +27,8 @@ Indexing-like operations
 select
 ^^^^^^
 
+.. doxygenfunction:: Tensor::select(const vector<string>&)
+
 Returns an array with the selected indices of the tensor.
 
   Parameters
@@ -42,6 +44,8 @@ Returns an array with the selected indices of the tensor.
 
 set_select
 ^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::set_select(const vector<string>&, Tensor *)
 
 Sets the elements in the array using the selected indices.
 The indices must be specified as a vector of strings ({"0", ":5", ":", "3:6"}).

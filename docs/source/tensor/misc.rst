@@ -14,6 +14,8 @@ Functions
 toCPU
 ^^^^^^^^^^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::toCPU
+
 Clone a tensor to the CPU
 
 .. code-block:: c++
@@ -22,6 +24,8 @@ Clone a tensor to the CPU
 
 toGPU
 ^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::toGPU
 
 Clone a tensor to the GPU
 
@@ -33,6 +37,8 @@ Clone a tensor to the GPU
 isCPU
 ^^^^^^^^^^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::isCPU
+
 Check if the tensor is in CPU
 
 .. code-block:: c++
@@ -42,6 +48,8 @@ Check if the tensor is in CPU
 
 isGPU
 ^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::isGPU
 
 Check if the tensor is in GPU
 
@@ -53,6 +61,8 @@ Check if the tensor is in GPU
 isFPGA
 ^^^^^^^^^^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::isFPGA
+
 Check if the tensor is in FPGA
 
 .. code-block:: c++
@@ -62,6 +72,8 @@ Check if the tensor is in FPGA
 
 isSquared
 ^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::isSquared
 
 Check if all dimensions in the tensors are the same
 
@@ -73,6 +85,8 @@ Check if all dimensions in the tensors are the same
 copy
 ^^^^^^^^^^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::copy
+
 Copy data from Tensor A to B
 
 .. code-block:: c++
@@ -82,6 +96,8 @@ Copy data from Tensor A to B
 
 clone
 ^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::clone
 
 Clone a tensor (same device)
 
@@ -93,6 +109,8 @@ Clone a tensor (same device)
 info
 ^^^^^^^^^^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::info
+
 Print shape, device and size information
 
 .. code-block:: c++
@@ -102,6 +120,8 @@ Print shape, device and size information
 
 print
 ^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::print
 
 Print the tensor values
 
@@ -113,6 +133,8 @@ Print the tensor values
 valid_indices
 ^^^^^^^^^^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::valid_indices
+
 Check if the given indices are valid for this tensor
 
 .. code-block:: c++
@@ -122,6 +144,8 @@ Check if the given indices are valid for this tensor
 
 get_address_rowmajor
 ^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::get_address_rowmajor
 
 Translate a set of indices to their corresponding address (row-major)
 

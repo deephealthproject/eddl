@@ -16,6 +16,8 @@ Input
 loadfs
 ^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::loadfs
+
 Load tensor from filestream.
 
   Parameters:
@@ -29,6 +31,9 @@ Load tensor from filestream.
     
 load
 ^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::load(const string&, string)
+
 
 Load tensor from file.
 
@@ -51,6 +56,8 @@ Load tensor from file.
 load_from_txt
 ^^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::load_from_txt(const string&, const char, int)
+
 Load data from a text file
 
   Parameters:
@@ -72,6 +79,8 @@ Output
 savefs
 ^^^^^^^^
 
+.. doxygenfunction:: Tensor::savefs
+
 Save tensor to a filestream.
 
   Parameters:
@@ -91,6 +100,8 @@ Save tensor to a filestream.
 
 save
 ^^^^^^^^
+
+.. doxygenfunction:: Tensor::save
 
 Save tensor to a file.
 
@@ -114,6 +125,8 @@ Save tensor to a file.
 
 save2txt
 ^^^^^^^^
+
+.. doxygenfunction:: Tensor::save2txt(const string&, const char, const vector<string>&)
 
 Save tensor to a text file.
 

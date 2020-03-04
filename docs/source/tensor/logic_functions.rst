@@ -15,6 +15,8 @@ Truth value testing
 all
 ^^^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::all
+
 Test whether all elements evaluate to True.
 
 .. code-block:: c++
@@ -24,6 +26,8 @@ Test whether all elements evaluate to True.
 
 any
 ^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::any
 
 Test whether any element evaluates to True
 
@@ -40,6 +44,8 @@ Array contents
 isfinite
 ^^^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::isfinite
+
 Test element-wise for finiteness (not infinity or not Not a Number).
 
   Parameters:
@@ -54,6 +60,8 @@ Test element-wise for finiteness (not infinity or not Not a Number).
 
 isinf
 ^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::isinf
 
 Test element-wise for positive or negative infinity.
 
@@ -70,6 +78,8 @@ Test element-wise for positive or negative infinity.
 isnan
 ^^^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::isnan
+
 Test element-wise for NaN.
 
   Parameters:
@@ -85,6 +95,8 @@ Test element-wise for NaN.
 isneginf
 ^^^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::isneginf
+
 Test element-wise for negative infinity.
   
   Parameters:
@@ -99,6 +111,8 @@ Test element-wise for negative infinity.
 
 isposinf
 ^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::isposinf
 
 Test element-wise for positive infinity.
 
@@ -120,6 +134,8 @@ Logical operations
 logical_and
 ^^^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::logical_and
+
 Compute the truth value of ``A and B`` element-wise.
 
   Parameters:
@@ -137,6 +153,8 @@ Compute the truth value of ``A and B`` element-wise.
 logical_or
 ^^^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::logical_or
+
 Compute the truth value of ``A or B`` element-wise.
 
   Parameters:
@@ -153,6 +171,8 @@ Compute the truth value of ``A or B`` element-wise.
 logical_not
 ^^^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::logical_not
+
 Compute the truth value of ``not A`` element-wise.
 
   Parameters:
@@ -167,6 +187,8 @@ Compute the truth value of ``not A`` element-wise.
 
 logical_xor
 ^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::logical_xor
 
 Compute the truth value of ``A xor B``, element-wise.
 
@@ -189,6 +211,8 @@ Comparison
 allclose
 ^^^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::allclose
+
 Returns True if two arrays are element-wise equal within a tolerance.
 
 .. code-block:: c++
@@ -199,6 +223,8 @@ Returns True if two arrays are element-wise equal within a tolerance.
 isclose
 ^^^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::isclose
+
 Returns a boolean array where two arrays are element-wise equal within a tolerance.
 
 .. code-block:: c++
@@ -208,6 +234,8 @@ Returns a boolean array where two arrays are element-wise equal within a toleran
 
 greater
 ^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::greater
 
 Return the truth value of ``A > B`` element-wise.
 
@@ -225,6 +253,8 @@ Return the truth value of ``A > B`` element-wise.
 greater_equal
 ^^^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::greater_equal
+
 Return the truth value of ``A >= B`` element-wise.
 
   Parameters:
@@ -240,6 +270,8 @@ Return the truth value of ``A >= B`` element-wise.
 
 less
 ^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::less
 
 Return the truth value of ``A < B`` element-wise.
 
@@ -257,6 +289,8 @@ Return the truth value of ``A < B`` element-wise.
 less_equal
 ^^^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::less_equal
+
 Return the truth value of ``A =< B`` element-wise.
 
   Parameters:
@@ -273,6 +307,8 @@ Return the truth value of ``A =< B`` element-wise.
 equal
 ^^^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::equal
+
 Return ``A == B`` element-wise.
 
   Parameters:
@@ -288,6 +324,8 @@ Return ``A == B`` element-wise.
 
 not_equal
 ^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::not_equal
 
 Return ``A != B`` element-wise.
 
