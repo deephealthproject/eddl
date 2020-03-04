@@ -5,6 +5,7 @@ This example trains and evaluates a simple convolutional neural network. Additio
 augmentation to the input data.
 
 .. image:: /_static/images/models/cnn_da.svg
+  :scale: 100%
 
 
 .. code:: c++

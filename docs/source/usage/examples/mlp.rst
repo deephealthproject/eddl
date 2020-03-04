@@ -5,6 +5,7 @@ This example trains and evaluates a simple multilayer perceptron.
 
 
 .. image:: /_static/images/models/mlp.svg
+  :scale: 100%
 
 
 .. code:: c++
