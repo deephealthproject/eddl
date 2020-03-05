@@ -567,6 +567,13 @@ namespace eddl {
 						Layer* parent = output_node_map[parent_name];
 						vector<int> parent_shape = parent->output->shape;
 
+						string scale_name = node->input(1); // Scale parameter
+						vector<float>* scale_weights = new vector<float>(map_init_values[scale_name]);
+						vector<int> scale_dims = map_init_dims[scale_name];
+
+						string bias_name = node->input(2); // Bias parameter
+						vector<float>* bias_weights = new vector<float>(map_init_values[bias_name]);
+						vector<int> bias_dims = map_init_dims[bias_name];
 
 						string mean_name = node->input(3); //Get weights and dims
 						vector<float>* mean_weights = new vector<float>(map_init_values[mean_name]);
@@ -576,14 +583,19 @@ namespace eddl {
 						vector<float>* variance_weights = new vector<float>(map_init_values[variance_name]);
 						vector<int> variance_dims = map_init_dims[variance_name];
 
-						cout << "Mean name = " << mean_name << endl;
-						cout << "Variance name = " << variance_name << endl;
-						
 						string name = node->name();
 
-						bool affine = false; //Not implemented in eddl
+						bool affine = true; // The ONNX operator description does not have an "affine" attribute. We have to assume that this will be allways true.
 
 						actual_layer = new LBatchNorm(parent, momentum, epsilon, affine, name, dev, mem);
+
+						Tensor* scale_tensor = eddlT::create(scale_dims, scale_weights->data(), dev);
+						Tensor::copy(scale_tensor, ((LBatchNorm *)(actual_layer))->bn_g);
+						delete(scale_tensor);
+
+						Tensor* bias_tensor = eddlT::create(bias_dims, bias_weights->data(), dev);
+						Tensor::copy(bias_tensor, ((LBatchNorm *)(actual_layer))->bn_b);
+						delete(bias_tensor);
 
 						Tensor* mean_tensor = eddlT::create(mean_dims, mean_weights->data(), dev);
 						Tensor::copy(mean_tensor, ((LBatchNorm *)(actual_layer))->mean);

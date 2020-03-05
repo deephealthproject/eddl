@@ -76,7 +76,7 @@ LReshape::~LReshape()
 void LReshape::resize(int batch){
     ls[0]=batch;
     output->resize(batch, parent[0]->output);
-    if (target!=nullptr) target->resize(batch);
+    
 }
 
 

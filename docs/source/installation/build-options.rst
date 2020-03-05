@@ -160,7 +160,7 @@ If CMake is unable to find MKL automatically, try setting MKL_ROOT, such as:
 
 .. code:: bash
 
-    -BUILD_OPENMP=ON
+    -DBUILD_OPENMP=ON
 
 .. note::
 
@@ -171,7 +171,7 @@ If CMake is unable to find MKL automatically, try setting MKL_ROOT, such as:
 
 .. code:: bash
 
-    -BUILD_PROTOBUF=ON
+    -DBUILD_PROTOBUF=ON
 
 .. note::
 
@@ -181,7 +181,7 @@ If CMake is unable to find MKL automatically, try setting MKL_ROOT, such as:
 
 .. code:: bash
 
-    -BUILD_HPC=ON
+    -DBUILD_HPC=ON
 
 .. note::
 

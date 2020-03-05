@@ -4,6 +4,8 @@ Generators
 Gaussian Generator
 ------------------
 
+.. doxygenfunction:: GaussGenerator
+
 Generates a gaussian noise output (typically used for GANs)
 
 Example:
@@ -17,6 +19,8 @@ Example:
 
 Uniform Generator
 -----------------
+
+.. doxygenfunction:: UniformGenerator
 
 Generates a uniform noise output (typically used for GANs)
 

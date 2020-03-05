@@ -121,7 +121,7 @@ void LNorm::resize(int batch){
 
   for(int i=0;i<layers.size();i++) layers[i]->resize(batch);
 
-  if (target!=nullptr) target->resize(batch);
+  
 }
 
 void LNorm::reset()

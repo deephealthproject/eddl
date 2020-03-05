@@ -862,11 +862,7 @@ namespace eddl {
 		onnx::TensorProto* scale = graph->add_initializer();
 		scale->set_name( layer->name + "_scale" );
 		scale->set_data_type( onnx::TensorProto::FLOAT );	
-		scale->add_dims( n_features );
-
-		for( int i = 0; i < n_features; ++i ) {
-			scale->add_float_data( 1 );
-		}
+		scale->add_dims( n_features );	
 
 		// Bias input
 		onnx::TensorProto* bias = graph->add_initializer();
@@ -874,8 +870,22 @@ namespace eddl {
 		bias->set_data_type( onnx::TensorProto::FLOAT );	
 		bias->add_dims( n_features );
 
-		for( int i = 0; i < n_features; ++i ) {
-			bias->add_float_data( 0 );
+		// Check if the layer has trainable parameters
+		if ( layer->affine ) 
+		{
+			for( int i = 0; i < n_features; ++i ) {
+				scale->add_float_data( layer->bn_g->ptr[i] );
+				bias->add_float_data( layer->bn_b->ptr[i] );
+			}
+		} 
+		else 
+		{
+			for( int i = 0; i < n_features; ++i ) {
+				// Set the scale values to 1 (1 is the default value in case of not having trainable parameters)
+				scale->add_float_data( 1 );
+				// Set the bias values to 0 (0 is the default value in case of not having trainable parameters)
+				bias->add_float_data( 0 );
+			}
 		}
 
 		// Mean input

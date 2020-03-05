@@ -48,7 +48,7 @@ void LRSum::backward(){
 // virtual
 void LRSum::resize(int batch){
     RD->resize(batch);
-    if (target!=nullptr) target->resize(batch);
+    
 }
 
 

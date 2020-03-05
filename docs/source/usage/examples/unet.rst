@@ -4,6 +4,7 @@ Training a U-Net
 This example trains and evaluates a U-Net
 
 .. image:: /_static/images/models/segnet.svg
+  :scale: 100%
 
 .. code:: c++
 

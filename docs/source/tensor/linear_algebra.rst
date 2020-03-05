@@ -13,6 +13,8 @@ Matrix and vector products
 
 ...
 
+.. doxygenfunction:: Tensor::interpolate
+
 Example:
 
 .. code-block:: c++

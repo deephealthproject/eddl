@@ -68,7 +68,7 @@ void LRMean::backward(){
 // virtual
 void LRMean::resize(int batch){
     RD->resize(batch);
-    if (target!=nullptr) target->resize(batch);
+    
 }
 
 

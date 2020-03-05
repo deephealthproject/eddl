@@ -56,5 +56,5 @@ void LPool::mem_delta(){
 
 void LPool::resize(int batch){
     pd->resize(batch);
-    if (target!=nullptr) target->resize(batch);
+    
 }
