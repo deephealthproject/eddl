@@ -4,6 +4,7 @@ Training a ResNet50
 This example trains and evaluates ResNet50 using CIFAR-10.
 
 .. image:: /_static/images/models/resnet50.svg
+  :scale: 100%
 
 
 .. code:: c++

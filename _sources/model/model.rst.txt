@@ -5,7 +5,6 @@ Model
 Constructor
 ------------
 
-Instantiates model, taking two vectors, one of input layers and another of output layers.
 
 .. doxygenfunction:: eddl::Model
 
@@ -20,7 +19,6 @@ Example:
 Build
 ----------
 
-Tell the model which optimizer, losses, metrics and computing services use.
 
 .. doxygenfunction:: eddl::build(model, optimizer, CompServ *, bool)
 
@@ -38,8 +36,6 @@ Example:
 
 Summary
 ----------
-
-Prints a summary representation of your model.
 
 .. doxygenfunction:: eddl::summary
 
@@ -72,7 +68,6 @@ Result:
 Plot
 -----------------
 
-Plots a representation of your model.
 
 .. doxygenfunction:: eddl::plot
 
@@ -92,7 +87,6 @@ Result:
 Load
 --------------
 
-Load weights to reinstantiate your model.
 
 .. doxygenfunction:: eddl::load(model, string&, string)
 
@@ -108,7 +102,6 @@ Example:
 Save
 --------------------
 
-Save weights of a model.
 
 .. doxygenfunction:: eddl::save(model, string&, string)
 
@@ -124,7 +117,6 @@ Example:
 Learning rate (on the fly)
 --------------------------
 
-Changes the learning rate and hyperparameters of the model optimizer.
 
 .. doxygenfunction:: eddl::setlr(model, vector<float>)
 
@@ -141,7 +133,6 @@ Example:
 Logging
 --------
 
-Save the training outputs of a model to a filename
 
 .. doxygenfunction:: eddl::setlogfile(model, string)
 

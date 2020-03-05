@@ -16,12 +16,7 @@ Input
 loadfs
 ^^^^^^^^^^^
 
-Load tensor from filestream.
-
-  Parameters:
-
-  - ``&ifs``: Filestream
-  - ``format``: File format. Accepted formats are: bin, onnx, csv, tsv, txt.
+.. doxygenfunction:: Tensor::loadfs
 
 .. code-block:: c++
 
@@ -30,18 +25,7 @@ Load tensor from filestream.
 load
 ^^^^^^^^^^^
 
-Load tensor from file.
-
-  Parameters:
-
-  - ``filename``: Name of the file to load the tensor from.
-  - ``format``: Filetype. The accepted filetypes are the following:
-
-    - Images: jpg, jpeg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm.
-    - Numpy: npy, npz
-    - Text: csv, tsv, txt
-    - Other: bin, onnx
-
+.. doxygenfunction:: Tensor::load(const string&, string)
 
 .. code-block:: c++
 
@@ -51,13 +35,7 @@ Load tensor from file.
 load_from_txt
 ^^^^^^^^^^^^^
 
-Load data from a text file
-
-  Parameters:
-  
-  - ``filename``: Name of the file to load the tensor from.
-  - ``delimiter``: Character used to separate the columns of the file.
-  - ``headerRows``: Number of top rows to avoid, generally because they correspond to the header.
+.. doxygenfunction:: Tensor::load_from_txt(const string&, const char, int)
 
 .. code-block:: c++
 
@@ -72,15 +50,7 @@ Output
 savefs
 ^^^^^^^^
 
-Save tensor to a filestream.
-
-  Parameters:
-
-  - ``&ofs``: Filestream.
-  - ``format``: Format to use. The accepted formats are the following:
-
-    - Text: csv, tsv, txt
-    - Other: bin, onnx
+.. doxygenfunction:: Tensor::savefs
 
 .. code-block:: c++
 
@@ -92,17 +62,7 @@ Save tensor to a filestream.
 save
 ^^^^^^^^
 
-Save tensor to a file.
-
-  Parameters:
-
-  - ``filename``: Name of the file to save the tensor to.
-  - ``format``: Filetype. The accepted filetypes are the following:
-
-    - Images: png, bmp, tga, jpg, jpeg, hdr.
-    - Numpy: npy, npz
-    - Text: csv, tsv, txt
-    - Other: bin, onnx
+.. doxygenfunction:: Tensor::save
 
 .. code-block:: c++
 
@@ -115,13 +75,7 @@ Save tensor to a file.
 save2txt
 ^^^^^^^^
 
-Save tensor to a text file.
-
-  Parameters:
-  
-  - ``filename``: Name of the file to save the tensor to.
-  - ``delimiter``: Character to use to separate the columns of the file.
-  - ``header``: Header rows.
+.. doxygenfunction:: Tensor::save2txt(const string&, const char, const vector<string>&)
 
 .. code-block:: c++
 

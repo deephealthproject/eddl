@@ -242,7 +242,6 @@
 <h1>Model<a class="headerlink" href="#model" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="constructor">
 <h2>Constructor<a class="headerlink" href="#constructor" title="Permalink to this headline">¶</a></h2>
-<p>Instantiates model, taking two vectors, one of input layers and another of output layers.</p>
 <dl class="function">
 <dt id="_CPPv4N4eddl5ModelE6vlayer6vlayer">
 <span id="_CPPv3N4eddl5ModelE6vlayer6vlayer"></span><span id="_CPPv2N4eddl5ModelE6vlayer6vlayer"></span><span id="eddl::Model__vlayer.vlayer"></span><span class="target" id="namespaceeddl_1a20d2dc23c5a0e4511914984336b2575c"></span>model <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Model</code><span class="sig-paren">(</span>vlayer <em>in</em>, vlayer <em>out</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5ModelE6vlayer6vlayer" title="Permalink to this definition">¶</a><br /></dt>
@@ -266,7 +265,6 @@
 </div>
 <div class="section" id="build">
 <h2>Build<a class="headerlink" href="#build" title="Permalink to this headline">¶</a></h2>
-<p>Tell the model which optimizer, losses, metrics and computing services use.</p>
 <dl class="function">
 <dt id="_CPPv4N4eddl5buildE5model9optimizerP8CompServb">
 <span id="_CPPv3N4eddl5buildE5model9optimizerP8CompServb"></span><span id="_CPPv2N4eddl5buildE5model9optimizerP8CompServb"></span><span id="eddl::build__model.optimizer.CompServP.b"></span><span class="target" id="namespaceeddl_1a9f67d216de07e07763f8af8c7974ae09"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">build</code><span class="sig-paren">(</span>model <em>net</em>, optimizer <em>o</em>, CompServ *<em>cs</em>, bool <em>init_weights</em><span class="sig-paren">)</span><br /></dt>
@@ -300,7 +298,6 @@
 </div>
 <div class="section" id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
-<p>Prints a summary representation of your model.</p>
 <dl class="function">
 <dt id="_CPPv4N4eddl7summaryE5model">
 <span id="_CPPv3N4eddl7summaryE5model"></span><span id="_CPPv2N4eddl7summaryE5model"></span><span id="eddl::summary__model"></span><span class="target" id="namespaceeddl_1ae060f2a83862eb1a5e839ea327fe8749"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">summary</code><span class="sig-paren">(</span>model <em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7summaryE5model" title="Permalink to this definition">¶</a><br /></dt>
@@ -338,7 +335,6 @@ softmax4                      |  (10)      =&gt;      (10)
 </div>
 <div class="section" id="plot">
 <h2>Plot<a class="headerlink" href="#plot" title="Permalink to this headline">¶</a></h2>
-<p>Plots a representation of your model.</p>
 <dl class="function">
 <dt id="_CPPv4N4eddl4plotE5model6string6string">
 <span id="_CPPv3N4eddl4plotE5model6string6string"></span><span id="_CPPv2N4eddl4plotE5model6string6string"></span><span id="eddl::plot__model.string.string"></span><span class="target" id="namespaceeddl_1a1ad21e624bd0160ee12541762a0d7bdf"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">plot</code><span class="sig-paren">(</span>model <em>m</em>, string <em>fname</em>, string <em>mode</em> = &quot;LR&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4plotE5model6string6string" title="Permalink to this definition">¶</a><br /></dt>
@@ -363,7 +359,6 @@ softmax4                      |  (10)      =&gt;      (10)
 <img alt="../_images/mlp.svg" src="../_images/mlp.svg" /></div>
 <div class="section" id="load">
 <h2>Load<a class="headerlink" href="#load" title="Permalink to this headline">¶</a></h2>
-<p>Load weights to reinstantiate your model.</p>
 <dl class="function">
 <dt id="_CPPv4N4eddl4loadE5modelRK6string6string">
 <span id="_CPPv3N4eddl4loadE5modelRK6string6string"></span><span id="_CPPv2N4eddl4loadE5modelRK6string6string"></span><span id="eddl::load__model.stringCR.string"></span><span class="target" id="namespaceeddl_1ad42db74ad4342e5f73a8636f978590d9"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">load</code><span class="sig-paren">(</span>model <em>m</em>, <em class="property">const</em> string &amp;<em>fname</em>, string <em>format</em> = &quot;bin&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4loadE5modelRK6string6string" title="Permalink to this definition">¶</a><br /></dt>
@@ -387,7 +382,6 @@ softmax4                      |  (10)      =&gt;      (10)
 </div>
 <div class="section" id="save">
 <h2>Save<a class="headerlink" href="#save" title="Permalink to this headline">¶</a></h2>
-<p>Save weights of a model.</p>
 <dl class="function">
 <dt id="_CPPv4N4eddl4saveE5modelRK6string6string">
 <span id="_CPPv3N4eddl4saveE5modelRK6string6string"></span><span id="_CPPv2N4eddl4saveE5modelRK6string6string"></span><span id="eddl::save__model.stringCR.string"></span><span class="target" id="namespaceeddl_1a2cd174b3944540e952c3e6d691b01d70"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">save</code><span class="sig-paren">(</span>model <em>m</em>, <em class="property">const</em> string &amp;<em>fname</em>, string <em>format</em> = &quot;bin&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4saveE5modelRK6string6string" title="Permalink to this definition">¶</a><br /></dt>
@@ -411,7 +405,6 @@ softmax4                      |  (10)      =&gt;      (10)
 </div>
 <div class="section" id="learning-rate-on-the-fly">
 <h2>Learning rate (on the fly)<a class="headerlink" href="#learning-rate-on-the-fly" title="Permalink to this headline">¶</a></h2>
-<p>Changes the learning rate and hyperparameters of the model optimizer.</p>
 <dl class="function">
 <dt id="_CPPv4N4eddl5setlrE5model6vectorIfE">
 <span id="_CPPv3N4eddl5setlrE5model6vectorIfE"></span><span id="_CPPv2N4eddl5setlrE5model6vectorIfE"></span><span id="eddl::setlr__model.vector:float:"></span><span class="target" id="namespaceeddl_1a6243850452ae21b9eaf08b24a98fa99e"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">setlr</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;float&gt; <em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5setlrE5model6vectorIfE" title="Permalink to this definition">¶</a><br /></dt>
@@ -435,7 +428,6 @@ softmax4                      |  (10)      =&gt;      (10)
 </div>
 <div class="section" id="logging">
 <h2>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h2>
-<p>Save the training outputs of a model to a filename</p>
 <dl class="function">
 <dt id="_CPPv4N4eddl10setlogfileE5model6string">
 <span id="_CPPv3N4eddl10setlogfileE5model6string"></span><span id="_CPPv2N4eddl10setlogfileE5model6string"></span><span id="eddl::setlogfile__model.string"></span><span class="target" id="namespaceeddl_1a0db24d2563d7c0bdbcb4a27bc18ca240"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">setlogfile</code><span class="sig-paren">(</span>model <em>net</em>, string <em>fname</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10setlogfileE5model6string" title="Permalink to this definition">¶</a><br /></dt>

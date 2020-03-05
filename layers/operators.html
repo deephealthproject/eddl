@@ -124,11 +124,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#addition">Addition</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#select">Select</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#permute">Permute</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#reducemean">ReduceMean</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#reducevar">ReduceVar</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#reducesum">ReduceSum</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#reducemax">ReduceMax</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#reducemin">ReduceMin</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reduction.html">Reduction Layers</a></li>
@@ -632,46 +627,6 @@
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Permute</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">dims</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">);</span>
  <span class="c1">// e.g.: Permute(l, {0, 3, 1, 2})</span>
-</pre></div>
-</td></tr></table></div>
-</div>
-<div class="section" id="reducemean">
-<h2>ReduceMean<a class="headerlink" href="#reducemean" title="Permalink to this headline">¶</a></h2>
-<p>Reduced mean</p>
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">ReduceMean</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">},</span> <span class="kt">bool</span> <span class="n">keepdims</span> <span class="o">=</span> <span class="nb">false</span><span class="p">);</span>
-</pre></div>
-</td></tr></table></div>
-</div>
-<div class="section" id="reducevar">
-<h2>ReduceVar<a class="headerlink" href="#reducevar" title="Permalink to this headline">¶</a></h2>
-<p>Reduced var</p>
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">ReduceVar</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">},</span> <span class="kt">bool</span> <span class="n">keepdims</span> <span class="o">=</span> <span class="nb">false</span><span class="p">);</span>
-</pre></div>
-</td></tr></table></div>
-</div>
-<div class="section" id="reducesum">
-<h2>ReduceSum<a class="headerlink" href="#reducesum" title="Permalink to this headline">¶</a></h2>
-<p>Reduced sum</p>
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">ReduceSum</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">},</span> <span class="kt">bool</span> <span class="n">keepdims</span> <span class="o">=</span> <span class="nb">false</span><span class="p">);</span>
-</pre></div>
-</td></tr></table></div>
-</div>
-<div class="section" id="reducemax">
-<h2>ReduceMax<a class="headerlink" href="#reducemax" title="Permalink to this headline">¶</a></h2>
-<p>Reduced max</p>
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">ReduceMax</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">},</span> <span class="kt">bool</span> <span class="n">keepdims</span> <span class="o">=</span> <span class="nb">false</span><span class="p">);</span>
-</pre></div>
-</td></tr></table></div>
-</div>
-<div class="section" id="reducemin">
-<h2>ReduceMin<a class="headerlink" href="#reducemin" title="Permalink to this headline">¶</a></h2>
-<p>Reduced min</p>
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">ReduceMin</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">axis</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">},</span> <span class="kt">bool</span> <span class="n">keepdims</span> <span class="o">=</span> <span class="nb">false</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
 </div>

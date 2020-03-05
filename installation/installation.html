@@ -25,6 +25,8 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script src="../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.js"></script>
+        <script src="../_static/sphinx_tabs/tabs.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -33,6 +35,10 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/segment.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/menu.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/semantic-ui-2.4.1/tab.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sphinx_tabs/tabs.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Build and configuration" href="build-options.html" />
@@ -84,6 +90,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#using-the-conda-package">Using the Conda package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#activate-conda-environments">Activate conda environments</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#enabling-onnx-features">Enabling ONNX features</a></li>
 </ul>
 </li>
@@ -251,10 +258,91 @@
 <h2>Using the Conda package<a class="headerlink" href="#using-the-conda-package" title="Permalink to this headline">¶</a></h2>
 <p>A package for EDDL is available on the conda package manager.
 You can use one of the following lines according to your needs:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install -c deephealth eddl-cpu            <span class="c1"># CPU (without ONNX) | Linux, MacOS</span>
-conda install -c deephealth eddl-gpu            <span class="c1"># GPU (without ONNX) | Linux</span>
-conda install -c deephealth eddl-gpu-onnx       <span class="c1"># GPU (with ONNX)    | Linux</span>
+<div class="sphinx-tabs docutils container">
+<div class="ui top attached tabular menu sphinx-menu docutils container">
+<div class="active item sphinx-data-tab-0-0 docutils container">
+<div class="docutils container">
+<p>CPU</p>
+</div>
+</div>
+<div class="item sphinx-data-tab-0-1 docutils container">
+<div class="docutils container">
+<p>GPU</p>
+</div>
+</div>
+<div class="item sphinx-data-tab-0-2 docutils container">
+<div class="docutils container">
+<p>GPU-ONNX</p>
+</div>
+</div>
+</div>
+<div class="ui bottom attached sphinx-tab tab segment sphinx-data-tab-0-0 active docutils container">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install -c deephealth eddl-cpu
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p><strong>Remember to activate the conda environment</strong></p></li>
+<li><p>It does not include ONNX support</p></li>
+<li><p>Platforms supported: Linux x86/x64 and MacOS</p></li>
+</ul>
+</div>
+</div>
+<div class="ui bottom attached sphinx-tab tab segment sphinx-data-tab-0-1 docutils container">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install -c deephealth eddl-gpu
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p><strong>Remember to activate the conda environment</strong></p></li>
+<li><p>It does not include ONNX support</p></li>
+<li><p>Platforms supported: Linux x86/x64</p></li>
+</ul>
+</div>
+</div>
+<div class="ui bottom attached sphinx-tab tab segment sphinx-data-tab-0-2 docutils container">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install -c deephealth eddl-gpu-onnx
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p><strong>Remember to activate the conda environment</strong></p></li>
+<li><p>Platforms supported: Linux x86/x64</p></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="activate-conda-environments">
+<h3>Activate conda environments<a class="headerlink" href="#activate-conda-environments" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>With conda, you can create, export, list, remove, and update
+environments that have different versions of Python and/or
+packages installed in them. Switching or moving between
+environments is called activating the environment.</p>
+<p>If you don’t specify a conda environment, conda will install all the packages in the
+default environment (<code class="docutils literal notranslate"><span class="pre">base</span></code>). To activate/deactivate the conda environment:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>For conda 4.6 and later versions:</dt><dd><ul>
+<li><p>Windows, Linux and macOS: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">activate</span></code> and <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">deactivate</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>For conda versions prior to 4.6:</dt><dd><ul>
+<li><p>Windows: <code class="docutils literal notranslate"><span class="pre">activate</span></code> or <code class="docutils literal notranslate"><span class="pre">deactivate</span></code></p></li>
+<li><p>Linux and macOS: <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">activate</span></code> or <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">deactivate</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
 </div>
 <div class="section" id="enabling-onnx-features">
 <h3>Enabling ONNX features<a class="headerlink" href="#enabling-onnx-features" title="Permalink to this headline">¶</a></h3>
@@ -280,7 +368,13 @@ ldconfig
 <h2>Using the Homebrew package<a class="headerlink" href="#using-the-homebrew-package" title="Permalink to this headline">¶</a></h2>
 <p>A package for EDDL is available on the homebrew package manager.
 You need to run both lines, one to add the tap and the other to install the library.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew tap deephealthproject/homebrew-tap
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install Homebrew</span>
+/bin/bash -c <span class="s2">&quot;</span><span class="k">$(</span>curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh<span class="k">)</span><span class="s2">&quot;</span>
+
+<span class="c1"># Add deephealth tap</span>
+brew tap deephealthproject/homebrew-tap
+
+<span class="c1"># Install EDDL</span>
 brew install eddl
 </pre></div>
 </div>

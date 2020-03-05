@@ -14,6 +14,8 @@ Element-wise
 abs
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::abs
+
 .. code-block:: c++
 
     static Tensor* abs(Tensor *A);
@@ -21,12 +23,20 @@ abs
 acos
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::acos
+
 .. code-block:: c++
 
     static Tensor* acos(Tensor *A);
     
 add
 ^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::add(Tensor *, Tensor *)
+
+.. doxygenfunction:: Tensor::add(float, Tensor *, float, Tensor *, Tensor *, int)
+
+.. doxygenfunction:: Tensor::add(Tensor *, Tensor *, Tensor *)
 
 .. code-block:: c++
    
@@ -37,12 +47,16 @@ add
 asin
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::asin
+
 .. code-block:: c++
 
     static Tensor* asin(Tensor *A);
     
 atan
 ^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::atan
 
 .. code-block:: c++
 
@@ -51,12 +65,16 @@ atan
 ceil
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::ceil
+
 .. code-block:: c++
    
     static Tensor* ceil(Tensor *A);
     
 clamp
 ^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::clamp
 
 .. code-block:: c++
    
@@ -65,12 +83,16 @@ clamp
 clampmax
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::clampmax
+
 .. code-block:: c++
    
     static Tensor* clampmax(Tensor *A, float max);
     
 clampmin
 ^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::clampmin
 
 .. code-block:: c++
 
@@ -79,6 +101,8 @@ clampmin
 cos
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::cos
+
 .. code-block:: c++
 
     static Tensor* cos(Tensor *A);
@@ -86,12 +110,18 @@ cos
 cosh
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::cosh
+
 .. code-block:: c++
    
     static Tensor* cosh(Tensor *A);
     
 div
 ^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::div(Tensor *, float)
+
+.. doxygenfunction:: Tensor::div(Tensor *, Tensor *)
 
 .. code-block:: c++  
 
@@ -101,12 +131,16 @@ div
 exp
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::exp
+
 .. code-block:: c++
    
     static Tensor* exp(Tensor *A);
     
 floor
 ^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::floor
 
 .. code-block:: c++   
 
@@ -115,12 +149,16 @@ floor
 log
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::log
+
 .. code-block:: c++
    
     static Tensor* log(Tensor *A);
     
 log2
 ^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::log2
 
 .. code-block:: c++
    
@@ -129,12 +167,16 @@ log2
 log10
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::log10
+
 .. code-block:: c++
    
     static Tensor* log10(Tensor *A);
     
 logn
 ^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::logn
 
 .. code-block:: c++
    
@@ -143,12 +185,18 @@ logn
 mod
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::mod
+
 .. code-block:: c++
    
     static Tensor* mod(Tensor *A, float v);
     
 mult
 ^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::mult(Tensor *, Tensor *)
+
+.. doxygenfunction:: Tensor::mult(Tensor *, float)
 
 .. code-block:: c++
    
@@ -158,12 +206,16 @@ mult
 neg
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::neg
+
 .. code-block:: c++  
 
     static Tensor* neg(Tensor *A);
     
 pow
 ^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::pow
 
 .. code-block:: c++
    
@@ -172,12 +224,16 @@ pow
 reciprocal
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::reciprocal
+
 .. code-block:: c++
    
     static Tensor* reciprocal(Tensor *A);
     
 remainder
 ^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::remainder
 
 .. code-block:: c++
    
@@ -186,12 +242,16 @@ remainder
 round
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::round
+
 .. code-block:: c++
    
     static Tensor* round(Tensor *A);
     
 rsqrt
 ^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::rsqrt
 
 .. code-block:: c++
    
@@ -200,12 +260,18 @@ rsqrt
 sigmoid
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::sigmoid
+
 .. code-block:: c++
    
     static Tensor* sigmoid(Tensor *A);
     
 sign
 ^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::sign(Tensor *)
+
+.. doxygenfunction:: Tensor::sign(Tensor *, Tensor *)
 
 .. code-block:: c++  
 
@@ -215,12 +281,16 @@ sign
 sin
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::sin
+
 .. code-block:: c++
    
     static Tensor* sin(Tensor *A);
     
 sinh
 ^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::sinh
 
 .. code-block:: c++
    
@@ -229,12 +299,16 @@ sinh
 sqr
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::sqr
+
 .. code-block:: c++
    
     static Tensor* sqr(Tensor *A);
     
 sqrt
 ^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::sqrt
 
 .. code-block:: c++
 
@@ -243,12 +317,20 @@ sqrt
 sub
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::sub
+
 .. code-block:: c++
    
     static Tensor* sub(Tensor *A, Tensor *B);
     
 sum
 ^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::sum2D_rowwise
+
+.. doxygenfunction:: Tensor::sum2D_colwise
+
+.. doxygenfunction:: Tensor::sum_abs
 
 .. code-block:: c++
    
@@ -259,6 +341,8 @@ sum
 tan
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::tan
+
 .. code-block:: c++
 
 
@@ -267,12 +351,16 @@ tan
 tanh
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::tanh
+
 .. code-block:: c++
    
     static Tensor* tanh(Tensor *A);
     
 trunc
 ^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::trunc
 
 .. code-block:: c++
    
@@ -287,12 +375,16 @@ Reductions
 max
 ^^^^^^^^^^^^
 
+.. doxygenfunction:: Tensor::max
+
 .. code-block:: c++
    
     float max();
     
 min
 ^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::min
 
 .. code-block:: c++
 

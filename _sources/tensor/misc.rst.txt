@@ -14,7 +14,7 @@ Functions
 toCPU
 ^^^^^^^^^^^^^^^^^^^^^
 
-Clone a tensor to the CPU
+.. doxygenfunction:: Tensor::toCPU
 
 .. code-block:: c++
 
@@ -23,7 +23,7 @@ Clone a tensor to the CPU
 toGPU
 ^^^^^^^^^^^^^^^^^^^^^
 
-Clone a tensor to the GPU
+.. doxygenfunction:: Tensor::toGPU
 
 .. code-block:: c++
 
@@ -33,7 +33,7 @@ Clone a tensor to the GPU
 isCPU
 ^^^^^^^^^^^^^^^^^^^^^
 
-Check if the tensor is in CPU
+.. doxygenfunction:: Tensor::isCPU
 
 .. code-block:: c++
 
@@ -43,7 +43,7 @@ Check if the tensor is in CPU
 isGPU
 ^^^^^^^^^^^^^^^^^^^^^
 
-Check if the tensor is in GPU
+.. doxygenfunction:: Tensor::isGPU
 
 .. code-block:: c++
 
@@ -53,7 +53,7 @@ Check if the tensor is in GPU
 isFPGA
 ^^^^^^^^^^^^^^^^^^^^^
 
-Check if the tensor is in FPGA
+.. doxygenfunction:: Tensor::isFPGA
 
 .. code-block:: c++
 
@@ -63,7 +63,7 @@ Check if the tensor is in FPGA
 isSquared
 ^^^^^^^^^^^^^^^^^^^^^
 
-Check if all dimensions in the tensors are the same
+.. doxygenfunction:: Tensor::isSquared
 
 .. code-block:: c++
 
@@ -73,7 +73,7 @@ Check if all dimensions in the tensors are the same
 copy
 ^^^^^^^^^^^^^^^^^^^^^
 
-Copy data from Tensor A to B
+.. doxygenfunction:: Tensor::copy
 
 .. code-block:: c++
 
@@ -83,7 +83,7 @@ Copy data from Tensor A to B
 clone
 ^^^^^^^^^^^^^^^^^^^^^
 
-Clone a tensor (same device)
+.. doxygenfunction:: Tensor::clone
 
 .. code-block:: c++
 
@@ -93,7 +93,7 @@ Clone a tensor (same device)
 info
 ^^^^^^^^^^^^^^^^^^^^^
 
-Print shape, device and size information
+.. doxygenfunction:: Tensor::info
 
 .. code-block:: c++
 
@@ -103,7 +103,7 @@ Print shape, device and size information
 print
 ^^^^^^^^^^^^^^^^^^^^^
 
-Print the tensor values
+.. doxygenfunction:: Tensor::print
 
 .. code-block:: c++
 
@@ -113,7 +113,7 @@ Print the tensor values
 valid_indices
 ^^^^^^^^^^^^^^^^^^^^^
 
-Check if the given indices are valid for this tensor
+.. doxygenfunction:: Tensor::valid_indices
 
 .. code-block:: c++
 
@@ -123,7 +123,7 @@ Check if the given indices are valid for this tensor
 get_address_rowmajor
 ^^^^^^^^^^^^^^^^^^^^^
 
-Translate a set of indices to their corresponding address (row-major)
+.. doxygenfunction:: Tensor::get_address_rowmajor
 
 .. code-block:: c++
 
