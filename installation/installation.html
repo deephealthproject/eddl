@@ -90,7 +90,6 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#using-the-conda-package">Using the Conda package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#activate-conda-environments">Activate conda environments</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#enabling-onnx-features">Enabling ONNX features</a></li>
 </ul>
 </li>
@@ -277,71 +276,42 @@ You can use one of the following lines according to your needs:</p>
 </div>
 </div>
 <div class="ui bottom attached sphinx-tab tab segment sphinx-data-tab-0-0 active docutils container">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install -c deephealth eddl-cpu
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda activate
+conda install -c deephealth eddl-cpu
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
-<li><p><strong>Remember to activate the conda environment</strong></p></li>
 <li><p>It does not include ONNX support</p></li>
 <li><p>Platforms supported: Linux x86/x64 and MacOS</p></li>
 </ul>
 </div>
 </div>
 <div class="ui bottom attached sphinx-tab tab segment sphinx-data-tab-0-1 docutils container">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install -c deephealth eddl-gpu
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda activate
+conda install -c deephealth eddl-gpu
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
-<li><p><strong>Remember to activate the conda environment</strong></p></li>
 <li><p>It does not include ONNX support</p></li>
 <li><p>Platforms supported: Linux x86/x64</p></li>
 </ul>
 </div>
 </div>
 <div class="ui bottom attached sphinx-tab tab segment sphinx-data-tab-0-2 docutils container">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install -c deephealth eddl-gpu-onnx
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda activate
+conda install -c deephealth eddl-gpu-onnx
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
-<li><p><strong>Remember to activate the conda environment</strong></p></li>
 <li><p>Platforms supported: Linux x86/x64</p></li>
 </ul>
 </div>
-</div>
-</div>
-<div class="section" id="activate-conda-environments">
-<h3>Activate conda environments<a class="headerlink" href="#activate-conda-environments" title="Permalink to this headline">¶</a></h3>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>With conda, you can create, export, list, remove, and update
-environments that have different versions of Python and/or
-packages installed in them. Switching or moving between
-environments is called activating the environment.</p>
-<p>If you don’t specify a conda environment, conda will install all the packages in the
-default environment (<code class="docutils literal notranslate"><span class="pre">base</span></code>). To activate/deactivate the conda environment:</p>
-<ul class="simple">
-<li><dl class="simple">
-<dt>For conda 4.6 and later versions:</dt><dd><ul>
-<li><p>Windows, Linux and macOS: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">activate</span></code> and <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">deactivate</span></code></p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>For conda versions prior to 4.6:</dt><dd><ul>
-<li><p>Windows: <code class="docutils literal notranslate"><span class="pre">activate</span></code> or <code class="docutils literal notranslate"><span class="pre">deactivate</span></code></p></li>
-<li><p>Linux and macOS: <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">activate</span></code> or <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">deactivate</span></code></p></li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
 </div>
 </div>
 <div class="section" id="enabling-onnx-features">
