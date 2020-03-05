@@ -27,7 +27,6 @@ using namespace eddl;
 layer BN(layer l)
 {
   return BatchNormalization(l);
-  //return l;
 }
 
 layer BG(layer l) {
@@ -70,19 +69,12 @@ int main(int argc, char **argv){
   layer l=in;
 
   // Data augmentation
-
   l = RandomCropScale(l, {0.8f, 1.0f});
-
-  // l = RandomShift(l,{-0.1,0.1},{-0.1,0.1});//CropScale(l, {0.8f, 1.0f});
   l = RandomHorizontalFlip(l);
-  //l = RandomCutout(l, {0.1,0.3},{0.1,0.3});
 
-  // Resnet-50
-
-  // For Imagenet size:
-
-  l=ReLu(BG(Conv(l,64,{3,3},{1,1},"same",false))); //{1,1}
-
+  // Resnet-50 for CIFAR-10
+  l=ReLu(BG(Conv(l,64,{3,3},{1,1},"same",false))); 
+	
   for(int i=0;i<3;i++)
     l=ResBlock(l, 64, 0, i==0); // not half but expand the first
 
@@ -120,8 +112,6 @@ int main(int argc, char **argv){
   // get some info from the network
   summary(net);
 
-
-
   // Load and preprocess training data
   tensor x_train = eddlT::load("cifar_trX.bin");
   tensor y_train = eddlT::load("cifar_trY.bin");
@@ -148,8 +138,6 @@ int main(int argc, char **argv){
       evaluate(net,{x_test},{y_test});
     }
   }
-
-
 
 }
 

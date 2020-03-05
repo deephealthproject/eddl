@@ -104,8 +104,21 @@ public:
     ~Tensor();
 
     // Copy data
+    /**
+      *  @brief Clone a tensor to the CPU.
+    */
     void toCPU(int dev=DEV_CPU);
+
+    /**
+      *  @brief Clone a tensor to the GPU.
+    */
     void toGPU(int dev=DEV_GPU);
+
+    /**
+      *  @brief Clone a tensor (same device).
+      * 
+      *  @return    Tensor
+    */
     Tensor* clone();
     void deleteData();
     void reallocate(Tensor* old_t, vector<int> *s = nullptr);
@@ -116,29 +129,122 @@ public:
     void resize(int b, Tensor *T);
 
     // Check device
+    /**
+      *  @brief Check if the tensor is in CPU.
+      *  
+      *  @return int
+    */
     int isCPU();
+
+    /**
+      *  @brief Check if the tensor is in GPU.
+      * 
+      *  @return int
+    */
     int isGPU();
+
+    /**
+      *  @brief Check if the tensor is in FPGA.
+      * 
+      *  @return int
+    */
     int isFPGA();
 
     // View methods
+
+    /**
+      *  @brief Print shape, device and size information.
+      * 
+      *  @return    void
+    */
     void info();
+
+    /**
+      *  @brief Print the tensor values.
+      * 
+      *  @return    void
+    */
     void print(bool asInt=false, bool raw=false);
     string getStrDevice();
 
     // Core
     vector<int> getShape();
     static int get_mode(string mode);
+
+    /**
+      *  @brief Check if all dimensions in the tensor are the same.
+      * 
+      *  @param A   Tensor
+      *  @return    bool
+    */
     static bool isSquared(Tensor *A);
 
 
     // Serialization *****************************
+    /**
+      *  @brief Load tensor from filestream.
+      *
+      *  @param ifs  Filestream
+      *  @param format    File format. Accepted formats are: bin, onnx, csv, tsv, txt.
+      *  @return    Tensor    
+    */
     static Tensor* loadfs(std::ifstream &ifs, string format="");
+
+    /**
+      *  @brief Load tensor from file.
+      *
+      *  @param filename  Name of the file to load the tensor from.
+      *  @param format    Filetype. The accepted filetypes are the following:
+      *                     - Images: jpg, jpeg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm.
+      *                     - Numpy: npy, npz
+      *                     - Other: bin, onnx
+      *  @return    Tensor    
+    */
     static Tensor* load(const string& filename, string format="");
     template<typename T> static Tensor* load(const string& filename, string format="");
+
+    /**
+      *  @brief Load data from a text file
+      *
+      *  @param filename  Name of the file to load the tensor from.
+      *  @param delimiter    Character used to separate the columns of the file.
+      *  @param headerRows   Number of top rows to avoid, generally because they correspond to the header.
+      *  @return    Tensor    
+    */
     static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
 
+    /**
+      *  @brief Save tensor to a filestream.
+      *
+      *  @param ofs     Filestream.
+      *  @param format    Format to use. The accepted formats are the following:
+      *                     - Text: csv, tsv, txt
+      *                     - Other: bin, onnx
+      *  @return    void    
+    */
     void savefs(std::ofstream &ofs, string format="");
+
+    /**
+      *  @brief Save tensor to a file.
+      *
+      *  @param filename    Name of the file to save the tensor to.
+      *  @param format    Filetype. The accepted filetypes are the following:
+      *                     - Images: png, bmp, tga, jpg, jpeg, hdr.
+      *                     - Numpy: npy, npz
+      *                     - Text: csv, tsv, txt
+      *                     - Other: bin, onnx
+      *  @return    void    
+    */
     void save(const string& filename, string format="");
+
+    /**
+      *  @brief Save tensor to a text file.
+      *
+      *  @param filename    Name of the file to save the tensor to.
+      *  @param delimiter   Character to use to separate the columns of the file.
+      *  @param header      Header rows.
+      *  @return    void    
+    */
     void save2txt(const string& filename, const char delimiter=',', const vector<string> &header={});
 
 
@@ -160,7 +266,20 @@ public:
     void unsqueeze_();
     static Tensor* unsqueeze(Tensor *A);
 
+    /**
+      *  @brief Check if the given indices are valid for this tensor.
+      *
+      *  @param indices
+      *  @return    bool
+    */
     bool valid_indices(vector<int> indices);
+
+    /**
+      *  @brief Translate a set of indices to their corresponding address (row-major).
+      *
+      *  @param indices
+      *  @return    int
+    */
     int get_address_rowmajor(vector<int> indices);
     vector<int> get_indices_rowmajor(int address);
     float get_(vector<int> indices);
@@ -171,15 +290,59 @@ public:
     // ****** Tensor operations ***********************
     // ************************************************
     // Creation ops ***********************************
+
+    /**
+      *  @brief Create a tensor of the specified shape and fill it with zeros.
+      *
+      *  @param shape  Shape of the tensor to create.
+      *  @param dev    Device to use. The possible values are: ``DEV_CPU`` and ``DEV_GPU``.
+      *  @return     Tensor of the specified shape filled with zeros
+    */
     static Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
+
+    /**
+      *  @brief Create a tensor of the specified shape and fill it with ones.
+      *
+      *  @param shape  Shape of the tensor to create.
+      *  @param dev    Device to use. The possible values are: ``DEV_CPU`` and ``DEV_GPU``.
+      *  @return     Tensor of the specified shape filled with ones
+    */
     static Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
+
+    /**
+      *  @brief Create a tensor of the specified shape and fill it with a specific value.
+      *
+      *  @param shape  Shape of the tensor to create.
+      *  @param value  Value to use to fill the tensor.
+      *  @param dev    Device to use. The possible values are: ``DEV_CPU`` and ``DEV_GPU``.
+      *  @return     Tensor of the specified shape filled with the value
+    */
     static Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
+
     static Tensor* arange(float start, float end, float step=1.0f, int dev=DEV_CPU);
     static Tensor* range(float start, float end, float step=1.0f, int dev=DEV_CPU);
     static Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
     static Tensor* logspace(float start, float end, int steps=100, float base=10.0f, int dev=DEV_CPU);
     static Tensor* geomspace(float start, float end, int steps=100, int dev=DEV_CPU);
+    
+    /**
+      *  @brief 
+      *
+      *  @param rows  Number of rows of the tensor.
+      *  @param offset  
+      *  @param dev    Device to use. The possible values are: ``DEV_CPU`` and ``DEV_GPU``.
+      *  @return     Tensor of the specified shape filled with the value
+    */
     static Tensor* eye(int rows, int offset=0, int dev=DEV_CPU);
+
+    /**
+      *  @brief Create a tensor representing the identity matrix. Equivalent to calling function ``eye`` with ``offset = 0``.
+      *
+      *  @param shape  Shape of the tensor to create.
+      *  @param value  Value to use to fill the tensor.
+      *  @param dev    Device to use. The possible values are: ``DEV_CPU`` and ``DEV_GPU``.
+      *  @return     Tensor of the specified shape filled with the value
+    */
     static Tensor* identity(int rows, int dev=DEV_CPU);
     static Tensor* diag(Tensor* A, int k=0, int dev=DEV_CPU);
     static Tensor* randu(const vector<int> &shape, int dev=DEV_CPU);
@@ -350,30 +513,196 @@ public:
     static void reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
 
     // Logic funcions: Truth value testing
+
+    /**
+      *  @brief Test whether all elements evaluate to True.
+      *
+      *  @param A   Tensor to evaluate
+      *  @return    bool
+    */
     static bool all(Tensor *A);
+
+    /**
+      *  @brief Test whether any element evaluates to True.
+      *
+      *  @param A   Tensor to evaluate
+      *  @return    bool
+    */
     static bool any(Tensor *A);
 
     // Logic funcions: Logical ops
+
+    /**
+      *  @brief Test element-wise for finiteness (not infinity or not Not a Number).
+      *
+      *  @param A   Tensor to evaluate
+      *  @param B   Tensor to store the results of the test as booleans
+      *  @return    void
+    */
     static void isfinite(Tensor *A, Tensor* B);
+
+    /**
+      *  @brief Test element-wise for positive or negative infinity.
+      *
+      *  @param A   Tensor to evaluate
+      *  @param B   Tensor to store the results of the test as booleans
+      *  @return    void
+    */
     static void isinf(Tensor *A, Tensor* B);
+
+    /**
+      *  @brief Test element-wise for Nan.
+      *
+      *  @param A   Tensor to evaluate
+      *  @param B   Tensor to store the results of the test as booleans
+      *  @return    void
+    */
     static void isnan(Tensor *A, Tensor* B);
+
+    /**
+      *  @brief Test element-wise for negative infinity.
+      *
+      *  @param A   Tensor to evaluate
+      *  @param B   Tensor to store the results of the test as booleans
+      *  @return    void
+    */
     static void isneginf(Tensor *A, Tensor* B);
+
+    /**
+      *  @brief Test element-wise for positive infinity.
+      *
+      *  @param A   Tensor to evaluate
+      *  @param B   Tensor to store the results of the test as booleans
+      *  @return    void
+    */
     static void isposinf(Tensor *A, Tensor* B);
 
     // Logic funcions: Logical ops
+
+    /**
+      *  @brief Compute the truth value of ``A and B`` element-wise.
+      *
+      *  @param A   Tensor
+      *  @param B   Tensor
+      *  @param C   Tensor to store the results of the operation
+      *  @return    void
+    */
     static void logical_and(Tensor *A, Tensor *B, Tensor *C);
+
+    /**
+      *  @brief Compute the truth value of ``A or B`` element-wise.
+      *
+      *  @param A   Tensor
+      *  @param B   Tensor
+      *  @param C   Tensor to store the results of the operation
+      *  @return    void
+    */
     static void logical_or(Tensor *A, Tensor *B, Tensor *C);
+
+    /**
+      *  @brief Compute the truth value of ``not A`` element-wise.
+      *
+      *  @param A   Tensor
+      *  @param B   Tensor to store the results of the operation
+      *  @return    void
+    */
     static void logical_not(Tensor *A, Tensor *B);
+
+    /**
+      *  @brief Compute the truth value of ``A xor B`` element-wise.
+      *
+      *  @param A   Tensor
+      *  @param B   Tensor
+      *  @param C   Tensor to store the results of the operation
+      *  @return    void
+    */
     static void logical_xor(Tensor *A, Tensor *B, Tensor *C);
 
     // Logic funcions: Comparison ops
+
+    /**
+      *  @brief Returns True if two arrays are element-wise equal within a tolerance.
+      *
+      *  @param A   Tensor
+      *  @param B   Tensor
+      *  @param rtol
+      *  @param atol
+      *  @param equal_nan
+      *  @return    void
+    */
     static bool allclose(Tensor *A, Tensor *B, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns true or false
+    
+    /**
+      *  @brief Returns a boolean array where two arrays are element-wise equal within a tolerance.
+      *
+      *  @param A   Tensor
+      *  @param B   Tensor
+      *  @param C   Tensor
+      *  @param rtol
+      *  @param atol
+      *  @param equal_nan
+      *  @return    void
+    */
     static void isclose(Tensor *A, Tensor *B, Tensor *C, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns a boolean tensor
+    
+    /**
+      *  @brief Return the truth value of ``A > B`` element-wise.
+      *
+      *  @param A   Tensor
+      *  @param B   Tensor
+      *  @param C   Tensor store the results of the operation.
+      *  @return    void
+    */
     static void greater(Tensor *A, Tensor *B, Tensor *C);
+
+    /**
+      *  @brief Return the truth value of ``A >= B`` element-wise.
+      *
+      *  @param A   Tensor
+      *  @param B   Tensor
+      *  @param C   Tensor store the results of the operation.
+      *  @return    void
+    */
     static void greater_equal(Tensor *A, Tensor *B, Tensor *C);
+
+    /**
+      *  @brief Return the truth value of ``A < B`` element-wise.
+      *
+      *  @param A   Tensor
+      *  @param B   Tensor
+      *  @param C   Tensor store the results of the operation.
+      *  @return    void
+    */
     static void less(Tensor *A, Tensor *B, Tensor *C);
+
+    /**
+      *  @brief Return the truth value of ``A <= B`` element-wise.
+      *
+      *  @param A   Tensor
+      *  @param B   Tensor
+      *  @param C   Tensor store the results of the operation.
+      *  @return    void
+    */
     static void less_equal(Tensor *A, Tensor *B, Tensor *C);
+
+    /**
+      *  @brief Return the truth value of ``A == B`` element-wise.
+      *
+      *  @param A   Tensor
+      *  @param B   Tensor
+      *  @param C   Tensor store the results of the operation.
+      *  @return    void
+    */
     static void equal(Tensor *A, Tensor *B, Tensor *C);
+
+    /**
+      *  @brief Return the truth value of ``A != B`` element-wise.
+      *
+      *  @param A   Tensor
+      *  @param B   Tensor
+      *  @param C   Tensor store the results of the operation.
+      *  @return    void
+    */
     static void not_equal(Tensor *A, Tensor *B, Tensor *C);
 
     // Legacy
@@ -392,14 +721,35 @@ public:
     static Tensor* concat(const vector<Tensor*> t, unsigned int axis=0, Tensor* output=nullptr);
     static void concat_back(Tensor *A, const vector<Tensor*> t, unsigned int axis);
 
+    /**
+      *  @brief Returns an array with the selected indices of the tensor.
+      *
+      *  @param indices  Vector of strings representing the indices to be selected. These indices must follow a Python-like syntax. Some examples: ``"0"`` , ``":5"`` , ``":"`` , ``"3:6"``.
+      *  @return     Tensor
+    */
     Tensor* select(const vector<string>& indices);
     static void select(Tensor *A, Tensor *B, SelDescriptor *sd);
 
+    /**
+      *  @brief Sets the elements in the array using the selected indices. The indices must be specified as a vector of strings ({“0”, “:5”, “:”, “3:6”}).
+      *
+      *  @param indices  Vector of strings representing the indices to be selected. These indices must follow a Python-like syntax. Some examples: ``"0"``, ``":5"``, ``":"``, ``"3:6"``.
+      *  @param A
+      *  @return     void
+    */
     void set_select(const vector<string>& indices, Tensor *A);
     static void set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
     static void set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 
     static void transpose(Tensor *A, Tensor *B, vector<int> dims);
+
+    /**
+      *  @brief Copy data from tensor A to B.
+      *
+      *  @param A   Tensor
+      *  @param B   Tensor
+      *  @return    void
+    */
     static void copy(Tensor *A, Tensor *B);
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
     static void select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
