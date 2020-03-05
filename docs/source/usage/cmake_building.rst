@@ -20,7 +20,7 @@ The following minimal ``CMakeLists.txt`` is enough to build the first example:
 
     find_package(eddl REQUIRED)
 
-    add_executable(first_example src/example.cpp)
+    add_executable(first_example src/main.cpp)
     target_link_libraries(first_example eddl)
 
 `cmake` has to know where to find the headers, this is done through the ``CMAKE_INSTALL_PREFIX``

@@ -30,6 +30,8 @@ author = 'Pattern Recognition and Human Language Translation Research Center.'
 # ones.
 extensions = [
     'breathe',
+    'sphinx_tabs.tabs',
+
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.todo',

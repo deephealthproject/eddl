@@ -17,17 +17,70 @@ Installation
 
 .. image:: ../_static/images/logos/conda.svg
 
+
 Using the Conda package
 -----------------------
 
 A package for EDDL is available on the conda package manager.
 You can use one of the following lines according to your needs:
 
-.. code:: bash
+.. tabs::
 
-    conda install -c deephealth eddl-cpu            # CPU (without ONNX) | Linux, MacOS
-    conda install -c deephealth eddl-gpu            # GPU (without ONNX) | Linux
-    conda install -c deephealth eddl-gpu-onnx       # GPU (with ONNX)    | Linux
+    .. tab:: CPU
+
+        .. code:: bash
+
+            conda install -c deephealth eddl-cpu
+
+        .. note::
+
+            - **Remember to activate the conda environment**
+            - It does not include ONNX support
+            - Platforms supported: Linux x86/x64 and MacOS
+
+    .. tab:: GPU
+
+        .. code:: bash
+
+            conda install -c deephealth eddl-gpu
+
+        .. note::
+
+            - **Remember to activate the conda environment**
+            - It does not include ONNX support
+            - Platforms supported: Linux x86/x64
+
+    .. tab:: GPU-ONNX
+
+        .. code:: bash
+
+            conda install -c deephealth eddl-gpu-onnx
+
+        .. note::
+
+            - **Remember to activate the conda environment**
+            - Platforms supported: Linux x86/x64
+
+
+Activate conda environments
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. note::
+
+    With conda, you can create, export, list, remove, and update
+    environments that have different versions of Python and/or
+    packages installed in them. Switching or moving between
+    environments is called activating the environment.
+
+    If you don't specify a conda environment, conda will install all the packages in the
+    default environment (``base``). To activate/deactivate the conda environment:
+
+    - For conda 4.6 and later versions:
+        * Windows, Linux and macOS: ``conda activate`` and ``conda deactivate``
+
+    - For conda versions prior to 4.6:
+        * Windows: ``activate`` or ``deactivate``
+        * Linux and macOS: ``source activate`` or ``source deactivate``
 
 
 Enabling ONNX features
@@ -64,7 +117,13 @@ You need to run both lines, one to add the tap and the other to install the libr
 
 .. code:: bash
 
+    # Install Homebrew
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+
+    # Add deephealth tap
     brew tap deephealthproject/homebrew-tap
+
+    # Install EDDL
     brew install eddl
 
 .. note::
