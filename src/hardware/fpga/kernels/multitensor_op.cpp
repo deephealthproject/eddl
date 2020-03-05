@@ -17,26 +17,34 @@ void softmax(const float *A, float *B, int dim0, int dim1){
    float max;
    float sum;
 
-   //A[dim1][dim2] column-wise 
-   for (int i=0; i<dim1; i++){ 
-      // get the max
-      max = A[i]; 
-      for (int j=0; j< dim0; j++){
-         if (A[j*dim1 +i] > max)
-            max= A[j*dim1+i];        
-      }   
-      // Get the sum
-      sum = 0;
-      for (int j=0; j < dim0; j++) {
-         B[j*dim1+i] = exp(A[j*dim1+i]-max);
-         sum = sum + B[j*dim1+i];
-      }
+   for(int i = 0; i<dim0;i++){
+     max = A[i];
+     for(int j = 0; j<dim1;j++){
+       if(A[i*dim1 +j]>max){
+         max = A[i*dim1 +j];
+       }
+     }
+    //printf("max[%d] = %f\n",i, max);
 
-      // Get the probabilities
-      for (int j=0; j < dim0; j++) {
-         B[j*dim1+i] = B[j*dim1+i] / sum;
-      }
-   }
+
+  //e^(A[i][j]-max)
+  //sum = sum(B_pre[i][j]);
+    sum = 0;
+    for(int j = 0; j<dim1;j++){
+      B[i*dim1+j] = exp(A[i*dim1+j]-max);
+      // printf("MAX_nextloop = %f\n",max);
+      // printf("B_pre[%d][%d]: %f\n", i,j,  B[i*dim1+j]);
+      sum = sum + B[i*dim1+j];
+    }
+
+
+    for (int j=0; j < dim1; j++) {
+      // printf("sum[%d] = %f\n", j , sum);
+      B[i*dim1+j] = B[i*dim1+j] / sum;
+      //printf("B[%d][%d]: %f\n", i,j,  B[i*dim1+j]);
+    }
+  }
+
 }
 
 extern "C" {
