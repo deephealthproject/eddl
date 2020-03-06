@@ -164,7 +164,8 @@ Tensor* Tensor::load_from_txt(std::ifstream &ifs, char delimiter, int headerRows
         }
 
         // Create tensor
-        t = new Tensor({rows, cols}, values.data());
+        t = new Tensor({rows, cols});
+        std::copy(std::begin(values), std::end(values), t->ptr);
 
     } catch(const std::bad_array_new_length &e) {
         msg("There was an error opening the file", "Tensor::load_from_txt");
