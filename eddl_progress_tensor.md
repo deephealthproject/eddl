@@ -1,4 +1,4 @@
-R# Tensor Routines
+# Tensor Routines
 
 Numpy-like operations over a raw-tensor object
 
