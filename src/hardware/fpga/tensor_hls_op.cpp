@@ -538,10 +538,9 @@ void fpga_core(Tensor *A, float v, int kernel_id)
     #endif
 
     OCL_CHECK(err, err = kernel_core.setArg(0, (A->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_core.setArg(1, (A->shape[0])));
-    OCL_CHECK(err, err = kernel_core.setArg(2, (A->shape[1])));
-    OCL_CHECK(err, err = kernel_core.setArg(3, v));
-    OCL_CHECK(err, err = kernel_core.setArg(4, kernel_id));
+    OCL_CHECK(err, err = kernel_core.setArg(1, (A->size)));
+    OCL_CHECK(err, err = kernel_core.setArg(2, v));
+    OCL_CHECK(err, err = kernel_core.setArg(3, kernel_id));
 
     // Launch the Kernel
     // For HLS kernels global and local size is always (1,1,1). So, it is recommended
