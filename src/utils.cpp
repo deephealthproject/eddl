@@ -25,6 +25,8 @@
 #include <stdexcept>
 #include <math.h>
 #include <vector>
+#include <iomanip>
+#include <limits>
 
 #include "system_info.h"
 #include "utils.h"
