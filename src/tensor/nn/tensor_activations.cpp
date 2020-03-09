@@ -37,17 +37,17 @@ void ReLu(Tensor *A, Tensor *B) {
 #ifdef cFPGA
     else if (A->isFPGA())
      {
-     //fpga_tensor_operation(A, B, FPGARELU);
+     fpga_tensor_operation(A, B, FPGARELU);
      //printf("FPGA::RELU\n");
-     Tensor *nA=new Tensor(A->getShape(),DEV_CPU);
-     Tensor *nB=new Tensor(B->getShape(),DEV_CPU);
-     fpga_copy_from_fpga(A, nA->ptr);
-     fpga_copy_from_fpga(B, nB->ptr);
-     cpu_relu(nA, nB);
-     fpga_copy_to_fpga(nA->ptr, A);
-     fpga_copy_to_fpga(nB->ptr, B);
-     delete nA;
-     delete nB;
+     // Tensor *nA=new Tensor(A->getShape(),DEV_CPU);
+     // Tensor *nB=new Tensor(B->getShape(),DEV_CPU);
+     // fpga_copy_from_fpga(A, nA->ptr);
+     // fpga_copy_from_fpga(B, nB->ptr);
+     // cpu_relu(nA, nB);
+     // fpga_copy_to_fpga(nA->ptr, A);
+     // fpga_copy_to_fpga(nB->ptr, B);
+     // delete nA;
+     // delete nB;
      }
 #endif
 
@@ -73,21 +73,22 @@ void D_ReLu(Tensor *D, Tensor *I, Tensor *PD) {
 #ifdef cFPGA
     else if (D->isFPGA())
       {
-        //fpga_relu_soft_d(D, I, PD, FPGARELU);
+        fpga_relu_soft_d(D, I, PD, FPGARELU);
         //printf("FPGA::D_RELU\n");
-        Tensor *nD=new Tensor(D->getShape(),DEV_CPU);
-        Tensor *nI=new Tensor(I->getShape(),DEV_CPU);
-        Tensor *nPD=new Tensor(PD->getShape(),DEV_CPU);
-        fpga_copy_from_fpga(D, nD->ptr);
-        fpga_copy_from_fpga(I, nI->ptr);
-        fpga_copy_from_fpga(PD, nPD->ptr);
-        cpu_d_relu(nD, nI, nPD);
-        fpga_copy_to_fpga(nD->ptr, D);
-        fpga_copy_to_fpga(nI->ptr, I);
-        fpga_copy_to_fpga(nPD->ptr, PD);
-        delete nD;
-        delete nI;
-        delete nPD;
+        // printf("DRELU:CPU parte FPGA\n");
+        // Tensor *nD=new Tensor(D->getShape(),DEV_CPU);
+        // Tensor *nI=new Tensor(I->getShape(),DEV_CPU);
+        // Tensor *nPD=new Tensor(PD->getShape(),DEV_CPU);
+        // fpga_copy_from_fpga(D, nD->ptr);
+        // fpga_copy_from_fpga(I, nI->ptr);
+        // fpga_copy_from_fpga(PD, nPD->ptr);
+        // cpu_d_relu(nD, nI, nPD);
+        // fpga_copy_to_fpga(nD->ptr, D);
+        // fpga_copy_to_fpga(nI->ptr, I);
+        // fpga_copy_to_fpga(nPD->ptr, PD);
+        // delete nD;
+        // delete nI;
+        // delete nPD;
       }
 #endif
     PD->tsem->unlock();
@@ -259,17 +260,23 @@ void Softmax(Tensor *A, Tensor *B) {
 #ifdef cFPGA
     else if (A->isFPGA())
       {
-        //fpga_tensor_operation(A, B, FPGASOFTM);
-        //printf("FPGA::SOFTMAX\n");
-        Tensor *nA=new Tensor(A->getShape(),DEV_CPU);
-        Tensor *nB=new Tensor(B->getShape(),DEV_CPU);
-        fpga_copy_from_fpga(A, nA->ptr);
-        fpga_copy_from_fpga(B, nB->ptr);
-        cpu_softmax(nA, nB);
-        fpga_copy_to_fpga(nA->ptr, A);
-        fpga_copy_to_fpga(nB->ptr, B);
-        delete nA;
-        delete nB; 
+        fpga_tensor_operation(A, B, FPGASOFTM);
+        // printf("A shape: \n");
+        // printf("A shape 0: %d\n",A->shape[0]);
+        // printf("A shape 1: %d\n",A->shape[1]);
+        // printf("B shape: \n");
+        // printf("B shape 0: %d\n",B->shape[0]);
+        // printf("B shape 1: %d\n",B->shape[1]);
+        // printf("FPGA::SOFTMAX\n");
+        // Tensor *nA=new Tensor(A->getShape(),DEV_CPU);
+        // Tensor *nB=new Tensor(B->getShape(),DEV_CPU);
+        // fpga_copy_from_fpga(A, nA->ptr);
+        // fpga_copy_from_fpga(B, nB->ptr);
+        // cpu_softmax(nA, nB);
+        // fpga_copy_to_fpga(nA->ptr, A);
+        // fpga_copy_to_fpga(nB->ptr, B);
+        // delete nA;
+        // delete nB;
       }
 #endif
 

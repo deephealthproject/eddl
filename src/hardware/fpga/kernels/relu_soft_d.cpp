@@ -39,11 +39,11 @@ void relu_soft_d(
 #pragma HLS INTERFACE s_axilite port=kernel_id bundle=control
 #pragma HLS INTERFACE s_axilite port=return bundle=control
    switch (kernel_id) {
-       case 9: /*relu_d(D, I, PD, tam);*/ break;
+       case 9: relu_d(D, I, PD, tam); break;
        case 10: softmax_d(D, I, PD, tam); break;
    }
 
 }
 
 
-} 
+}

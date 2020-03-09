@@ -34,6 +34,7 @@ cl::Kernel kernel_total_sum;
 cl::Kernel kernel_normalize;
 cl::Kernel el_div;
 cl::Kernel kernel_gemx;
+cl::Kernel kernel_core;
 
 //cl::Buffer buffer;
 
@@ -90,8 +91,9 @@ void fpga_init(){ // initialize only once
     //OCL_CHECK(err, mult2D = cl::Kernel(program,"kernel_mult2D", &err));
     OCL_CHECK(err, sum2D_rowwise = cl::Kernel(program,"kernel_sum2D_rowwise", &err));
     //OCL_CHECK(err, kernel_cent = cl::Kernel(program,"kernel_cent", &err));
-    //OCL_CHECK(err, relu_soft_d = cl::Kernel(program,"relu_soft_d", &err));
+    OCL_CHECK(err, relu_soft_d = cl::Kernel(program,"relu_soft_d", &err));
     OCL_CHECK(err, reduce_sum2D = cl::Kernel(program,"reduce_sum2D", &err));
+    OCL_CHECK(err, kernel_core = cl::Kernel(program,"kernel_core", &err));
     //OCL_CHECK(err, kernel_accuracy = cl::Kernel(program,"kernel_accuracy", &err));
     //OCL_CHECK(err, kernel_total_sum = cl::Kernel(program,"kernel_total_sum", &err));
     //OCL_CHECK(err, el_div = cl::Kernel(program,"el_div", &err));
@@ -523,4 +525,27 @@ void fpga_gemx_mult2D(Tensor *A,int tA, Tensor *B, int tB, Tensor *C, int incC) 
 
  //   clReleaseMemObject(instr_buffer);
 
+}
+
+
+void fpga_core(Tensor *A, float v, int kernel_id)
+{
+    cl_int err;
+    cl::Event event;
+
+    #ifdef DBG_FPGA
+        printf("FPGA::fpga_core %d\n", kernel_id);
+    #endif
+
+    OCL_CHECK(err, err = kernel_core.setArg(0, (A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_core.setArg(1, (A->shape[0])));
+    OCL_CHECK(err, err = kernel_core.setArg(2, (A->shape[1])));
+    OCL_CHECK(err, err = kernel_core.setArg(3, v));
+    OCL_CHECK(err, err = kernel_core.setArg(4, kernel_id));
+
+    // Launch the Kernel
+    // For HLS kernels global and local size is always (1,1,1). So, it is recommended
+    // to always use enqueueTask() for invoking HLS kernel
+    OCL_CHECK(err, err = q.enqueueTask(kernel_core, NULL, &event));
+    q.finish();
 }

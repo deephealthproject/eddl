@@ -42,6 +42,7 @@
 #define FPGARELU 9
 #define FPGASOFTM 10
 #define FPGAGAUSS 11 
+#define FPGAFILL_ 20
 
 int load_file_to_memory(const char *filename, char **result);
 void tensor_op_hls(Tensor *A, float fp, int kernel_id);
@@ -71,6 +72,7 @@ void verify2(cl::Buffer &buffer, int tam);
 //void fpga_init();
 //void* fpga_create_tensor(int dev,int size);
 //void tensor_operations(void* A, void* B, int tam, int kernel_id);
+void fpga_core(Tensor *A, float v, int kernel_id);
 
 
 

@@ -35,14 +35,14 @@ void Tensor::fill_(float v) {
       }
 #endif
 #ifdef cFPGA
-    else if (isFPGA())
+    else if (this->isFPGA())
       {
-        //tensor_op_hls(this, v,FPGASET); 
-        Tensor *nA=new Tensor(this->getShape(),DEV_CPU);
-        fpga_copy_from_fpga(this, nA->ptr);
-        cpu_fill_(nA, v);   
-        fpga_copy_to_fpga(nA->ptr, this);
-        delete nA;
+        fpga_core(this, v, FPGAFILL_);
+        // Tensor *nA=new Tensor(this->getShape(),DEV_CPU);
+        // fpga_copy_from_fpga(this, nA->ptr);
+        // cpu_fill_(nA, v);
+        // fpga_copy_to_fpga(nA->ptr, this);
+        // delete nA;
       }
 #endif
 }

@@ -4,7 +4,7 @@ TARGETS := sw_emu
 DEVICE := xilinx_u200_xdma_201830_2
 TARGET := $(TARGETS)
 XCLBIN := kernels/xclbin
-XOCC := $(XILINX_SDX)/bin/xocc 
+XOCC := $(XILINX_SDX)/bin/xocc
 BUILD_DIR := kernels/_x.$(TARGET).$(DEVICE)
 BUILD_DIR_tensor = $(BUILD_DIR)/tensor_op
 BINARY_CONTAINERS += $(XCLBIN)/tensor_op.$(TARGET).$(DEVICE).xclbin
@@ -14,17 +14,18 @@ BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/multitensor_op.$(TARGET).$(DEVICE).xo
 BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_mult2D.$(TARGET).$(DEVICE).xo
 BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_sum2D_rowwise.$(TARGET).$(DEVICE).xo
 #BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_cent.$(TARGET).$(DEVICE).xo
-#BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/relu_soft_d.$(TARGET).$(DEVICE).xo
-#BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/reduce_sum2D.$(TARGET).$(DEVICE).xo
+BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/relu_soft_d.$(TARGET).$(DEVICE).xo
+BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/reduce_sum2D.$(TARGET).$(DEVICE).xo
 BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_accuracy.$(TARGET).$(DEVICE).xo
 BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_total_sum.$(TARGET).$(DEVICE).xo
 BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/el_div.$(TARGET).$(DEVICE).xo
 BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_normalize.$(TARGET).$(DEVICE).xo
+BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_core.$(TARGET).$(DEVICE).xo
 
 xcl2_SRCS:=libs/xcl2.cpp
 xcl2_HDRS:=libs/xcl2.hpp
 xcl2_CXXFLAGS:=-I./libs/
-HOST_SRCS:= test_kernels.cpp $(xcl2_SRCS) 
+HOST_SRCS:= test_kernels.cpp $(xcl2_SRCS)
 OPENCL_INCLUDE:= $(XILINX_XRT)/include/
 VIVADO_INCLUDE:= $(XILINX_VIVADO)/include/
 opencl_CXXFLAGS=-I$(OPENCL_INCLUDE) -I$(VIVADO_INCLUDE)
@@ -40,7 +41,7 @@ FPGA_LDFLAGS += $(opencl_LDFLAGS)
 # LDFLAGS += -lrt -lstdc++
 #
 # Kernel compiler global settings
-CLFLAGS += -t $(TARGET) --platform $(DEVICE) --save-temps  
+CLFLAGS += -t $(TARGET) --platform $(DEVICE) --save-temps
 #
 
 ifeq ($(XILINX_XRT),)
@@ -54,7 +55,7 @@ $(error Set enviroment variable XILINX_SDX with directory to xilinx Vivado tools
 endif
 
 ##CXXFLAGS =-std=c++11 -O3
-CXXFLAGS = $(FPGA_CXXFLAGS) -DcFPGA 
+CXXFLAGS = $(FPGA_CXXFLAGS) -DcFPGA
 
 FPGA_CXX := $(XILINX_SDX)/bin/xcpp
 FPGA_OBJ = kernel_tests.o xcl2.o
@@ -70,19 +71,19 @@ SRC_PATH=.
 
 #test: $(FPGA_OBJ)
 kernel: $(XCLBIN)/tensor_op.$(TARGET).$(DEVICE).xo  $(BINARY_CONTAINERS)
-kernelemu: emuconfig 
+kernelemu: emuconfig
 
 
 #---------------------------------- fpga
 #xcl2.o: $(xcl2_SRCS) $(xcl2_HDRS)
-#		$(FPGA_CXX) $(FPGA_CXXFLAGS) $(FPGA_LDFLAGS) -c $(xcl2_SRCS) 
+#		$(FPGA_CXX) $(FPGA_CXXFLAGS) $(FPGA_LDFLAGS) -c $(xcl2_SRCS)
 
-#kernel_tests.o: kernel_tests.cpp  
+#kernel_tests.o: kernel_tests.cpp
 #	$(FPGA_CXX) $(FPGA_CXXFLAGS) $(FPGA_LDFLAGS) -c $(SRC_PATH)/kernel_tests.cpp
- 
+
 
 # Building kernels
-$(XCLBIN)/tensor_op.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/tensor_op.cpp 
+$(XCLBIN)/tensor_op.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/tensor_op.cpp
 	mkdir -p $(XCLBIN)
 	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k tensor_op -I'$(<D)' -o'$@' '$<'
 
@@ -106,13 +107,13 @@ $(XCLBIN)/kernel_sum2D_rowwise.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/kerne
 #	mkdir -p $(XCLBIN)
 #	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k kernel_cent -I'$(<D)' -o'$@' '$<'
 
-#$(XCLBIN)/relu_soft_d.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/relu_soft_d.cpp
-#	mkdir -p $(XCLBIN)
-#	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k relu_soft_d -I'$(<D)' -o'$@' '$<'
+$(XCLBIN)/relu_soft_d.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/relu_soft_d.cpp
+	mkdir -p $(XCLBIN)
+	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k relu_soft_d -I'$(<D)' -o'$@' '$<'
 
-#$(XCLBIN)/reduce_sum2D.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/reduce_sum2D.cpp
-#	mkdir -p $(XCLBIN)
-#	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k reduce_sum2D -I'$(<D)' -o'$@' '$<'
+$(XCLBIN)/reduce_sum2D.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/reduce_sum2D.cpp
+	mkdir -p $(XCLBIN)
+	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k reduce_sum2D -I'$(<D)' -o'$@' '$<'
 
 $(XCLBIN)/kernel_accuracy.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/kernel_accuracy.cpp
 	mkdir -p $(XCLBIN)
@@ -134,8 +135,12 @@ $(XCLBIN)/tensor_op.$(TARGET).$(DEVICE).xclbin: $(BINARY_CONTAINER_tensor_OBJS)
 	mkdir -p $(XCLBIN)
 	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -l $(LDCLFLAGS) -o'$@' $(+)
 
+$(XCLBIN)/kernel_core.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/kernel_core.cpp
+	mkdir -p $(XCLBIN)
+	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k kernel_core -I'$(<D)' -o'$@' '$<'
+
 #emulating kernel
-$(KERNELTEST): $(SRC_PATH)/test_kernels.cpp $(xcl2_SRCS) $(xcl2_HDRS) 
+$(KERNELTEST): $(SRC_PATH)/test_kernels.cpp $(xcl2_SRCS) $(xcl2_HDRS)
 	 $(FPGA_CXX) $(FPGA_CXXFLAGS) $(SRC_PATH)/test_kernels.cpp $(xcl2_SRCS) $(xcl2_HDRS) -o test_kernels $(FPGA_LDFLAGS)
 
 #emuconfig:$(EMCONFIG_DIR)/emconfig.json
