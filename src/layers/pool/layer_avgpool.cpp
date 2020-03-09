@@ -27,25 +27,12 @@ LAveragePool::LAveragePool(Layer *parent, const vector<int> &pool_size, const ve
 LAveragePool::LAveragePool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, string name, int dev, int mem) : LAveragePool(parent, new PoolDescriptor(pool_size, strides, padding, mem), name, dev, mem) {}
 
 LAveragePool::LAveragePool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem) : LPool(parent, D, name, dev, mem) {
-    // TODO: Implement (Temporal)
-    msg("Not implemented", "LAveragePool");
 
-    // Params
-    D->indX = new Tensor(D->O->shape, dev);
-    D->indY = new Tensor(D->O->shape, dev);
 }
 
 
 void LAveragePool::resize(int batch){
-    //cout<<"Resize "<<name<<"\n";
-
     LPool::resize(batch);
-
-    delete pd->indX;
-    delete pd->indY;
-
-    pd->indX = new Tensor(pd->O->shape, dev);
-    pd->indY = new Tensor(pd->O->shape, dev);
 }
 
 void LAveragePool::forward() {
