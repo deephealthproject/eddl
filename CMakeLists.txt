@@ -8,10 +8,9 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # USER OPTIONS *******************************
 option(BUILD_PYTHON "Compile python binding" OFF)
-option(BUILD_TESTS "Compile tests" ON)
+option(BUILD_TESTS "Compile tests" OFF)
 option(BUILD_EXAMPLES "Compile examples" ON)
-option(USE_GEMX "Set to ON to use GEMX" ON)
-SET(BUILD_TARGET "FPGA" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
+option(USE_GEMX "Set to ON to use GEMX" OFF)
 set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
 
 # PROPERTIES *******************************
@@ -23,7 +22,6 @@ if(NOT CMAKE_BUILD_TYPE)
     #set(CMAKE_BUILD_TYPE Debug)
     set(CMAKE_BUILD_TYPE Release)
 endif()
-set(CMAKE_CXX_FLAGS "-lOpenCL") 
 # SET COMPILER FLAGS
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
     #set(CMAKE_CXX_FLAGS "-march=native ${CMAKE_CXX_FLAGS}") // This is a bad idea
@@ -429,7 +427,7 @@ if(EDDL_WITH_CUDA AND CMAKE_CUDA_COMPILER)
     add_compile_definitions(cGPU)
 endif()
 if (EDDL_WITH_FPGA)
- add_compile_definitions(cFPGA)
+    add_compile_definitions(cFPGA)
 endif()
 
 target_include_directories(eddl PUBLIC
@@ -497,15 +495,14 @@ endif()
 
 # Handle GEMX
 if(USE_GEMX)
-    #find_package(OpenCL REQUIRED)
+    find_package(OpenCL REQUIRED)
     include_directories(${OpenCL_INCLUDE_DIR})
     include_directories("${PROJECT_SOURCE_DIR}/gemx/gemx/src")
     include_directories("${PROJECT_SOURCE_DIR}/gemx/gemx/src/host")
     include_directories("${PROJECT_SOURCE_DIR}/gemx/gemx/src/kernel")
-    #include_directories("$ENV{XILINX_VIVADO}/include")
-    include_directories("/opt/Xilinx/Vivado/2018.3/include")
-    #target_link_libraries(nnsim PRIVATE ${OpenCL_LIBRARY})
-    #target_link_libraries(nnsim PRIVATE pthread)
+    include_directories("$ENV{XILINX_VIVADO}/include")
+    #include_directories("/opt/Xilinx/Vivado/2018.3/include")
+    target_link_libraries(eddl PRIVATE ${OpenCL_LIBRARY})
 
     set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
 
