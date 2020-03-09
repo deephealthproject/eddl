@@ -70,9 +70,10 @@ Tensor* Tensor::loadfs(std::ifstream &ifs, string format) {
         else { delimiter = ' '; }
         return Tensor::load_from_txt(ifs, delimiter, 1);
     }else{
-        msg("Format not implemented: *.'" + format + "'", "Tensor::load");
+        msg("Format not implemented: *.'" + format + "'", "Tensor::load"); // Exits
     }
 
+    return nullptr; // To silent warnings
 }
 
 Tensor* Tensor::load_from_bin(std::ifstream &ifs){

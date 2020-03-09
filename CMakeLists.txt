@@ -40,7 +40,7 @@ endif()
 # Read: https://wiki.gentoo.org/wiki/GCC_optimization
 
 # Common
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DEIGEN_FAST_MATH -pipe -w")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DEIGEN_FAST_MATH -pipe")
 
 # Windows32
 if(WIN32)

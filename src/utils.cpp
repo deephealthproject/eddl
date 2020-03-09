@@ -23,6 +23,8 @@
 #include <string>
 #include <sys/stat.h>
 #include <stdexcept>
+#include <math.h>
+#include <vector>
 
 #include "system_info.h"
 #include "utils.h"
@@ -51,13 +53,13 @@
 void msg(const string& text, const string& title) {
     string s(text);
     if(!title.empty()){
-	s += " (" + title + ")";
+	    s += " (" + title + ")";
     }
     throw std::runtime_error(s);
 }
 
 
-float *get_fmem(long int size, char *str){
+float *get_fmem(long int size, const string &str){
     // Careful with memory overcommitment:
     // https://stackoverflow.com/questions/48585079/malloc-on-linux-without-overcommitting
     // TODO: This function does not work properly (...but it does, at least most of the time -for linux and mac-)
@@ -87,27 +89,33 @@ float *get_fmem(long int size, char *str){
     // Not enough free memory
     if (error) {
         delete ptr;
-        throw std::runtime_error("Error allocating " + string(humanSize(size*sizeof(float))) + " in " + string(str));
+        throw std::runtime_error("Error allocating " + string(bytes2human(size * sizeof(float))) + " in " + string(str));
     }
 
     return ptr;
 }
 
-char *humanSize(uint64_t bytes){
-    char *suffix[] = {"B", "KB", "MB", "GB", "TB"};
-    char length = sizeof(suffix) / sizeof(suffix[0]);
-
+string bytes2human(unsigned long long int bytes, int decimals){
+    vector<string> prefix = {"B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
+    double size = 0;
     int i = 0;
-    double dblBytes = bytes;
 
-    if (bytes > 1024) {
-        for (i = 0; (bytes / 1024) > 0 && i<length-1; i++, bytes /= 1024)
-            dblBytes = bytes / 1024.0;
+    if(bytes>0){ // bytes == 0 is a special case since log(0) is undefined
+        // Get prefix
+        i = floor(log(bytes) / log(1024));
+
+        // Compute size
+        size = (float)bytes / pow(1024, i);
     }
 
-    static char output[200];
-    sprintf(output, "%.02lf %s", dblBytes, suffix[i]);
-    return output;
+    // Format string
+    if(i==0){ decimals = 0; } // Make "Bytes" integers
+    std::stringstream stream;
+    stream << std::fixed << std::setprecision(decimals) << size;
+    stream << prefix[i]; // Prefix
+    std::string s = stream.str();
+
+    return s;
 }
 
 
@@ -147,7 +155,7 @@ unsigned long get_free_mem() {
         throw std::invalid_argument("Failed to fetch vm statistics");
     }
     unsigned long mem_free = (vm_stat.free_count +vm_stat.inactive_count) * pagesize;
-    //fprintf(stderr,"%s Free\n",humanSize(mem_free));
+    //fprintf(stderr,"%s Free\n",bytes2human(mem_free));
 
     return mem_free;
 }

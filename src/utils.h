@@ -18,9 +18,9 @@ using namespace std;
 
 void msg(const string& text, const string& title="");
 
-float *get_fmem(long int size, char *str);
+float *get_fmem(long int size, const string &str);
 
-char *humanSize(uint64_t bytes);
+string bytes2human(unsigned long long int bytes, int decimals=2);
 
 unsigned long get_free_mem();
 

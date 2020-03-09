@@ -115,7 +115,8 @@ namespace eddl {
         if (mem=="low_mem") return new CompServ(th, {}, {},0, 2);
         else if (mem=="mid_mem") return new CompServ(th, {}, {},0, 1);
         else if (mem=="full_mem") return new CompServ(th, {}, {},0, 0);
-        else msg("Error mem param","CS_CPU");
+        else msg("Error mem param","CS_CPU"); // Exits
+        return nullptr; // To silent warnings
     }
 
     compserv CS_GPU(const vector<int> g, string mem){
@@ -126,7 +127,8 @@ namespace eddl {
         if (mem=="low_mem") return new CompServ(0, g, {}, lsb, 2);
         else if (mem=="mid_mem") return new CompServ(0, g, {}, lsb, 1);
         else if (mem=="full_mem") return new CompServ(0, g, {}, lsb, 0);
-        else msg("Error mem param","CS_GPU");
+        else msg("Error mem param","CS_GPU"); // Exits
+        return nullptr; // To silent warnings
     }
 
 
