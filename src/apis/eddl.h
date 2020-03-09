@@ -1280,7 +1280,7 @@ typedef NetLoss * metric;
       *  @param name  A name for the operation
       *  @return     The result after apply the global max pooling operation over the parent layer
     */
-    layer GlobalMaxPool(layer parent, string name = ""); //Todo: Implement
+    layer GlobalMaxPool(layer parent, string name = "");
     /**
       *  @brief Global Average pooling operation.
       *
@@ -1288,7 +1288,7 @@ typedef NetLoss * metric;
       *  @param name  A name for the operation
       *  @return     The result after apply the global average pooling operation over the parent layer
     */
-    layer GlobalAveragePool(layer parent, string name = ""); //Todo: Implement
+    layer GlobalAveragePool(layer parent, string name = "");
     /**
       *  @brief Max pooling operation.
       *
