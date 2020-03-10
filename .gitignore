@@ -216,3 +216,7 @@ CMakeFiles/
 /doc/*.tmp
 /doc/doxygen/*.pdf
 /doc/doxygen/doxygen_log.txt
+
+src/hardware/fpga/kernels/_x*
+src/hardware/fpga/xocc*
+src/hardware/fpga/.Xil

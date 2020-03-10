@@ -71,10 +71,7 @@ void verify(Tensor *T) {
 void fpga_init(){ // initialize only once
 
     cl_int err;
-    //std::string binaryFile = "/home/carherlu/DEEPHEALTH/LASTVERSION/eddl/src/hardware/fpga/kernels/xclbin/tensor_op.hw.xilinx_u200_xdma_201830_2.xclbin";
-    //std::string binaryFile = "/home/carherlu/DEEPHEALTH/LASTVERSION/eddl/src/hardware/fpga/eddl-gemx.xclbin";
-    //std::string binaryFile = "/home/carherlu/DEEPHEALTH/gemx/gemx/fpga_kernels_gemx.hw.xilinx_u200_xdma_201830_2.xclbin";
-    std::string binaryFile = "/home/jorga20j/Escritorio/DeepHealthEDDL/eddl/src/hardware/fpga/kernels/xclbin/tensor_op.sw_emu.xilinx_u200_xdma_201830_2.xclbin";
+    std::string binaryFile = "eddl-gemx.xclbin";
     unsigned fileBufSize;
     std::vector<cl::Device> devices = xcl::get_xil_devices();
     cl::Device device = devices[0];

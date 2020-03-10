@@ -11,6 +11,7 @@ option(BUILD_PYTHON "Compile python binding" OFF)
 option(BUILD_TESTS "Compile tests" OFF)
 option(BUILD_EXAMPLES "Compile examples" ON)
 option(USE_GEMX "Set to ON to use GEMX" OFF)
+SET(BUILD_TARGET "FPGA" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
 set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
 
 # PROPERTIES *******************************
