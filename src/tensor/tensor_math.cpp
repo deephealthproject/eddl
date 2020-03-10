@@ -137,21 +137,21 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
     else if (A->isFPGA())
       {
         //msg("Not implemented for FPGA yet", "Tensor::add");
-        //fpga_tensor_sum6(scA, A, scB, B, C, incC);
+        fpga_tensor_add(scA, A, scB, B, C, incC);
         //printf("FPGA::ADD\n");
-        Tensor *nA=new Tensor(A->getShape(),DEV_CPU);
-        Tensor *nB=new Tensor(B->getShape(),DEV_CPU);
-        Tensor *nC=new Tensor(C->getShape(),DEV_CPU);
-        fpga_copy_from_fpga(A, nA->ptr);
-        fpga_copy_from_fpga(B, nB->ptr);
-        fpga_copy_from_fpga(C, nC->ptr);
-        cpu_add(scA,nA,scB, nB,nC,incC);
-        fpga_copy_to_fpga(nA->ptr, A);
-        fpga_copy_to_fpga(nB->ptr, B);
-        fpga_copy_to_fpga(nC->ptr, C);
-        delete nA;
-        delete nB;
-        delete nC;
+        // Tensor *nA=new Tensor(A->getShape(),DEV_CPU);
+        // Tensor *nB=new Tensor(B->getShape(),DEV_CPU);
+        // Tensor *nC=new Tensor(C->getShape(),DEV_CPU);
+        // fpga_copy_from_fpga(A, nA->ptr);
+        // fpga_copy_from_fpga(B, nB->ptr);
+        // fpga_copy_from_fpga(C, nC->ptr);
+        // cpu_add(scA,nA,scB, nB,nC,incC);
+        // fpga_copy_to_fpga(nA->ptr, A);
+        // fpga_copy_to_fpga(nB->ptr, B);
+        // fpga_copy_to_fpga(nC->ptr, C);
+        // delete nA;
+        // delete nB;
+        // delete nC;
       }
 #endif
 

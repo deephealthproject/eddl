@@ -10,7 +10,7 @@ BUILD_DIR_tensor = $(BUILD_DIR)/tensor_op
 BINARY_CONTAINERS += $(XCLBIN)/tensor_op.$(TARGET).$(DEVICE).xclbin
 BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/tensor_op.$(TARGET).$(DEVICE).xo
 BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/multitensor_op.$(TARGET).$(DEVICE).xo
-#BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_sum6.$(TARGET).$(DEVICE).xo
+BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_add.$(TARGET).$(DEVICE).xo
 BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_mult2D.$(TARGET).$(DEVICE).xo
 BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_sum2D_rowwise.$(TARGET).$(DEVICE).xo
 #BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_cent.$(TARGET).$(DEVICE).xo
@@ -91,9 +91,9 @@ $(XCLBIN)/multitensor_op.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/multitensor
 	mkdir -p $(XCLBIN)
 	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k multitensor_op -I'$(<D)' -o'$@' '$<'
 
-#$(XCLBIN)/kernel_sum6.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/kernel_sum6.cpp
-#	mkdir -p $(XCLBIN)
-#	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k kernel_sum6 -I'$(<D)' -o'$@' '$<'
+$(XCLBIN)/kernel_add.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/kernel_add.cpp
+	mkdir -p $(XCLBIN)
+	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k kernel_add -I'$(<D)' -o'$@' '$<'
 
 $(XCLBIN)/kernel_mult2D.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/kernel_mult2D.cpp
 	mkdir -p $(XCLBIN)

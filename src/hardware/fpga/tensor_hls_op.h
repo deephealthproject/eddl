@@ -41,7 +41,7 @@
 #define FPGASET 8
 #define FPGARELU 9
 #define FPGASOFTM 10
-#define FPGAGAUSS 11 
+#define FPGAGAUSS 11
 #define FPGAFILL_ 20
 
 int load_file_to_memory(const char *filename, char **result);
@@ -53,7 +53,7 @@ void fpga_tensor_operation(Tensor *A, Tensor *B, int kernel_id);
 void fpga_copy_fpga(Tensor *A, Tensor *B);
 void fpga_copy_to_fpga(float *nptr,Tensor *A);
 void fpga_copy_from_fpga(Tensor *A,float *nptr);
-void fpga_tensor_sum6(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC);
+void fpga_tensor_add(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC);
 void fpga_mult2D(Tensor *A,int tA, Tensor *B, int tB, Tensor *C, int incC);
 void fpga_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
 void fpga_cent(Tensor *A, Tensor *B, Tensor *C);
@@ -61,12 +61,12 @@ void fpga_relu_soft_d(Tensor *D, Tensor *I, Tensor *PD, int kernel_id);
 void fpga_reduce_sum2D(Tensor *A, Tensor *B, int axis,int incB);
 int fpga_accuracy (Tensor *A, Tensor *B);
 float fpga_total_sum (Tensor *A);
-void fpga_el_div_mult(Tensor *A, Tensor *B, Tensor *C, int incC, int op); 
+void fpga_el_div_mult(Tensor *A, Tensor *B, Tensor *C, int incC, int op);
 void fpga_tensor_normalize(Tensor *A, float max, float min);
 void fpga_gemx_mult2D(Tensor *A,int tA, Tensor *B, int tB, Tensor *C, int incC);
 void fpga_gemx_mult2D_CPU(Tensor *A,int tA, Tensor *B, int tB, Tensor *C, int incC);
 void verify(Tensor *T);
-void verify2(cl::Buffer &buffer, int tam); 
+void verify2(cl::Buffer &buffer, int tam);
 //int load_file_to_memory(const char *filename, char **result);
 //void tensor_op_hls(void *A, int tam, float fp, int kernel_id);
 //void fpga_init();
@@ -77,6 +77,3 @@ void fpga_core(Tensor *A, float v, int kernel_id);
 
 
 #endif
- 
-
-

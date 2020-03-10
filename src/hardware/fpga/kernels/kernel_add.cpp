@@ -3,18 +3,18 @@
 *******************************************************************************/
 
 #include <math.h>
-#define MAX_SIZE 1024*1024 
+#define MAX_SIZE 1024*1024
 
 
 extern "C" {
 
-void kernel_sum6(
+void kernel_add(
          float scA,
-         const float *A, 
-         float scB, 
-         const float *B, 
+         const float *A,
+         float scB,
+         const float *B,
          float *C,
-         int incC, 
+         int incC,
          int tam
         )
 {
@@ -39,4 +39,4 @@ for(int i=0;i<tam;i++){
 
 
 }
-} 
+}

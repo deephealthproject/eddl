@@ -23,7 +23,7 @@ cl::CommandQueue com;
 cl::Program program;
 cl::Kernel tensor_op;
 cl::Kernel multitensor_op;
-cl::Kernel kernel_sum6;
+cl::Kernel kernel_add;
 cl::Kernel mult2D;
 cl::Kernel sum2D_rowwise;
 cl::Kernel kernel_cent;
@@ -87,7 +87,7 @@ void fpga_init(){ // initialize only once
     OCL_CHECK(err, program = cl::Program(context, devices, bins, NULL, &err));
     /*OCL_CHECK(err, tensor_op= cl::Kernel(program,"tensor_op", &err));*/
     OCL_CHECK(err, multitensor_op = cl::Kernel(program,"multitensor_op", &err));
-    //OCL_CHECK(err, kernel_sum6 = cl::Kernel(program,"kernel_sum6", &err));
+    OCL_CHECK(err, kernel_add = cl::Kernel(program,"kernel_add", &err));
     //OCL_CHECK(err, mult2D = cl::Kernel(program,"kernel_mult2D", &err));
     OCL_CHECK(err, sum2D_rowwise = cl::Kernel(program,"kernel_sum2D_rowwise", &err));
     //OCL_CHECK(err, kernel_cent = cl::Kernel(program,"kernel_cent", &err));
@@ -95,7 +95,7 @@ void fpga_init(){ // initialize only once
     OCL_CHECK(err, reduce_sum2D = cl::Kernel(program,"reduce_sum2D", &err));
     OCL_CHECK(err, kernel_core = cl::Kernel(program,"kernel_core", &err));
     //OCL_CHECK(err, kernel_accuracy = cl::Kernel(program,"kernel_accuracy", &err));
-    //OCL_CHECK(err, kernel_total_sum = cl::Kernel(program,"kernel_total_sum", &err));
+    OCL_CHECK(err, kernel_total_sum = cl::Kernel(program,"kernel_total_sum", &err));
     //OCL_CHECK(err, el_div = cl::Kernel(program,"el_div", &err));
     //OCL_CHECK(err, kernel_normalize = cl::Kernel(program,"kernel_normalize", &err));*/
     //kernel_gemx = clCreateKernel(program(), "gemxKernel_0", &err);
@@ -145,7 +145,11 @@ void fpga_copy_to_fpga(float *nptr, Tensor *A)
 {
     cl_int err;
     cl::Event blocking_event;
+    //OCL_CHECK(err, err= q.enqueueWriteBuffer((A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(float), nptr, nullptr, &blocking_event));
     OCL_CHECK(err, err= q.enqueueWriteBuffer((A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(float), nptr, nullptr, &blocking_event));
+    //printf("A->sizeof(float): %f\n", A->size*sizeof(float));
+    //printf("nptr-> %f\n", nptr);
+    //printf("A->: %f\n", A->fpga_ptr);
     q.finish();
     //blocking_event.wait();
     //printf("Copy Tensor with tam %d in Buffer ref %d -- %f\n", A->tam, A->fpga_ptr,*nptr);
@@ -188,23 +192,23 @@ void tensor_op_hls(Tensor *A, float fp, int kernel_id)
     q.finish();
 }
 
-void fpga_tensor_sum6(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC)
+void fpga_tensor_add(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC)
 {
     cl_int err;
     cl::Event event;
     #ifdef DBG_FPGA
-        printf("FPGA::SUM6\n");
+        printf("FPGA::add\n");
     #endif
 
-    OCL_CHECK(err, err = kernel_sum6.setArg(0, scA));
-    OCL_CHECK(err, err = kernel_sum6.setArg(1, (A->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_sum6.setArg(2, scB));
-    OCL_CHECK(err, err = kernel_sum6.setArg(3, (B->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_sum6.setArg(4, (C->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_sum6.setArg(5, incC));
-    OCL_CHECK(err, err = kernel_sum6.setArg(6, A->size));
+    OCL_CHECK(err, err = kernel_add.setArg(0, scA));
+    OCL_CHECK(err, err = kernel_add.setArg(1, (A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_add.setArg(2, scB));
+    OCL_CHECK(err, err = kernel_add.setArg(3, (B->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_add.setArg(4, (C->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_add.setArg(5, incC));
+    OCL_CHECK(err, err = kernel_add.setArg(6, A->size));
 
-    OCL_CHECK(err, err = q.enqueueTask(kernel_sum6, NULL, &event));
+    OCL_CHECK(err, err = q.enqueueTask(kernel_add, NULL, &event));
     event.wait();
 }
 
@@ -238,7 +242,7 @@ void fpga_reduce_sum2D( Tensor *A, Tensor *B, int axis,int incB)
     cl::Event event;
 
     #ifdef DBG_FPGA
-        printf("FPGA::REDUCESUM2D\n");
+        //printf("FPGA::REDUCESUM2D\n");
     #endif
 
     OCL_CHECK(err, err = reduce_sum2D.setArg(0, (A->fpga_ptr)));
@@ -285,7 +289,7 @@ void fpga_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C){
     cl::Event event;
 
     #ifdef DBG_FPGA
-        printf("FPGA::SUM2DROWWISE\n");
+        //printf("FPGA::SUM2DROWWISE\n");
     #endif
 
     OCL_CHECK(err, err = sum2D_rowwise.setArg(0, (A->fpga_ptr)));
@@ -403,7 +407,7 @@ void fpga_relu_soft_d(Tensor *D, Tensor *I, Tensor *PD, int kernel_id){
     cl::Event event;
 
     #ifdef DBG_FPGA
-        printf("FPGA::RELU_SOFT\n", kernel_id);
+        //printf("FPGA::RELU_SOFT\n", kernel_id);
     #endif
 
 
@@ -425,12 +429,12 @@ void fpga_tensor_operation(Tensor *A, Tensor *B, int kernel_id)
     int aux;
     if (kernel_id == FPGARELU) 	{aux = A->size;}
     else {
-	if (kernel_id == FPGASOFTM) {aux = A->shape[0];}
+	     if (kernel_id == FPGASOFTM) {aux = A->shape[0];}
         else{printf("Tensor Operation not supported %d\n", kernel_id); exit(1);}
     }
 
     #ifdef DBG_FPGA
-        printf("FPGA::TENSOR_OPERATION %d\n", kernel_id);
+        //printf("FPGA::TENSOR_OPERATION %d\n", kernel_id);
     #endif
 
     OCL_CHECK(err, err = multitensor_op.setArg(0, (A->fpga_ptr)));
