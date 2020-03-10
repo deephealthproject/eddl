@@ -261,6 +261,9 @@ void Net::save(const string& filename, string format){
 void Net::load(const string& filename, string format){
     // Open file stream
     std::ifstream ifs(filename, std::ios::in | std::ios::binary);
+    if (!ifs.good()){
+        throw std::runtime_error(std::string("File not found. Check the file name and try again (Net::load)"));
+    }
 
     for (int i = 0; i != layers.size(); i++){
         layers[i]->load(ifs, format);
