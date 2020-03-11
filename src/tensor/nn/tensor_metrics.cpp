@@ -38,18 +38,18 @@ int accuracy(Tensor *A, Tensor *B) {
       }
 #endif
 #ifdef cFPGA
-    else if(A->isFPGA()) 
+    else if(A->isFPGA())
       {
-         //acc = fpga_accuracy(A,B);  
-         Tensor *nA=new Tensor(A->getShape(),DEV_CPU);
-         Tensor *nB=new Tensor(B->getShape(),DEV_CPU); 
-         fpga_copy_from_fpga(A, nA->ptr);
-         fpga_copy_from_fpga(B, nB->ptr);
-         acc = cpu_accuracy(nA, nB);
-         fpga_copy_to_fpga(nA->ptr, A);
-         fpga_copy_to_fpga(nB->ptr, B);
-         delete nA;
-         delete nB;
+         acc = fpga_accuracy(A,B);  
+         // Tensor *nA=new Tensor(A->getShape(),DEV_CPU);
+         // Tensor *nB=new Tensor(B->getShape(),DEV_CPU);
+         // fpga_copy_from_fpga(A, nA->ptr);
+         // fpga_copy_from_fpga(B, nB->ptr);
+         // acc = cpu_accuracy(nA, nB);
+         // fpga_copy_to_fpga(nA->ptr, A);
+         // fpga_copy_to_fpga(nB->ptr, B);
+         // delete nA;
+         // delete nB;
       }
 #endif
     B->tsem->unlock();

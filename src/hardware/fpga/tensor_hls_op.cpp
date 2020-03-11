@@ -91,7 +91,7 @@ void fpga_init(){ // initialize only once
     OCL_CHECK(err, relu_soft_d = cl::Kernel(program,"relu_soft_d", &err));
     OCL_CHECK(err, reduce_sum2D = cl::Kernel(program,"reduce_sum2D", &err));
     OCL_CHECK(err, kernel_core = cl::Kernel(program,"kernel_core", &err));
-    //OCL_CHECK(err, kernel_accuracy = cl::Kernel(program,"kernel_accuracy", &err));
+    OCL_CHECK(err, kernel_accuracy = cl::Kernel(program,"kernel_accuracy", &err));
     OCL_CHECK(err, kernel_total_sum = cl::Kernel(program,"kernel_total_sum", &err));
     //OCL_CHECK(err, el_div = cl::Kernel(program,"el_div", &err));
     //OCL_CHECK(err, kernel_normalize = cl::Kernel(program,"kernel_normalize", &err));*/
@@ -337,6 +337,7 @@ float fpga_total_sum (Tensor *A){
     #endif
 
    float *sum = (float*) malloc(sizeof(float));
+   *sum = 0;
    OCL_CHECK(err, cl::Buffer a(context,CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY, sizeof(float) ,sum, &err));
 
    OCL_CHECK(err, err = kernel_total_sum.setArg(0, (A->fpga_ptr)));
@@ -347,6 +348,7 @@ float fpga_total_sum (Tensor *A){
    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({a},CL_MIGRATE_MEM_OBJECT_HOST, NULL, &result_ready));
    result_ready.wait();
    return *sum;
+
 
 }
 
@@ -369,10 +371,8 @@ int fpga_accuracy (Tensor *A, Tensor *B){
    OCL_CHECK(err, err = kernel_accuracy.setArg(2, A->shape[0]));
    OCL_CHECK(err, err = kernel_accuracy.setArg(3, A->shape[1]));
    OCL_CHECK(err, err = kernel_accuracy.setArg(4, a));
-
    OCL_CHECK(err, err = q.enqueueTask(kernel_accuracy, NULL, &event));
    event.wait();
-
    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({a},CL_MIGRATE_MEM_OBJECT_HOST, NULL, &result_ready));
    result_ready.wait();
    return *acc;

@@ -1121,12 +1121,12 @@ float Tensor::sum() {
 #ifdef cFPGA
     else if (isFPGA())
     {
-      //return fpga_total_sum(this);
-      Tensor *nA=new Tensor(this->getShape(),DEV_CPU);
-      fpga_copy_from_fpga(this, nA->ptr);
-      float aux= cpu_sum(nA);
-      delete nA;
-      return aux;
+      return fpga_total_sum(this);
+      // Tensor *nA=new Tensor(this->getShape(),DEV_CPU);
+      // fpga_copy_from_fpga(this, nA->ptr);
+      // float aux= cpu_sum(nA);
+      // delete nA;
+      // return aux;
     }
 #endif
     return 0;
