@@ -73,7 +73,7 @@ public:
     int size;
     bool use_bias;
     int mem_level; // see CS
-
+    string padding;
 
     Tensor *I= nullptr; // Input map
     Tensor *ID= nullptr;// Delta input map
