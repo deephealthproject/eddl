@@ -11,7 +11,6 @@ To build EDDL you will need a ``C++11 compiler``
 If you want to compile with CUDA support, install:
 
 - NVIDIA CUDA 9 or above
-- NVIDIA cuDNN v7 or above
 
 Also, we highly recommend installing an Anaconda_ environment to manage the external dependencies. You will get a high-quality BLAS library (MKL) and controlled dependency versions regardless of your system.
 
@@ -115,7 +114,7 @@ These flags can enable/disable features of the EDDL so that you can optimized an
 troubleshoot the compilation process (see: :doc:``troubleshoot``).
 
 
-- **C++ compiler::** If you have problems with the default g++ compiler, try setting ``EIGEN3_INCLUDE_DIR``, such as:
+- **C++ compiler:** If you have problems with the default g++ compiler, try setting ``EIGEN3_INCLUDE_DIR``, such as:
 
 .. code:: bash
 
@@ -124,6 +123,12 @@ troubleshoot the compilation process (see: :doc:``troubleshoot``).
 .. note::
 
     On MacOS we recommend to use ``clang`` to avoid problems with OpenMP
+
+- **Prefix path:** Semicolon-separated list of directories specifying installation prefixes to be searched by the ``find_package()``, ``find_program()``, ``find_library()``, ``find_file()``, and ``find_path()`` commands.
+
+.. code:: bash
+
+    -DCMAKE_PREFIX_PATH=/path/to/directory
 
 
 - **Eigen3:** At the core of many numerical operations, we use Eigen3_. If CMake is unable to find Eigen3 automatically, try setting ``Eigen3_DIR``, such as:

@@ -31,18 +31,22 @@ PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, str
     stride = st;
     mem_level=mem;
 
-    if (p == "same") {
-      pad.push_back(ksize[0] / 2);
-      pad.push_back(ksize[0] / 2);
-      if (ksize[0] % 2 == 0) pad[1]--;
 
-      pad.push_back(ksize[1] / 2);
-      pad.push_back(ksize[1] / 2);
-      if (ksize[1] % 2 == 0) pad[3]--;
+    if (p=="same") {
+      this->pad = {0, 0, 0, 0};
+      if (st[0]==1) {
+        pad[0]=ksize[0] / 2;
+        pad[1]=ksize[0] / 2;
+        if (ksize[0] % 2 == 0) pad[1]--;
+      }
 
-    } else if (p == "none") {
+      if ((st[1]==1) &&(p == "same")) {
+        pad[2]=ksize[1] / 2;
+        pad[3]=ksize[1] / 2;
+        if (ksize[1] % 2 == 0) pad[3]--;
+      }
+    }else if (p == "none") {
         this->pad = {0, 0, 0, 0};
-
     } else {
         msg("Incorrect padding type", "PoolDescriptor::PoolDescriptor");
     }

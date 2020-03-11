@@ -15,7 +15,7 @@ The following minimal ``CMakeLists.txt`` is enough to build the first example:
 
 .. code:: cmake
 
-    cmake_minimum_required(VERSION 3.15)
+    cmake_minimum_required(VERSION 3.9.2)
     project(first_example)
 
     find_package(eddl REQUIRED)

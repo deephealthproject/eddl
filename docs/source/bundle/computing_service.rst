@@ -4,14 +4,7 @@ the code will be executed.
 CPU
 ====
 
-Executes the code in the CPU.
-
-- ``th``: Indicates the number of threads to use (``-1 = all available threads``)
-- ``mem``: Indicates the memory consumption of the model
-
-    - ``full_mem``: (default): No memory bound (highest speed at the expense of the memory requirements)
-    - ``mid_mem``: Slight memory optimization (good trade-off memory-speed)
-    - ``low_mem``: Optimized for hardware with restricted memory capabilities.
+.. doxygenfunction:: CS_CPU
 
 Example:
 
@@ -25,15 +18,8 @@ Example:
 GPU
 ====
 
-Executes the code in the GPU.
-
-- ``g``: Vector of bools to set which GPUs will be use (``1=on, 0=off``)
-- ``lsb``: (Multi-gpu setting) Number of batches to run before synchronizing the weighs of the different GPUs
-- ``mem``: Indicates the memory consumption of the model
-
-    - ``full_mem``: (default): No memory bound (highest speed at the expense of the memory requirements)
-    - ``mid_mem``: Slight memory optimization (good trade-off memory-speed)
-    - ``low_mem``: Optimized for hardware with restricted memory capabilities.
+.. doxygenfunction:: eddl::CS_GPU(const vector<int>, int, string)
+.. doxygenfunction:: eddl::CS_CPU(const vector<int>, string)
 
 Example:
 
@@ -42,19 +28,18 @@ Example:
 
     compserv CS_GPU(const vector<int> g={1}, int lsb=1, string mem="low_mem");
 
+    compserv CS_GPU(const vector<int> g={1}, string mem="low_mem");
+
 
 
 FPGA
 ====
 
-Executes the code in the FPGA.
-
-- ``f``: Vector of bools to set which FPGAs will be use (``1=on, 0=off``)
-- ``lsb``: (Multi-gpu setting) Number of batches to run before synchronizing the weighs of the different GPUs
+.. doxygenfunction:: CS_FGPA
 
 .. note::
 
-    Not yet implemented
+    **Not implemented yet**
 
 Example:
 
@@ -68,13 +53,12 @@ Example:
 COMPSS
 ======
 
-Executes the code through the COMP Superscalar (COMPSs) framework
-
-- ``filename``: File with the setup specification
+.. doxygenfunction:: CS_COMPSS
 
 .. note::
 
-    Not yet implemented
+    **Not implemented yet**
+
 
 Example:
 

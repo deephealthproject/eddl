@@ -134,9 +134,9 @@ Apply data transformations with random parametrization.
 
 | Functionality | CPU | GPU | ONNX | Comments |
 | ------------- |------| -----| ------|---------|
-| AvgPool | ❌️ | ❌️ | ✔️ | Average max pooling operation |
+| AvgPool | ✔️ | ✔️ | ✔️ | Average max pooling operation |
 | GlobalMaxPool | ✔️ | ✔️ | ❌️ | Global max pooling operation |
-| GlobalAveragePool | ❌️ | ❌️ | ❌️ | Global average pooling operation |
+| GlobalAveragePool | ✔️ | ✔️ | ❌️ | Global average pooling operation |
 | MaxPool | ✔️ | ✔️ | ✔️ | Max pooling operation |
 
 

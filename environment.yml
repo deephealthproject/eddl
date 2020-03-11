@@ -5,24 +5,20 @@ channels:
   - anaconda
   - philbrik
 dependencies:
-  - git >= 2.19.1
-  - graphviz >= 2.38.0
-  - wget >= 1.19.5
-  - cmake >= 3.12.2
-  - openmp >= 6.0.0
-  - blas >= 1.1
-  - eigen >= 3.3.7
-  - cudatoolkit >= 6.0
-  - zlib >= 1.2.8
-  - gtest >= 1.8.0
-  - benchmark >= 1.5.0
-  - protobuf >= 3.6.1
-  - libprotobuf >= 3.6.1
-  - doxygen >= 1.8.14
-  - python >= 3.5
+  - graphviz  # Build & Run
+  - wget
+  - cmake
+  - eigen
+  - cudatoolkit
+  - zlib
+  - gtest
+  - protobuf  # Protobuf
+  - libprotobuf
+  - doxygen  # Docs
+  - python
   - pip
   - pip:
-    - sphinx >= 2.4.3
-    - breathe >= 4.14.1
-    - sphinx_rtd_theme >= 0.4.3
-    - sphinx-tabs >= 1.1.13
+    - sphinx
+    - breathe
+    - sphinx_rtd_theme
+    - sphinx-tabs

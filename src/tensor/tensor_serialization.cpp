@@ -70,9 +70,10 @@ Tensor* Tensor::loadfs(std::ifstream &ifs, string format) {
         else { delimiter = ' '; }
         return Tensor::load_from_txt(ifs, delimiter, 1);
     }else{
-        msg("Format not implemented: *.'" + format + "'", "Tensor::load");
+        msg("Format not implemented: *.'" + format + "'", "Tensor::load"); // Exits
     }
 
+    return nullptr; // To silent warnings
 }
 
 Tensor* Tensor::load_from_bin(std::ifstream &ifs){
@@ -180,7 +181,7 @@ Tensor* Tensor::load_from_txt(const string& filename, const char delimiter, int 
     // Check if file exists (open file stream)
     std::ifstream ifs(filename.c_str(), std::ios::in | std::ios::binary);
     if (!ifs.good()){
-        msg("File not found. Check the file name and try again.", "Tensor::load");
+        throw std::runtime_error(std::string("File not found. Check the file name and try again (Tensor::load)"));
     }
 
     // Load tensor

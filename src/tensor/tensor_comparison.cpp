@@ -34,13 +34,15 @@ void checkCompatibility(Tensor *A, Tensor *B, Tensor *C, const string &title){
 }
 
 bool Tensor::all(Tensor *A){
+    bool res = false;
+
     if (A->isCPU()) {
-        return cpu_all(A);
+        res = cpu_all(A);
     }
 #ifdef cGPU
     else if (A->isGPU())
     {
-        return gpu_all(A);
+        res = gpu_all(A);
     }
 #endif
 #ifdef cFPGA
@@ -48,16 +50,20 @@ bool Tensor::all(Tensor *A){
 
     }
 #endif
+
+    return res;
 }
 
 bool Tensor::any(Tensor *A){
+    bool res = false;
+
     if (A->isCPU()) {
-        return cpu_any(A);
+        res = cpu_any(A);
     }
 #ifdef cGPU
     else if (A->isGPU())
     {
-        return gpu_any(A);
+        res = gpu_any(A);
     }
 #endif
 #ifdef cFPGA
@@ -65,6 +71,8 @@ bool Tensor::any(Tensor *A){
 
     }
 #endif
+
+   return res;
 }
 
 // Logic funcions: Logical ops

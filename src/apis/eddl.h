@@ -100,12 +100,51 @@ typedef NetLoss * metric;
       *  @return     (void)
     */
     void toCPU(model net, int t=std::thread::hardware_concurrency());
+    
+    /**
+      *  @brief Executes de code in the CPU.
+      *
+      *  @param th  Indicates the number of threads to use (-1 = all available threads)
+      *  @param mem  Indicates de memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
+      *  @return     The computer service itself.
+    */
     compserv CS_CPU(int th=-1, string mem="low_mem");
 
+    /**
+      *  @brief Executes de code in the GPU.
+      *
+      *  @param g  Vector of bools to set which GPUs will be used (1=on, 0=off)
+      *  @param mem  Indicates de memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
+      *  @return     The computer service itself.
+    */
     compserv CS_GPU(const vector<int> g={1}, string mem="low_mem");
+    
+    /**
+      *  @brief Executes de code in the GPU.
+      *
+      *  @param g  Vector of bools to set which GPUs will be used (1=on, 0=off)
+      *  @param lsb  (Multi-gpu setting) Number of batches to run before synchronizing the weights of the different GPUs
+      *  @param mem  Indicates de memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
+      *  @return     The computer service itself.
+    */
     compserv CS_GPU(const vector<int> g={1}, int lsb=1, string mem="low_mem");
 
+
+    /**
+      *  @brief Executes de code in the FPGA.
+      *
+      *  @param f  Vector of bools to set which FPGAs will be used (1=on, 0=off)
+      *  @param lsb  (Multi-fpga setting) Number of batches to run before synchronizing the weights of the different FPGAs
+      *  @return     The computer service itself.
+    */
     compserv CS_FGPA(const vector<int> &f,int lsb=1);
+
+    /**
+      *  @brief Executes de code through the COMP Superscalar (COMPSs) framework.
+      *
+      *  @param filename  File with the setup specification
+      *  @return     The computer service itself.
+    */
     compserv CS_COMPSS(string filename);
 
 
@@ -1258,6 +1297,7 @@ typedef NetLoss * metric;
     layer ReduceMin(layer l, vector<int> axis = {0}, bool keepdims = false);
 
     // Generator Layers
+
     layer GaussGenerator(float mean, float stdev, vector<int> size);
     layer UniformGenerator(float low, float high, vector<int> size);
 
@@ -1280,7 +1320,7 @@ typedef NetLoss * metric;
       *  @param name  A name for the operation
       *  @return     The result after apply the global max pooling operation over the parent layer
     */
-    layer GlobalMaxPool(layer parent, string name = ""); //Todo: Implement
+    layer GlobalMaxPool(layer parent, string name = "");
     /**
       *  @brief Global Average pooling operation.
       *
@@ -1288,7 +1328,7 @@ typedef NetLoss * metric;
       *  @param name  A name for the operation
       *  @return     The result after apply the global average pooling operation over the parent layer
     */
-    layer GlobalAveragePool(layer parent, string name = ""); //Todo: Implement
+    layer GlobalAveragePool(layer parent, string name = "");
     /**
       *  @brief Max pooling operation.
       *

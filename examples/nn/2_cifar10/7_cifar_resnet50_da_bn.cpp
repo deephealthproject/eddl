@@ -27,6 +27,7 @@ using namespace eddl;
 layer BN(layer l)
 {
   return BatchNormalization(l);
+  //return l;
 }
 
 layer BG(layer l) {
@@ -61,7 +62,7 @@ int main(int argc, char **argv){
 
   // Settings
   int epochs = 150;
-  int batch_size =16;
+  int batch_size =128;
   int num_classes = 10;
 
   // network
@@ -69,12 +70,15 @@ int main(int argc, char **argv){
   layer l=in;
 
   // Data augmentation
+
   l = RandomCropScale(l, {0.8f, 1.0f});
   l = RandomHorizontalFlip(l);
 
-  // Resnet-50 for CIFAR-10
-  l=ReLu(BG(Conv(l,64,{3,3},{1,1},"same",false))); 
-	
+  // Resnet-50
+
+  l=ReLu(BG(Conv(l,64,{3,3},{1,1},"same",false))); //{1,1}
+  //l=MaxPool(l,{3,3},{1,1},"same");
+
   for(int i=0;i<3;i++)
     l=ResBlock(l, 64, 0, i==0); // not half but expand the first
 
@@ -102,7 +106,7 @@ int main(int argc, char **argv){
 	sgd(0.001,0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-	CS_GPU({1},"full_mem")// GPU with only one gpu
+	CS_GPU({1,1},10,"full_mem")// GPU with only one gpu
 	//CS_CPU(-1)  // CPU with maximum threads availables
   );
 
@@ -111,6 +115,8 @@ int main(int argc, char **argv){
 
   // get some info from the network
   summary(net);
+
+
 
   // Load and preprocess training data
   tensor x_train = eddlT::load("cifar_trX.bin");
@@ -138,8 +144,4 @@ int main(int argc, char **argv){
       evaluate(net,{x_test},{y_test});
     }
   }
-
 }
-
-
-///////////

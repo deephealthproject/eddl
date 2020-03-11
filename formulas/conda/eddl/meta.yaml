@@ -18,32 +18,22 @@ build:
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - cmake
-    #- llvm-openmp  # IMPORTANT!!! JUST FOR MAC OS. NOT COMPATIBLE WITH OTHER BUILDS. DISABLE IF NOT NEEDED
   host:
     - graphviz
     - wget
+    - cmake
     - eigen
+    - cudatoolkit
     - zlib
     - gtest
-    - protobuf
-    - libprotobuf
-    - blas  # From here and on, these are extra dependencies that might not be used
-    - cudatoolkit
-    - mkl >=2019  
-    - mkl-include
   run:
     - graphviz
     - wget
+    - cmake
     - eigen
+    - cudatoolkit
     - zlib
     - gtest
-    - protobuf
-    - libprotobuf
-    - blas  # From here and on, these are extra dependencies that might not be used
-    - cudatoolkit
-    - mkl >=2019  
-    - mkl-include
 
 test:
   commands:

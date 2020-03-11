@@ -75,8 +75,8 @@ __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, i
 __global__ void maxpool2d_back(float* D, float* ID, int batch, int irows, int icols, int orows, int ocols, int depth, float* indX, float* indY);
 
 // AvgPool
-__global__ void avgpool2d(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padrt,int padrb,int padcl,int padcr, float* indX, float* indY);
-__global__ void avgpool2d_back(float* D, float* ID, int batch, int irows, int icols, int orows, int ocols, int depth, float* indX, float* indY);
+__global__ void avgpool2d(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padrt, int padrb,int padcl, int padcr);
+__global__ void avgpool2d_back(float* D, float* ID, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padrt, int padrb,int padcl, int padcr);
 
 
 // GPU: Tensor
