@@ -99,24 +99,35 @@ Net::Net(vlayer in, vlayer out) {
 
 Net::~Net()
 {
-  for(int i=0;i<snets.size();i++)
-    for(int j=0;j<snets[i]->layers.size();j++) {
-      delete snets[i]->layers[j];
+    for(int i=0;i<snets.size();i++){
+
+        for(int j=0;j<snets[i]->layers.size();j++) {
+            delete snets[i]->layers[j];
+            snets[i]->layers[j] = nullptr;
+        }
     }
 
-  for (int i = 0; i < lout.size(); i++) {
-    delete losses[i];
-    delete metrics[i];
-  }
-  delete optimizer;
+    for (int i = 0; i < losses.size(); i++) {
+        delete losses[i];
+        losses[i] = nullptr;
+    }
 
+    for (int i = 0; i < metrics.size(); i++) {
+        delete metrics[i];
+        metrics[i] = nullptr;
+    }
+
+
+    delete optimizer;
+    optimizer= nullptr;
 }
 
 /////////////////////////////////////////
 int Net::inNet(Layer *l) {
     // Check if the layer l is in the network
-    for (int i = 0; i < layers.size(); i++)
+    for (int i = 0; i < layers.size(); i++){
         if (l == layers[i]) return 1;
+    }
     return 0;
 }
 
@@ -125,12 +136,12 @@ int Net::inNet(Layer *l) {
 void Net::walk(Layer *l) {
     // If this layer is not in the network, add it, as well as all its children (recursively)
     if (!inNet(l)) {
-      if (l->orig!=nullptr) l->net=l->orig->net;
-      else l->net=this;
+        if (l->orig!=nullptr) l->net=l->orig->net;
+        else l->net=this;
 
-      layers.push_back(l);
-      for (int i = 0; i < l->child.size(); i++)
-          walk(l->child[i]);
+        layers.push_back(l);
+        for (int i = 0; i < l->child.size(); i++)
+            walk(l->child[i]);
     }
 }
 /////////////////////////////////////////
@@ -138,11 +149,11 @@ void Net::walk_back(Layer *l) {
     // If this layer is not in the network, add it, as well as all its children (recursively)
 
     if (!inNet(l)) {
-      //cout<<l->name<<"  BACK\n";
-      if (l->orig!=nullptr) l->net=l->orig->net;
-      else l->net=this;
+        //cout<<l->name<<"  BACK\n";
+        if (l->orig!=nullptr) l->net=l->orig->net;
+        else l->net=this;
 
-      layers.push_back(l);
+        layers.push_back(l);
     }
     for (int i = 0; i < l->parent.size(); i++)
         walk_back(l->parent[i]);
@@ -204,7 +215,7 @@ void Net::plot(string fname,string mode) {
     //plot links
     for (int i = 0; i != layers.size(); i++)
         for (int j = 0; j < layers[i]->child.size(); j++)
-              out << layers[i]->name << "->" << layers[i]->child[j]->name << "\n";
+            out << layers[i]->name << "->" << layers[i]->child[j]->name << "\n";
 
     out << "}\n";
 
@@ -219,14 +230,14 @@ void Net::plot(string fname,string mode) {
 /////////////////////////////////////////
 void Net::setlogfile(string fname)
 {
-  string str=fname+"_tr.log";
-  string sts=fname+"_ts.log";
+    string str=fname+"_tr.log";
+    string sts=fname+"_ts.log";
 
-  flog_tr=fopen(str.c_str(),"wt");
-  if (flog_tr==nullptr) msg("error creating tr log file","Net.setlogfile");
+    flog_tr=fopen(str.c_str(),"wt");
+    if (flog_tr==nullptr) msg("error creating tr log file","Net.setlogfile");
 
-  flog_ts=fopen(sts.c_str(),"wt");
-  if (flog_ts==nullptr) msg("error creating ts log file","Net.setlogfile");
+    flog_ts=fopen(sts.c_str(),"wt");
+    if (flog_ts==nullptr) msg("error creating ts log file","Net.setlogfile");
 }
 
 
@@ -235,8 +246,8 @@ void Net::save(const string& filename, string format){
     std::ofstream ofs(filename, std::ios::out | std::ios::binary);
 
     // Copy from CS devices to layers
-    if (snets[0]->dev!=DEV_CPU) 
-      sync_weights();
+    if (snets[0]->dev!=DEV_CPU)
+        sync_weights();
 
 
     for (int i = 0; i != layers.size(); i++){
@@ -250,6 +261,9 @@ void Net::save(const string& filename, string format){
 void Net::load(const string& filename, string format){
     // Open file stream
     std::ifstream ifs(filename, std::ios::in | std::ios::binary);
+    if (!ifs.good()){
+        throw std::runtime_error(std::string("File not found. Check the file name and try again (Net::load)"));
+    }
 
     for (int i = 0; i != layers.size(); i++){
         layers[i]->load(ifs, format);
@@ -258,9 +272,9 @@ void Net::load(const string& filename, string format){
 
     // Copy to CS devices layers
     if (snets[0]->dev!=DEV_CPU) {
-      for(int i=0; i!=snets.size(); i++)
-        for(int j=0;j<layers.size();j++)
-          layers[j]->copy(snets[i]->layers[j]);
+        for(int i=0; i!=snets.size(); i++)
+            for(int j=0;j<layers.size();j++)
+                layers[j]->copy(snets[i]->layers[j]);
     }
 
     // Close file stream
@@ -268,15 +282,15 @@ void Net::load(const string& filename, string format){
 }
 
 void Net::reset_accumulated_gradients(){
-	for(Layer* l : layers){
-		l->reset_accumulated_gradients();
-	}
+    for(Layer* l : layers){
+        l->reset_accumulated_gradients();
+    }
 }
 
 void Net::apply_accumulated_gradients(){
-	for(Layer * l : layers){
-		l->apply_accumulated_gradients();
-	}
+    for(Layer * l : layers){
+        l->apply_accumulated_gradients();
+    }
 }
 
 
