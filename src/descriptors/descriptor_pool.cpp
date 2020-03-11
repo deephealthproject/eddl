@@ -14,7 +14,7 @@
 PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem) {
     ksize = vector<int>(ks.begin(), ks.end());
     stride = vector<int>(st.begin(), st.end());
-    pad = vector<int>(p.begin(), p.end());
+    pad = vector<int>(p.begin(), p.end());  // TODO: Review (padding computed at build())
     mem_level=mem;
 
     if (ksize.size() != 2) msg("Pooling Kernels must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
@@ -31,7 +31,7 @@ PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, str
     stride = st;
     mem_level=mem;
 
-    if (p=="same" || p =="none" || p =="valid") {
+    if (p=="same" || p =="none" || p =="valid" || p =="zeros") {
         this->padding=p;
     }else{
         msg("Incorrect padding type", "PoolDescriptor::PoolDescriptor");
@@ -63,7 +63,7 @@ void PoolDescriptor::build(Tensor *A) {
         // Compute padding
         this->pad = {0, 0, 0, 0};
 
-    }else{
+    } else if (this->padding=="same" || this->padding=="zeros") {
         // Compute output
         z = iz;
         r = std::ceil(ir / (float)sr);
@@ -73,6 +73,19 @@ void PoolDescriptor::build(Tensor *A) {
         int padr = (r - 1) * sr + (kr - 1) * 1 + 1 - ir;
         int padc = (c - 1) * sc + (kc - 1) * 1 + 1 - ic;
         this->pad = {padr/2, padr-padr/2, padc/2, padc-padc/2};
+
+    } else {
+        // TODO: TEMP!!!
+        // Review this method: PoolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem)
+
+        // Set padding (aliases)
+        padrt = pad[0]; padrb = pad[1];
+        padcl = pad[2]; padcr = pad[3];
+
+        // Compute output
+        z = nk;
+        r = (ir - kr + padrt + padrb) / sr + 1;
+        c = (ic - kc + padcl + padcr) / sc + 1;
     }
 
     // Set padding (aliases)
