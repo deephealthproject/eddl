@@ -521,7 +521,7 @@ namespace eddl {
             msg("The parent needs to output a tensor with at least two dimensions", "EDDL::Transpose");
         }
 
-        // Build dimension vecto
+        // Build dimension vector
         for(int i=0; i < ndims; i++){
             dims.push_back(i);
         }

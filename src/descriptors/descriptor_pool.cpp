@@ -55,21 +55,29 @@ void PoolDescriptor::build(Tensor *A) {
     ic = A->shape[3];
 
     if(this->padding=="none" || this->padding=="valid"){
+        // Compute output
+        z = iz;
+        r = std::ceil((ir - (kr - 1) * 1)/(float)sr);
+        c = std::ceil((ic - (kc - 1) * 1)/(float)sc);
+
+        // Compute padding
         this->pad = {0, 0, 0, 0};
+
     }else{
-        int padr = (ir - sr) + (kr - 1) * 1 + 1 - ir;
-        int padc = (ic - sc) + (kc - 1) * 1 + 1 - ic;
+        // Compute output
+        z = iz;
+        r = std::ceil(ir / (float)sr);
+        c = std::ceil(ic / (float)sc);
+
+        // Compute padding
+        int padr = (r - 1) * sr + (kr - 1) * 1 + 1 - ir;
+        int padc = (c - 1) * sc + (kc - 1) * 1 + 1 - ic;
         this->pad = {padr/2, padr-padr/2, padc/2, padc-padc/2};
     }
 
-    padrt = pad[0];
-    padrb = pad[1];
-    padcl = pad[2];
-    padcr = pad[3];
-
-    z = iz;
-    r = (ir - kr + padrt + padrb) / sr + 1;
-    c = (ic - kc + padcl + padcr) / sc + 1;
+    // Set padding (aliases)
+    padrt = pad[0]; padrb = pad[1];
+    padcl = pad[2]; padcr = pad[3];
 
     if ((r <= 0) || (c <= 0)) {
         msg("Invalid output shape", "PoolDescriptor::build");
