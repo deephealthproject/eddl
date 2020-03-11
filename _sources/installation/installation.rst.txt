@@ -21,7 +21,7 @@ Installation
 Using the Conda package
 -----------------------
 
-A package for EDDL is available on the conda package manager.
+A package for EDDL is available on Anaconda_.
 You can use one of the following lines according to your needs:
 
 .. tabs::
@@ -195,3 +195,5 @@ installation mode you choose, you can add ``EDDL`` to your project using cmake:
 
     find_package(eddl REQUIRED)
     target_link_libraries(your_target PUBLIC eddl)
+
+.. _Anaconda: https://www.anaconda.com/

@@ -231,19 +231,22 @@
 the code will be executed.</p>
 <div class="section" id="cpu">
 <h1>CPU<a class="headerlink" href="#cpu" title="Permalink to this headline">¶</a></h1>
-<p>Executes the code in the CPU.</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">th</span></code>: Indicates the number of threads to use (<code class="docutils literal notranslate"><span class="pre">-1</span> <span class="pre">=</span> <span class="pre">all</span> <span class="pre">available</span> <span class="pre">threads</span></code>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mem</span></code>: Indicates the memory consumption of the model</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">full_mem</span></code>: (default): No memory bound (highest speed at the expense of the memory requirements)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mid_mem</span></code>: Slight memory optimization (good trade-off memory-speed)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">low_mem</span></code>: Optimized for hardware with restricted memory capabilities.</p></li>
+<dl class="function">
+<dt id="_CPPv4N4eddl6CS_CPUEi6string">
+<span id="_CPPv3N4eddl6CS_CPUEi6string"></span><span id="_CPPv2N4eddl6CS_CPUEi6string"></span><span id="eddl::CS_CPU__i.string"></span><span class="target" id="namespaceeddl_1a22c355a2526a4d67d1e69c06b232a62b"></span>compserv <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">CS_CPU</code><span class="sig-paren">(</span>int <em>th</em> = -1, string <em>mem</em> = &quot;low_mem&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6CS_CPUEi6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Executes de code in the CPU. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The computer service itself. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">th</span></code>: Indicates the number of threads to use (-1 = all available threads) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mem</span></code>: Indicates de memory consumption of the model. One of “full_mem” (default), “mid_mem” or “low_mem”. </p></li>
 </ul>
-</div></blockquote>
-</li>
-</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">compserv</span> <span class="nf">CS_CPU</span><span class="p">(</span><span class="kt">int</span> <span class="n">th</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">string</span> <span class="n">mem</span><span class="o">=</span><span class="s">&quot;low_mem&quot;</span><span class="p">);</span>
 </pre></div>
@@ -251,35 +254,69 @@ the code will be executed.</p>
 </div>
 <div class="section" id="gpu">
 <h1>GPU<a class="headerlink" href="#gpu" title="Permalink to this headline">¶</a></h1>
-<p>Executes the code in the GPU.</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">g</span></code>: Vector of bools to set which GPUs will be use (<code class="docutils literal notranslate"><span class="pre">1=on,</span> <span class="pre">0=off</span></code>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">lsb</span></code>: (Multi-gpu setting) Number of batches to run before synchronizing the weighs of the different GPUs</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mem</span></code>: Indicates the memory consumption of the model</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">full_mem</span></code>: (default): No memory bound (highest speed at the expense of the memory requirements)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mid_mem</span></code>: Slight memory optimization (good trade-off memory-speed)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">low_mem</span></code>: Optimized for hardware with restricted memory capabilities.</p></li>
+<dl class="function">
+<dt id="_CPPv4N4eddl6CS_GPUEK6vectorIiEi6string">
+<span id="_CPPv3N4eddl6CS_GPUEK6vectorIiEi6string"></span><span id="_CPPv2N4eddl6CS_GPUEK6vectorIiEi6string"></span><span id="eddl::CS_GPU__vector:i:C.i.string"></span><span class="target" id="namespaceeddl_1a3f22f10f2bc8d8b35387b920def8cfbe"></span>compserv <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">CS_GPU</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; <em>g</em> = {1}, int <em>lsb</em> = 1, string <em>mem</em> = &quot;low_mem&quot;<span class="sig-paren">)</span><br /></dt>
+<dd><p>Executes de code in the GPU. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The computer service itself. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">g</span></code>: Vector of bools to set which GPUs will be used (1=on, 0=off) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lsb</span></code>: (Multi-gpu setting) Number of batches to run before synchronizing the weights of the different GPUs </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mem</span></code>: Indicates de memory consumption of the model. One of “full_mem” (default), “mid_mem” or “low_mem”. </p></li>
 </ul>
-</div></blockquote>
-</li>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4eddl6CS_CPUEi6string">
+<span id="_CPPv3N4eddl6CS_CPUEi6string"></span><span id="_CPPv2N4eddl6CS_CPUEi6string"></span><span class="target" id="namespaceeddl_1a22c355a2526a4d67d1e69c06b232a62b"></span>compserv <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">CS_CPU</code><span class="sig-paren">(</span>int <em>th</em> = -1, string <em>mem</em> = &quot;low_mem&quot;<span class="sig-paren">)</span><br /></dt>
+<dd><p>Executes de code in the CPU. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The computer service itself. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">th</span></code>: Indicates the number of threads to use (-1 = all available threads) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mem</span></code>: Indicates de memory consumption of the model. One of “full_mem” (default), “mid_mem” or “low_mem”. </p></li>
 </ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">compserv</span> <span class="nf">CS_GPU</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">g</span><span class="o">=</span><span class="p">{</span><span class="mi">1</span><span class="p">},</span> <span class="kt">int</span> <span class="n">lsb</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">string</span> <span class="n">mem</span><span class="o">=</span><span class="s">&quot;low_mem&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">compserv</span> <span class="nf">CS_GPU</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">g</span><span class="o">=</span><span class="p">{</span><span class="mi">1</span><span class="p">},</span> <span class="kt">int</span> <span class="n">lsb</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">string</span> <span class="n">mem</span><span class="o">=</span><span class="s">&quot;low_mem&quot;</span><span class="p">);</span>
+
+ <span class="n">compserv</span> <span class="nf">CS_GPU</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">g</span><span class="o">=</span><span class="p">{</span><span class="mi">1</span><span class="p">},</span> <span class="n">string</span> <span class="n">mem</span><span class="o">=</span><span class="s">&quot;low_mem&quot;</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
 </div>
 <div class="section" id="fpga">
 <h1>FPGA<a class="headerlink" href="#fpga" title="Permalink to this headline">¶</a></h1>
-<p>Executes the code in the FPGA.</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>: Vector of bools to set which FPGAs will be use (<code class="docutils literal notranslate"><span class="pre">1=on,</span> <span class="pre">0=off</span></code>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">lsb</span></code>: (Multi-gpu setting) Number of batches to run before synchronizing the weighs of the different GPUs</p></li>
+<dl class="function">
+<dt id="_CPPv4N4eddl7CS_FGPAERK6vectorIiEi">
+<span id="_CPPv3N4eddl7CS_FGPAERK6vectorIiEi"></span><span id="_CPPv2N4eddl7CS_FGPAERK6vectorIiEi"></span><span id="eddl::CS_FGPA__vector:i:CR.i"></span><span class="target" id="namespaceeddl_1a3f6009786e29e382a806f9a17c6637c4"></span>compserv <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">CS_FGPA</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>f</em>, int <em>lsb</em> = 1<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7CS_FGPAERK6vectorIiEi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Executes de code in the FPGA. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The computer service itself. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>: Vector of bools to set which FPGAs will be used (1=on, 0=off) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lsb</span></code>: (Multi-fpga setting) Number of batches to run before synchronizing the weights of the different FPGAs </p></li>
 </ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Not yet implemented</p>
+<p><strong>Not implemented yet</strong></p>
 </div>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">compserv</span> <span class="nf">CS_FGPA</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">f</span><span class="p">,</span> <span class="kt">int</span> <span class="n">lsb</span><span class="o">=</span><span class="mi">1</span><span class="p">);</span>
@@ -288,13 +325,24 @@ the code will be executed.</p>
 </div>
 <div class="section" id="compss">
 <h1>COMPSS<a class="headerlink" href="#compss" title="Permalink to this headline">¶</a></h1>
-<p>Executes the code through the COMP Superscalar (COMPSs) framework</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">filename</span></code>: File with the setup specification</p></li>
+<dl class="function">
+<dt id="_CPPv4N4eddl9CS_COMPSSE6string">
+<span id="_CPPv3N4eddl9CS_COMPSSE6string"></span><span id="_CPPv2N4eddl9CS_COMPSSE6string"></span><span id="eddl::CS_COMPSS__string"></span><span class="target" id="namespaceeddl_1ab6bddca6f57563dd48da4966f4eae0a1"></span>compserv <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">CS_COMPSS</code><span class="sig-paren">(</span>string <em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9CS_COMPSSE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Executes de code through the COMP Superscalar (COMPSs) framework. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The computer service itself. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">filename</span></code>: File with the setup specification </p></li>
 </ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Not yet implemented</p>
+<p><strong>Not implemented yet</strong></p>
 </div>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">compserv</span> <span class="nf">CS_COMPSS</span><span class="p">(</span><span class="n">string</span> <span class="n">filename</span><span class="p">);</span>
