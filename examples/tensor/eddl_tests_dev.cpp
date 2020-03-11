@@ -83,19 +83,103 @@ int main(int argc, char **argv) {
 //     t6->print();
 //     t7->print();
 
-    // Test average pooling
-    float ptr[4*4] = {31, 15, 28, 184, 0, 100, 70, 38, 12, 12, 7, 2, 12, 12 ,45, 6};
-    auto* t1 = new Tensor({1, 1, 4, 4}, ptr, device);
 
-    auto* pd = new PoolDescriptor({2, 2}, {2,2}, "none");
+    // Test pooling
+    PoolDescriptor* pd;
+    auto* t0 = new Tensor({1, 1, 8,8});
+    pd = new PoolDescriptor({2, 2}, {2,2}, "none");
+    pd->build(t0);
+
+    // Image
+    float ptr_img[5*5] = {0, 1, 0, 4, 5,
+                          2, 3, 2, 1, 3,
+                          4, 4, 0, 4, 3,
+                          2, 5, 2, 6, 4,
+                          1, 0, 0, 5, 7};
+    auto* t1 = new Tensor({1, 1, 5, 5}, ptr_img, device);
+    t1->print();
+
+    // [MaxPool] Sol. 1
+    float ptr_mp_3x3_s1_padv[3*3] = {4,4,5,
+                                     5,6,6,
+                                     5,6,7};
+    auto* t2_mp = new Tensor({1, 1, 3, 3}, ptr_mp_3x3_s1_padv, device);
+
+    // [MaxPool] Sol. 2
+    float ptr_mp_3x3_s1_pads[5*5] = {3,3,4,5,5,
+                                     4,4,4,5,5,
+                                     5,5,6,6,6,
+                                     5,5,6,7,7,
+                                     5,5,6,7,7};
+    auto* t3_mp = new Tensor({1, 1, 5, 5}, ptr_mp_3x3_s1_pads, device);
+
+    // [AvgPool] Sol. 1
+    float ptr_ap_3x3_s2_padv[2*2] = {1.8, 2.4,
+                                     2, 3.4};
+    auto* t2_ap = new Tensor({1, 1, 2, 2}, ptr_ap_3x3_s2_padv, device);
+
+    // [AvgPool] Sol. 2
+    float ptr_ap_3x3_s2_pads[3*3] = {0.7, 1.2, 1.4,
+                                     2.2, 3.0, 2.3,
+                                     0.9, 2.0, 2.4};
+    auto* t3_ap = new Tensor({1, 1, 3, 3}, ptr_ap_3x3_s2_pads, device);
+
+    // [MaxPool] Test 1  ************
+    cout << "*************************************" << endl;
+    cout << "Result MaxPool(3x3_s1_padv):" << endl;
+    pd = new PoolDescriptor({3, 3}, {1,1}, "none");
+    pd->build(t1);
+    pd->indX = new Tensor(pd->O->getShape(), device);
+    pd->indY = new Tensor(pd->O->getShape(), device);
+
+    // Forward
+    MPool2D(pd);
+    pd->O->print();
+
+    cout << "Correct MaxPool(3x3_s1_padv):" << Tensor::equal2(t2_mp, pd->O, 10e-1f)  <<  endl;
+    t2_mp->print();
+
+    // [MaxPool] Test 2  ************
+    cout << "*************************************" << endl;
+    cout << "Result MaxPool(3x3_s1_pads):" << endl;
+    pd = new PoolDescriptor({3, 3}, {1,1}, "same");
+    pd->build(t1);
+    pd->indX = new Tensor(pd->O->getShape(), device);
+    pd->indY = new Tensor(pd->O->getShape(), device);
+
+    // Forward
+    MPool2D(pd);
+    pd->O->print();
+
+    cout << "Correct MaxPool(3x3_s1_pads):" << Tensor::equal2(t3_mp, pd->O, 10e-1f) << endl;
+    t3_mp->print();
+
+    // [AvgPool] Test 1  ************
+    cout << "*************************************" << endl;
+    cout << "Result AvgPool(3x3_s2_padv):" << endl;
+    pd = new PoolDescriptor({3, 3}, {2,2}, "none");
+    pd->build(t1);
+
+    // Forward
+    AvgPool2D(pd);
+    pd->O->print();
+
+    cout << "Correct AvgPool(3x3_s2_padv):" << Tensor::equal2(t2_ap, pd->O, 10e-1f)  <<  endl;
+    t2_ap->print();
+
+    // [AvgPool] Test 2  ************
+    cout << "*************************************" << endl;
+    cout << "Result AvgPool(3x3_s2_pads):" << endl;
+    pd = new PoolDescriptor({3, 3}, {2,2}, "same");
     pd->build(t1);
     pd->indX = new Tensor(pd->O->getShape(), device);
     pd->indY = new Tensor(pd->O->getShape(), device);
 
     // Forward
     AvgPool2D(pd);
-
-    // Print
     pd->O->print();
-    int asda = 33;
+
+    cout << "Correct MaxPool(3x3_s2_pads):" << Tensor::equal2(t3_ap, pd->O, 10e-1f) << endl;
+    t3_ap->print();
+
 }
