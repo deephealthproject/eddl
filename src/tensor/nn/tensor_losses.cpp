@@ -37,20 +37,20 @@ void cent(Tensor *A, Tensor *B, Tensor *C) {
 #ifdef cFPGA
     else if (A->isFPGA())
       {
-         //fpga_cent(A,B,C); 
-         Tensor *nA=new Tensor(A->getShape(),DEV_CPU);
-         Tensor *nB=new Tensor(B->getShape(),DEV_CPU);
-         Tensor *nC=new Tensor(C->getShape(),DEV_CPU);
-         fpga_copy_from_fpga(A, nA->ptr);
-         fpga_copy_from_fpga(B, nB->ptr);
-         fpga_copy_from_fpga(C, nC->ptr);
-         cpu_cent(nA,nB,nC);
-         fpga_copy_to_fpga(nA->ptr, A);
-         fpga_copy_to_fpga(nB->ptr, B);
-         fpga_copy_to_fpga(nC->ptr, C);
-         delete nA; 
-         delete nB;
-         delete nC; 
+         fpga_cent(A,B,C); 
+         // Tensor *nA=new Tensor(A->getShape(),DEV_CPU);
+         // Tensor *nB=new Tensor(B->getShape(),DEV_CPU);
+         // Tensor *nC=new Tensor(C->getShape(),DEV_CPU);
+         // fpga_copy_from_fpga(A, nA->ptr);
+         // fpga_copy_from_fpga(B, nB->ptr);
+         // fpga_copy_from_fpga(C, nC->ptr);
+         // cpu_cent(nA,nB,nC);
+         // fpga_copy_to_fpga(nA->ptr, A);
+         // fpga_copy_to_fpga(nB->ptr, B);
+         // fpga_copy_to_fpga(nC->ptr, C);
+         // delete nA;
+         // delete nB;
+         // delete nC;
       }
 #endif
     C->tsem->unlock();

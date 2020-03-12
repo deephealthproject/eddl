@@ -13,7 +13,7 @@ BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/multitensor_op.$(TARGET).$(DEVICE).xo
 BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_add.$(TARGET).$(DEVICE).xo
 BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_mult2D.$(TARGET).$(DEVICE).xo
 BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_sum2D_rowwise.$(TARGET).$(DEVICE).xo
-#BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_cent.$(TARGET).$(DEVICE).xo
+BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_cent.$(TARGET).$(DEVICE).xo
 BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/relu_soft_d.$(TARGET).$(DEVICE).xo
 BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/reduce_sum2D.$(TARGET).$(DEVICE).xo
 BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_accuracy.$(TARGET).$(DEVICE).xo
@@ -103,9 +103,9 @@ $(XCLBIN)/kernel_sum2D_rowwise.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/kerne
 	mkdir -p $(XCLBIN)
 	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k kernel_sum2D_rowwise -I'$(<D)' -o'$@' '$<'
 
-#$(XCLBIN)/kernel_cent.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/kernel_cent.cpp
-#	mkdir -p $(XCLBIN)
-#	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k kernel_cent -I'$(<D)' -o'$@' '$<'
+$(XCLBIN)/kernel_cent.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/kernel_cent.cpp
+	mkdir -p $(XCLBIN)
+	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k kernel_cent -I'$(<D)' -o'$@' '$<'
 
 $(XCLBIN)/relu_soft_d.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/relu_soft_d.cpp
 	mkdir -p $(XCLBIN)

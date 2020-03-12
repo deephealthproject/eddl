@@ -87,7 +87,7 @@ void fpga_init(){ // initialize only once
     OCL_CHECK(err, kernel_add = cl::Kernel(program,"kernel_add", &err));
     //OCL_CHECK(err, mult2D = cl::Kernel(program,"kernel_mult2D", &err));
     OCL_CHECK(err, sum2D_rowwise = cl::Kernel(program,"kernel_sum2D_rowwise", &err));
-    //OCL_CHECK(err, kernel_cent = cl::Kernel(program,"kernel_cent", &err));
+    OCL_CHECK(err, kernel_cent = cl::Kernel(program,"kernel_cent", &err));
     OCL_CHECK(err, relu_soft_d = cl::Kernel(program,"relu_soft_d", &err));
     OCL_CHECK(err, reduce_sum2D = cl::Kernel(program,"reduce_sum2D", &err));
     OCL_CHECK(err, kernel_core = cl::Kernel(program,"kernel_core", &err));
