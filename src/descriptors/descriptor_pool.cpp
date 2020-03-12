@@ -54,41 +54,17 @@ void PoolDescriptor::build(Tensor *A) {
     ir = A->shape[2];
     ic = A->shape[3];
 
-    if(this->padding=="none" || this->padding=="valid"){
-        // Compute output
-        z = iz;
-        r = std::ceil((ir - (kr - 1) * 1)/(float)sr);
-        c = std::ceil((ic - (kc - 1) * 1)/(float)sc);
+    // Compute output
+    z = iz;
+    r = compute_output(this->padding, ir, kr, sr);
+    c = compute_output(this->padding, ic, kc, sc);
 
-        // Compute padding
-        this->pad = {0, 0, 0, 0};
+    // Compute padding
+    vector<int> padr = compute_padding(r, ir, kr, sr, this->padding);
+    vector<int> padc = compute_padding(c, ic, kc, sc, this->padding);
 
-    } else if (this->padding=="same" || this->padding=="zeros") {
-        // Compute output
-        z = iz;
-        r = std::ceil(ir / (float)sr);
-        c = std::ceil(ic / (float)sc);
-
-        // Compute padding
-        int padr = (r - 1) * sr + (kr - 1) * 1 + 1 - ir;
-        int padc = (c - 1) * sc + (kc - 1) * 1 + 1 - ic;
-        this->pad = {padr/2, padr-padr/2, padc/2, padc-padc/2};
-
-    } else {
-        // TODO: TEMP!!!
-        // Review this method: PoolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem)
-
-        // Set padding (aliases)
-        padrt = pad[0]; padrb = pad[1];
-        padcl = pad[2]; padcr = pad[3];
-
-        // Compute output
-        z = nk;
-        r = (ir - kr + padrt + padrb) / sr + 1;
-        c = (ic - kc + padcl + padcr) / sc + 1;
-    }
-
-    // Set padding (aliases)
+    // Set padding
+    pad = {padr[0], padr[1], padc[0], padc[1]};
     padrt = pad[0]; padrb = pad[1];
     padcl = pad[2]; padcr = pad[3];
 

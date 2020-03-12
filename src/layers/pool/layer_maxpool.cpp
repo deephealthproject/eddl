@@ -27,6 +27,8 @@ LMaxPool::LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int
 LMaxPool::LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, string name, int dev, int mem) : LMaxPool(parent, new PoolDescriptor(pool_size, strides, padding, mem), name, dev, mem) {}
 
 LMaxPool::LMaxPool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem) : LPool(parent, D, name, dev, mem) {
+    if(name.empty()) this->name = "maxpool" + to_string(++total_layers);
+
     // Params
     D->indX = new Tensor(D->O->shape, dev);
     D->indY = new Tensor(D->O->shape, dev);

@@ -9,7 +9,8 @@
 
 
 #include "descriptors.h"
-
+#include <cmath>
+#include <algorithm>
 
 #ifdef cGPU
 #include "../hardware/gpu/gpu_tensor.h"
@@ -175,4 +176,35 @@ void ConvolDescriptor::enable_distributed() {
     acc_gK->fill_(0.0);
     acc_gbias = new Tensor(vector<int>{nk}, I->device);
     acc_gbias->fill_(0.0);
+}
+
+int ConvolDescriptor::compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate){
+    if (padding=="same" || padding =="zeros") {
+        return std::ceil((float)input_size/(float)stride);
+
+    }else if(padding =="valid" || padding =="none"){
+        return std::ceil(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate)/(float)stride);
+
+    }else{
+        msg("Incorrect padding type", "ConvolDescriptor::compute_output");
+    }
+}
+
+vector<int> ConvolDescriptor::compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding){
+    if (padding=="same" || padding =="zeros") {
+        int pad = (output_size-1) * stride + kerkel_size - input_size;
+        pad = std::max(pad, 0);
+
+        // Ignore the padding if possible
+        int padl = pad/2;  // 1/2=0.5 => 0
+        int padr = pad - pad/2; // 1-1/2 = 1-0 => 1
+
+        return vector<int>({padl, padr});
+
+    }else if(padding =="valid" || padding =="none"){
+        return vector<int>({0, 0});
+
+    }else{
+        msg("Incorrect padding type", "ConvolDescriptor::compute_padding");
+    }
 }
