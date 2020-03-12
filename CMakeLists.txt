@@ -290,7 +290,7 @@ if(USE_CUDA AND CMAKE_CUDA_COMPILER)
             PRIVATE cudart
             PRIVATE curand
             )
-    add_compile_definitions(cGPU)
+		add_definitions(-DcGPU)
 
     # Target properties
     set_target_properties(eddl PROPERTIES
@@ -312,7 +312,7 @@ if(BUILD_PROTOBUF)
     include(FindProtobuf)
     find_package(Protobuf REQUIRED)
     if(Protobuf_FOUND)
-        add_compile_definitions(cPROTO)
+		add_definitions(-DcPROTO)
         target_include_directories(eddl PUBLIC ${PROTOBUF_INCLUDE_DIR})
     	target_link_libraries(eddl PRIVATE ${PROTOBUF_LIBRARIES})
     	message("Protobuf path: ${PROTOBUF_LIBRARIES} ${PROTOBUF_INCLUDE_DIR}")
