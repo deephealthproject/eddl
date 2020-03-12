@@ -51,7 +51,6 @@ namespace eddl {
         vector<Loss *> l;
         vector<Metric *> m;
 
-        // TODO: Fix this sh*t
         // Replace string by functions
         for (const auto &li : lo){
             l.push_back(getLoss(li));

@@ -107,52 +107,60 @@ int main(int argc, char **argv) {
     cout << "Output: " << o << endl;
     cout << "Padding: " << (p[0]+p[1]) << " (" << p[0] << ", " << p[1] << ")"<< endl;
 
+
     // Image
-    float ptr_img[5*5] = {0, 1, 0, 4, 5,
-                          2, 3, 2, 1, 3,
-                          4, 4, 0, 4, 3,
-                          2, 5, 2, 6, 4,
-                          1, 0, 0, 5, 7};
+    float *ptr_img = new float[5*5]{1, 1, 0, 4, 5,
+                                    2, 3, 2, 1, 3,
+                                    4, 4, 0, 4, 3,
+                                    2, 5, 2, 6, 4,
+                                    1, 0, 0, 5, 7};
     auto* t1 = new Tensor({1, 1, 5, 5}, ptr_img);
     t1->print();
+    t1->toGPU();
 
     // [MaxPool] Sol. 1
-    float ptr_mp_3x3_s1_padv[3*3] = {4,4,5,
-                                     5,6,6,
-                                     5,6,7};
+    float *ptr_mp_3x3_s1_padv = new float[3*3]{4,4,5,
+                                               5,6,6,
+                                               5,6,7};
     auto* t2_mp = new Tensor({1, 1, 3, 3}, ptr_mp_3x3_s1_padv);
+    t2_mp->toGPU();
 
     // [MaxPool] Sol. 2
-    float ptr_mp_3x3_s1_pads[5*5] = {3,3,4,5,5,
-                                     4,4,4,5,5,
-                                     5,5,6,6,6,
-                                     5,5,6,7,7,
-                                     5,5,6,7,7};
+    float *ptr_mp_3x3_s1_pads = new float[5*5]{3,3,4,5,5,
+                                               4,4,4,5,5,
+                                               5,5,6,6,6,
+                                               5,5,6,7,7,
+                                               5,5,6,7,7};
     auto* t3_mp = new Tensor({1, 1, 5, 5}, ptr_mp_3x3_s1_pads);
+    t3_mp->toGPU();
 
     // [AvgPool] Sol. 1
-    float ptr_ap_3x3_s2_padv[2*2] = {1.8, 2.4,
-                                     2, 3.4};
+    float *ptr_ap_3x3_s2_padv = new float[2*2]{1.8, 2.4,
+                                               2, 3.4};
     auto* t2_ap = new Tensor({1, 1, 2, 2}, ptr_ap_3x3_s2_padv);
+    t2_ap->toGPU();
 
     // [AvgPool] Sol. 2
-    float ptr_ap_3x3_s2_pads[3*3] = {0.7, 1.2, 1.4,
-                                     2.2, 3.0, 2.3,
-                                     0.9, 2.0, 2.4};
+    float *ptr_ap_3x3_s2_pads = new float[3*3]{0.7, 1.2, 1.4,
+                                               2.2, 3.0, 2.3,
+                                               0.9, 2.0, 2.4};
     auto* t3_ap = new Tensor({1, 1, 3, 3}, ptr_ap_3x3_s2_pads);
+    t3_ap->toGPU();
 
     // [MaxPool] Test 1  ************
     cout << "*************************************" << endl;
     cout << "Result MaxPool(3x3_s1_padv):" << endl;
     pd = new PoolDescriptor({3, 3}, {1,1}, "none");
     pd->build(t1);
-    pd->indX = new Tensor(pd->O->getShape());
-    pd->indY = new Tensor(pd->O->getShape());
+    pd->indX = new Tensor(pd->O->getShape()); pd->indX->toGPU();
+    pd->indY = new Tensor(pd->O->getShape()); pd->indY->toGPU();
 
     // Forward
     MPool2D(pd);
     pd->O->print();
 
+    t2_mp->toCPU();
+    pd->O->toCPU();
     cout << "Correct MaxPool(3x3_s1_padv):" << Tensor::equal2(t2_mp, pd->O, 10e-1f)  <<  endl;
     t2_mp->print();
 
@@ -161,13 +169,15 @@ int main(int argc, char **argv) {
     cout << "Result MaxPool(3x3_s1_pads):" << endl;
     pd = new PoolDescriptor({3, 3}, {1,1}, "same");
     pd->build(t1);
-    pd->indX = new Tensor(pd->O->getShape());
-    pd->indY = new Tensor(pd->O->getShape());
+    pd->indX = new Tensor(pd->O->getShape()); pd->indX->toGPU();
+    pd->indY = new Tensor(pd->O->getShape()); pd->indY->toGPU();
 
     // Forward
     MPool2D(pd);
     pd->O->print();
 
+    t3_mp->toCPU();
+    pd->O->toCPU();
     cout << "Correct MaxPool(3x3_s1_pads):" << Tensor::equal2(t3_mp, pd->O, 10e-1f) << endl;
     t3_mp->print();
 
@@ -181,6 +191,8 @@ int main(int argc, char **argv) {
     AvgPool2D(pd);
     pd->O->print();
 
+    t2_ap->toCPU();
+    pd->O->toCPU();
     cout << "Correct AvgPool(3x3_s2_padv):" << Tensor::equal2(t2_ap, pd->O, 10e-1f)  <<  endl;
     t2_ap->print();
 
@@ -194,6 +206,8 @@ int main(int argc, char **argv) {
     AvgPool2D(pd);
     pd->O->print();
 
+    t3_ap->toCPU();
+    pd->O->toCPU();
     cout << "Correct AvgPool(3x3_s2_pads):" << Tensor::equal2(t3_ap, pd->O, 10e-1f) << endl;
     t3_ap->print();
 

@@ -22,7 +22,7 @@ void cpu_mpool2D(PoolDescriptor *D){
     int irsize=D->ir*D->ic;
 
 
-    #pragma omp parallel for
+    //#pragma omp parallel for default(none) shared(D, isize, irsize)
     for(int b=0;b<D->I->shape[0];b++){
         int p=b*D->size;
         int i,j,k,ki,kj;
@@ -48,12 +48,12 @@ void cpu_mpool2D(PoolDescriptor *D){
     }// batch
 }
 
-void cpu_mpool2D_back(PoolDescriptor *D)
-{
+void cpu_mpool2D_back(PoolDescriptor *D){
     int isize=D->ir*D->ic*D->iz;
     int irsize=D->ir*D->ic;
+    int a = 3;
 
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for(int b=0;b<D->I->shape[0];b++){
         int p=b*D->size;
         int i,j,k,ki,kj;
