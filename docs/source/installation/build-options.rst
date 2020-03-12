@@ -26,25 +26,24 @@ If you decide to manually install the dependencies in your system, make sure the
 
 .. code::
 
+    cmake >= 3.12.2
     graphviz >= 2.38.0
     wget >= 1.19.5
-    cmake >= 3.12.2
-    openmp >= 6.0.0
-    blas >= 1.1
     eigen >= 3.3.7
     cudatoolkit >= 6.0
     zlib >= 1.2.8
     gtest >= 1.8.0
-    benchmark >= 1.5.0
     protobuf >= 3.6.1
     libprotobuf >= 3.6.1
 
     # For development
-    git >= 2.19.1
-    sphinx >= 1.3.1
-    breathe >= 4.9.1
-    sphinx_rtd_theme >= 0.1.7
-
+    doxygen
+    python
+    pip:
+      - sphinx
+      - breathe
+      - sphinx_rtd_theme
+      - sphinx-tabs
 
 
 Build and optimization
