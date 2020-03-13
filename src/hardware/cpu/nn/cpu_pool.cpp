@@ -9,8 +9,8 @@
 
 
 
-#include <stdio.h>      /* printf, scanf, NULL */
-#include <stdlib.h>     /* malloc, free, rand */
+#include <cstdio>      /* printf, scanf, NULL */
+#include <cstdlib>     /* malloc, free, rand */
 #include <iostream>
 #include <limits>       // std::numeric_limits
 

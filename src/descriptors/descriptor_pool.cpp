@@ -11,19 +11,8 @@
 #include "descriptors.h"
 #include <math.h>
 
-PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem) {
-    ksize = vector<int>(ks.begin(), ks.end());
-    stride = vector<int>(st.begin(), st.end());
-    pad = vector<int>(p.begin(), p.end());  // TODO: Review (padding computed at build())
-    mem_level=mem;
 
-    if (ksize.size() != 2) msg("Pooling Kernels must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
-    if (stride.size() != 2) msg("Strides must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
-    //if (pad.size() != 2) msg("Padding must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
-
-}
-
-PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, string p, int mem) {
+PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, const string& p, int mem) {
     if (ks.size() != 2) msg("Pooling Kernels must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
     if (st.size() != 2) msg("Strides must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
 

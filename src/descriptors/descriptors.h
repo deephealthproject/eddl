@@ -124,9 +124,7 @@ public:
     Tensor *indX, *indY; // indexes
     int mem_level; // see CS
 
-    PoolDescriptor(const vector<int> &ks, const vector<int> &st, string p, int mem=0);
-
-    PoolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem=0);
+    PoolDescriptor(const vector<int> &ks, const vector<int> &st, const string& p, int mem=0);
 
     void build(Tensor *A);
     void resize(int b);

@@ -38,6 +38,7 @@ void add_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsi
     D->ID->ptr[address]+=val;
 }
 
+
 void im2col(int b,ConvolDescriptor *D,float *ptrI,int col2im)
 {
     int i,j,k;

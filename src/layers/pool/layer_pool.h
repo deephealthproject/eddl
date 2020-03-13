@@ -42,11 +42,9 @@ class LMaxPool : public LPool {
 public:
 
     // constructors and clones
-    LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name, int dev, int mem);
+    LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const string& padding, string name, int dev, int mem);
 
-    LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, string name, int dev, int mem);
-
-    LMaxPool(Layer *parent, PoolDescriptor *cd, string name, int dev, int mem);
+    LMaxPool(Layer *parent, PoolDescriptor *cd, const string& name, int dev, int mem);
 
     // Params
     Tensor *indX, *indY;
@@ -73,11 +71,9 @@ public:
     Tensor *indX, *indY;
 
     // constructors and clones
-    LAveragePool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name, int dev, int mem);
+    LAveragePool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const string& padding, const string& name, int dev, int mem);
 
-    LAveragePool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, string name, int dev, int mem);
-
-    LAveragePool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem);
+    LAveragePool(Layer *parent, PoolDescriptor *D, const string& name, int dev, int mem);
 
     // implementation
     void forward() override;

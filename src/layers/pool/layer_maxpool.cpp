@@ -22,11 +22,9 @@ using namespace std;
 // constructors and clones
 
 // constructors and clones
-LMaxPool::LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name, int dev, int mem) : LMaxPool(parent, new PoolDescriptor(pool_size, strides, padding, mem), name, dev, mem) {}
+LMaxPool::LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const string& padding, string name, int dev, int mem) : LMaxPool(parent, new PoolDescriptor(pool_size, strides, padding, mem), name, dev, mem) {}
 
-LMaxPool::LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, string name, int dev, int mem) : LMaxPool(parent, new PoolDescriptor(pool_size, strides, padding, mem), name, dev, mem) {}
-
-LMaxPool::LMaxPool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem) : LPool(parent, D, name, dev, mem) {
+LMaxPool::LMaxPool(Layer *parent, PoolDescriptor *D, const string& name, int dev, int mem) : LPool(parent, D, name, dev, mem) {
     if(name.empty()) this->name = "maxpool" + to_string(++total_layers);
 
     // Params
@@ -36,8 +34,6 @@ LMaxPool::LMaxPool(Layer *parent, PoolDescriptor *D, string name, int dev, int m
 
 
 void LMaxPool::resize(int batch){
-  //cout<<"Resize "<<name<<"\n";
-
   LPool::resize(batch);
 
   delete pd->indX;
@@ -57,14 +53,14 @@ void LMaxPool::backward() {
 }
 
 Layer *LMaxPool::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LMaxPool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, pd->padding, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    auto *n = new LMaxPool(p[0], this->pd, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LMaxPool::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LMaxPool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, pd->padding, "clone_" + to_string(todev) + this->name, todev, this->mem_level);
+    auto *n = new LMaxPool(p[0], this->pd, "clone_" + to_string(todev) + this->name, todev, this->mem_level);
     n->orig = this;
 
     return n;
