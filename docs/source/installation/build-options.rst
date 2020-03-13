@@ -26,7 +26,7 @@ If you decide to manually install the dependencies in your system, make sure the
 
 .. code::
 
-    cmake >= 3.12.2
+    cmake >= 3.9.2
     graphviz >= 2.38.0
     wget >= 1.19.5
     eigen >= 3.3.7
