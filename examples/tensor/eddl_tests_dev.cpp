@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
     // Test pooling
     PoolDescriptor *pd;
 
-    int o;
+/*    int o;
     vector<int> p;
     o = pd->compute_output("none", 8,1,3);
     p = pd->compute_padding(o, 8,1,3, "none");
@@ -105,8 +105,9 @@ int main(int argc, char **argv) {
     o = pd->compute_output("same", 8,3,3);
     p = pd->compute_padding(o,8,3,3, "same");
     cout << "Output: " << o << endl;
-    cout << "Padding: " << (p[0]+p[1]) << " (" << p[0] << ", " << p[1] << ")"<< endl;
+    cout << "Padding: " << (p[0]+p[1]) << " (" << p[0] << ", " << p[1] << ")"<< endl;*/
 
+    bool use_gpu = false;
 
     // Image
     float *ptr_img = new float[5*5]{1, 1, 0, 4, 5,
@@ -115,15 +116,14 @@ int main(int argc, char **argv) {
                                     2, 5, 2, 6, 4,
                                     1, 0, 0, 5, 7};
     auto* t1 = new Tensor({1, 1, 5, 5}, ptr_img);
-    t1->print();
-    t1->toGPU();
+    if(use_gpu) t1->toGPU();
 
     // [MaxPool] Sol. 1
     float *ptr_mp_3x3_s1_padv = new float[3*3]{4,4,5,
                                                5,6,6,
                                                5,6,7};
     auto* t2_mp = new Tensor({1, 1, 3, 3}, ptr_mp_3x3_s1_padv);
-    t2_mp->toGPU();
+    if(use_gpu) t2_mp->toGPU();
 
     // [MaxPool] Sol. 2
     float *ptr_mp_3x3_s1_pads = new float[5*5]{3,3,4,5,5,
@@ -132,45 +132,65 @@ int main(int argc, char **argv) {
                                                5,5,6,7,7,
                                                5,5,6,7,7};
     auto* t3_mp = new Tensor({1, 1, 5, 5}, ptr_mp_3x3_s1_pads);
-    t3_mp->toGPU();
+    if(use_gpu) t3_mp->toGPU();
 
     // [AvgPool] Sol. 1
     float *ptr_ap_3x3_s2_padv = new float[2*2]{1.8, 2.4,
                                                2, 3.4};
     auto* t2_ap = new Tensor({1, 1, 2, 2}, ptr_ap_3x3_s2_padv);
-    t2_ap->toGPU();
+    if(use_gpu) t2_ap->toGPU();
 
     // [AvgPool] Sol. 2
     float *ptr_ap_3x3_s2_pads = new float[3*3]{0.7, 1.2, 1.4,
                                                2.2, 3.0, 2.3,
                                                0.9, 2.0, 2.4};
     auto* t3_ap = new Tensor({1, 1, 3, 3}, ptr_ap_3x3_s2_pads);
-    t3_ap->toGPU();
+    if(use_gpu) t3_ap->toGPU();
+
+    cout << "*************************************" << endl;
+    cout << "Input image:" << endl;
+    t1->print();
 
     // [MaxPool] Test 1  ************
+    cout << endl;
     cout << "*************************************" << endl;
     cout << "Result MaxPool(3x3_s1_padv):" << endl;
-    pd = new PoolDescriptor({3, 3}, {1,1}, "none");
+    pd = new PoolDescriptor({3, 3}, {1,1}, "same");
     pd->build(t1);
-    pd->indX = new Tensor(pd->O->getShape()); pd->indX->toGPU();
-    pd->indY = new Tensor(pd->O->getShape()); pd->indY->toGPU();
+    pd->indX = new Tensor(pd->O->getShape());  if(use_gpu) pd->indX->toGPU();
+    pd->indY = new Tensor(pd->O->getShape());  if(use_gpu) pd->indY->toGPU();
+    pd->ID = Tensor::zeros(pd->I->getShape()); if(use_gpu) pd->ID->toGPU();
+    pd->D = Tensor::ones(pd->O->getShape());  if(use_gpu) pd->D->toGPU();
 
     // Forward
     MPool2D(pd);
     pd->O->print();
 
-    t2_mp->toCPU();
+/*    t2_mp->toCPU();
     pd->O->toCPU();
     cout << "Correct MaxPool(3x3_s1_padv):" << Tensor::equal2(t2_mp, pd->O, 10e-1f)  <<  endl;
     t2_mp->print();
+    */
+    // [MaxPool Back] Test 1  ************
+    cout << endl;
+    cout << "*************************************" << endl;
+    cout << "Result MaxPool-Back(3x3_s1_padv):" << endl;
+    MPool2D_back(pd);
+    pd->ID->print();
+
+    int a = 3;
+    cout << a << endl;
 
     // [MaxPool] Test 2  ************
+    cout << endl;
     cout << "*************************************" << endl;
     cout << "Result MaxPool(3x3_s1_pads):" << endl;
     pd = new PoolDescriptor({3, 3}, {1,1}, "same");
     pd->build(t1);
-    pd->indX = new Tensor(pd->O->getShape()); pd->indX->toGPU();
-    pd->indY = new Tensor(pd->O->getShape()); pd->indY->toGPU();
+    pd->indX = new Tensor(pd->O->getShape());  if(use_gpu) pd->indX->toGPU();
+    pd->indY = new Tensor(pd->O->getShape());  if(use_gpu) pd->indY->toGPU();
+    pd->ID = Tensor::zeros(pd->I->getShape()); if(use_gpu) pd->ID->toGPU();
+    pd->D = Tensor::ones(pd->O->getShape());  if(use_gpu) pd->D->toGPU();
 
     // Forward
     MPool2D(pd);
@@ -182,6 +202,7 @@ int main(int argc, char **argv) {
     t3_mp->print();
 
     // [AvgPool] Test 1  ************
+    cout << endl;
     cout << "*************************************" << endl;
     cout << "Result AvgPool(3x3_s2_padv):" << endl;
     pd = new PoolDescriptor({3, 3}, {2,2}, "valid");
@@ -197,6 +218,7 @@ int main(int argc, char **argv) {
     t2_ap->print();
 
     // [AvgPool] Test 2  ************
+    cout << endl;
     cout << "*************************************" << endl;
     cout << "Result AvgPool(3x3_s2_padn):" << endl;
     pd = new PoolDescriptor({3, 3}, {2,2}, "same");

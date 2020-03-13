@@ -57,15 +57,14 @@ void LMaxPool::backward() {
 }
 
 Layer *LMaxPool::share(int c, int bs, vector<Layer *> p) {
-    LMaxPool *n = new LMaxPool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, pd->pad, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    auto *n = new LMaxPool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, pd->padding, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LMaxPool::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LMaxPool *n = new LMaxPool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, pd->padding,
-                           "clone_" + to_string(todev) + name, todev,mem_level);
+    auto *n = new LMaxPool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, pd->padding, "clone_" + to_string(todev) + this->name, todev, this->mem_level);
     n->orig = this;
 
     return n;

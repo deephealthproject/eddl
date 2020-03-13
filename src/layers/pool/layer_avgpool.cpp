@@ -52,8 +52,7 @@ Layer *LAveragePool::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LAveragePool::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LAveragePool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, pd->padding,
-                               "clone_" + to_string(todev) + name, todev,mem_level);
+    auto *n = new LAveragePool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, pd->padding, "clone_" + to_string(todev) + this->name, todev, this->mem_level);
     n->orig = this;
 
     return n;

@@ -37,15 +37,13 @@ int main(int argc, char **argv) {
     layer l = in;  // Aux var
 
     l = Reshape(l,{1,28,28});
-    l = MaxPool(ReLu(Conv(l,32,{3,3},{1,1})), {2,2}, {2,2}, "same");
-    l = MaxPool(ReLu(Conv(l,64,{3,3},{1,1})), {2,2}, {2,2}, "same");
-    l = MaxPool(ReLu(Conv(l,128,{3,3},{1,1})),{2,2}, {2,2}, "same");
-    l = MaxPool(ReLu(Conv(l,256,{3,3},{1,1})),{2,2}, {2,2}, "same");
+    l = MaxPool(ReLu(Conv(l,32,{3,3},{1,1})), {2,2}, {2,2}, "none");
+    l = MaxPool(ReLu(Conv(l,64,{3,3},{1,1})), {2,2}, {2,2}, "none");
     l = Reshape(l,{-1});
 
     layer out = Activation(Dense(l, num_classes), "softmax");
     model net = Model({in}, {out});
-    net->verbosity_level = 0;
+    net->verbosity_level = 2;
 
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
@@ -55,7 +53,7 @@ int main(int argc, char **argv) {
           rmsprop(0.01), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-         // CS_GPU({1}, "low_mem") // one GPU
+          //CS_GPU({1}, "low_mem") // one GPU
           CS_CPU(-1, "low_mem") // CPU with maximum threads availables
     );
 

@@ -191,6 +191,8 @@ int ConvolDescriptor::compute_output(const string& padding, int input_size, int 
 }
 
 vector<int> ConvolDescriptor::compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding){
+    // Padding order: [left, right] // [top, bottom]
+
     if (padding=="same" || padding =="zeros") {
         int pad = (output_size-1) * stride + kerkel_size - input_size;
         pad = std::max(pad, 0);
