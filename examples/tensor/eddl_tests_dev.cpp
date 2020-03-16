@@ -24,8 +24,10 @@
 #include "../src/regularizers/regularizer.h"
 #include "../src/tensor/nn/tensor_nn.h"
 #include "../src/hardware/cpu/nn/cpu_nn.h"
+#include "../src/apis/eddl.h"
 
 using namespace std;
+using namespace eddl;
 
 int main(int argc, char **argv) {
     cout << "Tests for development. Ignore." << endl;
@@ -107,7 +109,10 @@ int main(int argc, char **argv) {
     cout << "Output: " << o << endl;
     cout << "Padding: " << (p[0]+p[1]) << " (" << p[0] << ", " << p[1] << ")"<< endl;*/
 
-    bool use_gpu = false;
+    layer in = Input({3, 16, 16});
+    layer t = Transpose(in);
+
+    bool use_gpu = true;
 
     // Image
     float *ptr_img = new float[5*5]{1, 1, 0, 4, 5,
@@ -124,6 +129,15 @@ int main(int argc, char **argv) {
                                                5,6,7};
     auto* t2_mp = new Tensor({1, 1, 3, 3}, ptr_mp_3x3_s1_padv);
     if(use_gpu) t2_mp->toGPU();
+
+    // [MaxPool-back] Sol. 1
+    float *ptr_mp_3x3_s1_padv_back = new float[5*5]{0, 0, 0, 2, 4,
+                                                    0, 2, 0, 0, 0,
+                                                    2, 0, 0, 0, 0,
+                                                    0, 6, 0, 5, 0,
+                                                    0, 0, 0, 0, 4};
+    auto* t2_mp_back = new Tensor({1, 1, 5, 5}, ptr_mp_3x3_s1_padv_back);
+    if(use_gpu) t2_mp_back->toGPU();
 
     // [MaxPool] Sol. 2
     float *ptr_mp_3x3_s1_pads = new float[5*5]{3,3,4,5,5,
@@ -178,8 +192,11 @@ int main(int argc, char **argv) {
     MPool2D_back(pd);
     pd->ID->print();
 
-    int a = 3;
-    cout << a << endl;
+    t2_mp_back->toCPU();
+    pd->ID->toCPU();
+    cout << "Correct MaxPool-Back(3x3_s1_pads):" << Tensor::equal2(t2_mp_back, pd->ID, 10e-1f) << endl;
+    t2_mp_back->print();
+
 
     // [MaxPool] Test 2  ************
     cout << endl;
