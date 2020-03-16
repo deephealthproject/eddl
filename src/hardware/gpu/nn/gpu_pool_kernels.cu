@@ -116,32 +116,31 @@ __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, i
 
 __global__ void maxpool2d_back(float* D, float* ID, int batch, int irows, int icols, int idepth, int orows, int ocols, int odepth, float* indX, float* indY)
 {
-    long int ops = batch * irows * icols * idepth;
+    int size=orows * ocols * odepth;
+    int rsize=orows * ocols;
+
+    int isize = irows *icols * idepth;
+    int irsize = irows *icols;
+
+    long int ops = batch * size;
     long int thread_id_x = blockDim.x * blockIdx.x + threadIdx.x;
 
     if (thread_id_x < ops) {
-        int ircd=irows*icols*idepth; // in size of batch
-        int irc=irows*icols;  // in size of batch
-        int b = thread_id_x/ircd; // batch's index => B[i] || (ib=ob)
-        int bm=thread_id_x%ircd; // index inside batch i => thread_id_x=23, batch_size=20: index = 3
-        int d=bm/irc; // depth index (iuz=ouz)
+
+
+        int b = thread_id_x/size; // batch's index => B[i] || (ib=ob)
+        int bm = thread_id_x%size; // index inside batch i => thread_id_x=23, batch_size=20: index = 3
+        int z = bm/rsize; // depth index (iuz=ouz)
 
         int p = thread_id_x;  // index
-        //printf("%d\n", p);
 
         // Check bounds
         int px = (int)indX[p];
         int py = (int)indY[p];
-        int pz = d;
+        int pz = z;
 
-        if (px < 0) {}
-        else if (py < 0) {}
-        else if (px >= icols) {}
-        else if (py >= irows) {}
-        else {
-            p = (b*ircd) + (pz*irc) + (py*icols) + px;
-            atomicAdd(&ID[p], D[thread_id_x]); // +val
-        }
+        p = (b*isize) + (pz*irsize) + (py*icols) + px;
+        atomicAdd(&ID[p], D[thread_id_x]);
 
     }
 }

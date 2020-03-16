@@ -21,7 +21,7 @@ void cpu_mpool2D(PoolDescriptor *D){
     int isize = D->ir*D->ic*D->iz;
     int irsize = D->ir*D->ic;
 
-    //#pragma omp parallel for default(none) shared(D, isize, irsize)
+    #pragma omp parallel for default(none) shared(D, isize, irsize)
     for(int b=0; b<D->I->shape[0]; b++){  // Batches
         int p=b*D->size;  // Kernel's index (opt. shared variable)
 
@@ -58,7 +58,7 @@ void cpu_mpool2D_back(PoolDescriptor *D){
     int isize = D->ir*D->ic*D->iz;
     int irsize = D->ir*D->ic;
 
-    //#pragma omp parallel for default(none) shared(D, isize, irsize)
+    #pragma omp parallel for default(none) shared(D, isize, irsize)
     for(int b=0; b<D->I->shape[0]; b++){  // Batches (ob=ib)
         int p=b*D->size; // Kernel's index (opt. shared variable)
 
