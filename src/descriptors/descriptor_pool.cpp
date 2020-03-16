@@ -12,6 +12,20 @@
 #include <math.h>
 
 
+PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem) {
+    ksize = vector<int>(ks.begin(), ks.end());
+    stride = vector<int>(st.begin(), st.end());
+    pad = vector<int>(p.begin(), p.end());
+    mem_level=mem;
+
+    this->padding = "custom";
+
+    if (ksize.size() != 2) msg("Pooling Kernels must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
+    if (stride.size() != 2) msg("Strides must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
+    //if (pad.size() != 2) msg("Padding must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
+
+}
+
 PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, const string& p, int mem) {
     if (ks.size() != 2) msg("Pooling Kernels must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
     if (st.size() != 2) msg("Strides must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
@@ -43,17 +57,27 @@ void PoolDescriptor::build(Tensor *A) {
     ir = A->shape[2];
     ic = A->shape[3];
 
-    // Compute output
-    z = iz;
-    r = compute_output(this->padding, ir, kr, sr);
-    c = compute_output(this->padding, ic, kc, sc);
 
-    // Compute padding
-    vector<int> padr = compute_padding(r, ir, kr, sr, this->padding);  // Order: [top, bottom]
-    vector<int> padc = compute_padding(c, ic, kc, sc, this->padding);  // Order: [left, right]
+    if(this->padding=="custom"){  // Known padding
+        // Compute output
+        z = iz;
+        r = compute_output(this->pad, ir, kr, sr);
+        c = compute_output(this->pad, ic, kc, sc);
 
-    // Set padding
-    pad = {padr[0], padr[1], padc[0], padc[1]};  // top, bottom, left, right
+    }else{  // Common padding (same/zeros)
+        // Compute output
+        z = iz;
+        r = compute_output(this->padding, ir, kr, sr);
+        c = compute_output(this->padding, ic, kc, sc);
+
+        // Compute padding
+        vector<int> padr = compute_padding(r, ir, kr, sr, this->padding);  // Order: [top, bottom]
+        vector<int> padc = compute_padding(c, ic, kc, sc, this->padding);  // Order: [left, right]
+
+        // Set padding
+        pad = {padr[0], padr[1], padc[0], padc[1]};  // top, bottom, left, right
+    }
+
     padrt = pad[0]; padrb = pad[1];  // rows: top-bottom
     padcl = pad[2]; padcr = pad[3];  // cols: left-right
 

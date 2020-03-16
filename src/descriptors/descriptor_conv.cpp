@@ -190,6 +190,10 @@ int ConvolDescriptor::compute_output(const string& padding, int input_size, int 
     }
 }
 
+int ConvolDescriptor::compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate) {
+    return (int)(((float)input_size - ((float)kerkel_size - 1.0f) * (float)dilation_rate + (float)padding[0] + (float)padding[1] - 1.0f)/(float)stride + 1.0f);
+}
+
 vector<int> ConvolDescriptor::compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding){
     // Padding order: [left, right] // [top, bottom]
 

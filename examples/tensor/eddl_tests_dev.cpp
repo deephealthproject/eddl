@@ -87,29 +87,36 @@ int main(int argc, char **argv) {
     // Test pooling
     PoolDescriptor *pd;
 
-/*    int o;
+    int input_size = 5;
+    int o;
     vector<int> p;
-    o = pd->compute_output("none", 8,1,3);
-    p = pd->compute_padding(o, 8,1,3, "none");
+
+    p = {1, 0};
+    o = pd->compute_output(p, input_size,2,2);
+    cout << "Output (custom): " << o << endl;
+    cout << "Padding (custom): " << (p[0]+p[1]) << " (" << p[0] << ", " << p[1] << ")"<< endl;
+
+    o = pd->compute_output("none", input_size,1,3);
+    p = pd->compute_padding(o, input_size,1,3, "none");
     cout << "Output: " << o << endl;
     cout << "Padding: " << (p[0]+p[1]) << " (" << p[0] << ", " << p[1] << ")"<< endl;
 
-    o = pd->compute_output("same", 8,1,3);
-    p = pd->compute_padding(o,8,1,3, "same");
+    o = pd->compute_output("same", input_size,1,3);
+    p = pd->compute_padding(o,input_size,1,3, "same");
     cout << "Output: " << o << endl;
     cout << "Padding: " << (p[0]+p[1]) << " (" << p[0] << ", " << p[1] << ")"<< endl;
 
-    o = pd->compute_output("none", 8,3,3);
-    p = pd->compute_padding(o,8,3,3, "none");
+    o = pd->compute_output("none", input_size,3,3);
+    p = pd->compute_padding(o,input_size,3,3, "none");
     cout << "Output: " << o << endl;
     cout << "Padding: " << (p[0]+p[1]) << " (" << p[0] << ", " << p[1] << ")"<< endl;
 
-    o = pd->compute_output("same", 8,3,3);
-    p = pd->compute_padding(o,8,3,3, "same");
+    o = pd->compute_output("same", input_size,3,3);
+    p = pd->compute_padding(o,input_size,3,3, "same");
     cout << "Output: " << o << endl;
-    cout << "Padding: " << (p[0]+p[1]) << " (" << p[0] << ", " << p[1] << ")"<< endl;*/
+    cout << "Padding: " << (p[0]+p[1]) << " (" << p[0] << ", " << p[1] << ")"<< endl;
 
-    bool use_gpu = false;
+    bool use_gpu = true;
 
     // Image
     float *ptr_img = new float[5*5]{0, 1, 0, 4, 5,

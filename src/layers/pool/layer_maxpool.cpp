@@ -22,7 +22,9 @@ using namespace std;
 // constructors and clones
 
 // constructors and clones
-LMaxPool::LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const string& padding, string name, int dev, int mem) : LMaxPool(parent, new PoolDescriptor(pool_size, strides, padding, mem), name, dev, mem) {}
+LMaxPool::LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const string& padding, const string& name, int dev, int mem) : LMaxPool(parent, new PoolDescriptor(pool_size, strides, padding, mem), name, dev, mem) {}
+
+LMaxPool::LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, const string& name, int dev, int mem) : LMaxPool(parent, new PoolDescriptor(pool_size, strides, padding, mem), name, dev, mem) {}
 
 LMaxPool::LMaxPool(Layer *parent, PoolDescriptor *D, const string& name, int dev, int mem) : LPool(parent, D, name, dev, mem) {
     if(name.empty()) this->name = "maxpool" + to_string(++total_layers);

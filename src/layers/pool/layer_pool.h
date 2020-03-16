@@ -42,7 +42,9 @@ class LMaxPool : public LPool {
 public:
 
     // constructors and clones
-    LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const string& padding, string name, int dev, int mem);
+    LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const string& padding, const string& name, int dev, int mem);
+
+    LMaxPool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, const string& name, int dev, int mem);
 
     LMaxPool(Layer *parent, PoolDescriptor *cd, const string& name, int dev, int mem);
 
@@ -72,6 +74,8 @@ public:
 
     // constructors and clones
     LAveragePool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const string& padding, const string& name, int dev, int mem);
+
+    LAveragePool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, string name, int dev, int mem);
 
     LAveragePool(Layer *parent, PoolDescriptor *D, const string& name, int dev, int mem);
 
