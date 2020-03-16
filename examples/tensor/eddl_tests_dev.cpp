@@ -109,13 +109,10 @@ int main(int argc, char **argv) {
     cout << "Output: " << o << endl;
     cout << "Padding: " << (p[0]+p[1]) << " (" << p[0] << ", " << p[1] << ")"<< endl;*/
 
-    layer in = Input({3, 16, 16});
-    layer t = Transpose(in);
-
-    bool use_gpu = true;
+    bool use_gpu = false;
 
     // Image
-    float *ptr_img = new float[5*5]{1, 1, 0, 4, 5,
+    float *ptr_img = new float[5*5]{0, 1, 0, 4, 5,
                                     2, 3, 2, 1, 3,
                                     4, 4, 0, 4, 3,
                                     2, 5, 2, 6, 4,
@@ -169,7 +166,7 @@ int main(int argc, char **argv) {
     cout << endl;
     cout << "*************************************" << endl;
     cout << "Result MaxPool(3x3_s1_padv):" << endl;
-    pd = new PoolDescriptor({3, 3}, {1,1}, "same");
+    pd = new PoolDescriptor({3, 3}, {1,1}, "valid");
     pd->build(t1);
     pd->indX = new Tensor(pd->O->getShape());  if(use_gpu) pd->indX->toGPU();
     pd->indY = new Tensor(pd->O->getShape());  if(use_gpu) pd->indY->toGPU();
@@ -180,11 +177,11 @@ int main(int argc, char **argv) {
     MPool2D(pd);
     pd->O->print();
 
-/*    t2_mp->toCPU();
+    t2_mp->toCPU();
     pd->O->toCPU();
     cout << "Correct MaxPool(3x3_s1_padv):" << Tensor::equal2(t2_mp, pd->O, 10e-1f)  <<  endl;
     t2_mp->print();
-    */
+
     // [MaxPool Back] Test 1  ************
     cout << endl;
     cout << "*************************************" << endl;
@@ -196,7 +193,6 @@ int main(int argc, char **argv) {
     pd->ID->toCPU();
     cout << "Correct MaxPool-Back(3x3_s1_pads):" << Tensor::equal2(t2_mp_back, pd->ID, 10e-1f) << endl;
     t2_mp_back->print();
-
 
     // [MaxPool] Test 2  ************
     cout << endl;
