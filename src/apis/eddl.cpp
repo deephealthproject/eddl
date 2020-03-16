@@ -515,16 +515,17 @@ namespace eddl {
 
     layer Transpose(layer parent, string name){
         vector<int> dims;
+        bool ignoreBatch = true;
         int ndims = parent->output->ndim;
         if(ndims<2){
             msg("The parent needs to output a tensor with at least two dimensions", "EDDL::Transpose");
         }
 
-        // Build dimension vector
-        for(int i=0; i < ndims; i++){
-            dims.push_back(i);
+        // Build dimension vector (ignore batch)
+        for(int i=(int)ignoreBatch; i < ndims; i++){
+            dims.push_back(i-(int)ignoreBatch);
         }
-        swap(dims[(ndims-2)], dims[(ndims-1)]);  // Swap last two indices
+        swap(dims[(ndims-2-(int)ignoreBatch)], dims[(ndims-1-(int)ignoreBatch)]);  // Swap last two indices
 
         return new LPermute(parent, dims, name, DEV_CPU, 0);
     }
