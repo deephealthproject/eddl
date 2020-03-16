@@ -72,7 +72,7 @@ __global__ void gpu_im2col_k_low(float* I, int b, float *ptrI, int irows,int ico
 // GPU: Pool
 // MaxPool
 __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padrt,int padrb,int padcl,int padcr, float* indX, float* indY);
-__global__ void maxpool2d_back(float* D, float* ID, int batch, int irows, int icols, int orows, int ocols, int depth, float* indX, float* indY);
+__global__ void maxpool2d_back(float* D, float* ID, int batch, int irows, int icols, int orows, int idepth, int ocols, int odepth, float* indX, float* indY);
 
 // AvgPool
 __global__ void avgpool2d(float* I, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padrt, int padrb,int padcl, int padcr);

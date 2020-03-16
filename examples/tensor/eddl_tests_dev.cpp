@@ -128,11 +128,11 @@ int main(int argc, char **argv) {
     if(use_gpu) t2_mp->toGPU();
 
     // [MaxPool-back] Sol. 1
-    float *ptr_mp_3x3_s1_padv_back = new float[5*5]{0, 0, 0, 2, 4,
-                                                    0, 2, 0, 0, 0,
-                                                    2, 0, 0, 0, 0,
-                                                    0, 6, 0, 5, 0,
-                                                    0, 0, 0, 0, 4};
+    float *ptr_mp_3x3_s1_padv_back = new float[5*5]{0, 0, 0, 1, 1,
+                                                    0, 0, 0, 0, 0,
+                                                    1, 0, 0, 0, 0,
+                                                    0, 2, 0, 3, 0,
+                                                    0, 0, 0, 0, 1};
     auto* t2_mp_back = new Tensor({1, 1, 5, 5}, ptr_mp_3x3_s1_padv_back);
     if(use_gpu) t2_mp_back->toGPU();
 
@@ -245,5 +245,4 @@ int main(int argc, char **argv) {
     pd->O->toCPU();
     cout << "Correct AvgPool(3x3_s2_pads):" << Tensor::equal2(t3_ap, pd->O, 10e-1f) << endl;
     t3_ap->print();
-
 }

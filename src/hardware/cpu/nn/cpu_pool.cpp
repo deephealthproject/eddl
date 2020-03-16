@@ -21,13 +21,13 @@ void cpu_mpool2D(PoolDescriptor *D){
     int isize = D->ir*D->ic*D->iz;
     int irsize = D->ir*D->ic;
 
-    #pragma omp parallel for default(none) shared(D, isize, irsize)
+    //#pragma omp parallel for default(none) shared(D, isize, irsize)
     for(int b=0; b<D->I->shape[0]; b++){  // Batches
-        int p=b*D->size;
+        int p=b*D->size;  // Kernel's index (opt. shared variable)
 
         for(int k=0; k<D->iz; k++) { // Depth: front-back
             for(int i=-D->padrt; i<=D->ir+D->padrb-D->kr; i+=D->sr) {  // rows: top-bottom
-                for(int j=-D->padcl; j<=D->ic+D->padcr-D->kc; j+=D->sc,p++) { // cols: left-right
+                for(int j=-D->padcl; j<=D->ic+D->padcr-D->kc; j+=D->sc, p++) { // cols: left-right
 
                     // Get max value in window
                     float max = std::numeric_limits<float>::min();
@@ -58,17 +58,17 @@ void cpu_mpool2D_back(PoolDescriptor *D){
     int isize = D->ir*D->ic*D->iz;
     int irsize = D->ir*D->ic;
 
-    #pragma omp parallel for default(none) shared(D, isize, irsize)
-    for(int b=0; b<D->I->shape[0]; b++){  // Batches
-        int p=b*D->size;
+    //#pragma omp parallel for default(none) shared(D, isize, irsize)
+    for(int b=0; b<D->I->shape[0]; b++){  // Batches (ob=ib)
+        int p=b*D->size; // Kernel's index (opt. shared variable)
 
-        for(int k=0; k<D->iz; k++) { // Depth: front-back
+        for(int k=0; k<D->iz; k++) { // Depth: front-back (oz=iz)
             for(int i=-D->padrt; i<=D->ir+D->padrb-D->kr; i+=D->sr) {  // rows: top-bottom
-                for(int j=-D->padcl; j<=D->ic+D->padcr-D->kc; j+=D->sc,p++) { // cols: left-right
+                for(int j=-D->padcl; j<=D->ic+D->padcr-D->kc; j+=D->sc, p++) { // cols: left-right
 
                     int x = D->indX->ptr[p];  // previous: j+kj
                     int y = D->indY->ptr[p];  // previous: i+ki
-                    add_pixel(b,x,y,k,D,isize,irsize,D->D->ptr[p]);
+                    add_pixel(b, x, y, k, D, isize, irsize, D->D->ptr[p]);  // Set input's delta
 
                 } // cols
             } // rows
@@ -83,11 +83,11 @@ void cpu_avgpool2D(PoolDescriptor *D){
 
     #pragma omp parallel for default(none) shared(D, isize, irsize, ksize)
     for(int b=0; b<D->I->shape[0]; b++){  // Batches
-        int p=b*D->size;
+        int p=b*D->size; // Kernel's index (opt. shared variable)
 
         for(int k=0; k<D->iz; k++) { // Depth: front-back
             for(int i=-D->padrt; i<=D->ir+D->padrb-D->kr; i+=D->sr) {  // rows: top-bottom
-                for(int j=-D->padcl; j<=D->ic+D->padcr-D->kc; j+=D->sc,p++) { // cols: left-right
+                for(int j=-D->padcl; j<=D->ic+D->padcr-D->kc; j+=D->sc, p++) { // cols: left-right
 
                     // Sum values window
                     float sum = 0.0f;
@@ -117,7 +117,7 @@ void cpu_avgpool2D_back(PoolDescriptor *D){
 
     #pragma omp parallel for default(none) shared(D, isize, irsize, ksize)
     for(int b=0; b<D->I->shape[0]; b++){  // Batches
-        int p=b*D->size;
+        int p=b*D->size; // Kernel's index (opt. shared variable)
 
         for(int k=0; k<D->iz; k++) { // Depth: front-back
             for(int i=-D->padrt; i<=D->ir+D->padrb-D->kr; i+=D->sr) {  // rows: top-bottom

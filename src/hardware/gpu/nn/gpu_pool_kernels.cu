@@ -46,46 +46,50 @@ __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, i
     long int thread_id_x = blockDim.x * blockIdx.x + threadIdx.x;
 
     if (thread_id_x < ops) {
+        // Parse "thread_id_x" to output(b, d, r, c) ****************
         // output pixel at batch=ob, coord=(or,oc) at map=oz
         int orcd=orows*ocols*odepth; // out size of batch
         int orc=orows*ocols;  // out size of slice
-        int ob=thread_id_x/orcd; // current batch (ib=ob)
-        int bm=thread_id_x%orcd; // index in batch
-        int ouz=bm/orc; // out depth (iuz=ouz)
-        int our=(bm%orc)/ocols; // out row
-        int ouc=(bm%orc)%ocols; // out col
+        int ob=thread_id_x/orcd; // batch's index => B[i] || (ib=ob)
+        int bm=thread_id_x%orcd; // index inside batch i => thread_id_x=23, batch_size=20: index = 3
+        int ouz=bm/orc; // depth index (iuz=ouz)
+        int our=(bm%orc)/ocols; // row index
+        int ouc=(bm%orc)%ocols; // col index
 
-        int inr = our * sr;  // in row
-        int inc = ouc * sc;  // in col
+        // Parse output(b, d, r, c) to input(b, d, r, c) ****************
+        int inr = our * sr;  // input row index (without padding)
+        int inc = ouc * sc;  // input col index (without padding)
         int ircd=irows*icols*idepth; // in size of batch
         int irc=irows*icols;  // in size of batch
 
         int min_i = -padrt;
-        int max_i = irows+padrt-kr;
-        int i = min_i + inr;  // row
+        int max_i = irows+padrb-kr;
+        int i = min_i + inr;  // input row index (with padding)
 
         int min_j = -padcl;
-        int max_j = icols+padcl-kc;
-        int j = min_j + inc;  // column
+        int max_j = icols+padcr-kc;
+        int j = min_j + inc;  // input column index (with padding)
 
         int b = ob;  // batch
         int k = ouz;  // depth
         int p = thread_id_x;  // index
+        /*printf("%d\n", p);*/
 
         // Check bounds
         if (i <= max_i && j <= max_j){
 
             float max = GPU_MIN_FLOAT;
             //float max = I[i,j];
-            for (int ki = 0; ki < kr; ki++)  // kernel_rows
-                for (int kj = 0; kj < kc; kj++) {  // kernel_cols
+            for (int ki = 0; ki < kr; ki++){  // rows (kernel): top-bottom
+                for (int kj = 0; kj < kc; kj++) {  // cols (kernel): left-right
 
-                    // Get pixel
+                    // Get value W[ki,kj] value in window
                     int px = j + kj;
                     int py = i + ki;
                     int pz = k;
                     float v = 0.0;
 
+                    // Get values
                     if (px < 0) v = 0.0;
                     else if (py < 0) v = 0.0;
                     else if (px >= icols) v = 0.0;
@@ -100,39 +104,45 @@ __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, i
                         indX[p] = j + kj;
                         indY[p] = i + ki;
                     }
-                }
+                }// kernel cols
+            }// kernel rows
+
+            // Set output value
             O[p] = max;
         }
     }
 
 }
 
-__global__ void maxpool2d_back(float* D, float* ID, int batch, int irows, int icols, int orows, int ocols, int depth, float* indX, float* indY)
+__global__ void maxpool2d_back(float* D, float* ID, int batch, int irows, int icols, int idepth, int orows, int ocols, int odepth, float* indX, float* indY)
 {
-    int size=orows * ocols * depth;
-    int rsize=orows * ocols;
-
-    int isize = irows *icols * depth;
-    int irsize = irows *icols;
-
-    long int ops = batch * size;
+    long int ops = batch * irows * icols * idepth;
     long int thread_id_x = blockDim.x * blockIdx.x + threadIdx.x;
 
     if (thread_id_x < ops) {
-
-        int b=thread_id_x/size; // current batch (ib=ob)
-        int bm=thread_id_x%size; // index in batch
-        int z=bm/rsize; // out depth (iuz=ouz)
+        int ircd=irows*icols*idepth; // in size of batch
+        int irc=irows*icols;  // in size of batch
+        int b = thread_id_x/ircd; // batch's index => B[i] || (ib=ob)
+        int bm=thread_id_x%ircd; // index inside batch i => thread_id_x=23, batch_size=20: index = 3
+        int d=bm/irc; // depth index (iuz=ouz)
 
         int p = thread_id_x;  // index
+        //printf("%d\n", p);
 
         // Check bounds
-        int px=indX[p];
-        int py=indY[p];
-        int pz=z;
+        int px = (int)indX[p];
+        int py = (int)indY[p];
+        int pz = d;
 
-        p=(b*isize)+(pz*irsize)+(py*icols)+px;
-        ID[p]+=D[thread_id_x]; // +val
+        if (px < 0) {}
+        else if (py < 0) {}
+        else if (px >= icols) {}
+        else if (py >= irows) {}
+        else {
+            p = (b*ircd) + (pz*irc) + (py*icols) + px;
+            atomicAdd(&ID[p], D[thread_id_x]); // +val
+        }
+
     }
 }
 
@@ -143,27 +153,29 @@ __global__ void avgpool2d(float* I, int batch, int irows,int icols, int idepth, 
     int ksize = kr*kc;
 
     if (thread_id_x < ops) {
+        // Parse "thread_id_x" to output(b, d, r, c) ****************
         // output pixel at batch=ob, coord=(or,oc) at map=oz
         int orcd=orows*ocols*odepth; // out size of batch
         int orc=orows*ocols;  // out size of slice
-        int ob=thread_id_x/orcd; // current batch (ib=ob)
-        int bm=thread_id_x%orcd; // index in batch
-        int ouz=bm/orc; // out depth (iuz=ouz)
-        int our=(bm%orc)/ocols; // out row
-        int ouc=(bm%orc)%ocols; // out col
+        int ob=thread_id_x/orcd; // batch's index => B[i] || (ib=ob)
+        int bm=thread_id_x%orcd; // index inside batch i => thread_id_x=23, batch_size=20: index = 3
+        int ouz=bm/orc; // depth index (iuz=ouz)
+        int our=(bm%orc)/ocols; // row index
+        int ouc=(bm%orc)%ocols; // col index
 
-        int inr = our * sr;  // in row
-        int inc = ouc * sc;  // in col
+        // Parse output(b, d, r, c) to input(b, d, r, c) ****************
+        int inr = our * sr;  // input row index (without padding)
+        int inc = ouc * sc;  // input col index (without padding)
         int ircd=irows*icols*idepth; // in size of batch
         int irc=irows*icols;  // in size of batch
 
         int min_i = -padrt;
-        int max_i = irows+padrt-kr;
-        int i = min_i + inr;  // row
+        int max_i = irows+padrb-kr;
+        int i = min_i + inr;  // input row index (with padding)
 
         int min_j = -padcl;
-        int max_j = icols+padcl-kc;
-        int j = min_j + inc;  // column
+        int max_j = icols+padcr-kc;
+        int j = min_j + inc;  // input column index (with padding)
 
         int b = ob;  // batch
         int k = ouz;  // depth
@@ -174,10 +186,10 @@ __global__ void avgpool2d(float* I, int batch, int irows,int icols, int idepth, 
 
             // Sum values window
             float sum = 0.0f;
-            for (int ki = 0; ki < kr; ki++){  // top-bottom (kernel)
-                for (int kj = 0; kj < kc; kj++) {  // left-right (kernel)
+            for (int ki = 0; ki < kr; ki++){ // rows (kernel): top-bottom
+                for (int kj = 0; kj < kc; kj++) { // cols (kernel): left-right
 
-                    // Get pixel
+                    // Get value W[ki,kj] value in window
                     int px = j + kj;
                     int py = i + ki;
                     int pz = k;
@@ -193,12 +205,13 @@ __global__ void avgpool2d(float* I, int batch, int irows,int icols, int idepth, 
                     }
 
                     sum+=v;
-                }
-            }
-            O[p] = sum/ksize;
+                } // kernel cols
+            } // kernel rows
+
+            // Set output value
+            O[p] = sum/(float)ksize;
         }
     }
-
 }
 
 // AvgPool backward
@@ -253,7 +266,7 @@ __global__ void avgpool2d_back(float* D, float* ID, int batch,int irows,int icol
                     else {
                         // Compute address from indices (row-major)
                         int ptr = (b * ircd) + (pz * irc) + (py * icols) + px;
-                        ID[ptr]+=D[p]/ksize;
+                        atomicAdd(&ID[ptr], D[p]/(float)ksize);
                     }
 
                 }
