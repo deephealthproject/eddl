@@ -13,7 +13,7 @@
 #include <iostream>
 #include <utility>
 
-#include "layer_operators.h"
+#include "layers/core/layer_core.h"
 
 
 using namespace std;
@@ -30,7 +30,7 @@ int LPermute::total_layers = 0;
   @returns the absolute value of each element in l
 
   */
-LPermute::LPermute(Layer *parent, vector<int> dims, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
+LPermute::LPermute(Layer *parent, vector<int> dims, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     // Set default name
     if(name.empty()) this->name = "permute_" + to_string(++total_layers);
 

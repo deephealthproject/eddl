@@ -72,12 +72,12 @@ endif()
 # Device specific setup
 string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
 if(${BUILD_TARGET} STREQUAL "CPU")
-#    message("Compiling for CPU...")
+    #    message("Compiling for CPU...")
 elseif(${BUILD_TARGET} STREQUAL "GPU" OR ${BUILD_TARGET} STREQUAL "CUDA")
-#    message("Compiling for GPU...")
+    #    message("Compiling for GPU...")
     set(USE_CUDA ON CACHE BOOL "Enable CUDA support if checked")
 elseif(${BUILD_TARGET} STREQUAL "FPGA")
-#    message("Compiling for FPGA...")
+    #    message("Compiling for FPGA...")
     message(FATAL_ERROR "FPGA not implemented, CMake will exit." )
 else()
     message(FATAL_ERROR "Build target not implemented, CMake will exit." )
@@ -142,10 +142,10 @@ if(BUILD_PROTOBUF)
     include(FindProtobuf)
     find_package(Protobuf REQUIRED)
     if(Protobuf_FOUND)
-		add_compile_definitions(cPROTO)
-    	#protobuf_generate_cpp(onnx.pb.cc onnx.pb.h onnx.proto) #Generate protobuf files #Doesn't work
+        add_compile_definitions(cPROTO)
+        #protobuf_generate_cpp(onnx.pb.cc onnx.pb.h onnx.proto) #Generate protobuf files #Doesn't work
         # It seems that in some computers we the path appended to the file
-    	EXEC_PROGRAM(${PROTOBUF_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
+        EXEC_PROGRAM(${PROTOBUF_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
     else()
         SET(BUILD_PROTOBUF OFF)
         message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
@@ -200,7 +200,7 @@ file(GLOB_RECURSE CPP_SOURCE_FILES_NESTED
         ${PROJECT_SOURCE_DIR}/src/optimizers/*.cpp
         ${PROJECT_SOURCE_DIR}/src/regularizers/*.cpp
         ${PROJECT_SOURCE_DIR}/src/tensor/*.cpp
-)
+        )
 SET(CPP_HEADER_FILES ${CPP_HEADER_FILES_TOP} ${CPP_HEADER_FILES_NESTED})
 SET(CPP_SOURCE_FILES ${CPP_SOURCE_FILES_TOP} ${CPP_SOURCE_FILES_NESTED})
 SET(CPP_SOURCES ${CPP_HEADER_FILES} ${CPP_SOURCE_FILES})
@@ -220,12 +220,12 @@ SET(CUDA_SOURCES ${CUDA_HEADER_FILES} ${CUDA_CU_FILES})
 SET(ONNX_SOURCES "")
 if(BUILD_PROTOBUF)
     file(GLOB_RECURSE ONNX_HEADER_FILES
-        ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.h
-    )
+            ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.h
+            )
     file(GLOB_RECURSE ONNX_SOURCES_FILES
-        ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.cpp
-        ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.cc
-    )
+            ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.cpp
+            ${PROJECT_SOURCE_DIR}/src/serialization/onnx/*.cc
+            )
     SET(ONNX_SOURCES ${ONNX_HEADER_FILES} ${ONNX_SOURCES_FILES})
 endif()
 
@@ -248,7 +248,7 @@ target_include_directories(eddl PUBLIC
 set_target_properties(eddl PROPERTIES
         OUTPUT_NAME_DEBUG "eddld"
         OUTPUT_NAME_RELEASE "eddl"
-)
+        )
 
 # Eigen3
 find_package(Eigen3 3.3 REQUIRED)
@@ -290,7 +290,7 @@ if(USE_CUDA AND CMAKE_CUDA_COMPILER)
             PRIVATE cudart
             PRIVATE curand
             )
-		add_definitions(-DcGPU)
+    add_definitions(-DcGPU)
 
     # Target properties
     set_target_properties(eddl PROPERTIES
@@ -312,10 +312,10 @@ if(BUILD_PROTOBUF)
     include(FindProtobuf)
     find_package(Protobuf REQUIRED)
     if(Protobuf_FOUND)
-		add_definitions(-DcPROTO)
+        add_definitions(-DcPROTO)
         target_include_directories(eddl PUBLIC ${PROTOBUF_INCLUDE_DIR})
-    	target_link_libraries(eddl PRIVATE ${PROTOBUF_LIBRARIES})
-    	message("Protobuf path: ${PROTOBUF_LIBRARIES} ${PROTOBUF_INCLUDE_DIR}")
+        target_link_libraries(eddl PRIVATE ${PROTOBUF_LIBRARIES})
+        message("Protobuf path: ${PROTOBUF_LIBRARIES} ${PROTOBUF_INCLUDE_DIR}")
     else()
         message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
     endif()
@@ -423,16 +423,16 @@ if(BUILD_EXAMPLES)
     add_executable(tensor_tests_dev "${EXAMPLES_DIR}/tensor/eddl_tests_dev.cpp")
     target_link_libraries(tensor_tests_dev eddl)
 
-	# EXAMPLES: ONNX ******************************************************************
+    # EXAMPLES: ONNX ******************************************************************
     if(BUILD_PROTOBUF)
-    	add_executable(onnx_pointer "${EXAMPLES_DIR}/onnx/1_onnx_pointer.cpp")
-    	target_link_libraries(onnx_pointer eddl)
+        add_executable(onnx_pointer "${EXAMPLES_DIR}/onnx/1_onnx_pointer.cpp")
+        target_link_libraries(onnx_pointer eddl)
 
-    	add_executable(onnx_export "${EXAMPLES_DIR}/onnx/2_onnx_save_net_to_file.cpp")
-    	target_link_libraries(onnx_export eddl)
+        add_executable(onnx_export "${EXAMPLES_DIR}/onnx/2_onnx_save_net_to_file.cpp")
+        target_link_libraries(onnx_export eddl)
 
-    	add_executable(onnx_import "${EXAMPLES_DIR}/onnx/3_onnx_import_net_from_file.cpp")
-    	target_link_libraries(onnx_import eddl)
+        add_executable(onnx_import "${EXAMPLES_DIR}/onnx/3_onnx_import_net_from_file.cpp")
+        target_link_libraries(onnx_import eddl)
     endif()
 
 endif(BUILD_EXAMPLES)
@@ -485,19 +485,44 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/cmake/eddlConfig.cmake"
 # SHOW OPTIONS
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )
-message(STATUS "Build type: " ${CMAKE_BUILD_TYPE} )
+message(STATUS "Project name: " ${CMAKE_PROJECT_NAME} )
+message(STATUS "Prefix path: " ${CMAKE_PREFIX_PATH} )
+message(STATUS "Install prefix: " ${CMAKE_INSTALL_PREFIX} )
+message(STATUS "-------------------------------------------" )
 message(STATUS "Build target: " ${BUILD_TARGET} )
+message(STATUS "Build type: " ${CMAKE_BUILD_TYPE} )
 message(STATUS "Build tests: " ${BUILD_TESTS} )
 message(STATUS "Build examples: " ${BUILD_EXAMPLES} )
-message(STATUS "Build OpenMP: " ${BUILD_OPENMP} )
-message(STATUS "Build Protobuf: " ${BUILD_PROTOBUF} )
-message(STATUS "Build HPC: " ${BUILD_HPC} )
+message(STATUS "-------------------------------------------" )
+message(STATUS "Use OpenMP: " ${BUILD_OPENMP} )
+message(STATUS "Use Protobuf: " ${BUILD_PROTOBUF} )
+message(STATUS "Use HPC: " ${BUILD_HPC} )
 message(STATUS "Use Intel-MKL: " ${MKL} )
-message(STATUS "C++ compiler: " ${CMAKE_CXX_COMPILER_ID} )
+message(STATUS "-------------------------------------------" )
+message(STATUS "C++ compiler: ${CMAKE_CXX_COMPILER_ID} (${CMAKE_CXX_COMPILER})")
 message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS})
 message(STATUS "C++ flags (release): " ${CMAKE_CXX_FLAGS_RELEASE})
 message(STATUS "C++ flags (debug): " ${CMAKE_CXX_FLAGS_DEBUG})
+message(STATUS "-------------------------------------------" )
 message(STATUS "CUDA Enabled: " ${USE_CUDA} )
-message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
+if(USE_CUDA)
+    message(STATUS "CUDA compiler: " ${CMAKE_CUDA_COMPILER})
+    message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
+    message(STATUS "CUDA toolkit: " ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} )
+endif(USE_CUDA)
+message(STATUS "-------------------------------------------" )
+if(BUILD_OPENMP)
+    message(STATUS "OpenMP version: " ${OpenMP_VERSION_MAJOR} )
+    message(STATUS "OpenMP gomp library: " ${OpenMP_gomp_LIBRARY} )
+    message(STATUS "OpenMP pthread library: " ${OpenMP_pthread_LIBRARY} )
+endif(BUILD_OPENMP)
+message(STATUS "-------------------------------------------" )
+if(BUILD_PROTOBUF)
+    message(STATUS "Protobuf: " ${Protobuf_INCLUDE_DIR} )
+    message(STATUS "Protobuf compiler: " ${Protobuf_PROTOC_EXECUTABLE} )
+endif(BUILD_PROTOBUF)
+message(STATUS "-------------------------------------------" )
+message(STATUS "Eigen3: " ${EIGEN3_INCLUDE_DIR} )
+message(STATUS "ZLIB: " ${ZLIB_INCLUDE_DIR} )
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )
