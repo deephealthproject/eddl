@@ -116,30 +116,30 @@ __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, i
 
 __global__ void maxpool2d_back(float* D, float* ID, int batch, int irows, int icols, int idepth, int orows, int ocols, int odepth, float* indX, float* indY)
 {
-    int size=orows * ocols * odepth;
-    int rsize=orows * ocols;
-
-    int isize = irows *icols * idepth;
-    int irsize = irows *icols;
-
-    long int ops = batch * size;
+    long int ops = batch * orows * ocols * odepth;
     long int thread_id_x = blockDim.x * blockIdx.x + threadIdx.x;
 
+
     if (thread_id_x < ops) {
+        // Parse "thread_id_x" to output(b, d, r, c) ****************
+        // output pixel at batch=ob, coord=(or,oc) at map=oz
+        int orcd=orows*ocols*odepth; // out size of batch
+        int orc=orows*ocols;  // out size of slice
+        int ob=thread_id_x/orcd; // batch's index => B[i] || (ib=ob)
+        int bm=thread_id_x%orcd; // index inside batch i => thread_id_x=23, batch_size=20: index = 3
+        int ouz=bm/orc; // depth index (iuz=ouz)
+        int our=(bm%orc)/ocols; // row index
+        int ouc=(bm%orc)%ocols; // col index
 
-
-        int b = thread_id_x/size; // batch's index => B[i] || (ib=ob)
-        int bm = thread_id_x%size; // index inside batch i => thread_id_x=23, batch_size=20: index = 3
-        int z = bm/rsize; // depth index (iuz=ouz)
-
-        int p = thread_id_x;  // index
+        int isize = irows *icols * idepth;
+        int irsize = irows *icols;
 
         // Check bounds
-        int px = (int)indX[p];
-        int py = (int)indY[p];
-        int pz = z;
+        int px = (int)indX[thread_id_x];
+        int py = (int)indY[thread_id_x];
+        int pz = ouz;
 
-        p = (b*isize) + (pz*irsize) + (py*icols) + px;
+        int p = (ob*isize) + (pz*irsize) + (py*icols) + px;
         atomicAdd(&ID[p], D[thread_id_x]);
 
     }
