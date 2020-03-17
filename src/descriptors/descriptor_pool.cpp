@@ -57,7 +57,6 @@ void PoolDescriptor::build(Tensor *A) {
     ir = A->shape[2];
     ic = A->shape[3];
 
-
     if(this->padding=="custom"){  // Known padding
         // Compute output
         z = iz;

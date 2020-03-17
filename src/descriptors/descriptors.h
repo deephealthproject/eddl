@@ -105,7 +105,7 @@ public:
 
     ConvolDescriptor();
 
-    ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, string p, bool use_bias, int mem=0);
+    ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, const string& p, bool use_bias, int mem=0);
 
     ConvolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem=0);
 
