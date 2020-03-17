@@ -101,8 +101,8 @@ __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, i
 
                     if (v > max) {
                         max = v;
-                        indX[p] = j + kj;
-                        indY[p] = i + ki;
+                        indX[p] = px;
+                        indY[p] = py;
                     }
                 }// kernel cols
             }// kernel rows
@@ -114,35 +114,58 @@ __global__ void maxpool2d(float* I, int batch,int irows,int icols, int idepth, i
 
 }
 
-__global__ void maxpool2d_back(float* D, float* ID, int batch, int irows, int icols, int idepth, int orows, int ocols, int odepth, float* indX, float* indY)
-{
+__global__ void maxpool2d_back(float* D, float* ID, int batch,int irows,int icols, int idepth, int kr,int kc, float* O,int orows,int ocols, int odepth, int sr,int sc,int padrt, int padrb,int padcl, int padcr,float* indX, float* indY) {
+
     long int ops = batch * orows * ocols * odepth;
     long int thread_id_x = blockDim.x * blockIdx.x + threadIdx.x;
 
-
     if (thread_id_x < ops) {
-        // Parse "thread_id_x" to output(b, d, r, c) ****************
         // output pixel at batch=ob, coord=(or,oc) at map=oz
         int orcd=orows*ocols*odepth; // out size of batch
         int orc=orows*ocols;  // out size of slice
-        int ob=thread_id_x/orcd; // batch's index => B[i] || (ib=ob)
-        int bm=thread_id_x%orcd; // index inside batch i => thread_id_x=23, batch_size=20: index = 3
-        int ouz=bm/orc; // depth index (iuz=ouz)
-        int our=(bm%orc)/ocols; // row index
-        int ouc=(bm%orc)%ocols; // col index
+        int ob=thread_id_x/orcd; // current batch (ib=ob)
+        int bm=thread_id_x%orcd; // index in batch
+        int ouz=bm/orc; // out depth (iuz=ouz)
+        int our=(bm%orc)/ocols; // out row
+        int ouc=(bm%orc)%ocols; // out col
 
-        int isize = irows *icols * idepth;
-        int irsize = irows *icols;
+        int inr = our * sr;  // in row
+        int inc = ouc * sc;  // in col
+        int ircd=irows*icols*idepth; // in size of batch
+        int irc=irows*icols;  // in size of batch
+
+        int min_i = -padrt;
+        int max_i = irows+padrb-kr;
+        int i = min_i + inr;  // row
+
+        int min_j = -padcl;
+        int max_j = icols+padcr-kc;
+        int j = min_j + inc;  // column
+
+        int b = ob;  // batch
+        int k = ouz;  // depth
+        int p = thread_id_x;  // index
 
         // Check bounds
-        int px = (int)indX[thread_id_x];
-        int py = (int)indY[thread_id_x];
-        int pz = ouz;
+        if (i <= max_i && j <= max_j){
 
-        int p = (ob*isize) + (pz*irsize) + (py*icols) + px;
-        atomicAdd(&ID[p], D[thread_id_x]);
+            int px = indX[p];
+            int py = indY[p];
+            int pz = k;
 
+            if (px < 0){}
+            else if (py < 0){}
+            else if (px >= icols){}
+            else if (py >= irows){}
+            else {
+                // Compute address from indices (row-major)
+                int ptr = (b * ircd) + (pz * irc) + (py * icols) + px;
+                atomicAdd(&ID[ptr], D[p]);
+            }
+
+        }
     }
+
 }
 
 // AvgPool
@@ -236,11 +259,11 @@ __global__ void avgpool2d_back(float* D, float* ID, int batch,int irows,int icol
         int irc=irows*icols;  // in size of batch
 
         int min_i = -padrt;
-        int max_i = irows+padrt-kr;
+        int max_i = irows+padrb-kr;
         int i = min_i + inr;  // row
 
         int min_j = -padcl;
-        int max_j = icols+padcl-kc;
+        int max_j = icols+padcr-kc;
         int j = min_j + inc;  // column
 
         int b = ob;  // batch
