@@ -55,7 +55,7 @@
 void msg(const string& text, const string& title) {
     string s(text);
     if(!title.empty()){
-	    s += " (" + title + ")";
+        s += " (" + title + ")";
     }
     throw std::runtime_error(s);
 }
@@ -122,7 +122,7 @@ string bytes2human(unsigned long long int bytes, int decimals){
 
 
 #ifdef EDDL_LINUX
-    unsigned long get_free_mem() {
+unsigned long get_free_mem() {
         std::string token;
         std::string type = "MemFree:";
         std::ifstream file("/proc/meminfo");
@@ -369,4 +369,11 @@ bool is_number(const std::string& s){
 bool pathExists(const std::string &s){
     struct stat buffer;
     return (stat (s.c_str(), &buffer) == 0);
+}
+
+string get_parent_dir(const string& fname){
+    size_t pos = fname.find_last_of("\\/");
+    return (std::string::npos == pos)
+           ? ""
+           : fname.substr(0, pos);
 }
