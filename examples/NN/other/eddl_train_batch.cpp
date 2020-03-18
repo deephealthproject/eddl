@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
 
     // Settings
     int epochs = 1;
-    int batch_size = 100;
+    int batch_size = 16;
     int num_classes = 10;
 
     // Define network
@@ -44,8 +44,9 @@ int main(int argc, char **argv) {
           sgd(0.01, 0.9), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          //CS_CPU()
-          CS_GPU({1})
+          CS_CPU()
+          //CS_GPU({1})
+          //CS_FPGA({1})
     );
 
     // View model
@@ -65,10 +66,10 @@ int main(int argc, char **argv) {
     // Prepare data
 
     int num_samples = x_train->shape[0];  //arg1
-    int num_batches = num_samples / batch_size; //arg2
+    int num_batches = 1;//num_samples / batch_size; //arg2
 
     int test_samples = x_test->shape[0];  //arg1
-    int test_batches = test_samples / batch_size; //arg2
+    int test_batches = 1;//test_samples / batch_size; //arg2
 
     // Set batch size
     resize_model(net, batch_size);  // Bind this function
@@ -76,6 +77,7 @@ int main(int argc, char **argv) {
     // Start training
     set_mode(net, TRMODE);  // Bind this function
 
+    reset_loss(net);
 
     // Train model (fine-grained)
     for(int i=0;i<epochs;i++) {
@@ -85,12 +87,14 @@ int main(int argc, char **argv) {
             fprintf(stdout, "Epoch %d/%d (batch %d/%d)\r", i + 1, epochs, j+1, num_batches);
 
             // Set random indices
-            vector<int> indices = random_indices(batch_size, num_samples); // Should declared from python
+            vector<int> indices;// = random_indices(batch_size, num_samples); // Should declared from python
+            for (int k = 0; k < batch_size; k++) indices.push_back(k);
 
             // COMPS: wait for weights()
 
             // Train batch
             train_batch(net, {x_train}, {y_train}, indices);  // Bind this function
+            net->print_loss(1);
 
             // COMPS: send grads()
         }
@@ -100,11 +104,13 @@ int main(int argc, char **argv) {
             fprintf(stdout, "Epoch %d/%d (batch %d/%d)\r", i + 1, epochs, j+1, test_batches);
 
             // Set random indices
-            vector<int> indices = random_indices(batch_size, num_samples); // Should declared from python
+            vector<int> indices;// = random_indices(batch_size, num_samples); // Should declared from python
+            for (int k = 0; k < batch_size; k++) indices.push_back(k);
 
             // COMPS: wait for weights()
 
             eval_batch(net, {x_train}, {y_train}, indices);  // Bind this function
+            net->print_loss(1);
 
             // COMPS: send grads()
         }
@@ -113,8 +119,9 @@ int main(int argc, char **argv) {
 
 
       // Evaluate test
-      std::cout << "Evaluate test:" << std::endl;
-      evaluate(net, {x_test}, {y_test});
+      //std::cout << "Evaluate test:" << std::endl;
+      //evaluate(net, {x_test}, {y_test});
+    mult2d_ps.dump();
 }
 
 

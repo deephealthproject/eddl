@@ -26,6 +26,7 @@
 
 using namespace std;
 
+ProfilerStorage mult2d_ps("mult2d");
 
 void Tensor::abs_() {
     if (isCPU()) {
@@ -658,6 +659,8 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
     //// Dimensions and types must be compatible
     //// Only for 2D Tensors
     ///////////////////////////////////////
+
+    BlockProfiler prof_(mult2d_ps);
 
     if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::mult2D");
     if ((A->ndim != 2) || (B->ndim != 2) || (C->ndim != 2)) msg("Only 2D tensors", "Tensor::mult2D");

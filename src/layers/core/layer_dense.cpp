@@ -31,6 +31,7 @@ LDense::LDense(Layer *parent, int ndim, bool use_bias, string name, int dev) : L
     delta = new Tensor(output->getShape(), dev);
 
     W = new Tensor(vector<int>{input->shape[1], ndim}, dev);
+    //W->fill_(1.f);
     if (use_bias) bias = new Tensor(vector<int>{ndim}, dev);
     params.push_back(W);
     if (use_bias) params.push_back(bias);

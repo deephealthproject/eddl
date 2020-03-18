@@ -16,7 +16,8 @@
 #include <vector>
 #include <string>
 #include <mutex>
-#include "../hardware/fpga/libs/xcl2.hpp" 
+#include <chrono>
+#include "../hardware/fpga/libs/xcl2.hpp"
 #include <Eigen/Dense>
 
 
@@ -48,6 +49,46 @@
 #define MAX_FPGAS 8
 
 using namespace std;
+
+class ProfilerStorage {
+private:
+    mutex m;
+    size_t cnt;
+    double total_time;
+    string name;
+
+public:
+    ProfilerStorage(string str) : cnt{0}, total_time{0}, name{str} { }
+
+    void addExecution(double t) {
+        unique_lock<mutex> lock_(m);
+        cnt++;
+        total_time += t;
+    }
+
+    void dump() {
+        cout << name << " stats: " << (total_time / cnt) << " s/call (" << cnt << " calls)" << endl;
+    }
+};
+
+class BlockProfiler {
+private:
+    ProfilerStorage &storage;
+    chrono::system_clock::time_point start;
+
+public:
+    BlockProfiler(ProfilerStorage &s) : storage(s) {
+        start = chrono::system_clock::now();
+    }
+
+    ~BlockProfiler() {
+        auto end = chrono::system_clock::now();
+        chrono::duration<double> diff = end - start;
+        storage.addExecution(diff.count());
+    }
+};
+
+extern ProfilerStorage mult2d_ps;
 
 // TODO: Remove this. Don't like here
 typedef Eigen::Matrix<float, -1, -1, Eigen::RowMajor> MatrixXRMf;
