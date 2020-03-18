@@ -23,13 +23,13 @@ endif()
 
 # USER OPTIONS *******************************
 set(BUILD_TARGET "GPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
-option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_OPENMP "Compile using OpenMP" ON)
 option(BUILD_PROTOBUF "Compile using Protobuf" OFF)
-option(BUILD_TESTS "Compile tests" ON)
+#option(BUILD_HPC "Use aggressive flags that might break the code. Use it carefully." OFF) # TODO: Deprecated, not reliable
+#option(MKL "Use Intel MKL" OFF)  # TODO: Deprecated, not tested
 option(BUILD_SHARED_LIB "Whether to build a static or dynamic library" ON)
-option(BUILD_HPC "Use aggressive flags that might break the code. Use it carefully." OFF)
-option(MKL "Use Intel MKL" OFF)
+option(BUILD_EXAMPLES "Compile examples" ON)
+option(BUILD_TESTS "Compile tests" ON)
 
 # Double checks (restricted args)
 set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
@@ -41,6 +41,7 @@ SET(EXAMPLES_DIR "${PROJECT_SOURCE_DIR}/examples")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "targets")
 
+# TODO: Review, Is this needed?
 # SET BUILD TYPE (RELEASE/DEBUG)
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
@@ -51,7 +52,7 @@ endif()
 # Read: https://wiki.gentoo.org/wiki/GCC_optimization
 
 # Common
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DEIGEN_FAST_MATH -pipe -w")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DEIGEN_FAST_MATH -pipe")
 
 # Windows32
 if(WIN32)
@@ -121,6 +122,7 @@ if(USE_CUDA)
     endif()
 endif()
 
+# TODO: Review, not tested (probably deprecated)
 # Microsoft Visual C++ - set static/dynamic runtime
 if(MSVC)
     if(BUILD_SHARED_LIB)
@@ -163,21 +165,7 @@ if(BUILD_PROTOBUF)
     endif()
 endif()
 
-
-# [MACRO] Download submodules
-macro(eddl_update_third_party SUBMODULE)
-    if(GIT_FOUND AND IS_DIRECTORY "${PROJECT_SOURCE_DIR}/.git")
-        # Update submodule as needed
-        message(STATUS "${SUBMODULE} update")
-        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive third_party/${SUBMODULE}
-                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                RESULT_VARIABLE GIT_SUBMOD_RESULT)
-        if(NOT GIT_SUBMOD_RESULT EQUAL "0")
-            message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout ${SUBMODULE} submodule")
-        endif()
-    endif()
-endmacro()
-
+# TODO: Use another cmakelists?
 # C++ files
 file(GLOB CPP_HEADER_FILES_TOP
         ${PROJECT_SOURCE_DIR}/src/*.h
@@ -282,16 +270,6 @@ if(BUILD_OPENMP)
     endif()
 endif()
 
-# enable Intel-MKL (only for Intel compilers)
-# NB requires correct specification of BLA_VENDOR, e.g.
-#   export BLA_VENDOR=Intel10_64lp_seq
-if (MKL AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-    find_package(BLAS)
-    target_include_directories(${BLAS_INCLUDE_DIRS})
-    set(PROJECT_LIBS ${BLAS_LIBRARIES})
-    add_definitions(-DEIGEN_USE_MKL_ALL)
-endif()
-
 # CUDA
 if(USE_CUDA AND CMAKE_CUDA_COMPILER)
     target_sources(eddl PRIVATE ${CUDA_SOURCES})
@@ -375,7 +353,7 @@ if(BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif(BUILD_EXAMPLES)
 
-
+# TODO: REVIEW installtion paths (potential conflict with GNUInstallDirs)
 # [INSTALL] Install the EDDL library
 message(STATUS "Install path: ${CMAKE_INSTALL_PREFIX}")
 
@@ -404,21 +382,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/eddlConfig.cmake.in ${CMAKE_CUR
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/cmake/eddlConfig.cmake"
         DESTINATION ${EDDL_CONFIG_INSTALL_PATH}
         )
-
-#Experimental script
-#file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/temp)
-#file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
-#file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/temp/eddlc "#!/usr/bin/bash\n")
-#set(SCRIPT_CPP_FLAGS "CPPFLAGS=\"-g -O3 -fopenmp -I${PROJECT_SOURCE_DIR}/src\"")
-#file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/temp/eddlc "${SCRIPT_CPP_FLAGS}\n")
-#file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/temp/eddlc "LDFLAGS=\"-g\"\n")
-#set(SCRIPT_LD_LIBS "LDLIBS=\"-fopenmp -lpthread ${CMAKE_INSTALL_PREFIX}/lib/libeddl.a -lz \"\n")
-#file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/temp/eddlc ${SCRIPT_LD_LIBS})
-#file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/temp/eddlc "g++ \$CPPFLAGS -c \$1\n")
-#file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/temp/eddlc "g++ -o \$\{1%.cpp} \$LDFLAGS \$\{1%.cpp}.o \$LDLIBS\n")
-
-#install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/temp/eddlc DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/scripts/ )
-
 
 # SHOW OPTIONS
 message(STATUS "===========================================" )
