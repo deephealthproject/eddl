@@ -20,10 +20,13 @@ jobs:
           sudo cmake CMakeLists.txt
           sudo make
           sudo cp *.a /usr/lib
-      - name: Compile
+      - name: Build
         run: |
           mkdir build
           cd build
           cmake .. -DBUILD_TARGET=CPU -DBUILD_OPENMP=ON -DBUILD_PROTOBUF=OFF -DBUILD_EXAMPLES=ON -DBUILD_TESTS=ON
           make
-          make test ARGS=-V
+      - name: Test
+        run: |
+          cd build
+          ctest --verbose
