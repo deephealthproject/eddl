@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install utilities
-        run: sudo apt-get install -y cmake wget graphviz zlib1g-dev
+        run: sudo apt-get install -y cmake wget graphviz zlib1g-dev libboost-all-dev
       - name: Install Eigen3
         run: sudo apt-get install -y libeigen3-dev
       - name: Install gTests
@@ -19,6 +19,6 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake ..
+          cmake .. -DBUILD_TARGET=CPU -BUILD_OPENMP=ON -BUILD_PROTOBUF=OFF -DBUILD_EXAMPLES=ON -DBUILD_TESTS=ON
           make
-          make test
+          make test ARGS=-V

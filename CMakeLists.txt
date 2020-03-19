@@ -29,7 +29,7 @@ option(BUILD_PROTOBUF "Compile using Protobuf" OFF)
 #option(MKL "Use Intel MKL" OFF)  # TODO: Deprecated, not tested
 option(BUILD_SHARED_LIB "Whether to build a static or dynamic library" ON)
 option(BUILD_EXAMPLES "Compile examples" ON)
-option(BUILD_TESTS "Compile tests" OFF)
+option(BUILD_TESTS "Compile tests" ON)
 
 # Double checks (restricted args)
 set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
