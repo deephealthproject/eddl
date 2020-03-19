@@ -190,6 +190,7 @@ int ConvolDescriptor::compute_output(const string& padding, int input_size, int 
     }else{
         msg("Incorrect padding type", "ConvolDescriptor::compute_output");
     }
+    return -1;
 }
 
 int ConvolDescriptor::compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate) {
@@ -215,4 +216,6 @@ vector<int> ConvolDescriptor::compute_padding(int output_size, int input_size, i
     }else{
         msg("Incorrect padding type", "ConvolDescriptor::compute_padding");
     }
+
+    return {-1};
 }

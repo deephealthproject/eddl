@@ -44,6 +44,8 @@ bool is_number(const std::string& s);
 
 bool pathExists(const std::string &s);
 
+string get_parent_dir(const string& fname);
+
 template<typename T>
 string printVector(vector<T> myvector){
     string temp = "";
