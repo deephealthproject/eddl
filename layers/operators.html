@@ -122,8 +122,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#power">Power</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sqrt">Sqrt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#addition">Addition</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#select">Select</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#permute">Permute</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reduction.html">Reduction Layers</a></li>
@@ -573,60 +571,6 @@
 3</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Sum</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="n">layer</span> <span class="n">l2</span><span class="p">);</span>
  <span class="n">layer</span> <span class="nf">Sum</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="kt">float</span> <span class="n">k</span><span class="p">);</span>
  <span class="n">layer</span> <span class="nf">Sum</span><span class="p">(</span><span class="kt">float</span> <span class="n">k</span><span class="p">,</span> <span class="n">layer</span> <span class="n">l1</span><span class="p">);</span>
-</pre></div>
-</td></tr></table></div>
-</div>
-<div class="section" id="select">
-<h2>Select<a class="headerlink" href="#select" title="Permalink to this headline">¶</a></h2>
-<p>Selects a subset of the output tensor using indices (similar to Numpy; the batch is ignored)</p>
-<dl class="function">
-<dt id="_CPPv4N4eddl6SelectE5layer6vectorI6stringE6string">
-<span id="_CPPv3N4eddl6SelectE5layer6vectorI6stringE6string"></span><span id="_CPPv2N4eddl6SelectE5layer6vectorI6stringE6string"></span><span id="eddl::Select__layer.vector:string:.string"></span><span class="target" id="namespaceeddl_1ae68ca3efc10e726dad867a83d0274b3c"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Select</code><span class="sig-paren">(</span>layer <em>l</em>, vector&lt;string&gt; <em>indices</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6SelectE5layer6vectorI6stringE6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Returns a new tensor which indexes the input tensor using the entries in indices. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>A tensor with the selected elements </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">indices</span></code>: Vector of indices to be selected </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Select</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">indices</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">);</span>
- <span class="c1">// e.g.: Select(l, {&quot;-1&quot;, &quot;20:100&quot;, &quot;50:-10&quot;, &quot;:&quot;}</span>
-</pre></div>
-</td></tr></table></div>
-</div>
-<div class="section" id="permute">
-<h2>Permute<a class="headerlink" href="#permute" title="Permalink to this headline">¶</a></h2>
-<p>Permute the axis of the output tensor (the batch is ignored)</p>
-<dl class="function">
-<dt id="_CPPv4N4eddl7PermuteE5layer6vectorIiE6string">
-<span id="_CPPv3N4eddl7PermuteE5layer6vectorIiE6string"></span><span id="_CPPv2N4eddl7PermuteE5layer6vectorIiE6string"></span><span id="eddl::Permute__layer.vector:i:.string"></span><span class="target" id="namespaceeddl_1a316191d1720ff9cd6b261105ee652c07"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Permute</code><span class="sig-paren">(</span>layer <em>l</em>, vector&lt;int&gt; <em>dims</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7PermuteE5layer6vectorIiE6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Permutes the dimensions of the input according to a given pattern. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>The permuted tensor. </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dims</span></code>: Permutation pattern, does not include the samples dimension. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Permute</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">dims</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">);</span>
- <span class="c1">// e.g.: Permute(l, {0, 3, 1, 2})</span>
 </pre></div>
 </td></tr></table></div>
 </div>

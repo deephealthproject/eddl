@@ -407,17 +407,51 @@
 <div class="section" id="print">
 <h3>print<a class="headerlink" href="#print" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
-<dt id="_CPPv4N6Tensor5printEbb">
-<span id="_CPPv3N6Tensor5printEbb"></span><span id="_CPPv2N6Tensor5printEbb"></span><span id="Tensor::print__b.b"></span><span class="target" id="class_tensor_1a6bad16c1fa5689de6306d79c93a101f0"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">print</code><span class="sig-paren">(</span>bool <em>asInt</em> = false, bool <em>raw</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5printEbb" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6Tensor5printEib">
+<span id="_CPPv3N6Tensor5printEib"></span><span id="_CPPv2N6Tensor5printEib"></span><span id="Tensor::print__i.b"></span><span class="target" id="class_tensor_1acd72f1d50fa275904e44ccab50aea2e9"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">print</code><span class="sig-paren">(</span>int <em>precision</em> = 6, bool <em>raw</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5printEib" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Print the tensor values. </p>
+<p>Prints the content of the tensor.</p>
 <p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>void </p>
+<dt><strong>Return</strong></dt><dd><p>void</p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">precision</span></code>: Number of decimals places to use </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">raw</span></code>: Print the tensor without format </p></li>
+</ul>
 </dd>
 </dl>
 </p>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">print</span><span class="p">(</span><span class="kt">bool</span> <span class="n">asInt</span><span class="o">=</span><span class="nb">false</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">raw</span><span class="o">=</span><span class="nb">false</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="n">print</span><span class="p">(</span><span class="kt">int</span> <span class="n">precision</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">raw</span><span class="o">=</span><span class="nb">false</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+<span class="n">t</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">();</span>
+
+    <span class="p">[</span>
+    <span class="p">[</span><span class="o">-</span><span class="mf">1.106357</span> <span class="mf">0.176572</span> <span class="o">-</span><span class="mf">0.148911</span><span class="p">]</span>
+    <span class="p">[</span><span class="mf">0.989854</span> <span class="o">-</span><span class="mf">1.420635</span> <span class="o">-</span><span class="mf">0.334201</span><span class="p">]</span>
+    <span class="p">[</span><span class="o">-</span><span class="mf">0.647039</span> <span class="mf">0.876878</span> <span class="o">-</span><span class="mf">0.305620</span><span class="p">]</span>
+    <span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+<span class="n">t</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+    <span class="p">[</span>
+    <span class="p">[</span><span class="o">-</span><span class="mf">1.1</span> <span class="mf">0.2</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">]</span>
+    <span class="p">[</span><span class="mf">1.0</span> <span class="o">-</span><span class="mf">1.4</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">]</span>
+    <span class="p">[</span><span class="o">-</span><span class="mf">0.6</span> <span class="mf">0.9</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">]</span>
+    <span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">::</span><span class="n">randn</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+<span class="n">t</span><span class="o">-&gt;</span><span class="n">print</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+
+    <span class="p">[</span>
+    <span class="o">-</span><span class="mi">1</span> <span class="mi">0</span> <span class="o">-</span><span class="mi">0</span> <span class="mi">1</span> <span class="o">-</span><span class="mi">1</span> <span class="o">-</span><span class="mi">0</span> <span class="o">-</span><span class="mi">1</span> <span class="mi">1</span> <span class="o">-</span><span class="mi">0</span>
+    <span class="p">]</span>
 </pre></div>
 </div>
 </div>
