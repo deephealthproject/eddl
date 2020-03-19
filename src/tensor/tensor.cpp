@@ -252,7 +252,13 @@ void Tensor::info() {
 }
 
 
-void Tensor::print(bool asInt, bool raw) {
+/**
+  *  @brief Prints the content of the tensor
+  *
+  *  @param precision Number of decimals places to use
+  *  @param raw  Print the tensor without format
+*/
+void Tensor::print(int precision, bool raw) {
     int opened = 0;
     int closed = 0;
 
@@ -267,13 +273,14 @@ void Tensor::print(bool asInt, bool raw) {
 
     // ***** Shitty code to prettify the output *******
     std::stringstream buffer;
+    buffer << std::fixed;
+    buffer << std::setprecision(precision);
 
     for (int i = 0; i < aux->size; ++i) {
 
         if(raw){
             // Print number
-            if(asInt) {  buffer << (int)aux->ptr[i] << " "; }
-            else {  buffer << aux->ptr[i] << " "; }
+            buffer << aux->ptr[i] << " ";
 
         }else{
 
@@ -288,8 +295,7 @@ void Tensor::print(bool asInt, bool raw) {
             }
 
             // Print number
-            if(asInt) {  buffer << (int)aux->ptr[i]; }
-            else {  buffer << aux->ptr[i]; }
+            buffer << aux->ptr[i];
 
             // Close brackets
             closed = 0;

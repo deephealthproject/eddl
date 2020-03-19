@@ -12,6 +12,7 @@ dependencies:
   - cudatoolkit
   - zlib
   - gtest
+  - boost
   - protobuf  # Protobuf
   - libprotobuf
   - doxygen  # Docs

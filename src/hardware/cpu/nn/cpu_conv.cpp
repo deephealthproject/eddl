@@ -16,8 +16,8 @@
 
 float get_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize) {
     // Check boundaries of the window
-    if (px<0.0) return 0.0;
-    if (py<0.0) return 0.0;
+    if (px<0) return 0.0;
+    if (py<0) return 0.0;
     if (px>=D->ic) return 0.0;
     if (py>=D->ir) return 0.0;
 
@@ -28,8 +28,8 @@ float get_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irs
 
 void add_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize,float val) {
     // Check boundaries of the window
-    if (px<0.0) return;
-    if (py<0.0) return;
+    if (px<0) return;
+    if (py<0) return;
     if (px>=D->ic) return;
     if (py>=D->ir) return;
 
@@ -37,6 +37,7 @@ void add_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsi
     unsigned int address = (b*isize) + (pz*irsize) + (py*D->ic) + px;
     D->ID->ptr[address]+=val;
 }
+
 
 void im2col(int b,ConvolDescriptor *D,float *ptrI,int col2im)
 {

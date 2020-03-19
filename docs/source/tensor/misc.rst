@@ -107,7 +107,38 @@ print
 
 .. code-block:: c++
 
-    void print(bool asInt=false, bool raw=false);
+    void print(int precision=6, bool raw=false)
+
+.. code-block:: c++
+
+    Tensor* t = Tensor::randn({3, 3});
+    t->print();
+
+        [
+        [-1.106357 0.176572 -0.148911]
+        [0.989854 -1.420635 -0.334201]
+        [-0.647039 0.876878 -0.305620]
+        ]
+
+.. code-block:: c++
+
+    Tensor* t = Tensor::randn({3, 3});
+    t->print(1);
+
+        [
+        [-1.1 0.2 -0.1]
+        [1.0 -1.4 -0.3]
+        [-0.6 0.9 -0.3]
+        ]
+
+.. code-block:: c++
+
+    Tensor* t = Tensor::randn({3, 3});
+    t->print(0, true);
+
+        [
+        -1 0 -0 1 -1 -0 -1 1 -0
+        ]
 
 
 valid_indices

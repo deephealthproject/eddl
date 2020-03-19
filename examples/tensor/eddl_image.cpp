@@ -22,8 +22,8 @@ int main(int argc, char **argv) {
     Tensor* t3 = nullptr;
 
     // Paths
-    string fname = "../examples/data/elephant.jpg";  // Some image
-    string output = "output/";  // Create this folder!
+    string fname = "../../examples/data/elephant.jpg";  // Some image
+    string output = "./";  // Create this folder!
 
     // Load image
     t1 = Tensor::load(fname);

@@ -68,7 +68,7 @@ int main(int argc, char **argv){
     sgd(0.001, 0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    CS_GPU({1,1},500,"full_mem") // GPU with only one gpu and "low_mem"
+    CS_GPU({1}, "low_mem") // GPU with only one gpu
     //CS_CPU(-1, "low_mem")  // CPU with maximum threads availables
   );
 

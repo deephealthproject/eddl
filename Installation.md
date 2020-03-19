@@ -25,17 +25,22 @@ git clone https://github.com/deephealthproject/eddl.git
 To build EDDL from source, the following tools are needed:
 
 - C++11-standard-compliant compiler
-- CMake >= 3.9.2
-- CUDA Toolkit >= 8.0
-- Eigen3
-- BLAS
-- LAPACK
 - graphviz
 - wget
+- cmake
+- eigen
+- cudatoolkit
 - zlib
-- Protobuf
-- Google tests
-- Google Benchmark
+- gtest
+- protobuf
+- libprotobuf
+- doxygen
+- python
+- pip:
+    - sphinx
+    - breathe
+    - sphinx_rtd_theme
+    - sphinx-tabs
 
 These dependencies can be installed either manually or using a conda package manager (recommended).
 
@@ -61,25 +66,25 @@ conda activate eddl
 Regardless of your platform, install:
 
 - CUDA: https://developer.nvidia.com/cuda-toolkit
-- Google benchmark: https://github.com/google/benchmark
 - Protobuf: https://github.com/protocolbuffers/protobuf/blob/master/src/README.md
+- Google Tests: https://github.com/google/googletest
 
 Then, on Ubuntu/Debian install:
 
 ```
-sudo apt-get install build-essential git graphviz wget zlib1g-dev cmake  # Utilities
-sudo apt-get install libblas-dev liblapack-dev  # BLAS + LAPACK
-sudo apt-get install libeigen3-dev  # Eigen3
-sudo apt-get install libgtest-dev  # Google tests
+sudo apt-get install -y build-essential cmake git wget graphviz zlib1g-dev # Utilities
+sudo apt-get install -y libblas-dev liblapack-dev  # BLAS + LAPACK
+sudo apt-get install -y libeigen3-dev  # Eigen3
+sudo apt-get install -y libboost-all-dev  # Boost
 ```
 
 Or, on MacOS install:
 
 ```
-brew install git graphviz wget zlib cmake  # Utilities
-brew install openblas lapack # BLAS + LAPACK
-brew install eigen
-# Install Google Tests: https://github.com/google/googletest
+brew install cmake git wget graphviz zlib  # Utilities
+brew install openblas lapack  # BLAS + LAPACK
+brew install eigen  # Eigen3
+brew install boost  # Boost
 ```
 
 

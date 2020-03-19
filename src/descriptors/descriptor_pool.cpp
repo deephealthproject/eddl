@@ -11,11 +11,14 @@
 #include "descriptors.h"
 #include <math.h>
 
+
 PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, const vector<int> &p, int mem) {
     ksize = vector<int>(ks.begin(), ks.end());
     stride = vector<int>(st.begin(), st.end());
     pad = vector<int>(p.begin(), p.end());
     mem_level=mem;
+
+    this->padding = "custom";
 
     if (ksize.size() != 2) msg("Pooling Kernels must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
     if (stride.size() != 2) msg("Strides must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
@@ -23,7 +26,7 @@ PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, con
 
 }
 
-PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, string p, int mem) {
+PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, const string& p, int mem) {
     if (ks.size() != 2) msg("Pooling Kernels must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
     if (st.size() != 2) msg("Strides must have 2 dimensions", "PoolDescriptor::PoolDescriptor");
 
@@ -31,23 +34,9 @@ PoolDescriptor::PoolDescriptor(const vector<int> &ks, const vector<int> &st, str
     stride = st;
     mem_level=mem;
 
-
-    if (p=="same") {
-      this->pad = {0, 0, 0, 0};
-      if (st[0]==1) {
-        pad[0]=ksize[0] / 2;
-        pad[1]=ksize[0] / 2;
-        if (ksize[0] % 2 == 0) pad[1]--;
-      }
-
-      if ((st[1]==1) &&(p == "same")) {
-        pad[2]=ksize[1] / 2;
-        pad[3]=ksize[1] / 2;
-        if (ksize[1] % 2 == 0) pad[3]--;
-      }
-    }else if (p == "none") {
-        this->pad = {0, 0, 0, 0};
-    } else {
+    if (p=="same" || p =="none" || p =="valid" || p =="zeros") {
+        this->padding=p;
+    }else{
         msg("Incorrect padding type", "PoolDescriptor::PoolDescriptor");
     }
 }
@@ -68,16 +57,28 @@ void PoolDescriptor::build(Tensor *A) {
     ir = A->shape[2];
     ic = A->shape[3];
 
+    if(this->padding=="custom"){  // Known padding
+        // Compute output
+        z = iz;
+        r = compute_output(this->pad, ir, kr, sr);
+        c = compute_output(this->pad, ic, kc, sc);
 
-    padrt = pad[0];
-    padrb = pad[1];
-    padcl = pad[2];
-    padcr = pad[3];
+    }else{  // Common padding (same/zeros)
+        // Compute output
+        z = iz;
+        r = compute_output(this->padding, ir, kr, sr);
+        c = compute_output(this->padding, ic, kc, sc);
 
+        // Compute padding
+        vector<int> padr = compute_padding(r, ir, kr, sr, this->padding);  // Order: [top, bottom]
+        vector<int> padc = compute_padding(c, ic, kc, sc, this->padding);  // Order: [left, right]
 
-    z = iz;
-    r = (ir - kr + padrt + padrb) / sr + 1;
-    c = (ic - kc + padcl + padcr) / sc + 1;
+        // Set padding
+        pad = {padr[0], padr[1], padc[0], padc[1]};  // top, bottom, left, right
+    }
+
+    padrt = pad[0]; padrb = pad[1];  // rows: top-bottom
+    padcl = pad[2]; padcr = pad[3];  // cols: left-right
 
     if ((r <= 0) || (c <= 0)) {
         msg("Invalid output shape", "PoolDescriptor::build");
