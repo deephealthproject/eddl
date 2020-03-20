@@ -89,6 +89,16 @@ public:
 };
 
 extern ProfilerStorage mult2d_ps;
+extern ProfilerStorage sum2D_rowwise_ps;
+extern ProfilerStorage reduce_sum2D_ps;
+extern ProfilerStorage add_ps;
+extern ProfilerStorage sum_ps;
+extern ProfilerStorage ReLu_ps;
+extern ProfilerStorage D_ReLu_ps;
+extern ProfilerStorage Softmax_ps;
+extern ProfilerStorage fill__ps;
+extern ProfilerStorage cent_ps;
+extern ProfilerStorage accuracy_ps;
 
 // TODO: Remove this. Don't like here
 typedef Eigen::Matrix<float, -1, -1, Eigen::RowMajor> MatrixXRMf;

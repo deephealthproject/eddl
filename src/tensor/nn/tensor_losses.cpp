@@ -19,8 +19,12 @@
 #include "../../hardware/fpga/tensor_hls_op.h"
 #endif
 
+ProfilerStorage cent_ps("cent");
+
 // Cross-Entropy: C=-(A*log(B)+(1-A)*log_(1-B))
 void cent(Tensor *A, Tensor *B, Tensor *C) {
+
+    BlockProfiler prof_(cent_ps);
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::cross-entropy");
     if ((!Tensor::eqsize(A, B)) || (!Tensor::eqsize(A, C))) msg("Incompatible dims", "Tensor::cross-entropy");
 

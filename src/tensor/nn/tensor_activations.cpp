@@ -19,13 +19,20 @@
 #include "../../hardware/fpga/tensor_hls_op.h"
 #endif
 
+ProfilerStorage ReLu_ps("ReLu");
+ProfilerStorage D_ReLu_ps("D_ReLu");
+ProfilerStorage Softmax_ps("Softmax");
+
 // ReLU
 void ReLu(Tensor *A, Tensor *B) {
+    BlockProfiler prof_(ReLu_ps);
+
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::ReLu");
     if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::ReLu");
 
     B->tsem->lock();
     if (A->isCPU()) {
+        //printf("RELU:CPU\n");
         cpu_relu(A, B);
     }
 #ifdef cGPU
@@ -56,6 +63,8 @@ void ReLu(Tensor *A, Tensor *B) {
 
 // RELU Derivative, always increment over parent delta
 void D_ReLu(Tensor *D, Tensor *I, Tensor *PD) {
+
+    BlockProfiler prof_(D_ReLu_ps);
     if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_ReLu");
     if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_ReLu");
 
@@ -242,6 +251,8 @@ void D_Tanh(Tensor *D, Tensor *I, Tensor *PD) {
 
 // SOFTMAX
 void Softmax(Tensor *A, Tensor *B) {
+
+    BlockProfiler prof_(Softmax_ps);
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::Softmax");
     if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::Softmax");
     if (A->ndim != 2) msg("Softmax only over 2D Tensor (batch x logits)", "Tensor::Softmax");

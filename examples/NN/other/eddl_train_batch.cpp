@@ -122,6 +122,16 @@ int main(int argc, char **argv) {
       //std::cout << "Evaluate test:" << std::endl;
       //evaluate(net, {x_test}, {y_test});
     mult2d_ps.dump();
+    sum2D_rowwise_ps.dump();
+    reduce_sum2D_ps.dump();
+    add_ps.dump();
+    sum_ps.dump();
+    ReLu_ps.dump();
+    D_ReLu_ps.dump();
+    Softmax_ps.dump();
+    fill__ps.dump();
+    cent_ps.dump();
+    accuracy_ps.dump();
 }
 
 

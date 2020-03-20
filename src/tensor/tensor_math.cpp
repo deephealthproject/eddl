@@ -27,6 +27,10 @@
 using namespace std;
 
 ProfilerStorage mult2d_ps("mult2d");
+ProfilerStorage sum2D_rowwise_ps("sum2D_rowwise");
+ProfilerStorage reduce_sum2D_ps("reduce_sum2D");
+ProfilerStorage add_ps("add");
+ProfilerStorage sum_ps("sum");
 
 void Tensor::abs_() {
     if (isCPU()) {
@@ -113,6 +117,8 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
     //// or C+=(sca*A)+(scb*B) if incC is 1
     //// Dimensions and types must be compatible
     ///////////////////////////////////////
+
+    BlockProfiler prof_(add_ps);
     int aux = 0;
 
 
@@ -1112,6 +1118,9 @@ Tensor* Tensor::sub(Tensor *A, Tensor *B){
 }
 
 float Tensor::sum() {
+
+
+BlockProfiler prof_(sum_ps);
     if (isCPU()) {
         return cpu_sum(this);
     }
@@ -1144,6 +1153,8 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
     //// A is 2D Tensor
     //// B is 1D Tensor
     ///////////////////////////////////////
+
+    BlockProfiler prof_(sum2D_rowwise_ps);
     if ((A->device != B->device) || (A->device != C->device))
         msg("Tensors in different devices", "Tensor::sum2D_rowwise");
     if ((A->ndim != 2) || (B->ndim != 1) || (C->ndim != 2)) msg("sum2D_rowwise dims");
@@ -1189,6 +1200,8 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
     //// B is 1D Tensor
     //// axis is the dimension to be sumed
     ///////////////////////////////////////
+
+    BlockProfiler prof_(reduce_sum2D_ps);
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::reduce_sum2D");
     if ((A->ndim - 1) != B->ndim) msg("Incorrect dims", "Tensor::reduce_sum2D");
     if ((A->shape[1 - axis] != B->shape[0])) msg("Incompatible dims", "Tensor::reduce_sum2D");

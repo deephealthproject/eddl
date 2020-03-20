@@ -19,7 +19,11 @@
 #include "../../hardware/fpga/tensor_hls_op.h"
 #endif
 
+ProfilerStorage accuracy_ps("accuracy");
+
 int accuracy(Tensor *A, Tensor *B) {
+
+    BlockProfiler prof_(accuracy_ps);
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::accuracy");
     if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::accuracy");
     if (A->ndim != 2) msg("Accuracy only over 2D Tensor (batch x probs)", "Tensor::Accuracy");
