@@ -23,8 +23,12 @@
 
 using namespace std;
 
+ProfilerStorage fill__ps("fill_");
+
 // ***** Core (in-place) *****************************
 void Tensor::fill_(float v) {
+
+    BlockProfiler prof_(fill__ps);
     if (this->isCPU()) {
         cpu_fill_(this, v);
     }

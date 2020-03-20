@@ -1120,7 +1120,7 @@ Tensor* Tensor::sub(Tensor *A, Tensor *B){
 float Tensor::sum() {
 
 
-BlockProfiler prof_(sum_ps);
+    BlockProfiler prof_(sum_ps);
     if (isCPU()) {
         return cpu_sum(this);
     }
