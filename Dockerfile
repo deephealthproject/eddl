@@ -2,38 +2,41 @@ FROM ubuntu:18.04
 
 # Update software repository
 RUN apt-get update
-RUN apt-get install -y build-essential ca-certificates apt-utils # Essentials
+RUN apt-get install -y build-essential ca-certificates apt-utils autoconf # Essentials
 
-# Get the latest repository
-RUN apt-get install -y apt-transport-https ca-certificates gnupg software-properties-common wget
-RUN wget --no-check-certificate -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | apt-key add -
-RUN apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
-RUN apt-get update
+# Install dependencies  ******************
+# Utilities
+RUN apt-get install -y cmake git wget graphviz zlib1g-dev libboost-all-dev
 
-# Install dependencies
-RUN apt-get install -y cmake graphviz zlib1g-dev # Utilities
-RUN apt-get install -y libblas-dev liblapack-dev  # BLAS + LAPACK
-RUN apt-get install -y libeigen3-dev  # Eigen3
-#RUN apt-get install -y libprotobuf-dev protobuf-compiler protobuf-c-compiler  # Protobuf
-RUN apt-get install -y libgtest-dev  # Google tests
-RUN apt-get install -y autoconf automake libtool curl make g++ unzip git
+# Eigen3
+RUN apt-get install -y libeigen3-dev
 
+# gTests
+RUN apt-get install -y libgtest-dev && \
+    cd /usr/src/gtest && \
+    cmake CMakeLists.txt && \
+    make && \
+    cp *.a /usr/lib
 
-# Install Protocol Buffers
+# Protobuf
 RUN git clone https://github.com/protocolbuffers/protobuf.git && \
 	cd protobuf && \
-	git submodule update --init --recursive && \
+	git submodule update --init --recursive
+RUN cd protobuf && \
     ./autogen.sh && \
 	./configure && \
-    make && \
-    make check && \
+    make -j$(nproc) && \
     make install && \
-    ldconfig 
+    ldconfig
 
-
-RUN protoc --version
-
-
+# Install development libraries
+RUN apt-get install -y doxygen
+RUN apt-get install -y python3-pip
+RUN pip3 install sphinx
+RUN pip3 install sphinx_rtd_theme
+RUN pip3 install sphinx-tabs
+RUN pip3 install breathe
+# ****************** Install dependencies
 
 # Set working directory
 ENV EDDL_ROOT /eddl
@@ -42,20 +45,17 @@ WORKDIR $EDDL_ROOT
 # Copy repo
 COPY . .
 
-# All together
-RUN mkdir build && \
-    cd build && \
-    cmake -D BUILD_SHARED_LIB=ON -D BUILD_EXAMPLES=ON .. && \
-    make -j$(grep -c ^processor /proc/cpuinfo) && \
+# Build EDDL
+RUN mkdir build
+RUN cd build && \
+    cmake .. -DBUILD_PROTOBUF=ON -DBUILD_EXAMPLES=ON -DBUILD_TESTS=ON && \
+    make -j$(nproc) && \
     make install
 
+# Test EDDL
+RUN cd build && ctest --verbose
 
-# Make build folder
-#RUN mkdir build
+# Build docs (optional, check .dockerignore)
+RUN cd docs/doxygen && doxygen
+RUN cd docs/source && make clean && make html
 
-# Set working directory
-#WORKDIR $EDDL_ROOT/build
-
-## Build EDDL
-#RUN cmake .. -DBUILD_TARGET=CPU  # {CPU, GPU, FPGA}
-#RUN make -j$(nproc)

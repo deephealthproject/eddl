@@ -2,10 +2,6 @@ cmake_minimum_required(VERSION 3.9.2)
 
 PROJECT(eddl LANGUAGES CXX)
 
-if (${CMAKE_VERSION} VERSION_GREATER "3.12")
-    cmake_policy(SET CMP0074 NEW) # Suppress warning for zlib_ROOT variable
-endif()
-
 # SET C++ COMPILER STANDARD
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -155,7 +151,7 @@ if(BUILD_PROTOBUF)
     include(FindProtobuf)
     find_package(Protobuf REQUIRED)
     if(Protobuf_FOUND)
-        add_compile_definitions(cPROTO)
+        add_definitions(-DcPROTO)
         #protobuf_generate_cpp(onnx.pb.cc onnx.pb.h onnx.proto) #Generate protobuf files #Doesn't work
         # It seems that in some computers we the path appended to the file
         EXEC_PROGRAM(${PROTOBUF_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
