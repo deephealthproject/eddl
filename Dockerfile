@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 
 # Update software repository
 RUN apt-get update
-RUN apt-get install -y build-essential ca-certificates apt-utils autoconf # Essentials
+RUN apt-get install -y build-essential ca-certificates apt-utils # Essentials
 
 # Install dependencies  ******************
 # Utilities
@@ -19,15 +19,15 @@ RUN apt-get install -y libgtest-dev && \
     cp *.a /usr/lib
 
 # Protobuf
-RUN git clone https://github.com/protocolbuffers/protobuf.git && \
-	cd protobuf && \
-	git submodule update --init --recursive
-RUN cd protobuf && \
-    ./autogen.sh && \
-	./configure && \
-    make -j$(nproc) && \
-    make install && \
-    ldconfig
+ARG PROTOBUF_VERSION=3.11.4
+RUN apt-get install -y autoconf automake libtool curl make g++ unzip
+RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protobuf-cpp-$PROTOBUF_VERSION.tar.gz && \
+    tar -xf protobuf-cpp-$PROTOBUF_VERSION.tar.gz
+RUN cd protobuf-$PROTOBUF_VERSION && \
+    ./configure && \
+     make -j$(nproc) && \
+     make install && \
+     ldconfig
 
 # Install development libraries
 RUN apt-get install -y doxygen

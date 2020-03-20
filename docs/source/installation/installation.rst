@@ -72,16 +72,17 @@ install ``protobuf`` manually:
 .. code:: bash
 
     # Download source
-    git clone https://github.com/protocolbuffers/protobuf.git
-    cd protobuf/
-    git submodule update --init --recursive
+    PROTOBUF_VERSION=3.11.4
+    sudo apt-get install -y wget
+    sudo apt-get install -y autoconf automake libtool curl make g++ unzip
+    wget https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protobuf-cpp-$PROTOBUF_VERSION.tar.gz
+    tar -xf protobuf-cpp-$PROTOBUF_VERSION.tar.gz
 
     # Build and install
-    ./autogen.sh
+    cd protobuf-$PROTOBUF_VERSION
     ./configure
-    make -j4
-    sudo make check -j4
-    sudo make install
+    make -j$(nproc)
+    make install
     ldconfig
 
 
