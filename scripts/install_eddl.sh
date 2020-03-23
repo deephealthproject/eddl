@@ -1,18 +1,23 @@
 #!/bin/bash
 
-# Variables
-EDDL_VERSION=0.4.3
+echo "***********************************************************"
+echo "**************** SCRIPTS FOR DEBIAN/UBUNTU ****************"
+echo "***********************************************************"
 
 # Install requirements
 sudo chmod +x install_requirements.sh
 sudo ./install_requirements.sh
 
-# Download EDDL
+# [A] Use specific version
+EDDL_VERSION=0.4.3
 wget https://github.com/deephealthproject/eddl/archive/$EDDL_VERSION.tar.gz
 tar -xf $EDDL_VERSION.tar.gz
+cd eddl-$EDDL_VERSION/
+
+# [B] Use this version
+#cd ..
 
 # Build EDDL
-cd eddl-$EDDL_VERSION/
 mkdir build
 cd build/
 cmake .. -DBUILD_PROTOBUF=ON -DBUILD_EXAMPLES=ON -DBUILD_TESTS=ON
@@ -23,5 +28,5 @@ make install
 ctest --verbose
 
 # Build docs (optional, check .dockerignore)
-cd docs/doxygen/ && doxygen
+cd ../docs/doxygen/ && doxygen
 cd ../source && make clean && make html

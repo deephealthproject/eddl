@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Create temp folder
+mkdir temp/
+cd temp/
+
 # Update software repository
 sudo apt-get update
 sudo apt-get install -y build-essential ca-certificates apt-utils # Essentials
@@ -20,8 +24,8 @@ sudo chmod +x install_protobuf.sh
 sudo ./install_protobuf.sh
 
 # Install development libraries
-sudp apt-get install -y doxygen
-sudp apt-get install -y python3-pip
+sudo apt-get install -y doxygen
+sudo apt-get install -y python3-pip
 pip3 install sphinx
 pip3 install sphinx_rtd_theme
 pip3 install sphinx-tabs
