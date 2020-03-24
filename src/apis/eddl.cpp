@@ -820,7 +820,7 @@ namespace eddl {
     }
 
     layer GlobalMaxPool(layer parent, string name){
-        if (parent->output->ndim!=4) msg("GlobalAveragePool only over 4D tensors","GlobalAveragePool");
+        if (parent->output->ndim!=4) msg("GlobalMaxPool only over 4D tensors","GlobalMaxPool");
 
         int h=parent->output->shape[2];
         int w=parent->output->shape[3];
