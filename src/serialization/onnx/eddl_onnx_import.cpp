@@ -435,10 +435,11 @@ namespace eddl {
 		// version we created this importer for.
 		if(ir_version != 0x00000006) {
 			cerr << "Ir_version < 6" << endl;
+			cerr << "Warning: Version is inferior to the one supported. ONNX module will try to load it anyway" << endl;
 		}
 
 		// We omit the OperatorSetIdProto, since it doesn't do anything for EDDL
-
+		cout << "Ir_version = " << ir_version << endl;
 		cout << "Producer_name: " << model.producer_name() << endl;
 		cout << "Producer_version: " << model.producer_version() << endl;
 		cout << "Domain: " << model.domain() << endl;
@@ -520,7 +521,7 @@ namespace eddl {
 				if(constant_node_map.count(input)){
 					continue;
 				}
-				cout << "Input " << input << " Is not avaliable" << endl;
+				//cout << "Input " << input << " Is not avaliable" << endl;
 				avaliable = false;
 				break;
 			}
@@ -532,7 +533,7 @@ namespace eddl {
 
 			//6.2
 			if(!avaliable){
-				cout << " node->op_type   " << node->op_type() << " is not avaliable" << endl;
+				//cout << " node->op_type   " << node->op_type() << " is not avaliable" << endl;
 				nodeQueue.pop();
 				continue;
 			}
@@ -1298,6 +1299,7 @@ namespace eddl {
 		for( int i = 0; i < output_names.size(); i++ ) {
 			output_layers.push_back(output_node_map[output_names[i]]);
 		}
+		cout << "Net imported from ONNX succesfuly" << endl;
 		return new Net(input_layers, output_layers);
 	}
 
