@@ -22,12 +22,12 @@ using namespace std;
 // constructors and clones
 
 // constructors and clones
-LAveragePool::LAveragePool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name, int dev, int mem) : LAveragePool(parent, new PoolDescriptor(pool_size, strides, padding, mem), name, dev, mem) {}
+LAveragePool::LAveragePool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const string& padding, const string& name, int dev, int mem) : LAveragePool(parent, new PoolDescriptor(pool_size, strides, padding, mem), name, dev, mem) {}
 
 LAveragePool::LAveragePool(Layer *parent, const vector<int> &pool_size, const vector<int> &strides, const vector<int> &padding, string name, int dev, int mem) : LAveragePool(parent, new PoolDescriptor(pool_size, strides, padding, mem), name, dev, mem) {}
 
-LAveragePool::LAveragePool(Layer *parent, PoolDescriptor *D, string name, int dev, int mem) : LPool(parent, D, name, dev, mem) {
-
+LAveragePool::LAveragePool(Layer *parent, PoolDescriptor *D, const string& name, int dev, int mem) : LPool(parent, D, name, dev, mem) {
+    if(name.empty()) this->name = "avgpool" + to_string(++total_layers);
 }
 
 
@@ -44,15 +44,14 @@ void LAveragePool::backward() {
 }
 
 Layer *LAveragePool::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LAveragePool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, pd->pad, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    auto *n = new LAveragePool(p[0], this->pd, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LAveragePool::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LAveragePool(p[0], vector<int>{pd->kr, pd->kc}, vector<int>{pd->sr, pd->sc}, pd->pad,
-                               "clone_" + to_string(todev) + name, todev,mem_level);
+    auto *n = new LAveragePool(p[0], this->pd, "clone_" + to_string(todev) + this->name, todev, this->mem_level);
     n->orig = this;
 
     return n;

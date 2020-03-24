@@ -164,7 +164,7 @@ public:
       * 
       *  @return    void
     */
-    void print(bool asInt=false, bool raw=false);
+    void print(int precision=6, bool raw=false);
     string getStrDevice();
 
     // Core

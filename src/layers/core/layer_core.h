@@ -245,6 +245,44 @@ public:
 };
 
 
+/// Select Layer
+class LSelect : public LinLayer {
+public:
+    static int total_layers;
+    SelDescriptor *sd;
 
+    LSelect(Layer *l, vector<string> indices, bool hasBatch, string name, int dev, int mem);
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int b) override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+};
+
+
+/// Permute Layer
+class LPermute : public LinLayer {
+public:
+    static int total_layers;
+
+    PermuteDescriptor *sd;
+
+    LPermute(Layer *l, vector<int> dims, string name, int dev, int mem);
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int b) override;
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+};
 
 #endif //EDDL_LAYER_CORE_H

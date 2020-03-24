@@ -68,7 +68,7 @@ Tensor* Tensor::loadfs(std::ifstream &ifs, string format) {
         if (format=="csv") {delimiter = ','; }
         else if (format=="tsv") {delimiter = '\t'; }
         else { delimiter = ' '; }
-        return Tensor::load_from_txt(ifs, delimiter, 1);
+        return Tensor::load_from_txt(ifs, delimiter, 0);
     }else{
         msg("Format not implemented: *.'" + format + "'", "Tensor::load"); // Exits
     }
@@ -160,7 +160,7 @@ Tensor* Tensor::load_from_txt(std::ifstream &ifs, char delimiter, int headerRows
                 }
             }else{
                 // If header is present, consume one line
-                cout << "Ignoring row #" << (i+1) << " as header" << endl;
+                // cout << "Ignoring row #" << (i+1) << " as header" << endl;
             }
         }
 
@@ -285,7 +285,7 @@ void Tensor::save2img(const string& filename, string format){
     t = Tensor::permute(t, {1, 2, 0});  // Performs clone
 
     // Normalize image (for RGB must fall between 0 and 255) => Not a good idea
-    t->normalize_(0.0f, 255.0f);
+    //t->normalize_(0.0f, 255.0f);
 
     // TODO: I don't see the need to cast this (but if i remove it, it doesn't work)
     // Cast pointer
@@ -355,7 +355,7 @@ void Tensor::save2txt(std::ofstream &ofs, const char delimiter, const vector<str
 void Tensor::save2txt(const string& filename, const char delimiter, const vector<string> &header){
     // Check if the folder exists
     string folder = filename.substr(0, filename.find_last_of("\\/"));
-    if(!pathExists(folder)){
+    if(folder != filename && !pathExists(folder)){
         msg("The file could not be saved. Check if the directory exists or if you have permissions to write in it.", "Tensor::save");
     }
 

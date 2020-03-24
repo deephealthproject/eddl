@@ -18,14 +18,19 @@ using namespace std;
 int main(int argc, char **argv) {
 
     // Paths
-    string fname = "../examples/data/";
-    string output = "./output/";  // CREATE THIS FOLDER!!!!!
+    string fname = "../../examples/data/";
+    string output = "./";
 
     // Default tensor
 
     // ****************************************************
     // LOAD METHODS ***************************************
     // ****************************************************
+
+    Tensor* t = Tensor::randn({3, 3});
+    t->print();
+    t->print(1);
+    t->print(0, true);
 
     // Load image (formats accepted: jpg, jpeg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm)
     Tensor *t1 = Tensor::load(fname + "elephant.jpg");
@@ -36,6 +41,7 @@ int main(int argc, char **argv) {
     Tensor *t2 = Tensor::load<float>(fname + "iris.npy");  // <source data type>
     cout << "Tensor loaded! (Numpy)" << endl;
     cout << endl;
+    t2->print(2);
 
     // Load CSV (Presumes a one row-header, and ',' as delimiter)
     Tensor *t3 = Tensor::load(fname + "iris.csv");
@@ -50,7 +56,7 @@ int main(int argc, char **argv) {
     cout << endl;
 
     // Load generic txt (csv, csv, tsv,...)
-    Tensor *t5 = Tensor::load_from_txt(fname + "iris.txt", ' ', 0); // false=No header
+    Tensor *t5 = Tensor::load_from_txt(fname + "iris.txt", ' ', 1);
     cout << "Tensor loaded! (txt)" << endl;
     cout << "isEqualToPrevious? " << Tensor::equal2(t4, t5, 10e-6f) << endl;
     cout << endl;
