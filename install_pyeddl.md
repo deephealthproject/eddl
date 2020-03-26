@@ -7,7 +7,7 @@ To install the PyEDDL run the following commands (Ubuntu/Debian)
 > Note: If you're using conda, first deactivate the environment by typing: `conda deactivate`
 
 ```bash
-https://gist.githubusercontent.com/salvacarrion/c4d599396297f7f6e322ab2373174547/raw/f7cecb31d6266554d9793c10963f87bc46e680c8/install_pyeddl.sh
+wget https://gist.githubusercontent.com/salvacarrion/c4d599396297f7f6e322ab2373174547/raw/f7cecb31d6266554d9793c10963f87bc46e680c8/install_pyeddl.sh
 chmod +x install_pyeddl.sh
 sudo sh install_pyeddl.sh
 ```
