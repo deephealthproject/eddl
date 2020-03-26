@@ -86,8 +86,11 @@ cmake .. -DBUILD_PROTOBUF=ON -DBUILD_EXAMPLES=ON -DBUILD_TARGET=GPU -DCUDA_TOOLK
 ```
 
 > Example for CUDA 10:
+>
 > `CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-10`
+>
 > `CUDA_COMPILER=/usr/local/cuda-10/bin/nvcc` 
+>
 >  Try `which nvcc` to know the path
 
 Then save and run the script again:
