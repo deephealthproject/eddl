@@ -6,7 +6,7 @@
 #include "descriptors/descriptors.h"
 
 // Demo dataset
-auto *ptr_iris = new float[150*4]{
+static auto *ptr_iris = new float[150*4]{
         5.10, 3.50, 1.40, 0.20,
         4.90, 3.00, 1.40, 0.20,
         4.70, 3.20, 1.30, 0.20,
@@ -158,17 +158,17 @@ auto *ptr_iris = new float[150*4]{
         6.20, 3.40, 5.40, 2.30,
         5.90, 3.00, 5.10, 1.80,
 };
-auto* t_iris = new Tensor({150, 4}, ptr_iris);
+static auto* t_iris = new Tensor({150, 4}, ptr_iris);
 
 // Demo image
-auto* t_image = Tensor::arange(0, 100);
+static auto* t_image = Tensor::arange(0, 100);
 
 // Random generators
 const int MIN_RANDOM = 0;
 const int MAX_RANDOM = 999999;
-std::random_device rd;
-std::mt19937 mt(rd());
-std::uniform_int_distribution<std::mt19937::result_type> dist6(MIN_RANDOM, MAX_RANDOM);
+static std::random_device rd;
+static std::mt19937 mt(rd());
+static std::uniform_int_distribution<std::mt19937::result_type> dist6(MIN_RANDOM, MAX_RANDOM);
 
 
 TEST(tensorTest, tensor_io_jpg)

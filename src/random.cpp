@@ -16,12 +16,12 @@
 #define PI 3.1415926
 #define MAX_RTABLE 100000
 
-float *RTable=nullptr;
-int posTable=0;
+static float *RTable=nullptr;
+static int posTable=0;
 
 // Default seed
-std::random_device rd;  //Will be used to obtain a seed for the random number engine
-std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+static std::random_device rd;  //Will be used to obtain a seed for the random number engine
+static std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
 
 
 float uniform(float min, float max) {
