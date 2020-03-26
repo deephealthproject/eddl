@@ -12,7 +12,10 @@ Example:
 .. code-block:: c++
    :linenos:
 
-   layer Dense(layer parent, int ndim, bool use_bias = true,  string name = "");
+   layer l = Input({784});
+   l = Dense(l, 1024);
+   l = Dense(l, 1024);
+   ...
 
 
 Embedding
@@ -25,7 +28,7 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Embedding(int input_dim, int output_dim, string name = "");
+   ...
 
 .. note::
 
@@ -44,7 +47,20 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Reshape(layer parent, const vector<int> &shape, string name = "");
+   // Download mnist
+   download_mnist();
+
+   layer l = Input({784});
+
+   // Data augmentation assumes 3D tensors... images:
+   l = Reshape(l,{1,28,28});
+   // Data augmentation
+   ...
+
+   // Come back to 1D tensor for fully connected:
+   l = Reshape(l,{-1});
+
+   ...
 
 
 Flatten
@@ -59,7 +75,20 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Flatten(layer parent, string name = "");
+   // Download mnist
+   download_mnist();
+
+   layer l = Input({784});
+
+   // Data augmentation assumes 3D tensors... images:
+   l = Reshape(l,{1,28,28});
+   // Data augmentation
+   ...
+
+   // Come back to 1D tensor for fully connected:
+   l = Flatten(l);
+
+   ...
 
 
 Input
@@ -72,7 +101,8 @@ Example:
 .. code-block:: c++
    :linenos:
 
-   layer Input(const vector<int> &shape, string name = "");
+   download_mnist();
+   layer in = Input({784});
 
 
 
@@ -86,7 +116,7 @@ Example:
 .. code-block:: c++
    :linenos:
 
-   layer Dropout(layer parent, float rate, string name = "");
+   ...
 
 
 Select
@@ -102,8 +132,8 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Select(layer l, vector<string> indices, string name="");
-    // e.g.: Select(l, {"-1", "20:100", "50:-10", ":"}
+   ...
+   l = Select(l, {"-1", "20:100", "50:-10", ":"});
 
 
 
@@ -120,8 +150,8 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Permute(layer l, vector<int> dims, string name="");
-    // e.g.: Permute(l, {0, 2, 1})
+   ...
+   l = Permute(l, {0, 2, 1});
 
 
 Transpose
@@ -136,5 +166,5 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Transpose(layer parent, string name = "");
-    // e.g.: Transpose(l)
+   ...
+   l = Transpose(l);

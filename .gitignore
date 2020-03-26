@@ -11,6 +11,7 @@
 /[Bb]uild*
 /[Bb]in*
 build/
+temp/
 
 # Documentation
 /docs/source/_build
