@@ -319,16 +319,17 @@ conda install -c deephealth eddl-gpu-onnx
 <p>If you want to enable the ONNX features, in addition to installing the <code class="docutils literal notranslate"><span class="pre">eddl-gpu-onnx</span></code> binary, you need to
 install <code class="docutils literal notranslate"><span class="pre">protobuf</span></code> manually:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download source</span>
-git clone https://github.com/protocolbuffers/protobuf.git
-<span class="nb">cd</span> protobuf/
-git submodule update --init --recursive
+<span class="nv">PROTOBUF_VERSION</span><span class="o">=</span><span class="m">3</span>.11.4
+sudo apt-get install -y wget
+sudo apt-get install -y autoconf automake libtool curl make g++ unzip
+wget https://github.com/protocolbuffers/protobuf/releases/download/v<span class="nv">$PROTOBUF_VERSION</span>/protobuf-cpp-<span class="nv">$PROTOBUF_VERSION</span>.tar.gz
+tar -xf protobuf-cpp-<span class="nv">$PROTOBUF_VERSION</span>.tar.gz
 
 <span class="c1"># Build and install</span>
-./autogen.sh
+<span class="nb">cd</span> protobuf-<span class="nv">$PROTOBUF_VERSION</span>
 ./configure
-make -j4
-sudo make check -j4
-sudo make install
+make -j<span class="k">$(</span>nproc<span class="k">)</span>
+make install
 ldconfig
 </pre></div>
 </div>
