@@ -1,5 +1,7 @@
 # PyEDDL
 
+**THIS IS NOT THE PYEDDL REPOSITORY**
+
 To install the PyEDDL run the following commands (Ubuntu/Debian)
 
 > Note: If you're using conda, first deactivate the environment by typing: `conda deactivate`
