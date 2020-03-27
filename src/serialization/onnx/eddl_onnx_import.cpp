@@ -770,15 +770,7 @@ namespace eddl {
 								ndim = dims.size();
 							}
 						}
-						if(node->input_size() > 2){
-							use_bias=true;
-							bias_name = node->input(2);
-							bias = new vector<float>(map_init_values[bias_name]);
-							bias_dims = map_init_dims[bias_name];
-
-						}
-
-
+						use_bias=node->input_size() > 2;
 						int neuronas = 0;
 						if(transB){
 							neuronas = dims[0];
@@ -787,7 +779,7 @@ namespace eddl {
 							neuronas = dims[1];
 						string name = node->name();
 						Tensor * input_size = parent->output;
-						LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem);
+						LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem); 
 
 						Tensor* weights_tensor = eddlT::create(dims, weights->data(), dev);
 						if(transB){
@@ -803,11 +795,13 @@ namespace eddl {
 						else Tensor::copy(weights_tensor, dense->W );
 						delete(weights_tensor);
 						if(use_bias){
+							bias_name = node->input(2);
+							bias = new vector<float>(map_init_values[bias_name]);
+							bias_dims = map_init_dims[bias_name];
 							Tensor* bias_tensor = eddlT::create(bias_dims, bias->data(), dev);
 							Tensor::copy(bias_tensor, dense->bias);
 							delete(bias_tensor);
 						}
-						cout << "DEBUG: BIAS APPLIED" << endl;
 						actual_layer = dense;
 					}
 					break;
@@ -956,8 +950,6 @@ namespace eddl {
 				case ONNX_LAYERS::RESHAPE:
 					{
 
-						string parent_name = node->input(0);
-						Layer *parent = output_node_map[parent_name];
 
 						string shape_node_name = node->input(1);
 						onnx::NodeProto* shape_node = constant_node_map[shape_node_name];
@@ -969,11 +961,25 @@ namespace eddl {
 						onnx::TensorProto shape_tensor = shape_attribute.t();
 						vector<float> shape_float = parseTensorValues(shape_tensor);
 						vector<int> shape(++shape_float.begin(), shape_float.end()); //We skip first dim cause it is batch size
-						shape.insert(shape.begin(), 1); //Default batch size = 1
 						string name = node->name();
-						vector<int> parent_shape = parent->output->shape;
-
-						actual_layer= new LReshape(parent, shape, name, dev, mem);
+						string parent_name = node->input(0);
+						if(output_node_map.count(parent_name)){
+							shape.insert(shape.begin(), 1); //Default batch size = 1 //Required for reshape but not for parameters
+							Layer *parent = output_node_map[parent_name];
+							actual_layer= new LReshape(parent, shape, name, dev, mem);
+						}
+						else if(map_init_values.count(parent_name)){ //This means it is a parameter and not a layer
+							for( int i = 0; i < node->output_size(); i++ ) {
+								map_init_values[node->output(i)] = map_init_values[parent_name];
+								map_init_dims[node->output(i)] = shape; 
+								vector<onnx::NodeProto*> child_nodes = input_node_map[node->output(i)];
+								for(onnx::NodeProto * child : child_nodes){
+									nodeQueue.push(child);
+								}
+							}
+							nodeQueue.pop();
+							continue; //We need to do the update of the queue here because we are not creating a true layer
+						} else cerr << "Uknown parent type for reshape" << endl;
 					}
 					break;
 
@@ -1208,14 +1214,45 @@ namespace eddl {
 					{
 						vector<Layer *> parents;
 						string parent_name;
-						cout << "creating parents vector" << endl;
+						bool parameter_input = false;
+						int index_parameter = -1; //Possible values 0 and 1, we won't expect parameters in an add with more than two parents
 						for ( int j = 0; j < node->input_size(); j++) {
 							parent_name = node->input(j);
-							cout << "Checking parent name" << endl;
 							if(output_node_map.count(parent_name))
 								parents.push_back(output_node_map[parent_name]);
-							else
-								cout << "Not in the output node vector" << endl;
+							else if(map_init_values.count(parent_name))
+								parameter_input = true;
+								index_parameter = j;
+						}
+						if(parameter_input){
+							LConv* conv;
+							LDense* dense;
+							if(conv = dynamic_cast<LConv*>(parents[0]) ){
+								ConvolDescriptor* convol_descriptor = conv->cd;
+								convol_descriptor->use_bias = true; //We need to enable the bias
+								string bias_name = node->input(index_parameter);
+								vector<float> *bias = new vector<float>(map_init_values[bias_name]);
+								vector<int> bias_shape;
+								bias_shape.push_back(bias->size());
+								Tensor* bias_tensor = eddlT::create(bias_shape, bias->data(), dev);
+								Tensor::copy(bias_tensor , convol_descriptor->bias);
+								delete(bias_tensor);
+								actual_layer = conv;
+								cout << "Conv modified succesfuly" << endl;
+								break;
+							}
+							else if(dense = dynamic_cast<LDense*>(parents[0]) ){
+								string bias_name = node->input(index_parameter);
+								vector<float> *bias = new vector<float>(map_init_values[bias_name]);
+								vector<int> bias_dims = map_init_dims[bias_name];
+								Tensor* bias_tensor = eddlT::create(bias_dims, bias->data(), dev);
+								Tensor::copy(bias_tensor, dense->bias);
+								delete(bias_tensor);
+								actual_layer=dense;
+								cout << "Dense modified succesfuly" << endl;
+								break;
+
+							} else cerr << "Error, add with a parameter input where the other input is not a dense or a convolutional layer" << endl;
 						}
 						string name = node->name();
 						cout << "parents vector created" << endl;
