@@ -15,8 +15,7 @@
 using namespace std;
 
 namespace eddl {
-#ifdef cPROTO
-
+#ifdef cPROTO 
 	enum ONNX_LAYERS{
 		//TODO Comment in which section belongs each layer
 		BATCHNORM,			// implemented
@@ -25,11 +24,14 @@ namespace eddl {
 		DROP,               // implemented
 		//EMBEDDING,  		// Onnx doesn't support this
 		RESHAPE,            // implemented
+		FLATTEN,            // implemented
 		TRANSPOSE,          // implementing
 		TRANSPOSED_CONV,	// not implemented in eddl
 		UPSAMPLING,         // deprecated in ONNX, but works for EDDL
 		MAXPOOL,			// implemented
 		AVGPOOL,            // needs testing
+		GLOBAVGPOOL,        // implemented
+		GLOBMAXPOOL,        // implemented
 		PERMUTE,            // implemented
 		// Activation layers
 		RELU, 				// implemented
@@ -124,12 +126,15 @@ namespace eddl {
 		map_layers["Gemm"] = ONNX_LAYERS::DENSE;
 		map_layers["Dropout"] = ONNX_LAYERS::DROP;
 		map_layers["Reshape"] = ONNX_LAYERS::RESHAPE;
+		map_layers["Flatten"] = ONNX_LAYERS::FLATTEN;
 		map_layers["Transpose"] = ONNX_LAYERS::TRANSPOSE;
 		map_layers["ConvTranspose"] = ONNX_LAYERS::TRANSPOSED_CONV;
 		map_layers["Upsample"] = ONNX_LAYERS::UPSAMPLING;
 		map_layers["Softmax"] = ONNX_LAYERS::SOFTMAX;
 		map_layers["MaxPool"] = ONNX_LAYERS::MAXPOOL;
 		map_layers["AveragePool"] = ONNX_LAYERS::AVGPOOL;
+		map_layers["GlobalMaxPool"] = ONNX_LAYERS::GLOBMAXPOOL;
+		map_layers["GlobalAveragePool"] = ONNX_LAYERS::GLOBAVGPOOL;
 		map_layers["Transpose"] = ONNX_LAYERS::PERMUTE;
 		// Activation layers
 		map_layers["Relu"] = ONNX_LAYERS::RELU;
@@ -440,6 +445,10 @@ namespace eddl {
 
 		// We omit the OperatorSetIdProto, since it doesn't do anything for EDDL
 		cout << "Ir_version = " << ir_version << endl;
+		for(int i = 0; i < model.opset_import_size() ; i++){
+			cout << "Operator domain  = " << model.opset_import(i).domain() << endl;
+			cout << "Operator version = " << model.opset_import(i).version() << endl;
+		}
 		cout << "Producer_name: " << model.producer_name() << endl;
 		cout << "Producer_version: " << model.producer_version() << endl;
 		cout << "Domain: " << model.domain() << endl;
@@ -550,6 +559,7 @@ namespace eddl {
 			string name = node->name();
 			int dev = DEV_CPU;//TODO: Check what device to use
 			Layer *actual_layer;
+			cout << "   LAYER TYPE = " << layer_type_name << endl;
 
 			switch (layer_type) { //Every case should create the corresponding layer and asign it to "actual_layer" variable
 
@@ -611,20 +621,30 @@ namespace eddl {
 
 				case ONNX_LAYERS::CONV:
 					{
+						cout << "Debug 1" << endl;
 						int filters;
 						vector<int> kernel_shape;
 						vector<int> strides;
 						vector<int> pads;
-						bool explicit_padding = true;
+						//bool explicit_padding;
+						string auto_pad_option = "";
+						bool auto_pad = false;
 						vector<float> *bias;
+						cout << "Adding attributes" << endl;
 
 						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
 							onnx::AttributeProto attribute = node->attribute(j);
 							string attr_name = attribute.name();
 							if (!attr_name.compare("auto_pad")) {
-								if(!attribute.s().compare("NOTSET")) continue;
-								if(!attribute.s().compare("VALID"))
-									explicit_padding=false;
+								auto_pad = true;
+								if(!attribute.s().compare("NOTSET")){
+									auto_pad = false;
+									continue;
+								}
+								else if(!attribute.s().compare("VALID"))
+									auto_pad_option = "none";
+								else if(!attribute.s().compare("SAME_UPPER"))
+									auto_pad_option = "same";
 							}
 							else if (!attr_name.compare("dilations")) { //It isn't implemented in eddl
 
@@ -636,26 +656,30 @@ namespace eddl {
 								for( int h = 0; h<attribute.ints_size(); h++){
 									kernel_shape.push_back(attribute.ints(h));
 								}
+								cout << "found kernel_shape" << endl;
 							}
 							else if (!attr_name.compare("pads")) { //
 								for(int h = 0; h < 4; h++){
 									pads.push_back(attribute.ints(h));
 								}
+								cout << "found pads" << endl;
 							}
 							else if (!attr_name.compare("strides")) { //
 								for(int h = 0; h < attribute.ints_size(); h++){
 									strides.push_back(attribute.ints(h));
 								}
+								cout << "found strides" << endl;
 							}
 						}
 
-						if(!explicit_padding){ //We have to add 0 padding to the conv descriptor
+						cout << "Attributes readed" << endl;
+						/*if(!explicit_padding){ //We have to add 0 padding to the conv descriptor
 							pads.resize(4,0);
 							pads[0] = 0;
 							pads[1] = 0;
 							pads[2] = 0;
 							pads[3] = 0;
-						}
+						}*/
 
 						string parent_name = node->input(0); //Get parent
 						Layer* parent = output_node_map[parent_name];
@@ -666,14 +690,21 @@ namespace eddl {
 						vector<int> dims = map_init_dims[weights_name];
 
 
+						cout << "Weights loaded from init" << endl;
 
 						filters = dims[0];
-						kernel_shape.insert(kernel_shape.begin(), filters); //Add number of filters to kernel shape
 						string name = node->name();
+						cout << "Take name" << endl;
+						ConvolDescriptor* convol_descriptor;
+						if(!auto_pad){
+							kernel_shape.insert(kernel_shape.begin(), filters); //Add number of filters to kernel shape
+							convol_descriptor = new ConvolDescriptor(kernel_shape, strides, pads);
+						}
+						else convol_descriptor = new ConvolDescriptor(filters, kernel_shape, strides, auto_pad_option, node->input_size() > 2, mem);
 
-						ConvolDescriptor* convol_descriptor = new ConvolDescriptor(kernel_shape, strides, pads);
-
+						cout << "Conv descriptor created" << endl;
 						actual_layer = new LConv(parent, convol_descriptor, name, dev, mem);
+						cout << "Layer created" << endl;
 
 						if(node->input_size() > 2){
 							string bias_name = node->input(2);
@@ -685,6 +716,7 @@ namespace eddl {
 							delete(bias_tensor);
 
 						}
+						cout << "Copying weights" << endl;
 						Tensor* weights_tensor = eddlT::create(dims, weights->data(), dev);
 						Tensor::copy(weights_tensor, convol_descriptor->K);
 						delete(weights_tensor);
@@ -747,21 +779,39 @@ namespace eddl {
 						}
 
 
+						int neuronas = 0;
+						if(transB){
+							neuronas = dims[0];
+						}
+						else
+							neuronas = dims[1];
 						string name = node->name();
 						Tensor * input_size = parent->output;
-						LDense* dense = new LDense(parent, dims[1], use_bias, name, dev, mem);
+						LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem);
 
 						Tensor* weights_tensor = eddlT::create(dims, weights->data(), dev);
-						Tensor::copy(weights_tensor, dense->W );
+						if(transB){
+							vector<int> reverse_dims;
+							for(int h = dims.size()-1; h >= 0; h--){
+								reverse_dims.push_back(dims[h]);
+							}
+							Tensor* weights_tensor_T = eddlT::create(reverse_dims, dev);
+							Tensor::transpose(weights_tensor, weights_tensor_T, {1,0});
+							Tensor::copy(weights_tensor_T, dense->W );
+							delete(weights_tensor_T);
+						}
+						else Tensor::copy(weights_tensor, dense->W );
 						delete(weights_tensor);
 						if(use_bias){
 							Tensor* bias_tensor = eddlT::create(bias_dims, bias->data(), dev);
 							Tensor::copy(bias_tensor, dense->bias);
 							delete(bias_tensor);
 						}
+						cout << "DEBUG: BIAS APPLIED" << endl;
 						actual_layer = dense;
-						break;
 					}
+					break;
+					
 				case ONNX_LAYERS::UPSAMPLING:
 					{
 						string interpolation_mode;
@@ -886,7 +936,21 @@ namespace eddl {
 
 						string name = node->name();
 
+
 						actual_layer = new LAveragePool(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
+					}
+					break;
+
+				case ONNX_LAYERS::GLOBAVGPOOL:
+					{
+						string parent_name = node->input(0); //Get parent
+						Layer* parent = output_node_map[parent_name];
+						vector<int> parent_shape = parent->output->shape;
+
+						int h=parent_shape[2];
+						int w=parent_shape[3];
+
+						actual_layer = AveragePool(parent, {h,w},{1,1});
 					}
 					break;
 				case ONNX_LAYERS::RESHAPE:
@@ -910,9 +974,17 @@ namespace eddl {
 						vector<int> parent_shape = parent->output->shape;
 
 						actual_layer= new LReshape(parent, shape, name, dev, mem);
-						break;
 					}
+					break;
 
+				case ONNX_LAYERS::FLATTEN:
+					{
+						string parent_name = node->input(0); //Get parent
+						Layer* parent = output_node_map[parent_name];
+
+						actual_layer = Reshape(parent, {-1}, name);
+					}
+					break;
 				case ONNX_LAYERS::PERMUTE:
 					{
 						vector<int> dims;
@@ -1136,12 +1208,19 @@ namespace eddl {
 					{
 						vector<Layer *> parents;
 						string parent_name;
+						cout << "creating parents vector" << endl;
 						for ( int j = 0; j < node->input_size(); j++) {
 							parent_name = node->input(j);
-							parents.push_back(output_node_map[parent_name]);
+							cout << "Checking parent name" << endl;
+							if(output_node_map.count(parent_name))
+								parents.push_back(output_node_map[parent_name]);
+							else
+								cout << "Not in the output node vector" << endl;
 						}
 						string name = node->name();
+						cout << "parents vector created" << endl;
 						actual_layer = new LAdd(parents, name, dev, mem);
+						cout << "layer donete" << endl;
 
 						break;
 					}
@@ -1271,11 +1350,23 @@ namespace eddl {
 						string name = node->name();
 
 						actual_layer = new LMaxPool(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
-						break;
 					}
+						break;
+				case ONNX_LAYERS::GLOBMAXPOOL:
+					{
+						string parent_name = node->input(0); //Get parent
+						Layer* parent = output_node_map[parent_name];
+						vector<int> parent_shape = parent->output->shape;
+
+						int h=parent_shape[2];
+						int w=parent_shape[3];
+
+						actual_layer = MaxPool(parent, {h,w},{1,1}, "none", "gpool");
+					}
+					break;
 
 				default:
-					cerr << "FATAL: LAYER NOT RECOGNIZED WITH TYPE " << layer_type <<   endl;
+					cerr << "FATAL: LAYER NOT RECOGNIZED WITH TYPE " << layer_type_name <<  endl;
 					nodeQueue.pop();
 					continue;
 					break;
@@ -1291,6 +1382,7 @@ namespace eddl {
 			nodeQueue.pop();
 
 		}
+		cout << "DEBUG: FINISHED LOOP" << endl;
 		vector<Layer *> input_layers;
 		for( Layer* layer : inputs) input_layers.push_back(layer);
 
@@ -1299,7 +1391,7 @@ namespace eddl {
 		for( int i = 0; i < output_names.size(); i++ ) {
 			output_layers.push_back(output_node_map[output_names[i]]);
 		}
-		cout << "Net imported from ONNX succesfuly" << endl;
+		cout << "Net imported from ONNX succesfully" << endl;
 		return new Net(input_layers, output_layers);
 	}
 
