@@ -951,16 +951,8 @@ namespace eddl {
 					{
 
 
-						string shape_node_name = node->input(1);
-						onnx::NodeProto* shape_node = constant_node_map[shape_node_name];
-						onnx::AttributeProto shape_attribute = shape_node->attribute(0);
-						if(shape_attribute.name().compare("value")){
-							//This means an error ocurred, but don't know how to proceed then.
-							printf("An error ocurred when reading the shape of reshape\n");
-						}
-						onnx::TensorProto shape_tensor = shape_attribute.t();
-						vector<float> shape_float = parseTensorValues(shape_tensor);
-						vector<int> shape(++shape_float.begin(), shape_float.end()); //We skip first dim cause it is batch size
+						string shape_name = node->input(1);
+						vector<int> shape(map_init_values[shape_name].begin(), map_init_values[shape_name].end());
 						string name = node->name();
 						string parent_name = node->input(0);
 						if(output_node_map.count(parent_name)){
