@@ -30,3 +30,5 @@ pip3 install sphinx
 pip3 install sphinx_rtd_theme
 pip3 install sphinx-tabs
 pip3 install breathe
+pip3 install pytest
+

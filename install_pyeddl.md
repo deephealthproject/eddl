@@ -7,7 +7,8 @@ To install the PyEDDL run the following commands (Ubuntu/Debian)
 > Note: If you're using conda, first deactivate the environment by typing: `conda deactivate`
 
 ```bash
-wget https://gist.githubusercontent.com/salvacarrion/c4d599396297f7f6e322ab2373174547/raw/f7cecb31d6266554d9793c10963f87bc46e680c8/install_pyeddl.sh
+git clone https://gist.github.com/c4d599396297f7f6e322ab2373174547.git; 
+cd c4d599396297f7f6e322ab2373174547/
 chmod +x install_pyeddl.sh
 sudo sh install_pyeddl.sh
 ```
@@ -82,7 +83,7 @@ cmake .. -DBUILD_PROTOBUF=ON -DBUILD_EXAMPLES=ON
 ```bash
 CUDA_TOOLKIT=PATH WHERE THE CUDA TOOLKIT IS INSTALLED
 CUDA_COMPILER=PATH WHERE THE CUDA COMPILER IS INSTALLED
-cmake .. -DBUILD_PROTOBUF=ON -DBUILD_EXAMPLES=ON -DBUILD_TARGET=GPU -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_TOOLKIT DCMAKE_CUDA_COMPILER=$CUDA_COMPILER
+cmake .. -DBUILD_PROTOBUF=ON -DBUILD_EXAMPLES=ON -DBUILD_TARGET=GPU -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_TOOLKIT -DCMAKE_CUDA_COMPILER=$CUDA_COMPILER
 ```
 
 > Example for CUDA 10:

@@ -18,6 +18,8 @@ temp/
 /docs/doxygen/build
 /docs/doxygen/html
 /docs/doxygen/latex
+/docs/html
+/docs/latex
 
 
 # Other files
