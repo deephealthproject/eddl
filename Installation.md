@@ -72,19 +72,15 @@ Regardless of your platform, install:
 Then, on Ubuntu/Debian install:
 
 ```
-sudo apt-get install -y build-essential cmake git wget graphviz zlib1g-dev # Utilities
-sudo apt-get install -y libblas-dev liblapack-dev  # BLAS + LAPACK
-sudo apt-get install -y libeigen3-dev  # Eigen3
-sudo apt-get install -y libboost-all-dev  # Boost
+sudo apt-get install -y build-essential cmake git wget graphviz  # Run dependencies
+sudo apt-get install -y libeigen3-dev zlib1g-dev libboost-all-dev  # Build dependencies
 ```
 
 Or, on MacOS install:
 
 ```
-brew install cmake git wget graphviz zlib  # Utilities
-brew install openblas lapack  # BLAS + LAPACK
-brew install eigen  # Eigen3
-brew install boost  # Boost
+brew install cmake git wget graphviz  # Run dependencies
+brew install eigen zlib boost  # Build dependencies
 ```
 
 

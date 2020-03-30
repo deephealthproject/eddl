@@ -31,6 +31,16 @@ make clean; make html
 
 Generated using: [shields.io](https://shields.io/)
 
+## Compute sha256
+
+```
+# MacOS
+shasum -a 256 <file>
+openssl dgst -sha256 <file>
+
+# Linux
+sha256sum <file>
+```
 
 ## Build conda package
 
