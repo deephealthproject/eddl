@@ -42,6 +42,11 @@ openssl dgst -sha256 <file>
 sha256sum <file>
 ```
 
+## Test Brew formulas
+
+Drop the `formulas/brew/eddl.rb` file at `/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/`, and the run `brew install eddl`
+
+
 ## Build conda package
 
 ```
