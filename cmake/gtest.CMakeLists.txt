@@ -1,0 +1,22 @@
+cmake_minimum_required(VERSION 3.5)
+
+# simplify variable expansion
+cmake_policy(SET CMP0053 NEW)
+cmake_policy(SET CMP0010 NEW)
+
+project(gtest-download NONE)
+
+include(ExternalProject)
+ExternalProject_Add(gtest_project
+        GIT_REPOSITORY https://github.com/google/gtest.git
+        GIT_TAG "master"
+        SOURCE_DIR "${CMAKE_BINARY_DIR}/gtest-src"
+        BINARY_DIR "${CMAKE_BINARY_DIR}/gtest-build"
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND     ""
+        INSTALL_COMMAND   ""
+        TEST_COMMAND      ""
+        )
+
+ExternalProject_Get_Property(gtest_project install_dir)
+set(gtest_install_dir ${install_dir})

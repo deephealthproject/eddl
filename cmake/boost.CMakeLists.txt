@@ -1,0 +1,22 @@
+cmake_minimum_required(VERSION 3.5)
+
+# simplify variable expansion
+cmake_policy(SET CMP0053 NEW)
+cmake_policy(SET CMP0010 NEW)
+
+project(boost-download NONE)
+
+include(ExternalProject)
+ExternalProject_Add(boost_project
+		GIT_REPOSITORY "https://github.com/boostorg/boost.git"
+		GIT_TAG "boost-1.72.0"
+		SOURCE_DIR "${CMAKE_BINARY_DIR}/boost-src"
+		BINARY_DIR "${CMAKE_BINARY_DIR}/boost-build"
+		CONFIGURE_COMMAND ""
+		BUILD_COMMAND     ""
+		INSTALL_COMMAND   ""
+		TEST_COMMAND      ""
+		)
+
+ExternalProject_Get_Property(boost_project install_dir)
+set(boost_install_dir ${install_dir})

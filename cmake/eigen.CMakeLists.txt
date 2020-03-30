@@ -1,0 +1,22 @@
+cmake_minimum_required(VERSION 3.9.2)
+
+# simplify variable expansion
+cmake_policy(SET CMP0053 NEW)
+cmake_policy(SET CMP0010 NEW)
+
+project(eigen-download NONE)
+
+include(ExternalProject)
+ExternalProject_Add(eigen_project
+		GIT_REPOSITORY "https://gitlab.com/libeigen/eigen.git"
+		GIT_TAG "3.3.7"
+		SOURCE_DIR "${CMAKE_BINARY_DIR}/eigen-src"
+		BINARY_DIR "${CMAKE_BINARY_DIR}/eigen-build"
+		CONFIGURE_COMMAND ""
+		BUILD_COMMAND     ""
+		INSTALL_COMMAND   ""
+		TEST_COMMAND      ""
+		)
+
+ExternalProject_Get_Property(eigen_project install_dir)
+set(eigen_install_dir ${install_dir})
