@@ -9,7 +9,7 @@ endif()
 # USER OPTIONS *******************************
 set(BUILD_TARGET "GPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
 option(BUILD_OPENMP "Compile using OpenMP" ON)
-option(BUILD_PROTOBUF "Compile using Protobuf" OFF)
+option(BUILD_PROTOBUF "Compile using Protobuf" ON)
 option(BUILD_SHARED_LIB "Whether to build a static or dynamic library" ON)
 option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_TESTS "Compile tests" ON)
@@ -65,25 +65,3 @@ if(BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif(BUILD_EXAMPLES)
 
-
-#
-## Install
-#install(EXPORT CMakeExternalTargets
-#        NAMESPACE CMakeExternal::
-#        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/CMakeExternal
-#        COMPONENT Devel)
-#include(CMakePackageConfigHelpers)
-#configure_package_config_file(cmake/CMakeExternalConfig.cmake.in
-#        "${PROJECT_BINARY_DIR}/CMakeExternalConfig.cmake"
-#        INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/CMakeExternal"
-#        NO_SET_AND_CHECK_MACRO
-#        NO_CHECK_REQUIRED_COMPONENTS_MACRO)
-#write_basic_package_version_file(
-#        "${PROJECT_BINARY_DIR}/CMakeExternalConfigVersion.cmake"
-#        COMPATIBILITY SameMajorVersion)
-#install(
-#        FILES
-#        "${PROJECT_BINARY_DIR}/CMakeExternalConfig.cmake"
-#        "${PROJECT_BINARY_DIR}/CMakeExternalConfigVersion.cmake"
-#        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/CMakeExternal"
-#        COMPONENT Devel)

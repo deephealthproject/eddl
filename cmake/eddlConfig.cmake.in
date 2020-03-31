@@ -1,0 +1,40 @@
+include(CMakeFindDependencyMacro)
+
+# VARIABLES
+SET(USE_CUDA "@USE_CUDA@")
+SET(BUILD_OPENMP "@BUILD_OPENMP@")
+SET(BUILD_PROTOBUF "@BUILD_PROTOBUF@")
+SET(ZLIB_ROOT "@ZLIB_ROOT@")
+
+# THREADS (pthreads setup for linux os)
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+    SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
+    find_dependency(Threads)
+endif()
+
+# CUDA
+if (${USE_CUDA})
+    enable_language(CUDA)
+endif()
+
+# EIGEN
+find_dependency(Eigen3)
+
+# OPENMP
+if (${BUILD_OPENMP})
+    find_dependency(OpenMP)
+endif()
+
+# ZLIB
+find_dependency(ZLIB)
+
+# PROTOBUF
+if (${BUILD_PROTOBUF})
+    find_dependency(Protobuf)
+endif()
+
+include("@EDDL_CONFIG_INSTALL_PATH@/eddlTargets.cmake")
+
+SET(EDDL_LIBRARIES eddl)
+SET(EDDL_INCLUDE_DIR "@CMAKE_INSTALL_PREFIX@/include")

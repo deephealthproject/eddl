@@ -1,7 +1,3 @@
-cmake_minimum_required(VERSION 3.9.2)
-
-PROJECT(eddllib LANGUAGES CXX)
-
 
 # Add CUDA (if possible)
 if(USE_CUDA)
@@ -54,49 +50,50 @@ endif()
 
 # C++ files
 file(GLOB CPP_HEADER_FILES_TOP
-        ${PROJECT_SOURCE_DIR}/*.h
+        *.h
         )
 file(GLOB CPP_SOURCE_FILES_TOP
-        ${PROJECT_SOURCE_DIR}/*.cpp
+        *.cpp
         )
 file(GLOB_RECURSE CPP_HEADER_FILES_NESTED
-        ${PROJECT_SOURCE_DIR}/apis/*.h
-        ${PROJECT_SOURCE_DIR}/descriptors/*.h
-        ${PROJECT_SOURCE_DIR}/hardware/cpu/*.h
-        ${PROJECT_SOURCE_DIR}/initializers/*.h
-        ${PROJECT_SOURCE_DIR}/layers/*.h
-        ${PROJECT_SOURCE_DIR}/losses/*.h
-        ${PROJECT_SOURCE_DIR}/metrics/*.h
-        ${PROJECT_SOURCE_DIR}/net/*.h
-        ${PROJECT_SOURCE_DIR}/optimizers/*.h
-        ${PROJECT_SOURCE_DIR}/regularizers/*.h
-        ${PROJECT_SOURCE_DIR}/tensor/*.h
+        apis/*.h
+        descriptors/*.h
+        hardware/cpu/*.h
+        initializers/*.h
+        layers/*.h
+        losses/*.h
+        metrics/*.h
+        net/*.h
+        optimizers/*.h
+        regularizers/*.h
+        tensor/*.h
         )
 
 file(GLOB_RECURSE CPP_SOURCE_FILES_NESTED
-        ${PROJECT_SOURCE_DIR}/apis/*.cpp
-        ${PROJECT_SOURCE_DIR}/descriptors/*.cpp
-        ${PROJECT_SOURCE_DIR}/hardware/cpu/*.cpp
-        ${PROJECT_SOURCE_DIR}/initializers/*.cpp
-        ${PROJECT_SOURCE_DIR}/layers/*.cpp
-        ${PROJECT_SOURCE_DIR}/losses/*.cpp
-        ${PROJECT_SOURCE_DIR}/metrics/*.cpp
-        ${PROJECT_SOURCE_DIR}/net/*.cpp
-        ${PROJECT_SOURCE_DIR}/optimizers/*.cpp
-        ${PROJECT_SOURCE_DIR}/regularizers/*.cpp
-        ${PROJECT_SOURCE_DIR}/tensor/*.cpp
+        apis/*.cpp
+        descriptors/*.cpp
+        hardware/cpu/*.cpp
+        initializers/*.cpp
+        layers/*.cpp
+        losses/*.cpp
+        metrics/*.cpp
+        net/*.cpp
+        optimizers/*.cpp
+        regularizers/*.cpp
+        tensor/*.cpp
         )
 SET(CPP_HEADER_FILES ${CPP_HEADER_FILES_TOP} ${CPP_HEADER_FILES_NESTED})
 SET(CPP_SOURCE_FILES ${CPP_SOURCE_FILES_TOP} ${CPP_SOURCE_FILES_NESTED})
 SET(CPP_SOURCES ${CPP_HEADER_FILES} ${CPP_SOURCE_FILES})
 
+message(" fileeeeees: ${CPP_SOURCES}" )
 
 # CUDA files
 file(GLOB_RECURSE CUDA_HEADER_FILES
-        ${PROJECT_SOURCE_DIR}/hardware/gpu/*.h
+        hardware/gpu/*.h
         )
 file(GLOB_RECURSE CUDA_CU_FILES
-        ${PROJECT_SOURCE_DIR}/hardware/gpu/*.cu
+        hardware/gpu/*.cu
         )
 SET(CUDA_SOURCES ${CUDA_HEADER_FILES} ${CUDA_CU_FILES})
 
@@ -105,11 +102,11 @@ SET(CUDA_SOURCES ${CUDA_HEADER_FILES} ${CUDA_CU_FILES})
 SET(ONNX_SOURCES "")
 if(BUILD_PROTOBUF)
     file(GLOB_RECURSE ONNX_HEADER_FILES
-            ${PROJECT_SOURCE_DIR}/serialization/onnx/*.h
+            serialization/onnx/*.h
             )
     file(GLOB_RECURSE ONNX_SOURCES_FILES
-            ${PROJECT_SOURCE_DIR}/serialization/onnx/*.cpp
-            ${PROJECT_SOURCE_DIR}/serialization/onnx/*.cc
+            serialization/onnx/*.cpp
+            serialization/onnx/*.cc
             )
     SET(ONNX_SOURCES ${ONNX_HEADER_FILES} ${ONNX_SOURCES_FILES})
 endif()
@@ -193,11 +190,83 @@ if(USE_CUDA AND CMAKE_CUDA_COMPILER)
             CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 endif()
 
-# Install
+
+# TODO: REVIEW installtion paths (potential conflict with GNUInstallDirs)
+# [INSTALL] Install the EDDL library
+message(STATUS "Install path: ${CMAKE_INSTALL_PREFIX}")
+
+if (WIN32)
+    SET(EDDL_CONFIG_INSTALL_PATH ${CMAKE_INSTALL_PREFIX})
+else()
+    SET(EDDL_CONFIG_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/lib/cmake/eddl)
+endif()
+
 install(TARGETS ${PROJECT_NAME}
-        EXPORT CMakeExternalTargets
-        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        #RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        EXPORT eddlTargets
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin
+        INCLUDES DESTINATION include
         )
+install(EXPORT eddlTargets
+        DESTINATION ${EDDL_CONFIG_INSTALL_PATH}
+        )
+install(DIRECTORY .
+        DESTINATION include/${PROJECT_NAME}
+        FILES_MATCHING PATTERN "*.h")
+
+# This allows to do: "find_package(eddl)"
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/eddlConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/../cmake/eddlConfig.cmake @ONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/../cmake/eddlConfig.cmake"
+        DESTINATION ${EDDL_CONFIG_INSTALL_PATH}
+        )
+
+
+
+# SHOW OPTIONS
+message(STATUS "===========================================" )
+message(STATUS "===========================================" )
+message(STATUS "Project name: " ${CMAKE_PROJECT_NAME} )
+message(STATUS "Prefix path: " ${CMAKE_PREFIX_PATH} )
+message(STATUS "Install prefix: " ${CMAKE_INSTALL_PREFIX} )
+message(STATUS "-------------------------------------------" )
+message(STATUS "Build target: " ${BUILD_TARGET} )
+message(STATUS "Build type: " ${CMAKE_BUILD_TYPE} )
+message(STATUS "Build tests: " ${BUILD_TESTS} )
+message(STATUS "Build examples: " ${BUILD_EXAMPLES} )
+message(STATUS "-------------------------------------------" )
+message(STATUS "Use OpenMP: " ${BUILD_OPENMP} )
+message(STATUS "Use Protobuf: " ${BUILD_PROTOBUF} )
+message(STATUS "Use HPC: " ${BUILD_HPC} )
+message(STATUS "Use Intel-MKL: " ${MKL} )
+message(STATUS "-------------------------------------------" )
+message(STATUS "C++ compiler: ${CMAKE_CXX_COMPILER_ID} (${CMAKE_CXX_COMPILER})")
+message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS})
+message(STATUS "C++ flags (release): " ${CMAKE_CXX_FLAGS_RELEASE})
+message(STATUS "C++ flags (debug): " ${CMAKE_CXX_FLAGS_DEBUG})
+message(STATUS "-------------------------------------------" )
+message(STATUS "CUDA Enabled: " ${USE_CUDA} )
+if(USE_CUDA)
+    message(STATUS "CUDA compiler: " ${CMAKE_CUDA_COMPILER})
+    message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
+    message(STATUS "CUDA toolkit: " ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} )
+endif(USE_CUDA)
+message(STATUS "-------------------------------------------" )
+if(BUILD_OPENMP)
+    message(STATUS "OpenMP version: " ${OpenMP_VERSION_MAJOR} )
+    message(STATUS "OpenMP gomp library: " ${OpenMP_gomp_LIBRARY} )
+    message(STATUS "OpenMP pthread library: " ${OpenMP_pthread_LIBRARY} )
+endif(BUILD_OPENMP)
+message(STATUS "-------------------------------------------" )
+if(BUILD_PROTOBUF)
+    message(STATUS "Protobuf: " ${Protobuf_INCLUDE_DIR} )
+    message(STATUS "Protobuf compiler: " ${Protobuf_PROTOC_EXECUTABLE} )
+endif(BUILD_PROTOBUF)
+message(STATUS "-------------------------------------------" )
+message(STATUS "Eigen3: " ${EIGEN3_INCLUDE_DIR} )
+message(STATUS "ZLIB: " ${ZLIB_INCLUDE_DIR} )
+if(BUILD_TESTS)
+    message(STATUS "gTests: " ${GTEST_INCLUDE_DIRS} )
+endif(BUILD_TESTS)
+message(STATUS "===========================================" )
+message(STATUS "===========================================" )

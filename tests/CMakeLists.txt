@@ -17,4 +17,4 @@ add_test(
         ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/${TEST_NAME}
 )
 
-target_link_libraries(${TEST_NAME} PUBLIC ${GTEST_BOTH_LIBRARIES} eddl)
+target_link_libraries(${TEST_NAME} PUBLIC eddl ${GTEST_INCLUDE_DIRS})
