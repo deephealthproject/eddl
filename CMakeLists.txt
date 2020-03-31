@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.9.2)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+PROJECT(eddl VERSION 0.4.5 LANGUAGES CXX)
 
 ## Apple: Don't modify install_name when touching RPATH.
 if (APPLE)
@@ -13,6 +14,7 @@ option(BUILD_PROTOBUF "Compile using Protobuf" ON)
 option(BUILD_SHARED_LIB "Whether to build a static or dynamic library" ON)
 option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_TESTS "Compile tests" ON)
+option(USE_SYSTEM_DEPENDENCIES "Use system dependencies" ON)
 
 # Double checks (restricted args)
 set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
@@ -30,8 +32,6 @@ endif()
 
 # Force default build type to Release
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel.")
-
-PROJECT(eddl LANGUAGES CXX)
 
 # SET C++ COMPILER STANDARD
 SET(CMAKE_CXX_STANDARD 11)
@@ -52,17 +52,18 @@ else()
 endif()
 
 # Build Dependencies
-add_subdirectory(cmake)
+if(NOT USE_SYSTEM_DEPENDENCIES)
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+    add_subdirectory(cmake)
+endif()
 
 # Build library
 add_subdirectory(src)
 
 # Build tests
 if(BUILD_TESTS)
-    enable_testing()
     add_subdirectory(tests)
 endif(BUILD_TESTS)
-
 
 # Build examples
 if(BUILD_EXAMPLES)

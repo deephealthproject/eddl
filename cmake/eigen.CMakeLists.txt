@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.9.2)
 
 # simplify variable expansion
-cmake_policy(SET CMP0053 NEW)
-cmake_policy(SET CMP0010 NEW)
 
 project(eigen-download NONE)
 

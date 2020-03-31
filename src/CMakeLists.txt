@@ -1,143 +1,54 @@
-# [LIBRARY] EDDL LIBRARY *********************
-if(BUILD_SHARED_LIB)
-    add_library(${PROJECT_NAME} SHARED "")
-else(BUILD_SHARED_LIB)
-    add_library(${PROJECT_NAME} STATIC "")
-endif(BUILD_SHARED_LIB)
+###########################################################################
+############################# SET LIBRARY #################################
+###########################################################################
 
 
-# Add CUDA (if possible)
-if(USE_CUDA)
-    include(CheckLanguage)
-    check_language(CUDA)
-    if(CMAKE_CUDA_COMPILER)
-        enable_language(CUDA)
-        if(NOT DEFINED CMAKE_CUDA_STANDARD)
-            set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr -D_MWAITXINTRIN_H_INCLUDED -D_FORCE_INLINES -D__STRICT_ANSI__")
-            set(CMAKE_CUDA_STANDARD 11)
-            set(CMAKE_CUDA_STANDARD_REQUIRED ON)
-        endif()
-    else()
-        set(USE_CUDA OFF)
-        set(BUILD_TARGET "CPU")
-    endif()
-endif()
+# C++ files
+file(GLOB_RECURSE CPP_HEADERS ${PROJECT_SOURCE_DIR}/include/eddl *.h *.hpp)
+file(GLOB_RECURSE CPP_SOURCES ${PROJECT_SOURCE_DIR}/src *.cpp *.cc)
+file(GLOB_RECURSE CUDA_SOURCES ${PROJECT_SOURCE_DIR}/src *.cu)
 
+# Make an automatic library - will be static or dynamic based on user setting
+add_library(${PROJECT_NAME} lib.cpp ${CPP_HEADERS} ${CPP_SOURCES})
+
+# We need this directory, and users of our library will need it too
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
+
+# All users of this library will need at least C++11
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
+
+# IDEs should put the headers in a nice place
+source_group(TREE "${PROJECT_SOURCE_DIR}/include" PREFIX "Header Files" FILES ${CPP_HEADERS})
+
+
+###########################################################################
+########################### LINK LIBRARIES ################################
+###########################################################################
+# Threads
+find_package(Threads REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
+
+# Eigen
+find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)
+
+# ZLIB
+find_package(ZLIB REQUIRED)
+target_include_directories(${PROJECT_NAME} PUBLIC ${ZLIB_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${ZLIB_LIBRARIES})
 
 # ONNX files
-SET(ONNX_SOURCES "")
 if(BUILD_PROTOBUF)
     add_definitions(-DcPROTO)
 
     # Link library
-#    target_include_directories(${PROJECT_NAME} PUBLIC ${PROTOBUF_INCLUDE_DIRS})
-    target_link_libraries(${PROJECT_NAME} PRIVATE libprotobuf libprotobuf-lite libprotoc)
+    find_package(Protobuf REQUIRED)
+    target_include_directories(${PROJECT_NAME} PUBLIC ${Protobuf_INCLUDE_DIRS})
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES})
 
-#    if(Protobuf_FOUND)
-#        message("Using system's protobuf")
-#        #protobuf_generate_cpp(onnx.pb.cc onnx.pb.h onnx.proto) #Generate protobuf files #Doesn't work
-#        # It seems that in some computers we the path appended to the file
-#        EXEC_PROGRAM(${PROTOBUF_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
-#
-#        # Link library
-#        target_include_directories(${PROJECT_NAME} PUBLIC ${PROTOBUF_INCLUDE_DIRS})
-#        target_link_libraries(${PROJECT_NAME} PRIVATE ${PROTOBUF_LIBRARIES})
-#    else()
-#        message("Using project's protobuf")
-#        SET(BUILD_PROTOBUF OFF)
-#        message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
-#    endif()
-
-    # Set files (Needs to be here since "onnx.pb.cc" and "onnx.pb.h" could have been generated above
-    file(GLOB_RECURSE ONNX_HEADER_FILES
-            serialization/onnx/*.h
-            )
-    file(GLOB_RECURSE ONNX_SOURCES_FILES
-            serialization/onnx/*.cpp
-            serialization/onnx/*.cc
-            )
-    SET(ONNX_SOURCES ${ONNX_HEADER_FILES} ${ONNX_SOURCES_FILES})
-endif()
-
-
-
-# C++ files
-file(GLOB CPP_HEADER_FILES_TOP
-        *.h
-        )
-file(GLOB CPP_SOURCE_FILES_TOP
-        *.cpp
-        )
-file(GLOB_RECURSE CPP_HEADER_FILES_NESTED
-        apis/*.h
-        descriptors/*.h
-        hardware/cpu/*.h
-        initializers/*.h
-        layers/*.h
-        losses/*.h
-        metrics/*.h
-        net/*.h
-        optimizers/*.h
-        regularizers/*.h
-        tensor/*.h
-        )
-
-file(GLOB_RECURSE CPP_SOURCE_FILES_NESTED
-        apis/*.cpp
-        descriptors/*.cpp
-        hardware/cpu/*.cpp
-        initializers/*.cpp
-        layers/*.cpp
-        losses/*.cpp
-        metrics/*.cpp
-        net/*.cpp
-        optimizers/*.cpp
-        regularizers/*.cpp
-        tensor/*.cpp
-        )
-SET(CPP_HEADER_FILES ${CPP_HEADER_FILES_TOP} ${CPP_HEADER_FILES_NESTED})
-SET(CPP_SOURCE_FILES ${CPP_SOURCE_FILES_TOP} ${CPP_SOURCE_FILES_NESTED})
-SET(CPP_SOURCES ${CPP_HEADER_FILES} ${CPP_SOURCE_FILES})
-
-# CUDA files
-file(GLOB_RECURSE CUDA_HEADER_FILES
-        hardware/gpu/*.h
-        )
-file(GLOB_RECURSE CUDA_CU_FILES
-        hardware/gpu/*.cu
-        )
-SET(CUDA_SOURCES ${CUDA_HEADER_FILES} ${CUDA_CU_FILES})
-
-
-target_sources(${PROJECT_NAME} PRIVATE ${CPP_SOURCES} ${ONNX_SOURCES})
-target_include_directories(${PROJECT_NAME} PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-        $<INSTALL_INTERFACE:include>
-        )
-
-# pthreads setup for linux os
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
-    SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
-    find_package(Threads REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
-endif()
-
-# Eigen
-find_package (Eigen3 3.3 CONFIG REQUIRED)
-target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)
-
-# ZLIB
-find_package(ZLIB)
-if(ZLIB_FOUND)
-    message("Using system's ZLIB")
-    target_include_directories(${PROJECT_NAME} PUBLIC ${ZLIB_INCLUDE_DIRS})
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${ZLIB_LIBRARIES})
-else()
-    message("Using project's ZLIB")
-    target_include_directories(${PROJECT_NAME} PUBLIC ${ZLIB_INCLUDE_DIRS})
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${ZLIB_LIBRARY})
+    # Create "onnx.pb.cc" and "onnx.pb.h" files
+    # EXEC_PROGRAM(${Protobuf_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
 endif()
 
 
@@ -160,52 +71,42 @@ endif()
 
 
 # CUDA
-if(USE_CUDA AND CMAKE_CUDA_COMPILER)
-    target_sources(${PROJECT_NAME} PRIVATE ${CUDA_SOURCES})
-    target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
-    target_link_libraries(${PROJECT_NAME}
-            PRIVATE cublas
-            PRIVATE cudart
-            PRIVATE curand
-            )
-    add_definitions(-DcGPU)
+if(USE_CUDA)
+    include(CheckLanguage)
+    check_language(CUDA)
+    if(CMAKE_CUDA_COMPILER)
+        enable_language(CUDA)
+        add_definitions(-DcGPU)
 
-    # Target properties
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-            CUDA_SEPARABLE_COMPILATION ON
-            CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+        target_sources(${PROJECT_NAME} PRIVATE ${CUDA_SOURCES})
+
+        # Target properties
+        set_target_properties(${PROJECT_NAME} PROPERTIES
+                CUDA_SEPARABLE_COMPILATION ON
+                CUDA_RESOLVE_DEVICE_SYMBOLS ON
+                #CUDA_SEPARABLE_COMPILATION ON
+                )
+
+        target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+        target_link_libraries(${PROJECT_NAME} PRIVATE cublas cudart curand)
+
+        if(APPLE)
+            # We need to add the path to the driver (libcuda.dylib) as an rpath,
+            # so that the static cuda runtime can find it at runtime.
+            set_property(TARGET ${PROJECT_NAME} PROPERTY BUILD_RPATH ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
+        endif()
+
+        # TODO: Is this really needed?
+        if(NOT DEFINED CMAKE_CUDA_STANDARD)
+            set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr -D_MWAITXINTRIN_H_INCLUDED -D_FORCE_INLINES -D__STRICT_ANSI__")
+        endif()
+
+    else()
+        set(USE_CUDA OFF)
+        set(BUILD_TARGET "CPU")
+    endif()
 endif()
 
-
-# TODO: REVIEW installtion paths (potential conflict with GNUInstallDirs)
-# [INSTALL] Install the EDDL library
-message(STATUS "Install path: ${CMAKE_INSTALL_PREFIX}")
-
-if (WIN32)
-    SET(EDDL_CONFIG_INSTALL_PATH ${CMAKE_INSTALL_PREFIX})
-else()
-    SET(EDDL_CONFIG_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/lib/cmake/eddl)
-endif()
-
-install(TARGETS ${PROJECT_NAME}
-        EXPORT eddlTargets
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-        RUNTIME DESTINATION bin
-        INCLUDES DESTINATION include
-        )
-install(EXPORT eddlTargets
-        DESTINATION ${EDDL_CONFIG_INSTALL_PATH}
-        )
-install(DIRECTORY .
-        DESTINATION include/${PROJECT_NAME}
-        FILES_MATCHING PATTERN "*.h")
-
-# This allows to do: "find_package(eddl)"
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/eddlConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/../cmake/eddlConfig.cmake @ONLY)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/../cmake/eddlConfig.cmake"
-        DESTINATION ${EDDL_CONFIG_INSTALL_PATH}
-        )
 
 # SHOW OPTIONS
 message(STATUS "===========================================" )
@@ -238,14 +139,12 @@ message(STATUS "OpenMP version: " ${OpenMP_VERSION_MAJOR} )
 message(STATUS "OpenMP gomp library: " ${OpenMP_gomp_LIBRARY} )
 message(STATUS "OpenMP pthread library: " ${OpenMP_pthread_LIBRARY} )
 message(STATUS "-------------------------------------------" )
-message(STATUS "Protobuf include: " ${PROTOBUF_INCLUDE_DIR} )
-message(STATUS "Protobuf libraries: " ${PROTOBUF_LIBRARIES} )
-message(STATUS "Protobuf compiler: " ${PROTOBUF_PROTOC_EXECUTABLE} )
+message(STATUS "Protobuf include: " ${Protobuf_INCLUDE_DIRS} )
+message(STATUS "Protobuf libraries: " ${Protobuf_LIBRARIES} )
+message(STATUS "Protobuf compiler: " ${Protobuf_PROTOC_EXECUTABLE} )
 message(STATUS "-------------------------------------------" )
 message(STATUS "Eigen3 include: " ${EIGEN3_INCLUDE_DIR} )
-message(STATUS "Eigen3 dir: " ${Eigen3_DIR} )
 message(STATUS "-------------------------------------------" )
-message(STATUS "ZLIB root: " ${ZLIB_ROOT} )
 message(STATUS "ZLIB include: " ${ZLIB_INCLUDE_DIRS} )
 message(STATUS "ZLIB libraries: " ${ZLIB_LIBRARIES} )
 message(STATUS "===========================================" )

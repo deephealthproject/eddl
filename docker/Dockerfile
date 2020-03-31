@@ -43,7 +43,7 @@ ENV EDDL_ROOT /eddl
 WORKDIR $EDDL_ROOT
 
 # Copy repo
-COPY . .
+COPY .. .
 
 # Build EDDL
 RUN mkdir build

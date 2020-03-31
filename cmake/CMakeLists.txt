@@ -1,33 +1,10 @@
-#cmake_minimum_required(VERSION 3.9.2)
-#
-#
-##############
-###  BOOST  ##
-##############
-##message(STATUS "Subproject: BOOST...")
-### Download and unpack eigen at configure time
-##configure_file(
-##        ${CMAKE_CURRENT_SOURCE_DIR}/boost.CMakeLists.txt
-##        ${CMAKE_BINARY_DIR}/boost-download/CMakeLists.txt)
-##execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-##        RESULT_VARIABLE result
-##        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/boost-download)
-##if(result)
-##    message(FATAL_ERROR "CMake step for boost failed: ${result}")
-##endif()
-##execute_process(COMMAND ${CMAKE_COMMAND} --build .
-##        RESULT_VARIABLE result
-##        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/boost-download)
-##if(result)
-##    message(FATAL_ERROR "Build step for boost failed: ${result}")
-##endif()
-##
-##add_subdirectory(
-##        ${CMAKE_BINARY_DIR}/boost-src
-##        ${CMAKE_BINARY_DIR}/boost-build)
-##message(STATUS "Subproject: BOOST...DONE")
-#
-#
+cmake_minimum_required(VERSION 3.9.2)
+
+option(USE_SYSTEM_EIGEN "Use system dependency" OFF)
+option(USE_SYSTEM_GTEST "Use system dependency" OFF)
+option(USE_SYSTEM_PROTOBUF "Use system dependency" OFF)
+option(USE_SYSTEM_ZLIB "Use system dependency" OFF)
+
 ###############
 ####  EIGEN  ##
 ###############
@@ -44,17 +21,21 @@ if(result)
 endif()
 execute_process(COMMAND ${CMAKE_COMMAND} --build .
         RESULT_VARIABLE result
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/eigen-download)
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/eigen-download )
 if(result)
     message(FATAL_ERROR "Build step for eigen failed: ${result}")
 endif()
 
+# Set variables
+SET(Eigen3_DIR ${CMAKE_CURRENT_BINARY_DIR}/eigen/share/eigen3/cmake PARENT_SCOPE)
+SET(EIGEN3_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/eigen/include/eigen3 PARENT_SCOPE)
+
 message(STATUS "Subproject: EIGEN...DONE")
 
 
-##############
-###  GTEST  ##
-##############
+###############
+####  GTEST  ##
+###############
 message(STATUS "Subproject: GTEST...")
 # Download and unpack gtest at configure time
 configure_file(
@@ -94,63 +75,54 @@ endif()
 message(STATUS "Subproject: GTEST...DONE")
 
 
-#################
-###  PROTOBUF  ##
-#################
-message(STATUS "Subproject: Protobuf...")
-# Download and unpack gtest at configure time
-configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/protobuf.CMakeLists.txt
-        ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download/CMakeLists.txt)
-execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-        RESULT_VARIABLE result
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download )
-if(result)
-    message(FATAL_ERROR "CMake step for protobuf failed: ${result}")
-endif()
-execute_process(COMMAND ${CMAKE_COMMAND} --build .
-        RESULT_VARIABLE result
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download )
-if(result)
-    message(FATAL_ERROR "Build step for protobuf failed: ${result}")
-endif()
-
-# Protobuf flags
-set(protobuf_BUILD_TESTS OFF CACHE BOOL "")
-#set(protobuf_BUILD_SHARED_LIBS OFF CACHE BOOL "")
-set(protobuf_WITH_ZLIB OFF CACHE BOOL "")
-
-# Add protobuf directly to our build. This defines
-add_subdirectory(
-        ${CMAKE_CURRENT_BINARY_DIR}/protobuf-src/cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/protobuf-build
-        EXCLUDE_FROM_ALL
-        )
-
-message(STATUS "Subproject: Protobuf...DONE")
-
 #############
 ###  ZLIB  ##
 #############
-#message(STATUS "Subproject: ZLIB...")
-## Download and unpack zlib at configure time
+message(STATUS "Subproject: ZLIB...")
+# Download and unpack zlib at configure time
+configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/zlib.CMakeLists.txt
+        ${CMAKE_CURRENT_BINARY_DIR}/zlib-download/CMakeLists.txt)
+execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+        RESULT_VARIABLE result
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/zlib-download)
+if(result)
+    message(FATAL_ERROR "CMake step for zlib failed: ${result}")
+endif()
+execute_process(COMMAND ${CMAKE_COMMAND} --build .
+        RESULT_VARIABLE result
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/zlib-download)
+if(result)
+    message(FATAL_ERROR "Build step for zlib failed: ${result}")
+endif()
+
+add_subdirectory(
+        ${CMAKE_CURRENT_BINARY_DIR}/zlib-src
+        ${CMAKE_CURRENT_BINARY_DIR}/zlib-build)
+message(STATUS "Subproject: ZLIB...DONE")
+
+
+##################
+####  PROTOBUF  ##
+##################
+#message(STATUS "Subproject: Protobuf...")
+## Download and unpack gtest at configure time
 #configure_file(
-#        ${CMAKE_CURRENT_SOURCE_DIR}/zlib.CMakeLists.txt
-#        ${CMAKE_BINARY_DIR}/zlib-download/CMakeLists.txt)
+#        ${CMAKE_CURRENT_SOURCE_DIR}/protobuf.CMakeLists.txt
+#        ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download/CMakeLists.txt)
 #execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
 #        RESULT_VARIABLE result
-#        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/zlib-download)
+#        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download )
 #if(result)
-#    message(FATAL_ERROR "CMake step for zlib failed: ${result}")
-#endif()
-#execute_process(COMMAND ${CMAKE_COMMAND} --build .
-#        RESULT_VARIABLE result
-#        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/zlib-download)
-#if(result)
-#    message(FATAL_ERROR "Build step for zlib failed: ${result}")
+#    message(FATAL_ERROR "CMake step for protobuf failed: ${result}")
 #endif()
 #
-#add_subdirectory(
-#        ${CMAKE_BINARY_DIR}/zlib-src
-#        ${CMAKE_BINARY_DIR}/zlib-build)
-#message(STATUS "Subproject: ZLIB...DONE")
+## the location where protobuf-config.cmake will be installed varies by platform
+#if (WIN32)
+#    set(_FINDPACKAGE_PROTOBUF_CONFIG_DIR "${CMAKE_CURRENT_BINARY_DIR}/protobuf/cmake")
+#else()
+#    set(_FINDPACKAGE_PROTOBUF_CONFIG_DIR "${CMAKE_CURRENT_BINARY_DIR}/protobuf/lib/cmake/protobuf")
+#endif()
+#
+## Set variables
+#SET(protobuf_DIR ${_FINDPACKAGE_PROTOBUF_CONFIG_DIR} PARENT_SCOPE)
