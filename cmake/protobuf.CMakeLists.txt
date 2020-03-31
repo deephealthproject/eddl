@@ -13,29 +13,8 @@ ExternalProject_Add(protobuf
         INSTALL_COMMAND   ""
         TEST_COMMAND      ""
         )
-
-set(PROTOBUF_LIBRARY_STATIC ${CMAKE_CURRENT_BINARY_DIR}/protobuf/lib/libprotobuf.a)
-set(PROTOBUF_LIBRARY_SHARED ${CMAKE_CURRENT_BINARY_DIR}/protobuf/lib/libprotobuf.so)
-
-# Mimic the behavior of `FindProtobuf` module
-# Use the old variable names to ensure backward compatibility
-set(PROTOBUF_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/protobuf/include)
-set(PROTOBUF_INCLUDE_DIRS ${PROTOBUF_INCLUDE_DIR})
-set(PROTOBUF_LIBRARY ${PROTOBUF_LIBRARY_STATIC}) # use the static library
-set(PROTOBUF_LIBRARIES ${PROTOBUF_LIBRARY})
-set(PROTOBUF_PROTOC_EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/protobuf/bin/protoc)
-set(PROTOBUF_FOUND TRUE)
-
-# configure protobuf::libprotobuf
-add_library(protobuf::libprotobuf UNKNOWN IMPORTED)
-# Note: INTERFACE_INCLUDE_DIRECTORIES can't set in this place because include/ is
-# not installed during executing `cmake`
-set_target_properties(protobuf::libprotobuf PROPERTIES
-        IMPORTED_LOCATION "${PROTOBUF_LIBRARY_STATIC}")
-add_dependencies(protobuf::libprotobuf Protobuf)
-
-# configure protobuf::protoc
-add_executable(protobuf::protoc IMPORTED)
-set_target_properties(protobuf::protoc PROPERTIES
-        IMPORTED_LOCATION "${PROTOBUF_PROTOC_EXECUTABLE}")
-add_dependencies(protobuf::protoc Protobuf)
+#
+## cmake 3.7 uses Protobuf_ when 3.5 PROTOBUF_ prefixes.
+#set(Protobuf_INCLUDE_DIRS ${PROTOBUF_INCLUDE_DIRS})
+#set(Protobuf_LIBRARIES ${PROTOBUF_LIBRARIES})
+#set(Protobuf_PROTOC_EXECUTABLE ${PROTOBUF_PROTOC_EXECUTABLE})

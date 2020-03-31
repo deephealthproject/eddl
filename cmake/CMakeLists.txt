@@ -99,34 +99,35 @@ message(STATUS "Subproject: GTEST...DONE")
 #################
 ###  PROTOBUF  ##
 #################
-message(STATUS "Subproject: Protobuf...")
-# Download and unpack gtest at configure time
-configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/protobuf.CMakeLists.txt
-        ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download/CMakeLists.txt)
-execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-        RESULT_VARIABLE result
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download )
-if(result)
-    message(FATAL_ERROR "CMake step for protobuf failed: ${result}")
-endif()
-execute_process(COMMAND ${CMAKE_COMMAND} --build .
-        RESULT_VARIABLE result
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download )
-if(result)
-    message(FATAL_ERROR "Build step for protobuf failed: ${result}")
-endif()
-
-# Protobuf flags
-set(protobuf_BUILD_TESTS OFF CACHE INTERNAL "Disable Protobuf tests")
-
-# Add protobuf directly to our build. This defines
-add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/protobuf-src
-                ${CMAKE_CURRENT_BINARY_DIR}/protobuf-build
-                EXCLUDE_FROM_ALL)
-
-message(${CMAKE_CURRENT_BINARY_DIR})
-message(STATUS "Subproject: Protobuf...DONE")
+#message(STATUS "Subproject: Protobuf...")
+## Download and unpack gtest at configure time
+#configure_file(
+#        ${CMAKE_CURRENT_SOURCE_DIR}/protobuf.CMakeLists.txt
+#        ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download/CMakeLists.txt)
+#execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+#        RESULT_VARIABLE result
+#        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download )
+#if(result)
+#    message(FATAL_ERROR "CMake step for protobuf failed: ${result}")
+#endif()
+#execute_process(COMMAND ${CMAKE_COMMAND} --build .
+#        RESULT_VARIABLE result
+#        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download )
+#if(result)
+#    message(FATAL_ERROR "Build step for protobuf failed: ${result}")
+#endif()
+#
+## Protobuf flags
+#set(protobuf_BUILD_TESTS OFF CACHE BOOL "")
+##set(protobuf_BUILD_SHARED_LIBS OFF CACHE BOOL "")
+#set(protobuf_WITH_ZLIB OFF CACHE BOOL "")
+#
+## Add protobuf directly to our build. This defines
+#add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/protobuf-src/cmake
+#                 ${CMAKE_CURRENT_BINARY_DIR}/protobuf-build
+#        )
+#
+#message(STATUS "Subproject: Protobuf...DONE")
 
 #############
 ###  ZLIB  ##

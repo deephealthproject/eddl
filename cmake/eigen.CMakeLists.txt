@@ -18,7 +18,5 @@ ExternalProject_Add(eigen_project
 		TEST_COMMAND      ""
 		)
 
-ExternalProject_Get_Property(eigen_project install_dir)
-set(eigen_install_dir ${install_dir})
-
-SET(EIGEN3_INCLUDE_DIR ${install_dir}/include/Eigen3)
+ExternalProject_Get_Property(eigen_project source_dir)
+SET(EIGEN3_INCLUDE_DIR ${source_dir}/include/Eigen3)

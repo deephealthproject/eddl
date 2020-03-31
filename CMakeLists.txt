@@ -63,9 +63,9 @@ if(BUILD_TESTS)
     add_subdirectory(tests)
 endif(BUILD_TESTS)
 
-#
-## Build examples
-#if(BUILD_EXAMPLES)
-#    add_subdirectory(examples)
-#endif(BUILD_EXAMPLES)
-#
+
+# Build examples
+if(BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif(BUILD_EXAMPLES)
+
