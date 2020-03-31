@@ -29,29 +29,23 @@ SET(ONNX_SOURCES "")
 if(BUILD_PROTOBUF)
     add_definitions(-DcPROTO)
 
-    # Find protobuf
-    include(FindProtobuf)
-    find_package(Protobuf)
-    if(Protobuf_FOUND)
-        message("Using system's Protobuf")
-        target_include_directories(${PROJECT_NAME} PUBLIC ${PROTOBUF_INCLUDE_DIR})
-        target_link_libraries(${PROJECT_NAME} PRIVATE ${PROTOBUF_LIBRARIES})
-        message("Protobuf path: ${PROTOBUF_LIBRARIES} ${PROTOBUF_INCLUDE_DIR}")
-    else()
-        message("Using project's Protobuf")
-        target_include_directories(${PROJECT_NAME} PUBLIC ${Protobuf_INCLUDE_DIR})
-        target_link_libraries(${PROJECT_NAME} PRIVATE ${PROTOBUF_LIBRARIES})
-    endif()
+    # Generate protobuf files
+    message("PROTOTOTOTOOTOTOTO: ${PROTOBUF_PROTOC_EXECUTABLE}")
+    EXEC_PROGRAM(${PROTOBUF_PROTOC_EXECUTABLE} ARGS --cpp_out serialization/onnx/ --proto_path serialization/onnx/ onnx.proto )
 
     # Set files
     file(GLOB_RECURSE ONNX_HEADER_FILES
-            ${PROJECT_SOURCE_DIR}/serialization/onnx/*.h
+            serialization/onnx/*.h
             )
     file(GLOB_RECURSE ONNX_SOURCES_FILES
-            ${PROJECT_SOURCE_DIR}/serialization/onnx/*.cpp
-            ${PROJECT_SOURCE_DIR}/serialization/onnx/*.cc
+            serialization/onnx/*.cpp
+            serialization/onnx/*.cc
             )
     SET(ONNX_SOURCES ${ONNX_HEADER_FILES} ${ONNX_SOURCES_FILES})
+
+    # Link library
+    target_include_directories(${PROJECT_NAME} PUBLIC ${PROTOBUF_INCLUDE_DIRS})
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${PROTOBUF_LIBRARIES})
 endif()
 
 
@@ -93,8 +87,6 @@ file(GLOB_RECURSE CPP_SOURCE_FILES_NESTED
 SET(CPP_HEADER_FILES ${CPP_HEADER_FILES_TOP} ${CPP_HEADER_FILES_NESTED})
 SET(CPP_SOURCE_FILES ${CPP_SOURCE_FILES_TOP} ${CPP_SOURCE_FILES_NESTED})
 SET(CPP_SOURCES ${CPP_HEADER_FILES} ${CPP_SOURCE_FILES})
-
-message(" fileeeeees: ${CPP_SOURCES}" )
 
 # CUDA files
 file(GLOB_RECURSE CUDA_HEADER_FILES

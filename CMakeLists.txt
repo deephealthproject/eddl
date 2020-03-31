@@ -52,7 +52,7 @@ else()
 endif()
 
 # Build Dependencies
-#add_subdirectory(cmake)
+add_subdirectory(cmake)
 
 # Build library
 add_subdirectory(src)
@@ -60,15 +60,12 @@ add_subdirectory(src)
 # Build tests
 if(BUILD_TESTS)
     enable_testing()
-    find_package(GTest)
-    include_directories(${GTEST_INCLUDE_DIRS})
-
     add_subdirectory(tests)
 endif(BUILD_TESTS)
 
-
-# Build examples
-if(BUILD_EXAMPLES)
-    add_subdirectory(examples)
-endif(BUILD_EXAMPLES)
-
+#
+## Build examples
+#if(BUILD_EXAMPLES)
+#    add_subdirectory(examples)
+#endif(BUILD_EXAMPLES)
+#

@@ -1,25 +1,41 @@
-cmake_minimum_required(VERSION 3.5)
-
-# simplify variable expansion
-cmake_policy(SET CMP0053 NEW)
-cmake_policy(SET CMP0010 NEW)
+cmake_minimum_required(VERSION 3.9.2)
 
 project(protobuf-download NONE)
 
 include(ExternalProject)
-ExternalProject_Add(protobuf_project
+ExternalProject_Add(protobuf
         GIT_REPOSITORY https://github.com/google/protobuf
         GIT_TAG "v3.11.4"
-        SOURCE_DIR "${CMAKE_BINARY_DIR}/protobuf-src"
-        BINARY_DIR "${CMAKE_BINARY_DIR}/protobuf-build"
+        SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/protobuf-src"
+        BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/protobuf-build"
         CONFIGURE_COMMAND ""
         BUILD_COMMAND     ""
         INSTALL_COMMAND   ""
         TEST_COMMAND      ""
         )
 
-ExternalProject_Get_Property(protobuf_project install_dir)
-set(protobuf_install_dir ${install_dir})
+set(PROTOBUF_LIBRARY_STATIC ${CMAKE_CURRENT_BINARY_DIR}/protobuf/lib/libprotobuf.a)
+set(PROTOBUF_LIBRARY_SHARED ${CMAKE_CURRENT_BINARY_DIR}/protobuf/lib/libprotobuf.so)
 
-set(PROTOBUF_INCLUDE_DIR ${install_dir}/protobuf/include)
-set(PROTOBUF_LIBRARIES ${install_dir}/protobuf/lib)
+# Mimic the behavior of `FindProtobuf` module
+# Use the old variable names to ensure backward compatibility
+set(PROTOBUF_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/protobuf/include)
+set(PROTOBUF_INCLUDE_DIRS ${PROTOBUF_INCLUDE_DIR})
+set(PROTOBUF_LIBRARY ${PROTOBUF_LIBRARY_STATIC}) # use the static library
+set(PROTOBUF_LIBRARIES ${PROTOBUF_LIBRARY})
+set(PROTOBUF_PROTOC_EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/protobuf/bin/protoc)
+set(PROTOBUF_FOUND TRUE)
+
+# configure protobuf::libprotobuf
+add_library(protobuf::libprotobuf UNKNOWN IMPORTED)
+# Note: INTERFACE_INCLUDE_DIRECTORIES can't set in this place because include/ is
+# not installed during executing `cmake`
+set_target_properties(protobuf::libprotobuf PROPERTIES
+        IMPORTED_LOCATION "${PROTOBUF_LIBRARY_STATIC}")
+add_dependencies(protobuf::libprotobuf Protobuf)
+
+# configure protobuf::protoc
+add_executable(protobuf::protoc IMPORTED)
+set_target_properties(protobuf::protoc PROPERTIES
+        IMPORTED_LOCATION "${PROTOBUF_PROTOC_EXECUTABLE}")
+add_dependencies(protobuf::protoc Protobuf)
