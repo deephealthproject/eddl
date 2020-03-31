@@ -18,7 +18,6 @@ ExternalProject_Add(gtest_project
         TEST_COMMAND      ""
         )
 
-include_directories()
 ExternalProject_Get_Property(gtest_project install_dir)
 set(gtest_install_dir ${install_dir})
 

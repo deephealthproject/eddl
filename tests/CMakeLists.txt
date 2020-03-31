@@ -1,20 +1,13 @@
-# Set name
-set(TEST_NAME unit_tests)
+cmake_minimum_required(VERSION 3.9.2)
 
 # Find tests (recursively)
 file(GLOB_RECURSE CPP_TESTS_FILES LIST_DIRECTORIES true *.h *.cpp)
 
-message(STATUS "Test files: ${CPP_TESTS_FILES}")
+message("adasdasd:" ${GTEST_BOTH_LIBRARIES})
 
 # Build test and target libraries
-add_executable(${TEST_NAME} ${CPP_TESTS_FILES})
+add_executable(unit_tests ${CPP_TESTS_FILES})
+target_link_libraries(unit_tests PUBLIC ${PROJECT_NAME} ${GTEST_BOTH_LIBRARIES})
 
 # Add test
-add_test(
-        NAME
-        ${TEST_NAME}
-        COMMAND
-        ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/${TEST_NAME}
-)
-
-target_link_libraries(${TEST_NAME} PUBLIC ${PROJECT_NAME} ${GTEST_INCLUDE_DIRS})
+add_test(NAME unit_tests COMMAND unit_tests)

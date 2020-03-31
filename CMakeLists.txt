@@ -59,6 +59,10 @@ add_subdirectory(src)
 
 # Build tests
 if(BUILD_TESTS)
+    enable_testing()
+    find_package(GTest)
+    include_directories(${GTEST_INCLUDE_DIRS})
+
     add_subdirectory(tests)
 endif(BUILD_TESTS)
 
