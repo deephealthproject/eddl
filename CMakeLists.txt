@@ -21,6 +21,7 @@ set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
 string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
 if(${BUILD_TARGET} STREQUAL "CPU")
 elseif(${BUILD_TARGET} STREQUAL "GPU")
+    set(USE_CUDA ON CACHE BOOL "Enable CUDA support if checked")
 elseif(${BUILD_TARGET} STREQUAL "FPGA")
     message(FATAL_ERROR "FPGA not implemented, CMake will exit." )
 else()
@@ -51,16 +52,18 @@ else()
 endif()
 
 # Build Dependencies
-add_subdirectory(cmake)
+#add_subdirectory(cmake)
+
+# Build library
 add_subdirectory(src)
 
-# [TESTS] Generate a test executable
+# Build tests
 if(BUILD_TESTS)
     add_subdirectory(tests)
 endif(BUILD_TESTS)
 
 
-# [EXAMPLES] Generate a few test executables
+# Build examples
 if(BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif(BUILD_EXAMPLES)

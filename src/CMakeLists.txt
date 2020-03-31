@@ -1,3 +1,10 @@
+# [LIBRARY] EDDL LIBRARY *********************
+if(BUILD_SHARED_LIB)
+    add_library(${PROJECT_NAME} SHARED "")
+else(BUILD_SHARED_LIB)
+    add_library(${PROJECT_NAME} STATIC "")
+endif(BUILD_SHARED_LIB)
+
 
 # Add CUDA (if possible)
 if(USE_CUDA)
@@ -20,19 +27,20 @@ endif()
 # ONNX files
 SET(ONNX_SOURCES "")
 if(BUILD_PROTOBUF)
+    add_definitions(-DcPROTO)
 
     # Find protobuf
-    if(TARGET protobuf::libprotobuf)
-        include(FindProtobuf)
-        find_package(Protobuf REQUIRED)
-        add_definitions(-DcPROTO)
-        target_include_directories(eddl PUBLIC ${PROTOBUF_INCLUDE_DIR})
-        target_link_libraries(eddl PRIVATE ${PROTOBUF_LIBRARIES})
+    include(FindProtobuf)
+    find_package(Protobuf)
+    if(Protobuf_FOUND)
+        message("Using system's Protobuf")
+        target_include_directories(${PROJECT_NAME} PUBLIC ${PROTOBUF_INCLUDE_DIR})
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${PROTOBUF_LIBRARIES})
         message("Protobuf path: ${PROTOBUF_LIBRARIES} ${PROTOBUF_INCLUDE_DIR}")
     else()
-        add_definitions(-DcPROTO)
-        target_include_directories(${PROJECT_NAME} PUBLIC ${PROTOBUF_INCLUDE_DIR})
-        target_link_libraries(${PROJECT_NAME} PRIVATE ${PROTOBUF_LIB_DIR})
+        message("Using project's Protobuf")
+        target_include_directories(${PROJECT_NAME} PUBLIC ${Protobuf_INCLUDE_DIR})
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${PROTOBUF_LIBRARIES})
     endif()
 
     # Set files
@@ -98,27 +106,6 @@ file(GLOB_RECURSE CUDA_CU_FILES
 SET(CUDA_SOURCES ${CUDA_HEADER_FILES} ${CUDA_CU_FILES})
 
 
-# ONNX files
-SET(ONNX_SOURCES "")
-if(BUILD_PROTOBUF)
-    file(GLOB_RECURSE ONNX_HEADER_FILES
-            serialization/onnx/*.h
-            )
-    file(GLOB_RECURSE ONNX_SOURCES_FILES
-            serialization/onnx/*.cpp
-            serialization/onnx/*.cc
-            )
-    SET(ONNX_SOURCES ${ONNX_HEADER_FILES} ${ONNX_SOURCES_FILES})
-endif()
-
-
-# [LIBRARY] EDDL LIBRARY *********************
-if(BUILD_SHARED_LIB)
-    add_library(${PROJECT_NAME} SHARED "")
-else(BUILD_SHARED_LIB)
-    add_library(${PROJECT_NAME} STATIC "")
-endif(BUILD_SHARED_LIB)
-
 target_sources(${PROJECT_NAME} PRIVATE ${CPP_SOURCES} ${ONNX_SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
@@ -134,23 +121,27 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 endif()
 
 # Eigen
-if(TARGET Eigen3::Eigen)
-    find_package(Eigen3 3.3)
+find_package(Eigen3 3.3)
+if(Eigen3_FOUND)
+    message("Using system's Eigen")
     target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIR})
     target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)
 else()
+    message("Using project's Eigen")
     target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIR})
     target_link_libraries(${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIR})
 endif()
 
 
 # ZLIB
-if(TARGET ZLIB::ZLIB)
-    find_package(ZLIB)
+find_package(ZLIB)
+if(ZLIB_FOUND)
+    message("Using system's ZLIB")
     target_include_directories(${PROJECT_NAME} PUBLIC ${ZLIB_INCLUDE_DIRS})
     target_link_libraries(${PROJECT_NAME} PRIVATE ${ZLIB_LIBRARIES})
 else()
-    target_include_directories(${PROJECT_NAME} PUBLIC ${ZLIB_INCLUDE_DIR})
+    message("Using project's ZLIB")
+    target_include_directories(${PROJECT_NAME} PUBLIC ${ZLIB_INCLUDE_DIRS})
     target_link_libraries(${PROJECT_NAME} PRIVATE ${ZLIB_LIBRARY})
 endif()
 
@@ -221,8 +212,6 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/../cmake/eddlConfig.cmake"
         DESTINATION ${EDDL_CONFIG_INSTALL_PATH}
         )
 
-
-
 # SHOW OPTIONS
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )
@@ -246,27 +235,23 @@ message(STATUS "C++ flags (release): " ${CMAKE_CXX_FLAGS_RELEASE})
 message(STATUS "C++ flags (debug): " ${CMAKE_CXX_FLAGS_DEBUG})
 message(STATUS "-------------------------------------------" )
 message(STATUS "CUDA Enabled: " ${USE_CUDA} )
-if(USE_CUDA)
-    message(STATUS "CUDA compiler: " ${CMAKE_CUDA_COMPILER})
-    message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
-    message(STATUS "CUDA toolkit: " ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} )
-endif(USE_CUDA)
+message(STATUS "CUDA compiler: " ${CMAKE_CUDA_COMPILER})
+message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
+message(STATUS "CUDA toolkit: " ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} )
 message(STATUS "-------------------------------------------" )
-if(BUILD_OPENMP)
-    message(STATUS "OpenMP version: " ${OpenMP_VERSION_MAJOR} )
-    message(STATUS "OpenMP gomp library: " ${OpenMP_gomp_LIBRARY} )
-    message(STATUS "OpenMP pthread library: " ${OpenMP_pthread_LIBRARY} )
-endif(BUILD_OPENMP)
+message(STATUS "OpenMP version: " ${OpenMP_VERSION_MAJOR} )
+message(STATUS "OpenMP gomp library: " ${OpenMP_gomp_LIBRARY} )
+message(STATUS "OpenMP pthread library: " ${OpenMP_pthread_LIBRARY} )
 message(STATUS "-------------------------------------------" )
-if(BUILD_PROTOBUF)
-    message(STATUS "Protobuf: " ${Protobuf_INCLUDE_DIR} )
-    message(STATUS "Protobuf compiler: " ${Protobuf_PROTOC_EXECUTABLE} )
-endif(BUILD_PROTOBUF)
+message(STATUS "Protobuf include: " ${PROTOBUF_INCLUDE_DIR} )
+message(STATUS "Protobuf libraries: " ${PROTOBUF_LIBRARIES} )
+message(STATUS "Protobuf compiler: " ${Protobuf_PROTOC_EXECUTABLE} )
 message(STATUS "-------------------------------------------" )
-message(STATUS "Eigen3: " ${EIGEN3_INCLUDE_DIR} )
-message(STATUS "ZLIB: " ${ZLIB_INCLUDE_DIR} )
-if(BUILD_TESTS)
-    message(STATUS "gTests: " ${GTEST_INCLUDE_DIRS} )
-endif(BUILD_TESTS)
+message(STATUS "Eigen3 include: " ${EIGEN3_INCLUDE_DIR} )
+message(STATUS "Eigen3 dir: " ${Eigen3_DIR} )
+message(STATUS "-------------------------------------------" )
+message(STATUS "ZLIB root: " ${ZLIB_ROOT} )
+message(STATUS "ZLIB include: " ${ZLIB_INCLUDE_DIRS} )
+message(STATUS "ZLIB libraries: " ${ZLIB_LIBRARIES} )
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )

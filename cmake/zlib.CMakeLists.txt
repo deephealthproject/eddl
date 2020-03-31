@@ -21,8 +21,7 @@ ExternalProject_Add(zlib_project
 ExternalProject_Get_Property(zlib_project install_dir)
 set(zlib_install_dir ${install_dir})
 
-set(ZLIB_INCLUDE_DIR ${install_dir}/zlib/include)
-set(ZLIB_ROOT ${install_dir} CACHE PATH "zlib root" FORCE)
+set(ZLIB_INCLUDE_DIRS ${install_dir}/zlib/include)
 if(WIN32)
 	set(ZLIB_LIBRARY ${install_dir}/lib/zlib.lib CACHE FILEPATH "zlib library" FORCE)
 else()

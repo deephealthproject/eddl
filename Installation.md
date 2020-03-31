@@ -73,14 +73,14 @@ Then, on Ubuntu/Debian install:
 
 ```
 sudo apt-get install -y build-essential cmake git wget graphviz  # Run dependencies
-sudo apt-get install -y libeigen3-dev zlib1g-dev libboost-all-dev  # Build dependencies
+sudo apt-get install -y libeigen3-dev zlib1g-dev #libboost-all-dev  # Build dependencies
 ```
 
 Or, on MacOS install:
 
 ```
 brew install cmake git wget graphviz  # Run dependencies
-brew install eigen zlib boost  # Build dependencies
+brew install eigen zlib protobuf #boost  # Build dependencies
 ```
 
 
