@@ -7,16 +7,10 @@ cmake_policy(SET CMP0010 NEW)
 project(eigen-download NONE)
 
 include(ExternalProject)
-ExternalProject_Add(eigen_project
+ExternalProject_Add(eigen
 		GIT_REPOSITORY "https://gitlab.com/libeigen/eigen.git"
 		GIT_TAG "3.3.7"
-		SOURCE_DIR "${CMAKE_BINARY_DIR}/eigen-src"
-		BINARY_DIR "${CMAKE_BINARY_DIR}/eigen-build"
-		CONFIGURE_COMMAND ""
-		BUILD_COMMAND     ""
-		INSTALL_COMMAND   ""
-		TEST_COMMAND      ""
+		SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/eigen-src"
+		CMAKE_CACHE_ARGS
+			-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/eigen
 		)
-
-ExternalProject_Get_Property(eigen_project source_dir)
-SET(EIGEN3_INCLUDE_DIR ${source_dir}/include/Eigen3)

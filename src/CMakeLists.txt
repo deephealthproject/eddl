@@ -29,22 +29,24 @@ SET(ONNX_SOURCES "")
 if(BUILD_PROTOBUF)
     add_definitions(-DcPROTO)
 
-    include(FindProtobuf)
-    find_package(Protobuf)
-    if(Protobuf_FOUND)
-        message("Using system's protobuf")
-        #protobuf_generate_cpp(onnx.pb.cc onnx.pb.h onnx.proto) #Generate protobuf files #Doesn't work
-        # It seems that in some computers we the path appended to the file
-        EXEC_PROGRAM(${PROTOBUF_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
+    # Link library
+#    target_include_directories(${PROJECT_NAME} PUBLIC ${PROTOBUF_INCLUDE_DIRS})
+    target_link_libraries(${PROJECT_NAME} PRIVATE libprotobuf libprotobuf-lite libprotoc)
 
-        # Link library
-        target_include_directories(${PROJECT_NAME} PUBLIC ${PROTOBUF_INCLUDE_DIRS})
-        target_link_libraries(${PROJECT_NAME} PRIVATE ${PROTOBUF_LIBRARIES})
-    else()
-        message("Using project's protobuf")
-        SET(BUILD_PROTOBUF OFF)
-        message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
-    endif()
+#    if(Protobuf_FOUND)
+#        message("Using system's protobuf")
+#        #protobuf_generate_cpp(onnx.pb.cc onnx.pb.h onnx.proto) #Generate protobuf files #Doesn't work
+#        # It seems that in some computers we the path appended to the file
+#        EXEC_PROGRAM(${PROTOBUF_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
+#
+#        # Link library
+#        target_include_directories(${PROJECT_NAME} PUBLIC ${PROTOBUF_INCLUDE_DIRS})
+#        target_link_libraries(${PROJECT_NAME} PRIVATE ${PROTOBUF_LIBRARIES})
+#    else()
+#        message("Using project's protobuf")
+#        SET(BUILD_PROTOBUF OFF)
+#        message(WARNING "Protobuf not found, ignore if you are not using the ONNX module.")
+#    endif()
 
     # Set files (Needs to be here since "onnx.pb.cc" and "onnx.pb.h" could have been generated above
     file(GLOB_RECURSE ONNX_HEADER_FILES
@@ -122,17 +124,9 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 endif()
 
 # Eigen
-find_package (Eigen3 3.3 NO_MODULE)
-if(TARGET Eigen3::Eigen)
-    message("Using system's Eigen")
-    target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIR})
-    target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)
-else()
-    message("Using project's Eigen")
-    target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIR})
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIR})
-endif()
-
+find_package (Eigen3 3.3 CONFIG REQUIRED)
+target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)
 
 # ZLIB
 find_package(ZLIB)
