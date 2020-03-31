@@ -20,3 +20,6 @@ ExternalProject_Add(protobuf_project
 
 ExternalProject_Get_Property(protobuf_project install_dir)
 set(protobuf_install_dir ${install_dir})
+
+set(PROTOBUF_INCLUDE_DIR ${install_dir}/protobuf/include)
+set(PROTOBUF_LIB_DIR ${install_dir}/protobuf/lib)

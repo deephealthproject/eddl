@@ -28,9 +28,9 @@ cmake_minimum_required(VERSION 3.9.2)
 #message(STATUS "Subproject: BOOST...DONE")
 
 
-#############
-##  EIGEN  ##
-#############
+##############
+###  EIGEN  ##
+##############
 message(STATUS "Subproject: EIGEN...")
 # Download and unpack eigen at configure time
 configure_file(

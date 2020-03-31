@@ -20,3 +20,5 @@ ExternalProject_Add(eigen_project
 
 ExternalProject_Get_Property(eigen_project install_dir)
 set(eigen_install_dir ${install_dir})
+
+SET(EIGEN3_INCLUDE_DIR ${install_dir}/include/Eigen3)
