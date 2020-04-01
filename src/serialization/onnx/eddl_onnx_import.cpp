@@ -512,11 +512,32 @@ namespace eddl {
 
 		queue<onnx::NodeProto *> nodeQueue = process_inputs(&inputs, &inputs_onnx, &input_node_map, &output_node_map);
 
+		for(int i = 0; i < nodes.size(); i++){ //Check if any node only has initializers and constant nodes as parameters, so we can process it right away
+			onnx::NodeProto *node = &nodes[i];
+			bool avaliable = true;
+			for(int j = 0; j < node->input_size(); j++){
+				string input = node->input(j);
+				if(map_init_values.count(input)){
+					continue;
+				}
+				if(constant_node_map.count(input)){
+					continue;
+				}
+				avaliable = false;
+				break;
+			}
+			if(avaliable){
+				cout << "Node " << node->name() << " is avaliable" << endl;
+				nodeQueue.push(node);
+			}
+		}
+
 		map<string, ONNX_LAYERS> map_layers = create_enum_map();
 		//6 - While the queue is not empty:
 		while(!nodeQueue.empty()){
 			counter = 0;
 			onnx::NodeProto* node= nodeQueue.front();
+			cout << "Processing node named: " << node->name() << endl;
 			//6.1: Check all inputs are avaliable
 			bool avaliable = true;
 			for(int i = 0; i < node->input_size(); i++){
@@ -718,8 +739,11 @@ namespace eddl {
 						}
 						cout << "Copying weights" << endl;
 						Tensor* weights_tensor = eddlT::create(dims, weights->data(), dev);
+						cout << "Tensor con los pesos creado" << endl;
 						Tensor::copy(weights_tensor, convol_descriptor->K);
+						cout << "Tensor copiado" << endl;
 						delete(weights_tensor);
+						cout << "Tensor auxiliar borrado" << endl;
 						break;
 					}
 
@@ -1402,11 +1426,15 @@ namespace eddl {
 			}
 
 			for( int i = 0; i < node->output_size(); i++ ) {
+				cout << "Adding outputs: iteration " << i << endl;
 				output_node_map[node->output(i)] = actual_layer;
+				cout << "output set" << endl;
 				vector<onnx::NodeProto*> child_nodes = input_node_map[node->output(i)];
+				cout << "child nodes extracted from input node map" << endl;
 				for(onnx::NodeProto * child : child_nodes){
 					nodeQueue.push(child);
 				}
+				cout << "childs pushed into the queue" << endl;
 			}
 			nodeQueue.pop();
 
