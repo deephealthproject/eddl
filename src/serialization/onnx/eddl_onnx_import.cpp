@@ -8,8 +8,10 @@
 #include <map>
 #include <set>
 #include <algorithm>
-#include "apis/eddl.h"
-#include "apis/eddlT.h"
+
+// TODO: IF THIS FILE USES THE API, IT SHOULD BE ON "EDDL/APIS/*"
+#include "eddl/apis/eddl.h"
+#include "eddl/apis/eddlT.h"
 
 
 using namespace std;

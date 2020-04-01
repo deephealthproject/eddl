@@ -9,7 +9,7 @@ endif()
 
 # USER OPTIONS *******************************
 set(BUILD_TARGET "GPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
-option(BUILD_OPENMP "Compile using OpenMP" OFF)
+option(BUILD_OPENMP "Compile using OpenMP" ON)
 option(BUILD_PROTOBUF "Compile using Protobuf" ON)
 option(BUILD_SHARED_LIB "Whether to build a static or dynamic library" ON)
 option(BUILD_EXAMPLES "Compile examples" OFF)
