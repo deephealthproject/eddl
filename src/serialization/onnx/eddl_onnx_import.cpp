@@ -527,7 +527,7 @@ namespace eddl {
 				break;
 			}
 			if(avaliable){
-				cout << "Node " << node->name() << " is avaliable" << endl;
+				//cout << "Node " << node->name() << " is avaliable" << endl;
 				nodeQueue.push(node);
 			}
 		}
@@ -537,7 +537,6 @@ namespace eddl {
 		while(!nodeQueue.empty()){
 			counter = 0;
 			onnx::NodeProto* node= nodeQueue.front();
-			cout << "Processing node named: " << node->name() << endl;
 			//6.1: Check all inputs are avaliable
 			bool avaliable = true;
 			for(int i = 0; i < node->input_size(); i++){
@@ -551,7 +550,6 @@ namespace eddl {
 				if(constant_node_map.count(input)){
 					continue;
 				}
-				//cout << "Input " << input << " Is not avaliable" << endl;
 				avaliable = false;
 				break;
 			}
@@ -563,7 +561,6 @@ namespace eddl {
 
 			//6.2
 			if(!avaliable){
-				//cout << " node->op_type   " << node->op_type() << " is not avaliable" << endl;
 				nodeQueue.pop();
 				continue;
 			}
@@ -580,7 +577,6 @@ namespace eddl {
 			string name = node->name();
 			int dev = DEV_CPU;//TODO: Check what device to use
 			Layer *actual_layer;
-			cout << "   LAYER TYPE = " << layer_type_name << endl;
 
 			switch (layer_type) { //Every case should create the corresponding layer and asign it to "actual_layer" variable
 
@@ -642,7 +638,6 @@ namespace eddl {
 
 				case ONNX_LAYERS::CONV:
 					{
-						cout << "Debug 1" << endl;
 						int filters;
 						vector<int> kernel_shape;
 						vector<int> strides;
@@ -651,7 +646,6 @@ namespace eddl {
 						string auto_pad_option = "";
 						bool auto_pad = false;
 						vector<float> *bias;
-						cout << "Adding attributes" << endl;
 
 						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
 							onnx::AttributeProto attribute = node->attribute(j);
@@ -677,23 +671,19 @@ namespace eddl {
 								for( int h = 0; h<attribute.ints_size(); h++){
 									kernel_shape.push_back(attribute.ints(h));
 								}
-								cout << "found kernel_shape" << endl;
 							}
 							else if (!attr_name.compare("pads")) { //
 								for(int h = 0; h < 4; h++){
 									pads.push_back(attribute.ints(h));
 								}
-								cout << "found pads" << endl;
 							}
 							else if (!attr_name.compare("strides")) { //
 								for(int h = 0; h < attribute.ints_size(); h++){
 									strides.push_back(attribute.ints(h));
 								}
-								cout << "found strides" << endl;
 							}
 						}
 
-						cout << "Attributes readed" << endl;
 						/*if(!explicit_padding){ //We have to add 0 padding to the conv descriptor
 							pads.resize(4,0);
 							pads[0] = 0;
@@ -711,11 +701,9 @@ namespace eddl {
 						vector<int> dims = map_init_dims[weights_name];
 
 
-						cout << "Weights loaded from init" << endl;
 
 						filters = dims[0];
 						string name = node->name();
-						cout << "Take name" << endl;
 						ConvolDescriptor* convol_descriptor;
 						if(!auto_pad){
 							kernel_shape.insert(kernel_shape.begin(), filters); //Add number of filters to kernel shape
@@ -723,9 +711,7 @@ namespace eddl {
 						}
 						else convol_descriptor = new ConvolDescriptor(filters, kernel_shape, strides, auto_pad_option, node->input_size() > 2, mem);
 
-						cout << "Conv descriptor created" << endl;
 						actual_layer = new LConv(parent, convol_descriptor, name, dev, mem);
-						cout << "Layer created" << endl;
 
 						if(node->input_size() > 2){
 							string bias_name = node->input(2);
@@ -737,13 +723,9 @@ namespace eddl {
 							delete(bias_tensor);
 
 						}
-						cout << "Copying weights" << endl;
 						Tensor* weights_tensor = eddlT::create(dims, weights->data(), dev);
-						cout << "Tensor con los pesos creado" << endl;
 						Tensor::copy(weights_tensor, convol_descriptor->K);
-						cout << "Tensor copiado" << endl;
 						delete(weights_tensor);
-						cout << "Tensor auxiliar borrado" << endl;
 						break;
 					}
 
@@ -859,10 +841,6 @@ namespace eddl {
 						height_scale = scales->at(2);
 						width_scale = scales->at(3);
 						
-						cout << "Batch scale = " << batch_scale << endl;
-						cout << "Channel scale = " << channel_scale << endl;
-						cout << "height scale = " << height_scale << endl;
-						cout << "width scale = " << width_scale << endl;
 						string name = node->name();
 
 
@@ -1245,35 +1223,46 @@ namespace eddl {
 							LDense* dense;
 							if(conv = dynamic_cast<LConv*>(parents[0]) ){
 								ConvolDescriptor* convol_descriptor = conv->cd;
-								convol_descriptor->use_bias = true; //We need to enable the bias
 								string bias_name = node->input(index_parameter);
 								vector<float> *bias = new vector<float>(map_init_values[bias_name]);
 								vector<int> bias_shape;
 								bias_shape.push_back(bias->size());
 								Tensor* bias_tensor = eddlT::create(bias_shape, bias->data(), dev);
-								Tensor::copy(bias_tensor , convol_descriptor->bias);
+								if(!convol_descriptor->use_bias){
+									convol_descriptor->use_bias = true; //We need to enable the bias
+									Tensor::copy(bias_tensor , convol_descriptor->bias);
+								}
+								else{
+									Tensor* auxiliar_tensor = eddlT::add(convol_descriptor->bias, bias_tensor);
+									Tensor::copy(auxiliar_tensor , convol_descriptor->bias);
+									delete(auxiliar_tensor);
+
+								}
 								delete(bias_tensor);
 								actual_layer = conv;
-								cout << "Conv modified succesfuly" << endl;
 								break;
 							}
 							else if(dense = dynamic_cast<LDense*>(parents[0]) ){
 								string bias_name = node->input(index_parameter);
 								vector<float> *bias = new vector<float>(map_init_values[bias_name]);
 								vector<int> bias_dims = map_init_dims[bias_name];
-								dense->use_bias = true;
-								dense->bias = eddlT::create(bias_dims, bias->data(), dev);
+								if(!dense->use_bias){
+									dense->use_bias = true;
+									dense->bias = eddlT::create(bias_dims, bias->data(), dev);
+								}
+								else{ //If dense already has a bias, we sum it in top of the bias
+									Tensor* add_to_bias = eddlT::create(bias_dims, bias->data(), dev);
+									dense->bias = eddlT::add(dense->bias, add_to_bias);
+
+								}
 								//Tensor::copy(bias_tensor, dense->bias);
 								actual_layer=dense;
-								cout << "Dense modified succesfuly" << endl;
 								break;
 
 							} else cerr << "Error, add with a parameter input where the other input is not a dense or a convolutional layer" << endl;
 						}
 						string name = node->name();
-						cout << "parents vector created" << endl;
 						actual_layer = new LAdd(parents, name, dev, mem);
-						cout << "layer donete" << endl;
 
 						break;
 					}
@@ -1451,20 +1440,15 @@ namespace eddl {
 			}
 
 			for( int i = 0; i < node->output_size(); i++ ) {
-				cout << "Adding outputs: iteration " << i << endl;
 				output_node_map[node->output(i)] = actual_layer;
-				cout << "output set" << endl;
 				vector<onnx::NodeProto*> child_nodes = input_node_map[node->output(i)];
-				cout << "child nodes extracted from input node map" << endl;
 				for(onnx::NodeProto * child : child_nodes){
 					nodeQueue.push(child);
 				}
-				cout << "childs pushed into the queue" << endl;
 			}
 			nodeQueue.pop();
 
 		}
-		cout << "DEBUG: FINISHED LOOP" << endl;
 		vector<Layer *> input_layers;
 		for( Layer* layer : inputs) input_layers.push_back(layer);
 
