@@ -10,8 +10,8 @@ Example:
 
 .. code-block:: c++
    
-
-   layer Softmax(layer parent, string name="");
+   ...
+   l = Softmax(l);
 
 
 Sigmoid
@@ -23,8 +23,8 @@ Example:
 
 .. code-block:: c++
    
-
-   layer Sigmoid(layer parent, string name="");
+   ...
+   l = Sigmoid(l);
 
 
 ReLu
@@ -37,8 +37,8 @@ Example:
 
 .. code-block:: c++
    
-
-   layer ReLu(layer parent, string name="");
+   ...
+   l = ReLu(l);
 
 
 
@@ -52,8 +52,8 @@ Example:
 
 .. code-block:: c++
    
-
-    layer ThresholdedReLu(layer parent, float alpha=1.0, string name="");
+   ...
+    l = ThresholdedReLu(l, 1.0);
 
 
 
@@ -68,8 +68,8 @@ Example:
 
 .. code-block:: c++
    
-
-    layer LeakyReLu(layer parent, float alpha=0.01, string name="");
+   ...
+    l = LeakyReLu(l, 0.01);
 
 
 
@@ -83,8 +83,8 @@ Example:
 
 .. code-block:: c++
    
-
-    layer Elu(layer parent, float alpha=1.0, string name="");
+   ...
+    l = Elu(l, 1.0);
 
 SeLu
 --------
@@ -95,8 +95,8 @@ Example:
 
 .. code-block:: c++
    
-
-    layer Selu(layer parent, string name="");
+   ...
+    l = Selu(l);
 
 
 Exponential
@@ -108,8 +108,8 @@ Example:
 
 .. code-block:: c++
    
-
-    layer Exponential(layer parent, string name="");
+   ...
+    l = Exponential(l);
 
 
 
@@ -123,8 +123,8 @@ Example:
 
 .. code-block:: c++
    
-
-    layer Softplus(layer parent, string name="");
+   ...
+    l = Softplus(l);
 
 
 
@@ -139,8 +139,8 @@ Example:
 
 .. code-block:: c++
    
-
-    layer Softsign(layer parent, string name="");
+   ...
+    l = Softsign(l);
 
 
 
@@ -155,8 +155,8 @@ Example:
 
 .. code-block:: c++
    
-
-    layer Linear(layer parent, float alpha=1.0, string name="");
+   ...
+    l = Linear(l, 1.0);
 
 
 
@@ -170,5 +170,5 @@ Example:
 
 .. code-block:: c++
    
-
-    layer Tanh(layer parent, string name="");
+   ...
+    l = Tanh(l);
