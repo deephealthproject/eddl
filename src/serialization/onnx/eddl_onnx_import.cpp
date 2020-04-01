@@ -980,7 +980,7 @@ namespace eddl {
 						string name = node->name();
 						string parent_name = node->input(0);
 						if(output_node_map.count(parent_name)){
-							shape.insert(shape.begin(), 1); //Default batch size = 1 //Required for reshape but not for parameters
+							//shape.insert(shape.begin(), 1); //Default batch size = 1 //Required for reshape but not for parameters
 							Layer *parent = output_node_map[parent_name];
 							actual_layer= new LReshape(parent, shape, name, dev, mem);
 						}
@@ -1261,9 +1261,9 @@ namespace eddl {
 								string bias_name = node->input(index_parameter);
 								vector<float> *bias = new vector<float>(map_init_values[bias_name]);
 								vector<int> bias_dims = map_init_dims[bias_name];
-								Tensor* bias_tensor = eddlT::create(bias_dims, bias->data(), dev);
-								Tensor::copy(bias_tensor, dense->bias);
-								delete(bias_tensor);
+								dense->use_bias = true;
+								dense->bias = eddlT::create(bias_dims, bias->data(), dev);
+								//Tensor::copy(bias_tensor, dense->bias);
 								actual_layer=dense;
 								cout << "Dense modified succesfuly" << endl;
 								break;
@@ -1307,9 +1307,34 @@ namespace eddl {
 					{
 						vector<Layer *> parents;
 						string parent_name;
+						bool dense_detected = false;
+						int index_parameter = -1;
 						for ( int j = 0; j < node->input_size(); j++) {
 							parent_name = node->input(j);
-							parents.push_back(output_node_map[parent_name]);
+							if(map_init_values.count(parent_name)){
+								//Dense detected	
+								if(dense_detected){
+									cerr << "MAT_MUL with two parameters" << endl;
+								}
+								dense_detected=true;
+								index_parameter = j;
+							} else
+								parents.push_back(output_node_map[parent_name]);
+						}
+						if(dense_detected){
+							string weights_name = node->input(index_parameter);
+							vector<float> *weights = new vector<float>(map_init_values[weights_name]);
+							vector<int> dims = map_init_dims[weights_name];
+							int ndim = dims.size();
+							int neuronas = dims[1];
+							Layer *parent = parents[1-index_parameter];
+							bool use_bias = false;
+							LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem); 
+							Tensor* weights_tensor = eddlT::create(dims, weights->data(), dev);
+							Tensor::copy(weights_tensor, dense->W );
+							delete(weights_tensor);
+							actual_layer = dense;
+							break;
 						}
 						string name = node->name();
 						actual_layer = new LMatMul(parents, name, dev, mem);
