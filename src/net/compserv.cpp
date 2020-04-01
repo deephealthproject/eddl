@@ -7,13 +7,13 @@
 * All rights reserved
 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <string>
 #include <vector>
 #include <stdexcept>
 
-#include "compserv.h"
+#include "eddl/net/compserv.h"
 
 
 // for local

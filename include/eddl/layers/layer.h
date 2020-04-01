@@ -14,12 +14,12 @@
 #include <string>
 #include <cstdio>
 
-#include "../initializers/initializer.h"
+#include "eddl/initializers/initializer.h"
 
-#include "../tensor/tensor.h"
-#include "../tensor/tensor_reduction.h"
-#include "../tensor/nn/tensor_nn.h"
-#include "../regularizers/regularizer.h"
+#include "eddl/tensor/tensor.h"
+#include "eddl/tensor/tensor_reduction.h"
+#include "eddl/tensor/nn/tensor_nn.h"
+#include "eddl/regularizers/regularizer.h"
 
 
 #define TRMODE 1

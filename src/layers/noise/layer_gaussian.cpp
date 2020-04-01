@@ -8,11 +8,11 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "layer_noise.h"
+#include "eddl/layers/noise/layer_noise.h"
 
 
 using namespace std;

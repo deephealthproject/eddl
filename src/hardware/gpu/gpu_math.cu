@@ -7,7 +7,7 @@
 * All rights reserved
 */
 
-#include <stdio.h>
+#include <cstdio>
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
@@ -18,12 +18,12 @@
 #include <thrust/functional.h>
 #include <thrust/extrema.h>
 
-#include "gpu_tensor.h"
-#include "gpu_kernels.h"
-#include "gpu_hw.h"
+#include "eddl/hardware/gpu/gpu_tensor.h"
+#include "eddl/hardware/gpu/gpu_kernels.h"
+#include "eddl/hardware/gpu/gpu_hw.h"
 
-#include "../../tensor/tensor.h"
-#include "../../descriptors/descriptors.h"
+#include "eddl/tensor/tensor.h"
+#include "eddl/descriptors/descriptors.h"
 
 // GPU: Structs for Thrust ********************************************
 

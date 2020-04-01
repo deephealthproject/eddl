@@ -10,13 +10,13 @@
 #ifndef EDDL_NETLOSS_H
 #define EDDL_NETLOSS_H
 
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <vector>
 #include <functional>
 
 
-#include "net.h"
+#include "eddl/net/net.h"
 
 
 using namespace std;

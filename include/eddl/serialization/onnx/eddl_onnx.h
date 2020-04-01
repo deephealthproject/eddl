@@ -2,19 +2,19 @@
 #define EDDL_EDDL_ONNX_H
 
 
-#include "../../net/net.h"
 #include <string>
 #include <vector>
-#include "../../layers/layer.h"
 #include <map>
-#include "../../layers/core/layer_core.h"
-#include "../../layers/conv/layer_conv.h"
-#include "../../layers/pool/layer_pool.h"
-#include "../../layers/merge/layer_merge.h"
-#include "../../layers/operators/layer_operators.h"
-#include "../../layers/normalization/layer_normalization.h"
+#include "eddl/net/net.h"
+#include "eddl/layers/layer.h"
+#include "eddl/layers/core/layer_core.h"
+#include "eddl/layers/conv/layer_conv.h"
+#include "eddl/layers/pool/layer_pool.h"
+#include "eddl/layers/merge/layer_merge.h"
+#include "eddl/layers/operators/layer_operators.h"
+#include "eddl/layers/normalization/layer_normalization.h"
 #if defined(cPROTO)
-#   include "onnx.pb.h"
+#   include "eddl/serialization/onnx/onnx.pb.h"
 #endif
 
 

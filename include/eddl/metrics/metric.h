@@ -11,11 +11,11 @@
 #ifndef _METRIC_
 #define _METRIC_
 
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 
-#include "../tensor/tensor.h"
-#include "../tensor/nn/tensor_nn.h"
+#include "eddl/tensor/tensor.h"
+#include "eddl/tensor/nn/tensor_nn.h"
 
 
 using namespace std;

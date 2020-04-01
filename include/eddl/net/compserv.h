@@ -10,7 +10,7 @@
 #ifndef EDDL_COMPSERV_H
 #define EDDL_COMPSERV_H
 
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <vector>
 

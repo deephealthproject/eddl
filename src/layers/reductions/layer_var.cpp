@@ -8,12 +8,12 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "../operators/layer_operators.h"
-#include "layer_reductions.h"
+#include "eddl/layers/operators/layer_operators.h"
+#include "eddl/layers/reductions/layer_reductions.h"
 
 
 using namespace std;

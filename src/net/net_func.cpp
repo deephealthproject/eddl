@@ -8,18 +8,18 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <chrono>
 #include <thread>
-#include "net.h"
+#include "eddl/net/net.h"
 #include <pthread.h>
-#include "../utils.h"
-#include "../random.h"
-#include "../layers/core/layer_core.h"
+#include "eddl/utils.h"
+#include "eddl/random.h"
+#include "eddl/layers/core/layer_core.h"
 
 #define VERBOSE 0
 

@@ -12,10 +12,10 @@
 #define EDDL_LAYER_CONV_H
 
 #include <string>
-#include <stdio.h>
+#include <cstdio>
 
-#include "../layer.h"
-#include "../../regularizers/regularizer.h"
+#include "eddl/layers/layer.h"
+#include "eddl/regularizers/regularizer.h"
 
 #define TRMODE 1
 #define TSMODE 0

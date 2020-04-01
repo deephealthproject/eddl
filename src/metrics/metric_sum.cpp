@@ -7,11 +7,11 @@
 * All rights reserved
 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "metric.h"
+#include "eddl/metrics/metric.h"
 
 using namespace std;
 

@@ -8,11 +8,11 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "layer_core.h"
+#include "eddl/layers/core/layer_core.h"
 
 extern ostream &operator<<(ostream &os, const vector<int> shape);
 

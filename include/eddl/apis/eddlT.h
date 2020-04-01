@@ -12,8 +12,8 @@
 #define _EDDLT_
 
 
-#include "../tensor/tensor.h"
-#include "../tensor/tensor_reduction.h"
+#include "eddl/tensor/tensor.h"
+#include "eddl/tensor/tensor_reduction.h"
 
 typedef Tensor* tensor;
 typedef vector<int> tshape;

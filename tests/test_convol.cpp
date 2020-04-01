@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "descriptors/descriptors.h"
+#include "eddl/descriptors/descriptors.h"
 
 
 TEST(convolTest, output_size)

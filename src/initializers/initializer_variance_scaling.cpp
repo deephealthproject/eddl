@@ -8,11 +8,11 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "initializer.h"
+#include "eddl/initializers/initializer.h"
 
 using namespace std;
 

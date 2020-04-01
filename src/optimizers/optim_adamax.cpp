@@ -7,11 +7,11 @@
 * All rights reserved
 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "optim.h"
+#include "eddl/optimizers/optim.h"
 
 using namespace std;
 

@@ -8,11 +8,11 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "loss.h"
+#include "eddl/losses/loss.h"
 
 using namespace std;
 

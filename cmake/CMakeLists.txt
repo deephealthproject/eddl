@@ -1,13 +1,15 @@
 cmake_minimum_required(VERSION 3.9.2)
 
-option(USE_SYSTEM_EIGEN "Use system dependency" OFF)
-option(USE_SYSTEM_GTEST "Use system dependency" OFF)
-option(USE_SYSTEM_PROTOBUF "Use system dependency" OFF)
-option(USE_SYSTEM_ZLIB "Use system dependency" OFF)
+option(USE_SYSTEM_EIGEN "Use system dependency" ON)
+option(USE_SYSTEM_GTEST "Use system dependency" ON)
+option(USE_SYSTEM_PROTOBUF "Use system dependency" ON)
+option(USE_SYSTEM_ZLIB "Use system dependency" ON)
 
 ###############
 ####  EIGEN  ##
 ###############
+if(USE_SYSTEM_EIGEN)
+else()
 message(STATUS "Subproject: EIGEN...")
 # Download and unpack eigen at configure time
 configure_file(
@@ -31,11 +33,14 @@ SET(Eigen3_DIR ${CMAKE_CURRENT_BINARY_DIR}/eigen/share/eigen3/cmake PARENT_SCOPE
 SET(EIGEN3_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/eigen/include/eigen3 PARENT_SCOPE)
 
 message(STATUS "Subproject: EIGEN...DONE")
+endif()
 
 
 ###############
 ####  GTEST  ##
 ###############
+if(USE_SYSTEM_EIGEN)
+else()
 message(STATUS "Subproject: GTEST...")
 # Download and unpack gtest at configure time
 configure_file(
@@ -73,11 +78,13 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
 endif()
 
 message(STATUS "Subproject: GTEST...DONE")
-
+endif()
 
 #############
 ###  ZLIB  ##
 #############
+if(USE_SYSTEM_EIGEN)
+else()
 message(STATUS "Subproject: ZLIB...")
 # Download and unpack zlib at configure time
 configure_file(
@@ -100,29 +107,35 @@ add_subdirectory(
         ${CMAKE_CURRENT_BINARY_DIR}/zlib-src
         ${CMAKE_CURRENT_BINARY_DIR}/zlib-build)
 message(STATUS "Subproject: ZLIB...DONE")
+endif()
 
 
 ##################
 ####  PROTOBUF  ##
 ##################
-#message(STATUS "Subproject: Protobuf...")
-## Download and unpack gtest at configure time
-#configure_file(
-#        ${CMAKE_CURRENT_SOURCE_DIR}/protobuf.CMakeLists.txt
-#        ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download/CMakeLists.txt)
-#execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-#        RESULT_VARIABLE result
-#        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download )
-#if(result)
-#    message(FATAL_ERROR "CMake step for protobuf failed: ${result}")
-#endif()
-#
-## the location where protobuf-config.cmake will be installed varies by platform
-#if (WIN32)
-#    set(_FINDPACKAGE_PROTOBUF_CONFIG_DIR "${CMAKE_CURRENT_BINARY_DIR}/protobuf/cmake")
-#else()
-#    set(_FINDPACKAGE_PROTOBUF_CONFIG_DIR "${CMAKE_CURRENT_BINARY_DIR}/protobuf/lib/cmake/protobuf")
-#endif()
-#
-## Set variables
-#SET(protobuf_DIR ${_FINDPACKAGE_PROTOBUF_CONFIG_DIR} PARENT_SCOPE)
+if(USE_SYSTEM_EIGEN)
+else()
+message(STATUS "Subproject: Protobuf...")
+# Download and unpack gtest at configure time
+configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/protobuf.CMakeLists.txt
+        ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download/CMakeLists.txt)
+execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+        RESULT_VARIABLE result
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download )
+if(result)
+    message(FATAL_ERROR "CMake step for protobuf failed: ${result}")
+endif()
+
+# the location where protobuf-config.cmake will be installed varies by platform
+if (WIN32)
+    set(_FINDPACKAGE_PROTOBUF_CONFIG_DIR "${CMAKE_CURRENT_BINARY_DIR}/protobuf/cmake")
+else()
+    set(_FINDPACKAGE_PROTOBUF_CONFIG_DIR "${CMAKE_CURRENT_BINARY_DIR}/protobuf/lib/cmake/protobuf")
+endif()
+
+# Set variables
+SET(protobuf_DIR ${_FINDPACKAGE_PROTOBUF_CONFIG_DIR} PARENT_SCOPE)
+
+message(STATUS "Subproject: Protobuf...DONE")
+endif()

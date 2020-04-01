@@ -17,13 +17,13 @@
 #include <cublas_v2.h>
 
 //
-//#include <stdio.h>
+//#include <cstdio>
 //#include <cuda.h>
 //#include <cuda_runtime_api.h>
 //#include <cublas_v2.h>
 //
-//#include "gpu_tensor.h"
-//#include "tensor_kernels.h"
+//#include "eddl/hardware/gpu/gpu_tensor.h"
+//#include "eddl/hardware/gpu/tensor_kernels.h"
 
 
 

@@ -16,9 +16,9 @@
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
 
-#include "../../tensor/tensor.h"
-#include "../../tensor/tensor_reduction.h"
-#include "../../descriptors/descriptors.h"
+#include "eddl/tensor/tensor.h"
+#include "eddl/tensor/tensor_reduction.h"
+#include "eddl/descriptors/descriptors.h"
 
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
 

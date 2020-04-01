@@ -8,11 +8,11 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "layer_pool.h"
+#include "eddl/layers/pool/layer_pool.h"
 
 
 using namespace std;

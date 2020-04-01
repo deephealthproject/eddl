@@ -13,7 +13,7 @@
 
 #include <string>
 
-#include "../tensor/tensor.h"
+#include "eddl/tensor/tensor.h"
 
 using namespace std;
 

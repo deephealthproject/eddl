@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.9.2)
 
+project(eddl-examples)
+
 # EXAMPLES: MNIST ****************************************************
 add_executable(mnist_mlp "nn/1_mnist/1_mnist_mlp.cpp")
 target_link_libraries(mnist_mlp eddl)

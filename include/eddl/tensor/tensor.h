@@ -19,11 +19,11 @@
 
 #include "Eigen/Dense"
 
-#include "../utils.h"
-#include "../descriptors/tensor_descriptors.h"
+#include "eddl/utils.h"
+#include "eddl/descriptors/tensor_descriptors.h"
 
 // Read/Write Numpy
-#include "cnpy/cnpy.h"
+#include "eddl/tensor/cnpy/cnpy.h"
 
 #define DEV_CPU 0
 

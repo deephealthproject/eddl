@@ -8,11 +8,11 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "layer_normalization.h"
+#include "eddl/layers/normalization/layer_normalization.h"
 
 
 using namespace std;

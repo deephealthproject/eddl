@@ -14,11 +14,11 @@
 #include <string>
 #include <vector>
 
-#include "../layers/layer.h"
-#include "../optimizers/optim.h"
-#include "../losses/loss.h"
-#include "../metrics/metric.h"
-#include "compserv.h"
+#include "eddl/layers/layer.h"
+#include "eddl/optimizers/optim.h"
+#include "eddl/losses/loss.h"
+#include "eddl/metrics/metric.h"
+#include "eddl/net/compserv.h"
 
 using namespace std;
 

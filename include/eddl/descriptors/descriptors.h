@@ -10,15 +10,15 @@
 #ifndef EDDL_DESCRIPTORS_H
 #define EDDL_DESCRIPTORS_H
 
-#include <stdio.h>
+#include <cstdio>
 #include <vector>
 #include <string>
 #include <mutex>
 
 #include "Eigen/Dense"
-#include "../tensor/tensor.h"
 
-#include "../utils.h"
+#include "eddl/tensor/tensor.h"
+#include "eddl/utils.h"
 
 
 using namespace std;

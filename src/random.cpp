@@ -6,12 +6,12 @@
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
-#include <stdio.h>
+#include <cstdio>
 #include <cmath>
 #include <random>
 
-#include "random.h"
-#include "utils.h"
+#include "eddl/random.h"
+#include "eddl/utils.h"
 
 #define PI 3.1415926
 #define MAX_RTABLE 100000

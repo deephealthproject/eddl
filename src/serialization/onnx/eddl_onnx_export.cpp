@@ -1,6 +1,6 @@
-#include <stdio.h>
+#include <cstdio>
 #include <fstream>
-#include "eddl_onnx.h"
+#include "eddl/serialization/onnx/eddl_onnx.h"
 
 using namespace std;
 

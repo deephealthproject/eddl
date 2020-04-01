@@ -1,15 +1,15 @@
-#include "eddl_onnx.h"
+#include "eddl/serialization/onnx/eddl_onnx.h"
 #include <queue>
 #include <fstream>
-#include "../../layers/core/layer_core.h"
-#include "../../layers/conv/layer_conv.h"
-#include "../../layers/normalization/layer_normalization.h"
-#include "../../layers/pool/layer_pool.h"
+#include "eddl/layers/core/layer_core.h"
+#include "eddl/layers/conv/layer_conv.h"
+#include "eddl/layers/normalization/layer_normalization.h"
+#include "eddl/layers/pool/layer_pool.h"
 #include <map>
 #include <set>
 #include <algorithm>
-#include "../../apis/eddl.h"
-#include "../../apis/eddlT.h"
+#include "eddl/apis/eddl.h"
+#include "eddl/apis/eddlT.h"
 
 
 using namespace std;

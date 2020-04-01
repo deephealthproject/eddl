@@ -13,9 +13,9 @@
 
 
 #include <string>
-#include <stdio.h>
+#include <cstdio>
 
-#include "../layer.h"
+#include "eddl/layers/layer.h"
 
 #define TRMODE 1
 #define TSMODE 0

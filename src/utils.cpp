@@ -28,8 +28,8 @@
 #include <iomanip>
 #include <limits>
 
-#include "system_info.h"
-#include "utils.h"
+#include "eddl/system_info.h"
+#include "eddl/utils.h"
 
 #ifdef EDDL_LINUX
 #include "sys/mman.h"

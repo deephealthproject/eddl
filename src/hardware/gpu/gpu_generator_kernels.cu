@@ -9,14 +9,14 @@
 
 
 #include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <cuda.h>
 #include <curand_kernel.h>
 #include <curand.h>
 
-#include "gpu_kernels.h"
+#include "eddl/hardware/gpu/gpu_kernels.h"
 
 
 /* this GPU kernel function is used to initialize the random states */

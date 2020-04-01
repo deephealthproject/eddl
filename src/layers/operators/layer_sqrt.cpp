@@ -8,11 +8,11 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "layer_operators.h"
+#include "eddl/layers/operators/layer_operators.h"
 
 using namespace std;
 

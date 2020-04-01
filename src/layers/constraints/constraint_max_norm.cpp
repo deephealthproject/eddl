@@ -8,7 +8,7 @@
 */
 
 
-#include "constraint.h"
+#include "eddl/layers/constraints/constraint.h"
 
 using namespace std;
 

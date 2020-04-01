@@ -8,13 +8,14 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "layer_normalization.h"
-#include "../reductions/layer_reductions.h"
-#include "../operators/layer_operators.h"
+#include "eddl/layers/normalization/layer_normalization.h"
+
+#include "eddl/layers/reductions/layer_reductions.h"
+#include "eddl/layers/operators/layer_operators.h"
 
 using namespace std;
 

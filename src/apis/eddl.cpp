@@ -8,13 +8,13 @@
 */
 
 
-#include <stdio.h>
+#include <cstdio>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
 
-#include "eddl.h"
+#include "eddl/apis/eddl.h"
 
 
 using namespace std;

@@ -10,8 +10,8 @@
 #ifndef EDDL_TENSOR_NN_H
 #define EDDL_TENSOR_NN_H
 
-#include "../tensor.h"
-#include "../../descriptors/descriptors.h"
+#include "eddl/tensor/tensor.h"
+#include "eddl/descriptors/descriptors.h"
 
 // ***** Losses *****************************
 void cent(Tensor *A, Tensor *B, Tensor *C);

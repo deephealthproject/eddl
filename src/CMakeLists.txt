@@ -2,14 +2,14 @@
 ############################# SET LIBRARY #################################
 ###########################################################################
 
-
 # C++ files
-file(GLOB_RECURSE CPP_HEADERS ${PROJECT_SOURCE_DIR}/include/eddl *.h *.hpp)
-file(GLOB_RECURSE CPP_SOURCES ${PROJECT_SOURCE_DIR}/src *.cpp *.cc)
-file(GLOB_RECURSE CUDA_SOURCES ${PROJECT_SOURCE_DIR}/src *.cu)
+file(GLOB_RECURSE CPP_HEADERS "${PROJECT_SOURCE_DIR}/include/eddl/*" *.{h, *.hpp})
+file(GLOB_RECURSE CPP_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cc, cpp})
+file(GLOB_RECURSE CUDA_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cu})
+
 
 # Make an automatic library - will be static or dynamic based on user setting
-add_library(${PROJECT_NAME} lib.cpp ${CPP_HEADERS} ${CPP_SOURCES})
+add_library(${PROJECT_NAME} ${CPP_HEADERS} ${CPP_SOURCES})
 
 # We need this directory, and users of our library will need it too
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
