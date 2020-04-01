@@ -2,7 +2,7 @@
 #include <random>
 
 #include "eddl/apis/eddl.h"
-#include "eddl/serialization/onnx/eddl_onnx.h"
+#include "serialization/onnx/eddl_onnx.h"
 #include <typeinfo>
 
 using namespace eddl;

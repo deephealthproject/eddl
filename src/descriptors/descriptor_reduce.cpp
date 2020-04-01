@@ -9,13 +9,13 @@
 
 #include <stdexcept>
 
-#include "eddl/descriptors/descriptors.h"
-#include "eddl/tensor/tensor_reduction.h"
+#include "descriptors/descriptors.h"
+#include "tensor/tensor_reduction.h"
 
 
 #ifdef cGPU
-#include "eddl/hardware/gpu/gpu_tensor.h"
-#include "eddl/hardware/gpu/gpu_hw.h"
+#include "hardware/gpu/gpu_tensor.h"
+#include "hardware/gpu/gpu_hw.h"
 #endif
 
 

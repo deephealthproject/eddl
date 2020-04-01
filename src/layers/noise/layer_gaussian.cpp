@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "eddl/layers/noise/layer_noise.h"
+#include "layers/noise/layer_noise.h"
 
 
 using namespace std;

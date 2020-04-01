@@ -10,8 +10,8 @@
 #include <cmath>
 #include <random>
 
-#include "eddl/random.h"
-#include "eddl/utils.h"
+#include "random.h"
+#include "utils.h"
 
 #define PI 3.1415926
 #define MAX_RTABLE 100000

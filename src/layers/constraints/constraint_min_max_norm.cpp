@@ -8,7 +8,7 @@
 */
 
 
-#include "eddl/layers/constraints/constraint.h"
+#include "layers/constraints/constraint.h"
 
 
 CMinMaxNorm::CMinMaxNorm(float min_value, float max_value, float rate, int axis) : Constraint("min_max_norm") {

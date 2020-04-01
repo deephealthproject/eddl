@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "eddl/layers/generators/layer_generators.h"
+#include "layers/generators/layer_generators.h"
 
 
 using namespace std;

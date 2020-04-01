@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "eddl/layers/merge/layer_merge.h"
+#include "layers/merge/layer_merge.h"
 
 
 using namespace std;

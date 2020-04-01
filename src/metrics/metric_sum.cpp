@@ -11,7 +11,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "eddl/metrics/metric.h"
+#include "metrics/metric.h"
 
 using namespace std;
 

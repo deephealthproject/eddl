@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "eddl/layers/core/layer_core.h"
+#include "layers/core/layer_core.h"
 
 extern ostream &operator<<(ostream &os, const vector<int> shape);
 

@@ -8,8 +8,8 @@
 */
 
 
-#include "eddl/descriptors/tensor_descriptors.h"
-#include "eddl/utils.h"
+#include "descriptors/tensor_descriptors.h"
+#include "utils.h"
 
 SelDescriptor::SelDescriptor(int dev) : TensorDescriptor(dev) {
 

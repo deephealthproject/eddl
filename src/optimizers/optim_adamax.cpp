@@ -11,7 +11,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "eddl/optimizers/optim.h"
+#include "optimizers/optim.h"
 
 using namespace std;
 

@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "eddl/layers/conv/layer_conv.h"
+#include "layers/conv/layer_conv.h"
 
 
 using namespace std;

@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "eddl/layers/recurrent/layer_recurrent.h"
+#include "layers/recurrent/layer_recurrent.h"
 
 
 using namespace std;

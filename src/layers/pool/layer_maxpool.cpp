@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "eddl/layers/pool/layer_pool.h"
+#include "layers/pool/layer_pool.h"
 
 
 using namespace std;

@@ -14,7 +14,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "eddl/losses/loss.h"
+#include "losses/loss.h"
 
 using namespace std;
 

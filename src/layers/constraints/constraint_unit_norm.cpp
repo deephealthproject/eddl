@@ -8,7 +8,7 @@
 */
 
 
-#include "eddl/layers/constraints/constraint.h"
+#include "layers/constraints/constraint.h"
 
 CUnitNorm::CUnitNorm(int axis) : Constraint("unit_norm") {
     // Todo: Implement

@@ -12,12 +12,12 @@
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
 
-#include "eddl/harware/gpu/gpu_tensor.h"
-#include "eddl/harware/gpu/gpu_kernels.h"
-#include "eddl/harware/gpu/gpu_hw.h"
+#include "harware/gpu/gpu_tensor.h"
+#include "harware/gpu/gpu_kernels.h"
+#include "harware/gpu/gpu_hw.h"
 
-#include "eddl/tensor/tensor.h"
-#include "eddl/descriptors/descriptors.h"
+#include "tensor/tensor.h"
+#include "descriptors/descriptors.h"
 
 
 // CPU: Logic functions: Comparisons

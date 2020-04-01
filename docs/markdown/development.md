@@ -70,3 +70,13 @@ anaconda upload ~/anaconda3/conda-bld/...
 # Upload all
 find ~/precompiled -name "*.bz2" -type f -exec anaconda upload "{}" \;
 ```
+
+## Install protobuf on MacOS from source
+
+```
+brew install autoconf && brew install automake
+(donwload repo: https://github.com/protocolbuffers/protobuf/releases)
+cd protobuf/
+./autogen.sh && ./configure && make
+sudo make install
+```

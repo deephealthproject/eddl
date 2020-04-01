@@ -3,22 +3,24 @@
 ###########################################################################
 
 # C++ files
-file(GLOB_RECURSE CPP_HEADERS "${PROJECT_SOURCE_DIR}/include/eddl/*" *.{h, *.hpp})
+file(GLOB_RECURSE CPP_PUBLIC_HEADERS "${PROJECT_SOURCE_DIR}/include/*" *.{h, *.hpp})
+file(GLOB_RECURSE CPP_HEADERS "${PROJECT_SOURCE_DIR}/src/*" *.{h, *.hpp})
 file(GLOB_RECURSE CPP_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cc, cpp})
 file(GLOB_RECURSE CUDA_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cu})
 
-
 # Make an automatic library - will be static or dynamic based on user setting
-add_library(${PROJECT_NAME} ${CPP_HEADERS} ${CPP_SOURCES})
+add_library(${PROJECT_NAME} ${CPP_PUBLIC_HEADERS} ${CPP_HEADERS} ${CPP_SOURCES})
 
 # We need this directory, and users of our library will need it too
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} PUBLIC
+                           ${PROJECT_SOURCE_DIR}/include
+                           ${PROJECT_SOURCE_DIR}/src)
 
 # All users of this library will need at least C++11
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
 
 # IDEs should put the headers in a nice place
-source_group(TREE "${PROJECT_SOURCE_DIR}/include" PREFIX "Header Files" FILES ${CPP_HEADERS})
+#source_group(TREE "${PROJECT_SOURCE_DIR}/include2" PREFIX ${PROJECT_NAME} FILES ${CPP_PUBLIC_HEADERS})
 
 
 ###########################################################################
@@ -29,9 +31,9 @@ find_package(Threads REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
 # Eigen
-find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)
+target_link_libraries(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIRS})
 
 # ZLIB
 find_package(ZLIB REQUIRED)
@@ -47,8 +49,11 @@ if(BUILD_PROTOBUF)
     target_include_directories(${PROJECT_NAME} PUBLIC ${Protobuf_INCLUDE_DIRS})
     target_link_libraries(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES})
 
-    # Create "onnx.pb.cc" and "onnx.pb.h" files
-    # EXEC_PROGRAM(${Protobuf_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
+    # Create "onnx.pb.cc" and "onnx.pb.h" files (from serialization/onnx)
+    # Equivalent to: /usr/local/bin/protoc --cpp_out . onnx.proto
+    if(OVERWRITE_PROTO_FILES)
+        EXEC_PROGRAM(${Protobuf_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
+    endif()
 endif()
 
 

@@ -13,7 +13,7 @@
 #include <vector>
 #include <stdexcept>
 
-#include "eddl/net/compserv.h"
+#include "net/compserv.h"
 
 
 // for local

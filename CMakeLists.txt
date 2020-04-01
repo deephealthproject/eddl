@@ -9,12 +9,13 @@ endif()
 
 # USER OPTIONS *******************************
 set(BUILD_TARGET "GPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
-option(BUILD_OPENMP "Compile using OpenMP" ON)
+option(BUILD_OPENMP "Compile using OpenMP" OFF)
 option(BUILD_PROTOBUF "Compile using Protobuf" ON)
 option(BUILD_SHARED_LIB "Whether to build a static or dynamic library" ON)
-option(BUILD_EXAMPLES "Compile examples" ON)
+option(BUILD_EXAMPLES "Compile examples" OFF)
 option(BUILD_TESTS "Compile tests" ON)
-option(USE_SYSTEM_DEPENDENCIES "Use system dependencies" ON)
+option(USE_SUPERBUILD "Use superbuild system" OFF)
+option(OVERWRITE_PROTO_FILES "Overwrite protobuf files (requires a compatible protobuf compiler)" OFF)
 
 # Double checks (restricted args)
 set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
@@ -52,9 +53,11 @@ else()
 endif()
 
 # Build Dependencies
-if(NOT USE_SYSTEM_DEPENDENCIES)
+if(USE_SUPERBUILD)
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
     add_subdirectory(cmake)
+else()
+    add_subdirectory(libs/googletest)  # testing
 endif()
 
 # Build library
@@ -62,7 +65,6 @@ add_subdirectory(src)
 
 # Build tests
 if(BUILD_TESTS)
-    add_subdirectory(libs/googletest)
     add_subdirectory(tests)
 endif(BUILD_TESTS)
 

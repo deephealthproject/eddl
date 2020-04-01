@@ -13,7 +13,7 @@
 #include <iostream>
 #include <utility>
 
-#include "eddl/layers/da/layer_da.h"
+#include "layers/da/layer_da.h"
 
 
 using namespace std;

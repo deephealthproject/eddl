@@ -12,12 +12,12 @@
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
 
-#include "eddl/hardware/gpu/gpu_tensor.h"
-#include "eddl/hardware/gpu/gpu_kernels.h"
-#include "eddl/hardware/gpu/gpu_hw.h"
+#include "hardware/gpu/gpu_tensor.h"
+#include "hardware/gpu/gpu_kernels.h"
+#include "hardware/gpu/gpu_hw.h"
 
-#include "eddl/tensor/tensor.h"
-#include "eddl/descriptors/descriptors.h"
+#include "tensor/tensor.h"
+#include "descriptors/descriptors.h"
 
 
 int* get_block_dim(int N, int blockSize){

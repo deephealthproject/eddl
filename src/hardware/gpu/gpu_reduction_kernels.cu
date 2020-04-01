@@ -14,7 +14,7 @@
 #include <iostream>
 #include <cuda.h>
 
-#include "eddl/hardware/gpu/gpu_kernels.h"
+#include "hardware/gpu/gpu_kernels.h"
 
 
 __global__ void reduce_mean(float *A,float *B,int *map,int size)

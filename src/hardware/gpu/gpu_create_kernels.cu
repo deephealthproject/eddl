@@ -14,7 +14,7 @@
 #include <iostream>
 #include <cuda.h>
 
-#include "eddl/hardware/gpu/gpu_kernels.h"
+#include "hardware/gpu/gpu_kernels.h"
 
 __global__ void range(float* a, float start, float step, long int size) {
     long int thread_id_x = blockDim.x*blockIdx.x + threadIdx.x;

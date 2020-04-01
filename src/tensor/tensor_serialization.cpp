@@ -9,15 +9,15 @@
 
 #include <utility>
 
-#include "eddl/tensor/tensor.h"
-#include "eddl/hardware/cpu/cpu_hw.h"
-#include "eddl/utils.h"
-#include "eddl/helpers.h"
+#include "tensor/tensor.h"
+#include "hardware/cpu/cpu_hw.h"
+#include "utils.h"
+#include "helpers.h"
 
 #ifdef cGPU
-#include "eddl/hardware/gpu/gpu_tensor.h"
-#include "eddl/hardware/gpu/gpu_hw.h"
-#include "eddl/hardware/gpu/nn/gpu_nn.h"
+#include "hardware/gpu/gpu_tensor.h"
+#include "hardware/gpu/gpu_hw.h"
+#include "hardware/gpu/nn/gpu_nn.h"
 #endif
 
 
@@ -25,16 +25,16 @@
 #define STBI_WINDOWS_UTF8
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "eddl/tensor/stb/stb_image_write.h"
+#include "tensor/stb/stb_image_write.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "eddl/tensor/stb/stb_image.h"
+#include "tensor/stb/stb_image.h"
 
 #define STB_DEFINE
-#include "eddl/tensor/stb/stb.h"
+#include "tensor/stb/stb.h"
 
 // Read/Write Numpy
-#include "eddl/tensor/cnpy/cnpy.h"
+#include "tensor/cnpy/cnpy.h"
 
 using namespace std;
 

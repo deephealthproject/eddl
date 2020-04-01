@@ -8,7 +8,7 @@
 */
 
 
-#include "eddl/layers/constraints/constraint.h"
+#include "layers/constraints/constraint.h"
 
 
 CNonNeg::CNonNeg() : Constraint("non_neg") {

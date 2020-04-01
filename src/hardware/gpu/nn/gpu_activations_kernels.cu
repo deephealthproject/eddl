@@ -14,8 +14,8 @@
 #include <iostream>
 #include <cuda.h>
 
-#include "eddl/hardware/gpu/gpu_nn_kernels.h"
-#include "eddl/hardware/gpu/gpu_kernels.h"
+#include "hardware/gpu/gpu_nn_kernels.h"
+#include "hardware/gpu/gpu_kernels.h"
 
 
 __global__ void relu(float *a,float *b,long int size)

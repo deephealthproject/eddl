@@ -14,7 +14,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "eddl/layers/core/layer_core.h"
+#include "layers/core/layer_core.h"
 
 using namespace std;
 
