@@ -18,8 +18,6 @@
 #endif
 
 
-namespace eddl{
-
 	//Importing module
 	//------------------------------------------------------------------------------
 
@@ -129,7 +127,6 @@ namespace eddl{
 #if defined(cPROTO)
 	map<string, vector<Tensor*> > get_tensors_from_onnx(onnx::ModelProto model);
 #endif
-}
 
 
 #endif //EDDL_EDDL_ONNX_H

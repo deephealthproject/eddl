@@ -8,13 +8,10 @@
 #include <map>
 #include <set>
 #include <algorithm>
-#include "../../apis/eddl.h"
-#include "../../apis/eddlT.h"
 
 
 using namespace std;
 
-namespace eddl {
 #ifdef cPROTO 
 	enum ONNX_LAYERS{
 		//TODO Comment in which section belongs each layer
@@ -286,8 +283,8 @@ namespace eddl {
 			for(int i = 0; i < tensor.dims_size(); i++) {
 				dims.push_back(tensor.dims(i));
 			}
-			vector<float> values = parseTensorValues(tensor);
 			string tensorName = tensor.name();
+			vector<float> values = parseTensorValues(tensor);
 
 
 			values_map[tensorName] = values;
@@ -302,6 +299,7 @@ namespace eddl {
 	vector<int> parse_IO_tensor(onnx::TypeProto::Tensor tensor) {
 		onnx::TensorShapeProto tensorShape = tensor.shape();
 		vector<int> shape;
+		shape.push_back(1); //TODO check this is required
 
 		for(int i = 1; i < tensorShape.dim_size(); i++){
 			shape.push_back(tensorShape.dim(i).dim_value());
@@ -312,14 +310,15 @@ namespace eddl {
 
 	//Converts one vector of TensorProto pointers (Input or output)
 	//to one vector of eddl Tensor pointers.
-	vector<Layer*> parse_IO_tensors(vector<onnx::ValueInfoProto> io_onnx) {
+	vector<Layer*> parse_IO_tensors(vector<onnx::ValueInfoProto> io_onnx, int mem) {
 		vector<Layer*> io;
 		onnx::TypeProto::Tensor tensor;
 		int dev = DEV_CPU;
 
 		for(onnx::ValueInfoProto infoProto : io_onnx) {
 			tensor = infoProto.type().tensor_type();
-			io.push_back(Input(parse_IO_tensor(tensor)) );
+			string name = infoProto.name();
+			io.push_back(new LInput(new Tensor(parse_IO_tensor(tensor)), name, dev, mem) );
 		}
 
 		for(Layer* layer : io){
@@ -459,7 +458,7 @@ namespace eddl {
 
 		vector<onnx::ValueInfoProto> inputs_onnx = get_inputs(graph); //Get the inputs
 
-		vector<Layer*> inputs =  parse_IO_tensors(inputs_onnx); //Parse ONNX inputs to EDDL inputs
+		vector<Layer*> inputs =  parse_IO_tensors(inputs_onnx, mem); //Parse ONNX inputs to EDDL inputs
 
 		vector<onnx::TensorProto> initializers = get_initializers(graph); // Retrieves the initializers from the graph.
 																		  // The weight for the layers can be found in the initializers.
@@ -528,6 +527,7 @@ namespace eddl {
 			}
 			if(avaliable){
 				//cout << "Node " << node->name() << " is avaliable" << endl;
+				if(node->op_type() == "Constant" ) continue;
 				nodeQueue.push(node);
 			}
 		}
@@ -617,19 +617,19 @@ namespace eddl {
 
 						actual_layer = new LBatchNorm(parent, momentum, epsilon, affine, name, dev, mem);
 
-						Tensor* scale_tensor = eddlT::create(scale_dims, scale_weights->data(), dev);
+						Tensor* scale_tensor = new Tensor(scale_dims, scale_weights->data(), dev);
 						Tensor::copy(scale_tensor, ((LBatchNorm *)(actual_layer))->bn_g);
 						delete(scale_tensor);
 
-						Tensor* bias_tensor = eddlT::create(bias_dims, bias_weights->data(), dev);
+						Tensor* bias_tensor = new Tensor(bias_dims, bias_weights->data(), dev);
 						Tensor::copy(bias_tensor, ((LBatchNorm *)(actual_layer))->bn_b);
 						delete(bias_tensor);
 
-						Tensor* mean_tensor = eddlT::create(mean_dims, mean_weights->data(), dev);
+						Tensor* mean_tensor = new Tensor(mean_dims, mean_weights->data(), dev);
 						Tensor::copy(mean_tensor, ((LBatchNorm *)(actual_layer))->mean);
 						delete(mean_tensor);
 
-						Tensor* variance_tensor = eddlT::create(variance_dims, variance_weights->data(), dev);
+						Tensor* variance_tensor = new Tensor(variance_dims, variance_weights->data(), dev);
 						Tensor::copy(variance_tensor, ((LBatchNorm *)(actual_layer))->variance);
 						delete(variance_tensor);
 
@@ -718,12 +718,12 @@ namespace eddl {
 							bias = new vector<float>(map_init_values[bias_name]);
 							vector<int> bias_shape;
 							bias_shape.push_back(bias->size());
-							Tensor* bias_tensor = eddlT::create(bias_shape, bias->data(), dev);
+							Tensor* bias_tensor = new Tensor(bias_shape, bias->data(), dev);
 							Tensor::copy(bias_tensor , convol_descriptor->bias);
 							delete(bias_tensor);
 
 						}
-						Tensor* weights_tensor = eddlT::create(dims, weights->data(), dev);
+						Tensor* weights_tensor = new Tensor(dims, weights->data(), dev);
 						Tensor::copy(weights_tensor, convol_descriptor->K);
 						delete(weights_tensor);
 						break;
@@ -735,23 +735,23 @@ namespace eddl {
 						bool use_bias = false;
 						float alpha;
 						float beta;
-						int transA;
-						int transB;
+						int transA = 0;
+						int transB = 0;
 						vector<int> bias_dims;
 						vector <float>* bias;
 						for ( int j = 0; j < node->attribute_size(); j++ ) {
 							onnx::AttributeProto attribute = node->attribute(j);
 							string attr_name = attribute.name();
-							if (attr_name.compare("alpha")) {
+							if (!attr_name.compare("alpha")) {
 								alpha = attribute.f();
 							}
-							else if (attr_name.compare("beta")) {
+							else if (!attr_name.compare("beta")) {
 								beta = attribute.f();
 							}
-							else if (attr_name.compare("transA")) {
+							else if (!attr_name.compare("transA")) {
 								transA = attribute.i();
 							}
-							else if (attr_name.compare("transB")) {
+							else if (!attr_name.compare("transB")) {
 								transB = attribute.i();
 							}
 						}
@@ -787,13 +787,13 @@ namespace eddl {
 						Tensor * input_size = parent->output;
 						LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem); 
 
-						Tensor* weights_tensor = eddlT::create(dims, weights->data(), dev);
+						Tensor* weights_tensor = new Tensor(dims, weights->data(), dev);
 						if(transB){
 							vector<int> reverse_dims;
 							for(int h = dims.size()-1; h >= 0; h--){
 								reverse_dims.push_back(dims[h]);
 							}
-							Tensor* weights_tensor_T = eddlT::create(reverse_dims, dev);
+							Tensor* weights_tensor_T = new Tensor(reverse_dims, dev);
 							Tensor::transpose(weights_tensor, weights_tensor_T, {1,0});
 							Tensor::copy(weights_tensor_T, dense->W );
 							delete(weights_tensor_T);
@@ -804,7 +804,7 @@ namespace eddl {
 							bias_name = node->input(2);
 							bias = new vector<float>(map_init_values[bias_name]);
 							bias_dims = map_init_dims[bias_name];
-							Tensor* bias_tensor = eddlT::create(bias_dims, bias->data(), dev);
+							Tensor* bias_tensor = new Tensor(bias_dims, bias->data(), dev);
 							Tensor::copy(bias_tensor, dense->bias);
 							delete(bias_tensor);
 						}
@@ -946,19 +946,36 @@ namespace eddl {
 						int h=parent_shape[2];
 						int w=parent_shape[3];
 
-						actual_layer = AveragePool(parent, {h,w},{1,1});
+						actual_layer = new LAveragePool(parent, {h,w},{1,1}, "none", node->name(), dev, mem);
 					}
 					break;
 				case ONNX_LAYERS::RESHAPE:
 					{
 
 
-						string shape_name = node->input(1);
-						vector<int> shape(map_init_values[shape_name].begin(), map_init_values[shape_name].end());
+						string shape_node_name = node->input(1);
+						vector<int> shape;
+						if(constant_node_map.count(shape_node_name)){
+							onnx::NodeProto* shape_node = constant_node_map[shape_node_name];
+							onnx::AttributeProto shape_attribute = shape_node->attribute(0);
+							if(shape_attribute.name().compare("value")){
+								//This means an error ocurred, but don't know how to proceed then.
+								printf("An error ocurred when reading the shape of reshape\n");
+							}
+							onnx::TensorProto shape_tensor = shape_attribute.t();
+							vector<float> shape_float = parseTensorValues(shape_tensor);
+							vector<int> aux_shape(shape_float.begin(), shape_float.end());
+							shape = aux_shape;
+						}
+						else{
+							vector<int> aux_shape(map_init_values[shape_node_name].begin(), map_init_values[shape_node_name].end());
+							shape = aux_shape;
+						}
 						string name = node->name();
 						string parent_name = node->input(0);
 						if(output_node_map.count(parent_name)){
 							//shape.insert(shape.begin(), 1); //Default batch size = 1 //Required for reshape but not for parameters
+							shape[0] = 1;
 							Layer *parent = output_node_map[parent_name];
 							actual_layer= new LReshape(parent, shape, name, dev, mem);
 						}
@@ -982,7 +999,7 @@ namespace eddl {
 						string parent_name = node->input(0); //Get parent
 						Layer* parent = output_node_map[parent_name];
 
-						actual_layer = Reshape(parent, {-1}, name);
+						actual_layer = new LReshape(parent, {1,-1}, name, dev, mem);
 					}
 					break;
 				case ONNX_LAYERS::PERMUTE:
@@ -1227,13 +1244,13 @@ namespace eddl {
 								vector<float> *bias = new vector<float>(map_init_values[bias_name]);
 								vector<int> bias_shape;
 								bias_shape.push_back(bias->size());
-								Tensor* bias_tensor = eddlT::create(bias_shape, bias->data(), dev);
+								Tensor* bias_tensor = new Tensor(bias_shape, bias->data(), dev);
 								if(!convol_descriptor->use_bias){
 									convol_descriptor->use_bias = true; //We need to enable the bias
 									Tensor::copy(bias_tensor , convol_descriptor->bias);
 								}
 								else{
-									Tensor* auxiliar_tensor = eddlT::add(convol_descriptor->bias, bias_tensor);
+									Tensor* auxiliar_tensor = Tensor::add(convol_descriptor->bias, bias_tensor);
 									Tensor::copy(auxiliar_tensor , convol_descriptor->bias);
 									delete(auxiliar_tensor);
 
@@ -1248,11 +1265,11 @@ namespace eddl {
 								vector<int> bias_dims = map_init_dims[bias_name];
 								if(!dense->use_bias){
 									dense->use_bias = true;
-									dense->bias = eddlT::create(bias_dims, bias->data(), dev);
+									dense->bias = new Tensor(bias_dims, bias->data(), dev);
 								}
 								else{ //If dense already has a bias, we sum it in top of the bias
-									Tensor* add_to_bias = eddlT::create(bias_dims, bias->data(), dev);
-									dense->bias = eddlT::add(dense->bias, add_to_bias);
+									Tensor* add_to_bias = new Tensor(bias_dims, bias->data(), dev);
+									dense->bias = Tensor::add(dense->bias, add_to_bias);
 
 								}
 								//Tensor::copy(bias_tensor, dense->bias);
@@ -1319,7 +1336,7 @@ namespace eddl {
 							Layer *parent = parents[1-index_parameter];
 							bool use_bias = false;
 							LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem); 
-							Tensor* weights_tensor = eddlT::create(dims, weights->data(), dev);
+							Tensor* weights_tensor = new Tensor(dims, weights->data(), dev);
 							Tensor::copy(weights_tensor, dense->W );
 							delete(weights_tensor);
 							actual_layer = dense;
@@ -1428,7 +1445,7 @@ namespace eddl {
 						int h=parent_shape[2];
 						int w=parent_shape[3];
 
-						actual_layer = MaxPool(parent, {h,w},{1,1}, "none", "gpool");
+						actual_layer = new LMaxPool(parent, {h,w},{1,1}, "none", "gpool", dev, mem);
 					}
 					break;
 
@@ -1689,14 +1706,14 @@ namespace eddl {
 						vector<float>* weights = new vector<float>(map_init_values[weights_name]);
 						vector<int> dims = map_init_dims[weights_name];
 
-						conv_tensors.push_back(eddlT::create(dims, weights->data(), dev));
+						conv_tensors.push_back(new Tensor(dims, weights->data(), dev));
 
 						if(node.input_size() > 2){ //This means we also have a bias
 							string bias_name = node.input(2);
 							vector<float>* bias = new vector<float>(map_init_values[bias_name]);
 							vector<int> bias_shape;
 							bias_shape.push_back(bias->size());
-							conv_tensors.push_back(eddlT::create(bias_shape, bias->data(), dev));
+							conv_tensors.push_back(new Tensor(bias_shape, bias->data(), dev));
 						}
 
 						tensors[name] = conv_tensors;
@@ -1712,13 +1729,13 @@ namespace eddl {
 						vector<float>* weights = new vector<float>(map_init_values[weights_name]);
 						vector<int> dims = map_init_dims[weights_name];
 
-						dense_tensors.push_back(eddlT::create(dims, weights->data(), dev));
+						dense_tensors.push_back(new Tensor(dims, weights->data(), dev));
 
 						if(node.input_size() > 2){
 							string bias_name = node.input(2);
 							vector<float>* bias = new vector<float>(map_init_values[bias_name]);
 							vector<int> bias_dims = map_init_dims[bias_name];
-							dense_tensors.push_back(eddlT::create(bias_dims, bias->data(), dev));
+							dense_tensors.push_back(new Tensor(bias_dims, bias->data(), dev));
 						}
 
 						tensors[name] = dense_tensors;
@@ -1754,4 +1771,3 @@ namespace eddl {
 
 #endif //cPROTO
 
-}
