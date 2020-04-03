@@ -1,10 +1,10 @@
-#include "eddl_onnx.h"
+#include "serialization/onnx/eddl_onnx.h"
 #include <queue>
 #include <fstream>
-#include "../../layers/core/layer_core.h"
-#include "../../layers/conv/layer_conv.h"
-#include "../../layers/normalization/layer_normalization.h"
-#include "../../layers/pool/layer_pool.h"
+#include "layers/core/layer_core.h"
+#include "layers/conv/layer_conv.h"
+#include "layers/normalization/layer_normalization.h"
+#include "layers/pool/layer_pool.h"
 #include <map>
 #include <set>
 #include <algorithm>
