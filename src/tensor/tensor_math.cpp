@@ -700,6 +700,7 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
 #ifdef cFPGA
     else {
        //fpga_mult2D(A,tA,B,tB,C,incC);
+       //fpga_gemx_mult2D(A,tA,B,tB,C,incC);
        Tensor *nA=new Tensor(A->getShape(),DEV_CPU);
        Tensor *nB=new Tensor(B->getShape(),DEV_CPU);
        Tensor *nC=new Tensor(C->getShape(),DEV_CPU);
