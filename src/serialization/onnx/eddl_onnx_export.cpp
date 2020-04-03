@@ -4,7 +4,6 @@
 
 using namespace std;
 
-namespace eddl {
 
 #ifdef cPROTO
 
@@ -978,5 +977,3 @@ namespace eddl {
 	}
 
 #endif //cPROTO
-
-}
