@@ -40,6 +40,14 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Place binaries and libraries according to GNU standards
 include(GNUInstallDirs)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+
+# Disable in-source builds to prevent source tree corruption.
+if(" ${CMAKE_SOURCE_DIR}" STREQUAL " ${CMAKE_BINARY_DIR}")
+    message(FATAL_ERROR "FATAL: In-source builds are not allowed. You should create a separate directory for build files.")
+endif()
 
 # Flags
 set(CMAKE_VERBOSE_MAKEFILE ON)
