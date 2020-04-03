@@ -1,19 +1,45 @@
 ###########################################################################
+################################ OPTIONS ##################################
+###########################################################################
+
+# USER OPTIONS *******************************
+set(BUILD_TARGET "GPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
+option(BUILD_OPENMP "Compile using OpenMP" ON)
+option(BUILD_PROTOBUF "Compile using Protobuf" OFF)
+option(OVERWRITE_PROTO_FILES "Overwrite protobuf files (requires a compatible protobuf compiler)" OFF)
+
+# Double checks (restricted args)
+set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
+
+# Device specific setup
+string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
+if(${BUILD_TARGET} STREQUAL "CPU")
+elseif(${BUILD_TARGET} STREQUAL "GPU")
+    set(USE_CUDA ON CACHE BOOL "Enable CUDA support if checked")
+elseif(${BUILD_TARGET} STREQUAL "FPGA")
+    message(FATAL_ERROR "FPGA not implemented, CMake will exit." )
+else()
+    message(FATAL_ERROR "Build target not implemented, CMake will exit." )
+endif()
+
+# Force default build type to Release
+set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel.")
+
+
+###########################################################################
 ############################# SET LIBRARY #################################
 ###########################################################################
 
 # C++ files
-file(GLOB_RECURSE CPP_PUBLIC_HEADERS "${PROJECT_SOURCE_DIR}/include/*" *.{h, *.hpp})
 file(GLOB_RECURSE CPP_HEADERS "${PROJECT_SOURCE_DIR}/src/*" *.{h, *.hpp})
 file(GLOB_RECURSE CPP_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cc, cpp})
 file(GLOB_RECURSE CUDA_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cu})
 
 # Make an automatic library - will be static or dynamic based on user setting
-add_library(${PROJECT_NAME} ${CPP_PUBLIC_HEADERS} ${CPP_HEADERS} ${CPP_SOURCES})
+add_library(${PROJECT_NAME} ${CPP_HEADERS} ${CPP_SOURCES})
 
 # We need this directory, and users of our library will need it too
 target_include_directories(${PROJECT_NAME} PUBLIC
-                           ${PROJECT_SOURCE_DIR}/include
                            ${PROJECT_SOURCE_DIR}/src)
 
 # All users of this library will need at least C++11
@@ -31,13 +57,16 @@ find_package(Threads REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
 # Eigen
-find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)  # EIGEN_DIR => ok
 target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIRS})
 
 # ZLIB
-find_package(ZLIB REQUIRED)
+if(NOT ZLIB_INCLUDE_DIRS)
+    find_package(ZLIB REQUIRED)  # Problems with: ZLIB_ROOT
+endif()
 target_include_directories(${PROJECT_NAME} PUBLIC ${ZLIB_INCLUDE_DIRS})
+target_link_directories(${PROJECT_NAME} PRIVATE ${ZLIB_LIBRARIES_DIRS})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${ZLIB_LIBRARIES})
 
 # ONNX files
@@ -45,8 +74,11 @@ if(BUILD_PROTOBUF)
     add_definitions(-DcPROTO)
 
     # Link library
-    find_package(Protobuf REQUIRED)
+    if(NOT Protobuf_INCLUDE_DIRS)
+        find_package(Protobuf REQUIRED)  # Problems with: Protobuf_DIR
+    endif()
     target_include_directories(${PROJECT_NAME} PUBLIC ${Protobuf_INCLUDE_DIRS})
+    target_link_directories(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES_DIRS})
     target_link_libraries(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES})
 
     # Create "onnx.pb.cc" and "onnx.pb.h" files (from serialization/onnx)
@@ -122,6 +154,7 @@ message(STATUS "Install prefix: " ${CMAKE_INSTALL_PREFIX} )
 message(STATUS "-------------------------------------------" )
 message(STATUS "Build target: " ${BUILD_TARGET} )
 message(STATUS "Build type: " ${CMAKE_BUILD_TYPE} )
+message(STATUS "Build shared libs: " ${BUILD_SHARED_LIBS} )
 message(STATUS "Build tests: " ${BUILD_TESTS} )
 message(STATUS "Build examples: " ${BUILD_EXAMPLES} )
 message(STATUS "-------------------------------------------" )
@@ -144,13 +177,20 @@ message(STATUS "OpenMP version: " ${OpenMP_VERSION_MAJOR} )
 message(STATUS "OpenMP gomp library: " ${OpenMP_gomp_LIBRARY} )
 message(STATUS "OpenMP pthread library: " ${OpenMP_pthread_LIBRARY} )
 message(STATUS "-------------------------------------------" )
+message(STATUS "Eigen3 dir: " ${Eigen3_DIR} )
+message(STATUS "Eigen3 include: " ${EIGEN3_INCLUDE_DIR} )
+message(STATUS "-------------------------------------------" )
+message(STATUS "ZLIB root: " ${ZLIB_ROOT} )
+message(STATUS "ZLIB include: " ${ZLIB_INCLUDE_DIRS} )
+message(STATUS "ZLIB libraries: " ${ZLIB_LIBRARIES} )
+message(STATUS "-------------------------------------------" )
+message(STATUS "Protobuf dir: " ${Protobuf_DIR} )
 message(STATUS "Protobuf include: " ${Protobuf_INCLUDE_DIRS} )
 message(STATUS "Protobuf libraries: " ${Protobuf_LIBRARIES} )
 message(STATUS "Protobuf compiler: " ${Protobuf_PROTOC_EXECUTABLE} )
 message(STATUS "-------------------------------------------" )
-message(STATUS "Eigen3 include: " ${EIGEN3_INCLUDE_DIR} )
-message(STATUS "-------------------------------------------" )
-message(STATUS "ZLIB include: " ${ZLIB_INCLUDE_DIRS} )
-message(STATUS "ZLIB libraries: " ${ZLIB_LIBRARIES} )
+message(STATUS "GTest root: " ${GTEST_ROOT} )
+message(STATUS "GTest include: " ${GTEST_INCLUDE_DIRS} )
+message(STATUS "GTest libraries: " ${GTEST_BOTH_LIBRARIES} )
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )

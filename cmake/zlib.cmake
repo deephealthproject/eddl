@@ -1,0 +1,15 @@
+include(ExternalProject)
+ExternalProject_Add(ZLIB
+		PREFIX zlib
+		GIT_REPOSITORY "https://github.com/madler/zlib.git"
+		GIT_TAG "v1.2.11"
+		SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/zlib-src"
+		CMAKE_CACHE_ARGS
+			-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/zlib
+		)
+
+# Set variables
+SET(ZLIB_ROOT ${CMAKE_CURRENT_BINARY_DIR}/zlib)
+SET(ZLIB_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/zlib/include)
+SET(ZLIB_LIBRARIES_DIRS ${CMAKE_CURRENT_BINARY_DIR}/zlib/lib)
+SET(ZLIB_LIBRARIES "z")

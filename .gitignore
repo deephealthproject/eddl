@@ -6,6 +6,7 @@
 *.DS_Store
 .idea
 .vscode
+libs/
 
 # Build
 /[Bb]uild*
@@ -20,7 +21,6 @@ temp/
 /docs/doxygen/latex
 /docs/html
 /docs/latex
-
 
 # Other files
 *.dot
@@ -220,7 +220,6 @@ dmypy.json
 CMakeCache.txt
 CMakeFiles/
 *.dir/
-*.cmake
 
 # ==========================================
 # DOCUMENTATION ============================

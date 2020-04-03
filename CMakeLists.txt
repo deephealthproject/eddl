@@ -1,38 +1,32 @@
 cmake_minimum_required(VERSION 3.9.2)
 
-PROJECT(eddl VERSION 0.4.5 LANGUAGES CXX)
+###########################################################################
+################################ OPTIONS ##################################
+###########################################################################
 
-## Apple: Don't modify install_name when touching RPATH.
-if (APPLE)
-    SET(CMAKE_MACOSX_RPATH 1)
-endif()
+# DO NOT TOUCH!!! (Two step building: 1) ON, 2) OFF)
+option(USE_SUPERBUILD "Use superbuild system" ON)
 
-# USER OPTIONS *******************************
-set(BUILD_TARGET "GPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
-option(BUILD_OPENMP "Compile using OpenMP" ON)
-option(BUILD_PROTOBUF "Compile using Protobuf" ON)
-option(BUILD_SHARED_LIB "Whether to build a static or dynamic library" ON)
-option(BUILD_EXAMPLES "Compile examples" OFF)
+# User options
 option(BUILD_TESTS "Compile tests" ON)
-option(USE_SUPERBUILD "Use superbuild system" OFF)
-option(OVERWRITE_PROTO_FILES "Overwrite protobuf files (requires a compatible protobuf compiler)" OFF)
+option(BUILD_EXAMPLES "Compile examples" ON)
+option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" ON)
 
-# Double checks (restricted args)
-set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
 
-# Device specific setup
-string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
-if(${BUILD_TARGET} STREQUAL "CPU")
-elseif(${BUILD_TARGET} STREQUAL "GPU")
-    set(USE_CUDA ON CACHE BOOL "Enable CUDA support if checked")
-elseif(${BUILD_TARGET} STREQUAL "FPGA")
-    message(FATAL_ERROR "FPGA not implemented, CMake will exit." )
+###########################################################################
+################################# BUILD ###################################
+###########################################################################
+
+# Build Dependencies
+if(USE_SUPERBUILD)
+    PROJECT(eddl-superbuild NONE)
+
+    add_subdirectory(cmake)
+    return() # stop processing this file further
 else()
-    message(FATAL_ERROR "Build target not implemented, CMake will exit." )
+    PROJECT(eddl VERSION 0.4.5 LANGUAGES CXX)
 endif()
 
-# Force default build type to Release
-set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel.")
 
 # SET C++ COMPILER STANDARD
 SET(CMAKE_CXX_STANDARD 11)
@@ -53,20 +47,6 @@ endif()
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-if(UNIX)
-    option(BUILD_SHARED_LIBS "Build shared libraries(.so)." ON)
-else()
-    # only support for static build on Windows.
-    set(BUILD_SHARED_LIBS OFF)
-endif()
-
-# Build Dependencies
-if(USE_SUPERBUILD)
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-    add_subdirectory(cmake)
-else()
-    add_subdirectory(libs/googletest)  # testing
-endif()
 
 # Build library
 add_subdirectory(src)

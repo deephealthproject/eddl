@@ -14,7 +14,7 @@
 #include <iostream>
 
 
-#include "eddl/apis/eddlT.h"
+#include "apis/eddlT.h"
 
 using namespace std;
 

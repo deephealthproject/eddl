@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include <random>
 
-#include "eddl/apis/eddl.h"
+#include "apis/eddl.h"
 #include "serialization/onnx/eddl_onnx.h"
 #include <typeinfo>
 

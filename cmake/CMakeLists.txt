@@ -1,141 +1,98 @@
-cmake_minimum_required(VERSION 3.9.2)
+#cmake_minimum_required(VERSION 3.9.2)
+include(ExternalProject)
 
-option(USE_SYSTEM_EIGEN "Use system dependency" ON)
-option(USE_SYSTEM_GTEST "Use system dependency" ON)
-option(USE_SYSTEM_PROTOBUF "Use system dependency" ON)
-option(USE_SYSTEM_ZLIB "Use system dependency" ON)
-
-###############
-####  EIGEN  ##
-###############
-if(USE_SYSTEM_EIGEN)
-else()
-message(STATUS "Subproject: EIGEN...")
-# Download and unpack eigen at configure time
-configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/eigen.CMakeLists.txt
-        ${CMAKE_CURRENT_BINARY_DIR}/eigen-download/CMakeLists.txt)
-execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-        RESULT_VARIABLE result
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/eigen-download)
-if(result)
-    message(FATAL_ERROR "CMake step for eigen failed: ${result}")
-endif()
-execute_process(COMMAND ${CMAKE_COMMAND} --build .
-        RESULT_VARIABLE result
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/eigen-download )
-if(result)
-    message(FATAL_ERROR "Build step for eigen failed: ${result}")
-endif()
+option(USE_SYSTEM_EIGEN "Use system dependency" OFF)
+option(USE_SYSTEM_GTEST "Use system dependency" OFF)
+option(USE_SYSTEM_ZLIB "Use system dependency" OFF)
+option(USE_SYSTEM_PROTOBUF "Use system dependency" OFF)
 
 # Set variables
-SET(Eigen3_DIR ${CMAKE_CURRENT_BINARY_DIR}/eigen/share/eigen3/cmake PARENT_SCOPE)
-SET(EIGEN3_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/eigen/include/eigen3 PARENT_SCOPE)
+set(EDDL_DEPENDENCIES )
 
-message(STATUS "Subproject: EIGEN...DONE")
+#############
+##  EIGEN  ##
+#############
+message(STATUS "Subproject: EIGEN...")
+if(USE_SYSTEM_EIGEN)
+    find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+else()
+    include(eigen.cmake)
 endif()
+set(EDDL_DEPENDENCIES ${EDDL_DEPENDENCIES} Eigen3)
+message(STATUS "Subproject: EIGEN...DONE")
 
 
 ###############
 ####  GTEST  ##
 ###############
-if(USE_SYSTEM_EIGEN)
-else()
 message(STATUS "Subproject: GTEST...")
-# Download and unpack gtest at configure time
-configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/gtest.CMakeLists.txt
-        ${CMAKE_CURRENT_BINARY_DIR}/googletest-download/CMakeLists.txt)
-execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-        RESULT_VARIABLE result
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
-if(result)
-    message(FATAL_ERROR "CMake step for googletest failed: ${result}")
+if(USE_SYSTEM_GTEST)
+    find_package(GTest REQUIRED)
+else()
+    include(googletest.cmake)
 endif()
-execute_process(COMMAND ${CMAKE_COMMAND} --build .
-        RESULT_VARIABLE result
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
-if(result)
-    message(FATAL_ERROR "Build step for googletest failed: ${result}")
-endif()
-
-# Prevent overriding the parent project's compiler/linker
-# settings on Windows
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-# Add googletest directly to our build. This defines
-# the gtest and gtest_main targets.
-add_subdirectory(
-        ${CMAKE_CURRENT_BINARY_DIR}/googletest-src
-        ${CMAKE_CURRENT_BINARY_DIR}/googletest-build
-        EXCLUDE_FROM_ALL)
-
-# The gtest/gtest_main targets carry header search path
-# dependencies automatically when using CMake 2.8.11 or
-# later. Otherwise we have to add them here ourselves.
-if (CMAKE_VERSION VERSION_LESS 2.8.11)
-    include_directories("${gtest_SOURCE_DIR}/include")
-endif()
-
+set(EDDL_DEPENDENCIES ${EDDL_DEPENDENCIES} GTest)
 message(STATUS "Subproject: GTEST...DONE")
-endif()
 
-#############
-###  ZLIB  ##
-#############
-if(USE_SYSTEM_EIGEN)
-else()
+
+############
+##  ZLIB  ##
+############
 message(STATUS "Subproject: ZLIB...")
-# Download and unpack zlib at configure time
-configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/zlib.CMakeLists.txt
-        ${CMAKE_CURRENT_BINARY_DIR}/zlib-download/CMakeLists.txt)
-execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-        RESULT_VARIABLE result
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/zlib-download)
-if(result)
-    message(FATAL_ERROR "CMake step for zlib failed: ${result}")
+if(USE_SYSTEM_ZLIB)
+    find_package(ZLIB REQUIRED)
+else()
+    include(zlib.cmake)
 endif()
-execute_process(COMMAND ${CMAKE_COMMAND} --build .
-        RESULT_VARIABLE result
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/zlib-download)
-if(result)
-    message(FATAL_ERROR "Build step for zlib failed: ${result}")
-endif()
-
-add_subdirectory(
-        ${CMAKE_CURRENT_BINARY_DIR}/zlib-src
-        ${CMAKE_CURRENT_BINARY_DIR}/zlib-build)
+set(EDDL_DEPENDENCIES ${EDDL_DEPENDENCIES} ZLIB)
 message(STATUS "Subproject: ZLIB...DONE")
-endif()
 
 
-##################
-####  PROTOBUF  ##
-##################
-if(USE_SYSTEM_EIGEN)
+################
+##  PROTOBUF  ##
+################
+if(USE_SYSTEM_PROTOBUF)
+    find_package(Protobuf REQUIRED)
 else()
-message(STATUS "Subproject: Protobuf...")
-# Download and unpack gtest at configure time
-configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/protobuf.CMakeLists.txt
-        ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download/CMakeLists.txt)
-execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-        RESULT_VARIABLE result
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download )
-if(result)
-    message(FATAL_ERROR "CMake step for protobuf failed: ${result}")
+    include(protobuf.cmake)
 endif()
-
-# the location where protobuf-config.cmake will be installed varies by platform
-if (WIN32)
-    set(_FINDPACKAGE_PROTOBUF_CONFIG_DIR "${CMAKE_CURRENT_BINARY_DIR}/protobuf/cmake")
-else()
-    set(_FINDPACKAGE_PROTOBUF_CONFIG_DIR "${CMAKE_CURRENT_BINARY_DIR}/protobuf/lib/cmake/protobuf")
-endif()
-
-# Set variables
-SET(protobuf_DIR ${_FINDPACKAGE_PROTOBUF_CONFIG_DIR} PARENT_SCOPE)
-
+set(EDDL_DEPENDENCIES ${EDDL_DEPENDENCIES} protobuf)
 message(STATUS "Subproject: Protobuf...DONE")
-endif()
+
+
+message("=== SUPERBUILD ======================>")
+message("Eigen3_DIR: ${Eigen3_DIR}")
+message("GTEST_ROOT: ${GTEST_ROOT}")
+message("ZLIB_ROOT: ${ZLIB_ROOT}")
+message("Protobuf_DIR: ${Protobuf_DIR}")
+message("USE_SUPERBUILD: ${USE_SUPERBUILD}")
+
+
+#############
+###  EDDL  ##
+#############
+ExternalProject_Add(ep_eddl
+        PREFIX ep_eddl
+        SOURCE_DIR "${PROJECT_SOURCE_DIR}"
+        BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/ep_eddl"
+        INSTALL_COMMAND ""
+        CMAKE_CACHE_ARGS
+            -DUSE_SUPERBUILD:BOOL=OFF
+
+            -DEigen3_DIR:PATH=${Eigen3_DIR}
+
+            -DGTEST_ROOT:PATH=${GTEST_ROOT}
+
+            #-DZLIB_ROOT:PATH=${ZLIB_ROOT}  # Problems
+            -DZLIB_INCLUDE_DIRS:PATH=${ZLIB_INCLUDE_DIRS}
+            -DZLIB_LIBRARIES:PATH=${ZLIB_LIBRARIES}
+            -DZLIB_LIBRARIES_DIRS:PATH=${ZLIB_LIBRARIES_DIRS}
+
+            #-DProtobuf_DIR:PATH=${Protobuf_DIR}  # Problems
+            -DProtobuf_INCLUDE_DIRS:PATH=${Protobuf_INCLUDE_DIRS}
+            -DProtobuf_LIBRARIES:PATH=${Protobuf_LIBRARIES}
+            -DProtobuf_LIBRARIES_DIRS:PATH=${Protobuf_LIBRARIES_DIRS}
+            -DProtobuf_PROTOC_EXECUTABLE:PATH=${Protobuf_PROTOC_EXECUTABLE}
+
+        DEPENDS ${EDDL_DEPENDENCIES}
+        )
