@@ -17,6 +17,9 @@
 
 using namespace std;
 
+
+// Different reductions operations using matrices routines
+// CuBlas in GPU and Eigen for CPU
 void rsum(Tensor *A, Tensor *b, Tensor *ones, Tensor *mem)
 {
   int N,M;
@@ -184,7 +187,6 @@ void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, Tensor *bn_mean, T
   int b,z,r,c,d;
 
   Tensor *dp;
-  Tensor *in;
 
   if (input->ndim==2) {
     N=b=input->shape[0];
@@ -192,7 +194,6 @@ void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, Tensor *bn_mean, T
 
 
     dp=delta->clone();
-    in=input->clone();
   }
   else {
     b=input->shape[0];
@@ -203,21 +204,18 @@ void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, Tensor *bn_mean, T
     N=b*r*c;
 
     // permute input and delta
-    in=new Tensor({b,r,c,z},input->device);
     dp=new Tensor({b,r,c,z},input->device);
 
     permute_channels_last(delta,dp);
-    permute_channels_last(input,in);
 
     dp->reshape_({N,M});
-    in->reshape_({N,M});
 
   }
 
   Tensor *A=new Tensor({N,M},input->device);
-  Tensor *ones=new Tensor({1,N},in->device);
+  Tensor *ones=new Tensor({1,N},input->device);
   ones->fill_(1.0);
-  Tensor *m=new Tensor({1,M},in->device);
+  Tensor *m=new Tensor({1,M},input->device);
 
 
   // Affine
@@ -251,7 +249,6 @@ void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, Tensor *bn_mean, T
   // equation, the operations allow for expansion (i.e. broadcast) along all
   // dimensions except the channels dimension where required.
 
-
   //1
   Tensor::el_mult(dp,opa,A,0);
 
@@ -284,7 +281,6 @@ void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, Tensor *bn_mean, T
   delete ones;
   delete m;
   delete A;
-  delete in;
   delete dp;
 
 
