@@ -25,7 +25,7 @@ using namespace eddl;
 
 layer Normalization(layer l)
 {
-  return BatchNormalization(l,4);
+  return BatchNormalization(l);
 }
 
 layer Block1(layer l,int filters) {

@@ -137,7 +137,7 @@ void LLayerNorm::forward() {
     Tensor::select(input,A, PD);
     B=new Tensor(A->getShape(),A->device);
 
-    //BN_forward(A,B,MD,bn_mean,bn_var,mean,variance,momentum,epsilon,affine, bn_g,bn_b,mode==TRMODE);
+    //BN_forward(A,B,bn_mean,bn_var,mean,variance,momentum,epsilon,affine, bn_g,bn_b,mode==TRMODE);
 
     Tensor::select(B,output, PD2);
 
@@ -163,7 +163,7 @@ void LLayerNorm::backward()
     C=new Tensor(A->getShape(),A->device);
     C->fill_(0.0);
 
-    //BN_backward(B,A,C,MD,bn_mean,bn_var,mean,variance,epsilon);
+    //BN_backward(B,A,C,bn_mean,bn_var,mean,variance,epsilon);
 
     delete A;
 

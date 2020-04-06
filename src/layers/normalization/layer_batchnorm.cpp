@@ -34,12 +34,12 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
     if(name.empty()) this->name = "batchnorm" + to_string(++total_layers);
 
+
     this->momentum = momentum;
     this->epsilon = epsilon;
     this->affine = affine;
-
+    
     output=new Tensor(input->getShape(),dev);
-//    if (!mem_level) delta=new Tensor(input->getShape(),dev);
 
     mean=new Tensor(shape,dev);
     mean->fill_(0.0);
@@ -69,9 +69,6 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
     params.push_back(mean);
     params.push_back(variance);
 
-    MD=new MapReduceDescriptor(input,axis);
-
-
     parent->addchild(this);
     addparent(parent);
 }
@@ -95,10 +92,6 @@ void LBatchNorm::resize(int batch){
     if (batch!=output->shape[0]) {
         output->resize(batch);
         if (affine) opa->resize(batch);
-//        if (!mem_level) delta->resize(batch);
-        
-        delete MD;
-        MD=new MapReduceDescriptor(input,axis);
     }
 }
 
@@ -106,11 +99,11 @@ void LBatchNorm::resize(int batch){
 
 
 void LBatchNorm::forward() {
-    BN_forward(input,output,MD,bn_mean,bn_var,mean,variance,momentum,epsilon,affine,bn_g,bn_b,opa,mode==TRMODE);
+    BN_forward(input,output,bn_mean,bn_var,mean,variance,momentum,epsilon,affine,bn_g,bn_b,opa,mode==TRMODE);
 }
 
 void LBatchNorm::backward(){
-    BN_backward(input,delta, parent[0]->delta,MD,bn_mean,bn_var,mean,variance,epsilon,affine,bn_g,bn_b,gbn_g,gbn_b,opa);
+    BN_backward(input,delta, parent[0]->delta,bn_mean,bn_var,mean,variance,epsilon,affine,bn_g,bn_b,gbn_g,gbn_b,opa);
 }
 
 

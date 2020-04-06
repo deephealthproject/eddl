@@ -87,4 +87,8 @@ void AvgPool2D_back(PoolDescriptor *D);
 void repeat_nn(Tensor *A, Tensor *B, vector<int> size);
 void d_repeat_nn(Tensor *D, Tensor *P, vector<int> size);
 
+// ***** Permutations for BatchNorm ********************
+void permute_channels_last(Tensor *A,Tensor *B);
+void permute_channels_first(Tensor *A,Tensor *B);
+
 #endif //EDDL_TENSOR_NN_H
