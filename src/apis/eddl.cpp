@@ -659,11 +659,11 @@ namespace eddl {
     layer BatchNormalization(layer parent, float momentum, float epsilon, bool affine, string name){
         return new LBatchNorm(parent, momentum, epsilon, affine, name, DEV_CPU, 0);
     }
-    layer LayerNormalization(layer parent, float momentum, float epsilon, bool affine, string name){
-        return new LLayerNorm(parent, momentum, epsilon, affine, name, DEV_CPU, 0);
+    layer LayerNormalization(layer parent, float epsilon, string name){
+        return new LLayerNorm(parent,  epsilon, name, DEV_CPU, 0);
     }
-    layer GroupNormalization(layer parent, int groups, float momentum, float epsilon, bool affine, string name){
-        return new LGroupNorm(parent, groups, momentum, epsilon, affine, name, DEV_CPU, 0);
+    layer GroupNormalization(layer parent, int groups,float epsilon,  string name){
+        return new LGroupNorm(parent, groups,epsilon,name, DEV_CPU, 0);
     }
 
 

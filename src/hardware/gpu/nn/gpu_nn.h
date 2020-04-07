@@ -85,6 +85,7 @@ void gpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size);
 // BN
 void gpu_permute_channels_first(Tensor *A,Tensor *B);
 void gpu_permute_channels_last(Tensor *A,Tensor *B);
-
+void gpu_permute_batch_first(Tensor *A,Tensor *B);
+void gpu_permute_batch_last(Tensor *A,Tensor *B);
 
 #endif //EDDL_GPU_NN_H

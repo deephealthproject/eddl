@@ -24,22 +24,21 @@ int LBatchNorm::total_layers = 0;
 LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     input=parent->output;
 
-    if (input->ndim == 2) {axis.push_back(0);shape.push_back(input->shape[1]);}
-    else if (input->ndim == 4) {axis.push_back(0);axis.push_back(2);axis.push_back(3);shape.push_back(input->shape[1]);}
-    else {
+    shape.push_back(input->shape[1]);
+
+    if ((input->ndim != 2)&&(input->ndim != 4)) {
         input->info();
         msg("LBatchNorm only works over 1D (Dense) or 2D (Conv) tensors","LBatchNorm");
     }
 
-
     if(name.empty()) this->name = "batchnorm" + to_string(++total_layers);
-
 
     this->momentum = momentum;
     this->epsilon = epsilon;
     this->affine = affine;
-    
+
     output=new Tensor(input->getShape(),dev);
+    opa=new Tensor(input->getShape(),dev);
 
     mean=new Tensor(shape,dev);
     mean->fill_(0.0);
@@ -55,8 +54,6 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
       gbn_g=new Tensor(shape,dev);
       gbn_b=new Tensor(shape,dev);
-
-      opa=new Tensor(output->getShape(),dev); //output pre-affine
 
       params.push_back(bn_g);
       params.push_back(bn_b);
@@ -90,20 +87,92 @@ void LBatchNorm::initialize() {
 
 void LBatchNorm::resize(int batch){
     if (batch!=output->shape[0]) {
-        output->resize(batch);
-        if (affine) opa->resize(batch);
+      opa->reshape_(output->getShape());
+      output->resize(batch);
+      opa->resize(batch);
     }
 }
 
 
 
-
+// Batchnorm works over 2D Tensors
+// Essentialy 4D Tensors are reshaped as 2D and
+// Permute 4D tensors and set N,M values.
 void LBatchNorm::forward() {
-    BN_forward(input,output,bn_mean,bn_var,mean,variance,momentum,epsilon,affine,bn_g,bn_b,opa,mode==TRMODE);
+  // Input = Output = opa = {Batch,Channels,H,W} OR {Batch,Dim}
+  // bn_mean = bn_var = mean = variance = bn_g = bn_b = {Channels} or {Dim}
+
+  int M,N;
+  int b,z,r,c,d;
+  Tensor *in;
+
+  if (input->ndim==2) {
+    N=b=input->shape[0];
+    M=d=input->shape[1];
+    in=input->clone();
+  }
+  else {
+    b=input->shape[0];
+    M=z=input->shape[1];
+    r=input->shape[2];
+    c=input->shape[3];
+    N=b*r*c;
+
+    in=new Tensor({b*r*c*z},input->device);
+    permute_channels_last(input,in);
+    in->reshape_({N,M});
+    opa->reshape_({N,M});
+  }
+
+  BN_forward(in,bn_mean,bn_var,mean,variance,momentum,epsilon,affine,bn_g,bn_b,opa,mode==TRMODE);
+
+  // copy in to ouput
+  if (input->ndim==4) {permute_channels_first(in,output);}
+  else Tensor::copy(in,output);
+
+  delete in;
 }
 
 void LBatchNorm::backward(){
-    BN_backward(input,delta, parent[0]->delta,bn_mean,bn_var,mean,variance,epsilon,affine,bn_g,bn_b,gbn_g,gbn_b,opa);
+  int M,N;
+  int b,z,r,c,d;
+
+  Tensor *dp;
+
+  if (input->ndim==2) {
+    N=b=input->shape[0];
+    M=d=input->shape[1];
+
+    dp=delta->clone();
+  }
+  else {
+    b=input->shape[0];
+    M=z=input->shape[1];
+    r=input->shape[2];
+    c=input->shape[3];
+
+    N=b*r*c;
+
+    // permute input and delta
+    dp=new Tensor({b,r,c,z},input->device);
+
+    permute_channels_last(delta,dp);
+
+    dp->reshape_({N,M});
+
+  }
+
+  BN_backward(dp,bn_mean,bn_var,mean,variance,epsilon,affine,bn_g,bn_b,gbn_g,gbn_b,opa);
+
+  // Inc parent delta
+  if (input->ndim==4) {
+    permute_channels_first(dp,delta);
+    Tensor::inc(delta, parent[0]->delta);
+  }
+  else Tensor::inc(dp, parent[0]->delta);
+
+  delete dp;
+
 }
 
 

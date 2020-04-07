@@ -44,6 +44,25 @@ void gpu_permute_channels_first(Tensor *A,Tensor *B)
   check_cuda(cudaDeviceSynchronize(),"bn_permute_channels_first");
 }
 
+void gpu_permute_batch_last(Tensor *A,Tensor *B)
+{
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  setDims(A);
+  bn_permute_batch_last<<<dimGrid,dimBlock>>>(A->ptr, B->ptr,A->shape[0],A->shape[1],A->shape[2],A->shape[3],A->size);
+  check_cuda(cudaDeviceSynchronize(),"bn_permute_batch_last");
+}
+
+void gpu_permute_batch_first(Tensor *A,Tensor *B)
+{
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  setDims(A);
+  bn_permute_batch_first<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,B->shape[0],B->shape[1],B->shape[2],B->shape[3],B->size);
+  check_cuda(cudaDeviceSynchronize(),"bn_permute_batch_first");
+}
 
 
 

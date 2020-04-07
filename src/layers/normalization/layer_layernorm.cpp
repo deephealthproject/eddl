@@ -21,166 +21,142 @@ using namespace std;
 int LLayerNorm::total_layers = 0;
 
 
-LLayerNorm::LLayerNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem) : LinLayer(name, dev, mem) {
-
+LLayerNorm::LLayerNorm(Layer *parent,  float epsilon,  string name, int dev, int mem) : LinLayer(name, dev, mem) {
     input=parent->output;
 
-    Tensor *A;
+    shape.push_back(input->shape[0]);
 
-    affine=false;
-
-    if (input->ndim == 2) PD=new PermuteDescriptor({1,0});
-    else PD=new PermuteDescriptor({1,0,2,3});
-
-    if (input->ndim == 2) PD2=new PermuteDescriptor({1,0});
-    else PD2=new PermuteDescriptor({1,0,2,3});
-
-    PD->build(input->shape);
-
-    A=new Tensor(PD->oshape,dev);
-
-    PD2->build(A->getShape());
-
-
-    if (input->ndim == 2) {axis.push_back(0);shape.push_back(A->shape[1]);}
-    else if (input->ndim == 4) {axis.push_back(0);axis.push_back(2);axis.push_back(3);shape.push_back(A->shape[1]);}
-    else {
+    if ((input->ndim != 2)&&(input->ndim != 4)) {
         input->info();
-        msg("LLayerNorm only works over 1D (Dense) or 2D (Conv) tensors","LLayerNorm");
+        msg("LBatchNorm only works over 1D (Dense) or 2D (Conv) tensors","LBatchNorm");
     }
 
-    MD=new MapReduceDescriptor(A,axis);
-
-    delete A;
 
     if(name.empty()) this->name = "layernorm" + to_string(++total_layers);
 
-    this->momentum = momentum;
     this->epsilon = epsilon;
-    this->affine = affine;
 
     output=new Tensor(input->getShape(),dev);
-//    delta=new Tensor(input->getShape(),dev);
-
+    in=new Tensor(input->getShape(),dev);
     bn_mean=new Tensor(shape,dev);
     bn_var=new Tensor(shape,dev);
-
-    if (momentum!=0.0) {
-        mean=new Tensor(shape,dev);
-        mean->fill_(0.0);
-
-        variance=new Tensor(shape,dev);
-        variance->fill_(1.0);
-    }
 
     parent->addchild(this);
     addparent(parent);
 }
 
-
-// override functions:
-int LLayerNorm::get_trainable_params_count()
-{
-  if (affine) return 2;  // only 2 trainable params
-  else return 0;  // no trainable params
-}
-
-void LLayerNorm::initialize() {
-  if (affine) {
-    params[0]->fill_(1.0);
-    params[1]->fill_(0.0);
-  }
-}
-
-// virtual
 void LLayerNorm::resize(int batch){
     if (batch!=output->shape[0]) {
+        in->reshape_(output->getShape());
+
         output->resize(batch);
-//        delta->resize(batch);
-
-
-        delete MD;
-        delete PD;
-        delete PD2;
-
-        if (input->ndim == 2) PD=new PermuteDescriptor({1,0});
-        else PD=new PermuteDescriptor({1,0,2,3});
-
-        if (input->ndim == 2) PD2=new PermuteDescriptor({1,0});
-        else PD2=new PermuteDescriptor({1,0,2,3});
-
-        PD->build(input->shape);
-
-        Tensor *A=new Tensor(PD->oshape,dev);
-
-        PD2->build(A->getShape());
-
-        MD=new MapReduceDescriptor(A,axis);
-
+        in->resize(batch);
         bn_mean->resize(batch);
         bn_var->resize(batch);
-        mean->resize(batch);
-        variance->resize(batch);
-
-        delete A;
     }
 }
 
 
+// Permute 4D tensors and set N,M values.
+// Essentialy 4D Tensors are reshaped as 2D and
+// all the batchnorm works over 2D Tensors
 void LLayerNorm::forward() {
+  // Input = Output = {Batch,Channels,H,W} OR {Batch,Dim}
+  // bn_mean = bn_var = mean = variance = bn_g = bn_b = {Batch}
 
-    Tensor *A;
-    Tensor *B;
+  int M,N;
+  int b,z,r,c,d;
 
-    A=new Tensor(PD->oshape,dev);
+  if (input->ndim==2) {
+    M=b=input->shape[0];
+    N=d=input->shape[1];
 
-    Tensor::select(input,A, PD);
-    B=new Tensor(A->getShape(),A->device);
+    input->reshape_({b,d,1,1});
+    permute_batch_last(input,in);
+    input->reshape_({M,N});
+    in->reshape_({N,M});
 
-    //BN_forward(A,B,bn_mean,bn_var,mean,variance,momentum,epsilon,affine, bn_g,bn_b,mode==TRMODE);
+  }
+  else {
+    M=b=input->shape[0];
+    z=input->shape[1];
+    r=input->shape[2];
+    c=input->shape[3];
+    N=z*r*c;
 
-    Tensor::select(B,output, PD2);
+    permute_batch_last(input,in);
+    in->reshape_({N,M}); // now is a 2D tensor
 
-    delete A;
-    delete B;
+  }
+
+
+  BN_forward(in,bn_mean,bn_var,nullptr,nullptr,0.0,epsilon,false,nullptr,nullptr,nullptr,1);
+
+  // copy in to ouput
+  if (input->ndim==4) {permute_batch_first(in,output);}
+  else {
+    output->reshape_({b,d,1,1});
+    permute_batch_first(in,output);
+    output->reshape_({b,d});
+  }
+
+
+
 }
 
 void LLayerNorm::backward()
 {
-    Tensor *A;
-    Tensor *B;
-    Tensor *C;
+  int M,N;
+  int b,z,r,c,d;
 
+  Tensor *dp;
 
-    A=new Tensor(PD->oshape,dev);
-    Tensor::select(delta,A, PD);
+  if (input->ndim==2) {
+    M=b=delta->shape[0];
+    N=d=delta->shape[1];
+    delta->reshape_({b,d,1,1});
+    dp=new Tensor({d,1,1,b},input->device);
+    permute_batch_last(delta,dp);
+    delta->reshape_({M,N});
+    dp->reshape_({N,M});
+  }
+  else {
+    M=b=input->shape[0];
+    z=input->shape[1];
+    r=input->shape[2];
+    c=input->shape[3];
 
+    N=z*r*c;
 
+    // permute input and delta
+    dp=new Tensor({z,r,c,b},input->device);
+    permute_batch_last(delta,dp);
+    dp->reshape_({N,M});
 
-    B=new Tensor(PD->oshape,dev);
-    Tensor::select(input,B, PD);
+  }
 
-    C=new Tensor(A->getShape(),A->device);
-    C->fill_(0.0);
+  BN_backward(dp,bn_mean,bn_var,nullptr,nullptr,epsilon,false,nullptr,nullptr,nullptr,nullptr,in);
 
-    //BN_backward(B,A,C,bn_mean,bn_var,mean,variance,epsilon);
+  // Inc parent delta
+  if (input->ndim==4) {
+    permute_batch_first(dp,delta);
+    Tensor::inc(delta, parent[0]->delta);
+  }
+  else {
+    delta->reshape_({b,d,1,1});
+    permute_batch_first(dp,delta);
+    delta->reshape_({b,d});
+    Tensor::inc(delta, parent[0]->delta);
+  }
 
-    delete A;
+  delete dp;
 
-    A=new Tensor(delta->getShape(),dev);
-    Tensor::select(C,A, PD2);
-
-    Tensor::inc(A,parent[0]->delta);
-
-    delete A;
-    delete B;
-    delete C;
 }
 
 
 
 Layer *LLayerNorm::share(int c, int bs, vector<Layer *> p) {
-    LLayerNorm *n = new LLayerNorm(p[0], momentum, epsilon, affine, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    LLayerNorm *n= new LLayerNorm(p[0], epsilon, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement
@@ -189,7 +165,7 @@ Layer *LLayerNorm::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LLayerNorm::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LLayerNorm *n = new LLayerNorm(p[0], momentum, epsilon, affine, "clone_" + to_string(todev) + name, todev, this->mem_level);
+    LLayerNorm *n= new LLayerNorm(p[0], epsilon, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

@@ -86,6 +86,8 @@ __global__ void d_repeat_nn_k(float *d, int batch, int depth, int d_rows, int d_
 // BN
 __global__ void bn_permute_channels_first(float *src, float *dest,int b,int z,int r,int c,long int size);
 __global__ void bn_permute_channels_last(float *src, float *dest,int b,int z,int r,int c,long int size);
+__global__ void bn_permute_batch_first(float *src, float *dest,int b,int z,int r,int c,long int size);
+__global__ void bn_permute_batch_last(float *src, float *dest,int b,int z,int r,int c,long int size);
 
 
 

@@ -100,7 +100,7 @@ typedef NetLoss * metric;
       *  @return     (void)
     */
     void toCPU(model net, int t=std::thread::hardware_concurrency());
-    
+
     /**
       *  @brief Executes de code in the CPU.
       *
@@ -118,7 +118,7 @@ typedef NetLoss * metric;
       *  @return     The computer service itself.
     */
     compserv CS_GPU(const vector<int> g={1}, string mem="low_mem");
-    
+
     /**
       *  @brief Executes de code in the GPU.
       *
@@ -1113,7 +1113,7 @@ typedef NetLoss * metric;
       *  @param name  A name for the operation
       *  @return     Parent layer after the normalization
     */
-    layer BatchNormalization(layer parent, float momentum = 0.9f, float epsilon = 0.001f, bool affine = true,string name = "");
+    layer BatchNormalization(layer parent, float momentum = 0.9f, float epsilon = 0.00001f, bool affine = true,string name = "");
 
     /**
       *  @brief Layer normalization layer.
@@ -1130,7 +1130,7 @@ typedef NetLoss * metric;
       *  @param name  A name for the operation
       *  @return     Parent layer after the normalization
     */
-    layer LayerNormalization(layer parent, float momentum = 0.9f, float epsilon = 0.001f, bool affine = true,string name = "");
+    layer LayerNormalization(layer parent, float epsilon = 0.00001f, string name = "");
 
     /**
       *  @brief Group normalization layer.
@@ -1148,7 +1148,7 @@ typedef NetLoss * metric;
       *  @param name  A name for the operation
       *  @return     Parent layer after the normalization
     */
-    layer GroupNormalization(layer parent, int groups, float momentum = 0.9f, float epsilon = 0.001f, bool affine = true,string name = "");
+    layer GroupNormalization(layer parent, int groups, float epsilon = 0.001f, string name = "");
 
 
     layer Norm(layer parent, float epsilon = 0.001f, string name = "");

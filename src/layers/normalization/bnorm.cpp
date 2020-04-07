@@ -90,37 +90,15 @@ void cmean(Tensor *A, Tensor *b,Tensor *ones)
 }
 
 
-void BN_forward(Tensor *input,Tensor *output,  Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float momentum, float epsilon, bool affine, Tensor *bn_g, Tensor *bn_b,Tensor *opa, int trmode)
+void BN_forward(Tensor *input,Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float momentum, float epsilon, bool affine, Tensor *bn_g, Tensor *bn_b,Tensor *opa,int trmode)
 {
-  // 2D or 4D batch norm
-  // Input = Output = opa = {Batch,Channels,H,W} OR {Batch,Dim}
-  // bn_mean = bn_var = mean = variance = bn_g = bn_b = {Channels} or {Dim}
+  // General 2D BN
+  // NxM tensors where N is thre reduced dimensions to M statistics
 
-  int M,N;
-  int b,z,r,c,d;
+  int N,M;
 
-  Tensor *in;
-
-  // Permute 4D tensors and set N,M values.
-  // Essentialy 4D Tensors are reshaped as 2D and
-  // all the batchnorm works over 2D Tensors
-  if (input->ndim==2) {
-    N=b=input->shape[0];
-    M=d=input->shape[1];
-    in=input->clone();
-  }
-  else {
-    b=input->shape[0];
-    M=z=input->shape[1];
-    r=input->shape[2];
-    c=input->shape[3];
-    N=b*r*c;
-
-    in=new Tensor({b,r,c,z},input->device);
-    permute_channels_last(input,in);
-    in->reshape_({N,M}); // now is a 2D tensor
-  }
-
+  N=input->shape[0];
+  M=input->shape[1];
 
   Tensor *var=new Tensor({N,M},input->device);
   Tensor *ones=new Tensor({N,1},input->device);
@@ -128,112 +106,83 @@ void BN_forward(Tensor *input,Tensor *output,  Tensor *bn_mean, Tensor *bn_var, 
 
   if (trmode) {
     // mean
-    cmean(in,bn_mean,ones);
+    cmean(input,bn_mean,ones);
 
     // in=in-mean
-    rdiff(in,bn_mean,ones,var);
+    rdiff(input,bn_mean,ones,var);
 
-    Tensor::copy(in,var);
+    Tensor::copy(input,var);
 
     // variance
     var->sqr_();
     cmean(var,bn_var,ones);
 
     // Update global statistics
-    Tensor::add(momentum, mean, (1.0-momentum), bn_mean,mean,0);
-    Tensor::add(momentum, variance, (1.0-momentum), bn_var,variance,0);
+    if (momentum!=0.0) {
+      Tensor::add(momentum, mean, (1.0-momentum), bn_mean,mean,0);
+      Tensor::add(momentum, variance, (1.0-momentum), bn_var,variance,0);
+    }
 
     // sd=sqrt(var+epsilon)
     bn_var->add_(epsilon);
     bn_var->sqrt_();
 
     // in/sd
-    rdiv(in,bn_var,ones,var); //in=(x-mean)/sd
+    rdiv(input,bn_var,ones,var); //in=(x-mean)/sd
   }
   else {
-    rdiff(in,mean,ones,var);
+    rdiff(input,mean,ones,var);
     Tensor::copy(variance,bn_var);
     bn_var->add_(epsilon);
     bn_var->sqrt_();
-    rdiv(in,bn_var,ones,var);
+    rdiv(input,bn_var,ones,var);
   }
 
   if (affine) {
-    // opa: output pre-affice needed for backward
-    if (trmode) {
-      if (input->ndim==4) opa->reshape_({N,M});
-      Tensor::copy(in,opa);
-    }
+    Tensor::copy(input,opa);
     // apply affine transform in=gamma*in+beta
-    rmult(in,bn_g,ones,var);
-    rsum(in,bn_b,ones,var);
+    rmult(input,bn_g,ones,var);
+    rsum(input,bn_b,ones,var);
   }
 
-  // copy in to ouput
-  if (input->ndim==4) {permute_channels_first(in,output);}
-  else Tensor::copy(in,output);
 
   // Free
   delete var;
-  delete in;
   delete ones;
 
 
 }
 
-void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float epsilon, bool affine, Tensor *bn_g, Tensor *bn_b, Tensor *gbn_g, Tensor* gbn_b,Tensor *opa)
+void BN_backward(Tensor *delta,Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float epsilon, bool affine, Tensor *bn_g, Tensor *bn_b, Tensor *gbn_g, Tensor* gbn_b,Tensor *opa)
 {
-  int M,N;
-  int b,z,r,c,d;
+  // General 2D BN
+  // NxM tensors where N is thre reduced dimensions to M statistics
 
-  Tensor *dp;
+  int N,M;
 
-  if (input->ndim==2) {
-    N=b=input->shape[0];
-    M=d=input->shape[1];
+  N=delta->shape[0];
+  M=delta->shape[1];
 
-
-    dp=delta->clone();
-  }
-  else {
-    b=input->shape[0];
-    M=z=input->shape[1];
-    r=input->shape[2];
-    c=input->shape[3];
-
-    N=b*r*c;
-
-    // permute input and delta
-    dp=new Tensor({b,r,c,z},input->device);
-
-    permute_channels_last(delta,dp);
-
-    dp->reshape_({N,M});
-
-  }
-
-  Tensor *A=new Tensor({N,M},input->device);
-  Tensor *ones=new Tensor({1,N},input->device);
+  Tensor *A=new Tensor({N,M},delta->device);
+  Tensor *ones=new Tensor({N},delta->device);
   ones->fill_(1.0);
-  Tensor *m=new Tensor({1,M},input->device);
-
+  Tensor *m=new Tensor({1,M},delta->device);
 
   // Affine
   if (affine) {
     //1 gamma
-    Tensor::el_mult(dp,opa,opa,0);
-    cmean(opa,m,ones);
+    Tensor::el_mult(delta,opa,A,0);
+    cmean(A,m,ones);
     Tensor::add(1,gbn_g,1,m,gbn_g,0);
 
     //2 Beta
-    cmean(dp,m,ones);
+    cmean(delta,m,ones);
     Tensor::add(1,gbn_b,1,m,gbn_b,0);
 
     // Y = OPA
-    // dp=dE/dY
+    // delta=dE/dY
     // Obtain dE/dY from delta:
-    rmult(dp,bn_g,ones,A);
-
+    rmult(delta,bn_g,ones,A);
   }
 
   // From https://github.com/BVLC/caffe/blob/master/src/caffe/layers/batch_norm_layer.cu
@@ -250,7 +199,7 @@ void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, Tensor *bn_mean, T
   // dimensions except the channels dimension where required.
 
   //1
-  Tensor::el_mult(dp,opa,A,0);
+  Tensor::el_mult(delta,opa,A,0);
 
   //2
   cmean(A,m,ones);
@@ -259,29 +208,21 @@ void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, Tensor *bn_mean, T
   rmult(opa,m,ones,A);
 
   //4
-  cmean(dp,m,ones);
+  cmean(delta,m,ones);
 
   //5
   rsum(opa,m,ones,A);
 
   // 6
-  Tensor::add(1,dp,-1,opa,dp,0);
+  Tensor::add(1,delta,-1,opa,delta,0);
 
   // from forward bn_var=sqrt(var(X) + eps
   // 7
-  rdiv(dp,bn_var,ones,A);
+  rdiv(delta,bn_var,ones,A);
 
-  // Inc parent delta
-  if (input->ndim==4) {
-    permute_channels_first(dp,delta);
-    Tensor::inc(delta, pdelta);
-  }
-  else Tensor::inc(dp, pdelta);
 
   delete ones;
   delete m;
   delete A;
-  delete dp;
-
 
 }

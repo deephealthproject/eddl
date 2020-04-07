@@ -23,8 +23,8 @@
 
 using namespace std;
 
-void BN_forward(Tensor *input,Tensor *output, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float momentum, float epsilon, bool affine, Tensor *bn_g, Tensor *bn_b, Tensor *opa, int trmode);
-void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta,  Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float epsilon, bool affine, Tensor *bn_g, Tensor *bn_b, Tensor *gbn_g, Tensor* gbn_b, Tensor *opa);
+void BN_forward(Tensor *input, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float momentum, float epsilon, bool affine, Tensor *bn_g, Tensor *bn_b, Tensor *opa, int trmode);
+void BN_backward(Tensor *delta, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float epsilon, bool affine, Tensor *bn_g, Tensor *bn_b, Tensor *gbn_g, Tensor* gbn_b, Tensor *opa);
 
 
 
@@ -44,10 +44,7 @@ public:
     Tensor *gbn_b;
     Tensor *opa; //output pre-affine
 
-
-    MapReduceDescriptor *MD;
     bool init;
-    vector<int> axis;
     vector<int> shape;
 
     static int total_layers;
@@ -74,44 +71,28 @@ public:
 /// LayerNormalization Layer
 class LLayerNorm : public LinLayer {
 public:
-    float momentum;
     float epsilon;
-    bool affine;
-    Tensor *mean;
-    Tensor *variance;
     Tensor *bn_mean;
     Tensor *bn_var;
-    Tensor *bn_g;
-    Tensor *bn_b;
-    Tensor *gbn_g;
-    Tensor *gbn_b;
-    Tensor *opa; //output pre-affine
-
-    PermuteDescriptor *PD;
-    PermuteDescriptor *PD2;
-    MapReduceDescriptor *MD;
+    Tensor *in; //normalized input
 
     bool init;
-    vector<int> axis;
     vector<int> shape;
 
     static int total_layers;
     vector<Layer *> layers;
 
-    LLayerNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem);
+    LLayerNorm(Layer *parent, float epsilon, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
+    void resize(int batch) override;
+
     void forward() override;
 
     void backward() override;
-
-    void initialize() override;
-
-    void resize(int batch) override;
-    int get_trainable_params_count() override;
 
     string plot(int c) override;
 };
@@ -119,33 +100,18 @@ public:
 /// GroupNormalization Layer
 class LGroupNorm : public LinLayer {
 public:
-    float momentum;
     float epsilon;
     int groups;
-    int N,CH,H,W;
-    bool affine;
-    Tensor *mean;
-    Tensor *variance;
     Tensor *bn_mean;
     Tensor *bn_var;
-    Tensor *bn_g;
-    Tensor *bn_b;
-    Tensor *gbn_g;
-    Tensor *gbn_b;
-    Tensor *opa; //output pre-affine
-
-    PermuteDescriptor *PD;
-    PermuteDescriptor *PD2;
-    MapReduceDescriptor *MD;
-
+    Tensor *in; //normalized input
     bool init;
-    vector<int> axis;
     vector<int> shape;
 
     static int total_layers;
     vector<Layer *> layers;
 
-    LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool affine, string name, int dev, int mem);
+    LGroupNorm(Layer *parent, int g,  float epsilon,string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -155,10 +121,7 @@ public:
 
     void backward() override;
 
-    void initialize() override;
-
     void resize(int batch) override;
-    int get_trainable_params_count() override;
 
     string plot(int c) override;
 };
