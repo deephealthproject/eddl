@@ -23,12 +23,15 @@
 
 using namespace std;
 
-void BN_forward(Tensor *input, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float momentum, float epsilon, bool affine, Tensor *bn_g, Tensor *bn_b, Tensor *opa, int trmode);
-void BN_backward(Tensor *delta, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float epsilon, bool affine, Tensor *bn_g, Tensor *bn_b, Tensor *gbn_g, Tensor* gbn_b, Tensor *opa);
+void BN_forward(Tensor *input, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float momentum, float epsilon, int trmode);
+void BN_backward(Tensor *delta, Tensor *bn_var, Tensor *opa);
+void rsum(Tensor *A, Tensor *b, Tensor *ones, Tensor *mem,int p=1);
+void rdiff(Tensor *A, Tensor *b, Tensor *ones,Tensor *mem,int p=1);
+void rmult(Tensor *A, Tensor *b, Tensor *ones,Tensor *mem,int p=1);
+void rdiv(Tensor *A, Tensor *b, Tensor *ones,Tensor *mem,int p=1);
+void cmean(Tensor *A, Tensor *b,Tensor *ones,int p=1);
 
 
-
-/// BatchNormalization Layer
 class LBatchNorm : public LinLayer {
 public:
     float momentum;
@@ -63,6 +66,7 @@ public:
     void initialize() override;
 
     void resize(int batch) override;
+    
     int get_trainable_params_count() override;
 
     string plot(int c) override;
@@ -72,9 +76,15 @@ public:
 class LLayerNorm : public LinLayer {
 public:
     float epsilon;
+    bool affine;
     Tensor *bn_mean;
     Tensor *bn_var;
     Tensor *in; //normalized input
+    Tensor *bn_g;
+    Tensor *bn_b;
+    Tensor *gbn_g;
+    Tensor *gbn_b;
+    Tensor *opa; //output pre-affine
 
     bool init;
     vector<int> shape;
@@ -82,13 +92,17 @@ public:
     static int total_layers;
     vector<Layer *> layers;
 
-    LLayerNorm(Layer *parent, float epsilon, string name, int dev, int mem);
+    LLayerNorm(Layer *parent, float epsilon, bool affine, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
+    void initialize() override;
+
     void resize(int batch) override;
+
+    int get_trainable_params_count() override;
 
     void forward() override;
 

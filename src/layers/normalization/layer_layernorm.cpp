@@ -21,8 +21,9 @@ using namespace std;
 int LLayerNorm::total_layers = 0;
 
 
-LLayerNorm::LLayerNorm(Layer *parent,  float epsilon,  string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LLayerNorm::LLayerNorm(Layer *parent,  float epsilon, bool affine,  string name, int dev, int mem) : LinLayer(name, dev, mem) {
     input=parent->output;
+    this->affine=affine;
 
     shape.push_back(input->shape[0]);
 
@@ -37,9 +38,26 @@ LLayerNorm::LLayerNorm(Layer *parent,  float epsilon,  string name, int dev, int
     this->epsilon = epsilon;
 
     output=new Tensor(input->getShape(),dev);
-    in=new Tensor(input->getShape(),dev);
+    opa=new Tensor(input->getShape(),dev);
     bn_mean=new Tensor(shape,dev);
     bn_var=new Tensor(shape,dev);
+
+
+    if (affine) {
+      int size=input->size/input->shape[0];//z*r*c
+
+      bn_g=new Tensor({size},dev);
+      bn_b=new Tensor({size},dev);
+      gbn_g=new Tensor({size},dev);
+      gbn_b=new Tensor({size},dev);
+
+      params.push_back(bn_g);
+      params.push_back(bn_b);
+
+      gradients.push_back(gbn_g);
+      gradients.push_back(gbn_b);
+    }
+
 
     parent->addchild(this);
     addparent(parent);
@@ -47,13 +65,27 @@ LLayerNorm::LLayerNorm(Layer *parent,  float epsilon,  string name, int dev, int
 
 void LLayerNorm::resize(int batch){
     if (batch!=output->shape[0]) {
-        in->reshape_(output->getShape());
-
+        opa->reshape_(output->getShape());
         output->resize(batch);
-        in->resize(batch);
+        opa->resize(batch);
+
         bn_mean->resize(batch);
         bn_var->resize(batch);
     }
+}
+
+// override functions:
+int LLayerNorm::get_trainable_params_count()
+{
+  if (affine) return 2;  // only 2 trainable params
+  else return 0;  // no trainable params
+}
+
+void LLayerNorm::initialize() {
+  if (affine) {
+    params[0]->fill_(1.0);
+    params[1]->fill_(0.0);
+  }
 }
 
 
@@ -67,10 +99,12 @@ void LLayerNorm::forward() {
   int M,N;
   int b,z,r,c,d;
 
+  Tensor *in;
   if (input->ndim==2) {
     M=b=input->shape[0];
     N=d=input->shape[1];
 
+    in=new Tensor({b*d},input->device);
     input->reshape_({b,d,1,1});
     permute_batch_last(input,in);
     input->reshape_({M,N});
@@ -84,13 +118,27 @@ void LLayerNorm::forward() {
     c=input->shape[3];
     N=z*r*c;
 
+    in=new Tensor({b*r*c*z},input->device);
     permute_batch_last(input,in);
     in->reshape_({N,M}); // now is a 2D tensor
+    opa->reshape_({N,M});
 
   }
 
+  BN_forward(in,bn_mean,bn_var,nullptr,nullptr,0.0,epsilon,1);
+  Tensor::copy(in,opa);
 
-  BN_forward(in,bn_mean,bn_var,nullptr,nullptr,0.0,epsilon,false,nullptr,nullptr,nullptr,1);
+  if (affine) {
+    Tensor *var=new Tensor({N,M},input->device);
+    Tensor *ones=new Tensor({1,M},input->device);
+    ones->fill_(1.0);
+
+    // apply affine transform in=gamma*in+beta
+    rmult(in,bn_g,ones,var,0);
+    rsum(in,bn_b,ones,var,0);
+    delete var;
+    delete ones;
+  }
 
   // copy in to ouput
   if (input->ndim==4) {permute_batch_first(in,output);}
@@ -100,6 +148,7 @@ void LLayerNorm::forward() {
     output->reshape_({b,d});
   }
 
+  delete in;
 
 
 }
@@ -134,8 +183,34 @@ void LLayerNorm::backward()
     dp->reshape_({N,M});
 
   }
+  // Affine
 
-  BN_backward(dp,bn_mean,bn_var,nullptr,nullptr,epsilon,false,nullptr,nullptr,nullptr,nullptr,in);
+  if (affine) {
+    Tensor *A=new Tensor({N,M},delta->device);
+    Tensor *ones=new Tensor({1,M},delta->device);
+    ones->fill_(1.0);
+    Tensor *m=new Tensor({1,N},delta->device);
+
+    //1 gamma
+    Tensor::el_mult(dp,opa,A,0);
+    cmean(A,m,ones,0);
+    Tensor::add(1,gbn_g,1,m,gbn_g,0);
+
+    //2 Beta
+    cmean(dp,m,ones,0);
+    Tensor::add(1,gbn_b,1,m,gbn_b,0);
+
+    // delta=dE/dY
+    // Obtain dE/dY from delta:
+    
+    rmult(dp,bn_g,ones,A,0);
+
+    delete A;
+    delete ones;
+    delete m;
+  }
+
+  BN_backward(dp,bn_var,opa);
 
   // Inc parent delta
   if (input->ndim==4) {
@@ -156,7 +231,7 @@ void LLayerNorm::backward()
 
 
 Layer *LLayerNorm::share(int c, int bs, vector<Layer *> p) {
-    LLayerNorm *n= new LLayerNorm(p[0], epsilon, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    LLayerNorm *n= new LLayerNorm(p[0], epsilon, affine, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement
@@ -165,7 +240,7 @@ Layer *LLayerNorm::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LLayerNorm::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LLayerNorm *n= new LLayerNorm(p[0], epsilon, "clone_" + to_string(todev) + name, todev, this->mem_level);
+    LLayerNorm *n= new LLayerNorm(p[0], epsilon, affine, "clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

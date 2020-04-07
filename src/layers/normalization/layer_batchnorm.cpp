@@ -124,7 +124,21 @@ void LBatchNorm::forward() {
     opa->reshape_({N,M});
   }
 
-  BN_forward(in,bn_mean,bn_var,mean,variance,momentum,epsilon,affine,bn_g,bn_b,opa,mode==TRMODE);
+  BN_forward(in,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);
+
+  Tensor::copy(in,opa);
+  if (affine) {
+    Tensor *var=new Tensor({N,M},input->device);
+    Tensor *ones=new Tensor({N,1},input->device);
+    ones->fill_(1.0);
+
+    // apply affine transform in=gamma*in+beta
+    rmult(in,bn_g,ones,var);
+    rsum(in,bn_b,ones,var);
+    delete var;
+    delete ones;
+  }
+
 
   // copy in to ouput
   if (input->ndim==4) {permute_channels_first(in,output);}
@@ -162,7 +176,30 @@ void LBatchNorm::backward(){
 
   }
 
-  BN_backward(dp,bn_mean,bn_var,mean,variance,epsilon,affine,bn_g,bn_b,gbn_g,gbn_b,opa);
+  // Affine
+  if (affine) {
+    Tensor *A=new Tensor({N,M},delta->device);
+    Tensor *ones=new Tensor({N},delta->device);
+    ones->fill_(1.0);
+    Tensor *m=new Tensor({1,M},delta->device);
+    //1 gamma
+    Tensor::el_mult(dp,opa,A,0);
+    cmean(A,m,ones);
+    Tensor::add(1,gbn_g,1,m,gbn_g,0);
+
+    //2 Beta
+    cmean(dp,m,ones);
+    Tensor::add(1,gbn_b,1,m,gbn_b,0);
+
+    // delta=dE/dY
+    // Obtain dE/dY from delta:
+    rmult(dp,bn_g,ones,A);
+    delete A;
+    delete ones;
+    delete m;
+  }
+
+  BN_backward(dp,bn_var,opa);
 
   // Inc parent delta
   if (input->ndim==4) {

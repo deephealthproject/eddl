@@ -1130,7 +1130,7 @@ typedef NetLoss * metric;
       *  @param name  A name for the operation
       *  @return     Parent layer after the normalization
     */
-    layer LayerNormalization(layer parent, float epsilon = 0.00001f, string name = "");
+    layer LayerNormalization(layer parent, float epsilon = 0.00001f, bool affine=true, string name = "");
 
     /**
       *  @brief Group normalization layer.

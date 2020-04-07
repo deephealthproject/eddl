@@ -31,7 +31,11 @@ LGroupNorm::LGroupNorm(Layer *parent, int g, float epsilon, string name, int dev
       msg("LGroupNorm only works over 2D (Conv) tensors","LGroupNorm");
     }
 
-    if (input->shape[1]%groups) msg("incorrect group value not channel divider","LGroupNorm");
+    if (input->shape[1]<groups)
+      msg("incorrect group value larger than channels","LGroupNorm");
+
+    if (input->shape[1]%groups)
+      msg("incorrect group value not channel divider","LGroupNorm");
 
     shape.push_back(input->shape[0]*groups);
 
@@ -41,6 +45,8 @@ LGroupNorm::LGroupNorm(Layer *parent, int g, float epsilon, string name, int dev
     in=new Tensor(input->getShape(),dev);
     bn_mean=new Tensor(shape,dev);
     bn_var=new Tensor(shape,dev);
+
+
 
     parent->addchild(this);
     addparent(parent);
@@ -68,6 +74,7 @@ void LGroupNorm::forward()
   int M,N;
   int b,z,r,c,d;
 
+
   b=input->shape[0];
   z=input->shape[1];
   r=input->shape[2];
@@ -84,12 +91,15 @@ void LGroupNorm::forward()
 
   permute_batch_last(input,in);
   in->reshape_({N,M}); // now is a 2D tensor
-  input->reshape_({b/groups,z*groups,r,c});
 
-  BN_forward(in,bn_mean,bn_var,nullptr,nullptr,0.0,epsilon,false,nullptr,nullptr,nullptr,1);
+  BN_forward(in,bn_mean,bn_var,nullptr,nullptr,0.0,epsilon,1);
 
   // copy in to ouput
+  output->reshape_({b,z,r,c});
   permute_batch_first(in,output);
+
+  input->reshape_({b/groups,z*groups,r,c});
+  output->reshape_({b/groups,z*groups,r,c});
 }
 
 void LGroupNorm::backward()
@@ -113,19 +123,20 @@ void LGroupNorm::backward()
   c=delta->shape[3];
 
   N=z*r*c;
-  
+
   // permute input and delta
   dp=new Tensor({z,r,c,b},input->device);
   permute_batch_last(delta,dp);
   dp->reshape_({N,M});
 
-  delta->reshape_({b/groups,z*groups,r,c});
-
-  BN_backward(dp,bn_mean,bn_var,nullptr,nullptr,epsilon,false,nullptr,nullptr,nullptr,nullptr,in);
-
+  BN_backward(dp,bn_var,in);
 
   permute_batch_first(dp,delta);
+
+  delta->reshape_({b/groups,z*groups,r,c});
   Tensor::inc(delta, parent[0]->delta);
+
+
 
   delete dp;
 }
