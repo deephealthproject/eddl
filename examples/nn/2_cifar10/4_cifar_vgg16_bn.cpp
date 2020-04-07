@@ -25,9 +25,9 @@ using namespace eddl;
 
 layer Normalization(layer l)
 {
-  return BatchNormalization(l);
+  //return BatchNormalization(l);
   //return LayerNormalization(l);
-  //return GroupNormalization(l,8);
+  return GroupNormalization(l,8);
 }
 
 layer Block1(layer l,int filters) {
@@ -47,7 +47,7 @@ int main(int argc, char **argv){
 
   // Settings
   int epochs = 25;
-  int batch_size = 100;
+  int batch_size = 16;
   int num_classes = 10;
 
   // network

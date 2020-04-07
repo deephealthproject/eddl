@@ -81,5 +81,6 @@ void cpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size);
 // BN
 void cpu_permute_channels_first(Tensor *A,Tensor *B);
 void cpu_permute_channels_last(Tensor *A,Tensor *B);
-
+void cpu_permute_batch_first(Tensor *A,Tensor *B);
+void cpu_permute_batch_last(Tensor *A,Tensor *B);
 #endif //EDDL_CPU_NN_H

@@ -57,7 +57,7 @@ void permute_channels_first(Tensor *A,Tensor *B)
 void permute_batch_last(Tensor *A,Tensor *B)
 {
   if (A->isCPU()) {
-        cpu_permute_channels_last(A,B);
+        cpu_permute_batch_last(A,B);
   }
 #ifdef cGPU
   else if (A->isGPU())
@@ -75,7 +75,7 @@ void permute_batch_last(Tensor *A,Tensor *B)
 void permute_batch_first(Tensor *A,Tensor *B)
 {
   if (A->isCPU()) {
-        cpu_permute_channels_first(A,B);
+        cpu_permute_batch_first(A,B);
   }
 #ifdef cGPU
   else if (A->isGPU())

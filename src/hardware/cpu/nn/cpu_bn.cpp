@@ -60,3 +60,48 @@ void cpu_permute_channels_first(Tensor *A,Tensor *B)
   }
 
 }
+
+void cpu_permute_batch_last(Tensor *A,Tensor *B)
+{
+  int b,z,r,c;
+
+  b=A->shape[0];
+  z=A->shape[1];
+  r=A->shape[2];
+  c=A->shape[3];
+
+  #pragma omp parallel for
+  for (int i = 0; i < b; ++i) {
+    int psrc=i*(z*r*c);
+    for(int j=0;j<z;j++)
+      for(int k=0;k<r;k++)
+        for(int m=0;m<c;m++,psrc++) {
+          int pdest=j*(r*c*b)+k*(c*b)+m*b+i;
+          B->ptr[pdest]=A->ptr[psrc];
+        }
+  }
+
+}
+
+void cpu_permute_batch_first(Tensor *A,Tensor *B)
+{
+  int b,z,r,c;
+
+  b=B->shape[0];
+  z=B->shape[1];
+  r=B->shape[2];
+  c=B->shape[3];
+
+
+  #pragma omp parallel for
+  for (int i = 0; i < b; ++i) {
+    int psrc=i*(z*r*c);
+    for(int j=0;j<z;j++)
+      for(int k=0;k<r;k++)
+        for(int m=0;m<c;m++,psrc++) {
+          int pdest=j*(r*c*b)+k*(c*b)+m*b+i;
+          B->ptr[psrc]=A->ptr[pdest];
+        }
+  }
+
+}
