@@ -9,4 +9,4 @@ ExternalProject_Add(GTest
         )
 
 # Set variables
-SET(GTEST_ROOT ${CMAKE_CURRENT_BINARY_DIR}/googletest)
+SET(GTEST_ROOT "${CMAKE_CURRENT_BINARY_DIR}/googletest")

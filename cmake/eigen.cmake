@@ -9,5 +9,5 @@ ExternalProject_Add(Eigen3
 		)
 
 # Set variables
-SET(Eigen3_DIR ${CMAKE_CURRENT_BINARY_DIR}/eigen/share/eigen3/cmake )
-SET(EIGEN3_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/eigen/include/eigen3 )
+SET(Eigen3_DIR "${CMAKE_CURRENT_BINARY_DIR}/eigen/share/eigen3/cmake" )
+SET(EIGEN3_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/eigen/include/eigen3" )

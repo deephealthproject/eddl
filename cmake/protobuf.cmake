@@ -15,5 +15,10 @@ ExternalProject_Add(protobuf
 set(Protobuf_DIR "${CMAKE_CURRENT_BINARY_DIR}/protobuf/lib/cmake/protobuf")
 set(Protobuf_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}/protobuf/include")
 set(Protobuf_LIBRARIES_DIRS "${CMAKE_CURRENT_BINARY_DIR}/protobuf/lib")
-set(Protobuf_LIBRARIES "protobuf")
+#set(Protobuf_LIBRARIES "${Protobuf_LIBRARIES_DIRS}/protobuf")
 set(Protobuf_PROTOC_EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/protobuf/bin/protoc")
+
+find_library(Protobuf_LIBRARIES
+        NAMES protobuf
+        HINTS "${Protobuf_LIBRARIES_DIRS}"
+        )

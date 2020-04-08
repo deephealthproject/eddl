@@ -6,7 +6,6 @@ cmake_minimum_required(VERSION 3.9.2)
 
 # DO NOT TOUCH!!! (Two step building: 1) ON, 2) OFF)
 option(USE_SUPERBUILD "Use superbuild system" ON)
-option(USE_SYSTEM_DEPENDENCIES "Force the use of system dependencies" OFF)
 
 # User options
 option(BUILD_TESTS "Compile tests" ON)
@@ -19,7 +18,7 @@ option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libr
 
 # Build Dependencies
 if(USE_SUPERBUILD)
-    PROJECT(eddl-superbuild NONE)
+    PROJECT(eddl-superbuild)
 
     add_subdirectory(cmake)
     return() # stop processing this file further
