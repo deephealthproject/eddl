@@ -9,6 +9,8 @@ using namespace std;
 
 	void save_net_to_onnx_file( Net *net, string path ) {
 		// Builds all the model in onnx from the Net object
+		if (net->snets[0]->dev!=DEV_CPU)
+			net->sync_weights();
 		bool export_gradients = false; // We always store weights to file
 		onnx::ModelProto model = build_onnx_model( net , export_gradients );
 		// Create the file stream and save the serialization of the onnx model in it
@@ -20,6 +22,8 @@ using namespace std;
 
 	size_t serialize_net_to_onnx_pointer( Net *net, void * & serialized_model, bool gradients ) {
 		// Builds all the model in onnx from the Net object
+		if (net->snets[0]->dev!=DEV_CPU)
+			net->sync_weights();
 		onnx::ModelProto model = build_onnx_model( net , gradients );
 		// Serialization of the model to an array of bytes
 		size_t size = model.ByteSizeLong(); // Get the size of the serialized model
@@ -33,6 +37,8 @@ using namespace std;
 
 	string* serialize_net_to_onnx_string( Net *net, bool gradients) {
 		// Builds all the model in onnx from the Net object
+		if (net->snets[0]->dev!=DEV_CPU)
+			net->sync_weights();
 		onnx::ModelProto model = build_onnx_model( net , gradients );
 		// Serialization of the model to an array of bytes
 		string * model_string = new string();

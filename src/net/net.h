@@ -53,6 +53,7 @@ public:
 	int trmode;
 	int mem_level; // see Computing Service
 	unsigned int verbosity_level = 0;
+	bool onnx_pretrained;
 
 	vector<int> devsel;
 	CompServ *cs;

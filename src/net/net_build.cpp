@@ -154,6 +154,7 @@ void Net::toGPU(vector<int> g,int lsb,int mem){
 }
 
 void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize){
+	onnx_pretrained = !initialize; // For controlling when to copy the weights to the snet
 	build(opt, lo, me, initialize);
     set_compserv(cs);
 
@@ -362,6 +363,11 @@ void Net::split(int c, int todev) {
         sprintf(cname,"snet_%d",i);
         snets[i]->name=cname;
         snets[i]->build(optimizer->clone(), losses, metrics);
+        if(onnx_pretrained){ //We need to copy the imported weights to each snet
+            for(int i = 0; i < snets.size(); i++)
+                for(int j = 0; j < layers.size(); j++)
+                    layers[j]->copy(snets[i]->layers[j]);
+        }
 
     }
 }

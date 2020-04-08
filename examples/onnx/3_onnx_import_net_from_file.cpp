@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
     int num_classes = 10;
 
 	string path("trained_model.onnx");
-	Net* net = import_net_from_onnx_file(path);
+	Net* net = import_net_from_onnx_file(path, DEV_CPU);
 
 	std::cout << "Output size list = " << net->lout.size() << endl;
     // Build model
@@ -42,11 +42,11 @@ int main(int argc, char **argv) {
           rmsprop(0.01), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          //CS_GPU({1}) // one GPU
-          CS_CPU(4), // CPU with maximum threads availables
+          CS_GPU({1}, "low_mem"), // one GPU
+          //CS_CPU(), // CPU with maximum threads availables
 		  false       // Parameter that indicates that the weights of the net must not be initialized to random values.
     );
-
+	
 	//Resize model
 	net->resize(batch_size); //Since we don't use "fit", we need to resize the net manually to a correct batch size
 
