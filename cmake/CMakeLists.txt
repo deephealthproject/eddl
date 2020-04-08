@@ -3,7 +3,7 @@ include(ExternalProject)
 
 
 # For development (ignore)
-option(USE_SYSTEM_DEPENDENCIES "Force the use of system dependencies" ON)  # Master flag
+option(USE_SYSTEM_DEPENDENCIES "Force the use of system dependencies" OFF)  # Master flag
 option(USE_SYSTEM_GTEST "Use system dependency" OFF)
 option(USE_SYSTEM_EIGEN "Use system dependency" OFF)
 option(USE_SYSTEM_ZLIB "Use system dependency" OFF)
