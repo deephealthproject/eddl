@@ -29,30 +29,24 @@ message(STATUS "Subproject: GTEST...")
 if(USE_SYSTEM_DEPENDENCIES OR USE_SYSTEM_GTEST)
     find_package(GTest REQUIRED)
 else()
-    # Check if eigen is in the system
-    find_package(GTest)
-    if (GTEST_FOUND)
-        message("GTest found in the system")
-    else()
-        # Download and unpack googletest at configure time
-        configure_file(googletest.CMakeLists.txt.in googletest-download/CMakeLists.txt)
-        execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-                RESULT_VARIABLE result
-                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
-        if(result)
-            message(FATAL_ERROR "CMake step for googletest failed: ${result}")
-        endif()
-        execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
-                RESULT_VARIABLE result
-                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
-        if(result)
-            message(FATAL_ERROR "Build step for googletest failed: ${result}")
-        endif()
 
-        # Set variables
-        SET(GTEST_ROOT "${CMAKE_CURRENT_BINARY_DIR}/googletest")
-    #    find_package(GTest REQUIRED)  # Double check - Fill more variables
+    # Download and unpack googletest at configure time
+    configure_file(googletest.CMakeLists.txt.in googletest-download/CMakeLists.txt)
+    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+            RESULT_VARIABLE result
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
+    if(result)
+        message(FATAL_ERROR "CMake step for googletest failed: ${result}")
     endif()
+    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
+            RESULT_VARIABLE result
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
+    if(result)
+        message(FATAL_ERROR "Build step for googletest failed: ${result}")
+    endif()
+
+    # Set variables
+    SET(GTEST_ROOT "${CMAKE_CURRENT_BINARY_DIR}/googletest")
 endif()
 message(STATUS "Subproject: GTEST...DONE")
 
@@ -65,30 +59,24 @@ if(USE_SYSTEM_DEPENDENCIES OR USE_SYSTEM_EIGEN)
     find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 else()
 
-    # Check if eigen is in the system
-    find_package(Eigen3 3.3 NO_MODULE)
-    if (TARGET Eigen3::Eigen)
-        message("Eigen found in the system")
-    else()
-        # Download and unpack googletest at configure time
-        configure_file(eigen.CMakeLists.txt.in eigen-download/CMakeLists.txt)
-        execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-                RESULT_VARIABLE result
-                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/eigen-download )
-        if(result)
-            message(FATAL_ERROR "CMake step for googletest failed: ${result}")
-        endif()
-        execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
-                RESULT_VARIABLE result
-                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/eigen-download )
-        if(result)
-            message(FATAL_ERROR "Build step for eigen failed: ${result}")
-        endif()
-
-        # Set variables
-        SET(Eigen3_DIR "${CMAKE_CURRENT_BINARY_DIR}/eigen/share/eigen3/cmake" )
-#        find_package(Eigen3 3.3 REQUIRED NO_MODULE)  # Double check - Fill more variables
+    # Download and unpack googletest at configure time
+    configure_file(eigen.CMakeLists.txt.in eigen-download/CMakeLists.txt)
+    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+            RESULT_VARIABLE result
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/eigen-download )
+    if(result)
+        message(FATAL_ERROR "CMake step for googletest failed: ${result}")
     endif()
+    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
+            RESULT_VARIABLE result
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/eigen-download )
+    if(result)
+        message(FATAL_ERROR "Build step for eigen failed: ${result}")
+    endif()
+
+    # Set variables
+    SET(Eigen3_DIR "${CMAKE_CURRENT_BINARY_DIR}/eigen/share/eigen3/cmake" )
+#        find_package(Eigen3 3.3 REQUIRED NO_MODULE)  # Double check - Fill more variables
 endif()
 message(STATUS "Subproject: EIGEN...DONE")
 
@@ -100,44 +88,37 @@ message(STATUS "Subproject: ZLIB...")
 if(USE_SYSTEM_DEPENDENCIES OR USE_SYSTEM_ZLIB)
     find_package(ZLIB REQUIRED)
 else()
-    # Check if zlib is in the system
-    find_package(ZLIB)
-    if (ZLIB_FOUND)
-        message("ZLIB found in the system")
-    else()
-        # Download and unpack googletest at configure time
-        configure_file(zlib.CMakeLists.txt.in zlib-download/CMakeLists.txt)
-        execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-                RESULT_VARIABLE result
-                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/zlib-download )
-        if(result)
-            message(FATAL_ERROR "CMake step for zlib failed: ${result}")
-        endif()
-        execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
-                RESULT_VARIABLE result
-                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/zlib-download )
-        if(result)
-            message(FATAL_ERROR "Build step for zlib failed: ${result}")
-        endif()
-
-
-        # Set variables
-        SET(ZLIB_ROOT "${CMAKE_CURRENT_BINARY_DIR}/zlib")
-        SET(ZLIB_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}/zlib/include")
-        SET(ZLIB_LIBRARIES_DIRS "${CMAKE_CURRENT_BINARY_DIR}/zlib/lib")
-        SET(ZLIB_LIBRARIES "z")
-
-#        find_library(ZLIB_LIBRARIES
-#                NAMES z
-#                PATHS ${ZLIB_LIBRARIES_DIRS}
-#                PATH_SUFFIXES lib
-#                NO_DEFAULT_PATH
-#                )
-#        if(NOT ZLIB_LIBRARIES)
-#            message(FATAL_ERROR "ZLIB library not found")
-#        endif()
-#        find_package(ZLIB REQUIRED)  # Double check - Fill more variables
+    # Download and unpack googletest at configure time
+    configure_file(zlib.CMakeLists.txt.in zlib-download/CMakeLists.txt)
+    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+            RESULT_VARIABLE result
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/zlib-download )
+    if(result)
+        message(FATAL_ERROR "CMake step for zlib failed: ${result}")
     endif()
+    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
+            RESULT_VARIABLE result
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/zlib-download )
+    if(result)
+        message(FATAL_ERROR "Build step for zlib failed: ${result}")
+    endif()
+
+
+    # Set variables
+    SET(ZLIB_ROOT "${CMAKE_CURRENT_BINARY_DIR}/zlib")
+    SET(ZLIB_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}/zlib/include")
+    SET(ZLIB_LIBRARIES_DIRS "${CMAKE_CURRENT_BINARY_DIR}/zlib/lib")
+    SET(ZLIB_LIBRARIES "z")
+
+#    find_library(ZLIB_LIBRARIES
+#            NAMES z
+#            PATHS ${ZLIB_LIBRARIES_DIRS}
+#            PATH_SUFFIXES lib
+#            NO_DEFAULT_PATH
+#            )
+#    if(NOT ZLIB_LIBRARIES)
+#        message(FATAL_ERROR "ZLIB library not found")
+#    endif()
 endif()
 message(STATUS "Subproject: ZLIB...DONE")
 
@@ -148,36 +129,32 @@ message(STATUS "Subproject: ZLIB...DONE")
 if(USE_SYSTEM_DEPENDENCIES OR USE_SYSTEM_PROTOBUF)
     find_package(Protobuf REQUIRED)
 else()
-    find_package(Protobuf)
-    if (Protobuf_FOUND)
-        message("Protobuf found in the system")
+    # Download and unpack googletest at configure time
+    configure_file(protobuf.CMakeLists.txt.in protobuf-download/CMakeLists.txt)
+    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+            RESULT_VARIABLE result
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download )
+    if(result)
+        message(FATAL_ERROR "CMake step for protobuf failed: ${result}")
+    endif()
+    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
+            RESULT_VARIABLE result
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download )
+    if(result)
+        message(FATAL_ERROR "Build step for protobuf failed: ${result}")
+    endif()
+
+    # This variable does not work (deprecated?)
+    if (WIN32)
+        set(Protobuf_DIR "${CMAKE_CURRENT_BINARY_DIR}/protobuf/cmake")
     else()
-        # Download and unpack googletest at configure time
-        configure_file(protobuf.CMakeLists.txt.in protobuf-download/CMakeLists.txt)
-        execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-                RESULT_VARIABLE result
-                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download )
-        if(result)
-            message(FATAL_ERROR "CMake step for protobuf failed: ${result}")
-        endif()
-        execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
-                RESULT_VARIABLE result
-                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download )
-        if(result)
-            message(FATAL_ERROR "Build step for protobuf failed: ${result}")
-        endif()
+        set(Protobuf_DIR "${CMAKE_CURRENT_BINARY_DIR}/protobuf/lib/cmake/protobuf")
+    endif()
 
-        # This variable does not work (deprecated?)
-        if (WIN32)
-            set(Protobuf_DIR "${CMAKE_CURRENT_BINARY_DIR}/protobuf/cmake")
-        else()
-            set(Protobuf_DIR "${CMAKE_CURRENT_BINARY_DIR}/protobuf/lib/cmake/protobuf")
-        endif()
-
-        set(Protobuf_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}/protobuf/include")
-        set(Protobuf_LIBRARIES_DIRS "${CMAKE_CURRENT_BINARY_DIR}/protobuf/lib")
-        set(Protobuf_LIBRARIES "protobuf")
-        set(Protobuf_PROTOC_EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/protobuf/bin/protoc")
+    set(Protobuf_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}/protobuf/include")
+    set(Protobuf_LIBRARIES_DIRS "${CMAKE_CURRENT_BINARY_DIR}/protobuf/lib")
+    set(Protobuf_LIBRARIES "protobuf")
+    set(Protobuf_PROTOC_EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/protobuf/bin/protoc")
 
 #        # Weirdly, in github does not work
 #        find_library(Protobuf_LIBRARIES
@@ -189,8 +166,7 @@ else()
 #        if(NOT Protobuf_LIBRARIES)
 #            message(FATAL_ERROR "Protobuf library not found")
 #        endif()
-#        find_package(Protobuf REQUIRED)  # Double check - Fill more variables
-    endif()
+
 endif()
 message(STATUS "Subproject: Protobuf...DONE")
 

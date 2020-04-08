@@ -13,7 +13,7 @@
 #include <iostream>
 #include <cuda.h>
 
-#include "hardware/gpu/gpu_nn_kernels.h"
+#include "hardware/gpu/nn/gpu_nn_kernels.h"
 #include "hardware/gpu/gpu_kernels.h"
 //
 //__device__ float get_pixel(int b,int px,int py,int pz, int ircd, int irc, int irows, int icols, float* I){

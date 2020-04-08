@@ -12,9 +12,9 @@
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
 
-#include "harware/gpu/gpu_tensor.h"
-#include "harware/gpu/gpu_kernels.h"
-#include "harware/gpu/gpu_hw.h"
+#include "hardware/gpu/gpu_tensor.h"
+#include "hardware/gpu/gpu_kernels.h"
+#include "hardware/gpu/gpu_hw.h"
 
 #include "tensor/tensor.h"
 #include "descriptors/descriptors.h"

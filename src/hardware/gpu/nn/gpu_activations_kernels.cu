@@ -14,7 +14,7 @@
 #include <iostream>
 #include <cuda.h>
 
-#include "hardware/gpu/gpu_nn_kernels.h"
+#include "hardware/gpu/nn/gpu_nn_kernels.h"
 #include "hardware/gpu/gpu_kernels.h"
 
 

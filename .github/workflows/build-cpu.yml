@@ -20,4 +20,4 @@ jobs:
       - name: Test
         run: |
           cd build
-          ctest --verbose
+          ./cmake/ep_eddl/bin/unit_tests

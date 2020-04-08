@@ -12,8 +12,8 @@
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
 
-#include "hardware/gpu/gpu_nn.h"
-#include "hardware/gpu/gpu_nn_kernels.h"
+#include "hardware/gpu/nn/gpu_nn.h"
+#include "hardware/gpu/nn/gpu_nn_kernels.h"
 
 #include "hardware/gpu/gpu_hw.h"
 #include "hardware/gpu/gpu_tensor.h"

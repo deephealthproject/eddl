@@ -58,22 +58,22 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
 # Eigen
 if(DEFINED Eigen3_DIR)
-    message("Using specific Eigen")
+    message(STATUS "Using specific Eigen")
 else()
-    message("Searching for Eigen in the system...")
+    message(STATUS "Searching for Eigen in the system...")
 endif()
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)  # EIGEN_DIR => ok
-message("Eigen found!")
+message(STATUS "Eigen found!")
 target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only library
 
 # ZLIB
 if(DEFINED ZLIB_INCLUDE_DIRS AND DEFINED ZLIB_LIBRARIES_DIRS AND DEFINED ZLIB_LIBRARIES)
-    message("Using specific Zlib")
+    message(STATUS "Using specific Zlib")
 else()
-    message("Searching for ZLIB in the system...")
+    message(STATUS "Searching for ZLIB in the system...")
     find_package(ZLIB REQUIRED)  # Problems with: ZLIB_ROOT
-    message("ZLIB found!")
+    message(STATUS "ZLIB found!")
 endif()
 target_include_directories(${PROJECT_NAME} PUBLIC ${ZLIB_INCLUDE_DIRS})
 target_link_directories(${PROJECT_NAME} PRIVATE ${ZLIB_LIBRARIES_DIRS})
@@ -85,11 +85,11 @@ if(BUILD_PROTOBUF)
 
     # Link library
     if(DEFINED Protobuf_DIR AND DEFINED Protobuf_LIBRARIES_DIRS AND DEFINED Protobuf_LIBRARIES)
-        message("Using specific Protobuf")
+        message(STATUS "Using specific Protobuf")
     else()
-        message("Searching for Protobuf in the system...")
+        message(STATUS "Searching for Protobuf in the system...")
         find_package(Protobuf REQUIRED)  # Problems with: Protobuf_DIR
-        message("Protobuf found! (system)")
+        message(STATUS "Protobuf found! (system)")
     endif()
     target_include_directories(${PROJECT_NAME} PUBLIC ${Protobuf_INCLUDE_DIRS})
     target_link_directories(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES_DIRS})
@@ -105,18 +105,14 @@ endif()
 
 # OpenMP
 if(BUILD_OPENMP)
-    find_package(OpenMP)
+    find_package(OpenMP REQUIRED)
     if (OpenMP_FOUND)
         target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_CXX)
         if (${OpenMP_CXX_VERSION_MAJOR})
             set(OpenMP_VERSION_MAJOR ${OpenMP_CXX_VERSION_MAJOR} CACHE INTERNAL "" FORCE)
         endif()
         target_compile_definitions(${PROJECT_NAME} PUBLIC OpenMP_VERSION_MAJOR=${OpenMP_VERSION_MAJOR})
-        message(STATUS "Found OpenMP, version ${OpenMP_VERSION_MAJOR}")
-
         set(OMP_CANCELLATION true)  # https://www.openmp.org/spec-html/5.0/openmpse59.html
-    else()
-        set(BUILD_OPENMP OFF)
     endif()
 endif()
 

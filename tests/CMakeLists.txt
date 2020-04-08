@@ -5,24 +5,15 @@ project(eddl-tests)
 # GTest (use local)
 enable_testing()
 if(DEFINED GTEST_ROOT)
-    message("Using specific GTest")
+    message(STATUS "Using specific GTest")
 else()
-    message("Searching for GTest in the system...")
+    message(STATUS "Searching for GTest in the system...")
 endif()
 find_package(GTest REQUIRED)
-message("GTest found!")
+message(STATUS "GTest found!")
 
 # Find tests (recursively)
 file(GLOB_RECURSE CPP_TESTS_FILES LIST_DIRECTORIES true *.h *.cpp)
-
-# GTest
-if(DEFINED GTEST_ROOT)
-    message("Using specific GTest")
-else()
-    message("Searching for GTest in the system...")
-endif()
-find_package(GTest REQUIRED)  # Problems with: ZLIB_ROOT
-message("GTest found!")
 
 # Build test and target libraries
 add_executable(unit_tests ${CPP_TESTS_FILES})
