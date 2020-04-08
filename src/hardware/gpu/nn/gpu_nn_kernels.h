@@ -83,5 +83,12 @@ __global__ void avgpool2d_back(float* D, float* ID, int batch,int irows,int icol
 __global__ void repeat_nn_k(float *a, int batch, int depth, int a_rows, int a_cols, float *b, int b_rows, int b_cols, int *size);
 __global__ void d_repeat_nn_k(float *d, int batch, int depth, int d_rows, int d_cols, float *a, int a_rows, int a_cols, int *size);
 
+// BN
+__global__ void bn_permute_channels_first(float *src, float *dest,int b,int z,int r,int c,long int size);
+__global__ void bn_permute_channels_last(float *src, float *dest,int b,int z,int r,int c,long int size);
+__global__ void bn_permute_batch_first(float *src, float *dest,int b,int z,int r,int c,long int size);
+__global__ void bn_permute_batch_last(float *src, float *dest,int b,int z,int r,int c,long int size);
+
+
 
 #endif

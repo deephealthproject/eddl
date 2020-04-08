@@ -33,7 +33,7 @@ public:
     ~TensorDescriptor();
 
     // Don't mark as pure virtual because not all methods use the same parameters
-    virtual void build(){};
+    //virtual void build(){};
     virtual void resize(int b){};
     void free_memory();
 };
@@ -52,7 +52,7 @@ public:
     SelDescriptor(const vector<string>& indices, int dev=0);
 
     virtual void build(vector<int> ishape);
-    virtual void resize(int b);
+    void resize(int b) override;
     virtual void build_indices();
 };
 
@@ -61,10 +61,10 @@ public:
     vector<int> dims;
 
     PermuteDescriptor(const vector<int>& dims, int dev=0);
-    
-    void build(vector<int> ishape);
-    void resize(int b);
-    void build_indices();
+
+    void build(vector<int> ishape) override;
+    void resize(int b) override;
+    void build_indices() override;
 };
 
 

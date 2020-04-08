@@ -25,7 +25,9 @@ using namespace eddl;
 
 layer Normalization(layer l)
 {
-  return BatchNormalization(l,4);
+  return BatchNormalization(l);
+  //return LayerNormalization(l);
+  //return GroupNormalization(l,8);
 }
 
 layer Block1(layer l,int filters) {
@@ -63,7 +65,7 @@ int main(int argc, char **argv){
   l=MaxPool(Block1(Block3_2(l,512),512));
 
   l=Reshape(l,{-1});
-  l=ReLu(BatchNormalization(Dense(l,512)));
+  l=ReLu(Dense(l,512));
 
   layer out=Softmax(Dense(l,num_classes));
 
@@ -73,10 +75,10 @@ int main(int argc, char **argv){
 
   // Build model
   build(net,
-    sgd(0.01, 0.9), // Optimizer
+      sgd(0.001, 0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    CS_GPU({1}, "low_mem") // GPU with only one gpu
+    CS_GPU({1}, "full_mem") // GPU with only one gpu
 	//CS_CPU(-1, "low_mem")  // CPU with maximum threads availables
   );
 

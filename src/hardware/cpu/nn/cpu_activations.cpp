@@ -95,14 +95,14 @@ void cpu_d_softplus(Tensor *D, Tensor *I, Tensor *PD){
 void cpu_softsign(Tensor *A, Tensor *B){
     #pragma omp parallel for
     for (int i = 0; i < A->size; i++) {
-        B->ptr[i] = A->ptr[i] / (1 + ::abs(A->ptr[i]));
+        B->ptr[i] = A->ptr[i] / (1 + ::fabs(A->ptr[i]));
     }
 }
 
 void cpu_d_softsign(Tensor *D, Tensor *I, Tensor *PD){
     #pragma omp parallel for
     for (int i = 0; i < D->size; i++) {
-        float denom = 1 + ::abs(I->ptr[i]);
+        float denom = 1 + ::fabs(I->ptr[i]);
         PD->ptr[i] = D->ptr[i] * 1/(denom*denom);
     }
 }
