@@ -6,7 +6,6 @@
 *.DS_Store
 .idea
 .vscode
-libs/
 
 # Build
 /[Bb]uild*

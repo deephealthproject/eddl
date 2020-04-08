@@ -1,19 +1,35 @@
 #cmake_minimum_required(VERSION 3.9.2)
 include(ExternalProject)
 
-option(USE_SYSTEM_EIGEN "Use system dependency" OFF)
+# For development (ignore)
 option(USE_SYSTEM_GTEST "Use system dependency" OFF)
+option(USE_SYSTEM_EIGEN "Use system dependency" OFF)
 option(USE_SYSTEM_ZLIB "Use system dependency" OFF)
 option(USE_SYSTEM_PROTOBUF "Use system dependency" OFF)
 
 # Set variables
-set(EDDL_DEPENDENCIES )
+set(EDDL_DEPENDENCIES)
+
+#################################################################################
+#################################################################################
+
+##############
+###  GTEST  ##
+##############
+message(STATUS "Subproject: GTEST...")
+if(USE_SYSTEM_DEPENDENCIES OR USE_SYSTEM_GTEST)
+    find_package(GTest REQUIRED)
+else()
+    include(googletest.cmake)
+endif()
+set(EDDL_DEPENDENCIES ${EDDL_DEPENDENCIES} GTest)
+message(STATUS "Subproject: GTEST...DONE")
 
 #############
 ##  EIGEN  ##
 #############
 message(STATUS "Subproject: EIGEN...")
-if(USE_SYSTEM_EIGEN)
+if(USE_SYSTEM_DEPENDENCIES OR USE_SYSTEM_EIGEN)
     find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 else()
     include(eigen.cmake)
@@ -22,24 +38,11 @@ set(EDDL_DEPENDENCIES ${EDDL_DEPENDENCIES} Eigen3)
 message(STATUS "Subproject: EIGEN...DONE")
 
 
-###############
-####  GTEST  ##
-###############
-message(STATUS "Subproject: GTEST...")
-if(USE_SYSTEM_GTEST)
-    find_package(GTest REQUIRED)
-else()
-    include(googletest.cmake)
-endif()
-set(EDDL_DEPENDENCIES ${EDDL_DEPENDENCIES} GTest)
-message(STATUS "Subproject: GTEST...DONE")
-
-
 ############
 ##  ZLIB  ##
 ############
 message(STATUS "Subproject: ZLIB...")
-if(USE_SYSTEM_ZLIB)
+if(USE_SYSTEM_DEPENDENCIES OR USE_SYSTEM_ZLIB)
     find_package(ZLIB REQUIRED)
 else()
     include(zlib.cmake)
@@ -51,21 +54,13 @@ message(STATUS "Subproject: ZLIB...DONE")
 ################
 ##  PROTOBUF  ##
 ################
-if(USE_SYSTEM_PROTOBUF)
+if(USE_SYSTEM_DEPENDENCIES OR USE_SYSTEM_PROTOBUF)
     find_package(Protobuf REQUIRED)
 else()
     include(protobuf.cmake)
 endif()
 set(EDDL_DEPENDENCIES ${EDDL_DEPENDENCIES} protobuf)
 message(STATUS "Subproject: Protobuf...DONE")
-
-
-message("=== SUPERBUILD ======================>")
-message("Eigen3_DIR: ${Eigen3_DIR}")
-message("GTEST_ROOT: ${GTEST_ROOT}")
-message("ZLIB_ROOT: ${ZLIB_ROOT}")
-message("Protobuf_DIR: ${Protobuf_DIR}")
-message("USE_SUPERBUILD: ${USE_SUPERBUILD}")
 
 
 #############
@@ -81,14 +76,14 @@ ExternalProject_Add(ep_eddl
 
             -DEigen3_DIR:PATH=${Eigen3_DIR}
 
-            -DGTEST_ROOT:PATH=${GTEST_ROOT}
+            -DGTEST_ROOT:PATH=${GTEST_ROOT}  # Special
 
-            #-DZLIB_ROOT:PATH=${ZLIB_ROOT}  # Problems
+            -DZLIB_ROOT:PATH=${ZLIB_ROOT}  # Problems
             -DZLIB_INCLUDE_DIRS:PATH=${ZLIB_INCLUDE_DIRS}
             -DZLIB_LIBRARIES:PATH=${ZLIB_LIBRARIES}
             -DZLIB_LIBRARIES_DIRS:PATH=${ZLIB_LIBRARIES_DIRS}
 
-            #-DProtobuf_DIR:PATH=${Protobuf_DIR}  # Problems
+            -DProtobuf_DIR:PATH=${Protobuf_DIR}  # Problems
             -DProtobuf_INCLUDE_DIRS:PATH=${Protobuf_INCLUDE_DIRS}
             -DProtobuf_LIBRARIES:PATH=${Protobuf_LIBRARIES}
             -DProtobuf_LIBRARIES_DIRS:PATH=${Protobuf_LIBRARIES_DIRS}
@@ -96,3 +91,21 @@ ExternalProject_Add(ep_eddl
 
         DEPENDS ${EDDL_DEPENDENCIES}
         )
+
+
+# SHOW OPTIONS
+message(STATUS "===========================================" )
+message(STATUS "===========================================" )
+message(STATUS "Use system dependencies: " ${USE_SYSTEM_DEPENDENCIES} )
+message(STATUS "-------------------------------------------" )
+if(NOT USE_SYSTEM_DEPENDENCIES)
+message(STATUS "Use system GTest: " ${USE_SYSTEM_GTEST} )
+message(STATUS "-------------------------------------------" )
+message(STATUS "Use system Eigen: " ${USE_SYSTEM_EIGEN} )
+message(STATUS "-------------------------------------------" )
+message(STATUS "Use system Zlib: " ${USE_SYSTEM_ZLIB} )
+message(STATUS "-------------------------------------------" )
+message(STATUS "Use system Protobuf: " ${USE_SYSTEM_PROTOBUF} )
+endif()
+message(STATUS "===========================================" )
+message(STATUS "===========================================" )
