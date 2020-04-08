@@ -57,7 +57,7 @@ find_package(Threads REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
 # Eigen
-if(DEFINED EIGEN3_DIR)
+if(DEFINED Eigen3_DIR)
     message("Using specific Eigen")
 else()
     message("Searching for Eigen in the system...")

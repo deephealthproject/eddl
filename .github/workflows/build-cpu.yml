@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install utilities
-        run: sudo apt-get install -y cmake git wget graphviz
+        run: sudo apt-get install -y cmake wget graphviz
       - name: Build
         run: |
           mkdir build
