@@ -115,7 +115,9 @@ else()
         #SET(ZLIB_LIBRARIES "${ZLIB_LIBRARIES_DIRS}/z")
         find_library(ZLIB_LIBRARIES
                 NAMES z
-                HINTS "${ZLIB_LIBRARIES_DIRS}"
+                PATHS ${ZLIB_LIBRARIES_DIRS}
+                PATH_SUFFIXES lib
+                NO_DEFAULT_PATH
                 )
         if(NOT ZLIB_LIBRARIES)
             message(FATAL_ERROR "ZLIB library not found")
@@ -157,8 +159,10 @@ else()
         set(Protobuf_PROTOC_EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/protobuf/bin/protoc")
 
         find_library(Protobuf_LIBRARIES
-                NAMES protobuf
-                HINTS "${Protobuf_LIBRARIES_DIRS}"
+                NAMES protobuf protobuf-lite protoc
+                PATHS ${Protobuf_LIBRARIES_DIRS}
+                PATH_SUFFIXES lib
+                NO_DEFAULT_PATH
                 )
         if(NOT Protobuf_LIBRARIES)
             message(FATAL_ERROR "Protobuf library not found")
