@@ -68,7 +68,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only library
 
 # ZLIB
-if(DEFINED ZLIB_INCLUDE_DIRS AND DEFINED ZLIB_LIBRARIES)
+if(DEFINED ZLIB_INCLUDE_DIRS AND DEFINED ZLIB_LIBRARIES_DIRS AND DEFINED ZLIB_LIBRARIES)
     message("Using specific Zlib")
 else()
     message("Searching for ZLIB in the system...")
@@ -76,7 +76,7 @@ else()
     message("ZLIB found!")
 endif()
 target_include_directories(${PROJECT_NAME} PUBLIC ${ZLIB_INCLUDE_DIRS})
-#target_link_directories(${PROJECT_NAME} PRIVATE ${ZLIB_LIBRARIES_DIRS})
+target_link_directories(${PROJECT_NAME} PRIVATE ${ZLIB_LIBRARIES_DIRS})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${ZLIB_LIBRARIES})
 
 # ONNX files
@@ -84,15 +84,15 @@ if(BUILD_PROTOBUF)
     add_definitions(-DcPROTO)
 
     # Link library
-    if(DEFINED Protobuf_INCLUDE_DIRS AND DEFINED Protobuf_LIBRARIES)
+    if(DEFINED Protobuf_DIR AND DEFINED Protobuf_LIBRARIES_DIRS AND DEFINED Protobuf_LIBRARIES)
         message("Using specific Protobuf")
     else()
         message("Searching for Protobuf in the system...")
         find_package(Protobuf REQUIRED)  # Problems with: Protobuf_DIR
-        message("Protobuf found!")
+        message("Protobuf found! (system)")
     endif()
     target_include_directories(${PROJECT_NAME} PUBLIC ${Protobuf_INCLUDE_DIRS})
-#    target_link_directories(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES_DIRS})
+    target_link_directories(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES_DIRS})
     target_link_libraries(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES})
 
     # Create "onnx.pb.cc" and "onnx.pb.h" files (from serialization/onnx)
