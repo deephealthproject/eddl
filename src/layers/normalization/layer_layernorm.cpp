@@ -46,6 +46,11 @@ LLayerNorm::LLayerNorm(Layer *parent,  float epsilon, bool affine,  string name,
     if (affine) {
       int size=input->size/input->shape[0];//z*r*c
 
+      //https://pytorch.org/docs/stable/nn.html#torch.nn.LayerNorm
+      //Unlike Batch Normalization which applies scalar scale and bias
+      //for each entire channel/plane with the affine option,
+      //Layer Normalization applies per-element scale and bias with
+      //elementwise_affine.
       bn_g=new Tensor({size},dev);
       bn_b=new Tensor({size},dev);
       gbn_g=new Tensor({size},dev);
@@ -202,7 +207,7 @@ void LLayerNorm::backward()
 
     // delta=dE/dY
     // Obtain dE/dY from delta:
-    
+
     rmult(dp,bn_g,ones,A,0);
 
     delete A;

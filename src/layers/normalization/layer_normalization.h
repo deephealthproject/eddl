@@ -66,7 +66,7 @@ public:
     void initialize() override;
 
     void resize(int batch) override;
-    
+
     int get_trainable_params_count() override;
 
     string plot(int c) override;
@@ -79,7 +79,6 @@ public:
     bool affine;
     Tensor *bn_mean;
     Tensor *bn_var;
-    Tensor *in; //normalized input
     Tensor *bn_g;
     Tensor *bn_b;
     Tensor *gbn_g;
@@ -115,17 +114,23 @@ public:
 class LGroupNorm : public LinLayer {
 public:
     float epsilon;
+    bool affine;
     int groups;
     Tensor *bn_mean;
     Tensor *bn_var;
-    Tensor *in; //normalized input
+    Tensor *bn_g;
+    Tensor *bn_b;
+    Tensor *gbn_g;
+    Tensor *gbn_b;
+    Tensor *opa; //output pre-affine
+
     bool init;
     vector<int> shape;
 
     static int total_layers;
     vector<Layer *> layers;
 
-    LGroupNorm(Layer *parent, int g,  float epsilon,string name, int dev, int mem);
+    LGroupNorm(Layer *parent, int g,  float epsilon, bool affine,string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -135,7 +140,11 @@ public:
 
     void backward() override;
 
+    void initialize() override;
+
     void resize(int batch) override;
+
+    int get_trainable_params_count() override;
 
     string plot(int c) override;
 };

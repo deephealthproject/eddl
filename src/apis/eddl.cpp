@@ -662,8 +662,8 @@ namespace eddl {
     layer LayerNormalization(layer parent, float epsilon, bool affine, string name){
         return new LLayerNorm(parent,  epsilon, affine, name, DEV_CPU, 0);
     }
-    layer GroupNormalization(layer parent, int groups,float epsilon,  string name){
-        return new LGroupNorm(parent, groups,epsilon,name, DEV_CPU, 0);
+    layer GroupNormalization(layer parent, int groups,float epsilon, bool affine, string name){
+        return new LGroupNorm(parent, groups,epsilon,affine,name, DEV_CPU, 0);
     }
 
 
