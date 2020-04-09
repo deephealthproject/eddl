@@ -18,11 +18,13 @@ option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libr
 
 # Build Dependencies
 if(USE_SUPERBUILD)
+    # This is executed at building time: "cmake .."
     PROJECT(eddl-superbuild)
 
     add_subdirectory(cmake)
     return() # stop processing this file further
 else()
+    # This is executed at compilation time: "make"
     PROJECT(eddl VERSION 0.4.5 LANGUAGES CXX)
 endif()
 

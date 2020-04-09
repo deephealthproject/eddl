@@ -16,8 +16,8 @@ jobs:
           mkdir build
           cd build
           cmake ..
-          make
+          make -j
       - name: Test
         run: |
           cd build
-          ./cmake/ep_eddl/bin/unit_tests
+          cmake/eddl/bin/unit_tests

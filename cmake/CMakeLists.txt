@@ -187,10 +187,11 @@ message(STATUS "Subproject: Protobuf...DONE")
 ##############
 ####  EDDL  ##
 ##############
-ExternalProject_Add(ep_eddl
+ExternalProject_Add(eddl
+        PREFIX eddl
         DEPENDS ${EDDL_DEPENDENCIES}
         SOURCE_DIR "${PROJECT_SOURCE_DIR}"
-        BINARY_DIR "${EP_BASE_DIR}/ep_eddl"
+        BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/eddl"
         INSTALL_COMMAND ""
         CMAKE_ARGS ${CL_ARGS}  # Overrides CMAKE_CACHE_ARGS when an argument is duplicated
         CMAKE_CACHE_ARGS
