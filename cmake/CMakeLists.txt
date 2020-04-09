@@ -1,6 +1,9 @@
 #cmake_minimum_required(VERSION 3.9.2)
 include(ExternalProject)
 
+set_property (DIRECTORY PROPERTY EP_BASE third_party)
+SET(EP_BASE_DIR "${CMAKE_CURRENT_BINARY_DIR}/third_party")
+
 # Set parallelization
 include(ProcessorCount)
 ProcessorCount(NUM_CORES)
@@ -19,6 +22,17 @@ option(USE_SYSTEM_PROTOBUF "Use system dependency" OFF)
 # Set variables
 set(EDDL_DEPENDENCIES)
 
+
+# Collect args
+get_cmake_property(vars CACHE_VARIABLES)
+foreach(var ${vars})
+    get_property(currentHelpString CACHE "${var}" PROPERTY HELPSTRING)
+    if("${currentHelpString}" MATCHES "No help, variable specified on the command line." OR "${currentHelpString}" STREQUAL "")
+        # message("${var} = [${${var}}]  --  ${currentHelpString}") # uncomment to see the variables being processed
+        list(APPEND CL_ARGS "-D${var}=${${var}}")
+    endif()
+endforeach()
+
 #################################################################################
 #################################################################################
 
@@ -31,22 +45,22 @@ if(USE_SYSTEM_DEPENDENCIES OR USE_SYSTEM_GTEST)
 else()
 
     # Download and unpack googletest at configure time
-    configure_file(googletest.CMakeLists.txt.in googletest-download/CMakeLists.txt)
+    configure_file(googletest.CMakeLists.txt.in ${EP_BASE_DIR}/googletest-download/CMakeLists.txt)
     execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
             RESULT_VARIABLE result
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
+            WORKING_DIRECTORY ${EP_BASE_DIR}/googletest-download )
     if(result)
         message(FATAL_ERROR "CMake step for googletest failed: ${result}")
     endif()
     execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
             RESULT_VARIABLE result
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
+            WORKING_DIRECTORY ${EP_BASE_DIR}/googletest-download )
     if(result)
         message(FATAL_ERROR "Build step for googletest failed: ${result}")
     endif()
 
     # Set variables
-    SET(GTEST_ROOT "${CMAKE_CURRENT_BINARY_DIR}/googletest")
+    SET(GTEST_ROOT "${EP_BASE_DIR}/googletest")
 endif()
 message(STATUS "Subproject: GTEST...DONE")
 
@@ -60,22 +74,22 @@ if(USE_SYSTEM_DEPENDENCIES OR USE_SYSTEM_EIGEN)
 else()
 
     # Download and unpack googletest at configure time
-    configure_file(eigen.CMakeLists.txt.in eigen-download/CMakeLists.txt)
+    configure_file(eigen.CMakeLists.txt.in ${EP_BASE_DIR}/eigen-download/CMakeLists.txt)
     execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
             RESULT_VARIABLE result
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/eigen-download )
+            WORKING_DIRECTORY ${EP_BASE_DIR}/eigen-download )
     if(result)
         message(FATAL_ERROR "CMake step for googletest failed: ${result}")
     endif()
     execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
             RESULT_VARIABLE result
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/eigen-download )
+            WORKING_DIRECTORY ${EP_BASE_DIR}/eigen-download )
     if(result)
         message(FATAL_ERROR "Build step for eigen failed: ${result}")
     endif()
 
     # Set variables
-    SET(Eigen3_DIR "${CMAKE_CURRENT_BINARY_DIR}/eigen/share/eigen3/cmake" )
+    SET(Eigen3_DIR "${EP_BASE_DIR}/eigen/share/eigen3/cmake" )
 #        find_package(Eigen3 3.3 REQUIRED NO_MODULE)  # Double check - Fill more variables
 endif()
 message(STATUS "Subproject: EIGEN...DONE")
@@ -89,25 +103,25 @@ if(USE_SYSTEM_DEPENDENCIES OR USE_SYSTEM_ZLIB)
     find_package(ZLIB REQUIRED)
 else()
     # Download and unpack googletest at configure time
-    configure_file(zlib.CMakeLists.txt.in zlib-download/CMakeLists.txt)
+    configure_file(zlib.CMakeLists.txt.in ${EP_BASE_DIR}/zlib-download/CMakeLists.txt)
     execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
             RESULT_VARIABLE result
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/zlib-download )
+            WORKING_DIRECTORY ${EP_BASE_DIR}/zlib-download )
     if(result)
         message(FATAL_ERROR "CMake step for zlib failed: ${result}")
     endif()
     execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
             RESULT_VARIABLE result
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/zlib-download )
+            WORKING_DIRECTORY ${EP_BASE_DIR}/zlib-download )
     if(result)
         message(FATAL_ERROR "Build step for zlib failed: ${result}")
     endif()
 
 
     # Set variables
-    SET(ZLIB_ROOT "${CMAKE_CURRENT_BINARY_DIR}/zlib")
-    SET(ZLIB_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}/zlib/include")
-    SET(ZLIB_LIBRARIES_DIRS "${CMAKE_CURRENT_BINARY_DIR}/zlib/lib")
+    SET(ZLIB_ROOT "${EP_BASE_DIR}/zlib")
+    SET(ZLIB_INCLUDE_DIRS "${EP_BASE_DIR}/zlib/include")
+    SET(ZLIB_LIBRARIES_DIRS "${EP_BASE_DIR}/zlib/lib")
     SET(ZLIB_LIBRARIES "z")
 
 #    find_library(ZLIB_LIBRARIES
@@ -130,31 +144,31 @@ if(USE_SYSTEM_DEPENDENCIES OR USE_SYSTEM_PROTOBUF)
     find_package(Protobuf REQUIRED)
 else()
     # Download and unpack googletest at configure time
-    configure_file(protobuf.CMakeLists.txt.in protobuf-download/CMakeLists.txt)
+    configure_file(protobuf.CMakeLists.txt.in ${EP_BASE_DIR}/protobuf-download/CMakeLists.txt)
     execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
             RESULT_VARIABLE result
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download )
+            WORKING_DIRECTORY ${EP_BASE_DIR}/protobuf-download )
     if(result)
         message(FATAL_ERROR "CMake step for protobuf failed: ${result}")
     endif()
     execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
             RESULT_VARIABLE result
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/protobuf-download )
+            WORKING_DIRECTORY ${EP_BASE_DIR}/protobuf-download )
     if(result)
         message(FATAL_ERROR "Build step for protobuf failed: ${result}")
     endif()
 
     # This variable does not work (deprecated?)
     if (WIN32)
-        set(Protobuf_DIR "${CMAKE_CURRENT_BINARY_DIR}/protobuf/cmake")
+        set(Protobuf_DIR "${EP_BASE_DIR}/protobuf/cmake")
     else()
-        set(Protobuf_DIR "${CMAKE_CURRENT_BINARY_DIR}/protobuf/lib/cmake/protobuf")
+        set(Protobuf_DIR "${EP_BASE_DIR}/protobuf/lib/cmake/protobuf")
     endif()
 
-    set(Protobuf_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}/protobuf/include")
-    set(Protobuf_LIBRARIES_DIRS "${CMAKE_CURRENT_BINARY_DIR}/protobuf/lib")
+    set(Protobuf_INCLUDE_DIRS "${EP_BASE_DIR}/protobuf/include")
+    set(Protobuf_LIBRARIES_DIRS "${EP_BASE_DIR}/protobuf/lib")
     set(Protobuf_LIBRARIES "protobuf")
-    set(Protobuf_PROTOC_EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/protobuf/bin/protoc")
+    set(Protobuf_PROTOC_EXECUTABLE "${EP_BASE_DIR}/protobuf/bin/protoc")
 
 #        # Weirdly, in github does not work
 #        find_library(Protobuf_LIBRARIES
@@ -174,10 +188,11 @@ message(STATUS "Subproject: Protobuf...DONE")
 ####  EDDL  ##
 ##############
 ExternalProject_Add(ep_eddl
-        PREFIX ep_eddl
+        DEPENDS ${EDDL_DEPENDENCIES}
         SOURCE_DIR "${PROJECT_SOURCE_DIR}"
-        BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/ep_eddl"
+        BINARY_DIR "${EP_BASE_DIR}/ep_eddl"
         INSTALL_COMMAND ""
+        CMAKE_ARGS ${CL_ARGS}  # Overrides CMAKE_CACHE_ARGS when an argument is duplicated
         CMAKE_CACHE_ARGS
             -DUSE_SUPERBUILD:BOOL=OFF
 
@@ -195,8 +210,6 @@ ExternalProject_Add(ep_eddl
             -DProtobuf_LIBRARIES:PATH=${Protobuf_LIBRARIES}
             -DProtobuf_LIBRARIES_DIRS:PATH=${Protobuf_LIBRARIES_DIRS}
             -DProtobuf_PROTOC_EXECUTABLE:PATH=${Protobuf_PROTOC_EXECUTABLE}
-
-        DEPENDS ${EDDL_DEPENDENCIES}
         )
 
 
@@ -205,6 +218,7 @@ message(STATUS "===========================================" )
 message(STATUS "===========================================" )
 message(STATUS "Use system dependencies: " ${USE_SYSTEM_DEPENDENCIES} )
 message(STATUS "Cores used: " ${NUM_PARALLEL} )
+message(STATUS "Args used: " ${CL_ARGS} )
 message(STATUS "-------------------------------------------" )
 message(STATUS "Use system GTest: " ${USE_SYSTEM_GTEST} )
 message(STATUS "GTests root: " ${GTEST_ROOT})
