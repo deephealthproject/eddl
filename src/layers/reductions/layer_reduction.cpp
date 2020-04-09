@@ -8,11 +8,11 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "layer_reductions.h"
+#include "layers/reductions/layer_reductions.h"
 
 
 using namespace std;

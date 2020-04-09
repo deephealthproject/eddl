@@ -9,7 +9,7 @@
 
 #include <stdexcept>
 
-#include "cpu_hw.h"
+#include "hardware/cpu/cpu_hw.h"
 
 void cpu_reduce(Tensor *A, Tensor *B,string mode,int* map)
 {

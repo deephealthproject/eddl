@@ -8,12 +8,12 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <cmath>
 
-#include "initializer.h"
+#include "initializers/initializer.h"
 
 using namespace std;
 

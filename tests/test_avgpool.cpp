@@ -5,7 +5,6 @@
 #include "descriptors/descriptors.h"
 
 
-
 TEST(avgpoolTest, avgpool_k2x2_s2x2_pad_valid)
 {
     // Image

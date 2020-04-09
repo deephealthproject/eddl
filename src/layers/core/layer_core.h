@@ -12,9 +12,9 @@
 #define EDDL_LAYER_CORE_H
 
 #include <string>
-#include <stdio.h>
+#include <cstdio>
 
-#include "../layer.h"
+#include "layers/layer.h"
 
 #define TRMODE 1
 #define TSMODE 0

@@ -8,22 +8,22 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <chrono>
 #include <thread>
-#include "net.h"
+#include "net/net.h"
 #include <pthread.h>
-#include "../utils.h"
-#include "../random.h"
+#include "utils.h"
+#include "random.h"
 
-#include "../layers/core/layer_core.h"
+#include "layers/core/layer_core.h"
 
 #ifdef cGPU
-#include "../hardware/gpu/gpu_tensor.h"
+#include "hardware/gpu/gpu_tensor.h"
 #endif
 
 #define VERBOSE 0

@@ -12,13 +12,13 @@
 #include <iostream>
 #include <utility>
 
-#include "tensor.h"
-#include "../hardware/cpu/cpu_hw.h"
+#include "tensor/tensor.h"
+#include "hardware/cpu/cpu_hw.h"
 
 #ifdef cGPU
-#include "../hardware/gpu/gpu_tensor.h"
-#include "../hardware/gpu/gpu_hw.h"
-#include "../hardware/gpu/nn/gpu_nn.h"
+#include "hardware/gpu/gpu_tensor.h"
+#include "hardware/gpu/gpu_hw.h"
+#include "hardware/gpu/nn/gpu_nn.h"
 #endif
 
 

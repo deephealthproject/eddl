@@ -8,13 +8,13 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <stdexcept>
 
-#include "layer_core.h"
-#include "../merge/layer_merge.h"  // TODO: Review dependency (LADD)
+#include "layers/core/layer_core.h"
+#include "layers/merge/layer_merge.h"  // TODO: Review dependency (LADD)
 
 
 using namespace std;

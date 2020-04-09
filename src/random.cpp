@@ -6,7 +6,7 @@
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
-#include <stdio.h>
+#include <cstdio>
 #include <cmath>
 #include <random>
 

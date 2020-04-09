@@ -8,14 +8,14 @@
 */
 
 
-#include "descriptors.h"
+#include "descriptors/descriptors.h"
 #include <cmath>
 #include <algorithm>
 
 #ifdef cGPU
-#include "../hardware/gpu/gpu_tensor.h"
-#include "../hardware/gpu/gpu_hw.h"
-#include "../hardware/gpu/nn/gpu_nn.h"
+#include "hardware/gpu/gpu_tensor.h"
+#include "hardware/gpu/gpu_hw.h"
+#include "hardware/gpu/nn/gpu_nn.h"
 #endif
 
 ConvolDescriptor::ConvolDescriptor() {}

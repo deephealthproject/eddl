@@ -8,12 +8,12 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <utility>
 
-#include "layer_da.h"
+#include "layers/da/layer_da.h"
 
 
 using namespace std;

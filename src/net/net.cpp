@@ -16,12 +16,12 @@
 #include <string>
 #include <chrono>
 #include <thread>
-#include "net.h"
+#include "net/net.h"
 #include <pthread.h>
-#include "../utils.h"
-#include "../random.h"
+#include "utils.h"
+#include "random.h"
 
-#include "../layers/core/layer_core.h"
+#include "layers/core/layer_core.h"
 
 
 

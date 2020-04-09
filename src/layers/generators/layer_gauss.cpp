@@ -8,12 +8,12 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "../operators/layer_operators.h"
-#include "layer_generators.h"
+#include "layers/operators/layer_operators.h"
+#include "layers/generators/layer_generators.h"
 
 
 using namespace std;

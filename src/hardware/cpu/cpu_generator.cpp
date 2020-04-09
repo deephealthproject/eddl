@@ -8,8 +8,8 @@
  */
 
 
-#include "../../random.h"
-#include "cpu_hw.h"
+#include "random.h"
+#include "hardware/cpu/cpu_hw.h"
 
 void
 cpu_rand_uniform(Tensor * A, float v)

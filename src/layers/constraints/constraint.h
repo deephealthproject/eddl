@@ -12,7 +12,7 @@
 
 #include <string>
 
-#include "../../tensor/tensor.h"
+#include "tensor/tensor.h"
 
 class Constraint {
 public:

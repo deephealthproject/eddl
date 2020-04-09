@@ -11,8 +11,8 @@
 #ifndef EDDL_CPU_NN_H
 #define EDDL_CPU_NN_H
 
-#include "../../../tensor/tensor.h"
-#include "../../../descriptors/descriptors.h"
+#include "tensor/tensor.h"
+#include "descriptors/descriptors.h"
 
 // Aux
 float get_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize);

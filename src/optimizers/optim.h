@@ -10,11 +10,11 @@
 #ifndef _OPTIM_
 #define _OPTIM_
 
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <vector>
 
-#include "../layers/layer.h"
+#include "layers/layer.h"
 
 using namespace std;
 

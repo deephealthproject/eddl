@@ -13,7 +13,7 @@
 
 
 #include <cuda.h>
-#include <stdio.h>
+#include <cstdio>
 
 // todo
 #define GPU_MAX_FLOAT 1000000.0f

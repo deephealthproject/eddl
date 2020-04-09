@@ -10,9 +10,9 @@
 #ifndef EDDL_CPU_HW_H
 #define EDDL_CPU_HW_H
 
-#include "../../tensor/tensor.h"
-#include "../../tensor/tensor_reduction.h"
-#include "../../descriptors/descriptors.h"
+#include "tensor/tensor.h"
+#include "tensor/tensor_reduction.h"
+#include "descriptors/descriptors.h"
 
 #define MAX_FLOAT std::numeric_limits<float>::max()
 #define MIN_FLOAT -std::numeric_limits<float>::max()

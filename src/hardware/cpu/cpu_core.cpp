@@ -8,7 +8,7 @@
  */
 
 
-#include "cpu_hw.h"
+#include "hardware/cpu/cpu_hw.h"
 
 void cpu_transpose(Tensor * A, Tensor * B) {
     #pragma omp parallel for

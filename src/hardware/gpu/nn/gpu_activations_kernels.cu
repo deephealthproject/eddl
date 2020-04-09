@@ -9,13 +9,13 @@
 
 
 #include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <cuda.h>
 
-#include "gpu_nn_kernels.h"
-#include "../gpu_kernels.h"
+#include "hardware/gpu/nn/gpu_nn_kernels.h"
+#include "hardware/gpu/gpu_kernels.h"
 
 
 __global__ void relu(float *a,float *b,long int size)

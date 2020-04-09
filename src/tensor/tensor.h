@@ -17,13 +17,13 @@
 #include <string>
 #include <mutex>
 
-#include <Eigen/Dense>
+#include "Eigen/Dense"
 
-#include "../utils.h"
-#include "../descriptors/tensor_descriptors.h"
+#include "utils.h"
+#include "descriptors/tensor_descriptors.h"
 
 // Read/Write Numpy
-#include "cnpy/cnpy.h"
+#include "tensor/cnpy/cnpy.h"
 
 #define DEV_CPU 0
 

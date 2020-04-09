@@ -10,12 +10,12 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <cuda.h>
 
-#include "gpu_kernels.h"
+#include "hardware/gpu/gpu_kernels.h"
 
 __device__ void gpu_single_shift(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, int* shift, int mode, float constant){
     int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};

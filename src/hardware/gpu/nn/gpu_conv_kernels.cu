@@ -9,13 +9,13 @@
 
 
 #include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <cuda.h>
 
-#include "gpu_nn_kernels.h"
-#include "../gpu_kernels.h"
+#include "hardware/gpu/nn/gpu_nn_kernels.h"
+#include "hardware/gpu/gpu_kernels.h"
 
 
 __global__ void  gpu_traspose_batch_depth(float *ptrB, float *ptr, int b,int z,int r, int c)

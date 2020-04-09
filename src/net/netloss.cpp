@@ -7,13 +7,13 @@
 * All rights reserved
 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <string>
 #include <vector>
 
-#include "netloss.h"
-#include "../layers/core/layer_core.h"
+#include "net/netloss.h"
+#include "layers/core/layer_core.h"
 
 
 NetLoss::NetLoss(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> in, string name)

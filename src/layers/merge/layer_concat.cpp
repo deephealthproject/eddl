@@ -8,11 +8,11 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "layer_merge.h"
+#include "layers/merge/layer_merge.h"
 
 
 using namespace std;

@@ -7,17 +7,17 @@
 * All rights reserved
 */
 
-#include <stdio.h>
+#include <cstdio>
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
 
-#include "gpu_tensor.h"
-#include "gpu_kernels.h"
-#include "gpu_hw.h"
+#include "hardware/gpu/gpu_tensor.h"
+#include "hardware/gpu/gpu_kernels.h"
+#include "hardware/gpu/gpu_hw.h"
 
-#include "../../tensor/tensor.h"
-#include "../../descriptors/descriptors.h"
+#include "tensor/tensor.h"
+#include "descriptors/descriptors.h"
 
 #ifndef M_PI
     #define M_PI 3.14159265358979323846

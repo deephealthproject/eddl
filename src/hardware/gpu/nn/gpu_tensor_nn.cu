@@ -8,21 +8,21 @@
 */
 
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
 
 
-#include "gpu_nn.h"
-#include "gpu_nn_kernels.h"
+#include "hardware/gpu/nn/gpu_nn.h"
+#include "hardware/gpu/nn/gpu_nn_kernels.h"
 
-#include "../gpu_hw.h"
-#include "../gpu_tensor.h"
-#include "../gpu_kernels.h"
+#include "hardware/gpu/gpu_hw.h"
+#include "hardware/gpu/gpu_tensor.h"
+#include "hardware/gpu/gpu_kernels.h"
 
-#include "../../../tensor/tensor.h"
-#include "../../../descriptors/descriptors.h"
+#include "tensor/tensor.h"
+#include "descriptors/descriptors.h"
 
 
 void gpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){

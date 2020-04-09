@@ -9,12 +9,12 @@
 */
 
 
-#include "tensor_descriptors.h"
-#include "../utils.h"
+#include "descriptors/tensor_descriptors.h"
+#include "utils.h"
 
 #ifdef cGPU
-#include "../hardware/gpu/gpu_tensor.h"
-#include "../hardware/gpu/gpu_hw.h"
+#include "hardware/gpu/gpu_tensor.h"
+#include "hardware/gpu/gpu_hw.h"
 #endif
 
 TensorDescriptor::TensorDescriptor(int dev){

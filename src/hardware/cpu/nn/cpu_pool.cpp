@@ -14,7 +14,7 @@
 #include <iostream>
 #include <limits>       // std::numeric_limits
 
-#include "cpu_nn.h"
+#include "hardware/cpu/nn/cpu_nn.h"
 
 
 void cpu_mpool2D(PoolDescriptor *D){

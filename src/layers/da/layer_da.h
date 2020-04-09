@@ -13,10 +13,10 @@
 
 
 #include <string>
-#include <stdio.h>
+#include <cstdio>
 
-#include "../layer.h"
-#include "../../random.h"
+#include "layers/layer.h"
+#include "random.h"
 
 #define TRMODE 1
 #define TSMODE 0

@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.9.2)
+
+project(eigen-download NONE)
+
+# Set base dir
+SET(EP_BASE_DIR ${CMAKE_CURRENT_BINARY_DIR}/third_party)
+
+include(ExternalProject)
+ExternalProject_Add(eigen
+		PREFIX eigen
+		GIT_REPOSITORY "https://gitlab.com/libeigen/eigen.git"
+		GIT_TAG "3.3.7"
+		SOURCE_DIR "${EP_BASE_DIR}/eigen-src"
+		BINARY_DIR "${EP_BASE_DIR}/eigen-build"
+		CMAKE_CACHE_ARGS
+			-DCMAKE_INSTALL_PREFIX:PATH=${EP_BASE_DIR}/eigen
+		)

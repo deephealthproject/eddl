@@ -8,7 +8,7 @@
 */
 
 
-#include "cpu_hw.h"
+#include "hardware/cpu/cpu_hw.h"
 #include <limits>
 
 // CPU: Logic functions: Truth value testing

@@ -8,11 +8,11 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "regularizer.h"
+#include "regularizers/regularizer.h"
 
 using namespace std;
 

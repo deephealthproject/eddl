@@ -8,13 +8,13 @@
 */
 
 #include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <cuda.h>
 
-#include "gpu_nn_kernels.h"
-#include "../gpu_kernels.h"
+#include "hardware/gpu/nn/gpu_nn_kernels.h"
+#include "hardware/gpu/gpu_kernels.h"
 //
 //__device__ float get_pixel(int b,int px,int py,int pz, int ircd, int irc, int irows, int icols, float* I){
 //    if (px < 0) return 0.0;

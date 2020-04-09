@@ -8,11 +8,11 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "constraint.h"
+#include "layers/constraints/constraint.h"
 
 using namespace std;
 

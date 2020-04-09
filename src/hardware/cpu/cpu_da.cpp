@@ -13,8 +13,8 @@
 #include <utility>
 #include <cmath>
 
-#include "cpu_hw.h"
-#include "../../random.h"
+#include "hardware/cpu/cpu_hw.h"
+#include "random.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846

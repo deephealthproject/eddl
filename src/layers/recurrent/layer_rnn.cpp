@@ -8,11 +8,11 @@
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "layer_recurrent.h"
+#include "layers/recurrent/layer_recurrent.h"
 
 
 using namespace std;

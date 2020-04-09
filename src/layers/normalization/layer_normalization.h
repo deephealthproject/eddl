@@ -12,11 +12,11 @@
 #define EDDL_LAYER_NORMALIZATION_H
 
 #include <string>
-#include <stdio.h>
+#include <cstdio>
 
-#include "../layer.h"
-#include "../core/layer_core.h"
-#include "../../regularizers/regularizer.h"
+#include "layers/layer.h"
+#include "layers/core/layer_core.h"
+#include "regularizers/regularizer.h"
 
 #define TRMODE 1
 #define TSMODE 0

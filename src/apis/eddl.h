@@ -16,25 +16,25 @@
 #include <pthread.h>
 #include <functional>
 
-#include "../net/net.h"
-#include "../net/netloss.h"
-#include "../initializers/initializer.h"
-#include "../regularizers/regularizer.h"
-#include "../losses/loss.h"
-#include "../metrics/metric.h"
+#include "net/net.h"
+#include "net/netloss.h"
+#include "initializers/initializer.h"
+#include "regularizers/regularizer.h"
+#include "losses/loss.h"
+#include "metrics/metric.h"
 
-#include "../layers/layer.h"
-#include "../layers/conv/layer_conv.h"
-#include "../layers/core/layer_core.h"
-#include "../layers/da/layer_da.h"
-#include "../layers/generators/layer_generators.h"
-#include "../layers/merge/layer_merge.h"
-#include "../layers/noise/layer_noise.h"
-#include "../layers/normalization/layer_normalization.h"
-#include "../layers/operators/layer_operators.h"
-#include "../layers/reductions/layer_reductions.h"
-#include "../layers/pool/layer_pool.h"
-#include "../layers/recurrent/layer_recurrent.h"
+#include "layers/layer.h"
+#include "layers/conv/layer_conv.h"
+#include "layers/core/layer_core.h"
+#include "layers/da/layer_da.h"
+#include "layers/generators/layer_generators.h"
+#include "layers/merge/layer_merge.h"
+#include "layers/noise/layer_noise.h"
+#include "layers/normalization/layer_normalization.h"
+#include "layers/operators/layer_operators.h"
+#include "layers/reductions/layer_reductions.h"
+#include "layers/pool/layer_pool.h"
+#include "layers/recurrent/layer_recurrent.h"
 
 
 // EDDL namespace defines the API
