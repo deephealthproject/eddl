@@ -14,12 +14,10 @@ build/
 temp/
 
 # Documentation
-/docs/source/_build
-/docs/doxygen/build
-/docs/doxygen/html
-/docs/doxygen/latex
-/docs/html
-/docs/latex
+docs/doxygen/*
+!docs/doxygen/Doxyfile
+docs/sphinx/source/_build
+docs/sphinx/source/_static
 
 # Other files
 *.dot
