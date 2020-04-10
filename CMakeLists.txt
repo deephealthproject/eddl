@@ -11,6 +11,7 @@ option(USE_SUPERBUILD "Use superbuild system" ON)
 option(BUILD_TESTS "Compile tests" ON)
 option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" ON)
+option(BUILD_COVERAGE "Flag to compile for coverage information" OFF)
 
 ###########################################################################
 ################################# BUILD ###################################
@@ -48,6 +49,12 @@ endif()
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+# Coverage
+if(BUILD_COVERAGE)
+set(COVERAGE_FLAGS ${CMAKE_CXX_FLAGS} "-O0 -g --coverage")
+set(CMAKE_EXE_LINKER_FLAGS ${COVERAGE_FLAGS})
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${COVERAGE_FLAGS})
+endif()
 
 # Build library
 add_subdirectory(src)
