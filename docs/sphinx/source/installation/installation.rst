@@ -35,7 +35,6 @@ You can use one of the following lines according to your needs:
 
         .. note::
 
-            - It does not include ONNX support
             - Platforms supported: Linux x86/x64 and MacOS
 
     .. tab:: GPU
@@ -47,43 +46,7 @@ You can use one of the following lines according to your needs:
 
         .. note::
 
-            - It does not include ONNX support
             - Platforms supported: Linux x86/x64
-
-    .. tab:: GPU-ONNX
-
-        .. code:: bash
-
-            conda activate
-            conda install -c deephealth eddl-gpu-onnx
-
-        .. note::
-
-            - Platforms supported: Linux x86/x64
-
-
-Enabling ONNX features
-~~~~~~~~~~~~~~~~~~~~~
-
-If you want to enable the ONNX features, in addition to installing the ``eddl-gpu-onnx`` binary, you need to
-install ``protobuf`` manually:
-
-
-.. code:: bash
-
-    # Download source
-    PROTOBUF_VERSION=3.11.4
-    sudo apt-get install -y wget
-    sudo apt-get install -y autoconf automake libtool curl make g++ unzip
-    wget https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protobuf-cpp-$PROTOBUF_VERSION.tar.gz
-    tar -xf protobuf-cpp-$PROTOBUF_VERSION.tar.gz
-
-    # Build and install
-    cd protobuf-$PROTOBUF_VERSION
-    ./configure
-    make -j$(nproc)
-    make install
-    ldconfig
 
 
 .. image:: ../_static/images/logos/homebrew.svg
@@ -97,93 +60,94 @@ You need to run both lines, one to add the tap and the other to install the libr
 
 .. code:: bash
 
-    # Install Homebrew
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-
     # Add deephealth tap
     brew tap deephealthproject/homebrew-tap
 
     # Install EDDL
     brew install eddl
 
-.. note::
-
-    Only ``CPU`` support.
-
-    If you get an error like ``Undefined symbols for architecture x86_64:``, it might be due to a conflict with
-    the default compilers. A simple workaround is to force the use ``CClang`` (for instance) for C and C++,
-    and then install the EDDL again:
-
-    .. code:: bash
-
-        # Set env variables
-        export CC=/usr/local/opt/llvm/bin/clang
-        export CXX=/usr/local/opt/llvm/bin/clang++
-        export LDFLAGS="-L/usr/local/opt/llvm/lib"
-        export CPPFLAGS="-I/usr/local/opt/llvm/include"
-
-        # Add tap
-        brew tap deephealthproject/homebrew-tap
-
-        # Uninstall and install the EDDL
-        brew uninstall eddl
-        brew install eddl
-
 
 .. image:: ../_static/images/logos/cmake.svg
+
 
 From source with cmake
 ----------------------
 
-You can also install ``EDDL`` from source with cmake. In order to manage the external dependencies we recommend to
-install Anaconda (see the :doc:`build-options` section for more details about external dependencies).
+You can also install ``EDDL`` from source with cmake.
 
 On Unix platforms, from the source directory:
 
-.. code:: bash
 
-    # Download source code
-    git clone https://github.com/deephealthproject/eddl.git
-    cd eddl/
+.. tabs::
 
-    # Install dependencies
-    conda env create -f environment.yml
-    conda activate eddl
+    .. tab:: Linux
 
-    # Build and install
-    mkdir build
-    cd build
-    cmake -DCMAKE_INSTALL_PREFIX=path_to_prefix ..
-    make install
+        .. code:: bash
 
-On Windows platforms, from the source directory:
+            # Download source code
+            git clone https://github.com/deephealthproject/eddl.git
+            cd eddl/
 
-.. code:: bash
+            # Install run dependencies
+            sudo apt-get install cmake git wget graphviz
 
-    # Download source code
-    git clone https://github.com/deephealthproject/eddl.git
-    cd eddl/
+            # Build and install
+            mkdir build
+            cd build
+            cmake ..
+            make install
 
-    # Install dependencies
-    conda env create -f environment.yml
-    conda activate eddl
+    .. tab:: MacOS
 
-    # Build and install
-    mkdir build
-    cd build
-    cmake -G "NMake Makefiles" -DCMAKE_INSTALL_PREFIX=path_to_prefix ..
-    nmake
-    nmake install
+        .. code:: bash
 
-``path_to_prefix`` is the absolute path to the folder where cmake searches for
-dependencies and installs libraries. ``EDDL`` installation from cmake assumes
-this folder contains ``include`` and ``lib`` subfolders.
+            # Download source code
+            git clone https://github.com/deephealthproject/eddl.git
+            cd eddl/
+
+            # Install run dependencies
+            brew install cmake git wget graphviz
+
+            # Build and install
+            mkdir build
+            cd build
+            cmake ..
+            make install
+
+    .. tab:: Windows
+
+        .. code:: bash
+
+            # Download source code
+            git clone https://github.com/deephealthproject/eddl.git
+            cd eddl/
+
+            # Install dependencies
+            conda env create -f environment.yml
+            conda activate eddl
+
+            # Build and install
+            mkdir build
+            cd build
+            cmake -G "NMake Makefiles" ..
+            nmake
+            nmake install
+
 
 See the :doc:`build-options` section for more details about cmake options.
 
 .. note::
 
-    You can ignore the flag ``-DCMAKE_INSTALL_PREFIX`` if you prefer to use the standard paths
+    You can make use of the ``-DCMAKE_INSTALL_PREFIX`` flag to specify where cmake searches for
+    dependencies and installs libraries.
+
+    Additionally, if you like Conda, you can make use of our environment by running these commands from
+    the source directory (``eddl/``):
+
+    .. code:: bash
+
+        conda env create -f environment.yml
+        conda activate eddl
 
 
 Including EDDL in your project
