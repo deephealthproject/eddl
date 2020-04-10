@@ -3,7 +3,7 @@
 #include "descriptors/descriptors.h"
 
 
-TEST(convolTest, output_size)
+TEST(Convol2DTest, output_size)
 {
     vector<string> padding = {"valid", "same"};
     vector<int> output_sizes;

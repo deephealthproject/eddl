@@ -171,7 +171,7 @@ static std::mt19937 mt(rd());
 static std::uniform_int_distribution<std::mt19937::result_type> dist6(MIN_RANDOM, MAX_RANDOM);
 
 
-TEST(tensorTest, tensor_io_jpg)
+TEST(TensorTest, tensor_io_jpg)
 {
     // Generate random name
     int rdn_name = dist6(mt);
@@ -192,7 +192,7 @@ TEST(tensorTest, tensor_io_jpg)
     ASSERT_TRUE(Tensor::equal2(t_ref, t_load, 10e-0));
 }
 
-TEST(tensorTest, tensor_io_png)
+TEST(TensorTest, tensor_io_png)
 {
     // Generate random name
     int rdn_name = dist6(mt);
@@ -214,7 +214,7 @@ TEST(tensorTest, tensor_io_png)
 }
 
 
-TEST(tensorTest, tensor_io_bmp)
+TEST(TensorTest, tensor_io_bmp)
 {
     // Generate random name
     int rdn_name = dist6(mt);
@@ -236,7 +236,7 @@ TEST(tensorTest, tensor_io_bmp)
 }
 
 
-TEST(tensorTest, tensor_io_numpy)
+TEST(TensorTest, tensor_io_numpy)
 {
     // Generate random name
     int rdn_name = dist6(mt);
@@ -256,7 +256,7 @@ TEST(tensorTest, tensor_io_numpy)
 }
 
 
-TEST(tensorTest, tensor_io_csv)
+TEST(TensorTest, tensor_io_csv)
 {
     // Generate random name
     int rdn_name = dist6(mt);
@@ -276,7 +276,7 @@ TEST(tensorTest, tensor_io_csv)
 }
 
 
-TEST(tensorTest, tensor_io_tsv)
+TEST(TensorTest, tensor_io_tsv)
 {
     // Generate random name
     int rdn_name = dist6(mt);
@@ -296,7 +296,7 @@ TEST(tensorTest, tensor_io_tsv)
 }
 
 
-TEST(tensorTest, tensor_io_txt)
+TEST(TensorTest, tensor_io_txt)
 {
     // Generate random name
     int rdn_name = dist6(mt);
@@ -316,7 +316,7 @@ TEST(tensorTest, tensor_io_txt)
 }
 
 
-TEST(tensorTest, tensor_io_bin)
+TEST(TensorTest, tensor_io_bin)
 {
     // Generate random name
     int rdn_name = dist6(mt);

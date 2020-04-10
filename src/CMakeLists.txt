@@ -31,7 +31,7 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options a
 ###########################################################################
 
 # C++ files
-file(GLOB_RECURSE CPP_HEADERS "${PROJECT_SOURCE_DIR}/src/*" *.{h, *.hpp})
+file(GLOB_RECURSE CPP_HEADERS "${PROJECT_SOURCE_DIR}/src/*" *.{h, hpp})
 file(GLOB_RECURSE CPP_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cc, cpp})
 file(GLOB_RECURSE CUDA_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cu})
 
@@ -46,7 +46,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
 
 # IDEs should put the headers in a nice place
-#source_group(TREE "${PROJECT_SOURCE_DIR}/include2" PREFIX ${PROJECT_NAME} FILES ${CPP_PUBLIC_HEADERS})
+source_group(TREE "${PROJECT_SOURCE_DIR}/src" PREFIX "Header Files" FILES ${CPP_HEADERS})
 
 
 ###########################################################################
