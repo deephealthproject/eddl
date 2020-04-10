@@ -6,7 +6,7 @@
 
 
 
-TEST(MaxPoolTest, mpool_k2x2_s2x2_pad_valid)
+TEST(MaxPoolTestSuite, mpool_k2x2_s2x2_pad_valid)
 {
     // Image
     auto *ptr_img = new float[5*5]{0, 1, 0, 4, 5,
@@ -49,7 +49,7 @@ TEST(MaxPoolTest, mpool_k2x2_s2x2_pad_valid)
 }
 
 
-TEST(MaxPoolTest, mpool_k2x2_s2x2_pad_same)
+TEST(MaxPoolTestSuite, mpool_k2x2_s2x2_pad_same)
 {
     // Image
     auto *ptr_img = new float[5*5]{0, 1, 0, 4, 5,
@@ -93,7 +93,7 @@ TEST(MaxPoolTest, mpool_k2x2_s2x2_pad_same)
 }
 
 
-TEST(MaxPoolTest, mpool_k3x3_s1x1_pad_valid)
+TEST(MaxPoolTestSuite, mpool_k3x3_s1x1_pad_valid)
 {
     // Image
     auto *ptr_img = new float[5*5]{0, 1, 0, 4, 5,
@@ -137,7 +137,7 @@ TEST(MaxPoolTest, mpool_k3x3_s1x1_pad_valid)
 }
 
 
-TEST(MaxPoolTest, mpool_k3x3_s1x1_pad_same)
+TEST(MaxPoolTestSuite, mpool_k3x3_s1x1_pad_same)
 {
     // Image
     auto *ptr_img = new float[5*5]{0, 1, 0, 4, 5,
@@ -185,7 +185,7 @@ TEST(MaxPoolTest, mpool_k3x3_s1x1_pad_same)
 
 
 
-TEST(MaxPoolTest, mpool_k3x3_s2x2_pad_valid)
+TEST(MaxPoolTestSuite, mpool_k3x3_s2x2_pad_valid)
 {
     // Image
     auto *ptr_img = new float[5*5]{0, 1, 0, 4, 5,
@@ -228,7 +228,7 @@ TEST(MaxPoolTest, mpool_k3x3_s2x2_pad_valid)
 }
 
 
-TEST(MaxPoolTest, mpool_k3x3_s2x2_pad_same)
+TEST(MaxPoolTestSuite, mpool_k3x3_s2x2_pad_same)
 {
     // Image
     auto *ptr_img = new float[5*5]{0, 1, 0, 4, 5,

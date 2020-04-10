@@ -35,7 +35,7 @@
 //    return net;
 //}
 //
-//TEST(onnxTest, onnx_import){
+//TEST(ONNXTestSuite, onnx_import){
 //    // Generate random name
 //    int rdn_name = dist6(mt);
 //    string fname = "onnx_net_" + to_string(rdn_name) + ".onnx";
