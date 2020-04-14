@@ -1,6 +1,10 @@
 #include <gtest/gtest.h>
+#include <string>
 
-#include "descriptors/descriptors.h"
+#include "eddl/descriptors/descriptors.h"
+
+
+using namespace std;
 
 
 TEST(Convol2DTestSuite, output_size)

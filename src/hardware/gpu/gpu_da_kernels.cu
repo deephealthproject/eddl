@@ -15,7 +15,7 @@
 #include <iostream>
 #include <cuda.h>
 
-#include "hardware/gpu/gpu_kernels.h"
+#include "eddl/hardware/gpu/gpu_kernels.h"
 
 __device__ void gpu_single_shift(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, int* shift, int mode, float constant){
     int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};

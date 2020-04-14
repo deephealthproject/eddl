@@ -17,7 +17,7 @@
 
 //#include <omp.h>
 
-#include "apis/eddlT.h"
+#include "eddl/apis/eddlT.h"
 #include "../../src/tensor/tensor_reduction.h"
 
 using namespace std;

@@ -56,28 +56,29 @@ add_executable(drive_seg "nn/3_drive/1_drive_seg.cpp")
 target_link_libraries(drive_seg eddl)
 
 
+# DISABLED: Access needs to be done through "eddl/..."
 # EXAMPLES: Tensor ****************************************************
-add_executable(tensor_ops "tensor/eddl_ops.cpp")
-target_link_libraries(tensor_ops eddl)
+#add_executable(tensor_ops "tensor/eddl_ops.cpp")
+#target_link_libraries(tensor_ops eddl)
+#
+#add_executable(tensor_image "tensor/eddl_image.cpp")
+#target_link_libraries(tensor_image eddl)
+#
+#add_executable(tensor_io "tensor/eddl_io.cpp")
+#target_link_libraries(tensor_io eddl)
+#
+#add_executable(tensor_tests_dev "tensor/eddl_tests_dev.cpp")
+#target_link_libraries(tensor_tests_dev eddl)
 
-add_executable(tensor_image "tensor/eddl_image.cpp")
-target_link_libraries(tensor_image eddl)
 
-add_executable(tensor_io "tensor/eddl_io.cpp")
-target_link_libraries(tensor_io eddl)
-
-add_executable(tensor_tests_dev "tensor/eddl_tests_dev.cpp")
-target_link_libraries(tensor_tests_dev eddl)
-
-
-# EXAMPLES: ONNX ******************************************************************
-if(BUILD_PROTOBUF)
-    add_executable(onnx_pointer "onnx/1_onnx_pointer.cpp")
-    target_link_libraries(onnx_pointer eddl)
-
-    add_executable(onnx_export "onnx/2_onnx_save_net_to_file.cpp")
-    target_link_libraries(onnx_export eddl)
-
-    add_executable(onnx_import "onnx/3_onnx_import_net_from_file.cpp")
-    target_link_libraries(onnx_import eddl)
-endif()
+## EXAMPLES: ONNX ******************************************************************
+#if(BUILD_PROTOBUF)
+#    add_executable(onnx_pointer "onnx/1_onnx_pointer.cpp")
+#    target_link_libraries(onnx_pointer eddl)
+#
+#    add_executable(onnx_export "onnx/2_onnx_save_net_to_file.cpp")
+#    target_link_libraries(onnx_export eddl)
+#
+#    add_executable(onnx_import "onnx/3_onnx_import_net_from_file.cpp")
+#    target_link_libraries(onnx_import eddl)
+#endif()

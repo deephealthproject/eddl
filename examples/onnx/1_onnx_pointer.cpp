@@ -11,9 +11,9 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "apis/eddl.h"
-#include "apis/eddlT.h"
-#include "serialization/onnx/eddl_onnx.h"
+#include "eddl/apis/eddl.h"
+#include "eddl/apis/eddlT.h"
+#include "serialization/onnx/eddl_onnx.h" // Not allowed
 
 using namespace eddl;
 

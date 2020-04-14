@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "regularizers/regularizer.h"
+#include "eddl/regularizers/regularizer.h"
 
 using namespace std;
 

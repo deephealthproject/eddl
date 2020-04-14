@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "tensor/tensor.h"
-#include "tensor/nn/tensor_nn.h"
-#include "descriptors/descriptors.h"
+#include "eddl/tensor/tensor.h"
+#include "eddl/tensor/nn/tensor_nn.h"
+#include "eddl/descriptors/descriptors.h"
 
 
 TEST(AvgPoolTestSuite, avgpool_k2x2_s2x2_pad_valid)

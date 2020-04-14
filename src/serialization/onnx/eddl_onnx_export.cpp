@@ -1,9 +1,85 @@
 #include <cstdio>
 #include <fstream>
-#include "serialization/onnx/eddl_onnx.h"
+#include "eddl/serialization/onnx/eddl_onnx.h"
 
 using namespace std;
 
+#if defined(cPROTO)
+#include "onnx.pb.h"
+#endif
+
+
+// Builds the onnx model from the net
+#if defined(cPROTO)
+	onnx::ModelProto build_onnx_model(Net *net, bool gradients );
+
+	// Builds the graph of the ModelProto from the net
+	void set_graph( onnx::ModelProto *model, Net *net, bool gradients );
+
+	// Builds a node in the onnx graph from the layer of eddl
+	void build_node_from_layer( Layer *layer, onnx::GraphProto *graph, bool gradients );
+
+	// Node builders
+	//----------------------------------------------------------------------------------------
+
+	void build_conv_node( LConv *layer, onnx::GraphProto *graph, bool gradients );
+
+	void build_gemm_node( LDense *layer, onnx::GraphProto *graph, bool gradients );
+
+	void build_maxpool_node( LMaxPool *layer, onnx::GraphProto *graph );
+
+	void build_averagepool_node( LAveragePool *layer, onnx::GraphProto *graph );
+
+	void build_reshape_node( LReshape *layer, onnx::GraphProto *graph );
+
+	void build_permute_node( LPermute *layer, onnx::GraphProto *graph );
+
+	void build_relu_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_sigmoid_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_hard_sigmoid_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_tanh_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_exp_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_linear_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_leaky_relu_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_thresholded_relu_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_elu_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_selu_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_softmax_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_softsign_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_softplus_node( LActivation *layer, onnx::GraphProto *graph );
+
+	void build_concat_node( LConcat *layer, onnx::GraphProto *graph );
+
+	void build_add_node( LAdd *layer, onnx::GraphProto *graph );
+
+	void build_sub_node( LSubtract *layer, onnx::GraphProto *graph );
+
+	void build_average_node( LAverage *layer, onnx::GraphProto *graph );
+
+	void build_matmul_node( LMatMul *layer, onnx::GraphProto *graph );
+
+	void build_max_node( LMaximum *layer, onnx::GraphProto *graph );
+
+	void build_min_node( LMinimum *layer, onnx::GraphProto *graph );
+
+	void build_batchnorm_node( LBatchNorm *layer, onnx::GraphProto *graph );
+
+	void build_dropout_node( LDropout *layer, onnx::GraphProto *graph );
+
+	void build_upsample_node( LUpSampling *layer, onnx::GraphProto *graph );
+#endif
 
 #ifdef cPROTO
 

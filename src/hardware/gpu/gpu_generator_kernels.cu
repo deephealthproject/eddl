@@ -16,7 +16,7 @@
 #include <curand_kernel.h>
 #include <curand.h>
 
-#include "hardware/gpu/gpu_kernels.h"
+#include "eddl/hardware/gpu/gpu_kernels.h"
 
 
 /* this GPU kernel function is used to initialize the random states */

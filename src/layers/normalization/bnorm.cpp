@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "layers/normalization/layer_normalization.h"
+#include "eddl/layers/normalization/layer_normalization.h"
 
 
 using namespace std;

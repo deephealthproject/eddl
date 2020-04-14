@@ -16,11 +16,11 @@
 #include <chrono>
 #include <thread>
 #include <stdexcept>
-#include "net/net.h"
+#include "eddl/net/net.h"
 #include <pthread.h>
-#include "utils.h"
-#include "random.h"
-#include "layers/core/layer_core.h"
+#include "eddl/utils.h"
+#include "eddl/random.h"
+#include "eddl/layers/core/layer_core.h"
 
 #define VERBOSE 0
 

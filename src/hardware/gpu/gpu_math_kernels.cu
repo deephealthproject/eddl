@@ -14,7 +14,7 @@
 #include <iostream>
 #include <cuda.h>
 
-#include "hardware/gpu/gpu_kernels.h"
+#include "eddl/hardware/gpu/gpu_kernels.h"
 
 
 __global__ void abs_(float* a, long int size){

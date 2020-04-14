@@ -20,13 +20,14 @@ option(BUILD_COVERAGE "Flag to compile for coverage information" OFF)
 # Build Dependencies
 if(USE_SUPERBUILD)
     # This is executed at building time: "cmake .."
-    PROJECT(eddl-superbuild)  # None
+    PROJECT(eddl-superbuild NONE)  # None
 
     add_subdirectory(cmake)
     return() # stop processing this file further
 else()
     # This is executed at compilation time: "make"
     PROJECT(eddl VERSION 0.4.5 LANGUAGES CXX)
+    message(STATUS "TWICEEEEEEEEEEEEE")
 endif()
 
 
@@ -68,7 +69,7 @@ endif(BUILD_TESTS)
 if(BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif(BUILD_EXAMPLES)
-
+#
 #
 ## Install
 #install(EXPORT CMakeExternalTargets

@@ -20,12 +20,12 @@
 
 #include <stdexcept>
 
-#include "hardware/gpu/gpu_tensor.h"
-#include "hardware/gpu/gpu_kernels.h"
-#include "hardware/gpu/gpu_hw.h"
+#include "eddl/hardware/gpu/gpu_tensor.h"
+#include "eddl/hardware/gpu/gpu_kernels.h"
+#include "eddl/hardware/gpu/gpu_hw.h"
 
-#include "tensor/tensor.h"
-#include "descriptors/descriptors.h"
+#include "eddl/tensor/tensor.h"
+#include "eddl/descriptors/descriptors.h"
 
 void gpu_reduce(Tensor *A, Tensor *B,string mode,int* map)
 {
