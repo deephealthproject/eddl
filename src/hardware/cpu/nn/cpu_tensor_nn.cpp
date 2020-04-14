@@ -7,7 +7,7 @@
 * All rights reserved
 */
 
-#include "hardware/cpu/nn/cpu_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_nn.h"
 
 void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
     // TODO: Should be for N dimensions, not 2 (...and generic, not just NN)

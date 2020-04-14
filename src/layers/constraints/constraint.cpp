@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "layers/constraints/constraint.h"
+#include "eddl/layers/constraints/constraint.h"
 
 using namespace std;
 

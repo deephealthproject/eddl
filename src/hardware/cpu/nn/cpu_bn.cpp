@@ -12,7 +12,7 @@
 #include <cstdlib>     /* malloc, free, rand */
 #include <iostream>
 
-#include "hardware/cpu/nn/cpu_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_nn.h"
 
 
 // BN

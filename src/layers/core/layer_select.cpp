@@ -13,7 +13,7 @@
 #include <iostream>
 #include <utility>
 
-#include "layers/core/layer_core.h"
+#include "eddl/layers/core/layer_core.h"
 
 
 using namespace std;

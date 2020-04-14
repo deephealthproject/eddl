@@ -12,10 +12,10 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "layers/normalization/layer_normalization.h"
+#include "eddl/layers/normalization/layer_normalization.h"
 
-#include "layers/reductions/layer_reductions.h"
-#include "layers/operators/layer_operators.h"
+#include "eddl/layers/reductions/layer_reductions.h"
+#include "eddl/layers/operators/layer_operators.h"
 
 using namespace std;
 

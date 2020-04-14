@@ -55,7 +55,6 @@ target_link_libraries(cifar_resnet50 eddl)
 add_executable(drive_seg "nn/3_drive/1_drive_seg.cpp")
 target_link_libraries(drive_seg eddl)
 
-
 # EXAMPLES: Tensor ****************************************************
 add_executable(tensor_ops "tensor/eddl_ops.cpp")
 target_link_libraries(tensor_ops eddl)

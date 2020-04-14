@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "losses/loss.h"
+#include "eddl/losses/loss.h"
 
 using namespace std;
 

@@ -8,7 +8,7 @@
 */
 
 
-#include "descriptors/descriptors.h"
+#include "eddl/descriptors/descriptors.h"
 #include <math.h>
 
 

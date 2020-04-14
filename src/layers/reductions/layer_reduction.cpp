@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "layers/reductions/layer_reductions.h"
+#include "eddl/layers/reductions/layer_reductions.h"
 
 
 using namespace std;

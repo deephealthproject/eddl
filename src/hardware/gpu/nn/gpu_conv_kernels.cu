@@ -14,8 +14,8 @@
 #include <iostream>
 #include <cuda.h>
 
-#include "hardware/gpu/nn/gpu_nn_kernels.h"
-#include "hardware/gpu/gpu_kernels.h"
+#include "eddl/hardware/gpu/nn/gpu_nn_kernels.h"
+#include "eddl/hardware/gpu/gpu_kernels.h"
 
 
 __global__ void  gpu_traspose_batch_depth(float *ptrB, float *ptr, int b,int z,int r, int c)

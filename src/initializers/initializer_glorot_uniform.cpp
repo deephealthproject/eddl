@@ -13,7 +13,7 @@
 #include <iostream>
 #include <cmath>
 
-#include "initializers/initializer.h"
+#include "eddl/initializers/initializer.h"
 
 using namespace std;
 

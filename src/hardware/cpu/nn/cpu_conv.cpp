@@ -11,7 +11,7 @@
 #include <cstdlib>     /* malloc, free, rand */
 #include <iostream>
 
-#include "hardware/cpu/nn/cpu_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_nn.h"
 
 
 float get_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsize) {

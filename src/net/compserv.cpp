@@ -13,8 +13,8 @@
 #include <vector>
 #include <stdexcept>
 
-#include "net/compserv.h"
-
+#include "eddl/net/compserv.h"
+#include "eddl/Eigen/Core"
 
 // for local
 CompServ::CompServ(int t, const vector<int> g, const vector<int> &f,int lsb, int mem) {

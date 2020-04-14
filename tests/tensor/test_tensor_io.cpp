@@ -1,9 +1,12 @@
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <random>
+#include <string>
 
-#include "tensor/tensor.h"
-#include "tensor/nn/tensor_nn.h"
-#include "descriptors/descriptors.h"
+#include "eddl/tensor/tensor.h"
+#include "eddl/tensor/nn/tensor_nn.h"
+#include "eddl/descriptors/descriptors.h"
+
+using namespace std;
 
 // Demo dataset
 static auto *ptr_iris = new float[150*4]{

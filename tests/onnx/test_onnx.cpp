@@ -1,9 +1,12 @@
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <random>
+#include <string>
 
-#include "apis/eddl.h"
-#include "serialization/onnx/eddl_onnx.h"
+#include "eddl/apis/eddl.h"
+#include "eddl/serialization/onnx/eddl_onnx.h"
 #include <typeinfo>
+
+using namespace std;
 
 using namespace eddl;
 

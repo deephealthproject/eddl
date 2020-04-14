@@ -15,7 +15,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "layers/recurrent/layer_recurrent.h"
+#include "eddl/layers/recurrent/layer_recurrent.h"
 
 
 using namespace std;

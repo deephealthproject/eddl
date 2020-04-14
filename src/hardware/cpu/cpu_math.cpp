@@ -8,7 +8,7 @@
 */
 
 
-#include "hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_hw.h"
 
 // CPU: Math (in-place) ********************************************
 

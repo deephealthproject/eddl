@@ -9,8 +9,8 @@
 */
 
 
-#include "descriptors/tensor_descriptors.h"
-#include "utils.h"
+#include "eddl/descriptors/tensor_descriptors.h"
+#include "eddl/utils.h"
 
 PermuteDescriptor::PermuteDescriptor(const vector<int>& dims, int dev) : SelDescriptor(dev) {
     this->dims = vector<int>(dims);

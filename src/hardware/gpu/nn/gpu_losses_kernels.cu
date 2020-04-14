@@ -14,8 +14,8 @@
 #include <iostream>
 #include <cuda.h>
 
-#include "hardware/gpu/nn/gpu_nn_kernels.h"
-#include "hardware/gpu/gpu_kernels.h"
+#include "eddl/hardware/gpu/nn/gpu_nn_kernels.h"
+#include "eddl/hardware/gpu/gpu_kernels.h"
 
 
 __global__ void cent(float* a, float* b, float* c, long int size)

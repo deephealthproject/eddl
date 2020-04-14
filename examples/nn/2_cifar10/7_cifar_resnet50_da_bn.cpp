@@ -11,8 +11,8 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "apis/eddl.h"
-#include "apis/eddlT.h"
+#include "eddl/apis/eddl.h"
+#include "eddl/apis/eddlT.h"
 
 using namespace eddl;
 

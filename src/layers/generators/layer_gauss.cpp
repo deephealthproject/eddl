@@ -12,8 +12,8 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "layers/operators/layer_operators.h"
-#include "layers/generators/layer_generators.h"
+#include "eddl/layers/operators/layer_operators.h"
+#include "eddl/layers/generators/layer_generators.h"
 
 
 using namespace std;
