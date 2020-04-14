@@ -13,7 +13,7 @@
 
 #include "eddl/apis/eddl.h"
 #include "eddl/apis/eddlT.h"
-#include "serialization/onnx/eddl_onnx.h" // Not allowed
+#include "eddl/serialization/onnx/eddl_onnx.h" // Not allowed
 
 using namespace eddl;
 
