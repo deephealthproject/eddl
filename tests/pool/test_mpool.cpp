@@ -1,4 +1,4 @@
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 #include "tensor/tensor.h"
 #include "tensor/nn/tensor_nn.h"

@@ -20,7 +20,7 @@ option(BUILD_COVERAGE "Flag to compile for coverage information" OFF)
 # Build Dependencies
 if(USE_SUPERBUILD)
     # This is executed at building time: "cmake .."
-    PROJECT(eddl-superbuild)
+    PROJECT(eddl-superbuild)  # None
 
     add_subdirectory(cmake)
     return() # stop processing this file further
@@ -69,4 +69,24 @@ if(BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif(BUILD_EXAMPLES)
 
-
+#
+## Install
+#install(EXPORT CMakeExternalTargets
+#        NAMESPACE CMakeExternal::
+#        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/CMakeExternal
+#        COMPONENT Development)
+#include(CMakePackageConfigHelpers)
+#configure_package_config_file(cmake/CMakeExternalConfig.cmake.in
+#        "${PROJECT_BINARY_DIR}/CMakeExternalConfig.cmake"
+#        INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/CMakeExternal"
+#        NO_SET_AND_CHECK_MACRO
+#        NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+#write_basic_package_version_file(
+#        "${PROJECT_BINARY_DIR}/CMakeExternalConfigVersion.cmake"
+#        COMPATIBILITY SameMajorVersion)
+#install(
+#        FILES
+#        "${PROJECT_BINARY_DIR}/CMakeExternalConfig.cmake"
+#        "${PROJECT_BINARY_DIR}/CMakeExternalConfigVersion.cmake"
+#        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/CMakeExternal"
+#        COMPONENT Development)
