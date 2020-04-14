@@ -15,8 +15,6 @@
 #include <string>
 #include <mutex>
 
-#include <Eigen/Dense>
-
 
 using namespace std;
 

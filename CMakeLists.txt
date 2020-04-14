@@ -27,7 +27,6 @@ if(USE_SUPERBUILD)
 else()
     # This is executed at compilation time: "make"
     PROJECT(eddl VERSION 0.4.5 LANGUAGES CXX)
-    message(STATUS "TWICEEEEEEEEEEEEE")
 endif()
 
 
@@ -69,25 +68,25 @@ endif(BUILD_TESTS)
 if(BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif(BUILD_EXAMPLES)
-#
-#
-## Install
-#install(EXPORT CMakeExternalTargets
-#        NAMESPACE CMakeExternal::
-#        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/CMakeExternal
-#        COMPONENT Development)
-#include(CMakePackageConfigHelpers)
-#configure_package_config_file(cmake/CMakeExternalConfig.cmake.in
-#        "${PROJECT_BINARY_DIR}/CMakeExternalConfig.cmake"
-#        INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/CMakeExternal"
-#        NO_SET_AND_CHECK_MACRO
-#        NO_CHECK_REQUIRED_COMPONENTS_MACRO)
-#write_basic_package_version_file(
-#        "${PROJECT_BINARY_DIR}/CMakeExternalConfigVersion.cmake"
-#        COMPATIBILITY SameMajorVersion)
-#install(
-#        FILES
-#        "${PROJECT_BINARY_DIR}/CMakeExternalConfig.cmake"
-#        "${PROJECT_BINARY_DIR}/CMakeExternalConfigVersion.cmake"
-#        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/CMakeExternal"
-#        COMPONENT Development)
+
+
+# Install
+install(EXPORT EDDLTargets
+        NAMESPACE EDDL::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/EDDL
+        COMPONENT Development)
+include(CMakePackageConfigHelpers)
+configure_package_config_file(cmake/EDDLConfig.cmake.in
+        "${PROJECT_BINARY_DIR}/EDDLConfig.cmake"
+        INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/EDDL"
+        NO_SET_AND_CHECK_MACRO
+        NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+write_basic_package_version_file(
+        "${PROJECT_BINARY_DIR}/EDDLConfigVersion.cmake"
+        COMPATIBILITY SameMajorVersion)
+install(
+        FILES
+        "${PROJECT_BINARY_DIR}/EDDLConfig.cmake"
+        "${PROJECT_BINARY_DIR}/EDDLConfigVersion.cmake"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/EDDL"
+        COMPONENT Development)

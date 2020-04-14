@@ -15,7 +15,7 @@ endif()
 # For development (ignore)
 option(USE_SYSTEM_DEPENDENCIES "Force the use of system dependencies" OFF)  # Master flag
 option(USE_SYSTEM_GTEST "Use system dependency" OFF)
-option(USE_SYSTEM_EIGEN "Use system dependency" OFF)
+#option(USE_SYSTEM_EIGEN "Use system dependency" OFF)
 option(USE_SYSTEM_ZLIB "Use system dependency" OFF)
 option(USE_SYSTEM_PROTOBUF "Use system dependency" OFF)
 
@@ -64,35 +64,35 @@ else()
 endif()
 message(STATUS "Subproject: GTEST...DONE")
 
-
-#############
-##  EIGEN  ##
-#############
-message(STATUS "Subproject: EIGEN...")
-if(USE_SYSTEM_DEPENDENCIES OR USE_SYSTEM_EIGEN)
-    find_package(Eigen3 3.3 REQUIRED NO_MODULE)
-else()
-
-    # Download and unpack googletest at configure time
-    configure_file(eigen.CMakeLists.txt.in ${EP_BASE_DIR}/eigen-download/CMakeLists.txt)
-    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-            RESULT_VARIABLE result
-            WORKING_DIRECTORY ${EP_BASE_DIR}/eigen-download )
-    if(result)
-        message(FATAL_ERROR "CMake step for googletest failed: ${result}")
-    endif()
-    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
-            RESULT_VARIABLE result
-            WORKING_DIRECTORY ${EP_BASE_DIR}/eigen-download )
-    if(result)
-        message(FATAL_ERROR "Build step for eigen failed: ${result}")
-    endif()
-
-    # Set variables
-    SET(Eigen3_DIR "${EP_BASE_DIR}/eigen/share/eigen3/cmake" )
-#        find_package(Eigen3 3.3 REQUIRED NO_MODULE)  # Double check - Fill more variables
-endif()
-message(STATUS "Subproject: EIGEN...DONE")
+#
+##############
+###  EIGEN  ##
+##############
+#message(STATUS "Subproject: EIGEN...")
+#if(USE_SYSTEM_DEPENDENCIES OR USE_SYSTEM_EIGEN)
+#    find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+#else()
+#
+#    # Download and unpack googletest at configure time
+#    configure_file(eigen.CMakeLists.txt.in ${EP_BASE_DIR}/eigen-download/CMakeLists.txt)
+#    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+#            RESULT_VARIABLE result
+#            WORKING_DIRECTORY ${EP_BASE_DIR}/eigen-download )
+#    if(result)
+#        message(FATAL_ERROR "CMake step for googletest failed: ${result}")
+#    endif()
+#    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
+#            RESULT_VARIABLE result
+#            WORKING_DIRECTORY ${EP_BASE_DIR}/eigen-download )
+#    if(result)
+#        message(FATAL_ERROR "Build step for eigen failed: ${result}")
+#    endif()
+#
+#    # Set variables
+#    SET(Eigen3_DIR "${EP_BASE_DIR}/eigen/share/eigen3/cmake" )
+##        find_package(Eigen3 3.3 REQUIRED NO_MODULE)  # Double check - Fill more variables
+#endif()
+#message(STATUS "Subproject: EIGEN...DONE")
 
 
 #############
@@ -197,7 +197,7 @@ ExternalProject_Add(eddl
         CMAKE_CACHE_ARGS
             -DUSE_SUPERBUILD:BOOL=OFF
 
-            -DEigen3_DIR:PATH=${Eigen3_DIR}
+#            -DEigen3_DIR:PATH=${Eigen3_DIR}
 
             -DGTEST_ROOT:PATH=${GTEST_ROOT}  # Special
 
@@ -223,9 +223,9 @@ message(STATUS "Args used: " ${CL_ARGS} )
 message(STATUS "-------------------------------------------" )
 message(STATUS "Use system GTest: " ${USE_SYSTEM_GTEST} )
 message(STATUS "GTests root: " ${GTEST_ROOT})
-message(STATUS "-------------------------------------------" )
-message(STATUS "Use system Eigen: " ${USE_SYSTEM_EIGEN} )
-message(STATUS "Eigen dir: " ${Eigen3_DIR})
+#message(STATUS "-------------------------------------------" )
+#message(STATUS "Use system Eigen: " ${USE_SYSTEM_EIGEN} )
+#message(STATUS "Eigen dir: " ${Eigen3_DIR})
 message(STATUS "-------------------------------------------" )
 message(STATUS "Use system Zlib: " ${USE_SYSTEM_ZLIB} )
 message(STATUS "Zlib root: " ${ZLIB_ROOT})

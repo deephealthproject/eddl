@@ -17,7 +17,7 @@
 #include <string>
 #include <mutex>
 
-#include <Eigen/Dense>
+#include "Eigen/Dense"
 
 #include "eddl/utils.h"
 #include "eddl/descriptors/tensor_descriptors.h"

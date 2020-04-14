@@ -31,7 +31,6 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options a
 ###########################################################################
 
 # C++ files
-file(GLOB_RECURSE CPP_PUBLIC_HEADERS "${PROJECT_SOURCE_DIR}/include/*" *.{h, hpp})
 file(GLOB_RECURSE CPP_HEADERS "${PROJECT_SOURCE_DIR}/src/*" *.{h, hpp})
 file(GLOB_RECURSE CPP_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cc, cpp})
 file(GLOB_RECURSE CUDA_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cu})
@@ -40,9 +39,6 @@ file(GLOB_RECURSE CUDA_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cu})
 add_library(${PROJECT_NAME} ${CPP_HEADERS} ${CPP_SOURCES})
 
 # We need this directory, and users of our library will need it too
-#target_include_directories(${PROJECT_NAME} PUBLIC
-#                           ${PROJECT_SOURCE_DIR}/src)
-
 target_include_directories(${PROJECT_NAME}
         PUBLIC
             $<INSTALL_INTERFACE:include>
@@ -51,12 +47,11 @@ target_include_directories(${PROJECT_NAME}
             ${PROJECT_SOURCE_DIR}/src
         )
 
-
 # All users of this library will need at least C++11
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_11)
 
 # IDEs should put the headers in a nice place
-#source_group(TREE "${PROJECT_SOURCE_DIR}/src" PREFIX "Header Files" FILES ${CPP_HEADERS})
+#source_group(TREE "${PROJECT_SOURCE_DIR}/include" PREFIX "Header Files" FILES ${CPP_HEADERS})
 
 
 ###########################################################################
@@ -65,17 +60,17 @@ target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_11)
 # Threads
 find_package(Threads REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
-
-# Eigen
-if(DEFINED Eigen3_DIR)
-    message(STATUS "Using specific Eigen")
-else()
-    message(STATUS "Searching for Eigen in the system...")
-endif()
-find_package(Eigen3 3.3 REQUIRED NO_MODULE)  # EIGEN_DIR => ok
-message(STATUS "Eigen found!")
-target_include_directories(${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only library
+#
+## Eigen
+#if(DEFINED Eigen3_DIR)
+#    message(STATUS "Using specific Eigen")
+#else()
+#    message(STATUS "Searching for Eigen in the system...")
+#endif()
+#find_package(Eigen3 3.3 REQUIRED NO_MODULE)  # EIGEN_DIR => ok
+#message(STATUS "Eigen found!")
+#target_include_directories(${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIRS})
+#target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only library
 
 # ZLIB
 if(DEFINED ZLIB_INCLUDE_DIRS AND DEFINED ZLIB_LIBRARIES_DIRS AND DEFINED ZLIB_LIBRARIES)
@@ -167,17 +162,17 @@ if(USE_CUDA)
     endif()
 endif()
 
-#
-#add_library(CMakeExternal::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
-#
-## Install
-#install(TARGETS ${PROJECT_NAME}
-#        EXPORT CMakeExternalTargets
-##        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
-#        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-#        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-#        #RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-#        )
+
+add_library(EDDL::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+
+# Install
+install(TARGETS ${PROJECT_NAME}
+        EXPORT EDDLTargets
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
 
 #
 #if (WIN32)
@@ -237,9 +232,9 @@ message(STATUS "OpenMP version: " ${OpenMP_VERSION_MAJOR} )
 message(STATUS "OpenMP gomp library: " ${OpenMP_gomp_LIBRARY} )
 message(STATUS "OpenMP pthread library: " ${OpenMP_pthread_LIBRARY} )
 endif()
-message(STATUS "-------------------------------------------" )
-message(STATUS "Eigen3 dir: " ${Eigen3_DIR} )
-message(STATUS "Eigen3 include: " ${EIGEN3_INCLUDE_DIR} )
+#message(STATUS "-------------------------------------------" )
+#message(STATUS "Eigen3 dir: " ${Eigen3_DIR} )
+#message(STATUS "Eigen3 include: " ${EIGEN3_INCLUDE_DIR} )
 message(STATUS "-------------------------------------------" )
 message(STATUS "ZLIB root: " ${ZLIB_ROOT} )
 message(STATUS "ZLIB include: " ${ZLIB_INCLUDE_DIRS} )

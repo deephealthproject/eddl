@@ -14,7 +14,6 @@
 #include <string>
 #include <vector>
 
-#include <Eigen/Dense>
 
 using namespace std;
 
