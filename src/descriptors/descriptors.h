@@ -15,7 +15,7 @@
 #include <string>
 #include <mutex>
 
-#include "Eigen/Dense"
+#include "eddl/Eigen/Dense"
 
 #include "eddl/tensor/tensor.h"
 #include "eddl/utils.h"

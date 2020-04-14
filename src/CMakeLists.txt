@@ -174,33 +174,6 @@ install(TARGETS ${PROJECT_NAME}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         )
 
-#
-#if (WIN32)
-#    SET(EDDL_CONFIG_INSTALL_PATH ${CMAKE_INSTALL_PREFIX})
-#else()
-#    SET(EDDL_CONFIG_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/lib/cmake/eddl)
-#endif()
-#
-#install(TARGETS eddl
-#        EXPORT eddlTargets
-#        LIBRARY DESTINATION lib
-#        ARCHIVE DESTINATION lib
-#        RUNTIME DESTINATION bin
-#        INCLUDES DESTINATION include
-#        )
-#install(EXPORT eddlTargets
-#        DESTINATION ${EDDL_CONFIG_INSTALL_PATH}
-#        )
-#install(DIRECTORY ${PROJECT_SOURCE_DIR}/src
-#        DESTINATION include/eddl
-#        FILES_MATCHING PATTERN "*.h")
-#
-## This allows to do: "find_package(eddl)"
-#configure_file(${PROJECT_SOURCE_DIR}/cmake/eddlConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/cmake/eddlConfig.cmake @ONLY)
-#install(FILES "${CMAKE_CURRENT_BINARY_DIR}/cmake/eddlConfig.cmake"
-#        DESTINATION ${EDDL_CONFIG_INSTALL_PATH}
-#        )
-
 # SHOW OPTIONS
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )

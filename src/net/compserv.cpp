@@ -14,7 +14,7 @@
 #include <stdexcept>
 
 #include "eddl/net/compserv.h"
-#include "Eigen/Core"
+#include "eddl/Eigen/Core"
 
 // for local
 CompServ::CompServ(int t, const vector<int> g, const vector<int> &f,int lsb, int mem) {
