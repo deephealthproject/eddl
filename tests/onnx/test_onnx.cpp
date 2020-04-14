@@ -32,10 +32,6 @@ Net* get_network(){
     layer out = Activation(Dense(l, 10), "softmax");
     model net = Model({in}, {out});
 
-    build(net,
-            sgd(0.01), // Optimizer
-          {"soft_cross_entropy"}, // Losses
-          {"categorical_accuracy"}); // Metrics);
     return net;
 }
 
@@ -46,12 +42,24 @@ TEST(ONNXTestSuite, onnx_import){
 
     // Get some network
     Net* net_export = get_network();
+    build(net_export,
+          sgd(0.01), // Optimizer
+          {"soft_cross_entropy"}, // Losses
+          {"categorical_accuracy"},  // Metrics)
+          CS_CPU(), true);
+    net_export->resize(1);
 
     // Export network to ONNX
     save_net_to_onnx_file(net_export, fname);
 
     // Import net
     Net* net_import = import_net_from_onnx_file(fname);
+    build(net_import,
+          sgd(0.01), // Optimizer
+          {"soft_cross_entropy"}, // Losses
+          {"categorical_accuracy"}, // Metrics);
+          CS_CPU(), false);
+    net_import->resize(1);
 
     // Delete file
     int hasFailed = std::remove(fname.c_str());
