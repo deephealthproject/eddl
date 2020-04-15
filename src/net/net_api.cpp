@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.5
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -484,7 +484,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 
             high_resolution_clock::time_point e2 = high_resolution_clock::now();
             duration<double> epoch_time_span = e2 - e1;
-            fprintf(stdout, "%1.3f secs/batch\r", epoch_time_span.count()/(j+1));
+            fprintf(stdout, "%1.3f secs/batch\r\n", epoch_time_span.count()/(j+1));
             fflush(stdout);
 
 

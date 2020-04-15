@@ -13,6 +13,7 @@ option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" ON)
 option(BUILD_COVERAGE "Flag to compile for coverage information" OFF)
 
+
 ###########################################################################
 ################################# BUILD ###################################
 ###########################################################################
@@ -43,16 +44,37 @@ if(" ${CMAKE_SOURCE_DIR}" STREQUAL " ${CMAKE_BINARY_DIR}")
     message(FATAL_ERROR "FATAL: In-source builds are not allowed. You should create a separate directory for build files.")
 endif()
 
-# Flags
+# Flags: Global
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# Coverage
+# Flags: Debugging
 if(BUILD_COVERAGE)
-set(COVERAGE_FLAGS ${CMAKE_CXX_FLAGS} "-O0 -g --coverage")
-set(CMAKE_EXE_LINKER_FLAGS ${COVERAGE_FLAGS})
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${COVERAGE_FLAGS})
+    set(COVERAGE_FLAGS ${CMAKE_CXX_FLAGS} "-O0 -g --coverage")
+
+    # Apply coverage flags
+    set(CMAKE_EXE_LINKER_FLAGS ${COVERAGE_FLAGS})
+    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${COVERAGE_FLAGS})
 endif()
+
+# Flags: Optimization
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DEIGEN_FAST_MATH -pipe")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -Og")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
+# Windows32
+if(WIN32)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNOMINMAX")   # Disable min/max macros in windef.h
+
+    if(MSVC)  # Microsoft Visual C++
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W1 /MP")   # Enable parallel compilation
+    endif()
+endif()
+
+
+###########################################################################
+############################## PACKAGES ###################################
+###########################################################################
 
 # Build library
 add_subdirectory(src)
@@ -66,6 +88,11 @@ endif(BUILD_TESTS)
 if(BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif(BUILD_EXAMPLES)
+
+
+###########################################################################
+########################## INSTALLATION ###################################
+###########################################################################
 
 # Install
 install(EXPORT EDDLTargets

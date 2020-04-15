@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.5
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -12,14 +12,14 @@
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
 
-#include "eddl/hardware/gpu/gpu_nn.h"
-#include "eddl/hardware/gpu/gpu_nn_kernels.h"
+#include "eddl/hardware/gpu/nn/gpu_nn.h"
+#include "eddl/hardware/gpu/nn/gpu_nn_kernels.h"
 
 #include "eddl/hardware/gpu/gpu_hw.h"
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_kernels.h"
 
-#include "tensor/tensor.h"
+#include "eddl/tensor/tensor.h"
 
 #define VERBOSE 0
 
