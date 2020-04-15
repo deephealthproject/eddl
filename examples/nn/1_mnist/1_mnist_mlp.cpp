@@ -23,7 +23,6 @@ using namespace eddl;
 //////////////////////////////////
 
 int main(int argc, char **argv) {
-
     // Download mnist
     download_mnist();
 
