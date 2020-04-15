@@ -16,7 +16,7 @@ jobs:
           mkdir build
           cd build
           cmake ..
-          make
+          make install
       - name: Test
         run: |
           cd build

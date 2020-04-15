@@ -15,13 +15,19 @@ endif()
 # For development (ignore)
 option(USE_SYSTEM_DEPENDENCIES "Force the use of system dependencies" OFF)  # Master flag
 option(USE_SYSTEM_GTEST "Use system dependency" OFF)
-#option(USE_SYSTEM_EIGEN "Use system dependency" OFF)
+option(USE_SYSTEM_EIGEN "Use system dependency" OFF)
 option(USE_SYSTEM_ZLIB "Use system dependency" OFF)
 option(USE_SYSTEM_PROTOBUF "Use system dependency" OFF)
 
 # Set variables
 set(EDDL_DEPENDENCIES)
 
+if(USE_SYSTEM_DEPENDENCIES)
+    set(USE_SYSTEM_GTEST OFF)
+    set(USE_SYSTEM_EIGEN OFF)
+    set(USE_SYSTEM_ZLIB OFF)
+    set(USE_SYSTEM_PROTOBUF OFF)
+endif()
 
 # Collect args
 get_cmake_property(vars CACHE_VARIABLES)
@@ -40,7 +46,7 @@ endforeach()
 ###  GTEST  ##
 ##############
 message(STATUS "Subproject: GTEST...")
-if(USE_SYSTEM_DEPENDENCIES OR USE_SYSTEM_GTEST)
+if(USE_SYSTEM_GTEST)
     find_package(GTest REQUIRED)
 else()
 
@@ -60,7 +66,7 @@ else()
     endif()
 
     # Set variables
-    SET(GTEST_ROOT "${EP_BASE_DIR}/googletest")
+    SET(GTEST_ROOT "${EP_BASE_DIR}/googletest" PARENT_SCOPE)
 endif()
 message(STATUS "Subproject: GTEST...DONE")
 
@@ -69,7 +75,7 @@ message(STATUS "Subproject: GTEST...DONE")
 ###  EIGEN  ##
 ##############
 #message(STATUS "Subproject: EIGEN...")
-#if(USE_SYSTEM_DEPENDENCIES OR USE_SYSTEM_EIGEN)
+#if(USE_SYSTEM_EIGEN)
 #    find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 #else()
 #
@@ -99,7 +105,7 @@ message(STATUS "Subproject: GTEST...DONE")
 ###  ZLIB  ##
 #############
 message(STATUS "Subproject: ZLIB...")
-if(USE_SYSTEM_DEPENDENCIES OR USE_SYSTEM_ZLIB)
+if(USE_SYSTEM_ZLIB)
     find_package(ZLIB REQUIRED)
 else()
     # Download and unpack googletest at configure time
@@ -117,22 +123,11 @@ else()
         message(FATAL_ERROR "Build step for zlib failed: ${result}")
     endif()
 
-
     # Set variables
-    SET(ZLIB_ROOT "${EP_BASE_DIR}/zlib")
-    SET(ZLIB_INCLUDE_DIRS "${EP_BASE_DIR}/zlib/include")
-    SET(ZLIB_LIBRARIES_DIRS "${EP_BASE_DIR}/zlib/lib")
-    SET(ZLIB_LIBRARIES "z")
-
-#    find_library(ZLIB_LIBRARIES
-#            NAMES z
-#            PATHS ${ZLIB_LIBRARIES_DIRS}
-#            PATH_SUFFIXES lib
-#            NO_DEFAULT_PATH
-#            )
-#    if(NOT ZLIB_LIBRARIES)
-#        message(FATAL_ERROR "ZLIB library not found")
-#    endif()
+    SET(ZLIB_ROOT "${EP_BASE_DIR}/zlib" PARENT_SCOPE)
+    SET(ZLIB_INCLUDE_DIRS "${EP_BASE_DIR}/zlib/include" PARENT_SCOPE)
+    SET(ZLIB_LIBRARIES_DIRS "${EP_BASE_DIR}/zlib/lib" PARENT_SCOPE)
+    SET(ZLIB_LIBRARIES "z" PARENT_SCOPE)
 endif()
 message(STATUS "Subproject: ZLIB...DONE")
 
@@ -140,7 +135,7 @@ message(STATUS "Subproject: ZLIB...DONE")
 ################
 ##  PROTOBUF  ##
 ################
-if(USE_SYSTEM_DEPENDENCIES OR USE_SYSTEM_PROTOBUF)
+if(USE_SYSTEM_PROTOBUF)
     find_package(Protobuf REQUIRED)
 else()
     # Download and unpack googletest at configure time
@@ -160,58 +155,50 @@ else()
 
     # This variable does not work (deprecated?)
     if (WIN32)
-        set(Protobuf_DIR "${EP_BASE_DIR}/protobuf/cmake")
+        set(Protobuf_DIR "${EP_BASE_DIR}/protobuf/cmake" PARENT_SCOPE)
     else()
-        set(Protobuf_DIR "${EP_BASE_DIR}/protobuf/lib/cmake/protobuf")
+        set(Protobuf_DIR "${EP_BASE_DIR}/protobuf/lib/cmake/protobuf" PARENT_SCOPE)
     endif()
 
-    set(Protobuf_INCLUDE_DIRS "${EP_BASE_DIR}/protobuf/include")
-    set(Protobuf_LIBRARIES_DIRS "${EP_BASE_DIR}/protobuf/lib")
-    set(Protobuf_LIBRARIES "protobuf")
-    set(Protobuf_PROTOC_EXECUTABLE "${EP_BASE_DIR}/protobuf/bin/protoc")
-
-#        # Weirdly, in github does not work
-#        find_library(Protobuf_LIBRARIES
-#                NAMES protobuf protobuf-lite protoc
-#                PATHS ${Protobuf_LIBRARIES_DIRS}
-#                PATH_SUFFIXES lib
-#                NO_DEFAULT_PATH
-#                )
-#        if(NOT Protobuf_LIBRARIES)
-#            message(FATAL_ERROR "Protobuf library not found")
-#        endif()
-
+    set(Protobuf_INCLUDE_DIRS "${EP_BASE_DIR}/protobuf/include" PARENT_SCOPE)
+    set(Protobuf_LIBRARIES_DIRS "${EP_BASE_DIR}/protobuf/lib" PARENT_SCOPE)
+    set(Protobuf_LIBRARIES "protobuf" PARENT_SCOPE)
+    set(Protobuf_PROTOC_EXECUTABLE "${EP_BASE_DIR}/protobuf/bin/protoc" PARENT_SCOPE)
 endif()
 message(STATUS "Subproject: Protobuf...DONE")
-
-##############
-####  EDDL  ##
-##############
-ExternalProject_Add(eddl
-        PREFIX eddl
-        DEPENDS ${EDDL_DEPENDENCIES}
-        SOURCE_DIR "${PROJECT_SOURCE_DIR}"
-        BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/eddl"
-        INSTALL_COMMAND ""
-        CMAKE_ARGS ${CL_ARGS}  # Overrides CMAKE_CACHE_ARGS when an argument is duplicated
-        CMAKE_CACHE_ARGS
-            -DUSE_SUPERBUILD:BOOL=OFF
-
-#            -DEigen3_DIR:PATH=${Eigen3_DIR}
-
-            -DGTEST_ROOT:PATH=${GTEST_ROOT}  # Special
-
-            -DZLIB_ROOT:PATH=${ZLIB_ROOT}  # Problems
-            -DZLIB_INCLUDE_DIRS:PATH=${ZLIB_INCLUDE_DIRS}
-            -DZLIB_LIBRARIES:PATH=${ZLIB_LIBRARIES}
-            -DZLIB_LIBRARIES_DIRS:PATH=${ZLIB_LIBRARIES_DIRS}
-
-            -DProtobuf_DIR:PATH=${Protobuf_DIR}  # Problems
-            -DProtobuf_INCLUDE_DIRS:PATH=${Protobuf_INCLUDE_DIRS}
-            -DProtobuf_LIBRARIES:PATH=${Protobuf_LIBRARIES}
-            -DProtobuf_LIBRARIES_DIRS:PATH=${Protobuf_LIBRARIES_DIRS}
-            -DProtobuf_PROTOC_EXECUTABLE:PATH=${Protobuf_PROTOC_EXECUTABLE}
-        )
+#
+###############
+#####  EDDL  ##
+###############
+#ExternalProject_Add(eddl
+#        PREFIX eddl
+#        DEPENDS ${EDDL_DEPENDENCIES}
+#        SOURCE_DIR "${PROJECT_SOURCE_DIR}"
+#        BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/eddl"
+#        INSTALL_COMMAND ""
+#        CMAKE_ARGS ${CL_ARGS}  # Overrides CMAKE_CACHE_ARGS when an argument is duplicated
+#        CMAKE_CACHE_ARGS
+#            -DUSE_SUPERBUILD:BOOL=OFF
+#            -DUSE_SYSTEM_EIGEN:BOOL=${USE_SYSTEM_EIGEN}
+#            -DUSE_SYSTEM_GTEST:BOOL=${USE_SYSTEM_GTEST}
+#            -DUSE_SYSTEM_ZLIB:BOOL=${USE_SYSTEM_ZLIB}
+#            -DUSE_SYSTEM_PROTOBUF:BOOL=${USE_SYSTEM_PROTOBUF}
+#
+##            -DEigen3_DIR:PATH=${Eigen3_DIR}
+#
+#            -DGTEST_ROOT:PATH=${GTEST_ROOT}  # Special
+#
+#            -DZLIB_ROOT:PATH=${ZLIB_ROOT}  # Problems
+#            -DZLIB_INCLUDE_DIRS:PATH=${ZLIB_INCLUDE_DIRS}
+#            -DZLIB_LIBRARIES:PATH=${ZLIB_LIBRARIES}
+#            -DZLIB_LIBRARIES_DIRS:PATH=${ZLIB_LIBRARIES_DIRS}
+#
+#            -DProtobuf_DIR:PATH=${Protobuf_DIR}  # Problems
+#            -DProtobuf_INCLUDE_DIRS:PATH=${Protobuf_INCLUDE_DIRS}
+#            -DProtobuf_LIBRARIES:PATH=${Protobuf_LIBRARIES}
+#            -DProtobuf_LIBRARIES_DIRS:PATH=${Protobuf_LIBRARIES_DIRS}
+#            -DProtobuf_PROTOC_EXECUTABLE:PATH=${Protobuf_PROTOC_EXECUTABLE}
+#        )
 
 
 # SHOW OPTIONS
@@ -223,9 +210,9 @@ message(STATUS "Args used: " ${CL_ARGS} )
 message(STATUS "-------------------------------------------" )
 message(STATUS "Use system GTest: " ${USE_SYSTEM_GTEST} )
 message(STATUS "GTests root: " ${GTEST_ROOT})
-#message(STATUS "-------------------------------------------" )
-#message(STATUS "Use system Eigen: " ${USE_SYSTEM_EIGEN} )
-#message(STATUS "Eigen dir: " ${Eigen3_DIR})
+message(STATUS "-------------------------------------------" )
+message(STATUS "Use system Eigen: " ${USE_SYSTEM_EIGEN} )
+message(STATUS "Eigen dir: " ${Eigen3_DIR})
 message(STATUS "-------------------------------------------" )
 message(STATUS "Use system Zlib: " ${USE_SYSTEM_ZLIB} )
 message(STATUS "Zlib root: " ${ZLIB_ROOT})
