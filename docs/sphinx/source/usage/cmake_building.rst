@@ -18,10 +18,11 @@ The following minimal ``CMakeLists.txt`` is enough to build the first example:
     cmake_minimum_required(VERSION 3.9.2)
     project(first_example)
 
-    find_package(eddl REQUIRED)
-
     add_executable(first_example src/main.cpp)
-    target_link_libraries(first_example eddl)
+
+    find_package(EDDL REQUIRED)
+    target_link_libraries(first_example PUBLIC EDDL::eddl)
+
 
 `cmake` has to know where to find the headers, this is done through the ``CMAKE_INSTALL_PREFIX``
 variable. Note that ``CMAKE_INSTALL_PREFIX`` is usually the path to a folder containing the following

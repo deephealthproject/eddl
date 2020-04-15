@@ -18,5 +18,5 @@ Copy this code to a new file, and let's name it ``main.cpp``:
 
 This example simply sums all the elements of a tensor
 
-To compile it we are going to use CMake and the ``find_package(eddl)`` function.
+To compile it we are going to use CMake and the ``find_package(EDDL REQUIRED)`` function.
 If you are not familiar with CMake, read the next section.
