@@ -23,8 +23,6 @@ if(USE_SUPERBUILD)
     PROJECT(eddl-superbuild NONE)
 
     add_subdirectory(cmake)
-#    return() # stop processing this file further
-#else()
 endif()
 # This is executed at compilation time: "make"
 PROJECT(eddl VERSION 0.4.6 LANGUAGES CXX)

@@ -13,7 +13,6 @@ if (NUM_CORES GREATER_EQUAL 2)
 endif()
 
 # For development (ignore)
-option(USE_SYSTEM_DEPENDENCIES "Force the use of system dependencies" OFF)  # Master flag
 option(USE_SYSTEM_GTEST "Use system dependency" OFF)
 option(USE_SYSTEM_EIGEN "Use system dependency" OFF)
 option(USE_SYSTEM_ZLIB "Use system dependency" OFF)
@@ -21,13 +20,6 @@ option(USE_SYSTEM_PROTOBUF "Use system dependency" OFF)
 
 # Set variables
 set(EDDL_DEPENDENCIES)
-
-if(USE_SYSTEM_DEPENDENCIES)
-    set(USE_SYSTEM_GTEST OFF)
-    set(USE_SYSTEM_EIGEN OFF)
-    set(USE_SYSTEM_ZLIB OFF)
-    set(USE_SYSTEM_PROTOBUF OFF)
-endif()
 
 # Collect args
 get_cmake_property(vars CACHE_VARIABLES)
@@ -166,7 +158,7 @@ else()
     set(Protobuf_PROTOC_EXECUTABLE "${EP_BASE_DIR}/protobuf/bin/protoc" PARENT_SCOPE)
 endif()
 message(STATUS "Subproject: Protobuf...DONE")
-#
+
 ###############
 #####  EDDL  ##
 ###############
@@ -204,7 +196,6 @@ message(STATUS "Subproject: Protobuf...DONE")
 # SHOW OPTIONS
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )
-message(STATUS "Use system dependencies: " ${USE_SYSTEM_DEPENDENCIES} )
 message(STATUS "Cores used: " ${NUM_PARALLEL} )
 message(STATUS "Args used: " ${CL_ARGS} )
 message(STATUS "-------------------------------------------" )

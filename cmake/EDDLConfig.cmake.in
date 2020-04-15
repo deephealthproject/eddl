@@ -14,15 +14,9 @@ if (${USE_CUDA})
 endif()
 
 # Dependencies
-if(@USE_SYSTEM_EIGEN@)
-    find_dependency(Eigen3 REQUIRED NO_MODULE)
-endif()
-
-if(@USE_SYSTEM_ZLIB@)
+if(NOT @USE_SUPERBUILD@)
+    #find_dependency(Eigen3 REQUIRED NO_MODULE)
     find_dependency(ZLIB REQUIRED NO_MODULE)
-endif()
-
-if(@USE_SYSTEM_PROTOBUF@)
     find_dependency(Protobuf REQUIRED NO_MODULE)
 endif()
 
