@@ -15,9 +15,9 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_INSTALL_PREFIX=.
-          make install
+          cmake ..
+          make
       - name: Test
         run: |
           cd build
-          cmake/eddl/bin/unit_tests
+          bin/unit_tests
