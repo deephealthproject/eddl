@@ -11,16 +11,16 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
-#include <stdexcept>
+#include <thread>
 
+#include <stdexcept>
 #include "eddl/net/compserv.h"
-#include "eddl/Eigen/Core"
 
 // for local
 CompServ::CompServ(int t, const vector<int> g, const vector<int> &f,int lsb, int mem) {
     type = "local";
 
-    if (t==-1) local_threads = Eigen::nbThreads(); // TODO: Review => std::thread::hardware_concurrency()???
+    if (t==-1) local_threads = std::thread::hardware_concurrency();  // Avoid eigen dependency
     else local_threads = t;
 
     local_gpus = vector<int>(g.begin(), g.end());
