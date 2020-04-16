@@ -1,13 +1,26 @@
-#include "serialization/onnx/eddl_onnx.h"
+#include "eddl/serialization/onnx/eddl_onnx.h"
 #include <queue>
 #include <fstream>
-#include "layers/core/layer_core.h"
-#include "layers/conv/layer_conv.h"
-#include "layers/normalization/layer_normalization.h"
-#include "layers/pool/layer_pool.h"
+#include "eddl/layers/core/layer_core.h"
+#include "eddl/layers/conv/layer_conv.h"
+#include "eddl/layers/normalization/layer_normalization.h"
+#include "eddl/layers/pool/layer_pool.h"
 #include <map>
 #include <set>
 #include <algorithm>
+
+
+#if defined(cPROTO)
+#include "onnx.pb.h"
+#endif
+
+#if defined(cPROTO)
+	Net* build_net_onnx(onnx::ModelProto model, int mem);
+#endif
+
+#if defined(cPROTO)
+	map<string, vector<Tensor*> > get_tensors_from_onnx(onnx::ModelProto model);
+#endif
 
 
 using namespace std;

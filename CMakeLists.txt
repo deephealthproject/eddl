@@ -13,6 +13,7 @@ option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" ON)
 option(BUILD_COVERAGE "Flag to compile for coverage information" OFF)
 
+
 ###########################################################################
 ################################# BUILD ###################################
 ###########################################################################
@@ -20,14 +21,12 @@ option(BUILD_COVERAGE "Flag to compile for coverage information" OFF)
 # Build Dependencies
 if(USE_SUPERBUILD)
     # This is executed at building time: "cmake .."
-    PROJECT(eddl-superbuild)
+    PROJECT(eddl-superbuild NONE)
 
     add_subdirectory(cmake)
-    return() # stop processing this file further
-else()
-    # This is executed at compilation time: "make"
-    PROJECT(eddl VERSION 0.4.5 LANGUAGES CXX)
 endif()
+# This is executed at compilation time: "make"
+PROJECT(eddl VERSION 0.5 LANGUAGES CXX)
 
 
 # SET C++ COMPILER STANDARD
@@ -45,16 +44,37 @@ if(" ${CMAKE_SOURCE_DIR}" STREQUAL " ${CMAKE_BINARY_DIR}")
     message(FATAL_ERROR "FATAL: In-source builds are not allowed. You should create a separate directory for build files.")
 endif()
 
-# Flags
+# Flags: Global
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# Coverage
+# Flags: Debugging
 if(BUILD_COVERAGE)
-set(COVERAGE_FLAGS ${CMAKE_CXX_FLAGS} "-O0 -g --coverage")
-set(CMAKE_EXE_LINKER_FLAGS ${COVERAGE_FLAGS})
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${COVERAGE_FLAGS})
+    set(COVERAGE_FLAGS ${CMAKE_CXX_FLAGS} "-O0 -g --coverage")
+
+    # Apply coverage flags
+    set(CMAKE_EXE_LINKER_FLAGS ${COVERAGE_FLAGS})
+    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${COVERAGE_FLAGS})
 endif()
+
+# Flags: Optimization
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DEIGEN_FAST_MATH -pipe")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -Og")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
+# Windows32
+if(WIN32)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNOMINMAX")   # Disable min/max macros in windef.h
+
+    if(MSVC)  # Microsoft Visual C++
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W1 /MP")   # Enable parallel compilation
+    endif()
+endif()
+
+
+###########################################################################
+############################## PACKAGES ###################################
+###########################################################################
 
 # Build library
 add_subdirectory(src)
@@ -70,3 +90,27 @@ if(BUILD_EXAMPLES)
 endif(BUILD_EXAMPLES)
 
 
+###########################################################################
+########################## INSTALLATION ###################################
+###########################################################################
+
+# Install
+install(EXPORT EDDLTargets
+        NAMESPACE EDDL::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/eddl
+        COMPONENT devel)
+include(CMakePackageConfigHelpers)
+configure_package_config_file(cmake/EDDLConfig.cmake.in
+        "${PROJECT_BINARY_DIR}/cmake/eddl/EDDLConfig.cmake"
+        INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/eddl"
+        NO_SET_AND_CHECK_MACRO
+        NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+write_basic_package_version_file(
+        "${PROJECT_BINARY_DIR}/cmake/eddl/EDDLConfigVersion.cmake"
+        COMPATIBILITY SameMajorVersion)
+install(
+        FILES
+        "${PROJECT_BINARY_DIR}/cmake/eddl/EDDLConfig.cmake"
+        "${PROJECT_BINARY_DIR}/cmake/eddl/EDDLConfigVersion.cmake"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/eddl"
+        COMPONENT devel)

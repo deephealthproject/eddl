@@ -89,7 +89,7 @@ On Unix platforms, from the source directory:
             cd eddl/
 
             # Install run dependencies
-            sudo apt-get install cmake git wget graphviz
+            sudo apt-get install cmake wget graphviz
 
             # Build and install
             mkdir build
@@ -106,7 +106,7 @@ On Unix platforms, from the source directory:
             cd eddl/
 
             # Install run dependencies
-            brew install cmake git wget graphviz
+            brew install cmake wget graphviz
 
             # Build and install
             mkdir build
@@ -139,9 +139,10 @@ See the :doc:`build-options` section for more details about cmake options.
 .. note::
 
     You can make use of the ``-DCMAKE_INSTALL_PREFIX`` flag to specify where cmake searches for
-    dependencies and installs libraries.
+    dependencies and installs libraries. In addition to this flag, you also need to make use of
+    ``-DUSE_SUPERBUILD=OFF`` to not use our dependency management system.
 
-    Additionally, if you like Conda, you can make use of our environment by running these commands from
+    If you like Conda, you can make use of our environment by running these commands from
     the source directory (``eddl/``):
 
     .. code:: bash
@@ -159,6 +160,11 @@ installation mode you choose, you can add ``EDDL`` to your project using cmake:
 .. code:: cmake
 
     find_package(eddl REQUIRED)
-    target_link_libraries(your_target PUBLIC eddl)
+    target_link_libraries(your_target PUBLIC EDDL::eddl)
+
+.. note::
+
+    After ``find_package``, you can access library components with theses variables:
+    ``EDDL_ROOT``, ``EDDL_INCLUDE_DIR``, ``EDDL_LIBRARIES_DIR`` and ``EDDL_LIBRARIES``.
 
 .. _Anaconda: https://www.anaconda.com/

@@ -11,8 +11,8 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "apis/eddl.h"
-#include "apis/eddlT.h"
+#include "eddl/apis/eddl.h"
+#include "eddl/apis/eddlT.h"
 
 using namespace eddl;
 
@@ -23,7 +23,6 @@ using namespace eddl;
 //////////////////////////////////
 
 int main(int argc, char **argv) {
-
     // Download mnist
     download_mnist();
 

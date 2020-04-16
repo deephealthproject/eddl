@@ -16,10 +16,8 @@ string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
 if(${BUILD_TARGET} STREQUAL "CPU")
 elseif(${BUILD_TARGET} STREQUAL "GPU")
     set(USE_CUDA ON CACHE BOOL "Enable CUDA support if checked")
-elseif(${BUILD_TARGET} STREQUAL "FPGA")
-    message(FATAL_ERROR "FPGA not implemented, CMake will exit." )
 else()
-    message(FATAL_ERROR "Build target not implemented, CMake will exit." )
+    message(FATAL_ERROR "Build target '${BUILD_TARGET}' not implemented, CMake will exit." )
 endif()
 
 # Force default build type to Release
@@ -31,22 +29,28 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options a
 ###########################################################################
 
 # C++ files
+file(GLOB_RECURSE PUBLIC_HEADERS "${PROJECT_SOURCE_DIR}/include/*" *.{h, hpp})
 file(GLOB_RECURSE CPP_HEADERS "${PROJECT_SOURCE_DIR}/src/*" *.{h, hpp})
 file(GLOB_RECURSE CPP_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cc, cpp})
 file(GLOB_RECURSE CUDA_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cu})
 
 # Make an automatic library - will be static or dynamic based on user setting
-add_library(${PROJECT_NAME} ${CPP_HEADERS} ${CPP_SOURCES})
+add_library(${PROJECT_NAME} ${PUBLIC_HEADERS} ${CPP_HEADERS} ${CPP_SOURCES})
 
 # We need this directory, and users of our library will need it too
-target_include_directories(${PROJECT_NAME} PUBLIC
-                           ${PROJECT_SOURCE_DIR}/src)
+target_include_directories(${PROJECT_NAME}
+        PUBLIC
+            $<INSTALL_INTERFACE:include>
+            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+        PRIVATE
+            ${PROJECT_SOURCE_DIR}/src
+        )
 
 # All users of this library will need at least C++11
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_11)
 
 # IDEs should put the headers in a nice place
-source_group(TREE "${PROJECT_SOURCE_DIR}/src" PREFIX "Header Files" FILES ${CPP_HEADERS})
+#source_group(TREE "${PROJECT_SOURCE_DIR}/include" PREFIX "Header Files" FILES ${CPP_HEADERS})
 
 
 ###########################################################################
@@ -56,16 +60,16 @@ source_group(TREE "${PROJECT_SOURCE_DIR}/src" PREFIX "Header Files" FILES ${CPP_
 find_package(Threads REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
-# Eigen
-if(DEFINED Eigen3_DIR)
-    message(STATUS "Using specific Eigen")
-else()
-    message(STATUS "Searching for Eigen in the system...")
-endif()
-find_package(Eigen3 3.3 REQUIRED NO_MODULE)  # EIGEN_DIR => ok
-message(STATUS "Eigen found!")
-target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only library
+## Eigen (I have temporally drop this header-only library to "includes/eddl/")
+#if(DEFINED Eigen3_DIR)
+#    message(STATUS "Using specific Eigen")
+#else()
+#    message(STATUS "Searching for Eigen in the system...")
+#endif()
+#find_package(Eigen3 3.3 REQUIRED NO_MODULE)  # EIGEN_DIR => ok
+#message(STATUS "Eigen found!")
+#target_include_directories(${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIRS})
+#target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only library
 
 # ZLIB
 if(DEFINED ZLIB_INCLUDE_DIRS AND DEFINED ZLIB_LIBRARIES_DIRS AND DEFINED ZLIB_LIBRARIES)
@@ -75,7 +79,7 @@ else()
     find_package(ZLIB REQUIRED)  # Problems with: ZLIB_ROOT
     message(STATUS "ZLIB found!")
 endif()
-target_include_directories(${PROJECT_NAME} PUBLIC ${ZLIB_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PRIVATE ${ZLIB_INCLUDE_DIRS})
 target_link_directories(${PROJECT_NAME} PRIVATE ${ZLIB_LIBRARIES_DIRS})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${ZLIB_LIBRARIES})
 
@@ -91,7 +95,7 @@ if(BUILD_PROTOBUF)
         find_package(Protobuf REQUIRED)  # Problems with: Protobuf_DIR
         message(STATUS "Protobuf found! (system)")
     endif()
-    target_include_directories(${PROJECT_NAME} PUBLIC ${Protobuf_INCLUDE_DIRS})
+    target_include_directories(${PROJECT_NAME} PRIVATE ${Protobuf_INCLUDE_DIRS})
     target_link_directories(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES_DIRS})
     target_link_libraries(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES})
 
@@ -114,7 +118,8 @@ if(BUILD_OPENMP)
         target_compile_definitions(${PROJECT_NAME} PUBLIC OpenMP_VERSION_MAJOR=${OpenMP_VERSION_MAJOR})
         set(OMP_CANCELLATION true)  # https://www.openmp.org/spec-html/5.0/openmpse59.html
     else()
-        message(STATUS "[WARNING] OpenMP not found but requested during compilation. Check your compiler. (Setting '-D BUILD_OPENMP=OFF')")
+        message(WARNING "OpenMP not found but requested during compilation. (Falling back to: '-D BUILD_OPENMP=OFF')
+        Hint: Use a compiler with OpenMP support using: '-D CMAKE_CXX_COMPILER=path'")
         SET(BUILD_OPENMP OFF)
     endif()
 endif()
@@ -124,6 +129,7 @@ endif()
 if(USE_CUDA)
     include(CheckLanguage)
     check_language(CUDA)
+    message(STATUS "CMAKE_CUDA_COMPILER: ${CMAKE_CUDA_COMPILER}")
     if(CMAKE_CUDA_COMPILER)
         enable_language(CUDA)
         add_definitions(-DcGPU)
@@ -137,7 +143,7 @@ if(USE_CUDA)
                 #CUDA_SEPARABLE_COMPILATION ON
                 )
 
-        target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+        target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
         target_link_libraries(${PROJECT_NAME} PRIVATE cublas cudart curand)
 
         if(APPLE)
@@ -152,11 +158,29 @@ if(USE_CUDA)
         endif()
 
     else()
+        message(WARNING "[WARNING] CUDA compiler not found but requested during compilation. (Falling back to: '-D USE_CUDA=OFF')
+        Hint: Set the NVCC path using '-D CMAKE_CUDA_COMPILER=path' or creating a symbolic link.")
         set(USE_CUDA OFF)
         set(BUILD_TARGET "CPU")
     endif()
 endif()
 
+
+add_library(EDDL::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+
+# Install
+install(TARGETS ${PROJECT_NAME}
+        EXPORT EDDLTargets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        )
+
+# Add EDDL includes
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        COMPONENT devel)
 
 # SHOW OPTIONS
 message(STATUS "===========================================" )
@@ -189,17 +213,20 @@ message(STATUS "OpenMP version: " ${OpenMP_VERSION_MAJOR} )
 message(STATUS "OpenMP gomp library: " ${OpenMP_gomp_LIBRARY} )
 message(STATUS "OpenMP pthread library: " ${OpenMP_pthread_LIBRARY} )
 endif()
-message(STATUS "-------------------------------------------" )
-message(STATUS "Eigen3 dir: " ${Eigen3_DIR} )
-message(STATUS "Eigen3 include: " ${EIGEN3_INCLUDE_DIR} )
+#message(STATUS "-------------------------------------------" )
+#message(STATUS "Eigen3 dir: " ${Eigen3_DIR} )
+#message(STATUS "Eigen3 include: " ${EIGEN3_INCLUDE_DIR} )
 message(STATUS "-------------------------------------------" )
 message(STATUS "ZLIB root: " ${ZLIB_ROOT} )
 message(STATUS "ZLIB include: " ${ZLIB_INCLUDE_DIRS} )
 message(STATUS "ZLIB libraries: " ${ZLIB_LIBRARIES} )
 message(STATUS "-------------------------------------------" )
+message(STATUS "Use Protobuf: " ${BUILD_PROTOBUF} )
+if(BUILD_PROTOBUF)
 message(STATUS "Protobuf dir: " ${Protobuf_DIR} )
 message(STATUS "Protobuf include: " ${Protobuf_INCLUDE_DIRS} )
 message(STATUS "Protobuf libraries: " ${Protobuf_LIBRARIES} )
 message(STATUS "Protobuf compiler: " ${Protobuf_PROTOC_EXECUTABLE} )
+endif()
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )

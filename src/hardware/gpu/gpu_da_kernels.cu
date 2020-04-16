@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.5
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -15,7 +15,7 @@
 #include <iostream>
 #include <cuda.h>
 
-#include "hardware/gpu/gpu_kernels.h"
+#include "eddl/hardware/gpu/gpu_kernels.h"
 
 __device__ void gpu_single_shift(long int thread_id_x, float* A, float* B, int batch, int depth, int irows, int icols, int* shift, int mode, float constant){
     int A_stride[4] = {depth*irows*icols, irows*icols, icols, 1};
