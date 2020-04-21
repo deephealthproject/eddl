@@ -46,4 +46,4 @@ jobs:
       with:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         BRANCH: gh-pages # The branch the action should deploy to.
-        FOLDER: docs/source/sphinx/_build/html/
+        FOLDER: docs/sphinx/source/_build/html/
