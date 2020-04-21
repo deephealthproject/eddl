@@ -89,10 +89,7 @@
               <p class="caption"><span class="caption-text">Installation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#using-the-conda-package">Using the Conda package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#enabling-onnx-features">Enabling ONNX features</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#using-the-conda-package">Using the Conda package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#using-the-homebrew-package">Using the Homebrew package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#from-source-with-cmake">From source with cmake</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#including-eddl-in-your-project">Including EDDL in your project</a></li>
@@ -269,11 +266,6 @@ You can use one of the following lines according to your needs:</p>
 <p>GPU</p>
 </div>
 </div>
-<div class="item sphinx-data-tab-0-2 docutils container">
-<div class="docutils container">
-<p>GPU-ONNX</p>
-</div>
-</div>
 </div>
 <div class="ui bottom attached sphinx-tab tab segment sphinx-data-tab-0-0 active docutils container">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda activate
@@ -283,7 +275,6 @@ conda install -c deephealth eddl-cpu
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
-<li><p>It does not include ONNX support</p></li>
 <li><p>Platforms supported: Linux x86/x64 and MacOS</p></li>
 </ul>
 </div>
@@ -296,102 +287,79 @@ conda install -c deephealth eddl-gpu
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
-<li><p>It does not include ONNX support</p></li>
 <li><p>Platforms supported: Linux x86/x64</p></li>
 </ul>
 </div>
 </div>
-<div class="ui bottom attached sphinx-tab tab segment sphinx-data-tab-0-2 docutils container">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda activate
-conda install -c deephealth eddl-gpu-onnx
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<ul class="simple">
-<li><p>Platforms supported: Linux x86/x64</p></li>
-</ul>
-</div>
-</div>
-</div>
-<div class="section" id="enabling-onnx-features">
-<h3>Enabling ONNX features<a class="headerlink" href="#enabling-onnx-features" title="Permalink to this headline">¶</a></h3>
-<p>If you want to enable the ONNX features, in addition to installing the <code class="docutils literal notranslate"><span class="pre">eddl-gpu-onnx</span></code> binary, you need to
-install <code class="docutils literal notranslate"><span class="pre">protobuf</span></code> manually:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download source</span>
-<span class="nv">PROTOBUF_VERSION</span><span class="o">=</span><span class="m">3</span>.11.4
-sudo apt-get install -y wget
-sudo apt-get install -y autoconf automake libtool curl make g++ unzip
-wget https://github.com/protocolbuffers/protobuf/releases/download/v<span class="nv">$PROTOBUF_VERSION</span>/protobuf-cpp-<span class="nv">$PROTOBUF_VERSION</span>.tar.gz
-tar -xf protobuf-cpp-<span class="nv">$PROTOBUF_VERSION</span>.tar.gz
-
-<span class="c1"># Build and install</span>
-<span class="nb">cd</span> protobuf-<span class="nv">$PROTOBUF_VERSION</span>
-./configure
-make -j<span class="k">$(</span>nproc<span class="k">)</span>
-make install
-ldconfig
-</pre></div>
 </div>
 <img alt="../_images/homebrew.svg" src="../_images/homebrew.svg" /></div>
-</div>
 <div class="section" id="using-the-homebrew-package">
 <h2>Using the Homebrew package<a class="headerlink" href="#using-the-homebrew-package" title="Permalink to this headline">¶</a></h2>
 <p>A package for EDDL is available on the homebrew package manager.
 You need to run both lines, one to add the tap and the other to install the library.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install Homebrew</span>
-/bin/bash -c <span class="s2">&quot;</span><span class="k">$(</span>curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh<span class="k">)</span><span class="s2">&quot;</span>
-
-<span class="c1"># Add deephealth tap</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add deephealth tap</span>
 brew tap deephealthproject/homebrew-tap
 
 <span class="c1"># Install EDDL</span>
 brew install eddl
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Only <code class="docutils literal notranslate"><span class="pre">CPU</span></code> support.</p>
-<p>If you get an error like <code class="docutils literal notranslate"><span class="pre">Undefined</span> <span class="pre">symbols</span> <span class="pre">for</span> <span class="pre">architecture</span> <span class="pre">x86_64:</span></code>, it might be due to a conflict with
-the default compilers. A simple workaround is to force the use <code class="docutils literal notranslate"><span class="pre">CClang</span></code> (for instance) for C and C++,
-and then install the EDDL again:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set env variables</span>
-<span class="nb">export</span> <span class="nv">CC</span><span class="o">=</span>/usr/local/opt/llvm/bin/clang
-<span class="nb">export</span> <span class="nv">CXX</span><span class="o">=</span>/usr/local/opt/llvm/bin/clang++
-<span class="nb">export</span> <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&quot;-L/usr/local/opt/llvm/lib&quot;</span>
-<span class="nb">export</span> <span class="nv">CPPFLAGS</span><span class="o">=</span><span class="s2">&quot;-I/usr/local/opt/llvm/include&quot;</span>
-
-<span class="c1"># Add tap</span>
-brew tap deephealthproject/homebrew-tap
-
-<span class="c1"># Uninstall and install the EDDL</span>
-brew uninstall eddl
-brew install eddl
-</pre></div>
-</div>
-</div>
 <img alt="../_images/cmake.svg" src="../_images/cmake.svg" /></div>
 <div class="section" id="from-source-with-cmake">
 <h2>From source with cmake<a class="headerlink" href="#from-source-with-cmake" title="Permalink to this headline">¶</a></h2>
-<p>You can also install <code class="docutils literal notranslate"><span class="pre">EDDL</span></code> from source with cmake. In order to manage the external dependencies we recommend to
-install Anaconda (see the <a class="reference internal" href="build-options.html"><span class="doc">Build and configuration</span></a> section for more details about external dependencies).</p>
+<p>You can also install <code class="docutils literal notranslate"><span class="pre">EDDL</span></code> from source with cmake.</p>
 <p>On Unix platforms, from the source directory:</p>
+<div class="sphinx-tabs docutils container">
+<div class="ui top attached tabular menu sphinx-menu docutils container">
+<div class="active item sphinx-data-tab-1-0 docutils container">
+<div class="docutils container">
+<p>Linux</p>
+</div>
+</div>
+<div class="item sphinx-data-tab-1-1 docutils container">
+<div class="docutils container">
+<p>MacOS</p>
+</div>
+</div>
+<div class="item sphinx-data-tab-1-2 docutils container">
+<div class="docutils container">
+<p>Windows</p>
+</div>
+</div>
+</div>
+<div class="ui bottom attached sphinx-tab tab segment sphinx-data-tab-1-0 active docutils container">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download source code</span>
 git clone https://github.com/deephealthproject/eddl.git
 <span class="nb">cd</span> eddl/
 
-<span class="c1"># Install dependencies</span>
-conda env create -f environment.yml
-conda activate eddl
+<span class="c1"># Install run dependencies</span>
+sudo apt-get install cmake wget graphviz
 
 <span class="c1"># Build and install</span>
 mkdir build
 <span class="nb">cd</span> build
-cmake -DCMAKE_INSTALL_PREFIX<span class="o">=</span>path_to_prefix ..
+cmake ..
 make install
 </pre></div>
 </div>
-<p>On Windows platforms, from the source directory:</p>
+</div>
+<div class="ui bottom attached sphinx-tab tab segment sphinx-data-tab-1-1 docutils container">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download source code</span>
+git clone https://github.com/deephealthproject/eddl.git
+<span class="nb">cd</span> eddl/
+
+<span class="c1"># Install run dependencies</span>
+brew install cmake wget graphviz
+
+<span class="c1"># Build and install</span>
+mkdir build
+<span class="nb">cd</span> build
+cmake ..
+make install
+</pre></div>
+</div>
+</div>
+<div class="ui bottom attached sphinx-tab tab segment sphinx-data-tab-1-2 docutils container">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download source code</span>
 git clone https://github.com/deephealthproject/eddl.git
 <span class="nb">cd</span> eddl/
@@ -403,18 +371,25 @@ conda activate eddl
 <span class="c1"># Build and install</span>
 mkdir build
 <span class="nb">cd</span> build
-cmake -G <span class="s2">&quot;NMake Makefiles&quot;</span> -DCMAKE_INSTALL_PREFIX<span class="o">=</span>path_to_prefix ..
+cmake -G <span class="s2">&quot;NMake Makefiles&quot;</span> ..
 nmake
 nmake install
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">path_to_prefix</span></code> is the absolute path to the folder where cmake searches for
-dependencies and installs libraries. <code class="docutils literal notranslate"><span class="pre">EDDL</span></code> installation from cmake assumes
-this folder contains <code class="docutils literal notranslate"><span class="pre">include</span></code> and <code class="docutils literal notranslate"><span class="pre">lib</span></code> subfolders.</p>
+</div>
+</div>
 <p>See the <a class="reference internal" href="build-options.html"><span class="doc">Build and configuration</span></a> section for more details about cmake options.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>You can ignore the flag <code class="docutils literal notranslate"><span class="pre">-DCMAKE_INSTALL_PREFIX</span></code> if you prefer to use the standard paths</p>
+<p>You can make use of the <code class="docutils literal notranslate"><span class="pre">-DCMAKE_INSTALL_PREFIX</span></code> flag to specify where cmake searches for
+dependencies and installs libraries. In addition to this flag, you also need to make use of
+<code class="docutils literal notranslate"><span class="pre">-DUSE_SUPERBUILD=OFF</span></code> to not use our dependency management system.</p>
+<p>If you like Conda, you can make use of our environment by running these commands from
+the source directory (<code class="docutils literal notranslate"><span class="pre">eddl/</span></code>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda env create -f environment.yml
+conda activate eddl
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="including-eddl-in-your-project">
@@ -422,8 +397,13 @@ this folder contains <code class="docutils literal notranslate"><span class="pre
 <p>The different packages of <code class="docutils literal notranslate"><span class="pre">EDDL</span></code> are built with cmake, so whatever the
 installation mode you choose, you can add <code class="docutils literal notranslate"><span class="pre">EDDL</span></code> to your project using cmake:</p>
 <div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">find_package</span><span class="p">(</span><span class="s">eddl</span> <span class="s">REQUIRED</span><span class="p">)</span>
-<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">your_target</span> <span class="s">PUBLIC</span> <span class="s">eddl</span><span class="p">)</span>
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">your_target</span> <span class="s">PUBLIC</span> <span class="s">EDDL::eddl</span><span class="p">)</span>
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>After <code class="docutils literal notranslate"><span class="pre">find_package</span></code>, you can access library components with theses variables:
+<code class="docutils literal notranslate"><span class="pre">EDDL_ROOT</span></code>, <code class="docutils literal notranslate"><span class="pre">EDDL_INCLUDE_DIR</span></code>, <code class="docutils literal notranslate"><span class="pre">EDDL_LIBRARIES_DIR</span></code> and <code class="docutils literal notranslate"><span class="pre">EDDL_LIBRARIES</span></code>.</p>
 </div>
 </div>
 </div>

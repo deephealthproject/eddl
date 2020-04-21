@@ -29,12 +29,7 @@ If you decide to manually install the dependencies in your system, make sure the
     cmake >= 3.9.2
     graphviz >= 2.38.0
     wget >= 1.19.5
-    eigen >= 3.3.7
     cudatoolkit >= 6.0
-    zlib >= 1.2.8
-    gtest >= 1.8.0
-    protobuf >= 3.6.1
-    libprotobuf >= 3.6.1
 
     # For development
     doxygen
@@ -113,6 +108,24 @@ These flags can enable/disable features of the EDDL so that you can optimized an
 troubleshoot the compilation process (see: :doc:``troubleshoot``).
 
 
+- **Prefix path:** Semicolon-separated list of directories specifying installation prefixes to be searched by the ``find_package()``, ``find_program()``, ``find_library()``, ``find_file()``, and ``find_path()`` commands.
+
+.. code:: bash
+
+    -DCMAKE_PREFIX_PATH=/path/to/directory
+
+
+- **Installation paths:** To change the installation paths, use the following cmake option:
+
+.. code:: bash
+
+    -DCMAKE_INSTALL_PREFIX=/path/to/dir
+
+.. note::
+
+    Defaults to ``/usr/local`` on UNIX and ``c:/Program Files`` on Windows.
+
+
 - **C++ compiler:** If you have problems with the default g++ compiler, try setting ``EIGEN3_INCLUDE_DIR``, such as:
 
 .. code:: bash
@@ -123,11 +136,23 @@ troubleshoot the compilation process (see: :doc:``troubleshoot``).
 
     On MacOS we recommend to use ``clang`` to avoid problems with OpenMP
 
-- **Prefix path:** Semicolon-separated list of directories specifying installation prefixes to be searched by the ``find_package()``, ``find_program()``, ``find_library()``, ``find_file()``, and ``find_path()`` commands.
+
+- **CUDA compiler:** If cmake have problems finding your cuda compiler, try setting ``CMAKE_CUDA_COMPILER``, such as:
 
 .. code:: bash
 
-    -DCMAKE_PREFIX_PATH=/path/to/directory
+    -DCMAKE_CUDA_COMPILER=/path/to/cuda compiler
+
+.. note::
+
+    You can also create a symbolic link: (unix) ``sudo ln -s usr/local/cuda-{VERSION} /usr/local/cuda``
+
+
+- **CUDA Toolkit:** If CMake is unable to find CUDA automatically, try setting ``CUDA_TOOLKIT_ROOT_DIR``, such as:
+
+.. code:: bash
+
+    -DCUDA_TOOLKIT_ROOT_DIR=/path/to/cuda
 
 
 - **Eigen3:** At the core of many numerical operations, we use Eigen3_. If CMake is unable to find Eigen3 automatically, try setting ``Eigen3_DIR``, such as:
@@ -135,29 +160,6 @@ troubleshoot the compilation process (see: :doc:``troubleshoot``).
 .. code:: bash
 
     -DEigen3_DIR=/path/to/eigen
-
-
-- **Intel MKL:** EDDL can leverage Intel's MKL library to speed up computation on the CPU.
-
-To use MKL, include the following cmake option:
-
-.. code:: bash
-
-    -DMKL=TRUE
-
-
-If CMake is unable to find MKL automatically, try setting MKL_ROOT, such as:
-
-.. code:: bash
-
-    -DMKL_ROOT="/path/to/MKL"
-
-
-- **CUDA:** If CMake is unable to find CUDA automatically, try setting ``CUDA_TOOLKIT_ROOT_DIR``, such as:
-
-.. code:: bash
-
-    -DCUDA_TOOLKIT_ROOT_DIR=/path/to/cuda
 
 
 - **Use OpenMP:** To enable/disabled OpenMP, use the setting ``BUILD_OPENMP``, such as:
@@ -179,17 +181,7 @@ If CMake is unable to find MKL automatically, try setting MKL_ROOT, such as:
 
 .. note::
 
-    Disabled by default (this dependency can be tricky to install)
-
-- **Build for High-Performance Computing:** To compile the EDDL using aggressive flags to speed-up the code, use the following cmake option:
-
-.. code:: bash
-
-    -DBUILD_HPC=ON
-
-.. note::
-
-    Disabled by default (Use it carefully, your processor might not support these optimizations)
+    Enabled by default
 
 
 - **Build tests:** To compile the tests, use the setting ``BUILD_TESTS``, such as:
@@ -201,6 +193,7 @@ If CMake is unable to find MKL automatically, try setting MKL_ROOT, such as:
 .. note::
 
     Enabled by default
+
 
 - **Build examples:** To compile the examples, use the setting ``BUILD_EXAMPLES``, such as:
 
@@ -208,7 +201,6 @@ If CMake is unable to find MKL automatically, try setting MKL_ROOT, such as:
 
     -DBUILD_EXAMPLES=ON
 
-
 .. note::
 
     Enabled by default
@@ -224,26 +216,26 @@ If CMake is unable to find MKL automatically, try setting MKL_ROOT, such as:
 
     Enabled by default
 
-- **Build shared library:** To compile the EDDL as a shared library, use the setting ``BUILD_SHARED_LIB``, such as:
+
+- **Build shared library:** To compile the EDDL as a shared library, use the setting ``BUILD_SHARED_LIBS``, such as:
 
 .. code:: bash
 
-    -DBUILD_SHARED_LIB=ON
+    -DBUILD_SHARED_LIBS=ON
 
 .. note::
 
-    Enabled by default (if ``OFF``, it will build a static library)
+    Enabled by default
 
-
-- **Installation paths:** To change the installation paths, use the following cmake option:
+- **Superbuild:** To let the EDDL manage its dependencies automatically, use the setting ``USE_SUPERBUILD``:
 
 .. code:: bash
 
-    -DCMAKE_INSTALL_PREFIX=/path/to/dir
+    -DUSE_SUPERBUILD=ON
 
 .. note::
 
-    Defaults to ``/usr/local`` on UNIX and ``c:/Program Files`` on Windows.
+    Enabled by default. If ``OFF``, cmake will look at your ``CMAKE_PREFIX_PATH``
 
 
 .. _Anaconda: https://docs.conda.io/en/latest/miniconda.html

@@ -256,12 +256,7 @@ conda activate eddl
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cmake</span> <span class="o">&gt;=</span> <span class="mf">3.9</span><span class="o">.</span><span class="mi">2</span>
 <span class="n">graphviz</span> <span class="o">&gt;=</span> <span class="mf">2.38</span><span class="o">.</span><span class="mi">0</span>
 <span class="n">wget</span> <span class="o">&gt;=</span> <span class="mf">1.19</span><span class="o">.</span><span class="mi">5</span>
-<span class="n">eigen</span> <span class="o">&gt;=</span> <span class="mf">3.3</span><span class="o">.</span><span class="mi">7</span>
 <span class="n">cudatoolkit</span> <span class="o">&gt;=</span> <span class="mf">6.0</span>
-<span class="n">zlib</span> <span class="o">&gt;=</span> <span class="mf">1.2</span><span class="o">.</span><span class="mi">8</span>
-<span class="n">gtest</span> <span class="o">&gt;=</span> <span class="mf">1.8</span><span class="o">.</span><span class="mi">0</span>
-<span class="n">protobuf</span> <span class="o">&gt;=</span> <span class="mf">3.6</span><span class="o">.</span><span class="mi">1</span>
-<span class="n">libprotobuf</span> <span class="o">&gt;=</span> <span class="mf">3.6</span><span class="o">.</span><span class="mi">1</span>
 
 <span class="c1"># For development</span>
 <span class="n">doxygen</span>
@@ -330,6 +325,22 @@ not found (or CUDA), it is automatically disabled so that it can run of CPU (alt
 <p>These flags can enable/disable features of the EDDL so that you can optimized and
 troubleshoot the compilation process (see: :doc:<code class="docutils literal notranslate"><span class="pre">troubleshoot</span></code>).</p>
 <ul class="simple">
+<li><p><strong>Prefix path:</strong> Semicolon-separated list of directories specifying installation prefixes to be searched by the <code class="docutils literal notranslate"><span class="pre">find_package()</span></code>, <code class="docutils literal notranslate"><span class="pre">find_program()</span></code>, <code class="docutils literal notranslate"><span class="pre">find_library()</span></code>, <code class="docutils literal notranslate"><span class="pre">find_file()</span></code>, and <code class="docutils literal notranslate"><span class="pre">find_path()</span></code> commands.</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_PREFIX_PATH<span class="o">=</span>/path/to/directory
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Installation paths:</strong> To change the installation paths, use the following cmake option:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span>/path/to/dir
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Defaults to <code class="docutils literal notranslate"><span class="pre">/usr/local</span></code> on UNIX and <code class="docutils literal notranslate"><span class="pre">c:/Program</span> <span class="pre">Files</span></code> on Windows.</p>
+</div>
+<ul class="simple">
 <li><p><strong>C++ compiler:</strong> If you have problems with the default g++ compiler, try setting <code class="docutils literal notranslate"><span class="pre">EIGEN3_INCLUDE_DIR</span></code>, such as:</p></li>
 </ul>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_CXX_COMPILER<span class="o">=</span>/path/to/c++compiler
@@ -340,32 +351,25 @@ troubleshoot the compilation process (see: :doc:<code class="docutils literal no
 <p>On MacOS we recommend to use <code class="docutils literal notranslate"><span class="pre">clang</span></code> to avoid problems with OpenMP</p>
 </div>
 <ul class="simple">
-<li><p><strong>Prefix path:</strong> Semicolon-separated list of directories specifying installation prefixes to be searched by the <code class="docutils literal notranslate"><span class="pre">find_package()</span></code>, <code class="docutils literal notranslate"><span class="pre">find_program()</span></code>, <code class="docutils literal notranslate"><span class="pre">find_library()</span></code>, <code class="docutils literal notranslate"><span class="pre">find_file()</span></code>, and <code class="docutils literal notranslate"><span class="pre">find_path()</span></code> commands.</p></li>
+<li><p><strong>CUDA compiler:</strong> If cmake have problems finding your cuda compiler, try setting <code class="docutils literal notranslate"><span class="pre">CMAKE_CUDA_COMPILER</span></code>, such as:</p></li>
 </ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_PREFIX_PATH<span class="o">=</span>/path/to/directory
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_CUDA_COMPILER<span class="o">=</span>/path/to/cuda compiler
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can also create a symbolic link: (unix) <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">ln</span> <span class="pre">-s</span> <span class="pre">usr/local/cuda-{VERSION}</span> <span class="pre">/usr/local/cuda</span></code></p>
+</div>
+<ul class="simple">
+<li><p><strong>CUDA Toolkit:</strong> If CMake is unable to find CUDA automatically, try setting <code class="docutils literal notranslate"><span class="pre">CUDA_TOOLKIT_ROOT_DIR</span></code>, such as:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCUDA_TOOLKIT_ROOT_DIR<span class="o">=</span>/path/to/cuda
 </pre></div>
 </div>
 <ul class="simple">
 <li><p><strong>Eigen3:</strong> At the core of many numerical operations, we use <a class="reference external" href="http://eigen.tuxfamily.org/index.php?title=Main_Page">Eigen3</a>. If CMake is unable to find Eigen3 automatically, try setting <code class="docutils literal notranslate"><span class="pre">Eigen3_DIR</span></code>, such as:</p></li>
 </ul>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DEigen3_DIR<span class="o">=</span>/path/to/eigen
-</pre></div>
-</div>
-<ul class="simple">
-<li><p><strong>Intel MKL:</strong> EDDL can leverage Intel’s MKL library to speed up computation on the CPU.</p></li>
-</ul>
-<p>To use MKL, include the following cmake option:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DMKL<span class="o">=</span>TRUE
-</pre></div>
-</div>
-<p>If CMake is unable to find MKL automatically, try setting MKL_ROOT, such as:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DMKL_ROOT<span class="o">=</span><span class="s2">&quot;/path/to/MKL&quot;</span>
-</pre></div>
-</div>
-<ul class="simple">
-<li><p><strong>CUDA:</strong> If CMake is unable to find CUDA automatically, try setting <code class="docutils literal notranslate"><span class="pre">CUDA_TOOLKIT_ROOT_DIR</span></code>, such as:</p></li>
-</ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCUDA_TOOLKIT_ROOT_DIR<span class="o">=</span>/path/to/cuda
 </pre></div>
 </div>
 <ul class="simple">
@@ -386,17 +390,7 @@ troubleshoot the compilation process (see: :doc:<code class="docutils literal no
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Disabled by default (this dependency can be tricky to install)</p>
-</div>
-<ul class="simple">
-<li><p><strong>Build for High-Performance Computing:</strong> To compile the EDDL using aggressive flags to speed-up the code, use the following cmake option:</p></li>
-</ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DBUILD_HPC<span class="o">=</span>ON
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Disabled by default (Use it carefully, your processor might not support these optimizations)</p>
+<p>Enabled by default</p>
 </div>
 <ul class="simple">
 <li><p><strong>Build tests:</strong> To compile the tests, use the setting <code class="docutils literal notranslate"><span class="pre">BUILD_TESTS</span></code>, such as:</p></li>
@@ -429,24 +423,24 @@ troubleshoot the compilation process (see: :doc:<code class="docutils literal no
 <p>Enabled by default</p>
 </div>
 <ul class="simple">
-<li><p><strong>Build shared library:</strong> To compile the EDDL as a shared library, use the setting <code class="docutils literal notranslate"><span class="pre">BUILD_SHARED_LIB</span></code>, such as:</p></li>
+<li><p><strong>Build shared library:</strong> To compile the EDDL as a shared library, use the setting <code class="docutils literal notranslate"><span class="pre">BUILD_SHARED_LIBS</span></code>, such as:</p></li>
 </ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DBUILD_SHARED_LIB<span class="o">=</span>ON
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DBUILD_SHARED_LIBS<span class="o">=</span>ON
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Enabled by default (if <code class="docutils literal notranslate"><span class="pre">OFF</span></code>, it will build a static library)</p>
+<p>Enabled by default</p>
 </div>
 <ul class="simple">
-<li><p><strong>Installation paths:</strong> To change the installation paths, use the following cmake option:</p></li>
+<li><p><strong>Superbuild:</strong> To let the EDDL manage its dependencies automatically, use the setting <code class="docutils literal notranslate"><span class="pre">USE_SUPERBUILD</span></code>:</p></li>
 </ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span>/path/to/dir
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DUSE_SUPERBUILD<span class="o">=</span>ON
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Defaults to <code class="docutils literal notranslate"><span class="pre">/usr/local</span></code> on UNIX and <code class="docutils literal notranslate"><span class="pre">c:/Program</span> <span class="pre">Files</span></code> on Windows.</p>
+<p>Enabled by default. If <code class="docutils literal notranslate"><span class="pre">OFF</span></code>, cmake will look at your <code class="docutils literal notranslate"><span class="pre">CMAKE_PREFIX_PATH</span></code></p>
 </div>
 </div>
 </div>

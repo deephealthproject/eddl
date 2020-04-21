@@ -253,9 +253,9 @@
 <p>(todo)</p>
 <div class="section" id="random-indices">
 <h2>random_indices<a class="headerlink" href="#random-indices" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv4N4eddl14random_indicesEii">
-<span id="_CPPv3N4eddl14random_indicesEii"></span><span id="_CPPv2N4eddl14random_indicesEii"></span><span id="eddl::random_indices__i.i"></span><span class="target" id="namespaceeddl_1a907447522385eb175ff5b5d1e822f46c"></span>vector&lt;int&gt; <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">random_indices</code><span class="sig-paren">(</span>int <em>batch_size</em>, int <em>num_samples</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl14random_indicesEii" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N4eddl14random_indicesEii"></span><span id="_CPPv2N4eddl14random_indicesEii"></span><span id="eddl::random_indices__i.i"></span><span class="target" id="namespaceeddl_1a42d8ccac2432480ff6d33c5862692e6b"></span>vector&lt;int&gt; <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">random_indices</code><span class="sig-paren">(</span>int <em>batch_size</em>, int <em>num_samples</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl14random_indicesEii" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">random_indices</span><span class="p">(</span><span class="kt">int</span> <span class="n">batch_size</span><span class="p">,</span> <span class="kt">int</span> <span class="n">num_samples</span><span class="p">);</span>
@@ -264,9 +264,9 @@
 </div>
 <div class="section" id="next-batch">
 <h2>next_batch<a class="headerlink" href="#next-batch" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv4N4eddl10next_batchE6vectorIP6TensorE6vectorIP6TensorE">
-<span id="_CPPv3N4eddl10next_batchE6vectorIP6TensorE6vectorIP6TensorE"></span><span id="_CPPv2N4eddl10next_batchE6vectorIP6TensorE6vectorIP6TensorE"></span><span id="eddl::next_batch__vector:TensorP:.vector:TensorP:"></span><span class="target" id="namespaceeddl_1a69d3f62b616e8733053e80391b62b185"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">next_batch</code><span class="sig-paren">(</span>vector&lt;Tensor *&gt; <em>in</em>, vector&lt;Tensor *&gt; <em>out</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10next_batchE6vectorIP6TensorE6vectorIP6TensorE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N4eddl10next_batchE6vectorIP6TensorE6vectorIP6TensorE"></span><span id="_CPPv2N4eddl10next_batchE6vectorIP6TensorE6vectorIP6TensorE"></span><span id="eddl::next_batch__vector:TensorP:.vector:TensorP:"></span><span class="target" id="namespaceeddl_1a69d3f62b616e8733053e80391b62b185"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">next_batch</code><span class="sig-paren">(</span>vector&lt;Tensor*&gt; <em>in</em>, vector&lt;Tensor*&gt; <em>out</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10next_batchE6vectorIP6TensorE6vectorIP6TensorE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">next_batch</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span> <span class="o">*&gt;</span> <span class="n">in</span><span class="p">,</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span> <span class="o">*&gt;</span> <span class="n">out</span><span class="p">);</span>
@@ -275,16 +275,26 @@
 </div>
 <div class="section" id="train-batch">
 <h2>train_batch<a class="headerlink" href="#train-batch" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="_CPPv4N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE">
-<span id="_CPPv3N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE"></span><span id="_CPPv2N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE"></span><span id="eddl::train_batch__model.vector:TensorP:.vector:TensorP:.vector:i:"></span><span class="target" id="namespaceeddl_1a6f05fcd7b322495963a2934384e23402"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">train_batch</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;Tensor *&gt; <em>in</em>, vector&lt;Tensor *&gt; <em>out</em>, vector&lt;int&gt; <em>indices</em><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE">
-<span id="_CPPv3N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE"></span><span id="_CPPv2N4eddl11train_batchE5model6vectorIP6TensorE6vectorIP6TensorE"></span><span id="eddl::train_batch__model.vector:TensorP:.vector:TensorP:"></span><span class="target" id="namespaceeddl_1ac739f5814807b8b167e0bc2350714c3b"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">train_batch</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;Tensor *&gt; <em>in</em>, vector&lt;Tensor *&gt; <em>out</em><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::train_batch” with arguments (model, vector&lt;Tensor *&gt;, vector&lt;Tensor *&gt;, vector&lt;int&gt;) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">train_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">train_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::train_batch” with arguments (model, vector&lt;Tensor *&gt;, vector&lt;Tensor *&gt;) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">train_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">train_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">train_batch</span><span class="p">(</span><span class="n">model</span> <span class="n">net</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span> <span class="o">*&gt;</span> <span class="n">in</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span> <span class="o">*&gt;</span> <span class="n">out</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">indices</span><span class="p">);</span>
 <span class="kt">void</span> <span class="nf">train_batch</span><span class="p">(</span><span class="n">model</span> <span class="n">net</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span> <span class="o">*&gt;</span> <span class="n">in</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span> <span class="o">*&gt;</span> <span class="n">out</span><span class="p">);</span>
 </pre></div>
@@ -292,16 +302,26 @@
 </div>
 <div class="section" id="eval-batch">
 <h2>eval_batch<a class="headerlink" href="#eval-batch" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="_CPPv4N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE">
-<span id="_CPPv3N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE"></span><span id="_CPPv2N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE6vectorIiE"></span><span id="eddl::eval_batch__model.vector:TensorP:.vector:TensorP:.vector:i:"></span><span class="target" id="namespaceeddl_1a674dd51ee714a716e66c3ddc4dd1a94a"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">eval_batch</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;Tensor *&gt; <em>in</em>, vector&lt;Tensor *&gt; <em>out</em>, vector&lt;int&gt; <em>indices</em><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE">
-<span id="_CPPv3N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE"></span><span id="_CPPv2N4eddl10eval_batchE5model6vectorIP6TensorE6vectorIP6TensorE"></span><span id="eddl::eval_batch__model.vector:TensorP:.vector:TensorP:"></span><span class="target" id="namespaceeddl_1ac2551b745ad01730ce2bb23bc2068a1d"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">eval_batch</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;Tensor *&gt; <em>in</em>, vector&lt;Tensor *&gt; <em>out</em><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::eval_batch” with arguments (model, vector&lt;Tensor *&gt;, vector&lt;Tensor *&gt;, vector&lt;int&gt;) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">eval_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">eval_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::eval_batch” with arguments (model, vector&lt;Tensor *&gt;, vector&lt;Tensor *&gt;) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">eval_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">eval_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">eval_batch</span><span class="p">(</span><span class="n">model</span> <span class="n">net</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span> <span class="o">*&gt;</span> <span class="n">in</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span> <span class="o">*&gt;</span> <span class="n">out</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">indices</span><span class="p">);</span>
 <span class="kt">void</span> <span class="nf">eval_batch</span><span class="p">(</span><span class="n">model</span> <span class="n">net</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span> <span class="o">*&gt;</span> <span class="n">in</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span> <span class="o">*&gt;</span> <span class="n">out</span><span class="p">);</span>
 </pre></div>
@@ -309,21 +329,10 @@
 </div>
 <div class="section" id="set-mode">
 <h2>set_mode<a class="headerlink" href="#set-mode" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv4N4eddl8set_modeE5modeli">
 <span id="_CPPv3N4eddl8set_modeE5modeli"></span><span id="_CPPv2N4eddl8set_modeE5modeli"></span><span id="eddl::set_mode__model.i"></span><span class="target" id="namespaceeddl_1aeea7298f723f561454324181111bbc43"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">set_mode</code><span class="sig-paren">(</span>model <em>net</em>, int <em>mode</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8set_modeE5modeli" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Set model mode. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: Train 1, Test 0 </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<dd></dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">set_mode</span><span class="p">(</span><span class="n">model</span> <span class="n">net</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mode</span><span class="p">);</span>
 </pre></div>
@@ -331,20 +340,10 @@
 </div>
 <div class="section" id="reset-loss">
 <h2>reset_loss<a class="headerlink" href="#reset-loss" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv4N4eddl10reset_lossE5model">
 <span id="_CPPv3N4eddl10reset_lossE5model"></span><span id="_CPPv2N4eddl10reset_lossE5model"></span><span id="eddl::reset_loss__model"></span><span class="target" id="namespaceeddl_1a0a7097af07f1ddbb6c840f7b10cac9f9"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">reset_loss</code><span class="sig-paren">(</span>model <em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10reset_lossE5model" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Resets model loss. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<dd></dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">reset_loss</span><span class="p">(</span><span class="n">model</span> <span class="n">m</span><span class="p">);</span>
 </pre></div>
@@ -352,22 +351,36 @@
 </div>
 <div class="section" id="forward">
 <h2>forward<a class="headerlink" href="#forward" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="_CPPv4N4eddl7forwardE5model6vectorIP5LayerE">
-<span id="_CPPv3N4eddl7forwardE5model6vectorIP5LayerE"></span><span id="_CPPv2N4eddl7forwardE5model6vectorIP5LayerE"></span><span id="eddl::forward__model.vector:LayerP:"></span><span class="target" id="namespaceeddl_1a2a34baad3337e38fdbc484b2173d7bd9"></span>vlayer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">forward</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;Layer *&gt; <em>in</em><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N4eddl7forwardE5model6vectorIP6TensorE">
-<span id="_CPPv3N4eddl7forwardE5model6vectorIP6TensorE"></span><span id="_CPPv2N4eddl7forwardE5model6vectorIP6TensorE"></span><span id="eddl::forward__model.vector:TensorP:"></span><span class="target" id="namespaceeddl_1a0244273970d536ae1446c2dc306a8a4c"></span>vlayer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">forward</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;Tensor *&gt; <em>in</em><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
-
-<dl class="function">
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::forward” with arguments (model, vector&lt;Layer *&gt;) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::forward” with arguments (model, vector&lt;Tensor *&gt;) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">vlayer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">forward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<dl class="cpp function">
 <dt id="_CPPv4N4eddl7forwardE5model">
 <span id="_CPPv3N4eddl7forwardE5model"></span><span id="_CPPv2N4eddl7forwardE5model"></span><span id="eddl::forward__model"></span><span class="target" id="namespaceeddl_1aa1e420eb8905798f56a14d7a9cabcac3"></span>vlayer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">forward</code><span class="sig-paren">(</span>model <em>net</em><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv4N4eddl7forwardE5modeli">
 <span id="_CPPv3N4eddl7forwardE5modeli"></span><span id="_CPPv2N4eddl7forwardE5modeli"></span><span id="eddl::forward__model.i"></span><span class="target" id="namespaceeddl_1ae70ceb4e21631df31008b36d3553f014"></span>vlayer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">forward</code><span class="sig-paren">(</span>model <em>net</em>, int <em>b</em><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
@@ -381,20 +394,10 @@
 </div>
 <div class="section" id="zerograds">
 <h2>zeroGrads<a class="headerlink" href="#zerograds" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv4N4eddl9zeroGradsE5model">
-<span id="_CPPv3N4eddl9zeroGradsE5model"></span><span id="_CPPv2N4eddl9zeroGradsE5model"></span><span id="eddl::zeroGrads__model"></span><span class="target" id="namespaceeddl_1a7e56049313cf4b51d76bbbd1c16b7d4b"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">zeroGrads</code><span class="sig-paren">(</span>model <em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9zeroGradsE5model" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Set model gradients to zero. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<span id="_CPPv3N4eddl9zeroGradsE5model"></span><span id="_CPPv2N4eddl9zeroGradsE5model"></span><span id="eddl::zeroGrads__model"></span><span class="target" id="namespaceeddl_1a3ed6f1c3c934802cf0a9cfbc6fca8fa5"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">zeroGrads</code><span class="sig-paren">(</span>model <em>net</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9zeroGradsE5model" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">zeroGrads</span><span class="p">(</span><span class="n">model</span> <span class="n">m</span><span class="p">);</span>
 </pre></div>
@@ -402,22 +405,17 @@
 </div>
 <div class="section" id="backward">
 <h2>backward<a class="headerlink" href="#backward" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="_CPPv4N4eddl8backwardE5model6vectorIP6TensorE">
-<span id="_CPPv3N4eddl8backwardE5model6vectorIP6TensorE"></span><span id="_CPPv2N4eddl8backwardE5model6vectorIP6TensorE"></span><span id="eddl::backward__model.vector:TensorP:"></span><span class="target" id="namespaceeddl_1a9deaeecde0f468cff06ca6d12fc98d11"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">backward</code><span class="sig-paren">(</span>model <em>m</em>, vector&lt;Tensor *&gt; <em>target</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Calculates the gradient by passing it’s argument (1x1 unit tensor by default) through the backward graph. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">target</span></code>: Targets </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::backward” with arguments (model, vector&lt;Tensor *&gt;) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">backward</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">backward</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">backward</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">backward</span><span class="p">(</span><span class="n">model</span> <span class="n">m</span><span class="p">,</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span> <span class="o">*&gt;</span> <span class="n">target</span><span class="p">);</span>
 <span class="kt">void</span> <span class="nf">backward</span><span class="p">(</span><span class="n">model</span> <span class="n">net</span><span class="p">);</span>
 <span class="kt">void</span> <span class="nf">backward</span><span class="p">(</span><span class="n">loss</span> <span class="n">l</span><span class="p">);</span>
@@ -426,7 +424,7 @@
 </div>
 <div class="section" id="update">
 <h2>update<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv4N4eddl6updateE5model">
 <span id="_CPPv3N4eddl6updateE5model"></span><span id="_CPPv2N4eddl6updateE5model"></span><span id="eddl::update__model"></span><span class="target" id="namespaceeddl_1a70f2c013fcce4dc6363d58f9eb29ae5d"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">update</code><span class="sig-paren">(</span>model <em>net</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6updateE5model" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
@@ -437,21 +435,10 @@
 </div>
 <div class="section" id="print-loss">
 <h2>print_loss<a class="headerlink" href="#print-loss" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv4N4eddl10print_lossE5modeli">
 <span id="_CPPv3N4eddl10print_lossE5modeli"></span><span id="_CPPv2N4eddl10print_lossE5modeli"></span><span id="eddl::print_loss__model.i"></span><span class="target" id="namespaceeddl_1a4c9b28aa85ff9c12112ddf9b55217bc6"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">print_loss</code><span class="sig-paren">(</span>model <em>m</em>, int <em>batch</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10print_lossE5modeli" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Prints model loss at some batch. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">batch</span></code>: Batch number </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<dd></dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">print_loss</span><span class="p">(</span><span class="n">model</span> <span class="n">m</span><span class="p">,</span> <span class="kt">int</span> <span class="n">batch</span><span class="p">);</span>
 </pre></div>
@@ -459,22 +446,10 @@
 </div>
 <div class="section" id="clamp">
 <h2>clamp<a class="headerlink" href="#clamp" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv4N4eddl5clampE5modelff">
 <span id="_CPPv3N4eddl5clampE5modelff"></span><span id="_CPPv2N4eddl5clampE5modelff"></span><span id="eddl::clamp__model.float.float"></span><span class="target" id="namespaceeddl_1a6fa82826bab70a33a04f26757f268a7e"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">clamp</code><span class="sig-paren">(</span>model <em>m</em>, float <em>min</em>, float <em>max</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5clampE5modelff" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Model parameters values clipping. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>(void) Performs model clamp between min and max </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">min</span></code>: Minimum value </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">max</span></code>: Maximum value </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<dd></dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">clamp</span><span class="p">(</span><span class="n">model</span> <span class="n">m</span><span class="p">,</span><span class="kt">float</span> <span class="n">min</span><span class="p">,</span><span class="kt">float</span> <span class="n">max</span><span class="p">);</span>
 </pre></div>
@@ -482,7 +457,7 @@
 </div>
 <div class="section" id="compute-loss">
 <h2>compute_loss<a class="headerlink" href="#compute-loss" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv4N4eddl12compute_lossE4loss">
 <span id="_CPPv3N4eddl12compute_lossE4loss"></span><span id="_CPPv2N4eddl12compute_lossE4loss"></span><span id="eddl::compute_loss__loss"></span><span class="target" id="namespaceeddl_1a9101e8f405a0ead9fb9fe2b7e72438d2"></span>float <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">compute_loss</code><span class="sig-paren">(</span>loss <em>L</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl12compute_lossE4loss" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
@@ -493,7 +468,7 @@
 </div>
 <div class="section" id="compute-metric">
 <h2>compute_metric<a class="headerlink" href="#compute-metric" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv4N4eddl14compute_metricE4loss">
 <span id="_CPPv3N4eddl14compute_metricE4loss"></span><span id="_CPPv2N4eddl14compute_metricE4loss"></span><span id="eddl::compute_metric__loss"></span><span class="target" id="namespaceeddl_1aa884ab3b56ae8f048eede1238277c4c4"></span>float <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">compute_metric</code><span class="sig-paren">(</span>loss <em>L</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl14compute_metricE4loss" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
@@ -504,20 +479,10 @@
 </div>
 <div class="section" id="getloss">
 <h2>getLoss<a class="headerlink" href="#getloss" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv4N4eddl7getLossE6string">
-<span id="_CPPv3N4eddl7getLossE6string"></span><span id="_CPPv2N4eddl7getLossE6string"></span><span id="eddl::getLoss__string"></span><span class="target" id="namespaceeddl_1a5018e1a632a81ff9cc8fdc689b3bac0f"></span>Loss *<code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">getLoss</code><span class="sig-paren">(</span>string <em>type</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Get Loss by his name. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Selected Loss </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code>: Loss name/type </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<span id="_CPPv3N4eddl7getLossE6string"></span><span id="_CPPv2N4eddl7getLossE6string"></span><span id="eddl::getLoss__string"></span><span class="target" id="namespaceeddl_1ac4e5bc08ce9be40d7a3ea8dce321aff9"></span>Loss *<code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">getLoss</code><span class="sig-paren">(</span>string <em>type</em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Loss</span><span class="o">*</span> <span class="nf">getLoss</span><span class="p">(</span><span class="n">string</span> <span class="n">type</span><span class="p">);</span>
 </pre></div>
@@ -525,63 +490,39 @@
 </div>
 <div class="section" id="newloss">
 <h2>newloss<a class="headerlink" href="#newloss" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="_CPPv4N4eddl7newlossERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string">
-<span id="_CPPv3N4eddl7newlossERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string"></span><span id="_CPPv2N4eddl7newlossERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string"></span><span class="target" id="namespaceeddl_1ae42cdc505dc6c016468d06d432037d93"></span>loss <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">newloss</code><span class="sig-paren">(</span><em class="property">const</em> std::function&lt;Layer *<span class="sig-paren">(</span>Layer *<span class="sig-paren">)</span>&gt; &amp;<em>f</em>, Layer *<em>in</em>, string <em>name</em>, <span class="sig-paren">)</span><br /></dt>
-<dd><p>Create new Loss. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Created Loss </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>: Loss function </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Loss input </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Loss name </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::newloss” with arguments (const std::function&lt;Layer *Layer *&gt;&amp;, Layer *, string) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">loss</span> <span class="n">eddl</span><span class="p">::</span><span class="n">newloss</span><span class="p">(</span><span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*</span><span class="n">Layer</span><span class="o">*&gt;&amp;</span><span class="p">,</span> <span class="n">Layer</span><span class="o">*</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">loss</span> <span class="n">eddl</span><span class="p">::</span><span class="n">newloss</span><span class="p">(</span><span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;&gt;&amp;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">loss</span> <span class="nf">newloss</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;</span><span class="p">)</span><span class="o">&gt;&amp;</span> <span class="n">f</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;</span> <span class="n">in</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="p">);</span>
 </pre></div>
 </div>
-<dl class="function">
-<dt id="_CPPv4N4eddl7newlossERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string">
-<span id="_CPPv3N4eddl7newlossERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string"></span><span id="_CPPv2N4eddl7newlossERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string"></span><span class="target" id="namespaceeddl_1ac6184b5984b223be1c3a5ad5dfe23ab1"></span>loss <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">newloss</code><span class="sig-paren">(</span><em class="property">const</em> std::function&lt;Layer *<span class="sig-paren">(</span>vector&lt;Layer *&gt;<span class="sig-paren">)</span>&gt; &amp;<em>f</em>, vector&lt;Layer *&gt; <em>in</em>, string <em>name</em>, <span class="sig-paren">)</span><br /></dt>
-<dd><p>Create new Loss. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Created Loss </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>: Loss function </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Loss input </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Loss name </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::newloss” with arguments (const std::function&lt;Layer *vector&lt;Layer *&gt;&gt;&amp;, vector&lt;Layer *&gt;, string) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">loss</span> <span class="n">eddl</span><span class="p">::</span><span class="n">newloss</span><span class="p">(</span><span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*</span><span class="n">Layer</span><span class="o">*&gt;&amp;</span><span class="p">,</span> <span class="n">Layer</span><span class="o">*</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">loss</span> <span class="n">eddl</span><span class="p">::</span><span class="n">newloss</span><span class="p">(</span><span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;&gt;&amp;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">loss</span> <span class="nf">newloss</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*</span><span class="p">(</span><span class="n">Layer</span><span class="o">*</span><span class="p">)</span><span class="o">&gt;&amp;</span> <span class="n">f</span><span class="p">,</span> <span class="n">Layer</span> <span class="o">*</span><span class="n">in</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="getmetric">
 <h2>getMetric<a class="headerlink" href="#getmetric" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv4N4eddl9getMetricE6string">
-<span id="_CPPv3N4eddl9getMetricE6string"></span><span id="_CPPv2N4eddl9getMetricE6string"></span><span id="eddl::getMetric__string"></span><span class="target" id="namespaceeddl_1a476f62895d1b9c0fca0b4bd762df00d0"></span>Metric *<code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">getMetric</code><span class="sig-paren">(</span>string <em>type</em><span class="sig-paren">)</span><br /></dt>
-<dd><p>Get Metric by his name. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Selected Metric </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code>: Metric name/type </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<span id="_CPPv3N4eddl9getMetricE6string"></span><span id="_CPPv2N4eddl9getMetricE6string"></span><span id="eddl::getMetric__string"></span><span class="target" id="namespaceeddl_1a5dae40ff5a647ea6cfcdaae4e74dbc38"></span>Metric *<code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">getMetric</code><span class="sig-paren">(</span>string <em>type</em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Metric</span><span class="o">*</span> <span class="nf">getMetric</span><span class="p">(</span><span class="n">string</span> <span class="n">type</span><span class="p">);</span>
 </pre></div>
@@ -589,16 +530,26 @@
 </div>
 <div class="section" id="newmetric">
 <h2>newmetric<a class="headerlink" href="#newmetric" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="_CPPv4N4eddl9newmetricERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string">
-<span id="_CPPv3N4eddl9newmetricERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string"></span><span id="_CPPv2N4eddl9newmetricERKNSt8functionIFP5LayerP5LayerEEEP5Layer6string"></span><span class="target" id="namespaceeddl_1acd1e679e6595979d5b1f95ce0f134041"></span>loss <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">newmetric</code><span class="sig-paren">(</span><em class="property">const</em> std::function&lt;Layer *<span class="sig-paren">(</span>Layer *<span class="sig-paren">)</span>&gt; &amp;<em>f</em>, Layer *<em>in</em>, string <em>name</em>, <span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N4eddl9newmetricERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string">
-<span id="_CPPv3N4eddl9newmetricERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string"></span><span id="_CPPv2N4eddl9newmetricERKNSt8functionIFP5Layer6vectorIP5LayerEEEE6vectorIP5LayerE6string"></span><span class="target" id="namespaceeddl_1a8ec60396ca7224a5dce29e965bb4a86e"></span>loss <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">newmetric</code><span class="sig-paren">(</span><em class="property">const</em> std::function&lt;Layer *<span class="sig-paren">(</span>vector&lt;Layer *&gt;<span class="sig-paren">)</span>&gt; &amp;<em>f</em>, vector&lt;Layer *&gt; <em>in</em>, string <em>name</em>, <span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::newmetric” with arguments (const std::function&lt;Layer *Layer *&gt;&amp;, Layer *, string) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">loss</span> <span class="n">eddl</span><span class="p">::</span><span class="n">newmetric</span><span class="p">(</span><span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*</span><span class="n">Layer</span><span class="o">*&gt;&amp;</span><span class="p">,</span> <span class="n">Layer</span><span class="o">*</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">loss</span> <span class="n">eddl</span><span class="p">::</span><span class="n">newmetric</span><span class="p">(</span><span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;&gt;&amp;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::newmetric” with arguments (const std::function&lt;Layer *vector&lt;Layer *&gt;&gt;&amp;, vector&lt;Layer *&gt;, string) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">loss</span> <span class="n">eddl</span><span class="p">::</span><span class="n">newmetric</span><span class="p">(</span><span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*</span><span class="n">Layer</span><span class="o">*&gt;&amp;</span><span class="p">,</span> <span class="n">Layer</span><span class="o">*</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">loss</span> <span class="n">eddl</span><span class="p">::</span><span class="n">newmetric</span><span class="p">(</span><span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;&gt;&amp;</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">loss</span> <span class="nf">newmetric</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;</span><span class="p">)</span><span class="o">&gt;&amp;</span> <span class="n">f</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*&gt;</span> <span class="n">in</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="p">);</span>
 <span class="n">loss</span> <span class="nf">newmetric</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">Layer</span><span class="o">*</span><span class="p">(</span><span class="n">Layer</span><span class="o">*</span><span class="p">)</span><span class="o">&gt;&amp;</span> <span class="n">f</span><span class="p">,</span> <span class="n">Layer</span> <span class="o">*</span><span class="n">in</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="p">);</span>
 </pre></div>
@@ -606,12 +557,12 @@
 </div>
 <div class="section" id="detach">
 <h2>detach<a class="headerlink" href="#detach" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv4N4eddl6detachE5layer">
 <span id="_CPPv3N4eddl6detachE5layer"></span><span id="_CPPv2N4eddl6detachE5layer"></span><span id="eddl::detach__layer"></span><span class="target" id="namespaceeddl_1a33604ce94f505bca73c109a628b01280"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">detach</code><span class="sig-paren">(</span>layer <em>l</em><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv4N4eddl6detachE6vlayer">
 <span id="_CPPv3N4eddl6detachE6vlayer"></span><span id="_CPPv2N4eddl6detachE6vlayer"></span><span id="eddl::detach__vlayer"></span><span class="target" id="namespaceeddl_1a9e8aa3afa5301bab5c1f490fb051e162"></span>vlayer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">detach</code><span class="sig-paren">(</span>vlayer <em>l</em><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>

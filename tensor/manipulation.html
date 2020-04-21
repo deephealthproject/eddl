@@ -273,11 +273,10 @@
 </div>
 <div class="section" id="constructor">
 <h2>Constructor<a class="headerlink" href="#constructor" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="_CPPv4N6Tensor6TensorERK6vectorIiEPfi">
-<span id="_CPPv3N6Tensor6TensorERK6vectorIiEPfi"></span><span id="_CPPv2N6Tensor6TensorERK6vectorIiEPfi"></span><span id="Tensor::Tensor__vector:i:CR.floatP.i"></span><span class="target" id="class_tensor_1a50699c7bf00272783f7f09077d0763b0"></span><code class="sig-prename descclassname"><a class="reference internal" href="create.html#_CPPv4N6Tensor6TensorEv" title="Tensor::Tensor">Tensor</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Tensor</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, float *<em>fptr</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::Tensor” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <p>Create an uninitialized tensor</p>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">float</span> <span class="o">*</span><span class="n">fptr</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
@@ -288,16 +287,14 @@
 <h2>Changing array shape<a class="headerlink" href="#changing-array-shape" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="reshape">
 <h3>reshape<a class="headerlink" href="#reshape" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor8reshape_ERK6vectorIiE">
-<span id="_CPPv3N6Tensor8reshape_ERK6vectorIiE"></span><span id="_CPPv2N6Tensor8reshape_ERK6vectorIiE"></span><span id="Tensor::reshape___vector:i:CR"></span><span class="target" id="class_tensor_1a77b037ee0ce7ed11a705ce3b278d0018"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">reshape_</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>new_shape</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8reshape_ERK6vectorIiE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N6Tensor7reshapeEP6TensorRK6vectorIiE">
-<span id="_CPPv3N6Tensor7reshapeEP6TensorRK6vectorIiE"></span><span id="_CPPv2N6Tensor7reshapeEP6TensorRK6vectorIiE"></span><span id="Tensor::reshape__TensorP.vector:i:CR"></span><span class="target" id="class_tensor_1ab2ad68ea536ab3ca6fb3921ff126f111"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">reshape</code><span class="sig-paren">(</span>Tensor *<em>A</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7reshapeEP6TensorRK6vectorIiE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::reshape_” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::reshape” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">reshape_</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">new_shape</span><span class="p">);</span>
 <span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">reshape</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">);</span>
 </pre></div>
@@ -305,11 +302,10 @@
 </div>
 <div class="section" id="flatten">
 <h3>flatten<a class="headerlink" href="#flatten" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor7flattenEP6Tensor">
-<span id="_CPPv3N6Tensor7flattenEP6Tensor"></span><span id="_CPPv2N6Tensor7flattenEP6Tensor"></span><span id="Tensor::flatten__TensorP"></span><span class="target" id="class_tensor_1a1a4ae3d472ef8447e80a6fb0d079b3f0"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">flatten</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7flattenEP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::flatten” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">flatten</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -319,33 +315,30 @@
 <h2>Transpose-like operations<a class="headerlink" href="#transpose-like-operations" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="permute">
 <h3>permute<a class="headerlink" href="#permute" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor7permuteEP6TensorRK6vectorIiE">
-<span id="_CPPv3N6Tensor7permuteEP6TensorRK6vectorIiE"></span><span id="_CPPv2N6Tensor7permuteEP6TensorRK6vectorIiE"></span><span id="Tensor::permute__TensorP.vector:i:CR"></span><span class="target" id="class_tensor_1abbf62334682b3d728937ba14c755a07f"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">permute</code><span class="sig-paren">(</span>Tensor *<em>t</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>dims</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7permuteEP6TensorRK6vectorIiE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::permute” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">permute</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t</span><span class="p">,</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span> <span class="n">dims</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="moveaxis">
 <h3>moveaxis<a class="headerlink" href="#moveaxis" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor8moveaxisEP6Tensorii">
-<span id="_CPPv3N6Tensor8moveaxisEP6Tensorii"></span><span id="_CPPv2N6Tensor8moveaxisEP6Tensorii"></span><span id="Tensor::moveaxis__TensorP.i.i"></span><span class="target" id="class_tensor_1a0cd10ccdc490b4ec61623050df069eb9"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">moveaxis</code><span class="sig-paren">(</span>Tensor *<em>t</em>, int <em>source</em>, int <em>destination</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8moveaxisEP6Tensorii" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::moveaxis” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">moveaxis</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t</span><span class="p">,</span> <span class="kt">int</span> <span class="n">source</span><span class="p">,</span> <span class="kt">int</span> <span class="n">destination</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="swapaxis">
 <h3>swapaxis<a class="headerlink" href="#swapaxis" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor8swapaxisEP6Tensorii">
-<span id="_CPPv3N6Tensor8swapaxisEP6Tensorii"></span><span id="_CPPv2N6Tensor8swapaxisEP6Tensorii"></span><span id="Tensor::swapaxis__TensorP.i.i"></span><span class="target" id="class_tensor_1a211656eb3e865dbdd4c2257da01d3937"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">swapaxis</code><span class="sig-paren">(</span>Tensor *<em>t</em>, int <em>axis1</em>, int <em>axis2</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8swapaxisEP6Tensorii" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::swapaxis” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">swapaxis</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">t</span><span class="p">,</span> <span class="kt">int</span> <span class="n">axis1</span><span class="p">,</span> <span class="kt">int</span> <span class="n">axis2</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -355,22 +348,20 @@
 <h2>Changing number of dimensions<a class="headerlink" href="#changing-number-of-dimensions" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="squeeze">
 <h3>squeeze<a class="headerlink" href="#squeeze" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor7squeezeEP6Tensor">
-<span id="_CPPv3N6Tensor7squeezeEP6Tensor"></span><span id="_CPPv2N6Tensor7squeezeEP6Tensor"></span><span id="Tensor::squeeze__TensorP"></span><span class="target" id="class_tensor_1a35ea5711e39aa7fd986e454e73525475"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">squeeze</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7squeezeEP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::squeeze” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">squeeze</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="unsqueeze">
 <h3>unsqueeze<a class="headerlink" href="#unsqueeze" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor9unsqueezeEP6Tensor">
-<span id="_CPPv3N6Tensor9unsqueezeEP6Tensor"></span><span id="_CPPv2N6Tensor9unsqueezeEP6Tensor"></span><span id="Tensor::unsqueeze__TensorP"></span><span class="target" id="class_tensor_1a03a51fd3cacf67cf26878c523c72f3d5"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">unsqueeze</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor9unsqueezeEP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::unsqueeze” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">unsqueeze</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -378,11 +369,10 @@
 </div>
 <div class="section" id="joining-arrays">
 <h2>Joining arrays<a class="headerlink" href="#joining-arrays" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="_CPPv4N6Tensor6concatEK6vectorIP6TensorEjP6Tensor">
-<span id="_CPPv3N6Tensor6concatEK6vectorIP6TensorEjP6Tensor"></span><span id="_CPPv2N6Tensor6concatEK6vectorIP6TensorEjP6Tensor"></span><span id="Tensor::concat__vector:TensorP:C.unsigned-i.TensorP"></span><span class="target" id="class_tensor_1ab5e077e4fbe2a704b0a5f35e76080724"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">concat</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;Tensor *&gt; <em>t</em>, unsigned int <em>axis</em> = 0, Tensor *<em>output</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6concatEK6vectorIP6TensorEjP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::concat” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">concat</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">*&gt;</span> <span class="n">t</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">output</span><span class="o">=</span><span class="k">nullptr</span><span class="p">);</span>
 </pre></div>
@@ -392,154 +382,140 @@
 <h2>Rearranging elements and transformations<a class="headerlink" href="#rearranging-elements-and-transformations" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="shift">
 <h3>shift<a class="headerlink" href="#shift" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor5shiftEP6TensorP6Tensor6vectorIiE6stringf">
-<span id="_CPPv3N6Tensor5shiftEP6TensorP6Tensor6vectorIiE6stringf"></span><span id="_CPPv2N6Tensor5shiftEP6TensorP6Tensor6vectorIiE6stringf"></span><span id="Tensor::shift__TensorP.TensorP.vector:i:.string.float"></span><span class="target" id="class_tensor_1a1242d0301ad24695db77eaf521309fc8"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">shift</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;int&gt; <em>shift</em>, string <em>mode</em> = &quot;constant&quot;, float <em>constant</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5shiftEP6TensorP6Tensor6vectorIiE6stringf" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::shift” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">shift</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">shift</span><span class="p">,</span> <span class="n">string</span> <span class="n">mode</span><span class="o">=</span><span class="s">&quot;constant&quot;</span><span class="p">,</span> <span class="kt">float</span> <span class="n">constant</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="rotate">
 <h3>rotate<a class="headerlink" href="#rotate" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor6rotateEP6TensorP6Tensorf6vectorIiE6stringf">
-<span id="_CPPv3N6Tensor6rotateEP6TensorP6Tensorf6vectorIiE6stringf"></span><span id="_CPPv2N6Tensor6rotateEP6TensorP6Tensorf6vectorIiE6stringf"></span><span id="Tensor::rotate__TensorP.TensorP.float.vector:i:.string.float"></span><span class="target" id="class_tensor_1a5ad97edda6432972ae34865e33e17fc2"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">rotate</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, float <em>angle</em>, vector&lt;int&gt; <em>offset_center</em> = {0, 0}, string <em>mode</em> = &quot;constant&quot;, float <em>constant</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6rotateEP6TensorP6Tensorf6vectorIiE6stringf" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::rotate” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">rotate</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">angle</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">offset_center</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">},</span> <span class="n">string</span> <span class="n">mode</span><span class="o">=</span><span class="s">&quot;constant&quot;</span><span class="p">,</span> <span class="kt">float</span> <span class="n">constant</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="scale">
 <h3>scale<a class="headerlink" href="#scale" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor5scaleEP6TensorP6Tensor6vectorIiE6stringf">
-<span id="_CPPv3N6Tensor5scaleEP6TensorP6Tensor6vectorIiE6stringf"></span><span id="_CPPv2N6Tensor5scaleEP6TensorP6Tensor6vectorIiE6stringf"></span><span id="Tensor::scale__TensorP.TensorP.vector:i:.string.float"></span><span class="target" id="class_tensor_1ac07c99d0350c331b532b117257e9c11b"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">scale</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;int&gt; <em>new_shape</em>, string <em>mode</em> = &quot;nearest&quot;, float <em>constant</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5scaleEP6TensorP6Tensor6vectorIiE6stringf" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::scale” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">scale</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">new_shape</span><span class="p">,</span> <span class="n">string</span> <span class="n">mode</span><span class="o">=</span><span class="s">&quot;nearest&quot;</span><span class="p">,</span> <span class="kt">float</span> <span class="n">constant</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="flip">
 <h3>flip<a class="headerlink" href="#flip" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor4flipEP6TensorP6Tensori">
-<span id="_CPPv3N6Tensor4flipEP6TensorP6Tensori"></span><span id="_CPPv2N6Tensor4flipEP6TensorP6Tensori"></span><span id="Tensor::flip__TensorP.TensorP.i"></span><span class="target" id="class_tensor_1a9a43eea3e3ddf37bf4f05bed0dac030c"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">flip</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, int <em>axis</em> = 0<span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::flip” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">flip</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">int</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="crop">
 <h3>crop<a class="headerlink" href="#crop" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor4cropEP6TensorP6Tensor6vectorIiE6vectorIiEf">
-<span id="_CPPv3N6Tensor4cropEP6TensorP6Tensor6vectorIiE6vectorIiEf"></span><span id="_CPPv2N6Tensor4cropEP6TensorP6Tensor6vectorIiE6vectorIiEf"></span><span id="Tensor::crop__TensorP.TensorP.vector:i:.vector:i:.float"></span><span class="target" id="class_tensor_1ad6ebfa231a2c9186f17f291896cc3331"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">crop</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;int&gt; <em>coords_from</em>, vector&lt;int&gt; <em>coords_to</em>, float <em>constant</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4cropEP6TensorP6Tensor6vectorIiE6vectorIiEf" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::crop” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">crop</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">coords_from</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">coords_to</span><span class="p">,</span> <span class="kt">float</span> <span class="n">constant</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="crop-scale">
 <h3>crop_scale<a class="headerlink" href="#crop-scale" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor10crop_scaleEP6TensorP6Tensor6vectorIiE6vectorIiE6stringf">
-<span id="_CPPv3N6Tensor10crop_scaleEP6TensorP6Tensor6vectorIiE6vectorIiE6stringf"></span><span id="_CPPv2N6Tensor10crop_scaleEP6TensorP6Tensor6vectorIiE6vectorIiE6stringf"></span><span id="Tensor::crop_scale__TensorP.TensorP.vector:i:.vector:i:.string.float"></span><span class="target" id="class_tensor_1aa9d1565b92ad009f67fb867b13432d4f"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">crop_scale</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;int&gt; <em>coords_from</em>, vector&lt;int&gt; <em>coords_to</em>, string <em>mode</em> = &quot;nearest&quot;, float <em>constant</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10crop_scaleEP6TensorP6Tensor6vectorIiE6vectorIiE6stringf" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::crop_scale” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">crop_scale</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">coords_from</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">coords_to</span><span class="p">,</span> <span class="n">string</span> <span class="n">mode</span><span class="o">=</span><span class="s">&quot;nearest&quot;</span><span class="p">,</span> <span class="kt">float</span> <span class="n">constant</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="cutout">
 <h3>cutout<a class="headerlink" href="#cutout" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor6cutoutEP6TensorP6Tensor6vectorIiE6vectorIiEf">
-<span id="_CPPv3N6Tensor6cutoutEP6TensorP6Tensor6vectorIiE6vectorIiEf"></span><span id="_CPPv2N6Tensor6cutoutEP6TensorP6Tensor6vectorIiE6vectorIiEf"></span><span id="Tensor::cutout__TensorP.TensorP.vector:i:.vector:i:.float"></span><span class="target" id="class_tensor_1ac10476b3b6bbbed0e28eaeb610d12259"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">cutout</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;int&gt; <em>coords_from</em>, vector&lt;int&gt; <em>coords_to</em>, float <em>constant</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6cutoutEP6TensorP6Tensor6vectorIiE6vectorIiEf" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::cutout” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">cutout</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">coords_from</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">coords_to</span><span class="p">,</span> <span class="kt">float</span> <span class="n">constant</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="shift-random">
 <h3>shift_random<a class="headerlink" href="#shift-random" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor12shift_randomEP6TensorP6Tensor6vectorIfE6vectorIfE6stringf">
-<span id="_CPPv3N6Tensor12shift_randomEP6TensorP6Tensor6vectorIfE6vectorIfE6stringf"></span><span id="_CPPv2N6Tensor12shift_randomEP6TensorP6Tensor6vectorIfE6vectorIfE6stringf"></span><span id="Tensor::shift_random__TensorP.TensorP.vector:float:.vector:float:.string.float"></span><span class="target" id="class_tensor_1a606933b69bfe8e759cb931d683b49752"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">shift_random</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;float&gt; <em>factor_x</em>, vector&lt;float&gt; <em>factor_y</em>, string <em>mode</em> = &quot;constant&quot;, float <em>constant</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor12shift_randomEP6TensorP6Tensor6vectorIfE6vectorIfE6stringf" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::shift_random” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">shift_random</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span> <span class="n">factor_x</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span> <span class="n">factor_y</span><span class="p">,</span> <span class="n">string</span> <span class="n">mode</span><span class="o">=</span><span class="s">&quot;constant&quot;</span><span class="p">,</span> <span class="kt">float</span> <span class="n">constant</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="rotate-random">
 <h3>rotate_random<a class="headerlink" href="#rotate-random" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor13rotate_randomEP6TensorP6Tensor6vectorIfE6vectorIiE6stringf">
-<span id="_CPPv3N6Tensor13rotate_randomEP6TensorP6Tensor6vectorIfE6vectorIiE6stringf"></span><span id="_CPPv2N6Tensor13rotate_randomEP6TensorP6Tensor6vectorIfE6vectorIiE6stringf"></span><span id="Tensor::rotate_random__TensorP.TensorP.vector:float:.vector:i:.string.float"></span><span class="target" id="class_tensor_1a97e190495be48c179ff4ff7edea10b02"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">rotate_random</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;float&gt; <em>factor</em>, vector&lt;int&gt; <em>offset_center</em> = {0, 0}, string <em>mode</em> = &quot;constant&quot;, float <em>constant</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor13rotate_randomEP6TensorP6Tensor6vectorIfE6vectorIiE6stringf" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::rotate_random” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">rotate_random</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span> <span class="n">factor</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">offset_center</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">},</span> <span class="n">string</span> <span class="n">mode</span><span class="o">=</span><span class="s">&quot;constant&quot;</span><span class="p">,</span> <span class="kt">float</span> <span class="n">constant</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="scale-random">
 <h3>scale_random<a class="headerlink" href="#scale-random" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor12scale_randomEP6TensorP6Tensor6vectorIfE6stringf">
-<span id="_CPPv3N6Tensor12scale_randomEP6TensorP6Tensor6vectorIfE6stringf"></span><span id="_CPPv2N6Tensor12scale_randomEP6TensorP6Tensor6vectorIfE6stringf"></span><span id="Tensor::scale_random__TensorP.TensorP.vector:float:.string.float"></span><span class="target" id="class_tensor_1a2df7cc4b813a73ca95171320fdc4203a"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">scale_random</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;float&gt; <em>factor</em>, string <em>mode</em> = &quot;nearest&quot;, float <em>constant</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor12scale_randomEP6TensorP6Tensor6vectorIfE6stringf" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::scale_random” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">scale_random</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span> <span class="n">factor</span><span class="p">,</span> <span class="n">string</span> <span class="n">mode</span><span class="o">=</span><span class="s">&quot;nearest&quot;</span><span class="p">,</span> <span class="kt">float</span> <span class="n">constant</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="flip-random">
 <h3>flip_random<a class="headerlink" href="#flip-random" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor11flip_randomEP6TensorP6Tensori">
-<span id="_CPPv3N6Tensor11flip_randomEP6TensorP6Tensori"></span><span id="_CPPv2N6Tensor11flip_randomEP6TensorP6Tensori"></span><span id="Tensor::flip_random__TensorP.TensorP.i"></span><span class="target" id="class_tensor_1a7c9d95c3128ebfaacda04448562fe24d"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">flip_random</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, int <em>axis</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor11flip_randomEP6TensorP6Tensori" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::flip_random” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">flip_random</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">int</span> <span class="n">axis</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="crop-random">
 <h3>crop_random<a class="headerlink" href="#crop-random" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor11crop_randomEP6TensorP6Tensor">
-<span id="_CPPv3N6Tensor11crop_randomEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor11crop_randomEP6TensorP6Tensor"></span><span id="Tensor::crop_random__TensorP.TensorP"></span><span class="target" id="class_tensor_1a2495e8b397ed2afb8b5fe581d880ed61"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">crop_random</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor11crop_randomEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::crop_random” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">crop_random</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="crop-scale-random">
 <h3>crop_scale_random<a class="headerlink" href="#crop-scale-random" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor17crop_scale_randomEP6TensorP6Tensor6vectorIfE6stringf">
-<span id="_CPPv3N6Tensor17crop_scale_randomEP6TensorP6Tensor6vectorIfE6stringf"></span><span id="_CPPv2N6Tensor17crop_scale_randomEP6TensorP6Tensor6vectorIfE6stringf"></span><span id="Tensor::crop_scale_random__TensorP.TensorP.vector:float:.string.float"></span><span class="target" id="class_tensor_1ac5d9766c9f9aa347a99824d18645c7ae"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">crop_scale_random</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;float&gt; <em>factor</em>, string <em>mode</em> = &quot;nearest&quot;, float <em>constant</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor17crop_scale_randomEP6TensorP6Tensor6vectorIfE6stringf" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::crop_scale_random” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">crop_scale_random</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span> <span class="n">factor</span><span class="p">,</span> <span class="n">string</span> <span class="n">mode</span><span class="o">=</span><span class="s">&quot;nearest&quot;</span><span class="p">,</span> <span class="kt">float</span> <span class="n">constant</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="cutout-random">
 <h3>cutout_random<a class="headerlink" href="#cutout-random" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="_CPPv4N6Tensor13cutout_randomEP6TensorP6Tensor6vectorIfE6vectorIfEf">
-<span id="_CPPv3N6Tensor13cutout_randomEP6TensorP6Tensor6vectorIfE6vectorIfEf"></span><span id="_CPPv2N6Tensor13cutout_randomEP6TensorP6Tensor6vectorIfE6vectorIfEf"></span><span id="Tensor::cutout_random__TensorP.TensorP.vector:float:.vector:float:.float"></span><span class="target" id="class_tensor_1adda4f5f1e246a42c69f5934c2b505aca"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">cutout_random</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, vector&lt;float&gt; <em>factor_x</em>, vector&lt;float&gt; <em>factor_y</em>, float <em>constant</em> = 0.0f<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor13cutout_randomEP6TensorP6Tensor6vectorIfE6vectorIfEf" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “Tensor::cutout_random” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">cutout_random</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span> <span class="n">factor_x</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span> <span class="n">factor_y</span><span class="p">,</span> <span class="kt">float</span> <span class="n">constant</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">);</span>
 </pre></div>
 </div>
