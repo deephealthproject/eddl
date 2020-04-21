@@ -114,13 +114,13 @@ Tensor* Tensor::permute(Tensor* t, const vector<int>& dims){
     // Build descriptor
     auto *sd = new PermuteDescriptor(dims, t->device);
     sd->build(t->shape);
-    sd->build_indices();
 
     // Initialize new tensor
     auto *new_t = new Tensor(sd->oshape, t->device);
 
     // Fill new tensor
     Tensor::select(t, new_t, sd);
+	delete sd;
     return new_t;
 }
 
