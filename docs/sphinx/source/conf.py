@@ -40,7 +40,7 @@ extensions = [
     'sphinx.ext.autosummary'
 ]
 
-breathe_projects = {"eddl" : "../doxygen/build/xml/"}
+breathe_projects = {"eddl" : "../../doxygen/build/xml/"}
 #
 breathe_default_project = "eddl"
 
