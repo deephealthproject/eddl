@@ -1,20 +1,20 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.5
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
 
 
-#include <stdio.h>
+#include <cstdio>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
 
-#include "eddl.h"
+#include "eddl/apis/eddl.h"
 
 
 using namespace std;
@@ -659,11 +659,11 @@ namespace eddl {
     layer BatchNormalization(layer parent, float momentum, float epsilon, bool affine, string name){
         return new LBatchNorm(parent, momentum, epsilon, affine, name, DEV_CPU, 0);
     }
-    layer LayerNormalization(layer parent, float momentum, float epsilon, bool affine, string name){
-        return new LLayerNorm(parent, momentum, epsilon, affine, name, DEV_CPU, 0);
+    layer LayerNormalization(layer parent, float epsilon, bool affine, string name){
+        return new LLayerNorm(parent,  epsilon, affine, name, DEV_CPU, 0);
     }
-    layer GroupNormalization(layer parent, int groups, float momentum, float epsilon, bool affine, string name){
-        return new LGroupNorm(parent, groups, momentum, epsilon, affine, name, DEV_CPU, 0);
+    layer GroupNormalization(layer parent, int groups,float epsilon, bool affine, string name){
+        return new LGroupNorm(parent, groups,epsilon,affine,name, DEV_CPU, 0);
     }
 
 

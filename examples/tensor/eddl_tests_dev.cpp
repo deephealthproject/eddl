@@ -7,8 +7,8 @@
 * All rights reserved
 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 #include <ctime>
@@ -17,14 +17,14 @@
 
 //#include <omp.h>
 
-#include "../src/initializers/initializer.h"
-#include "../src/tensor/tensor.h"
-#include "../src/tensor/tensor_reduction.h"
-#include "../src/tensor/nn/tensor_nn.h"
-#include "../src/regularizers/regularizer.h"
-#include "../src/tensor/nn/tensor_nn.h"
-#include "../src/hardware/cpu/nn/cpu_nn.h"
-#include "../src/apis/eddl.h"
+#include "eddl/initializers/initializer.h"
+#include "eddl/tensor/tensor.h"
+#include "eddl/tensor/tensor_reduction.h"
+#include "eddl/tensor/nn/tensor_nn.h"
+#include "eddl/regularizers/regularizer.h"
+#include "eddl/tensor/nn/tensor_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_nn.h"
+#include "eddl/apis/eddl.h"
 
 using namespace std;
 using namespace eddl;

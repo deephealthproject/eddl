@@ -7,8 +7,8 @@
 * All rights reserved
 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 #include <ctime>
@@ -17,8 +17,8 @@
 
 //#include <omp.h>
 
-#include "apis/eddlT.h"
-#include "../../src/tensor/tensor_reduction.h"
+#include "eddl/apis/eddlT.h"
+#include "eddl/tensor/tensor_reduction.h"
 
 using namespace std;
 using namespace eddlT;

@@ -1,18 +1,18 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.5
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "layer_pool.h"
+#include "eddl/layers/pool/layer_pool.h"
 
 
 using namespace std;
@@ -62,7 +62,7 @@ Layer *LMaxPool::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LMaxPool::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LMaxPool(p[0], this->pd, "clone_" + to_string(todev) + this->name, todev, this->mem_level);
+    auto *n = new LMaxPool(p[0], new PoolDescriptor(pd->ksize, pd->stride, pd->padding, pd->mem_level), "clone_" + to_string(todev) + this->name, todev, this->mem_level);
     n->orig = this;
 
     return n;

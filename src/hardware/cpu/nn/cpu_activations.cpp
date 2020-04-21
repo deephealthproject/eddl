@@ -1,18 +1,18 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.5
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
 
 
-#include <stdio.h>      /* printf, scanf, NULL */
-#include <stdlib.h>     /* malloc, free, rand */
+#include <cstdio>      /* printf, scanf, NULL */
+#include <cstdlib>     /* malloc, free, rand */
 #include <iostream>
 
-#include "cpu_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_nn.h"
 
 void cpu_relu(Tensor *A, Tensor *B){
   #pragma omp parallel for
@@ -95,14 +95,14 @@ void cpu_d_softplus(Tensor *D, Tensor *I, Tensor *PD){
 void cpu_softsign(Tensor *A, Tensor *B){
     #pragma omp parallel for
     for (int i = 0; i < A->size; i++) {
-        B->ptr[i] = A->ptr[i] / (1 + ::abs(A->ptr[i]));
+        B->ptr[i] = A->ptr[i] / (1 + ::fabs(A->ptr[i]));
     }
 }
 
 void cpu_d_softsign(Tensor *D, Tensor *I, Tensor *PD){
     #pragma omp parallel for
     for (int i = 0; i < D->size; i++) {
-        float denom = 1 + ::abs(I->ptr[i]);
+        float denom = 1 + ::fabs(I->ptr[i]);
         PD->ptr[i] = D->ptr[i] * 1/(denom*denom);
     }
 }

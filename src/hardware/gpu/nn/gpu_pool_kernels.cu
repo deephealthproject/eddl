@@ -1,20 +1,20 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.5
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
 
 #include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <cuda.h>
 
-#include "gpu_nn_kernels.h"
-#include "../gpu_kernels.h"
+#include "eddl/hardware/gpu/nn/gpu_nn_kernels.h"
+#include "eddl/hardware/gpu/gpu_kernels.h"
 //
 //__device__ float get_pixel(int b,int px,int py,int pz, int ircd, int irc, int irows, int icols, float* I){
 //    if (px < 0) return 0.0;

@@ -1,0 +1,34 @@
+# CMakeExternal CMake configuration file
+include(CMakeFindDependencyMacro)
+
+# THREADS (pthreads setup for linux os)
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+    SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
+    find_dependency(Threads)
+endif()
+
+# CUDA
+if (@USE_CUDA@)
+    enable_language(CUDA)
+endif()
+
+# CUDA
+if (@BUILD_OPENMP@)
+    find_dependency(OpenMP REQUIRED)
+endif()
+
+# Dependencies
+if(NOT @USE_SUPERBUILD@)
+    #find_dependency(Eigen3 REQUIRED NO_MODULE)
+    find_dependency(ZLIB REQUIRED)
+    find_dependency(Protobuf REQUIRED)
+endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/EDDLTargets.cmake")
+
+# Set default paths
+SET(EDDL_ROOT "@CMAKE_INSTALL_PREFIX@")
+SET(EDDL_INCLUDE_DIR "@CMAKE_INSTALL_PREFIX@/include")
+SET(EDDL_LIBRARIES_DIR "@CMAKE_INSTALL_PREFIX@/lib")
+SET(EDDL_LIBRARIES EDDL::eddl)

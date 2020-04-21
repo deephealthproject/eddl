@@ -1,22 +1,31 @@
-#include "eddl_onnx.h"
+#include "eddl/serialization/onnx/eddl_onnx.h"
 #include <queue>
 #include <fstream>
-#include "../../layers/core/layer_core.h"
-#include "../../layers/conv/layer_conv.h"
-#include "../../layers/normalization/layer_normalization.h"
-#include "../../layers/pool/layer_pool.h"
+#include "eddl/layers/core/layer_core.h"
+#include "eddl/layers/conv/layer_conv.h"
+#include "eddl/layers/normalization/layer_normalization.h"
+#include "eddl/layers/pool/layer_pool.h"
 #include <map>
 #include <set>
 #include <algorithm>
-#include "../../apis/eddl.h"
-#include "../../apis/eddlT.h"
+
+
+#if defined(cPROTO)
+#include "onnx.pb.h"
+#endif
+
+#if defined(cPROTO)
+	Net* build_net_onnx(onnx::ModelProto model, int mem);
+#endif
+
+#if defined(cPROTO)
+	map<string, vector<Tensor*> > get_tensors_from_onnx(onnx::ModelProto model);
+#endif
 
 
 using namespace std;
 
-namespace eddl {
-#ifdef cPROTO
-
+#ifdef cPROTO 
 	enum ONNX_LAYERS{
 		//TODO Comment in which section belongs each layer
 		BATCHNORM,			// implemented
@@ -25,11 +34,14 @@ namespace eddl {
 		DROP,               // implemented
 		//EMBEDDING,  		// Onnx doesn't support this
 		RESHAPE,            // implemented
+		FLATTEN,            // implemented
 		TRANSPOSE,          // implementing
 		TRANSPOSED_CONV,	// not implemented in eddl
 		UPSAMPLING,         // deprecated in ONNX, but works for EDDL
 		MAXPOOL,			// implemented
 		AVGPOOL,            // needs testing
+		GLOBAVGPOOL,        // implemented
+		GLOBMAXPOOL,        // implemented
 		PERMUTE,            // implemented
 		// Activation layers
 		RELU, 				// implemented
@@ -124,12 +136,15 @@ namespace eddl {
 		map_layers["Gemm"] = ONNX_LAYERS::DENSE;
 		map_layers["Dropout"] = ONNX_LAYERS::DROP;
 		map_layers["Reshape"] = ONNX_LAYERS::RESHAPE;
+		map_layers["Flatten"] = ONNX_LAYERS::FLATTEN;
 		map_layers["Transpose"] = ONNX_LAYERS::TRANSPOSE;
 		map_layers["ConvTranspose"] = ONNX_LAYERS::TRANSPOSED_CONV;
 		map_layers["Upsample"] = ONNX_LAYERS::UPSAMPLING;
 		map_layers["Softmax"] = ONNX_LAYERS::SOFTMAX;
 		map_layers["MaxPool"] = ONNX_LAYERS::MAXPOOL;
 		map_layers["AveragePool"] = ONNX_LAYERS::AVGPOOL;
+		map_layers["GlobalMaxPool"] = ONNX_LAYERS::GLOBMAXPOOL;
+		map_layers["GlobalAveragePool"] = ONNX_LAYERS::GLOBAVGPOOL;
 		map_layers["Transpose"] = ONNX_LAYERS::PERMUTE;
 		// Activation layers
 		map_layers["Relu"] = ONNX_LAYERS::RELU;
@@ -281,8 +296,8 @@ namespace eddl {
 			for(int i = 0; i < tensor.dims_size(); i++) {
 				dims.push_back(tensor.dims(i));
 			}
-			vector<float> values = parseTensorValues(tensor);
 			string tensorName = tensor.name();
+			vector<float> values = parseTensorValues(tensor);
 
 
 			values_map[tensorName] = values;
@@ -297,6 +312,7 @@ namespace eddl {
 	vector<int> parse_IO_tensor(onnx::TypeProto::Tensor tensor) {
 		onnx::TensorShapeProto tensorShape = tensor.shape();
 		vector<int> shape;
+		shape.push_back(1); //TODO check this is required
 
 		for(int i = 1; i < tensorShape.dim_size(); i++){
 			shape.push_back(tensorShape.dim(i).dim_value());
@@ -307,14 +323,15 @@ namespace eddl {
 
 	//Converts one vector of TensorProto pointers (Input or output)
 	//to one vector of eddl Tensor pointers.
-	vector<Layer*> parse_IO_tensors(vector<onnx::ValueInfoProto> io_onnx) {
+	vector<Layer*> parse_IO_tensors(vector<onnx::ValueInfoProto> io_onnx, int mem) {
 		vector<Layer*> io;
 		onnx::TypeProto::Tensor tensor;
 		int dev = DEV_CPU;
 
 		for(onnx::ValueInfoProto infoProto : io_onnx) {
 			tensor = infoProto.type().tensor_type();
-			io.push_back(Input(parse_IO_tensor(tensor)) );
+			string name = infoProto.name();
+			io.push_back(new LInput(new Tensor(parse_IO_tensor(tensor)), name, dev, mem) );
 		}
 
 		for(Layer* layer : io){
@@ -440,6 +457,10 @@ namespace eddl {
 
 		// We omit the OperatorSetIdProto, since it doesn't do anything for EDDL
 		cout << "Ir_version = " << ir_version << endl;
+		for(int i = 0; i < model.opset_import_size() ; i++){
+			cout << "Operator domain  = " << model.opset_import(i).domain() << endl;
+			cout << "Operator version = " << model.opset_import(i).version() << endl;
+		}
 		cout << "Producer_name: " << model.producer_name() << endl;
 		cout << "Producer_version: " << model.producer_version() << endl;
 		cout << "Domain: " << model.domain() << endl;
@@ -450,7 +471,7 @@ namespace eddl {
 
 		vector<onnx::ValueInfoProto> inputs_onnx = get_inputs(graph); //Get the inputs
 
-		vector<Layer*> inputs =  parse_IO_tensors(inputs_onnx); //Parse ONNX inputs to EDDL inputs
+		vector<Layer*> inputs =  parse_IO_tensors(inputs_onnx, mem); //Parse ONNX inputs to EDDL inputs
 
 		vector<onnx::TensorProto> initializers = get_initializers(graph); // Retrieves the initializers from the graph.
 																		  // The weight for the layers can be found in the initializers.
@@ -503,6 +524,27 @@ namespace eddl {
 
 		queue<onnx::NodeProto *> nodeQueue = process_inputs(&inputs, &inputs_onnx, &input_node_map, &output_node_map);
 
+		for(int i = 0; i < nodes.size(); i++){ //Check if any node only has initializers and constant nodes as parameters, so we can process it right away
+			onnx::NodeProto *node = &nodes[i];
+			bool avaliable = true;
+			for(int j = 0; j < node->input_size(); j++){
+				string input = node->input(j);
+				if(map_init_values.count(input)){
+					continue;
+				}
+				if(constant_node_map.count(input)){
+					continue;
+				}
+				avaliable = false;
+				break;
+			}
+			if(avaliable){
+				//cout << "Node " << node->name() << " is avaliable" << endl;
+				if(node->op_type() == "Constant" ) continue;
+				nodeQueue.push(node);
+			}
+		}
+
 		map<string, ONNX_LAYERS> map_layers = create_enum_map();
 		//6 - While the queue is not empty:
 		while(!nodeQueue.empty()){
@@ -521,7 +563,6 @@ namespace eddl {
 				if(constant_node_map.count(input)){
 					continue;
 				}
-				//cout << "Input " << input << " Is not avaliable" << endl;
 				avaliable = false;
 				break;
 			}
@@ -533,7 +574,6 @@ namespace eddl {
 
 			//6.2
 			if(!avaliable){
-				//cout << " node->op_type   " << node->op_type() << " is not avaliable" << endl;
 				nodeQueue.pop();
 				continue;
 			}
@@ -590,19 +630,19 @@ namespace eddl {
 
 						actual_layer = new LBatchNorm(parent, momentum, epsilon, affine, name, dev, mem);
 
-						Tensor* scale_tensor = eddlT::create(scale_dims, scale_weights->data(), dev);
+						Tensor* scale_tensor = new Tensor(scale_dims, scale_weights->data(), dev);
 						Tensor::copy(scale_tensor, ((LBatchNorm *)(actual_layer))->bn_g);
 						delete(scale_tensor);
 
-						Tensor* bias_tensor = eddlT::create(bias_dims, bias_weights->data(), dev);
+						Tensor* bias_tensor = new Tensor(bias_dims, bias_weights->data(), dev);
 						Tensor::copy(bias_tensor, ((LBatchNorm *)(actual_layer))->bn_b);
 						delete(bias_tensor);
 
-						Tensor* mean_tensor = eddlT::create(mean_dims, mean_weights->data(), dev);
+						Tensor* mean_tensor = new Tensor(mean_dims, mean_weights->data(), dev);
 						Tensor::copy(mean_tensor, ((LBatchNorm *)(actual_layer))->mean);
 						delete(mean_tensor);
 
-						Tensor* variance_tensor = eddlT::create(variance_dims, variance_weights->data(), dev);
+						Tensor* variance_tensor = new Tensor(variance_dims, variance_weights->data(), dev);
 						Tensor::copy(variance_tensor, ((LBatchNorm *)(actual_layer))->variance);
 						delete(variance_tensor);
 
@@ -615,16 +655,24 @@ namespace eddl {
 						vector<int> kernel_shape;
 						vector<int> strides;
 						vector<int> pads;
-						bool explicit_padding = true;
+						//bool explicit_padding;
+						string auto_pad_option = "";
+						bool auto_pad = false;
 						vector<float> *bias;
 
 						for ( int j = 0; j < node->attribute_size(); j++ ) { //Set the attributes
 							onnx::AttributeProto attribute = node->attribute(j);
 							string attr_name = attribute.name();
 							if (!attr_name.compare("auto_pad")) {
-								if(!attribute.s().compare("NOTSET")) continue;
-								if(!attribute.s().compare("VALID"))
-									explicit_padding=false;
+								auto_pad = true;
+								if(!attribute.s().compare("NOTSET")){
+									auto_pad = false;
+									continue;
+								}
+								else if(!attribute.s().compare("VALID"))
+									auto_pad_option = "none";
+								else if(!attribute.s().compare("SAME_UPPER"))
+									auto_pad_option = "same";
 							}
 							else if (!attr_name.compare("dilations")) { //It isn't implemented in eddl
 
@@ -649,13 +697,13 @@ namespace eddl {
 							}
 						}
 
-						if(!explicit_padding){ //We have to add 0 padding to the conv descriptor
+						/*if(!explicit_padding){ //We have to add 0 padding to the conv descriptor
 							pads.resize(4,0);
 							pads[0] = 0;
 							pads[1] = 0;
 							pads[2] = 0;
 							pads[3] = 0;
-						}
+						}*/
 
 						string parent_name = node->input(0); //Get parent
 						Layer* parent = output_node_map[parent_name];
@@ -668,10 +716,13 @@ namespace eddl {
 
 
 						filters = dims[0];
-						kernel_shape.insert(kernel_shape.begin(), filters); //Add number of filters to kernel shape
 						string name = node->name();
-
-						ConvolDescriptor* convol_descriptor = new ConvolDescriptor(kernel_shape, strides, pads);
+						ConvolDescriptor* convol_descriptor;
+						if(!auto_pad){
+							kernel_shape.insert(kernel_shape.begin(), filters); //Add number of filters to kernel shape
+							convol_descriptor = new ConvolDescriptor(kernel_shape, strides, pads);
+						}
+						else convol_descriptor = new ConvolDescriptor(filters, kernel_shape, strides, auto_pad_option, node->input_size() > 2, mem);
 
 						actual_layer = new LConv(parent, convol_descriptor, name, dev, mem);
 
@@ -680,12 +731,12 @@ namespace eddl {
 							bias = new vector<float>(map_init_values[bias_name]);
 							vector<int> bias_shape;
 							bias_shape.push_back(bias->size());
-							Tensor* bias_tensor = eddlT::create(bias_shape, bias->data(), dev);
+							Tensor* bias_tensor = new Tensor(bias_shape, bias->data(), dev);
 							Tensor::copy(bias_tensor , convol_descriptor->bias);
 							delete(bias_tensor);
 
 						}
-						Tensor* weights_tensor = eddlT::create(dims, weights->data(), dev);
+						Tensor* weights_tensor = new Tensor(dims, weights->data(), dev);
 						Tensor::copy(weights_tensor, convol_descriptor->K);
 						delete(weights_tensor);
 						break;
@@ -697,23 +748,23 @@ namespace eddl {
 						bool use_bias = false;
 						float alpha;
 						float beta;
-						int transA;
-						int transB;
+						int transA = 0;
+						int transB = 0;
 						vector<int> bias_dims;
 						vector <float>* bias;
 						for ( int j = 0; j < node->attribute_size(); j++ ) {
 							onnx::AttributeProto attribute = node->attribute(j);
 							string attr_name = attribute.name();
-							if (attr_name.compare("alpha")) {
+							if (!attr_name.compare("alpha")) {
 								alpha = attribute.f();
 							}
-							else if (attr_name.compare("beta")) {
+							else if (!attr_name.compare("beta")) {
 								beta = attribute.f();
 							}
-							else if (attr_name.compare("transA")) {
+							else if (!attr_name.compare("transA")) {
 								transA = attribute.i();
 							}
-							else if (attr_name.compare("transB")) {
+							else if (!attr_name.compare("transB")) {
 								transB = attribute.i();
 							}
 						}
@@ -738,30 +789,42 @@ namespace eddl {
 								ndim = dims.size();
 							}
 						}
-						if(node->input_size() > 2){
-							use_bias=true;
+						use_bias=node->input_size() > 2;
+						int neuronas = 0;
+						if(transB){
+							neuronas = dims[0];
+						}
+						else
+							neuronas = dims[1];
+						string name = node->name();
+						Tensor * input_size = parent->output;
+						LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem); 
+
+						Tensor* weights_tensor = new Tensor(dims, weights->data(), dev);
+						if(transB){
+							vector<int> reverse_dims;
+							for(int h = dims.size()-1; h >= 0; h--){
+								reverse_dims.push_back(dims[h]);
+							}
+							Tensor* weights_tensor_T = new Tensor(reverse_dims, dev);
+							Tensor::transpose(weights_tensor, weights_tensor_T, {1,0});
+							Tensor::copy(weights_tensor_T, dense->W );
+							delete(weights_tensor_T);
+						}
+						else Tensor::copy(weights_tensor, dense->W );
+						delete(weights_tensor);
+						if(use_bias){
 							bias_name = node->input(2);
 							bias = new vector<float>(map_init_values[bias_name]);
 							bias_dims = map_init_dims[bias_name];
-
-						}
-
-
-						string name = node->name();
-						Tensor * input_size = parent->output;
-						LDense* dense = new LDense(parent, dims[1], use_bias, name, dev, mem);
-
-						Tensor* weights_tensor = eddlT::create(dims, weights->data(), dev);
-						Tensor::copy(weights_tensor, dense->W );
-						delete(weights_tensor);
-						if(use_bias){
-							Tensor* bias_tensor = eddlT::create(bias_dims, bias->data(), dev);
+							Tensor* bias_tensor = new Tensor(bias_dims, bias->data(), dev);
 							Tensor::copy(bias_tensor, dense->bias);
 							delete(bias_tensor);
 						}
 						actual_layer = dense;
-						break;
 					}
+					break;
+					
 				case ONNX_LAYERS::UPSAMPLING:
 					{
 						string interpolation_mode;
@@ -791,10 +854,6 @@ namespace eddl {
 						height_scale = scales->at(2);
 						width_scale = scales->at(3);
 						
-						cout << "Batch scale = " << batch_scale << endl;
-						cout << "Channel scale = " << channel_scale << endl;
-						cout << "height scale = " << height_scale << endl;
-						cout << "width scale = " << width_scale << endl;
 						string name = node->name();
 
 
@@ -886,33 +945,76 @@ namespace eddl {
 
 						string name = node->name();
 
+
 						actual_layer = new LAveragePool(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
+					}
+					break;
+
+				case ONNX_LAYERS::GLOBAVGPOOL:
+					{
+						string parent_name = node->input(0); //Get parent
+						Layer* parent = output_node_map[parent_name];
+						vector<int> parent_shape = parent->output->shape;
+
+						int h=parent_shape[2];
+						int w=parent_shape[3];
+
+						actual_layer = new LAveragePool(parent, {h,w},{1,1}, "none", node->name(), dev, mem);
 					}
 					break;
 				case ONNX_LAYERS::RESHAPE:
 					{
 
-						string parent_name = node->input(0);
-						Layer *parent = output_node_map[parent_name];
 
 						string shape_node_name = node->input(1);
-						onnx::NodeProto* shape_node = constant_node_map[shape_node_name];
-						onnx::AttributeProto shape_attribute = shape_node->attribute(0);
-						if(shape_attribute.name().compare("value")){
-							//This means an error ocurred, but don't know how to proceed then.
-							printf("An error ocurred when reading the shape of reshape\n");
+						vector<int> shape;
+						if(constant_node_map.count(shape_node_name)){
+							onnx::NodeProto* shape_node = constant_node_map[shape_node_name];
+							onnx::AttributeProto shape_attribute = shape_node->attribute(0);
+							if(shape_attribute.name().compare("value")){
+								//This means an error ocurred, but don't know how to proceed then.
+								printf("An error ocurred when reading the shape of reshape\n");
+							}
+							onnx::TensorProto shape_tensor = shape_attribute.t();
+							vector<float> shape_float = parseTensorValues(shape_tensor);
+							vector<int> aux_shape(shape_float.begin(), shape_float.end());
+							shape = aux_shape;
 						}
-						onnx::TensorProto shape_tensor = shape_attribute.t();
-						vector<float> shape_float = parseTensorValues(shape_tensor);
-						vector<int> shape(++shape_float.begin(), shape_float.end()); //We skip first dim cause it is batch size
-						shape.insert(shape.begin(), 1); //Default batch size = 1
+						else{
+							vector<int> aux_shape(map_init_values[shape_node_name].begin(), map_init_values[shape_node_name].end());
+							shape = aux_shape;
+						}
 						string name = node->name();
-						vector<int> parent_shape = parent->output->shape;
-
-						actual_layer= new LReshape(parent, shape, name, dev, mem);
-						break;
+						string parent_name = node->input(0);
+						if(output_node_map.count(parent_name)){
+							//shape.insert(shape.begin(), 1); //Default batch size = 1 //Required for reshape but not for parameters
+							shape[0] = 1;
+							Layer *parent = output_node_map[parent_name];
+							actual_layer= new LReshape(parent, shape, name, dev, mem);
+						}
+						else if(map_init_values.count(parent_name)){ //This means it is a parameter and not a layer
+							for( int i = 0; i < node->output_size(); i++ ) {
+								map_init_values[node->output(i)] = map_init_values[parent_name];
+								map_init_dims[node->output(i)] = shape; 
+								vector<onnx::NodeProto*> child_nodes = input_node_map[node->output(i)];
+								for(onnx::NodeProto * child : child_nodes){
+									nodeQueue.push(child);
+								}
+							}
+							nodeQueue.pop();
+							continue; //We need to do the update of the queue here because we are not creating a true layer
+						} else cerr << "Uknown parent type for reshape" << endl;
 					}
+					break;
 
+				case ONNX_LAYERS::FLATTEN:
+					{
+						string parent_name = node->input(0); //Get parent
+						Layer* parent = output_node_map[parent_name];
+
+						actual_layer = new LReshape(parent, {1,-1}, name, dev, mem);
+					}
+					break;
 				case ONNX_LAYERS::PERMUTE:
 					{
 						vector<int> dims;
@@ -1136,9 +1238,58 @@ namespace eddl {
 					{
 						vector<Layer *> parents;
 						string parent_name;
+						bool parameter_input = false;
+						int index_parameter = -1; //Possible values 0 and 1, we won't expect parameters in an add with more than two parents
 						for ( int j = 0; j < node->input_size(); j++) {
 							parent_name = node->input(j);
-							parents.push_back(output_node_map[parent_name]);
+							if(output_node_map.count(parent_name))
+								parents.push_back(output_node_map[parent_name]);
+							else if(map_init_values.count(parent_name))
+								parameter_input = true;
+								index_parameter = j;
+						}
+						if(parameter_input){
+							LConv* conv;
+							LDense* dense;
+							if(conv = dynamic_cast<LConv*>(parents[0]) ){
+								ConvolDescriptor* convol_descriptor = conv->cd;
+								string bias_name = node->input(index_parameter);
+								vector<float> *bias = new vector<float>(map_init_values[bias_name]);
+								vector<int> bias_shape;
+								bias_shape.push_back(bias->size());
+								Tensor* bias_tensor = new Tensor(bias_shape, bias->data(), dev);
+								if(!convol_descriptor->use_bias){
+									convol_descriptor->use_bias = true; //We need to enable the bias
+									Tensor::copy(bias_tensor , convol_descriptor->bias);
+								}
+								else{
+									Tensor* auxiliar_tensor = Tensor::add(convol_descriptor->bias, bias_tensor);
+									Tensor::copy(auxiliar_tensor , convol_descriptor->bias);
+									delete(auxiliar_tensor);
+
+								}
+								delete(bias_tensor);
+								actual_layer = conv;
+								break;
+							}
+							else if(dense = dynamic_cast<LDense*>(parents[0]) ){
+								string bias_name = node->input(index_parameter);
+								vector<float> *bias = new vector<float>(map_init_values[bias_name]);
+								vector<int> bias_dims = map_init_dims[bias_name];
+								if(!dense->use_bias){
+									dense->use_bias = true;
+									dense->bias = new Tensor(bias_dims, bias->data(), dev);
+								}
+								else{ //If dense already has a bias, we sum it in top of the bias
+									Tensor* add_to_bias = new Tensor(bias_dims, bias->data(), dev);
+									dense->bias = Tensor::add(dense->bias, add_to_bias);
+
+								}
+								//Tensor::copy(bias_tensor, dense->bias);
+								actual_layer=dense;
+								break;
+
+							} else cerr << "Error, add with a parameter input where the other input is not a dense or a convolutional layer" << endl;
 						}
 						string name = node->name();
 						actual_layer = new LAdd(parents, name, dev, mem);
@@ -1175,9 +1326,34 @@ namespace eddl {
 					{
 						vector<Layer *> parents;
 						string parent_name;
+						bool dense_detected = false;
+						int index_parameter = -1;
 						for ( int j = 0; j < node->input_size(); j++) {
 							parent_name = node->input(j);
-							parents.push_back(output_node_map[parent_name]);
+							if(map_init_values.count(parent_name)){
+								//Dense detected	
+								if(dense_detected){
+									cerr << "MAT_MUL with two parameters" << endl;
+								}
+								dense_detected=true;
+								index_parameter = j;
+							} else
+								parents.push_back(output_node_map[parent_name]);
+						}
+						if(dense_detected){
+							string weights_name = node->input(index_parameter);
+							vector<float> *weights = new vector<float>(map_init_values[weights_name]);
+							vector<int> dims = map_init_dims[weights_name];
+							int ndim = dims.size();
+							int neuronas = dims[1];
+							Layer *parent = parents[1-index_parameter];
+							bool use_bias = false;
+							LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem); 
+							Tensor* weights_tensor = new Tensor(dims, weights->data(), dev);
+							Tensor::copy(weights_tensor, dense->W );
+							delete(weights_tensor);
+							actual_layer = dense;
+							break;
 						}
 						string name = node->name();
 						actual_layer = new LMatMul(parents, name, dev, mem);
@@ -1271,11 +1447,23 @@ namespace eddl {
 						string name = node->name();
 
 						actual_layer = new LMaxPool(parent, new PoolDescriptor(kernel_shape, strides, pads), name, dev, mem);
-						break;
 					}
+						break;
+				case ONNX_LAYERS::GLOBMAXPOOL:
+					{
+						string parent_name = node->input(0); //Get parent
+						Layer* parent = output_node_map[parent_name];
+						vector<int> parent_shape = parent->output->shape;
+
+						int h=parent_shape[2];
+						int w=parent_shape[3];
+
+						actual_layer = new LMaxPool(parent, {h,w},{1,1}, "none", "gpool", dev, mem);
+					}
+					break;
 
 				default:
-					cerr << "FATAL: LAYER NOT RECOGNIZED WITH TYPE " << layer_type <<   endl;
+					cerr << "FATAL: LAYER NOT RECOGNIZED WITH TYPE " << layer_type_name <<  endl;
 					nodeQueue.pop();
 					continue;
 					break;
@@ -1299,7 +1487,7 @@ namespace eddl {
 		for( int i = 0; i < output_names.size(); i++ ) {
 			output_layers.push_back(output_node_map[output_names[i]]);
 		}
-		cout << "Net imported from ONNX succesfuly" << endl;
+		cout << "Net imported from ONNX succesfully" << endl;
 		return new Net(input_layers, output_layers);
 	}
 
@@ -1531,14 +1719,14 @@ namespace eddl {
 						vector<float>* weights = new vector<float>(map_init_values[weights_name]);
 						vector<int> dims = map_init_dims[weights_name];
 
-						conv_tensors.push_back(eddlT::create(dims, weights->data(), dev));
+						conv_tensors.push_back(new Tensor(dims, weights->data(), dev));
 
 						if(node.input_size() > 2){ //This means we also have a bias
 							string bias_name = node.input(2);
 							vector<float>* bias = new vector<float>(map_init_values[bias_name]);
 							vector<int> bias_shape;
 							bias_shape.push_back(bias->size());
-							conv_tensors.push_back(eddlT::create(bias_shape, bias->data(), dev));
+							conv_tensors.push_back(new Tensor(bias_shape, bias->data(), dev));
 						}
 
 						tensors[name] = conv_tensors;
@@ -1554,13 +1742,13 @@ namespace eddl {
 						vector<float>* weights = new vector<float>(map_init_values[weights_name]);
 						vector<int> dims = map_init_dims[weights_name];
 
-						dense_tensors.push_back(eddlT::create(dims, weights->data(), dev));
+						dense_tensors.push_back(new Tensor(dims, weights->data(), dev));
 
 						if(node.input_size() > 2){
 							string bias_name = node.input(2);
 							vector<float>* bias = new vector<float>(map_init_values[bias_name]);
 							vector<int> bias_dims = map_init_dims[bias_name];
-							dense_tensors.push_back(eddlT::create(bias_dims, bias->data(), dev));
+							dense_tensors.push_back(new Tensor(bias_dims, bias->data(), dev));
 						}
 
 						tensors[name] = dense_tensors;
@@ -1596,4 +1784,3 @@ namespace eddl {
 
 #endif //cPROTO
 
-}

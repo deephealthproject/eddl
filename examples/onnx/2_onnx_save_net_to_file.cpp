@@ -7,13 +7,13 @@
 * All rights reserved
 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "apis/eddl.h"
-#include "apis/eddlT.h"
-#include "serialization/onnx/eddl_onnx.h"
+#include "eddl/apis/eddl.h"
+#include "eddl/apis/eddlT.h"
+#include "eddl/serialization/onnx/eddl_onnx.h" // Not allowed
 
 using namespace eddl;
 
@@ -30,33 +30,39 @@ int main(int argc, char **argv) {
 
     // Settings
     int epochs = 1;
-    int batch_size = 100;
+    int batch_size = 1000;
     int num_classes = 10;
 
     // Define network
     layer in = Input({784});
     layer l = in;  // Aux var
 
-  	l=Reshape(l,{-1});
-    l = ReLu(Dense(l, 1024));
-    l = BatchNormalization(l);
-    l = ReLu(Dense(l, 1024));
-    l = BatchNormalization(l);
-    l = ReLu(Dense(l, 1024));
-    l = BatchNormalization(l);
+	 l = l=Reshape(l,{1,28,28});
+	 l=MaxPool(ReLu(BatchNormalization(Conv(l,32,{3,3},{1,1}))),{2,2});
+	 l=MaxPool(ReLu(BatchNormalization(Conv(l,64,{3,3},{1,1}))),{2,2});
+	 l=MaxPool(ReLu(BatchNormalization(Conv(l,128,{3,3},{1,1}))),{2,2});
+					 
+	 l=Flatten(l);
+									 
+	 l=Activation(Dense(l,256),"relu");
+											 
+	 l=Activation(Dense(l,128),"relu");
+													 
+	 layer out=Activation(Dense(l,num_classes),"softmax");
+															 
+	 // Net define input and output layers list
+	 model net=Model({in},{out});// Build model
 
-    layer out = Activation(Dense(l, num_classes), "softmax");
-    model net = Model({in}, {out});
-
-    // Build model
     build(net,
           rmsprop(0.01), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          //CS_GPU({1}) // one GPU
-          CS_CPU(4), // CPU with maximum threads availables
+		  CS_GPU({1}, "low_mem"), // one GPU
+          //CS_CPU(), // CPU with maximum threads availables
 		  true       // Parameter that indicates that the weights of the net must be initialized to random values.
     );
+	
+	
 
     // View model
     summary(net);
@@ -77,8 +83,6 @@ int main(int argc, char **argv) {
 
     // Evaluate
     evaluate(net, {x_test}, {y_test});
-
-	
 
 	// Export
 	string path("trained_model.onnx");

@@ -1,19 +1,19 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
-* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es), (jmaronasm@gmail.com)
+* Version: 0.5
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
+* Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
 
 
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <stdexcept>
 
-#include "gpu_tensor.h"
-#include "gpu_kernels.h"
+#include "eddl/hardware/gpu/gpu_tensor.h"
+#include "eddl/hardware/gpu/gpu_kernels.h"
 
 // CUDA, NVIDIA compute capabilities:
 // https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#compute-capabilities

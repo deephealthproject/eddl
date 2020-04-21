@@ -1,159 +1,236 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.5
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "layer_normalization.h"
+#include "eddl/layers/normalization/layer_normalization.h"
 
 
 using namespace std;
 
-void BN_forward(Tensor *input,Tensor *output, MapReduceDescriptor *MD, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float momentum, float epsilon, bool affine, Tensor *bn_g, Tensor *bn_b,Tensor *opa, int trmode)
+
+// Different reductions operations using matrices routines
+// CuBlas in GPU and Eigen for CPU
+void rsum(Tensor *A, Tensor *b, Tensor *ones, Tensor *mem,int p)
 {
+  int s;
 
-  if (trmode) {
+  s=A->shape[p];
 
-    Tensor::copy(input,output);
+  if (p) b->reshape_({1,s});
+  else b->reshape_({s,1});
 
-    reduce_mean(output,bn_mean,MD);
+  if (p) Tensor::mult2D(ones,0,b,0,mem,0);
+  else Tensor::mult2D(b,0,ones,0,mem,0);
 
-    reduce_diff(output,bn_mean,MD);
-
-    Tensor *osqr=output->clone();
-    osqr->sqr_();
-
-    reduce_mean(osqr,bn_var,MD);
-
-    Tensor::add(momentum, mean, (1.0-momentum), bn_mean,mean,0);
-    Tensor::add(momentum, variance, (1.0-momentum), bn_var,variance,0);
-
-    Tensor *sd=bn_var->clone();
-
-    sd->add_(epsilon);
-    sd->sqrt_();
-
-    reduce_div(output,sd,MD);
-    if (affine) {
-      Tensor::copy(output,opa);
-      reduce_mult(output,bn_g,MD);
-      reduce_sum(output,bn_b,MD);
-    }
-    delete osqr;
-    delete sd;
-
-  }
-  else { // testmode
-    Tensor::copy(input,output);
-    reduce_diff(output,mean,MD);
-    Tensor::copy(variance,bn_var);
-    bn_var->add_(epsilon);
-    bn_var->sqrt_();
-    reduce_div(output,bn_var,MD);
-
-    if (affine) {
-      reduce_mult(output,bn_g,MD);
-      reduce_sum(output,bn_b,MD);
-    }
-
-  }
+  A->Tensor::add(1.0,A,1.0,mem,A,0);
+  b->reshape_({s});
 
 }
 
-void BN_backward(Tensor* input, Tensor *delta,Tensor *pdelta, MapReduceDescriptor *MD, Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float epsilon, bool affine, Tensor *bn_g, Tensor *bn_b, Tensor *gbn_g, Tensor* gbn_b,Tensor *opa)
+void rdiff(Tensor *A, Tensor *b, Tensor *ones,Tensor *mem,int p)
 {
-  // from http://proceedings.mlr.press/v37/ioffe15.pdf
+  int s;
 
-  int m;
+  s=A->shape[p];
 
-  if (delta->ndim == 2) {
-      m = delta->shape[0];
-  }else {
-      m = delta->shape[0] * delta->shape[2] * delta->shape[3];
+  if (p) b->reshape_({1,s});
+  else b->reshape_({s,1});
+
+  if (p) Tensor::mult2D(ones,0,b,0,mem,0);
+  else Tensor::mult2D(b,0,ones,0,mem,0);
+
+  A->Tensor::add(1.0,A,-1.0,mem,A,0);
+  b->reshape_({s});
+
+}
+
+void rmult(Tensor *A, Tensor *b, Tensor *ones,Tensor *mem,int p)
+{
+  int s;
+
+  s=A->shape[p];
+
+
+  if (p) b->reshape_({1,s});
+  else b->reshape_({s,1});
+
+  if (p) Tensor::mult2D(ones,0,b,0,mem,0);
+  else Tensor::mult2D(b,0,ones,0,mem,0);
+
+  Tensor::el_mult(A,mem,A,0);
+  b->reshape_({s});
+
+}
+
+void rdiv(Tensor *A, Tensor *b, Tensor *ones,Tensor *mem,int p)
+{
+  int s;
+
+  s=A->shape[p];
+
+
+  if (p) b->reshape_({1,s});
+  else b->reshape_({s,1});
+
+  if (p) Tensor::mult2D(ones,0,b,0,mem,0);
+  else Tensor::mult2D(b,0,ones,0,mem,0);
+
+  Tensor::el_div(A,mem,A,0);
+  b->reshape_({s});
+
+}
+
+void cmean(Tensor *A, Tensor *b,Tensor *ones,int p)
+{
+  int N,M;
+
+  N=A->shape[1-p];
+  M=A->shape[p];
+
+  if (p) {
+    ones->reshape_({1,N});
+    b->reshape_({1,M});
+  }
+  else {
+    ones->reshape_({N,1});
+    b->reshape_({M,1});
   }
 
-  Tensor *dmean=new Tensor(bn_mean->getShape(),bn_mean->device);
-  Tensor *dvar=new Tensor(bn_var->getShape(),bn_var->device);
+  if (p) Tensor::mult2D(ones,0,A,0,b,0);
+  else Tensor::mult2D(A,0,ones,0,b,0);
+  b->div_(N);
 
-  Tensor *X=input->clone();
-  Tensor *Tvar32=bn_var->clone();
-  Tensor *Tsqvar=bn_var->clone();
-  Tensor *dx_hat=delta->clone();
-
-
-  // Affine
-  if (affine) {
-
-    Tensor *A=new Tensor(delta->getShape(),delta->device);
-    Tensor *b=new Tensor(bn_g->getShape(),bn_g->device);
-    Tensor::el_mult(delta,opa,A,0);
-    reduce_mean(A,b,MD);
-    b->mult_(A->size/b->size);
-    Tensor::add(1,gbn_g,1,b,gbn_g,0);
-
-    //2 Beta
-    reduce_mean(delta,b,MD);
-    b->mult_(delta->size/b->size);
-    Tensor::add(1,gbn_b,1,b,gbn_b,0);
-
-    delete A;
-    delete b;
+  if (p) {
+    b->reshape_({M});
+    ones->reshape_({N,1});
+  }
+  else {
+    b->reshape_({M});
+    ones->reshape_({1,N});
+  }
+}
 
 
+void BN_forward(Tensor *input,Tensor *bn_mean, Tensor *bn_var, Tensor *mean, Tensor *variance,float momentum, float epsilon, int trmode)
+{
+  // General 2D BN
+  // NxM tensors where N is thre reduced dimensions to M statistics
+
+  int N,M;
+
+  N=input->shape[0];
+  M=input->shape[1];
+
+  Tensor *var=new Tensor({N,M},input->device);
+  Tensor *ones=new Tensor({N,1},input->device);
+  ones->fill_(1.0);
+
+  if (trmode) {
+
+    // mean
+    cmean(input,bn_mean,ones);
+
+    // in=in-mean
+    rdiff(input,bn_mean,ones,var);
+
+    Tensor::copy(input,var);
+
+    // variance
+    var->sqr_();
+    cmean(var,bn_var,ones);
+
+    // Update global statistics
+    if (momentum!=0.0) {
+      Tensor::add(momentum, mean, (1.0-momentum), bn_mean,mean,0);
+      Tensor::add(momentum, variance, (1.0-momentum), bn_var,variance,0);
+    }
+
+    // sd=sqrt(var+epsilon)
+    bn_var->add_(epsilon);
+    bn_var->sqrt_();
+
+    // in/sd
+    rdiv(input,bn_var,ones,var); //in=(x-mean)/sd
+  }
+  else {
+    rdiff(input,mean,ones,var);
+    Tensor::copy(variance,bn_var);
+    bn_var->add_(epsilon);
+    bn_var->sqrt_();
+    rdiv(input,bn_var,ones,var);
   }
 
-  //4 Var : dvar
-  Tsqvar->add_(epsilon);
-  Tsqvar->sqrt_();
 
-  Tvar32->add_(epsilon);
-  Tvar32->pow_(1.5);
-
-  X->div_(-1.0);
-  reduce_sum(X,bn_mean,MD);
-  X->div_(2.0);
-  reduce_div(X,Tvar32,MD);
-  Tensor::el_mult(X,dx_hat,X,0);
-  reduce_mean(X,dvar,MD);
-  dvar->mult_(m);
+  // Free
+  delete var;
+  delete ones;
 
 
-  //5 Mean
-  reduce_div(dx_hat,Tsqvar,MD);
-  //dx_hat->mult_(-1);
-  reduce_mean(dx_hat,dmean,MD);
-  dmean->mult_(-m);
-  //Tensor::copy(delta, dx_hat);
+}
 
-  //6 Delta
-  //reduce_div(dx_hat,Tsqvar,MD);
-  Tensor::copy(dx_hat,delta);
+void BN_backward(Tensor *delta,Tensor *bn_var, Tensor *opa)
+{
+  // General 2D BN
+  // NxM tensors where N is thre reduced dimensions to M statistics
 
-  Tensor::copy(input,X);
-  X->mult_(2.0/m);
-  bn_mean->mult_(-2.0/m);
-  reduce_sum(X,bn_mean,MD);
-  reduce_mult(X,dvar,MD);
-  Tensor::inc(X,delta);
-  dmean->mult_(1.0/m);
-  reduce_sum(delta,dmean,MD);
+  int N,M;
 
-  Tensor::inc(delta,pdelta);
+  N=delta->shape[0];
+  M=delta->shape[1];
+
+  Tensor *A=new Tensor({N,M},delta->device);
+  Tensor *ones=new Tensor({N},delta->device);
+  ones->fill_(1.0);
+  Tensor *m=new Tensor({1,M},delta->device);
+
+  // From https://github.com/BVLC/caffe/blob/master/src/caffe/layers/batch_norm_layer.cu
+  // if Y = (X-mean(X))/(sqrt(var(X)+eps)), then
+  //
+  // dE(Y)/dX =
+  //   (dE/dY - mean(dE/dY) - mean(dE/dY \cdot Y) \cdot Y)./ sqrt(var(X) + eps)
+  //          6   4         5   2          1        3      7
+  //
+  // where \cdot and ./ are hadamard product and elementwise division,
+  // respectively, dE/dY is the top diff, and mean/var/sum are all computed
+  // along all dimensions except the channels dimension.  In the above
+  // equation, the operations allow for expansion (i.e. broadcast) along all
+  // dimensions except the channels dimension where required.
+
+  //1
+  Tensor::el_mult(delta,opa,A,0);
+
+  //2
+  cmean(A,m,ones);
+
+  //3
+  rmult(opa,m,ones,A);
+
+  //4
+  cmean(delta,m,ones);
+
+  //5
+  rsum(opa,m,ones,A);
+
+  // 6
+  Tensor::add(1,delta,-1,opa,delta,0);
+
+  // from forward bn_var=sqrt(var(X) + eps
+  // 7
+  rdiv(delta,bn_var,ones,A);
 
 
-  delete X;
-  delete Tvar32;
-  delete Tsqvar;
-  delete dx_hat;
-  delete dvar;
-  delete dmean;
+  delete ones;
+  delete m;
+  delete A;
 
 }

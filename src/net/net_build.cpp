@@ -1,29 +1,29 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.5
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <chrono>
 #include <thread>
-#include "net.h"
+#include "eddl/net/net.h"
 #include <pthread.h>
-#include "../utils.h"
-#include "../random.h"
+#include "eddl/utils.h"
+#include "eddl/random.h"
 
-#include "../layers/core/layer_core.h"
+#include "eddl/layers/core/layer_core.h"
 
 #ifdef cGPU
-#include "../hardware/gpu/gpu_tensor.h"
+#include "eddl/hardware/gpu/gpu_tensor.h"
 #endif
 
 #define VERBOSE 0
@@ -154,6 +154,7 @@ void Net::toGPU(vector<int> g,int lsb,int mem){
 }
 
 void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize){
+	onnx_pretrained = !initialize; // For controlling when to copy the weights to the snet
 	build(opt, lo, me, initialize);
     set_compserv(cs);
 
@@ -362,6 +363,11 @@ void Net::split(int c, int todev) {
         sprintf(cname,"snet_%d",i);
         snets[i]->name=cname;
         snets[i]->build(optimizer->clone(), losses, metrics);
+        if(onnx_pretrained){ //We need to copy the imported weights to each snet
+            for(int i = 0; i < snets.size(); i++)
+                for(int j = 0; j < layers.size(); j++)
+                    layers[j]->copy(snets[i]->layers[j]);
+        }
 
     }
 }

@@ -237,8 +237,8 @@ CREDITS
    #endif
 #endif
 
-#include <stdlib.h>     // stdlib could have min/max
-#include <stdio.h>      // need FILE
+#include <cstdlib>     // stdlib could have min/max
+#include <cstdio>      // need FILE
 #include <string.h>     // stb_define_hash needs memcpy/memset
 #include <time.h>       // stb_dirtree
 #ifdef __MINGW32__
@@ -778,7 +778,7 @@ STB_EXTERN void * stb__malloc(size_t, char *, int);
    #endif
 
    // include everything that might define these, BEFORE making macros
-   #include <stdlib.h>
+   #include <cstdlib>
    #include <string.h>
    #include <malloc.h>
 

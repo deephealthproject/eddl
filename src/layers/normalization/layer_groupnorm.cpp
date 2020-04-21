@@ -1,91 +1,60 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.5
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "layer_normalization.h"
-#include "../reductions/layer_reductions.h"
-#include "../operators/layer_operators.h"
+#include "eddl/layers/normalization/layer_normalization.h"
+#include "eddl/layers/reductions/layer_reductions.h"
+#include "eddl/layers/operators/layer_operators.h"
 
 using namespace std;
 
 int LGroupNorm::total_layers = 0;
 
 
-LGroupNorm::LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool affine, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LGroupNorm::LGroupNorm(Layer *parent, int g, float epsilon, bool affine, string name, int dev, int mem) : LinLayer(name, dev, mem) {
 
     input=parent->output;
     groups=g;
-
-
-    affine=false;
+    this->affine=affine;
 
     if (input->ndim != 4) {
       input->info();
       msg("LGroupNorm only works over 2D (Conv) tensors","LGroupNorm");
     }
 
-    N=input->shape[0];
-    CH=input->shape[1];
-    H=input->shape[2];
-    W=input->shape[3];
+    if (input->shape[1]<groups)
+      msg("incorrect group value larger than channels","LGroupNorm");
 
-    if (CH%groups) msg("incorrect group value not channel divider","LGroupNorm");
+    if (input->shape[1]%groups)
+      msg("incorrect group value not channel divider","LGroupNorm");
 
-    Tensor *A=input->clone();
-    A->reshape_({N*groups,CH/groups,H,W});
+    shape.push_back(input->shape[0]*groups);
 
-    PD=new PermuteDescriptor({1,0,2,3});
-    PD->build(A->shape);
-
-    PD2=new PermuteDescriptor({1,0,2,3});
-    Tensor *B=new Tensor(PD->oshape,dev);
-    PD2->build(B->getShape());
-
-    axis.push_back(0);axis.push_back(2);axis.push_back(3);
-    shape.push_back(B->shape[1]);
-
-    MD=new MapReduceDescriptor(B,axis);
-
-
-    if (affine) opa=new Tensor(B->getShape(),dev); //output pre-affine
-
-
-    delete A;
-    delete B;
-
-    if(name.empty()) this->name = "groupnorm" + to_string(++total_layers);
-
-    this->momentum = momentum;
     this->epsilon = epsilon;
-    this->affine = affine;
 
     output=new Tensor(input->getShape(),dev);
-//    delta=new Tensor(input->getShape(),dev);
-
-    mean=new Tensor(shape,dev);
-    mean->fill_(0.0);
-    variance=new Tensor(shape,dev);
-    variance->fill_(1.0);
-
+    opa=new Tensor(input->getShape(),dev);
     bn_mean=new Tensor(shape,dev);
     bn_var=new Tensor(shape,dev);
 
     if (affine) {
-      bn_g=new Tensor(shape,dev);
-      bn_b=new Tensor(shape,dev);
+      int s=input->shape[1]/groups;
 
-      gbn_g=new Tensor(shape,dev);
-      gbn_b=new Tensor(shape,dev);
+      bn_g=new Tensor({s},dev);
+      bn_b=new Tensor({s},dev);
+
+      gbn_g=new Tensor({s},dev);
+      gbn_b=new Tensor({s},dev);
 
       params.push_back(bn_g);
       params.push_back(bn_b);
@@ -94,12 +63,23 @@ LGroupNorm::LGroupNorm(Layer *parent, int g, float momentum, float epsilon, bool
       gradients.push_back(gbn_b);
     }
 
-    // no trainable:
-    params.push_back(mean);
-    params.push_back(variance);
 
     parent->addchild(this);
     addparent(parent);
+}
+
+// virtual
+void LGroupNorm::resize(int batch){
+  if (batch!=output->shape[0]) {
+    opa->reshape_(output->getShape());
+
+    output->resize(batch);
+    opa->resize(batch);
+
+    bn_mean->resize(batch*groups);
+    bn_var->resize(batch*groups);
+
+  }
 }
 
 // override functions:
@@ -116,129 +96,169 @@ void LGroupNorm::initialize() {
   }
 }
 
-// virtual
-void LGroupNorm::resize(int batch){
-  if (batch!=output->shape[0]) {
-    output->resize(batch);
-//    delta->resize(batch);
+void LGroupNorm::forward()
+{
+  // Input = Output = {Batch,Channels,H,W} OR {Batch,Dim}
+  // bn_mean = bn_var = mean = variance = bn_g = bn_b = {Batch}
 
-    delete MD;
-
-    N=batch;
-
-    delete PD;
-    delete PD2;
-
-    Tensor *A=input->clone();
-    A->reshape_({N*groups,CH/groups,H,W});
-
-    PD=new PermuteDescriptor({1,0,2,3});
-    PD->build(A->shape);
-
-    PD2=new PermuteDescriptor({1,0,2,3});
-    Tensor *B=new Tensor(PD->oshape,dev);
-    PD2->build(B->getShape());
-
-    MD=new MapReduceDescriptor(B,axis);
-
-    if (affine) {
-      delete opa;
-      opa=new Tensor(B->getShape(),dev); //output pre-affine
-    }
-
-    delete A;
-    delete B;
+  int M,N;
+  int b,z,r,c,d;
 
 
-    bn_mean->resize(N*groups);
-    bn_var->resize(N*groups);
-    mean->resize(N*groups);
-    variance->resize(N*groups);
-    if (affine) {
-      bn_g->resize(N*groups);
-      bn_b->resize(N*groups);
+  b=input->shape[0];
+  z=input->shape[1];
+  r=input->shape[2];
+  c=input->shape[3];
 
-      gbn_g->resize(N*groups);
-      gbn_b->resize(N*groups);
+  input->reshape_({b*groups,z/groups,r,c});
 
-    }
+  // Now is like a LayerNorm but affine is channel-wise
+  M=b=input->shape[0];
+  z=input->shape[1];
+  r=input->shape[2];
+  c=input->shape[3];
+  N=z*r*c;
 
+  Tensor *in=new Tensor(input->getShape(),input->device);
+
+  permute_batch_last(input,in);
+  in->reshape_({N,M}); // now is a 2D tensor
+  opa->reshape_({N,M});
+
+  BN_forward(in,bn_mean,bn_var,nullptr,nullptr,0.0,epsilon,1);
+  Tensor::copy(in,opa);
+
+  if (affine) {
+    Tensor *in2=new Tensor({b,z,r,c},input->device);
+    int M2,N2;
+    N2=b*r*c;
+    M2=z;
+
+    permute_batch_first(opa,in2);
+    permute_channels_last(in2,in);
+
+    in->reshape_({N2,M2});
+
+    Tensor *var=new Tensor({N2,M2},input->device);
+    Tensor *ones=new Tensor({N2,1},input->device);
+    ones->fill_(1.0);
+
+    // apply affine transform in=gamma*in+beta
+    rmult(in,bn_g,ones,var);
+    rsum(in,bn_b,ones,var);
+
+    in2->reshape_({b,z,r,c});
+    permute_channels_first(in,in2);
+    permute_batch_last(in2,in);
+
+    in->reshape_({N,M});
+
+    delete in2;
+    delete var;
+    delete ones;
   }
-}
 
-void LGroupNorm::forward() {
+  // copy in to ouput
+  output->reshape_({b,z,r,c});
+  permute_batch_first(in,output);
 
-  Tensor *A;
-  Tensor *B;
-  Tensor *C;
+  input->reshape_({b/groups,z*groups,r,c});
+  output->reshape_({b/groups,z*groups,r,c});
 
-  A=input->clone();
-  A->reshape_({N*groups,CH/groups,H,W});
-
-  B=new Tensor(PD->oshape,dev);
-  C=new Tensor(PD->oshape,dev);
-
-  Tensor::select(A,B, PD);
-
-  BN_forward(B,C,MD,bn_mean,bn_var,mean,variance,momentum,epsilon,affine,bn_g,bn_b,opa,mode==TRMODE);
-
-  Tensor::select(C,A, PD2);
-
-  A->reshape_({N,CH,H,W});
-
-  Tensor::copy(A,output);
-
-  delete A;
-  delete B;
-  delete C;
-
+  delete in;
 }
 
 void LGroupNorm::backward()
 {
-  Tensor *A;
-  Tensor *B;
-  Tensor *C;
+  int M,N;
+  int b,z,r,c,d;
+
+  Tensor *dp;
+
+  b=delta->shape[0];
+  z=delta->shape[1];
+  r=delta->shape[2];
+  c=delta->shape[3];
+
+  delta->reshape_({b*groups,z/groups,r,c});
+
+  // Now is like a LayerNorm but affine is channel-wise
+  M=b=delta->shape[0];
+  z=delta->shape[1];
+  r=delta->shape[2];
+  c=delta->shape[3];
+
+  N=z*r*c;
+
+  // permute input and delta
+  dp=new Tensor({N,M},input->device);
+  permute_batch_last(delta,dp);
 
 
-  A=delta->clone();
-  A->reshape_({N*groups,CH/groups,H,W});
-  B=new Tensor(PD->oshape,dev);
-  Tensor::select(A,B, PD);
+  // Affine
+  if (affine) {
+    int M2,N2;
+    N2=b*r*c;
+    M2=z;
 
-  delete A;
+    Tensor *A=new Tensor({N,M},delta->device);
+    Tensor *A2=new Tensor({N,M},delta->device);
+    Tensor *ones=new Tensor({N2},delta->device);
+    ones->fill_(1.0);
+    Tensor *m=new Tensor({1,M2},delta->device);
+    //1 gamma
+    Tensor::el_mult(dp,opa,A,0);
 
-  A=input->clone();
-  A->reshape_({N*groups,CH/groups,H,W});
-  C=new Tensor(PD->oshape,dev);
-  Tensor::select(A,C, PD);
+    A2->reshape_({b,z,r,c});
+    permute_batch_first(A,A2);
+    permute_channels_last(A2,A);
+    A->reshape_({N2,M2});
 
-  delete A;
+    cmean(A,m,ones);
+    Tensor::add(1,gbn_g,1,m,gbn_g,0);
 
-  A=new Tensor(PD->oshape,dev);
-  A->fill_(0.0);
+    //2 Beta
+    A2->reshape_({b,z,r,c});
+    permute_batch_first(dp,A2);
+    permute_channels_last(A2,A);
+    A->reshape_({N2,M2});
+
+    cmean(A,m,ones);
+    Tensor::add(1,gbn_b,1,m,gbn_b,0);
+
+    // delta=dE/dY
+    // Obtain dE/dY from delta:
+    A2->reshape_({N2,M2});
+    rmult(A,bn_g,ones,A2);
+
+    A2->reshape_({b,z,r,c});
+    dp->reshape_({b,z,r,c});
+    permute_channels_first(A,A2);
+    permute_batch_last(A2,dp);
+    dp->reshape_({N,M});
+
+    delete A;
+    delete A2;
+    delete ones;
+    delete m;
+  }
+
+  BN_backward(dp,bn_var,opa);
+
+  permute_batch_first(dp,delta);
+
+  delta->reshape_({b/groups,z*groups,r,c});
+  Tensor::inc(delta, parent[0]->delta);
 
 
-  BN_backward(C,B,A,MD,bn_mean,bn_var,mean,variance,epsilon,affine,bn_g,bn_b,gbn_g,gbn_b,opa);
 
-  delete B;
-
-  B=new Tensor(PD2->oshape,dev);
-
-  Tensor::select(A,B, PD2);
-  B->reshape_({N,CH,H,W});
-
-  Tensor::inc(B,parent[0]->delta);
-
-  delete A;
-  delete B;
-  delete C;
+  delete dp;
 }
 
 
 
 Layer *LGroupNorm::share(int c, int bs, vector<Layer *> p) {
-    LGroupNorm *n = new LGroupNorm(p[0], groups, momentum, epsilon, affine, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    LGroupNorm *n = new LGroupNorm(p[0], groups, epsilon, affine,"share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement
@@ -247,7 +267,7 @@ Layer *LGroupNorm::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LGroupNorm::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LGroupNorm *n = new LGroupNorm(p[0], groups, momentum, epsilon, affine, "clone_" + to_string(todev) + name, todev, this->mem_level);
+    LGroupNorm *n = new LGroupNorm(p[0], groups, epsilon, affine,"clone_" + to_string(todev) + name, todev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

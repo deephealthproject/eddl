@@ -1,20 +1,20 @@
 
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.5
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
 
 
-#include "tensor_descriptors.h"
-#include "../utils.h"
+#include "eddl/descriptors/tensor_descriptors.h"
+#include "eddl/utils.h"
 
 #ifdef cGPU
-#include "../hardware/gpu/gpu_tensor.h"
-#include "../hardware/gpu/gpu_hw.h"
+#include "eddl/hardware/gpu/gpu_tensor.h"
+#include "eddl/hardware/gpu/gpu_hw.h"
 #endif
 
 TensorDescriptor::TensorDescriptor(int dev){

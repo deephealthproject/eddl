@@ -7,12 +7,12 @@
 * All rights reserved
 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "apis/eddl.h"
-#include "apis/eddlT.h"
+#include "eddl/apis/eddl.h"
+#include "eddl/apis/eddlT.h"
 
 using namespace eddl;
 
@@ -106,7 +106,7 @@ int main(int argc, char **argv){
 	sgd(0.001,0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    CS_GPU({1}, "low_mem") // GPU with only one gpu
+    CS_GPU({1}, "full_mem") // GPU with only one gpu
       //CS_CPU(-1)  // CPU with maximum threads availables
   );
 

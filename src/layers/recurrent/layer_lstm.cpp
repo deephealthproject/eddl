@@ -1,21 +1,21 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.5
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
 
 
 
-#include <stdio.h>
-#include <stdio.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdio>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 
-#include "layer_recurrent.h"
+#include "eddl/layers/recurrent/layer_recurrent.h"
 
 
 using namespace std;

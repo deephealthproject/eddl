@@ -1,22 +1,22 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.5
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
 
 
-#include "tensor.h"
-#include "tensor_reduction.h"
-#include "../hardware/cpu/cpu_hw.h"
+#include "eddl/tensor/tensor.h"
+#include "eddl/tensor/tensor_reduction.h"
+#include "eddl/hardware/cpu/cpu_hw.h"
 
 
 #ifdef cGPU
-#include "../hardware/gpu/gpu_tensor.h"
-#include "../hardware/gpu/gpu_hw.h"
-#include "../hardware/gpu/nn/gpu_nn.h"
+#include "eddl/hardware/gpu/gpu_tensor.h"
+#include "eddl/hardware/gpu/gpu_hw.h"
+#include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
 
