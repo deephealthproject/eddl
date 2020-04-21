@@ -59,6 +59,9 @@ else()
 
     # Set variables
     SET(GTEST_ROOT "${EP_BASE_DIR}/googletest" PARENT_SCOPE)
+    SET(GTEST_INCLUDE_DIRS "${EP_BASE_DIR}/googletest/include" PARENT_SCOPE)
+    SET(GTEST_LIBRARIES_DIRS "${EP_BASE_DIR}/googletest/lib" PARENT_SCOPE)
+    SET(GTEST_BOTH_LIBRARIES "gtest gtest_main" PARENT_SCOPE)
 endif()
 message(STATUS "Subproject: GTEST...DONE")
 
