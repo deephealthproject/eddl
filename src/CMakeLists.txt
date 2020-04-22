@@ -4,8 +4,6 @@
 
 # USER OPTIONS *******************************
 set(BUILD_TARGET "GPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
-option(BUILD_OPENMP "Compile using OpenMP" ON)
-option(BUILD_PROTOBUF "Compile using Protobuf" ON)
 option(OVERWRITE_PROTO_FILES "Overwrite protobuf files (requires a compatible protobuf compiler)" ON)
 
 # Double checks (restricted args)
@@ -15,7 +13,8 @@ set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
 string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
 if(${BUILD_TARGET} STREQUAL "CPU")
 elseif(${BUILD_TARGET} STREQUAL "GPU")
-    set(USE_CUDA ON CACHE BOOL "Enable CUDA support if checked")
+    SET(USE_CUDA ON) # Local's scope
+    SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
 else()
     message(FATAL_ERROR "Build target '${BUILD_TARGET}' not implemented, CMake will exit." )
 endif()
@@ -66,15 +65,15 @@ if(UNIX) # Add setup for windows in the windows's section
 endif()
 
 ## Eigen (I have temporally drop this header-only library to "includes/eddl/")
-#if(DEFINED Eigen3_DIR)
-#    message(STATUS "Using specific Eigen")
-#else()
-#    message(STATUS "Searching for Eigen in the system...")
-#endif()
-#find_package(Eigen3 3.3 REQUIRED NO_MODULE)  # EIGEN_DIR => ok
-#message(STATUS "Eigen found!")
-#target_include_directories(${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIRS})
-#target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only library
+if(DEFINED Eigen3_DIR)
+    message(STATUS "Using specific Eigen")
+else()
+    message(STATUS "Searching for Eigen in the system...")
+endif()
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)  # EIGEN_DIR => ok
+message(STATUS "Eigen found!")
+target_include_directories(${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only library
 
 # ZLIB
 if(DEFINED ZLIB_INCLUDE_DIRS AND DEFINED ZLIB_LIBRARIES_DIRS AND DEFINED ZLIB_LIBRARIES)
@@ -125,7 +124,8 @@ if(BUILD_OPENMP)
     else()
         message(WARNING "OpenMP not found but requested during compilation. (Falling back to: '-D BUILD_OPENMP=OFF')
         Hint: Use a compiler with OpenMP support using: '-D CMAKE_CXX_COMPILER=path'")
-        SET(BUILD_OPENMP OFF)
+        SET(USE_OPENMP OFF) # Local's scope
+        SET(USE_OPENMP ${USE_OPENMP} PARENT_SCOPE)  # Parent's scope
     endif()
 endif()
 
@@ -165,8 +165,10 @@ if(USE_CUDA)
     else()
         message(WARNING "[WARNING] CUDA compiler not found but requested during compilation. (Falling back to: '-D USE_CUDA=OFF')
         Hint: Set the NVCC path using '-D CMAKE_CUDA_COMPILER=path' or creating a symbolic link.")
-        set(USE_CUDA OFF)
-        set(BUILD_TARGET "CPU")
+        SET(USE_CUDA OFF) # Local's scope
+        SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
+        SET(BUILD_TARGET "CPU") # Local's scope
+        SET(BUILD_TARGET ${BUILD_TARGET} PARENT_SCOPE)  # Parent's scope
     endif()
 endif()
 
@@ -262,15 +264,15 @@ message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
 message(STATUS "CUDA toolkit: " ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} )
 endif()
 message(STATUS "-------------------------------------------" )
-message(STATUS "OpenMP enabled: " ${BUILD_OPENMP} )
+message(STATUS "OpenMP enabled: " ${USE_OPENMP} )
 if(BUILD_OPENMP)
 message(STATUS "OpenMP version: " ${OpenMP_VERSION_MAJOR} )
 message(STATUS "OpenMP gomp library: " ${OpenMP_gomp_LIBRARY} )
 message(STATUS "OpenMP pthread library: " ${OpenMP_pthread_LIBRARY} )
 endif()
-#message(STATUS "-------------------------------------------" )
-#message(STATUS "Eigen3 dir: " ${Eigen3_DIR} )
-#message(STATUS "Eigen3 include: " ${EIGEN3_INCLUDE_DIR} )
+message(STATUS "-------------------------------------------" )
+message(STATUS "Eigen3 dir: " ${Eigen3_DIR} )
+message(STATUS "Eigen3 include: " ${EIGEN3_INCLUDE_DIR} )
 message(STATUS "-------------------------------------------" )
 message(STATUS "ZLIB root: " ${ZLIB_ROOT} )
 message(STATUS "ZLIB include: " ${ZLIB_INCLUDE_DIRS} )

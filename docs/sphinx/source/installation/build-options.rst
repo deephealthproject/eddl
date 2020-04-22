@@ -227,11 +227,11 @@ troubleshoot the compilation process (see: :doc:``troubleshoot``).
 
     Enabled by default
 
-- **Superbuild:** To let the EDDL manage its dependencies automatically, use the setting ``USE_SUPERBUILD``:
+- **Superbuild:** To let the EDDL manage its dependencies automatically, use the setting ``BUILD_SUPERBUILD``:
 
 .. code:: bash
 
-    -DUSE_SUPERBUILD=ON
+    -DBUILD_SUPERBUILD=ON
 
 .. note::
 

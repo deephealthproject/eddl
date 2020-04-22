@@ -9,7 +9,7 @@ sudo chmod +x install_requirements.sh
 sudo ./install_requirements.sh
 
 # [A] Use specific version
-EDDL_VERSION=0.4.4
+EDDL_VERSION=v0.5.2a
 wget https://github.com/deephealthproject/eddl/archive/$EDDL_VERSION.tar.gz
 tar -xf $EDDL_VERSION.tar.gz
 cd eddl-$EDDL_VERSION/
@@ -20,13 +20,13 @@ cd eddl-$EDDL_VERSION/
 # Build EDDL
 mkdir build
 cd build/
-cmake .. -DBUILD_PROTOBUF=ON -DBUILD_EXAMPLES=ON -DBUILD_TESTS=ON
+cmake .. -DBUILD_EXAMPLES=ON -DBUILD_TESTS=ON
 make -j$(nproc)
 make install
 
 # Test EDDL
-ctest --verbose
+bin/unit_tests
 
 # Build docs (optional, check .dockerignore)
 cd ../docs/doxygen/ && doxygen
-cd ../source && make clean && make html
+cd ../sphinx/source && make clean && make html

@@ -88,8 +88,8 @@ On Unix platforms, from the source directory:
             git clone https://github.com/deephealthproject/eddl.git
             cd eddl/
 
-            # Install run dependencies
-            sudo apt-get install cmake wget graphviz
+            # Install dependencies
+            sudo apt-get install cmake wget graphviz libeigen3-dev zlib1g-dev
 
             # Build and install
             mkdir build
@@ -105,33 +105,14 @@ On Unix platforms, from the source directory:
             git clone https://github.com/deephealthproject/eddl.git
             cd eddl/
 
-            # Install run dependencies
-            brew install cmake wget graphviz
+            # Install dependencies
+            brew install cmake wget graphviz eigen zlib
 
             # Build and install
             mkdir build
             cd build
             cmake ..
             make install
-
-    .. tab:: Windows
-
-        .. code:: bash
-
-            # Download source code
-            git clone https://github.com/deephealthproject/eddl.git
-            cd eddl/
-
-            # Install dependencies
-            conda env create -f environment.yml
-            conda activate eddl
-
-            # Build and install
-            mkdir build
-            cd build
-            cmake -G "NMake Makefiles" ..
-            nmake
-            nmake install
 
 
 See the :doc:`build-options` section for more details about cmake options.
@@ -140,7 +121,7 @@ See the :doc:`build-options` section for more details about cmake options.
 
     You can make use of the ``-DCMAKE_INSTALL_PREFIX`` flag to specify where cmake searches for
     dependencies and installs libraries. In addition to this flag, you also need to make use of
-    ``-DUSE_SUPERBUILD=OFF`` to not use our dependency management system.
+    ``-DBUILD_SUPERBUILD=OFF`` to not use our dependency management system.
 
     If you like Conda, you can make use of our environment by running these commands from
     the source directory (``eddl/``):

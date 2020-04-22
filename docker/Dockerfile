@@ -6,7 +6,7 @@ RUN apt-get install -y build-essential ca-certificates apt-utils # Essentials
 
 # Install dependencies  ******************
 # Utilities
-RUN apt-get install -y cmake git wget graphviz
+RUN apt-get install -y cmake git wget graphviz libeigen3-dev zlib1g-dev
 
 # Install development libraries
 RUN apt-get install -y doxygen
@@ -36,5 +36,5 @@ RUN cd build && cmake/eddl/bin/unit_tests
 
 # Build docs (optional, check .dockerignore)
 RUN cd docs/doxygen && doxygen
-RUN cd docs/source && make clean && make html
+RUN cd docs/sphinx/source && make clean && make html
 

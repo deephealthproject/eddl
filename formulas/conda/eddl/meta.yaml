@@ -1,6 +1,6 @@
 {% set name = "eddl-cpu" %}  # If this is a package for GPU, use: "eddl-gpu"
-{% set version = "0.4.3" %}
-{% set sha256 = "07492ae01d13a8b9c686ea5578dfc8740be751dc9b82d61ef669699054b9dd7f" %}
+{% set version = "v0.5.2a" %}
+{% set sha256 = "bd937a6e228ff0c4b1ef957c65c017adb5ef2abf5a5dd1eb7a838a60217a1e8e" %}
 
 package:
   name: {{ name|lower }}
@@ -19,29 +19,25 @@ requirements:
   build:
     - {{ compiler('cxx') }}
   host:
-    - graphviz
-    - wget
     - cmake
     - eigen
-    - cudatoolkit
     - zlib
-    - gtest
+    - cudatoolkit
+    - graphviz
+    - wget
   run:
-    - graphviz
-    - wget
     - cmake
     - eigen
-    - cudatoolkit
     - zlib
-    - gtest
+    - cudatoolkit
+    - graphviz
+    - wget
 
 test:
   commands:
     - test -d ${PREFIX}/include/eddl  # [unix]
-    - test -f ${PREFIX}/include/eddl/tensor/tensor.h  # [unix]
-    - test -f ${PREFIX}/lib/cmake/eddl/eddlConfig.cmake  # [unix]
-    - if exist %LIBRARY_PREFIX%\include\tensor\tensor.h (exit 0) else (exit 1)  # [win]
-    - if exist %LIBRARY_PREFIX%\lib\cmake\eddlConfig.cmake (exit 0) else (exit 1)  # [win]
+    - test -f ${PREFIX}/include/eddl/apis/eddl.h  # [unix]
+    - test -f ${PREFIX}/lib/cmake/eddl/EDDLConfig.cmake  # [unix]
 
 about:
   home: https://github.com/deephealthproject/eddl
@@ -49,5 +45,5 @@ about:
   license_family: MIT
   license_file: LICENSE
   summary: 'EDDL is an optimized tensor library for distributed deep learning with hardware transparency support for CPUs, GPUs and FPGAs'
-  doc_url: https://deephealthproject.github.io/eddldocs/
-  dev_url: https://github.com/deephealthproject/eddl
+  doc_url: https://deephealthproject.github.io/eddl/
+  dev_url: https://github.com/deephealthproject/eddl/

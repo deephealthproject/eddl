@@ -73,16 +73,28 @@ sha256sum <file>
 ## Test Brew formulas
 
 Drop the `formulas/brew/eddl.rb` file at `/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/`, and the run `brew install eddl`
+Then you can also execute; `brew`
 
 
 ## Build conda package
 
 ```
+# Use the environment from the source to use the conda cmake and 
+# avoid looking too much into the system packages
+conda env create -f environment.yml
+conda activate eddl
+
+...or
+conda remove --name eddl --all
+conda create --name eddl
+conda activate eddl
+conda install cmake
+---------
+# Go to the folder of conda/eddl
 cd formulas/conda/eddl
 conda build .
 
 # Test installation
-conda activate
 conda install --use-local eddl
 
 # Test cpp example

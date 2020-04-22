@@ -18,38 +18,7 @@ sudo apt-get install -y build-essential ca-certificates apt-utils # Essentials
 
 # Install dependencies  ******************
 # Utilities
-sudo apt-get install -y cmake git wget graphviz zlib1g-dev libboost-all-dev
-
-# Eigen3
-echo "Installing Eigen3 ----------------------"
-sudo apt-get install -y libeigen3-dev
-
-# gTests
-echo "Installing google tests ----------------------"
-sudo apt-get install -y libgtest-dev
-cd /usr/src/gtest
-cmake CMakeLists.txt
-make -j$(nproc)
-cp *.a /usr/lib
-
-# Protobuf
-PROTOBUF_VERSION=3.11.4
-echo "Installing protobuf $PROTOBUF_VERSION ----------------------"
-
-# Install requirements
-sudo apt-get install -y wget
-sudo apt-get install -y autoconf automake libtool curl make g++ unzip
-
-# Download source
-wget https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protobuf-cpp-$PROTOBUF_VERSION.tar.gz
-tar -xf protobuf-cpp-$PROTOBUF_VERSION.tar.gz
-
-# Build and install
-cd protobuf-$PROTOBUF_VERSION
-./configure
-make -j$(nproc)
-make install
-ldconfig
+sudo apt-get install -y cmake git wget graphviz libeigen3-dev zlib1g-dev
 
 # Install development libraries
 echo "Installing development dependencies ----------------------"
@@ -63,7 +32,7 @@ pip3 install pytest
 
 
 # [A] Use specific version
-EDDL_VERSION=0.4.4
+EDDL_VERSION=v0.5.2a
 echo "INSTALLING EDDL $EDDL_VERSION****************"
 
 wget https://github.com/deephealthproject/eddl/archive/$EDDL_VERSION.tar.gz
@@ -78,17 +47,17 @@ mkdir build
 cd build/
 #CUDA_TOOLKIT=PATH WHERE THE CUDA TOOLKIT IS INSTALLED
 #CUDA_COMPILER=PATH WHERE THE CUDA COMPILER IS INSTALLED
-cmake .. -DBUILD_PROTOBUF=ON -DBUILD_EXAMPLES=ON  # -DBUILD_TARGET=GPU -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_TOOLKIT -DCMAKE_CUDA_COMPILER=$CUDA_COMPILER
+cmake .. -DBUILD_EXAMPLES=ON  # -DBUILD_TARGET=GPU -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_TOOLKIT -DCMAKE_CUDA_COMPILER=$CUDA_COMPILER
 make -j$(nproc)
 make install
 
 # Test EDDL
-ctest --verbose
+bin/unit_tests
 
 echo "BUILDING EDDL DOCUMENTATION***************"
 # Build docs (optional, check .dockerignore)
 cd ../docs/doxygen/ && doxygen
-cd ../source && make clean && make html
+cd ../sphinx/source && make clean && make html
 
 
 # Install PyEDDL
