@@ -18,10 +18,12 @@ if (@BUILD_OPENMP@)
     find_dependency(OpenMP REQUIRED)
 endif()
 
+
+find_dependency(Eigen3 REQUIRED NO_MODULE)
+find_dependency(ZLIB REQUIRED)
+
 # Dependencies
 if(NOT @USE_SUPERBUILD@)
-    #find_dependency(Eigen3 REQUIRED NO_MODULE)
-    find_dependency(ZLIB REQUIRED)
     find_dependency(Protobuf REQUIRED)
 endif()
 
