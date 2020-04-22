@@ -4,8 +4,6 @@
 
 # USER OPTIONS *******************************
 set(BUILD_TARGET "GPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
-option(BUILD_OPENMP "Compile using OpenMP" ON)
-option(BUILD_PROTOBUF "Compile using Protobuf" ON)
 option(OVERWRITE_PROTO_FILES "Overwrite protobuf files (requires a compatible protobuf compiler)" ON)
 
 # Double checks (restricted args)
@@ -15,7 +13,8 @@ set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
 string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
 if(${BUILD_TARGET} STREQUAL "CPU")
 elseif(${BUILD_TARGET} STREQUAL "GPU")
-    set(USE_CUDA ON CACHE BOOL "Enable CUDA support if checked" PARENT_SCOPE)
+    SET(USE_CUDA ON) # Local's scope
+    SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
 else()
     message(FATAL_ERROR "Build target '${BUILD_TARGET}' not implemented, CMake will exit." )
 endif()
@@ -125,7 +124,8 @@ if(BUILD_OPENMP)
     else()
         message(WARNING "OpenMP not found but requested during compilation. (Falling back to: '-D BUILD_OPENMP=OFF')
         Hint: Use a compiler with OpenMP support using: '-D CMAKE_CXX_COMPILER=path'")
-        SET(BUILD_OPENMP OFF)
+        SET(USE_OPENMP OFF) # Local's scope
+        SET(USE_OPENMP ${USE_OPENMP} PARENT_SCOPE)  # Parent's scope
     endif()
 endif()
 
@@ -165,8 +165,10 @@ if(USE_CUDA)
     else()
         message(WARNING "[WARNING] CUDA compiler not found but requested during compilation. (Falling back to: '-D USE_CUDA=OFF')
         Hint: Set the NVCC path using '-D CMAKE_CUDA_COMPILER=path' or creating a symbolic link.")
-        set(USE_CUDA OFF PARENT_SCOPE)
-        set(BUILD_TARGET "CPU")
+        SET(USE_CUDA OFF) # Local's scope
+        SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
+        SET(BUILD_TARGET "CPU") # Local's scope
+        SET(BUILD_TARGET ${BUILD_TARGET} PARENT_SCOPE)  # Parent's scope
     endif()
 endif()
 
@@ -262,7 +264,7 @@ message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
 message(STATUS "CUDA toolkit: " ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} )
 endif()
 message(STATUS "-------------------------------------------" )
-message(STATUS "OpenMP enabled: " ${BUILD_OPENMP} )
+message(STATUS "OpenMP enabled: " ${USE_OPENMP} )
 if(BUILD_OPENMP)
 message(STATUS "OpenMP version: " ${OpenMP_VERSION_MAJOR} )
 message(STATUS "OpenMP gomp library: " ${OpenMP_gomp_LIBRARY} )
