@@ -84,6 +84,12 @@ Then you can also execute; `brew`
 conda env create -f environment.yml
 conda activate eddl
 
+...or
+conda remove --name eddl --all
+conda create --name eddl
+conda activate eddl
+conda install cmake
+---------
 # Go to the folder of conda/eddl
 cd formulas/conda/eddl
 conda build .
