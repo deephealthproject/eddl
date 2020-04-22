@@ -423,6 +423,11 @@ void Net::delta()
 void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     int i, j, k, n;
 
+    if (isrecurrent) {
+        fit_recurrent(tin,tout, batch, epochs);
+    }
+  else{
+
     // Check current optimizer
     if (optimizer == nullptr)
         msg("Net is not build", "Net.fit");
@@ -494,7 +499,48 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
         fprintf(stdout, "\n%1.3f secs/epoch\n", epoch_time_span.count());
     }
     fflush(stdout);
+  }
 }
+
+void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
+    int i, j, k, n;
+
+
+   int inl;
+   int outl;
+
+   inl=tin[0]->shape[0];
+   outl=1;
+
+   printf("Recurrent %d to %d\n",inl,outl);
+
+
+   Net* rnet=unroll(inl,outl,false,false);
+
+   rnet->plot("rmodel.pdf","LR");
+
+   vloss lr;
+   for(i=0;i<outl;i++) lr.push_back(losses[0]);
+
+   vmetrics mr;
+   for(i=0;i<outl;i++) mr.push_back(metrics[0]);
+
+
+   rnet->build(optimizer->clone(),losses,metrics,cs);
+
+   vtensor tinr;
+   int offset;
+   offset=tin[0]->shape[1]*tin[0]->shape[2];
+   for(i=0;i<inl;i++) {
+     tinr.push_back(new Tensor({tin[0]->shape[1],tin[0]->shape[2]},tin[0]->ptr+offset));
+     //tinr[i]->info();
+   }
+
+   rnet->isrecurrent=false;
+
+   rnet->fit(tinr,tout,batch,epochs);
+}
+
 
 /////////////////////////////////////////
 void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {

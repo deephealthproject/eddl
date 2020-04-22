@@ -497,6 +497,8 @@ Net* Net::unroll(int inl, int outl, bool seq, bool areg) {
       noutl.push_back(nout[i][j]);
 
   Net *rnet=new Net(ninl, noutl);
+  rnet->isrecurrent=true;
+  
 
   return rnet;
 /*

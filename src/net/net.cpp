@@ -94,6 +94,8 @@ Net::Net(vlayer in, vlayer out) {
         fiterr.push_back(0.0);
     }
 
+    isrecurrent=false;
+
     build_randn_table();
 }
 

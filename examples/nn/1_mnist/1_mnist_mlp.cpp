@@ -32,19 +32,14 @@ int main(int argc, char **argv) {
     int num_classes = 10;
 
     // Define network
-    layer in = Input({784});
+    layer in = Input({28});
     layer l = in;  // Aux var
     layer l2;
 
-    l = LeakyReLu(Dense(l, 1024));
-    l2 = LeakyReLu(Dense(l, 1024));
-    l= Sum(l,l2);
-    l = LeakyReLu(RNN(l, 1024));
-    l = LeakyReLu(Dense(l, 1024));
-    l2 = LeakyReLu(Dense(l, 1024));
-    l= Sum(l,l2);
-    l = LeakyReLu(RNN(l, 1024));
-    l = LeakyReLu(Dense(l, 1024));
+
+    l = LeakyReLu(Dense(l, 16));
+    l = LeakyReLu(RNN(l, 32));
+    l = LeakyReLu(Dense(l, 16));
 
     layer out = Softmax(Dense(l, num_classes));
     model net = Model({in}, {out});
@@ -55,7 +50,7 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          rmsprop(0.01), // Optimizer
+          sgd(0.01), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_GPU({1}, "low_mem") // one GPU
@@ -66,34 +61,28 @@ int main(int argc, char **argv) {
     // View model
     summary(net);
 
-    model rnet=net->unroll(5,2,false,false);
 
-    /*build(rnet,
-          rmsprop(0.01), // Optimizer
-          {"soft_cross_entropy"}, // Losses
-          {"categorical_accuracy"}, // Metrics
-          CS_GPU({1,1},100, "low_mem") // one GPU
-          //CS_CPU(-1, "low_mem") // CPU with maximum threads availables
-    );*/
-
-    plot(rnet,"rmodel.pdf");
-
-/*
     // Load dataset
     tensor x_train = eddlT::load("trX.bin");
     tensor y_train = eddlT::load("trY.bin");
     tensor x_test = eddlT::load("tsX.bin");
     tensor y_test = eddlT::load("tsY.bin");
 
+    x_train->reshape_({60000,28,28});
+    tensor x_train2=Tensor::permute(x_train,{1,0,2});
+
+    x_train2->info();
+
+
     // Preprocessing
-    eddlT::div_(x_train, 255.0);
+    eddlT::div_(x_train2, 255.0);
     eddlT::div_(x_test, 255.0);
 
     // Train model
-    fit(net, {x_train}, {y_train}, batch_size, epochs);
+    net->fit_recurrent({x_train2}, {y_train}, batch_size, epochs);
 
     // Evaluate
-    evaluate(net, {x_test}, {y_test});
-    */
+    //evaluate(net, {x_test}, {y_test});
+
 
 }

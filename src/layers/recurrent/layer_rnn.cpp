@@ -40,25 +40,26 @@ LRNN::LRNN(vector<Layer *> parent, int units, int num_layers, bool use_bias, flo
 
     // From parent layer
     Wx = new Tensor(vector<int>{input->shape[1], ndim}, dev);
-    if (use_bias) biasx = new Tensor(vector<int>{ndim}, dev);
     params.push_back(Wx);
-    if (use_bias) params.push_back(biasx);
 
     gWx = new Tensor(vector<int>{input->shape[1], ndim}, dev);
-    if (use_bias) gbiasx = new Tensor(vector<int>{ndim}, dev);
     gradients.push_back(gWx);
-    if (use_bias) gradients.push_back(gbiasx);
 
     // From t-1 RNN
     Wy = new Tensor(vector<int>{ndim, ndim}, dev);
-    if (use_bias) biasy = new Tensor(vector<int>{ndim}, dev);
     params.push_back(Wy);
-    if (use_bias) params.push_back(biasy);
 
     gWy = new Tensor(vector<int>{ndim, ndim}, dev);
-    if (use_bias) gbiasy = new Tensor(vector<int>{ndim}, dev);
     gradients.push_back(gWy);
-    if (use_bias) gradients.push_back(gbiasy);
+
+
+    if (use_bias) {
+      bias = new Tensor(vector<int>{ndim}, dev);
+      params.push_back(bias);
+      gbias = new Tensor(vector<int>{ndim}, dev);
+      if (use_bias) gradients.push_back(gbias);
+    }
+
 
     for (int i = 0; i < parent.size(); ++i) {
         parent[i]->addchild(this);
@@ -70,11 +71,30 @@ LRNN::LRNN(vector<Layer *> parent, int units, int num_layers, bool use_bias, flo
 
 // virtual
 void LRNN::forward() {
-    // TODO: Implement
+  Tensor::mult2D(parent[0]->output, 0, Wx, 0, output, 0);
+  if (parent.size()>1)
+    Tensor::mult2D(parent[1]->output, 0, Wy, 0, output, 1);
+  if (use_bias) Tensor::sum2D_rowwise(output, bias, output);
 }
 
 void LRNN::backward() {
-    // TODO: Implement
+  //get gradients with provided delta
+
+  if (trainable) {
+      Tensor::mult2D(parent[0]->output, 1, delta, 0, gWx, 1);
+      if (parent.size()>1)
+        Tensor::mult2D(parent[1]->output, 1, delta, 0, gWy, 1);
+    if (use_bias) Tensor::reduce_sum2D(delta, gbias, 0, 1);
+  }
+
+  //1: note that increment parent delta
+  Tensor::mult2D(delta, 0, Wx, 1, parent[0]->delta, 1);
+  if (parent.size()>1)
+    Tensor::mult2D(delta, 0, Wy, 1, parent[1]->delta, 1);
+
+  // Regularizer
+  if (trainable) if(reg != nullptr) {reg->apply(this->Wx);reg->apply(this->Wy);}
+
 }
 
 
@@ -82,7 +102,20 @@ Layer *LRNN::share(int c, int bs, vector<Layer *> p) {
     LRNN *n = new LRNN(p, units, num_layers, use_bias, dropout, bidirectional, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
 
-    // TODO: Implement
+    //share params
+    for (int i = 0; i < n->params.size(); i++) delete n->params[i];
+    n->params.clear();
+
+    n->Wx = params[0];
+    n->Wy = params[1];
+    if (use_bias) n->bias = params[2];
+
+    n->params.push_back(n->Wx);
+    n->params.push_back(n->Wy);
+    if (use_bias) n->params.push_back(n->bias);
+
+    n->reg=reg;
+    n->init=init;
 
     return n;
 }

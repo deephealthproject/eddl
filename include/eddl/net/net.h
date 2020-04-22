@@ -54,6 +54,7 @@ public:
 	int mem_level; // see Computing Service
 	unsigned int verbosity_level = 0;
 	bool onnx_pretrained;
+  bool isrecurrent;
 
 	vector<int> devsel;
 	CompServ *cs;
@@ -146,6 +147,7 @@ public:
 
 
 	void fit(vtensor tin, vtensor tout, int batch_size, int epochs);
+	void fit_recurrent(vtensor tin, vtensor tout, int batch_size, int epochs);
 	void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);
 	void evaluate(vtensor tin, vtensor tout);
 	void predict(vtensor tin, vtensor tout);
