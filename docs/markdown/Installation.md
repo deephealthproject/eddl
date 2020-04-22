@@ -67,13 +67,13 @@ Regardless of your platform, install:
 Then, on Ubuntu/Debian install:
 
 ```
-sudo apt-get install -y build-essential cmake git wget graphviz  # Run dependencies
+sudo apt-get install -y build-essential cmake git wget graphviz libeigen3-dev zlib1g-dev # Dependencies
 ```
 
 Or, on MacOS install:
 
 ```
-brew install cmake git wget graphviz  # Run dependencies
+brew install cmake git wget graphviz eigen zlib # Dependencies
 ```
 
 

@@ -66,15 +66,15 @@ if(UNIX) # Add setup for windows in the windows's section
 endif()
 
 ## Eigen (I have temporally drop this header-only library to "includes/eddl/")
-#if(DEFINED Eigen3_DIR)
-#    message(STATUS "Using specific Eigen")
-#else()
-#    message(STATUS "Searching for Eigen in the system...")
-#endif()
-#find_package(Eigen3 3.3 REQUIRED NO_MODULE)  # EIGEN_DIR => ok
-#message(STATUS "Eigen found!")
-#target_include_directories(${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIRS})
-#target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only library
+if(DEFINED Eigen3_DIR)
+    message(STATUS "Using specific Eigen")
+else()
+    message(STATUS "Searching for Eigen in the system...")
+endif()
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)  # EIGEN_DIR => ok
+message(STATUS "Eigen found!")
+target_include_directories(${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only library
 
 # ZLIB
 if(DEFINED ZLIB_INCLUDE_DIRS AND DEFINED ZLIB_LIBRARIES_DIRS AND DEFINED ZLIB_LIBRARIES)
@@ -268,9 +268,9 @@ message(STATUS "OpenMP version: " ${OpenMP_VERSION_MAJOR} )
 message(STATUS "OpenMP gomp library: " ${OpenMP_gomp_LIBRARY} )
 message(STATUS "OpenMP pthread library: " ${OpenMP_pthread_LIBRARY} )
 endif()
-#message(STATUS "-------------------------------------------" )
-#message(STATUS "Eigen3 dir: " ${Eigen3_DIR} )
-#message(STATUS "Eigen3 include: " ${EIGEN3_INCLUDE_DIR} )
+message(STATUS "-------------------------------------------" )
+message(STATUS "Eigen3 dir: " ${Eigen3_DIR} )
+message(STATUS "Eigen3 include: " ${EIGEN3_INCLUDE_DIR} )
 message(STATUS "-------------------------------------------" )
 message(STATUS "ZLIB root: " ${ZLIB_ROOT} )
 message(STATUS "ZLIB include: " ${ZLIB_INCLUDE_DIRS} )
