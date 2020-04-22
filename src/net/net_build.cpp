@@ -422,6 +422,134 @@ void Net::resize(int b)
 
 }
 
+
+// Unroll Recurrent net
+Net* Net::unroll(int inl, int outl, bool seq, bool areg) {
+    int i, j, k, l;
+
+    vlayer *nlayers;
+    vlayer *nin;
+    vlayer *nout;
+    int ind;
+    vlayer par;
+
+
+
+  // unroll inputs
+  nin=new vlayer[inl];
+  nlayers=new vlayer[inl];
+  nout=new vlayer[inl];
+
+  int last_recurrent;
+  for (k = 0; k < layers.size(); k++)
+    if (layers[k]->isrecurrent) last_recurrent=k;
+
+
+  for (i = 0; i < inl; i++) {
+
+    //input layers
+    for (j = 0; j < lin.size(); j++)  {
+      nin[i].push_back(lin[j]->share(i, batch_size, par));
+      nlayers[i].push_back(nin[i][j]);
+    }
+
+    // rest of layers
+    for (k = 0; k < layers.size(); k++) {
+      for (j = 0; j < layers.size(); j++)
+        if ((i>=(inl-outl))||(j<=last_recurrent)) {
+          if (!isInorig(layers[j], nlayers[i], ind)) {
+              vlayer par;
+              for (l = 0; l < layers[j]->parent.size(); l++) {
+                  if (!isInorig(layers[j]->parent[l], nlayers[i], ind)) break;
+                  else par.push_back(nlayers[i][ind]);
+              }
+              if (l == layers[j]->parent.size()) {
+                  if ((layers[j]->isrecurrent)&&(i>0)) {
+                    par.push_back(nlayers[i-1][j]);
+                    nlayers[i].push_back(layers[j]->share(i, batch_size, par));
+                  }
+                  else
+                    nlayers[i].push_back(layers[j]->share(i, batch_size, par));
+              }
+          }
+      }
+    }
+
+    // set output layers
+    if (i>=(inl-outl)) {
+      for (j = 0; j < lout.size(); j++)
+          if (isInorig(lout[j], nlayers[i], ind))
+            nout[i].push_back(nlayers[i][ind]);
+    }
+
+  }
+
+  /////
+  vlayer ninl;
+  vlayer noutl;
+
+  for (i = 0; i < inl; i++)
+   for (j = 0; j < nin[i].size(); j++)
+     ninl.push_back(nin[i][j]);
+
+  for (i = 0; i < inl; i++)
+    for (j = 0; j < nout[i].size(); j++)
+      noutl.push_back(nout[i][j]);
+
+  Net *rnet=new Net(ninl, noutl);
+
+  return rnet;
+/*
+        // special layers that are not input of net but has not parents
+        // for instance noise generators in GANs
+        for (j = 0; j < layers.size(); j++)
+          if ((layers[j]->lin==0)&&(!isIn(layers[j],lin,ind))) {
+            nlayers.push_back(layers[j]->clone(c, bs, par, todev + devsel[i]));
+          }
+
+        // rest of layers
+        for (k = 0; k < layers.size(); k++) {
+            for (j = 0; j < layers.size(); j++) {
+                if (!isInorig(layers[j], nlayers, ind)) {
+                    vlayer par;
+                    for (l = 0; l < layers[j]->parent.size(); l++) {
+                        if (!isInorig(layers[j]->parent[l], nlayers, ind)) break;
+                        else par.push_back(nlayers[ind]);
+                    }
+                    if (l == layers[j]->parent.size()) {
+                        nlayers.push_back(layers[j]->clone(i, bs, par, todev + devsel[i]));
+                    }
+                }
+
+            }
+          }
+
+        // set outputs
+        for (j = 0; j < lout.size(); j++)
+            if (isInorig(lout[j], nlayers, ind))
+                nout.push_back(nlayers[ind]);
+
+        // create twin net on CS device
+        snets.push_back(new Net(nin, nout));
+
+        // build new net
+        char cname[100];
+        sprintf(cname,"snet_%d",i);
+        snets[i]->name=cname;
+        snets[i]->build(optimizer->clone(), losses, metrics);
+        if(onnx_pretrained){ //We need to copy the imported weights to each snet
+            for(int i = 0; i < snets.size(); i++)
+                for(int j = 0; j < layers.size(); j++)
+                    layers[j]->copy(snets[i]->layers[j]);
+        }
+
+    }
+    */
+}
+
+
+
+
 void Net::enable_distributed(){
 	for(Layer* l : layers){
 		l->enable_distributed();

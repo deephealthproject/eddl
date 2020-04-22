@@ -31,6 +31,7 @@ Layer::Layer(string name, int dev, int mem) {
     lin = lout = 0;
     delta_bp = 0;
     detached=false;
+    isrecurrent=false;
 
     orig=nullptr;
     net=nullptr;

@@ -1355,7 +1355,7 @@ typedef NetLoss * metric;
       *  @param name  A name for the operation
       *  @return     The RNN layer
     */
-    layer RNN(layer parent, int units, int num_layers, bool use_bias = true, float dropout = .0f, bool bidirectional = false, string name = "");
+    layer RNN(layer parent, int units, int num_layers=1, bool use_bias = true, float dropout = .0f, bool bidirectional = false, string name = "");
 
     /**
       *  @brief Long Short-Term Memory layer - Hochreiter 1997.

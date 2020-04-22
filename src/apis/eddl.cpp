@@ -829,7 +829,8 @@ namespace eddl {
 
     // Recurrent Layers
     layer RNN(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name){
-        return new LRNN(parent, units, num_layers, use_bias, dropout, bidirectional, name, DEV_CPU, 0);
+
+        return new LRNN({parent}, units, num_layers, use_bias, dropout, bidirectional, name, DEV_CPU, 0);
     }
 
     layer LSTM(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name){

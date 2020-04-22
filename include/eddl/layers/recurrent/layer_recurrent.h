@@ -24,7 +24,7 @@ using namespace std;
 
 
 /// RNN Layer
-class LRNN : public LinLayer {
+class LRNN : public MLayer {
 public:
     int units;
     int num_layers;
@@ -33,7 +33,17 @@ public:
     bool bidirectional;
     static int total_layers;
 
-    LRNN(Layer *parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev, int mem);
+    Tensor *Wx;
+    Tensor *gWx;
+    Tensor *biasx;
+    Tensor *gbiasx;
+
+    Tensor *Wy;
+    Tensor *gWy;
+    Tensor *biasy;
+    Tensor *gbiasy;
+
+    LRNN(vector<Layer *> in, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

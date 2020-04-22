@@ -40,6 +40,7 @@ public:
     Net *net;
     bool trainable;
     int mem_level; // See CS
+    bool isrecurrent;
 
     vector<Tensor *> params;
     vector<Tensor *> gradients;

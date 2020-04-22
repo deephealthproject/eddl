@@ -89,6 +89,8 @@ public:
 	void fts();
 	void bts();
 	void split(int c, int todev);
+	Net *unroll(int inl, int outl, bool seq, bool areg);
+
 	int inNet(Layer *l);
 	void walk(Layer *l);
 	void walk_back(Layer *l);

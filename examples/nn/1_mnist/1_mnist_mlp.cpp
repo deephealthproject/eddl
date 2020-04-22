@@ -34,9 +34,16 @@ int main(int argc, char **argv) {
     // Define network
     layer in = Input({784});
     layer l = in;  // Aux var
+    layer l2;
 
     l = LeakyReLu(Dense(l, 1024));
+    l2 = LeakyReLu(Dense(l, 1024));
+    l= Sum(l,l2);
+    l = LeakyReLu(RNN(l, 1024));
     l = LeakyReLu(Dense(l, 1024));
+    l2 = LeakyReLu(Dense(l, 1024));
+    l= Sum(l,l2);
+    l = LeakyReLu(RNN(l, 1024));
     l = LeakyReLu(Dense(l, 1024));
 
     layer out = Softmax(Dense(l, num_classes));
@@ -59,6 +66,19 @@ int main(int argc, char **argv) {
     // View model
     summary(net);
 
+    model rnet=net->unroll(5,2,false,false);
+
+    /*build(rnet,
+          rmsprop(0.01), // Optimizer
+          {"soft_cross_entropy"}, // Losses
+          {"categorical_accuracy"}, // Metrics
+          CS_GPU({1,1},100, "low_mem") // one GPU
+          //CS_CPU(-1, "low_mem") // CPU with maximum threads availables
+    );*/
+
+    plot(rnet,"rmodel.pdf");
+
+/*
     // Load dataset
     tensor x_train = eddlT::load("trX.bin");
     tensor y_train = eddlT::load("trY.bin");
@@ -74,5 +94,6 @@ int main(int argc, char **argv) {
 
     // Evaluate
     evaluate(net, {x_test}, {y_test});
+    */
 
 }
