@@ -89,7 +89,7 @@ On Unix platforms, from the source directory:
             cd eddl/
 
             # Install run dependencies
-            sudo apt-get install cmake wget graphviz zlib1g-dev
+            sudo apt-get install cmake wget graphviz libeigen3-dev zlib1g-dev
 
             # Build and install
             mkdir build
@@ -106,7 +106,7 @@ On Unix platforms, from the source directory:
             cd eddl/
 
             # Install run dependencies
-            brew install cmake wget graphviz zlib
+            brew install cmake wget graphviz eigen zlib
 
             # Build and install
             mkdir build
