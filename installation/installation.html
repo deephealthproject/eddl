@@ -321,18 +321,13 @@ brew install eddl
 <p>MacOS</p>
 </div>
 </div>
-<div class="item sphinx-data-tab-1-2 docutils container">
-<div class="docutils container">
-<p>Windows</p>
-</div>
-</div>
 </div>
 <div class="ui bottom attached sphinx-tab tab segment sphinx-data-tab-1-0 active docutils container">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download source code</span>
 git clone https://github.com/deephealthproject/eddl.git
 <span class="nb">cd</span> eddl/
 
-<span class="c1"># Install run dependencies</span>
+<span class="c1"># Install dependencies</span>
 sudo apt-get install cmake wget graphviz libeigen3-dev zlib1g-dev
 
 <span class="c1"># Build and install</span>
@@ -348,7 +343,7 @@ make install
 git clone https://github.com/deephealthproject/eddl.git
 <span class="nb">cd</span> eddl/
 
-<span class="c1"># Install run dependencies</span>
+<span class="c1"># Install dependencies</span>
 brew install cmake wget graphviz eigen zlib
 
 <span class="c1"># Build and install</span>
@@ -356,24 +351,6 @@ mkdir build
 <span class="nb">cd</span> build
 cmake ..
 make install
-</pre></div>
-</div>
-</div>
-<div class="ui bottom attached sphinx-tab tab segment sphinx-data-tab-1-2 docutils container">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download source code</span>
-git clone https://github.com/deephealthproject/eddl.git
-<span class="nb">cd</span> eddl/
-
-<span class="c1"># Install dependencies</span>
-conda env create -f environment.yml
-conda activate eddl
-
-<span class="c1"># Build and install</span>
-mkdir build
-<span class="nb">cd</span> build
-cmake -G <span class="s2">&quot;NMake Makefiles&quot;</span> ..
-nmake
-nmake install
 </pre></div>
 </div>
 </div>
