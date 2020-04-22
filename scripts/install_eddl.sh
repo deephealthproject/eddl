@@ -9,7 +9,7 @@ sudo chmod +x install_requirements.sh
 sudo ./install_requirements.sh
 
 # [A] Use specific version
-EDDL_VERSION=v0.5a
+EDDL_VERSION=v0.5.2a
 wget https://github.com/deephealthproject/eddl/archive/$EDDL_VERSION.tar.gz
 tar -xf $EDDL_VERSION.tar.gz
 cd eddl-$EDDL_VERSION/

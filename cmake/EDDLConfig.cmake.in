@@ -1,29 +1,35 @@
 # CMakeExternal CMake configuration file
 include(CMakeFindDependencyMacro)
 
-# THREADS (pthreads setup for linux os)
+# VARIABLES
+SET(USE_SUPERBUILD "@BUILD_SUPERBUILD@")  # Set in parent
+SET(USE_PROTOBUF "@BUILD_PROTOBUF@")  # Set in parent
+SET(USE_OPENMP "@USE_OPENMP@")  # Modified in a subdirectory
+SET(USE_CUDA "@USE_CUDA@") # Modified in a subdirectory
+
+# Threads (linux)
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
     SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
-    find_dependency(Threads)
+    find_dependency(Threads REQUIRED)
 endif()
 
-# CUDA
-if (@USE_CUDA@)
-    enable_language(CUDA)
-endif()
-
-# CUDA
-if (@BUILD_OPENMP@)
-    find_dependency(OpenMP REQUIRED)
-endif()
-
-
+# Core dependencies
 find_dependency(Eigen3 REQUIRED NO_MODULE)
 find_dependency(ZLIB REQUIRED)
 
-# Dependencies
-if(NOT @USE_SUPERBUILD@)
+# OpenMP
+if (USE_OPENMP)
+    find_dependency(OpenMP REQUIRED)
+endif()
+
+# CUDA
+if (USE_CUDA)
+    enable_language(CUDA)
+endif()
+
+# Protobuf
+if(USE_PROTOBUF AND NOT USE_SUPERBUILD)
     find_dependency(Protobuf REQUIRED)
 endif()
 

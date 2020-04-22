@@ -18,7 +18,7 @@ sudo apt-get install -y build-essential ca-certificates apt-utils # Essentials
 
 # Install dependencies  ******************
 # Utilities
-sudo apt-get install -y cmake git wget graphviz libeigen3-dev zlib1g-dev libboost-all-dev
+sudo apt-get install -y cmake git wget graphviz libeigen3-dev zlib1g-dev
 
 # Install development libraries
 echo "Installing development dependencies ----------------------"
@@ -32,7 +32,7 @@ pip3 install pytest
 
 
 # [A] Use specific version
-EDDL_VERSION=v0.5a
+EDDL_VERSION=v0.5.2a
 echo "INSTALLING EDDL $EDDL_VERSION****************"
 
 wget https://github.com/deephealthproject/eddl/archive/$EDDL_VERSION.tar.gz

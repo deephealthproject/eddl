@@ -1,4 +1,4 @@
-VERSION=0.4.3
+VERSION=v0.5.2a
 sudo apt-get install wget
 wget "https://github.com/deephealthproject/eddl/archive/$VERSION.tar.gz"
 tar -xf "$VERSION.tar.gz"
