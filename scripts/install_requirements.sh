@@ -10,7 +10,7 @@ sudo apt-get install -y build-essential ca-certificates apt-utils # Essentials
 
 # Install dependencies  ******************
 # Utilities
-sudo apt-get install -y cmake git wget graphviz libeigen3-dev zlib1g-dev libboost-all-dev
+sudo apt-get install -y cmake git wget graphviz libeigen3-dev zlib1g-dev
 
 # Install development libraries
 sudo apt-get install -y doxygen
