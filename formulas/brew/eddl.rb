@@ -4,8 +4,8 @@
 class Eddl < Formula
   desc "European Distributed Deep Learning Library (EDDL)"
   homepage "https://github.com/deephealthproject/eddl"
-  url "https://github.com/deephealthproject/eddl/archive/v0.5-alpha.tar.gz"
-  sha256 "eac951828e578a8c2f01bf228be7fc1545f7e077bf21f20888c9913e4d1c2f77"
+  url "https://github.com/deephealthproject/eddl/archive/v0.5a.tar.gz"
+  sha256 "414679914e68052387ef295292fc2d1d5839f927c15e7f729882fdc4f4cd07cd"
 
   depends_on "cmake" => :build
   depends_on "eigen" => :build

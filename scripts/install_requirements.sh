@@ -10,18 +10,7 @@ sudo apt-get install -y build-essential ca-certificates apt-utils # Essentials
 
 # Install dependencies  ******************
 # Utilities
-sudo apt-get install -y cmake git wget graphviz zlib1g-dev libboost-all-dev
-
-# Eigen3
-sudo apt-get install -y libeigen3-dev
-
-# gTests
-sudo chmod +x install_gTests.sh
-sudo ./install_gTests.sh
-
-# Protobuf
-sudo chmod +x install_protobuf.sh
-sudo ./install_protobuf.sh
+sudo apt-get install -y cmake git wget graphviz libeigen3-dev zlib1g-dev libboost-all-dev
 
 # Install development libraries
 sudo apt-get install -y doxygen

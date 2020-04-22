@@ -14,8 +14,8 @@ endif()
 
 # For development (ignore)
 option(USE_SYSTEM_GTEST "Use system dependency" OFF)
-option(USE_SYSTEM_EIGEN "Use system dependency" OFF)
-option(USE_SYSTEM_ZLIB "Use system dependency" OFF)
+#option(USE_SYSTEM_EIGEN "Use system dependency" OFF)
+#option(USE_SYSTEM_ZLIB "Use system dependency" OFF)
 option(USE_SYSTEM_PROTOBUF "Use system dependency" OFF)
 
 # Set variables
