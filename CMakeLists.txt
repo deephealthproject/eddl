@@ -58,18 +58,9 @@ if(BUILD_COVERAGE)
 endif()
 
 # Flags: Optimization
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DEIGEN_FAST_MATH -pipe")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -Og")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-
-# Windows32
-if(WIN32)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNOMINMAX")   # Disable min/max macros in windef.h
-
-    if(MSVC)  # Microsoft Visual C++
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W1 /MP")   # Enable parallel compilation
-    endif()
-endif()
 
 # Set a default build type if none was specified
 set(default_build_type "Release")
@@ -85,6 +76,23 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
             "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
+
+
+###########################################################################
+############################### WINDOWS ###################################
+###########################################################################
+
+## Windows
+#if(WIN32)
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNOMINMAX")   # Disable min/max macros in windef.h
+#endif()
+#
+## Microsoft Visual C++
+#if(MSVC)
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W1 /MP")   # Enable parallel compilation
+#    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+#endif()
+
 
 ###########################################################################
 ############################## PACKAGES ###################################

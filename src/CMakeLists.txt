@@ -56,9 +56,14 @@ target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_11)
 ###########################################################################
 ########################### LINK LIBRARIES ################################
 ###########################################################################
+
 # Threads
-find_package(Threads REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
+if(UNIX) # Add setup for windows in the windows's section
+    SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+    SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
+    find_package(Threads REQUIRED)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
+endif()
 
 ## Eigen (I have temporally drop this header-only library to "includes/eddl/")
 #if(DEFINED Eigen3_DIR)
@@ -165,6 +170,56 @@ if(USE_CUDA)
     endif()
 endif()
 
+###########################################################################
+################################## WINDOWS ################################
+###########################################################################
+
+#if(WIN32)
+#    # Threads *************************************************************
+#    set(EDDL_PTHREADS_INSTALL_PATH "$ENV{PTHREADS_ROOT}" CACHE PATH "Path to the installation of pthreads under Windows")
+#    if(EDDL_PTHREADS_INSTALL_PATH STREQUAL "")
+#        message(ERROR ": pthreds install path must be specified under Windows")
+#    endif()
+#    target_link_libraries(${PROJECT_NAME} PRIVATE debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3d.lib"
+#            PRIVATE debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib"
+#            PRIVATE debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib")
+#    target_link_libraries(${PROJECT_NAME} PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib"
+#            PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib"
+#            PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")
+#    target_include_directories(${PROJECT_NAME} PUBLIC "${EDDL_PTHREADS_INSTALL_PATH}/include")
+#endif()
+#
+## Microsoft Visual C++ - set static/dynamic runtime
+#if(MSVC)
+#    if(BUILD_SHARED_LIB)
+#        message(STATUS "Setting dinamic runtime for MSVC")
+#        foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+#            string(REGEX REPLACE "/MT" "/MD" ${flag_var} "${${flag_var}}")
+#        endforeach(flag_var)
+#        if (USE_CUDA AND CMAKE_CUDA_COMPILER)
+#            foreach(flag_var CMAKE_CUDA_FLAGS_DEBUG CMAKE_CUDA_FLAGS_RELEASE CMAKE_CUDA_FLAGS_MINSIZEREL CMAKE_CUDA_FLAGS_RELWITHDEBINFO)
+#                string(REGEX REPLACE "-MT" "-MD" ${flag_var} "${${flag_var}}")
+#            endforeach(flag_var)
+#        endif()
+#    else(BUILD_SHARED_LIB)
+#        message(STATUS "Setting static runtime for MSVC")
+#        foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+#            string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+#        endforeach(flag_var)
+#        if (USE_CUDA AND CMAKE_CUDA_COMPILER)
+#            foreach(flag_var CMAKE_CUDA_FLAGS_DEBUG CMAKE_CUDA_FLAGS_RELEASE CMAKE_CUDA_FLAGS_MINSIZEREL CMAKE_CUDA_FLAGS_RELWITHDEBINFO)
+#                string(REGEX REPLACE "-MD" "-MT" ${flag_var} "${${flag_var}}")
+#            endforeach(flag_var)
+#        endif()
+#    endif(BUILD_SHARED_LIB)
+#
+#    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+#endif()
+
+
+###########################################################################
+############################# INSTALLATION ################################
+###########################################################################
 
 add_library(EDDL::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
