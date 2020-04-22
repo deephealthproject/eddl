@@ -156,7 +156,7 @@ void Net::toGPU(vector<int> g,int lsb,int mem){
 void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize){
 	onnx_pretrained = !initialize; // For controlling when to copy the weights to the snet
 	build(opt, lo, me, initialize);
-    set_compserv(cs);
+  set_compserv(cs);
 
 
   if (VERBOSE) {
@@ -187,6 +187,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
 
 
     for(int i=0; i<layers.size(); i++){
+        if (layers[i]->isrecurrent) isrecurrent=true;
 
         // Set device // TODO: Rewrite this
         if (dev == -1) {
@@ -497,56 +498,8 @@ Net* Net::unroll(int inl, int outl, bool seq, bool areg) {
       noutl.push_back(nout[i][j]);
 
   Net *rnet=new Net(ninl, noutl);
-  rnet->isrecurrent=true;
-  
 
   return rnet;
-/*
-        // special layers that are not input of net but has not parents
-        // for instance noise generators in GANs
-        for (j = 0; j < layers.size(); j++)
-          if ((layers[j]->lin==0)&&(!isIn(layers[j],lin,ind))) {
-            nlayers.push_back(layers[j]->clone(c, bs, par, todev + devsel[i]));
-          }
-
-        // rest of layers
-        for (k = 0; k < layers.size(); k++) {
-            for (j = 0; j < layers.size(); j++) {
-                if (!isInorig(layers[j], nlayers, ind)) {
-                    vlayer par;
-                    for (l = 0; l < layers[j]->parent.size(); l++) {
-                        if (!isInorig(layers[j]->parent[l], nlayers, ind)) break;
-                        else par.push_back(nlayers[ind]);
-                    }
-                    if (l == layers[j]->parent.size()) {
-                        nlayers.push_back(layers[j]->clone(i, bs, par, todev + devsel[i]));
-                    }
-                }
-
-            }
-          }
-
-        // set outputs
-        for (j = 0; j < lout.size(); j++)
-            if (isInorig(lout[j], nlayers, ind))
-                nout.push_back(nlayers[ind]);
-
-        // create twin net on CS device
-        snets.push_back(new Net(nin, nout));
-
-        // build new net
-        char cname[100];
-        sprintf(cname,"snet_%d",i);
-        snets[i]->name=cname;
-        snets[i]->build(optimizer->clone(), losses, metrics);
-        if(onnx_pretrained){ //We need to copy the imported weights to each snet
-            for(int i = 0; i < snets.size(); i++)
-                for(int j = 0; j < layers.size(); j++)
-                    layers[j]->copy(snets[i]->layers[j]);
-        }
-
-    }
-    */
 }
 
 

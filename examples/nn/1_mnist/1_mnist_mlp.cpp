@@ -27,19 +27,17 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 1;
+    int epochs = 10;
     int batch_size = 100;
     int num_classes = 10;
 
     // Define network
     layer in = Input({28});
     layer l = in;  // Aux var
-    layer l2;
 
-
-    l = LeakyReLu(Dense(l, 16));
+    l = LeakyReLu(Dense(l, 32));
     l = LeakyReLu(RNN(l, 32));
-    l = LeakyReLu(Dense(l, 16));
+    l = LeakyReLu(Dense(l, 32));
 
     layer out = Softmax(Dense(l, num_classes));
     model net = Model({in}, {out});
@@ -50,11 +48,11 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          sgd(0.01), // Optimizer
+          rmsprop(0.001), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_GPU({1}, "low_mem") // one GPU
-          //CS_CPU(-1, "low_mem") // CPU with maximum threads availables
+          //CS_GPU({1}, "low_mem") // one GPU
+          CS_CPU(-1, "low_mem") // CPU with maximum threads availables
     );
     //toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 
@@ -73,13 +71,14 @@ int main(int argc, char **argv) {
 
     x_train2->info();
 
-
     // Preprocessing
     eddlT::div_(x_train2, 255.0);
     eddlT::div_(x_test, 255.0);
 
+    setlogfile(net,"recurrent_mnist");
+
     // Train model
-    net->fit_recurrent({x_train2}, {y_train}, batch_size, epochs);
+    fit(net,{x_train2}, {y_train}, batch_size, epochs);
 
     // Evaluate
     //evaluate(net, {x_test}, {y_test});

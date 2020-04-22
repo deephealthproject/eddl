@@ -344,9 +344,11 @@ void Net::print_loss(int b)
               losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
               metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
 
-      if ((flog_tr!=nullptr)&&(trmode))
+
+      if ((flog_tr!=nullptr)&&(trmode)) {
         fprintf(flog_tr, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
                 metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+              }
 
       if ((flog_ts!=nullptr)&&(!trmode))
         fprintf(flog_ts, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
@@ -426,7 +428,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     if (isrecurrent) {
         fit_recurrent(tin,tout, batch, epochs);
     }
-  else{
+   else{
 
     // Check current optimizer
     if (optimizer == nullptr)
@@ -532,13 +534,18 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
    int offset;
    offset=tin[0]->shape[1]*tin[0]->shape[2];
    for(i=0;i<inl;i++) {
-     tinr.push_back(new Tensor({tin[0]->shape[1],tin[0]->shape[2]},tin[0]->ptr+offset));
-     //tinr[i]->info();
+     Tensor *n=new Tensor({tin[0]->shape[1],tin[0]->shape[2]},tin[0]->ptr+(i*offset));
+     tinr.push_back(n);
    }
 
    rnet->isrecurrent=false;
+   rnet->flog_tr=flog_tr;
+   rnet->flog_ts=flog_ts;
+
 
    rnet->fit(tinr,tout,batch,epochs);
+
+   delete rnet;
 }
 
 
