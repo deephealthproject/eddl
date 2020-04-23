@@ -255,10 +255,26 @@ Ranges are defined using relative coordinates between 0 and 1.</p>
 </div>
 <div class="section" id="randomaffine">
 <h2>RandomAffine<a class="headerlink" href="#randomaffine" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “RandomAffine” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl12RandomAffineE5layer6vectorIfE6vectorIfE6vectorIfE6vectorIfE6string">
+<span id="_CPPv3N4eddl12RandomAffineE5layer6vectorIfE6vectorIfE6vectorIfE6vectorIfE6string"></span><span id="_CPPv2N4eddl12RandomAffineE5layer6vectorIfE6vectorIfE6vectorIfE6vectorIfE6string"></span><span id="eddl::RandomAffine__layer.vector:float:.vector:float:.vector:float:.vector:float:.string"></span><span class="target" id="namespaceeddl_1a4fa348b4558b00c10164586cf757566a"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomAffine</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;float&gt; <em>angle</em>, vector&lt;float&gt; <em>translate</em>, vector&lt;float&gt; <em>scale</em>, vector&lt;float&gt; <em>shear</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl12RandomAffineE5layer6vectorIfE6vectorIfE6vectorIfE6vectorIfE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Random affine transformation of the image keeping center invariant: rotate+translate+scale+shear. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of affine transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">angle</span></code>: Angle factor range </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">translate</span></code>: Translate factor range </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scale</span></code>: Scaling factor range </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shear</span></code>: Shear factor range </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><strong>Not implemented yet</strong></p>
@@ -269,8 +285,20 @@ Ranges are defined using relative coordinates between 0 and 1.</p>
 <h2>RandomCrop<a class="headerlink" href="#randomcrop" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl10RandomCropE5layer6vectorIiE6string">
-<span id="_CPPv3N4eddl10RandomCropE5layer6vectorIiE6string"></span><span id="_CPPv2N4eddl10RandomCropE5layer6vectorIiE6string"></span><span id="eddl::RandomCrop__layer.vector:i:.string"></span><span class="target" id="namespaceeddl_1a9c0fa24ff8775295eda1868ed3843f69"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomCrop</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>new_shape</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10RandomCropE5layer6vectorIiE6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl10RandomCropE5layer6vectorIiE6string"></span><span id="_CPPv2N4eddl10RandomCropE5layer6vectorIiE6string"></span><span id="eddl::RandomCrop__layer.vector:i:.string"></span><span class="target" id="namespaceeddl_1aa5a9825f43126f47b60e6f71e0ff5bba"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomCrop</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>new_shape</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10RandomCropE5layer6vectorIiE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Crop the given image at a random location with size <code class="docutils literal notranslate"><span class="pre">[height,</span> <span class="pre">width]</span></code>. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of random crop transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">new_shape</span></code>: Vector (height, width) size </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -295,8 +323,21 @@ Ranges are defined using relative coordinates between 0 and 1.</p>
 <h2>RandomCropScale<a class="headerlink" href="#randomcropscale" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl15RandomCropScaleE5layer6vectorIfE6string6string">
-<span id="_CPPv3N4eddl15RandomCropScaleE5layer6vectorIfE6string6string"></span><span id="_CPPv2N4eddl15RandomCropScaleE5layer6vectorIfE6string6string"></span><span id="eddl::RandomCropScale__layer.vector:float:.string.string"></span><span class="target" id="namespaceeddl_1a3eb3833e405aabff632acc586220f5db"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomCropScale</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;float&gt; <em>factor</em>, string <em>da_mode</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl15RandomCropScaleE5layer6vectorIfE6string6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl15RandomCropScaleE5layer6vectorIfE6string6string"></span><span id="_CPPv2N4eddl15RandomCropScaleE5layer6vectorIfE6string6string"></span><span id="eddl::RandomCropScale__layer.vector:float:.string.string"></span><span class="target" id="namespaceeddl_1aaf3065bc022af5465f385785c535b657"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomCropScale</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;float&gt; <em>factor</em>, string <em>da_mode</em> = &quot;nearest&quot;, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl15RandomCropScaleE5layer6vectorIfE6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Crop the given image randomly by the size in a range <code class="docutils literal notranslate"><span class="pre">[a,</span> <span class="pre">b]</span></code> by and scale it to the parent size. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of random crop scale transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">factor</span></code>: Factor Range for random crop </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">da_mode</span></code>: One of “nearest”, “constant”, (ToDo: “mirrror”, “reflect”, “wrap”, “original”) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -321,8 +362,22 @@ Ranges are defined using relative coordinates between 0 and 1.</p>
 <h2>RandomCutout<a class="headerlink" href="#randomcutout" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl12RandomCutoutE5layer6vectorIfE6vectorIfEf6string">
-<span id="_CPPv3N4eddl12RandomCutoutE5layer6vectorIfE6vectorIfEf6string"></span><span id="_CPPv2N4eddl12RandomCutoutE5layer6vectorIfE6vectorIfEf6string"></span><span id="eddl::RandomCutout__layer.vector:float:.vector:float:.float.string"></span><span class="target" id="namespaceeddl_1a1f410bdf750408d452c1cd7341b8dd0c"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomCutout</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;float&gt; <em>factor_x</em>, vector&lt;float&gt; <em>factor_y</em>, float <em>constant</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl12RandomCutoutE5layer6vectorIfE6vectorIfEf6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl12RandomCutoutE5layer6vectorIfE6vectorIfEf6string"></span><span id="_CPPv2N4eddl12RandomCutoutE5layer6vectorIfE6vectorIfEf6string"></span><span id="eddl::RandomCutout__layer.vector:float:.vector:float:.float.string"></span><span class="target" id="namespaceeddl_1a141b3c3bc0639539b035edcb18b7868a"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomCutout</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;float&gt; <em>factor_x</em>, vector&lt;float&gt; <em>factor_y</em>, float <em>constant</em> = 0.0f, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl12RandomCutoutE5layer6vectorIfE6vectorIfEf6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Randomly selects a rectangle region in an image and erases its pixels. The random region is defined by the range <code class="docutils literal notranslate"><span class="pre">[(min_x,</span> <span class="pre">max_x),</span> <span class="pre">(min_y,</span> <span class="pre">max_y)]</span></code>, where these are relative values. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of random cutout transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">factor_x</span></code>: Vector of factor fraction for horizontal size </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">factor_y</span></code>: Vector of factor fraction for vertical size </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Erasing value </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -349,8 +404,20 @@ Ranges are defined using relative coordinates between 0 and 1.</p>
 <h2>RandomFlip<a class="headerlink" href="#randomflip" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl10RandomFlipE5layeri6string">
-<span id="_CPPv3N4eddl10RandomFlipE5layeri6string"></span><span id="_CPPv2N4eddl10RandomFlipE5layeri6string"></span><span id="eddl::RandomFlip__layer.i.string"></span><span class="target" id="namespaceeddl_1ae84fe9d0c7bc75db72d7798e6c235b73"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomFlip</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>axis</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10RandomFlipE5layeri6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl10RandomFlipE5layeri6string"></span><span id="_CPPv2N4eddl10RandomFlipE5layeri6string"></span><span id="eddl::RandomFlip__layer.i.string"></span><span class="target" id="namespaceeddl_1a1ab3376bfc46fb1f7e25d121f69ac874"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomFlip</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>axis</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10RandomFlipE5layeri6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Flip the given image at <code class="docutils literal notranslate"><span class="pre">axis=n</span></code> randomly with a given probability. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of random flip transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span></code>: Flip axis </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -373,10 +440,22 @@ Ranges are defined using relative coordinates between 0 and 1.</p>
 </div>
 <div class="section" id="randomgrayscale">
 <h2>RandomGrayscale<a class="headerlink" href="#randomgrayscale" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “RandomGrayscale” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl15RandomGrayscaleE5layer6string">
+<span id="_CPPv3N4eddl15RandomGrayscaleE5layer6string"></span><span id="_CPPv2N4eddl15RandomGrayscaleE5layer6string"></span><span id="eddl::RandomGrayscale__layer.string"></span><span class="target" id="namespaceeddl_1aa7754993c864202a2dfda8171bcb15b0"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomGrayscale</code><span class="sig-paren">(</span>layer <em>parent</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl15RandomGrayscaleE5layer6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Converts the given image to grayscale a given probability. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of random horizontal flip transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><strong>Not implemented yet</strong></p>
@@ -387,8 +466,19 @@ Ranges are defined using relative coordinates between 0 and 1.</p>
 <h2>RandomHorizontalFlip<a class="headerlink" href="#randomhorizontalflip" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl20RandomHorizontalFlipE5layer6string">
-<span id="_CPPv3N4eddl20RandomHorizontalFlipE5layer6string"></span><span id="_CPPv2N4eddl20RandomHorizontalFlipE5layer6string"></span><span id="eddl::RandomHorizontalFlip__layer.string"></span><span class="target" id="namespaceeddl_1a1ffb93b9889b2a96874b9a4dd47afe56"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomHorizontalFlip</code><span class="sig-paren">(</span>layer <em>parent</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl20RandomHorizontalFlipE5layer6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl20RandomHorizontalFlipE5layer6string"></span><span id="_CPPv2N4eddl20RandomHorizontalFlipE5layer6string"></span><span id="eddl::RandomHorizontalFlip__layer.string"></span><span class="target" id="namespaceeddl_1afa3e40c196615115a0412f47486e636d"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomHorizontalFlip</code><span class="sig-paren">(</span>layer <em>parent</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl20RandomHorizontalFlipE5layer6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Horizontally flip the given image randomly with a given probability. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of random horizontal flip transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -413,8 +503,22 @@ Ranges are defined using relative coordinates between 0 and 1.</p>
 <h2>RandomRotation<a class="headerlink" href="#randomrotation" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl14RandomRotationE5layer6vectorIfE6vectorIiE6stringf6string">
-<span id="_CPPv3N4eddl14RandomRotationE5layer6vectorIfE6vectorIiE6stringf6string"></span><span id="_CPPv2N4eddl14RandomRotationE5layer6vectorIfE6vectorIiE6stringf6string"></span><span id="eddl::RandomRotation__layer.vector:float:.vector:i:.string.float.string"></span><span class="target" id="namespaceeddl_1a786618eb4419c9337fbf22d97c73e3dc"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomRotation</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;float&gt; <em>factor</em>, vector&lt;int&gt; <em>offset_center</em>, string <em>da_mode</em>, float <em>constant</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl14RandomRotationE5layer6vectorIfE6vectorIiE6stringf6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl14RandomRotationE5layer6vectorIfE6vectorIiE6stringf6string"></span><span id="_CPPv2N4eddl14RandomRotationE5layer6vectorIfE6vectorIiE6stringf6string"></span><span id="eddl::RandomRotation__layer.vector:float:.vector:i:.string.float.string"></span><span class="target" id="namespaceeddl_1a5f2e1018b40dbe809af6f22a6401010a"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomRotation</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;float&gt; <em>factor</em>, vector&lt;int&gt; <em>offset_center</em> = {0, 0}, string <em>da_mode</em> = &quot;original&quot;, float <em>constant</em> = 0.0f, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl14RandomRotationE5layer6vectorIfE6vectorIiE6stringf6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Rotate the image randomly by an angle defined in a range <code class="docutils literal notranslate"><span class="pre">[a,</span> <span class="pre">b]</span></code>. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of rotate transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">factor</span></code>: Range In degrees counter clockwise order </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">offset_center</span></code>: Optional center of rotation. Default is the center of the image </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">da_mode</span></code>: One of “original” </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Fill value for area outside the rotated image, it is used for all channels respectively. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -439,8 +543,21 @@ Ranges are defined using relative coordinates between 0 and 1.</p>
 <h2>RandomScale<a class="headerlink" href="#randomscale" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl11RandomScaleE5layer6vectorIfE6stringf6string">
-<span id="_CPPv3N4eddl11RandomScaleE5layer6vectorIfE6stringf6string"></span><span id="_CPPv2N4eddl11RandomScaleE5layer6vectorIfE6stringf6string"></span><span id="eddl::RandomScale__layer.vector:float:.string.float.string"></span><span class="target" id="namespaceeddl_1a993ecc24bc2a864a613294a74f6cc770"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomScale</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;float&gt; <em>factor</em>, string <em>da_mode</em>, float <em>constant</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl11RandomScaleE5layer6vectorIfE6stringf6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl11RandomScaleE5layer6vectorIfE6stringf6string"></span><span id="_CPPv2N4eddl11RandomScaleE5layer6vectorIfE6stringf6string"></span><span id="eddl::RandomScale__layer.vector:float:.string.float.string"></span><span class="target" id="namespaceeddl_1a2f47c7eaabbc416aab4ae3615f6696f1"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomScale</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;float&gt; <em>factor</em>, string <em>da_mode</em> = &quot;nearest&quot;, float <em>constant</em> = 0.0f, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl11RandomScaleE5layer6vectorIfE6stringf6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Resize the input image randomly by the size in a range <code class="docutils literal notranslate"><span class="pre">[a,</span> <span class="pre">b]</span></code>. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of scale transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">factor</span></code>: Vector of factor size range new shape </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">da_mode</span></code>: One of “nearest” </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Fill value for area outside the resized image, it is used for all channels respectively. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -463,8 +580,22 @@ Ranges are defined using relative coordinates between 0 and 1.</p>
 <h2>RandomShift<a class="headerlink" href="#randomshift" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl11RandomShiftE5layer6vectorIfE6vectorIfE6stringf6string">
-<span id="_CPPv3N4eddl11RandomShiftE5layer6vectorIfE6vectorIfE6stringf6string"></span><span id="_CPPv2N4eddl11RandomShiftE5layer6vectorIfE6vectorIfE6stringf6string"></span><span id="eddl::RandomShift__layer.vector:float:.vector:float:.string.float.string"></span><span class="target" id="namespaceeddl_1ace08ae54e9ebca45ef03d1e100e79c43"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomShift</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;float&gt; <em>factor_x</em>, vector&lt;float&gt; <em>factor_y</em>, string <em>da_mode</em>, float <em>constant</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl11RandomShiftE5layer6vectorIfE6vectorIfE6stringf6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl11RandomShiftE5layer6vectorIfE6vectorIfE6stringf6string"></span><span id="_CPPv2N4eddl11RandomShiftE5layer6vectorIfE6vectorIfE6stringf6string"></span><span id="eddl::RandomShift__layer.vector:float:.vector:float:.string.float.string"></span><span class="target" id="namespaceeddl_1abc443936f0cdef4bf0cfce489c3e6e4c"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomShift</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;float&gt; <em>factor_x</em>, vector&lt;float&gt; <em>factor_y</em>, string <em>da_mode</em> = &quot;nearest&quot;, float <em>constant</em> = 0.0f, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl11RandomShiftE5layer6vectorIfE6vectorIfE6stringf6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Shift the input image randomly in range <code class="docutils literal notranslate"><span class="pre">[a,</span> <span class="pre">b]</span></code>. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of scale transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">factor_x</span></code>: Vector of factor fraction for horizontal translations </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">factor_y</span></code>: Vector of factor fraction for vertical translations </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">da_mode</span></code>: One of “nearest”, “constant”, (ToDo: “mirrror”, “reflect”, “wrap”, “original”) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Fill value for area outside the resized image, it is used for all channels respectively. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -489,8 +620,19 @@ Ranges are defined using relative coordinates between 0 and 1.</p>
 <h2>RandomVerticalFlip<a class="headerlink" href="#randomverticalflip" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl18RandomVerticalFlipE5layer6string">
-<span id="_CPPv3N4eddl18RandomVerticalFlipE5layer6string"></span><span id="_CPPv2N4eddl18RandomVerticalFlipE5layer6string"></span><span id="eddl::RandomVerticalFlip__layer.string"></span><span class="target" id="namespaceeddl_1acccb8977dfd3787d7c08ef4b6e264fe7"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomVerticalFlip</code><span class="sig-paren">(</span>layer <em>parent</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl18RandomVerticalFlipE5layer6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl18RandomVerticalFlipE5layer6string"></span><span id="_CPPv2N4eddl18RandomVerticalFlipE5layer6string"></span><span id="eddl::RandomVerticalFlip__layer.string"></span><span class="target" id="namespaceeddl_1ac2c2558fd42e94d23882fcdbb2824da1"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomVerticalFlip</code><span class="sig-paren">(</span>layer <em>parent</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl18RandomVerticalFlipE5layer6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Vertically flip the given image randomly with a given probability. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of random vertical flip transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1

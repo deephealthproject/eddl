@@ -270,7 +270,15 @@
 <p>Create an uninitialized tensor</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::Tensor” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::Tensor” with arguments (const vector&lt;int&gt;&amp;, float *, int) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">()</span>
+<span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="nb">float</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">float</span> <span class="o">*</span><span class="n">fptr</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
@@ -281,50 +289,112 @@
 <p>Create tensor from generators</p>
 <div class="section" id="zeros">
 <h3>zeros<a class="headerlink" href="#zeros" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::zeros” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor5zerosERK6vectorIiEi">
+<span id="_CPPv3N6Tensor5zerosERK6vectorIiEi"></span><span id="_CPPv2N6Tensor5zerosERK6vectorIiEi"></span><span id="Tensor::zeros__vector:i:CR.i"></span><span class="target" id="class_tensor_1a369bcb7cffc78d60348b58561d9002c9"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">zeros</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5zerosERK6vectorIiEi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a tensor of the specified shape and fill it with zeros. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor of the specified shape filled with zeros </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Shape of the tensor to create. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">zeros</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="ones">
 <h3>ones<a class="headerlink" href="#ones" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::ones” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor4onesERK6vectorIiEi">
+<span id="_CPPv3N6Tensor4onesERK6vectorIiEi"></span><span id="_CPPv2N6Tensor4onesERK6vectorIiEi"></span><span id="Tensor::ones__vector:i:CR.i"></span><span class="target" id="class_tensor_1a17af99e2d288c01fd64a9ff27f05a124"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ones</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4onesERK6vectorIiEi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a tensor of the specified shape and fill it with ones. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor of the specified shape filled with ones </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Shape of the tensor to create. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">ones</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="full">
 <h3>full<a class="headerlink" href="#full" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::full” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor4fullERK6vectorIiEfi">
+<span id="_CPPv3N6Tensor4fullERK6vectorIiEfi"></span><span id="_CPPv2N6Tensor4fullERK6vectorIiEfi"></span><span id="Tensor::full__vector:i:CR.float.i"></span><span class="target" id="class_tensor_1ad96f086f07c67e2430053d26121274b6"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">full</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, float <em>value</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4fullERK6vectorIiEfi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a tensor of the specified shape and fill it with a specific value. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor of the specified shape filled with the value </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Shape of the tensor to create. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: Value to use to fill the tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">full</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">float</span> <span class="n">value</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="eye">
 <h3>eye<a class="headerlink" href="#eye" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::eye” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor3eyeEiii">
+<span id="_CPPv3N6Tensor3eyeEiii"></span><span id="_CPPv2N6Tensor3eyeEiii"></span><span id="Tensor::eye__i.i.i"></span><span class="target" id="class_tensor_1afc30fce8989c8cd07ebf2888730f8705"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">eye</code><span class="sig-paren">(</span>int <em>rows</em>, int <em>offset</em> = 0, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3eyeEiii" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor of the specified shape filled with the value </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">rows</span></code>: Number of rows of the tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">offset</span></code>: </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">eye</span><span class="p">(</span><span class="kt">int</span> <span class="n">rows</span><span class="p">,</span> <span class="kt">int</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="identity">
 <h3>identity<a class="headerlink" href="#identity" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::identity” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor8identityEii">
+<span id="_CPPv3N6Tensor8identityEii"></span><span id="_CPPv2N6Tensor8identityEii"></span><span id="Tensor::identity__i.i"></span><span class="target" id="class_tensor_1aef18d21f233c577f18226ca412c11606"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">identity</code><span class="sig-paren">(</span>int <em>rows</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8identityEii" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a tensor representing the identity matrix. Equivalent to calling function <code class="docutils literal notranslate"><span class="pre">eye</span></code> with <code class="docutils literal notranslate"><span class="pre">offset</span> <span class="pre">=</span> <span class="pre">0</span></code>. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor of the specified shape filled with the value </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Shape of the tensor to create. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: Value to use to fill the tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">identity</span><span class="p">(</span><span class="kt">int</span> <span class="n">rows</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 <span class="c1">// empty?</span>
 </pre></div>
@@ -336,30 +406,50 @@
 <p>Create tensor from existing data</p>
 <div class="section" id="clone">
 <h3>clone<a class="headerlink" href="#clone" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::clone” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor5cloneEv">
+<span id="_CPPv3N6Tensor5cloneEv"></span><span id="_CPPv2N6Tensor5cloneEv"></span><span id="Tensor::clone"></span><span class="target" id="class_tensor_1a997099c0f8de3f9b89b61ec279da2d34"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5cloneEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Clone a tensor (same device). </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="nf">clone</span><span class="p">();</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="reallocate">
 <h3>reallocate<a class="headerlink" href="#reallocate" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::reallocate” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor10reallocateEP6TensorP6vectorIiE">
+<span id="_CPPv3N6Tensor10reallocateEP6TensorP6vectorIiE"></span><span id="_CPPv2N6Tensor10reallocateEP6TensorP6vectorIiE"></span><span id="Tensor::reallocate__TensorP.vector:i:P"></span><span class="target" id="class_tensor_1a941b22232a6a0d46ac89815cd47d933c"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">reallocate</code><span class="sig-paren">(</span>Tensor *<em>old_t</em>, vector&lt;int&gt; *<em>s</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10reallocateEP6TensorP6vectorIiE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">reallocate</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">old_t</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="copy">
 <h3>copy<a class="headerlink" href="#copy" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::copy” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor4copyEP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor4copyEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor4copyEP6TensorP6Tensor"></span><span id="Tensor::copy__TensorP.TensorP"></span><span class="target" id="class_tensor_1a48d86fd650524a63cf5a1147cd6b62e0"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">copy</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4copyEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Copy data from tensor A to B. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">copy</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 <span class="c1">//more</span>
 </pre></div>
@@ -371,50 +461,55 @@
 <p>Create tensor from numerical ranges</p>
 <div class="section" id="arange">
 <h3>arange<a class="headerlink" href="#arange" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::arange” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor6arangeEfffi">
+<span id="_CPPv3N6Tensor6arangeEfffi"></span><span id="_CPPv2N6Tensor6arangeEfffi"></span><span id="Tensor::arange__float.float.float.i"></span><span class="target" id="class_tensor_1a6ee1b4958f826a1de286f631842e4aa8"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">arange</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, float <em>step</em> = 1.0f, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6arangeEfffi" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">arange</span><span class="p">(</span><span class="kt">float</span> <span class="n">start</span><span class="p">,</span> <span class="kt">float</span> <span class="n">end</span><span class="p">,</span> <span class="kt">float</span> <span class="n">step</span><span class="o">=</span><span class="mf">1.0f</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="range">
 <h3>range<a class="headerlink" href="#range" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::range” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor5rangeEfffi">
+<span id="_CPPv3N6Tensor5rangeEfffi"></span><span id="_CPPv2N6Tensor5rangeEfffi"></span><span id="Tensor::range__float.float.float.i"></span><span class="target" id="class_tensor_1af679670e497f8912cdfb28a101a3ea38"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">range</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, float <em>step</em> = 1.0f, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5rangeEfffi" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">range</span><span class="p">(</span><span class="kt">float</span> <span class="n">start</span><span class="p">,</span> <span class="kt">float</span> <span class="n">end</span><span class="p">,</span> <span class="kt">float</span> <span class="n">step</span><span class="o">=</span><span class="mf">1.0f</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="linspace">
 <h3>linspace<a class="headerlink" href="#linspace" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::linspace” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor8linspaceEffii">
+<span id="_CPPv3N6Tensor8linspaceEffii"></span><span id="_CPPv2N6Tensor8linspaceEffii"></span><span id="Tensor::linspace__float.float.i.i"></span><span class="target" id="class_tensor_1ab0abb998c7d097791f23e9bdda8cace0"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">linspace</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, int <em>steps</em> = 100, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8linspaceEffii" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">linspace</span><span class="p">(</span><span class="kt">float</span> <span class="n">start</span><span class="p">,</span> <span class="kt">float</span> <span class="n">end</span><span class="p">,</span> <span class="kt">int</span> <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="logspace">
 <h3>logspace<a class="headerlink" href="#logspace" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::logspace” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor8logspaceEffifi">
+<span id="_CPPv3N6Tensor8logspaceEffifi"></span><span id="_CPPv2N6Tensor8logspaceEffifi"></span><span id="Tensor::logspace__float.float.i.float.i"></span><span class="target" id="class_tensor_1a6307a5a9387363c168dcd4f644622cf9"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">logspace</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, int <em>steps</em> = 100, float <em>base</em> = 10.0f, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8logspaceEffifi" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">logspace</span><span class="p">(</span><span class="kt">float</span> <span class="n">start</span><span class="p">,</span> <span class="kt">float</span> <span class="n">end</span><span class="p">,</span> <span class="kt">int</span> <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="kt">float</span> <span class="n">base</span><span class="o">=</span><span class="mf">10.0f</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="geomspace">
 <h3>geomspace<a class="headerlink" href="#geomspace" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::geomspace” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor9geomspaceEffii">
+<span id="_CPPv3N6Tensor9geomspaceEffii"></span><span id="_CPPv2N6Tensor9geomspaceEffii"></span><span id="Tensor::geomspace__float.float.i.i"></span><span class="target" id="class_tensor_1a7b3b1e649de5d4d2565ed1793c1c5699"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">geomspace</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, int <em>steps</em> = 100, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor9geomspaceEffii" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">geomspace</span><span class="p">(</span><span class="kt">float</span> <span class="n">start</span><span class="p">,</span> <span class="kt">float</span> <span class="n">end</span><span class="p">,</span> <span class="kt">int</span> <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -425,20 +520,22 @@
 <p>Create tensor from generators</p>
 <div class="section" id="randu">
 <h3>randu<a class="headerlink" href="#randu" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::randu” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor5randuERK6vectorIiEi">
+<span id="_CPPv3N6Tensor5randuERK6vectorIiEi"></span><span id="_CPPv2N6Tensor5randuERK6vectorIiEi"></span><span id="Tensor::randu__vector:i:CR.i"></span><span class="target" id="class_tensor_1ace96fede6da7958a824a57df8a366f1a"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">randu</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5randuERK6vectorIiEi" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">randu</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="randn">
 <h3>randn<a class="headerlink" href="#randn" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::randn” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor5randnERK6vectorIiEi">
+<span id="_CPPv3N6Tensor5randnERK6vectorIiEi"></span><span id="_CPPv2N6Tensor5randnERK6vectorIiEi"></span><span id="Tensor::randn__vector:i:CR.i"></span><span class="target" id="class_tensor_1a7277ccb42afa48c6771d669fe1664a1c"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">randn</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5randnERK6vectorIiEi" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">randn</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -448,7 +545,13 @@
 <h2>Build matrices<a class="headerlink" href="#build-matrices" title="Permalink to this headline">¶</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::diag” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::diag” with arguments (Tensor *, int, int) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">diag</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">static</span> <span class="nb">int</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">diag</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <p>Create tensor from generators</p>
 <p>Example:</p>

@@ -236,8 +236,20 @@
 <h2>Evaluate model<a class="headerlink" href="#evaluate-model" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorE">
-<span id="_CPPv3N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorE"></span><span id="_CPPv2N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorE"></span><span id="eddl::evaluate__model.vector:TensorP:CR.vector:TensorP:CR"></span><span class="target" id="namespaceeddl_1ae45df63105f71d3df2d131d4474086b9"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">evaluate</code><span class="sig-paren">(</span>model <em>net</em>, <em class="property">const</em> vector&lt;Tensor*&gt; &amp;<em>in</em>, <em class="property">const</em> vector&lt;Tensor*&gt; &amp;<em>out</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorE"></span><span id="_CPPv2N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorE"></span><span id="eddl::evaluate__model.vector:TensorP:CR.vector:TensorP:CR"></span><span class="target" id="namespaceeddl_1a66e45f3302765619424737649dae3c31"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">evaluate</code><span class="sig-paren">(</span>model <em>m</em>, <em class="property">const</em> vector&lt;Tensor*&gt; &amp;<em>in</em>, <em class="property">const</em> vector&lt;Tensor*&gt; &amp;<em>out</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the loss value &amp; metrics values for the model in test mode. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>(void) Evaluates the model </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model to train </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Input data (features) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">out</span></code>: Output data (labels) </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1

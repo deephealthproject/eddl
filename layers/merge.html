@@ -242,8 +242,20 @@
 <h2>Add<a class="headerlink" href="#add" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl3AddERK6vectorI5layerE6string">
-<span id="_CPPv3N4eddl3AddERK6vectorI5layerE6string"></span><span id="_CPPv2N4eddl3AddERK6vectorI5layerE6string"></span><span id="eddl::Add__vector:layer:CR.string"></span><span class="target" id="namespaceeddl_1a38019db465abbb324a34636994a4fc60"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Add</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;layer&gt; &amp;<em>layers</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3AddERK6vectorI5layerE6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl3AddERK6vectorI5layerE6string"></span><span id="_CPPv2N4eddl3AddERK6vectorI5layerE6string"></span><span id="eddl::Add__vector:layer:CR.string"></span><span class="target" id="namespaceeddl_1adde6ba39f75e6d5f620fe007c88a5b05"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Add</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;layer&gt; &amp;<em>layers</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3AddERK6vectorI5layerE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Layer that adds a list of layer inputs. </p>
+<p>It takes as input a list of layers, all of the same shape, and returns a single tensor (also of the same shape).</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of add operation with all input layers </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">layers</span></code>: List of layers </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Add</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">layer</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">layers</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
@@ -254,8 +266,20 @@
 <h2>Average<a class="headerlink" href="#average" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl7AverageERK6vectorI5layerE6string">
-<span id="_CPPv3N4eddl7AverageERK6vectorI5layerE6string"></span><span id="_CPPv2N4eddl7AverageERK6vectorI5layerE6string"></span><span id="eddl::Average__vector:layer:CR.string"></span><span class="target" id="namespaceeddl_1af41d33cda87705b321c1ce8e57a01a5e"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Average</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;layer&gt; &amp;<em>layers</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7AverageERK6vectorI5layerE6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl7AverageERK6vectorI5layerE6string"></span><span id="_CPPv2N4eddl7AverageERK6vectorI5layerE6string"></span><span id="eddl::Average__vector:layer:CR.string"></span><span class="target" id="namespaceeddl_1a68059f3ebf371e58ba96bdbac57d8c9e"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Average</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;layer&gt; &amp;<em>layers</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7AverageERK6vectorI5layerE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Layer that averages a list of layer inputs. </p>
+<p>It takes as input a list of layers, all of the same shape, and returns a single tensor (also of the same shape).</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of average operation with all input layers </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">layers</span></code>: List of layers </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Average</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">layer</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">layers</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span> <span class="c1">//Todo: Implement</span>
@@ -266,8 +290,21 @@
 <h2>Concat<a class="headerlink" href="#concat" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl6ConcatERK6vectorI5layerEj6string">
-<span id="_CPPv3N4eddl6ConcatERK6vectorI5layerEj6string"></span><span id="_CPPv2N4eddl6ConcatERK6vectorI5layerEj6string"></span><span id="eddl::Concat__vector:layer:CR.unsigned-i.string"></span><span class="target" id="namespaceeddl_1a002bb99a79ccddc19ac62029faa051ef"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Concat</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;layer&gt; &amp;<em>layers</em>, unsigned int <em>axis</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6ConcatERK6vectorI5layerEj6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl6ConcatERK6vectorI5layerEj6string"></span><span id="_CPPv2N4eddl6ConcatERK6vectorI5layerEj6string"></span><span id="eddl::Concat__vector:layer:CR.unsigned-i.string"></span><span class="target" id="namespaceeddl_1af58d05b083fcec709e6526b8d6e24916"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Concat</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;layer&gt; &amp;<em>layers</em>, unsigned int <em>axis</em> = 1, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6ConcatERK6vectorI5layerEj6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Layer that concatenates a list of inputs. </p>
+<p>It takes as input a list of layers and returns a single tensor, the concatenation of all inputs.</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of concatenation operation with all input layers </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">layers</span></code>: List of layers </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span></code>: Axis along which to concatenate. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Concat</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">layer</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">layers</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
@@ -291,8 +328,20 @@
 <h2>Maximum<a class="headerlink" href="#maximum" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl7MaximumERK6vectorI5layerE6string">
-<span id="_CPPv3N4eddl7MaximumERK6vectorI5layerE6string"></span><span id="_CPPv2N4eddl7MaximumERK6vectorI5layerE6string"></span><span id="eddl::Maximum__vector:layer:CR.string"></span><span class="target" id="namespaceeddl_1a68ce88422a99ca352ed067d8982131aa"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Maximum</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;layer&gt; &amp;<em>layers</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7MaximumERK6vectorI5layerE6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl7MaximumERK6vectorI5layerE6string"></span><span id="_CPPv2N4eddl7MaximumERK6vectorI5layerE6string"></span><span id="eddl::Maximum__vector:layer:CR.string"></span><span class="target" id="namespaceeddl_1ae1ca91f168e65be685f2092de7966de5"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Maximum</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;layer&gt; &amp;<em>layers</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7MaximumERK6vectorI5layerE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Layer that computes the maximum (element-wise) a list of inputs. </p>
+<p>It takes as input a list of tensors, all of the same shape, and returns a single tensor (also of the same shape).</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of Maximum operation with all input layers </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">layers</span></code>: List of layers </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Maximum</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">layer</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">layers</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
@@ -303,8 +352,20 @@
 <h2>Minimum<a class="headerlink" href="#minimum" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl7MinimumERK6vectorI5layerE6string">
-<span id="_CPPv3N4eddl7MinimumERK6vectorI5layerE6string"></span><span id="_CPPv2N4eddl7MinimumERK6vectorI5layerE6string"></span><span id="eddl::Minimum__vector:layer:CR.string"></span><span class="target" id="namespaceeddl_1a1bbc861a5bbd599f8595855fc582cfd2"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Minimum</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;layer&gt; &amp;<em>layers</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7MinimumERK6vectorI5layerE6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl7MinimumERK6vectorI5layerE6string"></span><span id="_CPPv2N4eddl7MinimumERK6vectorI5layerE6string"></span><span id="eddl::Minimum__vector:layer:CR.string"></span><span class="target" id="namespaceeddl_1a0b21f1de94e69ff73d17473ff9317b2e"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Minimum</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;layer&gt; &amp;<em>layers</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7MinimumERK6vectorI5layerE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Layer that computes the minimum (element-wise) a list of inputs. </p>
+<p>It takes as input a list of tensors, all of the same shape, and returns a single tensor (also of the same shape).</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of Minimum operation with all input layers </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">layers</span></code>: List of layers </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Minimum</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">layer</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">layers</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
@@ -315,8 +376,20 @@
 <h2>Subtract<a class="headerlink" href="#subtract" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl8SubtractERK6vectorI5layerE6string">
-<span id="_CPPv3N4eddl8SubtractERK6vectorI5layerE6string"></span><span id="_CPPv2N4eddl8SubtractERK6vectorI5layerE6string"></span><span id="eddl::Subtract__vector:layer:CR.string"></span><span class="target" id="namespaceeddl_1acdb2bad22b4611eabfcf7428e3e56ded"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Subtract</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;layer&gt; &amp;<em>layers</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8SubtractERK6vectorI5layerE6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl8SubtractERK6vectorI5layerE6string"></span><span id="_CPPv2N4eddl8SubtractERK6vectorI5layerE6string"></span><span id="eddl::Subtract__vector:layer:CR.string"></span><span class="target" id="namespaceeddl_1a2f50c418b4b40fc01656b626db277579"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Subtract</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;layer&gt; &amp;<em>layers</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8SubtractERK6vectorI5layerE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Layer that subtracts two inputs. </p>
+<p>It takes as input a list of tensors of size 2, both of the same shape, and returns a single tensor, (inputs[0] - inputs[1]), also of the same shape.</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of Substract operation with all input layers </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">layers</span></code>: List of layers </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Subtract</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">layer</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">layers</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>

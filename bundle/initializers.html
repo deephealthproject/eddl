@@ -245,8 +245,20 @@
 <h2>GlorotNormal<a class="headerlink" href="#glorotnormal" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl12GlorotNormalE5layeri">
-<span id="_CPPv3N4eddl12GlorotNormalE5layeri"></span><span id="_CPPv2N4eddl12GlorotNormalE5layeri"></span><span id="eddl::GlorotNormal__layer.i"></span><span class="target" id="namespaceeddl_1a1d7f814f786f7a9b95ca5acd4167c1d0"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">GlorotNormal</code><span class="sig-paren">(</span>layer <em>l</em>, int <em>seed</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl12GlorotNormalE5layeri" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl12GlorotNormalE5layeri"></span><span id="_CPPv2N4eddl12GlorotNormalE5layeri"></span><span id="eddl::GlorotNormal__layer.i"></span><span class="target" id="namespaceeddl_1a93b1cf7a55b311f9ac1724137ab3b213"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">GlorotNormal</code><span class="sig-paren">(</span>layer <em>l</em>, int <em>seed</em> = 1234<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl12GlorotNormalE5layeri" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Glorot normal initializer, also called Xavier normal initializer. </p>
+<p>It draws samples from a truncated normal distribution centered on 0 with stddev = sqrt(2 / (fan_in + fan_out)) where fan_in is the number of input units in the weight tensor and fan_out is the number of output units in the weight tensor.</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The layer l initialized with the Glorot normal </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer to initialize </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">seed</span></code>: Used to seed the random generator </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">GlorotNormal</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span><span class="kt">int</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">);</span>
@@ -257,8 +269,20 @@
 <h2>GlorotUniform<a class="headerlink" href="#glorotuniform" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl13GlorotUniformE5layeri">
-<span id="_CPPv3N4eddl13GlorotUniformE5layeri"></span><span id="_CPPv2N4eddl13GlorotUniformE5layeri"></span><span id="eddl::GlorotUniform__layer.i"></span><span class="target" id="namespaceeddl_1a4d855fdacd5eceffc9ace69326207618"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">GlorotUniform</code><span class="sig-paren">(</span>layer <em>l</em>, int <em>seed</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl13GlorotUniformE5layeri" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl13GlorotUniformE5layeri"></span><span id="_CPPv2N4eddl13GlorotUniformE5layeri"></span><span id="eddl::GlorotUniform__layer.i"></span><span class="target" id="namespaceeddl_1af83145b79d53e87e99ccfd82b9202235"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">GlorotUniform</code><span class="sig-paren">(</span>layer <em>l</em>, int <em>seed</em> = 1234<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl13GlorotUniformE5layeri" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Glorot uniform initializer, also called Xavier uniform initializer. </p>
+<p>It draws samples from a uniform distribution within [-limit, limit] where limit is sqrt(6 / (fan_in + fan_out)) where fan_in is the number of input units in the weight tensor and fan_out is the number of output units in the weight tensor.</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The layer l initialized with the Glorot uniform </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer to initialize </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">seed</span></code>: Used to seed the random generator </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">GlorotUniform</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span><span class="kt">int</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">);</span>
@@ -269,8 +293,21 @@
 <h2>RandomNormal<a class="headerlink" href="#randomnormal" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl12RandomNormalE5layerfff">
-<span id="_CPPv3N4eddl12RandomNormalE5layerfff"></span><span id="_CPPv2N4eddl12RandomNormalE5layerfff"></span><span id="eddl::RandomNormal__layer.float.float.float"></span><span class="target" id="namespaceeddl_1a1e0484ec89abc2d0b8def3463e7e7c6a"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomNormal</code><span class="sig-paren">(</span>layer <em>l</em>, float <em>m</em>, float <em>s</em>, float <em>seed</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl12RandomNormalE5layerfff" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl12RandomNormalE5layerfff"></span><span id="_CPPv2N4eddl12RandomNormalE5layerfff"></span><span id="eddl::RandomNormal__layer.float.float.float"></span><span class="target" id="namespaceeddl_1ac8eb406abc5628fe3b2b715597e1d0f3"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomNormal</code><span class="sig-paren">(</span>layer <em>l</em>, float <em>m</em> = 0.0, float <em>s</em> = 0.1, float <em>seed</em> = 1234<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl12RandomNormalE5layerfff" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Random normal initializer. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The layer l initialized with a random normal distribution </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer to initialize </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Mean of the normal distribution to draw samples </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">s</span></code>: Standard deviation of the normal distribution to draw samples </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">seed</span></code>: Used to seed the random generator </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">RandomNormal</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="kt">float</span> <span class="n">m</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="kt">float</span> <span class="n">s</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="kt">float</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">);</span>
@@ -281,8 +318,21 @@
 <h2>RandomUniform<a class="headerlink" href="#randomuniform" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl13RandomUniformE5layerfff">
-<span id="_CPPv3N4eddl13RandomUniformE5layerfff"></span><span id="_CPPv2N4eddl13RandomUniformE5layerfff"></span><span id="eddl::RandomUniform__layer.float.float.float"></span><span class="target" id="namespaceeddl_1abf1d0070a2b929117dee817a28422742"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomUniform</code><span class="sig-paren">(</span>layer <em>l</em>, float <em>min</em>, float <em>max</em>, float <em>seed</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl13RandomUniformE5layerfff" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl13RandomUniformE5layerfff"></span><span id="_CPPv2N4eddl13RandomUniformE5layerfff"></span><span id="eddl::RandomUniform__layer.float.float.float"></span><span class="target" id="namespaceeddl_1a2e9b68bfbc2804cf05074179456561a1"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RandomUniform</code><span class="sig-paren">(</span>layer <em>l</em>, float <em>min</em> = 0.0, float <em>max</em> = 0.1, float <em>seed</em> = 1234<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl13RandomUniformE5layerfff" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Random uniform initializer. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The layer l initialized with a random normal distribution </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer to initialize </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Mean of the normal distribution to draw samples </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">s</span></code>: Standard deviation of the normal distribution to draw samples </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">seed</span></code>: Used to seed the random generator </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">RandomUniform</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="kt">float</span> <span class="n">min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="kt">float</span> <span class="n">max</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="kt">float</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">);</span>
@@ -293,8 +343,19 @@
 <h2>Constant<a class="headerlink" href="#constant" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl8ConstantE5layerf">
-<span id="_CPPv3N4eddl8ConstantE5layerf"></span><span id="_CPPv2N4eddl8ConstantE5layerf"></span><span id="eddl::Constant__layer.float"></span><span class="target" id="namespaceeddl_1a163f3a66f27c8704878dc1cae696991d"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Constant</code><span class="sig-paren">(</span>layer <em>l</em>, float <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8ConstantE5layerf" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl8ConstantE5layerf"></span><span id="_CPPv2N4eddl8ConstantE5layerf"></span><span id="eddl::Constant__layer.float"></span><span class="target" id="namespaceeddl_1a9a1b17a941e947b93452e987979fb699"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Constant</code><span class="sig-paren">(</span>layer <em>l</em>, float <em>v</em> = 0.1<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8ConstantE5layerf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Initializer that generates tensors initialized to a constant value. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The layer l initialized with a constant value </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l</span></code>: Parent layer to initialize </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: Value of the generator </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Constant</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="o">=</span><span class="mf">0.1</span><span class="p">);</span>

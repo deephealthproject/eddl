@@ -255,7 +255,7 @@
 <h2>random_indices<a class="headerlink" href="#random-indices" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl14random_indicesEii">
-<span id="_CPPv3N4eddl14random_indicesEii"></span><span id="_CPPv2N4eddl14random_indicesEii"></span><span id="eddl::random_indices__i.i"></span><span class="target" id="namespaceeddl_1a42d8ccac2432480ff6d33c5862692e6b"></span>vector&lt;int&gt; <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">random_indices</code><span class="sig-paren">(</span>int <em>batch_size</em>, int <em>num_samples</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl14random_indicesEii" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N4eddl14random_indicesEii"></span><span id="_CPPv2N4eddl14random_indicesEii"></span><span id="eddl::random_indices__i.i"></span><span class="target" id="namespaceeddl_1a907447522385eb175ff5b5d1e822f46c"></span>vector&lt;int&gt; <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">random_indices</code><span class="sig-paren">(</span>int <em>batch_size</em>, int <em>num_samples</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl14random_indicesEii" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">random_indices</span><span class="p">(</span><span class="kt">int</span> <span class="n">batch_size</span><span class="p">,</span> <span class="kt">int</span> <span class="n">num_samples</span><span class="p">);</span>
@@ -332,7 +332,18 @@ Potential matches:
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl8set_modeE5modeli">
 <span id="_CPPv3N4eddl8set_modeE5modeli"></span><span id="_CPPv2N4eddl8set_modeE5modeli"></span><span id="eddl::set_mode__model.i"></span><span class="target" id="namespaceeddl_1aeea7298f723f561454324181111bbc43"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">set_mode</code><span class="sig-paren">(</span>model <em>net</em>, int <em>mode</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8set_modeE5modeli" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Set model mode. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>(void) </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: Train 1, Test 0 </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">set_mode</span><span class="p">(</span><span class="n">model</span> <span class="n">net</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mode</span><span class="p">);</span>
 </pre></div>
@@ -343,7 +354,17 @@ Potential matches:
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl10reset_lossE5model">
 <span id="_CPPv3N4eddl10reset_lossE5model"></span><span id="_CPPv2N4eddl10reset_lossE5model"></span><span id="eddl::reset_loss__model"></span><span class="target" id="namespaceeddl_1a0a7097af07f1ddbb6c840f7b10cac9f9"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">reset_loss</code><span class="sig-paren">(</span>model <em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10reset_lossE5model" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Resets model loss. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>(void) </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">reset_loss</span><span class="p">(</span><span class="n">model</span> <span class="n">m</span><span class="p">);</span>
 </pre></div>
@@ -396,8 +417,18 @@ Potential matches:
 <h2>zeroGrads<a class="headerlink" href="#zerograds" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl9zeroGradsE5model">
-<span id="_CPPv3N4eddl9zeroGradsE5model"></span><span id="_CPPv2N4eddl9zeroGradsE5model"></span><span id="eddl::zeroGrads__model"></span><span class="target" id="namespaceeddl_1a3ed6f1c3c934802cf0a9cfbc6fca8fa5"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">zeroGrads</code><span class="sig-paren">(</span>model <em>net</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9zeroGradsE5model" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl9zeroGradsE5model"></span><span id="_CPPv2N4eddl9zeroGradsE5model"></span><span id="eddl::zeroGrads__model"></span><span class="target" id="namespaceeddl_1a7e56049313cf4b51d76bbbd1c16b7d4b"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">zeroGrads</code><span class="sig-paren">(</span>model <em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9zeroGradsE5model" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Set model gradients to zero. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>(void) </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">zeroGrads</span><span class="p">(</span><span class="n">model</span> <span class="n">m</span><span class="p">);</span>
 </pre></div>
@@ -438,7 +469,18 @@ Potential matches:
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl10print_lossE5modeli">
 <span id="_CPPv3N4eddl10print_lossE5modeli"></span><span id="_CPPv2N4eddl10print_lossE5modeli"></span><span id="eddl::print_loss__model.i"></span><span class="target" id="namespaceeddl_1a4c9b28aa85ff9c12112ddf9b55217bc6"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">print_loss</code><span class="sig-paren">(</span>model <em>m</em>, int <em>batch</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10print_lossE5modeli" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Prints model loss at some batch. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>(void) </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">batch</span></code>: Batch number </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">print_loss</span><span class="p">(</span><span class="n">model</span> <span class="n">m</span><span class="p">,</span> <span class="kt">int</span> <span class="n">batch</span><span class="p">);</span>
 </pre></div>
@@ -449,7 +491,19 @@ Potential matches:
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl5clampE5modelff">
 <span id="_CPPv3N4eddl5clampE5modelff"></span><span id="_CPPv2N4eddl5clampE5modelff"></span><span id="eddl::clamp__model.float.float"></span><span class="target" id="namespaceeddl_1a6fa82826bab70a33a04f26757f268a7e"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">clamp</code><span class="sig-paren">(</span>model <em>m</em>, float <em>min</em>, float <em>max</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5clampE5modelff" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Model parameters values clipping. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>(void) Performs model clamp between min and max </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">min</span></code>: Minimum value </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max</span></code>: Maximum value </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">clamp</span><span class="p">(</span><span class="n">model</span> <span class="n">m</span><span class="p">,</span><span class="kt">float</span> <span class="n">min</span><span class="p">,</span><span class="kt">float</span> <span class="n">max</span><span class="p">);</span>
 </pre></div>
@@ -481,8 +535,18 @@ Potential matches:
 <h2>getLoss<a class="headerlink" href="#getloss" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl7getLossE6string">
-<span id="_CPPv3N4eddl7getLossE6string"></span><span id="_CPPv2N4eddl7getLossE6string"></span><span id="eddl::getLoss__string"></span><span class="target" id="namespaceeddl_1ac4e5bc08ce9be40d7a3ea8dce321aff9"></span>Loss *<code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">getLoss</code><span class="sig-paren">(</span>string <em>type</em><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl7getLossE6string"></span><span id="_CPPv2N4eddl7getLossE6string"></span><span id="eddl::getLoss__string"></span><span class="target" id="namespaceeddl_1a5018e1a632a81ff9cc8fdc689b3bac0f"></span>Loss *<code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">getLoss</code><span class="sig-paren">(</span>string <em>type</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Get Loss by his name. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Selected Loss </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code>: Loss name/type </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Loss</span><span class="o">*</span> <span class="nf">getLoss</span><span class="p">(</span><span class="n">string</span> <span class="n">type</span><span class="p">);</span>
 </pre></div>
@@ -521,8 +585,18 @@ Potential matches:
 <h2>getMetric<a class="headerlink" href="#getmetric" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl9getMetricE6string">
-<span id="_CPPv3N4eddl9getMetricE6string"></span><span id="_CPPv2N4eddl9getMetricE6string"></span><span id="eddl::getMetric__string"></span><span class="target" id="namespaceeddl_1a5dae40ff5a647ea6cfcdaae4e74dbc38"></span>Metric *<code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">getMetric</code><span class="sig-paren">(</span>string <em>type</em><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl9getMetricE6string"></span><span id="_CPPv2N4eddl9getMetricE6string"></span><span id="eddl::getMetric__string"></span><span class="target" id="namespaceeddl_1a476f62895d1b9c0fca0b4bd762df00d0"></span>Metric *<code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">getMetric</code><span class="sig-paren">(</span>string <em>type</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Get Metric by his name. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Selected Metric </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code>: Metric name/type </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Metric</span><span class="o">*</span> <span class="nf">getMetric</span><span class="p">(</span><span class="n">string</span> <span class="n">type</span><span class="p">);</span>
 </pre></div>

@@ -24,12 +24,6 @@ Affine
 
     Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations
 
-Example:
-
-.. code-block:: c++
-   :linenos:
-
-    layer Affine(layer parent, float angle=0, float translate=0, float scale=0, float shear=0, string name="");
 
 
 Crop
@@ -42,8 +36,13 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Crop(layer parent, vector<int> from_coords, vector<int> to_coords, bool reshape=true, float constant=0.0f, string name="");
-
+   // Define network
+   layer in = Input({784});
+   layer l = in;  // Aux var
+   l=Reshape(l,{1,28,28});
+   // Data transformation
+   l = Crop(l, {4,4},{24,24});
+   ...
 
 CenteredCrop
 ---------------
@@ -55,8 +54,13 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer CenteredCrop(layer parent, vector<int> size, bool reshape=true, float constant=0.0f, string name="");
-
+   // Define network
+   layer in = Input({784});
+   layer l = in;  // Aux var
+   l=Reshape(l,{1,28,28});
+   // Data transformation
+   l = CenteredCrop(l, {24,24});
+   ...
 
 ColorJitter
 ---------------
@@ -69,12 +73,6 @@ ColorJitter
 
     Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations
 
-Example:
-
-.. code-block:: c++
-   :linenos:
-
-    layer ColorJitter(layer parent, float brightness=0, float contrast=0, float saturation=0, float hue=0, string name="");  // TODO: Implement
 
 
 CropScale
@@ -87,8 +85,13 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer CropScale(layer parent, vector<int> from_coords, vector<int> to_coords, string da_mode="nearest", float constant=0.0f, string name="");
-
+   // Define network
+   layer in = Input({784});
+   layer l = in;  // Aux var
+   l=Reshape(l,{1,28,28});
+   // Data transformation
+   l = CropScale(l, {8,8},{20,20});
+   ...
 
 Cutout
 -------
@@ -100,8 +103,13 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Cutout(layer parent, vector<int> from_coords, vector<int> to_coords, float constant=0.0f, string name="");
-
+   // Define network
+   layer in = Input({784});
+   layer l = in;  // Aux var
+   l=Reshape(l,{1,28,28});
+   // Data transformation
+   l = Cutout(l, {0,0},{5,5});
+   ...
 
 
 Flip
@@ -114,25 +122,27 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Flip(layer parent, int axis=0, string name="");
+   // Define network
+   layer in = Input({784});
+   layer l = in;  // Aux var
+   l=Reshape(l,{1,28,28});
+   // Data transformation
+   l = Flip(l, 1);
+   ...
+
 
 Grayscale
 ---------
 
 .. doxygenfunction:: Grayscale
 
-Example:
 
 .. note::
 
     **Not implemented yet**
 
     Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations
-    
-.. code-block:: c++
-   :linenos:
-
-    layer Grayscale(layer parent,  string name="");
+ 
 
 
 HorizontalFlip
@@ -145,7 +155,13 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer HorizontalFlip(layer parent, string name="");
+   // Define network
+   layer in = Input({784});
+   layer l = in;  // Aux var
+   l=Reshape(l,{1,28,28});
+   // Data transformation
+   l = HorizontalFlip(l);
+   ...
 
 
 Pad
@@ -159,12 +175,6 @@ Pad
 
     Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations
 
-Example:
-
-.. code-block:: c++
-   :linenos:
-
-    layer Pad(layer parent, vector<int> padding, float constant=0.0f, string name="");
 
 
 
@@ -178,8 +188,13 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Rotate(layer parent, float angle, vector<int> offset_center={0, 0}, string da_mode="original", float constant=0.0f, string name="");
-
+   // Define network
+   layer in = Input({784});
+   layer l = in;  // Aux var
+   l=Reshape(l,{1,28,28});
+   // Data transformation
+   l = Rotate(l, 30.0);
+   ...
 
 
 Scale
@@ -192,20 +207,19 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Scale(layer parent, vector<int> new_shape, bool reshape=true, string da_mode="nearest", float constant=0.0f, string name="");
-
+   // Define network
+   layer in = Input({784});
+   layer l = in;  // Aux var
+   l=Reshape(l,{1,28,28});
+   // Data transformation
+   l = Scale(l, {35,35}, false);
+   ...
 
 Shift
 -----------
 
 .. doxygenfunction:: Shift
 
-Example:
-
-.. code-block:: c++
-   :linenos:
-
-    layer Shift(layer parent, vector<int> shift, string da_mode="nearest", float constant=0.0f, string name="");
 
 
 VerticalFlip
@@ -218,8 +232,13 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer VerticalFlip(layer parent, string name="");
-
+   // Define network
+   layer in = Input({784});
+   layer l = in;  // Aux var
+   l=Reshape(l,{1,28,28});
+   // Data transformation
+   l = VerticalFlip(l);
+   ...
 
 Normalize
 ---------
@@ -232,9 +251,3 @@ Normalize
 
     Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations
 
-Example:
-
-.. code-block:: c++
-   :linenos:
-
-    layer Normalize(layer parent, string name="");

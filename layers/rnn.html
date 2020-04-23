@@ -238,8 +238,24 @@
 <h2>RNN<a class="headerlink" href="#rnn" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl3RNNE5layeriibfb6string">
-<span id="_CPPv3N4eddl3RNNE5layeriibfb6string"></span><span id="_CPPv2N4eddl3RNNE5layeriibfb6string"></span><span id="eddl::RNN__layer.i.i.b.float.b.string"></span><span class="target" id="namespaceeddl_1a9fa7b9f387259bd54de8e059dce7ebda"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RNN</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>units</em>, int <em>num_layers</em>, bool <em>use_bias</em>, float <em>dropout</em>, bool <em>bidirectional</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3RNNE5layeriibfb6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl3RNNE5layeriibfb6string"></span><span id="_CPPv2N4eddl3RNNE5layeriibfb6string"></span><span id="eddl::RNN__layer.i.i.b.float.b.string"></span><span class="target" id="namespaceeddl_1a6892e81884b8e7b0e5804367d60afab3"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RNN</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>units</em>, int <em>num_layers</em> = 1, bool <em>use_bias</em> = true, float <em>dropout</em> = .0f, bool <em>bidirectional</em> = false, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3RNNE5layeriibfb6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Fully-connected RNN where the output is to be fed back to input. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The RNN layer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">units</span></code>: dimensionality of the output space. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">num_layers</span></code>: Number of RNN layers </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: whether the layer uses a bias vector. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dropout</span></code>: Fraction of the units to drop for the linear transformation of the inputs. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bidirectional</span></code>: Wether the RNN is bidirectional or not. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -268,8 +284,24 @@
 <h2>LSTM<a class="headerlink" href="#lstm" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl4LSTME5layeriibfb6string">
-<span id="_CPPv3N4eddl4LSTME5layeriibfb6string"></span><span id="_CPPv2N4eddl4LSTME5layeriibfb6string"></span><span id="eddl::LSTM__layer.i.i.b.float.b.string"></span><span class="target" id="namespaceeddl_1af3a25e9d07f157f325032c41d1d5bd15"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">LSTM</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>units</em>, int <em>num_layers</em>, bool <em>use_bias</em>, float <em>dropout</em>, bool <em>bidirectional</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4LSTME5layeriibfb6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl4LSTME5layeriibfb6string"></span><span id="_CPPv2N4eddl4LSTME5layeriibfb6string"></span><span id="eddl::LSTM__layer.i.i.b.float.b.string"></span><span class="target" id="namespaceeddl_1a11d1aa3b0ab0b22451b6b69012e16465"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">LSTM</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>units</em>, int <em>num_layers</em>, bool <em>use_bias</em> = true, float <em>dropout</em> = .0f, bool <em>bidirectional</em> = false, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4LSTME5layeriibfb6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Long Short-Term Memory layer - Hochreiter 1997. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The LSTM layer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">units</span></code>: dimensionality of the output space. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">num_layers</span></code>: Number of RNN layers </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: whether the layer uses a bias vector. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dropout</span></code>: Fraction of the units to drop for the linear transformation of the inputs. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bidirectional</span></code>: Wether the RNN is bidirectional or not. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="admonition note">
 <p class="admonition-title">Note</p>

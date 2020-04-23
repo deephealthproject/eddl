@@ -254,10 +254,21 @@
 <h2>Indexing-like operations<a class="headerlink" href="#indexing-like-operations" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="select">
 <h3>select<a class="headerlink" href="#select" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::select” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor6selectERK6vectorI6stringE">
+<span id="_CPPv3N6Tensor6selectERK6vectorI6stringE"></span><span id="_CPPv2N6Tensor6selectERK6vectorI6stringE"></span><span id="Tensor::select__vector:string:CR"></span><span class="target" id="class_tensor_1ae1a8017516f3a368261645b0fd9feaee"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;string&gt; &amp;<em>indices</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Returns an array with the selected indices of the tensor. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">indices</span></code>: Vector of strings representing the indices to be selected. These indices must follow a Python-like syntax. Some examples: <code class="docutils literal notranslate"><span class="pre">&quot;0&quot;</span></code> , <code class="docutils literal notranslate"><span class="pre">&quot;:5&quot;</span></code> , <code class="docutils literal notranslate"><span class="pre">&quot;:&quot;</span></code> , <code class="docutils literal notranslate"><span class="pre">&quot;3:6&quot;</span></code>. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="nf">select</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span> <span class="n">indices</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
@@ -266,7 +277,13 @@
 <h3>set_select<a class="headerlink" href="#set-select" title="Permalink to this headline">¶</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::set_select” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::set_select” with arguments (const vector&lt;string&gt;&amp;, Tensor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">set_select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">SelDescriptor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">set_select</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">set_select</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span> <span class="n">indices</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
 </pre></div>

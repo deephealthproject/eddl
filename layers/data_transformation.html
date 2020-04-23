@@ -258,29 +258,68 @@
 </div>
 <div class="section" id="affine">
 <h2>Affine<a class="headerlink" href="#affine" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Affine” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl6AffineE5layerffff6string">
+<span id="_CPPv3N4eddl6AffineE5layerffff6string"></span><span id="_CPPv2N4eddl6AffineE5layerffff6string"></span><span id="eddl::Affine__layer.float.float.float.float.string"></span><span class="target" id="namespaceeddl_1adc31eed3b873c2b154560c5b4be6d12e"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Affine</code><span class="sig-paren">(</span>layer <em>parent</em>, float <em>angle</em> = 0, float <em>translate</em> = 0, float <em>scale</em> = 0, float <em>shear</em> = 0, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6AffineE5layerffff6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Affine transformation of the image keeping center invariant: rotate+translate+scale+shear. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of affine transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">angle</span></code>: Angle factor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">translate</span></code>: Translate factor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scale</span></code>: Scaling factor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shear</span></code>: Shear factor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><strong>Not implemented yet</strong></p>
 <p>Check development progress in <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations">https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations</a></p>
 </div>
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Affine</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="kt">float</span> <span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="kt">float</span> <span class="n">translate</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="kt">float</span> <span class="n">scale</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="kt">float</span> <span class="n">shear</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">);</span>
-</pre></div>
-</td></tr></table></div>
 </div>
 <div class="section" id="crop">
 <h2>Crop<a class="headerlink" href="#crop" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl4CropE5layer6vectorIiE6vectorIiEbf6string">
-<span id="_CPPv3N4eddl4CropE5layer6vectorIiE6vectorIiEbf6string"></span><span id="_CPPv2N4eddl4CropE5layer6vectorIiE6vectorIiEbf6string"></span><span id="eddl::Crop__layer.vector:i:.vector:i:.b.float.string"></span><span class="target" id="namespaceeddl_1afae2ecddae5793e06be1c6f5f4f82e86"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Crop</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>from_coords</em>, vector&lt;int&gt; <em>to_coords</em>, bool <em>reshape</em>, float <em>constant</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4CropE5layer6vectorIiE6vectorIiEbf6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl4CropE5layer6vectorIiE6vectorIiEbf6string"></span><span id="_CPPv2N4eddl4CropE5layer6vectorIiE6vectorIiEbf6string"></span><span id="eddl::Crop__layer.vector:i:.vector:i:.b.float.string"></span><span class="target" id="namespaceeddl_1ae6d0cd2037620b41ec04d8bf346ba094"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Crop</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>from_coords</em>, vector&lt;int&gt; <em>to_coords</em>, bool <em>reshape</em> = true, float <em>constant</em> = 0.0f, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4CropE5layer6vectorIiE6vectorIiEbf6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Crops the given image at <code class="docutils literal notranslate"><span class="pre">[(top,</span> <span class="pre">left),</span> <span class="pre">(bottom,</span> <span class="pre">right)]</span></code>. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of crop transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">from_coords</span></code>: Vector (top, left) coordinates </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">to_coords</span></code>: Vector (bottom, right) coordinates </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reshape</span></code>: If True, the output shape will be new_shape (classical scale; recommended). If False, the output shape will be the input shape (scale&lt;100%: scale + padding; scale &gt;100%: crop + scale) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Erasing value </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Crop</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">from_coords</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">to_coords</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">reshape</span><span class="o">=</span><span class="nb">true</span><span class="p">,</span> <span class="kt">float</span> <span class="n">constant</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// Define network</span>
+<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
+<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
+<span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
+<span class="c1">// Data transformation</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Crop</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">},{</span><span class="mi">24</span><span class="p">,</span><span class="mi">24</span><span class="p">});</span>
+<span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -288,39 +327,104 @@
 <h2>CenteredCrop<a class="headerlink" href="#centeredcrop" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl12CenteredCropE5layer6vectorIiEbf6string">
-<span id="_CPPv3N4eddl12CenteredCropE5layer6vectorIiEbf6string"></span><span id="_CPPv2N4eddl12CenteredCropE5layer6vectorIiEbf6string"></span><span id="eddl::CenteredCrop__layer.vector:i:.b.float.string"></span><span class="target" id="namespaceeddl_1aa47dd4a4cf2133ab9bdbd0d36bdf19be"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">CenteredCrop</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>size</em>, bool <em>reshape</em>, float <em>constant</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl12CenteredCropE5layer6vectorIiEbf6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl12CenteredCropE5layer6vectorIiEbf6string"></span><span id="_CPPv2N4eddl12CenteredCropE5layer6vectorIiEbf6string"></span><span id="eddl::CenteredCrop__layer.vector:i:.b.float.string"></span><span class="target" id="namespaceeddl_1a98041d0a78f0c9925dd3cfbc12e82d66"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">CenteredCrop</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>size</em>, bool <em>reshape</em> = true, float <em>constant</em> = 0.0f, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl12CenteredCropE5layer6vectorIiEbf6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Crops the given image at the center with size (width, height). </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of center crop transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">size</span></code>: Vector (height, width) size </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reshape</span></code>: If True, the output shape will be new_shape (classical scale; recommended). If False, the output shape will be the input shape (scale&lt;100%: scale + padding; scale &gt;100%: crop + scale) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Erasing value </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">CenteredCrop</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">size</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">reshape</span><span class="o">=</span><span class="nb">true</span><span class="p">,</span> <span class="kt">float</span> <span class="n">constant</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// Define network</span>
+<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
+<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
+<span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
+<span class="c1">// Data transformation</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">CenteredCrop</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">24</span><span class="p">,</span><span class="mi">24</span><span class="p">});</span>
+<span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>
 <div class="section" id="colorjitter">
 <h2>ColorJitter<a class="headerlink" href="#colorjitter" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “ColorJitter” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl11ColorJitterE5layerffff6string">
+<span id="_CPPv3N4eddl11ColorJitterE5layerffff6string"></span><span id="_CPPv2N4eddl11ColorJitterE5layerffff6string"></span><span id="eddl::ColorJitter__layer.float.float.float.float.string"></span><span class="target" id="namespaceeddl_1a8597b11e48dec84dec771b52e50f0b3a"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ColorJitter</code><span class="sig-paren">(</span>layer <em>parent</em>, float <em>brightness</em> = 0, float <em>contrast</em> = 0, float <em>saturation</em> = 0, float <em>hue</em> = 0, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl11ColorJitterE5layerffff6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Randomly change the brightness, contrast and saturation of an image. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of color jitter transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">brightness</span></code>: How much to jitter brightness. brightness_factor is chosen uniformly from [max(0, 1 - brightness), 1 + brightness] or the given [min, max]. Should be non negative numbers </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">contrast</span></code>: How much to jitter contrast. contrast_factor is chosen uniformly from [max(0, 1 - contrast), 1 + contrast] or the given [min, max]. Should be non negative numbers </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">saturation</span></code>: How much to jitter saturation. saturation_factor is chosen uniformly from [max(0, 1 - saturation), 1 + saturation] or the given [min, max]. Should be non negative numbers </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hue</span></code>: How much to jitter hue. hue_factor is chosen uniformly from [-hue, hue] or the given [min, max]. Should have 0&lt;= hue &lt;= 0.5 or -0.5 &lt;= min &lt;= max &lt;= 0.5 </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><strong>Not implemented yet</strong></p>
 <p>Check development progress in <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations">https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations</a></p>
 </div>
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">ColorJitter</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="kt">float</span> <span class="n">brightness</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="kt">float</span> <span class="n">contrast</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="kt">float</span> <span class="n">saturation</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="kt">float</span> <span class="n">hue</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">);</span>  <span class="c1">// TODO: Implement</span>
-</pre></div>
-</td></tr></table></div>
 </div>
 <div class="section" id="cropscale">
 <h2>CropScale<a class="headerlink" href="#cropscale" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl9CropScaleE5layer6vectorIiE6vectorIiE6stringf6string">
-<span id="_CPPv3N4eddl9CropScaleE5layer6vectorIiE6vectorIiE6stringf6string"></span><span id="_CPPv2N4eddl9CropScaleE5layer6vectorIiE6vectorIiE6stringf6string"></span><span id="eddl::CropScale__layer.vector:i:.vector:i:.string.float.string"></span><span class="target" id="namespaceeddl_1a3cd6097da87de03cdaba87c20ea92821"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">CropScale</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>from_coords</em>, vector&lt;int&gt; <em>to_coords</em>, string <em>da_mode</em>, float <em>constant</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9CropScaleE5layer6vectorIiE6vectorIiE6stringf6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl9CropScaleE5layer6vectorIiE6vectorIiE6stringf6string"></span><span id="_CPPv2N4eddl9CropScaleE5layer6vectorIiE6vectorIiE6stringf6string"></span><span id="eddl::CropScale__layer.vector:i:.vector:i:.string.float.string"></span><span class="target" id="namespaceeddl_1a7bb77d179022be558caf6c817c133f71"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">CropScale</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>from_coords</em>, vector&lt;int&gt; <em>to_coords</em>, string <em>da_mode</em> = &quot;nearest&quot;, float <em>constant</em> = 0.0f, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9CropScaleE5layer6vectorIiE6vectorIiE6stringf6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Crop the given image at <code class="docutils literal notranslate"><span class="pre">[(top,</span> <span class="pre">left),</span> <span class="pre">(bottom,</span> <span class="pre">right)]</span></code> and scale it to the parent size. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of crop scale transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">from_coords</span></code>: Vector (top, left) coordinates </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">to_coords</span></code>: Vector (bottom, right) coordinates </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">da_mode</span></code>: One of “nearest”, “constant”, (ToDo: “mirrror”, “reflect”, “wrap”, “original”) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Fill value for area outside the rotated image, it is used for all channels respectively </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">CropScale</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">from_coords</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">to_coords</span><span class="p">,</span> <span class="n">string</span> <span class="n">da_mode</span><span class="o">=</span><span class="s">&quot;nearest&quot;</span><span class="p">,</span> <span class="kt">float</span> <span class="n">constant</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// Define network</span>
+<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
+<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
+<span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
+<span class="c1">// Data transformation</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">CropScale</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">},{</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">});</span>
+<span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -328,11 +432,37 @@
 <h2>Cutout<a class="headerlink" href="#cutout" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl6CutoutE5layer6vectorIiE6vectorIiEf6string">
-<span id="_CPPv3N4eddl6CutoutE5layer6vectorIiE6vectorIiEf6string"></span><span id="_CPPv2N4eddl6CutoutE5layer6vectorIiE6vectorIiEf6string"></span><span id="eddl::Cutout__layer.vector:i:.vector:i:.float.string"></span><span class="target" id="namespaceeddl_1ad8edee2aec13bb162f8a00615d78014b"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Cutout</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>from_coords</em>, vector&lt;int&gt; <em>to_coords</em>, float <em>constant</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6CutoutE5layer6vectorIiE6vectorIiEf6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl6CutoutE5layer6vectorIiE6vectorIiEf6string"></span><span id="_CPPv2N4eddl6CutoutE5layer6vectorIiE6vectorIiEf6string"></span><span id="eddl::Cutout__layer.vector:i:.vector:i:.float.string"></span><span class="target" id="namespaceeddl_1ab754b0224174c6d127246d968cde6b67"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Cutout</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>from_coords</em>, vector&lt;int&gt; <em>to_coords</em>, float <em>constant</em> = 0.0f, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6CutoutE5layer6vectorIiE6vectorIiEf6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Selects a rectangle region in an image at <code class="docutils literal notranslate"><span class="pre">[(top,</span> <span class="pre">left),</span> <span class="pre">(bottom,</span> <span class="pre">right)]</span></code> and erases its pixels using a constant value. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of cutout transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">from_coords</span></code>: Vector (top, left) coordinates </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">to_coords</span></code>: Vector (bottom, right) coordinates </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Erasing value </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Cutout</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">from_coords</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">to_coords</span><span class="p">,</span> <span class="kt">float</span> <span class="n">constant</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// Define network</span>
+<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
+<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
+<span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
+<span class="c1">// Data transformation</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Cutout</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">},{</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">});</span>
+<span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -340,67 +470,158 @@
 <h2>Flip<a class="headerlink" href="#flip" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl4FlipE5layeri6string">
-<span id="_CPPv3N4eddl4FlipE5layeri6string"></span><span id="_CPPv2N4eddl4FlipE5layeri6string"></span><span id="eddl::Flip__layer.i.string"></span><span class="target" id="namespaceeddl_1a1859644c597c6e4e9c5a66fe1e9766a6"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Flip</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>axis</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4FlipE5layeri6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl4FlipE5layeri6string"></span><span id="_CPPv2N4eddl4FlipE5layeri6string"></span><span id="eddl::Flip__layer.i.string"></span><span class="target" id="namespaceeddl_1a989b18386ff68203b5610d2c4b0dda4c"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Flip</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>axis</em> = 0, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4FlipE5layeri6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Flip the given image at <code class="docutils literal notranslate"><span class="pre">axis=n</span></code>. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of flip transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span></code>: Flip axis </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Flip</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="kt">int</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// Define network</span>
+<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
+<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
+<span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
+<span class="c1">// Data transformation</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Flip</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+<span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>
 <div class="section" id="grayscale">
 <h2>Grayscale<a class="headerlink" href="#grayscale" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Grayscale” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
-<p>Example:</p>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl9GrayscaleE5layer6string">
+<span id="_CPPv3N4eddl9GrayscaleE5layer6string"></span><span id="_CPPv2N4eddl9GrayscaleE5layer6string"></span><span id="eddl::Grayscale__layer.string"></span><span class="target" id="namespaceeddl_1a1430da4391416d07e33fb08d434f111a"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Grayscale</code><span class="sig-paren">(</span>layer <em>parent</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9GrayscaleE5layer6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Convert image to grayscale.. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of grayscale transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><strong>Not implemented yet</strong></p>
 <p>Check development progress in <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations">https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations</a></p>
 </div>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Grayscale</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span>  <span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">);</span>
-</pre></div>
-</td></tr></table></div>
 </div>
 <div class="section" id="horizontalflip">
 <h2>HorizontalFlip<a class="headerlink" href="#horizontalflip" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl14HorizontalFlipE5layer6string">
-<span id="_CPPv3N4eddl14HorizontalFlipE5layer6string"></span><span id="_CPPv2N4eddl14HorizontalFlipE5layer6string"></span><span id="eddl::HorizontalFlip__layer.string"></span><span class="target" id="namespaceeddl_1a1811d8d04f39f2444a0d1484c8d96224"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">HorizontalFlip</code><span class="sig-paren">(</span>layer <em>parent</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl14HorizontalFlipE5layer6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl14HorizontalFlipE5layer6string"></span><span id="_CPPv2N4eddl14HorizontalFlipE5layer6string"></span><span id="eddl::HorizontalFlip__layer.string"></span><span class="target" id="namespaceeddl_1a63f1562f5000a5ee2576c9c8a6c172d2"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">HorizontalFlip</code><span class="sig-paren">(</span>layer <em>parent</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl14HorizontalFlipE5layer6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Horizontally flip the given image. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of horizontal flip transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">HorizontalFlip</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// Define network</span>
+<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
+<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
+<span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
+<span class="c1">// Data transformation</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">HorizontalFlip</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>
 <div class="section" id="pad">
 <h2>Pad<a class="headerlink" href="#pad" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Pad” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl3PadE5layer6vectorIiEf6string">
+<span id="_CPPv3N4eddl3PadE5layer6vectorIiEf6string"></span><span id="_CPPv2N4eddl3PadE5layer6vectorIiEf6string"></span><span id="eddl::Pad__layer.vector:i:.float.string"></span><span class="target" id="namespaceeddl_1a8ee0a3efb874bdd24325fee8108750b6"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Pad</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>padding</em>, float <em>constant</em> = 0.0f, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3PadE5layer6vectorIiEf6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Pad the given image on all sides with the given “pad” value.. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Padded image </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">padding</span></code>: Padding on each border. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: pads with a constant value </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><strong>Not implemented yet</strong></p>
 <p>Check development progress in <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations">https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations</a></p>
 </div>
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Pad</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">padding</span><span class="p">,</span> <span class="kt">float</span> <span class="n">constant</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">);</span>
-</pre></div>
-</td></tr></table></div>
 </div>
 <div class="section" id="rotate">
 <h2>Rotate<a class="headerlink" href="#rotate" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl6RotateE5layerf6vectorIiE6stringf6string">
-<span id="_CPPv3N4eddl6RotateE5layerf6vectorIiE6stringf6string"></span><span id="_CPPv2N4eddl6RotateE5layerf6vectorIiE6stringf6string"></span><span id="eddl::Rotate__layer.float.vector:i:.string.float.string"></span><span class="target" id="namespaceeddl_1aa742c232ae5216fde25ddd093576e62f"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Rotate</code><span class="sig-paren">(</span>layer <em>parent</em>, float <em>angle</em>, vector&lt;int&gt; <em>offset_center</em>, string <em>da_mode</em>, float <em>constant</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6RotateE5layerf6vectorIiE6stringf6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl6RotateE5layerf6vectorIiE6stringf6string"></span><span id="_CPPv2N4eddl6RotateE5layerf6vectorIiE6stringf6string"></span><span id="eddl::Rotate__layer.float.vector:i:.string.float.string"></span><span class="target" id="namespaceeddl_1a443c0be2f45bc714497b8de27fdfa898"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Rotate</code><span class="sig-paren">(</span>layer <em>parent</em>, float <em>angle</em>, vector&lt;int&gt; <em>offset_center</em> = {0, 0}, string <em>da_mode</em> = &quot;original&quot;, float <em>constant</em> = 0.0f, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6RotateE5layerf6vectorIiE6stringf6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Rotate the image by angle. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of rotate transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">angle</span></code>: In degrees counter clockwise order </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">offset_center</span></code>: Optional center of rotation. Default is the center of the image </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">da_mode</span></code>: One of “nearest”, “constant”, (ToDo: “mirrror”, “reflect”, “wrap”, “original”) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Fill value for area outside the rotated image, it is used for all channels respectively. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Rotate</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="kt">float</span> <span class="n">angle</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">offset_center</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">},</span> <span class="n">string</span> <span class="n">da_mode</span><span class="o">=</span><span class="s">&quot;original&quot;</span><span class="p">,</span> <span class="kt">float</span> <span class="n">constant</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// Define network</span>
+<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
+<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
+<span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
+<span class="c1">// Data transformation</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Rotate</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">);</span>
+<span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -408,11 +629,37 @@
 <h2>Scale<a class="headerlink" href="#scale" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl5ScaleE5layer6vectorIiEb6stringf6string">
-<span id="_CPPv3N4eddl5ScaleE5layer6vectorIiEb6stringf6string"></span><span id="_CPPv2N4eddl5ScaleE5layer6vectorIiEb6stringf6string"></span><span id="eddl::Scale__layer.vector:i:.b.string.float.string"></span><span class="target" id="namespaceeddl_1a8ad1776a79f4fe8f7451175b3632ed98"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Scale</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>new_shape</em>, bool <em>reshape</em>, string <em>da_mode</em>, float <em>constant</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5ScaleE5layer6vectorIiEb6stringf6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl5ScaleE5layer6vectorIiEb6stringf6string"></span><span id="_CPPv2N4eddl5ScaleE5layer6vectorIiEb6stringf6string"></span><span id="eddl::Scale__layer.vector:i:.b.string.float.string"></span><span class="target" id="namespaceeddl_1abbda2cad36a66cf8e2b8726fff3aa07a"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Scale</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>new_shape</em>, bool <em>reshape</em> = true, string <em>da_mode</em> = &quot;nearest&quot;, float <em>constant</em> = 0.0f, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5ScaleE5layer6vectorIiEb6stringf6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Resize the input image to the given size. <code class="docutils literal notranslate"><span class="pre">[height,</span> <span class="pre">width]</span></code>. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of scale transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">new_shape</span></code>: Vector with layer/images desired new shape </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reshape</span></code>: If True, the output shape will be new_shape (classical scale; recommended). If False, the output shape will be the input shape (scale&lt;100%: scale + padding; scale &gt;100%: crop + scale) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">da_mode</span></code>: One of “nearest”, “constant”, (ToDo: “mirrror”, “reflect”, “wrap”, “original”) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Fill value for area outside the resized image, it is used for all channels respectively. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Scale</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">new_shape</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">reshape</span><span class="o">=</span><span class="nb">true</span><span class="p">,</span> <span class="n">string</span> <span class="n">da_mode</span><span class="o">=</span><span class="s">&quot;nearest&quot;</span><span class="p">,</span> <span class="kt">float</span> <span class="n">constant</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// Define network</span>
+<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
+<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
+<span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
+<span class="c1">// Data transformation</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Scale</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">35</span><span class="p">,</span><span class="mi">35</span><span class="p">},</span> <span class="nb">false</span><span class="p">);</span>
+<span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -420,41 +667,81 @@
 <h2>Shift<a class="headerlink" href="#shift" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl5ShiftE5layer6vectorIiE6stringf6string">
-<span id="_CPPv3N4eddl5ShiftE5layer6vectorIiE6stringf6string"></span><span id="_CPPv2N4eddl5ShiftE5layer6vectorIiE6stringf6string"></span><span id="eddl::Shift__layer.vector:i:.string.float.string"></span><span class="target" id="namespaceeddl_1a9044b780601351948a490f3272eb53a9"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Shift</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>shift</em>, string <em>da_mode</em>, float <em>constant</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5ShiftE5layer6vectorIiE6stringf6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl5ShiftE5layer6vectorIiE6stringf6string"></span><span id="_CPPv2N4eddl5ShiftE5layer6vectorIiE6stringf6string"></span><span id="eddl::Shift__layer.vector:i:.string.float.string"></span><span class="target" id="namespaceeddl_1ad3eb1e853b4fa592bae0eb4195ce3933"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Shift</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>shift</em>, string <em>da_mode</em> = &quot;nearest&quot;, float <em>constant</em> = 0.0f, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5ShiftE5layer6vectorIiE6stringf6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Shift the input image <code class="docutils literal notranslate"><span class="pre">[a,</span> <span class="pre">b]</span></code>. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of scale transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shift</span></code>: Vector of maximum absolute fraction for horizontal and vertical translations </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">da_mode</span></code>: One of “nearest”, “constant”, (ToDo: “mirrror”, “reflect”, “wrap”, “original”) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: Fill value for area outside the resized image, it is used for all channels respectively. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Shift</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">shift</span><span class="p">,</span> <span class="n">string</span> <span class="n">da_mode</span><span class="o">=</span><span class="s">&quot;nearest&quot;</span><span class="p">,</span> <span class="kt">float</span> <span class="n">constant</span><span class="o">=</span><span class="mf">0.0f</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">);</span>
-</pre></div>
-</td></tr></table></div>
 </div>
 <div class="section" id="verticalflip">
 <h2>VerticalFlip<a class="headerlink" href="#verticalflip" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl12VerticalFlipE5layer6string">
-<span id="_CPPv3N4eddl12VerticalFlipE5layer6string"></span><span id="_CPPv2N4eddl12VerticalFlipE5layer6string"></span><span id="eddl::VerticalFlip__layer.string"></span><span class="target" id="namespaceeddl_1a3dbdab7be9f422d8793398cbd8ee4179"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">VerticalFlip</code><span class="sig-paren">(</span>layer <em>parent</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl12VerticalFlipE5layer6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl12VerticalFlipE5layer6string"></span><span id="_CPPv2N4eddl12VerticalFlipE5layer6string"></span><span id="eddl::VerticalFlip__layer.string"></span><span class="target" id="namespaceeddl_1ab059b811d669017c8a694a4d740de820"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">VerticalFlip</code><span class="sig-paren">(</span>layer <em>parent</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl12VerticalFlipE5layer6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Vertically flip the given image. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of vertical flip transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">VerticalFlip</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">// Define network</span>
+<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
+<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
+<span class="n">l</span><span class="o">=</span><span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
+<span class="c1">// Data transformation</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">VerticalFlip</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>
 <div class="section" id="normalize">
 <h2>Normalize<a class="headerlink" href="#normalize" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Normalize” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl9NormalizeE5layer6string">
+<span id="_CPPv3N4eddl9NormalizeE5layer6string"></span><span id="_CPPv2N4eddl9NormalizeE5layer6string"></span><span id="eddl::Normalize__layer.string"></span><span class="target" id="namespaceeddl_1a2e0ab61a4313bdb6fc8fbb5645fd5618"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Normalize</code><span class="sig-paren">(</span>layer <em>parent</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9NormalizeE5layer6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Normalize an image with mean and standard deviation. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Output of normalize transformation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><strong>Not implemented yet</strong></p>
 <p>Check development progress in <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations">https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations</a></p>
 </div>
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Normalize</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">);</span>
-</pre></div>
-</td></tr></table></div>
 </div>
 </div>
 

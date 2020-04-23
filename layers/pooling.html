@@ -239,8 +239,22 @@
 <h2>MaxPooling<a class="headerlink" href="#maxpooling" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl7MaxPoolE5layerRK6vectorIiERK6vectorIiE6string6string">
-<span id="_CPPv3N4eddl7MaxPoolE5layerRK6vectorIiERK6vectorIiE6string6string"></span><span id="_CPPv2N4eddl7MaxPoolE5layerRK6vectorIiERK6vectorIiE6string6string"></span><span id="eddl::MaxPool__layer.vector:i:CR.vector:i:CR.string.string"></span><span class="target" id="namespaceeddl_1ac14922e3ac1d273e1c6df84f849c3047"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">MaxPool</code><span class="sig-paren">(</span>layer <em>parent</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>pool_size</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>strides</em>, string <em>padding</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7MaxPoolE5layerRK6vectorIiERK6vectorIiE6string6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl7MaxPoolE5layerRK6vectorIiERK6vectorIiE6string6string"></span><span id="_CPPv2N4eddl7MaxPoolE5layerRK6vectorIiERK6vectorIiE6string6string"></span><span id="eddl::MaxPool__layer.vector:i:CR.vector:i:CR.string.string"></span><span class="target" id="namespaceeddl_1ae7965d907af4e0cb6bd950c60126aa0f"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">MaxPool</code><span class="sig-paren">(</span>layer <em>parent</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>pool_size</em> = {2, 2}, <em class="property">const</em> vector&lt;int&gt; &amp;<em>strides</em> = {2, 2}, string <em>padding</em> = &quot;none&quot;, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7MaxPoolE5layerRK6vectorIiERK6vectorIiE6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Max pooling operation. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The result after apply the max pooling operation over the parent layer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pool_size</span></code>: Size of the max pooling windows </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strides</span></code>: Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">padding</span></code>: One of “none”, “valid” or “same” (case-insensitive). </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">MaxPool</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">pool_size</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">},</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">strides</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">},</span> <span class="n">string</span> <span class="n">padding</span> <span class="o">=</span> <span class="s">&quot;none&quot;</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
@@ -251,8 +265,19 @@
 <h2>GlobalMaxPooling<a class="headerlink" href="#globalmaxpooling" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl13GlobalMaxPoolE5layer6string">
-<span id="_CPPv3N4eddl13GlobalMaxPoolE5layer6string"></span><span id="_CPPv2N4eddl13GlobalMaxPoolE5layer6string"></span><span id="eddl::GlobalMaxPool__layer.string"></span><span class="target" id="namespaceeddl_1a2709c8f8e584e391ec6a2ba3d1afd279"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">GlobalMaxPool</code><span class="sig-paren">(</span>layer <em>parent</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl13GlobalMaxPoolE5layer6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl13GlobalMaxPoolE5layer6string"></span><span id="_CPPv2N4eddl13GlobalMaxPoolE5layer6string"></span><span id="eddl::GlobalMaxPool__layer.string"></span><span class="target" id="namespaceeddl_1a2ce2f513077a554a3470b0e6a25839ff"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">GlobalMaxPool</code><span class="sig-paren">(</span>layer <em>parent</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl13GlobalMaxPoolE5layer6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Global Max pooling operation. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The result after apply the global max pooling operation over the parent layer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">GlobalMaxPool</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
@@ -263,8 +288,22 @@
 <h2>AveragePooling<a class="headerlink" href="#averagepooling" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl11AveragePoolE5layerRK6vectorIiERK6vectorIiE6string6string">
-<span id="_CPPv3N4eddl11AveragePoolE5layerRK6vectorIiERK6vectorIiE6string6string"></span><span id="_CPPv2N4eddl11AveragePoolE5layerRK6vectorIiERK6vectorIiE6string6string"></span><span id="eddl::AveragePool__layer.vector:i:CR.vector:i:CR.string.string"></span><span class="target" id="namespaceeddl_1af420f3fa2366be3799f0d6285629abda"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">AveragePool</code><span class="sig-paren">(</span>layer <em>parent</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>pool_size</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>strides</em>, string <em>padding</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl11AveragePoolE5layerRK6vectorIiERK6vectorIiE6string6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl11AveragePoolE5layerRK6vectorIiERK6vectorIiE6string6string"></span><span id="_CPPv2N4eddl11AveragePoolE5layerRK6vectorIiERK6vectorIiE6string6string"></span><span id="eddl::AveragePool__layer.vector:i:CR.vector:i:CR.string.string"></span><span class="target" id="namespaceeddl_1a618d2165689e163272f67acc133733cc"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">AveragePool</code><span class="sig-paren">(</span>layer <em>parent</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>pool_size</em> = {2, 2}, <em class="property">const</em> vector&lt;int&gt; &amp;<em>strides</em> = {2, 2}, string <em>padding</em> = &quot;none&quot;, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl11AveragePoolE5layerRK6vectorIiERK6vectorIiE6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Average pooling operation. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The result after apply the average pooling operation over the parent layer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pool_size</span></code>: Size of the average pooling windows </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strides</span></code>: Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">padding</span></code>: One of “none”, “valid” or “same” (case-insensitive). </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -280,8 +319,19 @@
 <h2>GlobalAveragePooling<a class="headerlink" href="#globalaveragepooling" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl17GlobalAveragePoolE5layer6string">
-<span id="_CPPv3N4eddl17GlobalAveragePoolE5layer6string"></span><span id="_CPPv2N4eddl17GlobalAveragePoolE5layer6string"></span><span id="eddl::GlobalAveragePool__layer.string"></span><span class="target" id="namespaceeddl_1a13702be6f5dc39932576d663d3abed3b"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">GlobalAveragePool</code><span class="sig-paren">(</span>layer <em>parent</em>, string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl17GlobalAveragePoolE5layer6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl17GlobalAveragePoolE5layer6string"></span><span id="_CPPv2N4eddl17GlobalAveragePoolE5layer6string"></span><span id="eddl::GlobalAveragePool__layer.string"></span><span class="target" id="namespaceeddl_1a5a5f0183aea4468901ebb2c33801d9ca"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">GlobalAveragePool</code><span class="sig-paren">(</span>layer <em>parent</em>, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl17GlobalAveragePoolE5layer6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Global Average pooling operation. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The result after apply the global average pooling operation over the parent layer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="admonition note">
 <p class="admonition-title">Note</p>

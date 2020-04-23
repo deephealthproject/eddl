@@ -271,20 +271,42 @@
 <h2>Truth value testing<a class="headerlink" href="#truth-value-testing" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="all">
 <h3>all<a class="headerlink" href="#all" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::all” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor3allEP6Tensor">
+<span id="_CPPv3N6Tensor3allEP6Tensor"></span><span id="_CPPv2N6Tensor3allEP6Tensor"></span><span id="Tensor::all__TensorP"></span><span class="target" id="class_tensor_1a80c4bbcc0bd7fbdeb3d0276b71ab894b"></span>bool <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">all</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3allEP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Test whether all elements evaluate to True. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>bool </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor to evaluate </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">bool</span> <span class="nf">all</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="any">
 <h3>any<a class="headerlink" href="#any" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::any” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor3anyEP6Tensor">
+<span id="_CPPv3N6Tensor3anyEP6Tensor"></span><span id="_CPPv2N6Tensor3anyEP6Tensor"></span><span id="Tensor::any__TensorP"></span><span class="target" id="class_tensor_1a7dd780b41414fa0bc5459643f9ea3dcf"></span>bool <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">any</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor3anyEP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Test whether any element evaluates to True. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>bool </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor to evaluate </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">bool</span> <span class="nf">any</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -294,50 +316,110 @@
 <h2>Array contents<a class="headerlink" href="#array-contents" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="isfinite">
 <h3>isfinite<a class="headerlink" href="#isfinite" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::isfinite” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor8isfiniteEP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor8isfiniteEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor8isfiniteEP6TensorP6Tensor"></span><span id="Tensor::isfinite__TensorP.TensorP"></span><span class="target" id="class_tensor_1ae83806cda88bb32a5125c526c60111fd"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isfinite</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8isfiniteEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Test element-wise for finiteness (not infinity or not Not a Number). </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor to evaluate </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor to store the results of the test as booleans </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">isfinite</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="isinf">
 <h3>isinf<a class="headerlink" href="#isinf" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::isinf” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor5isinfEP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor5isinfEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor5isinfEP6TensorP6Tensor"></span><span id="Tensor::isinf__TensorP.TensorP"></span><span class="target" id="class_tensor_1a4fec63172d2867f7c2a45b720d457355"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isinf</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5isinfEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Test element-wise for positive or negative infinity. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor to evaluate </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor to store the results of the test as booleans </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">isinf</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="isnan">
 <h3>isnan<a class="headerlink" href="#isnan" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::isnan” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor5isnanEP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor5isnanEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor5isnanEP6TensorP6Tensor"></span><span id="Tensor::isnan__TensorP.TensorP"></span><span class="target" id="class_tensor_1a730b4e06fa675726b2ca559341035b1a"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isnan</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5isnanEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Test element-wise for Nan. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor to evaluate </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor to store the results of the test as booleans </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">isnan</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="isneginf">
 <h3>isneginf<a class="headerlink" href="#isneginf" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::isneginf” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor8isneginfEP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor8isneginfEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor8isneginfEP6TensorP6Tensor"></span><span id="Tensor::isneginf__TensorP.TensorP"></span><span class="target" id="class_tensor_1a59765f2717524be72208d6c95aafc2c3"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isneginf</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8isneginfEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Test element-wise for negative infinity. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor to evaluate </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor to store the results of the test as booleans </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">isneginf</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="isposinf">
 <h3>isposinf<a class="headerlink" href="#isposinf" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::isposinf” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor8isposinfEP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor8isposinfEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor8isposinfEP6TensorP6Tensor"></span><span id="Tensor::isposinf__TensorP.TensorP"></span><span class="target" id="class_tensor_1aafadfd9a38f839d460aab52490ca8f23"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isposinf</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8isposinfEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Test element-wise for positive infinity. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor to evaluate </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor to store the results of the test as booleans </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">isposinf</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -347,40 +429,91 @@
 <h2>Logical operations<a class="headerlink" href="#logical-operations" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="logical-and">
 <h3>logical_and<a class="headerlink" href="#logical-and" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::logical_and” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor11logical_andEP6TensorP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor11logical_andEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor11logical_andEP6TensorP6TensorP6Tensor"></span><span id="Tensor::logical_and__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1a516274c7a7ed8de29bd31138f3c9f58b"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">logical_and</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor11logical_andEP6TensorP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Compute the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">and</span> <span class="pre">B</span></code> element-wise. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor to store the results of the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">logical_and</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="logical-or">
 <h3>logical_or<a class="headerlink" href="#logical-or" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::logical_or” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor10logical_orEP6TensorP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor10logical_orEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor10logical_orEP6TensorP6TensorP6Tensor"></span><span id="Tensor::logical_or__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1a9595621f13aaf4796b1337257928520a"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">logical_or</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10logical_orEP6TensorP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Compute the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">or</span> <span class="pre">B</span></code> element-wise. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor to store the results of the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">logical_or</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="logical-not">
 <h3>logical_not<a class="headerlink" href="#logical-not" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::logical_not” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor11logical_notEP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor11logical_notEP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor11logical_notEP6TensorP6Tensor"></span><span id="Tensor::logical_not__TensorP.TensorP"></span><span class="target" id="class_tensor_1ab0cbec0cc33cf0f1f450b220946f9498"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">logical_not</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor11logical_notEP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Compute the truth value of <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">A</span></code> element-wise. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor to store the results of the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">logical_not</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="logical-xor">
 <h3>logical_xor<a class="headerlink" href="#logical-xor" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::logical_xor” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor11logical_xorEP6TensorP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor11logical_xorEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor11logical_xorEP6TensorP6TensorP6Tensor"></span><span id="Tensor::logical_xor__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1a5fda943ffe5d0544e43ec799f78bca39"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">logical_xor</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor11logical_xorEP6TensorP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Compute the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">xor</span> <span class="pre">B</span></code> element-wise. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor to store the results of the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">logical_xor</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -390,80 +523,189 @@
 <h2>Comparison<a class="headerlink" href="#comparison" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="allclose">
 <h3>allclose<a class="headerlink" href="#allclose" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::allclose” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor8allcloseEP6TensorP6Tensorffb">
+<span id="_CPPv3N6Tensor8allcloseEP6TensorP6Tensorffb"></span><span id="_CPPv2N6Tensor8allcloseEP6TensorP6Tensorffb"></span><span id="Tensor::allclose__TensorP.TensorP.float.float.b"></span><span class="target" id="class_tensor_1a1501f8bfba737420f7d8d1d50b76d86e"></span>bool <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">allclose</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, float <em>rtol</em> = 1e-05, float <em>atol</em> = 1e-08, bool <em>equal_nan</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8allcloseEP6TensorP6Tensorffb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns True if two arrays are element-wise equal within a tolerance. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rtol</span></code>: </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">atol</span></code>: </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">equal_nan</span></code>: </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">bool</span> <span class="nf">allclose</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="kt">float</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="kt">float</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">equal_nan</span><span class="o">=</span><span class="nb">false</span><span class="p">);</span>  <span class="c1">// Returns true or false</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="isclose">
 <h3>isclose<a class="headerlink" href="#isclose" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::isclose” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor7iscloseEP6TensorP6TensorP6Tensorffb">
+<span id="_CPPv3N6Tensor7iscloseEP6TensorP6TensorP6Tensorffb"></span><span id="_CPPv2N6Tensor7iscloseEP6TensorP6TensorP6Tensorffb"></span><span id="Tensor::isclose__TensorP.TensorP.TensorP.float.float.b"></span><span class="target" id="class_tensor_1adb3078270a1649ba3158bdf6cabe7440"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">isclose</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em>, float <em>rtol</em> = 1e-05, float <em>atol</em> = 1e-08, bool <em>equal_nan</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7iscloseEP6TensorP6TensorP6Tensorffb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a boolean array where two arrays are element-wise equal within a tolerance. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rtol</span></code>: </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">atol</span></code>: </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">equal_nan</span></code>: </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">isclose</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">,</span> <span class="kt">float</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="kt">float</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">equal_nan</span><span class="o">=</span><span class="nb">false</span><span class="p">);</span>  <span class="c1">// Returns a boolean tensor</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="greater">
 <h3>greater<a class="headerlink" href="#greater" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::greater” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor7greaterEP6TensorP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor7greaterEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor7greaterEP6TensorP6TensorP6Tensor"></span><span id="Tensor::greater__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1a84e24e58bafbfc13519d88b307504764"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">greater</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor7greaterEP6TensorP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">&gt;</span> <span class="pre">B</span></code> element-wise. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor store the results of the operation. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">greater</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="greater-equal">
 <h3>greater_equal<a class="headerlink" href="#greater-equal" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::greater_equal” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor13greater_equalEP6TensorP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor13greater_equalEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor13greater_equalEP6TensorP6TensorP6Tensor"></span><span id="Tensor::greater_equal__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1a13e196e6eaabfcd14f5cef5950dc7924"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">greater_equal</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor13greater_equalEP6TensorP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">&gt;=</span> <span class="pre">B</span></code> element-wise. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor store the results of the operation. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">greater_equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="less">
 <h3>less<a class="headerlink" href="#less" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::less” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor4lessEP6TensorP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor4lessEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor4lessEP6TensorP6TensorP6Tensor"></span><span id="Tensor::less__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1ae247af925e05e2ef6646cd34e5db35c6"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">less</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4lessEP6TensorP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">&lt;</span> <span class="pre">B</span></code> element-wise. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor store the results of the operation. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">less</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="less-equal">
 <h3>less_equal<a class="headerlink" href="#less-equal" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::less_equal” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor10less_equalEP6TensorP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor10less_equalEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor10less_equalEP6TensorP6TensorP6Tensor"></span><span id="Tensor::less_equal__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1aa55c8a8fb1a6a6615bcbd64d16a12135"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">less_equal</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10less_equalEP6TensorP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">&lt;=</span> <span class="pre">B</span></code> element-wise. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor store the results of the operation. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">less_equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="equal">
 <h3>equal<a class="headerlink" href="#equal" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::equal” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor5equalEP6TensorP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor5equalEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor5equalEP6TensorP6TensorP6Tensor"></span><span id="Tensor::equal__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1aa6f9e6f46640611e9ee6bea688ca4eee"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">equal</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5equalEP6TensorP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">==</span> <span class="pre">B</span></code> element-wise. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor store the results of the operation. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="not-equal">
 <h3>not_equal<a class="headerlink" href="#not-equal" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “Tensor::not_equal” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor9not_equalEP6TensorP6TensorP6Tensor">
+<span id="_CPPv3N6Tensor9not_equalEP6TensorP6TensorP6Tensor"></span><span id="_CPPv2N6Tensor9not_equalEP6TensorP6TensorP6Tensor"></span><span id="Tensor::not_equal__TensorP.TensorP.TensorP"></span><span class="target" id="class_tensor_1a29b81e36b827c32b0df02ddcb691f648"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">not_equal</code><span class="sig-paren">(</span>Tensor *<em>A</em>, Tensor *<em>B</em>, Tensor *<em>C</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor9not_equalEP6TensorP6TensorP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the truth value of <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">!=</span> <span class="pre">B</span></code> element-wise. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span></code>: Tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Tensor store the results of the operation. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">not_equal</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">C</span><span class="p">);</span>
 </pre></div>
 </div>

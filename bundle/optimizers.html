@@ -243,7 +243,23 @@
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl8adadeltaEffff">
 <span id="_CPPv3N4eddl8adadeltaEffff"></span><span id="_CPPv2N4eddl8adadeltaEffff"></span><span id="eddl::adadelta__float.float.float.float"></span><span class="target" id="namespaceeddl_1ab7990db93dd516ae3ad707f757d02296"></span>optimizer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">adadelta</code><span class="sig-paren">(</span>float <em>lr</em>, float <em>rho</em>, float <em>epsilon</em>, float <em>weight_decay</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl8adadeltaEffff" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Adadelta optimizer. </p>
+<p>Adadelta is a more robust extension of Adagrad that adapts learning rates based on a moving window of gradient updates, instead of accumulating all past gradients. This way, Adadelta continues learning even when many updates have been done.</p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference external" href="https://arxiv.org/abs/1212.5701">https://arxiv.org/abs/1212.5701</a></p>
+</dd>
+<dt><strong>Return</strong></dt><dd><p>Adadelta optimizer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lr</span></code>: Learning rate </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rho</span></code>: Smoothing constant </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Term added to the denominator to improve numerical stability </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">weight_decay</span></code>: Weight decay (L2 penalty) </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="nf">adadelta</span><span class="p">(</span><span class="kt">float</span> <span class="n">lr</span><span class="p">,</span> <span class="kt">float</span> <span class="n">rho</span><span class="p">,</span> <span class="kt">float</span> <span class="n">epsilon</span><span class="p">,</span> <span class="kt">float</span> <span class="n">weight_decay</span><span class="p">);</span>
@@ -254,8 +270,25 @@
 <h2>Adam<a class="headerlink" href="#adam" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl4adamEfffffb">
-<span id="_CPPv3N4eddl4adamEfffffb"></span><span id="_CPPv2N4eddl4adamEfffffb"></span><span id="eddl::adam__float.float.float.float.float.b"></span><span class="target" id="namespaceeddl_1ae7685bf83e21d74d469a849077a45a01"></span>optimizer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">adam</code><span class="sig-paren">(</span>float <em>lr</em>, float <em>beta_1</em>, float <em>beta_2</em>, float <em>epsilon</em>, float <em>weight_decay</em>, bool <em>amsgrad</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4adamEfffffb" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl4adamEfffffb"></span><span id="_CPPv2N4eddl4adamEfffffb"></span><span id="eddl::adam__float.float.float.float.float.b"></span><span class="target" id="namespaceeddl_1a1245376cb4f64d7addf20e8ef1b5e982"></span>optimizer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">adam</code><span class="sig-paren">(</span>float <em>lr</em> = 0.01, float <em>beta_1</em> = 0.9, float <em>beta_2</em> = 0.999, float <em>epsilon</em> = 0.000001, float <em>weight_decay</em> = 0, bool <em>amsgrad</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4adamEfffffb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Adam optimizer. </p>
+<p>Default parameters follow those provided in the original paper (See section). <dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference external" href="https://arxiv.org/abs/1412.6980v8">https://arxiv.org/abs/1412.6980v8</a></p>
+</dd>
+<dt><strong>Return</strong></dt><dd><p>Adam optimizer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lr</span></code>: Learning rate </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">beta_1</span></code>: Coefficients used for computing running averages of gradient and its square </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">beta_2</span></code>: Coefficients used for computing running averages of gradient and its square </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Term added to the denominator to improve numerical stability </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">weight_decay</span></code>: Weight decay (L2 penalty) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">amsgrad</span></code>: Whether to apply the AMSGrad variant of this algorithm from the paper “On the Convergence of Adam and Beyond”. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="nf">adam</span><span class="p">(</span><span class="kt">float</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="kt">float</span> <span class="n">beta_1</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="kt">float</span> <span class="n">beta_2</span><span class="o">=</span><span class="mf">0.999</span><span class="p">,</span> <span class="kt">float</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.000001</span><span class="p">,</span> <span class="kt">float</span> <span class="n">weight_decay</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="kt">bool</span> <span class="n">amsgrad</span><span class="o">=</span><span class="nb">false</span><span class="p">);</span>
@@ -267,7 +300,23 @@
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl7adagradEfff">
 <span id="_CPPv3N4eddl7adagradEfff"></span><span id="_CPPv2N4eddl7adagradEfff"></span><span id="eddl::adagrad__float.float.float"></span><span class="target" id="namespaceeddl_1afe8db87b88a3267f0be7e7496bc294f4"></span>optimizer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">adagrad</code><span class="sig-paren">(</span>float <em>lr</em>, float <em>epsilon</em>, float <em>weight_decay</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7adagradEfff" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Adagrad optimizer. </p>
+<p>Adagrad is an optimizer with parameter-specific learning rates, which are adapted relative to how frequently a parameter gets updated during training. The more updates a parameter receives, the smaller the learning rate.</p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference external" href="http://www.jmlr.org/papers/volume12/duchi11a/duchi11a.pdf">http://www.jmlr.org/papers/volume12/duchi11a/duchi11a.pdf</a></p>
+</dd>
+<dt><strong>Return</strong></dt><dd><p>Adagrad optimizer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lr</span></code>: Learning rate </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rho</span></code>: Smoothing constant </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Term added to the denominator to improve numerical stability </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">weight_decay</span></code>: Weight decay (L2 penalty) </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="nf">adagrad</span><span class="p">(</span><span class="kt">float</span> <span class="n">lr</span><span class="p">,</span> <span class="kt">float</span> <span class="n">epsilon</span><span class="p">,</span> <span class="kt">float</span> <span class="n">weight_decay</span><span class="p">);</span>
@@ -279,7 +328,23 @@
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl6adamaxEfffff">
 <span id="_CPPv3N4eddl6adamaxEfffff"></span><span id="_CPPv2N4eddl6adamaxEfffff"></span><span id="eddl::adamax__float.float.float.float.float"></span><span class="target" id="namespaceeddl_1a325ff1a6fdb5f7065b806695ded3f693"></span>optimizer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">adamax</code><span class="sig-paren">(</span>float <em>lr</em>, float <em>beta_1</em>, float <em>beta_2</em>, float <em>epsilon</em>, float <em>weight_decay</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6adamaxEfffff" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Adamax optimizer. </p>
+<p>It is a variant of Adam based on the infinity norm. Default parameters follow those provided in the See section. <dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference external" href="https://arxiv.org/abs/1412.6980v8">https://arxiv.org/abs/1412.6980v8</a></p>
+</dd>
+<dt><strong>Return</strong></dt><dd><p>Adamax optimizer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lr</span></code>: Learning rate </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">beta_1</span></code>: Coefficients used for computing running averages of gradient and its square </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">beta_2</span></code>: Coefficients used for computing running averages of gradient and its square </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Term added to the denominator to improve numerical stability </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">weight_decay</span></code>: Weight decay (L2 penalty) </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="nf">adamax</span><span class="p">(</span><span class="kt">float</span> <span class="n">lr</span><span class="p">,</span> <span class="kt">float</span> <span class="n">beta_1</span><span class="p">,</span> <span class="kt">float</span> <span class="n">beta_2</span><span class="p">,</span> <span class="kt">float</span> <span class="n">epsilon</span><span class="p">,</span> <span class="kt">float</span> <span class="n">weight_decay</span><span class="p">);</span>
@@ -291,7 +356,23 @@
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl5nadamEfffff">
 <span id="_CPPv3N4eddl5nadamEfffff"></span><span id="_CPPv2N4eddl5nadamEfffff"></span><span id="eddl::nadam__float.float.float.float.float"></span><span class="target" id="namespaceeddl_1a91dbb377770ae4cb5361ad824149b13a"></span>optimizer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">nadam</code><span class="sig-paren">(</span>float <em>lr</em>, float <em>beta_1</em>, float <em>beta_2</em>, float <em>epsilon</em>, float <em>schedule_decay</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5nadamEfffff" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Nadam optimizer. </p>
+<p>It is a variant of Adam based on the infinity norm. Default parameters follow those provided in the See section. <dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference external" href="https://arxiv.org/abs/1412.6980v8">https://arxiv.org/abs/1412.6980v8</a></p>
+</dd>
+<dt><strong>Return</strong></dt><dd><p>Nadam optimizer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lr</span></code>: Learning rate </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">beta_1</span></code>: Coefficients used for computing running averages of gradient and its square </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">beta_2</span></code>: Coefficients used for computing running averages of gradient and its square </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Term added to the denominator to improve numerical stability </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">schedule_decay</span></code>: Weight decay (L2 penalty) </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="nf">nadam</span><span class="p">(</span><span class="kt">float</span> <span class="n">lr</span><span class="p">,</span> <span class="kt">float</span> <span class="n">beta_1</span><span class="p">,</span> <span class="kt">float</span> <span class="n">beta_2</span><span class="p">,</span> <span class="kt">float</span> <span class="n">epsilon</span><span class="p">,</span> <span class="kt">float</span> <span class="n">schedule_decay</span><span class="p">);</span>
@@ -302,8 +383,24 @@
 <h2>RMSProp<a class="headerlink" href="#rmsprop" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl7rmspropEffff">
-<span id="_CPPv3N4eddl7rmspropEffff"></span><span id="_CPPv2N4eddl7rmspropEffff"></span><span id="eddl::rmsprop__float.float.float.float"></span><span class="target" id="namespaceeddl_1ad617a66064b41d43b8ae35d86adb9088"></span>optimizer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">rmsprop</code><span class="sig-paren">(</span>float <em>lr</em>, float <em>rho</em>, float <em>epsilon</em>, float <em>weight_decay</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7rmspropEffff" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl7rmspropEffff"></span><span id="_CPPv2N4eddl7rmspropEffff"></span><span id="eddl::rmsprop__float.float.float.float"></span><span class="target" id="namespaceeddl_1a8109148bc89e06fe446881e5c61c7a03"></span>optimizer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">rmsprop</code><span class="sig-paren">(</span>float <em>lr</em> = 0.01, float <em>rho</em> = 0.9, float <em>epsilon</em> = 0.00001, float <em>weight_decay</em> = 0.0<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7rmspropEffff" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>RMSProp optimizer. </p>
+<p>It is recommended to leave the parameters of this optimizer at their default values (except the learning rate, which can be freely tuned).</p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference external" href="http://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf">http://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf</a></p>
+</dd>
+<dt><strong>Return</strong></dt><dd><p>RMSProp optimizer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lr</span></code>: Learning rate </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rho</span></code>: Smoothing constant </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Term added to the denominator to improve numerical stability </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">weight_decay</span></code>: Weight decay (L2 penalty) </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="nf">rmsprop</span><span class="p">(</span><span class="kt">float</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="kt">float</span> <span class="n">rho</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="kt">float</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.00001</span><span class="p">,</span> <span class="kt">float</span> <span class="n">weight_decay</span><span class="o">=</span><span class="mf">0.0</span><span class="p">);</span>
@@ -314,8 +411,22 @@
 <h2>SGD (Stochastic Gradient Descent)<a class="headerlink" href="#sgd-stochastic-gradient-descent" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl3sgdEfffb">
-<span id="_CPPv3N4eddl3sgdEfffb"></span><span id="_CPPv2N4eddl3sgdEfffb"></span><span id="eddl::sgd__float.float.float.b"></span><span class="target" id="namespaceeddl_1aaba31390611ee2441ffe1222270a4a8d"></span>optimizer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sgd</code><span class="sig-paren">(</span>float <em>lr</em>, float <em>momentum</em>, float <em>weight_decay</em>, bool <em>nesterov</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3sgdEfffb" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl3sgdEfffb"></span><span id="_CPPv2N4eddl3sgdEfffb"></span><span id="eddl::sgd__float.float.float.b"></span><span class="target" id="namespaceeddl_1ae030ab89d6778ba90ca5d5e0e8587c41"></span>optimizer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">sgd</code><span class="sig-paren">(</span>float <em>lr</em> = 0.01f, float <em>momentum</em> = 0.0f, float <em>weight_decay</em> = 0.0f, bool <em>nesterov</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3sgdEfffb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Stochastic gradient descent optimizer. </p>
+<p>Includes support for momentum, learning rate decay, and Nesterov momentum</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Stochastic gradient descent optimizer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lr</span></code>: Learning rate </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">momentum</span></code>: Momentum factor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">weight_decay</span></code>: Value to apply to the activation function </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nesterov</span></code>: Boolean. Whether to apply Nesterov momentum </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="nf">sgd</span><span class="p">(</span><span class="kt">float</span> <span class="n">lr</span> <span class="o">=</span> <span class="mf">0.01f</span><span class="p">,</span> <span class="kt">float</span> <span class="n">momentum</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="kt">float</span> <span class="n">weight_decay</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">nesterov</span> <span class="o">=</span> <span class="nb">false</span><span class="p">);</span>

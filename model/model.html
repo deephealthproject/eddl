@@ -245,7 +245,18 @@
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl5ModelE6vlayer6vlayer">
 <span id="_CPPv3N4eddl5ModelE6vlayer6vlayer"></span><span id="_CPPv2N4eddl5ModelE6vlayer6vlayer"></span><span id="eddl::Model__vlayer.vlayer"></span><span class="target" id="namespaceeddl_1a20d2dc23c5a0e4511914984336b2575c"></span>model <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Model</code><span class="sig-paren">(</span>vlayer <em>in</em>, vlayer <em>out</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5ModelE6vlayer6vlayer" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Instantiates model, taking two vectors, one of input layers and another of output layers. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Model instance </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Vector with model input layers, typically Input({…}) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">out</span></code>: Vector with the ouputs of the model. Example: {Sigmoid(MyModel())} </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">model</span> <span class="nf">Model</span><span class="p">(</span><span class="n">vlayer</span> <span class="n">in</span><span class="p">,</span> <span class="n">vlayer</span> <span class="n">out</span><span class="p">);</span>
@@ -286,7 +297,17 @@ Potential matches:
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl7summaryE5model">
 <span id="_CPPv3N4eddl7summaryE5model"></span><span id="_CPPv2N4eddl7summaryE5model"></span><span id="eddl::summary__model"></span><span class="target" id="namespaceeddl_1ae060f2a83862eb1a5e839ea327fe8749"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">summary</code><span class="sig-paren">(</span>model <em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl7summaryE5model" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Prints a summary representation of your model. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>(void) Prints the model </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model to train </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">summary</span><span class="p">(</span><span class="n">model</span> <span class="n">m</span><span class="p">);</span>
@@ -312,8 +333,19 @@ softmax4                      |  (10)      =&gt;      (10)
 <h2>Plot<a class="headerlink" href="#plot" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl4plotE5model6string6string">
-<span id="_CPPv3N4eddl4plotE5model6string6string"></span><span id="_CPPv2N4eddl4plotE5model6string6string"></span><span id="eddl::plot__model.string.string"></span><span class="target" id="namespaceeddl_1a275e35e06f5082695c5019413414a15e"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">plot</code><span class="sig-paren">(</span>model <em>m</em>, string <em>fname</em>, string <em>mode</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4plotE5model6string6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl4plotE5model6string6string"></span><span id="_CPPv2N4eddl4plotE5model6string6string"></span><span id="eddl::plot__model.string.string"></span><span class="target" id="namespaceeddl_1a1ad21e624bd0160ee12541762a0d7bdf"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">plot</code><span class="sig-paren">(</span>model <em>m</em>, string <em>fname</em>, string <em>mode</em> = &quot;LR&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4plotE5model6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Plots a representation of your model. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>(void) Plots the model </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model to plot </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fname</span></code>: Where the plot is saved </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">plot</span><span class="p">(</span><span class="n">model</span> <span class="n">m</span><span class="p">,</span> <span class="n">string</span> <span class="n">fname</span><span class="p">,</span> <span class="n">string</span> <span class="n">mode</span><span class="o">=</span><span class="s">&quot;LR&quot;</span><span class="p">);</span>
@@ -325,8 +357,19 @@ softmax4                      |  (10)      =&gt;      (10)
 <h2>Load<a class="headerlink" href="#load" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl4loadE5modelRK6string6string">
-<span id="_CPPv3N4eddl4loadE5modelRK6string6string"></span><span id="_CPPv2N4eddl4loadE5modelRK6string6string"></span><span id="eddl::load__model.stringCR.string"></span><span class="target" id="namespaceeddl_1a0dda7cbefc270b39650a83c16a5daea5"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">load</code><span class="sig-paren">(</span>model <em>m</em>, <em class="property">const</em> string &amp;<em>fname</em>, string <em>format</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4loadE5modelRK6string6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl4loadE5modelRK6string6string"></span><span id="_CPPv2N4eddl4loadE5modelRK6string6string"></span><span id="eddl::load__model.stringCR.string"></span><span class="target" id="namespaceeddl_1ad42db74ad4342e5f73a8636f978590d9"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">load</code><span class="sig-paren">(</span>model <em>m</em>, <em class="property">const</em> string &amp;<em>fname</em>, string <em>format</em> = &quot;bin&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4loadE5modelRK6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Load weights to reinstantiate your model. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>(void) Load the weights </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fname</span></code>: Where are the model weights </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">load</span><span class="p">(</span><span class="n">model</span> <span class="n">m</span><span class="p">,</span> <span class="k">const</span> <span class="n">string</span><span class="o">&amp;</span> <span class="n">fname</span><span class="p">,</span> <span class="n">string</span> <span class="n">format</span><span class="o">=</span><span class="s">&quot;bin&quot;</span><span class="p">);</span>
@@ -337,8 +380,19 @@ softmax4                      |  (10)      =&gt;      (10)
 <h2>Save<a class="headerlink" href="#save" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl4saveE5modelRK6string6string">
-<span id="_CPPv3N4eddl4saveE5modelRK6string6string"></span><span id="_CPPv2N4eddl4saveE5modelRK6string6string"></span><span id="eddl::save__model.stringCR.string"></span><span class="target" id="namespaceeddl_1a7d508fc421b7113a2c83ef36817ab149"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">save</code><span class="sig-paren">(</span>model <em>m</em>, <em class="property">const</em> string &amp;<em>fname</em>, string <em>format</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4saveE5modelRK6string6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl4saveE5modelRK6string6string"></span><span id="_CPPv2N4eddl4saveE5modelRK6string6string"></span><span id="eddl::save__model.stringCR.string"></span><span class="target" id="namespaceeddl_1a2cd174b3944540e952c3e6d691b01d70"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">save</code><span class="sig-paren">(</span>model <em>m</em>, <em class="property">const</em> string &amp;<em>fname</em>, string <em>format</em> = &quot;bin&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4saveE5modelRK6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Save weights of a model. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>(void) Save the weights </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fname</span></code>: Where the model weights will be saved </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">save</span><span class="p">(</span><span class="n">model</span> <span class="n">m</span><span class="p">,</span> <span class="k">const</span> <span class="n">string</span><span class="o">&amp;</span> <span class="n">fname</span><span class="p">,</span> <span class="n">string</span> <span class="n">format</span><span class="o">=</span><span class="s">&quot;bin&quot;</span><span class="p">);</span>
@@ -350,7 +404,18 @@ softmax4                      |  (10)      =&gt;      (10)
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl5setlrE5model6vectorIfE">
 <span id="_CPPv3N4eddl5setlrE5model6vectorIfE"></span><span id="_CPPv2N4eddl5setlrE5model6vectorIfE"></span><span id="eddl::setlr__model.vector:float:"></span><span class="target" id="namespaceeddl_1a6243850452ae21b9eaf08b24a98fa99e"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">setlr</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;float&gt; <em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5setlrE5model6vectorIfE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Changes the learning rate and hyperparameters of the model optimizer. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>(void) Changes model optimizer settings </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">p</span></code>: Vector with the learning rate and hyperparameters of the model </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">setlr</span><span class="p">(</span><span class="n">model</span> <span class="n">net</span><span class="p">,</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="n">p</span><span class="p">);</span>
@@ -362,7 +427,18 @@ softmax4                      |  (10)      =&gt;      (10)
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl10setlogfileE5model6string">
 <span id="_CPPv3N4eddl10setlogfileE5model6string"></span><span id="_CPPv2N4eddl10setlogfileE5model6string"></span><span id="eddl::setlogfile__model.string"></span><span class="target" id="namespaceeddl_1a0db24d2563d7c0bdbcb4a27bc18ca240"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">setlogfile</code><span class="sig-paren">(</span>model <em>net</em>, string <em>fname</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl10setlogfileE5model6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Save the training outputs of a model to a filename. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>(void) Outputs log to the given file. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: Model to train </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fname</span></code>: Name of the logfile </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">setlogfile</span><span class="p">(</span><span class="n">model</span> <span class="n">net</span><span class="p">,</span> <span class="n">string</span> <span class="n">fname</span><span class="p">);</span>
@@ -374,8 +450,19 @@ softmax4                      |  (10)      =&gt;      (10)
 <p>Move the model to a specific device</p>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl5toCPUE5modeli">
-<span id="_CPPv3N4eddl5toCPUE5modeli"></span><span id="_CPPv2N4eddl5toCPUE5modeli"></span><span id="eddl::toCPU__model.i"></span><span class="target" id="namespaceeddl_1a812dd00404e33eab195456e915a96fe0"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">toCPU</code><span class="sig-paren">(</span>model <em>net</em>, int <em>t</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5toCPUE5modeli" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3N4eddl5toCPUE5modeli"></span><span id="_CPPv2N4eddl5toCPUE5modeli"></span><span id="eddl::toCPU__model.i"></span><span class="target" id="namespaceeddl_1af793928921ba4f15326e1620846cb12d"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">toCPU</code><span class="sig-paren">(</span>model <em>net</em>, int <em>t</em> = std::thread::hardware_concurrency()<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5toCPUE5modeli" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Assign model operations to the CPU. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>(void) </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code>: Model </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">t</span></code>: CPU Threads </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl5toGPUE5model6vectorIiEi6string">
