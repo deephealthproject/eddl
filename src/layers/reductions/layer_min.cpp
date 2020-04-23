@@ -54,7 +54,7 @@ void LRMin::resize(int batch){
 
 Layer *LRMin::share(int c, int bs, vector<Layer *> p) {
     LRMin *n;
-    n = new LRMin(p[0], RD->axis, RD->keepdims, "share_" + to_string(c) + name, this->dev, this->mem_level);
+    n = new LRMin(p[0], RD->axis, RD->keepdims,  name, this->dev, this->mem_level);
     n->orig = this;
     return n;
 }

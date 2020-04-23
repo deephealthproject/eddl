@@ -56,7 +56,7 @@ Layer *LExp::share(int c, int bs, vector<Layer *> p) {
 
 Layer *LExp::clone(int c, int bs, vector<Layer *> p, int todev) {
   LExp *n;
-  n = new LExp(p[0], "share_" + to_string(c) + name, todev, this->mem_level);
+  n = new LExp(p[0],  name, todev, this->mem_level);
   n->orig = this;
   return n;
 }

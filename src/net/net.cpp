@@ -111,6 +111,8 @@ Net::~Net()
         }
     }
 
+    // TODO: CHECK REMOVE CPU 
+
 /*
     for (int i = 0; i < losses.size(); i++) {
         delete losses[i];

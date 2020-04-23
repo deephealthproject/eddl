@@ -258,7 +258,7 @@ void LGroupNorm::backward()
 
 
 Layer *LGroupNorm::share(int c, int bs, vector<Layer *> p) {
-    LGroupNorm *n = new LGroupNorm(p[0], groups, epsilon, affine,"share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    LGroupNorm *n = new LGroupNorm(p[0], groups, epsilon, affine, this->name, this->dev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement
@@ -267,7 +267,7 @@ Layer *LGroupNorm::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LGroupNorm::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LGroupNorm *n = new LGroupNorm(p[0], groups, epsilon, affine,"clone_" + to_string(todev) + name, todev, this->mem_level);
+    LGroupNorm *n = new LGroupNorm(p[0], groups, epsilon, affine, name, todev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

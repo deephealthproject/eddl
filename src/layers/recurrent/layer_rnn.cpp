@@ -99,7 +99,7 @@ void LRNN::backward() {
 
 
 Layer *LRNN::share(int c, int bs, vector<Layer *> p) {
-    LRNN *n = new LRNN(p, units, num_layers, use_bias, dropout, bidirectional, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    LRNN *n = new LRNN(p, units, num_layers, use_bias, dropout, bidirectional,  this->name, this->dev, this->mem_level);
     n->orig = this;
     n->isshared=true;
     
@@ -122,7 +122,7 @@ Layer *LRNN::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LRNN::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LRNN *n = new LRNN(p, units, num_layers, use_bias, dropout, bidirectional, "clone_" + to_string(todev) + name, todev, this->mem_level);
+    LRNN *n = new LRNN(p, units, num_layers, use_bias, dropout, bidirectional,  name, todev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

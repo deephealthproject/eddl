@@ -47,14 +47,14 @@ void LFlipRandom::backward() {
 
 
 Layer *LFlipRandom::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LFlipRandom(p[0], this->axis, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    auto *n = new LFlipRandom(p[0], this->axis,  this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LFlipRandom::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LFlipRandom(p[0], this->axis, "clone_" + to_string(todev) + name, todev, this->mem_level);
+    auto *n = new LFlipRandom(p[0], this->axis,  name, todev, this->mem_level);
     n->orig = this;
 
     return n;

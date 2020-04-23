@@ -95,9 +95,9 @@ Layer *LSum::share(int c, int bs, vector<Layer *> p) {
 Layer *LSum::clone(int c, int bs, vector<Layer *> p, int todev) {
     LSum *n;
     if (binary)
-        n = new LSum(p[0], p[1], "share_" + to_string(c) + name, todev,mem_level);
+        n = new LSum(p[0], p[1],  name, todev,mem_level);
     else
-        n = new LSum(p[0], val, "share_" + to_string(c) + name, todev,mem_level);
+        n = new LSum(p[0], val,  name, todev,mem_level);
     n->orig = this;
     return n;
 }

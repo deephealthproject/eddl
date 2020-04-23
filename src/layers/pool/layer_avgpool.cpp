@@ -44,14 +44,14 @@ void LAveragePool::backward() {
 }
 
 Layer *LAveragePool::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LAveragePool(p[0], this->pd, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    auto *n = new LAveragePool(p[0], this->pd,  this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LAveragePool::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LMaxPool(p[0], new PoolDescriptor(pd->ksize, pd->stride, pd->padding, pd->mem_level), "clone_" + to_string(todev) + this->name, todev, this->mem_level);
+    auto *n = new LMaxPool(p[0], new PoolDescriptor(pd->ksize, pd->stride, pd->padding, pd->mem_level),  this->name, todev, this->mem_level);
     n->orig = this;
 
     return n;

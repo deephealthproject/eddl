@@ -55,7 +55,7 @@ Layer *LLog::share(int c, int bs, vector<Layer *> p) {
 
 Layer *LLog::clone(int c, int bs, vector<Layer *> p, int todev) {
   LLog *n;
-  n = new LLog(p[0], "share_" + to_string(c) + name, todev, this->mem_level);
+  n = new LLog(p[0],  name, todev, this->mem_level);
   n->orig = this;
   return n;
 }

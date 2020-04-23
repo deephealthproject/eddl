@@ -369,7 +369,7 @@ void Net::split(int c, int todev) {
         snets[i]->name=cname;
         snets[i]->build(optimizer->clone(), losses, metrics);
         if(onnx_pretrained){ //We need to copy the imported weights to each snet
-            printf("Copying from CPU to GPU\n");
+            //printf("Copying from CPU to GPU\n");
             for(int i = 0; i < snets.size(); i++)
                 for(int j = 0; j < layers.size(); j++)
                     layers[j]->copy(snets[i]->layers[j]);
@@ -506,6 +506,65 @@ Net* Net::unroll(int inl, int outl, bool seq, bool areg) {
 
   return rnet;
 }
+
+
+void Net::build_rnet(int inl,int outl) {
+  int i, j, k, n;
+  int todev;
+
+  if (cs->local_gpus.size() > 0) todev = DEV_GPU;
+  else if (cs->local_fpgas.size() > 0) todev = DEV_FPGA;
+  else todev = DEV_CPU;
+
+  if ((rnet==nullptr)||(inl!=rnet->lin.size())) {
+
+   if (rnet!=nullptr) delete rnet;
+
+   printf("Recurrent net %d time steps, %d outputs\n",inl,outl);
+
+   // Create an unrolled version on CPU
+   rnet=unroll(inl,outl,false,false);
+
+   for(i=0;i<rnet->layers.size();i++)
+     rnet->layers[i]->isrecurrent=false;
+   rnet->isrecurrent=false;
+
+   rnet->plot("rmodel.pdf","LR");
+
+   vloss lr;
+   for(i=0;i<outl;i++) lr.push_back(losses[0]->clone());
+
+   vmetrics mr;
+   for(i=0;i<outl;i++) mr.push_back(metrics[0]->clone());
+
+
+   rnet->build(optimizer->clone(),lr,mr,cs,false);
+   //cout<<rnet->summary();
+
+   if (todev!=DEV_CPU) {
+     // unroll CS devices and link
+     for(i=0;i<rnet->snets.size();i++)
+       delete rnet->snets[i];
+     rnet->snets.clear();
+
+     for(i=0;i<snets.size();i++) {
+     //cout<<snets[i]->summary();
+       rnet->snets.push_back(snets[i]->unroll(inl,outl,false,false));
+       for(j=0;j<rnet->snets[i]->layers.size();j++)
+             rnet->snets[i]->layers[j]->isrecurrent=false;
+       rnet->snets[i]->isrecurrent=false;
+
+       rnet->snets[i]->build(optimizer->clone(),lr,mr,false);
+       rnet->snets[i]->plot("rsnet.pdf","LR");
+       //cout<<rnet->snets[i]->summary();
+      }
+    }
+
+   rnet->flog_tr=flog_tr;
+   rnet->flog_ts=flog_ts;
+  }
+}
+
 
 
 
