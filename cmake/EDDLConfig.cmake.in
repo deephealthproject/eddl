@@ -14,10 +14,6 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_dependency(Threads REQUIRED)
 endif()
 
-# Core dependencies
-find_dependency(Eigen3 REQUIRED NO_MODULE)
-find_dependency(ZLIB REQUIRED)
-
 # OpenMP
 if (USE_OPENMP)
     find_dependency(OpenMP REQUIRED)
@@ -28,10 +24,15 @@ if (USE_CUDA)
     enable_language(CUDA)
 endif()
 
+# Core dependencies
+find_dependency(Eigen3 REQUIRED NO_MODULE)
+find_dependency(ZLIB REQUIRED)
+
 # Protobuf
-if(USE_PROTOBUF AND NOT USE_SUPERBUILD)
+if(USE_PROTOBUF)
     find_dependency(Protobuf REQUIRED)
 endif()
+
 
 include("${CMAKE_CURRENT_LIST_DIR}/EDDLTargets.cmake")
 

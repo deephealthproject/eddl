@@ -235,7 +235,10 @@ troubleshoot the compilation process (see: :doc:``troubleshoot``).
 
 .. note::
 
-    Enabled by default. If ``OFF``, cmake will look at your ``CMAKE_PREFIX_PATH``
+    Disabled by default. If ``OFF``, cmake will look at your ``CMAKE_PREFIX_PATH``
+
+    If you want to distribute the resulting shared library, you should use the flag
+    ``-DBUILD_SUPERBUILD=ON`` so that we can make specific tunings to our dependencies.
 
 
 .. _Anaconda: https://docs.conda.io/en/latest/miniconda.html

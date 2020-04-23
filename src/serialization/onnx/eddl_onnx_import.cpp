@@ -1251,7 +1251,7 @@ using namespace std;
 						if(parameter_input){
 							LConv* conv;
 							LDense* dense;
-							if(conv = dynamic_cast<LConv*>(parents[0]) ){
+							if((conv = dynamic_cast<LConv*>(parents[0]) )){
 								ConvolDescriptor* convol_descriptor = conv->cd;
 								string bias_name = node->input(index_parameter);
 								vector<float> *bias = new vector<float>(map_init_values[bias_name]);
@@ -1272,7 +1272,7 @@ using namespace std;
 								actual_layer = conv;
 								break;
 							}
-							else if(dense = dynamic_cast<LDense*>(parents[0]) ){
+							else if((dense = dynamic_cast<LDense*>(parents[0]) )){
 								string bias_name = node->input(index_parameter);
 								vector<float> *bias = new vector<float>(map_init_values[bias_name]);
 								vector<int> bias_dims = map_init_dims[bias_name];
@@ -1511,7 +1511,7 @@ using namespace std;
 				continue;
 			}
 			vector<Tensor*> layer_tensors = tensors[l->name];
-			if(conv = dynamic_cast<LConv*>(l) ){
+			if((conv = dynamic_cast<LConv*>(l))){
 				if(layer_tensors.size() > 1)
 					conv->update_weights(layer_tensors[0], layer_tensors[1]);
 				else{
@@ -1520,7 +1520,7 @@ using namespace std;
 				}
 
 			}
-			else if(dense = dynamic_cast<LDense*>( l ) ){
+			else if((dense = dynamic_cast<LDense*>( l ) )){
 				if(layer_tensors.size() > 1)
 					dense->update_weights(layer_tensors[0], layer_tensors[1]);
 				else
@@ -1558,7 +1558,7 @@ using namespace std;
 				continue;
 			}
 			vector<Tensor*> layer_tensors = tensors[l->name];
-			if(conv = dynamic_cast<LConv*>(l) ){
+			if((conv = dynamic_cast<LConv*>(l) )){
 				if(layer_tensors.size() > 1)
 					conv->update_weights(layer_tensors[0], layer_tensors[1]);
 				else{
@@ -1567,7 +1567,7 @@ using namespace std;
 				}
 
 			}
-			else if(dense = dynamic_cast<LDense*>( l ) ){
+			else if((dense = dynamic_cast<LDense*>( l ) )){
 				if(layer_tensors.size() > 1)
 					dense->update_weights(layer_tensors[0], layer_tensors[1]);
 				else
@@ -1606,7 +1606,7 @@ using namespace std;
 				continue;
 			}
 			vector<Tensor*> layer_tensors = tensors[l->name];
-			if(conv = dynamic_cast<LConv*>(l) ){
+			if((conv = dynamic_cast<LConv*>(l) )){
 				if(layer_tensors.size() > 1) {
 					conv->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
 				} else{
@@ -1615,7 +1615,7 @@ using namespace std;
 				}
 
 			}
-			else if(dense = dynamic_cast<LDense*>( l ) ){
+			else if((dense = dynamic_cast<LDense*>( l ) )){
 				if(layer_tensors.size() > 1){
 					dense->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
 				}
@@ -1653,7 +1653,7 @@ using namespace std;
 		for(Layer* l : net->layers){
 			if(!tensors.count(l->name)) continue;
 			vector<Tensor*> layer_tensors = tensors[l->name];
-			if(conv = dynamic_cast<LConv*>(l) ){
+			if((conv = dynamic_cast<LConv*>(l) )){
 				if(layer_tensors.size() > 1)
 					conv->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
 				else{
@@ -1662,7 +1662,7 @@ using namespace std;
 				}
 
 			}
-			else if(dense = dynamic_cast<LDense*>( l ) ){
+			else if((dense = dynamic_cast<LDense*>( l ) )){
 				if(layer_tensors.size() > 1)
 					dense->accumulate_accumulated_gradients(layer_tensors[0], layer_tensors[1]);
 				else

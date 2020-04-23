@@ -22,6 +22,7 @@ requirements:
     - cmake
     - eigen
     - zlib
+    - protobuf
     - cudatoolkit
     - graphviz
     - wget
@@ -29,6 +30,7 @@ requirements:
     - cmake
     - eigen
     - zlib
+    - protobuf
     - cudatoolkit
     - graphviz
     - wget

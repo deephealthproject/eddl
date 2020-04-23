@@ -83,15 +83,10 @@ You need: conda install anaconda-client in your environment
 
 # Use the environment from the source to use the conda cmake and 
 # avoid looking too much into the system packages
+conda remove --name eddl --all
 conda env create -f environment.yml
 conda activate eddl
 
-...or
-conda remove --name eddl --all
-conda create --name eddl
-conda activate eddl
-conda install cmake
----------
 # Go to the folder of conda/eddl
 cd formulas/conda/eddl
 conda build .

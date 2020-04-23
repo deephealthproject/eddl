@@ -17,19 +17,9 @@ file(GLOB_RECURSE CPP_TESTS_FILES "${PROJECT_SOURCE_DIR}/*" *.{h, cpp})
 
 # Build test and target libraries
 add_executable(unit_tests ${CPP_TESTS_FILES})
+target_include_directories(unit_tests PUBLIC ${GTEST_INCLUDE_DIRS})
 target_link_directories(unit_tests PUBLIC ${GTEST_LIBRARIES_DIRS})
 target_link_libraries(unit_tests PUBLIC eddl ${GTEST_BOTH_LIBRARIES})
-
-# What we should do:
-target_include_directories(unit_tests PUBLIC ${GTEST_INCLUDE_DIRS})
-## Really dirty trick!!! I do this to access private methods
-#target_include_directories(unit_tests
-#        PUBLIC
-#            ${GTEST_INCLUDE_DIRS}
-#        PRIVATE
-#            ${PROJECT_SOURCE_DIR}/../include
-#            ${PROJECT_SOURCE_DIR}/../src
-#        )
 
 # Add test
 add_test(NAME unit_tests COMMAND unit_tests)

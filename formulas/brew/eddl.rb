@@ -10,6 +10,7 @@ class Eddl < Formula
   depends_on "cmake" => :build
   depends_on "eigen" => :build
   depends_on "zlib" => :build
+  depends_on "protobuf" => :build
   depends_on "graphviz" => :build
   depends_on "wget" => :build
 
