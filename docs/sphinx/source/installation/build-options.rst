@@ -26,19 +26,23 @@ If you decide to manually install the dependencies in your system, make sure the
 
 .. code::
 
-    cmake >= 3.9.2
-    graphviz >= 2.38.0
-    wget >= 1.19.5
-    cudatoolkit >= 6.0
+    - cmake>=3.9.2
+    - eigen>=3.3.7
+    - zlib=1.2.*
+    - protobuf=3.11.*
+    - cudatoolkit
+    - gtest
+    - graphviz  # Build & Run
+    - wget
+    - doxygen  # Docs
+    - python
+    - pip
 
-    # For development
-    doxygen
-    python
-    pip:
-      - sphinx
-      - breathe
-      - sphinx_rtd_theme
-      - sphinx-tabs
+    - pip:
+        - sphinx
+        - breathe
+        - sphinx_rtd_theme
+        - sphinx-tabs
 
 
 Build and optimization
