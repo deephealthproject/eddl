@@ -14,8 +14,8 @@ endif()
 
 # For development (ignore)
 option(USE_SYSTEM_GTEST "Use system dependency" OFF)
-#option(USE_SYSTEM_EIGEN "Use system dependency" OFF)
-#option(USE_SYSTEM_ZLIB "Use system dependency" OFF)
+option(USE_SYSTEM_EIGEN "Use system dependency" OFF)
+option(USE_SYSTEM_ZLIB "Use system dependency" OFF)
 option(USE_SYSTEM_PROTOBUF "Use system dependency" OFF)
 
 # Set variables
@@ -69,60 +69,60 @@ message(STATUS "Subproject: GTEST...DONE")
 ##############
 ###  EIGEN  ##
 ##############
-#message(STATUS "Subproject: EIGEN...")
-#if(USE_SYSTEM_EIGEN)
-#    find_package(Eigen3 3.3 REQUIRED NO_MODULE)
-#else()
-#    # Download and unpack googletest at configure time
-#    configure_file(eigen.CMakeLists.txt.in ${EP_BASE_DIR}/eigen-download/CMakeLists.txt)
-#    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-#            RESULT_VARIABLE result
-#            WORKING_DIRECTORY ${EP_BASE_DIR}/eigen-download )
-#    if(result)
-#        message(FATAL_ERROR "CMake step for googletest failed: ${result}")
-#    endif()
-#    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
-#            RESULT_VARIABLE result
-#            WORKING_DIRECTORY ${EP_BASE_DIR}/eigen-download )
-#    if(result)
-#        message(FATAL_ERROR "Build step for eigen failed: ${result}")
-#    endif()
-#
-#    # Set variables
-#    SET(Eigen3_DIR "${EP_BASE_DIR}/eigen/share/eigen3/cmake" PARENT_SCOPE)
-#endif()
-#message(STATUS "Subproject: EIGEN...DONE")
+message(STATUS "Subproject: EIGEN...")
+if(USE_SYSTEM_EIGEN)
+    find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+else()
+    # Download and unpack googletest at configure time
+    configure_file(eigen.CMakeLists.txt.in ${EP_BASE_DIR}/eigen-download/CMakeLists.txt)
+    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+            RESULT_VARIABLE result
+            WORKING_DIRECTORY ${EP_BASE_DIR}/eigen-download )
+    if(result)
+        message(FATAL_ERROR "CMake step for googletest failed: ${result}")
+    endif()
+    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
+            RESULT_VARIABLE result
+            WORKING_DIRECTORY ${EP_BASE_DIR}/eigen-download )
+    if(result)
+        message(FATAL_ERROR "Build step for eigen failed: ${result}")
+    endif()
+
+    # Set variables
+    SET(Eigen3_DIR "${EP_BASE_DIR}/eigen/share/eigen3/cmake" PARENT_SCOPE)
+endif()
+message(STATUS "Subproject: EIGEN...DONE")
 
 
 #############
 ###  ZLIB  ##
 #############
-#message(STATUS "Subproject: ZLIB...")
-#if(USE_SYSTEM_ZLIB)
-#    find_package(ZLIB REQUIRED)
-#else()
-#    # Download and unpack googletest at configure time
-#    configure_file(zlib.CMakeLists.txt.in ${EP_BASE_DIR}/zlib-download/CMakeLists.txt)
-#    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-#            RESULT_VARIABLE result
-#            WORKING_DIRECTORY ${EP_BASE_DIR}/zlib-download )
-#    if(result)
-#        message(FATAL_ERROR "CMake step for zlib failed: ${result}")
-#    endif()
-#    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
-#            RESULT_VARIABLE result
-#            WORKING_DIRECTORY ${EP_BASE_DIR}/zlib-download )
-#    if(result)
-#        message(FATAL_ERROR "Build step for zlib failed: ${result}")
-#    endif()
-#
-#    # Set variables
-#    SET(ZLIB_ROOT "${EP_BASE_DIR}/zlib" PARENT_SCOPE)
-#    SET(ZLIB_INCLUDE_DIRS "${EP_BASE_DIR}/zlib/include" PARENT_SCOPE)
-#    SET(ZLIB_LIBRARIES_DIRS "${EP_BASE_DIR}/zlib/lib" PARENT_SCOPE)
-#    SET(ZLIB_LIBRARIES "z" PARENT_SCOPE)
-#endif()
-#message(STATUS "Subproject: ZLIB...DONE")
+message(STATUS "Subproject: ZLIB...")
+if(USE_SYSTEM_ZLIB)
+    find_package(ZLIB REQUIRED)
+else()
+    # Download and unpack googletest at configure time
+    configure_file(zlib.CMakeLists.txt.in ${EP_BASE_DIR}/zlib-download/CMakeLists.txt)
+    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+            RESULT_VARIABLE result
+            WORKING_DIRECTORY ${EP_BASE_DIR}/zlib-download )
+    if(result)
+        message(FATAL_ERROR "CMake step for zlib failed: ${result}")
+    endif()
+    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
+            RESULT_VARIABLE result
+            WORKING_DIRECTORY ${EP_BASE_DIR}/zlib-download )
+    if(result)
+        message(FATAL_ERROR "Build step for zlib failed: ${result}")
+    endif()
+
+    # Set variables
+    SET(ZLIB_ROOT "${EP_BASE_DIR}/zlib" PARENT_SCOPE)
+    SET(ZLIB_INCLUDE_DIRS "${EP_BASE_DIR}/zlib/include" PARENT_SCOPE)
+    SET(ZLIB_LIBRARIES_DIRS "${EP_BASE_DIR}/zlib/lib" PARENT_SCOPE)
+    SET(ZLIB_LIBRARIES "z" PARENT_SCOPE)
+endif()
+message(STATUS "Subproject: ZLIB...DONE")
 
 
 ################

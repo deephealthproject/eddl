@@ -20,6 +20,7 @@ fi
 mkdir build
 cd build/
 cmake -DBUILD_TARGET=GPU \
+      -DBUILD_SUPERBUILD=OFF \
       -DBUILD_EXAMPLES=OFF \
       -DBUILD_TESTS=OFF \
       -DCMAKE_INSTALL_PREFIX=$PREFIX \

@@ -4,10 +4,12 @@ channels:
   - defaults
   - anaconda
 dependencies:
-  - cmake
-  - eigen
-  - zlib
+  - cmake>=3.9.2
+  - eigen>=3.3.7
+  - zlib=1.2.*
+  - protobuf=3.11.*
   - cudatoolkit
+  - gtest
   - graphviz  # Build & Run
   - wget
   - doxygen  # Docs

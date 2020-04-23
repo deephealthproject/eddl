@@ -10,12 +10,13 @@ class Eddl < Formula
   depends_on "cmake" => :build
   depends_on "eigen" => :build
   depends_on "zlib" => :build
+  depends_on "protobuf" => :build
   depends_on "graphviz" => :build
   depends_on "wget" => :build
 
   def install
     mkdir "build" do
-      system "cmake", "..", "-DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF", *std_cmake_args
+      system "cmake", "..", "-DBUILD_SUPERBUILD=OFF -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF", *std_cmake_args
       system "make", "install", "PREFIX=#{prefix}"
     end
   end
