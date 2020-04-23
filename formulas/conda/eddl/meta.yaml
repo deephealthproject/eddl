@@ -38,6 +38,7 @@ test:
     - test -d ${PREFIX}/include/eddl  # [unix]
     - test -f ${PREFIX}/include/eddl/apis/eddl.h  # [unix]
     - test -f ${PREFIX}/lib/cmake/eddl/EDDLConfig.cmake  # [unix]
+    - test -f ${PREFIX}/lib/libeddl${SHLIB_EXT}  # [unix]
 
 about:
   home: https://github.com/deephealthproject/eddl
