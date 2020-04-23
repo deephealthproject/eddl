@@ -31,6 +31,8 @@ Layer::Layer(string name, int dev, int mem) {
     lin = lout = 0;
     delta_bp = 0;
     detached=false;
+    isrecurrent=false;
+    isshared=false;
 
     orig=nullptr;
     net=nullptr;
@@ -45,9 +47,10 @@ Layer::~Layer(){
     if (target!=nullptr) delete target;
 
     //params if any
-    for (int i=0;i<params.size();i++){
-        delete params[i];
-    }
+    if (!isshared)
+      for (int i=0;i<params.size();i++)
+          delete params[i];
+
 
     //gradients if any
     for (int i=0;i<gradients.size();i++){

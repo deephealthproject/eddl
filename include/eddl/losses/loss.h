@@ -27,6 +27,7 @@ public:
 
     virtual void delta(Tensor *T, Tensor *Y, Tensor *D);
     virtual float value(Tensor *T, Tensor *Y);
+    virtual Loss* clone();
 };
 
 
@@ -36,6 +37,7 @@ public:
 
     void delta(Tensor *T, Tensor *Y, Tensor *D) override;
     float value(Tensor *T, Tensor *Y) override;
+    Loss* clone() override;
 };
 
 
@@ -45,6 +47,7 @@ public:
 
     void delta(Tensor *T, Tensor *Y, Tensor *D) override;
     float value(Tensor *T, Tensor *Y) override;
+    Loss* clone() override;
 };
 
 
@@ -54,6 +57,7 @@ public:
 
     void delta(Tensor *T, Tensor *Y, Tensor *D) override;
     float value(Tensor *T, Tensor *Y) override;
+    Loss* clone() override;
 };
 
 
@@ -63,6 +67,7 @@ public:
 
     void delta(Tensor *T, Tensor *Y, Tensor *D) override;
     float value(Tensor *T, Tensor *Y) override;
+    Loss* clone() override;
 };
 
 
@@ -72,6 +77,7 @@ public:
 
     void delta(Tensor *T, Tensor *Y, Tensor *D) override;
     float value(Tensor *T, Tensor *Y) override;
+    Loss* clone() override;
 };
 
 
@@ -81,6 +87,7 @@ public:
 
     void delta(Tensor *T, Tensor *Y, Tensor *D) override;
     float value(Tensor *T, Tensor *Y) override;
+    Loss* clone() override;
 };
 
 class LSoftCrossEntropy : public Loss {
@@ -89,6 +96,7 @@ public:
 
     void delta(Tensor *T, Tensor *Y, Tensor *D) override;
     float value(Tensor *T, Tensor *Y) override;
+    Loss* clone() override;
 };
 
 class LMin : public Loss {
@@ -97,6 +105,7 @@ public:
 
     void delta(Tensor *T, Tensor *Y, Tensor *D) override;
     float value(Tensor *T, Tensor *Y) override;
+    Loss* clone() override;
 };
 
 

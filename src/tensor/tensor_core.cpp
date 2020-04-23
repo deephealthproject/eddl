@@ -120,7 +120,7 @@ Tensor* Tensor::permute(Tensor* t, const vector<int>& dims){
 
     // Fill new tensor
     Tensor::select(t, new_t, sd);
-	delete sd;
+  	delete sd;
     return new_t;
 }
 

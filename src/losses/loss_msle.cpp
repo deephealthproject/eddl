@@ -24,3 +24,8 @@ void LMeanSquaredLogarithmicError::delta(Tensor *T, Tensor *Y, Tensor *D) {
 float LMeanSquaredLogarithmicError::value(Tensor *T, Tensor *Y) {
     return 0;
 }
+
+Loss* LMeanSquaredLogarithmicError::clone()
+{
+  return new LMeanSquaredLogarithmicError();
+}

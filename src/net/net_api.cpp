@@ -344,9 +344,11 @@ void Net::print_loss(int b)
               losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
               metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
 
-      if ((flog_tr!=nullptr)&&(trmode))
+
+      if ((flog_tr!=nullptr)&&(trmode)) {
         fprintf(flog_tr, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
                 metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+              }
 
       if ((flog_ts!=nullptr)&&(!trmode))
         fprintf(flog_ts, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
@@ -423,6 +425,11 @@ void Net::delta()
 void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     int i, j, k, n;
 
+    if (isrecurrent) {
+        fit_recurrent(tin,tout, batch, epochs);
+    }
+   else{
+
     // Check current optimizer
     if (optimizer == nullptr)
         msg("Net is not build", "Net.fit");
@@ -494,7 +501,41 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
         fprintf(stdout, "\n%1.3f secs/epoch\n", epoch_time_span.count());
     }
     fflush(stdout);
+  }
 }
+
+void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
+  int i, j, k, n;
+  int todev;
+
+  if (cs->local_gpus.size() > 0) todev = DEV_GPU;
+  else if (cs->local_fpgas.size() > 0) todev = DEV_FPGA;
+  else todev = DEV_CPU;
+
+  int inl;
+  int outl;
+
+  inl=tin[0]->shape[0];
+  outl=1;
+
+  build_rnet(inl,outl);
+
+  // prepare data for unroll net
+  vtensor tinr;
+  int offset;
+  offset=tin[0]->shape[1]*tin[0]->shape[2];
+  for(i=0;i<inl;i++) {
+    Tensor *n=new Tensor({tin[0]->shape[1],tin[0]->shape[2]},tin[0]->ptr+(i*offset));
+    tinr.push_back(n);
+  }
+
+  rnet->fit(tinr,tout,batch,epochs);
+
+  if (todev!=DEV_CPU) rnet->sync_weights();
+
+
+}
+
 
 /////////////////////////////////////////
 void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
@@ -555,54 +596,88 @@ void Net::evaluate(vtensor tin, vtensor tout) {
 
     int i, j, k, n;
 
-    // Check list shape
-    if (tin.size() != lin.size())
-        msg("input tensor list does not match with defined input layers", "Net.evaluate");
-    if (tout.size() != lout.size())
-        msg("output tensor list does not match with defined output layers", "Net.evaluate");
-
-    // Check data consistency
-    n = tin[0]->shape[0];
-
-
-    for (i = 1; i < tin.size(); i++)
-        if (tin[i]->shape[0] != n)
-            msg("different number of samples in input tensor", "Net.evaluate");
-
-    for (i = 1; i < tout.size(); i++)
-        if (tout[i]->shape[0] != n)
-            msg("different number of samples in output tensor", "Net.evaluate");
-
-
-
-    printf("Evaluate with batch size %d\n",batch_size);
-
-    // Create internal variables
-    vind sind;
-    for (k=0;k<batch_size;k++)
-      sind.push_back(0);
-
-
-    // Start eval
-    setmode(TSMODE);
-    reset_loss();
-    for (j = 0; j < n / batch_size; j++) {
-
-        for (k=0;k<batch_size;k++)
-          sind[k]=(j*batch_size)+k;
-
-        train_batch(tin, tout, sind, 1);
-
-        print_loss(j+1);
-        fprintf(stdout, "\r");
-        fflush(stdout);
+    if (isrecurrent) {
+        evaluate_recurrent(tin,tout);
     }
-    fprintf(stdout, "\n");
+   else{
 
+      // Check list shape
+      if (tin.size() != lin.size())
+          msg("input tensor list does not match with defined input layers", "Net.evaluate");
+      if (tout.size() != lout.size())
+          msg("output tensor list does not match with defined output layers", "Net.evaluate");
+
+      // Check data consistency
+      n = tin[0]->shape[0];
+
+
+      for (i = 1; i < tin.size(); i++)
+          if (tin[i]->shape[0] != n)
+              msg("different number of samples in input tensor", "Net.evaluate");
+
+      for (i = 1; i < tout.size(); i++)
+          if (tout[i]->shape[0] != n)
+              msg("different number of samples in output tensor", "Net.evaluate");
+
+
+
+      printf("Evaluate with batch size %d\n",batch_size);
+
+        // Create internal variables
+      vind sind;
+      for (k=0;k<batch_size;k++)
+        sind.push_back(0);
+
+
+        // Start eval
+      setmode(TSMODE);
+      reset_loss();
+      for (j = 0; j < n / batch_size; j++) {
+
+            for (k=0;k<batch_size;k++)
+            sind[k]=(j*batch_size)+k;
+
+          train_batch(tin, tout, sind, 1);
+
+          print_loss(j+1);
+            fprintf(stdout, "\r");
+          fflush(stdout);
+      }
+      fprintf(stdout, "\n");
+
+  }
 }
 
+///////////////////////////////////////////
+void Net::evaluate_recurrent(vtensor tin, vtensor tout) {
 
+  int i, j, k, n;
+  int todev;
 
+  if (cs->local_gpus.size() > 0) todev = DEV_GPU;
+  else if (cs->local_fpgas.size() > 0) todev = DEV_FPGA;
+  else todev = DEV_CPU;
+
+  int inl;
+  int outl;
+
+  inl=tin[0]->shape[0];
+  outl=1;
+
+  build_rnet(inl,outl);
+
+  // prepare data for unroll net
+  vtensor tinr;
+  int offset;
+  offset=tin[0]->shape[1]*tin[0]->shape[2];
+  for(i=0;i<inl;i++) {
+    Tensor *n=new Tensor({tin[0]->shape[1],tin[0]->shape[2]},tin[0]->ptr+(i*offset));
+    tinr.push_back(n);
+  }
+
+  rnet->evaluate(tinr,tout);
+
+}
 
 
 

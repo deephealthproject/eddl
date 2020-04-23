@@ -23,3 +23,5 @@ Loss::Loss(string name) {
 void Loss::delta(Tensor *T, Tensor *Y, Tensor *D) {}
 
 float Loss::value(Tensor *T, Tensor *Y) {return 0;}
+
+Loss* Loss::clone() {return nullptr;}

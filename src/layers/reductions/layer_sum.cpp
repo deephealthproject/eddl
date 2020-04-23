@@ -54,7 +54,7 @@ void LRSum::resize(int batch){
 
 Layer *LRSum::share(int c, int bs, vector<Layer *> p) {
     LRSum *n;
-    n = new LRSum(p[0], RD->axis, RD->keepdims, "share_" + to_string(c) + name, this->dev, this->mem_level);
+    n = new LRSum(p[0], RD->axis, RD->keepdims,  name, this->dev, this->mem_level);
     n->orig = this;
     return n;
 }

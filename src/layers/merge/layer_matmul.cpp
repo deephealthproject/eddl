@@ -72,7 +72,7 @@ void LMatMul::backward() {
 }
 
 Layer *LMatMul::share(int c, int bs, vector<Layer *> p) {
-    LMatMul *n = new LMatMul(p, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    LMatMul *n = new LMatMul(p,  this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
@@ -80,7 +80,7 @@ Layer *LMatMul::share(int c, int bs, vector<Layer *> p) {
 
 
 Layer *LMatMul::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LMatMul *n = new LMatMul(p, "share_" + to_string(c) + name, todev, this->mem_level);
+    LMatMul *n = new LMatMul(p,  name, todev, this->mem_level);
     n->orig = this;
 
     return n;

@@ -156,7 +156,9 @@ void Net::toGPU(vector<int> g,int lsb,int mem){
 void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize){
 	onnx_pretrained = !initialize; // For controlling when to copy the weights to the snet
 	build(opt, lo, me, initialize);
-    set_compserv(cs);
+
+
+  set_compserv(cs);
 
 
   if (VERBOSE) {
@@ -187,6 +189,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
 
 
     for(int i=0; i<layers.size(); i++){
+        if (layers[i]->isrecurrent) isrecurrent=true;
 
         // Set device // TODO: Rewrite this
         if (dev == -1) {
@@ -257,7 +260,7 @@ void Net::set_compserv(CompServ *cs){
 #ifndef cGPU
             msg("EDDLL not compiled for GPU", "Net.set_compserv");
 #else
-            // split on multiple GPUs
+        // split on multiple GPUs
         int ngpus=gpu_devices();
         if (ngpus==0) {
           msg("GPU devices not found","Net.set_compserv(");
@@ -279,7 +282,8 @@ void Net::set_compserv(CompServ *cs){
         if (!devsel.size())
           msg("No gpu selected","Net.set_compserv");
 
-          if (VERBOSE) cout<<"split into "<<devsel.size()<<" GPUs devices\n";
+        if (VERBOSE) cout<<"split into "<<devsel.size()<<" GPUs devices\n";
+
         split(devsel.size(),DEV_GPU);
 #endif
         } else {
@@ -289,6 +293,7 @@ void Net::set_compserv(CompServ *cs){
         msg("Distributed version not yet implemented", "Net.set_compserv");
     }
 
+
     // create input and output tensors (X,Y)
     for (int i = 0; i < snets.size(); i++) {
       for (int j = 0; j < snets[i]->lin.size(); j++)
@@ -296,7 +301,7 @@ void Net::set_compserv(CompServ *cs){
       for (int j = 0; j < snets[i]->lout.size(); j++)
           Ys[i].push_back(new Tensor(snets[i]->lout[j]->output->shape));
     }
-}
+  }
 
 // Split nets among CS
 void Net::split(int c, int todev) {
@@ -364,6 +369,7 @@ void Net::split(int c, int todev) {
         snets[i]->name=cname;
         snets[i]->build(optimizer->clone(), losses, metrics);
         if(onnx_pretrained){ //We need to copy the imported weights to each snet
+            //printf("Copying from CPU to GPU\n");
             for(int i = 0; i < snets.size(); i++)
                 for(int j = 0; j < layers.size(); j++)
                     layers[j]->copy(snets[i]->layers[j]);
@@ -421,6 +427,147 @@ void Net::resize(int b)
   reset();
 
 }
+
+
+// Unroll Recurrent net
+Net* Net::unroll(int inl, int outl, bool seq, bool areg) {
+    int i, j, k, l;
+
+    vlayer *nlayers;
+    vlayer *nin;
+    vlayer *nout;
+    int ind;
+    vlayer par;
+
+
+
+  // unroll inputs
+  nin=new vlayer[inl];
+  nlayers=new vlayer[inl];
+  nout=new vlayer[inl];
+
+  int last_recurrent;
+  for (k = 0; k < layers.size(); k++)
+    if (layers[k]->isrecurrent) last_recurrent=k;
+
+
+  for (i = 0; i < inl; i++) {
+
+    //input layers
+    for (j = 0; j < lin.size(); j++)  {
+      nin[i].push_back(lin[j]->share(i, batch_size, par));
+      nlayers[i].push_back(nin[i][j]);
+    }
+
+    // rest of layers
+    for (k = 0; k < layers.size(); k++) {
+      for (j = 0; j < layers.size(); j++)
+        if ((i>=(inl-outl))||(j<=last_recurrent)) {
+          if (!isInorig(layers[j], nlayers[i], ind)) {
+              vlayer par;
+              for (l = 0; l < layers[j]->parent.size(); l++) {
+                  if (!isInorig(layers[j]->parent[l], nlayers[i], ind)) break;
+                  else par.push_back(nlayers[i][ind]);
+              }
+              if (l == layers[j]->parent.size()) {
+                  if ((layers[j]->isrecurrent)&&(i>0)) {
+                    par.push_back(nlayers[i-1][j]);
+                    nlayers[i].push_back(layers[j]->share(i, batch_size, par));
+                  }
+                  else
+                    nlayers[i].push_back(layers[j]->share(i, batch_size, par));
+              }
+          }
+      }
+    }
+
+    // set output layers
+    if (i>=(inl-outl)) {
+      for (j = 0; j < lout.size(); j++)
+          if (isInorig(lout[j], nlayers[i], ind))
+            nout[i].push_back(nlayers[i][ind]);
+    }
+
+  }
+
+  /////
+  vlayer ninl;
+  vlayer noutl;
+
+  for (i = 0; i < inl; i++)
+   for (j = 0; j < nin[i].size(); j++)
+     ninl.push_back(nin[i][j]);
+
+  for (i = 0; i < inl; i++)
+    for (j = 0; j < nout[i].size(); j++)
+      noutl.push_back(nout[i][j]);
+
+  Net *rnet=new Net(ninl, noutl);
+
+  return rnet;
+}
+
+
+void Net::build_rnet(int inl,int outl) {
+  int i, j, k, n;
+  int todev;
+
+  if (cs->local_gpus.size() > 0) todev = DEV_GPU;
+  else if (cs->local_fpgas.size() > 0) todev = DEV_FPGA;
+  else todev = DEV_CPU;
+
+  if ((rnet==nullptr)||(inl!=rnet->lin.size())) {
+
+   if (rnet!=nullptr) delete rnet;
+
+   printf("Recurrent net %d time steps, %d outputs\n",inl,outl);
+
+   // Create an unrolled version on CPU
+   rnet=unroll(inl,outl,false,false);
+
+   for(i=0;i<rnet->layers.size();i++)
+     rnet->layers[i]->isrecurrent=false;
+   rnet->isrecurrent=false;
+
+   rnet->plot("rmodel.pdf","LR");
+
+   vloss lr;
+   for(i=0;i<outl;i++) lr.push_back(losses[0]->clone());
+
+   vmetrics mr;
+   for(i=0;i<outl;i++) mr.push_back(metrics[0]->clone());
+
+
+   rnet->build(optimizer->clone(),lr,mr,cs,false);
+   //cout<<rnet->summary();
+
+   if (todev!=DEV_CPU) {
+     // unroll CS devices and link
+     for(i=0;i<rnet->snets.size();i++)
+       delete rnet->snets[i];
+     rnet->snets.clear();
+
+     for(i=0;i<snets.size();i++) {
+     //cout<<snets[i]->summary();
+       rnet->snets.push_back(snets[i]->unroll(inl,outl,false,false));
+       for(j=0;j<rnet->snets[i]->layers.size();j++)
+             rnet->snets[i]->layers[j]->isrecurrent=false;
+       rnet->snets[i]->isrecurrent=false;
+
+       rnet->snets[i]->build(optimizer->clone(),lr,mr,false);
+       rnet->snets[i]->plot("rsnet.pdf","LR");
+       //cout<<rnet->snets[i]->summary();
+      }
+    }
+
+   rnet->flog_tr=flog_tr;
+   rnet->flog_ts=flog_ts;
+  }
+}
+
+
+
+
 
 void Net::enable_distributed(){
 	for(Layer* l : layers){

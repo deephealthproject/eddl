@@ -65,3 +65,8 @@ float LCrossEntropy::value(Tensor *T, Tensor *Y) {
 
     return f;
 }
+
+Loss* LCrossEntropy::clone()
+{
+  return new LCrossEntropy();
+}

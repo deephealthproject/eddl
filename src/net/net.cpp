@@ -75,6 +75,7 @@ Net::Net(vlayer in, vlayer out) {
     tr_batches=0;
     flog_tr=nullptr;
     flog_ts=nullptr;
+    rnet=nullptr;
     unsigned int verbosity_level = 0;
 
     // Walk through the pointers of all layers, to get a plain
@@ -94,6 +95,9 @@ Net::Net(vlayer in, vlayer out) {
         fiterr.push_back(0.0);
     }
 
+    isrecurrent=false;
+
+
     build_randn_table();
 }
 
@@ -107,6 +111,9 @@ Net::~Net()
         }
     }
 
+    // TODO: CHECK REMOVE CPU 
+
+/*
     for (int i = 0; i < losses.size(); i++) {
         delete losses[i];
         losses[i] = nullptr;
@@ -116,7 +123,7 @@ Net::~Net()
         delete metrics[i];
         metrics[i] = nullptr;
     }
-
+*/
 
     delete optimizer;
     optimizer= nullptr;
@@ -182,7 +189,12 @@ string Net::summary() {
         ss << setw(10) << left << istr;
         ss << setw(8) << left << "=>";
         ss << setw(10) << left << ostr;
+        ss << vft->dev<<" , "<<vft->input->device;
         ss << endl;
+    }
+    ss << "---------------------------------------------" << endl;
+    for(int i=0;i<snets.size();i++) {
+      ss<<"split_net["<<i<<"] in dev "<<snets[i]->dev<<endl;
     }
     ss << "---------------------------------------------" << endl;
 

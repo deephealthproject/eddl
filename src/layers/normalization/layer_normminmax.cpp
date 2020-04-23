@@ -139,7 +139,7 @@ void LNormMinMax::backward() {
 
 
 Layer *LNormMinMax::share(int c, int bs, vector<Layer *> p) {
-    LNormMinMax *n = new LNormMinMax(p[0], epsilon, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    LNormMinMax *n = new LNormMinMax(p[0], epsilon,  this->name, this->dev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement
@@ -148,7 +148,7 @@ Layer *LNormMinMax::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LNormMinMax::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LNormMinMax *n = new LNormMinMax(p[0], epsilon, "clone_" + to_string(todev) + name, todev, this->mem_level);
+    LNormMinMax *n = new LNormMinMax(p[0], epsilon,  name, todev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

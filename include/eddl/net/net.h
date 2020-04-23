@@ -54,6 +54,7 @@ public:
 	int mem_level; // see Computing Service
 	unsigned int verbosity_level = 0;
 	bool onnx_pretrained;
+  bool isrecurrent;
 
 	vector<int> devsel;
 	CompServ *cs;
@@ -75,6 +76,7 @@ public:
 
 	Optimizer *optimizer;
 	vector<Net *> snets;
+	Net* rnet;
 
 	vtensor Xs[MAX_THREADS];
 	vtensor Ys[MAX_THREADS];
@@ -89,6 +91,9 @@ public:
 	void fts();
 	void bts();
 	void split(int c, int todev);
+	Net *unroll(int inl, int outl, bool seq, bool areg);
+	void build_rnet(int inl,int outl);
+
 	int inNet(Layer *l);
 	void walk(Layer *l);
 	void walk_back(Layer *l);
@@ -144,8 +149,10 @@ public:
 
 
 	void fit(vtensor tin, vtensor tout, int batch_size, int epochs);
+	void fit_recurrent(vtensor tin, vtensor tout, int batch_size, int epochs);
 	void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);
 	void evaluate(vtensor tin, vtensor tout);
+	void evaluate_recurrent(vtensor tin, vtensor tout);
 	void predict(vtensor tin, vtensor tout);
 
 

@@ -24,3 +24,7 @@ void LMeanRelativeError::delta(Tensor *T, Tensor *Y, Tensor *D) {
 float LMeanRelativeError::value(Tensor *T, Tensor *Y) {
     return 0;
 }
+Loss* LMeanRelativeError::clone()
+{
+  return new LMeanRelativeError();
+}
