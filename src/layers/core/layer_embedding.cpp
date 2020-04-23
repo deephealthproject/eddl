@@ -49,7 +49,7 @@ void LEmbedding::backward() {
 
 Layer *LEmbedding::share(int c, int bs, vector<Layer *> p) {
     // TODO: Implement
-    LEmbedding *n = new LEmbedding(input_dim, output_dim, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    LEmbedding *n = new LEmbedding(input_dim, output_dim,  this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
@@ -57,7 +57,7 @@ Layer *LEmbedding::share(int c, int bs, vector<Layer *> p) {
 
 Layer *LEmbedding::clone(int c, int bs, vector<Layer *> p, int todev) {
     // TODO: Implement
-    LEmbedding *n = new LEmbedding(input_dim, output_dim, "clone_" + to_string(todev) + name, todev, this->mem_level);
+    LEmbedding *n = new LEmbedding(input_dim, output_dim,  name, todev, this->mem_level);
     n->orig = this;
 
     return n;

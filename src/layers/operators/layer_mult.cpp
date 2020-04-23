@@ -84,9 +84,9 @@ Layer *LMult::share(int c, int bs, vector<Layer *> p) {
 Layer *LMult::clone(int c, int bs, vector<Layer *> p, int todev) {
     LMult *n;
     if (binary)
-        n = new LMult(p[0], p[1], "share_" + to_string(c) + name, todev, this->mem_level);
+        n = new LMult(p[0], p[1],  name, todev, this->mem_level);
     else
-        n = new LMult(p[0], val, "share_" + to_string(c) + name, todev, this->mem_level);
+        n = new LMult(p[0], val,  name, todev, this->mem_level);
     n->orig = this;
     return n;
 }

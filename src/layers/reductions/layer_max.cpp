@@ -54,7 +54,7 @@ void LRMax::resize(int batch){
 
 Layer *LRMax::share(int c, int bs, vector<Layer *> p) {
     LRMax *n;
-    n = new LRMax(p[0], RD->axis, RD->keepdims, "share_" + to_string(c) + name, this->dev, this->mem_level);
+    n = new LRMax(p[0], RD->axis, RD->keepdims,  name, this->dev, this->mem_level);
     n->orig = this;
     return n;
 }

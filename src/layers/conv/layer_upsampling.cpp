@@ -44,14 +44,14 @@ void LUpSampling::backward() {
 }
 
 Layer *LUpSampling::share(int c, int bs, vector<Layer *> p) {
-    LUpSampling *n = new LUpSampling(p[0], this->size, this->interpolation, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    LUpSampling *n = new LUpSampling(p[0], this->size, this->interpolation,  this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LUpSampling::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LUpSampling *n = new LUpSampling(p[0], this->size, this->interpolation, "clone_" + to_string(todev) + name, todev, this->mem_level);
+    LUpSampling *n = new LUpSampling(p[0], this->size, this->interpolation,  name, todev, this->mem_level);
     n->orig = this;
 
     return n;

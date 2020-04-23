@@ -27,17 +27,17 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 1;
+    int epochs = 10;
     int batch_size = 100;
     int num_classes = 10;
 
     // Define network
-    layer in = Input({784});
+    layer in = Input({28});
     layer l = in;  // Aux var
 
-    l = LeakyReLu(Dense(l, 1024));
-    l = LeakyReLu(Dense(l, 1024));
-    l = LeakyReLu(Dense(l, 1024));
+    l = LeakyReLu(Dense(l, 32));
+    l = LeakyReLu(RNN(l, 32));
+    l = LeakyReLu(Dense(l, 32));
 
     layer out = Softmax(Dense(l, num_classes));
     model net = Model({in}, {out});
@@ -48,10 +48,10 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          rmsprop(0.01), // Optimizer
+          rmsprop(0.001), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_GPU({1}, "low_mem") // one GPU
+          CS_GPU({1,1},100, "low_mem") // one GPU
           //CS_CPU(-1, "low_mem") // CPU with maximum threads availables
     );
     //toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
@@ -59,20 +59,33 @@ int main(int argc, char **argv) {
     // View model
     summary(net);
 
+
     // Load dataset
     tensor x_train = eddlT::load("trX.bin");
     tensor y_train = eddlT::load("trY.bin");
     tensor x_test = eddlT::load("tsX.bin");
     tensor y_test = eddlT::load("tsY.bin");
 
+    x_train->reshape_({60000,28,28});
+    tensor x_trainp=Tensor::permute(x_train,{1,0,2});
+    delete x_train;
+
+    x_test->reshape_({10000,28,28});
+    tensor x_testp=Tensor::permute(x_test,{1,0,2});
+    delete x_test;
+
     // Preprocessing
-    eddlT::div_(x_train, 255.0);
-    eddlT::div_(x_test, 255.0);
+    eddlT::div_(x_trainp, 255.0);
+    eddlT::div_(x_testp, 255.0);
+
+    setlogfile(net,"recurrent_mnist");
 
     // Train model
-    fit(net, {x_train}, {y_train}, batch_size, epochs);
 
-    // Evaluate
-    evaluate(net, {x_test}, {y_test});
+    for(int i=0;i<epochs;i++) {
+      fit(net,{x_trainp}, {y_train}, batch_size, 1);
+      evaluate(net, {x_testp}, {y_test});
+    }
+    
 
 }

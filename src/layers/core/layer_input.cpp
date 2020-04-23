@@ -64,7 +64,7 @@ Layer *LInput::share(int c, int bs, vector<Layer *> p) {
     vector<int> shape = input->getShape();
     shape[0] = bs;
 
-    LInput *n = new LInput(new Tensor(shape,dev), "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    LInput *n = new LInput(new Tensor(shape,dev),  this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
@@ -74,7 +74,7 @@ Layer *LInput::clone(int c, int bs, vector<Layer *> p, int todev) {
     vector<int> shape = input->getShape();
     shape[0] = bs;
 
-    LInput *n = new LInput(new Tensor(shape, todev), "clone_" + to_string(todev) + name, todev, this->mem_level);
+    LInput *n = new LInput(new Tensor(shape, todev),  name, todev, this->mem_level);
     n->orig = this;
 
     return n;

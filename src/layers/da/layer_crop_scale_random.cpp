@@ -48,14 +48,14 @@ void LCropScaleRandom::backward() {
 
 
 Layer *LCropScaleRandom::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LCropScaleRandom(p[0], this->factor, this->da_mode, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
+    auto *n = new LCropScaleRandom(p[0], this->factor, this->da_mode,  this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LCropScaleRandom::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LCropScaleRandom(p[0], this->factor, this->da_mode, "clone_" + to_string(todev) + name, todev, this->mem_level);
+    auto *n = new LCropScaleRandom(p[0], this->factor, this->da_mode,  name, todev, this->mem_level);
     n->orig = this;
 
     return n;

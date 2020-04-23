@@ -92,6 +92,7 @@ public:
 	void bts();
 	void split(int c, int todev);
 	Net *unroll(int inl, int outl, bool seq, bool areg);
+	void build_rnet(int inl,int outl);
 
 	int inNet(Layer *l);
 	void walk(Layer *l);
@@ -151,6 +152,7 @@ public:
 	void fit_recurrent(vtensor tin, vtensor tout, int batch_size, int epochs);
 	void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);
 	void evaluate(vtensor tin, vtensor tout);
+	void evaluate_recurrent(vtensor tin, vtensor tout);
 	void predict(vtensor tin, vtensor tout);
 
 
