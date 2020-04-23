@@ -252,20 +252,24 @@ environment by running the following commands <strong>from the source directory<
 conda activate eddl
 </pre></div>
 </div>
-<p>If you decide to manually install the dependencies in your system, make sure they are at standard paths:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cmake</span> <span class="o">&gt;=</span> <span class="mf">3.9</span><span class="o">.</span><span class="mi">2</span>
-<span class="n">graphviz</span> <span class="o">&gt;=</span> <span class="mf">2.38</span><span class="o">.</span><span class="mi">0</span>
-<span class="n">wget</span> <span class="o">&gt;=</span> <span class="mf">1.19</span><span class="o">.</span><span class="mi">5</span>
-<span class="n">cudatoolkit</span> <span class="o">&gt;=</span> <span class="mf">6.0</span>
+<p>If you decide to manually install these dependencies in your system (make sure they are at standard paths):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">cmake</span><span class="o">&gt;=</span><span class="mf">3.9</span><span class="o">.</span><span class="mi">2</span>
+<span class="o">-</span> <span class="n">eigen</span><span class="o">&gt;=</span><span class="mf">3.3</span><span class="o">.</span><span class="mi">7</span>
+<span class="o">-</span> <span class="n">zlib</span><span class="o">=</span><span class="mf">1.2</span><span class="o">.*</span>
+<span class="o">-</span> <span class="n">protobuf</span><span class="o">=</span><span class="mf">3.11</span><span class="o">.*</span>
+<span class="o">-</span> <span class="n">cudatoolkit</span>
+<span class="o">-</span> <span class="n">gtest</span>
+<span class="o">-</span> <span class="n">graphviz</span>  <span class="c1"># Build &amp; Run</span>
+<span class="o">-</span> <span class="n">wget</span>
+<span class="o">-</span> <span class="n">doxygen</span>  <span class="c1"># Docs</span>
+<span class="o">-</span> <span class="n">python</span>
+<span class="o">-</span> <span class="n">pip</span>
 
-<span class="c1"># For development</span>
-<span class="n">doxygen</span>
-<span class="n">python</span>
-<span class="n">pip</span><span class="p">:</span>
-  <span class="o">-</span> <span class="n">sphinx</span>
-  <span class="o">-</span> <span class="n">breathe</span>
-  <span class="o">-</span> <span class="n">sphinx_rtd_theme</span>
-  <span class="o">-</span> <span class="n">sphinx</span><span class="o">-</span><span class="n">tabs</span>
+<span class="o">-</span> <span class="n">pip</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">sphinx</span>
+    <span class="o">-</span> <span class="n">breathe</span>
+    <span class="o">-</span> <span class="n">sphinx_rtd_theme</span>
+    <span class="o">-</span> <span class="n">sphinx</span><span class="o">-</span><span class="n">tabs</span>
 </pre></div>
 </div>
 </div>
@@ -440,7 +444,9 @@ troubleshoot the compilation process (see: :doc:<code class="docutils literal no
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Enabled by default. If <code class="docutils literal notranslate"><span class="pre">OFF</span></code>, cmake will look at your <code class="docutils literal notranslate"><span class="pre">CMAKE_PREFIX_PATH</span></code></p>
+<p>Disabled by default. If <code class="docutils literal notranslate"><span class="pre">OFF</span></code>, cmake will look at your <code class="docutils literal notranslate"><span class="pre">CMAKE_PREFIX_PATH</span></code></p>
+<p>If you want to distribute the resulting shared library, you should use the flag
+<code class="docutils literal notranslate"><span class="pre">-DBUILD_SUPERBUILD=ON</span></code> so that we can make specific tunings to our dependencies.</p>
 </div>
 </div>
 </div>

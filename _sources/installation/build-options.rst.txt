@@ -22,23 +22,27 @@ environment by running the following commands **from the source directory**:
     conda env create -f environment.yml
     conda activate eddl
 
-If you decide to manually install the dependencies in your system, make sure they are at standard paths:
+If you decide to manually install these dependencies in your system (make sure they are at standard paths):
 
 .. code::
 
-    cmake >= 3.9.2
-    graphviz >= 2.38.0
-    wget >= 1.19.5
-    cudatoolkit >= 6.0
+    - cmake>=3.9.2
+    - eigen>=3.3.7
+    - zlib=1.2.*
+    - protobuf=3.11.*
+    - cudatoolkit
+    - gtest
+    - graphviz  # Build & Run
+    - wget
+    - doxygen  # Docs
+    - python
+    - pip
 
-    # For development
-    doxygen
-    python
-    pip:
-      - sphinx
-      - breathe
-      - sphinx_rtd_theme
-      - sphinx-tabs
+    - pip:
+        - sphinx
+        - breathe
+        - sphinx_rtd_theme
+        - sphinx-tabs
 
 
 Build and optimization
@@ -235,7 +239,10 @@ troubleshoot the compilation process (see: :doc:``troubleshoot``).
 
 .. note::
 
-    Enabled by default. If ``OFF``, cmake will look at your ``CMAKE_PREFIX_PATH``
+    Disabled by default. If ``OFF``, cmake will look at your ``CMAKE_PREFIX_PATH``
+
+    If you want to distribute the resulting shared library, you should use the flag
+    ``-DBUILD_SUPERBUILD=ON`` so that we can make specific tunings to our dependencies.
 
 
 .. _Anaconda: https://docs.conda.io/en/latest/miniconda.html
