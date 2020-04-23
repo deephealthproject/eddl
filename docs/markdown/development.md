@@ -79,7 +79,8 @@ Then you can also execute; `brew`
 ## Build conda package
 
 ```
-You need: conda install anaconda-client in your environment
+Install Anaconda Client (in your environment)
+conda install anaconda-client 
 
 # Use the environment from the source to use the conda cmake and 
 # avoid looking too much into the system packages
@@ -98,11 +99,11 @@ conda install --use-local eddl
 # rm -rf ./*; cmake ..; make; ./main
 cmake ..; make; ./main
 
-# Convert to platforms
-conda convert --platform all ... -o ~/precompiled
+# Convert to platforms (osx-64,linux-32,linux-64,linux-ppc64le,linux-armv6l,linux-armv7l,linux-aarch64,win-32,win-64,all)
+conda convert --platform linux-32 (file) -o ~/precompiled 
 
 # Upload
-anaconda upload ~/anaconda3/conda-bld/...
+anaconda upload ...
 
 # Upload all
 find ~/precompiled -name "*.bz2" -type f -exec anaconda upload "{}" \;

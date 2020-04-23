@@ -32,7 +32,7 @@ pip3 install pytest
 
 
 # [A] Use specific version
-EDDL_VERSION=v0.5.2a
+EDDL_VERSION=v0.5.4a
 echo "INSTALLING EDDL $EDDL_VERSION****************"
 
 wget https://github.com/deephealthproject/eddl/archive/$EDDL_VERSION.tar.gz
