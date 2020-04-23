@@ -19,7 +19,11 @@ fi
 # Build makefiles
 mkdir build
 cd build/
-cmake -DBUILD_TARGET=GPU -DBUILD_EXAMPLES=OFF -DCMAKE_INSTALL_PREFIX=$PREFIX $SRC_DIR
+cmake -DBUILD_TARGET=GPU \
+      -DBUILD_EXAMPLES=OFF \
+      -DBUILD_TESTS=OFF \
+      -DCMAKE_INSTALL_PREFIX=$PREFIX \
+      $SRC_DIR
 
 # Compile
 make -j${CPU_COUNT} ${VERBOSE_CM}
