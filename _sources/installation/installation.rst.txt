@@ -119,10 +119,10 @@ See the :doc:`build-options` section for more details about cmake options.
 
 .. note::
 
-    - You can make use of the ``-DCMAKE_INSTALL_PREFIX`` flag to specify where cmake searches for
+    You can make use of the ``-DCMAKE_INSTALL_PREFIX`` flag to specify where cmake searches for
     dependencies and installs libraries.
 
-    - If you want to distribute the resulting shared library, you should use the flag
+    If you want to distribute the resulting shared library, you should use the flag
     ``-DBUILD_SUPERBUILD=ON`` so that we can make specific tunings to our dependencies.
 
 
