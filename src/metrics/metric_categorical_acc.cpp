@@ -23,3 +23,7 @@ float MCategoricalAccuracy::value(Tensor *T, Tensor *Y) {
     f = accuracy(T, Y);
     return f;
 }
+
+Metric* MCategoricalAccuracy::clone() {
+  return new MCategoricalAccuracy();
+}

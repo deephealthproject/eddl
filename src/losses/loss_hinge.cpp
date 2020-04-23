@@ -24,3 +24,7 @@ void LHinge::delta(Tensor *T, Tensor *Y, Tensor *D) {
 float LHinge::value(Tensor *T, Tensor *Y) {
     return 0;
 }
+Loss* LHinge::clone()
+{
+  return new LHinge();
+}

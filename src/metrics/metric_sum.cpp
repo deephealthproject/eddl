@@ -21,3 +21,7 @@ MSum::MSum() : Metric("sum"){}
 float MSum::value(Tensor *T, Tensor *Y) {
     return Y->sum();
 }
+
+Metric* MSum::clone() {
+  return new MSum();
+}

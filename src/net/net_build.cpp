@@ -156,6 +156,8 @@ void Net::toGPU(vector<int> g,int lsb,int mem){
 void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize){
 	onnx_pretrained = !initialize; // For controlling when to copy the weights to the snet
 	build(opt, lo, me, initialize);
+
+
   set_compserv(cs);
 
 
@@ -258,7 +260,7 @@ void Net::set_compserv(CompServ *cs){
 #ifndef cGPU
             msg("EDDLL not compiled for GPU", "Net.set_compserv");
 #else
-            // split on multiple GPUs
+        // split on multiple GPUs
         int ngpus=gpu_devices();
         if (ngpus==0) {
           msg("GPU devices not found","Net.set_compserv(");
@@ -280,7 +282,8 @@ void Net::set_compserv(CompServ *cs){
         if (!devsel.size())
           msg("No gpu selected","Net.set_compserv");
 
-          if (VERBOSE) cout<<"split into "<<devsel.size()<<" GPUs devices\n";
+        if (VERBOSE) cout<<"split into "<<devsel.size()<<" GPUs devices\n";
+
         split(devsel.size(),DEV_GPU);
 #endif
         } else {
@@ -290,6 +293,7 @@ void Net::set_compserv(CompServ *cs){
         msg("Distributed version not yet implemented", "Net.set_compserv");
     }
 
+
     // create input and output tensors (X,Y)
     for (int i = 0; i < snets.size(); i++) {
       for (int j = 0; j < snets[i]->lin.size(); j++)
@@ -297,7 +301,7 @@ void Net::set_compserv(CompServ *cs){
       for (int j = 0; j < snets[i]->lout.size(); j++)
           Ys[i].push_back(new Tensor(snets[i]->lout[j]->output->shape));
     }
-}
+  }
 
 // Split nets among CS
 void Net::split(int c, int todev) {
@@ -365,6 +369,7 @@ void Net::split(int c, int todev) {
         snets[i]->name=cname;
         snets[i]->build(optimizer->clone(), losses, metrics);
         if(onnx_pretrained){ //We need to copy the imported weights to each snet
+            printf("Copying from CPU to GPU\n");
             for(int i = 0; i < snets.size(); i++)
                 for(int j = 0; j < layers.size(); j++)
                     layers[j]->copy(snets[i]->layers[j]);

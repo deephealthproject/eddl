@@ -51,8 +51,8 @@ int main(int argc, char **argv) {
           rmsprop(0.001), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          //CS_GPU({1}, "low_mem") // one GPU
-          CS_CPU(-1, "low_mem") // CPU with maximum threads availables
+          CS_GPU({1,1},100, "low_mem") // one GPU
+          //CS_CPU(-1, "low_mem") // CPU with maximum threads availables
     );
     //toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 
@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
     x_train->reshape_({60000,28,28});
     tensor x_train2=Tensor::permute(x_train,{1,0,2});
 
-    x_train2->info();
+    //x_train2->info();
 
     // Preprocessing
     eddlT::div_(x_train2, 255.0);
@@ -78,6 +78,8 @@ int main(int argc, char **argv) {
     setlogfile(net,"recurrent_mnist");
 
     // Train model
+    fit(net,{x_train2}, {y_train}, batch_size, 1);
+    fit(net,{x_train2}, {y_train}, batch_size, 1);
     fit(net,{x_train2}, {y_train}, batch_size, epochs);
 
     // Evaluate

@@ -506,7 +506,11 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 
 void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
     int i, j, k, n;
+    int todev;
 
+    if (cs->local_gpus.size() > 0) todev = DEV_GPU;
+    else if (cs->local_fpgas.size() > 0) todev = DEV_FPGA;
+    else todev = DEV_CPU;
 
    int inl;
    int outl;
@@ -514,38 +518,68 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
    inl=tin[0]->shape[0];
    outl=1;
 
-   printf("Recurrent %d to %d\n",inl,outl);
+   if ((rnet==nullptr)||(inl!=rnet->lin.size())) {
+
+     if (rnet!=nullptr) delete rnet;
+
+     printf("Recurrent %d to %d\n",inl,outl);
+
+     // Create an unrolled version on CPU
+     rnet=unroll(inl,outl,false,false);
+
+     for(i=0;i<rnet->layers.size();i++)
+       rnet->layers[i]->isrecurrent=false;
+     rnet->isrecurrent=false;
+
+     rnet->plot("rmodel.pdf","LR");
+
+     vloss lr;
+     for(i=0;i<outl;i++) lr.push_back(losses[0]->clone());
+
+     vmetrics mr;
+     for(i=0;i<outl;i++) mr.push_back(metrics[0]->clone());
 
 
-   Net* rnet=unroll(inl,outl,false,false);
+     rnet->build(optimizer->clone(),lr,mr,cs,false);
+     //cout<<rnet->summary();
 
-   rnet->plot("rmodel.pdf","LR");
+     if (todev!=DEV_CPU) {
+       // unroll CS devices and link
+       for(i=0;i<rnet->snets.size();i++)
+         delete rnet->snets[i];
+       rnet->snets.clear();
 
-   vloss lr;
-   for(i=0;i<outl;i++) lr.push_back(losses[0]);
+       for(i=0;i<snets.size();i++) {
+       //cout<<snets[i]->summary();
+         rnet->snets.push_back(snets[i]->unroll(inl,outl,false,false));
+         for(j=0;j<rnet->snets[i]->layers.size();j++)
+             rnet->snets[i]->layers[j]->isrecurrent=false;
+         rnet->snets[i]->isrecurrent=false;
 
-   vmetrics mr;
-   for(i=0;i<outl;i++) mr.push_back(metrics[0]);
+         rnet->snets[i]->build(optimizer->clone(),lr,mr,false);
+         rnet->snets[i]->plot("rsnet.pdf","LR");
+       //cout<<rnet->snets[i]->summary();
+        }
+      }
+
+     rnet->flog_tr=flog_tr;
+     rnet->flog_ts=flog_ts;
+  }
+
+  // prepare data for unroll net
+  vtensor tinr;
+  int offset;
+  offset=tin[0]->shape[1]*tin[0]->shape[2];
+  for(i=0;i<inl;i++) {
+    Tensor *n=new Tensor({tin[0]->shape[1],tin[0]->shape[2]},tin[0]->ptr+(i*offset));
+    tinr.push_back(n);
+  }
+
+  rnet->fit(tinr,tout,batch,epochs);
+
+  if (todev!=DEV_CPU) rnet->sync_weights();
 
 
-   rnet->build(optimizer->clone(),losses,metrics,cs);
-
-   vtensor tinr;
-   int offset;
-   offset=tin[0]->shape[1]*tin[0]->shape[2];
-   for(i=0;i<inl;i++) {
-     Tensor *n=new Tensor({tin[0]->shape[1],tin[0]->shape[2]},tin[0]->ptr+(i*offset));
-     tinr.push_back(n);
-   }
-
-   rnet->isrecurrent=false;
-   rnet->flog_tr=flog_tr;
-   rnet->flog_ts=flog_ts;
-
-
-   rnet->fit(tinr,tout,batch,epochs);
-
-   delete rnet;
 }
 
 
@@ -656,6 +690,37 @@ void Net::evaluate(vtensor tin, vtensor tout) {
 
 
 
+/*
+   float sum=0;
+   for(int i=0;i<layers.size();i++) {
+     if (layers[i]->params.size()) {
+        for(int j=0;j<layers[i]->params.size();j++)
+         sum+=layers[i]->params[j]->sum();
+     }
+   }
+   printf("Total in CPU %f\n",sum);
+
+
+
+   sum=0;
+   for(int i=0;i<layers.size();i++) {
+     if (layers[i]->params.size()) {
+        for(int j=0;j<layers[i]->params.size();j++)
+         sum+=layers[i]->params[j]->sum();
+     }
+   }
+   printf("Total in CPU %f\n",sum);
+
+   sum=0;
+   for(int i=0;i<rnet->layers.size();i++) {
+     if (rnet->layers[i]->params.size()) {
+       for(int j=0;j<rnet->layers[i]->params.size();j++)
+         sum+=rnet->layers[i]->params[j]->sum();
+     }
+   }
+   printf("Total in CPU unroll %f\n",sum);
+
+*/
 
 
 

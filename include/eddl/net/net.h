@@ -76,6 +76,7 @@ public:
 
 	Optimizer *optimizer;
 	vector<Net *> snets;
+	Net* rnet;
 
 	vtensor Xs[MAX_THREADS];
 	vtensor Ys[MAX_THREADS];

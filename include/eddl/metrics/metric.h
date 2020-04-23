@@ -27,6 +27,7 @@ public:
     explicit Metric(string name);
 
     virtual float value(Tensor *T, Tensor *Y);
+    virtual Metric* clone();
 };
 
 
@@ -35,6 +36,7 @@ public:
     MMeanSquaredError();
 
     float value(Tensor *T, Tensor *Y) override;
+    Metric* clone() override;
 };
 
 class MMeanRelativeError : public Metric {
@@ -43,6 +45,7 @@ public:
     float eps;
 
     float value(Tensor *T, Tensor *Y) override;
+    Metric* clone() override;
 };
 
 class MMeanAbsoluteError : public Metric {
@@ -50,6 +53,7 @@ public:
     MMeanAbsoluteError();
 
     float value(Tensor *T, Tensor *Y) override;
+    Metric* clone() override;
 };
 
 
@@ -59,6 +63,7 @@ public:
     MCategoricalAccuracy();
 
     float value(Tensor *T, Tensor *Y) override;
+    Metric* clone() override;
 };
 
 class MSum : public Metric {
@@ -66,6 +71,7 @@ public:
     MSum();
 
     float value(Tensor *T, Tensor *Y) override;
+    Metric* clone() override;
 };
 
 

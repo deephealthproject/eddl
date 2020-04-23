@@ -30,3 +30,7 @@ float LMin::value(Tensor *T, Tensor *Y) {
     sum=Y->sum();
     return sum;
 }
+Loss* LMin::clone()
+{
+  return new LMin();
+}

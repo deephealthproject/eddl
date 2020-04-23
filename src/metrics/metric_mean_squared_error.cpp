@@ -31,3 +31,7 @@ float MMeanSquaredError::value(Tensor *T, Tensor *Y) {
     delete aux1;
     return f;
 }
+
+Metric* MMeanSquaredError::clone() {
+  return new MMeanSquaredError();
+}

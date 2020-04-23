@@ -41,7 +41,8 @@ public:
     bool trainable;
     int mem_level; // See CS
     bool isrecurrent;
-
+    bool isshared;
+    
     vector<Tensor *> params;
     vector<Tensor *> gradients;
 	vector<Tensor *> acc_gradients;

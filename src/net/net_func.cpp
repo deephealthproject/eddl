@@ -49,13 +49,19 @@ void Net::do_reset_grads() {
 
 void Net::do_forward() {
     for (int i = 0; i < vfts.size(); i++) {
-        vfts[i]->forward();
-        if (VERBOSE) {
-            cout << vfts[i]->name << " mem="<<vfts[i]->mem_level<<"\n";
-            for(int j=0;j<vfts[i]->parent.size();j++)
-              fprintf(stdout, "  %s In[%d]:%f\n", vfts[i]->name.c_str(), j, vfts[i]->parent[j]->output->sum());
-            fprintf(stdout, "  %s Out:%f\n", vfts[i]->name.c_str(), vfts[i]->output->sum());
-        }
+      if (VERBOSE) {
+          cout << vfts[i]->name << " mem="<<vfts[i]->mem_level<<"\n";
+          for(int j=0;j<vfts[i]->parent.size();j++)
+            fprintf(stdout, "  %s In[%d,%s]:%f\n", vfts[i]->name.c_str(), j, vfts[i]->parent[j]->name.c_str(),vfts[i]->parent[j]->output->sum());
+      }
+
+      vfts[i]->forward();
+      if (VERBOSE) {
+          cout << vfts[i]->name << " mem="<<vfts[i]->mem_level<<"\n";
+
+          fprintf(stdout, "  %s Out:%f\n", vfts[i]->name.c_str(), vfts[i]->output->sum());
+      }
+
     }
 }
 

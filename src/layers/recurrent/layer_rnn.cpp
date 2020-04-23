@@ -101,7 +101,8 @@ void LRNN::backward() {
 Layer *LRNN::share(int c, int bs, vector<Layer *> p) {
     LRNN *n = new LRNN(p, units, num_layers, use_bias, dropout, bidirectional, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
-
+    n->isshared=true;
+    
     //share params
     for (int i = 0; i < n->params.size(); i++) delete n->params[i];
     n->params.clear();

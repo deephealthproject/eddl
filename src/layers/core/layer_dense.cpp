@@ -97,6 +97,7 @@ void LDense::apply_accumulated_gradients() {
 Layer *LDense::share(int c, int bs, vector<Layer *> p) {
     LDense *n = new LDense(p[0], ndim, use_bias, "share_" + to_string(c) + this->name, this->dev, this->mem_level);
     n->orig = this;
+    n->isshared=true;
 
     //share params
     for (int i = 0; i < n->params.size(); i++) delete n->params[i];

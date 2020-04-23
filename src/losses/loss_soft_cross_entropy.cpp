@@ -19,6 +19,7 @@ using namespace std;
 
 LSoftCrossEntropy::LSoftCrossEntropy() : Loss("soft_cross_entropy"){}
 
+
 void LSoftCrossEntropy::delta(Tensor *T, Tensor *Y, Tensor *D) {
     Tensor::add(-1.0, T, 1.0, Y, D, 0);
     D->div_(D->shape[0]);
@@ -36,4 +37,8 @@ float LSoftCrossEntropy::value(Tensor *T, Tensor *Y) {
     delete aux1;
 
     return f;
+}
+Loss* LSoftCrossEntropy::clone()
+{
+  return new LSoftCrossEntropy();
 }
