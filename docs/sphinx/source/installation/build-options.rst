@@ -22,7 +22,7 @@ environment by running the following commands **from the source directory**:
     conda env create -f environment.yml
     conda activate eddl
 
-If you decide to manually install the dependencies in your system, make sure they are at standard paths:
+If you decide to manually install these dependencies in your system (make sure they are at standard paths):
 
 .. code::
 
