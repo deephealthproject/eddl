@@ -79,6 +79,8 @@ Then you can also execute; `brew`
 ## Build conda package
 
 ```
+You need: conda install anaconda-client in your environment
+
 # Use the environment from the source to use the conda cmake and 
 # avoid looking too much into the system packages
 conda env create -f environment.yml

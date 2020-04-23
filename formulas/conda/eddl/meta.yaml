@@ -1,6 +1,6 @@
-{% set name = "eddl-cpu" %}  # If this is a package for GPU, use: "eddl-gpu"
-{% set version = "v0.5.2a" %}
-{% set sha256 = "bd937a6e228ff0c4b1ef957c65c017adb5ef2abf5a5dd1eb7a838a60217a1e8e" %}
+{% set name = "eddl-gpu" %}  # If this is a package for GPU, use: "eddl-gpu"
+{% set version = "v0.5.3a" %}
+{% set sha256 = "e92e0fe9a36d0869e5608005d38e2f389cc0d9ea8127e69de751662c2429d730" %}
 
 package:
   name: {{ name|lower }}
@@ -38,6 +38,7 @@ test:
     - test -d ${PREFIX}/include/eddl  # [unix]
     - test -f ${PREFIX}/include/eddl/apis/eddl.h  # [unix]
     - test -f ${PREFIX}/lib/cmake/eddl/EDDLConfig.cmake  # [unix]
+    - test -f ${PREFIX}/lib/libeddl${SHLIB_EXT}  # [unix]
 
 about:
   home: https://github.com/deephealthproject/eddl
