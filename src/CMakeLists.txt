@@ -129,6 +129,9 @@ if(BUILD_OPENMP)
         SET(USE_OPENMP OFF) # Local's scope
         SET(USE_OPENMP ${USE_OPENMP} PARENT_SCOPE)  # Parent's scope
     endif()
+else()
+    SET(USE_OPENMP OFF) # Local's scope
+    SET(USE_OPENMP ${USE_OPENMP} PARENT_SCOPE)  # Parent's scope
 endif()
 
 
