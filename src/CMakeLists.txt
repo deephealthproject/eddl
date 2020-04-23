@@ -9,12 +9,15 @@ option(OVERWRITE_PROTO_FILES "Overwrite protobuf files (requires a compatible pr
 # Double checks (restricted args)
 set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
 
+# Initializations (Local's scope)
+SET(USE_OPENMP OFF)
+SET(USE_CUDA OFF)
+
 # Device specific setup
 string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
 if(${BUILD_TARGET} STREQUAL "CPU")
 elseif(${BUILD_TARGET} STREQUAL "GPU")
     SET(USE_CUDA ON) # Local's scope
-    SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
 else()
     message(FATAL_ERROR "Build target '${BUILD_TARGET}' not implemented, CMake will exit." )
 endif()
@@ -122,17 +125,12 @@ if(BUILD_OPENMP)
         target_compile_definitions(${PROJECT_NAME} PUBLIC OpenMP_VERSION_MAJOR=${OpenMP_VERSION_MAJOR})
         set(OMP_CANCELLATION true)  # https://www.openmp.org/spec-html/5.0/openmpse59.html
         SET(USE_OPENMP ON) # Local's scope
-        SET(USE_OPENMP ${USE_OPENMP} PARENT_SCOPE)  # Parent's scope
     else()
         message(WARNING "OpenMP not found but requested during compilation. (Falling back to: '-D BUILD_OPENMP=OFF')
         Hint: Use a compiler with OpenMP support using: '-D CMAKE_CXX_COMPILER=path'")
-        SET(USE_OPENMP OFF) # Local's scope
-        SET(USE_OPENMP ${USE_OPENMP} PARENT_SCOPE)  # Parent's scope
     endif()
-else()
-    SET(USE_OPENMP OFF) # Local's scope
-    SET(USE_OPENMP ${USE_OPENMP} PARENT_SCOPE)  # Parent's scope
 endif()
+SET(USE_OPENMP ${USE_OPENMP} PARENT_SCOPE)  # Parent's scope
 
 
 # CUDA
@@ -166,17 +164,14 @@ if(USE_CUDA)
         if(NOT DEFINED CMAKE_CUDA_STANDARD)
             set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr -D_MWAITXINTRIN_H_INCLUDED -D_FORCE_INLINES -D__STRICT_ANSI__")
         endif()
-
-        SET(USE_CUDA ON) # Local's scope
-        SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
     else()
         message(WARNING "[WARNING] CUDA compiler not found but requested during compilation. (Falling back to: '-D USE_CUDA=OFF')
         Hint: Set the NVCC path using '-D CMAKE_CUDA_COMPILER=path' or creating a symbolic link.")
-        SET(USE_CUDA OFF) # Local's scope
-        SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
         SET(BUILD_TARGET "CPU") # Local's scope
+        SET(USE_CUDA OFF) # Local's scope (disable)
     endif()
 endif()
+SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
 
 ###########################################################################
 ################################## WINDOWS ################################
