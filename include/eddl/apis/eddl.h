@@ -108,7 +108,17 @@ typedef NetLoss * metric;
       *  @param mem  Indicates de memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
       *  @return     The computer service itself.
     */
-    compserv CS_CPU(int th=-1);
+    compserv CS_CPU();
+
+
+    /**
+      *  @brief Executes de code in the CPU.
+      *
+      *  @param th  Indicates the number of threads to use (-1 = all available threads)
+      *  @param mem  Indicates de memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
+      *  @return     The computer service itself.
+    */
+    compserv CS_CPU(int th);
 
 
     /**
@@ -118,6 +128,18 @@ typedef NetLoss * metric;
       *  @param mem  Indicates de memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
       *  @return     The computer service itself.
     */
+
+    compserv CS_CPU(int th,string mem);
+
+
+    /**
+      *  @brief Executes de code in the GPU.
+      *
+      *  @param g  Vector of bools to set which GPUs will be used (1=on, 0=off)
+      *  @param mem  Indicates de memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
+      *  @return     The computer service itself.
+    */
+
     compserv CS_GPU(const vector<int> g);
 
     /**
