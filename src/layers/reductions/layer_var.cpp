@@ -116,7 +116,7 @@ void LRVar::reset()
 
 Layer *LRVar::share(int c, int bs, vector<Layer *> p) {
   LRVar *n;
-  n = new LRVar(p[0], axis, keepdims,  this->name, this->dev, this->mem_level);
+  n = new LRVar(p[0], axis, keepdims, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
   n->orig = this;
   return n;
 }

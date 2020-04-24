@@ -124,12 +124,12 @@ void LDiv::backward() {
 Layer *LDiv::share(int c, int bs, vector<Layer *> p) {
   LDiv *n;
   if (binary)
-      n = new LDiv(p[0], p[1],  this->name, this->dev, this->mem_level);
+      n = new LDiv(p[0], p[1], "share_"+to_string(c)+this->name, this->dev, this->mem_level);
   else {
     if (left)
-      n = new LDiv(p[0], val,  this->name, this->dev, this->mem_level);
+      n = new LDiv(p[0], val, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     else
-      n = new LDiv(val, p[0],  this->name, this->dev, this->mem_level);
+      n = new LDiv(val, p[0], "share_"+to_string(c)+this->name, this->dev, this->mem_level);
   }
   n->orig = this;
   return n;

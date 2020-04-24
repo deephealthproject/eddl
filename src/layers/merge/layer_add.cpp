@@ -71,7 +71,7 @@ void LAdd::backward() {
 }
 
 Layer *LAdd::share(int c, int bs, vector<Layer *> p) {
-    LAdd *n = new LAdd(p,  this->name, this->dev, this->mem_level);
+    LAdd *n = new LAdd(p, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

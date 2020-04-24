@@ -75,7 +75,7 @@ void LAverage::backward() {
 
 
 Layer *LAverage::share(int c, int bs, vector<Layer *> p) {
-    LAverage *n = new LAverage(p,  this->name, this->dev, this->mem_level);
+    LAverage *n = new LAverage(p, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

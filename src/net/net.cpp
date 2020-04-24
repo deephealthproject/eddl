@@ -50,12 +50,12 @@ int isIn(Layer *l, vlayer vl, int &ind) {
 
 /////////////////////////////////////////
 int isInorig(Layer *l, vlayer vl, int &ind) {
-    for (int i = 0; i < vl.size(); i++)
+    for (int i = 0; i < vl.size(); i++) {
         if (l == vl[i]->orig) {
             ind = i;
             return 1;
         }
-
+  }
     return 0;
 }
 
@@ -111,7 +111,7 @@ Net::~Net()
         }
     }
 
-    // TODO: CHECK REMOVE CPU 
+    // TODO: CHECK REMOVE CPU
 
 /*
     for (int i = 0; i < losses.size(); i++) {
@@ -171,7 +171,7 @@ void Net::walk_back(Layer *l) {
 /////////////////////////////////////////
 string Net::summary() {
     std::stringstream ss;
-    ss << "---------------------------------------------" << endl;
+    ss << "---------------------------------------------------------" << endl;
     for (auto & vft : vfts) {
         // Get input/output shapes
         vector<int> ishape(vft->input->shape);
@@ -189,14 +189,9 @@ string Net::summary() {
         ss << setw(10) << left << istr;
         ss << setw(8) << left << "=>";
         ss << setw(10) << left << ostr;
-        ss << vft->dev<<" , "<<vft->input->device;
         ss << endl;
     }
-    ss << "---------------------------------------------" << endl;
-    for(int i=0;i<snets.size();i++) {
-      ss<<"split_net["<<i<<"] in dev "<<snets[i]->dev<<endl;
-    }
-    ss << "---------------------------------------------" << endl;
+    ss << "---------------------------------------------------------" << endl;
 
     return ss.str();
 }
@@ -225,9 +220,13 @@ void Net::plot(string fname,string mode) {
         out << lout[i]->plot(1) << "\n";
 
     //plot links
-    for (int i = 0; i != layers.size(); i++)
-        for (int j = 0; j < layers[i]->child.size(); j++)
-            out << layers[i]->name << "->" << layers[i]->child[j]->name << "\n";
+    for (int i = 0; i != layers.size(); i++) {
+       if (layers[i]->isrecurrent)
+         out << layers[i]->name << "->" << layers[i]->name << "\n";
+
+       for (int j = 0; j < layers[i]->child.size(); j++)
+        out << layers[i]->name << "->" << layers[i]->child[j]->name << "\n";
+    }
 
     out << "}\n";
 

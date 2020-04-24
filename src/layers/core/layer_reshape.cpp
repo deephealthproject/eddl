@@ -122,7 +122,7 @@ Layer *LReshape::share(int c, int bs, vector<Layer *> p) {
     vector<int> shape = ls;
     shape[0] = bs;
 
-    auto *n = new LReshape(p[0], shape,  this->name, this->dev, this->mem_level);
+    auto *n = new LReshape(p[0], shape, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

@@ -428,16 +428,59 @@ void Net::resize(int b)
 
 }
 
+bool check_rnn_forward(Layer *l) {
+
+  bool frnn=false;
+
+  for(int i=0;i<l->child.size();i++) {
+    if (l->child[i]->isrecurrent) {frnn=true;break;}
+    else frnn=check_rnn_forward(l->child[i]);
+    if (frnn) break;
+  }
+
+  return frnn;
+}
 
 // Unroll Recurrent net
 Net* Net::unroll(int inl, int outl, bool seq, bool areg) {
-    int i, j, k, l;
+  int i, j, k, l;
 
-    vlayer *nlayers;
-    vlayer *nin;
-    vlayer *nout;
-    int ind;
-    vlayer par;
+  vlayer *nlayers;
+  vlayer *nin;
+  vlayer *nout;
+  int ind;
+  vlayer par;
+  vector<bool> frnn;
+
+
+  // set vfts sort
+  layers.clear();
+  for(int i=0;i<vfts.size();i++)
+    layers.push_back(vfts[i]);
+
+  // check if rnn is in forward path
+  for(int i=0;i<layers.size();i++)
+    if (layers[i]->isrecurrent) frnn.push_back(true);
+    else frnn.push_back(check_rnn_forward(layers[i]));
+
+  // set sort first frnn
+  vlayer lfrnn;
+  for(int i=0;i<layers.size();i++)
+    if (frnn[i]) lfrnn.push_back(layers[i]);
+
+  for(int i=0;i<layers.size();i++)
+    if (!frnn[i]) lfrnn.push_back(layers[i]);
+
+  layers.clear();
+  for(int i=0;i<lfrnn.size();i++)
+    layers.push_back(lfrnn[i]);
+
+  
+  // re-check frnn with the new sort
+  frnn.clear();
+  for(int i=0;i<layers.size();i++)
+    if (layers[i]->isrecurrent) frnn.push_back(true);
+    else frnn.push_back(check_rnn_forward(layers[i]));
 
 
 
@@ -446,13 +489,7 @@ Net* Net::unroll(int inl, int outl, bool seq, bool areg) {
   nlayers=new vlayer[inl];
   nout=new vlayer[inl];
 
-  int last_recurrent;
-  for (k = 0; k < layers.size(); k++)
-    if (layers[k]->isrecurrent) last_recurrent=k;
-
-
   for (i = 0; i < inl; i++) {
-
     //input layers
     for (j = 0; j < lin.size(); j++)  {
       nin[i].push_back(lin[j]->share(i, batch_size, par));
@@ -460,51 +497,54 @@ Net* Net::unroll(int inl, int outl, bool seq, bool areg) {
     }
 
     // rest of layers
-    for (k = 0; k < layers.size(); k++) {
-      for (j = 0; j < layers.size(); j++)
-        if ((i>=(inl-outl))||(j<=last_recurrent)) {
-          if (!isInorig(layers[j], nlayers[i], ind)) {
-              vlayer par;
-              for (l = 0; l < layers[j]->parent.size(); l++) {
-                  if (!isInorig(layers[j]->parent[l], nlayers[i], ind)) break;
-                  else par.push_back(nlayers[i][ind]);
-              }
-              if (l == layers[j]->parent.size()) {
-                  if ((layers[j]->isrecurrent)&&(i>0)) {
-                    par.push_back(nlayers[i-1][j]);
-                    nlayers[i].push_back(layers[j]->share(i, batch_size, par));
-                  }
-                  else
-                    nlayers[i].push_back(layers[j]->share(i, batch_size, par));
-              }
+    for (j = 0; j < layers.size(); j++) {
+      if ((i>=(inl-outl))||(frnn[j])) {
+        //cout<<j<<":"<<layers[j]->name<<endl;
+        if (!isInorig(layers[j], nlayers[i], ind)) {
+          vlayer par;
+          for (l = 0; l < layers[j]->parent.size(); l++) {
+            if (!isInorig(layers[j]->parent[l], nlayers[i], ind)) break;
+            else par.push_back(nlayers[i][ind]);
           }
+          if (l == layers[j]->parent.size()) {
+
+            if ((layers[j]->isrecurrent)&&(i>0)) {
+              par.push_back(nlayers[i-1][j]);
+              nlayers[i].push_back(layers[j]->share(i, batch_size, par));
+            }
+            else {
+              nlayers[i].push_back(layers[j]->share(i, batch_size, par));
+            }
+          }
+          else msg("Unexpected error","unroll");
+        }
       }
     }
 
-    // set output layers
-    if (i>=(inl-outl)) {
-      for (j = 0; j < lout.size(); j++)
-          if (isInorig(lout[j], nlayers[i], ind))
-            nout[i].push_back(nlayers[i][ind]);
-    }
-
+  // set output layers
+  if (i>=(inl-outl)) {
+    for (j = 0; j < lout.size(); j++)
+      if (isInorig(lout[j], nlayers[i], ind))
+        nout[i].push_back(nlayers[i][ind]);
   }
 
-  /////
-  vlayer ninl;
-  vlayer noutl;
+}
 
-  for (i = 0; i < inl; i++)
-   for (j = 0; j < nin[i].size(); j++)
-     ninl.push_back(nin[i][j]);
+/////
+vlayer ninl;
+vlayer noutl;
 
-  for (i = 0; i < inl; i++)
-    for (j = 0; j < nout[i].size(); j++)
-      noutl.push_back(nout[i][j]);
+for (i = 0; i < inl; i++)
+  for (j = 0; j < nin[i].size(); j++)
+    ninl.push_back(nin[i][j]);
 
-  Net *rnet=new Net(ninl, noutl);
+for (i = 0; i < inl; i++)
+  for (j = 0; j < nout[i].size(); j++)
+    noutl.push_back(nout[i][j]);
 
-  return rnet;
+Net *rnet=new Net(ninl, noutl);
+
+return rnet;
 }
 
 
@@ -529,7 +569,6 @@ void Net::build_rnet(int inl,int outl) {
      rnet->layers[i]->isrecurrent=false;
    rnet->isrecurrent=false;
 
-   rnet->plot("rmodel.pdf","LR");
 
    vloss lr;
    for(i=0;i<outl;i++) lr.push_back(losses[0]->clone());
@@ -539,6 +578,11 @@ void Net::build_rnet(int inl,int outl) {
 
 
    rnet->build(optimizer->clone(),lr,mr,cs,false);
+   //cout<<rnet->summary();
+   rnet->plot("rmodel.pdf","LR");
+
+
+   //getchar();
    //cout<<rnet->summary();
 
    if (todev!=DEV_CPU) {

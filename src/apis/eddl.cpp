@@ -110,18 +110,19 @@ namespace eddl {
         net->toCPU(t);
     }
 
-    compserv CS_CPU(int th, string mem){
-        if (mem=="low_mem") return new CompServ(th, {}, {},0, 2);
-        else if (mem=="mid_mem") return new CompServ(th, {}, {},0, 1);
-        else if (mem=="full_mem") return new CompServ(th, {}, {},0, 0);
-        else msg("Error mem param","CS_CPU"); // Exits
-        return nullptr; // To silent warnings
+    compserv CS_CPU(int th){
+        return new CompServ(th, {}, {},0, 0);
     }
 
+    compserv CS_GPU(const vector<int> g){
+        return CS_GPU(g, 1, "full_mem");
+    }
     compserv CS_GPU(const vector<int> g, string mem){
         return CS_GPU(g, 1, mem);
     }
-
+    compserv CS_GPU(const vector<int> g, int lsb){
+        return CS_GPU(g, lsb, "full_mem");
+    }
     compserv CS_GPU(const vector<int> g, int lsb, string mem){
         if (mem=="low_mem") return new CompServ(0, g, {}, lsb, 2);
         else if (mem=="mid_mem") return new CompServ(0, g, {}, lsb, 1);

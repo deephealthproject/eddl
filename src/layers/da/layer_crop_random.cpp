@@ -47,7 +47,7 @@ void LCropRandom::backward(){
 
 
 Layer *LCropRandom::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LCropRandom(p[0], this->new_shape,  this->name, this->dev, this->mem_level);
+    auto *n = new LCropRandom(p[0], this->new_shape, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

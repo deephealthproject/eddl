@@ -236,7 +236,7 @@ void LLayerNorm::backward()
 
 
 Layer *LLayerNorm::share(int c, int bs, vector<Layer *> p) {
-    LLayerNorm *n= new LLayerNorm(p[0], epsilon, affine,  this->name, this->dev, this->mem_level);
+    LLayerNorm *n= new LLayerNorm(p[0], epsilon, affine, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

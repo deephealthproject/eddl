@@ -17,8 +17,8 @@
 using namespace eddl;
 
 //////////////////////////////////
-// mnist_mlp.cpp:
-// A very basic MLP for mnist
+// mnist_rnn.cpp:
+// A recurrent NN for mnist
 // Using fit for training
 //////////////////////////////////
 
@@ -37,6 +37,8 @@ int main(int argc, char **argv) {
 
     l = LeakyReLu(Dense(l, 32));
     l = LeakyReLu(RNN(l, 32));
+    l = LeakyReLu(RNN(l, 32));
+
     l = LeakyReLu(Dense(l, 32));
 
     layer out = Softmax(Dense(l, num_classes));
@@ -51,10 +53,9 @@ int main(int argc, char **argv) {
           rmsprop(0.001), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_GPU({1,1},100, "low_mem") // one GPU
-          //CS_CPU(-1, "low_mem") // CPU with maximum threads availables
+          //CS_GPU({1}) // one GPU
+          CS_CPU(-1) // CPU with maximum threads availables
     );
-    //toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 
     // View model
     summary(net);
@@ -86,6 +87,6 @@ int main(int argc, char **argv) {
       fit(net,{x_trainp}, {y_train}, batch_size, 1);
       evaluate(net, {x_testp}, {y_test});
     }
-    
+
 
 }

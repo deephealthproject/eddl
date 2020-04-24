@@ -50,7 +50,7 @@ void LScale::backward() {
 
 
 Layer *LScale::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LScale(p[0], this->new_shape, this->reshape, this->da_mode, this->constant,  this->name, this->dev, this->mem_level);
+    auto *n = new LScale(p[0], this->new_shape, this->reshape, this->da_mode, this->constant, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

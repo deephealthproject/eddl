@@ -64,7 +64,7 @@ void LDropout::backward() {
 
 
 Layer *LDropout::share(int c, int bs, vector<Layer *> p) {
-    LDropout *n = new LDropout(p[0], df,  this->name, this->dev, this->mem_level);
+    LDropout *n = new LDropout(p[0], df, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

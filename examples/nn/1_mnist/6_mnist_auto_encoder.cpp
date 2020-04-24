@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
           {"mean_squared_error"}, // Losses
           {"mean_squared_error"}, // Metrics
           CS_GPU({1}, "low_mem")
-          //CS_CPU(-1, "low_mem")
+          //CS_CPU(-1)
     );
 
     // Load dataset
