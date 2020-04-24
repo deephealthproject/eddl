@@ -4,18 +4,19 @@
 class Eddl < Formula
   desc "European Distributed Deep Learning Library (EDDL)"
   homepage "https://github.com/deephealthproject/eddl"
-  url "https://github.com/deephealthproject/eddl/archive/v0.5.2a.tar.gz"
-  sha256 "bd937a6e228ff0c4b1ef957c65c017adb5ef2abf5a5dd1eb7a838a60217a1e8e"
+  url "https://github.com/deephealthproject/eddl/archive/v0.5.4a.tar.gz"
+  sha256 "50acb25976f14e6caf5535b82fc760dd1a0f7e0b81db83906b62eddd8eba0db7"
 
   depends_on "cmake" => :build
   depends_on "eigen" => :build
   depends_on "zlib" => :build
+  depends_on "protobuf" => :build
   depends_on "graphviz" => :build
   depends_on "wget" => :build
 
   def install
     mkdir "build" do
-      system "cmake", "..", "-DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF", *std_cmake_args
+      system "cmake", "..", "-DBUILD_SUPERBUILD=OFF -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF", *std_cmake_args
       system "make", "install", "PREFIX=#{prefix}"
     end
   end

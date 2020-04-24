@@ -1,6 +1,6 @@
-{% set name = "eddl-gpu" %}  # If this is a package for GPU, use: "eddl-gpu"
-{% set version = "v0.5.3a" %}
-{% set sha256 = "e92e0fe9a36d0869e5608005d38e2f389cc0d9ea8127e69de751662c2429d730" %}
+{% set name = "eddl-cpu" %}  # If this is a package for GPU, use: "eddl-gpu"
+{% set version = "v0.5.4a" %}
+{% set sha256 = "50acb25976f14e6caf5535b82fc760dd1a0f7e0b81db83906b62eddd8eba0db7" %}
 
 package:
   name: {{ name|lower }}
@@ -22,6 +22,7 @@ requirements:
     - cmake
     - eigen
     - zlib
+    - protobuf
     - cudatoolkit
     - graphviz
     - wget
@@ -29,6 +30,7 @@ requirements:
     - cmake
     - eigen
     - zlib
+    - protobuf
     - cudatoolkit
     - graphviz
     - wget

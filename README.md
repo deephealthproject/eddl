@@ -25,8 +25,8 @@ Please note that EDDL is an ambitious project with few hands on it. Our short-te
 ## Documentation [here](https://deephealthproject.github.io/eddl/)
 
 ## Progress and coverage
-- [Deep-learning features](https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md)
-- [Tensor features](https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md)
+- [Deep-learning features](https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md)
+- [Tensor features](https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress_tensor.md)
 
 ## Python wrapper
 

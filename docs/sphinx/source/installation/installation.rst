@@ -30,7 +30,6 @@ You can use one of the following lines according to your needs:
 
         .. code:: bash
 
-            conda activate
             conda install -c deephealth eddl-cpu
 
         .. note::
@@ -41,7 +40,6 @@ You can use one of the following lines according to your needs:
 
         .. code:: bash
 
-            conda activate
             conda install -c deephealth eddl-gpu
 
         .. note::
@@ -89,7 +87,8 @@ On Unix platforms, from the source directory:
             cd eddl/
 
             # Install dependencies
-            sudo apt-get install cmake wget graphviz libeigen3-dev zlib1g-dev
+            conda env create -f environment.yml
+            conda activate eddl
 
             # Build and install
             mkdir build
@@ -106,7 +105,8 @@ On Unix platforms, from the source directory:
             cd eddl/
 
             # Install dependencies
-            brew install cmake wget graphviz eigen zlib
+            conda env create -f environment.yml
+            conda activate eddl
 
             # Build and install
             mkdir build
@@ -120,16 +120,10 @@ See the :doc:`build-options` section for more details about cmake options.
 .. note::
 
     You can make use of the ``-DCMAKE_INSTALL_PREFIX`` flag to specify where cmake searches for
-    dependencies and installs libraries. In addition to this flag, you also need to make use of
-    ``-DBUILD_SUPERBUILD=OFF`` to not use our dependency management system.
+    dependencies and installs libraries.
 
-    If you like Conda, you can make use of our environment by running these commands from
-    the source directory (``eddl/``):
-
-    .. code:: bash
-
-        conda env create -f environment.yml
-        conda activate eddl
+    If you want to distribute the resulting shared library, you should use the flag
+    ``-DBUILD_SUPERBUILD=ON`` so that we can make specific tunings to our dependencies.
 
 
 Including EDDL in your project

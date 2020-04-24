@@ -4,10 +4,9 @@ cmake_minimum_required(VERSION 3.9.2)
 ################################ OPTIONS ##################################
 ###########################################################################
 
-# DO NOT TOUCH!!! (Two step building: 1) ON, 2) OFF)
-option(BUILD_SUPERBUILD "Compile using the superbuild system" ON)
 
 # User options
+option(BUILD_SUPERBUILD "Compile using the superbuild system" OFF)
 option(BUILD_PROTOBUF "Compile using Protobuf" ON)
 option(BUILD_OPENMP "Compile using OpenMP" ON)
 option(BUILD_TESTS "Compile tests" ON)

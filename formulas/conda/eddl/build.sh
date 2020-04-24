@@ -19,7 +19,8 @@ fi
 # Build makefiles
 mkdir build
 cd build/
-cmake -DBUILD_TARGET=GPU \
+cmake -DBUILD_TARGET=CPU \
+      -DBUILD_SUPERBUILD=OFF \
       -DBUILD_EXAMPLES=OFF \
       -DBUILD_TESTS=OFF \
       -DCMAKE_INSTALL_PREFIX=$PREFIX \
