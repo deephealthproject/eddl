@@ -9,12 +9,26 @@ Conv2D
 Example:
 
 .. code-block:: c++
+   :linenos:
+    
+    ...
+    // Define network
+    layer in = Input({784});
+    layer l = in;  // Aux var
 
-   layer Conv(layer parent, int filters, const vector<int> &kernel_size,
-               const vector<int> &strides = {1, 1}, string padding = "same", int groups = 1,
-               const vector<int> &dilation_rate = {1, 1},
-               bool use_bias = true, string name = "");
+    l = Reshape(l,{1,28,28});
+    l = Conv(l,32, {3,3},{1,1});
+    l = ReLu(l);
+    l = MaxPool(l,{3,3}, {1,1}, "same");
+    l = Conv(l,64, {3,3},{1,1});
+    l = ReLu(l);
+    l = MaxPool(l,{2,2}, {2,2}, "none");
+    l = Reshape(l,{-1});
 
+    layer out = Activation(Dense(l, num_classes), "softmax");
+    model net = Model({in}, {out});
+    ...
+    
 
 2D Upsampling 
 --------------
@@ -29,15 +43,22 @@ Example:
 
 .. code-block:: c++
    :linenos:
+    
+    ...
+    // Define network
+    layer in = Input({784});
+    layer l = in;  // Aux var
 
-   layer UpSampling(layer parent, const vector<int> &size, string interpolation = "nearest", string name = "");
-
+    l = Reshape(l,{1,28,28});
+    l = MaxPool(ReLu(Conv(l,128,{3,3},{2,2})),{2,2});
+    l = UpSampling(l, {2, 2});
+    ...
 
 
 Convolutional Transpose
 ------------------------
 
-.. doxygenfunction:: eddl::UpSampling
+.. doxygenfunction:: eddl::ConvT
 
 .. note::
 
@@ -45,12 +66,3 @@ Convolutional Transpose
 
     Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#convolutional-layers
 
-Example:
-
-.. code-block:: c++
-   :linenos:
-
-   layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
-                const vector<int> &output_padding, string padding = "same",
-                const vector<int> &dilation_rate = {1, 1},
-                const vector<int> &strides = {1, 1}, bool use_bias = true, string name = "");
