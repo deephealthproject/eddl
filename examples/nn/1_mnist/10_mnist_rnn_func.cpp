@@ -17,8 +17,8 @@
 using namespace eddl;
 
 //////////////////////////////////
-// mnist_mlp.cpp:
-// A very basic MLP for mnist
+// mnist_rnn.cpp:
+// A recurrent NN for mnist
 // Using fit for training
 //////////////////////////////////
 
@@ -27,37 +27,40 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 1;
+    int epochs = 10;
     int batch_size = 100;
     int num_classes = 10;
 
     // Define network
-    layer in = Input({784});
+    layer in = Input({28});
     layer l = in;  // Aux var
 
-    l = LeakyReLu(Dense(l, 1024));
-    l = LeakyReLu(Dense(l, 1024));
-    l = LeakyReLu(Dense(l, 1024));
+    l = LeakyReLu(Dense(l, 32));
+    l = LeakyReLu(RNN(l, 32));
+    l = LeakyReLu(RNN(l, 32));
+
+    l = LeakyReLu(Dense(l, 32));
 
     layer out = Softmax(Dense(l, num_classes));
-    model net = Model({in}, {out});
-    net->verbosity_level = 0;
+    model net= Model({in}, {out});
+
+
 
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
     // Build model
     build(net,
-          rmsprop(0.01), // Optimizer
+          rmsprop(0.001), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-            CS_GPU({1,1},100) // one GPU
+          CS_GPU({1,1},100) // one GPU
           //CS_CPU(-1) // CPU with maximum threads availables
     );
-    //toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 
     // View model
     summary(net);
+
 
     // Load dataset
     tensor x_train = eddlT::load("trX.bin");
@@ -65,14 +68,60 @@ int main(int argc, char **argv) {
     tensor x_test = eddlT::load("tsX.bin");
     tensor y_test = eddlT::load("tsY.bin");
 
+
+
     // Preprocessing
     eddlT::div_(x_train, 255.0);
     eddlT::div_(x_test, 255.0);
 
-    // Train model
-    fit(net, {x_train}, {y_train}, batch_size, epochs);
+    setlogfile(net,"recurrent_mnist");
 
-    // Evaluate
-    evaluate(net, {x_test}, {y_test});
+    tensor x_train_batch=eddlT::create({batch_size,784});
+    tensor y_train_batch=eddlT::create({batch_size,10});
+
+    // Train model
+    int num_batches=x_train->shape[0]/batch_size;
+    for(int i=0;i<epochs;i++) {
+      printf("Epoch %d\n",i+1);
+      reset_loss(net);
+      for(int j=0;j<num_batches;j++) {
+        // get a batch
+        next_batch({x_train,y_train},{x_train_batch,y_train_batch});
+
+        x_train_batch->reshape_({batch_size,28,28});
+        tensor xt=Tensor::permute(x_train_batch,{1,0,2});
+        x_train_batch->reshape_({batch_size,784});
+
+        zeroGrads(net);
+        forward(net,{xt});
+        backward(net,{y_train_batch});
+        update(net);
+
+
+        print_loss(net,j);
+        printf("\r");
+
+        delete xt;
+
+    }
+    printf("\n");
+  }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////

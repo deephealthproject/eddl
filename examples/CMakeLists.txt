@@ -28,6 +28,12 @@ target_link_libraries(mnist_conv eddl)
 add_executable(mnist_rnn "nn/1_mnist/8_mnist_rnn.cpp")
 target_link_libraries(mnist_rnn eddl)
 
+add_executable(mnist_mlp_func "nn/1_mnist/9_mnist_mlp_func.cpp")
+target_link_libraries(mnist_mlp_func eddl)
+
+add_executable(mnist_rnn_func "nn/1_mnist/10_mnist_rnn_func.cpp")
+target_link_libraries(mnist_rnn_func eddl)
+
 # EXAMPLES: CIFAR10 ****************************************************
 add_executable(cifar_conv "nn/2_cifar10/1_cifar_conv.cpp")
 target_link_libraries(cifar_conv eddl)

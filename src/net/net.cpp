@@ -96,6 +96,7 @@ Net::Net(vlayer in, vlayer out) {
     }
 
     isrecurrent=false;
+    rnet=nullptr;
 
 
     build_randn_table();

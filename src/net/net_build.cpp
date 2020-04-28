@@ -475,7 +475,7 @@ Net* Net::unroll(int inl, int outl, bool seq, bool areg) {
   for(int i=0;i<lfrnn.size();i++)
     layers.push_back(lfrnn[i]);
 
-  
+
   // re-check frnn with the new sort
   frnn.clear();
   for(int i=0;i<layers.size();i++)
@@ -565,8 +565,11 @@ void Net::build_rnet(int inl,int outl) {
    // Create an unrolled version on CPU
    rnet=unroll(inl,outl,false,false);
 
-   for(i=0;i<rnet->layers.size();i++)
+   for(i=0;i<rnet->layers.size();i++) {
      rnet->layers[i]->isrecurrent=false;
+     rnet->layers[i]->net=rnet;
+     rnet->layers[i]->orig=rnet->layers[i];
+   }
    rnet->isrecurrent=false;
 
 
@@ -580,6 +583,7 @@ void Net::build_rnet(int inl,int outl) {
    rnet->build(optimizer->clone(),lr,mr,cs,false);
    //cout<<rnet->summary();
    rnet->plot("rmodel.pdf","LR");
+   rnet->name="rnet";
 
 
    //getchar();
@@ -594,18 +598,27 @@ void Net::build_rnet(int inl,int outl) {
      for(i=0;i<snets.size();i++) {
      //cout<<snets[i]->summary();
        rnet->snets.push_back(snets[i]->unroll(inl,outl,false,false));
-       for(j=0;j<rnet->snets[i]->layers.size();j++)
+       for(j=0;j<rnet->snets[i]->layers.size();j++) {
              rnet->snets[i]->layers[j]->isrecurrent=false;
+       }
        rnet->snets[i]->isrecurrent=false;
 
        rnet->snets[i]->build(optimizer->clone(),lr,mr,false);
        rnet->snets[i]->plot("rsnet.pdf","LR");
-       //cout<<rnet->snets[i]->summary();
+       for(j=0;j<rnet->snets[i]->layers.size();j++) {
+             rnet->snets[i]->layers[j]->orig=rnet->layers[j];
+             rnet->snets[i]->layers[j]->net=rnet;
+       }
       }
     }
 
    rnet->flog_tr=flog_tr;
    rnet->flog_ts=flog_ts;
+
+   rnet->reset_loss();
+   rnet->reset();
+   rnet->reset_grads();
+
   }
 }
 

@@ -153,9 +153,6 @@ void Net::run_snets(void *(*F)(void *t))
 
   int comp=snets.size();
 
-  if (batch_size<comp)
-  comp=batch_size;
-
   for (int i = 0; i < comp; i++) {
     // Thread params
     td[i].net = snets[i];
@@ -202,31 +199,65 @@ void Net::setlr(vector <float> p)
 //////////////////////////////////
 // API functions
 
+// FORWARD
 void Net::forward(vector<Tensor*> in)
 {
 
-  netinput.clear();
+  if (isrecurrent) {
+    forward_recurrent(in);
+  }
+  else {
+    netinput.clear();
 
-  reset();
-  if (in.size()) {
-    if (in.size()!=lin.size())
-      msg("size missmatch in list of tensors","Net.forward(vtensor)");
+    reset();
+    if (in.size()) {
+      if (in.size()!=lin.size())
+        msg("size missmatch in list of tensors","Net.forward(vtensor)");
 
-    if (batch_size!=in[0]->shape[0]) {
-      resize(in[0]->shape[0]);
+      if (batch_size!=in[0]->shape[0]) {
+        resize(in[0]->shape[0]);
+      }
+
+      for (int i = 0; i < in.size(); i++) {
+          Tensor::copy(in[i],lin[i]->output);
+      }
+
+      // Distribute to snets inputs
+      for (int i = 0; i < in.size(); i++)
+        distributeTensor(lin[i]);
+
     }
 
-    for (int i = 0; i < in.size(); i++) {
-        Tensor::copy(in[i],lin[i]->output);
-    }
-
-    // Distribute to snets inputs
-    for (int i = 0; i < in.size(); i++)
-      distributeTensor(lin[i]);
-
+    run_snets(forward_t);
   }
 
-  run_snets(forward_t);
+}
+
+void Net::forward_recurrent(vector<Tensor*> tin)
+{
+  int i, j, k, n;
+
+  int inl;
+  int outl;
+
+  inl=tin[0]->shape[0];
+  outl=1;
+
+  // TODO: check dims with inputs
+
+  build_rnet(inl,outl);
+
+  // prepare data for unroll net
+  vtensor tinr;
+  int offset;
+  offset=tin[0]->shape[1]*tin[0]->shape[2];
+  for(i=0;i<inl;i++) {
+    Tensor *n=new Tensor({tin[0]->shape[1],tin[0]->shape[2]},tin[0]->ptr+(i*offset));
+    tinr.push_back(n);
+    }
+
+  rnet->forward(tinr);
+
 }
 
 
@@ -242,13 +273,13 @@ void Net::forward(vector<Layer *> in)
     if (batch_size!=in[0]->output->shape[0]) {
       resize(in[0]->output->shape[0]);
     }
-
-    for (int i = 0; i < in.size(); i++)
-      copyTensor(in[i],lin[i]);
-
   }
 
-  run_snets(forward_t);
+  vector<Tensor *> vt;
+  for (int i = 0; i < in.size(); i++)
+    vt.push_back(in[i]->output);
+
+  forward(vt);
 
 }
 
@@ -260,48 +291,53 @@ void Net::forward()
 }
 
 
+//// BACKWARD
 void Net::backward(vector<Tensor *> target)
 {
-  void *status;
-  int rc;
-  pthread_t thr[100];
-  struct tdata td[100];
 
-
-  int comp=snets.size();
-
-  if (target.size()) {
-    if (target.size()!=lout.size())
-      msg("size missmatch in list of targets","Net.backward(vtensor)");
-
-    if (batch_size!=target[0]->shape[0])
-      msg("bakcward step with different batch_size than forward","Net.backward(vtensor)");
-
-
-    if (batch_size<comp)
-      comp=batch_size;
-
-    int thread_batch_size=batch_size / comp;
-
-    // Split data for each network
-    for (int i = 0; i < comp; i++) {
-        int start = i * thread_batch_size;
-        int end = start + Ys[i][0]->shape[0];
-        vector<int> sind(batch_size);
-        for(int k=0;k<batch_size;k++) sind[k]=k;
-        // Copy samples
-        // Copy targets
-        for (int j = 0; j < target.size(); j++) {
-            Tensor::select(target[j], Ys[i][j], sind, start, end);
-            snets[i]->lout[j]->check_target();
-            Tensor::copy(Ys[i][j], snets[i]->lout[j]->target);
-        }
+  if (isrecurrent) {
+    if (rnet==nullptr) {
+      msg("Error backward without previous forward","backward_recurrent");
     }
+    rnet->backward(target);
   }
-  tr_batches++;
-  run_snets(backward_t);
-  compute_loss();
+  else  {
 
+    if (target.size()) {
+      if (target.size()!=lout.size())
+        msg("size missmatch in list of targets","Net.backward(vtensor)");
+
+      if (batch_size!=target[0]->shape[0])
+        msg("bakcward step with different batch_size than forward","Net.backward(vtensor)");
+
+      int comp=snets.size();
+      if (batch_size<comp) {
+        msg("batch_size lower than computing service parallelism","backward");
+      }
+
+      int thread_batch_size=batch_size / comp;
+
+      // Split data for each network
+      for (int i = 0; i < comp; i++) {
+          int start = i * thread_batch_size;
+          int end = start + Ys[i][0]->shape[0];
+          vector<int> sind(batch_size);
+          for(int k=0;k<batch_size;k++) sind[k]=k;
+          // Copy targets
+          for (int j = 0; j < target.size(); j++) {
+              Tensor::select(target[j], Ys[i][j], sind, start, end);
+              snets[i]->lout[j]->check_target();
+              Tensor::copy(Ys[i][j], snets[i]->lout[j]->target);
+          }
+      }
+    }
+    tr_batches++;
+
+    compute_loss();
+
+    run_snets(backward_t);
+
+  }
 }
 
 
@@ -316,107 +352,161 @@ void Net::backward(){
       netinput[i]->net->backward();
     }
   }
+}
+
+void Net::backward_recurrent(vector<Tensor *> target)
+{
+
 
 }
 
+
+
+
+//// Loss
 void Net::reset_loss()
 {
-  // Reset errors
-  int p=0;
-  for (int j = 0; j < lout.size(); j++,p+=2){
+  if (isrecurrent) {
+      if (rnet!=nullptr) rnet->reset_loss();
+  }
+  else {
+    // Reset errors
+    int p=0;
+    for (int j = 0; j < lout.size(); j++,p+=2){
       total_loss[j] = 0.0;
       total_metric[j] = 0.0;
       fiterr[p] = fiterr[p + 1] = 0.0;
+    }
+    inferenced_samples=0;
   }
-  inferenced_samples=0;
+}
+
+
+//// COMPUTE Loss
+void Net::compute_loss()
+{
+
+  if (isrecurrent) {
+    if (rnet==nullptr) {
+      msg("Error compute loss unroll net","compute_loss");
+    }
+    rnet->compute_loss();
+  }
+  else {
+    run_snets(compute_loss_t);
+
+    int comp=snets.size();
+    if (batch_size<comp) {
+      msg("batch_size lower than computing service parallelism","compute_loss");
+    }
+
+
+    if (snets[0]->dev != DEV_CPU)
+      for (int i = 0; i < comp; i++) {
+            for (int j = 0; j < 2 * lout.size(); j++) {
+              fiterr[j] += snets[i]->fiterr[j];
+          }
+      }
+
+    inferenced_samples+=batch_size;
+  }
 }
 
 void Net::print_loss(int b)
 {
   int p = 0;
 
-  for (int k = 0; k < lout.size(); k++, p += 2) {
-      total_loss[k] += fiterr[p];  // loss
-      total_metric[k] += fiterr[p + 1];  // metric
-      fiterr[p] = fiterr[p + 1] = 0.0;
-      fprintf(stdout,"Batch %d ",b);
-      fprintf(stdout, "%s(%s=%1.3f,%s=%1.3f) ", lout[k]->name.c_str(),
-              losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
-              metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
-
-
-      if ((flog_tr!=nullptr)&&(trmode)) {
-        fprintf(flog_tr, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
-                metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
-              }
-
-      if ((flog_ts!=nullptr)&&(!trmode))
-        fprintf(flog_ts, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
+  if (isrecurrent) {
+    if (rnet!=nullptr) rnet->print_loss(b);
+  }
+  else {
+    for (int k = 0; k < lout.size(); k++, p += 2) {
+        total_loss[k] += fiterr[p];  // loss
+        total_metric[k] += fiterr[p + 1];  // metric
+        fiterr[p] = fiterr[p + 1] = 0.0;
+        fprintf(stdout,"Batch %d ",b);
+        fprintf(stdout, "%s(%s=%1.3f,%s=%1.3f) ", lout[k]->name.c_str(),
+                losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
                 metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
 
-  }
-  fflush(stdout);
 
-  if ((flog_tr!=nullptr)&&(trmode)) {
-    fprintf(flog_tr, "\n");
-    fflush(flog_tr);
-  }
+        if ((flog_tr!=nullptr)&&(trmode)) {
+          fprintf(flog_tr, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
+                  metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+                }
 
-  if ((flog_ts!=nullptr)&&(!trmode)) {
-    fprintf(flog_ts, "\n");
-    fflush(flog_ts);
-  }
+        if ((flog_ts!=nullptr)&&(!trmode))
+          fprintf(flog_ts, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
+                  metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
 
+    }
+    fflush(stdout);
+
+    if ((flog_tr!=nullptr)&&(trmode)) {
+      fprintf(flog_tr, "\n");
+      fflush(flog_tr);
+    }
+
+    if ((flog_ts!=nullptr)&&(!trmode)) {
+      fprintf(flog_ts, "\n");
+      fflush(flog_ts);
+    }
+  }
 }
 
 void Net::reset_grads()
 {
+  if (isrecurrent)
+    if (rnet!=nullptr)
+      rnet->reset_grads();
+
   do_reset_grads();
   run_snets(reset_grads_t);
 }
 
 void Net::reset()
 {
+  if (isrecurrent)
+    if (rnet!=nullptr)
+      rnet->reset();
+
   do_reset();
   run_snets(reset_t);
 }
 
-void Net::compute_loss()
-{
-  run_snets(compute_loss_t);
-
-  int comp=snets.size();
-  if (batch_size<comp)
-    comp=batch_size;
-
-  if (snets[0]->dev != DEV_CPU)
-    for (int i = 0; i < comp; i++) {
-        for (int j = 0; j < 2 * lout.size(); j++) {
-            fiterr[j] += snets[i]->fiterr[j];
-        }
-    }
-
-    inferenced_samples+=batch_size;
-}
 
 
 void Net::update()
 {
-  run_snets(update_t);
+  if (isrecurrent) {
+    if (rnet!=nullptr) {
+      rnet->update();
+    }
+  }
+  else {
+    run_snets(update_t);
 
-  int comp=snets.size();
+    int comp=snets.size();
 
-  if (batch_size<comp)
-    comp=batch_size;
+    if (batch_size<comp) {
+      msg("batch_size lower than computing service parallelism","update");
 
-  if ((snets[0]->dev != DEV_CPU) && (comp > 1) && (tr_batches%cs->lsb==1)) {
-    sync_weights();
+    }
+
+    if ((snets[0]->dev != DEV_CPU) && (comp > 1) && (tr_batches%cs->lsb==1)) {
+      sync_weights();
+    }
   }
 }
 
 void Net::delta()
 {
-  run_snets(delta_t);
+  if (isrecurrent) {
+    if (rnet!=nullptr)
+      rnet->run_snets(delta_t);
+  }
+  else run_snets(delta_t);
+
 }
 
 
@@ -506,11 +596,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 
 void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
   int i, j, k, n;
-  int todev;
 
-  if (cs->local_gpus.size() > 0) todev = DEV_GPU;
-  else if (cs->local_fpgas.size() > 0) todev = DEV_FPGA;
-  else todev = DEV_CPU;
 
   int inl;
   int outl;
@@ -531,7 +617,7 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
 
   rnet->fit(tinr,tout,batch,epochs);
 
-  if (todev!=DEV_CPU) rnet->sync_weights();
+  if (snets[0]->dev!=DEV_CPU) rnet->sync_weights();
 
 
 }
@@ -544,8 +630,9 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
 
   int comp=snets.size();
 
-  if (batch_size<comp)
-    comp=batch_size;
+  if (batch_size<comp) {
+    msg("batch_size lower than computing service parallelism","compute_loss");
+  }
 
   int thread_batch_size=batch_size / comp;
 
@@ -652,11 +739,6 @@ void Net::evaluate(vtensor tin, vtensor tout) {
 void Net::evaluate_recurrent(vtensor tin, vtensor tout) {
 
   int i, j, k, n;
-  int todev;
-
-  if (cs->local_gpus.size() > 0) todev = DEV_GPU;
-  else if (cs->local_fpgas.size() > 0) todev = DEV_FPGA;
-  else todev = DEV_CPU;
 
   int inl;
   int outl;

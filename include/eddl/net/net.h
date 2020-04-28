@@ -134,11 +134,13 @@ public:
 	void forward(vector<Layer *> in);
 	void forward(vector<Tensor*> in);
 	void forward();
+	void forward_recurrent(vector<Tensor*> tin);
 	void reset_loss();
 	void print_loss(int b);
 	void backward(vector<Tensor *> target);
 	void backward(Layer* (*f)(Layer *),Layer *out);
 	void backward();
+	void backward_recurrent(vector<Tensor *> target);
 	void delta();
 	void reset();
 	void reset_grads();

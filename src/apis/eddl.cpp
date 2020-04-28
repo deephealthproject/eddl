@@ -117,7 +117,7 @@ namespace eddl {
     compserv CS_CPU(int th){
         return CS_CPU(th, "full_mem");
     }
-    
+
     compserv CS_CPU(int th,string mem){
       if (mem=="low_mem") return new CompServ(th, {}, {}, 0, 2);
       else if (mem=="mid_mem") return new CompServ(th, {}, {}, 0, 1);
@@ -334,6 +334,7 @@ namespace eddl {
         m->clamp(min,max);
     }
 
+  
     // loss and metrics methods
     float compute_loss(loss L)
     {

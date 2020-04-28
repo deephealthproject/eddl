@@ -43,8 +43,9 @@ void Net::do_reset() {
 }
 
 void Net::do_reset_grads() {
-    for (int i = 0; i != layers.size(); i++)
+    for (int i = 0; i != layers.size(); i++) {
         layers[i]->zeroGrads();
+      }
 }
 
 void Net::do_forward() {
@@ -182,15 +183,17 @@ void collectTensor(Layer *l,string tname,int p)
 void distributeTensor(Layer *l,string tname,int p)
 {
     Net *sn=l->net;
+
     if (sn->snets[0]->dev==DEV_CPU) return;
 
     int i,j,comp;
 
     comp=sn->snets.size();
 
-    if (sn->batch_size<comp)
-        comp=sn->batch_size;
+    if (sn->batch_size<comp) {
+      msg("batch_size lower than computing service parallelism","distributeTensor");
 
+    }
     int thread_batch_size=sn->batch_size / comp;
 
     vector<int> sind(sn->batch_size);
