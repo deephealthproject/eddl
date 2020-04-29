@@ -14,7 +14,8 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer ReduceMean(layer l, vector<int> axis = {0}, bool keepdims = false);
+   ...
+    l = ReduceMean(l, {1}, true);
 
 
 ReduceVar
@@ -22,14 +23,8 @@ ReduceVar
 
 .. doxygenfunction:: ReduceVar
 
-Reduced var
+Reduced variance
 
-Example:
-
-.. code-block:: c++
-   :linenos:
-
-    layer ReduceVar(layer l, vector<int> axis = {0}, bool keepdims = false);
 
 
 ReduceSum
@@ -44,7 +39,9 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer ReduceSum(layer l, vector<int> axis = {0}, bool keepdims = false);
+   ...
+    l = ReduceSum(l, {1}, true);
+
 
 
 ReduceMax
@@ -54,12 +51,14 @@ ReduceMax
 
 Reduced max
 
+
 Example:
 
 .. code-block:: c++
    :linenos:
 
-    layer ReduceMax(layer l, vector<int> axis = {0}, bool keepdims = false);
+   ...
+    l = ReduceMax(l, {1}, true);
 
 
 ReduceMin
@@ -74,4 +73,5 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer ReduceMin(layer l, vector<int> axis = {0}, bool keepdims = false);
+   ...
+    l = ReduceMin(l, {1}, true);
