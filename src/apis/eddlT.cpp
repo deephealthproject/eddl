@@ -119,6 +119,7 @@ namespace eddlT {
   }
   void set_(Tensor *A,vector<int> indices, float value)
   {
+  // DO NOT USE. They're mainly for debugging.
     A->set_(indices,value);
   }
 

@@ -182,10 +182,12 @@ vector<int> Tensor::get_indices_rowmajor(int address){
 }
 
 float Tensor::get_(vector<int> indices){
+    // DO NOT USE. They're mainly for debugging.
     return this->ptr[get_address_rowmajor(std::move(indices))];
 }
 
 void Tensor::set_(vector<int> indices, float value){
+    // DO NOT USE. They're mainly for debugging.
     this->ptr[get_address_rowmajor(std::move(indices))] = value;
 }
 
