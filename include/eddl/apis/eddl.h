@@ -660,6 +660,7 @@ typedef NetLoss * metric;
                const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
                int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
 
+
     /**
       *  @brief Regular densely-connected NN layer.
       *
@@ -752,12 +753,14 @@ typedef NetLoss * metric;
     /**
       *  @brief Turns positive integers (indexes) into dense vectors of fixed size. eg. [[4], [20]] -> [[0.25, 0.1], [0.6, -0.2]]
       *
-      *  @param input_dim  Size of the vocabulary, i.e. maximum integer index + 1
+      *  @param parent Parent layer
+      *  @param vocsize Size of the vocabulary, i.e. maximum integer index + 1
       *  @param output_dim  Dimension of the dense embedding
+      *  @param length (1) Length of the sequence, to connect to Dense Layers no Recurrent
       *  @param name  A name for the operation
       *  @return The embedded input
     */
-    layer Embedding(int input_dim, int output_dim, string name = ""); //Todo: Implement
+    layer Embedding(layer parent, int vocsize, int length, int output_dim,  string name = ""); //Todo: Implement
 
     /**
       *  @brief Transposes a Layer.

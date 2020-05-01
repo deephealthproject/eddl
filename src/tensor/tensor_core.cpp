@@ -584,7 +584,7 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
     }
     //B->tsem->unlock();
 }
-void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
+void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc) {
     ///////////////////////////////////////
     /// deSelect from A to B, B is bigger
     //////////////////////////////////////
@@ -597,19 +597,19 @@ void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) 
 
     //B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
-        cpu_deselect(A, B, sind, ini, end);
+        cpu_deselect(A, B, sind, ini, end, inc);
     }
     else if ((A->isGPU()) && (B->isCPU())) {
         Tensor *Ac=A->clone();
         Ac->toCPU();
 
-        cpu_deselect(Ac, B, sind, ini, end);
+        cpu_deselect(Ac, B, sind, ini, end, inc);
 
         delete Ac;
     }else if ((A->isCPU()) && (B->isGPU())) {
         Tensor *Bc=B->clone();
         Bc->toCPU();
-        cpu_deselect(A, Bc, sind, ini, end);
+        cpu_deselect(A, Bc, sind, ini, end, inc);
 
         Tensor::copy(Bc,B);
 
@@ -622,7 +622,7 @@ void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) 
         Tensor *Bc=B->clone();
         Bc->toCPU();
 
-        cpu_deselect(Ac, Bc, sind, ini, end);
+        cpu_deselect(Ac, Bc, sind, ini, end, inc);
         Tensor::copy(Bc,B);
 
         delete Ac;

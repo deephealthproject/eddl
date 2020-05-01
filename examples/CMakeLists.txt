@@ -64,6 +64,12 @@ target_link_libraries(cifar_resnet50 eddl)
 add_executable(drive_seg "nn/3_drive/1_drive_seg.cpp")
 target_link_libraries(drive_seg eddl)
 
+# EXAMPLES: NLP ****************************************************
+add_executable(sentiment_preproces "nn/4_NLP/1_sentiment_preproces.cpp")
+target_link_libraries(sentiment_preproces eddl)
+add_executable(sentiment_mlp "nn/4_NLP/2_sentiment_mlp.cpp")
+target_link_libraries(sentiment_mlp eddl)
+
 # EXAMPLES: Tensor ****************************************************
 add_executable(tensor_ops "tensor/eddl_ops.cpp")
 target_link_libraries(tensor_ops eddl)

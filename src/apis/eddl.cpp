@@ -334,7 +334,7 @@ namespace eddl {
         m->clamp(min,max);
     }
 
-  
+
     // loss and metrics methods
     float compute_loss(loss L)
     {
@@ -489,6 +489,8 @@ namespace eddl {
         return new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
+
+
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding, const vector<int> &dilation_rate,
                 const vector<int> &strides, bool use_bias, string name){
@@ -503,8 +505,8 @@ namespace eddl {
         return new LDropout(parent, rate, name, DEV_CPU, 0);
     }
 
-    layer Embedding(int input_dim, int output_dim, string name){
-        return new LEmbedding(input_dim, output_dim, name, DEV_CPU, 0);
+    layer Embedding(layer parent, int vocsize, int length, int output_dim,  string name){
+        return new LEmbedding(parent, vocsize, length, output_dim,  name, DEV_CPU, 0);
     }
 
     layer Input(const vector<int> &shape, string name){

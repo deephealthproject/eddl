@@ -70,8 +70,8 @@ void PoolDescriptor::build(Tensor *A) {
         c = compute_output(this->padding, ic, kc, sc);
 
         // Compute padding
-        vector<int> padr = compute_padding(r, ir, kr, sr, this->padding);  // Order: [top, bottom]
-        vector<int> padc = compute_padding(c, ic, kc, sc, this->padding);  // Order: [left, right]
+        vector<int> padr = compute_padding(r, ir, kr, sr, this->padding,true);  // Order: [top, bottom]
+        vector<int> padc = compute_padding(c, ic, kc, sc, this->padding,false);  // Order: [left, right]
 
         // Set padding
         pad = {padr[0], padr[1], padc[0], padc[1]};  // top, bottom, left, right

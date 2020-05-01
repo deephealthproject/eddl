@@ -42,6 +42,8 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
     cd->build(input);
 
     output = cd->O;
+
+
 //    delta = cd->D;
 //    cd->ID = parent->delta;
 
@@ -125,7 +127,7 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
     LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad,  name, dev,mem_level);
     n->orig = this;
     n->isshared=true;
-    
+
     //share params
     for (int i = 0; i < n->params.size(); i++) delete n->params[i];
     n->params.clear();
@@ -155,6 +157,7 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LConv::clone(int c, int bs, vector<Layer *> p, int todev) {
+
     LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad,  name, todev, this->mem_level);
     n->orig = this;
     n->cd->use_bias=cd->use_bias;
