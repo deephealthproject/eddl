@@ -41,9 +41,9 @@ int main(int argc, char **argv) {
     l = GlorotUniform(L2(Embedding(l, vocsize, length, embdim),0.001));
     l = Reshape(l,{1,length,embdim});
     layer l1 = ReLu(BatchNormalization(Conv(l,128,{1,embdim},{1,1},"same,none")));
-    layer l3 = ReLu(BatchNormalization(Conv(l,128,{2,embdim},{1,1},"same,none")));
-    layer l5 = ReLu(BatchNormalization(Conv(l,128,{3,embdim},{1,1},"same,none")));
-    l=GlobalMaxPool(Concat({l1,l3,l5}));
+    layer l2 = ReLu(BatchNormalization(Conv(l,128,{2,embdim},{1,1},"same,none")));
+    layer l3 = ReLu(BatchNormalization(Conv(l,128,{3,embdim},{1,1},"same,none")));
+    l=GlobalMaxPool(Concat({l1,l2,l3}));
 
     l = Reshape(l,{-1});
 
