@@ -67,8 +67,8 @@ target_link_libraries(drive_seg eddl)
 # EXAMPLES: NLP ****************************************************
 add_executable(sentiment_preproces "nn/4_NLP/1_sentiment_preproces.cpp")
 target_link_libraries(sentiment_preproces eddl)
-add_executable(sentiment_mlp "nn/4_NLP/2_sentiment_mlp.cpp")
-target_link_libraries(sentiment_mlp eddl)
+add_executable(sentiment_cnn "nn/4_NLP/2_sentiment_cnn.cpp")
+target_link_libraries(sentiment_cnn eddl)
 
 # EXAMPLES: Tensor ****************************************************
 add_executable(tensor_ops "tensor/eddl_ops.cpp")

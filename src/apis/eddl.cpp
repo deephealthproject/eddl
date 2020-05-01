@@ -1055,5 +1055,41 @@ namespace eddl {
         }
     }
 
+    void download_imdb(){
+        // TODO: Too big, we should use the one in the PyEDDL
+        // TODO: Need for "to_categorical" method
+        string cmd;
+        string trX = "imdb_trX.bin";
+        string trY = "imdb_trY.bin";
+        string tsX = "imdb_tsX.bin";
+        string tsY = "imdb_tsY.bin";
+
+        if ((!exist(trX)) || (!exist(trY)) || (!exist(tsX)) || (!exist(tsY))){
+            cmd = "wget https://www.dropbox.com/s/snf3vi7e1bjo8k5/imdb_trX.bin";
+            int status = system(cmd.c_str());
+            if (status != 0){
+                msg("wget must be installed", "eddl.download_imdb");
+            }
+
+            cmd = "wget https://www.dropbox.com/s/c2zgsl2wb39ivlo/imdb_trY.bin";
+            status = system(cmd.c_str());
+            if (status != 0){
+                msg("wget must be installed", "eddl.download_imdb");
+            }
+            cmd = "wget https://www.dropbox.com/s/lkti7c12yoh18pv/imdb_tsX.bin";
+            status = system(cmd.c_str());
+            if (status != 0){
+                msg("wget must be installed", "eddl.download_imdb");
+            }
+            cmd = "wget https://www.dropbox.com/s/cd1uocgv6abzt32/imdb_tsY.bin";
+            status = system(cmd.c_str());
+            if (status != 0){
+                msg("wget must be installed", "eddl.download_imdb");
+            }
+
+        }
+    }
+
+
 
 }//namespace

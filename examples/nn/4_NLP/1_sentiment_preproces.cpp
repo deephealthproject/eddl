@@ -44,7 +44,7 @@ void build_dict(map<string,int> &dict,string fname)
   file.close();
 }
 
-void convert(map<string,int>  &dict,vector<int> &out, string fname, int length)
+int convert(map<string,int>  &dict,vector<int> &out, string fname, int length)
 {
   ifstream file;
   vector<string> words;
@@ -52,26 +52,87 @@ void convert(map<string,int>  &dict,vector<int> &out, string fname, int length)
   file.open(fname);
   string str;
 
+  int unk=0;
   int i=0;
   while ((getline(file, str, ' '))&&(i<length)) {
       if (!dict.count(str)) {
-        cout<<"Out of vocabulary: "<<str<<endl;
-        exit(1);
+        unk++;
+        //cout<<"Out of vocabulary: "<<str<<endl;
+        //exit(1);
       }
       else {
-         out.push_back(dict[str]);
+         out.push_back(dict[str]+1); // 0 is for padding
+         i++;
       }
-      i++;
+
   }
 
+  // padding if needed
   for(int j=i;j<length;j++) out.push_back(0);
 
+  return unk;
+
 }
+
+void convert(map<string,int>  &dict, string list_fname, int numlines, int length, string tensor_name)
+{
+  int i;
+  string str;
+  ifstream file;
+
+  cout<<"Converting "<<list_fname<<endl;
+  file.open(list_fname);
+
+  tensor xtr=new Tensor({numlines,length});
+  tensor ytr=new Tensor({numlines,2});
+  ytr->fill_(0.0);
+
+  float *xptr=xtr->ptr;
+  float *yptr=ytr->ptr;
+
+  int unk=0;
+  i=0;
+  while (getline(file, str, '\n')) {
+     if (i%2==0) {
+        vector<int> out;
+        cout<<"FILE:"<<str<<"\r";
+        unk+=convert(dict,out,str,length);
+        for(int j=0;j<out.size();j++){
+          *xptr=out[j];
+          xptr++;
+        }
+      }
+      else {
+        int c=stoi(str);
+        if (c==0) *yptr=1;
+        else {
+          yptr++;
+          *yptr=1;
+          yptr++;
+        }
+      }
+    i++;
+  }
+
+  cout<<endl;
+
+  cout<<unk<<" unknown words in "<<numlines<<" files --> "<<(float)unk/(float)numlines<<" per file\n";
+
+  xtr->save("x"+tensor_name+".bin");
+  ytr->save("y"+tensor_name+".bin");
+
+  delete xtr;
+  delete ytr;
+
+
+
+}
+
 
 int main(int argc, char **argv) {
     // build dict
     map<string,int> dict;
-    int length=80;
+    int length=100;
     ifstream file;
     string str,str2;
 
@@ -90,7 +151,7 @@ int main(int argc, char **argv) {
     }
     file.close();
 
-    cout<<"Vocab:"<<dict.size()<<" size\n";
+    cout<<"Vocab:"<<dict.size()+1<<" size\n"; //0 for padding
     ofstream of;
     of.open("vocab.txt");
 
@@ -102,45 +163,10 @@ int main(int argc, char **argv) {
     of.close();
 
 
-    cout<<"Converting...\n";
-    file.open("list_tr.txt");
+    convert(dict, "list_tr.txt", c, length, "train");
+    convert(dict, "list_ts.txt", c, length, "test");
 
-    tensor xtr=new Tensor({c,length});
-    tensor ytr=new Tensor({c,2});
-    ytr->fill_(0.0);
-
-    float *xptr=xtr->ptr;
-    float *yptr=ytr->ptr;
-    i=0;
-    while (getline(file, str, '\n')) {
-       if (i%2==0) {
-          vector<int> out;
-          cout<<"FILE:"<<str<<"\r";
-          convert(dict,out,str,length);
-          for(int j=0;j<out.size();j++){
-            *xptr=out[j];
-            xptr++;
-          }
-        }
-        else {
-          int c=stoi(str);
-          if (c==0) *yptr=1;
-          else {
-            yptr++;
-            *yptr=1;
-            yptr++;
-          }
-        }
-      i++;
-    }
-
-    cout<<endl;
-
-    xtr->save("xtrain.bin");
-    ytr->save("ytrain.bin");
-
-
-}
+  }
 
 
 

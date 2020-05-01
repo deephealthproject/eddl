@@ -1546,6 +1546,14 @@ typedef NetLoss * metric;
       *  @return     (void) The numpy files of DRIVE
     */
     void download_drive();
+    /**
+      *  @brief Downloads IMDB Dataset.
+      *
+      *  @see   https://ai.stanford.edu/~amaas/data/sentiment/
+      *
+      *  @return     (void) The numpy files of IMDB
+    */
+    void download_imdb();
 
 }
 #endif
