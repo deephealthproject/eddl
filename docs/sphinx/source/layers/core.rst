@@ -23,12 +23,6 @@ Embedding
 
 .. doxygenfunction:: Embedding
 
-Example:
-
-.. code-block:: c++
-   :linenos:
-
-   ...
 
 .. note::
 
@@ -117,6 +111,7 @@ Example:
    :linenos:
 
    ...
+   l = Dropout(l, 0.3);
 
 
 Select

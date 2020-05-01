@@ -9,6 +9,7 @@ Softmax
 Example:
 
 .. code-block:: c++
+   :linenos:
    
    ...
    l = Softmax(l);
@@ -22,6 +23,7 @@ Sigmoid
 Example:
 
 .. code-block:: c++
+   :linenos:
    
    ...
    l = Sigmoid(l);
@@ -36,6 +38,7 @@ ReLu
 Example:
 
 .. code-block:: c++
+   :linenos:
    
    ...
    l = ReLu(l);
@@ -51,6 +54,7 @@ Threshold ReLu
 Example:
 
 .. code-block:: c++
+   :linenos:
    
    ...
     l = ThresholdedReLu(l, 1.0);
@@ -67,6 +71,7 @@ Leaky ReLu
 Example:
 
 .. code-block:: c++
+   :linenos:
    
    ...
     l = LeakyReLu(l, 0.01);
@@ -82,6 +87,7 @@ ELu
 Example:
 
 .. code-block:: c++
+   :linenos:
    
    ...
     l = Elu(l, 1.0);
@@ -94,6 +100,7 @@ SeLu
 Example:
 
 .. code-block:: c++
+   :linenos:
    
    ...
     l = Selu(l);
@@ -107,6 +114,7 @@ Exponential
 Example:
 
 .. code-block:: c++
+   :linenos:
    
    ...
     l = Exponential(l);
@@ -122,6 +130,7 @@ Softplus
 Example:
 
 .. code-block:: c++
+   :linenos:
    
    ...
     l = Softplus(l);
@@ -138,6 +147,7 @@ Softsign
 Example:
 
 .. code-block:: c++
+   :linenos:
    
    ...
     l = Softsign(l);
@@ -154,6 +164,7 @@ Linear
 Example:
 
 .. code-block:: c++
+   :linenos:
    
    ...
     l = Linear(l, 1.0);
@@ -169,6 +180,7 @@ Tanh
 Example:
 
 .. code-block:: c++
+   :linenos:
    
    ...
     l = Tanh(l);
