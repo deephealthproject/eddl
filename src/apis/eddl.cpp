@@ -978,11 +978,15 @@ namespace eddl {
 
         for(int i=0;i<link.size();i++) {
           if (!exist(file[i])) {
+            cout<<file[i]<<" x\n";
             cmd = "wget -q --show-progress https://www.dropbox.com/s/"+link[i]+"/"+file[i];
             int status = system(cmd.c_str());
             if (status != 0){
-                msg("wget must be installed", "eddl.download"+name);
+                msg("wget must be installed", "eddl.download_"+name);
             }
+          }
+          else {
+            cout<<file[i]<<" ✓\n";
           }
         }
       }
@@ -992,14 +996,14 @@ namespace eddl {
     }
 
     void download_cifar10(){
-        download_dataset("cifar","bin",{"wap282xox5ew02d","yxhw99cu1ktiwxq","dh9vqxe9vt7scrp","gdmsve6mbu82ndp"});
+      download_dataset("cifar","bin",{"wap282xox5ew02d","yxhw99cu1ktiwxq","dh9vqxe9vt7scrp","gdmsve6mbu82ndp"});
     }
     void download_imdb(){
-        download_dataset("imdb","bin",{"snf3vi7e1bjo8k5","c2zgsl2wb39ivlo","lkti7c12yoh18pv","cd1uocgv6abzt32"});
+      download_dataset("imdb","bin",{"snf3vi7e1bjo8k5","c2zgsl2wb39ivlo","lkti7c12yoh18pv","cd1uocgv6abzt32"});
     }
 
     void download_drive(){
-        download_dataset("drive","npy",{"sbd8eu32adcf5oi","qp0j8oiqzf6tc1a"});
+      download_dataset("drive","npy",{"sbd8eu32adcf5oi","qp0j8oiqzf6tc1a"});
     }
 
 
