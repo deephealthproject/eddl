@@ -965,130 +965,45 @@ namespace eddl {
         return false;
     }
 
-    void download_mnist(){
-        // TODO: Too big, we should use the one in the PyEDDL
-        // TODO: Need for "to_categorical" method
+    void download_dataset(string name, string ext, vector<string>link){
         string cmd;
-        string trX = "trX.bin";
-        string trY = "trY.bin";
-        string tsX = "tsX.bin";
-        string tsY = "tsY.bin";
 
-        if ((!exist(trX)) || (!exist(trY)) || (!exist(tsX)) || (!exist(tsY))){
-            cmd = "wget https://www.dropbox.com/s/khrb3th2z6owd9t/trX.bin";
+        cout<<"Downloading "<<name<<endl;
+
+        vector<string> file;
+        file.push_back(name+"_trX."+ext);
+        file.push_back(name+"_trY."+ext);
+        file.push_back(name+"_tsX."+ext);
+        file.push_back(name+"_tsY."+ext);
+
+        for(int i=0;i<link.size();i++) {
+          if (!exist(file[i])) {
+            cmd = "wget -q --show-progress https://www.dropbox.com/s/"+link[i]+"/"+file[i];
             int status = system(cmd.c_str());
             if (status != 0){
-                msg("wget must be installed", "eddl.download_mnist");
+                msg("wget must be installed", "eddl.download"+name);
             }
-
-            cmd = "wget https://www.dropbox.com/s/m82hmmrg46kcugp/trY.bin";
-            status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_mnist");
-            }
-            cmd = "wget https://www.dropbox.com/s/7psutd4m4wna2d5/tsX.bin";
-            status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_mnist");
-            }
-            cmd = "wget https://www.dropbox.com/s/q0tnbjvaenb4tjs/tsY.bin";
-            status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_mnist");
-            }
+          }
         }
+      }
+
+    void download_mnist(){
+      download_dataset("mnist","bin",{"khrb3th2z6owd9t","m82hmmrg46kcugp","7psutd4m4wna2d5","q0tnbjvaenb4tjs"});
     }
 
     void download_cifar10(){
-        // TODO: Too big, we should use the one in the PyEDDL
-        // TODO: Need for "to_categorical" method
-        string cmd;
-        string trX = "cifar_trX.bin";
-        string trY = "cifar_trY.bin";
-        string tsX = "cifar_tsX.bin";
-        string tsY = "cifar_tsY.bin";
-
-        if ((!exist(trX)) || (!exist(trY)) || (!exist(tsX)) || (!exist(tsY))){
-            cmd = "wget https://www.dropbox.com/s/wap282xox5ew02d/cifar_trX.bin";
-            int status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_cifar10");
-            }
-
-            cmd = "wget https://www.dropbox.com/s/yxhw99cu1ktiwxq/cifar_trY.bin";
-            status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_cifar10");
-            }
-            cmd = "wget https://www.dropbox.com/s/dh9vqxe9vt7scrp/cifar_tsX.bin";
-            status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_cifar10");
-            }
-            cmd = "wget https://www.dropbox.com/s/gdmsve6mbu82ndp/cifar_tsY.bin";
-            status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_cifar10");
-            }
-
-        }
+        download_dataset("cifar","bin",{"wap282xox5ew02d","yxhw99cu1ktiwxq","dh9vqxe9vt7scrp","gdmsve6mbu82ndp"});
+    }
+    void download_imdb(){
+        download_dataset("imdb","bin",{"snf3vi7e1bjo8k5","c2zgsl2wb39ivlo","lkti7c12yoh18pv","cd1uocgv6abzt32"});
     }
 
     void download_drive(){
-        // TODO: Too big, we should use the one in the PyEDDL
-        string cmd;
-        string trX = "drive_x.npy";
-        string trY = "drive_y.npy";
-
-        if ((!exist(trX)) || (!exist(trY)) ){
-            cmd = "wget https://www.dropbox.com/s/sbd8eu32adcf5oi/drive_x.npy";
-            int status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_drive");
-            }
-
-            cmd = "wget https://www.dropbox.com/s/qp0j8oiqzf6tc1a/drive_y.npy";
-            status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_drive");
-            }
-        }
+        download_dataset("drive","npy",{"sbd8eu32adcf5oi","qp0j8oiqzf6tc1a"});
     }
 
-    void download_imdb(){
-        // TODO: Too big, we should use the one in the PyEDDL
-        // TODO: Need for "to_categorical" method
-        string cmd;
-        string trX = "imdb_trX.bin";
-        string trY = "imdb_trY.bin";
-        string tsX = "imdb_tsX.bin";
-        string tsY = "imdb_tsY.bin";
 
-        if ((!exist(trX)) || (!exist(trY)) || (!exist(tsX)) || (!exist(tsY))){
-            cmd = "wget https://www.dropbox.com/s/snf3vi7e1bjo8k5/imdb_trX.bin";
-            int status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_imdb");
-            }
 
-            cmd = "wget https://www.dropbox.com/s/c2zgsl2wb39ivlo/imdb_trY.bin";
-            status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_imdb");
-            }
-            cmd = "wget https://www.dropbox.com/s/lkti7c12yoh18pv/imdb_tsX.bin";
-            status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_imdb");
-            }
-            cmd = "wget https://www.dropbox.com/s/cd1uocgv6abzt32/imdb_tsY.bin";
-            status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_imdb");
-            }
-
-        }
-    }
 
 
 

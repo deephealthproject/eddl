@@ -131,14 +131,14 @@ int main(int argc, char **argv){
   //////////////////////////////////////////////////////////////
   // Load and preprocess training data
   cout<<"Reading train numpy\n";
-  tensor x_train_f = Tensor::load<uint8_t>("drive_x.npy");
+  tensor x_train_f = Tensor::load<uint8_t>("drive_trX.npy");
   tensor x_train=Tensor::permute(x_train_f, {0,3,1,2});
   x_train->info();
   eddlT::div_(x_train,255.0);
   //permute
 
   cout<<"Reading test numpy\n";
-  tensor y_train = Tensor::load<uint8_t>("drive_y.npy");
+  tensor y_train = Tensor::load<uint8_t>("drive_trY.npy");
   y_train->info();
   eddlT::reshape_(y_train,{20,1,584,584});
   eddlT::div_(y_train,255.0);
