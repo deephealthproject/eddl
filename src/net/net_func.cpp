@@ -49,6 +49,10 @@ void Net::do_reset_grads() {
 }
 
 void Net::do_forward() {
+  if (VERBOSE) {
+    cout<<"START FORWARD\n";
+    getchar();
+  }
     for (int i = 0; i < vfts.size(); i++) {
       if (VERBOSE) {
           cout << vfts[i]->name << " mem="<<vfts[i]->mem_level<<"\n";
@@ -59,14 +63,20 @@ void Net::do_forward() {
       vfts[i]->forward();
       if (VERBOSE) {
           cout << vfts[i]->name << " mem="<<vfts[i]->mem_level<<"\n";
-
           fprintf(stdout, "  %s Out:%f\n", vfts[i]->name.c_str(), vfts[i]->output->sum());
       }
-
+    }
+    if (VERBOSE) {
+      cout<<"END FORWARD\n";
+      getchar();
     }
 }
 
 void Net::do_backward() {
+    if (VERBOSE) {
+      cout<<"START BACKWARD\n";
+      getchar();
+    }
     for (int i = 0; i < vbts.size(); i++) {
         if(this->verbosity_level >= 1){
             std::cout << vbts[i]->name << std::endl;
@@ -78,8 +88,16 @@ void Net::do_backward() {
         // Do backward
         vbts[i]->backward();
 
+        if (VERBOSE) {
+            cout << vbts[i]->name << " delta="<<vbts[i]->delta->sum()<<"\n";
+        }
+
         // Delete this delta
         if(vbts[i]->mem_level) { vbts[i]->free_delta(); }
+    }
+    if (VERBOSE) {
+      cout<<"END BACKWARD\n";
+      getchar();
     }
 }
 

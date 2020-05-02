@@ -53,7 +53,8 @@ Layer::~Layer(){
 
 
     //gradients if any
-    for (int i=0;i<gradients.size();i++){
+    if (!isshared)
+      for (int i=0;i<gradients.size();i++){
         delete gradients[i];
     }
 }

@@ -19,7 +19,7 @@ using namespace std;
 
 int LRNN::total_layers = 0;
 
-LRNN::LRNN(vector<Layer *> parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev, int mem) : MLayer(name, dev, mem) {
+LRNN::LRNN(vector<Layer *> parent, int units, string activation, bool use_bias, bool bidirectional, string name, int dev, int mem) : MLayer(name, dev, mem) {
 
     this->units = units;
     int ndim=units;
@@ -28,6 +28,7 @@ LRNN::LRNN(vector<Layer *> parent, int units, int num_layers, bool use_bias, flo
     this->dropout = dropout;
     this->bidirectional = bidirectional;
     isrecurrent=true;
+    this->activation=activation;
 
     // TODO: Implement
 
@@ -78,26 +79,47 @@ void LRNN::forward() {
   Tensor::mult2D(parent[0]->output, 0, Wx, 0, preoutput, 0);
   if (parent.size()>1)
     Tensor::mult2D(parent[1]->output, 0, Wy, 0, preoutput, 1);
-  if (use_bias) Tensor::sum2D_rowwise(output, bias, preoutput);
+  if (use_bias) Tensor::sum2D_rowwise(preoutput, bias, preoutput);
 
-  Tanh(preoutput, output);
+  if (activation == "relu"){
+      ReLu(preoutput, output);
+  }else if (activation == "sigmoid"){
+      Sigmoid(preoutput, output);
+  }else if (activation == "hard_sigmoid"){
+      HardSigmoid(preoutput, output);
+  }else if (activation == "tanh"){
+      Tanh(preoutput, output);
+  }else if (activation == "none") {
+    Tensor::copy(preoutput,output);
+  }else {
+    msg("Activation not supported for RNN","RNN::RNN");
+  }
+
 }
 
 void LRNN::backward() {
   //get gradients with provided delta
-  D_Tanh(delta, output, delta);
-
-  if (trainable) {
-      Tensor::mult2D(parent[0]->output, 1, delta, 0, gWx, 1);
-      if (parent.size()>1)
-        Tensor::mult2D(parent[1]->output, 1, delta, 0, gWy, 1);
-    if (use_bias) Tensor::reduce_sum2D(delta, gbias, 0, 1);
+  if (activation == "relu"){
+      D_ReLu(delta, preoutput, delta);
+  }else if (activation == "sigmoid"){
+      D_Sigmoid(delta, output, delta);
+  }else if (activation == "hard_sigmoid"){
+      D_HardSigmoid(delta, preoutput, delta);
+  }else if (activation == "tanh"){
+      D_Tanh(delta, output, delta);
   }
 
-  //1: note that increment parent delta
-  Tensor::mult2D(delta, 0, Wx, 1, parent[0]->delta, 1);
-  if (parent.size()>1)
-    Tensor::mult2D(delta, 0, Wy, 1, parent[1]->delta, 1);
+
+  if (trainable) {
+    Tensor::mult2D(parent[0]->output, 1, delta, 0, gWx, 1);
+    if (parent.size()>1)
+      Tensor::mult2D(parent[1]->output, 1, delta, 0, gWy, 1);
+    if (use_bias) Tensor::reduce_sum2D(delta, gbias, 0, 1);
+
+    Tensor::mult2D(delta, 0, Wx, 1, parent[0]->delta, 1);
+    if (parent.size()>1)
+      Tensor::mult2D(delta, 0, Wy, 1, parent[1]->delta, 1);
+  }
 
   // Regularizer
   if (trainable) if(reg != nullptr) {reg->apply(this->Wx);reg->apply(this->Wy);}
@@ -106,7 +128,7 @@ void LRNN::backward() {
 
 
 Layer *LRNN::share(int c, int bs, vector<Layer *> p) {
-    LRNN *n = new LRNN(p, units, num_layers, use_bias, dropout, bidirectional, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
+    LRNN *n = new LRNN(p, units, activation, use_bias, bidirectional, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
     n->isshared=true;
 
@@ -122,6 +144,18 @@ Layer *LRNN::share(int c, int bs, vector<Layer *> p) {
     n->params.push_back(n->Wy);
     if (use_bias) n->params.push_back(n->bias);
 
+    //share gradients
+    for (int i = 0; i < n->gradients.size(); i++) delete n->gradients[i];
+    n->gradients.clear();
+
+    n->gWx = gradients[0];
+    n->gWy = gradients[1];
+    if (use_bias) n->gbias = gradients[2];
+
+    n->gradients.push_back(n->gWx);
+    n->gradients.push_back(n->gWy);
+    if (use_bias) n->gradients.push_back(n->gbias);
+
     n->reg=reg;
     n->init=init;
 
@@ -129,7 +163,7 @@ Layer *LRNN::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LRNN::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LRNN *n = new LRNN(p, units, num_layers, use_bias, dropout, bidirectional,  "clone_" + name, todev, this->mem_level);
+    LRNN *n = new LRNN(p, units, activation, use_bias, bidirectional,  "clone_" + name, todev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

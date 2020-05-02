@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 10;
+    int epochs = 100;
     int batch_size = 100;
     int num_classes = 10;
 
@@ -36,8 +36,8 @@ int main(int argc, char **argv) {
     layer l = in;  // Aux var
 
     l = LeakyReLu(Dense(l, 32));
-    l = LeakyReLu(RNN(l, 32));
-    l = LeakyReLu(RNN(l, 32));
+    l = RNN(l, 32, "tanh");
+    l = RNN(l, 32, "tanh");
 
     l = LeakyReLu(Dense(l, 32));
 
@@ -53,8 +53,8 @@ int main(int argc, char **argv) {
           rmsprop(0.001), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_GPU({1,1},100) // one GPU
-          //CS_CPU(-1,"low_mem") // CPU with maximum threads availables
+          //CS_GPU({1,1},100) // one GPU
+          CS_CPU(-1,"low_mem") // CPU with maximum threads availables
     );
 
     // View model
@@ -67,26 +67,20 @@ int main(int argc, char **argv) {
     tensor x_test = eddlT::load("mnist_tsX.bin");
     tensor y_test = eddlT::load("mnist_tsY.bin");
 
+    // Reshape to fit recurrent batch x timestep x dim
     x_train->reshape_({60000,28,28});
-    tensor x_trainp=Tensor::permute(x_train,{1,0,2});
-    delete x_train;
-
     x_test->reshape_({10000,28,28});
-    tensor x_testp=Tensor::permute(x_test,{1,0,2});
-    delete x_test;
 
     // Preprocessing
-    eddlT::div_(x_trainp, 255.0);
-    eddlT::div_(x_testp, 255.0);
+    eddlT::div_(x_train, 255.0);
+    eddlT::div_(x_test, 255.0);
 
     setlogfile(net,"recurrent_mnist");
 
     // Train model
+    fit(net,{x_train}, {y_train}, batch_size, epochs);
+    evaluate(net, {x_test}, {y_test});
 
-    for(int i=0;i<epochs;i++) {
-      fit(net,{x_trainp}, {y_train}, batch_size, 1);
-      evaluate(net, {x_testp}, {y_test});
-    }
 
 
 }

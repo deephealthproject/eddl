@@ -601,7 +601,7 @@ void Net::build_rnet(int inl,int outl) {
        }
        rnet->snets[i]->isrecurrent=false;
 
-       rnet->snets[i]->build(optimizer->clone(),lr,mr,false);
+       rnet->snets[i]->build(optimizer->share(),lr,mr,false);
        rnet->snets[i]->plot("rsnet.pdf","LR");
        for(j=0;j<rnet->snets[i]->layers.size();j++) {
              rnet->snets[i]->layers[j]->orig=rnet->layers[j];

@@ -32,6 +32,7 @@ public:
     float dropout;
     bool bidirectional;
     static int total_layers;
+    string activation;
 
     Tensor *preoutput;
 
@@ -44,7 +45,7 @@ public:
     Tensor *gWy;
     Tensor *biasy;
 
-    LRNN(vector<Layer *> in, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev, int mem);
+    LRNN(vector<Layer *> in, int units, string activation, bool use_bias, bool bidirectional, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

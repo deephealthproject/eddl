@@ -35,11 +35,10 @@ int main(int argc, char **argv) {
     layer in = Input({28});
     layer l = in;  // Aux var
 
-    l = LeakyReLu(Dense(l, 32));
-    l = LeakyReLu(RNN(l, 32));
-    l = LeakyReLu(RNN(l, 32));
+    l = RNN(l, 32);
+    l = RNN(l, 32);
 
-    l = LeakyReLu(Dense(l, 32));
+    l = ReLu(Dense(l, 32));
 
     layer out = Softmax(Dense(l, num_classes));
     model net= Model({in}, {out});

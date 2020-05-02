@@ -605,9 +605,7 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
   int inl;
   int outl;
 
-  tin[0]->info();
   Tensor* xt=Tensor::permute(tin[0],{1,0,2}); // time x batch x dim
-  xt->info();
 
   inl=xt->shape[0];
   outl=1;
@@ -628,6 +626,7 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
   if (snets[0]->dev!=DEV_CPU) rnet->sync_weights();
 
   delete xt;
+
 
 }
 
@@ -752,7 +751,9 @@ void Net::evaluate_recurrent(vtensor tin, vtensor tout) {
   int inl;
   int outl;
 
-  inl=tin[0]->shape[0];
+  Tensor* xt=Tensor::permute(tin[0],{1,0,2}); // time x batch x dim
+
+  inl=xt->shape[0];
   outl=1;
 
   build_rnet(inl,outl);
@@ -760,13 +761,15 @@ void Net::evaluate_recurrent(vtensor tin, vtensor tout) {
   // prepare data for unroll net
   vtensor tinr;
   int offset;
-  offset=tin[0]->shape[1]*tin[0]->shape[2];
+  offset=xt->shape[1]*xt->shape[2];
   for(i=0;i<inl;i++) {
-    Tensor *n=new Tensor({tin[0]->shape[1],tin[0]->shape[2]},tin[0]->ptr+(i*offset));
+    Tensor *n=new Tensor({xt->shape[1],xt->shape[2]},xt->ptr+(i*offset));
     tinr.push_back(n);
   }
 
   rnet->evaluate(tinr,tout);
+
+  delete xt;
 
 }
 
