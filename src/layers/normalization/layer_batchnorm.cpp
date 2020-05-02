@@ -218,7 +218,29 @@ Layer *LBatchNorm::share(int c, int bs, vector<Layer *> p) {
     LBatchNorm *n = new LBatchNorm(p[0], momentum, epsilon, affine, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
-    // TODO: Implement
+    //share params and gradients
+    for (int i = 0; i < n->params.size(); i++) delete n->params[i];
+    n->params.clear();
+
+    for (int i = 0; i < n->gradients.size(); i++) delete n->gradients[i];
+    n->gradients.clear();
+
+    if (affine) {
+      n->bn_g=bn_g;
+      n->bn_b=bn_b;
+      params.push_back(bn_g);
+      params.push_back(bn_b);
+
+      n->gbn_g=gbn_g;
+      n->gbn_b=gbn_b;
+      gradients.push_back(gbn_g);
+      gradients.push_back(gbn_b);
+    }
+    n->mean=mean;
+    n->variance=variance;
+    params.push_back(mean);
+    params.push_back(variance);
+
 
     return n;
 }
@@ -226,8 +248,6 @@ Layer *LBatchNorm::share(int c, int bs, vector<Layer *> p) {
 Layer *LBatchNorm::clone(int c, int bs, vector<Layer *> p, int todev) {
     LBatchNorm *n = new LBatchNorm(p[0], momentum, epsilon, affine,  name, todev,mem_level);
     n->orig = this;
-
-    // TODO: Implement
 
     return n;
 }

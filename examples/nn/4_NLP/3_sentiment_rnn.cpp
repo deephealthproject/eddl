@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
     int num_classes = 2;
 
     int length=100;
-    int embdim=250;
+    int embdim=200;
     int vocsize=75181;
 
     // Define network
@@ -39,8 +39,8 @@ int main(int argc, char **argv) {
     layer l = in;
 
     l = GlorotUniform(L2(Embedding(l, vocsize, 1, embdim),0.001));
-    l = RNN(l,32);
-    l = ReLu(Dense(l,64));
+    l = LayerNormalization(RNN(l,32,"relu"));
+    l = ReLu(BatchNormalization(Dense(l,64)));
 
     layer out = Softmax(Dense(l, num_classes));
     model net = Model({in}, {out});
