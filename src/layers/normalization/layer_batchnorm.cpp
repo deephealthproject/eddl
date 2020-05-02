@@ -23,7 +23,8 @@ int LBatchNorm::total_layers = 0;
 
 LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     input=parent->output;
-
+    isnorm=true;
+    
     shape.push_back(input->shape[1]);
 
     if ((input->ndim != 2)&&(input->ndim != 4)) {

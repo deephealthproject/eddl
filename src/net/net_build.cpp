@@ -460,6 +460,7 @@ Net* Net::unroll(int inl, int outl, bool seq, bool areg) {
   // check if rnn is in forward path
   for(int i=0;i<layers.size();i++)
     if (layers[i]->isrecurrent) frnn.push_back(true);
+    else if ((layers[i]->isnorm)&&(layers[i]->parent[0]->isrecurrent)) frnn.push_back(true);
     else frnn.push_back(check_rnn_forward(layers[i]));
 
   // set sort first frnn
@@ -479,6 +480,7 @@ Net* Net::unroll(int inl, int outl, bool seq, bool areg) {
   frnn.clear();
   for(int i=0;i<layers.size();i++)
     if (layers[i]->isrecurrent) frnn.push_back(true);
+    else if ((layers[i]->isnorm)&&(layers[i]->parent[0]->isrecurrent)) frnn.push_back(true);
     else frnn.push_back(check_rnn_forward(layers[i]));
 
 
@@ -508,7 +510,10 @@ Net* Net::unroll(int inl, int outl, bool seq, bool areg) {
           if (l == layers[j]->parent.size()) {
 
             if ((layers[j]->isrecurrent)&&(i>0)) {
-              par.push_back(nlayers[i-1][j]);
+              if (layers[j]->child[0]->isnorm)
+                par.push_back(nlayers[i-1][j+1]);
+              else
+                par.push_back(nlayers[i-1][j]);
               nlayers[i].push_back(layers[j]->share(i, batch_size, par));
             }
             else {

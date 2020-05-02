@@ -24,6 +24,7 @@ int LLayerNorm::total_layers = 0;
 LLayerNorm::LLayerNorm(Layer *parent,  float epsilon, bool affine,  string name, int dev, int mem) : LinLayer(name, dev, mem) {
     input=parent->output;
     this->affine=affine;
+    isnorm=true;
 
     shape.push_back(input->shape[0]);
 

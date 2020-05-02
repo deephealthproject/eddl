@@ -33,6 +33,7 @@ Layer::Layer(string name, int dev, int mem) {
     detached=false;
     isrecurrent=false;
     isshared=false;
+    isnorm=false;
 
     orig=nullptr;
     net=nullptr;
