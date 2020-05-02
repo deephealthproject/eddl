@@ -124,25 +124,39 @@ void LConv::apply_accumulated_gradients() {
 }
 
 Layer *LConv::share(int c, int bs, vector<Layer *> p) {
+    // TODO: share ComvDescriptor
     LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad,  name, dev,mem_level);
     n->orig = this;
     n->isshared=true;
 
+    n->cd->use_bias=cd->use_bias;
+
     //share params
     for (int i = 0; i < n->params.size(); i++) delete n->params[i];
     n->params.clear();
-    n->acc_gradients.clear();
-    n->cd->use_bias=cd->use_bias;
+
 
     n->cd->K = cd->K;
     n->cd->bias = cd->bias;
-    new(&n->cd->matK) Eigen::Map<Eigen::MatrixXf>(n->cd->K->ptr, cd->kr * cd->kc * cd->kz, cd->nk);
+    n->cd->matK = cd->matK;
 
     n->params.push_back(n->cd->K);
     n->params.push_back(n->cd->bias);
 
+    //share gradients
+    for (int i = 0; i < n->gradients.size(); i++) delete n->gradients[i];
+    n->gradients.clear();
+
+    n->cd->gK = cd->gK;
+    n->cd->gbias = cd->gbias;
+
+    n->gradients.push_back(n->cd->gK);
+    n->gradients.push_back(n->cd->gbias);
+
 
     if ( distributed_training ) {
+        n->acc_gradients.clear();
+
         n->cd->acc_gK  = cd->acc_gK;
         n->cd->acc_gbias  = cd->acc_gbias;
 

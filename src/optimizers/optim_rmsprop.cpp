@@ -39,8 +39,16 @@ Optimizer *RMSProp::clone() {
     return new RMSProp(lr, rho, epsilon, weight_decay);
 }
 
+Optimizer *RMSProp::share() {
+    RMSProp *n=new RMSProp(lr, rho, epsilon, weight_decay);
+    n->orig=this;
+    n->isshared=true;
+    return n;
+}
 void RMSProp::setlayers(vlayer l) {
     layers = l;
+
+    if (isshared) return;
 
     // create momemtum tensors
     for (int i = 0; i < layers.size(); i++)
@@ -54,7 +62,10 @@ void RMSProp::setlayers(vlayer l) {
 }
 
 void RMSProp::applygrads(int batch) {
-
+  if (isshared) {
+    orig->applygrads(batch);
+  }
+  else {
     int p = 0;
     for (int i = 0; i < layers.size(); i++)
       if (layers[i]->trainable) {
@@ -82,6 +93,6 @@ void RMSProp::applygrads(int batch) {
         }
     }
     else p+=layers[i]->get_trainable_params_count();
-
+  }
 
 }

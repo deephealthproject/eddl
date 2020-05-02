@@ -62,10 +62,10 @@ int main(int argc, char **argv) {
 
 
     // Load dataset
-    tensor x_train = eddlT::load("trX.bin");
-    tensor y_train = eddlT::load("trY.bin");
-    tensor x_test = eddlT::load("tsX.bin");
-    tensor y_test = eddlT::load("tsY.bin");
+    tensor x_train = eddlT::load("mnist_trX.bin");
+    tensor y_train = eddlT::load("mnist_trY.bin");
+    tensor x_test = eddlT::load("mnist_tsX.bin");
+    tensor y_test = eddlT::load("mnist_tsY.bin");
 
     x_train->reshape_({60000,28,28});
     tensor x_trainp=Tensor::permute(x_train,{1,0,2});

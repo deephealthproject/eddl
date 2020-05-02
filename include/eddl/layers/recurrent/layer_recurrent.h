@@ -33,6 +33,8 @@ public:
     bool bidirectional;
     static int total_layers;
 
+    Tensor *preoutput;
+
     Tensor *Wx;
     Tensor *gWx;
     Tensor *bias;

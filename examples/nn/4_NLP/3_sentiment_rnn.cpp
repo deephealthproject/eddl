@@ -17,27 +17,30 @@
 using namespace eddl;
 
 //////////////////////////////////
-// mnist_mlp.cpp:
-// A very basic MLP for mnist
-// Using fit for training
+// Embeding+CNN for
+// aclImdb sentiment analysis
 //////////////////////////////////
 
 int main(int argc, char **argv) {
-    // Download mnist
-    download_mnist();
+    // Download aclImdb
+    download_imdb();
 
     // Settings
-    int epochs = 1;
+    int epochs = 1000;
     int batch_size = 100;
-    int num_classes = 10;
+    int num_classes = 2;
+
+    int length=100;
+    int embdim=250;
+    int vocsize=75181;
 
     // Define network
-    layer in = Input({784});
-    layer l = in;  // Aux var
+    layer in = Input({1}); //length x 1
+    layer l = in;
 
-    l = LeakyReLu(Dense(l, 1024));
-    l = LeakyReLu(Dense(l, 1024));
-    l = LeakyReLu(Dense(l, 1024));
+    l = GlorotUniform(L2(Embedding(l, vocsize, 1, embdim),0.001));
+    l = RNN(l,32);
+    l = ReLu(Dense(l,64));
 
     layer out = Softmax(Dense(l, num_classes));
     model net = Model({in}, {out});
@@ -48,11 +51,12 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          rmsprop(0.01), // Optimizer
+          adam(0.0001), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-            CS_GPU({1,1},100) // one GPU
-          //CS_CPU(-1) // CPU with maximum threads availables
+          //CS_GPU({1}) // one GPU
+          //CS_GPU({1,1},100) // two GPU
+          CS_CPU(-1) // CPU with maximum threads availables
     );
     //toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 
@@ -60,19 +64,38 @@ int main(int argc, char **argv) {
     summary(net);
 
     // Load dataset
-    tensor x_train = eddlT::load("mnist_trX.bin");
-    tensor y_train = eddlT::load("mnist_trY.bin");
-    tensor x_test = eddlT::load("mnist_tsX.bin");
-    tensor y_test = eddlT::load("mnist_tsY.bin");
-
-    // Preprocessing
-    eddlT::div_(x_train, 255.0);
-    eddlT::div_(x_test, 255.0);
+    tensor x_train=eddlT::load("imdb_trX.bin");
+    //x_train->info();
+    tensor y_train=eddlT::load("imdb_trY.bin");
+    //y_train->info();
+    // Load dataset
+    tensor x_test=eddlT::load("imdb_tsX.bin");
+    //x_train->info();
+    tensor y_test=eddlT::load("imdb_tsY.bin");
+    //y_train->info();
 
     // Train model
-    fit(net, {x_train}, {y_train}, batch_size, epochs);
+    x_train->reshape_({x_train->shape[0],length,1}); //batch x timesteps x input_dim
+    for(int i=0;i<epochs;i++) {
+      fit(net, {x_train}, {y_train}, batch_size, 1);
+      evaluate(net,{x_test},{y_test});
+    }
 
-    // Evaluate
-    evaluate(net, {x_test}, {y_test});
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////

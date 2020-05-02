@@ -125,11 +125,22 @@ void LEmbedding::backward()
 Layer *LEmbedding::share(int c, int bs, vector<Layer *> p) {
     LEmbedding *n = new LEmbedding(p[0],vocsize, length, dim,  "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
+    n->isshared=true;
 
+    //share params
+    delete n->params[0];
+    delete n->gradients[0];
+    n->params.clear();
+    n->gradients.clear();
+
+    n->E = params[0];
+    n->gE= gradients[0];
+
+    n->params.push_back(n->E);
+    n->gradients.push_back(n->gE);
 
     n->reg=reg;
     n->init=init;
-
     return n;
 }
 

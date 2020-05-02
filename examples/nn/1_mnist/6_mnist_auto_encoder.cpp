@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
     );
 
     // Load dataset
-    tensor x_train = eddlT::load("trX.bin");
+    tensor x_train = eddlT::load("mnist_trX.bin");
     // Preprocessing
     eddlT::div_(x_train, 255.0);
 

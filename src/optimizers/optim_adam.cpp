@@ -43,9 +43,16 @@ void Adam::change(vector<float> &p) {
 Optimizer *Adam::clone() {
     return new Adam(lr, beta_1, beta_2, epsilon, weight_decay, amsgrad);
 }
-
+Optimizer *Adam::share() {
+    Adam *n=new Adam(lr, beta_1, beta_2, epsilon, weight_decay, amsgrad);
+    n->orig=this;
+    n->isshared=true;
+    return n;
+}
 void Adam::setlayers(vlayer l) {
     layers = l;
+
+    if (isshared) return;
 
     // create momemtum tensors
     for (int i = 0; i < layers.size(); i++)
@@ -63,7 +70,10 @@ void Adam::setlayers(vlayer l) {
 }
 
 void Adam::applygrads(int batch) {
-
+  if (isshared) {
+    orig->applygrads(batch);
+  }
+  else {
     int p = 0;
     t++;
 
@@ -88,6 +98,6 @@ void Adam::applygrads(int batch) {
         }
     }
     else p+=layers[i]->get_trainable_params_count();
-
+  }
 
 }

@@ -54,8 +54,8 @@ int main(int argc, char **argv) {
           rmsprop(0.001), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_GPU({1,1},100) // one GPU
-          //CS_CPU(-1) // CPU with maximum threads availables
+          //CS_GPU({1,1},100) // one GPU
+          CS_CPU(-1) // CPU with maximum threads availables
     );
 
     // View model
@@ -63,10 +63,10 @@ int main(int argc, char **argv) {
 
 
     // Load dataset
-    tensor x_train = eddlT::load("trX.bin");
-    tensor y_train = eddlT::load("trY.bin");
-    tensor x_test = eddlT::load("tsX.bin");
-    tensor y_test = eddlT::load("tsY.bin");
+    tensor x_train = eddlT::load("mnist_trX.bin");
+    tensor y_train = eddlT::load("mnist_trY.bin");
+    tensor x_test = eddlT::load("mnist_tsX.bin");
+    tensor y_test = eddlT::load("mnist_tsY.bin");
 
 
 
@@ -88,12 +88,10 @@ int main(int argc, char **argv) {
         // get a batch
         next_batch({x_train,y_train},{x_train_batch,y_train_batch});
 
-        x_train_batch->reshape_({batch_size,28,28});
-        tensor xt=Tensor::permute(x_train_batch,{1,0,2});
-        x_train_batch->reshape_({batch_size,784});
+        x_train_batch->reshape_({batch_size,28,28}); // time x dim
 
         zeroGrads(net);
-        forward(net,{xt});
+        forward(net,{x_train_batch});
         backward(net,{y_train_batch});
         update(net);
 
@@ -101,7 +99,7 @@ int main(int argc, char **argv) {
         print_loss(net,j);
         printf("\r");
 
-        delete xt;
+        x_train_batch->reshape_({batch_size,784});
 
     }
     printf("\n");

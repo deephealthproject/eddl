@@ -114,6 +114,16 @@ Layer *LDense::share(int c, int bs, vector<Layer *> p) {
     n->params.push_back(n->W);
     if (use_bias) n->params.push_back(n->bias);
 
+    //share gradients
+    for (int i = 0; i < n->gradients.size(); i++) delete n->gradients[i];
+    n->gradients.clear();
+
+    n->gW = gradients[0];
+    if (use_bias) n->gbias = gradients[1];
+
+    n->gradients.push_back(n->gW);
+    if (use_bias) n->gradients.push_back(n->gbias);
+
     n->reg=reg;
     n->init=init;
 

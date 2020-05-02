@@ -28,6 +28,8 @@ class Optimizer {
 public:
     string name;
     vlayer layers;
+    bool isshared;
+    Optimizer *orig;
 
     Optimizer();
 
@@ -36,6 +38,7 @@ public:
     virtual void applygrads(int batch) {}
 
     virtual Optimizer *clone() { return nullptr; }
+    virtual Optimizer *share() { return nullptr; }
 
     virtual void change(vector<float> &p) {}
 
@@ -54,6 +57,7 @@ public:
     ~SGD();
 
     Optimizer *clone() override;
+    Optimizer *share() override;
 
     void setlayers(vlayer l) override;
 
@@ -81,13 +85,14 @@ public:
     explicit Adam(float lr=0.01f, float beta_1=0.9f, float beta_2=0.999f, float epsilon=1e-8f, float weight_decay=0.0f, bool amsgrad=false);
     ~Adam();
 
-    Optimizer *clone();
+    Optimizer *clone() override;
+    Optimizer *share() override;
 
-    void setlayers(vlayer l);
+    void setlayers(vlayer l) override;
 
-    void applygrads(int batch);
+    void applygrads(int batch) override;
 
-    void change(vector<float> &p);
+    void change(vector<float> &p) override;
 };
 
 
@@ -190,14 +195,15 @@ public:
     explicit RMSProp(float lr=0.01f, float rho=0.9f, float epsilon=1e-8f, float weight_decay=0.0f);
 
     ~RMSProp();
-    
-    Optimizer *clone();
 
-    void setlayers(vlayer l);
+    Optimizer *clone() override;
+    Optimizer *share() override;
 
-    void applygrads(int batch);
+    void setlayers(vlayer l) override;
 
-    void change(vector<float> &p);
+    void applygrads(int batch) override;
+
+    void change(vector<float> &p) override;
 };
 #endif
 

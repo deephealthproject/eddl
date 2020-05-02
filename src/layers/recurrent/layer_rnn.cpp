@@ -37,6 +37,7 @@ LRNN::LRNN(vector<Layer *> parent, int units, int num_layers, bool use_bias, flo
 
     input = parent[0]->output;
     output = new Tensor(vector<int>{input->shape[0], ndim}, dev);
+    preoutput = new Tensor(vector<int>{input->shape[0], ndim}, dev);
 
     // From parent layer
     Wx = new Tensor(vector<int>{input->shape[1], ndim}, dev);
@@ -71,14 +72,20 @@ LRNN::LRNN(vector<Layer *> parent, int units, int num_layers, bool use_bias, flo
 
 // virtual
 void LRNN::forward() {
-  Tensor::mult2D(parent[0]->output, 0, Wx, 0, output, 0);
+  if (preoutput->size!=output->size)
+    preoutput->resize(output->shape[0]);
+
+  Tensor::mult2D(parent[0]->output, 0, Wx, 0, preoutput, 0);
   if (parent.size()>1)
-    Tensor::mult2D(parent[1]->output, 0, Wy, 0, output, 1);
-  if (use_bias) Tensor::sum2D_rowwise(output, bias, output);
+    Tensor::mult2D(parent[1]->output, 0, Wy, 0, preoutput, 1);
+  if (use_bias) Tensor::sum2D_rowwise(output, bias, preoutput);
+
+  Tanh(preoutput, output);
 }
 
 void LRNN::backward() {
   //get gradients with provided delta
+  D_Tanh(delta, output, delta);
 
   if (trainable) {
       Tensor::mult2D(parent[0]->output, 1, delta, 0, gWx, 1);

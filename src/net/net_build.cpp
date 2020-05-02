@@ -160,7 +160,6 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initia
 
   set_compserv(cs);
 
-
   if (VERBOSE) {
     if (cs->type == "local") {
       if (snets[0]->dev == DEV_CPU)
@@ -533,11 +532,9 @@ Net* Net::unroll(int inl, int outl, bool seq, bool areg) {
 /////
 vlayer ninl;
 vlayer noutl;
-
 for (i = 0; i < inl; i++)
   for (j = 0; j < nin[i].size(); j++)
     ninl.push_back(nin[i][j]);
-
 for (i = 0; i < inl; i++)
   for (j = 0; j < nout[i].size(); j++)
     noutl.push_back(nout[i][j]);
@@ -565,6 +562,8 @@ void Net::build_rnet(int inl,int outl) {
    // Create an unrolled version on CPU
    rnet=unroll(inl,outl,false,false);
 
+   rnet->plot("rmodel.pdf","LR");
+
    for(i=0;i<rnet->layers.size();i++) {
      rnet->layers[i]->isrecurrent=false;
      rnet->layers[i]->net=rnet;
@@ -572,16 +571,15 @@ void Net::build_rnet(int inl,int outl) {
    }
    rnet->isrecurrent=false;
 
-
    vloss lr;
    for(i=0;i<outl;i++) lr.push_back(losses[0]->clone());
 
    vmetrics mr;
    for(i=0;i<outl;i++) mr.push_back(metrics[0]->clone());
 
-
-   rnet->build(optimizer->clone(),lr,mr,cs,false);
+   rnet->build(optimizer->share(),lr,mr,cs,false);
    //cout<<rnet->summary();
+   fflush(stdout);
    rnet->plot("rmodel.pdf","LR");
    rnet->name="rnet";
 
@@ -618,6 +616,8 @@ void Net::build_rnet(int inl,int outl) {
    rnet->reset_loss();
    rnet->reset();
    rnet->reset_grads();
+
+   fflush(stdout);
 
   }
 }

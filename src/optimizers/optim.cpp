@@ -16,5 +16,6 @@
 using namespace std;
 
 
-Optimizer::Optimizer() {}
-
+Optimizer::Optimizer() {
+  isshared=false;
+}
