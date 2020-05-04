@@ -31,32 +31,34 @@ int main(int argc, char **argv) {
     int num_classes = 2;
 
     int length=100;
-    int embdim=200;
+    int embdim=250;
     int vocsize=75181;
 
     // Define network
-    layer in = Input({1}); //length x 1
+    layer in = Input({1}); //1 word
     layer l = in;
 
-    l = GlorotUniform(L2(Embedding(l, vocsize, 1, embdim),0.001));
-    l = LayerNormalization(RNN(l,32,"relu"));
+    layer lE = Embedding(l, vocsize, 1, embdim);
+
+    set_trainable(lE,false);
+
+    l = BatchNormalization(RNN(lE,128,"relu"));
     l = ReLu(BatchNormalization(Dense(l,64)));
 
     layer out = Softmax(Dense(l, num_classes));
     model net = Model({in}, {out});
-    net->verbosity_level = 0;
 
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
     // Build model
     build(net,
-          adam(0.0001), // Optimizer
+          sgd(0.001), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          //CS_GPU({1}) // one GPU
+          CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU
-          CS_CPU(-1) // CPU with maximum threads availables
+          //CS_CPU(-1) // CPU with maximum threads availables
     );
     //toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 
@@ -75,11 +77,17 @@ int main(int argc, char **argv) {
     //y_train->info();
 
     // Train model
+    tensor E=eddlT::load("embedding.bin");
+    E->info();
+
+    Tensor::copy(E,lE->params[0]);
+    distributeTensor(lE,"param",0);
+
     x_train->reshape_({x_train->shape[0],length,1}); //batch x timesteps x input_dim
-    for(int i=0;i<epochs;i++) {
-      fit(net, {x_train}, {y_train}, batch_size, 1);
-      evaluate(net,{x_test},{y_test});
-    }
+    x_test->reshape_({x_test->shape[0],length,1}); //batch x timesteps x input_dim
+
+    fit(net, {x_train}, {y_train}, batch_size, epochs);
+    evaluate(net,{x_test},{y_test});
 
 
 }

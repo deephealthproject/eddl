@@ -50,6 +50,38 @@ __global__ void mask(float* a, float v, long int size){
     }
 }
 
+__global__ void select_rows(float* A, float* B, int rowsize, int size, int* indices, int ini)
+{
+  long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+  if (thread_id_x < size){
+    int b=thread_id_x/rowsize;
+    int c=thread_id_x%rowsize;
+
+    int posA=(indices[b]*rowsize)+c;
+    int posB=((b-ini)*rowsize)+c;
+
+    B[posB]=A[posA];
+  }
+
+}
+__global__ void deselect_rows(float* A, float* B, int rowsize, int size, int* indices, int ini, int inc)
+{
+  long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+  if (thread_id_x < size){
+    int b=thread_id_x/rowsize;
+    int c=thread_id_x%rowsize;
+
+    int posA=((b-ini)*rowsize)+c;
+    int posB=(indices[b]*rowsize)+c;
+
+
+    if (inc) B[posB]+=A[posA];
+    else B[posB]=A[posA];
+  }
+
+}
 
 __global__ void select(float* A, float* B, int size, int* indices){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;

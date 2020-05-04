@@ -855,7 +855,10 @@ namespace eddl {
     }
 
 
+
+    //////////////////////////////
     // Layers Methods
+    //////////////////////////////
     void set_trainable(layer l, bool val)
     {
         l->set_trainable(val);
@@ -879,30 +882,63 @@ namespace eddl {
 
     }
 
-    void copyTensor(Layer *l1,Layer *l2)
-    {
-        collectTensor(l1);
-        Tensor::copy(l1->output,l2->output);
-        distributeTensor(l2);
-    }
 
-    void copyGrad(Layer *l1,Layer *l2)
-    {
-        collectTensor(l1,"grad");
-        Tensor::copy(l1->delta,l2->delta);
-        distributeTensor(l2,"grad");
-    }
+    ////////////////////////////////////
+    // Manage Tensors inside Layers
+    ////////////////////////////////////
 
-
-    Tensor* getTensor(layer l1){
-        collectTensor(l1);
+    // get tensors
+    // collect from CS when necessary
+    Tensor* getOutput(layer l1){
+        collectTensor(l1,"output");
         return l1->output;
     }
 
-    Tensor* getGrad(layer l1){
-        collectTensor(l1,"grad");
+    Tensor* getDelta(layer l1){
+        collectTensor(l1,"delta");
         return l1->delta;
     }
+
+    Tensor* getParam(layer l1, int p){
+        collectTensor(l1,"param",p);
+        return l1->params[p];
+    }
+
+    Tensor* getGradient(layer l1,int p){
+        collectTensor(l1,"gradient",p);
+        return l1->gradients[p];
+    }
+
+    // Copy tensors between layers
+    // collect from CS when necessary
+    // distribute to CS when necessary
+    void copyOutput(Layer *l1,Layer *l2)
+    {
+        collectTensor(l1,"output");
+        Tensor::copy(l1->output,l2->output);
+        distributeTensor(l2,"output");
+    }
+
+    void copyDelta(Layer *l1,Layer *l2)
+    {
+        collectTensor(l1,"delta");
+        Tensor::copy(l1->delta,l2->delta);
+        distributeTensor(l2,"delta");
+    }
+    void copyParam(Layer *l1,Layer *l2, int p)
+    {
+        collectTensor(l1,"param",p);
+        Tensor::copy(l1->params[p],l2->params[p]);
+        distributeTensor(l2,"param",p);
+    }
+
+    void copyGradient(Layer *l1,Layer *l2, int p)
+    {
+        collectTensor(l1,"gradient",p);
+        Tensor::copy(l1->gradients[p],l2->gradients[p]);
+        distributeTensor(l2,"gradient",p);
+    }
+
 
 
     ///////////////////////////////////////

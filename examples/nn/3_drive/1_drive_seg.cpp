@@ -169,8 +169,8 @@ int main(int argc, char **argv){
       forward(danet, vector<Tensor *>{xbatch, ybatch});
 
       // get tensors from DA
-      tensor xbatch_da = getTensor(img);
-      tensor ybatch_da = getTensor(mask);
+      tensor xbatch_da = getOutput(img);
+      tensor ybatch_da = getOutput(mask);
 
       // xout = eddlT::select(xbatch_da,0);
       // xout->save("./1.tr_out_after.jpg");
@@ -187,7 +187,7 @@ int main(int argc, char **argv){
       // printf("  sum=%f",yout->sum());
       printf("\r");
 
-      tensor yout = eddlT::select(getTensor(out),0);
+      tensor yout = eddlT::select(getOutput(out),0);
       yout->save("./out.jpg");
       delete yout;
     }

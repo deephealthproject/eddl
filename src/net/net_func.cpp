@@ -125,7 +125,8 @@ void Net::do_applygrads() {
 }
 
 
-/////////////////////////////////////////
+
+
 void Net::sync_weights() {
     //cout<<"\nSync weights...\n";
     for (int j = 0; j < layers.size(); j++)
@@ -146,7 +147,7 @@ void Net::sync_weights() {
 }
 
 
-void collectTensor(Layer *l,string tname,int p)
+void collectTensor(Layer *l,string tname, int p)
 {
     Net *sn=l->net;
     if (sn->snets[0]->dev==DEV_CPU) return;
@@ -187,18 +188,18 @@ void collectTensor(Layer *l,string tname,int p)
         int end = start + sl->output->shape[0];
 
         if (tname=="output")
-            Tensor::deselect(sl->output, l->output, sind, start, end);
-        else if (tname=="grad")
-            Tensor::deselect(sl->delta, l->delta, sind, start, end);
+          Tensor::deselect(sl->output, l->output, sind, start, end);
+        else if (tname=="delta")
+          Tensor::deselect(sl->delta, l->delta, sind, start, end);
         else if (tname=="param")
-            Tensor::deselect(sl->params[p], l->params[p], sind, start, end);
-
+          Tensor::copy(sl->params[p],l->params[p]);
+        else if (tname=="gradient")
+          Tensor::copy(sl->gradients[p],l->gradients[p]);
     }
-
 }
 
 
-void distributeTensor(Layer *l,string tname,int p)
+void distributeTensor(Layer *l,string tname, int p)
 {
     Net *sn=l->net;
 
@@ -236,67 +237,12 @@ void distributeTensor(Layer *l,string tname,int p)
         int end = start + sl->output->shape[0];
 
         if (tname=="output")
-            Tensor::select(l->output, sl->output, sind, start, end);
-        else if (tname=="grad")
-            Tensor::select(l->delta, sl->delta, sind, start, end);
+          Tensor::select(l->output, sl->output, sind, start, end);
+        else if (tname=="delta")
+          Tensor::select(l->delta, sl->delta, sind, start, end);
         else if (tname=="param")
-            Tensor::select(l->params[p], sl->params[p], sind, start, end);
-
+          Tensor::copy(l->params[p],sl->params[p]);
+        else if (tname=="gradient")
+          Tensor::copy(l->gradients[p],sl->gradients[p]);
     }
-}
-
-
-void copyTensor(Layer *l1,Layer *l2,string name){
-
-    Layer *sl1;
-    Layer *sl2;
-    int i,j;
-    Net *sn1;
-    Net *sn2;
-
-    sn1=l1->net;
-    sn2=l2->net;
-
-    if (sn1->snets.size()!=sn2->snets.size()) {
-        msg("Error copying tensors from graphs in diffrent CS","Net.copyTensor");
-    }
-
-    int size=sn1->snets.size();
-
-    for(i=0;i<size;i++) {
-        //l1
-        if (sn1->snets[i]->dev==DEV_CPU) {
-            sl1=l1;
-        }
-        else {
-            for(j=0;j<sn1->snets[i]->layers.size();j++) {
-                if (sn1->snets[i]->layers[j]->orig==l1) {
-                    sl1=sn1->snets[i]->layers[j];
-                    break;
-                }
-            }
-        }
-
-        //l2
-        if (sn2->snets[0]->dev==DEV_CPU) {
-            sl2=l2;
-        }
-        else {
-            for(j=0;j<sn2->snets[i]->layers.size();j++) {
-                if (sn2->snets[i]->layers[j]->orig==l2) {
-                    sl2=sn2->snets[i]->layers[j];
-                    break;
-                }
-            }
-        }
-
-        if (name=="output") Tensor::copy(sl1->output,sl2->output);
-        else if (name=="grad") {
-            // TODO: REVIEW
-            // sl1->mem_delta();
-            sl2->mem_delta();
-            Tensor::copy(sl1->delta, sl2->delta);
-        }
-    }
-
 }

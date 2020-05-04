@@ -56,6 +56,7 @@ LEmbedding::LEmbedding(Layer *parent, int vocsize, int length, int dim, string n
     output = new Tensor(vector<int>{input->shape[0], length*dim}, dev);
 
     E=new Tensor({vocsize,dim},dev);
+
     params.push_back(E);
     gE=new Tensor({vocsize,dim},dev);
     gradients.push_back(gE);
@@ -80,23 +81,18 @@ void LEmbedding::forward()
   inputc->toCPU();
 
   for(int i=0;i<b*length;i++) {
-    sind.push_back(inputc->get_({i}));
-    if (sind[i]>=vocsize) msg("word > vocsize","LEmbedding::forward");
+    int val=inputc->get_({i});
+    //int val=0;
+    if (val>=vocsize) {msg("word > vocsize","LEmbedding::forward");}
+    sind.push_back(val);
   }
+
   delete inputc;
 
   output->reshape_({b*length,dim});
 
+  Tensor::select(E,output, sind, 0,sind.size());
 
-  Tensor::select(E,output, sind, 0,sind.size()); //1=inc
-
- /*
-  for(int i=0;i<sind.size();i++) {
-    Tensor *t2= E->select({to_string(sind[i]), ":"});
-    output->set_select({to_string(i),":"},t2);
-    delete t2;
-  }
-*/
   if (indim==2) input->reshape_({b,length});
 
   output->reshape_({b,length*dim});
@@ -105,18 +101,16 @@ void LEmbedding::forward()
 
 void LEmbedding::backward()
 {
-   int b=output->shape[0];
+   if (trainable) {
+     int b=output->shape[0];
+     delta->reshape_({b*length,dim});
 
-   delta->reshape_({b*length,dim});
+     Tensor::deselect(delta,gE, sind, 0,sind.size(),1); //1=inc
 
-   Tensor::deselect(delta,gE, sind, 0,sind.size(),1); //1=inc
+     delta->reshape_({b,length*dim});
 
-   delta->reshape_({b,length*dim});
-
-   if (trainable) if(reg!= nullptr) {reg->apply(E);}
-
-   //cout<<"\n"<<"E="<<E->sum()<<"\n";
-
+     if(reg!= nullptr) {reg->apply(E);}
+   }
 }
 
 
@@ -126,6 +120,8 @@ Layer *LEmbedding::share(int c, int bs, vector<Layer *> p) {
     LEmbedding *n = new LEmbedding(p[0],vocsize, length, dim,  "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
     n->isshared=true;
+    n->trainable = trainable;
+
 
     //share params
     delete n->params[0];
@@ -147,7 +143,7 @@ Layer *LEmbedding::share(int c, int bs, vector<Layer *> p) {
 Layer *LEmbedding::clone(int c, int bs, vector<Layer *> p, int todev) {
     LEmbedding *n = new LEmbedding(p[0],vocsize, length, dim, "share_"+to_string(c)+this->name, todev, this->mem_level);
     n->orig = this;
-
+    n->trainable = trainable;
     n->reg=reg;
     n->init=init;
 

@@ -568,18 +568,7 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
         delete Bc;
     }
     else if ((A->isGPU()) && (B->isGPU())) {
-        Tensor *Ac=A->clone();
-        Ac->toCPU();
-
-        Tensor *Bc=B->clone();
-        Bc->toCPU();
-
-        cpu_select(Ac, Bc, sind, ini, end);
-
-        Tensor::copy(Bc,B);
-
-        delete Ac;
-        delete Bc;
+          gpu_select(A, B, sind, ini, end);
     }
     else {
         msg("unsuppoted select", "Tensor::select");
@@ -618,17 +607,7 @@ void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,i
         delete Bc;
     }
     else if ((A->isGPU()) && (B->isGPU())) {
-        Tensor *Ac=A->clone();
-        Ac->toCPU();
-
-        Tensor *Bc=B->clone();
-        Bc->toCPU();
-
-        cpu_deselect(Ac, Bc, sind, ini, end, inc);
-        Tensor::copy(Bc,B);
-
-        delete Ac;
-        delete Bc;
+        gpu_deselect(A, B, sind, ini, end, inc);
     }
     else {
         msg("unsuppoted select", "Tensor::select");

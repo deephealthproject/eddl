@@ -200,7 +200,6 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
         }
 
         // Set params
-        layers[i]->set_trainable(true);
         layers[i]->verbosity_level = this->verbosity_level;
     }
 
@@ -283,7 +282,7 @@ void Net::set_compserv(CompServ *cs){
 
         if (VERBOSE) cout<<"split into "<<devsel.size()<<" GPUs devices\n";
 
-        split(devsel.size(),DEV_GPU);
+        if (!cs->isshared) split(devsel.size(),DEV_GPU);
 #endif
         } else {
             // split on multiple FPGAs
@@ -582,7 +581,7 @@ void Net::build_rnet(int inl,int outl) {
    vmetrics mr;
    for(i=0;i<outl;i++) mr.push_back(metrics[0]->clone());
 
-   rnet->build(optimizer->share(),lr,mr,cs,false);
+   rnet->build(optimizer->share(),lr,mr,cs->share(),false);
    //cout<<rnet->summary();
    fflush(stdout);
    rnet->plot("rmodel.pdf","LR");
@@ -597,7 +596,6 @@ void Net::build_rnet(int inl,int outl) {
      for(i=0;i<rnet->snets.size();i++)
        delete rnet->snets[i];
      rnet->snets.clear();
-
      for(i=0;i<snets.size();i++) {
      //cout<<snets[i]->summary();
        rnet->snets.push_back(snets[i]->unroll(inl,outl,false,false));
@@ -606,7 +604,7 @@ void Net::build_rnet(int inl,int outl) {
        }
        rnet->snets[i]->isrecurrent=false;
 
-       rnet->snets[i]->build(optimizer->share(),lr,mr,false);
+       rnet->snets[i]->build(snets[i]->optimizer->share(),lr,mr,false);
        rnet->snets[i]->plot("rsnet.pdf","LR");
        for(j=0;j<rnet->snets[i]->layers.size();j++) {
              rnet->snets[i]->layers[j]->orig=rnet->layers[j];

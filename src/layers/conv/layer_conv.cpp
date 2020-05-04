@@ -128,6 +128,7 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
     LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad,  name, dev,mem_level);
     n->orig = this;
     n->isshared=true;
+    n->trainable = trainable;
 
     n->cd->use_bias=cd->use_bias;
 
@@ -173,6 +174,8 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
 Layer *LConv::clone(int c, int bs, vector<Layer *> p, int todev) {
 
     LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad,  name, todev, this->mem_level);
+    n->trainable = trainable;
+    
     n->orig = this;
     n->cd->use_bias=cd->use_bias;
 

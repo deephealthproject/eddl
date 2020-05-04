@@ -36,6 +36,10 @@ void copy_cpu2gpu(void* cpu_addresses, void* gpu_addresses, int size, bool delet
 // GPU: Core
 void gpu_fill_(Tensor *A, float v);
 void gpu_mask(Tensor *A,float v);
+
+void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
+void gpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc);
+
 void gpu_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd);

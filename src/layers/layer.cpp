@@ -34,6 +34,7 @@ Layer::Layer(string name, int dev, int mem) {
     isrecurrent=false;
     isshared=false;
     isnorm=false;
+    trainable=true;
 
     orig=nullptr;
     net=nullptr;

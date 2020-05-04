@@ -358,7 +358,9 @@ void Net::backward(){
 
   for(int i=0;i<netinput.size();i++) {
     if (netinput[i]->detached==false) {
-      copyTensor(lin[i],netinput[i],"grad");
+      collectTensor(lin[i],"delta");
+      Tensor::copy(lin[i]->delta,netinput[i]->delta);
+      distributeTensor(netinput[i],"delta");
       netinput[i]->net->backward();
     }
   }
@@ -486,6 +488,7 @@ void Net::reset()
   do_reset();
   run_snets(reset_t);
 }
+
 
 
 
@@ -625,7 +628,10 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
 
   outl=1;
 
+
   build_rnet(inl,outl);
+
+
 
   // prepare data for unroll net
   vtensor tinr;

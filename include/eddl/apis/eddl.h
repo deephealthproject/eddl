@@ -1419,11 +1419,17 @@ typedef NetLoss * metric;
 
     // Layers Methods
     void set_trainable(layer l, bool val);
-    void copyTensor(Layer *l1,Layer *l2);
-    void copyGrad(Layer *l1,Layer *l2);
     vlayer getOut(model net);
-    Tensor* getTensor(layer l);
-    Tensor* getGrad(layer l);
+
+    // Manage tensors inside layers
+    Tensor* getOutput(layer l1);
+    Tensor* getDelta(layer l1);
+    Tensor* getParam(layer l1, int p);
+    Tensor* getGradient(layer l1,int p);
+    void copyOutput(Layer *l1,Layer *l2);
+    void copyDelta(Layer *l1,Layer *l2);
+    void copyParam(Layer *l1,Layer *l2, int p);
+    void copyGradient(Layer *l1,Layer *l2, int p);
 
 
     ///////////////////////////////////////

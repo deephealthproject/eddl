@@ -120,6 +120,70 @@ void gpu_fill_(Tensor *A, float v) {
     check_cuda(cudaDeviceSynchronize(),"set");
 }
 
+void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end)
+{
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  int *ind;
+  cudaMalloc((void **) &ind, sind.size() * sizeof(int));
+  cudaMemcpy(ind, &sind[0], sind.size() * sizeof(int), cudaMemcpyHostToDevice);
+
+  int size=sind.size()*(B->shape[1]);
+
+  int grid,block;
+  if (size>=1024) {
+    grid=size/1024;
+    block=1024;
+    if (size%1024) grid++;
+  }
+  else {
+    grid=1;
+    block=size;
+  }
+
+  dim3 dimGrid(grid);
+  dim3 dimBlock(block);
+
+  select_rows<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[1], size, ind, ini);
+  check_cuda(cudaDeviceSynchronize(), "gpu_select");
+
+  cudaFree(ind);
+
+}
+
+void gpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, int inc)
+{
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  int *ind;
+  cudaMalloc((void **) &ind, sind.size() * sizeof(int));
+  cudaMemcpy(ind, &sind[0], sind.size() * sizeof(int), cudaMemcpyHostToDevice);
+
+  int size=sind.size()*(B->shape[1]);
+
+  int grid,block;
+  if (size>=1024) {
+    grid=size/1024;
+    block=1024;
+    if (size%1024) grid++;
+  }
+  else {
+    grid=1;
+    block=size;
+  }
+
+  dim3 dimGrid(grid);
+  dim3 dimBlock(block);
+
+  deselect_rows<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[1], size, ind, ini, inc);
+  check_cuda(cudaDeviceSynchronize(), "gpu_select");
+
+  cudaFree(ind);
+
+}
+
 
 void gpu_select(Tensor *A, Tensor *B, SelDescriptor *sd){
     int device=A->gpu_device;

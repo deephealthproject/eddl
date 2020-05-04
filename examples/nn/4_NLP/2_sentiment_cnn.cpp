@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
     download_imdb();
 
     // Settings
-    int epochs = 1000;
+    int epochs = 25;
     int batch_size = 100;
     int num_classes = 2;
 
@@ -38,7 +38,8 @@ int main(int argc, char **argv) {
     layer in = Input({length});
     layer l = in;
 
-    l = GlorotUniform(L2(Embedding(l, vocsize, length, embdim),0.001));
+    layer lE=Embedding(l, vocsize, length, embdim);
+    l = GlorotUniform(L2(lE,0.001));
     l = Reshape(l,{1,length,embdim});
     layer l1 = ReLu(BatchNormalization(Conv(l,128,{1,embdim},{1,1},"same,none")));
     layer l2 = ReLu(BatchNormalization(Conv(l,128,{2,embdim},{1,1},"same,none")));
@@ -60,9 +61,9 @@ int main(int argc, char **argv) {
           adam(0.0001), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          //CS_GPU({1}) // one GPU
+          CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU
-          CS_CPU(-1) // CPU with maximum threads availables
+          //CS_CPU(-1) // CPU with maximum threads availables
     );
     //toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 
@@ -81,10 +82,13 @@ int main(int argc, char **argv) {
     //y_train->info();
 
     // Train model
-    for(int i=0;i<epochs;i++) {
-      fit(net, {x_train}, {y_train}, batch_size, 1);
-      evaluate(net,{x_test},{y_test});
-    }
+    fit(net, {x_train}, {y_train}, batch_size, epochs);
+    evaluate(net,{x_test},{y_test});
+
+
+    tensor E=getParam(lE,0);
+
+    E->save("embedding.bin");
 
 
 }
