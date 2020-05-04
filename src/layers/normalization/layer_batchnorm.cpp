@@ -24,7 +24,7 @@ int LBatchNorm::total_layers = 0;
 LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     input=parent->output;
     isnorm=true;
-    
+
     shape.push_back(input->shape[1]);
 
     if ((input->ndim != 2)&&(input->ndim != 4)) {
@@ -50,6 +50,7 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
     bn_var=new Tensor(shape,dev);
 
     if (affine) {
+
       bn_g=new Tensor(shape,dev);
       bn_b=new Tensor(shape,dev);
 
@@ -127,6 +128,7 @@ void LBatchNorm::forward() {
 
   BN_forward(in,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);
 
+
   Tensor::copy(in,opa);
   if (affine) {
     Tensor *var=new Tensor({N,M},input->device);
@@ -140,7 +142,6 @@ void LBatchNorm::forward() {
     delete ones;
   }
 
-
   // copy in to ouput
   if (input->ndim==4) {permute_channels_first(in,output);}
   else Tensor::copy(in,output);
@@ -151,6 +152,8 @@ void LBatchNorm::forward() {
 void LBatchNorm::backward(){
   int M,N;
   int b,z,r,c,d;
+
+
 
   Tensor *dp;
 
@@ -218,6 +221,9 @@ void LBatchNorm::backward(){
 Layer *LBatchNorm::share(int c, int bs, vector<Layer *> p) {
     LBatchNorm *n = new LBatchNorm(p[0], momentum, epsilon, affine, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
+    n->isshared=true;
+    n->trainable = trainable;
+
 
     //share params and gradients
     for (int i = 0; i < n->params.size(); i++) delete n->params[i];
@@ -229,19 +235,18 @@ Layer *LBatchNorm::share(int c, int bs, vector<Layer *> p) {
     if (affine) {
       n->bn_g=bn_g;
       n->bn_b=bn_b;
-      params.push_back(bn_g);
-      params.push_back(bn_b);
+      n->params.push_back(bn_g);
+      n->params.push_back(bn_b);
 
       n->gbn_g=gbn_g;
       n->gbn_b=gbn_b;
-      gradients.push_back(gbn_g);
-      gradients.push_back(gbn_b);
+      n->gradients.push_back(gbn_g);
+      n->gradients.push_back(gbn_b);
     }
     n->mean=mean;
     n->variance=variance;
-    params.push_back(mean);
-    params.push_back(variance);
-
+    n->params.push_back(mean);
+    n->params.push_back(variance);
 
     return n;
 }
@@ -249,6 +254,7 @@ Layer *LBatchNorm::share(int c, int bs, vector<Layer *> p) {
 Layer *LBatchNorm::clone(int c, int bs, vector<Layer *> p, int todev) {
     LBatchNorm *n = new LBatchNorm(p[0], momentum, epsilon, affine,  name, todev,mem_level);
     n->orig = this;
+    n->trainable = trainable;
 
     return n;
 }

@@ -56,8 +56,8 @@ LEmbedding::LEmbedding(Layer *parent, int vocsize, int length, int dim, string n
     output = new Tensor(vector<int>{input->shape[0], length*dim}, dev);
 
     E=new Tensor({vocsize,dim},dev);
-
     params.push_back(E);
+
     gE=new Tensor({vocsize,dim},dev);
     gradients.push_back(gE);
 
@@ -129,11 +129,11 @@ Layer *LEmbedding::share(int c, int bs, vector<Layer *> p) {
     n->params.clear();
     n->gradients.clear();
 
-    n->E = params[0];
-    n->gE= gradients[0];
+    n->E = E;
+    n->gE = gE;
 
-    n->params.push_back(n->E);
-    n->gradients.push_back(n->gE);
+    n->params.push_back(E);
+    n->gradients.push_back(gE);
 
     n->reg=reg;
     n->init=init;
@@ -141,7 +141,7 @@ Layer *LEmbedding::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LEmbedding::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LEmbedding *n = new LEmbedding(p[0],vocsize, length, dim, "share_"+to_string(c)+this->name, todev, this->mem_level);
+    LEmbedding *n = new LEmbedding(p[0],vocsize, length, dim, "clone_"+to_string(c)+this->name, todev, this->mem_level);
     n->orig = this;
     n->trainable = trainable;
     n->reg=reg;

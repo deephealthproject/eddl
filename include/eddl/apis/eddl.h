@@ -1159,6 +1159,7 @@ typedef NetLoss * metric;
       *  @return     Parent layer after the normalization
     */
     layer BatchNormalization(layer parent, float momentum = 0.9f, float epsilon = 0.00001f, bool affine = true,string name = "");
+    layer BatchNormalization(layer parent, bool affine, float momentum = 0.9f, float epsilon = 0.00001f, string name = "");
 
     /**
       *  @brief Layer normalization layer.
@@ -1176,6 +1177,7 @@ typedef NetLoss * metric;
       *  @return     Parent layer after the normalization
     */
     layer LayerNormalization(layer parent, float epsilon = 0.00001f, bool affine=true, string name = "");
+    layer LayerNormalization(layer parent, bool affine,float epsilon = 0.00001f,  string name = "");
 
     /**
       *  @brief Group normalization layer.

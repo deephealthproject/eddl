@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
     int batch_size = 100;
     int num_classes = 2;
 
-    int length=100;
+    int length=10;
     int embdim=250;
     int vocsize=75181;
 
@@ -39,8 +39,8 @@ int main(int argc, char **argv) {
     layer l = in;
 
     layer lE=Embedding(l, vocsize, length, embdim);
-    l = GlorotUniform(L2(lE,0.001));
-    l = Reshape(l,{1,length,embdim});
+
+    l = Reshape(lE,{1,length,embdim});
     layer l1 = ReLu(BatchNormalization(Conv(l,128,{1,embdim},{1,1},"same,none")));
     layer l2 = ReLu(BatchNormalization(Conv(l,128,{2,embdim},{1,1},"same,none")));
     layer l3 = ReLu(BatchNormalization(Conv(l,128,{3,embdim},{1,1},"same,none")));

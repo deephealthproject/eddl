@@ -253,18 +253,18 @@ Layer *LLayerNorm::share(int c, int bs, vector<Layer *> p) {
     if (affine) {
       n->bn_g=bn_g;
       n->bn_b=bn_b;
-      params.push_back(bn_g);
-      params.push_back(bn_b);
+      n->params.push_back(bn_g);
+      n->params.push_back(bn_b);
 
       n->gbn_g=gbn_g;
       n->gbn_b=gbn_b;
-      gradients.push_back(gbn_g);
-      gradients.push_back(gbn_b);
+      n->gradients.push_back(gbn_g);
+      n->gradients.push_back(gbn_b);
     }
     n->mean=mean;
     n->variance=variance;
-    params.push_back(mean);
-    params.push_back(variance);
+    n->params.push_back(mean);
+    n->params.push_back(variance);
 
     return n;
 }
