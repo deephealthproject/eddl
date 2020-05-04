@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
     int batch_size = 100;
     int num_classes = 2;
 
-    int length=10;
+    int length=100;
     int embdim=250;
     int vocsize=75181;
 
