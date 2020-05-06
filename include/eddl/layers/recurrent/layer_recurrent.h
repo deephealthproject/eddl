@@ -27,9 +27,7 @@ using namespace std;
 class LRNN : public MLayer {
 public:
     int units;
-    int num_layers;
     bool use_bias;
-    float dropout;
     bool bidirectional;
     static int total_layers;
     string activation;
@@ -60,16 +58,34 @@ public:
 
 
 /// LSTM Layer
-class LLSTM : public LinLayer {
+class LLSTM : public MLayer {
 public:
     int units;
-    int num_layers;
     bool use_bias;
-    float dropout;
     bool bidirectional;
     static int total_layers;
 
-    LLSTM(Layer *parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev, int mem);
+    Tensor *state_c;
+    Tensor *state_h;
+    Tensor *delta_h;
+    Tensor *delta_c;
+
+    Tensor *Wih,*Wix;
+    Tensor *Wfh,*Wfx;
+    Tensor *Woh,*Wox;
+    Tensor *Wch,*Wcx;
+
+    Tensor *gWih,*gWix;
+    Tensor *gWfh,*gWfx;
+    Tensor *gWoh,*gWox;
+    Tensor *gWch,*gWcx;
+
+    Tensor *in,*fn,*on,*cn;
+    Tensor *incn,*cn1fn;
+
+
+
+    LLSTM(vector<Layer *> in, int units, bool bidirectional, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

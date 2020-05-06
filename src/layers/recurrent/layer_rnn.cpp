@@ -22,43 +22,39 @@ int LRNN::total_layers = 0;
 LRNN::LRNN(vector<Layer *> parent, int units, string activation, bool use_bias, bool bidirectional, string name, int dev, int mem) : MLayer(name, dev, mem) {
 
     this->units = units;
-    int ndim=units;
-    this->num_layers = num_layers;
     this->use_bias = use_bias;
-    this->dropout = dropout;
     this->bidirectional = bidirectional;
-    isrecurrent=true;
     this->activation=activation;
 
-    // TODO: Implement
+    isrecurrent=true;
 
     if (parent[0]->output->ndim != 2) msg("LRNN only works over 2D tensors", "LRNN");
 
     if(name.empty()) this->name = "RNN" + to_string(++total_layers);
 
     input = parent[0]->output;
-    output = new Tensor(vector<int>{input->shape[0], ndim}, dev);
-    preoutput = new Tensor(vector<int>{input->shape[0], ndim}, dev);
+    output = new Tensor(vector<int>{input->shape[0], units}, dev);
+    preoutput = new Tensor(vector<int>{input->shape[0], units}, dev);
 
     // From parent layer
-    Wx = new Tensor(vector<int>{input->shape[1], ndim}, dev);
+    Wx = new Tensor(vector<int>{input->shape[1], units}, dev);
     params.push_back(Wx);
 
-    gWx = new Tensor(vector<int>{input->shape[1], ndim}, dev);
+    gWx = new Tensor(vector<int>{input->shape[1], units}, dev);
     gradients.push_back(gWx);
 
     // From t-1 RNN
-    Wy = new Tensor(vector<int>{ndim, ndim}, dev);
+    Wy = new Tensor(vector<int>{units, units}, dev);
     params.push_back(Wy);
 
-    gWy = new Tensor(vector<int>{ndim, ndim}, dev);
+    gWy = new Tensor(vector<int>{units, units}, dev);
     gradients.push_back(gWy);
 
 
     if (use_bias) {
-      bias = new Tensor(vector<int>{ndim}, dev);
+      bias = new Tensor(vector<int>{units}, dev);
       params.push_back(bias);
-      gbias = new Tensor(vector<int>{ndim}, dev);
+      gbias = new Tensor(vector<int>{units}, dev);
       if (use_bias) gradients.push_back(gbias);
     }
 

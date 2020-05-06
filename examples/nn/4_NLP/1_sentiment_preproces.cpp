@@ -28,7 +28,6 @@ using namespace eddl;
 void build_dict(map<string,int> &dict,string fname)
 {
   ifstream file;
-  char buffer[256];
 
   file.open(fname);
   string str;

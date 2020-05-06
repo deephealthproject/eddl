@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 
     int length=100;
     int embdim=250;
-    int vocsize=75181;
+    int vocsize=72682;
 
     // Define network
     layer in = Input({1}); //1 word
