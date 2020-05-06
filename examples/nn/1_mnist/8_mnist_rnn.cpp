@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
     int num_classes = 10;
 
     // Define network
-    layer in = Input({1});
+    layer in = Input({28});
     layer l = in;  // Aux var
 
     l = LeakyReLu(Dense(l, 32));
@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          rmsprop(0.001), // Optimizer
+          rmsprop(0.0001), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           //CS_GPU({1}) // one GPU
@@ -68,8 +68,8 @@ int main(int argc, char **argv) {
     Tensor* y_test = Tensor::load("mnist_tsY.bin");
 
     // Reshape to fit recurrent batch x timestep x dim
-    x_train->reshape_({60000,784,1});
-    x_test->reshape_({10000,784,1});
+    x_train->reshape_({60000,28,28});
+    x_test->reshape_({10000,28,28});
 
     // Preprocessing
     x_train->div_(255.0f);
