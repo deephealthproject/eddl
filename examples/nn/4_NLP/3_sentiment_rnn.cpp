@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
 
     //set_trainable(lE,false);
 
-    l = L2(RNN(lE,128),0.0001);
+    l = L2(RNN(lE,128),0.001);
     l = LeakyReLu(Dense(l,64));
 
     layer out = Softmax(Dense(l, num_classes));
@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          rmsprop(0.00001), // Optimizer
+          rmsprop(0.0001), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_GPU({1}) // one GPU

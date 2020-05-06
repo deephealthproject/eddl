@@ -92,6 +92,7 @@ void LLSTM::mem_delta(){
         delta_h=delta = Tensor::zeros(this->output->shape, this->output->device);
         delta_c = Tensor::zeros(this->output->shape, this->output->device);
 
+        delta_states.clear();
         delta_states.push_back(delta_h);
         delta_states.push_back(delta_c);
 
