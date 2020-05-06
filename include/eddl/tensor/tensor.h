@@ -88,7 +88,7 @@ public:
 
     // Data pointers
     float *ptr;
-    Eigen::MatrixXf *ptr2;  // TODO: I don't like. float or eigen, not both
+    Eigen::MatrixXf *ptr2;  // TODO: I don't like it. float or eigen, not both
 
     // Aux variables
     int gpu_device;
@@ -169,7 +169,7 @@ public:
 
     // Core
     vector<int> getShape();
-    static int get_mode(string mode);
+    static int get_mode(string mode);  // TODO: Delete?
 
     /**
       *  @brief Check if all dimensions in the tensor are the same.

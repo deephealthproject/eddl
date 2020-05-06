@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.5
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include "eddl/apis/eddl.h"
-#include "eddl/apis/eddlT.h"
+
 
 using namespace eddl;
 
@@ -131,20 +131,20 @@ int main(int argc, char **argv){
   //////////////////////////////////////////////////////////////
   // Load and preprocess training data
   cout<<"Reading train numpy\n";
-  tensor x_train_f = Tensor::load<uint8_t>("drive_trX.npy");
-  tensor x_train=Tensor::permute(x_train_f, {0,3,1,2});
+  Tensor* x_train_f = Tensor::load<uint8_t>("drive_trX.npy");
+  Tensor* x_train=Tensor::permute(x_train_f, {0,3,1,2});
   x_train->info();
-  eddlT::div_(x_train,255.0);
+  x_train->div_(255.0f);
   //permute
 
   cout<<"Reading test numpy\n";
-  tensor y_train = Tensor::load<uint8_t>("drive_trY.npy");
+  Tensor* y_train = Tensor::load<uint8_t>("drive_trY.npy");
   y_train->info();
-  eddlT::reshape_(y_train,{20,1,584,584});
-  eddlT::div_(y_train,255.0);
+  y_train->reshape_({20,1,584,584});
+  y_train->div_(255.0f);
 
-  tensor xbatch = eddlT::create({batch_size,3,584,584});
-  tensor ybatch = eddlT::create({batch_size,1,584,584});
+  Tensor* xbatch = new Tensor({batch_size,3,584,584});
+  Tensor* ybatch = new Tensor({batch_size,1,584,584});
 
 
   //////////////////////////////////////////////////////////////
@@ -157,28 +157,28 @@ int main(int argc, char **argv){
       next_batch({x_train,y_train},{xbatch,ybatch});
 
 
-      // tensor xout = eddlT::select(xbatch,0);
-      // xout->save("./0.tr_out_prev.jpg");
-      // delete xout;
-
-      // tensor yout = eddlT::select(ybatch,0);
-      // yout->save("./0.ts_out_prev.jpg");
-      // delete yout;
+//       Tensor* xout = xbatch->select({"0"});  // TODO: Review. Not tested
+//       xout->save("./0.tr_out_prev.jpg");
+//       delete xout;
+//
+//       Tensor* yout = ybatch->select({"0"});
+//       yout->save("./0.ts_out_prev.jpg");
+//       delete yout;
 
       // DA
       forward(danet, vector<Tensor *>{xbatch, ybatch});
 
       // get tensors from DA
-      tensor xbatch_da = getOutput(img);
-      tensor ybatch_da = getOutput(mask);
+      Tensor* xbatch_da = getOutput(img);
+      Tensor* ybatch_da = getOutput(mask);
 
-      // xout = eddlT::select(xbatch_da,0);
-      // xout->save("./1.tr_out_after.jpg");
-      // delete xout;
-
-      // yout = eddlT::select(ybatch_da,0);
-      // yout->save("./1.ts_out_after.jpg");
-      // delete yout;
+//       xout = xbatch_da->select({"0"});   // TODO: Review. Not tested
+//       xout->save("./1.tr_out_after.jpg");
+//       delete xout;
+//
+//       yout = ybatch_da->select({"0"});
+//       yout->save("./1.ts_out_after.jpg");
+//       delete yout;
 
       // SegNet
       train_batch(segnet, {xbatch_da},{ybatch_da});
@@ -187,7 +187,8 @@ int main(int argc, char **argv){
       // printf("  sum=%f",yout->sum());
       printf("\r");
 
-      tensor yout = eddlT::select(getOutput(out),0);
+      Tensor* yout = getOutput(out);
+      yout = yout->select({"0"});  // TODO: Review. Not tested
       yout->save("./out.jpg");
       delete yout;
     }

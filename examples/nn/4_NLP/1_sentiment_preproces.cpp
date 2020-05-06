@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.5
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -17,7 +17,7 @@
 #include <string.h>
 
 #include "eddl/apis/eddl.h"
-#include "eddl/apis/eddlT.h"
+
 
 using namespace eddl;
 
@@ -83,8 +83,8 @@ void convert(map<string,int>  &dict, string list_fname, int numlines, int length
   cout<<"Converting "<<list_fname<<endl;
   file.open(list_fname);
 
-  tensor xtr=new Tensor({numlines,length});
-  tensor ytr=new Tensor({numlines,2});
+  Tensor* xtr=new Tensor({numlines,length});
+  Tensor* ytr=new Tensor({numlines,2});
   ytr->fill_(0.0);
 
   float *xptr=xtr->ptr;
@@ -170,29 +170,3 @@ int main(int argc, char **argv) {
     convert(dict, "list_ts.txt", numfiles, length, "test");
 
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-////////

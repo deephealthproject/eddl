@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.5
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include "eddl/apis/eddl.h"
-#include "eddl/apis/eddlT.h"
+
 
 using namespace eddl;
 
@@ -66,18 +66,18 @@ int main(int argc, char **argv) {
     summary(net);
 
     // Load dataset
-    tensor x_train=eddlT::load("imdb_trX.bin");
+    Tensor* x_train=Tensor::load("imdb_trX.bin");
     //x_train->info();
-    tensor y_train=eddlT::load("imdb_trY.bin");
+    Tensor* y_train=Tensor::load("imdb_trY.bin");
     //y_train->info();
     // Load dataset
-    tensor x_test=eddlT::load("imdb_tsX.bin");
+    Tensor* x_test=Tensor::load("imdb_tsX.bin");
     //x_train->info();
-    tensor y_test=eddlT::load("imdb_tsY.bin");
+    Tensor* y_test=Tensor::load("imdb_tsY.bin");
     //y_train->info();
 
     // Train model
-    tensor E=eddlT::load("embedding.bin");
+    Tensor* E=Tensor::load("embedding.bin");
     E->info();
 
     Tensor::copy(E,lE->params[0]);
@@ -92,19 +92,3 @@ int main(int argc, char **argv) {
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////

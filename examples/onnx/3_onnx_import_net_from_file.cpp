@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include "eddl/apis/eddl.h"
-#include "eddl/apis/eddlT.h"
+
 #include "eddl/serialization/onnx/eddl_onnx.h" // Not allowed
 
 using namespace eddl;
@@ -54,15 +54,15 @@ int main(int argc, char **argv) {
     summary(net);
 
     // Load dataset
-    tensor x_train = eddlT::load("mnist_trX.bin");
-    tensor y_train = eddlT::load("mnist_trY.bin");
-    tensor x_test = eddlT::load("mnist_tsX.bin");
-    tensor y_test = eddlT::load("mnist_tsY.bin");
+    Tensor* x_train = Tensor::load("mnist_trX.bin");
+    Tensor* y_train = Tensor::load("mnist_trY.bin");
+    Tensor* x_test = Tensor::load("mnist_tsX.bin");
+    Tensor* y_test = Tensor::load("mnist_tsY.bin");
 
 
     // Preprocessing
-    eddlT::div_(x_train, 255.0);
-    eddlT::div_(x_test, 255.0);
+    x_train->div_(255.0f);
+    x_test->div_(255.0f);
 
     // Evaluate
     evaluate(net, {x_test}, {y_test});
