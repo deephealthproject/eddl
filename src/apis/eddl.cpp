@@ -505,8 +505,8 @@ namespace eddl {
         return new LDropout(parent, rate, name, DEV_CPU, 0);
     }
 
-    layer Embedding(layer parent, int vocsize, int length, int output_dim,  string name){
-        return new LEmbedding(parent, vocsize, length, output_dim,  name, DEV_CPU, 0);
+    layer Embedding(layer parent, int vocsize, int length, int output_dim,  bool mask_zeros, string name){
+        return new LEmbedding(parent, vocsize, length, output_dim, mask_zeros, name, DEV_CPU, 0);
     }
 
     layer Input(const vector<int> &shape, string name){

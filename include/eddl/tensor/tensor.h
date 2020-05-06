@@ -753,8 +753,8 @@ public:
     static void copy(Tensor *A, Tensor *B);
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
     static void select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
-    static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
-    static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0);
+    static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool mask_zeros=false);
+    static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0, bool mask_zeros=false);
     static void tile(Tensor *A, Tensor *B);
 
     // Generators (In-place) *************************************

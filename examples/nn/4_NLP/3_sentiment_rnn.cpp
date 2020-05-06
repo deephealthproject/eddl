@@ -17,7 +17,7 @@
 using namespace eddl;
 
 //////////////////////////////////
-// Embeding+CNN for
+// Embeding+RNN for
 // aclImdb sentiment analysis
 //////////////////////////////////
 
@@ -38,14 +38,12 @@ int main(int argc, char **argv) {
     layer in = Input({1}); //1 word
     layer l = in;
 
-    layer lE = Embedding(l, vocsize, 1,embdim);
+    layer lE = Embedding(l, vocsize, 1, embdim);
 
-    set_trainable(lE,false);
+    //set_trainable(lE,false);
 
-    l = L2(RNN(lE,128,"relu"),0.001);
-    //l = L2(RNN(lE,256,"relu"),0.01);
-    //l = ReLu(Dense(l,128));
-    l = LeakyReLu(Dense(l,64));
+    l = BatchNormalization(L2(RNN(lE,128,"relu"),0.001),false);
+    l = LeakyReLu(BatchNormalization(Dense(l,64)));
 
     layer out = Softmax(Dense(l, num_classes));
     model net = Model({in}, {out});
@@ -55,7 +53,7 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          sgd(0.0001), // Optimizer
+          rmsprop(0.001), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_GPU({1}) // one GPU

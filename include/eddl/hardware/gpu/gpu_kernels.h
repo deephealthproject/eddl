@@ -28,8 +28,8 @@ __global__ void eye(float* a, long int rows, long int cols, int offset);
 __global__ void fill(float *aptr,float *bptr,int t,int aini,int at,int bini,int bt,int tot,int inc);
 __global__ void fill_(float* a, float v, long int size);
 __global__ void mask(float* a, float v, long int size);
-__global__ void select_rows(float* A, float* B, int rowsize, int size, int* indices, int ini);
-__global__ void deselect_rows(float* A, float* B, int rowsize, int size, int* indices, int ini,int inc);
+__global__ void select_rows(float* A, float* B, int rowsize, int size, int* indices, int ini,bool mask_zeros);
+__global__ void deselect_rows(float* A, float* B, int rowsize, int size, int* indices, int ini,int inc,bool mask_zeros);
 
 __global__ void select(float* A, float* B, int size, int* indices);
 __global__ void select_back(float* A, float* B, int size, int* indices);

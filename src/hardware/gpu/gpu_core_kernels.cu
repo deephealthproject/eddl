@@ -50,7 +50,7 @@ __global__ void mask(float* a, float v, long int size){
     }
 }
 
-__global__ void select_rows(float* A, float* B, int rowsize, int size, int* indices, int ini)
+__global__ void select_rows(float* A, float* B, int rowsize, int size, int* indices, int ini, bool mask_zeros)
 {
   long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -61,11 +61,12 @@ __global__ void select_rows(float* A, float* B, int rowsize, int size, int* indi
     int posA=(indices[b]*rowsize)+c;
     int posB=((b-ini)*rowsize)+c;
 
-    B[posB]=A[posA];
+    if ((mask_zeros)&&(indices[b]==0)) B[posB]=0;
+    else B[posB]=A[posA];
   }
 
 }
-__global__ void deselect_rows(float* A, float* B, int rowsize, int size, int* indices, int ini, int inc)
+__global__ void deselect_rows(float* A, float* B, int rowsize, int size, int* indices, int ini, int inc, bool mask_zeros)
 {
   long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -76,9 +77,11 @@ __global__ void deselect_rows(float* A, float* B, int rowsize, int size, int* in
     int posA=((b-ini)*rowsize)+c;
     int posB=(indices[b]*rowsize)+c;
 
-
-    if (inc) B[posB]+=A[posA];
-    else B[posB]=A[posA];
+    if ((mask_zeros)&&(indices[b]==0)) B[posB]=0;
+    else {
+      if (inc) B[posB]+=A[posA];
+      else B[posB]=A[posA];
+    }
   }
 
 }

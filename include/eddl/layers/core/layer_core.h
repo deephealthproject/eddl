@@ -85,12 +85,13 @@ public:
     int dim;
     int vocsize;
     int length;
+    bool mask_zeros;
     Tensor *E;
     Tensor *gE;
     vector<int> sind;
     static int total_layers;
 
-    LEmbedding(Layer *parent, int vocsize, int lenght, int dim, string name, int dev, int mem);
+    LEmbedding(Layer *parent, int vocsize, int lenght, int dim, bool mask_zeros, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

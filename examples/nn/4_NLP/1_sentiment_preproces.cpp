@@ -57,18 +57,18 @@ int convert(map<string,int>  &dict,vector<int> &out, string fname, int length)
   while ((getline(file, str, ' '))&&(i<length)) {
       if (!dict.count(str)) {
         unk++;
-        //cout<<"Out of vocabulary: "<<str<<endl;
-        //exit(1);
+        out.push_back(0); // 0 is for unknown
+        i++;
       }
       else {
-         out.push_back(dict[str]+1); // 0 is for padding
+         out.push_back(dict[str]);
          i++;
       }
 
   }
 
   // padding if needed
-  for(int j=i;j<length;j++) out.push_back(0);
+  for(int j=i;j<length;j++) out.push_back(0); // 0 for padding
 
   return unk;
 
@@ -140,18 +140,21 @@ int main(int argc, char **argv) {
     file.open("list_tr.txt");
     int i=0;
 
-    int c=0;
+
+    int numfiles=0;
+    // special word for padding and unknown
+    dict["UNK"]=0; // 0 allows dropout in the input
     while (getline(file, str, '\n')) {
       if (i%2==0) {
           build_dict(dict,str);
           cout<<"Dict size:"<<dict.size()<<"\r";
-          c++;
+          numfiles++;
       }
       i++;
     }
     file.close();
 
-    cout<<"Vocab:"<<dict.size()+1<<" size\n"; //0 for padding
+    cout<<"Vocab:"<<dict.size()<<" size\n"; //0 for padding
     ofstream of;
     of.open("vocab.txt");
 
@@ -163,8 +166,8 @@ int main(int argc, char **argv) {
     of.close();
 
 
-    convert(dict, "list_tr.txt", c, length, "train");
-    convert(dict, "list_ts.txt", c, length, "test");
+    convert(dict, "list_tr.txt", numfiles, length, "train");
+    convert(dict, "list_ts.txt", numfiles, length, "test");
 
   }
 

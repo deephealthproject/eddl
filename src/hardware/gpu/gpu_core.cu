@@ -120,7 +120,7 @@ void gpu_fill_(Tensor *A, float v) {
     check_cuda(cudaDeviceSynchronize(),"set");
 }
 
-void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end)
+void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool mask_zeros)
 {
   int device=A->gpu_device;
   cudaSetDevice(device);
@@ -145,14 +145,14 @@ void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end)
   dim3 dimGrid(grid);
   dim3 dimBlock(block);
 
-  select_rows<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[1], size, ind, ini);
+  select_rows<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[1], size, ind, ini, mask_zeros);
   check_cuda(cudaDeviceSynchronize(), "gpu_select");
 
   cudaFree(ind);
 
 }
 
-void gpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, int inc)
+void gpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, int inc, bool mask_zeros)
 {
   int device=A->gpu_device;
   cudaSetDevice(device);
@@ -177,7 +177,7 @@ void gpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, int 
   dim3 dimGrid(grid);
   dim3 dimBlock(block);
 
-  deselect_rows<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[1], size, ind, ini, inc);
+  deselect_rows<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[1], size, ind, ini, inc,mask_zeros);
   check_cuda(cudaDeviceSynchronize(), "gpu_select");
 
   cudaFree(ind);

@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
     download_imdb();
 
     // Settings
-    int epochs = 25;
+    int epochs = 100;
     int batch_size = 100;
     int num_classes = 2;
 
@@ -38,13 +38,35 @@ int main(int argc, char **argv) {
     layer in = Input({length});
     layer l = in;
 
-    layer lE=Embedding(l, vocsize, length, embdim);
+    layer lE=Embedding(l, vocsize, length, embdim, true); // mask_zeros
 
-    l = Reshape(lE,{1,length,embdim});
-    layer l1 = ReLu(BatchNormalization(Conv(l,128,{1,embdim},{1,1},"same,none")));
-    layer l2 = ReLu(BatchNormalization(Conv(l,128,{2,embdim},{1,1},"same,none")));
-    layer l3 = ReLu(BatchNormalization(Conv(l,128,{3,embdim},{1,1},"same,none")));
-    l=GlobalMaxPool(Concat({l1,l2,l3}));
+    l=Dropout(lE,0.1); //5% of training words treated as unknown
+
+    l = Reshape(l,{1,length,embdim});
+    layer l1 = ReLu(BatchNormalization(Conv(l,128,{1,embdim},{1,1},"same,none",false)));
+    layer l2 = ReLu(BatchNormalization(Conv(l,128,{2,embdim},{1,1},"same,none",false)));
+    layer l3 = ReLu(BatchNormalization(Conv(l,128,{3,embdim},{1,1},"same,none",false)));
+
+    layer lc1=l=Concat({l1,l2,l3});
+
+
+    l1 = ReLu(BatchNormalization(Conv(l,128,{1,1},{1,1},"same,none",false)));
+    l2 = ReLu(BatchNormalization(Conv(l,128,{2,1},{1,1},"same,none",false)));
+    l3 = ReLu(BatchNormalization(Conv(l,128,{3,1},{1,1},"same,none",false)));
+
+    layer lc2=l=Concat({l1,l2,l3});
+
+
+    l1 = ReLu(BatchNormalization(Conv(l,128,{1,1},{1,1},"same,none",false)));
+    l2 = ReLu(BatchNormalization(Conv(l,128,{2,1},{1,1},"same,none",false)));
+    l3 = ReLu(BatchNormalization(Conv(l,128,{3,1},{1,1},"same,none",false)));
+
+    layer lc3=l=Concat({l1,l2,l3});
+
+    l=Add({lc1,lc2,lc3});
+
+
+    l=GlobalMaxPool(l);
 
     l = Reshape(l,{-1});
 
@@ -82,8 +104,10 @@ int main(int argc, char **argv) {
     //y_train->info();
 
     // Train model
-    fit(net, {x_train}, {y_train}, batch_size, epochs);
-    evaluate(net,{x_test},{y_test});
+    for(int i=0;i<epochs;i++) {
+      fit(net, {x_train}, {y_train}, batch_size, 1);
+      evaluate(net,{x_test},{y_test});
+    }
 
 
     tensor E=getParam(lE,0);

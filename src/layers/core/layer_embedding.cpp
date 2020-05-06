@@ -19,7 +19,7 @@ using namespace std;
 
 int LEmbedding::total_layers = 0;
 
-LEmbedding::LEmbedding(Layer *parent, int vocsize, int length, int dim, string name, int dev, int mem): LinLayer(name, dev, mem) {
+LEmbedding::LEmbedding(Layer *parent, int vocsize, int length, int dim, bool mask_zeros, string name, int dev, int mem): LinLayer(name, dev, mem) {
     // TODO: Implement
     if(name.empty()) this->name = "embedding" + to_string(++total_layers);
 
@@ -83,7 +83,7 @@ void LEmbedding::forward()
   for(int i=0;i<b*length;i++) {
     int val=inputc->get_({i});
     //int val=0;
-    if (val>=vocsize) {msg("word > vocsize","LEmbedding::forward");}
+    if (val>=vocsize) {cout<<"word:"<<val<<endl;msg("word > vocsize","LEmbedding::forward");}
     sind.push_back(val);
   }
 
@@ -91,7 +91,7 @@ void LEmbedding::forward()
 
   output->reshape_({b*length,dim});
 
-  Tensor::select(E,output, sind, 0,sind.size());
+  Tensor::select(E,output, sind, 0,sind.size(), mask_zeros);
 
   if (indim==2) input->reshape_({b,length});
 
@@ -105,7 +105,7 @@ void LEmbedding::backward()
      int b=output->shape[0];
      delta->reshape_({b*length,dim});
 
-     Tensor::deselect(delta,gE, sind, 0,sind.size(),1); //1=inc
+     Tensor::deselect(delta,gE, sind, 0,sind.size(),1, mask_zeros); //1=inc
 
      delta->reshape_({b,length*dim});
 
@@ -117,7 +117,7 @@ void LEmbedding::backward()
 
 
 Layer *LEmbedding::share(int c, int bs, vector<Layer *> p) {
-    LEmbedding *n = new LEmbedding(p[0],vocsize, length, dim,  "share_"+to_string(c)+this->name, this->dev, this->mem_level);
+    LEmbedding *n = new LEmbedding(p[0],vocsize, length, dim, mask_zeros, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
     n->isshared=true;
     n->trainable = trainable;
@@ -141,7 +141,7 @@ Layer *LEmbedding::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LEmbedding::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LEmbedding *n = new LEmbedding(p[0],vocsize, length, dim, "clone_"+to_string(c)+this->name, todev, this->mem_level);
+    LEmbedding *n = new LEmbedding(p[0],vocsize, length, dim, mask_zeros, "clone_"+to_string(c)+this->name, todev, this->mem_level);
     n->orig = this;
     n->trainable = trainable;
     n->reg=reg;
