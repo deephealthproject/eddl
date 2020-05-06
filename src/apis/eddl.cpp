@@ -860,7 +860,7 @@ namespace eddl {
         return new LRNN({parent}, units, activation, use_bias, bidirectional, name, DEV_CPU, 0);
     }
 
-    layer LSTM(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name){
+    layer LSTM(layer parent, int units, bool bidirectional, string name){
         return new LLSTM({parent}, units, bidirectional, name, DEV_CPU, 0);
     }
 

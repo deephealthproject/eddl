@@ -63,6 +63,8 @@ public:
 
     void backward() override;
 
+    void mem_delta() override;
+
     void initialize() override;
 
     void resize(int batch) override;

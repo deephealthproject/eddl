@@ -82,6 +82,7 @@ public:
 
     Tensor *in,*fn,*on,*cn;
     Tensor *incn,*cn1fn;
+    Tensor *sh;
 
 
 
@@ -91,6 +92,8 @@ public:
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 
+    void resize(int batch) override;
+    void mem_delta() override;
     void forward() override;
 
     void backward() override;

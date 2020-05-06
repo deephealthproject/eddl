@@ -1416,7 +1416,7 @@ typedef NetLoss * metric;
       *  @param name  A name for the operation
       *  @return     The LSTM layer
     */
-    layer LSTM(layer parent, int units, int num_layers, bool use_bias = true, float dropout = .0f, bool bidirectional = false, string name = "");
+    layer LSTM(layer parent, int units, bool bidirectional = false, string name = "");
 
 
     // Layers Methods

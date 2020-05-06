@@ -131,7 +131,7 @@ void convert(map<string,int>  &dict, string list_fname, int numlines, int length
 int main(int argc, char **argv) {
     // build dict
     map<string,int> dict;
-    int length=100;
+    int length=10;
     ifstream file;
     string str,str2;
 

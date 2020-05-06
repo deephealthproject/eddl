@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
     int batch_size = 100;
     int num_classes = 2;
 
-    int length=100;
+    int length=10;
     int embdim=250;
     int vocsize=72682;
 
@@ -42,8 +42,8 @@ int main(int argc, char **argv) {
 
     //set_trainable(lE,false);
 
-    l = BatchNormalization(L2(RNN(lE,128,"relu"),0.001),false);
-    l = LeakyReLu(BatchNormalization(Dense(l,64)));
+    l = L2(RNN(lE,128),0.0001);
+    l = LeakyReLu(Dense(l,64));
 
     layer out = Softmax(Dense(l, num_classes));
     model net = Model({in}, {out});
@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          rmsprop(0.001), // Optimizer
+          rmsprop(0.00001), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_GPU({1}) // one GPU
@@ -77,12 +77,13 @@ int main(int argc, char **argv) {
     //y_train->info();
 
     // Train model
+    /*
     Tensor* E=Tensor::load("embedding.bin");
     E->info();
 
     Tensor::copy(E,lE->params[0]);
     distributeTensor(lE,"param",0);
-
+    */
 
     x_train->reshape_({x_train->shape[0],length,1}); //batch x timesteps x input_dim
     x_test->reshape_({x_test->shape[0],length,1}); //batch x timesteps x input_dim
