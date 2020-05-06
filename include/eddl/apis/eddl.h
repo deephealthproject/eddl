@@ -760,7 +760,7 @@ typedef NetLoss * metric;
       *  @param name  A name for the operation
       *  @return The embedded input
     */
-    layer Embedding(layer parent, int vocsize, int length, int output_dim,  string name = ""); //Todo: Implement
+    layer Embedding(layer parent, int vocsize, int length, int output_dim,  bool mask_zeros=false, string name = ""); //Todo: Implement
 
     /**
       *  @brief Transposes a Layer.

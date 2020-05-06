@@ -536,7 +536,7 @@ void Tensor::set_select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
 
 }
 
-void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
+void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool mask_zeros) {
     ///////////////////////////////////////
     /// Select from A to B, A is bigger
     //////////////////////////////////////
@@ -549,19 +549,19 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
 
     //B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
-        cpu_select(A, B, sind, ini, end);
+        cpu_select(A, B, sind, ini, end,mask_zeros);
     }
     else if ((A->isGPU()) && (B->isCPU())) {
         Tensor *Ac=A->clone();
         Ac->toCPU();
 
-        cpu_select(Ac, B, sind, ini, end);
+        cpu_select(Ac, B, sind, ini, end,mask_zeros);
 
         delete Ac;
     }else if ((A->isCPU()) && (B->isGPU())) {
         Tensor *Bc=B->clone();
         Bc->toCPU();
-        cpu_select(A, Bc, sind, ini, end);
+        cpu_select(A, Bc, sind, ini, end,mask_zeros);
 
         Tensor::copy(Bc,B);
 
@@ -570,7 +570,7 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
     #ifdef cGPU
         else if (A->isGPU() && B->isGPU())
       {
-        gpu_select(A, B, sind, ini, end);
+        gpu_select(A, B, sind, ini, end,mask_zeros);
       }
     #endif
     else {
@@ -578,7 +578,7 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
     }
     //B->tsem->unlock();
 }
-void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc) {
+void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc, bool mask_zeros) {
     ///////////////////////////////////////
     /// deSelect from A to B, B is bigger
     //////////////////////////////////////
@@ -591,19 +591,19 @@ void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,i
 
     //B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
-        cpu_deselect(A, B, sind, ini, end, inc);
+        cpu_deselect(A, B, sind, ini, end, inc,mask_zeros);
     }
     else if ((A->isGPU()) && (B->isCPU())) {
         Tensor *Ac=A->clone();
         Ac->toCPU();
 
-        cpu_deselect(Ac, B, sind, ini, end, inc);
+        cpu_deselect(Ac, B, sind, ini, end, inc,mask_zeros);
 
         delete Ac;
     }else if ((A->isCPU()) && (B->isGPU())) {
         Tensor *Bc=B->clone();
         Bc->toCPU();
-        cpu_deselect(A, Bc, sind, ini, end, inc);
+        cpu_deselect(A, Bc, sind, ini, end, inc,mask_zeros);
 
         Tensor::copy(Bc,B);
 
@@ -612,7 +612,7 @@ void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,i
     #ifdef cGPU
         else if (A->isGPU() && B->isGPU())
       {
-        gpu_deselect(A, B, sind, ini, end, inc);
+        gpu_deselect(A, B, sind, ini, end, inc,mask_zeros);
       }
     #endif
     else {
