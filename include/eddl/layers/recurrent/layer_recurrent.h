@@ -94,6 +94,8 @@ public:
 
     void resize(int batch) override;
     void mem_delta() override;
+    void free_delta() override;
+
     void forward() override;
 
     void backward() override;

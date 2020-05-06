@@ -87,11 +87,12 @@ LLSTM::LLSTM(vector<Layer *> parent, int units,  bool bidirectional, string name
 
 // RESIZE , MEM_DELTA states
 void LLSTM::mem_delta(){
-    // Reserve space for the parent's delta
+    // Reserve space for delta
     if(delta == nullptr){
         delta_h=delta = Tensor::zeros(this->output->shape, this->output->device);
         delta_c = Tensor::zeros(this->output->shape, this->output->device);
 
+        delta_states.clear();
         delta_states.push_back(delta_h);
         delta_states.push_back(delta_c);
 
@@ -101,6 +102,23 @@ void LLSTM::mem_delta(){
         }
     }
 }
+
+void LLSTM::free_delta(){
+    if (delta != nullptr){
+        // The Tensor destructor takes into account the device details
+        delete delta;
+        delta = nullptr;  // Ensure nullptr
+
+        delete delta_c;
+        delta_c=nullptr;
+
+        if(this->verbosity_level >= 2){
+            std::cout << "Deleted delta for: " + this->name << std::endl;
+        }
+    }
+}
+
+
 void LLSTM::resize(int batch){
     if (output!=nullptr) {
       output->resize(batch);
