@@ -52,10 +52,10 @@ LRNN::LRNN(vector<Layer *> parent, int units, string activation, bool use_bias, 
 
 
     if (use_bias) {
-      bias = new Tensor(vector<int>{units}, dev);
-      params.push_back(bias);
-      gbias = new Tensor(vector<int>{units}, dev);
-      if (use_bias) gradients.push_back(gbias);
+        bias = new Tensor(vector<int>{units}, dev);
+        params.push_back(bias);
+        gbias = new Tensor(vector<int>{units}, dev);
+        if (use_bias) gradients.push_back(gbias);  // TODO: if (use_bias) again?
     }
 
 
@@ -69,56 +69,56 @@ LRNN::LRNN(vector<Layer *> parent, int units, string activation, bool use_bias, 
 
 // virtual
 void LRNN::forward() {
-  if (preoutput->size!=output->size)
-    preoutput->resize(output->shape[0]);
+    if (preoutput->size!=output->size)
+        preoutput->resize(output->shape[0]);
 
-  Tensor::mult2D(parent[0]->output, 0, Wx, 0, preoutput, 0);
-  if (parent.size()>1)
-    Tensor::mult2D(parent[1]->output, 0, Wy, 0, preoutput, 1);
-  if (use_bias) Tensor::sum2D_rowwise(preoutput, bias, preoutput);
+    Tensor::mult2D(parent[0]->output, 0, Wx, 0, preoutput, 0);
+    if (parent.size()>1)
+        Tensor::mult2D(parent[1]->output, 0, Wy, 0, preoutput, 1);
+    if (use_bias) Tensor::sum2D_rowwise(preoutput, bias, preoutput);
 
-  if (activation == "relu"){
-      ReLu(preoutput, output);
-  }else if (activation == "sigmoid"){
-      Sigmoid(preoutput, output);
-  }else if (activation == "hard_sigmoid"){
-      HardSigmoid(preoutput, output);
-  }else if (activation == "tanh"){
-      Tanh(preoutput, output);
-  }else if (activation == "none") {
-    Tensor::copy(preoutput,output);
-  }else {
-    msg("Activation not supported for RNN","RNN::RNN");
-  }
+    if (activation == "relu"){
+        ReLu(preoutput, output);
+    }else if (activation == "sigmoid"){
+        Sigmoid(preoutput, output);
+    }else if (activation == "hard_sigmoid"){
+        HardSigmoid(preoutput, output);
+    }else if (activation == "tanh"){
+        Tanh(preoutput, output);
+    }else if (activation == "none") {
+        Tensor::copy(preoutput,output);
+    }else {
+        msg("Activation not supported for RNN","RNN::RNN");
+    }
 
 }
 
 void LRNN::backward() {
-  //get gradients with provided delta
-  if (activation == "relu"){
-      D_ReLu(delta, preoutput, delta);
-  }else if (activation == "sigmoid"){
-      D_Sigmoid(delta, output, delta);
-  }else if (activation == "hard_sigmoid"){
-      D_HardSigmoid(delta, preoutput, delta);
-  }else if (activation == "tanh"){
-      D_Tanh(delta, output, delta);
-  }
+    //get gradients with provided delta
+    if (activation == "relu"){
+        D_ReLu(delta, preoutput, delta);
+    }else if (activation == "sigmoid"){
+        D_Sigmoid(delta, output, delta);
+    }else if (activation == "hard_sigmoid"){
+        D_HardSigmoid(delta, preoutput, delta);
+    }else if (activation == "tanh"){
+        D_Tanh(delta, output, delta);
+    }
 
 
-  if (trainable) {
-    Tensor::mult2D(parent[0]->output, 1, delta, 0, gWx, 1);
-    if (parent.size()>1)
-      Tensor::mult2D(parent[1]->output, 1, delta, 0, gWy, 1);
-    if (use_bias) Tensor::reduce_sum2D(delta, gbias, 0, 1);
+    if (trainable) {
+        Tensor::mult2D(parent[0]->output, 1, delta, 0, gWx, 1);
+        if (parent.size()>1)
+            Tensor::mult2D(parent[1]->output, 1, delta, 0, gWy, 1);
+        if (use_bias) Tensor::reduce_sum2D(delta, gbias, 0, 1);
 
-    Tensor::mult2D(delta, 0, Wx, 1, parent[0]->delta, 1);
-    if (parent.size()>1)
-      Tensor::mult2D(delta, 0, Wy, 1, parent[1]->delta, 1);
-  }
+        Tensor::mult2D(delta, 0, Wx, 1, parent[0]->delta, 1);
+        if (parent.size()>1)
+            Tensor::mult2D(delta, 0, Wy, 1, parent[1]->delta, 1);
+    }
 
-  // Regularizer
-  if (trainable) if(reg != nullptr) {reg->apply(this->Wx);reg->apply(this->Wy);}
+    // Regularizer
+    if (trainable) if(reg != nullptr) {reg->apply(this->Wx);reg->apply(this->Wy);}
 
 }
 
@@ -171,6 +171,7 @@ Layer *LRNN::clone(int c, int bs, vector<Layer *> p, int todev) {
 string LRNN::plot(int c) {
     string s;
 
+    // TODO: Twice the same?
     if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=Orange,shape=polygon]";
     else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=Orange,shape=polygon]";
 
