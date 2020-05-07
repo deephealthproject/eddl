@@ -18,7 +18,7 @@ using namespace std;
 
 void msg(const string& text, const string& title="");
 
-float *get_fmem(long int size, const string &str);
+float *get_fmem(unsigned long int size, const string &str);
 
 string bytes2human(unsigned long long int bytes, int decimals=2);
 

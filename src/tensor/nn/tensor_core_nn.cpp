@@ -33,10 +33,10 @@ void Tensor::resize(int b, float *fptr){
 
     if (isCPU()) {
         if (fptr==nullptr) {
-          free(ptr);
-          ptr = get_fmem(size,"Tensor::resize");
+            free(ptr);
+            ptr = get_fmem(size,"Tensor::resize");
         } else {
-          ptr=fptr;
+            ptr=fptr;
         }
         if (ndim == 2) {
             ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(ptr, shape[1], shape[0]);
@@ -44,15 +44,15 @@ void Tensor::resize(int b, float *fptr){
     }
 #ifdef cGPU
     else if (isGPU())
-        {
-          if (fptr==nullptr) {
+    {
+        if (fptr==nullptr) {
             gpu_delete_tensor(gpu_device,ptr);
             ptr=gpu_create_tensor(gpu_device,size);
-          }
-          else {
-            ptr=fptr;
-          }
         }
+        else {
+            ptr=fptr;
+        }
+    }
 #endif
 #ifdef cFPGA
     else {
@@ -63,11 +63,11 @@ void Tensor::resize(int b, float *fptr){
 }
 
 void Tensor::resize(int b) {
-  resize(b,(float *)nullptr);
+    resize(b,(float *)nullptr);
 }
 
 void Tensor::resize(int b, Tensor *T) {
-  resize(b,T->ptr);
+    resize(b,T->ptr);
 }
 
 
@@ -90,7 +90,7 @@ void repeat_nn(Tensor *A, Tensor *B, vector<int> size) {
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU()) {
         gpu_repeat_nn(A, B, size);
-      }
+    }
 #endif
 #ifdef cFPGA
     else {
@@ -109,7 +109,7 @@ void d_repeat_nn(Tensor *D, Tensor *A, vector<int> size) {
 #ifdef cGPU
     else if (D->isGPU() && A->isGPU()) {
         gpu_d_repeat_nn(D, A, size);
-      }
+    }
 #endif
 #ifdef cFPGA
     else {

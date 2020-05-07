@@ -60,7 +60,7 @@ void msg(const string& text, const string& title) {
 }
 
 
-float *get_fmem(long int size, const string &str){
+float *get_fmem(unsigned long int size, const string &str){
     // Careful with memory overcommitment:
     // https://stackoverflow.com/questions/48585079/malloc-on-linux-without-overcommitting
     // TODO: This function does not work properly (...but it does, at least most of the time -for linux and mac-)
@@ -95,6 +95,7 @@ float *get_fmem(long int size, const string &str){
 
     return ptr;
 }
+
 
 string bytes2human(unsigned long long int bytes, int decimals){
     vector<string> prefix = {"B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};

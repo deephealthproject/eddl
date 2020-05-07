@@ -50,6 +50,12 @@ void gpu_copy_to_gpu(float *nptr,Tensor *B);
 void gpu_copy_from_gpu(Tensor *A,float *nptr);
 void gpu_copy_gpu(Tensor *A,Tensor *B);
 
+void cpu2gpu(float *dst, const float *src, unsigned long int size, int gpu_device);
+void gpu2cpu(float *dst, const float *src, unsigned long int size, int gpu_device);
+
+float* get_gpu_fmem(unsigned long int size, int gpu_device);
+void free_gpu_ptr(float *ptr, int gpu_device);
+
 void gpu_transpose(Tensor *A, Tensor *B);
 void gpu_copy(Tensor *A, Tensor *B);
 void gpu_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);

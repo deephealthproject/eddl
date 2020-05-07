@@ -74,6 +74,11 @@ Tensor* Tensor::reshape(Tensor *A, const vector<int> &shape){
     return t_new;
 }
 
+
+void Tensor::flatten_(){
+    this->reshape_({-1});
+}
+
 Tensor* Tensor::flatten(Tensor *A){
     Tensor *t_new = A->clone();
     t_new->reshape_({-1});
@@ -110,6 +115,12 @@ Tensor* Tensor::unsqueeze(Tensor *A){
     return t_new;
 }
 
+void Tensor::permute_(const vector<int>& dims){
+    Tensor* temp = Tensor::permute(this, dims);
+    this->deleteData();
+    this->ptr = temp->ptr;
+}
+
 Tensor* Tensor::permute(Tensor* t, const vector<int>& dims){
     // Build descriptor
     auto *sd = new PermuteDescriptor(dims, t->device);
@@ -122,6 +133,12 @@ Tensor* Tensor::permute(Tensor* t, const vector<int>& dims){
     Tensor::select(t, new_t, sd);
   	delete sd;
     return new_t;
+}
+
+void Tensor::moveaxis_(int source, int destination){
+    Tensor* temp = Tensor::moveaxis(this, source, destination);
+    this->deleteData();
+    this->ptr = temp->ptr;
 }
 
 Tensor* Tensor::moveaxis(Tensor* t, int source, int destination){
@@ -148,6 +165,12 @@ Tensor* Tensor::moveaxis(Tensor* t, int source, int destination){
     return t2;
 }
 
+void Tensor::swapaxis_(int axis1, int axis2){
+    Tensor* temp = Tensor::swapaxis(this, axis1, axis2);
+    this->deleteData();
+    this->ptr = temp->ptr;
+}
+
 Tensor* Tensor::swapaxis(Tensor* t, int axis1, int axis2){
     // Check values
     if(axis1<-1 || axis2 <-1 || axis1 == axis2){
@@ -166,39 +189,40 @@ Tensor* Tensor::swapaxis(Tensor* t, int axis1, int axis2){
 }
 
 
-int Tensor::get_address_rowmajor(vector<int> indices){
-    int address=0;
-    for(int i=0; i<this->ndim; i++){ address +=  indices[i] * this->stride[i];}  //*(indices.begin()+i)
-    return address;
-}
+//int Tensor::get_address_rowmajor(vector<int> indices){
+//    int address=0;
+//    for(int i=0; i<this->ndim; i++){ address +=  indices[i] * this->stride[i];}  //*(indices.begin()+i)
+//    return address;
+//}
+//
+//vector<int> Tensor::get_indices_rowmajor(int address){
+//    vector<int> indices;
+//    indices.reserve(this->shape.size());
+//    for(int i=0; i<this->shape.size(); i++){
+//        indices.push_back(address / this->stride[i] % this->shape[i]);
+//    }
+//    return indices;
+//}
+//
+//float Tensor::get_(vector<int> indices){
+//    // DO NOT USE. They're mainly for debugging.
+//    return this->ptr[get_address_rowmajor(std::move(indices))];
+//}
+//
+//void Tensor::set_(vector<int> indices, float value){
+//    // DO NOT USE. They're mainly for debugging.
+//    this->ptr[get_address_rowmajor(std::move(indices))] = value;
+//}
+//
+//bool Tensor::valid_indices(vector<int> indices){
+//    for (int i=0; i<indices.size(); i++){
+//        if (indices[i] <0 || indices[i] >= this->shape[i]){
+//            return false;
+//        }
+//    }
+//    return true;
+//}
 
-vector<int> Tensor::get_indices_rowmajor(int address){
-    vector<int> indices;
-    indices.reserve(this->shape.size());
-    for(int i=0; i<this->shape.size(); i++){
-        indices.push_back(address / this->stride[i] % this->shape[i]);
-    }
-    return indices;
-}
-
-float Tensor::get_(vector<int> indices){
-    // DO NOT USE. They're mainly for debugging.
-    return this->ptr[get_address_rowmajor(std::move(indices))];
-}
-
-void Tensor::set_(vector<int> indices, float value){
-    // DO NOT USE. They're mainly for debugging.
-    this->ptr[get_address_rowmajor(std::move(indices))] = value;
-}
-
-bool Tensor::valid_indices(vector<int> indices){
-    for (int i=0; i<indices.size(); i++){
-        if (indices[i] <0 || indices[i] >= this->shape[i]){
-            return false;
-        }
-    }
-    return true;
-}
 // ***** Core (static) *****************************
 void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
     // Transpose

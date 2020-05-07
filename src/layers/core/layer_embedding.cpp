@@ -81,8 +81,7 @@ void LEmbedding::forward()
   inputc->toCPU();
 
   for(int i=0;i<b*length;i++) {
-    int val=inputc->get_({i});
-    //int val=0;
+      int val=(int)inputc->ptr[i*inputc->stride[0]];
     if (val>=vocsize) {cout<<"word:"<<val<<endl;msg("word > vocsize","LEmbedding::forward");}
     sind.push_back(val);
   }

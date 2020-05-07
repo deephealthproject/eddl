@@ -52,7 +52,7 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
     updateStrides();
     updateData(fptr);
 
-    tsem = new mutex();
+    this->tsem = new mutex();
 }
 
 // From shape and device
@@ -62,12 +62,12 @@ Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape, nullptr, dev){}
 Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr,T->device) {}
 
 
-void Tensor::updateDevice(int dev){
+void Tensor::updateDevice(unsigned int dev){
     this->device = dev;
 }
 
-void Tensor::updateShape(const vector<int> &shape){
-    this->shape = vector<int>(shape);
+void Tensor::updateShape(const vector<int> &new_shape){
+    this->shape = vector<int>(new_shape);
     this->ndim = this->shape.size();
 }
 
@@ -82,23 +82,36 @@ void Tensor::updateSize() {
 void Tensor::updateStrides() {
     this->stride.clear();  // Remove all elements
 
-    int new_size = this->size;
+    unsigned long int new_size = this->size;
     for(int i=0;i<ndim;i++) {
         new_size /= shape[i];
         this->stride.push_back(new_size);
     }
 }
 
-void Tensor::deleteData(){
-    if(this->ptr != nullptr){
-        delete this->ptr;
-        this->ptr = nullptr;
+void Tensor::deleteData() {
+    if (this->ptr != nullptr) {
+        if (this->isCPU()) {
+            delete this->ptr;
+        }
+#ifdef cGPU
+        else if (this->isGPU()) {
+            free_gpu_ptr(this->ptr, this->gpu_device);
+        }
+#endif
+#ifdef cFPGA
+        else {
+            // delete FPGA Tensor
+        }
+#endif
     }
+
+    this->ptr = nullptr;
 }
 
 void Tensor::updateData(float *fptr){
 
-    if (isCPU()) {
+    if (this->isCPU()) {
         // If null => Reserve memory
         // else => point to data
         if (fptr==nullptr) { this->ptr = get_fmem(this->size,"Tensor::updateData"); }
@@ -111,20 +124,20 @@ void Tensor::updateData(float *fptr){
         }
     }
 #ifdef cGPU
-    else if (isGPU())
-        {
-          gpu_device=this->device-DEV_GPU;
-          if (!initcuda[gpu_device]){
-              gpu_init(gpu_device);
-              initcuda[gpu_device]=1;
-          }
-
-          // If null => Reserve memory
-          // else => point to data  | CAREFUL! This pointer MUST be a GPU pointer. We cannot check it.
-          if (fptr == nullptr) { this->ptr = gpu_create_tensor(gpu_device, this->size); }
-          else { this->ptr = fptr; }
-
+    else if (this->isGPU())
+    {
+        gpu_device=this->device-DEV_GPU;
+        if (!initcuda[gpu_device]){
+            gpu_init(gpu_device);
+            initcuda[gpu_device]=1;
         }
+
+        // If null => Reserve memory
+        // else => point to data  | CAREFUL! This pointer MUST be a GPU pointer. We cannot check it.
+        if (fptr == nullptr) { this->ptr = gpu_create_tensor(gpu_device, this->size); }
+        else { this->ptr = fptr; }
+
+    }
 #endif
 #ifdef cFPGA
     else {
@@ -136,21 +149,21 @@ void Tensor::updateData(float *fptr){
 void Tensor::toCPU(int dev){
 #ifdef cGPU
     if (isGPU())
-      {
-        this->device = dev;
+    {
+        // Reserve CPU memory and get GPU pointer
+        float *cpu_ptr = get_fmem(this->size, "Tensor::toCPU");
+        float *gpu_ptr = this->ptr;
 
-        float *cpu_ptr = get_fmem(size, "Tensor::toCPU");
-        float *gpu_ptr = ptr;
+        // Copy GPU data to a CPU pointer
+        gpu2cpu(gpu_ptr, cpu_ptr, this->size, this->gpu_device);
 
-        if (ndim == 2) {
-            ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(cpu_ptr, shape[1], shape[0]);
-        }
+        // Delete current data (ptr)
+        this->deleteData();
 
-        gpu_copy_from_gpu(this, cpu_ptr);
-        this->ptr = cpu_ptr;
-        gpu_delete_tensor(gpu_device,gpu_ptr);
-
-      }
+        // Update pointer
+        this->updateDevice(dev);
+        this->updateData(cpu_ptr);
+    }
 #endif
 #ifdef cFPGA
     else {
@@ -161,23 +174,32 @@ void Tensor::toCPU(int dev){
 
 void Tensor::toGPU(int dev){
 #ifdef cGPU
-    if (isCPU()) {
-        this->device = dev;
-        this->gpu_device = this->device - DEV_GPU;
+    if (this->isCPU()) {
+        // Set device
+        this->gpu_device = (int)this->device - DEV_GPU;
 
-        float *cpu_ptr = ptr;
-        float *gpu_ptr = gpu_create_tensor(this->gpu_device, this->size);
-
-        if (!initcuda[gpu_device]){
-            gpu_init(gpu_device);
-            initcuda[gpu_device] = 1;
+        // Initialize device
+        if (!initcuda[this->gpu_device]){
+            gpu_init(this->gpu_device);
+            initcuda[this->gpu_device] = 1;
         }
 
-        this->ptr = gpu_ptr;
-        gpu_copy_to_gpu(cpu_ptr, this);
-        delete cpu_ptr;
+        // Get CPU pointer and reserve GPU memory
+        float *cpu_ptr = this->ptr;
+        float *gpu_ptr = get_gpu_fmem(this->size, this->gpu_device);
+
+        // Copy CPU data to a GPU pointer
+        cpu2gpu(cpu_ptr, gpu_ptr, this->size, this->gpu_device);
+
+        // Delete current data (ptr)
+        this->deleteData();
+
+        // Update pointer
+        this->updateDevice(dev);
+        this->updateData(gpu_ptr);
+
     }
-    else if (isGPU())
+    else if (this->isGPU())
       {
 //        printf("Tensor already in GPU\n");
       }
@@ -195,41 +217,30 @@ Tensor* Tensor::clone(){
     return t_new;
 }
 
-void Tensor::reallocate(Tensor* old_t, vector<int> *s){
+void Tensor::reallocate(Tensor* old_t, vector<int>* new_shape){
     // Update values
-    if(s != nullptr){
-        updateDevice(old_t->device);
-        updateShape(*s);
-        updateSize();
-        updateStrides();
+    if(new_shape != nullptr){
+        this->updateDevice(old_t->device);
+        this->updateShape(*new_shape);
+        this->updateSize();
+        this->updateStrides();
     }
 
-    updateData(old_t->ptr);
+    // Delete previous data and point to the new data
+    this->deleteData();
+    this->updateData(old_t->ptr);
 }
 
 Tensor::~Tensor() {
-    if (isCPU()) {
-        delete ptr;
-    }
-#ifdef cGPU
-    else if (isGPU())
-      {
-        gpu_delete_tensor(gpu_device, ptr);
-      }
-#endif
-#ifdef cFPGA
-    else {
-      // delete FPGA Tensor
-    }
-#endif
+    this->deleteData();
     delete tsem;
 }
 
-int Tensor::isCPU() { return (device == DEV_CPU); }
+int Tensor::isCPU() const { return (device == DEV_CPU); }
 
-int Tensor::isGPU() { return ((device >= DEV_GPU) && (device < DEV_FPGA)); }
+int Tensor::isGPU() const { return ((device >= DEV_GPU) && (device < DEV_FPGA)); }
 
-int Tensor::isFPGA() { return (device >= DEV_FPGA); }
+int Tensor::isFPGA() const { return (device >= DEV_FPGA); }
 
 vector<int> Tensor::getShape() {
     return vector<int>(this->shape);

@@ -41,11 +41,11 @@ void Tensor::abs_() {
 #endif
 }
 
-Tensor* Tensor::abs(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->abs_();
-    return t_new;
-}
+//Tensor* Tensor::abs(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->abs_();
+//    return t_new;
+//}
 
 void Tensor::acos_(){
     if (isCPU()) {
@@ -64,11 +64,11 @@ void Tensor::acos_(){
 #endif
 }
 
-Tensor* Tensor::acos(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->acos_();
-    return t_new;
- }
+//Tensor* Tensor::acos(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->acos_();
+//    return t_new;
+// }
 
 void Tensor::add_(float v) {
     if (isCPU()) {
@@ -181,11 +181,11 @@ void Tensor::asin_(){
 #endif
 }
 
-Tensor* Tensor::asin(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->asin_();
-    return t_new;
- }
+//Tensor* Tensor::asin(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->asin_();
+//    return t_new;
+// }
 
 void Tensor::atan_(){
     if (isCPU()) {
@@ -204,11 +204,11 @@ void Tensor::atan_(){
 #endif
 }
 
-Tensor* Tensor::atan(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->atan_();
-    return t_new;
- }
+//Tensor* Tensor::atan(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->atan_();
+//    return t_new;
+// }
 
 void Tensor::ceil_(){
     if (isCPU()) {
@@ -227,11 +227,11 @@ void Tensor::ceil_(){
 #endif
 }
 
-Tensor* Tensor::ceil(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->ceil_();
-    return t_new;
- }
+//Tensor* Tensor::ceil(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->ceil_();
+//    return t_new;
+// }
 
 void Tensor::clamp_(float min, float max){
     if (isCPU()) {
@@ -250,26 +250,27 @@ void Tensor::clamp_(float min, float max){
 #endif
 }
 
-Tensor* Tensor::clamp(Tensor *A, float min, float max){
-    auto *t_new = A->clone();
-    t_new->clamp_(min, max);
-    return t_new;
- }
+//Tensor* Tensor::clamp(Tensor *A, float min, float max){
+//    auto *t_new = A->clone();
+//    t_new->clamp_(min, max);
+//    return t_new;
+// }
 
 void Tensor::clampmax_(float max){ clamp_(MIN_FLOAT, max); }
 
-Tensor* Tensor::clampmax(Tensor *A, float max){
-    auto *t_new = A->clone();
-    t_new->clampmax_(max);
-    return t_new;
-}
+//Tensor* Tensor::clampmax(Tensor *A, float max){
+//    auto *t_new = A->clone();
+//    t_new->clampmax_(max);
+//    return t_new;
+//}
 
 void Tensor::clampmin_(float min){ clamp_(min, MAX_FLOAT); }
-Tensor* Tensor::clampmin(Tensor *A, float min){
-    auto *t_new = A->clone();
-    t_new->clampmin_(min);
-    return t_new;
-}
+
+//Tensor* Tensor::clampmin(Tensor *A, float min){
+//    auto *t_new = A->clone();
+//    t_new->clampmin_(min);
+//    return t_new;
+//}
 
 void Tensor::cos_(){
     if (isCPU()) {
@@ -288,11 +289,11 @@ void Tensor::cos_(){
 #endif
 }
 
-Tensor* Tensor::cos(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->cos_();
-    return t_new;
-}
+//Tensor* Tensor::cos(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->cos_();
+//    return t_new;
+//}
 
 void Tensor::cosh_(){
     if (isCPU()) {
@@ -311,11 +312,11 @@ void Tensor::cosh_(){
 #endif
 }
 
-Tensor* Tensor::cosh(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->cosh_();
-    return t_new;
-}
+//Tensor* Tensor::cosh(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->cosh_();
+//    return t_new;
+//}
 
 
 void Tensor::div_(float v) { mult_(1.0f / v); }
@@ -395,12 +396,12 @@ void Tensor::exp_() {
 #endif
 }
 
-
-Tensor* Tensor::exp(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->exp_();
-    return t_new;
-}
+//
+//Tensor* Tensor::exp(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->exp_();
+//    return t_new;
+//}
 
 void Tensor::floor_(){
     if (isCPU()) {
@@ -419,11 +420,11 @@ void Tensor::floor_(){
 #endif
 }
 
-Tensor* Tensor::floor(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->floor_();
-    return t_new;
-}
+//Tensor* Tensor::floor(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->floor_();
+//    return t_new;
+//}
 
 
 void Tensor::log_() {
@@ -443,11 +444,11 @@ void Tensor::log_() {
 #endif
 }
 
-Tensor* Tensor::log(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->log_();
-    return t_new;
-}
+//Tensor* Tensor::log(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->log_();
+//    return t_new;
+//}
 
 void Tensor::log2_() {
     if (isCPU()) {
@@ -466,11 +467,11 @@ void Tensor::log2_() {
 #endif
 }
 
-Tensor* Tensor::log2(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->log2_();
-    return t_new;
-}
+//Tensor* Tensor::log2(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->log2_();
+//    return t_new;
+//}
 
 
 void Tensor::log10_() {
@@ -489,12 +490,12 @@ void Tensor::log10_() {
     }
 #endif
 }
-
-Tensor* Tensor::log10(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->log10_();
-    return t_new;
-}
+//
+//Tensor* Tensor::log10(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->log10_();
+//    return t_new;
+//}
 
 
 void Tensor::logn_(float n) {
@@ -514,11 +515,11 @@ void Tensor::logn_(float n) {
 #endif
 }
 
-Tensor* Tensor::logn(Tensor *A, float n){
-    auto *t_new = A->clone();
-    t_new->logn_(n);
-    return t_new;
-}
+//Tensor* Tensor::logn(Tensor *A, float n){
+//    auto *t_new = A->clone();
+//    t_new->logn_(n);
+//    return t_new;
+//}
 
 float Tensor::max(){
     if (isCPU()) {
@@ -574,11 +575,11 @@ void Tensor::mod_(float v){
 #endif
 }
 
-Tensor* Tensor::mod(Tensor *A, float v){
-    auto *t_new = A->clone();
-    t_new->mod_(v);
-    return t_new;
-};
+//Tensor* Tensor::mod(Tensor *A, float v){
+//    auto *t_new = A->clone();
+//    t_new->mod_(v);
+//    return t_new;
+//};
 
 void Tensor::mult_(float v) {
     if (isCPU()) {
@@ -693,11 +694,11 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
 
 void Tensor::neg_(){ mult_(-1.0f); }
 
-Tensor* Tensor::neg(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->neg_();
-    return t_new;
-};
+//Tensor* Tensor::neg(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->neg_();
+//    return t_new;
+//};
 
 
 void Tensor::normalize_(float min, float max){
@@ -742,11 +743,11 @@ void Tensor::pow_(float exp) {
 #endif
 }
 
-Tensor* Tensor::pow(Tensor *A, float exp){
-    auto *t_new = A->clone();
-    t_new->pow_(exp);
-    return t_new;
-}
+//Tensor* Tensor::pow(Tensor *A, float exp){
+//    auto *t_new = A->clone();
+//    t_new->pow_(exp);
+//    return t_new;
+//}
 
 void Tensor::powb_(float base) {
     // Similar to pow (tensor^exp) but here we revert the order (base^tensor)
@@ -766,11 +767,11 @@ void Tensor::powb_(float base) {
 #endif
 }
 
-Tensor* Tensor::powb(Tensor *A, float base){
-    auto *t_new = A->clone();
-    t_new->powb_(base);
-    return t_new;
-}
+//Tensor* Tensor::powb(Tensor *A, float base){
+//    auto *t_new = A->clone();
+//    t_new->powb_(base);
+//    return t_new;
+//}
 
 void Tensor::reciprocal_() {
     if (isCPU()) {
@@ -789,11 +790,11 @@ void Tensor::reciprocal_() {
 #endif
 }
 
-Tensor* Tensor::reciprocal(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->reciprocal_();
-    return t_new;
-}
+//Tensor* Tensor::reciprocal(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->reciprocal_();
+//    return t_new;
+//}
 
 void Tensor::remainder_(float v) {
     if (isCPU()) {
@@ -812,11 +813,11 @@ void Tensor::remainder_(float v) {
 #endif
 }
 
-Tensor* Tensor::remainder(Tensor *A, float v){
-    auto *t_new = A->clone();
-    t_new->remainder_(v);
-    return t_new;
-}
+//Tensor* Tensor::remainder(Tensor *A, float v){
+//    auto *t_new = A->clone();
+//    t_new->remainder_(v);
+//    return t_new;
+//}
 
 void Tensor::round_(){
     if (isCPU()) {
@@ -835,11 +836,11 @@ void Tensor::round_(){
 #endif
 }
 
-Tensor* Tensor::round(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->round_();
-    return t_new;
-}
+//Tensor* Tensor::round(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->round_();
+//    return t_new;
+//}
 
 void Tensor::rsqrt_(){
     if (isCPU()) {
@@ -858,11 +859,11 @@ void Tensor::rsqrt_(){
 #endif
 }
 
-Tensor* Tensor::rsqrt(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->rsqrt_();
-    return t_new;
-}
+//Tensor* Tensor::rsqrt(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->rsqrt_();
+//    return t_new;
+//}
 
 void Tensor::sigmoid_(){
     if (isCPU()) {
@@ -881,11 +882,11 @@ void Tensor::sigmoid_(){
 #endif
 }
 
-Tensor* Tensor::sigmoid(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->sigmoid_();
-    return t_new;
-}
+//Tensor* Tensor::sigmoid(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->sigmoid_();
+//    return t_new;
+//}
 
 void Tensor::sign_(){
     if (isCPU()) {
@@ -904,11 +905,11 @@ void Tensor::sign_(){
 #endif
 }
 
-Tensor* Tensor::sign(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->sign_();
-    return t_new;
-}
+//Tensor* Tensor::sign(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->sign_();
+//    return t_new;
+//}
 
 void Tensor::sign(Tensor *A, Tensor *B) {
     ///////////////////////////////////////
@@ -955,12 +956,12 @@ void Tensor::sin_(){
     }
 #endif
 }
-
-Tensor* Tensor::sin(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->sin_();
-    return t_new;
-}
+//
+//Tensor* Tensor::sin(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->sin_();
+//    return t_new;
+//}
 
 void Tensor::sinh_(){
     if (isCPU()) {
@@ -979,11 +980,11 @@ void Tensor::sinh_(){
 #endif
 }
 
-Tensor* Tensor::sinh(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->sinh_();
-    return t_new;
-}
+//Tensor* Tensor::sinh(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->sinh_();
+//    return t_new;
+//}
 
 
 void Tensor::sqr_() {
@@ -1005,11 +1006,11 @@ void Tensor::sqr_() {
 #endif
 }
 
-Tensor* Tensor::sqr(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->sqr_();
-    return t_new;
-}
+//Tensor* Tensor::sqr(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->sqr_();
+//    return t_new;
+//}
 
 
 void Tensor::sqrt_() {
@@ -1029,20 +1030,20 @@ void Tensor::sqrt_() {
 #endif
 }
 
-Tensor* Tensor::sqrt(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->sqrt_();
-    return t_new;
-}
+//Tensor* Tensor::sqrt(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->sqrt_();
+//    return t_new;
+//}
 
 
 void Tensor::sub_(float v) { add_(-v); }
 
-Tensor* Tensor::sub(Tensor *A, Tensor *B){
-    auto *t_new = new Tensor(A->shape, A->device);
-    add(1.0f, A, -1.0f, B, t_new, 0);
-    return t_new;
-}
+//Tensor* Tensor::sub(Tensor *A, Tensor *B){
+//    auto *t_new = new Tensor(A->shape, A->device);
+//    add(1.0f, A, -1.0f, B, t_new, 0);
+//    return t_new;
+//}
 
 float Tensor::sum() {
     if (isCPU()) {
@@ -1191,12 +1192,12 @@ void Tensor::tan_(){
     }
 #endif
 }
-
-Tensor* Tensor::tan(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->tan_();
-    return t_new;
-}
+//
+//Tensor* Tensor::tan(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->tan_();
+//    return t_new;
+//}
 
 void Tensor::tanh_(){
     if (isCPU()) {
@@ -1214,12 +1215,12 @@ void Tensor::tanh_(){
     }
 #endif
 }
-
-Tensor* Tensor::tanh(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->tanh_();
-    return t_new;
-}
+//
+//Tensor* Tensor::tanh(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->tanh_();
+//    return t_new;
+//}
 
 
 void Tensor::trunc_(){
@@ -1239,11 +1240,11 @@ void Tensor::trunc_(){
 #endif
 }
 
-Tensor* Tensor::trunc(Tensor *A){
-    auto *t_new = A->clone();
-    t_new->trunc_();
-    return t_new;
-}
+//Tensor* Tensor::trunc(Tensor *A){
+//    auto *t_new = A->clone();
+//    t_new->trunc_();
+//    return t_new;
+//}
 
 
 Tensor* Tensor::interpolate(float factor1, Tensor *A, float factor2, Tensor *B){
@@ -1259,10 +1260,10 @@ Tensor& operator+ (Tensor &A, Tensor &B) {
     return (*t);
 }
 
-Tensor& operator- (Tensor &A, Tensor &B) {
-    Tensor* t = Tensor::sub(&A, &B);
-    return (*t);
-}
+//Tensor& operator- (Tensor &A, Tensor &B) {
+//    Tensor* t = Tensor::sub(&A, &B);
+//    return (*t);
+//}
 
 Tensor& operator* (Tensor &A, Tensor &B) {
     Tensor* t = Tensor::mult(&A, &B);
