@@ -145,7 +145,13 @@ void Layer::detach(Layer *l){
 }
 
 void Layer::reset() {
-    if ((!mem_level) && (delta!=nullptr)) { delta->fill_(0.0); }
+    if ((!mem_level) && (delta!=nullptr)) {
+      delta->fill_(0.0);
+      for(int i=0;i<states.size();i++)
+        states[i]->fill_(0.0);
+      for(int i=0;i<states.size();i++)
+        delta_states[i]->fill_(0.0);
+    }
     detached=false;
 }
 

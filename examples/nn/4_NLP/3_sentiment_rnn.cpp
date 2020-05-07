@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
     int batch_size = 100;
     int num_classes = 2;
 
-    int length=10;
+    int length=100;
     int embdim=250;
     int vocsize=72682;
 
@@ -38,12 +38,11 @@ int main(int argc, char **argv) {
     layer in = Input({1}); //1 word
     layer l = in;
 
-    layer lE = Embedding(l, vocsize, 1, embdim);
+    layer lE = Embedding(l, vocsize, 1,embdim,true);
 
-    //set_trainable(lE,false);
+    l = L2(LSTM(lE,128),0.001);
+    l = LeakyReLu(BatchNormalization(Dense(l,64)));
 
-    l = L2(RNN(lE,128),0.001);
-    l = LeakyReLu(Dense(l,64));
 
     layer out = Softmax(Dense(l, num_classes));
     model net = Model({in}, {out});
@@ -51,9 +50,13 @@ int main(int argc, char **argv) {
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
+    optimizer opt=rmsprop(0.00001);
+    //opt->set_clip_val(0.1);
+
+
     // Build model
     build(net,
-          rmsprop(0.0001), // Optimizer
+          opt, // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           CS_GPU({1}) // one GPU

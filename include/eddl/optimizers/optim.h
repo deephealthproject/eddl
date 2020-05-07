@@ -29,9 +29,13 @@ public:
     string name;
     vlayer layers;
     bool isshared;
+    float clip_val;
     Optimizer *orig;
 
     Optimizer();
+
+    void set_clip_val(float v);
+    void clip();
 
     virtual void setlayers(vlayer l) {}
 

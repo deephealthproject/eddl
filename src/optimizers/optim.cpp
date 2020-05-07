@@ -18,4 +18,20 @@ using namespace std;
 
 Optimizer::Optimizer() {
   isshared=false;
+  clip_val=-1;
+}
+
+void Optimizer::set_clip_val(float v)
+{
+  clip_val=v;
+}
+
+void Optimizer::clip()
+{
+  if (clip_val<0) return;
+
+  for (int i = 0; i < layers.size(); i++)
+    for (int j = 0; j < layers[i]->get_trainable_params_count(); j++)
+      layers[i]->gradients[j]->clamp_(-clip_val,clip_val);
+
 }

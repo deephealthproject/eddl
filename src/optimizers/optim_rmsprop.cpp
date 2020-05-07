@@ -36,13 +36,17 @@ void RMSProp::change(vector<float> &p) {
 }
 
 Optimizer *RMSProp::clone() {
-    return new RMSProp(lr, rho, epsilon, weight_decay);
+    RMSProp *n=new RMSProp(lr, rho, epsilon, weight_decay);
+    n->clip_val=clip_val;
+
+    return n;
 }
 
 Optimizer *RMSProp::share() {
     RMSProp *n=new RMSProp(lr, rho, epsilon, weight_decay);
     n->orig=this;
     n->isshared=true;
+    n->clip_val=clip_val;
     return n;
 }
 void RMSProp::setlayers(vlayer l) {
@@ -66,6 +70,9 @@ void RMSProp::applygrads(int batch) {
     orig->applygrads(batch);
   }
   else {
+
+    clip();
+
     int p = 0;
     for (int i = 0; i < layers.size(); i++)
       if (layers[i]->trainable) {

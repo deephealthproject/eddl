@@ -56,8 +56,6 @@ int convert(map<string,int>  &dict,vector<int> &out, string fname, int length)
   while ((getline(file, str, ' '))&&(i<length)) {
       if (!dict.count(str)) {
         unk++;
-        out.push_back(0); // 0 is for unknown
-        i++;
       }
       else {
          out.push_back(dict[str]);
@@ -131,7 +129,7 @@ void convert(map<string,int>  &dict, string list_fname, int numlines, int length
 int main(int argc, char **argv) {
     // build dict
     map<string,int> dict;
-    int length=10;
+    int length=100;
     ifstream file;
     string str,str2;
 
@@ -142,7 +140,7 @@ int main(int argc, char **argv) {
 
     int numfiles=0;
     // special word for padding and unknown
-    dict["UNK"]=0; // 0 allows dropout in the input
+    dict["PAD"]=0; // 0 allows dropout in the input
     while (getline(file, str, '\n')) {
       if (i%2==0) {
           build_dict(dict,str);

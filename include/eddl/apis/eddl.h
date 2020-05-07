@@ -1428,6 +1428,8 @@ typedef NetLoss * metric;
     Tensor* getDelta(layer l1);
     Tensor* getParam(layer l1, int p);
     Tensor* getGradient(layer l1,int p);
+    vector<Tensor*> getParams(layer l1);
+    vector<Tensor*> getGradients(layer l1);
     void copyOutput(Layer *l1,Layer *l2);
     void copyDelta(Layer *l1,Layer *l2);
     void copyParam(Layer *l1,Layer *l2, int p);

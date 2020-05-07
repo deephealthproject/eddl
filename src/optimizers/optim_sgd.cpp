@@ -34,13 +34,17 @@ void SGD::change(vector<float> &p) {
 }
 
 Optimizer *SGD::clone() {
-    return new SGD(lr, mu, weight_decay, nesterov);
+    SGD *n=new SGD(lr, mu, weight_decay, nesterov);
+    n->clip_val=clip_val;
+
+    return n;
 }
 
 Optimizer *SGD::share() {
     SGD *n=new SGD(lr, mu, weight_decay, nesterov);
     n->orig=this;
     n->isshared=true;
+    n->clip_val=clip_val;
     return n;
 }
 
@@ -64,6 +68,7 @@ void SGD::applygrads(int batch) {
       orig->applygrads(batch);
     }
     else {
+      clip();
       int p = 0;
       for (int i = 0; i < layers.size(); i++) {
         if (layers[i]->trainable) {

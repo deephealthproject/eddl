@@ -919,6 +919,27 @@ namespace eddl {
         return l1->gradients[p];
     }
 
+
+    // get vector of tensor
+    vector<Tensor*> getParams(layer l1){
+      vector<Tensor*> n;
+      for(int i=0;i<l1->params.size();i++) {
+        collectTensor(l1,"param",i);
+        n.push_back(l1->params[i]);
+      }
+      return n;
+    }
+
+    vector<Tensor*> getGradients(layer l1){
+      vector<Tensor*> n;
+      for(int i=0;i<l1->gradients.size();i++) {
+        collectTensor(l1,"gradients",i);
+        n.push_back(l1->gradients[i]);
+      }
+      return n;
+    }
+
+
     // Copy tensors between layers
     // collect from CS when necessary
     // distribute to CS when necessary

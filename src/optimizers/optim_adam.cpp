@@ -41,12 +41,16 @@ void Adam::change(vector<float> &p) {
 }
 
 Optimizer *Adam::clone() {
-    return new Adam(lr, beta_1, beta_2, epsilon, weight_decay, amsgrad);
+    Adam *n=new Adam(lr, beta_1, beta_2, epsilon, weight_decay, amsgrad);
+    n->clip_val=clip_val;
+    
+    return n;
 }
 Optimizer *Adam::share() {
     Adam *n=new Adam(lr, beta_1, beta_2, epsilon, weight_decay, amsgrad);
     n->orig=this;
     n->isshared=true;
+    n->clip_val=clip_val;
     return n;
 }
 void Adam::setlayers(vlayer l) {
@@ -74,9 +78,9 @@ void Adam::applygrads(int batch) {
     orig->applygrads(batch);
   }
   else {
+    clip();
     int p = 0;
     t++;
-
     for (int i = 0; i < layers.size(); i++)
       if (layers[i]->trainable) {
         for (int j = 0; j < layers[i]->get_trainable_params_count(); j++, p++) {
