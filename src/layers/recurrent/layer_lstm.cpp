@@ -22,10 +22,11 @@ using namespace std;
 
 int LLSTM::total_layers = 0;
 
-LLSTM::LLSTM(vector<Layer *> parent, int units,  bool bidirectional, string name, int dev, int mem): MLayer(name, dev, mem) {
+LLSTM::LLSTM(vector<Layer *> parent, int units, bool mask_zeros, bool bidirectional, string name, int dev, int mem): MLayer(name, dev, mem) {
 
     this->units = units;
     this->bidirectional = bidirectional;
+    this->mask_zeros=mask_zeros;
 
     isrecurrent=true;
 
@@ -83,6 +84,8 @@ LLSTM::LLSTM(vector<Layer *> parent, int units,  bool bidirectional, string name
         addparent(parent[i]);
     }
 
+
+
 }
 
 // RESIZE , MEM_DELTA states
@@ -129,6 +132,39 @@ void LLSTM::resize(int batch){
 
 // virtual
 void LLSTM::forward() {
+
+    if ((mask_zeros)&&(parent.size()>1)) {
+      mask=new Tensor({input->shape[0],1},dev);
+
+      Tensor *ones=new Tensor({input->shape[1],1},dev);
+      ones->fill_(1.0);
+
+      Tensor *A=input->clone();
+      A->abs_();
+      Tensor::mult2D(A,0,ones,0,mask,0);
+      delete A;
+      delete ones;
+
+      // mask to binary
+      Tensor::logical_not(mask,mask);
+
+      // mask replicate to matrix A
+      ones=new Tensor({1,units},dev);
+      ones->fill_(1.0);
+      A=new Tensor({input->shape[0],units},dev);
+      Tensor::mult2D(mask,0,ones,0,A,0);
+
+      psh=parent[1]->states[0]->clone();
+      psc=parent[1]->states[1]->clone();
+
+      Tensor::el_mult(A,psh,psh,0);
+      Tensor::el_mult(A,psc,psc,0);
+
+      delete A;
+      delete ones;
+
+    }
+
     // input=parent[0]->output
     in=new Tensor({input->shape[0], units}, dev);
 
@@ -177,11 +213,67 @@ void LLSTM::forward() {
 
     Tensor::el_mult(sh,on,state_h,0);
 
+
+    if ((mask_zeros)&&(parent.size()>1)) {
+      Tensor::logical_not(mask,mask);
+
+      Tensor *ones=new Tensor({1,units},dev);
+      ones->fill_(1.0);
+      Tensor *A=new Tensor({input->shape[0],units},dev);
+
+      Tensor::mult2D(mask,0,ones,0,A,0);
+
+      Tensor::el_mult(A,state_h,state_h,0);
+      Tensor::el_mult(A,state_c,state_c,0);
+
+      Tensor::inc(psh,state_h);
+      Tensor::inc(psc,state_c);
+
+      delete A;
+      delete ones;
+      delete psh;
+      delete psc;
+    }
+
+
+    if (!mode) { // eval mode
+      delete in;
+      delete fn;
+      delete cn;
+      delete on;
+      delete incn;
+      delete cn1fn;
+      delete sh;
+    }
+
+
 }
 
 void LLSTM::backward() {
     //delta_h=delta;
 
+    if ((mask_zeros)&&(parent.size()>1)) {
+      Tensor::logical_not(mask,mask);
+
+      Tensor *ones=new Tensor({1,units},dev);
+      ones->fill_(1.0);
+
+      Tensor *A=new Tensor({input->shape[0],units},dev);
+      Tensor::mult2D(mask,0,ones,0,A,0);
+
+      psh=delta_h->clone();
+      psc=delta_c->clone();
+
+      Tensor::el_mult(A,psh,psh,0);
+      Tensor::el_mult(A,psc,psc,0);
+
+      delete A;
+      delete ones;
+
+    }
+
+
+    //else {
     Tensor *d1=new Tensor(delta->getShape(),dev);
     Tensor *d2=new Tensor(delta->getShape(),dev);
 
@@ -237,6 +329,28 @@ void LLSTM::backward() {
     if (parent.size()>1)
       Tensor::mult2D(d1, 0, Wch, 1, parent[1]->delta_states[0], 1);
 
+    if ((mask_zeros)&&(parent.size()>1)) {
+      Tensor::logical_not(mask,mask);
+
+      Tensor *ones=new Tensor({1,units},dev);
+      ones->fill_(1.0);
+
+      Tensor *A=new Tensor({input->shape[0],units},dev);
+      Tensor::mult2D(mask,0,ones,0,A,0);
+
+      Tensor::el_mult(A,parent[1]->delta_states[0],parent[1]->delta_states[0],0);
+      Tensor::el_mult(A,parent[1]->delta_states[1],parent[1]->delta_states[1],0);
+
+      Tensor::inc(psh,parent[1]->delta_states[0]);
+      Tensor::inc(psc,parent[1]->delta_states[1]);
+
+      delete A;
+      delete ones;
+      delete psh;
+      delete psc;
+      delete mask;
+    }
+
     delete d1;
     delete d2;
     delete in;
@@ -246,12 +360,13 @@ void LLSTM::backward() {
     delete incn;
     delete cn1fn;
     delete sh;
+  //}
 
 }
 
 
 Layer *LLSTM::share(int c, int bs, vector<Layer *> p) {
-    LLSTM *n = new LLSTM(p, units, bidirectional, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
+    LLSTM *n = new LLSTM(p, units, mask_zeros, bidirectional, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
     n->isshared=true;
 
@@ -314,7 +429,7 @@ Layer *LLSTM::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LLSTM::clone(int c, int bs, vector<Layer *> p, int todev) {
-    LLSTM *n = new LLSTM(p, units, bidirectional,  name, todev, this->mem_level);
+    LLSTM *n = new LLSTM(p, units, mask_zeros, bidirectional,  name, todev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

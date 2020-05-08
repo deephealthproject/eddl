@@ -63,6 +63,8 @@ public:
     int units;
     bool use_bias;
     bool bidirectional;
+    bool mask_zeros;
+
     static int total_layers;
 
     Tensor *state_c;
@@ -84,9 +86,13 @@ public:
     Tensor *incn,*cn1fn;
     Tensor *sh;
 
+    Tensor *mask;
+    Tensor *psh;
+    Tensor *psc;
 
 
-    LLSTM(vector<Layer *> in, int units, bool bidirectional, string name, int dev, int mem);
+
+    LLSTM(vector<Layer *> in, int units,  bool mask_zeros, bool bidirectional, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

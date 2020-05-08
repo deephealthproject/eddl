@@ -1416,7 +1416,7 @@ typedef NetLoss * metric;
       *  @param name  A name for the operation
       *  @return     The LSTM layer
     */
-    layer LSTM(layer parent, int units, bool bidirectional = false, string name = "");
+    layer LSTM(layer parent, int units, bool mask_zeros=false, bool bidirectional = false, string name = "");
 
 
     // Layers Methods
@@ -1564,6 +1564,16 @@ typedef NetLoss * metric;
       *  @return     (void) The numpy files of IMDB
     */
     void download_imdb();
+
+    /**
+      *  @brief Downloads IMDB Dataset. 1000 most frequent words
+      *
+      *  @see   https://ai.stanford.edu/~amaas/data/sentiment/
+      *
+      *  @return     (void) The numpy files of IMDB
+    */
+    void download_imdb_1000();
+
 
 }
 #endif

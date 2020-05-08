@@ -36,8 +36,8 @@ int main(int argc, char **argv) {
     layer l = in;  // Aux var
 
     l = LeakyReLu(Dense(l, 32));
-    //l = L2(RNN(l, 32, "relu"),0.001);
-    l = L2(LSTM(l, 32, "relu"),0.001);
+    //l = L2(RNN(l, 128, "relu"),0.001);
+    l = L2(LSTM(l, 128),0.001);
     l = LeakyReLu(Dense(l, 32));
 
     layer out = Softmax(Dense(l, num_classes));

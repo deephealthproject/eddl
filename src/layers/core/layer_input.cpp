@@ -53,6 +53,7 @@ void LInput::free_delta(){
 
 void LInput::forward() {
 
+
 }
 
 
