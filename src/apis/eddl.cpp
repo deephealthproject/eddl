@@ -501,8 +501,8 @@ namespace eddl {
         return new LDense(parent, ndim, use_bias, name, DEV_CPU, 0);
     }
 
-    layer Dropout(layer parent, float rate, string name){
-        return new LDropout(parent, rate, name, DEV_CPU, 0);
+  layer Dropout(layer parent, float rate, bool iw, string name){
+    return new LDropout(parent, rate, iw, name, DEV_CPU, 0);
     }
 
     layer Embedding(layer parent, int vocsize, int length, int output_dim,  bool mask_zeros, string name){
