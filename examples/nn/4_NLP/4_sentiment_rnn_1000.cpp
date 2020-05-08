@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
     layer lE = Embedding(l, vocsize, 1,embdim,true); //mask_zeros=true
 
-    l = L2(LSTM(lE,512),0.001); //mask_zeros=true
+    l = L2(LSTM(lE,256),0.001); 
     l = LeakyReLu(BatchNormalization(Dense(l,128)));
 
 
