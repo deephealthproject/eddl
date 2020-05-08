@@ -882,7 +882,7 @@ using namespace std;
 						vector<int> parent_shape = parent->output->shape;
 
 						string name = node->name();
-						actual_layer = new LDropout(parent, ratio, name, dev, mem);
+						actual_layer = new LDropout(parent, ratio, true, name, dev, mem);
 
 					}
 					break;

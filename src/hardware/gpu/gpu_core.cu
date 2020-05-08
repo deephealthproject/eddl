@@ -151,6 +151,8 @@ void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool m
   cudaMalloc((void **) &ind, sind.size() * sizeof(int));
   cudaMemcpy(ind, &sind[0], sind.size() * sizeof(int), cudaMemcpyHostToDevice);
 
+  
+
   int size=sind.size()*(B->shape[1]);
 
   int grid,block;

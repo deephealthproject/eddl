@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <map>
+#include <vector>
 #include <string>
 #include <iterator>
 #include <stdio.h>
@@ -25,6 +26,48 @@ using namespace eddl;
 // aclImdb	preprocessing
 //////////////////////////////////
 
+/// IMDB files.txt have been preprocessed in this way:
+/*
+cat name.txt | tr '[:upper:]' '[:lower:]' |\
+sed 's/[[:punct:]]/ /g' |\
+sed 's/ br / /g' |\
+sed -E 's/[0-9]+/#num /g'|\
+sed -E 's/ +/ /g'|\
+sed -e ':loop' -e 's/\([[:alpha:]]\)\1/\1/g' -e 't loop' > name.txt-preprocessed
+*/
+
+// utility comparator function to pass to the sort() module
+bool sortByVal(const pair<string, int> &a,
+               const pair<string, int> &b)
+{
+    return (a.second > b.second);
+}
+
+map<string,int> sort_dict(map<string,int> dict,int max_size) {
+	// create a empty vector of pairs
+	vector<pair<string, int>> vec;
+
+	// copy key-value pairs from the map to the vector
+  map<string, int> :: iterator it;
+  for (it=dict.begin(); it!=dict.end(); it++)
+  {
+    vec.push_back(make_pair(it->first, it->second));
+  }
+
+	// // sort the vector by increasing order of its pair's second value
+  sort(vec.begin(), vec.end(), sortByVal);
+
+  if (max_size<0) max_size=vec.size();
+
+  map<string,int> sdict;
+  for(int i=0;i<max_size;i++) {
+     sdict[vec[i].first]=i;
+   }
+
+  return sdict;
+}
+
+
 void build_dict(map<string,int> &dict,string fname)
 {
   ifstream file;
@@ -32,13 +75,7 @@ void build_dict(map<string,int> &dict,string fname)
   file.open(fname);
   string str;
 
-  int i=dict.size();
-  while (getline(file, str, ' ')) {
-      if (!dict.count(str)) {
-        dict[str]=i;
-        i++;
-      }
-  }
+  while (getline(file, str, ' ')) dict[str]++;
 
   file.close();
 }
@@ -58,10 +95,9 @@ int convert(map<string,int>  &dict,vector<int> &out, string fname, int length)
         unk++;
       }
       else {
-         out.push_back(dict[str]);
-         i++;
+        out.push_back(dict[str]+1); // +1 to leave 0 for padding
+        i++;
       }
-
   }
 
   // padding if needed
@@ -139,8 +175,6 @@ int main(int argc, char **argv) {
 
 
     int numfiles=0;
-    // special word for padding and unknown
-    dict["PAD"]=0; // 0 allows dropout in the input
     while (getline(file, str, '\n')) {
       if (i%2==0) {
           build_dict(dict,str);
@@ -151,19 +185,26 @@ int main(int argc, char **argv) {
     }
     file.close();
 
-    cout<<"Vocab:"<<dict.size()<<" size\n"; //0 for padding
+
+    // 1000 most frequent words
+    //map<string,int> sdict=sort_dict(dict,1000);
+
+    // all words
+    map<string,int> sdict=sort_dict(dict,-1);
+
+    cout<<"Vocab:"<<sdict.size()<<" size\n"; //0 for padding
     ofstream of;
     of.open("vocab.txt");
 
     i=0;
-    for(map<string,int>::iterator it = dict.begin(); it != dict.end(); ++it) {
+    for(map<string,int>::iterator it = sdict.begin(); it != sdict.end(); ++it) {
       of << it->second<< ":"<<it->first<<endl;
       i++;
     }
     of.close();
 
 
-    convert(dict, "list_tr.txt", numfiles, length, "train");
-    convert(dict, "list_ts.txt", numfiles, length, "test");
+    convert(sdict, "list_tr.txt", numfiles, length, "train");
+    convert(sdict, "list_ts.txt", numfiles, length, "test");
 
   }

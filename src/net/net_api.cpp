@@ -638,8 +638,11 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
   int offset;
   for(i=0;i<xt.size();i++) {
     offset=xt[i]->size/xt[i]->shape[0];
+    vector<int>shape;
+    for(j=1;j<xt[i]->ndim;j++)
+      shape.push_back(xt[i]->shape[j]);
     for(j=0;j<inl;j++)
-      tinr.push_back(new Tensor({xt[i]->shape[1],xt[i]->shape[2]},xt[i]->ptr+(j*offset)));
+      tinr.push_back(new Tensor(shape,xt[i]->ptr+(j*offset)));
   }
 
   rnet->fit(tinr,tout,batch,epochs);
@@ -729,6 +732,7 @@ void Net::evaluate(vtensor tin, vtensor tout) {
       n = tin[0]->shape[0];
 
 
+
       for (i = 1; i < tin.size(); i++)
           if (tin[i]->shape[0] != n)
               msg("different number of samples in input tensor", "Net.evaluate");
@@ -752,13 +756,13 @@ void Net::evaluate(vtensor tin, vtensor tout) {
       reset_loss();
       for (j = 0; j < n / batch_size; j++) {
 
-            for (k=0;k<batch_size;k++)
+          for (k=0;k<batch_size;k++)
             sind[k]=(j*batch_size)+k;
 
           train_batch(tin, tout, sind, 1);
 
           print_loss(j+1);
-            fprintf(stdout, "\r");
+          fprintf(stdout, "\r");
           fflush(stdout);
       }
       fprintf(stdout, "\n");
@@ -779,20 +783,23 @@ void Net::evaluate_recurrent(vtensor tin, vtensor tout) {
 
   inl=xt[0]->shape[0];
   for(i=0;i<xt.size();i++)
-   if (xt[i]->shape[0]!=inl)
+   if (xt[i]->shape[i]!=inl)
      msg("Input tensors with different time steps","fit_recurrent");
 
   outl=1;
-
-  build_rnet(inl,outl);
 
   // prepare data for unroll net
   vtensor tinr;
   int offset;
   for(i=0;i<xt.size();i++) {
     offset=xt[i]->size/xt[i]->shape[0];
+
+    vector<int>shape;
+    for(j=1;j<xt[i]->ndim;j++)
+      shape.push_back(xt[i]->shape[j]);
+
     for(j=0;j<inl;j++)
-      tinr.push_back(new Tensor({xt[i]->shape[1],xt[i]->shape[2]},xt[i]->ptr+(j*offset)));
+      tinr.push_back(new Tensor(shape,xt[i]->ptr+(j*offset)));
   }
 
   rnet->evaluate(tinr,tout);

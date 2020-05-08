@@ -36,8 +36,8 @@ int main(int argc, char **argv) {
     layer l = in;  // Aux var
 
     l = LeakyReLu(Dense(l, 32));
-    l = L2(RNN(l, 32, "relu"),0.001);
-    //l = L2(LSTM(l, 32, "relu"),0.001);
+    //l = L2(RNN(l, 128, "relu"),0.001);
+    l = L2(LSTM(l, 128),0.001);
     l = LeakyReLu(Dense(l, 32));
 
     layer out = Softmax(Dense(l, num_classes));
@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
           rmsprop(0.001), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          //CS_GPU({1}, "low_mem") // one GPU
+          //CS_CPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU
           CS_CPU(-1) // CPU with maximum threads availables
     );

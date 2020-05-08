@@ -86,12 +86,12 @@ void Net::do_backward() {
         vbts[i]->mem_delta_parent();
 
         // Do backward
+        if (VERBOSE) {
+            cout << "backward "<<vbts[i]->name << " delta="<<vbts[i]->delta->sum()<<"\n";
+        }
         vbts[i]->backward();
 
-        if (VERBOSE) {
-            cout << vbts[i]->name << " delta="<<vbts[i]->delta->sum()<<"\n";
-        }
-
+        if (VERBOSE) getchar();
         // Delete this delta
         if(vbts[i]->mem_level) { vbts[i]->free_delta(); }
     }

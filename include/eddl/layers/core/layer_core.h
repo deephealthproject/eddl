@@ -228,9 +228,10 @@ public:
 class LDropout : public LinLayer {
 public:
     static int total_layers;
-
+    bool iw; //inference weighting
+    
     // constructors and clones
-    LDropout(Layer *parent, float df, string name, int dev, int mem);
+    LDropout(Layer *parent, float df, bool iw, string name, int dev, int mem);
     ~LDropout() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;

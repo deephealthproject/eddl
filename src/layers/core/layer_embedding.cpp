@@ -27,6 +27,7 @@ LEmbedding::LEmbedding(Layer *parent, int vocsize, int length, int dim, bool mas
     this->length=length;
     this->vocsize=vocsize;
     this->dim=dim;
+    this->mask_zeros=mask_zeros;
 
 
     input = parent->output;
@@ -73,6 +74,8 @@ void LEmbedding::forward()
   int b=input->shape[0];
   int indim=input->ndim;
 
+
+
   input->reshape_({b*length});
 
   sind.clear();
@@ -90,7 +93,9 @@ void LEmbedding::forward()
 
   output->reshape_({b*length,dim});
 
+
   Tensor::select(E,output, sind, 0,sind.size(), mask_zeros);
+
 
   if (indim==2) input->reshape_({b,length});
 

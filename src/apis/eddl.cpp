@@ -501,8 +501,8 @@ namespace eddl {
         return new LDense(parent, ndim, use_bias, name, DEV_CPU, 0);
     }
 
-    layer Dropout(layer parent, float rate, string name){
-        return new LDropout(parent, rate, name, DEV_CPU, 0);
+  layer Dropout(layer parent, float rate, bool iw, string name){
+    return new LDropout(parent, rate, iw, name, DEV_CPU, 0);
     }
 
     layer Embedding(layer parent, int vocsize, int length, int output_dim,  bool mask_zeros, string name){
@@ -860,8 +860,8 @@ namespace eddl {
         return new LRNN({parent}, units, activation, use_bias, bidirectional, name, DEV_CPU, 0);
     }
 
-    layer LSTM(layer parent, int units, bool bidirectional, string name){
-        return new LLSTM({parent}, units, bidirectional, name, DEV_CPU, 0);
+    layer LSTM(layer parent, int units, bool mask_zeros, bool bidirectional, string name){
+        return new LLSTM({parent}, units, mask_zeros, bidirectional, name, DEV_CPU, 0);
     }
 
 
@@ -1066,8 +1066,13 @@ namespace eddl {
     void download_cifar10(){
       download_dataset("cifar","bin",{"wap282xox5ew02d","yxhw99cu1ktiwxq","dh9vqxe9vt7scrp","gdmsve6mbu82ndp"});
     }
+
     void download_imdb(){
       download_dataset("imdb","bin",{"snf3vi7e1bjo8k5","c2zgsl2wb39ivlo","lkti7c12yoh18pv","cd1uocgv6abzt32"});
+    }
+
+    void download_imdb_1000(){
+      download_dataset("imdb_1000","bin",{"q96yf0h84mhcbgy","jfkg2spj7bd0ca8","q2e0atxf30udvlh","wlpc9pajyvmcsiu"});
     }
 
     void download_drive(){

@@ -571,6 +571,7 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bo
         msg("Incompatible shape", "Tensor::select");
     }
 
+
     //B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
         cpu_select(A, B, sind, ini, end,mask_zeros);
