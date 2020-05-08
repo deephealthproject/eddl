@@ -41,8 +41,10 @@ int main(int argc, char **argv) {
 
     layer lE = Embedding(l, vocsize, 1,embdim,true); //mask_zeros=true
 
-    l = LSTM(lE,512);
-    l = LeakyReLu(BatchNormalization(Dense(l,128)));
+    //l = LSTM(lE,512);
+
+    l = BatchNormalization(LSTM(lE,512));
+    l = LeakyReLu(BatchNormalization(Dense(l,128)),false);
 
 
     layer out = Softmax(Dense(l, num_classes));

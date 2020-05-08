@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
     layer lE = Embedding(l, vocsize, 1,embdim,true); //mask_zeros=true
 
-    l = L2(LSTM(lE,256),0.001); 
+    l = L2(LSTM(lE,256),0.001);
     l = LeakyReLu(BatchNormalization(Dense(l,128)));
 
 
@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
-    optimizer opt=rmsprop(0.0001);
+    optimizer opt=rmsprop(0.00001);
     //opt->set_clip_val(0.01);
 
     // Build model
@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
           opt, // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
+          CS_GPU({0,1}) // one GPU
           //CS_GPU({1,1},100) // two GPU
           //CS_CPU(-1) // CPU with maximum threads availables
     );

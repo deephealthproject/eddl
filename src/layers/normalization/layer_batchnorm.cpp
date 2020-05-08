@@ -95,25 +95,6 @@ void LBatchNorm::resize(int batch){
     }
 }
 
-void LBatchNorm::mem_delta(){
-
-      // Reserve space for the parent's delta
-      if(delta == nullptr){
-        delta = Tensor::zeros(this->output->shape, this->output->device);
-
-        if (parent[0]->states.size()) {
-          parent[0]->mem_delta();
-          delta_states.clear();
-          delta_states.push_back(delta);
-          delta_states.push_back(parent[0]->delta_states[1]);
-        }
-
-        if(this->verbosity_level >= 2){
-            std::cout << "Booked delta for: " + this->name << std::endl;
-        }
-    }
-}
-
 // Batchnorm works over 2D Tensors
 // Essentialy 4D Tensors are reshaped as 2D and
 // Permute 4D tensors and set N,M values.
@@ -164,19 +145,12 @@ void LBatchNorm::forward() {
   else Tensor::copy(in,output);
 
 
-  if (parent[0]->states.size()) {
-    states.clear();
-    states.push_back(output);
-    states.push_back(parent[0]->states[1]);
-  }
-
   delete in;
 }
 
 void LBatchNorm::backward(){
   int M,N;
   int b,z,r,c,d;
-
 
   Tensor *dp;
 
@@ -212,11 +186,11 @@ void LBatchNorm::backward(){
     //1 gamma
     Tensor::el_mult(dp,opa,A,0);
     cmean(A,m,ones);
-    Tensor::add(1,gbn_g,1,m,gbn_g,0);
+    Tensor::add(1,gbn_g,1,m,gbn_g,1);
 
     //2 Beta
     cmean(dp,m,ones);
-    Tensor::add(1,gbn_b,1,m,gbn_b,0);
+    Tensor::add(1,gbn_b,1,m,gbn_b,1);
 
     // delta=dE/dY
     // Obtain dE/dY from delta:

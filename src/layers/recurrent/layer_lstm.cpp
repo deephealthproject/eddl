@@ -233,6 +233,7 @@ void LLSTM::forward() {
 
     sh=new Tensor({input->shape[0], units}, dev);
     Tanh(state_c,sh);
+    //ReLu(state_c,sh);
 
     Tensor::el_mult(sh,on,state_h,0);
 
@@ -311,6 +312,7 @@ void LLSTM::backward() {
         Tensor::mult2D(d2, 0, Woh, 1, parent[1]->delta_states[0], 1);
     Tensor::reduce_sum2D(d2, gonbias, 0, 1);
 
+    //D_ReLu(delta, state_c, delta);
     D_Tanh(d1, sh, d2);
     Tensor::inc(d2,delta_c);
 
