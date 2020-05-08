@@ -75,10 +75,10 @@ int main(int argc, char **argv) {
     summary(net);
 
     // Load dataset
-    Tensor* x_train=Tensor::load("imdb_1000_trX.bin");
-    Tensor* y_train=Tensor::load("imdb_1000_trY.bin");
-    Tensor* x_test=Tensor::load("imdb_1000_tsX.bin");
-    Tensor* y_test=Tensor::load("imdb_1000_tsY.bin");
+    Tensor* x_train=Tensor::load("imdb_trX.bin");
+    Tensor* y_train=Tensor::load("imdb_trY.bin");
+    Tensor* x_test=Tensor::load("imdb_tsX.bin");
+    Tensor* y_test=Tensor::load("imdb_tsY.bin");
 
     // Train model
     for(int i=0;i<epochs;i++) {
