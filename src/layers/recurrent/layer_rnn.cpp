@@ -55,7 +55,7 @@ LRNN::LRNN(vector<Layer *> parent, int units, string activation, bool use_bias, 
         bias = new Tensor(vector<int>{units}, dev);
         params.push_back(bias);
         gbias = new Tensor(vector<int>{units}, dev);
-        if (use_bias) gradients.push_back(gbias);  // TODO: if (use_bias) again?
+        gradients.push_back(gbias); 
     }
 
 

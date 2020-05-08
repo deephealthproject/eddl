@@ -83,6 +83,9 @@ public:
     Tensor *gWch,*gWcx;
 
     Tensor *in,*fn,*on,*cn;
+    Tensor *inbias,*fnbias,*onbias,*cnbias;
+    Tensor *ginbias,*gfnbias,*gonbias,*gcnbias;
+
     Tensor *incn,*cn1fn;
     Tensor *sh;
 

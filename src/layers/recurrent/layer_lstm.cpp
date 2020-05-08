@@ -78,6 +78,25 @@ LLSTM::LLSTM(vector<Layer *> parent, int units, bool mask_zeros, bool bidirectio
     gradients.push_back(gWoh);
     gradients.push_back(gWch);
 
+    inbias = new Tensor(vector<int>{units}, dev);
+    params.push_back(inbias);
+    ginbias = new Tensor(vector<int>{units}, dev);
+    gradients.push_back(ginbias);
+
+    fnbias = new Tensor(vector<int>{units}, dev);
+    params.push_back(fnbias);
+    gfnbias = new Tensor(vector<int>{units}, dev);
+    gradients.push_back(gfnbias);
+
+    onbias = new Tensor(vector<int>{units}, dev);
+    params.push_back(onbias);
+    gonbias = new Tensor(vector<int>{units}, dev);
+    gradients.push_back(gonbias);
+
+    cnbias = new Tensor(vector<int>{units}, dev);
+    params.push_back(cnbias);
+    gcnbias = new Tensor(vector<int>{units}, dev);
+    gradients.push_back(gcnbias);
 
     for (int i = 0; i < parent.size(); ++i) {
         parent[i]->addchild(this);
@@ -172,6 +191,7 @@ void LLSTM::forward() {
     if (parent.size()>1) {
       Tensor::mult2D(parent[1]->states[0], 0, Wih, 0, in, 1);
     }
+    Tensor::sum2D_rowwise(in, inbias, in);
     Sigmoid(in, in);
 
     fn=new Tensor({input->shape[0], units}, dev);
@@ -179,6 +199,7 @@ void LLSTM::forward() {
     if (parent.size()>1) {
       Tensor::mult2D(parent[1]->states[0], 0, Wfh, 0, fn, 1);
     }
+    Tensor::sum2D_rowwise(fn, fnbias, fn);
     Sigmoid(fn, fn);
 
     on=new Tensor({input->shape[0], units}, dev);
@@ -186,6 +207,7 @@ void LLSTM::forward() {
     if (parent.size()>1) {
       Tensor::mult2D(parent[1]->states[0], 0, Woh, 0, on, 1);
     }
+    Tensor::sum2D_rowwise(on, onbias, on);
     Sigmoid(on, on);
 
     cn=new Tensor({input->shape[0], units}, dev);
@@ -193,6 +215,7 @@ void LLSTM::forward() {
     if (parent.size()>1) {
       Tensor::mult2D(parent[1]->states[0], 0, Wch, 0, cn, 1);
     }
+    Tensor::sum2D_rowwise(cn, cnbias, cn);
     Tanh(cn,cn);
 
     incn=new Tensor({input->shape[0], units}, dev);
@@ -272,8 +295,6 @@ void LLSTM::backward() {
 
     }
 
-
-    //else {
     Tensor *d1=new Tensor(delta->getShape(),dev);
     Tensor *d2=new Tensor(delta->getShape(),dev);
 
@@ -288,7 +309,7 @@ void LLSTM::backward() {
     Tensor::mult2D(d2, 0, Wox, 1, parent[0]->delta, 1);
     if (parent.size()>1)
         Tensor::mult2D(d2, 0, Woh, 1, parent[1]->delta_states[0], 1);
-
+    Tensor::reduce_sum2D(d2, gonbias, 0, 1);
 
     D_Tanh(d1, sh, d2);
     Tensor::inc(d2,delta_c);
@@ -305,6 +326,8 @@ void LLSTM::backward() {
 
       Tensor::mult2D(d2, 0, Wfx, 1, parent[0]->delta, 1);
       Tensor::mult2D(d2, 0, Wfh, 1, parent[1]->delta_states[0], 1);
+
+      Tensor::reduce_sum2D(d2, gfnbias, 0, 1);
     }
 
     Tensor::el_mult(delta_c, in, d1, 0);
@@ -318,6 +341,7 @@ void LLSTM::backward() {
     Tensor::mult2D(d2, 0, Wix, 1, parent[0]->delta, 1);
     if (parent.size()>1)
       Tensor::mult2D(d2, 0, Wih, 1, parent[1]->delta_states[0], 1);
+    Tensor::reduce_sum2D(d2, ginbias, 0, 1);
 
     // Cn
     D_Tanh(d1, cn, d1);
@@ -328,6 +352,7 @@ void LLSTM::backward() {
     Tensor::mult2D(d1, 0, Wcx, 1, parent[0]->delta, 1);
     if (parent.size()>1)
       Tensor::mult2D(d1, 0, Wch, 1, parent[1]->delta_states[0], 1);
+    Tensor::reduce_sum2D(d2, gcnbias, 0, 1);
 
     if ((mask_zeros)&&(parent.size()>1)) {
       Tensor::logical_not(mask,mask);
@@ -360,7 +385,6 @@ void LLSTM::backward() {
     delete incn;
     delete cn1fn;
     delete sh;
-  //}
 
 }
 
@@ -382,6 +406,15 @@ Layer *LLSTM::share(int c, int bs, vector<Layer *> p) {
     n->params.push_back(Wfx);
     n->params.push_back(Wox);
     n->params.push_back(Wcx);
+    n->inbias = inbias;
+    n->fnbias = fnbias;
+    n->onbias = onbias;
+    n->cnbias = cnbias;
+    n->params.push_back(inbias);
+    n->params.push_back(fnbias);
+    n->params.push_back(onbias);
+    n->params.push_back(cnbias);
+
     if (n->parent.size()>1) {
       n->Woh = Woh;
       n->Wih = Wih;
@@ -406,6 +439,14 @@ Layer *LLSTM::share(int c, int bs, vector<Layer *> p) {
     n->gradients.push_back(gWfx);
     n->gradients.push_back(gWox);
     n->gradients.push_back(gWcx);
+    n->ginbias = ginbias;
+    n->gfnbias = gfnbias;
+    n->gonbias = gonbias;
+    n->gcnbias = gcnbias;
+    n->gradients.push_back(ginbias);
+    n->gradients.push_back(gfnbias);
+    n->gradients.push_back(gonbias);
+    n->gradients.push_back(gcnbias);
     if (n->parent.size()>1) {
       n->gWoh = gWoh;
       n->gWih = gWih;
