@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
     int num_classes = 2;
 
     int length=100;
-    int embdim=50;
+    int embdim=250;
     int vocsize=1001;  //1000 most frequent words + padding
 
     // Define network
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
     layer lE = Embedding(l, vocsize, 1,embdim,true); //mask_zeros=true
 
-    l = L2(LSTM(lE,128,true),0.001); //mask_zeros=true
+    l = L2(LSTM(lE,512),0.001); //mask_zeros=true
     l = LeakyReLu(BatchNormalization(Dense(l,128)));
 
 
@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
-    optimizer opt=rmsprop(0.001);
+    optimizer opt=rmsprop(0.0001);
     //opt->set_clip_val(0.01);
 
     // Build model

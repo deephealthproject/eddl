@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
     int num_classes = 2;
 
     int length=100;
-    int embdim=50;
+    int embdim=250;
     int vocsize=1001; //1000 most frequent words + padding
 
     // Define network
