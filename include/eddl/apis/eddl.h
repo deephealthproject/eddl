@@ -680,10 +680,11 @@ typedef NetLoss * metric;
       *
       *  @param parent  Parent layer
       *  @param rate  Between 0 and 1. Fraction of the input units to drop
+      *  @param iw  perform weighting in inference (boolean, true)
       *  @param name  A name for the operation
       *  @return     Layer with Dropout
     */
-    layer Dropout(layer parent, float rate, string name = "");
+    layer Dropout(layer parent, float rate, bool iw=true, string name = "");
 
     /**
       *  @brief Used to initialize an input to a model.

@@ -39,6 +39,8 @@ int main(int argc, char **argv) {
     layer in = Input({1}); //1 word
     layer l = in;
 
+    l=Dropout(l,0.1,false);  // don't weight in inference
+    
     layer lE = Embedding(l, vocsize, 1,embdim,true); //mask_zeros=true
 
     l = LSTM(lE,512,true);
