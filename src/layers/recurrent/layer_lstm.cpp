@@ -381,8 +381,8 @@ void LLSTM::backward() {
       Tensor::el_mult(A,parent[1]->delta_states[1],parent[1]->delta_states[1],0);
       delete A;
 
-      Tensor::inc(parent[1]->delta_states[0],psh);
-      Tensor::inc(parent[1]->delta_states[1],psc);
+      Tensor::inc(psh,parent[1]->delta_states[0]);
+      Tensor::inc(psc,parent[1]->delta_states[1]);
 
       delete psh;
       delete psc;
