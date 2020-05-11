@@ -20,6 +20,8 @@ using namespace eddl;
 // Embeding+RNN for
 // aclImdb sentiment analysis
 // using all vocabulary
+// adding Dropout and
+// masking zeros in LSTM
 //////////////////////////////////
 
 int main(int argc, char **argv) {

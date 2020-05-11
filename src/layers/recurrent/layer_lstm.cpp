@@ -285,6 +285,7 @@ void LLSTM::forward() {
     delete incn;
     delete cn1fn;
     delete sh;
+    if (mask_zeros) delete mask;
   }
 
 
