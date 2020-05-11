@@ -661,6 +661,25 @@ typedef NetLoss * metric;
                int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
 
 
+     /**
+    *  @brief 1D Convolution layer.
+    *
+    *  @param parent  Parent layer
+    *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+    *  @param kernel_size  Vector of 1 integers, specifying the height and width of the 2D convolution window.
+    *  @param strides  Vector of 1 integers, specifying the strides of the convolution along the height and width
+    *  @param padding  One of "none", "valid" or "same"
+    *  @param use_bias  Boolean, whether the layer uses a bias vector.
+    *  @param groups  Number of blocked connections from input channels to output channels
+    *  @param dilation_rate  Vector of 1 integers, specifying the dilation rate to use for dilated convolution
+    *  @param name  A name for the operation
+    *  @return     Convolution layer
+  */
+  layer Conv1D(layer parent, int filters,  vector<int> kernel_size,
+             vector<int> strides = {1}, string padding = "same", bool use_bias = true,
+             int groups = 1, const vector<int> dilation_rate = {1}, string name = "");
+
+
     /**
       *  @brief Regular densely-connected NN layer.
       *
@@ -1388,6 +1407,19 @@ typedef NetLoss * metric;
       *  @return     The result after apply the max pooling operation over the parent layer
     */
     layer MaxPool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2}, string padding = "none", string name = "");
+
+    /**
+      *  @brief Max 1D pooling operation.
+      *
+      *  @param parent  Parent layer
+      *  @param pool_size  Size of the max pooling windows
+      *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
+      *  @param padding  One of "none", "valid" or "same" (case-insensitive).
+      *  @param name  A name for the operation
+      *  @return     The result after apply the max pooling operation over the parent layer
+    */
+    layer MaxPool1D(layer parent, vector<int> pool_size = {2}, vector<int> strides = {2}, string padding = "none", string name = "");
+
 
     // Recurrent Layers
 
