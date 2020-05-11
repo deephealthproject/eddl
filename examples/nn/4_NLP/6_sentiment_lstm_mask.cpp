@@ -20,6 +20,8 @@ using namespace eddl;
 // Embeding+RNN for
 // aclImdb sentiment analysis
 // using all vocabulary
+// adding Dropout and
+// masking zeros in LSTM
 //////////////////////////////////
 
 int main(int argc, char **argv) {
@@ -39,9 +41,11 @@ int main(int argc, char **argv) {
     layer in = Input({1}); //1 word
     layer l = in;
 
+    l=Dropout(l,0.1,false);  // false: don't weight in inference
+
     layer lE = Embedding(l, vocsize, 1,embdim,true); //mask_zeros=true
 
-    l = LSTM(lE,512);
+    l = LSTM(lE,512,true); //mask_zeros=true
     l = LeakyReLu(BatchNormalization(Dense(l,128)),false);
 
 
@@ -51,7 +55,7 @@ int main(int argc, char **argv) {
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
-    optimizer opt=rmsprop(0.0001);
+    optimizer opt=rmsprop(0.00001);
     //opt->set_clip_val(0.01);
 
     // Build model

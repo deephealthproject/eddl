@@ -81,6 +81,8 @@ target_link_libraries(sentiment_rnn_1000 eddl)
 add_executable(sentiment_rnn_all "nn/4_NLP/5_sentiment_rnn_all.cpp")
 target_link_libraries(sentiment_rnn_all eddl)
 
+add_executable(sentiment_lstm_mask "nn/4_NLP/6_sentiment_lstm_mask.cpp")
+target_link_libraries(sentiment_lstm_mask eddl)
 
 
 
