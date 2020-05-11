@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 
     layer lE = Embedding(l, vocsize, 1,embdim,true); //mask_zeros=true
 
-    l = LSTM(lE,512);
+    l = LSTM(lE,512,true);
     l = LeakyReLu(BatchNormalization(Dense(l,128)),false);
 
 
@@ -59,8 +59,8 @@ int main(int argc, char **argv) {
           opt, // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
-          //CS_GPU({1,1},100) // two GPU
+          //CS_GPU({1}) // one GPU
+          CS_GPU({0,1},100) // two GPU
           //CS_CPU(-1) // CPU with maximum threads availables
     );
 
