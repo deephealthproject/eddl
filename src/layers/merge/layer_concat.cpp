@@ -28,62 +28,68 @@ LConcat::LConcat(vector<Layer *> parent, unsigned int axis, string name, int dev
     this->axis = axis;
 
     if (parent.size() > 1) {
+
         // All layers need to have the same number of dimensions
         for (int i = 0; i < parent.size() - 1; ++i) {
-            if (ndim != parent[i]->output->ndim){
+            if (this->ndim != parent[i+1]->output->ndim){
                 msg("Error: LConcat layers with different tensor dims");
             }
         }
 
-        // Check that all dimensions except depth (d=1), match
-        if (ndim == 2) {
-            for (int i = 0; i < parent.size() - 1; ++i){
-                if (parent[i]->output->shape[0] != parent[i + 1]->output->shape[0]){
+        // Check dimensions
+        for (int i = 0; i < parent.size() - 1; ++i){
+            for (int d = 0; d < this->ndim; ++d) {
+                if (d != this->axis && parent[i]->output->shape[d] != parent[i + 1]->output->shape[d]) {
                     msg("Error: LConcat layers with different size in dim 1");
                 }
             }
-        } else if (ndim == 4) {
-            for (int i = 0; i < parent.size() - 1; ++i) {
-                if (parent[i]->output->shape[0] != parent[i + 1]->output->shape[0]){
-                    msg("Error: LConcat layers with different size in dim 1, batch size");
-                } else if (parent[i]->output->shape[2] != parent[i + 1]->output->shape[2]){
-                    msg("Error: LConcat layers with different size in dim 3, rows of 4D");
-                } else if (parent[i]->output->shape[3] != parent[i + 1]->output->shape[3]){
-                    msg("Error: LConcat layers with different size in dim 4, cols of 4D");
-                }
-            }
-        } else {
-            msg("Error: LConcat layers of 2D or 4D tensors");
         }
+
+    }else{
+        msg("Error: LConcat must receive at least two layers");
     }
 
     // Sum depth dimensions to know the final dimension [2+2+6=10]
     int t = 0;
     for (int i = 0; i < parent.size(); ++i) {
-        t += parent[i]->output->shape[1];
+        t += parent[i]->output->shape[axis];
         index.push_back(t);
     }
 
     // Set new shape
-    vector<int> shape = parent[0]->output->getShape();
-    shape[1] = t;
+    vector<int> new_shape = parent[0]->output->getShape();
+    new_shape[axis] = t;
 
     input = parent[0]->output;
-    output = new Tensor(shape, dev);
+    output = new Tensor(new_shape, dev);
 //    if (!mem_level) { delta = new Tensor(output->shape, dev);  }  // NOT parent[0]->output
 
-    // Create a descriptor for each layer address translation
-    int temp = 0;
+    // Temp indices
+    vector<string> indices_tmp;
     for (int i = 0; i < parent.size(); ++i) {
-        auto *aux = new SelDescriptor({":", to_string(temp)+":"+to_string(temp+parent[i]->output->shape[1])});
-        temp += parent[i]->output->shape[1];
+        indices_tmp.push_back(":");
+    }
 
+    // Create a descriptor for each layer address translation
+    int start_idx = 0;
+    int end_idx = 0;
+    for (int i = 0; i < parent.size(); ++i) {
+        // Build indices for the given axis
+        start_idx = end_idx;
+        end_idx = start_idx+parent[i]->output->shape[axis];
+        vector<string> indices = vector<string>(indices_tmp);
+        indices[axis] = to_string(start_idx)+":"+to_string(end_idx);
+
+        // Build descriptor
+        auto *aux = new SelDescriptor(indices);
+
+        // Build translation table
         aux->build(this->output->shape);
         aux->build_indices();
         this->sd.push_back(aux);
     }
 
-    // Set childs
+    // Set children
     for (int i = 0; i < parent.size(); ++i) {
         parent[i]->addchild(this);
         addparent(parent[i]);
@@ -92,13 +98,12 @@ LConcat::LConcat(vector<Layer *> parent, unsigned int axis, string name, int dev
 }
 
 
-// virtual
 void LConcat::forward() {
     // Get output tensors
     vector<Tensor*> outputs;
     for (auto & p : this->parent) { outputs.push_back(p->output); }
 
-    // Perform concat
+    // Perform concatenation
     Tensor::concat(outputs, this->axis, this->output);
 }
 
@@ -125,7 +130,7 @@ Layer *LConcat::share(int c, int bs, vector<Layer *> p) {
 
 Layer *LConcat::clone(int c, int bs, vector<Layer *> p, int todev) {
 
-    auto *n = new LConcat(p, this->axis,  name, todev,mem_level);
+    auto *n = new LConcat(p, this->axis, name, todev,mem_level);
     n->orig = this;
 
     return n;

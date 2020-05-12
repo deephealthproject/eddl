@@ -9,6 +9,7 @@ cmake_minimum_required(VERSION 3.9.2)
 option(BUILD_SUPERBUILD "Compile using the superbuild system" OFF)
 option(BUILD_PROTOBUF "Compile using Protobuf" ON)
 option(BUILD_OPENMP "Compile using OpenMP" ON)
+option(BUILD_HPC "Compile using agressive flags" OFF)
 option(BUILD_TESTS "Compile tests" ON)
 option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" ON)
@@ -77,6 +78,10 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
             "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
+
+if(BUILD_HPC)
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -msse -mfpmath=sse -ffast-math")
+endif()
 
 ###########################################################################
 ############################### WINDOWS ###################################
