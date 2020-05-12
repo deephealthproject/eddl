@@ -14,7 +14,7 @@ Element-wise
 abs
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::abs
+.. doxygenfunction:: eddlT::abs
 
 .. code-block:: c++
 
@@ -23,7 +23,7 @@ abs
 acos
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::acos
+.. doxygenfunction:: eddlT::acos
 
 .. code-block:: c++
 
@@ -32,11 +32,17 @@ acos
 add
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::add(Tensor *, Tensor *)
+.. doxygenfunction:: eddlT::add(Tensor *, float)
+.. doxygenfunction:: eddlT::add(Tensor *, Tensor *)
 
-.. doxygenfunction:: Tensor::add(float, Tensor *, float, Tensor *, Tensor *, int)
+###Inplace versions
 
-.. doxygenfunction:: Tensor::add(Tensor *, Tensor *, Tensor *)
+.. doxygenfunction:: eddlT::add_(Tensor *, float)
+.. doxygenfunction:: eddlT::add_(Tensor *, Tensor *)
+
+.. doxygenfunction:: eddlT::add(float, Tensor *, float, Tensor *, Tensor *, int)
+
+.. doxygenfunction:: eddlT::add(Tensor *, Tensor *, Tensor *)
 
 .. code-block:: c++
    
@@ -47,7 +53,7 @@ add
 asin
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::asin
+.. doxygenfunction:: eddlT::asin
 
 .. code-block:: c++
 
@@ -56,7 +62,7 @@ asin
 atan
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::atan
+.. doxygenfunction:: eddlT::atan
 
 .. code-block:: c++
 
@@ -65,7 +71,7 @@ atan
 ceil
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::ceil
+.. doxygenfunction:: eddlT::ceil
 
 .. code-block:: c++
    
@@ -74,7 +80,7 @@ ceil
 clamp
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::clamp
+.. doxygenfunction:: eddlT::clamp
 
 .. code-block:: c++
    
@@ -83,7 +89,7 @@ clamp
 clampmax
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::clampmax
+.. doxygenfunction:: eddlT::clampmax
 
 .. code-block:: c++
    
@@ -92,7 +98,7 @@ clampmax
 clampmin
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::clampmin
+.. doxygenfunction:: eddlT::clampmin
 
 .. code-block:: c++
 
@@ -101,7 +107,7 @@ clampmin
 cos
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::cos
+.. doxygenfunction:: eddlT::cos
 
 .. code-block:: c++
 
@@ -110,7 +116,7 @@ cos
 cosh
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::cosh
+.. doxygenfunction:: eddlT::cosh
 
 .. code-block:: c++
    
@@ -119,9 +125,9 @@ cosh
 div
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::div(Tensor *, float)
+.. doxygenfunction:: eddlT::div(Tensor *, float)
 
-.. doxygenfunction:: Tensor::div(Tensor *, Tensor *)
+.. doxygenfunction:: eddlT::div(Tensor *, Tensor *)
 
 .. code-block:: c++  
 
@@ -131,7 +137,7 @@ div
 exp
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::exp
+.. doxygenfunction:: eddlT::exp
 
 .. code-block:: c++
    
@@ -140,7 +146,7 @@ exp
 floor
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::floor
+.. doxygenfunction:: eddlT::floor
 
 .. code-block:: c++   
 
@@ -149,7 +155,7 @@ floor
 log
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::log
+.. doxygenfunction:: eddlT::log
 
 .. code-block:: c++
    
@@ -158,7 +164,7 @@ log
 log2
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::log2
+.. doxygenfunction:: eddlT::log2
 
 .. code-block:: c++
    
@@ -167,7 +173,7 @@ log2
 log10
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::log10
+.. doxygenfunction:: eddlT::log10
 
 .. code-block:: c++
    
@@ -176,7 +182,7 @@ log10
 logn
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::logn
+.. doxygenfunction:: eddlT::logn
 
 .. code-block:: c++
    
@@ -185,7 +191,7 @@ logn
 mod
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::mod
+.. doxygenfunction:: eddlT::mod
 
 .. code-block:: c++
    
@@ -194,9 +200,9 @@ mod
 mult
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::mult(Tensor *, Tensor *)
+.. doxygenfunction:: eddlT::mult(Tensor *, Tensor *)
 
-.. doxygenfunction:: Tensor::mult(Tensor *, float)
+.. doxygenfunction:: eddlT::mult(Tensor *, float)
 
 .. code-block:: c++
    
@@ -206,7 +212,7 @@ mult
 neg
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::neg
+.. doxygenfunction:: eddlT::neg
 
 .. code-block:: c++  
 
@@ -215,7 +221,7 @@ neg
 pow
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::pow
+.. doxygenfunction:: eddlT::pow
 
 .. code-block:: c++
    
@@ -224,7 +230,7 @@ pow
 reciprocal
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::reciprocal
+.. doxygenfunction:: eddlT::reciprocal
 
 .. code-block:: c++
    
@@ -233,7 +239,7 @@ reciprocal
 remainder
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::remainder
+.. doxygenfunction:: eddlT::remainder
 
 .. code-block:: c++
    
@@ -242,7 +248,7 @@ remainder
 round
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::round
+.. doxygenfunction:: eddlT::round
 
 .. code-block:: c++
    
@@ -251,7 +257,7 @@ round
 rsqrt
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::rsqrt
+.. doxygenfunction:: eddlT::rsqrt
 
 .. code-block:: c++
    
@@ -260,7 +266,7 @@ rsqrt
 sigmoid
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sigmoid
+.. doxygenfunction:: eddlT::sigmoid
 
 .. code-block:: c++
    
@@ -269,9 +275,9 @@ sigmoid
 sign
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sign(Tensor *)
+.. doxygenfunction:: eddlT::sign(Tensor *)
 
-.. doxygenfunction:: Tensor::sign(Tensor *, Tensor *)
+.. doxygenfunction:: eddlT::sign(Tensor *, Tensor *)
 
 .. code-block:: c++  
 
@@ -281,7 +287,7 @@ sign
 sin
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sin
+.. doxygenfunction:: eddlT::sin
 
 .. code-block:: c++
    
@@ -290,7 +296,7 @@ sin
 sinh
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sinh
+.. doxygenfunction:: eddlT::sinh
 
 .. code-block:: c++
    
@@ -299,7 +305,7 @@ sinh
 sqr
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sqr
+.. doxygenfunction:: eddlT::sqr
 
 .. code-block:: c++
    
@@ -308,7 +314,7 @@ sqr
 sqrt
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sqrt
+.. doxygenfunction:: eddlT::sqrt
 
 .. code-block:: c++
 
@@ -317,7 +323,13 @@ sqrt
 sub
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::sub
+.. doxygenfunction:: eddlT::sub(Tensor *,float )
+.. doxygenfunction:: eddlT::sub(Tensor *, Tensor *)
+
+###Inplace versions
+
+.. doxygenfunction:: eddlT::sub_(Tensor *, float)
+.. doxygenfunction:: eddlT::sub_(Tensor *, Tensor *)
 
 .. code-block:: c++
    
@@ -330,7 +342,7 @@ sum
 
 .. doxygenfunction:: Tensor::sum2D_colwise
 
-.. doxygenfunction:: Tensor::sum_abs
+.. doxygenfunction:: eddlT::sum_abs
 
 .. code-block:: c++
    
@@ -341,7 +353,7 @@ sum
 tan
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::tan
+.. doxygenfunction:: eddlT::tan
 
 .. code-block:: c++
 
@@ -351,7 +363,7 @@ tan
 tanh
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::tanh
+.. doxygenfunction:: eddlT::tanh
 
 .. code-block:: c++
    
@@ -360,7 +372,7 @@ tanh
 trunc
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::trunc
+.. doxygenfunction:: eddlT::trunc
 
 .. code-block:: c++
    
@@ -375,7 +387,7 @@ Reductions
 max
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::max
+.. doxygenfunction:: eddlT::max
 
 .. code-block:: c++
    
@@ -384,7 +396,7 @@ max
 min
 ^^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::min
+.. doxygenfunction:: eddlT::min
 
 .. code-block:: c++
 

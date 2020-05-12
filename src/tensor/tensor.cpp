@@ -27,9 +27,20 @@ int initcuda[MAX_GPUS] = {0, 0, 0, 0, 0, 0, 0, 0};
 int linpos;
 extern ostream &operator<<(ostream &os, const vector<int> shape);
 
-
+/**
+  *  @brief Constructor of an uninitialized tensor in CPU with dimension and size 0
+  *  @return a tensor
+*/
 Tensor::Tensor() : device(DEV_CPU), ndim(0), size(0) {}
 
+/**
+  *  @brief Constructor of an uninitialized tensor
+  *
+  *  @param shape Vector of ints specifying the shape of the tensor
+  *  @param fptr  memory pointer
+  *  @param dev  One of DEV_CPU or DEV_GPU
+  *  @return a tensor
+*/
 Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
     /*
      * Important! If we are creating a GPU tensor, "fptr" must point to a GPU pointer.
@@ -56,21 +67,49 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
 }
 
 // From shape and device
+/**
+  *  @brief Constructor of an uninitialized tensor
+  *
+  *  @param shape Vector of ints specifying the shape of the tensor
+  *  @param dev  One of DEV_CPU or DEV_GPU
+  *  @return a tensor
+*/
 Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape, nullptr, dev){}
 
 // From shape and Tensor (sharing ptr)
+/**
+  *  @brief Constructor of an uninitialized tensor
+  *
+  *  @param shape Vector of ints specifying the shape of the tensor
+  *  @param T  tensor from which to take device and memory pointer
+  *  @return a tensor
+*/
 Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr,T->device) {}
 
 
+/**
+  *  @brief Moves the tensor to new computing device
+  *
+  *  @param dev  One of DEV_CPU or DEV_GPU
+*/
 void Tensor::updateDevice(int dev){
     this->device = dev;
 }
 
+/**
+  *  @brief Change the shape of a tensor
+  *
+  *  @param shape  Vector of ints specifying the new shape of the tensor
+*/
 void Tensor::updateShape(const vector<int> &shape){
     this->shape = vector<int>(shape);
     this->ndim = this->shape.size();
 }
 
+
+/**
+  *  @brief Update the size of the tensor
+*/
 void Tensor::updateSize() {
     this->size = 1;
 
@@ -79,6 +118,10 @@ void Tensor::updateSize() {
     }
 }
 
+
+/**
+  *  @brief Update the strides of the tensor
+*/
 void Tensor::updateStrides() {
     this->stride.clear();  // Remove all elements
 
@@ -89,6 +132,9 @@ void Tensor::updateStrides() {
     }
 }
 
+/**
+  *  @brief Delete tensor data
+*/
 void Tensor::deleteData(){
     if(this->ptr != nullptr){
         delete this->ptr;
@@ -96,6 +142,11 @@ void Tensor::deleteData(){
     }
 }
 
+/**
+  *  @brief Update tensor data
+  *  
+  *  @param fptr Pointer to the new data
+*/
 void Tensor::updateData(float *fptr){
 
     if (isCPU()) {
@@ -133,6 +184,11 @@ void Tensor::updateData(float *fptr){
 #endif
 }
 
+/**
+  *  @brief Move the tensor to CPU
+  *  
+  *  @param dev target CPU device
+*/
 void Tensor::toCPU(int dev){
 #ifdef cGPU
     if (isGPU())
@@ -159,6 +215,11 @@ void Tensor::toCPU(int dev){
 #endif
 }
 
+/**
+  *  @brief Move the tensor to GPU
+  *  
+  *  @param dev target GPU device
+*/
 void Tensor::toGPU(int dev){
 #ifdef cGPU
     if (isCPU()) {
@@ -189,6 +250,12 @@ void Tensor::toGPU(int dev){
 #endif
 }
 
+
+/**
+  *  @brief Obtain a copy of a tensor
+  *  
+  *  @return The copied tensor
+*/
 Tensor* Tensor::clone(){
     auto* t_new = new Tensor(this->shape, this->device);
     Tensor::copy(this, t_new);
@@ -225,16 +292,40 @@ Tensor::~Tensor() {
     delete tsem;
 }
 
+/**
+  *  @brief Check if a tensor is in CPU
+  *  
+  *  @return 1 if the tensor is in CPU, 0 otherwise
+*/
 int Tensor::isCPU() { return (device == DEV_CPU); }
 
+/**
+  *  @brief Check if a tensor is in GPU
+  *  
+  *  @return 1 if the tensor is in GPU, 0 otherwise
+*/
 int Tensor::isGPU() { return ((device >= DEV_GPU) && (device < DEV_FPGA)); }
 
+
+/**
+  *  @brief Check if a tensor is in FPGA
+  *  
+  *  @return 1 if the tensor is in FPGA, 0 otherwise
+*/
 int Tensor::isFPGA() { return (device >= DEV_FPGA); }
 
+/**
+  *  @brief Get the shape of a tensor
+  *  
+  *  @return a vector of ints representing the shape
+*/
 vector<int> Tensor::getShape() {
     return vector<int>(this->shape);
 }
 
+/**
+  *  @brief Print information about a tensor
+*/
 void Tensor::info() {
     int cols = 15;
     cout << "-------------------------------" << endl;
@@ -333,6 +424,11 @@ void Tensor::print(int precision, bool raw) {
     }
 }
 
+/**
+  *  @brief Check the device where a tensor is
+  *  
+  *  @return String. One of "CPU", "GPU", "FPGA" or "unknown"
+*/
 string Tensor::getStrDevice(){
     if ((this->device >= DEV_CPU) && (this->device < DEV_GPU)) { return "CPU"; }
     else if ((device >= DEV_GPU) && (this->device < DEV_FPGA)) { return "GPU"; }
@@ -340,6 +436,16 @@ string Tensor::getStrDevice(){
     return "unknown";
 }
 
+/**
+  *  @brief Obtain a flag indicating the tensor's mode. A tensor can be in one of the following modes:
+  *  "constant": The input is extended by filling all values beyond the edge with the same constant value, defined by the cval parameter. E.g.: (k k k k | a b c d | k k k k)
+  *  "reflect": The input is extended by reflecting about the edge of the last pixel. E.g.:(d c b a | a b c d | d c b a)
+  *  "nearest": The input is extended by replicating the last pixel. E.g.: (a a a a | a b c d | d d d d)
+  *  "mirror": The input is extended by reflecting about the center of the last pixel. E. g.: (d c b | a b c d | c b a)
+  *  "wrap": The input is extended by wrapping around to the opposite edge. E.g.: (a b c d | a b c d | a b c d)
+  *  "original": The input is extended by filling all values beyond the edge with the original values. E.g.: (o o o o | a b c d | o o o o)
+  *  @return integer. 0 if constant, 1 if reflect, 2 if nearest, 3 id mirror, 4 if wrap, 5 if original. Otherwise -1.
+*/
 int Tensor::get_mode(string mode){
     if(mode == "constant"){
         // (k k k k | a b c d | k k k k)
@@ -370,7 +476,10 @@ int Tensor::get_mode(string mode){
     }
 }
 
-
+/**
+  *  @brief Check if a tensor is squared or not
+  *  @return boolean. True if the tensor is squared, False otherwise.
+*/
 bool Tensor::isSquared(Tensor *A){
     int last_dim = A->shape[0];
     for(int i=0; i<A->ndim; i++){
