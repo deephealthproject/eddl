@@ -29,38 +29,55 @@ SGD::~SGD() {
 }
 
 void SGD::change(vector<float> &p) {
-
     if (p.size()>0) lr = p[0];
     if (p.size()>1) mu = p[1];
-    //cout<<"Optimizer SGD set new lr="<<lr<<" mu="<<mu<<"\n";
 }
 
 Optimizer *SGD::clone() {
-    return new SGD(lr, mu, weight_decay, nesterov);
+    SGD *n=new SGD(lr, mu, weight_decay, nesterov);
+    n->clip_val=clip_val;
+
+    return n;
+}
+
+Optimizer *SGD::share() {
+    SGD *n=new SGD(lr, mu, weight_decay, nesterov);
+    n->orig=this;
+    n->isshared=true;
+    n->clip_val=clip_val;
+    return n;
 }
 
 void SGD::setlayers(vlayer l) {
     layers = l;
 
+    if (isshared) return;
+
     // create momemtum tensors
     for (int i = 0; i < layers.size(); i++)
-        for (int j = 0; j < layers[i]->get_trainable_params_count(); j++) {
-            mT.push_back(new Tensor(layers[i]->gradients[j]->getShape(), layers[i]->dev));
-            mT.back()->fill_(0.0);
-        }
+      for (int j = 0; j < layers[i]->get_trainable_params_count(); j++) {
+          mT.push_back(new Tensor(layers[i]->gradients[j]->getShape(), layers[i]->dev));
+          mT.back()->fill_(0.0);
+    }
+
 
 }
 
 void SGD::applygrads(int batch) {
-
-    int p = 0;
-    for (int i = 0; i < layers.size(); i++)
-      if (layers[i]->trainable) {
-        for (int j = 0; j < layers[i]->get_trainable_params_count(); j++, p++) {
+    if (isshared) {
+      orig->applygrads(batch);
+    }
+    else {
+      clip();
+      int p = 0;
+      for (int i = 0; i < layers.size(); i++) {
+        if (layers[i]->trainable) {
+          for (int j = 0; j < layers[i]->get_trainable_params_count(); j++, p++) {
             Tensor::add(lr , layers[i]->gradients[j], mu, mT[p], mT[p], 0);
             Tensor::add(1.0, layers[i]->params[j], -1.0, mT[p], layers[i]->params[j], 0);
+          }
         }
+        else p+=layers[i]->get_trainable_params_count();
       }
-      else p+=layers[i]->get_trainable_params_count();
-
+    }
 }

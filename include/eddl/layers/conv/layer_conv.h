@@ -34,6 +34,8 @@ public:
     // constructors and clones
     LConv(Layer *parent, const vector<int> &ks, const vector<int> &st, const vector<int> &p, string name, int dev, int mem);
 
+    LConv(Layer *parent, int filters, const vector<int> &ks, const vector<int> &st,const vector<int> &p, string name, int dev, int mem);
+
     LConv(Layer *parent, int filters, const vector<int> &kernel_size, const vector<int> &strides, string padding,
           int groups, const vector<int> &dilation_rate, bool use_bias, string name, int dev, int mem);
 

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.5
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include "eddl/apis/eddl.h"
-#include "eddl/apis/eddlT.h"
+
 
 using namespace eddl;
 
@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 10;
+    int epochs = 100;
     int batch_size = 100;
     int num_classes = 10;
 
@@ -36,9 +36,8 @@ int main(int argc, char **argv) {
     layer l = in;  // Aux var
 
     l = LeakyReLu(Dense(l, 32));
-    l = LeakyReLu(RNN(l, 32));
-    l = LeakyReLu(RNN(l, 32));
-
+    //l = L2(RNN(l, 128, "relu"),0.001);
+    l = L2(LSTM(l, 128),0.001);
     l = LeakyReLu(Dense(l, 32));
 
     layer out = Softmax(Dense(l, num_classes));
@@ -53,8 +52,9 @@ int main(int argc, char **argv) {
           rmsprop(0.001), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_GPU({1,1},100) // one GPU
-          //CS_CPU(-1,"low_mem") // CPU with maximum threads availables
+          //CS_CPU({1}) // one GPU
+          //CS_GPU({1,1},100) // two GPU
+          CS_CPU(-1) // CPU with maximum threads availables
     );
 
     // View model
@@ -62,31 +62,27 @@ int main(int argc, char **argv) {
 
 
     // Load dataset
-    tensor x_train = eddlT::load("trX.bin");
-    tensor y_train = eddlT::load("trY.bin");
-    tensor x_test = eddlT::load("tsX.bin");
-    tensor y_test = eddlT::load("tsY.bin");
+    Tensor* x_train = Tensor::load("mnist_trX.bin");
+    Tensor* y_train = Tensor::load("mnist_trY.bin");
+    Tensor* x_test = Tensor::load("mnist_tsX.bin");
+    Tensor* y_test = Tensor::load("mnist_tsY.bin");
 
+    // Reshape to fit recurrent batch x timestep x dim
     x_train->reshape_({60000,28,28});
-    tensor x_trainp=Tensor::permute(x_train,{1,0,2});
-    delete x_train;
-
     x_test->reshape_({10000,28,28});
-    tensor x_testp=Tensor::permute(x_test,{1,0,2});
-    delete x_test;
 
     // Preprocessing
-    eddlT::div_(x_trainp, 255.0);
-    eddlT::div_(x_testp, 255.0);
+    x_train->div_(255.0f);
+    x_test->div_(255.0f);
 
     setlogfile(net,"recurrent_mnist");
 
     // Train model
-
     for(int i=0;i<epochs;i++) {
-      fit(net,{x_trainp}, {y_train}, batch_size, 1);
-      evaluate(net, {x_testp}, {y_test});
+      fit(net,{x_train}, {y_train}, batch_size, 1);
+      evaluate(net, {x_test}, {y_test});
     }
+
 
 
 }

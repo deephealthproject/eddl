@@ -160,7 +160,6 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initia
 
   set_compserv(cs);
 
-
   if (VERBOSE) {
     if (cs->type == "local") {
       if (snets[0]->dev == DEV_CPU)
@@ -201,7 +200,6 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
         }
 
         // Set params
-        layers[i]->set_trainable(true);
         layers[i]->verbosity_level = this->verbosity_level;
     }
 
@@ -284,7 +282,7 @@ void Net::set_compserv(CompServ *cs){
 
         if (VERBOSE) cout<<"split into "<<devsel.size()<<" GPUs devices\n";
 
-        split(devsel.size(),DEV_GPU);
+        if (!cs->isshared) split(devsel.size(),DEV_GPU);
 #endif
         } else {
             // split on multiple FPGAs
@@ -499,7 +497,6 @@ Net* Net::unroll(int inl, int outl, bool seq, bool areg) {
     // rest of layers
     for (j = 0; j < layers.size(); j++) {
       if ((i>=(inl-outl))||(frnn[j])) {
-        //cout<<j<<":"<<layers[j]->name<<endl;
         if (!isInorig(layers[j], nlayers[i], ind)) {
           vlayer par;
           for (l = 0; l < layers[j]->parent.size(); l++) {
@@ -533,11 +530,9 @@ Net* Net::unroll(int inl, int outl, bool seq, bool areg) {
 /////
 vlayer ninl;
 vlayer noutl;
-
 for (i = 0; i < inl; i++)
   for (j = 0; j < nin[i].size(); j++)
     ninl.push_back(nin[i][j]);
-
 for (i = 0; i < inl; i++)
   for (j = 0; j < nout[i].size(); j++)
     noutl.push_back(nout[i][j]);
@@ -565,6 +560,8 @@ void Net::build_rnet(int inl,int outl) {
    // Create an unrolled version on CPU
    rnet=unroll(inl,outl,false,false);
 
+   rnet->plot("rmodel.pdf","LR");
+
    for(i=0;i<rnet->layers.size();i++) {
      rnet->layers[i]->isrecurrent=false;
      rnet->layers[i]->net=rnet;
@@ -572,16 +569,15 @@ void Net::build_rnet(int inl,int outl) {
    }
    rnet->isrecurrent=false;
 
-
    vloss lr;
    for(i=0;i<outl;i++) lr.push_back(losses[0]->clone());
 
    vmetrics mr;
    for(i=0;i<outl;i++) mr.push_back(metrics[0]->clone());
 
-
-   rnet->build(optimizer->clone(),lr,mr,cs,false);
+   rnet->build(optimizer->share(),lr,mr,cs->share(),false);
    //cout<<rnet->summary();
+   fflush(stdout);
    rnet->plot("rmodel.pdf","LR");
    rnet->name="rnet";
 
@@ -594,7 +590,6 @@ void Net::build_rnet(int inl,int outl) {
      for(i=0;i<rnet->snets.size();i++)
        delete rnet->snets[i];
      rnet->snets.clear();
-
      for(i=0;i<snets.size();i++) {
      //cout<<snets[i]->summary();
        rnet->snets.push_back(snets[i]->unroll(inl,outl,false,false));
@@ -603,7 +598,7 @@ void Net::build_rnet(int inl,int outl) {
        }
        rnet->snets[i]->isrecurrent=false;
 
-       rnet->snets[i]->build(optimizer->clone(),lr,mr,false);
+       rnet->snets[i]->build(snets[i]->optimizer->share(),lr,mr,false);
        rnet->snets[i]->plot("rsnet.pdf","LR");
        for(j=0;j<rnet->snets[i]->layers.size();j++) {
              rnet->snets[i]->layers[j]->orig=rnet->layers[j];
@@ -618,6 +613,8 @@ void Net::build_rnet(int inl,int outl) {
    rnet->reset_loss();
    rnet->reset();
    rnet->reset_grads();
+
+   fflush(stdout);
 
   }
 }

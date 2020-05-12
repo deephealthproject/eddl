@@ -48,10 +48,10 @@ eddl.build(
 eddl.summary(net)
 eddl.plot(net, "model.pdf")
 
-x_train = eddlT.load("trX.bin")
-y_train = eddlT.load("trY.bin")
-x_test = eddlT.load("tsX.bin")
-y_test = eddlT.load("tsY.bin")
+x_train = eddlT.load("mnist_trX.bin")
+y_train = eddlT.load("mnist_trY.bin")
+x_test = eddlT.load("mnist_tsX.bin")
+y_test = eddlT.load("mnist_tsY.bin")
 
 eddlT.div_(x_train, 255.0)
 eddlT.div_(x_test, 255.0)

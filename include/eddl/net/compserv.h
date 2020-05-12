@@ -26,6 +26,7 @@ public:
     vector<int> local_gpus;
     vector<int> local_fpgas;
     int lsb; //local sync batches
+    bool isshared;
 
 
 
@@ -35,6 +36,10 @@ public:
     // 2: low memory. save memory as much as possible
     int mem_level;
 
+
+
+    CompServ();
+    CompServ * share();
 
     // for local
     CompServ(int threads, const vector<int> g, const vector<int> &f,int lsb=1, int mem=0);

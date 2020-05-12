@@ -235,28 +235,38 @@ void Net::forward(vector<Tensor*> in)
 
 void Net::forward_recurrent(vector<Tensor*> tin)
 {
-  int i, j, k, n;
-
+  int i,j,k;
   int inl;
   int outl;
 
-  inl=tin[0]->shape[0];
-  outl=1;
 
-  // TODO: check dims with inputs
+  vector<Tensor *>xt;
+  for(i=0;i<tin.size();i++)
+    xt.push_back(Tensor::permute(tin[i],{1,0,2})); // time x batch x dim
+
+  inl=xt[0]->shape[0];
+  for(i=0;i<xt.size();i++)
+   if (xt[i]->shape[0]!=inl)
+     msg("Input tensors with different time steps","fit_recurrent");
+
+  outl=1;
 
   build_rnet(inl,outl);
 
   // prepare data for unroll net
   vtensor tinr;
   int offset;
-  offset=tin[0]->shape[1]*tin[0]->shape[2];
-  for(i=0;i<inl;i++) {
-    Tensor *n=new Tensor({tin[0]->shape[1],tin[0]->shape[2]},tin[0]->ptr+(i*offset));
-    tinr.push_back(n);
-    }
+  for(i=0;i<xt.size();i++) {
+    offset=xt[i]->size/xt[i]->shape[0];
+    for(j=0;j<inl;j++)
+      tinr.push_back(new Tensor({xt[i]->shape[1],xt[i]->shape[2]},xt[i]->ptr+(j*offset)));
+  }
 
   rnet->forward(tinr);
+
+  for(i=0;i<xt.size();i++)
+    delete xt[i];
+  xt.clear();
 
 }
 
@@ -348,7 +358,9 @@ void Net::backward(){
 
   for(int i=0;i<netinput.size();i++) {
     if (netinput[i]->detached==false) {
-      copyTensor(lin[i],netinput[i],"grad");
+      collectTensor(lin[i],"delta");
+      Tensor::copy(lin[i]->delta,netinput[i]->delta);
+      distributeTensor(netinput[i],"delta");
       netinput[i]->net->backward();
     }
   }
@@ -425,7 +437,10 @@ void Net::print_loss(int b)
         total_metric[k] += fiterr[p + 1];  // metric
         fiterr[p] = fiterr[p + 1] = 0.0;
         fprintf(stdout,"Batch %d ",b);
-        fprintf(stdout, "%s(%s=%1.3f,%s=%1.3f) ", lout[k]->name.c_str(),
+        string name=lout[k]->name;
+        if (lout[k]->isshared) name=lout[k]->orig->name;
+
+        fprintf(stdout, "%s(%s=%1.3f,%s=%1.3f) ", name.c_str(),
                 losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
                 metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
 
@@ -473,6 +488,7 @@ void Net::reset()
   do_reset();
   run_snets(reset_t);
 }
+
 
 
 
@@ -597,27 +613,45 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
 void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
   int i, j, k, n;
 
-
   int inl;
   int outl;
 
-  inl=tin[0]->shape[0];
+
+  vector<Tensor *>xt;
+  for(i=0;i<tin.size();i++)
+    xt.push_back(Tensor::permute(tin[i],{1,0,2})); // time x batch x dim
+
+  inl=xt[0]->shape[0];
+  for(i=0;i<xt.size();i++)
+   if (xt[i]->shape[0]!=inl)
+     msg("Input tensors with different time steps","fit_recurrent");
+
   outl=1;
 
+
   build_rnet(inl,outl);
+
+
 
   // prepare data for unroll net
   vtensor tinr;
   int offset;
-  offset=tin[0]->shape[1]*tin[0]->shape[2];
-  for(i=0;i<inl;i++) {
-    Tensor *n=new Tensor({tin[0]->shape[1],tin[0]->shape[2]},tin[0]->ptr+(i*offset));
-    tinr.push_back(n);
+  for(i=0;i<xt.size();i++) {
+    offset=xt[i]->size/xt[i]->shape[0];
+    vector<int>shape;
+    for(j=1;j<xt[i]->ndim;j++)
+      shape.push_back(xt[i]->shape[j]);
+    for(j=0;j<inl;j++)
+      tinr.push_back(new Tensor(shape,xt[i]->ptr+(j*offset)));
   }
 
   rnet->fit(tinr,tout,batch,epochs);
 
   if (snets[0]->dev!=DEV_CPU) rnet->sync_weights();
+
+  for(i=0;i<xt.size();i++)
+    delete xt[i];
+  xt.clear();
 
 
 }
@@ -698,6 +732,7 @@ void Net::evaluate(vtensor tin, vtensor tout) {
       n = tin[0]->shape[0];
 
 
+
       for (i = 1; i < tin.size(); i++)
           if (tin[i]->shape[0] != n)
               msg("different number of samples in input tensor", "Net.evaluate");
@@ -721,13 +756,13 @@ void Net::evaluate(vtensor tin, vtensor tout) {
       reset_loss();
       for (j = 0; j < n / batch_size; j++) {
 
-            for (k=0;k<batch_size;k++)
+          for (k=0;k<batch_size;k++)
             sind[k]=(j*batch_size)+k;
 
           train_batch(tin, tout, sind, 1);
 
           print_loss(j+1);
-            fprintf(stdout, "\r");
+          fprintf(stdout, "\r");
           fflush(stdout);
       }
       fprintf(stdout, "\n");
@@ -737,27 +772,41 @@ void Net::evaluate(vtensor tin, vtensor tout) {
 
 ///////////////////////////////////////////
 void Net::evaluate_recurrent(vtensor tin, vtensor tout) {
-
-  int i, j, k, n;
-
+  int i,j,k;
   int inl;
   int outl;
 
-  inl=tin[0]->shape[0];
-  outl=1;
 
-  build_rnet(inl,outl);
+  vector<Tensor *>xt;
+  for(i=0;i<tin.size();i++)
+    xt.push_back(Tensor::permute(tin[i],{1,0,2})); // time x batch x dim
+
+  inl=xt[0]->shape[0];
+  for(i=0;i<xt.size();i++)
+   if (xt[i]->shape[i]!=inl)
+     msg("Input tensors with different time steps","fit_recurrent");
+
+  outl=1;
 
   // prepare data for unroll net
   vtensor tinr;
   int offset;
-  offset=tin[0]->shape[1]*tin[0]->shape[2];
-  for(i=0;i<inl;i++) {
-    Tensor *n=new Tensor({tin[0]->shape[1],tin[0]->shape[2]},tin[0]->ptr+(i*offset));
-    tinr.push_back(n);
+  for(i=0;i<xt.size();i++) {
+    offset=xt[i]->size/xt[i]->shape[0];
+
+    vector<int>shape;
+    for(j=1;j<xt[i]->ndim;j++)
+      shape.push_back(xt[i]->shape[j]);
+
+    for(j=0;j<inl;j++)
+      tinr.push_back(new Tensor(shape,xt[i]->ptr+(j*offset)));
   }
 
   rnet->evaluate(tinr,tout);
+
+  for(i=0;i<xt.size();i++)
+    delete xt[i];
+  xt.clear();
 
 }
 
