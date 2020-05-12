@@ -62,7 +62,7 @@ Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape, nullptr, dev){}
 Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr,T->device) {}
 
 
-void Tensor::updateDevice(int dev){
+void Tensor::updateDevice(unsigned int dev){
     this->device = dev;
 }
 
@@ -90,6 +90,7 @@ void Tensor::updateStrides() {
 }
 
 void Tensor::deleteData(){
+    // Careful, you can't know is a pointer is allocated
     if(this->ptr != nullptr){
         delete this->ptr;
         this->ptr = nullptr;
@@ -225,11 +226,11 @@ Tensor::~Tensor() {
     delete tsem;
 }
 
-int Tensor::isCPU() { return (device == DEV_CPU); }
+unsigned int Tensor::isCPU() { return (device == DEV_CPU); }
 
-int Tensor::isGPU() { return ((device >= DEV_GPU) && (device < DEV_FPGA)); }
+unsigned int Tensor::isGPU() { return ((device >= DEV_GPU) && (device < DEV_FPGA)); }
 
-int Tensor::isFPGA() { return (device >= DEV_FPGA); }
+unsigned int Tensor::isFPGA() { return (device >= DEV_FPGA); }
 
 vector<int> Tensor::getShape() {
     return vector<int>(this->shape);
@@ -247,7 +248,7 @@ void Tensor::info() {
     cout << setw(cols) << left << "order: "        << 'C' << endl;  // C=>C order, F=>Fortran order
     cout << setw(cols) << left << "data pointer: " << &this->ptr << endl;
     cout << setw(cols) << left << "type: "         << "float" << " (" << sizeof(float) << " bytes)" << endl;
-    cout << setw(cols) << left << "device: "         << this->getStrDevice() << " (code = " << this->device << ")" << endl;
+    cout << setw(cols) << left << "device: " << this->getDeviceName() << " (code = " << this->device << ")" << endl;
     cout << "-------------------------------" << endl;
 }
 
@@ -333,41 +334,11 @@ void Tensor::print(int precision, bool raw) {
     }
 }
 
-string Tensor::getStrDevice(){
+string Tensor::getDeviceName(){
     if ((this->device >= DEV_CPU) && (this->device < DEV_GPU)) { return "CPU"; }
     else if ((device >= DEV_GPU) && (this->device < DEV_FPGA)) { return "GPU"; }
     else if (this->device >= DEV_FPGA) { return "FPGA"; }
     return "unknown";
-}
-
-int Tensor::get_mode(string mode){
-    if(mode == "constant"){
-        // (k k k k | a b c d | k k k k)
-        // The input is extended by filling all values beyond the edge with the same constant value, defined by the cval parameter.
-        return 0;
-    }else if(mode == "reflect"){
-        // (d c b a | a b c d | d c b a)
-        // The input is extended by reflecting about the edge of the last pixel.
-        return 1;
-    }else if(mode == "nearest"){
-        // (a a a a | a b c d | d d d d)
-        // The input is extended by replicating the last pixel.
-        return 2;
-    }else if(mode == "mirror"){
-        // (d c b | a b c d | c b a)
-        // The input is extended by reflecting about the center of the last pixel.
-        return 3;
-    }else if(mode == "wrap"){
-        // (a b c d | a b c d | a b c d)
-        // The input is extended by wrapping around to the opposite edge.
-        return 4;
-    }else if(mode == "original"){
-        // (o o o o | a b c d | o o o o)
-        // The input is extended by filling all values beyond the edge with the original values
-        return 5;
-    }else {  // constant
-        return -1;
-    }
 }
 
 

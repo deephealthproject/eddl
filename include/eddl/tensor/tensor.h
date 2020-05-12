@@ -59,13 +59,6 @@ typedef vector<int> tshape;
 
 class Tensor {
 private:
-    void updateDevice(unsigned int dev);
-    void updateShape(const vector<int> &new_shape);
-    void updateSize();
-    void updateStrides();
-    void updateData(float* ptr);
-    void deleteData();
-
     // Load methods
     static Tensor* load_from_bin(std::ifstream &ifs);
     static Tensor* load_from_onnx(std::ifstream &ifs);
@@ -97,12 +90,20 @@ public:
 
     // Constructors
     Tensor();
-    explicit Tensor(const vector<int> &shape, int dev=DEV_CPU);
-    Tensor(const vector<int> &shape, float *fptr, int dev=DEV_CPU);
+    Tensor(const vector<int> &shape, int dev=DEV_CPU);
+    explicit Tensor(const vector<int> &shape, float *fptr, int dev=DEV_CPU);
     Tensor(const vector<int> &shape, Tensor *T);
 
     // Destructors
     ~Tensor();
+
+    // Internal methods
+    void updateDevice(unsigned int dev);
+    void updateShape(const vector<int> &new_shape);
+    void updateSize();
+    void updateStrides();
+    void updateData(float* ptr);
+    void deleteData();
 
     /**
       *  @brief Clone a tensor to the CPU.
@@ -115,39 +116,25 @@ public:
     void toGPU(int dev=DEV_GPU);
 
     /**
-      *  @brief Clone a tensor (same device).
-      *
-      *  @return    Tensor
-    */
-    Tensor* clone();
-    void reallocate(Tensor* old_t, vector<int> *s = nullptr);
-
-    // Resize
-    void resize(int b, float *fptr);
-    void resize(int b);
-    void resize(int b, Tensor *T);
-
-    // Check device
-    /**
       *  @brief Check if the tensor is in CPU.
       *
       *  @return int
     */
-    int isCPU() const;
+    unsigned int isCPU();
 
     /**
       *  @brief Check if the tensor is in GPU.
       *
       *  @return int
     */
-    int isGPU() const;
+    unsigned int isGPU();
 
     /**
       *  @brief Check if the tensor is in FPGA.
       *
       *  @return int
     */
-    int isFPGA() const;
+    unsigned int isFPGA();
 
 
     /**
@@ -163,11 +150,16 @@ public:
       *  @return    void
     */
     void print(int precision=6, bool raw=false);
-    string getStrDevice(); // TODO: Delete?
+
+    /**
+      *  @brief Returns the device name where the tensor is allocated ("CPU", "GPU" or "FPGA")
+      *
+      *  @return    string
+    */
+    string getDeviceName();
 
     // Core
     vector<int> getShape(); // TODO: Delete?
-    static int get_mode(string mode);  // TODO: Delete?
 
     /**
       *  @brief Check if all dimensions in the tensor are the same.
@@ -352,23 +344,23 @@ public:
     static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
     // ***** Transformations *****************************
-    static void shift(Tensor *A,Tensor *B, vector<int> shift, string mode="constant", float constant=0.0f);
-    static void rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center={0,0}, string mode="constant", float constant=0.0f);
-    static void scale(Tensor *A, Tensor *B, vector<int> new_shape, string mode="nearest", float constant=0.0f);
+    static void shift(Tensor *A,Tensor *B, vector<int> shift, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+    static void rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center={0,0}, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+    static void scale(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mode=WrappingMode::Nearest, float cval=0.0f);
     static void flip(Tensor *A, Tensor *B, int axis=0);
-    static void crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant=0.0f);
-    static void crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, string mode="nearest", float constant=0.0f);
-    static void cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant=0.0f);
+    static void crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float cval=0.0f);
+    static void crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, WrappingMode mode=WrappingMode::Nearest, float cval=0.0f);
+    static void cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float cval=0.0f);
 
     // ***** Data augmentation *****************************
-    static void shift_random(Tensor *A,Tensor *B, vector<float> factor_x, vector<float> factor_y, string mode="constant", float constant=0.0f);
-    static void rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center={0,0}, string mode="constant", float constant=0.0f);
-    static void scale_random(Tensor *A, Tensor *B, vector<float> factor, string mode="nearest", float constant=0.0f);
+    static void shift_random(Tensor *A,Tensor *B, vector<float> factor_x, vector<float> factor_y, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+    static void rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center={0,0}, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+    static void scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMode mode=WrappingMode::Nearest, float cval=0.0f);
     static void flip_random(Tensor *A, Tensor *B, int axis);
 
     static void crop_random(Tensor *A, Tensor *B);
-    static void crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, string mode="nearest", float constant=0.0f);
-    static void cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant=0.0f);
+    static void crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMode mode=WrappingMode::Nearest, float cval=0.0f);
+    static void cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float cval=0.0f);
 
     // Math operations ********************************
     static Tensor* interpolate(float factor1, Tensor *A, float factor2, Tensor *B);
@@ -747,6 +739,13 @@ public:
     static void transpose(Tensor *A, Tensor *B, vector<int> dims);
 
     /**
+     *  @brief Clone a tensor (same device). Similar to copy, but returning a new instance
+     *
+     *  @return    Tensor
+    */
+    Tensor* clone();
+
+    /**
       *  @brief Copy data from tensor A to B.
       *
       *  @param A   Tensor
@@ -759,6 +758,21 @@ public:
     static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool mask_zeros=false);
     static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0, bool mask_zeros=false);
     static void tile(Tensor *A, Tensor *B);
+
+    /**
+      *  @brief Reallocates a tensor into this one. Deprecated.
+      *
+      *  @return
+    */
+    void reallocate(Tensor* old_t, vector<int> *s = nullptr);
+
+    /**
+      *  @brief Resizes a tensor ({2, 2, 2} => {10, 2, 2}).
+      *
+      *  @return
+    */
+    void resize(int b, float *fptr=nullptr);
+
 
     // Generators (In-place) *************************************
     // Rethink names

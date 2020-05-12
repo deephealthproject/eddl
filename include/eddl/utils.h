@@ -56,4 +56,7 @@ string printVector(vector<T> myvector){
     return temp;
 }
 
+enum WrappingMode {Constant=0, Reflect=1, Nearest=2, Mirror=3, Wrap=4, Original=5};
+WrappingMode getWrappingMode(string mode);
+
 #endif //EDDL_UTILS_H

@@ -85,8 +85,7 @@ LReshape::~LReshape()
 // virtual
 void LReshape::resize(int batch){
     ls[0]=batch;
-    output->resize(batch, parent[0]->output);
-
+    output->resize(batch, parent[0]->output->ptr);
 }
 
 

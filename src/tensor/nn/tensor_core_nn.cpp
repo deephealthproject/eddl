@@ -16,59 +16,21 @@
 #endif
 
 // Resizing tensors
-void Tensor::resize(int b, float *fptr){
+void Tensor::resize(int b, float *fptr) {
+    if (b == shape[0]) return;
 
-    if (b==shape[0]) return;
+    // Get new shape
+    vector<int> new_shape = this->getShape();
+    new_shape[0] = b;
 
-    shape[0] = b;
-
-    size = 1;
-    for (int i = 0; i < ndim; ++i) size *= shape[i];
-
-    int s=size;
-    for(int i=0;i<ndim;i++) {
-        s/=shape[i];
-        stride.push_back(s);
-    }
-
-    if (isCPU()) {
-        if (fptr==nullptr) {
-            free(ptr);
-            ptr = get_fmem(size,"Tensor::resize");
-        } else {
-            ptr=fptr;
-        }
-        if (ndim == 2) {
-            ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(ptr, shape[1], shape[0]);
-        }
-    }
-#ifdef cGPU
-    else if (isGPU())
-    {
-        if (fptr==nullptr) {
-            gpu_delete_tensor(gpu_device,ptr);
-            ptr=gpu_create_tensor(gpu_device,size);
-        }
-        else {
-            ptr=fptr;
-        }
-    }
-#endif
-#ifdef cFPGA
-    else {
-        // create FPGA Tensor
-      }
-#endif
-
+    // Update attributes
+    updateShape(new_shape);
+    updateSize();
+    updateStrides();
+    if (fptr == nullptr) deleteData();  // Potential error
+    updateData(fptr);
 }
 
-void Tensor::resize(int b) {
-    resize(b,(float *)nullptr);
-}
-
-void Tensor::resize(int b, Tensor *T) {
-    resize(b,T->ptr);
-}
 
 
 void repeat_nn(Tensor *A, Tensor *B, vector<int> size) {
@@ -78,8 +40,8 @@ void repeat_nn(Tensor *A, Tensor *B, vector<int> size) {
     if (A->ndim != B->ndim) msg("Incompatible dims", "Tensor::Repeat");
 
     // Check size
-    for(int i=2; i<A->ndim; i++){
-        if(A->shape[i]*size[i-2]!=B->shape[i]){
+    for (int i = 2; i < A->ndim; i++) {
+        if (A->shape[i] * size[i - 2] != B->shape[i]) {
             msg("Incompatible dimensions (size)", "Tensor::Repeat_NN");
         }
     }
