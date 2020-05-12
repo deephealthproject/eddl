@@ -56,11 +56,11 @@ int main(int argc, char **argv) {
     plot(net, "model.pdf");
 
     optimizer opt=rmsprop(0.00001);
-    //opt->set_clip_val(0.01);
+    opt->set_clip_val(0.01);
 
     // Build model
     build(net,
-          opt, // Optimizer
+          adam(0.0001), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
           //CS_GPU({1}) // one GPU
