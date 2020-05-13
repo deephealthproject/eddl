@@ -36,8 +36,8 @@ int main(int argc, char **argv) {
     layer l = in;  // Aux var
 
     l = LeakyReLu(Dense(l, 32));
-    l = RNN(l, 32, "relu");
-    l = RNN(l, 32, "relu");
+    l = LSTM(l, 32, "relu");
+    l = LSTM(l, 32, "relu");
 
     l = LeakyReLu(Dense(l, 32));
 
