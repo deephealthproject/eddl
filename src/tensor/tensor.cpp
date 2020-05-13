@@ -57,18 +57,18 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
 }
 
 // From shape and device
-Tensor::Tensor(const vector<int> &shape, unsigned int dev):Tensor(shape, nullptr, dev){}
+Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape, nullptr, dev){}
 
 // From shape and Tensor (sharing ptr)
-Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr,T->device) {}
+Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr, T->device) {}
 
 
-void Tensor::updateDevice(unsigned int dev){
+void Tensor::updateDevice(int dev){
     this->device = dev;
 }
 
-void Tensor::updateShape(const vector<int> &shape){
-    this->shape = vector<int>(shape);
+void Tensor::updateShape(const vector<int> &new_shape){
+    this->shape = vector<int>(new_shape);
     this->ndim = this->shape.size();
 }
 
@@ -83,7 +83,7 @@ void Tensor::updateSize() {
 void Tensor::updateStrides() {
     this->stride.clear();  // Remove all elements
 
-    int new_size = this->size;
+    unsigned long int new_size = this->size;
     for(int i=0;i<ndim;i++) {
         new_size /= shape[i];
         this->stride.push_back(new_size);
@@ -227,11 +227,11 @@ Tensor::~Tensor() {
     delete tsem;
 }
 
-unsigned int Tensor::isCPU() { return (device == DEV_CPU); }
+int Tensor::isCPU() { return (device == DEV_CPU); }
 
-unsigned int Tensor::isGPU() { return ((device >= DEV_GPU) && (device < DEV_FPGA)); }
+int Tensor::isGPU() { return ((device >= DEV_GPU) && (device < DEV_FPGA)); }
 
-unsigned int Tensor::isFPGA() { return (device >= DEV_FPGA); }
+int Tensor::isFPGA() { return (device >= DEV_FPGA); }
 
 vector<int> Tensor::getShape() {
     return vector<int>(this->shape);

@@ -113,10 +113,10 @@ void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
 void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
 
 // CPU: Should be reductions
-float cpu_max(Tensor *A, Tensor *B);
-float cpu_min(Tensor *A, Tensor *B);
-float cpu_sum(Tensor *A, Tensor *B);
-float cpu_sum_abs(Tensor *A, Tensor *B);
+float cpu_max(Tensor *A);
+float cpu_min(Tensor *A);
+float cpu_sum(Tensor *A);
+float cpu_sum_abs(Tensor *A);
 
 // CPU: Reduction
 void cpu_reduce(Tensor *A, Tensor *B,string mode,int* map);

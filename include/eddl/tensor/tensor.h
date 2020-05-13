@@ -74,7 +74,7 @@ private:
     void save2txt(std::ofstream &ofs, const char delimiter, const vector<string> &header);
 
 public:
-    unsigned int device;
+    int device;
     unsigned int ndim;
     unsigned long int size;
     vector<int> shape;
@@ -90,7 +90,7 @@ public:
 
     // Constructors
     Tensor();
-    Tensor(const vector<int> &shape, unsigned int dev=DEV_CPU);
+    explicit Tensor(const vector<int> &shape, int dev=DEV_CPU);
     Tensor(const vector<int> &shape, float *fptr, int dev);
     Tensor(const vector<int> &shape, Tensor *T);
 
@@ -98,7 +98,7 @@ public:
     ~Tensor();
 
     // Internal methods
-    void updateDevice(unsigned int dev);
+    void updateDevice(int dev);
     void updateShape(const vector<int> &new_shape);
     void updateSize();
     void updateStrides();
@@ -120,21 +120,21 @@ public:
       *
       *  @return int
     */
-    unsigned int isCPU();
+    int isCPU();
 
     /**
       *  @brief Check if the tensor is in GPU.
       *
       *  @return int
     */
-    unsigned int isGPU();
+    int isGPU();
 
     /**
       *  @brief Check if the tensor is in FPGA.
       *
       *  @return int
     */
-    unsigned int isFPGA();
+    int isFPGA();
 
 
     /**
@@ -310,10 +310,20 @@ public:
     static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
 
+    // Math operations (zero) ************************
+    // TODO: Deprecated? They should be reductions (unless for speed)
+    static float max(Tensor* A);
+    static float min(Tensor* A);
+    static float sum(Tensor* A);
+    static float sum_abs(Tensor* A);
+
+
     // Math operations (unary) ************************
     static void abs(Tensor *A, Tensor *B);
 
     static void acos(Tensor *A, Tensor *B);
+
+    static void add(Tensor *A, Tensor *B, float v); // B = A + v
 
     static void asin(Tensor *A, Tensor *B);
 
@@ -331,11 +341,13 @@ public:
 
     static void cosh(Tensor *A, Tensor *B);
 
-    static void inv(Tensor *A, Tensor *B);
+    static void div(Tensor *A, Tensor *B, float v); // B = A / v
 
     static void exp(Tensor *A, Tensor *B);
 
     static void floor(Tensor *A, Tensor *B);
+
+    static void inv(Tensor *A, Tensor *B, float v=1.0f);
 
     static void log(Tensor *A, Tensor *B);
 
@@ -346,6 +358,8 @@ public:
     static void logn(Tensor *A, Tensor *B, float n);
 
     static void mod(Tensor *A, Tensor *B, float v);
+
+    static void mult(Tensor *A, Tensor *B, float v); // B = A * v
 
     static void neg(Tensor *A, Tensor *B);
 
@@ -385,7 +399,12 @@ public:
 
 
     // Math operations (binary) ************************
-    static Tensor* interpolate(float factor1, Tensor *A, float factor2, Tensor *B);
+    static void add(Tensor *A, Tensor *B, Tensor *C); // C = A + B
+
+    static void div(Tensor *A, Tensor *B, Tensor *C); // C = A / B
+
+    static void mult(Tensor *A, Tensor *B, Tensor *C); // C = A * B
+
     static void interpolate(float factor1, Tensor *A, float factor2, Tensor *B, Tensor *C);
 
 
@@ -740,45 +759,16 @@ public:
     static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0, bool mask_zeros=false);
     static void tile(Tensor *A, Tensor *B);
 
-
-    static void transpose(Tensor *A, Tensor *B, vector<int> dims);
-
     // TODO: REFACTOR!!! ************************
-    void add_(float v);
-    void add_(Tensor *A);
-    static Tensor* add(Tensor *A, Tensor *B);
-    static void add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
-    static void add(Tensor *A, Tensor *B, Tensor *C);
+    static void transpose(Tensor *A, Tensor *B, vector<int> dims);
+    static void add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC); // C = a*A+b*B
     static void inc(Tensor *A, Tensor *B);
-
-    void div_(float v);
-    static Tensor* div(Tensor *A, float v);
-    static Tensor* div(Tensor *A, Tensor *B);
     static void el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
-
-    float max();  // TODO: Deprecated
-    float min();  // TODO: Deprecated
-
-
-// TODO: REFACTOR!!!
-    void mult_(float v);
-    static Tensor* mult(Tensor *A, float v);
-    static Tensor* mult(Tensor *A, Tensor *B);
-    static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
     static void el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
-
-// TODO: REFACTOR!!!
-    float sum();
-//    //static Tensor* sum(Tensor *A);
+    static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
     static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
     static void sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
-
-    float sum_abs();
-
-
-// Math operations: Reduction ops
     static void reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
-
     static int eqsize(Tensor *A, Tensor *B);
     static int equal2(Tensor *A, Tensor *B, float epsilon=1e-3);
 
