@@ -1,6 +1,24 @@
 Pooling
 =============
 
+MaxPooling1D
+------------
+
+.. doxygenfunction:: MaxPool1D
+
+Example:
+
+.. code-block:: c++
+    :linenos:
+
+    ...
+    l = Reshape(l,{1,784}); //image as a 1D signal with depth=1
+    l = Conv1D(l,16, {3},{1});
+    l = ReLu(l);
+    l = MaxPool1D(l,{4},{4});  //MaxPool 4 stride 4
+    ...
+
+
 MaxPooling
 ----------
 
