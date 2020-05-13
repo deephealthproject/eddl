@@ -93,7 +93,7 @@ void cpu_remainder(Tensor *A, Tensor *B, float v);
 void cpu_round(Tensor *A, Tensor *B);
 void cpu_rsqrt(Tensor *A, Tensor *B);
 void cpu_sigmoid(Tensor *A, Tensor *B);
-void cpu_sign(Tensor *A, Tensor *B);
+void cpu_sign(Tensor *A, Tensor *B, float zero_sign=0.0f);
 void cpu_sin(Tensor *A, Tensor *B);
 void cpu_sinh(Tensor *A, Tensor *B);
 void cpu_sqr(Tensor *A, Tensor *B);
@@ -108,7 +108,6 @@ void cpu_inc(Tensor *A, Tensor *B);
 void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
 void cpu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
 void cpu_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
-void cpu_sign2(Tensor *A, Tensor *B); // TODO: Remove
 void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
 void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
 

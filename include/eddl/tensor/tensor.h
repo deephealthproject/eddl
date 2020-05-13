@@ -379,7 +379,7 @@ public:
 
     static void sigmoid(Tensor *A, Tensor *B);
 
-    static void sign(Tensor *A, Tensor *B);  // TODO: Review
+    static void sign(Tensor *A, Tensor *B, float zero_sign=0.0f);
 
     static void sin(Tensor *A, Tensor *B);
 
@@ -389,7 +389,7 @@ public:
 
     static void sqrt(Tensor *A, Tensor *B);
 
-    static void sub(Tensor *A, Tensor *B);
+    static void sub(Tensor *A, Tensor *B, float v);
 
     static void tan(Tensor *A, Tensor *B);
 
@@ -406,6 +406,9 @@ public:
     static void mult(Tensor *A, Tensor *B, Tensor *C); // C = A * B
 
     static void interpolate(float factor1, Tensor *A, float factor2, Tensor *B, Tensor *C);
+
+    static void sub(Tensor *A, Tensor *B, Tensor *C); // C = A - B
+
 
 
     // ***** Core *****************************

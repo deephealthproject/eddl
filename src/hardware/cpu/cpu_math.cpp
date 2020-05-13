@@ -158,7 +158,7 @@ void cpu_sigmoid(Tensor *A, Tensor *B){
     for (int i = 0; i < A->size; ++i) B->ptr[i] = ::expf(A->ptr[i])/(::expf(A->ptr[i])+1.0f);
 }
 
-void cpu_sign(Tensor *A, Tensor *B){
+void cpu_sign(Tensor *A, Tensor *B, float zero_sign){
 #pragma omp parallel for
     for (int i = 0; i < A->size; ++i) {
         if(A->ptr[i] > 0.0f){
@@ -166,7 +166,7 @@ void cpu_sign(Tensor *A, Tensor *B){
         }else if(A->ptr[i] < 0.0f){
             B->ptr[i] = -1.0f;
         }else{
-            B->ptr[i] = 0.0f;
+            B->ptr[i] = zero_sign;  // 0.0f recommended
         }
     };
 }
@@ -267,14 +267,6 @@ void cpu_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
         else C->ptr[i] = A->ptr[i] * B->ptr[i];
 }
 
-
-void cpu_sign2(Tensor *A, Tensor *B){
-    // TODO: Remove
-#pragma omp parallel for
-    for (int i = 0; i < A->size; i++)
-        if (A->ptr[i] < 0) B->ptr[i] = -1.0;
-        else B->ptr[i] = 1.0;
-}
 
 void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
 #pragma omp parallel for

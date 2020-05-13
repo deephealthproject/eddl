@@ -595,24 +595,14 @@ void Tensor::sigmoid(Tensor *A, Tensor *B){
 }
 
 
-void Tensor::sign(Tensor *A, Tensor *B) {
-    ///////////////////////////////////////
-    /// Get sign (+-) of all values
-    //////////////////////////////////////
-    //B->tsem->lock();
-
-    if (!Tensor::eqsize(A, B))
-        msg("Tensors with different shape", "Tensor::sign");
-    if (A->device != B->device) msg("Tensors in different devices", "Tensor::sign");
-
-    if (A->isCPU()) {
-        cpu_sign2(A, B);
+void Tensor::sign(Tensor *A, Tensor *B, float zero_sign) {
+    if (A->isCPU() && B->isCPU()) {
+        cpu_sign(A, B, zero_sign);
     }
 #ifdef cGPU
-    else if (A->isGPU())
+    else if (A->isGPU() && B->isGPU())
       {
-        Tensor::copy(A,B);
-        gpu_sign_(B);
+        gpu_sign(A, B, zero_sign);
       }
 #endif
 #ifdef cFPGA
@@ -620,8 +610,6 @@ void Tensor::sign(Tensor *A, Tensor *B) {
 
     }
 #endif
-    //B->tsem->unlock();
-
 }
 
 
@@ -697,21 +685,8 @@ void Tensor::sqrt(Tensor *A, Tensor *B){
 }
 
 
-void Tensor::sub(Tensor *A, Tensor *B){
-    if (A->isCPU() && B->isCPU()) {
-        cpu_sub(A, B);
-    }
-#ifdef cGPU
-    else if (A->isGPU() && B->isGPU())
-      {
-        gpu_sub(A, B);
-      }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
+void Tensor::sub(Tensor *A, Tensor *B, float v){
+    Tensor::add(A, B, -1.0f * v);
 }
 
 
@@ -784,6 +759,10 @@ void Tensor::mult(Tensor *A, Tensor *B, Tensor *C) {
 
 void Tensor::interpolate(float factor1, Tensor *A, float factor2, Tensor *B, Tensor *C){
     Tensor::add(factor1, A, factor2, B, C, 1);
+}
+
+void Tensor::sub(Tensor *A, Tensor *B, Tensor *C) {
+    Tensor::add(1.0, A, -1.0, B, C, 0);
 }
 
 
@@ -994,50 +973,7 @@ void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
 }
 
 
-float Tensor::max(){
-    if (isCPU()) {
-        return cpu_max(this);
-    }
-#ifdef cGPU
-    else if (isGPU())
-      {
-        return gpu_max(this);
-      }
-#endif
-#ifdef cFPGA
-    else {
 
-    }
-#endif
-    return -1.0f;  // Temp
-}
-
-float Tensor::min(){
-    if (isCPU()) {
-        return cpu_min(this);
-    }
-#ifdef cGPU
-    else if (isGPU())
-      {
-        return gpu_min(this);
-      }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-    return -1.0f;  // Temp
-}
-
-
-
-
-Tensor* Tensor::mult(Tensor *A, Tensor *B){
-    auto *t_new = new Tensor(A->shape, A->device);
-    Tensor::el_mult(A, B, t_new, 0);
-    return t_new;
-}
 
 
 void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
@@ -1120,26 +1056,6 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
     C->tsem->unlock();
 }
 
-
-float Tensor::sum() {
-    if (isCPU()) {
-        return cpu_sum(this);
-    }
-#ifdef cGPU
-    else if (isGPU())
-    {
-        return gpu_sum(this);
-    }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-    return 0;
-}
-
-//Tensor* Tensor::sum(Tensor *A){}
 
 void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
     ///////////////////////////////////////
@@ -1230,22 +1146,4 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
     }
 #endif
     C->tsem->unlock();
-}
-
-float Tensor::sum_abs() {
-    if (isCPU()) {
-        return cpu_sum_abs(this);
-    }
-#ifdef cGPU
-    else if (isGPU())
-      {
-         //return gpu_sum_abs(this);
-      }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-    return 0;
 }
