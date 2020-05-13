@@ -41,6 +41,10 @@ Tensor* raw_range(float start, float step, int size, int dev){
 // Creation ops ***********************************
 // ************************************************
 
+Tensor* Tensor::empty(const vector<int> &shape, int dev){
+    return new Tensor(shape, dev);
+}
+
 Tensor* Tensor::zeros(const vector<int> &shape, int dev){
     auto t = new Tensor(shape, dev);
     t->fill_(0.0f);

@@ -21,13 +21,18 @@ using namespace std;
 
 // ***** Core (in-place) *****************************
 void Tensor::fill_(float v) {
-    if (this->isCPU()) {
-        cpu_fill_(this, v);
+    Tensor::fill(this, v);
+}
+
+
+void Tensor::fill(Tensor* A, float v){
+    if (A->isCPU()) {
+        cpu_fill_(A, v);
     }
 #ifdef cGPU
-    else if (this->isGPU())
+    else if (A->isGPU())
       {
-        gpu_fill_(this,v);
+        gpu_fill_(A, v);
       }
 #endif
 #ifdef cFPGA
@@ -37,11 +42,85 @@ void Tensor::fill_(float v) {
 #endif
 }
 
-//Tensor* Tensor::fill(Tensor *A, float v){
-//    Tensor *t_new = A->clone();
-//    t_new->fill_(v);
-//    return t_new;
-//}
+
+void Tensor::permute_(const vector<int>& dims){
+    Tensor* temp = Tensor::permute(this, dims);
+    this->deleteData();
+    this->ptr = temp->ptr;
+}
+
+
+Tensor* Tensor::permute(Tensor* A, const vector<int>& dims){
+    // Build descriptor
+    auto *sd = new PermuteDescriptor(dims, A->device);
+    sd->build(A->shape);
+
+    // Initialize new tensor
+    auto *new_t = new Tensor(sd->oshape, A->device);
+
+    // Fill new tensor
+    Tensor::select(A, new_t, sd);
+    delete sd;
+    return new_t;
+}
+
+
+void Tensor::moveaxis_(int source, int destination){
+    Tensor* temp = Tensor::moveaxis(this, source, destination);
+    this->deleteData();
+    this->ptr = temp->ptr;
+}
+
+
+Tensor* Tensor::moveaxis(Tensor* A, int source, int destination){
+    // Check values
+    if(source<-1 || destination <-1){
+        msg("Invalid axis", "Tensor::moveaxis");
+    }
+
+    // User "-1" as alias for the last dimension
+    if(source == -1){source = A->ndim-1; }
+    if(destination == -1){destination = A->ndim-1; }
+
+    // Build axes to permute [1 => 3] => (0,1,2,3) => (0,2,3,1)
+    vector<int> dims;
+    dims.reserve(A->ndim);
+    for(int i=0; i<A->ndim;i++){
+        dims.push_back(i);
+    }
+    dims.erase(dims.begin()+source);  // Remove axis
+    dims.insert(dims.begin() + destination, source);  // Insert at final position
+
+    // Permute tensor
+    Tensor* t2 = Tensor::permute(A, dims);
+    return t2;
+}
+
+
+void Tensor::swapaxis_(int axis1, int axis2){
+    Tensor* temp = Tensor::swapaxis(this, axis1, axis2);
+    this->deleteData();
+    this->ptr = temp->ptr;
+}
+
+
+Tensor* Tensor::swapaxis(Tensor* A, int axis1, int axis2){
+    // Check values
+    if(axis1<-1 || axis2 <-1 || axis1 == axis2){
+        msg("Invalid axis", "Tensor::swapaxis");
+    }
+
+    // Build axes to permute [0, 3] => (0,1,2,3) => (3,1,2,0)
+    vector<int> dims;
+    for(int i=0; i<A->ndim;i++){ dims.emplace_back(i); }
+    dims[axis1] = axis2;
+    dims[axis2] = axis1;
+
+    // Permute tensor
+    Tensor* t2 = Tensor::permute(A, dims);
+    return t2;
+}
+
 
 void Tensor::reshape_(const vector<int> &new_shape){
     int new_size = 1;  // For checking
@@ -68,6 +147,7 @@ void Tensor::reshape_(const vector<int> &new_shape){
     updateData(this->ptr);  // Due to the Eigen mapping
 }
 
+
 Tensor* Tensor::reshape(Tensor *A, const vector<int> &shape){
     Tensor *t_new = A->clone();
     t_new->reshape_(shape);
@@ -78,6 +158,7 @@ Tensor* Tensor::reshape(Tensor *A, const vector<int> &shape){
 void Tensor::flatten_(){
     this->reshape_({-1});
 }
+
 
 Tensor* Tensor::flatten(Tensor *A){
     Tensor *t_new = A->clone();
@@ -97,11 +178,13 @@ void Tensor::squeeze_(){
     this->reshape_(new_shape);
 }
 
+
 Tensor* Tensor::squeeze(Tensor *A){
     Tensor *t_new = A->clone();
     t_new->squeeze_();
     return t_new;
 }
+
 
 void Tensor::unsqueeze_(){
     vector<int> new_shape(this->shape);
@@ -109,83 +192,11 @@ void Tensor::unsqueeze_(){
     this->reshape_(new_shape);
 }
 
+
 Tensor* Tensor::unsqueeze(Tensor *A){
     Tensor *t_new = A->clone();
     t_new->unsqueeze_();
     return t_new;
-}
-
-void Tensor::permute_(const vector<int>& dims){
-    Tensor* temp = Tensor::permute(this, dims);
-    this->deleteData();
-    this->ptr = temp->ptr;
-}
-
-Tensor* Tensor::permute(Tensor* t, const vector<int>& dims){
-    // Build descriptor
-    auto *sd = new PermuteDescriptor(dims, t->device);
-    sd->build(t->shape);
-
-    // Initialize new tensor
-    auto *new_t = new Tensor(sd->oshape, t->device);
-
-    // Fill new tensor
-    Tensor::select(t, new_t, sd);
-  	delete sd;
-    return new_t;
-}
-
-void Tensor::moveaxis_(int source, int destination){
-    Tensor* temp = Tensor::moveaxis(this, source, destination);
-    this->deleteData();
-    this->ptr = temp->ptr;
-}
-
-Tensor* Tensor::moveaxis(Tensor* t, int source, int destination){
-    // Check values
-    if(source<-1 || destination <-1){
-        msg("Invalid axis", "Tensor::moveaxis");
-    }
-
-    // User "-1" as alias for the last dimension
-    if(source == -1){source = t->ndim-1; }
-    if(destination == -1){destination = t->ndim-1; }
-
-    // Build axes to permute [1 => 3] => (0,1,2,3) => (0,2,3,1)
-    vector<int> dims;
-    dims.reserve(t->ndim);
-    for(int i=0; i<t->ndim;i++){
-        dims.push_back(i);
-    }
-    dims.erase(dims.begin()+source);  // Remove axis
-    dims.insert(dims.begin() + destination, source);  // Insert at final position
-
-    // Permute tensor
-    Tensor* t2 = Tensor::permute(t, dims);
-    return t2;
-}
-
-void Tensor::swapaxis_(int axis1, int axis2){
-    Tensor* temp = Tensor::swapaxis(this, axis1, axis2);
-    this->deleteData();
-    this->ptr = temp->ptr;
-}
-
-Tensor* Tensor::swapaxis(Tensor* t, int axis1, int axis2){
-    // Check values
-    if(axis1<-1 || axis2 <-1 || axis1 == axis2){
-        msg("Invalid axis", "Tensor::swapaxis");
-    }
-
-    // Build axes to permute [0, 3] => (0,1,2,3) => (3,1,2,0)
-    vector<int> dims;
-    for(int i=0; i<t->ndim;i++){ dims.emplace_back(i); }
-    dims[axis1] = axis2;
-    dims[axis2] = axis1;
-
-    // Permute tensor
-    Tensor* t2 = Tensor::permute(t, dims);
-    return t2;
 }
 
 
@@ -319,43 +330,43 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
     B->tsem->unlock();
 }
 
-Tensor* Tensor::concat(const vector<Tensor*> t, unsigned int axis, Tensor* output){
+Tensor* Tensor::concat(const vector<Tensor*> A, unsigned int axis, Tensor* output){
     // Check number of vectors to concat
-    if(t.size()<2){
+    if(A.size()<2){
         msg("Concat requires a minimum of two tensors", "Tensor::concat");
     }
 
     // Temp variables
-    vector<int> new_shape = t[0]->shape;
+    vector<int> new_shape = A[0]->shape;
     int new_axis = 0;
 
     // Walk through each tensor to check for compatibility issues (from 1 to n)
-    for(int i=1; i<t.size(); i++){
+    for(int i=1; i<A.size(); i++){
 
         // Check device
-        if(t[0]->device != t[i]->device){
+        if(A[0]->device != A[i]->device){
             msg("All tensors must be on the same device", "Tensor::concat");
         }
 
         // Check dimensions
-        if(t[0]->ndim != t[i]->ndim){
+        if(A[0]->ndim != A[i]->ndim){
             msg("The number of dimensions of all tensors must match (" +
-                to_string(t[0]->ndim) +  "!=" + to_string(t[i]->ndim) + ")", "Tensor::concat");
+                to_string(A[0]->ndim) +  "!=" + to_string(A[i]->ndim) + ")", "Tensor::concat");
         }
 
 
         // Check that all dimensions match except the one to concat
-        for(int j=0; j<t[0]->shape.size(); j++) {
+        for(int j=0; j<A[0]->shape.size(); j++) {
 
             // Check current dimension
-            if (j!=axis && t[0]->shape[j] != t[i]->shape[j]) {
+            if (j!=axis && A[0]->shape[j] != A[i]->shape[j]) {
                 msg("The dimensions across of all tensors must match (" +
-                    to_string(t[0]->shape[j]) +  "!=" + to_string(t[i]->shape[j]) + ")", "Tensor::concat");
+                    to_string(A[0]->shape[j]) +  "!=" + to_string(A[i]->shape[j]) + ")", "Tensor::concat");
             }
         }
 
         // Sum dimension
-        new_axis += t[i]->shape[axis];
+        new_axis += A[i]->shape[axis];
     }
 
     // Update final shape
@@ -363,18 +374,18 @@ Tensor* Tensor::concat(const vector<Tensor*> t, unsigned int axis, Tensor* outpu
 
     // Create new tensor
     if(output==nullptr){
-        output = new Tensor(new_shape, t[0]->device);
+        output = new Tensor(new_shape, A[0]->device);
     }else{
         // Check dimensions
         if(output->shape!=new_shape){
             msg("The dimension of the output tensor is incorrect", "Tensor::concat");
-        }else if(output->device != t[0]->device){
+        }else if(output->device != A[0]->device){
             msg("The output tensor and the input ones must be on the same device", "Tensor::concat");
         }
     }
 
     if (output->isCPU()) {
-        cpu_concat(output, t, axis, false);
+        cpu_concat(output, A, axis, false);
     }
 #ifdef cGPU
     else if (output->isGPU())

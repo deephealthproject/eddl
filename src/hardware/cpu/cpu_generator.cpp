@@ -11,22 +11,19 @@
 #include "eddl/random.h"
 #include "eddl/hardware/cpu/cpu_hw.h"
 
-void
-cpu_rand_uniform(Tensor * A, float v)
+void cpu_rand_uniform(Tensor * A, float v)
 {
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i) A->ptr[i] = uniform() * v;
 }
 
-void
-cpu_rand_signed_uniform(Tensor * A, float v)
+void cpu_rand_signed_uniform(Tensor * A, float v)
 {
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i) A->ptr[i] = signed_uniform() * v;
 }
 
-void
-cpu_rand_binary(Tensor * A, float v)
+void cpu_rand_binary(Tensor * A, float v)
 {
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i)

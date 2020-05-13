@@ -30,6 +30,7 @@ extern ostream &operator<<(ostream &os, const vector<int> shape);
 
 Tensor::Tensor() : device(DEV_CPU), ndim(0), size(0) {}
 
+
 Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
     /*
      * Important! If we are creating a GPU tensor, "fptr" must point to a GPU pointer.
@@ -56,7 +57,7 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
 }
 
 // From shape and device
-Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape, nullptr, dev){}
+Tensor::Tensor(const vector<int> &shape, unsigned int dev):Tensor(shape, nullptr, dev){}
 
 // From shape and Tensor (sharing ptr)
 Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr,T->device) {}
