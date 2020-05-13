@@ -13,7 +13,7 @@
 #include <utility>
 #include <cmath>
 
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 #include "eddl/random.h"
 
 #ifndef M_PI

@@ -14,13 +14,13 @@ TEST(MaxPoolTestSuite, mpool_k2x2_s2x2_pad_valid)
                                    4, 4, 0, 4, 3,
                                    2, 5, 2, 6, 4,
                                    1, 0, 0, 5, 7};
-    auto* t_image = new Tensor({1, 1, 5, 5}, ptr_img);
+    auto* t_image = new Tensor({1, 1, 5, 5}, ptr_img, DEV_CPU);
 
 
     // Forward
     auto *ptr_fwrd = new float[2*2]{3, 4,
                                     5, 6};
-    auto* t_fwrd = new Tensor({1, 1, 2, 2}, ptr_fwrd);
+    auto* t_fwrd = new Tensor({1, 1, 2, 2}, ptr_fwrd, DEV_CPU);
 
 
     // backward
@@ -29,7 +29,7 @@ TEST(MaxPoolTestSuite, mpool_k2x2_s2x2_pad_valid)
                                     0, 0, 0, 0, 0,
                                     0, 1, 0, 1, 0,
                                     0, 0, 0, 0, 0};
-    auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd);
+    auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd, DEV_CPU);
 
     // Operation
     auto *pd = new PoolDescriptor({2, 2}, {2, 2}, "valid");
@@ -40,11 +40,11 @@ TEST(MaxPoolTestSuite, mpool_k2x2_s2x2_pad_valid)
     pd->indY = new Tensor(pd->O->getShape());
 
     // Forward
-    MPool2D(pd);
+    tensorNN::MPool2D(pd);
     ASSERT_TRUE((bool)Tensor::equal2(t_fwrd, pd->O, 10e-5f));
 
     // Backward
-    MPool2D_back(pd);
+    tensorNN::MPool2D_back(pd);
     ASSERT_TRUE((bool)Tensor::equal2(t_bwrd, pd->ID, 10e-5f));
 }
 
@@ -57,14 +57,14 @@ TEST(MaxPoolTestSuite, mpool_k2x2_s2x2_pad_same)
                                    4, 4, 0, 4, 3,
                                    2, 5, 2, 6, 4,
                                    1, 0, 0, 5, 7};
-    auto* t_image = new Tensor({1, 1, 5, 5}, ptr_img);
+    auto* t_image = new Tensor({1, 1, 5, 5}, ptr_img, DEV_CPU);
 
 
     // Forward
     auto *ptr_fwrd = new float[3*3]{3, 4, 5,
                                     5, 6, 4,
                                     1, 5, 7};
-    auto* t_fwrd = new Tensor({1, 1, 3, 3}, ptr_fwrd);
+    auto* t_fwrd = new Tensor({1, 1, 3, 3}, ptr_fwrd, DEV_CPU);
 
 
     // backward
@@ -73,7 +73,7 @@ TEST(MaxPoolTestSuite, mpool_k2x2_s2x2_pad_same)
                                     0, 0, 0, 0, 0,
                                     0, 1, 0, 1, 1,
                                     1, 0, 0, 1, 1};
-    auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd);
+    auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd, DEV_CPU);
 
     // Operation
     auto *pd = new PoolDescriptor({2, 2}, {2, 2}, "same");
@@ -84,11 +84,11 @@ TEST(MaxPoolTestSuite, mpool_k2x2_s2x2_pad_same)
     pd->indY = new Tensor(pd->O->getShape());
 
     // Forward
-    MPool2D(pd);
+    tensorNN::MPool2D(pd);
     ASSERT_TRUE((bool)Tensor::equal2(t_fwrd, pd->O, 10e-5f));
 
     // Backward
-    MPool2D_back(pd);
+    tensorNN::MPool2D_back(pd);
     ASSERT_TRUE((bool)Tensor::equal2(t_bwrd, pd->ID, 10e-5f));
 }
 
@@ -101,14 +101,14 @@ TEST(MaxPoolTestSuite, mpool_k3x3_s1x1_pad_valid)
                                    4, 4, 0, 4, 3,
                                    2, 5, 2, 6, 4,
                                    1, 0, 0, 5, 7};
-    auto* t_image = new Tensor({1, 1, 5, 5}, ptr_img);
+    auto* t_image = new Tensor({1, 1, 5, 5}, ptr_img, DEV_CPU);
 
 
     // Forward
     auto *ptr_fwrd = new float[3*3]{4,4,5,
                                     5,6,6,
                                     5,6,7};
-    auto* t_fwrd = new Tensor({1, 1, 3, 3}, ptr_fwrd);
+    auto* t_fwrd = new Tensor({1, 1, 3, 3}, ptr_fwrd, DEV_CPU);
 
 
     // backward
@@ -117,7 +117,7 @@ TEST(MaxPoolTestSuite, mpool_k3x3_s1x1_pad_valid)
                                     1, 0, 0, 0, 0,
                                     0, 2, 0, 3, 0,
                                     0, 0, 0, 0, 1};
-    auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd);
+    auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd, DEV_CPU);
 
     // Operation
     auto *pd = new PoolDescriptor({3, 3}, {1,1}, "valid");
@@ -128,11 +128,11 @@ TEST(MaxPoolTestSuite, mpool_k3x3_s1x1_pad_valid)
     pd->indY = new Tensor(pd->O->getShape());
 
     // Forward
-    MPool2D(pd);
+    tensorNN::MPool2D(pd);
     ASSERT_TRUE((bool)Tensor::equal2(t_fwrd, pd->O, 10e-5f));
 
     // Backward
-    MPool2D_back(pd);
+    tensorNN::MPool2D_back(pd);
     ASSERT_TRUE((bool)Tensor::equal2(t_bwrd, pd->ID, 10e-5f));
 }
 
@@ -145,7 +145,7 @@ TEST(MaxPoolTestSuite, mpool_k3x3_s1x1_pad_same)
                                    4, 4, 0, 4, 3,
                                    2, 5, 2, 6, 4,
                                    1, 0, 0, 5, 7};
-    auto* t_image = new Tensor({1, 1, 5, 5}, ptr_img);
+    auto* t_image = new Tensor({1, 1, 5, 5}, ptr_img, DEV_CPU);
 
 
     // Forward
@@ -154,7 +154,7 @@ TEST(MaxPoolTestSuite, mpool_k3x3_s1x1_pad_same)
                                     5, 5, 6, 6, 6,
                                     5, 5, 6, 7, 7,
                                     5, 5, 6, 7, 7};
-    auto* t_fwrd = new Tensor({1, 1, 5, 5}, ptr_fwrd);
+    auto* t_fwrd = new Tensor({1, 1, 5, 5}, ptr_fwrd, DEV_CPU);
 
 
     // backward
@@ -163,7 +163,7 @@ TEST(MaxPoolTestSuite, mpool_k3x3_s1x1_pad_same)
                                     2, 0, 0, 0, 0,
                                     0, 6, 0, 5, 0,
                                     0, 0, 0, 0, 4};
-    auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd);
+    auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd, DEV_CPU);
 
     // Operation
     auto *pd = new PoolDescriptor({3, 3}, {1, 1}, "same");
@@ -174,11 +174,11 @@ TEST(MaxPoolTestSuite, mpool_k3x3_s1x1_pad_same)
     pd->indY = new Tensor(pd->O->getShape());
 
     // Forward
-    MPool2D(pd);
+    tensorNN::MPool2D(pd);
     ASSERT_TRUE((bool)Tensor::equal2(t_fwrd, pd->O, 10e-5f));
 
     // Backward
-    MPool2D_back(pd);
+    tensorNN::MPool2D_back(pd);
     ASSERT_TRUE((bool)Tensor::equal2(t_bwrd, pd->ID, 10e-5f));
 }
 
@@ -193,13 +193,13 @@ TEST(MaxPoolTestSuite, mpool_k3x3_s2x2_pad_valid)
                                    4, 4, 0, 4, 3,
                                    2, 5, 2, 6, 4,
                                    1, 0, 0, 5, 7};
-    auto* t_image = new Tensor({1, 1, 5, 5}, ptr_img);
+    auto* t_image = new Tensor({1, 1, 5, 5}, ptr_img, DEV_CPU);
 
 
     // Forward
     auto *ptr_fwrd = new float[2*2]{4, 5,
                                     5, 7};
-    auto* t_fwrd = new Tensor({1, 1, 2, 2}, ptr_fwrd);
+    auto* t_fwrd = new Tensor({1, 1, 2, 2}, ptr_fwrd, DEV_CPU);
 
 
     // backward
@@ -208,7 +208,7 @@ TEST(MaxPoolTestSuite, mpool_k3x3_s2x2_pad_valid)
                                     1, 0, 0, 0, 0,
                                     0, 1, 0, 0, 0,
                                     0, 0, 0, 0, 1};
-    auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd);
+    auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd, DEV_CPU);
 
     // Operation
     auto *pd = new PoolDescriptor({3, 3}, {2, 2}, "valid");
@@ -219,11 +219,11 @@ TEST(MaxPoolTestSuite, mpool_k3x3_s2x2_pad_valid)
     pd->indY = new Tensor(pd->O->getShape());
 
     // Forward
-    MPool2D(pd);
+    tensorNN::MPool2D(pd);
     ASSERT_TRUE((bool)Tensor::equal2(t_fwrd, pd->O, 10e-5f));
 
     // Backward
-    MPool2D_back(pd);
+    tensorNN::MPool2D_back(pd);
     ASSERT_TRUE((bool)Tensor::equal2(t_bwrd, pd->ID, 10e-5f));
 }
 
@@ -236,14 +236,14 @@ TEST(MaxPoolTestSuite, mpool_k3x3_s2x2_pad_same)
                                    4, 4, 0, 4, 3,
                                    2, 5, 2, 6, 4,
                                    1, 0, 0, 5, 7};
-    auto* t_image = new Tensor({1, 1, 5, 5}, ptr_img);
+    auto* t_image = new Tensor({1, 1, 5, 5}, ptr_img, DEV_CPU);
 
 
     // Forward
     auto *ptr_fwrd = new float[3*3]{3, 4, 5,
                                     5, 6, 6,
                                     5, 6, 7};
-    auto* t_fwrd = new Tensor({1, 1, 3, 3}, ptr_fwrd);
+    auto* t_fwrd = new Tensor({1, 1, 3, 3}, ptr_fwrd, DEV_CPU);
 
 
     // backward
@@ -252,7 +252,7 @@ TEST(MaxPoolTestSuite, mpool_k3x3_s2x2_pad_same)
                                     0, 0, 0, 0, 0,
                                     0, 2, 0, 3, 0,
                                     0, 0, 0, 0, 1};
-    auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd);
+    auto* t_bwrd = new Tensor({1, 1, 5, 5}, ptr_bwrd, DEV_CPU);
 
     // Operation
     auto *pd = new PoolDescriptor({3, 3}, {2, 2}, "same");
@@ -263,10 +263,10 @@ TEST(MaxPoolTestSuite, mpool_k3x3_s2x2_pad_same)
     pd->indY = new Tensor(pd->O->getShape());
 
     // Forward
-    MPool2D(pd);
+    tensorNN::MPool2D(pd);
     ASSERT_TRUE((bool)Tensor::equal2(t_fwrd, pd->O, 10e-5f));
 
     // Backward
-    MPool2D_back(pd);
+    tensorNN::MPool2D_back(pd);
     ASSERT_TRUE((bool)Tensor::equal2(t_bwrd, pd->ID, 10e-5f));
 }

@@ -23,7 +23,7 @@
 #include "eddl/tensor/nn/tensor_nn.h"
 #include "eddl/regularizers/regularizer.h"
 #include "eddl/tensor/nn/tensor_nn.h"
-#include "eddl/hardware/cpu/nn/cpu_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 #include "eddl/apis/eddl.h"
 
 using namespace std;

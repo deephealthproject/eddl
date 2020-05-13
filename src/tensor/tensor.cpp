@@ -352,3 +352,19 @@ bool Tensor::isSquared(Tensor *A){
     }
     return true;
 }
+
+// Resizing tensors
+void Tensor::resize(int b, float *fptr) {
+    if (b == shape[0]) return;
+
+    // Get new shape
+    vector<int> new_shape = this->getShape();
+    new_shape[0] = b;
+
+    // Update attributes
+    updateShape(new_shape);
+    updateSize();
+    updateStrides();
+    if (fptr == nullptr) deleteData();  // Potential error
+    updateData(fptr);
+}

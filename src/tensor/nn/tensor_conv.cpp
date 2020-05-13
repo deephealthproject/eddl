@@ -7,13 +7,15 @@
 * All rights reserved
 */
 #include "eddl/tensor/nn/tensor_nn.h"
-#include "eddl/hardware/cpu/nn/cpu_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
 #include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
+
+namespace tensorNN{
 
 
 void Conv2D(ConvolDescriptor *D) {
@@ -96,4 +98,6 @@ void Conv2D_back(ConvolDescriptor *D) {
     }
 #endif
     D->ID->tsem->unlock();
+}
+
 }

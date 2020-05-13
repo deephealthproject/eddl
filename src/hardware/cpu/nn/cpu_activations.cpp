@@ -12,7 +12,7 @@
 #include <cstdlib>     /* malloc, free, rand */
 #include <iostream>
 
-#include "eddl/hardware/cpu/nn/cpu_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 
 void cpu_relu(Tensor *A, Tensor *B){
   #pragma omp parallel for
@@ -121,11 +121,11 @@ void cpu_d_linear(Tensor *D, Tensor *I, Tensor *PD, float param){
   }
 }
 
-void cpu_sigmoid(Tensor *A, Tensor *B){
-  #pragma omp parallel for
-  for (int i = 0; i < A->size; i++)
-    B->ptr[i] = 1/(1+std::exp(-A->ptr[i]));
-}
+//void cpu_sigmoid(Tensor *A, Tensor *B){
+//  #pragma omp parallel for
+//  for (int i = 0; i < A->size; i++)
+//    B->ptr[i] = 1/(1+std::exp(-A->ptr[i]));
+//}
 
 void cpu_d_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
   #pragma omp parallel for
@@ -149,12 +149,12 @@ void cpu_d_hard_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
     else PD->ptr[i] = D->ptr[i] * 0.2;
 }
 
-void cpu_exp(Tensor *A, Tensor *B){
-  #pragma omp parallel for
-  for (int i = 0; i < A->size; i++) {
-    B->ptr[i] = std::exp(A->ptr[i]);
-  }
-}
+//void cpu_exp(Tensor *A, Tensor *B){
+//  #pragma omp parallel for
+//  for (int i = 0; i < A->size; i++) {
+//    B->ptr[i] = std::exp(A->ptr[i]);
+//  }
+//}
 
 void cpu_d_exp(Tensor *D, Tensor *I, Tensor *PD){
   #pragma omp parallel for
@@ -162,14 +162,14 @@ void cpu_d_exp(Tensor *D, Tensor *I, Tensor *PD){
     PD->ptr[i] = D->ptr[i] * I->ptr[i];
 }
 
-void cpu_tanh(Tensor *A, Tensor *B){
-  #pragma omp parallel for
-  for (int i = 0; i < A->size; i++) {
-    float p=std::exp(A->ptr[i]);
-    float n=std::exp(-A->ptr[i]);
-    B->ptr[i] = (p-n)/(p+n);
-  }
-}
+//void cpu_tanh(Tensor *A, Tensor *B){
+//  #pragma omp parallel for
+//  for (int i = 0; i < A->size; i++) {
+//    float p=std::exp(A->ptr[i]);
+//    float n=std::exp(-A->ptr[i]);
+//    B->ptr[i] = (p-n)/(p+n);
+//  }
+//}
 
 void cpu_d_tanh(Tensor *D, Tensor *I, Tensor *PD){
   #pragma omp parallel for

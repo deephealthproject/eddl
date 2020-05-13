@@ -7,7 +7,7 @@
 * All rights reserved
 */
 #include "eddl/tensor/nn/tensor_nn.h"
-#include "eddl/hardware/cpu/nn/cpu_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
@@ -15,77 +15,76 @@
 #include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
+namespace tensorNN {
 
 
-void permute_channels_last(Tensor *A,Tensor *B)
-{
-  if (A->isCPU()) {
-        cpu_permute_channels_last(A,B);
-  }
+    void permute_channels_last(Tensor *A, Tensor *B) {
+        if (A->isCPU()) {
+            cpu_permute_channels_last(A, B);
+        }
 #ifdef cGPU
-  else if (A->isGPU())
-      {
-        gpu_permute_channels_last(A,B);
-      }
+        else if (A->isGPU())
+            {
+              gpu_permute_channels_last(A,B);
+            }
 #endif
 #ifdef cFPGA
-  else {
+        else {
 
-    }
+          }
 #endif
-}
+    }
 
-void permute_channels_first(Tensor *A,Tensor *B)
-{
-  if (A->isCPU()) {
-        cpu_permute_channels_first(A,B);
-  }
+    void permute_channels_first(Tensor *A, Tensor *B) {
+        if (A->isCPU()) {
+            cpu_permute_channels_first(A, B);
+        }
 #ifdef cGPU
-  else if (A->isGPU())
-      {
-        gpu_permute_channels_first(A,B);
-      }
+        else if (A->isGPU())
+            {
+              gpu_permute_channels_first(A,B);
+            }
 #endif
 #ifdef cFPGA
-  else {
+        else {
 
-    }
+          }
 #endif
-}
+    }
 
 
-void permute_batch_last(Tensor *A,Tensor *B)
-{
-  if (A->isCPU()) {
-        cpu_permute_batch_last(A,B);
-  }
+    void permute_batch_last(Tensor *A, Tensor *B) {
+        if (A->isCPU()) {
+            cpu_permute_batch_last(A, B);
+        }
 #ifdef cGPU
-  else if (A->isGPU())
-      {
-        gpu_permute_batch_last(A,B);
-      }
+        else if (A->isGPU())
+            {
+              gpu_permute_batch_last(A,B);
+            }
 #endif
 #ifdef cFPGA
-  else {
+        else {
 
-    }
+          }
 #endif
-}
+    }
 
-void permute_batch_first(Tensor *A,Tensor *B)
-{
-  if (A->isCPU()) {
-        cpu_permute_batch_first(A,B);
-  }
+    void permute_batch_first(Tensor *A, Tensor *B) {
+        if (A->isCPU()) {
+            cpu_permute_batch_first(A, B);
+        }
 #ifdef cGPU
-  else if (A->isGPU())
-      {
-        gpu_permute_batch_first(A,B);
-      }
+        else if (A->isGPU())
+            {
+              gpu_permute_batch_first(A,B);
+            }
 #endif
 #ifdef cFPGA
-  else {
+        else {
 
-    }
+          }
 #endif
+    }
+
 }

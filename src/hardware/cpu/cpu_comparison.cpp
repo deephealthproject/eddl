@@ -8,7 +8,7 @@
 */
 
 
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 #include <limits>
 
 // CPU: Logic functions: Truth value testing

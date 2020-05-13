@@ -161,7 +161,7 @@ static auto *ptr_iris = new float[150*4]{
         6.20, 3.40, 5.40, 2.30,
         5.90, 3.00, 5.10, 1.80,
 };
-static auto* t_iris = new Tensor({150, 4}, ptr_iris);
+static auto* t_iris = new Tensor({150, 4}, ptr_iris, DEV_CPU);
 
 // Demo image
 static auto* t_image = Tensor::arange(0, 100);

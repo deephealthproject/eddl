@@ -8,8 +8,8 @@
 */
 
 
-#ifndef EDDL_CPU_NN_H
-#define EDDL_CPU_NN_H
+#ifndef EDDL_CPU_TENSOR_NN_H
+#define EDDL_CPU_TENSOR_NN_H
 
 #include "eddl/tensor/tensor.h"
 #include "eddl/descriptors/descriptors.h"
@@ -83,4 +83,4 @@ void cpu_permute_channels_first(Tensor *A,Tensor *B);
 void cpu_permute_channels_last(Tensor *A,Tensor *B);
 void cpu_permute_batch_first(Tensor *A,Tensor *B);
 void cpu_permute_batch_last(Tensor *A,Tensor *B);
-#endif //EDDL_CPU_NN_H
+#endif //EDDL_CPU_TENSOR_NN_H

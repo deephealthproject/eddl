@@ -55,7 +55,7 @@ LRNN::LRNN(vector<Layer *> parent, int units, string activation, bool use_bias, 
         bias = new Tensor(vector<int>{units}, dev);
         params.push_back(bias);
         gbias = new Tensor(vector<int>{units}, dev);
-        gradients.push_back(gbias); 
+        gradients.push_back(gbias);
     }
 
 
@@ -78,13 +78,13 @@ void LRNN::forward() {
     if (use_bias) Tensor::sum2D_rowwise(preoutput, bias, preoutput);
 
     if (activation == "relu"){
-        ReLu(preoutput, output);
+        tensorNN::ReLu(preoutput, output);
     }else if (activation == "sigmoid"){
-        Sigmoid(preoutput, output);
+        tensorNN::Sigmoid(preoutput, output);
     }else if (activation == "hard_sigmoid"){
-        HardSigmoid(preoutput, output);
+        tensorNN::HardSigmoid(preoutput, output);
     }else if (activation == "tanh"){
-        Tanh(preoutput, output);
+        tensorNN::Tanh(preoutput, output);
     }else if (activation == "none") {
         Tensor::copy(preoutput,output);
     }else {
@@ -96,13 +96,13 @@ void LRNN::forward() {
 void LRNN::backward() {
     //get gradients with provided delta
     if (activation == "relu"){
-        D_ReLu(delta, preoutput, delta);
+        tensorNN::D_ReLu(delta, preoutput, delta);
     }else if (activation == "sigmoid"){
-        D_Sigmoid(delta, output, delta);
+        tensorNN::D_Sigmoid(delta, output, delta);
     }else if (activation == "hard_sigmoid"){
-        D_HardSigmoid(delta, preoutput, delta);
+        tensorNN::D_HardSigmoid(delta, preoutput, delta);
     }else if (activation == "tanh"){
-        D_Tanh(delta, output, delta);
+        tensorNN::D_Tanh(delta, output, delta);
     }
 
 

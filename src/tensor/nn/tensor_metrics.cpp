@@ -7,7 +7,7 @@
 * All rights reserved
 */
 #include "eddl/tensor/nn/tensor_nn.h"
-#include "eddl/hardware/cpu/nn/cpu_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
@@ -15,31 +15,35 @@
 #include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
+namespace tensorNN {
 
-int accuracy(Tensor *A, Tensor *B) {
-    if (A->device != B->device) msg("Tensors in different devices", "Tensor::accuracy");
-    if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::accuracy");
-    if (A->ndim != 2) msg("Accuracy only over 2D Tensor (batch x probs)", "Tensor::Accuracy");
 
-    int acc = 0;
+    int accuracy(Tensor *A, Tensor *B) {
+        if (A->device != B->device) msg("Tensors in different devices", "Tensor::accuracy");
+        if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::accuracy");
+        if (A->ndim != 2) msg("Accuracy only over 2D Tensor (batch x probs)", "Tensor::Accuracy");
 
-    B->tsem->lock();
+        int acc = 0;
 
-    if (A->isCPU()) {
-        acc = cpu_accuracy(A, B);
-    }
+        B->tsem->lock();
+
+        if (A->isCPU()) {
+            acc = cpu_accuracy(A, B);
+        }
 #ifdef cGPU
-    else if (A->isGPU())
-      {
-         gpu_accuracy(A,B,&acc);
-      }
+        else if (A->isGPU())
+          {
+             gpu_accuracy(A,B,&acc);
+          }
 #endif
 #ifdef cFPGA
-    else {
+        else {
+
+        }
+#endif
+        B->tsem->unlock();
+        return acc;
 
     }
-#endif
-    B->tsem->unlock();
-    return acc;
 
 }

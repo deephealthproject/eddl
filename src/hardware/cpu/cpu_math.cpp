@@ -8,7 +8,7 @@
 */
 
 
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 
 // CPU: Math (in-place) ********************************************
 
@@ -155,7 +155,7 @@ void cpu_rsqrt(Tensor *A, Tensor *B){
 
 void cpu_sigmoid(Tensor *A, Tensor *B){
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::expf(A->ptr[i])/(::expf(A->ptr[i])+1.0f);
+    for (int i = 0; i < A->size; ++i) B->ptr[i] = 1.0f/(1.0f + ::expf(-A->ptr[i]));
 }
 
 void cpu_sign(Tensor *A, Tensor *B, float zero_sign){

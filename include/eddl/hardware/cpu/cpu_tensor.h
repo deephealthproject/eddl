@@ -7,8 +7,8 @@
 * All rights reserved
 */
 
-#ifndef EDDL_CPU_HW_H
-#define EDDL_CPU_HW_H
+#ifndef EDDL_CPU_TENSOR_H
+#define EDDL_CPU_TENSOR_H
 
 #include "eddl/tensor/tensor.h"
 #include "eddl/tensor/tensor_reduction.h"
@@ -163,4 +163,4 @@ int cpu_equal2(Tensor *A, Tensor *B, float epsilon);
 
 
 
-#endif //EDDL_CPU_HW_H
+#endif //EDDL_CPU_TENSOR_H

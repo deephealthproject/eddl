@@ -8,7 +8,7 @@
 */
 
 #include "eddl/tensor/tensor.h"
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
