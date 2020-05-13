@@ -312,101 +312,156 @@ public:
 
     // Math operations (zero) ************************
     // TODO: Deprecated? They should be reductions (unless for speed)
+    float max();
     static float max(Tensor* A);
+
+    float min();
     static float min(Tensor* A);
+
+    float sum();
     static float sum(Tensor* A);
+
+    float sum_abs();
     static float sum_abs(Tensor* A);
 
 
     // Math operations (unary) ************************
+    void abs_();
     static void abs(Tensor *A, Tensor *B);
 
+    void acos_();
     static void acos(Tensor *A, Tensor *B);
 
+    void add_(float v);
+    void add_(Tensor* A);  // this = this .+ A
     static void add(Tensor *A, Tensor *B, float v); // B = A + v
 
+    void asin_();
     static void asin(Tensor *A, Tensor *B);
 
+    void atan_();
     static void atan(Tensor *A, Tensor *B);
 
+    void ceil_();
     static void ceil(Tensor *A, Tensor *B);
 
+    void clamp_(float min, float max);
     static void clamp(Tensor *A, Tensor *B, float min, float max);
 
+    void clampmax_(float max);
     static void clampmax(Tensor *A, Tensor *B, float max);
 
+    void clampmin_(float min);
     static void clampmin(Tensor *A, Tensor *B, float min);
 
+    void cos_();
     static void cos(Tensor *A, Tensor *B);
 
+    void cosh_();
     static void cosh(Tensor *A, Tensor *B);
 
+    void div_(float v);
+    void div_(Tensor* A); // this = this ./ A
     static void div(Tensor *A, Tensor *B, float v); // B = A / v
 
+    void exp_();
     static void exp(Tensor *A, Tensor *B);
 
+    void floor_();
     static void floor(Tensor *A, Tensor *B);
 
+    void inv_(float v=1.0f);
     static void inv(Tensor *A, Tensor *B, float v=1.0f);
 
+    void log_();
     static void log(Tensor *A, Tensor *B);
 
+    void log2_();
     static void log2(Tensor *A, Tensor *B);
 
+    void log10_();
     static void log10(Tensor *A, Tensor *B);
 
+    void logn_(float n);
     static void logn(Tensor *A, Tensor *B, float n);
 
+    void mod_(float v);
     static void mod(Tensor *A, Tensor *B, float v);
 
+    void mult_(float v);
+    void mult_(Tensor* A); // this = this .* A
     static void mult(Tensor *A, Tensor *B, float v); // B = A * v
 
+    void neg_();
     static void neg(Tensor *A, Tensor *B);
 
+    void normalize_(float min=0.0f, float max=1.0f);
     static void normalize(Tensor *A, Tensor *B, float min=0.0f, float max=1.0f);
 
+    void pow_(float exp);
     static void pow(Tensor *A, Tensor *B, float exp);
 
+    void powb_(float base);
     static void powb(Tensor *A, Tensor *B, float base);
 
+    void reciprocal_();
     static void reciprocal(Tensor *A, Tensor *B);
 
+    void remainder_(float v);
     static void remainder(Tensor *A, Tensor *B, float v);
 
+    void round_();
     static void round(Tensor *A, Tensor *B);
 
+    void rsqrt_();
     static void rsqrt(Tensor *A, Tensor *B);
 
+    void sigmoid_();
     static void sigmoid(Tensor *A, Tensor *B);
 
+    void sign_(float zero_sign=0.0f);
     static void sign(Tensor *A, Tensor *B, float zero_sign=0.0f);
 
+    void sin_();
     static void sin(Tensor *A, Tensor *B);
 
+    void sinh_();
     static void sinh(Tensor *A, Tensor *B);
 
+    void sqr_();
     static void sqr(Tensor *A, Tensor *B);
 
+    void sqrt_();
     static void sqrt(Tensor *A, Tensor *B);
 
+    void sub_(float v);
+    void sub_(Tensor* A); // this = this .- A
     static void sub(Tensor *A, Tensor *B, float v);
 
+    void tan_();
     static void tan(Tensor *A, Tensor *B);
 
+    void tanh_();
     static void tanh(Tensor *A, Tensor *B);
 
+    void trunc_();
     static void trunc(Tensor *A, Tensor *B);
 
 
     // Math operations (binary) ************************
+    static Tensor* add(Tensor *A, Tensor *B); // (new)C = A + B
     static void add(Tensor *A, Tensor *B, Tensor *C); // C = A + B
 
+    static Tensor* div(Tensor *A, Tensor *B); // (new)C = A / B
     static void div(Tensor *A, Tensor *B, Tensor *C); // C = A / B
 
+    static Tensor* mult(Tensor *A, Tensor *B); // (new)C = A * B
     static void mult(Tensor *A, Tensor *B, Tensor *C); // C = A * B
 
-    static void interpolate(float factor1, Tensor *A, float factor2, Tensor *B, Tensor *C);
+    static Tensor* interpolate(float factor1, Tensor *A, float factor2, Tensor *B); // (new)C = f1*A + f2*B
+    static void interpolate(float factor1, Tensor *A, float factor2, Tensor *B, Tensor *C);  // C = f1*A + f2*B
 
+    static Tensor* sub(Tensor *A, Tensor *B); // (new)C = A - B
     static void sub(Tensor *A, Tensor *B, Tensor *C); // C = A - B
 
 
@@ -702,6 +757,14 @@ public:
     */
     void resize(int b, float *fptr=nullptr);
 
+
+    // ***********************************************************
+    // ***********************************************************
+    // ***********************************************************
+    // ************************ LEGACY ***************************
+    // ***********************************************************
+    // ***********************************************************
+    // ***********************************************************
 
     // Generators (In-place) *************************************
     // TODO: Rethink names + static

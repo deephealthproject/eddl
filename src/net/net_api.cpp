@@ -259,7 +259,7 @@ void Net::forward_recurrent(vector<Tensor*> tin)
   for(i=0;i<xt.size();i++) {
     offset=xt[i]->size/xt[i]->shape[0];
     for(j=0;j<inl;j++)
-      tinr.push_back(new Tensor({xt[i]->shape[1],xt[i]->shape[2]},xt[i]->ptr+(j*offset)));
+      tinr.push_back(new Tensor({xt[i]->shape[1],xt[i]->shape[2]},xt[i]->ptr+(j*offset),xt[i]->device));
   }
 
   rnet->forward(tinr);
@@ -642,7 +642,7 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
     for(j=1;j<xt[i]->ndim;j++)
       shape.push_back(xt[i]->shape[j]);
     for(j=0;j<inl;j++)
-      tinr.push_back(new Tensor(shape,xt[i]->ptr+(j*offset)));
+      tinr.push_back(new Tensor(shape, xt[i]->ptr+(j*offset), xt[i]->device));
   }
 
   rnet->fit(tinr,tout,batch,epochs);
@@ -799,10 +799,10 @@ void Net::evaluate_recurrent(vtensor tin, vtensor tout) {
       shape.push_back(xt[i]->shape[j]);
 
     for(j=0;j<inl;j++)
-      tinr.push_back(new Tensor(shape,xt[i]->ptr+(j*offset)));
+      tinr.push_back(new Tensor(shape, xt[i]->ptr+(j*offset), xt[i]->device));
   }
 
-  rnet->evaluate(tinr,tout);
+  rnet->evaluate(tinr, tout);
 
   for(i=0;i<xt.size();i++)
     delete xt[i];
