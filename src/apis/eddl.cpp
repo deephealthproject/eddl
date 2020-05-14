@@ -35,6 +35,10 @@ namespace eddl {
         return new Net(in, out);
     }
 
+    model Model(vector<Net*> vnets) {
+      return new Net(vnets);
+    }
+
     void build(model net, optimizer o, CompServ *cs, bool init_weights){
         // Assign default computing service
         if (cs== nullptr){

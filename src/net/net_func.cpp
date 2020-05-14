@@ -91,7 +91,7 @@ void Net::do_backward() {
         }
         vbts[i]->backward();
 
-        if (VERBOSE) getchar();
+
         // Delete this delta
         if(vbts[i]->mem_level) { vbts[i]->free_delta(); }
     }

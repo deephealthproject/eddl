@@ -81,7 +81,9 @@ public:
 	vtensor Xs[MAX_THREADS];
 	vtensor Ys[MAX_THREADS];
 
+  Net();
 	Net(vlayer in, vlayer out);
+	Net(vector <Net *> vnets);
 	~Net();
 
 	void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize=true);

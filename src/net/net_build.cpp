@@ -38,7 +38,10 @@ void Net::fts() {
     vector<int> visit;
     vector<int> gin;
 
+    for (i = 0; i < layers.size(); i++)
+      vfts.push_back(layers[i]);
     //fprintf(stdout,"FTS:");
+    /*
     for (i = 0; i < layers.size(); i++) {
         visit.push_back(0);
         gin.push_back(layers[i]->lin);
@@ -69,6 +72,7 @@ void Net::fts() {
       cout<<"\n";
       //getchar();
     }
+    */
 }
 
 
@@ -78,6 +82,9 @@ void Net::bts() {
     vector<int> visit;
     vector<int> gout;
 
+    for (i = layers.size()-1; i >=0; i--)
+      vbts.push_back(layers[i]);
+    /*
     //fprintf(stdout,"BTS:");
     for (i = 0; i < layers.size(); i++) {
         visit.push_back(0);
@@ -89,8 +96,8 @@ void Net::bts() {
         for (j = 0; j < layers.size(); j++)
             if ((gout[j] == 0) && (!visit[j])) break;
 
-        if (j == layers.size())
-            msg("error recurrent net in", "Net.bts");
+        //if (j == layers.size())
+        //    msg("error recurrent net in", "Net.bts");
 
         visit[j] = 1;
         vbts.push_back(layers[j]);
@@ -100,6 +107,7 @@ void Net::bts() {
                 if (layers[n] == layers[j]->parent[k]) gout[n]--;
 
     }
+    */
 }
 
 
@@ -186,7 +194,6 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     dev = -1;
     int ind;
 
-
     for(int i=0; i<layers.size(); i++){
         if (layers[i]->isrecurrent) isrecurrent=true;
 
@@ -202,22 +209,18 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
         // Set params
         layers[i]->verbosity_level = this->verbosity_level;
     }
-
     // set optimizer
     optimizer = opt;
     optimizer->setlayers(layers);
 
     // set loss functions and create targets tensors
-
     this->losses = vloss(lo);
     for (int i = 0; i < lo.size(); i++) {
         if (lo[i]->name == "soft_cross_entropy") lout[i]->delta_bp = 1;
         lout[i]->target = new Tensor(lout[i]->output->getShape(), dev);
     }
-
     // set metrics
     this->metrics = vmetrics(me);
-
     // forward sort
     fts();
     // backward sort
@@ -320,7 +323,6 @@ void Net::split(int c, int todev) {
         nlayers.clear();
         nin.clear();
         nout.clear();
-
         if (i == c - 1) bs += m;
 
         // set inputs
@@ -328,14 +330,12 @@ void Net::split(int c, int todev) {
             nin.push_back(lin[j]->clone(c, bs, par, todev + devsel[i]));
             nlayers.push_back(nin[j]);
         }
-
         // special layers that are not input of net but has not parents
         // for instance noise generators in GANs
         for (j = 0; j < layers.size(); j++)
           if ((layers[j]->lin==0)&&(!isIn(layers[j],lin,ind))) {
             nlayers.push_back(layers[j]->clone(c, bs, par, todev + devsel[i]));
           }
-
         // rest of layers
         for (k = 0; k < layers.size(); k++) {
             for (j = 0; j < layers.size(); j++) {
@@ -343,7 +343,7 @@ void Net::split(int c, int todev) {
                     vlayer par;
                     for (l = 0; l < layers[j]->parent.size(); l++) {
                         if (!isInorig(layers[j]->parent[l], nlayers, ind)) break;
-                        else par.push_back(nlayers[ind]);
+                        else {par.push_back(nlayers[ind]);}
                     }
                     if (l == layers[j]->parent.size()) {
                         nlayers.push_back(layers[j]->clone(i, bs, par, todev + devsel[i]));
@@ -372,6 +372,7 @@ void Net::split(int c, int todev) {
                 for(int j = 0; j < layers.size(); j++)
                     layers[j]->copy(snets[i]->layers[j]);
         }
+        snets[i]->plot("smodel.pdf","LR");
 
     }
 }
