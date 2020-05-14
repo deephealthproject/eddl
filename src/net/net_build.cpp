@@ -38,10 +38,10 @@ void Net::fts() {
     vector<int> visit;
     vector<int> gin;
 
-    for (i = 0; i < layers.size(); i++)
-      vfts.push_back(layers[i]);
+    //for (i = 0; i < layers.size(); i++)
+    //  vfts.push_back(layers[i]);
     //fprintf(stdout,"FTS:");
-    /*
+
     for (i = 0; i < layers.size(); i++) {
         visit.push_back(0);
         gin.push_back(layers[i]->lin);
@@ -72,7 +72,7 @@ void Net::fts() {
       cout<<"\n";
       //getchar();
     }
-    */
+
 }
 
 
@@ -82,9 +82,9 @@ void Net::bts() {
     vector<int> visit;
     vector<int> gout;
 
-    for (i = layers.size()-1; i >=0; i--)
-      vbts.push_back(layers[i]);
-    /*
+    //for (i = layers.size()-1; i >=0; i--)
+    //  vbts.push_back(layers[i]);
+
     //fprintf(stdout,"BTS:");
     for (i = 0; i < layers.size(); i++) {
         visit.push_back(0);
@@ -96,8 +96,8 @@ void Net::bts() {
         for (j = 0; j < layers.size(); j++)
             if ((gout[j] == 0) && (!visit[j])) break;
 
-        //if (j == layers.size())
-        //    msg("error recurrent net in", "Net.bts");
+        if (j == layers.size())
+          msg("error recurrent net in", "Net.bts");
 
         visit[j] = 1;
         vbts.push_back(layers[j]);
@@ -107,7 +107,7 @@ void Net::bts() {
                 if (layers[n] == layers[j]->parent[k]) gout[n]--;
 
     }
-    */
+
 }
 
 
