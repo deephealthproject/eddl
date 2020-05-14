@@ -104,9 +104,11 @@ void Net::do_backward() {
 void Net::do_delta() {
     for (int i = 0; i < lout.size(); i++) {
         lout[i]->mem_delta();
-        losses[i]->delta(lout[i]->target, lout[i]->output, lout[i]->delta);
-        if (VERBOSE) cout<<"Delta: "<<vbts[i]->name<<" delta:"<<vbts[i]->delta->sum()<<"\n";
-    }
+        if (losses.size()>=(i+1)) {
+          losses[i]->delta(lout[i]->target, lout[i]->output, lout[i]->delta);
+          if (VERBOSE) cout<<"Delta: "<<vbts[i]->name<<" delta:"<<vbts[i]->delta->sum()<<"\n";
+        }
+      }
     if (VERBOSE) getchar();
 }
 
@@ -114,9 +116,11 @@ void Net::do_compute_loss() {
     int p = 0;
     for (int i = 0; i < lout.size(); i++, p += 2) {
         // loss value
-        fiterr[p] = losses[i]->value(lout[i]->target, lout[i]->output);
+        if (losses.size()>=(i+1))
+          fiterr[p] = losses[i]->value(lout[i]->target, lout[i]->output);
         // metric value
-        fiterr[p + 1] = metrics[i]->value(lout[i]->target, lout[i]->output);
+        if (metrics.size()>=(i+1))
+          fiterr[p + 1] = metrics[i]->value(lout[i]->target, lout[i]->output);
     }
 }
 

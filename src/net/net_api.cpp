@@ -424,6 +424,7 @@ void Net::compute_loss()
   }
 }
 
+
 void Net::print_loss(int b)
 {
   int p = 0;
@@ -440,19 +441,45 @@ void Net::print_loss(int b)
         string name=lout[k]->name;
         if (lout[k]->isshared) name=lout[k]->orig->name;
 
-        fprintf(stdout, "%s(%s=%1.3f,%s=%1.3f) ", name.c_str(),
-                losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
-                metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+        fprintf(stdout, "%s ", name.c_str());
+        if (losses.size()>=(k+1)) {
+          fprintf(stdout, "loss[%s]=%1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
+        }
+        if (metrics.size()>=(k+1)) {
+          if (metrics[k]->name!="none")
+           fprintf(stdout, "metric[%s]=%1.3f ", metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+        }
+
+        fprintf(stdout, " -- ");
 
 
         if ((flog_tr!=nullptr)&&(trmode)) {
-          fprintf(flog_tr, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
-                  metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
-                }
+          fprintf(flog_tr, "%s ", name.c_str());
+          if (losses.size()>=(k+1)) {
+            fprintf(flog_tr, "loss[%s]=%1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
+          }
+          if (metrics.size()>=(k+1)) {
+            if (metrics[k]->name!="none")
+             fprintf(flog_tr, "metric[%s]=%1.3f ", metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+          }
 
-        if ((flog_ts!=nullptr)&&(!trmode))
-          fprintf(flog_ts, "%s %1.3f %s %1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples,
-                  metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+          fprintf(flog_tr, " -- ");
+
+
+        }
+        if ((flog_ts!=nullptr)&&(!trmode)) {
+          fprintf(flog_ts, "%s ", name.c_str());
+          if (losses.size()>=(k+1)) {
+            fprintf(flog_ts, "loss[%s]=%1.3f ", losses[k]->name.c_str(), total_loss[k] / inferenced_samples);
+          }
+          if (metrics.size()>=(k+1)) {
+            if (metrics[k]->name!="none")
+             fprintf(flog_ts, "metric[%s]=%1.3f ", metrics[k]->name.c_str(), total_metric[k] / inferenced_samples);
+          }
+
+          fprintf(flog_ts, " -- ");
+        }
+
 
     }
     fflush(stdout);

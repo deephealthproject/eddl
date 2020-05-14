@@ -186,13 +186,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initia
 
 void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     if (VERBOSE) cout<<"Build net "<<name<<"\n";
-/*
-    if (lo.size() != lout.size())
-        msg("Loss list size does not match output list", "Net.build");
 
-    if (me.size() != lout.size())
-        msg("Metric list size does not match output list", "Net.build");
-*/
     // check devices
     dev = -1;
     int ind;
@@ -262,8 +256,9 @@ void Net::set_compserv(CompServ *cs){
                 if (mnets.size()){
                   // comes from a merge of nets
                   for(int j=0;j<mnets.size();j++) {
-                    if (!mnets[j]->isbuild)
+                    if (!mnets[j]->isbuild) {
                       mnets[j]->build(optimizer->clone(),{},{},cs,true);
+                    }
                   }
                 }
             } else {
@@ -300,10 +295,10 @@ void Net::set_compserv(CompServ *cs){
         if (!cs->isshared) {
           if (mnets.size()){
             // comes from a merge of nets
-            for(int j=0;j<mnets.size();j++) {
-              if (!mnets[j]->isbuild)
+            for(int j=0;j<mnets.size();j++)
+              if (!mnets[j]->isbuild){
                 mnets[j]->build(optimizer->clone(),{},{},cs,true);
-            }
+              }
 
             cout<<"Building merge "<<endl;
             for(int i=0;i<devsel.size();i++) {
@@ -604,10 +599,10 @@ void Net::build_rnet(int inl,int outl) {
    rnet->isrecurrent=false;
 
    vloss lr;
-   for(i=0;i<outl;i++) lr.push_back(losses[0]->clone());
+   for(i=0;i<losses.size();i++) lr.push_back(losses[i]->clone());
 
    vmetrics mr;
-   for(i=0;i<outl;i++) mr.push_back(metrics[0]->clone());
+   for(i=0;i<metrics.size();i++) mr.push_back(metrics[i]->clone());
 
    rnet->build(optimizer->share(),lr,mr,cs->share(),false);
    //cout<<rnet->summary();

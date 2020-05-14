@@ -21,4 +21,4 @@ Metric::Metric(string name) {
 }
 float Metric::value(Tensor *T, Tensor *Y) {return 0; }
 
-Metric* Metric::clone() {return nullptr;}
+Metric* Metric::clone() {return this;}

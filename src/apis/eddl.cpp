@@ -68,6 +68,7 @@ namespace eddl {
             cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
         }
 
+
         net->build(o, l, m, cs, init_weights);
     }
 
@@ -384,6 +385,9 @@ namespace eddl {
         }
         else if (type=="mean_relative_error"){
             return new MMeanRelativeError();
+        }
+        else if (type=="none") {
+            return new Metric("none");
         }
         else {
             throw std::invalid_argument("unsupported metric: " + type);

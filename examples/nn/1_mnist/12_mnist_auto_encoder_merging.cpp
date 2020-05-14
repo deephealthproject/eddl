@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
     build(net,
           sgd(0.001, 0.9), // Optimizer
           {"mean_squared_error"}, // Losses
-          {"mean_squared_error"}, // Metrics
+          {"none"}, // Metrics
           //CS_GPU({1})
           CS_CPU(-1)
     );
