@@ -76,6 +76,7 @@ public:
 
 	Optimizer *optimizer;
 	vector<Net *> snets;
+	vector<Net *> mnets;
 	Net* rnet;
 
 	vtensor Xs[MAX_THREADS];
@@ -157,7 +158,7 @@ public:
 	void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);
 	void evaluate(vtensor tin, vtensor tout);
 	void evaluate_recurrent(vtensor tin, vtensor tout);
-	void predict(vtensor tin, vtensor tout);
+	vtensor predict(vtensor tin);
 
 
 };

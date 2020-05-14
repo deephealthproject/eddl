@@ -38,10 +38,9 @@ void Net::fts() {
     vector<int> visit;
     vector<int> gin;
 
-    //for (i = 0; i < layers.size(); i++)
-    //  vfts.push_back(layers[i]);
-    //fprintf(stdout,"FTS:");
-
+    for (i = 0; i < layers.size(); i++)
+      vfts.push_back(layers[i]);
+    /*
     for (i = 0; i < layers.size(); i++) {
         visit.push_back(0);
         gin.push_back(layers[i]->lin);
@@ -72,6 +71,7 @@ void Net::fts() {
       cout<<"\n";
       //getchar();
     }
+    */
 
 }
 
@@ -82,9 +82,9 @@ void Net::bts() {
     vector<int> visit;
     vector<int> gout;
 
-    //for (i = layers.size()-1; i >=0; i--)
-    //  vbts.push_back(layers[i]);
-
+    for (i = layers.size()-1; i >=0; i--)
+      vbts.push_back(layers[i]);
+/*
     //fprintf(stdout,"BTS:");
     for (i = 0; i < layers.size(); i++) {
         visit.push_back(0);
@@ -107,6 +107,7 @@ void Net::bts() {
                 if (layers[n] == layers[j]->parent[k]) gout[n]--;
 
     }
+    */
 
 }
 
@@ -178,18 +179,19 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initia
         cout << "Net running on FPGA " << snets[0]->dev - DEV_FPGA << "\n";
     }
   }
+
 }
 
 
 void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     if (VERBOSE) cout<<"Build net "<<name<<"\n";
-
+/*
     if (lo.size() != lout.size())
         msg("Loss list size does not match output list", "Net.build");
 
     if (me.size() != lout.size())
         msg("Metric list size does not match output list", "Net.build");
-
+*/
     // check devices
     dev = -1;
     int ind;
@@ -221,6 +223,8 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     }
     // set metrics
     this->metrics = vmetrics(me);
+
+
     // forward sort
     fts();
     // backward sort
@@ -285,7 +289,29 @@ void Net::set_compserv(CompServ *cs){
 
         if (VERBOSE) cout<<"split into "<<devsel.size()<<" GPUs devices\n";
 
-        if (!cs->isshared) split(devsel.size(),DEV_GPU);
+        if (!cs->isshared) {
+          if (mnets.size()){
+            // comes from a merge of nets
+
+            for(int j=0;j<mnets.size();j++) {
+              cout<<"Building net "<<j<<endl;
+              mnets[j]->build(optimizer->clone(),{},{},cs,true);
+            }
+
+            cout<<"Building merge "<<endl;
+            for(int i=0;i<devsel.size();i++) {
+              vector <Net *>sm;
+              for(int j=0;j<mnets.size();j++) {
+                sm.push_back(mnets[j]->snets[i]);
+              }
+              snets.push_back(new Net(sm));
+              snets[i]->build(optimizer->clone(), losses, metrics);
+            }
+          }
+          else {
+            split(devsel.size(),DEV_GPU);
+          }
+        }
 #endif
         } else {
             // split on multiple FPGAs

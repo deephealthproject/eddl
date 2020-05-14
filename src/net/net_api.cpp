@@ -814,6 +814,24 @@ void Net::evaluate_recurrent(vtensor tin, vtensor tout) {
 
 
 
+///////////////////////////////////////////
+vtensor Net::predict(vtensor tin) {
+    vtensor out;
+
+    cout<<"Predict "<<tin[0]->shape[0]<<" samples\n";
+
+    setmode(TSMODE);
+
+    forward(tin);
+
+    cout<<"OK\n";
+    for (int i = 0; i < lout.size(); i++) {
+      collectTensor(lout[i],"output");
+      out.push_back(lout[i]->output->clone());
+    }
+
+    return out;
+}
 
 
 

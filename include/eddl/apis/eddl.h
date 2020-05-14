@@ -381,6 +381,16 @@ typedef NetLoss * metric;
     */
     void evaluate(model m, const vector<Tensor *> &in, const vector<Tensor *> &out);
 
+    /**
+      *  @brief Performs a prediction with input data
+      *
+      *  @param m  Model
+      *  @param in  Input data (features)
+      *  @return    vector of output tensors.
+    */
+    vector<Tensor *>  predict(model m, const vector<Tensor *> &in);
+
+
     // Finer methods
     vector<int> random_indices(int batch_size, int num_samples);
     void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);

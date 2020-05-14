@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
           sgd(0.001, 0.9), // Optimizer
           {"mean_squared_error"}, // Losses
           {"mean_squared_error"}, // Metrics
-          CS_GPU({1}, "low_mem")
+          CS_GPU({1})
           //CS_CPU(-1)
     );
 
@@ -77,6 +77,13 @@ int main(int argc, char **argv) {
     x_train->div_(255.0f);
 
     // Train model
-    fit(net, {x_train}, {x_train}, batch_size, epochs);
+    fit(net, {x_train}, {x_train}, batch_size, 1);
+
+    // Predict with encoder
+    vtensor tout=predict(encoder,{x_train});
+
+    tout[0]->info();
+
+
 
 }

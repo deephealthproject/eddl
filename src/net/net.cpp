@@ -109,6 +109,10 @@ Net::Net(vector <Net *> vnets):Net()
   int ind;
 
   if (!vsize) return;
+
+  mnets=vnets;
+
+
   for(int i=0;i<vnets[0]->lin.size();i++)
     lin.push_back(vnets[0]->lin[i]);
 
@@ -144,6 +148,8 @@ Net::Net(vector <Net *> vnets):Net()
 
 
   build_randn_table();
+
+
 }
 
 

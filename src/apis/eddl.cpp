@@ -224,6 +224,10 @@ namespace eddl {
     void evaluate(model net, const vector<Tensor *> &in, const vector<Tensor *> &out){
         net->evaluate(in, out);
     }
+    vector<Tensor *>  predict(model m, const vector<Tensor *> &in)
+    {
+      return m->predict(in);
+    }
 
     // Finer methods
     vector<int> random_indices(int batch_size, int num_samples){
