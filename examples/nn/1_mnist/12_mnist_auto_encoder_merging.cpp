@@ -40,9 +40,9 @@ int main(int argc, char **argv) {
     l = Activation(Dense(l, 128), "relu");
     layer out = Activation(Dense(l, 64), "relu");
 
-    model net = Model({in}, {out});
+    model encoder = Model({in}, {out});
 
-    summary(net);
+    summary(encoder);
 
     // Define network
     in = Input({64});
@@ -51,19 +51,19 @@ int main(int argc, char **argv) {
 
     out = Dense(l, 784);
 
-    model net2 = Model({in}, {out});
+    model decoder = Model({in}, {out});
 
-    summary(net2);
+    summary(decoder);
 
-    model netf = Model({net,net2});
+    model net = Model({encoder,decoder});
 
 
     // View model
-    summary(netf);
-    plot(netf, "model.pdf");
+    summary(net);
+    plot(net, "model.pdf");
 
     // Build model
-    build(netf,
+    build(net,
           sgd(0.001, 0.9), // Optimizer
           {"mean_squared_error"}, // Losses
           {"mean_squared_error"}, // Metrics
@@ -77,6 +77,6 @@ int main(int argc, char **argv) {
     x_train->div_(255.0f);
 
     // Train model
-    fit(netf, {x_train}, {x_train}, batch_size, epochs);
+    fit(net, {x_train}, {x_train}, batch_size, epochs);
 
 }
