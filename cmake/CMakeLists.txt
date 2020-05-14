@@ -2,6 +2,7 @@
 include(ExternalProject)
 
 set_property (DIRECTORY PROPERTY EP_BASE third_party)
+SET(EP_BASE_DIR "${CMAKE_CURRENT_BINARY_DIR}/third_party" PARENT_SCOPE)
 SET(EP_BASE_DIR "${CMAKE_CURRENT_BINARY_DIR}/third_party")
 
 # Set parallelization
@@ -50,7 +51,7 @@ else()
     if(result)
         message(FATAL_ERROR "CMake step for googletest failed: ${result}")
     endif()
-    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
+    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL} --config ${CMAKE_BUILD_TYPE}
             RESULT_VARIABLE result
             WORKING_DIRECTORY ${EP_BASE_DIR}/googletest-download )
     if(result)
@@ -74,18 +75,18 @@ if(USE_SYSTEM_EIGEN)
     find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 else()
     # Download and unpack googletest at configure time
-    configure_file(eigen.CMakeLists.txt.in ${EP_BASE_DIR}/eigen-download/CMakeLists.txt)
+    configure_file(eigen.CMakeLists.txt.in ${EP_BASE_DIR}/eigen-download/CMakeLists.txt @ONLY)
     execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
             RESULT_VARIABLE result
             WORKING_DIRECTORY ${EP_BASE_DIR}/eigen-download )
     if(result)
-        message(FATAL_ERROR "CMake step for googletest failed: ${result}")
+        message(FATAL_ERROR "CMake step for Eigen3 failed: ${result}")
     endif()
     execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
             RESULT_VARIABLE result
             WORKING_DIRECTORY ${EP_BASE_DIR}/eigen-download )
     if(result)
-        message(FATAL_ERROR "Build step for eigen failed: ${result}")
+        message(FATAL_ERROR "Build step for Eigen3 failed: ${result}")
     endif()
 
     # Set variables
@@ -109,7 +110,7 @@ else()
     if(result)
         message(FATAL_ERROR "CMake step for zlib failed: ${result}")
     endif()
-    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
+    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL} --config ${CMAKE_BUILD_TYPE}
             RESULT_VARIABLE result
             WORKING_DIRECTORY ${EP_BASE_DIR}/zlib-download )
     if(result)
@@ -118,9 +119,10 @@ else()
 
     # Set variables
     SET(ZLIB_ROOT "${EP_BASE_DIR}/zlib" PARENT_SCOPE)
-    SET(ZLIB_INCLUDE_DIRS "${EP_BASE_DIR}/zlib/include" PARENT_SCOPE)
-    SET(ZLIB_LIBRARIES_DIRS "${EP_BASE_DIR}/zlib/lib" PARENT_SCOPE)
-    SET(ZLIB_LIBRARIES "z" PARENT_SCOPE)
+    SET(ZLIB_BIN "${EP_BASE_DIR}/zlib/bin" PARENT_SCOPE)
+    # SET(ZLIB_INCLUDE_DIRS "${EP_BASE_DIR}/zlib/include" PARENT_SCOPE)
+    # SET(ZLIB_LIBRARIES_DIRS "${EP_BASE_DIR}/zlib/lib" PARENT_SCOPE)
+    # SET(ZLIB_LIBRARIES "z" PARENT_SCOPE)
 endif()
 message(STATUS "Subproject: ZLIB...DONE")
 
@@ -132,31 +134,32 @@ if(USE_SYSTEM_PROTOBUF)
     find_package(Protobuf REQUIRED)
 else()
     # Download and unpack googletest at configure time
-    configure_file(protobuf.CMakeLists.txt.in ${EP_BASE_DIR}/protobuf-download/CMakeLists.txt)
+    configure_file(protobuf.CMakeLists.txt.in ${EP_BASE_DIR}/Protobuf-download/CMakeLists.txt @ONLY)
     execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
             RESULT_VARIABLE result
-            WORKING_DIRECTORY ${EP_BASE_DIR}/protobuf-download )
+            WORKING_DIRECTORY ${EP_BASE_DIR}/Protobuf-download )
     if(result)
-        message(FATAL_ERROR "CMake step for protobuf failed: ${result}")
+        message(FATAL_ERROR "CMake step for Protobuf failed: ${result}")
     endif()
-    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
+    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL} --config ${CMAKE_BUILD_TYPE}
             RESULT_VARIABLE result
-            WORKING_DIRECTORY ${EP_BASE_DIR}/protobuf-download )
+            WORKING_DIRECTORY ${EP_BASE_DIR}/Protobuf-download )
     if(result)
-        message(FATAL_ERROR "Build step for protobuf failed: ${result}")
+        message(FATAL_ERROR "Build step for Protobuf failed: ${result}")
     endif()
 
     # This variable does not work (deprecated?)
     if (WIN32)
-        set(Protobuf_DIR "${EP_BASE_DIR}/protobuf/cmake" PARENT_SCOPE)
+        set(Protobuf_DIR "${EP_BASE_DIR}/Protobuf/cmake" PARENT_SCOPE)
     else()
-        set(Protobuf_DIR "${EP_BASE_DIR}/protobuf/lib/cmake/protobuf" PARENT_SCOPE)
+        set(Protobuf_DIR "${EP_BASE_DIR}/Protobuf/lib/cmake/Protobuf" PARENT_SCOPE)
     endif()
 
-    set(Protobuf_INCLUDE_DIRS "${EP_BASE_DIR}/protobuf/include" PARENT_SCOPE)
-    set(Protobuf_LIBRARIES_DIRS "${EP_BASE_DIR}/protobuf/lib" PARENT_SCOPE)
-    set(Protobuf_LIBRARIES "protobuf" PARENT_SCOPE)
-    set(Protobuf_PROTOC_EXECUTABLE "${EP_BASE_DIR}/protobuf/bin/protoc" PARENT_SCOPE)
+    set(Protobuf_ROOT "${EP_BASE_DIR}/Protobuf" PARENT_SCOPE)
+    # set(Protobuf_INCLUDE_DIRS "${EP_BASE_DIR}/Protobuf/include" PARENT_SCOPE)
+    # set(Protobuf_LIBRARIES_DIRS "${EP_BASE_DIR}/Protobuf/lib" PARENT_SCOPE)
+    # set(Protobuf_LIBRARIES "Protobuf" PARENT_SCOPE)
+    # set(Protobuf_PROTOC_EXECUTABLE "${EP_BASE_DIR}/Protobuf/bin/protoc" PARENT_SCOPE)
 endif()
 message(STATUS "Subproject: Protobuf...DONE")
 

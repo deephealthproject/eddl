@@ -14,9 +14,28 @@ option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" ON)
 option(BUILD_COVERAGE "Flag to compile for coverage information" OFF)
 
+if(WIN32)
+    option(BUILD_SHARED_LIBS OFF)
+endif()
+
 ###########################################################################
 ################################# BUILD ###################################
 ###########################################################################
+
+# Set a default build type if none was specified
+set(default_build_type "Release")
+#if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
+#    set(default_build_type "Debug")
+#endif()
+
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
+    set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE
+            STRING "Choose the type of build." FORCE)
+    # Set the possible values of build type for cmake-gui
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+            "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
 
 # Build Dependencies
 if(BUILD_SUPERBUILD)
@@ -58,23 +77,10 @@ if(BUILD_COVERAGE)
 endif()
 
 # Flags: Optimization
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-
-# Set a default build type if none was specified
-set(default_build_type "Release")
-#if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
-#    set(default_build_type "Debug")
-#endif()
-
-if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-    message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
-    set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE
-            STRING "Choose the type of build." FORCE)
-    # Set the possible values of build type for cmake-gui
-    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
-            "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+if(UNIX)
+    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 endif()
 
 
@@ -82,16 +88,18 @@ endif()
 ############################### WINDOWS ###################################
 ###########################################################################
 
-## Windows
-#if(WIN32)
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNOMINMAX")   # Disable min/max macros in windef.h
-#endif()
-#
-## Microsoft Visual C++
-#if(MSVC)
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W1 /MP")   # Enable parallel compilation
-#    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-#endif()
+# Windows
+if(WIN32)
+    add_compile_definitions(
+        NOMINMAX # Disable min/max macros in windef.h
+        _CRT_SECURE_NO_WARNINGS # Eliminate deprecation warnings less secure functions
+    )
+    # Microsoft Visual C++
+    add_compile_options(
+        $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:CXX>>:-W1> # Display level 1 (severe) warnings
+        $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:CXX>>:-MP> # Enable parallel compilation
+    )
+endif()
 
 
 ###########################################################################
