@@ -62,9 +62,10 @@ Layer *LMaxPool::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LMaxPool::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LMaxPool(p[0], new PoolDescriptor(pd->ksize, pd->stride, pd->padding, pd->mem_level), "share_"+to_string(c)+this->name, todev, this->mem_level);
-    n->orig = this;
 
+    auto *n = new LMaxPool(p[0], new PoolDescriptor(pd->ksize, pd->stride, pd->pad, pd->mem_level),  "share_"+to_string(c)+this->name, todev, this->mem_level);
+
+    n->orig = this;
     return n;
 }
 
