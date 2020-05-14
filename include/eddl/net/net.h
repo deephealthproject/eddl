@@ -55,6 +55,7 @@ public:
 	unsigned int verbosity_level = 0;
 	bool onnx_pretrained;
   bool isrecurrent;
+  bool isbuild;
 
 	vector<int> devsel;
 	CompServ *cs;

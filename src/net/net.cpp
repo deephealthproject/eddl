@@ -72,6 +72,7 @@ Net::Net() {
     flog_tr=nullptr;
     flog_ts=nullptr;
     rnet=nullptr;
+    isbuild=false;
 }
 
 Net::Net(vlayer in, vlayer out):Net() {

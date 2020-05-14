@@ -164,8 +164,8 @@ void Net::toGPU(vector<int> g,int lsb,int mem){
 
 void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize){
 	onnx_pretrained = !initialize; // For controlling when to copy the weights to the snet
-	build(opt, lo, me, initialize);
 
+  build(opt, lo, me, initialize);
 
   set_compserv(cs);
 
@@ -179,6 +179,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initia
         cout << "Net running on FPGA " << snets[0]->dev - DEV_FPGA << "\n";
     }
   }
+  isbuild=true;
 
 }
 
@@ -292,10 +293,9 @@ void Net::set_compserv(CompServ *cs){
         if (!cs->isshared) {
           if (mnets.size()){
             // comes from a merge of nets
-
             for(int j=0;j<mnets.size();j++) {
-              cout<<"Building net "<<j<<endl;
-              mnets[j]->build(optimizer->clone(),{},{},cs,true);
+              if (!mnets[j]->isbuild)
+                mnets[j]->build(optimizer->clone(),{},{},cs,true);
             }
 
             cout<<"Building merge "<<endl;
