@@ -19,6 +19,7 @@ using namespace std;
 
 LDice::LDice() : Loss("dice"){}
 
+//https://arxiv.org/pdf/1606.04797v1.pdf
 void LDice::delta(Tensor *T, Tensor *Y, Tensor *D) {
     //delta: 2*[T*(sum(Y^2)+sum(T^2))-2Y(sum(T*Y))/(sum(Y^2)+sum(T^2))^2]
     Tensor *A;
