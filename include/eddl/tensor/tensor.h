@@ -327,124 +327,167 @@ public:
 
     // Math operations (unary) ************************
     void abs_();
+    Tensor* abs();
     static void abs(Tensor *A, Tensor *B);
 
     void acos_();
+    Tensor* acos();
     static void acos(Tensor *A, Tensor *B);
 
     void add_(float v);
+    Tensor* add(float v);
     void add_(Tensor* A);  // this = this .+ A
+    Tensor* add(Tensor* A);  // this = this .+ A
     static void add(Tensor *A, Tensor *B, float v); // B = A + v
 
     void asin_();
+    Tensor* asin();
     static void asin(Tensor *A, Tensor *B);
 
     void atan_();
+    Tensor* atan();
     static void atan(Tensor *A, Tensor *B);
 
     void ceil_();
+    Tensor* ceil();
     static void ceil(Tensor *A, Tensor *B);
 
     void clamp_(float min, float max);
+    Tensor* clamp(float min, float max);
     static void clamp(Tensor *A, Tensor *B, float min, float max);
 
     void clampmax_(float max);
+    Tensor* clampmax(float max);
     static void clampmax(Tensor *A, Tensor *B, float max);
 
     void clampmin_(float min);
+    Tensor* clampmin(float min);
     static void clampmin(Tensor *A, Tensor *B, float min);
 
     void cos_();
+    Tensor* cos();
     static void cos(Tensor *A, Tensor *B);
 
     void cosh_();
+    Tensor* cosh();
     static void cosh(Tensor *A, Tensor *B);
 
     void div_(float v);
+    Tensor* div(float v);
     void div_(Tensor* A); // this = this ./ A
+    Tensor* div(Tensor* A); // this = this ./ A
     static void div(Tensor *A, Tensor *B, float v); // B = A / v
 
     void exp_();
+    Tensor* exp();
     static void exp(Tensor *A, Tensor *B);
 
     void floor_();
+    Tensor* floor();
     static void floor(Tensor *A, Tensor *B);
 
     void inv_(float v=1.0f);
+    Tensor* inv(float v=1.0f);
     static void inv(Tensor *A, Tensor *B, float v=1.0f);
 
     void log_();
+    Tensor* log();
     static void log(Tensor *A, Tensor *B);
 
     void log2_();
+    Tensor* log2();
     static void log2(Tensor *A, Tensor *B);
 
     void log10_();
+    Tensor* log10();
     static void log10(Tensor *A, Tensor *B);
 
     void logn_(float n);
+    Tensor* logn(float n);
     static void logn(Tensor *A, Tensor *B, float n);
 
     void mod_(float v);
+    Tensor* mod(float v);
     static void mod(Tensor *A, Tensor *B, float v);
 
     void mult_(float v);
+    Tensor* mult(float v);
     void mult_(Tensor* A); // this = this .* A
+    Tensor* mult(Tensor* A); // this = this .* A
     static void mult(Tensor *A, Tensor *B, float v); // B = A * v
 
     void neg_();
+    Tensor* neg();
     static void neg(Tensor *A, Tensor *B);
 
     void normalize_(float min=0.0f, float max=1.0f);
+    Tensor* normalize(float min=0.0f, float max=1.0f);
     static void normalize(Tensor *A, Tensor *B, float min=0.0f, float max=1.0f);
 
     void pow_(float exp);
+    Tensor* pow(float exp);
     static void pow(Tensor *A, Tensor *B, float exp);
 
     void powb_(float base);
+    Tensor* powb(float base);
     static void powb(Tensor *A, Tensor *B, float base);
 
     void reciprocal_();
+    Tensor* reciprocal();
     static void reciprocal(Tensor *A, Tensor *B);
 
     void remainder_(float v);
+    Tensor* remainder(float v);
     static void remainder(Tensor *A, Tensor *B, float v);
 
     void round_();
+    Tensor* round();
     static void round(Tensor *A, Tensor *B);
 
     void rsqrt_();
+    Tensor* rsqrt();
     static void rsqrt(Tensor *A, Tensor *B);
 
     void sigmoid_();
+    Tensor* sigmoid();
     static void sigmoid(Tensor *A, Tensor *B);
 
     void sign_(float zero_sign=0.0f);
+    Tensor* sign(float zero_sign=0.0f);
     static void sign(Tensor *A, Tensor *B, float zero_sign=0.0f);
 
     void sin_();
+    Tensor* sin();
     static void sin(Tensor *A, Tensor *B);
 
     void sinh_();
+    Tensor* sinh();
     static void sinh(Tensor *A, Tensor *B);
 
     void sqr_();
+    Tensor* sqr();
     static void sqr(Tensor *A, Tensor *B);
 
     void sqrt_();
+    Tensor* sqrt();
     static void sqrt(Tensor *A, Tensor *B);
 
     void sub_(float v);
+    Tensor* sub(float v);
     void sub_(Tensor* A); // this = this .- A
+    Tensor* sub(Tensor* A); // this = this .- A
     static void sub(Tensor *A, Tensor *B, float v);
 
     void tan_();
+    Tensor* tan();
     static void tan(Tensor *A, Tensor *B);
 
     void tanh_();
+    Tensor* tanh();
     static void tanh(Tensor *A, Tensor *B);
 
     void trunc_();
+    Tensor* trunc();
     static void trunc(Tensor *A, Tensor *B);
 
 
