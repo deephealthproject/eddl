@@ -22,7 +22,7 @@ void checkCompatibility(Tensor *A, Tensor *B, const string &title){
         msg("Tensors in different devices", title);
     }
 
-    if (!Tensor::eqsize(A, B)){
+    if (!Tensor::sameShape(A, B)){
         msg("Tensors with different shape", title);
     }
 }
@@ -408,7 +408,7 @@ void Tensor::not_equal(Tensor *A, Tensor *B, Tensor *C){
 
 
 
-int Tensor::eqsize(Tensor *A, Tensor *B) {
+int Tensor::sameShape(Tensor *A, Tensor *B) {
     if (A->ndim != B->ndim) return 0;
 
     for (int i = 0; i < A->ndim; i++){
@@ -418,11 +418,14 @@ int Tensor::eqsize(Tensor *A, Tensor *B) {
     return 1;
 }
 
-int Tensor::equal2(Tensor *A, Tensor *B, float epsilon) {
+int Tensor::equivalent(Tensor *A, Tensor *B, float epsilon) {
+    // Equal device
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::equal");
 
-    if (!eqsize(A,B)) return 0;
+    // Equal ndims and shapes
+    if (!sameShape(A, B)) return 0;
 
+    // Equal data
     if (A->isCPU()) {
         return cpu_equal2(A, B, epsilon);
     }

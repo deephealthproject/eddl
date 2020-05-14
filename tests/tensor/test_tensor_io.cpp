@@ -192,7 +192,7 @@ TEST(TensorTestSuite, tensor_io_jpg)
     int hasFailed = std::remove(fname.c_str());
     if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
 
-    ASSERT_TRUE(Tensor::equal2(t_ref, t_load, 10e-0));
+    ASSERT_TRUE(Tensor::equivalent(t_ref, t_load, 10e-0));
 }
 
 TEST(TensorTestSuite, tensor_io_png)
@@ -213,7 +213,7 @@ TEST(TensorTestSuite, tensor_io_png)
     int hasFailed = std::remove(fname.c_str());
     if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
 
-    ASSERT_TRUE(Tensor::equal2(t_ref, t_load, 10e-0));
+    ASSERT_TRUE(Tensor::equivalent(t_ref, t_load, 10e-0));
 }
 
 
@@ -235,7 +235,7 @@ TEST(TensorTestSuite, tensor_io_bmp)
     int hasFailed = std::remove(fname.c_str());
     if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
 
-    ASSERT_TRUE(Tensor::equal2(t_ref, t_load, 10e-0));
+    ASSERT_TRUE(Tensor::equivalent(t_ref, t_load, 10e-0));
 }
 
 
@@ -255,7 +255,7 @@ TEST(TensorTestSuite, tensor_io_numpy)
     int hasFailed = std::remove(fname.c_str());
     if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
 
-    ASSERT_TRUE(Tensor::equal2(t_iris, t_load, 10e-5));
+    ASSERT_TRUE(Tensor::equivalent(t_iris, t_load, 10e-5));
 }
 
 
@@ -275,7 +275,7 @@ TEST(TensorTestSuite, tensor_io_csv)
     int hasFailed = std::remove(fname.c_str());
     if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
 
-    ASSERT_TRUE(Tensor::equal2(t_iris, t_load, 10e-5));
+    ASSERT_TRUE(Tensor::equivalent(t_iris, t_load, 10e-5));
 }
 
 
@@ -295,7 +295,7 @@ TEST(TensorTestSuite, tensor_io_tsv)
     int hasFailed = std::remove(fname.c_str());
     if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
 
-    ASSERT_TRUE(Tensor::equal2(t_iris, t_load, 10e-5));
+    ASSERT_TRUE(Tensor::equivalent(t_iris, t_load, 10e-5));
 }
 
 
@@ -315,7 +315,7 @@ TEST(TensorTestSuite, tensor_io_txt)
     int hasFailed = std::remove(fname.c_str());
     if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
 
-    ASSERT_TRUE(Tensor::equal2(t_iris, t_load, 10e-5));
+    ASSERT_TRUE(Tensor::equivalent(t_iris, t_load, 10e-5));
 }
 
 
@@ -335,5 +335,5 @@ TEST(TensorTestSuite, tensor_io_bin)
     int hasFailed = std::remove(fname.c_str());
     if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
 
-    ASSERT_TRUE(Tensor::equal2(t_iris, t_load, 10e-5));
+    ASSERT_TRUE(Tensor::equivalent(t_iris, t_load, 10e-5));
 }

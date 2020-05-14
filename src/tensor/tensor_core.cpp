@@ -239,7 +239,7 @@ void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
     // Transpose
     // TODO: Review correctness
     B->tsem->lock();
-    if (!Tensor::eqsize(A, B))
+    if (!Tensor::sameShape(A, B))
         msg("Tensors with different shape", "Tensor::transpose");
 
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::transpose");
@@ -276,7 +276,7 @@ void Tensor::copy(Tensor *A, Tensor *B) {
     //////////////////////////////////////
     // TODO: Review correctness for ndim==2
 
-    if (!Tensor::eqsize(A, B)) {
+    if (!Tensor::sameShape(A, B)) {
         A->info();
         B->info();
         msg("Tensors with different shape", "Tensor::copy");

@@ -1462,7 +1462,7 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
 
 
     if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::add_");
-    if ((!eqsize(A, B)) || (!eqsize(A, C))) {
+    if ((!sameShape(A, B)) || (!sameShape(A, C))) {
         A->info();
         B->info();
         C->info();
@@ -1492,7 +1492,7 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
 void Tensor::inc(Tensor *A, Tensor *B) {
     // TODO: Review against add
 
-    if (!Tensor::eqsize(A, B))
+    if (!Tensor::sameShape(A, B))
         msg("Tensors with different shape", "Tensor::inc");
 
 
@@ -1528,7 +1528,7 @@ void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
     ///////////////////////////////////////
 
     if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::el_div");
-    if ((!eqsize(A, B)) || (!eqsize(A, C))) msg("Incompatible dims", "Tensor::el_div");
+    if ((!sameShape(A, B)) || (!sameShape(A, C))) msg("Incompatible dims", "Tensor::el_div");
 
     C->tsem->lock();
     if (A->isCPU()) {
@@ -1608,7 +1608,7 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
     ///////////////////////////////////////
     C->tsem->lock();
     if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::el_mult");
-    if ((!eqsize(A, B)) || (!eqsize(A, C))) {
+    if ((!sameShape(A, B)) || (!sameShape(A, C))) {
         A->info();
         B->info();
         C->info();
@@ -1643,7 +1643,7 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
     if ((A->device != B->device) || (A->device != C->device))
         msg("Tensors in different devices", "Tensor::sum2D_rowwise");
     if ((A->ndim != 2) || (B->ndim != 1) || (C->ndim != 2)) msg("sum2D_rowwise dims");
-    if ((!eqsize(A, C)) || (A->shape[1] != B->shape[0])) msg("Incompatible dims", "Tensor::sum2D_rowwise");
+    if ((!sameShape(A, C)) || (A->shape[1] != B->shape[0])) msg("Incompatible dims", "Tensor::sum2D_rowwise");
 
     C->tsem->lock();
     if (A->isCPU()) {
@@ -1704,7 +1704,7 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
     if ((A->device != B->device) || (A->device != C->device))
         msg("Tensors in different devices", "Tensor::sum2D_colwise");
     if ((A->ndim != 2) || (B->ndim != 1) || (C->ndim != 2)) msg("sum2D_colwise dims");
-    if ((!eqsize(A, C)) || (A->shape[0] != B->shape[0])) msg("Incompatible dims", "Tensor::sum2D_colwise");
+    if ((!sameShape(A, C)) || (A->shape[0] != B->shape[0])) msg("Incompatible dims", "Tensor::sum2D_colwise");
 
     C->tsem->lock();
     if (A->isCPU()) {

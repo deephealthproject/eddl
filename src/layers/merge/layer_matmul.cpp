@@ -24,7 +24,7 @@ LMatMul::LMatMul(vector<Layer *> parent, string name, int dev, int mem) : MLayer
 
     if (parent.size() > 1)
         for (int i = 0; i < parent.size() - 1; ++i)
-            if (!Tensor::eqsize(parent[i]->output, parent[i + 1]->output)) {
+            if (!Tensor::sameShape(parent[i]->output, parent[i + 1]->output)) {
                 parent[i]->output->info();
                 parent[i + 1]->output->info();
                 msg("Error: LMatMul layers with different tensor shape");

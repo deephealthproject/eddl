@@ -20,7 +20,7 @@ namespace tensorNN {
 
     int accuracy(Tensor *A, Tensor *B) {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::accuracy");
-        if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::accuracy");
+        if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::accuracy");
         if (A->ndim != 2) msg("Accuracy only over 2D Tensor (batch x probs)", "Tensor::Accuracy");
 
         int acc = 0;

@@ -235,7 +235,7 @@ void cpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_
     // Inverse => For cutout
 
     int offsets[2] = {0, 0};
-    if(!Tensor::eqsize(A, B)){
+    if(!Tensor::sameShape(A, B)){
         offsets[0] = coords_from[0];
         offsets[1] = coords_from[1];
     }

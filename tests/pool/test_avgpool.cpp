@@ -41,11 +41,11 @@ TEST(AvgPoolTestSuite, avgpool_k2x2_s2x2_pad_valid)
 
     // Forward
     tensorNN::AvgPool2D(pd);
-    ASSERT_TRUE((bool)Tensor::equal2(t_fwrd, pd->O, 10e-5f));
+    ASSERT_TRUE((bool) Tensor::equivalent(t_fwrd, pd->O, 10e-5f));
 
     // Backward
     tensorNN::AvgPool2D_back(pd);
-    ASSERT_TRUE((bool)Tensor::equal2(t_bwrd, pd->ID, 10e-5f));
+    ASSERT_TRUE((bool) Tensor::equivalent(t_bwrd, pd->ID, 10e-5f));
 }
 
 
@@ -85,11 +85,11 @@ TEST(AvgPoolTestSuite, avgpool_k2x2_s2x2_pad_same)
 
     // Forward
     tensorNN::AvgPool2D(pd);
-    ASSERT_TRUE((bool)Tensor::equal2(t_fwrd, pd->O, 10e-5f));
+    ASSERT_TRUE((bool) Tensor::equivalent(t_fwrd, pd->O, 10e-5f));
 
     // Backward
     tensorNN::AvgPool2D_back(pd);
-    ASSERT_TRUE((bool)Tensor::equal2(t_bwrd, pd->ID, 10e-5f));
+    ASSERT_TRUE((bool) Tensor::equivalent(t_bwrd, pd->ID, 10e-5f));
 }
 
 
@@ -129,11 +129,11 @@ TEST(AvgPoolTestSuite, avgpool_k3x3_s1x1_pad_valid)
 
     // Forward
     tensorNN::AvgPool2D(pd);
-    ASSERT_TRUE((bool)Tensor::equal2(t_fwrd, pd->O, 10e-5f));
+    ASSERT_TRUE((bool) Tensor::equivalent(t_fwrd, pd->O, 10e-5f));
 
     // Backward
     tensorNN::AvgPool2D_back(pd);
-    ASSERT_TRUE((bool)Tensor::equal2(t_bwrd, pd->ID, 10e-5f));
+    ASSERT_TRUE((bool) Tensor::equivalent(t_bwrd, pd->ID, 10e-5f));
 }
 
 
@@ -175,11 +175,11 @@ TEST(AvgPoolTestSuite, avgpool_k3x3_s1x1_pad_same)
 
     // Forward
     tensorNN::AvgPool2D(pd);
-    ASSERT_TRUE((bool)Tensor::equal2(t_fwrd, pd->O, 10e-5f));
+    ASSERT_TRUE((bool) Tensor::equivalent(t_fwrd, pd->O, 10e-5f));
 
     // Backward
     tensorNN::AvgPool2D_back(pd);
-    ASSERT_TRUE((bool)Tensor::equal2(t_bwrd, pd->ID, 10e-5f));
+    ASSERT_TRUE((bool) Tensor::equivalent(t_bwrd, pd->ID, 10e-5f));
 }
 
 
@@ -220,11 +220,11 @@ TEST(AvgPoolTestSuite, avgpool_k3x3_s2x2_pad_valid)
 
     // Forward
     tensorNN::AvgPool2D(pd);
-    ASSERT_TRUE((bool)Tensor::equal2(t_fwrd, pd->O, 10e-5f));
+    ASSERT_TRUE((bool) Tensor::equivalent(t_fwrd, pd->O, 10e-5f));
 
     // Backward
     tensorNN::AvgPool2D_back(pd);
-    ASSERT_TRUE((bool)Tensor::equal2(t_bwrd, pd->ID, 10e-5f));
+    ASSERT_TRUE((bool) Tensor::equivalent(t_bwrd, pd->ID, 10e-5f));
 }
 
 
@@ -265,9 +265,9 @@ TEST(AvgPoolTestSuite, avgpool_k3x3_s2x2_pad_same)
 
     // Forward
     tensorNN::AvgPool2D(pd);
-    ASSERT_TRUE((bool)Tensor::equal2(t_fwrd, pd->O, 10e-5f));
+    ASSERT_TRUE((bool) Tensor::equivalent(t_fwrd, pd->O, 10e-5f));
 
     // Backward
     tensorNN::AvgPool2D_back(pd);
-    ASSERT_TRUE((bool)Tensor::equal2(t_bwrd, pd->ID, 10e-5f));
+    ASSERT_TRUE((bool) Tensor::equivalent(t_bwrd, pd->ID, 10e-5f));
 }

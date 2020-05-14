@@ -21,7 +21,7 @@ namespace tensorNN {
 // ReLU
     void ReLu(Tensor *A, Tensor *B) {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::ReLu");
-        if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::ReLu");
+        if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::ReLu");
 
         B->tsem->lock();
         if (A->isCPU()) {
@@ -47,7 +47,7 @@ namespace tensorNN {
         if ((D->device != I->device) || (D->device != PD->device)) {
             msg("Tensors in different devices", "Tensor::D_ReLu");
         }
-        if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_ReLu");
+        if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_ReLu");
 
         PD->tsem->lock();
         if (D->isCPU()) {
@@ -71,7 +71,7 @@ namespace tensorNN {
 // ThresholdedReLu
     void ThresholdedReLu(Tensor *A, Tensor *B, float param) {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::ThresholdedReLu");
-        if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::ThresholdedReLu");
+        if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::ThresholdedReLu");
 
         B->tsem->lock();
         if (A->isCPU()) {
@@ -96,7 +96,7 @@ namespace tensorNN {
     void D_ThresholdedReLu(Tensor *D, Tensor *I, Tensor *PD, float param) {
         if ((D->device != I->device) || (D->device != PD->device))
             msg("Tensors in different devices", "Tensor::D_ThresholdedReLu");
-        if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_ThresholdedReLu");
+        if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_ThresholdedReLu");
 
         PD->tsem->lock();
         if (D->isCPU()) {
@@ -120,7 +120,7 @@ namespace tensorNN {
 // LeakyReLU
     void LeakyReLu(Tensor *A, Tensor *B, float param) {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::LeakyReLu");
-        if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::LeakyReLu");
+        if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::LeakyReLu");
 
         B->tsem->lock();
         if (A->isCPU()) {
@@ -145,7 +145,7 @@ namespace tensorNN {
     void D_LeakyReLu(Tensor *D, Tensor *I, Tensor *PD, float param) {
         if ((D->device != I->device) || (D->device != PD->device))
             msg("Tensors in different devices", "Tensor::D_ReLu");
-        if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_ReLu");
+        if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_ReLu");
 
         PD->tsem->lock();
         if (D->isCPU()) {
@@ -170,7 +170,7 @@ namespace tensorNN {
 // ELU
     void ELu(Tensor *A, Tensor *B, float param) {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::ELu");
-        if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::ELu");
+        if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::ELu");
 
         B->tsem->lock();
         if (A->isCPU()) {
@@ -194,7 +194,7 @@ namespace tensorNN {
 // ELU Derivative
     void D_ELu(Tensor *D, Tensor *I, Tensor *PD, float param) {
         if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_ELu");
-        if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_ELu");
+        if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_ELu");
 
         PD->tsem->lock();
         if (D->isCPU()) {
@@ -219,7 +219,7 @@ namespace tensorNN {
 // Softplus
     void Softplus(Tensor *A, Tensor *B) {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::Softplus");
-        if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::Softplus");
+        if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::Softplus");
 
         B->tsem->lock();
         if (A->isCPU()) {
@@ -244,7 +244,7 @@ namespace tensorNN {
     void D_softplus(Tensor *D, Tensor *I, Tensor *PD) {
         if ((D->device != I->device) || (D->device != PD->device))
             msg("Tensors in different devices", "Tensor::D_softplus");
-        if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_softplus");
+        if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_softplus");
 
         PD->tsem->lock();
         if (D->isCPU()) {
@@ -269,7 +269,7 @@ namespace tensorNN {
 // Softsign
     void Softsign(Tensor *A, Tensor *B) {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::Softsign");
-        if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::Softsign");
+        if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::Softsign");
 
         B->tsem->lock();
         if (A->isCPU()) {
@@ -294,7 +294,7 @@ namespace tensorNN {
     void D_softsign(Tensor *D, Tensor *I, Tensor *PD) {
         if ((D->device != I->device) || (D->device != PD->device))
             msg("Tensors in different devices", "Tensor::D_softsign");
-        if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_softsign");
+        if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_softsign");
 
         PD->tsem->lock();
         if (D->isCPU()) {
@@ -318,7 +318,7 @@ namespace tensorNN {
 // Linear
     void Linear(Tensor *A, Tensor *B, float param) {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::Linear");
-        if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::Linear");
+        if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::Linear");
 
         B->tsem->lock();
         if (A->isCPU()) {
@@ -343,7 +343,7 @@ namespace tensorNN {
     void D_Linear(Tensor *D, Tensor *I, Tensor *PD, float param) {
         if ((D->device != I->device) || (D->device != PD->device))
             msg("Tensors in different devices", "Tensor::D_Linear");
-        if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_Linear");
+        if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_Linear");
 
         PD->tsem->lock();
         if (D->isCPU()) {
@@ -367,7 +367,7 @@ namespace tensorNN {
 // Sigmoid
     void Sigmoid(Tensor *A, Tensor *B) {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::Sigmoid");
-        if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::Sigmoid");
+        if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::Sigmoid");
 
         B->tsem->lock();
         if (A->isCPU()) {
@@ -392,7 +392,7 @@ namespace tensorNN {
     void D_Sigmoid(Tensor *D, Tensor *I, Tensor *PD) {
         if ((D->device != I->device) || (D->device != PD->device))
             msg("Tensors in different devices", "Tensor::D_Sigmoid");
-        if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_Sigmoid");
+        if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_Sigmoid");
 
         PD->tsem->lock();
         if (D->isCPU()) {
@@ -416,7 +416,7 @@ namespace tensorNN {
 // Hard Sigmoid
     void HardSigmoid(Tensor *A, Tensor *B) {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::HardSigmoid");
-        if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::HardSigmoid");
+        if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::HardSigmoid");
 
         B->tsem->lock();
         if (A->isCPU()) {
@@ -441,7 +441,7 @@ namespace tensorNN {
     void D_HardSigmoid(Tensor *D, Tensor *I, Tensor *PD) {
         if ((D->device != I->device) || (D->device != PD->device))
             msg("Tensors in different devices", "Tensor::D_HardSigmoid");
-        if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_HardSigmoid");
+        if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_HardSigmoid");
 
         PD->tsem->lock();
         if (D->isCPU()) {
@@ -465,7 +465,7 @@ namespace tensorNN {
 // Exponential
     void Exp(Tensor *A, Tensor *B) {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::Exp");
-        if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::Exp");
+        if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::Exp");
 
         B->tsem->lock();
         if (A->isCPU()) {
@@ -490,7 +490,7 @@ namespace tensorNN {
 // Exponential Derivative
     void D_Exp(Tensor *D, Tensor *I, Tensor *PD) {
         if ((D->device != I->device) || (D->device != PD->device)) msg("Tensors in different devices", "Tensor::D_Exp");
-        if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_Exp");
+        if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_Exp");
 
         PD->tsem->lock();
         if (D->isCPU()) {
@@ -513,7 +513,7 @@ namespace tensorNN {
 // Tanh
     void Tanh(Tensor *A, Tensor *B) {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::Tanh");
-        if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::Tanh");
+        if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::Tanh");
 
         B->tsem->lock();
         if (A->isCPU()) {
@@ -538,7 +538,7 @@ namespace tensorNN {
     void D_Tanh(Tensor *D, Tensor *I, Tensor *PD) {
         if ((D->device != I->device) || (D->device != PD->device))
             msg("Tensors in different devices", "Tensor::D_Tanh");
-        if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_Tanh");
+        if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_Tanh");
 
         PD->tsem->lock();
         if (D->isCPU()) {
@@ -563,7 +563,7 @@ namespace tensorNN {
 // SOFTMAX
     void Softmax(Tensor *A, Tensor *B) {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::Softmax");
-        if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::Softmax");
+        if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::Softmax");
         if (A->ndim != 2) msg("Softmax only over 2D Tensor (batch x logits)", "Tensor::Softmax");
 
         B->tsem->lock();
@@ -590,7 +590,7 @@ namespace tensorNN {
     void D_Softmax(Tensor *D, Tensor *I, Tensor *PD) {
         if ((D->device != I->device) || (D->device != PD->device))
             msg("Tensors in different devices", "Tensor::D_Softmax");
-        if ((!Tensor::eqsize(D, I)) || (!Tensor::eqsize(D, PD))) msg("Incompatible dims", "Tensor::D_Softmax");
+        if ((!Tensor::sameShape(D, I)) || (!Tensor::sameShape(D, PD))) msg("Incompatible dims", "Tensor::D_Softmax");
         if (D->ndim != 2) msg("D_Softmax only over 2D Tensor (batch x delta_probs)", "Tensor::D_Softmax");
 
         if (D->isCPU()) {
