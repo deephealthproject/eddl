@@ -134,32 +134,32 @@ if(USE_SYSTEM_PROTOBUF)
     find_package(Protobuf REQUIRED)
 else()
     # Download and unpack googletest at configure time
-    configure_file(protobuf.CMakeLists.txt.in ${EP_BASE_DIR}/Protobuf-download/CMakeLists.txt @ONLY)
+    configure_file(protobuf.CMakeLists.txt.in ${EP_BASE_DIR}/protobuf-download/CMakeLists.txt @ONLY)
     execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
             RESULT_VARIABLE result
-            WORKING_DIRECTORY ${EP_BASE_DIR}/Protobuf-download )
+            WORKING_DIRECTORY ${EP_BASE_DIR}/protobuf-download )
     if(result)
         message(FATAL_ERROR "CMake step for Protobuf failed: ${result}")
     endif()
     execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL} --config ${CMAKE_BUILD_TYPE}
             RESULT_VARIABLE result
-            WORKING_DIRECTORY ${EP_BASE_DIR}/Protobuf-download )
+            WORKING_DIRECTORY ${EP_BASE_DIR}/protobuf-download )
     if(result)
         message(FATAL_ERROR "Build step for Protobuf failed: ${result}")
     endif()
 
     # This variable does not work (deprecated?)
     if (WIN32)
-        set(Protobuf_DIR "${EP_BASE_DIR}/Protobuf/cmake" PARENT_SCOPE)
+        set(Protobuf_DIR "${EP_BASE_DIR}/protobuf/cmake" PARENT_SCOPE)
     else()
-        set(Protobuf_DIR "${EP_BASE_DIR}/Protobuf/lib/cmake/Protobuf" PARENT_SCOPE)
+        set(Protobuf_DIR "${EP_BASE_DIR}/protobuf/lib/cmake/Protobuf" PARENT_SCOPE)
     endif()
 
-    set(Protobuf_ROOT "${EP_BASE_DIR}/Protobuf" PARENT_SCOPE)
-    # set(Protobuf_INCLUDE_DIRS "${EP_BASE_DIR}/Protobuf/include" PARENT_SCOPE)
-    # set(Protobuf_LIBRARIES_DIRS "${EP_BASE_DIR}/Protobuf/lib" PARENT_SCOPE)
-    # set(Protobuf_LIBRARIES "Protobuf" PARENT_SCOPE)
-    # set(Protobuf_PROTOC_EXECUTABLE "${EP_BASE_DIR}/Protobuf/bin/protoc" PARENT_SCOPE)
+    set(Protobuf_ROOT "${EP_BASE_DIR}/protobuf" PARENT_SCOPE)
+    # set(Protobuf_INCLUDE_DIRS "${EP_BASE_DIR}/protobuf/include" PARENT_SCOPE)
+    # set(Protobuf_LIBRARIES_DIRS "${EP_BASE_DIR}/protobuf/lib" PARENT_SCOPE)
+    # set(Protobuf_LIBRARIES "protobuf" PARENT_SCOPE)
+    # set(Protobuf_PROTOC_EXECUTABLE "${EP_BASE_DIR}/protobuf/bin/protoc" PARENT_SCOPE)
 endif()
 message(STATUS "Subproject: Protobuf...DONE")
 
