@@ -31,8 +31,7 @@ int main(int argc, char **argv) {
     int epochs = 10;
     int batch_size = 100;
 
-
-    // Define network
+    // Define encoder
     layer in = Input({784});
     layer l = in;  // Aux var
 
@@ -41,10 +40,9 @@ int main(int argc, char **argv) {
     layer out = Activation(Dense(l, 64), "relu");
 
     model encoder = Model({in}, {out});
-
     summary(encoder);
 
-    // Define network
+    // Define decoder
     in = Input({64});
     l = Activation(Dense(in, 128), "relu");
     l = Activation(Dense(l, 256), "relu");
@@ -52,13 +50,10 @@ int main(int argc, char **argv) {
     out = Dense(l, 784);
 
     model decoder = Model({in}, {out});
-
     summary(decoder);
 
+    // Merge both models into a new one
     model net = Model({encoder,decoder});
-
-
-    // View model
     summary(net);
     plot(net, "model.pdf");
 
@@ -67,8 +62,8 @@ int main(int argc, char **argv) {
           sgd(0.001, 0.9), // Optimizer
           {"mean_squared_error"}, // Losses
           {"mean_squared_error"}, // Metrics
-          CS_GPU({1})
-          //CS_CPU(-1)
+          //CS_GPU({1})
+          CS_CPU(-1)
     );
 
     // Load dataset
@@ -77,13 +72,10 @@ int main(int argc, char **argv) {
     x_train->div_(255.0f);
 
     // Train model
-    fit(net, {x_train}, {x_train}, batch_size, 1);
+    fit(net, {x_train}, {x_train}, batch_size, 5);
 
     // Predict with encoder
     vtensor tout=predict(encoder,{x_train});
-
     tout[0]->info();
-
-
 
 }

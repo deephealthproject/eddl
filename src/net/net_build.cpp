@@ -259,6 +259,13 @@ void Net::set_compserv(CompServ *cs){
                 Eigen::setNbThreads(nthreads);
 
                 snets.push_back(this);
+                if (mnets.size()){
+                  // comes from a merge of nets
+                  for(int j=0;j<mnets.size();j++) {
+                    if (!mnets[j]->isbuild)
+                      mnets[j]->build(optimizer->clone(),{},{},cs,true);
+                  }
+                }
             } else {
                 msg("Net and Layers device missmatch", "Net.set_compserv");
             }
@@ -344,7 +351,7 @@ void Net::split(int c, int todev) {
     int m=0;
 
     for (i = 0; i < c; i++) {
-          if (VERBOSE) cout << "Split " << i << "\n";
+        if (VERBOSE) cout << "Split " << i << "\n";
 
         nlayers.clear();
         nin.clear();
