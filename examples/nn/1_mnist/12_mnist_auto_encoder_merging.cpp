@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
     l = Activation(Dense(in, 128), "relu");
     l = Activation(Dense(l, 256), "relu");
 
-    out = Dense(l, 784);
+    out = Sigmoid(Dense(l, 784));
 
     model decoder = Model({in}, {out});
     summary(decoder);
@@ -59,11 +59,11 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          sgd(0.001, 0.9), // Optimizer
-          {"mean_squared_error"}, // Losses
-          {"none"}, // Metrics
-          //CS_GPU({1})
-          CS_CPU(-1)
+          sgd(0.1, 0.9), // Optimizer
+          {"dice"}, // Losses
+          {"dice"}, // Metrics
+          CS_GPU({1})
+          //CS_CPU(-1)
     );
 
     // Load dataset

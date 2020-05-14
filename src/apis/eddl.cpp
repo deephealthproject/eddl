@@ -363,6 +363,9 @@ namespace eddl {
         } else if (type == "soft_cross_entropy"){
             return new LSoftCrossEntropy();
         }
+        else if (type == "dice"){
+            return new LDice();
+        }
         return nullptr;
     }
 
@@ -385,6 +388,9 @@ namespace eddl {
         }
         else if (type=="mean_relative_error"){
             return new MMeanRelativeError();
+        }
+        else if (type=="dice") {
+            return new MDice();
         }
         else if (type=="none") {
             return new Metric("none");
