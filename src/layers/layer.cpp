@@ -33,6 +33,8 @@ Layer::Layer(string name, int dev, int mem) {
     detached=false;
     isrecurrent=false;
     isshared=false;
+    isnorm=false;
+    trainable=true;
 
     orig=nullptr;
     net=nullptr;
@@ -53,7 +55,8 @@ Layer::~Layer(){
 
 
     //gradients if any
-    for (int i=0;i<gradients.size();i++){
+    if (!isshared)
+      for (int i=0;i<gradients.size();i++){
         delete gradients[i];
     }
 }
@@ -90,7 +93,7 @@ void Layer::mem_delta_parent(){
 }
 
 void Layer::mem_delta(){
-    // Reserve space for the parent's delta
+    // Reserve space for the delta
     if(this->delta == nullptr){
         this->delta = Tensor::zeros(this->output->shape, this->output->device);
 
@@ -142,7 +145,13 @@ void Layer::detach(Layer *l){
 }
 
 void Layer::reset() {
-    if ((!mem_level) && (delta!=nullptr)) { delta->fill_(0.0); }
+    if ((!mem_level) && (delta!=nullptr)) {
+      delta->fill_(0.0);
+      for(int i=0;i<states.size();i++)
+        states[i]->fill_(0.0);
+      for(int i=0;i<states.size();i++)
+        delta_states[i]->fill_(0.0);
+    }
     detached=false;
 }
 

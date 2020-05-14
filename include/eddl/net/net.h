@@ -55,6 +55,7 @@ public:
 	unsigned int verbosity_level = 0;
 	bool onnx_pretrained;
   bool isrecurrent;
+  bool isbuild;
 
 	vector<int> devsel;
 	CompServ *cs;
@@ -76,12 +77,15 @@ public:
 
 	Optimizer *optimizer;
 	vector<Net *> snets;
+	vector<Net *> mnets;
 	Net* rnet;
 
 	vtensor Xs[MAX_THREADS];
 	vtensor Ys[MAX_THREADS];
 
+  Net();
 	Net(vlayer in, vlayer out);
+	Net(vector <Net *> vnets);
 	~Net();
 
 	void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize=true);
@@ -134,11 +138,13 @@ public:
 	void forward(vector<Layer *> in);
 	void forward(vector<Tensor*> in);
 	void forward();
+	void forward_recurrent(vector<Tensor*> tin);
 	void reset_loss();
 	void print_loss(int b);
 	void backward(vector<Tensor *> target);
 	void backward(Layer* (*f)(Layer *),Layer *out);
 	void backward();
+	void backward_recurrent(vector<Tensor *> target);
 	void delta();
 	void reset();
 	void reset_grads();
@@ -153,16 +159,13 @@ public:
 	void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);
 	void evaluate(vtensor tin, vtensor tout);
 	void evaluate_recurrent(vtensor tin, vtensor tout);
-	void predict(vtensor tin, vtensor tout);
-
-
-
+	vtensor predict(vtensor tin);
 
 
 };
 
+
 void collectTensor(Layer *l,string tname="output",int p=0);
-void distributeTensor(Layer *l,string tname="output",int p=0);
-void copyTensor(Layer *l1,Layer *l2,string name="output");
+void distributeTensor(Layer *l,string tname="output", int p=0);
 
 #endif  //EDDL_NET_H

@@ -53,7 +53,7 @@ int LSqrt::total_layers = 0;
 
   Layer *LSqrt::share(int c, int bs, vector<Layer *> p) {
     LSqrt *n;
-    n = new LSqrt(p[0],  this->name, this->dev, this->mem_level);
+    n = new LSqrt(p[0], "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
     return n;
   }

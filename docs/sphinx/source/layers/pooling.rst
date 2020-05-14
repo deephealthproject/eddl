@@ -1,6 +1,24 @@
 Pooling
 =============
 
+MaxPooling1D
+------------
+
+.. doxygenfunction:: MaxPool1D
+
+Example:
+
+.. code-block:: c++
+    :linenos:
+
+    ...
+    l = Reshape(l,{1,784}); //image as a 1D signal with depth=1
+    l = Conv1D(l,16, {3},{1});
+    l = ReLu(l);
+    l = MaxPool1D(l,{4},{4});  //MaxPool 4 stride 4
+    ...
+
+
 MaxPooling
 ----------
 
@@ -12,8 +30,12 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer MaxPool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2}, string padding = "none", string name = "");
-
+    ...
+    l = Reshape(l,{1,28,28});
+    l = Conv(l,32, {3,3},{1,1});
+    l = ReLu(l);
+    l = MaxPool(l,{3,3}, {1,1}, "same");
+    ...
 
 
 GlobalMaxPooling
@@ -27,8 +49,12 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer GlobalMaxPool(layer parent, string name = "");
-
+    ...
+    l = MaxPool(ReLu(Conv(l,32,{3,3},{1,1})),{2,2});
+    l = MaxPool(ReLu(Conv(l,64,{3,3},{1,1})),{2,2});
+    l = MaxPool(ReLu(Conv(l,128,{3,3},{1,1})),{2,2});
+    l = GlobalMaxPool(l);
+    ...
 
 
 AveragePooling
@@ -42,12 +68,6 @@ AveragePooling
 
     Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers
 
-Example:
-
-.. code-block:: c++
-   :linenos:
-
-    layer AveragePool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2},string padding = "none", string name = "");
 
 
 
@@ -62,12 +82,4 @@ GlobalAveragePooling
     **Not implemented yet**
 
     Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers
-
-Example:
-
-.. code-block:: c++
-   :linenos:
-
-    layer GlobalAveragePool(layer parent, string name = "");
-
 

@@ -13,7 +13,13 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    model Model(vlayer in, vlayer out);
+    layer in1 = Input({3,32,32});
+    layer in2 = Input({1,32,32});
+    layer l = Concat(in1, in2);
+    ...
+    layer out = Activation(Dense(l, num_classes), "softmax");
+    ...
+    model net = Model({in1, in2}, {out});
 
 
 Build
@@ -30,9 +36,17 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    void build(model net, optimizer o, const vector<string> &lo, const vector<string> &me, CompServ *cs=nullptr, bool init_weights=true);
-    //e.g.: build(mymodel, sgd(0.01f), {"cross_entropy"}, {"accuracy"}, CS_GPU({1, 0}), true);
+    ...
+    model net=Model({in},{out});
 
+    // Build model
+    build(net,
+          sgd(0.01, 0.9), // Optimizer
+          {"soft_cross_entropy"}, // Losses
+          {"categorical_accuracy"}, // Metrics
+          CS_GPU({1}, "low_mem") // GPU with only one gpu
+    );
+    
 
 Summary
 ----------
@@ -44,7 +58,18 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    void summary(model m);
+    ...
+    model net=Model({in},{out});
+
+    // Build model
+    build(net,
+          sgd(0.01, 0.9), // Optimizer
+          {"soft_cross_entropy"}, // Losses
+          {"categorical_accuracy"}, // Metrics
+          CS_GPU({1}, "low_mem") // GPU with only one gpu
+    );
+
+    summary(net);
 
 
 Result:
@@ -76,7 +101,10 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    void plot(model m, string fname, string mode="LR");
+    ...
+    model net=Model({in},{out});
+
+    plot(net,"model.pdf");
 
 Result:
 
@@ -95,8 +123,22 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    void load(model m, const string& fname, string format="bin");
+    ...
+    model net = Model({in}, {out});
 
+    // Build model
+    build(net,
+          rmsprop(0.01), // Optimizer
+          {"soft_cross_entropy"}, // Losses
+          {"categorical_accuracy"}, // Metrics
+           CS_GPU({1,1},100) // one GPU
+    );
+
+    // Load weights
+    load(net, "saved-weights.bin");
+
+    // Evaluate
+    evaluate(net, {x_test}, {y_test});
 
 
 Save
@@ -110,8 +152,22 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    void save(model m, const string& fname, string format="bin");
+    ...
+    model net = Model({in}, {out});
 
+    // Build model
+    build(net,
+          rmsprop(0.01), // Optimizer
+          {"soft_cross_entropy"}, // Losses
+          {"categorical_accuracy"}, // Metrics
+           CS_GPU({1,1},100) // one GPU
+    );
+    
+    // Train model
+    fit(net, {x_train}, {y_train}, batch_size, epochs);
+
+    // Save weights
+    save(net, "saved-weights.bin");
 
 
 Learning rate (on the fly)
@@ -125,7 +181,16 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    void setlr(model net,vector<float>p);
+    ...
+    model net = Model({in}, {out});
+
+    // Build model
+    ...
+
+    setlr(net,{0.005,0.9});
+
+    // Train model
+    fit(net, {x_train}, {y_train}, batch_size, epochs);
 
 
 
@@ -141,7 +206,15 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    void setlogfile(model net, string fname);
+    model net = Model({in}, {out});
+
+    // Build model
+    ...
+
+    setlogfile(net,"model-log");
+
+    // Train model
+    fit(net, {x_train}, {y_train}, batch_size, epochs);
 
 
 
@@ -153,6 +226,13 @@ Move the model to a specific device
 
 .. doxygenfunction:: eddl::toCPU
 
+Example:
+
+.. code-block:: c++
+   :linenos:
+
+    toCPU(net);
+
 .. doxygenfunction:: eddl::toGPU(model, vector<int>, int, string)
 
 Example:
@@ -160,6 +240,5 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    void toCPU(model net, int t=std::thread::hardware_concurrency()); // num. threads, memory consumption
-    void toGPU(model net, vector<int> g, int lsb, string mem); // mode, list of gpus (on=1/off=0), sync number, memory consumption
-
+    
+    toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup

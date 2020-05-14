@@ -48,7 +48,7 @@ void LCutoutRandom::backward() {
 
 
 Layer *LCutoutRandom::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LCutoutRandom(p[0], this->factor_x, this->factor_y, this->constant,  this->name, this->dev, this->mem_level);
+    auto *n = new LCutoutRandom(p[0], this->factor_x, this->factor_y, this->constant, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

@@ -72,7 +72,7 @@ void LMaximum::backward() {
 }
 
 Layer *LMaximum::share(int c, int bs, vector<Layer *> p) {
-    LMaximum *n = new LMaximum(p,  this->name, this->dev, this->mem_level);
+    LMaximum *n = new LMaximum(p, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

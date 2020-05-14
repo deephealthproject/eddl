@@ -30,6 +30,13 @@ public:
     virtual Metric* clone();
 };
 
+class MDice : public Metric {
+public:
+    MDice();
+
+    float value(Tensor *T, Tensor *Y) override;
+    Metric* clone() override;
+};
 
 class MMeanSquaredError : public Metric {
 public:

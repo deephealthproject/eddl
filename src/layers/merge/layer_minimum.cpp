@@ -72,7 +72,7 @@ void LMinimum::backward() {
 }
 
 Layer *LMinimum::share(int c, int bs, vector<Layer *> p) {
-    LMinimum *n = new LMinimum(p,  this->name, this->dev, this->mem_level);
+    LMinimum *n = new LMinimum(p, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

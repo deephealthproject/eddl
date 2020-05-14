@@ -89,7 +89,7 @@ void LGaussianNoise::backward() {
 
 
 Layer *LGaussianNoise::share(int c, int bs, vector<Layer *> p) {
-    LGaussianNoise *n = new LGaussianNoise(p[0], stdev,  this->name, this->dev, this->mem_level);
+    LGaussianNoise *n = new LGaussianNoise(p[0], stdev, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

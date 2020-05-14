@@ -31,6 +31,16 @@ public:
 };
 
 
+class LDice : public Loss {
+public:
+    LDice();
+
+    void delta(Tensor *T, Tensor *Y, Tensor *D) override;
+    float value(Tensor *T, Tensor *Y) override;
+    Loss* clone() override;
+};
+
+
 class LMeanSquaredError : public Loss {
 public:
     LMeanSquaredError();

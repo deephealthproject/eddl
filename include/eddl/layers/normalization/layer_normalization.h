@@ -77,8 +77,8 @@ class LLayerNorm : public LinLayer {
 public:
     float epsilon;
     bool affine;
-    Tensor *bn_mean;
-    Tensor *bn_var;
+    Tensor *mean;
+    Tensor *variance;
     Tensor *bn_g;
     Tensor *bn_b;
     Tensor *gbn_g;

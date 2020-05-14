@@ -16,9 +16,15 @@
 #include <stdexcept>
 #include "eddl/net/compserv.h"
 
+CompServ::CompServ()
+{
+
+}
+
 // for local
 CompServ::CompServ(int t, const vector<int> g, const vector<int> &f,int lsb, int mem) {
     type = "local";
+    isshared=false;
 
     if (t==-1) local_threads = std::thread::hardware_concurrency();  // Avoid eigen dependency
     else local_threads = t;
@@ -44,6 +50,22 @@ CompServ::CompServ(int t, const vector<int> g, const vector<int> &f,int lsb, int
     }
 
 }
+
+CompServ * CompServ::share() {
+  CompServ *n=new CompServ();
+  
+  n->type=type;
+  n->local_threads=local_threads;
+  n->local_gpus=local_gpus;
+  n->local_fpgas=local_fpgas;
+  n->lsb=lsb;
+  n->isshared=true;
+  n->mem_level=mem_level;
+
+  return n;
+}
+
+
 
 // for Distributed
 CompServ::CompServ(string filename) {

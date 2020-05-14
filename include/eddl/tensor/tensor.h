@@ -88,7 +88,7 @@ public:
 
     // Data pointers
     float *ptr;
-    Eigen::MatrixXf *ptr2;  // TODO: I don't like. float or eigen, not both
+    Eigen::MatrixXf *ptr2;  // TODO: I don't like it. float or eigen, not both
 
     // Aux variables
     int gpu_device;
@@ -116,7 +116,7 @@ public:
 
     /**
       *  @brief Clone a tensor (same device).
-      * 
+      *
       *  @return    Tensor
     */
     Tensor* clone();
@@ -131,21 +131,21 @@ public:
     // Check device
     /**
       *  @brief Check if the tensor is in CPU.
-      *  
+      *
       *  @return int
     */
     int isCPU();
 
     /**
       *  @brief Check if the tensor is in GPU.
-      * 
+      *
       *  @return int
     */
     int isGPU();
 
     /**
       *  @brief Check if the tensor is in FPGA.
-      * 
+      *
       *  @return int
     */
     int isFPGA();
@@ -154,14 +154,14 @@ public:
 
     /**
       *  @brief Print shape, device and size information.
-      * 
+      *
       *  @return    void
     */
     void info();
 
     /**
       *  @brief Print the tensor values.
-      * 
+      *
       *  @return    void
     */
     void print(int precision=6, bool raw=false);
@@ -169,11 +169,11 @@ public:
 
     // Core
     vector<int> getShape();
-    static int get_mode(string mode);
+    static int get_mode(string mode);  // TODO: Delete?
 
     /**
       *  @brief Check if all dimensions in the tensor are the same.
-      * 
+      *
       *  @param A   Tensor
       *  @return    bool
     */
@@ -186,7 +186,7 @@ public:
       *
       *  @param ifs  Filestream
       *  @param format    File format. Accepted formats are: bin, onnx, csv, tsv, txt.
-      *  @return    Tensor    
+      *  @return    Tensor
     */
     static Tensor* loadfs(std::ifstream &ifs, string format="");
 
@@ -198,7 +198,7 @@ public:
       *                     - Images: jpg, jpeg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm.
       *                     - Numpy: npy, npz
       *                     - Other: bin, onnx
-      *  @return    Tensor    
+      *  @return    Tensor
     */
     static Tensor* load(const string& filename, string format="");
     template<typename T> static Tensor* load(const string& filename, string format="");
@@ -209,7 +209,7 @@ public:
       *  @param filename  Name of the file to load the tensor from.
       *  @param delimiter    Character used to separate the columns of the file.
       *  @param headerRows   Number of top rows to avoid, generally because they correspond to the header.
-      *  @return    Tensor    
+      *  @return    Tensor
     */
     static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
 
@@ -220,7 +220,7 @@ public:
       *  @param format    Format to use. The accepted formats are the following:
       *                     - Text: csv, tsv, txt
       *                     - Other: bin, onnx
-      *  @return    void    
+      *  @return    void
     */
     void savefs(std::ofstream &ofs, string format="");
 
@@ -233,7 +233,7 @@ public:
       *                     - Numpy: npy, npz
       *                     - Text: csv, tsv, txt
       *                     - Other: bin, onnx
-      *  @return    void    
+      *  @return    void
     */
     void save(const string& filename, string format="");
 
@@ -243,7 +243,7 @@ public:
       *  @param filename    Name of the file to save the tensor to.
       *  @param delimiter   Character to use to separate the columns of the file.
       *  @param header      Header rows.
-      *  @return    void    
+      *  @return    void
     */
     void save2txt(const string& filename, const char delimiter=',', const vector<string> &header={});
 
@@ -324,12 +324,12 @@ public:
     static Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
     static Tensor* logspace(float start, float end, int steps=100, float base=10.0f, int dev=DEV_CPU);
     static Tensor* geomspace(float start, float end, int steps=100, int dev=DEV_CPU);
-    
+
     /**
-      *  @brief 
+      *  @brief
       *
       *  @param rows  Number of rows of the tensor.
-      *  @param offset  
+      *  @param offset
       *  @param dev    Device to use. The possible values are: ``DEV_CPU`` and ``DEV_GPU``.
       *  @return     Tensor of the specified shape filled with the value
     */
@@ -631,7 +631,7 @@ public:
       *  @return    void
     */
     static bool allclose(Tensor *A, Tensor *B, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns true or false
-    
+
     /**
       *  @brief Returns a boolean array where two arrays are element-wise equal within a tolerance.
       *
@@ -644,7 +644,7 @@ public:
       *  @return    void
     */
     static void isclose(Tensor *A, Tensor *B, Tensor *C, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns a boolean tensor
-    
+
     /**
       *  @brief Return the truth value of ``A > B`` element-wise.
       *
@@ -753,8 +753,8 @@ public:
     static void copy(Tensor *A, Tensor *B);
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
     static void select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
-    static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
-    static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
+    static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool mask_zeros=false);
+    static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0, bool mask_zeros=false);
     static void tile(Tensor *A, Tensor *B);
 
     // Generators (In-place) *************************************

@@ -65,7 +65,7 @@ float NetLoss::compute(){
     graph->forward(input);
     graph->delta();
 
-    collectTensor(fout);
+    collectTensor(fout,"output");
     value=fout->output->sum()/fout->output->shape[0];
 
     return value;

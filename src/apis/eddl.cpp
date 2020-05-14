@@ -35,6 +35,10 @@ namespace eddl {
         return new Net(in, out);
     }
 
+    model Model(vector<Net*> vnets) {
+      return new Net(vnets);
+    }
+
     void build(model net, optimizer o, CompServ *cs, bool init_weights){
         // Assign default computing service
         if (cs== nullptr){
@@ -63,6 +67,7 @@ namespace eddl {
         if (cs== nullptr){
             cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
         }
+
 
         net->build(o, l, m, cs, init_weights);
     }
@@ -110,18 +115,31 @@ namespace eddl {
         net->toCPU(t);
     }
 
-    compserv CS_CPU(int th, string mem){
-        if (mem=="low_mem") return new CompServ(th, {}, {},0, 2);
-        else if (mem=="mid_mem") return new CompServ(th, {}, {},0, 1);
-        else if (mem=="full_mem") return new CompServ(th, {}, {},0, 0);
-        else msg("Error mem param","CS_CPU"); // Exits
-        return nullptr; // To silent warnings
+    compserv CS_CPU(){
+        return CS_CPU(-1, "full_mem");
     }
 
+    compserv CS_CPU(int th){
+        return CS_CPU(th, "full_mem");
+    }
+
+    compserv CS_CPU(int th,string mem){
+      if (mem=="low_mem") return new CompServ(th, {}, {}, 0, 2);
+      else if (mem=="mid_mem") return new CompServ(th, {}, {}, 0, 1);
+      else if (mem=="full_mem") return new CompServ(th, {}, {}, 0, 0);
+      else msg("Error mem param","CS_CPU"); // Exits
+      return nullptr; // To silent warnings
+    }
+
+    compserv CS_GPU(const vector<int> g){
+        return CS_GPU(g, 1, "full_mem");
+    }
     compserv CS_GPU(const vector<int> g, string mem){
         return CS_GPU(g, 1, mem);
     }
-
+    compserv CS_GPU(const vector<int> g, int lsb){
+        return CS_GPU(g, lsb, "full_mem");
+    }
     compserv CS_GPU(const vector<int> g, int lsb, string mem){
         if (mem=="low_mem") return new CompServ(0, g, {}, lsb, 2);
         else if (mem=="mid_mem") return new CompServ(0, g, {}, lsb, 1);
@@ -206,6 +224,10 @@ namespace eddl {
     }
     void evaluate(model net, const vector<Tensor *> &in, const vector<Tensor *> &out){
         net->evaluate(in, out);
+    }
+    vector<Tensor *>  predict(model m, const vector<Tensor *> &in)
+    {
+      return m->predict(in);
     }
 
     // Finer methods
@@ -321,6 +343,7 @@ namespace eddl {
         m->clamp(min,max);
     }
 
+
     // loss and metrics methods
     float compute_loss(loss L)
     {
@@ -339,6 +362,9 @@ namespace eddl {
             return new LCrossEntropy();
         } else if (type == "soft_cross_entropy"){
             return new LSoftCrossEntropy();
+        }
+        else if (type == "dice"){
+            return new LDice();
         }
         return nullptr;
     }
@@ -362,6 +388,12 @@ namespace eddl {
         }
         else if (type=="mean_relative_error"){
             return new MMeanRelativeError();
+        }
+        else if (type=="dice") {
+            return new MDice();
+        }
+        else if (type=="none") {
+            return new Metric("none");
         }
         else {
             throw std::invalid_argument("unsupported metric: " + type);
@@ -475,6 +507,28 @@ namespace eddl {
         return new LConv(parent, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
     }
 
+    layer Conv1D(layer parent, int filters, vector<int> kernel_size,
+               vector<int> strides, string padding,  bool use_bias,
+               int groups, vector<int> dilation_rate,string name){
+
+        vector<int> shape=parent->output->getShape();
+        shape.push_back(1);
+        LReshape *l=new LReshape(parent, shape, "", DEV_CPU, 0);
+
+        kernel_size.push_back(1);
+        strides.push_back(1);
+        LConv *lc=new LConv(l, filters, kernel_size, strides, padding, groups, dilation_rate, use_bias, name, DEV_CPU, 0);
+
+        vector<int> shape2=lc->output->getShape();
+        shape2.pop_back();
+        return new LReshape(lc,shape2, "", DEV_CPU, 0);
+
+    }
+
+
+
+
+
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding, const vector<int> &dilation_rate,
                 const vector<int> &strides, bool use_bias, string name){
@@ -485,12 +539,12 @@ namespace eddl {
         return new LDense(parent, ndim, use_bias, name, DEV_CPU, 0);
     }
 
-    layer Dropout(layer parent, float rate, string name){
-        return new LDropout(parent, rate, name, DEV_CPU, 0);
+  layer Dropout(layer parent, float rate, bool iw, string name){
+    return new LDropout(parent, rate, iw, name, DEV_CPU, 0);
     }
 
-    layer Embedding(int input_dim, int output_dim, string name){
-        return new LEmbedding(input_dim, output_dim, name, DEV_CPU, 0);
+    layer Embedding(layer parent, int vocsize, int length, int output_dim,  bool mask_zeros, string name){
+        return new LEmbedding(parent, vocsize, length, output_dim, mask_zeros, name, DEV_CPU, 0);
     }
 
     layer Input(const vector<int> &shape, string name){
@@ -659,9 +713,19 @@ namespace eddl {
     layer BatchNormalization(layer parent, float momentum, float epsilon, bool affine, string name){
         return new LBatchNorm(parent, momentum, epsilon, affine, name, DEV_CPU, 0);
     }
+    layer BatchNormalization(layer parent, bool affine, float momentum, float epsilon,  string name){
+        return new LBatchNorm(parent, momentum, epsilon, affine, name, DEV_CPU, 0);
+    }
+
     layer LayerNormalization(layer parent, float epsilon, bool affine, string name){
         return new LLayerNorm(parent,  epsilon, affine, name, DEV_CPU, 0);
     }
+    layer LayerNormalization(layer parent, bool affine,float epsilon,  string name)
+    {
+        return new LLayerNorm(parent,  epsilon, affine, name, DEV_CPU, 0);
+    }
+
+
     layer GroupNormalization(layer parent, int groups,float epsilon, bool affine, string name){
         return new LGroupNorm(parent, groups,epsilon,affine,name, DEV_CPU, 0);
     }
@@ -818,6 +882,20 @@ namespace eddl {
     layer MaxPool(layer parent, const vector<int> &pool_size, const vector<int> &strides, string padding, string name){
         return new LMaxPool(parent, pool_size, strides, padding, name, DEV_CPU, 0);
     }
+    layer MaxPool1D(layer parent, vector<int> pool_size, vector<int> strides, string padding, string name){
+
+        vector<int> shape=parent->output->getShape();
+        shape.push_back(1);
+        LReshape *l=new LReshape(parent, shape, "", DEV_CPU, 0);
+
+        pool_size.push_back(1);
+        strides.push_back(1);
+        LMaxPool *lp=new LMaxPool(l, pool_size, strides, padding, name, DEV_CPU, 0);
+
+        vector<int> shape2=lp->output->getShape();
+        shape2.pop_back();
+        return new LReshape(lp,shape2, "", DEV_CPU, 0);
+    }
 
     layer GlobalMaxPool(layer parent, string name){
         if (parent->output->ndim!=4) msg("GlobalMaxPool only over 4D tensors","GlobalMaxPool");
@@ -828,17 +906,21 @@ namespace eddl {
     }
 
     // Recurrent Layers
-    layer RNN(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name){
 
-        return new LRNN({parent}, units, num_layers, use_bias, dropout, bidirectional, name, DEV_CPU, 0);
+    layer RNN(layer parent, int units, string activation, bool use_bias, bool bidirectional, string name){
+
+        return new LRNN({parent}, units, activation, use_bias, bidirectional, name, DEV_CPU, 0);
     }
 
-    layer LSTM(layer parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name){
-        return new LLSTM(parent, units, num_layers, use_bias, dropout, bidirectional, name, DEV_CPU, 0);
+    layer LSTM(layer parent, int units, bool mask_zeros, bool bidirectional, string name){
+        return new LLSTM({parent}, units, mask_zeros, bidirectional, name, DEV_CPU, 0);
     }
 
 
+
+    //////////////////////////////
     // Layers Methods
+    //////////////////////////////
     void set_trainable(layer l, bool val)
     {
         l->set_trainable(val);
@@ -862,30 +944,84 @@ namespace eddl {
 
     }
 
-    void copyTensor(Layer *l1,Layer *l2)
-    {
-        collectTensor(l1);
-        Tensor::copy(l1->output,l2->output);
-        distributeTensor(l2);
-    }
 
-    void copyGrad(Layer *l1,Layer *l2)
-    {
-        collectTensor(l1,"grad");
-        Tensor::copy(l1->delta,l2->delta);
-        distributeTensor(l2,"grad");
-    }
+    ////////////////////////////////////
+    // Manage Tensors inside Layers
+    ////////////////////////////////////
 
-
-    Tensor* getTensor(layer l1){
-        collectTensor(l1);
+    // get tensors
+    // collect from CS when necessary
+    Tensor* getOutput(layer l1){
+        collectTensor(l1,"output");
         return l1->output;
     }
 
-    Tensor* getGrad(layer l1){
-        collectTensor(l1,"grad");
+    Tensor* getDelta(layer l1){
+        collectTensor(l1,"delta");
         return l1->delta;
     }
+
+    Tensor* getParam(layer l1, int p){
+        collectTensor(l1,"param",p);
+        return l1->params[p];
+    }
+
+    Tensor* getGradient(layer l1,int p){
+        collectTensor(l1,"gradient",p);
+        return l1->gradients[p];
+    }
+
+
+    // get vector of tensor
+    vector<Tensor*> getParams(layer l1){
+      vector<Tensor*> n;
+      for(int i=0;i<l1->params.size();i++) {
+        collectTensor(l1,"param",i);
+        n.push_back(l1->params[i]);
+      }
+      return n;
+    }
+
+    vector<Tensor*> getGradients(layer l1){
+      vector<Tensor*> n;
+      for(int i=0;i<l1->gradients.size();i++) {
+        collectTensor(l1,"gradients",i);
+        n.push_back(l1->gradients[i]);
+      }
+      return n;
+    }
+
+
+    // Copy tensors between layers
+    // collect from CS when necessary
+    // distribute to CS when necessary
+    void copyOutput(Layer *l1,Layer *l2)
+    {
+        collectTensor(l1,"output");
+        Tensor::copy(l1->output,l2->output);
+        distributeTensor(l2,"output");
+    }
+
+    void copyDelta(Layer *l1,Layer *l2)
+    {
+        collectTensor(l1,"delta");
+        Tensor::copy(l1->delta,l2->delta);
+        distributeTensor(l2,"delta");
+    }
+    void copyParam(Layer *l1,Layer *l2, int p)
+    {
+        collectTensor(l1,"param",p);
+        Tensor::copy(l1->params[p],l2->params[p]);
+        distributeTensor(l2,"param",p);
+    }
+
+    void copyGradient(Layer *l1,Layer *l2, int p)
+    {
+        collectTensor(l1,"gradient",p);
+        Tensor::copy(l1->gradients[p],l2->gradients[p]);
+        distributeTensor(l2,"gradient",p);
+    }
+
 
 
     ///////////////////////////////////////
@@ -949,95 +1085,55 @@ namespace eddl {
         return false;
     }
 
-    void download_mnist(){
-        // TODO: Too big, we should use the one in the PyEDDL
-        // TODO: Need for "to_categorical" method
+    void download_dataset(string name, string ext, vector<string>link){
         string cmd;
-        string trX = "trX.bin";
-        string trY = "trY.bin";
-        string tsX = "tsX.bin";
-        string tsY = "tsY.bin";
 
-        if ((!exist(trX)) || (!exist(trY)) || (!exist(tsX)) || (!exist(tsY))){
-            cmd = "wget https://www.dropbox.com/s/khrb3th2z6owd9t/trX.bin";
+        cout<<"Downloading "<<name<<endl;
+
+        vector<string> file;
+        file.push_back(name+"_trX."+ext);
+        file.push_back(name+"_trY."+ext);
+        file.push_back(name+"_tsX."+ext);
+        file.push_back(name+"_tsY."+ext);
+
+        for(int i=0;i<link.size();i++) {
+          if (!exist(file[i])) {
+            cout<<file[i]<<" x\n";
+            cmd = "wget -q --show-progress https://www.dropbox.com/s/"+link[i]+"/"+file[i];
             int status = system(cmd.c_str());
             if (status != 0){
-                msg("wget must be installed", "eddl.download_mnist");
+                msg("wget must be installed", "eddl.download_"+name);
             }
-
-            cmd = "wget https://www.dropbox.com/s/m82hmmrg46kcugp/trY.bin";
-            status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_mnist");
-            }
-            cmd = "wget https://www.dropbox.com/s/7psutd4m4wna2d5/tsX.bin";
-            status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_mnist");
-            }
-            cmd = "wget https://www.dropbox.com/s/q0tnbjvaenb4tjs/tsY.bin";
-            status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_mnist");
-            }
+          }
+          else {
+            cout<<file[i]<<" ✓\n";
+          }
         }
+      }
+
+    void download_mnist(){
+      download_dataset("mnist","bin",{"khrb3th2z6owd9t","m82hmmrg46kcugp","7psutd4m4wna2d5","q0tnbjvaenb4tjs"});
     }
 
     void download_cifar10(){
-        // TODO: Too big, we should use the one in the PyEDDL
-        // TODO: Need for "to_categorical" method
-        string cmd;
-        string trX = "cifar_trX.bin";
-        string trY = "cifar_trY.bin";
-        string tsX = "cifar_tsX.bin";
-        string tsY = "cifar_tsY.bin";
+      download_dataset("cifar","bin",{"wap282xox5ew02d","yxhw99cu1ktiwxq","dh9vqxe9vt7scrp","gdmsve6mbu82ndp"});
+    }
 
-        if ((!exist(trX)) || (!exist(trY)) || (!exist(tsX)) || (!exist(tsY))){
-            cmd = "wget https://www.dropbox.com/s/wap282xox5ew02d/cifar_trX.bin";
-            int status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_cifar10");
-            }
+    void download_imdb(){
+      download_dataset("imdb","bin",{"snf3vi7e1bjo8k5","c2zgsl2wb39ivlo","lkti7c12yoh18pv","cd1uocgv6abzt32"});
+    }
 
-            cmd = "wget https://www.dropbox.com/s/yxhw99cu1ktiwxq/cifar_trY.bin";
-            status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_cifar10");
-            }
-            cmd = "wget https://www.dropbox.com/s/dh9vqxe9vt7scrp/cifar_tsX.bin";
-            status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_cifar10");
-            }
-            cmd = "wget https://www.dropbox.com/s/gdmsve6mbu82ndp/cifar_tsY.bin";
-            status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_cifar10");
-            }
-
-        }
+    void download_imdb_1000(){
+      download_dataset("imdb_1000","bin",{"q96yf0h84mhcbgy","jfkg2spj7bd0ca8","q2e0atxf30udvlh","wlpc9pajyvmcsiu"});
     }
 
     void download_drive(){
-        // TODO: Too big, we should use the one in the PyEDDL
-        string cmd;
-        string trX = "drive_x.npy";
-        string trY = "drive_y.npy";
-
-        if ((!exist(trX)) || (!exist(trY)) ){
-            cmd = "wget https://www.dropbox.com/s/sbd8eu32adcf5oi/drive_x.npy";
-            int status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_drive");
-            }
-
-            cmd = "wget https://www.dropbox.com/s/qp0j8oiqzf6tc1a/drive_y.npy";
-            status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_drive");
-            }
-        }
+      download_dataset("drive","npy",{"sbd8eu32adcf5oi","qp0j8oiqzf6tc1a"});
     }
+
+
+
+
 
 
 }//namespace

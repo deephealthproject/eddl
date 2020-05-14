@@ -82,11 +82,16 @@ public:
 /// EMBEDDING Layer
 class LEmbedding : public LinLayer {
 public:
-    int input_dim;
-    int output_dim;
+    int dim;
+    int vocsize;
+    int length;
+    bool mask_zeros;
+    Tensor *E;
+    Tensor *gE;
+    vector<int> sind;
     static int total_layers;
 
-    LEmbedding(int input_dim, int output_dim, string name, int dev, int mem);
+    LEmbedding(Layer *parent, int vocsize, int lenght, int dim, bool mask_zeros, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -223,9 +228,10 @@ public:
 class LDropout : public LinLayer {
 public:
     static int total_layers;
-
+    bool iw; //inference weighting
+    
     // constructors and clones
-    LDropout(Layer *parent, float df, string name, int dev, int mem);
+    LDropout(Layer *parent, float df, bool iw, string name, int dev, int mem);
     ~LDropout() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;

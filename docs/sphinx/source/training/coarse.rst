@@ -10,7 +10,13 @@ Fit
 Example:
 
 .. code-block:: c++
+    :linenos:
+    
+    model net = Model({in}, {out});
 
-    void fit(model m, const vector<Tensor *> &in, const vector<Tensor *> &out, int batch, int epochs);
-    // e.g.: fit(mymodel, {X_train}, {Y_train}, 128, 25);
+    // Build model
+    ...
+
+    // Train model
+    fit(net, {x_train}, {y_train}, batch_size, epochs);
 

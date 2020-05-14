@@ -117,7 +117,7 @@ void LConcat::backward() {
 
 Layer *LConcat::share(int c, int bs, vector<Layer *> p) {
 
-    auto *n = new LConcat(p, this->axis,  this->name, this->dev, this->mem_level);
+    auto *n = new LConcat(p, this->axis, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

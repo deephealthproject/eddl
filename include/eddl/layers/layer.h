@@ -42,10 +42,15 @@ public:
     int mem_level; // See CS
     bool isrecurrent;
     bool isshared;
-    
+    bool isnorm;
+
     vector<Tensor *> params;
     vector<Tensor *> gradients;
-	vector<Tensor *> acc_gradients;
+    
+    vector<Tensor *> states;
+    vector<Tensor *> delta_states;
+
+  	vector<Tensor *> acc_gradients;
 
     vector<Layer *> parent;
     vector<Layer *> child;

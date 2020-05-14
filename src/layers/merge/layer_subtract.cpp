@@ -72,7 +72,7 @@ void LSubtract::backward() {
 }
 
 Layer *LSubtract::share(int c, int bs, vector<Layer *> p) {
-    LSubtract *n = new LSubtract(p,  this->name, this->dev, this->mem_level);
+    LSubtract *n = new LSubtract(p, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

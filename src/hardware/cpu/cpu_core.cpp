@@ -83,7 +83,7 @@ void cpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
 }
 
 
-void cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end){
+void cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,bool mask_zeros){
     int s = A->size / A->shape[0];
 
     #pragma omp parallel for
@@ -91,11 +91,12 @@ void cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end){
         int p  = sind[i] * s;
         int pb = (i - ini) * s;
         for (int j = 0; j < s; j++, p++, pb++)
-            B->ptr[pb] = A->ptr[p];
+            if ((mask_zeros)&&(sind[i]==0)) B->ptr[p]=0;
+            else B->ptr[pb] = A->ptr[p];
     }
 }
 
-void cpu_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end){
+void cpu_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,int inc,bool mask_zeros){
     int s = A->size / A->shape[0];
 
     #pragma omp parallel for
@@ -103,7 +104,11 @@ void cpu_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end){
         int p  = sind[i] * s;
         int pb = (i - ini) * s;
         for (int j = 0; j < s; j++, p++, pb++)
-            B->ptr[p] = A->ptr[pb];
+            if ((mask_zeros)&&(sind[i]==0)) B->ptr[p]=0;
+            else {
+              if (!inc) B->ptr[p] = A->ptr[pb];
+              else B->ptr[p] += A->ptr[pb];
+            }
     }
 }
 
@@ -134,4 +139,3 @@ void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative
         }
     }
 }
-

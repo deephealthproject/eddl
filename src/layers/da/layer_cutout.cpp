@@ -45,7 +45,7 @@ void LCutout::backward() {
 
 
 Layer *LCutout::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LCutout(p[0], this->from_coords, this->to_coords, this->constant,  this->name, this->dev, this->mem_level);
+    auto *n = new LCutout(p[0], this->from_coords, this->to_coords, this->constant, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

@@ -24,12 +24,13 @@ int LLayerNorm::total_layers = 0;
 LLayerNorm::LLayerNorm(Layer *parent,  float epsilon, bool affine,  string name, int dev, int mem) : LinLayer(name, dev, mem) {
     input=parent->output;
     this->affine=affine;
+    isnorm=true;
 
     shape.push_back(input->shape[0]);
 
     if ((input->ndim != 2)&&(input->ndim != 4)) {
         input->info();
-        msg("LBatchNorm only works over 1D (Dense) or 2D (Conv) tensors","LBatchNorm");
+        msg("LLayerNorm only works over 1D (Dense) or 2D (Conv) tensors","LLayerNorm");
     }
 
 
@@ -39,8 +40,8 @@ LLayerNorm::LLayerNorm(Layer *parent,  float epsilon, bool affine,  string name,
 
     output=new Tensor(input->getShape(),dev);
     opa=new Tensor(input->getShape(),dev);
-    bn_mean=new Tensor(shape,dev);
-    bn_var=new Tensor(shape,dev);
+    mean=new Tensor(shape,dev);
+    variance=new Tensor(shape,dev);
 
 
     if (affine) {
@@ -63,6 +64,9 @@ LLayerNorm::LLayerNorm(Layer *parent,  float epsilon, bool affine,  string name,
       gradients.push_back(gbn_b);
     }
 
+    // no trainable:
+    params.push_back(mean);
+    params.push_back(variance);
 
     parent->addchild(this);
     addparent(parent);
@@ -74,8 +78,8 @@ void LLayerNorm::resize(int batch){
         output->resize(batch);
         opa->resize(batch);
 
-        bn_mean->resize(batch);
-        bn_var->resize(batch);
+        mean->resize(batch);
+        variance->resize(batch);
     }
 }
 
@@ -99,7 +103,7 @@ void LLayerNorm::initialize() {
 // all the batchnorm works over 2D Tensors
 void LLayerNorm::forward() {
   // Input = Output = {Batch,Channels,H,W} OR {Batch,Dim}
-  // bn_mean = bn_var = mean = variance = bn_g = bn_b = {Batch}
+  // mean = variance = mean = variance = bn_g = bn_b = {Batch}
 
   int M,N;
   int b,z,r,c,d;
@@ -114,6 +118,7 @@ void LLayerNorm::forward() {
     permute_batch_last(input,in);
     input->reshape_({M,N});
     in->reshape_({N,M});
+    opa->reshape_({N,M});
 
   }
   else {
@@ -130,7 +135,7 @@ void LLayerNorm::forward() {
 
   }
 
-  BN_forward(in,bn_mean,bn_var,nullptr,nullptr,0.0,epsilon,1);
+  BN_forward(in,mean,variance,nullptr,nullptr,0.0,epsilon,1);
   Tensor::copy(in,opa);
 
   if (affine) {
@@ -156,6 +161,7 @@ void LLayerNorm::forward() {
   delete in;
 
 
+
 }
 
 void LLayerNorm::backward()
@@ -171,7 +177,6 @@ void LLayerNorm::backward()
     delta->reshape_({b,d,1,1});
     dp=new Tensor({d,1,1,b},input->device);
     permute_batch_last(delta,dp);
-    delta->reshape_({M,N});
     dp->reshape_({N,M});
   }
   else {
@@ -215,7 +220,7 @@ void LLayerNorm::backward()
     delete m;
   }
 
-  BN_backward(dp,bn_var,opa);
+  BN_backward(dp,variance,opa);
 
   // Inc parent delta
   if (input->ndim==4) {
@@ -228,7 +233,6 @@ void LLayerNorm::backward()
     delta->reshape_({b,d});
     Tensor::inc(delta, parent[0]->delta);
   }
-
   delete dp;
 
 }
@@ -236,10 +240,31 @@ void LLayerNorm::backward()
 
 
 Layer *LLayerNorm::share(int c, int bs, vector<Layer *> p) {
-    LLayerNorm *n= new LLayerNorm(p[0], epsilon, affine,  this->name, this->dev, this->mem_level);
+    LLayerNorm *n= new LLayerNorm(p[0], epsilon, affine, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
-    // TODO: Implement
+    //share params and gradients
+    for (int i = 0; i < n->params.size(); i++) delete n->params[i];
+    n->params.clear();
+
+    for (int i = 0; i < n->gradients.size(); i++) delete n->gradients[i];
+    n->gradients.clear();
+
+    if (affine) {
+      n->bn_g=bn_g;
+      n->bn_b=bn_b;
+      n->params.push_back(bn_g);
+      n->params.push_back(bn_b);
+
+      n->gbn_g=gbn_g;
+      n->gbn_b=gbn_b;
+      n->gradients.push_back(gbn_g);
+      n->gradients.push_back(gbn_b);
+    }
+    n->mean=mean;
+    n->variance=variance;
+    n->params.push_back(mean);
+    n->params.push_back(variance);
 
     return n;
 }

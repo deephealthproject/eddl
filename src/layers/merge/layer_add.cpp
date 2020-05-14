@@ -25,6 +25,8 @@ int LAdd::total_layers = 0;
 LAdd::LAdd(vector<Layer *> parent, string name, int dev, int mem) : MLayer(name, dev, mem) {
     if (parent.size() == 0) msg("Error: LAdd layer with empty list");
 
+    if(name.empty()) this->name = "merge_add" + to_string(++total_layers);
+
     if (parent.size() > 1)
         for (int i = 0; i < parent.size() - 1; ++i)
             if (!Tensor::eqsize(parent[i]->output, parent[i + 1]->output)) {
@@ -71,7 +73,7 @@ void LAdd::backward() {
 }
 
 Layer *LAdd::share(int c, int bs, vector<Layer *> p) {
-    LAdd *n = new LAdd(p,  this->name, this->dev, this->mem_level);
+    LAdd *n = new LAdd(p, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

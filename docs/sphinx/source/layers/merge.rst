@@ -11,8 +11,12 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Add(const vector<layer> &layers, string name = "");
+   ...
+   layer in1=Input({3,584,584});
+   layer in2=Input({3,584,584});
 
+   layer l=Add({in1,in2});
+   ...
 
 
 Average
@@ -25,8 +29,12 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Average(const vector<layer> &layers, string name = ""); //Todo: Implement
+   ...
+   layer in1=Input({3,584,584});
+   layer in2=Input({3,584,584});
 
+   layer l=Average({in1,in2});
+   ...
 
 
 Concat
@@ -39,8 +47,12 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Concat(const vector<layer> &layers, unsigned int axis=1, string name = "");
+   ...
+   layer in1=Input({3,584,584});
+   layer in2=Input({1,584,584});
 
+   layer l=Concat({in1,in2});
+   ...
 
 
 MatMul
@@ -55,8 +67,12 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer MatMul(const vector<layer> &layers, string name = "");
+   ...
+   layer in1=Input({3,584,584});
+   layer in2=Input({3,584,584});
 
+   layer l=MatMul({in1,in2});
+   ...
 
 
 Maximum
@@ -69,8 +85,12 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Maximum(const vector<layer> &layers, string name = "");
+   ...
+   layer in1=Input({3,584,584});
+   layer in2=Input({3,584,584});
 
+   layer l=Maximum({in1,in2});
+   ...
 
 
 Minimum
@@ -83,8 +103,12 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Minimum(const vector<layer> &layers, string name = "");
+   ...
+   layer in1=Input({3,584,584});
+   layer in2=Input({3,584,584});
 
+   layer l=Minimum({in1,in2});
+   ...
 
 
 Subtract
@@ -97,6 +121,10 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Subtract(const vector<layer> &layers, string name = "");
+   ...
+   layer in1=Input({3,584,584});
+   layer in2=Input({3,584,584});
 
+   layer l=Subtract({in1,in2});
+   ...
 

@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.5
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include "eddl/apis/eddl.h"
-#include "eddl/apis/eddlT.h"
+
 
 using namespace eddl;
 
@@ -52,8 +52,8 @@ int main(int argc, char **argv) {
           sgd(0.01, 0.9), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_GPU({1}, "low_mem") // one GPU
-          //CS_CPU(-1, "low_mem") // CPU with maximum threads availables
+          CS_GPU({1,1},100) // one GPU
+          //CS_CPU(-1) // CPU with maximum threads availables
     );
 
     // View model
@@ -62,22 +62,22 @@ int main(int argc, char **argv) {
     setlogfile(net,"mnist");
 
     // Load dataset
-    tensor x_train = eddlT::load("trX.bin");
-    tensor y_train = eddlT::load("trY.bin");
-    tensor x_test = eddlT::load("tsX.bin");
-    tensor y_test = eddlT::load("tsY.bin");
+    Tensor* x_train = Tensor::load("mnist_trX.bin");
+    Tensor* y_train = Tensor::load("mnist_trY.bin");
+    Tensor* x_test = Tensor::load("mnist_tsX.bin");
+    Tensor* y_test = Tensor::load("mnist_tsY.bin");
 
-    tensor xbatch = eddlT::create({batch_size,784});
-    tensor ybatch = eddlT::create({batch_size,10});
+    Tensor* xbatch = new Tensor({batch_size, 784});
+    Tensor* ybatch = new Tensor({batch_size, 10});
 
     // Preprocessing
-    eddlT::div_(x_train, 255.0);
-    eddlT::div_(x_test, 255.0);
+    x_train->div_(255.0f);
+    x_test->div_(255.0f);
 
 
     // Train model
     int i,j;
-    tshape s=eddlT::getShape(x_train);
+    tshape s = x_train->getShape();
     int num_batches=s[0]/batch_size;
 
     for(i=0;i<epochs;i++) {
@@ -101,7 +101,7 @@ int main(int argc, char **argv) {
 
     // Evaluate model
     printf("Evaluate:\n");
-    s=eddlT::getShape(x_test);
+    s=x_test->getShape();
     num_batches=s[0]/batch_size;
 
     reset_loss(net);
