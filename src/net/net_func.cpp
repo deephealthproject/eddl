@@ -55,15 +55,16 @@ void Net::do_forward() {
   }
     for (int i = 0; i < vfts.size(); i++) {
       if (VERBOSE) {
-          cout << vfts[i]->name << " mem="<<vfts[i]->mem_level<<"\n";
+          cout << vfts[i]->name << " Shape: ";
+          vfts[i]->info();
           for(int j=0;j<vfts[i]->parent.size();j++)
             fprintf(stdout, "  %s In[%d,%s]:%f\n", vfts[i]->name.c_str(), j, vfts[i]->parent[j]->name.c_str(),vfts[i]->parent[j]->output->sum());
       }
 
       vfts[i]->forward();
       if (VERBOSE) {
-          cout << vfts[i]->name << " mem="<<vfts[i]->mem_level<<"\n";
           fprintf(stdout, "  %s Out:%f\n", vfts[i]->name.c_str(), vfts[i]->output->sum());
+          getchar();
       }
     }
     if (VERBOSE) {
@@ -81,12 +82,15 @@ void Net::do_backward() {
         if(this->verbosity_level >= 1){
             std::cout << vbts[i]->name << std::endl;
         }
+
         // Reserve parent's delta (if reserved, ignored)
         vbts[i]->mem_delta_parent();
+
         // Do backward
         if (VERBOSE) {
             cout << "backward "<<vbts[i]->name << " delta="<<vbts[i]->delta->sum()<<"\n";
         }
+
         vbts[i]->backward();
 
 

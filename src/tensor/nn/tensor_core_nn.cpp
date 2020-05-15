@@ -26,6 +26,7 @@ void Tensor::resize(int b, float *fptr){
     for (int i = 0; i < ndim; ++i) size *= shape[i];
 
     int s=size;
+    stride.clear();
     for(int i=0;i<ndim;i++) {
         s/=shape[i];
         stride.push_back(s);

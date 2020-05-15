@@ -66,14 +66,13 @@ void Net::fts() {
 
     }
 
-    //fprintf(stdout,"\n");
-    if (VERBOSE) {
-      cout<<"Forward sort:";
-      for (i = 0; i < vfts.size(); i++)
-        cout<<vfts[i]->name<<"-->";
-      cout<<"\n";
-      //getchar();
+   if (VERBOSE) {
+    for (i = 0; i < vfts.size(); i++) {
+      cout<<vfts[i]->name<<"-->";
     }
+    cout<<"\n";
+    getchar();
+  }
 
 
 }
@@ -112,6 +111,13 @@ void Net::bts() {
 
     }
 
+if (VERBOSE) {
+   for (i = 0; i < vbts.size(); i++) {
+     cout<<vbts[i]->name<<"-->";
+   }
+   cout<<"\n";
+   getchar();
+}
 
 
 }
@@ -437,6 +443,8 @@ void Net::resize(int b)
   for (j = 0; j < layers.size(); j++) {
       layers[j]->resize(batch_size);
   }
+
+
 
 
   for(i=0; i<c; i++) {
