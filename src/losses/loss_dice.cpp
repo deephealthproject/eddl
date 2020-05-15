@@ -51,11 +51,38 @@ void reduced_sum_keep(Tensor * input, Tensor *output,int inc)
   delete red;
 
 }
-/*
+
+// {nxd} --> {nx1}
+void reduced_sum_no_keep(Tensor * input, Tensor *output,int inc)
+{
+  int n,d;
+  n=input->shape[0];
+  d=input->shape[1];
+
+  // nxd
+  Tensor *A=input->clone();
+
+  // dx1
+  Tensor *ones=new Tensor({d,1},input->device);
+  ones->fill_(1.0);
+
+  // nx1
+  Tensor *red=new Tensor({n,1},input->device);
+
+  // {nxd} x {dx1} --> {nx1}
+  Tensor::mult2D(A,0,ones,0,output,inc);
+
+  delete A;
+  delete ones;
+  delete red;
+
+}
+
+
 
 // reduction batch
 void LDice::delta(Tensor *T, Tensor *Y, Tensor *D) {
-    //delta: 2*[sum(T)*(sum(Y)+sum(T))-Dim*sum(T*Y)]/(sum(Y)+sum(T)^2)
+    //delta: 2*[T*(sum(Y)+sum(T))-Dim*sum(T*Y)]/(sum(Y)+sum(T)^2)
     Tensor *A;
     Tensor *B;
     Tensor *C;
@@ -69,23 +96,18 @@ void LDice::delta(Tensor *T, Tensor *Y, Tensor *D) {
     reduced_sum_keep(A,D,0);
     reduced_sum_keep(B,D,1);
 
-    // -Dim*sum(T*Y)
+
+    // -sum(T*Y)
     //T*Y
     Tensor::el_mult(A,B,C,0);
 
     // sum(T*Y)
     reduced_sum_keep(C,C,0);
-
-    // -Dim*sum(T*Y)
-    C->mult_(-d);
+    C->mult_(-1.0);
     ////
 
-    //sum(T)
-    reduced_sum_keep(A,A,0);
-
-    //sum(T)*(sum(Y)+sum(T))-Dim*sum(T*Y)
+    //T*(sum(Y)+sum(T))-sum(T*Y)
     Tensor::el_mult(A,D,C,1); //inc=1 -> C=C+A*D
-
 
     //(sum(Y)+sum(T))^2
     D->sqr_();
@@ -96,11 +118,11 @@ void LDice::delta(Tensor *T, Tensor *Y, Tensor *D) {
     delete B;
     delete C;
 
-    D->div_(-D->shape[0]); // -1 want to maximize
+    D->mult_(-1);//D->shape[0]); // -1 want to maximize
 
 
 }
-*/
+
 
 
 // redcution to batch, image level value
@@ -109,39 +131,41 @@ float LDice::value(Tensor *T, Tensor *Y) {
   //2*sum(T*Y)/(sum(T)+sum(Y))
   Tensor *A;
   Tensor *B;
-  Tensor *C;
-
-  float D;
+  Tensor *Num;
+  Tensor *Den;
 
   int d=T->size/T->shape[0];
 
   A=T->clone();
   B=Y->clone();
-  C=A->clone();
+  Num=new Tensor({T->shape[0],1},A->device);
+  Den=new Tensor({T->shape[0],1},A->device);
+
 
   // (sum(T)+sum(Y))
-  reduced_sum_keep(A,C,0);
-  reduced_sum_keep(B,C,1);
+  reduced_sum_no_keep(A,Den,0);
+  reduced_sum_no_keep(B,Den,1);
 
 
   // 2*sum(A*B)
   Tensor::el_mult(A,B,A,0);
-  reduced_sum_keep(A,A,0);
-  A->mult_(2.0);
+  reduced_sum_no_keep(A,Num,0);
+  Num->mult_(2.0);
 
   // 2*sum(A*B)/(sum(T)+sum(Y))
-  Tensor::el_div(A,C,C,0);
+  Tensor::el_div(Num,Den,Den,0);
 
-  float n=C->sum()/d;
+  float n=Den->sum();
 
   delete A;
   delete B;
-  delete C;
+  delete Num;
+  delete Den;
 
   return n;
 }
 
-
+/*
 //https://arxiv.org/pdf/1606.04797v1.pdf
 void LDice::delta(Tensor *T, Tensor *Y, Tensor *D) {
     //delta: 2*[T*(sum(Y^2)+sum(T^2))-2Y(sum(T*Y))/(sum(Y^2)+sum(T^2))^2]
@@ -183,6 +207,7 @@ void LDice::delta(Tensor *T, Tensor *Y, Tensor *D) {
 
 
 }
+*/
 
 
 

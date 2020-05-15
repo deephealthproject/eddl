@@ -18,39 +18,69 @@ using namespace std;
 
 MDice::MDice() : Metric("dice"){}
 
+// TODO: general implementation in tensor reduction
+// {nxd} --> {nx1}
+void reduced_dice_sum_no_keep(Tensor * input, Tensor *output,int inc)
+{
+  int n,d;
+  n=input->shape[0];
+  d=input->shape[1];
+
+  // nxd
+  Tensor *A=input->clone();
+
+  // dx1
+  Tensor *ones=new Tensor({d,1},input->device);
+  ones->fill_(1.0);
+
+  // nx1
+  Tensor *red=new Tensor({n,1},input->device);
+
+  // {nxd} x {dx1} --> {nx1}
+  Tensor::mult2D(A,0,ones,0,output,inc);
+
+  delete A;
+  delete ones;
+  delete red;
+
+}
 float MDice::value(Tensor *T, Tensor *Y) {
-    //2*sum(|A*B|)/(sum(A^2)+sum(B^2))
-    Tensor *A;
-    Tensor *B;
-    Tensor *C;
+  //2*sum(A*B)/(sum(A)+sum(B))
+  //2*sum(T*Y)/(sum(T)+sum(Y))
+  Tensor *A;
+  Tensor *B;
+  Tensor *Num;
+  Tensor *Den;
 
-    float D;
+  int d=T->size/T->shape[0];
 
-    A=T->clone();
-    B=Y->clone();
-
-
-    C=A->clone();
-
-
-    Tensor::el_mult(A,B,C,0);
-    C->abs_();
-    float n=2*C->sum();
+  A=T->clone();
+  B=Y->clone();
+  Num=new Tensor({T->shape[0],1},A->device);
+  Den=new Tensor({T->shape[0],1},A->device);
 
 
-    A->sqr_();
-    float sA=A->sum();
+  // (sum(T)+sum(Y))
+  reduced_dice_sum_no_keep(A,Den,0);
+  reduced_dice_sum_no_keep(B,Den,1);
 
-    B->sqr_();
-    float sB=B->sum();
 
-    D=n/(sA+sB);
+  // 2*sum(A*B)
+  Tensor::el_mult(A,B,A,0);
+  reduced_dice_sum_no_keep(A,Num,0);
+  Num->mult_(2.0);
 
-    delete A;
-    delete B;
-    delete C;
+  // 2*sum(A*B)/(sum(T)+sum(Y))
+  Tensor::el_div(Num,Den,Den,0);
 
-    return D*T->shape[0]; // batch is divided in print_loss
+  float n=Den->sum();
+
+  delete A;
+  delete B;
+  delete Num;
+  delete Den;
+
+  return n;
 }
 
 Metric* MDice::clone() {
