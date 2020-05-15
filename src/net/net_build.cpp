@@ -38,9 +38,12 @@ void Net::fts() {
     vector<int> visit;
     vector<int> gin;
 
-    for (i = 0; i < layers.size(); i++)
-      vfts.push_back(layers[i]);
-    /*
+
+    if (mnets.size()) {
+      for (i = 0; i < layers.size(); i++)
+        vfts.push_back(layers[i]);
+    }
+    else {
     for (i = 0; i < layers.size(); i++) {
         visit.push_back(0);
         gin.push_back(layers[i]->lin);
@@ -63,6 +66,7 @@ void Net::fts() {
                 if (layers[n] == layers[j]->child[k]) gin[n]--;
 
     }
+  }
     //fprintf(stdout,"\n");
     if (VERBOSE) {
       cout<<"Forward sort:";
@@ -71,7 +75,7 @@ void Net::fts() {
       cout<<"\n";
       //getchar();
     }
-    */
+
 
 }
 
@@ -82,9 +86,13 @@ void Net::bts() {
     vector<int> visit;
     vector<int> gout;
 
-    for (i = layers.size()-1; i >=0; i--)
-      vbts.push_back(layers[i]);
-/*
+
+
+    if (mnets.size()) {
+      for (i = layers.size()-1; i >=0; i--)
+        vbts.push_back(layers[i]);
+    }
+    else {
     //fprintf(stdout,"BTS:");
     for (i = 0; i < layers.size(); i++) {
         visit.push_back(0);
@@ -107,7 +115,8 @@ void Net::bts() {
                 if (layers[n] == layers[j]->parent[k]) gout[n]--;
 
     }
-    */
+  }
+
 
 }
 

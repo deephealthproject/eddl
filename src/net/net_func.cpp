@@ -81,10 +81,8 @@ void Net::do_backward() {
         if(this->verbosity_level >= 1){
             std::cout << vbts[i]->name << std::endl;
         }
-
         // Reserve parent's delta (if reserved, ignored)
         vbts[i]->mem_delta_parent();
-
         // Do backward
         if (VERBOSE) {
             cout << "backward "<<vbts[i]->name << " delta="<<vbts[i]->delta->sum()<<"\n";
@@ -102,17 +100,29 @@ void Net::do_backward() {
 }
 
 void Net::do_delta() {
+    if (VERBOSE) {
+      cout<<"Delta\n";
+      getchar();
+    }
     for (int i = 0; i < lout.size(); i++) {
         lout[i]->mem_delta();
         if (losses.size()>=(i+1)) {
           losses[i]->delta(lout[i]->target, lout[i]->output, lout[i]->delta);
-          if (VERBOSE) cout<<"Delta: "<<vbts[i]->name<<" delta:"<<vbts[i]->delta->sum()<<"\n";
+          if (VERBOSE) cout<<"Delta: "<<lout[i]->name<<" delta:"<<lout[i]->delta->sum()<<"\n";
         }
       }
-    if (VERBOSE) getchar();
+    if (VERBOSE) {
+      cout<<"Delta end\n";
+      getchar();
+    }
 }
 
 void Net::do_compute_loss() {
+    if (VERBOSE) {
+      cout<<"Compute Loss\n";
+      getchar();
+    }
+
     int p = 0;
     for (int i = 0; i < lout.size(); i++, p += 2) {
         // loss value
@@ -121,6 +131,11 @@ void Net::do_compute_loss() {
         // metric value
         if (metrics.size()>=(i+1))
           fiterr[p + 1] = metrics[i]->value(lout[i]->target, lout[i]->output);
+    }
+
+    if (VERBOSE) {
+      cout<<"Compute Loss end\n";
+      getchar();
     }
 }
 
