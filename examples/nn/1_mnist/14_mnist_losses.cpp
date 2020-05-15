@@ -75,17 +75,18 @@ int main(int argc, char **argv) {
 
       fprintf(stdout, "Epoch %d/%d (%d batches)\n", i + 1, epochs,num_batches);
       float val=0.0;
+      float mseloss=0;
       for(j=0;j<num_batches;j++)  {
 
-        // get a batch from real images
         next_batch({x_train},{batch});
-        // Train Discriminator
+
         zeroGrads(net);
-        // Real
+
         forward(net,{batch});
+
         val+=compute_loss(dice)/batch_size;
 
-        cout<<"loss="<<val/(j+1)<<"\r";
+        cout<<"diceloss="<<val/(j+1)<<" ";
         fflush(stdout);
 
         backward(dice);
