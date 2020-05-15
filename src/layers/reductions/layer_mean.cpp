@@ -49,7 +49,7 @@ LRMean::LRMean(Layer *l, vector <int> axis, bool keepdims, string name, int dev,
     // move all the axis +1 because 0 is for batch
     for(int i=0;i<axis.size();i++)
       axis[i]++;
-      
+
     RD=new ReduceDescriptor(input,axis,"mean",keepdims);
 
     output=RD->O;

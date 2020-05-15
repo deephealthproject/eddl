@@ -34,6 +34,8 @@ NetLoss::NetLoss(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> 
 
     graph->build(sn->optimizer->clone(),{new LMin()},{new MSum()},sn->cs);
 
+    cout<<"Loss graph:"<<name<<endl;
+    cout<<graph->summary();
 
 }
 
@@ -53,6 +55,8 @@ NetLoss::NetLoss(const std::function<Layer*(Layer*)>& f, Layer *in, string name)
 
     graph->build(sn->optimizer->clone(),{new LMin()},{new MSum()},sn->cs);
 
+    cout<<"Loss graph:"<<name<<endl;
+    cout<<graph->summary();
 
 }
 

@@ -225,7 +225,7 @@ void Net::walk_back(Layer *l) {
 string Net::summary() {
     std::stringstream ss;
     ss << "---------------------------------------------------------" << endl;
-    for (auto & l : layers) {
+    for (auto & l : vfts) {
         // Get input/output shapes
         vector<int> ishape(l->input->shape);
         vector<int> oshape(l->output->shape);

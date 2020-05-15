@@ -25,7 +25,10 @@ LRMax::LRMax(Layer *l, vector<int> axis, bool keepdims, string name, int dev, in
     if(name.empty()) this->name = "reduction_max" + to_string(++total_layers);
 
     input=l->output;
-
+    // move all the axis +1 because 0 is for batch
+    for(int i=0;i<axis.size();i++)
+      axis[i]++;
+      
     RD=new ReduceDescriptor(input,axis,"max",keepdims);
 
     output=RD->O;
@@ -48,7 +51,7 @@ void LRMax::backward(){
 // virtual
 void LRMax::resize(int batch){
     RD->resize(batch);
-    
+
 }
 
 

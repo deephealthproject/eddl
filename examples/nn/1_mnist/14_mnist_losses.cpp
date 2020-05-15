@@ -27,10 +27,23 @@ layer mse_loss(vector<layer> in)
   return Mult(diff,diff);
 }
 
-layer dice_loss(vector<layer> in)
+// Dice loss image-level
+layer dice_loss_img(vector<layer> in)
 {
-  layer num=ReduceMean(Mult(in[0],in[1]),{0,1,2});
+  layer num=Mult(2,ReduceMean(Mult(in[0],in[1]),{0,1,2}));
   layer den=ReduceMean(Sum(in[0],in[1]),{0,1,2});
+
+  return Diff(1.0,Div(num,den));
+}
+
+// Dice loss pixel-level
+layer dice_loss_pixel(vector<layer> in)
+{
+  layer num=Mult(2,ReduceMean(Mult(in[0],in[1]),{0}));
+  layer den=ReduceMean(Sum(in[0],in[1]),{0});
+
+  num=Sum(num,1);
+  den=Sum(den,1);
 
   return Diff(1.0,Div(num,den));
 }
@@ -58,7 +71,7 @@ int main(int argc, char **argv) {
     layer out = Sigmoid(Conv(l,1,{3,3}));
     model net = Model({in}, {});
     // Build model
-    build(net,adam(0.001));
+    build(net,adam(0.01));
     summary(net);
     // Load dataset
     Tensor* x_train = Tensor::load("mnist_trX.bin");
@@ -67,15 +80,18 @@ int main(int argc, char **argv) {
     x_train->div_(255.0f);
 
     loss mse=newloss(mse_loss,{out,target},"mse_loss");
-    loss dice=newloss(dice_loss,{out,target},"dice_loss");
+    loss dicei=newloss(dice_loss_img,{out,target},"dice_loss_img");
+    loss dicep=newloss(dice_loss_pixel,{out,target},"dice_loss_pixel");
 
     Tensor *batch=new Tensor({batch_size,784});
     int num_batches=x_train->shape[0]/batch_size;
     for(i=0;i<epochs;i++) {
 
       fprintf(stdout, "Epoch %d/%d (%d batches)\n", i + 1, epochs,num_batches);
-      float val=0.0;
+      float diceploss=0.0;
+      float diceiloss=0.0;
       float mseloss=0;
+
       for(j=0;j<num_batches;j++)  {
 
         next_batch({x_train},{batch});
@@ -84,12 +100,19 @@ int main(int argc, char **argv) {
 
         forward(net,{batch});
 
-        val+=compute_loss(dice)/batch_size;
-
-        cout<<"diceloss="<<val/(j+1)<<"\r";
+        diceploss+=compute_loss(dicep)/batch_size;
+        cout<<"diceploss="<<diceploss/(j+1)<<" ";
         fflush(stdout);
 
-        backward(dice);
+        diceiloss+=compute_loss(dicei)/batch_size;
+        cout<<"diceiloss="<<diceiloss/(j+1)<<"\r";
+        fflush(stdout);
+
+        mseloss+=compute_loss(mse)/batch_size;
+        cout<<"mseloss="<<mseloss/(j+1)<<"\r";
+        fflush(stdout);
+
+        backward(dicep);
 
         update(net);
 

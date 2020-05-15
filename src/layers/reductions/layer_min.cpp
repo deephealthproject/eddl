@@ -25,7 +25,10 @@ LRMin::LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev, in
     if(name.empty()) this->name = "reduction_min" + to_string(++total_layers);
 
     input=l->output;
-
+    // move all the axis +1 because 0 is for batch
+    for(int i=0;i<axis.size();i++)
+      axis[i]++;
+      
     RD=new ReduceDescriptor(input,axis,"min",keepdims);
 
     output=RD->O;
@@ -48,7 +51,7 @@ void LRMin::backward(){
 // virtual
 void LRMin::resize(int batch){
     RD->resize(batch);
-    
+
 }
 
 

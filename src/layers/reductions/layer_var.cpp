@@ -27,7 +27,7 @@ LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev, in
     input=l->output;
     output=l->output;
 //    delta=l->delta;
-
+  
     this->axis=axis;
     this->keepdims=keepdims;
 
