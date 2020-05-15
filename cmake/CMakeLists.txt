@@ -155,7 +155,7 @@ else()
     if (WIN32)
         set(Protobuf_DIR "${EP_BASE_DIR}/protobuf/cmake" PARENT_SCOPE)
     else()
-        set(Protobuf_DIR "${EP_BASE_DIR}/protobuf/lib/cmake/Protobuf" PARENT_SCOPE)
+        set(Protobuf_DIR "${EP_BASE_DIR}/protobuf/lib/cmake/protobuf" PARENT_SCOPE)
     endif()
 
     set(Protobuf_ROOT "${EP_BASE_DIR}/protobuf" PARENT_SCOPE)

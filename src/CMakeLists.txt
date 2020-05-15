@@ -110,8 +110,8 @@ if(BUILD_PROTOBUF)
         message(STATUS "Searching for Protobuf in the system...")
         find_package(Protobuf REQUIRED)  # Problems with: Protobuf_DIR
         message(STATUS "Protobuf found! (system)")
-        target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
-        target_link_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_LIBRARIES_DIRS}>)
+        target_include_directories(${PROJECT_NAME} PUBLIC ${Protobuf_INCLUDE_DIRS})
+        target_link_directories(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARIES_DIRS})
         target_link_libraries(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES})
     endif()
 
