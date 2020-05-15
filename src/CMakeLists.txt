@@ -188,17 +188,16 @@ SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
 
 if(WIN32)
    # Threads *************************************************************
-   set(EDDL_PTHREADS_INSTALL_PATH "$ENV{PTHREADS_ROOT}" CACHE PATH "Path to the installation of pthreads under Windows")
-   if(EDDL_PTHREADS_INSTALL_PATH STREQUAL "")
-       message(ERROR ": pthreds install path must be specified under Windows")
+   if(PTHREADS_INSTALL_PATH STREQUAL "")
+       message(ERROR ": Pthreads install path must be specified under Windows")
    endif()
-   target_link_libraries(${PROJECT_NAME} PRIVATE debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3d.lib"
-           PRIVATE debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib"
-           PRIVATE debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib")
-   target_link_libraries(${PROJECT_NAME} PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib"
-           PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib"
-           PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")
-   target_include_directories(${PROJECT_NAME} PUBLIC "${EDDL_PTHREADS_INSTALL_PATH}/include")
+   target_link_libraries(${PROJECT_NAME} PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVC3d.lib
+           PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib
+           PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib)
+   target_link_libraries(${PROJECT_NAME} PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib
+           PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib
+           PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib)
+   target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${PTHREADS_INSTALL_PATH}/include>)
 endif()
 
 # Microsoft Visual C++ - set static/dynamic runtime
@@ -295,6 +294,12 @@ message(STATUS "Protobuf dir: " ${Protobuf_DIR} )
 message(STATUS "Protobuf include: " ${Protobuf_INCLUDE_DIRS} )
 message(STATUS "Protobuf libraries: " ${Protobuf_LIBRARIES} )
 message(STATUS "Protobuf compiler: " ${Protobuf_PROTOC_EXECUTABLE} )
+endif()
+if(WIN32)
+message(STATUS "-------------------------------------------" )
+message(STATUS "Pthreads dir: " ${PTHREADS_INSTALL_PATH} )
+message(STATUS "Pthreads include: " ${PTHREADS_INSTALL_PATH}/include )
+message(STATUS "Pthreads libraries: " ${PTHREADS_INSTALL_PATH}/lib )
 endif()
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )

@@ -18,6 +18,9 @@ option(USE_SYSTEM_GTEST "Use system dependency" OFF)
 option(USE_SYSTEM_EIGEN "Use system dependency" OFF)
 option(USE_SYSTEM_ZLIB "Use system dependency" OFF)
 option(USE_SYSTEM_PROTOBUF "Use system dependency" OFF)
+if(WIN32)
+    option(USE_SYSTEM_PTHREADS "Use system dependency" OFF)
+endif()
 
 # Set variables
 set(EDDL_DEPENDENCIES)
@@ -162,6 +165,31 @@ else()
     # set(Protobuf_PROTOC_EXECUTABLE "${EP_BASE_DIR}/Protobuf/bin/protoc" PARENT_SCOPE)
 endif()
 message(STATUS "Subproject: Protobuf...DONE")
+
+##################
+##  PTHREADS4W  ##
+##################
+if(WIN32)
+    if(USE_SYSTEM_PTHREADS)
+        set(PTHREADS_INSTALL_PATH "$ENV{PTHREADS_ROOT}" CACHE PATH "Path to the installation of pthreads under Windows" PARENT_SCOPE)
+    else()
+        # Download and unpack pthreads4w at configure time
+        configure_file(pthreads4w.CMakeLists.txt.in ${EP_BASE_DIR}/pthreads4w-download/CMakeLists.txt @ONLY)
+        execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+                RESULT_VARIABLE result
+                WORKING_DIRECTORY ${EP_BASE_DIR}/pthreads4w-download)
+        if(result)
+            message(FATAL_ERROR "CMake step for pthreads4w failed: ${result}")
+        endif()
+        execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
+                RESULT_VARIABLE result
+                WORKING_DIRECTORY ${EP_BASE_DIR}/pthreads4w-download)
+        if(result)
+            message(FATAL_ERROR "Build step for pthreads4w failed: ${result}")
+        endif()
+        set(PTHREADS_INSTALL_PATH "${EP_BASE_DIR}/PTHREADS-BUILT" PARENT_SCOPE)
+    endif()
+endif()
 
 ###############
 #####  EDDL  ##
