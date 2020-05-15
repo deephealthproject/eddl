@@ -20,10 +20,10 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install sphinx
-        pip install sphinx_rtd_theme
-        pip install sphinx-tabs
-        pip install breathe
+        pip install sphinx==3.0.3
+        pip install sphinx_rtd_theme==0.4.3
+        pip install sphinx-tabs==1.1.13
+        pip install breathe==4.16.0
         sudo apt -y install doxygen
 
     - name: Build documentation
