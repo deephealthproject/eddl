@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -120,8 +120,8 @@ int main(int argc, char **argv){
     adam(0.00001), // Optimizer
     {"mse"}, // Losses
     {"mse"}, // Metrics
-    CS_GPU({1}, "low_mem")
-    //CS_CPU(-1)
+    //CS_GPU({1}, "low_mem")
+    CS_CPU(-1)
     );
   // Train on multi-gpu with sync weights every 100 batches:
 //  toGPU(segnet,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
