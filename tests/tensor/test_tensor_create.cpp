@@ -153,7 +153,6 @@ TEST(TensorTestSuite, tensor_create_geomspace){
     vector<float> d_t1_ref = {1.,    10.,   100.,  1000.};
     Tensor* t1_ref = new Tensor(t1_shape, d_t1_ref.data(), DEV_CPU);
     Tensor* t1 = Tensor::geomspace(1.0f, 1000.0f, 4);
-    t1->print();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, t1, 10e-0));
 
     // Test #2
@@ -161,5 +160,25 @@ TEST(TensorTestSuite, tensor_create_geomspace){
     vector<int> t2_shape = {9};
     Tensor* t2_ref = new Tensor(t2_shape, d_t2_ref.data(), DEV_CPU);
     Tensor* t2 = Tensor::geomspace(1.0f, 256.0f, 9);
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, t2, 10e-0));
+}
+
+TEST(TensorTestSuite, tensor_create_eye){
+    // Test #1
+    vector<int> t1_shape = {3, 3};
+    vector<float> d_t1_ref = {1.0f, 0.0f, 0.0f,
+                              0.0f, 1.0f, 0.0f,
+                              0.0f, 0.0f, 1.0f};
+    Tensor* t1_ref = new Tensor(t1_shape, d_t1_ref.data(), DEV_CPU);
+    Tensor* t1 = Tensor::eye(3);
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, t1, 10e-0));
+
+    // Test #1
+    vector<int> t2_shape = {3, 3};
+    vector<float> d_t2_ref = {0.0f, 1.0f, 0.0f,
+                              0.0f, 0.0f, 1.0f,
+                              0.0f, 0.0f, 0.0f};
+    Tensor* t2_ref = new Tensor(t2_shape, d_t2_ref.data(), DEV_CPU);
+    Tensor* t2 = Tensor::eye(3, 1);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, t2, 10e-0));
 }
