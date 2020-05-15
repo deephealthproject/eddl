@@ -44,7 +44,7 @@ ReduceDescriptor::ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool
 
   for(int i=0;i<axis.size();i++)
     if (axis[i]>=A->ndim) {
-      throw std::runtime_error("axis " + std::to_string(axis[i]) + " > dim=" + std::to_string(A->ndim));
+      throw std::runtime_error("axis " + std::to_string(axis[i]-1) + " >= dim=" + std::to_string(A->ndim-1));
     }
 
 

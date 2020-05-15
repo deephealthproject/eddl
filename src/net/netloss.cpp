@@ -34,6 +34,7 @@ NetLoss::NetLoss(const std::function<Layer*(vector<Layer*>)>& f, vector<Layer*> 
 
     graph->build(sn->optimizer->clone(),{new LMin()},{new MSum()},sn->cs);
 
+
 }
 
 NetLoss::NetLoss(const std::function<Layer*(Layer*)>& f, Layer *in, string name)
@@ -52,6 +53,7 @@ NetLoss::NetLoss(const std::function<Layer*(Layer*)>& f, Layer *in, string name)
 
     graph->build(sn->optimizer->clone(),{new LMin()},{new MSum()},sn->cs);
 
+
 }
 
 
@@ -60,13 +62,15 @@ NetLoss::~NetLoss() {
 }
 
 float NetLoss::compute(){
+    int size=fout->output->size/fout->output->shape[0];
+
     graph->reset();
     graph->reset_grads();
     graph->forward(input);
     graph->delta();
 
     collectTensor(fout,"output");
-    value=fout->output->sum()/fout->output->shape[0];
+    value=fout->output->sum()/size;
 
     return value;
 }

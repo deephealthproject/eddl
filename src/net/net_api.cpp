@@ -207,7 +207,6 @@ void Net::forward(vector<Tensor*> in)
     forward_recurrent(in);
   }
   else {
-    netinput.clear();
 
     reset();
     if (in.size()) {
@@ -353,17 +352,35 @@ void Net::backward(vector<Tensor *> target)
 
 void Net::backward(){
 
+ vector<Net*> visited;
   tr_batches++;
+
   run_snets(backward_t);
 
   for(int i=0;i<netinput.size();i++) {
     if (netinput[i]->detached==false) {
       collectTensor(lin[i],"delta");
+      netinput[i]->mem_delta();
       Tensor::copy(lin[i]->delta,netinput[i]->delta);
       distributeTensor(netinput[i],"delta");
-      netinput[i]->net->backward();
     }
   }
+
+  for(int i=0;i<netinput.size();i++) {
+    if (netinput[i]->detached==false){
+      bool enc=false;
+      for(int j=0;j<visited.size();j++)
+        if (visited[j]==netinput[i]->net) enc=true;
+
+      if (!enc) {
+        visited.push_back(netinput[i]->net);
+        netinput[i]->net->backward();
+      }
+    }
+  }
+
+  netinput.clear();
+
 }
 
 void Net::backward_recurrent(vector<Tensor *> target)
