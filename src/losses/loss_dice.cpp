@@ -86,11 +86,21 @@ void LDice::delta(Tensor *T, Tensor *Y, Tensor *D) {
     Tensor *A;
     Tensor *B;
     Tensor *C;
+    vector<int> shape=D->shape;
+
+    int b=T->shape[0];
     int d=T->size/T->shape[0];
 
     A=T->clone();
+    A->reshape_({b,d});
+
     B=Y->clone();
+    B->reshape_({b,d});
+
     C=A->clone();
+    C->reshape_({b,d});
+
+    D->reshape_({b,d});
 
     //(sum(Y)+sum(T))
     reduced_sum_keep(A,D,0);
@@ -118,6 +128,8 @@ void LDice::delta(Tensor *T, Tensor *Y, Tensor *D) {
     delete B;
     delete C;
 
+    D->reshape_(shape);
+
     D->mult_(-1);//D->shape[0]); // -1 want to maximize
 
 
@@ -134,10 +146,15 @@ float LDice::value(Tensor *T, Tensor *Y) {
   Tensor *Num;
   Tensor *Den;
 
+  int b=T->shape[0];
   int d=T->size/T->shape[0];
 
+
   A=T->clone();
+  A->reshape_({b,d});
   B=Y->clone();
+  B->reshape_({b,d});
+
   Num=new Tensor({T->shape[0],1},A->device);
   Den=new Tensor({T->shape[0],1},A->device);
 

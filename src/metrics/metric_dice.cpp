@@ -52,12 +52,18 @@ float MDice::value(Tensor *T, Tensor *Y) {
   Tensor *Num;
   Tensor *Den;
 
+  int b=T->shape[0];
   int d=T->size/T->shape[0];
 
   A=T->clone();
+  A->reshape_({b,d});
   B=Y->clone();
+  B->reshape_({b,d});
+
   Num=new Tensor({T->shape[0],1},A->device);
   Den=new Tensor({T->shape[0],1},A->device);
+
+
 
 
   // (sum(T)+sum(Y))
