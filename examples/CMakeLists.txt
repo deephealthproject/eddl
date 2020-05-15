@@ -40,6 +40,9 @@ target_link_libraries(mnist_conv1D eddl)
 add_executable(mnist_auto_merging "nn/1_mnist/12_mnist_auto_encoder_merging.cpp")
 target_link_libraries(mnist_auto_merging eddl)
 
+add_executable(mnist_conv_dice "nn/1_mnist/13_mnist_conv_dice.cpp")
+target_link_libraries(mnist_conv_dice eddl)
+
 
 # EXAMPLES: CIFAR10 ****************************************************
 add_executable(cifar_conv "nn/2_cifar10/1_cifar_conv.cpp")
