@@ -18,7 +18,6 @@ using namespace std;
 
 MDice::MDice() : Metric("dice"){}
 
-//https://arxiv.org/pdf/1606.04797v1.pdf
 float MDice::value(Tensor *T, Tensor *Y) {
     //2*sum(|A*B|)/(sum(A^2)+sum(B^2))
     Tensor *A;
