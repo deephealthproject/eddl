@@ -1368,11 +1368,11 @@ typedef NetLoss * metric;
     layer Permute(layer l, vector<int> dims, string name="");
 
     // Reduction Layers
-    layer ReduceMean(layer l, vector<int> axis = {0}, bool keepdims = false);
-    layer ReduceVar(layer l, vector<int> axis = {0}, bool keepdims = false);
-    layer ReduceSum(layer l, vector<int> axis = {0}, bool keepdims = false);
-    layer ReduceMax(layer l, vector<int> axis = {0}, bool keepdims = false);
-    layer ReduceMin(layer l, vector<int> axis = {0}, bool keepdims = false);
+    layer ReduceMean(layer l, vector<int> axis, bool keepdims = false);
+    layer ReduceVar(layer l, vector<int> axis, bool keepdims = false);
+    layer ReduceSum(layer l, vector<int> axis, bool keepdims = false);
+    layer ReduceMax(layer l, vector<int> axis, bool keepdims = false);
+    layer ReduceMin(layer l, vector<int> axis, bool keepdims = false);
 
     // Generator Layers
 

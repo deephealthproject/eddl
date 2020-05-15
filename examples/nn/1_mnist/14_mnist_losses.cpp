@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
 
         val+=compute_loss(dice)/batch_size;
 
-        cout<<"diceloss="<<val/(j+1)<<" ";
+        cout<<"diceloss="<<val/(j+1)<<"\r";
         fflush(stdout);
 
         backward(dice);
