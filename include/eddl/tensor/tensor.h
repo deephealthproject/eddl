@@ -437,7 +437,7 @@ public:
     static void reciprocal(Tensor *A, Tensor *B);
 
     void remainder_(float v);
-    Tensor* remainder(float v);
+    Tensor* remainder(float v);  // TODO: difference with mod??
     static void remainder(Tensor *A, Tensor *B, float v);
 
     void round_();
