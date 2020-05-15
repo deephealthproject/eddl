@@ -51,7 +51,7 @@ void reduced_sum_keep(Tensor * input, Tensor *output,int inc)
   delete red;
 
 }
-
+/*
 
 // reduction batch
 void LDice::delta(Tensor *T, Tensor *Y, Tensor *D) {
@@ -100,7 +100,7 @@ void LDice::delta(Tensor *T, Tensor *Y, Tensor *D) {
 
 
 }
-
+*/
 
 
 // redcution to batch, image level value
@@ -141,7 +141,7 @@ float LDice::value(Tensor *T, Tensor *Y) {
   return n;
 }
 
-/*
+
 //https://arxiv.org/pdf/1606.04797v1.pdf
 void LDice::delta(Tensor *T, Tensor *Y, Tensor *D) {
     //delta: 2*[T*(sum(Y^2)+sum(T^2))-2Y(sum(T*Y))/(sum(Y^2)+sum(T^2))^2]
@@ -183,7 +183,7 @@ void LDice::delta(Tensor *T, Tensor *Y, Tensor *D) {
 
 
 }
-*/
+
 
 
 Loss* LDice::clone()

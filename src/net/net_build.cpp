@@ -38,15 +38,14 @@ void Net::fts() {
     vector<int> visit;
     vector<int> gin;
 
-
-    if (mnets.size()) {
-      for (i = 0; i < layers.size(); i++)
-        vfts.push_back(layers[i]);
-    }
-    else {
     for (i = 0; i < layers.size(); i++) {
         visit.push_back(0);
-        gin.push_back(layers[i]->lin);
+
+        n=0;
+        for (j = 0; j < layers[i]->parent.size(); j++)
+          if (isIn(layers[i]->parent[j],layers,k)) n++;
+
+        gin.push_back(n);
     }
 
     for (i = 0; i < layers.size(); i++) {
@@ -66,7 +65,7 @@ void Net::fts() {
                 if (layers[n] == layers[j]->child[k]) gin[n]--;
 
     }
-  }
+
     //fprintf(stdout,"\n");
     if (VERBOSE) {
       cout<<"Forward sort:";
@@ -87,16 +86,13 @@ void Net::bts() {
     vector<int> gout;
 
 
-
-    if (mnets.size()) {
-      for (i = layers.size()-1; i >=0; i--)
-        vbts.push_back(layers[i]);
-    }
-    else {
     //fprintf(stdout,"BTS:");
     for (i = 0; i < layers.size(); i++) {
         visit.push_back(0);
-        gout.push_back(layers[i]->lout);
+        n=0;
+        for (j = 0; j < layers[i]->child.size(); j++)
+          if (isIn(layers[i]->child[j],layers,k)) n++;
+        gout.push_back(n);
     }
 
     for (i = 0; i < layers.size(); i++) {
@@ -115,7 +111,7 @@ void Net::bts() {
                 if (layers[n] == layers[j]->parent[k]) gout[n]--;
 
     }
-  }
+
 
 
 }
