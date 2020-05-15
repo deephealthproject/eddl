@@ -30,11 +30,7 @@ layer mse_loss(vector<layer> in)
 layer dice_loss(vector<layer> in)
 {
   layer num=ReduceMean(Mult(in[0],in[1]),{0,1,2});
-
-  layer sT=ReduceMean(in[1],{0,1,2});
-  layer sY=ReduceMean(in[1],{0,1,2});
-
-  layer den=Sum(sT,sY);
+  layer den=ReduceMean(Sum(in[0],in[1]),{0,1,2});
 
   return Diff(1.0,Div(num,den));
 }
