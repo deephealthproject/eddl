@@ -1,0 +1,27 @@
+name: build-windows
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        #os: [windows-latest, windows-2016]
+        os: [windows-latest]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Configure
+      run: |
+        mkdir build
+        cd build
+        cmake -DBUILD_SUPERBUILD=ON ..
+      shell: cmd
+    - name: Build
+      run: cmake --build build --config Release
+      shell: cmd
+    - name: Test
+      run: |
+            cd build
+            bin/unit_tests.exe
+      shell: cmd
