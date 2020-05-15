@@ -47,6 +47,7 @@ add_executable(mnist_losses "nn/1_mnist/14_mnist_losses.cpp")
 target_link_libraries(mnist_losses eddl)
 
 
+
 # EXAMPLES: CIFAR10 ****************************************************
 add_executable(cifar_conv "nn/2_cifar10/1_cifar_conv.cpp")
 target_link_libraries(cifar_conv eddl)
