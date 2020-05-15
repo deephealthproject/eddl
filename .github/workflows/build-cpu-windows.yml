@@ -23,5 +23,5 @@ jobs:
     - name: Test
       run: |
             cd build
-            bin/unit_tests.exe
+            "bin/Release/unit_tests.exe"
       shell: cmd
