@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 10;
+    int epochs = 100;
     int batch_size = 100;
 
     // Define encoder
@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          sgd(1000.0, 0.9), // Optimizer
+          sgd(1.0, 0.9), // Optimizer
           {"dice"}, // Losses
           {"dice"}, // Metrics
           CS_GPU({1})
@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
     x_train->div_(255.0f);
 
     // Train model
-    fit(net, {x_train}, {x_train}, batch_size, 5);
+    fit(net, {x_train}, {x_train}, batch_size, epochs);
 
     // Predict with encoder
     vtensor tout=predict(encoder,{x_train});
