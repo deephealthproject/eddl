@@ -95,7 +95,7 @@ void LRNN::forward() {
 
 void LRNN::backward() {
     //get gradients with provided delta
-    Tensor *daux=new Tensor(dela->shape,delta->device);
+    Tensor *daux=new Tensor(delta->shape,delta->device);
     daux->fill_(0.0);
 
     if (activation == "relu"){
