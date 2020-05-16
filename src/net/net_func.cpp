@@ -261,8 +261,10 @@ void distributeTensor(Layer *l,string tname, int p)
 
     if (tname=="output")
     Tensor::select(l->output, sl->output, sind, start, end);
-    else if (tname=="delta")
-    Tensor::select(l->delta, sl->delta, sind, start, end);
+    else if (tname=="delta") {
+      sl->mem_delta();
+      Tensor::select(l->delta, sl->delta, sind, start, end);
+    }
     else if (tname=="param")
     Tensor::copy(l->params[p],sl->params[p]);
     else if (tname=="gradient")

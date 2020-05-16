@@ -285,8 +285,11 @@ void Net::forward(vector<Layer *> in)
   }
 
   vector<Tensor *> vt;
-  for (int i = 0; i < in.size(); i++)
-  vt.push_back(in[i]->output);
+  for (int i = 0; i < in.size(); i++) {
+     collectTensor(in[i],"output");
+     vt.push_back(in[i]->output);
+   }
+
 
   forward(vt);
 
@@ -357,8 +360,10 @@ void Net::backward(){
 
   run_snets(backward_t);
 
+
   for(int i=0;i<netinput.size();i++) {
     if (netinput[i]->detached==false) {
+      lin[i]->mem_delta();
       collectTensor(lin[i],"delta");
       netinput[i]->mem_delta();
       Tensor::copy(lin[i]->delta,netinput[i]->delta);
