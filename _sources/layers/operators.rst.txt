@@ -13,7 +13,9 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Abs(layer l);
+   ...
+   l = Abs(l);
+
 
 
 
@@ -24,8 +26,24 @@ Computes the subtract operation
 
 .. doxygenfunction:: eddl::Diff(layer, layer)
 
+Example:
+
+.. code-block:: c++
+   :linenos:
+
+   ...
+   layer l = Diff(l1, l2); // l1 and l2 are layers with the same shape
+
 
 .. doxygenfunction:: eddl::Diff(layer, float)
+
+Example:
+
+.. code-block:: c++
+   :linenos:
+
+   ...
+   l = Diff(l, 0.5);
 
 
 .. doxygenfunction:: eddl::Diff(float, layer)
@@ -36,10 +54,9 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Diff(layer l1, layer l2);
-    layer Diff(layer l1, float k);
-    layer Diff(float k, layer l1);
-
+   ...
+   l = Diff(0.5, l);
+   
 
 
 Division
@@ -49,19 +66,39 @@ Computes the division operation
 
 .. doxygenfunction:: eddl::Div(layer, layer)
 
+Example:
+
+.. code-block:: c++
+   :linenos:
+
+   ...
+   layer l = Div(l1, l2); // l1 and l2 are layers with the same shape
+
+
+
 .. doxygenfunction:: eddl::Div(layer, float)
-
-.. doxygenfunction:: eddl::Div(float, layer)
-
 
 Example:
 
 .. code-block:: c++
    :linenos:
 
-    layer Div(layer l1, layer l2);
-    layer Div(layer l1, float k);
-    layer Div(float k, layer l1);
+   ...
+   l = Div(l, 0.5);
+
+
+
+.. doxygenfunction:: eddl::Div(float, layer)
+
+Example:
+
+.. code-block:: c++
+   :linenos:
+
+   ...
+   l = Div(0.5, l);
+   
+
 
 
 Exponent
@@ -78,7 +115,8 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Exp(layer l);
+   ...
+   l = Exp(l);
 
 
 
@@ -96,7 +134,8 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Log(layer l);
+   ...
+   l = Log(l);
 
 
 
@@ -114,7 +153,8 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Log2(layer l);
+   ...
+   l = Log2(l);
 
 
 
@@ -132,8 +172,8 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Abs(layer l);
-
+   ...
+   l = Log10(l);
 
 
 Multiplication
@@ -143,20 +183,35 @@ Computes the product operation
 
 .. doxygenfunction:: eddl::Mult(layer,layer)
 
+Example:
+
+.. code-block:: c++
+   :linenos:
+
+   ...
+   layer l = Mult(l1, l2); // l1 and l2 are layers with the same shape
+   
+
 .. doxygenfunction:: eddl::Mult(layer,float)
-
-.. doxygenfunction:: eddl::Mult(float,layer)
-
-
 
 Example:
 
 .. code-block:: c++
    :linenos:
 
-    layer Mult(layer l1, layer l2);
-    layer Mult(layer l1, float k);
-    layer Mult(float k,layer l1);
+   ...
+   l = Mult(l, 2.0);
+
+
+.. doxygenfunction:: eddl::Mult(float,layer)
+
+Example:
+
+.. code-block:: c++
+   :linenos:
+
+   ...
+   layer l = Mult(0.5, l);
 
 
 
@@ -170,15 +225,6 @@ Computes the power operation
 .. doxygenfunction:: eddl::Pow(layer,float)
 
 
-
-
-Example:
-
-.. code-block:: c++
-   :linenos:
-
-    layer Pow(layer l1, layer l2);
-    layer Pow(layer l1, float k);
 
 
 
@@ -196,7 +242,8 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    layer Sqrt(layer l);
+   ...
+   l = Sqrt(l);
 
 
 
@@ -207,17 +254,33 @@ Computes the power operation
 
 .. doxygenfunction:: eddl::Sum(layer, layer)
 
+Example:
+
+.. code-block:: c++
+   :linenos:
+
+   ...
+   layer l = Sum(l1, l2); // l1 and l2 are layers with the same shape
+
+
 .. doxygenfunction:: eddl::Sum(layer, float)
-
-.. doxygenfunction:: eddl::Sum(float, layer)
-
-
 
 Example:
 
 .. code-block:: c++
    :linenos:
 
-    layer Sum(layer l1, layer l2);
-    layer Sum(layer l1, float k);
-    layer Sum(float k, layer l1);
+   ...
+   l = Sum(l, 0.5);
+
+.. doxygenfunction:: eddl::Sum(float, layer)
+
+Example:
+
+.. code-block:: c++
+   :linenos:
+
+   ...
+   l = Sum(0.5, l);
+
+

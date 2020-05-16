@@ -270,10 +270,10 @@
     <span class="p">);</span>
 
     <span class="c1">// Load dataset</span>
-    <span class="n">tensor</span> <span class="n">x_train</span> <span class="o">=</span> <span class="n">eddlT</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;trX.bin&quot;</span><span class="p">);</span>
-    <span class="n">tensor</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">eddlT</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;trY.bin&quot;</span><span class="p">);</span>
-    <span class="n">tensor</span> <span class="n">x_test</span> <span class="o">=</span> <span class="n">eddlT</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;tsX.bin&quot;</span><span class="p">);</span>
-    <span class="n">tensor</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">eddlT</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;tsY.bin&quot;</span><span class="p">);</span>
+    <span class="n">tensor</span> <span class="n">x_train</span> <span class="o">=</span> <span class="n">eddlT</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;mnist_trX.bin&quot;</span><span class="p">);</span>
+    <span class="n">tensor</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">eddlT</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;mnist_trY.bin&quot;</span><span class="p">);</span>
+    <span class="n">tensor</span> <span class="n">x_test</span> <span class="o">=</span> <span class="n">eddlT</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;mnist_tsX.bin&quot;</span><span class="p">);</span>
+    <span class="n">tensor</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">eddlT</span><span class="o">::</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;mnist_tsY.bin&quot;</span><span class="p">);</span>
 
     <span class="c1">// Preprocessing</span>
     <span class="n">eddlT</span><span class="o">::</span><span class="n">div_</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="mf">255.0</span><span class="p">);</span>

@@ -154,7 +154,7 @@
 <p class="caption"><span class="caption-text">Tensor</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Creation Routines</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#constructor">Constructor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#constructors">Constructors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ones-and-zeros">Ones and zeros</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#zeros">zeros</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ones">ones</a></li>
@@ -265,12 +265,51 @@
 <p>Section in progress</p>
 <p>Read this: <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md">https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md</a></p>
 </div>
-<div class="section" id="constructor">
-<h2>Constructor<a class="headerlink" href="#constructor" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="constructors">
+<h2>Constructors<a class="headerlink" href="#constructors" title="Permalink to this headline">¶</a></h2>
 <p>Create an uninitialized tensor</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor6TensorEv">
+<span id="_CPPv3N6Tensor6TensorEv"></span><span id="_CPPv2N6Tensor6TensorEv"></span><span id="Tensor::Tensor"></span><span class="target" id="class_tensor_1a4420e3cacf3811f54a0363db56d9379d"></span><code class="sig-prename descclassname"><a class="reference internal" href="#_CPPv4N6Tensor6TensorEv" title="Tensor::Tensor">Tensor</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Tensor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Constructor of an uninitialized tensor in CPU with dimension and size 0. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>a tensor </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::Tensor” with arguments (const vector&lt;int&gt;&amp;, float *, int) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">()</span>
+<span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="nb">float</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor6TensorERK6vectorIiEi">
+<span id="_CPPv3N6Tensor6TensorERK6vectorIiEi"></span><span id="_CPPv2N6Tensor6TensorERK6vectorIiEi"></span><span id="Tensor::Tensor__vector:i:CR.i"></span><span class="target" id="class_tensor_1a48b7318a576e60ebdabd9edb7ca7faee"></span><code class="sig-prename descclassname"><a class="reference internal" href="#_CPPv4N6Tensor6TensorERK6vectorIiEi" title="Tensor::Tensor">Tensor</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Tensor</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><br /></dt>
+<dd><p>Constructor of an uninitialized tensor. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>a tensor </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Vector of ints specifying the shape of the tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: One of DEV_CPU or DEV_GPU </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::Tensor” with arguments (const vector&lt;int&gt;&amp;, Tensor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
 Potential matches:
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">()</span>
@@ -410,8 +449,11 @@ Potential matches:
 <dt id="_CPPv4N6Tensor5cloneEv">
 <span id="_CPPv3N6Tensor5cloneEv"></span><span id="_CPPv2N6Tensor5cloneEv"></span><span id="Tensor::clone"></span><span class="target" id="class_tensor_1a997099c0f8de3f9b89b61ec279da2d34"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5cloneEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Clone a tensor (same device). </p>
+<p>Obtain a copy of a tensor.</p>
 <p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Tensor </p>
+<dt><strong>Return</strong></dt><dd><p>Tensor</p>
+</dd>
+<dt><strong>Return</strong></dt><dd><p>The copied tensor </p>
 </dd>
 </dl>
 </p>
@@ -462,9 +504,22 @@ Potential matches:
 <div class="section" id="arange">
 <h3>arange<a class="headerlink" href="#arange" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor6arangeEfffi">
-<span id="_CPPv3N6Tensor6arangeEfffi"></span><span id="_CPPv2N6Tensor6arangeEfffi"></span><span id="Tensor::arange__float.float.float.i"></span><span class="target" id="class_tensor_1a6ee1b4958f826a1de286f631842e4aa8"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">arange</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, float <em>step</em> = 1.0f, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6arangeEfffi" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dt id="_CPPv4N5eddlT6arangeEfffi">
+<span id="_CPPv3N5eddlT6arangeEfffi"></span><span id="_CPPv2N5eddlT6arangeEfffi"></span><span id="eddlT::arange__float.float.float.i"></span><span class="target" id="namespaceeddl_t_1a5316cab90ec8e40797ccb0b5074a3d24"></span>Tensor *<code class="sig-prename descclassname">eddlT<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">arange</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, float <em>step</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5eddlT6arangeEfffi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a 1-D tensor of size ceil(end - start) with values from start to end with step step. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The new tensor </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code>: Start index </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">end</span></code>: End index </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">step</span></code>: The gap between two values in the tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code>or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">arange</span><span class="p">(</span><span class="kt">float</span> <span class="n">start</span><span class="p">,</span> <span class="kt">float</span> <span class="n">end</span><span class="p">,</span> <span class="kt">float</span> <span class="n">step</span><span class="o">=</span><span class="mf">1.0f</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
@@ -473,9 +528,22 @@ Potential matches:
 <div class="section" id="range">
 <h3>range<a class="headerlink" href="#range" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor5rangeEfffi">
-<span id="_CPPv3N6Tensor5rangeEfffi"></span><span id="_CPPv2N6Tensor5rangeEfffi"></span><span id="Tensor::range__float.float.float.i"></span><span class="target" id="class_tensor_1af679670e497f8912cdfb28a101a3ea38"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">range</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, float <em>step</em> = 1.0f, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5rangeEfffi" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dt id="_CPPv4N5eddlT5rangeEfffi">
+<span id="_CPPv3N5eddlT5rangeEfffi"></span><span id="_CPPv2N5eddlT5rangeEfffi"></span><span id="eddlT::range__float.float.float.i"></span><span class="target" id="namespaceeddl_t_1aabed9bb805745d203339394ed44ee634"></span>Tensor *<code class="sig-prename descclassname">eddlT<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">range</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, float <em>step</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5eddlT5rangeEfffi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Creates a 1-D tensor of size floor(end - start)/ + 1 with values from start to end with step step. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The new tensor </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code>: Start value </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">end</span></code>: End value </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">step</span></code>: The gap between two values in the tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code>or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">range</span><span class="p">(</span><span class="kt">float</span> <span class="n">start</span><span class="p">,</span> <span class="kt">float</span> <span class="n">end</span><span class="p">,</span> <span class="kt">float</span> <span class="n">step</span><span class="o">=</span><span class="mf">1.0f</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
@@ -484,9 +552,22 @@ Potential matches:
 <div class="section" id="linspace">
 <h3>linspace<a class="headerlink" href="#linspace" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor8linspaceEffii">
-<span id="_CPPv3N6Tensor8linspaceEffii"></span><span id="_CPPv2N6Tensor8linspaceEffii"></span><span id="Tensor::linspace__float.float.i.i"></span><span class="target" id="class_tensor_1ab0abb998c7d097791f23e9bdda8cace0"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">linspace</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, int <em>steps</em> = 100, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8linspaceEffii" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dt id="_CPPv4N5eddlT8linspaceEffii">
+<span id="_CPPv3N5eddlT8linspaceEffii"></span><span id="_CPPv2N5eddlT8linspaceEffii"></span><span id="eddlT::linspace__float.float.i.i"></span><span class="target" id="namespaceeddl_t_1a78fd8a5e840692640db42d9362846c0a"></span>Tensor *<code class="sig-prename descclassname">eddlT<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">linspace</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, int <em>steps</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5eddlT8linspaceEffii" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Creates a 1-D tensor with a sequence of num evenly-spaced values starting at start. If steps &gt; 1, the values in the sequence increase by end - start / steps - 1, so that the last one is exactly end. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The new tensor </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code>: Start value </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">end</span></code>: End value </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">steps</span></code>: The gap between two values in the tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code>or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">linspace</span><span class="p">(</span><span class="kt">float</span> <span class="n">start</span><span class="p">,</span> <span class="kt">float</span> <span class="n">end</span><span class="p">,</span> <span class="kt">int</span> <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
@@ -495,8 +576,8 @@ Potential matches:
 <div class="section" id="logspace">
 <h3>logspace<a class="headerlink" href="#logspace" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N6Tensor8logspaceEffifi">
-<span id="_CPPv3N6Tensor8logspaceEffifi"></span><span id="_CPPv2N6Tensor8logspaceEffifi"></span><span id="Tensor::logspace__float.float.i.float.i"></span><span class="target" id="class_tensor_1a6307a5a9387363c168dcd4f644622cf9"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">logspace</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, int <em>steps</em> = 100, float <em>base</em> = 10.0f, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8logspaceEffifi" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5eddlT8logspaceEffifi">
+<span id="_CPPv3N5eddlT8logspaceEffifi"></span><span id="_CPPv2N5eddlT8logspaceEffifi"></span><span id="eddlT::logspace__float.float.i.float.i"></span><span class="target" id="namespaceeddl_t_1a56887d52075dd3ff0f496a44ed9ca29e"></span>Tensor *<code class="sig-prename descclassname">eddlT<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">logspace</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, int <em>steps</em>, float <em>base</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5eddlT8logspaceEffifi" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">logspace</span><span class="p">(</span><span class="kt">float</span> <span class="n">start</span><span class="p">,</span> <span class="kt">float</span> <span class="n">end</span><span class="p">,</span> <span class="kt">int</span> <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="kt">float</span> <span class="n">base</span><span class="o">=</span><span class="mf">10.0f</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
@@ -505,11 +586,10 @@ Potential matches:
 </div>
 <div class="section" id="geomspace">
 <h3>geomspace<a class="headerlink" href="#geomspace" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor9geomspaceEffii">
-<span id="_CPPv3N6Tensor9geomspaceEffii"></span><span id="_CPPv2N6Tensor9geomspaceEffii"></span><span id="Tensor::geomspace__float.float.i.i"></span><span class="target" id="class_tensor_1a7b3b1e649de5d4d2565ed1793c1c5699"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">geomspace</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, int <em>steps</em> = 100, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor9geomspaceEffii" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “eddlT::geomspace” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
+</div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">geomspace</span><span class="p">(</span><span class="kt">float</span> <span class="n">start</span><span class="p">,</span> <span class="kt">float</span> <span class="n">end</span><span class="p">,</span> <span class="kt">int</span> <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
 </div>

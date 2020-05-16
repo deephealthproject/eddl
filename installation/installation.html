@@ -332,7 +332,7 @@ conda activate eddl
 <span class="c1"># Build and install</span>
 mkdir build
 <span class="nb">cd</span> build
-cmake ..
+cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span>/path/to/dir -DCMAKE_INSTALL_PREFIX<span class="o">=</span>/path/to/dir
 make install
 </pre></div>
 </div>
@@ -349,7 +349,8 @@ conda activate eddl
 <span class="c1"># Build and install</span>
 mkdir build
 <span class="nb">cd</span> build
-cmake ..
+cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span>/path/to/dir -DCMAKE_INSTALL_PREFIX<span class="o">=</span>/path/to/dir
+
 make install
 </pre></div>
 </div>
@@ -358,8 +359,8 @@ make install
 <p>See the <a class="reference internal" href="build-options.html"><span class="doc">Build and configuration</span></a> section for more details about cmake options.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>You can make use of the <code class="docutils literal notranslate"><span class="pre">-DCMAKE_INSTALL_PREFIX</span></code> flag to specify where cmake searches for
-dependencies and installs libraries.</p>
+<p>You can ignore <code class="docutils literal notranslate"><span class="pre">-DCMAKE_INSTALL_PREFIX</span></code> and <code class="docutils literal notranslate"><span class="pre">-DCMAKE_INSTALL_PREFIX</span></code> to use their default values,
+or if you prefer it, you can specificy your environment like <code class="docutils literal notranslate"><span class="pre">-DCMAKE_PREFIX_PATH=$CONDA_PREFIX</span></code>.</p>
 <p>If you want to distribute the resulting shared library, you should use the flag
 <code class="docutils literal notranslate"><span class="pre">-DBUILD_SUPERBUILD=ON</span></code> so that we can make specific tunings to our dependencies.</p>
 </div>

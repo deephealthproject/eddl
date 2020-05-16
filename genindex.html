@@ -259,8 +259,6 @@
 </li>
       <li><a href="layers/pooling.html#_CPPv4N4eddl11AveragePoolE5layerRK6vectorIiERK6vectorIiE6string6string">eddl::AveragePool (C++ function)</a>
 </li>
-      <li><a href="layers/normalization.html#_CPPv4N4eddl18BatchNormalizationE5layerffb6string">eddl::BatchNormalization (C++ function)</a>
-</li>
       <li><a href="layers/data_transformation.html#_CPPv4N4eddl12CenteredCropE5layer6vectorIiEbf6string">eddl::CenteredCrop (C++ function)</a>
 </li>
       <li><a href="training/fine_grained.html#_CPPv4N4eddl5clampE5modelff">eddl::clamp (C++ function)</a>
@@ -277,17 +275,21 @@
 </li>
       <li><a href="layers/convolutional.html#_CPPv4N4eddl4ConvE5layeriRK6vectorIiERK6vectorIiE6stringbiRK6vectorIiE6string">eddl::Conv (C++ function)</a>
 </li>
+      <li><a href="layers/convolutional.html#_CPPv4N4eddl6Conv1DE5layeri6vectorIiE6vectorIiE6stringbiK6vectorIiE6string">eddl::Conv1D (C++ function)</a>
+</li>
+      <li><a href="layers/convolutional.html#_CPPv4N4eddl5ConvTE5layeriRK6vectorIiERK6vectorIiE6stringRK6vectorIiERK6vectorIiEb6string">eddl::ConvT (C++ function)</a>
+</li>
       <li><a href="layers/data_transformation.html#_CPPv4N4eddl4CropE5layer6vectorIiE6vectorIiEbf6string">eddl::Crop (C++ function)</a>
 </li>
       <li><a href="layers/data_transformation.html#_CPPv4N4eddl9CropScaleE5layer6vectorIiE6vectorIiE6stringf6string">eddl::CropScale (C++ function)</a>
 </li>
       <li><a href="bundle/computing_service.html#_CPPv4N4eddl9CS_COMPSSE6string">eddl::CS_COMPSS (C++ function)</a>
 </li>
-      <li><a href="bundle/computing_service.html#_CPPv4N4eddl6CS_CPUEi6string">eddl::CS_CPU (C++ function)</a>, <a href="bundle/computing_service.html#_CPPv4N4eddl6CS_CPUEi6string">[1]</a>
+      <li><a href="bundle/computing_service.html#_CPPv4N4eddl6CS_CPUEv">eddl::CS_CPU (C++ function)</a>
 </li>
       <li><a href="bundle/computing_service.html#_CPPv4N4eddl7CS_FGPAERK6vectorIiEi">eddl::CS_FGPA (C++ function)</a>
 </li>
-      <li><a href="bundle/computing_service.html#_CPPv4N4eddl6CS_GPUEK6vectorIiEi6string">eddl::CS_GPU (C++ function)</a>
+      <li><a href="bundle/computing_service.html#_CPPv4N4eddl6CS_GPUEK6vectorIiE6string">eddl::CS_GPU (C++ function)</a>, <a href="bundle/computing_service.html#_CPPv4N4eddl6CS_GPUEK6vectorIiEi6string">[1]</a>
 </li>
       <li><a href="layers/data_transformation.html#_CPPv4N4eddl6CutoutE5layer6vectorIiE6vectorIiEf6string">eddl::Cutout (C++ function)</a>
 </li>
@@ -305,11 +307,11 @@
 </li>
       <li><a href="datasets/classification.html#_CPPv4N4eddl14download_mnistEv">eddl::download_mnist (C++ function)</a>
 </li>
-      <li><a href="layers/core.html#_CPPv4N4eddl7DropoutE5layerf6string">eddl::Dropout (C++ function)</a>
+      <li><a href="layers/core.html#_CPPv4N4eddl7DropoutE5layerfb6string">eddl::Dropout (C++ function)</a>
 </li>
       <li><a href="layers/activations.html#_CPPv4N4eddl3EluE5layerf6string">eddl::Elu (C++ function)</a>
 </li>
-      <li><a href="layers/core.html#_CPPv4N4eddl9EmbeddingEii6string">eddl::Embedding (C++ function)</a>
+      <li><a href="layers/core.html#_CPPv4N4eddl9EmbeddingE5layeriiib6string">eddl::Embedding (C++ function)</a>
 </li>
       <li><a href="test_score/test_score.html#_CPPv4N4eddl8evaluateE5modelRK6vectorIP6TensorERK6vectorIP6TensorE">eddl::evaluate (C++ function)</a>
 </li>
@@ -355,8 +357,6 @@
 </li>
       <li><a href="bundle/regularizers.html#_CPPv4N4eddl2L2E5layerf">eddl::L2 (C++ function)</a>
 </li>
-      <li><a href="layers/normalization.html#_CPPv4N4eddl18LayerNormalizationE5layerfb6string">eddl::LayerNormalization (C++ function)</a>
-</li>
       <li><a href="layers/activations.html#_CPPv4N4eddl9LeakyReLuE5layerf6string">eddl::LeakyReLu (C++ function)</a>
 </li>
       <li><a href="layers/activations.html#_CPPv4N4eddl6LinearE5layerf6string">eddl::Linear (C++ function)</a>
@@ -369,19 +369,17 @@
 </li>
       <li><a href="layers/operators.html#_CPPv4N4eddl4Log2E5layer">eddl::Log2 (C++ function)</a>
 </li>
-      <li><a href="layers/rnn.html#_CPPv4N4eddl4LSTME5layeriibfb6string">eddl::LSTM (C++ function)</a>
+      <li><a href="layers/rnn.html#_CPPv4N4eddl4LSTME5layeribb6string">eddl::LSTM (C++ function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="layers/merge.html#_CPPv4N4eddl6MatMulERK6vectorI5layerE6string">eddl::MatMul (C++ function)</a>
 </li>
       <li><a href="layers/merge.html#_CPPv4N4eddl7MaximumERK6vectorI5layerE6string">eddl::Maximum (C++ function)</a>
 </li>
       <li><a href="layers/pooling.html#_CPPv4N4eddl7MaxPoolE5layerRK6vectorIiERK6vectorIiE6string6string">eddl::MaxPool (C++ function)</a>
 </li>
-      <li><a href="layers/merge.html#_CPPv4N4eddl7MinimumERK6vectorI5layerE6string">eddl::Minimum (C++ function)</a>
+      <li><a href="layers/pooling.html#_CPPv4N4eddl9MaxPool1DE5layer6vectorIiE6vectorIiE6string6string">eddl::MaxPool1D (C++ function)</a>
 </li>
-      <li><a href="model/model.html#_CPPv4N4eddl5ModelE6vlayer6vlayer">eddl::Model (C++ function)</a>
+      <li><a href="layers/merge.html#_CPPv4N4eddl7MinimumERK6vectorI5layerE6string">eddl::Minimum (C++ function)</a>
 </li>
       <li><a href="layers/operators.html#_CPPv4N4eddl4MultE5layer5layer">eddl::Mult (C++ function)</a>, <a href="layers/operators.html#_CPPv4N4eddl4MultE5layerf">[1]</a>, <a href="layers/operators.html#_CPPv4N4eddl4MultEf5layer">[2]</a>
 </li>
@@ -413,6 +411,8 @@
 </li>
       <li><a href="layers/data_augmentation.html#_CPPv4N4eddl10RandomFlipE5layeri6string">eddl::RandomFlip (C++ function)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="layers/data_augmentation.html#_CPPv4N4eddl15RandomGrayscaleE5layer6string">eddl::RandomGrayscale (C++ function)</a>
 </li>
       <li><a href="layers/data_augmentation.html#_CPPv4N4eddl20RandomHorizontalFlipE5layer6string">eddl::RandomHorizontalFlip (C++ function)</a>
@@ -447,7 +447,7 @@
 </li>
       <li><a href="bundle/optimizers.html#_CPPv4N4eddl7rmspropEffff">eddl::rmsprop (C++ function)</a>
 </li>
-      <li><a href="layers/rnn.html#_CPPv4N4eddl3RNNE5layeriibfb6string">eddl::RNN (C++ function)</a>
+      <li><a href="layers/rnn.html#_CPPv4N4eddl3RNNE5layeri6stringbb6string">eddl::RNN (C++ function)</a>
 </li>
       <li><a href="layers/data_transformation.html#_CPPv4N4eddl6RotateE5layerf6vectorIiE6stringf6string">eddl::Rotate (C++ function)</a>
 </li>
@@ -499,11 +499,89 @@
 </li>
       <li><a href="training/fine_grained.html#_CPPv4N4eddl6updateE5model">eddl::update (C++ function)</a>
 </li>
-      <li><a href="layers/convolutional.html#_CPPv4N4eddl10UpSamplingE5layerRK6vectorIiE6string6string">eddl::UpSampling (C++ function)</a>, <a href="layers/convolutional.html#_CPPv4N4eddl10UpSamplingE5layerRK6vectorIiE6string6string">[1]</a>
+      <li><a href="layers/convolutional.html#_CPPv4N4eddl10UpSamplingE5layerRK6vectorIiE6string6string">eddl::UpSampling (C++ function)</a>
 </li>
       <li><a href="layers/data_transformation.html#_CPPv4N4eddl12VerticalFlipE5layer6string">eddl::VerticalFlip (C++ function)</a>
 </li>
       <li><a href="training/fine_grained.html#_CPPv4N4eddl9zeroGradsE5model">eddl::zeroGrads (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT3absEP6Tensor">eddlT::abs (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT4acosEP6Tensor">eddlT::acos (C++ function)</a>
+</li>
+      <li><a href="tensor/create.html#_CPPv4N5eddlT6arangeEfffi">eddlT::arange (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT4asinEP6Tensor">eddlT::asin (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT4atanEP6Tensor">eddlT::atan (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT4ceilEP6Tensor">eddlT::ceil (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT5clampEP6Tensorff">eddlT::clamp (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT8clampmaxEP6Tensorf">eddlT::clampmax (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT8clampminEP6Tensorf">eddlT::clampmin (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT3cosEP6Tensor">eddlT::cos (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT4coshEP6Tensor">eddlT::cosh (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT3expEP6Tensor">eddlT::exp (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT5floorEP6Tensor">eddlT::floor (C++ function)</a>
+</li>
+      <li><a href="tensor/create.html#_CPPv4N5eddlT8linspaceEffii">eddlT::linspace (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT3logEP6Tensor">eddlT::log (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT5log10EP6Tensor">eddlT::log10 (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT4log2EP6Tensor">eddlT::log2 (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT4lognEP6Tensorf">eddlT::logn (C++ function)</a>
+</li>
+      <li><a href="tensor/create.html#_CPPv4N5eddlT8logspaceEffifi">eddlT::logspace (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT3maxEP6Tensor">eddlT::max (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT3minEP6Tensor">eddlT::min (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT3modEP6Tensorf">eddlT::mod (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT3negEP6Tensor">eddlT::neg (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT3powEP6Tensorf">eddlT::pow (C++ function)</a>
+</li>
+      <li><a href="tensor/create.html#_CPPv4N5eddlT5rangeEfffi">eddlT::range (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT10reciprocalEP6Tensor">eddlT::reciprocal (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT9remainderEP6Tensorf">eddlT::remainder (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT5roundEP6Tensor">eddlT::round (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT5rsqrtEP6Tensor">eddlT::rsqrt (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT7sigmoidEP6Tensor">eddlT::sigmoid (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT4signEP6Tensor">eddlT::sign (C++ function)</a>, <a href="tensor/math.html#_CPPv4N5eddlT4signEP6Tensor">[1]</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT3sinEP6Tensor">eddlT::sin (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT4sinhEP6Tensor">eddlT::sinh (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT3sqrEP6Tensor">eddlT::sqr (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT4sqrtEP6Tensor">eddlT::sqrt (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT7sum_absEP6Tensor">eddlT::sum_abs (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT3tanEP6Tensor">eddlT::tan (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT4tanhEP6Tensor">eddlT::tanh (C++ function)</a>
+</li>
+      <li><a href="tensor/math.html#_CPPv4N5eddlT5truncEP6Tensor">eddlT::trunc (C++ function)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -511,39 +589,17 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor3absEP6Tensor">Tensor::abs (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor4acosEP6Tensor">Tensor::acos (C++ function)</a>
-</li>
       <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor3allEP6Tensor">Tensor::all (C++ function)</a>
 </li>
       <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor8allcloseEP6TensorP6Tensorffb">Tensor::allclose (C++ function)</a>
 </li>
       <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor3anyEP6Tensor">Tensor::any (C++ function)</a>
 </li>
-      <li><a href="tensor/create.html#_CPPv4N6Tensor6arangeEfffi">Tensor::arange (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor4asinEP6Tensor">Tensor::asin (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor4atanEP6Tensor">Tensor::atan (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor4ceilEP6Tensor">Tensor::ceil (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor5clampEP6Tensorff">Tensor::clamp (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor8clampmaxEP6Tensorf">Tensor::clampmax (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor8clampminEP6Tensorf">Tensor::clampmin (C++ function)</a>
-</li>
       <li><a href="tensor/create.html#_CPPv4N6Tensor5cloneEv">Tensor::clone (C++ function)</a>, <a href="tensor/misc.html#_CPPv4N6Tensor5cloneEv">[1]</a>
 </li>
       <li><a href="tensor/manipulation.html#_CPPv4N6Tensor6concatEK6vectorIP6TensorEjP6Tensor">Tensor::concat (C++ function)</a>
 </li>
       <li><a href="tensor/create.html#_CPPv4N6Tensor4copyEP6TensorP6Tensor">Tensor::copy (C++ function)</a>, <a href="tensor/misc.html#_CPPv4N6Tensor4copyEP6TensorP6Tensor">[1]</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor3cosEP6Tensor">Tensor::cos (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor4coshEP6Tensor">Tensor::cosh (C++ function)</a>
 </li>
       <li><a href="tensor/manipulation.html#_CPPv4N6Tensor4cropEP6TensorP6Tensor6vectorIiE6vectorIiEf">Tensor::crop (C++ function)</a>
 </li>
@@ -559,19 +615,13 @@
 </li>
       <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor5equalEP6TensorP6TensorP6Tensor">Tensor::equal (C++ function)</a>
 </li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor3expEP6Tensor">Tensor::exp (C++ function)</a>
-</li>
       <li><a href="tensor/create.html#_CPPv4N6Tensor3eyeEiii">Tensor::eye (C++ function)</a>
 </li>
       <li><a href="tensor/manipulation.html#_CPPv4N6Tensor7flattenEP6Tensor">Tensor::flatten (C++ function)</a>
 </li>
       <li><a href="tensor/manipulation.html#_CPPv4N6Tensor11flip_randomEP6TensorP6Tensori">Tensor::flip_random (C++ function)</a>
 </li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor5floorEP6Tensor">Tensor::floor (C++ function)</a>
-</li>
       <li><a href="tensor/create.html#_CPPv4N6Tensor4fullERK6vectorIiEfi">Tensor::full (C++ function)</a>
-</li>
-      <li><a href="tensor/create.html#_CPPv4N6Tensor9geomspaceEffii">Tensor::geomspace (C++ function)</a>
 </li>
       <li><a href="tensor/misc.html#_CPPv4N6Tensor20get_address_rowmajorE6vectorIiE">Tensor::get_address_rowmajor (C++ function)</a>
 </li>
@@ -609,21 +659,13 @@
 </li>
       <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor10less_equalEP6TensorP6TensorP6Tensor">Tensor::less_equal (C++ function)</a>
 </li>
-      <li><a href="tensor/create.html#_CPPv4N6Tensor8linspaceEffii">Tensor::linspace (C++ function)</a>
-</li>
       <li><a href="tensor/input_output.html#_CPPv4N6Tensor4loadERK6string6string">Tensor::load (C++ function)</a>
-</li>
-      <li><a href="tensor/input_output.html#_CPPv4N6Tensor13load_from_txtERK6stringKci">Tensor::load_from_txt (C++ function)</a>
-</li>
-      <li><a href="tensor/input_output.html#_CPPv4N6Tensor6loadfsERNSt8ifstreamE6string">Tensor::loadfs (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor3logEP6Tensor">Tensor::log (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor5log10EP6Tensor">Tensor::log10 (C++ function)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor4log2EP6Tensor">Tensor::log2 (C++ function)</a>
+      <li><a href="tensor/input_output.html#_CPPv4N6Tensor13load_from_txtERK6stringKci">Tensor::load_from_txt (C++ function)</a>
+</li>
+      <li><a href="tensor/input_output.html#_CPPv4N6Tensor6loadfsERNSt8ifstreamE6string">Tensor::loadfs (C++ function)</a>
 </li>
       <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor11logical_andEP6TensorP6TensorP6Tensor">Tensor::logical_and (C++ function)</a>
 </li>
@@ -633,19 +675,7 @@
 </li>
       <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor11logical_xorEP6TensorP6TensorP6Tensor">Tensor::logical_xor (C++ function)</a>
 </li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor4lognEP6Tensorf">Tensor::logn (C++ function)</a>
-</li>
-      <li><a href="tensor/create.html#_CPPv4N6Tensor8logspaceEffifi">Tensor::logspace (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor3maxEv">Tensor::max (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor3minEv">Tensor::min (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor3modEP6Tensorf">Tensor::mod (C++ function)</a>
-</li>
       <li><a href="tensor/manipulation.html#_CPPv4N6Tensor8moveaxisEP6Tensorii">Tensor::moveaxis (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor3negEP6Tensor">Tensor::neg (C++ function)</a>
 </li>
       <li><a href="tensor/logic_functions.html#_CPPv4N6Tensor9not_equalEP6TensorP6TensorP6Tensor">Tensor::not_equal (C++ function)</a>
 </li>
@@ -653,21 +683,13 @@
 </li>
       <li><a href="tensor/manipulation.html#_CPPv4N6Tensor7permuteEP6TensorRK6vectorIiE">Tensor::permute (C++ function)</a>
 </li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor3powEP6Tensorf">Tensor::pow (C++ function)</a>
-</li>
       <li><a href="tensor/misc.html#_CPPv4N6Tensor5printEib">Tensor::print (C++ function)</a>
 </li>
       <li><a href="tensor/create.html#_CPPv4N6Tensor5randnERK6vectorIiEi">Tensor::randn (C++ function)</a>
 </li>
       <li><a href="tensor/create.html#_CPPv4N6Tensor5randuERK6vectorIiEi">Tensor::randu (C++ function)</a>
 </li>
-      <li><a href="tensor/create.html#_CPPv4N6Tensor5rangeEfffi">Tensor::range (C++ function)</a>
-</li>
       <li><a href="tensor/create.html#_CPPv4N6Tensor10reallocateEP6TensorP6vectorIiE">Tensor::reallocate (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor10reciprocalEP6Tensor">Tensor::reciprocal (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor9remainderEP6Tensorf">Tensor::remainder (C++ function)</a>
 </li>
       <li><a href="tensor/manipulation.html#_CPPv4N6Tensor7reshapeEP6TensorRK6vectorIiE">Tensor::reshape (C++ function)</a>
 </li>
@@ -676,10 +698,6 @@
       <li><a href="tensor/manipulation.html#_CPPv4N6Tensor6rotateEP6TensorP6Tensorf6vectorIiE6stringf">Tensor::rotate (C++ function)</a>
 </li>
       <li><a href="tensor/manipulation.html#_CPPv4N6Tensor13rotate_randomEP6TensorP6Tensor6vectorIfE6vectorIiE6stringf">Tensor::rotate_random (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor5roundEP6Tensor">Tensor::round (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor5rsqrtEP6Tensor">Tensor::rsqrt (C++ function)</a>
 </li>
       <li><a href="tensor/input_output.html#_CPPv4N6Tensor4saveERK6string6string">Tensor::save (C++ function)</a>
 </li>
@@ -697,37 +715,19 @@
 </li>
       <li><a href="tensor/manipulation.html#_CPPv4N6Tensor12shift_randomEP6TensorP6Tensor6vectorIfE6vectorIfE6stringf">Tensor::shift_random (C++ function)</a>
 </li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor7sigmoidEP6Tensor">Tensor::sigmoid (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor3sinEP6Tensor">Tensor::sin (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor4sinhEP6Tensor">Tensor::sinh (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor3sqrEP6Tensor">Tensor::sqr (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor4sqrtEP6Tensor">Tensor::sqrt (C++ function)</a>
-</li>
       <li><a href="tensor/manipulation.html#_CPPv4N6Tensor7squeezeEP6Tensor">Tensor::squeeze (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor3subEP6TensorP6Tensor">Tensor::sub (C++ function)</a>
 </li>
       <li><a href="tensor/math.html#_CPPv4N6Tensor13sum2D_colwiseEP6TensorP6TensorP6Tensor">Tensor::sum2D_colwise (C++ function)</a>
 </li>
       <li><a href="tensor/math.html#_CPPv4N6Tensor13sum2D_rowwiseEP6TensorP6TensorP6Tensor">Tensor::sum2D_rowwise (C++ function)</a>
 </li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor7sum_absEv">Tensor::sum_abs (C++ function)</a>
-</li>
       <li><a href="tensor/manipulation.html#_CPPv4N6Tensor8swapaxisEP6Tensorii">Tensor::swapaxis (C++ function)</a>
 </li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor3tanEP6Tensor">Tensor::tan (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor4tanhEP6Tensor">Tensor::tanh (C++ function)</a>
+      <li><a href="tensor/create.html#_CPPv4N6Tensor6TensorERK6vectorIiEi">Tensor::Tensor (C++ function)</a>, <a href="tensor/create.html#_CPPv4N6Tensor6TensorEv">[1]</a>
 </li>
       <li><a href="tensor/misc.html#_CPPv4N6Tensor5toCPUEi">Tensor::toCPU (C++ function)</a>
 </li>
       <li><a href="tensor/misc.html#_CPPv4N6Tensor5toGPUEi">Tensor::toGPU (C++ function)</a>
-</li>
-      <li><a href="tensor/math.html#_CPPv4N6Tensor5truncEP6Tensor">Tensor::trunc (C++ function)</a>
 </li>
       <li><a href="tensor/manipulation.html#_CPPv4N6Tensor9unsqueezeEP6Tensor">Tensor::unsqueeze (C++ function)</a>
 </li>

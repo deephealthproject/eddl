@@ -242,24 +242,30 @@
 <h1>Model<a class="headerlink" href="#model" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="constructor">
 <h2>Constructor<a class="headerlink" href="#constructor" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl5ModelE6vlayer6vlayer">
-<span id="_CPPv3N4eddl5ModelE6vlayer6vlayer"></span><span id="_CPPv2N4eddl5ModelE6vlayer6vlayer"></span><span id="eddl::Model__vlayer.vlayer"></span><span class="target" id="namespaceeddl_1a20d2dc23c5a0e4511914984336b2575c"></span>model <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Model</code><span class="sig-paren">(</span>vlayer <em>in</em>, vlayer <em>out</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5ModelE6vlayer6vlayer" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Instantiates model, taking two vectors, one of input layers and another of output layers. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Model instance </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Vector with model input layers, typically Input({…}) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">out</span></code>: Vector with the ouputs of the model. Example: {Sigmoid(MyModel())} </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::Model” with arguments () in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">model</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Model</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Net</span><span class="o">*&gt;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">model</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Model</span><span class="p">(</span><span class="n">vlayer</span><span class="p">,</span> <span class="n">vlayer</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">model</span> <span class="nf">Model</span><span class="p">(</span><span class="n">vlayer</span> <span class="n">in</span><span class="p">,</span> <span class="n">vlayer</span> <span class="n">out</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="n">in1</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">32</span><span class="p">});</span>
+ <span class="n">layer</span> <span class="n">in2</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">32</span><span class="p">});</span>
+ <span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">Concat</span><span class="p">(</span><span class="n">in1</span><span class="p">,</span> <span class="n">in2</span><span class="p">);</span>
+ <span class="p">...</span>
+ <span class="n">layer</span> <span class="n">out</span> <span class="o">=</span> <span class="n">Activation</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">),</span> <span class="s">&quot;softmax&quot;</span><span class="p">);</span>
+ <span class="p">...</span>
+ <span class="n">model</span> <span class="n">net</span> <span class="o">=</span> <span class="n">Model</span><span class="p">({</span><span class="n">in1</span><span class="p">,</span> <span class="n">in2</span><span class="p">},</span> <span class="p">{</span><span class="n">out</span><span class="p">});</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -286,9 +292,25 @@ Potential matches:
 </div>
 </div>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">build</span><span class="p">(</span><span class="n">model</span> <span class="n">net</span><span class="p">,</span> <span class="n">optimizer</span> <span class="n">o</span><span class="p">,</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">lo</span><span class="p">,</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">me</span><span class="p">,</span> <span class="n">CompServ</span> <span class="o">*</span><span class="n">cs</span><span class="o">=</span><span class="k">nullptr</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">init_weights</span><span class="o">=</span><span class="nb">true</span><span class="p">);</span>
- <span class="c1">//e.g.: build(mymodel, sgd(0.01f), {&quot;cross_entropy&quot;}, {&quot;accuracy&quot;}, CS_GPU({1, 0}), true);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="p">...</span>
+ <span class="n">model</span> <span class="n">net</span><span class="o">=</span><span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},{</span><span class="n">out</span><span class="p">});</span>
+
+ <span class="c1">// Build model</span>
+ <span class="n">build</span><span class="p">(</span><span class="n">net</span><span class="p">,</span>
+       <span class="n">sgd</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">),</span> <span class="c1">// Optimizer</span>
+       <span class="p">{</span><span class="s">&quot;soft_cross_entropy&quot;</span><span class="p">},</span> <span class="c1">// Losses</span>
+       <span class="p">{</span><span class="s">&quot;categorical_accuracy&quot;</span><span class="p">},</span> <span class="c1">// Metrics</span>
+       <span class="n">CS_GPU</span><span class="p">({</span><span class="mi">1</span><span class="p">},</span> <span class="s">&quot;low_mem&quot;</span><span class="p">)</span> <span class="c1">// GPU with only one gpu</span>
+ <span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -310,7 +332,29 @@ Potential matches:
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">summary</span><span class="p">(</span><span class="n">model</span> <span class="n">m</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="p">...</span>
+ <span class="n">model</span> <span class="n">net</span><span class="o">=</span><span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},{</span><span class="n">out</span><span class="p">});</span>
+
+ <span class="c1">// Build model</span>
+ <span class="n">build</span><span class="p">(</span><span class="n">net</span><span class="p">,</span>
+       <span class="n">sgd</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">),</span> <span class="c1">// Optimizer</span>
+       <span class="p">{</span><span class="s">&quot;soft_cross_entropy&quot;</span><span class="p">},</span> <span class="c1">// Losses</span>
+       <span class="p">{</span><span class="s">&quot;categorical_accuracy&quot;</span><span class="p">},</span> <span class="c1">// Metrics</span>
+       <span class="n">CS_GPU</span><span class="p">({</span><span class="mi">1</span><span class="p">},</span> <span class="s">&quot;low_mem&quot;</span><span class="p">)</span> <span class="c1">// GPU with only one gpu</span>
+ <span class="p">);</span>
+
+ <span class="n">summary</span><span class="p">(</span><span class="n">net</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
 <p>Result:</p>
@@ -348,7 +392,13 @@ softmax4                      |  (10)      =&gt;      (10)
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">plot</span><span class="p">(</span><span class="n">model</span> <span class="n">m</span><span class="p">,</span> <span class="n">string</span> <span class="n">fname</span><span class="p">,</span> <span class="n">string</span> <span class="n">mode</span><span class="o">=</span><span class="s">&quot;LR&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="p">...</span>
+ <span class="n">model</span> <span class="n">net</span><span class="o">=</span><span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},{</span><span class="n">out</span><span class="p">});</span>
+
+ <span class="n">plot</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="s">&quot;model.pdf&quot;</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
 <p>Result:</p>
@@ -372,7 +422,37 @@ softmax4                      |  (10)      =&gt;      (10)
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">load</span><span class="p">(</span><span class="n">model</span> <span class="n">m</span><span class="p">,</span> <span class="k">const</span> <span class="n">string</span><span class="o">&amp;</span> <span class="n">fname</span><span class="p">,</span> <span class="n">string</span> <span class="n">format</span><span class="o">=</span><span class="s">&quot;bin&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="p">...</span>
+ <span class="n">model</span> <span class="n">net</span> <span class="o">=</span> <span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},</span> <span class="p">{</span><span class="n">out</span><span class="p">});</span>
+
+ <span class="c1">// Build model</span>
+ <span class="n">build</span><span class="p">(</span><span class="n">net</span><span class="p">,</span>
+       <span class="n">rmsprop</span><span class="p">(</span><span class="mf">0.01</span><span class="p">),</span> <span class="c1">// Optimizer</span>
+       <span class="p">{</span><span class="s">&quot;soft_cross_entropy&quot;</span><span class="p">},</span> <span class="c1">// Losses</span>
+       <span class="p">{</span><span class="s">&quot;categorical_accuracy&quot;</span><span class="p">},</span> <span class="c1">// Metrics</span>
+        <span class="n">CS_GPU</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span><span class="mi">100</span><span class="p">)</span> <span class="c1">// one GPU</span>
+ <span class="p">);</span>
+
+ <span class="c1">// Load weights</span>
+ <span class="n">load</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="s">&quot;saved-weights.bin&quot;</span><span class="p">);</span>
+
+ <span class="c1">// Evaluate</span>
+ <span class="n">evaluate</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="p">{</span><span class="n">x_test</span><span class="p">},</span> <span class="p">{</span><span class="n">y_test</span><span class="p">});</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -395,7 +475,37 @@ softmax4                      |  (10)      =&gt;      (10)
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">save</span><span class="p">(</span><span class="n">model</span> <span class="n">m</span><span class="p">,</span> <span class="k">const</span> <span class="n">string</span><span class="o">&amp;</span> <span class="n">fname</span><span class="p">,</span> <span class="n">string</span> <span class="n">format</span><span class="o">=</span><span class="s">&quot;bin&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="p">...</span>
+ <span class="n">model</span> <span class="n">net</span> <span class="o">=</span> <span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},</span> <span class="p">{</span><span class="n">out</span><span class="p">});</span>
+
+ <span class="c1">// Build model</span>
+ <span class="n">build</span><span class="p">(</span><span class="n">net</span><span class="p">,</span>
+       <span class="n">rmsprop</span><span class="p">(</span><span class="mf">0.01</span><span class="p">),</span> <span class="c1">// Optimizer</span>
+       <span class="p">{</span><span class="s">&quot;soft_cross_entropy&quot;</span><span class="p">},</span> <span class="c1">// Losses</span>
+       <span class="p">{</span><span class="s">&quot;categorical_accuracy&quot;</span><span class="p">},</span> <span class="c1">// Metrics</span>
+        <span class="n">CS_GPU</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span><span class="mi">100</span><span class="p">)</span> <span class="c1">// one GPU</span>
+ <span class="p">);</span>
+
+ <span class="c1">// Train model</span>
+ <span class="n">fit</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="p">{</span><span class="n">x_train</span><span class="p">},</span> <span class="p">{</span><span class="n">y_train</span><span class="p">},</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">epochs</span><span class="p">);</span>
+
+ <span class="c1">// Save weights</span>
+ <span class="n">save</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="s">&quot;saved-weights.bin&quot;</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -418,7 +528,25 @@ softmax4                      |  (10)      =&gt;      (10)
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">setlr</span><span class="p">(</span><span class="n">model</span> <span class="n">net</span><span class="p">,</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="n">p</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="p">...</span>
+ <span class="n">model</span> <span class="n">net</span> <span class="o">=</span> <span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},</span> <span class="p">{</span><span class="n">out</span><span class="p">});</span>
+
+ <span class="c1">// Build model</span>
+ <span class="p">...</span>
+
+ <span class="n">setlr</span><span class="p">(</span><span class="n">net</span><span class="p">,{</span><span class="mf">0.005</span><span class="p">,</span><span class="mf">0.9</span><span class="p">});</span>
+
+ <span class="c1">// Train model</span>
+ <span class="n">fit</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="p">{</span><span class="n">x_train</span><span class="p">},</span> <span class="p">{</span><span class="n">y_train</span><span class="p">},</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">epochs</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -441,7 +569,23 @@ softmax4                      |  (10)      =&gt;      (10)
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">setlogfile</span><span class="p">(</span><span class="n">model</span> <span class="n">net</span><span class="p">,</span> <span class="n">string</span> <span class="n">fname</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">model</span> <span class="n">net</span> <span class="o">=</span> <span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},</span> <span class="p">{</span><span class="n">out</span><span class="p">});</span>
+
+ <span class="c1">// Build model</span>
+ <span class="p">...</span>
+
+ <span class="n">setlogfile</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="s">&quot;model-log&quot;</span><span class="p">);</span>
+
+ <span class="c1">// Train model</span>
+ <span class="n">fit</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="p">{</span><span class="n">x_train</span><span class="p">},</span> <span class="p">{</span><span class="n">y_train</span><span class="p">},</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">epochs</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -464,15 +608,17 @@ softmax4                      |  (10)      =&gt;      (10)
 </p>
 </dd></dl>
 
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">toCPU</span><span class="p">(</span><span class="n">net</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl5toGPUE5model6vectorIiEi6string">
 <span id="_CPPv3N4eddl5toGPUE5model6vectorIiEi6string"></span><span id="_CPPv2N4eddl5toGPUE5model6vectorIiEi6string"></span><span id="eddl::toGPU__model.vector:i:.i.string"></span><span class="target" id="namespaceeddl_1a26d9bf05672b184b480bae3bd8bb92ed"></span>void <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">toGPU</code><span class="sig-paren">(</span>model <em>net</em>, vector&lt;int&gt; <em>g</em>, int <em>lsb</em>, string <em>mem</em><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">toCPU</span><span class="p">(</span><span class="n">model</span> <span class="n">net</span><span class="p">,</span> <span class="kt">int</span> <span class="n">t</span><span class="o">=</span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="o">::</span><span class="n">hardware_concurrency</span><span class="p">());</span> <span class="c1">// num. threads, memory consumption</span>
- <span class="kt">void</span> <span class="nf">toGPU</span><span class="p">(</span><span class="n">model</span> <span class="n">net</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">g</span><span class="p">,</span> <span class="kt">int</span> <span class="n">lsb</span><span class="p">,</span> <span class="n">string</span> <span class="n">mem</span><span class="p">);</span> <span class="c1">// mode, list of gpus (on=1/off=0), sync number, memory consumption</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">toGPU</span><span class="p">(</span><span class="n">net</span><span class="p">,{</span><span class="mi">1</span><span class="p">},</span><span class="mi">100</span><span class="p">,</span><span class="s">&quot;low_mem&quot;</span><span class="p">);</span> <span class="c1">// In two gpus, syncronize every 100 batches, low_mem setup</span>
 </pre></div>
 </td></tr></table></div>
 </div>

@@ -266,11 +266,17 @@ conda activate eddl
 <span class="o">-</span> <span class="n">pip</span>
 
 <span class="o">-</span> <span class="n">pip</span><span class="p">:</span>
-    <span class="o">-</span> <span class="n">sphinx</span>
-    <span class="o">-</span> <span class="n">breathe</span>
-    <span class="o">-</span> <span class="n">sphinx_rtd_theme</span>
-    <span class="o">-</span> <span class="n">sphinx</span><span class="o">-</span><span class="n">tabs</span>
+    <span class="o">-</span> <span class="n">sphinx</span><span class="o">==</span><span class="mf">3.0</span><span class="o">.</span><span class="mi">3</span>
+    <span class="o">-</span> <span class="n">sphinx_rtd_theme</span><span class="o">==</span><span class="mf">0.4</span><span class="o">.</span><span class="mi">3</span>
+    <span class="o">-</span> <span class="n">sphinx</span><span class="o">-</span><span class="n">tabs</span><span class="o">==</span><span class="mf">1.1</span><span class="o">.</span><span class="mi">13</span>
+    <span class="o">-</span> <span class="n">breathe</span><span class="o">==</span><span class="mf">4.16</span><span class="o">.</span><span class="mi">0</span>
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When using <code class="docutils literal notranslate"><span class="pre">apt-get</span></code>, the installed version of the package depends on the distro version (by default).
+This is important to known, because for instance, in Ubuntu 18.04 <code class="docutils literal notranslate"><span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">libeigen3-dev</span></code>
+installs Eigen 3.3.4-4, when the EDDL needs Eigen 3.3.7.</p>
 </div>
 </div>
 <div class="section" id="build-and-optimization">
@@ -331,7 +337,7 @@ troubleshoot the compilation process (see: :doc:<code class="docutils literal no
 <ul class="simple">
 <li><p><strong>Prefix path:</strong> Semicolon-separated list of directories specifying installation prefixes to be searched by the <code class="docutils literal notranslate"><span class="pre">find_package()</span></code>, <code class="docutils literal notranslate"><span class="pre">find_program()</span></code>, <code class="docutils literal notranslate"><span class="pre">find_library()</span></code>, <code class="docutils literal notranslate"><span class="pre">find_file()</span></code>, and <code class="docutils literal notranslate"><span class="pre">find_path()</span></code> commands.</p></li>
 </ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_PREFIX_PATH<span class="o">=</span>/path/to/directory
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DCMAKE_PREFIX_PATH<span class="o">=</span>/path/to/dir
 </pre></div>
 </div>
 <ul class="simple">
@@ -405,6 +411,20 @@ troubleshoot the compilation process (see: :doc:<code class="docutils literal no
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Enabled by default</p>
+</div>
+<ul class="simple">
+<li><p><strong>Use local gtest:</strong> Uses the local copy of the gtest repository as fail-safe. Ignored if using superbuild.</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-DUSE_LOCAL_GTEST<span class="o">=</span>ON
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Enabled by default.</p>
+<p>Why this? Because the Google C++ Testing Framework uses conditional compilation for some things.
+Because of the C++ “One Definition Rule”, gtest must be compiled with exactly the same flags as
+your C++ code under test. Therefore, to avoid or fix potential problems, we have provide you with
+this flag in advance.</p>
 </div>
 <ul class="simple">
 <li><p><strong>Build examples:</strong> To compile the examples, use the setting <code class="docutils literal notranslate"><span class="pre">BUILD_EXAMPLES</span></code>, such as:</p></li>

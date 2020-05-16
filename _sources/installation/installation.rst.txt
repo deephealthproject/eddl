@@ -93,7 +93,7 @@ On Unix platforms, from the source directory:
             # Build and install
             mkdir build
             cd build
-            cmake ..
+            cmake .. -DCMAKE_PREFIX_PATH=/path/to/dir -DCMAKE_INSTALL_PREFIX=/path/to/dir
             make install
 
     .. tab:: MacOS
@@ -111,7 +111,8 @@ On Unix platforms, from the source directory:
             # Build and install
             mkdir build
             cd build
-            cmake ..
+            cmake .. -DCMAKE_PREFIX_PATH=/path/to/dir -DCMAKE_INSTALL_PREFIX=/path/to/dir
+
             make install
 
 
@@ -119,8 +120,8 @@ See the :doc:`build-options` section for more details about cmake options.
 
 .. note::
 
-    You can make use of the ``-DCMAKE_INSTALL_PREFIX`` flag to specify where cmake searches for
-    dependencies and installs libraries.
+    You can ignore ``-DCMAKE_INSTALL_PREFIX`` and ``-DCMAKE_INSTALL_PREFIX`` to use their default values,
+    or if you prefer it, you can specificy your environment like ``-DCMAKE_PREFIX_PATH=$CONDA_PREFIX``.
 
     If you want to distribute the resulting shared library, you should use the flag
     ``-DBUILD_SUPERBUILD=ON`` so that we can make specific tunings to our dependencies.

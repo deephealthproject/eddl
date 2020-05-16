@@ -105,6 +105,7 @@
 <li class="toctree-l1"><a class="reference internal" href="data_augmentation.html">Data augmentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_transformation.html">Data transformation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Convolutions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#conv1d">Conv1D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#conv2d">Conv2D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#d-upsampling">2D Upsampling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#convolutional-transpose">Convolutional Transpose</a></li>
@@ -234,6 +235,64 @@
             
   <div class="section" id="convolutions">
 <h1>Convolutions<a class="headerlink" href="#convolutions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="conv1d">
+<h2>Conv1D<a class="headerlink" href="#conv1d" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl6Conv1DE5layeri6vectorIiE6vectorIiE6stringbiK6vectorIiE6string">
+<span id="_CPPv3N4eddl6Conv1DE5layeri6vectorIiE6vectorIiE6stringbiK6vectorIiE6string"></span><span id="_CPPv2N4eddl6Conv1DE5layeri6vectorIiE6vectorIiE6stringbiK6vectorIiE6string"></span><span id="eddl::Conv1D__layer.i.vector:i:.vector:i:.string.b.i.vector:i:C.string"></span><span class="target" id="namespaceeddl_1a1871b4ba3666e37a07ecff20c6711173"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Conv1D</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>filters</em>, vector&lt;int&gt; <em>kernel_size</em>, vector&lt;int&gt; <em>strides</em> = {1}, string <em>padding</em> = &quot;same&quot;, bool <em>use_bias</em> = true, int <em>groups</em> = 1, <em class="property">const</em> vector&lt;int&gt; <em>dilation_rate</em> = {1}, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl6Conv1DE5layeri6vectorIiE6vectorIiE6stringbiK6vectorIiE6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>1D Convolution layer. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Convolution layer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filters</span></code>: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kernel_size</span></code>: Vector of 1 integers, specifying the height and width of the 2D convolution window. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strides</span></code>: Vector of 1 integers, specifying the strides of the convolution along the height and width </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">padding</span></code>: One of “none”, “valid” or “same” </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: Boolean, whether the layer uses a bias vector. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">groups</span></code>: Number of blocked connections from input channels to output channels </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dilation_rate</span></code>: Vector of 1 integers, specifying the dilation rate to use for dilated convolution </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="c1">// Define network</span>
+<span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
+<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
+
+<span class="n">l</span> <span class="o">=</span> <span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">784</span><span class="p">});</span> <span class="c1">//image as a 1D signal with depth=1</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">MaxPool1D</span><span class="p">(</span><span class="n">ReLu</span><span class="p">(</span><span class="n">Conv1D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">})),{</span><span class="mi">4</span><span class="p">},{</span><span class="mi">4</span><span class="p">});</span>  <span class="c1">//MaxPool 4 stride 4</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">MaxPool1D</span><span class="p">(</span><span class="n">ReLu</span><span class="p">(</span><span class="n">Conv1D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">})),{</span><span class="mi">4</span><span class="p">},{</span><span class="mi">4</span><span class="p">});</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">MaxPool1D</span><span class="p">(</span><span class="n">ReLu</span><span class="p">(</span><span class="n">Conv1D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">64</span><span class="p">,{</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">})),{</span><span class="mi">4</span><span class="p">},{</span><span class="mi">4</span><span class="p">});</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">MaxPool1D</span><span class="p">(</span><span class="n">ReLu</span><span class="p">(</span><span class="n">Conv1D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">64</span><span class="p">,{</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">})),{</span><span class="mi">4</span><span class="p">},{</span><span class="mi">4</span><span class="p">});</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="o">-</span><span class="mi">1</span><span class="p">});</span>
+
+<span class="n">layer</span> <span class="n">out</span> <span class="o">=</span> <span class="n">Activation</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">),</span> <span class="s">&quot;softmax&quot;</span><span class="p">);</span>
+<span class="n">model</span> <span class="n">net</span> <span class="o">=</span> <span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},</span> <span class="p">{</span><span class="n">out</span><span class="p">});</span>
+<span class="p">...</span>
+</pre></div>
+</td></tr></table></div>
+</div>
 <div class="section" id="conv2d">
 <h2>Conv2D<a class="headerlink" href="#conv2d" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
@@ -260,12 +319,41 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="nf">Conv</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="kt">int</span> <span class="n">filters</span><span class="p">,</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">kernel_size</span><span class="p">,</span>
-            <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">strides</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">},</span> <span class="n">string</span> <span class="n">padding</span> <span class="o">=</span> <span class="s">&quot;same&quot;</span><span class="p">,</span> <span class="kt">int</span> <span class="n">groups</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">dilation_rate</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">},</span>
-            <span class="kt">bool</span> <span class="n">use_bias</span> <span class="o">=</span> <span class="nb">true</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="p">...</span>
+ <span class="c1">// Define network</span>
+ <span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
+ <span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
+
+ <span class="n">l</span> <span class="o">=</span> <span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
+ <span class="n">l</span> <span class="o">=</span> <span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">});</span>
+ <span class="n">l</span> <span class="o">=</span> <span class="n">ReLu</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+ <span class="n">l</span> <span class="o">=</span> <span class="n">MaxPool</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span> <span class="s">&quot;same&quot;</span><span class="p">);</span>
+ <span class="n">l</span> <span class="o">=</span> <span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">64</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">});</span>
+ <span class="n">l</span> <span class="o">=</span> <span class="n">ReLu</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+ <span class="n">l</span> <span class="o">=</span> <span class="n">MaxPool</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">},</span> <span class="s">&quot;none&quot;</span><span class="p">);</span>
+ <span class="n">l</span> <span class="o">=</span> <span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="o">-</span><span class="mi">1</span><span class="p">});</span>
+
+ <span class="n">layer</span> <span class="n">out</span> <span class="o">=</span> <span class="n">Activation</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">),</span> <span class="s">&quot;softmax&quot;</span><span class="p">);</span>
+ <span class="n">model</span> <span class="n">net</span> <span class="o">=</span> <span class="n">Model</span><span class="p">({</span><span class="n">in</span><span class="p">},</span> <span class="p">{</span><span class="n">out</span><span class="p">});</span>
+ <span class="p">...</span>
 </pre></div>
-</div>
+</td></tr></table></div>
 </div>
 <div class="section" id="d-upsampling">
 <h2>2D Upsampling<a class="headerlink" href="#d-upsampling" title="Permalink to this headline">¶</a></h2>
@@ -293,25 +381,46 @@
 <p>In future versions this function will call <code class="docutils literal notranslate"><span class="pre">scale</span></code> instead of <code class="docutils literal notranslate"><span class="pre">repeat</span></code></p>
 </div>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="nf">UpSampling</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">size</span><span class="p">,</span> <span class="n">string</span> <span class="n">interpolation</span> <span class="o">=</span> <span class="s">&quot;nearest&quot;</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="p">...</span>
+ <span class="c1">// Define network</span>
+ <span class="n">layer</span> <span class="n">in</span> <span class="o">=</span> <span class="n">Input</span><span class="p">({</span><span class="mi">784</span><span class="p">});</span>
+ <span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">in</span><span class="p">;</span>  <span class="c1">// Aux var</span>
+
+ <span class="n">l</span> <span class="o">=</span> <span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
+ <span class="n">l</span> <span class="o">=</span> <span class="n">MaxPool</span><span class="p">(</span><span class="n">ReLu</span><span class="p">(</span><span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">128</span><span class="p">,{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">})),{</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">});</span>
+ <span class="n">l</span> <span class="o">=</span> <span class="n">UpSampling</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">});</span>
+ <span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>
 <div class="section" id="convolutional-transpose">
 <h2>Convolutional Transpose<a class="headerlink" href="#convolutional-transpose" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl10UpSamplingE5layerRK6vectorIiE6string6string">
-<span id="_CPPv3N4eddl10UpSamplingE5layerRK6vectorIiE6string6string"></span><span id="_CPPv2N4eddl10UpSamplingE5layerRK6vectorIiE6string6string"></span><span class="target" id="namespaceeddl_1ad41b26a319f9f9b471742050aa9a92ea"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">UpSampling</code><span class="sig-paren">(</span>layer <em>parent</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>size</em>, string <em>interpolation</em> = &quot;nearest&quot;, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><br /></dt>
-<dd><p>Upsampling layer. </p>
-<p>Identical to the <code class="docutils literal notranslate"><span class="pre">scale</span></code> transformation, the only difference is that <code class="docutils literal notranslate"><span class="pre">upsampling</span></code> repeats its rows/columns <em>n</em> times, while scaling uses a proportion.</p>
+<dt id="_CPPv4N4eddl5ConvTE5layeriRK6vectorIiERK6vectorIiE6stringRK6vectorIiERK6vectorIiEb6string">
+<span id="_CPPv3N4eddl5ConvTE5layeriRK6vectorIiERK6vectorIiE6stringRK6vectorIiERK6vectorIiEb6string"></span><span id="_CPPv2N4eddl5ConvTE5layeriRK6vectorIiERK6vectorIiE6stringRK6vectorIiERK6vectorIiEb6string"></span><span id="eddl::ConvT__layer.i.vector:i:CR.vector:i:CR.string.vector:i:CR.vector:i:CR.b.string"></span><span class="target" id="namespaceeddl_1a6edb080aca0f0791fd8ab86205a3b063"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ConvT</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>filters</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>kernel_size</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>output_padding</em>, string <em>padding</em> = &quot;same&quot;, <em class="property">const</em> vector&lt;int&gt; &amp;<em>dilation_rate</em> = {1, 1}, <em class="property">const</em> vector&lt;int&gt; &amp;<em>strides</em> = {1, 1}, bool <em>use_bias</em> = true, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl5ConvTE5layeriRK6vectorIiERK6vectorIiE6stringRK6vectorIiERK6vectorIiEb6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Transposed convolution layer (sometimes called Deconvolution). </p>
+<p>The need for transposed convolutions generally arises from the desire to use a transformation going in the opposite direction of a normal convolution, i.e., from something that has the shape of the output of some convolution to something that has the shape of its input while maintaining a connectivity pattern that is compatible with said convolution.</p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>Output layer after upsampling operation </p>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">size</span></code>: Vector of 2 integers. The upsampling factors for rows and columns </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">interpolation</span></code>: A string, one of nearest or bilinear </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filters</span></code>: the dimensionality of the output space (i.e. the number of output filters in the convolution). </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kernel_size</span></code>: the height and width of the 2D convolution window. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_padding</span></code>: the amount of padding along the height and width of the output tensor. The amount of output padding along a given dimension must be lower than the stride along that same dimension </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">padding</span></code>: one of “valid” or “same” </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dilation_rate</span></code>: the dilation rate to use for dilated convolution. Spacing between kernel elements. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strides</span></code>: the strides of the convolution along the height and width. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_bias</span></code>: Boolean, whether the layer uses a bias vector. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation. </p></li>
 </ul>
 </dd>
 </dl>
@@ -323,16 +432,6 @@
 <p><strong>Not implemented yet</strong></p>
 <p>Check development progress in <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#convolutional-layers">https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#convolutional-layers</a></p>
 </div>
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">layer</span> <span class="nf">ConvT</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="kt">int</span> <span class="n">filters</span><span class="p">,</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">kernel_size</span><span class="p">,</span>
-             <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">output_padding</span><span class="p">,</span> <span class="n">string</span> <span class="n">padding</span> <span class="o">=</span> <span class="s">&quot;same&quot;</span><span class="p">,</span>
-             <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">dilation_rate</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">},</span>
-             <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">strides</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">},</span> <span class="kt">bool</span> <span class="n">use_bias</span> <span class="o">=</span> <span class="nb">true</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
-</pre></div>
-</td></tr></table></div>
 </div>
 </div>
 

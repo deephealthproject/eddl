@@ -237,8 +237,8 @@
 <div class="section" id="rnn">
 <h2>RNN<a class="headerlink" href="#rnn" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl3RNNE5layeriibfb6string">
-<span id="_CPPv3N4eddl3RNNE5layeriibfb6string"></span><span id="_CPPv2N4eddl3RNNE5layeriibfb6string"></span><span id="eddl::RNN__layer.i.i.b.float.b.string"></span><span class="target" id="namespaceeddl_1a6892e81884b8e7b0e5804367d60afab3"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RNN</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>units</em>, int <em>num_layers</em> = 1, bool <em>use_bias</em> = true, float <em>dropout</em> = .0f, bool <em>bidirectional</em> = false, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3RNNE5layeriibfb6string" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N4eddl3RNNE5layeri6stringbb6string">
+<span id="_CPPv3N4eddl3RNNE5layeri6stringbb6string"></span><span id="_CPPv2N4eddl3RNNE5layeri6stringbb6string"></span><span id="eddl::RNN__layer.i.string.b.b.string"></span><span class="target" id="namespaceeddl_1a3147ad0e2bb051c785e7c436eced9376"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">RNN</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>units</em>, string <em>activation</em> = &quot;tanh&quot;, bool <em>use_bias</em> = true, bool <em>bidirectional</em> = false, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl3RNNE5layeri6stringbb6string" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Fully-connected RNN where the output is to be fed back to input. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>The RNN layer </p>
@@ -262,10 +262,6 @@
 <p><strong>Not implemented yet</strong></p>
 <p>Check development progress in <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers">https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers</a></p>
 </div>
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">RNN</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="kt">int</span> <span class="n">units</span><span class="p">,</span> <span class="kt">int</span> <span class="n">num_layers</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">use_bias</span> <span class="o">=</span> <span class="nb">true</span><span class="p">,</span> <span class="kt">float</span> <span class="n">dropout</span> <span class="o">=</span> <span class="mf">.0f</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">bidirectional</span> <span class="o">=</span> <span class="nb">false</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
-</pre></div>
-</td></tr></table></div>
 </div>
 <div class="section" id="gru">
 <h2>GRU<a class="headerlink" href="#gru" title="Permalink to this headline">¶</a></h2>
@@ -275,16 +271,12 @@
 <p><strong>Not implemented yet</strong></p>
 <p>Check development progress in <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers">https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers</a></p>
 </div>
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">GRU</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="kt">int</span> <span class="n">units</span><span class="p">,</span> <span class="kt">int</span> <span class="n">num_layers</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">use_bias</span> <span class="o">=</span> <span class="nb">true</span><span class="p">,</span> <span class="kt">float</span> <span class="n">dropout</span> <span class="o">=</span> <span class="mf">.0f</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">bidirectional</span> <span class="o">=</span> <span class="nb">false</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
-</pre></div>
-</td></tr></table></div>
 </div>
 <div class="section" id="lstm">
 <h2>LSTM<a class="headerlink" href="#lstm" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
-<dt id="_CPPv4N4eddl4LSTME5layeriibfb6string">
-<span id="_CPPv3N4eddl4LSTME5layeriibfb6string"></span><span id="_CPPv2N4eddl4LSTME5layeriibfb6string"></span><span id="eddl::LSTM__layer.i.i.b.float.b.string"></span><span class="target" id="namespaceeddl_1a11d1aa3b0ab0b22451b6b69012e16465"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">LSTM</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>units</em>, int <em>num_layers</em>, bool <em>use_bias</em> = true, float <em>dropout</em> = .0f, bool <em>bidirectional</em> = false, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4LSTME5layeriibfb6string" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N4eddl4LSTME5layeribb6string">
+<span id="_CPPv3N4eddl4LSTME5layeribb6string"></span><span id="_CPPv2N4eddl4LSTME5layeribb6string"></span><span id="eddl::LSTM__layer.i.b.b.string"></span><span class="target" id="namespaceeddl_1aa89e150fc5d6899949128942c1d4cbbd"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">LSTM</code><span class="sig-paren">(</span>layer <em>parent</em>, int <em>units</em>, bool <em>mask_zeros</em> = false, bool <em>bidirectional</em> = false, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl4LSTME5layeribb6string" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Long Short-Term Memory layer - Hochreiter 1997. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>The LSTM layer </p>
@@ -308,10 +300,6 @@
 <p><strong>Not implemented yet</strong></p>
 <p>Check development progress in <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers">https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers</a></p>
 </div>
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">LSTM</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="kt">int</span> <span class="n">units</span><span class="p">,</span> <span class="kt">int</span> <span class="n">num_layers</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">use_bias</span> <span class="o">=</span> <span class="nb">true</span><span class="p">,</span> <span class="kt">float</span> <span class="n">dropout</span> <span class="o">=</span> <span class="mf">.0f</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">bidirectional</span> <span class="o">=</span> <span class="nb">false</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
-</pre></div>
-</td></tr></table></div>
 </div>
 </div>
 

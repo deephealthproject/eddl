@@ -261,7 +261,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Abs</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Abs</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -284,11 +286,23 @@
 </p>
 </dd></dl>
 
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">Diff</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">);</span> <span class="c1">// l1 and l2 are layers with the same shape</span>
+</pre></div>
+</td></tr></table></div>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl4DiffE5layerf">
 <span id="_CPPv3N4eddl4DiffE5layerf"></span><span id="_CPPv2N4eddl4DiffE5layerf"></span><span id="eddl::Diff__layer.float"></span><span class="target" id="namespaceeddl_1a0bef31942932d7f03cb58ff517be9beb"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Diff</code><span class="sig-paren">(</span>layer <em>l1</em>, float <em>k</em><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Diff</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl4DiffEf5layer">
 <span id="_CPPv3N4eddl4DiffEf5layer"></span><span id="_CPPv2N4eddl4DiffEf5layer"></span><span id="eddl::Diff__float.layer"></span><span class="target" id="namespaceeddl_1aaa34c371296477a7c77072e8bed08943"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Diff</code><span class="sig-paren">(</span>float <em>k</em>, layer <em>l1</em><span class="sig-paren">)</span><br /></dt>
@@ -296,10 +310,8 @@
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Diff</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="n">layer</span> <span class="n">l2</span><span class="p">);</span>
- <span class="n">layer</span> <span class="nf">Diff</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="kt">float</span> <span class="n">k</span><span class="p">);</span>
- <span class="n">layer</span> <span class="nf">Diff</span><span class="p">(</span><span class="kt">float</span> <span class="n">k</span><span class="p">,</span> <span class="n">layer</span> <span class="n">l1</span><span class="p">);</span>
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Diff</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">l</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -322,11 +334,23 @@
 </p>
 </dd></dl>
 
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">Div</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">);</span> <span class="c1">// l1 and l2 are layers with the same shape</span>
+</pre></div>
+</td></tr></table></div>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl3DivE5layerf">
 <span id="_CPPv3N4eddl3DivE5layerf"></span><span id="_CPPv2N4eddl3DivE5layerf"></span><span id="eddl::Div__layer.float"></span><span class="target" id="namespaceeddl_1a635ee1d48ff9cc4e6ce4daf3859ac5e3"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Div</code><span class="sig-paren">(</span>layer <em>l1</em>, float <em>k</em><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Div</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl3DivEf5layer">
 <span id="_CPPv3N4eddl3DivEf5layer"></span><span id="_CPPv2N4eddl3DivEf5layer"></span><span id="eddl::Div__float.layer"></span><span class="target" id="namespaceeddl_1a60ba50fb85367c102cb75b53a83dcceb"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Div</code><span class="sig-paren">(</span>float <em>k</em>, layer <em>l1</em><span class="sig-paren">)</span><br /></dt>
@@ -334,10 +358,8 @@
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Div</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="n">layer</span> <span class="n">l2</span><span class="p">);</span>
- <span class="n">layer</span> <span class="nf">Div</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="kt">float</span> <span class="n">k</span><span class="p">);</span>
- <span class="n">layer</span> <span class="nf">Div</span><span class="p">(</span><span class="kt">float</span> <span class="n">k</span><span class="p">,</span> <span class="n">layer</span> <span class="n">l1</span><span class="p">);</span>
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Div</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">l</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -360,7 +382,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Exp</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Exp</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -383,7 +407,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Log</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Log</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -406,7 +432,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Log2</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Log2</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -429,7 +457,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Abs</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Log10</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -452,11 +482,23 @@
 </p>
 </dd></dl>
 
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">Mult</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">);</span> <span class="c1">// l1 and l2 are layers with the same shape</span>
+</pre></div>
+</td></tr></table></div>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl4MultE5layerf">
 <span id="_CPPv3N4eddl4MultE5layerf"></span><span id="_CPPv2N4eddl4MultE5layerf"></span><span id="eddl::Mult__layer.float"></span><span class="target" id="namespaceeddl_1afe11c00acc31fa8c69383d9c8e93edaa"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Mult</code><span class="sig-paren">(</span>layer <em>l1</em>, float <em>k</em><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Mult</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl4MultEf5layer">
 <span id="_CPPv3N4eddl4MultEf5layer"></span><span id="_CPPv2N4eddl4MultEf5layer"></span><span id="eddl::Mult__float.layer"></span><span class="target" id="namespaceeddl_1a2504bb8e28c324f950c0b6b00026aefb"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Mult</code><span class="sig-paren">(</span>float <em>k</em>, layer <em>l1</em><span class="sig-paren">)</span><br /></dt>
@@ -464,10 +506,8 @@
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Mult</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="n">layer</span> <span class="n">l2</span><span class="p">);</span>
- <span class="n">layer</span> <span class="nf">Mult</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="kt">float</span> <span class="n">k</span><span class="p">);</span>
- <span class="n">layer</span> <span class="nf">Mult</span><span class="p">(</span><span class="kt">float</span> <span class="n">k</span><span class="p">,</span><span class="n">layer</span> <span class="n">l1</span><span class="p">);</span>
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">Mult</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">l</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -495,12 +535,6 @@
 <span id="_CPPv3N4eddl3PowE5layerf"></span><span id="_CPPv2N4eddl3PowE5layerf"></span><span id="eddl::Pow__layer.float"></span><span class="target" id="namespaceeddl_1ac7caf7b40e13d7ab29e8808a53ad0fd9"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Pow</code><span class="sig-paren">(</span>layer <em>l1</em>, float <em>k</em><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Pow</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="n">layer</span> <span class="n">l2</span><span class="p">);</span>
- <span class="n">layer</span> <span class="nf">Pow</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="kt">float</span> <span class="n">k</span><span class="p">);</span>
-</pre></div>
-</td></tr></table></div>
 </div>
 <div class="section" id="sqrt">
 <h2>Sqrt<a class="headerlink" href="#sqrt" title="Permalink to this headline">¶</a></h2>
@@ -521,7 +555,9 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Sqrt</span><span class="p">(</span><span class="n">layer</span> <span class="n">l</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Sqrt</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -544,6 +580,12 @@
 </p>
 </dd></dl>
 
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">layer</span> <span class="n">l</span> <span class="o">=</span> <span class="n">Sum</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">);</span> <span class="c1">// l1 and l2 are layers with the same shape</span>
+</pre></div>
+</td></tr></table></div>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl3SumE5layerf">
 <span id="_CPPv3N4eddl3SumE5layerf"></span><span id="_CPPv2N4eddl3SumE5layerf"></span><span id="eddl::Sum__layer.float"></span><span class="target" id="namespaceeddl_1abe790c35f3853be91b30adb646139740"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Sum</code><span class="sig-paren">(</span>layer <em>l1</em>, float <em>k</em><span class="sig-paren">)</span><br /></dt>
@@ -560,6 +602,12 @@
 </p>
 </dd></dl>
 
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Sum</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">);</span>
+</pre></div>
+</td></tr></table></div>
 <dl class="cpp function">
 <dt id="_CPPv4N4eddl3SumEf5layer">
 <span id="_CPPv3N4eddl3SumEf5layer"></span><span id="_CPPv2N4eddl3SumEf5layer"></span><span id="eddl::Sum__float.layer"></span><span class="target" id="namespaceeddl_1a53eb47d4d90cc1ea326e58f5939726db"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Sum</code><span class="sig-paren">(</span>float <em>k</em>, layer <em>l1</em><span class="sig-paren">)</span><br /></dt>
@@ -567,10 +615,8 @@
 
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Sum</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="n">layer</span> <span class="n">l2</span><span class="p">);</span>
- <span class="n">layer</span> <span class="nf">Sum</span><span class="p">(</span><span class="n">layer</span> <span class="n">l1</span><span class="p">,</span> <span class="kt">float</span> <span class="n">k</span><span class="p">);</span>
- <span class="n">layer</span> <span class="nf">Sum</span><span class="p">(</span><span class="kt">float</span> <span class="n">k</span><span class="p">,</span> <span class="n">layer</span> <span class="n">l1</span><span class="p">);</span>
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Sum</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">l</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
 </div>

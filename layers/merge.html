@@ -258,7 +258,17 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Add</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">layer</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">layers</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">layer</span> <span class="n">in1</span><span class="o">=</span><span class="n">Input</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="mi">584</span><span class="p">,</span><span class="mi">584</span><span class="p">});</span>
+<span class="n">layer</span> <span class="n">in2</span><span class="o">=</span><span class="n">Input</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="mi">584</span><span class="p">,</span><span class="mi">584</span><span class="p">});</span>
+
+<span class="n">layer</span> <span class="n">l</span><span class="o">=</span><span class="n">Add</span><span class="p">({</span><span class="n">in1</span><span class="p">,</span><span class="n">in2</span><span class="p">});</span>
+<span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -282,7 +292,17 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Average</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">layer</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">layers</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span> <span class="c1">//Todo: Implement</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">layer</span> <span class="n">in1</span><span class="o">=</span><span class="n">Input</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="mi">584</span><span class="p">,</span><span class="mi">584</span><span class="p">});</span>
+<span class="n">layer</span> <span class="n">in2</span><span class="o">=</span><span class="n">Input</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="mi">584</span><span class="p">,</span><span class="mi">584</span><span class="p">});</span>
+
+<span class="n">layer</span> <span class="n">l</span><span class="o">=</span><span class="n">Average</span><span class="p">({</span><span class="n">in1</span><span class="p">,</span><span class="n">in2</span><span class="p">});</span>
+<span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -307,7 +327,17 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Concat</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">layer</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">layers</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">layer</span> <span class="n">in1</span><span class="o">=</span><span class="n">Input</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="mi">584</span><span class="p">,</span><span class="mi">584</span><span class="p">});</span>
+<span class="n">layer</span> <span class="n">in2</span><span class="o">=</span><span class="n">Input</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">584</span><span class="p">,</span><span class="mi">584</span><span class="p">});</span>
+
+<span class="n">layer</span> <span class="n">l</span><span class="o">=</span><span class="n">Concat</span><span class="p">({</span><span class="n">in1</span><span class="p">,</span><span class="n">in2</span><span class="p">});</span>
+<span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -320,7 +350,17 @@
 
 <p>It takes as input a list of layers, all of the same shape, and returns a single tensor (also of the same shape).</p>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">MatMul</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">layer</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">layers</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">layer</span> <span class="n">in1</span><span class="o">=</span><span class="n">Input</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="mi">584</span><span class="p">,</span><span class="mi">584</span><span class="p">});</span>
+<span class="n">layer</span> <span class="n">in2</span><span class="o">=</span><span class="n">Input</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="mi">584</span><span class="p">,</span><span class="mi">584</span><span class="p">});</span>
+
+<span class="n">layer</span> <span class="n">l</span><span class="o">=</span><span class="n">MatMul</span><span class="p">({</span><span class="n">in1</span><span class="p">,</span><span class="n">in2</span><span class="p">});</span>
+<span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -344,7 +384,17 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Maximum</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">layer</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">layers</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">layer</span> <span class="n">in1</span><span class="o">=</span><span class="n">Input</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="mi">584</span><span class="p">,</span><span class="mi">584</span><span class="p">});</span>
+<span class="n">layer</span> <span class="n">in2</span><span class="o">=</span><span class="n">Input</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="mi">584</span><span class="p">,</span><span class="mi">584</span><span class="p">});</span>
+
+<span class="n">layer</span> <span class="n">l</span><span class="o">=</span><span class="n">Maximum</span><span class="p">({</span><span class="n">in1</span><span class="p">,</span><span class="n">in2</span><span class="p">});</span>
+<span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -368,7 +418,17 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Minimum</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">layer</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">layers</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">layer</span> <span class="n">in1</span><span class="o">=</span><span class="n">Input</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="mi">584</span><span class="p">,</span><span class="mi">584</span><span class="p">});</span>
+<span class="n">layer</span> <span class="n">in2</span><span class="o">=</span><span class="n">Input</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="mi">584</span><span class="p">,</span><span class="mi">584</span><span class="p">});</span>
+
+<span class="n">layer</span> <span class="n">l</span><span class="o">=</span><span class="n">Minimum</span><span class="p">({</span><span class="n">in1</span><span class="p">,</span><span class="n">in2</span><span class="p">});</span>
+<span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -392,7 +452,17 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">Subtract</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">layer</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">layers</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">layer</span> <span class="n">in1</span><span class="o">=</span><span class="n">Input</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="mi">584</span><span class="p">,</span><span class="mi">584</span><span class="p">});</span>
+<span class="n">layer</span> <span class="n">in2</span><span class="o">=</span><span class="n">Input</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="mi">584</span><span class="p">,</span><span class="mi">584</span><span class="p">});</span>
+
+<span class="n">layer</span> <span class="n">l</span><span class="o">=</span><span class="n">Subtract</span><span class="p">({</span><span class="n">in1</span><span class="p">,</span><span class="n">in2</span><span class="p">});</span>
+<span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>

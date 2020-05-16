@@ -236,59 +236,47 @@
 <h1>Normalization<a class="headerlink" href="#normalization" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="batchnormalization">
 <h2>BatchNormalization<a class="headerlink" href="#batchnormalization" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl18BatchNormalizationE5layerffb6string">
-<span id="_CPPv3N4eddl18BatchNormalizationE5layerffb6string"></span><span id="_CPPv2N4eddl18BatchNormalizationE5layerffb6string"></span><span id="eddl::BatchNormalization__layer.float.float.b.string"></span><span class="target" id="namespaceeddl_1aa2065370ac09bb78242c9792d7a2af91"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">BatchNormalization</code><span class="sig-paren">(</span>layer <em>parent</em>, float <em>momentum</em> = 0.9f, float <em>epsilon</em> = 0.00001f, bool <em>affine</em> = true, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl18BatchNormalizationE5layerffb6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Batch normalization layer. </p>
-<p>Normalize the activations of the previous layer at each batch, i.e. applies a transformation that maintains the mean activation close to 0 and the activation standard deviation close to 1.</p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference external" href="https://arxiv.org/abs/1502.03167">https://arxiv.org/abs/1502.03167</a></p>
-</dd>
-<dt><strong>Return</strong></dt><dd><p>Parent layer after the normalization </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">momentum</span></code>: Momentum for the moving mean and the moving variance </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Small float added to variance to avoid dividing by zero </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">affine</span></code>: A boolean value that when set to True, this module has learnable affine parameters </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “BatchNormalization” with arguments () in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">BatchNormalization</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">BatchNormalization</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">BatchNormalization</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="kt">float</span> <span class="n">momentum</span> <span class="o">=</span> <span class="mf">0.9f</span><span class="p">,</span> <span class="kt">float</span> <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.001f</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">affine</span> <span class="o">=</span> <span class="nb">true</span><span class="p">,</span><span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">l</span><span class="o">=</span><span class="n">Dense</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1024</span><span class="p">);</span>
+<span class="n">l</span><span class="o">=</span><span class="n">BatchNormalization</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>
 <div class="section" id="layernormalization">
 <h2>LayerNormalization<a class="headerlink" href="#layernormalization" title="Permalink to this headline">¶</a></h2>
-<dl class="cpp function">
-<dt id="_CPPv4N4eddl18LayerNormalizationE5layerfb6string">
-<span id="_CPPv3N4eddl18LayerNormalizationE5layerfb6string"></span><span id="_CPPv2N4eddl18LayerNormalizationE5layerfb6string"></span><span id="eddl::LayerNormalization__layer.float.b.string"></span><span class="target" id="namespaceeddl_1a602ada2bbfb60e2c6833432bffbdc784"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">LayerNormalization</code><span class="sig-paren">(</span>layer <em>parent</em>, float <em>epsilon</em> = 0.00001f, bool <em>affine</em> = true, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl18LayerNormalizationE5layerfb6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Layer normalization layer. </p>
-<p>Applies Layer Normalization over a input.</p>
-<p><dl class="simple">
-<dt><strong>See</strong></dt><dd><p><a class="reference external" href="https://arxiv.org/abs/1607.06450">https://arxiv.org/abs/1607.06450</a></p>
-</dd>
-<dt><strong>Return</strong></dt><dd><p>Parent layer after the normalization </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">momentum</span></code>: Momentum for the moving mean and the moving variance </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code>: Value added to the denominator for numerical stability </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">affine</span></code>: A boolean value that when set to True, this module has learnable affine parameters </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “LayerNormalization” with arguments () in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
 </p>
-</dd></dl>
-
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">LayerNormalization</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">layer</span> <span class="n">eddl</span><span class="p">::</span><span class="n">LayerNormalization</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">LayerNormalization</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="kt">float</span> <span class="n">momentum</span> <span class="o">=</span> <span class="mf">0.9f</span><span class="p">,</span> <span class="kt">float</span> <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.001f</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">affine</span> <span class="o">=</span> <span class="nb">true</span><span class="p">,</span><span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">l</span><span class="o">=</span><span class="n">Dense</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1024</span><span class="p">);</span>
+<span class="n">l</span><span class="o">=</span><span class="n">LayerNormalization</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -318,7 +306,13 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">GroupNormalization</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="kt">int</span> <span class="n">groups</span><span class="p">,</span> <span class="kt">float</span> <span class="n">momentum</span> <span class="o">=</span> <span class="mf">0.9f</span><span class="p">,</span> <span class="kt">float</span> <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.001f</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">affine</span> <span class="o">=</span> <span class="nb">true</span><span class="p">,</span><span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">l</span><span class="o">=</span><span class="n">Dense</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1024</span><span class="p">);</span>
+<span class="n">l</span><span class="o">=</span><span class="n">GroupNormalization</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">8</span><span class="p">);</span>
+<span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>

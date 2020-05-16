@@ -107,6 +107,7 @@
 <li class="toctree-l1"><a class="reference internal" href="convolutional.html">Convolutions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="noise.html">Noise Layers</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Pooling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#maxpooling1d">MaxPooling1D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#maxpooling">MaxPooling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#globalmaxpooling">GlobalMaxPooling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#averagepooling">AveragePooling</a></li>
@@ -235,6 +236,42 @@
             
   <div class="section" id="pooling">
 <h1>Pooling<a class="headerlink" href="#pooling" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="maxpooling1d">
+<h2>MaxPooling1D<a class="headerlink" href="#maxpooling1d" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl9MaxPool1DE5layer6vectorIiE6vectorIiE6string6string">
+<span id="_CPPv3N4eddl9MaxPool1DE5layer6vectorIiE6vectorIiE6string6string"></span><span id="_CPPv2N4eddl9MaxPool1DE5layer6vectorIiE6vectorIiE6string6string"></span><span id="eddl::MaxPool1D__layer.vector:i:.vector:i:.string.string"></span><span class="target" id="namespaceeddl_1ac0d76e543e0290b7f5394102e6cecb95"></span>layer <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">MaxPool1D</code><span class="sig-paren">(</span>layer <em>parent</em>, vector&lt;int&gt; <em>pool_size</em> = {2}, vector&lt;int&gt; <em>strides</em> = {2}, string <em>padding</em> = &quot;none&quot;, string <em>name</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4eddl9MaxPool1DE5layer6vectorIiE6vectorIiE6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Max 1D pooling operation. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The result after apply the max pooling operation over the parent layer </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parent</span></code>: Parent layer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pool_size</span></code>: Size of the max pooling windows </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strides</span></code>: Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">padding</span></code>: One of “none”, “valid” or “same” (case-insensitive). </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A name for the operation </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">...</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">784</span><span class="p">});</span> <span class="c1">//image as a 1D signal with depth=1</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">Conv1D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">});</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">ReLu</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">MaxPool1D</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">4</span><span class="p">},{</span><span class="mi">4</span><span class="p">});</span>  <span class="c1">//MaxPool 4 stride 4</span>
+<span class="p">...</span>
+</pre></div>
+</td></tr></table></div>
+</div>
 <div class="section" id="maxpooling">
 <h2>MaxPooling<a class="headerlink" href="#maxpooling" title="Permalink to this headline">¶</a></h2>
 <dl class="cpp function">
@@ -257,7 +294,17 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">MaxPool</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">pool_size</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">},</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">strides</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">},</span> <span class="n">string</span> <span class="n">padding</span> <span class="o">=</span> <span class="s">&quot;none&quot;</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="p">...</span>
+ <span class="n">l</span> <span class="o">=</span> <span class="n">Reshape</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">});</span>
+ <span class="n">l</span> <span class="o">=</span> <span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">});</span>
+ <span class="n">l</span> <span class="o">=</span> <span class="n">ReLu</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+ <span class="n">l</span> <span class="o">=</span> <span class="n">MaxPool</span><span class="p">(</span><span class="n">l</span><span class="p">,{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span> <span class="s">&quot;same&quot;</span><span class="p">);</span>
+ <span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -280,7 +327,17 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">GlobalMaxPool</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="p">...</span>
+ <span class="n">l</span> <span class="o">=</span> <span class="n">MaxPool</span><span class="p">(</span><span class="n">ReLu</span><span class="p">(</span><span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">32</span><span class="p">,{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">})),{</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">});</span>
+ <span class="n">l</span> <span class="o">=</span> <span class="n">MaxPool</span><span class="p">(</span><span class="n">ReLu</span><span class="p">(</span><span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">64</span><span class="p">,{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">})),{</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">});</span>
+ <span class="n">l</span> <span class="o">=</span> <span class="n">MaxPool</span><span class="p">(</span><span class="n">ReLu</span><span class="p">(</span><span class="n">Conv</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="mi">128</span><span class="p">,{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">})),{</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">});</span>
+ <span class="n">l</span> <span class="o">=</span> <span class="n">GlobalMaxPool</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>
+ <span class="p">...</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -310,10 +367,6 @@
 <p><strong>Not implemented yet</strong></p>
 <p>Check development progress in <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers">https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers</a></p>
 </div>
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">AveragePool</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">pool_size</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">},</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">strides</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">},</span><span class="n">string</span> <span class="n">padding</span> <span class="o">=</span> <span class="s">&quot;none&quot;</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
-</pre></div>
-</td></tr></table></div>
 </div>
 <div class="section" id="globalaveragepooling">
 <h2>GlobalAveragePooling<a class="headerlink" href="#globalaveragepooling" title="Permalink to this headline">¶</a></h2>
@@ -338,10 +391,6 @@
 <p><strong>Not implemented yet</strong></p>
 <p>Check development progress in <a class="reference external" href="https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers">https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers</a></p>
 </div>
-<p>Example:</p>
-<div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">layer</span> <span class="nf">GlobalAveragePool</span><span class="p">(</span><span class="n">layer</span> <span class="n">parent</span><span class="p">,</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
-</pre></div>
-</td></tr></table></div>
 </div>
 </div>
 
