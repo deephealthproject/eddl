@@ -84,7 +84,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only libra
 
 # ZLIB
 if(BUILD_SUPERBUILD AND NOT USE_SYSTEM_ZLIB)
-    message(STATUS "Using specific Zlib")
+    message(STATUS "Using specific ZLIB")
     SET(CMAKE_PREFIX_PATH "${ZLIB_BIN};${CMAKE_PREFIX_PATH}")
 else()
     message(STATUS "Searching for ZLIB in the system...")
