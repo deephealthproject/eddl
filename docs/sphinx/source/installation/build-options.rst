@@ -39,10 +39,17 @@ If you decide to manually install these dependencies in your system (make sure t
     - pip
 
     - pip:
-        - sphinx
-        - breathe
-        - sphinx_rtd_theme
-        - sphinx-tabs
+        - sphinx==3.0.3
+        - sphinx_rtd_theme==0.4.3
+        - sphinx-tabs==1.1.13
+        - breathe==4.16.0
+
+
+.. note::
+
+    When using ``apt-get``, the installed version of the package depends on the distro version (by default).
+    This is important to known, because for instance, in Ubuntu 18.04 ``apt-get install libeigen3-dev``
+    installs Eigen 3.3.4-4, when the EDDL needs Eigen 3.3.7.
 
 
 Build and optimization
@@ -198,6 +205,21 @@ troubleshoot the compilation process (see: :doc:``troubleshoot``).
 
     Enabled by default
 
+
+- **Use local gtest:** Uses the local copy of the gtest repository as fail-safe. Ignored if using superbuild.
+
+.. code:: bash
+
+    -DUSE_LOCAL_GTEST=ON
+
+.. note::
+
+    Enabled by default.
+
+    Why this? Because the Google C++ Testing Framework uses conditional compilation for some things.
+    Because of the C++ "One Definition Rule", gtest must be compiled with exactly the same flags as
+    your C++ code under test. Therefore, to avoid or fix potential problems, we have provide you with
+    this flag in advance.
 
 - **Build examples:** To compile the examples, use the setting ``BUILD_EXAMPLES``, such as:
 

@@ -1,11 +1,124 @@
 # Benchmarks
 
-Simple time reference benchmarks for development.
+Benchmarks for development. 
+
+> Disclaimer: This is not a serious benchmark. The results in this sections are intendeed for the developers of this
+> library so that can easily check if their results are consistent with previous versions.
 
 
-## MacBook Pro 2013 - Quad-Core Intel Core i7 - 2.3Ghz (8 cores) - 8GB RAM
+## Desktop - Ubuntu 18.04 - AMD Ryzen 7 2700X Eight-Core Processor - 4.3Ghz (16 cores) - 16GB RAM - GeForce GTX 1070 (8GB)
 
-### MNIST MLP
+### MNIST MLP (`1_mnist_mlp.cpp`)
+
+
+#### CPU only
+
+**Default flags:**
+
+```
+Setup
+-------
+TARGET: CPU
+CORES: 16
+EPOCHS: 1
+C++ flags (release): -O3
+
+Training/Evaluation:
+--------------------
+
+
+Memory:
+--------
+  PID USER      PRI  NI  VIRT   RES S CPU% MEM%   TIME+  Command
+```
+
+
+**Optimization flags:**
+
+```
+Setup
+-------
+TARGET: CPU
+CORES: 16
+EPOCHS: 1
+C++ flags (release): -O3 -Ofast -msse -mfpmath=sse -ffast-math
+
+Training/Evaluation:
+--------------------
+
+
+Memory:
+--------
+  PID USER      PRI  NI  VIRT   RES S CPU% MEM%   TIME+  Command
+```
+
+```
+Setup
+-------
+TARGET: CPU
+CORES: 16
+EPOCHS: 1
+C++ flags (release): -O3
+
+Training/Evaluation:
+--------------------
+
+
+Memory:
+--------
+  PID USER      PRI  NI  VIRT   RES S CPU% MEM%   TIME+  Command
+```
+
+```
+Setup
+-------
+TARGET: CPU
+CORES: 16
+EPOCHS: 1
+C++ flags (release): -O3 -Ofast -msse -mfpmath=sse -ffast-math
+
+Training/Evaluation:
+--------------------
+
+
+Memory:
+--------
+  PID USER      PRI  NI  VIRT   RES S CPU% MEM%   TIME+  Command
+```
+
+
+### CIFAR10 CONV (`1_cifar_conv.cpp`)
+
+#### CPU only
+
+**Default flags:**
+
+```
+Setup
+-------
+TARGET: CPU
+CORES: 8
+EPOCHS: 1
+C++ flags (release): -O3
+
+Training/Evaluation:
+--------------------
+
+
+Memory:
+--------
+  PID USER      PRI  NI  VIRT   RES S CPU% MEM%   TIME+  Command
+```
+
+
+## MacBook Pro 2013 - macOS Catalina (version 10.15 - Quad-Core Intel Core i7 - 2.3Ghz (8 cores) - 8GB RAM - No GPU
+
+### MNIST MLP (`1_mnist_mlp.cpp`)
+
+
+#### CPU only
+
+**Default flags:**
 
 ```
 Setup
@@ -28,6 +141,9 @@ Memory:
 93492 salvacarr  17   0 4616M  271M ? 714.  3.3  1:42.05 ./bin/mnist_mlp
 ```
 
+
+**Optimization flags:**
+
 ```
 Setup
 -------
@@ -49,7 +165,12 @@ Memory:
 98456 salvacarr  17   0 4616M  271M ? 616.  3.3  2:32.09 ./bin/mnist_mlp
 ```
 
-### CIFAR10 CONV
+
+### CIFAR10 CONV (`1_cifar_conv.cpp`)
+
+#### CPU only
+
+**Default flags:**
 
 ```
 Setup
