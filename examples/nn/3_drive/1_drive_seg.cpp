@@ -169,19 +169,9 @@ int main(int argc, char **argv){
       // DA
       forward(danet, vector<Tensor *>{xbatch, ybatch});
 
-      // get tensors from DA
+      // get COPIES of tensors from DA
       Tensor* xbatch_da = getOutput(img);
       Tensor* ybatch_da = getOutput(mask);
-
-//       xout = xbatch_da->select({"0"});
-//        xout->mult_(255.0f);
-//       xout->save("./1.tr_out_after.jpg");
-//       delete xout;
-//
-//       yout = ybatch_da->select({"0"});
-//        yout->mult_(255.0f);
-//       yout->save("./1.ts_out_after.jpg");
-//       delete yout;
 
       // SegNet
       train_batch(segnet, {xbatch_da},{ybatch_da});
@@ -190,11 +180,14 @@ int main(int argc, char **argv){
       // printf("  sum=%f",yout->sum());
       printf("\r");
 
-//      Tensor* yout2 = getOutput(out);
-//      yout2 = yout2->select({"0"});
-//      yout2->mult_(255.0f);
-//      yout2->save("./out.jpg");
-//      delete yout2;
+      delete xbatch_da;
+      delete ybatch_da;
+
+      Tensor* yout2 = getOutput(out);
+      yout2 = yout2->select({"0"});
+      yout2->mult_(255.0f);
+      yout2->save("./out.jpg");
+      delete yout2;
     }
     printf("\n");
   }
