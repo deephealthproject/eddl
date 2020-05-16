@@ -55,6 +55,10 @@ else()
 endif()
 cmake_minimum_required(VERSION 2.6.4)
 
+if (POLICY CMP0042) # MACOSX_RPTH  # ADDED BY EDDL TEAM
+  cmake_policy(SET CMP0042 OLD)
+endif (POLICY CMP0042)
+
 if (POLICY CMP0063) # Visibility
   cmake_policy(SET CMP0063 NEW)
 endif (POLICY CMP0063)
