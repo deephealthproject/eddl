@@ -55,7 +55,7 @@ Example:
 
 
 Thresholded ReLu
----------------
+-----------------
 
 
 .. doxygenfunction:: eddl::ThresholdedReLu

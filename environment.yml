@@ -16,7 +16,7 @@ dependencies:
   - python
   - pip
   - pip:
-    - sphinx
-    - breathe
-    - sphinx_rtd_theme
-    - sphinx-tabs
+    - sphinx==3.0.3
+    - sphinx_rtd_theme==0.4.3
+    - sphinx-tabs==1.1.13
+    - breathe==4.16.0

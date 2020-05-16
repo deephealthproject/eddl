@@ -85,6 +85,12 @@ else()
     message(STATUS "Searching for ZLIB in the system...")
     find_package(ZLIB REQUIRED)  # Problems with: ZLIB_ROOT
     message(STATUS "ZLIB found!")
+
+    # Check if Protobuf was really found
+    if(NOT ZLIB_FOUND)
+        message(FATAL_ERROR "ZLIB was found by CMake but its libraries or includes are missing.
+                Use '-D BUILD_SUPERBUILD=ON', or try with a different ZLIB installation to fix this problem.")
+    endif()
 endif()
 target_include_directories(${PROJECT_NAME} PRIVATE ${ZLIB_INCLUDE_DIRS})
 target_link_directories(${PROJECT_NAME} PRIVATE ${ZLIB_LIBRARIES_DIRS})
@@ -101,6 +107,13 @@ if(BUILD_PROTOBUF)
         message(STATUS "Searching for Protobuf in the system...")
         find_package(Protobuf REQUIRED)  # Problems with: Protobuf_DIR
         message(STATUS "Protobuf found! (system)")
+
+        # Check if Protobuf was really found
+        if(NOT Protobuf_FOUND)
+            message(FATAL_ERROR "Protobuf was found by CMake but its libraries or includes are missing.
+                    Use '-D BUILD_SUPERBUILD=ON', or try with a different Protobuf installation to fix this problem.
+                    Alternatively, you can disable it with '-D BUILD_PROTOBUF=OFF")
+        endif()
     endif()
     target_include_directories(${PROJECT_NAME} PRIVATE ${Protobuf_INCLUDE_DIRS})
     target_link_directories(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES_DIRS})
@@ -252,6 +265,7 @@ message(STATUS "Build target: " ${BUILD_TARGET} )
 message(STATUS "Build type: " ${CMAKE_BUILD_TYPE} )
 message(STATUS "Build shared libs: " ${BUILD_SHARED_LIBS} )
 message(STATUS "Build coverage: " ${BUILD_COVERAGE} )
+message(STATUS "Superbuild: " ${BUILD_SUPERBUILD} )
 message(STATUS "-------------------------------------------" )
 message(STATUS "C++ compiler: ${CMAKE_CXX_COMPILER_ID} (${CMAKE_CXX_COMPILER})")
 message(STATUS "C++ flags: " ${CMAKE_CXX_FLAGS})

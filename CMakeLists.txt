@@ -9,10 +9,13 @@ cmake_minimum_required(VERSION 3.9.2)
 option(BUILD_SUPERBUILD "Compile using the superbuild system" OFF)
 option(BUILD_PROTOBUF "Compile using Protobuf" ON)
 option(BUILD_OPENMP "Compile using OpenMP" ON)
+option(BUILD_HPC "Compile using agressive flags" OFF)
 option(BUILD_TESTS "Compile tests" ON)
+option(USE_LOCAL_GTEST "Use the local library to avoid problems derived from the 'One Definition Rule'" ON)
 option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" ON)
 option(BUILD_COVERAGE "Flag to compile for coverage information" OFF)
+
 
 ###########################################################################
 ################################# BUILD ###################################
@@ -26,7 +29,7 @@ if(BUILD_SUPERBUILD)
     add_subdirectory(cmake)
 endif()
 # This is executed at compilation time: "make"
-PROJECT(eddl VERSION 0.5 LANGUAGES CXX)
+PROJECT(eddl VERSION 0.6 LANGUAGES CXX)
 
 
 # SET C++ COMPILER STANDARD
@@ -78,6 +81,10 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 
+if(BUILD_HPC)
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -msse -mfpmath=sse -ffast-math")
+endif()
+
 ###########################################################################
 ############################### WINDOWS ###################################
 ###########################################################################
@@ -103,6 +110,12 @@ add_subdirectory(src)
 
 # Build tests
 if(BUILD_TESTS)
+    if(USE_LOCAL_GTEST AND NOT BUILD_SUPERBUILD)
+        add_subdirectory(libs/googletest)
+        set(GTEST_INCLUDE_DIRS "${gtest_SOURCE_DIR}/include;${gtest_SOURCE_DIR}")
+        SET(GTEST_BOTH_LIBRARIES "gtest;gtest_main")
+    endif()
+
     add_subdirectory(tests)
 endif(BUILD_TESTS)
 
