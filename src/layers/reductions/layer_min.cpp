@@ -25,10 +25,14 @@ LRMin::LRMin(Layer *l, vector<int> axis, bool keepdims, string name, int dev, in
     if(name.empty()) this->name = "reduction_min" + to_string(++total_layers);
 
     input=l->output;
+    this->axis=axis;
+    this->keepdims=keepdims;
+
+
     // move all the axis +1 because 0 is for batch
     for(int i=0;i<axis.size();i++)
       axis[i]++;
-      
+
     RD=new ReduceDescriptor(input,axis,"min",keepdims);
 
     output=RD->O;
@@ -57,14 +61,14 @@ void LRMin::resize(int batch){
 
 Layer *LRMin::share(int c, int bs, vector<Layer *> p) {
     LRMin *n;
-    n = new LRMin(p[0], RD->axis, RD->keepdims,  name, this->dev, this->mem_level);
+    n = new LRMin(p[0], axis, keepdims,  name, this->dev, this->mem_level);
     n->orig = this;
     return n;
 }
 
 Layer *LRMin::clone(int c, int bs, vector<Layer *> p, int todev) {
     LRMin *n;
-    n = new LRMin(p[0],RD->axis, RD->keepdims, "clone_" + to_string(c) + name, todev, this->mem_level);
+    n = new LRMin(p[0],axis, keepdims, "clone_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
     return n;
 }

@@ -33,6 +33,8 @@ public:
     int binary;
     float val;
     ReduceDescriptor *RD;
+    vector<int> axis;
+    bool keepdims;
 
     ReductionLayer(string name, int dev, int mem);
 
@@ -72,8 +74,6 @@ class LRVar : public ReductionLayer {
 public:
     static int total_layers;
 
-    vector<int> axis;
-    bool keepdims;
 
     vector<Layer *> layers;
 
