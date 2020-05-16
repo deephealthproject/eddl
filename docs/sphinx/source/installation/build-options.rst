@@ -123,7 +123,7 @@ troubleshoot the compilation process (see: :doc:``troubleshoot``).
 
 .. code:: bash
 
-    -DCMAKE_PREFIX_PATH=/path/to/directory
+    -DCMAKE_PREFIX_PATH=/path/to/dir
 
 
 - **Installation paths:** To change the installation paths, use the following cmake option:
