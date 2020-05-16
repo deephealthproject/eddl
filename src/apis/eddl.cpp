@@ -325,6 +325,16 @@ namespace eddl {
     {
         l->graph->backward();
     }
+    void optimize(loss l)
+    {
+        l->graph->backward();
+    }
+    void optimize(vector <loss> vl)
+    {
+      for(auto &l : vl)
+        l->graph->backward();  
+    }
+
     void update(model net)
     {
         net->update();

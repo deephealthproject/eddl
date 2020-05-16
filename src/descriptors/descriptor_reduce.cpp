@@ -39,6 +39,7 @@ ReduceDescriptor::ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool
   ind=nullptr;
   factor=100;
 
+
   if (axis.size()>=A->ndim)
     msg("axis must be lower than tensor dim","ReduceDescriptor");
 

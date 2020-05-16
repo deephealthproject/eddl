@@ -242,6 +242,7 @@ void LLSTM::forward() {
   incn=new Tensor({input->shape[0], units}, dev);
   Tensor::el_mult(in,cn,incn,0);
 
+
   cn1fn=new Tensor({input->shape[0], units}, dev);
   if (parent.size()>1) {
     Tensor::el_mult(parent[1]->states[1],fn,cn1fn,0);
@@ -313,12 +314,16 @@ void LLSTM::backward() {
 
   Tensor *d1=new Tensor(delta->getShape(),dev);
   Tensor *d2=new Tensor(delta->getShape(),dev);
+  Tensor *daux=new Tensor(delta->getShape(),dev);
 
   Tensor::el_mult(delta,on,d1,0);
   Tensor::el_mult(delta,sh,d2,0);
 
   // output gate
-  D_Sigmoid(d2, on, d2);
+  daux->fill_(0.0);
+  D_Sigmoid(d2, on, daux);
+  Tensor::copy(daux,d2);
+
   Tensor::mult2D(parent[0]->output, 1, d2, 0, gWox, 1);
   if (parent.size()>1)
     Tensor::mult2D(parent[1]->states[0], 1, d2, 0, gWoh, 1);
@@ -327,7 +332,7 @@ void LLSTM::backward() {
     Tensor::mult2D(d2, 0, Woh, 1, parent[1]->delta_states[0], 1);
   Tensor::reduce_sum2D(d2, gonbias, 0, 1);
 
-  //D_ReLu(delta, state_c, delta);
+  d2->fill_(0.0);
   D_Tanh(d1, sh, d2);
   Tensor::inc(d2,delta_c);
 
@@ -336,8 +341,10 @@ void LLSTM::backward() {
     Tensor::el_mult(delta_c, fn, parent[1]->delta_states[1], 1);
     Tensor::el_mult(delta_c, parent[1]->states[1], d2, 0);
 
+    daux->fill_(0.0);
+    D_Sigmoid(d2, fn, daux);
+    Tensor::copy(daux,d2);
 
-    D_Sigmoid(d2, fn, d2);
     Tensor::mult2D(parent[0]->output, 1, d2, 0, gWfx, 1);
     Tensor::mult2D(parent[1]->states[0], 1, d2, 0, gWfh, 1);
 
@@ -351,7 +358,10 @@ void LLSTM::backward() {
   Tensor::el_mult(delta_c, cn, d2, 0);
 
   // Input gate
-  D_Sigmoid(d2, in, d2);
+  daux->fill_(0.0);
+  D_Sigmoid(d2, in, daux);
+  Tensor::copy(daux,d2);
+
   Tensor::mult2D(parent[0]->output, 1, d2, 0, gWix, 1);
   if (parent.size()>1)
     Tensor::mult2D(parent[1]->states[0], 1, d2, 0, gWih, 1);
@@ -361,7 +371,10 @@ void LLSTM::backward() {
   Tensor::reduce_sum2D(d2, ginbias, 0, 1);
 
   // Cn
-  D_Tanh(d1, cn, d1);
+  daux->fill_(0.0);
+  D_Tanh(d1, cn, daux);
+  Tensor::copy(daux,d1);
+
   Tensor::mult2D(parent[0]->output, 1, d1, 0, gWcx, 1);
   if (parent.size()>1)
     Tensor::mult2D(parent[1]->states[0], 1, d1, 0, gWch, 1);
@@ -394,6 +407,7 @@ void LLSTM::backward() {
 
   delete d1;
   delete d2;
+  delete daux;
   delete in;
   delete fn;
   delete cn;

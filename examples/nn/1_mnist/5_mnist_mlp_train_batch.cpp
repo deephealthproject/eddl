@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 1;
+    int epochs = 5;
     int batch_size = 128;
     int num_classes = 10;
 
@@ -52,8 +52,9 @@ int main(int argc, char **argv) {
           sgd(0.01, 0.9), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          CS_GPU({1,1},100) // one GPU
-          //CS_CPU(-1) // CPU with maximum threads availables
+          CS_GPU({1}) // one GPU
+          //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
+          //CS_CPU()
     );
 
     // View model

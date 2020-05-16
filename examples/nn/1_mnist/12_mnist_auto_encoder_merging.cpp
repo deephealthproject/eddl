@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 100;
+    int epochs = 5;
     int batch_size = 100;
 
     // Define encoder
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
     layer out = Activation(Dense(l, 64), "relu");
 
     model encoder = Model({in}, {out});
-    summary(encoder);
+
 
     // Define decoder
     in = Input({64});
@@ -50,21 +50,22 @@ int main(int argc, char **argv) {
     out = Sigmoid(Dense(l, 784));
 
     model decoder = Model({in}, {out});
-    summary(decoder);
+
 
     // Merge both models into a new one
     model net = Model({encoder,decoder});
-    summary(net);
-    plot(net, "model.pdf");
 
     // Build model
     build(net,
           sgd(0.001, 0.9), // Optimizer
           {"dice"}, // Losses
           {"dice"}, // Metrics
-          CS_GPU({1})
-          //CS_CPU(-1)
+          CS_GPU({1}) // one GPU
+          //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
+          //CS_CPU()
     );
+    summary(net);
+    plot(net, "model.pdf");
 
     // Load dataset
     Tensor* x_train = Tensor::load("mnist_trX.bin");

@@ -61,7 +61,7 @@ int main(int argc, char **argv){
   download_cifar10();
 
   // Settings
-  int epochs = 150;
+  int epochs = 5;
   int batch_size =16;
   int num_classes = 10;
 
@@ -106,8 +106,9 @@ int main(int argc, char **argv){
 	sgd(0.001,0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    CS_GPU({1}, "full_mem") // GPU with only one gpu
-      //CS_CPU(-1)  // CPU with maximum threads availables
+    CS_GPU({1}) // one GPU
+    //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
+    //CS_CPU()
   );
 
   // plot the model

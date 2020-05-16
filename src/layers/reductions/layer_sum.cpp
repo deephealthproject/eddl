@@ -25,10 +25,13 @@ LRSum::LRSum(Layer *l, vector<int> axis, bool keepdims, string name, int dev, in
     if(name.empty()) this->name = "reduction_sum" + to_string(++total_layers);
 
     input=l->output;
+    this->axis=axis;
+    this->keepdims=keepdims;
+
     // move all the axis +1 because 0 is for batch
     for(int i=0;i<axis.size();i++)
       axis[i]++;
-      
+
     RD=new ReduceDescriptor(input,axis,"sum",keepdims);
 
     output=RD->O;
@@ -57,14 +60,15 @@ void LRSum::resize(int batch){
 
 Layer *LRSum::share(int c, int bs, vector<Layer *> p) {
     LRSum *n;
-    n = new LRSum(p[0], RD->axis, RD->keepdims,  name, this->dev, this->mem_level);
+    // move all the axis +1 because 0 is for batch
+    n = new LRSum(p[0], axis, keepdims,  name, this->dev, this->mem_level);
     n->orig = this;
     return n;
 }
 
 Layer *LRSum::clone(int c, int bs, vector<Layer *> p, int todev) {
     LRSum *n;
-    n = new LRSum(p[0],RD->axis, RD->keepdims, "clone_" + to_string(c) + name, todev, this->mem_level);
+    n = new LRSum(p[0], axis, keepdims, "clone_" + to_string(c) + name, todev, this->mem_level);
     n->orig = this;
     return n;
 }

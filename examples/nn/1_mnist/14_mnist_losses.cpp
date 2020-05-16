@@ -16,22 +16,31 @@
 using namespace eddl;
 
 //////////////////////////////////
-// mnist_gan.cpp:
+// mnist_losses.cpp:
 // A basic enc-dec with
 // user defined loss
 //////////////////////////////////
 
+
+// l2_loss
 layer mse_loss(vector<layer> in)
 {
   layer diff=Diff(in[0],in[1]);
   return Mult(diff,diff);
 }
 
+// l1_loss
+layer l1_loss(vector<layer> in)
+{
+  return Abs(Diff(in[0],in[1]));
+}
+
+
 // Dice loss image-level
 layer dice_loss_img(vector<layer> in)
 {
-  layer num=Mult(2,ReduceMean(Mult(in[0],in[1]),{0,1,2}));
-  layer den=ReduceMean(Sum(in[0],in[1]),{0,1,2});
+  layer num=Mult(2,ReduceSum(Mult(in[0],in[1]),{0,1,2}));
+  layer den=ReduceSum(Sum(in[0],in[1]),{0,1,2});
 
   return Diff(1.0,Div(num,den));
 }
@@ -39,8 +48,8 @@ layer dice_loss_img(vector<layer> in)
 // Dice loss pixel-level
 layer dice_loss_pixel(vector<layer> in)
 {
-  layer num=Mult(2,ReduceMean(Mult(in[0],in[1]),{0}));
-  layer den=ReduceMean(Sum(in[0],in[1]),{0});
+  layer num=Mult(2,ReduceSum(Mult(in[0],in[1]),{0}));
+  layer den=ReduceSum(Sum(in[0],in[1]),{0});
 
   num=Sum(num,1);
   den=Sum(den,1);
@@ -55,7 +64,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 100;
+    int epochs = 5;
     int batch_size = 100;
 
 
@@ -71,7 +80,15 @@ int main(int argc, char **argv) {
     layer out = Sigmoid(Conv(l,1,{3,3}));
     model net = Model({in}, {});
     // Build model
-    build(net,adam(0.01));
+    build(net,
+          adam(0.001), // Optimizer
+          {}, // Losses
+          {}, // Metrics
+          //CS_GPU({1}) // one GPU
+          //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
+          CS_CPU()
+    );
+
     summary(net);
     // Load dataset
     Tensor* x_train = Tensor::load("mnist_trX.bin");
@@ -94,6 +111,7 @@ int main(int argc, char **argv) {
 
       for(j=0;j<num_batches;j++)  {
 
+        cout<<"Batch "<<j<<" ";
         next_batch({x_train},{batch});
 
         zeroGrads(net);
@@ -105,14 +123,16 @@ int main(int argc, char **argv) {
         fflush(stdout);
 
         diceiloss+=compute_loss(dicei)/batch_size;
-        cout<<"diceiloss="<<diceiloss/(j+1)<<"\r";
+        cout<<"diceiloss="<<diceiloss/(j+1)<<" ";
         fflush(stdout);
 
         mseloss+=compute_loss(mse)/batch_size;
         cout<<"mseloss="<<mseloss/(j+1)<<"\r";
         fflush(stdout);
 
-        backward(dicep);
+        optimize(dicep);
+        //optimize({mse,dicep});
+
 
         update(net);
 

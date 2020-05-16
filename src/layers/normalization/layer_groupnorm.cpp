@@ -38,6 +38,9 @@ LGroupNorm::LGroupNorm(Layer *parent, int g, float epsilon, bool affine, string 
     if (input->shape[1]%groups)
       msg("incorrect group value not channel divider","LGroupNorm");
 
+
+    if(name.empty()) this->name = "groupnorm" + to_string(++total_layers);
+
     shape.push_back(input->shape[0]*groups);
 
     this->epsilon = epsilon;

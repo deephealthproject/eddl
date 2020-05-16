@@ -33,8 +33,8 @@ __global__ void d_relu(float *d,float *i,float *pd,long int size)
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
   if (thread_id_x < size){
-    if (i[thread_id_x]>0.0) pd[thread_id_x]=d[thread_id_x];
-    else pd[thread_id_x]=0.0;
+    if (i[thread_id_x]>0.0) pd[thread_id_x]+= d[thread_id_x];
+    else pd[thread_id_x]+= 0.0;
    }
 
 }
@@ -55,8 +55,8 @@ __global__ void d_thresholded_relu(float *d,float *i,float *pd, float param, lon
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
   if (thread_id_x < size){
-    if (i[thread_id_x]>param) pd[thread_id_x]=d[thread_id_x];
-    else pd[thread_id_x]=0.0;
+    if (i[thread_id_x]>param) pd[thread_id_x]+= d[thread_id_x];
+    else pd[thread_id_x]+= 0.0;
    }
 
 }
@@ -77,8 +77,8 @@ __global__ void d_leaky_relu(float *d,float *i,float *pd, float param, long int 
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
   if (thread_id_x < size){
-    if (i[thread_id_x]>0.0) pd[thread_id_x]=d[thread_id_x];
-    else pd[thread_id_x]=param*d[thread_id_x];
+    if (i[thread_id_x]>0.0) pd[thread_id_x]+= d[thread_id_x];
+    else pd[thread_id_x]+= param*d[thread_id_x];
    }
 
 }
@@ -98,8 +98,8 @@ __global__ void d_elu(float *d,float *i,float *pd, float param, long int size)
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
   if (thread_id_x < size){
-    if (i[thread_id_x]>0.0) pd[thread_id_x]=d[thread_id_x];
-    else pd[thread_id_x]=(param*expf(i[thread_id_x])) * d[thread_id_x];
+    if (i[thread_id_x]>0.0) pd[thread_id_x]+= d[thread_id_x];
+    else pd[thread_id_x]+= (param*expf(i[thread_id_x])) * d[thread_id_x];
    }
 
 }
@@ -116,7 +116,7 @@ __global__ void d_softplus(float *d,float *i,float *pd,long int size){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x < size){
-        pd[thread_id_x] = d[thread_id_x] * 1/(1 + expf(-i[thread_id_x]));
+        pd[thread_id_x] += d[thread_id_x] * 1/(1 + expf(-i[thread_id_x]));
     }
 }
 
@@ -133,7 +133,7 @@ __global__ void d_softsign(float *d,float *i,float *pd,long int size){
 
     if (thread_id_x < size){
         float denom = 1 + abs(i[thread_id_x]);
-        pd[thread_id_x] = d[thread_id_x] * (1/(denom*denom));
+        pd[thread_id_x]+=  d[thread_id_x] * (1/(denom*denom));
     }
 }
 
@@ -151,7 +151,7 @@ __global__ void d_linear(float *d,float *i,float *pd, float param, long int size
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
   if (thread_id_x < size){
-    pd[thread_id_x] = param * d[thread_id_x];
+    pd[thread_id_x]+=  param * d[thread_id_x];
    }
 
 }
@@ -190,8 +190,8 @@ __global__ void d_hard_sigmoid(float *d,float *i,float *pd,long int size)
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
   if (thread_id_x < size){
-    if (i[thread_id_x] < -2.5 || i[thread_id_x] > 2.5) pd[thread_id_x] = 0.0;
-    else pd[thread_id_x] = 0.2 * d[thread_id_x];
+    if (i[thread_id_x] < -2.5 || i[thread_id_x] > 2.5) pd[thread_id_x]+=  0.0;
+    else pd[thread_id_x]+=  0.2 * d[thread_id_x];
    }
 }
 
@@ -209,7 +209,7 @@ __global__ void d_exp(float *d,float *i,float *pd,long int size)
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
   if (thread_id_x < size){
-    pd[thread_id_x] = d[thread_id_x] * i[thread_id_x];
+    pd[thread_id_x]+=  d[thread_id_x] * i[thread_id_x];
    }
 }
 
