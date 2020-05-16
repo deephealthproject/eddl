@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 100;
+    int epochs = 5;
     int batch_size = 100;
 
     // Define encoder

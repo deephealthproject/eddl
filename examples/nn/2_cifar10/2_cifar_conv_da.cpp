@@ -29,7 +29,7 @@ int main(int argc, char **argv){
     download_cifar10();
 
     // Settings
-    int epochs = 25;
+    int epochs = 5;
     int batch_size = 100;
     int num_classes = 10;
 
@@ -69,7 +69,7 @@ int main(int argc, char **argv){
           {"categorical_accuracy"}, // Metrics
           CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU() 
+          //CS_CPU()
     );
 
 

@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 10;
+    int epochs = 5;
     int batch_size = 100;
     int num_classes = 10;
 
@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
           {"categorical_accuracy"}, // Metrics
           CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU() 
+          //CS_CPU()
     );
 
     // View model

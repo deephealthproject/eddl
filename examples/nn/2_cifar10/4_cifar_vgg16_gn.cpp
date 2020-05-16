@@ -38,7 +38,7 @@ int main(int argc, char **argv){
   download_cifar10();
 
   // Settings
-  int epochs = 25;
+  int epochs = 5;
   int batch_size = 8; // very small batch to test GroupNormalization
   int num_classes = 10;
 
