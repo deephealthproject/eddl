@@ -16,7 +16,7 @@
 using namespace eddl;
 
 //////////////////////////////////
-// mnist_gan.cpp:
+// mnist_losses.cpp:
 // A basic enc-dec with
 // user defined loss
 //////////////////////////////////

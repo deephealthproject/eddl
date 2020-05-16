@@ -17,8 +17,9 @@
 using namespace eddl;
 
 //////////////////////////////////
-// mnist_mlp.cpp:
+// mnist_conv_dice.cpp:
 // A very basic CNN for mnist
+// dice metric
 // Using fit for training
 //////////////////////////////////
 
