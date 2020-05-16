@@ -62,8 +62,9 @@ int main(int argc, char **argv) {
           sgd(0.001, 0.9), // Optimizer
           {"dice"}, // Losses
           {"dice"}, // Metrics
-          CS_GPU({1})
-          //CS_CPU(-1)
+          CS_GPU({1}) // one GPU
+          //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
+          //CS_CPU()
     );
 
     // Load dataset

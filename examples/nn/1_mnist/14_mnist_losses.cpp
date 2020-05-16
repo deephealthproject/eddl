@@ -80,7 +80,15 @@ int main(int argc, char **argv) {
     layer out = Sigmoid(Conv(l,1,{3,3}));
     model net = Model({in}, {});
     // Build model
-    build(net,adam(0.001));
+    build(net,
+          adam(0.001), // Optimizer
+          {}, // Losses
+          {}, // Metrics
+          CS_GPU({1}) // one GPU
+          //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
+          //CS_CPU()
+    );
+
     summary(net);
     // Load dataset
     Tensor* x_train = Tensor::load("mnist_trX.bin");

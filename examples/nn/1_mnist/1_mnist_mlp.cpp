@@ -51,8 +51,9 @@ int main(int argc, char **argv) {
           rmsprop(0.01), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-            CS_GPU({1,1},100) // one GPU
-          //CS_CPU(-1) // CPU with maximum threads availables
+          CS_GPU({1}) // one GPU
+          //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
+          //CS_CPU()
     );
     //toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
 
