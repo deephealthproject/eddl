@@ -37,6 +37,33 @@ endforeach()
 
 #################################################################################
 #################################################################################
+macro(CONF_PACKAGE package_name build_type only_substitution)
+    configure_file(${package_name}.CMakeLists.txt.in ${EP_BASE_DIR}/${package_name}-download/CMakeLists.txt ${only_substitution})
+    execute_process(COMMAND ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR} . -D CMAKE_BUILD_TYPE=${build_type}
+            RESULT_VARIABLE result
+            WORKING_DIRECTORY ${EP_BASE_DIR}/${package_name}-download)
+    if(result)
+        message(FATAL_ERROR "CMake step for ${package_name} failed: ${result}")
+    endif()
+endmacro()
+
+macro(BUILD_PACKAGE package_name build_type)
+    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL} --config ${build_type}
+            RESULT_VARIABLE result
+            WORKING_DIRECTORY ${EP_BASE_DIR}/${package_name}-download)
+    if(result)
+        message(FATAL_ERROR "Build step for ${package_name} failed: ${result}")
+    endif()
+endmacro()
+
+set(config_types ${CMAKE_BUILD_TYPE})
+if(CMAKE_GENERATOR MATCHES "Visual Studio")
+    # Build debug and release for multi-configuration generator
+    # this also installs libraries with "d" suffix
+    set(config_types "Debug;Release")
+    list(REMOVE_ITEM config_types ${CMAKE_BUILD_TYPE})
+    list(APPEND config_types ${CMAKE_BUILD_TYPE})
+endif()
 
 ##############
 ###  GTEST  ##
@@ -45,27 +72,18 @@ message(STATUS "Subproject: GTEST...")
 if(USE_SYSTEM_GTEST)
     find_package(GTest REQUIRED)
 else()
-
-    # Download and unpack googletest at configure time
-    configure_file(googletest.CMakeLists.txt.in ${EP_BASE_DIR}/googletest-download/CMakeLists.txt)
-    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-            RESULT_VARIABLE result
-            WORKING_DIRECTORY ${EP_BASE_DIR}/googletest-download )
-    if(result)
-        message(FATAL_ERROR "CMake step for googletest failed: ${result}")
-    endif()
-    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL} --config ${CMAKE_BUILD_TYPE}
-            RESULT_VARIABLE result
-            WORKING_DIRECTORY ${EP_BASE_DIR}/googletest-download )
-    if(result)
-        message(FATAL_ERROR "Build step for googletest failed: ${result}")
-    endif()
+    # Download and unpack googletest at configure time   
+    foreach(config ${config_types})
+        CONF_PACKAGE(googletest ${config} "")
+        BUILD_PACKAGE(googletest ${config})
+    endforeach()
 
     # Set variables
     SET(GTEST_ROOT "${EP_BASE_DIR}/googletest" PARENT_SCOPE)
     SET(GTEST_INCLUDE_DIRS "${EP_BASE_DIR}/googletest/include" PARENT_SCOPE)
     SET(GTEST_LIBRARIES_DIRS "${EP_BASE_DIR}/googletest/lib" PARENT_SCOPE)
     SET(GTEST_BOTH_LIBRARIES "gtest;gtest_main" PARENT_SCOPE)
+    SET(GTEST_BOTH_LIBRARIES_D "gtestd;gtest_maind" PARENT_SCOPE)
 endif()
 message(STATUS "Subproject: GTEST...DONE")
 
@@ -77,20 +95,8 @@ message(STATUS "Subproject: EIGEN...")
 if(USE_SYSTEM_EIGEN)
     find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 else()
-    # Download and unpack googletest at configure time
-    configure_file(eigen.CMakeLists.txt.in ${EP_BASE_DIR}/eigen-download/CMakeLists.txt @ONLY)
-    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-            RESULT_VARIABLE result
-            WORKING_DIRECTORY ${EP_BASE_DIR}/eigen-download )
-    if(result)
-        message(FATAL_ERROR "CMake step for Eigen3 failed: ${result}")
-    endif()
-    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
-            RESULT_VARIABLE result
-            WORKING_DIRECTORY ${EP_BASE_DIR}/eigen-download )
-    if(result)
-        message(FATAL_ERROR "Build step for Eigen3 failed: ${result}")
-    endif()
+    CONF_PACKAGE(eigen ${CMAKE_BUILD_TYPE} @ONLY)
+    BUILD_PACKAGE(eigen ${CMAKE_BUILD_TYPE})
 
     # Set variables
     SET(Eigen3_DIR "${EP_BASE_DIR}/eigen/share/eigen3/cmake" PARENT_SCOPE)
@@ -105,21 +111,11 @@ message(STATUS "Subproject: ZLIB...")
 if(USE_SYSTEM_ZLIB)
     find_package(ZLIB REQUIRED)
 else()
-    # Download and unpack googletest at configure time
-    configure_file(zlib.CMakeLists.txt.in ${EP_BASE_DIR}/zlib-download/CMakeLists.txt)
-    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-            RESULT_VARIABLE result
-            WORKING_DIRECTORY ${EP_BASE_DIR}/zlib-download )
-    if(result)
-        message(FATAL_ERROR "CMake step for zlib failed: ${result}")
-    endif()
-    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL} --config ${CMAKE_BUILD_TYPE}
-            RESULT_VARIABLE result
-            WORKING_DIRECTORY ${EP_BASE_DIR}/zlib-download )
-    if(result)
-        message(FATAL_ERROR "Build step for zlib failed: ${result}")
-    endif()
-
+    # Download and unpack ZLIB at configure time
+    foreach(config ${config_types})
+        CONF_PACKAGE(zlib ${config} "")
+        BUILD_PACKAGE(zlib ${config})
+    endforeach()
     # Set variables
     SET(ZLIB_ROOT "${EP_BASE_DIR}/zlib" PARENT_SCOPE)
     SET(ZLIB_BIN "${EP_BASE_DIR}/zlib/bin" PARENT_SCOPE)
@@ -136,28 +132,18 @@ message(STATUS "Subproject: ZLIB...DONE")
 if(USE_SYSTEM_PROTOBUF)
     find_package(Protobuf REQUIRED)
 else()
-    # Download and unpack googletest at configure time
-    configure_file(protobuf.CMakeLists.txt.in ${EP_BASE_DIR}/protobuf-download/CMakeLists.txt @ONLY)
-    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-            RESULT_VARIABLE result
-            WORKING_DIRECTORY ${EP_BASE_DIR}/protobuf-download )
-    if(result)
-        message(FATAL_ERROR "CMake step for Protobuf failed: ${result}")
-    endif()
-    execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL} --config ${CMAKE_BUILD_TYPE}
-            RESULT_VARIABLE result
-            WORKING_DIRECTORY ${EP_BASE_DIR}/protobuf-download )
-    if(result)
-        message(FATAL_ERROR "Build step for Protobuf failed: ${result}")
-    endif()
-
-    # This variable does not work (deprecated?)
+    # Download and unpack protobuf at configure time
+    foreach(config ${config_types})
+        CONF_PACKAGE(protobuf ${config} @ONLY)
+        BUILD_PACKAGE(protobuf ${config})
+    endforeach()
+    # Set Protobuf_DIR  variable
     if (WIN32)
         set(Protobuf_DIR "${EP_BASE_DIR}/protobuf/cmake" PARENT_SCOPE)
     else()
         set(Protobuf_DIR "${EP_BASE_DIR}/protobuf/lib/cmake/protobuf" PARENT_SCOPE)
     endif()
-
+    
     set(Protobuf_ROOT "${EP_BASE_DIR}/protobuf" PARENT_SCOPE)
     # set(Protobuf_INCLUDE_DIRS "${EP_BASE_DIR}/protobuf/include" PARENT_SCOPE)
     # set(Protobuf_LIBRARIES_DIRS "${EP_BASE_DIR}/protobuf/lib" PARENT_SCOPE)
@@ -171,22 +157,12 @@ message(STATUS "Subproject: Protobuf...DONE")
 ##################
 if(WIN32)
     if(USE_SYSTEM_PTHREADS)
-        set(PTHREADS_INSTALL_PATH "$ENV{PTHREADS_ROOT}" CACHE PATH "Path to the installation of pthreads under Windows" PARENT_SCOPE)
+        set(PTHREADS_INSTALL_PATH "$ENV{PTHREADS_ROOT}" CACHE PATH "Path to the installation of Pthreads under Windows (PTHREADS_ROOT env variable)" PARENT_SCOPE)
     else()
         # Download and unpack pthreads4w at configure time
-        configure_file(pthreads4w.CMakeLists.txt.in ${EP_BASE_DIR}/pthreads4w-download/CMakeLists.txt @ONLY)
-        execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-                RESULT_VARIABLE result
-                WORKING_DIRECTORY ${EP_BASE_DIR}/pthreads4w-download)
-        if(result)
-            message(FATAL_ERROR "CMake step for pthreads4w failed: ${result}")
-        endif()
-        execute_process(COMMAND ${CMAKE_COMMAND} --build . -j ${NUM_PARALLEL}
-                RESULT_VARIABLE result
-                WORKING_DIRECTORY ${EP_BASE_DIR}/pthreads4w-download)
-        if(result)
-            message(FATAL_ERROR "Build step for pthreads4w failed: ${result}")
-        endif()
+        CONF_PACKAGE(pthreads4w ${CMAKE_BUILD_TYPE} @ONLY)
+        BUILD_PACKAGE(pthreads4w ${CMAKE_BUILD_TYPE})
+        
         set(PTHREADS_INSTALL_PATH "${EP_BASE_DIR}/PTHREADS-BUILT" PARENT_SCOPE)
     endif()
 endif()

@@ -8,7 +8,7 @@ SET(EP_BASE_DIR @CMAKE_CURRENT_BINARY_DIR@/third_party)
 if("${CMAKE_VS_PLATFORM_NAME}" MATCHES "x64")
     SET(VCVARS "@CMAKE_GENERATOR_INSTANCE@/VC/Auxiliary/Build/vcvars64.bat")
 else()
-    SET(VCVARS "@CMAKE_GENERATOR_INSTANCE@/VC/Auxiliary/Build/vcvars32.bat")
+    SET(VCVARS "@CMAKE_GENERATOR_INSTANCE@/VC/Auxiliary/Build/vcvarsamd64_x86.bat")
 endif()
 
 include(ExternalProject)

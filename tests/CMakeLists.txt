@@ -18,9 +18,11 @@ file(GLOB_RECURSE CPP_TESTS_FILES "${PROJECT_SOURCE_DIR}/*" *.{h, cpp})
 
 # Build test and target libraries
 add_executable(unit_tests ${CPP_TESTS_FILES})
-target_include_directories(unit_tests PUBLIC ${GTEST_INCLUDE_DIRS})
+target_include_directories(unit_tests PUBLIC $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>)
 target_link_directories(unit_tests PUBLIC ${GTEST_LIBRARIES_DIRS})
-target_link_libraries(unit_tests PRIVATE eddl ${GTEST_BOTH_LIBRARIES})
+target_link_libraries(unit_tests PRIVATE eddl
+    optimized ${GTEST_BOTH_LIBRARIES}
+    debug ${GTEST_BOTH_LIBRARIES_D})
 
 # Add test
 add_test(NAME unit_tests COMMAND unit_tests)
