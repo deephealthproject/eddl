@@ -39,8 +39,8 @@ layer l1_loss(vector<layer> in)
 // Dice loss image-level
 layer dice_loss_img(vector<layer> in)
 {
-  layer num=Mult(2,ReduceMean(Mult(in[0],in[1]),{0,1,2}));
-  layer den=ReduceMean(Sum(in[0],in[1]),{0,1,2});
+  layer num=Mult(2,ReduceSum(Mult(in[0],in[1]),{0,1,2}));
+  layer den=ReduceSum(Sum(in[0],in[1]),{0,1,2});
 
   return Diff(1.0,Div(num,den));
 }
@@ -48,8 +48,8 @@ layer dice_loss_img(vector<layer> in)
 // Dice loss pixel-level
 layer dice_loss_pixel(vector<layer> in)
 {
-  layer num=Mult(2,ReduceMean(Mult(in[0],in[1]),{0}));
-  layer den=ReduceMean(Sum(in[0],in[1]),{0});
+  layer num=Mult(2,ReduceSum(Mult(in[0],in[1]),{0}));
+  layer den=ReduceSum(Sum(in[0],in[1]),{0});
 
   num=Sum(num,1);
   den=Sum(den,1);
@@ -84,9 +84,9 @@ int main(int argc, char **argv) {
           adam(0.001), // Optimizer
           {}, // Losses
           {}, // Metrics
-          CS_GPU({1}) // one GPU
+          //CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU()
+          CS_CPU()
     );
 
     summary(net);
@@ -130,8 +130,8 @@ int main(int argc, char **argv) {
         cout<<"mseloss="<<mseloss/(j+1)<<"\r";
         fflush(stdout);
 
-        //optimize(dicep);
-        optimize({mse,dicep});
+        optimize(dicep);
+        //optimize({mse,dicep});
 
 
         update(net);

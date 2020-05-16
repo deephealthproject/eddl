@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
     layer out = Activation(Dense(l, 64), "relu");
 
     model encoder = Model({in}, {out});
-    summary(encoder);
+
 
     // Define decoder
     in = Input({64});
@@ -50,12 +50,10 @@ int main(int argc, char **argv) {
     out = Sigmoid(Dense(l, 784));
 
     model decoder = Model({in}, {out});
-    summary(decoder);
+
 
     // Merge both models into a new one
     model net = Model({encoder,decoder});
-    summary(net);
-    plot(net, "model.pdf");
 
     // Build model
     build(net,
@@ -66,6 +64,8 @@ int main(int argc, char **argv) {
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
           //CS_CPU()
     );
+    summary(net);
+    plot(net, "model.pdf");
 
     // Load dataset
     Tensor* x_train = Tensor::load("mnist_trX.bin");
