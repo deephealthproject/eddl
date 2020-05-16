@@ -436,6 +436,8 @@ typedef NetLoss * metric;
     void backward(model m,vector<Tensor *> target);
     void backward(model net);
     void backward(loss l);
+    void optimize(loss l);
+    void optimize(vector <loss> l);
     void update(model m);
     /**
       *  @brief Prints model loss at some batch.

@@ -55,7 +55,7 @@ LRNN::LRNN(vector<Layer *> parent, int units, string activation, bool use_bias, 
         bias = new Tensor(vector<int>{units}, dev);
         params.push_back(bias);
         gbias = new Tensor(vector<int>{units}, dev);
-        gradients.push_back(gbias); 
+        gradients.push_back(gbias);
     }
 
 
@@ -95,16 +95,24 @@ void LRNN::forward() {
 
 void LRNN::backward() {
     //get gradients with provided delta
+    Tensor *daux=new Tensor(dela->shape,delta->device);
+    daux->fill_(0.0);
+
     if (activation == "relu"){
-        D_ReLu(delta, preoutput, delta);
+        D_ReLu(delta, preoutput, daux);
+        Tensor::copy(daux,delta);
     }else if (activation == "sigmoid"){
-        D_Sigmoid(delta, output, delta);
+        D_Sigmoid(delta, output, daux);
+        Tensor::copy(daux,delta);
     }else if (activation == "hard_sigmoid"){
-        D_HardSigmoid(delta, preoutput, delta);
+        D_HardSigmoid(delta, preoutput, daux);
+        Tensor::copy(daux,delta);
     }else if (activation == "tanh"){
-        D_Tanh(delta, output, delta);
+        D_Tanh(delta, output, daux);
+        Tensor::copy(daux,delta);
     }
 
+   delete daux;
 
     if (trainable) {
         Tensor::mult2D(parent[0]->output, 1, delta, 0, gWx, 1);
