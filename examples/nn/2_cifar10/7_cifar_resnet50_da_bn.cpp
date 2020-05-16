@@ -62,7 +62,7 @@ int main(int argc, char **argv){
 
   // Settings
   int epochs = 5;
-  int batch_size =100;
+  int batch_size =16;
   int num_classes = 10;
 
   // network
