@@ -332,7 +332,7 @@ namespace eddl {
     void optimize(vector <loss> vl)
     {
       for(auto &l : vl)
-        l->graph->backward();  
+        l->graph->backward();
     }
 
     void update(model net)
@@ -959,35 +959,34 @@ namespace eddl {
     // Manage Tensors inside Layers
     ////////////////////////////////////
 
-    // get tensors
+    // get COPIES of tensors
     // collect from CS when necessary
     Tensor* getOutput(layer l1){
         collectTensor(l1,"output");
-        return l1->output;
+        return l1->output->clone();
     }
 
     Tensor* getDelta(layer l1){
         collectTensor(l1,"delta");
-        return l1->delta;
+        return l1->delta->clone();
     }
 
     Tensor* getParam(layer l1, int p){
         collectTensor(l1,"param",p);
-        return l1->params[p];
+        return l1->params[p]->clone();
     }
 
     Tensor* getGradient(layer l1,int p){
         collectTensor(l1,"gradient",p);
-        return l1->gradients[p];
+        return l1->gradients[p]->clone();
     }
-
 
     // get vector of tensor
     vector<Tensor*> getParams(layer l1){
       vector<Tensor*> n;
       for(int i=0;i<l1->params.size();i++) {
         collectTensor(l1,"param",i);
-        n.push_back(l1->params[i]);
+        n.push_back(l1->params[i]->clone());
       }
       return n;
     }
@@ -996,7 +995,7 @@ namespace eddl {
       vector<Tensor*> n;
       for(int i=0;i<l1->gradients.size();i++) {
         collectTensor(l1,"gradients",i);
-        n.push_back(l1->gradients[i]);
+        n.push_back(l1->gradients[i]->clone());
       }
       return n;
     }
