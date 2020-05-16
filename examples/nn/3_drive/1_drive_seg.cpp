@@ -156,14 +156,15 @@ int main(int argc, char **argv){
 
       next_batch({x_train,y_train},{xbatch,ybatch});
 
+        Tensor* xout = xbatch->select({"0"});
+        xout->mult_(255.0f);
+        xout->save("./0.tr_out_prev.jpg");
+       delete xout;
 
-//       Tensor* xout = xbatch->select({"0"});  // TODO: Review. Not tested
-//       xout->save("./0.tr_out_prev.jpg");
-//       delete xout;
-//
-//       Tensor* yout = ybatch->select({"0"});
-//       yout->save("./0.ts_out_prev.jpg");
-//       delete yout;
+       Tensor* yout = ybatch->select({"0"});
+       yout->mult_(255.0f);
+       yout->save("./0.ts_out_prev.jpg");
+       delete yout;
 
       // DA
       forward(danet, vector<Tensor *>{xbatch, ybatch});
@@ -172,11 +173,13 @@ int main(int argc, char **argv){
       Tensor* xbatch_da = getOutput(img);
       Tensor* ybatch_da = getOutput(mask);
 
-//       xout = xbatch_da->select({"0"});   // TODO: Review. Not tested
+//       xout = xbatch_da->select({"0"});
+//        xout->mult_(255.0f);
 //       xout->save("./1.tr_out_after.jpg");
 //       delete xout;
 //
 //       yout = ybatch_da->select({"0"});
+//        yout->mult_(255.0f);
 //       yout->save("./1.ts_out_after.jpg");
 //       delete yout;
 
@@ -187,10 +190,11 @@ int main(int argc, char **argv){
       // printf("  sum=%f",yout->sum());
       printf("\r");
 
-      Tensor* yout = getOutput(out);
-      yout = yout->select({"0"});  // TODO: Review. Not tested
-      yout->save("./out.jpg");
-      delete yout;
+//      Tensor* yout2 = getOutput(out);
+//      yout2 = yout2->select({"0"});
+//      yout2->mult_(255.0f);
+//      yout2->save("./out.jpg");
+//      delete yout2;
     }
     printf("\n");
   }
