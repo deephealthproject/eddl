@@ -88,14 +88,14 @@ if(BUILD_SUPERBUILD AND NOT USE_SYSTEM_ZLIB)
     SET(CMAKE_PREFIX_PATH "${ZLIB_BIN};${CMAKE_PREFIX_PATH}")
 else()
     message(STATUS "Searching for ZLIB in the system...")
-
-    # Check if Protobuf was really found
-    if(NOT ZLIB_FOUND)
-        message(FATAL_ERROR "ZLIB was found by CMake but its libraries or includes are missing.
-                Use '-D BUILD_SUPERBUILD=ON', or try with a different ZLIB installation to fix this problem.")
-    endif()
 endif()
+
 find_package(ZLIB REQUIRED)  # Problems with: ZLIB_ROOT
+# Check if Protobuf was really found
+if(NOT ZLIB_FOUND)
+    message(FATAL_ERROR "ZLIB was found by CMake but its libraries or includes are missing.
+            Use '-D BUILD_SUPERBUILD=ON', or try with a different ZLIB installation to fix this problem.")
+endif()
 message(STATUS "ZLIB found!")
 target_link_libraries(${PROJECT_NAME} PUBLIC ZLIB::ZLIB)
 # target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIRS}>)
