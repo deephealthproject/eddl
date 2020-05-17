@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
 
     // Build model
     build(net,
-          sgd(0.001, 0.9), // Optimizer
+          adam(0.0001), // Optimizer
           {"dice"}, // Losses
           {"dice"}, // Metrics
           CS_GPU({1}) // one GPU
