@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -36,11 +36,23 @@ void RMSProp::change(vector<float> &p) {
 }
 
 Optimizer *RMSProp::clone() {
-    return new RMSProp(lr, rho, epsilon, weight_decay);
+    RMSProp *n=new RMSProp(lr, rho, epsilon, weight_decay);
+    n->clip_val=clip_val;
+
+    return n;
 }
 
+Optimizer *RMSProp::share() {
+    RMSProp *n=new RMSProp(lr, rho, epsilon, weight_decay);
+    n->orig=this;
+    n->isshared=true;
+    n->clip_val=clip_val;
+    return n;
+}
 void RMSProp::setlayers(vlayer l) {
     layers = l;
+
+    if (isshared) return;
 
     // create momemtum tensors
     for (int i = 0; i < layers.size(); i++)
@@ -54,6 +66,12 @@ void RMSProp::setlayers(vlayer l) {
 }
 
 void RMSProp::applygrads(int batch) {
+  if (isshared) {
+    orig->applygrads(batch);
+  }
+  else {
+
+    clip();
 
     int p = 0;
     for (int i = 0; i < layers.size(); i++)
@@ -82,6 +100,6 @@ void RMSProp::applygrads(int batch) {
         }
     }
     else p+=layers[i]->get_trainable_params_count();
-
+  }
 
 }

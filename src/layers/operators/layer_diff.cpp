@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -124,12 +124,12 @@ void LDiff::backward(){
 Layer *LDiff::share(int c, int bs, vector<Layer *> p) {
   LDiff *n;
   if (binary)
-      n = new LDiff(p[0], p[1],  this->name, this->dev, this->mem_level);
+      n = new LDiff(p[0], p[1], "share_"+to_string(c)+this->name, this->dev, this->mem_level);
   else {
     if (left)
-      n = new LDiff(p[0], val,  this->name, this->dev, this->mem_level);
+      n = new LDiff(p[0], val, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     else
-      n = new LDiff(val, p[0],  this->name, this->dev, this->mem_level);
+      n = new LDiff(val, p[0], "share_"+to_string(c)+this->name, this->dev, this->mem_level);
   }
   n->orig = this;
   return n;

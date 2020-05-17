@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -77,8 +77,8 @@ class LLayerNorm : public LinLayer {
 public:
     float epsilon;
     bool affine;
-    Tensor *bn_mean;
-    Tensor *bn_var;
+    Tensor *mean;
+    Tensor *variance;
     Tensor *bn_g;
     Tensor *bn_b;
     Tensor *gbn_g;

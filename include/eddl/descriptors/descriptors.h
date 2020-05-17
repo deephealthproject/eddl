@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -115,7 +115,7 @@ public:
 
 	static int compute_output(const string& padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
 	static int compute_output(vector<int> padding, int input_size, int kerkel_size, int stride, int dilation_rate=1);
-    static vector<int> compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding="same");
+    static vector<int> compute_padding(int output_size, int input_size, int kerkel_size, int stride, string padding="same",bool row=false);
 
     };
 

@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -53,7 +53,7 @@ int LSqrt::total_layers = 0;
 
   Layer *LSqrt::share(int c, int bs, vector<Layer *> p) {
     LSqrt *n;
-    n = new LSqrt(p[0],  this->name, this->dev, this->mem_level);
+    n = new LSqrt(p[0], "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
     return n;
   }

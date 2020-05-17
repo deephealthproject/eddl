@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -62,6 +62,7 @@ typedef NetLoss * metric;
       *  @return     Model instance
     */
     model Model(vlayer in, vlayer out);
+    model Model(vector<Net*> vnets);
     void build(model net, optimizer o=nullptr, CompServ *cs=nullptr, bool init_weigths=true);
 
     /**
@@ -108,7 +109,18 @@ typedef NetLoss * metric;
       *  @param mem  Indicates de memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
       *  @return     The computer service itself.
     */
-    compserv CS_CPU(int th=-1, string mem="low_mem");
+    compserv CS_CPU();
+
+
+    /**
+      *  @brief Executes de code in the CPU.
+      *
+      *  @param th  Indicates the number of threads to use (-1 = all available threads)
+      *  @param mem  Indicates de memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
+      *  @return     The computer service itself.
+    */
+    compserv CS_CPU(int th);
+
 
     /**
       *  @brief Executes de code in the GPU.
@@ -117,7 +129,28 @@ typedef NetLoss * metric;
       *  @param mem  Indicates de memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
       *  @return     The computer service itself.
     */
-    compserv CS_GPU(const vector<int> g={1}, string mem="low_mem");
+
+    compserv CS_CPU(int th,string mem);
+
+
+    /**
+      *  @brief Executes de code in the GPU.
+      *
+      *  @param g  Vector of bools to set which GPUs will be used (1=on, 0=off)
+      *  @param mem  Indicates de memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
+      *  @return     The computer service itself.
+    */
+
+    compserv CS_GPU(const vector<int> g);
+
+    /**
+      *  @brief Executes de code in the GPU.
+      *
+      *  @param g  Vector of bools to set which GPUs will be used (1=on, 0=off)
+      *  @param mem  Indicates de memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
+      *  @return     The computer service itself.
+    */
+    compserv CS_GPU(const vector<int> g, string mem);
 
     /**
       *  @brief Executes de code in the GPU.
@@ -127,7 +160,17 @@ typedef NetLoss * metric;
       *  @param mem  Indicates de memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
       *  @return     The computer service itself.
     */
-    compserv CS_GPU(const vector<int> g={1}, int lsb=1, string mem="low_mem");
+    compserv CS_GPU(const vector<int> g, int lsb);
+
+    /**
+      *  @brief Executes de code in the GPU.
+      *
+      *  @param g  Vector of bools to set which GPUs will be used (1=on, 0=off)
+      *  @param lsb  (Multi-gpu setting) Number of batches to run before synchronizing the weights of the different GPUs
+      *  @param mem  Indicates de memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
+      *  @return     The computer service itself.
+    */
+    compserv CS_GPU(const vector<int> g, int lsb,string mem);
 
 
     /**
@@ -338,6 +381,16 @@ typedef NetLoss * metric;
     */
     void evaluate(model m, const vector<Tensor *> &in, const vector<Tensor *> &out);
 
+    /**
+      *  @brief Performs a prediction with input data
+      *
+      *  @param m  Model
+      *  @param in  Input data (features)
+      *  @return    vector of output tensors.
+    */
+    vector<Tensor *>  predict(model m, const vector<Tensor *> &in);
+
+
     // Finer methods
     vector<int> random_indices(int batch_size, int num_samples);
     void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
@@ -383,6 +436,8 @@ typedef NetLoss * metric;
     void backward(model m,vector<Tensor *> target);
     void backward(model net);
     void backward(loss l);
+    void optimize(loss l);
+    void optimize(vector <loss> l);
     void update(model m);
     /**
       *  @brief Prints model loss at some batch.
@@ -618,6 +673,26 @@ typedef NetLoss * metric;
                const vector<int> &strides = {1, 1}, string padding = "same", bool use_bias = true,
                int groups = 1, const vector<int> &dilation_rate = {1, 1}, string name = "");
 
+
+     /**
+    *  @brief 1D Convolution layer.
+    *
+    *  @param parent  Parent layer
+    *  @param filters  Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+    *  @param kernel_size  Vector of 1 integers, specifying the height and width of the 2D convolution window.
+    *  @param strides  Vector of 1 integers, specifying the strides of the convolution along the height and width
+    *  @param padding  One of "none", "valid" or "same"
+    *  @param use_bias  Boolean, whether the layer uses a bias vector.
+    *  @param groups  Number of blocked connections from input channels to output channels
+    *  @param dilation_rate  Vector of 1 integers, specifying the dilation rate to use for dilated convolution
+    *  @param name  A name for the operation
+    *  @return     Convolution layer
+  */
+  layer Conv1D(layer parent, int filters,  vector<int> kernel_size,
+             vector<int> strides = {1}, string padding = "same", bool use_bias = true,
+             int groups = 1, const vector<int> dilation_rate = {1}, string name = "");
+
+
     /**
       *  @brief Regular densely-connected NN layer.
       *
@@ -637,10 +712,11 @@ typedef NetLoss * metric;
       *
       *  @param parent  Parent layer
       *  @param rate  Between 0 and 1. Fraction of the input units to drop
+      *  @param iw  perform weighting in inference (boolean, true)
       *  @param name  A name for the operation
       *  @return     Layer with Dropout
     */
-    layer Dropout(layer parent, float rate, string name = "");
+    layer Dropout(layer parent, float rate, bool iw=true, string name = "");
 
     /**
       *  @brief Used to initialize an input to a model.
@@ -710,12 +786,14 @@ typedef NetLoss * metric;
     /**
       *  @brief Turns positive integers (indexes) into dense vectors of fixed size. eg. [[4], [20]] -> [[0.25, 0.1], [0.6, -0.2]]
       *
-      *  @param input_dim  Size of the vocabulary, i.e. maximum integer index + 1
+      *  @param parent Parent layer
+      *  @param vocsize Size of the vocabulary, i.e. maximum integer index + 1
       *  @param output_dim  Dimension of the dense embedding
+      *  @param length (1) Length of the sequence, to connect to Dense Layers no Recurrent
       *  @param name  A name for the operation
       *  @return The embedded input
     */
-    layer Embedding(int input_dim, int output_dim, string name = ""); //Todo: Implement
+    layer Embedding(layer parent, int vocsize, int length, int output_dim,  bool mask_zeros=false, string name = ""); //Todo: Implement
 
     /**
       *  @brief Transposes a Layer.
@@ -1114,6 +1192,7 @@ typedef NetLoss * metric;
       *  @return     Parent layer after the normalization
     */
     layer BatchNormalization(layer parent, float momentum = 0.9f, float epsilon = 0.00001f, bool affine = true,string name = "");
+    layer BatchNormalization(layer parent, bool affine, float momentum = 0.9f, float epsilon = 0.00001f, string name = "");
 
     /**
       *  @brief Layer normalization layer.
@@ -1131,6 +1210,7 @@ typedef NetLoss * metric;
       *  @return     Parent layer after the normalization
     */
     layer LayerNormalization(layer parent, float epsilon = 0.00001f, bool affine=true, string name = "");
+    layer LayerNormalization(layer parent, bool affine,float epsilon = 0.00001f,  string name = "");
 
     /**
       *  @brief Group normalization layer.
@@ -1290,11 +1370,11 @@ typedef NetLoss * metric;
     layer Permute(layer l, vector<int> dims, string name="");
 
     // Reduction Layers
-    layer ReduceMean(layer l, vector<int> axis = {0}, bool keepdims = false);
-    layer ReduceVar(layer l, vector<int> axis = {0}, bool keepdims = false);
-    layer ReduceSum(layer l, vector<int> axis = {0}, bool keepdims = false);
-    layer ReduceMax(layer l, vector<int> axis = {0}, bool keepdims = false);
-    layer ReduceMin(layer l, vector<int> axis = {0}, bool keepdims = false);
+    layer ReduceMean(layer l, vector<int> axis, bool keepdims = false);
+    layer ReduceVar(layer l, vector<int> axis, bool keepdims = false);
+    layer ReduceSum(layer l, vector<int> axis, bool keepdims = false);
+    layer ReduceMax(layer l, vector<int> axis, bool keepdims = false);
+    layer ReduceMin(layer l, vector<int> axis, bool keepdims = false);
 
     // Generator Layers
 
@@ -1341,6 +1421,19 @@ typedef NetLoss * metric;
     */
     layer MaxPool(layer parent, const vector<int> &pool_size = {2, 2}, const vector<int> &strides = {2, 2}, string padding = "none", string name = "");
 
+    /**
+      *  @brief Max 1D pooling operation.
+      *
+      *  @param parent  Parent layer
+      *  @param pool_size  Size of the max pooling windows
+      *  @param strides  Factor by which to downscale. E.g. 2 will halve the input. If None, it will default to pool_size
+      *  @param padding  One of "none", "valid" or "same" (case-insensitive).
+      *  @param name  A name for the operation
+      *  @return     The result after apply the max pooling operation over the parent layer
+    */
+    layer MaxPool1D(layer parent, vector<int> pool_size = {2}, vector<int> strides = {2}, string padding = "none", string name = "");
+
+
     // Recurrent Layers
 
     /**
@@ -1355,7 +1448,7 @@ typedef NetLoss * metric;
       *  @param name  A name for the operation
       *  @return     The RNN layer
     */
-    layer RNN(layer parent, int units, int num_layers=1, bool use_bias = true, float dropout = .0f, bool bidirectional = false, string name = "");
+    layer RNN(layer parent, int units, string activation="tanh", bool use_bias = true, bool bidirectional = false, string name = "");
 
     /**
       *  @brief Long Short-Term Memory layer - Hochreiter 1997.
@@ -1369,16 +1462,24 @@ typedef NetLoss * metric;
       *  @param name  A name for the operation
       *  @return     The LSTM layer
     */
-    layer LSTM(layer parent, int units, int num_layers, bool use_bias = true, float dropout = .0f, bool bidirectional = false, string name = "");
+    layer LSTM(layer parent, int units, bool mask_zeros=false, bool bidirectional = false, string name = "");
 
 
     // Layers Methods
     void set_trainable(layer l, bool val);
-    void copyTensor(Layer *l1,Layer *l2);
-    void copyGrad(Layer *l1,Layer *l2);
     vlayer getOut(model net);
-    Tensor* getTensor(layer l);
-    Tensor* getGrad(layer l);
+
+    // Manage tensors inside layers
+    Tensor* getOutput(layer l1);
+    Tensor* getDelta(layer l1);
+    Tensor* getParam(layer l1, int p);
+    Tensor* getGradient(layer l1,int p);
+    vector<Tensor*> getParams(layer l1);
+    vector<Tensor*> getGradients(layer l1);
+    void copyOutput(Layer *l1,Layer *l2);
+    void copyDelta(Layer *l1,Layer *l2);
+    void copyParam(Layer *l1,Layer *l2, int p);
+    void copyGradient(Layer *l1,Layer *l2, int p);
 
 
     ///////////////////////////////////////
@@ -1501,6 +1602,24 @@ typedef NetLoss * metric;
       *  @return     (void) The numpy files of DRIVE
     */
     void download_drive();
+    /**
+      *  @brief Downloads IMDB Dataset.
+      *
+      *  @see   https://ai.stanford.edu/~amaas/data/sentiment/
+      *
+      *  @return     (void) The numpy files of IMDB
+    */
+    void download_imdb();
+
+    /**
+      *  @brief Downloads IMDB Dataset. 1000 most frequent words
+      *
+      *  @see   https://ai.stanford.edu/~amaas/data/sentiment/
+      *
+      *  @return     (void) The numpy files of IMDB
+    */
+    void download_imdb_1000();
+
 
 }
 #endif

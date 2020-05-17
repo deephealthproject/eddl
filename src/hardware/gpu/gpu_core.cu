@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -118,6 +118,72 @@ void gpu_fill_(Tensor *A, float v) {
 
     fill_<<<dimGrid,dimBlock>>>(A->ptr,v,A->size);
     check_cuda(cudaDeviceSynchronize(),"set");
+}
+
+void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool mask_zeros)
+{
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  int *ind;
+  cudaMalloc((void **) &ind, sind.size() * sizeof(int));
+  cudaMemcpy(ind, &sind[0], sind.size() * sizeof(int), cudaMemcpyHostToDevice);
+
+  
+
+  int size=sind.size()*(B->shape[1]);
+
+  int grid,block;
+  if (size>=1024) {
+    grid=size/1024;
+    block=1024;
+    if (size%1024) grid++;
+  }
+  else {
+    grid=1;
+    block=size;
+  }
+
+  dim3 dimGrid(grid);
+  dim3 dimBlock(block);
+
+  select_rows<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[1], size, ind, ini, mask_zeros);
+  check_cuda(cudaDeviceSynchronize(), "gpu_select");
+
+  cudaFree(ind);
+
+}
+
+void gpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, int inc, bool mask_zeros)
+{
+  int device=A->gpu_device;
+  cudaSetDevice(device);
+
+  int *ind;
+  cudaMalloc((void **) &ind, sind.size() * sizeof(int));
+  cudaMemcpy(ind, &sind[0], sind.size() * sizeof(int), cudaMemcpyHostToDevice);
+
+  int size=sind.size()*(B->shape[1]);
+
+  int grid,block;
+  if (size>=1024) {
+    grid=size/1024;
+    block=1024;
+    if (size%1024) grid++;
+  }
+  else {
+    grid=1;
+    block=size;
+  }
+
+  dim3 dimGrid(grid);
+  dim3 dimBlock(block);
+
+  deselect_rows<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->shape[1], size, ind, ini, inc,mask_zeros);
+  check_cuda(cudaDeviceSynchronize(), "gpu_select");
+
+  cudaFree(ind);
+
 }
 
 

@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -36,6 +36,10 @@ void copy_cpu2gpu(void* cpu_addresses, void* gpu_addresses, int size, bool delet
 // GPU: Core
 void gpu_fill_(Tensor *A, float v);
 void gpu_mask(Tensor *A,float v);
+
+void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,bool mask_zeros=false);
+void gpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc,bool mask_zeros=false);
+
 void gpu_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd);

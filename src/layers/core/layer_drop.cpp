@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -18,12 +18,13 @@ using namespace std;
 
 int LDropout::total_layers = 0;
 
-LDropout::LDropout(Layer *parent, float df, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LDropout::LDropout(Layer *parent, float df, bool iw, string name, int dev, int mem) : LinLayer(name, dev, mem) {
 
     if(name.empty()) this->name = "dropout" + to_string(++total_layers);
 
     // df: drop factor is the probability to delete (drop) an activation
     this->df = df;
+    this->iw=iw;
 
     input = parent->output;
     output = new Tensor(input->shape, dev);
@@ -53,7 +54,7 @@ void LDropout::forward() {
         Tensor::el_mult(input, mask, output, 0);
     } else {
         Tensor::copy(input, output);
-        output->mult_(1.0 - df);
+        if (iw) output->mult_(1.0 - df);
     }
 
 }
@@ -64,15 +65,16 @@ void LDropout::backward() {
 
 
 Layer *LDropout::share(int c, int bs, vector<Layer *> p) {
-    LDropout *n = new LDropout(p[0], df,  this->name, this->dev, this->mem_level);
+  LDropout *n = new LDropout(p[0], df, iw,"share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
+    
 
     return n;
 }
 
 Layer *LDropout::clone(int c, int bs, vector<Layer *> p, int todev) {
 
-    LDropout *n = new LDropout(p[0], df,  name, todev, this->mem_level);
+  LDropout *n = new LDropout(p[0], df,  iw,name, todev, this->mem_level);
     n->orig = this;
 
     return n;

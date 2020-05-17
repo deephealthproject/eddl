@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -42,6 +42,8 @@ LConv::LConv(Layer *parent, ConvolDescriptor *D, string name, int dev, int mem) 
     cd->build(input);
 
     output = cd->O;
+
+
 //    delta = cd->D;
 //    cd->ID = parent->delta;
 
@@ -122,25 +124,40 @@ void LConv::apply_accumulated_gradients() {
 }
 
 Layer *LConv::share(int c, int bs, vector<Layer *> p) {
+    // TODO: share ComvDescriptor
     LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad,  name, dev,mem_level);
     n->orig = this;
     n->isshared=true;
-    
+    n->trainable = trainable;
+
+    n->cd->use_bias=cd->use_bias;
+
     //share params
     for (int i = 0; i < n->params.size(); i++) delete n->params[i];
     n->params.clear();
-    n->acc_gradients.clear();
-    n->cd->use_bias=cd->use_bias;
+
 
     n->cd->K = cd->K;
     n->cd->bias = cd->bias;
-    new(&n->cd->matK) Eigen::Map<Eigen::MatrixXf>(n->cd->K->ptr, cd->kr * cd->kc * cd->kz, cd->nk);
+    n->cd->matK = cd->matK;
 
     n->params.push_back(n->cd->K);
     n->params.push_back(n->cd->bias);
 
+    //share gradients
+    for (int i = 0; i < n->gradients.size(); i++) delete n->gradients[i];
+    n->gradients.clear();
+
+    n->cd->gK = cd->gK;
+    n->cd->gbias = cd->gbias;
+
+    n->gradients.push_back(n->cd->gK);
+    n->gradients.push_back(n->cd->gbias);
+
 
     if ( distributed_training ) {
+        n->acc_gradients.clear();
+
         n->cd->acc_gK  = cd->acc_gK;
         n->cd->acc_gbias  = cd->acc_gbias;
 
@@ -155,7 +172,10 @@ Layer *LConv::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LConv::clone(int c, int bs, vector<Layer *> p, int todev) {
+
     LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad,  name, todev, this->mem_level);
+    n->trainable = trainable;
+    
     n->orig = this;
     n->cd->use_bias=cd->use_bias;
 

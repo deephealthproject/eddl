@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -112,7 +112,7 @@ void LActivation::backward(){
 
         }else if (act == "exp"){
             D_Exp(delta, output, parent[0]->delta);
-            
+
         }else if (act == "softplus"){
             D_softplus(delta, output, parent[0]->delta);
 
@@ -155,7 +155,7 @@ void LActivation::load(std::ifstream &ifs, string format){
 }
 
 Layer *LActivation::share(int c, int bs, vector<Layer *> p){
-    LActivation *n = new LActivation(p[0], this->act, this->params,  this->name, this->dev, this->mem_level);
+    LActivation *n = new LActivation(p[0], this->act, this->params, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
     n->delta_bp = delta_bp;
 
@@ -165,7 +165,7 @@ Layer *LActivation::share(int c, int bs, vector<Layer *> p){
 Layer *LActivation::clone(int c, int bs, vector<Layer *> p, int todev){
 
 
-    LActivation *n = new LActivation(p[0], this->act, this->params,  name, todev, this->mem_level);
+    LActivation *n = new LActivation(p[0], this->act, this->params,  "clone_" + name, todev, this->mem_level);
     n->orig = this;
     n->delta_bp = delta_bp;
 

@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -33,8 +33,9 @@ void IGlorotNormal::apply(Tensor* params)
 {
   if (params->ndim == 1)
       params->rand_signed_uniform(0.1f);
-  else if (params->ndim == 2)
+  else if (params->ndim == 2) {
       params->rand_normal(0.0f, ::sqrtf(2.0f / (params->shape[0]+params->shape[1])));
+    }
   else if (params->ndim == 4) // only fan_in
       params->rand_normal(0.0f, ::sqrtf(1.0f / ((float)params->size / params->shape[0])));
   else {

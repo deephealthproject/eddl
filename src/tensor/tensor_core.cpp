@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -182,10 +182,12 @@ vector<int> Tensor::get_indices_rowmajor(int address){
 }
 
 float Tensor::get_(vector<int> indices){
+    // DO NOT USE. They're mainly for debugging.
     return this->ptr[get_address_rowmajor(std::move(indices))];
 }
 
 void Tensor::set_(vector<int> indices, float value){
+    // DO NOT USE. They're mainly for debugging.
     this->ptr[get_address_rowmajor(std::move(indices))] = value;
 }
 
@@ -534,7 +536,7 @@ void Tensor::set_select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
 
 }
 
-void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
+void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool mask_zeros) {
     ///////////////////////////////////////
     /// Select from A to B, A is bigger
     //////////////////////////////////////
@@ -545,46 +547,39 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
         msg("Incompatible shape", "Tensor::select");
     }
 
+
     //B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
-        cpu_select(A, B, sind, ini, end);
+        cpu_select(A, B, sind, ini, end,mask_zeros);
     }
     else if ((A->isGPU()) && (B->isCPU())) {
         Tensor *Ac=A->clone();
         Ac->toCPU();
 
-        cpu_select(Ac, B, sind, ini, end);
+        cpu_select(Ac, B, sind, ini, end,mask_zeros);
 
         delete Ac;
     }else if ((A->isCPU()) && (B->isGPU())) {
         Tensor *Bc=B->clone();
         Bc->toCPU();
-        cpu_select(A, Bc, sind, ini, end);
+        cpu_select(A, Bc, sind, ini, end,mask_zeros);
 
         Tensor::copy(Bc,B);
 
         delete Bc;
     }
-    else if ((A->isGPU()) && (B->isGPU())) {
-        Tensor *Ac=A->clone();
-        Ac->toCPU();
-
-        Tensor *Bc=B->clone();
-        Bc->toCPU();
-
-        cpu_select(Ac, Bc, sind, ini, end);
-
-        Tensor::copy(Bc,B);
-
-        delete Ac;
-        delete Bc;
-    }
+    #ifdef cGPU
+        else if (A->isGPU() && B->isGPU())
+      {
+        gpu_select(A, B, sind, ini, end,mask_zeros);
+      }
+    #endif
     else {
         msg("unsuppoted select", "Tensor::select");
     }
     //B->tsem->unlock();
 }
-void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) {
+void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc, bool mask_zeros) {
     ///////////////////////////////////////
     /// deSelect from A to B, B is bigger
     //////////////////////////////////////
@@ -597,37 +592,30 @@ void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end) 
 
     //B->tsem->lock();
     if ((A->isCPU()) && (B->isCPU())) {
-        cpu_deselect(A, B, sind, ini, end);
+        cpu_deselect(A, B, sind, ini, end, inc,mask_zeros);
     }
     else if ((A->isGPU()) && (B->isCPU())) {
         Tensor *Ac=A->clone();
         Ac->toCPU();
 
-        cpu_deselect(Ac, B, sind, ini, end);
+        cpu_deselect(Ac, B, sind, ini, end, inc,mask_zeros);
 
         delete Ac;
     }else if ((A->isCPU()) && (B->isGPU())) {
         Tensor *Bc=B->clone();
         Bc->toCPU();
-        cpu_deselect(A, Bc, sind, ini, end);
+        cpu_deselect(A, Bc, sind, ini, end, inc,mask_zeros);
 
         Tensor::copy(Bc,B);
 
         delete Bc;
     }
-    else if ((A->isGPU()) && (B->isGPU())) {
-        Tensor *Ac=A->clone();
-        Ac->toCPU();
-
-        Tensor *Bc=B->clone();
-        Bc->toCPU();
-
-        cpu_deselect(Ac, Bc, sind, ini, end);
-        Tensor::copy(Bc,B);
-
-        delete Ac;
-        delete Bc;
-    }
+    #ifdef cGPU
+        else if (A->isGPU() && B->isGPU())
+      {
+        gpu_deselect(A, B, sind, ini, end, inc,mask_zeros);
+      }
+    #endif
     else {
         msg("unsuppoted select", "Tensor::select");
     }

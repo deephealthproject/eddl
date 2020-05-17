@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.6
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include "eddl/apis/eddl.h"
-#include "eddl/apis/eddlT.h"
+
 
 using namespace eddl;
 
@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 10;
+    int epochs = 5;
     int batch_size = 100;
 
     // Define network
@@ -46,23 +46,24 @@ int main(int argc, char **argv) {
 
     model net = Model({in}, {out});
 
-    // View model
-    summary(net);
-    plot(net, "model.pdf");
-
     // Build model
     build(net,
           sgd(0.001, 0.9), // Optimizer
           {"mean_squared_error"}, // Losses
           {"mean_squared_error"}, // Metrics
-          CS_GPU({1}, "low_mem")
-          //CS_CPU(-1, "low_mem")
+          CS_GPU({1}) // one GPU
+          //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
+          //CS_CPU()
     );
 
+    // View model
+    summary(net);
+    plot(net, "model.pdf");
+
     // Load dataset
-    tensor x_train = eddlT::load("trX.bin");
+    Tensor* x_train = Tensor::load("mnist_trX.bin");
     // Preprocessing
-    eddlT::div_(x_train, 255.0);
+    x_train->div_(255.0f);
 
     // Train model
     fit(net, {x_train}, {x_train}, batch_size, epochs);

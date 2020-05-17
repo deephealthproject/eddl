@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -41,11 +41,22 @@ void Adam::change(vector<float> &p) {
 }
 
 Optimizer *Adam::clone() {
-    return new Adam(lr, beta_1, beta_2, epsilon, weight_decay, amsgrad);
+    Adam *n=new Adam(lr, beta_1, beta_2, epsilon, weight_decay, amsgrad);
+    n->clip_val=clip_val;
+    
+    return n;
 }
-
+Optimizer *Adam::share() {
+    Adam *n=new Adam(lr, beta_1, beta_2, epsilon, weight_decay, amsgrad);
+    n->orig=this;
+    n->isshared=true;
+    n->clip_val=clip_val;
+    return n;
+}
 void Adam::setlayers(vlayer l) {
     layers = l;
+
+    if (isshared) return;
 
     // create momemtum tensors
     for (int i = 0; i < layers.size(); i++)
@@ -63,10 +74,13 @@ void Adam::setlayers(vlayer l) {
 }
 
 void Adam::applygrads(int batch) {
-
+  if (isshared) {
+    orig->applygrads(batch);
+  }
+  else {
+    clip();
     int p = 0;
     t++;
-
     for (int i = 0; i < layers.size(); i++)
       if (layers[i]->trainable) {
         for (int j = 0; j < layers[i]->get_trainable_params_count(); j++, p++) {
@@ -88,6 +102,6 @@ void Adam::applygrads(int batch) {
         }
     }
     else p+=layers[i]->get_trainable_params_count();
-
+  }
 
 }

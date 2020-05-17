@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -27,11 +27,12 @@ using namespace std;
 class LRNN : public MLayer {
 public:
     int units;
-    int num_layers;
     bool use_bias;
-    float dropout;
     bool bidirectional;
     static int total_layers;
+    string activation;
+
+    Tensor *preoutput;
 
     Tensor *Wx;
     Tensor *gWx;
@@ -42,7 +43,7 @@ public:
     Tensor *gWy;
     Tensor *biasy;
 
-    LRNN(vector<Layer *> in, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev, int mem);
+    LRNN(vector<Layer *> in, int units, string activation, bool use_bias, bool bidirectional, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -57,20 +58,52 @@ public:
 
 
 /// LSTM Layer
-class LLSTM : public LinLayer {
+class LLSTM : public MLayer {
 public:
     int units;
-    int num_layers;
     bool use_bias;
-    float dropout;
     bool bidirectional;
+    bool mask_zeros;
+
     static int total_layers;
 
-    LLSTM(Layer *parent, int units, int num_layers, bool use_bias, float dropout, bool bidirectional, string name, int dev, int mem);
+    Tensor *state_c;
+    Tensor *state_h;
+    Tensor *delta_h;
+    Tensor *delta_c;
+
+    Tensor *Wih,*Wix;
+    Tensor *Wfh,*Wfx;
+    Tensor *Woh,*Wox;
+    Tensor *Wch,*Wcx;
+
+    Tensor *gWih,*gWix;
+    Tensor *gWfh,*gWfx;
+    Tensor *gWoh,*gWox;
+    Tensor *gWch,*gWcx;
+
+    Tensor *in,*fn,*on,*cn;
+    Tensor *inbias,*fnbias,*onbias,*cnbias;
+    Tensor *ginbias,*gfnbias,*gonbias,*gcnbias;
+
+    Tensor *incn,*cn1fn;
+    Tensor *sh;
+
+    Tensor *mask;
+    Tensor *psh;
+    Tensor *psc;
+
+
+
+    LLSTM(vector<Layer *> in, int units,  bool mask_zeros, bool bidirectional, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void resize(int batch) override;
+    void mem_delta() override;
+    void free_delta() override;
 
     void forward() override;
 

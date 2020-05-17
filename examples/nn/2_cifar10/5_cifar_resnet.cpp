@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.6
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include "eddl/apis/eddl.h"
-#include "eddl/apis/eddlT.h"
+
 
 using namespace eddl;
 
@@ -46,7 +46,7 @@ int main(int argc, char **argv){
   download_cifar10();
 
   // Settings
-  int epochs = 25;
+  int epochs = 5;
   int batch_size = 100;
   int num_classes = 10;
 
@@ -82,8 +82,9 @@ int main(int argc, char **argv){
     sgd(0.01, 0.9), // Optimizer
     {"soft_cross_entropy"}, // Losses
     {"categorical_accuracy"}, // Metrics
-    CS_GPU({1}, "low_mem") // GPU with only one gpu
-    //CS_CPU(-1, "low_mem")  // CPU with maximum threads availables
+    CS_GPU({1}) // one GPU
+    //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
+    //CS_CPU()
   );
 
   // plot the model
@@ -93,14 +94,14 @@ int main(int argc, char **argv){
   summary(net);
 
   // Load and preprocess training data
-  tensor x_train = eddlT::load("cifar_trX.bin");
-  tensor y_train = eddlT::load("cifar_trY.bin");
-  eddlT::div_(x_train, 255.0);
+  Tensor* x_train = Tensor::load("cifar_trX.bin");
+  Tensor* y_train = Tensor::load("cifar_trY.bin");
+  x_train->div_(255.0f);
 
   // Load and preprocess test data
-  tensor x_test = eddlT::load("cifar_tsX.bin");
-  tensor y_test = eddlT::load("cifar_tsY.bin");
-  eddlT::div_(x_test, 255.0);
+  Tensor* x_test = Tensor::load("cifar_tsX.bin");
+  Tensor* y_test = Tensor::load("cifar_tsY.bin");
+  x_test->div_(255.0f);
 
   for(int i=0;i<epochs;i++) {
     // training, list of input and output tensors, batch, epochs

@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -70,8 +70,8 @@ void PoolDescriptor::build(Tensor *A) {
         c = compute_output(this->padding, ic, kc, sc);
 
         // Compute padding
-        vector<int> padr = compute_padding(r, ir, kr, sr, this->padding);  // Order: [top, bottom]
-        vector<int> padc = compute_padding(c, ic, kc, sc, this->padding);  // Order: [left, right]
+        vector<int> padr = compute_padding(r, ir, kr, sr, this->padding,true);  // Order: [top, bottom]
+        vector<int> padc = compute_padding(c, ic, kc, sc, this->padding,false);  // Order: [left, right]
 
         // Set padding
         pad = {padr[0], padr[1], padc[0], padc[1]};  // top, bottom, left, right

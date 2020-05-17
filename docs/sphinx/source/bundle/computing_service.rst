@@ -19,7 +19,7 @@ GPU
 ====
 
 .. doxygenfunction:: eddl::CS_GPU(const vector<int>, int, string)
-.. doxygenfunction:: eddl::CS_CPU(const vector<int>, string)
+.. doxygenfunction:: eddl::CS_GPU(const vector<int>, string)
 
 Example:
 

@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -32,6 +32,7 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev, int m
     int tin = input->size;
     int t = 1, c = 0, ind = -1;
 
+
     // Check shape comp.
     for (int i = 0; i < ls.size(); i++) {
         if (ls[i] != -1) t *= ls[i];
@@ -47,14 +48,23 @@ LReshape::LReshape(Layer *parent, vector<int> shape, string name, int dev, int m
     if (c == 1) {
 
         if (t > tin) {
+            for(int i=0;i<sin.size();i++)
+              cout<<sin[i]<<" x ";
+            cout<<endl;
             msg("Incompatible shape", "Reshape");
         } else if (tin % t) {
+          for(int i=0;i<sin.size();i++)
+            cout<<sin[i]<<" x ";
+            cout<<endl;
             msg("Incompatible shape", "Reshape");
         } else {
             ls[ind] = tin / t;
             t = tin;
         }
     } else if (t != tin) {
+      for(int i=0;i<sin.size();i++)
+        cout<<sin[i]<<" x ";
+        cout<<endl;
         msg("Incompatible shape", "Reshape");
     }
 
@@ -76,7 +86,7 @@ LReshape::~LReshape()
 void LReshape::resize(int batch){
     ls[0]=batch;
     output->resize(batch, parent[0]->output);
-    
+
 }
 
 
@@ -122,7 +132,7 @@ Layer *LReshape::share(int c, int bs, vector<Layer *> p) {
     vector<int> shape = ls;
     shape[0] = bs;
 
-    auto *n = new LReshape(p[0], shape,  this->name, this->dev, this->mem_level);
+    auto *n = new LReshape(p[0], shape, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
@@ -133,8 +143,8 @@ Layer *LReshape::clone(int c, int bs, vector<Layer *> p, int todev) {
     vector<int> shape = ls;
     shape[0] = bs;
 
-
     auto *n = new LReshape(p[0], shape,  name, todev, mem_level);
+
     n->orig = this;
 
     return n;

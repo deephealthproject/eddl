@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -31,8 +31,8 @@ void cpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 
-void cpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
-void cpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
+void cpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,bool mask_zeros=false);
+void cpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0,bool mask_zeros=false);
 
 void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative);
 

@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -48,7 +48,7 @@ void LCropScaleRandom::backward() {
 
 
 Layer *LCropScaleRandom::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LCropScaleRandom(p[0], this->factor, this->da_mode,  this->name, this->dev, this->mem_level);
+    auto *n = new LCropScaleRandom(p[0], this->factor, this->da_mode, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;

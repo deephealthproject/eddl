@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -28,6 +28,16 @@ public:
     virtual void delta(Tensor *T, Tensor *Y, Tensor *D);
     virtual float value(Tensor *T, Tensor *Y);
     virtual Loss* clone();
+};
+
+
+class LDice : public Loss {
+public:
+    LDice();
+
+    void delta(Tensor *T, Tensor *Y, Tensor *D) override;
+    float value(Tensor *T, Tensor *Y) override;
+    Loss* clone() override;
 };
 
 

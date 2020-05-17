@@ -1,8 +1,8 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.3
-* copyright (c) 2019, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
-* Date: October 2019
+* Version: 0.6
+* copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
+* Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
@@ -17,11 +17,11 @@
 
 //#include <omp.h>
 
-#include "eddl/apis/eddlT.h"
+
 #include "eddl/tensor/tensor_reduction.h"
 
 using namespace std;
-using namespace eddlT;
+
 
 int main(int argc, char **argv) {
     Tensor* t1 = nullptr;

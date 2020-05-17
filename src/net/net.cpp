@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -50,12 +50,12 @@ int isIn(Layer *l, vlayer vl, int &ind) {
 
 /////////////////////////////////////////
 int isInorig(Layer *l, vlayer vl, int &ind) {
-    for (int i = 0; i < vl.size(); i++)
+    for (int i = 0; i < vl.size(); i++) {
         if (l == vl[i]->orig) {
             ind = i;
             return 1;
         }
-
+  }
     return 0;
 }
 
@@ -64,19 +64,21 @@ int isInorig(Layer *l, vlayer vl, int &ind) {
 ///// NET CLASS
 ////////////////////////////////////
 
-Net::Net(vlayer in, vlayer out) {
-    // Set input/outlayer
-    lin = in;
-    lout = out;
+Net::Net() {
     batch_size=1;
-    // Default optimizer
     optimizer = nullptr;
     name="model";
     tr_batches=0;
     flog_tr=nullptr;
     flog_ts=nullptr;
     rnet=nullptr;
-    unsigned int verbosity_level = 0;
+    isbuild=false;
+}
+
+Net::Net(vlayer in, vlayer out):Net() {
+    // Set input/outlayer
+    lin = in;
+    lout = out;
 
     // Walk through the pointers of all layers, to get a plain
     // vector with all the layers
@@ -96,10 +98,61 @@ Net::Net(vlayer in, vlayer out) {
     }
 
     isrecurrent=false;
+    rnet=nullptr;
 
 
     build_randn_table();
 }
+
+Net::Net(vector <Net *> vnets):Net()
+{
+  int vsize=vnets.size();
+  int ind;
+
+  if (!vsize) return;
+
+  mnets=vnets;
+
+
+  for(int i=0;i<vnets[0]->lin.size();i++)
+    lin.push_back(vnets[0]->lin[i]);
+
+  for(int i=0;i<vnets[0]->layers.size();i++)
+    layers.push_back(vnets[0]->layers[i]);
+
+///
+  for(int i=0;i<vnets.size()-1;i++) {
+    if (vnets[i]->lout.size()!=vnets[i+1]->lin.size())
+      msg("out layers does not match in layers","Net");
+    for(int j=0;j<vnets[i+1]->layers.size();j++)
+        layers.push_back(vnets[i+1]->layers[j]);
+
+    for(int j=0;j<vnets[i]->lout.size();j++) {
+        vnets[i]->lout[j]->addchild(vnets[i+1]->lin[j]);
+        vnets[i+1]->lin[j]->addparent(vnets[i]->lout[j]);
+    }
+  }
+
+
+  for(int i=0;i<vnets[vsize-1]->lout.size();i++)
+    lout.push_back(vnets[vsize-1]->lout[i]);
+
+  for (int i = 0; i < lout.size(); i++) {
+    total_loss.push_back(0.0);
+    total_metric.push_back(0.0);
+    fiterr.push_back(0.0);
+    fiterr.push_back(0.0);
+  }
+
+  isrecurrent=false;
+  rnet=nullptr;
+
+
+  build_randn_table();
+
+
+}
+
 
 Net::~Net()
 {
@@ -111,7 +164,7 @@ Net::~Net()
         }
     }
 
-    // TODO: CHECK REMOVE CPU 
+    // TODO: CHECK REMOVE CPU
 
 /*
     for (int i = 0; i < losses.size(); i++) {
@@ -171,11 +224,11 @@ void Net::walk_back(Layer *l) {
 /////////////////////////////////////////
 string Net::summary() {
     std::stringstream ss;
-    ss << "---------------------------------------------" << endl;
-    for (auto & vft : vfts) {
+    ss << "---------------------------------------------------------" << endl;
+    for (auto & l : vfts) {
         // Get input/output shapes
-        vector<int> ishape(vft->input->shape);
-        vector<int> oshape(vft->output->shape);
+        vector<int> ishape(l->input->shape);
+        vector<int> oshape(l->output->shape);
 
         // Remove batch (if has)
         if (ishape.size() > 1) { ishape.erase(ishape.begin(), ishape.begin() + 1); }
@@ -185,18 +238,13 @@ string Net::summary() {
         string istr = "(" + printVector(ishape) + ")";
         string ostr = "(" + printVector(oshape) + ")";
 
-        ss << setw(30) << left << vft->name << "|  ";
+        ss << setw(30) << left << l->name << "|  ";
         ss << setw(10) << left << istr;
         ss << setw(8) << left << "=>";
         ss << setw(10) << left << ostr;
-        ss << vft->dev<<" , "<<vft->input->device;
         ss << endl;
     }
-    ss << "---------------------------------------------" << endl;
-    for(int i=0;i<snets.size();i++) {
-      ss<<"split_net["<<i<<"] in dev "<<snets[i]->dev<<endl;
-    }
-    ss << "---------------------------------------------" << endl;
+    ss << "---------------------------------------------------------" << endl;
 
     return ss.str();
 }
@@ -225,9 +273,13 @@ void Net::plot(string fname,string mode) {
         out << lout[i]->plot(1) << "\n";
 
     //plot links
-    for (int i = 0; i != layers.size(); i++)
-        for (int j = 0; j < layers[i]->child.size(); j++)
-            out << layers[i]->name << "->" << layers[i]->child[j]->name << "\n";
+    for (int i = 0; i != layers.size(); i++) {
+       if (layers[i]->isrecurrent)
+         out << layers[i]->name << "->" << layers[i]->name << "\n";
+
+       for (int j = 0; j < layers[i]->child.size(); j++)
+        out << layers[i]->name << "->" << layers[i]->child[j]->name << "\n";
+    }
 
     out << "}\n";
 

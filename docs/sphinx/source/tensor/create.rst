@@ -8,12 +8,15 @@ Creation Routines
     Read this: https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md
 
 
-Constructor
-------------
+Constructors
+-------------
 
 Create an uninitialized tensor
 
-.. doxygenfunction:: Tensor::Tensor( const vector<int>&, float *, int)
+.. doxygenfunction:: Tensor::Tensor()
+.. doxygenfunction:: Tensor::Tensor( const vector<int>&, float *, int )
+.. doxygenfunction:: Tensor::Tensor( const vector<int>&, int )
+.. doxygenfunction:: Tensor::Tensor( const vector<int>&, Tensor * )
 
 .. code-block:: c++
 
@@ -118,7 +121,7 @@ Create tensor from numerical ranges
 arange
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::arange(float, float, float, int)
+.. doxygenfunction:: eddlT::arange
 
 .. code-block:: c++
 
@@ -127,7 +130,7 @@ arange
 range
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::range
+.. doxygenfunction:: eddlT::range
 
 .. code-block:: c++
 
@@ -136,7 +139,7 @@ range
 linspace
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::linspace
+.. doxygenfunction:: eddlT::linspace
 
 .. code-block:: c++
 
@@ -145,7 +148,7 @@ linspace
 logspace
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::logspace
+.. doxygenfunction:: eddlT::logspace
 
 .. code-block:: c++
 
@@ -154,7 +157,7 @@ logspace
 geomspace
 ^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::geomspace
+.. doxygenfunction:: eddlT::geomspace
 
 .. code-block:: c++
 

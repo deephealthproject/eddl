@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -37,6 +37,9 @@ LGroupNorm::LGroupNorm(Layer *parent, int g, float epsilon, bool affine, string 
 
     if (input->shape[1]%groups)
       msg("incorrect group value not channel divider","LGroupNorm");
+
+
+    if(name.empty()) this->name = "groupnorm" + to_string(++total_layers);
 
     shape.push_back(input->shape[0]*groups);
 
@@ -258,7 +261,7 @@ void LGroupNorm::backward()
 
 
 Layer *LGroupNorm::share(int c, int bs, vector<Layer *> p) {
-    LGroupNorm *n = new LGroupNorm(p[0], groups, epsilon, affine, this->name, this->dev, this->mem_level);
+    LGroupNorm *n = new LGroupNorm(p[0], groups, epsilon, affine,"share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     // TODO: Implement

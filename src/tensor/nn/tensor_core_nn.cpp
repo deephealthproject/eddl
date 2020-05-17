@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -26,6 +26,7 @@ void Tensor::resize(int b, float *fptr){
     for (int i = 0; i < ndim; ++i) size *= shape[i];
 
     int s=size;
+    stride.clear();
     for(int i=0;i<ndim;i++) {
         s/=shape[i];
         stride.push_back(s);

@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -39,12 +39,13 @@ ReduceDescriptor::ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool
   ind=nullptr;
   factor=100;
 
+
   if (axis.size()>=A->ndim)
     msg("axis must be lower than tensor dim","ReduceDescriptor");
 
   for(int i=0;i<axis.size();i++)
     if (axis[i]>=A->ndim) {
-      throw std::runtime_error("axis " + std::to_string(axis[i]) + " > dim=" + std::to_string(A->ndim));
+      throw std::runtime_error("axis " + std::to_string(axis[i]-1) + " >= dim=" + std::to_string(A->ndim-1));
     }
 
 
