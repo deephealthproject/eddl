@@ -6,8 +6,10 @@ project(pthreads4w-download NONE)
 SET(EP_BASE_DIR @CMAKE_CURRENT_BINARY_DIR@/third_party)
 
 if("${CMAKE_VS_PLATFORM_NAME}" MATCHES "x64")
+	message(STATUS "pthreads for Windows will be compiled at 64 bits")
     SET(VCVARS "@CMAKE_GENERATOR_INSTANCE@/VC/Auxiliary/Build/vcvars64.bat")
 else()
+	message(STATUS "pthreads for Windows will be compiled at 32 bits")
     SET(VCVARS "@CMAKE_GENERATOR_INSTANCE@/VC/Auxiliary/Build/vcvarsamd64_x86.bat")
 endif()
 
