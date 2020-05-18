@@ -864,20 +864,7 @@ Tensor* Tensor::reciprocal(){
 
 
 void Tensor::reciprocal(Tensor *A, Tensor *B){
-    if (A->isCPU() && B->isCPU()) {
-        cpu_reciprocal(A, B);
-    }
-#ifdef cGPU
-    else if (A->isGPU() && B->isGPU())
-      {
-        gpu_reciprocal(A, B);
-      }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
+    Tensor::inv(A, B, 1.0f);
 }
 
 

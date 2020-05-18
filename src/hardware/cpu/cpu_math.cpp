@@ -133,14 +133,9 @@ void cpu_powb(Tensor *A, Tensor *B, float base) {
     for (int i = 0; i < A->size; ++i) B->ptr[i] = ::powf(base, A->ptr[i]);
 }
 
-void cpu_reciprocal(Tensor *A, Tensor *B) {
-#pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = 1.0f/A->ptr[i];
-}
-
 void cpu_remainder(Tensor *A, Tensor *B, float v) {
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = (int)(A->ptr[i]/v);
+    for (int i = 0; i < A->size; ++i) B->ptr[i] = fmod((v + fmod(A->ptr[i], v)), v);
 }
 
 void cpu_round(Tensor *A, Tensor *B){

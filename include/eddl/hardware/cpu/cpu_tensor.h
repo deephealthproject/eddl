@@ -88,7 +88,6 @@ void cpu_mult(Tensor *A, Tensor *B, float v);
 void cpu_normalize(Tensor *A, Tensor *B, float min, float max);
 void cpu_pow(Tensor *A, Tensor *B, float exp);
 void cpu_powb(Tensor *A, Tensor *B, float base);
-void cpu_reciprocal(Tensor *A, Tensor *B);
 void cpu_remainder(Tensor *A, Tensor *B, float v);
 void cpu_round(Tensor *A, Tensor *B);
 void cpu_rsqrt(Tensor *A, Tensor *B);
