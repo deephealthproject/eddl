@@ -152,53 +152,8 @@ float LDice::value(Tensor *T, Tensor *Y) {
   delete Num;
   delete Den;
 
-  return n;
+  return T->shape[0]-n;
 }
-
-/*
-//https://arxiv.org/pdf/1606.04797v1.pdf
-void LDice::delta(Tensor *T, Tensor *Y, Tensor *D) {
-    //delta: 2*[T*(sum(Y^2)+sum(T^2))-2Y(sum(T*Y))/(sum(Y^2)+sum(T^2))^2]
-    Tensor *A;
-    Tensor *B;
-    Tensor *C;
-
-    A=T->clone();
-    B=Y->clone();
-    C=A->clone();
-
-    // -2Y(sum(T*Y))
-    Tensor::el_mult(A,B,C,0);
-    float n=-2*C->sum();
-    B->mult_(n);
-    ////
-
-    //T*(sum(Y^2)+sum(T^2))
-    A->sqr_();
-    float sT=A->sum();
-
-    Tensor::copy(Y,C);
-    C->sqr_();
-    float sY=C->sum();
-    float sTY=sT+sY;
-
-    Tensor::copy(T,A);
-    A->mult_(sTY);
-    ///
-
-    Tensor::add(1.0, A,1.0, B,D,0);
-    D->mult_(2.0); // 2*[]
-
-    delete A;
-    delete B;
-    delete C;
-
-    D->div_(-1*sTY*sTY*D->shape[0]); // -1 want to maximize
-
-
-}
-*/
-
 
 
 Loss* LDice::clone()
