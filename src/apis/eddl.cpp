@@ -1110,8 +1110,11 @@ namespace eddl {
             cout<<file[i]<<" x\n";
             cmd = "wget -q --show-progress https://www.dropbox.com/s/"+link[i]+"/"+file[i];
             int status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_"+name);
+            if (status < 0){
+                msg("Error executing wget.  Is it installed?", "eddl.download_"+name);
+            }
+            else if (status > 0){
+                msg("wget failed to download dataset (exit code: " + status "). See previous messages for details.", "eddl.download_"+name);
             }
           }
           else {
