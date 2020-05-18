@@ -90,8 +90,14 @@ else()
     message(STATUS "Searching for ZLIB in the system...")
 endif()
 
-find_package(ZLIB REQUIRED)  # Problems with: ZLIB_ROOT
-# Check if Protobuf was really found
+if(NOT BUILD_SHARED_LIBS AND WIN32)
+    # Unable to choose static zlib
+    # Workaround: delete dynamic libraries
+    file(REMOVE ${ZLIB_ROOT}/lib/zlib.lib ${ZLIB_ROOT}/lib/zlibd.lib
+        ${ZLIB_ROOT}/bin/zlib.dll ${ZLIB_ROOT}/bin/zlibd.dll)
+endif()
+find_package(ZLIB REQUIRED)
+# Check if ZLIB was really found
 if(NOT ZLIB_FOUND)
     message(FATAL_ERROR "ZLIB was found by CMake but its libraries or includes are missing.
             Use '-D BUILD_SUPERBUILD=ON', or try with a different ZLIB installation to fix this problem.")
