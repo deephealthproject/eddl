@@ -1114,7 +1114,7 @@ namespace eddl {
                 msg("Error executing wget.  Is it installed?", "eddl.download_"+name);
             }
             else if (status > 0){
-                msg("wget failed to download dataset (exit code: " + status "). See previous messages for details.", "eddl.download_"+name);
+                msg("wget failed to download dataset (exit code: " + to_string(status) + "). See previous messages for details.", "eddl.download_"+name);
             }
           }
           else {
