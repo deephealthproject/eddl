@@ -6,12 +6,6 @@ RNN
 
 .. doxygenfunction:: RNN
 
-.. note::
-
-    **Not implemented yet**
-
-    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers
-
 
 
 GRU
@@ -31,11 +25,4 @@ LSTM
 ---------------
 
 .. doxygenfunction:: LSTM
-
-.. note::
-
-    **Not implemented yet**
-
-    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#core-layers
-
 
