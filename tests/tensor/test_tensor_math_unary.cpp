@@ -483,196 +483,197 @@ TEST(TensorTestSuite, tensor_math_unary_remainder){
 }
 
 
-//TEST(TensorTestSuite, tensor_math_unary_round){
-//    // Test #1
-//    vector<int> t1_shape_ref = {4};
-//    vector<float> d_t1_ref = {1, 2, 3};
-//    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
-//
-//    vector<int> t1_shape = {4};
-//    vector<float> d_t1 = {-1, -2, 3};
-//    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
-//
-//    Tensor* new_t = t1->round();
-//    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
-//}
-//
-//
-//TEST(TensorTestSuite, tensor_math_unary_rsqrt){
-//    // Test #1
-//    vector<int> t1_shape_ref = {4};
-//    vector<float> d_t1_ref = {1, 2, 3};
-//    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
-//
-//    vector<int> t1_shape = {4};
-//    vector<float> d_t1 = {-1, -2, 3};
-//    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
-//
-//    Tensor* new_t = t1->rsqrt();
-//    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
-//}
-//
-//
-//TEST(TensorTestSuite, tensor_math_unary_sigmoid){
-//    // Test #1
-//    vector<int> t1_shape_ref = {4};
-//    vector<float> d_t1_ref = {1, 2, 3};
-//    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
-//
-//    vector<int> t1_shape = {4};
-//    vector<float> d_t1 = {-1, -2, 3};
-//    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
-//
-//    Tensor* new_t = t1->sigmoid();
-//    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
-//}
-//
-//
-//TEST(TensorTestSuite, tensor_math_unary_sign){
-//    // Test #1
-//    vector<int> t1_shape_ref = {4};
-//    vector<float> d_t1_ref = {1, 2, 3};
-//    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
-//
-//    vector<int> t1_shape = {4};
-//    vector<float> d_t1 = {-1, -2, 3};
-//    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
-//
-//    Tensor* new_t = t1->sign();
-//    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
-//}
-//
-//
-//TEST(TensorTestSuite, tensor_math_unary_sin){
-//    // Test #1
-//    vector<int> t1_shape_ref = {4};
-//    vector<float> d_t1_ref = {1, 2, 3};
-//    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
-//
-//    vector<int> t1_shape = {4};
-//    vector<float> d_t1 = {-1, -2, 3};
-//    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
-//
-//    Tensor* new_t = t1->sin();
-//    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
-//}
-//
-//
-//TEST(TensorTestSuite, tensor_math_unary_sinh){
-//    // Test #1
-//    vector<int> t1_shape_ref = {4};
-//    vector<float> d_t1_ref = {1, 2, 3};
-//    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
-//
-//    vector<int> t1_shape = {4};
-//    vector<float> d_t1 = {-1, -2, 3};
-//    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
-//
-//    Tensor* new_t = t1->sinh();
-//    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
-//}
-//
-//
-//TEST(TensorTestSuite, tensor_math_unary_sqr){
-//    // Test #1
-//    vector<int> t1_shape_ref = {4};
-//    vector<float> d_t1_ref = {1, 2, 3};
-//    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
-//
-//    vector<int> t1_shape = {4};
-//    vector<float> d_t1 = {-1, -2, 3};
-//    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
-//
-//    Tensor* new_t = t1->sqr();
-//    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
-//}
-//
-//
-//TEST(TensorTestSuite, tensor_math_unary_sqrt){
-//    // Test #1
-//    vector<int> t1_shape_ref = {4};
-//    vector<float> d_t1_ref = {1, 2, 3};
-//    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
-//
-//    vector<int> t1_shape = {4};
-//    vector<float> d_t1 = {-1, -2, 3};
-//    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
-//
-//    Tensor* new_t = t1->sqrt();
-//    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
-//}
-//
-//
-//TEST(TensorTestSuite, tensor_math_unary_sub){
-//    // Test #1
-//    vector<int> t1_shape_ref = {4};
-//    vector<float> d_t1_ref = {1, 2, 3};
-//    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
-//
-//    vector<int> t1_shape = {4};
-//    vector<float> d_t1 = {-1, -2, 3};
-//    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
-//
-//    Tensor* new_t = t1->sub(3);
-//    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
-//}
-//
-//
-//TEST(TensorTestSuite, tensor_math_unary_subT){
-//    // Test #1
-//    vector<int> t1_shape_ref = {4};
-//    vector<float> d_t1_ref = {1, 2, 3};
-//    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
-//
-//    vector<int> t1_shape = {4};
-//    vector<float> d_t1 = {-1, -2, 3};
-//    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
-//
-//    Tensor* new_t = t1->sub(t1);
-//    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
-//}
-//
-//
-//TEST(TensorTestSuite, tensor_math_unary_tan){
-//    // Test #1
-//    vector<int> t1_shape_ref = {4};
-//    vector<float> d_t1_ref = {1, 2, 3};
-//    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
-//
-//    vector<int> t1_shape = {4};
-//    vector<float> d_t1 = {-1, -2, 3};
-//    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
-//
-//    Tensor* new_t = t1->tan();
-//    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
-//}
-//
-//
-//TEST(TensorTestSuite, tensor_math_unary_tanh){
-//    // Test #1
-//    vector<int> t1_shape_ref = {4};
-//    vector<float> d_t1_ref = {1, 2, 3};
-//    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
-//
-//    vector<int> t1_shape = {4};
-//    vector<float> d_t1 = {-1, -2, 3};
-//    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
-//
-//    Tensor* new_t = t1->tanh();
-//    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
-//}
-//
-//
-//TEST(TensorTestSuite, tensor_math_unary_trunc){
-//    // Test #1
-//    vector<int> t1_shape_ref = {4};
-//    vector<float> d_t1_ref = {1, 2, 3};
-//    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
-//
-//    vector<int> t1_shape = {4};
-//    vector<float> d_t1 = {-1, -2, 3};
-//    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
-//
-//    Tensor* new_t = t1->trunc();
-//    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
-//}
+TEST(TensorTestSuite, tensor_math_unary_round){
+    // Test #1
+    vector<int> t1_shape_ref = {4};
+    vector<float> d_t1_ref = {1.,  1.,  1., -1.};
+    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
+
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = {0.9920,  0.6077,  0.9734, -1.0362};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
+
+    Tensor* new_t = t1->round();
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_rsqrt){
+    // Test #1
+    vector<int> t1_shape_ref = {4};
+    vector<float> d_t1_ref = {std::numeric_limits<double>::quiet_NaN(),  1.8351,  0.8053, std::numeric_limits<double>::quiet_NaN()};
+    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
+
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = {-0.0370,  0.2970,  1.5420, -0.9105};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
+
+    Tensor* new_t = t1->rsqrt();
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_sigmoid){
+    // Test #1
+    vector<int> t1_shape_ref = {4};
+    vector<float> d_t1_ref = {0.7153,  0.7481,  0.2920,  0.1458};
+    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
+
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = {0.9213,  1.0887, -0.8858, -1.7683};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
+
+    Tensor* new_t = t1->sigmoid();
+    new_t->sigmoid();
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_sign){
+    // Test #1
+    vector<int> t1_shape_ref = {4};
+    vector<float> d_t1_ref = {1., -1.,  0.,  1.};
+    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
+
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = {0.7000, -1.2000,  0.0000,  2.3000};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
+
+    Tensor* new_t = t1->sign();
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_sin){
+    // Test #1
+    vector<int> t1_shape_ref = {4};
+    vector<float> d_t1_ref = {-0.5194,  0.1343, -0.4032, -0.2711};
+    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
+
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = {-0.5461,  0.1347, -2.7266, -0.2746};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
+
+    Tensor* new_t = t1->sin();
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_sinh){
+    // Test #1
+    vector<int> t1_shape_ref = {4};
+    vector<float> d_t1_ref = {0.5644, -0.9744, -0.1268,  1.0845};
+    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
+
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = {0.5380, -0.8632, -0.1265,  0.9399};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
+
+    Tensor* new_t = t1->sinh();
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_sqr){
+    // Test #1
+    vector<int> t1_shape_ref = {4};
+    vector<float> d_t1_ref = {0.3594, 0.1461, 1.4741, 6.0706};
+    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
+
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = { 0.5995, -0.3823, -1.2141, -2.4639};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
+
+    Tensor* new_t = t1->sqr();
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_sqrt){
+    // Test #1
+    vector<int> t1_shape_ref = {4};
+    vector<float> d_t1_ref = {std::numeric_limits<double>::quiet_NaN(),  1.0112,  0.2883,  0.6933};
+    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
+
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = {-2.0755,  1.0226,  0.0831,  0.4806};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
+
+    Tensor* new_t = t1->sqrt();
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_sub){
+    // Test #1
+    vector<int> t1_shape_ref = {4};
+    vector<float> d_t1_ref = {-9.4202,  -9.2406,  -9.3453, -10.3650};
+    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
+
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = {0.5798,  0.7594,  0.6547, -0.3650};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);//TODO: doo
+
+    Tensor* new_t = t1->sub(10);
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_subT){
+    // Test #1
+    vector<int> t1_shape_ref = {4};
+    vector<float> d_t1_ref = {0., 0., 0., 0.};
+    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
+
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = {0.5798,  0.7594,  0.6547, -0.3650};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);//TODO: doo
+
+    Tensor* new_t = t1->sub(t1);
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_tan){
+    // Test #1
+    vector<int> t1_shape_ref = {4};
+    vector<float> d_t1_ref = {-2.5928, 4.9868, 0.4722, -5.3378};
+    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
+
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = {-1.2027, -1.7687,  0.4412, -1.3856};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
+
+    Tensor* new_t = t1->tan();
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_tanh){
+    // Test #1
+    vector<int> t1_shape_ref = {4};
+    vector<float> d_t1_ref = {0.7156, -0.6218,  0.8257,  0.2553};
+    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
+
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = {0.8986, -0.7279,  1.1745,  0.2611};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
+
+    Tensor* new_t = t1->tanh();
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_trunc){
+    // Test #1
+    vector<int> t1_shape_ref = {4};
+    vector<float> d_t1_ref = {3.,  0., -0., -0.};
+    Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
+
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = {3.4742,  0.5466, -0.8008, -0.9079};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
+
+    Tensor* new_t = t1->trunc();
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+}

@@ -995,7 +995,7 @@ void Tensor::sign_(float zero_sign){
 
 Tensor* Tensor::sign(float zero_sign){
     Tensor *t = this->clone();
-    t->sign(zero_sign);
+    t->sign_(zero_sign);
     return t;
 }
 
@@ -1122,7 +1122,7 @@ Tensor* Tensor::sqrt(){
 
 void Tensor::sqrt(Tensor *A, Tensor *B){
     if (A->isCPU() && B->isCPU()) {
-        cpu_log10(A, B);
+        cpu_sqrt(A, B);
     }
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
