@@ -277,7 +277,7 @@ void Net::set_compserv(CompServ *cs){
             }
         } else if (todev < DEV_FPGA) {
 #ifndef cGPU
-            msg("EDDLL not compiled for GPU", "Net.set_compserv");
+            msg("EDDL not compiled for GPU", "Net.set_compserv");
 #else
         // split on multiple GPUs
         int ngpus=gpu_devices();
