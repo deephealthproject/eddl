@@ -4,7 +4,7 @@
 
 # USER OPTIONS *******************************
 set(BUILD_TARGET "GPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
-option(OVERWRITE_PROTO_FILES "Overwrite protobuf files (requires a compatible protobuf compiler)" ON)
+option(OVERWRITE_PROTO_FILES "Overwrite Protobuf files (requires a compatible Protobuf compiler)" ON)
 
 # Double checks (restricted args)
 set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
@@ -49,11 +49,15 @@ target_include_directories(${PROJECT_NAME}
         )
 
 # All users of this library will need at least C++11
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_11)
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
 
 # IDEs should put the headers in a nice place
 #source_group(TREE "${PROJECT_SOURCE_DIR}/include" PREFIX "Header Files" FILES ${CPP_HEADERS})
 
+if(MSVC)
+    # Install the debug library with "d" suffix
+    set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d") 
+endif()
 
 ###########################################################################
 ########################### LINK LIBRARIES ################################
@@ -64,7 +68,7 @@ if(UNIX) # Add setup for windows in the windows's section
     SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
     SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
     find_package(Threads REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads) 
 endif()
 
 ## Eigen (I have temporally drop this header-only library to "includes/eddl/")
@@ -79,30 +83,39 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only library
 
 # ZLIB
-if(DEFINED ZLIB_INCLUDE_DIRS AND DEFINED ZLIB_LIBRARIES_DIRS AND DEFINED ZLIB_LIBRARIES)
-    message(STATUS "Using specific Zlib")
+if(NOT BUILD_SHARED_LIBS AND WIN32)
+    # FindZLIB does not allow to choose static zlib
+    # Workaround: delete dynamic libraries
+    file(REMOVE ${ZLIB_ROOT}/lib/zlib.lib ${ZLIB_ROOT}/lib/zlibd.lib
+        ${ZLIB_ROOT}/bin/zlib.dll ${ZLIB_ROOT}/bin/zlibd.dll)
+endif()
+if(BUILD_SUPERBUILD AND NOT USE_SYSTEM_ZLIB)
+    message(STATUS "Using specific ZLIB")
 else()
     message(STATUS "Searching for ZLIB in the system...")
-    find_package(ZLIB REQUIRED)  # Problems with: ZLIB_ROOT
-    message(STATUS "ZLIB found!")
-
-    # Check if Protobuf was really found
-    if(NOT ZLIB_FOUND)
-        message(FATAL_ERROR "ZLIB was found by CMake but its libraries or includes are missing.
-                Use '-D BUILD_SUPERBUILD=ON', or try with a different ZLIB installation to fix this problem.")
-    endif()
 endif()
-target_include_directories(${PROJECT_NAME} PRIVATE ${ZLIB_INCLUDE_DIRS})
-target_link_directories(${PROJECT_NAME} PRIVATE ${ZLIB_LIBRARIES_DIRS})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${ZLIB_LIBRARIES})
+find_package(ZLIB REQUIRED)
+# Check if ZLIB was really found
+if(NOT ZLIB_FOUND)
+    message(FATAL_ERROR "ZLIB was found by CMake but its libraries or includes are missing.
+            Use '-D BUILD_SUPERBUILD=ON', or try with a different ZLIB installation to fix this problem.")
+endif()
+message(STATUS "ZLIB found!")
+target_link_libraries(${PROJECT_NAME} PUBLIC ZLIB::ZLIB)
+# target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIRS}>)
+# target_link_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${ZLIB_LIBRARIES_DIRS}>)
+# target_link_libraries(${PROJECT_NAME} PRIVATE ${ZLIB_LIBRARIES})
 
 # ONNX files
 if(BUILD_PROTOBUF)
     add_definitions(-DcPROTO)
 
     # Link library
-    if(DEFINED Protobuf_DIR AND DEFINED Protobuf_LIBRARIES_DIRS AND DEFINED Protobuf_LIBRARIES)
+    if(BUILD_SUPERBUILD AND NOT USE_SYSTEM_PROTOBUF)
         message(STATUS "Using specific Protobuf")
+        SET(CMAKE_PREFIX_PATH "${Protobuf_ROOT}/bin;${CMAKE_PREFIX_PATH}")
+        find_package(Protobuf CONFIG REQUIRED HINTS ${Protobuf_DIR})
+        target_link_libraries(${PROJECT_NAME} PRIVATE protobuf::libprotobuf protobuf::libprotoc)
     else()
         message(STATUS "Searching for Protobuf in the system...")
         find_package(Protobuf REQUIRED)  # Problems with: Protobuf_DIR
@@ -114,10 +127,10 @@ if(BUILD_PROTOBUF)
                     Use '-D BUILD_SUPERBUILD=ON', or try with a different Protobuf installation to fix this problem.
                     Alternatively, you can disable it with '-D BUILD_PROTOBUF=OFF")
         endif()
+        target_include_directories(${PROJECT_NAME} PUBLIC ${Protobuf_INCLUDE_DIRS})
+        target_link_directories(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARIES_DIRS})
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES})
     endif()
-    target_include_directories(${PROJECT_NAME} PRIVATE ${Protobuf_INCLUDE_DIRS})
-    target_link_directories(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES_DIRS})
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES})
 
     # Create "onnx.pb.cc" and "onnx.pb.h" files (from serialization/onnx)
     # Equivalent to: /usr/local/bin/protoc --cpp_out . onnx.proto
@@ -190,48 +203,48 @@ SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
 ################################## WINDOWS ################################
 ###########################################################################
 
-#if(WIN32)
-#    # Threads *************************************************************
-#    set(EDDL_PTHREADS_INSTALL_PATH "$ENV{PTHREADS_ROOT}" CACHE PATH "Path to the installation of pthreads under Windows")
-#    if(EDDL_PTHREADS_INSTALL_PATH STREQUAL "")
-#        message(ERROR ": pthreds install path must be specified under Windows")
-#    endif()
-#    target_link_libraries(${PROJECT_NAME} PRIVATE debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3d.lib"
-#            PRIVATE debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib"
-#            PRIVATE debug "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib")
-#    target_link_libraries(${PROJECT_NAME} PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib"
-#            PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib"
-#            PRIVATE optimized "${EDDL_PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib")
-#    target_include_directories(${PROJECT_NAME} PUBLIC "${EDDL_PTHREADS_INSTALL_PATH}/include")
-#endif()
-#
-## Microsoft Visual C++ - set static/dynamic runtime
-#if(MSVC)
-#    if(BUILD_SHARED_LIB)
-#        message(STATUS "Setting dinamic runtime for MSVC")
-#        foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-#            string(REGEX REPLACE "/MT" "/MD" ${flag_var} "${${flag_var}}")
-#        endforeach(flag_var)
-#        if (USE_CUDA AND CMAKE_CUDA_COMPILER)
-#            foreach(flag_var CMAKE_CUDA_FLAGS_DEBUG CMAKE_CUDA_FLAGS_RELEASE CMAKE_CUDA_FLAGS_MINSIZEREL CMAKE_CUDA_FLAGS_RELWITHDEBINFO)
-#                string(REGEX REPLACE "-MT" "-MD" ${flag_var} "${${flag_var}}")
-#            endforeach(flag_var)
-#        endif()
-#    else(BUILD_SHARED_LIB)
-#        message(STATUS "Setting static runtime for MSVC")
-#        foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-#            string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
-#        endforeach(flag_var)
-#        if (USE_CUDA AND CMAKE_CUDA_COMPILER)
-#            foreach(flag_var CMAKE_CUDA_FLAGS_DEBUG CMAKE_CUDA_FLAGS_RELEASE CMAKE_CUDA_FLAGS_MINSIZEREL CMAKE_CUDA_FLAGS_RELWITHDEBINFO)
-#                string(REGEX REPLACE "-MD" "-MT" ${flag_var} "${${flag_var}}")
-#            endforeach(flag_var)
-#        endif()
-#    endif(BUILD_SHARED_LIB)
-#
-#    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-#endif()
+if(WIN32)
+   # Threads *************************************************************
+   if(PTHREADS_INSTALL_PATH STREQUAL "")
+       message(ERROR ": Pthreads install path must be specified under Windows")
+   endif()
+   target_link_libraries(${PROJECT_NAME} PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVC3d.lib
+           PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3d.lib
+           PRIVATE debug ${PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3d.lib)
+   target_link_libraries(${PROJECT_NAME} PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVC3.lib
+           PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVCE3.lib
+           PRIVATE optimized ${PTHREADS_INSTALL_PATH}/lib/libpthreadVSE3.lib)
+   target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${PTHREADS_INSTALL_PATH}/include>)
+endif()
 
+# Microsoft Visual C++ - set static/dynamic runtime
+if(MSVC)
+   if(BUILD_SHARED_LIBS)
+       message(STATUS "Setting dynamic runtime for MSVC")
+       foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+           string(REGEX REPLACE "/MT" "/MD" ${flag_var} "${${flag_var}}")
+           set(${flag_var} "${${flag_var}}" PARENT_SCOPE)
+       endforeach(flag_var)
+       if (USE_CUDA AND CMAKE_CUDA_COMPILER)
+           foreach(flag_var CMAKE_CUDA_FLAGS_DEBUG CMAKE_CUDA_FLAGS_RELEASE CMAKE_CUDA_FLAGS_MINSIZEREL CMAKE_CUDA_FLAGS_RELWITHDEBINFO)
+               string(REGEX REPLACE "-MT" "-MD" ${flag_var} "${${flag_var}}")
+               set(${flag_var} "${${flag_var}}" PARENT_SCOPE)
+           endforeach(flag_var)
+       endif()
+   else()
+       message(STATUS "Setting static runtime for MSVC")
+       foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+           string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+           set(${flag_var} "${${flag_var}}" PARENT_SCOPE)
+       endforeach(flag_var)
+       if (USE_CUDA AND CMAKE_CUDA_COMPILER)
+           foreach(flag_var CMAKE_CUDA_FLAGS_DEBUG CMAKE_CUDA_FLAGS_RELEASE CMAKE_CUDA_FLAGS_MINSIZEREL CMAKE_CUDA_FLAGS_RELWITHDEBINFO)
+               string(REGEX REPLACE "-MD" "-MT" ${flag_var} "${${flag_var}}")
+               set(${flag_var} "${${flag_var}}" PARENT_SCOPE)
+           endforeach(flag_var)
+       endif()
+   endif()
+endif()
 
 ###########################################################################
 ############################# INSTALLATION ################################
@@ -299,6 +312,12 @@ message(STATUS "Protobuf dir: " ${Protobuf_DIR} )
 message(STATUS "Protobuf include: " ${Protobuf_INCLUDE_DIRS} )
 message(STATUS "Protobuf libraries: " ${Protobuf_LIBRARIES} )
 message(STATUS "Protobuf compiler: " ${Protobuf_PROTOC_EXECUTABLE} )
+endif()
+if(WIN32)
+message(STATUS "-------------------------------------------" )
+message(STATUS "Pthreads dir: " ${PTHREADS_INSTALL_PATH} )
+message(STATUS "Pthreads include: " ${PTHREADS_INSTALL_PATH}/include )
+message(STATUS "Pthreads libraries: " ${PTHREADS_INSTALL_PATH}/lib )
 endif()
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )

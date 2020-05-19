@@ -13,7 +13,7 @@
 
 #include <vector>
 #include <thread>
-#include <pthread.h>
+//#include <pthread.h>
 #include <functional>
 
 #include "eddl/net/net.h"
