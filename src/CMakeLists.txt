@@ -83,18 +83,16 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only library
 
 # ZLIB
-if(BUILD_SUPERBUILD AND NOT USE_SYSTEM_ZLIB)
-    message(STATUS "Using specific ZLIB")
-    SET(CMAKE_PREFIX_PATH "${ZLIB_BIN};${CMAKE_PREFIX_PATH}")
-else()
-    message(STATUS "Searching for ZLIB in the system...")
-endif()
-
 if(NOT BUILD_SHARED_LIBS AND WIN32)
-    # Unable to choose static zlib
+    # FindZLIB does not allow to choose static zlib
     # Workaround: delete dynamic libraries
     file(REMOVE ${ZLIB_ROOT}/lib/zlib.lib ${ZLIB_ROOT}/lib/zlibd.lib
         ${ZLIB_ROOT}/bin/zlib.dll ${ZLIB_ROOT}/bin/zlibd.dll)
+endif()
+if(BUILD_SUPERBUILD AND NOT USE_SYSTEM_ZLIB)
+    message(STATUS "Using specific ZLIB")
+else()
+    message(STATUS "Searching for ZLIB in the system...")
 endif()
 find_package(ZLIB REQUIRED)
 # Check if ZLIB was really found
@@ -116,7 +114,7 @@ if(BUILD_PROTOBUF)
     if(BUILD_SUPERBUILD AND NOT USE_SYSTEM_PROTOBUF)
         message(STATUS "Using specific Protobuf")
         SET(CMAKE_PREFIX_PATH "${Protobuf_ROOT}/bin;${CMAKE_PREFIX_PATH}")
-        find_package(Protobuf CONFIG REQUIRED HINTS ${Protobuf_DIR})  # Problems with: Protobuf_DIR
+        find_package(Protobuf CONFIG REQUIRED HINTS ${Protobuf_DIR})
         target_link_libraries(${PROJECT_NAME} PRIVATE protobuf::libprotobuf protobuf::libprotoc)
     else()
         message(STATUS "Searching for Protobuf in the system...")
