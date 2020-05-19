@@ -7,8 +7,6 @@ RNN
 .. doxygenfunction:: RNN
 
 
-
-
 GRU
 ---------------
 
