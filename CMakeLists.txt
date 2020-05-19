@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.9.2)
-#cmake_policy(set CMP0074 NEW)
+if(POLICY CMP0074)
+	cmake_policy(SET CMP0074 NEW)
+endif()
 
 ###########################################################################
 ################################ OPTIONS ##################################
