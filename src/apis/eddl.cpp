@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -35,6 +35,10 @@ namespace eddl {
         return new Net(in, out);
     }
 
+    model Model(vector<Net*> vnets) {
+      return new Net(vnets);
+    }
+
     void build(model net, optimizer o, CompServ *cs, bool init_weights){
         // Assign default computing service
         if (cs== nullptr){
@@ -63,6 +67,7 @@ namespace eddl {
         if (cs== nullptr){
             cs = new CompServ(std::thread::hardware_concurrency(), {}, {});
         }
+
 
         net->build(o, l, m, cs, init_weights);
     }
@@ -220,6 +225,10 @@ namespace eddl {
     void evaluate(model net, const vector<Tensor *> &in, const vector<Tensor *> &out){
         net->evaluate(in, out);
     }
+    vector<Tensor *>  predict(model m, const vector<Tensor *> &in)
+    {
+      return m->predict(in);
+    }
 
     // Finer methods
     vector<int> random_indices(int batch_size, int num_samples){
@@ -316,6 +325,16 @@ namespace eddl {
     {
         l->graph->backward();
     }
+    void optimize(loss l)
+    {
+        l->graph->backward();
+    }
+    void optimize(vector <loss> vl)
+    {
+      for(auto &l : vl)
+        l->graph->backward();
+    }
+
     void update(model net)
     {
         net->update();
@@ -354,6 +373,9 @@ namespace eddl {
         } else if (type == "soft_cross_entropy"){
             return new LSoftCrossEntropy();
         }
+        else if (type == "dice"){
+            return new LDice();
+        }
         return nullptr;
     }
 
@@ -376,6 +398,12 @@ namespace eddl {
         }
         else if (type=="mean_relative_error"){
             return new MMeanRelativeError();
+        }
+        else if (type=="dice") {
+            return new MDice();
+        }
+        else if (type=="none") {
+            return new Metric("none");
         }
         else {
             throw std::invalid_argument("unsupported metric: " + type);
@@ -931,35 +959,34 @@ namespace eddl {
     // Manage Tensors inside Layers
     ////////////////////////////////////
 
-    // get tensors
+    // get COPIES of tensors
     // collect from CS when necessary
     Tensor* getOutput(layer l1){
         collectTensor(l1,"output");
-        return l1->output;
+        return l1->output->clone();
     }
 
     Tensor* getDelta(layer l1){
         collectTensor(l1,"delta");
-        return l1->delta;
+        return l1->delta->clone();
     }
 
     Tensor* getParam(layer l1, int p){
         collectTensor(l1,"param",p);
-        return l1->params[p];
+        return l1->params[p]->clone();
     }
 
     Tensor* getGradient(layer l1,int p){
         collectTensor(l1,"gradient",p);
-        return l1->gradients[p];
+        return l1->gradients[p]->clone();
     }
-
 
     // get vector of tensor
     vector<Tensor*> getParams(layer l1){
       vector<Tensor*> n;
       for(int i=0;i<l1->params.size();i++) {
         collectTensor(l1,"param",i);
-        n.push_back(l1->params[i]);
+        n.push_back(l1->params[i]->clone());
       }
       return n;
     }
@@ -968,7 +995,7 @@ namespace eddl {
       vector<Tensor*> n;
       for(int i=0;i<l1->gradients.size();i++) {
         collectTensor(l1,"gradients",i);
-        n.push_back(l1->gradients[i]);
+        n.push_back(l1->gradients[i]->clone());
       }
       return n;
     }
@@ -1083,8 +1110,11 @@ namespace eddl {
             cout<<file[i]<<" x\n";
             cmd = "wget -q --show-progress https://www.dropbox.com/s/"+link[i]+"/"+file[i];
             int status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_"+name);
+            if (status < 0){
+                msg("Error executing wget.  Is it installed?", "eddl.download_"+name);
+            }
+            else if (status > 0){
+                msg("wget failed to download dataset (exit code: " + to_string(status) + "). See previous messages for details.", "eddl.download_"+name);
             }
           }
           else {

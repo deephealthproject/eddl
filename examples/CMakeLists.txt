@@ -37,6 +37,15 @@ target_link_libraries(mnist_rnn_func eddl)
 add_executable(mnist_conv1D "nn/1_mnist/11_mnist_conv1D.cpp")
 target_link_libraries(mnist_conv1D eddl)
 
+add_executable(mnist_auto_merging "nn/1_mnist/12_mnist_auto_encoder_merging.cpp")
+target_link_libraries(mnist_auto_merging eddl)
+
+add_executable(mnist_conv_dice "nn/1_mnist/13_mnist_conv_dice.cpp")
+target_link_libraries(mnist_conv_dice eddl)
+
+add_executable(mnist_losses "nn/1_mnist/14_mnist_losses.cpp")
+target_link_libraries(mnist_losses eddl)
+
 
 
 # EXAMPLES: CIFAR10 ****************************************************

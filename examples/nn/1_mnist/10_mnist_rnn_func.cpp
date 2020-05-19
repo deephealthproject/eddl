@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 10;
+    int epochs = 5;
     int batch_size = 100;
     int num_classes = 10;
 
@@ -36,8 +36,8 @@ int main(int argc, char **argv) {
     layer l = in;  // Aux var
 
     l = LeakyReLu(Dense(l, 32));
-    l = RNN(l, 32, "relu");
-    l = RNN(l, 32, "relu");
+    l = LSTM(l, 32, "relu");
+    l = LSTM(l, 32, "relu");
 
     l = LeakyReLu(Dense(l, 32));
 
@@ -53,8 +53,9 @@ int main(int argc, char **argv) {
           rmsprop(0.001), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          //CS_GPU({1,1},100) // one GPU
-          CS_CPU(-1) // CPU with maximum threads availables
+          CS_GPU({1}) // one GPU
+          //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
+          //CS_CPU()
     );
 
     // View model

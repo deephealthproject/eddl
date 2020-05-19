@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 10;
+    int epochs = 5;
     int batch_size = 100;
 
     // Define network
@@ -46,18 +46,19 @@ int main(int argc, char **argv) {
 
     model net = Model({in}, {out});
 
-    // View model
-    summary(net);
-    plot(net, "model.pdf");
-
     // Build model
     build(net,
           sgd(0.001, 0.9), // Optimizer
           {"mean_squared_error"}, // Losses
           {"mean_squared_error"}, // Metrics
-          CS_GPU({1}, "low_mem")
-          //CS_CPU(-1)
+          CS_GPU({1}) // one GPU
+          //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
+          //CS_CPU()
     );
+
+    // View model
+    summary(net);
+    plot(net, "model.pdf");
 
     // Load dataset
     Tensor* x_train = Tensor::load("mnist_trX.bin");

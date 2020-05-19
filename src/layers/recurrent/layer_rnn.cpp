@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -78,13 +78,13 @@ void LRNN::forward() {
     if (use_bias) Tensor::sum2D_rowwise(preoutput, bias, preoutput);
 
     if (activation == "relu"){
-        tensorNN::ReLu(preoutput, output);
+        ReLu(preoutput, output);
     }else if (activation == "sigmoid"){
-        tensorNN::Sigmoid(preoutput, output);
+        Sigmoid(preoutput, output);
     }else if (activation == "hard_sigmoid"){
-        tensorNN::HardSigmoid(preoutput, output);
+        HardSigmoid(preoutput, output);
     }else if (activation == "tanh"){
-        tensorNN::Tanh(preoutput, output);
+        Tanh(preoutput, output);
     }else if (activation == "none") {
         Tensor::copy(preoutput,output);
     }else {
@@ -95,16 +95,24 @@ void LRNN::forward() {
 
 void LRNN::backward() {
     //get gradients with provided delta
+    Tensor *daux=new Tensor(delta->shape,delta->device);
+    daux->fill_(0.0);
+
     if (activation == "relu"){
-        tensorNN::D_ReLu(delta, preoutput, delta);
+        D_ReLu(delta, preoutput, daux);
+        Tensor::copy(daux,delta);
     }else if (activation == "sigmoid"){
-        tensorNN::D_Sigmoid(delta, output, delta);
+        D_Sigmoid(delta, output, daux);
+        Tensor::copy(daux,delta);
     }else if (activation == "hard_sigmoid"){
-        tensorNN::D_HardSigmoid(delta, preoutput, delta);
+        D_HardSigmoid(delta, preoutput, daux);
+        Tensor::copy(daux,delta);
     }else if (activation == "tanh"){
-        tensorNN::D_Tanh(delta, output, delta);
+        D_Tanh(delta, output, daux);
+        Tensor::copy(daux,delta);
     }
 
+   delete daux;
 
     if (trainable) {
         Tensor::mult2D(parent[0]->output, 1, delta, 0, gWx, 1);

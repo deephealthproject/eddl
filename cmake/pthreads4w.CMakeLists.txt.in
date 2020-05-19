@@ -1,0 +1,26 @@
+cmake_minimum_required(VERSION 3.9.2)
+
+project(pthreads4w-download NONE)
+
+# Set base dir
+SET(EP_BASE_DIR @CMAKE_CURRENT_BINARY_DIR@/third_party)
+
+if("${CMAKE_VS_PLATFORM_NAME}" MATCHES "x64")
+	message(STATUS "pthreads for Windows will be compiled at 64 bits")
+    SET(VCVARS "@CMAKE_GENERATOR_INSTANCE@/VC/Auxiliary/Build/vcvars64.bat")
+else()
+	message(STATUS "pthreads for Windows will be compiled at 32 bits")
+    SET(VCVARS "@CMAKE_GENERATOR_INSTANCE@/VC/Auxiliary/Build/vcvarsamd64_x86.bat")
+endif()
+
+include(ExternalProject)
+ExternalProject_Add(pthreads4w
+    PREFIX pthreads4w
+    URL https://sourceforge.net/projects/pthreads4w/files/pthreads4w-code-v3.0.0.zip/download
+    URL_HASH MD5=f3bf81bb395840b3446197bcf4ecd653
+    SOURCE_DIR "${EP_BASE_DIR}/pthreads4w-src"
+    BUILD_IN_SOURCE 1
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ${VCVARS} && nmake all install
+    INSTALL_COMMAND ""
+    )

@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -26,8 +26,6 @@ LRVar::LRVar(Layer *l, vector<int> axis, bool keepdims, string name, int dev, in
 
     input=l->output;
     output=l->output;
-//    delta=l->delta;
-
     this->axis=axis;
     this->keepdims=keepdims;
 

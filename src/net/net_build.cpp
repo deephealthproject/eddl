@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -38,10 +38,14 @@ void Net::fts() {
     vector<int> visit;
     vector<int> gin;
 
-    //fprintf(stdout,"FTS:");
     for (i = 0; i < layers.size(); i++) {
         visit.push_back(0);
-        gin.push_back(layers[i]->lin);
+
+        n=0;
+        for (j = 0; j < layers[i]->parent.size(); j++)
+          if (isIn(layers[i]->parent[j],layers,k)) n++;
+
+        gin.push_back(n);
     }
 
     for (i = 0; i < layers.size(); i++) {
@@ -61,14 +65,16 @@ void Net::fts() {
                 if (layers[n] == layers[j]->child[k]) gin[n]--;
 
     }
-    //fprintf(stdout,"\n");
-    if (VERBOSE) {
-      cout<<"Forward sort:";
-      for (i = 0; i < vfts.size(); i++)
-        cout<<vfts[i]->name<<"-->";
-      cout<<"\n";
-      //getchar();
+
+   if (VERBOSE) {
+    for (i = 0; i < vfts.size(); i++) {
+      cout<<vfts[i]->name<<"-->";
     }
+    cout<<"\n";
+    getchar();
+  }
+
+
 }
 
 
@@ -78,10 +84,14 @@ void Net::bts() {
     vector<int> visit;
     vector<int> gout;
 
+
     //fprintf(stdout,"BTS:");
     for (i = 0; i < layers.size(); i++) {
         visit.push_back(0);
-        gout.push_back(layers[i]->lout);
+        n=0;
+        for (j = 0; j < layers[i]->child.size(); j++)
+          if (isIn(layers[i]->child[j],layers,k)) n++;
+        gout.push_back(n);
     }
 
     for (i = 0; i < layers.size(); i++) {
@@ -90,7 +100,7 @@ void Net::bts() {
             if ((gout[j] == 0) && (!visit[j])) break;
 
         if (j == layers.size())
-            msg("error recurrent net in", "Net.bts");
+          msg("error recurrent net in", "Net.bts");
 
         visit[j] = 1;
         vbts.push_back(layers[j]);
@@ -100,6 +110,16 @@ void Net::bts() {
                 if (layers[n] == layers[j]->parent[k]) gout[n]--;
 
     }
+
+if (VERBOSE) {
+   for (i = 0; i < vbts.size(); i++) {
+     cout<<vbts[i]->name<<"-->";
+   }
+   cout<<"\n";
+   getchar();
+}
+
+
 }
 
 
@@ -155,8 +175,8 @@ void Net::toGPU(vector<int> g,int lsb,int mem){
 
 void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize){
 	onnx_pretrained = !initialize; // For controlling when to copy the weights to the snet
-	build(opt, lo, me, initialize);
 
+  build(opt, lo, me, initialize);
 
   set_compserv(cs);
 
@@ -170,22 +190,17 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initia
         cout << "Net running on FPGA " << snets[0]->dev - DEV_FPGA << "\n";
     }
   }
+  isbuild=true;
+
 }
 
 
 void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     if (VERBOSE) cout<<"Build net "<<name<<"\n";
 
-    if (lo.size() != lout.size())
-        msg("Loss list size does not match output list", "Net.build");
-
-    if (me.size() != lout.size())
-        msg("Metric list size does not match output list", "Net.build");
-
     // check devices
     dev = -1;
     int ind;
-
 
     for(int i=0; i<layers.size(); i++){
         if (layers[i]->isrecurrent) isrecurrent=true;
@@ -202,21 +217,19 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
         // Set params
         layers[i]->verbosity_level = this->verbosity_level;
     }
-
     // set optimizer
     optimizer = opt;
     optimizer->setlayers(layers);
 
     // set loss functions and create targets tensors
-
     this->losses = vloss(lo);
     for (int i = 0; i < lo.size(); i++) {
         if (lo[i]->name == "soft_cross_entropy") lout[i]->delta_bp = 1;
         lout[i]->target = new Tensor(lout[i]->output->getShape(), dev);
     }
-
     // set metrics
     this->metrics = vmetrics(me);
+
 
     // forward sort
     fts();
@@ -251,6 +264,14 @@ void Net::set_compserv(CompServ *cs){
                 Eigen::setNbThreads(nthreads);
 
                 snets.push_back(this);
+                if (mnets.size()){
+                  // comes from a merge of nets
+                  for(int j=0;j<mnets.size();j++) {
+                    if (!mnets[j]->isbuild) {
+                      mnets[j]->build(optimizer->clone(),{},{},cs,true);
+                    }
+                  }
+                }
             } else {
                 msg("Net and Layers device missmatch", "Net.set_compserv");
             }
@@ -282,7 +303,28 @@ void Net::set_compserv(CompServ *cs){
 
         if (VERBOSE) cout<<"split into "<<devsel.size()<<" GPUs devices\n";
 
-        if (!cs->isshared) split(devsel.size(),DEV_GPU);
+        if (!cs->isshared) {
+          if (mnets.size()){
+            // comes from a merge of nets
+            for(int j=0;j<mnets.size();j++)
+              if (!mnets[j]->isbuild){
+                mnets[j]->build(optimizer->clone(),{},{},cs,true);
+              }
+
+            cout<<"Building merge "<<endl;
+            for(int i=0;i<devsel.size();i++) {
+              vector <Net *>sm;
+              for(int j=0;j<mnets.size();j++) {
+                sm.push_back(mnets[j]->snets[i]);
+              }
+              snets.push_back(new Net(sm));
+              snets[i]->build(optimizer->clone(), losses, metrics);
+            }
+          }
+          else {
+            split(devsel.size(),DEV_GPU);
+          }
+        }
 #endif
         } else {
             // split on multiple FPGAs
@@ -315,12 +357,11 @@ void Net::split(int c, int todev) {
     int m=0;
 
     for (i = 0; i < c; i++) {
-          if (VERBOSE) cout << "Split " << i << "\n";
+        if (VERBOSE) cout << "Split " << i << "\n";
 
         nlayers.clear();
         nin.clear();
         nout.clear();
-
         if (i == c - 1) bs += m;
 
         // set inputs
@@ -328,14 +369,12 @@ void Net::split(int c, int todev) {
             nin.push_back(lin[j]->clone(c, bs, par, todev + devsel[i]));
             nlayers.push_back(nin[j]);
         }
-
         // special layers that are not input of net but has not parents
         // for instance noise generators in GANs
         for (j = 0; j < layers.size(); j++)
           if ((layers[j]->lin==0)&&(!isIn(layers[j],lin,ind))) {
             nlayers.push_back(layers[j]->clone(c, bs, par, todev + devsel[i]));
           }
-
         // rest of layers
         for (k = 0; k < layers.size(); k++) {
             for (j = 0; j < layers.size(); j++) {
@@ -343,7 +382,7 @@ void Net::split(int c, int todev) {
                     vlayer par;
                     for (l = 0; l < layers[j]->parent.size(); l++) {
                         if (!isInorig(layers[j]->parent[l], nlayers, ind)) break;
-                        else par.push_back(nlayers[ind]);
+                        else {par.push_back(nlayers[ind]);}
                     }
                     if (l == layers[j]->parent.size()) {
                         nlayers.push_back(layers[j]->clone(i, bs, par, todev + devsel[i]));
@@ -372,6 +411,7 @@ void Net::split(int c, int todev) {
                 for(int j = 0; j < layers.size(); j++)
                     layers[j]->copy(snets[i]->layers[j]);
         }
+        snets[i]->plot("smodel.pdf","LR");
 
     }
 }
@@ -403,6 +443,8 @@ void Net::resize(int b)
   for (j = 0; j < layers.size(); j++) {
       layers[j]->resize(batch_size);
   }
+
+
 
 
   for(i=0; i<c; i++) {
@@ -570,10 +612,10 @@ void Net::build_rnet(int inl,int outl) {
    rnet->isrecurrent=false;
 
    vloss lr;
-   for(i=0;i<outl;i++) lr.push_back(losses[0]->clone());
+   for(i=0;i<losses.size();i++) lr.push_back(losses[i]->clone());
 
    vmetrics mr;
-   for(i=0;i<outl;i++) mr.push_back(metrics[0]->clone());
+   for(i=0;i<metrics.size();i++) mr.push_back(metrics[i]->clone());
 
    rnet->build(optimizer->share(),lr,mr,cs->share(),false);
    //cout<<rnet->summary();

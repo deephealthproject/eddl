@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     download_mnist();
 
     // Settings
-    int epochs = 10;
+    int epochs = 5;
     int batch_size = 100;
     int num_classes = 10;
 
@@ -55,8 +55,9 @@ int main(int argc, char **argv) {
           rmsprop(0.01), // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"categorical_accuracy"}, // Metrics
-          //CS_GPU({1}, "full_mem") // one GPU
-          CS_CPU(-1) // CPU with maximum threads availables
+          CS_GPU({1}) // one GPU
+          //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
+          //CS_CPU()
     );
 
     // View model

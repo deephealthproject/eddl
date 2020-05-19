@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -13,7 +13,7 @@
 
 #include <vector>
 #include <thread>
-#include <pthread.h>
+//#include <pthread.h>
 #include <functional>
 
 #include "eddl/net/net.h"
@@ -62,6 +62,7 @@ typedef NetLoss * metric;
       *  @return     Model instance
     */
     model Model(vlayer in, vlayer out);
+    model Model(vector<Net*> vnets);
     void build(model net, optimizer o=nullptr, CompServ *cs=nullptr, bool init_weigths=true);
 
     /**
@@ -380,6 +381,16 @@ typedef NetLoss * metric;
     */
     void evaluate(model m, const vector<Tensor *> &in, const vector<Tensor *> &out);
 
+    /**
+      *  @brief Performs a prediction with input data
+      *
+      *  @param m  Model
+      *  @param in  Input data (features)
+      *  @return    vector of output tensors.
+    */
+    vector<Tensor *>  predict(model m, const vector<Tensor *> &in);
+
+
     // Finer methods
     vector<int> random_indices(int batch_size, int num_samples);
     void train_batch(model net, vector<Tensor *> in, vector<Tensor *> out, vector<int> indices);
@@ -425,6 +436,8 @@ typedef NetLoss * metric;
     void backward(model m,vector<Tensor *> target);
     void backward(model net);
     void backward(loss l);
+    void optimize(loss l);
+    void optimize(vector <loss> l);
     void update(model m);
     /**
       *  @brief Prints model loss at some batch.
@@ -1357,11 +1370,11 @@ typedef NetLoss * metric;
     layer Permute(layer l, vector<int> dims, string name="");
 
     // Reduction Layers
-    layer ReduceMean(layer l, vector<int> axis = {0}, bool keepdims = false);
-    layer ReduceVar(layer l, vector<int> axis = {0}, bool keepdims = false);
-    layer ReduceSum(layer l, vector<int> axis = {0}, bool keepdims = false);
-    layer ReduceMax(layer l, vector<int> axis = {0}, bool keepdims = false);
-    layer ReduceMin(layer l, vector<int> axis = {0}, bool keepdims = false);
+    layer ReduceMean(layer l, vector<int> axis, bool keepdims = false);
+    layer ReduceVar(layer l, vector<int> axis, bool keepdims = false);
+    layer ReduceSum(layer l, vector<int> axis, bool keepdims = false);
+    layer ReduceMax(layer l, vector<int> axis, bool keepdims = false);
+    layer ReduceMin(layer l, vector<int> axis, bool keepdims = false);
 
     // Generator Layers
 

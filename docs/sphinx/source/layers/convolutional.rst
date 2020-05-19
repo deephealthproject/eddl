@@ -1,6 +1,34 @@
 Convolutions
 ============
 
+
+Conv1D
+--------
+
+.. doxygenfunction:: eddl::Conv1D
+
+Example:
+
+.. code-block:: c++
+    :linenos:
+
+    ...
+    // Define network
+    layer in = Input({784});
+    layer l = in;  // Aux var
+
+    l = Reshape(l,{1,784}); //image as a 1D signal with depth=1
+    l = MaxPool1D(ReLu(Conv1D(l,16, {3},{1})),{4},{4});  //MaxPool 4 stride 4
+    l = MaxPool1D(ReLu(Conv1D(l,32, {3},{1})),{4},{4});
+    l = MaxPool1D(ReLu(Conv1D(l,64,{3},{1})),{4},{4});
+    l = MaxPool1D(ReLu(Conv1D(l,64,{3},{1})),{4},{4});
+    l = Reshape(l,{-1});
+
+    layer out = Activation(Dense(l, num_classes), "softmax");
+    model net = Model({in}, {out});
+    ...
+
+
 Conv2D
 --------
 
@@ -64,5 +92,5 @@ Convolutional Transpose
 
     **Not implemented yet**
 
-    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#convolutional-layers
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#convolutional-layers
 

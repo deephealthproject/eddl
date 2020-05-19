@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.5
+* Version: 0.6
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -33,6 +33,8 @@ public:
     int binary;
     float val;
     ReduceDescriptor *RD;
+    vector<int> axis;
+    bool keepdims;
 
     ReductionLayer(string name, int dev, int mem);
 
@@ -72,8 +74,6 @@ class LRVar : public ReductionLayer {
 public:
     static int total_layers;
 
-    vector<int> axis;
-    bool keepdims;
 
     vector<Layer *> layers;
 
