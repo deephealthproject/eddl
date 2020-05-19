@@ -92,5 +92,5 @@ Convolutional Transpose
 
     **Not implemented yet**
 
-    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#convolutional-layers
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#convolutional-layers
 
