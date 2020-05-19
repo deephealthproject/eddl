@@ -39,7 +39,11 @@ endforeach()
 #################################################################################
 macro(CONF_PACKAGE package_name build_type only_substitution)
     configure_file(${package_name}.CMakeLists.txt.in ${EP_BASE_DIR}/${package_name}-download/CMakeLists.txt ${only_substitution})
-    execute_process(COMMAND ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR} . -D CMAKE_BUILD_TYPE=${build_type}
+    set(conf_command ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" . -DCMAKE_BUILD_TYPE=${build_type})
+    if(CMAKE_GENERATOR_PLATFORM)
+        list(APPEND conf_command -A ${CMAKE_GENERATOR_PLATFORM})
+    endif()
+    execute_process(COMMAND ${conf_command}
             RESULT_VARIABLE result
             WORKING_DIRECTORY ${EP_BASE_DIR}/${package_name}-download)
     if(result)
