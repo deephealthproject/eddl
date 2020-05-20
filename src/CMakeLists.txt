@@ -48,6 +48,7 @@ target_include_directories(${PROJECT_NAME}
             ${PROJECT_SOURCE_DIR}/src
         )
 
+# TODO: why make cxx_std_11 public?
 # All users of this library will need at least C++11
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
 
@@ -82,6 +83,7 @@ message(STATUS "Eigen found!")
 target_include_directories(${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only library
 
+# TODO: Too different from the previous. I don't like to hard-code paths here.
 # ZLIB
 if(NOT BUILD_SHARED_LIBS AND WIN32)
     # FindZLIB does not allow to choose static zlib
@@ -113,6 +115,8 @@ if(BUILD_PROTOBUF)
     # Link library
     if(BUILD_SUPERBUILD AND NOT USE_SYSTEM_PROTOBUF)
         message(STATUS "Using specific Protobuf")
+        # TODO: This should have been specified in the superbuild
+        # TODO: Protobuf_DIR not always working
         SET(CMAKE_PREFIX_PATH "${Protobuf_ROOT}/bin;${CMAKE_PREFIX_PATH}")
         find_package(Protobuf CONFIG REQUIRED HINTS ${Protobuf_DIR})
         target_link_libraries(${PROJECT_NAME} PRIVATE protobuf::libprotobuf protobuf::libprotoc)
@@ -127,7 +131,8 @@ if(BUILD_PROTOBUF)
                     Use '-D BUILD_SUPERBUILD=ON', or try with a different Protobuf installation to fix this problem.
                     Alternatively, you can disable it with '-D BUILD_PROTOBUF=OFF")
         endif()
-        target_include_directories(${PROJECT_NAME} PUBLIC ${Protobuf_INCLUDE_DIRS})
+        # TODO: This should be common
+        target_include_directories(${PROJECT_NAME} PUBLIC ${Protobuf_INCLUDE_DIRS})  # TODO: Why public? I don't want them to be public
         target_link_directories(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARIES_DIRS})
         target_link_libraries(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES})
     endif()

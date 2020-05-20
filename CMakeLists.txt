@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.9.2)
+
+# TODO: Add explanation
 if(POLICY CMP0074)
 	cmake_policy(SET CMP0074 NEW)
 endif()
@@ -19,7 +21,7 @@ option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" ON)
 option(BUILD_COVERAGE "Flag to compile for coverage information" OFF)
 
-if(WIN32)
+if(WIN32) # TODO: Why? What I cannot build a shared library in windows?
     option(BUILD_SHARED_LIBS OFF)
 endif()
 
@@ -82,14 +84,14 @@ if(BUILD_COVERAGE)
 endif()
 
 # Flags: Optimization
-if(UNIX)
+if(UNIX) # TODO: This is unix but the above lines aren't?
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 endif()
 
 
-if(BUILD_HPC)
+if(BUILD_HPC)  # TODO: Same here. Is this cross-platform?
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -msse -mfpmath=sse -ffast-math")
 endif()
 
