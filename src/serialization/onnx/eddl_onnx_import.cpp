@@ -9,6 +9,16 @@
 #include <set>
 #include <algorithm>
 
+#define NEW_FROM_VECTOR_PTR(v) (copy((v)->begin(), (v)->end(), new float[(v)->size()]) - (v)->size())
+std::vector<int> vf2vi(const std::vector<float>& vf)
+{
+    std::vector<int> vi;
+    vi.reserve(vf.size());
+    for (const auto& x : vf) {
+        vi.emplace_back(static_cast<int>(x));
+    }
+    return vi;
+}
 
 #if defined(cPROTO)
 #include "onnx.pb.h"
@@ -609,19 +619,19 @@ using namespace std;
 						vector<int> parent_shape = parent->output->shape;
 
 						string scale_name = node->input(1); // Scale parameter
-						vector<float>* scale_weights = new vector<float>(map_init_values[scale_name]);
+						vector<float>* scale_weights = &(map_init_values[scale_name]);
 						vector<int> scale_dims = map_init_dims[scale_name];
 
 						string bias_name = node->input(2); // Bias parameter
-						vector<float>* bias_weights = new vector<float>(map_init_values[bias_name]);
+						vector<float>* bias_weights = &(map_init_values[bias_name]);
 						vector<int> bias_dims = map_init_dims[bias_name];
 
 						string mean_name = node->input(3); //Get weights and dims
-						vector<float>* mean_weights = new vector<float>(map_init_values[mean_name]);
+						vector<float>* mean_weights = &(map_init_values[mean_name]);
 						vector<int> mean_dims = map_init_dims[mean_name];
 
 						string variance_name = node->input(4); //Get weights and dims
-						vector<float>* variance_weights = new vector<float>(map_init_values[variance_name]);
+						vector<float>* variance_weights = &(map_init_values[variance_name]);
 						vector<int> variance_dims = map_init_dims[variance_name];
 
 						string name = node->name();
@@ -630,21 +640,21 @@ using namespace std;
 
 						actual_layer = new LBatchNorm(parent, momentum, epsilon, affine, name, dev, mem);
 
-						Tensor* scale_tensor = new Tensor(scale_dims, scale_weights->data(), dev);
+						Tensor* scale_tensor = new Tensor(scale_dims, NEW_FROM_VECTOR_PTR(scale_weights), dev);
 						Tensor::copy(scale_tensor, ((LBatchNorm *)(actual_layer))->bn_g);
-						delete(scale_tensor);
+						delete scale_tensor;
 
-						Tensor* bias_tensor = new Tensor(bias_dims, bias_weights->data(), dev);
+						Tensor* bias_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias_weights), dev);
 						Tensor::copy(bias_tensor, ((LBatchNorm *)(actual_layer))->bn_b);
-						delete(bias_tensor);
+						delete bias_tensor;
 
-						Tensor* mean_tensor = new Tensor(mean_dims, mean_weights->data(), dev);
+						Tensor* mean_tensor = new Tensor(mean_dims, NEW_FROM_VECTOR_PTR(mean_weights), dev);
 						Tensor::copy(mean_tensor, ((LBatchNorm *)(actual_layer))->mean);
-						delete(mean_tensor);
+						delete mean_tensor;
 
-						Tensor* variance_tensor = new Tensor(variance_dims, variance_weights->data(), dev);
+						Tensor* variance_tensor = new Tensor(variance_dims, NEW_FROM_VECTOR_PTR(variance_weights), dev);
 						Tensor::copy(variance_tensor, ((LBatchNorm *)(actual_layer))->variance);
-						delete(variance_tensor);
+						delete variance_tensor;
 
 					}
 					break;
@@ -710,7 +720,7 @@ using namespace std;
 						vector<int> parent_shape = parent->output->shape;
 
 						string weights_name = node->input(1); //Get weights and dims
-						vector<float>* weights = new vector<float>(map_init_values[weights_name]);
+						vector<float>* weights = &(map_init_values[weights_name]);
 						vector<int> dims = map_init_dims[weights_name];
 
 
@@ -728,17 +738,17 @@ using namespace std;
 
 						if(node->input_size() > 2){
 							string bias_name = node->input(2);
-							bias = new vector<float>(map_init_values[bias_name]);
+							bias = &(map_init_values[bias_name]);
 							vector<int> bias_shape;
 							bias_shape.push_back(bias->size());
-							Tensor* bias_tensor = new Tensor(bias_shape, bias->data(), dev);
+							Tensor* bias_tensor = new Tensor(bias_shape, NEW_FROM_VECTOR_PTR(bias), dev);
 							Tensor::copy(bias_tensor , convol_descriptor->bias);
-							delete(bias_tensor);
+							delete bias_tensor;
 
 						}
-						Tensor* weights_tensor = new Tensor(dims, weights->data(), dev);
+						Tensor* weights_tensor = new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev);
 						Tensor::copy(weights_tensor, convol_descriptor->K);
-						delete(weights_tensor);
+						delete weights_tensor;
 						break;
 					}
 
@@ -784,7 +794,7 @@ using namespace std;
 							}
 							else { // weights
 								weights_name = node->input(i);
-								weights = new vector<float>(map_init_values[input]);
+								weights = &(map_init_values[input]);
 								dims = map_init_dims[input];
 								ndim = dims.size();
 							}
@@ -800,7 +810,7 @@ using namespace std;
 						Tensor * input_size = parent->output;
 						LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem); 
 
-						Tensor* weights_tensor = new Tensor(dims, weights->data(), dev);
+						Tensor* weights_tensor = new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev);
 						if(transB){
 							vector<int> reverse_dims;
 							for(int h = dims.size()-1; h >= 0; h--){
@@ -809,17 +819,17 @@ using namespace std;
 							Tensor* weights_tensor_T = new Tensor(reverse_dims, dev);
 							Tensor::transpose(weights_tensor, weights_tensor_T, {1,0});
 							Tensor::copy(weights_tensor_T, dense->W );
-							delete(weights_tensor_T);
+							delete weights_tensor_T;
 						}
 						else Tensor::copy(weights_tensor, dense->W );
-						delete(weights_tensor);
+						delete weights_tensor;
 						if(use_bias){
 							bias_name = node->input(2);
-							bias = new vector<float>(map_init_values[bias_name]);
+							bias = &(map_init_values[bias_name]);
 							bias_dims = map_init_dims[bias_name];
-							Tensor* bias_tensor = new Tensor(bias_dims, bias->data(), dev);
+							Tensor* bias_tensor = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias), dev);
 							Tensor::copy(bias_tensor, dense->bias);
-							delete(bias_tensor);
+							delete bias_tensor;
 						}
 						actual_layer = dense;
 					}
@@ -843,7 +853,7 @@ using namespace std;
 						vector<int> parent_shape = parent->output->shape;
 						
 						string scales_name = node->input(1); //Get scales and dims
-						vector<float>* scales = new vector<float>(map_init_values[scales_name]);
+						vector<float>* scales = &(map_init_values[scales_name]);
 						vector<int> scales_dims = map_init_dims[scales_name];
 						
 						if(scales_dims[0] != 4){
@@ -861,7 +871,7 @@ using namespace std;
 						size_vector.push_back((int)height_scale);
 						size_vector.push_back((int)width_scale);
 						actual_layer = new LUpSampling(parent, size_vector, interpolation_mode, name, dev, mem);
-						delete(scales);
+						delete scales;
 
 					}
 					break;
@@ -964,8 +974,6 @@ using namespace std;
 					break;
 				case ONNX_LAYERS::RESHAPE:
 					{
-
-
 						string shape_node_name = node->input(1);
 						vector<int> shape;
 						if(constant_node_map.count(shape_node_name)){
@@ -976,13 +984,10 @@ using namespace std;
 								printf("An error ocurred when reading the shape of reshape\n");
 							}
 							onnx::TensorProto shape_tensor = shape_attribute.t();
-							vector<float> shape_float = parseTensorValues(shape_tensor);
-							vector<int> aux_shape(shape_float.begin(), shape_float.end());
-							shape = aux_shape;
+							shape = vf2vi(parseTensorValues(shape_tensor));
 						}
 						else{
-							vector<int> aux_shape(map_init_values[shape_node_name].begin(), map_init_values[shape_node_name].end());
-							shape = aux_shape;
+							shape = vf2vi(map_init_values[shape_node_name]);
 						}
 						string name = node->name();
 						string parent_name = node->input(0);
@@ -1254,10 +1259,10 @@ using namespace std;
 							if((conv = dynamic_cast<LConv*>(parents[0]) )){
 								ConvolDescriptor* convol_descriptor = conv->cd;
 								string bias_name = node->input(index_parameter);
-								vector<float> *bias = new vector<float>(map_init_values[bias_name]);
+								vector<float> *bias = &(map_init_values[bias_name]);
 								vector<int> bias_shape;
 								bias_shape.push_back(bias->size());
-								Tensor* bias_tensor = new Tensor(bias_shape, bias->data(), dev);
+								Tensor* bias_tensor = new Tensor(bias_shape, NEW_FROM_VECTOR_PTR(bias), dev);
 								if(!convol_descriptor->use_bias){
 									convol_descriptor->use_bias = true; //We need to enable the bias
 									Tensor::copy(bias_tensor , convol_descriptor->bias);
@@ -1265,23 +1270,23 @@ using namespace std;
 								else{
 									Tensor* auxiliar_tensor = Tensor::add(convol_descriptor->bias, bias_tensor);
 									Tensor::copy(auxiliar_tensor , convol_descriptor->bias);
-									delete(auxiliar_tensor);
+									delete auxiliar_tensor;
 
 								}
-								delete(bias_tensor);
+								delete bias_tensor;
 								actual_layer = conv;
 								break;
 							}
 							else if((dense = dynamic_cast<LDense*>(parents[0]) )){
 								string bias_name = node->input(index_parameter);
-								vector<float> *bias = new vector<float>(map_init_values[bias_name]);
+								vector<float> *bias = &(map_init_values[bias_name]);
 								vector<int> bias_dims = map_init_dims[bias_name];
 								if(!dense->use_bias){
 									dense->use_bias = true;
-									dense->bias = new Tensor(bias_dims, bias->data(), dev);
+									dense->bias = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias), dev);
 								}
 								else{ //If dense already has a bias, we sum it in top of the bias
-									Tensor* add_to_bias = new Tensor(bias_dims, bias->data(), dev);
+									Tensor* add_to_bias = new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias), dev);
 									dense->bias = Tensor::add(dense->bias, add_to_bias);
 
 								}
@@ -1342,16 +1347,16 @@ using namespace std;
 						}
 						if(dense_detected){
 							string weights_name = node->input(index_parameter);
-							vector<float> *weights = new vector<float>(map_init_values[weights_name]);
+							vector<float> *weights = &(map_init_values[weights_name]);
 							vector<int> dims = map_init_dims[weights_name];
 							int ndim = dims.size();
 							int neuronas = dims[1];
 							Layer *parent = parents[1-index_parameter];
 							bool use_bias = false;
 							LDense* dense = new LDense(parent, neuronas, use_bias, name, dev, mem); 
-							Tensor* weights_tensor = new Tensor(dims, weights->data(), dev);
+							Tensor* weights_tensor = new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev);
 							Tensor::copy(weights_tensor, dense->W );
-							delete(weights_tensor);
+							delete weights_tensor;
 							actual_layer = dense;
 							break;
 						}
@@ -1716,17 +1721,17 @@ using namespace std;
 
 
 						string weights_name = node.input(1); //Get weights and dims
-						vector<float>* weights = new vector<float>(map_init_values[weights_name]);
+						vector<float>* weights = &(map_init_values[weights_name]);
 						vector<int> dims = map_init_dims[weights_name];
 
-						conv_tensors.push_back(new Tensor(dims, weights->data(), dev));
+						conv_tensors.push_back(new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev));
 
 						if(node.input_size() > 2){ //This means we also have a bias
 							string bias_name = node.input(2);
-							vector<float>* bias = new vector<float>(map_init_values[bias_name]);
+							vector<float>* bias = &(map_init_values[bias_name]);
 							vector<int> bias_shape;
 							bias_shape.push_back(bias->size());
-							conv_tensors.push_back(new Tensor(bias_shape, bias->data(), dev));
+							conv_tensors.push_back(new Tensor(bias_shape, NEW_FROM_VECTOR_PTR(bias), dev));
 						}
 
 						tensors[name] = conv_tensors;
@@ -1739,16 +1744,16 @@ using namespace std;
 						vector<Tensor*> dense_tensors;
 
 						string weights_name = node.input(1); //Get weights and dims
-						vector<float>* weights = new vector<float>(map_init_values[weights_name]);
+						vector<float>* weights = &(map_init_values[weights_name]);
 						vector<int> dims = map_init_dims[weights_name];
 
-						dense_tensors.push_back(new Tensor(dims, weights->data(), dev));
+						dense_tensors.push_back(new Tensor(dims, NEW_FROM_VECTOR_PTR(weights), dev));
 
 						if(node.input_size() > 2){
 							string bias_name = node.input(2);
-							vector<float>* bias = new vector<float>(map_init_values[bias_name]);
+							vector<float>* bias = &(map_init_values[bias_name]);
 							vector<int> bias_dims = map_init_dims[bias_name];
-							dense_tensors.push_back(new Tensor(bias_dims, bias->data(), dev));
+							dense_tensors.push_back(new Tensor(bias_dims, NEW_FROM_VECTOR_PTR(bias), dev));
 						}
 
 						tensors[name] = dense_tensors;
