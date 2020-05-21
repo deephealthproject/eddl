@@ -97,6 +97,13 @@ target_link_libraries(sentiment_rnn_all eddl)
 add_executable(sentiment_lstm_mask "nn/4_NLP/6_sentiment_lstm_mask.cpp")
 target_link_libraries(sentiment_lstm_mask eddl)
 
+add_executable(imdb_rnn "nn/4_NLP/7_imdb_rnn.cpp")
+target_link_libraries(imdb_rnn eddl)
+
+add_executable(imdb_lstm "nn/4_NLP/8_imdb_lstm.cpp")
+target_link_libraries(imdb_lstm eddl)
+
+
 
 
 # EXAMPLES: Tensor ****************************************************

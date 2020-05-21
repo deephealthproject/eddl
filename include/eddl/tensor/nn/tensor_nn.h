@@ -18,6 +18,7 @@ void cent(Tensor *A, Tensor *B, Tensor *C);
 
 // ***** Metrics *****************************
 int accuracy(Tensor *A, Tensor *B);
+int bin_accuracy(Tensor *A, Tensor *B);
 
 
 // ***** Activations *****************************

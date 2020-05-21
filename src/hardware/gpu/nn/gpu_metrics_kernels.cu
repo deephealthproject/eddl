@@ -52,3 +52,18 @@ if (thread_id_x < total_ops)
 }
 
 }
+
+__global__ void bin_accuracy(float* T, float* N, int size, int* acc){
+
+long int thread_id_x = threadIdx.x + blockIdx.x*blockDim.x;
+
+if (thread_id_x < size)
+{
+  if ((T[thread_id_x ]==1.0)&&(N[thread_id_x]>0.5))
+    atomicAdd(acc,1);
+  else if ((T[thread_id_x ]==0.0)&&(N[thread_id_x]<=0.5))
+    atomicAdd(acc,1);
+
+}
+
+}

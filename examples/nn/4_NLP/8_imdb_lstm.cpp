@@ -17,9 +17,9 @@
 using namespace eddl;
 
 //////////////////////////////////
-// Embeding+CNN for
-// aclImdb sentiment analysis
-// using 1000 top words
+// Embeding+LSTM
+// using imdb from keras
+// 2000 words
 //////////////////////////////////
 
 int main(int argc, char **argv) {
@@ -27,50 +27,41 @@ int main(int argc, char **argv) {
     //download_imdb_2000();
 
     // Settings
-    int epochs = 100;
-    int batch_size = 100;
-    int num_classes = 1;
+    int epochs = 1000;
+    int batch_size = 32;
 
     int length=250;
     int embdim=32;
-    int vocsize=2000; //1000 most frequent words + padding
+    int vocsize=2000;  //1000 most frequent words + padding
 
     // Define network
-    layer in = Input({length});
+    layer in = Input({1}); //1 word
     layer l = in;
 
-    layer lE = RandomUniform(Embedding(l, vocsize, length,embdim),-0.05,0.05);
+    layer lE = RandomUniform(Embedding(l, vocsize, 1,embdim),-0.05,0.05);
 
-    l = Reshape(lE,{1,length,embdim});
+    l = LSTM(lE,32);
+    l = ReLu(Dense(l,256));
 
-    layer l1 = ReLu(BatchNormalization(Conv(l,128,{1,embdim},{1,1},"same,none",false)));
-    layer l2 = ReLu(BatchNormalization(Conv(l,128,{2,embdim},{1,1},"same,none",false)));
-    layer l3 = ReLu(BatchNormalization(Conv(l,128,{3,embdim},{1,1},"same,none",false)));
-
-    layer lc1=l=Concat({l1,l2,l3});
-
-    l=GlobalMaxPool(l);
-
-    l = Reshape(l,{-1});
-
-    l = ReLu(BatchNormalization(Dense(l,256)));
-
-    layer out = Sigmoid(Dense(l, num_classes));
+    layer out = Sigmoid(Dense(l, 1));
     model net = Model({in}, {out});
-    net->verbosity_level = 0;
 
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
+    optimizer opt=adam(0.001);
+    //opt->set_clip_val(0.01);
+
     // Build model
     build(net,
-          adam(0.001), // Optimizer
-          {"soft_cross_entropy"}, // Losses
+          opt, // Optimizer
+          {"cross_entropy"}, // Losses
           {"binary_accuracy"}, // Metrics
           CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
           //CS_CPU()
     );
+
     // View model
     summary(net);
 
@@ -82,12 +73,16 @@ int main(int argc, char **argv) {
     Tensor* y_test=Tensor::load("imdb_2000_tsY.bin");
 
 
-    // Train model
+    x_train->info();
+    x_test->info();
+
+    x_train->reshape_({x_train->shape[0],length,1}); //batch x timesteps x input_dim
+    x_test->reshape_({x_test->shape[0],length,1}); //batch x timesteps x input_dim
+
     for(int i=0;i<epochs;i++) {
-      fit(net, {x_train}, {y_train}, batch_size, 1);
+      fit(net, {x_train}, {y_train}, batch_size, 5);
       evaluate(net,{x_test},{y_test});
     }
-
 
 
 }

@@ -393,6 +393,9 @@ namespace eddl {
         } else if (type == "categorical_accuracy" || type == "accuracy"){
             return new MCategoricalAccuracy();
         }
+        else if (type == "binary_accuracy"){
+            return new MBinAccuracy();
+        }
         else if (type=="mean_absolute_error"){
             return new MMeanAbsoluteError();
         }

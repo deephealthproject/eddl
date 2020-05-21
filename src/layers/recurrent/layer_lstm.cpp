@@ -384,6 +384,13 @@ void LLSTM::backward() {
     Tensor::mult2D(d1, 0, Wch, 1, parent[1]->delta_states[0], 1);
   Tensor::reduce_sum2D(d2, gcnbias, 0, 1);
 
+/*
+  if (parent.size()==1) {
+    for(int i=0;i<gradients.size();i++)
+      gradients[i]->div_(250.0);
+  }
+  */
+
   if (mask_zeros) {
     if (parent.size()>1) {
       Tensor::logical_not(mask,mask);
