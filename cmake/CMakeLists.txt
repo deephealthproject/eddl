@@ -2,7 +2,7 @@
 include(ExternalProject)
 
 set_property (DIRECTORY PROPERTY EP_BASE third_party)
-SET(EP_BASE_DIR "${CMAKE_CURRENT_BINARY_DIR}/third_party" PARENT_SCOPE)
+SET(EP_BASE_DIR "${CMAKE_CURRENT_BINARY_DIR}/third_party" PARENT_SCOPE)  # TODO: Why define this in the parent scope when we only care about certain variables?
 SET(EP_BASE_DIR "${CMAKE_CURRENT_BINARY_DIR}/third_party")
 
 # Set parallelization
