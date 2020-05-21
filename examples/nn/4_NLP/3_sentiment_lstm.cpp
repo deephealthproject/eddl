@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     download_imdb_2000();
 
     // Settings
-    int epochs = 1000;
+    int epochs = 10;
     int batch_size = 32;
 
     int length=250;
@@ -67,14 +67,10 @@ int main(int argc, char **argv) {
 
     // Load dataset
     Tensor* x_train=Tensor::load("imdb_2000_trX.bin");
-    x_train->info();
     Tensor* y_train=Tensor::load("imdb_2000_trY.bin");
-    y_train->info();
     Tensor* x_test=Tensor::load("imdb_2000_tsX.bin");
-    x_test->info();
     Tensor* y_test=Tensor::load("imdb_2000_tsY.bin");
-    y_test->info();
-    
+
     x_train->reshape_({x_train->shape[0],length,1}); //batch x timesteps x input_dim
     x_test->reshape_({x_test->shape[0],length,1}); //batch x timesteps x input_dim
 

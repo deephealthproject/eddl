@@ -324,13 +324,17 @@ void LLSTM::backward() {
   D_Sigmoid(d2, on, daux);
   Tensor::copy(daux,d2);
 
-  Tensor::mult2D(parent[0]->output, 1, d2, 0, gWox, 1);
-  if (parent.size()>1)
-    Tensor::mult2D(parent[1]->states[0], 1, d2, 0, gWoh, 1);
+  if (trainable) {
+    Tensor::mult2D(parent[0]->output, 1, d2, 0, gWox, 1);
+    if (parent.size()>1)
+      Tensor::mult2D(parent[1]->states[0], 1, d2, 0, gWoh, 1);
+    Tensor::reduce_sum2D(d2, gonbias, 0, 1);
+  }
+
   Tensor::mult2D(d2, 0, Wox, 1, parent[0]->delta, 1);
   if (parent.size()>1)
     Tensor::mult2D(d2, 0, Woh, 1, parent[1]->delta_states[0], 1);
-  Tensor::reduce_sum2D(d2, gonbias, 0, 1);
+
 
   d2->fill_(0.0);
   D_Tanh(d1, sh, d2);
@@ -345,13 +349,13 @@ void LLSTM::backward() {
     D_Sigmoid(d2, fn, daux);
     Tensor::copy(daux,d2);
 
-    Tensor::mult2D(parent[0]->output, 1, d2, 0, gWfx, 1);
-    Tensor::mult2D(parent[1]->states[0], 1, d2, 0, gWfh, 1);
-
+    if (trainable) {
+      Tensor::mult2D(parent[0]->output, 1, d2, 0, gWfx, 1);
+      Tensor::mult2D(parent[1]->states[0], 1, d2, 0, gWfh, 1);
+      Tensor::reduce_sum2D(d2, gfnbias, 0, 1);
+    }
     Tensor::mult2D(d2, 0, Wfx, 1, parent[0]->delta, 1);
     Tensor::mult2D(d2, 0, Wfh, 1, parent[1]->delta_states[0], 1);
-
-    Tensor::reduce_sum2D(d2, gfnbias, 0, 1);
   }
 
   Tensor::el_mult(delta_c, in, d1, 0);
@@ -362,34 +366,33 @@ void LLSTM::backward() {
   D_Sigmoid(d2, in, daux);
   Tensor::copy(daux,d2);
 
-  Tensor::mult2D(parent[0]->output, 1, d2, 0, gWix, 1);
-  if (parent.size()>1)
-    Tensor::mult2D(parent[1]->states[0], 1, d2, 0, gWih, 1);
+  if (trainable) {
+    Tensor::mult2D(parent[0]->output, 1, d2, 0, gWix, 1);
+    if (parent.size()>1)
+      Tensor::mult2D(parent[1]->states[0], 1, d2, 0, gWih, 1);
+    Tensor::reduce_sum2D(d2, ginbias, 0, 1);
+  }
+
   Tensor::mult2D(d2, 0, Wix, 1, parent[0]->delta, 1);
   if (parent.size()>1)
     Tensor::mult2D(d2, 0, Wih, 1, parent[1]->delta_states[0], 1);
-  Tensor::reduce_sum2D(d2, ginbias, 0, 1);
 
   // Cn
   daux->fill_(0.0);
   D_Tanh(d1, cn, daux);
   Tensor::copy(daux,d1);
 
-  Tensor::mult2D(parent[0]->output, 1, d1, 0, gWcx, 1);
-  if (parent.size()>1)
-    Tensor::mult2D(parent[1]->states[0], 1, d1, 0, gWch, 1);
+  if (trainable) {
+    Tensor::mult2D(parent[0]->output, 1, d1, 0, gWcx, 1);
+    if (parent.size()>1)
+      Tensor::mult2D(parent[1]->states[0], 1, d1, 0, gWch, 1);
+    Tensor::reduce_sum2D(d1, gcnbias, 0, 1);
+  }
 
   Tensor::mult2D(d1, 0, Wcx, 1, parent[0]->delta, 1);
   if (parent.size()>1)
     Tensor::mult2D(d1, 0, Wch, 1, parent[1]->delta_states[0], 1);
-  Tensor::reduce_sum2D(d2, gcnbias, 0, 1);
 
-/*
-  if (parent.size()==1) {
-    for(int i=0;i<gradients.size();i++)
-      gradients[i]->div_(250.0);
-  }
-  */
 
   if (mask_zeros) {
     if (parent.size()>1) {

@@ -120,16 +120,12 @@ void LRNN::backward() {
             Tensor::mult2D(parent[1]->output, 1, delta, 0, gWy, 1);
         if (use_bias) Tensor::reduce_sum2D(delta, gbias, 0, 1);
 
-
-        if (parent.size()==1) {
-          for(int i=0;i<gradients.size();i++)
-            gradients[i]->div_(250.0);
-        }
-
-        Tensor::mult2D(delta, 0, Wx, 1, parent[0]->delta, 1);
-        if (parent.size()>1)
-            Tensor::mult2D(delta, 0, Wy, 1, parent[1]->delta, 1);
     }
+
+    Tensor::mult2D(delta, 0, Wx, 1, parent[0]->delta, 1);
+    if (parent.size()>1)
+        Tensor::mult2D(delta, 0, Wy, 1, parent[1]->delta, 1);
+
 
     // Regularizer
     if (trainable) if(reg != nullptr) {reg->apply(this->Wx);reg->apply(this->Wy);}

@@ -17,7 +17,7 @@
 using namespace eddl;
 
 //////////////////////////////////
-// Embeding+CNN 
+// Embeding+CNN
 // using imdb preprocessed from keras
 // 2000 words
 //////////////////////////////////
@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     download_imdb_2000();
 
     // Settings
-    int epochs = 100;
+    int epochs = 10;
     int batch_size = 100;
 
     int length=250;
