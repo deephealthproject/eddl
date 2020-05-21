@@ -79,30 +79,14 @@ add_executable(drive_seg "nn/3_drive/1_drive_seg.cpp")
 target_link_libraries(drive_seg eddl)
 
 # EXAMPLES: NLP ****************************************************
-add_executable(sentiment_preproces "nn/4_NLP/1_sentiment_preproces.cpp")
-target_link_libraries(sentiment_preproces eddl)
+add_executable(sentiment_cnn "nn/4_NLP/1_sentiment_cnn.cpp")
+target_link_libraries(sentiment_cnn eddl)
 
-add_executable(sentiment_cnn_1000 "nn/4_NLP/2_sentiment_cnn_1000.cpp")
-target_link_libraries(sentiment_cnn_1000 eddl)
+add_executable(sentiment_rnn "nn/4_NLP/2_sentiment_rnn.cpp")
+target_link_libraries(sentiment_rnn eddl)
 
-add_executable(sentiment_cnn_all "nn/4_NLP/3_sentiment_cnn_all.cpp")
-target_link_libraries(sentiment_cnn_all eddl)
-
-add_executable(sentiment_rnn_1000 "nn/4_NLP/4_sentiment_rnn_1000.cpp")
-target_link_libraries(sentiment_rnn_1000 eddl)
-
-add_executable(sentiment_rnn_all "nn/4_NLP/5_sentiment_rnn_all.cpp")
-target_link_libraries(sentiment_rnn_all eddl)
-
-add_executable(sentiment_lstm_mask "nn/4_NLP/6_sentiment_lstm_mask.cpp")
-target_link_libraries(sentiment_lstm_mask eddl)
-
-add_executable(imdb_rnn "nn/4_NLP/7_imdb_rnn.cpp")
-target_link_libraries(imdb_rnn eddl)
-
-add_executable(imdb_lstm "nn/4_NLP/8_imdb_lstm.cpp")
-target_link_libraries(imdb_lstm eddl)
-
+add_executable(sentiment_lstm "nn/4_NLP/3_sentiment_lstm.cpp")
+target_link_libraries(sentiment_lstm eddl)
 
 
 

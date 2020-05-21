@@ -18,13 +18,13 @@ using namespace eddl;
 
 //////////////////////////////////
 // Embeding+LSTM
-// using imdb from keras
+// using imdb preprocessed from keras
 // 2000 words
 //////////////////////////////////
 
 int main(int argc, char **argv) {
-    // Download aclImdb
-    //download_imdb_2000();
+    // Download Imdb
+    download_imdb_2000();
 
     // Settings
     int epochs = 1000;
@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 
     int length=250;
     int embdim=32;
-    int vocsize=2000;  //1000 most frequent words + padding
+    int vocsize=2000;
 
     // Define network
     layer in = Input({1}); //1 word
@@ -57,9 +57,9 @@ int main(int argc, char **argv) {
           opt, // Optimizer
           {"cross_entropy"}, // Losses
           {"binary_accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
+          //CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU()
+          CS_CPU()
     );
 
     // View model
@@ -67,22 +67,21 @@ int main(int argc, char **argv) {
 
     // Load dataset
     Tensor* x_train=Tensor::load("imdb_2000_trX.bin");
-    Tensor* y_train=Tensor::load("imdb_2000_trY.bin");
-
-    Tensor* x_test=Tensor::load("imdb_2000_tsX.bin");
-    Tensor* y_test=Tensor::load("imdb_2000_tsY.bin");
-
-
     x_train->info();
+    Tensor* y_train=Tensor::load("imdb_2000_trY.bin");
+    y_train->info();
+    Tensor* x_test=Tensor::load("imdb_2000_tsX.bin");
     x_test->info();
-
+    Tensor* y_test=Tensor::load("imdb_2000_tsY.bin");
+    y_test->info();
+    
     x_train->reshape_({x_train->shape[0],length,1}); //batch x timesteps x input_dim
     x_test->reshape_({x_test->shape[0],length,1}); //batch x timesteps x input_dim
 
+    // Train model
     for(int i=0;i<epochs;i++) {
-      fit(net, {x_train}, {y_train}, batch_size, 5);
+      fit(net, {x_train}, {y_train}, batch_size, 1);
       evaluate(net,{x_test},{y_test});
     }
-
 
 }

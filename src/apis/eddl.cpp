@@ -1126,6 +1126,8 @@ namespace eddl {
         }
       }
 
+
+
     void download_mnist(){
       download_dataset("mnist","bin",{"khrb3th2z6owd9t","m82hmmrg46kcugp","7psutd4m4wna2d5","q0tnbjvaenb4tjs"});
     }
@@ -1134,12 +1136,8 @@ namespace eddl {
       download_dataset("cifar","bin",{"wap282xox5ew02d","yxhw99cu1ktiwxq","dh9vqxe9vt7scrp","gdmsve6mbu82ndp"});
     }
 
-    void download_imdb(){
-      download_dataset("imdb","bin",{"snf3vi7e1bjo8k5","c2zgsl2wb39ivlo","lkti7c12yoh18pv","cd1uocgv6abzt32"});
-    }
-
-    void download_imdb_1000(){
-      download_dataset("imdb_1000","bin",{"q96yf0h84mhcbgy","jfkg2spj7bd0ca8","q2e0atxf30udvlh","wlpc9pajyvmcsiu"});
+    void download_imdb_2000(){
+      download_dataset("imdb_2000","bin",{"4m0h8ep53mixq6x","zekpjclm58tdevk","1bgdr8mz1lqkhgi","6cwob77654lruwq"});
     }
 
     void download_drive(){

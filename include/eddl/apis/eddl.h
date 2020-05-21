@@ -1602,23 +1602,15 @@ typedef NetLoss * metric;
       *  @return     (void) The numpy files of DRIVE
     */
     void download_drive();
-    /**
-      *  @brief Downloads IMDB Dataset.
-      *
-      *  @see   https://ai.stanford.edu/~amaas/data/sentiment/
-      *
-      *  @return     (void) The numpy files of IMDB
-    */
-    void download_imdb();
 
     /**
-      *  @brief Downloads IMDB Dataset. 1000 most frequent words
+      *  @brief Downloads IMDB Dataset. 2000 most frequent words
       *
       *  @see   https://ai.stanford.edu/~amaas/data/sentiment/
       *
-      *  @return     (void) The numpy files of IMDB
+      *  @return     (void) The binary files of IMDB
     */
-    void download_imdb_1000();
+    void download_imdb_2000();
 
 
 }
