@@ -461,7 +461,6 @@ void Net::print_loss(int b)
       fiterr[p] = fiterr[p + 1] = 0.0;
       fprintf(stdout,"Batch %d ",b);
       string name=lout[k]->name;
-      if (lout[k]->isshared) name=lout[k]->orig->name;
 
       fprintf(stdout, "%s ", name.c_str());
       if (losses.size()>=(k+1)) {

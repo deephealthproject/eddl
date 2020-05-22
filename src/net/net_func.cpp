@@ -51,12 +51,10 @@ void Net::do_reset_grads() {
 void Net::do_forward() {
   if (VERBOSE) {
     cout<<"START FORWARD\n";
-    getchar();
   }
   for (int i = 0; i < vfts.size(); i++) {
     if (VERBOSE) {
       cout << vfts[i]->name << " Shape: ";
-      vfts[i]->info();
       for(int j=0;j<vfts[i]->parent.size();j++)
       fprintf(stdout, "  %s In[%d,%s]:%f\n", vfts[i]->name.c_str(), j, vfts[i]->parent[j]->name.c_str(),vfts[i]->parent[j]->output->sum());
     }
@@ -64,7 +62,6 @@ void Net::do_forward() {
     vfts[i]->forward();
     if (VERBOSE) {
       fprintf(stdout, "  %s Out:%f\n", vfts[i]->name.c_str(), vfts[i]->output->sum());
-      getchar();
     }
   }
   if (VERBOSE) {
@@ -76,7 +73,6 @@ void Net::do_forward() {
 void Net::do_backward() {
   if (VERBOSE) {
     cout<<"START BACKWARD\n";
-    getchar();
   }
   for (int i = 0; i < vbts.size(); i++) {
     if(this->verbosity_level >= 1){

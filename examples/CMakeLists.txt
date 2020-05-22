@@ -79,13 +79,11 @@ add_executable(drive_seg "nn/3_drive/1_drive_seg.cpp")
 target_link_libraries(drive_seg eddl)
 
 # EXAMPLES: NLP ****************************************************
-add_executable(sentiment_cnn "nn/4_NLP/1_sentiment_cnn.cpp")
-target_link_libraries(sentiment_cnn eddl)
 
-add_executable(sentiment_rnn "nn/4_NLP/2_sentiment_rnn.cpp")
+add_executable(sentiment_rnn "nn/4_NLP/1_sentiment_rnn.cpp")
 target_link_libraries(sentiment_rnn eddl)
 
-add_executable(sentiment_lstm "nn/4_NLP/3_sentiment_lstm.cpp")
+add_executable(sentiment_lstm "nn/4_NLP/2_sentiment_lstm.cpp")
 target_link_libraries(sentiment_lstm eddl)
 
 
