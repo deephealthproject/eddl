@@ -176,6 +176,15 @@ void Net::toGPU(vector<int> g,int lsb,int mem){
 void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize){
 	onnx_pretrained = !initialize; // For controlling when to copy the weights to the snet
 
+  if (mnets.size()){
+    // comes from a merge of nets
+    for(int j=0;j<mnets.size();j++)
+      if (!mnets[j]->isbuild) {
+        cout<<"build mnet "<<j<<endl;
+        mnets[j]->build(opt->clone(),{},{},cs,true);
+    }
+  }
+
   build(opt, lo, me, initialize);
 
   set_compserv(cs);
@@ -264,14 +273,7 @@ void Net::set_compserv(CompServ *cs){
                 Eigen::setNbThreads(nthreads);
 
                 snets.push_back(this);
-                if (mnets.size()){
-                  // comes from a merge of nets
-                  for(int j=0;j<mnets.size();j++) {
-                    if (!mnets[j]->isbuild) {
-                      mnets[j]->build(optimizer->clone(),{},{},cs,true);
-                    }
-                  }
-                }
+
             } else {
                 msg("Net and Layers device missmatch", "Net.set_compserv");
             }
@@ -304,27 +306,10 @@ void Net::set_compserv(CompServ *cs){
         if (VERBOSE) cout<<"split into "<<devsel.size()<<" GPUs devices\n";
 
         if (!cs->isshared) {
-          if (mnets.size()){
-            // comes from a merge of nets
-            for(int j=0;j<mnets.size();j++)
-              if (!mnets[j]->isbuild){
-                mnets[j]->build(optimizer->clone(),{},{},cs,true);
-              }
-
-            cout<<"Building merge "<<endl;
-            for(int i=0;i<devsel.size();i++) {
-              vector <Net *>sm;
-              for(int j=0;j<mnets.size();j++) {
-                sm.push_back(mnets[j]->snets[i]);
-              }
-              snets.push_back(new Net(sm));
-              snets[i]->build(optimizer->clone(), losses, metrics);
-            }
-          }
-          else {
             split(devsel.size(),DEV_GPU);
-          }
         }
+
+
 #endif
         } else {
             // split on multiple FPGAs
@@ -332,7 +317,6 @@ void Net::set_compserv(CompServ *cs){
     } else {
         msg("Distributed version not yet implemented", "Net.set_compserv");
     }
-
 
     // create input and output tensors (X,Y)
     for (int i = 0; i < snets.size(); i++) {
@@ -366,14 +350,32 @@ void Net::split(int c, int todev) {
 
         // set inputs
         for (j = 0; j < lin.size(); j++)  {
-            nin.push_back(lin[j]->clone(c, bs, par, todev + devsel[i]));
-            nlayers.push_back(nin[j]);
+            Layer *n;
+            if (!lin[j]->iscloned) {
+              n=lin[j]->clone(i, bs, par, todev + devsel[i]);
+              lin[j]->iscloned=true;
+              lin[j]->clones.push_back(n);
+            }
+            else {
+              n=lin[j]->clones[i];
+            }
+            nin.push_back(n);
+            nlayers.push_back(n);
         }
         // special layers that are not input of net but has not parents
         // for instance noise generators in GANs
         for (j = 0; j < layers.size(); j++)
           if ((layers[j]->lin==0)&&(!isIn(layers[j],lin,ind))) {
-            nlayers.push_back(layers[j]->clone(c, bs, par, todev + devsel[i]));
+            Layer *n;
+            if (!layers[j]->iscloned) {
+              n=layers[j]->clone(i, bs, par, todev + devsel[i]);
+              layers[j]->iscloned=true;
+              layers[j]->clones.push_back(n);
+            }
+            else {
+              n=layers[j]->clones[i];
+            }
+            nlayers.push_back(n);
           }
         // rest of layers
         for (k = 0; k < layers.size(); k++) {
@@ -385,7 +387,16 @@ void Net::split(int c, int todev) {
                         else {par.push_back(nlayers[ind]);}
                     }
                     if (l == layers[j]->parent.size()) {
-                        nlayers.push_back(layers[j]->clone(i, bs, par, todev + devsel[i]));
+                      Layer *n;
+                      if (!layers[j]->iscloned) {
+                        n=layers[j]->clone(i, bs, par, todev + devsel[i]);
+                        layers[j]->iscloned=true;
+                        layers[j]->clones.push_back(n);
+                      }
+                      else {
+                        n=layers[j]->clones[i];
+                      }
+                      nlayers.push_back(n);
                     }
                 }
 
@@ -444,9 +455,6 @@ void Net::resize(int b)
       layers[j]->resize(batch_size);
   }
 
-
-
-
   for(i=0; i<c; i++) {
     Xs[i].clear();
     Ys[i].clear();
@@ -467,6 +475,73 @@ void Net::resize(int b)
   reset();
 
 }
+
+Layer * Net::getLayer(vlayer in)
+{
+  int i,j,k,l,ind;
+  if (lin.size()!=in.size())
+    msg("Error size of input layers set","Net:Net");
+
+  // insert in mnets
+  for(int i=0;i<in.size();i++) {
+    // The layer net
+    if (in[i]->net!=nullptr) {
+      bool found=false;
+      for(int j=0;j<mnets.size();j++)
+        if (in[i]->net==mnets[j]) found=true;
+      if (!found) mnets.push_back(in[i]->net);
+
+      // The mnets of layer net
+      for(int j=0;j<in[i]->net->mnets.size();j++) {
+        bool found=false;
+        for(int k=0;k<mnets.size();k++)
+          if (in[i]->net->mnets[j]==mnets[k]) found=true;
+        if (!found) mnets.push_back(in[i]->net->mnets[j]);
+      }
+    }
+  }
+
+
+
+  vlayer nlayers;
+  //input layers
+  for (i = 0; i < lin.size(); i++)  {
+    vlayer par;
+    Layer *n=lin[i]->share(0, 1, par);
+    nlayers.push_back(n);
+
+    in[i]->addchild(n);
+    n->addparent(in[i]);
+  }
+
+  // rest of layers
+  for (k = 0; k < layers.size(); k++) {
+      for (j = 0; j < layers.size(); j++) {
+          if (!isInorig(layers[j], nlayers, ind)) {
+              vlayer par;
+              for (l = 0; l < layers[j]->parent.size(); l++) {
+                  if (!isInorig(layers[j]->parent[l], nlayers, ind)) break;
+                  else {par.push_back(nlayers[ind]);}
+              }
+              if (l == layers[j]->parent.size()) {
+                  nlayers.push_back(layers[j]->share(0, 1, par));
+              }
+          }
+      }
+    }
+
+  vlayer nout;
+  // set outputs
+  for (j = 0; j < lout.size(); j++)
+    if (isInorig(lout[j], nlayers, ind))
+        nout.push_back(nlayers[ind]);
+
+  return nout[0];
+
+}
+
+
+
 
 bool check_rnn_forward(Layer *l) {
 

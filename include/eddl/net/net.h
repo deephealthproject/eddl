@@ -88,6 +88,7 @@ public:
 	Net(vector <Net *> vnets);
 	~Net();
 
+
 	void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize=true);
 	void toGPU(vector<int> g,int lsb,int mem);
 	void toCPU(int t);
@@ -97,6 +98,7 @@ public:
 	void split(int c, int todev);
 	Net *unroll(int inl, int outl, bool seq, bool areg);
 	void build_rnet(int inl,int outl);
+	Layer* getLayer(vlayer in);
 
 	int inNet(Layer *l);
 	void walk(Layer *l);

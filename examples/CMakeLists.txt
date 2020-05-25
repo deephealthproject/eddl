@@ -46,6 +46,8 @@ target_link_libraries(mnist_conv_dice eddl)
 add_executable(mnist_losses "nn/1_mnist/14_mnist_losses.cpp")
 target_link_libraries(mnist_losses eddl)
 
+add_executable(mnist_siamese "nn/1_mnist/15_mnist_siamese.cpp")
+target_link_libraries(mnist_siamese eddl)
 
 
 # EXAMPLES: CIFAR10 ****************************************************

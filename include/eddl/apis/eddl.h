@@ -63,6 +63,9 @@ typedef NetLoss * metric;
     */
     model Model(vlayer in, vlayer out);
     model Model(vector<Net*> vnets);
+
+    layer getLayer(Net *net, vlayer in);
+
     void build(model net, optimizer o=nullptr, CompServ *cs=nullptr, bool init_weigths=true);
 
     /**

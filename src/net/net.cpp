@@ -113,7 +113,6 @@ Net::Net(vector <Net *> vnets):Net()
 
   mnets=vnets;
 
-
   for(int i=0;i<vnets[0]->lin.size();i++)
     lin.push_back(vnets[0]->lin[i]);
 
@@ -152,6 +151,8 @@ Net::Net(vector <Net *> vnets):Net()
 
 
 }
+
+
 
 
 Net::~Net()

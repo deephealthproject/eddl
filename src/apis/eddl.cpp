@@ -39,6 +39,11 @@ namespace eddl {
       return new Net(vnets);
     }
 
+    layer getLayer(model net, vlayer in)
+    {
+      return net->getLayer(in);
+    }
+
     void build(model net, optimizer o, CompServ *cs, bool init_weights){
         // Assign default computing service
         if (cs== nullptr){

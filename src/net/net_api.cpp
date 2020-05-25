@@ -872,7 +872,6 @@ vtensor Net::predict(vtensor tin) {
 
   forward(tin);
 
-  cout<<"OK\n";
   for (int i = 0; i < lout.size(); i++) {
     collectTensor(lout[i],"output");
     out.push_back(lout[i]->output->clone());
