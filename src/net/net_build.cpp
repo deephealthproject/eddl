@@ -367,16 +367,16 @@ void Net::split(int c, int todev) {
         for (j = 0; j < layers.size(); j++)
           if ((layers[j]->lin==0)&&(!isIn(layers[j],lin,ind))) {
             Layer *n;
-            if (lin[j]->isshared) {
-              n=lin[j]->orig->clones[i]->share(0, 1, par);;
+            if (layers[j]->isshared) {
+              n=layers[j]->orig->clones[i]->share(0, 1, par);;
             }
-            else if (lin[j]->iscloned) {
-              n=lin[j]->clones[i];
+            else if (layers[j]->iscloned) {
+              n=layers[j]->clones[i];
             }
             else {
-              n=lin[j]->clone(i, bs, par, todev + devsel[i]);
-              lin[j]->iscloned=true;
-              lin[j]->clones.push_back(n);
+              n=layers[j]->clone(i, bs, par, todev + devsel[i]);
+              layers[j]->iscloned=true;
+              layers[j]->clones.push_back(n);
             }
             nlayers.push_back(n);
           }
@@ -391,16 +391,16 @@ void Net::split(int c, int todev) {
                     }
                     if (l == layers[j]->parent.size()) {
                       Layer *n;
-                      if (lin[j]->isshared) {
-                        n=lin[j]->orig->clones[i]->share(0, 1, par);;
+                      if (layers[j]->isshared) {
+                        n=layers[j]->orig->clones[i]->share(0, 1, par);;
                       }
-                      else if (lin[j]->iscloned) {
-                        n=lin[j]->clones[i];
+                      else if (layers[j]->iscloned) {
+                        n=layers[j]->clones[i];
                       }
                       else {
-                        n=lin[j]->clone(i, bs, par, todev + devsel[i]);
-                        lin[j]->iscloned=true;
-                        lin[j]->clones.push_back(n);
+                        n=layers[j]->clone(i, bs, par, todev + devsel[i]);
+                        layers[j]->iscloned=true;
+                        layers[j]->clones.push_back(n);
                       }
                       nlayers.push_back(n);
                     }
