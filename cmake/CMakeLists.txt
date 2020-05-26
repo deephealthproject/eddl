@@ -1,8 +1,12 @@
 #cmake_minimum_required(VERSION 3.9.2)
 include(ExternalProject)
 
+if(POLICY CMP0074)
+	cmake_policy(SET CMP0074 NEW) # Suppress warning for zlib_ROOT variable
+endif()
+
 set_property (DIRECTORY PROPERTY EP_BASE third_party)
-SET(EP_BASE_DIR "${CMAKE_CURRENT_BINARY_DIR}/third_party" PARENT_SCOPE)  # TODO: Why define this in the parent scope when we only care about certain variables?
+SET(EP_BASE_DIR "${CMAKE_CURRENT_BINARY_DIR}/third_party" PARENT_SCOPE)
 SET(EP_BASE_DIR "${CMAKE_CURRENT_BINARY_DIR}/third_party")
 
 # Set parallelization
@@ -124,7 +128,11 @@ else()
     SET(ZLIB_ROOT "${EP_BASE_DIR}/zlib" PARENT_SCOPE)
     SET(ZLIB_INCLUDE_DIRS "${EP_BASE_DIR}/zlib/include" PARENT_SCOPE)
     SET(ZLIB_LIBRARIES_DIRS "${EP_BASE_DIR}/zlib/lib" PARENT_SCOPE)
-    SET(ZLIB_LIBRARIES "z" PARENT_SCOPE)
+    if(WIN32)
+        SET(ZLIB_LIBRARIES "${ZLIB_LIBRARIES_DIRS}/zlibstatic.lib" PARENT_SCOPE)
+    elseif(UNIX)
+        SET(ZLIB_LIBRARIES "${ZLIB_LIBRARIES_DIRS}/libz.a" PARENT_SCOPE)
+    endif()
 endif()
 message(STATUS "Subproject: ZLIB...DONE")
 
@@ -150,8 +158,13 @@ else()
     set(Protobuf_ROOT "${EP_BASE_DIR}/protobuf" PARENT_SCOPE)
     set(Protobuf_INCLUDE_DIRS "${EP_BASE_DIR}/protobuf/include" PARENT_SCOPE)
     set(Protobuf_LIBRARIES_DIRS "${EP_BASE_DIR}/protobuf/lib" PARENT_SCOPE)
-    set(Protobuf_LIBRARIES "protobuf" PARENT_SCOPE)
+    # set(Protobuf_LIBRARIES "protobuf" PARENT_SCOPE)
     set(Protobuf_PROTOC_EXECUTABLE "${EP_BASE_DIR}/protobuf/bin/protoc" PARENT_SCOPE)
+    if(WIN32)
+        SET(Protobuf_LIBRARIES "${Protobuf_LIBRARIES_DIRS}/libprotobuf.lib" PARENT_SCOPE)
+    elseif(UNIX)
+        SET(Protobuf_LIBRARIES "${Protobuf_LIBRARIES_DIRS}/libprotobuf.a" PARENT_SCOPE)
+    endif()
 endif()
 message(STATUS "Subproject: Protobuf...DONE")
 

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.9.2)
 project(protobuf-download NONE)
 
 # Set base dir
-SET(EP_BASE_DIR @CMAKE_CURRENT_BINARY_DIR@/third_party)
+SET(EP_BASE_DIR @EP_BASE_DIR@)
 SET(BUILD_SHARED_LIBS @BUILD_SHARED_LIBS@)
 
 SET(Protobuf_MSVC_STATIC_RUNTIME OFF)
@@ -23,21 +23,7 @@ ExternalProject_Add(protobuf
         -Dprotobuf_BUILD_TESTS:BOOL=OFF
         -Dprotobuf_WITH_ZLIB:BOOL=OFF
         -Dprotobuf_MSVC_STATIC_RUNTIME:BOOL=${Protobuf_MSVC_STATIC_RUNTIME}
-        -Dprotobuf_BUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
+        -Dprotobuf_BUILD_SHARED_LIBS:BOOL=OFF
         -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
         -DCMAKE_INSTALL_PREFIX:PATH=${EP_BASE_DIR}/protobuf
     )
-# ExternalProject_Add(protobuf
-    # PREFIX  protobuf
-    # URL  https://github.com/protocolbuffers/protobuf/releases/download/v3.11.4/protobuf-cpp-3.11.4.tar.gz
-    # SOURCE_DIR  "${EP_BASE_DIR}/protobuf-src"
-    # BINARY_DIR  "${EP_BASE_DIR}/protobuf-build"
-    # SOURCE_SUBDIR cmake
-    # CMAKE_CACHE_ARGS
-        # -Dprotobuf_BUILD_TESTS:BOOL=OFF
-        # -Dprotobuf_WITH_ZLIB:BOOL=OFF
-        # -Dprotobuf_MSVC_STATIC_RUNTIME:BOOL=${Protobuf_MSVC_STATIC_RUNTIME}
-        # -Dprotobuf_BUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
-        # -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
-        # -DCMAKE_INSTALL_PREFIX:PATH=${EP_BASE_DIR}/protobuf
-# )
