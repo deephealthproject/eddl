@@ -17,7 +17,7 @@ option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libr
 option(BUILD_COVERAGE "Flag to compile for coverage information" OFF)
 
 if(WIN32)
-    option(BUILD_SHARED_LIBS OFF) # Prefer lib over dll in windows
+    option(BUILD_SHARED_LIBS "" OFF) # Prefer lib over dll in windows
 endif()
 
 ###########################################################################
