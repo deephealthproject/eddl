@@ -96,8 +96,8 @@ else()
                 Use '-D BUILD_SUPERBUILD=ON', or try with a different ZLIB installation to fix this problem.")
     endif()
 endif()
-# target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIRS}>)
-target_include_directories(${PROJECT_NAME} PUBLIC ${ZLIB_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIRS}>)
+# target_include_directories(${PROJECT_NAME} PUBLIC ${ZLIB_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${ZLIB_LIBRARIES})
 
 
@@ -120,7 +120,8 @@ if(BUILD_PROTOBUF)
                     Alternatively, you can disable it with '-D BUILD_PROTOBUF=OFF")
         endif()
     endif()
-    target_include_directories(${PROJECT_NAME} PUBLIC ${Protobuf_INCLUDE_DIRS})
+    # target_include_directories(${PROJECT_NAME} PRIVATE ${Protobuf_INCLUDE_DIRS})
+    target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
     # target_link_directories(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES_DIRS})
     target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARIES})
     
@@ -147,7 +148,7 @@ if(BUILD_PROTOBUF)
         # target_include_directories(${PROJECT_NAME} PUBLIC ${Protobuf_INCLUDE_DIRS})  # TODO: Why public? I don't want them to be public
         # target_link_directories(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARIES_DIRS})
         # target_link_libraries(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES})
-    endif()
+    # endif()
 
     # Create "onnx.pb.cc" and "onnx.pb.h" files (from serialization/onnx)
     # Equivalent to: /usr/local/bin/protoc --cpp_out . onnx.proto
