@@ -164,7 +164,6 @@ Layer *LActivation::share(int c, int bs, vector<Layer *> p){
 
 Layer *LActivation::clone(int c, int bs, vector<Layer *> p, int todev){
 
-
     LActivation *n = new LActivation(p[0], this->act, this->params,  "clone_" + name, todev, this->mem_level);
     n->orig = this;
     n->delta_bp = delta_bp;

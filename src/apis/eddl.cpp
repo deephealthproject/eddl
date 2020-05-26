@@ -39,6 +39,11 @@ namespace eddl {
       return new Net(vnets);
     }
 
+    void setName(model m, string name)
+    {
+      m->name=name;
+    }
+
     layer getLayer(model net, vlayer in)
     {
       return net->getLayer(in);

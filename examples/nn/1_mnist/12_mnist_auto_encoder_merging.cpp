@@ -58,11 +58,11 @@ int main(int argc, char **argv) {
     // Build model
     build(net,
           adam(0.0001), // Optimizer
-          {"dice"}, // Losses
+          {"mse"}, // Losses
           {"dice"}, // Metrics
-          //CS_GPU({1}) // one GPU
+          CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          CS_CPU()
+          //CS_CPU()
     );
     summary(net);
     plot(net, "model.pdf");

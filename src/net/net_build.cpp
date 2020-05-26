@@ -176,12 +176,19 @@ void Net::toGPU(vector<int> g,int lsb,int mem){
 void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize){
 	onnx_pretrained = !initialize; // For controlling when to copy the weights to the snet
 
-  // build first layers from their respective nets if any
-  for(int j=0;j<mnets.size();j++)
-    if (!mnets[j]->isbuild) {
-      mnets[j]->build(opt->clone(),{},{},cs,true);
-    }
+  if (isbuild) return;
 
+
+  for(int i=0;i<layers.size();i++) {
+    if ((layers[i]->orig!=nullptr)&&(layers[i]->orig->net!=this)) {
+      layers[i]->orig->net->build(opt->clone(),{},{},cs,true);
+    }
+    else if (layers[i]->net!=this) {
+      layers[i]->net->build(opt->clone(),{},{},cs,true);
+    }
+  }
+
+  cout<<"Building "<<name<<endl;
 
   build(opt, lo, me, initialize);
 
@@ -337,6 +344,7 @@ void Net::split(int c, int todev) {
     int bs=1;
     int m=0;
 
+    //clone net into CompServices
     for (i = 0; i < c; i++) {
         if (VERBOSE) cout << "Split " << i << "\n";
 
@@ -345,77 +353,43 @@ void Net::split(int c, int todev) {
         nout.clear();
         if (i == c - 1) bs += m;
 
-        // set inputs
-        for (j = 0; j < lin.size(); j++)  {
-            Layer *n;
-            if (lin[j]->isshared) {
-              n=lin[j]->orig->clones[i]->share(0, 1, par);;
-            }
-            else if (lin[j]->iscloned) {
-              n=lin[j]->clones[i];
-            }
-            else {
-              n=lin[j]->clone(i, bs, par, todev + devsel[i]);
-              lin[j]->iscloned=true;
-              lin[j]->clones.push_back(n);
-            }
-            nin.push_back(n);
-            nlayers.push_back(n);
-        }
-        // special layers that are not input of net but has not parents
-        // for instance noise generators in GANs
-        for (j = 0; j < layers.size(); j++)
-          if ((layers[j]->lin==0)&&(!isIn(layers[j],lin,ind))) {
-            Layer *n;
-            if (layers[j]->isshared) {
-              n=layers[j]->orig->clones[i]->share(0, 1, par);;
-            }
-            else if (layers[j]->iscloned) {
-              n=layers[j]->clones[i];
-            }
-            else {
-              n=layers[j]->clone(i, bs, par, todev + devsel[i]);
-              layers[j]->iscloned=true;
-              layers[j]->clones.push_back(n);
-            }
-            nlayers.push_back(n);
-          }
-        // rest of layers
-        for (k = 0; k < layers.size(); k++) {
-            for (j = 0; j < layers.size(); j++) {
-                if (!isInorig(layers[j], nlayers, ind)) {
-                    vlayer par;
-                    for (l = 0; l < layers[j]->parent.size(); l++) {
-                        if (!isInorig(layers[j]->parent[l], nlayers, ind)) break;
-                        else {par.push_back(nlayers[ind]);}
-                    }
-                    if (l == layers[j]->parent.size()) {
-                      Layer *n;
-                      if (layers[j]->isshared) {
-                        n=layers[j]->orig->clones[i]->share(0, 1, par);;
-                      }
-                      else if (layers[j]->iscloned) {
-                        n=layers[j]->clones[i];
-                      }
-                      else {
-                        n=layers[j]->clone(i, bs, par, todev + devsel[i]);
-                        layers[j]->iscloned=true;
-                        layers[j]->clones.push_back(n);
-                      }
-                      nlayers.push_back(n);
-                    }
-                }
-            }
-          }
+        //clone layers into CompServices
+        for(int j=0;j<vfts.size();j++) {
+          if (!isInorig(vfts[j], nlayers, ind)) {
 
-        // set outputs
-        for (j = 0; j < lout.size(); j++)
-            if (isInorig(lout[j], nlayers, ind))
-                nout.push_back(nlayers[ind]);
+              vlayer par;
+              for (l = 0; l < vfts[j]->parent.size(); l++)
+                  if (isInorig(vfts[j]->parent[l], nlayers, ind))
+                    par.push_back(nlayers[ind]);
+
+              Layer *n;
+              if (vfts[j]->isshared) {
+                Layer *on;
+                if (vfts[j]->orig->clones.size()>i) {
+                  on=vfts[j]->orig->clones[i];
+                }
+                else {
+                  // should have been cloned previously in build
+                  msg("error","build");
+                }
+                n=on->share(0,1,par);
+                n->name="share_"+on->name;
+                n->orig=vfts[j];
+              }
+              else {
+                n=vfts[j]->clone(i, bs, par, todev + devsel[i]);
+                n->name="clone_"+i+vfts[j]->name;
+                vfts[j]->clones.push_back(n);
+              }
+
+              nlayers.push_back(n);
+              if (isIn(vfts[j],lin,ind)) nin.push_back(n);
+              if (isIn(vfts[j],lout,ind)) nout.push_back(n);
+          }
+        }
 
         // create twin net on CS device
         snets.push_back(new Net(nin, nout));
-
         // build new net
         char cname[100];
         sprintf(cname,"snet_%d",i);
@@ -428,7 +402,6 @@ void Net::split(int c, int todev) {
                     layers[j]->copy(snets[i]->layers[j]);
         }
         snets[i]->plot("smodel.pdf","LR");
-
     }
 }
 
@@ -487,32 +460,14 @@ Layer * Net::getLayer(vlayer in)
   if (lin.size()!=in.size())
     msg("Error size of input layers set","Net:Net");
 
-  // insert in mnets
-  for(int i=0;i<in.size();i++) {
-    // The layer net
-    if (in[i]->net!=nullptr) {
-      bool found=false;
-      for(int j=0;j<mnets.size();j++)
-        if (in[i]->net==mnets[j]) found=true;
-      if (!found) mnets.push_back(in[i]->net);
-
-      // The mnets of layer net
-      for(int j=0;j<in[i]->net->mnets.size();j++) {
-        bool found=false;
-        for(int k=0;k<mnets.size();k++)
-          if (in[i]->net->mnets[j]==mnets[k]) found=true;
-        if (!found) mnets.push_back(in[i]->net->mnets[j]);
-      }
-    }
-  }
-
-
 
   vlayer nlayers;
   //input layers
   for (i = 0; i < lin.size(); i++)  {
     vlayer par;
     Layer *n=lin[i]->share(0, 1, par);
+
+    n->name=in[0]->name+n->name;
     nlayers.push_back(n);
 
     in[i]->addchild(n);
@@ -529,7 +484,11 @@ Layer * Net::getLayer(vlayer in)
                   else {par.push_back(nlayers[ind]);}
               }
               if (l == layers[j]->parent.size()) {
-                  nlayers.push_back(layers[j]->share(0, 1, par));
+                  Layer *n;
+                  n=layers[j]->share(0, 1, par);
+                  nlayers.push_back(n);
+                  n->name=in[0]->name+n->name;
+                  n->isshared=true;
               }
           }
       }

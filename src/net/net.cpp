@@ -109,9 +109,9 @@ Net::Net(vector <Net *> vnets):Net()
   int vsize=vnets.size();
   int ind;
 
-  if (!vsize) return;
-
-  mnets=vnets;
+  if (vsize<2) {
+    msg("Use at least two networks to concatenate","Net::Net");
+  }
 
   for(int i=0;i<vnets[0]->lin.size();i++)
     lin.push_back(vnets[0]->lin[i]);
@@ -133,8 +133,9 @@ Net::Net(vector <Net *> vnets):Net()
   }
 
 
-  for(int i=0;i<vnets[vsize-1]->lout.size();i++)
+  for(int i=0;i<vnets[vsize-1]->lout.size();i++) 
     lout.push_back(vnets[vsize-1]->lout[i]);
+
 
   for (int i = 0; i < lout.size(); i++) {
     total_loss.push_back(0.0);
@@ -226,6 +227,9 @@ void Net::walk_back(Layer *l) {
 string Net::summary() {
     std::stringstream ss;
     ss << "---------------------------------------------------------" << endl;
+    ss << name << endl;
+    ss << "---------------------------------------------------------" << endl;
+
     for (auto & l : vfts) {
         // Get input/output shapes
         vector<int> ishape(l->input->shape);

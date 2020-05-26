@@ -41,17 +41,18 @@ int main(int argc, char **argv) {
     l = Activation(Dense(l, 128), "relu");
 
     model enc=Model({in},{l});
+    setName(enc,"enc");
 
     in = Input({128});
     layer out = Activation(Dense(in, 64), "relu");
 
     model dec=Model({in},{out});
+    setName(dec,"dec");
 
     model base = Model({enc,dec});
-
+    setName(base,"base");
 
     plot(base, "base.pdf");
-
 
     //////
     layer out1 = getLayer(base,{in1});
@@ -62,17 +63,16 @@ int main(int argc, char **argv) {
     layer outs=Sigmoid(Dense(l,784));
 
     model siamese=Model({in1,in2},{outs});
-
-
+    setName(siamese,"siamese");
 
     // Build model
     build(siamese,
           adam(0.0001), // Optimizer
           {"dice"}, // Losses
           {"dice"}, // Metrics
-          //CS_GPU({1}) // one GPU
+          CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          CS_CPU()
+          //CS_CPU()
     );
     summary(siamese);
     plot(siamese, "model.pdf");
