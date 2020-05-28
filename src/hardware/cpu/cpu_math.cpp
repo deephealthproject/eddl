@@ -24,7 +24,7 @@ void cpu_acos(Tensor *A, Tensor *B){
 
 void cpu_add(Tensor *A, Tensor *B, float v) {
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] += v;
+    for (int i = 0; i < A->size; ++i) B->ptr[i] = A->ptr[i] + v;
 }
 
 
@@ -50,6 +50,8 @@ void cpu_clamp(Tensor *A, Tensor *B, float min, float max){
             B->ptr[i] = min;
         } else if(A->ptr[i] > max){
             B->ptr[i] = max;
+        }else {
+            B[i] = A[i];
         }
     }
 }
@@ -108,7 +110,7 @@ void cpu_mod(Tensor *A, Tensor *B, float v){
 
 void cpu_mult(Tensor *A, Tensor *B, float v) {
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] *= v;
+    for (int i = 0; i < A->size; ++i) B->ptr[i] = A->ptr[i] * v;
 }
 
 void cpu_normalize(Tensor *A, Tensor *B, float min, float max){
@@ -181,7 +183,7 @@ void cpu_sqr(Tensor *A, Tensor *B) {
     // pow(x, 2) == x*x  To know more, read comments in pow_'s function
     // speed: 0.000497s
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] *= A->ptr[i];
+    for (int i = 0; i < A->size; ++i) B->ptr[i] = A->ptr[i] * A->ptr[i];
 }
 
 void cpu_sqrt(Tensor *A, Tensor *B) {

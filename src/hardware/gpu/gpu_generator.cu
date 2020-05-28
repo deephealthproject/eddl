@@ -73,8 +73,8 @@ void gpu_rand_signed_uniform(Tensor *A, float v){
 
   check_cuda(cudaDeviceSynchronize(),"gpu_rand_signed_uniform");
 
-  gpu_mult_(A, 2*v);
-  gpu_add_(A, -v);
+  A->mult_(2*v);
+  A->sub_(v);
 
   check_cuda(cudaDeviceSynchronize(),"gpu_rand_signed_uniform");
 

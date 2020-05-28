@@ -14,7 +14,6 @@
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
-#include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
 using namespace std;
@@ -390,7 +389,7 @@ Tensor* Tensor::concat(const vector<Tensor*> A, unsigned int axis, Tensor* outpu
 #ifdef cGPU
     else if (output->isGPU())
       {
-        gpu_concat(output, t, axis, false);
+        gpu_concat(output, A, axis, false);
       }
 #endif
 #ifdef cFPGA

@@ -18,7 +18,6 @@
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
-#include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
 
@@ -45,7 +44,7 @@ void Tensor::shift(Tensor *A, Tensor *B, vector<int> shift, WrappingMode mode, f
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_shift(A, B, std::move(shift), mode, constant);
+        gpu_shift(A, B, std::move(shift), mode, cval);
       }
 #endif
 #ifdef cFPGA

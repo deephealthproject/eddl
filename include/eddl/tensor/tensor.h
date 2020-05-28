@@ -869,7 +869,7 @@ public:
     static void tile(Tensor *A, Tensor *B);
 
     // TODO: REFACTOR!!! ************************
-    static void transpose(Tensor *A, Tensor *B, vector<int> dims);
+    static void transpose(Tensor *A, Tensor *B, vector<int> dims);  // TODO: Should be replaced by permute
     static void add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC); // C = a*A+b*B
     static void inc(Tensor *A, Tensor *B);
     static void el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
@@ -878,8 +878,8 @@ public:
     static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
     static void sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
     static void reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
-    static int sameShape(Tensor *A, Tensor *B);
-    static int equivalent(Tensor *A, Tensor *B, float epsilon=1e-3);
+    static int sameShape(Tensor *A, Tensor *B);  // Previously named "Tensor::eqsize"
+    static int equivalent(Tensor *A, Tensor *B, float epsilon=1e-3);  // Previously named "Tensor::equal"
 
 };
 

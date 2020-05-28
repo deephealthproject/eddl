@@ -8,8 +8,8 @@
 */
 
 
-#ifndef EDDL_GPU_NN_KERNELS_H
-#define EDDL_GPU_NN_KERNELS_H
+#ifndef EDDL_GPU_TENSOR_NN_KERNELS_H
+#define EDDL_GPU_TENSOR_NN_KERNELS_H
 
 
 #include <cuda.h>

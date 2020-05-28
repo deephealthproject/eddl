@@ -7,8 +7,8 @@
 * All rights reserved
 */
 
-#ifndef EDDL_GPU_NN_H
-#define EDDL_GPU_NN_H
+#ifndef EDDL_GPU_TENSOR_NN_H
+#define EDDL_GPU_TENSOR_NN_H
 
 #include <cuda.h>
 #include <curand.h>
@@ -88,4 +88,4 @@ void gpu_permute_channels_last(Tensor *A,Tensor *B);
 void gpu_permute_batch_first(Tensor *A,Tensor *B);
 void gpu_permute_batch_last(Tensor *A,Tensor *B);
 
-#endif //EDDL_GPU_NN_H
+#endif //EDDL_GPU_TENSOR_NN_H

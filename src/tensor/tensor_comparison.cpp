@@ -12,7 +12,6 @@
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
-#include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
 using namespace std;
@@ -420,7 +419,7 @@ int Tensor::sameShape(Tensor *A, Tensor *B) {
 
 int Tensor::equivalent(Tensor *A, Tensor *B, float epsilon) {
     // Equal device
-    if (A->device != B->device) msg("Tensors in different devices", "Tensor::equal");
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::equivalent");
 
     // Equal ndims and shapes
     if (!sameShape(A, B)) return 0;
@@ -432,7 +431,7 @@ int Tensor::equivalent(Tensor *A, Tensor *B, float epsilon) {
 #ifdef cGPU
     else if (A->isGPU())
           {
-            msg("Equal only for CPU Tensors", "Tensor::equal");
+            msg("Equal only for CPU Tensors", "Tensor::equivalent");
           }
 #endif
 #ifdef cFPGA

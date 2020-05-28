@@ -15,9 +15,7 @@
 #include "eddl/hardware/cpu/cpu_tensor.h"
 
 #ifdef cGPU
-#include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
-#include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
 
@@ -780,7 +778,7 @@ void Tensor::normalize(Tensor *A, Tensor *B, float min, float max){
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
       {
-        cpu_normalize(A, B, min, max);
+        gpu_normalize(A, B, min, max);
       }
 #endif
 #ifdef cFPGA
@@ -840,7 +838,7 @@ void Tensor::powb(Tensor *A, Tensor *B, float base){
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
       {
-        cpu_powb(A, B, base);
+        gpu_powb(A, B, base);
       }
 #endif
 #ifdef cFPGA
@@ -1463,7 +1461,7 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_addc(scA,A,scB,B,C,incC);
+        gpu_add(scA, A, scB, B, C, incC);
       }
 #endif
 #ifdef cFPGA
@@ -1487,7 +1485,7 @@ void Tensor::inc(Tensor *A, Tensor *B) {
         cpu_inc(A, B);
     }
 #ifdef cGPU
-        else if ((A->isGPU())&&(B->isGPU())) {
+    else if ((A->isGPU())&&(B->isGPU())) {
         Tensor::add(1,A,1,B,B,0);
     }
     else if (((A->isCPU())&&(B->isGPU()))||((A->isGPU())&&(B->isCPU())))

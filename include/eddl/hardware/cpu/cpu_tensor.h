@@ -31,13 +31,10 @@ void cpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 
-void cpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,bool mask_zeros=false);
-void cpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0,bool mask_zeros=false);
+void cpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,bool mask_zeros=false); // TODO: Legacy
+void cpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0,bool mask_zeros=false); // TODO: Legacy
 
 void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative);
-
-void cpu_repeat(Tensor *A, Tensor *B, vector<int> size);
-void cpu_d_repeat(Tensor *D, Tensor *A, vector<int> size);
 
 // CPU: Create
 void cpu_range(Tensor *A, float min, float step);
