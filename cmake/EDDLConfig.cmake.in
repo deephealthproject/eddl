@@ -55,7 +55,6 @@ if(USE_PROTOBUF)
     endif()
 endif()
 
-
 include("${CMAKE_CURRENT_LIST_DIR}/EDDLTargets.cmake")
 
 # Set default paths
