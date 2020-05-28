@@ -88,6 +88,9 @@ target_link_libraries(sentiment_rnn eddl)
 add_executable(sentiment_lstm "nn/4_NLP/2_sentiment_lstm.cpp")
 target_link_libraries(sentiment_lstm eddl)
 
+add_executable(machine_translation "nn/4_NLP/3_machine_translation.cpp")
+target_link_libraries(machine_translation eddl)
+
 
 
 # EXAMPLES: Tensor ****************************************************

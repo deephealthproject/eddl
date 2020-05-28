@@ -44,6 +44,7 @@ public:
     bool isshared;
     bool iscloned;
     bool isnorm;
+    bool isdecoder;
 
 
     vector<Tensor *> params;

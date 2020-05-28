@@ -939,6 +939,23 @@ namespace eddl {
         return new LLSTM({parent}, units, mask_zeros, bidirectional, name, DEV_CPU, 0);
     }
 
+    layer Decoder(layer l, int outvs) {
+      layer p=l->parent[0];
+      l->parent[0]->detach(l);
+
+      layer cps=new LCopyStates({p},"",DEV_CPU, 0);
+      cps->isdecoder=true;
+
+      layer in=Input({outvs});
+      in->name="InputDec";
+      layer n=l->clone(0,1,{in,cps},DEV_CPU);
+      n->name=l->name;
+      n->isdecoder=true;
+
+      delete l;
+      return n;
+    }
+
 
 
     //////////////////////////////
@@ -1148,6 +1165,10 @@ namespace eddl {
 
     void download_imdb_2000(){
       download_dataset("imdb_2000","bin",{"4m0h8ep53mixq6x","zekpjclm58tdevk","1bgdr8mz1lqkhgi","6cwob77654lruwq"});
+    }
+
+    void download_eutrans(){
+      download_dataset("eutrans","bin",{"4m0h8ep53mixq6x","zekpjclm58tdevk","1bgdr8mz1lqkhgi","6cwob77654lruwq"});
     }
 
     void download_drive(){

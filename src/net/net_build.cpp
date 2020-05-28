@@ -639,6 +639,7 @@ void Net::build_rnet(int inl,int outl) {
    printf("Recurrent net %d time steps, %d outputs\n",inl,outl);
 
    // Create an unrolled version on CPU
+   
    rnet=unroll(inl,outl,false,false);
 
    rnet->plot("rmodel.pdf","LR");
