@@ -1468,6 +1468,7 @@ typedef NetLoss * metric;
     */
     layer LSTM(layer parent, int units, bool mask_zeros=false, bool bidirectional = false, string name = "");
 
+    layer Decoder(layer l, int ov);
 
     // Layers Methods
     void set_trainable(layer l, bool val);
@@ -1615,6 +1616,16 @@ typedef NetLoss * metric;
       *  @return     (void) The binary files of IMDB
     */
     void download_imdb_2000();
+
+
+    /**
+      *  @brief Downloads EuTrans Dataset.
+      *
+      *  @see
+      *
+      *  @return     (void) The binary files of EuTrans
+    */
+    void download_eutrans();
 
 
 }

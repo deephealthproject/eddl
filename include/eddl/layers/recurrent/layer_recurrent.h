@@ -24,6 +24,26 @@ using namespace std;
 
 
 /// RNN Layer
+class LCopyStates : public MLayer {
+public:
+    static int total_layers;
+
+    LCopyStates(vector<Layer *> in, string name, int dev, int mem);
+
+    Layer *share(int c, int bs, vector<Layer *> p) override;
+
+    Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
+
+    void forward() override;
+
+    void backward() override;
+
+    void resize(int batch) override;
+
+    string plot(int c) override;
+};
+
+/// RNN Layer
 class LRNN : public MLayer {
 public:
     int units;
@@ -31,6 +51,7 @@ public:
     bool bidirectional;
     static int total_layers;
     string activation;
+    Layer *cps;
 
     Tensor *preoutput;
 
@@ -42,6 +63,7 @@ public:
     Tensor *Wy;
     Tensor *gWy;
     Tensor *biasy;
+
 
     LRNN(vector<Layer *> in, int units, string activation, bool use_bias, bool bidirectional, string name, int dev, int mem);
 
@@ -64,6 +86,7 @@ public:
     bool use_bias;
     bool bidirectional;
     bool mask_zeros;
+    Layer *cps;
 
     static int total_layers;
 
@@ -111,5 +134,6 @@ public:
 
     string plot(int c) override;
 };
+
 
 #endif //EDDL_LAYER_RECURRENT_H

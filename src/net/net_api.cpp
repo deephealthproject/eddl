@@ -250,6 +250,10 @@ void Net::forward_recurrent(vector<Tensor*> tin)
 
   outl=1;
 
+  bool isdecoder=false;
+  for(int i=0;i<layers.size();i++)
+    if (layers[i]->isdecoder) isdecoder=true;
+
   build_rnet(inl,outl);
 
   // prepare data for unroll net
@@ -674,11 +678,19 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
   if (xt[i]->shape[0]!=inl)
   msg("Input tensors with different time steps","fit_recurrent");
 
-  outl=1;
+  bool isdecoder=false;
+  for(int i=0;i<layers.size();i++)
+    if (layers[i]->isdecoder) isdecoder=true;
 
+  if (!isdecoder) outl=1;
+  else {
+    vector<Tensor *>yt;
+    for(i=0;i<tout.size();i++)
+      yt.push_back(Tensor::permute(tout[i],{1,0,2})); // time x batch x dim
+    outl=yt[0]->shape[0];
+  }
 
   build_rnet(inl,outl);
-
 
 
   // prepare data for unroll net
@@ -688,9 +700,9 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
     offset=xt[i]->size/xt[i]->shape[0];
     vector<int>shape;
     for(j=1;j<xt[i]->ndim;j++)
-    shape.push_back(xt[i]->shape[j]);
+      shape.push_back(xt[i]->shape[j]);
     for(j=0;j<inl;j++)
-    tinr.push_back(new Tensor(shape,xt[i]->ptr+(j*offset)));
+      tinr.push_back(new Tensor(shape,xt[i]->ptr+(j*offset)));
   }
 
   rnet->fit(tinr,tout,batch,epochs);
