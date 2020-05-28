@@ -6,8 +6,7 @@ Constructor
 ------------
 
 
-.. doxygenfunction:: eddl::Model(vlayer, vlayer)
-
+.. doxygenfunction:: eddl::Model
 
 Example:
 
@@ -26,6 +25,8 @@ Example:
 Build
 ----------
 
+
+.. doxygenfunction:: eddl::build(model, optimizer, CompServ *, bool)
 
 .. doxygenfunction:: eddl::build(model, optimizer, const vector<string>&, const vector<string>&, CompServ *, bool)
 
