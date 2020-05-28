@@ -345,7 +345,23 @@ public:
     */
     static Tensor* identity(int rows, int dev=DEV_CPU);
     static Tensor* diag(Tensor* A, int k=0, int dev=DEV_CPU);
+
+    /**
+      *  @brief Initialise a tensor with random values following an uniform distribution.
+      *
+      *  @param shape  Shape of the tensor to create.
+      *  @param dev    Device to use. The possible values are: ``DEV_CPU`` and ``DEV_GPU``.
+      *  @return     Tensor of the specified shape filled
+    */
     static Tensor* randu(const vector<int> &shape, int dev=DEV_CPU);
+
+    /**
+      *  @brief Initialise a tensor with random values following an normal distribution.
+      *
+      *  @param shape  Shape of the tensor to create.
+      *  @param dev    Device to use. The possible values are: ``DEV_CPU`` and ``DEV_GPU``.
+      *  @return     Tensor of the specified shape filled
+    */
     static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
     // ***** Transformations *****************************
@@ -380,7 +396,22 @@ public:
     void add_(float v);
     void add_(Tensor *A);
     static Tensor* add(Tensor *A, Tensor *B);
+    /**
+    *   @brief Weighted sum of tensors
+    *   @param scA. Weight of tensor A
+    *   @param A. A tensor
+    *   @param scB. Weight of tensor B
+    *   @param B. Another tensor
+    *   @param C. The tensor where to save the sum
+    *   @param incC. If 0 C=scA*A+scB*B, if 1 C+=scA*A+scB*B.
+    */
     static void add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
+    /**
+    *   @brief Sum of tensors
+    *   @param A. A tensor
+    *   @param B. Another tensor
+    *   @param C. The tensor where to save the sum
+    */
     static void add(Tensor *A, Tensor *B, Tensor *C);
     static void inc(Tensor *A, Tensor *B);
 
