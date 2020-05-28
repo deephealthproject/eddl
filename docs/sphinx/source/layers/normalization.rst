@@ -4,7 +4,8 @@ Normalization
 BatchNormalization
 ------------------
 
-.. doxygenfunction:: BatchNormalization
+.. doxygenfunction:: BatchNormalization(layer, bool, float, float, string)
+
 
 Example:
 
@@ -17,10 +18,11 @@ Example:
    ...
 
 
+
 LayerNormalization
 ------------------
 
-.. doxygenfunction:: LayerNormalization
+.. doxygenfunction:: LayerNormalization(layer, bool, float, string)
 
 Example:
 
