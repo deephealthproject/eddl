@@ -151,7 +151,6 @@ void Tensor::toCPU(int dev){
 #ifdef cGPU
     if (isGPU())
     {
-        this->device = dev;
 
         // Reserve memory for CPU
         float *cpu_ptr = get_fmem(size, "Tensor::toCPU");
@@ -163,6 +162,7 @@ void Tensor::toCPU(int dev){
         this->deleteData();
 
         // Assign CPU pointer
+        this->device = dev;  // Must appear after deleting the data
         this->ptr = cpu_ptr;
         if (ndim == 2) {
             ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(cpu_ptr, shape[1], shape[0]);
