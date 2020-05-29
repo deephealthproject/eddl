@@ -192,8 +192,15 @@ void cpu_sqrt(Tensor *A, Tensor *B) {
 }
 
 void cpu_tan(Tensor *A, Tensor *B){
-#pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = ::tanf(A->ptr[i]);
+//    #pragma omp parallel for
+    for (int i = 0; i < A->size; ++i) {
+        float r1 = A->ptr[i];
+        B->ptr[i] = ::tanf(A->ptr[i]);
+        float r2 = B->ptr[i];
+        if(::abs(r2)> 1000){
+            int asdasd = 33;
+        }
+    }
 }
 
 void cpu_tanh(Tensor *A, Tensor *B){

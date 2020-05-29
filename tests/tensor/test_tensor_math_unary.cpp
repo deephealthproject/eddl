@@ -26,7 +26,7 @@ TEST(TensorTestSuite, tensor_math_unary_abs){
 
     // Test GPU
     #ifdef cGPU
-        Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+        Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
         Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
         t_cpu->abs_();
         t_gpu->abs_(); t_gpu->toCPU();
@@ -50,7 +50,7 @@ TEST(TensorTestSuite, tensor_math_unary_acos){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->acos_();
     t_gpu->acos_(); t_gpu->toCPU();
@@ -74,7 +74,7 @@ TEST(TensorTestSuite, tensor_math_unary_add){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->add_(100.0f);
     t_gpu->add_(100.0f); t_gpu->toCPU();
@@ -98,7 +98,7 @@ TEST(TensorTestSuite, tensor_math_unary_addT){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->add_(t_cpu);
     t_gpu->add_(t_gpu); t_gpu->toCPU();
@@ -122,7 +122,7 @@ TEST(TensorTestSuite, tensor_math_unary_asin){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->asin_();
     t_gpu->asin_(); t_gpu->toCPU();
@@ -146,7 +146,7 @@ TEST(TensorTestSuite, tensor_math_unary_atan){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->atan_();
     t_gpu->atan_(); t_gpu->toCPU();
@@ -170,7 +170,7 @@ TEST(TensorTestSuite, tensor_math_unary_ceil){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->ceil_();
     t_gpu->ceil_(); t_gpu->toCPU();
@@ -194,7 +194,7 @@ TEST(TensorTestSuite, tensor_math_unary_clamp){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->clamp_(0.1, 0.3);
     t_gpu->clamp_(0.1, 0.3); t_gpu->toCPU();
@@ -218,7 +218,7 @@ TEST(TensorTestSuite, tensor_math_unary_clampmax){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->clampmax_(0.3f);
     t_gpu->clampmax_(0.3f); t_gpu->toCPU();
@@ -242,7 +242,7 @@ TEST(TensorTestSuite, tensor_math_unary_clampmin){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->clampmin_(0.1f);
     t_gpu->clampmin_(0.1f); t_gpu->toCPU();
@@ -266,7 +266,7 @@ TEST(TensorTestSuite, tensor_math_unary_cos){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->cos_();
     t_gpu->cos_(); t_gpu->toCPU();
@@ -290,7 +290,7 @@ TEST(TensorTestSuite, tensor_math_unary_cosh){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->cosh_();
     t_gpu->cosh_(); t_gpu->toCPU();
@@ -314,7 +314,7 @@ TEST(TensorTestSuite, tensor_math_unary_div){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->div_(2.0f);
     t_gpu->div_(2.0f); t_gpu->toCPU();
@@ -338,7 +338,7 @@ TEST(TensorTestSuite, tensor_math_unary_divT){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->div_(t_cpu);
     t_gpu->div_(t_gpu); t_gpu->toCPU();
@@ -362,7 +362,7 @@ TEST(TensorTestSuite, tensor_math_unary_exp){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->exp_();
     t_gpu->exp_(); t_gpu->toCPU();
@@ -386,7 +386,7 @@ TEST(TensorTestSuite, tensor_math_unary_floor){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->floor_();
     t_gpu->floor_(); t_gpu->toCPU();
@@ -410,7 +410,7 @@ TEST(TensorTestSuite, tensor_math_unary_inv){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->inv_(5.0f);
     t_gpu->inv_(5.0f); t_gpu->toCPU();
@@ -434,7 +434,7 @@ TEST(TensorTestSuite, tensor_math_unary_log){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->log_();
     t_gpu->log_(); t_gpu->toCPU();
@@ -458,7 +458,7 @@ TEST(TensorTestSuite, tensor_math_unary_log2){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->log2_();
     t_gpu->log2_(); t_gpu->toCPU();
@@ -482,7 +482,7 @@ TEST(TensorTestSuite, tensor_math_unary_log10){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->log10_();
     t_gpu->log10_(); t_gpu->toCPU();
@@ -506,7 +506,7 @@ TEST(TensorTestSuite, tensor_math_unary_logn){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->logn_(3.0f);
     t_gpu->logn_(3.0f); t_gpu->toCPU();
@@ -542,7 +542,7 @@ TEST(TensorTestSuite, tensor_math_unary_mod){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->mod_(1.5f);
     t_gpu->mod_(1.5f); t_gpu->toCPU();
@@ -566,7 +566,7 @@ TEST(TensorTestSuite, tensor_math_unary_mult){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->mult_(100.0f);
     t_gpu->mult_(100.0f); t_gpu->toCPU();
@@ -590,7 +590,7 @@ TEST(TensorTestSuite, tensor_math_unary_multT){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->mult_(t_cpu);
     t_gpu->mult_(t_gpu); t_gpu->toCPU();
@@ -614,7 +614,7 @@ TEST(TensorTestSuite, tensor_math_unary_neg){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->neg();
     t_gpu->neg(); t_gpu->toCPU();
@@ -638,7 +638,7 @@ TEST(TensorTestSuite, tensor_math_unary_normalize){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->normalize_();
     t_gpu->normalize_(); t_gpu->toCPU();
@@ -662,7 +662,7 @@ TEST(TensorTestSuite, tensor_math_unary_pow){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->pow_(3.5f);
     t_gpu->pow_(3.5f); t_gpu->toCPU();
@@ -686,7 +686,7 @@ TEST(TensorTestSuite, tensor_math_unary_powb){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->powb_(4);
     t_gpu->powb_(4); t_gpu->toCPU();
@@ -710,7 +710,7 @@ TEST(TensorTestSuite, tensor_math_unary_reciprocal){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->reciprocal_();
     t_gpu->reciprocal_(); t_gpu->toCPU();
@@ -746,7 +746,7 @@ TEST(TensorTestSuite, tensor_math_unary_remainder){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->remainder_(2.3f);
     t_gpu->remainder_(2.3f); t_gpu->toCPU();
@@ -770,7 +770,7 @@ TEST(TensorTestSuite, tensor_math_unary_round){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->round();
     t_gpu->round(); t_gpu->toCPU();
@@ -794,7 +794,7 @@ TEST(TensorTestSuite, tensor_math_unary_rsqrt){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->rsqrt_();
     t_gpu->rsqrt_(); t_gpu->toCPU();
@@ -819,7 +819,7 @@ TEST(TensorTestSuite, tensor_math_unary_sigmoid){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->sigmoid_();
     t_gpu->sigmoid_(); t_gpu->toCPU();
@@ -843,7 +843,7 @@ TEST(TensorTestSuite, tensor_math_unary_sign){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->sign_();
     t_gpu->sign_(); t_gpu->toCPU();
@@ -867,7 +867,7 @@ TEST(TensorTestSuite, tensor_math_unary_sin){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->sin_();
     t_gpu->sin_(); t_gpu->toCPU();
@@ -891,7 +891,7 @@ TEST(TensorTestSuite, tensor_math_unary_sinh){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->sinh_();
     t_gpu->sinh_(); t_gpu->toCPU();
@@ -915,7 +915,7 @@ TEST(TensorTestSuite, tensor_math_unary_sqr){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->sqr_();
     t_gpu->sqr_(); t_gpu->toCPU();
@@ -939,7 +939,7 @@ TEST(TensorTestSuite, tensor_math_unary_sqrt){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->sqrt_();
     t_gpu->sqrt_(); t_gpu->toCPU();
@@ -963,7 +963,7 @@ TEST(TensorTestSuite, tensor_math_unary_sub){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->sub_(3.0f);
     t_gpu->sub_(3.0f); t_gpu->toCPU();
@@ -987,7 +987,7 @@ TEST(TensorTestSuite, tensor_math_unary_subT){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->sub_(t_cpu);
     t_gpu->sub_(t_gpu); t_gpu->toCPU();
@@ -1011,7 +1011,7 @@ TEST(TensorTestSuite, tensor_math_unary_tan){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->tan_();
     t_gpu->tan_(); t_gpu->toCPU();
@@ -1035,7 +1035,7 @@ TEST(TensorTestSuite, tensor_math_unary_tanh){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->tanh_();
     t_gpu->tanh_(); t_gpu->toCPU();
@@ -1059,7 +1059,7 @@ TEST(TensorTestSuite, tensor_math_unary_trunc){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
     t_cpu->trunc_();
     t_gpu->trunc_(); t_gpu->toCPU();

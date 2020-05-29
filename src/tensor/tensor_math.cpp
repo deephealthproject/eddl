@@ -209,7 +209,7 @@ void Tensor::add(Tensor *A, Tensor *B, float v){
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
       {
-        cpu_add(A, B, v);
+        gpu_add(A, B, v);
       }
 #endif
 #ifdef cFPGA
@@ -808,7 +808,7 @@ void Tensor::pow(Tensor *A, Tensor *B, float exp){
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
       {
-        cpu_pow(A, B, exp);
+        gpu_pow(A, B, exp);
       }
 #endif
 #ifdef cFPGA

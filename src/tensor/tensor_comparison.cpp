@@ -425,11 +425,11 @@ int Tensor::equivalent(Tensor *A, Tensor *B, float epsilon) {
     if (!sameShape(A, B)) return 0;
 
     // Equal data
-    if (A->isCPU()) {
+    if (A->isCPU() && B->isCPU()) {
         return cpu_equal2(A, B, epsilon);
     }
 #ifdef cGPU
-    else if (A->isGPU())
+    else if (A->isGPU() || B->isGPU())
           {
             msg("Equal only for CPU Tensors", "Tensor::equivalent");
           }

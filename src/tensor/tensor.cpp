@@ -34,6 +34,7 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
     /*
      * Important! If we are creating a GPU tensor, "fptr" must point to a GPU pointer.
      */
+// if NOT define... (I always forget)
 #ifndef cGPU
     if ((dev > DEV_CPU)&&(dev<DEV_FPGA)) {
         throw std::runtime_error("Not compiled for GPU");
@@ -60,7 +61,6 @@ Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape, nullptr, dev){}
 
 // From shape and Tensor (sharing ptr)
 Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr, T->device) {}
-
 
 void Tensor::updateDevice(int dev){
     this->device = dev;
