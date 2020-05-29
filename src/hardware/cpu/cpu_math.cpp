@@ -51,7 +51,7 @@ void cpu_clamp(Tensor *A, Tensor *B, float min, float max){
         } else if(A->ptr[i] > max){
             B->ptr[i] = max;
         }else {
-            B[i] = A[i];
+            B->ptr[i] = A->ptr[i];
         }
     }
 }

@@ -600,6 +600,7 @@ namespace tensorNN {
         else if (D->isGPU())
           {
 
+            // TODO: This could be improved (missing "gpu_d_softmax")
             Tensor *aux=new Tensor(D->getShape(),D->device);
             aux->fill_(1.0);
             Tensor::add(1.0,aux,-1.0,I,aux,0);
