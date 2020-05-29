@@ -4,7 +4,9 @@ Normalization
 BatchNormalization
 ------------------
 
-.. doxygenfunction:: BatchNormalization
+.. doxygenfunction:: eddl::BatchNormalization(layer, bool, float, float, string)
+
+.. doxygenfunction:: eddl::BatchNormalization(layer, float, float, bool, string)
 
 Example:
 
@@ -20,7 +22,8 @@ Example:
 LayerNormalization
 ------------------
 
-.. doxygenfunction:: LayerNormalization
+.. doxygenfunction:: eddl::LayerNormalization(layer, bool, float, string)
+.. doxygenfunction:: eddl::LayerNormalization(layer, float, bool, string)
 
 Example:
 

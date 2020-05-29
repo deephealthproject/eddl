@@ -941,19 +941,26 @@ namespace eddl {
 
     layer Decoder(layer l, int outvs) {
       layer p=l->parent[0];
-      l->parent[0]->detach(l);
 
-      layer cps=new LCopyStates({p},"",DEV_CPU, 0);
-      cps->isdecoder=true;
+      if (p->isrecurrent) {
+        l->parent[0]->detach(l);
 
-      layer in=Input({outvs});
-      in->name="InputDec";
-      layer n=l->clone(0,1,{in,cps},DEV_CPU);
-      n->name=l->name;
-      n->isdecoder=true;
+        layer cps=new LCopyStates({p},"",DEV_CPU, 0);
+        cps->isdecoder=false;
 
-      delete l;
-      return n;
+        layer in=Input({outvs});
+        in->name="InputDec";
+        in->isdecoder=true;
+        layer n=l->clone(0,1,{in,cps},DEV_CPU);
+        n->orig=nullptr;
+        n->name=l->name;
+        n->isdecoder=true;
+        delete l;
+        return n;
+      }else {
+        l->isdecoder=true;
+        return l;
+      }
     }
 
 
