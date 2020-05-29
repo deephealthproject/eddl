@@ -76,6 +76,7 @@ Net::Net() {
     isdecoder=false;
     isencoder=false;
     isrecurrent=false;
+    decsize=1;
 }
 
 Net::Net(vlayer in, vlayer out):Net() {

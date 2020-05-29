@@ -56,6 +56,9 @@ Net* Net::unroll_enc(int inl, int outl) {
   vlayer par;
   vector<bool> frnn;
 
+
+  cout<<"Recurrent net input sequence length="<<inl<<endl;
+
   // set vfts sort
   layers.clear();
   for(int i=0;i<vfts.size();i++)
@@ -163,6 +166,8 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
   vlayer par;
   vector<bool> frnn;
 
+  
+  cout<<"Recurrent net encoder input sequence length="<<inl<<", decoder output sequence length="<<outl<<endl;
 
   // set vfts sort
   layers.clear();
@@ -210,13 +215,6 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
     }
   }
 
-  /*for(j=0; j<layers.size();j++) {
-    if (frnn[j]) cout<<layers[j]->name<<"X"<<"-->";
-    else cout<<layers[j]->name<<"-->";
-  }
-  cout<<"\n";
-*/
-
   // unroll inputs
   nin=new vlayer[inl+outl];
   nlayers=new vlayer[inl+outl];
@@ -230,6 +228,7 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
   }
 
   bool connected=false;
+  din.clear();
   for (i = 0; i < size; i++) {
 
      /*cout<<"======= "<<i<<endl;
@@ -278,6 +277,7 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
             vlayer par;
             Layer *n=layers[j]->share(i-inl, batch_size, par);
             //nin[i].push_back(n);
+            din.push_back(n); // decoder inputs
             nlayers[i].push_back(n);
           }
           else {
@@ -334,7 +334,7 @@ for (i = 0; i < outl; i++)
 
 Net *rnet=new Net(ninl, noutl);
 
-
+rnet->din=din;
 
 return rnet;
 
@@ -354,7 +354,7 @@ Net* Net::unroll_dec(int inl, int outl) {
   vlayer par;
   vector<bool> frnn;
 
-  cout<<"Unrolling Decoder recurrent net with length "<<outl<<endl;
+  cout<<"Recurrent net output sequence length="<<outl<<endl;
 
   // set vfts sort
   layers.clear();
@@ -382,7 +382,7 @@ Net* Net::unroll_dec(int inl, int outl) {
   nlayers=new vlayer[outl];
   nout=new vlayer[outl];
 
-  bool connected=false;
+  din.clear();
   for (i = 0; i < outl; i++) {
     if (i==0) {
       for (j = 0; j < lin.size(); j++)  {
@@ -407,7 +407,11 @@ Net* Net::unroll_dec(int inl, int outl) {
               nlayers[i].push_back(layers[j]->share(i, batch_size, par));
             }
             else {
-              nlayers[i].push_back(layers[j]->share(i, batch_size, par));
+              Layer *n;
+              n=layers[j]->share(i, batch_size, par);
+              nlayers[i].push_back(n);
+              if (layers[j]->lin==0)
+                din.push_back(n);
             }
           }
           else msg("Unexpected error","unroll");
@@ -438,7 +442,7 @@ for (i = 0; i < outl; i++)
 
 Net *rnet=new Net(ninl, noutl);
 
-
+rnet->din=din;
 
 return rnet;
 
@@ -486,6 +490,8 @@ void Net::build_rnet(int inl,int outl) {
    vmetrics mr;
    for(i=0;i<metrics.size();i++) mr.push_back(metrics[i]->clone());
 
+   rnet->name="rnet";
+
    rnet->build(optimizer->share(),lr,mr,cs->share(),false);
    //cout<<rnet->summary();
    fflush(stdout);
@@ -504,6 +510,19 @@ void Net::build_rnet(int inl,int outl) {
      for(i=0;i<snets.size();i++) {
      //cout<<snets[i]->summary();
        //rnet->snets.push_back(snets[i]->unroll(inl,outl));
+       if ((isencoder)&&(isdecoder))
+         rnet->snets.push_back(snets[i]->unroll_enc_dec(inl,outl));
+       else if (!isdecoder)
+         rnet->snets.push_back(snets[i]->unroll_enc(inl,outl));
+       else rnet->snets.push_back(snets[i]->unroll_dec(inl,outl));
+
+       rnet->snets[i]->isencoder=rnet->isencoder;
+       rnet->snets[i]->isdecoder=rnet->isdecoder;
+
+       /// TODO:
+       // check Xs Ys...
+       // resize method reserve memory for Xs Ys... lucky guy
+
        for(j=0;j<rnet->snets[i]->layers.size();j++) {
              rnet->snets[i]->layers[j]->isrecurrent=false;
        }

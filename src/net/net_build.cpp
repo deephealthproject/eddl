@@ -238,13 +238,25 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     optimizer->setlayers(layers);
 
     // set loss functions and create targets tensors
-    this->losses = vloss(lo);
-    for (int i = 0; i < lo.size(); i++) {
-        if (lo[i]->name == "soft_cross_entropy") lout[i]->delta_bp = 1;
+    if (isdecoder) {
+      decsize=lout.size()/lo.size();
+      for(int i=0;i<decsize;i++)
+        for(int j=0;j<lo.size();j++)
+           losses.push_back(lo[j]);
+    }
+    else losses = vloss(lo);
+
+    for (int i = 0; i < lout.size(); i++) {
+        if (losses[i]->name == "soft_cross_entropy") lout[i]->delta_bp = 1;
         lout[i]->target = new Tensor(lout[i]->output->getShape(), dev);
     }
     // set metrics
-    this->metrics = vmetrics(me);
+    if (isdecoder) {
+      for(int i=0;i<decsize;i++)
+        for(int j=0;j<me.size();j++)
+           metrics.push_back(me[j]);
+    }
+    else metrics = vmetrics(me);
 
 
     // forward sort
@@ -380,7 +392,7 @@ void Net::split(int c, int todev) {
               }
               else {
                 n=vfts[j]->clone(i, bs, par, todev + devsel[i]);
-                n->name="clone_"+i+vfts[j]->name;
+                n->name="clone_"+to_string(i)+vfts[j]->name;
                 vfts[j]->clones.push_back(n);
               }
 

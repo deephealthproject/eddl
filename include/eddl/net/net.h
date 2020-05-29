@@ -58,12 +58,14 @@ public:
   bool isbuild;
 	bool isdecoder;
 	bool isencoder;
-
+  int decsize;
+	
 	vector<int> devsel;
 	CompServ *cs;
 
 	vlayer layers;
 	vlayer lin;
+	vlayer din;
 	vlayer lout;
 	vlayer vfts;
 	vlayer vbts;
