@@ -32,17 +32,6 @@ using namespace eddl;
 int main(int argc, char **argv) {
     cout << "Tests for development. Ignore." << endl;
 
-    // Test GPU
-
-    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
-        Tensor* t_gpu = t_cpu->clone();
-        t_gpu->toGPU();
-        t_cpu->abs_();
-        t_gpu->abs_();
-        t_gpu->toCPU();
-        cout << Tensor::equivalent(t_cpu, t_gpu, 10e-4) << endl;
-
-
     // Overload operations
     Tensor t1 = *Tensor::full({5,5}, 1.0f);
     Tensor t2 = *Tensor::full({5,5}, 2.0f);

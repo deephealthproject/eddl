@@ -41,50 +41,10 @@ else()
 endif()
 
 
-
-
-
-#
-## CUDA (set in parent scope)
-#if(USE_CUDA)
-#    include(CheckLanguage)
-#    check_language(CUDA)
-#    message(STATUS "CMAKE_CUDA_COMPILER: ${CMAKE_CUDA_COMPILER}")
-#    if(CMAKE_CUDA_COMPILER)
-#        enable_language(CUDA)
-#        add_definitions(-DcGPU)
-#
-#        # Target properties
-#        set_target_properties(unit_tests PROPERTIES
-#                CUDA_SEPARABLE_COMPILATION ON
-#                CUDA_RESOLVE_DEVICE_SYMBOLS ON
-#                #CUDA_SEPARABLE_COMPILATION ON
-#                )
-#
-#        target_include_directories(unit_tests PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
-#        target_link_libraries(unit_tests PUBLIC cublas cudart curand)
-#
-#        if(APPLE)
-#            # We need to add the path to the driver (libcuda.dylib) as an rpath,
-#            # so that the static cuda runtime can find it at runtime.
-#            set_property(TARGET unit_tests PROPERTY BUILD_RPATH ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
-#        endif()
-#
-#        if(NOT DEFINED CMAKE_CUDA_STANDARD)
-#            # Make EDDL works for cuda 7.5
-#            set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr -D_MWAITXINTRIN_H_INCLUDED -D_FORCE_INLINES -D__STRICT_ANSI__")
-#        endif()
-#    else()
-#        message(WARNING "[WARNING] CUDA compiler not found but requested during compilation. (Falling back to: '-D USE_CUDA=OFF')
-#        Hint: Set the NVCC path using '-D CMAKE_CUDA_COMPILER=path' or creating a symbolic link.")
-#        SET(BUILD_TARGET "CPU") # Local's scope
-#        SET(USE_CUDA OFF) # Local's scope (disable)
-#    endif()
-#endif()
-
-
-
-
+# CUDA (set in parent scope)
+if(USE_CUDA)
+    add_definitions(-DcGPU)
+endif()
 
 
 # Add test
