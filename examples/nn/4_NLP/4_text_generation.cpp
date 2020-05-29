@@ -17,19 +17,17 @@
 using namespace eddl;
 
 //////////////////////////////////
-// MT
-// using EuTrans
+// Text generation
+// Only Decoder
 //////////////////////////////////
 
 int main(int argc, char **argv) {
-    // Download EuTrans
-    //download_eutrans();
+
 
     // Settings
     int epochs = 10;
     int batch_size = 32;
 
-    int ilength=3;
     int olength=5;
     int invs=100;
     int outvs=100;
@@ -41,10 +39,10 @@ int main(int argc, char **argv) {
 
     layer lE = RandomUniform(Embedding(l, invs, 1,embedding),-0.05,0.05);
 
-    l = LSTM(LSTM(lE,256),256);
+    l = ReLu(Dense(lE,outvs));
 
     // Decoder
-    l = LSTM(Decoder(LSTM(l,256),outvs),256);
+    l = Decoder(LSTM(l,256),outvs);
 
     layer out = Softmax(Dense(l, outvs));
 
@@ -52,7 +50,6 @@ int main(int argc, char **argv) {
 
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
-
 
 
     optimizer opt=adam(0.001);
@@ -73,15 +70,9 @@ int main(int argc, char **argv) {
 
 
     // Load dataset
-    /*
-    Tensor* x_train=Tensor::load("eutrans_trX.bin");
-    Tensor* y_train=Tensor::load("eutrans_trY.bin");
-    Tensor* x_test=Tensor::load("eutrans_tsX.bin");
-    Tensor* y_test=Tensor::load("eutrans_tsY.bin");
-*/
-    Tensor *x_train=new Tensor({1000,ilength});
+
+    Tensor *x_train=new Tensor({1000,1});
     Tensor *y_train=new Tensor({1000,olength*outvs});
-    x_train->reshape_({x_train->shape[0],ilength,1}); //batch x timesteps x input_dim
     y_train->reshape_({x_train->shape[0],olength,outvs}); //batch x timesteps x input_dim
 
     // Train model

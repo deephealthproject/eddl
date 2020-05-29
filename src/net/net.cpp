@@ -74,6 +74,7 @@ Net::Net() {
     rnet=nullptr;
     isbuild=false;
     isdecoder=false;
+    isencoder=false;
     isrecurrent=false;
 }
 

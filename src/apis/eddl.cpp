@@ -958,8 +958,19 @@ namespace eddl {
         delete l;
         return n;
       }else {
-        l->isdecoder=true;
-        return l;
+        l->parent[0]->detach(l);
+
+        layer in=Input({outvs});
+        in->name="InputDec";
+        in->isdecoder=true;
+        layer sum=Sum(p,in);
+        sum->isdecoder=true;
+        layer n=l->clone(0,1,{sum},DEV_CPU);
+        n->orig=nullptr;
+        n->name=l->name;
+        n->isdecoder=true;
+        delete l;
+        return n;
       }
     }
 
