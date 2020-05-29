@@ -30,6 +30,8 @@ LCopyStates::LCopyStates(vector<Layer *> parent, string name, int dev, int mem):
       states.push_back(new Tensor(parent[0]->states[i]->shape,dev));
       delta_states.push_back(new Tensor(parent[0]->states[i]->shape,dev));
     }
+    output=states[0];
+    input=parent[0]->output;
 
     for (int i = 0; i < parent.size(); ++i) {
         parent[i]->addchild(this);

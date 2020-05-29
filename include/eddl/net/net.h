@@ -56,6 +56,7 @@ public:
 	bool onnx_pretrained;
   bool isrecurrent;
   bool isbuild;
+	bool isdecoder;
 
 	vector<int> devsel;
 	CompServ *cs;
@@ -96,7 +97,7 @@ public:
 	void fts();
 	void bts();
 	void split(int c, int todev);
-	Net *unroll(int inl, int outl, bool seq, bool areg);
+	Net *unroll(int inl, int outl);
 	void build_rnet(int inl,int outl);
 	Layer* getLayer(vlayer in);
 

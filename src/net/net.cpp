@@ -73,6 +73,8 @@ Net::Net() {
     flog_ts=nullptr;
     rnet=nullptr;
     isbuild=false;
+    isdecoder=false;
+    isrecurrent=false;
 }
 
 Net::Net(vlayer in, vlayer out):Net() {
@@ -96,9 +98,6 @@ Net::Net(vlayer in, vlayer out):Net() {
         fiterr.push_back(0.0);
         fiterr.push_back(0.0);
     }
-
-    isrecurrent=false;
-    rnet=nullptr;
 
 
     build_randn_table();
@@ -133,7 +132,7 @@ Net::Net(vector <Net *> vnets):Net()
   }
 
 
-  for(int i=0;i<vnets[vsize-1]->lout.size();i++) 
+  for(int i=0;i<vnets[vsize-1]->lout.size();i++)
     lout.push_back(vnets[vsize-1]->lout[i]);
 
 
@@ -197,6 +196,7 @@ int Net::inNet(Layer *l) {
 /////////////////////////////////////////
 void Net::walk(Layer *l) {
     // If this layer is not in the network, add it, as well as all its children (recursively)
+
     if (!inNet(l)) {
         if (l->orig!=nullptr) l->net=l->orig->net;
         else l->net=this;
@@ -204,6 +204,7 @@ void Net::walk(Layer *l) {
         layers.push_back(l);
         for (int i = 0; i < l->child.size(); i++)
             walk(l->child[i]);
+
     }
 }
 /////////////////////////////////////////

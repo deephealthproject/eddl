@@ -111,6 +111,7 @@ void *backward_t(void *t) {
 
   Net *net = targs->net;
 
+
   net->do_delta();
   net->do_backward();
 
@@ -593,10 +594,14 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     msg("Net is not build", "Net.fit");
 
     // Check if number of input/output network layers matches with the input/output tensor data
-    if (tin.size() != lin.size())
-    msg("input tensor list does not match with defined input layers", "Net.fit");
-    if (tout.size() != lout.size())
-    msg("output tensor list does not match with defined output layers", "Net.fit");
+    if (tin.size() != lin.size()) {
+      cout<<tin.size()<<"!="<<lin.size()<<endl;
+      msg("input tensor list does not match with defined input layers", "Net.fit");
+    }
+    if (tout.size() != lout.size()) {
+      cout<<tout.size()<<"!="<<lout.size()<<endl;
+      msg("output tensor list does not match with defined output layers", "Net.fit");
+    }
 
     // Check if all the data inputs has the same number of samples
     n = tin[0]->shape[0];
@@ -668,7 +673,6 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
   int inl;
   int outl;
 
-
   vector<Tensor *>xt;
   for(i=0;i<tin.size();i++)
   xt.push_back(Tensor::permute(tin[i],{1,0,2})); // time x batch x dim
@@ -678,13 +682,9 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
   if (xt[i]->shape[0]!=inl)
   msg("Input tensors with different time steps","fit_recurrent");
 
-  bool isdecoder=false;
-  for(int i=0;i<layers.size();i++)
-    if (layers[i]->isdecoder) isdecoder=true;
-
+  vector<Tensor *>yt;
   if (!isdecoder) outl=1;
   else {
-    vector<Tensor *>yt;
     for(i=0;i<tout.size();i++)
       yt.push_back(Tensor::permute(tout[i],{1,0,2})); // time x batch x dim
     outl=yt[0]->shape[0];
@@ -705,12 +705,33 @@ void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
       tinr.push_back(new Tensor(shape,xt[i]->ptr+(j*offset)));
   }
 
-  rnet->fit(tinr,tout,batch,epochs);
+  if (isdecoder) {
+    vtensor toutr;
+    vtensor start;
+    int offset;
+    for(i=0;i<yt.size();i++) {
+      offset=yt[i]->size/yt[i]->shape[0];
+      vector<int>shape;
+      for(j=1;j<yt[i]->ndim;j++)
+        shape.push_back(yt[i]->shape[j]);
+
+      for(j=0;j<outl;j++)
+        toutr.push_back(new Tensor(shape,yt[i]->ptr+(j*offset)));
+    }
+
+    rnet->fit(tinr,toutr,batch,epochs);
+    for(i=0;i<start.size();i++)
+      delete start[i];
+    start.clear();
+  }
+  else {
+    rnet->fit(tinr,tout,batch,epochs);
+  }
 
   if (snets[0]->dev!=DEV_CPU) rnet->sync_weights();
 
   for(i=0;i<xt.size();i++)
-  delete xt[i];
+    delete xt[i];
   xt.clear();
 
 
