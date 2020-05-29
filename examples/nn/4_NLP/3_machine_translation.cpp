@@ -17,9 +17,8 @@
 using namespace eddl;
 
 //////////////////////////////////
-// Embeding+LSTM
-// using imdb preprocessed from keras
-// 2000 words
+// MT
+// using EuTrans
 //////////////////////////////////
 
 int main(int argc, char **argv) {
