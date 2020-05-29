@@ -894,8 +894,9 @@ public:
     static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
     static void sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
     static void reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
+    static int eqsize(Tensor *A, Tensor *B);  // Legacy
     static int sameShape(Tensor *A, Tensor *B);  // Previously named "Tensor::eqsize"
-    static int equivalent(Tensor *A, Tensor *B, float epsilon=1e-3);  // Previously named "Tensor::equal"
+    static int equivalent(Tensor *A, Tensor *B, float epsilon=1e-3);  // Previously named "Tensor::equal2"
 
 };
 

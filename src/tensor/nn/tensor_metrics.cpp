@@ -31,10 +31,9 @@ namespace tensorNN {
             acc = cpu_accuracy(A, B);
         }
 #ifdef cGPU
-        else if (A->isGPU())
-          {
-             gpu_accuracy(A,B,&acc);
-          }
+        else if (A->isGPU()) {
+            gpu_accuracy(A, B, &acc);
+        }
 #endif
 #ifdef cFPGA
         else {
@@ -46,33 +45,35 @@ namespace tensorNN {
 
     }
 
-int bin_accuracy(Tensor *A, Tensor *B) {
-    if (A->device != B->device) msg("Tensors in different devices", "Tensor::accuracy");
-    if (!Tensor::eqsize(A, B)) msg("Incompatible dims", "Tensor::accuracy");
-    if (A->ndim != 2) msg("Accuracy only over 2D Tensor (batch x prob)", "Tensor::Bin_Accuracy");
+    int bin_accuracy(Tensor *A, Tensor *B) {
+        if (A->device != B->device) msg("Tensors in different devices", "Tensor::accuracy");
+        if (!Tensor::equivalent(A, B)) msg("Incompatible dims", "Tensor::accuracy");
+        if (A->ndim != 2) msg("Accuracy only over 2D Tensor (batch x prob)", "Tensor::Bin_Accuracy");
 
-    if (A->shape[1]!= 1) msg("Accuracy only over 2D Tensor (batch x prob) within shape:{batchx1}", "Tensor::Bin_Accuracy");
+        if (A->shape[1] != 1)
+            msg("Accuracy only over 2D Tensor (batch x prob) within shape:{batchx1}", "Tensor::Bin_Accuracy");
 
 
-    int acc = 0;
+        int acc = 0;
 
-    B->tsem->lock();
+        B->tsem->lock();
 
-    if (A->isCPU()) {
-        acc = cpu_bin_accuracy(A, B);
-    }
+        if (A->isCPU()) {
+            acc = cpu_bin_accuracy(A, B);
+        }
 #ifdef cGPU
-    else if (A->isGPU())
-      {
-         gpu_bin_accuracy(A,B,&acc);
-      }
+        else if (A->isGPU()) {
+            gpu_bin_accuracy(A, B, &acc);
+        }
 #endif
 #ifdef cFPGA
-    else {
+        else {
+
+        }
+#endif
+        B->tsem->unlock();
+        return acc;
 
     }
-#endif
-    B->tsem->unlock();
-    return acc;
 
 }
