@@ -23,7 +23,6 @@ using namespace eddl;
 
 int main(int argc, char **argv) {
 
-
     // Settings
     int epochs = 10;
     int batch_size = 32;
