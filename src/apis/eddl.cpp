@@ -39,6 +39,16 @@ namespace eddl {
       return new Net(vnets);
     }
 
+    void setName(model m, string name)
+    {
+      m->name=name;
+    }
+
+    layer getLayer(model net, vlayer in)
+    {
+      return net->getLayer(in);
+    }
+
     void build(model net, optimizer o, CompServ *cs, bool init_weights){
         // Assign default computing service
         if (cs== nullptr){
@@ -392,6 +402,9 @@ namespace eddl {
             return new MMeanSquaredError();
         } else if (type == "categorical_accuracy" || type == "accuracy"){
             return new MCategoricalAccuracy();
+        }
+        else if (type == "binary_accuracy"){
+            return new MBinAccuracy();
         }
         else if (type=="mean_absolute_error"){
             return new MMeanAbsoluteError();
@@ -926,6 +939,41 @@ namespace eddl {
         return new LLSTM({parent}, units, mask_zeros, bidirectional, name, DEV_CPU, 0);
     }
 
+    layer Decoder(layer l, int outvs) {
+      layer p=l->parent[0];
+
+      if (p->isrecurrent) {
+        l->parent[0]->detach(l);
+
+        layer cps=new LCopyStates({p},"",DEV_CPU, 0);
+        cps->isdecoder=false;
+
+        layer in=Input({outvs});
+        in->name="InputDec";
+        in->isdecoder=true;
+        layer n=l->clone(0,1,{in,cps},DEV_CPU);
+        n->orig=nullptr;
+        n->name=l->name;
+        n->isdecoder=true;
+        delete l;
+        return n;
+      }else {
+        l->parent[0]->detach(l);
+
+        layer in=Input({outvs});
+        in->name="InputDec";
+        in->isdecoder=true;
+        layer sum=Sum(p,in);
+        sum->isdecoder=true;
+        layer n=l->clone(0,1,{sum},DEV_CPU);
+        n->orig=nullptr;
+        n->name=l->name;
+        n->isdecoder=true;
+        delete l;
+        return n;
+      }
+    }
+
 
 
     //////////////////////////////
@@ -1123,6 +1171,8 @@ namespace eddl {
         }
       }
 
+
+
     void download_mnist(){
       download_dataset("mnist","bin",{"khrb3th2z6owd9t","m82hmmrg46kcugp","7psutd4m4wna2d5","q0tnbjvaenb4tjs"});
     }
@@ -1131,12 +1181,12 @@ namespace eddl {
       download_dataset("cifar","bin",{"wap282xox5ew02d","yxhw99cu1ktiwxq","dh9vqxe9vt7scrp","gdmsve6mbu82ndp"});
     }
 
-    void download_imdb(){
-      download_dataset("imdb","bin",{"snf3vi7e1bjo8k5","c2zgsl2wb39ivlo","lkti7c12yoh18pv","cd1uocgv6abzt32"});
+    void download_imdb_2000(){
+      download_dataset("imdb_2000","bin",{"4m0h8ep53mixq6x","zekpjclm58tdevk","1bgdr8mz1lqkhgi","6cwob77654lruwq"});
     }
 
-    void download_imdb_1000(){
-      download_dataset("imdb_1000","bin",{"q96yf0h84mhcbgy","jfkg2spj7bd0ca8","q2e0atxf30udvlh","wlpc9pajyvmcsiu"});
+    void download_eutrans(){
+      download_dataset("eutrans","bin",{"4m0h8ep53mixq6x","zekpjclm58tdevk","1bgdr8mz1lqkhgi","6cwob77654lruwq"});
     }
 
     void download_drive(){

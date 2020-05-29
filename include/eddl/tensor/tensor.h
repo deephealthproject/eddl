@@ -306,7 +306,23 @@ public:
     */
     static Tensor* identity(int rows, int dev=DEV_CPU);
     static Tensor* diag(Tensor* A, int k=0, int dev=DEV_CPU);
+
+    /**
+      *  @brief Initialise a tensor with random values following an uniform distribution.
+      *
+      *  @param shape  Shape of the tensor to create.
+      *  @param dev    Device to use. The possible values are: ``DEV_CPU`` and ``DEV_GPU``.
+      *  @return     Tensor of the specified shape filled
+    */
     static Tensor* randu(const vector<int> &shape, int dev=DEV_CPU);
+
+    /**
+      *  @brief Initialise a tensor with random values following an normal distribution.
+      *
+      *  @param shape  Shape of the tensor to create.
+      *  @param dev    Device to use. The possible values are: ``DEV_CPU`` and ``DEV_GPU``.
+      *  @return     Tensor of the specified shape filled
+    */
     static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
 

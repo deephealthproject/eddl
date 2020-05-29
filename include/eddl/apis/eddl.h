@@ -63,6 +63,10 @@ typedef NetLoss * metric;
     */
     model Model(vlayer in, vlayer out);
     model Model(vector<Net*> vnets);
+    void setName(model m, string name);
+
+    layer getLayer(Net *net, vlayer in);
+
     void build(model net, optimizer o=nullptr, CompServ *cs=nullptr, bool init_weigths=true);
 
     /**
@@ -1464,6 +1468,7 @@ typedef NetLoss * metric;
     */
     layer LSTM(layer parent, int units, bool mask_zeros=false, bool bidirectional = false, string name = "");
 
+    layer Decoder(layer l, int ov);
 
     // Layers Methods
     void set_trainable(layer l, bool val);
@@ -1602,23 +1607,25 @@ typedef NetLoss * metric;
       *  @return     (void) The numpy files of DRIVE
     */
     void download_drive();
-    /**
-      *  @brief Downloads IMDB Dataset.
-      *
-      *  @see   https://ai.stanford.edu/~amaas/data/sentiment/
-      *
-      *  @return     (void) The numpy files of IMDB
-    */
-    void download_imdb();
 
     /**
-      *  @brief Downloads IMDB Dataset. 1000 most frequent words
+      *  @brief Downloads IMDB Dataset. 2000 most frequent words
       *
       *  @see   https://ai.stanford.edu/~amaas/data/sentiment/
       *
-      *  @return     (void) The numpy files of IMDB
+      *  @return     (void) The binary files of IMDB
     */
-    void download_imdb_1000();
+    void download_imdb_2000();
+
+
+    /**
+      *  @brief Downloads EuTrans Dataset.
+      *
+      *  @see
+      *
+      *  @return     (void) The binary files of EuTrans
+    */
+    void download_eutrans();
 
 
 }

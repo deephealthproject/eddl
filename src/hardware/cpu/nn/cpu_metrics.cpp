@@ -25,3 +25,13 @@ int cpu_accuracy(Tensor *A, Tensor *B){
   }
   return acc;
 }
+
+int cpu_bin_accuracy(Tensor *A, Tensor *B){
+  int acc = 0;
+
+  for (int i = 0; i < A->shape[0]; i++)
+    if ((B->ptr[i]>0.5)&&(A->ptr[i]==1.0)) acc++;
+    else if ((B->ptr[i]<=0.5)&&(A->ptr[i]==0.0)) acc++;
+
+  return acc;
+}

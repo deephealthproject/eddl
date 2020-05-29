@@ -76,9 +76,10 @@ Layer *LInput::share(int c, int bs, vector<Layer *> p) {
 
     LInput *n = new LInput(new Tensor(shape,dev), "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
+    n->isshared=true;
     for(int i=0;i<p.size();i++) {
-      p[i]->addchild(this);
-      addparent(p[i]);
+      p[i]->addchild(n);
+      n->addparent(p[i]);
     }
 
     return n;

@@ -62,6 +62,7 @@ __global__ void cent(float* a, float* b, float* c, long int size);
 
 // GPU: Metrics
 __global__ void accuracy(float* T, float* N,float* acc,long int cols, long int total_ops, int* MC_err);
+__global__ void bin_accuracy(float* T, float* N, int size, int* acc);
 
 // GPU: Conv
 __global__ void gpu_traspose_batch_depth(float *Bptr, float *ptr, int b,int z,int r, int c);

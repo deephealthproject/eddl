@@ -35,12 +35,15 @@ Layer::Layer(string name, int dev, int mem) {
     isshared=false;
     isnorm=false;
     trainable=true;
+    iscloned=false;
+    isdecoder=false;
 
     orig=nullptr;
     net=nullptr;
 
     reg = nullptr;
-    init=new IGlorotNormal(1234);
+    //init=new IGlorotNormal(1234);
+    init=new IGlorotUniform(1234);
 }
 
 Layer::~Layer(){

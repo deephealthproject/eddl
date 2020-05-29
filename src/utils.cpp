@@ -81,6 +81,8 @@ float *get_fmem(unsigned long int size, const string &str){
     // New is an operator, Malloc a function (slower)
     try{
         ptr = new float[size];
+        //ptr=(float *)malloc(size*sizeof(float));
+        //ptr=aligned_alloc(64, size*sizeof(float));
     }
     catch (std::bad_alloc& badAlloc){
         error=true;

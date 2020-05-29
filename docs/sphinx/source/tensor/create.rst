@@ -14,14 +14,16 @@ Constructors
 Create an uninitialized tensor
 
 .. doxygenfunction:: Tensor::Tensor()
-.. doxygenfunction:: Tensor::Tensor( const vector<int>&, float *, int )
-.. doxygenfunction:: Tensor::Tensor( const vector<int>&, int )
-.. doxygenfunction:: Tensor::Tensor( const vector<int>&, Tensor * )
+.. doxygenfunction:: Tensor::Tensor(const vector<int>&, float *, int)
+.. doxygenfunction:: Tensor::Tensor(const vector<int>&, int)
+.. doxygenfunction:: Tensor::Tensor(const vector<int>&, Tensor * )
 
 .. code-block:: c++
 
+    Tensor()
     Tensor(const vector<int> &shape, float *fptr, int dev=DEV_CPU);
-
+    Tensor(const vector<int> &shape, int dev=DEV_CPU);
+    Tensor(const vector<int> &shape, Tensor *tensor );
 
 Ones and zeros
 --------------
@@ -153,11 +155,10 @@ logspace
 .. code-block:: c++
 
     static Tensor* logspace(float start, float end, int steps=100, float base=10.0f, int dev=DEV_CPU);
-    
+ 
+
 geomspace
 ^^^^^^^^^^
-
-.. doxygenfunction:: eddlT::geomspace
 
 .. code-block:: c++
 

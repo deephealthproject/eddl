@@ -46,6 +46,8 @@ target_link_libraries(mnist_conv_dice eddl)
 add_executable(mnist_losses "nn/1_mnist/14_mnist_losses.cpp")
 target_link_libraries(mnist_losses eddl)
 
+add_executable(mnist_siamese "nn/1_mnist/15_mnist_siamese.cpp")
+target_link_libraries(mnist_siamese eddl)
 
 
 # EXAMPLES: CIFAR10 ****************************************************
@@ -79,24 +81,18 @@ add_executable(drive_seg "nn/3_drive/1_drive_seg.cpp")
 target_link_libraries(drive_seg eddl)
 
 # EXAMPLES: NLP ****************************************************
-add_executable(sentiment_preproces "nn/4_NLP/1_sentiment_preproces.cpp")
-target_link_libraries(sentiment_preproces eddl)
 
-add_executable(sentiment_cnn_1000 "nn/4_NLP/2_sentiment_cnn_1000.cpp")
-target_link_libraries(sentiment_cnn_1000 eddl)
+add_executable(sentiment_rnn "nn/4_NLP/1_sentiment_rnn.cpp")
+target_link_libraries(sentiment_rnn eddl)
 
-add_executable(sentiment_cnn_all "nn/4_NLP/3_sentiment_cnn_all.cpp")
-target_link_libraries(sentiment_cnn_all eddl)
+add_executable(sentiment_lstm "nn/4_NLP/2_sentiment_lstm.cpp")
+target_link_libraries(sentiment_lstm eddl)
 
-add_executable(sentiment_rnn_1000 "nn/4_NLP/4_sentiment_rnn_1000.cpp")
-target_link_libraries(sentiment_rnn_1000 eddl)
+add_executable(machine_translation "nn/4_NLP/3_machine_translation.cpp")
+target_link_libraries(machine_translation eddl)
 
-add_executable(sentiment_rnn_all "nn/4_NLP/5_sentiment_rnn_all.cpp")
-target_link_libraries(sentiment_rnn_all eddl)
-
-add_executable(sentiment_lstm_mask "nn/4_NLP/6_sentiment_lstm_mask.cpp")
-target_link_libraries(sentiment_lstm_mask eddl)
-
+add_executable(text_generation "nn/4_NLP/4_text_generation.cpp")
+target_link_libraries(text_generation eddl)
 
 
 # EXAMPLES: Tensor ****************************************************

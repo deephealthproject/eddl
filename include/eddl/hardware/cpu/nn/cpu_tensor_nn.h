@@ -57,9 +57,12 @@ void cpu_d_linear(Tensor *D, Tensor *I, Tensor *PD, float param);
 
 // Losses
 void cpu_cent(Tensor *A, Tensor *B, Tensor *C);
+void cpu_bin_cent(Tensor *A, Tensor *B, Tensor *C);
 
 // Metrics
 int cpu_accuracy(Tensor *A, Tensor *B);
+int cpu_bin_accuracy(Tensor *A, Tensor *B);
+
 
 // Conv
 void cpu_conv2D(ConvolDescriptor *D);

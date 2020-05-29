@@ -56,12 +56,16 @@ public:
 	bool onnx_pretrained;
   bool isrecurrent;
   bool isbuild;
-
+	bool isdecoder;
+	bool isencoder;
+  int decsize;
+	
 	vector<int> devsel;
 	CompServ *cs;
 
 	vlayer layers;
 	vlayer lin;
+	vlayer din;
 	vlayer lout;
 	vlayer vfts;
 	vlayer vbts;
@@ -88,6 +92,7 @@ public:
 	Net(vector <Net *> vnets);
 	~Net();
 
+
 	void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize=true);
 	void toGPU(vector<int> g,int lsb,int mem);
 	void toCPU(int t);
@@ -95,8 +100,12 @@ public:
 	void fts();
 	void bts();
 	void split(int c, int todev);
-	Net *unroll(int inl, int outl, bool seq, bool areg);
+	Net *unroll(int inl, int outl);
+	Net *unroll_enc(int inl, int outl);
+	Net *unroll_enc_dec(int inl, int outl);
+	Net *unroll_dec(int inl, int outl);
 	void build_rnet(int inl,int outl);
+	Layer* getLayer(vlayer in);
 
 	int inNet(Layer *l);
 	void walk(Layer *l);

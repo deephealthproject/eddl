@@ -64,6 +64,7 @@ void gpu_cent(Tensor *A,Tensor *B,Tensor *C);
 
 // Metrics
 void gpu_accuracy(Tensor *A,Tensor *B,int *acc);
+void gpu_bin_accuracy(Tensor *A,Tensor *B,int *acc);
 
 // Conv
 void gpu_conv2D(ConvolDescriptor *D);

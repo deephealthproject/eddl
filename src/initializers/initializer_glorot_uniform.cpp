@@ -33,7 +33,8 @@ IGlorotUniform::IGlorotUniform(int seed) : Initializer("glorot_uniform") {
 void IGlorotUniform::apply(Tensor* params) {
 
     if (params->ndim == 1)
-        params->rand_signed_uniform(0.1f);
+        //params->rand_signed_uniform(0.1f);
+        params->fill_(0.0f);
     else if (params->ndim == 2) {
         params->rand_signed_uniform(1.0);
         float limits=sqrtf(6.0f / (params->shape[0]+params->shape[1]));

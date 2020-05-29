@@ -73,6 +73,15 @@ public:
     Metric* clone() override;
 };
 
+class MBinAccuracy : public Metric {
+public:
+    MBinAccuracy();
+
+    float value(Tensor *T, Tensor *Y) override;
+    Metric* clone() override;
+};
+
+
 class MSum : public Metric {
 public:
     MSum();

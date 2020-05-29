@@ -73,6 +73,10 @@ Net::Net() {
     flog_ts=nullptr;
     rnet=nullptr;
     isbuild=false;
+    isdecoder=false;
+    isencoder=false;
+    isrecurrent=false;
+    decsize=1;
 }
 
 Net::Net(vlayer in, vlayer out):Net() {
@@ -97,9 +101,6 @@ Net::Net(vlayer in, vlayer out):Net() {
         fiterr.push_back(0.0);
     }
 
-    isrecurrent=false;
-    rnet=nullptr;
-
 
     build_randn_table();
 }
@@ -109,10 +110,9 @@ Net::Net(vector <Net *> vnets):Net()
   int vsize=vnets.size();
   int ind;
 
-  if (!vsize) return;
-
-  mnets=vnets;
-
+  if (vsize<2) {
+    msg("Use at least two networks to concatenate","Net::Net");
+  }
 
   for(int i=0;i<vnets[0]->lin.size();i++)
     lin.push_back(vnets[0]->lin[i]);
@@ -137,6 +137,7 @@ Net::Net(vector <Net *> vnets):Net()
   for(int i=0;i<vnets[vsize-1]->lout.size();i++)
     lout.push_back(vnets[vsize-1]->lout[i]);
 
+
   for (int i = 0; i < lout.size(); i++) {
     total_loss.push_back(0.0);
     total_metric.push_back(0.0);
@@ -152,6 +153,8 @@ Net::Net(vector <Net *> vnets):Net()
 
 
 }
+
+
 
 
 Net::~Net()
@@ -195,6 +198,7 @@ int Net::inNet(Layer *l) {
 /////////////////////////////////////////
 void Net::walk(Layer *l) {
     // If this layer is not in the network, add it, as well as all its children (recursively)
+
     if (!inNet(l)) {
         if (l->orig!=nullptr) l->net=l->orig->net;
         else l->net=this;
@@ -202,6 +206,7 @@ void Net::walk(Layer *l) {
         layers.push_back(l);
         for (int i = 0; i < l->child.size(); i++)
             walk(l->child[i]);
+
     }
 }
 /////////////////////////////////////////
@@ -225,6 +230,9 @@ void Net::walk_back(Layer *l) {
 string Net::summary() {
     std::stringstream ss;
     ss << "---------------------------------------------------------" << endl;
+    ss << name << endl;
+    ss << "---------------------------------------------------------" << endl;
+
     for (auto & l : vfts) {
         // Get input/output shapes
         vector<int> ishape(l->input->shape);

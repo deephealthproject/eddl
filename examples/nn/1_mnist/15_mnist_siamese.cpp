@@ -31,41 +31,51 @@ int main(int argc, char **argv) {
     int epochs = 5;
     int batch_size = 100;
 
-    // Define encoder
+
+    layer in1 = Input({784});
+    layer in2 = Input({784});
+
+    // base model
     layer in = Input({784});
-    layer l = in;  // Aux var
-
-    l = Activation(Dense(l, 256), "relu");
+    layer l = Activation(Dense(in, 256), "relu");
     l = Activation(Dense(l, 128), "relu");
-    layer out = Activation(Dense(l, 64), "relu");
 
-    model encoder = Model({in}, {out});
+    model enc=Model({in},{l});
+    setName(enc,"enc");
 
+    in = Input({128});
+    layer out = Activation(Dense(in, 64), "relu");
 
-    // Define decoder
-    in = Input({64});
-    l = Activation(Dense(in, 128), "relu");
-    l = Activation(Dense(l, 256), "relu");
+    model dec=Model({in},{out});
+    setName(dec,"dec");
 
-    out = Sigmoid(Dense(l, 784));
+    model base = Model({enc,dec});
+    setName(base,"base");
 
-    model decoder = Model({in}, {out});
+    plot(base, "base.pdf");
 
+    //////
+    layer out1 = getLayer(base,{in1});
+    layer out2 = getLayer(base,{in2});
 
-    // Merge both models into a new one
-    model net = Model({encoder,decoder});
+    l=Diff(out1,out2);
+    l=ReLu(Dense(l,256));
+    layer outs=Sigmoid(Dense(l,784));
+
+    model siamese=Model({in1,in2},{outs});
+    setName(siamese,"siamese");
 
     // Build model
-    build(net,
+    build(siamese,
           adam(0.0001), // Optimizer
-          {"mse"}, // Losses
+          {"dice"}, // Losses
           {"dice"}, // Metrics
           CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
           //CS_CPU()
     );
-    summary(net);
-    plot(net, "model.pdf");
+    summary(siamese);
+    plot(siamese, "model.pdf");
 
     // Load dataset
     Tensor* x_train = Tensor::load("mnist_trX.bin");
@@ -73,10 +83,6 @@ int main(int argc, char **argv) {
     x_train->div_(255.0f);
 
     // Train model
-    fit(net, {x_train}, {x_train}, batch_size, epochs);
-
-    // Predict with encoder
-    vtensor tout=predict(encoder,{x_train});
-    tout[0]->info();
+    fit(siamese, {x_train,x_train}, {x_train}, batch_size, epochs);
 
 }
