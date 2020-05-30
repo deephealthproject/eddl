@@ -469,16 +469,15 @@ void Net::print_loss(int b)
 
       string name=lout[k]->name;
 
-      fprintf(stdout, "%s ", name.c_str());
+      fprintf(stdout, "%s ( ", name.c_str());
       if (losses.size()>=(k+1)) {
         fprintf(stdout, "loss[%s]=%1.3f ", losses[k]->name.c_str(), total_loss[k] / (decsize*inferenced_samples));
       }
       if (metrics.size()>=(k+1)) {
-        if (metrics[k]->name!="none")
         fprintf(stdout, "metric[%s]=%1.3f ", metrics[k]->name.c_str(), total_metric[k] / (decsize*inferenced_samples));
       }
 
-      fprintf(stdout, " -- ");
+      fprintf(stdout, ") -- ");
 
 
       if ((flog_tr!=nullptr)&&(trmode)) {

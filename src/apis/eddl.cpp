@@ -65,10 +65,19 @@ namespace eddl {
         vector<Loss *> l;
         vector<Metric *> m;
 
+        if (lo.size()!=net->lout.size()) {
+          msg("Different number of losses and output layers. Use \"none\"","build");
+        }
+
         // Replace string by functions
         for (const auto &li : lo){
             l.push_back(getLoss(li));
         }
+
+        if (me.size()!=net->lout.size()) {
+          msg("Different number of metrics and output layers. Use \"none\"","build");
+        }
+
         for (const auto &mi : me){
             m.push_back(getMetric(mi));
         }
@@ -385,6 +394,9 @@ namespace eddl {
         }
         else if (type == "dice"){
             return new LDice();
+        }
+        else if (type == "none"){
+            return new Loss("none");
         }
         return nullptr;
     }
