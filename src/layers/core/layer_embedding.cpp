@@ -86,7 +86,11 @@ void LEmbedding::forward()
   for(int i=0;i<b*length;i++) {
     int val=inputc->get_({i});
     //int val=0;
-    if (val>=vocsize) {cout<<"word:"<<val<<endl;msg("word > vocsize","LEmbedding::forward");}
+    if (val>=vocsize) {
+      cout<<"\n Warning word:"<<val<<" out of vocabulary\n";
+      val=0;
+      //msg("word > vocsize","LEmbedding::forward");
+    }
     sind.push_back(val);
   }
 

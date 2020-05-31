@@ -42,7 +42,6 @@ int main(int argc, char **argv) {
     // Download EuTrans
     //download_eutrans();
 
-
     // Settings
     int epochs = 10;
     int batch_size = 32;
@@ -57,7 +56,7 @@ int main(int argc, char **argv) {
     layer in = Input({1}); //1 word
     layer l = in;
 
-    layer lE = RandomUniform(Embedding(l, invs, 1,embedding),-0.05,0.05);
+    layer lE = Dropout(RandomUniform(Embedding(l, invs, 1,embedding),-0.05,0.05),0.2);
 
     l = LSTM(lE,128);
 
@@ -95,13 +94,20 @@ int main(int argc, char **argv) {
     Tensor *y_train=Tensor::load("EuTransCod/tren.bin","bin");
     y_train=onehot(y_train,outvs);
 
+    Tensor *x_test=Tensor::load("EuTransCod/tses.bin","bin");
+    Tensor *y_test=Tensor::load("EuTransCod/tsen.bin","bin");
+    y_test=onehot(y_test,outvs);
+
     x_train->reshape_({x_train->shape[0],ilength,1}); //batch x timesteps x input_dim
     y_train->reshape_({y_train->shape[0],olength,outvs}); //batch x timesteps x ouput_dim
+
+    x_test->reshape_({x_test->shape[0],ilength,1}); //batch x timesteps x input_dim
+    y_test->reshape_({y_test->shape[0],olength,outvs}); //batch x timesteps x ouput_dim
 
     // Train model
     for(int i=0;i<epochs;i++) {
       fit(net, {x_train}, {y_train}, batch_size, 1);
-      //evaluate(net,{x_test},{y_test});
+      evaluate(net,{x_test},{y_test});
     }
 
 }
