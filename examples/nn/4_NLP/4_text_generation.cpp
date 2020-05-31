@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
 
     layer lE = RandomUniform(Embedding(l, invs, 1,embedding),-0.05,0.05);
 
-    l = ReLu(Dense(lE,outvs));
+    l = ReLu(Dense(lE,1024));
 
     // Decoder
     l = Decoder(LSTM(l,256),outvs);

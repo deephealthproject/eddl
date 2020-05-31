@@ -56,9 +56,9 @@ int main(int argc, char **argv) {
     layer in = Input({1}); //1 word
     layer l = in;
 
-    layer lE = Dropout(RandomUniform(Embedding(l, invs, 1,embedding),-0.05,0.05),0.2);
+    layer lE = Dropout(RandomUniform(Embedding(l, invs, 1,embedding,true),-0.05,0.05),0.5); // mask_zeros=true
 
-    l = LSTM(lE,128);
+    l = LSTM(lE,128,true);  // mask_zeros=true
 
     // Decoder
     l = Decoder(LSTM(l,128),outvs);
@@ -69,8 +69,6 @@ int main(int argc, char **argv) {
 
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
-
-
 
     optimizer opt=adam(0.001);
     //opt->set_clip_val(0.01);

@@ -363,7 +363,7 @@ Net* Net::unroll_dec(int inl, int outl) {
     if (layers[i]->isdecoder) break;
     else frnn[i]=false;
 
-
+/*
   for(j=0; j<layers.size();j++) {
     if (frnn[j]) cout<<layers[j]->name<<"X"<<"-->";
     else cout<<layers[j]->name<<"-->";
@@ -371,7 +371,7 @@ Net* Net::unroll_dec(int inl, int outl) {
   cout<<"\n";
 
   getchar();
-
+*/
   // unroll inputs
   nin=new vlayer[inl];
   nlayers=new vlayer[outl];
