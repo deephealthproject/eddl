@@ -406,7 +406,7 @@ void Tensor::not_equal(Tensor *A, Tensor *B, Tensor *C){
 }
 
 int Tensor::eqsize(Tensor *A, Tensor *B){
-    Tensor::sameShape(A, B);
+    return Tensor::sameShape(A, B);
 }
 
 
