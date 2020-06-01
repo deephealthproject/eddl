@@ -14,10 +14,8 @@
 
 #include "eddl/hardware/cpu/nn/cpu_nn.h"
 
-void cpu_relu(Tensor *A, Tensor *B){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_relu\n");
-    #endif
+void cpu_relu(Tensor *A, Tensor *B){ 
+  _profile(_CPU_RELU);
   #pragma omp parallel for
   for (int i = 0; i < A->size; i++) {
     if (A->ptr[i] > 0.0) B->ptr[i] = A->ptr[i];
@@ -26,9 +24,7 @@ void cpu_relu(Tensor *A, Tensor *B){
 }
 
 void cpu_d_relu(Tensor *D, Tensor *I, Tensor *PD){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_d_relu\n");
-    #endif
+ _profile(_CPU_D_RELU);   
   #pragma omp parallel for
   for (int i = 0; i < D->size; i++) {
     if (I->ptr[i] > 0.0) PD->ptr[i] += D->ptr[i];
@@ -37,9 +33,7 @@ void cpu_d_relu(Tensor *D, Tensor *I, Tensor *PD){
 }
 
 void cpu_thresholded_relu(Tensor *A, Tensor *B,float param){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_thresholded_relu\n");
-    #endif
+  _profile(_CPU_THRESHOLDED_RELU);
   #pragma omp parallel for
   for (int i = 0; i < A->size; i++) {
     if (A->ptr[i] > param) B->ptr[i] = A->ptr[i];
@@ -48,9 +42,7 @@ void cpu_thresholded_relu(Tensor *A, Tensor *B,float param){
 }
 
 void cpu_d_thresholded_relu(Tensor *D, Tensor *I, Tensor *PD,float param){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_d_thresholded_relu\n");
-    #endif
+  _profile(_CPU_D_THRESHOLDED_RELU);
   #pragma omp parallel for
   for (int i = 0; i < D->size; i++) {
     if (I->ptr[i] > param) PD->ptr[i] += D->ptr[i];
@@ -59,9 +51,7 @@ void cpu_d_thresholded_relu(Tensor *D, Tensor *I, Tensor *PD,float param){
 }
 
 void cpu_leaky_relu(Tensor *A, Tensor *B,float param){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_leaky_relu\n");
-    #endif
+  _profile(_CPU_LEAKY_RELU);
   #pragma omp parallel for
   for (int i = 0; i < A->size; i++) {
     if (A->ptr[i] > 0.0) B->ptr[i] = A->ptr[i];
@@ -70,9 +60,7 @@ void cpu_leaky_relu(Tensor *A, Tensor *B,float param){
 }
 
 void cpu_d_leaky_relu(Tensor *D, Tensor *I, Tensor *PD,float param){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_d_leaky_relu\n");
-    #endif
+  _profile(_CPU_D_LEAKY_RELU);
   #pragma omp parallel for
   for (int i = 0; i < D->size; i++) {
     if (I->ptr[i] > 0.0) PD->ptr[i] += D->ptr[i];
@@ -81,9 +69,7 @@ void cpu_d_leaky_relu(Tensor *D, Tensor *I, Tensor *PD,float param){
 }
 
 void cpu_elu(Tensor *A, Tensor *B, float param){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_elu\n");
-    #endif
+  _profile(_CPU_ELU);
   #pragma omp parallel for
   for (int i = 0; i < A->size; i++) {
     if (A->ptr[i] > 0.0) B->ptr[i] = A->ptr[i];
@@ -92,9 +78,7 @@ void cpu_elu(Tensor *A, Tensor *B, float param){
 }
 
 void cpu_d_elu(Tensor *D, Tensor *I, Tensor *PD, float param){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_d_elu\n");
-    #endif
+  _profile(_CPU_D_ELU);
   #pragma omp parallel for
   for (int i = 0; i < D->size; i++) {
     if (I->ptr[i] > 0.0) PD->ptr[i] += D->ptr[i];
@@ -103,9 +87,7 @@ void cpu_d_elu(Tensor *D, Tensor *I, Tensor *PD, float param){
 }
 
 void cpu_softplus(Tensor *A, Tensor *B){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_softplus\n");
-    #endif
+    _profile(_CPU_SOFTPLUS);
     #pragma omp parallel for
     for (int i = 0; i < A->size; i++) {
         B->ptr[i] = ::logf(1 + ::expf(A->ptr[i]));
@@ -113,9 +95,7 @@ void cpu_softplus(Tensor *A, Tensor *B){
 }
 
 void cpu_d_softplus(Tensor *D, Tensor *I, Tensor *PD){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_d_softplus\n");
-    #endif
+    _profile(_CPU_LEAKY_RELU);
     #pragma omp parallel for
     for (int i = 0; i < D->size; i++) {
         PD->ptr[i] += D->ptr[i] * 1/(1 + ::expf(-I->ptr[i]));
@@ -123,9 +103,7 @@ void cpu_d_softplus(Tensor *D, Tensor *I, Tensor *PD){
 }
 
 void cpu_softsign(Tensor *A, Tensor *B){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_softsign\n");
-    #endif
+    _profile(_CPU_SOFTSIGN);
     #pragma omp parallel for
     for (int i = 0; i < A->size; i++) {
         B->ptr[i] = A->ptr[i] / (1 + ::fabs(A->ptr[i]));
@@ -133,9 +111,7 @@ void cpu_softsign(Tensor *A, Tensor *B){
 }
 
 void cpu_d_softsign(Tensor *D, Tensor *I, Tensor *PD){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_d_softsign\n");
-    #endif
+    _profile(_CPU_D_SOFTSIGN);
     #pragma omp parallel for
     for (int i = 0; i < D->size; i++) {
         float denom = 1 + ::fabs(I->ptr[i]);
@@ -144,9 +120,7 @@ void cpu_d_softsign(Tensor *D, Tensor *I, Tensor *PD){
 }
 
 void cpu_linear(Tensor *A, Tensor *B, float param){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_linear\n");
-    #endif
+  _profile(_CPU_LINEAR);
   #pragma omp parallel for
   for (int i = 0; i < A->size; i++) {
     B->ptr[i] = param * A->ptr[i];
@@ -154,9 +128,7 @@ void cpu_linear(Tensor *A, Tensor *B, float param){
 }
 
 void cpu_d_linear(Tensor *D, Tensor *I, Tensor *PD, float param){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_d_linear\n");
-    #endif
+  _profile(_CPU_D_LINEAR);
   #pragma omp parallel for
   for (int i = 0; i < D->size; i++) {
     PD->ptr[i] += D->ptr[i] * param;
@@ -164,27 +136,21 @@ void cpu_d_linear(Tensor *D, Tensor *I, Tensor *PD, float param){
 }
 
 void cpu_sigmoid(Tensor *A, Tensor *B){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_sigmoid\n");
-    #endif
+  _profile(_CPU_SIGMOID);
   #pragma omp parallel for
   for (int i = 0; i < A->size; i++)
     B->ptr[i] = 1/(1+std::exp(-A->ptr[i]));
 }
 
 void cpu_d_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_d_sigmoid\n");
-    #endif
+  _profile(_CPU_D_SIGMOID);
   #pragma omp parallel for
   for (int i = 0; i < D->size; i++)
     PD->ptr[i] += D->ptr[i]*((1-I->ptr[i])*I->ptr[i]);
 }
 
 void cpu_hard_sigmoid(Tensor *A, Tensor *B){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_hard_sigmoid\n");
-    #endif
+  _profile(_CPU_HARD_SIGMOID);
   #pragma omp parallel for
   for (int i = 0; i < A->size; i++) {
     if (A->ptr[i] > 2.5) B->ptr[i] = 1.0;
@@ -194,9 +160,7 @@ void cpu_hard_sigmoid(Tensor *A, Tensor *B){
 }
 
 void cpu_d_hard_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_d_hard_sigmoid\n");
-    #endif
+  _profile(_CPU_D_HARD_SIGMOID);
   #pragma omp parallel for
   for (int i = 0; i < D->size; i++)
     if (I->ptr[i] < -2.5 || I->ptr[i] > 2.5) PD->ptr[i] += 0;
@@ -204,9 +168,7 @@ void cpu_d_hard_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
 }
 
 void cpu_exp(Tensor *A, Tensor *B){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_exp\n");
-    #endif
+  _profile(_CPU_EXP);
   #pragma omp parallel for
   for (int i = 0; i < A->size; i++) {
     B->ptr[i] = std::exp(A->ptr[i]);
@@ -214,18 +176,14 @@ void cpu_exp(Tensor *A, Tensor *B){
 }
 
 void cpu_d_exp(Tensor *D, Tensor *I, Tensor *PD){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_d_exp\n");
-    #endif
+  _profile(_CPU_D_EXP);
   #pragma omp parallel for
   for (int i = 0; i < D->size; i++)
     PD->ptr[i] += D->ptr[i] * I->ptr[i];
 }
 
 void cpu_tanh(Tensor *A, Tensor *B){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_tanh\n");
-    #endif
+  _profile(_CPU_TANH);
   #pragma omp parallel for
   for (int i = 0; i < A->size; i++) {
     float p=std::exp(A->ptr[i]);
@@ -235,9 +193,7 @@ void cpu_tanh(Tensor *A, Tensor *B){
 }
 
 void cpu_d_tanh(Tensor *D, Tensor *I, Tensor *PD){
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_d_tanh\n");
-    #endif
+  _profile(_CPU_D_TANH);
   #pragma omp parallel for
   for (int i = 0; i < D->size; i++)
     PD->ptr[i] += D->ptr[i]*(1-(I->ptr[i]*I->ptr[i]));
@@ -246,9 +202,7 @@ void cpu_d_tanh(Tensor *D, Tensor *I, Tensor *PD){
 
 
 void cpu_softmax(Tensor *A, Tensor *B) {
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_softmax\n");
-    #endif
+  _profile(_CPU_SOFTMAX);
   float max, sum;
 
   //#pragma omp parallel for
@@ -264,9 +218,7 @@ void cpu_softmax(Tensor *A, Tensor *B) {
 }
 
 void cpu_d_softmax(Tensor *D, Tensor *I, Tensor *PD) {
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_d_softmax\n");
-    #endif
+  _profile(_CPU_D_SOFTMAX);
   PD->tsem->lock();
 
   #pragma omp parallel for

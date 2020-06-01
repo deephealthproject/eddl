@@ -41,9 +41,7 @@ void add_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsi
 
 void im2col(int b,ConvolDescriptor *D,float *ptrI,int col2im)
 {
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_im2col\n");
-    #endif
+  _profile(CPU_IM2COL);
   int i,j,k;
   int pz,py,px,y,x;
   int ksize=D->kr*D->kc;
@@ -87,9 +85,7 @@ void im2col(int b,ConvolDescriptor *D,float *ptrI,int col2im)
 
 void cpu_conv2D(ConvolDescriptor *D)
 {
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_conv2D\n");
-    #endif
+  _profile(_CPU_CONV2D);
   int osize=D->z*D->r*D->c;
   int isize=D->r*D->c*D->kc*D->kr*D->kz;//r*c,kr*kc*kz
 
@@ -130,9 +126,7 @@ void cpu_conv2D(ConvolDescriptor *D)
 
 void cpu_conv2D_grad(ConvolDescriptor *D)
 {
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_conv2D_grad\n");
-    #endif
+  _profile(_CPU_CONV2D_GRAD);
   //return;
   int osize=D->z*D->r*D->c;
   int isize=D->r*D->c*D->kc*D->kr*D->kz;//r*c,kr*kc*kz
@@ -169,9 +163,7 @@ void cpu_conv2D_grad(ConvolDescriptor *D)
 
 void cpu_conv2D_back(ConvolDescriptor *D)
 {
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_conv2D_back\n");
-    #endif
+  _profile(_CPU_CONV2D_BACK);
   int osize=D->z*D->r*D->c;
   int isize=D->r*D->c*D->kc*D->kr*D->kz;//r*c,kr*kc*kz
 

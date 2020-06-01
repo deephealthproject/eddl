@@ -18,9 +18,7 @@
 // BN
 void cpu_permute_channels_last(Tensor *A,Tensor *B)
 {
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_permute_channels_last\n");
-    #endif
+  _profile(_CPU_PERMUTE_CHANELS_LAST);
   int b,z,r,c;
 
   b=A->shape[0];
@@ -43,9 +41,7 @@ void cpu_permute_channels_last(Tensor *A,Tensor *B)
 
 void cpu_permute_channels_first(Tensor *A,Tensor *B)
 {
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_permute_channels_first\n");
-    #endif
+  _profile(_CPU_PERMUTE_CHANELS_FIRST);
   int b,z,r,c;
 
   b=B->shape[0];
@@ -69,9 +65,7 @@ void cpu_permute_channels_first(Tensor *A,Tensor *B)
 
 void cpu_permute_batch_last(Tensor *A,Tensor *B)
 {
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_permute_batch_last\n");
-    #endif
+  _profile(_CPU_PERMUTE_BATCH_LAST);
   int b,z,r,c;
 
   b=A->shape[0];
@@ -94,9 +88,7 @@ void cpu_permute_batch_last(Tensor *A,Tensor *B)
 
 void cpu_permute_batch_first(Tensor *A,Tensor *B)
 {
-    #ifdef DEBUG_FUNCS 
-    printf("cpu_permute_batch_first\n");
-    #endif
+  _profile(_CPU_PERMUTE_BATCH_FIRST);
   int b,z,r,c;
 
   b=B->shape[0];
