@@ -350,7 +350,7 @@ void cpu_crop_random(Tensor *A, Tensor *B){
 void cpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant){
 
 
-    _profile(_CPU_SCALE_RANDOM);
+    _profile(_CPU_CROP_SCALE_RANDOM);
 #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
 

@@ -95,7 +95,7 @@ void cpu_softplus(Tensor *A, Tensor *B){
 }
 
 void cpu_d_softplus(Tensor *D, Tensor *I, Tensor *PD){
-    _profile(_CPU_LEAKY_RELU);
+    _profile(_CPU_D_SOFTPLUS);
     #pragma omp parallel for
     for (int i = 0; i < D->size; i++) {
         PD->ptr[i] += D->ptr[i] * 1/(1 + ::expf(-I->ptr[i]));

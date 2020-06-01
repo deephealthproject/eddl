@@ -11,6 +11,8 @@
 #ifndef EDDL_CPU_NN_H
 #define EDDL_CPU_NN_H
 
+#include "eddl/hardware/cpu/cpu_profile.h"
+
 #include "eddl/tensor/tensor.h"
 #include "eddl/descriptors/descriptors.h"
 

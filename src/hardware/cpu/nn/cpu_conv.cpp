@@ -41,7 +41,7 @@ void add_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsi
 
 void im2col(int b,ConvolDescriptor *D,float *ptrI,int col2im)
 {
-  _profile(CPU_IM2COL);
+  _profile(_CPU_IM2COL);
   int i,j,k;
   int pz,py,px,y,x;
   int ksize=D->kr*D->kc;
