@@ -405,10 +405,10 @@ void Tensor::not_equal(Tensor *A, Tensor *B, Tensor *C){
 #endif
 }
 
-
-int Tensor::eqsize(Tensor *A, Tensor *B) {  // Legacy
-    return Tensor::sameShape(A, B);
+int Tensor::eqsize(Tensor *A, Tensor *B){
+    Tensor::sameShape(A, B);
 }
+
 
 int Tensor::sameShape(Tensor *A, Tensor *B) {
     if (A->ndim != B->ndim) return 0;

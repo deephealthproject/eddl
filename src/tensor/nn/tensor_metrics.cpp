@@ -47,7 +47,7 @@ namespace tensorNN {
 
     int bin_accuracy(Tensor *A, Tensor *B) {
         if (A->device != B->device) msg("Tensors in different devices", "Tensor::accuracy");
-        if (!Tensor::equivalent(A, B)) msg("Incompatible dims", "Tensor::accuracy");
+        if (!Tensor::sameShape(A, B)) msg("Incompatible dims", "Tensor::accuracy");
         if (A->ndim != 2) msg("Accuracy only over 2D Tensor (batch x prob)", "Tensor::Bin_Accuracy");
 
         if (A->shape[1] != 1)
