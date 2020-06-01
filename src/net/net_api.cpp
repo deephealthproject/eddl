@@ -870,7 +870,6 @@ void Net::evaluate(vtensor tin, vtensor tout) {
     msg("different number of samples in output tensor", "Net.evaluate");
 
 
-
     printf("Evaluate with batch size %d\n",batch_size);
 
     // Create internal variables

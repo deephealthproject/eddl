@@ -40,7 +40,7 @@ Tensor *onehot(Tensor *in, int vocs)
 //////////////////////////////////
 int main(int argc, char **argv) {
     // Download EuTrans
-    //download_eutrans();
+    download_eutrans();
 
     // Settings
     int epochs = 10;
@@ -88,12 +88,12 @@ int main(int argc, char **argv) {
 
 
     // Load dataset
-    Tensor *x_train=Tensor::load("EuTransCod/tres.bin","bin");
-    Tensor *y_train=Tensor::load("EuTransCod/tren.bin","bin");
+    Tensor *x_train=Tensor::load("eutrans_trX.bin","bin");
+    Tensor *y_train=Tensor::load("eutrans_trY.bin","bin");
     y_train=onehot(y_train,outvs);
 
-    Tensor *x_test=Tensor::load("EuTransCod/tses.bin","bin");
-    Tensor *y_test=Tensor::load("EuTransCod/tsen.bin","bin");
+    Tensor *x_test=Tensor::load("eutrans_tsX.bin","bin");
+    Tensor *y_test=Tensor::load("eutrans_tsY.bin","bin");
     y_test=onehot(y_test,outvs);
 
     x_train->reshape_({x_train->shape[0],ilength,1}); //batch x timesteps x input_dim
