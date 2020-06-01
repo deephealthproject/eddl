@@ -13,6 +13,7 @@
 
 void cpu_reduce(Tensor *A, Tensor *B,string mode,int* map)
 {
+  _profile(_CPU_REDUCE);
   int i,j,min,max,sum;
   int s=A->size/B->size;
 
@@ -50,6 +51,7 @@ void cpu_reduce(Tensor *A, Tensor *B,string mode,MapReduceDescriptor *MD)
 
 void cpu_reduce_op(Tensor *A, Tensor *B,string op,int* map)
 {
+  _profile(_CPU_REDUCE_OP);
   int i,j,min,max,sum;
   int s=A->size/B->size;
 
@@ -85,6 +87,7 @@ void cpu_reduce_op(Tensor *A, Tensor *B,string op,MapReduceDescriptor *MD)
 
 
 void cpu_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
+  _profile(_CPU_REDUCE_SUM2D);
     if (axis == 0) {
         if (!incB) for (int i = 0; i < A->shape[1]; ++i) B->ptr[i] = 0;
 
@@ -107,6 +110,8 @@ void cpu_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
 
 
 void cpu_reduction(ReduceDescriptor *RD){
+
+  _profile(_CPU_REDUCTION);
 
       float val,sum;
       int ind;
@@ -173,6 +178,8 @@ void cpu_reduction(ReduceDescriptor *RD){
   }
 
   void cpu_reduction_back(ReduceDescriptor *RD){
+
+  _profile(_CPU_REDUCTION_BACK);
 
       float val,sum;
       int ind;

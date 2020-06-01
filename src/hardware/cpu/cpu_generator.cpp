@@ -14,13 +14,15 @@
 void
 cpu_rand_uniform(Tensor * A, float v)
 {
-    #pragma omp parallel for
+    _profile(_CPU_RAND_UNIFORM);
+#pragma omp parallel for
     for (int i = 0; i < A->size; ++i) A->ptr[i] = uniform() * v;
 }
 
 void
 cpu_rand_signed_uniform(Tensor * A, float v)
 {
+    _profile(_CPU_RAND_SIGNED_UNIFORM);
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i) A->ptr[i] = signed_uniform() * v;
 }
@@ -28,6 +30,7 @@ cpu_rand_signed_uniform(Tensor * A, float v)
 void
 cpu_rand_binary(Tensor * A, float v)
 {
+    _profile(_CPU_BINARY);
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i)
         if (uniform() < v) A->ptr[i] = 1.0;
@@ -35,6 +38,7 @@ cpu_rand_binary(Tensor * A, float v)
 }
 
 void cpu_rand_normal(Tensor * A, float m, float s, bool fast_math) {
+    _profile(_CPU_RAND_NORMAL);
     int r = rand();
 
     if (fast_math) {

@@ -10,6 +10,9 @@
 #include "eddl/hardware/cpu/nn/cpu_nn.h"
 
 void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
+    #ifdef DEBUG_FUNCS 
+    printf("cpu_repeat_nn\n");
+    #endif
     // TODO: Should be for N dimensions, not 2 (...and generic, not just NN)
     #pragma omp parallel for
     for(int i=0; i<B->size; i++){
@@ -28,6 +31,9 @@ void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
 }
 
 void cpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
+    #ifdef DEBUG_FUNCS 
+    printf("cpu_d_repeat_nn\n");
+    #endif
     // TODO: Should be for N dimensions, not 2 (...and generic, not just NN)
     ////#pragma omp parallel for
 

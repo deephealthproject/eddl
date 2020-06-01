@@ -11,6 +11,7 @@
 #include "eddl/hardware/cpu/cpu_hw.h"
 
 void cpu_range(Tensor *A, float min, float step){
+    _profile(_CPU_RANGE);
     float v=min;
 
     //#pragma omp parallel for
@@ -21,6 +22,7 @@ void cpu_range(Tensor *A, float min, float step){
 }
 
 void cpu_eye(Tensor *A, int offset){
+    _profile(_CPU_EYE);
     #pragma omp parallel for
     for(int i=0; i<A->size; i++){
         if ((i/A->shape[0]+offset) == i%A->shape[1]){ A->ptr[i] = 1.0f; }  // rows+offset == col?

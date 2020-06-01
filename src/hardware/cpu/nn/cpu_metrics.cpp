@@ -15,6 +15,9 @@
 #include "eddl/hardware/cpu/nn/cpu_nn.h"
 
 int cpu_accuracy(Tensor *A, Tensor *B){
+    #ifdef DEBUG_FUNCS 
+    printf("cpu_accuracy\n");
+    #endif
   int acc = 0;
   int aind, bind;
 

@@ -18,6 +18,9 @@
 
 
 void cpu_mpool2D(PoolDescriptor *D){
+    #ifdef DEBUG_FUNCS 
+    printf("cpu_mpool2D\n");
+    #endif
     int isize = D->ir*D->ic*D->iz;
     int irsize = D->ir*D->ic;
 
@@ -55,6 +58,9 @@ void cpu_mpool2D(PoolDescriptor *D){
 }
 
 void cpu_mpool2D_back(PoolDescriptor *D){
+    #ifdef DEBUG_FUNCS 
+    printf("cpu_mpool2D_back\n");
+    #endif
     int isize = D->ir*D->ic*D->iz;
     int irsize = D->ir*D->ic;
 
@@ -77,6 +83,9 @@ void cpu_mpool2D_back(PoolDescriptor *D){
 }
 
 void cpu_avgpool2D(PoolDescriptor *D){
+    #ifdef DEBUG_FUNCS 
+    printf("cpu_avgpool2D\n");
+    #endif
     int isize = D->ir*D->ic*D->iz;
     int irsize = D->ir*D->ic;
     int ksize = D->kr*D->kc;
@@ -111,6 +120,9 @@ void cpu_avgpool2D(PoolDescriptor *D){
 }
 
 void cpu_avgpool2D_back(PoolDescriptor *D){
+    #ifdef DEBUG_FUNCS 
+    printf("cpu_avgpool2D_back\n");
+    #endif
     int isize = D->ir*D->ic*D->iz;
     int irsize = D->ir*D->ic;
     int ksize = D->kr*D->kc;

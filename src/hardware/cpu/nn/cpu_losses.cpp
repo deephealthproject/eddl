@@ -16,6 +16,9 @@
 
 
 void cpu_cent(Tensor *A, Tensor *B, Tensor *C){
+    #ifdef DEBUG_FUNCS 
+    printf("cpu_cent\n");
+    #endif
   #pragma omp parallel for
   for (int i = 0; i < A->size; i++) {
     C->ptr[i] = 0;

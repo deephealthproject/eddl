@@ -21,6 +21,7 @@
 #endif
 
 void cpu_single_shift(int b, Tensor *A, Tensor *B, vector<int> shift, int mode, float constant){
+    _profile(_CPU_SINGLE_SHIFT);
     for(int c=0; c<B->shape[1]; c++) {
         for(int Bi=0; Bi<B->shape[2];Bi++) {
             for(int Bj=0; Bj<B->shape[3];Bj++) {
@@ -48,6 +49,7 @@ void cpu_single_shift(int b, Tensor *A, Tensor *B, vector<int> shift, int mode, 
 }
 
 void cpu_single_rotate(int b, Tensor *A, Tensor *B, float angle, vector<int> offset_center, int mode, float constant){
+    _profile(_CPU_SINGLE_ROTATE);
     float side_a = A->shape[2]/2.0f;
     float side_b = A->shape[3]/2.0f;
     int center[2] = {(int)side_a+offset_center[0], (int)side_b+offset_center[1]};
@@ -82,6 +84,7 @@ void cpu_single_rotate(int b, Tensor *A, Tensor *B, float angle, vector<int> off
 }
 
 void cpu_single_scale(int b, int* offsets, Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant){
+    _profile(_CPU_SINGLE_SCALE);
 
     for(int c=0; c<B->shape[1]; c++) {
 
@@ -110,6 +113,7 @@ void cpu_single_scale(int b, int* offsets, Tensor *A, Tensor *B, vector<int> new
 }
 
 void cpu_single_flip(int b, bool apply, Tensor *A, Tensor *B, int axis){
+    _profile(_CPU_SINGLE_FLIP);
 
     for(int c=0; c<B->shape[1]; c++) {
         for(int Bi=0; Bi<B->shape[2];Bi++) {
@@ -131,7 +135,7 @@ void cpu_single_flip(int b, bool apply, Tensor *A, Tensor *B, int axis){
 }
 
 void cpu_single_crop(int b, const int* offsets, Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant, bool inverse){
-
+    _profile(_CPU_SINGLE_CROP);
     for(int c=0; c<B->shape[1]; c++) {
         for(int Bi=0; Bi<B->shape[2];Bi++) {
             for(int Bj=0; Bj<B->shape[3];Bj++) {
@@ -155,6 +159,7 @@ void cpu_single_crop(int b, const int* offsets, Tensor *A, Tensor *B, vector<int
 }
 
 void cpu_single_crop_scale(int b, Tensor* A, Tensor* B, vector<int> coords_from, vector<int> coords_to, int mode, float constant){
+    _profile(_CPU_SINGLE_CROP_SCALE);
     int A_hc = coords_to[0]-coords_from[0]+1;
     int A_wc = coords_to[1]-coords_from[1]+1;
 
@@ -182,7 +187,7 @@ void cpu_single_crop_scale(int b, Tensor* A, Tensor* B, vector<int> coords_from,
 // CPU: Data augmentation (2D Optimized) ********************************************
 void cpu_shift(Tensor *A, Tensor *B, vector<int> shift, int mode, float constant) {
     // https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.shift.html
-
+    _profile(_CPU_SHIFT);
 #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
         cpu_single_shift(b, A, B, shift, mode, constant);
@@ -191,7 +196,7 @@ void cpu_shift(Tensor *A, Tensor *B, vector<int> shift, int mode, float constant
 
 void cpu_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, int mode, float constant){
     // https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.rotate.html
-
+    _profile(_CPU_ROTATE);
 #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
         cpu_single_rotate(b, A, B, angle, offset_center, mode, constant);
@@ -208,6 +213,7 @@ void cpu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float cons
     // A=10x10; B=10x10; new_size=5x5 => Zoom-out centered
     // A=5x5; B=5x5; new_size=10x10 => Zoom in window
 
+    _profile(_CPU_SCALE);
     // Center crop (if the if the crop is smaller than B)
     int offsets[2] = {0, 0};
     offsets[0] = (new_shape[0] - B->shape[2])/2.0f;
@@ -234,6 +240,7 @@ void cpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_
     // -> A=10x10; B=10x10; crop_size=3x3 => Crop with padding (inverse of cutout)
     // Inverse => For cutout
 
+    _profile(_CPU_CROP);
     int offsets[2] = {0, 0};
     if(!Tensor::eqsize(A, B)){
         offsets[0] = coords_from[0];
@@ -248,7 +255,7 @@ void cpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_
 
 
 void cpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, int mode, float constant){
-
+    _profile(_CPU_CROP_SCALE);
 #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
         cpu_single_crop_scale(b, A, B, coords_from, coords_to, mode, constant);
@@ -260,6 +267,7 @@ void cpu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> c
 void cpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int mode, float constant) {
     // https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.shift.html
 
+    _profile(_CPU_SHIFT_RANDOM);
 #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
         int shift_y = (int)(A->shape[2] * uniform(factor_y[0], factor_y[1]));
@@ -271,6 +279,7 @@ void cpu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float
 
 void cpu_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center, int mode, float constant){
     // https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.rotate.html
+    _profile(_CPU_ROTATE_RANDOM);
 #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
         float angle =  uniform(factor[0], factor[1]);
@@ -283,6 +292,7 @@ void cpu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, floa
     // I use "new_shape" because I might want to keep the shape of B, but thinking of it as a bigger/smaller matrix
     // If the factor is less than 1.0f, performs a downscale with padding
 
+    _profile(_CPU_SCALE_RANDOM);
 #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
         float scale = uniform(factor[0], factor[1]);
@@ -301,6 +311,8 @@ void cpu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, floa
 void cpu_flip_random(Tensor *A, Tensor *B, int axis){
     // https://docs.scipy.org/doc/numpy/reference/generated/numpy.flip.html
 
+
+    _profile(_CPU_FLIP_RANDOM);
 #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
         bool apply = uniform(0.0f, 1.0f) >= 0.5f;
@@ -312,6 +324,7 @@ void cpu_flip_random(Tensor *A, Tensor *B, int axis){
 void cpu_crop_random(Tensor *A, Tensor *B){
     // Performs a crop with padding (Keeps the original size)
 
+    _profile(_CPU_CROP_RANDOM);
 #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
 
@@ -336,6 +349,8 @@ void cpu_crop_random(Tensor *A, Tensor *B){
 
 void cpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant){
 
+
+    _profile(_CPU_SCALE_RANDOM);
 #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
 
@@ -359,6 +374,7 @@ void cpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode,
 void cpu_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant){
     // Performs a crop with padding (Keeps the original size)
 
+    _profile(_CPU_CUTOUT_RANDOM);
 #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
 
