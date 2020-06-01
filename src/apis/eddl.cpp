@@ -65,10 +65,19 @@ namespace eddl {
         vector<Loss *> l;
         vector<Metric *> m;
 
+        if (lo.size()!=net->lout.size()) {
+          msg("Different number of losses and output layers. Use \"none\"","build");
+        }
+
         // Replace string by functions
         for (const auto &li : lo){
             l.push_back(getLoss(li));
         }
+
+        if (me.size()!=net->lout.size()) {
+          msg("Different number of metrics and output layers. Use \"none\"","build");
+        }
+
         for (const auto &mi : me){
             m.push_back(getMetric(mi));
         }
@@ -385,6 +394,9 @@ namespace eddl {
         }
         else if (type == "dice"){
             return new LDice();
+        }
+        else if (type == "none"){
+            return new Loss("none");
         }
         return nullptr;
     }
@@ -939,7 +951,7 @@ namespace eddl {
         return new LLSTM({parent}, units, mask_zeros, bidirectional, name, DEV_CPU, 0);
     }
 
-    layer Decoder(layer l, int outvs) {
+    layer Decoder(layer l, int outvs,string op) {
       layer p=l->parent[0];
 
       if (p->isrecurrent) {
@@ -963,9 +975,15 @@ namespace eddl {
         layer in=Input({outvs});
         in->name="InputDec";
         in->isdecoder=true;
-        layer sum=Sum(p,in);
-        sum->isdecoder=true;
-        layer n=l->clone(0,1,{sum},DEV_CPU);
+        layer lop;
+        if (op=="concat") lop=Concat({p,in},1);
+        else if (op=="sum") lop=Sum(p,in);
+        else {
+          msg("Incorrect operator layer","Decoder");
+        }
+        lop->isdecoder=true;
+
+        layer n=l->clone(0,1,{lop},DEV_CPU);
         n->orig=nullptr;
         n->name=l->name;
         n->isdecoder=true;
@@ -1186,7 +1204,7 @@ namespace eddl {
     }
 
     void download_eutrans(){
-      download_dataset("eutrans","bin",{"4m0h8ep53mixq6x","zekpjclm58tdevk","1bgdr8mz1lqkhgi","6cwob77654lruwq"});
+      download_dataset("eutrans","bin",{"2w0p7f4un6ci94v","g4k1bc6p4bow9tf","egcfin16gl9t92y","n8ks3lyqyhxx1e8"});
     }
 
     void download_drive(){

@@ -57,94 +57,89 @@ Net* Net::unroll_enc(int inl, int outl) {
   vector<bool> frnn;
 
 
-  cout<<"Recurrent net input sequence length="<<inl<<endl;
-
   // set vfts sort
   layers.clear();
   for(int i=0;i<vfts.size();i++)
     layers.push_back(vfts[i]);
 
-
   // check if rnn is in forward path
-  for(i=0;i<layers.size();i++)
+  for(int i=0;i<layers.size();i++)
     if (layers[i]->isrecurrent) frnn.push_back(true);
     else frnn.push_back(check_rnn_forward(layers[i]));
 
   // set sort first frnn
   vlayer lfrnn;
-  for(i=0;i<layers.size();i++)
+  for(int i=0;i<layers.size();i++)
     if (frnn[i]) lfrnn.push_back(layers[i]);
 
-  for(i=0;i<layers.size();i++)
+  for(int i=0;i<layers.size();i++)
     if (!frnn[i]) lfrnn.push_back(layers[i]);
 
-
   layers.clear();
-  for(i=0;i<lfrnn.size();i++)
+  for(int i=0;i<lfrnn.size();i++)
     layers.push_back(lfrnn[i]);
+
 
   // re-check frnn with the new sort
   frnn.clear();
-  for(i=0;i<layers.size();i++) frnn.push_back(false);
+  for(int i=0;i<layers.size();i++)
+    if (layers[i]->isrecurrent) frnn.push_back(true);
+    else frnn.push_back(check_rnn_forward(layers[i]));
+
 
 
   // unroll inputs
-  nin=new vlayer[inl+outl];
-  nlayers=new vlayer[inl+outl];
-  nout=new vlayer[outl];
-
-  int size=inl;
-  int top=1;
+  nin=new vlayer[inl];
+  nlayers=new vlayer[inl];
+  nout=new vlayer[inl];
 
   for (i = 0; i < inl; i++) {
-   //input layers
-   for (j = 0; j < lin.size(); j++)  {
-     nin[i].push_back(lin[j]->share(i, batch_size, par));
-     nlayers[i].push_back(nin[i][j]);
-   }
+    //input layers
+    for (j = 0; j < lin.size(); j++)  {
+      nin[i].push_back(lin[j]->share(i, batch_size, par));
+      nlayers[i].push_back(nin[i][j]);
+    }
 
-   // rest of layers
-   for (j = 0; j < layers.size(); j++) {
-     if ((i==inl-1)||(frnn[j])) {
-       if (!isInorig(layers[j], nlayers[i], ind)) {
-         vlayer par;
-         for (l = 0; l < layers[j]->parent.size(); l++) {
-           if (!isInorig(layers[j]->parent[l], nlayers[i], ind)) break;
-           else par.push_back(nlayers[i][ind]);
-         }
-         if (l == layers[j]->parent.size()) {
+    // rest of layers
+    for (j = 0; j < layers.size(); j++) {
+      if ((i>=(inl-outl))||(frnn[j])) {
+        if (!isInorig(layers[j], nlayers[i], ind)) {
+          vlayer par;
+          for (l = 0; l < layers[j]->parent.size(); l++) {
+            if (!isInorig(layers[j]->parent[l], nlayers[i], ind)) break;
+            else par.push_back(nlayers[i][ind]);
+          }
+          if (l == layers[j]->parent.size()) {
 
-           if ((layers[j]->isrecurrent)&&(i>0)) {
-             par.push_back(nlayers[i-1][j]);
-             nlayers[i].push_back(layers[j]->share(i, batch_size, par));
-           }
-           else {
-             nlayers[i].push_back(layers[j]->share(i, batch_size, par));
-           }
-         }
-         else msg("Unexpected error","unroll");
-       }
-     }
-   }
+            if ((layers[j]->isrecurrent)&&(i>0)) {
+              par.push_back(nlayers[i-1][j]);
+              nlayers[i].push_back(layers[j]->share(i, batch_size, par));
+            }
+            else {
+              nlayers[i].push_back(layers[j]->share(i, batch_size, par));
+            }
+          }
+          else msg("Unexpected error","unroll");
+        }
+      }
+    }
 
- // set output layers
- if (i==inl-1) {
-   for (j = 0; j < lout.size(); j++)
-     if (isInorig(lout[j], nlayers[i], ind))
-       nout[i].push_back(nlayers[i][ind]);
- }
+  // set output layers
+  if (i>=(inl-outl)) {
+    for (j = 0; j < lout.size(); j++)
+      if (isInorig(lout[j], nlayers[i], ind))
+        nout[i].push_back(nlayers[i][ind]);
+  }
 
 }
-
 
 /////
 vlayer ninl;
 vlayer noutl;
-for (i = 0; i < inl+outl; i++)
+for (i = 0; i < inl; i++)
   for (j = 0; j < nin[i].size(); j++)
     ninl.push_back(nin[i][j]);
-
-for (i = 0; i < outl; i++)
+for (i = 0; i < inl; i++)
   for (j = 0; j < nout[i].size(); j++)
     noutl.push_back(nout[i][j]);
 
@@ -166,7 +161,7 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
   vlayer par;
   vector<bool> frnn;
 
-  
+
   cout<<"Recurrent net encoder input sequence length="<<inl<<", decoder output sequence length="<<outl<<endl;
 
   // set vfts sort
@@ -368,7 +363,7 @@ Net* Net::unroll_dec(int inl, int outl) {
     if (layers[i]->isdecoder) break;
     else frnn[i]=false;
 
-
+/*
   for(j=0; j<layers.size();j++) {
     if (frnn[j]) cout<<layers[j]->name<<"X"<<"-->";
     else cout<<layers[j]->name<<"-->";
@@ -376,7 +371,7 @@ Net* Net::unroll_dec(int inl, int outl) {
   cout<<"\n";
 
   getchar();
-
+*/
   // unroll inputs
   nin=new vlayer[inl];
   nlayers=new vlayer[outl];
