@@ -392,6 +392,7 @@ void Net::split(int c, int todev) {
               }
               else {
                 n=vfts[j]->clone(i, bs, par, todev + devsel[i]);
+                n->isdecoder=vfts[j]->isdecoder;
                 n->name="clone_"+to_string(i)+vfts[j]->name;
                 vfts[j]->clones.push_back(n);
               }

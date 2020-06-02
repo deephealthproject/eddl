@@ -1468,7 +1468,7 @@ typedef NetLoss * metric;
     */
     layer LSTM(layer parent, int units, bool mask_zeros=false, bool bidirectional = false, string name = "");
 
-    layer Decoder(layer l, int ov, string op="concat");
+    layer Decoder(layer l, layer ld, string op="concat");
 
     // Layers Methods
     void set_trainable(layer l, bool val);

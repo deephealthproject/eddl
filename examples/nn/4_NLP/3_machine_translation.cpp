@@ -52,27 +52,16 @@ int main(int argc, char **argv) {
     int outvs=514;
     int embedding=64;
 
-    // Define network
+    // Encoder
     layer in = Input({1}); //1 word
     layer l = in;
 
     layer lE = Dropout(RandomUniform(Embedding(l, invs, 1,embedding,true),-0.05,0.05),0.5); // mask_zeros=true
-
-    l = LSTM(lE,128,true);  // mask_zeros=true
+    layer enc = LSTM(lE,128,true);  // mask_zeros=true
 
     // Decoder
-
-    /*
-    layer ld=Input({1});
-    ld=Dropout(RandomUniform(Embedding(l, invs, 1,embedding,true),-0.05,0.05),0.5);
-
-    l = Decoder(LSTM(ld,128),l,outvs);
-    */
-    l = Decoder(LSTM(l,128),outvs);
-
-    //l = LSTM(l,128);
-
-
+    layer ld=Input({outvs});
+    l = Decoder(LSTM(ld,128),enc);
     layer out = Softmax(Dense(l, outvs));
 
     model net = Model({in}, {out});
@@ -88,9 +77,9 @@ int main(int argc, char **argv) {
           opt, // Optimizer
           {"soft_cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
-          //CS_GPU({1}) // one GPU
+          CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          CS_CPU()
+          //CS_CPU()
     );
 
     // View model
@@ -101,21 +90,19 @@ int main(int argc, char **argv) {
     Tensor *x_train=Tensor::load("eutrans_trX.bin","bin");
     Tensor *y_train=Tensor::load("eutrans_trY.bin","bin");
     y_train=onehot(y_train,outvs);
+    x_train->reshape_({x_train->shape[0],ilength,1}); //batch x timesteps x input_dim
+    y_train->reshape_({y_train->shape[0],olength,outvs}); //batch x timesteps x ouput_dim
 
     Tensor *x_test=Tensor::load("eutrans_tsX.bin","bin");
     Tensor *y_test=Tensor::load("eutrans_tsY.bin","bin");
     y_test=onehot(y_test,outvs);
-
-    x_train->reshape_({x_train->shape[0],ilength,1}); //batch x timesteps x input_dim
-    y_train->reshape_({y_train->shape[0],olength,outvs}); //batch x timesteps x ouput_dim
-
     x_test->reshape_({x_test->shape[0],ilength,1}); //batch x timesteps x input_dim
     y_test->reshape_({y_test->shape[0],olength,outvs}); //batch x timesteps x ouput_dim
 
     // Train model
     for(int i=0;i<epochs;i++) {
       fit(net, {x_train}, {y_train}, batch_size, 1);
-      //evaluate(net,{x_test},{y_test});
+      evaluate(net,{x_test},{y_test});
     }
 
     // predict

@@ -170,11 +170,21 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
   for(int i=0;i<vfts.size();i++)
     layers.push_back(vfts[i]);
 
+  /*for(int i=0;i<layers.size();i++)
+     cout<<layers[i]->name<<endl;
+  cout<<endl;
+  */
 
   // check if rnn is in forward path
   for(i=0;i<layers.size();i++)
     if (layers[i]->isrecurrent) frnn.push_back(true);
     else frnn.push_back(check_rnn_forward(layers[i]));
+
+  /*for(int i=0;i<layers.size();i++)
+    if (frnn[i]) cout<<layers[i]->name<<"-->";
+    else cout<<layers[i]->name<<"X-->";
+  cout<<endl;
+*/
 
  // check decoder branch if any
   for(i=0;i<layers.size();i++)
@@ -211,30 +221,22 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
     }
   }
 
+  /*for(int i=0;i<layers.size();i++)
+    if (frnn[i]) cout<<layers[i]->name<<"-->";
+    else cout<<layers[i]->name<<"X-->";
+  cout<<endl;
+*/
   // unroll inputs
   nin=new vlayer[inl+outl];
   nlayers=new vlayer[inl+outl];
   nout=new vlayer[outl];
 
-  int size=inl;
-  int top=1;
-  if (isdecoder) {
-    size+=outl;
-    top=0;
-  }
+  int size=inl+outl;
+  int top=0;
 
   bool connected=false;
   din.clear();
   for (i = 0; i < size; i++) {
-
-     /*cout<<"======= "<<i<<endl;
-    if (i>0) {
-      for(j=0; j<nlayers[i-1].size();j++) {
-        cout<<nlayers[i-1][j]->name<<"-->";
-      }
-    cout<<"\n===============\n";
-  }*/
-
 
     //encoder input layers
     if (i<inl) {
@@ -267,9 +269,9 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
         }
       }
       else if ((i>=(inl-top))&&(!frnn[j])) {
+
           // End-Dec transition in case of decoder
           if ((isdecoder)&&(layers[j]->lin==0)) {
-
             vlayer par;
             Layer *n=layers[j]->share(i-inl, batch_size, par);
             //nin[i].push_back(n);
@@ -287,7 +289,8 @@ Net* Net::unroll_enc_dec(int inl, int outl) {
               if ((layers[j]->isrecurrent)&&(i>0)) {
                 if (i==inl) {
                   if (!connected) {
-                    par.push_back(nlayers[i-1][j-2]);
+                    int c=nlayers[i-1].size();
+                    par.push_back(nlayers[i-1][c-1]);
                     connected=true; // end-dec connected
                   }
                 }
@@ -372,7 +375,8 @@ Net* Net::unroll_dec(int inl, int outl) {
   cout<<"\n";
 
   getchar();
-*/
+  */
+
   // unroll inputs
   nin=new vlayer[inl];
   nlayers=new vlayer[outl];

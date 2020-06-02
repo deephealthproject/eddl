@@ -951,47 +951,77 @@ namespace eddl {
         return new LLSTM({parent}, units, mask_zeros, bidirectional, name, DEV_CPU, 0);
     }
 
-    layer Decoder(layer l, int outvs,string op) {
-      layer p=l->parent[0];
+    void setDecoder(layer l)
+    {
+       l->isdecoder=true;
+       for(int i=0;i<l->parent.size();i++)
+         setDecoder(l->parent[i]);
+    }
 
-      if (p->isrecurrent) {
-        l->parent[0]->detach(l);
 
-        layer cps=new LCopyStates({p},"",DEV_CPU, 0);
+    bool isrec(layer l)
+    {
+      if (l->isrecurrent) return true;
+
+      bool rec=false;
+      for(int i=0;i<l->parent.size();i++) {
+        if (l->parent[i]->isrecurrent) {rec=true;break;}
+        else {
+          if (isrec(l->parent[i])) {rec=true; break;}
+        }
+      }
+
+      return rec;
+    }
+
+    layer Decoder(layer dec, layer enc, string op)
+    {
+
+      bool enrec=isrec(enc);
+
+      if (enrec) {
+        // copy states from encoder
+        cout<<"Enc-Dec\n";
+        layer cps=new LCopyStates({enc},"",DEV_CPU, 0);
         cps->isdecoder=false;
 
-        layer in=Input({outvs});
-        in->name="InputDec";
-        in->isdecoder=true;
-        layer n=l->clone(0,1,{in,cps},DEV_CPU);
-        n->orig=nullptr;
-        n->name=l->name;
-        n->isdecoder=true;
-        delete l;
-        return n;
-      }else {
-        l->parent[0]->detach(l);
+        setDecoder(dec);
 
-        layer in=Input({outvs});
-        in->name="InputDec";
-        in->isdecoder=true;
+        // clone and link with encoder
+        layer in=dec->parent[0];
+        in->detach(dec);
+
+        layer n=dec->clone(0,1,{in,cps},DEV_CPU);
+        n->orig=nullptr;
+        n->name="dec_"+dec->name;
+        n->isdecoder=true;
+
+        delete dec;
+        return n;
+      }
+      else {
+        cout<<"Dec "<<endl;
+        setDecoder(dec);
+
+        layer in=dec->parent[0];
+        in->detach(dec);
+
         layer lop;
-        if (op=="concat") lop=Concat({p,in},1);
-        else if (op=="sum") lop=Sum(p,in);
+        if (op=="concat") lop=Concat({enc,in},1);
+          else if (op=="sum") lop=Sum(enc,in);
         else {
           msg("Incorrect operator layer","Decoder");
         }
         lop->isdecoder=true;
 
-        layer n=l->clone(0,1,{lop},DEV_CPU);
+        layer n=dec->clone(0,1,{lop},DEV_CPU);
         n->orig=nullptr;
-        n->name=l->name;
+        n->name="dec_"+dec->name;
         n->isdecoder=true;
-        delete l;
+        delete dec;
         return n;
       }
     }
-
 
 
     //////////////////////////////

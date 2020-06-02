@@ -41,7 +41,8 @@ int main(int argc, char **argv) {
     l = ReLu(Dense(lE,1024));
 
     // Decoder
-    l = Decoder(LSTM(l,256),outvs);
+    layer ind = Input({outvs});
+    l = Decoder(LSTM(ind,256),l,"concat");
 
     layer out = Softmax(Dense(l, outvs));
 
@@ -49,7 +50,6 @@ int main(int argc, char **argv) {
 
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
-
 
     optimizer opt=adam(0.001);
     //opt->set_clip_val(0.01);
@@ -59,9 +59,9 @@ int main(int argc, char **argv) {
           opt, // Optimizer
           {"cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
-          //CS_GPU({1}) // one GPU
+          CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          CS_CPU()
+          //CS_CPU()
     );
 
     // View model
