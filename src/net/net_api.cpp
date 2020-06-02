@@ -592,17 +592,22 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     if (optimizer == nullptr)
     msg("Net is not build", "Net.fit");
 
+    printf("hola... \n");
     // Check if number of input/output network layers matches with the input/output tensor data
     if (tin.size() != lin.size())
     msg("input tensor list does not match with defined input layers", "Net.fit");
     if (tout.size() != lout.size())
     msg("output tensor list does not match with defined output layers", "Net.fit");
 
+    printf("hola1...\n");
+
     // Check if all the data inputs has the same number of samples
     n = tin[0]->shape[0];
     for (i = 1; i < tin.size(); i++)
     if (tin[i]->shape[0] != n)
     msg("different number of samples in input tensor", "Net.fit");
+
+    printf("hola2...\n");
 
 
     // Check if the size of the output layers matches with inputs sizes
@@ -611,14 +616,19 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     msg("different number of samples in output tensor", "Net.fit");
 
 
+    printf("hola3...\n");
+
     // Set batch size
     resize(batch);
+
+    printf("hola4...\n");
 
     // Create array to store batch indices (later random)
     vind sind;
     for (i = 0; i < batch_size; i++)
     sind.push_back(0);
 
+    printf("hola5...\n");
 
     // Start training
     setmode(TRMODE);

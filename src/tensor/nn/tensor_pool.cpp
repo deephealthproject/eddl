@@ -15,7 +15,10 @@
 #include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
-
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#include "eddl/hardware/fpga/nn/fpga_nn.h"
+#endif
 
 void MPool2D(PoolDescriptor *D) {
     /////////////////////////////////////////////////////////////////////
@@ -37,9 +40,10 @@ void MPool2D(PoolDescriptor *D) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (D->I->isFPGA())
+      {
+        fpga_mpool2D(D);
+      }
 #endif
     D->O->tsem->unlock();
 }
@@ -64,9 +68,10 @@ void MPool2D_back(PoolDescriptor *D) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (D->I->isFPGA())
+      {
+        fpga_mpool2D_back(D);
+      }
 #endif
     D->ID->tsem->unlock();
 }
@@ -93,9 +98,10 @@ void AvgPool2D(PoolDescriptor *D) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (D->I->isFPGA())
+      {
+        fpga_avgpool2D(D);
+      }
 #endif
     D->O->tsem->unlock();
 }
@@ -120,9 +126,10 @@ void AvgPool2D_back(PoolDescriptor *D) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (D->I->isFPGA())
+      {
+        fpga_avgpool2D_back(D);
+      }
 #endif
     D->ID->tsem->unlock();
 }

@@ -15,8 +15,15 @@
 #include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#include "eddl/hardware/fpga/nn/fpga_nn.h"
+#endif
+
 // Resizing tensors
 void Tensor::resize(int b, float *fptr){
+
+    printf("tensor::resize\n");
 
     if (b==shape[0]) return;
 
@@ -56,9 +63,17 @@ void Tensor::resize(int b, float *fptr){
         }
 #endif
 #ifdef cFPGA
-    else {
-        // create FPGA Tensor
-      }
+    else if (isFPGA())
+        {
+          if (fptr==nullptr) {
+//            fpga_delete_tensor(fpga_device,ptr);
+//            ptr=fpga_create_tensor(fpga_device,size);
+printf("to fix! where to define fpga_device\n"); exit(1);
+          }
+          else {
+            ptr=fptr;
+          }
+        }
 #endif
 
 }
@@ -94,9 +109,9 @@ void repeat_nn(Tensor *A, Tensor *B, vector<int> size) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA()) {
+        fpga_repeat_nn(A, B, size);
+      }
 #endif
 }
 
@@ -113,8 +128,8 @@ void d_repeat_nn(Tensor *D, Tensor *A, vector<int> size) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (D->isFPGA() && A->isFPGA()) {
+        fpga_d_repeat_nn(D, A, size);
+      }
 #endif
 }

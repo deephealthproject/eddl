@@ -328,6 +328,7 @@ void Net::set_compserv(CompServ *cs){
 #endif
         } else {
             // split on multiple FPGAs
+            printf("split on FPGAs, not implemented yet\n"); exit(1);
         }
     } else {
         msg("Distributed version not yet implemented", "Net.set_compserv");
@@ -429,6 +430,8 @@ void Net::resize(int b)
   int c=snets.size();
   int bs,m;
 
+  printf("c %d\n", c);
+
   if (batch_size<c) {
     printf("=====> Warning: batch_size (%d) lower than compserv resources (%d)\n",batch_size,c);
     bs=1;
@@ -441,6 +444,7 @@ void Net::resize(int b)
   }
 
   for (j = 0; j < layers.size(); j++) {
+      printf("resize layer %d\n", j);
       layers[j]->resize(batch_size);
   }
 

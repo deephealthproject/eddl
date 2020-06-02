@@ -17,6 +17,11 @@
 #include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#include "eddl/hardware/fpga/nn/fpga_nn.h"
+#endif
+
 using namespace std;
 
 // ***** Core (in-place) *****************************
@@ -32,7 +37,7 @@ void Tensor::fill_(float v) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_fill_(this,v);
     }
 #endif
 }
@@ -226,7 +231,7 @@ void Tensor::transpose(Tensor *A, Tensor *B, vector<int> dims) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_transpose(A, N);
     }
 #endif
     B->tsem->unlock();
@@ -360,7 +365,7 @@ Tensor* Tensor::concat(const vector<Tensor*> t, unsigned int axis, Tensor* outpu
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_concat(output, t, axis, false);
     }
 #endif
 
@@ -429,7 +434,7 @@ void Tensor::concat_back(Tensor *A, const vector<Tensor*> t, unsigned int axis){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_concat(A, t, axis, true);
     }
 #endif
 }
@@ -462,7 +467,7 @@ void Tensor::select(Tensor *A, Tensor* B, SelDescriptor *sd){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_select(A, B, sd);
     }
 #endif
 
@@ -480,7 +485,7 @@ void Tensor::select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_select_back(A, B, sd);
     }
 #endif
 
@@ -512,7 +517,7 @@ void Tensor::set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_set_select(A, B, sd);
     }
 #endif
 }
@@ -530,7 +535,7 @@ void Tensor::set_select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_set_select_back(A, B, sd);
     }
 #endif
 

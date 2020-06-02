@@ -15,6 +15,10 @@
 #include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#include "eddl/hardware/fpga/nn/fpga_nn.h"
+#endif
 
 int accuracy(Tensor *A, Tensor *B) {
     if (A->device != B->device) msg("Tensors in different devices", "Tensor::accuracy");
@@ -35,9 +39,10 @@ int accuracy(Tensor *A, Tensor *B) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA())
+      {
+         fpga_accuracy(A,B);
+      }
 #endif
     B->tsem->unlock();
     return acc;

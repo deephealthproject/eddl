@@ -180,7 +180,7 @@ typedef NetLoss * metric;
       *  @param lsb  (Multi-fpga setting) Number of batches to run before synchronizing the weights of the different FPGAs
       *  @return     The computer service itself.
     */
-    compserv CS_FGPA(const vector<int> &f,int lsb=1);
+    compserv CS_FPGA(const vector<int> &f,int lsb=1);
 
     /**
       *  @brief Executes de code through the COMP Superscalar (COMPSs) framework.

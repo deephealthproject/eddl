@@ -149,7 +149,7 @@ namespace eddl {
     }
 
 
-    compserv CS_FGPA(const vector<int> &f,int lsb){
+    compserv CS_FPGA(const vector<int> &f,int lsb){
         return new CompServ(0, {}, f,lsb);
     }
 

@@ -15,6 +15,11 @@
 #include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#include "eddl/hardware/fpga/nn/fpga_nn.h"
+#endif
+
 using namespace std;
 
 void checkCompatibility(Tensor *A, Tensor *B, const string &title){

@@ -20,9 +20,6 @@
 #include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
-void _profile_add_tensor(int size);
-void _profile_remove_tensor(int size);
-
 using namespace std;
 
 // TODO: Don't like here
@@ -67,9 +64,6 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
     updateData(fptr);
 
     tsem = new mutex();
-
-    // profiling
-    _profile_add_tensor(this->size);
 }
 
 
@@ -185,8 +179,9 @@ void Tensor::updateData(float *fptr){
         }
 #endif
 #ifdef cFPGA
-    else {
+    else if (isFPGA()) {
         // create FPGA Tensor
+        printf("create tensor in fpga. Not implemented yet\n"); exit(1);
       }
 #endif
 }
@@ -216,7 +211,8 @@ void Tensor::toCPU(int dev){
       }
 #endif
 #ifdef cFPGA
-    else {
+    if (isFPGA()) {
+      printf("toCPU not implemented yet\n"); exit(1);
 
     }
 #endif
@@ -251,8 +247,8 @@ void Tensor::toGPU(int dev){
       }
 #endif
 #ifdef cFPGA
-    else {
-
+    if (isFPGA()) {
+      printf("Error, toGPU when using FPGA\n"); exit(1);
     }
 #endif
 }
@@ -294,9 +290,9 @@ Tensor::~Tensor() {
 #ifdef cFPGA
     else {
       // delete FPGA Tensor
+      printf("delete fpga tensor not implemented yet\n"); exit(1);
     }
 #endif
-  _profile_remove_tensor(this->size);
     delete tsem;
 }
 

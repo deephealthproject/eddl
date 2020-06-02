@@ -15,6 +15,11 @@
 #include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#include "eddl/hardware/fpga/nn/fpga_nn.h"
+#endif
+
 using namespace std;
 
 Tensor* raw_range(float start, float step, int size, int dev){
@@ -30,7 +35,7 @@ Tensor* raw_range(float start, float step, int size, int dev){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_range(t, start, step);
     }
 #endif
     return t;
@@ -105,7 +110,7 @@ Tensor* Tensor::eye(int rows, int offset, int dev){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_eye(t, offset);
     }
 #endif
     return t;

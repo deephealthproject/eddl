@@ -9,6 +9,10 @@
 #include "eddl/tensor/nn/tensor_nn.h"
 #include "eddl/hardware/cpu/nn/cpu_nn.h"
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/nn/fpga_nn.h"
+#endif
+
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
@@ -33,7 +37,7 @@ void ReLu(Tensor *A, Tensor *B) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_relu(A,B);
     }
 #endif
 
@@ -60,7 +64,7 @@ void D_ReLu(Tensor *D, Tensor *I, Tensor *PD) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_d_relu(D,I,PD);
     }
 #endif
     PD->tsem->unlock();
@@ -83,7 +87,7 @@ void ThresholdedReLu(Tensor *A, Tensor *B,float param) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_thresholded_relu(A,B,param);
     }
 #endif
 
@@ -108,7 +112,7 @@ void D_ThresholdedReLu(Tensor *D, Tensor *I, Tensor *PD,float param) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_d_thresholded_relu(D, I, PD, param);
     }
 #endif
     PD->tsem->unlock();
@@ -131,7 +135,7 @@ void LeakyReLu(Tensor *A, Tensor *B,float param) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_leaky_relu(A,B,param);
     }
 #endif
 
@@ -156,7 +160,7 @@ void D_LeakyReLu(Tensor *D, Tensor *I, Tensor *PD,float param) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_d_leaky_relu(D,I,PD,param);
     }
 #endif
     PD->tsem->unlock();
@@ -180,7 +184,7 @@ void ELu(Tensor *A, Tensor *B, float param) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_elu(A,B,param);
     }
 #endif
 
@@ -205,7 +209,7 @@ void D_ELu(Tensor *D, Tensor *I, Tensor *PD, float param) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_d_elu(D, I, PD, param);
     }
 #endif
     PD->tsem->unlock();
@@ -230,7 +234,7 @@ void Softplus(Tensor *A, Tensor *B) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_softplus(A, B);
     }
 #endif
 
@@ -255,7 +259,7 @@ void D_softplus(Tensor *D, Tensor *I, Tensor *PD) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_d_softplus(D, I, PD);
     }
 #endif
     PD->tsem->unlock();
@@ -280,7 +284,7 @@ void Softsign(Tensor *A, Tensor *B) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_softsign(A, B);
     }
 #endif
 
@@ -305,7 +309,7 @@ void D_softsign(Tensor *D, Tensor *I, Tensor *PD) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_d_softsign(D, I, PD);
     }
 #endif
     PD->tsem->unlock();
@@ -328,7 +332,7 @@ void Linear(Tensor *A, Tensor *B, float param) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_linear(A, B, param);
     }
 #endif
 
@@ -353,7 +357,7 @@ void D_Linear(Tensor *D, Tensor *I, Tensor *PD, float param) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_d_linear(D, I, PD, param);
     }
 #endif
     PD->tsem->unlock();
@@ -376,7 +380,7 @@ void Sigmoid(Tensor *A, Tensor *B) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_sigmoid(A, B);
     }
 #endif
 
@@ -401,7 +405,7 @@ void D_Sigmoid(Tensor *D, Tensor *I, Tensor *PD) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_d_sigmoid(D, I, PD);
     }
 #endif
     PD->tsem->unlock();
@@ -424,7 +428,7 @@ void HardSigmoid(Tensor *A, Tensor *B) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_hard_sigmoid(A, B);
     }
 #endif
 
@@ -449,7 +453,7 @@ void D_HardSigmoid(Tensor *D, Tensor *I, Tensor *PD) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_d_hard_sigmoid(D, I, PD);
     }
 #endif
     PD->tsem->unlock();
@@ -473,7 +477,7 @@ void Exp(Tensor *A, Tensor *B) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_exp(A, B);
     }
 #endif
 
@@ -497,7 +501,7 @@ void D_Exp(Tensor *D, Tensor *I, Tensor *PD) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_d_exp(D, I, PD);
     }
 #endif
     PD->tsem->unlock();
@@ -520,7 +524,7 @@ void Tanh(Tensor *A, Tensor *B) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_tanh(A, B);
     }
 #endif
 
@@ -545,7 +549,7 @@ void D_Tanh(Tensor *D, Tensor *I, Tensor *PD) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_d_tanh(D, I, PD);
     }
 #endif
     PD->tsem->unlock();
@@ -571,7 +575,7 @@ void Softmax(Tensor *A, Tensor *B) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_softmax(A, B);
     }
 #endif
 
@@ -602,7 +606,7 @@ void D_Softmax(Tensor *D, Tensor *I, Tensor *PD) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_d_softmax(D, I, PD);
     }
 #endif
 

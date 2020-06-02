@@ -20,6 +20,10 @@
 #include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#include "eddl/hardware/fpga/nn/fpga_nn.h"
+#endif
 
 using namespace std;
 
@@ -37,7 +41,6 @@ void Tensor::abs_() {
 #ifdef cFPGA
     else {
       fpga_abs_(this);
-
     }
 #endif
 }
@@ -127,7 +130,7 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
 #endif
 #ifdef cFPGA
     else {
-        fpga_addc(scA,A,scB,B,C,incC);
+        fpga_add(scA,A,scB,B,C,incC);
     }
 #endif
 
@@ -246,7 +249,7 @@ void Tensor::clamp_(float min, float max){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_clamp_(this, min, max);
     }
 #endif
 }
@@ -284,7 +287,7 @@ void Tensor::cos_(){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_cos_(this);
     }
 #endif
 }
@@ -307,7 +310,7 @@ void Tensor::cosh_(){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_cosh_(this);
     }
 #endif
 }
@@ -333,7 +336,7 @@ void Tensor::inv_(float v) {
   #endif
   #ifdef cFPGA
   else {
-
+      fpga_inv_(this, v);
   }
   #endif
 }
@@ -373,7 +376,7 @@ void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_el_div(A,B,C,incC);
     }
 #endif
     C->tsem->unlock();
@@ -391,7 +394,7 @@ void Tensor::exp_() {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_exp_(this);
     }
 #endif
 }
@@ -415,7 +418,7 @@ void Tensor::floor_(){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_floor_(this);
     }
 #endif
 }
@@ -439,7 +442,7 @@ void Tensor::log_() {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_log_(this);
     }
 #endif
 }
@@ -462,7 +465,7 @@ void Tensor::log2_() {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_log2_(this);
     }
 #endif
 }
@@ -486,7 +489,7 @@ void Tensor::log10_() {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_log10_(this);
     }
 #endif
 }
@@ -510,7 +513,7 @@ void Tensor::logn_(float n) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_logn_(this, n);
     }
 #endif
 }
@@ -533,7 +536,7 @@ float Tensor::max(){
 #endif
 #ifdef cFPGA
     else {
-
+        return fpga_max(this);
     }
 #endif
     return -1.0f;  // Temp
@@ -551,7 +554,7 @@ float Tensor::min(){
 #endif
 #ifdef cFPGA
     else {
-
+        return fpga_min(this);
     }
 #endif
     return -1.0f;  // Temp
@@ -570,7 +573,7 @@ void Tensor::mod_(float v){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_mod_(this, v);
     }
 #endif
 }
@@ -593,7 +596,7 @@ void Tensor::mult_(float v) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_mult_(this, v);
     }
 #endif
 }
@@ -653,7 +656,7 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_mult2D(A,tA,B,tB,C,incC);
     }
 #endif
     C->tsem->unlock();
@@ -686,7 +689,7 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_el_mult(A,B,C,incC);
     }
 #endif
     C->tsem->unlock();
@@ -715,7 +718,7 @@ void Tensor::normalize_(float min, float max){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_normalize_(this, min, max);
     }
 #endif
 }
@@ -738,7 +741,7 @@ void Tensor::pow_(float exp) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_pow_(this, exp);
     }
 #endif
 }
@@ -762,7 +765,7 @@ void Tensor::powb_(float base) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_powb_(this, base);
     }
 #endif
 }
@@ -785,7 +788,7 @@ void Tensor::reciprocal_() {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_reciprocal_(this);
     }
 #endif
 }
@@ -808,7 +811,7 @@ void Tensor::remainder_(float v) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_remainder_(this, v);
     }
 #endif
 }
@@ -831,7 +834,7 @@ void Tensor::round_(){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_round_(this);
     }
 #endif
 }
@@ -854,7 +857,7 @@ void Tensor::rsqrt_(){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_rsqrt_(this);
     }
 #endif
 }
@@ -877,7 +880,7 @@ void Tensor::sigmoid_(){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_sigmoid_(this);
     }
 #endif
 }
@@ -900,7 +903,7 @@ void Tensor::sign_(){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_sign_(this);
     }
 #endif
 }
@@ -933,7 +936,7 @@ void Tensor::sign(Tensor *A, Tensor *B) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_sign_(B);
     }
 #endif
     //B->tsem->unlock();
@@ -952,7 +955,7 @@ void Tensor::sin_(){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_sin_(this);
     }
 #endif
 }
@@ -975,7 +978,7 @@ void Tensor::sinh_(){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_sinh_(this);
     }
 #endif
 }
@@ -1001,7 +1004,7 @@ void Tensor::sqr_() {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_sqr_(this);
     }
 #endif
 }
@@ -1025,7 +1028,7 @@ void Tensor::sqrt_() {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_sqrt_(this);
     }
 #endif
 }
@@ -1057,7 +1060,7 @@ float Tensor::sum() {
 #endif
 #ifdef cFPGA
     else {
-
+        return fpga_sum(this);
     }
 #endif
     return 0;
@@ -1089,7 +1092,7 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_sum2D_rowwise(A,B,C);
     }
 #endif
     C->tsem->unlock();
@@ -1120,7 +1123,7 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_reduce_sum2D(A,B,axis,incB);
     }
 #endif
     B->tsem->unlock();
@@ -1150,7 +1153,7 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_sum2D_colwise(A,B,C);
     }
 #endif
     C->tsem->unlock();
@@ -1168,7 +1171,7 @@ float Tensor::sum_abs() {
 #endif
 #ifdef cFPGA
     else {
-
+        return fpga_sum_abs(this);
     }
 #endif
     return 0;
@@ -1188,7 +1191,7 @@ void Tensor::tan_(){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_tan_(this);
     }
 #endif
 }
@@ -1211,7 +1214,7 @@ void Tensor::tanh_(){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_tanh_(this);
     }
 #endif
 }
@@ -1235,7 +1238,7 @@ void Tensor::trunc_(){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_trunc_(this);
     }
 #endif
 }

@@ -21,6 +21,10 @@
 #include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#include "eddl/hardware/fpga/nn/fpga_nn.h"
+#endif
 
 using namespace std;
 
@@ -50,7 +54,7 @@ void Tensor::shift(Tensor *A, Tensor *B, vector<int> shift, string mode, float c
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_shift(A, B, std::move(shift), get_mode(std::move(mode)), constant);
     }
 #endif
 }
@@ -75,7 +79,7 @@ void Tensor::rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_rotate(A, B, angle, std::move(offset_center), get_mode(std::move(mode)), constant);
     }
 #endif
 }
@@ -103,7 +107,7 @@ void Tensor::scale(Tensor *A, Tensor *B, vector<int> new_shape, string mode, flo
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_scale(A, B, std::move(new_shape), get_mode(std::move(mode)), constant);
     }
 #endif
 }
@@ -133,7 +137,7 @@ void Tensor::flip(Tensor *A, Tensor *B, int axis) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_flip(A, B, axis);
     }
 #endif
 }
@@ -164,7 +168,7 @@ void Tensor::crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coo
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_crop(A, B, std::move(coords_from), std::move(coords_to), constant, false);
     }
 #endif
 }
@@ -195,7 +199,7 @@ void Tensor::crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<in
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_crop_scale(A, B, std::move(coords_from), std::move(coords_to), get_mode(std::move(mode)), constant);
     }
 #endif
 }
@@ -229,7 +233,7 @@ void Tensor::cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> c
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_crop(A, B, std::move(coords_from), std::move(coords_to), constant, true);
     }
 #endif
 }
@@ -264,7 +268,7 @@ void Tensor::shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<f
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_shift_random(A, B, std::move(factor_x), std::move(factor_y), get_mode(std::move(mode)), constant);
     }
 #endif
 }
@@ -290,7 +294,7 @@ void Tensor::rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<in
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_rotate_random(A, B,  std::move(factor), std::move(offset_center), get_mode(std::move(mode)), constant);
     }
 #endif
 }
@@ -317,7 +321,7 @@ void Tensor::scale_random(Tensor *A, Tensor *B, vector<float> factor, string mod
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_scale_random(A, B, std::move(factor), get_mode(std::move(mode)), constant);
     }
 #endif
 }
@@ -347,7 +351,7 @@ void Tensor::flip_random(Tensor *A, Tensor *B, int axis) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_flip_random(A, B, axis);
     }
 #endif
 }
@@ -369,7 +373,7 @@ void Tensor::crop_random(Tensor *A, Tensor *B) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_crop_random(A, B);
     }
 #endif
 }
@@ -397,7 +401,7 @@ void Tensor::crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, strin
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_crop_scale_random(A, B, std::move(factor), get_mode(std::move(mode)), constant);
     }
 #endif
 }
@@ -429,7 +433,7 @@ void Tensor::cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_cutout_random(A, B, std::move(factor_x), std::move(factor_y), constant);
     }
 #endif
 }

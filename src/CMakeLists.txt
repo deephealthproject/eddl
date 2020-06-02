@@ -3,7 +3,7 @@
 ###########################################################################
 
 # USER OPTIONS *******************************
-set(BUILD_TARGET "GPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
+set(BUILD_TARGET "FPGA" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
 option(OVERWRITE_PROTO_FILES "Overwrite Protobuf files (requires a compatible Protobuf compiler)" ON)
 
 # Double checks (restricted args)
@@ -18,6 +18,8 @@ string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
 if(${BUILD_TARGET} STREQUAL "CPU")
 elseif(${BUILD_TARGET} STREQUAL "GPU")
     SET(USE_CUDA ON) # Local's scope
+elseif(${BUILD_TARGET} STREQUAL "FPGA")
+    SET(USE_FPGA ON)
 else()
     message(FATAL_ERROR "Build target '${BUILD_TARGET}' not implemented, CMake will exit." )
 endif()
@@ -203,6 +205,11 @@ if(USE_CUDA)
     endif()
 endif()
 SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
+
+# FPGA
+if (USE_FPGA)
+  add_definitions(-DcFPGA)
+endif()
 
 ###########################################################################
 ################################## WINDOWS ################################

@@ -523,13 +523,12 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_onnx_2eproto::offsets[] PROTOB
   ~0u,
   ~0u,
   0,
-  PROTOBUF_FIELD_OFFSET(::onnx::TensorShapeProto, _has_bits_),
+  ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::onnx::TensorShapeProto, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::onnx::TensorShapeProto, dim_),
-  ~0u,
   PROTOBUF_FIELD_OFFSET(::onnx::TypeProto_Tensor, _has_bits_),
   PROTOBUF_FIELD_OFFSET(::onnx::TypeProto_Tensor, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -591,12 +590,12 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOB
   { 140, 159, sizeof(::onnx::TensorProto)},
   { 173, 181, sizeof(::onnx::SparseTensorProto)},
   { 184, 193, sizeof(::onnx::TensorShapeProto_Dimension)},
-  { 196, 202, sizeof(::onnx::TensorShapeProto)},
-  { 203, 210, sizeof(::onnx::TypeProto_Tensor)},
-  { 212, 218, sizeof(::onnx::TypeProto_Sequence)},
-  { 219, 226, sizeof(::onnx::TypeProto_Map)},
-  { 228, 238, sizeof(::onnx::TypeProto)},
-  { 242, 249, sizeof(::onnx::OperatorSetIdProto)},
+  { 196, -1, sizeof(::onnx::TensorShapeProto)},
+  { 202, 209, sizeof(::onnx::TypeProto_Tensor)},
+  { 211, 217, sizeof(::onnx::TypeProto_Sequence)},
+  { 218, 225, sizeof(::onnx::TypeProto_Map)},
+  { 227, 237, sizeof(::onnx::TypeProto)},
+  { 241, 248, sizeof(::onnx::OperatorSetIdProto)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -720,16 +719,15 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_onn
   &scc_info_ValueInfoProto_onnx_2eproto.base,
 };
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_onnx_2eproto_once;
-static bool descriptor_table_onnx_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_onnx_2eproto = {
-  &descriptor_table_onnx_2eproto_initialized, descriptor_table_protodef_onnx_2eproto, "onnx.proto", 3213,
+  false, false, descriptor_table_protodef_onnx_2eproto, "onnx.proto", 3213,
   &descriptor_table_onnx_2eproto_once, descriptor_table_onnx_2eproto_sccs, descriptor_table_onnx_2eproto_deps, 13, 0,
   schemas, file_default_instances, TableStruct_onnx_2eproto::offsets,
   file_level_metadata_onnx_2eproto, 17, file_level_enum_descriptors_onnx_2eproto, file_level_service_descriptors_onnx_2eproto,
 };
 
 // Force running AddDescriptors() at dynamic initialization time.
-static bool dynamic_init_dummy_onnx_2eproto = (  ::PROTOBUF_NAMESPACE_ID::internal::AddDescriptors(&descriptor_table_onnx_2eproto), true);
+static bool dynamic_init_dummy_onnx_2eproto = (static_cast<void>(::PROTOBUF_NAMESPACE_ID::internal::AddDescriptors(&descriptor_table_onnx_2eproto)), true);
 namespace onnx {
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* AttributeProto_AttributeType_descriptor() {
   ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_onnx_2eproto);
@@ -926,14 +924,20 @@ const ::onnx::SparseTensorProto&
 AttributeProto::_Internal::sparse_tensor(const AttributeProto* msg) {
   return *msg->sparse_tensor_;
 }
-AttributeProto::AttributeProto()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+AttributeProto::AttributeProto(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena),
+  floats_(arena),
+  ints_(arena),
+  strings_(arena),
+  tensors_(arena),
+  graphs_(arena),
+  sparse_tensors_(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:onnx.AttributeProto)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:onnx.AttributeProto)
 }
 AttributeProto::AttributeProto(const AttributeProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_),
       floats_(from.floats_),
       ints_(from.ints_),
@@ -941,22 +945,26 @@ AttributeProto::AttributeProto(const AttributeProto& from)
       tensors_(from.tensors_),
       graphs_(from.graphs_),
       sparse_tensors_(from.sparse_tensors_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   name_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_name()) {
-    name_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.name_);
+    name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_name(),
+      GetArena());
   }
   s_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_s()) {
-    s_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.s_);
+    s_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_s(),
+      GetArena());
   }
   doc_string_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_doc_string()) {
-    doc_string_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.doc_string_);
+    doc_string_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_doc_string(),
+      GetArena());
   }
   ref_attr_name_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_ref_attr_name()) {
-    ref_attr_name_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.ref_attr_name_);
+    ref_attr_name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_ref_attr_name(),
+      GetArena());
   }
   if (from._internal_has_t()) {
     t_ = new ::onnx::TensorProto(*from.t_);
@@ -993,9 +1001,11 @@ void AttributeProto::SharedCtor() {
 AttributeProto::~AttributeProto() {
   // @@protoc_insertion_point(destructor:onnx.AttributeProto)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void AttributeProto::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   name_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   s_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   doc_string_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
@@ -1005,6 +1015,12 @@ void AttributeProto::SharedDtor() {
   if (this != internal_default_instance()) delete sparse_tensor_;
 }
 
+void AttributeProto::ArenaDtor(void* object) {
+  AttributeProto* _this = reinterpret_cast< AttributeProto* >(object);
+  (void)_this;
+}
+void AttributeProto::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void AttributeProto::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -1029,16 +1045,16 @@ void AttributeProto::Clear() {
   cached_has_bits = _has_bits_[0];
   if (cached_has_bits & 0x0000007fu) {
     if (cached_has_bits & 0x00000001u) {
-      name_.ClearNonDefaultToEmptyNoArena();
+      name_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000002u) {
-      s_.ClearNonDefaultToEmptyNoArena();
+      s_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000004u) {
-      doc_string_.ClearNonDefaultToEmptyNoArena();
+      doc_string_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000008u) {
-      ref_attr_name_.ClearNonDefaultToEmptyNoArena();
+      ref_attr_name_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000010u) {
       GOOGLE_DCHECK(t_ != nullptr);
@@ -1060,12 +1076,13 @@ void AttributeProto::Clear() {
         reinterpret_cast<char*>(&f_)) + sizeof(type_));
   }
   _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* AttributeProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
@@ -1094,7 +1111,7 @@ const char* AttributeProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
           _Internal::set_has_i(&has_bits);
-          i_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          i_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -1141,7 +1158,7 @@ const char* AttributeProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE
           ptr -= 1;
           do {
             ptr += 1;
-            _internal_add_ints(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr));
+            _internal_add_ints(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr));
             CHK_(ptr);
             if (!ctx->DataAvailable(ptr)) break;
           } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<64>(ptr));
@@ -1201,7 +1218,7 @@ const char* AttributeProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE
       // optional .onnx.AttributeProto.AttributeType type = 20;
       case 20:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 160)) {
-          ::PROTOBUF_NAMESPACE_ID::uint64 val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          ::PROTOBUF_NAMESPACE_ID::uint64 val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
           if (PROTOBUF_PREDICT_TRUE(::onnx::AttributeProto_AttributeType_IsValid(val))) {
             _internal_set_type(static_cast<::onnx::AttributeProto_AttributeType>(val));
@@ -1246,7 +1263,9 @@ const char* AttributeProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -1391,7 +1410,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:onnx.AttributeProto)
   return target;
@@ -1551,7 +1570,7 @@ void AttributeProto::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 void AttributeProto::MergeFrom(const AttributeProto& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:onnx.AttributeProto)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -1564,20 +1583,16 @@ void AttributeProto::MergeFrom(const AttributeProto& from) {
   cached_has_bits = from._has_bits_[0];
   if (cached_has_bits & 0x000000ffu) {
     if (cached_has_bits & 0x00000001u) {
-      _has_bits_[0] |= 0x00000001u;
-      name_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.name_);
+      _internal_set_name(from._internal_name());
     }
     if (cached_has_bits & 0x00000002u) {
-      _has_bits_[0] |= 0x00000002u;
-      s_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.s_);
+      _internal_set_s(from._internal_s());
     }
     if (cached_has_bits & 0x00000004u) {
-      _has_bits_[0] |= 0x00000004u;
-      doc_string_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.doc_string_);
+      _internal_set_doc_string(from._internal_doc_string());
     }
     if (cached_has_bits & 0x00000008u) {
-      _has_bits_[0] |= 0x00000008u;
-      ref_attr_name_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.ref_attr_name_);
+      _internal_set_ref_attr_name(from._internal_ref_attr_name());
     }
     if (cached_has_bits & 0x00000010u) {
       _internal_mutable_t()->::onnx::TensorProto::MergeFrom(from._internal_t());
@@ -1624,7 +1639,7 @@ bool AttributeProto::IsInitialized() const {
 
 void AttributeProto::InternalSwap(AttributeProto* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   floats_.InternalSwap(&other->floats_);
   ints_.InternalSwap(&other->ints_);
@@ -1632,20 +1647,16 @@ void AttributeProto::InternalSwap(AttributeProto* other) {
   tensors_.InternalSwap(&other->tensors_);
   graphs_.InternalSwap(&other->graphs_);
   sparse_tensors_.InternalSwap(&other->sparse_tensors_);
-  name_.Swap(&other->name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  s_.Swap(&other->s_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  doc_string_.Swap(&other->doc_string_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  ref_attr_name_.Swap(&other->ref_attr_name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  swap(t_, other->t_);
-  swap(g_, other->g_);
-  swap(sparse_tensor_, other->sparse_tensor_);
-  swap(i_, other->i_);
-  swap(f_, other->f_);
-  swap(type_, other->type_);
+  name_.Swap(&other->name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  s_.Swap(&other->s_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  doc_string_.Swap(&other->doc_string_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  ref_attr_name_.Swap(&other->ref_attr_name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(AttributeProto, type_)
+      + sizeof(AttributeProto::type_)
+      - PROTOBUF_FIELD_OFFSET(AttributeProto, t_)>(
+          reinterpret_cast<char*>(&t_),
+          reinterpret_cast<char*>(&other->t_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata AttributeProto::GetMetadata() const {
@@ -1678,23 +1689,25 @@ const ::onnx::TypeProto&
 ValueInfoProto::_Internal::type(const ValueInfoProto* msg) {
   return *msg->type_;
 }
-ValueInfoProto::ValueInfoProto()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+ValueInfoProto::ValueInfoProto(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:onnx.ValueInfoProto)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:onnx.ValueInfoProto)
 }
 ValueInfoProto::ValueInfoProto(const ValueInfoProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   name_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_name()) {
-    name_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.name_);
+    name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_name(),
+      GetArena());
   }
   doc_string_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_doc_string()) {
-    doc_string_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.doc_string_);
+    doc_string_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_doc_string(),
+      GetArena());
   }
   if (from._internal_has_type()) {
     type_ = new ::onnx::TypeProto(*from.type_);
@@ -1714,14 +1727,22 @@ void ValueInfoProto::SharedCtor() {
 ValueInfoProto::~ValueInfoProto() {
   // @@protoc_insertion_point(destructor:onnx.ValueInfoProto)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void ValueInfoProto::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   name_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   doc_string_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (this != internal_default_instance()) delete type_;
 }
 
+void ValueInfoProto::ArenaDtor(void* object) {
+  ValueInfoProto* _this = reinterpret_cast< ValueInfoProto* >(object);
+  (void)_this;
+}
+void ValueInfoProto::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void ValueInfoProto::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -1740,10 +1761,10 @@ void ValueInfoProto::Clear() {
   cached_has_bits = _has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
     if (cached_has_bits & 0x00000001u) {
-      name_.ClearNonDefaultToEmptyNoArena();
+      name_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000002u) {
-      doc_string_.ClearNonDefaultToEmptyNoArena();
+      doc_string_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000004u) {
       GOOGLE_DCHECK(type_ != nullptr);
@@ -1751,12 +1772,13 @@ void ValueInfoProto::Clear() {
     }
   }
   _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* ValueInfoProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
@@ -1797,7 +1819,9 @@ const char* ValueInfoProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -1849,7 +1873,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:onnx.ValueInfoProto)
   return target;
@@ -1914,19 +1938,17 @@ void ValueInfoProto::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 void ValueInfoProto::MergeFrom(const ValueInfoProto& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:onnx.ValueInfoProto)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   cached_has_bits = from._has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
     if (cached_has_bits & 0x00000001u) {
-      _has_bits_[0] |= 0x00000001u;
-      name_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.name_);
+      _internal_set_name(from._internal_name());
     }
     if (cached_has_bits & 0x00000002u) {
-      _has_bits_[0] |= 0x00000002u;
-      doc_string_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.doc_string_);
+      _internal_set_doc_string(from._internal_doc_string());
     }
     if (cached_has_bits & 0x00000004u) {
       _internal_mutable_type()->::onnx::TypeProto::MergeFrom(from._internal_type());
@@ -1954,12 +1976,10 @@ bool ValueInfoProto::IsInitialized() const {
 
 void ValueInfoProto::InternalSwap(ValueInfoProto* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
-  name_.Swap(&other->name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  doc_string_.Swap(&other->doc_string_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
+  name_.Swap(&other->name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  doc_string_.Swap(&other->doc_string_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   swap(type_, other->type_);
 }
 
@@ -1989,34 +2009,41 @@ class NodeProto::_Internal {
   }
 };
 
-NodeProto::NodeProto()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+NodeProto::NodeProto(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena),
+  input_(arena),
+  output_(arena),
+  attribute_(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:onnx.NodeProto)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:onnx.NodeProto)
 }
 NodeProto::NodeProto(const NodeProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_),
       input_(from.input_),
       output_(from.output_),
       attribute_(from.attribute_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   name_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_name()) {
-    name_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.name_);
+    name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_name(),
+      GetArena());
   }
   op_type_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_op_type()) {
-    op_type_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.op_type_);
+    op_type_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_op_type(),
+      GetArena());
   }
   doc_string_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_doc_string()) {
-    doc_string_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.doc_string_);
+    doc_string_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_doc_string(),
+      GetArena());
   }
   domain_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_domain()) {
-    domain_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.domain_);
+    domain_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_domain(),
+      GetArena());
   }
   // @@protoc_insertion_point(copy_constructor:onnx.NodeProto)
 }
@@ -2032,15 +2059,23 @@ void NodeProto::SharedCtor() {
 NodeProto::~NodeProto() {
   // @@protoc_insertion_point(destructor:onnx.NodeProto)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void NodeProto::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   name_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   op_type_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   doc_string_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   domain_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
+void NodeProto::ArenaDtor(void* object) {
+  NodeProto* _this = reinterpret_cast< NodeProto* >(object);
+  (void)_this;
+}
+void NodeProto::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void NodeProto::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -2062,25 +2097,26 @@ void NodeProto::Clear() {
   cached_has_bits = _has_bits_[0];
   if (cached_has_bits & 0x0000000fu) {
     if (cached_has_bits & 0x00000001u) {
-      name_.ClearNonDefaultToEmptyNoArena();
+      name_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000002u) {
-      op_type_.ClearNonDefaultToEmptyNoArena();
+      op_type_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000004u) {
-      doc_string_.ClearNonDefaultToEmptyNoArena();
+      doc_string_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000008u) {
-      domain_.ClearNonDefaultToEmptyNoArena();
+      domain_.ClearNonDefaultToEmpty();
     }
   }
   _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* NodeProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
@@ -2180,7 +2216,9 @@ const char* NodeProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -2272,7 +2310,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:onnx.NodeProto)
   return target;
@@ -2367,7 +2405,7 @@ void NodeProto::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 void NodeProto::MergeFrom(const NodeProto& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:onnx.NodeProto)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -2377,20 +2415,16 @@ void NodeProto::MergeFrom(const NodeProto& from) {
   cached_has_bits = from._has_bits_[0];
   if (cached_has_bits & 0x0000000fu) {
     if (cached_has_bits & 0x00000001u) {
-      _has_bits_[0] |= 0x00000001u;
-      name_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.name_);
+      _internal_set_name(from._internal_name());
     }
     if (cached_has_bits & 0x00000002u) {
-      _has_bits_[0] |= 0x00000002u;
-      op_type_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.op_type_);
+      _internal_set_op_type(from._internal_op_type());
     }
     if (cached_has_bits & 0x00000004u) {
-      _has_bits_[0] |= 0x00000004u;
-      doc_string_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.doc_string_);
+      _internal_set_doc_string(from._internal_doc_string());
     }
     if (cached_has_bits & 0x00000008u) {
-      _has_bits_[0] |= 0x00000008u;
-      domain_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.domain_);
+      _internal_set_domain(from._internal_domain());
     }
   }
 }
@@ -2415,19 +2449,15 @@ bool NodeProto::IsInitialized() const {
 
 void NodeProto::InternalSwap(NodeProto* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   input_.InternalSwap(&other->input_);
   output_.InternalSwap(&other->output_);
   attribute_.InternalSwap(&other->attribute_);
-  name_.Swap(&other->name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  op_type_.Swap(&other->op_type_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  doc_string_.Swap(&other->doc_string_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  domain_.Swap(&other->domain_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
+  name_.Swap(&other->name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  op_type_.Swap(&other->op_type_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  doc_string_.Swap(&other->doc_string_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  domain_.Swap(&other->domain_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata NodeProto::GetMetadata() const {
@@ -2472,33 +2502,39 @@ const ::onnx::GraphProto&
 ModelProto::_Internal::graph(const ModelProto* msg) {
   return *msg->graph_;
 }
-ModelProto::ModelProto()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+ModelProto::ModelProto(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena),
+  opset_import_(arena),
+  metadata_props_(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:onnx.ModelProto)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:onnx.ModelProto)
 }
 ModelProto::ModelProto(const ModelProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_),
       opset_import_(from.opset_import_),
       metadata_props_(from.metadata_props_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   producer_name_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_producer_name()) {
-    producer_name_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.producer_name_);
+    producer_name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_producer_name(),
+      GetArena());
   }
   producer_version_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_producer_version()) {
-    producer_version_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.producer_version_);
+    producer_version_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_producer_version(),
+      GetArena());
   }
   domain_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_domain()) {
-    domain_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.domain_);
+    domain_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_domain(),
+      GetArena());
   }
   doc_string_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_doc_string()) {
-    doc_string_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.doc_string_);
+    doc_string_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_doc_string(),
+      GetArena());
   }
   if (from._internal_has_graph()) {
     graph_ = new ::onnx::GraphProto(*from.graph_);
@@ -2525,9 +2561,11 @@ void ModelProto::SharedCtor() {
 ModelProto::~ModelProto() {
   // @@protoc_insertion_point(destructor:onnx.ModelProto)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void ModelProto::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   producer_name_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   producer_version_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   domain_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
@@ -2535,6 +2573,12 @@ void ModelProto::SharedDtor() {
   if (this != internal_default_instance()) delete graph_;
 }
 
+void ModelProto::ArenaDtor(void* object) {
+  ModelProto* _this = reinterpret_cast< ModelProto* >(object);
+  (void)_this;
+}
+void ModelProto::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void ModelProto::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -2555,16 +2599,16 @@ void ModelProto::Clear() {
   cached_has_bits = _has_bits_[0];
   if (cached_has_bits & 0x0000001fu) {
     if (cached_has_bits & 0x00000001u) {
-      producer_name_.ClearNonDefaultToEmptyNoArena();
+      producer_name_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000002u) {
-      producer_version_.ClearNonDefaultToEmptyNoArena();
+      producer_version_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000004u) {
-      domain_.ClearNonDefaultToEmptyNoArena();
+      domain_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000008u) {
-      doc_string_.ClearNonDefaultToEmptyNoArena();
+      doc_string_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000010u) {
       GOOGLE_DCHECK(graph_ != nullptr);
@@ -2577,12 +2621,13 @@ void ModelProto::Clear() {
         reinterpret_cast<char*>(&ir_version_)) + sizeof(model_version_));
   }
   _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* ModelProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
@@ -2592,7 +2637,7 @@ const char* ModelProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID:
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
           _Internal::set_has_ir_version(&has_bits);
-          ir_version_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          ir_version_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -2633,7 +2678,7 @@ const char* ModelProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID:
       case 5:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 40)) {
           _Internal::set_has_model_version(&has_bits);
-          model_version_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          model_version_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -2685,7 +2730,9 @@ const char* ModelProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID:
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -2785,7 +2832,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:onnx.ModelProto)
   return target;
@@ -2892,7 +2939,7 @@ void ModelProto::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 void ModelProto::MergeFrom(const ModelProto& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:onnx.ModelProto)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -2901,20 +2948,16 @@ void ModelProto::MergeFrom(const ModelProto& from) {
   cached_has_bits = from._has_bits_[0];
   if (cached_has_bits & 0x0000007fu) {
     if (cached_has_bits & 0x00000001u) {
-      _has_bits_[0] |= 0x00000001u;
-      producer_name_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.producer_name_);
+      _internal_set_producer_name(from._internal_producer_name());
     }
     if (cached_has_bits & 0x00000002u) {
-      _has_bits_[0] |= 0x00000002u;
-      producer_version_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.producer_version_);
+      _internal_set_producer_version(from._internal_producer_version());
     }
     if (cached_has_bits & 0x00000004u) {
-      _has_bits_[0] |= 0x00000004u;
-      domain_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.domain_);
+      _internal_set_domain(from._internal_domain());
     }
     if (cached_has_bits & 0x00000008u) {
-      _has_bits_[0] |= 0x00000008u;
-      doc_string_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.doc_string_);
+      _internal_set_doc_string(from._internal_doc_string());
     }
     if (cached_has_bits & 0x00000010u) {
       _internal_mutable_graph()->::onnx::GraphProto::MergeFrom(from._internal_graph());
@@ -2949,21 +2992,20 @@ bool ModelProto::IsInitialized() const {
 
 void ModelProto::InternalSwap(ModelProto* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   opset_import_.InternalSwap(&other->opset_import_);
   metadata_props_.InternalSwap(&other->metadata_props_);
-  producer_name_.Swap(&other->producer_name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  producer_version_.Swap(&other->producer_version_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  domain_.Swap(&other->domain_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  doc_string_.Swap(&other->doc_string_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  swap(graph_, other->graph_);
-  swap(ir_version_, other->ir_version_);
-  swap(model_version_, other->model_version_);
+  producer_name_.Swap(&other->producer_name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  producer_version_.Swap(&other->producer_version_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  domain_.Swap(&other->domain_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  doc_string_.Swap(&other->doc_string_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(ModelProto, model_version_)
+      + sizeof(ModelProto::model_version_)
+      - PROTOBUF_FIELD_OFFSET(ModelProto, graph_)>(
+          reinterpret_cast<char*>(&graph_),
+          reinterpret_cast<char*>(&other->graph_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata ModelProto::GetMetadata() const {
@@ -2986,23 +3028,25 @@ class StringStringEntryProto::_Internal {
   }
 };
 
-StringStringEntryProto::StringStringEntryProto()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+StringStringEntryProto::StringStringEntryProto(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:onnx.StringStringEntryProto)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:onnx.StringStringEntryProto)
 }
 StringStringEntryProto::StringStringEntryProto(const StringStringEntryProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   key_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_key()) {
-    key_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.key_);
+    key_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_key(),
+      GetArena());
   }
   value_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_value()) {
-    value_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.value_);
+    value_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_value(),
+      GetArena());
   }
   // @@protoc_insertion_point(copy_constructor:onnx.StringStringEntryProto)
 }
@@ -3016,13 +3060,21 @@ void StringStringEntryProto::SharedCtor() {
 StringStringEntryProto::~StringStringEntryProto() {
   // @@protoc_insertion_point(destructor:onnx.StringStringEntryProto)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void StringStringEntryProto::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   key_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   value_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
+void StringStringEntryProto::ArenaDtor(void* object) {
+  StringStringEntryProto* _this = reinterpret_cast< StringStringEntryProto* >(object);
+  (void)_this;
+}
+void StringStringEntryProto::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void StringStringEntryProto::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -3041,19 +3093,20 @@ void StringStringEntryProto::Clear() {
   cached_has_bits = _has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      key_.ClearNonDefaultToEmptyNoArena();
+      key_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000002u) {
-      value_.ClearNonDefaultToEmptyNoArena();
+      value_.ClearNonDefaultToEmpty();
     }
   }
   _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* StringStringEntryProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
@@ -3087,7 +3140,9 @@ const char* StringStringEntryProto::_InternalParse(const char* ptr, ::PROTOBUF_N
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -3131,7 +3186,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:onnx.StringStringEntryProto)
   return target;
@@ -3189,19 +3244,17 @@ void StringStringEntryProto::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& f
 void StringStringEntryProto::MergeFrom(const StringStringEntryProto& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:onnx.StringStringEntryProto)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   cached_has_bits = from._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _has_bits_[0] |= 0x00000001u;
-      key_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.key_);
+      _internal_set_key(from._internal_key());
     }
     if (cached_has_bits & 0x00000002u) {
-      _has_bits_[0] |= 0x00000002u;
-      value_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.value_);
+      _internal_set_value(from._internal_value());
     }
   }
 }
@@ -3226,12 +3279,10 @@ bool StringStringEntryProto::IsInitialized() const {
 
 void StringStringEntryProto::InternalSwap(StringStringEntryProto* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
-  key_.Swap(&other->key_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  value_.Swap(&other->value_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
+  key_.Swap(&other->key_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  value_.Swap(&other->value_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata StringStringEntryProto::GetMetadata() const {
@@ -3251,20 +3302,22 @@ class TensorAnnotation::_Internal {
   }
 };
 
-TensorAnnotation::TensorAnnotation()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+TensorAnnotation::TensorAnnotation(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena),
+  quant_parameter_tensor_names_(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:onnx.TensorAnnotation)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:onnx.TensorAnnotation)
 }
 TensorAnnotation::TensorAnnotation(const TensorAnnotation& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_),
       quant_parameter_tensor_names_(from.quant_parameter_tensor_names_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   tensor_name_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_tensor_name()) {
-    tensor_name_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.tensor_name_);
+    tensor_name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_tensor_name(),
+      GetArena());
   }
   // @@protoc_insertion_point(copy_constructor:onnx.TensorAnnotation)
 }
@@ -3277,12 +3330,20 @@ void TensorAnnotation::SharedCtor() {
 TensorAnnotation::~TensorAnnotation() {
   // @@protoc_insertion_point(destructor:onnx.TensorAnnotation)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void TensorAnnotation::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   tensor_name_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
+void TensorAnnotation::ArenaDtor(void* object) {
+  TensorAnnotation* _this = reinterpret_cast< TensorAnnotation* >(object);
+  (void)_this;
+}
+void TensorAnnotation::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void TensorAnnotation::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -3301,15 +3362,16 @@ void TensorAnnotation::Clear() {
   quant_parameter_tensor_names_.Clear();
   cached_has_bits = _has_bits_[0];
   if (cached_has_bits & 0x00000001u) {
-    tensor_name_.ClearNonDefaultToEmptyNoArena();
+    tensor_name_.ClearNonDefaultToEmpty();
   }
   _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* TensorAnnotation::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
@@ -3344,7 +3406,9 @@ const char* TensorAnnotation::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPA
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -3386,7 +3450,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:onnx.TensorAnnotation)
   return target;
@@ -3442,14 +3506,13 @@ void TensorAnnotation::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 void TensorAnnotation::MergeFrom(const TensorAnnotation& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:onnx.TensorAnnotation)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   quant_parameter_tensor_names_.MergeFrom(from.quant_parameter_tensor_names_);
   if (from._internal_has_tensor_name()) {
-    _has_bits_[0] |= 0x00000001u;
-    tensor_name_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.tensor_name_);
+    _internal_set_tensor_name(from._internal_tensor_name());
   }
 }
 
@@ -3473,11 +3536,10 @@ bool TensorAnnotation::IsInitialized() const {
 
 void TensorAnnotation::InternalSwap(TensorAnnotation* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   quant_parameter_tensor_names_.InternalSwap(&other->quant_parameter_tensor_names_);
-  tensor_name_.Swap(&other->tensor_name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
+  tensor_name_.Swap(&other->tensor_name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata TensorAnnotation::GetMetadata() const {
@@ -3500,14 +3562,21 @@ class GraphProto::_Internal {
   }
 };
 
-GraphProto::GraphProto()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+GraphProto::GraphProto(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena),
+  node_(arena),
+  initializer_(arena),
+  input_(arena),
+  output_(arena),
+  value_info_(arena),
+  quantization_annotation_(arena),
+  sparse_initializer_(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:onnx.GraphProto)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:onnx.GraphProto)
 }
 GraphProto::GraphProto(const GraphProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_),
       node_(from.node_),
       initializer_(from.initializer_),
@@ -3516,14 +3585,16 @@ GraphProto::GraphProto(const GraphProto& from)
       value_info_(from.value_info_),
       quantization_annotation_(from.quantization_annotation_),
       sparse_initializer_(from.sparse_initializer_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   name_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_name()) {
-    name_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.name_);
+    name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_name(),
+      GetArena());
   }
   doc_string_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_doc_string()) {
-    doc_string_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.doc_string_);
+    doc_string_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_doc_string(),
+      GetArena());
   }
   // @@protoc_insertion_point(copy_constructor:onnx.GraphProto)
 }
@@ -3537,13 +3608,21 @@ void GraphProto::SharedCtor() {
 GraphProto::~GraphProto() {
   // @@protoc_insertion_point(destructor:onnx.GraphProto)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void GraphProto::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   name_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   doc_string_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
+void GraphProto::ArenaDtor(void* object) {
+  GraphProto* _this = reinterpret_cast< GraphProto* >(object);
+  (void)_this;
+}
+void GraphProto::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void GraphProto::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -3569,19 +3648,20 @@ void GraphProto::Clear() {
   cached_has_bits = _has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      name_.ClearNonDefaultToEmptyNoArena();
+      name_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000002u) {
-      doc_string_.ClearNonDefaultToEmptyNoArena();
+      doc_string_.ClearNonDefaultToEmpty();
     }
   }
   _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* GraphProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
@@ -3699,7 +3779,9 @@ const char* GraphProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID:
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -3799,7 +3881,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:onnx.GraphProto)
   return target;
@@ -3906,7 +3988,7 @@ void GraphProto::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 void GraphProto::MergeFrom(const GraphProto& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:onnx.GraphProto)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -3920,12 +4002,10 @@ void GraphProto::MergeFrom(const GraphProto& from) {
   cached_has_bits = from._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _has_bits_[0] |= 0x00000001u;
-      name_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.name_);
+      _internal_set_name(from._internal_name());
     }
     if (cached_has_bits & 0x00000002u) {
-      _has_bits_[0] |= 0x00000002u;
-      doc_string_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.doc_string_);
+      _internal_set_doc_string(from._internal_doc_string());
     }
   }
 }
@@ -3950,7 +4030,7 @@ bool GraphProto::IsInitialized() const {
 
 void GraphProto::InternalSwap(GraphProto* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   node_.InternalSwap(&other->node_);
   initializer_.InternalSwap(&other->initializer_);
@@ -3959,10 +4039,8 @@ void GraphProto::InternalSwap(GraphProto* other) {
   value_info_.InternalSwap(&other->value_info_);
   quantization_annotation_.InternalSwap(&other->quantization_annotation_);
   sparse_initializer_.InternalSwap(&other->sparse_initializer_);
-  name_.Swap(&other->name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  doc_string_.Swap(&other->doc_string_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
+  name_.Swap(&other->name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  doc_string_.Swap(&other->doc_string_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata GraphProto::GetMetadata() const {
@@ -3985,16 +4063,16 @@ class TensorProto_Segment::_Internal {
   }
 };
 
-TensorProto_Segment::TensorProto_Segment()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+TensorProto_Segment::TensorProto_Segment(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:onnx.TensorProto.Segment)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:onnx.TensorProto.Segment)
 }
 TensorProto_Segment::TensorProto_Segment(const TensorProto_Segment& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::memcpy(&begin_, &from.begin_,
     static_cast<size_t>(reinterpret_cast<char*>(&end_) -
     reinterpret_cast<char*>(&begin_)) + sizeof(end_));
@@ -4010,11 +4088,19 @@ void TensorProto_Segment::SharedCtor() {
 TensorProto_Segment::~TensorProto_Segment() {
   // @@protoc_insertion_point(destructor:onnx.TensorProto.Segment)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void TensorProto_Segment::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
 }
 
+void TensorProto_Segment::ArenaDtor(void* object) {
+  TensorProto_Segment* _this = reinterpret_cast< TensorProto_Segment* >(object);
+  (void)_this;
+}
+void TensorProto_Segment::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void TensorProto_Segment::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -4037,12 +4123,13 @@ void TensorProto_Segment::Clear() {
         reinterpret_cast<char*>(&begin_)) + sizeof(end_));
   }
   _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* TensorProto_Segment::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
@@ -4052,7 +4139,7 @@ const char* TensorProto_Segment::_InternalParse(const char* ptr, ::PROTOBUF_NAME
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
           _Internal::set_has_begin(&has_bits);
-          begin_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          begin_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -4060,7 +4147,7 @@ const char* TensorProto_Segment::_InternalParse(const char* ptr, ::PROTOBUF_NAME
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
           _Internal::set_has_end(&has_bits);
-          end_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          end_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -4070,7 +4157,9 @@ const char* TensorProto_Segment::_InternalParse(const char* ptr, ::PROTOBUF_NAME
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -4106,7 +4195,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:onnx.TensorProto.Segment)
   return target;
@@ -4164,7 +4253,7 @@ void TensorProto_Segment::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from
 void TensorProto_Segment::MergeFrom(const TensorProto_Segment& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:onnx.TensorProto.Segment)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -4200,10 +4289,14 @@ bool TensorProto_Segment::IsInitialized() const {
 
 void TensorProto_Segment::InternalSwap(TensorProto_Segment* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
-  swap(begin_, other->begin_);
-  swap(end_, other->end_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(TensorProto_Segment, end_)
+      + sizeof(TensorProto_Segment::end_)
+      - PROTOBUF_FIELD_OFFSET(TensorProto_Segment, begin_)>(
+          reinterpret_cast<char*>(&begin_),
+          reinterpret_cast<char*>(&other->begin_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata TensorProto_Segment::GetMetadata() const {
@@ -4245,14 +4338,22 @@ const ::onnx::TensorProto_Segment&
 TensorProto::_Internal::segment(const TensorProto* msg) {
   return *msg->segment_;
 }
-TensorProto::TensorProto()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+TensorProto::TensorProto(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena),
+  dims_(arena),
+  float_data_(arena),
+  int32_data_(arena),
+  string_data_(arena),
+  int64_data_(arena),
+  double_data_(arena),
+  uint64_data_(arena),
+  external_data_(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:onnx.TensorProto)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:onnx.TensorProto)
 }
 TensorProto::TensorProto(const TensorProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_),
       dims_(from.dims_),
       float_data_(from.float_data_),
@@ -4262,18 +4363,21 @@ TensorProto::TensorProto(const TensorProto& from)
       double_data_(from.double_data_),
       uint64_data_(from.uint64_data_),
       external_data_(from.external_data_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   name_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_name()) {
-    name_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.name_);
+    name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_name(),
+      GetArena());
   }
   raw_data_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_raw_data()) {
-    raw_data_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.raw_data_);
+    raw_data_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_raw_data(),
+      GetArena());
   }
   doc_string_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_doc_string()) {
-    doc_string_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.doc_string_);
+    doc_string_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_doc_string(),
+      GetArena());
   }
   if (from._internal_has_segment()) {
     segment_ = new ::onnx::TensorProto_Segment(*from.segment_);
@@ -4299,15 +4403,23 @@ void TensorProto::SharedCtor() {
 TensorProto::~TensorProto() {
   // @@protoc_insertion_point(destructor:onnx.TensorProto)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void TensorProto::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   name_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   raw_data_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   doc_string_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (this != internal_default_instance()) delete segment_;
 }
 
+void TensorProto::ArenaDtor(void* object) {
+  TensorProto* _this = reinterpret_cast< TensorProto* >(object);
+  (void)_this;
+}
+void TensorProto::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void TensorProto::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -4334,13 +4446,13 @@ void TensorProto::Clear() {
   cached_has_bits = _has_bits_[0];
   if (cached_has_bits & 0x0000000fu) {
     if (cached_has_bits & 0x00000001u) {
-      name_.ClearNonDefaultToEmptyNoArena();
+      name_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000002u) {
-      raw_data_.ClearNonDefaultToEmptyNoArena();
+      raw_data_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000004u) {
-      doc_string_.ClearNonDefaultToEmptyNoArena();
+      doc_string_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000008u) {
       GOOGLE_DCHECK(segment_ != nullptr);
@@ -4353,12 +4465,13 @@ void TensorProto::Clear() {
         reinterpret_cast<char*>(&data_type_)) + sizeof(data_location_));
   }
   _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* TensorProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
@@ -4370,7 +4483,7 @@ const char* TensorProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID
           ptr -= 1;
           do {
             ptr += 1;
-            _internal_add_dims(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr));
+            _internal_add_dims(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr));
             CHK_(ptr);
             if (!ctx->DataAvailable(ptr)) break;
           } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<8>(ptr));
@@ -4383,7 +4496,7 @@ const char* TensorProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
           _Internal::set_has_data_type(&has_bits);
-          data_type_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          data_type_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -4410,7 +4523,7 @@ const char* TensorProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedInt32Parser(_internal_mutable_int32_data(), ptr, ctx);
           CHK_(ptr);
         } else if (static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 40) {
-          _internal_add_int32_data(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr));
+          _internal_add_int32_data(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr));
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -4433,7 +4546,7 @@ const char* TensorProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedInt64Parser(_internal_mutable_int64_data(), ptr, ctx);
           CHK_(ptr);
         } else if (static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 56) {
-          _internal_add_int64_data(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr));
+          _internal_add_int64_data(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr));
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -4472,7 +4585,7 @@ const char* TensorProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedUInt64Parser(_internal_mutable_uint64_data(), ptr, ctx);
           CHK_(ptr);
         } else if (static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 88) {
-          _internal_add_uint64_data(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr));
+          _internal_add_uint64_data(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr));
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -4502,7 +4615,7 @@ const char* TensorProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID
       // optional .onnx.TensorProto.DataLocation data_location = 14;
       case 14:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 112)) {
-          ::PROTOBUF_NAMESPACE_ID::uint64 val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          ::PROTOBUF_NAMESPACE_ID::uint64 val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
           if (PROTOBUF_PREDICT_TRUE(::onnx::TensorProto_DataLocation_IsValid(val))) {
             _internal_set_data_location(static_cast<::onnx::TensorProto_DataLocation>(val));
@@ -4517,7 +4630,9 @@ const char* TensorProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -4645,7 +4760,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:onnx.TensorProto)
   return target;
@@ -4829,7 +4944,7 @@ void TensorProto::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 void TensorProto::MergeFrom(const TensorProto& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:onnx.TensorProto)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -4844,16 +4959,13 @@ void TensorProto::MergeFrom(const TensorProto& from) {
   cached_has_bits = from._has_bits_[0];
   if (cached_has_bits & 0x0000003fu) {
     if (cached_has_bits & 0x00000001u) {
-      _has_bits_[0] |= 0x00000001u;
-      name_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.name_);
+      _internal_set_name(from._internal_name());
     }
     if (cached_has_bits & 0x00000002u) {
-      _has_bits_[0] |= 0x00000002u;
-      raw_data_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.raw_data_);
+      _internal_set_raw_data(from._internal_raw_data());
     }
     if (cached_has_bits & 0x00000004u) {
-      _has_bits_[0] |= 0x00000004u;
-      doc_string_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.doc_string_);
+      _internal_set_doc_string(from._internal_doc_string());
     }
     if (cached_has_bits & 0x00000008u) {
       _internal_mutable_segment()->::onnx::TensorProto_Segment::MergeFrom(from._internal_segment());
@@ -4888,7 +5000,7 @@ bool TensorProto::IsInitialized() const {
 
 void TensorProto::InternalSwap(TensorProto* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   dims_.InternalSwap(&other->dims_);
   float_data_.InternalSwap(&other->float_data_);
@@ -4898,15 +5010,15 @@ void TensorProto::InternalSwap(TensorProto* other) {
   double_data_.InternalSwap(&other->double_data_);
   uint64_data_.InternalSwap(&other->uint64_data_);
   external_data_.InternalSwap(&other->external_data_);
-  name_.Swap(&other->name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  raw_data_.Swap(&other->raw_data_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  doc_string_.Swap(&other->doc_string_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  swap(segment_, other->segment_);
-  swap(data_type_, other->data_type_);
-  swap(data_location_, other->data_location_);
+  name_.Swap(&other->name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  raw_data_.Swap(&other->raw_data_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  doc_string_.Swap(&other->doc_string_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(TensorProto, data_location_)
+      + sizeof(TensorProto::data_location_)
+      - PROTOBUF_FIELD_OFFSET(TensorProto, segment_)>(
+          reinterpret_cast<char*>(&segment_),
+          reinterpret_cast<char*>(&other->segment_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata TensorProto::GetMetadata() const {
@@ -4943,17 +5055,18 @@ const ::onnx::TensorProto&
 SparseTensorProto::_Internal::indices(const SparseTensorProto* msg) {
   return *msg->indices_;
 }
-SparseTensorProto::SparseTensorProto()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+SparseTensorProto::SparseTensorProto(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena),
+  dims_(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:onnx.SparseTensorProto)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:onnx.SparseTensorProto)
 }
 SparseTensorProto::SparseTensorProto(const SparseTensorProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_),
       dims_(from.dims_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_values()) {
     values_ = new ::onnx::TensorProto(*from.values_);
   } else {
@@ -4977,13 +5090,21 @@ void SparseTensorProto::SharedCtor() {
 SparseTensorProto::~SparseTensorProto() {
   // @@protoc_insertion_point(destructor:onnx.SparseTensorProto)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void SparseTensorProto::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   if (this != internal_default_instance()) delete values_;
   if (this != internal_default_instance()) delete indices_;
 }
 
+void SparseTensorProto::ArenaDtor(void* object) {
+  SparseTensorProto* _this = reinterpret_cast< SparseTensorProto* >(object);
+  (void)_this;
+}
+void SparseTensorProto::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void SparseTensorProto::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -5012,12 +5133,13 @@ void SparseTensorProto::Clear() {
     }
   }
   _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* SparseTensorProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
@@ -5043,7 +5165,7 @@ const char* SparseTensorProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESP
           ptr -= 1;
           do {
             ptr += 1;
-            _internal_add_dims(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr));
+            _internal_add_dims(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr));
             CHK_(ptr);
             if (!ctx->DataAvailable(ptr)) break;
           } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<24>(ptr));
@@ -5058,7 +5180,9 @@ const char* SparseTensorProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESP
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -5104,7 +5228,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:onnx.SparseTensorProto)
   return target;
@@ -5171,7 +5295,7 @@ void SparseTensorProto::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) 
 void SparseTensorProto::MergeFrom(const SparseTensorProto& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:onnx.SparseTensorProto)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -5207,11 +5331,15 @@ bool SparseTensorProto::IsInitialized() const {
 
 void SparseTensorProto::InternalSwap(SparseTensorProto* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   dims_.InternalSwap(&other->dims_);
-  swap(values_, other->values_);
-  swap(indices_, other->indices_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(SparseTensorProto, indices_)
+      + sizeof(SparseTensorProto::indices_)
+      - PROTOBUF_FIELD_OFFSET(SparseTensorProto, values_)>(
+          reinterpret_cast<char*>(&values_),
+          reinterpret_cast<char*>(&other->values_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata SparseTensorProto::GetMetadata() const {
@@ -5234,19 +5362,20 @@ class TensorShapeProto_Dimension::_Internal {
   }
 };
 
-TensorShapeProto_Dimension::TensorShapeProto_Dimension()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+TensorShapeProto_Dimension::TensorShapeProto_Dimension(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:onnx.TensorShapeProto.Dimension)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:onnx.TensorShapeProto.Dimension)
 }
 TensorShapeProto_Dimension::TensorShapeProto_Dimension(const TensorShapeProto_Dimension& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   denotation_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_denotation()) {
-    denotation_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.denotation_);
+    denotation_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_denotation(),
+      GetArena());
   }
   clear_has_value();
   switch (from.value_case()) {
@@ -5274,15 +5403,23 @@ void TensorShapeProto_Dimension::SharedCtor() {
 TensorShapeProto_Dimension::~TensorShapeProto_Dimension() {
   // @@protoc_insertion_point(destructor:onnx.TensorShapeProto.Dimension)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void TensorShapeProto_Dimension::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   denotation_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (has_value()) {
     clear_value();
   }
 }
 
+void TensorShapeProto_Dimension::ArenaDtor(void* object) {
+  TensorShapeProto_Dimension* _this = reinterpret_cast< TensorShapeProto_Dimension* >(object);
+  (void)_this;
+}
+void TensorShapeProto_Dimension::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void TensorShapeProto_Dimension::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -5300,7 +5437,7 @@ void TensorShapeProto_Dimension::clear_value() {
       break;
     }
     case kDimParam: {
-      value_.dim_param_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+      value_.dim_param_.Destroy(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
       break;
     }
     case VALUE_NOT_SET: {
@@ -5319,29 +5456,30 @@ void TensorShapeProto_Dimension::Clear() {
 
   cached_has_bits = _has_bits_[0];
   if (cached_has_bits & 0x00000001u) {
-    denotation_.ClearNonDefaultToEmptyNoArena();
+    denotation_.ClearNonDefaultToEmpty();
   }
   clear_value();
   _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* TensorShapeProto_Dimension::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     CHK_(ptr);
     switch (tag >> 3) {
-      // optional int64 dim_value = 1;
+      // int64 dim_value = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
-          _internal_set_dim_value(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr));
+          _internal_set_dim_value(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr));
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // optional string dim_param = 2;
+      // string dim_param = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
           auto str = _internal_mutable_dim_param();
@@ -5369,7 +5507,9 @@ const char* TensorShapeProto_Dimension::_InternalParse(const char* ptr, ::PROTOB
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -5420,7 +5560,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:onnx.TensorShapeProto.Dimension)
   return target;
@@ -5443,14 +5583,14 @@ size_t TensorShapeProto_Dimension::ByteSizeLong() const {
   }
 
   switch (value_case()) {
-    // optional int64 dim_value = 1;
+    // int64 dim_value = 1;
     case kDimValue: {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int64Size(
           this->_internal_dim_value());
       break;
     }
-    // optional string dim_param = 2;
+    // string dim_param = 2;
     case kDimParam: {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
@@ -5488,13 +5628,12 @@ void TensorShapeProto_Dimension::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Messag
 void TensorShapeProto_Dimension::MergeFrom(const TensorShapeProto_Dimension& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:onnx.TensorShapeProto.Dimension)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (from._internal_has_denotation()) {
-    _has_bits_[0] |= 0x00000001u;
-    denotation_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.denotation_);
+    _internal_set_denotation(from._internal_denotation());
   }
   switch (from.value_case()) {
     case kDimValue: {
@@ -5531,10 +5670,9 @@ bool TensorShapeProto_Dimension::IsInitialized() const {
 
 void TensorShapeProto_Dimension::InternalSwap(TensorShapeProto_Dimension* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
-  denotation_.Swap(&other->denotation_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
+  denotation_.Swap(&other->denotation_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   swap(value_, other->value_);
   swap(_oneof_case_[0], other->_oneof_case_[0]);
 }
@@ -5550,20 +5688,19 @@ void TensorShapeProto::InitAsDefaultInstance() {
 }
 class TensorShapeProto::_Internal {
  public:
-  using HasBits = decltype(std::declval<TensorShapeProto>()._has_bits_);
 };
 
-TensorShapeProto::TensorShapeProto()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+TensorShapeProto::TensorShapeProto(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena),
+  dim_(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:onnx.TensorShapeProto)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:onnx.TensorShapeProto)
 }
 TensorShapeProto::TensorShapeProto(const TensorShapeProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
-      _has_bits_(from._has_bits_),
       dim_(from.dim_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   // @@protoc_insertion_point(copy_constructor:onnx.TensorShapeProto)
 }
 
@@ -5574,11 +5711,19 @@ void TensorShapeProto::SharedCtor() {
 TensorShapeProto::~TensorShapeProto() {
   // @@protoc_insertion_point(destructor:onnx.TensorShapeProto)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void TensorShapeProto::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
 }
 
+void TensorShapeProto::ArenaDtor(void* object) {
+  TensorShapeProto* _this = reinterpret_cast< TensorShapeProto* >(object);
+  (void)_this;
+}
+void TensorShapeProto::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void TensorShapeProto::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -5595,12 +5740,12 @@ void TensorShapeProto::Clear() {
   (void) cached_has_bits;
 
   dim_.Clear();
-  _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* TensorShapeProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
@@ -5624,7 +5769,9 @@ const char* TensorShapeProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPA
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -5654,7 +5801,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:onnx.TensorShapeProto)
   return target;
@@ -5702,7 +5849,7 @@ void TensorShapeProto::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 void TensorShapeProto::MergeFrom(const TensorShapeProto& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:onnx.TensorShapeProto)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -5729,8 +5876,7 @@ bool TensorShapeProto::IsInitialized() const {
 
 void TensorShapeProto::InternalSwap(TensorShapeProto* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
-  swap(_has_bits_[0], other->_has_bits_[0]);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   dim_.InternalSwap(&other->dim_);
 }
 
@@ -5761,16 +5907,16 @@ const ::onnx::TensorShapeProto&
 TypeProto_Tensor::_Internal::shape(const TypeProto_Tensor* msg) {
   return *msg->shape_;
 }
-TypeProto_Tensor::TypeProto_Tensor()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+TypeProto_Tensor::TypeProto_Tensor(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:onnx.TypeProto.Tensor)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:onnx.TypeProto.Tensor)
 }
 TypeProto_Tensor::TypeProto_Tensor(const TypeProto_Tensor& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_shape()) {
     shape_ = new ::onnx::TensorShapeProto(*from.shape_);
   } else {
@@ -5790,12 +5936,20 @@ void TypeProto_Tensor::SharedCtor() {
 TypeProto_Tensor::~TypeProto_Tensor() {
   // @@protoc_insertion_point(destructor:onnx.TypeProto.Tensor)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void TypeProto_Tensor::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   if (this != internal_default_instance()) delete shape_;
 }
 
+void TypeProto_Tensor::ArenaDtor(void* object) {
+  TypeProto_Tensor* _this = reinterpret_cast< TypeProto_Tensor* >(object);
+  (void)_this;
+}
+void TypeProto_Tensor::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void TypeProto_Tensor::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -5818,12 +5972,13 @@ void TypeProto_Tensor::Clear() {
   }
   elem_type_ = 0;
   _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* TypeProto_Tensor::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
@@ -5833,7 +5988,7 @@ const char* TypeProto_Tensor::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPA
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
           _Internal::set_has_elem_type(&has_bits);
-          elem_type_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          elem_type_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -5850,7 +6005,9 @@ const char* TypeProto_Tensor::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPA
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -5888,7 +6045,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:onnx.TypeProto.Tensor)
   return target;
@@ -5946,7 +6103,7 @@ void TypeProto_Tensor::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 void TypeProto_Tensor::MergeFrom(const TypeProto_Tensor& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:onnx.TypeProto.Tensor)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -5982,10 +6139,14 @@ bool TypeProto_Tensor::IsInitialized() const {
 
 void TypeProto_Tensor::InternalSwap(TypeProto_Tensor* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
-  swap(shape_, other->shape_);
-  swap(elem_type_, other->elem_type_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(TypeProto_Tensor, elem_type_)
+      + sizeof(TypeProto_Tensor::elem_type_)
+      - PROTOBUF_FIELD_OFFSET(TypeProto_Tensor, shape_)>(
+          reinterpret_cast<char*>(&shape_),
+          reinterpret_cast<char*>(&other->shape_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata TypeProto_Tensor::GetMetadata() const {
@@ -6012,16 +6173,16 @@ const ::onnx::TypeProto&
 TypeProto_Sequence::_Internal::elem_type(const TypeProto_Sequence* msg) {
   return *msg->elem_type_;
 }
-TypeProto_Sequence::TypeProto_Sequence()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+TypeProto_Sequence::TypeProto_Sequence(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:onnx.TypeProto.Sequence)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:onnx.TypeProto.Sequence)
 }
 TypeProto_Sequence::TypeProto_Sequence(const TypeProto_Sequence& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_elem_type()) {
     elem_type_ = new ::onnx::TypeProto(*from.elem_type_);
   } else {
@@ -6038,12 +6199,20 @@ void TypeProto_Sequence::SharedCtor() {
 TypeProto_Sequence::~TypeProto_Sequence() {
   // @@protoc_insertion_point(destructor:onnx.TypeProto.Sequence)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void TypeProto_Sequence::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   if (this != internal_default_instance()) delete elem_type_;
 }
 
+void TypeProto_Sequence::ArenaDtor(void* object) {
+  TypeProto_Sequence* _this = reinterpret_cast< TypeProto_Sequence* >(object);
+  (void)_this;
+}
+void TypeProto_Sequence::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void TypeProto_Sequence::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -6065,12 +6234,13 @@ void TypeProto_Sequence::Clear() {
     elem_type_->Clear();
   }
   _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* TypeProto_Sequence::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
@@ -6089,7 +6259,9 @@ const char* TypeProto_Sequence::_InternalParse(const char* ptr, ::PROTOBUF_NAMES
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -6121,7 +6293,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:onnx.TypeProto.Sequence)
   return target;
@@ -6170,7 +6342,7 @@ void TypeProto_Sequence::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from)
 void TypeProto_Sequence::MergeFrom(const TypeProto_Sequence& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:onnx.TypeProto.Sequence)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -6199,7 +6371,7 @@ bool TypeProto_Sequence::IsInitialized() const {
 
 void TypeProto_Sequence::InternalSwap(TypeProto_Sequence* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   swap(elem_type_, other->elem_type_);
 }
@@ -6231,16 +6403,16 @@ const ::onnx::TypeProto&
 TypeProto_Map::_Internal::value_type(const TypeProto_Map* msg) {
   return *msg->value_type_;
 }
-TypeProto_Map::TypeProto_Map()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+TypeProto_Map::TypeProto_Map(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:onnx.TypeProto.Map)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:onnx.TypeProto.Map)
 }
 TypeProto_Map::TypeProto_Map(const TypeProto_Map& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_value_type()) {
     value_type_ = new ::onnx::TypeProto(*from.value_type_);
   } else {
@@ -6260,12 +6432,20 @@ void TypeProto_Map::SharedCtor() {
 TypeProto_Map::~TypeProto_Map() {
   // @@protoc_insertion_point(destructor:onnx.TypeProto.Map)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void TypeProto_Map::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   if (this != internal_default_instance()) delete value_type_;
 }
 
+void TypeProto_Map::ArenaDtor(void* object) {
+  TypeProto_Map* _this = reinterpret_cast< TypeProto_Map* >(object);
+  (void)_this;
+}
+void TypeProto_Map::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void TypeProto_Map::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -6288,12 +6468,13 @@ void TypeProto_Map::Clear() {
   }
   key_type_ = 0;
   _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* TypeProto_Map::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
@@ -6303,7 +6484,7 @@ const char* TypeProto_Map::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
           _Internal::set_has_key_type(&has_bits);
-          key_type_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          key_type_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -6320,7 +6501,9 @@ const char* TypeProto_Map::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -6358,7 +6541,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:onnx.TypeProto.Map)
   return target;
@@ -6416,7 +6599,7 @@ void TypeProto_Map::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 void TypeProto_Map::MergeFrom(const TypeProto_Map& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:onnx.TypeProto.Map)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -6452,10 +6635,14 @@ bool TypeProto_Map::IsInitialized() const {
 
 void TypeProto_Map::InternalSwap(TypeProto_Map* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
-  swap(value_type_, other->value_type_);
-  swap(key_type_, other->key_type_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(TypeProto_Map, key_type_)
+      + sizeof(TypeProto_Map::key_type_)
+      - PROTOBUF_FIELD_OFFSET(TypeProto_Map, value_type_)>(
+          reinterpret_cast<char*>(&value_type_),
+          reinterpret_cast<char*>(&other->value_type_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata TypeProto_Map::GetMetadata() const {
@@ -6497,10 +6684,11 @@ TypeProto::_Internal::map_type(const TypeProto* msg) {
   return *msg->value_.map_type_;
 }
 void TypeProto::set_allocated_tensor_type(::onnx::TypeProto_Tensor* tensor_type) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaNoVirtual();
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArena();
   clear_value();
   if (tensor_type) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena = nullptr;
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+      ::PROTOBUF_NAMESPACE_ID::Arena::GetArena(tensor_type);
     if (message_arena != submessage_arena) {
       tensor_type = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
           message_arena, tensor_type, submessage_arena);
@@ -6511,10 +6699,11 @@ void TypeProto::set_allocated_tensor_type(::onnx::TypeProto_Tensor* tensor_type)
   // @@protoc_insertion_point(field_set_allocated:onnx.TypeProto.tensor_type)
 }
 void TypeProto::set_allocated_sequence_type(::onnx::TypeProto_Sequence* sequence_type) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaNoVirtual();
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArena();
   clear_value();
   if (sequence_type) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena = nullptr;
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+      ::PROTOBUF_NAMESPACE_ID::Arena::GetArena(sequence_type);
     if (message_arena != submessage_arena) {
       sequence_type = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
           message_arena, sequence_type, submessage_arena);
@@ -6525,10 +6714,11 @@ void TypeProto::set_allocated_sequence_type(::onnx::TypeProto_Sequence* sequence
   // @@protoc_insertion_point(field_set_allocated:onnx.TypeProto.sequence_type)
 }
 void TypeProto::set_allocated_map_type(::onnx::TypeProto_Map* map_type) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaNoVirtual();
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArena();
   clear_value();
   if (map_type) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena = nullptr;
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+      ::PROTOBUF_NAMESPACE_ID::Arena::GetArena(map_type);
     if (message_arena != submessage_arena) {
       map_type = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
           message_arena, map_type, submessage_arena);
@@ -6538,19 +6728,20 @@ void TypeProto::set_allocated_map_type(::onnx::TypeProto_Map* map_type) {
   }
   // @@protoc_insertion_point(field_set_allocated:onnx.TypeProto.map_type)
 }
-TypeProto::TypeProto()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+TypeProto::TypeProto(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:onnx.TypeProto)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:onnx.TypeProto)
 }
 TypeProto::TypeProto(const TypeProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   denotation_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_denotation()) {
-    denotation_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.denotation_);
+    denotation_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_denotation(),
+      GetArena());
   }
   clear_has_value();
   switch (from.value_case()) {
@@ -6582,15 +6773,23 @@ void TypeProto::SharedCtor() {
 TypeProto::~TypeProto() {
   // @@protoc_insertion_point(destructor:onnx.TypeProto)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void TypeProto::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   denotation_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (has_value()) {
     clear_value();
   }
 }
 
+void TypeProto::ArenaDtor(void* object) {
+  TypeProto* _this = reinterpret_cast< TypeProto* >(object);
+  (void)_this;
+}
+void TypeProto::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void TypeProto::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -6604,15 +6803,21 @@ void TypeProto::clear_value() {
 // @@protoc_insertion_point(one_of_clear_start:onnx.TypeProto)
   switch (value_case()) {
     case kTensorType: {
-      delete value_.tensor_type_;
+      if (GetArena() == nullptr) {
+        delete value_.tensor_type_;
+      }
       break;
     }
     case kSequenceType: {
-      delete value_.sequence_type_;
+      if (GetArena() == nullptr) {
+        delete value_.sequence_type_;
+      }
       break;
     }
     case kMapType: {
-      delete value_.map_type_;
+      if (GetArena() == nullptr) {
+        delete value_.map_type_;
+      }
       break;
     }
     case VALUE_NOT_SET: {
@@ -6631,36 +6836,37 @@ void TypeProto::Clear() {
 
   cached_has_bits = _has_bits_[0];
   if (cached_has_bits & 0x00000001u) {
-    denotation_.ClearNonDefaultToEmptyNoArena();
+    denotation_.ClearNonDefaultToEmpty();
   }
   clear_value();
   _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* TypeProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     CHK_(ptr);
     switch (tag >> 3) {
-      // optional .onnx.TypeProto.Tensor tensor_type = 1;
+      // .onnx.TypeProto.Tensor tensor_type = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_tensor_type(), ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // optional .onnx.TypeProto.Sequence sequence_type = 4;
+      // .onnx.TypeProto.Sequence sequence_type = 4;
       case 4:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 34)) {
           ptr = ctx->ParseMessage(_internal_mutable_sequence_type(), ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // optional .onnx.TypeProto.Map map_type = 5;
+      // .onnx.TypeProto.Map map_type = 5;
       case 5:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 42)) {
           ptr = ctx->ParseMessage(_internal_mutable_map_type(), ptr);
@@ -6684,7 +6890,9 @@ const char* TypeProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -6742,7 +6950,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:onnx.TypeProto)
   return target;
@@ -6765,21 +6973,21 @@ size_t TypeProto::ByteSizeLong() const {
   }
 
   switch (value_case()) {
-    // optional .onnx.TypeProto.Tensor tensor_type = 1;
+    // .onnx.TypeProto.Tensor tensor_type = 1;
     case kTensorType: {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *value_.tensor_type_);
       break;
     }
-    // optional .onnx.TypeProto.Sequence sequence_type = 4;
+    // .onnx.TypeProto.Sequence sequence_type = 4;
     case kSequenceType: {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *value_.sequence_type_);
       break;
     }
-    // optional .onnx.TypeProto.Map map_type = 5;
+    // .onnx.TypeProto.Map map_type = 5;
     case kMapType: {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -6817,13 +7025,12 @@ void TypeProto::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 void TypeProto::MergeFrom(const TypeProto& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:onnx.TypeProto)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (from._internal_has_denotation()) {
-    _has_bits_[0] |= 0x00000001u;
-    denotation_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.denotation_);
+    _internal_set_denotation(from._internal_denotation());
   }
   switch (from.value_case()) {
     case kTensorType: {
@@ -6864,10 +7071,9 @@ bool TypeProto::IsInitialized() const {
 
 void TypeProto::InternalSwap(TypeProto* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
-  denotation_.Swap(&other->denotation_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
+  denotation_.Swap(&other->denotation_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   swap(value_, other->value_);
   swap(_oneof_case_[0], other->_oneof_case_[0]);
 }
@@ -6892,19 +7098,20 @@ class OperatorSetIdProto::_Internal {
   }
 };
 
-OperatorSetIdProto::OperatorSetIdProto()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+OperatorSetIdProto::OperatorSetIdProto(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:onnx.OperatorSetIdProto)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:onnx.OperatorSetIdProto)
 }
 OperatorSetIdProto::OperatorSetIdProto(const OperatorSetIdProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   domain_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from._internal_has_domain()) {
-    domain_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.domain_);
+    domain_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_domain(),
+      GetArena());
   }
   version_ = from.version_;
   // @@protoc_insertion_point(copy_constructor:onnx.OperatorSetIdProto)
@@ -6919,12 +7126,20 @@ void OperatorSetIdProto::SharedCtor() {
 OperatorSetIdProto::~OperatorSetIdProto() {
   // @@protoc_insertion_point(destructor:onnx.OperatorSetIdProto)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void OperatorSetIdProto::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   domain_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
+void OperatorSetIdProto::ArenaDtor(void* object) {
+  OperatorSetIdProto* _this = reinterpret_cast< OperatorSetIdProto* >(object);
+  (void)_this;
+}
+void OperatorSetIdProto::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void OperatorSetIdProto::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -6942,16 +7157,17 @@ void OperatorSetIdProto::Clear() {
 
   cached_has_bits = _has_bits_[0];
   if (cached_has_bits & 0x00000001u) {
-    domain_.ClearNonDefaultToEmptyNoArena();
+    domain_.ClearNonDefaultToEmpty();
   }
   version_ = PROTOBUF_LONGLONG(0);
   _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* OperatorSetIdProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
@@ -6972,7 +7188,7 @@ const char* OperatorSetIdProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMES
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
           _Internal::set_has_version(&has_bits);
-          version_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          version_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -6982,7 +7198,9 @@ const char* OperatorSetIdProto::_InternalParse(const char* ptr, ::PROTOBUF_NAMES
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -7022,7 +7240,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:onnx.OperatorSetIdProto)
   return target;
@@ -7080,15 +7298,14 @@ void OperatorSetIdProto::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from)
 void OperatorSetIdProto::MergeFrom(const OperatorSetIdProto& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:onnx.OperatorSetIdProto)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   cached_has_bits = from._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _has_bits_[0] |= 0x00000001u;
-      domain_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.domain_);
+      _internal_set_domain(from._internal_domain());
     }
     if (cached_has_bits & 0x00000002u) {
       version_ = from.version_;
@@ -7117,10 +7334,9 @@ bool OperatorSetIdProto::IsInitialized() const {
 
 void OperatorSetIdProto::InternalSwap(OperatorSetIdProto* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
-  domain_.Swap(&other->domain_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
+  domain_.Swap(&other->domain_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   swap(version_, other->version_);
 }
 
@@ -7133,55 +7349,55 @@ void OperatorSetIdProto::InternalSwap(OperatorSetIdProto* other) {
 }  // namespace onnx
 PROTOBUF_NAMESPACE_OPEN
 template<> PROTOBUF_NOINLINE ::onnx::AttributeProto* Arena::CreateMaybeMessage< ::onnx::AttributeProto >(Arena* arena) {
-  return Arena::CreateInternal< ::onnx::AttributeProto >(arena);
+  return Arena::CreateMessageInternal< ::onnx::AttributeProto >(arena);
 }
 template<> PROTOBUF_NOINLINE ::onnx::ValueInfoProto* Arena::CreateMaybeMessage< ::onnx::ValueInfoProto >(Arena* arena) {
-  return Arena::CreateInternal< ::onnx::ValueInfoProto >(arena);
+  return Arena::CreateMessageInternal< ::onnx::ValueInfoProto >(arena);
 }
 template<> PROTOBUF_NOINLINE ::onnx::NodeProto* Arena::CreateMaybeMessage< ::onnx::NodeProto >(Arena* arena) {
-  return Arena::CreateInternal< ::onnx::NodeProto >(arena);
+  return Arena::CreateMessageInternal< ::onnx::NodeProto >(arena);
 }
 template<> PROTOBUF_NOINLINE ::onnx::ModelProto* Arena::CreateMaybeMessage< ::onnx::ModelProto >(Arena* arena) {
-  return Arena::CreateInternal< ::onnx::ModelProto >(arena);
+  return Arena::CreateMessageInternal< ::onnx::ModelProto >(arena);
 }
 template<> PROTOBUF_NOINLINE ::onnx::StringStringEntryProto* Arena::CreateMaybeMessage< ::onnx::StringStringEntryProto >(Arena* arena) {
-  return Arena::CreateInternal< ::onnx::StringStringEntryProto >(arena);
+  return Arena::CreateMessageInternal< ::onnx::StringStringEntryProto >(arena);
 }
 template<> PROTOBUF_NOINLINE ::onnx::TensorAnnotation* Arena::CreateMaybeMessage< ::onnx::TensorAnnotation >(Arena* arena) {
-  return Arena::CreateInternal< ::onnx::TensorAnnotation >(arena);
+  return Arena::CreateMessageInternal< ::onnx::TensorAnnotation >(arena);
 }
 template<> PROTOBUF_NOINLINE ::onnx::GraphProto* Arena::CreateMaybeMessage< ::onnx::GraphProto >(Arena* arena) {
-  return Arena::CreateInternal< ::onnx::GraphProto >(arena);
+  return Arena::CreateMessageInternal< ::onnx::GraphProto >(arena);
 }
 template<> PROTOBUF_NOINLINE ::onnx::TensorProto_Segment* Arena::CreateMaybeMessage< ::onnx::TensorProto_Segment >(Arena* arena) {
-  return Arena::CreateInternal< ::onnx::TensorProto_Segment >(arena);
+  return Arena::CreateMessageInternal< ::onnx::TensorProto_Segment >(arena);
 }
 template<> PROTOBUF_NOINLINE ::onnx::TensorProto* Arena::CreateMaybeMessage< ::onnx::TensorProto >(Arena* arena) {
-  return Arena::CreateInternal< ::onnx::TensorProto >(arena);
+  return Arena::CreateMessageInternal< ::onnx::TensorProto >(arena);
 }
 template<> PROTOBUF_NOINLINE ::onnx::SparseTensorProto* Arena::CreateMaybeMessage< ::onnx::SparseTensorProto >(Arena* arena) {
-  return Arena::CreateInternal< ::onnx::SparseTensorProto >(arena);
+  return Arena::CreateMessageInternal< ::onnx::SparseTensorProto >(arena);
 }
 template<> PROTOBUF_NOINLINE ::onnx::TensorShapeProto_Dimension* Arena::CreateMaybeMessage< ::onnx::TensorShapeProto_Dimension >(Arena* arena) {
-  return Arena::CreateInternal< ::onnx::TensorShapeProto_Dimension >(arena);
+  return Arena::CreateMessageInternal< ::onnx::TensorShapeProto_Dimension >(arena);
 }
 template<> PROTOBUF_NOINLINE ::onnx::TensorShapeProto* Arena::CreateMaybeMessage< ::onnx::TensorShapeProto >(Arena* arena) {
-  return Arena::CreateInternal< ::onnx::TensorShapeProto >(arena);
+  return Arena::CreateMessageInternal< ::onnx::TensorShapeProto >(arena);
 }
 template<> PROTOBUF_NOINLINE ::onnx::TypeProto_Tensor* Arena::CreateMaybeMessage< ::onnx::TypeProto_Tensor >(Arena* arena) {
-  return Arena::CreateInternal< ::onnx::TypeProto_Tensor >(arena);
+  return Arena::CreateMessageInternal< ::onnx::TypeProto_Tensor >(arena);
 }
 template<> PROTOBUF_NOINLINE ::onnx::TypeProto_Sequence* Arena::CreateMaybeMessage< ::onnx::TypeProto_Sequence >(Arena* arena) {
-  return Arena::CreateInternal< ::onnx::TypeProto_Sequence >(arena);
+  return Arena::CreateMessageInternal< ::onnx::TypeProto_Sequence >(arena);
 }
 template<> PROTOBUF_NOINLINE ::onnx::TypeProto_Map* Arena::CreateMaybeMessage< ::onnx::TypeProto_Map >(Arena* arena) {
-  return Arena::CreateInternal< ::onnx::TypeProto_Map >(arena);
+  return Arena::CreateMessageInternal< ::onnx::TypeProto_Map >(arena);
 }
 template<> PROTOBUF_NOINLINE ::onnx::TypeProto* Arena::CreateMaybeMessage< ::onnx::TypeProto >(Arena* arena) {
-  return Arena::CreateInternal< ::onnx::TypeProto >(arena);
+  return Arena::CreateMessageInternal< ::onnx::TypeProto >(arena);
 }
 template<> PROTOBUF_NOINLINE ::onnx::OperatorSetIdProto* Arena::CreateMaybeMessage< ::onnx::OperatorSetIdProto >(Arena* arena) {
-  return Arena::CreateInternal< ::onnx::OperatorSetIdProto >(arena);
+  return Arena::CreateMessageInternal< ::onnx::OperatorSetIdProto >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 
