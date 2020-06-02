@@ -15,7 +15,7 @@
 bool cpu_all(Tensor *A){
     bool res = true;
 
-    _profile(_CPU_ALL);
+    _profile(_CPU_ALL, 0);
 
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
@@ -29,13 +29,14 @@ bool cpu_all(Tensor *A){
 #endif // OpenMP_VERSION_MAJOR >= 4
         }
     }
+    _profile(_CPU_ALL, 1);
     return res;
 }
 
 bool cpu_any(Tensor *A){
     bool res = false;
 
-    _profile(_CPU_ANY);
+    _profile(_CPU_ANY, 0);
 
 
     #pragma omp parallel for
@@ -50,83 +51,93 @@ bool cpu_any(Tensor *A){
 #endif // OpenMP_VERSION_MAJOR >= 4
         }
     }
+    _profile(_CPU_ANY, 1);
     return res;
 }
 
 // CPU: Logic functions: Comparisons
 void cpu_isfinite(Tensor *A, Tensor* B){
+    _profile(_CPU_ISFINITE, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         B->ptr[i] = std::isfinite(A->ptr[i]);
     }
-    _profile(_CPU_ISFINITE);
+    _profile(_CPU_ISFINITE, 1);
 }
 
 void cpu_isinf(Tensor *A, Tensor* B){
+    _profile(_CPU_ISINF, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         B->ptr[i] = std::isinf(A->ptr[i]);
     }
-    _profile(_CPU_ISINF);
+    _profile(_CPU_ISINF, 1);
 }
 
 void cpu_isnan(Tensor *A, Tensor* B){
+    _profile(_CPU_ISNAN, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         B->ptr[i] = std::isnan(A->ptr[i]);
     }
-    _profile(_CPU_ISNAN);
+    _profile(_CPU_ISNAN, 1);
 }
 
 
 void cpu_isneginf(Tensor *A, Tensor* B){
+    _profile(_CPU_ISNEGINF, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         B->ptr[i] = std::isinf(A->ptr[i]) && A->ptr[i] < 0.0f;
     }
-    _profile(_CPU_ISNEGINF);
+    _profile(_CPU_ISNEGINF, 1);
 }
 
 void cpu_isposinf(Tensor *A, Tensor* B){
+    _profile(_CPU_ISPOSINF, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         B->ptr[i] = std::isinf(A->ptr[i]) && A->ptr[i] > 0.0f;
     }
-    _profile(_CPU_ISPOSINF);
+    _profile(_CPU_ISPOSINF, 1);
 }
 
 
 // CPU: Logic functions: Comparisons
 void cpu_logical_and(Tensor *A, Tensor *B, Tensor *C){
+    _profile(_CPU_LOGICAL_AND, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         C->ptr[i] = (bool)A->ptr[i] & (bool)B->ptr[i];
     }
-    _profile(_CPU_LOGICAL_AND);
+    _profile(_CPU_LOGICAL_AND, 1);
 }
 
 void cpu_logical_or(Tensor *A, Tensor *B, Tensor *C){
+    _profile(_CPU_LOGICAL_OR, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         C->ptr[i] = (bool)A->ptr[i] | (bool)B->ptr[i];
     }
-    _profile(_CPU_LOGICAL_OR);
+    _profile(_CPU_LOGICAL_OR, 1);
 }
 
 void cpu_logical_not(Tensor *A, Tensor *B){
+    _profile(_CPU_LOGICAL_NOT, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         B->ptr[i] = !((bool)A->ptr[i]);  // why not use "~"
     }
-    _profile(_CPU_LOGICAL_NOT);
+    _profile(_CPU_LOGICAL_NOT, 1);
 }
 
 void cpu_logical_xor(Tensor *A, Tensor *B, Tensor *C){
+    _profile(_CPU_LOGICAL_XOR, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         C->ptr[i] = (bool)A->ptr[i] ^ (bool)B->ptr[i];
     }
-    _profile(_CPU_LOGICAL_XOR);
+    _profile(_CPU_LOGICAL_XOR, 1);
 }
 
 
@@ -134,7 +145,7 @@ void cpu_logical_xor(Tensor *A, Tensor *B, Tensor *C){
 
 bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
     bool allclose = true;
-    _profile(_CPU_ALLCLOSE);
+    _profile(_CPU_ALLCLOSE, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         bool close = ::fabsf(A->ptr[i] - B->ptr[i]) <= (atol + rtol * ::fabsf(B->ptr[i]));
@@ -148,72 +159,80 @@ bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
 #endif // OpenMP_VERSION_MAJOR >= 4
         }
     }
+    _profile(_CPU_ALLCLOSE, 1);
     return allclose;
 }
 
 void cpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool equal_nan){
-    _profile(_CPU_ISCLOSE);
+    _profile(_CPU_ISCLOSE, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         C->ptr[i] = ::fabsf(A->ptr[i] - B->ptr[i]) <= (atol + rtol * ::fabsf(B->ptr[i]));
     }
+    _profile(_CPU_ISCLOSE, 1);
 }
 
 void cpu_greater(Tensor *A, Tensor *B, Tensor *C){
-    _profile(_CPU_GREATER);
+    _profile(_CPU_GREATER, 0);
 
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         C->ptr[i] = A->ptr[i] > B->ptr[i];
     }
+    _profile(_CPU_GREATER, 1);
 }
 
 void cpu_greater_equal(Tensor *A, Tensor *B, Tensor *C){
-    _profile(_CPU_GREATER_EQUAL);
+    _profile(_CPU_GREATER_EQUAL, 0);
 
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         C->ptr[i] = A->ptr[i] >= B->ptr[i];
     }
+    _profile(_CPU_GREATER_EQUAL, 1);
 }
 
 void cpu_less(Tensor *A, Tensor *B, Tensor *C){
-    _profile(_CPU_LESS);
+    _profile(_CPU_LESS, 0);
 
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         C->ptr[i] = A->ptr[i] < B->ptr[i];
     }
+    _profile(_CPU_LESS, 1);
 }
 
 void cpu_less_equal(Tensor *A, Tensor *B, Tensor *C){
-    _profile(_CPU_LESS_EQUAL);
+    _profile(_CPU_LESS_EQUAL, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         C->ptr[i] = A->ptr[i] <= B->ptr[i];
     }
+    _profile(_CPU_LESS_EQUAL, 1);
 }
 
 void cpu_equal(Tensor *A, Tensor *B, Tensor *C){
-    _profile(_CPU_EQUAL);
+    _profile(_CPU_EQUAL, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         C->ptr[i] = A->ptr[i] == B->ptr[i];
     }
+    _profile(_CPU_EQUAL, 1);
 }
 
 void cpu_not_equal(Tensor *A, Tensor *B, Tensor *C){
-    _profile(_CPU_NOT_EQUAL);
+    _profile(_CPU_NOT_EQUAL, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         C->ptr[i] = A->ptr[i] != B->ptr[i];
     }
+    _profile(_CPU_NOT_EQUAL, 1);
 }
 
 
 
 int cpu_equal2(Tensor *A, Tensor *B, float epsilon){
-  _profile(_CPU_EQUAL2);
+  _profile(_CPU_EQUAL2, 0);
 
   for (int i = 0; i < A->size; i++){
       float delta = ::fabs(A->ptr[i] - B->ptr[i]);
@@ -221,8 +240,10 @@ int cpu_equal2(Tensor *A, Tensor *B, float epsilon){
           fprintf(stderr, "\n>>>>>>>>>>\n");
           fprintf(stderr, "%f != %f\n", A->ptr[i], B->ptr[i]);
           fprintf(stderr, "%f > %f\n", delta, epsilon);
+          _profile(_CPU_EQUAL2, 1);
           return 0;
       }
   }
+  _profile(_CPU_EQUAL2, 1);
   return 1;
 }

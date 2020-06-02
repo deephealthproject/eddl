@@ -147,9 +147,10 @@
 #define _CPU_AVGPOOL2D_BACK        143
 #define _CPU_REPEAT_NN             144
 #define _CPU_D_REPEAT_NN           145
+#define _CPU_FLIP                  146
 
-#define _NUM_CPU_FUNCS       146
+#define _NUM_CPU_FUNCS       147
 extern int num_instances[_NUM_CPU_FUNCS];
-void _profile(int f_id);
+void _profile(int f_id, int end);
 
 #endif

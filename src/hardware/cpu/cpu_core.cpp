@@ -9,9 +9,11 @@
 
 
 #include "eddl/hardware/cpu/cpu_hw.h"
+#include <sys/time.h>
 
 
 int num_instances[_NUM_CPU_FUNCS];
+float mb_memory_needed;
 
 void _profile_funcname(int i, char *name) {
   switch(i) {
@@ -165,46 +167,70 @@ default                          : strcpy(name, "?????"); break;
 }
 }
 
-void _profile(int f_id) {
+struct timeval time_ini[_NUM_CPU_FUNCS];
+unsigned long long acc_time[_NUM_CPU_FUNCS];
+
+void _profile(int f_id, int end) {
   num_instances[f_id]++;
+  if (!end) gettimeofday(&time_ini[f_id], NULL);
+  else {
+      timeval t1;
+      gettimeofday(&t1, NULL);
+      acc_time[f_id] += ((t1.tv_sec - time_ini[f_id].tv_sec) * 1000000) +
+                        (t1.tv_usec - time_ini[f_id].tv_usec);
+  }
 }
 
 void _show_profile() {
+  printf("\nCPU functions called:\n");
   for (int i=0; i<_NUM_CPU_FUNCS; i++) {
     if (num_instances[i] != 0) {
       char func_name[50];
       _profile_funcname(i, func_name);
-      printf("%50s: %d\n", func_name, num_instances[i]);  
+      printf("%-50s: %d instances, %llu us\n", func_name, num_instances[i], acc_time[i]);
     }
   }
+  printf("Memory: %f MB\n", mb_memory_needed);
+}
+
+void _profile_add_tensor(int size) {
+  mb_memory_needed += (float)size / 1024.0 / 1024.0;
+  printf("accumulated tensor memory: size %f\n", mb_memory_needed);
+}
+
+void _profile_remove_tensor(int size) {
+  mb_memory_needed -= (float)size / 1024.0 / 1024.0;
 }
 
 void cpu_transpose(Tensor * A, Tensor * B) {
-    _profile(_CPU_TRANSPOSE);
+    _profile(_CPU_TRANSPOSE, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; i++){
         B->ptr[i] = A->ptr[i];
     }
+    _profile(_CPU_TRANSPOSE, 1);
 }
 
 void cpu_copy(Tensor * A, Tensor * B){
-    _profile(_CPU_COPY);
+    _profile(_CPU_COPY, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; i++){
         B->ptr[i] = A->ptr[i];
     }
+    _profile(_CPU_COPY, 1);
 }
 
 void cpu_fill_(Tensor *A, float v){
-    _profile(_CPU_FILL_);
+    _profile(_CPU_FILL_, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         A->ptr[i] = v;
     }
+    _profile(_CPU_FILL_, 1);
 }
 
 void cpu_fill(Tensor * A, int aini, int aend, Tensor * B, int bini, int bend, int inc){
-    _profile(_CPU_FILL);
+    _profile(_CPU_FILL, 0);
     int at = A->size / A->shape[0];
     int bt = B->size / B->shape[0];
 
@@ -225,43 +251,48 @@ void cpu_fill(Tensor * A, int aini, int aend, Tensor * B, int bini, int bend, in
                 else B->ptr[bp] = A->ptr[ap];
         }
     }
+    _profile(_CPU_FILL, 1);
 }
 
 
 void cpu_select(Tensor *A, Tensor *B, SelDescriptor *sd){
-    _profile(_CPU_SELECT);
+    _profile(_CPU_SELECT, 0);
     #pragma omp parallel for
     for (int i = 0; i < B->size; i++) {
         B->ptr[i] = A->ptr[sd->cpu_addresses[i]];
     }
+    _profile(_CPU_SELECT, 1);
 }
 
 void cpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
-    _profile(_CPU_SELECT_BACK);
+    _profile(_CPU_SELECT_BACK, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; i++) {  // walk stride
         B->ptr[sd->cpu_addresses[i]] += A->ptr[i];  // delta_parent += delta
     }
+    _profile(_CPU_SELECT_BACK, 1);
 }
 
 void cpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
-    _profile(_CPU_SET_SELECT);
+    _profile(_CPU_SET_SELECT, 0);
     #pragma omp parallel for
     for (int i = 0; i < B->size; i++) {
         A->ptr[sd->cpu_addresses[i]] = B->ptr[i];
     }
+    _profile(_CPU_SET_SELECT, 1);
 }
 void cpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
-    _profile(_CPU_SET_SELECT_BACK);
+    _profile(_CPU_SET_SELECT_BACK, 0);
     #pragma omp parallel for
     for (int i = 0; i < B->size; i++) {
         B->ptr[i] += A->ptr[sd->cpu_addresses[i]];
     }
+    _profile(_CPU_SET_SELECT_BACK, 1);
 }
 
 
 void cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,bool mask_zeros){
-    _profile(_CPU_SELECT2);
+    _profile(_CPU_SELECT2, 0);
     int s = A->size / A->shape[0];
 
     #pragma omp parallel for
@@ -272,10 +303,11 @@ void cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,bool 
             if ((mask_zeros)&&(sind[i]==0)) B->ptr[p]=0;
             else B->ptr[pb] = A->ptr[p];
     }
+    _profile(_CPU_SELECT2, 1);
 }
 
 void cpu_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,int inc,bool mask_zeros){
-    _profile(_CPU_DESELECT);
+    _profile(_CPU_DESELECT, 0);
     int s = A->size / A->shape[0];
 
     #pragma omp parallel for
@@ -289,10 +321,11 @@ void cpu_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,int
               else B->ptr[p] += A->ptr[pb];
             }
     }
+    _profile(_CPU_DESELECT, 1);
 }
 
 void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative){
-    _profile(_CPU_CONCAT);
+    _profile(_CPU_CONCAT, 0);
   // Walk through all the tensors to concat one axis (once)
     unsigned int offset = 0;
     unsigned int src_stride = 0;
@@ -318,4 +351,5 @@ void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative
             else{ dest[dest_offset + k] = src[j]; }
         }
     }
+    _profile(_CPU_CONCAT, 1);
 }

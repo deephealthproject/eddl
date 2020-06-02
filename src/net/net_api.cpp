@@ -22,6 +22,9 @@
 #include "eddl/random.h"
 #include "eddl/layers/core/layer_core.h"
 
+
+extern void _show_profile();
+
 #define VERBOSE 0
 
 using namespace std;
@@ -657,6 +660,7 @@ void Net::fit(vtensor tin, vtensor tout, int batch, int epochs) {
     }
     fflush(stdout);
   }
+
 }
 
 void Net::fit_recurrent(vtensor tin, vtensor tout, int batch, int epochs) {
@@ -757,6 +761,8 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
   }
 
   compute_loss();
+
+  _show_profile();
 
 }
 

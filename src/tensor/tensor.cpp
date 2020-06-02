@@ -20,6 +20,9 @@
 #include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
+void _profile_add_tensor(int size);
+void _profile_remove_tensor(int size);
+
 using namespace std;
 
 // TODO: Don't like here
@@ -64,7 +67,11 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
     updateData(fptr);
 
     tsem = new mutex();
+
+    // profiling
+    _profile_add_tensor(this->size);
 }
+
 
 // From shape and device
 /**
@@ -289,6 +296,7 @@ Tensor::~Tensor() {
       // delete FPGA Tensor
     }
 #endif
+  _profile_remove_tensor(this->size);
     delete tsem;
 }
 

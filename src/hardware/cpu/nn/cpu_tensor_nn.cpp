@@ -10,7 +10,7 @@
 #include "eddl/hardware/cpu/nn/cpu_nn.h"
 
 void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
-    _profile(_CPU_REPEAT_NN);
+    _profile(_CPU_REPEAT_NN, 0);
     // TODO: Should be for N dimensions, not 2 (...and generic, not just NN)
     #pragma omp parallel for
     for(int i=0; i<B->size; i++){
@@ -25,11 +25,12 @@ void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
 
         B->ptr[i] = A->ptr[offset_a];
     }
+    _profile(_CPU_REPEAT_NN, 1);
 
 }
 
 void cpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
-    _profile(_CPU_D_REPEAT_NN);
+    _profile(_CPU_D_REPEAT_NN, 0);
     // TODO: Should be for N dimensions, not 2 (...and generic, not just NN)
     ////#pragma omp parallel for
 
@@ -46,5 +47,6 @@ void cpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
 
         A->ptr[offset_a] += D->ptr[i];
     }
+    _profile(_CPU_D_REPEAT_NN, 1);
 
 }

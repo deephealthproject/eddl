@@ -47,7 +47,7 @@ bool Tensor::all(Tensor *A){
 #endif
 #ifdef cFPGA
     else {
-
+        res = fpga_all(A);
     }
 #endif
 
@@ -68,7 +68,7 @@ bool Tensor::any(Tensor *A){
 #endif
 #ifdef cFPGA
     else {
-
+        res = fpga_any(A);
     }
 #endif
 
@@ -90,7 +90,7 @@ void Tensor::isfinite(Tensor *A, Tensor* B){
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::isfinite");
+         fpga_isfinite(A, B);
         }
 #endif
 }
@@ -109,7 +109,7 @@ void Tensor::isinf(Tensor *A, Tensor* B){
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::isinf");
+          fpga_isinf(A, B);
         }
 #endif
 }
@@ -128,7 +128,7 @@ void Tensor::isnan(Tensor *A, Tensor* B){
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::isnan");
+          fpga_isnan(A, B);
         }
 #endif
 }
@@ -147,7 +147,7 @@ void Tensor::isneginf(Tensor *A, Tensor* B){
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::isneginf");
+         fpga_isneginf(A, B);
         }
 #endif
 }
@@ -166,7 +166,7 @@ void Tensor::isposinf(Tensor *A, Tensor* B){
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::isposinf");
+         fpga_isposinf(A, B);
         }
 #endif
 }
@@ -188,7 +188,7 @@ void Tensor::logical_and(Tensor *A, Tensor *B, Tensor *C){
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::greater");
+          fpga_logical_and(A, B, C);
         }
 #endif
 }
@@ -207,7 +207,7 @@ void Tensor::logical_or(Tensor *A, Tensor *B, Tensor *C){
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::greater");
+          fpga_logical_or(A, B, C);
         }
 #endif
 }
@@ -226,7 +226,7 @@ void Tensor::logical_not(Tensor *A, Tensor *B){
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::greater");
+          fpga_logical_not(A, B);
         }
 #endif
 }
@@ -245,7 +245,7 @@ void Tensor::logical_xor(Tensor *A, Tensor *B, Tensor *C){
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::greater");
+          fpga_logical_xor(A, B, C);
         }
 #endif
 }
@@ -265,7 +265,7 @@ bool Tensor::allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_n
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::greater");
+          return fpga_allclose(A, B, rtol, atol, equal_nan);
         }
 #endif
     return 0;
@@ -286,7 +286,7 @@ void Tensor::isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bo
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::greater");
+          fpga_isclose(A, B, C, rtol, atol, equal_nan);
         }
 #endif
 }
@@ -306,7 +306,7 @@ void Tensor::greater(Tensor *A, Tensor *B, Tensor *C){
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::greater");
+            fpga_greater(A, B, C);
         }
 #endif
 }
@@ -325,7 +325,7 @@ void Tensor::greater_equal(Tensor *A, Tensor *B, Tensor *C){
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::greater");
+          fpga_greater_equal(A, B, C);
         }
 #endif
 }
@@ -344,7 +344,7 @@ void Tensor::less(Tensor *A, Tensor *B, Tensor *C){
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::greater");
+         fpga_less(A, B, C);
         }
 #endif
 }
@@ -363,7 +363,7 @@ void Tensor::less_equal(Tensor *A, Tensor *B, Tensor *C){
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::greater");
+          fpga_less_equal(A, B, C);
         }
 #endif
 }
@@ -382,7 +382,7 @@ void Tensor::equal(Tensor *A, Tensor *B, Tensor *C){
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::greater");
+         fpga_equal(A, B, C);
         }
 #endif
 }
@@ -401,7 +401,7 @@ void Tensor::not_equal(Tensor *A, Tensor *B, Tensor *C){
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::greater");
+           fpga_not_equal(A, B, C);
         }
 #endif
 }
@@ -434,7 +434,7 @@ int Tensor::equal2(Tensor *A, Tensor *B, float epsilon) {
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::equal");
+          return fpga_equal2(A, B, epsilon);
         }
 #endif
 

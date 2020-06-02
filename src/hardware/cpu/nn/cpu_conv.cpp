@@ -41,7 +41,7 @@ void add_pixel(int b,int px,int py,int pz,ConvolDescriptor *D,int isize,int irsi
 
 void im2col(int b,ConvolDescriptor *D,float *ptrI,int col2im)
 {
-  _profile(_CPU_IM2COL);
+  _profile(_CPU_IM2COL, 0);
   int i,j,k;
   int pz,py,px,y,x;
   int ksize=D->kr*D->kc;
@@ -80,12 +80,13 @@ void im2col(int b,ConvolDescriptor *D,float *ptrI,int col2im)
       py+=D->sr;
     }
   }
+    _profile(_CPU_IM2COL, 1);
 }
 
 
 void cpu_conv2D(ConvolDescriptor *D)
 {
-  _profile(_CPU_CONV2D);
+  _profile(_CPU_CONV2D, 0);
   int osize=D->z*D->r*D->c;
   int isize=D->r*D->c*D->kc*D->kr*D->kz;//r*c,kr*kc*kz
 
@@ -121,12 +122,13 @@ void cpu_conv2D(ConvolDescriptor *D)
       (*ptrO)+=D->bias->ptr[z];
     }
   }
+    _profile(_CPU_CONV2D, 1);
 
 }
 
 void cpu_conv2D_grad(ConvolDescriptor *D)
 {
-  _profile(_CPU_CONV2D_GRAD);
+  _profile(_CPU_CONV2D_GRAD, 0);
   //return;
   int osize=D->z*D->r*D->c;
   int isize=D->r*D->c*D->kc*D->kr*D->kz;//r*c,kr*kc*kz
@@ -159,11 +161,12 @@ void cpu_conv2D_grad(ConvolDescriptor *D)
 
     }
   }
+    _profile(_CPU_CONV2D_GRAD, 1);
 }
 
 void cpu_conv2D_back(ConvolDescriptor *D)
 {
-  _profile(_CPU_CONV2D_BACK);
+  _profile(_CPU_CONV2D_BACK, 0);
   int osize=D->z*D->r*D->c;
   int isize=D->r*D->c*D->kc*D->kr*D->kz;//r*c,kr*kc*kz
 
@@ -188,4 +191,5 @@ void cpu_conv2D_back(ConvolDescriptor *D)
     im2col(b,D,ptrI,1);
 
   }// batch
+    _profile(_CPU_CONV2D_BACK, 1);
 }

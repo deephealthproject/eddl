@@ -15,7 +15,7 @@
 #include "eddl/hardware/cpu/nn/cpu_nn.h"
 
 int cpu_accuracy(Tensor *A, Tensor *B){
-  _profile(_CPU_ACCURACY);
+  _profile(_CPU_ACCURACY, 0);
   int acc = 0;
   int aind, bind;
 
@@ -24,5 +24,6 @@ int cpu_accuracy(Tensor *A, Tensor *B){
     (*B->ptr2).col(i).maxCoeff(&bind);
     if (aind == bind) acc++;
   }
+  _profile(_CPU_ACCURACY, 1);
   return acc;
 }

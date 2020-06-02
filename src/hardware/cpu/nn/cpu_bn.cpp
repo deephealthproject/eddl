@@ -18,7 +18,7 @@
 // BN
 void cpu_permute_channels_last(Tensor *A,Tensor *B)
 {
-  _profile(_CPU_PERMUTE_CHANELS_LAST);
+  _profile(_CPU_PERMUTE_CHANELS_LAST, 0);
   int b,z,r,c;
 
   b=A->shape[0];
@@ -36,12 +36,13 @@ void cpu_permute_channels_last(Tensor *A,Tensor *B)
           B->ptr[pdest]=A->ptr[psrc];
         }
   }
+    _profile(_CPU_PERMUTE_CHANELS_LAST, 1);
 
 }
 
 void cpu_permute_channels_first(Tensor *A,Tensor *B)
 {
-  _profile(_CPU_PERMUTE_CHANELS_FIRST);
+    _profile(_CPU_PERMUTE_CHANELS_FIRST, 0);
   int b,z,r,c;
 
   b=B->shape[0];
@@ -60,12 +61,13 @@ void cpu_permute_channels_first(Tensor *A,Tensor *B)
           B->ptr[psrc]=A->ptr[pdest];
         }
   }
+    _profile(_CPU_PERMUTE_CHANELS_FIRST, 1);
 
 }
 
 void cpu_permute_batch_last(Tensor *A,Tensor *B)
 {
-  _profile(_CPU_PERMUTE_BATCH_LAST);
+  _profile(_CPU_PERMUTE_BATCH_LAST, 0);
   int b,z,r,c;
 
   b=A->shape[0];
@@ -83,12 +85,13 @@ void cpu_permute_batch_last(Tensor *A,Tensor *B)
           B->ptr[pdest]=A->ptr[psrc];
         }
   }
+    _profile(_CPU_PERMUTE_BATCH_LAST, 1);
 
 }
 
 void cpu_permute_batch_first(Tensor *A,Tensor *B)
 {
-  _profile(_CPU_PERMUTE_BATCH_FIRST);
+  _profile(_CPU_PERMUTE_BATCH_FIRST, 0);
   int b,z,r,c;
 
   b=B->shape[0];
@@ -107,5 +110,6 @@ void cpu_permute_batch_first(Tensor *A,Tensor *B)
           B->ptr[psrc]=A->ptr[pdest];
         }
   }
+    _profile(_CPU_PERMUTE_BATCH_FIRST, 1);
 
 }

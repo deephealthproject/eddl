@@ -36,6 +36,7 @@ void Tensor::abs_() {
 #endif
 #ifdef cFPGA
     else {
+      fpga_abs_(this);
 
     }
 #endif
@@ -59,7 +60,7 @@ void Tensor::acos_(){
 #endif
 #ifdef cFPGA
     else {
-
+       fpga_acos_(this);
     }
 #endif
 }
@@ -82,7 +83,7 @@ void Tensor::add_(float v) {
 #endif
 #ifdef cFPGA
     else {
-
+       fpga_add_(this, v);
     }
 #endif
 }
@@ -126,7 +127,7 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_addc(scA,A,scB,B,C,incC);
     }
 #endif
 
@@ -176,7 +177,7 @@ void Tensor::asin_(){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_asin_(this);
     }
 #endif
 }
@@ -199,7 +200,7 @@ void Tensor::atan_(){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_atan_(this);
     }
 #endif
 }
@@ -222,7 +223,7 @@ void Tensor::ceil_(){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_ceil_(this);
     }
 #endif
 }
