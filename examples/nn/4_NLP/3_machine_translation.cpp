@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
 
     l = Decoder(LSTM(ld,128),l,outvs);
     */
-    l = Decoder(LSTM(l,128));
+    l = Decoder(LSTM(l,128),outvs);
 
     //l = LSTM(l,128);
 

@@ -730,7 +730,7 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
       for(j=1;j<xt[i]->ndim;j++)
         shape.push_back(xt[i]->shape[j]);
       for(j=0;j<inl;j++)
-        tinr.push_back(new Tensor(shape,xt[i]->ptr+(j*offset)));
+        tinr.push_back(new Tensor(shape,xt[i]->ptr+(j*offset),xt[i]->device));
     }
   }
 
@@ -744,7 +744,7 @@ void Net::prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vten
 
       if (tout.size())
         for(j=0;j<outl;j++)
-          toutr.push_back(new Tensor(shape,yt[i]->ptr+(j*offset)));
+          toutr.push_back(new Tensor(shape,yt[i]->ptr+(j*offset),yt[i]->device));
     }
   }
 }
