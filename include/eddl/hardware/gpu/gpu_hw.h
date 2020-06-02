@@ -22,43 +22,34 @@
 
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
 
-// MAX THREADS PER BLOCK
-#define MAX_TPB 1024
-#define setDims(A) int setdim_r,setdim_c;setdim_r=(A->size/MAX_TPB);if (setdim_r==0) {setdim_r=1;setdim_c=A->size;}else {if (A->size%MAX_TPB) setdim_r++;setdim_c=MAX_TPB;}dim3 dimGrid(setdim_r);dim3 dimBlock(setdim_c);
 
-extern cublasHandle_t hcublas[64];
-extern curandGenerator_t random_generator[64];
+// CPU: Core (static)
+//void gpu_transpose(Tensor *A, Tensor *B);
+//void gpu_copy(Tensor *A, Tensor *B);
 
-// GPU: Temp
-int* get_block_dim(int N, int blockSize);
-void copy_cpu2gpu(void* cpu_addresses, void* gpu_addresses, int size, bool delete_cpu);
-
-// GPU: Core
 void gpu_fill_(Tensor *A, float v);
-void gpu_mask(Tensor *A,float v);
-
-void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,bool mask_zeros=false);
-void gpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc,bool mask_zeros=false);
+void gpu_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
 
 void gpu_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
+
 void gpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
+
+void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,bool mask_zeros=false); // TODO: Legacy
+void gpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc,bool mask_zeros=false); // TODO: Legacy
+
 void gpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative);
 
-void gpu_copy_to_gpu(float *nptr,Tensor *B);
-void gpu_copy_from_gpu(Tensor *A,float *nptr);
-void gpu_copy_gpu(Tensor *A,Tensor *B);
-
-void gpu_transpose(Tensor *A, Tensor *B);
-void gpu_copy(Tensor *A, Tensor *B);
-void gpu_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
-void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
-
-
-// GPU: Create (static)
+// GPU: Create
 void gpu_range(Tensor *A, float start, float step);
 void gpu_eye(Tensor *A, int offset);
+
+// GPU: Generator
+void gpu_rand_uniform(Tensor *A, float v);
+void gpu_rand_signed_uniform(Tensor *A, float v);
+void gpu_rand_binary(Tensor *A, float v);
+void gpu_rand_normal(Tensor *A, float m, float s);
 
 // GPU: Data transformations (2D Optimized) ********************************************
 void gpu_shift(Tensor *A, Tensor *B, vector<int> t_shift, int mode, float constant);
@@ -77,66 +68,54 @@ void gpu_crop_random(Tensor *A, Tensor *B);
 void gpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant);
 void gpu_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant);
 
+// CPU: Math (in-place)
+void gpu_abs(Tensor *A, Tensor *B);
+void gpu_acos(Tensor *A, Tensor *B);
+void gpu_add(Tensor *A, Tensor *B, float v);
+void gpu_asin(Tensor *A, Tensor *B);
+void gpu_atan(Tensor *A, Tensor *B);
+void gpu_ceil(Tensor *A, Tensor *B);
+void gpu_clamp(Tensor *A, Tensor *B, float min, float max);
+void gpu_cos(Tensor *A, Tensor *B);
+void gpu_cosh(Tensor *A, Tensor *B);
+void gpu_exp(Tensor *A, Tensor *B);
+void gpu_inv(Tensor *A, Tensor *B, float v);
+void gpu_floor(Tensor *A, Tensor *B);
+void gpu_log(Tensor *A, Tensor *B);
+void gpu_log2(Tensor *A, Tensor *B);
+void gpu_log10(Tensor *A, Tensor *B);
+void gpu_logn(Tensor *A, Tensor *B, float n);
+void gpu_mod(Tensor *A, Tensor *B, float v);
+void gpu_mult(Tensor *A, Tensor *B, float v);
+void gpu_normalize(Tensor *A, Tensor *B, float min, float max);
+void gpu_pow(Tensor *A, Tensor *B, float exp);
+void gpu_powb(Tensor *A, Tensor *B, float base);
+void gpu_remainder(Tensor *A, Tensor *B, float v);
+void gpu_round(Tensor *A, Tensor *B);
+void gpu_rsqrt(Tensor *A, Tensor *B);
+void gpu_sigmoid(Tensor *A, Tensor *B);
+void gpu_sign(Tensor *A, Tensor *B, float zero_sign=0.0f);
+void gpu_sin(Tensor *A, Tensor *B);
+void gpu_sinh(Tensor *A, Tensor *B);
+void gpu_sqr(Tensor *A, Tensor *B);
+void gpu_sqrt(Tensor *A, Tensor *B);
+void gpu_tan(Tensor *A, Tensor *B);
+void gpu_tanh(Tensor *A, Tensor *B);
+void gpu_trunc(Tensor *A, Tensor *B);
 
-// GPU: Generator
-float* gpu_get_uniforms(int N);
-void gpu_rand_uniform(Tensor *A, float v);
-void gpu_rand_signed_uniform(Tensor *A, float v);
-void gpu_rand_binary(Tensor *A, float v);
-void gpu_rand_normal(Tensor *A, float m, float s);
-
-// GPU: Math (in-place)
-void gpu_inv_(Tensor *A, float v);
-void gpu_abs_(Tensor *A);
-void gpu_acos_(Tensor *A);
-void gpu_add_(Tensor *A, float v);
-void gpu_asin_(Tensor *A);
-void gpu_atan_(Tensor *A);
-void gpu_ceil_(Tensor *A);
-void gpu_clamp_(Tensor *A, float min, float max);
-void gpu_cos_(Tensor *A);
-void gpu_cosh_(Tensor *A);
-void gpu_exp_(Tensor *A);
-void gpu_floor_(Tensor *A);
-void gpu_log_(Tensor *A);
-void gpu_log2_(Tensor *A);
-void gpu_log10_(Tensor *A);
-void gpu_logn_(Tensor *A, float n);
-void gpu_mod_(Tensor *A, float v);
-void gpu_mult_(Tensor *A, float v);
-void gpu_normalize_(Tensor *A, float min, float max);
-void gpu_pow_(Tensor *A, float exp);
-void gpu_powb_(Tensor *A, float base);
-void gpu_reciprocal_(Tensor *A);
-void gpu_remainder_(Tensor *A, float v);
-void gpu_round_(Tensor *A);
-void gpu_rsqrt_(Tensor *A);
-void gpu_sigmoid_(Tensor *A);
-void gpu_sign_(Tensor *A);
-void gpu_sin_(Tensor *A);
-void gpu_sinh_(Tensor *A);
-void gpu_sqr_(Tensor *A);
-void gpu_sqrt_(Tensor *A);
-void gpu_tan_(Tensor *A);
-void gpu_tanh_(Tensor *A);
-void gpu_trunc_(Tensor *A);
-
-// GPU: Math (static)
-void gpu_addc(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
+// CPU: Math (static)
+void gpu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
 void gpu_inc(Tensor *A, Tensor *B);
 void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
 void gpu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
 void gpu_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
-void gpu_sign2(Tensor *A, Tensor *B); // TODO: Remove
 void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
 void gpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
-
 
 // GPU: Should be reductions
 float gpu_max(Tensor *A);
 float gpu_min(Tensor *A);
 float gpu_sum(Tensor *A);
-void gpu_total_sum(Tensor *A, float *tot);
 float gpu_sum_abs(Tensor *A);
 
 // GPU: Reduction
@@ -153,6 +132,10 @@ void gpu_reduction_back(ReduceDescriptor *RD);
 //void gpu_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
 //void gpu_delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC);
 
+// GPU: Logic functions: Truth value testing
+bool gpu_all(Tensor *A);
+bool gpu_any(Tensor *A);
+
 // GPU: Logic functions: Comparisons
 void gpu_isfinite(Tensor *A, Tensor* B);
 void gpu_isinf(Tensor *A, Tensor* B);
@@ -166,10 +149,6 @@ void gpu_logical_or(Tensor *A, Tensor *B, Tensor *C);
 void gpu_logical_not(Tensor *A, Tensor *B);
 void gpu_logical_xor(Tensor *A, Tensor *B, Tensor *C);
 
-// GPU: Logic functions: Truth value testing
-bool gpu_all(Tensor *A);
-bool gpu_any(Tensor *A);
-
 // GPU: Logic operations: Comparison ops
 bool gpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan);
 void gpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool equal_nan);
@@ -179,5 +158,27 @@ void gpu_less(Tensor *A, Tensor *B, Tensor *C);
 void gpu_less_equal(Tensor *A, Tensor *B, Tensor *C);
 void gpu_equal(Tensor *A, Tensor *B, Tensor *C);
 void gpu_not_equal(Tensor *A, Tensor *B, Tensor *C);
+
+
+// Legacy  **************************************************************************************
+void gpu_copy_to_gpu(float *nptr,Tensor *B);
+void gpu_copy_from_gpu(Tensor *A,float *nptr);
+void gpu_copy_gpu(Tensor *A,Tensor *B);
+
+void cpu2gpu(float *dst, const float *src, unsigned long int size, int gpu_device);
+void gpu2cpu(float *dst, const float *src, unsigned long int size, int gpu_device);
+
+float* get_gpu_fmem(unsigned long int size, int gpu_device);
+void free_gpu_ptr(float *ptr, int gpu_device);
+void gpu_mask(Tensor *A,float v);
+
+
+void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end);
+float* gpu_get_uniforms(int N);  // TODO: What is this?
+void gpu_total_sum(Tensor *A, float *tot);
+
+// GPU: Temp
+int* get_block_dim(int N, int blockSize);
+void copy_cpu2gpu(void* cpu_addresses, void* gpu_addresses, int size, bool delete_cpu);
 
 #endif //EDDL_GPU_HW_H

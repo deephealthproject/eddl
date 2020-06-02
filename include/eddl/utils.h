@@ -18,7 +18,7 @@ using namespace std;
 
 void msg(const string& text, const string& title="");
 
-float *get_fmem(long int size, const string &str);
+float *get_fmem(unsigned long int size, const string &str);
 
 string bytes2human(unsigned long long int bytes, int decimals=2);
 
@@ -55,5 +55,8 @@ string printVector(vector<T> myvector){
     temp += to_string(myvector[myvector.size()-1]);
     return temp;
 }
+
+enum WrappingMode {Constant=0, Reflect=1, Nearest=2, Mirror=3, Wrap=4, Original=5};
+WrappingMode getWrappingMode(string mode);
 
 #endif //EDDL_UTILS_H

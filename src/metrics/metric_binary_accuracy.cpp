@@ -20,7 +20,7 @@ MBinAccuracy::MBinAccuracy() : Metric("binary_accuracy"){}
 
 float MBinAccuracy::value(Tensor *T, Tensor *Y) {
     float f;
-    f = bin_accuracy(T, Y);
+    f = tensorNN::bin_accuracy(T, Y);
     return f;
 }
 

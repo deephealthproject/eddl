@@ -12,7 +12,7 @@
 #include <cstdlib>     /* malloc, free, rand */
 #include <iostream>
 
-#include "eddl/hardware/cpu/nn/cpu_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 
 
 void cpu_cent(Tensor *A, Tensor *B, Tensor *C){

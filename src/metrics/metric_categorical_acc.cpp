@@ -20,10 +20,10 @@ MCategoricalAccuracy::MCategoricalAccuracy() : Metric("categorical_accuracy"){}
 
 float MCategoricalAccuracy::value(Tensor *T, Tensor *Y) {
     float f;
-    f = accuracy(T, Y);
+    f = tensorNN::accuracy(T, Y);
     return f;
 }
 
 Metric* MCategoricalAccuracy::clone() {
-  return new MCategoricalAccuracy();
+    return new MCategoricalAccuracy();
 }

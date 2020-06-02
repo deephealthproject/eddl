@@ -19,7 +19,7 @@ using namespace std;
 
 int LCutoutRandom::total_layers = 0;
 
-LCutoutRandom::LCutoutRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
+LCutoutRandom::LCutoutRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, float cval, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "cutout_random" + to_string(++total_layers);
 
     output = new Tensor(input->shape, dev);
@@ -27,7 +27,7 @@ LCutoutRandom::LCutoutRandom(Layer *parent, vector<float> factor_x, vector<float
     // Params
     this->factor_x = std::move(factor_x);
     this->factor_y = std::move(factor_y);
-    this->constant = constant;
+    this->cval = cval;
 
     parent->addchild(this);
     addparent(parent);
@@ -36,7 +36,7 @@ LCutoutRandom::LCutoutRandom(Layer *parent, vector<float> factor_x, vector<float
 
 void LCutoutRandom::forward() {
   if (mode == TRMODE) {
-    Tensor::cutout_random(this->input, this->output, this->factor_x, this->factor_y, this->constant);
+    Tensor::cutout_random(this->input, this->output, this->factor_x, this->factor_y, this->cval);
   } else {
     Tensor::copy(input, output);
   }
@@ -48,14 +48,14 @@ void LCutoutRandom::backward() {
 
 
 Layer *LCutoutRandom::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LCutoutRandom(p[0], this->factor_x, this->factor_y, this->constant, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
+    auto *n = new LCutoutRandom(p[0], this->factor_x, this->factor_y, this->cval, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LCutoutRandom::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LCutoutRandom(p[0], this->factor_x, this->factor_y, this->constant,  name, todev, this->mem_level);
+    auto *n = new LCutoutRandom(p[0], this->factor_x, this->factor_y, this->cval,  name, todev, this->mem_level);
     n->orig = this;
 
     return n;

@@ -7,12 +7,11 @@
 * All rights reserved
 */
 #include "eddl/tensor/tensor.h"
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
-#include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
 using namespace std;
@@ -22,7 +21,7 @@ void checkCompatibility(Tensor *A, Tensor *B, const string &title){
         msg("Tensors in different devices", title);
     }
 
-    if (!Tensor::eqsize(A, B)){
+    if (!Tensor::sameShape(A, B)){
         msg("Tensors with different shape", title);
     }
 }
@@ -406,9 +405,12 @@ void Tensor::not_equal(Tensor *A, Tensor *B, Tensor *C){
 #endif
 }
 
+int Tensor::eqsize(Tensor *A, Tensor *B){
+    return Tensor::sameShape(A, B);
+}
 
 
-int Tensor::eqsize(Tensor *A, Tensor *B) {
+int Tensor::sameShape(Tensor *A, Tensor *B) {
     if (A->ndim != B->ndim) return 0;
 
     for (int i = 0; i < A->ndim; i++){
@@ -418,18 +420,21 @@ int Tensor::eqsize(Tensor *A, Tensor *B) {
     return 1;
 }
 
-int Tensor::equal2(Tensor *A, Tensor *B, float epsilon) {
-    if (A->device != B->device) msg("Tensors in different devices", "Tensor::equal");
+int Tensor::equivalent(Tensor *A, Tensor *B, float epsilon) {
+    // Equal device
+    if (A->device != B->device) msg("Tensors in different devices", "Tensor::equivalent");
 
-    if (!eqsize(A,B)) return 0;
+    // Equal ndims and shapes
+    if (!sameShape(A, B)) return 0;
 
-    if (A->isCPU()) {
+    // Equal data
+    if (A->isCPU() && B->isCPU()) {
         return cpu_equal2(A, B, epsilon);
     }
 #ifdef cGPU
-    else if (A->isGPU())
+    else if (A->isGPU() || B->isGPU())
           {
-            msg("Equal only for CPU Tensors", "Tensor::equal");
+            msg("Equal only for CPU Tensors", "Tensor::equivalent");
           }
 #endif
 #ifdef cFPGA

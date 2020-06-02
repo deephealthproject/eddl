@@ -7,8 +7,8 @@
 * All rights reserved
 */
 
-#ifndef EDDL_GPU_NN_H
-#define EDDL_GPU_NN_H
+#ifndef EDDL_GPU_TENSOR_NN_H
+#define EDDL_GPU_TENSOR_NN_H
 
 #include <cuda.h>
 #include <curand.h>
@@ -47,17 +47,17 @@ void gpu_d_sigmoid(Tensor *D,Tensor *I,Tensor *PD);
 void gpu_hard_sigmoid(Tensor *A,Tensor *B);
 void gpu_d_hard_sigmoid(Tensor *D,Tensor *I,Tensor *PD);
 
-
 void gpu_exp(Tensor *A,Tensor *B);
 void gpu_d_exp(Tensor *D,Tensor *I,Tensor *PD);
 
 void gpu_tanh(Tensor *A,Tensor *B);
 void gpu_d_tanh(Tensor *D,Tensor *I,Tensor *PD);
 
+void gpu_softmax(Tensor *A,Tensor *B);
+//void gpu_d_softmax(Tensor *D,Tensor *I,Tensor *PD);  // TODO: Missing
+
 void gpu_linear(Tensor *A,Tensor *B,float param);
 void gpu_d_linear(Tensor *D,Tensor *I,Tensor *PD,float param);
-
-void gpu_softmax(Tensor *A,Tensor *B);
 
 // Losses
 void gpu_cent(Tensor *A,Tensor *B,Tensor *C);
@@ -89,4 +89,4 @@ void gpu_permute_channels_last(Tensor *A,Tensor *B);
 void gpu_permute_batch_first(Tensor *A,Tensor *B);
 void gpu_permute_batch_last(Tensor *A,Tensor *B);
 
-#endif //EDDL_GPU_NN_H
+#endif //EDDL_GPU_TENSOR_NN_H

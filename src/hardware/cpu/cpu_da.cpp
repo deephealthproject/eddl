@@ -13,7 +13,7 @@
 #include <utility>
 #include <cmath>
 
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 #include "eddl/random.h"
 
 #ifndef M_PI
@@ -33,9 +33,9 @@ void cpu_single_shift(int b, Tensor *A, Tensor *B, vector<int> shift, int mode, 
                     int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
                     B->ptr[B_pos] = A->ptr[A_pos];
                 }else{
-                    if(mode==0){  // Constant
+                    if(mode == WrappingMode::Constant){  // Constant
                         B->ptr[B_pos] = constant;
-                    }else if(mode == 5){  // Original
+                    }else if(mode == WrappingMode::Original){  // Original
                         B->ptr[B_pos] = A->ptr[B_pos];
                     }else{
                         msg("Mode (" + to_string(mode) + ") not implemented", "Tensor::cpu_single_shift");
@@ -68,9 +68,9 @@ void cpu_single_rotate(int b, Tensor *A, Tensor *B, float angle, vector<int> off
                     int A_pos = b*A->stride[0] + c*A->stride[1] + Ai*A->stride[2] + Aj*A->stride[3];
                     B->ptr[B_pos] = A->ptr[A_pos];;
                 }else{
-                    if(mode==0){  // Constant
+                    if(mode == WrappingMode::Constant){  // Constant
                         B->ptr[B_pos] = constant;
-                    }else if(mode == 5){  // Original
+                    }else if(mode == WrappingMode::Original){  // Original
                         B->ptr[B_pos] = A->ptr[B_pos];
                     }else{
                         msg("Mode (" + to_string(mode) + ") not implemented", "Tensor::cpu_single_rotate");
@@ -89,7 +89,7 @@ void cpu_single_scale(int b, int* offsets, Tensor *A, Tensor *B, vector<int> new
             for(int Bj=0; Bj<B->shape[3];Bj++) {
 
                 // Interpolate indices
-                if(mode==2) { // Nearest
+                if(mode == WrappingMode::Nearest) { // Nearest
                     int Ai = ((Bi + offsets[0]) * A->shape[2]) / new_shape[0];
                     int Aj = ((Bj + offsets[1]) * A->shape[3]) / new_shape[1];
 
@@ -162,7 +162,7 @@ void cpu_single_crop_scale(int b, Tensor* A, Tensor* B, vector<int> coords_from,
         for(int Bi=0; Bi<B->shape[2]; Bi++) {
             for(int Bj=0; Bj<B->shape[3]; Bj++) {
 
-                if(mode==2){ // Nearest
+                if(mode == WrappingMode::Nearest){ // Nearest
                     // Interpolate indices
                     int Ai = (Bi * A_hc) / B->shape[2] + coords_from[0];
                     int Aj = (Bj * A_wc) / B->shape[3] + coords_from[1];
@@ -235,7 +235,7 @@ void cpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_
     // Inverse => For cutout
 
     int offsets[2] = {0, 0};
-    if(!Tensor::eqsize(A, B)){
+    if(!Tensor::sameShape(A, B)){
         offsets[0] = coords_from[0];
         offsets[1] = coords_from[1];
     }
@@ -336,7 +336,7 @@ void cpu_crop_random(Tensor *A, Tensor *B){
 
 void cpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant){
 
-#pragma omp parallel for
+    #pragma omp parallel for
     for(int b=0; b<B->shape[0]; b++) {
 
         // Compute random coordinates

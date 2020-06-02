@@ -19,7 +19,7 @@ using namespace std;
 
 int LRotate::total_layers = 0;
 
-LRotate::LRotate(Layer *parent, float angle, vector<int> offset_center, string da_mode, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
+LRotate::LRotate(Layer *parent, float angle, vector<int> offset_center, WrappingMode da_mode, float cval, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "rotate" + to_string(++total_layers);
 
     output = new Tensor(input->shape, dev);
@@ -28,7 +28,7 @@ LRotate::LRotate(Layer *parent, float angle, vector<int> offset_center, string d
     this->angle = angle;
     this->offset_center = offset_center;
     this->da_mode = da_mode;
-    this->constant = constant;
+    this->cval = cval;
 
     parent->addchild(this);
     addparent(parent);
@@ -37,7 +37,7 @@ LRotate::LRotate(Layer *parent, float angle, vector<int> offset_center, string d
 
 
 void LRotate::forward() {
-    Tensor::rotate(this->input, this->output, angle, this->offset_center, this->da_mode, this->constant);
+    Tensor::rotate(this->input, this->output, angle, this->offset_center, this->da_mode, this->cval);
 }
 
 void LRotate::backward() {
@@ -46,14 +46,14 @@ void LRotate::backward() {
 
 
 Layer *LRotate::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LRotate(p[0], this->angle, this->offset_center, this->da_mode, this->constant, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
+    auto *n = new LRotate(p[0], this->angle, this->offset_center, this->da_mode, this->cval, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LRotate::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LRotate(p[0], this->angle, this->offset_center, this->da_mode, this->constant,  name, todev, this->mem_level);
+    auto *n = new LRotate(p[0], this->angle, this->offset_center, this->da_mode, this->cval,  name, todev, this->mem_level);
     n->orig = this;
 
     return n;

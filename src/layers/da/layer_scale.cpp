@@ -19,7 +19,7 @@ using namespace std;
 
 int LScale::total_layers = 0;
 
-LScale::LScale(Layer *parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
+LScale::LScale(Layer *parent, vector<int> new_shape, bool reshape, WrappingMode da_mode, float cval, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "scale" + to_string(++total_layers);
 
     if (reshape){
@@ -31,7 +31,7 @@ LScale::LScale(Layer *parent, vector<int> new_shape, bool reshape, string da_mod
     // Params
     this->new_shape = new_shape;
     this->reshape = reshape;
-    this->constant = constant;
+    this->cval = cval;
     this->da_mode = da_mode;
 
     parent->addchild(this);
@@ -41,7 +41,7 @@ LScale::LScale(Layer *parent, vector<int> new_shape, bool reshape, string da_mod
 
 
 void LScale::forward() {
-    Tensor::scale(this->input, this->output, this->new_shape, this->da_mode, this->constant);
+    Tensor::scale(this->input, this->output, this->new_shape, this->da_mode, this->cval);
 }
 
 void LScale::backward() {
@@ -50,14 +50,14 @@ void LScale::backward() {
 
 
 Layer *LScale::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LScale(p[0], this->new_shape, this->reshape, this->da_mode, this->constant, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
+    auto *n = new LScale(p[0], this->new_shape, this->reshape, this->da_mode, this->cval, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LScale::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LScale(p[0], this->new_shape, this->reshape, this->da_mode, this->constant,  name, todev, this->mem_level);
+    auto *n = new LScale(p[0], this->new_shape, this->reshape, this->da_mode, this->cval,  name, todev, this->mem_level);
     n->orig = this;
 
     return n;

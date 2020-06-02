@@ -36,11 +36,11 @@ void LAveragePool::resize(int batch){
 }
 
 void LAveragePool::forward() {
-    AvgPool2D(this->pd);
+    tensorNN::AvgPool2D(this->pd);
 }
 
 void LAveragePool::backward() {
-    AvgPool2D_back(this->pd);
+    tensorNN::AvgPool2D_back(this->pd);
 }
 
 Layer *LAveragePool::share(int c, int bs, vector<Layer *> p) {

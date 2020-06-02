@@ -7,12 +7,11 @@
 * All rights reserved
 */
 #include "eddl/tensor/tensor.h"
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
-#include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
 using namespace std;
@@ -41,6 +40,10 @@ Tensor* raw_range(float start, float step, int size, int dev){
 // Creation ops ***********************************
 // ************************************************
 
+Tensor* Tensor::empty(const vector<int> &shape, int dev){
+    return new Tensor(shape, dev);
+}
+
 Tensor* Tensor::zeros(const vector<int> &shape, int dev){
     auto t = new Tensor(shape, dev);
     t->fill_(0.0f);
@@ -60,6 +63,8 @@ Tensor* Tensor::full(const vector<int> &shape, float value, int dev){
 }
 
 Tensor* Tensor::arange(float start, float end, float step, int dev){
+    if(step==0.0f){ step = 1.0f; }  // Trick to avoid division by zero
+
     // [1, 100)
     // Returns a 1-D tensor of size ceil(end - start) with values from start to end with step step.
     // Step is the gap between two values in the tensor.
@@ -68,20 +73,22 @@ Tensor* Tensor::arange(float start, float end, float step, int dev){
 }
 
 Tensor* Tensor::range(float start, float end, float step, int dev){
+    if(step==0.0f){ step = 1.0f; }  // Trick to avoid division by zero
+
     // [1, 100]
     // Returns a 1-D tensor of size floor(end - start)/ + 1 with values from start to end with step step.
     // Step is the gap between two values in the tensor.
-    int size = ::floorf((end-start)/step) + 1;
+    int size = ::floorf((end-start)/step) + 1.0f;
     return raw_range(start, step, size, dev);
 }
 
 Tensor* Tensor::linspace(float start, float end, int steps, int dev){
-    float step = (end-start)/((float)steps-1);
+    float step = (end-start)/((float)steps-1.0f + 10e-8f);
     return Tensor::range(start, end, step, dev);
 }
 
 Tensor* Tensor::logspace(float start, float end, int steps, float base, int dev){
-    float step = (end-start)/((float)steps-1);
+    float step = (end-start)/((float)steps-1.0f + 10e-8f);
     auto t = Tensor::range(start, end, step, dev);
     t->powb_(base);
     return t;

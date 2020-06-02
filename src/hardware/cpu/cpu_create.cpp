@@ -8,7 +8,7 @@
 */
 
 
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 
 void cpu_range(Tensor *A, float min, float step){
     float v=min;

@@ -8,7 +8,7 @@
 */
 
 
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 #include <limits>
 
 // CPU: Logic functions: Truth value testing
@@ -194,8 +194,10 @@ int cpu_equal2(Tensor *A, Tensor *B, float epsilon){
       float delta = ::fabs(A->ptr[i] - B->ptr[i]);
       if (delta > epsilon) {
           fprintf(stderr, "\n>>>>>>>>>>\n");
-          fprintf(stderr, "%f != %f\n", A->ptr[i], B->ptr[i]);
-          fprintf(stderr, "%f > %f\n", delta, epsilon);
+          fprintf(stderr, "[values]\t\t%f != %f\n", A->ptr[i], B->ptr[i]);
+          fprintf(stderr, "[diff/epsilon]\t%f > %f\n", delta, epsilon);
+          fprintf(stderr, "<<<<<<<<<<\n");
+
           return 0;
       }
   }

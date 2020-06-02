@@ -19,7 +19,7 @@ using namespace std;
 
 int LCrop::total_layers = 0;
 
-LCrop::LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool reshape, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
+LCrop::LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool reshape, float cval, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "crop" + to_string(++total_layers);
 
     // Reshape if needed (TODO: builds output tensor twice... First parent, then here)
@@ -33,7 +33,7 @@ LCrop::LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool
     this->from_coords = from_coords;
     this->to_coords = to_coords;
     this->reshape = reshape;
-    this->constant = constant;
+    this->cval = cval;
 
     parent->addchild(this);
     addparent(parent);
@@ -42,7 +42,7 @@ LCrop::LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool
 
 
 void LCrop::forward() {
-    Tensor::crop(this->input, this->output, this->from_coords, this->to_coords, this->constant);
+    Tensor::crop(this->input, this->output, this->from_coords, this->to_coords, this->cval);
 }
 
 void LCrop::backward(){
@@ -51,14 +51,14 @@ void LCrop::backward(){
 
 
 Layer *LCrop::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LCrop(p[0], this->from_coords, this->to_coords, this->reshape, this->constant, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
+    auto *n = new LCrop(p[0], this->from_coords, this->to_coords, this->reshape, this->cval, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LCrop::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LCrop(p[0], this->from_coords, this->to_coords, this->reshape, this->constant,  name, todev, this->mem_level);
+    auto *n = new LCrop(p[0], this->from_coords, this->to_coords, this->reshape, this->cval,  name, todev, this->mem_level);
     n->orig = this;
 
     return n;
