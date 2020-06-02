@@ -14,7 +14,7 @@
 #include <iostream>
 #include <cuda.h>
 
-#include "eddl/hardware/gpu/nn/gpu_nn_kernels.h"
+#include "eddl/hardware/gpu/nn/gpu_tensor_nn_kernels.h"
 #include "eddl/hardware/gpu/gpu_kernels.h"
 
 __global__ void accuracy(float* T, float* N,float* acc,long int cols, long int total_ops, int* MC_err){

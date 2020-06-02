@@ -17,7 +17,6 @@
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
-#include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
 using namespace std;
@@ -27,24 +26,15 @@ int initcuda[MAX_GPUS] = {0, 0, 0, 0, 0, 0, 0, 0};
 int linpos;
 extern ostream &operator<<(ostream &os, const vector<int> shape);
 
-/**
-  *  @brief Constructor of an uninitialized tensor in CPU with dimension and size 0
-  *  @return a tensor
-*/
+
 Tensor::Tensor() : device(DEV_CPU), ndim(0), size(0) {}
 
-/**
-  *  @brief Constructor of an uninitialized tensor
-  *
-  *  @param shape Vector of ints specifying the shape of the tensor
-  *  @param fptr  memory pointer
-  *  @param dev  One of DEV_CPU or DEV_GPU
-  *  @return a tensor
-*/
+
 Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
     /*
      * Important! If we are creating a GPU tensor, "fptr" must point to a GPU pointer.
      */
+// if NOT define... (I always forget)
 #ifndef cGPU
     if ((dev > DEV_CPU)&&(dev<DEV_FPGA)) {
         throw std::runtime_error("Not compiled for GPU");
@@ -63,53 +53,24 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
     updateStrides();
     updateData(fptr);
 
-    tsem = new mutex();
+    this->tsem = new mutex();
 }
 
 // From shape and device
-/**
-  *  @brief Constructor of an uninitialized tensor
-  *
-  *  @param shape Vector of ints specifying the shape of the tensor
-  *  @param dev  One of DEV_CPU or DEV_GPU
-  *  @return a tensor
-*/
 Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape, nullptr, dev){}
 
 // From shape and Tensor (sharing ptr)
-/**
-  *  @brief Constructor of an uninitialized tensor
-  *
-  *  @param shape Vector of ints specifying the shape of the tensor
-  *  @param T  tensor from which to take device and memory pointer
-  *  @return a tensor
-*/
-Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr,T->device) {}
+Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr, T->device) {}
 
-
-/**
-  *  @brief Moves the tensor to new computing device
-  *
-  *  @param dev  One of DEV_CPU or DEV_GPU
-*/
 void Tensor::updateDevice(int dev){
     this->device = dev;
 }
 
-/**
-  *  @brief Change the shape of a tensor
-  *
-  *  @param shape  Vector of ints specifying the new shape of the tensor
-*/
-void Tensor::updateShape(const vector<int> &shape){
-    this->shape = vector<int>(shape);
+void Tensor::updateShape(const vector<int> &new_shape){
+    this->shape = vector<int>(new_shape);
     this->ndim = this->shape.size();
 }
 
-
-/**
-  *  @brief Update the size of the tensor
-*/
 void Tensor::updateSize() {
     this->size = 1;
 
@@ -118,35 +79,37 @@ void Tensor::updateSize() {
     }
 }
 
-
-/**
-  *  @brief Update the strides of the tensor
-*/
 void Tensor::updateStrides() {
     this->stride.clear();  // Remove all elements
 
-    int new_size = this->size;
+    unsigned long int new_size = this->size;
     for(int i=0;i<ndim;i++) {
         new_size /= shape[i];
         this->stride.push_back(new_size);
     }
 }
 
-/**
-  *  @brief Delete tensor data
-*/
 void Tensor::deleteData(){
+    // Careful, you can't know is a pointer is allocated
     if(this->ptr != nullptr){
-        delete this->ptr;
+        if (this->isCPU()) {
+            delete this->ptr;
+        }
+#ifdef cGPU
+        else if (this->isGPU())
+        {
+            gpu_delete_tensor(this->gpu_device, this->ptr);
+        }
+#endif
+#ifdef cFPGA
+        else {
+      // delete FPGA Tensor
+    }
+#endif
         this->ptr = nullptr;
     }
 }
 
-/**
-  *  @brief Update tensor data
-  *  
-  *  @param fptr Pointer to the new data
-*/
 void Tensor::updateData(float *fptr){
 
     if (isCPU()) {
@@ -163,19 +126,19 @@ void Tensor::updateData(float *fptr){
     }
 #ifdef cGPU
     else if (isGPU())
-        {
-          gpu_device=this->device-DEV_GPU;
-          if (!initcuda[gpu_device]){
-              gpu_init(gpu_device);
-              initcuda[gpu_device]=1;
-          }
-
-          // If null => Reserve memory
-          // else => point to data  | CAREFUL! This pointer MUST be a GPU pointer. We cannot check it.
-          if (fptr == nullptr) { this->ptr = gpu_create_tensor(gpu_device, this->size); }
-          else { this->ptr = fptr; }
-
+    {
+        gpu_device=this->device-DEV_GPU;
+        if (!initcuda[gpu_device]){
+            gpu_init(gpu_device);
+            initcuda[gpu_device]=1;
         }
+
+        // If null => Reserve memory
+        // else => point to data  | CAREFUL! This pointer MUST be a GPU pointer. We cannot check it.
+        if (fptr == nullptr) { this->ptr = gpu_create_tensor(gpu_device, this->size); }
+        else { this->ptr = fptr; }
+
+    }
 #endif
 #ifdef cFPGA
     else {
@@ -184,29 +147,28 @@ void Tensor::updateData(float *fptr){
 #endif
 }
 
-/**
-  *  @brief Move the tensor to CPU
-  *  
-  *  @param dev target CPU device
-*/
 void Tensor::toCPU(int dev){
 #ifdef cGPU
     if (isGPU())
-      {
-        this->device = dev;
+    {
 
+        // Reserve memory for CPU
         float *cpu_ptr = get_fmem(size, "Tensor::toCPU");
-        float *gpu_ptr = ptr;
 
+        // Copy GPU data to CPU
+        gpu_copy_from_gpu(this, cpu_ptr);
+
+        // Delete GPU data
+        this->deleteData();
+
+        // Assign CPU pointer
+        this->device = dev;  // Must appear after deleting the data
+        this->ptr = cpu_ptr;
         if (ndim == 2) {
             ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(cpu_ptr, shape[1], shape[0]);
         }
 
-        gpu_copy_from_gpu(this, cpu_ptr);
-        this->ptr = cpu_ptr;
-        gpu_delete_tensor(gpu_device,gpu_ptr);
-
-      }
+    }
 #endif
 #ifdef cFPGA
     else {
@@ -215,11 +177,6 @@ void Tensor::toCPU(int dev){
 #endif
 }
 
-/**
-  *  @brief Move the tensor to GPU
-  *  
-  *  @param dev target GPU device
-*/
 void Tensor::toGPU(int dev){
 #ifdef cGPU
     if (isCPU()) {
@@ -239,9 +196,9 @@ void Tensor::toGPU(int dev){
         delete cpu_ptr;
     }
     else if (isGPU())
-      {
+    {
 //        printf("Tensor already in GPU\n");
-      }
+    }
 #endif
 #ifdef cFPGA
     else {
@@ -250,12 +207,6 @@ void Tensor::toGPU(int dev){
 #endif
 }
 
-
-/**
-  *  @brief Obtain a copy of a tensor
-  *  
-  *  @return The copied tensor
-*/
 Tensor* Tensor::clone(){
     auto* t_new = new Tensor(this->shape, this->device);
     Tensor::copy(this, t_new);
@@ -275,57 +226,20 @@ void Tensor::reallocate(Tensor* old_t, vector<int> *s){
 }
 
 Tensor::~Tensor() {
-    if (isCPU()) {
-        delete ptr;
-    }
-#ifdef cGPU
-    else if (isGPU())
-      {
-        gpu_delete_tensor(gpu_device, ptr);
-      }
-#endif
-#ifdef cFPGA
-    else {
-      // delete FPGA Tensor
-    }
-#endif
+    this->deleteData();
     delete tsem;
 }
 
-/**
-  *  @brief Check if a tensor is in CPU
-  *  
-  *  @return 1 if the tensor is in CPU, 0 otherwise
-*/
 int Tensor::isCPU() { return (device == DEV_CPU); }
 
-/**
-  *  @brief Check if a tensor is in GPU
-  *  
-  *  @return 1 if the tensor is in GPU, 0 otherwise
-*/
 int Tensor::isGPU() { return ((device >= DEV_GPU) && (device < DEV_FPGA)); }
 
-
-/**
-  *  @brief Check if a tensor is in FPGA
-  *  
-  *  @return 1 if the tensor is in FPGA, 0 otherwise
-*/
 int Tensor::isFPGA() { return (device >= DEV_FPGA); }
 
-/**
-  *  @brief Get the shape of a tensor
-  *  
-  *  @return a vector of ints representing the shape
-*/
 vector<int> Tensor::getShape() {
     return vector<int>(this->shape);
 }
 
-/**
-  *  @brief Print information about a tensor
-*/
 void Tensor::info() {
     int cols = 15;
     cout << "-------------------------------" << endl;
@@ -338,7 +252,7 @@ void Tensor::info() {
     cout << setw(cols) << left << "order: "        << 'C' << endl;  // C=>C order, F=>Fortran order
     cout << setw(cols) << left << "data pointer: " << &this->ptr << endl;
     cout << setw(cols) << left << "type: "         << "float" << " (" << sizeof(float) << " bytes)" << endl;
-    cout << setw(cols) << left << "device: "         << this->getStrDevice() << " (code = " << this->device << ")" << endl;
+    cout << setw(cols) << left << "device: " << this->getDeviceName() << " (code = " << this->device << ")" << endl;
     cout << "-------------------------------" << endl;
 }
 
@@ -424,62 +338,14 @@ void Tensor::print(int precision, bool raw) {
     }
 }
 
-/**
-  *  @brief Check the device where a tensor is
-  *  
-  *  @return String. One of "CPU", "GPU", "FPGA" or "unknown"
-*/
-string Tensor::getStrDevice(){
+string Tensor::getDeviceName(){
     if ((this->device >= DEV_CPU) && (this->device < DEV_GPU)) { return "CPU"; }
     else if ((device >= DEV_GPU) && (this->device < DEV_FPGA)) { return "GPU"; }
     else if (this->device >= DEV_FPGA) { return "FPGA"; }
     return "unknown";
 }
 
-/**
-  *  @brief Obtain a flag indicating the tensor's mode. A tensor can be in one of the following modes:
-  *  "constant": The input is extended by filling all values beyond the edge with the same constant value, defined by the cval parameter. E.g.: (k k k k | a b c d | k k k k)
-  *  "reflect": The input is extended by reflecting about the edge of the last pixel. E.g.:(d c b a | a b c d | d c b a)
-  *  "nearest": The input is extended by replicating the last pixel. E.g.: (a a a a | a b c d | d d d d)
-  *  "mirror": The input is extended by reflecting about the center of the last pixel. E. g.: (d c b | a b c d | c b a)
-  *  "wrap": The input is extended by wrapping around to the opposite edge. E.g.: (a b c d | a b c d | a b c d)
-  *  "original": The input is extended by filling all values beyond the edge with the original values. E.g.: (o o o o | a b c d | o o o o)
-  *  @return integer. 0 if constant, 1 if reflect, 2 if nearest, 3 id mirror, 4 if wrap, 5 if original. Otherwise -1.
-*/
-int Tensor::get_mode(string mode){
-    if(mode == "constant"){
-        // (k k k k | a b c d | k k k k)
-        // The input is extended by filling all values beyond the edge with the same constant value, defined by the cval parameter.
-        return 0;
-    }else if(mode == "reflect"){
-        // (d c b a | a b c d | d c b a)
-        // The input is extended by reflecting about the edge of the last pixel.
-        return 1;
-    }else if(mode == "nearest"){
-        // (a a a a | a b c d | d d d d)
-        // The input is extended by replicating the last pixel.
-        return 2;
-    }else if(mode == "mirror"){
-        // (d c b | a b c d | c b a)
-        // The input is extended by reflecting about the center of the last pixel.
-        return 3;
-    }else if(mode == "wrap"){
-        // (a b c d | a b c d | a b c d)
-        // The input is extended by wrapping around to the opposite edge.
-        return 4;
-    }else if(mode == "original"){
-        // (o o o o | a b c d | o o o o)
-        // The input is extended by filling all values beyond the edge with the original values
-        return 5;
-    }else {  // constant
-        return -1;
-    }
-}
 
-/**
-  *  @brief Check if a tensor is squared or not
-  *  @return boolean. True if the tensor is squared, False otherwise.
-*/
 bool Tensor::isSquared(Tensor *A){
     int last_dim = A->shape[0];
     for(int i=0; i<A->ndim; i++){
@@ -488,4 +354,20 @@ bool Tensor::isSquared(Tensor *A){
         }
     }
     return true;
+}
+
+// Resizing tensors
+void Tensor::resize(int b, float *fptr) {
+    if (b == shape[0]) return;
+
+    // Get new shape
+    vector<int> new_shape = this->getShape();
+    new_shape[0] = b;
+
+    // Update attributes
+    updateShape(new_shape);
+    updateSize();
+    updateStrides();
+    if (fptr == nullptr) deleteData();  // Potential error
+    updateData(fptr);
 }

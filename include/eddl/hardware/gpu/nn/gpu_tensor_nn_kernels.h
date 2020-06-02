@@ -8,8 +8,8 @@
 */
 
 
-#ifndef EDDL_GPU_NN_KERNELS_H
-#define EDDL_GPU_NN_KERNELS_H
+#ifndef EDDL_GPU_TENSOR_NN_KERNELS_H
+#define EDDL_GPU_TENSOR_NN_KERNELS_H
 
 
 #include <cuda.h>
@@ -51,10 +51,11 @@ __global__ void d_exp(float *d,float *i,float *pd,long int size);
 __global__ void tanh(float *a,float *b,long int size);
 __global__ void d_tanh(float *d,float *i,float *pd,long int size);
 
+__global__ void softmax(float* E,float* N,float* auxE ,long int sample_ndim, long int n_vals);
+//__global__ void d_softmax(float *d,float *i,float *pd,long int size);  // TODO: Missing
+
 __global__ void linear(float *a,float *b,float param, long int size);
 __global__ void d_linear(float *d,float *i,float *pd,float param, long int size);
-
-__global__ void softmax(float* E,float* N,float* auxE ,long int sample_ndim, long int n_vals);
 
 // GPU: Losses
 __global__ void cent(float* a, float* b, float* c, long int size);

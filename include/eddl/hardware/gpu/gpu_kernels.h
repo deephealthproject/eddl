@@ -18,93 +18,102 @@
 #include <curand.h>
 #include <curand_kernel.h>
 
-// GPU: Comparison
-
-// GPU: Create
-__global__ void range(float* a, float start, float step, long int size);
-__global__ void eye(float* a, long int rows, long int cols, int offset);
 
 // GPU: Core (static)
-__global__ void fill(float *aptr,float *bptr,int t,int aini,int at,int bini,int bt,int tot,int inc);
-__global__ void fill_(float* a, float v, long int size);
-__global__ void mask(float* a, float v, long int size);
-__global__ void select_rows(float* A, float* B, int rowsize, int size, int* indices, int ini,bool mask_zeros);
-__global__ void deselect_rows(float* A, float* B, int rowsize, int size, int* indices, int ini,int inc,bool mask_zeros);
+//void gpu_transpose(Tensor *A, Tensor *B);
+//void gpu_copy(Tensor *A, Tensor *B);
 
-__global__ void select(float* A, float* B, int size, int* indices);
-__global__ void select_back(float* A, float* B, int size, int* indices);
-__global__ void set_select(float* A, float* B, int size, int* indices);
-__global__ void set_select_back(float* A, float* B, int size, int* indices);
+__global__ void fill_(float *A, float v, long int size);
+__global__ void fill(float *aptr, float *bptr, int t, int aini, int at, int bini, int bt, int tot, int inc);
+
+__global__ void select(float *A, float* B, int size, int* indices);
+__global__ void select_back(float *A, float* B, int size, int* indices);
+
+__global__ void set_select(float *A, float* B, int size, int* indices);
+__global__ void set_select_back(float *A, float* B, int size, int* indices);
+
+__global__ void select_rows(float *A, float* B, int rowsize, int size, int* indices, int ini,bool mask_zeros);  // TODO: Legacy
+__global__ void deselect_rows(float *A, float* B, int rowsize, int size, int* indices, int ini,int inc,bool mask_zeros);  // TODO: Legacy
+
 __global__ void concat(float *dest, float *src, unsigned int src_size, unsigned int src_stride, unsigned int dest_stride, bool derivative);
 
-// GPU: Transformations
-__global__ void shift(float* A, float* B, int batch, int depth, int irows, int icols, int* shift, int mode, float constant);
-__global__ void rotate(float* A, float* B, int batch, int depth, int irows, int icols, float angle_rad, int* center, int mode, float constant);
-__global__ void scale(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* new_shape, int mode, float constant);
-__global__ void flip(float* A, float* B, int batch, int depth, int irows, int icols, int axis);
-__global__ void crop(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int* offsets, float constant, bool inverse);
-__global__ void crop_scale(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int mode, float constant);
-
-// GPU: Data augmentation
-__global__ void shift_random(float* A, float* B, int batch, int depth, int irows, int icols, float* factor_x, float* factor_y, int mode, float constant, float* rnd);
-__global__ void rotate_random(float* A, float* B, int batch, int depth, int irows, int icols, float* factor, int* offset_center, int mode, float constant, float* rnd);
-__global__ void scale_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor, int mode, float constant, float* rnd);
-__global__ void flip_random(float* A, float* B, int batch, int depth, int irows, int icols, int axis, float* rnd);
-__global__ void crop_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* rnd);
-__global__ void crop_scale_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor, int mode, float constant, float* rnd);
-__global__ void cutout_random(float* A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor_x, float* factor_y, float constant, float* rnd);
+// GPU: Create
+__global__ void range(float *A, float start, float step, long int size);
+__global__ void eye(float *A, long int rows, long int cols, int offset);
 
 // GPU: Generator
 __global__ void init(unsigned int seed, curandState_t* states);
 __global__ void random_uniform(curandState_t* states, float* numbers);
+//void gpu_rand_signed_uniform(Tensor *A, float v);
+//void gpu_rand_binary(Tensor *A, float v);
+//void gpu_rand_normal(Tensor *A, float m, float s);
+
+// GPU: Data transformations (2D Optimized) ********************************************
+__global__ void shift(float *A, float* B, int batch, int depth, int irows, int icols, int* shift, int mode, float constant);
+__global__ void rotate(float *A, float* B, int batch, int depth, int irows, int icols, float angle_rad, int* center, int mode, float constant);
+__global__ void scale(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* new_shape, int mode, float constant);
+__global__ void flip(float *A, float* B, int batch, int depth, int irows, int icols, int axis);
+__global__ void crop(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int* offsets, float constant, bool inverse);
+__global__ void crop_scale(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, int* coords_from, int* coords_to, int mode, float constant);
+
+// GPU: Data augmentations (2D Optimized) ********************************************
+__global__ void shift_random(float *A, float* B, int batch, int depth, int irows, int icols, float* factor_x, float* factor_y, int mode, float constant, float* rnd);
+__global__ void rotate_random(float *A, float* B, int batch, int depth, int irows, int icols, float* factor, int* offset_center, int mode, float constant, float* rnd);
+__global__ void scale_random(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor, int mode, float constant, float* rnd);
+__global__ void flip_random(float *A, float* B, int batch, int depth, int irows, int icols, int axis, float* rnd);
+__global__ void crop_random(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* rnd);
+__global__ void crop_scale_random(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor, int mode, float constant, float* rnd);
+__global__ void cutout_random(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor_x, float* factor_y, float constant, float* rnd);
+
 
 // GPU: Math (in-place)
-__global__ void abs_(float* a, long int size);
-__global__ void acos_(float* a, long int size);
-__global__ void add_(float* a, long int size, float v);
-__global__ void asin_(float* a, long int size);
-__global__ void atan_(float* a, long int size);
-__global__ void ceil_(float* a, long int size);
-__global__ void clamp_(float* a, long int size, float min, float max);
-__global__ void cos_(float* a, long int size);
-__global__ void cosh_(float* a, long int size);
-__global__ void exp_(float* a, long int size);
-__global__ void floor_(float* a, long int size);
-__global__ void log_(float* a, long int size);
-__global__ void log2_(float* a, long int size);
-__global__ void log10_(float* a, long int size);
-__global__ void logn_(float* a, long int size, float n);
-__global__ void mod_(float* a, long int size, float v);
-__global__ void inv_(float* a, float v, long int size);
-__global__ void mult_(float* a, long int size, float v);
-__global__ void normalize_(float* a, long int size, float min_ori, float max_ori, float min, float max);
-__global__ void pow_(float* a, long int size, float exp);
-__global__ void powb_(float* a, long int size, float base);
-__global__ void reciprocal_(float* a, long int size);
-__global__ void remainder_(float* a, long int size, float v);
-__global__ void round_(float* a, long int size);
-__global__ void rsqrt_(float* a, long int size);
-__global__ void sigmoid_(float* a, long int size);
-__global__ void sign_(float* a, long int size);
-__global__ void sin_(float* a, long int size);
-__global__ void sinh_(float* a, long int size);
-__global__ void sqr_(float* a, long int size);
-__global__ void sqrt_(float* a, long int size);
-__global__ void tan_(float* a, long int size);
-__global__ void tanh_(float* a, long int size);
-__global__ void trunc_(float* a, long int size);
+__global__ void gpu_abs(float *A, float *B, long int size);
+__global__ void gpu_acos(float *A, float *B, long int size);
+__global__ void gpu_add(float *A, float *B, long int size, float v);
+__global__ void gpu_asin(float *A, float *B, long int size);
+__global__ void gpu_atan(float *A, float *B, long int size);
+__global__ void gpu_ceil(float *A, float *B, long int size);
+__global__ void gpu_clamp(float *A, float *B, long int size, float min, float max);
+__global__ void gpu_cos(float *A, float *B, long int size);
+__global__ void gpu_cosh(float *A, float *B, long int size);
+__global__ void gpu_exp(float *A, float *B, long int size);
+__global__ void gpu_floor(float *A, float *B, long int size);
+__global__ void gpu_log(float *A, float *B, long int size);
+__global__ void gpu_log2(float *A, float *B, long int size);
+__global__ void gpu_log10(float *A, float *B, long int size);
+__global__ void gpu_logn(float *A, float *B, long int size, float n);
+__global__ void gpu_mod(float *A, float *B, long int size, float v);
+__global__ void gpu_inv(float *A, float *B,  long int size, float v);
+__global__ void gpu_mult(float *A, float *B, long int size, float v);
+__global__ void gpu_normalize(float *A, float *B, long int size, float min_ori, float max_ori, float min, float max);
+__global__ void gpu_pow(float *A, float *B, long int size, float exp);
+__global__ void gpu_powb(float *A, float *B, long int size, float base);
+__global__ void gpu_remainder(float *A, float *B, long int size, float v);
+__global__ void gpu_round(float *A, float *B, long int size);
+__global__ void gpu_rsqrt(float *A, float *B, long int size);
+__global__ void gpu_sigmoid(float *A, float *B, long int size);
+__global__ void gpu_sign(float *A, float *B, long int size, float zero_sign);
+__global__ void gpu_sin(float *A, float *B, long int size);
+__global__ void gpu_sinh(float *A, float *B, long int size);
+__global__ void gpu_sqr(float *A, float *B, long int size);
+__global__ void gpu_sqrt(float *A, float *B, long int size);
+__global__ void gpu_tan(float *A, float *B, long int size);
+__global__ void gpu_tanh(float *A, float *B, long int size);
+__global__ void gpu_trunc(float *A, float *B, long int size);
 
 // GPU: Math (static)
-__global__ void addc(float scA,float* a,float scB,float *b, float *c,long int incC, long int size);
-__global__ void el_mult(float* a,float *b, float *c, long int incC, long int size);
-__global__ void el_div(float* a, float *b, float *c, long int incC, long int size);
-__global__ void sum_mat_row(float* a, float* b, float* c, long int cols, long int rows);
-__global__ void sum_mat_col(float* a, float* b, float* c, long int cols, long int rows);
+__global__ void gpu_add(float scA, float *A, float scB, float *B, float *C, long int incC, long int size);
+//void gpu_inc(Tensor *A, Tensor *B);
+//void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
+__global__ void gpu_el_mult(float *A,float *B, float *C, long int incC, long int size);
+__global__ void gpu_el_div(float *A, float *B, float *C, long int incC, long int size);
+__global__ void gpu_sum2D_rowwise(float *A, float* b, float* c, long int cols, long int rows);  //gpu_sum2D_rowwise
+__global__ void gpu_sum2D_colwise(float *A, float* b, float* c, long int cols, long int rows); //gpu_sum2D_rowwise
+__global__ void gpu_reduce_sum2D(float *A,float *B,long int r,long int c,long int axis);
 
 // GPU: Should be reductions
 
 // GPU: Reduction
-__global__ void reduce_sum2D(float *a,float *b,long int r,long int c,long int axis);
 
 __global__ void reduce_mean(float *A,float *B,int *map,int size);
 __global__ void reduce_op_sum(float *A,float *B,int *map,int size);
@@ -123,8 +132,8 @@ __global__ void reduction_kernel_sum(float *I,float *O,int m, int d,int *ind,int
 
 
 // GPU: Truth value testing
-__global__ void glogical_all(float *A, int size, bool &result);
-__global__ void glogical_any(float *A, int size, bool &result);
+__global__ void gpu_logical_all(float *A, int size, bool &result);
+__global__ void gpu_logical_any(float *A, int size, bool &result);
 
 // GPU: Logic functions: Comparisons
 __global__ void gpu_isfinite(float *A, float *B, int size);
@@ -134,21 +143,25 @@ __global__ void gpu_isneginf(float *A, float *B, int size);
 __global__ void gpu_isposinf(float *A, float *B, int size);
 
 // GPU: Logic functions: Comparisons
-__global__ void glogical_and(float *A, float *B, float *C, int size);
-__global__ void glogical_or(float *A, float *B, float *C, int size);
-__global__ void glogical_not(float *A, float *B, int size);
-__global__ void glogical_xor(float *A, float *B, float *C, int size);
+__global__ void gpu_logical_and(float *A, float *B, float *C, int size);
+__global__ void gpu_logical_or(float *A, float *B, float *C, int size);
+__global__ void gpu_logical_not(float *A, float *B, int size);
+__global__ void gpu_logical_xor(float *A, float *B, float *C, int size);
 
 // GPU: Logic operations: Comparison ops
-__global__ void glogical_allclose(float *A, float *B, float rtol, float atol, bool equal_nan, int size, bool &close);
-__global__ void glogical_isclose(float *A, float *B, float *C, float rtol, float atol, bool equal_nan, int size);
-__global__ void glogical_greater(float *A, float *B, float *C, int size);
-__global__ void glogical_greater_equal(float *A, float *B, float *C, int size);
-__global__ void glogical_less(float *A, float *B, float *C, int size);
-__global__ void glogical_less_equal(float *A, float *B, float *C, int size);
-__global__ void glogical_equal(float *A, float *B, float *C, int size);
-__global__ void glogical_not_equal(float *A, float *B, float *C, int size);
+__global__ void gpu_logical_allclose(float *A, float *B, float rtol, float atol, bool equal_nan, int size, bool &close);
+__global__ void gpu_logical_isclose(float *A, float *B, float *C, float rtol, float atol, bool equal_nan, int size);
+__global__ void gpu_logical_greater(float *A, float *B, float *C, int size);
+__global__ void gpu_logical_greater_equal(float *A, float *B, float *C, int size);
+__global__ void gpu_logical_less(float *A, float *B, float *C, int size);
+__global__ void gpu_logical_less_equal(float *A, float *B, float *C, int size);
+__global__ void gpu_logical_equal(float *A, float *B, float *C, int size);
+__global__ void gpu_logical_not_equal(float *A, float *B, float *C, int size);
 
+
+// Legacy
+
+__global__ void mask(float *A, float v, long int size);
 
 
 #endif

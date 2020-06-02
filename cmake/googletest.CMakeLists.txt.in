@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 3.9.2)
 project(googletest-download NONE)
 
 # Set base dir
-SET(EP_BASE_DIR ${CMAKE_CURRENT_BINARY_DIR}/third_party)
+SET(EP_BASE_DIR @EP_BASE_DIR@)
+SET(BUILD_SHARED_LIBS @BUILD_SHARED_LIBS@)
 
 include(ExternalProject)
 ExternalProject_Add(googletest
@@ -14,6 +15,7 @@ ExternalProject_Add(googletest
         BINARY_DIR "${EP_BASE_DIR}/googletest-build"
         CMAKE_CACHE_ARGS
             -DCMAKE_INSTALL_PREFIX:PATH=${EP_BASE_DIR}/googletest
-            -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS} # TODO: Always static
+            -DBUILD_SHARED_LIBS:BOOL=OFF
+            -Dgtest_force_shared_crt=${BUILD_SHARED_LIBS}
         )
 

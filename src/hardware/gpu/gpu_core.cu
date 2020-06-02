@@ -49,7 +49,7 @@ void gpu_copy_to_gpu(float *nptr,Tensor *A){
 }
 
 
-void gpu_copy_from_gpu(Tensor *A,float *nptr){
+void gpu_copy_from_gpu(Tensor *A, float *nptr){
     int device=A->gpu_device;
     cudaSetDevice(device);
     check_cuda(cudaMemcpy(nptr,A->ptr,A->size*sizeof(float),cudaMemcpyDeviceToHost),"gpu_copy_to_gpu");
@@ -62,6 +62,28 @@ void gpu_copy_gpu(Tensor *A,Tensor *B){
     check_cuda(cudaMemcpy(B->ptr,A->ptr,A->size*sizeof(float),cudaMemcpyDeviceToDevice),"gpu_copy_gpu");
 }
 
+
+void cpu2gpu(float *dst, const float *src, unsigned long int size, int gpu_device){
+    cudaSetDevice(gpu_device);
+    check_cuda(cudaMemcpy(dst, src, size*sizeof(float), cudaMemcpyHostToDevice),"cpu2gpu");
+}
+
+void gpu2cpu(float *dst, const float *src, unsigned long int size, int gpu_device){
+    cudaSetDevice(gpu_device);
+    check_cuda(cudaMemcpy(dst, src, size*sizeof(float), cudaMemcpyDeviceToHost),"gpu2cpu");
+}
+
+float* get_gpu_fmem(unsigned long int size, int gpu_device){
+    float* ptr;
+    cudaSetDevice(gpu_device);
+    check_cuda(cudaMalloc((void**)&ptr,size*sizeof(float)),"get_gpu_fmem");
+    return ptr;
+}
+
+void free_gpu_ptr(float *ptr, int gpu_device){
+    cudaSetDevice(gpu_device);
+    check_cuda(cudaFree(ptr),"free_gpu_ptr");
+}
 
 void gpu_fill(Tensor *A,int aini,int aend,Tensor *B,int bini,int bend,int inc){
     int device=A->gpu_device;

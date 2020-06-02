@@ -14,7 +14,7 @@
 #include <iostream>
 #include <limits>       // std::numeric_limits
 
-#include "eddl/hardware/cpu/nn/cpu_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 
 
 void cpu_mpool2D(PoolDescriptor *D){

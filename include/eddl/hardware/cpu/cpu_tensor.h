@@ -7,8 +7,8 @@
 * All rights reserved
 */
 
-#ifndef EDDL_CPU_HW_H
-#define EDDL_CPU_HW_H
+#ifndef EDDL_CPU_TENSOR_H
+#define EDDL_CPU_TENSOR_H
 
 #include "eddl/tensor/tensor.h"
 #include "eddl/tensor/tensor_reduction.h"
@@ -31,13 +31,10 @@ void cpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 
-void cpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,bool mask_zeros=false);
-void cpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0,bool mask_zeros=false);
+void cpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,bool mask_zeros=false); // TODO: Legacy
+void cpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0,bool mask_zeros=false); // TODO: Legacy
 
 void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative);
-
-void cpu_repeat(Tensor *A, Tensor *B, vector<int> size);
-void cpu_d_repeat(Tensor *D, Tensor *A, vector<int> size);
 
 // CPU: Create
 void cpu_range(Tensor *A, float min, float step);
@@ -67,40 +64,39 @@ void cpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode,
 void cpu_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant);
 
 // CPU: Math (in-place)
-void cpu_abs_(Tensor *A);
-void cpu_acos_(Tensor *A);
-void cpu_add_(Tensor *A, float v);
-void cpu_asin_(Tensor *A);
-void cpu_atan_(Tensor *A);
-void cpu_ceil_(Tensor *A);
-void cpu_clamp_(Tensor *A, float min, float max);
-void cpu_cos_(Tensor *A);
-void cpu_cosh_(Tensor *A);
-void cpu_exp_(Tensor *A);
-void cpu_inv_(Tensor *A, float v);
-void cpu_floor_(Tensor *A);
-void cpu_log_(Tensor *A);
-void cpu_log2_(Tensor *A);
-void cpu_log10_(Tensor *A);
-void cpu_logn_(Tensor *A, float n);
-void cpu_mod_(Tensor *A, float v);
-void cpu_mult_(Tensor *A, float v);
-void cpu_normalize_(Tensor *A, float min, float max);
-void cpu_pow_(Tensor *A, float exp);
-void cpu_powb_(Tensor *A, float base);
-void cpu_reciprocal_(Tensor *A);
-void cpu_remainder_(Tensor *A, float v);
-void cpu_round_(Tensor *A);
-void cpu_rsqrt_(Tensor *A);
-void cpu_sigmoid_(Tensor *A);
-void cpu_sign_(Tensor *A);
-void cpu_sin_(Tensor *A);
-void cpu_sinh_(Tensor *A);
-void cpu_sqr_(Tensor *A);
-void cpu_sqrt_(Tensor *A);
-void cpu_tan_(Tensor *A);
-void cpu_tanh_(Tensor *A);
-void cpu_trunc_(Tensor *A);
+void cpu_abs(Tensor *A, Tensor *B);
+void cpu_acos(Tensor *A, Tensor *B);
+void cpu_add(Tensor *A, Tensor *B, float v);
+void cpu_asin(Tensor *A, Tensor *B);
+void cpu_atan(Tensor *A, Tensor *B);
+void cpu_ceil(Tensor *A, Tensor *B);
+void cpu_clamp(Tensor *A, Tensor *B, float min, float max);
+void cpu_cos(Tensor *A, Tensor *B);
+void cpu_cosh(Tensor *A, Tensor *B);
+void cpu_exp(Tensor *A, Tensor *B);
+void cpu_inv(Tensor *A, Tensor *B, float v);
+void cpu_floor(Tensor *A, Tensor *B);
+void cpu_log(Tensor *A, Tensor *B);
+void cpu_log2(Tensor *A, Tensor *B);
+void cpu_log10(Tensor *A, Tensor *B);
+void cpu_logn(Tensor *A, Tensor *B, float n);
+void cpu_mod(Tensor *A, Tensor *B, float v);
+void cpu_mult(Tensor *A, Tensor *B, float v);
+void cpu_normalize(Tensor *A, Tensor *B, float min, float max);
+void cpu_pow(Tensor *A, Tensor *B, float exp);
+void cpu_powb(Tensor *A, Tensor *B, float base);
+void cpu_remainder(Tensor *A, Tensor *B, float v);
+void cpu_round(Tensor *A, Tensor *B);
+void cpu_rsqrt(Tensor *A, Tensor *B);
+void cpu_sigmoid(Tensor *A, Tensor *B);
+void cpu_sign(Tensor *A, Tensor *B, float zero_sign=0.0f);
+void cpu_sin(Tensor *A, Tensor *B);
+void cpu_sinh(Tensor *A, Tensor *B);
+void cpu_sqr(Tensor *A, Tensor *B);
+void cpu_sqrt(Tensor *A, Tensor *B);
+void cpu_tan(Tensor *A, Tensor *B);
+void cpu_tanh(Tensor *A, Tensor *B);
+void cpu_trunc(Tensor *A, Tensor *B);
 
 // CPU: Math (static)
 void cpu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
@@ -108,7 +104,6 @@ void cpu_inc(Tensor *A, Tensor *B);
 void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
 void cpu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
 void cpu_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
-void cpu_sign2(Tensor *A, Tensor *B); // TODO: Remove
 void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
 void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
 
@@ -164,4 +159,4 @@ int cpu_equal2(Tensor *A, Tensor *B, float epsilon);
 
 
 
-#endif //EDDL_CPU_HW_H
+#endif //EDDL_CPU_TENSOR_H

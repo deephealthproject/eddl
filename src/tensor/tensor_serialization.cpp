@@ -10,14 +10,13 @@
 #include <utility>
 
 #include "eddl/tensor/tensor.h"
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 #include "eddl/utils.h"
 #include "eddl/helpers.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
-#include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
 

@@ -84,112 +84,113 @@ layer UNetWithPadding(layer x)
 
 int main(int argc, char **argv){
 
-  // Download Dataset
-  download_drive();
+    // Download Dataset
+    download_drive();
 
-  // Settings
-  int epochs = 100000;
-  int batch_size =2;
+    // Settings
+    int epochs = 100000;
+    int batch_size =2;
 
-  //////////////////////////////////////////////////////////////
-  // Network for Data Augmentation
-  layer in1=Input({3,584,584});
-  layer in2=Input({1,584,584});
+    //////////////////////////////////////////////////////////////
+    // Network for Data Augmentation
+    layer in1=Input({3,584,584});
+    layer in2=Input({1,584,584});
 
-  layer l=Concat({in1,in2});   // Cat image and mask
-  l= RandomCropScale(l, {0.9f, 1.0f}); // Random Crop and Scale to orig size
-  l= CenteredCrop(l,{512,512});         // Crop to work with sizes power 2
-  layer img=Select(l,{"0:3"}); // UnCat [0-2] image
-  layer mask=Select(l,{"3"});  // UnCat [3] mask
-  // Both, image and mask, have the same augmentation
+    layer l=Concat({in1,in2});   // Cat image and mask
+    l= RandomCropScale(l, {0.9f, 1.0f}); // Random Crop and Scale to orig size
+    l= CenteredCrop(l,{512,512});         // Crop to work with sizes power 2
+    layer img=Select(l,{"0:3"}); // UnCat [0-2] image
+    layer mask=Select(l,{"3"});  // UnCat [3] mask
+    // Both, image and mask, have the same augmentation
 
-  // Define DA model inputs
-  model danet=Model({in1,in2},{});
+    // Define DA model inputs
+    model danet=Model({in1,in2},{});
 
-  // Build model for DA
-  build(danet);
-  //toGPU(danet,"low_mem");   // only in GPU 0 with low_mem setup
-  summary(danet);
+    // Build model for DA
+    build(danet);
+    toGPU(danet,"low_mem");   // only in GPU 0 with low_mem setup
+    summary(danet);
 
-  //////////////////////////////////////////////////////////////
-  // Build SegNet
-  layer in=Input({3,512,512});
-  layer out=Sigmoid(UNetWithPadding(in));
-  model segnet=Model({in},{out});
-  build(segnet,
-    adam(0.00001), // Optimizer
-    {"mse"}, // Losses
-    {"mse"}, // Metrics
-    //CS_GPU({1}, "low_mem")
-    CS_CPU(-1)
+    //////////////////////////////////////////////////////////////
+    // Build SegNet
+    layer in=Input({3,512,512});
+    layer out=Sigmoid(UNetWithPadding(in));
+    model segnet=Model({in},{out});
+    build(segnet,
+          adam(0.00001), // Optimizer
+          {"mse"}, // Losses
+          {"mse"}, // Metrics
+            CS_GPU({1}, "low_mem")
+          //CS_CPU(-1)
     );
-  // Train on multi-gpu with sync weights every 100 batches:
+    // Train on multi-gpu with sync weights every 100 batches:
 //  toGPU(segnet,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup
-  summary(segnet);
-  plot(segnet,"segnet.pdf");
+    summary(segnet);
+    plot(segnet,"segnet.pdf");
 
-  //////////////////////////////////////////////////////////////
-  // Load and preprocess training data
-  cout<<"Reading train numpy\n";
-  Tensor* x_train_f = Tensor::load<uint8_t>("drive_trX.npy");
-  Tensor* x_train=Tensor::permute(x_train_f, {0,3,1,2});
-  x_train->info();
-  x_train->div_(255.0f);
-  //permute
+    //////////////////////////////////////////////////////////////
+    // Load and preprocess training data
+    cout<<"Reading train numpy\n";
+    Tensor* x_train_f = Tensor::load<uint8_t>("drive_trX.npy");
+    Tensor* x_train=Tensor::permute(x_train_f, {0,3,1,2});
+    x_train->info();
+    x_train->div_(255.0f);
+    //permute
 
-  cout<<"Reading test numpy\n";
-  Tensor* y_train = Tensor::load<uint8_t>("drive_trY.npy");
-  y_train->info();
-  y_train->reshape_({20,1,584,584});
-  y_train->div_(255.0f);
+    cout<<"Reading test numpy\n";
+    Tensor* y_train = Tensor::load<uint8_t>("drive_trY.npy");
+    y_train->info();
+    y_train->reshape_({20,1,584,584});
+    y_train->div_(255.0f);
 
-  Tensor* xbatch = new Tensor({batch_size,3,584,584});
-  Tensor* ybatch = new Tensor({batch_size,1,584,584});
+    Tensor* xbatch = new Tensor({batch_size,3,584,584});
+    Tensor* ybatch = new Tensor({batch_size,1,584,584});
 
 
-  //////////////////////////////////////////////////////////////
-  // Training
-  int num_batches=1000;
-  for(int i=0;i<epochs;i++) {
-    reset_loss(segnet);
-    for(int j=0;j<num_batches;j++)  {
+    //////////////////////////////////////////////////////////////
+    // Training
+    int num_batches=1000;
+    for(int i=0;i<epochs;i++) {
+        reset_loss(segnet);
+        for(int j=0;j<num_batches;j++)  {
 
-      next_batch({x_train,y_train},{xbatch,ybatch});
+            next_batch({x_train,y_train},{xbatch,ybatch});
 
-        Tensor* xout = xbatch->select({"0"});
-        xout->mult_(255.0f);
-        xout->save("./0.tr_out_prev.jpg");
-       delete xout;
+            Tensor* xout = xbatch->select({"0"});
+            xout->mult_(255.0f);
+            xout->save("./0.tr_out_prev.jpg");
+            delete xout;
 
-       Tensor* yout = ybatch->select({"0"});
-       yout->mult_(255.0f);
-       yout->save("./0.ts_out_prev.jpg");
-       delete yout;
+            Tensor* yout = ybatch->select({"0"});
+            yout->mult_(255.0f);
+            yout->save("./0.ts_out_prev.jpg");
+            delete yout;
 
-      // DA
-      forward(danet, vector<Tensor *>{xbatch, ybatch});
+            // DA
+            forward(danet, vector<Tensor *>{xbatch, ybatch});
 
-      // get COPIES of tensors from DA
-      Tensor* xbatch_da = getOutput(img);
-      Tensor* ybatch_da = getOutput(mask);
+            // get COPIES of tensors from DA
+            Tensor* xbatch_da = getOutput(img);
+            Tensor* ybatch_da = getOutput(mask);
 
-      // SegNet
-      train_batch(segnet, {xbatch_da},{ybatch_da});
+            // SegNet
+            train_batch(segnet, {xbatch_da},{ybatch_da});
 
-      print_loss(segnet, j);
-      // printf("  sum=%f",yout->sum());
-      printf("\r");
+            print_loss(segnet, j);
+            // printf("  sum=%f",yout->sum());
+            printf("\r");
 
-      delete xbatch_da;
-      delete ybatch_da;
+            delete xbatch_da;
+            delete ybatch_da;
 
-      Tensor* yout2 = getOutput(out);
-      yout2 = yout2->select({"0"});
-      yout2->mult_(255.0f);
-      yout2->save("./out.jpg");
-      delete yout2;
+            // We should use "mult_(255.0f)" but with normalize we can stretch its contrast and see results faster
+            Tensor* yout2 = getOutput(out);
+            yout2 = yout2->select({"0"});
+            yout2->normalize_(0.0f, 255.0f);
+            yout2->save("./out.jpg");
+            delete yout2;
+        }
+        printf("\n");
     }
-    printf("\n");
-  }
 
 }

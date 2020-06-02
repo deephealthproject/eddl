@@ -3,12 +3,14 @@ cmake_minimum_required(VERSION 3.9.2)
 project(eigen-download NONE)
 
 # Set base dir
-SET(EP_BASE_DIR @CMAKE_CURRENT_BINARY_DIR@/third_party)
+SET(EP_BASE_DIR @EP_BASE_DIR@)
 
 if(CMAKE_GENERATOR MATCHES "Visual Studio")
-	SET(TAG ba9d18b9388acdf27a3900a4f981fab587e59b0c) # Version 3.3.90
+    # Visual Studio needs a more recent version of Eigen3
+    # Version 3.3.90
+	SET(TAG ba9d18b9388acdf27a3900a4f981fab587e59b0c) 
 else()
-	SET(TAG "3.3.7")
+	SET(TAG "3.3.7") # Eigen3 must be >= 3.3.7
 endif()
 
 include(ExternalProject)

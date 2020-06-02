@@ -47,11 +47,11 @@ void LMaxPool::resize(int batch){
 }
 
 void LMaxPool::forward() {
-    MPool2D(this->pd);
+    tensorNN::MPool2D(this->pd);
 }
 
 void LMaxPool::backward() {
-    MPool2D_back(this->pd);
+    tensorNN::MPool2D_back(this->pd);
 }
 
 Layer *LMaxPool::share(int c, int bs, vector<Layer *> p) {

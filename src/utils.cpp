@@ -60,7 +60,7 @@ void msg(const string& text, const string& title) {
 }
 
 
-float *get_fmem(long int size, const string &str){
+float *get_fmem(unsigned long int size, const string &str){
     // Careful with memory overcommitment:
     // https://stackoverflow.com/questions/48585079/malloc-on-linux-without-overcommitting
     // TODO: This function does not work properly (...but it does, at least most of the time -for linux and mac-)
@@ -97,6 +97,7 @@ float *get_fmem(long int size, const string &str){
 
     return ptr;
 }
+
 
 string bytes2human(unsigned long long int bytes, int decimals){
     vector<string> prefix = {"B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
@@ -377,4 +378,35 @@ string get_parent_dir(const string& fname){
     return (std::string::npos == pos)
            ? ""
            : fname.substr(0, pos);
+}
+
+
+WrappingMode getWrappingMode(string mode){
+    if(mode == "constant"){
+        // (k k k k | a b c d | k k k k)
+        // The input is extended by filling all values beyond the edge with the same constant value, defined by the cval parameter.
+        return WrappingMode::Constant;
+    }else if(mode == "reflect"){
+        // (d c b a | a b c d | d c b a)
+        // The input is extended by reflecting about the edge of the last pixel.
+        return WrappingMode::Reflect;
+    }else if(mode == "nearest"){
+        // (a a a a | a b c d | d d d d)
+        // The input is extended by replicating the last pixel.
+        return WrappingMode::Nearest;
+    }else if(mode == "mirror"){
+        // (d c b | a b c d | c b a)
+        // The input is extended by reflecting about the center of the last pixel.
+        return WrappingMode::Mirror;
+    }else if(mode == "wrap"){
+        // (a b c d | a b c d | a b c d)
+        // The input is extended by wrapping around to the opposite edge.
+        return WrappingMode::Wrap;
+    }else if(mode == "original"){
+        // (o o o o | a b c d | o o o o)
+        // The input is extended by filling all values beyond the edge with the original values
+        return WrappingMode::Original;
+    }else {  // constant
+        return WrappingMode::Constant;
+    }
 }

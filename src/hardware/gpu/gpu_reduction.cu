@@ -238,7 +238,7 @@ void gpu_reduce_sum2D(Tensor *A,Tensor *B,int axis,int incB){
 
     if (!incB) gpu_fill_(B,0.0);
 
-    reduce_sum2D<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->shape[0],A->shape[1],axis);
+    gpu_reduce_sum2D<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->shape[0],A->shape[1],axis);
 
     check_cuda(cudaDeviceSynchronize(),"reduce_sum2D");
 }

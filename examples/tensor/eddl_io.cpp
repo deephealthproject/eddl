@@ -46,25 +46,25 @@ int main(int argc, char **argv) {
     // Load CSV (Presumes a one row-header, and ',' as delimiter)
     Tensor *t3 = Tensor::load(fname + "iris.csv");
     cout << "Tensor loaded! (csv)" << endl;
-    cout << "isEqualToPrevious? " << Tensor::equal2(t2, t3, 10e-6f) << endl;
+    cout << "isEqualToPrevious? " << Tensor::equivalent(t2, t3, 10e-6f) << endl;
     cout << endl;
 
     // Load TSV (Presumes a one row-header, and '\t' as delimiter)
     Tensor *t4 = Tensor::load(fname + "iris.tsv");
     cout << "Tensor loaded! (tsv)" << endl;
-    cout << "isEqualToPrevious? " << Tensor::equal2(t3, t4, 10e-6f) << endl;
+    cout << "isEqualToPrevious? " << Tensor::equivalent(t3, t4, 10e-6f) << endl;
     cout << endl;
 
     // Load generic txt (csv, csv, tsv,...)
     Tensor *t5 = Tensor::load_from_txt(fname + "iris.txt", ' ', 1);
     cout << "Tensor loaded! (txt)" << endl;
-    cout << "isEqualToPrevious? " << Tensor::equal2(t4, t5, 10e-6f) << endl;
+    cout << "isEqualToPrevious? " << Tensor::equivalent(t4, t5, 10e-6f) << endl;
     cout << endl;
 
     // Load binary (EDDL format)
     Tensor *t6 = Tensor::load(fname + "iris.bin");
     cout << "Tensor loaded! (bin)" << endl;
-    cout << "isEqualToPrevious? " << Tensor::equal2(t5, t6, 10e-6f) << endl;
+    cout << "isEqualToPrevious? " << Tensor::equivalent(t5, t6, 10e-6f) << endl;
     cout << endl;
 
     // ****************************************************
