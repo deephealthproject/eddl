@@ -59,7 +59,7 @@ public:
 	bool isdecoder;
 	bool isencoder;
   int decsize;
-	
+
 	vector<int> devsel;
 	CompServ *cs;
 
@@ -164,10 +164,13 @@ public:
 
 
 	void fit(vtensor tin, vtensor tout, int batch_size, int epochs);
+	void prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt,vtensor &yt,vtensor &tinr,vtensor &toutr);
+
 	void fit_recurrent(vtensor tin, vtensor tout, int batch_size, int epochs);
 	void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);
 	void evaluate(vtensor tin, vtensor tout);
 	void evaluate_recurrent(vtensor tin, vtensor tout);
+	vtensor predict_recurrent(vtensor tin);
 	vtensor predict(vtensor tin);
 
 

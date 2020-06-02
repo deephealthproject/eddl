@@ -61,7 +61,17 @@ int main(int argc, char **argv) {
     l = LSTM(lE,128,true);  // mask_zeros=true
 
     // Decoder
-    l = Decoder(LSTM(l,128),outvs);
+
+    /*
+    layer ld=Input({1});
+    ld=Dropout(RandomUniform(Embedding(l, invs, 1,embedding,true),-0.05,0.05),0.5);
+
+    l = Decoder(LSTM(ld,128),l,outvs);
+    */
+    l = Decoder(LSTM(l,128));
+
+    //l = LSTM(l,128);
+
 
     layer out = Softmax(Dense(l, outvs));
 
@@ -70,7 +80,7 @@ int main(int argc, char **argv) {
     // dot from graphviz should be installed:
     plot(net, "model.pdf");
 
-    optimizer opt=adam(0.001);
+    optimizer opt=adam(0.01);
     //opt->set_clip_val(0.01);
 
     // Build model
@@ -105,7 +115,26 @@ int main(int argc, char **argv) {
     // Train model
     for(int i=0;i<epochs;i++) {
       fit(net, {x_train}, {y_train}, batch_size, 1);
-      evaluate(net,{x_test},{y_test});
+      //evaluate(net,{x_test},{y_test});
+    }
+
+    // predict
+    vtensor tout=predict(net,{x_train});
+
+    for(int i=0;i<x_train->shape[0];i++) {
+      for(int j=0;j<olength;j++) {
+        float max=0.0;
+        int ind;
+        int p=i*outvs;
+        for(int k=0;k<outvs;k++,p++) {
+          if (tout[j]->ptr[p]>max) {
+            max=tout[j]->ptr[p];
+            ind=k;
+          }
+        }
+        printf("%d ",ind);
+      }
+      printf("\n");
     }
 
 }
