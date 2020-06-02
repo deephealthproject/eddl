@@ -51,6 +51,11 @@ Layer::~Layer(){
     if (delta!=nullptr) delete delta;
     if (target!=nullptr) delete target;
 
+//    if (orig!=nullptr) delete this->orig;
+//    if (net!=nullptr) delete this->net;
+//    if (reg!=nullptr) delete this->reg;
+//    if (init!=nullptr) delete this->init;
+
     //params if any
     if (!isshared)
       for (int i=0;i<params.size();i++)

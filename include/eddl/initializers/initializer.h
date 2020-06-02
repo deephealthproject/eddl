@@ -23,6 +23,7 @@ public:
     string name;
     // Todo: Implement
     explicit Initializer(string name);
+    ~Initializer();
     virtual void apply(Tensor *params) = 0;  // Pure virtual
 };
 

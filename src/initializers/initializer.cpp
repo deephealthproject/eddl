@@ -19,3 +19,7 @@ using namespace std;
 Initializer::Initializer(string name) {
     this->name = name;
 }
+
+Initializer::~Initializer(){
+
+}
