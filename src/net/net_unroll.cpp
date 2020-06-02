@@ -56,6 +56,7 @@ Net* Net::unroll_enc(int inl, int outl) {
   vlayer par;
   vector<bool> frnn;
 
+  cout<<"Recurrent net input sequence length="<<inl<<endl;
 
   // set vfts sort
   layers.clear();
@@ -503,8 +504,6 @@ void Net::build_rnet(int inl,int outl) {
        delete rnet->snets[i];
      rnet->snets.clear();
      for(i=0;i<snets.size();i++) {
-     //cout<<snets[i]->summary();
-       //rnet->snets.push_back(snets[i]->unroll(inl,outl));
        if ((isencoder)&&(isdecoder))
          rnet->snets.push_back(snets[i]->unroll_enc_dec(inl,outl));
        else if (!isdecoder)
