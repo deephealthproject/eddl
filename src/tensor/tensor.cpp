@@ -24,6 +24,7 @@ using namespace std;
 
 // TODO: Don't like here
 int initcuda[MAX_GPUS] = {0, 0, 0, 0, 0, 0, 0, 0};
+int initfpga[MAX_FPGAS] = {0, 0, 0, 0, 0, 0, 0, 0};
 int linpos;
 extern ostream &operator<<(ostream &os, const vector<int> shape);
 
@@ -181,7 +182,18 @@ void Tensor::updateData(float *fptr){
 #ifdef cFPGA
     else if (isFPGA()) {
         // create FPGA Tensor
-        printf("create tensor in fpga. Not implemented yet\n"); exit(1);
+        fpga_device = device -DEV_FPGA;
+        //gpu_device=device-DEV_GPU;
+        if (!initfpga[fpga_device])
+          {
+           printf("Initializing FPGA device\n");
+           fpga_init(/*fpga_device*/);
+           printf("Xilinx OpenCL\n");
+           initfpga[fpga_device]=1;
+         }
+        //printf("Creating FPGA tensor\n");
+        fpga_create_tensor(this, fpga_device);
+        }
       }
 #endif
 }

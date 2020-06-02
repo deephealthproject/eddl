@@ -17,6 +17,8 @@
 #include <string>
 #include <mutex>
 
+//#include "../hardware/fpga/libs/xcl2.hpp"
+
 #include "Eigen/Dense"
 
 #include "eddl/utils.h"
@@ -50,6 +52,7 @@
 #define DEV_FPGA_8 2008
 
 #define MAX_GPUS 8
+#define MAX_FPGAS 8
 
 using namespace std;
 
@@ -93,6 +96,10 @@ public:
     // Aux variables
     int gpu_device;
     mutex *tsem;  // Multithreading. Tensor semaphore
+
+    // aux variables
+    int fpga_device;
+    // cl::Buffer fpga_ptr;
 
     // Constructors
     Tensor();
