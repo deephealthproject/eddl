@@ -82,23 +82,23 @@ message(STATUS "Eigen found!")
 target_include_directories(${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only library
 
-# ZLIB
-if(DEFINED ZLIB_INCLUDE_DIRS AND DEFINED ZLIB_LIBRARIES_DIRS AND DEFINED ZLIB_LIBRARIES)
-    message(STATUS "Using specific Zlib")
-else()
-    message(STATUS "Searching for ZLIB in the system...")
-    find_package(ZLIB REQUIRED)  # Problems with: ZLIB_ROOT
-    message(STATUS "ZLIB found!")
-
-    # Check if ZLIB was really found
-    if(NOT ZLIB_FOUND)
-        message(FATAL_ERROR "ZLIB was found by CMake but its libraries or includes are missing.
-                Use '-D BUILD_SUPERBUILD=ON', or try with a different ZLIB installation to fix this problem.")
-    endif()
-endif()
-target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIRS}>)
-# target_include_directories(${PROJECT_NAME} PUBLIC ${ZLIB_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PUBLIC ${ZLIB_LIBRARIES})
+## ZLIB
+#if(DEFINED ZLIB_INCLUDE_DIRS AND DEFINED ZLIB_LIBRARIES_DIRS AND DEFINED ZLIB_LIBRARIES)
+#    message(STATUS "Using specific Zlib")
+#else()
+#    message(STATUS "Searching for ZLIB in the system...")
+#    find_package(ZLIB REQUIRED)  # Problems with: ZLIB_ROOT
+#    message(STATUS "ZLIB found!")
+#
+#    # Check if ZLIB was really found
+#    if(NOT ZLIB_FOUND)
+#        message(FATAL_ERROR "ZLIB was found by CMake but its libraries or includes are missing.
+#                Use '-D BUILD_SUPERBUILD=ON', or try with a different ZLIB installation to fix this problem.")
+#    endif()
+#endif()
+#target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIRS}>)
+## target_include_directories(${PROJECT_NAME} PUBLIC ${ZLIB_INCLUDE_DIRS})
+#target_link_libraries(${PROJECT_NAME} PUBLIC ${ZLIB_LIBRARIES})
 
 
 
@@ -320,10 +320,10 @@ message(STATUS "-------------------------------------------" )
 message(STATUS "Eigen3 dir: " ${Eigen3_DIR} )
 message(STATUS "Eigen3 include: " ${EIGEN3_INCLUDE_DIR} )
 message(STATUS "-------------------------------------------" )
-message(STATUS "ZLIB root: " ${ZLIB_ROOT} )
-message(STATUS "ZLIB include: " ${ZLIB_INCLUDE_DIRS} )
-message(STATUS "ZLIB libraries: " ${ZLIB_LIBRARIES} )
-message(STATUS "-------------------------------------------" )
+#message(STATUS "ZLIB root: " ${ZLIB_ROOT} )
+#message(STATUS "ZLIB include: " ${ZLIB_INCLUDE_DIRS} )
+#message(STATUS "ZLIB libraries: " ${ZLIB_LIBRARIES} )
+#message(STATUS "-------------------------------------------" )
 message(STATUS "Use Protobuf: " ${BUILD_PROTOBUF} )
 if(BUILD_PROTOBUF)
 message(STATUS "Protobuf dir: " ${Protobuf_DIR} )

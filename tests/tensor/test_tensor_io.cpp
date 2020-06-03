@@ -239,84 +239,84 @@ TEST(TensorTestSuite, tensor_io_bmp)
 }
 
 
-TEST(TensorTestSuite, tensor_io_numpy)
-{
-    // Generate random name
-    int rdn_name = dist6(mt);
-    string fname = "iris_" + to_string(rdn_name) + ".npy";
-
-    // Save file
-    t_iris->save(fname);
-
-    // Load saved file
-    Tensor* t_load = Tensor::load<float>(fname);
-
-    // Delete file
-    int hasFailed = std::remove(fname.c_str());
-    if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
-
-    ASSERT_TRUE(Tensor::equivalent(t_iris, t_load, 10e-5));
-}
-
-
-TEST(TensorTestSuite, tensor_io_csv)
-{
-    // Generate random name
-    int rdn_name = dist6(mt);
-    string fname = "iris_" + to_string(rdn_name) + ".csv";
-
-    // Save file
-    t_iris->save(fname);
-
-    // Load saved file
-    Tensor* t_load = Tensor::load(fname);
-
-    // Delete file
-    int hasFailed = std::remove(fname.c_str());
-    if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
-
-    ASSERT_TRUE(Tensor::equivalent(t_iris, t_load, 10e-5));
-}
+//TEST(TensorTestSuite, tensor_io_numpy)
+//{
+//    // Generate random name
+//    int rdn_name = dist6(mt);
+//    string fname = "iris_" + to_string(rdn_name) + ".npy";
+//
+//    // Save file
+//    t_iris->save(fname);
+//
+//    // Load saved file
+//    Tensor* t_load = Tensor::load<float>(fname);
+//
+//    // Delete file
+//    int hasFailed = std::remove(fname.c_str());
+//    if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
+//
+//    ASSERT_TRUE(Tensor::equivalent(t_iris, t_load, 10e-5));
+//}
 
 
-TEST(TensorTestSuite, tensor_io_tsv)
-{
-    // Generate random name
-    int rdn_name = dist6(mt);
-    string fname = "iris_" + to_string(rdn_name) + ".tsv";
+//TEST(TensorTestSuite, tensor_io_csv)
+//{
+//    // Generate random name
+//    int rdn_name = dist6(mt);
+//    string fname = "iris_" + to_string(rdn_name) + ".csv";
+//
+//    // Save file
+//    t_iris->save(fname);
+//
+//    // Load saved file
+//    Tensor* t_load = Tensor::load(fname);
+//
+//    // Delete file
+//    int hasFailed = std::remove(fname.c_str());
+//    if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
+//
+//    ASSERT_TRUE(Tensor::equivalent(t_iris, t_load, 10e-5));
+//}
 
-    // Save file
-    t_iris->save(fname);
 
-    // Load saved file
-    Tensor* t_load = Tensor::load(fname);
+//TEST(TensorTestSuite, tensor_io_tsv)
+//{
+//    // Generate random name
+//    int rdn_name = dist6(mt);
+//    string fname = "iris_" + to_string(rdn_name) + ".tsv";
+//
+//    // Save file
+//    t_iris->save(fname);
+//
+//    // Load saved file
+//    Tensor* t_load = Tensor::load(fname);
+//
+//    // Delete file
+//    int hasFailed = std::remove(fname.c_str());
+//    if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
+//
+//    ASSERT_TRUE(Tensor::equivalent(t_iris, t_load, 10e-5));
+//}
 
-    // Delete file
-    int hasFailed = std::remove(fname.c_str());
-    if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
 
-    ASSERT_TRUE(Tensor::equivalent(t_iris, t_load, 10e-5));
-}
-
-
-TEST(TensorTestSuite, tensor_io_txt)
-{
-    // Generate random name
-    int rdn_name = dist6(mt);
-    string fname = "iris_" + to_string(rdn_name) + ".txt";
-
-    // Save file
-    t_iris->save2txt(fname, ' ', {"sepal.length" , "sepal.width", "petal.length", "petal.width"});
-
-    // Load saved file
-    Tensor* t_load = Tensor::load_from_txt(fname, ' ', 1);
-
-    // Delete file
-    int hasFailed = std::remove(fname.c_str());
-    if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
-
-    ASSERT_TRUE(Tensor::equivalent(t_iris, t_load, 10e-5));
-}
+//TEST(TensorTestSuite, tensor_io_txt)
+//{
+//    // Generate random name
+//    int rdn_name = dist6(mt);
+//    string fname = "iris_" + to_string(rdn_name) + ".txt";
+//
+//    // Save file
+//    t_iris->save2txt(fname, ' ', {"sepal.length" , "sepal.width", "petal.length", "petal.width"});
+//
+//    // Load saved file
+//    Tensor* t_load = Tensor::load_from_txt(fname, ' ', 1);
+//
+//    // Delete file
+//    int hasFailed = std::remove(fname.c_str());
+//    if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
+//
+//    ASSERT_TRUE(Tensor::equivalent(t_iris, t_load, 10e-5));
+//}
 
 
 TEST(TensorTestSuite, tensor_io_bin)

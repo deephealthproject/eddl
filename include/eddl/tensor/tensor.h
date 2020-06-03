@@ -23,7 +23,7 @@
 #include "eddl/descriptors/tensor_descriptors.h"
 
 // Read/Write Numpy
-#include "eddl/tensor/cnpy/cnpy.h"
+//#include "eddl/tensor/cnpy/cnpy.h"
 
 #define DEV_CPU 0
 
@@ -63,14 +63,14 @@ private:
     static Tensor* load_from_bin(std::ifstream &ifs);
     static Tensor* load_from_onnx(std::ifstream &ifs);
     static Tensor* load_from_img(const string &filename, const string &format);
-    template<typename T> static Tensor* load_from_numpy(const string &filename, const string &format);
-    static Tensor* load_from_txt(std::ifstream &ifs, char delimiter, int headerRows);
+//    template<typename T> static Tensor* load_from_numpy(const string &filename, const string &format);  // Deprecated
+//    static Tensor* load_from_txt(std::ifstream &ifs, char delimiter, int headerRows);  // Deprecated
 
     // Save methods
     void save2bin(std::ofstream &ofs);
     void save2onnx(std::ofstream &ofs);
     void save2img(const string &filename, string format);
-    void save2numpy(const string &filename, string format);
+//    void save2numpy(const string &filename, string format);
     void save2txt(std::ofstream &ofs, const char delimiter, const vector<string> &header);
 
 public:
@@ -193,15 +193,15 @@ public:
     static Tensor* load(const string& filename, string format="");
     template<typename T> static Tensor* load(const string& filename, string format="");
 
-    /**
-      *  @brief Load data from a text file
-      *
-      *  @param filename  Name of the file to load the tensor from.
-      *  @param delimiter    Character used to separate the columns of the file.
-      *  @param headerRows   Number of top rows to avoid, generally because they correspond to the header.
-      *  @return    Tensor
-    */
-    static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
+//    /**
+//      *  @brief Load data from a text file
+//      *
+//      *  @param filename  Name of the file to load the tensor from.
+//      *  @param delimiter    Character used to separate the columns of the file.
+//      *  @param headerRows   Number of top rows to avoid, generally because they correspond to the header.
+//      *  @return    Tensor
+//    */
+//    static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
 
     /**
       *  @brief Save tensor to a filestream.
@@ -902,29 +902,30 @@ public:
 
 
 
-template<typename T>
-Tensor* Tensor::load_from_numpy(const string &filename, const string &format){
-    Tensor* t = nullptr;
+//template<typename T>
+//Tensor* Tensor::load_from_numpy(const string &filename, const string &format){
+//    Tensor* t = nullptr;
+//
+//    cnpy::NpyArray arr = cnpy::npy_load(filename);
+//    auto* loaded_data = arr.data<T>();
+//
+//    // Get shape
+//    vector<int> arr_shape;
+//    for(unsigned long i : arr.shape){
+//        arr_shape.push_back(i);
+//    }
+//
+//    // Initialize tensor
+//    t = new Tensor(arr_shape, DEV_CPU);
+//
+//    // Fill tensor
+//    for(int i=0; i<arr.num_vals; i++){
+//        t->ptr[i] = (float)loaded_data[i];
+//    }
+//
+//    return t;
+//}
 
-    cnpy::NpyArray arr = cnpy::npy_load(filename);
-    auto* loaded_data = arr.data<T>();
-
-    // Get shape
-    vector<int> arr_shape;
-    for(unsigned long i : arr.shape){
-        arr_shape.push_back(i);
-    }
-
-    // Initialize tensor
-    t = new Tensor(arr_shape, DEV_CPU);
-
-    // Fill tensor
-    for(int i=0; i<arr.num_vals; i++){
-        t->ptr[i] = (float)loaded_data[i];
-    }
-
-    return t;
-}
 
 template<typename T>
 Tensor* Tensor::load(const string& filename, string format){
@@ -946,10 +947,12 @@ Tensor* Tensor::load(const string& filename, string format){
         t = Tensor::load_from_img(filename, format);
     }else if(format=="bin" || format=="onnx"){
         t = Tensor::loadfs(ifs, format);
-    }else if(format=="npy" || format=="npz"){
-        t = Tensor::load_from_numpy<T>(filename, format);
-    }else if(format=="csv" || format=="tsv" || format=="txt"){
-        t = Tensor::loadfs(ifs, format);
+    }else if(format=="npy" || format=="npz"){  // Deprecated
+        msg("Format deprecated in favor of python: *.'" + format + "'", "Tensor::load");
+//        t = Tensor::load_from_numpy<T>(filename, format);
+    }else if(format=="csv" || format=="tsv" || format=="txt"){  // Deprecated
+        msg("Format deprecated in favor of python: *.'" + format + "'", "Tensor::load");
+//        t = Tensor::loadfs(ifs, format);
     }else{
         msg("Format not implemented: *.'" + format + "'", "Tensor::load");
     }
@@ -958,7 +961,6 @@ Tensor* Tensor::load(const string& filename, string format){
     ifs.close();
     return t;
 }
-
 
 
 #endif //EDDL_TENSOR_H

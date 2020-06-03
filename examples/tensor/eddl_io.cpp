@@ -37,29 +37,29 @@ int main(int argc, char **argv) {
     cout << "Tensor loaded! (image)" << endl;
     cout << endl;
 
-    // Load Numpy
-    Tensor *t2 = Tensor::load<float>(fname + "iris.npy");  // <source data type>
-    cout << "Tensor loaded! (Numpy)" << endl;
-    cout << endl;
-    t2->print(2);
-
-    // Load CSV (Presumes a one row-header, and ',' as delimiter)
-    Tensor *t3 = Tensor::load(fname + "iris.csv");
-    cout << "Tensor loaded! (csv)" << endl;
-    cout << "isEqualToPrevious? " << Tensor::equivalent(t2, t3, 10e-6f) << endl;
-    cout << endl;
-
-    // Load TSV (Presumes a one row-header, and '\t' as delimiter)
-    Tensor *t4 = Tensor::load(fname + "iris.tsv");
-    cout << "Tensor loaded! (tsv)" << endl;
-    cout << "isEqualToPrevious? " << Tensor::equivalent(t3, t4, 10e-6f) << endl;
-    cout << endl;
-
-    // Load generic txt (csv, csv, tsv,...)
-    Tensor *t5 = Tensor::load_from_txt(fname + "iris.txt", ' ', 1);
-    cout << "Tensor loaded! (txt)" << endl;
-    cout << "isEqualToPrevious? " << Tensor::equivalent(t4, t5, 10e-6f) << endl;
-    cout << endl;
+//    // Load Numpy
+//    Tensor *t2 = Tensor::load<float>(fname + "iris.npy");  // <source data type>
+//    cout << "Tensor loaded! (Numpy)" << endl;
+//    cout << endl;
+//    t2->print(2);
+//
+//    // Load CSV (Presumes a one row-header, and ',' as delimiter)
+//    Tensor *t3 = Tensor::load(fname + "iris.csv");
+//    cout << "Tensor loaded! (csv)" << endl;
+//    cout << "isEqualToPrevious? " << Tensor::equivalent(t2, t3, 10e-6f) << endl;
+//    cout << endl;
+//
+//    // Load TSV (Presumes a one row-header, and '\t' as delimiter)
+//    Tensor *t4 = Tensor::load(fname + "iris.tsv");
+//    cout << "Tensor loaded! (tsv)" << endl;
+//    cout << "isEqualToPrevious? " << Tensor::equivalent(t3, t4, 10e-6f) << endl;
+//    cout << endl;
+//
+//    // Load generic txt (csv, csv, tsv,...)
+//    Tensor *t5 = Tensor::load_from_txt(fname + "iris.txt", ' ', 1);
+//    cout << "Tensor loaded! (txt)" << endl;
+//    cout << "isEqualToPrevious? " << Tensor::equivalent(t4, t5, 10e-6f) << endl;
+//    cout << endl;
 
     // Load binary (EDDL format)
     Tensor *t6 = Tensor::load(fname + "iris.bin");
@@ -80,25 +80,25 @@ int main(int argc, char **argv) {
     cout << "Tensor saved! (image - Force codification)" << endl;
     cout << endl;
 
-    // Save as numpy (npy)
-    t2->save(output + "iris.npy");
-    cout << "Tensor saved! (numpy)" << endl;
-    cout << endl;
-
-    // Save as CSV
-    t3->save(output + "iris.csv");
-    cout << "Tensor saved! (csv)" << endl;
-    cout << endl;
-
-    // Save as TSV
-    t4->save(output + "iris.tsv");
-    cout << "Tensor saved! (tsv)" << endl;
-    cout << endl;
-
-    // Save as TXT (csv, csv, tsv,...)
-    t5->save2txt(output + "iris.txt", ',', {"sepal.length" , "sepal.width", "petal.length", "petal.width"});
-    cout << "Tensor saved! (txt)" << endl;
-    cout << endl;
+//    // Save as numpy (npy)
+//    t2->save(output + "iris.npy");
+//    cout << "Tensor saved! (numpy)" << endl;
+//    cout << endl;
+//
+//    // Save as CSV
+//    t3->save(output + "iris.csv");
+//    cout << "Tensor saved! (csv)" << endl;
+//    cout << endl;
+//
+//    // Save as TSV
+//    t4->save(output + "iris.tsv");
+//    cout << "Tensor saved! (tsv)" << endl;
+//    cout << endl;
+//
+//    // Save as TXT (csv, csv, tsv,...)
+//    t5->save2txt(output + "iris.txt", ',', {"sepal.length" , "sepal.width", "petal.length", "petal.width"});
+//    cout << "Tensor saved! (txt)" << endl;
+//    cout << endl;
 
     // Save as binary (EDDL own format)
     t6->save(output + "iris.bin");

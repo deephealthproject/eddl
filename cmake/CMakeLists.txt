@@ -115,27 +115,28 @@ message(STATUS "Subproject: EIGEN...DONE")
 #############
 ###  ZLIB  ##
 #############
-message(STATUS "Subproject: ZLIB...")
-if(USE_SYSTEM_ZLIB)
-    find_package(ZLIB REQUIRED)
-else()
-    # Download and unpack ZLIB at configure time
-    foreach(config ${config_types})
-        CONF_PACKAGE(zlib ${config} "")
-        BUILD_PACKAGE(zlib ${config})
-    endforeach()
-    # Set variables
-    SET(ZLIB_ROOT "${EP_BASE_DIR}/zlib" PARENT_SCOPE)
-    SET(ZLIB_INCLUDE_DIRS "${EP_BASE_DIR}/zlib/include" PARENT_SCOPE)
-    SET(ZLIB_LIBRARIES_DIRS "${EP_BASE_DIR}/zlib/lib")
-    SET(ZLIB_LIBRARIES_DIRS ${ZLIB_LIBRARIES_DIRS} PARENT_SCOPE)
-    if(WIN32)
-        SET(ZLIB_LIBRARIES "${ZLIB_LIBRARIES_DIRS}/zlibstatic.lib" PARENT_SCOPE)
-    elseif(UNIX)
-        SET(ZLIB_LIBRARIES "${ZLIB_LIBRARIES_DIRS}/libz.a" PARENT_SCOPE)
-    endif()
-endif()
-message(STATUS "Subproject: ZLIB...DONE")
+# NOT USED *****************************************************
+#message(STATUS "Subproject: ZLIB...")
+#if(USE_SYSTEM_ZLIB)
+#    find_package(ZLIB REQUIRED)
+#else()
+#    # Download and unpack ZLIB at configure time
+#    foreach(config ${config_types})
+#        CONF_PACKAGE(zlib ${config} "")
+#        BUILD_PACKAGE(zlib ${config})
+#    endforeach()
+#    # Set variables
+#    SET(ZLIB_ROOT "${EP_BASE_DIR}/zlib" PARENT_SCOPE)
+#    SET(ZLIB_INCLUDE_DIRS "${EP_BASE_DIR}/zlib/include" PARENT_SCOPE)
+#    SET(ZLIB_LIBRARIES_DIRS "${EP_BASE_DIR}/zlib/lib")
+#    SET(ZLIB_LIBRARIES_DIRS ${ZLIB_LIBRARIES_DIRS} PARENT_SCOPE)
+#    if(WIN32)
+#        SET(ZLIB_LIBRARIES "${ZLIB_LIBRARIES_DIRS}/zlibstatic.lib" PARENT_SCOPE)
+#    elseif(UNIX)
+#        SET(ZLIB_LIBRARIES "${ZLIB_LIBRARIES_DIRS}/libz.a" PARENT_SCOPE)
+#    endif()
+#endif()
+#message(STATUS "Subproject: ZLIB...DONE")
 
 
 ################

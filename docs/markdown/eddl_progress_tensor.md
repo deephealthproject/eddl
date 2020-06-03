@@ -178,9 +178,9 @@ Not yet...
 
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
-| load          | ✔️    | -    | Images: jpg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm<br />Numpy: npy, npz<br />Text: csv, tsv, txt,...<br />Other: onnx, bin |
+| load          | ✔️    | -    | Images: jpg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm<br />Numpy (removed): npy, npz<br />Text (removed): csv, tsv, txt,...<br />Other: onnx, bin |
 | load<source_type>          | ✔️    | -    | Numpy: npy, npz |
-| load_from_txt | ✔️    | -    |  Load data from a text file.                                                              |
+| load_from_txt (removed) | ✔️    | -    |  Load data from a text file.                                                              |
 | memmap | ❌    | -    |  Create a memory-map to an array stored in a binary file on disk.                                                            |
 
 ### Output

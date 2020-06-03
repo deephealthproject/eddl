@@ -32,15 +32,6 @@ load
     static Tensor* load(const string& filename, string format="");
     template<typename T> static Tensor* load(const string& filename, string format="");
     
-load_from_txt
-^^^^^^^^^^^^^
-
-.. doxygenfunction:: Tensor::load_from_txt(const string&, const char, int)
-
-.. code-block:: c++
-
-    static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
-
 
 
 Output
