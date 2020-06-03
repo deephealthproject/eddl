@@ -4,7 +4,7 @@
 
 
 //initialize tensor to 'v' value
-void fill_(float *A, int Asize, float v){
+void k_fill_(float *A, int Asize, float v){
 #pragma HLS INLINE
   for(int i = 0; i<Asize;i++){
         A[i] = v;
@@ -17,7 +17,7 @@ void fill_(float *A, int Asize, float v){
 
 extern "C" {
 
-void kernel_core(
+void k_core(
          float *A,
          int Asize,
 	       float v,
@@ -33,7 +33,7 @@ void kernel_core(
 #pragma HLS INTERFACE s_axilite port=return bundle=control
 
   switch (kernel_id) {
-    case 20: fill_(A, Asize, v); break;
+    case 20: k_fill_(A, Asize, v); break;
 
   }
 

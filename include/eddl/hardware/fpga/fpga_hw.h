@@ -20,6 +20,9 @@
 #define MIN_FLOAT -std::numeric_limits<float>::max()
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
 
+void fpga_init();
+void fpga_create_tensor(Tensor *T, int dev);
+
 // CPU: Core (static)
 void fpga_transpose(Tensor *A, Tensor *B);
 void fpga_copy(Tensor *A, Tensor *B);

@@ -4,7 +4,7 @@
 
 #include <math.h>
 
-void relu_d(const float *D, const float *I, float *PD, int tam){
+void k_relu_d(const float *D, const float *I, float *PD, int tam){
 #pragma HLS INLINE   
     for(int i=0;i<tam;i++) {
        if (I[i]>0.0) PD[i]=D[i];
@@ -12,7 +12,7 @@ void relu_d(const float *D, const float *I, float *PD, int tam){
     } 
 }
 
-void softmax_d(const float *D, const float *I, float *PD, int tam){
+void k_softmax_d(const float *D, const float *I, float *PD, int tam){
 #pragma HLS INLINE
     for(int i=0;i<tam;i++)
          PD[i]+=D[i]*(I[i]*(1.0-I[i]));
@@ -20,7 +20,7 @@ void softmax_d(const float *D, const float *I, float *PD, int tam){
 
 extern "C" {
 
-void relu_soft_d(
+void k_relu_soft_d(
         const float *D, // Output Tensor
         const float *I,
         float *PD,
@@ -39,8 +39,8 @@ void relu_soft_d(
 #pragma HLS INTERFACE s_axilite port=kernel_id bundle=control
 #pragma HLS INTERFACE s_axilite port=return bundle=control
    switch (kernel_id) {
-       case 9: relu_d(D, I, PD, tam); break;
-       case 10: softmax_d(D, I, PD, tam); break;
+       case 9: k_relu_d(D, I, PD, tam); break;
+       case 10: k_softmax_d(D, I, PD, tam); break;
    }
 
 }

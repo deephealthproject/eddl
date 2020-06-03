@@ -27,8 +27,8 @@
 #ifndef _TENSOR_HLS_OP_
 #define _TENSOR_HLS_OP_
 
-#include "libs/xcl2.hpp"
-#include "../../tensor/tensor.h"
+#include "xcl2.hpp"
+#include "eddl/tensor/tensor.h"
 
 #define FPGAMULT 0
 #define FPGASUM 1

@@ -6,7 +6,7 @@
 
 extern "C" {
 
-void kernel_mult2D(
+void k_mult2D(
          const float *A, 
          const float *B, 
          float *C,

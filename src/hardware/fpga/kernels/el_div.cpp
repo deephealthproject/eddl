@@ -6,7 +6,7 @@
 #include <stdio.h>
 extern "C" {
 
-void el_div(
+void k_el_div(
          const float *A, 
          const float *B,
          float *C, 

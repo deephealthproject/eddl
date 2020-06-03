@@ -30,7 +30,9 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <unistd.h>
 #include <limits.h>
 #include <sys/stat.h>
-#include "xcl2.hpp"
+#include "eddl/hardware/fpga/xcl2.hpp"
+
+
 namespace xcl {
 std::vector<cl::Device> get_devices(const std::string& vendor_name) {
 

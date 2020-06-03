@@ -6,7 +6,7 @@
 
 extern "C" {
 
-void kernel_normalize(
+void k_normalize(
          float *A, 
          float max, 
          float min, 

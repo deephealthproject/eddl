@@ -7,7 +7,7 @@
 
 extern "C" {
 
-void kernel_accuracy(
+void k_accuracy(
          const float *A,
          const float *B,
          int dim0,

@@ -6,7 +6,7 @@
 
 extern "C" {
 
-void kernel_cent(
+void k_cent(
          const float *A, 
          const float *B, 
          float *C,

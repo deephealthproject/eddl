@@ -45,7 +45,14 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       exit(EXIT_FAILURE);                                           \
     }                                       
 
+#ifdef __APPLE__
+#include "cl2.hpp"
+#else
 #include <CL/cl2.hpp>
+#endif
+
+
+//#include <CL/cl2.hpp>
 #include <iostream>
 #include <fstream>
 //#include <CL/cl_ext_xilinx.h>

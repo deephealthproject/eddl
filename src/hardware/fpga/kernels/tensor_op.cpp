@@ -6,7 +6,7 @@
 #define BUFFER_SIZE 1024
 static int rnd_seed = 123132545;
 
-void set(float *tensor, float fp, int tam){
+void k_set(float *tensor, float fp, int tam){
 #pragma HLS INLINE 
 //    float tensor_buffer[BUFFER_SIZE];    // Local memory to store input tensor 
     //float tensor_out_buffer[BUFFER_SIZE];    // Local memory to store tensor results
@@ -19,7 +19,7 @@ void set(float *tensor, float fp, int tam){
     }
 }
 
-void mult(float *tensor, float fp, int tam){
+void k_mult(float *tensor, float fp, int tam){
 #pragma HLS INLINE 
     float tensor_buffer[BUFFER_SIZE];    // Local memory to store input tensor 
      //Per iteration of this loop perform BUFFER_SIZE vector addition
@@ -51,7 +51,7 @@ void mult(float *tensor, float fp, int tam){
 
 }
 
-void sum(float *tensor, float fp, int tam) {
+void k_sum(float *tensor, float fp, int tam) {
 #pragma HLS INLINE 
     float tensor_buffer[BUFFER_SIZE];    // Local memory to store input tensor 
      //Per iteration of this loop perform BUFFER_SIZE vector addition
@@ -75,7 +75,7 @@ void sum(float *tensor, float fp, int tam) {
     }
 }
 
-void set_log(float *tensor, int tam){
+void k_set_log(float *tensor, int tam){
 #pragma HLS INLINE 
     float tensor_buffer[BUFFER_SIZE];    // Local memory to store input tensor 
     for(int i = 0; i < tam;  i += BUFFER_SIZE)
@@ -96,7 +96,7 @@ void set_log(float *tensor, int tam){
         }
     }
 }
-void set_exp(float *tensor, int tam){
+void k_set_exp(float *tensor, int tam){
 #pragma HLS INLINE 
     float tensor_buffer[BUFFER_SIZE];    // Local memory to store input tensor 
     for(int i = 0; i < tam;  i += BUFFER_SIZE)
@@ -117,7 +117,7 @@ void set_exp(float *tensor, int tam){
         }
     }
 }
-void set_sqrt(float *tensor, int tam){
+void k_set_sqrt(float *tensor, int tam){
 #pragma HLS INLINE
     for (int i = 0 ; i < tam; i ++){
  //   #pragma HLS PIPELINE II=1
@@ -125,14 +125,14 @@ void set_sqrt(float *tensor, int tam){
     }
 
 }
-void set_sqr(float *tensor, int tam){
+void k_set_sqr(float *tensor, int tam){
 #pragma HLS INLINE 
     tensor_pow: for (int i = 0 ; i < tam; i ++){
     #pragma HLS PIPELINE II=1
        tensor[i] = tensor[i]*tensor[i];
     }
 }
-float total_sum(float *tensor, int tam){
+float k_total_sum(float *tensor, int tam){
 #pragma HLS INLINE 
      float tensor_buffer[BUFFER_SIZE];
      float acc = 0;
@@ -154,7 +154,7 @@ float total_sum(float *tensor, int tam){
      }
      return acc;
 }
-float total_abs(const float *tensor, int tam){
+float k_total_abs(const float *tensor, int tam){
 #pragma HLS INLINE 
      float tensor_buffer[BUFFER_SIZE];
      float acc = 0;
@@ -177,7 +177,7 @@ float total_abs(const float *tensor, int tam){
      return acc;
 }
 
-int rand_int_function(){
+int k_rand_int_function(){
 #pragma HLS INLINE
 {
     int k1;
@@ -194,7 +194,7 @@ int rand_int_function(){
 }
 
 
-void rand_gaussian(float *tensor, float fp, int tam){
+void k_rand_gaussian(float *tensor, float fp, int tam){
 #pragma HLS INLINE
      for (int i=0; i<tam; i++){
         #pragma HLS PIPELINE II=1
@@ -203,7 +203,7 @@ void rand_gaussian(float *tensor, float fp, int tam){
 }
 
 extern "C" {
-void tensor_op( 
+void k_tensor_op(
         float *tensor, // Output Tensor
         float fp,       // float parameter
         int tam,         // Tensor total elements
@@ -219,16 +219,16 @@ void tensor_op(
 #pragma HLS INTERFACE s_axilite port=return bundle=control
    float acc; 
    switch (kernel_id) {
-       case 0: mult(tensor, fp, tam); break;
-       case 1: sum(tensor, fp, tam); break;
-       case 2: set_log(tensor, tam); break;
-       case 3: set_exp(tensor, tam); break;
-       case 4: set_sqrt(tensor, tam); break;
-       case 5: set_sqr(tensor, tam); break;
-       case 6: acc = total_sum(tensor, tam); break;
-       case 7: acc = total_abs(tensor, tam); break;
-       case 8: set(tensor, fp, tam); break;
-       case 11: rand_gaussian(tensor, fp, tam); break;
+       case 0: k_mult(tensor, fp, tam); break;
+       case 1: k_sum(tensor, fp, tam); break;
+       case 2: k_set_log(tensor, tam); break;
+       case 3: k_set_exp(tensor, tam); break;
+       case 4: k_set_sqrt(tensor, tam); break;
+       case 5: k_set_sqr(tensor, tam); break;
+       case 6: acc = k_total_sum(tensor, tam); break;
+       case 7: acc = k_total_abs(tensor, tam); break;
+       case 8: k_set(tensor, fp, tam); break;
+       case 11: k_rand_gaussian(tensor, fp, tam); break;
    /*  case 8: rand_uniform(); break;
        case 9: rand_suniform(); break;
        case 10: rand_gaussian(); break;

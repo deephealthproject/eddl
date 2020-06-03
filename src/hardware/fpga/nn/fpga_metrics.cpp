@@ -13,9 +13,35 @@
 
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
 
+extern cl::Kernel kernel_accuracy;
+extern cl::CommandQueue q;
+
 int fpga_accuracy(Tensor *A, Tensor *B){
   _profile_fpga(_FPGA_ACCURACY, 0);
-  printf("fpga_accuracy not yet implemented\n"); exit(1);
-  _profile_fpga(_FPGA_ACCURACY, 1);
+  /*   cl_int err;
+     cl::Event event, result_ready;
+
+
+     #ifdef DBG_FPGA
+          printf("FPGA::ACCURACY\n");
+      #endif
+
+     int *acc = (int*) malloc(sizeof(int));
+     *acc = 0;
+     
+     OCL_CHECK(err, cl::Buffer a(context,CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY, 4 ,acc, &err));
+
+     OCL_CHECK(err, err = kernel_accuracy.setArg(0, (A->fpga_ptr)));
+     OCL_CHECK(err, err = kernel_accuracy.setArg(1, (B->fpga_ptr)));
+     OCL_CHECK(err, err = kernel_accuracy.setArg(2, A->shape[0]));
+     OCL_CHECK(err, err = kernel_accuracy.setArg(3, A->shape[1]));
+     OCL_CHECK(err, err = kernel_accuracy.setArg(4, a));
+     OCL_CHECK(err, err = q.enqueueTask(kernel_accuracy, NULL, &event));
+     event.wait();
+     OCL_CHECK(err, err = q.enqueueMigrateMemObjects({a},CL_MIGRATE_MEM_OBJECT_HOST, NULL, &result_ready));
+     result_ready.wait();
+     return *acc;
+  */
+  printf("Accuracy not implemented yet (has compilation error)\n"); exit(1);  _profile_fpga(_FPGA_ACCURACY, 1);
   return 0;
 }

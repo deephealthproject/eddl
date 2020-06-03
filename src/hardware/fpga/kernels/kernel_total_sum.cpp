@@ -7,7 +7,7 @@
 
 extern "C" {
 
-void kernel_total_sum(
+void k_total_sum(
          const float *A,
          int Asize,
 	       float *sum

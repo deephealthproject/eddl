@@ -8,7 +8,7 @@
 
 extern "C" {
 
-void kernel_add(
+void k_add(
          float scA,
          const float *A,
          float scB,

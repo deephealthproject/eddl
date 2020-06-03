@@ -7,10 +7,36 @@
 * All rights reserved
 */
 
-
-
+#include "eddl/hardware/fpga/xcl2.hpp"
+#include <vector>
+#include <math.h>
+#include "eddl/hardware/fpga/tensor_hls_op.h"
+#include "eddl/tensor/tensor.h"
+#include "eddl/descriptors/descriptors.h"
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include <sys/time.h>
+
+cl::Context context;
+cl::CommandQueue q;
+cl::CommandQueue com;
+cl::Program program;
+cl::Kernel tensor_op;
+cl::Kernel multitensor_op;
+cl::Kernel kernel_add;
+cl::Kernel mult2D;
+cl::Kernel sum2D_rowwise;
+cl::Kernel kernel_cent;
+cl::Kernel relu_soft_d;
+cl::Kernel reduce_sum2D;
+cl::Kernel kernel_accuracy;
+cl::Kernel kernel_total_sum;
+cl::Kernel kernel_normalize;
+cl::Kernel el_div;
+//cl::Kernel kernel_gemx;
+cl::Kernel kernel_core;
+
+
+
 
 int num_instances_fpga[_NUM_FPGA_FUNCS];
 float mb_memory_needed_fpga;
@@ -201,6 +227,118 @@ void _profile_fpga_add_tensor(int size) {
 void _profile_fpga_remove_tensor(int size) {
   mb_memory_needed_fpga -= (float)size / 1024.0 / 1024.0;
 }
+
+
+// FPGA initialization and finalization ----------------------
+//
+void fpga_init(){ // initialize only once
+
+    cl_int err;
+    std::string binaryFile = "eddl-gemx.xclbin";
+    unsigned fileBufSize;
+    std::vector<cl::Device> devices = xcl::get_xil_devices();
+    cl::Device device = devices[0];
+    OCL_CHECK(err, context = cl::Context(device, NULL, NULL, NULL, &err));
+    OCL_CHECK(err, q = cl::CommandQueue(context, device, CL_QUEUE_PROFILING_ENABLE | CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, &err));
+    char *fileBuf = xcl::read_binary_file(binaryFile, fileBufSize);
+    cl::Program::Binaries bins{{fileBuf, fileBufSize}};
+
+    devices.resize(1);
+    OCL_CHECK(err, program = cl::Program(context, devices, bins, NULL, &err));
+    /*OCL_CHECK(err, tensor_op= cl::Kernel(program,"tensor_op", &err));*/
+    OCL_CHECK(err, multitensor_op = cl::Kernel(program,"k_multitensor_op", &err));
+    OCL_CHECK(err, kernel_add = cl::Kernel(program,"k_add", &err));
+    //OCL_CHECK(err, mult2D = cl::Kernel(program,"k_mult2D", &err));
+    OCL_CHECK(err, sum2D_rowwise = cl::Kernel(program,"k_sum2D_rowwise", &err));
+    OCL_CHECK(err, kernel_cent = cl::Kernel(program,"k_cent", &err));
+    OCL_CHECK(err, relu_soft_d = cl::Kernel(program,"k_relu_soft_d", &err));
+    OCL_CHECK(err, reduce_sum2D = cl::Kernel(program,"k_reduce_sum2D", &err));
+    OCL_CHECK(err, kernel_core = cl::Kernel(program,"k_core", &err));
+    OCL_CHECK(err, kernel_accuracy = cl::Kernel(program,"k_accuracy", &err));
+    OCL_CHECK(err, kernel_total_sum = cl::Kernel(program,"k_total_sum", &err));
+    //OCL_CHECK(err, el_div = cl::Kernel(program,"k_el_div", &err));
+    //OCL_CHECK(err, kernel_normalize = cl::Kernel(program,"k_normalize", &err));*/
+    //kernel_gemx = clCreateKernel(program(), "gemxKernel_0", &err);
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+
+}
+
+void close_fpga(){
+ //delete fileBuf;
+}
+
+
+// ----------------------------------------------
+// Tensor creation and delete operations
+//
+void fpga_create_tensor(Tensor *T, int dev)
+{
+    cl_int err;
+    int size = T->size;
+    //cl::Buffer buf;
+    //printf("Creating Buffer at ref %d -- size %d\n", 0, size);
+
+    OCL_CHECK(err,T->fpga_ptr = cl::Buffer(context,CL_MEM_READ_WRITE, size*sizeof(float), NULL, &err));
+
+    //OCL_CHECK(err, err= q.enqueueWriteBuffer(T->fpga_ptr, CL_TRUE, 0, T->tam*sizeof(float), ptr, nullptr, nullptr));
+    //verify2(T->fpga_ptr, T->tam);
+
+
+    //T->fpga_ptr = &buf;
+    //printf("Creating Buffer at ref %d -- %d size %d\n", buf,(T->fpga_ptr), size);
+}
+
+
+void fpga_delete_tensor(Tensor *T)
+{
+
+//  T->fpga_ptr.release();
+
+}
+
+// ---------------------------------------------------
+// Copy operations
+//
+
+///////////////////////////////////////////
+void fpga_copy_fpga(Tensor *A, Tensor *B)
+{
+    cl_int err;
+    OCL_CHECK(err, err= q.enqueueCopyBuffer((A->fpga_ptr), (B->fpga_ptr), 0, 0, A->size*sizeof(float)));
+    q.finish();
+}
+
+void fpga_copy_to_fpga(float *nptr, Tensor *A)
+{
+    cl_int err;
+    cl::Event blocking_event;
+    //OCL_CHECK(err, err= q.enqueueWriteBuffer((A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(float), nptr, nullptr, &blocking_event));
+    OCL_CHECK(err, err= q.enqueueWriteBuffer((A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(float), nptr, nullptr, &blocking_event));
+    //printf("A->sizeof(float): %f\n", A->size*sizeof(float));
+    //printf("nptr-> %f\n", nptr);
+    //printf("A->: %f\n", A->fpga_ptr);
+    q.finish();
+    //blocking_event.wait();
+    //printf("Copy Tensor with tam %d in Buffer ref %d -- %f\n", A->tam, A->fpga_ptr,*nptr);
+//    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({A->fpga_ptr},0/* 0 means from host*/));
+
+}
+
+///////////////////////////////////////////
+void fpga_copy_from_fpga(Tensor *A,float *nptr)
+{
+    cl_int err;
+    cl::Event event;
+    OCL_CHECK(err, err= q.enqueueReadBuffer((A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(float), nptr, nullptr, &event));
+    q.finish();;
+//    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_output},CL_MIGRATE_MEM_OBJECT_HOST));
+}
+
+
+
+
+// ---------------------------------------------------
+// Support functions
 
 void fpga_transpose(Tensor * A, Tensor * B) {
     _profile_fpga(_FPGA_TRANSPOSE, 0);

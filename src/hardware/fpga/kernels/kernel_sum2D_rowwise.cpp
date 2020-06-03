@@ -6,7 +6,7 @@
 
 extern "C" {
 
-void kernel_sum2D_rowwise(
+void k_sum2D_rowwise(
          const float *A,
          const float *B,
          float *C,

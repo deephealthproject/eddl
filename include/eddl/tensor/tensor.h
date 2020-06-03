@@ -17,7 +17,7 @@
 #include <string>
 #include <mutex>
 
-//#include "../hardware/fpga/libs/xcl2.hpp"
+#include "eddl/hardware/fpga/xcl2.hpp"
 
 #include "Eigen/Dense"
 
@@ -99,7 +99,7 @@ public:
 
     // aux variables
     int fpga_device;
-    // cl::Buffer fpga_ptr;
+    cl::Buffer fpga_ptr;
 
     // Constructors
     Tensor();

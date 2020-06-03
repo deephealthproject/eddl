@@ -20,6 +20,10 @@
 #include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#endif
+
 using namespace std;
 
 // TODO: Don't like here
@@ -193,8 +197,7 @@ void Tensor::updateData(float *fptr){
          }
         //printf("Creating FPGA tensor\n");
         fpga_create_tensor(this, fpga_device);
-        }
-      }
+    }
 #endif
 }
 

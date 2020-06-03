@@ -6,7 +6,7 @@
 #include <stdio.h>
 extern "C" {
 
-void reduce_sum2D(
+void k_reduce_sum2D(
         float *A, // Output Tensor
         float *B,
         int dim0, 

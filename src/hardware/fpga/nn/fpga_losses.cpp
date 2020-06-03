@@ -15,9 +15,22 @@
 
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
 
+extern cl::Kernel kernel_cent;
+extern cl::CommandQueue q;
+
 
 void fpga_cent(Tensor *A, Tensor *B, Tensor *C){
   _profile_fpga(_FPGA_CENT, 0);
-  printf("fpga_ not implemented yet\n"); exit(1);
+  cl_int err;
+  cl::Event event;
+ 
+  OCL_CHECK(err, err = kernel_cent.setArg(0, (A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_cent.setArg(1, (B->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_cent.setArg(2, (C->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_cent.setArg(3, A->size));
+
+  OCL_CHECK(err, err = q.enqueueTask(kernel_cent, NULL, &event));
+  //  event.wait();
+  q.finish();
   _profile_fpga(_FPGA_CENT, 1);
 }

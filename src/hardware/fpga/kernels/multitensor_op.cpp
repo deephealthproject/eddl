@@ -4,7 +4,7 @@
 
 #include <math.h>
 
-void relu(const float *A, float *B, int tam){
+void k_relu(const float *A, float *B, int tam){
 #pragma HLS INLINE          
      for(int i=0;i<tam;i++) {
         if (A[i]>0.0) B[i]=A[i];
@@ -12,7 +12,7 @@ void relu(const float *A, float *B, int tam){
      }
 }
 
-void softmax(const float *A, float *B, int dim0, int dim1){
+void k_softmax(const float *A, float *B, int dim0, int dim1){
 #pragma HLS INLINE
    float max;
    float sum;
@@ -49,7 +49,7 @@ void softmax(const float *A, float *B, int dim0, int dim1){
 
 extern "C" {
 
-void multitensor_op(
+void k_multitensor_op(
         const float *tensorA, // Output Tensor
         float *tensorB,
         int dim0,      
@@ -67,8 +67,8 @@ void multitensor_op(
 #pragma HLS INTERFACE s_axilite port=kernel_id bundle=control
 #pragma HLS INTERFACE s_axilite port=return bundle=control
    switch (kernel_id) {
-       case 9: relu(tensorA, tensorB, dim0); break;
-       case 10: softmax(tensorA, tensorB, dim0, dim1);break;
+       case 9: k_relu(tensorA, tensorB, dim0); break;
+       case 10: k_softmax(tensorA, tensorB, dim0, dim1);break;
    }
 
 }
