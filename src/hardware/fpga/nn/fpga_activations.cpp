@@ -42,148 +42,436 @@ char fpga_set_cpuemu_d_tanh             = 1;
 char fpga_set_cpuemu_softmax            = 1;
 char fpga_set_cpuemu_d_softmax          = 1;
 
+// -----------------------------------------------------------------
+// relu
+//
+void fpga_cpuemu_relu(Tensor *A, Tensor *B){
+  printf("fpga_cpuemu_relu not implemented yet\n");
+  exit(1);
+}
+
 void fpga_relu(Tensor *A, Tensor *B){
   _profile_fpga(_FPGA_RELU, 0);
-  printf("fpga_ not implemented yet\n"); exit(1);
+  if (fpga_set_cpuemu_relu == 1) {
+      fpga_cpuemu_relu(A, B);
+  } else {
+      printf("fpga_relu not implemented yet\n"); exit(1);
+  }
   _profile_fpga(_FPGA_RELU, 1);
+}
+
+// -----------------------------------------------------------------
+// d_relu
+//
+void fpga_cpuemu_d_relu(Tensor *D, Tensor *I, Tensor *PD){
+  printf("fpga_cpuemu_d_relu not implemented yet\n");
+  exit(1);
 }
 
 void fpga_d_relu(Tensor *D, Tensor *I, Tensor *PD){
  _profile_fpga(_FPGA_D_RELU, 0);
- printf("fpga_ not implemented yet\n"); exit(1);
+ if (fpga_set_cpuemu_d_relu == 1) {
+     fpga_cpuemu_d_relu(D, I, PD);
+ } else {
+     printf("fpga_d_relu not implemented yet\n"); exit(1);
+ }
  _profile_fpga(_FPGA_D_RELU, 1);
 }
 
-void fpga_thresholded_relu(Tensor *A, Tensor *B,float param){
+// -----------------------------------------------------------------
+// thbresholded_relu
+//
+void fpga_cpuemu_thresholded_relu(Tensor *A, Tensor *B, float param){
+  printf("fpga_cpuemu_thresholded_relu not implemented yet\n");
+  exit(1);
+}
+
+void fpga_thresholded_relu(Tensor *A, Tensor *B, float param){
   _profile_fpga(_FPGA_THRESHOLDED_RELU, 0);
-  printf("fpga_ not implemented yet\n"); exit(1);
+  if (fpga_set_cpuemu_thresholded_relu == 1) {
+      fpga_cpuemu_thresholded_relu(A, B, param);
+  } else {
+      printf("fpga_thresholded_relu not implemented yet\n"); exit(1);
+  }
   _profile_fpga(_FPGA_THRESHOLDED_RELU, 1);
 }
 
-void fpga_d_thresholded_relu(Tensor *D, Tensor *I, Tensor *PD,float param){
+// -----------------------------------------------------------------
+// d_thresholded_relu
+//
+void fpga_cpuemu_d_thresholded_relu(Tensor *D, Tensor *I, Tensor *PD, float param){
+  printf("fpga_cpuemu_d_thresholded_relu not implemented yet\n");
+  exit(1);
+}
+
+void fpga_d_thresholded_relu(Tensor *D, Tensor *I, Tensor *PD, float param){
   _profile_fpga(_FPGA_D_THRESHOLDED_RELU, 0);
-  printf("fpga_ not implemented yet\n"); exit(1);
+  if (fpga_set_cpuemu_d_thresholded_relu == 1) {
+      fpga_cpuemu_d_thresholded_relu(D, I, PD, param);
+  } else {
+      printf("fpga_d_thresholded_relu not implemented yet\n"); exit(1);
+  }
   _profile_fpga(_FPGA_D_THRESHOLDED_RELU, 1);
 }
 
-void fpga_leaky_relu(Tensor *A, Tensor *B,float param){
+// -----------------------------------------------------------------
+// leaky_relu
+//
+void fpga_cpuemu_leaky_relu(Tensor *A, Tensor *B, float param){
+  printf("fpga_cpuemu_leaky_relu not implemented yet\n");
+  exit(1);
+}
+
+void fpga_leaky_relu(Tensor *A, Tensor *B, float param){
   _profile_fpga(_FPGA_LEAKY_RELU, 0);
-  printf("fpga_ not implemented yet\n"); exit(1);
+  if (fpga_set_cpuemu_leaky_relu == 1) {
+      fpga_cpuemu_leaky_relu(A, B, param);
+  } else {
+      printf("fpga_leaky_relu not implemented yet\n"); exit(1);
+  }
   _profile_fpga(_FPGA_LEAKY_RELU, 1);
+}
+
+// -----------------------------------------------------------------
+// d_leaky_relu
+//
+void fpga_cpuemu_d_leaky_relu(Tensor *D, Tensor *I, Tensor *PD, float param){
+  printf("fpga_cpuemu_d_leaky_relu not implemented yet\n");
+  exit(1);
 }
 
 void fpga_d_leaky_relu(Tensor *D, Tensor *I, Tensor *PD,float param){
   _profile_fpga(_FPGA_D_LEAKY_RELU, 0);
-  printf("fpga_ not implemented yet\n"); exit(1);
+  if (fpga_set_cpuemu_d_leaky_relu == 1) {
+      fpga_cpuemu_d_leaky_relu(D, I, PD, param);
+  } else {
+      printf("fpga_leaky_relu not implemented yet\n"); exit(1);
+  }
   _profile_fpga(_FPGA_D_LEAKY_RELU, 1);
+}
+
+// -----------------------------------------------------------------
+// elu
+//
+void fpga_cpuemu_elu(Tensor *A, Tensor *B, float param){
+  printf("fpga_cpuemu_elu not implemented yet\n");
+  exit(1);
 }
 
 void fpga_elu(Tensor *A, Tensor *B, float param){
   _profile_fpga(_FPGA_ELU, 0);
-  printf("fpga_ not implemented yet\n"); exit(1);
+  if (fpga_set_cpuemu_elu == 1) {
+      fpga_cpuemu_elu(A, B, param);
+  } else {
+      printf("fpga_elu not implemented yet\n"); exit(1);
+  }
   _profile_fpga(_FPGA_ELU, 1);
+}
+
+// -----------------------------------------------------------------
+// d_elu
+//
+void fpga_cpuemu_d_elu(Tensor *D, Tensor *I, Tensor *PD, float param){
+  printf("fpga_cpuemu_d_elu not implemented yet\n");
+  exit(1);
 }
 
 void fpga_d_elu(Tensor *D, Tensor *I, Tensor *PD, float param){
   _profile_fpga(_FPGA_D_ELU, 0);
-  printf("fpga_ not implemented yet\n"); exit(1);
+  if (fpga_set_cpuemu_d_elu == 1) {
+      fpga_cpuemu_d_elu(D, I, PD, param);
+  } else {
+      printf("fpga_d_elu not implemented yet\n"); exit(1);
+  }
   _profile_fpga(_FPGA_D_ELU, 1);
+}
+
+// -----------------------------------------------------------------
+// softplus
+//
+void fpga_cpuemu_softplus(Tensor *A, Tensor *B){
+  printf("fpga_cpuemu_softplus not implemented yet\n");
+  exit(1);
 }
 
 void fpga_softplus(Tensor *A, Tensor *B){
     _profile_fpga(_FPGA_SOFTPLUS, 0);
-    printf("fpga_ not implemented yet\n"); exit(1);
+    if (fpga_set_cpuemu_softplus == 1) {
+        fpga_cpuemu_softplus(A, B);
+    } else {
+        printf("fpga_softplus not implemented yet\n"); exit(1);
+    }
     _profile_fpga(_FPGA_SOFTPLUS, 1);
+}
+
+// -----------------------------------------------------------------
+// d_softplus
+//
+void fpga_cpuemu_d_softplus(Tensor *D, Tensor *I, Tensor *PD){
+  printf("fpga_cpuemu_d_softplus not implemented yet\n");
+  exit(1);
 }
 
 void fpga_d_softplus(Tensor *D, Tensor *I, Tensor *PD){
     _profile_fpga(_FPGA_D_SOFTPLUS, 0);
-    printf("fpga_ not implemented yet\n"); exit(1);
+    if (fpga_set_cpuemu_d_softplus == 1) {
+        fpga_cpuemu_d_softplus(D, I, PD);
+    } else {
+        printf("fpga_d_softplus not implemented yet\n"); exit(1);
+    }
     _profile_fpga(_FPGA_D_SOFTPLUS, 1);
+}
+
+// -----------------------------------------------------------------
+// softsign
+//
+void fpga_cpuemu_softsign(Tensor *A, Tensor *B){
+  printf("fpga_cpuemu_softsign not implemented yet\n");
+  exit(1);
 }
 
 void fpga_softsign(Tensor *A, Tensor *B){
     _profile_fpga(_FPGA_SOFTSIGN, 0);
-    printf("fpga_ not implemented yet\n"); exit(1);
+    if (fpga_set_cpuemu_softsign == 1) {
+        fpga_cpuemu_softsign(A, B);
+    } else {
+        printf("fpga_softsign not implemented yet\n"); exit(1);
+    }
     _profile_fpga(_FPGA_SOFTSIGN, 1);
 }
 
+void fpga_cpuemu_d_softsign(Tensor *D, Tensor *I, Tensor *PD){
+  printf("fpga_cpuemu_d_softsign not implemented yet\n");
+  exit(1);
+}
+
+// -----------------------------------------------------------------
+// d_softsign
+//
 void fpga_d_softsign(Tensor *D, Tensor *I, Tensor *PD){
     _profile_fpga(_FPGA_D_SOFTSIGN, 0);
-    printf("fpga_ not implemented yet\n"); exit(1);
+    if (fpga_set_cpuemu_d_softsign == 1) {
+        fpga_cpuemu_d_softsign(D, I, PD);
+    } else {
+        printf("fpga_d_softsign not implemented yet\n"); exit(1);
+    }
     _profile_fpga(_FPGA_D_SOFTSIGN, 1);
+}
+
+// -----------------------------------------------------------------
+// linear
+//
+void fpga_cpuemu_linear(Tensor *A, Tensor *B, float param){
+  printf("fpga_cpuemu_linear not implemented yet\n");
+  exit(1);
 }
 
 void fpga_linear(Tensor *A, Tensor *B, float param){
   _profile_fpga(_FPGA_LINEAR, 0);
-  printf("fpga_ not implemented yet\n"); exit(1);
+  if (fpga_set_cpuemu_linear == 1) {
+      fpga_cpuemu_linear(A, B, param);
+  } else {
+      printf("fpga_linear not implemented yet\n"); exit(1);
+  }
   _profile_fpga(_FPGA_LINEAR, 1);
+}
+
+// -----------------------------------------------------------------
+// d_linear
+//
+void fpga_cpuemu_d_linear(Tensor *D, Tensor *I, Tensor *PD, float param){
+  printf("fpga_cpuemu_d_linear not implemented yet\n");
+  exit(1);
 }
 
 void fpga_d_linear(Tensor *D, Tensor *I, Tensor *PD, float param){
   _profile_fpga(_FPGA_D_LINEAR, 0);
-  printf("fpga_ not implemented yet\n"); exit(1);
+  if (fpga_set_cpuemu_d_linear == 1) {
+      fpga_cpuemu_d_linear(D, I, PD, param);
+  } else {
+      printf("fpga_d_linear not implemented yet\n"); exit(1);
+  }
   _profile_fpga(_FPGA_D_LINEAR, 1);
+}
+
+// -----------------------------------------------------------------
+// sigmoid
+//
+void fpga_cpuemu_sigmoid(Tensor *A, Tensor *B){
+  printf("fpga_cpuemu_sigmoid not implemented yet\n");
+  exit(1);
 }
 
 void fpga_sigmoid(Tensor *A, Tensor *B){
   _profile_fpga(_FPGA_SIGMOID, 0);
-  printf("fpga_ not implemented yet\n"); exit(1);
+  if (fpga_set_cpuemu_sigmoid == 1) {
+      fpga_cpuemu_sigmoid(A, B);
+  } else {
+      printf("fpga_sigmoid not implemented yet\n"); exit(1);
+  };
   _profile_fpga(_FPGA_SIGMOID, 1);
+}
+
+// -----------------------------------------------------------------
+// d_sigmoid
+//
+void fpga_cpuemu_d_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
+  printf("fpga_cpuemu_d_sigmoid not implemented yet\n");
+  exit(1);
 }
 
 void fpga_d_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
   _profile_fpga(_FPGA_D_SIGMOID, 0);
-  printf("fpga_ not implemented yet\n"); exit(1);
+  if (fpga_set_cpuemu_d_sigmoid == 1) {
+      fpga_cpuemu_d_sigmoid(D, I, PD);
+  } else {
+      printf("fpga_d_sigmoid not implemented yet\n"); exit(1);
+  }
   _profile_fpga(_FPGA_D_SIGMOID, 1);
+}
+
+// -----------------------------------------------------------------
+// hard_sigmoid
+//
+void fpga_cpuemu_hard_sigmoid(Tensor *A, Tensor *B){
+  printf("fpga_cpuemu_hard_sigmoid not implemented yet\n");
+  exit(1);
 }
 
 void fpga_hard_sigmoid(Tensor *A, Tensor *B){
   _profile_fpga(_FPGA_HARD_SIGMOID, 0);
-  printf("fpga_ not implemented yet\n"); exit(1);
+  if (fpga_set_cpuemu_hard_sigmoid == 1) {
+      fpga_cpuemu_hard_sigmoid(A, B);
+  } else {
+      printf("fpga_hard_sigmoid not implemented yet\n"); exit(1);
+  }
   _profile_fpga(_FPGA_HARD_SIGMOID, 1);
+}
+
+// -----------------------------------------------------------------
+// d_hard_sigmoid
+//
+void fpga_cpuemu_d_hard_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
+  printf("fpga_cpuemu_d_hard_sigmoid not implemented yet\n");
+  exit(1);
 }
 
 void fpga_d_hard_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
   _profile_fpga(_FPGA_D_HARD_SIGMOID, 0);
-  printf("fpga_ not implemented yet\n"); exit(1);
+  if (fpga_set_cpuemu_d_hard_sigmoid == 1) {
+      fpga_cpuemu_d_hard_sigmoid(D, I, PD);
+  } else {
+      printf("fpga_d_hard_sigmoid not implemented yet\n"); exit(1);
+  }
   _profile_fpga(_FPGA_D_HARD_SIGMOID, 1);
+}
+
+// -----------------------------------------------------------------
+// exp
+//
+void fpga_cpuemu_exp(Tensor *A, Tensor *B){
+  printf("fpga_cpuemu_exp not implemented yet\n");
+  exit(1);
 }
 
 void fpga_exp(Tensor *A, Tensor *B){
   _profile_fpga(_FPGA_EXP, 0);
-  printf("fpga_ not implemented yet\n"); exit(1);
+  if (fpga_set_cpuemu_exp == 1) {
+      fpga_cpuemu_exp(A, B);
+  } else {
+      printf("fpga_exp not implemented yet\n"); exit(1);
+  }
   _profile_fpga(_FPGA_EXP, 1);
+}
+
+// -----------------------------------------------------------------
+// d_exp
+//
+void fpga_cpuemu_d_exp(Tensor *D, Tensor *I, Tensor *PD){
+  printf("fpga_cpuemu_d_exp not implemented yet\n");
+  exit(1);
 }
 
 void fpga_d_exp(Tensor *D, Tensor *I, Tensor *PD){
   _profile_fpga(_FPGA_D_EXP, 0);
-  printf("fpga_ not implemented yet\n"); exit(1);
+  if (fpga_set_cpuemu_d_exp == 1) {
+      fpga_cpuemu_d_exp(D, I, PD);
+  } else {
+      printf("fpga_d_exp not implemented yet\n"); exit(1);
+  }
   _profile_fpga(_FPGA_D_EXP, 1);
+}
+
+// -----------------------------------------------------------------
+// tanh
+//
+void fpga_cpuemu_tanh(Tensor *A, Tensor *B){
+  printf("fpga_cpuemu_tanh not implemented yet\n");
+  exit(1);
 }
 
 void fpga_tanh(Tensor *A, Tensor *B){
   _profile_fpga(_FPGA_TANH, 0);
-  printf("fpga_ not implemented yet\n"); exit(1);
+  if (fpga_set_cpuemu_tanh == 1) {
+      fpga_cpuemu_tanh(A, B);
+  } else {
+      printf("fpga_tanh not implemented yet\n"); exit(1);
+  }
   _profile_fpga(_FPGA_TANH, 1);
+}
+
+// -----------------------------------------------------------------
+// d_tanh
+//
+void fpga_cpuemu_d_tanh(Tensor *D, Tensor *I, Tensor *PD){
+  printf("fpga_cpuemu_d_tanh not implemented yet\n");
+  exit(1);
 }
 
 void fpga_d_tanh(Tensor *D, Tensor *I, Tensor *PD){
   _profile_fpga(_FPGA_D_TANH, 0);
-  printf("fpga_ not implemented yet\n"); exit(1);
+  if (fpga_set_cpuemu_d_tanh == 1) {
+      fpga_cpuemu_d_tanh(D, I, PD);
+  } else {
+      printf("fpga_d_tanh not implemented yet\n"); exit(1);
+  }
   _profile_fpga(_FPGA_D_TANH, 1);
+}
+
+// -----------------------------------------------------------------
+// softmax
+//
+void fpga_cpuemu_softmax(Tensor *A, Tensor *B){
+  printf("fpga_cpuemu_softmax not implemented yet\n");
+  exit(1);
 }
 
 void fpga_softmax(Tensor *A, Tensor *B) {
   _profile_fpga(_FPGA_SOFTMAX, 0);
-  printf("fpga_ not implemented yet\n"); exit(1);
+  if (fpga_set_cpuemu_softmax == 1) {
+      fpga_cpuemu_softmax(A, B);
+  } else {
+      printf("fpga_softmax not implemented yet\n"); exit(1);
+  }
   _profile_fpga(_FPGA_SOFTMAX, 1);
+}
+
+// -----------------------------------------------------------------
+// d_softmax
+//
+void fpga_cpuemu_d_softmax(Tensor *D, Tensor *I, Tensor *PD){
+  printf("fpga_cpuemu_d_softmax not implemented yet\n");
+  exit(1);
 }
 
 void fpga_d_softmax(Tensor *D, Tensor *I, Tensor *PD) {
     _profile_fpga(_FPGA_D_SOFTMAX, 0);
   PD->tsem->lock();
-  printf("fpga_ not implemented yet\n"); exit(1);
+  if (fpga_set_cpuemu_d_softmax == 1) {
+      fpga_cpuemu_d_softmax(D, I, PD);
+  } else {
+      printf("fpga_d_softmax not implemented yet\n"); exit(1);
+  }
   PD->tsem->unlock();
   _profile_fpga(_FPGA_D_SOFTMAX, 1);
 }

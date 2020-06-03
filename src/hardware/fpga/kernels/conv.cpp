@@ -2,15 +2,15 @@
 #include <stdio.h>
 extern "C" {
 
-void k_conv2D(ConvolDescriptor *D)
+void k_conv2D()
 {
 }
 
-void k_conv2D_grad(ConvolDescriptor *D)
+void k_conv2D_grad()
 {
 }
 
-void k_conv2D_back(ConvolDescriptor *D)
+void k_conv2D_back()
 {
 }
 
