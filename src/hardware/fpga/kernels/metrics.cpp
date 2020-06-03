@@ -7,3 +7,5 @@ int k_accuracy(Tensor *A, Tensor *B){
 }
 
 }
+
+}
