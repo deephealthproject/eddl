@@ -81,6 +81,11 @@ void cpu_avgpool2D_back(PoolDescriptor *D);
 void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size);
 void cpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size);
 
+void cpu_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+void cpu_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+void cpu_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+void cpu_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+
 // BN
 void cpu_permute_channels_first(Tensor *A,Tensor *B);
 void cpu_permute_channels_last(Tensor *A,Tensor *B);

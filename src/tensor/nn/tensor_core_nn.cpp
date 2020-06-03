@@ -65,4 +65,43 @@ namespace tensorNN {
 #endif
     }
 
+
+    void select(Tensor *A, Tensor* B, SelDescriptor *sd){
+        if (A->isCPU() && B->isCPU()) {
+            cpu_select_nn(A, B, sd);
+        }
+#ifdef cGPU
+        else if (A->isGPU() && B->isGPU())
+        {
+            msg("Not yet implemented", "Tensor::select");
+            //gpu_select_nn(A, B, sd);
+        }
+#endif
+#ifdef cFPGA
+        else {
+
+    }
+#endif
+
+    }
+
+    void select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
+        if (A->isCPU() && B->isCPU()) {
+            cpu_select_back_nn(A, B, sd);
+        }
+#ifdef cGPU
+        else if (A->isGPU() && B->isGPU())
+        {
+            msg("Not yet implemented", "Tensor::select_back");
+//            gpu_select_back_nn(A, B, sd);
+        }
+#endif
+#ifdef cFPGA
+        else {
+
+    }
+#endif
+
+    }
+
 }

@@ -30,25 +30,16 @@ int LSelect::total_layers = 0;
   @returns the absolute value of each element in l
 
   */
-LSelect::LSelect(Layer *parent, vector<string> indices, bool hasBatch, string name, int dev, int mem) : LinLayer(name, dev, mem) {
+LSelect::LSelect(Layer *parent, vector<string> indices, string name, int dev, int mem) : LinLayer(name, dev, mem) {
     // Set default name
     if(name.empty()) this->name = "select_" + to_string(++total_layers);
 
     // Set input
     input=parent->output;
 
-    // Add batch to indices (if needed)
-    vector<string> indices_batch;
-    if(hasBatch){
-        indices_batch = indices;
-    }else{
-        indices_batch = vector<string>(indices);
-        indices_batch.insert(indices_batch.begin(), ":");
-    }
-
     // Build descriptor
-    sd = new SelDescriptor(indices_batch);
-    sd->build(input->shape);
+    sd = new SelDescriptor(indices);
+    sd->build(vector<int>(input->shape.begin()+1, input->shape.end()));  // Ignore batch
 
     // Set flow tensors
     output=new Tensor(sd->oshape, dev);
@@ -64,11 +55,11 @@ void LSelect::resize(int b){
 }
 
 void LSelect::forward(){
-    Tensor::select(this->input, this->output, sd);
+    tensorNN::select(this->input, this->output, sd);
 }
 
 void LSelect::backward(){
-    Tensor::select_back(this->delta, this->parent[0]->delta, sd);
+    tensorNN::select_back(this->delta, this->parent[0]->delta, sd);
 }
 
 
@@ -77,7 +68,7 @@ Layer *LSelect::share(int c, int bs, vector<Layer *> p) {
 }
 
 Layer *LSelect::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LSelect(p[0], sd->indices, true,  name, todev, this->mem_level);
+    auto *n = new LSelect(p[0], sd->indices, name, todev, this->mem_level);
     n->orig = this;
     return n;
 }

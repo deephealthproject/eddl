@@ -561,9 +561,6 @@ namespace eddl {
     }
 
 
-
-
-
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding, const vector<int> &dilation_rate,
                 const vector<int> &strides, bool use_bias, string name){
@@ -863,7 +860,7 @@ namespace eddl {
     }
 
     layer Select(layer l, vector<string> indices, string name){
-        return new LSelect(l, indices, false, name, DEV_CPU, 0);
+        return new LSelect(l, indices, name, DEV_CPU, 0);
     }
 
     layer Permute(layer l, vector<int> dims, string name){

@@ -257,7 +257,7 @@ public:
     static int total_layers;
     SelDescriptor *sd;
 
-    LSelect(Layer *l, vector<string> indices, bool hasBatch, string name, int dev, int mem);
+    LSelect(Layer *l, vector<string> indices, string name, int dev, int mem);
 
     void forward() override;
 
