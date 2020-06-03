@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
     // Load binary (EDDL format)
     Tensor *t6 = Tensor::load(fname + "iris.bin");
     cout << "Tensor loaded! (bin)" << endl;
-    cout << "isEqualToPrevious? " << Tensor::equivalent(t5, t6, 10e-6f) << endl;
+    cout << "isEqualToPrevious? " << Tensor::equivalent(t1, t6, 10e-6f) << endl;
     cout << endl;
 
     // ****************************************************
