@@ -82,7 +82,6 @@ __global__ void gpu_select_nn(float* A, float* B, long int size, int* indices, i
     if (thread_id_x < size){
         long int b = thread_id_x / B_batch_str;
         long int i = thread_id_x % B_batch_str;
-//        printf("Batch=%ld;\tindex_in_batch=%ld;\tglobal_addess=%d;\tthread_id_x=%ld;\tB_batch_str=%d\n", b, i, indices[i],thread_id_x,B_batch_str);
         B[thread_id_x] = A[b*A_batch_str + indices[i]];
     }
 }
