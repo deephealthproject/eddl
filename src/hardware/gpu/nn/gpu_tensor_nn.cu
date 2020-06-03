@@ -74,7 +74,7 @@ void gpu_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
 
 
     setDims(B);  // B is the small
-    gpu_select_nn<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, sd->gpu_addresses, A->stride[0]);
+    gpu_select_nn<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, sd->gpu_addresses, A->stride[0], B->stride[0]);
     check_cuda(cudaDeviceSynchronize(), "gpu_select_nn");
 }
 
@@ -95,7 +95,7 @@ void gpu_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
 
 
     setDims(A);  // A is the small
-    gpu_select_back_nn<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, sd->gpu_addresses, B->stride[0]);
+    gpu_select_back_nn<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, sd->gpu_addresses, A->stride[0], B->stride[0]);
     check_cuda(cudaDeviceSynchronize(), "gpu_select_back_nn");
 }
 
@@ -115,7 +115,7 @@ void gpu_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
     }
 
     setDims(B);  // B is the small
-    gpu_set_select_nn<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, sd->gpu_addresses, A->stride[0]);
+    gpu_set_select_nn<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, sd->gpu_addresses, A->stride[0], B->stride[0]);
     check_cuda(cudaDeviceSynchronize(), "gpu_set_select_nn");
 }
 
@@ -135,6 +135,6 @@ void gpu_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
     }
 
     setDims(B);  // B is the small
-    gpu_set_select_back_nn<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, sd->gpu_addresses, A->stride[0]);
+    gpu_set_select_back_nn<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, sd->gpu_addresses, A->stride[0], B->stride[0]);
     check_cuda(cudaDeviceSynchronize(), "gpu_set_select_back_nn");
 }

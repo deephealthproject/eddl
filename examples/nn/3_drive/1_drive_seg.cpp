@@ -89,7 +89,7 @@ int main(int argc, char **argv){
 
     // Settings
     int epochs = 100000;
-    int batch_size =2;
+    int batch_size =3;
 
     //////////////////////////////////////////////////////////////
     // Network for Data Augmentation
