@@ -15,6 +15,33 @@
 
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
 
+// emulation switches of functions (via cpu)
+// when set the function is run on the cpu
+char fpga_set_cpuemu_relu               = 1;
+char fpga_set_cpuemu_d_relu             = 1;
+char fpga_set_cpuemu_thresholded_relu   = 1;
+char fpga_set_cpuemu_d_thresholded_relu = 1;
+char fpga_set_cpuemu_leaky_relu         = 1;
+char fpga_set_cpuemu_d_leaky_relu       = 1;
+char fpga_set_cpuemu_elu                = 1;
+char fpga_set_cpuemu_d_elu              = 1;
+char fpga_set_cpuemu_softplus           = 1;
+char fpga_set_cpuemu_d_softplus         = 1;
+char fpga_set_cpuemu_softsign           = 1;
+char fpga_set_cpuemu_d_softsign         = 1;
+char fpga_set_cpuemu_linear             = 1;
+char fpga_set_cpuemu_d_linear           = 1; 
+char fpga_set_cpuemu_sigmoid            = 1;
+char fpga_set_cpuemu_d_sigmoid          = 1;
+char fpga_set_cpuemu_hard_sigmoid       = 1;
+char fpga_set_cpuemu_d_hard_sigmoid     = 1;
+char fpga_set_cpuemu_exp                = 1;
+char fpga_set_cpuemu_d_exp              = 1;
+char fpga_set_cpuemu_tanh               = 1;
+char fpga_set_cpuemu_d_tanh             = 1;
+char fpga_set_cpuemu_softmax            = 1;
+char fpga_set_cpuemu_d_softmax          = 1;
+
 void fpga_relu(Tensor *A, Tensor *B){
   _profile_fpga(_FPGA_RELU, 0);
   printf("fpga_ not implemented yet\n"); exit(1);
