@@ -28,13 +28,12 @@ void PermuteDescriptor::resize(int b){
     // Delete previous allocations
     this->free_memory();
 
-    // Update shapes
-    this->ishape[0] = b;
-    this->oshape[0] = b;
+//    // Update shapes
+//    this->ishape[0] = b;
+//    this->oshape[0] = b;
 
     // Build indices
     this->build_indices();
-
 }
 
 void PermuteDescriptor::build_indices(){

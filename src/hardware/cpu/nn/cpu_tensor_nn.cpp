@@ -49,7 +49,7 @@ void cpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
 
 
 void cpu_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
-#pragma omp parallel for
+    #pragma omp parallel for
     for (int b = 0; b < B->shape[0]; b++) {
         for (int i = 0; i < B->stride[0]; i++) {
             B->ptr[b*B->stride[0] + i] = A->ptr[b*A->stride[0] + sd->cpu_addresses[i]];
@@ -58,7 +58,7 @@ void cpu_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
 }
 
 void cpu_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
-#pragma omp parallel for
+    #pragma omp parallel for
     for (int b = 0; b < A->shape[0]; b++) {
         for (int i = 0; i < A->stride[0]; i++) {  // walk stride
             B->ptr[b*B->stride[0] + sd->cpu_addresses[i]] += A->ptr[b*A->stride[0] + i];  // delta_parent += delta
@@ -67,7 +67,7 @@ void cpu_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
 }
 
 void cpu_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
-#pragma omp parallel for
+   #pragma omp parallel for
     for (int b = 0; b < B->shape[0]; b++) {
         for (int i = 0; i < B->stride[0]; i++) {
             A->ptr[b*A->stride[0] + sd->cpu_addresses[i]] = B->ptr[b*B->stride[0] + i];
@@ -76,7 +76,7 @@ void cpu_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
 }
 
 void cpu_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
-#pragma omp parallel for
+   #pragma omp parallel for
     for (int b = 0; b < B->shape[0]; b++) {
         for (int i = 0; i < B->stride[0]; i++) {
             B->ptr[b*B->stride[0] + i] += A->ptr[b*A->stride[0] + sd->cpu_addresses[i]];

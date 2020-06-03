@@ -73,8 +73,7 @@ namespace tensorNN {
 #ifdef cGPU
         else if (A->isGPU() && B->isGPU())
         {
-            msg("Not yet implemented", "Tensor::select");
-            //gpu_select_nn(A, B, sd);
+            gpu_select_nn(A, B, sd);
         }
 #endif
 #ifdef cFPGA
@@ -92,8 +91,43 @@ namespace tensorNN {
 #ifdef cGPU
         else if (A->isGPU() && B->isGPU())
         {
-            msg("Not yet implemented", "Tensor::select_back");
-//            gpu_select_back_nn(A, B, sd);
+           gpu_select_back_nn(A, B, sd);
+        }
+#endif
+#ifdef cFPGA
+        else {
+
+    }
+#endif
+
+    }
+
+    void set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
+        if (A->isCPU() && B->isCPU()) {
+            cpu_set_select_nn(A, B, sd);
+        }
+#ifdef cGPU
+        else if (A->isGPU() && B->isGPU())
+        {
+            gpu_set_select_nn(A, B, sd);
+        }
+#endif
+#ifdef cFPGA
+        else {
+
+    }
+#endif
+    }
+
+
+    void set_select_back(Tensor *A, Tensor* B, SelDescriptor *sd){
+        if (A->isCPU() && B->isCPU()) {
+            cpu_set_select_back_nn(A, B, sd);
+        }
+#ifdef cGPU
+        else if (A->isGPU() && B->isGPU())
+        {
+            gpu_set_select_back_nn(A, B, sd);
         }
 #endif
 #ifdef cFPGA

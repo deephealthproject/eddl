@@ -38,11 +38,14 @@ LSelect::LSelect(Layer *parent, vector<string> indices, string name, int dev, in
     input=parent->output;
 
     // Build descriptor
+    vector<int> shape_no_batch(input->shape.begin()+1, input->shape.end());
     sd = new SelDescriptor(indices);
-    sd->build(vector<int>(input->shape.begin()+1, input->shape.end()));  // Ignore batch
+    sd->build(shape_no_batch);  // Ignore batch
 
     // Set flow tensors
-    output=new Tensor(sd->oshape, dev);
+    vector<int> oshape(sd->oshape);
+    oshape.insert(oshape.begin() + 0, 1);
+    output=new Tensor(oshape, dev);
 //    delta=new Tensor(sd->oshape, dev);
 
     parent->addchild(this);
@@ -51,7 +54,7 @@ LSelect::LSelect(Layer *parent, vector<string> indices, string name, int dev, in
 
 void LSelect::resize(int b){
     Layer::resize(b);
-    sd->resize(b);
+    sd->resize(b);  // The batch is ignored
 }
 
 void LSelect::forward(){

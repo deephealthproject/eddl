@@ -33,12 +33,13 @@ void SelDescriptor::resize(int b){
     // Delete previous allocations
     this->free_memory();
 
-    // Update batch of range
-    this->idxs_range[0][1] = b-1;
-
-    // Update shapes
-    this->ishape[0] = b;
-    this->oshape[0] = b;
+    // This is only used if the batch is specified
+//    // Update batch of range
+//    this->idxs_range[0][1] = b-1;
+//
+//    // Update shapes
+//    this->ishape[0] = b;
+//    this->oshape[0] = b;
 
     build_indices();
 }

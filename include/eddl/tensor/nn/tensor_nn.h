@@ -89,8 +89,11 @@ int bin_accuracy(Tensor *A, Tensor *B);
 // ***** Tensor operations *****************************
     void repeat_nn(Tensor *A, Tensor *B, vector<int> size);
     void d_repeat_nn(Tensor *D, Tensor *P, vector<int> size);
+
     void select(Tensor *A, Tensor* B, SelDescriptor *sd);
     void select_back(Tensor *A, Tensor* B, SelDescriptor *sd);
+    void set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
+    void set_select_back(Tensor *A, Tensor* B, SelDescriptor *sd);
 
 // ***** Permutations for BatchNorm ********************
     void permute_channels_last(Tensor *A,Tensor *B);

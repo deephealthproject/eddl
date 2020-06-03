@@ -83,6 +83,11 @@ void gpu_avgpool2D_back(PoolDescriptor *D);
 void gpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size);
 void gpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size);
 
+void gpu_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+void gpu_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+void gpu_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+void gpu_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+
 // BN
 void gpu_permute_channels_first(Tensor *A,Tensor *B);
 void gpu_permute_channels_last(Tensor *A,Tensor *B);

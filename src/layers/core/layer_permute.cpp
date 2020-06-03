@@ -37,16 +37,15 @@ LPermute::LPermute(Layer *parent, vector<int> dims, string name, int dev, int me
     // Set input
     input=parent->output;
 
-    // Add batch to dims (if needed)
-    vector<int> dims_batch = {0};
-    for(auto &d : dims){ dims_batch.emplace_back(d + 1); }
-
-    // Build descriptor
-    sd = new PermuteDescriptor(dims_batch);
-    sd->build(input->shape);
+        // Build descriptor
+    vector<int> shape_no_batch(input->shape.begin()+1, input->shape.end());
+    sd = new PermuteDescriptor(dims);
+    sd->build(shape_no_batch);
 
     // Set flow tensors
-    output=new Tensor(sd->oshape, dev);
+    vector<int> oshape(sd->oshape);
+    oshape.insert(oshape.begin() + 0, 1);
+    output=new Tensor(oshape, dev);
 //    delta=new Tensor(sd->oshape, dev);
 
     parent->addchild(this);
@@ -55,15 +54,15 @@ LPermute::LPermute(Layer *parent, vector<int> dims, string name, int dev, int me
 
 void LPermute::resize(int b){
     Layer::resize(b);
-    sd->resize(b);
+    sd->resize(b); // The batch is ignored
 }
 
 void LPermute::forward(){
-    Tensor::select(this->input, this->output, sd);
+    tensorNN::select(this->input, this->output, sd);
 }
 
 void LPermute::backward(){
-    Tensor::select_back(this->delta, this->parent[0]->delta, sd);
+    tensorNN::select_back(this->delta, this->parent[0]->delta, sd);
 }
 
 Layer *LPermute::share(int c, int bs, vector<Layer *> p) {
