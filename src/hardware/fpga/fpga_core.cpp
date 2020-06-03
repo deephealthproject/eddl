@@ -16,34 +16,33 @@
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include <sys/time.h>
 
-cl::Context context;
+cl::Context      context;
 cl::CommandQueue q;
 cl::CommandQueue com;
-cl::Program program;
-cl::Kernel tensor_op;
-cl::Kernel multitensor_op;
-cl::Kernel kernel_add;
-cl::Kernel mult2D;
-cl::Kernel sum2D_rowwise;
-cl::Kernel kernel_cent;
-cl::Kernel relu_soft_d;
-cl::Kernel reduce_sum2D;
-cl::Kernel kernel_accuracy;
-cl::Kernel kernel_total_sum;
-cl::Kernel kernel_normalize;
-cl::Kernel el_div;
-//cl::Kernel kernel_gemx;
-cl::Kernel kernel_core;
+cl::Program      program;
+cl::Kernel       tensor_op;
+cl::Kernel       multitensor_op;
+cl::Kernel       kernel_add;
+cl::Kernel       mult2D;
+cl::Kernel       sum2D_rowwise;
+cl::Kernel       kernel_cent;
+cl::Kernel       relu_soft_d;
+cl::Kernel       reduce_sum2D;
+cl::Kernel       kernel_accuracy;
+cl::Kernel       kernel_total_sum;
+cl::Kernel       kernel_normalize;
+cl::Kernel       el_div;
+//cl::Kernel       kernel_gemx;
+cl::Kernel       kernel_core;
 
-
-
-
+// profiling
 int num_instances_fpga[_NUM_FPGA_FUNCS];
 float mb_memory_needed_fpga;
 
+// profiling functions
 void _profile_fpga_funcname(int i, char *name) {
   switch(i) {
-      case _FPGA_ALL             : strcpy(name, "all"); break;
+      case _FPGA_ALL              : strcpy(name, "all"); break;
       case _FPGA_ANY              : strcpy(name, "any"); break;
       case _FPGA_ISFINITE         : strcpy(name, "isfinite"); break;
       case _FPGA_ISINF            : strcpy(name, "isinf"); break;
@@ -335,74 +334,218 @@ void fpga_copy_from_fpga(Tensor *A,float *nptr)
 }
 
 
-
+// emulation switches of functions (via cpu)
+// when set the function is run on the cpu
+char fpga_set_cpuemu_transpose       = 1;
+char fpga_set_cpuemu_copy            = 1;
+char fpga_set_cpuemu_fill_           = 1;
+char fpga_set_cpuemu_fill            = 1;
+char fpga_set_cpuemu_select          = 1;
+char fpga_set_cpuemu_select_back     = 1;
+char fpga_set_cpuemu_set_select      = 1;
+char fpga_set_cpuemu_set_select_back = 1;
+char fpga_set_cpuemu_select2         = 1;
+char fpga_set_cpuemu_deselect        = 1;
+char fpga_set_cpuemu_concat          = 1;
 
 // ---------------------------------------------------
 // Support functions
 
+// -----------------------------------------------------------------
+// all
+//
+void fpga_cpuemu_transpose(Tensor *A, Tensor *B) {
+    printf("fpga_cpuemu_transpose not implemented yet\n");
+    exit(1);
+}
+
 void fpga_transpose(Tensor * A, Tensor * B) {
     _profile_fpga(_FPGA_TRANSPOSE, 0);
-    printf("fpga_ not implemented yet\n"); exit(1);
+    if (fpga_set_cpuemu_transpose == 1) {
+        fpga_cpuemu_transpose(A, B);
+    } else {
+        printf("fpga_transpose not implemented yet\n"); exit(1);
+    }
     _profile_fpga(_FPGA_TRANSPOSE, 1);
+}
+
+// -----------------------------------------------------------------
+// copy
+//
+void fpga_cpuemu_copy(Tensor *A, Tensor *B) {
+    printf("fpga_cpuemu_copy not implemented yet\n");
+ 
+    exit(1);
 }
 
 void fpga_copy(Tensor * A, Tensor * B){
     _profile_fpga(_FPGA_COPY, 0);
-    printf("fpga_ not implemented yet\n"); exit(1);
+    if (fpga_set_cpuemu_copy == 1) {
+        fpga_cpuemu_copy(A, B);
+    } else {
+        printf("fpga_copy not implemented yet\n"); exit(1);
+    }
     _profile_fpga(_FPGA_COPY, 1);
+}
+
+// -----------------------------------------------------------------
+// fill_
+//
+void fpga_cpuemu_fill_(Tensor *A, float v) {
+    printf("fpga_cpuemu_fill_ not implemented yet\n");
+    exit(1);
 }
 
 void fpga_fill_(Tensor *A, float v){
     _profile_fpga(_FPGA_FILL_, 0);
-    printf("fpga_ not implemented yet\n"); exit(1);
+    if (fpga_set_cpuemu_fill_ == 1) {
+        fpga_cpuemu_fill_(A, v);
+    } else {
+        printf("fpga_fill_ not implemented yet\n"); exit(1);
+    }
     _profile_fpga(_FPGA_FILL_, 1);
+}
+
+// -----------------------------------------------------------------
+// fill
+//
+void fpga_cpuemu_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc) {
+    printf("fpga_cpuemu_fill not implemented yet\n");
+    exit(1);
 }
 
 void fpga_fill(Tensor * A, int aini, int aend, Tensor * B, int bini, int bend, int inc){
     _profile_fpga(_FPGA_FILL, 0);
-    printf("fpga_ not implemented yet\n"); exit(1);
+    if (fpga_set_cpuemu_fill == 1) {
+        fpga_cpuemu_fill(A, aini, aend, B, bini, bend, inc);
+    } else {
+        printf("fpga_fill not implemented yet\n"); exit(1);
+    }
     _profile_fpga(_FPGA_FILL, 1);
 }
 
+// -----------------------------------------------------------------
+// select
+//
+void fpga_cpuemu_select(Tensor *A, Tensor *B, SelDescriptor *sd) {
+    printf("fpga_cpuemu_select not implemented yet\n");
+    exit(1);
+}
 
 void fpga_select(Tensor *A, Tensor *B, SelDescriptor *sd){
     _profile_fpga(_FPGA_SELECT, 0);
-    printf("fpga_ not implemented yet\n"); exit(1);
+    if (fpga_set_cpuemu_transpose == 1) {
+        fpga_cpuemu_select(A, B, sd);
+    } else {
+        printf("fpga_select not implemented yet\n"); exit(1);
+    }
     _profile_fpga(_FPGA_SELECT, 1);
+}
+
+// -----------------------------------------------------------------
+// select_back
+//
+void fpga_cpuemu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd) {
+    printf("fpga_cpuemu_select_back not implemented yet\n");
+    exit(1);
 }
 
 void fpga_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
     _profile_fpga(_FPGA_SELECT_BACK, 0);
-    printf("fpga_ not implemented yet\n"); exit(1);
+    if (fpga_set_cpuemu_select_back == 1) {
+        fpga_cpuemu_select_back(A, B, sd);
+    } else {
+        printf("fpga_select_back not implemented yet\n"); exit(1);
+    }
     _profile_fpga(_FPGA_SELECT_BACK, 1);
+}
+
+// -----------------------------------------------------------------
+// set_select
+//
+void fpga_cpuemu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd) {
+    printf("fpga_cpuemu_set_select not implemented yet\n");
+    exit(1);
 }
 
 void fpga_set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
     _profile_fpga(_FPGA_SET_SELECT, 0);
-    printf("fpga_ not implemented yet\n"); exit(1);
+    if (fpga_set_cpuemu_select == 1) {
+        fpga_cpuemu_set_select(A, B, sd);
+    } else {
+        printf("fpga_transpose not implemented yet\n"); exit(1);
+    }
     _profile_fpga(_FPGA_SET_SELECT, 1);
 }
+
+// -----------------------------------------------------------------
+// set_select_back
+//
+void fpga_cpuemu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd) {
+    printf("fpga_cpuemu_set_select_back not implemented yet\n");
+    exit(1);
+}
+
 void fpga_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
     _profile_fpga(_FPGA_SET_SELECT_BACK, 0);
-    printf("fpga_ not implemented yet\n"); exit(1);
+    if (fpga_set_cpuemu_set_select_back == 1) {
+        fpga_cpuemu_set_select_back(A, B, sd);
+    } else {
+        printf("fpga_set_select_back not implemented yet\n"); exit(1);
+    }
     _profile_fpga(_FPGA_SET_SELECT_BACK, 1);
 }
 
+// -----------------------------------------------------------------
+// select2
+//
+void fpga_cpuemu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,bool mask_zeros) {
+    printf("fpga_cpuemu_select(2) not implemented yet\n");
+    exit(1);
+}
 
 void fpga_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,bool mask_zeros){
     _profile_fpga(_FPGA_SELECT2, 0);
-    printf("fpga_ not implemented yet\n"); exit(1);
+    if (fpga_set_cpuemu_select2 == 1) {
+        fpga_cpuemu_select(A, B, sind, ini, end, mask_zeros);
+    } else {
+        printf("fpga_select(2) not implemented yet\n"); exit(1);
+    }
     _profile_fpga(_FPGA_SELECT2, 1);
+}
+
+// -----------------------------------------------------------------
+// deselect
+//
+void fpga_cpuemu_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end, int inc, bool mask_zeros) {
+    printf("fpga_cpuemu_deslect not implemented yet\n");
+    exit(1);
 }
 
 void fpga_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,int inc,bool mask_zeros){
     _profile_fpga(_FPGA_DESELECT, 0);
-    printf("fpga_ not implemented yet\n"); exit(1);
+    if (fpga_set_cpuemu_deselect == 1) {
+        fpga_cpuemu_deselect(A, B, sind, ini, end, inc, mask_zeros);
+    } else {
+        printf("fpga_deselect not implemented yet\n"); exit(1);
+    }
     _profile_fpga(_FPGA_DESELECT, 1);
+}
+
+// -----------------------------------------------------------------
+// concat
+//
+void fpga_cpuemu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative) {
+    printf("fpga_cpuemu_concat not implemented yet\n");
+    exit(1);
 }
 
 void fpga_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative){
     _profile_fpga(_FPGA_CONCAT, 0);
-  printf("fpga_ not implemented yet\n"); exit(1);
+    if (fpga_set_cpuemu_concat == 1) {
+        fpga_cpuemu_concat(A, t, axis, derivative);
+    } else {
+        printf("fpga_concat not implemented yet\n"); exit(1);
+    }
     _profile_fpga(_FPGA_CONCAT, 1);
 }
