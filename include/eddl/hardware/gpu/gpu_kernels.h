@@ -130,6 +130,8 @@ __global__ void reduction_kernel_keep_inc(float *r, float *I, int *ind, int size
 
 __global__ void reduction_kernel_sum(float *I,float *O,int m, int d,int *ind,int rs);
 
+// Generating index arrays *****************************
+__global__ void gpu_where(float *condition, float *A, float *B, float *C, long int size);
 
 // GPU: Truth value testing
 __global__ void gpu_logical_all(float *A, int size, bool &result);
@@ -151,6 +153,7 @@ __global__ void gpu_logical_xor(float *A, float *B, float *C, int size);
 // GPU: Logic operations: Comparison ops
 __global__ void gpu_logical_allclose(float *A, float *B, float rtol, float atol, bool equal_nan, int size, bool &close);
 __global__ void gpu_logical_isclose(float *A, float *B, float *C, float rtol, float atol, bool equal_nan, int size);
+__global__ void gpu_greater(float *A, float *B, float v, int size);
 __global__ void gpu_logical_greater(float *A, float *B, float *C, int size);
 __global__ void gpu_logical_greater_equal(float *A, float *B, float *C, int size);
 __global__ void gpu_logical_less(float *A, float *B, float *C, int size);

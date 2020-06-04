@@ -160,6 +160,16 @@ void gpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool e
     check_cuda(cudaDeviceSynchronize(), "isclose");
 }
 
+void gpu_greater(Tensor *A, Tensor *B, float v){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_greater<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, v, A->size);
+    check_cuda(cudaDeviceSynchronize(), "greater");
+}
+
 void gpu_greater(Tensor *A, Tensor *B, Tensor *C){
     int device=A->gpu_device;
     cudaSetDevice(device);

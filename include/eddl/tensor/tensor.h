@@ -571,6 +571,15 @@ public:
     static void cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float cval=0.0f);
 
 
+    // Generating index arrays *****************************
+    std::pair<unsigned int*, int> _nonzero();
+    Tensor* nonzero(bool sort_indices=false);
+
+    static Tensor* where(Tensor *condition, Tensor *A, Tensor *B);  // where(x > 0, x[random], y[ones])
+    static void where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C);
+
+    Tensor* mask_indices(Tensor *mask, Tensor *A);  // where(x > 0, x[random], y[ones])
+    static void mask_indices(Tensor *mask, Tensor *A, Tensor *B);
 
     // Logic funcions: Truth value testing *****************************
 
@@ -705,6 +714,11 @@ public:
     */
     static void isclose(Tensor *A, Tensor *B, Tensor *C, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns a boolean tensor
 
+
+    void greater_(float v);
+    Tensor* greater(float v);
+    static void greater(Tensor *A, Tensor *B, float v);
+
     /**
       *  @brief Return the truth value of ``A > B`` element-wise.
       *
@@ -773,6 +787,7 @@ public:
     // Indexing, Slicing, Joining, Mutating Ops *************
     static Tensor* concat(vector<Tensor*> A, unsigned int axis=0, Tensor* output=nullptr);
     static void concat_back(Tensor *A, vector<Tensor*> t, unsigned int axis);
+
 
     /**
       *  @brief Returns an array with the selected indices of the tensor.
@@ -962,5 +977,7 @@ Tensor* Tensor::load(const string& filename, string format){
     return t;
 }
 
+void checkCompatibility(Tensor *A, Tensor *B, const string &title);
+void checkCompatibility(Tensor *A, Tensor *B, Tensor *C, const string &title);
 
 #endif //EDDL_TENSOR_H

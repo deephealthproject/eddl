@@ -137,7 +137,15 @@ __global__  void gpu_logical_isclose(float *A, float *B, float *C, float rtol, f
     }
 }
 
-__global__  void gpu_logical_greater(float *A, float *B, float *C, int size){
+__global__ void gpu_greater(float *A, float *B, float v, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        B[thread_id_x] = A[thread_id_x] > v;
+    }
+}
+
+__global__ void gpu_logical_greater(float *A, float *B, float *C, int size){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (thread_id_x < size){

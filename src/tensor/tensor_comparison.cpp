@@ -16,22 +16,6 @@
 
 using namespace std;
 
-void checkCompatibility(Tensor *A, Tensor *B, const string &title){
-    if (A->device != B->device) {
-        msg("Tensors in different devices", title);
-    }
-
-    if (!Tensor::sameShape(A, B)){
-        msg("Tensors with different shape", title);
-    }
-}
-
-
-void checkCompatibility(Tensor *A, Tensor *B, Tensor *C, const string &title){
-    checkCompatibility(A, B, title);
-    checkCompatibility(A, C, title);
-}
-
 bool Tensor::all(Tensor *A){
     bool res = false;
 
@@ -290,6 +274,34 @@ void Tensor::isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bo
 #endif
 }
 
+void Tensor::greater_(float v){
+    Tensor::greater(this, this, v);
+}
+
+Tensor* Tensor::greater(float v){
+    Tensor *t = this->clone();
+    t->greater_(v);
+    return t;
+}
+
+void Tensor::greater(Tensor *A, Tensor *B, float v){
+    checkCompatibility(A, B, "Tensor::greater");
+
+    if (A->isCPU()) {
+        cpu_greater(A, B, v);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+          {
+            gpu_greater(A, B, v);
+          }
+#endif
+#ifdef cFPGA
+    else {
+          msg("Equal only for CPU Tensors", "Tensor::greater");
+        }
+#endif
+}
 
 void Tensor::greater(Tensor *A, Tensor *B, Tensor *C){
     checkCompatibility(A, B, C, "Tensor::greater");

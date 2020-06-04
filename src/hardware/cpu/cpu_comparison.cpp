@@ -144,6 +144,14 @@ void cpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool e
     }
 }
 
+
+void cpu_greater(Tensor *A, Tensor *B, float v){
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; ++i){
+        B->ptr[i] = A->ptr[i] > v;
+    }
+}
+
 void cpu_greater(Tensor *A, Tensor *B, Tensor *C){
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
