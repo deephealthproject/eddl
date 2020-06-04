@@ -3,7 +3,7 @@
 extern "C" {
 
 void k_cent(float *A, float *B, float *C, int size) {
-}
+
 
 #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
 #pragma HLS INTERFACE m_axi port=B offset=slave bundle=gmem
@@ -22,6 +22,8 @@ for (int i=0; i < size; i++) {
   C[i]=0;
   if (A[i] != 0.0) C[i] -= A[i] * log( B[i] + 0.00001 );
   if (A[i] != 1.0) C[i] -= (1.0 - A[i]) * log( 1.0 - B[i] + 0.00001 );
+}
+
 }
 
 }

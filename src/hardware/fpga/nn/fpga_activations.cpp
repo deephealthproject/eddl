@@ -13,7 +13,9 @@
 #include <cstdlib>     /* malloc, free, rand */
 #include <iostream>
 
+#include "eddl/hardware/fpga/fpga_hw.h"   // for buffer copies
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_nn.h"  // for cpu emulation purposes
 
 // emulation switches of functions (via cpu)
 // when set the function is run on the cpu
@@ -46,8 +48,13 @@ char fpga_set_cpuemu_d_softmax          = 1;
 // relu
 //
 void fpga_cpuemu_relu(Tensor *A, Tensor *B){
-  printf("fpga_cpuemu_relu not implemented yet\n");
-  exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = A->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_relu(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_relu(Tensor *A, Tensor *B){
@@ -64,8 +71,16 @@ void fpga_relu(Tensor *A, Tensor *B){
 // d_relu
 //
 void fpga_cpuemu_d_relu(Tensor *D, Tensor *I, Tensor *PD){
-  printf("fpga_cpuemu_d_relu not implemented yet\n");
-  exit(1);
+  int Dsize = D->size * sizeof(float);
+  int Isize = I->size * sizeof(float);
+  int PDsize = PD->size * sizeof(float);
+  if (D->ptr == NULL) D->ptr = (float *)malloc(Dsize);
+  if (I->ptr == NULL) I->ptr = (float *)malloc(Isize);
+  if (PD->ptr == NULL) PD->ptr = (float *)malloc(PDsize);
+  fpga_copy_from_fpga(D, D->ptr);
+  fpga_copy_from_fpga(I, I->ptr);
+  cpu_d_relu(D, I, PD);
+  fpga_copy_to_fpga(PD->ptr, PD);
 }
 
 void fpga_d_relu(Tensor *D, Tensor *I, Tensor *PD){

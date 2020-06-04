@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdio.h>
+
 extern "C" {
 
 void k_relu(float *A, float *B, int size){

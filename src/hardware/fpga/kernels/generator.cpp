@@ -13,3 +13,5 @@ void k_rand_binary(float * A, float v) {
 
 void k_rand_normal(float * A, float m, float s, bool fast_math) {
 }
+
+}

@@ -18,7 +18,7 @@ void k_mpool2D(int ir, int ic, int iz, int padrt, int padrb, int padcl, int padc
                 for(int j= -padcl; j <= ic + padcr - kc; j += sc, p++) { // cols: left-right
 
                     // Get max value in window
-                    float max = FLT_MIN; // std::numeric_limits<float>::min();
+                    float max = -9999.9999e-99;  // To Fix FLT_MIN; // std::numeric_limits<float>::min();
                     for(int ki = 0; ki < kr; ki++){  // rows (kernel): top-bottom
                         for(int kj = 0; kj < kc; kj++) { // cols (kernel): left-right
 
