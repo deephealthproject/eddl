@@ -469,6 +469,44 @@ void Net::compute_loss()
   }
 }
 
+float Net::get_metric( const string  layer_name, const string  metric_name )
+{
+    float value=-1.;
+    string lname="";
+
+    if (isrecurrent) {
+        value = -1.;
+    } else {
+        int p=0;
+        int length = decsize;
+        for (int k = 0; k < lout.size(); k+=decsize) {
+
+            for( int l=0; l < length; l++, p+=2 ) {
+                total_loss[k] += fiterr[p];  // loss
+                total_metric[k] += fiterr[p + 1];  // metric
+                fiterr[p] = fiterr[p + 1] = 0.0;
+            }
+
+            if ( layer_name.size() > 0 ) {
+                lname = lout[k]->name;
+                if (lout[k]->isshared) lname=lout[k]->orig->name;
+            }
+
+            // if no layer specified and more than one layer then 
+            // the required metric of the last output layer will be returned
+
+            if ( layer_name.size() == 0 || layer_name == lname ) {
+
+                if ( losses[k]->name == metric_name ) {
+                    value = total_loss[k] / (length*inferenced_samples);
+                } else if ( metrics[k]->name == metric_name ) {
+                    value = total_metric[k] / (length*inferenced_samples);
+                }
+            }
+        }
+    }
+    return value;
+}
 
 void Net::print_loss(int b)
 {

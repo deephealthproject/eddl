@@ -149,6 +149,7 @@ public:
 	void forward();
 	void forward_recurrent(vector<Tensor*> tin);
 	void reset_loss();
+    float get_metric( const string  layer_name, const string  metric_name );
 	void print_loss(int b);
 	void backward(vector<Tensor *> target);
 	void backward(Layer* (*f)(Layer *),Layer *out);
