@@ -2,12 +2,15 @@
 #include <stdio.h>
 extern "C" {
 
+#ifdef K_ENABLED_FILL_
 void k_fill_(float *A, float v, int size){
     for (int i = 0; i < size; ++i){
         A[i] = v;
     }
 }
+#endif
 
+#ifdef K_ENABLED_FILL
 void k_fill(float *A, int aini, int aend, float * B, int bini, int bend, int inc,
             int Andim, int Asize, int *Ashape, int Bsize, int Bshape0){
     int at = Asize / Ashape[0];
@@ -30,31 +33,41 @@ void k_fill(float *A, int aini, int aend, float * B, int bini, int bend, int inc
         }
     }
 }
+#endif
 
+#ifdef K_ENABLED_SELECT
 void k_select(float *A, float *B, int *addresses, int size){
     for (int i = 0; i < size; i++) {
         B[i] = A[addresses[i]];
     }
 }
+#endif
 
+#ifdef K_ENABLED_SELECT_BACK
 void k_select_back(float *A, float *B, int *addresses, int size){
     for (int i = 0; i < size; i++) {  // walk stride
         B[addresses[i]] += A[i];  // delta_parent += delta
     }
 }
+#endif
 
+#ifdef K_ENABLED_SET_SELECT
 void k_set_select(float *A, float *B, int *addresses, int size){
     for (int i = 0; i < size; i++) {
         A[addresses[i]] = B[i];
     }
 }
+#endif
 
+#ifdef K_ENABLED_SET_SELECT_BACK
 void k_set_select_back(float *A, float *B, int *addresses, int size){
     for (int i = 0; i < size; i++) {
         B[i] += A[addresses[i]];
     }
 }
+#endif
 
+#ifdef K_ENABLED_SELECT
 void k_select(float * A, float * B, int *sind, int ini, int end,bool mask_zeros, int size, int Ashape0){
     int s = size / Ashape0;
 
@@ -67,7 +80,9 @@ void k_select(float * A, float * B, int *sind, int ini, int end,bool mask_zeros,
             else B[pb] = A[p];
     }
 }
+#endif
 
+#ifdef K_ENABLED_DESELECT
 void k_deselect(float * A, float * B, int *sind, int ini, int end,int inc,bool mask_zeros, int size, int Ashape0){
     int s = size / Ashape0;
 
@@ -83,7 +98,9 @@ void k_deselect(float * A, float * B, int *sind, int ini, int end,int inc,bool m
             }
     }
 }
+#endif
 
+#ifdef K_ENABLED_CONCAT
 void k_concat(float *A, int AstrideAxis, int AshapeAxis, int num_tensors, float **tensors, float *sizes, int *strides, int *shapes, unsigned int axis, bool derivative){
   // Walk through all the tensors to concat one axis (once)
     unsigned int offset = 0;
@@ -110,5 +127,6 @@ void k_concat(float *A, int AstrideAxis, int AshapeAxis, int num_tensors, float 
         }
     }
 }
+#endif
 
 }
