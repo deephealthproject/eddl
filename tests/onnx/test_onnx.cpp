@@ -72,7 +72,7 @@ TEST(ONNXTestSuite, onnx_import){
     ASSERT_TRUE(net_export->name == net_import->name);
     ASSERT_EQ(net_export->batch_size, net_import->batch_size);
 
-    LInput * input;
+	LInput * input;
     // Tests layers
     ASSERT_EQ(net_export->layers.size(), net_import->layers.size());
     for(int i=0; i<net_export->layers.size(); i++){
@@ -80,10 +80,12 @@ TEST(ONNXTestSuite, onnx_import){
 //        ASSERT_TRUE(net_export->layers[i]->name == net_import->layers[i]->name);
 
         // Check subclasses
-        ASSERT_TRUE(typeid(*net_export->layers[i]) == typeid(*net_import->layers[i]));
-        for(int j=0; j<net_export->layers[i]->params.size(); j++){
-            ASSERT_TRUE(Tensor::equivalent(net_export->layers[i]->params[j], net_import->layers[i]->params[j]));
-        }
+        auto& _exp = *net_export->layers[i];
+        auto& _imp = *net_import->layers[i];
+        ASSERT_TRUE(typeid(_exp).name() == typeid(_imp).name());
+		for(int j=0; j<net_export->layers[i]->params.size(); j++){
+        	ASSERT_TRUE(Tensor::equivalent(net_export->layers[i]->params[j], net_import->layers[i]->params[j]));
+		}
 
         // Check array content
         //ASSERT_TRUE(Tensor::equivalent(net_export->layers[i]->input, net_import->layers[i]->input));
@@ -97,7 +99,9 @@ TEST(ONNXTestSuite, onnx_import){
 //        ASSERT_TRUE(net_export->lin[i]->name == net_import->lin[i]->name);
 
         // Check subclasses
-        ASSERT_TRUE(typeid(*net_export->lin[i]) == typeid(*net_import->lin[i]));
+        auto& _exp = *net_export->lin[i];
+        auto& _imp = *net_import->lin[i];
+        ASSERT_TRUE(typeid(_exp).name() == typeid(_imp).name());
 
 
         // Check array content
@@ -114,7 +118,9 @@ TEST(ONNXTestSuite, onnx_import){
         ASSERT_TRUE(net_export->lout[i]->name == net_import->lout[i]->name);
 
         // Check subclasses
-        ASSERT_TRUE(typeid(*net_export->lout[i]) == typeid(*net_import->lout[i]));
+        auto& _exp = *net_export->lout[i];
+        auto& _imp = *net_import->lout[i];
+        ASSERT_TRUE(typeid(_exp).name() == typeid(_imp).name());
 
         // Check array content
         //ASSERT_TRUE(Tensor::equivalent(net_export->lout[i]->input, net_import->lout[i]->input));
@@ -122,3 +128,4 @@ TEST(ONNXTestSuite, onnx_import){
     }
 
 }
+
