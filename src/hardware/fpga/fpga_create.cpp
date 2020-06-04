@@ -18,8 +18,10 @@ char fpga_set_cpuemu_eye_       = 1;
 // range
 //
 void fpga_cpuemu_range_(Tensor *A, float min, float step) {
-    printf("fpga_cpuemu_range_ not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  cpu_range_(A, offset, min, step);
+  fpga_copy_to_fpga(A->ptr, A);
 }
 
 void fpga_range(Tensor *A, float min, float step){
@@ -36,8 +38,10 @@ void fpga_range(Tensor *A, float min, float step){
 // eye
 //
 void fpga_cpuemu_eye_(Tensor *A, int offset) {
-    printf("fpga_cpuemu_eye_ not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  cpu_eye_(A, offset);
+  fpga_copy_to_fpga(A->ptr, A);
 }
 
 void fpga_eye(Tensor *A, int offset){
