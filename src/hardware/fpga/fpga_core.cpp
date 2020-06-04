@@ -15,6 +15,7 @@
 #include "eddl/descriptors/descriptors.h"
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include <sys/time.h>
+#include "eddl/hardware/cpu/cpu_hw.h"
 
 cl::Context      context;
 cl::CommandQueue q;
@@ -355,8 +356,13 @@ char fpga_set_cpuemu_concat          = 1;
 // all
 //
 void fpga_cpuemu_transpose(Tensor *A, Tensor *B) {
-    printf("fpga_cpuemu_transpose not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_transpose(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_transpose(Tensor * A, Tensor * B) {
@@ -373,9 +379,12 @@ void fpga_transpose(Tensor * A, Tensor * B) {
 // copy
 //
 void fpga_cpuemu_copy(Tensor *A, Tensor *B) {
-    printf("fpga_cpuemu_copy not implemented yet\n");
- 
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_copy(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_copy(Tensor * A, Tensor * B){
@@ -383,7 +392,10 @@ void fpga_copy(Tensor * A, Tensor * B){
     if (fpga_set_cpuemu_copy == 1) {
         fpga_cpuemu_copy(A, B);
     } else {
-        printf("fpga_copy not implemented yet\n"); exit(1);
+      int Asize = A->size * sizeof(float);
+      if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+      fpga_copy_from_fpga(A, A->ptr);
+      fpga_copy_to_fpga(A->ptr, B);
     }
     _profile_fpga(_FPGA_COPY, 1);
 }
@@ -392,8 +404,9 @@ void fpga_copy(Tensor * A, Tensor * B){
 // fill_
 //
 void fpga_cpuemu_fill_(Tensor *A, float v) {
-    printf("fpga_cpuemu_fill_ not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  cpu_fill_(A, v);
+  fpga_copy_to_fpga(A->ptr, A);
 }
 
 void fpga_fill_(Tensor *A, float v){
@@ -410,8 +423,13 @@ void fpga_fill_(Tensor *A, float v){
 // fill
 //
 void fpga_cpuemu_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc) {
-    printf("fpga_cpuemu_fill not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_fill(A, aini, aend, B, bini, bend, inc);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_fill(Tensor * A, int aini, int aend, Tensor * B, int bini, int bend, int inc){
