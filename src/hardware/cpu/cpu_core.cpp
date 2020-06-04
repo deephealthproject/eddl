@@ -90,7 +90,7 @@ case _CPU_LOG10_           : strcpy(name, "log10_"); break;
 case _CPU_LOGN_            : strcpy(name, "logn_"); break;
 case _CPU_MOD_             : strcpy(name, "mod_"); break;
 case _CPU_MULT_            : strcpy(name, "mult_"); break;
-case_CPU_NORMALIZE_       : strcpy(name, "normalize_"); break;
+case _CPU_NORMALIZE_       : strcpy(name, "normalize_"); break;
 case _CPU_POW_             : strcpy(name, "pow_"); break;
 case _CPU_POWB_            : strcpy(name, "powb_"); break;
 case _CPU_RECIPROCAL_      : strcpy(name, "reciprocal_"); break;

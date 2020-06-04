@@ -2,7 +2,7 @@
 #include <stdio.h>
 extern "C" {
 
-float k_get_pixel(int b,int px,int py,int pz,int Dic, int Dir, int isize,int irsize, unsigned int *ptraddr) {
+float k_get_pixel(int b,int px,int py,int pz,int Dic, int Dir, int isize,int irsize, float *ptr) {
   // Check boundaries of the window
   if (px<0) return 0.0;
   if (py<0) return 0.0;
@@ -11,9 +11,9 @@ float k_get_pixel(int b,int px,int py,int pz,int Dic, int Dir, int isize,int irs
 
   // Compute address from indices (row-major)
   unsigned int address = (b*isize) + (pz*irsize) + (py*Dic) + px;
-  return ptraddr[address];
+  return ptr[address];
 }
-void k_add_pixel(int b,int px,int py,int pz, int Dic, int Dir, int isize,int irsize,float val, unsigned int *ptraddr) {
+void k_add_pixel(int b,int px,int py,int pz, int Dic, int Dir, int isize,int irsize,float val, float *ptr) {
   // Check boundaries of the window
   if (px<0) return;
   if (py<0) return;
@@ -22,7 +22,7 @@ void k_add_pixel(int b,int px,int py,int pz, int Dic, int Dir, int isize,int irs
 
   // Compute address from indices (row-major)
   unsigned int address = (b*isize) + (pz*irsize) + (py*Dic) + px;
-  ptraddr[address]+=val;
+  ptr[address]+=val;
 }
 
 void im2col(int b, int Dkr, int Dkc, int Dr, int Dc, int Dir, int Dic, int Diz, int Dsr, int Dsc, int Dpadrt, int Dpadcl, int matIrows, int matIcols, float *ptrI,int col2im, unsigned int *ptraddr)
@@ -66,18 +66,10 @@ void im2col(int b, int Dkr, int Dkc, int Dr, int Dc, int Dir, int Dic, int Diz, 
       py+=Dsr;
     }
   }
-
 }
 
-void k_conv2D() {
-}
-
-void k_conv2D_grad()
-{
-}
-
-void k_conv2D_back()
-{
-}
+// convolutional functions are not implemented as separate kernels. All convolution operations
+// are translated to im2col operation, matmul, and matrix additions. Each channel is
+// processesed separately with a loop running on the CPU (see src/hardware/fpga/nn/fpga_conv.cpp)
 
 }

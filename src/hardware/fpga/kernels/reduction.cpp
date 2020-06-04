@@ -23,3 +23,5 @@ void fpga_reduction(void *RD) {
 
 void fpga_reduction_back(void *RD) {
 }
+
+}

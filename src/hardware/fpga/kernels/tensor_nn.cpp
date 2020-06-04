@@ -9,3 +9,5 @@ void k_d_repeat_nn(float *D, float *A, int *size_ptr){
 }
 
 }
+
+}
