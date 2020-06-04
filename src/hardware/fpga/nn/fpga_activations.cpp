@@ -97,8 +97,13 @@ void fpga_d_relu(Tensor *D, Tensor *I, Tensor *PD){
 // thbresholded_relu
 //
 void fpga_cpuemu_thresholded_relu(Tensor *A, Tensor *B, float param){
-  printf("fpga_cpuemu_thresholded_relu not implemented yet\n");
-  exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = A->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_thresholded_relu(A, B, param);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_thresholded_relu(Tensor *A, Tensor *B, float param){
@@ -115,8 +120,16 @@ void fpga_thresholded_relu(Tensor *A, Tensor *B, float param){
 // d_thresholded_relu
 //
 void fpga_cpuemu_d_thresholded_relu(Tensor *D, Tensor *I, Tensor *PD, float param){
-  printf("fpga_cpuemu_d_thresholded_relu not implemented yet\n");
-  exit(1);
+  int Dsize = D->size * sizeof(float);
+  int Isize = I->size * sizeof(float);
+  int PDsize = PD->size * sizeof(float);
+  if (D->ptr == NULL) D->ptr = (float *)malloc(Dsize);
+  if (I->ptr == NULL) I->ptr = (float *)malloc(Isize);
+  if (PD->ptr == NULL) PD->ptr = (float *)malloc(PDsize);
+  fpga_copy_from_fpga(D, D->ptr);
+  fpga_copy_from_fpga(I, I->ptr);
+  cpu_d_thresholded_relu(D, I, PD, param);
+  fpga_copy_to_fpga(PD->ptr, PD);
 }
 
 void fpga_d_thresholded_relu(Tensor *D, Tensor *I, Tensor *PD, float param){
@@ -133,8 +146,13 @@ void fpga_d_thresholded_relu(Tensor *D, Tensor *I, Tensor *PD, float param){
 // leaky_relu
 //
 void fpga_cpuemu_leaky_relu(Tensor *A, Tensor *B, float param){
-  printf("fpga_cpuemu_leaky_relu not implemented yet\n");
-  exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = A->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_leaky_relu(A, B, param);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_leaky_relu(Tensor *A, Tensor *B, float param){
@@ -151,8 +169,16 @@ void fpga_leaky_relu(Tensor *A, Tensor *B, float param){
 // d_leaky_relu
 //
 void fpga_cpuemu_d_leaky_relu(Tensor *D, Tensor *I, Tensor *PD, float param){
-  printf("fpga_cpuemu_d_leaky_relu not implemented yet\n");
-  exit(1);
+  int Dsize = D->size * sizeof(float);
+  int Isize = I->size * sizeof(float);
+  int PDsize = PD->size * sizeof(float);
+  if (D->ptr == NULL) D->ptr = (float *)malloc(Dsize);
+  if (I->ptr == NULL) I->ptr = (float *)malloc(Isize);
+  if (PD->ptr == NULL) PD->ptr = (float *)malloc(PDsize);
+  fpga_copy_from_fpga(D, D->ptr);
+  fpga_copy_from_fpga(I, I->ptr);
+  cpu_d_leaky_relu(D, I, PD, param);
+  fpga_copy_to_fpga(PD->ptr, PD);
 }
 
 void fpga_d_leaky_relu(Tensor *D, Tensor *I, Tensor *PD,float param){
@@ -169,8 +195,13 @@ void fpga_d_leaky_relu(Tensor *D, Tensor *I, Tensor *PD,float param){
 // elu
 //
 void fpga_cpuemu_elu(Tensor *A, Tensor *B, float param){
-  printf("fpga_cpuemu_elu not implemented yet\n");
-  exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = A->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_elu(A, B, param);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_elu(Tensor *A, Tensor *B, float param){
@@ -187,8 +218,16 @@ void fpga_elu(Tensor *A, Tensor *B, float param){
 // d_elu
 //
 void fpga_cpuemu_d_elu(Tensor *D, Tensor *I, Tensor *PD, float param){
-  printf("fpga_cpuemu_d_elu not implemented yet\n");
-  exit(1);
+  int Dsize = D->size * sizeof(float);
+  int Isize = I->size * sizeof(float);
+  int PDsize = PD->size * sizeof(float);
+  if (D->ptr == NULL) D->ptr = (float *)malloc(Dsize);
+  if (I->ptr == NULL) I->ptr = (float *)malloc(Isize);
+  if (PD->ptr == NULL) PD->ptr = (float *)malloc(PDsize);
+  fpga_copy_from_fpga(D, D->ptr);
+  fpga_copy_from_fpga(I, I->ptr);
+  cpu_d_elu(D, I, PD, param);
+  fpga_copy_to_fpga(PD->ptr, PD);
 }
 
 void fpga_d_elu(Tensor *D, Tensor *I, Tensor *PD, float param){
@@ -205,8 +244,13 @@ void fpga_d_elu(Tensor *D, Tensor *I, Tensor *PD, float param){
 // softplus
 //
 void fpga_cpuemu_softplus(Tensor *A, Tensor *B){
-  printf("fpga_cpuemu_softplus not implemented yet\n");
-  exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = A->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_softplus(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_softplus(Tensor *A, Tensor *B){
@@ -223,8 +267,16 @@ void fpga_softplus(Tensor *A, Tensor *B){
 // d_softplus
 //
 void fpga_cpuemu_d_softplus(Tensor *D, Tensor *I, Tensor *PD){
-  printf("fpga_cpuemu_d_softplus not implemented yet\n");
-  exit(1);
+  int Dsize = D->size * sizeof(float);
+  int Isize = I->size * sizeof(float);
+  int PDsize = PD->size * sizeof(float);
+  if (D->ptr == NULL) D->ptr = (float *)malloc(Dsize);
+  if (I->ptr == NULL) I->ptr = (float *)malloc(Isize);
+  if (PD->ptr == NULL) PD->ptr = (float *)malloc(PDsize);
+  fpga_copy_from_fpga(D, D->ptr);
+  fpga_copy_from_fpga(I, I->ptr);
+  cpu_d_softplus(D, I, PD);
+  fpga_copy_to_fpga(PD->ptr, PD);
 }
 
 void fpga_d_softplus(Tensor *D, Tensor *I, Tensor *PD){
@@ -241,8 +293,13 @@ void fpga_d_softplus(Tensor *D, Tensor *I, Tensor *PD){
 // softsign
 //
 void fpga_cpuemu_softsign(Tensor *A, Tensor *B){
-  printf("fpga_cpuemu_softsign not implemented yet\n");
-  exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = A->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_softsign(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_softsign(Tensor *A, Tensor *B){
@@ -256,8 +313,16 @@ void fpga_softsign(Tensor *A, Tensor *B){
 }
 
 void fpga_cpuemu_d_softsign(Tensor *D, Tensor *I, Tensor *PD){
-  printf("fpga_cpuemu_d_softsign not implemented yet\n");
-  exit(1);
+  int Dsize = D->size * sizeof(float);
+  int Isize = I->size * sizeof(float);
+  int PDsize = PD->size * sizeof(float);
+  if (D->ptr == NULL) D->ptr = (float *)malloc(Dsize);
+  if (I->ptr == NULL) I->ptr = (float *)malloc(Isize);
+  if (PD->ptr == NULL) PD->ptr = (float *)malloc(PDsize);
+  fpga_copy_from_fpga(D, D->ptr);
+  fpga_copy_from_fpga(I, I->ptr);
+  cpu_d_softsign(D, I, PD);
+  fpga_copy_to_fpga(PD->ptr, PD);
 }
 
 // -----------------------------------------------------------------
@@ -277,8 +342,13 @@ void fpga_d_softsign(Tensor *D, Tensor *I, Tensor *PD){
 // linear
 //
 void fpga_cpuemu_linear(Tensor *A, Tensor *B, float param){
-  printf("fpga_cpuemu_linear not implemented yet\n");
-  exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = A->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_linear(A, B, param);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_linear(Tensor *A, Tensor *B, float param){
@@ -295,8 +365,16 @@ void fpga_linear(Tensor *A, Tensor *B, float param){
 // d_linear
 //
 void fpga_cpuemu_d_linear(Tensor *D, Tensor *I, Tensor *PD, float param){
-  printf("fpga_cpuemu_d_linear not implemented yet\n");
-  exit(1);
+  int Dsize = D->size * sizeof(float);
+  int Isize = I->size * sizeof(float);
+  int PDsize = PD->size * sizeof(float);
+  if (D->ptr == NULL) D->ptr = (float *)malloc(Dsize);
+  if (I->ptr == NULL) I->ptr = (float *)malloc(Isize);
+  if (PD->ptr == NULL) PD->ptr = (float *)malloc(PDsize);
+  fpga_copy_from_fpga(D, D->ptr);
+  fpga_copy_from_fpga(I, I->ptr);
+  cpu_d_linear(D, I, PD, param);
+  fpga_copy_to_fpga(PD->ptr, PD);
 }
 
 void fpga_d_linear(Tensor *D, Tensor *I, Tensor *PD, float param){
@@ -313,8 +391,13 @@ void fpga_d_linear(Tensor *D, Tensor *I, Tensor *PD, float param){
 // sigmoid
 //
 void fpga_cpuemu_sigmoid(Tensor *A, Tensor *B){
-  printf("fpga_cpuemu_sigmoid not implemented yet\n");
-  exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = A->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_sigmoid(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_sigmoid(Tensor *A, Tensor *B){
@@ -331,8 +414,16 @@ void fpga_sigmoid(Tensor *A, Tensor *B){
 // d_sigmoid
 //
 void fpga_cpuemu_d_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
-  printf("fpga_cpuemu_d_sigmoid not implemented yet\n");
-  exit(1);
+  int Dsize = D->size * sizeof(float);
+  int Isize = I->size * sizeof(float);
+  int PDsize = PD->size * sizeof(float);
+  if (D->ptr == NULL) D->ptr = (float *)malloc(Dsize);
+  if (I->ptr == NULL) I->ptr = (float *)malloc(Isize);
+  if (PD->ptr == NULL) PD->ptr = (float *)malloc(PDsize);
+  fpga_copy_from_fpga(D, D->ptr);
+  fpga_copy_from_fpga(I, I->ptr);
+  cpu_d_sigmoid(D, I, PD);
+  fpga_copy_to_fpga(PD->ptr, PD);
 }
 
 void fpga_d_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
@@ -349,8 +440,13 @@ void fpga_d_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
 // hard_sigmoid
 //
 void fpga_cpuemu_hard_sigmoid(Tensor *A, Tensor *B){
-  printf("fpga_cpuemu_hard_sigmoid not implemented yet\n");
-  exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = A->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_hard_sigmoid(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_hard_sigmoid(Tensor *A, Tensor *B){
@@ -367,8 +463,16 @@ void fpga_hard_sigmoid(Tensor *A, Tensor *B){
 // d_hard_sigmoid
 //
 void fpga_cpuemu_d_hard_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
-  printf("fpga_cpuemu_d_hard_sigmoid not implemented yet\n");
-  exit(1);
+  int Dsize = D->size * sizeof(float);
+  int Isize = I->size * sizeof(float);
+  int PDsize = PD->size * sizeof(float);
+  if (D->ptr == NULL) D->ptr = (float *)malloc(Dsize);
+  if (I->ptr == NULL) I->ptr = (float *)malloc(Isize);
+  if (PD->ptr == NULL) PD->ptr = (float *)malloc(PDsize);
+  fpga_copy_from_fpga(D, D->ptr);
+  fpga_copy_from_fpga(I, I->ptr);
+  cpu_d_hard_sigmoid(D, I, PD);
+  fpga_copy_to_fpga(PD->ptr, PD);
 }
 
 void fpga_d_hard_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
@@ -385,8 +489,13 @@ void fpga_d_hard_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
 // exp
 //
 void fpga_cpuemu_exp(Tensor *A, Tensor *B){
-  printf("fpga_cpuemu_exp not implemented yet\n");
-  exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = A->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_exp(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_exp(Tensor *A, Tensor *B){
@@ -403,8 +512,16 @@ void fpga_exp(Tensor *A, Tensor *B){
 // d_exp
 //
 void fpga_cpuemu_d_exp(Tensor *D, Tensor *I, Tensor *PD){
-  printf("fpga_cpuemu_d_exp not implemented yet\n");
-  exit(1);
+  int Dsize = D->size * sizeof(float);
+  int Isize = I->size * sizeof(float);
+  int PDsize = PD->size * sizeof(float);
+  if (D->ptr == NULL) D->ptr = (float *)malloc(Dsize);
+  if (I->ptr == NULL) I->ptr = (float *)malloc(Isize);
+  if (PD->ptr == NULL) PD->ptr = (float *)malloc(PDsize);
+  fpga_copy_from_fpga(D, D->ptr);
+  fpga_copy_from_fpga(I, I->ptr);
+  cpu_d_exp(D, I, PD);
+  fpga_copy_to_fpga(PD->ptr, PD);
 }
 
 void fpga_d_exp(Tensor *D, Tensor *I, Tensor *PD){
@@ -421,8 +538,13 @@ void fpga_d_exp(Tensor *D, Tensor *I, Tensor *PD){
 // tanh
 //
 void fpga_cpuemu_tanh(Tensor *A, Tensor *B){
-  printf("fpga_cpuemu_tanh not implemented yet\n");
-  exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = A->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_tanh(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_tanh(Tensor *A, Tensor *B){
@@ -439,8 +561,16 @@ void fpga_tanh(Tensor *A, Tensor *B){
 // d_tanh
 //
 void fpga_cpuemu_d_tanh(Tensor *D, Tensor *I, Tensor *PD){
-  printf("fpga_cpuemu_d_tanh not implemented yet\n");
-  exit(1);
+  int Dsize = D->size * sizeof(float);
+  int Isize = I->size * sizeof(float);
+  int PDsize = PD->size * sizeof(float);
+  if (D->ptr == NULL) D->ptr = (float *)malloc(Dsize);
+  if (I->ptr == NULL) I->ptr = (float *)malloc(Isize);
+  if (PD->ptr == NULL) PD->ptr = (float *)malloc(PDsize);
+  fpga_copy_from_fpga(D, D->ptr);
+  fpga_copy_from_fpga(I, I->ptr);
+  cpu_d_tanh(D, I, PD);
+  fpga_copy_to_fpga(PD->ptr, PD);
 }
 
 void fpga_d_tanh(Tensor *D, Tensor *I, Tensor *PD){
@@ -457,8 +587,13 @@ void fpga_d_tanh(Tensor *D, Tensor *I, Tensor *PD){
 // softmax
 //
 void fpga_cpuemu_softmax(Tensor *A, Tensor *B){
-  printf("fpga_cpuemu_softmax not implemented yet\n");
-  exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = A->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_softmax(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_softmax(Tensor *A, Tensor *B) {
@@ -475,8 +610,16 @@ void fpga_softmax(Tensor *A, Tensor *B) {
 // d_softmax
 //
 void fpga_cpuemu_d_softmax(Tensor *D, Tensor *I, Tensor *PD){
-  printf("fpga_cpuemu_d_softmax not implemented yet\n");
-  exit(1);
+  int Dsize = D->size * sizeof(float);
+  int Isize = I->size * sizeof(float);
+  int PDsize = PD->size * sizeof(float);
+  if (D->ptr == NULL) D->ptr = (float *)malloc(Dsize);
+  if (I->ptr == NULL) I->ptr = (float *)malloc(Isize);
+  if (PD->ptr == NULL) PD->ptr = (float *)malloc(PDsize);
+  fpga_copy_from_fpga(D, D->ptr);
+  fpga_copy_from_fpga(I, I->ptr);
+  cpu_d_softmax(D, I, PD);
+  fpga_copy_to_fpga(PD->ptr, PD);
 }
 
 void fpga_d_softmax(Tensor *D, Tensor *I, Tensor *PD) {

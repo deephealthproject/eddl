@@ -13,6 +13,8 @@
 #include <iostream>
 
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_nn.h"
+#include "eddl/hardware/fpga/fpga_hw.h"
 
 // emulation switches of functions (via cpu)
 // when set the function is run on the cpu
@@ -25,8 +27,13 @@ char fpga_set_cpuemu_permute_batch_first    = 1;
 // permute_channels_last
 //
 void fpga_cpuemu_permute_channels_last(Tensor *A, Tensor *B) {
-    printf("fpga_cpuemu_permute_channels_last not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_permute_channels_last(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_permute_channels_last(Tensor *A,Tensor *B)
@@ -45,8 +52,13 @@ void fpga_permute_channels_last(Tensor *A,Tensor *B)
 // permute_channels_first
 //
 void fpga_cpuemu_permute_channels_first(Tensor *A, Tensor *B) {
-    printf("fpga_cpuemu_permute_channels_first not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_permute_channels_first(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_permute_channels_first(Tensor *A,Tensor *B)
@@ -65,8 +77,13 @@ void fpga_permute_channels_first(Tensor *A,Tensor *B)
 // permute_batch_last
 //
 void fpga_cpuemu_permute_batch_last(Tensor *A, Tensor *B) {
-    printf("fpga_cpuemu_permute_batch_last not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_permute_batch_last(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_permute_batch_last(Tensor *A,Tensor *B)
@@ -84,8 +101,13 @@ void fpga_permute_batch_last(Tensor *A,Tensor *B)
 // permute_batch_first
 //
 void fpga_cpuemu_permute_batch_first(Tensor *A, Tensor *B) {
-    printf("fpga_cpuemu_permute_batch_first not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_permute_batch_first(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_permute_batch_first(Tensor *A,Tensor *B)
