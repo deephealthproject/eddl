@@ -3,8 +3,8 @@
 # ==========================================
 
 # ONNX stuff
-#src/serialization/onnx/onnx.pb.h
-#src/serialization/onnx/onnx.pb.cc
+src/serialization/onnx/onnx.pb.h
+src/serialization/onnx/onnx.pb.cc
 
 # Developer environments
 *.DS_Store
