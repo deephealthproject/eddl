@@ -245,8 +245,13 @@ void fpga_init(){ // initialize only once
 
     devices.resize(1);
     OCL_CHECK(err, program = cl::Program(context, devices, bins, NULL, &err));
+
+    #ifdef K_ENALBED_K_RELU
+    OCL_CHECK(err, k_relu = cl::Kernel(program,"k_relu", &err));
+    #endif
+
     /*OCL_CHECK(err, tensor_op= cl::Kernel(program,"tensor_op", &err));*/
-    OCL_CHECK(err, multitensor_op = cl::Kernel(program,"k_multitensor_op", &err));
+/*    OCL_CHECK(err, multitensor_op = cl::Kernel(program,"k_multitensor_op", &err));
     OCL_CHECK(err, kernel_add = cl::Kernel(program,"k_add", &err));
     //OCL_CHECK(err, mult2D = cl::Kernel(program,"k_mult2D", &err));
     OCL_CHECK(err, sum2D_rowwise = cl::Kernel(program,"k_sum2D_rowwise", &err));
@@ -257,8 +262,9 @@ void fpga_init(){ // initialize only once
     OCL_CHECK(err, kernel_accuracy = cl::Kernel(program,"k_accuracy", &err));
     OCL_CHECK(err, kernel_total_sum = cl::Kernel(program,"k_total_sum", &err));
     //OCL_CHECK(err, el_div = cl::Kernel(program,"k_el_div", &err));
-    //OCL_CHECK(err, kernel_normalize = cl::Kernel(program,"k_normalize", &err));*/
+    //OCL_CHECK(err, kernel_normalize = cl::Kernel(program,"k_normalize", &err));
     //kernel_gemx = clCreateKernel(program(), "gemxKernel_0", &err);
+*/
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
 
 }
