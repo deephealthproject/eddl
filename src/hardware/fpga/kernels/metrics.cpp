@@ -2,6 +2,7 @@
 #include <stdio.h>
 extern "C" {
 
+#ifdef K_ENABLED_ACCURACY
 void k_accuracy(float *A, float *B, int Ashape0, int Ashape1, int *accuracy) {
 
   int acc = 0;
@@ -15,7 +16,7 @@ void k_accuracy(float *A, float *B, int Ashape0, int Ashape1, int *accuracy) {
     aind = 0;
     maxA = A[ Ashape1 * i];
     bind = 0;
-    maxB = B[ Ashape1 * i];    
+    maxB = B[ Ashape1 * i];
     for (int j=0; j< Ashape1; j++) {
       int pos = Ashape1 * i + j;
       float valueA = A[pos];
@@ -33,5 +34,6 @@ void k_accuracy(float *A, float *B, int Ashape0, int Ashape1, int *accuracy) {
   }
   *accuracy = acc;
 }
+#endif
 
 }

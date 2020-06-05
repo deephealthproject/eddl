@@ -171,6 +171,7 @@ void k_d_exp(float *D, float *I, float *PD, int size){
   for (int i = 0; i < size; i++)
     PD[i] += D[i] * I[i];
 }
+#endif
 
 #ifdef K_ENABLED_TANH
 void k_tanh(float *A, float *B, int size){
