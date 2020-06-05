@@ -68,7 +68,7 @@ void k_set_select_back(float *A, float *B, int *addresses, int size){
 #endif
 
 #ifdef K_ENABLED_SELECT
-void k_select(float * A, float * B, int *sind, int ini, int end,bool mask_zeros, int size, int Ashape0){
+void k_select2(float * A, float * B, int *sind, int ini, int end,bool mask_zeros, int size, int Ashape0){
     int s = size / Ashape0;
 
     #pragma omp parallel for
@@ -76,7 +76,7 @@ void k_select(float * A, float * B, int *sind, int ini, int end,bool mask_zeros,
         int p  = sind[i] * s;
         int pb = (i - ini) * s;
         for (int j = 0; j < s; j++, p++, pb++)
-            if ((mask_zeros)&&(sind[i]==0)) B->ptr[p]=0;
+            if ((mask_zeros)&&(sind[i]==0)) B[p]=0;
             else B[pb] = A[p];
     }
 }

@@ -301,7 +301,7 @@ void k_sum2D_colwise(float *A, float *B, float *C, int Ashape0, int Ashape1) {
 
 #ifdef K_ENABLED_MAX
 float k_max(float *A, int size){
-  float max = FLT_MIN;
+  float max = A[0];
   // todo: #pragma omp parallel for
   for (int i = 0; i < size; ++i) {
     if (A[i] > max) { max = A[i]; }
@@ -311,7 +311,7 @@ float k_max(float *A, int size){
 
 #ifdef K_ENABLED_MIN
 float k_min(float *A, int size){
-  float min = FLT_MAX;
+  float min = A[0];
   // todo: #pragma omp parallel for
   for (int i = 0; i < size; ++i) {
     if (A[i] < min) { min = A[i]; }

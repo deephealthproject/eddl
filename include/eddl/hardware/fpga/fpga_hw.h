@@ -22,6 +22,9 @@
 
 void fpga_init();
 void fpga_create_tensor(Tensor *T, int dev);
+void fpga_copy_to_fpga(float *nptr, Tensor *A);
+void fpga_copy_from_fpga(Tensor *A,float *nptr);
+
 
 // CPU: Core (static)
 void fpga_transpose(Tensor *A, Tensor *B);

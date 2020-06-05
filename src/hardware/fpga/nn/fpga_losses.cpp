@@ -14,6 +14,8 @@
 #include <iostream>
 
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_nn.h"
+#include "eddl/hardware/fpga/fpga_hw.h"
 
 extern cl::Kernel kernel_cent;
 extern cl::CommandQueue q;
@@ -26,8 +28,16 @@ char fpga_set_cpuemu_cent      = 1;
 // cent
 //
 void fpga_cpuemu_cent(Tensor *A, Tensor *B, Tensor *C) {
-    printf("fpga_cpuemu_cent not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  int Csize = C->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  if (C->ptr == NULL) C->ptr = (float *)malloc(Csize);
+  fpga_copy_from_fpga(A, A->ptr);
+  fpga_copy_from_fpga(B, B->ptr);
+  cpu_cent(A, B, C);
+  fpga_copy_to_fpga(C->ptr, C);
 }
 
 void fpga_cent(Tensor *A, Tensor *B, Tensor *C){

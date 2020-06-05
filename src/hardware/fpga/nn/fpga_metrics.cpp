@@ -12,6 +12,8 @@
 #include <iostream>
 
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_nn.h"
+#include "eddl/hardware/fpga/fpga_hw.h"
 
 extern cl::Kernel kernel_accuracy;
 extern cl::CommandQueue q;
@@ -23,16 +25,23 @@ char fpga_set_cpuemu_accuracy      = 1;
 // -----------------------------------------------------------------
 // accuracy
 //
-void fpga_cpuemu_accuracy(Tensor *A, Tensor *B) {
-    printf("fpga_cpuemu_accuracy not implemented yet\n");
-    exit(1);
+int fpga_cpuemu_accuracy(Tensor *A, Tensor *B) {
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  fpga_copy_from_fpga(B, B->ptr);
+  int acc = cpu_accuracy(A, B);
+  return acc;
 }
 
 int fpga_accuracy(Tensor *A, Tensor *B){
   _profile_fpga(_FPGA_ACCURACY, 0);
 
   if (fpga_set_cpuemu_accuracy == 1) {
-    fpga_cpuemu_accuracy(A, B);
+    int acc = fpga_cpuemu_accuracy(A, B);
+    return acc;
   } else {
       printf("fpga_accuracy not implemented yet\n"); exit(1);
   }

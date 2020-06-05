@@ -60,10 +60,10 @@ void im2col(int b, int Dkr, int Dkc, int Dr, int Dc, int Dir, int Dic, int Diz, 
       y=py+(i%ksize)/Dkc;
       x=px+(i%Dkc);
 
-      if(col2im)
-          k_add_pixel(b,x,y,pz, Dic, Dir,isize,irsize,ptrI[k], ptraddr);
-      else
-          ptrI[k] = k_get_pixel(b,x,y,pz,Dic, Dir,isize,irsize, ptraddr);
+      //if(col2im)
+          //k_add_pixel(b,x,y,pz, Dic, Dir,isize,irsize,ptrI[k], ptraddr);
+      //else
+         //ptrI[k] = k_get_pixel(b,x,y,pz,Dic, Dir,isize,irsize, ptraddr);
 
     }
     px+=Dsc;
