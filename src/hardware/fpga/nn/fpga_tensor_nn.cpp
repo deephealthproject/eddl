@@ -9,6 +9,8 @@
 
 
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_nn.h"
+#include "eddl/hardware/fpga/fpga_hw.h"
 
 // emulation switches of functions (via cpu)
 // when set the function is run on the cpu
@@ -20,8 +22,13 @@ char fpga_set_cpuemu_d_repeat_nn     = 1;
 // repeat_nn
 //
 void fpga_cpuemu_repeat_nn(Tensor *A, Tensor *B, vector<int> size) {
-    printf("fpga_cpuemu_repeat_nn not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_repeat_nn(A, B, size);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
@@ -38,8 +45,13 @@ void fpga_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
 // d_repeat_nn
 //
 void fpga_cpuemu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size) {
-    printf("fpga_cpuemu_d_repeat_nn not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Dsize = D->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (D->ptr == NULL) D->ptr = (float *)malloc(Dsize);
+  fpga_copy_from_fpga(D, D->ptr);
+  cpu_repeat_nn(D, A, size);
+  fpga_copy_to_fpga(A->ptr, A);
 }
 
 void fpga_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
