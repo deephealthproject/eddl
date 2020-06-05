@@ -482,6 +482,46 @@ void gpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C){
 
 }
 
+void gpu_maximum(Tensor* A, Tensor* B, float v){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_maximum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, v, A->size);
+    check_cuda(cudaDeviceSynchronize(), "maximum");
+}
+
+void gpu_maximum(Tensor* A, Tensor* B, Tensor* C){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_maximum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "maximum");
+}
+
+void gpu_minimum(Tensor* A, Tensor* B, float v){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_minimum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, v, A->size);
+    check_cuda(cudaDeviceSynchronize(), "minimum");
+}
+
+void gpu_minimum(Tensor* A, Tensor* B, Tensor* C){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_minimum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "minimum");
+}
+
 
 // GPU: Should be reductions ***************************
 float gpu_max(Tensor *A){

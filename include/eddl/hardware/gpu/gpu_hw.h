@@ -112,6 +112,11 @@ void gpu_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
 void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
 void gpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
 
+void gpu_maximum(Tensor* A, Tensor* B, float v);
+void gpu_maximum(Tensor* A, Tensor* B, Tensor* C);
+void gpu_minimum(Tensor* A, Tensor* B, float v);
+void gpu_minimum(Tensor* A, Tensor* B, Tensor* C);
+
 // GPU: Should be reductions
 float gpu_max(Tensor *A);
 float gpu_min(Tensor *A);

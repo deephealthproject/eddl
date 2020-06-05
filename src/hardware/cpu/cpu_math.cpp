@@ -291,6 +291,36 @@ void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
     }
 }
 
+
+void cpu_maximum(Tensor* A, Tensor* B, float v){
+    #pragma omp parallel for
+    for (int i = 0; i < A->size; ++i) {
+        B->ptr[i] = ::max(A->ptr[i], v);
+    }
+}
+
+void cpu_maximum(Tensor* A, Tensor* B, Tensor* C){
+#pragma omp parallel for
+    for (int i = 0; i < A->size; ++i) {
+        C->ptr[i] = ::max(A->ptr[i], B->ptr[i]);
+    }
+}
+
+void cpu_minimum(Tensor* A, Tensor* B, float v){
+#pragma omp parallel for
+    for (int i = 0; i < A->size; ++i) {
+        B->ptr[i] = ::min(A->ptr[i], v);
+    }
+}
+
+void cpu_minimum(Tensor* A, Tensor* B, Tensor* C){
+#pragma omp parallel for
+    for (int i = 0; i < A->size; ++i) {
+        C->ptr[i] = ::min(A->ptr[i], B->ptr[i]);
+    }
+}
+
+
 // CPU: Should be reductions ***************************
 
 float cpu_max(Tensor *A){

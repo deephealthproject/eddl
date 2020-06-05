@@ -111,6 +111,11 @@ __global__ void gpu_sum2D_rowwise(float *A, float* b, float* c, long int cols, l
 __global__ void gpu_sum2D_colwise(float *A, float* b, float* c, long int cols, long int rows); //gpu_sum2D_rowwise
 __global__ void gpu_reduce_sum2D(float *A,float *B,long int r,long int c,long int axis);
 
+__global__ void gpu_maximum(float *A, float *B, float v, long int size);
+__global__ void gpu_maximum(float *A, float *B, float *C, long int size);
+__global__ void gpu_minimum(float *A, float *B, float v, long int size);
+__global__ void gpu_minimum(float *A, float *B, float *C, long int size);
+
 // GPU: Should be reductions
 
 // GPU: Reduction

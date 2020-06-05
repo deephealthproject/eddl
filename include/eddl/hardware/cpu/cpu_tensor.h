@@ -107,6 +107,11 @@ void cpu_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
 void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
 void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
 
+void cpu_maximum(Tensor* A, Tensor* B, float v);
+void cpu_maximum(Tensor* A, Tensor* B, Tensor* C);
+void cpu_minimum(Tensor* A, Tensor* B, float v);
+void cpu_minimum(Tensor* A, Tensor* B, Tensor* C);
+
 // CPU: Should be reductions
 float cpu_max(Tensor *A);
 float cpu_min(Tensor *A);

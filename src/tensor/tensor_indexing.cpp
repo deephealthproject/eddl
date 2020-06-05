@@ -34,6 +34,8 @@ std::pair<unsigned int*, int> Tensor::_nonzero(){
 
     }
 #endif
+
+    return std::make_pair(nullptr, 0);
 }
 
 Tensor* Tensor::nonzero(bool sort_indices){

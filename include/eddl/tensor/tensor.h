@@ -327,13 +327,28 @@ public:
 
 
     // Math operations (zero) ************************
+    float max();   // TODO: Should be reduced
+    static float max(Tensor* A);   // TODO: Should be reduced
+
+    Tensor* maximum(float v);
+    static Tensor* maximum(Tensor* A, float v);
+    static void maximum(Tensor* A, Tensor* B, float v);
+
+    static Tensor* maximum(Tensor* A, Tensor* B);
+    static void maximum(Tensor* A, Tensor* B, Tensor* C);
+
+
+    float min();  // TODO: Should be reduced
+    static float min(Tensor* A);   // TODO: Should be reduced
+
+    Tensor* minimum(float v);
+    static Tensor* minimum(Tensor* A, float v);
+    static void minimum(Tensor* A, Tensor* B, float v);
+
+    static Tensor* minimum(Tensor* A, Tensor* B);
+    static void minimum(Tensor* A, Tensor* B, Tensor* C);
+
     // TODO: Deprecated? They should be reductions (unless for speed)
-    float max();
-    static float max(Tensor* A);
-
-    float min();
-    static float min(Tensor* A);
-
     float sum();
     static float sum(Tensor* A);
 
