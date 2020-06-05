@@ -159,10 +159,25 @@ void cpu_greater(Tensor *A, Tensor *B, Tensor *C){
     }
 }
 
+
+void cpu_greater_equal(Tensor *A, Tensor *B, float v){
+#pragma omp parallel for
+    for (int i = 0; i < A->size; ++i){
+        B->ptr[i] = A->ptr[i] >= v;
+    }
+}
+
 void cpu_greater_equal(Tensor *A, Tensor *B, Tensor *C){
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         C->ptr[i] = A->ptr[i] >= B->ptr[i];
+    }
+}
+
+void cpu_less(Tensor *A, Tensor *B, float v){
+#pragma omp parallel for
+    for (int i = 0; i < A->size; ++i){
+        B->ptr[i] = A->ptr[i] < v;
     }
 }
 
@@ -173,6 +188,13 @@ void cpu_less(Tensor *A, Tensor *B, Tensor *C){
     }
 }
 
+void cpu_less_equal(Tensor *A, Tensor *B, float v){
+#pragma omp parallel for
+    for (int i = 0; i < A->size; ++i){
+        B->ptr[i] = A->ptr[i] <= v;
+    }
+}
+
 void cpu_less_equal(Tensor *A, Tensor *B, Tensor *C){
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
@@ -180,10 +202,24 @@ void cpu_less_equal(Tensor *A, Tensor *B, Tensor *C){
     }
 }
 
+void cpu_equal(Tensor *A, Tensor *B, float v){
+#pragma omp parallel for
+    for (int i = 0; i < A->size; ++i){
+        B->ptr[i] = A->ptr[i] == v;
+    }
+}
+
 void cpu_equal(Tensor *A, Tensor *B, Tensor *C){
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         C->ptr[i] = A->ptr[i] == B->ptr[i];
+    }
+}
+
+void cpu_not_equal(Tensor *A, Tensor *B, float v){
+#pragma omp parallel for
+    for (int i = 0; i < A->size; ++i){
+        B->ptr[i] = A->ptr[i] != v;
     }
 }
 

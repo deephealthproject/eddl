@@ -719,6 +719,8 @@ public:
     Tensor* greater(float v);
     static void greater(Tensor *A, Tensor *B, float v);
 
+    Tensor* greater(Tensor *A);
+
     /**
       *  @brief Return the truth value of ``A > B`` element-wise.
       *
@@ -728,6 +730,13 @@ public:
       *  @return    void
     */
     static void greater(Tensor *A, Tensor *B, Tensor *C);
+
+
+    void greater_equal_(float v);
+    Tensor* greater_equal(float v);
+    static void greater_equal(Tensor *A, Tensor *B, float v);
+
+    Tensor* greater_equal(Tensor *A);
 
     /**
       *  @brief Return the truth value of ``A >= B`` element-wise.
@@ -739,6 +748,12 @@ public:
     */
     static void greater_equal(Tensor *A, Tensor *B, Tensor *C);
 
+    void less_(float v);
+    Tensor* less(float v);
+    static void less(Tensor *A, Tensor *B, float v);
+
+    Tensor* less(Tensor *A);
+
     /**
       *  @brief Return the truth value of ``A < B`` element-wise.
       *
@@ -748,6 +763,12 @@ public:
       *  @return    void
     */
     static void less(Tensor *A, Tensor *B, Tensor *C);
+
+    void less_equal_(float v);
+    Tensor* less_equal(float v);
+    static void less_equal(Tensor *A, Tensor *B, float v);
+
+    Tensor* less_equal(Tensor *A);
 
     /**
       *  @brief Return the truth value of ``A <= B`` element-wise.
@@ -759,6 +780,12 @@ public:
     */
     static void less_equal(Tensor *A, Tensor *B, Tensor *C);
 
+    void equal_(float v);
+    Tensor* equal(float v);
+    static void equal(Tensor *A, Tensor *B, float v);
+
+    Tensor* equal(Tensor *A);
+
     /**
       *  @brief Return the truth value of ``A == B`` element-wise.
       *
@@ -768,6 +795,12 @@ public:
       *  @return    void
     */
     static void equal(Tensor *A, Tensor *B, Tensor *C);
+
+    void not_equal_(float v);
+    Tensor* not_equal(float v);
+    static void not_equal(Tensor *A, Tensor *B, float v);
+
+    Tensor* not_equal(Tensor *A);
 
     /**
       *  @brief Return the truth value of ``A != B`` element-wise.

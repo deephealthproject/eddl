@@ -42,7 +42,7 @@ TEST(TensorTestSuite, tensor_indexing_where){
 
     Tensor* t1_B = Tensor::ones({3, 2}, DEV_CPU);
 
-    Tensor* condition = t1_A->greater(0);
+    Tensor* condition = t1_A->greater(0.0f);
 
     Tensor* new_t = Tensor::where(condition, t1_A, t1_B);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
