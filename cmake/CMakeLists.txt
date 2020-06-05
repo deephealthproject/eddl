@@ -169,6 +169,9 @@ else()
         SET(Protobuf_LIBRARIES "${Protobuf_LIBRARIES_DIRS}/libprotobuf.a" PARENT_SCOPE)
     endif()
 endif()
+add_custom_target(protobuf_files 
+	protoc --cpp_out=../src/serialization/onnx ../src/serialization/onnx/onnx.proto
+	)
 message(STATUS "Subproject: Protobuf...DONE")
 
 ##################
