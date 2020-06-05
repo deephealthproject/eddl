@@ -961,13 +961,13 @@ void fpga_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
   } else {
     cl_int err;
     cl::Event event;
-    OCL_CHECK(err, err = sum2D_rowwise.setArg(0, (A->fpga_ptr)));
-    OCL_CHECK(err, err = sum2D_rowwise.setArg(1, (B->fpga_ptr)));
-    OCL_CHECK(err, err = sum2D_rowwise.setArg(2, (C->fpga_ptr)));
-    OCL_CHECK(err, err = sum2D_rowwise.setArg(3, A->shape[0]));
-    OCL_CHECK(err, err = sum2D_rowwise.setArg(4, A->shape[1]));
+    OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(0, (A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(1, (B->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(2, (C->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(3, A->shape[0]));
+    OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(4, A->shape[1]));
 
-    OCL_CHECK(err, err = q.enqueueTask(sum2D_rowwise, NULL, &event));
+    OCL_CHECK(err, err = q.enqueueTask(kernel_sum2D_rowwise, NULL, &event));
     q.finish();
   }
   _profile_fpga(_FPGA_SUM2D_ROWWISE, 1);

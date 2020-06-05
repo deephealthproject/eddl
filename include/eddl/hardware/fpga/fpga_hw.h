@@ -17,63 +17,63 @@
 #include "eddl/descriptors/descriptors.h"
 
 // activation kernels (22)
-cl::Kernel kernel_relu,   kernel_d_relu,  kernel_thresholded_relu,    kernel_d_thresholded_relu, kernel_leaky_relu,     kernel_d_leaky_relu;
-cl::Kernel kernel_elu,    kernel_d_elu,   kernel_softplus,            kernel_d_softplus,         kernel_softsign,       kernel_d_softsign;
-cl::Kernel kernel_linear, kernel_sigmoid, kernel_d_sigmoid,           kernel_hard_sigmoid,       kernel_d_hard_sigmoid;
-cl::Kernel kernel_exp,    kernel_d_exp,   kernel_tanh, kernel_d_tanh, kernel_softmax,            kernel_d_softmax;
+extern cl::Kernel kernel_relu,   kernel_d_relu,  kernel_thresholded_relu,    kernel_d_thresholded_relu, kernel_leaky_relu,     kernel_d_leaky_relu;
+extern cl::Kernel kernel_elu,    kernel_d_elu,   kernel_softplus,            kernel_d_softplus,         kernel_softsign,       kernel_d_softsign;
+extern cl::Kernel kernel_linear, kernel_sigmoid, kernel_d_sigmoid,           kernel_hard_sigmoid,       kernel_d_hard_sigmoid;
+extern cl::Kernel kernel_exp,    kernel_d_exp,   kernel_tanh, kernel_d_tanh, kernel_softmax,            kernel_d_softmax;
 
 // bn kernels (4)
-cl::Kernel kernel_permute_channels_last, kernel_permute_channels_first;
-cl::Kernel kernel_permute_batch_last,    kernel_permute_batch_first;
+extern cl::Kernel kernel_permute_channels_last, kernel_permute_channels_first;
+extern cl::Kernel kernel_permute_batch_last,    kernel_permute_batch_first;
 
 // comparison kernels (20)
-cl::Kernel kernel_all,         kernel_any,        kernel_isfinite,    kernel_isinf;
-cl::Kernel kernel_isnan,       kernel_isneginf,   kernel_isposinf,    kernel_equal2;
-cl::Kernel kernel_logical_and, kernel_logical_or, kernel_logical_not, kernel_logical_xor;
-cl::Kernel kernel_allclose,    kernel_isclose,    kernel_greater,     kernel_greater_equal;
-cl::Kernel kernel_less,        kernel_less_equal, kernel_equal,       kernel_not_equal;
+extern cl::Kernel kernel_all,         kernel_any,        kernel_isfinite,    kernel_isinf;
+extern cl::Kernel kernel_isnan,       kernel_isneginf,   kernel_isposinf,    kernel_equal2;
+extern cl::Kernel kernel_logical_and, kernel_logical_or, kernel_logical_not, kernel_logical_xor;
+extern cl::Kernel kernel_allclose,    kernel_isclose,    kernel_greater,     kernel_greater_equal;
+extern cl::Kernel kernel_less,        kernel_less_equal, kernel_equal,       kernel_not_equal;
 
 // core kernels (11)
-cl::Kernel kernel_transpose,   kernel_copy,        kernel_fill_,      kernel_fill;
-cl::Kernel kernel_select,      kernel_select_back, kernel_set_select, kernel_set_select_back;
-cl::Kernel kernel_set_select2, kernel_deselect,    kernel_concat;
+extern cl::Kernel kernel_transpose,   kernel_copy,        kernel_fill_,      kernel_fill;
+extern cl::Kernel kernel_select,      kernel_select_back, kernel_set_select, kernel_set_select_back;
+extern cl::Kernel kernel_set_select2, kernel_deselect,    kernel_concat;
 
 // conv kernels (1)
-cl::Kernel kernel_im2col;
+extern cl::Kernel kernel_im2col;
 
 // create kernels (2)
-cl::Kernel kernel_range, kernel_eye;
+extern cl::Kernel kernel_range, kernel_eye;
 
 // da kernels (6)
-cl::Kernel kernel_single_shift, kernel_single_rotate, kernel_single_scale;
-cl::Kernel kernel_single_flip,  kernel_single_crop,   kernel_single_crop_scale;
+extern cl::Kernel kernel_single_shift, kernel_single_rotate, kernel_single_scale;
+extern cl::Kernel kernel_single_flip,  kernel_single_crop,   kernel_single_crop_scale;
 
 // generator kernels (4)
-cl::Kernel kernel_rand_uniform, kernel_signed_uniform, kernel_rand_binary, kernel_rand_normal;
+extern cl::Kernel kernel_rand_uniform, kernel_signed_uniform, kernel_rand_binary, kernel_rand_normal;
 
 // losses kernels (1)
-cl::Kernel kernel_cent;
+extern cl::Kernel kernel_cent;
 
 // metrics kernels (1)
-cl::Kernel kernel_accuracy;
+extern cl::Kernel kernel_accuracy;
 
 // pool kernels (4)
-cl::Kernel kernel_mpool2D, kernel_mpool2D_back, kernel_avgpool2D, kernel_avgpool2D_back;
+extern cl::Kernel kernel_mpool2D, kernel_mpool2D_back, kernel_avgpool2D, kernel_avgpool2D_back;
 
 // reduction kernels (5)
-cl::Kernel kernel_reduce, kernel_reduce_op, kernel_reduce_sum2D, kernel_reduction, kernel_reduction_back;
+extern cl::Kernel kernel_reduce, kernel_reduce_op, kernel_reduce_sum2D, kernel_reduction, kernel_reduction_back;
 
 // tensor_nn kernels (2)
-cl::Kernel kernel_repeat_nn, kernel_d_repeat_nn;
+extern cl::Kernel kernel_repeat_nn, kernel_d_repeat_nn;
 
 // math kernels (45)
-cl::Kernel kernel_abs_,       kernel_acos_,  kernel_add_,      kernel_asin_,       kernel_atan_,      kernel_ceil_,         kernel_clamp_;
-cl::Kernel kernel_cos_,       kernel_cosh_,  kernel_sigmoid_,  kernel_mod_,        kernel_mult_,      kernel_trunc_,        kernel_sum_abs;
-cl::Kernel kernel_exp_,       kernel_floor_, kernel_inv_,      kernel_log_,        kernel_log2_,      kernel_log10_,        kernel_logn_;
-cl::Kernel kernel_normalize_, kernel_pow_,   kernel_powb_,     kernel_reciprocal_, kernel_remainder_, kernel_round_,        kernel_rsqrt_;
-cl::Kernel kernel_sign_,      kernel_sin_,   kernel_sinh_,     kernel_sqr_,        kernel_sqrt_,      kernel_tan_,          kernel_tanh_;
-cl::Kernel kernel_add,        kernel_inc,    kernel_el_div,    kernel_el_mult,     kernel_sign2,      kernel_sum2D_rowwise, kernel_sum2D_colwise;
-cl::Kernel kernel_max,        kernel_min,    kernel_sum;
+extern cl::Kernel kernel_abs_,       kernel_acos_,  kernel_add_,      kernel_asin_,       kernel_atan_,      kernel_ceil_,         kernel_clamp_;
+extern cl::Kernel kernel_cos_,       kernel_cosh_,  kernel_sigmoid_,  kernel_mod_,        kernel_mult_,      kernel_trunc_,        kernel_sum_abs;
+extern cl::Kernel kernel_exp_,       kernel_floor_, kernel_inv_,      kernel_log_,        kernel_log2_,      kernel_log10_,        kernel_logn_;
+extern cl::Kernel kernel_normalize_, kernel_pow_,   kernel_powb_,     kernel_reciprocal_, kernel_remainder_, kernel_round_,        kernel_rsqrt_;
+extern cl::Kernel kernel_sign_,      kernel_sin_,   kernel_sinh_,     kernel_sqr_,        kernel_sqrt_,      kernel_tan_,          kernel_tanh_;
+extern cl::Kernel kernel_add,        kernel_inc,    kernel_el_div,    kernel_el_mult,     kernel_sign2,      kernel_sum2D_rowwise, kernel_sum2D_colwise;
+extern cl::Kernel kernel_max,        kernel_min,    kernel_sum;
 
 #define MAX_FLOAT std::numeric_limits<float>::max()
 #define MIN_FLOAT -std::numeric_limits<float>::max()
