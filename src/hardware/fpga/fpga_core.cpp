@@ -21,20 +21,6 @@ cl::Context      context;
 cl::CommandQueue q;
 cl::CommandQueue com;
 cl::Program      program;
-cl::Kernel       tensor_op;
-cl::Kernel       multitensor_op;
-cl::Kernel       kernel_add;
-cl::Kernel       mult2D;
-cl::Kernel       sum2D_rowwise;
-cl::Kernel       kernel_cent;
-cl::Kernel       relu_soft_d;
-cl::Kernel       reduce_sum2D;
-cl::Kernel       kernel_accuracy;
-cl::Kernel       kernel_total_sum;
-cl::Kernel       kernel_normalize;
-cl::Kernel       el_div;
-//cl::Kernel       kernel_gemx;
-cl::Kernel       kernel_core;
 
 // profiling
 int num_instances_fpga[_NUM_FPGA_FUNCS];
@@ -246,27 +232,526 @@ void fpga_init(){ // initialize only once
     devices.resize(1);
     OCL_CHECK(err, program = cl::Program(context, devices, bins, NULL, &err));
 
-    #ifdef K_ENALBED_K_RELU
-    OCL_CHECK(err, k_relu = cl::Kernel(program,"k_relu", &err));
-    #endif
-
-    /*OCL_CHECK(err, tensor_op= cl::Kernel(program,"tensor_op", &err));*/
-/*    OCL_CHECK(err, multitensor_op = cl::Kernel(program,"k_multitensor_op", &err));
-    OCL_CHECK(err, kernel_add = cl::Kernel(program,"k_add", &err));
-    //OCL_CHECK(err, mult2D = cl::Kernel(program,"k_mult2D", &err));
-    OCL_CHECK(err, sum2D_rowwise = cl::Kernel(program,"k_sum2D_rowwise", &err));
-    OCL_CHECK(err, kernel_cent = cl::Kernel(program,"k_cent", &err));
-    OCL_CHECK(err, relu_soft_d = cl::Kernel(program,"k_relu_soft_d", &err));
-    OCL_CHECK(err, reduce_sum2D = cl::Kernel(program,"k_reduce_sum2D", &err));
-    OCL_CHECK(err, kernel_core = cl::Kernel(program,"k_core", &err));
-    OCL_CHECK(err, kernel_accuracy = cl::Kernel(program,"k_accuracy", &err));
-    OCL_CHECK(err, kernel_total_sum = cl::Kernel(program,"k_total_sum", &err));
-    //OCL_CHECK(err, el_div = cl::Kernel(program,"k_el_div", &err));
-    //OCL_CHECK(err, kernel_normalize = cl::Kernel(program,"k_normalize", &err));
-    //kernel_gemx = clCreateKernel(program(), "gemxKernel_0", &err);
-*/
+    #ifdef K_ENABLED_RELU
+    OCL_CHECK(err, kernel_relu = cl::Kernel(program,"k_relu", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
-
+    #endif
+    #ifdef K_ENABLED_D_RELU
+    OCL_CHECK(err, kernel_d_relu = cl::Kernel(program,"k_d_relu", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_D_THRESHOLDED_RELU
+    OCL_CHECK(err, kernel_thresholded_relu = cl::Kernel(program,"k_thresholded_relu", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_D_THRESHOLDED_RELU
+    OCL_CHECK(err, kernel_d_thresholded_relu = cl::Kernel(program,"k_d_thresholded_relu", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_LEAKY_RELU
+    OCL_CHECK(err, kernel_leaky_relu = cl::Kernel(program,"k_leaky_relu", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_D_LEAKY_RELU
+    OCL_CHECK(err, kernel_d_leaky_relu = cl::Kernel(program,"k_d_leaky_relu", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_ELU
+    OCL_CHECK(err, kernel_elu = cl::Kernel(program,"k_elu", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_D_ELU
+    OCL_CHECK(err, kernel_d_elu = cl::Kernel(program,"k_d_elu", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SOFTPLUS
+    OCL_CHECK(err, kernel_softplus = cl::Kernel(program,"k_softplus", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_D_SOFTPLUS
+    OCL_CHECK(err, kernel_d_softplus = cl::Kernel(program,"k_d_softplus", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SOFTSIGN
+    OCL_CHECK(err, kernel_softsign = cl::Kernel(program,"k_softsign", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_D_SOFTPLUS
+    OCL_CHECK(err, kernel_d_softsign = cl::Kernel(program,"k_d_softsign", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_LINEAR
+    OCL_CHECK(err, kernel_linear = cl::Kernel(program,"k_linear", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_D_LINEAR
+    OCL_CHECK(err, kernel_d_softplus = cl::Kernel(program,"k_d_linear", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SIGMOID
+    OCL_CHECK(err, kernel_sigmoid = cl::Kernel(program,"k_sigmoid", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_D_SIGMOID
+    OCL_CHECK(err, kernel_d_sigmoid = cl::Kernel(program,"k_d_sigmoid", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_HARD_SIGMOID
+    OCL_CHECK(err, kernel_hard_sigmoid = cl::Kernel(program,"k_hard_sigmoid", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_D_HARD_SIGMOID
+    OCL_CHECK(err, kernel_d_hard_sigmoid = cl::Kernel(program,"k_d_hard_sigmoid", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_EXP
+    OCL_CHECK(err, kernel_exp = cl::Kernel(program,"k_exp", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_D_EXP
+    OCL_CHECK(err, kernel_d_exp = cl::Kernel(program,"k_d_exp", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_TANH
+    OCL_CHECK(err, kernel_tanh = cl::Kernel(program,"k_tanh", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_D_TANH
+    OCL_CHECK(err, kernel_d_tanh = cl::Kernel(program,"k_d_tanh", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SOFTMAX
+    OCL_CHECK(err, kernel_softmax = cl::Kernel(program,"k_softmax", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_D_SOFTMAX
+    OCL_CHECK(err, kernel_d_softmax = cl::Kernel(program,"k_d_softmax", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_PERMUTE_CHANNELS_LAST
+    OCL_CHECK(err, kernel_permute_channels_last = cl::Kernel(program,"k_permute_channels_last", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_PERMUTE_CHANNELS_FIRST
+    OCL_CHECK(err, kernel_permute_channels_first = cl::Kernel(program,"k_permute_channels_first", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_PERMUTE_BATCH_LAST
+    OCL_CHECK(err, kernel_permute_batch_last = cl::Kernel(program,"k_permute_batch_last", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_PERMUTE_BATCH_FIRST
+    OCL_CHECK(err, kernel_permute_batch_first = cl::Kernel(program,"k_permute_batch_first", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_ALL
+    OCL_CHECK(err, kernel_all = cl::Kernel(program,"k_all", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_ANY
+    OCL_CHECK(err, kernel_any = cl::Kernel(program,"k_any", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_ISFINITE
+    OCL_CHECK(err, kernel_isfinite = cl::Kernel(program,"k_isfinite", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_ISINF
+    OCL_CHECK(err, kernel_isinf = cl::Kernel(program,"k_isinf", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_ISNAN
+    OCL_CHECK(err, kernel_isnan = cl::Kernel(program,"k_isnan", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_ISNEGINF
+    OCL_CHECK(err, kernel_isneginf = cl::Kernel(program,"k_isneginf", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_ISPOSINF
+    OCL_CHECK(err, kernel_isposinf = cl::Kernel(program,"k_isposinf", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_LOGICAL_AND
+    OCL_CHECK(err, kernel_logical_and = cl::Kernel(program,"k_logical_and", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_LOGICAL_OR
+    OCL_CHECK(err, kernel_logical_or = cl::Kernel(program,"k_logical_or", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_LOGICAL_NOT
+    OCL_CHECK(err, kernel_logical_not = cl::Kernel(program,"k_logical_not", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_LOGICAL_XOR
+    OCL_CHECK(err, kernel_logical_xor = cl::Kernel(program,"k_logical_xor", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_ALLCLOSE
+    OCL_CHECK(err, kernel_allclose = cl::Kernel(program,"k_allclose", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_ISCLOSE
+    OCL_CHECK(err, kernel_isclose = cl::Kernel(program,"k_isclose", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_GREATER
+    OCL_CHECK(err, kernel_greater = cl::Kernel(program,"k_greater", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_GREATER_EQUAL
+    OCL_CHECK(err, kernel_greater_equal = cl::Kernel(program,"k_greater_equal", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_LESS
+    OCL_CHECK(err, kernel_less = cl::Kernel(program,"k_less", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_LESS_EQUAL
+    OCL_CHECK(err, kernel_less_equal = cl::Kernel(program,"k_less_equal", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_EQUAL
+    OCL_CHECK(err, kernel_equal = cl::Kernel(program,"k_equal", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_NOT_EQUAL
+    OCL_CHECK(err, kernel_not_equal = cl::Kernel(program,"k_not_equal", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_EQUAL2
+    OCL_CHECK(err, kernel_equal2 = cl::Kernel(program,"k_equal2", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_TRANSPOSE
+    OCL_CHECK(err, kernel_transpose = cl::Kernel(program,"k_transpose", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_COPY
+    OCL_CHECK(err, kernel_copy = cl::Kernel(program,"k_copy", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_FILL_
+    OCL_CHECK(err, kernel_fill_ = cl::Kernel(program,"k_fill_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_FILL
+    OCL_CHECK(err, kernel_fill = cl::Kernel(program,"k_fill", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SELECT
+    OCL_CHECK(err, kernel_select = cl::Kernel(program,"k_select", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SELECT_BACK
+    OCL_CHECK(err, kernel_select_back = cl::Kernel(program,"k_select_back", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SET_SELECT
+    OCL_CHECK(err, kernel_set_select = cl::Kernel(program,"k_set_select", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SET_SELECT_BACK
+    OCL_CHECK(err, kernel_set_select_back = cl::Kernel(program,"k_set_select_back", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SET_SELECT2
+    OCL_CHECK(err, kernel_set_select2 = cl::Kernel(program,"k_set_select2", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_DESELECT
+    OCL_CHECK(err, kernel_deselect = cl::Kernel(program,"k_deselect", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_CONCAT
+    OCL_CHECK(err, kernel_concat = cl::Kernel(program,"k_concat", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_IM2COL
+    OCL_CHECK(err, kernel_im2col = cl::Kernel(program,"k_im2col", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_RANGE
+    OCL_CHECK(err, kernel_range = cl::Kernel(program,"k_range", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_EYE
+    OCL_CHECK(err, kernel_eye = cl::Kernel(program,"k_eye", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SINGLE_SHIFT
+    OCL_CHECK(err, kernel_single_shift = cl::Kernel(program,"k_single_shift", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SINGLE_ROTATE
+    OCL_CHECK(err, kernel_single_roate = cl::Kernel(program,"k_single_rotate", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SINGLE_SCALE
+    OCL_CHECK(err, kernel_single_scale = cl::Kernel(program,"k_single_scale", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SINGLE_FLIP
+    OCL_CHECK(err, kernel_single_flip = cl::Kernel(program,"k_single_flip", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SINGLE_CROP
+    OCL_CHECK(err, kernel_single_crop = cl::Kernel(program,"k_single_crop", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SINGLE_CROP_SCALE
+    OCL_CHECK(err, kernel_single_crop_scale = cl::Kernel(program,"k_single_crop_scale", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_RAND_UNIFORM
+    OCL_CHECK(err, kernel_rand_uniform = cl::Kernel(program,"k_single_rand_uniform", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_RAND_SIGNED_UNIFORM
+    OCL_CHECK(err, kernel_signed_uniform = cl::Kernel(program,"k_single_signed_uniform", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_RAND_BINARY
+    OCL_CHECK(err, kernel_rand_binary = cl::Kernel(program,"k_single_rand_binary", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_RAND_NORMAL
+    OCL_CHECK(err, kernel_rand_normal = cl::Kernel(program,"k_single_rand_normal", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_CENT
+    OCL_CHECK(err, kernel_cent = cl::Kernel(program,"k_cent", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_ACCURACY
+    OCL_CHECK(err, kernel_accuracy = cl::Kernel(program,"k_accuracy", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_MPOOL2D
+    OCL_CHECK(err, kernel_mpool2D = cl::Kernel(program,"k_mpool2D", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_MPOOL2D_BACK
+    OCL_CHECK(err, kernel_mpool2D_back = cl::Kernel(program,"k_mpool2D_back", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_AVGPOOL2D
+    OCL_CHECK(err, kernel_avgpool2D = cl::Kernel(program,"k_mpool2D", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_AVGPOOL2D_BACK
+    OCL_CHECK(err, kernel_avgpool2D_back = cl::Kernel(program,"k_avgpool2D_back", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_REDUCE
+    OCL_CHECK(err, kernel_reduce = cl::Kernel(program,"k_reduce", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_REDUCE_OP
+    OCL_CHECK(err, kernel_reduce_op = cl::Kernel(program,"k_reduce_op", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_reduce_sum2D
+    OCL_CHECK(err, kernel_reduce_sum2D = cl::Kernel(program,"k_reduce_sum2D", &err));
+     if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_REDUCTION
+    OCL_CHECK(err, kernel_reduction = cl::Kernel(program,"k_reduction", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_REDUCTION_BACK
+    OCL_CHECK(err, kernel_reduction_back = cl::Kernel(program,"k_reduction_back", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_REPEAT_NN
+    OCL_CHECK(err, kernel_repeat_nn = cl::Kernel(program,"k_repeat_nn", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_D_REPEAT_NN
+    OCL_CHECK(err, kernel_d_repeat_nn = cl::Kernel(program,"k_d_repeat_nn", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_ABS_
+    OCL_CHECK(err, kernel_abs_ = cl::Kernel(program,"k_abs_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_ACOS_
+    OCL_CHECK(err, kernel_acos_ = cl::Kernel(program,"k_acos_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_ADD_
+    OCL_CHECK(err, kernel_add_ = cl::Kernel(program,"k_add_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_ASIN_
+    OCL_CHECK(err, kernel_asin_ = cl::Kernel(program,"k_asin_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_ATAN_
+    OCL_CHECK(err, kernel_atan_ = cl::Kernel(program,"k_atan_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_CEIL_
+    OCL_CHECK(err, kernel_ceil_ = cl::Kernel(program,"k_ceil_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_CLAMP_
+    OCL_CHECK(err, kernel_clamp_ = cl::Kernel(program,"k_clamp_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_K_COS_
+    OCL_CHECK(err, kernel_cos_ = cl::Kernel(program,"k_cos_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_COSH_
+    OCL_CHECK(err, kernel_cosh_ = cl::Kernel(program,"k_cosh_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_EXP_
+    OCL_CHECK(err, kernel_exp_ = cl::Kernel(program,"k_exp_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_FLOOR_
+    OCL_CHECK(err, kernel_floor_ = cl::Kernel(program,"k_floor_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_INV_
+    OCL_CHECK(err, kernel_inv_ = cl::Kernel(program,"k_inv_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_LOG_
+    OCL_CHECK(err, kernel_log_ = cl::Kernel(program,"k_log_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_LOG2_
+    OCL_CHECK(err, kernel_log2_ = cl::Kernel(program,"k_log2_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_LOG10_
+    OCL_CHECK(err, kernel_log10_ = cl::Kernel(program,"k_log10_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_LOGN_
+    OCL_CHECK(err, kernel_logn_ = cl::Kernel(program,"k_logn_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_MOD_
+    OCL_CHECK(err, kernel_mod_ = cl::Kernel(program,"k_mod_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_MULT_
+    OCL_CHECK(err, kernel_mult_ = cl::Kernel(program,"k_mult_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_NORMALIZE_
+    OCL_CHECK(err, kernel_normalize_ = cl::Kernel(program,"k_normalize_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_POW_
+    OCL_CHECK(err, kernel_pow_ = cl::Kernel(program,"k_pow_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_POWB_
+    OCL_CHECK(err, kernel_powb_ = cl::Kernel(program,"k_powb_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_RECIPROCAL_
+    OCL_CHECK(err, kernel_reciprocal_ = cl::Kernel(program,"k_reciprocal_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_REMAINDER_
+    OCL_CHECK(err, kernel_remainder_ = cl::Kernel(program,"k_remainder_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_ROUND_
+    OCL_CHECK(err, kernel_round_ = cl::Kernel(program,"k_round_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_RSQRT_
+    OCL_CHECK(err, kernel_rsqrt_ = cl::Kernel(program,"k_rsqrt_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SIGMOID_
+    OCL_CHECK(err, kernel_sigmoid_ = cl::Kernel(program,"k_sigmoid_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SIGN_
+    OCL_CHECK(err, kernel_sign_ = cl::Kernel(program,"k_sign_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SIN_
+    OCL_CHECK(err, kernel_sin_ = cl::Kernel(program,"k_sin_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SINH_
+    OCL_CHECK(err, kernel_sinh_ = cl::Kernel(program,"k_sinh_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SQR_
+    OCL_CHECK(err, kernel_sqr_ = cl::Kernel(program,"k_sqr_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SQRT_
+    OCL_CHECK(err, kernel_sqrt_ = cl::Kernel(program,"k_sqrt_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_TAN_
+    OCL_CHECK(err, kernel_tan_ = cl::Kernel(program,"k_tan_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_TANH_
+    OCL_CHECK(err, kernel_tanh_ = cl::Kernel(program,"k_tanh_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_TRUNC_
+    OCL_CHECK(err, kernel_trunc_ = cl::Kernel(program,"k_trunc_", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_ADD
+    OCL_CHECK(err, kernel_add = cl::Kernel(program,"k_add", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_INC
+    OCL_CHECK(err, kernel_inc = cl::Kernel(program,"k_inc", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_EL_DIV
+    OCL_CHECK(err, kernel_el_div = cl::Kernel(program,"k_el_div", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_EL_MULT
+    OCL_CHECK(err, kernel_el_mult = cl::Kernel(program,"k_el_mult", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SIGN2
+    OCL_CHECK(err, kernel_sign2 = cl::Kernel(program,"k_sign2", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SUM2D_ROWWISE
+    OCL_CHECK(err, kernel_sum2D_rowwise = cl::Kernel(program,"k_sum2D_rowwise", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SUM2D_COLWISE
+    OCL_CHECK(err, kernel_sum2D_colwise = cl::Kernel(program,"k_sum2D_colwise", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_MAX
+    OCL_CHECK(err, kernel_max = cl::Kernel(program,"k_max", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_MIN
+    OCL_CHECK(err, kernel_min = cl::Kernel(program,"k_min", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SUM
+    OCL_CHECK(err, kernel_sum = cl::Kernel(program,"k_sum", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SUM_ABS
+    OCL_CHECK(err, kernel_sum_abs = cl::Kernel(program,"k_sum_abs", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
 }
 
 void close_fpga(){
