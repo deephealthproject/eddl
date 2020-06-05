@@ -16,6 +16,7 @@
 
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/random.h"
+#include "eddl/hardware/cpu/cpu_hw.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -23,12 +24,6 @@
 
 // emulation switches of functions (via cpu)
 // when set the function is run on the cpu
-char fpga_set_cpuemu_single_shift       = 1;
-char fpga_set_cpuemu_single_rotate      = 1;
-char fpga_set_cpuemu_single_scale       = 1;
-char fpga_set_cpuemu_single_flip        = 1;
-char fpga_set_cpuemu_single_crop        = 1;
-char fpga_set_cpuemu_single_crop_scale  = 1;
 char fpga_set_cpuemu_shift              = 1;
 char fpga_set_cpuemu_rotate             = 1;
 char fpga_set_cpuemu_scale              = 1;
@@ -43,122 +38,19 @@ char fpga_set_cpuemu_scale_random       = 1;
 char fpga_set_cpuemu_crop_scale_random  = 1;
 char fpga_set_cpuemu_cutout_random      = 1;
 
-// -----------------------------------------------------------------
-// single_shift
-//
-void fpga_cpuemu_single_shift(int b, Tensor *A, Tensor *B, vector<int> shift, int mode, float constant) {
-    printf("fpga_cpuemu_single_shift not implemented yet\n");
-    exit(1);
-}
-
-void fpga_single_shift(int b, Tensor *A, Tensor *B, vector<int> shift, int mode, float constant){
-    _profile_fpga(_FPGA_SINGLE_SHIFT, 0);
-    if (fpga_set_cpuemu_single_shift == 1) {
-        fpga_cpuemu_single_shift(b, A, B, shift, mode, constant);
-    } else {
-        printf("fpga_single_shift not implemented yet\n"); exit(1);
-    }
-    _profile_fpga(_FPGA_SINGLE_SHIFT, 1);
-}
-
-// -----------------------------------------------------------------
-// single_rotate
-//
-void fpga_cpuemu_single_rotate(int b, Tensor *A, Tensor *B, float angle, vector<int> offset_center, int mode, float constant) {
-    printf("fpga_cpuemu_single_rotate not implemented yet\n");
-    exit(1);
-}
-
-void fpga_single_rotate(int b, Tensor *A, Tensor *B, float angle, vector<int> offset_center, int mode, float constant){
-    _profile_fpga(_FPGA_SINGLE_ROTATE, 0);
-    if (fpga_set_cpuemu_single_rotate == 1) {
-        fpga_cpuemu_single_rotate(b, A, B, angle, offset_center, mode, constant);
-    } else {
-        printf("fpga_single_rotate not implemented yet\n"); exit(1);
-    }
-    _profile_fpga(_FPGA_SINGLE_ROTATE, 1);
-}
-
-// -----------------------------------------------------------------
-// single_scale
-//
-void fpga_cpuemu_single_scale(int b, int* offsets, Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant) {
-    printf("fpga_cpuemu_single_scale not implemented yet\n");
-    exit(1);
-}
-
-void fpga_single_scale(int b, int* offsets, Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant){
-    _profile_fpga(_FPGA_SINGLE_SCALE, 0);
-    if (fpga_set_cpuemu_single_scale == 1) {
-        fpga_cpuemu_single_scale(b, offsets, A, B, new_shape, mode, constant);
-    } else {
-        printf("fpga_single_scale not implemented yet\n"); exit(1);
-    }
-    _profile_fpga(_FPGA_SINGLE_SCALE, 1);
-}
-
-// -----------------------------------------------------------------
-// single_flip
-//
-void fpga_cpuemu_single_flip(int b, bool apply, Tensor *A, Tensor *B, int axis){
-    printf("fpga_cpuemu_single_flip not implemented yet\n");
-    exit(1);
-}
-
-void fpga_single_flip(int b, bool apply, Tensor *A, Tensor *B, int axis){
-    _profile_fpga(_FPGA_SINGLE_FLIP, 0);
-    if (fpga_set_cpuemu_single_flip == 1) {
-        fpga_cpuemu_single_flip(b, apply, A, B, axis);
-    } else {
-        printf("fpga_single_flip not implemented yet\n"); exit(1);
-    }
-    _profile_fpga(_FPGA_SINGLE_FLIP, 1);
-}
-
-// -----------------------------------------------------------------
-// single_crop
-//
-void fpga_cpuemu_single_crop(int b, const int* offsets, Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant, bool inverse){
-    printf("fpga_cpuemu_single_crop not implemented yet\n");
-    exit(1);
-}
-
-void fpga_single_crop(int b, const int* offsets, Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant, bool inverse){
-    _profile_fpga(_FPGA_SINGLE_CROP, 0);
-    if (fpga_set_cpuemu_single_crop == 1) {
-        fpga_cpuemu_single_crop(b, offsets, A, B, coords_from, coords_to, constant, inverse);
-    } else {
-        printf("fpga_single_crop not implemented yet\n"); exit(1);
-    }
-    _profile_fpga(_FPGA_SINGLE_CROP, 1);
-}
-
-// -----------------------------------------------------------------
-// single_crop_scale
-//
-void fpga_cpuemu_single_crop_scale(int b, Tensor* A, Tensor* B, vector<int> coords_from, vector<int> coords_to, int mode, float constant){
-    printf("fpga_cpuemu_single_crop_scale not implemented yet\n");
-    exit(1);
-}
-
-void fpga_single_crop_scale(int b, Tensor* A, Tensor* B, vector<int> coords_from, vector<int> coords_to, int mode, float constant){
-    _profile_fpga(_FPGA_SINGLE_CROP_SCALE, 0);
-    if (fpga_set_cpuemu_single_crop_scale == 1) {
-        fpga_cpuemu_single_crop_scale(b, A, B, coords_from, coords_to, mode, constant);
-    } else {
-        printf("fpga_single_crop_scale not implemented yet\n"); exit(1);
-    }
-    _profile_fpga(_FPGA_SINGLE_CROP_SCALE, 1);
-}
-
 // CPU: Data augmentation (2D Optimized) ********************************************
 
 // -----------------------------------------------------------------
 // single_shift
 //
 void fpga_cpuemu_shift(Tensor *A, Tensor *B, vector<int> shift, int mode, float constant) {
-    printf("fpga_cpuemu_shift not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_shift(A, B, shift, mode, constant);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_shift(Tensor *A, Tensor *B, vector<int> shift, int mode, float constant) {
@@ -176,8 +68,13 @@ void fpga_shift(Tensor *A, Tensor *B, vector<int> shift, int mode, float constan
 // rotate
 //
 void fpga_cpuemu_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, int mode, float constant){
-    printf("fpga_cpuemu_rotate not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_rotate(A, B, angle, offset_center, mode, constant);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, int mode, float constant){
@@ -195,8 +92,13 @@ void fpga_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, i
 // scale
 //
 void fpga_cpuemu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant) {
-    printf("fpga_cpuemu_scale not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_scale(A, B, new_shape, mode, constant);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant){
@@ -222,8 +124,13 @@ void fpga_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float con
 // flip
 //
 void fpga_cpuemu_flip(Tensor *A, Tensor *B, int axis){
-    printf("fpga_cpuemu_flip not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_flip(A, B, axis);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_flip(Tensor *A, Tensor *B, int axis){
@@ -241,8 +148,13 @@ void fpga_flip(Tensor *A, Tensor *B, int axis){
 // crop
 //
 void fpga_cpuemu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant, bool inverse){
-    printf("fpga_cpuemu_crop not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_crop(A, B, coords_from, coords_to, constant, inverse);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant, bool inverse){
@@ -264,8 +176,13 @@ void fpga_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords
 // crop-scale
 //
 void fpga_cpuemu_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, int mode, float constant) {
-    printf("fpga_cpuemu_scale not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_crop_scale(A, B, coords_from, coords_to, mode, constant);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, int mode, float constant){
@@ -285,8 +202,13 @@ void fpga_crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> 
 // shift_random
 //
 void fpga_cpuemu_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int mode, float constant) {
-    printf("fpga_cpuemu_shift_random not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_shift_random(A, B, factor_x, factor_y, mode, constant);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, int mode, float constant) {
@@ -302,11 +224,16 @@ void fpga_shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<floa
 }
 
 // -----------------------------------------------------------------
-// shift_random
+// rotate_random
 //
 void fpga_cpuemu_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center, int mode, float constant) {
-    printf("fpga_cpuemu_rotate_random not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_rotate_random(A, B, factor, offset_center, mode, constant);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center, int mode, float constant){
@@ -325,8 +252,13 @@ void fpga_rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> 
 // scale_random
 //
 void fpga_cpuemu_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant){
-    printf("fpga_cpuemu_scale_random not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_scale_random(A, B, factor, mode, constant);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant){
@@ -347,8 +279,13 @@ void fpga_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, flo
 // flip_random
 //
 void fpga_cpuemu_flip_random(Tensor *A, Tensor *B, int axis) {
-    printf("fpga_cpuemu_flip_random not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_flip_random(A, B, axis);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_flip_random(Tensor *A, Tensor *B, int axis){
@@ -368,8 +305,13 @@ void fpga_flip_random(Tensor *A, Tensor *B, int axis){
 // crop_random
 //
 void fpga_cpuemu_crop_random(Tensor *A, Tensor *B) {
-    printf("fpga_cpuemu_crop_random not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_crop_random(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_crop_random(Tensor *A, Tensor *B){
@@ -388,8 +330,13 @@ void fpga_crop_random(Tensor *A, Tensor *B){
 // crop_scale_random
 //
 void fpga_cpuemu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant) {
-    printf("fpga_cpuemu_crop_scale_random not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_crop_scale_random(A, B, factor, mode, constant);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant){
@@ -403,11 +350,16 @@ void fpga_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode
 }
 
 // -----------------------------------------------------------------
-// cutout_ranom
+// cutout_random
 //
 void fpga_cpuemu_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant){
-    printf("fpga_cpuemu_cutout_random not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_cutout_random(A, B, factor_x, factor_y, constant);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant){

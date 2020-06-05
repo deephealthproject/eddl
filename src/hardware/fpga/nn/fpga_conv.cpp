@@ -24,8 +24,16 @@ char fpga_set_cpuemu_conv2D_back = 1;
 // conv2D
 //
 void fpga_cpuemu_conv2D(ConvolDescriptor *D) {
-    printf("fpga_cpuemu_conv2D not implemented yet\n");
-    exit(1);
+ /* int Ksize = D->K->size * sizeof(float);
+  int Isize = D->ptrI->size * sizeof(float);
+  if (D->K->ptr == NULL) D->K->ptr = (float *)malloc(Ksize);
+  if (D->ptrI->ptr == NULL) D->ptrI->ptr = (float *)malloc(Isize);
+  fpga_copy_from_fpga(D->K, D->K->ptr);
+  fpga_copy_from_fpga(D->ptrI, D->ptrI->ptr);
+  cpu_conv2D(D);
+  fpga_copy_to_fpga(->ptr, B);*/
+  printf("fpga_cpuemu_conv2D not implemented yet\n");
+  exit(1);
 }
 
 void fpga_conv2D(ConvolDescriptor *D)

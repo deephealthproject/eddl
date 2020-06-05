@@ -15,6 +15,7 @@
 #include "eddl/descriptors/descriptors.h"
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include <sys/time.h>
+#include "eddl/hardware/cpu/cpu_hw.h"
 
 cl::Context      context;
 cl::CommandQueue q;
@@ -244,8 +245,13 @@ void fpga_init(){ // initialize only once
 
     devices.resize(1);
     OCL_CHECK(err, program = cl::Program(context, devices, bins, NULL, &err));
+
+    #ifdef K_ENALBED_K_RELU
+    OCL_CHECK(err, k_relu = cl::Kernel(program,"k_relu", &err));
+    #endif
+
     /*OCL_CHECK(err, tensor_op= cl::Kernel(program,"tensor_op", &err));*/
-    OCL_CHECK(err, multitensor_op = cl::Kernel(program,"k_multitensor_op", &err));
+/*    OCL_CHECK(err, multitensor_op = cl::Kernel(program,"k_multitensor_op", &err));
     OCL_CHECK(err, kernel_add = cl::Kernel(program,"k_add", &err));
     //OCL_CHECK(err, mult2D = cl::Kernel(program,"k_mult2D", &err));
     OCL_CHECK(err, sum2D_rowwise = cl::Kernel(program,"k_sum2D_rowwise", &err));
@@ -256,8 +262,9 @@ void fpga_init(){ // initialize only once
     OCL_CHECK(err, kernel_accuracy = cl::Kernel(program,"k_accuracy", &err));
     OCL_CHECK(err, kernel_total_sum = cl::Kernel(program,"k_total_sum", &err));
     //OCL_CHECK(err, el_div = cl::Kernel(program,"k_el_div", &err));
-    //OCL_CHECK(err, kernel_normalize = cl::Kernel(program,"k_normalize", &err));*/
+    //OCL_CHECK(err, kernel_normalize = cl::Kernel(program,"k_normalize", &err));
     //kernel_gemx = clCreateKernel(program(), "gemxKernel_0", &err);
+*/
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
 
 }
@@ -333,6 +340,15 @@ void fpga_copy_from_fpga(Tensor *A,float *nptr)
 //    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_output},CL_MIGRATE_MEM_OBJECT_HOST));
 }
 
+void fpga_copy_addresses_from_fpga(SelDescriptor *SD, int size, int *nptr)
+{
+    cl_int err;
+    cl::Event event;
+    OCL_CHECK(err, err= q.enqueueReadBuffer((SD->fpga_ptr), CL_TRUE, 0, size, nptr, nullptr, &event));
+    q.finish();;
+//    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_output},CL_MIGRATE_MEM_OBJECT_HOST));
+}
+
 
 // emulation switches of functions (via cpu)
 // when set the function is run on the cpu
@@ -355,8 +371,13 @@ char fpga_set_cpuemu_concat          = 1;
 // all
 //
 void fpga_cpuemu_transpose(Tensor *A, Tensor *B) {
-    printf("fpga_cpuemu_transpose not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_transpose(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_transpose(Tensor * A, Tensor * B) {
@@ -373,9 +394,12 @@ void fpga_transpose(Tensor * A, Tensor * B) {
 // copy
 //
 void fpga_cpuemu_copy(Tensor *A, Tensor *B) {
-    printf("fpga_cpuemu_copy not implemented yet\n");
- 
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_copy(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_copy(Tensor * A, Tensor * B){
@@ -383,7 +407,10 @@ void fpga_copy(Tensor * A, Tensor * B){
     if (fpga_set_cpuemu_copy == 1) {
         fpga_cpuemu_copy(A, B);
     } else {
-        printf("fpga_copy not implemented yet\n"); exit(1);
+      int Asize = A->size * sizeof(float);
+      if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+      fpga_copy_from_fpga(A, A->ptr);
+      fpga_copy_to_fpga(A->ptr, B);
     }
     _profile_fpga(_FPGA_COPY, 1);
 }
@@ -392,8 +419,9 @@ void fpga_copy(Tensor * A, Tensor * B){
 // fill_
 //
 void fpga_cpuemu_fill_(Tensor *A, float v) {
-    printf("fpga_cpuemu_fill_ not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  cpu_fill_(A, v);
+  fpga_copy_to_fpga(A->ptr, A);
 }
 
 void fpga_fill_(Tensor *A, float v){
@@ -410,8 +438,13 @@ void fpga_fill_(Tensor *A, float v){
 // fill
 //
 void fpga_cpuemu_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc) {
-    printf("fpga_cpuemu_fill not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_fill(A, aini, aend, B, bini, bend, inc);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_fill(Tensor * A, int aini, int aend, Tensor * B, int bini, int bend, int inc){
@@ -428,8 +461,16 @@ void fpga_fill(Tensor * A, int aini, int aend, Tensor * B, int bini, int bend, i
 // select
 //
 void fpga_cpuemu_select(Tensor *A, Tensor *B, SelDescriptor *sd) {
-    printf("fpga_cpuemu_select not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  int ADDRsize = B->size * sizeof(int);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  if (sd->cpu_addresses == NULL) sd->cpu_addresses = (int *)malloc(ADDRsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  fpga_copy_addresses_from_fpga(sd, ADDRsize, sd->cpu_addresses);
+  cpu_select(A, B, sd);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_select(Tensor *A, Tensor *B, SelDescriptor *sd){
@@ -446,8 +487,16 @@ void fpga_select(Tensor *A, Tensor *B, SelDescriptor *sd){
 // select_back
 //
 void fpga_cpuemu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd) {
-    printf("fpga_cpuemu_select_back not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  int ADDRsize = B->size * sizeof(int);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  if (sd->cpu_addresses == NULL) sd->cpu_addresses = (int *)malloc(ADDRsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  fpga_copy_addresses_from_fpga(sd, ADDRsize, sd->cpu_addresses);
+  cpu_select_back(A, B, sd);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
@@ -464,8 +513,16 @@ void fpga_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
 // set_select
 //
 void fpga_cpuemu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd) {
-    printf("fpga_cpuemu_set_select not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  int ADDRsize = B->size * sizeof(int);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  if (sd->cpu_addresses == NULL) sd->cpu_addresses = (int *)malloc(ADDRsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  fpga_copy_addresses_from_fpga(sd, ADDRsize, sd->cpu_addresses);
+  cpu_set_select(A, B, sd);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
@@ -482,8 +539,16 @@ void fpga_set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
 // set_select_back
 //
 void fpga_cpuemu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd) {
-    printf("fpga_cpuemu_set_select_back not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  int ADDRsize = B->size * sizeof(int);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  if (sd->cpu_addresses == NULL) sd->cpu_addresses = (int *)malloc(ADDRsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  fpga_copy_addresses_from_fpga(sd, ADDRsize, sd->cpu_addresses);
+  cpu_set_select_back(A, B, sd);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
@@ -500,8 +565,13 @@ void fpga_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
 // select2
 //
 void fpga_cpuemu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,bool mask_zeros) {
-    printf("fpga_cpuemu_select(2) not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_select(A, B, sind, ini, end, mask_zeros);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,bool mask_zeros){
@@ -518,8 +588,13 @@ void fpga_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,bool
 // deselect
 //
 void fpga_cpuemu_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end, int inc, bool mask_zeros) {
-    printf("fpga_cpuemu_deslect not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  int Bsize = B->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_deselect(A, B, sind, ini, end, inc, mask_zeros);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,int inc,bool mask_zeros){
@@ -536,8 +611,15 @@ void fpga_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,in
 // concat
 //
 void fpga_cpuemu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative) {
-    printf("fpga_cpuemu_concat not implemented yet\n");
-    exit(1);
+  int Asize = A->size * sizeof(float);
+  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+  for (unsigned int i = 0; i < t.size(); i++) {
+    int Tsize = t[i]->size * sizeof(float);
+    if (t[i]->ptr == NULL) t[i]->ptr = (float *)malloc(Tsize);
+    fpga_copy_from_fpga(t[i], t[i]->ptr);      
+  }
+  cpu_concat(A, t, axis, derivative);
+  fpga_copy_to_fpga(A->ptr, A);
 }
 
 void fpga_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative){
