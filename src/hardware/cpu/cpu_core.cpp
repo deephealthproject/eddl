@@ -182,6 +182,7 @@ void _profile(int f_id, int end) {
 }
 
 void _show_profile() {
+  #ifdef CPU_DEBUG
   printf("\nCPU functions called:\n");
   for (int i=0; i<_NUM_CPU_FUNCS; i++) {
     if (num_instances[i] != 0) {
@@ -191,6 +192,7 @@ void _show_profile() {
     }
   }
   printf("Memory: %f MB\n", mb_memory_needed);
+  #endif
 }
 
 void _profile_add_tensor(int size) {

@@ -23,7 +23,7 @@
 #include "eddl/layers/core/layer_core.h"
 
 
-extern void _show_profile();
+extern void _show_profile_fpga();
 
 #define VERBOSE 0
 
@@ -772,7 +772,7 @@ void Net::train_batch(vtensor X, vtensor Y, vind sind, int eval) {
 
   compute_loss();
 
-  _show_profile();
+  _show_profile_fpga();
 
 }
 

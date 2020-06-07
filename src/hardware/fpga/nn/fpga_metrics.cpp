@@ -37,10 +37,11 @@ int fpga_cpuemu_accuracy(Tensor *A, Tensor *B) {
 }
 
 int fpga_accuracy(Tensor *A, Tensor *B){
+  int acc;
   _profile_fpga(_FPGA_ACCURACY, 0);
 
   if (fpga_set_cpuemu_accuracy == 1) {
-    int acc = fpga_cpuemu_accuracy(A, B);
+    acc = fpga_cpuemu_accuracy(A, B);
     return acc;
   } else {
       printf("fpga_accuracy not implemented yet\n"); exit(1);
@@ -71,5 +72,5 @@ int fpga_accuracy(Tensor *A, Tensor *B){
      return *acc;
   */
   printf("Accuracy not implemented yet (has compilation error)\n"); exit(1);  _profile_fpga(_FPGA_ACCURACY, 1);
-  return 0;
+  return acc;
 }

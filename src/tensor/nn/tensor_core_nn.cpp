@@ -21,9 +21,7 @@
 #endif
 
 // Resizing tensors
-void Tensor::resize(int b, float *fptr){
-
-    printf("tensor::resize\n");
+void Tensor::resize(int b, float *fptr, cl::Buffer ffpga_ptr){
 
     if (b==shape[0]) return;
 
@@ -56,6 +54,10 @@ void Tensor::resize(int b, float *fptr){
           if (fptr==nullptr) {
             gpu_delete_tensor(gpu_device,ptr);
             ptr=gpu_create_tensor(gpu_device,size);
+	    int ant = fpga_tensor_id;
+	    fpga_tensor_id = next_fpga_tensor_id;
+	    next_fpga_tensor_id++;
+	    printf("FPGA (resize): new tensor id %d (ant %d)\n", fpga_tensor_id, fpga_tensor_id_ant);
           }
           else {
             ptr=fptr;
@@ -66,12 +68,23 @@ void Tensor::resize(int b, float *fptr){
     else if (isFPGA())
         {
           if (fptr==nullptr) {
-//            fpga_delete_tensor(fpga_device,ptr);
-//            ptr=fpga_create_tensor(fpga_device,size);
-printf("to fix! where to define fpga_device\n"); exit(1);
-          }
-          else {
+            #ifdef FPGA_DEBUG
+	    printf("FPGA: resize (removing and creating new tensor (id %d)\n", fpga_tensor_id);
+            #endif
+            fpga_delete_tensor(fpga_device,fpga_ptr, fpga_tensor_id, size);
+            fpga_ptr=fpga_create_tensor(fpga_device,size);
+	    // we also manage cpu buffers (to ease the cpu emulation flow)
+	    free(ptr);
+	    ptr = get_fmem(size,"Tensor::resize");
+
+          } else {
+	    printf("FPGA: resize (tensor_core_nn) with just pointer assignment (will not work on FPGA)\n");
+	    exit(1);
             ptr=fptr;
+          }
+	  // we also manage cpu buffers for eigen, to ease the cpu emulation flow
+          if (ndim == 2) {
+            ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(ptr, shape[1], shape[0]);
           }
         }
 #endif
@@ -79,11 +92,11 @@ printf("to fix! where to define fpga_device\n"); exit(1);
 }
 
 void Tensor::resize(int b) {
-  resize(b,(float *)nullptr);
+  resize(b,(float *)nullptr, (cl::Buffer)nullptr);
 }
 
 void Tensor::resize(int b, Tensor *T) {
-  resize(b,T->ptr);
+  resize(b, T->ptr, T->fpga_ptr);
 }
 
 

@@ -97,9 +97,10 @@ public:
     int gpu_device;
     mutex *tsem;  // Multithreading. Tensor semaphore
 
-    // aux variables
-    int fpga_device;
-    cl::Buffer fpga_ptr;
+    // fpga-related information
+    int fpga_device;         // fpga device
+    cl::Buffer fpga_ptr;     // open-cl buffer pointer to data
+    int fpga_tensor_id;      // for debuging and tracking tensors
 
     // Constructors
     Tensor();
@@ -131,7 +132,7 @@ public:
     void reallocate(Tensor* old_t, vector<int> *s = nullptr);
 
     // Resize
-    void resize(int b, float *fptr);
+    void resize(int b, float *fptr, cl::Buffer ffpga_ptr);
     void resize(int b);
     void resize(int b, Tensor *T);
 

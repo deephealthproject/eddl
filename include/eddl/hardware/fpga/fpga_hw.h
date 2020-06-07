@@ -16,6 +16,10 @@
 #include "eddl/tensor/tensor_reduction.h"
 #include "eddl/descriptors/descriptors.h"
 
+extern cl::CommandQueue q;
+
+#define K_ENABLED_RELU
+
 // activation kernels (22)
 extern cl::Kernel kernel_relu,   kernel_d_relu,  kernel_thresholded_relu,    kernel_d_thresholded_relu, kernel_leaky_relu,     kernel_d_leaky_relu;
 extern cl::Kernel kernel_elu,    kernel_d_elu,   kernel_softplus,            kernel_d_softplus,         kernel_softsign,       kernel_d_softsign;
@@ -80,7 +84,9 @@ extern cl::Kernel kernel_max,        kernel_min,    kernel_sum;
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
 
 void fpga_init();
-void fpga_create_tensor(Tensor *T, int dev);
+cl::Buffer fpga_create_tensor(int device, int size);
+void fpga_delete_tensor(int device, cl::Buffer ptr, int fpga_tensor_id_p, int size);
+void fpga_copy_fpga(Tensor *A, Tensor *B);
 void fpga_copy_to_fpga(float *nptr, Tensor *A);
 void fpga_copy_from_fpga(Tensor *A,float *nptr);
 void fpga_copy_addresses_from_fpga(SelDescriptor *SD, int size, int *nptr);

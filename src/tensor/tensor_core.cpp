@@ -269,6 +269,19 @@ void Tensor::copy(Tensor *A, Tensor *B) {
             gpu_copy_from_gpu(A,B->ptr);
           }
 #endif
+#ifdef cFPGA
+        else if ((A->isFPGA())&&(B->isFPGA())) {
+          fpga_copy_fpga(A,B);
+        }
+        else if ((A->isCPU())&&(B->isFPGA()))
+          {
+            fpga_copy_to_fpga(A->ptr,B);
+          }
+        else if ((A->isFPGA())&&(B->isCPU()))
+          {
+            fpga_copy_from_fpga(A,B->ptr);
+          }
+#endif
     else {
         fprintf(stderr, "(%d %d)\n", A->device, B->device);
         msg("unsupported copy between devices", "Tensor::copy");

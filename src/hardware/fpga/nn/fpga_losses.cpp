@@ -17,9 +17,6 @@
 #include "eddl/hardware/cpu/nn/cpu_nn.h"
 #include "eddl/hardware/fpga/fpga_hw.h"
 
-extern cl::Kernel kernel_cent;
-extern cl::CommandQueue q;
-
 // emulation switches of functions (via cpu)
 // when set the function is run on the cpu
 char fpga_set_cpuemu_cent      = 1;

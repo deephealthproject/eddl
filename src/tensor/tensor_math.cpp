@@ -162,6 +162,19 @@ void Tensor::inc(Tensor *A, Tensor *B) {
         delete n;
     }
 #endif
+
+#ifdef cFPGA
+    else if ((A->isFPGA())&&(B->isFPGA())) {
+        Tensor::add(1,A,1,B,B,0);
+    }
+    else if (((A->isCPU())&&(B->isFPGA()))||((A->isFPGA())&&(B->isCPU())))
+    {
+        Tensor *n=new Tensor(B->getShape(),B->device);
+        Tensor::copy(A,n);
+        Tensor::add(1,n,1,B,B,0);
+        delete n;
+    }
+#endif
     else {
         fprintf(stderr, "(%d %d)\n", A->device, B->device);
         msg("unsupported inc between devices", "Tensor::inc");

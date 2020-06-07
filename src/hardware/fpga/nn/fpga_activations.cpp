@@ -19,7 +19,7 @@
 
 // emulation switches of functions (via cpu)
 // when set the function is run on the cpu
-char fpga_set_cpuemu_relu               = 1;
+char fpga_set_cpuemu_relu               = 0;
 char fpga_set_cpuemu_d_relu             = 1;
 char fpga_set_cpuemu_thresholded_relu   = 1;
 char fpga_set_cpuemu_d_thresholded_relu = 1;
@@ -62,7 +62,16 @@ void fpga_relu(Tensor *A, Tensor *B){
   if (fpga_set_cpuemu_relu == 1) {
       fpga_cpuemu_relu(A, B);
   } else {
-      printf("fpga_relu not implemented yet\n"); exit(1);
+    cl_int err;
+    cl::Event event;
+
+    OCL_CHECK(err, err = kernel_relu.setArg(0, (A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_relu.setArg(1, (B->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_relu.setArg(2, A->size));
+
+    OCL_CHECK(err, err = q.enqueueTask(kernel_relu, NULL, &event));
+    //  event.wait();
+    q.finish();
   }
   _profile_fpga(_FPGA_RELU, 1);
 }
@@ -598,6 +607,8 @@ void fpga_cpuemu_softmax(Tensor *A, Tensor *B){
 
 void fpga_softmax(Tensor *A, Tensor *B) {
   _profile_fpga(_FPGA_SOFTMAX, 0);
+  _profile_fpga_tensor(A);
+  _profile_fpga_tensor(B);
   if (fpga_set_cpuemu_softmax == 1) {
       fpga_cpuemu_softmax(A, B);
   } else {

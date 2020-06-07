@@ -10,6 +10,8 @@
 #ifndef __PROFILE
 #define __PROFILE
 
+#include "eddl/tensor/tensor.h"
+
 #define _FPGA_ALL               0
 #define _FPGA_ANY               1
 #define _FPGA_ISFINITE          2
@@ -161,5 +163,5 @@
 #define _NUM_FPGA_FUNCS       147
 extern int num_instances_fpga[_NUM_FPGA_FUNCS];
 void _profile_fpga(int f_id, int end);
-
+void _profile_fpga_tensor(Tensor *T);
 #endif

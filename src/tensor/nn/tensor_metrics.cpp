@@ -41,7 +41,7 @@ int accuracy(Tensor *A, Tensor *B) {
 #ifdef cFPGA
     else if (A->isFPGA())
       {
-         fpga_accuracy(A,B);
+         acc = fpga_accuracy(A,B);
       }
 #endif
     B->tsem->unlock();

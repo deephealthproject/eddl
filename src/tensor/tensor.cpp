@@ -24,6 +24,10 @@
 #include "eddl/hardware/fpga/fpga_hw.h"
 #endif
 
+#ifdef cFPGA
+extern int next_fpga_tensor_id;
+#endif
+
 using namespace std;
 
 // TODO: Don't like here
@@ -178,7 +182,9 @@ void Tensor::updateData(float *fptr){
 
           // If null => Reserve memory
           // else => point to data  | CAREFUL! This pointer MUST be a GPU pointer. We cannot check it.
-          if (fptr == nullptr) { this->ptr = gpu_create_tensor(gpu_device, this->size); }
+          if (fptr == nullptr) { 
+            this->ptr = gpu_create_tensor(gpu_device, this->size);
+	  }
           else { this->ptr = fptr; }
 
         }
@@ -196,7 +202,28 @@ void Tensor::updateData(float *fptr){
            initfpga[fpga_device]=1;
          }
         //printf("Creating FPGA tensor\n");
-        fpga_create_tensor(this, fpga_device);
+        if (fptr == nullptr) {
+          #ifdef FPGA_DEBUG
+	  printf("FPGA: creating tensor with id %d\n", next_fpga_tensor_id);
+          #endif
+	  this->fpga_ptr = fpga_create_tensor(fpga_device, this->size);
+	  // we allocate also on cpu so to fluently emulate with cpu
+	  this->ptr = get_fmem(this->size,"Tensor::updateData");
+          // For 2 dimensions, map to data to Eigen for efficiency
+          // Efficient operations will be done over ptr2, which also points to ptr
+          if (this->ndim == 2) {
+            this->ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(this->ptr, this->shape[1], this->shape[0]);
+          }
+	  //
+          this->fpga_tensor_id = next_fpga_tensor_id;
+          next_fpga_tensor_id++;    
+ 	}
+	else { 
+	  printf("FPGA ERROR: mmmm... we are resizing and assigning directly the data (not supported)\n");
+	  exit(1);
+	  this->ptr = fptr;
+//	  this->fpga_ptr = fptr; 
+	}
     }
 #endif
 }
@@ -305,7 +332,7 @@ Tensor::~Tensor() {
 #ifdef cFPGA
     else {
       // delete FPGA Tensor
-      printf("delete fpga tensor not implemented yet\n"); exit(1);
+      fpga_delete_tensor(fpga_device, fpga_ptr, fpga_tensor_id, size);
     }
 #endif
     delete tsem;

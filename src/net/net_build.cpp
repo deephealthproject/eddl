@@ -469,7 +469,6 @@ void Net::resize(int b)
   }
 
   for (j = 0; j < layers.size(); j++) {
-      printf("resize layer %d\n", j);
       layers[j]->resize(batch_size);
   }
 
