@@ -158,9 +158,9 @@ Not yet...
 
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
-| nonzero          | ❌    | ❌    | Return the indices of the elements that are non-zero.                                      |
-| where          | ❌    | ❌    | Return elements, either from x or y, depending on condition.                                      |
-| mask_indices          | ❌    | ❌    | Return the indices to access (n, n) arrays, given a masking function.                                     |
+| nonzero          | ✔️    | ❌     | Return the indices of the elements that are non-zero.                                      |
+| where          | ✔️    | ✔️    | Return elements, either from x or y, depending on condition.                                      |
+| mask_indices          | ❌    | ❌️      | Return the indices to access (n, n) arrays, given a masking function.                                     |
 
 
 ### Indexing-like operations
@@ -169,8 +169,7 @@ Not yet...
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
 | select          | ✔️    | ✔️    | Returns an array with the selected indices. `Tensor::select(k); k=vector of strings ({"0", ":5", ":", "3:6"})`. _TODO: Accept masks_   |
 | set_select          | ✔️    | ✔️    | Sets the elements in the array using the selected indices        `Tensor::set_select({"0", ":5", ":", "3:6"}, k); //k=float or Tensor                           |
-| get | ✔️ | ✔️ | slow |
-| set | ✔️ | ✔️ | slow |
+
 
 ## Input and output
 
@@ -188,7 +187,7 @@ Not yet...
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
 | save          | ✔️    | -    | Images: jpg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm<br />Numpy: npy, npz<br />Text: csv, tsv, txt,...<br />Other: onnx, bin                                    |
-| save2txt      | ✔️    |      |                                                              |
+| save2txt      | ✔️    | -     |                                                              |
 
 > Note: ONNX not yet supported
 
@@ -307,6 +306,7 @@ Not yet...
 | neg | ✔️ | ✔️ |         |
 | normalize* | ✔️ | ✔️ | Not reduced         |
 | pow | ✔️ | ✔️ |         |
+| powb | ✔️ | ✔️ |         |
 | reciprocal | ✔️ | ✔️ |         |
 | remainder | ✔️ | ✔️ |         |
 | round | ✔️ | ✔️ |         |
@@ -361,5 +361,4 @@ Not yet...
 | clone | ✔️ | ✔️ | Clone a tensor (same device) |
 | info | ✔️ | ✔️ | Print shape, device and size information |
 | print | ✔️ | ✔️ | Prints the tensor values |
-| valid_indices | ✔️ | ✔️ | Check if the given indices are valid for this tensor |
-| get_address_rowmajor | ✔️ | ✔️ |  Translate a set of indices to their corresponding address (row-major) |
+
