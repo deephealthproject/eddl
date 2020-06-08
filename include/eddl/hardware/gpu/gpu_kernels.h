@@ -41,6 +41,8 @@ __global__ void concat(float *dest, float *src, unsigned int src_size, unsigned 
 __global__ void range(float *A, float start, float step, long int size);
 __global__ void eye(float *A, long int rows, long int cols, int offset);
 
+__global__ void gpu_diag(float* A, float* B, long int rows, long int cols, int k);
+
 // GPU: Generator
 __global__ void init(unsigned int seed, curandState_t* states);
 __global__ void random_uniform(curandState_t* states, float* numbers);
@@ -64,7 +66,6 @@ __global__ void flip_random(float *A, float* B, int batch, int depth, int irows,
 __global__ void crop_random(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* rnd);
 __global__ void crop_scale_random(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor, int mode, float constant, float* rnd);
 __global__ void cutout_random(float *A, float* B, int batch, int depth, int irows, int icols, int orows, int ocols, float* factor_x, float* factor_y, float constant, float* rnd);
-
 
 // GPU: Math (in-place)
 __global__ void gpu_abs(float *A, float *B, long int size);
@@ -111,6 +112,11 @@ __global__ void gpu_sum2D_rowwise(float *A, float* b, float* c, long int cols, l
 __global__ void gpu_sum2D_colwise(float *A, float* b, float* c, long int cols, long int rows); //gpu_sum2D_rowwise
 __global__ void gpu_reduce_sum2D(float *A,float *B,long int r,long int c,long int axis);
 
+__global__ void gpu_maximum(float *A, float *B, float v, long int size);
+__global__ void gpu_maximum(float *A, float *B, float *C, long int size);
+__global__ void gpu_minimum(float *A, float *B, float v, long int size);
+__global__ void gpu_minimum(float *A, float *B, float *C, long int size);
+
 // GPU: Should be reductions
 
 // GPU: Reduction
@@ -130,6 +136,11 @@ __global__ void reduction_kernel_keep_inc(float *r, float *I, int *ind, int size
 
 __global__ void reduction_kernel_sum(float *I,float *O,int m, int d,int *ind,int rs);
 
+// GPU: Linear algebra
+__global__ void gpu_norm_fro(float *A, long int size, float *result);
+
+// Generating index arrays *****************************
+__global__ void gpu_where(float *condition, float *A, float *B, float *C, long int size);
 
 // GPU: Truth value testing
 __global__ void gpu_logical_all(float *A, int size, bool &result);
@@ -151,12 +162,19 @@ __global__ void gpu_logical_xor(float *A, float *B, float *C, int size);
 // GPU: Logic operations: Comparison ops
 __global__ void gpu_logical_allclose(float *A, float *B, float rtol, float atol, bool equal_nan, int size, bool &close);
 __global__ void gpu_logical_isclose(float *A, float *B, float *C, float rtol, float atol, bool equal_nan, int size);
-__global__ void gpu_logical_greater(float *A, float *B, float *C, int size);
-__global__ void gpu_logical_greater_equal(float *A, float *B, float *C, int size);
-__global__ void gpu_logical_less(float *A, float *B, float *C, int size);
-__global__ void gpu_logical_less_equal(float *A, float *B, float *C, int size);
-__global__ void gpu_logical_equal(float *A, float *B, float *C, int size);
-__global__ void gpu_logical_not_equal(float *A, float *B, float *C, int size);
+
+__global__ void gpu_greater(float *A, float *B, float v, int size);
+__global__ void gpu_greater(float *A, float *B, float *C, int size);
+__global__ void gpu_greater_equal(float *A, float *B, float v, int size);
+__global__ void gpu_greater_equal(float *A, float *B, float *C, int size);
+__global__ void gpu_less(float *A, float *B, float v, int size);
+__global__ void gpu_less(float *A, float *B, float *C, int size);
+__global__ void gpu_less_equal(float *A, float *B, float v, int size);
+__global__ void gpu_less_equal(float *A, float *B, float *C, int size);
+__global__ void gpu_equal(float *A, float *B, float v, int size);
+__global__ void gpu_equal(float *A, float *B, float *C, int size);
+__global__ void gpu_not_equal(float *A, float *B, float v, int size);
+__global__ void gpu_not_equal(float *A, float *B, float *C, int size);
 
 
 // Legacy

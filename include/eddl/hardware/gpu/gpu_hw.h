@@ -45,6 +45,8 @@ void gpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative
 void gpu_range(Tensor *A, float start, float step);
 void gpu_eye(Tensor *A, int offset);
 
+void gpu_diag(Tensor *A, Tensor *B, int k);
+
 // GPU: Generator
 void gpu_rand_uniform(Tensor *A, float v);
 void gpu_rand_signed_uniform(Tensor *A, float v);
@@ -112,6 +114,11 @@ void gpu_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
 void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
 void gpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
 
+void gpu_maximum(Tensor* A, Tensor* B, float v);
+void gpu_maximum(Tensor* A, Tensor* B, Tensor* C);
+void gpu_minimum(Tensor* A, Tensor* B, float v);
+void gpu_minimum(Tensor* A, Tensor* B, Tensor* C);
+
 // GPU: Should be reductions
 float gpu_max(Tensor *A);
 float gpu_min(Tensor *A);
@@ -131,6 +138,12 @@ void gpu_reduction_back(ReduceDescriptor *RD);
 //void gpu_delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB);
 //void gpu_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
 //void gpu_delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC);
+
+// GPU: Linear algebra
+float gpu_norm(Tensor *A, string ord);
+
+// Generating index arrays *****************************
+void gpu_where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C);
 
 // GPU: Logic functions: Truth value testing
 bool gpu_all(Tensor *A);
@@ -152,11 +165,18 @@ void gpu_logical_xor(Tensor *A, Tensor *B, Tensor *C);
 // GPU: Logic operations: Comparison ops
 bool gpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan);
 void gpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool equal_nan);
+
+void gpu_greater(Tensor *A, Tensor *B, float v);
 void gpu_greater(Tensor *A, Tensor *B, Tensor *C);
+void gpu_greater_equal(Tensor *A, Tensor *B, float v);
 void gpu_greater_equal(Tensor *A, Tensor *B, Tensor *C);
+void gpu_less(Tensor *A, Tensor *B, float v);
 void gpu_less(Tensor *A, Tensor *B, Tensor *C);
+void gpu_less_equal(Tensor *A, Tensor *B, float v);
 void gpu_less_equal(Tensor *A, Tensor *B, Tensor *C);
+void gpu_equal(Tensor *A, Tensor *B, float v);
 void gpu_equal(Tensor *A, Tensor *B, Tensor *C);
+void gpu_not_equal(Tensor *A, Tensor *B, float v);
 void gpu_not_equal(Tensor *A, Tensor *B, Tensor *C);
 
 

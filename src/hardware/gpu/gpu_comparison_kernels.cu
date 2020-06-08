@@ -137,7 +137,15 @@ __global__  void gpu_logical_isclose(float *A, float *B, float *C, float rtol, f
     }
 }
 
-__global__  void gpu_logical_greater(float *A, float *B, float *C, int size){
+__global__ void gpu_greater(float *A, float *B, float v, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        B[thread_id_x] = A[thread_id_x] > v;
+    }
+}
+
+__global__ void gpu_greater(float *A, float *B, float *C, int size){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (thread_id_x < size){
@@ -145,7 +153,15 @@ __global__  void gpu_logical_greater(float *A, float *B, float *C, int size){
     }
 }
 
-__global__  void gpu_logical_greater_equal(float *A, float *B, float *C, int size){
+__global__  void gpu_greater_equal(float *A, float *B, float v, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        B[thread_id_x] = A[thread_id_x] >= v;
+    }
+}
+
+__global__  void gpu_greater_equal(float *A, float *B, float *C, int size){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (thread_id_x < size){
@@ -153,7 +169,15 @@ __global__  void gpu_logical_greater_equal(float *A, float *B, float *C, int siz
     }
 }
 
-__global__  void gpu_logical_less(float *A, float *B, float *C, int size){
+__global__  void gpu_less(float *A, float *B, float v, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        B[thread_id_x] = A[thread_id_x] < v;
+    }
+}
+
+__global__  void gpu_less(float *A, float *B, float *C, int size){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (thread_id_x < size){
@@ -161,7 +185,15 @@ __global__  void gpu_logical_less(float *A, float *B, float *C, int size){
     }
 }
 
-__global__  void gpu_logical_less_equal(float *A, float *B, float *C, int size){
+__global__  void gpu_less_equal(float *A, float *B, float v, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        B[thread_id_x] = A[thread_id_x] <= v;
+    }
+}
+
+__global__  void gpu_less_equal(float *A, float *B, float *C, int size){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (thread_id_x < size){
@@ -169,7 +201,15 @@ __global__  void gpu_logical_less_equal(float *A, float *B, float *C, int size){
     }
 }
 
-__global__  void gpu_logical_equal(float *A, float *B, float *C, int size){
+__global__  void gpu_equal(float *A, float *B, float v, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        B[thread_id_x] = A[thread_id_x] == v;
+    }
+}
+
+__global__  void gpu_equal(float *A, float *B, float *C, int size){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (thread_id_x < size){
@@ -177,7 +217,16 @@ __global__  void gpu_logical_equal(float *A, float *B, float *C, int size){
     }
 }
 
-__global__  void gpu_logical_not_equal(float *A, float *B, float *C, int size){
+
+__global__  void gpu_not_equal(float *A, float *B, float v, int size){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        B[thread_id_x] = A[thread_id_x] != v;
+    }
+}
+
+__global__  void gpu_not_equal(float *A, float *B, float *C, int size){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (thread_id_x < size){

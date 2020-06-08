@@ -16,22 +16,6 @@
 
 using namespace std;
 
-void checkCompatibility(Tensor *A, Tensor *B, const string &title){
-    if (A->device != B->device) {
-        msg("Tensors in different devices", title);
-    }
-
-    if (!Tensor::sameShape(A, B)){
-        msg("Tensors with different shape", title);
-    }
-}
-
-
-void checkCompatibility(Tensor *A, Tensor *B, Tensor *C, const string &title){
-    checkCompatibility(A, B, title);
-    checkCompatibility(A, C, title);
-}
-
 bool Tensor::all(Tensor *A){
     bool res = false;
 
@@ -290,6 +274,40 @@ void Tensor::isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bo
 #endif
 }
 
+void Tensor::greater_(float v){
+    Tensor::greater(this, this, v);
+}
+
+Tensor* Tensor::greater(float v){
+    Tensor *t = this->clone();
+    t->greater_(v);
+    return t;
+}
+
+void Tensor::greater(Tensor *A, Tensor *B, float v){
+    checkCompatibility(A, B, "Tensor::greater");
+
+    if (A->isCPU()) {
+        cpu_greater(A, B, v);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+          {
+            gpu_greater(A, B, v);
+          }
+#endif
+#ifdef cFPGA
+    else {
+          msg("Equal only for CPU Tensors", "Tensor::greater");
+        }
+#endif
+}
+
+Tensor* Tensor::greater(Tensor *A){
+    Tensor *t = Tensor::empty(this->shape, this->device);
+    t->greater(this, A, t);
+    return t;
+}
 
 void Tensor::greater(Tensor *A, Tensor *B, Tensor *C){
     checkCompatibility(A, B, C, "Tensor::greater");
@@ -310,6 +328,42 @@ void Tensor::greater(Tensor *A, Tensor *B, Tensor *C){
 #endif
 }
 
+
+void Tensor::greater_equal_(float v){
+    Tensor::greater_equal(this, this, v);
+}
+
+Tensor* Tensor::greater_equal(float v){
+    Tensor *t = this->clone();
+    t->greater_equal_(v);
+    return t;
+}
+
+void Tensor::greater_equal(Tensor *A, Tensor *B, float v){
+    checkCompatibility(A, B, "Tensor::greater_equal");
+
+    if (A->isCPU()) {
+        cpu_greater_equal(A, B, v);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+          {
+            gpu_greater_equal(A, B, v);
+          }
+#endif
+#ifdef cFPGA
+    else {
+          msg("Equal only for CPU Tensors", "Tensor::greater_equal");
+        }
+#endif
+}
+
+Tensor* Tensor::greater_equal(Tensor *A){
+    Tensor *t = Tensor::empty(this->shape, this->device);
+    t->greater_equal(this, A, t);
+    return t;
+}
+
 void Tensor::greater_equal(Tensor *A, Tensor *B, Tensor *C){
     checkCompatibility(A, B, C, "Tensor::greater_equal");
 
@@ -324,9 +378,45 @@ void Tensor::greater_equal(Tensor *A, Tensor *B, Tensor *C){
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::greater");
+          msg("Equal only for CPU Tensors", "Tensor::greater_equal");
         }
 #endif
+}
+
+
+void Tensor::less_(float v){
+    Tensor::less(this, this, v);
+}
+
+Tensor* Tensor::less(float v){
+    Tensor *t = this->clone();
+    t->less_(v);
+    return t;
+}
+
+void Tensor::less(Tensor *A, Tensor *B, float v){
+    checkCompatibility(A, B, "Tensor::less");
+
+    if (A->isCPU()) {
+        cpu_less(A, B, v);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+          {
+            gpu_less(A, B, v);
+          }
+#endif
+#ifdef cFPGA
+    else {
+          msg("Equal only for CPU Tensors", "Tensor::less");
+        }
+#endif
+}
+
+Tensor* Tensor::less(Tensor *A){
+    Tensor *t = Tensor::empty(this->shape, this->device);
+    t->less(this, A, t);
+    return t;
 }
 
 void Tensor::less(Tensor *A, Tensor *B, Tensor *C){
@@ -343,9 +433,46 @@ void Tensor::less(Tensor *A, Tensor *B, Tensor *C){
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::greater");
+          msg("Equal only for CPU Tensors", "Tensor::less");
         }
 #endif
+}
+
+
+void Tensor::less_equal_(float v){
+    Tensor::equal(this, this, v);
+}
+
+Tensor* Tensor::less_equal(float v){
+    Tensor *t = this->clone();
+    t->equal_(v);
+    return t;
+}
+
+void Tensor::less_equal(Tensor *A, Tensor *B, float v){
+    checkCompatibility(A, B, "Tensor::less_equal");
+
+    if (A->isCPU()) {
+        cpu_less_equal(A, B, v);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+          {
+            gpu_less_equal(A, B, v);
+          }
+#endif
+#ifdef cFPGA
+    else {
+          msg("Equal only for CPU Tensors", "Tensor::less_equal");
+        }
+#endif
+}
+
+
+Tensor* Tensor::less_equal(Tensor *A){
+    Tensor *t = Tensor::empty(this->shape, this->device);
+    t->less_equal(this, A, t);
+    return t;
 }
 
 void Tensor::less_equal(Tensor *A, Tensor *B, Tensor *C){
@@ -362,9 +489,45 @@ void Tensor::less_equal(Tensor *A, Tensor *B, Tensor *C){
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::greater");
+          msg("Equal only for CPU Tensors", "Tensor::less_equal");
         }
 #endif
+}
+
+
+void Tensor::equal_(float v){
+    Tensor::equal(this, this, v);
+}
+
+Tensor* Tensor::equal(float v){
+    Tensor *t = this->clone();
+    t->equal_(v);
+    return t;
+}
+
+void Tensor::equal(Tensor *A, Tensor *B, float v){
+    checkCompatibility(A, B, "Tensor::equal");
+
+    if (A->isCPU()) {
+        cpu_equal(A, B, v);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+          {
+            gpu_equal(A, B, v);
+          }
+#endif
+#ifdef cFPGA
+    else {
+          msg("Equal only for CPU Tensors", "Tensor::equal");
+        }
+#endif
+}
+
+Tensor* Tensor::equal(Tensor *A){
+    Tensor *t = Tensor::empty(this->shape, this->device);
+    t->equal(this, A, t);
+    return t;
 }
 
 void Tensor::equal(Tensor *A, Tensor *B, Tensor *C){
@@ -381,9 +544,44 @@ void Tensor::equal(Tensor *A, Tensor *B, Tensor *C){
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::greater");
+          msg("Equal only for CPU Tensors", "Tensor::equal");
         }
 #endif
+}
+
+void Tensor::not_equal_(float v){
+    Tensor::not_equal(this, this, v);
+}
+
+Tensor* Tensor::not_equal(float v){
+    Tensor *t = this->clone();
+    t->not_equal_(v);
+    return t;
+}
+
+void Tensor::not_equal(Tensor *A, Tensor *B, float v){
+    checkCompatibility(A, B, "Tensor::not_equal");
+
+    if (A->isCPU()) {
+        cpu_not_equal(A, B, v);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+          {
+            gpu_not_equal(A, B, v);
+          }
+#endif
+#ifdef cFPGA
+    else {
+          msg("Equal only for CPU Tensors", "Tensor::not_equal");
+        }
+#endif
+}
+
+Tensor* Tensor::not_equal(Tensor *A){
+    Tensor *t = Tensor::empty(this->shape, this->device);
+    t->not_equal(this, A, t);
+    return t;
 }
 
 void Tensor::not_equal(Tensor *A, Tensor *B, Tensor *C){
@@ -400,7 +598,7 @@ void Tensor::not_equal(Tensor *A, Tensor *B, Tensor *C){
 #endif
 #ifdef cFPGA
     else {
-          msg("Equal only for CPU Tensors", "Tensor::greater");
+          msg("Equal only for CPU Tensors", "Tensor::not_equal");
         }
 #endif
 }

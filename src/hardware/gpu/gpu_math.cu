@@ -27,11 +27,12 @@
 
 // GPU: Structs for Thrust ********************************************
 
-struct sum_abs_value : public thrust::unary_function<float, float>
+template<typename T>
+struct absolute_value : public unary_function<T,T>
 {
-    __host__ __device__ float operator()(const float &x) const
+    __host__ __device__ T operator()(const T &x) const
     {
-        return fabsf(x);
+        return x < T(0) ? -x : x;
     }
 };
 
@@ -390,7 +391,6 @@ void gpu_add(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC){
 
     setDims(A);
 
-
     gpu_add<<<dimGrid,dimBlock>>>(scA,A->ptr,scB,B->ptr,C->ptr,incC,A->size);
     check_cuda(cudaDeviceSynchronize(),"addc");
 }
@@ -482,6 +482,46 @@ void gpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C){
 
 }
 
+void gpu_maximum(Tensor* A, Tensor* B, float v){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_maximum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, v, A->size);
+    check_cuda(cudaDeviceSynchronize(), "maximum");
+}
+
+void gpu_maximum(Tensor* A, Tensor* B, Tensor* C){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_maximum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "maximum");
+}
+
+void gpu_minimum(Tensor* A, Tensor* B, float v){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_minimum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, v, A->size);
+    check_cuda(cudaDeviceSynchronize(), "minimum");
+}
+
+void gpu_minimum(Tensor* A, Tensor* B, Tensor* C){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_minimum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "minimum");
+}
+
 
 // GPU: Should be reductions ***************************
 float gpu_max(Tensor *A){
@@ -517,8 +557,7 @@ float gpu_sum_abs(Tensor *A){
     cudaSetDevice(device);
 
     thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
-    //return thrust::transform_reduce(dev_ptr, dev_ptr + A->size, thrust::plus<float>, 0.0f, sum_abs_value);
-    return 0.0f;
+    return thrust::transform_reduce(dev_ptr, dev_ptr + A->size, absolute_value<float>(), 0.0f, thrust::plus<float>());
 }
 
 

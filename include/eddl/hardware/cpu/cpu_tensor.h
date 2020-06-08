@@ -40,12 +40,15 @@ void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative
 void cpu_range(Tensor *A, float min, float step);
 void cpu_eye(Tensor *A, int offset);
 
+void cpu_diag(Tensor *A, Tensor *B, int k);
+
 // CPU: Generator
 void cpu_rand_uniform(Tensor *A, float v);
 void cpu_rand_signed_uniform(Tensor *A, float v);
 void cpu_rand_binary(Tensor *A, float v);
 void cpu_rand_normal(Tensor *A, float m, float s, bool fast_math);  // TODO: Don't like it
 
+// CPU: Data transformations (2D Optimized) ********************************************
 // CPU: Data transformations (2D Optimized) ********************************************
 void cpu_shift(Tensor *A, Tensor *B, vector<int> shift, int mode, float constant);
 void cpu_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, int mode, float constant);
@@ -107,6 +110,11 @@ void cpu_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
 void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
 void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
 
+void cpu_maximum(Tensor* A, Tensor* B, float v);
+void cpu_maximum(Tensor* A, Tensor* B, Tensor* C);
+void cpu_minimum(Tensor* A, Tensor* B, float v);
+void cpu_minimum(Tensor* A, Tensor* B, Tensor* C);
+
 // CPU: Should be reductions
 float cpu_max(Tensor *A);
 float cpu_min(Tensor *A);
@@ -126,6 +134,13 @@ void cpu_reduction_back(ReduceDescriptor *RD);
 //void cpu_delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB);
 //void cpu_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
 //void cpu_delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC);
+
+// CPU: Linear algebra
+float cpu_norm(Tensor *A, string ord);
+
+// CPU: Logic functions: Truth value testing
+std::pair<unsigned int*, int> cpu_nonzero(Tensor *A);
+void cpu_where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C);
 
 // CPU: Logic functions: Truth value testing
 bool cpu_all(Tensor *A);
@@ -147,11 +162,23 @@ void cpu_logical_xor(Tensor *A, Tensor *B, Tensor *C);
 // CPU: Logic functions: Comparisons
 bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan);
 void cpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool equal_nan);
+
+void cpu_greater(Tensor *A, Tensor *B, float v);
 void cpu_greater(Tensor *A, Tensor *B, Tensor *C);
+
+void cpu_greater_equal(Tensor *A, Tensor *B, float v);
 void cpu_greater_equal(Tensor *A, Tensor *B, Tensor *C);
+
+void cpu_less(Tensor *A, Tensor *B, float v);
 void cpu_less(Tensor *A, Tensor *B, Tensor *C);
+
+void cpu_less_equal(Tensor *A, Tensor *B, float v);
 void cpu_less_equal(Tensor *A, Tensor *B, Tensor *C);
+
+void cpu_equal(Tensor *A, Tensor *B, float v);
 void cpu_equal(Tensor *A, Tensor *B, Tensor *C);
+
+void cpu_not_equal(Tensor *A, Tensor *B, float v);
 void cpu_not_equal(Tensor *A, Tensor *B, Tensor *C);
 
 // Legacy

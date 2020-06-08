@@ -48,6 +48,60 @@ float Tensor::max(Tensor* A){
     return 0.0f; // Never used, this is for the compiler warning
 }
 
+Tensor* Tensor::maximum(float v){
+    Tensor *t = Tensor::empty(this->shape, this->device);
+    Tensor::maximum(this, t, v);
+    return t;
+}
+
+Tensor* Tensor::maximum(Tensor* A, float v){
+    Tensor *t = A->clone();
+    Tensor::maximum(A, t, v);
+    return t;
+}
+
+void Tensor::maximum(Tensor* A, Tensor* B, float v){
+    if (A->isCPU() && B->isCPU()){
+        cpu_maximum(A, B, v);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+    {
+        gpu_maximum(A, B, v);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+}
+
+Tensor* Tensor::maximum(Tensor* A, Tensor* B){
+    Tensor *t = A->clone();
+    Tensor::maximum(A, B, t);
+    return t;
+}
+
+void Tensor::maximum(Tensor* A, Tensor* B, Tensor* C){
+    if (A->isCPU() && B->isCPU() && C->isCPU()){
+        cpu_maximum(A, B, C);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU() && C->isGPU())
+    {
+        gpu_maximum(A, B, C);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+}
+
 
 float Tensor::min(){
     return Tensor::min(this);
@@ -72,6 +126,61 @@ float Tensor::min(Tensor* A){
 
     msg("Invalid device", "Tensor::max");
     return 0.0f; // Never used, this is for the compiler warning
+}
+
+
+Tensor* Tensor::minimum(float v){
+    Tensor *t = Tensor::empty(this->shape, this->device);
+    Tensor::minimum(this, t, v);
+    return t;
+}
+
+Tensor* Tensor::minimum(Tensor* A, float v){
+    Tensor *t = A->clone();
+    Tensor::minimum(A, t, v);
+    return t;
+}
+
+void Tensor::minimum(Tensor* A, Tensor* B, float v){
+    if (A->isCPU() && B->isCPU()){
+        cpu_minimum(A, B, v);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+    {
+        gpu_minimum(A, B, v);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+}
+
+Tensor* Tensor::minimum(Tensor* A, Tensor* B){
+    Tensor *t = A->clone();
+    Tensor::minimum(A, B, t);
+    return t;
+}
+
+void Tensor::minimum(Tensor* A, Tensor* B, Tensor* C){
+    if (A->isCPU() && B->isCPU() && C->isCPU()){
+        cpu_minimum(A, B, C);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU() && C->isGPU())
+    {
+        gpu_minimum(A, B, C);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
 }
 
 
@@ -527,7 +636,7 @@ void Tensor::inv_(float v){
 
 Tensor* Tensor::inv(float v){
     Tensor *t = this->clone();
-    t->inv_();
+    t->inv_(v);
     return t;
 }
 

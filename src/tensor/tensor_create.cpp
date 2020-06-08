@@ -124,32 +124,6 @@ Tensor* Tensor::identity(int rows, int dev){
 }
 
 
-Tensor* Tensor::diag(Tensor* A, int k, int dev){
-    msg("Not implemented", "Tensor::diag");
-
-    if(!Tensor::isSquared(A)){
-        msg("The matrix must be square", "Tensor::diag");
-    }
-    auto new_t = new Tensor({A->shape[0]}, dev);
-//
-//    if (new_t->isCPU()) {
-//        cpu_diag(new_t, k);
-//    }
-//#ifdef cGPU
-//    else if (t->isGPU())
-//      {
-//        gpu_diag(new_t, k);
-//      }
-//#endif
-//#ifdef cFPGA
-//    else {
-//
-//    }
-//#endif
-
-    return new_t;
-}
-
 Tensor* Tensor::randu(const vector<int> &shape, int dev){
     auto t = new Tensor(shape, dev);
     t->rand_uniform(1.0f);
@@ -161,3 +135,39 @@ Tensor* Tensor::randn(const vector<int> &shape, int dev){
     t->rand_normal(0.0f, 1.0f, false);
     return t;
 }
+
+
+void Tensor::diag_(int k){
+    Tensor::diag(this, this, k);
+}
+
+Tensor* Tensor::diag(int k){
+    Tensor *t = Tensor::empty(this->shape, this->device);
+    Tensor::diag(this, t, k);
+    return t;
+}
+
+void Tensor::diag(Tensor* A, Tensor* B, int k){
+    checkCompatibility(A, B, "Tensor::diag");
+
+    if(!Tensor::isSquared(A) || A->ndim != 2){  // isSquares is for n dimensions, and here we need just two
+        msg("The matrix must be square", "Tensor::diag");
+    }
+
+    if (A->isCPU() && B->isCPU()) {
+        cpu_diag(A, B, k);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+    {
+        gpu_diag(A, B, k);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+

@@ -305,7 +305,6 @@ public:
       *  @return     Tensor of the specified shape filled with the value
     */
     static Tensor* identity(int rows, int dev=DEV_CPU);
-    static Tensor* diag(Tensor* A, int k=0, int dev=DEV_CPU);
 
     /**
       *  @brief Initialise a tensor with random values following an uniform distribution.
@@ -325,15 +324,33 @@ public:
     */
     static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
+    void diag_(int k=0);
+    Tensor* diag(int k=0);
+    static void diag(Tensor* A, Tensor* B, int k=0);
 
     // Math operations (zero) ************************
+    float max();   // TODO: Should be reduced
+    static float max(Tensor* A);   // TODO: Should be reduced
+
+    Tensor* maximum(float v);
+    static Tensor* maximum(Tensor* A, float v);
+    static void maximum(Tensor* A, Tensor* B, float v);
+
+    static Tensor* maximum(Tensor* A, Tensor* B);
+    static void maximum(Tensor* A, Tensor* B, Tensor* C);
+
+
+    float min();  // TODO: Should be reduced
+    static float min(Tensor* A);   // TODO: Should be reduced
+
+    Tensor* minimum(float v);
+    static Tensor* minimum(Tensor* A, float v);
+    static void minimum(Tensor* A, Tensor* B, float v);
+
+    static Tensor* minimum(Tensor* A, Tensor* B);
+    static void minimum(Tensor* A, Tensor* B, Tensor* C);
+
     // TODO: Deprecated? They should be reductions (unless for speed)
-    float max();
-    static float max(Tensor* A);
-
-    float min();
-    static float min(Tensor* A);
-
     float sum();
     static float sum(Tensor* A);
 
@@ -571,6 +588,24 @@ public:
     static void cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float cval=0.0f);
 
 
+    // Linear algebra *****************************
+    float trace(int k=0);
+    static float trace(Tensor *A, int k=0);
+
+    float norm(string ord="fro");
+    static float norm(Tensor *A, string ord="fro");
+
+
+    // Generating index arrays *****************************
+    std::pair<unsigned int*, int> _nonzero();
+    Tensor* nonzero(bool sort_indices=false);
+
+    static Tensor* where(Tensor *condition, Tensor *A, Tensor *B);  // where(x > 0, x[random], y[ones])
+    static void where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C);
+
+    Tensor* mask_indices(Tensor *mask, Tensor *A);  // where(x > 0, x[random], y[ones])
+    static void mask_indices(Tensor *mask, Tensor *A, Tensor *B);
+
 
     // Logic funcions: Truth value testing *****************************
 
@@ -705,6 +740,13 @@ public:
     */
     static void isclose(Tensor *A, Tensor *B, Tensor *C, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns a boolean tensor
 
+
+    void greater_(float v);
+    Tensor* greater(float v);
+    static void greater(Tensor *A, Tensor *B, float v);
+
+    Tensor* greater(Tensor *A);
+
     /**
       *  @brief Return the truth value of ``A > B`` element-wise.
       *
@@ -714,6 +756,13 @@ public:
       *  @return    void
     */
     static void greater(Tensor *A, Tensor *B, Tensor *C);
+
+
+    void greater_equal_(float v);
+    Tensor* greater_equal(float v);
+    static void greater_equal(Tensor *A, Tensor *B, float v);
+
+    Tensor* greater_equal(Tensor *A);
 
     /**
       *  @brief Return the truth value of ``A >= B`` element-wise.
@@ -725,6 +774,12 @@ public:
     */
     static void greater_equal(Tensor *A, Tensor *B, Tensor *C);
 
+    void less_(float v);
+    Tensor* less(float v);
+    static void less(Tensor *A, Tensor *B, float v);
+
+    Tensor* less(Tensor *A);
+
     /**
       *  @brief Return the truth value of ``A < B`` element-wise.
       *
@@ -734,6 +789,12 @@ public:
       *  @return    void
     */
     static void less(Tensor *A, Tensor *B, Tensor *C);
+
+    void less_equal_(float v);
+    Tensor* less_equal(float v);
+    static void less_equal(Tensor *A, Tensor *B, float v);
+
+    Tensor* less_equal(Tensor *A);
 
     /**
       *  @brief Return the truth value of ``A <= B`` element-wise.
@@ -745,6 +806,12 @@ public:
     */
     static void less_equal(Tensor *A, Tensor *B, Tensor *C);
 
+    void equal_(float v);
+    Tensor* equal(float v);
+    static void equal(Tensor *A, Tensor *B, float v);
+
+    Tensor* equal(Tensor *A);
+
     /**
       *  @brief Return the truth value of ``A == B`` element-wise.
       *
@@ -754,6 +821,12 @@ public:
       *  @return    void
     */
     static void equal(Tensor *A, Tensor *B, Tensor *C);
+
+    void not_equal_(float v);
+    Tensor* not_equal(float v);
+    static void not_equal(Tensor *A, Tensor *B, float v);
+
+    Tensor* not_equal(Tensor *A);
 
     /**
       *  @brief Return the truth value of ``A != B`` element-wise.
@@ -773,6 +846,7 @@ public:
     // Indexing, Slicing, Joining, Mutating Ops *************
     static Tensor* concat(vector<Tensor*> A, unsigned int axis=0, Tensor* output=nullptr);
     static void concat_back(Tensor *A, vector<Tensor*> t, unsigned int axis);
+
 
     /**
       *  @brief Returns an array with the selected indices of the tensor.
@@ -962,5 +1036,7 @@ Tensor* Tensor::load(const string& filename, string format){
     return t;
 }
 
+void checkCompatibility(Tensor *A, Tensor *B, const string &title);
+void checkCompatibility(Tensor *A, Tensor *B, Tensor *C, const string &title);
 
 #endif //EDDL_TENSOR_H

@@ -26,6 +26,24 @@ int initcuda[MAX_GPUS] = {0, 0, 0, 0, 0, 0, 0, 0};
 int linpos;
 extern ostream &operator<<(ostream &os, const vector<int> shape);
 
+void checkCompatibility(Tensor *A, Tensor *B, const string &title){
+    if (A->device != B->device) {
+        msg("Tensors in different devices", title);
+    }
+
+    if (!Tensor::sameShape(A, B)){
+        msg("Tensors with different shape", title);
+    }
+}
+
+
+void checkCompatibility(Tensor *A, Tensor *B, Tensor *C, const string &title){
+    checkCompatibility(A, B, title);
+    checkCompatibility(A, C, title);
+}
+
+
+
 
 Tensor::Tensor() : device(DEV_CPU), ndim(0), size(0) {}
 
@@ -371,3 +389,4 @@ void Tensor::resize(int b, float *fptr) {
     if (fptr == nullptr) deleteData();  // Potential error
     updateData(fptr);
 }
+
