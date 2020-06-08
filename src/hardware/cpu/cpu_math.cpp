@@ -324,31 +324,51 @@ void cpu_minimum(Tensor* A, Tensor* B, Tensor* C){
 // CPU: Should be reductions ***************************
 
 float cpu_max(Tensor *A){
-    float max = MIN_FLOAT;
-    // todo: #pragma omp parallel for
+    float max_val = MIN_FLOAT;
+
+    #pragma omp parallel for
     for (int i = 0; i < A->size; ++i) {
-        if (A->ptr[i] > max) { max = A->ptr[i]; }
+        if (A->ptr[i] > max_val){
+            #pragma omp critical
+            max_val = A->ptr[i];
+        }
     }
-    return max;
+
+    return max_val;
 }
 
 float cpu_min(Tensor *A){
-    float min = MAX_FLOAT;
-    // todo: #pragma omp parallel for
+    float min_val = MAX_FLOAT;
+
+    #pragma omp parallel for
     for (int i = 0; i < A->size; ++i) {
-        if (A->ptr[i] < min) { min = A->ptr[i]; }
+        if (A->ptr[i] < min_val){
+            #pragma omp critical
+            min_val = A->ptr[i];
+        }
     }
-    return min;
+
+    return min_val;
 }
 
 float cpu_sum(Tensor *A) {
-    float sum = 0.0;
-    for (int i = 0; i < A->size; ++i) sum += A->ptr[i];
+    float sum = 0.0f;
+
+    #pragma omp parallel for reduction(+:sum)
+    for (int i = 0; i < A->size; ++i) {
+        sum += A->ptr[i];
+    }
+
     return sum;
 }
 
 float cpu_sum_abs(Tensor *A) {
-    float sum = 0.0;
-    for (int i = 0; i < A->size; ++i) sum += ::fabs(A->ptr[i]);
+    float sum = 0.0f;
+
+    #pragma omp parallel for reduction(+:sum)
+    for (int i = 0; i < A->size; ++i) {
+        sum += ::fabs(A->ptr[i]);
+    }
+
     return sum;
 }

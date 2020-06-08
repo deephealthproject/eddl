@@ -1160,3 +1160,91 @@ TEST(TensorTestSuite, tensor_math_minimumT){
     ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
 #endif
 }
+
+
+TEST(TensorTestSuite, tensor_math_unary_sum){
+    // Test #1
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = {0.8986, -0.7279,  1.1745,  0.2611};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
+
+    float t_sum = t1->sum();
+    ASSERT_NEAR(t_sum, 1.6063f, 10e-4f);
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    float t_cpu_sum = t_cpu->sum();
+    float t_gpu_sum = t_gpu->sum(); t_gpu->toCPU();
+
+    ASSERT_NEAR(t_cpu_sum, t_gpu_sum, 10e-4f);
+#endif
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_abs_sum){
+    // Test #1
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = {0.8986, -0.7279,  1.1745,  0.2611};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
+
+    float t_sum = t1->sum_abs();
+    ASSERT_NEAR(t_sum, 3.0621f, 10e-4f);
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    float t_cpu_sum = t_cpu->sum_abs();
+    float t_gpu_sum = t_gpu->sum_abs(); t_gpu->toCPU();
+
+    ASSERT_NEAR(t_cpu_sum, t_gpu_sum, 10e-4f);
+#endif
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_max){
+    // Test #1
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = {0.8986, -0.7279,  1.1745,  0.2611};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
+
+    float t_max = t1->max();
+    ASSERT_NEAR(t_max, 1.1745, 10e-4f);
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    float t_cpu_max = t_cpu->max();
+    float t_gpu_max = t_gpu->max(); t_gpu->toCPU();
+
+    ASSERT_NEAR(t_cpu_max, t_gpu_max, 10e-4f);
+#endif
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_min){
+    // Test #1
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = {0.8986, -0.7279,  1.1745,  0.2611};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
+
+    float t_min = t1->min();
+    ASSERT_NEAR(t_min, -0.7279, 10e-4f);
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    float t_cpu_min = t_cpu->min();
+    float t_gpu_min = t_gpu->min(); t_gpu->toCPU();
+
+    ASSERT_NEAR(t_cpu_min, t_gpu_min, 10e-4f);
+#endif
+}
