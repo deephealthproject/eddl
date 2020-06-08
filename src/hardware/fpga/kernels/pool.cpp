@@ -6,7 +6,7 @@ extern float k_get_pixel(int b,int px,int py,int pz,int Dic, int Dir, int isize,
 extern void k_add_pixel(int b,int px,int py,int pz, int Dic, int Dir, int isize,int irsize,float val, float *ptr);
 
 #ifdef K_ENABLED_MPOOL2D
-void k_mpool2D(int ir, int ic, int iz, int padrt, int padrb, int padcl, int padcr, int kr, int kc, int sr, int sc, int size, int Ishape0, float *ptr_in, float *ptr_out, int *ptr_indX, int *ptr_indY) {
+void k_mpool2D(int ir, int ic, int iz, int padrt, int padrb, int padcl, int padcr, int kr, int kc, int sr, int sc, long int size, int Ishape0, float *ptr_in, float *ptr_out, int *ptr_indX, int *ptr_indY) {
     int isize = ir * ic * iz;
     int irsize = ir * ic;
 
@@ -46,7 +46,7 @@ void k_mpool2D(int ir, int ic, int iz, int padrt, int padrb, int padcl, int padc
 #endif
 
 #ifdef K_ENABLED_MLPOOL2D_BACK
-void k_mpool2D_back(int ir, int ic, int iz, int padrt, int padrb, int padcl, int padcr, int kr, int kc, int sr, int sc, int size, int Ishape0, float *ptr_in, float *ptr_out, int *ptr_indX, int *ptr_indY) {
+void k_mpool2D_back(int ir, int ic, int iz, int padrt, int padrb, int padcl, int padcr, int kr, int kc, int sr, int sc, long int size, int Ishape0, float *ptr_in, float *ptr_out, int *ptr_indX, int *ptr_indY) {
     int isize = ir * ic * iz;
     int irsize = ir * ic;
 

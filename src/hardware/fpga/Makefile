@@ -4,23 +4,27 @@ TARGETS := sw_emu
 DEVICE := xilinx_u200_xdma_201830_2
 TARGET := $(TARGETS)
 XCLBIN := kernels/xclbin
-XOCC := $(XILINX_SDX)/bin/xocc
+XCLBIN_NAME := relu
+XOCC := /opt/Xilinx/Vitis/2019.2/bin/v++
 BUILD_DIR := kernels/_x.$(TARGET).$(DEVICE)
-BUILD_DIR_tensor = $(BUILD_DIR)/tensor_op
-BINARY_CONTAINERS += $(XCLBIN)/tensor_op.$(TARGET).$(DEVICE).xclbin
-BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/tensor_op.$(TARGET).$(DEVICE).xo
-BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/multitensor_op.$(TARGET).$(DEVICE).xo
-BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_add.$(TARGET).$(DEVICE).xo
-BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_mult2D.$(TARGET).$(DEVICE).xo
-BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_sum2D_rowwise.$(TARGET).$(DEVICE).xo
-BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_cent.$(TARGET).$(DEVICE).xo
-BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/relu_soft_d.$(TARGET).$(DEVICE).xo
-BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/reduce_sum2D.$(TARGET).$(DEVICE).xo
-BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_accuracy.$(TARGET).$(DEVICE).xo
-BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_total_sum.$(TARGET).$(DEVICE).xo
-BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/el_div.$(TARGET).$(DEVICE).xo
-BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_normalize.$(TARGET).$(DEVICE).xo
-BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/kernel_core.$(TARGET).$(DEVICE).xo
+BUILD_DIR_tensor = $(BUILD_DIR)/$(XCLBIN_NAME)
+BINARY_CONTAINERS += $(XCLBIN)/$(XCLBIN_NAME).$(TARGET).$(DEVICE).xclbin
+
+BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/activations.$(TARGET).$(DEVICE).xo
+#BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/bn.$(TARGET).$(DEVICE).xo
+#BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/comparison.$(TARGET).$(DEVICE).xo
+#BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/conv.$(TARGET).$(DEVICE).xo
+#BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/core.$(TARGET).$(DEVICE).xo
+#BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/create.$(TARGET).$(DEVICE).xo
+#BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/da.$(TARGET).$(DEVICE).xo
+#BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/generator.$(TARGET).$(DEVICE).xo
+#BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/losses.$(TARGET).$(DEVICE).xo
+#BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/math.$(TARGET).$(DEVICE).xo
+#BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/metrics.$(TARGET).$(DEVICE).xo
+#BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/pool.$(TARGET).$(DEVICE).xo
+#BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/reduction.$(TARGET).$(DEVICE).xo
+#BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/tensor_nn.$(TARGET).$(DEVICE).xo#
+
 
 xcl2_SRCS:=libs/xcl2.cpp
 xcl2_HDRS:=libs/xcl2.hpp
@@ -70,7 +74,7 @@ SRC_PATH=.
 #######################################################################
 
 #test: $(FPGA_OBJ)
-kernel: $(XCLBIN)/tensor_op.$(TARGET).$(DEVICE).xo  $(BINARY_CONTAINERS)
+kernel: $(XCLBIN)/activations.$(TARGET).$(DEVICE).xo  $(BINARY_CONTAINERS)
 kernelemu: emuconfig
 
 
@@ -83,61 +87,67 @@ kernelemu: emuconfig
 
 
 # Building kernels
-$(XCLBIN)/tensor_op.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/tensor_op.cpp
+$(XCLBIN)/activations.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/activations.cpp
 	mkdir -p $(XCLBIN)
-	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k tensor_op -I'$(<D)' -o'$@' '$<'
+	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k k_relu -I'$(<D)' -o'$@' '$<'
 
-$(XCLBIN)/multitensor_op.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/multitensor_op.cpp
-	mkdir -p $(XCLBIN)
-	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k multitensor_op -I'$(<D)' -o'$@' '$<'
+#$(XCLBIN)/bn.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/bn.cpp
+#	mkdir -p $(XCLBIN)
+#	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k bn -I'$(<D)' -o'$@' '$<'
 
-$(XCLBIN)/kernel_add.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/kernel_add.cpp
-	mkdir -p $(XCLBIN)
-	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k kernel_add -I'$(<D)' -o'$@' '$<'
+#$(XCLBIN)/comparison.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/comparison.cpp
+#	mkdir -p $(XCLBIN)
+#	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k comparison -I'$(<D)' -o'$@' '$<'
 
-$(XCLBIN)/kernel_mult2D.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/kernel_mult2D.cpp
-	mkdir -p $(XCLBIN)
-	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k kernel_mult2D -I'$(<D)' -o'$@' '$<'
+#$(XCLBIN)/conv.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/conv.cpp
+#	mkdir -p $(XCLBIN)
+#	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k conv -I'$(<D)' -o'$@' '$<'
 
-$(XCLBIN)/kernel_sum2D_rowwise.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/kernel_sum2D_rowwise.cpp
-	mkdir -p $(XCLBIN)
-	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k kernel_sum2D_rowwise -I'$(<D)' -o'$@' '$<'
+#$(XCLBIN)/core.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/core.cpp
+#	mkdir -p $(XCLBIN)
+#	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k core -I'$(<D)' -o'$@' '$<'
 
-$(XCLBIN)/kernel_cent.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/kernel_cent.cpp
-	mkdir -p $(XCLBIN)
-	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k kernel_cent -I'$(<D)' -o'$@' '$<'
+#$(XCLBIN)/create.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/create.cpp
+#	mkdir -p $(XCLBIN)
+#	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k create -I'$(<D)' -o'$@' '$<'
 
-$(XCLBIN)/relu_soft_d.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/relu_soft_d.cpp
-	mkdir -p $(XCLBIN)
-	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k relu_soft_d -I'$(<D)' -o'$@' '$<'
+#$(XCLBIN)/da.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/da.cpp
+#	mkdir -p $(XCLBIN)
+#	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k da -I'$(<D)' -o'$@' '$<'
 
-$(XCLBIN)/reduce_sum2D.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/reduce_sum2D.cpp
-	mkdir -p $(XCLBIN)
-	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k reduce_sum2D -I'$(<D)' -o'$@' '$<'
+#$(XCLBIN)/generator.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/generator.cpp
+#	mkdir -p $(XCLBIN)
+#	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k generator -I'$(<D)' -o'$@' '$<'
 
-$(XCLBIN)/kernel_accuracy.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/kernel_accuracy.cpp
-	mkdir -p $(XCLBIN)
-	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k kernel_accuracy -I'$(<D)' -o'$@' '$<'
+#$(XCLBIN)/losses.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/losses.cpp
+#	mkdir -p $(XCLBIN)
+#	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k losses -I'$(<D)' -o'$@' '$<'
 
-$(XCLBIN)/kernel_total_sum.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/kernel_total_sum.cpp
-	mkdir -p $(XCLBIN)
-	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k kernel_total_sum -I'$(<D)' -o'$@' '$<'
+#$(XCLBIN)/math.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/math.cpp
+#	mkdir -p $(XCLBIN)
+#	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k math -I'$(<D)' -o'$@' '$<'
 
-$(XCLBIN)/el_div.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/el_div.cpp
-	mkdir -p $(XCLBIN)
-	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k el_div -I'$(<D)' -o'$@' '$<'
+#$(XCLBIN)/metrics.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/metrics.cpp
+#	mkdir -p $(XCLBIN)
+#	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k metrics -I'$(<D)' -o'$@' '$<'
 
-$(XCLBIN)/kernel_normalize.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/kernel_normalize.cpp
-	mkdir -p $(XCLBIN)
-	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k kernel_normalize -I'$(<D)' -o'$@' '$<'
+#$(XCLBIN)/pool.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/pool.cpp
+#	mkdir -p $(XCLBIN)
+#	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k pool -I'$(<D)' -o'$@' '$<'
 
-$(XCLBIN)/tensor_op.$(TARGET).$(DEVICE).xclbin: $(BINARY_CONTAINER_tensor_OBJS)
+#$(XCLBIN)/reduction.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/reduction.cpp
+#	mkdir -p $(XCLBIN)
+#	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k reduction -I'$(<D)' -o'$@' '$<'
+
+#$(XCLBIN)/tensor_nn.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/tensor_nn.cpp
+#	mkdir -p $(XCLBIN)
+#	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k tensor_nn -I'$(<D)' -o'$@' '$<'
+
+$(XCLBIN)/$(XCLBIN_NAME).$(TARGET).$(DEVICE).xclbin: $(BINARY_CONTAINER_tensor_OBJS)
 	mkdir -p $(XCLBIN)
 	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -l $(LDCLFLAGS) -o'$@' $(+)
 
-$(XCLBIN)/kernel_core.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/kernel_core.cpp
-	mkdir -p $(XCLBIN)
-	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k kernel_core -I'$(<D)' -o'$@' '$<'
+
 
 #emulating kernel
 $(KERNELTEST): $(SRC_PATH)/test_kernels.cpp $(xcl2_SRCS) $(xcl2_HDRS)
@@ -148,7 +158,7 @@ $(KERNELTEST): $(SRC_PATH)/test_kernels.cpp $(xcl2_SRCS) $(xcl2_HDRS)
 emuconfig:
 	emconfigutil --platform $(DEVICE) --od $(EMCONFIG_DIR)
 	$(CP) $(EMCONFIG_DIR)/emconfig.json .
-	XCL_EMULATION_MODE=$(TARGET) ./test_kernels $(XCLBIN)/tensor_op.$(TARGET).$(DEVICE).xclbin
+	XCL_EMULATION_MODE=$(TARGET) ./test_kernels $(XCLBIN)/$(XCLBIN_NAME).$(TARGET).$(DEVICE).xclbin
 
 #---------------------------------- release
 #test_eddl: test_eddl.cpp $(FPGA_OBJ)
@@ -161,6 +171,7 @@ install:
 	cp test_eddl /usr/local/bin
 clean:
 	rm *.log
+
 
 
 

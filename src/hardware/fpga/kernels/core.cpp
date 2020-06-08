@@ -3,7 +3,7 @@
 extern "C" {
 
 #ifdef K_ENABLED_FILL_
-void k_fill_(float *A, float v, int size){
+void k_fill_(float *A, float v, long int size){
     for (int i = 0; i < size; ++i){
         A[i] = v;
     }
@@ -36,7 +36,7 @@ void k_fill(float *A, int aini, int aend, float * B, int bini, int bend, int inc
 #endif
 
 #ifdef K_ENABLED_SELECT
-void k_select(float *A, float *B, int *addresses, int size){
+void k_select(float *A, float *B, int *addresses, long int size){
     for (int i = 0; i < size; i++) {
         B[i] = A[addresses[i]];
     }
@@ -44,7 +44,7 @@ void k_select(float *A, float *B, int *addresses, int size){
 #endif
 
 #ifdef K_ENABLED_SELECT_BACK
-void k_select_back(float *A, float *B, int *addresses, int size){
+void k_select_back(float *A, float *B, int *addresses, long int size){
     for (int i = 0; i < size; i++) {  // walk stride
         B[addresses[i]] += A[i];  // delta_parent += delta
     }
@@ -52,7 +52,7 @@ void k_select_back(float *A, float *B, int *addresses, int size){
 #endif
 
 #ifdef K_ENABLED_SET_SELECT
-void k_set_select(float *A, float *B, int *addresses, int size){
+void k_set_select(float *A, float *B, int *addresses, long int size){
     for (int i = 0; i < size; i++) {
         A[addresses[i]] = B[i];
     }
@@ -60,7 +60,7 @@ void k_set_select(float *A, float *B, int *addresses, int size){
 #endif
 
 #ifdef K_ENABLED_SET_SELECT_BACK
-void k_set_select_back(float *A, float *B, int *addresses, int size){
+void k_set_select_back(float *A, float *B, int *addresses, long int size){
     for (int i = 0; i < size; i++) {
         B[i] += A[addresses[i]];
     }
@@ -68,7 +68,7 @@ void k_set_select_back(float *A, float *B, int *addresses, int size){
 #endif
 
 #ifdef K_ENABLED_SELECT
-void k_select2(float * A, float * B, int *sind, int ini, int end,bool mask_zeros, int size, int Ashape0){
+void k_select2(float * A, float * B, int *sind, int ini, int end,bool mask_zeros, long int size, int Ashape0){
     int s = size / Ashape0;
 
     #pragma omp parallel for
@@ -83,7 +83,7 @@ void k_select2(float * A, float * B, int *sind, int ini, int end,bool mask_zeros
 #endif
 
 #ifdef K_ENABLED_DESELECT
-void k_deselect(float * A, float * B, int *sind, int ini, int end,int inc,bool mask_zeros, int size, int Ashape0){
+void k_deselect(float * A, float * B, int *sind, int ini, int end,int inc,bool mask_zeros, long int size, int Ashape0){
     int s = size / Ashape0;
 
     #pragma omp parallel for
