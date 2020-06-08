@@ -118,8 +118,11 @@ void cpu_normalize(Tensor *A, Tensor *B, float min, float max){
     // (max2-min2)/(max1-min1) * (x-min1) + min2
     float max_ori = A->max();
     float min_ori = A->min();
+
 #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) B->ptr[i] = (max-min)/(max_ori-min_ori) * (A->ptr[i]-min_ori) + min;
+    for (int i = 0; i < A->size; ++i) {
+        B->ptr[i] = (max-min)/(max_ori-min_ori) * (A->ptr[i]-min_ori) + min;
+    }
 }
 
 void cpu_pow(Tensor *A, Tensor *B, float exp) {
@@ -293,7 +296,7 @@ void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
 
 
 void cpu_maximum(Tensor* A, Tensor* B, float v){
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < A->size; ++i) {
         B->ptr[i] = ::max(A->ptr[i], v);
     }
@@ -324,37 +327,53 @@ void cpu_minimum(Tensor* A, Tensor* B, Tensor* C){
 // CPU: Should be reductions ***************************
 
 float cpu_max(Tensor *A){
-    float max_val = MIN_FLOAT;
+    float shared_max = MIN_FLOAT;
+#pragma omp parallel
+    {
+        float min = MIN_FLOAT;
 
-    #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) {
-        if (A->ptr[i] > max_val){
-            #pragma omp critical
-            max_val = A->ptr[i];
+#pragma omp for nowait
+        for (int i = 0; i < A->size; ++i)
+        {
+            min = std::max(A->ptr[i], min);
+        }
+
+#pragma omp critical
+        {
+            shared_max = std::max(shared_max, min);
         }
     }
 
-    return max_val;
+    return shared_max;
 }
+
 
 float cpu_min(Tensor *A){
-    float min_val = MAX_FLOAT;
+    float shared_min = MAX_FLOAT;
+#pragma omp parallel
+    {
+        float min = MAX_FLOAT;
 
-    #pragma omp parallel for
-    for (int i = 0; i < A->size; ++i) {
-        if (A->ptr[i] < min_val){
-            #pragma omp critical
-            min_val = A->ptr[i];
+#pragma omp for nowait
+        for (int i = 0; i < A->size; ++i)
+        {
+            min = std::min(A->ptr[i], min);
+        }
+
+#pragma omp critical
+        {
+            shared_min = std::min(shared_min, min);
         }
     }
 
-    return min_val;
+    return shared_min;
 }
+
 
 float cpu_sum(Tensor *A) {
     float sum = 0.0f;
 
-    #pragma omp parallel for reduction(+:sum)
+#pragma omp parallel for reduction(+:sum)
     for (int i = 0; i < A->size; ++i) {
         sum += A->ptr[i];
     }
@@ -365,7 +384,7 @@ float cpu_sum(Tensor *A) {
 float cpu_sum_abs(Tensor *A) {
     float sum = 0.0f;
 
-    #pragma omp parallel for reduction(+:sum)
+#pragma omp parallel for reduction(+:sum)
     for (int i = 0; i < A->size; ++i) {
         sum += ::fabs(A->ptr[i]);
     }
