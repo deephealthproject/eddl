@@ -304,7 +304,7 @@ void Tensor::greater(Tensor *A, Tensor *B, float v){
 }
 
 Tensor* Tensor::greater(Tensor *A){
-    Tensor *t = this->clone();
+    Tensor *t = Tensor::empty(this->shape, this->device);
     t->greater(this, A, t);
     return t;
 }
@@ -359,7 +359,7 @@ void Tensor::greater_equal(Tensor *A, Tensor *B, float v){
 }
 
 Tensor* Tensor::greater_equal(Tensor *A){
-    Tensor *t = this->clone();
+    Tensor *t = Tensor::empty(this->shape, this->device);
     t->greater_equal(this, A, t);
     return t;
 }
@@ -414,7 +414,7 @@ void Tensor::less(Tensor *A, Tensor *B, float v){
 }
 
 Tensor* Tensor::less(Tensor *A){
-    Tensor *t = this->clone();
+    Tensor *t = Tensor::empty(this->shape, this->device);
     t->less(this, A, t);
     return t;
 }
@@ -470,7 +470,7 @@ void Tensor::less_equal(Tensor *A, Tensor *B, float v){
 
 
 Tensor* Tensor::less_equal(Tensor *A){
-    Tensor *t = this->clone();
+    Tensor *t = Tensor::empty(this->shape, this->device);
     t->less_equal(this, A, t);
     return t;
 }
@@ -525,7 +525,7 @@ void Tensor::equal(Tensor *A, Tensor *B, float v){
 }
 
 Tensor* Tensor::equal(Tensor *A){
-    Tensor *t = this->clone();
+    Tensor *t = Tensor::empty(this->shape, this->device);
     t->equal(this, A, t);
     return t;
 }
@@ -579,7 +579,7 @@ void Tensor::not_equal(Tensor *A, Tensor *B, float v){
 }
 
 Tensor* Tensor::not_equal(Tensor *A){
-    Tensor *t = this->clone();
+    Tensor *t = Tensor::empty(this->shape, this->device);
     t->not_equal(this, A, t);
     return t;
 }

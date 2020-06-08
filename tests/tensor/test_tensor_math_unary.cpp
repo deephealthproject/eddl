@@ -402,10 +402,10 @@ TEST(TensorTestSuite, tensor_math_unary_inv){
     Tensor* t1_ref = new Tensor(t1_shape_ref, d_t1_ref.data(), DEV_CPU);
 
     vector<int> t1_shape = {4};
-    vector<float> d_t1 = {1.0000, 0.5000, 0.3333, 0.2500};
+    vector<float> d_t1 = {2.0000, 1.0000, 0.6666, 0.5000};
     Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
 
-    Tensor* new_t = t1->inv();
+    Tensor* new_t = t1->inv(2.0f);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
     // Test GPU

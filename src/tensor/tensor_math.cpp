@@ -49,7 +49,7 @@ float Tensor::max(Tensor* A){
 }
 
 Tensor* Tensor::maximum(float v){
-    Tensor *t = this->clone();  // TODO: Remove "this->clone()" when when only need the shape
+    Tensor *t = Tensor::empty(this->shape, this->device);
     Tensor::maximum(this, t, v);
     return t;
 }
@@ -130,7 +130,7 @@ float Tensor::min(Tensor* A){
 
 
 Tensor* Tensor::minimum(float v){
-    Tensor *t = this->clone();
+    Tensor *t = Tensor::empty(this->shape, this->device);
     Tensor::minimum(this, t, v);
     return t;
 }
@@ -636,7 +636,7 @@ void Tensor::inv_(float v){
 
 Tensor* Tensor::inv(float v){
     Tensor *t = this->clone();
-    t->inv_();
+    t->inv_(v);
     return t;
 }
 

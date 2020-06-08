@@ -142,7 +142,7 @@ void Tensor::diag_(int k){
 }
 
 Tensor* Tensor::diag(int k){
-    Tensor *t = this->clone();
+    Tensor *t = Tensor::empty(this->shape, this->device);
     Tensor::diag(this, t, k);
     return t;
 }
