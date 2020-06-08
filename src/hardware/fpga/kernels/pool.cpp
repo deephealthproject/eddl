@@ -7,6 +7,29 @@ extern void k_add_pixel(int b,int px,int py,int pz, int Dic, int Dir, int isize,
 
 #ifdef K_ENABLED_MPOOL2D
 void k_mpool2D(int ir, int ic, int iz, int padrt, int padrb, int padcl, int padcr, int kr, int kc, int sr, int sc, long int size, int Ishape0, float *ptr_in, float *ptr_out, int *ptr_indX, int *ptr_indY) {
+
+  #pragma HLS INTERFACE m_axi port=ptr_in offset=slave bundle=gmem
+  #pragma HLS INTERFACE m_axi port=ptr_out offset=slave bundle=gmem
+  #pragma HLS INTERFACE m_axi port=ptr_indX offset=slave bundle=gmem
+  #pragma HLS INTERFACE m_axi port=ptr_indY offset=slave bundle=gmem
+  #pragma HLS INTERFACE s_axilite port=ptr_in  bundle=control
+  #pragma HLS INTERFACE s_axilite port=ptr_out  bundle=control
+  #pragma HLS INTERFACE s_axilite port=ptr_indX bundle=control
+  #pragma HLS INTERFACE s_axilite port=ptr_indY bundle=control
+  #pragma HLS INTERFACE s_axilite port=ir bundle=control
+  #pragma HLS INTERFACE s_axilite port=ic bundle=control
+  #pragma HLS INTERFACE s_axilite port=iz bundle=control
+  #pragma HLS INTERFACE s_axilite port=padrt bundle=control
+  #pragma HLS INTERFACE s_axilite port=padrb bundle=control
+  #pragma HLS INTERFACE s_axilite port=padcl bundle=control
+  #pragma HLS INTERFACE s_axilite port=padcr bundle=control
+  #pragma HLS INTERFACE s_axilite port=kr bundle=control
+  #pragma HLS INTERFACE s_axilite port=kc bundle=control
+  #pragma HLS INTERFACE s_axilite port=sr bundle=control
+  #pragma HLS INTERFACE s_axilite port=sc bundle=control
+  #pragma HLS INTERFACE s_axilite port=size bundle=control
+  #pragma HLS INTERFACE s_axilite port=Ishape0 bundle=control
+
     int isize = ir * ic * iz;
     int irsize = ir * ic;
 
@@ -47,6 +70,29 @@ void k_mpool2D(int ir, int ic, int iz, int padrt, int padrb, int padcl, int padc
 
 #ifdef K_ENABLED_MLPOOL2D_BACK
 void k_mpool2D_back(int ir, int ic, int iz, int padrt, int padrb, int padcl, int padcr, int kr, int kc, int sr, int sc, long int size, int Ishape0, float *ptr_in, float *ptr_out, int *ptr_indX, int *ptr_indY) {
+
+    #pragma HLS INTERFACE m_axi port=ptr_in offset=slave bundle=gmem
+    #pragma HLS INTERFACE m_axi port=ptr_out offset=slave bundle=gmem
+    #pragma HLS INTERFACE m_axi port=ptr_indX offset=slave bundle=gmem
+    #pragma HLS INTERFACE m_axi port=ptr_indY offset=slave bundle=gmem
+    #pragma HLS INTERFACE s_axilite port=ptr_in  bundle=control
+    #pragma HLS INTERFACE s_axilite port=ptr_out  bundle=control
+    #pragma HLS INTERFACE s_axilite port=ptr_indX bundle=control
+    #pragma HLS INTERFACE s_axilite port=ptr_indY bundle=control
+    #pragma HLS INTERFACE s_axilite port=ir bundle=control
+    #pragma HLS INTERFACE s_axilite port=ic bundle=control
+    #pragma HLS INTERFACE s_axilite port=iz bundle=control
+    #pragma HLS INTERFACE s_axilite port=padrt bundle=control
+    #pragma HLS INTERFACE s_axilite port=padrb bundle=control
+    #pragma HLS INTERFACE s_axilite port=padcl bundle=control
+    #pragma HLS INTERFACE s_axilite port=padcr bundle=control
+    #pragma HLS INTERFACE s_axilite port=kr bundle=control
+    #pragma HLS INTERFACE s_axilite port=kc bundle=control
+    #pragma HLS INTERFACE s_axilite port=sr bundle=control
+    #pragma HLS INTERFACE s_axilite port=sc bundle=control
+    #pragma HLS INTERFACE s_axilite port=size bundle=control
+    #pragma HLS INTERFACE s_axilite port=Ishape0 bundle=control
+
     int isize = ir * ic * iz;
     int irsize = ir * ic;
 

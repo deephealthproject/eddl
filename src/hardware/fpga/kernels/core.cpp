@@ -4,6 +4,12 @@ extern "C" {
 
 #ifdef K_ENABLED_FILL_
 void k_fill_(float *A, float v, long int size){
+
+  #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
+  #pragma HLS INTERFACE s_axilite port=A  bundle=control
+  #pragma HLS INTERFACE s_axilite port=v bundle=control
+  #pragma HLS INTERFACE s_axilite port=size bundle=control
+
     for (int i = 0; i < size; ++i){
         A[i] = v;
     }
@@ -13,6 +19,23 @@ void k_fill_(float *A, float v, long int size){
 #ifdef K_ENABLED_FILL
 void k_fill(float *A, int aini, int aend, float * B, int bini, int bend, int inc,
             int Andim, int Asize, int *Ashape, int Bsize, int Bshape0){
+
+    #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
+    #pragma HLS INTERFACE s_axilite port=A  bundle=control
+    #pragma HLS INTERFACE m_axi port=Ashape offset=slave bundle=gmem
+    #pragma HLS INTERFACE s_axilite port=Ashape  bundle=control
+    #pragma HLS INTERFACE m_axi port=B offset=slave bundle=gmem
+    #pragma HLS INTERFACE s_axilite port=B  bundle=control
+    #pragma HLS INTERFACE s_axilite port=aini bundle=control
+    #pragma HLS INTERFACE s_axilite port=aend bundle=control
+    #pragma HLS INTERFACE s_axilite port=bini bundle=control
+    #pragma HLS INTERFACE s_axilite port=bend bundle=control
+    #pragma HLS INTERFACE s_axilite port=inc bundle=control
+    #pragma HLS INTERFACE s_axilite port=Andim bundle=control
+    #pragma HLS INTERFACE s_axilite port=Asize bundle=control
+    #pragma HLS INTERFACE s_axilite port=Bsize bundle=control
+    #pragma HLS INTERFACE s_axilite port=Bshape0 bundle=control
+
     int at = Asize / Ashape[0];
     int bt = Bsize / Bshape0;
 
@@ -37,6 +60,15 @@ void k_fill(float *A, int aini, int aend, float * B, int bini, int bend, int inc
 
 #ifdef K_ENABLED_SELECT
 void k_select(float *A, float *B, int *addresses, long int size){
+
+  #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
+  #pragma HLS INTERFACE m_axi port=B offset=slave bundle=gmem
+  #pragma HLS INTERFACE m_axi port=addresses offset=slave bundle=gmem
+  #pragma HLS INTERFACE s_axilite port=A  bundle=control
+  #pragma HLS INTERFACE s_axilite port=B  bundle=control
+  #pragma HLS INTERFACE s_axilite port=addresses  bundle=control
+  #pragma HLS INTERFACE s_axilite port=size bundle=control
+
     for (int i = 0; i < size; i++) {
         B[i] = A[addresses[i]];
     }
@@ -45,6 +77,15 @@ void k_select(float *A, float *B, int *addresses, long int size){
 
 #ifdef K_ENABLED_SELECT_BACK
 void k_select_back(float *A, float *B, int *addresses, long int size){
+
+  #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
+  #pragma HLS INTERFACE m_axi port=B offset=slave bundle=gmem
+  #pragma HLS INTERFACE m_axi port=addresses offset=slave bundle=gmem
+  #pragma HLS INTERFACE s_axilite port=A  bundle=control
+  #pragma HLS INTERFACE s_axilite port=B  bundle=control
+  #pragma HLS INTERFACE s_axilite port=addresses  bundle=control
+  #pragma HLS INTERFACE s_axilite port=size bundle=control
+
     for (int i = 0; i < size; i++) {  // walk stride
         B[addresses[i]] += A[i];  // delta_parent += delta
     }
@@ -53,6 +94,15 @@ void k_select_back(float *A, float *B, int *addresses, long int size){
 
 #ifdef K_ENABLED_SET_SELECT
 void k_set_select(float *A, float *B, int *addresses, long int size){
+
+  #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
+  #pragma HLS INTERFACE m_axi port=B offset=slave bundle=gmem
+  #pragma HLS INTERFACE m_axi port=addresses offset=slave bundle=gmem
+  #pragma HLS INTERFACE s_axilite port=A  bundle=control
+  #pragma HLS INTERFACE s_axilite port=B  bundle=control
+  #pragma HLS INTERFACE s_axilite port=addresses  bundle=control
+  #pragma HLS INTERFACE s_axilite port=size bundle=control
+
     for (int i = 0; i < size; i++) {
         A[addresses[i]] = B[i];
     }
@@ -61,6 +111,15 @@ void k_set_select(float *A, float *B, int *addresses, long int size){
 
 #ifdef K_ENABLED_SET_SELECT_BACK
 void k_set_select_back(float *A, float *B, int *addresses, long int size){
+
+  #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
+  #pragma HLS INTERFACE m_axi port=B offset=slave bundle=gmem
+  #pragma HLS INTERFACE m_axi port=addresses offset=slave bundle=gmem
+  #pragma HLS INTERFACE s_axilite port=A  bundle=control
+  #pragma HLS INTERFACE s_axilite port=B  bundle=control
+  #pragma HLS INTERFACE s_axilite port=addresses  bundle=control
+  #pragma HLS INTERFACE s_axilite port=size bundle=control
+
     for (int i = 0; i < size; i++) {
         B[i] += A[addresses[i]];
     }
@@ -68,7 +127,20 @@ void k_set_select_back(float *A, float *B, int *addresses, long int size){
 #endif
 
 #ifdef K_ENABLED_SELECT
-void k_select2(float * A, float * B, int *sind, int ini, int end,bool mask_zeros, long int size, int Ashape0){
+void k_select2(float * A, float * B, int *sind, int ini, int end, bool mask_zeros, long int size, int Ashape0){
+
+  #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
+  #pragma HLS INTERFACE m_axi port=B offset=slave bundle=gmem
+  #pragma HLS INTERFACE m_axi port=sind offset=slave bundle=gmem
+  #pragma HLS INTERFACE s_axilite port=A  bundle=control
+  #pragma HLS INTERFACE s_axilite port=B  bundle=control
+  #pragma HLS INTERFACE s_axilite port=sind  bundle=control
+  #pragma HLS INTERFACE s_axilite port=ini bundle=control
+  #pragma HLS INTERFACE s_axilite port=end bundle=control
+  #pragma HLS INTERFACE s_axilite port=mask_zeros bundle=control
+  #pragma HLS INTERFACE s_axilite port=size bundle=control
+  #pragma HLS INTERFACE s_axilite port=Ashape0 bundle=control
+
     int s = size / Ashape0;
 
     #pragma omp parallel for
@@ -83,7 +155,20 @@ void k_select2(float * A, float * B, int *sind, int ini, int end,bool mask_zeros
 #endif
 
 #ifdef K_ENABLED_DESELECT
-void k_deselect(float * A, float * B, int *sind, int ini, int end,int inc,bool mask_zeros, long int size, int Ashape0){
+void k_deselect(float * A, float * B, int *sind, int ini, int end, int inc, bool mask_zeros, long int size, int Ashape0){
+
+  #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
+  #pragma HLS INTERFACE m_axi port=B offset=slave bundle=gmem
+  #pragma HLS INTERFACE m_axi port=sind offset=slave bundle=gmem
+  #pragma HLS INTERFACE s_axilite port=A  bundle=control
+  #pragma HLS INTERFACE s_axilite port=B  bundle=control
+  #pragma HLS INTERFACE s_axilite port=sind  bundle=control
+  #pragma HLS INTERFACE s_axilite port=ini bundle=control
+  #pragma HLS INTERFACE s_axilite port=end bundle=control
+  #pragma HLS INTERFACE s_axilite port=mask_zeros bundle=control
+  #pragma HLS INTERFACE s_axilite port=size bundle=control
+  #pragma HLS INTERFACE s_axilite port=Ashape0 bundle=control
+
     int s = size / Ashape0;
 
     #pragma omp parallel for
@@ -102,6 +187,23 @@ void k_deselect(float * A, float * B, int *sind, int ini, int end,int inc,bool m
 
 #ifdef K_ENABLED_CONCAT
 void k_concat(float *A, int AstrideAxis, int AshapeAxis, int num_tensors, float **tensors, float *sizes, int *strides, int *shapes, unsigned int axis, bool derivative){
+
+  #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
+  #pragma HLS INTERFACE m_axi port=tensors offset=slave bundle=gmem //to check
+  #pragma HLS INTERFACE m_axi port=sizes offset=slave bundle=gmem
+  #pragma HLS INTERFACE m_axi port=strides offset=slave bundle=gmem
+  #pragma HLS INTERFACE m_axi port=shapes offset=slave bundle=gmem
+  #pragma HLS INTERFACE s_axilite port=A  bundle=control
+  #pragma HLS INTERFACE s_axilite port=tensors  bundle=control
+  #pragma HLS INTERFACE s_axilite port=sizes  bundle=control
+  #pragma HLS INTERFACE s_axilite port=strides bundle=control
+  #pragma HLS INTERFACE s_axilite port=shapes bundle=control
+  #pragma HLS INTERFACE s_axilite port=AstrideAxis bundle=control
+  #pragma HLS INTERFACE s_axilite port=AshapeAxis bundle=control
+  #pragma HLS INTERFACE s_axilite port=num_tensors bundle=control
+  #pragma HLS INTERFACE s_axilite port=axis bundle=control
+  #pragma HLS INTERFACE s_axilite port=derivative bundle=control
+  
   // Walk through all the tensors to concat one axis (once)
     unsigned int offset = 0;
     unsigned int src_stride = 0;
