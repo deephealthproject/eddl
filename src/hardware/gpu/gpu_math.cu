@@ -390,7 +390,6 @@ void gpu_add(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC){
 
     setDims(A);
 
-
     gpu_add<<<dimGrid,dimBlock>>>(scA,A->ptr,scB,B->ptr,C->ptr,incC,A->size);
     check_cuda(cudaDeviceSynchronize(),"addc");
 }

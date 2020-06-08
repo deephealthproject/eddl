@@ -9,7 +9,7 @@
 using namespace std;
 
 
-TEST(TensorTestSuite, tensor_create_trace){
+TEST(TensorTestSuite, tensor_linalg_trace){
     // Test #1
 //    vector<int> t1_shape = {3, 3};
 //    vector<float> d_t1_ref = {1.0f, 0.0f, 0.0f,
@@ -43,5 +43,30 @@ TEST(TensorTestSuite, tensor_create_trace){
     float t_gpu_sum = t_gpu->trace(0);
 
     ASSERT_TRUE(abs(t_cpu_sum - t_gpu_sum) < 10e-4);
+#endif
+}
+
+
+TEST(TensorTestSuite, tensor_linalg_norm){
+    // Test #1
+    vector<int> t1_shape = {3, 3};
+    vector<float> d_t1 = {-4.0, -3.0, -2.0,
+                          -1.0,  0.0,  1.0,
+                           2.0,  3.0,  4.0};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
+
+    float t1_norm = t1->norm();
+    ASSERT_NEAR(t1_norm, 7.7459f, 10e-4f);
+
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    float t_cpu_norm = t_cpu->norm();
+    float t_gpu_norm = t_gpu->norm();
+
+    ASSERT_NEAR(t_cpu_norm, t_gpu_norm, 10e-2f);
 #endif
 }

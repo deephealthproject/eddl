@@ -588,6 +588,14 @@ public:
     static void cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float cval=0.0f);
 
 
+    // Linear algebra *****************************
+    float trace(int k=0);
+    static float trace(Tensor *A, int k=0);
+
+    float norm(string ord="fro");
+    static float norm(Tensor *A, string ord="fro");
+
+
     // Generating index arrays *****************************
     std::pair<unsigned int*, int> _nonzero();
     Tensor* nonzero(bool sort_indices=false);
@@ -597,10 +605,6 @@ public:
 
     Tensor* mask_indices(Tensor *mask, Tensor *A);  // where(x > 0, x[random], y[ones])
     static void mask_indices(Tensor *mask, Tensor *A, Tensor *B);
-
-
-    // Linear algebra *****************************
-    float trace(int k=0);
 
 
     // Logic funcions: Truth value testing *****************************

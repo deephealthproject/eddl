@@ -135,6 +135,9 @@ void cpu_reduction_back(ReduceDescriptor *RD);
 //void cpu_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
 //void cpu_delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC);
 
+// CPU: Linear algebra
+float cpu_norm(Tensor *A, string ord);
+
 // CPU: Logic functions: Truth value testing
 std::pair<unsigned int*, int> cpu_nonzero(Tensor *A);
 void cpu_where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C);

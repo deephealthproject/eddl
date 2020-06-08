@@ -139,6 +139,9 @@ void gpu_reduction_back(ReduceDescriptor *RD);
 //void gpu_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
 //void gpu_delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC);
 
+// GPU: Linear algebra
+float gpu_norm(Tensor *A, string ord);
+
 // Generating index arrays *****************************
 void gpu_where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C);
 

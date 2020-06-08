@@ -210,9 +210,9 @@ Not yet...
 
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
-| norm      | ❌    |  ❌    |  Matrix or vector norm.                                                 |
+| norm      | ✔️    |  ✔️    |  Matrix or vector norm.                                                 |
 | det      | ❌    |   ❌   |   Compute the determinant of an array.                                                        |
-| trace      | ❌    |   ❌   |   Return the sum along diagonals of the array.                                                 |
+| trace      | ✔️    |  ✔️    |   Return the sum along diagonals of the array.                                                 |
 
 ### Solving equations and inverting matrices
 

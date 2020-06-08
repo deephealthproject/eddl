@@ -18,10 +18,35 @@ using namespace std;
 
 
 float Tensor::trace(int k){
-    Tensor *t = this->diag(k);  // Generate diagonal
+    return Tensor::trace(this, k);
+}
+
+float Tensor::trace(Tensor *A, int k){
+    Tensor *t = A->diag(k);  // Generate diagonal
 
     float sum_diag = t->sum();
     delete t;
 
     return sum_diag;
+}
+
+float Tensor::norm(string ord){
+    return Tensor::norm(this, ord);
+}
+
+float Tensor::norm(Tensor *A, string ord){
+    if (A->isCPU()) {
+        return cpu_norm(A, ord);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+    {
+        return gpu_norm(A, ord);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
 }
