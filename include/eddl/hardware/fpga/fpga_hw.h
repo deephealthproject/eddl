@@ -18,7 +18,7 @@
 
 extern cl::CommandQueue q;
 
-#define K_ENABLED_RELU
+#include "eddl/hardware/fpga/fpga_enables.h"
 
 // activation kernels (22)
 extern cl::Kernel kernel_relu,   kernel_d_relu,  kernel_thresholded_relu,    kernel_d_thresholded_relu, kernel_leaky_relu,     kernel_d_leaky_relu;

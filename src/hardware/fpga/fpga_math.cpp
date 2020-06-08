@@ -439,6 +439,7 @@ void fpga_cpuemu_mult_(Tensor *A, float v) {
 
 void fpga_mult_(Tensor *A, float v) {
     _profile_fpga(_FPGA_MULT_, 0);
+    _profile_fpga_tensor(A);
     if (fpga_set_cpuemu_mult_ == 1) {
         fpga_cpuemu_mult_(A, v);
     } else {
@@ -854,6 +855,9 @@ void fpga_cpuemu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int inc
 
 void fpga_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
     _profile_fpga(_FPGA_MULT2D, 0);
+    _profile_fpga_tensor(A);
+    _profile_fpga_tensor(B);
+    _profile_fpga_tensor(C);
     if (fpga_set_cpuemu_mult2D == 1) {
       fpga_cpuemu_mult2D(A, tA, B, tB, C, incC);
     } else {
@@ -880,12 +884,18 @@ void fpga_cpuemu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
 
 void fpga_el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
   _profile_fpga(_FPGA_EL_DIV, 0);
+  _profile_fpga_tensor(A);
+  _profile_fpga_tensor(B);
+  _profile_fpga_tensor(C);
   if (fpga_set_cpuemu_el_div == 1) {
     fpga_cpuemu_el_div(A, B, C, incC);
   } else {
     printf("fpga_el_div not implemented yet\n"); exit(1);
   }
   _profile_fpga(_FPGA_EL_DIV, 1);
+  _profile_fpga_tensor(A);
+  _profile_fpga_tensor(B);
+  _profile_fpga_tensor(C);
 }
 
 // -----------------------------------------------------------------

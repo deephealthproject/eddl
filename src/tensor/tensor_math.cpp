@@ -1072,7 +1072,7 @@ float Tensor::sum() {
     }
 #endif
 #ifdef cFPGA
-    else {
+    else if (isFPGA()) {
         return fpga_sum(this);
     }
 #endif

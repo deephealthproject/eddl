@@ -262,7 +262,7 @@ void _profile_fpga(int f_id, int end) {
 
 void _profile_fpga_tensor(Tensor *T) {
 #ifdef FPGA_DEBUG
-      	printf("FPGA:    Tensor id %d size %d shape0 %d shape1 %d\n", T->fpga_tensor_id, T->size, T->shape[0], T->shape[1]);
+      	printf("FPGA:    Tensor id %d size %d shape0 %d shape1 %d (cpu_ptr %p)\n", T->fpga_tensor_id, T->size, T->shape[0], T->shape[1], T->ptr);
 #endif
 }
 
@@ -849,7 +849,7 @@ cl::Buffer fpga_create_tensor(int device, int size)
     //printf("Creating Buffer at ref %d -- size %d\n", 0, size);
     //
 #ifdef FPGA_DEBUG
-    printf("creating tensor in fpga...\n");
+    printf("creating tensor in fpga (size %d)...\n", size);
 #endif
 
     _profile_fpga_add_tensor(size*sizeof(float));
@@ -864,13 +864,13 @@ cl::Buffer fpga_create_tensor(int device, int size)
     //printf("Creating Buffer at ref %d -- %d size %d\n", buf,(T->fpga_ptr), size);
     //
 #ifdef FPGA_DEBUG
-    printf("created numfloats %d, pointer %p...\n", size, buffer);
+    printf("created numfloats %d\n", size, buffer);
 #endif
     return buffer;
 }
 
 
-void fpga_delete_tensor(int device, cl::Buffer ptr, int fpga_tensor_id_pi, int size)
+void fpga_delete_tensor(int device, cl::Buffer ptr, int fpga_tensor_id_p, int size)
 {
 #ifdef FPGA_DEBUG
     printf("deleting tensor in fpga... (id %d)\n", fpga_tensor_id_p);
@@ -879,7 +879,7 @@ void fpga_delete_tensor(int device, cl::Buffer ptr, int fpga_tensor_id_pi, int s
     _profile_fpga_remove_tensor(size*sizeof(float));
 
     // TOFIX
-//    ptr->release();
+    //ptr.release();
 
 }
 
@@ -895,14 +895,15 @@ void fpga_copy_fpga(Tensor *A, Tensor *B)
     printf("copy fpga...(tensor id %d -> tensor id %d)\n", A->fpga_tensor_id, B->fpga_tensor_id);
 #endif
     cl_int err;
-    OCL_CHECK(err, err= q.enqueueCopyBuffer((A->fpga_ptr), (B->fpga_ptr), 0, 0, A->size*sizeof(float)));
+    cl::Event blocking_event;
+    OCL_CHECK(err, err= q.enqueueCopyBuffer((A->fpga_ptr), (B->fpga_ptr), 0, 0, A->size*sizeof(float), NULL, &blocking_event));
     q.finish();
 }
 
 void fpga_copy_to_fpga(float *nptr, Tensor *A)
 {
 #ifdef FPGA_DEBUG
-    printf("copy to fpga (tensor id %d)...\n", A->fpga_tensor_id);
+    printf("copy to fpga: tensor id %d, size %d, from_cpu_ptr %p\n", A->fpga_tensor_id, A->size, nptr);
 #endif
     cl_int err;
     cl::Event blocking_event;
@@ -915,14 +916,13 @@ void fpga_copy_to_fpga(float *nptr, Tensor *A)
     //blocking_event.wait();
     //printf("Copy Tensor with tam %d in Buffer ref %d -- %f\n", A->tam, A->fpga_ptr,*nptr);
 //    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({A->fpga_ptr},0/* 0 means from host*/));
-
 }
 
 ///////////////////////////////////////////
 void fpga_copy_from_fpga(Tensor *A,float *nptr)
 {
 #ifdef FPGA_DEBUG
-    printf("copy from fpga... Tensor id %d\n", A->fpga_tensor_id);
+    printf("copy from fpga: tensor id %d, size %d, to_cpu_ptr %p\n", A->fpga_tensor_id, A->size, nptr);
 #endif
     cl_int err;
     cl::Event event;

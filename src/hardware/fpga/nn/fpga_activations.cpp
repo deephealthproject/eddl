@@ -67,7 +67,7 @@ void fpga_relu(Tensor *A, Tensor *B){
 
     OCL_CHECK(err, err = kernel_relu.setArg(0, (A->fpga_ptr)));
     OCL_CHECK(err, err = kernel_relu.setArg(1, (B->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_relu.setArg(2, A->size));
+    OCL_CHECK(err, err = kernel_relu.setArg(2, (int)A->size));
 
     OCL_CHECK(err, err = q.enqueueTask(kernel_relu, NULL, &event));
     //  event.wait();

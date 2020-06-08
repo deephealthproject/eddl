@@ -209,21 +209,22 @@ void Tensor::updateData(float *fptr){
 	  this->fpga_ptr = fpga_create_tensor(fpga_device, this->size);
 	  // we allocate also on cpu so to fluently emulate with cpu
 	  this->ptr = get_fmem(this->size,"Tensor::updateData");
-          // For 2 dimensions, map to data to Eigen for efficiency
-          // Efficient operations will be done over ptr2, which also points to ptr
-          if (this->ndim == 2) {
-            this->ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(this->ptr, this->shape[1], this->shape[0]);
-          }
 	  //
           this->fpga_tensor_id = next_fpga_tensor_id;
           next_fpga_tensor_id++;    
  	}
 	else { 
-	  printf("FPGA ERROR: mmmm... we are resizing and assigning directly the data (not supported)\n");
-	  exit(1);
+	  // The data has already been created in CPU, so we need now to create a buffer in FPGA and write the buffer into it
+	  this->fpga_ptr = fpga_create_tensor(fpga_device, this->size);
+	  fpga_copy_to_fpga(fptr, this);
 	  this->ptr = fptr;
-//	  this->fpga_ptr = fptr; 
 	}
+        // For 2 dimensions, map to data to Eigen for efficiency
+        // Efficient operations will be done over ptr2, which also points to ptr
+        if (this->ndim == 2) {
+          this->ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(this->ptr, this->shape[1], this->shape[0]);
+        }
+
     }
 #endif
 }
