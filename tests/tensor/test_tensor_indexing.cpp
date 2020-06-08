@@ -46,4 +46,21 @@ TEST(TensorTestSuite, tensor_indexing_where){
 
     Tensor* new_t = Tensor::where(condition, t1_A, t1_B);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t_cpu_A = Tensor::randu({3, 1000, 1000});
+    Tensor* t_gpu_A = t_cpu_A->clone(); t_gpu_A->toGPU();
+
+    Tensor* t_cpu_B = Tensor::randu({3, 1000, 1000});
+    Tensor* t_gpu_B = t_cpu_B->clone(); t_gpu_B->toGPU();
+
+    Tensor* t_cpu_condition = Tensor::randu({3, 1000, 1000}); t_cpu_condition->round();
+    Tensor* t_gpu_condition = t_cpu_condition->clone(); t_gpu_condition->toGPU();
+
+    Tensor* new_t_cpu = Tensor::where(t_cpu_condition, t_cpu_A, t_cpu_B);
+    Tensor* new_t_gpu =Tensor::where(t_gpu_condition, t_gpu_A, t_gpu_B);; new_t_gpu->toCPU();
+
+    ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
+#endif
 }

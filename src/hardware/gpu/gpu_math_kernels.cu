@@ -368,7 +368,7 @@ __global__ void gpu_maximum(float* A, float* B, float* C, long int size){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x < size){
-        C[thread_id_x] = min(A[thread_id_x], B[thread_id_x]);
+        C[thread_id_x] = max(A[thread_id_x], B[thread_id_x]);
     }
  }
 
@@ -376,7 +376,7 @@ __global__ void gpu_minimum(float* A, float* B, float v, long int size){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x < size){
-        B[thread_id_x] = max(A[thread_id_x], v);
+        B[thread_id_x] = min(A[thread_id_x], v);
     }
  }
 

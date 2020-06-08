@@ -26,13 +26,13 @@ TEST(TensorTestSuite, tensor_comparison_greaterT){
     // Test GPU
     #ifdef cGPU
         Tensor* t_cpu_A = Tensor::randu({3, 1000, 1000});
-        Tensor* t_gpu_A = t_cpu->clone(); t_gpu->toGPU();
+        Tensor* t_gpu_A = t_cpu_A->clone(); t_gpu_A->toGPU();
 
         Tensor* t_cpu_B = Tensor::full(t_cpu_A->shape, 0.5);
         Tensor* t_gpu_B = t_cpu_B->clone(); t_gpu_B->toGPU();
 
         Tensor* new_t_cpu = t_cpu_A->greater(t_cpu_B);
-        Tensor* new_t_gpu = t_gpu_A->greater(t_gpu_B); t_gpu->toCPU();
+        Tensor* new_t_gpu = t_gpu_A->greater(t_gpu_B); new_t_gpu->toCPU();
 
         ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
     #endif
@@ -60,13 +60,13 @@ TEST(TensorTestSuite, tensor_comparison_greater_equalT){
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu_A = Tensor::randu({3, 1000, 1000});
-        Tensor* t_gpu_A = t_cpu->clone(); t_gpu->toGPU();
+        Tensor* t_gpu_A = t_cpu_A->clone(); t_gpu_A->toGPU();
 
         Tensor* t_cpu_B = Tensor::full(t_cpu_A->shape, 0.5);
         Tensor* t_gpu_B = t_cpu_B->clone(); t_gpu_B->toGPU();
 
         Tensor* new_t_cpu = t_cpu_A->greater_equal(t_cpu_B);
-        Tensor* new_t_gpu = t_gpu_A->greater_equal(t_gpu_B); t_gpu->toCPU();
+        Tensor* new_t_gpu = t_gpu_A->greater_equal(t_gpu_B); new_t_gpu->toCPU();
 
         ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
 #endif
@@ -88,13 +88,13 @@ TEST(TensorTestSuite, tensor_comparison_lessT){
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu_A = Tensor::randu({3, 1000, 1000});
-        Tensor* t_gpu_A = t_cpu->clone(); t_gpu->toGPU();
+        Tensor* t_gpu_A = t_cpu_A->clone(); t_gpu_A->toGPU();
 
         Tensor* t_cpu_B = Tensor::full(t_cpu_A->shape, 0.5);
         Tensor* t_gpu_B = t_cpu_B->clone(); t_gpu_B->toGPU();
 
         Tensor* new_t_cpu = t_cpu_A->less(t_cpu_B);
-        Tensor* new_t_gpu = t_gpu_A->less(t_gpu_B); t_gpu->toCPU();
+        Tensor* new_t_gpu = t_gpu_A->less(t_gpu_B); new_t_gpu->toCPU();
 
         ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
 #endif
@@ -121,13 +121,13 @@ TEST(TensorTestSuite, tensor_comparison_less_equalT){
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu_A = Tensor::randu({3, 1000, 1000});
-        Tensor* t_gpu_A = t_cpu->clone(); t_gpu->toGPU();
+        Tensor* t_gpu_A = t_cpu_A->clone(); t_gpu_A->toGPU();
 
         Tensor* t_cpu_B = Tensor::full(t_cpu_A->shape, 0.5);
         Tensor* t_gpu_B = t_cpu_B->clone(); t_gpu_B->toGPU();
 
         Tensor* new_t_cpu = t_cpu_A->less_equal(t_cpu_B);
-        Tensor* new_t_gpu = t_gpu_A->less_equal(t_gpu_B); t_gpu->toCPU();
+        Tensor* new_t_gpu = t_gpu_A->less_equal(t_gpu_B); new_t_gpu->toCPU();
 
         ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
 #endif
@@ -152,7 +152,7 @@ TEST(TensorTestSuite, tensor_comparison_equalT){
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu_A = Tensor::randu({3, 1000, 1000});
-        Tensor* t_gpu_A = t_cpu->clone(); t_gpu->toGPU();
+        Tensor* t_gpu_A = t_cpu_A->clone(); t_gpu_A->toGPU();
 
         Tensor* t_cpu_B = Tensor::full(t_cpu_A->shape, 0.5);
         Tensor* t_gpu_B = t_cpu_B->clone(); t_gpu_B->toGPU();
@@ -184,7 +184,7 @@ TEST(TensorTestSuite, tensor_comparison_not_equalT){
     // Test GPU
 #ifdef cGPU
         Tensor* t_cpu_A = Tensor::randu({3, 1000, 1000});
-        Tensor* t_gpu_A = t_cpu->clone(); t_gpu->toGPU();
+        Tensor* t_gpu_A = t_cpu_A->clone(); t_gpu_A->toGPU();
 
         Tensor* t_cpu_B = Tensor::full(t_cpu_A->shape, 0.5);
         Tensor* t_gpu_B = t_cpu_B->clone(); t_gpu_B->toGPU();

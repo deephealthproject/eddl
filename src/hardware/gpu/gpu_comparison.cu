@@ -176,8 +176,18 @@ void gpu_greater(Tensor *A, Tensor *B, Tensor *C){
 
     setDims(A);
 
-    gpu_logical_greater<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    gpu_greater<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "greater");
+}
+
+void gpu_greater_equal(Tensor *A, Tensor *B, float v){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_greater_equal<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, v, A->size);
+    check_cuda(cudaDeviceSynchronize(), "greater_equal");
 }
 
 void gpu_greater_equal(Tensor *A, Tensor *B, Tensor *C){
@@ -186,8 +196,18 @@ void gpu_greater_equal(Tensor *A, Tensor *B, Tensor *C){
 
     setDims(A);
 
-    gpu_logical_greater_equal<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    gpu_greater_equal<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "greater_equal");
+}
+
+void gpu_less(Tensor *A, Tensor *B, float v){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_less<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, v, A->size);
+    check_cuda(cudaDeviceSynchronize(), "less");
 }
 
 void gpu_less(Tensor *A, Tensor *B, Tensor *C){
@@ -196,8 +216,18 @@ void gpu_less(Tensor *A, Tensor *B, Tensor *C){
 
     setDims(A);
 
-    gpu_logical_less<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    gpu_less<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "less");
+}
+
+void gpu_less_equal(Tensor *A, Tensor *B, float v){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_less_equal<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, v, A->size);
+    check_cuda(cudaDeviceSynchronize(), "less_equal");
 }
 
 void gpu_less_equal(Tensor *A, Tensor *B, Tensor *C){
@@ -206,8 +236,18 @@ void gpu_less_equal(Tensor *A, Tensor *B, Tensor *C){
 
     setDims(A);
 
-    gpu_logical_less_equal<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    gpu_less_equal<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "less_equal");
+}
+
+void gpu_equal(Tensor *A, Tensor *B, float v){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_equal<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, v, A->size);
+    check_cuda(cudaDeviceSynchronize(), "equal");
 }
 
 void gpu_equal(Tensor *A, Tensor *B, Tensor *C){
@@ -216,8 +256,18 @@ void gpu_equal(Tensor *A, Tensor *B, Tensor *C){
 
     setDims(A);
 
-    gpu_logical_equal<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    gpu_equal<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "equal");
+}
+
+void gpu_not_equal(Tensor *A, Tensor *B, float v){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_not_equal<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, v, A->size);
+    check_cuda(cudaDeviceSynchronize(), "not_equal");
 }
 
 void gpu_not_equal(Tensor *A, Tensor *B, Tensor *C){
@@ -226,6 +276,6 @@ void gpu_not_equal(Tensor *A, Tensor *B, Tensor *C){
 
     setDims(A);
 
-    gpu_logical_not_equal<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    gpu_not_equal<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
     check_cuda(cudaDeviceSynchronize(), "not_equal");
 }

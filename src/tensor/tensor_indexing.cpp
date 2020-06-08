@@ -24,7 +24,7 @@ std::pair<unsigned int*, int> Tensor::_nonzero(){
         return cpu_nonzero(this);
     }
 #ifdef cGPU
-    else if (A->isGPU() && B->isGPU())
+    else if (this->isGPU())
       {
         msg("Not yet implemented for CPU", "Tensor::_nonzero");
       }

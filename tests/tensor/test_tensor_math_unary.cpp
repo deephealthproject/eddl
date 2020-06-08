@@ -1072,18 +1072,18 @@ TEST(TensorTestSuite, tensor_math_maximum){
     // Test #1
     Tensor *t1_ref = Tensor::full({2, 3}, 10);
 
-    Tensor *t1_A = Tensor::full({2, 3}, 5);
+    Tensor *t1 = Tensor::full({2, 3}, 5);
 
-    Tensor* new_t = Tensor::maximum(t1_A, 10.0f);
+    Tensor* new_t = Tensor::maximum(t1, 10.0f);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu_A = Tensor::randu({3, 1000, 1000});
-    Tensor* t_gpu_A = t_cpu->clone(); t_gpu->toGPU();
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
 
-    Tensor* new_t_cpu = Tensor::maximum(t_cpu_A, 0.75f);
-    Tensor* new_t_gpu =Tensor::maximum(t_gpu_A, t_gpu_B);; new_t_gpu->toCPU();
+    Tensor* new_t_cpu = Tensor::maximum(t_cpu, 0.75f);
+    Tensor* new_t_gpu = Tensor::maximum(t_gpu, 0.75f);; new_t_gpu->toCPU();
 
     ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
 #endif
@@ -1103,7 +1103,7 @@ TEST(TensorTestSuite, tensor_math_maximumT){
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu_A = Tensor::randu({3, 1000, 1000});
-    Tensor* t_gpu_A = t_cpu->clone(); t_gpu->toGPU();
+    Tensor* t_gpu_A = t_cpu_A->clone(); t_gpu_A->toGPU();
 
     Tensor* t_cpu_B = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu_B = t_cpu_B->clone(); t_gpu_B->toGPU();
@@ -1119,18 +1119,18 @@ TEST(TensorTestSuite, tensor_math_minimum){
     // Test #1
     Tensor *t1_ref = Tensor::full({2, 3}, 5);
 
-    Tensor *t1_A = Tensor::full({2, 3}, 10);
+    Tensor *t1 = Tensor::full({2, 3}, 10);
 
-    Tensor* new_t = Tensor::minimum(t1_A, 5.0f);
+    Tensor* new_t = Tensor::minimum(t1, 5.0f);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu_A = Tensor::randu({3, 1000, 1000});
-    Tensor* t_gpu_A = t_cpu->clone(); t_gpu->toGPU();
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
 
-    Tensor* new_t_cpu = Tensor::minimum(t_cpu_A, 0.25f);
-    Tensor* new_t_gpu =Tensor::minimum(t_gpu_A, t_gpu_B);; new_t_gpu->toCPU();
+    Tensor* new_t_cpu = Tensor::minimum(t_cpu, 0.25f);
+    Tensor* new_t_gpu = Tensor::minimum(t_gpu, 0.25f);; new_t_gpu->toCPU();
 
     ASSERT_TRUE(Tensor::equivalent(new_t_cpu, new_t_gpu, 10e-4));
 #endif
@@ -1149,7 +1149,7 @@ TEST(TensorTestSuite, tensor_math_minimumT){
     // Test GPU
 #ifdef cGPU
     Tensor* t_cpu_A = Tensor::randu({3, 1000, 1000});
-    Tensor* t_gpu_A = t_cpu->clone(); t_gpu->toGPU();
+    Tensor* t_gpu_A = t_cpu_A->clone(); t_gpu_A->toGPU();
 
     Tensor* t_cpu_B = Tensor::randu({3, 1000, 1000});
     Tensor* t_gpu_B = t_cpu_B->clone(); t_gpu_B->toGPU();
