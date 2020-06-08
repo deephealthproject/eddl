@@ -12,7 +12,6 @@ void k_cent(float *A, float *B, float *C, long int size) {
 #pragma HLS INTERFACE s_axilite port=B  bundle=control
 #pragma HLS INTERFACE s_axilite port=C  bundle=control
 #pragma HLS INTERFACE s_axilite port=size bundle=control
-#pragma HLS INTERFACE s_axilite port=return bundle=control
 
 // In the CPU version a constant value has been added (0.00001)
 // To check whether an else is of need, seems strage not having the

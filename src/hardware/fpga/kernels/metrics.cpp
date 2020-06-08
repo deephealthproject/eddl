@@ -5,6 +5,15 @@ extern "C" {
 #ifdef K_ENABLED_ACCURACY
 void k_accuracy(float *A, float *B, int Ashape0, int Ashape1, int *accuracy) {
 
+  #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
+  #pragma HLS INTERFACE m_axi port=B offset=slave bundle=gmem
+  #pragma HLS INTERFACE m_axi port=accuracy offset=slave bundle=gmem
+  #pragma HLS INTERFACE s_axilite port=A  bundle=control
+  #pragma HLS INTERFACE s_axilite port=B  bundle=control
+  #pragma HLS INTERFACE s_axilite port=accuracy bundle=control
+  #pragma HLS INTERFACE s_axilite port=Ashape0 bundle=control
+  #pragma HLS INTERFACE s_axilite port=Ashape1 bundle=control
+
   int acc = 0;
   int aind = 0;
   int bind = 0;
