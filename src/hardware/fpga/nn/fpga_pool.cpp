@@ -13,7 +13,9 @@
 #include <iostream>
 #include <limits>       // std::numeric_limits
 
+#include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_nn.h"
 
 // emulation switches of functions (via cpu)
 // when set the function is run on the cpu
@@ -26,8 +28,10 @@ char fpga_set_cpuemu_avgpool2D_back  = 1;
 // mpool2D
 //
 void fpga_cpuemu_mpool2D(PoolDescriptor *D) {
-    printf("fpga_cpuemu_mpool2D not implemented yet\n");
-    exit(1);
+  fpga_copy_from_fpga(D->I, D->I->ptr);
+  cpu_mpool2D(D);
+  fpga_copy_to_fpga(D->O->ptr, D->O);
+//  printf("FPGA warning: pool addresses are stored in CPU for the moment...\n");
 }
 
 void fpga_mpool2D(PoolDescriptor *D){
@@ -44,8 +48,9 @@ void fpga_mpool2D(PoolDescriptor *D){
 // mpool2D_back
 //
 void fpga_cpuemu_mpool2D_back(PoolDescriptor *D) {
-    printf("fpga_cpuemu_mpool2D_back not implemented yet\n");
-    exit(1);
+  fpga_copy_from_fpga(D->D, D->D->ptr);
+  cpu_mpool2D_back(D);
+  fpga_copy_to_fpga(D->ID->ptr, D->ID);
 }
 
 void fpga_mpool2D_back(PoolDescriptor *D){

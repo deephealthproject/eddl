@@ -103,6 +103,10 @@ public:
     Tensor *gpugK; // gradient kernels
     Tensor *gpuD; // Delta
 
+    // FPGA implementation
+    cl::Buffer fpga_ptrI;
+    long int fpga_sizeI;
+
     ConvolDescriptor();
 
     ConvolDescriptor(int filters, const vector<int> &ks, const vector<int> &st, const string& p, bool use_bias, int mem=0);

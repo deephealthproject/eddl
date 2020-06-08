@@ -940,6 +940,40 @@ void fpga_copy_addresses_from_fpga(SelDescriptor *SD, int size, int *nptr)
 //    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_output},CL_MIGRATE_MEM_OBJECT_HOST));
 }
 
+void fpga_destroy_memory(cl::Buffer fpga_ptrI) {
+}
+
+cl::Buffer fpga_create_memory(long int size) {
+    cl::Buffer buffer;
+    cl_int err;
+    #ifdef FPGA_DEBUG
+    printf("creating memory in fpga (size %d)...\n", size);
+    #endif
+    OCL_CHECK(err,buffer = cl::Buffer(context,CL_MEM_READ_WRITE, size, NULL, &err));
+    return buffer;
+}
+
+void fpga_copy_memory_to_fpga(void *ptr_cpu, cl::Buffer ptr_fpga, long int size) {
+#ifdef FPGA_DEBUG
+    printf("copy memory to fpga: size %d, ptr_cpu %p\n", size, ptr_cpu);
+#endif
+    cl_int err;
+    cl::Event blocking_event;
+    OCL_CHECK(err, err= q.enqueueWriteBuffer(ptr_fpga, CL_TRUE, 0, size, ptr_cpu, nullptr, &blocking_event));
+    q.finish();
+}
+
+void fpga_copy_memory_from_fpga(cl::Buffer ptr_fpga, void *ptr_cpu, long int size) {
+#ifdef FPGA_DEBUG
+    printf("copy memory from fpga: size %d, ptr_cpu %p\n", size, ptr_cpu);
+#endif
+    cl_int err;
+    cl::Event event;
+    OCL_CHECK(err, err= q.enqueueReadBuffer(ptr_fpga, CL_TRUE, 0, size, ptr_cpu, nullptr, &event));
+    q.finish();
+}
+
+
 
 // emulation switches of functions (via cpu)
 // when set the function is run on the cpu

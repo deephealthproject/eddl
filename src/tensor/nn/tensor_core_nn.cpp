@@ -81,12 +81,12 @@ void Tensor::resize(int b, float *fptr, cl::Buffer ffpga_ptr){
 
           } else {
             // The data has already been created in CPU, so we need now to write it to the FPGA buffer
-	    printf("warning, resize with just one cpu pointer, not written to FPGA tensor_id %d\n", fpga_tensor_id);
-	    if (fpga_tensor_id == 0) {
+	    //printf("warning, resize with just one cpu pointer, not written to FPGA tensor_id %d\n", fpga_tensor_id);
+	    //if (fpga_tensor_id == 0) {
 	      fpga_ptr = fpga_create_tensor(fpga_device, size);
 	      fpga_tensor_id = next_fpga_tensor_id;
 	      next_fpga_tensor_id++;
-	    }
+	    //}
             fpga_copy_to_fpga(fptr, this);
 	    ptr = fptr;
           }

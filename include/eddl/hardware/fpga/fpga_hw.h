@@ -18,6 +18,8 @@
 
 extern cl::CommandQueue q;
 
+//#define FPGA_DEBUG
+
 #include "eddl/hardware/fpga/fpga_enables.h"
 
 // activation kernels (22)
@@ -86,6 +88,12 @@ extern cl::Kernel kernel_max,        kernel_min,    kernel_sum;
 void fpga_init();
 cl::Buffer fpga_create_tensor(int device, int size);
 void fpga_delete_tensor(int device, cl::Buffer ptr, int fpga_tensor_id_p, int size);
+
+void fpga_destroy_memory(cl::Buffer fpga_ptrI);
+cl::Buffer fpga_create_memory(long int size);
+void fpga_copy_memory_to_fpga(void *ptr_cpu, cl::Buffer ptr_fpga, long int size);
+void fpga_copy_memory_from_fpga(cl::Buffer ptr_fpga, void *ptr_cpu, long int size);
+
 void fpga_copy_fpga(Tensor *A, Tensor *B);
 void fpga_copy_to_fpga(float *nptr, Tensor *A);
 void fpga_copy_from_fpga(Tensor *A,float *nptr);
