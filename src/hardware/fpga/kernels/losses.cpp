@@ -3,7 +3,7 @@
 extern "C" {
 
 #ifdef K_ENABLED_CENT
-void k_cent(float *A, float *B, float *C, int size) {
+void k_cent(float *A, float *B, float *C, long int size) {
 
 #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
 #pragma HLS INTERFACE m_axi port=B offset=slave bundle=gmem

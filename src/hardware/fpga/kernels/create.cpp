@@ -3,7 +3,7 @@
 extern "C" {
 
 #ifdef K_ENABLED_RANGE
-void k_range(float *A, float min, float step, int size){
+void k_range(float *A, float min, float step, long int size){
    float v=min;
 
     for(int i=0; i<size; i++){
@@ -14,7 +14,7 @@ void k_range(float *A, float min, float step, int size){
 #endif
 
 #ifdef K_ENABLED_EYE
-void k_eye(float *A, int offset, int size, int Ashape0, int Ashape1){
+void k_eye(float *A, int offset, long int size, int Ashape0, int Ashape1){
     for(int i=0; i<size; i++){
         if ((i / Ashape0 + offset) == i % Ashape1) { A[i] = 1.0f; }  // rows+offset == col?
         else { A[i] = 0.0f; }
