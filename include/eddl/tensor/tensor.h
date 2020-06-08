@@ -305,7 +305,6 @@ public:
       *  @return     Tensor of the specified shape filled with the value
     */
     static Tensor* identity(int rows, int dev=DEV_CPU);
-    static Tensor* diag(Tensor* A, int k=0, int dev=DEV_CPU);
 
     /**
       *  @brief Initialise a tensor with random values following an uniform distribution.
@@ -325,6 +324,9 @@ public:
     */
     static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
+    void diag_(int k=0);
+    Tensor* diag(int k=0);
+    static void diag(Tensor* A, Tensor* B, int k=0);
 
     // Math operations (zero) ************************
     float max();   // TODO: Should be reduced
@@ -595,6 +597,11 @@ public:
 
     Tensor* mask_indices(Tensor *mask, Tensor *A);  // where(x > 0, x[random], y[ones])
     static void mask_indices(Tensor *mask, Tensor *A, Tensor *B);
+
+
+    // Linear algebra *****************************
+    float trace(int k=0);
+
 
     // Logic funcions: Truth value testing *****************************
 

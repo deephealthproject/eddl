@@ -40,12 +40,15 @@ void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative
 void cpu_range(Tensor *A, float min, float step);
 void cpu_eye(Tensor *A, int offset);
 
+void cpu_diag(Tensor *A, Tensor *B, int k);
+
 // CPU: Generator
 void cpu_rand_uniform(Tensor *A, float v);
 void cpu_rand_signed_uniform(Tensor *A, float v);
 void cpu_rand_binary(Tensor *A, float v);
 void cpu_rand_normal(Tensor *A, float m, float s, bool fast_math);  // TODO: Don't like it
 
+// CPU: Data transformations (2D Optimized) ********************************************
 // CPU: Data transformations (2D Optimized) ********************************************
 void cpu_shift(Tensor *A, Tensor *B, vector<int> shift, int mode, float constant);
 void cpu_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, int mode, float constant);

@@ -40,3 +40,15 @@ void gpu_eye(Tensor *A, int offset) {
     eye<<<dimGrid,dimBlock>>>(A->ptr, A->shape[0], A->shape[1], offset);
     check_cuda(cudaDeviceSynchronize(), "eye");
 }
+
+
+void gpu_diag(Tensor *A, Tensor *B, int k){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_diag<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->shape[0], A->shape[1], k);
+    check_cuda(cudaDeviceSynchronize(), "diag");
+
+}

@@ -45,6 +45,8 @@ void gpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative
 void gpu_range(Tensor *A, float start, float step);
 void gpu_eye(Tensor *A, int offset);
 
+void gpu_diag(Tensor *A, Tensor *B, int k);
+
 // GPU: Generator
 void gpu_rand_uniform(Tensor *A, float v);
 void gpu_rand_signed_uniform(Tensor *A, float v);

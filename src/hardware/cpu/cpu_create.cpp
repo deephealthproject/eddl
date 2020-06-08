@@ -27,3 +27,11 @@ void cpu_eye(Tensor *A, int offset){
         else { A->ptr[i] = 0.0f; }
     }
 }
+
+void cpu_diag(Tensor *A, Tensor *B, int k){
+    #pragma omp parallel for
+    for(int i=0; i<A->size; i++){
+        if ((i/A->shape[0]+k) == i%A->shape[1]){ B->ptr[i] = A->ptr[i]; }  // rows+offset == col?
+        else { B->ptr[i] = 0.0f; }
+    }
+}

@@ -41,6 +41,8 @@ __global__ void concat(float *dest, float *src, unsigned int src_size, unsigned 
 __global__ void range(float *A, float start, float step, long int size);
 __global__ void eye(float *A, long int rows, long int cols, int offset);
 
+__global__ void gpu_diag(float* A, float* B, long int rows, long int cols, int k);
+
 // GPU: Generator
 __global__ void init(unsigned int seed, curandState_t* states);
 __global__ void random_uniform(curandState_t* states, float* numbers);
