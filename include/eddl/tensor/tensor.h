@@ -364,6 +364,8 @@ public:
     float sum_abs();
     static float sum_abs(Tensor* A);
 
+    float mean();
+    static float mean(Tensor* A);
 
     // Math operations (unary) ************************
     void abs_();

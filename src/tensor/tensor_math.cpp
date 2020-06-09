@@ -235,6 +235,15 @@ float Tensor::sum_abs(Tensor* A){
     return 0.0f; // Never used, this is for the compiler warning
 }
 
+float Tensor::mean(){
+    return Tensor::mean(this);
+}
+
+float Tensor::mean(Tensor* A){
+    float sum = A->sum();
+    return sum/A->size;
+}
+
 void Tensor::abs_(){
     Tensor::abs(this, this);
 }
