@@ -256,18 +256,25 @@ Not yet...
 | logical_not      | ✔️    |  ✔️    | Compute the truth value of NOT x element-wise.  |
 | logical_xor      | ✔️    |  ✔️    |  Compute the truth value of x1 XOR x2, element-wise. |
 
+
 ### Comparison
+
+#### Boolean
 
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
 | allclose      | ✔️    |  ✔️    | Returns True if two arrays are element-wise equal within a tolerance.  |
 | isclose      | ✔️    |  ✔️    | Returns a boolean array where two arrays are element-wise equal within a tolerance.  |
-| greater      | ✔️    |  ✔️    | Return the truth value of (x1 > x2) element-wise.  |
-| greater_equal      | ✔️    |  ✔️    | Return the truth value of (x1 >= x2) element-wise.  |
-| less      | ✔️    |  ✔️    | Return the truth value of (x1 < x2) element-wise.  |
-| less_equal      | ✔️    |  ✔️    | Return the truth value of (x1 =< x2) element-wise.  |
-| equal      | ✔️    |  ✔️    | Return (x1 == x2) element-wise.  |
-| not_equal      | ✔️    |  ✔️    | Return (x1 != x2) element-wise.  |
+| greater      | ✔️    |  ✔️    | Return the truth value of (x1 > x2); Tensor-Tensor, Tensor-float  |
+| greater_equal      | ✔️    |  ✔️    | Return the truth value of (x1 >= x2); Tensor-Tensor, Tensor-float  |
+| less      | ✔️    |  ✔️    | Return the truth value of (x1 < x2) element-wise; Tensor-Tensor, Tensor-float  |
+| less_equal      | ✔️    |  ✔️    | Return the truth value of (x1 =< x2) element-wise; Tensor-Tensor, Tensor-float  |
+| equal      | ✔️    |  ✔️    | Return (x1 == x2) element-wise; Tensor-Tensor, Tensor-float  |
+| not_equal      | ✔️    |  ✔️    | Return (x1 != x2) element-wise; Tensor-Tensor, Tensor-float  |
+
+
+#### Indices
+
 | argsort      | ❌    |  ❌ ️    | Returns the indices that sort a tensor along a given dimension in ascending order by value.  |
 | kthvalue      | ❌    |  ❌ ️    | Returns a namedtuple (values, indices) where values is the k th smallest element of each row of the input tensor in the given dimension dim  |
 | sort      | ❌    |  ❌ ️    | Sorts the elements of the input tensor along a given dimension in ascending order by value.  |
@@ -276,14 +283,11 @@ Not yet...
 
 ## Masked array operations
 
-> To review...
+> To do...
 
 ## Mathematical functions
 
-
-### Element-wise
-
-> To review...
+### Point-wise
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
@@ -305,15 +309,15 @@ Not yet...
 | log2 | ✔️ | ✔️ |         |
 | log10 | ✔️ | ✔️ |         |
 | logn | ✔️ | ✔️ |         |
-| max* | ✔️ | ❌ | Not reduced         |
-| mean* | ❌ | ❌ | Not reduced         |
+| max | ✔️ | ✔️ | Not reduced         |
+| mean | ✔️ | ✔️ | Not reduced         |
 | median* | ❌ | ❌ | Not reduced         |
-| min* | ✔️ | ❌ | Not reduced         |
+| min | ✔️ | ✔️ | Not reduced         |
 | mod | ✔️ | ✔️ |         |
-| mode* | ✔️ | ❌ | Not reduced         |
+| mode | ❌ | ❌ | Not reduced         |
 | mult | ✔️ | ✔️ |         |
 | neg | ✔️ | ✔️ |         |
-| normalize* | ✔️ | ✔️ | Not reduced         |
+| normalize | ✔️ | ✔️ | Not reduced         |
 | pow | ✔️ | ✔️ |         |
 | powb | ✔️ | ✔️ |         |
 | reciprocal | ✔️ | ✔️ |         |
@@ -328,11 +332,25 @@ Not yet...
 | sqrt | ✔️ | ✔️ |         |
 | std* | ❌ | ❌ | Not reduced         |
 | sub | ✔️ | ✔️ |         |
-| sum* | ✔️ | ✔️ | Not reduced by default         |
+| sum | ✔️ | ✔️ | Not reduced         |
+| sum_abs | ✔️ | ✔️ | Not reduced         |
 | tan | ✔️ | ✔️ |         |
 | tanh | ✔️ | ✔️ |         |
 | trunc | ✔️ | ✔️ |         |
 | var* | ❌ | ❌ | Not reduced |
+
+
+### Element-wise
+
+| Functionality | CPU | GPU | Comments |
+| ------------- |------| -----| ---------|
+| add | ✔️ | ✔️ | Tensor-Tensor, Tensor-float
+| div | ✔️ | ✔️ | Tensor-Tensor, Tensor-float
+| mult | ✔️ | ✔️ | Tensor-Tensor, Tensor-float
+| sub | ✔️ | ✔️ | Tensor-Tensor, Tensor-float
+| interpolate | ✔️ | ✔️ | Tensor-Tensor
+| maximum | ✔️ | ✔️ | Tensor-Tensor, Tensor-float
+| minimum | ✔️ | ✔️ | Tensor-Tensor, Tensor-float
 
 
 ### Reductions
@@ -354,6 +372,8 @@ Not yet...
 | sum | ❌ | ❌ |
 | unique | ❌ | ❌ |
 | var | ❌ | ❌ |
+
+
 
 
 ## Miscellaneous
