@@ -126,7 +126,7 @@ void k_set_select_back(float *A, float *B, int *addresses, long int size){
 }
 #endif
 
-#ifdef K_ENABLED_SELECT
+#ifdef K_ENABLED_SELECT2
 void k_select2(float * A, float * B, int *sind, int ini, int end, bool mask_zeros, long int size, int Ashape0){
 
   #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
@@ -203,7 +203,7 @@ void k_concat(float *A, int AstrideAxis, int AshapeAxis, int num_tensors, float 
   #pragma HLS INTERFACE s_axilite port=num_tensors bundle=control
   #pragma HLS INTERFACE s_axilite port=axis bundle=control
   #pragma HLS INTERFACE s_axilite port=derivative bundle=control
-  
+
   // Walk through all the tensors to concat one axis (once)
     unsigned int offset = 0;
     unsigned int src_stride = 0;
