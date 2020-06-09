@@ -201,10 +201,9 @@ void Tensor::updateData(float *fptr){
            printf("Xilinx OpenCL\n");
            initfpga[fpga_device]=1;
          }
-        //printf("Creating FPGA tensor\n");
         if (fptr == nullptr) {
           #ifdef FPGA_DEBUG
-	  printf("FPGA: creating tensor with id %d\n", next_fpga_tensor_id);
+	  printf("    (creating tensor with id %d and size %d)\n", next_fpga_tensor_id, this->size);
           #endif
 	  this->fpga_ptr = fpga_create_tensor(fpga_device, this->size);
 	  // we allocate also on cpu so to fluently emulate with cpu

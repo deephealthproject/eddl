@@ -6,6 +6,9 @@
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
+
+#include <float.h>
+
 #include "eddl/tensor/nn/tensor_nn.h"
 #include "eddl/hardware/cpu/nn/cpu_nn.h"
 
@@ -65,30 +68,27 @@ void Tensor::resize(int b, float *fptr, cl::Buffer ffpga_ptr){
 #ifdef cFPGA
     else if (isFPGA())
         {
-          if (fptr==nullptr) {
+          if (ffpga_ptr==(cl::Buffer)nullptr) {
             #ifdef FPGA_DEBUG
-	    printf("FPGA: resize (removing and creating new tensor (id %d)\n", fpga_tensor_id);
+	    printf("    (resize: removing and creating new tensor id %d -> id %d, with size %d)\n", fpga_tensor_id, next_fpga_tensor_id, size);
             #endif
-            fpga_delete_tensor(fpga_device,fpga_ptr, fpga_tensor_id, size);
-            fpga_ptr=fpga_create_tensor(fpga_device,size);
+            fpga_delete_tensor(fpga_device, fpga_ptr, fpga_tensor_id, size);
+            fpga_ptr=fpga_create_tensor(fpga_device, size);
             int ant = fpga_tensor_id;
             fpga_tensor_id = next_fpga_tensor_id;
             next_fpga_tensor_id++;
-            printf("FPGA (resize): new tensor id %d (ant %d)\n", fpga_tensor_id, ant);
 	    // we also manage cpu buffers (to ease the cpu emulation flow)
 	    free(ptr);
 	    ptr = get_fmem(size,"Tensor::resize");
 
           } else {
             // The data has already been created in CPU, so we need now to write it to the FPGA buffer
-	    //printf("warning, resize with just one cpu pointer, not written to FPGA tensor_id %d\n", fpga_tensor_id);
-	    //if (fpga_tensor_id == 0) {
-	      fpga_ptr = fpga_create_tensor(fpga_device, size);
-	      fpga_tensor_id = next_fpga_tensor_id;
-	      next_fpga_tensor_id++;
-	    //}
-            fpga_copy_to_fpga(fptr, this);
+	    printf("    (resize with not-null pointer, new tensor id %d with size %d)\n", next_fpga_tensor_id, size);
+	    // asigning a new id
+	    fpga_tensor_id = next_fpga_tensor_id;
+	    next_fpga_tensor_id++;
 	    ptr = fptr;
+	    fpga_ptr = ffpga_ptr;
           }
 	  // we also manage cpu buffers for eigen, to ease the cpu emulation flow
           if (ndim == 2) {

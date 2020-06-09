@@ -10,6 +10,7 @@
 #include "eddl/hardware/fpga/xcl2.hpp"
 #include <vector>
 #include <math.h>
+#include <float.h>
 #include "eddl/hardware/fpga/tensor_hls_op.h"
 #include "eddl/tensor/tensor.h"
 #include "eddl/descriptors/descriptors.h"
@@ -248,7 +249,8 @@ void _profile_fpga(int f_id, int end) {
 #ifdef FPGA_DEBUG
   char func_name[50];
   _profile_fpga_funcname(f_id, func_name);
-  if (!end) printf("FPGA: %s\n", func_name);
+  if (!end) printf("%s\n", func_name);
+  if (end) printf("\n");
 #endif
   num_instances_fpga[f_id]++;
   if (!end) gettimeofday(&time_ini_fpga[f_id], NULL);
@@ -262,13 +264,25 @@ void _profile_fpga(int f_id, int end) {
 
 void _profile_fpga_tensor(Tensor *T) {
 #ifdef FPGA_DEBUG
-      	printf("FPGA:    Tensor id %d size %d shape0 %d shape1 %d (cpu_ptr %p)\n", T->fpga_tensor_id, T->size, T->shape[0], T->shape[1], T->ptr);
+  // We read the tensor from FPGA
+  fpga_copy_from_fpga(T, T->ptr);
+  float min = FLT_MAX;
+  float max = FLT_MIN;
+  float sum = 0.f;
+  float avg;
+  for (int i=0; i<T->size; i++) {
+    if (T->ptr[i] > max) max = T->ptr[i];
+    if (T->ptr[i] < min) min = T->ptr[i];
+    sum += T->ptr[i];
+  }
+  avg = sum / (float)T->size;
+  printf("  - Tensor id %d size %d shape0 %d shape1 %d (cpu_ptr %p). Min %8.4f Max %8.4f Avg %8.4f\n", T->fpga_tensor_id, T->size, T->shape[0], T->shape[1], T->ptr, min, max, avg);
 #endif
 }
 
 void _show_profile_fpga() {
 #ifdef FPGA_DEBUG
-  printf("\nFPGA functions called:\n");
+  printf("\n---------------------------------------\nFPGA functions called:\n");
   for (int i=0; i<_NUM_FPGA_FUNCS; i++) {
     if (num_instances_fpga[i] != 0) {
       char func_name[50];
@@ -277,19 +291,21 @@ void _show_profile_fpga() {
     }
   }
   printf("Memory: %f MB\n", mb_memory_needed_fpga);
+  printf("---------------------------------------\n");
 #endif
 }
 
 void _profile_fpga_add_tensor(int size) {
   mb_memory_needed_fpga += (float)size / 1024.0 / 1024.0;
 #ifdef FPGA_DEBUG
-  printf("accumulated tensor memory (fpga): size %f\n", mb_memory_needed_fpga);
+  printf("    (accumulated tensor memory %f)\n", mb_memory_needed_fpga);
 #endif
 }
 
 void _profile_fpga_remove_tensor(int size) {
   mb_memory_needed_fpga -= (float)size / 1024.0 / 1024.0;
 }
+
 
 
 // FPGA initialization and finalization ----------------------
@@ -845,27 +861,11 @@ cl::Buffer fpga_create_tensor(int device, int size)
 {
     cl::Buffer buffer;
     cl_int err;
-    //cl::Buffer buf;
-    //printf("Creating Buffer at ref %d -- size %d\n", 0, size);
-    //
 #ifdef FPGA_DEBUG
-    printf("creating tensor in fpga (size %d)...\n", size);
+    printf("    (creating tensor in fpga, size %d)\n", size);
 #endif
-
     _profile_fpga_add_tensor(size*sizeof(float));
-
     OCL_CHECK(err,buffer = cl::Buffer(context,CL_MEM_READ_WRITE, size*sizeof(float), NULL, &err));
-
-    //OCL_CHECK(err, err= q.enqueueWriteBuffer(T->fpga_ptr, CL_TRUE, 0, T->tam*sizeof(float), ptr, nullptr, nullptr));
-    //verify2(T->fpga_ptr, T->tam);
-
-
-    //T->fpga_ptr = &buf;
-    //printf("Creating Buffer at ref %d -- %d size %d\n", buf,(T->fpga_ptr), size);
-    //
-#ifdef FPGA_DEBUG
-    printf("created numfloats %d\n", size, buffer);
-#endif
     return buffer;
 }
 
@@ -873,7 +873,7 @@ cl::Buffer fpga_create_tensor(int device, int size)
 void fpga_delete_tensor(int device, cl::Buffer ptr, int fpga_tensor_id_p, int size)
 {
 #ifdef FPGA_DEBUG
-    printf("deleting tensor in fpga... (id %d)\n", fpga_tensor_id_p);
+    printf("    (deleting tensor in fpga, id %d)\n", fpga_tensor_id_p);
 #endif
 
     _profile_fpga_remove_tensor(size*sizeof(float));
@@ -892,7 +892,7 @@ void fpga_copy_fpga(Tensor *A, Tensor *B)
 {
 
 #ifdef FPGA_DEBUG
-    printf("copy fpga...(tensor id %d -> tensor id %d)\n", A->fpga_tensor_id, B->fpga_tensor_id);
+    printf("    (copy fpga: tensor id %d -> tensor id %d)\n", A->fpga_tensor_id, B->fpga_tensor_id);
 #endif
     cl_int err;
     cl::Event blocking_event;
@@ -903,32 +903,24 @@ void fpga_copy_fpga(Tensor *A, Tensor *B)
 void fpga_copy_to_fpga(float *nptr, Tensor *A)
 {
 #ifdef FPGA_DEBUG
-    printf("copy to fpga: tensor id %d, size %d, from_cpu_ptr %p\n", A->fpga_tensor_id, A->size, nptr);
+    printf("    (copy to fpga: tensor id %d, size %d, from_cpu_ptr %p)\n", A->fpga_tensor_id, A->size, nptr);
 #endif
     cl_int err;
     cl::Event blocking_event;
-    //OCL_CHECK(err, err= q.enqueueWriteBuffer((A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(float), nptr, nullptr, &blocking_event));
     OCL_CHECK(err, err= q.enqueueWriteBuffer((A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(float), nptr, nullptr, &blocking_event));
-    //printf("A->sizeof(float): %f\n", A->size*sizeof(float));
-    //printf("nptr-> %f\n", nptr);
-    //printf("A->: %f\n", A->fpga_ptr);
     q.finish();
-    //blocking_event.wait();
-    //printf("Copy Tensor with tam %d in Buffer ref %d -- %f\n", A->tam, A->fpga_ptr,*nptr);
-//    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({A->fpga_ptr},0/* 0 means from host*/));
 }
 
 ///////////////////////////////////////////
 void fpga_copy_from_fpga(Tensor *A,float *nptr)
 {
 #ifdef FPGA_DEBUG
-    printf("copy from fpga: tensor id %d, size %d, to_cpu_ptr %p\n", A->fpga_tensor_id, A->size, nptr);
+    printf("    (copy from fpga: tensor id %d, size %d, to_cpu_ptr %p)\n", A->fpga_tensor_id, A->size, nptr);
 #endif
     cl_int err;
     cl::Event event;
     OCL_CHECK(err, err= q.enqueueReadBuffer((A->fpga_ptr), CL_TRUE, 0, A->size*sizeof(float), nptr, nullptr, &event));
     q.finish();;
-//    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_output},CL_MIGRATE_MEM_OBJECT_HOST));
 }
 
 void fpga_copy_addresses_from_fpga(SelDescriptor *SD, int size, int *nptr)
@@ -937,7 +929,6 @@ void fpga_copy_addresses_from_fpga(SelDescriptor *SD, int size, int *nptr)
     cl::Event event;
     OCL_CHECK(err, err= q.enqueueReadBuffer((SD->fpga_ptr), CL_TRUE, 0, size, nptr, nullptr, &event));
     q.finish();;
-//    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_output},CL_MIGRATE_MEM_OBJECT_HOST));
 }
 
 void fpga_destroy_memory(cl::Buffer fpga_ptrI) {
@@ -947,7 +938,7 @@ cl::Buffer fpga_create_memory(long int size) {
     cl::Buffer buffer;
     cl_int err;
     #ifdef FPGA_DEBUG
-    printf("creating memory in fpga (size %d)...\n", size);
+    printf("    (creating memory in fpga size %d)\n", size);
     #endif
     OCL_CHECK(err,buffer = cl::Buffer(context,CL_MEM_READ_WRITE, size, NULL, &err));
     return buffer;
@@ -955,7 +946,7 @@ cl::Buffer fpga_create_memory(long int size) {
 
 void fpga_copy_memory_to_fpga(void *ptr_cpu, cl::Buffer ptr_fpga, long int size) {
 #ifdef FPGA_DEBUG
-    printf("copy memory to fpga: size %d, ptr_cpu %p\n", size, ptr_cpu);
+    printf("    (copy memory to fpga: size %d, ptr_cpu %p)\n", size, ptr_cpu);
 #endif
     cl_int err;
     cl::Event blocking_event;
@@ -965,7 +956,7 @@ void fpga_copy_memory_to_fpga(void *ptr_cpu, cl::Buffer ptr_fpga, long int size)
 
 void fpga_copy_memory_from_fpga(cl::Buffer ptr_fpga, void *ptr_cpu, long int size) {
 #ifdef FPGA_DEBUG
-    printf("copy memory from fpga: size %d, ptr_cpu %p\n", size, ptr_cpu);
+    printf("    (copy memory from fpga: size %d, ptr_cpu %p)\n", size, ptr_cpu);
 #endif
     cl_int err;
     cl::Event event;

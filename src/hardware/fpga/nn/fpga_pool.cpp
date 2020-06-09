@@ -36,11 +36,13 @@ void fpga_cpuemu_mpool2D(PoolDescriptor *D) {
 
 void fpga_mpool2D(PoolDescriptor *D){
     _profile_fpga(_FPGA_MPOOL2D, 0);
+    _profile_fpga_tensor(D->I);
     if (fpga_set_cpuemu_mpool2D == 1) {
         fpga_cpuemu_mpool2D(D);
     } else {
         printf("fpga_mpool2D not implemented yet\n"); exit(1);
     }
+    _profile_fpga_tensor(D->O);
     _profile_fpga(_FPGA_MPOOL2D, 1);
 }
 

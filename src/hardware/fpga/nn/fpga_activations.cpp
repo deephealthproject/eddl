@@ -59,6 +59,7 @@ void fpga_cpuemu_relu(Tensor *A, Tensor *B){
 
 void fpga_relu(Tensor *A, Tensor *B){
   _profile_fpga(_FPGA_RELU, 0);
+  _profile_fpga_tensor(A);
   if (fpga_set_cpuemu_relu == 1) {
       fpga_cpuemu_relu(A, B);
   } else {
@@ -73,6 +74,7 @@ void fpga_relu(Tensor *A, Tensor *B){
     //  event.wait();
     q.finish();
   }
+  _profile_fpga_tensor(B);
   _profile_fpga(_FPGA_RELU, 1);
 }
 
