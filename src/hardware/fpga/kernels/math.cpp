@@ -88,7 +88,7 @@ void k_clamp_(float *A, float min, float max, long int size) {
 }
 #endif
 
-#ifdef K_ENABLED_K_COS_
+#ifdef K_ENABLED_COS_
 void k_cos_(float *A, long int size) {
 
   #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
@@ -393,6 +393,11 @@ void k_tan_(float *A, long int size){
 
 #ifdef K_ENABLED_TANH_
 void k_tanh_(float *A, long int size){
+
+  #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
+  #pragma HLS INTERFACE s_axilite port=A  bundle=control
+  #pragma HLS INTERFACE s_axilite port=size bundle=control
+  
   for (int i = 0; i < size; ++i) A[i] = ::tanhf(A[i]);
 }
 #endif
