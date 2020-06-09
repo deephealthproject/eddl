@@ -20,22 +20,22 @@ Numpy-like operations over a raw-tensor object
 | Functionality | CPU  | GPU  | Comments |
 | ------------- | ---- | ---- | -------- |
 | empty         | ✔️    | ✔️    |   Returns a tensor filled with uninitialized data.       |
-| empty_like         | ❌ | ❌ ️    |   Returns a tensor filled with uninitialized data, with the same size as the input tensor       |
+| empty_like         | ✔️    | ✔ ️    |   Returns a tensor filled with uninitialized data, with the same size as the input tensor       |
 | eye           | ✔️    | ✔️    |   Return a 2-D array with ones on the diagonal and zeros elsewhere.       |
 | identity      | ✔️    | ✔️    |    Return the identity array (eye with offset=0).      |
 | ones          | ✔️    | ✔️    |    Return a new array of given shape and type, filled with ones.      |
-| ones_like         | ❌ | ❌    |     Returns a tensor filled with the scalar value 1, with the same size as the input tensor     |
+| ones_like         | ✔️    | ✔    |     Returns a tensor filled with the scalar value 1, with the same size as the input tensor     |
 | zeros         | ✔️    | ✔️    |     Return a new array of given shape and type, filled with zeros.     |
-| zeros_like         | ❌ | ❌    |     Returns a tensor filled with the scalar value 0, with the same size as the input tensor     |
+| zeros_like         | ✔️    | ✔    |     Returns a tensor filled with the scalar value 0, with the same size as the input tensor     |
 | full          | ✔️    | ✔️    |   Return a new array of given shape and type, filled with "value".       |
-| full_like         | ❌ | ❌    |     Returns a tensor filled with the given scalar value, with the same size as the input tensor     |
+| full_like         | ✔️    | ✔    |     Returns a tensor filled with the given scalar value, with the same size as the input tensor     |
 
 
 ### From existing data
 
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
-| Tensor         |  ❌ | ❌    | Constructs a tensor with data                           |
+| Tensor         |  ✔️    | ✔    | Constructs a tensor with data                           |
 | clone         | ✔️    | ✔️    | Creates an identical (but different) tensor from another                           |
 | copy          | ✔️ | ✔️ |  Copy data from Tensor A to B |
 
@@ -186,18 +186,15 @@ Not yet...
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
 | load          | ✔️    | -    | Images: jpg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm<br />Numpy (removed): npy, npz<br />Text (removed): csv, tsv, txt,...<br />Other: onnx, bin |
-| load<source_type>          | ✔️    | -    | Numpy: npy, npz |
-| load_from_txt (removed) | ✔️    | -    |  Load data from a text file.                                                              |
 | memmap | ❌    | -    |  Create a memory-map to an array stored in a binary file on disk.                                                            |
 
 ### Output
 
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
-| save          | ✔️    | -    | Images: jpg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm<br />Numpy: npy, npz<br />Text: csv, tsv, txt,...<br />Other: onnx, bin                                    |
+| save          | ✔️    | -    | Images: jpg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm<br />Numpy (removed): npy, npz<br />Text: csv, tsv, txt,...<br />Other: bin                                    |
 | save2txt      | ✔️    | -     |                                                              |
 
-> Note: ONNX not yet supported
 
 ## Linear algebra
 
@@ -373,5 +370,5 @@ Not yet...
 | clone | ✔️ | ✔️ | Clone a tensor (same device) |
 | info | ✔️ | ✔️ | Print shape, device and size information |
 | print | ✔️ | ✔️ | Prints the tensor values |
-| numel |  ❌ | ❌️ | Returns the total number of elements in the input tensor. |
+| numel |  ✔️ | ✔️ | Returns the total number of elements in the input tensor. |
 
