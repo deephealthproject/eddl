@@ -275,6 +275,8 @@ Not yet...
 
 #### Indices
 
+| Functionality | CPU  | GPU  | Comments                                                     |
+| ------------- | ---- | ---- | ------------------------------------------------------------ |
 | argsort      | ❌    |  ❌ ️    | Returns the indices that sort a tensor along a given dimension in ascending order by value.  |
 | kthvalue      | ❌    |  ❌ ️    | Returns a namedtuple (values, indices) where values is the k th smallest element of each row of the input tensor in the given dimension dim  |
 | sort      | ❌    |  ❌ ️    | Sorts the elements of the input tensor along a given dimension in ascending order by value.  |
