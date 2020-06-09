@@ -19,18 +19,23 @@ Numpy-like operations over a raw-tensor object
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- | ---- | ---- | -------- |
-| empty         | ✔️    | ✔️    |   Return a new array of given shape and type, without initializing entries.       |
+| empty         | ✔️    | ✔️    |   Returns a tensor filled with uninitialized data.       |
+| empty_like         | ❌ | ❌ ️    |   Returns a tensor filled with uninitialized data, with the same size as the input tensor       |
 | eye           | ✔️    | ✔️    |   Return a 2-D array with ones on the diagonal and zeros elsewhere.       |
 | identity      | ✔️    | ✔️    |    Return the identity array (eye with offset=0).      |
 | ones          | ✔️    | ✔️    |    Return a new array of given shape and type, filled with ones.      |
+| ones_like         | ❌ | ❌    |     Returns a tensor filled with the scalar value 1, with the same size as the input tensor     |
 | zeros         | ✔️    | ✔️    |     Return a new array of given shape and type, filled with zeros.     |
+| zeros_like         | ❌ | ❌    |     Returns a tensor filled with the scalar value 0, with the same size as the input tensor     |
 | full          | ✔️    | ✔️    |   Return a new array of given shape and type, filled with "value".       |
+| full_like         | ❌ | ❌    |     Returns a tensor filled with the given scalar value, with the same size as the input tensor     |
 
 
 ### From existing data
 
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
+| Tensor         |  ❌ | ❌    | Constructs a tensor with data                           |
 | clone         | ✔️    | ✔️    | Creates an identical (but different) tensor from another                           |
 | copy          | ✔️ | ✔️ |  Copy data from Tensor A to B |
 
@@ -63,7 +68,7 @@ Numpy-like operations over a raw-tensor object
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- | ---- | ---- | -------- |
-| diag      | ❌    | ❌   |  Extract a diagonal or construct a diagonal array.        |
+| diag      | ✔️    | ✔️    |  Extract a diagonal or construct a diagonal array.        |
 | tri      | ❌    | ❌    | An array with ones at and below the given diagonal and zeros elsewhere.         |
 
 
@@ -169,6 +174,9 @@ Not yet...
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
 | select          | ✔️    | ✔️    | Returns an array with the selected indices. `Tensor::select(k); k=vector of strings ({"0", ":5", ":", "3:6"})`. _TODO: Accept masks_   |
 | set_select          | ✔️    | ✔️    | Sets the elements in the array using the selected indices        `Tensor::set_select({"0", ":5", ":", "3:6"}, k); //k=float or Tensor                           |
+| index_select          | ❌    | ❌️    | Returns a new tensor which indexes the input tensor along dimension dim using the entries in index                          |
+| masked_select          | ❌    | ❌️    | Returns a new 1-D tensor which indexes the input tensor according to the boolean mask                           |
+| take          | ❌    | ❌️    | Returns a new tensor with the elements of input at the given indices. The input tensor is treated as if it were viewed as a 1-D tensor.                          |
 
 
 ## Input and output
@@ -263,6 +271,10 @@ Not yet...
 | less_equal      | ✔️    |  ✔️    | Return the truth value of (x1 =< x2) element-wise.  |
 | equal      | ✔️    |  ✔️    | Return (x1 == x2) element-wise.  |
 | not_equal      | ✔️    |  ✔️    | Return (x1 != x2) element-wise.  |
+| argsort      | ❌    |  ❌ ️    | Returns the indices that sort a tensor along a given dimension in ascending order by value.  |
+| kthvalue      | ❌    |  ❌ ️    | Returns a namedtuple (values, indices) where values is the k th smallest element of each row of the input tensor in the given dimension dim  |
+| sort      | ❌    |  ❌ ️    | Sorts the elements of the input tensor along a given dimension in ascending order by value.  |
+| topk      | ❌    |  ❌ ️    | Returns the k largest elements of the given input tensor along a given dimension.  |
 
 
 ## Masked array operations
@@ -361,4 +373,5 @@ Not yet...
 | clone | ✔️ | ✔️ | Clone a tensor (same device) |
 | info | ✔️ | ✔️ | Print shape, device and size information |
 | print | ✔️ | ✔️ | Prints the tensor values |
+| numel |  ❌ | ❌️ | Returns the total number of elements in the input tensor. |
 
