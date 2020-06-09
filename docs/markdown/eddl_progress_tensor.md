@@ -350,7 +350,6 @@ Not yet...
 | div | ✔️ | ✔️ | Tensor-Tensor, Tensor-float
 | mult | ✔️ | ✔️ | Tensor-Tensor, Tensor-float
 | sub | ✔️ | ✔️ | Tensor-Tensor, Tensor-float
-| interpolate | ✔️ | ✔️ | Tensor-Tensor
 | maximum | ✔️ | ✔️ | Tensor-Tensor, Tensor-float
 | minimum | ✔️ | ✔️ | Tensor-Tensor, Tensor-float
 
