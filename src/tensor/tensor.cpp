@@ -80,6 +80,22 @@ Tensor::Tensor(const vector<int> &shape, int dev):Tensor(shape, nullptr, dev){}
 // From shape and Tensor (sharing ptr)
 Tensor::Tensor(const vector<int> &shape, Tensor *T):Tensor(shape,T->ptr, T->device) {}
 
+Tensor::Tensor(const vector<float>& data, const vector<int> &shape, int dev) : Tensor(shape, nullptr, DEV_CPU) {
+    // 0. Tensor in CPU
+
+    // 1. Copy data from vector to pointer (CPU)
+    std::copy(data.begin(), data.end(), this->ptr);
+
+    // 2. Send to device (if needed)
+    if(dev==DEV_CPU) {
+        this->updateDevice(dev);
+    }else if ((dev >= DEV_GPU) && (dev < DEV_FPGA)) {
+        this->toGPU(dev);
+    }else{
+        msg("Not implemented for FPGA", "Tensor::Tensor");
+    }
+}
+
 void Tensor::updateDevice(int dev){
     this->device = dev;
 }
@@ -256,6 +272,10 @@ int Tensor::isFPGA() { return (device >= DEV_FPGA); }
 
 vector<int> Tensor::getShape() {
     return vector<int>(this->shape);
+}
+
+unsigned int Tensor::numel(){
+    return (unsigned int)this->size;
 }
 
 void Tensor::info() {

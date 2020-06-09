@@ -44,10 +44,18 @@ Tensor* Tensor::empty(const vector<int> &shape, int dev){
     return new Tensor(shape, dev);
 }
 
+Tensor* Tensor::empty_like(Tensor *A){
+    return Tensor::empty(A->shape, A->device);
+}
+
 Tensor* Tensor::zeros(const vector<int> &shape, int dev){
     auto t = new Tensor(shape, dev);
     t->fill_(0.0f);
     return t;
+}
+
+Tensor* Tensor::zeros_like(Tensor *A){
+    return Tensor::zeros(A->shape, A->device);
 }
 
 Tensor* Tensor::ones(const vector<int> &shape, int dev){
@@ -56,10 +64,18 @@ Tensor* Tensor::ones(const vector<int> &shape, int dev){
     return t;
 }
 
+Tensor* Tensor::ones_like(Tensor *A){
+    return Tensor::ones(A->shape, A->device);
+}
+
 Tensor* Tensor::full(const vector<int> &shape, float value, int dev){
     auto t = new Tensor(shape, dev);
     t->fill_(value);
     return t;
+}
+
+Tensor* Tensor::full_like(Tensor *A, float value){
+    return Tensor::full(A->shape, value, A->device);
 }
 
 Tensor* Tensor::arange(float start, float end, float step, int dev){

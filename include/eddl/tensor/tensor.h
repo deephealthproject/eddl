@@ -93,6 +93,7 @@ public:
     explicit Tensor(const vector<int> &shape, int dev=DEV_CPU);
     Tensor(const vector<int> &shape, float *fptr, int dev);
     Tensor(const vector<int> &shape, Tensor *T);
+    Tensor(const vector<float>& data, const vector<int> &shape, int dev=DEV_CPU);
 
     // Destructors
     ~Tensor();
@@ -160,6 +161,7 @@ public:
 
     // Core
     vector<int> getShape();
+    unsigned int numel();
 
     /**
       *  @brief Check if all dimensions in the tensor are the same.
@@ -251,6 +253,7 @@ public:
       *  @return     Tensor of the specified shape filled with zeros
      */
     static Tensor* empty(const vector<int> &shape, int dev=DEV_CPU);
+    static Tensor* empty_like(Tensor *A);
 
 
     /**
@@ -261,6 +264,7 @@ public:
       *  @return     Tensor of the specified shape filled with zeros
     */
     static Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
+    static Tensor* zeros_like(Tensor *A);
 
     /**
       *  @brief Create a tensor of the specified shape and filled with ones.
@@ -270,6 +274,7 @@ public:
       *  @return     Tensor of the specified shape filled with ones
     */
     static Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
+    static Tensor* ones_like(Tensor *A);
 
     /**
       *  @brief Create a tensor of the specified shape and filled with a specific value.
@@ -280,6 +285,8 @@ public:
       *  @return     Tensor of the specified shape filled with the value
     */
     static Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
+    static Tensor* full_like(Tensor *A, float value);
+
     static Tensor* arange(float start, float end, float step=1.0f, int dev=DEV_CPU);
     static Tensor* range(float start, float end, float step=1.0f, int dev=DEV_CPU);
     static Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
