@@ -1264,3 +1264,4 @@ TEST(TensorTestSuite, tensor_math_unary_min){
     ASSERT_NEAR(t_cpu_min, t_gpu_min, 10e-4f);
 #endif
 }
+
