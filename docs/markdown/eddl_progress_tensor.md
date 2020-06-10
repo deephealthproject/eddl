@@ -311,15 +311,10 @@ Not yet...
 | log2 | ✔️ | ✔️ |         |
 | log10 | ✔️ | ✔️ |         |
 | logn | ✔️ | ✔️ |         |
-| max | ✔️ | ✔️ | Not reduced         |
-| mean | ✔️ | ✔️ | Not reduced         |
-| median* | ❌ | ❌ | Not reduced         |
-| min | ✔️ | ✔️ | Not reduced         |
 | mod | ✔️ | ✔️ |         |
-| mode | ❌ | ❌ | Not reduced         |
 | mult | ✔️ | ✔️ |         |
 | neg | ✔️ | ✔️ |         |
-| normalize | ✔️ | ✔️ | Not reduced         |
+| normalize | ✔️ | ✔️ |       |
 | pow | ✔️ | ✔️ |         |
 | powb | ✔️ | ✔️ |         |
 | reciprocal | ✔️ | ✔️ |         |
@@ -332,26 +327,37 @@ Not yet...
 | sinh | ✔️ | ✔️ |         |
 | sqr | ✔️ | ✔️ |         |
 | sqrt | ✔️ | ✔️ |         |
-| std* | ❌ | ❌ | Not reduced         |
 | sub | ✔️ | ✔️ |         |
-| sum | ✔️ | ✔️ | Not reduced         |
-| sum_abs | ✔️ | ✔️ | Not reduced         |
 | tan | ✔️ | ✔️ |         |
 | tanh | ✔️ | ✔️ |         |
 | trunc | ✔️ | ✔️ |         |
-| var* | ❌ | ❌ | Not reduced |
 
 
 ### Element-wise
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| add | ✔️ | ✔️ | Tensor-Tensor, Tensor-float
-| div | ✔️ | ✔️ | Tensor-Tensor, Tensor-float
-| mult | ✔️ | ✔️ | Tensor-Tensor, Tensor-float
-| sub | ✔️ | ✔️ | Tensor-Tensor, Tensor-float
-| maximum | ✔️ | ✔️ | Tensor-Tensor, Tensor-float
-| minimum | ✔️ | ✔️ | Tensor-Tensor, Tensor-float
+| add | ✔️ | ✔️ | Tensor-Tensor, Tensor-float |
+| div | ✔️ | ✔️ | Tensor-Tensor, Tensor-float |
+| mult | ✔️ | ✔️ | Tensor-Tensor, Tensor-float |
+| sub | ✔️ | ✔️ | Tensor-Tensor, Tensor-float |
+| maximum | ✔️ | ✔️ | Tensor-Tensor, Tensor-float |
+| minimum | ✔️ | ✔️ | Tensor-Tensor, Tensor-float |
+
+
+### Single-value
+
+| Functionality | CPU | GPU | Comments |
+| ------------- |------| -----| ---------|
+| max | ✔️ | ✔️ | |
+| mean | ✔️ | ✔️ | |
+| median | ❌ | ❌ | |
+| min | ✔️ | ✔️ | |
+| mode | ❌ | ❌ | |
+| std | ❌ | ❌ | |
+| sum | ✔️ | ✔️ | |
+| sum_abs | ✔️ | ✔️ |  |
+| var | ❌ | ❌ |  |
 
 
 ### Reductions
@@ -370,7 +376,7 @@ Not yet...
 | norm | ❌ | ❌ |
 | prod | ❌ | ❌ |
 | std | ❌ | ❌ |
-| sum | ❌ | ❌ |
+| sum | ✔️ | ✔️ |
 | unique | ❌ | ❌ |
 | var | ❌ | ❌ |
 
