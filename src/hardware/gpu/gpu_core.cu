@@ -11,6 +11,9 @@
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
+#include <thrust/sort.h>
+#include <thrust/functional.h>
+
 
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_kernels.h"
@@ -316,5 +319,38 @@ void gpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative
         concat<<<dimGrid,dimBlock>>>(dest, src, t[i]->size, size, steps, derivative);
         check_cuda(cudaDeviceSynchronize(),"gpu_concat");
 
+    }
+}
+
+
+
+void gpu_sort(Tensor *A, Tensor *B, bool descending, bool stable){
+    auto order_desc = thrust::greater<float>();
+    auto order_asc = thrust::less<float>();
+
+    // Copy data from A to B
+    thrust::copy(A->ptr, A->ptr+A->size, B->ptr);
+
+    // Sort data
+    if(stable) {
+        if (descending) { thrust::stable_sort(B->ptr, B->ptr + B->size, order_desc); }
+        else { thrust::stable_sort(B->ptr, B->ptr + B->size, order_asc); }
+    } else{
+        if (descending) { thrust::sort(B->ptr, B->ptr+B->size, order_desc); }
+        else { thrust::sort(B->ptr, B->ptr+B->size, order_asc); }
+    }
+}
+
+void gpu_argsort(Tensor *A, Tensor *B, bool descending, bool stable) {
+    // Fill B with indices
+    thrust::sequence(B->ptr, B->ptr + B->size, 1);
+
+    // Sort data
+    if(stable) {
+        if (descending) { thrust::stable_sort_by_key(B->ptr, B->ptr + B->size, A->ptr); }
+        else { thrust::stable_sort_by_key(B->ptr, B->ptr + B->size, A->ptr); }
+    } else{
+        if (descending) { thrust::sort_by_key(B->ptr, B->ptr+B->size, A->ptr); }
+        else { thrust::sort_by_key(B->ptr, B->ptr+B->size, A->ptr); }
     }
 }

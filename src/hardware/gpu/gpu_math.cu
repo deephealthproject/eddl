@@ -560,6 +560,25 @@ float gpu_sum_abs(Tensor *A){
     return thrust::transform_reduce(dev_ptr, dev_ptr + A->size, absolute_value<float>(), 0.0f, thrust::plus<float>());
 }
 
+float gpu_median(Tensor *A){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    int size;
+    if(A->size % 2==0 && A->size>1) { size = 1; }
+    else{ size = 2; }
+
+    // Copy (minimum) data to host
+    float *host_array = new float[size];
+    check_cuda(cudaMemcpy(A->ptr, host_array, size*sizeof(float),cudaMemcpyDeviceToDevice),"gpu_median");
+
+    // Compute median
+    float median = 0.0f;
+    for(int i=0; i<size; i++){median+=host_array[i];}
+    median = median/size;
+
+    return median;
+}
 
 // GPU: Reduction ***************************
 void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC){
