@@ -9,23 +9,26 @@
 
 
 #include "eddl/hardware/cpu/cpu_tensor.h"
+#include <algorithm>
+#include <numeric>
+
 
 void cpu_transpose(Tensor * A, Tensor * B) {
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < A->size; i++){
         B->ptr[i] = A->ptr[i];
     }
 }
 
 void cpu_copy(Tensor * A, Tensor * B){
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < A->size; i++){
         B->ptr[i] = A->ptr[i];
     }
 }
 
 void cpu_fill_(Tensor *A, float v){
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
         A->ptr[i] = v;
     }
@@ -41,7 +44,7 @@ void cpu_fill(Tensor * A, int aini, int aend, Tensor * B, int bini, int bend, in
     for (int i = 2; i < A->ndim; i++)
         t *= A->shape[i];
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < A->shape[0]; i++) {
         int ap = (i * at) + (aini * t);
         int bp = (i * bt) + (bini * t);
@@ -56,27 +59,27 @@ void cpu_fill(Tensor * A, int aini, int aend, Tensor * B, int bini, int bend, in
 
 
 void cpu_select(Tensor *A, Tensor *B, SelDescriptor *sd){
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < B->size; i++) {
         B->ptr[i] = A->ptr[sd->cpu_addresses[i]];
     }
 }
 
 void cpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < A->size; i++) {  // walk stride
         B->ptr[sd->cpu_addresses[i]] += A->ptr[i];  // delta_parent += delta
     }
 }
 
 void cpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < B->size; i++) {
         A->ptr[sd->cpu_addresses[i]] = B->ptr[i];
     }
 }
 void cpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < B->size; i++) {
         B->ptr[i] += A->ptr[sd->cpu_addresses[i]];
     }
@@ -86,7 +89,7 @@ void cpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
 void cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,bool mask_zeros){
     int s = A->size / A->shape[0];
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int i = ini; i < end; i++) {
         int p  = sind[i] * s;
         int pb = (i - ini) * s;
@@ -99,21 +102,21 @@ void cpu_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,bool 
 void cpu_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,int inc,bool mask_zeros){
     int s = A->size / A->shape[0];
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int i = ini; i < end; i++) {
         int p  = sind[i] * s;
         int pb = (i - ini) * s;
         for (int j = 0; j < s; j++, p++, pb++)
             if ((mask_zeros)&&(sind[i]==0)) B->ptr[p]=0;
             else {
-              if (!inc) B->ptr[p] = A->ptr[pb];
-              else B->ptr[p] += A->ptr[pb];
+                if (!inc) B->ptr[p] = A->ptr[pb];
+                else B->ptr[p] += A->ptr[pb];
             }
     }
 }
 
 void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative){
-  // Walk through all the tensors to concat one axis (once)
+    // Walk through all the tensors to concat one axis (once)
     unsigned int offset = 0;
     unsigned int src_stride = 0;
     int steps = A->stride[axis] * A->shape[axis];  // Equivalent to A->stride[axis-1], but without the negative index problem
@@ -128,7 +131,7 @@ void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative
         float *src = t[i]->ptr;
 
         // Walk tensor i
-        #pragma omp parallel for
+#pragma omp parallel for
         for (int j = 0; j < t[i]->size; j++) {
             unsigned int k = j % src_stride;  // Pos (index) in the stride (src)
             unsigned int stride_idx = j / src_stride;  // Index of the stride (src/dst)
@@ -137,5 +140,45 @@ void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative
             if(derivative){ src[j] += dest[dest_offset + k]; }
             else{ dest[dest_offset + k] = src[j]; }
         }
+    }
+}
+
+
+void cpu_sort(Tensor *A, Tensor *B, bool descending, bool stable){
+    auto order_desc = std::greater<float>();
+    auto order_asc = std::less<float>();
+
+    // Copy data from A to B
+    std::copy(A->ptr, A->ptr+A->size, B->ptr);
+
+    // Sort data
+    if(stable) {
+        if (descending) { std::stable_sort(B->ptr, B->ptr + B->size, order_desc); }
+        else { std::stable_sort(B->ptr, B->ptr + B->size, order_asc); }
+    } else{
+        if (descending) { std::sort(B->ptr, B->ptr+B->size, order_desc); }
+        else { std::sort(B->ptr, B->ptr+B->size, order_asc); }
+    }
+}
+
+void cpu_argsort(Tensor *A, Tensor *B, bool descending, bool stable) {
+    // Fill B with indices
+    std::iota(B->ptr, B->ptr + B->size, 0);
+
+    // Set orders
+    auto order_desc = [&A](float i1, float i2) {
+        return A->ptr[(size_t)i1] > A->ptr[(size_t)i2];
+    };
+    auto order_asc = [&A](float i1, float i2) {
+        return A->ptr[(size_t)i1] < A->ptr[(size_t)i2];
+    };
+
+    // Sort data
+    if(stable) {
+        if (descending) { std::stable_sort(B->ptr, B->ptr + B->size, order_desc); }
+        else { std::stable_sort(B->ptr, B->ptr + B->size, order_asc); }
+    } else{
+        if (descending) { std::sort(B->ptr, B->ptr+B->size, order_desc); }
+        else { std::sort(B->ptr, B->ptr+B->size, order_asc); }
     }
 }

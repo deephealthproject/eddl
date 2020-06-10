@@ -158,7 +158,7 @@ void Tensor::diag_(int k){
 }
 
 Tensor* Tensor::diag(int k){
-    Tensor *t = Tensor::empty(this->shape, this->device);
+    Tensor *t = Tensor::empty_like(this);
     Tensor::diag(this, t, k);
     return t;
 }

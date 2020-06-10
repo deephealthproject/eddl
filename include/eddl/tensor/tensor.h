@@ -335,20 +335,13 @@ public:
     Tensor* diag(int k=0);
     static void diag(Tensor* A, Tensor* B, int k=0);
 
-    // Math operations (zero) ************************
-    float max();   // TODO: Should be reduced
-    static float max(Tensor* A);   // TODO: Should be reduced
-
+    // Math operations (Tensor-Tensor, Tensor-float) ************************
     Tensor* maximum(float v);
     static Tensor* maximum(Tensor* A, float v);
     static void maximum(Tensor* A, Tensor* B, float v);
 
     static Tensor* maximum(Tensor* A, Tensor* B);
     static void maximum(Tensor* A, Tensor* B, Tensor* C);
-
-
-    float min();  // TODO: Should be reduced
-    static float min(Tensor* A);   // TODO: Should be reduced
 
     Tensor* minimum(float v);
     static Tensor* minimum(Tensor* A, float v);
@@ -357,7 +350,14 @@ public:
     static Tensor* minimum(Tensor* A, Tensor* B);
     static void minimum(Tensor* A, Tensor* B, Tensor* C);
 
-    // TODO: Deprecated? They should be reductions (unless for speed)
+    // Math operations (single-value) ************************
+
+    float max();
+    static float max(Tensor* A);
+
+    float min();
+    static float min(Tensor* A);
+
     float sum();
     static float sum(Tensor* A);
 
@@ -366,6 +366,18 @@ public:
 
     float mean();
     static float mean(Tensor* A);
+
+    float median();
+    static float median(Tensor* A);
+
+    float mode();
+    static float mode(Tensor* A);
+
+    float std();
+    static float std(Tensor* A);
+
+    float var();
+    static float var(Tensor* A);
 
     // Math operations (unary) ************************
     void abs_();
@@ -847,10 +859,16 @@ public:
     */
     static void not_equal(Tensor *A, Tensor *B, Tensor *C);
 
-
     // Math operations: Other ops
-    // TODO: cross, diag, einsum, flip, trace, dot, etc
+    // TODO: cross, einsum, flip, dot, etc
 
+    void sort_(bool descending=false, bool stable=false);
+    Tensor* sort(bool descending=false, bool stable=false);
+    static void sort(Tensor* A, Tensor* B, bool descending=false, bool stable=false);
+
+    void argsort_(bool descending=false, bool stable=false);
+    Tensor* argsort(bool descending=false, bool stable=false);
+    static void argsort(Tensor* A, Tensor* B, bool descending=false, bool stable=false);
 
     // Indexing, Slicing, Joining, Mutating Ops *************
     static Tensor* concat(vector<Tensor*> A, unsigned int axis=0, Tensor* output=nullptr);

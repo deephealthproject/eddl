@@ -391,3 +391,13 @@ float cpu_sum_abs(Tensor *A) {
 
     return sum;
 }
+
+float cpu_median(Tensor *A) {
+    int midpoint = A->size / 2.0f;
+
+    if(A->size % 2==0 && A->size>1) {
+        return A->ptr[midpoint];
+    }else{
+        return (A->ptr[midpoint]+A->ptr[midpoint+1])/2.0f;
+    }
+}
