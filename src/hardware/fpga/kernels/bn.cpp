@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdio.h>
+#include "../../../../include/eddl/hardware/fpga/fpga_enables.h"
 extern "C" {
 
 #ifdef K_ENABLED_PERMUTE_CHANNELS_LAST
@@ -106,7 +107,7 @@ void k_permute_batch_first(float *A,float *B, int Bshape0, int Bshape1, int Bsha
   #pragma HLS INTERFACE s_axilite port=Bshape1 bundle=control
   #pragma HLS INTERFACE s_axilite port=Bshape2 bundle=control
   #pragma HLS INTERFACE s_axilite port=Bshape3 bundle=control
-  
+
   int b,z,r,c;
 
   b=Bshape0;

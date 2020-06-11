@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdio.h>
+#include "../../../../include/eddl/hardware/fpga/fpga_enables.h"
 extern "C" {
 
 extern float k_get_pixel(int b,int px,int py,int pz,int Dic, int Dir, int isize,int irsize, float *ptr);
