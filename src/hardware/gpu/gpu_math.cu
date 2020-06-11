@@ -36,6 +36,23 @@ struct absolute_value : public unary_function<T,T>
     }
 };
 
+
+/*
+ * @struct varianceshifteop
+ * @brief a unary function that shifts input data
+ * by their mean and computes the squares of them
+ */
+struct variance_shift_sum : std::unary_function<float, float>{
+    const float mean;
+
+    variance_shift_sum(float m) : mean(m) { /* empty */ }
+
+    __host__ __device__ float operator()(float x) const {
+        float tmp = x - mean;
+        return tmp*tmp;
+    }
+};
+
 // GPU: Math (in-place) ********************************************
 void gpu_abs(Tensor *A, Tensor *B){
     int device=A->gpu_device;
@@ -581,6 +598,27 @@ float gpu_median(Tensor *A){
     delete[] host_array;
     return median;
 }
+
+int gpu_mode(Tensor *A){
+    // TODO: Not implemented for GPU
+}
+
+float gpu_std(Tensor *A, bool unbiased){
+    return ::sqrtf(gpu_var(A, unbiased));
+}
+
+float gpu_var(Tensor *A, bool unbiased){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    float mean = thrust::reduce(dev_ptr, dev_ptr + A->size,0.0f, thrust::plus<float>()) / A->size;
+    float sum = thrust::transform_reduce(dev_ptr, dev_ptr + A->size, variance_shift_sum(mean), 0.0f, thrust::plus<float>());
+
+    if(unbiased){return sum/(A->size-1.0f);}
+    else {return sum/(A->size);}
+}
+
 
 // GPU: Reduction ***************************
 void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC){

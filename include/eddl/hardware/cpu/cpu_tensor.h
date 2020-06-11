@@ -125,6 +125,9 @@ float cpu_min(Tensor *A);
 float cpu_sum(Tensor *A);
 float cpu_sum_abs(Tensor *A);
 float cpu_median(Tensor *A);
+int cpu_mode(Tensor *A);
+float cpu_std(Tensor *A, bool unbiased);
+float cpu_var(Tensor *A, bool unbiased);
 
 // CPU: Reduction
 void cpu_reduce(Tensor *A, Tensor *B,string mode,int* map);

@@ -370,14 +370,14 @@ public:
     float median();
     static float median(Tensor* A);
 
-    float mode();
-    static float mode(Tensor* A);
+    int mode();
+    static int mode(Tensor* A);
 
-    float std();
-    static float std(Tensor* A);
+    float std(bool unbiased=true);
+    static float std(Tensor* A, bool unbiased=true);
 
-    float var();
-    static float var(Tensor* A);
+    float var(bool unbiased=true);
+    static float var(Tensor* A, bool unbiased=true);
 
     // Math operations (unary) ************************
     void abs_();

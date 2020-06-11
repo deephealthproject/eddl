@@ -9,6 +9,7 @@
 
 
 #include "eddl/hardware/cpu/cpu_tensor.h"
+#include <unordered_map>
 
 // CPU: Math (in-place) ********************************************
 
@@ -400,4 +401,45 @@ float cpu_median(Tensor *A) {
     }else{
         return (A->ptr[midpoint-1]+A->ptr[midpoint])/2.0f;
     }
+}
+
+
+int cpu_mode(Tensor *A) {
+    std::unordered_map<int, int> table;
+
+    // Get frequencies
+    for (int i = 0; i < A->size; ++i){
+        table[(int)A->ptr[i]]++;
+    }
+
+    int mode = 0;
+    int mode_freq = 0;
+    for (auto &itor : table){
+        if (itor.second > mode_freq){
+            mode = itor.first;
+            mode_freq = itor.second;
+        }
+    }
+
+    return mode;
+}
+
+
+float cpu_std(Tensor *A, bool unbiased){
+    return ::sqrtf(cpu_var(A, unbiased));
+}
+
+
+float cpu_var(Tensor *A, bool unbiased){
+    float mean = A->mean();
+    float sum = 0.0f;
+
+    #pragma omp parallel for reduction(+:sum)
+    for (int i = 0; i < A->size; ++i) {
+        float tmp = A->ptr[i] - mean;
+        sum += tmp*tmp;
+    }
+
+    if(unbiased){return sum/(A->size-1.0f);}
+    else {return sum/(A->size);}
 }

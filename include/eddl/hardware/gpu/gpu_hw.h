@@ -129,6 +129,9 @@ float gpu_min(Tensor *A);
 float gpu_sum(Tensor *A);
 float gpu_sum_abs(Tensor *A);
 float gpu_median(Tensor *A);
+int gpu_mode(Tensor *A);
+float gpu_std(Tensor *A, bool unbiased);
+float gpu_var(Tensor *A, bool unbiased);
 
 // GPU: Reduction
 void gpu_reduce(Tensor *A, Tensor *B,string mode,int* map);
