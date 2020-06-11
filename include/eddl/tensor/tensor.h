@@ -866,7 +866,6 @@ public:
     Tensor* sort(bool descending=false, bool stable=false);
     static void sort(Tensor* A, Tensor* B, bool descending=false, bool stable=false);
 
-    void argsort_(bool descending=false, bool stable=false);
     Tensor* argsort(bool descending=false, bool stable=false);
     static void argsort(Tensor* A, Tensor* B, bool descending=false, bool stable=false);
 

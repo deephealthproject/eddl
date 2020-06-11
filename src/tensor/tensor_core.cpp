@@ -357,9 +357,6 @@ void Tensor::sort(Tensor* A, Tensor* B, bool descending, bool stable){
 }
 
 
-void Tensor::argsort_(bool descending, bool stable){
-    Tensor::argsort(this, this, descending, stable);
-}
 
 Tensor* Tensor::argsort(bool descending, bool stable){
     Tensor *t = Tensor::empty_like(this);

@@ -155,7 +155,7 @@ void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool m
   cudaMalloc((void **) &ind, sind.size() * sizeof(int));
   cudaMemcpy(ind, &sind[0], sind.size() * sizeof(int), cudaMemcpyHostToDevice);
 
-  
+
 
   int size=sind.size()*(B->shape[1]);
 
@@ -330,8 +330,8 @@ void gpu_sort(Tensor *A, Tensor *B, bool descending, bool stable){
     auto order_asc = thrust::less<float>();
 
     // Copy data from A to B
-    thrust::device_ptr<float> A_d(A->ptr);  // add this line before the sort line
-    thrust::device_ptr<float> B_d(B->ptr);  // add this line before the sort line
+    thrust::device_ptr<float> A_d(A->ptr);
+    thrust::device_ptr<float> B_d(B->ptr);
     thrust::copy(A_d, A_d+A->size, B_d);
 
     // Sort data
@@ -349,18 +349,18 @@ void gpu_argsort(Tensor *A, Tensor *B, bool descending, bool stable) {
     auto order_asc = thrust::less<float>();
 
     // Copy data from A to B
-    thrust::device_ptr<float> A_d(A->ptr);  // add this line before the sort line
-    thrust::device_ptr<float> B_d(B->ptr);  // add this line before the sort line
+    thrust::device_ptr<float> keys(A->ptr);  // add this line before the sort line
+    thrust::device_ptr<float> indices(B->ptr);  // add this line before the sort line
     
     // Fill B with indices
-    thrust::sequence(B_d, B_d+B->size, 1);
+    thrust::sequence(indices, indices+B->size, 0);
 
     // Sort data
     if(stable) {
-        if (descending) { thrust::stable_sort_by_key(B_d, B_d + B->size, A_d); }
-        else { thrust::stable_sort_by_key(B_d, B_d + B->size, A_d); }
+        if (descending) { thrust::stable_sort_by_key(keys, keys+B->size, indices, order_desc); }
+        else { thrust::stable_sort_by_key(keys, keys+B->size, indices, order_asc); }
     } else{
-        if (descending) { thrust::sort_by_key(B_d, B_d+B->size, A_d); }
-        else { thrust::sort_by_key(B_d, B_d+B->size, A_d); }
+        if (descending) { thrust::sort_by_key(keys, keys+B->size, indices, order_desc); }
+        else { thrust::sort_by_key(keys, keys+B->size, indices, order_asc); }
     }
 }
