@@ -1317,3 +1317,56 @@ TEST(TensorTestSuite, tensor_math_unary_median){
 #endif
 }
 
+
+//TEST(TensorTestSuite, tensor_math_unary_mode){
+//    // Test #1
+//    Tensor* t1 = new Tensor({1.0f, 2.0f, 3.0f, 1.0f, 2.0f, 4.0f, 1.0f}, {7}, DEV_CPU);
+//
+//    float t1_mode = t1->mode();
+//    ASSERT_FLOAT_EQ(t1_mode, 0.2202);
+//
+//    // Test GPU
+//#ifdef cGPU
+//    Tensor* t1_cpu = Tensor::randn({1000}); t1_cpu->round();
+//    Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
+//    float t1_cpu_mode = t1_cpu->mode();
+//    float t1_gpu_mode = t1_gpu->mode(); t1_gpu->toCPU();
+//    ASSERT_NEAR(t1_cpu_mode, t1_gpu_mode, 10e-4f);
+//#endif
+//}
+
+
+//TEST(TensorTestSuite, tensor_math_unary_std){
+//    // Test #1
+//    Tensor* t1 = new Tensor({-0.8166, -1.3802, -0.3560}, {1, 3}, DEV_CPU);
+//
+//    float t1_std = t1->std();
+//    ASSERT_FLOAT_EQ(t1_std, 0.5130);
+//
+//    // Test GPU
+//#ifdef cGPU
+//    Tensor* t1_cpu = Tensor::randn({1000});
+//    Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
+//    float t1_cpu_std = t1_cpu->std();
+//    float t1_gpu_std = t1_gpu->std(); t1_gpu->toCPU();
+//    ASSERT_NEAR(t1_cpu_std, t1_gpu_std, 10e-4f);
+//#endif
+//}
+
+
+//TEST(TensorTestSuite, tensor_math_unary_var){
+//    // Test #1
+//    Tensor* t1 = new Tensor({-0.3425, -1.2636, -0.4864}, {1, 3}, DEV_CPU);
+//
+//    float t1_var = t1->var();
+//    ASSERT_FLOAT_EQ(t1_var, 0.2455);
+//
+//    // Test GPU
+//#ifdef cGPU
+//    Tensor* t1_cpu = Tensor::randn({1000});
+//    Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
+//    float t1_cpu_var = t1_cpu->var();
+//    float t1_gpu_var = t1_gpu->var(); t1_gpu->toCPU();
+//    ASSERT_NEAR(t1_cpu_var, t1_gpu_var, 10e-4f);
+//#endif
+//}
