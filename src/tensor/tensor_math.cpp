@@ -249,18 +249,18 @@ float Tensor::median(){
 
 
 float Tensor::median(Tensor* A){
+    float res = 0.0f;
+
+    // Clone tensor (needs to be sorted first)
     Tensor *tmp = A->clone();
     tmp->sort_();
 
     if (tmp->isCPU()) {
-        delete tmp;
-        return cpu_median(tmp);
+        res = cpu_median(tmp);
     }
 #ifdef cGPU
-    else if (tmp->isGPU())
-    {
-        delete tmp;
-        return gpu_median(tmp);
+    else if (tmp->isGPU()) {
+        res = gpu_median(tmp);
     }
 #endif
 #ifdef cFPGA
@@ -269,8 +269,8 @@ float Tensor::median(Tensor* A){
     }
 #endif
 
-    msg("Invalid device", "Tensor::median");
-    return 0.0f; // Never used, this is for the compiler warning
+    delete tmp;
+    return res;
 }
 //
 //float Tensor::mode(){
