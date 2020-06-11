@@ -353,11 +353,11 @@ Not yet...
 | mean | ✔️ | ✔️ | |
 | median | ✔️ | ✔ | |
 | min | ✔️ | ✔️ | |
-| mode | ❌ | ❌ | |
-| std | ❌ | ❌ | |
+| mode | ✔️  | ❌ | |
+| std |  ✔️ | ✔️ | |
 | sum | ✔️ | ✔️ | |
 | sum_abs | ✔️ | ✔️ |  |
-| var | ❌ | ❌ |  |
+| var |  ✔️ | ✔️ |  |
 
 
 ### Reductions
