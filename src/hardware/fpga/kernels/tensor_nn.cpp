@@ -11,7 +11,7 @@ void k_repeat_nn(float *A, float *B, int *size_ptr){
   #pragma HLS INTERFACE m_axi port=size_ptr offset=slave bundle=gmem
   #pragma HLS INTERFACE s_axilite port=A  bundle=control
   #pragma HLS INTERFACE s_axilite port=B  bundle=control
-  #pragma HLS INTERFACE s_axilite port=seze_ptr  bundle=control
+  #pragma HLS INTERFACE s_axilite port=size_ptr  bundle=control
 
 }
 #endif
@@ -24,7 +24,7 @@ void k_d_repeat_nn(float *D, float *A, int *size_ptr){
   #pragma HLS INTERFACE m_axi port=size_ptr offset=slave bundle=gmem
   #pragma HLS INTERFACE s_axilite port=D  bundle=control
   #pragma HLS INTERFACE s_axilite port=A  bundle=control
-  #pragma HLS INTERFACE s_axilite port=seze_ptr  bundle=control
+  #pragma HLS INTERFACE s_axilite port=size_ptr  bundle=control
 
 }
 #endif

@@ -36,7 +36,15 @@ void fpga_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
     if (fpga_set_cpuemu_repeat_nn == 1) {
         fpga_cpuemu_repeat_nn(A, B, size);
     } else {
-        printf("fpga_repeat_nn not implemented yet\n"); exit(1);
+        cl_int err;
+        cl::Event event;
+
+        OCL_CHECK(err, err = kernel_repeat_nn.setArg(0, (A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_repeat_nn.setArg(1, (B->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_repeat_nn.setArg(2, (int)size->fpga_ptr));
+
+        OCL_CHECK(err, err = q.enqueueTask(kernel_repeat_nn, NULL, &event));
+        q.finish();
     }
     _profile_fpga(_FPGA_REPEAT_NN, 1);
 }
@@ -59,7 +67,15 @@ void fpga_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
     if (fpga_set_cpuemu_d_repeat_nn == 1) {
         fpga_cpuemu_d_repeat_nn(D, A, size);
     } else {
-        printf("fpga_equal not implemented yet\n"); exit(1);
+        cl_int err;
+        cl::Event event;
+
+        OCL_CHECK(err, err = kernel_d_repeat_nn.setArg(0, (A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_d_repeat_nn.setArg(1, (B->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_d_repeat_nn.setArg(2, (int)size->fpga_ptr));
+
+        OCL_CHECK(err, err = q.enqueueTask(kernel_d_repeat_nn, NULL, &event));
+        q.finish();
     }
     _profile_fpga(_FPGA_D_REPEAT_NN, 1);
 }

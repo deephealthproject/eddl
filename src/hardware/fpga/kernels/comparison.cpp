@@ -148,6 +148,7 @@ bool k_allclose(float *A, float *B, float rtol, float atol, bool equal_nan, long
   #pragma HLS INTERFACE s_axilite port=atol  bundle=control
   #pragma HLS INTERFACE s_axilite port=equal_nan  bundle=control
   #pragma HLS INTERFACE s_axilite port=size bundle=control
+  //TODO: return
 }
 #endif
 
@@ -261,6 +262,7 @@ int k_equal2(float *A, float *B, float epsilon, long int size) {
   #pragma HLS INTERFACE s_axilite port=B  bundle=control
   #pragma HLS INTERFACE s_axilite port=epsilon  bundle=control
   #pragma HLS INTERFACE s_axilite port=size bundle=control
+  //TODO: return
 
 }
 #endif
