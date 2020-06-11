@@ -68,7 +68,7 @@ void fpga_relu(Tensor *A, Tensor *B){
 
     OCL_CHECK(err, err = kernel_relu.setArg(0, (A->fpga_ptr)));
     OCL_CHECK(err, err = kernel_relu.setArg(1, (B->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_relu.setArg(2, (int)A->size));
+    OCL_CHECK(err, err = kernel_relu.setArg(2, (long int)A->size));
 
     OCL_CHECK(err, err = q.enqueueTask(kernel_relu, NULL, &event));
     //  event.wait();
@@ -614,7 +614,20 @@ void fpga_softmax(Tensor *A, Tensor *B) {
   if (fpga_set_cpuemu_softmax == 1) {
       fpga_cpuemu_softmax(A, B);
   } else {
-      printf("fpga_softmax not implemented yet\n"); exit(1);
+      // printf("fpga_softmax not implemented yet\n"); exit(1);
+      cl_int err;
+      cl::Event event;
+
+      OCL_CHECK(err, err = kernel_softmax.setArg(0, (A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_softmax.setArg(1, (B->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_softmax.setArg(2, (int)A->shape[0]));
+      OCL_CHECK(err, err = kernel_softmax.setArg(3, (int)A->shape[1]));
+      OCL_CHECK(err, err = kernel_softmax.setArg(4, (int)B->shape[1]));
+
+      OCL_CHECK(err, err = q.enqueueTask(kernel_softmax, NULL, &event));
+      //  event.wait();
+      q.finish();
+
   }
   _profile_fpga(_FPGA_SOFTMAX, 1);
 }
