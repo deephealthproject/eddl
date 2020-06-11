@@ -565,18 +565,20 @@ float gpu_median(Tensor *A){
     cudaSetDevice(device);
 
     int size;
-    if(A->size % 2==0 && A->size>1) { size = 1; }
-    else{ size = 2; }
+    int midpoint = A->size / 2.0f;
+    if(A->size % 2==1 && A->size>1) { size = 1; }
+    else{ size = 2; midpoint -=1; }
 
     // Copy (minimum) data to host
-    float *host_array = new float[size];
-    check_cuda(cudaMemcpy(A->ptr, host_array, size*sizeof(float),cudaMemcpyDeviceToDevice),"gpu_median");
+    auto *host_array = new float[size];
+    check_cuda(cudaMemcpy(host_array, A->ptr+midpoint, size*sizeof(float),cudaMemcpyDeviceToHost),"gpu_median");
 
     // Compute median
     float median = 0.0f;
     for(int i=0; i<size; i++){median+=host_array[i];}
     median = median/size;
 
+    delete[] host_array;
     return median;
 }
 

@@ -13,6 +13,7 @@
 #include <cublas_v2.h>
 #include <thrust/sort.h>
 #include <thrust/functional.h>
+#include <thrust/device_ptr.h>
 
 
 #include "eddl/hardware/gpu/gpu_tensor.h"
@@ -329,28 +330,37 @@ void gpu_sort(Tensor *A, Tensor *B, bool descending, bool stable){
     auto order_asc = thrust::less<float>();
 
     // Copy data from A to B
-    thrust::copy(A->ptr, A->ptr+A->size, B->ptr);
+    thrust::device_ptr<float> A_d(A->ptr);  // add this line before the sort line
+    thrust::device_ptr<float> B_d(B->ptr);  // add this line before the sort line
+    thrust::copy(A_d, A_d+A->size, B_d);
 
     // Sort data
     if(stable) {
-        if (descending) { thrust::stable_sort(B->ptr, B->ptr + B->size, order_desc); }
-        else { thrust::stable_sort(B->ptr, B->ptr + B->size, order_asc); }
+        if (descending) { thrust::stable_sort(B_d, B_d + B->size, order_desc); }
+        else { thrust::stable_sort(B_d, B_d + B->size, order_asc); }
     } else{
-        if (descending) { thrust::sort(B->ptr, B->ptr+B->size, order_desc); }
-        else { thrust::sort(B->ptr, B->ptr+B->size, order_asc); }
+        if (descending) { thrust::sort(B_d, B_d+B->size, order_desc); }
+        else { thrust::sort(B_d, B_d+B->size, order_asc); }
     }
 }
 
 void gpu_argsort(Tensor *A, Tensor *B, bool descending, bool stable) {
+    auto order_desc = thrust::greater<float>();
+    auto order_asc = thrust::less<float>();
+
+    // Copy data from A to B
+    thrust::device_ptr<float> A_d(A->ptr);  // add this line before the sort line
+    thrust::device_ptr<float> B_d(B->ptr);  // add this line before the sort line
+    
     // Fill B with indices
-    thrust::sequence(B->ptr, B->ptr + B->size, 1);
+    thrust::sequence(B_d, B_d+B->size, 1);
 
     // Sort data
     if(stable) {
-        if (descending) { thrust::stable_sort_by_key(B->ptr, B->ptr + B->size, A->ptr); }
-        else { thrust::stable_sort_by_key(B->ptr, B->ptr + B->size, A->ptr); }
+        if (descending) { thrust::stable_sort_by_key(B_d, B_d + B->size, A_d); }
+        else { thrust::stable_sort_by_key(B_d, B_d + B->size, A_d); }
     } else{
-        if (descending) { thrust::sort_by_key(B->ptr, B->ptr+B->size, A->ptr); }
-        else { thrust::sort_by_key(B->ptr, B->ptr+B->size, A->ptr); }
+        if (descending) { thrust::sort_by_key(B_d, B_d+B->size, A_d); }
+        else { thrust::sort_by_key(B_d, B_d+B->size, A_d); }
     }
 }
