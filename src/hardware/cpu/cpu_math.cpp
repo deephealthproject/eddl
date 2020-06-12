@@ -404,6 +404,17 @@ float cpu_median(Tensor *A) {
 }
 
 
+float cpu_prod(Tensor *A) {
+    float prod = 1.0f;
+
+    #pragma omp parallel for reduction(*:prod)
+    for (int i = 0; i < A->size; ++i) {
+        prod *= A->ptr[i];
+    }
+
+    return prod;
+}
+
 int cpu_mode(Tensor *A) {
     std::unordered_map<int, int> table;
 

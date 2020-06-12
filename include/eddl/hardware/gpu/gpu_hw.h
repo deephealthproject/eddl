@@ -125,6 +125,7 @@ float gpu_max(Tensor *A);
 float gpu_min(Tensor *A);
 float gpu_sum(Tensor *A);
 float gpu_sum_abs(Tensor *A);
+float gpu_prod(Tensor *A);
 float gpu_median(Tensor *A);
 int gpu_mode(Tensor *A);  // TODO: Not implemented
 float gpu_std(Tensor *A, bool unbiased);

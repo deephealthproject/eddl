@@ -234,6 +234,33 @@ float Tensor::sum_abs(Tensor* A){
     return 0.0f; // Never used, this is for the compiler warning
 }
 
+
+float Tensor::prod(){
+    return Tensor::prod(this);
+}
+
+
+float Tensor::prod(Tensor* A){  // AKA factorial
+    if (A->isCPU()) {
+        return cpu_prod(A);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+    {
+        return gpu_prod(A);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+    msg("Invalid device", "Tensor::prod");
+    return 0.0f; // Never used, this is for the compiler warning
+}
+
+
 float Tensor::mean(){
     return Tensor::mean(this);
 }

@@ -562,7 +562,6 @@ float gpu_sum(Tensor *A){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
-
     thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
     float sum=thrust::reduce(dev_ptr, dev_ptr + A->size);
 
@@ -575,6 +574,16 @@ float gpu_sum_abs(Tensor *A){
 
     thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
     return thrust::transform_reduce(dev_ptr, dev_ptr + A->size, absolute_value<float>(), 0.0f, thrust::plus<float>());
+}
+
+float gpu_prod(Tensor *A){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    float prod=thrust::reduce(dev_ptr, dev_ptr + A->size, 1.0f, thrust::multiplies<float>());
+
+    return prod;
 }
 
 float gpu_median(Tensor *A){

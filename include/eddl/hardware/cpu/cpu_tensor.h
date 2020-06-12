@@ -124,6 +124,7 @@ float cpu_max(Tensor *A);
 float cpu_min(Tensor *A);
 float cpu_sum(Tensor *A);
 float cpu_sum_abs(Tensor *A);
+float cpu_prod(Tensor *A);
 float cpu_median(Tensor *A);
 int cpu_mode(Tensor *A);
 float cpu_std(Tensor *A, bool unbiased);
