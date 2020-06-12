@@ -1267,6 +1267,26 @@ TEST(TensorTestSuite, tensor_math_unary_abs_sum){
 }
 
 
+TEST(TensorTestSuite, tensor_math_unary_prod){
+    // Test #1
+    Tensor* t1 = Tensor::range(1, 10, DEV_CPU);
+
+    float t_prod = t1->prod();
+    ASSERT_NEAR(t_prod, 3628800.0f, 10e-4f);
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::randn({1, 10}); t_cpu->mult_(10.0f);  // High mismatch CPU/GPU
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    float t_cpu_prod = t_cpu->prod();
+    float t_gpu_prod = t_gpu->prod(); t_gpu->toCPU();
+
+    ASSERT_NEAR(t_cpu_prod, t_gpu_prod, 10e-4f);
+#endif
+}
+
+
 TEST(TensorTestSuite, tensor_math_unary_mean){
     // Test #1
     Tensor* t1 = new Tensor({0.2294, -0.5481,  1.3288}, {1, 3}, DEV_CPU);
