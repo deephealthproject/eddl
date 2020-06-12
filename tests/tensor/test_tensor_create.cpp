@@ -9,6 +9,21 @@
 using namespace std;
 
 
+TEST(TensorTestSuite, tensor_create_data){
+    // Test #1
+    vector<int> t1_shape = {2, 3};
+    vector<float> d_t1_ref = {1.0f, 2.0f, 3.0f,
+                              4.0f, 5.0f, 6.0f};
+    Tensor* t1_ref = new Tensor(t1_shape, d_t1_ref.data(), DEV_CPU);
+
+    Tensor* t1 = new Tensor( {1.0f, 2.0f, 3.0f,
+                              4.0f, 5.0f, 6.0f}, {2, 3}, DEV_CPU);
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, t1, 10e-0));
+
+}
+
+
+
 TEST(TensorTestSuite, tensor_create_zeros){
     // Test #1
     vector<int> t1_shape = {2, 3};
@@ -24,6 +39,12 @@ TEST(TensorTestSuite, tensor_create_zeros){
     Tensor* t2_ref = new Tensor(t2_shape, d_t2_ref.data(), DEV_CPU);
     Tensor* t2 = Tensor::zeros(t2_shape);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, t2, 10e-0));
+}
+
+TEST(TensorTestSuite, tensor_create_zeros_like){
+    Tensor* t1_ref = Tensor::zeros({2, 3}, DEV_CPU);
+    Tensor* t1 = Tensor::zeros_like(t1_ref);
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, t1, 10e-0));
 }
 
 
@@ -44,6 +65,11 @@ TEST(TensorTestSuite, tensor_create_ones){
     ASSERT_TRUE(Tensor::equivalent(t2_ref, t2, 10e-0));
 }
 
+TEST(TensorTestSuite, tensor_create_ones_like){
+    Tensor* t1_ref = Tensor::ones({2, 3}, DEV_CPU);
+    Tensor* t1 = Tensor::ones_like(t1_ref);
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, t1, 10e-0));
+}
 
 TEST(TensorTestSuite, tensor_create_full){
     // Test #1
@@ -56,6 +82,11 @@ TEST(TensorTestSuite, tensor_create_full){
 
 }
 
+TEST(TensorTestSuite, tensor_create_full_like){
+    Tensor* t1_ref = Tensor::full({2, 3}, 15.0f, DEV_CPU);
+    Tensor* t1 = Tensor::full_like(t1_ref, 15.0f);
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, t1, 10e-0));
+}
 
 TEST(TensorTestSuite, tensor_create_arange){
     // Test #1

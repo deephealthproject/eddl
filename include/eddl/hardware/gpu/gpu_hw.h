@@ -30,14 +30,15 @@
 void gpu_fill_(Tensor *A, float v);
 void gpu_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
 
+void _gpu_sort(Tensor *A, Tensor *B, bool descending, bool stable);
+void gpu_sort(Tensor *A, Tensor *B, bool descending, bool stable);
+void gpu_argsort(Tensor *A, Tensor *B, bool descending, bool stable);
+
 void gpu_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 
 void gpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void gpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
-
-void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,bool mask_zeros=false); // TODO: Legacy
-void gpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc,bool mask_zeros=false); // TODO: Legacy
 
 void gpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative);
 
@@ -124,6 +125,10 @@ float gpu_max(Tensor *A);
 float gpu_min(Tensor *A);
 float gpu_sum(Tensor *A);
 float gpu_sum_abs(Tensor *A);
+float gpu_median(Tensor *A);
+int gpu_mode(Tensor *A);  // TODO: Not implemented
+float gpu_std(Tensor *A, bool unbiased);
+float gpu_var(Tensor *A, bool unbiased);
 
 // GPU: Reduction
 void gpu_reduce(Tensor *A, Tensor *B,string mode,int* map);
@@ -181,6 +186,10 @@ void gpu_not_equal(Tensor *A, Tensor *B, Tensor *C);
 
 
 // Legacy  **************************************************************************************
+
+void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,bool mask_zeros=false); // TODO: Legacy
+void gpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc,bool mask_zeros=false); // TODO: Legacy
+
 void gpu_copy_to_gpu(float *nptr,Tensor *B);
 void gpu_copy_from_gpu(Tensor *A,float *nptr);
 void gpu_copy_gpu(Tensor *A,Tensor *B);

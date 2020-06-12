@@ -1162,49 +1162,6 @@ TEST(TensorTestSuite, tensor_math_minimumT){
 }
 
 
-TEST(TensorTestSuite, tensor_math_unary_sum){
-    // Test #1
-    vector<int> t1_shape = {4};
-    vector<float> d_t1 = {0.8986, -0.7279,  1.1745,  0.2611};
-    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
-
-    float t_sum = t1->sum();
-    ASSERT_NEAR(t_sum, 1.6063f, 10e-4f);
-
-    // Test GPU
-#ifdef cGPU
-    Tensor* t_cpu = Tensor::randu({1, 100, 100});  // High mismatch CPU/GPU
-    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
-
-    float t_cpu_sum = t_cpu->sum();
-    float t_gpu_sum = t_gpu->sum(); t_gpu->toCPU();
-
-    ASSERT_NEAR(t_cpu_sum, t_gpu_sum, 10e-2f);
-#endif
-}
-
-
-TEST(TensorTestSuite, tensor_math_unary_abs_sum){
-    // Test #1
-    vector<int> t1_shape = {4};
-    vector<float> d_t1 = {0.8986, -0.7279,  1.1745,  0.2611};
-    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
-
-    float t_sum = t1->sum_abs();
-    ASSERT_NEAR(t_sum, 3.0621f, 10e-4f);
-
-    // Test GPU
-#ifdef cGPU
-    Tensor* t_cpu = Tensor::randu({1, 100, 100});  // High mismatch CPU/GPU
-    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
-
-    float t_cpu_sum = t_cpu->sum_abs();
-    float t_gpu_sum = t_gpu->sum_abs(); t_gpu->toCPU();
-
-    ASSERT_NEAR(t_cpu_sum, t_gpu_sum, 10e-2f);
-#endif
-}
-
 
 TEST(TensorTestSuite, tensor_math_unary_max){
     // Test #1
@@ -1262,5 +1219,162 @@ TEST(TensorTestSuite, tensor_math_unary_min){
     float t_gpu_min = t_gpu->min(); t_gpu->toCPU();
 
     ASSERT_NEAR(t_cpu_min, t_gpu_min, 10e-4f);
+#endif
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_sum){
+    // Test #1
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = {0.8986, -0.7279,  1.1745,  0.2611};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
+
+    float t_sum = t1->sum();
+    ASSERT_NEAR(t_sum, 1.6063f, 10e-4f);
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::randu({1, 100, 100});  // High mismatch CPU/GPU
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    float t_cpu_sum = t_cpu->sum();
+    float t_gpu_sum = t_gpu->sum(); t_gpu->toCPU();
+
+    ASSERT_NEAR(t_cpu_sum, t_gpu_sum, 10e-2f);
+#endif
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_abs_sum){
+    // Test #1
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = {0.8986, -0.7279,  1.1745,  0.2611};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
+
+    float t_sum = t1->sum_abs();
+    ASSERT_NEAR(t_sum, 3.0621f, 10e-4f);
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::randu({1, 100, 100});  // High mismatch CPU/GPU
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    float t_cpu_sum = t_cpu->sum_abs();
+    float t_gpu_sum = t_gpu->sum_abs(); t_gpu->toCPU();
+
+    ASSERT_NEAR(t_cpu_sum, t_gpu_sum, 10e-2f);
+#endif
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_mean){
+    // Test #1
+    Tensor* t1 = new Tensor({0.2294, -0.5481,  1.3288}, {1, 3}, DEV_CPU);
+
+    float t1_mean = t1->mean();
+    ASSERT_FLOAT_EQ(t1_mean, 0.3367);
+
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    float t_cpu_mean = t_cpu->mean();
+    float t_gpu_mean = t_gpu->mean(); t_gpu->toCPU();
+
+    ASSERT_NEAR(t_cpu_mean, t_gpu_mean, 10e-4f);
+#endif
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_median){
+    // Test #1
+    Tensor* t1 = new Tensor({1.5219, -1.5212,  0.2202}, {1, 3}, DEV_CPU);
+
+    float t1_median = t1->median();
+    ASSERT_FLOAT_EQ(t1_median, 0.2202);
+
+    // Test #2
+    Tensor* t2 = new Tensor({1.5219, 0.3462, -1.5212,  0.2202}, {4}, DEV_CPU);
+
+    float t2_median = t2->median();
+    ASSERT_FLOAT_EQ(t2_median, 0.2832);
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t1_cpu = Tensor::randu({10001});
+    Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
+    float t1_cpu_median = t1_cpu->median();
+    float t1_gpu_median = t1_gpu->median(); t1_gpu->toCPU();
+    ASSERT_NEAR(t1_cpu_median, t1_gpu_median, 10e-4f);
+
+    Tensor* t2_cpu = Tensor::randu({10000});
+    Tensor* t2_gpu = t2_cpu->clone(); t2_gpu->toGPU();
+    float t2_cpu_median = t2_cpu->median();
+    float t2_gpu_median = t2_gpu->median(); t2_gpu->toCPU();
+    ASSERT_NEAR(t2_cpu_median, t2_gpu_median, 10e-4f);
+#endif
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_mode){
+    // Test #1
+    Tensor* t1 = new Tensor({1.0f, 2.0f, 3.0f, 1.0f, 2.0f, 4.0f, 1.0f}, {7}, DEV_CPU);
+
+    int t1_mode = t1->mode();
+    ASSERT_EQ(t1_mode, 1);
+
+//    // Test GPU
+//#ifdef cGPU
+//    Tensor* t1_cpu = Tensor::randn({1000}); t1_cpu->round();
+//    Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
+//    int t1_cpu_mode = t1_cpu->mode();
+//    int t1_gpu_mode = t1_gpu->mode(); t1_gpu->toCPU();
+//    ASSERT_EQ(t1_cpu_mode, t1_gpu_mode);
+//#endif
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_std){
+    Tensor* t1 = new Tensor({0.6449, -1.9696, -1.6930,  1.5281,  0.4412}, {1, 5}, DEV_CPU);
+
+    // Test #1
+    float t1_std = t1->std(true);
+    ASSERT_NEAR(t1_std, 1.5388, 10e-4f);
+
+    // Test #2
+    float t2_std = t1->std(false);
+    ASSERT_NEAR(t2_std, 1.3763, 10e-4f);
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t1_cpu = Tensor::randn({1000});
+    Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
+    float t1_cpu_std = t1_cpu->std();
+    float t1_gpu_std = t1_gpu->std(); t1_gpu->toCPU();
+    ASSERT_NEAR(t1_cpu_std, t1_gpu_std, 10e-4f);
+#endif
+}
+
+
+TEST(TensorTestSuite, tensor_math_unary_var){
+    Tensor* t1 = new Tensor({0.6449, -1.9696, -1.6930,  1.5281,  0.4412}, {1, 5}, DEV_CPU);
+
+    // Test #1
+    float t1_var = t1->var(true);
+    ASSERT_NEAR(t1_var, 2.3679, 10e-4f);
+
+    // Test #2
+    float t2_var = t1->var(false);
+    ASSERT_NEAR(t2_var, 1.8943, 10e-4f);
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t1_cpu = Tensor::randn({1000});
+    Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
+    float t1_cpu_var = t1_cpu->var();
+    float t1_gpu_var = t1_gpu->var(); t1_gpu->toCPU();
+    ASSERT_NEAR(t1_cpu_var, t1_gpu_var, 10e-4f);
 #endif
 }

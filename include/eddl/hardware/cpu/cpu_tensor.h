@@ -25,6 +25,10 @@ void cpu_copy(Tensor *A, Tensor *B);
 void cpu_fill_(Tensor *A, float v);
 void cpu_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
 
+void _cpu_sort(Tensor *A, Tensor *B, bool descending, bool stable);
+void cpu_sort(Tensor *A, Tensor *B, bool descending, bool stable);
+void cpu_argsort(Tensor *A, Tensor *B, bool descending, bool stable);
+
 void cpu_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 
@@ -120,6 +124,10 @@ float cpu_max(Tensor *A);
 float cpu_min(Tensor *A);
 float cpu_sum(Tensor *A);
 float cpu_sum_abs(Tensor *A);
+float cpu_median(Tensor *A);
+int cpu_mode(Tensor *A);
+float cpu_std(Tensor *A, bool unbiased);
+float cpu_var(Tensor *A, bool unbiased);
 
 // CPU: Reduction
 void cpu_reduce(Tensor *A, Tensor *B,string mode,int* map);

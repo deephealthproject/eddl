@@ -49,4 +49,5 @@ float Tensor::norm(Tensor *A, string ord){
 
     }
 #endif
+    return 0.0f;
 }

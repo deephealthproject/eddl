@@ -329,6 +329,58 @@ void Tensor::fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, 
     B->tsem->unlock();
 }
 
+void Tensor::sort_(bool descending, bool stable){
+    Tensor::sort(this, this, descending, stable);
+}
+
+Tensor* Tensor::sort(bool descending, bool stable){
+    Tensor *t = Tensor::empty_like(this);
+    Tensor::sort(this, t, descending, stable);
+    return t;
+}
+
+void Tensor::sort(Tensor* A, Tensor* B, bool descending, bool stable){
+    if (A->isCPU() && B->isCPU()){
+        cpu_sort(A, B, descending, stable);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+    {
+        gpu_sort(A, B, descending, stable);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+
+
+Tensor* Tensor::argsort(bool descending, bool stable){
+    Tensor *t = Tensor::empty_like(this);
+    Tensor::argsort(this, t, descending, stable);
+    return t;
+}
+
+void Tensor::argsort(Tensor* A, Tensor* B, bool descending, bool stable){
+    if (A->isCPU() && B->isCPU()){
+        cpu_argsort(A, B, descending, stable);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+    {
+        gpu_argsort(A, B, descending, stable);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
 Tensor* Tensor::concat(const vector<Tensor*> A, unsigned int axis, Tensor* output){
     // Check number of vectors to concat
     if(A.size()<2){

@@ -36,6 +36,23 @@ struct absolute_value : public unary_function<T,T>
     }
 };
 
+
+/*
+ * @struct varianceshifteop
+ * @brief a unary function that shifts input data
+ * by their mean and computes the squares of them
+ */
+struct variance_shift_sum : std::unary_function<float, float>{
+    const float mean;
+
+    variance_shift_sum(float m) : mean(m) { /* empty */ }
+
+    __host__ __device__ float operator()(float x) const {
+        float tmp = x - mean;
+        return tmp*tmp;
+    }
+};
+
 // GPU: Math (in-place) ********************************************
 void gpu_abs(Tensor *A, Tensor *B){
     int device=A->gpu_device;
@@ -558,6 +575,48 @@ float gpu_sum_abs(Tensor *A){
 
     thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
     return thrust::transform_reduce(dev_ptr, dev_ptr + A->size, absolute_value<float>(), 0.0f, thrust::plus<float>());
+}
+
+float gpu_median(Tensor *A){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    int size;
+    int midpoint = A->size / 2.0f;
+    if(A->size % 2==1 && A->size>1) { size = 1; }
+    else{ size = 2; midpoint -=1; }
+
+    // Copy (minimum) data to host
+    auto *host_array = new float[size];
+    check_cuda(cudaMemcpy(host_array, A->ptr+midpoint, size*sizeof(float),cudaMemcpyDeviceToHost),"gpu_median");
+
+    // Compute median
+    float median = 0.0f;
+    for(int i=0; i<size; i++){median+=host_array[i];}
+    median = median/size;
+
+    delete[] host_array;
+    return median;
+}
+
+int gpu_mode(Tensor *A){
+    // TODO: Not implemented for GPU
+}
+
+float gpu_std(Tensor *A, bool unbiased){
+    return ::sqrtf(gpu_var(A, unbiased));
+}
+
+float gpu_var(Tensor *A, bool unbiased){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    float mean = thrust::reduce(dev_ptr, dev_ptr + A->size,0.0f, thrust::plus<float>()) / A->size;
+    float sum = thrust::transform_reduce(dev_ptr, dev_ptr + A->size, variance_shift_sum(mean), 0.0f, thrust::plus<float>());
+
+    if(unbiased){return sum/(A->size-1.0f);}
+    else {return sum/(A->size);}
 }
 
 

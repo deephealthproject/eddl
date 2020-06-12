@@ -21,7 +21,116 @@
 
 using namespace std;
 
-// Math operations (zero) ************************
+// Math operations (Tensor-Tensor, Tensor-float) ************************
+
+Tensor* Tensor::maximum(float v){
+    Tensor *t = Tensor::empty_like(this);
+    Tensor::maximum(this, t, v);
+    return t;
+}
+
+Tensor* Tensor::maximum(Tensor* A, float v){
+    Tensor *t = Tensor::empty_like(A);;
+    Tensor::maximum(A, t, v);
+    return t;
+}
+
+void Tensor::maximum(Tensor* A, Tensor* B, float v){
+    if (A->isCPU() && B->isCPU()){
+        cpu_maximum(A, B, v);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+    {
+        gpu_maximum(A, B, v);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+}
+
+Tensor* Tensor::maximum(Tensor* A, Tensor* B){
+    Tensor *t = Tensor::empty_like(A);;
+    Tensor::maximum(A, B, t);
+    return t;
+}
+
+void Tensor::maximum(Tensor* A, Tensor* B, Tensor* C){
+    if (A->isCPU() && B->isCPU() && C->isCPU()){
+        cpu_maximum(A, B, C);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU() && C->isGPU())
+    {
+        gpu_maximum(A, B, C);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+}
+
+Tensor* Tensor::minimum(float v){
+    Tensor *t = Tensor::empty_like(this);
+    Tensor::minimum(this, t, v);
+    return t;
+}
+
+Tensor* Tensor::minimum(Tensor* A, float v){
+    Tensor *t = Tensor::empty_like(A);;
+    Tensor::minimum(A, t, v);
+    return t;
+}
+
+void Tensor::minimum(Tensor* A, Tensor* B, float v){
+    if (A->isCPU() && B->isCPU()){
+        cpu_minimum(A, B, v);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+    {
+        gpu_minimum(A, B, v);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+}
+
+Tensor* Tensor::minimum(Tensor* A, Tensor* B){
+    Tensor *t = Tensor::empty_like(A);
+    Tensor::minimum(A, B, t);
+    return t;
+}
+
+void Tensor::minimum(Tensor* A, Tensor* B, Tensor* C){
+    if (A->isCPU() && B->isCPU() && C->isCPU()){
+        cpu_minimum(A, B, C);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU() && C->isGPU())
+    {
+        gpu_minimum(A, B, C);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+}
+
 
 float Tensor::max(){
     return Tensor::max(this);
@@ -48,61 +157,6 @@ float Tensor::max(Tensor* A){
     return 0.0f; // Never used, this is for the compiler warning
 }
 
-Tensor* Tensor::maximum(float v){
-    Tensor *t = Tensor::empty(this->shape, this->device);
-    Tensor::maximum(this, t, v);
-    return t;
-}
-
-Tensor* Tensor::maximum(Tensor* A, float v){
-    Tensor *t = A->clone();
-    Tensor::maximum(A, t, v);
-    return t;
-}
-
-void Tensor::maximum(Tensor* A, Tensor* B, float v){
-    if (A->isCPU() && B->isCPU()){
-        cpu_maximum(A, B, v);
-    }
-#ifdef cGPU
-    else if (A->isGPU() && B->isGPU())
-    {
-        gpu_maximum(A, B, v);
-    }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-
-}
-
-Tensor* Tensor::maximum(Tensor* A, Tensor* B){
-    Tensor *t = A->clone();
-    Tensor::maximum(A, B, t);
-    return t;
-}
-
-void Tensor::maximum(Tensor* A, Tensor* B, Tensor* C){
-    if (A->isCPU() && B->isCPU() && C->isCPU()){
-        cpu_maximum(A, B, C);
-    }
-#ifdef cGPU
-    else if (A->isGPU() && B->isGPU() && C->isGPU())
-    {
-        gpu_maximum(A, B, C);
-    }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-
-}
-
-
 float Tensor::min(){
     return Tensor::min(this);
 }
@@ -124,63 +178,8 @@ float Tensor::min(Tensor* A){
     }
 #endif
 
-    msg("Invalid device", "Tensor::max");
+    msg("Invalid device", "Tensor::min");
     return 0.0f; // Never used, this is for the compiler warning
-}
-
-
-Tensor* Tensor::minimum(float v){
-    Tensor *t = Tensor::empty(this->shape, this->device);
-    Tensor::minimum(this, t, v);
-    return t;
-}
-
-Tensor* Tensor::minimum(Tensor* A, float v){
-    Tensor *t = A->clone();
-    Tensor::minimum(A, t, v);
-    return t;
-}
-
-void Tensor::minimum(Tensor* A, Tensor* B, float v){
-    if (A->isCPU() && B->isCPU()){
-        cpu_minimum(A, B, v);
-    }
-#ifdef cGPU
-    else if (A->isGPU() && B->isGPU())
-    {
-        gpu_minimum(A, B, v);
-    }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-
-}
-
-Tensor* Tensor::minimum(Tensor* A, Tensor* B){
-    Tensor *t = A->clone();
-    Tensor::minimum(A, B, t);
-    return t;
-}
-
-void Tensor::minimum(Tensor* A, Tensor* B, Tensor* C){
-    if (A->isCPU() && B->isCPU() && C->isCPU()){
-        cpu_minimum(A, B, C);
-    }
-#ifdef cGPU
-    else if (A->isGPU() && B->isGPU() && C->isGPU())
-    {
-        gpu_minimum(A, B, C);
-    }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-
 }
 
 
@@ -205,7 +204,7 @@ float Tensor::sum(Tensor* A){
     }
 #endif
 
-    msg("Invalid device", "Tensor::max");
+    msg("Invalid device", "Tensor::sum");
     return 0.0f; // Never used, this is for the compiler warning
 }
 
@@ -231,9 +230,127 @@ float Tensor::sum_abs(Tensor* A){
     }
 #endif
 
-    msg("Invalid device", "Tensor::max");
+    msg("Invalid device", "Tensor::sum_abs");
     return 0.0f; // Never used, this is for the compiler warning
 }
+
+float Tensor::mean(){
+    return Tensor::mean(this);
+}
+
+float Tensor::mean(Tensor* A){
+    float sum = A->sum();
+    return sum/A->size;
+}
+
+float Tensor::median(){
+    return Tensor::median(this);
+}
+
+
+float Tensor::median(Tensor* A){
+    float res = 0.0f;
+
+    // Clone tensor (needs to be sorted first)
+    Tensor *tmp = A->clone();
+    tmp->sort_();
+
+    if (tmp->isCPU()) {
+        res = cpu_median(tmp);
+    }
+#ifdef cGPU
+    else if (tmp->isGPU()) {
+        res = gpu_median(tmp);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+    delete tmp;
+    return res;
+}
+
+int Tensor::mode(){
+    return Tensor::mode(this);
+}
+
+
+int Tensor::mode(Tensor* A){
+    if (A->isCPU()) {
+        return cpu_mode(A);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+    {
+        msg("Not implemented for GPU", "Tensor::mode");
+        //return gpu_mode(A);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+    msg("Invalid device", "Tensor::mode");
+    return 0; // Never used, this is for the compiler warning
+}
+
+
+float Tensor::std(bool unbiased){
+    return Tensor::std(this, unbiased);
+}
+
+
+float Tensor::std(Tensor* A, bool unbiased){
+    if (A->isCPU()) {
+        return cpu_std(A, unbiased);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+    {
+        return gpu_std(A, unbiased);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+    msg("Invalid device", "Tensor::std");
+    return 0.0f; // Never used, this is for the compiler warning
+}
+
+
+float Tensor::var(bool unbiased){
+    return Tensor::var(this, unbiased);
+}
+
+
+float Tensor::var(Tensor* A, bool unbiased){
+    if (A->isCPU()) {
+        return cpu_var(A, unbiased);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+    {
+        return gpu_var(A, unbiased);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+    msg("Invalid device", "Tensor::var");
+    return 0.0f; // Never used, this is for the compiler warning
+}
+
 
 void Tensor::abs_(){
     Tensor::abs(this, this);
