@@ -1047,7 +1047,15 @@ void fpga_fill_(Tensor *A, float v){
     if (fpga_set_cpuemu_fill_ == 1) {
         fpga_cpuemu_fill_(A, v);
     } else {
-        printf("fpga_fill_ not implemented yet\n"); exit(1);
+        cl_int err;
+        cl::Event event;
+
+        OCL_CHECK(err, err = kernel_fill_.setArg(0, (A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_fill_.setArg(1, v));
+        OCL_CHECK(err, err = kernel_fill_.setArg(2, (long int)A->size));
+
+        OCL_CHECK(err, err = q.enqueueTask(kernel_fill_, NULL, &event));
+        q.finish();
     }
     _profile_fpga(_FPGA_FILL_, 1);
 }
@@ -1065,12 +1073,29 @@ void fpga_cpuemu_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int be
   fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_fill(Tensor * A, int aini, int aend, Tensor * B, int bini, int bend, int inc){
+void fpga_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc){
     _profile_fpga(_FPGA_FILL, 0);
     if (fpga_set_cpuemu_fill == 1) {
         fpga_cpuemu_fill(A, aini, aend, B, bini, bend, inc);
     } else {
-        printf("fpga_fill not implemented yet\n"); exit(1);
+        cl_int err;
+        cl::Event event;
+
+        OCL_CHECK(err, err = kernel_fill.setArg(0, (A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_fill.setArg(1, (int)aini));
+        OCL_CHECK(err, err = kernel_fill.setArg(2, (int)aend));
+        OCL_CHECK(err, err = kernel_fill.setArg(3, (B->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_fill.setArg(4, (int)bini));
+        OCL_CHECK(err, err = kernel_fill.setArg(5, (int)bend));
+        OCL_CHECK(err, err = kernel_fill.setArg(6, (int)inc));
+        OCL_CHECK(err, err = kernel_fill.setArg(7, (int)A->ndim));
+        OCL_CHECK(err, err = kernel_fill.setArg(8, (long int)A->size));
+        OCL_CHECK(err, err = kernel_fill.setArg(9, (int)A->shape));
+        OCL_CHECK(err, err = kernel_fill.setArg(10, (int)B->size));
+        OCL_CHECK(err, err = kernel_fill.setArg(11, (int)B->shape[0]));
+
+        OCL_CHECK(err, err = q.enqueueTask(kernel_fill, NULL, &event));
+        q.finish();
     }
     _profile_fpga(_FPGA_FILL, 1);
 }
@@ -1097,6 +1122,16 @@ void fpga_select(Tensor *A, Tensor *B, SelDescriptor *sd){
         fpga_cpuemu_select(A, B, sd);
     } else {
         printf("fpga_select not implemented yet\n"); exit(1);
+        // cl_int err;
+        // cl::Event event;
+        //
+        // OCL_CHECK(err, err = kernel_select.setArg(0, (A->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_select.setArg(1, (B->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_select.setArg(2, ((int)sd->fpga_addresses))); //TOCHECK
+        // OCL_CHECK(err, err = kernel_select.setArg(3, (long int)A->size));
+        //
+        // OCL_CHECK(err, err = q.enqueueTask(kernel_select, NULL, &event));
+        // q.finish();
     }
     _profile_fpga(_FPGA_SELECT, 1);
 }
@@ -1123,6 +1158,16 @@ void fpga_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
         fpga_cpuemu_select_back(A, B, sd);
     } else {
         printf("fpga_select_back not implemented yet\n"); exit(1);
+        // cl_int err;
+        // cl::Event event;
+        //
+        // OCL_CHECK(err, err = kernel_select_back.setArg(0, (A->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_select_back.setArg(1, (B->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_select_back.setArg(2, ((int)sd->fpga_addresses))); //TOCHECK
+        // OCL_CHECK(err, err = kernel_select_back.setArg(3, (long int)A->size));
+        //
+        // OCL_CHECK(err, err = q.enqueueTask(kernel_select_back, NULL, &event));
+        // q.finish();
     }
     _profile_fpga(_FPGA_SELECT_BACK, 1);
 }
@@ -1148,7 +1193,17 @@ void fpga_set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
     if (fpga_set_cpuemu_select == 1) {
         fpga_cpuemu_set_select(A, B, sd);
     } else {
-        printf("fpga_transpose not implemented yet\n"); exit(1);
+        printf("fpga_set_select not implemented yet\n"); exit(1);
+        // cl_int err;
+        // cl::Event event;
+        //
+        // OCL_CHECK(err, err = kernel_set_select.setArg(0, (A->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_set_select.setArg(1, (B->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_set_select.setArg(2, ((int)sd->fpga_addresses))); //TOCHECK
+        // OCL_CHECK(err, err = kernel_set_select.setArg(3, (long int)A->size));
+        //
+        // OCL_CHECK(err, err = q.enqueueTask(kernel_set_select, NULL, &event));
+        // q.finish();
     }
     _profile_fpga(_FPGA_SET_SELECT, 1);
 }
@@ -1175,6 +1230,16 @@ void fpga_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
         fpga_cpuemu_set_select_back(A, B, sd);
     } else {
         printf("fpga_set_select_back not implemented yet\n"); exit(1);
+        // cl_int err;
+        // cl::Event event;
+        //
+        // OCL_CHECK(err, err = kernel_set_select_back.setArg(0, (A->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_set_select_back.setArg(1, (B->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_set_select_back.setArg(2, ((int)sd->fpga_addresses))); //TOCHECK
+        // OCL_CHECK(err, err = kernel_set_select_back.setArg(3, (long int)A->size));
+        //
+        // OCL_CHECK(err, err = q.enqueueTask(kernel_set_select_back, NULL, &event));
+        // q.finish();
     }
     _profile_fpga(_FPGA_SET_SELECT_BACK, 1);
 }
@@ -1197,7 +1262,21 @@ void fpga_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,bool
     if (fpga_set_cpuemu_select2 == 1) {
         fpga_cpuemu_select(A, B, sind, ini, end, mask_zeros);
     } else {
-        printf("fpga_select(2) not implemented yet\n"); exit(1);
+        printf("fpga_select not implemented yet\n"); exit(1);
+        // cl_int err;
+        // cl::Event event;
+        //
+        // OCL_CHECK(err, err = kernel_set_select_back.setArg(0, (A->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_set_select_back.setArg(1, (B->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_set_select_back.setArg(2, (sind))); //TOCHECK
+        // OCL_CHECK(err, err = kernel_set_select_back.setArg(3, (int)ini));
+        // OCL_CHECK(err, err = kernel_set_select_back.setArg(4, (int)end));
+        // OCL_CHECK(err, err = kernel_set_select_back.setArg(5, (bool)mask_zeros));
+        // OCL_CHECK(err, err = kernel_set_select_back.setArg(6, (long int)A->size));
+        // OCL_CHECK(err, err = kernel_set_select_back.setArg(7, (int)A->shape[0]));
+        //
+        // OCL_CHECK(err, err = q.enqueueTask(kernel_set_select_back, NULL, &event));
+        // q.finish();
     }
     _profile_fpga(_FPGA_SELECT2, 1);
 }
@@ -1221,6 +1300,21 @@ void fpga_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,in
         fpga_cpuemu_deselect(A, B, sind, ini, end, inc, mask_zeros);
     } else {
         printf("fpga_deselect not implemented yet\n"); exit(1);
+        // cl_int err;
+        // cl::Event event;
+        //
+        // OCL_CHECK(err, err = kernel_deselect.setArg(0, (A->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_deselect.setArg(1, (B->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_deselect.setArg(2, (sind))); //TOCHECK
+        // OCL_CHECK(err, err = kernel_deselect.setArg(3, (int)ini));
+        // OCL_CHECK(err, err = kernel_deselect.setArg(4, (int)end));
+        // OCL_CHECK(err, err = kernel_deselect.setArg(5, (int)inc));
+        // OCL_CHECK(err, err = kernel_deselect.setArg(6, (bool)mask_zeros));
+        // OCL_CHECK(err, err = kernel_deselect.setArg(7, (long int)A->size));
+        // OCL_CHECK(err, err = kernel_deselect.setArg(8, (int)A->shape[0]));
+        //
+        // OCL_CHECK(err, err = q.enqueueTask(kernel_deselect, NULL, &event));
+        // q.finish();
     }
     _profile_fpga(_FPGA_DESELECT, 1);
 }
@@ -1234,7 +1328,7 @@ void fpga_cpuemu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool de
   for (unsigned int i = 0; i < t.size(); i++) {
     int Tsize = t[i]->size * sizeof(float);
     if (t[i]->ptr == NULL) t[i]->ptr = (float *)malloc(Tsize);
-    fpga_copy_from_fpga(t[i], t[i]->ptr);      
+    fpga_copy_from_fpga(t[i], t[i]->ptr);
   }
   cpu_concat(A, t, axis, derivative);
   fpga_copy_to_fpga(A->ptr, A);

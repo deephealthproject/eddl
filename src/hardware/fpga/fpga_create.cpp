@@ -31,7 +31,16 @@ void fpga_range(Tensor *A, float min, float step){
     if (fpga_set_cpuemu_range_ == 1) {
         fpga_cpuemu_range(A, min, step);
     } else {
-        printf("fpga_range_ not implemented yet\n"); exit(1);
+        cl_int err;
+        cl::Event event;
+
+        OCL_CHECK(err, err = kernel_range.setArg(0, (A->fpga)));
+        OCL_CHECK(err, err = kernel_range.setArg(1, min));
+        OCL_CHECK(err, err = kernel_range.setArg(2, step));
+        OCL_CHECK(err, err = kernel_range.setArg(3, (long int)A->size));
+
+        OCL_CHECK(err, err = q.enqueueTask(kernel_deselect, NULL, &event));
+        q.finish();
     }
     _profile_fpga(_FPGA_RANGE, 1);
 }
@@ -51,7 +60,17 @@ void fpga_eye(Tensor *A, int offset){
     if (fpga_set_cpuemu_eye_ == 1) {
         fpga_cpuemu_eye(A, offset);
     } else {
-        printf("fpga_eye not implemented yet\n"); exit(1);
+        cl_int err;
+        cl::Event event;
+
+        OCL_CHECK(err, err = kernel_range.setArg(0, (A->fpga)));
+        OCL_CHECK(err, err = kernel_range.setArg(1, offset));
+        OCL_CHECK(err, err = kernel_range.setArg(2, (long int)A->size));
+        OCL_CHECK(err, err = kernel_range.setArg(3, (int)A->shape[0]));
+        OCL_CHECK(err, err = kernel_range.setArg(4, (int)A->shape[1]));
+
+        OCL_CHECK(err, err = q.enqueueTask(kernel_range, NULL, &event));
+        q.finish();
     }
     _profile_fpga(_FPGA_EYE, 1);
 }
