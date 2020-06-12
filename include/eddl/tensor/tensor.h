@@ -382,6 +382,10 @@ public:
     float var(bool unbiased=true);
     static float var(Tensor* A, bool unbiased=true);
 
+    // Math operations (reductions) ************************
+    Tensor* sum(vector<int> axis, bool keepdims);
+    static void sum(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+
     // Math operations (unary) ************************
     void abs_();
     Tensor* abs();

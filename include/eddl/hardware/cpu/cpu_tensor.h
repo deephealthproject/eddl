@@ -122,13 +122,19 @@ void cpu_minimum(Tensor* A, Tensor* B, Tensor* C);
 // CPU: Should be reductions
 float cpu_max(Tensor *A);
 float cpu_min(Tensor *A);
+
 float cpu_sum(Tensor *A);
+void cpu_sum(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+float cpu_sum(float *ptr, int size, int *map);
+
 float cpu_sum_abs(Tensor *A);
 float cpu_prod(Tensor *A);
 float cpu_median(Tensor *A);
 int cpu_mode(Tensor *A);
 float cpu_std(Tensor *A, bool unbiased);
 float cpu_var(Tensor *A, bool unbiased);
+
+// CPU: Reduction 2
 
 // CPU: Reduction
 void cpu_reduce(Tensor *A, Tensor *B,string mode,int* map);

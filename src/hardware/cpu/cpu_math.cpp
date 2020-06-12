@@ -372,11 +372,27 @@ float cpu_min(Tensor *A){
 
 
 float cpu_sum(Tensor *A) {
+    return cpu_sum(A->ptr, A->size, nullptr);
+}
+
+
+void cpu_sum(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+#pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        B->ptr[i] = cpu_sum(A->ptr, rd->index[i].size(), rd->index[i].data());
+    }
+}
+
+float cpu_sum(float *ptr, int size, int *map) {
     float sum = 0.0f;
 
-#pragma omp parallel for reduction(+:sum)
-    for (int i = 0; i < A->size; ++i) {
-        sum += A->ptr[i];
+    // TODO: I don't like this approach
+    if(map == nullptr){
+        #pragma omp parallel for reduction(+:sum)
+        for (int i = 0; i < size; ++i) { sum += ptr[i]; }
+    }else{
+        #pragma omp parallel for reduction(+:sum)
+        for (int i = 0; i < size; ++i) { sum += ptr[map[i]]; }
     }
 
     return sum;
@@ -407,7 +423,7 @@ float cpu_median(Tensor *A) {
 float cpu_prod(Tensor *A) {
     float prod = 1.0f;
 
-    #pragma omp parallel for reduction(*:prod)
+#pragma omp parallel for reduction(*:prod)
     for (int i = 0; i < A->size; ++i) {
         prod *= A->ptr[i];
     }
@@ -445,7 +461,7 @@ float cpu_var(Tensor *A, bool unbiased){
     float mean = A->mean();
     float sum = 0.0f;
 
-    #pragma omp parallel for reduction(+:sum)
+#pragma omp parallel for reduction(+:sum)
     for (int i = 0; i < A->size; ++i) {
         float tmp = A->ptr[i] - mean;
         sum += tmp*tmp;
@@ -454,3 +470,4 @@ float cpu_var(Tensor *A, bool unbiased){
     if(unbiased){return sum/(A->size-1.0f);}
     else {return sum/(A->size);}
 }
+

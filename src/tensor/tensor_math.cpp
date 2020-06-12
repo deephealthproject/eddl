@@ -379,6 +379,40 @@ float Tensor::var(Tensor* A, bool unbiased){
 }
 
 
+// Math operations (reductions) ************************
+Tensor* Tensor::sum(vector<int> axis, bool keepdims){
+    // Build descriptor
+    auto rd = new ReduceDescriptor2(axis, keepdims);
+    rd->build(this->shape);
+
+    // Create output tensor
+    Tensor *t = Tensor::empty(rd->oshape, this->device);
+    Tensor::sum(this, t, rd);
+
+    delete rd;
+    return t;
+}
+
+void Tensor::sum(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_sum(A, B, rd);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+    {
+        msg("Not implemented error", "Tensor::sum");
+
+//        gpu_sum(A, B, rd);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+
 void Tensor::abs_(){
     Tensor::abs(this, this);
 }
