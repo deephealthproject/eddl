@@ -354,7 +354,7 @@ Not yet...
 | median | ✔️ | ✔ | |
 | min | ✔️ | ✔️ | |
 | mode | ✔️  | ❌ | |
-| prod | ❌ | ❌️ | |
+| prod | ✔️ | ✔️ | |
 | std |  ✔️ | ✔️ | |
 | sum | ✔️ | ✔️ | |
 | sum_abs | ✔️ | ✔️ |  |
@@ -378,6 +378,7 @@ Not yet...
 | prod | ❌ | ❌ |
 | std | ❌ | ❌ |
 | sum | ✔️ | ✔️ |
+| prod | ❌ | ❌ |
 | unique | ❌ | ❌ |
 | var | ❌ | ❌ |
 

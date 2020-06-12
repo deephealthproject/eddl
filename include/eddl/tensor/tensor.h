@@ -364,6 +364,9 @@ public:
     float sum_abs();
     static float sum_abs(Tensor* A);
 
+    float prod();
+    static float prod(Tensor* A);
+
     float mean();
     static float mean(Tensor* A);
 
