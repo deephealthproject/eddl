@@ -39,9 +39,10 @@ void fpga_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_repeat_nn.setArg(0, (A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_repeat_nn.setArg(1, (B->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_repeat_nn.setArg(2, (int)size->fpga_ptr));
+        OCL_CHECK(err, err = kernel_repeat_nn.setArg(0, *(A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_repeat_nn.setArg(1, *(B->fpga_ptr)));
+	printf("error, parameter fpga\n");
+//        OCL_CHECK(err, err = kernel_repeat_nn.setArg(2, (int)size->fpga_ptr));
 
         OCL_CHECK(err, err = q.enqueueTask(kernel_repeat_nn, NULL, &event));
         q.finish();
@@ -70,10 +71,10 @@ void fpga_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_d_repeat_nn.setArg(0, (A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_d_repeat_nn.setArg(1, (B->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_d_repeat_nn.setArg(2, (int)size->fpga_ptr));
-
+        OCL_CHECK(err, err = kernel_d_repeat_nn.setArg(0, *(D->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_d_repeat_nn.setArg(1, *(A->fpga_ptr)));
+//        OCL_CHECK(err, err = kernel_d_repeat_nn.setArg(2, (int)size->fpga_ptr));
+        printf("error, parameter fpga\n");
         OCL_CHECK(err, err = q.enqueueTask(kernel_d_repeat_nn, NULL, &event));
         q.finish();
     }

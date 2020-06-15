@@ -47,10 +47,12 @@ void fpga_reduce(Tensor *A, Tensor *B, string mode, int *map)
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_reduce.setArg(0, (A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_reduce.setArg(1, (B->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_reduce.setArg(2, (int)mode));
-      OCL_CHECK(err, err = kernel_reduce.setArg(3, (int)map));
+      OCL_CHECK(err, err = kernel_reduce.setArg(0, *(A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_reduce.setArg(1, *(B->fpga_ptr)));
+//      OCL_CHECK(err, err = kernel_reduce.setArg(2, (int)mode));
+      printf("Error, mode parameter not passed\n"); exit(1);
+//      OCL_CHECK(err, err = kernel_reduce.setArg(3, (int)map));
+      printf("Error, map pointer not passed\n"); exit(1);
 
       OCL_CHECK(err, err = q.enqueueTask(kernel_reduce, NULL, &event));
       q.finish();
@@ -88,10 +90,11 @@ void fpga_reduce_op(Tensor *A, Tensor *B, string op, int *map)
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_reduce_op.setArg(0, (A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_reduce_op.setArg(1, (B->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_reduce_op.setArg(2, (int)op));
-      OCL_CHECK(err, err = kernel_reduce_op.setArg(3, (int)map));
+      OCL_CHECK(err, err = kernel_reduce_op.setArg(0, *(A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_reduce_op.setArg(1, *(B->fpga_ptr)));
+      //OCL_CHECK(err, err = kernel_reduce_op.setArg(2, (int)op));
+      //OCL_CHECK(err, err = kernel_reduce_op.setArg(3, (int)map));
+      printf("Error, parameters not passed\n"); exit(1);
 
       OCL_CHECK(err, err = q.enqueueTask(kernel_reduce_op, NULL, &event));
       q.finish();

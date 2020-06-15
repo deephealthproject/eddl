@@ -36,7 +36,7 @@ cl::Program      program;
 // activation kernels (22)
 cl::Kernel kernel_relu,   kernel_d_relu,  kernel_thresholded_relu,    kernel_d_thresholded_relu, kernel_leaky_relu,     kernel_d_leaky_relu;
 cl::Kernel kernel_elu,    kernel_d_elu,   kernel_softplus,            kernel_d_softplus,         kernel_softsign,       kernel_d_softsign;
-cl::Kernel kernel_linear, kernel_sigmoid, kernel_d_sigmoid,           kernel_hard_sigmoid,       kernel_d_hard_sigmoid;
+cl::Kernel kernel_linear, kernel_d_linear,kernel_sigmoid,             kernel_d_sigmoid,          kernel_hard_sigmoid,   kernel_d_hard_sigmoid;
 cl::Kernel kernel_exp,    kernel_d_exp,   kernel_tanh, kernel_d_tanh, kernel_softmax,            kernel_d_softmax;
 
 // bn kernels (4)
@@ -51,7 +51,7 @@ cl::Kernel kernel_allclose,    kernel_isclose,    kernel_greater,     kernel_gre
 cl::Kernel kernel_less,        kernel_less_equal, kernel_equal,       kernel_not_equal;
 
 // core kernels (11)
-extern cl::Kernel kernel_transpose,   kernel_copy,        kernel_fill_,      kernel_fill;
+cl::Kernel kernel_transpose,   kernel_copy,        kernel_fill_,      kernel_fill;
 cl::Kernel kernel_select,      kernel_select_back, kernel_set_select, kernel_set_select_back;
 cl::Kernel kernel_set_select2, kernel_deselect,    kernel_concat;
 
@@ -387,6 +387,10 @@ void fpga_init(){ // initialize only once
     #endif
     #ifdef K_ENABLED_LINEAR
     OCL_CHECK(err, kernel_linear = cl::Kernel(program,"k_linear", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_D_LINEAR
+    OCL_CHECK(err, kernel_d_linear = cl::Kernel(program,"k_d_linear", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_D_LINEAR
@@ -1122,7 +1126,7 @@ void fpga_fill_(Tensor *A, float v){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_fill_.setArg(0, (A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_fill_.setArg(0, *(A->fpga_ptr)));
         OCL_CHECK(err, err = kernel_fill_.setArg(1, v));
         OCL_CHECK(err, err = kernel_fill_.setArg(2, (long int)A->size));
 
@@ -1153,16 +1157,16 @@ void fpga_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_fill.setArg(0, (A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_fill.setArg(0, *(A->fpga_ptr)));
         OCL_CHECK(err, err = kernel_fill.setArg(1, (int)aini));
         OCL_CHECK(err, err = kernel_fill.setArg(2, (int)aend));
-        OCL_CHECK(err, err = kernel_fill.setArg(3, (B->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_fill.setArg(3, *(B->fpga_ptr)));
         OCL_CHECK(err, err = kernel_fill.setArg(4, (int)bini));
         OCL_CHECK(err, err = kernel_fill.setArg(5, (int)bend));
         OCL_CHECK(err, err = kernel_fill.setArg(6, (int)inc));
         OCL_CHECK(err, err = kernel_fill.setArg(7, (int)A->ndim));
         OCL_CHECK(err, err = kernel_fill.setArg(8, (long int)A->size));
-        OCL_CHECK(err, err = kernel_fill.setArg(9, (int)A->shape));
+        OCL_CHECK(err, err = kernel_fill.setArg(9, (int)A->shape[0]));
         OCL_CHECK(err, err = kernel_fill.setArg(10, (int)B->size));
         OCL_CHECK(err, err = kernel_fill.setArg(11, (int)B->shape[0]));
 
@@ -1197,8 +1201,8 @@ void fpga_select(Tensor *A, Tensor *B, SelDescriptor *sd){
         // cl_int err;
         // cl::Event event;
         //
-        // OCL_CHECK(err, err = kernel_select.setArg(0, (A->fpga_ptr)));
-        // OCL_CHECK(err, err = kernel_select.setArg(1, (B->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_select.setArg(0, *(A->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_select.setArg(1, *(B->fpga_ptr)));
         // OCL_CHECK(err, err = kernel_select.setArg(2, ((int)sd->fpga_addresses))); //TOCHECK
         // OCL_CHECK(err, err = kernel_select.setArg(3, (long int)A->size));
         //
@@ -1233,8 +1237,8 @@ void fpga_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
         // cl_int err;
         // cl::Event event;
         //
-        // OCL_CHECK(err, err = kernel_select_back.setArg(0, (A->fpga_ptr)));
-        // OCL_CHECK(err, err = kernel_select_back.setArg(1, (B->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_select_back.setArg(0, *(A->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_select_back.setArg(1, *(B->fpga_ptr)));
         // OCL_CHECK(err, err = kernel_select_back.setArg(2, ((int)sd->fpga_addresses))); //TOCHECK
         // OCL_CHECK(err, err = kernel_select_back.setArg(3, (long int)A->size));
         //
@@ -1269,8 +1273,8 @@ void fpga_set_select(Tensor *A, Tensor *B, SelDescriptor *sd){
         // cl_int err;
         // cl::Event event;
         //
-        // OCL_CHECK(err, err = kernel_set_select.setArg(0, (A->fpga_ptr)));
-        // OCL_CHECK(err, err = kernel_set_select.setArg(1, (B->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_set_select.setArg(0, *(A->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_set_select.setArg(1, *(B->fpga_ptr)));
         // OCL_CHECK(err, err = kernel_set_select.setArg(2, ((int)sd->fpga_addresses))); //TOCHECK
         // OCL_CHECK(err, err = kernel_set_select.setArg(3, (long int)A->size));
         //
@@ -1305,8 +1309,8 @@ void fpga_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd){
         // cl_int err;
         // cl::Event event;
         //
-        // OCL_CHECK(err, err = kernel_set_select_back.setArg(0, (A->fpga_ptr)));
-        // OCL_CHECK(err, err = kernel_set_select_back.setArg(1, (B->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_set_select_back.setArg(0, *(A->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_set_select_back.setArg(1, *(B->fpga_ptr)));
         // OCL_CHECK(err, err = kernel_set_select_back.setArg(2, ((int)sd->fpga_addresses))); //TOCHECK
         // OCL_CHECK(err, err = kernel_set_select_back.setArg(3, (long int)A->size));
         //
@@ -1338,8 +1342,8 @@ void fpga_select(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,bool
         // cl_int err;
         // cl::Event event;
         //
-        // OCL_CHECK(err, err = kernel_set_select_back.setArg(0, (A->fpga_ptr)));
-        // OCL_CHECK(err, err = kernel_set_select_back.setArg(1, (B->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_set_select_back.setArg(0, *(A->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_set_select_back.setArg(1, *(B->fpga_ptr)));
         // OCL_CHECK(err, err = kernel_set_select_back.setArg(2, (sind))); //TOCHECK
         // OCL_CHECK(err, err = kernel_set_select_back.setArg(3, (int)ini));
         // OCL_CHECK(err, err = kernel_set_select_back.setArg(4, (int)end));
@@ -1375,8 +1379,8 @@ void fpga_deselect(Tensor * A, Tensor * B, vector<int> sind, int ini, int end,in
         // cl_int err;
         // cl::Event event;
         //
-        // OCL_CHECK(err, err = kernel_deselect.setArg(0, (A->fpga_ptr)));
-        // OCL_CHECK(err, err = kernel_deselect.setArg(1, (B->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_deselect.setArg(0, *(A->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_deselect.setArg(1, *(B->fpga_ptr)));
         // OCL_CHECK(err, err = kernel_deselect.setArg(2, (sind))); //TOCHECK
         // OCL_CHECK(err, err = kernel_deselect.setArg(3, (int)ini));
         // OCL_CHECK(err, err = kernel_deselect.setArg(4, (int)end));
