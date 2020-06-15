@@ -501,7 +501,7 @@ void cpu_mean(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
 
 
 float cpu_var(Tensor *A, bool unbiased){
-    return cpu_prod(A->ptr, A->size, nullptr);
+    return cpu_var(A->ptr, A->size, nullptr, unbiased);
 }
 
 
@@ -535,7 +535,7 @@ float cpu_var(float *ptr, int size, int *map, bool unbiased){
 
 
 float cpu_std(Tensor *A, bool unbiased) {
-    return cpu_var(A->ptr, A->size, nullptr, unbiased);
+    return ::sqrtf(cpu_var(A->ptr, A->size, nullptr, unbiased));
 }
 
 void cpu_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
