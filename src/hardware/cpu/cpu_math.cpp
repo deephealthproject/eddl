@@ -342,7 +342,7 @@ void cpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
     }
 }
 
-float cpu_argmax(Tensor *A) {
+int cpu_argmax(Tensor *A) {
     auto t = cpu_max(A->ptr, A->size, nullptr);
     return std::get<1>(t);  // get argmax
 }
@@ -413,7 +413,7 @@ void cpu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
 }
 
 
-float cpu_argmin(Tensor *A) {
+int cpu_argmin(Tensor *A) {
     auto t = cpu_min(A->ptr, A->size, nullptr);
     return std::get<1>(t);  // get argmin
 }

@@ -122,13 +122,13 @@ void cpu_minimum(Tensor* A, Tensor* B, Tensor* C);
 // CPU: Math (reductions)
 float cpu_max(Tensor *A);
 void cpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
-float cpu_argmax(Tensor *A);
+int cpu_argmax(Tensor *A);
 void cpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 std::tuple<float, int> cpu_max(float *ptr, int size, int *map);
 
 float cpu_min(Tensor *A);
 void cpu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
-float cpu_argmin(Tensor *A);
+int cpu_argmin(Tensor *A);
 void cpu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 std::tuple<float, int> cpu_min(float *ptr, int size, int *map);
 
