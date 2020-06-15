@@ -586,13 +586,38 @@ void Tensor::select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bo
 
         delete Bc;
     }
+    else if ((A->isFPGA()) && (B->isCPU())) {
+        Tensor *Ac=A->clone();
+        Ac->toCPU();
+
+        cpu_select(Ac, B, sind, ini, end,mask_zeros);
+
+        delete Ac;
+    }else if ((A->isCPU()) && (B->isFPGA())) {
+        Tensor *Bc=B->clone();
+        Bc->toCPU();
+        cpu_select(A, Bc, sind, ini, end,mask_zeros);
+
+        Tensor::copy(Bc,B);
+
+        delete Bc;
+    }
     #ifdef cGPU
         else if (A->isGPU() && B->isGPU())
       {
         gpu_select(A, B, sind, ini, end,mask_zeros);
       }
     #endif
+
+    #ifdef cFPGA
+        else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_select(A, B, sind, ini, end,mask_zeros);
+      }
+    #endif
+
     else {
+	    printf("1\n");
         msg("unsuppoted select", "Tensor::select");
     }
     //B->tsem->unlock();
@@ -627,13 +652,37 @@ void Tensor::deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,i
         Tensor::copy(Bc,B);
 
         delete Bc;
+    } else if ((A->isFPGA()) && (B->isCPU())) {
+        Tensor *Ac=A->clone();
+        Ac->toCPU();
+
+        cpu_deselect(Ac, B, sind, ini, end, inc,mask_zeros);
+
+        delete Ac;
+    }else if ((A->isCPU()) && (B->isFPGA())) {
+        Tensor *Bc=B->clone();
+        Bc->toCPU();
+        cpu_deselect(A, Bc, sind, ini, end, inc,mask_zeros);
+
+        Tensor::copy(Bc,B);
+
+        delete Bc;
     }
+
     #ifdef cGPU
         else if (A->isGPU() && B->isGPU())
       {
         gpu_deselect(A, B, sind, ini, end, inc,mask_zeros);
       }
     #endif
+
+    #ifdef cFPGA
+        else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_deselect(A, B, sind, ini, end, inc,mask_zeros);
+      }
+    #endif
+	
     else {
         msg("unsuppoted select", "Tensor::select");
     }

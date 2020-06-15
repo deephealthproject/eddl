@@ -34,7 +34,7 @@ void fpga_range(Tensor *A, float min, float step){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_range.setArg(0, (A->fpga)));
+        OCL_CHECK(err, err = kernel_range.setArg(0, *(A->fpga_ptr)));
         OCL_CHECK(err, err = kernel_range.setArg(1, min));
         OCL_CHECK(err, err = kernel_range.setArg(2, step));
         OCL_CHECK(err, err = kernel_range.setArg(3, (long int)A->size));
@@ -63,7 +63,7 @@ void fpga_eye(Tensor *A, int offset){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_range.setArg(0, (A->fpga)));
+        OCL_CHECK(err, err = kernel_range.setArg(0, *(A->fpga_ptr)));
         OCL_CHECK(err, err = kernel_range.setArg(1, offset));
         OCL_CHECK(err, err = kernel_range.setArg(2, (long int)A->size));
         OCL_CHECK(err, err = kernel_range.setArg(3, (int)A->shape[0]));

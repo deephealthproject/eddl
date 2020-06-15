@@ -104,7 +104,7 @@ public:
     Tensor *gpuD; // Delta
 
     // FPGA implementation
-    cl::Buffer fpga_ptrI;
+    cl::Buffer *fpga_ptrI;
     long int fpga_sizeI;
 
     ConvolDescriptor();

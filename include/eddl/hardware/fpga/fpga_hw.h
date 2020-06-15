@@ -22,11 +22,11 @@ extern cl::CommandQueue q;
 
 #include "eddl/hardware/fpga/fpga_enables.h"
 
-// activation kernels (22)
+// activation kernels (24)
 extern cl::Kernel kernel_relu,   kernel_d_relu,  kernel_thresholded_relu,    kernel_d_thresholded_relu, kernel_leaky_relu,     kernel_d_leaky_relu;
 extern cl::Kernel kernel_elu,    kernel_d_elu,   kernel_softplus,            kernel_d_softplus,         kernel_softsign,       kernel_d_softsign;
-extern cl::Kernel kernel_linear, kernel_sigmoid, kernel_d_sigmoid,           kernel_hard_sigmoid,       kernel_d_hard_sigmoid;
-extern cl::Kernel kernel_exp,    kernel_d_exp,   kernel_tanh, kernel_d_tanh, kernel_softmax,            kernel_d_softmax;
+extern cl::Kernel kernel_linear, kernel_d_linear,kernel_sigmoid,             kernel_d_sigmoid,          kernel_hard_sigmoid,   kernel_d_hard_sigmoid;
+extern cl::Kernel kernel_exp,    kernel_d_exp,   kernel_tanh,                kernel_d_tanh,             kernel_softmax,        kernel_d_softmax;
 
 // bn kernels (4)
 extern cl::Kernel kernel_permute_channels_last, kernel_permute_channels_first;
@@ -86,13 +86,13 @@ extern cl::Kernel kernel_max,        kernel_min,    kernel_sum;
 #define PRECISION_FLOAT -std::numeric_limits<float>::max()
 
 void fpga_init();
-cl::Buffer fpga_create_tensor(int device, int size);
-void fpga_delete_tensor(int device, cl::Buffer ptr, int fpga_tensor_id_p, int size);
+cl::Buffer *fpga_create_tensor(int device, int size);
+void fpga_delete_tensor(int device, cl::Buffer *ptr, int fpga_tensor_id_p, int size);
 
-void fpga_destroy_memory(cl::Buffer fpga_ptrI);
-cl::Buffer fpga_create_memory(long int size);
-void fpga_copy_memory_to_fpga(void *ptr_cpu, cl::Buffer ptr_fpga, long int size);
-void fpga_copy_memory_from_fpga(cl::Buffer ptr_fpga, void *ptr_cpu, long int size);
+void fpga_destroy_memory(cl::Buffer *fpga_ptrI);
+cl::Buffer *fpga_create_memory(long int size);
+void fpga_copy_memory_to_fpga(void *ptr_cpu, cl::Buffer *ptr_fpga, long int size);
+void fpga_copy_memory_from_fpga(cl::Buffer *ptr_fpga, void *ptr_cpu, long int size);
 
 void fpga_copy_fpga(Tensor *A, Tensor *B);
 void fpga_copy_to_fpga(float *nptr, Tensor *A);

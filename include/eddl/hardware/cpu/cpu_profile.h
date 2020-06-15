@@ -1,5 +1,5 @@
-#ifndef __PROFILE
-#define __PROFILE
+#ifndef __CPU_PROFILE
+#define __CPU_PROFILE
 
 #define _CPU_ALL               0
 #define _CPU_ANY               1
@@ -152,5 +152,6 @@
 #define _NUM_CPU_FUNCS       147
 extern int num_instances[_NUM_CPU_FUNCS];
 void _profile(int f_id, int end);
+void _profile_add_tensor(long size);
 
 #endif

@@ -28,7 +28,7 @@ public:
     int* cpu_addresses;
     int* gpu_addresses;
     int* fpga_addresses;
-    cl::Buffer fpga_ptr;
+    cl::Buffer *fpga_ptr;
 
     TensorDescriptor(int dev=0);
     ~TensorDescriptor();

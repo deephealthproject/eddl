@@ -12,6 +12,8 @@
 #include <cmath>
 #include <algorithm>
 
+#include "eddl/hardware/cpu/cpu_profile.h"
+
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
@@ -125,6 +127,7 @@ void ConvolDescriptor::build(Tensor *A) {
     if (I->isCPU()) {
         // mem for ptr, lowering im2col
         ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptor::build");
+	 _profile_add_tensor(A->shape[0] * r * c * kr * kc * kz);
         new(&matK) Eigen::Map<Eigen::MatrixXf>(K->ptr, kr * kc * kz, nk);
         new(&matgK) Eigen::Map<Eigen::MatrixXf>(gK->ptr, kr * kc * kz, nk);
         // convolution: matC=matA*matK
@@ -186,6 +189,7 @@ void ConvolDescriptor::resize(int b)
     if (I->isCPU()) {
         delete ptrI;
         ptrI=get_fmem(b * r * c * kr * kc * kz, "ConvolDescriptor::build");
+	 _profile_add_tensor(b * r * c * kr * kc * kz);
     }
 #ifdef cGPU
     else if (I->isGPU()) {

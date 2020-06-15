@@ -66,9 +66,9 @@ void fpga_relu(Tensor *A, Tensor *B){
     cl_int err;
     cl::Event event;
 
-    OCL_CHECK(err, err = kernel_relu.setArg(0, (A->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_relu.setArg(1, (B->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_relu.setArg(2, (long int)A->size));
+    OCL_CHECK(err, err = kernel_relu.setArg(0, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_relu.setArg(1, *(B->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_relu.setArg(2, A->size));
 
     OCL_CHECK(err, err = q.enqueueTask(kernel_relu, NULL, &event));
     //  event.wait();
@@ -102,9 +102,9 @@ void fpga_d_relu(Tensor *D, Tensor *I, Tensor *PD){
      cl_int err;
      cl::Event event;
 
-     OCL_CHECK(err, err = kernel_d_relu.setArg(0, (D->fpga_ptr)));
-     OCL_CHECK(err, err = kernel_d_relu.setArg(1, (I->fpga_ptr)));
-     OCL_CHECK(err, err = kernel_d_relu.setArg(2, (PD->fpga_ptr)));
+     OCL_CHECK(err, err = kernel_d_relu.setArg(0, *(D->fpga_ptr)));
+     OCL_CHECK(err, err = kernel_d_relu.setArg(1, *(I->fpga_ptr)));
+     OCL_CHECK(err, err = kernel_d_relu.setArg(2, *(PD->fpga_ptr)));
      OCL_CHECK(err, err = kernel_d_relu.setArg(3, (long int)D->size));
 
      OCL_CHECK(err, err = q.enqueueTask(kernel_d_relu, NULL, &event));
@@ -134,8 +134,8 @@ void fpga_thresholded_relu(Tensor *A, Tensor *B, float param){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_thresholded_relu.setArg(0, (A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_thresholded_relu.setArg(1, (B->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_thresholded_relu.setArg(0, *(A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_thresholded_relu.setArg(1, *(B->fpga_ptr)));
       OCL_CHECK(err, err = kernel_thresholded_relu.setArg(2, (long int)A->size));
       OCL_CHECK(err, err = kernel_thresholded_relu.setArg(3, param));
 
@@ -169,9 +169,9 @@ void fpga_d_thresholded_relu(Tensor *D, Tensor *I, Tensor *PD, float param){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_d_thresholded_relu.setArg(0, (D->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_thresholded_relu.setArg(1, (I->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_thresholded_relu.setArg(2, (PD->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_thresholded_relu.setArg(0, *(D->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_thresholded_relu.setArg(1, *(I->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_thresholded_relu.setArg(2, *(PD->fpga_ptr)));
       OCL_CHECK(err, err = kernel_d_thresholded_relu.setArg(3, (long int)D->size));
       OCL_CHECK(err, err = kernel_d_thresholded_relu.setArg(4, param));
 
@@ -202,9 +202,9 @@ void fpga_leaky_relu(Tensor *A, Tensor *B, float param){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_leaky_relu.setArg(0, (A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_leaky_relu.setArg(1, (B->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_leaky_relu.setArg(2, (long int)A-size));
+      OCL_CHECK(err, err = kernel_leaky_relu.setArg(0, *(A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_leaky_relu.setArg(1, *(B->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_leaky_relu.setArg(2, (long int)A->size));
       OCL_CHECK(err, err = kernel_leaky_relu.setArg(4, param));
 
       OCL_CHECK(err, err = q.enqueueTask(kernel_leaky_relu, NULL, &event));
@@ -237,9 +237,9 @@ void fpga_d_leaky_relu(Tensor *D, Tensor *I, Tensor *PD, float param){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_d_leaky_relu.setArg(0, (D->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_leaky_relu.setArg(1, (I->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_leaky_relu.setArg(2, (PD->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_leaky_relu.setArg(0, *(D->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_leaky_relu.setArg(1, *(I->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_leaky_relu.setArg(2, *(PD->fpga_ptr)));
       OCL_CHECK(err, err = kernel_d_leaky_relu.setArg(3, (long int)D->size));
       OCL_CHECK(err, err = kernel_d_leaky_relu.setArg(4, param));
 
@@ -270,8 +270,8 @@ void fpga_elu(Tensor *A, Tensor *B, float param){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_elu.setArg(0, (A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_elu.setArg(1, (B->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_elu.setArg(0, *(A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_elu.setArg(1, *(B->fpga_ptr)));
       OCL_CHECK(err, err = kernel_elu.setArg(3, (long int)A->size));
       OCL_CHECK(err, err = kernel_elu.setArg(4, param));
 
@@ -305,9 +305,9 @@ void fpga_d_elu(Tensor *D, Tensor *I, Tensor *PD, float param){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_d_elu.setArg(0, (D->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_elu.setArg(1, (I->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_elu.setArg(2, (PD->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_elu.setArg(0, *(D->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_elu.setArg(1, *(I->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_elu.setArg(2, *(PD->fpga_ptr)));
       OCL_CHECK(err, err = kernel_d_elu.setArg(3, (long int)D->size));
       OCL_CHECK(err, err = kernel_d_elu.setArg(4, param));
 
@@ -338,8 +338,8 @@ void fpga_softplus(Tensor *A, Tensor *B){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_softplus.setArg(0, (A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_softplus.setArg(1, (B->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_softplus.setArg(0, *(A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_softplus.setArg(1, *(B->fpga_ptr)));
         OCL_CHECK(err, err = kernel_softplus.setArg(2, (long int)A->size));
 
         OCL_CHECK(err, err = q.enqueueTask(kernel_softplus, NULL, &event));
@@ -372,10 +372,10 @@ void fpga_d_softplus(Tensor *D, Tensor *I, Tensor *PD){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_d_softplus.setArg(0, (D->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_d_softplus.setArg(1, (I->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_d_softplus.setArg(0, *(D->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_d_softplus.setArg(1, *(I->fpga_ptr)));
         OCL_CHECK(err, err = kernel_d_softplus.setArg(2, (long int)D->size));
-        OCL_CHECK(err, err = kernel_d_softplus.setArg(3, (PD->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_d_softplus.setArg(3, *(PD->fpga_ptr)));
 
         OCL_CHECK(err, err = q.enqueueTask(kernel_d_softplus, NULL, &event));
         q.finish();
@@ -404,8 +404,8 @@ void fpga_softsign(Tensor *A, Tensor *B){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_softsign.setArg(0, (A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_softsign.setArg(1, (B->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_softsign.setArg(0, *(A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_softsign.setArg(1, *(B->fpga_ptr)));
         OCL_CHECK(err, err = kernel_softsign.setArg(2, (long int)A->size));
 
         OCL_CHECK(err, err = q.enqueueTask(kernel_softsign, NULL, &event));
@@ -438,9 +438,9 @@ void fpga_d_softsign(Tensor *D, Tensor *I, Tensor *PD){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_d_softsign.setArg(0, (D->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_d_softsign.setArg(1, (I->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_d_softsign.setArg(2, (PD->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_d_softsign.setArg(0, *(D->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_d_softsign.setArg(1, *(I->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_d_softsign.setArg(2, *(PD->fpga_ptr)));
         OCL_CHECK(err, err = kernel_d_softsign.setArg(3, (long int)D->size));
 
         OCL_CHECK(err, err = q.enqueueTask(kernel_d_softsign, NULL, &event));
@@ -470,8 +470,8 @@ void fpga_linear(Tensor *A, Tensor *B, float param){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_linear.setArg(0, (A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_linear.setArg(1, (B->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_linear.setArg(0, *(A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_linear.setArg(1, *(B->fpga_ptr)));
       OCL_CHECK(err, err = kernel_linear.setArg(2, param));
       OCL_CHECK(err, err = kernel_linear.setArg(3, (long int)A->size));
 
@@ -505,9 +505,9 @@ void fpga_d_linear(Tensor *D, Tensor *I, Tensor *PD, float param){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_d_linear.setArg(0, (D->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_linear.setArg(1, (I->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_linear.setArg(2, (PD->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_linear.setArg(0, *(D->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_linear.setArg(1, *(I->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_linear.setArg(2, *(PD->fpga_ptr)));
       OCL_CHECK(err, err = kernel_d_linear.setArg(3, param));
       OCL_CHECK(err, err = kernel_d_linear.setArg(4, (long int)D->size));
 
@@ -538,8 +538,8 @@ void fpga_sigmoid(Tensor *A, Tensor *B){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_sigmoid.setArg(0, (A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_sigmoid.setArg(1, (B->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_sigmoid.setArg(0, *(A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_sigmoid.setArg(1, *(B->fpga_ptr)));
       OCL_CHECK(err, err = kernel_sigmoid.setArg(2, (long int)A->size));
 
       OCL_CHECK(err, err = q.enqueueTask(kernel_sigmoid, NULL, &event));
@@ -572,9 +572,9 @@ void fpga_d_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_d_sigmoid.setArg(0, (D->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_sigmoid.setArg(1, (I->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_sigmoid.setArg(2, (PD->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_sigmoid.setArg(0, *(D->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_sigmoid.setArg(1, *(I->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_sigmoid.setArg(2, *(PD->fpga_ptr)));
       OCL_CHECK(err, err = kernel_d_sigmoid.setArg(3, (long int)D->size));
 
       OCL_CHECK(err, err = q.enqueueTask(kernel_d_sigmoid, NULL, &event));
@@ -604,8 +604,8 @@ void fpga_hard_sigmoid(Tensor *A, Tensor *B){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_hard_sigmoid.setArg(0, (A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_hard_sigmoid.setArg(1, (B->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_hard_sigmoid.setArg(0, *(A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_hard_sigmoid.setArg(1, *(B->fpga_ptr)));
       OCL_CHECK(err, err = kernel_hard_sigmoid.setArg(2, (long int)A->size));
 
       OCL_CHECK(err, err = q.enqueueTask(kernel_hard_sigmoid, NULL, &event));
@@ -638,9 +638,9 @@ void fpga_d_hard_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_d_hard_sigmoid.setArg(0, (D->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_hard_sigmoid.setArg(1, (I->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_hard_sigmoid.setArg(2, (PD->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_hard_sigmoid.setArg(0, *(D->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_hard_sigmoid.setArg(1, *(I->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_hard_sigmoid.setArg(2, *(PD->fpga_ptr)));
       OCL_CHECK(err, err = kernel_d_hard_sigmoid.setArg(3, (long int)D->size));
 
       OCL_CHECK(err, err = q.enqueueTask(kernel_d_hard_sigmoid, NULL, &event));
@@ -670,8 +670,8 @@ void fpga_exp(Tensor *A, Tensor *B){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_exp.setArg(0, (A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_exp.setArg(1, (B->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_exp.setArg(0, *(A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_exp.setArg(1, *(B->fpga_ptr)));
       OCL_CHECK(err, err = kernel_exp.setArg(2, (long int)A->size));
 
       OCL_CHECK(err, err = q.enqueueTask(kernel_exp, NULL, &event));
@@ -704,9 +704,9 @@ void fpga_d_exp(Tensor *D, Tensor *I, Tensor *PD){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_d_exp.setArg(0, (D->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_exp.setArg(1, (I->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_exp.setArg(2, (PD->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_exp.setArg(0, *(D->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_exp.setArg(1, *(I->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_exp.setArg(2, *(PD->fpga_ptr)));
       OCL_CHECK(err, err = kernel_d_exp.setArg(3, (long int)D->size));
 
       OCL_CHECK(err, err = q.enqueueTask(kernel_d_exp, NULL, &event));
@@ -736,8 +736,8 @@ void fpga_tanh(Tensor *A, Tensor *B){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_tanh.setArg(0, (A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_tanh.setArg(1, (B->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_tanh.setArg(0, *(A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_tanh.setArg(1, *(B->fpga_ptr)));
       OCL_CHECK(err, err = kernel_tanh.setArg(2, (long int)A->size));
 
       OCL_CHECK(err, err = q.enqueueTask(kernel_tanh, NULL, &event));
@@ -770,9 +770,9 @@ void fpga_d_tanh(Tensor *D, Tensor *I, Tensor *PD){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_d_tanh.setArg(0, (D->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_tanh.setArg(1, (I->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_tanh.setArg(2, (PD->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_tanh.setArg(0, *(D->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_tanh.setArg(1, *(I->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_tanh.setArg(2, *(PD->fpga_ptr)));
       OCL_CHECK(err, err = kernel_d_tanh.setArg(3, (long int)D->size));
 
       OCL_CHECK(err, err = q.enqueueTask(kernel_d_tanh, NULL, &event));
@@ -804,8 +804,8 @@ void fpga_softmax(Tensor *A, Tensor *B) {
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_softmax.setArg(0, (A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_softmax.setArg(1, (B->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_softmax.setArg(0, *(A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_softmax.setArg(1, *(B->fpga_ptr)));
       OCL_CHECK(err, err = kernel_softmax.setArg(2, (int)A->shape[0]));
       OCL_CHECK(err, err = kernel_softmax.setArg(3, (int)A->shape[1]));
       OCL_CHECK(err, err = kernel_softmax.setArg(4, (int)B->shape[1]));
@@ -843,9 +843,9 @@ void fpga_d_softmax(Tensor *D, Tensor *I, Tensor *PD) {
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_d_softmax.setArg(0, (D->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_softmax.setArg(1, (I->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_softmax.setArg(2, (PD->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_softmax.setArg(0, *(D->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_softmax.setArg(1, *(I->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_d_softmax.setArg(2, *(PD->fpga_ptr)));
       OCL_CHECK(err, err = kernel_d_softmax.setArg(3, (long int)D->size));
 
       OCL_CHECK(err, err = q.enqueueTask(kernel_d_softmax, NULL, &event));

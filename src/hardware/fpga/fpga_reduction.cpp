@@ -28,6 +28,7 @@ char fpga_set_cpuemu_reduction_back  = 1;
 // reduce
 //
 void fpga_cpuemu_reduce(Tensor *A, Tensor *B, string mode, int* map) {
+  // TODO: map should be mapped to FPGA
   int Asize = A->size * sizeof(float);
   int Bsize = B->size * sizeof(float);
   if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
@@ -46,10 +47,12 @@ void fpga_reduce(Tensor *A, Tensor *B, string mode, int *map)
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_reduce.setArg(0, (A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_reduce.setArg(1, (B->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_reduce.setArg(2, (int)mode));
-      OCL_CHECK(err, err = kernel_reduce.setArg(3, (int)map));
+      OCL_CHECK(err, err = kernel_reduce.setArg(0, *(A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_reduce.setArg(1, *(B->fpga_ptr)));
+//      OCL_CHECK(err, err = kernel_reduce.setArg(2, (int)mode));
+      printf("Error, mode parameter not passed\n"); exit(1);
+//      OCL_CHECK(err, err = kernel_reduce.setArg(3, (int)map));
+      printf("Error, map pointer not passed\n"); exit(1);
 
       OCL_CHECK(err, err = q.enqueueTask(kernel_reduce, NULL, &event));
       q.finish();
@@ -87,10 +90,11 @@ void fpga_reduce_op(Tensor *A, Tensor *B, string op, int *map)
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_reduce_op.setArg(0, (A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_reduce_op.setArg(1, (B->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_reduce_op.setArg(2, (int)op));
-      OCL_CHECK(err, err = kernel_reduce_op.setArg(3, (int)map));
+      OCL_CHECK(err, err = kernel_reduce_op.setArg(0, *(A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_reduce_op.setArg(1, *(B->fpga_ptr)));
+      //OCL_CHECK(err, err = kernel_reduce_op.setArg(2, (int)op));
+      //OCL_CHECK(err, err = kernel_reduce_op.setArg(3, (int)map));
+      printf("Error, parameters not passed\n"); exit(1);
 
       OCL_CHECK(err, err = q.enqueueTask(kernel_reduce_op, NULL, &event));
       q.finish();
@@ -124,19 +128,19 @@ void fpga_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
   if (fpga_set_cpuemu_reduce_sum2D == 1) {
       fpga_cpuemu_reduce_sum2D(A, B, axis, incB);
   } else {
-      cl_int err;
-      cl::Event event;
+    cl_int err;
+    cl::Event event;
 
-      OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(0, (A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(1, (B->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(2, A->shape[0]));
-      OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(3, A->shape[1]));
-      OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(4, axis));
-      OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(5, incB));
+    OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(0, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(1, *(B->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(2, A->shape[0]));
+    OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(3, A->shape[1]));
+    OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(4, axis));
+    OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(5, incB));
 
-      OCL_CHECK(err, err = q.enqueueTask(kernel_reduce_sum2D, NULL, &event));
-      q.finish();
-    }
+    OCL_CHECK(err, err = q.enqueueTask(kernel_reduce_sum2D, NULL, &event));
+    q.finish();
+  }
   _profile_fpga(_FPGA_REDUCE_SUM2D, 1);
 }
 
@@ -144,13 +148,17 @@ void fpga_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
 // reduction
 //
 void fpga_cpuemu_reduction(ReduceDescriptor *RD) {
-  printf("Error, reduction must read data from fpga, to determine\n");
-  exit(1);
+  // TODO: index should be mapped on FPGA (for the moment is at CPU)
+  fpga_copy_from_fpga(RD->I, RD->I->ptr);
   cpu_reduction(RD);
+  fpga_copy_to_fpga(RD->O->ptr, RD->O);
+  // We ware that S tensor is not always created
+  if (RD->S != nullptr) {fpga_copy_to_fpga(RD->S->ptr, RD->S);}
 }
 
 void fpga_reduction(ReduceDescriptor *RD){
   _profile_fpga(_FPGA_REDUCTION, 0);
+  _profile_fpga_tensor(RD->I);
   if (fpga_set_cpuemu_reduction == 1) {
       fpga_cpuemu_reduction(RD);
   } else {
@@ -170,9 +178,13 @@ void fpga_reduction(ReduceDescriptor *RD){
 // reduction_back
 //
 void fpga_cpuemu_reduction_back(ReduceDescriptor *RD) {
-  printf("Error, reduction_back must read data from fpga, to determine\n");
-  exit(1);
+  // input data: tensor RD->S, tensor RD->D, and index vector
+  if (RD->S != nullptr) fpga_copy_from_fpga(RD->S, RD->S->ptr);
+  fpga_copy_from_fpga(RD->D, RD->D->ptr);
+  // TODO: For the moment index vector is on CPU always
   cpu_reduction_back(RD);
+  // output data: tensor RD->ID
+  fpga_copy_to_fpga(RD->ID->ptr, RD->ID);
 }
 
 void fpga_reduction_back(ReduceDescriptor *RD){

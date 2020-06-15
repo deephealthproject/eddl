@@ -45,8 +45,8 @@ void fpga_permute_channels_last(Tensor *A, Tensor *B)
     cl_int err;
     cl::Event event;
 
-    OCL_CHECK(err, err = kernel_permute_channels_last.setArg(0, (A->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_permute_channels_last.setArg(1, (B->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_permute_channels_last.setArg(0, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_permute_channels_last.setArg(1, *(B->fpga_ptr)));
     OCL_CHECK(err, err = kernel_permute_channels_last.setArg(2, (int)A->shape[0]));
     OCL_CHECK(err, err = kernel_permute_channels_last.setArg(3, (int)A->shape[1]));
     OCL_CHECK(err, err = kernel_permute_channels_last.setArg(4, (int)A->shape[2]));
@@ -81,8 +81,8 @@ void fpga_permute_channels_first(Tensor *A,Tensor *B)
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_permute_channels_first.setArg(0, (A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_permute_channels_first.setArg(1, (B->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_permute_channels_first.setArg(0, *(A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_permute_channels_first.setArg(1, *(B->fpga_ptr)));
       OCL_CHECK(err, err = kernel_permute_channels_first.setArg(2, (int)B->shape[0]));
       OCL_CHECK(err, err = kernel_permute_channels_first.setArg(3, (int)B->shape[1]));
       OCL_CHECK(err, err = kernel_permute_channels_first.setArg(4, (int)B->shape[2]));
@@ -117,8 +117,8 @@ void fpga_permute_batch_last(Tensor *A,Tensor *B)
     cl_int err;
     cl::Event event;
 
-    OCL_CHECK(err, err = kernel_permute_batch_last.setArg(0, (A->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_permute_batch_last.setArg(1, (B->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_permute_batch_last.setArg(0, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_permute_batch_last.setArg(1, *(B->fpga_ptr)));
     OCL_CHECK(err, err = kernel_permute_batch_last.setArg(2, (int)A->shape[0]));
     OCL_CHECK(err, err = kernel_permute_batch_last.setArg(3, (int)A->shape[1]));
     OCL_CHECK(err, err = kernel_permute_batch_last.setArg(4, (int)A->shape[2]));
@@ -152,8 +152,8 @@ void fpga_permute_batch_first(Tensor *A,Tensor *B)
     cl_int err;
     cl::Event event;
 
-    OCL_CHECK(err, err = kernel_permute_batch_first.setArg(0, (A->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_permute_batch_first.setArg(1, (B->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_permute_batch_first.setArg(0, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_permute_batch_first.setArg(1, *(B->fpga_ptr)));
     OCL_CHECK(err, err = kernel_permute_batch_first.setArg(2, (int)B->shape[0]));
     OCL_CHECK(err, err = kernel_permute_batch_first.setArg(3, (int)B->shape[1]));
     OCL_CHECK(err, err = kernel_permute_batch_first.setArg(4, (int)B->shape[2]));

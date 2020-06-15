@@ -56,7 +56,7 @@ bool fpga_all(Tensor *A){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_all.setArg(0, (A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_all.setArg(0, *(A->fpga_ptr)));
         OCL_CHECK(err, err = kernel_all.setArg(1, (long int)A->size));
 
         OCL_CHECK(err, err = q.enqueueTask(kernel_all, NULL, &event));
@@ -86,7 +86,7 @@ bool fpga_any(Tensor *A){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_any.setArg(0, (A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_any.setArg(0, *(A->fpga_ptr)));
         OCL_CHECK(err, err = kernel_any.setArg(1, (long int)A->size));
 
         OCL_CHECK(err, err = q.enqueueTask(kernel_any, NULL, &event));
@@ -119,8 +119,8 @@ void fpga_isfinite(Tensor *A, Tensor* B){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_isfinite.setArg(0, (A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_isfinite.setArg(1, (B->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_isfinite.setArg(0, *(A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_isfinite.setArg(1, *(B->fpga_ptr)));
         OCL_CHECK(err, err = kernel_isfinite.setArg(2, (long int)A->size));
 
         OCL_CHECK(err, err = q.enqueueTask(kernel_isfinite, NULL, &event));
@@ -150,8 +150,8 @@ void fpga_isinf(Tensor *A, Tensor* B){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_isinf.setArg(0, (A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_isinf.setArg(1, (B->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_isinf.setArg(0, *(A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_isinf.setArg(1, *(B->fpga_ptr)));
         OCL_CHECK(err, err = kernel_isinf.setArg(2, (long int)A->size));
 
         OCL_CHECK(err, err = q.enqueueTask(kernel_isinf, NULL, &event));
@@ -181,8 +181,8 @@ void fpga_isnan(Tensor *A, Tensor* B){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_isnan.setArg(0, (A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_isnan.setArg(1, (B->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_isnan.setArg(0, *(A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_isnan.setArg(1, *(B->fpga_ptr)));
         OCL_CHECK(err, err = kernel_isnan.setArg(2, (long int)A->size));
 
         OCL_CHECK(err, err = q.enqueueTask(kernel_isnan, NULL, &event));
@@ -211,8 +211,8 @@ void fpga_isneginf(Tensor *A, Tensor* B){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_isneginf.setArg(0, (A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_isneginf.setArg(1, (B->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_isneginf.setArg(0, *(A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_isneginf.setArg(1, *(B->fpga_ptr)));
       OCL_CHECK(err, err = kernel_isneginf.setArg(2, (long int)A->size));
 
       OCL_CHECK(err, err = q.enqueueTask(kernel_isneginf, NULL, &event));
@@ -242,8 +242,8 @@ void fpga_isposinf(Tensor *A, Tensor* B){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_isposinf.setArg(0, (A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_isposinf.setArg(1, (B->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_isposinf.setArg(0, *(A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_isposinf.setArg(1, *(B->fpga_ptr)));
         OCL_CHECK(err, err = kernel_isposinf.setArg(2, (long int)A->size));
 
         OCL_CHECK(err, err = q.enqueueTask(kernel_isposinf, NULL, &event));
@@ -278,9 +278,9 @@ void fpga_logical_and(Tensor *A, Tensor *B, Tensor *C){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_logical_and.setArg(0, (A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_logical_and.setArg(1, (B->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_logical_and.setArg(2, (C->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_logical_and.setArg(0, *(A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_logical_and.setArg(1, *(B->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_logical_and.setArg(2, *(C->fpga_ptr)));
         OCL_CHECK(err, err = kernel_logical_and.setArg(3, (long int)A->size));
 
         OCL_CHECK(err, err = q.enqueueTask(kernel_logical_and, NULL, &event));
@@ -313,9 +313,9 @@ void fpga_logical_or(Tensor *A, Tensor *B, Tensor *C){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_logical_or.setArg(0, (A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_logical_or.setArg(1, (B->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_logical_or.setArg(2, (C->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_logical_or.setArg(0, *(A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_logical_or.setArg(1, *(B->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_logical_or.setArg(2, *(C->fpga_ptr)));
         OCL_CHECK(err, err = kernel_logical_or.setArg(3, (long int)A->size));
 
         OCL_CHECK(err, err = q.enqueueTask(kernel_logical_or, NULL, &event));
@@ -345,8 +345,8 @@ void fpga_logical_not(Tensor *A, Tensor *B){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_logical_not.setArg(0, (A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_logical_not.setArg(1, (B->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_logical_not.setArg(0, *(A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_logical_not.setArg(1, *(B->fpga_ptr)));
       OCL_CHECK(err, err = kernel_logical_not.setArg(2, (long int)A->size));
 
       OCL_CHECK(err, err = q.enqueueTask(kernel_logical_not, NULL, &event));
@@ -379,9 +379,9 @@ void fpga_logical_xor(Tensor *A, Tensor *B, Tensor *C){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_logical_xor.setArg(0, (A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_logical_xor.setArg(1, (B->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_logical_xor.setArg(2, (C->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_logical_xor.setArg(0, *(A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_logical_xor.setArg(1, *(B->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_logical_xor.setArg(2, *(C->fpga_ptr)));
         OCL_CHECK(err, err = kernel_logical_xor.setArg(3, (long int)A->size));
 
         OCL_CHECK(err, err = q.enqueueTask(kernel_logical_not, NULL, &event));
@@ -416,8 +416,8 @@ bool fpga_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan)
         // cl_int err;
         // cl::Event event;
         //
-        // OCL_CHECK(err, err = kernel_allclose.setArg(0, (A->fpga_ptr)));
-        // OCL_CHECK(err, err = kernel_allclose.setArg(1, (B->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_allclose.setArg(0, *(A->fpga_ptr)));
+        // OCL_CHECK(err, err = kernel_allclose.setArg(1, *(B->fpga_ptr)));
         // OCL_CHECK(err, err = kernel_allclose.setArg(2, rtol));
         // OCL_CHECK(err, err = kernel_allclose.setArg(3, atol));
         // OCL_CHECK(err, err = kernel_allclose.setArg(4, equal_nan));
@@ -456,9 +456,9 @@ void fpga_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool 
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_isclose.setArg(0, (A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_isclose.setArg(1, (B->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_isclose.setArg(2, (C->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_isclose.setArg(0, *(A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_isclose.setArg(1, *(B->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_isclose.setArg(2, *(C->fpga_ptr)));
         OCL_CHECK(err, err = kernel_isclose.setArg(3, rtol));
         OCL_CHECK(err, err = kernel_isclose.setArg(4, atol));
         OCL_CHECK(err, err = kernel_isclose.setArg(5, equal_nan));
@@ -494,9 +494,9 @@ void fpga_greater(Tensor *A, Tensor *B, Tensor *C){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_greater.setArg(0, (A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_greater.setArg(1, (B->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_greater.setArg(2, (C->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_greater.setArg(0, *(A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_greater.setArg(1, *(B->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_greater.setArg(2, *(C->fpga_ptr)));
         OCL_CHECK(err, err = kernel_greater.setArg(3, (long int)A->size));
 
         OCL_CHECK(err, err = q.enqueueTask(kernel_greater, NULL, &event));
@@ -529,9 +529,9 @@ void fpga_greater_equal(Tensor *A, Tensor *B, Tensor *C){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_greater_equal.setArg(0, (A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_greater_equal.setArg(1, (B->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_greater_equal.setArg(2, (C->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_greater_equal.setArg(0, *(A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_greater_equal.setArg(1, *(B->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_greater_equal.setArg(2, *(C->fpga_ptr)));
         OCL_CHECK(err, err = kernel_greater_equal.setArg(3, (long int)A->size));
 
         OCL_CHECK(err, err = q.enqueueTask(kernel_greater_equal, NULL, &event));
@@ -564,9 +564,9 @@ void fpga_less(Tensor *A, Tensor *B, Tensor *C){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_less.setArg(0, (A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_less.setArg(1, (B->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_less.setArg(2, (C->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_less.setArg(0, *(A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_less.setArg(1, *(B->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_less.setArg(2, *(C->fpga_ptr)));
       OCL_CHECK(err, err = kernel_less.setArg(3, (long int)A->size));
 
       OCL_CHECK(err, err = q.enqueueTask(kernel_less, NULL, &event));
@@ -599,9 +599,9 @@ void fpga_less_equal(Tensor *A, Tensor *B, Tensor *C){
       cl_int err;
       cl::Event event;
 
-      OCL_CHECK(err, err = kernel_less_equal.setArg(0, (A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_less_equal.setArg(1, (B->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_less_equal.setArg(2, (C->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_less_equal.setArg(0, *(A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_less_equal.setArg(1, *(B->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_less_equal.setArg(2, *(C->fpga_ptr)));
       OCL_CHECK(err, err = kernel_less_equal.setArg(3, (long int)A->size));
 
       OCL_CHECK(err, err = q.enqueueTask(kernel_less_equal, NULL, &event));
@@ -634,9 +634,9 @@ void fpga_equal(Tensor *A, Tensor *B, Tensor *C){
           cl_int err;
           cl::Event event;
 
-          OCL_CHECK(err, err = kernel_equal.setArg(0, (A->fpga_ptr)));
-          OCL_CHECK(err, err = kernel_equal.setArg(1, (B->fpga_ptr)));
-          OCL_CHECK(err, err = kernel_equal.setArg(2, (C->fpga_ptr)));
+          OCL_CHECK(err, err = kernel_equal.setArg(0, *(A->fpga_ptr)));
+          OCL_CHECK(err, err = kernel_equal.setArg(1, *(B->fpga_ptr)));
+          OCL_CHECK(err, err = kernel_equal.setArg(2, *(C->fpga_ptr)));
           OCL_CHECK(err, err = kernel_equal.setArg(3, (long int)A->size));
 
           OCL_CHECK(err, err = q.enqueueTask(kernel_equal, NULL, &event));
@@ -669,9 +669,9 @@ void fpga_not_equal(Tensor *A, Tensor *B, Tensor *C){
         cl_int err;
         cl::Event event;
 
-        OCL_CHECK(err, err = kernel_not_equal.setArg(0, (A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_not_equal.setArg(1, (B->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_not_equal.setArg(2, (C->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_not_equal.setArg(0, *(A->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_not_equal.setArg(1, *(B->fpga_ptr)));
+        OCL_CHECK(err, err = kernel_not_equal.setArg(2, *(C->fpga_ptr)));
         OCL_CHECK(err, err = kernel_not_equal.setArg(3, (long int)A->size));
 
         OCL_CHECK(err, err = q.enqueueTask(kernel_not_equal, NULL, &event));
@@ -704,8 +704,8 @@ int fpga_equal2(Tensor *A, Tensor *B, float epsilon){
       // cl_int err;
       // cl::Event event;
       //
-      // OCL_CHECK(err, err = kernel_equal2.setArg(0, (A->fpga_ptr)));
-      // OCL_CHECK(err, err = kernel_equal2.setArg(1, (B->fpga_ptr)));
+      // OCL_CHECK(err, err = kernel_equal2.setArg(0, *(A->fpga_ptr)));
+      // OCL_CHECK(err, err = kernel_equal2.setArg(1, *(B->fpga_ptr)));
       // OCL_CHECK(err, err = kernel_equal2.setArg(2, epsilon));
       // OCL_CHECK(err, err = kernel_equal2.setArg(3, (long int)A->size));
       //
