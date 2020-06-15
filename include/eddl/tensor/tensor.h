@@ -351,19 +351,6 @@ public:
     static void minimum(Tensor* A, Tensor* B, Tensor* C);
 
     // Math operations (single-value) ************************
-
-    float max();
-    static float max(Tensor* A);
-
-    float min();
-    static float min(Tensor* A);
-
-    float sum();
-    static float sum(Tensor* A);
-
-    float sum_abs();
-    static float sum_abs(Tensor* A);
-
     float prod();
     static float prod(Tensor* A);
 
@@ -383,8 +370,25 @@ public:
     static float var(Tensor* A, bool unbiased=true);
 
     // Math operations (reductions) ************************
+    float max();
+    static float max(Tensor* A);
+    Tensor* max(vector<int> axis, bool keepdims);
+    static void max(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+
+    float min();
+    static float min(Tensor* A);
+    Tensor* min(vector<int> axis, bool keepdims);
+    static void min(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+
+    float sum();
+    static float sum(Tensor* A);
     Tensor* sum(vector<int> axis, bool keepdims);
     static void sum(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+
+    float sum_abs();
+    static float sum_abs(Tensor* A);
+    Tensor* sum_abs(vector<int> axis, bool keepdims);
+    static void sum_abs(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
     // Math operations (unary) ************************
     void abs_();

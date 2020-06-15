@@ -119,15 +119,23 @@ void cpu_maximum(Tensor* A, Tensor* B, Tensor* C);
 void cpu_minimum(Tensor* A, Tensor* B, float v);
 void cpu_minimum(Tensor* A, Tensor* B, Tensor* C);
 
-// CPU: Should be reductions
+// CPU: RMath (eductions)
 float cpu_max(Tensor *A);
+void cpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+float cpu_max(float *ptr, int size, int *map);
+
 float cpu_min(Tensor *A);
+void cpu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+float cpu_min(float *ptr, int size, int *map);
 
 float cpu_sum(Tensor *A);
 void cpu_sum(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 float cpu_sum(float *ptr, int size, int *map);
 
 float cpu_sum_abs(Tensor *A);
+void cpu_sum_abs(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+float cpu_sum_abs(float *ptr, int size, int *map);
+
 float cpu_prod(Tensor *A);
 float cpu_median(Tensor *A);
 int cpu_mode(Tensor *A);

@@ -327,21 +327,37 @@ void cpu_minimum(Tensor* A, Tensor* B, Tensor* C){
 
 // CPU: Should be reductions ***************************
 
-float cpu_max(Tensor *A){
-    float shared_max = MIN_FLOAT;
-#pragma omp parallel
-    {
-        float min = MIN_FLOAT;
 
-#pragma omp for nowait
-        for (int i = 0; i < A->size; ++i)
-        {
-            min = std::max(A->ptr[i], min);
+float cpu_max(Tensor *A) {
+    return cpu_max(A->ptr, A->size, nullptr);
+}
+
+
+void cpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+#pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        B->ptr[i] = cpu_max(A->ptr, rd->index[i].size(), rd->index[i].data());
+    }
+}
+
+float cpu_max(float *ptr, int size, int *map) {
+    float shared_max = MIN_FLOAT;
+        #pragma omp parallel
+    {
+        float max = MIN_FLOAT;
+
+        // TODO: I don't like this approach
+        if(map == nullptr){
+            #pragma omp for nowait
+            for (int i = 0; i < size; ++i) { max = std::max(ptr[i], max); }
+        }else{
+            #pragma omp for nowait
+            for (int i = 0; i < size; ++i) { max = std::max(ptr[map[i]], max); }
         }
 
 #pragma omp critical
         {
-            shared_max = std::max(shared_max, min);
+            shared_max = std::max(shared_max, max);
         }
     }
 
@@ -349,19 +365,36 @@ float cpu_max(Tensor *A){
 }
 
 
-float cpu_min(Tensor *A){
+
+float cpu_min(Tensor *A) {
+    return cpu_min(A->ptr, A->size, nullptr);
+}
+
+
+void cpu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    #pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        B->ptr[i] = cpu_min(A->ptr, rd->index[i].size(), rd->index[i].data());
+    }
+}
+
+float cpu_min(float *ptr, int size, int *map) {
     float shared_min = MAX_FLOAT;
-#pragma omp parallel
+    #pragma omp parallel
     {
         float min = MAX_FLOAT;
 
+        // TODO: I don't like this approach
+        if(map == nullptr){
 #pragma omp for nowait
-        for (int i = 0; i < A->size; ++i)
-        {
-            min = std::min(A->ptr[i], min);
+            for (int i = 0; i < size; ++i) { min = std::min(ptr[i], min); }
+        }else{
+#pragma omp for nowait
+            for (int i = 0; i < size; ++i) { min = std::min(ptr[map[i]], min); }
         }
 
-#pragma omp critical
+
+    #pragma omp critical
         {
             shared_min = std::min(shared_min, min);
         }
@@ -377,7 +410,7 @@ float cpu_sum(Tensor *A) {
 
 
 void cpu_sum(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
-#pragma omp parallel for
+    #pragma omp parallel for
     for(int i=0; i<rd->index.size(); i++){
         B->ptr[i] = cpu_sum(A->ptr, rd->index[i].size(), rd->index[i].data());
     }
@@ -398,16 +431,35 @@ float cpu_sum(float *ptr, int size, int *map) {
     return sum;
 }
 
+
 float cpu_sum_abs(Tensor *A) {
+    return cpu_sum_abs(A->ptr, A->size, nullptr);
+}
+
+
+void cpu_sum_abs(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+#pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        B->ptr[i] = cpu_sum_abs(A->ptr, rd->index[i].size(), rd->index[i].data());
+    }
+}
+
+float cpu_sum_abs(float *ptr, int size, int *map) {
     float sum = 0.0f;
 
+    // TODO: I don't like this approach
+    if(map == nullptr){
 #pragma omp parallel for reduction(+:sum)
-    for (int i = 0; i < A->size; ++i) {
-        sum += ::fabs(A->ptr[i]);
+        for (int i = 0; i < size; ++i) { sum += ::fabs(ptr[i]); }
+    }else{
+#pragma omp parallel for reduction(+:sum)
+        for (int i = 0; i < size; ++i) { sum += ::fabs(ptr[map[i]]); }
     }
 
     return sum;
 }
+
+
 
 float cpu_median(Tensor *A) {
     int midpoint = A->size / 2.0f;

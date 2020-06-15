@@ -132,107 +132,9 @@ void Tensor::minimum(Tensor* A, Tensor* B, Tensor* C){
 }
 
 
-float Tensor::max(){
-    return Tensor::max(this);
-}
 
 
-float Tensor::max(Tensor* A){
-    if (A->isCPU()) {
-        return cpu_max(A);
-    }
-#ifdef cGPU
-    else if (A->isGPU())
-    {
-        return gpu_max(A);
-    }
-#endif
-#ifdef cFPGA
-    else {
 
-    }
-#endif
-
-    msg("Invalid device", "Tensor::max");
-    return 0.0f; // Never used, this is for the compiler warning
-}
-
-float Tensor::min(){
-    return Tensor::min(this);
-}
-
-
-float Tensor::min(Tensor* A){
-    if (A->isCPU()) {
-        return cpu_min(A);
-    }
-#ifdef cGPU
-    else if (A->isGPU())
-    {
-        return gpu_min(A);
-    }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-
-    msg("Invalid device", "Tensor::min");
-    return 0.0f; // Never used, this is for the compiler warning
-}
-
-
-float Tensor::sum(){
-    return Tensor::sum(this);
-}
-
-
-float Tensor::sum(Tensor* A){
-    if (A->isCPU()) {
-        return cpu_sum(A);
-    }
-#ifdef cGPU
-    else if (A->isGPU())
-    {
-        return gpu_sum(A);
-    }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-
-    msg("Invalid device", "Tensor::sum");
-    return 0.0f; // Never used, this is for the compiler warning
-}
-
-
-float Tensor::sum_abs(){
-    return Tensor::sum_abs(this);
-}
-
-
-float Tensor::sum_abs(Tensor* A){
-    if (A->isCPU()) {
-        return cpu_sum_abs(A);
-    }
-#ifdef cGPU
-    else if (A->isGPU())
-    {
-        return gpu_sum_abs(A);
-    }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-
-    msg("Invalid device", "Tensor::sum_abs");
-    return 0.0f; // Never used, this is for the compiler warning
-}
 
 
 float Tensor::prod(){
@@ -380,6 +282,146 @@ float Tensor::var(Tensor* A, bool unbiased){
 
 
 // Math operations (reductions) ************************
+
+float Tensor::max(){
+    return Tensor::max(this);
+}
+
+
+float Tensor::max(Tensor* A){
+    if (A->isCPU()) {
+        return cpu_max(A);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+    {
+        return gpu_max(A);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+    msg("Invalid device", "Tensor::max");
+    return 0.0f; // Never used, this is for the compiler warning
+}
+
+Tensor* Tensor::max(vector<int> axis, bool keepdims){
+    // Build descriptor
+    auto rd = new ReduceDescriptor2(axis, keepdims);
+    rd->build(this->shape);
+
+    // Create output tensor
+    Tensor *t = Tensor::empty(rd->oshape, this->device);
+    Tensor::max(this, t, rd);
+
+    delete rd;
+    return t;
+}
+
+void Tensor::max(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_max(A, B, rd);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+    {
+        msg("Not implemented error", "Tensor::max");
+
+//        gpu_sum(A, B, rd);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+float Tensor::min(){
+    return Tensor::min(this);
+}
+
+
+float Tensor::min(Tensor* A){
+    if (A->isCPU()) {
+        return cpu_min(A);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+    {
+        return gpu_min(A);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+    msg("Invalid device", "Tensor::min");
+    return 0.0f; // Never used, this is for the compiler warning
+}
+
+Tensor* Tensor::min(vector<int> axis, bool keepdims){
+    // Build descriptor
+    auto rd = new ReduceDescriptor2(axis, keepdims);
+    rd->build(this->shape);
+
+    // Create output tensor
+    Tensor *t = Tensor::empty(rd->oshape, this->device);
+    Tensor::min(this, t, rd);
+
+    delete rd;
+    return t;
+}
+
+void Tensor::min(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_min(A, B, rd);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+    {
+        msg("Not implemented error", "Tensor::min");
+
+//        gpu_sum(A, B, rd);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+float Tensor::sum(){
+    return Tensor::sum(this);
+}
+
+
+float Tensor::sum(Tensor* A){
+    if (A->isCPU()) {
+        return cpu_sum(A);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+    {
+        return gpu_sum(A);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+    msg("Invalid device", "Tensor::sum");
+    return 0.0f; // Never used, this is for the compiler warning
+}
+
 Tensor* Tensor::sum(vector<int> axis, bool keepdims){
     // Build descriptor
     auto rd = new ReduceDescriptor2(axis, keepdims);
@@ -401,6 +443,64 @@ void Tensor::sum(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
     else if (A->isGPU() && B->isGPU())
     {
         msg("Not implemented error", "Tensor::sum");
+
+//        gpu_sum(A, B, rd);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+float Tensor::sum_abs(){
+    return Tensor::sum_abs(this);
+}
+
+
+float Tensor::sum_abs(Tensor* A){
+    if (A->isCPU()) {
+        return cpu_sum_abs(A);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+    {
+        return gpu_sum_abs(A);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+    msg("Invalid device", "Tensor::sum_abs");
+    return 0.0f; // Never used, this is for the compiler warning
+}
+
+
+Tensor* Tensor::sum_abs(vector<int> axis, bool keepdims){
+    // Build descriptor
+    auto rd = new ReduceDescriptor2(axis, keepdims);
+    rd->build(this->shape);
+
+    // Create output tensor
+    Tensor *t = Tensor::empty(rd->oshape, this->device);
+    Tensor::sum_abs(this, t, rd);
+
+    delete rd;
+    return t;
+}
+
+void Tensor::sum_abs(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_sum_abs(A, B, rd);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+    {
+        msg("Not implemented error", "Tensor::sum_abs");
 
 //        gpu_sum(A, B, rd);
     }
