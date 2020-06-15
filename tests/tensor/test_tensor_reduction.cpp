@@ -96,3 +96,5 @@ TEST(TensorTestSuite, tensor_math_reduction_std) {
     Tensor *new_t = t1->std({0}, false, true);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 }
+
+

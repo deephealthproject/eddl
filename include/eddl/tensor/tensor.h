@@ -355,9 +355,6 @@ public:
     float median();
     static float median(Tensor* A);
 
-    int mode();
-    static int mode(Tensor* A);
-
     // Math operations (reductions) ************************
     float max();
     static float max(Tensor* A);
@@ -398,6 +395,11 @@ public:
     static float var(Tensor* A, bool unbiased=true);
     Tensor* var(vector<int> axis, bool keepdims, bool unbiased=true);
     static void var(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased=true);
+
+    int mode();
+    static int mode(Tensor* A);
+    Tensor* mode(vector<int> axis, bool keepdims);
+    static void mode(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
     // Math operations (unary) ************************
     void abs_();

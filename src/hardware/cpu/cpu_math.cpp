@@ -546,23 +546,29 @@ void cpu_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
 }
 
 
-float cpu_median(Tensor *A) {
-    int midpoint = A->size / 2.0f;
-
-    if(A->size % 2==1 && A->size>1) {
-        return A->ptr[midpoint];
-    }else{
-        return (A->ptr[midpoint-1]+A->ptr[midpoint])/2.0f;
-    }
+int cpu_mode(Tensor *A) {
+    return cpu_mode(A->ptr, A->size, nullptr);
 }
 
 
-int cpu_mode(Tensor *A) {
+void cpu_mode(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+#pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        B->ptr[i] = cpu_mode(A->ptr, rd->index[i].size(), rd->index[i].data());
+    }
+}
+
+int cpu_mode(float *ptr, int size, int *map) {
     std::unordered_map<int, int> table;
 
-    // Get frequencies
-    for (int i = 0; i < A->size; ++i){
-        table[(int)A->ptr[i]]++;
+
+    // TODO: I don't like this approach
+    if(map == nullptr){
+        // Get frequencies
+        for (int i = 0; i < size; ++i){ table[(int)ptr[i]]++; }
+    }else{
+        // Get frequencies
+        for (int i = 0; i < size; ++i){ table[(int)ptr[map[i]]]++; }
     }
 
     int mode = 0;
@@ -576,6 +582,18 @@ int cpu_mode(Tensor *A) {
 
     return mode;
 }
+
+
+float cpu_median(Tensor *A) {
+    int midpoint = A->size / 2.0f;
+
+    if(A->size % 2==1 && A->size>1) {
+        return A->ptr[midpoint];
+    }else{
+        return (A->ptr[midpoint-1]+A->ptr[midpoint])/2.0f;
+    }
+}
+
 
 
 
