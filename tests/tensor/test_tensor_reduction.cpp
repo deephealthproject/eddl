@@ -66,3 +66,12 @@ TEST(TensorTestSuite, tensor_math_reduction_prod) {
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 }
 
+TEST(TensorTestSuite, tensor_math_reduction_mean) {
+    // Test #1
+    Tensor *t1_ref = new Tensor({5.0f, 5.5f, 3.5f},  {3}, DEV_CPU);
+    Tensor *t1 = new Tensor({4.0f, 7.0f, 3.0f,
+                             6.0f, 4.0f, 4.0f}, {2, 3}, DEV_CPU);
+
+    Tensor *new_t = t1->mean({0}, false);
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+}
