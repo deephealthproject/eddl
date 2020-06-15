@@ -119,7 +119,7 @@ void cpu_maximum(Tensor* A, Tensor* B, Tensor* C);
 void cpu_minimum(Tensor* A, Tensor* B, float v);
 void cpu_minimum(Tensor* A, Tensor* B, Tensor* C);
 
-// CPU: RMath (eductions)
+// CPU: Math (eductions)
 float cpu_max(Tensor *A);
 void cpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 float cpu_max(float *ptr, int size, int *map);
