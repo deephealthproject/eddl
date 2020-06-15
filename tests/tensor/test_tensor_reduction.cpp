@@ -98,3 +98,16 @@ TEST(TensorTestSuite, tensor_math_reduction_std) {
 }
 
 
+
+TEST(TensorTestSuite, tensor_math_reduction_mode) {
+    // Test #1
+    Tensor *t1_ref = new Tensor({1.0f, 4.0f, 8.0f},  {3}, DEV_CPU);
+    Tensor *t1 = new Tensor({
+                             1.0f, 4.0f, 4.0f,
+                             5.0f, 4.0f, 8.0f,
+                             2.0f, 3.0f, 8.0f,
+                             1.0f, 4.0f, 8.0f}, {4, 3}, DEV_CPU);
+
+    Tensor *new_t = t1->mode({0}, false);
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+}
