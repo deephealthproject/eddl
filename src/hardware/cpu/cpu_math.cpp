@@ -335,7 +335,7 @@ float cpu_max(Tensor *A) {
 
 
 void cpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
-//    #pragma omp parallel for
+    #pragma omp parallel for
     for(int i=0; i<rd->index.size(); i++){
         auto t = cpu_max(A->ptr, rd->index[i].size(), rd->index[i].data());
         B->ptr[i] = std::get<0>(t);  // get max
@@ -349,7 +349,7 @@ float cpu_argmax(Tensor *A) {
 
 
 void cpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
-//    #pragma omp parallel for
+    #pragma omp parallel for
     for(int i=0; i<rd->index.size(); i++){
         auto t = cpu_max(A->ptr, rd->index[i].size(), rd->index[i].data());
         B->ptr[i] = std::get<1>(t);  // get argmax
@@ -378,7 +378,7 @@ std::tuple<float, int> cpu_max(float *ptr, int size, int *map) {
         }else{
             #pragma omp for nowait
             for (int i = 0; i < size; ++i) {
-                if(ptr[i]>max){
+                if(ptr[map[i]]>max){
                     max = ptr[map[i]];
                     argmax = i;
                 }
@@ -387,8 +387,8 @@ std::tuple<float, int> cpu_max(float *ptr, int size, int *map) {
 
         #pragma omp critical
         {
-            if(max>shared_argmax){
-                shared_argmax = max;
+            if(max>shared_max){
+                shared_max = max;
                 shared_argmax = argmax;
             }
         }
@@ -405,7 +405,7 @@ float cpu_min(Tensor *A) {
 
 
 void cpu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
-//    #pragma omp parallel for
+    #pragma omp parallel for
     for(int i=0; i<rd->index.size(); i++){
         auto t = cpu_min(A->ptr, rd->index[i].size(), rd->index[i].data());
         B->ptr[i] = std::get<0>(t);  // get min
@@ -414,13 +414,13 @@ void cpu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
 
 
 float cpu_argmin(Tensor *A) {
-    auto t = cpu_max(A->ptr, A->size, nullptr);
+    auto t = cpu_min(A->ptr, A->size, nullptr);
     return std::get<1>(t);  // get argmin
 }
 
 
 void cpu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
-//    #pragma omp parallel for
+    #pragma omp parallel for
     for(int i=0; i<rd->index.size(); i++){
         auto t = cpu_min(A->ptr, rd->index[i].size(), rd->index[i].data());
         B->ptr[i] = std::get<1>(t);  // get argmmin
@@ -449,7 +449,7 @@ std::tuple<float, int> cpu_min(float *ptr, int size, int *map) {
         }else{
             #pragma omp for nowait
             for (int i = 0; i < size; ++i) {
-                if(ptr[i]<min){
+                if(ptr[map[i]]<min){
                     min = ptr[map[i]];
                     argmin = i;
                 }
@@ -458,8 +458,8 @@ std::tuple<float, int> cpu_min(float *ptr, int size, int *map) {
 
         #pragma omp critical
         {
-            if(min<shared_argmin){
-                shared_argmin = min;
+            if(min<shared_min){
+                shared_min = min;
                 shared_argmin = argmin;
             }
         }
