@@ -374,9 +374,9 @@ Not yet...
 | mean | ✔️ | ❌ |
 | median | ❌ | ❌ |
 | mode | ✔️ | ❌ |
-| norm | ❌ | ❌ |
+| norm | ✔ | ❌ |
 | prod | ✔️ | ❌️ |
-| std | ❌ | ❌ |
+| std | ✔ | ❌ |
 | sum | ✔️ | ❌ |
 | prod | ✔️ | ❌ |
 | unique | ❌ | ❌ |
