@@ -33,7 +33,6 @@ char fpga_set_cpuemu_log2_         = 1;
 char fpga_set_cpuemu_log10_        = 1;
 char fpga_set_cpuemu_logn_         = 1;
 char fpga_set_cpuemu_mod_          = 1;
-char fpga_set_cpuemu_mult_         = 1;
 char fpga_set_cpuemu_normalize_    = 1;
 char fpga_set_cpuemu_pow_          = 1;
 char fpga_set_cpuemu_powb_         = 1;
@@ -565,19 +564,19 @@ void fpga_cpuemu_mult_(Tensor *A, float v) {
 void fpga_mult_(Tensor *A, float v) {
     _profile_fpga(_FPGA_MULT_, 0);
     _profile_fpga_tensor(A);
-    if (fpga_set_cpuemu_mult_ == 1) {
-        fpga_cpuemu_mult_(A, v);
-    } else {
-        cl_int err;
-        cl::Event event;
+#ifndef K_ENABLED_MULT_
+    fpga_cpuemu_mult_(A, v);
+#else
+    cl_int err;
+    cl::Event event;
 
-        OCL_CHECK(err, err = kernel_mult_.setArg(0, *(A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_mult_.setArg(1, v));
-        OCL_CHECK(err, err = kernel_mult_.setArg(2, (long int)A->size));
+    OCL_CHECK(err, err = kernel_mult_.setArg(0, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_mult_.setArg(1, v));
+    OCL_CHECK(err, err = kernel_mult_.setArg(2, (long int)A->size));
 
-        OCL_CHECK(err, err = q.enqueueTask(kernel_mult_, NULL, &event));
-        q.finish();
-    }
+    OCL_CHECK(err, err = q.enqueueTask(kernel_mult_, NULL, &event));
+    q.finish();
+#endif
     _profile_fpga(_FPGA_MULT_, 1);
 }
 
@@ -1056,23 +1055,23 @@ void fpga_cpuemu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int 
 
 void fpga_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
     _profile_fpga(_FPGA_ADD, 0);
-    if (fpga_set_cpuemu_add == 1) {
-        fpga_cpuemu_add(scA, A, scB, B, C, incC);
-    } else {
-        cl_int err;
-        cl::Event event;
+#ifndef K_ENALBED_ADD
+    fpga_cpuemu_add(scA, A, scB, B, C, incC);
+#else
+    cl_int err;
+    cl::Event event;
 
-        OCL_CHECK(err, err = kernel_add.setArg(0, scA));
-        OCL_CHECK(err, err = kernel_add.setArg(1, *(A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_add.setArg(2, scB));
-        OCL_CHECK(err, err = kernel_add.setArg(3, *(B->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_add.setArg(4, *(C->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_add.setArg(5, incC));
-        OCL_CHECK(err, err = kernel_add.setArg(6, (long int)A->size));
+    OCL_CHECK(err, err = kernel_add.setArg(0, scA));
+    OCL_CHECK(err, err = kernel_add.setArg(1, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_add.setArg(2, scB));
+    OCL_CHECK(err, err = kernel_add.setArg(3, *(B->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_add.setArg(4, *(C->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_add.setArg(5, incC));
+    OCL_CHECK(err, err = kernel_add.setArg(6, (long int)A->size));
 
-        OCL_CHECK(err, err = q.enqueueTask(kernel_add, NULL, &event));
-        q.finish();
-    }
+    OCL_CHECK(err, err = q.enqueueTask(kernel_add, NULL, &event));
+    q.finish();
+#endif
     _profile_fpga(_FPGA_ADD, 1);
 }
 
@@ -1130,11 +1129,11 @@ void fpga_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
     _profile_fpga_tensor(A);
     _profile_fpga_tensor(B);
     _profile_fpga_tensor(C);
-    if (fpga_set_cpuemu_mult2D == 1) {
-      fpga_cpuemu_mult2D(A, tA, B, tB, C, incC);
-    } else {
-      printf("fpga_mult2D not implemented yet\n"); exit(1);
-    }
+#ifndef K_ENABLED_MULT2D
+    fpga_cpuemu_mult2D(A, tA, B, tB, C, incC);
+#else
+    printf("fpga_mult2D not implemented yet\n"); exit(1);
+#endif
     _profile_fpga(_FPGA_MULT2D, 1);
 }
 
@@ -1266,21 +1265,21 @@ void fpga_cpuemu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
 
 void fpga_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
   _profile_fpga(_FPGA_SUM2D_ROWWISE, 0);
-  if (fpga_set_cpuemu_sum2D_rowwise == 1) {
-    fpga_cpuemu_sum2D_rowwise(A, B, C);
-  } else {
-      cl_int err;
-      cl::Event event;
+#ifndef K_ENABLED_SUM2D_ROWWISE
+  fpga_cpuemu_sum2D_rowwise(A, B, C);
+#else
+  cl_int err;
+  cl::Event event;
 
-      OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(0, *(A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(1, *(B->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(2, *(C->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(3, A->shape[0]));
-      OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(4, A->shape[1]));
+  OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(0, *(A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(1, *(B->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(2, *(C->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(3, A->shape[0]));
+  OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(4, A->shape[1]));
 
-      OCL_CHECK(err, err = q.enqueueTask(kernel_sum2D_rowwise, NULL, &event));
-      q.finish();
-  }
+  OCL_CHECK(err, err = q.enqueueTask(kernel_sum2D_rowwise, NULL, &event));
+  q.finish();
+#endif
   _profile_fpga(_FPGA_SUM2D_ROWWISE, 1);
 }
 
@@ -1399,9 +1398,9 @@ float fpga_sum(Tensor *A) {
   float ret;
   _profile_fpga(_FPGA_SUM, 0);
   _profile_fpga_tensor(A);
-  if (fpga_set_cpuemu_sum == 1) {
+#ifndef K_ENABLED_SUM
     ret = fpga_cpuemu_sum(A);
-  } else {
+#else
     printf("fpga_sum not implemented yet\n"); exit(1);
     // cl_int err;
     // cl::Event event;
@@ -1411,8 +1410,7 @@ float fpga_sum(Tensor *A) {
     //
     // OCL_CHECK(err, err = q.enqueueTask(kernel_sum, NULL, &event));
     // q.finish();
-
-  }
+#endif
   _profile_fpga(_FPGA_SUM, 1);
   return ret;
 }

@@ -18,10 +18,6 @@
 extern cl::Kernel kernel_accuracy;
 extern cl::CommandQueue q;
 
-// emulation switches of functions (via cpu)
-// when set the function is run on the cpu
-char fpga_set_cpuemu_accuracy      = 1;
-
 // -----------------------------------------------------------------
 // accuracy
 //
@@ -40,12 +36,11 @@ int fpga_accuracy(Tensor *A, Tensor *B){
   int acc;
   _profile_fpga(_FPGA_ACCURACY, 0);
 
-  if (fpga_set_cpuemu_accuracy == 1) {
-    acc = fpga_cpuemu_accuracy(A, B);
-    return acc;
-  } else {
-      printf("fpga_accuracy not implemented yet\n"); exit(1);
-  }
+#ifndef K_ENABLED_ACCURACY
+  acc = fpga_cpuemu_accuracy(A, B);
+  return acc;
+#else
+  printf("fpga_accuracy not implemented yet\n"); exit(1);
 
   /*   cl_int err;
      cl::Event event, result_ready;
@@ -72,5 +67,6 @@ int fpga_accuracy(Tensor *A, Tensor *B){
      return *acc;
   */
   printf("Accuracy not implemented yet (has compilation error)\n"); exit(1);  _profile_fpga(_FPGA_ACCURACY, 1);
+#endif
   return acc;
 }

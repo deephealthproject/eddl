@@ -20,7 +20,6 @@ extern cl::Kernel reduce_sum2D;
 // when set the function is run on the cpu
 char fpga_set_cpuemu_reduce          = 1;
 char fpga_set_cpuemu_reduce_op       = 1;
-char fpga_set_cpuemu_reduce_sum2D    = 1;
 char fpga_set_cpuemu_reduction       = 1;
 char fpga_set_cpuemu_reduction_back  = 1;
 
@@ -125,22 +124,22 @@ void fpga_cpuemu_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
 
 void fpga_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
   _profile_fpga(_FPGA_REDUCE_SUM2D, 0);
-  if (fpga_set_cpuemu_reduce_sum2D == 1) {
-      fpga_cpuemu_reduce_sum2D(A, B, axis, incB);
-  } else {
-    cl_int err;
-    cl::Event event;
+#ifndef K_ENABLED_REDUCE_SUM2D
+  fpga_cpuemu_reduce_sum2D(A, B, axis, incB);
+#else
+  cl_int err;
+  cl::Event event;
 
-    OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(0, *(A->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(1, *(B->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(2, A->shape[0]));
-    OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(3, A->shape[1]));
-    OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(4, axis));
-    OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(5, incB));
+  OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(0, *(A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(1, *(B->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(2, A->shape[0]));
+  OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(3, A->shape[1]));
+  OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(4, axis));
+  OCL_CHECK(err, err = kernel_reduce_sum2D.setArg(5, incB));
 
-    OCL_CHECK(err, err = q.enqueueTask(kernel_reduce_sum2D, NULL, &event));
-    q.finish();
-  }
+  OCL_CHECK(err, err = q.enqueueTask(kernel_reduce_sum2D, NULL, &event));
+  q.finish();
+#endif
   _profile_fpga(_FPGA_REDUCE_SUM2D, 1);
 }
 

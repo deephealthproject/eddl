@@ -19,8 +19,6 @@
 
 // emulation switches of functions (via cpu)
 // when set the function is run on the cpu
-char fpga_set_cpuemu_relu               = 1;
-char fpga_set_cpuemu_d_relu             = 1;
 char fpga_set_cpuemu_thresholded_relu   = 1;
 char fpga_set_cpuemu_d_thresholded_relu = 1;
 char fpga_set_cpuemu_leaky_relu         = 1;
@@ -60,20 +58,20 @@ void fpga_cpuemu_relu(Tensor *A, Tensor *B){
 void fpga_relu(Tensor *A, Tensor *B){
   _profile_fpga(_FPGA_RELU, 0);
   _profile_fpga_tensor(A);
-  if (fpga_set_cpuemu_relu == 1) {
-      fpga_cpuemu_relu(A, B);
-  } else {
-    cl_int err;
-    cl::Event event;
+#ifndef K_ENABLED_RELU
+  fpga_cpuemu_relu(A, B);
+#else
+  cl_int err;
+  cl::Event event;
 
-    OCL_CHECK(err, err = kernel_relu.setArg(0, *(A->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_relu.setArg(1, *(B->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_relu.setArg(2, A->size));
+  OCL_CHECK(err, err = kernel_relu.setArg(0, *(A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_relu.setArg(1, *(B->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_relu.setArg(2, A->size));
 
-    OCL_CHECK(err, err = q.enqueueTask(kernel_relu, NULL, &event));
-    //  event.wait();
-    q.finish();
-  }
+  OCL_CHECK(err, err = q.enqueueTask(kernel_relu, NULL, &event));
+  //  event.wait();
+  q.finish();
+#endif
   _profile_fpga_tensor(B);
   _profile_fpga(_FPGA_RELU, 1);
 }
@@ -95,22 +93,22 @@ void fpga_cpuemu_d_relu(Tensor *D, Tensor *I, Tensor *PD){
 }
 
 void fpga_d_relu(Tensor *D, Tensor *I, Tensor *PD){
- _profile_fpga(_FPGA_D_RELU, 0);
- if (fpga_set_cpuemu_d_relu == 1) {
-     fpga_cpuemu_d_relu(D, I, PD);
- } else {
-     cl_int err;
-     cl::Event event;
+  _profile_fpga(_FPGA_D_RELU, 0);
+#ifndef K_ENABLED_D_RELU
+  fpga_cpuemu_d_relu(D, I, PD);
+#else
+  cl_int err;
+  cl::Event event;
 
-     OCL_CHECK(err, err = kernel_d_relu.setArg(0, *(D->fpga_ptr)));
-     OCL_CHECK(err, err = kernel_d_relu.setArg(1, *(I->fpga_ptr)));
-     OCL_CHECK(err, err = kernel_d_relu.setArg(2, *(PD->fpga_ptr)));
-     OCL_CHECK(err, err = kernel_d_relu.setArg(3, (long int)D->size));
+  OCL_CHECK(err, err = kernel_d_relu.setArg(0, *(D->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_d_relu.setArg(1, *(I->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_d_relu.setArg(2, *(PD->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_d_relu.setArg(3, (long int)D->size));
 
-     OCL_CHECK(err, err = q.enqueueTask(kernel_d_relu, NULL, &event));
-     q.finish();
- }
- _profile_fpga(_FPGA_D_RELU, 1);
+  OCL_CHECK(err, err = q.enqueueTask(kernel_d_relu, NULL, &event));
+  q.finish();
+#endif
+  _profile_fpga(_FPGA_D_RELU, 1);
 }
 
 // -----------------------------------------------------------------
@@ -128,20 +126,20 @@ void fpga_cpuemu_thresholded_relu(Tensor *A, Tensor *B, float param){
 
 void fpga_thresholded_relu(Tensor *A, Tensor *B, float param){
   _profile_fpga(_FPGA_THRESHOLDED_RELU, 0);
-  if (fpga_set_cpuemu_thresholded_relu == 1) {
-      fpga_cpuemu_thresholded_relu(A, B, param);
-  } else {
-      cl_int err;
-      cl::Event event;
+#ifndef K_ENABLED_THRESHOLDED_RELU
+  fpga_cpuemu_thresholded_relu(A, B, param);
+#else
+  cl_int err;
+  cl::Event event;
 
-      OCL_CHECK(err, err = kernel_thresholded_relu.setArg(0, *(A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_thresholded_relu.setArg(1, *(B->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_thresholded_relu.setArg(2, (long int)A->size));
-      OCL_CHECK(err, err = kernel_thresholded_relu.setArg(3, param));
+  OCL_CHECK(err, err = kernel_thresholded_relu.setArg(0, *(A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_thresholded_relu.setArg(1, *(B->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_thresholded_relu.setArg(2, (long int)A->size));
+  OCL_CHECK(err, err = kernel_thresholded_relu.setArg(3, param));
 
-      OCL_CHECK(err, err = q.enqueueTask(kernel_d_relu, NULL, &event));
-      q.finish();
-  }
+  OCL_CHECK(err, err = q.enqueueTask(kernel_d_relu, NULL, &event));
+  q.finish();
+#endif
   _profile_fpga(_FPGA_THRESHOLDED_RELU, 1);
 }
 
@@ -163,21 +161,21 @@ void fpga_cpuemu_d_thresholded_relu(Tensor *D, Tensor *I, Tensor *PD, float para
 
 void fpga_d_thresholded_relu(Tensor *D, Tensor *I, Tensor *PD, float param){
   _profile_fpga(_FPGA_D_THRESHOLDED_RELU, 0);
-  if (fpga_set_cpuemu_d_thresholded_relu == 1) {
-      fpga_cpuemu_d_thresholded_relu(D, I, PD, param);
-  } else {
-      cl_int err;
-      cl::Event event;
+#ifndef K_ENABLED_D_THRESHOLDED_RELU
+  fpga_cpuemu_d_thresholded_relu(D, I, PD, param);
+#else
+  cl_int err;
+  cl::Event event;
 
-      OCL_CHECK(err, err = kernel_d_thresholded_relu.setArg(0, *(D->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_thresholded_relu.setArg(1, *(I->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_thresholded_relu.setArg(2, *(PD->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_d_thresholded_relu.setArg(3, (long int)D->size));
-      OCL_CHECK(err, err = kernel_d_thresholded_relu.setArg(4, param));
+  OCL_CHECK(err, err = kernel_d_thresholded_relu.setArg(0, *(D->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_d_thresholded_relu.setArg(1, *(I->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_d_thresholded_relu.setArg(2, *(PD->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_d_thresholded_relu.setArg(3, (long int)D->size));
+  OCL_CHECK(err, err = kernel_d_thresholded_relu.setArg(4, param));
 
-      OCL_CHECK(err, err = q.enqueueTask(kernel_d_thresholded_relu, NULL, &event));
-      q.finish();
-  }
+  OCL_CHECK(err, err = q.enqueueTask(kernel_d_thresholded_relu, NULL, &event));
+  q.finish();
+#endif
   _profile_fpga(_FPGA_D_THRESHOLDED_RELU, 1);
 }
 
@@ -798,23 +796,22 @@ void fpga_softmax(Tensor *A, Tensor *B) {
   _profile_fpga(_FPGA_SOFTMAX, 0);
   _profile_fpga_tensor(A);
   _profile_fpga_tensor(B);
-  if (fpga_set_cpuemu_softmax == 1) {
-      fpga_cpuemu_softmax(A, B);
-  } else {
-      cl_int err;
-      cl::Event event;
+#ifndef K_ENABLED_SOFTMAX
+  fpga_cpuemu_softmax(A, B);
+#else
+  cl_int err;
+  cl::Event event;
 
-      OCL_CHECK(err, err = kernel_softmax.setArg(0, *(A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_softmax.setArg(1, *(B->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_softmax.setArg(2, (int)A->shape[0]));
-      OCL_CHECK(err, err = kernel_softmax.setArg(3, (int)A->shape[1]));
-      OCL_CHECK(err, err = kernel_softmax.setArg(4, (int)B->shape[1]));
+  OCL_CHECK(err, err = kernel_softmax.setArg(0, *(A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_softmax.setArg(1, *(B->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_softmax.setArg(2, (int)A->shape[0]));
+  OCL_CHECK(err, err = kernel_softmax.setArg(3, (int)A->shape[1]));
+  OCL_CHECK(err, err = kernel_softmax.setArg(4, (int)B->shape[1]));
 
-      OCL_CHECK(err, err = q.enqueueTask(kernel_softmax, NULL, &event));
-      //  event.wait();
-      q.finish();
-
-  }
+  OCL_CHECK(err, err = q.enqueueTask(kernel_softmax, NULL, &event));
+  //  event.wait();
+  q.finish();
+#endif
   _profile_fpga(_FPGA_SOFTMAX, 1);
 }
 
