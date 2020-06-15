@@ -4,14 +4,13 @@ TARGETS := sw_emu
 DEVICE := xilinx_u200_xdma_201830_2
 TARGET := $(TARGETS)
 XCLBIN := kernels/xclbin
-XCLBIN_NAME := relu_softmax
+XCLBIN_NAME := relu
 XOCC := /opt/Xilinx/Vitis/2019.2/bin/v++
 BUILD_DIR := kernels/_x.$(TARGET).$(DEVICE)
 BUILD_DIR_tensor = $(BUILD_DIR)/$(XCLBIN_NAME)
 BINARY_CONTAINERS += $(XCLBIN)/$(XCLBIN_NAME).$(TARGET).$(DEVICE).xclbin
 
 BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/activations.$(TARGET).$(DEVICE).xo
-BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/activations_1.$(TARGET).$(DEVICE).xo
 #BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/bn.$(TARGET).$(DEVICE).xo
 #BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/comparison.$(TARGET).$(DEVICE).xo
 #BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/conv.$(TARGET).$(DEVICE).xo
@@ -91,10 +90,6 @@ kernelemu: emuconfig
 $(XCLBIN)/activations.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/activations.cpp
 	mkdir -p $(XCLBIN)
 	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k k_relu -I'$(<D)' -o'$@' '$<'
-
-$(XCLBIN)/activations_1.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/activations.cpp
-	mkdir -p $(XCLBIN)
-	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k k_softmax -I'$(<D)' -o'$@' '$<'
 
 #$(XCLBIN)/bn.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/bn.cpp
 #	mkdir -p $(XCLBIN)
