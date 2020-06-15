@@ -19,18 +19,18 @@
 
 
 float cpu_norm(Tensor *A, string ord){
-    return cpu_norm(A->ptr, A->size, nullptr, ord);
+    return cpu_norm_(A->ptr, A->size, nullptr, ord);
 }
 
 
 void cpu_norm(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, string ord){
 #pragma omp parallel for
     for(int i=0; i<rd->index.size(); i++){
-        B->ptr[i] = cpu_norm(A->ptr, rd->index[i].size(), rd->index[i].data(), ord);
+        B->ptr[i] = cpu_norm_(A->ptr, rd->index[i].size(), rd->index[i].data(), ord);
     }
 }
 
-float cpu_norm(float *ptr, int size, int *map, string ord){
+float cpu_norm_(float *ptr, int size, int *map, string ord){
     float norm = 0.0f;
 
     if(ord=="fro"){

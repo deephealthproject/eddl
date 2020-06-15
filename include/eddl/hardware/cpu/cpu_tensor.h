@@ -179,7 +179,7 @@ void cpu_reduction_back(ReduceDescriptor *RD);
 // CPU: Linear algebra
 float cpu_norm(Tensor *A, string ord);
 void cpu_norm(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, string ord);
-float cpu_norm(float *ptr, int size, int *map, string ord);
+float cpu_norm_(float *ptr, int size, int *map, string ord);
 
 
 // CPU: Logic functions: Truth value testing
