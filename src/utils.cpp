@@ -56,7 +56,11 @@ void msg(const string& text, const string& title) {
     if(!title.empty()){
         s += " (" + title + ")";
     }
-    throw std::runtime_error(s);
+    cout<<"==================================================================\n";
+    cout<<s<<endl;
+    cout<<"==================================================================\n";
+
+    throw std::runtime_error("eddl exception");
 }
 
 
