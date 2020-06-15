@@ -272,7 +272,6 @@ void fpga_logical_not(Tensor *A, Tensor *B){
     } else {
         printf("fpga_logical_not not implemented yet\n"); exit(1);
     }
-    printf("fpga_logical_not not implemented yet\n"); exit(1);
     _profile_fpga(_FPGA_LOGICAL_NOT, 1);
 }
 

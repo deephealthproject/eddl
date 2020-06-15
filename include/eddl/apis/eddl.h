@@ -172,6 +172,45 @@ typedef NetLoss * metric;
     */
     compserv CS_GPU(const vector<int> g, int lsb,string mem);
 
+    /**
+      *  @brief Executes de code in the FPGA.
+      *
+      *  @param g  Vector of bools to set which FPGAs will be used (1=on, 0=off)
+      *  @param mem  Indicates de memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
+      *  @return     The computer service itself.
+    */
+
+//    compserv CS_FPGA(const vector<int> g);
+
+    /**
+      *  @brief Executes de code in the FPGA.
+      *
+      *  @param g  Vector of bools to set which FPGAs will be used (1=on, 0=off)
+      *  @param mem  Indicates de memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
+      *  @return     The computer service itself.
+    */
+//    compserv CS_FPGA(const vector<int> g, string mem);
+
+    /**
+      *  @brief Executes de code in the FPGA.
+      *
+      *  @param g  Vector of bools to set which FPGAs will be used (1=on, 0=off)
+      *  @param lsb  (Multi-gpu setting) Number of batches to run before synchronizing the weights of the different FPGAs
+      *  @param mem  Indicates de memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
+      *  @return     The computer service itself.
+    */
+//    compserv CS_FPGA(const vector<int> g, int lsb);
+
+    /**
+      *  @brief Executes de code in the FPGA.
+      *
+      *  @param g  Vector of bools to set which FPGAs will be used (1=on, 0=off)
+      *  @param lsb  (Multi-gpu setting) Number of batches to run before synchronizing the weights of the different FGPAs
+      *  @param mem  Indicates de memory consumption of the model. One of "full_mem" (default), "mid_mem" or "low_mem".
+      *  @return     The computer service itself.
+    */
+//    compserv CS_FPGA(const vector<int> g, int lsb,string mem);
+
 
     /**
       *  @brief Executes de code in the FPGA.

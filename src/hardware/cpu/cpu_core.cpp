@@ -195,12 +195,13 @@ void _show_profile() {
   #endif
 }
 
-void _profile_add_tensor(int size) {
-  mb_memory_needed += (float)size / 1024.0 / 1024.0;
-  printf("accumulated tensor memory: size %f\n", mb_memory_needed);
+void _profile_add_tensor(long size) {
+//  printf("tensor add: size in MB: %6.4f\n", (float)size / 1024.0 / 1024.0);
+//  mb_memory_needed += (float)size / 1024.0 / 1024.0;
+//  printf("accumulated tensor memory: size %f\n", mb_memory_needed);
 }
 
-void _profile_remove_tensor(int size) {
+void _profile_remove_tensor(long size) {
   mb_memory_needed -= (float)size / 1024.0 / 1024.0;
 }
 

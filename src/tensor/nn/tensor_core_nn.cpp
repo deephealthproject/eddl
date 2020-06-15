@@ -26,7 +26,7 @@ extern int next_fpga_tensor_id;
 #endif
 
 // Resizing tensors
-void Tensor::resize(int b, float *fptr, cl::Buffer ffpga_ptr){
+void Tensor::resize(int b, float *fptr, cl::Buffer *ffpga_ptr){
 
     if (b==shape[0]) return;
 
@@ -46,6 +46,7 @@ void Tensor::resize(int b, float *fptr, cl::Buffer ffpga_ptr){
         if (fptr==nullptr) {
           free(ptr);
           ptr = get_fmem(size,"Tensor::resize");
+	   _profile_add_tensor(size);
         } else {
           ptr=fptr;
         }
@@ -68,27 +69,26 @@ void Tensor::resize(int b, float *fptr, cl::Buffer ffpga_ptr){
 #ifdef cFPGA
     else if (isFPGA())
         {
-          if (ffpga_ptr==(cl::Buffer)nullptr) {
+          if (ffpga_ptr==(cl::Buffer *)nullptr) {
             #ifdef FPGA_DEBUG
-	    printf("    (resize: removing and creating new tensor id %d -> id %d, with size %d)\n", fpga_tensor_id, next_fpga_tensor_id, size);
+	    printf("    (resize: resize tensor id %d (size %d -> new size %d)\n", fpga_tensor_id, fpga_size, size);
             #endif
-            fpga_delete_tensor(fpga_device, fpga_ptr, fpga_tensor_id, size);
+            fpga_delete_tensor(fpga_device, fpga_ptr, fpga_tensor_id, fpga_size);
             fpga_ptr=fpga_create_tensor(fpga_device, size);
-            int ant = fpga_tensor_id;
-            fpga_tensor_id = next_fpga_tensor_id;
-            next_fpga_tensor_id++;
+	    fpga_size = size;
 	    // we also manage cpu buffers (to ease the cpu emulation flow)
 	    free(ptr);
 	    ptr = get_fmem(size,"Tensor::resize");
 
           } else {
             // The data has already been created in CPU, so we need now to write it to the FPGA buffer
-	    printf("    (resize with not-null pointer, new tensor id %d with size %d)\n", next_fpga_tensor_id, size);
-	    // asigning a new id
-	    fpga_tensor_id = next_fpga_tensor_id;
-	    next_fpga_tensor_id++;
+	    printf("    (resize with not-null pointer, tensor id %d with size %d -> new size %d)\n", next_fpga_tensor_id, fpga_size, size);
 	    ptr = fptr;
 	    fpga_ptr = ffpga_ptr;
+	    if (size != fpga_size) {
+	      //fpga_ptr = fpga_create_tensor(fpga_device, size);
+	    }
+	    fpga_size = size;
           }
 	  // we also manage cpu buffers for eigen, to ease the cpu emulation flow
           if (ndim == 2) {
@@ -100,7 +100,7 @@ void Tensor::resize(int b, float *fptr, cl::Buffer ffpga_ptr){
 }
 
 void Tensor::resize(int b) {
-  resize(b,(float *)nullptr, (cl::Buffer)nullptr);
+  resize(b,(float *)nullptr, (cl::Buffer *)nullptr);
 }
 
 void Tensor::resize(int b, Tensor *T) {

@@ -230,9 +230,9 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     // set metrics
     this->metrics = vmetrics(me);
 
-
     // forward sort
     fts();
+
     // backward sort
     bts();
     // random params
@@ -332,15 +332,12 @@ void Net::set_compserv(CompServ *cs){
         msg("EDDLL not compiled for FPGA", "Net.build");
 #else
         int nfpgas=1;  //fpga_devices();
-        if (nfpgas==0) {
-          msg("FPGA devices not found","Net.build");
-        }
-        if (cs->local_fpgas.size()>nfpgas)
-        {
-          msg("FPGA list on ComputingService is larger than available devices","Net.build");
-        }
+
+        if (nfpgas==0) msg("FPGA devices not found","Net.build");
+        if (cs->local_fpgas.size()>nfpgas) msg("FPGA list on ComputingService is larger than available devices","Net.build");
 
         fprintf(stderr,"Selecting FPGAs from CS_FPGA\n");
+
         for(int i=0;i<cs->local_fpgas.size();i++)
           if (cs->local_fpgas[i]) {
             devsel.push_back(i);
@@ -348,11 +345,33 @@ void Net::set_compserv(CompServ *cs){
           }
 
         fprintf(stderr,"\n");
-        if (!devsel.size())
-          msg("No fpga selected","Net.build");
+
+        if (!devsel.size()) msg("No fpga selected","Net.build");
 
         cout<<"split into "<<devsel.size()<<" FPGAs devices\n";
-        split(devsel.size(),DEV_FPGA);
+
+        if (!cs->isshared) {
+          if (mnets.size()){
+            // comes from a merge of nets
+            for(int j=0;j<mnets.size();j++)
+              if (!mnets[j]->isbuild){
+                mnets[j]->build(optimizer->clone(),{},{},cs,true);
+              }
+
+            cout<<"Building merge "<<endl;
+            for(int i=0;i<devsel.size();i++) {
+              vector <Net *>sm;
+              for(int j=0;j<mnets.size();j++) {
+                sm.push_back(mnets[j]->snets[i]);
+              }
+              snets.push_back(new Net(sm));
+              snets[i]->build(optimizer->clone(), losses, metrics);
+            }
+          }
+          else {
+            split(devsel.size(),DEV_FPGA);
+          }
+        }
 #endif  
         }
     } else {
@@ -454,8 +473,6 @@ void Net::resize(int b)
 
   int c=snets.size();
   int bs,m;
-
-  printf("c %d\n", c);
 
   if (batch_size<c) {
     printf("=====> Warning: batch_size (%d) lower than compserv resources (%d)\n",batch_size,c);

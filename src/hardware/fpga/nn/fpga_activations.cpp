@@ -19,7 +19,7 @@
 
 // emulation switches of functions (via cpu)
 // when set the function is run on the cpu
-char fpga_set_cpuemu_relu               = 0;
+char fpga_set_cpuemu_relu               = 1;
 char fpga_set_cpuemu_d_relu             = 1;
 char fpga_set_cpuemu_thresholded_relu   = 1;
 char fpga_set_cpuemu_d_thresholded_relu = 1;
@@ -66,8 +66,8 @@ void fpga_relu(Tensor *A, Tensor *B){
     cl_int err;
     cl::Event event;
 
-    OCL_CHECK(err, err = kernel_relu.setArg(0, (A->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_relu.setArg(1, (B->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_relu.setArg(0, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_relu.setArg(1, *(B->fpga_ptr)));
     OCL_CHECK(err, err = kernel_relu.setArg(2, (int)A->size));
 
     OCL_CHECK(err, err = q.enqueueTask(kernel_relu, NULL, &event));

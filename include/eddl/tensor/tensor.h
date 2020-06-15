@@ -99,13 +99,15 @@ public:
 
     // fpga-related information
     int fpga_device;         // fpga device
-    cl::Buffer fpga_ptr;     // open-cl buffer pointer to data
+    cl::Buffer *fpga_ptr;     // open-cl buffer pointer to data
     int fpga_tensor_id;      // for debuging and tracking tensors
+    long int fpga_size;      // buffer size (in elements)
 
     // Constructors
     Tensor();
     explicit Tensor(const vector<int> &shape, int dev=DEV_CPU);
     Tensor(const vector<int> &shape, float *fptr, int dev=DEV_CPU);
+
     Tensor(const vector<int> &shape, Tensor *T);
 
     // Destructors
@@ -132,7 +134,7 @@ public:
     void reallocate(Tensor* old_t, vector<int> *s = nullptr);
 
     // Resize
-    void resize(int b, float *fptr, cl::Buffer ffpga_ptr);
+    void resize(int b, float *fptr, cl::Buffer *ffpga_ptr);
     void resize(int b);
     void resize(int b, Tensor *T);
 

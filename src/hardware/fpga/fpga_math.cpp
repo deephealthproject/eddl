@@ -971,9 +971,9 @@ void fpga_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
   } else {
     cl_int err;
     cl::Event event;
-    OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(0, (A->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(1, (B->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(2, (C->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(0, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(1, *(B->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(2, *(C->fpga_ptr)));
     OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(3, A->shape[0]));
     OCL_CHECK(err, err = kernel_sum2D_rowwise.setArg(4, A->shape[1]));
 
@@ -1071,6 +1071,7 @@ float fpga_cpuemu_sum(Tensor *A) {
 float fpga_sum(Tensor *A) {
   float ret;
   _profile_fpga(_FPGA_SUM, 0);
+  _profile_fpga_tensor(A);
   if (fpga_set_cpuemu_sum == 1) {
     ret = fpga_cpuemu_sum(A);
   } else {

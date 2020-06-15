@@ -80,6 +80,7 @@ ReduceDescriptor::ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool
 
   if ((m==2)||(m==3))
    S=new Tensor(os,dev);
+  else S=nullptr;
 
   build_index();
 
