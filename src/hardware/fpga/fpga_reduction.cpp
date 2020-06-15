@@ -38,13 +38,22 @@ void fpga_cpuemu_reduce(Tensor *A, Tensor *B, string mode, int* map) {
   fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_reduce(Tensor *A, Tensor *B,string mode,int* map)
+void fpga_reduce(Tensor *A, Tensor *B, string mode, int *map)
 {
   _profile_fpga(_FPGA_REDUCE, 0);
   if (fpga_set_cpuemu_reduce == 1) {
-    fpga_cpuemu_reduce(A, B, mode, map);
+      fpga_cpuemu_reduce(A, B, mode, map);
   } else {
-    printf("fpga_reduce not implemented yet\n"); exit(1);
+      cl_int err;
+      cl::Event event;
+
+      OCL_CHECK(err, err = kernel_reduce.setArg(0, (A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_reduce.setArg(1, (B->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_reduce.setArg(2, (int)mode));
+      OCL_CHECK(err, err = kernel_reduce.setArg(3, (int)map));
+
+      OCL_CHECK(err, err = q.enqueueTask(kernel_reduce, NULL, &event));
+      q.finish();
   }
   _profile_fpga(_FPGA_REDUCE, 1);
 }
@@ -52,7 +61,7 @@ void fpga_reduce(Tensor *A, Tensor *B,string mode,int* map)
 // -----------------------------------------------------------------
 // reduce
 //
-void fpga_reduce(Tensor *A, Tensor *B,string mode,MapReduceDescriptor *MD)
+void fpga_reduce(Tensor *A, Tensor *B, string mode, MapReduceDescriptor *MD)
 {
     fpga_reduce(A,B,mode,MD->ind);
 }
@@ -60,8 +69,7 @@ void fpga_reduce(Tensor *A, Tensor *B,string mode,MapReduceDescriptor *MD)
 // -----------------------------------------------------------------
 // reduce_op
 //
-void fpga_cpuemu_reduce_op(Tensor *A, Tensor *B, string op, int* map) {
-  // TODO: map should be mapped to FPGA
+void fpga_cpuemu_reduce_op(Tensor *A, Tensor *B, string op, int *map) {
   int Asize = A->size * sizeof(float);
   int Bsize = B->size * sizeof(float);
   if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
@@ -71,13 +79,22 @@ void fpga_cpuemu_reduce_op(Tensor *A, Tensor *B, string op, int* map) {
   fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_reduce_op(Tensor *A, Tensor *B,string op,int* map)
+void fpga_reduce_op(Tensor *A, Tensor *B, string op, int *map)
 {
   _profile_fpga(_FPGA_REDUCE_OP, 0);
   if (fpga_set_cpuemu_reduce_op == 1) {
-    fpga_cpuemu_reduce_op(A, B, op, map);
+      fpga_cpuemu_reduce_op(A, B, op, map);
   } else {
-    printf("fpga_reduce_op not implemented yet\n"); exit(1);
+      cl_int err;
+      cl::Event event;
+
+      OCL_CHECK(err, err = kernel_reduce_op.setArg(0, (A->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_reduce_op.setArg(1, (B->fpga_ptr)));
+      OCL_CHECK(err, err = kernel_reduce_op.setArg(2, (int)op));
+      OCL_CHECK(err, err = kernel_reduce_op.setArg(3, (int)map));
+
+      OCL_CHECK(err, err = q.enqueueTask(kernel_reduce_op, NULL, &event));
+      q.finish();
   }
   _profile_fpga(_FPGA_REDUCE_OP, 1);
 }
@@ -85,7 +102,7 @@ void fpga_reduce_op(Tensor *A, Tensor *B,string op,int* map)
 // -----------------------------------------------------------------
 // reduce_op
 //
-void fpga_reduce_op(Tensor *A, Tensor *B,string op,MapReduceDescriptor *MD)
+void fpga_reduce_op(Tensor *A, Tensor *B, string op, MapReduceDescriptor *MD)
 {
   fpga_reduce_op(A,B,op,MD->ind);
 }
@@ -106,7 +123,7 @@ void fpga_cpuemu_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
 void fpga_reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
   _profile_fpga(_FPGA_REDUCE_SUM2D, 0);
   if (fpga_set_cpuemu_reduce_sum2D == 1) {
-    fpga_cpuemu_reduce_sum2D(A, B, axis, incB);
+      fpga_cpuemu_reduce_sum2D(A, B, axis, incB);
   } else {
     cl_int err;
     cl::Event event;
@@ -140,9 +157,16 @@ void fpga_reduction(ReduceDescriptor *RD){
   _profile_fpga(_FPGA_REDUCTION, 0);
   _profile_fpga_tensor(RD->I);
   if (fpga_set_cpuemu_reduction == 1) {
-    fpga_cpuemu_reduction(RD);
+      fpga_cpuemu_reduction(RD);
   } else {
-    printf("fpga_reduction not implemented yet\n"); exit(1);
+      printf("fpga_reduction not implemented yet\n"); exit(1);
+      // cl_int err;
+      // cl::Event event;
+      //
+      // OCL_CHECK(err, err = kernel_reduction.setArg(0, RD));
+      //
+      // OCL_CHECK(err, err = q.enqueueTask(kernel_reduction, NULL, &event));
+      // q.finish();
   }
   _profile_fpga(_FPGA_REDUCTION, 1);
 }
@@ -163,9 +187,16 @@ void fpga_cpuemu_reduction_back(ReduceDescriptor *RD) {
 void fpga_reduction_back(ReduceDescriptor *RD){
   _profile_fpga(_FPGA_REDUCTION_BACK, 0);
   if (fpga_set_cpuemu_reduction_back == 1) {
-    fpga_cpuemu_reduction_back(RD);
+      fpga_cpuemu_reduction_back(RD);
   } else {
-    printf("fpga_reduction_back not implemented yet\n"); exit(1);
+      printf("fpga_reduction_back not implemented yet\n"); exit(1);
+      // cl_int err;
+      // cl::Event event;
+      //
+      // OCL_CHECK(err, err = kernel_reduction.setArg(0, RD));
+      //
+      // OCL_CHECK(err, err = q.enqueueTask(kernel_reduction, NULL, &event));
+      // q.finish();
   }
  _profile_fpga(_FPGA_REDUCTION_BACK, 1);
 }

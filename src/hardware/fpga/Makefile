@@ -4,13 +4,14 @@ TARGETS := sw_emu
 DEVICE := xilinx_u200_xdma_201830_2
 TARGET := $(TARGETS)
 XCLBIN := kernels/xclbin
-XCLBIN_NAME := relu
+XCLBIN_NAME := relu_softmax
 XOCC := /opt/Xilinx/Vitis/2019.2/bin/v++
 BUILD_DIR := kernels/_x.$(TARGET).$(DEVICE)
 BUILD_DIR_tensor = $(BUILD_DIR)/$(XCLBIN_NAME)
 BINARY_CONTAINERS += $(XCLBIN)/$(XCLBIN_NAME).$(TARGET).$(DEVICE).xclbin
 
 BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/activations.$(TARGET).$(DEVICE).xo
+BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/activations_1.$(TARGET).$(DEVICE).xo
 #BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/bn.$(TARGET).$(DEVICE).xo
 #BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/comparison.$(TARGET).$(DEVICE).xo
 #BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/conv.$(TARGET).$(DEVICE).xo
@@ -23,7 +24,7 @@ BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/activations.$(TARGET).$(DEVICE).xo
 #BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/metrics.$(TARGET).$(DEVICE).xo
 #BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/pool.$(TARGET).$(DEVICE).xo
 #BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/reduction.$(TARGET).$(DEVICE).xo
-#BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/tensor_nn.$(TARGET).$(DEVICE).xo#
+#BINARY_CONTAINER_tensor_OBJS += $(XCLBIN)/tensor_nn.$(TARGET).$(DEVICE).xo
 
 
 xcl2_SRCS:=libs/xcl2.cpp
@@ -91,6 +92,10 @@ $(XCLBIN)/activations.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/activations.cp
 	mkdir -p $(XCLBIN)
 	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k k_relu -I'$(<D)' -o'$@' '$<'
 
+$(XCLBIN)/activations_1.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/activations.cpp
+	mkdir -p $(XCLBIN)
+	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k k_softmax -I'$(<D)' -o'$@' '$<'
+
 #$(XCLBIN)/bn.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/bn.cpp
 #	mkdir -p $(XCLBIN)
 #	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k bn -I'$(<D)' -o'$@' '$<'
@@ -125,7 +130,7 @@ $(XCLBIN)/activations.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/activations.cp
 
 #$(XCLBIN)/math.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/math.cpp
 #	mkdir -p $(XCLBIN)
-#	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k math -I'$(<D)' -o'$@' '$<'
+#	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_tensor) -c -k k_sum2D_rowwise -I'$(<D)' -o'$@' '$<'
 
 #$(XCLBIN)/metrics.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernels/metrics.cpp
 #	mkdir -p $(XCLBIN)

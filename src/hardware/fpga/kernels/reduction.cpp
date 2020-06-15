@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdio.h>
+#include "../../../../include/eddl/hardware/fpga/fpga_enables.h"
 extern "C" {
 
 #ifdef K_ENABLED_REDUCE
@@ -85,7 +86,7 @@ void fpga_reduction_back(void *RD) {
 
   #pragma HLS INTERFACE m_axi port=RD offset=slave bundle=gmem
   #pragma HLS INTERFACE s_axilite port=RD  bundle=control
-  
+
 }
 #endif
 

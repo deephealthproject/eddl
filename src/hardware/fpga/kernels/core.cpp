@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdio.h>
+#include "../../../../include/eddl/hardware/fpga/fpga_enables.h"
 extern "C" {
 
 #ifdef K_ENABLED_FILL_
