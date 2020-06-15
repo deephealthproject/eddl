@@ -895,12 +895,12 @@ public:
     // Math operations: Other ops
     // TODO: cross, einsum, flip, dot, etc
 
-    void sort_(bool descending=false, bool stable=false);
-    Tensor* sort(bool descending=false, bool stable=false);
-    static void sort(Tensor* A, Tensor* B, bool descending=false, bool stable=false);
+    void sort_(bool descending=false, bool stable=true);
+    Tensor* sort(bool descending=false, bool stable=true);
+    static void sort(Tensor* A, Tensor* B, bool descending=false, bool stable=true);
 
-    Tensor* argsort(bool descending=false, bool stable=false);
-    static void argsort(Tensor* A, Tensor* B, bool descending=false, bool stable=false);
+    Tensor* argsort(bool descending=false, bool stable=true);
+    static void argsort(Tensor* A, Tensor* B, bool descending=false, bool stable=true);
 
     // Indexing, Slicing, Joining, Mutating Ops *************
     static Tensor* concat(vector<Tensor*> A, unsigned int axis=0, Tensor* output=nullptr);
