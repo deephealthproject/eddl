@@ -500,6 +500,52 @@ void cpu_mean(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
 }
 
 
+float cpu_var(Tensor *A, bool unbiased){
+    return cpu_prod(A->ptr, A->size, nullptr);
+}
+
+
+void cpu_var(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
+#pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        B->ptr[i] = cpu_var(A->ptr, rd->index[i].size(), rd->index[i].data(), unbiased);
+    }
+}
+
+float cpu_var(float *ptr, int size, int *map, bool unbiased){
+    float mean = cpu_sum(ptr, size, map) / size;
+    float sum = 0.0f;
+
+    if(map == nullptr) {
+        #pragma omp parallel for reduction(+:sum)
+        for (int i = 0; i < size; ++i) {
+            float tmp = ptr[i] - mean;
+            sum += tmp * tmp;
+        }
+    }else{
+        #pragma omp parallel for reduction(+:sum)
+        for (int i = 0; i < size; ++i) {
+            float tmp = ptr[map[i]] - mean;
+            sum += tmp * tmp;
+        }
+    }
+    if(unbiased){return sum/(size-1.0f);}
+    else {return sum/(size);}
+}
+
+
+float cpu_std(Tensor *A, bool unbiased) {
+    return cpu_var(A->ptr, A->size, nullptr, unbiased);
+}
+
+void cpu_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
+#pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        B->ptr[i] = ::sqrtf(cpu_var(A->ptr, rd->index[i].size(), rd->index[i].data(), unbiased));
+    }
+}
+
+
 float cpu_median(Tensor *A) {
     int midpoint = A->size / 2.0f;
 
@@ -532,22 +578,4 @@ int cpu_mode(Tensor *A) {
 }
 
 
-float cpu_std(Tensor *A, bool unbiased){
-    return ::sqrtf(cpu_var(A, unbiased));
-}
-
-
-float cpu_var(Tensor *A, bool unbiased){
-    float mean = A->mean();
-    float sum = 0.0f;
-
-#pragma omp parallel for reduction(+:sum)
-    for (int i = 0; i < A->size; ++i) {
-        float tmp = A->ptr[i] - mean;
-        sum += tmp*tmp;
-    }
-
-    if(unbiased){return sum/(A->size-1.0f);}
-    else {return sum/(A->size);}
-}
 

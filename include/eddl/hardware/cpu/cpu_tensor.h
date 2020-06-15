@@ -143,12 +143,16 @@ float cpu_prod(float *ptr, int size, int *map);
 float cpu_mean(Tensor *A);
 void cpu_mean(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 
+float cpu_var(Tensor *A, bool unbiased);
+void cpu_var(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased);
+float cpu_var(float *ptr, int size, int *map, bool unbiased);
+
+float cpu_std(Tensor *A, bool unbiased);
+void cpu_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased);
+
+// TODO: make them reduction
 float cpu_median(Tensor *A);
 int cpu_mode(Tensor *A);
-float cpu_std(Tensor *A, bool unbiased);
-float cpu_var(Tensor *A, bool unbiased);
-
-// CPU: Reduction 2
 
 // CPU: Reduction
 void cpu_reduce(Tensor *A, Tensor *B,string mode,int* map);

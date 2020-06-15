@@ -189,57 +189,6 @@ int Tensor::mode(Tensor* A){
 }
 
 
-float Tensor::std(bool unbiased){
-    return Tensor::std(this, unbiased);
-}
-
-
-float Tensor::std(Tensor* A, bool unbiased){
-    if (A->isCPU()) {
-        return cpu_std(A, unbiased);
-    }
-#ifdef cGPU
-    else if (A->isGPU())
-    {
-        return gpu_std(A, unbiased);
-    }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-
-    msg("Invalid device", "Tensor::std");
-    return 0.0f; // Never used, this is for the compiler warning
-}
-
-
-float Tensor::var(bool unbiased){
-    return Tensor::var(this, unbiased);
-}
-
-
-float Tensor::var(Tensor* A, bool unbiased){
-    if (A->isCPU()) {
-        return cpu_var(A, unbiased);
-    }
-#ifdef cGPU
-    else if (A->isGPU())
-    {
-        return gpu_var(A, unbiased);
-    }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-
-    msg("Invalid device", "Tensor::var");
-    return 0.0f; // Never used, this is for the compiler warning
-}
-
 
 // Math operations (reductions) ************************
 
@@ -571,6 +520,126 @@ void Tensor::mean(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
     }
 #endif
 }
+
+
+
+float Tensor::std(bool unbiased){
+    return Tensor::std(this, unbiased);
+}
+
+
+float Tensor::std(Tensor* A, bool unbiased){
+    if (A->isCPU()) {
+        return cpu_std(A, unbiased);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+    {
+        return gpu_std(A, unbiased);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+    msg("Invalid device", "Tensor::std");
+    return 0.0f; // Never used, this is for the compiler warning
+}
+
+
+Tensor* Tensor::std(vector<int> axis, bool keepdims, bool unbiased){
+    // Build descriptor
+    auto rd = new ReduceDescriptor2(axis, keepdims);
+    rd->build(this->shape);
+
+    // Create output tensor
+    Tensor *t = Tensor::empty(rd->oshape, this->device);
+    Tensor::std(this, t, rd, unbiased);
+
+    delete rd;
+    return t;
+}
+
+void Tensor::std(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_std(A, B, rd, unbiased);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+    {
+        msg("Not implemented error", "Tensor::std");
+
+//        gpu_sum(A, B, rd);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+
+float Tensor::var(bool unbiased){
+    return Tensor::var(this, unbiased);
+}
+
+
+float Tensor::var(Tensor* A, bool unbiased){
+    if (A->isCPU()) {
+        return cpu_var(A, unbiased);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+    {
+        return gpu_var(A, unbiased);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+    msg("Invalid device", "Tensor::var");
+    return 0.0f; // Never used, this is for the compiler warning
+}
+
+
+Tensor* Tensor::var(vector<int> axis, bool keepdims, bool unbiased){
+    // Build descriptor
+    auto rd = new ReduceDescriptor2(axis, keepdims);
+    rd->build(this->shape);
+
+    // Create output tensor
+    Tensor *t = Tensor::empty(rd->oshape, this->device);
+    Tensor::var(this, t, rd, unbiased);
+
+    delete rd;
+    return t;
+}
+
+void Tensor::var(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_var(A, B, rd, unbiased);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+    {
+        msg("Not implemented error", "Tensor::var");
+
+//        gpu_sum(A, B, rd);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
 
 void Tensor::abs_(){
     Tensor::abs(this, this);

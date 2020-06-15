@@ -358,12 +358,6 @@ public:
     int mode();
     static int mode(Tensor* A);
 
-    float std(bool unbiased=true);
-    static float std(Tensor* A, bool unbiased=true);
-
-    float var(bool unbiased=true);
-    static float var(Tensor* A, bool unbiased=true);
-
     // Math operations (reductions) ************************
     float max();
     static float max(Tensor* A);
@@ -394,6 +388,16 @@ public:
     static float mean(Tensor* A);
     Tensor* mean(vector<int> axis, bool keepdims);
     static void mean(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+
+    float std(bool unbiased=true);
+    static float std(Tensor* A, bool unbiased=true);
+    Tensor* std(vector<int> axis, bool keepdims, bool unbiased=true);
+    static void std(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased=true);
+
+    float var(bool unbiased=true);
+    static float var(Tensor* A, bool unbiased=true);
+    Tensor* var(vector<int> axis, bool keepdims, bool unbiased=true);
+    static void var(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased=true);
 
     // Math operations (unary) ************************
     void abs_();

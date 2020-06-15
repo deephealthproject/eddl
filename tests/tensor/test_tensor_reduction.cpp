@@ -75,3 +75,4 @@ TEST(TensorTestSuite, tensor_math_reduction_mean) {
     Tensor *new_t = t1->mean({0}, false);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 }
+
