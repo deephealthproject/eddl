@@ -647,7 +647,8 @@ public:
 
     float norm(string ord="fro");
     static float norm(Tensor *A, string ord="fro");
-
+    Tensor* norm(vector<int> axis, bool keepdims, string ord="fro");
+    static void norm(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, string ord="fro");
 
     // Generating index arrays *****************************
     std::pair<unsigned int*, int> _nonzero();

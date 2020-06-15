@@ -23,8 +23,18 @@ TEST(TensorTestSuite, tensor_math_reduction_max) {
                                     1.0f, 6.0f, 0.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t = t1->max({0}, false);
-    new_t->print();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+
+    // Test #2
+    Tensor *t2_ref = new Tensor({4.0f, 8.0f, 9.0f, 6.0f},  {4}, DEV_CPU);
+    Tensor *t2 = new Tensor({
+                                    1.0f, 4.0f, 4.0f,
+                                    5.0f, 4.0f, 8.0f,
+                                    2.0f, -3.0f, 9.0f,
+                                    1.0f, 6.0f, 0.0f}, {4, 3}, DEV_CPU);
+
+    Tensor *new_t2 = t2->max({1}, false);
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
 }
 
 TEST(TensorTestSuite, tensor_math_reduction_argmax) {
@@ -37,8 +47,18 @@ TEST(TensorTestSuite, tensor_math_reduction_argmax) {
                                     1.0f, 6.0f, 0.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t = t1->argmax({0}, false);
-    new_t->print();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+
+    // Test #2
+    Tensor *t2_ref = new Tensor({1.0f, 2.0f, 2.0f, 1.0f},  {4}, DEV_CPU);
+    Tensor *t2 = new Tensor({
+                                    1.0f, 4.0f, 4.0f,
+                                    5.0f, 4.0f, 8.0f,
+                                    2.0f, -3.0f, 9.0f,
+                                    1.0f, 6.0f, 0.0f}, {4, 3}, DEV_CPU);
+
+    Tensor *new_t2 = t2->argmax({1}, false);
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
 }
 
 
@@ -52,8 +72,18 @@ TEST(TensorTestSuite, tensor_math_reduction_min) {
                                     1.0f, 6.0f, 0.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t = t1->min({0}, false);
-    new_t->print();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+
+    // Test #2
+    Tensor *t2_ref = new Tensor({1.0f, 4.0f, -3.0f, 0.0f},  {4}, DEV_CPU);
+    Tensor *t2 = new Tensor({
+                                    1.0f, 4.0f, 4.0f,
+                                    5.0f, 4.0f, 8.0f,
+                                    2.0f, -3.0f, 9.0f,
+                                    1.0f, 6.0f, 0.0f}, {4, 3}, DEV_CPU);
+
+    Tensor *new_t2 = t2->min({1}, false);
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
 }
 
 TEST(TensorTestSuite, tensor_math_reduction_argmin) {
@@ -66,19 +96,40 @@ TEST(TensorTestSuite, tensor_math_reduction_argmin) {
                                     1.0f, 6.0f, 0.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t = t1->argmin({0}, false);
-    new_t->print();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+
+    // Test #2
+    Tensor *t2_ref = new Tensor({0.0f, 1.0f, 1.0f, 2.0f},  {4}, DEV_CPU);
+    Tensor *t2 = new Tensor({
+                                    1.0f, 4.0f, 4.0f,
+                                    5.0f, 4.0f, 8.0f,
+                                    2.0f, -3.0f, 9.0f,
+                                    1.0f, 6.0f, 0.0f}, {4, 3}, DEV_CPU);
+
+    Tensor *new_t2 = t2->argmin({1}, false);
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
 }
 
 TEST(TensorTestSuite, tensor_math_reduction_sum) {
     // Test #1
-    Tensor *t1_ref = new Tensor({4.0f, 4.0f,
-                                 4.0f, 4.0f,
-                                 4.0f, 4.0f}, {3, 2}, DEV_CPU);
+    Tensor *t1_ref = new Tensor({
+                                        4.0f, 4.0f,
+                                        4.0f, 4.0f,
+                                        4.0f, 4.0f}, {3, 2}, DEV_CPU);
     Tensor *t1 = Tensor::ones({3, 2, 4}, DEV_CPU);
 
     Tensor *new_t = t1->sum({2}, false);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+
+    // Test #2
+    Tensor *t2_ref = new Tensor({
+                                        2.0f, 2.0f, 2.0f, 2.0f,
+                                        2.0f, 2.0f, 2.0f, 2.0f,
+                                        2.0f, 2.0f, 2.0f, 2.0f}, {3, 4}, DEV_CPU);
+    Tensor *t2 = Tensor::ones({3, 2, 4}, DEV_CPU);
+
+    Tensor *new_t2 = t2->sum({1}, false);
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
 }
 
 
@@ -90,6 +141,14 @@ TEST(TensorTestSuite, tensor_math_reduction_sum_abs) {
 
     Tensor *new_t = t1->sum_abs({0}, false);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+
+    // Test #1
+    Tensor *t2_ref = new Tensor({14.0f, 14.0f},  {2}, DEV_CPU);
+    Tensor *t2 = new Tensor({-4.0f, 7.0f, 3.0f,
+                             6.0f, 4.0f, -4.0f}, {2, 3}, DEV_CPU);
+
+    Tensor *new_t2 = t2->sum_abs({1}, false);
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
 }
 
 TEST(TensorTestSuite, tensor_math_reduction_prod) {
@@ -100,6 +159,17 @@ TEST(TensorTestSuite, tensor_math_reduction_prod) {
 
     Tensor *new_t = t1->prod({0}, false);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+
+    // Test #2
+    Tensor *t2_ref = new Tensor({ 16., 160.,  48.,  32. },  {4}, DEV_CPU);
+    Tensor *t2 = new Tensor({
+                                    1.0f, 4.0f, 4.0f,
+                                    5.0f, 4.0f, 8.0f,
+                                    2.0f, 3.0f, 8.0f,
+                                    1.0f, 4.0f, 8.0f}, {4, 3}, DEV_CPU);
+
+    Tensor *new_t2 = t2->prod({1}, false);
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
 }
 
 TEST(TensorTestSuite, tensor_math_reduction_mean) {
@@ -110,6 +180,17 @@ TEST(TensorTestSuite, tensor_math_reduction_mean) {
 
     Tensor *new_t = t1->mean({0}, false);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+
+    // Test #2
+    Tensor *t2_ref = new Tensor({ 3.0000, 5.6667, 4.3333, 4.3333},  {4}, DEV_CPU);
+    Tensor *t2 = new Tensor({
+                                    1.0f, 4.0f, 4.0f,
+                                    5.0f, 4.0f, 8.0f,
+                                    2.0f, 3.0f, 8.0f,
+                                    1.0f, 4.0f, 8.0f}, {4, 3}, DEV_CPU);
+
+    Tensor *new_t2 = t2->mean({1}, false);
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
 }
 
 TEST(TensorTestSuite, tensor_math_reduction_var) {
@@ -120,6 +201,17 @@ TEST(TensorTestSuite, tensor_math_reduction_var) {
 
     Tensor *new_t = t1->var({0}, false, true);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+
+    // Test #2
+    Tensor *t2_ref = new Tensor({ 3.0000,  4.3333, 10.3333, 12.3333},  {4}, DEV_CPU);
+    Tensor *t2 = new Tensor({
+                                    1.0f, 4.0f, 4.0f,
+                                    5.0f, 4.0f, 8.0f,
+                                    2.0f, 3.0f, 8.0f,
+                                    1.0f, 4.0f, 8.0f}, {4, 3}, DEV_CPU);
+
+    Tensor *new_t2 = t2->var({1}, false);
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
 }
 
 
@@ -127,10 +219,21 @@ TEST(TensorTestSuite, tensor_math_reduction_std) {
     // Test #1
     Tensor *t1_ref = new Tensor({1.4142f, 2.1213f, 0.7071f},  {3}, DEV_CPU);
     Tensor *t1 = new Tensor({4.0f, 7.0f, 3.0f,
-                             6.0f, 4.0f, 4.0f}, {2, 3}, DEV_CPU);
+                                 6.0f, 4.0f, 4.0f}, {2, 3}, DEV_CPU);
 
     Tensor *new_t = t1->std({0}, false, true);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+
+    // Test #2
+    Tensor *t2_ref = new Tensor({1.7321, 2.0817, 3.2146, 3.5119},  {4}, DEV_CPU);
+    Tensor *t2 = new Tensor({
+                                    1.0f, 4.0f, 4.0f,
+                                    5.0f, 4.0f, 8.0f,
+                                    2.0f, 3.0f, 8.0f,
+                                    1.0f, 4.0f, 8.0f}, {4, 3}, DEV_CPU);
+
+    Tensor *new_t2 = t2->std({1}, false);
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
 }
 
 
@@ -146,4 +249,40 @@ TEST(TensorTestSuite, tensor_math_reduction_mode) {
 
     Tensor *new_t = t1->mode({0}, false);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+
+    // Test #2
+    Tensor *t2_ref = new Tensor({4., 5., 2., 1.},  {4}, DEV_CPU);
+    Tensor *t2 = new Tensor({
+                                    1.0f, 4.0f, 4.0f,
+                                    5.0f, 5.0f, 8.0f,
+                                    2.0f, 3.0f, 2.0f,
+                                    1.0f, 1.0f, 1.0f}, {4, 3}, DEV_CPU);
+
+    Tensor *new_t2 = t2->mode({1}, false);
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+}
+
+
+TEST(TensorTestSuite, tensor_math_reduction_norm) {
+    // Test #1
+    Tensor *t1_ref = new Tensor({5.5678f,  7.5498f, 14.4222f},  {3}, DEV_CPU);
+    Tensor *t1 = new Tensor({
+                                    1.0f, 4.0f, 4.0f,
+                                    5.0f, 4.0f, 8.0f,
+                                    2.0f, 3.0f, 8.0f,
+                                    1.0f, 4.0f, 8.0f}, {4, 3}, DEV_CPU);
+
+    Tensor *new_t = t1->norm({0}, false);
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+
+    // Test #2
+    Tensor *t2_ref = new Tensor({5.7446f, 10.2470f, 8.7750f, 9.0000f},  {4}, DEV_CPU);
+    Tensor *t2 = new Tensor({
+                                    1.0f, 4.0f, 4.0f,
+                                    5.0f, 4.0f, 8.0f,
+                                    2.0f, 3.0f, 8.0f,
+                                    1.0f, 4.0f, 8.0f}, {4, 3}, DEV_CPU);
+
+    Tensor *new_t2 = t2->norm({1}, false);
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
 }

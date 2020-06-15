@@ -158,9 +158,6 @@ int cpu_mode(Tensor *A);
 void cpu_mode(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 int cpu_mode(float *ptr, int size, int *map);
 
-void cpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
-void cpu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
-
 // TODO: make them reduction
 float cpu_median(Tensor *A);
 
@@ -181,6 +178,9 @@ void cpu_reduction_back(ReduceDescriptor *RD);
 
 // CPU: Linear algebra
 float cpu_norm(Tensor *A, string ord);
+void cpu_norm(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, string ord);
+float cpu_norm(float *ptr, int size, int *map, string ord);
+
 
 // CPU: Logic functions: Truth value testing
 std::pair<unsigned int*, int> cpu_nonzero(Tensor *A);

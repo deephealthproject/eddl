@@ -358,13 +358,13 @@ void cpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
 
 
 std::tuple<float, int> cpu_max(float *ptr, int size, int *map) {
-    float shared_max = *ptr;
+    float shared_max = MIN_FLOAT;
     int shared_argmax = 0;
 
     #pragma omp parallel
     {
-        float max = shared_max;
-        int argmax = shared_argmax;
+        float max = MIN_FLOAT;
+        int argmax = 0;
 
         // TODO: I don't like this approach
         if(map == nullptr){
@@ -429,13 +429,13 @@ void cpu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
 
 
 std::tuple<float, int> cpu_min(float *ptr, int size, int *map) {
-    float shared_min = *ptr;
+    float shared_min = MAX_FLOAT;
     int shared_argmin = 0;
 
     #pragma omp parallel
     {
-        float min = shared_min;
-        int argmin = shared_argmin;
+        float min = MAX_FLOAT;
+        int argmin = 0;
 
         // TODO: I don't like this approach
         if(map == nullptr){
