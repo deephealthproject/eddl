@@ -140,6 +140,9 @@ float cpu_prod(Tensor *A);
 void cpu_prod(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 float cpu_prod(float *ptr, int size, int *map);
 
+float cpu_mean(Tensor *A);
+void cpu_mean(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+
 float cpu_median(Tensor *A);
 int cpu_mode(Tensor *A);
 float cpu_std(Tensor *A, bool unbiased);

@@ -132,15 +132,6 @@ void Tensor::minimum(Tensor* A, Tensor* B, Tensor* C){
 }
 
 
-float Tensor::mean(){
-    return Tensor::mean(this);
-}
-
-float Tensor::mean(Tensor* A){
-    float sum = A->sum();
-    return sum/A->size;
-}
-
 float Tensor::median(){
     return Tensor::median(this);
 }
@@ -528,6 +519,48 @@ void Tensor::prod(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
     else if (A->isGPU() && B->isGPU())
     {
         msg("Not implemented error", "Tensor::prod");
+
+//        gpu_sum(A, B, rd);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
+
+float Tensor::mean(){
+    return Tensor::mean(this);
+}
+
+float Tensor::mean(Tensor* A){
+    float sum = A->sum();
+    return sum/A->size;
+}
+
+Tensor* Tensor::mean(vector<int> axis, bool keepdims){
+    // Build descriptor
+    auto rd = new ReduceDescriptor2(axis, keepdims);
+    rd->build(this->shape);
+
+    // Create output tensor
+    Tensor *t = Tensor::empty(rd->oshape, this->device);
+    Tensor::mean(this, t, rd);
+
+    delete rd;
+    return t;
+}
+
+void Tensor::mean(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_mean(A, B, rd);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+    {
+        msg("Not implemented error", "Tensor::mean");
 
 //        gpu_sum(A, B, rd);
     }

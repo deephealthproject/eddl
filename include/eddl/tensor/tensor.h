@@ -392,7 +392,8 @@ public:
 
     float mean();
     static float mean(Tensor* A);
-
+    Tensor* mean(vector<int> axis, bool keepdims);
+    static void mean(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
     // Math operations (unary) ************************
     void abs_();

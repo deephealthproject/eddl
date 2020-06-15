@@ -487,6 +487,18 @@ float cpu_prod(float *ptr, int size, int *map) {
     return prod;
 }
 
+float cpu_mean(Tensor *A) {
+    return cpu_sum(A->ptr, A->size, nullptr) / A->size;
+}
+
+
+void cpu_mean(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    #pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        B->ptr[i] = cpu_sum(A->ptr, rd->index[i].size(), rd->index[i].data()) / rd->index[i].size();
+    }
+}
+
 
 float cpu_median(Tensor *A) {
     int midpoint = A->size / 2.0f;

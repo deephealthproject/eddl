@@ -65,3 +65,4 @@ TEST(TensorTestSuite, tensor_math_reduction_prod) {
     Tensor *new_t = t1->prod({0}, false);
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 }
+
