@@ -78,9 +78,12 @@ TEST(TensorTestSuite, tensor_math_argsort) {
     // Test #2
     Tensor* t2_cpu = Tensor::randn({10000});
     Tensor* t2_gpu = t2_cpu->clone(); t2_gpu->toGPU();
-    t2_cpu = t2_cpu->argsort(true, false);
-    t2_gpu = t2_gpu->argsort(true, false); t2_gpu->toCPU();
+    t2_cpu = t2_cpu->argsort(true, true);
+    t2_gpu = t2_gpu->argsort(true, true); t2_gpu->toCPU();
     ASSERT_TRUE(Tensor::equivalent(t2_cpu, t2_gpu, 10e-4));
+
+    // Note: I don't test the unstable sort here, because similar (or equal) float values could be
+    // sorted into different positions
 #endif
 }
 
