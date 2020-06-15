@@ -215,9 +215,9 @@ void k_normalize_(float *A, float min, float max, long int size, float Amin, flo
   #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
   #pragma HLS INTERFACE s_axilite port=A  bundle=control
   #pragma HLS INTERFACE s_axilite port=min bundle=control
-  ragma HLS INTERFACE s_axilite port=max bundle=control
-  ragma HLS INTERFACE s_axilite port=size bundle=control
-  ragma HLS INTERFACE s_axilite port=Amin bundle=control
+  #pragma HLS INTERFACE s_axilite port=max bundle=control
+  #pragma HLS INTERFACE s_axilite port=size bundle=control
+  #pragma HLS INTERFACE s_axilite port=Amin bundle=control
   #pragma HLS INTERFACE s_axilite port=Amax bundle=control
 
   // Normalize in range: 423 from [23, 562], to range [-1, 1] => 0.4842
