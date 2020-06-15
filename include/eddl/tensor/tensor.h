@@ -411,9 +411,6 @@ public:
     Tensor* mode(vector<int> axis, bool keepdims);
     static void mode(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
-    Tensor* sort(vector<int> axis, bool keepdims, bool descending=false, bool stable=false));
-    static void sort(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool descending=false, bool stable=false));
-
     // Math operations (unary) ************************
     void abs_();
     Tensor* abs();

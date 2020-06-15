@@ -236,7 +236,9 @@ int Tensor::argmax(Tensor* A){
 #ifdef cGPU
     else if (A->isGPU())
     {
-        return gpu_argmax(A);
+        msg("Not implemented error", "Tensor::gpu_argmax");
+
+//        return gpu_argmax(A);
     }
 #endif
 #ifdef cFPGA
@@ -264,7 +266,7 @@ Tensor* Tensor::argmax(vector<int> axis, bool keepdims){
 
 void Tensor::argmax(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
     if (A->isCPU() && B->isCPU()) {
-        argmax(A, B, rd);
+        cpu_argmax(A, B, rd);
     }
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
@@ -351,7 +353,9 @@ int Tensor::argmin(Tensor* A){
 #ifdef cGPU
     else if (A->isGPU())
     {
-        return gpu_argmin(A);
+        msg("Not implemented error", "Tensor::gpu_argmin");
+
+//        return gpu_argmin(A);
     }
 #endif
 #ifdef cFPGA
@@ -791,38 +795,6 @@ void Tensor::mode(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #endif
 }
 
-
-Tensor* Tensor::sort(vector<int> axis, bool keepdims, bool descending, bool stable){
-    // Build descriptor
-    auto rd = new ReduceDescriptor2(axis, keepdims);
-    rd->build(this->shape);
-
-    // Create output tensor
-    Tensor *t = Tensor::empty(rd->oshape, this->device);
-    Tensor::sort(this, t, rd, descending, stable);
-
-    delete rd;
-    return t;
-}
-
-void Tensor::sort(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool descending, bool stable){
-    if (A->isCPU() && B->isCPU()) {
-        cpu_sort(A, B, rd, descending, stable);
-    }
-#ifdef cGPU
-    else if (A->isGPU() && B->isGPU())
-    {
-        msg("Not implemented error", "Tensor::sort");
-
-//        gpu_sum(A, B, rd);
-    }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-}
 
 void Tensor::abs_(){
     Tensor::abs(this, this);

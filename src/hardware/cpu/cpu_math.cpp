@@ -335,7 +335,7 @@ float cpu_max(Tensor *A) {
 
 
 void cpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
-#pragma omp parallel for
+//    #pragma omp parallel for
     for(int i=0; i<rd->index.size(); i++){
         auto t = cpu_max(A->ptr, rd->index[i].size(), rd->index[i].data());
         B->ptr[i] = std::get<0>(t);  // get max
@@ -349,7 +349,7 @@ float cpu_argmax(Tensor *A) {
 
 
 void cpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
-#pragma omp parallel for
+//    #pragma omp parallel for
     for(int i=0; i<rd->index.size(); i++){
         auto t = cpu_max(A->ptr, rd->index[i].size(), rd->index[i].data());
         B->ptr[i] = std::get<1>(t);  // get argmax
@@ -358,13 +358,13 @@ void cpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
 
 
 std::tuple<float, int> cpu_max(float *ptr, int size, int *map) {
-    float shared_max = MIN_FLOAT;
+    float shared_max = *ptr;
     int shared_argmax = 0;
 
-        #pragma omp parallel
+    #pragma omp parallel
     {
-        float max = MIN_FLOAT;
-        int argmax = 0;
+        float max = shared_max;
+        int argmax = shared_argmax;
 
         // TODO: I don't like this approach
         if(map == nullptr){
@@ -385,7 +385,7 @@ std::tuple<float, int> cpu_max(float *ptr, int size, int *map) {
             }
         }
 
-    #pragma omp critical
+        #pragma omp critical
         {
             if(max>shared_argmax){
                 shared_argmax = max;
@@ -405,7 +405,7 @@ float cpu_min(Tensor *A) {
 
 
 void cpu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
-    #pragma omp parallel for
+//    #pragma omp parallel for
     for(int i=0; i<rd->index.size(); i++){
         auto t = cpu_min(A->ptr, rd->index[i].size(), rd->index[i].data());
         B->ptr[i] = std::get<0>(t);  // get min
@@ -420,7 +420,7 @@ float cpu_argmin(Tensor *A) {
 
 
 void cpu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
-#pragma omp parallel for
+//    #pragma omp parallel for
     for(int i=0; i<rd->index.size(); i++){
         auto t = cpu_min(A->ptr, rd->index[i].size(), rd->index[i].data());
         B->ptr[i] = std::get<1>(t);  // get argmmin
@@ -429,17 +429,17 @@ void cpu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
 
 
 std::tuple<float, int> cpu_min(float *ptr, int size, int *map) {
-    float shared_min = MAX_FLOAT;
+    float shared_min = *ptr;
     int shared_argmin = 0;
 
-#pragma omp parallel
+    #pragma omp parallel
     {
-        float min = MAX_FLOAT;
-        int argmin = 0;
+        float min = shared_min;
+        int argmin = shared_argmin;
 
         // TODO: I don't like this approach
         if(map == nullptr){
-#pragma omp for nowait
+            #pragma omp for nowait
             for (int i = 0; i < size; ++i) {
                 if(ptr[i]<min){
                     min = ptr[i];
@@ -447,7 +447,7 @@ std::tuple<float, int> cpu_min(float *ptr, int size, int *map) {
                 }
             }
         }else{
-#pragma omp for nowait
+            #pragma omp for nowait
             for (int i = 0; i < size; ++i) {
                 if(ptr[i]<min){
                     min = ptr[map[i]];
@@ -456,7 +456,7 @@ std::tuple<float, int> cpu_min(float *ptr, int size, int *map) {
             }
         }
 
-#pragma omp critical
+        #pragma omp critical
         {
             if(min<shared_argmin){
                 shared_argmin = min;
