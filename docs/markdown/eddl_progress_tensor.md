@@ -365,22 +365,24 @@ Not yet...
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
+| sort | ❌ | ❌ |
+| argsort | ❌ | ❌ |
 | argmax | ❌ | ❌ |
 | argmin | ❌ | ❌ |
 | cumprod | ❌ | ❌ |
 | cumsum | ❌ | ❌ |
-| max | ✔️ | ✔️ |
-| min | ✔️ | ✔️ |
-| mean | ✔️ | ✔️ |
+| max | ✔️ | ❌ |
+| min | ✔️ | ❌ |
+| mean | ✔️ | ❌ |
 | median | ❌ | ❌ |
 | mode | ❌ | ❌ |
 | norm | ❌ | ❌ |
-| prod | ❌ | ❌ |
+| prod | ✔️ | ❌️ |
 | std | ❌ | ❌ |
-| sum | ✔️ | ✔️ |
-| prod | ❌ | ❌ |
+| sum | ✔️ | ❌ |
+| prod | ✔️ | ❌ |
 | unique | ❌ | ❌ |
-| var | ❌ | ❌ |
+| var | ✔️ | ❌ |
 
 
 
