@@ -119,14 +119,18 @@ void cpu_maximum(Tensor* A, Tensor* B, Tensor* C);
 void cpu_minimum(Tensor* A, Tensor* B, float v);
 void cpu_minimum(Tensor* A, Tensor* B, Tensor* C);
 
-// CPU: Math (eductions)
+// CPU: Math (reductions)
 float cpu_max(Tensor *A);
 void cpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
-float cpu_max(float *ptr, int size, int *map);
+float cpu_argmax(Tensor *A);
+void cpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+std::tuple<float, int> cpu_max(float *ptr, int size, int *map);
 
 float cpu_min(Tensor *A);
 void cpu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
-float cpu_min(float *ptr, int size, int *map);
+float cpu_argmin(Tensor *A);
+void cpu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+std::tuple<float, int> cpu_min(float *ptr, int size, int *map);
 
 float cpu_sum(Tensor *A);
 void cpu_sum(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
@@ -153,6 +157,9 @@ void cpu_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased);
 int cpu_mode(Tensor *A);
 void cpu_mode(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 int cpu_mode(float *ptr, int size, int *map);
+
+void cpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+void cpu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 
 // TODO: make them reduction
 float cpu_median(Tensor *A);

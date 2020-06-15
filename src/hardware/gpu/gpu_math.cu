@@ -568,6 +568,7 @@ float gpu_sum(Tensor *A){
     return sum;
 }
 
+
 float gpu_sum_abs(Tensor *A){
     int device=A->gpu_device;
     cudaSetDevice(device);

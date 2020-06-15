@@ -123,7 +123,9 @@ void gpu_minimum(Tensor* A, Tensor* B, Tensor* C);
 // GPU: Should be reductions
 float gpu_max(Tensor *A);
 float gpu_min(Tensor *A);
+
 float gpu_sum(Tensor *A);
+
 float gpu_sum_abs(Tensor *A);
 float gpu_prod(Tensor *A);
 float gpu_median(Tensor *A);

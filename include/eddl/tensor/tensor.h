@@ -361,10 +361,20 @@ public:
     Tensor* max(vector<int> axis, bool keepdims);
     static void max(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
+    int argmax();
+    static int argmax(Tensor* A);
+    Tensor* argmax(vector<int> axis, bool keepdims);
+    static void argmax(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+
     float min();
     static float min(Tensor* A);
     Tensor* min(vector<int> axis, bool keepdims);
     static void min(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+
+    int argmin();
+    static int argmin(Tensor* A);
+    Tensor* argmin(vector<int> axis, bool keepdims);
+    static void argmin(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
     float sum();
     static float sum(Tensor* A);
@@ -400,6 +410,9 @@ public:
     static int mode(Tensor* A);
     Tensor* mode(vector<int> axis, bool keepdims);
     static void mode(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+
+    Tensor* sort(vector<int> axis, bool keepdims, bool descending=false, bool stable=false));
+    static void sort(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool descending=false, bool stable=false));
 
     // Math operations (unary) ************************
     void abs_();
