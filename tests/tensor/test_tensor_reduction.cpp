@@ -15,22 +15,58 @@ using namespace std;
 
 TEST(TensorTestSuite, tensor_math_reduction_max) {
     // Test #1
-    Tensor *t1_ref = new Tensor({6.0f, 7.0f, 4.0f},  {3}, DEV_CPU);
-    Tensor *t1 = new Tensor({4.0f, 7.0f, 3.0f,
-                                  6.0f, 4.0f, 4.0f}, {2, 3}, DEV_CPU);
+    Tensor *t1_ref = new Tensor({5.0f, 6.0f, 9.0f},  {3}, DEV_CPU);
+    Tensor *t1 = new Tensor({
+                                    1.0f, 4.0f, 4.0f,
+                                    5.0f, 4.0f, 8.0f,
+                                    2.0f, -3.0f, 9.0f,
+                                    1.0f, 6.0f, 0.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t = t1->max({0}, false);
+    new_t->print();
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+}
+
+TEST(TensorTestSuite, tensor_math_reduction_argmax) {
+    // Test #1
+    Tensor *t1_ref = new Tensor({1.0f, 3.0f, 2.0f},  {3}, DEV_CPU);
+    Tensor *t1 = new Tensor({
+                                    1.0f, 4.0f, 4.0f,
+                                    5.0f, 4.0f, 8.0f,
+                                    2.0f, -3.0f, 9.0f,
+                                    1.0f, 6.0f, 0.0f}, {4, 3}, DEV_CPU);
+
+    Tensor *new_t = t1->argmax({0}, false);
+    new_t->print();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 }
 
 
 TEST(TensorTestSuite, tensor_math_reduction_min) {
     // Test #1
-    Tensor *t1_ref = new Tensor({4.0f, 4.0f, 3.0f},  {3}, DEV_CPU);
-    Tensor *t1 = new Tensor({4.0f, 7.0f, 3.0f,
-                             6.0f, 4.0f, 4.0f}, {2, 3}, DEV_CPU);
+    Tensor *t1_ref = new Tensor({1.0f, -3.0f, 0.0f},  {3}, DEV_CPU);
+    Tensor *t1 = new Tensor({
+                                    1.0f, 4.0f, 4.0f,
+                                    5.0f, 4.0f, 8.0f,
+                                    2.0f, -3.0f, 9.0f,
+                                    1.0f, 6.0f, 0.0f}, {4, 3}, DEV_CPU);
 
     Tensor *new_t = t1->min({0}, false);
+    new_t->print();
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+}
+
+TEST(TensorTestSuite, tensor_math_reduction_argmin) {
+    // Test #1
+    Tensor *t1_ref = new Tensor({0.0f, 2.0f, 3.0f},  {3}, DEV_CPU);
+    Tensor *t1 = new Tensor({
+                                    1.0f, 4.0f, 4.0f,
+                                    5.0f, 4.0f, 8.0f,
+                                    2.0f, -3.0f, 9.0f,
+                                    1.0f, 6.0f, 0.0f}, {4, 3}, DEV_CPU);
+
+    Tensor *new_t = t1->argmin({0}, false);
+    new_t->print();
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 }
 
