@@ -549,6 +549,22 @@ float gpu_max(Tensor *A){
     return *thrust::max_element(dev_ptr, dev_ptr + A->size);
 }
 
+void gpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+
+}
+
+int gpu_argmax(Tensor *A){
+
+}
+
+void gpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+
+}
+
+std::tuple<float, int> gpu_max(float *ptr, int size, int *map){
+
+}
+
 float gpu_min(Tensor *A){
     int device=A->gpu_device;
     cudaSetDevice(device);
@@ -560,12 +576,28 @@ float gpu_min(Tensor *A){
 
 float gpu_sum(Tensor *A){
     int device=A->gpu_device;
+    int *gmap;
+
     cudaSetDevice(device);
 
     thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
-    float sum=thrust::reduce(dev_ptr, dev_ptr + A->size);
+    return thrust::reduce(dev_ptr, dev_ptr + A->size);
+}
 
-    return sum;
+void gpu_sum(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A->size);
+
+    for(int i=0; i<A->size; i++){
+        cout << i << ": " << rd->cpu_addresses[i] << endl;
+    }
+
+    setDims(A);
+    gpu_sum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, A->size);
+    check_cuda(cudaDeviceSynchronize(),"reduce_sum");
+
 }
 
 
@@ -653,5 +685,28 @@ void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC){
         check_cublas(
                 cublasSgeam(hcublas[device], CUBLAS_OP_N, CUBLAS_OP_N, m, n, &alfa, A->ptr, ldA, &beta, B->ptr, ldB,
                             C->ptr, ldC), "sum2D");
+    }
+}
+
+
+void gpu_initialize_rd(ReduceDescriptor2 *rd, int size){
+    // TODO: TEMP! I don't like this approach
+    if(rd->gpu_addresses == nullptr){
+        // Build cpu map (if needed)
+        if(rd->cpu_addresses == nullptr){
+            rd->build_map();
+        }
+
+        check_cuda(cudaMalloc((void**)&(rd->gpu_addresses), size*sizeof(int)),"create map");
+        check_cuda(cudaDeviceSynchronize(), "create");
+
+        check_cuda(cudaMemcpy(rd->gpu_addresses, rd->cpu_addresses, size*sizeof(int),cudaMemcpyHostToDevice),"copy map");
+        check_cuda(cudaDeviceSynchronize(), "copy");
+
+        // Delete cpu
+//        if(rd->cpu_addresses != nullptr){
+//            delete rd->cpu_addresses;
+//            rd->cpu_addresses = nullptr;
+//        }
     }
 }

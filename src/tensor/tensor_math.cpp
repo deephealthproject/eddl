@@ -446,9 +446,7 @@ void Tensor::sum(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
     {
-        msg("Not implemented error", "Tensor::sum");
-
-//        gpu_sum(A, B, rd);
+      gpu_sum(A, B, rd);
     }
 #endif
 #ifdef cFPGA

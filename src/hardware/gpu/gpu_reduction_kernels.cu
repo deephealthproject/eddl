@@ -16,6 +16,14 @@
 
 #include "eddl/hardware/gpu/gpu_kernels.h"
 
+__global__ void gpu_sum(float *A, float *B, int *map, int size){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x<size) {
+        atomicAdd(&B[map[thread_id_x]], A[thread_id_x]);
+    }
+
+}
 
 __global__ void reduce_mean(float *A,float *B,int *map,int size)
 {
@@ -34,8 +42,8 @@ __global__ void reduce_op_sum(float *A,float *B,int *map,int size)
   if (thread_id_x<size) {
     A[thread_id_x]+=B[map[thread_id_x]];
   }
-
 }
+
 __global__ void reduce_op_diff(float *A,float *B,int *map,int size)
 {
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;

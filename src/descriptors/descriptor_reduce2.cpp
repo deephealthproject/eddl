@@ -108,3 +108,17 @@ void ReduceDescriptor2::resize(int b){
 
 }
 
+void ReduceDescriptor2::build_map(){
+    this->free_memory();
+
+    int size = shape2size(this->ishape);
+    this->cpu_addresses = new int[size];
+
+    #pragma omp parallel for
+    for(int i=0; i<index.size(); i++) {
+        for(int j=0; j<index[i].size(); j++){
+            cpu_addresses[index[i][j]] = i;  // A[Original address] = reduction address
+        }
+    }
+
+}

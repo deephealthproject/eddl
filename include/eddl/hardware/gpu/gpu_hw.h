@@ -122,9 +122,16 @@ void gpu_minimum(Tensor* A, Tensor* B, Tensor* C);
 
 // GPU: Should be reductions
 float gpu_max(Tensor *A);
+void gpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+int gpu_argmax(Tensor *A);
+void gpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+std::tuple<float, int> gpu_max(float *ptr, int size, int *map);
+
 float gpu_min(Tensor *A);
 
 float gpu_sum(Tensor *A);
+void gpu_sum(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+float gpu_sum(float *ptr, int size, int *map);
 
 float gpu_sum_abs(Tensor *A);
 float gpu_prod(Tensor *A);
@@ -212,5 +219,6 @@ void gpu_total_sum(Tensor *A, float *tot);
 // GPU: Temp
 int* get_block_dim(int N, int blockSize);
 void copy_cpu2gpu(void* cpu_addresses, void* gpu_addresses, int size, bool delete_cpu);
+void gpu_initialize_rd(ReduceDescriptor2 *rd, int size);
 
 #endif //EDDL_GPU_HW_H
