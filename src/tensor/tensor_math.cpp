@@ -132,37 +132,6 @@ void Tensor::minimum(Tensor* A, Tensor* B, Tensor* C){
 }
 
 
-
-
-
-
-
-float Tensor::prod(){
-    return Tensor::prod(this);
-}
-
-
-float Tensor::prod(Tensor* A){  // AKA factorial
-    if (A->isCPU()) {
-        return cpu_prod(A);
-    }
-#ifdef cGPU
-    else if (A->isGPU())
-    {
-        return gpu_prod(A);
-    }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-
-    msg("Invalid device", "Tensor::prod");
-    return 0.0f; // Never used, this is for the compiler warning
-}
-
-
 float Tensor::mean(){
     return Tensor::mean(this);
 }
@@ -512,6 +481,63 @@ void Tensor::sum_abs(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #endif
 }
 
+float Tensor::prod(){
+    return Tensor::prod(this);
+}
+
+
+float Tensor::prod(Tensor* A){  // AKA factorial
+    if (A->isCPU()) {
+        return cpu_prod(A);
+    }
+#ifdef cGPU
+    else if (A->isGPU())
+    {
+        return gpu_prod(A);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+    msg("Invalid device", "Tensor::prod");
+    return 0.0f; // Never used, this is for the compiler warning
+}
+
+
+Tensor* Tensor::prod(vector<int> axis, bool keepdims){
+    // Build descriptor
+    auto rd = new ReduceDescriptor2(axis, keepdims);
+    rd->build(this->shape);
+
+    // Create output tensor
+    Tensor *t = Tensor::empty(rd->oshape, this->device);
+    Tensor::prod(this, t, rd);
+
+    delete rd;
+    return t;
+}
+
+void Tensor::prod(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_prod(A, B, rd);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+    {
+        msg("Not implemented error", "Tensor::prod");
+
+//        gpu_sum(A, B, rd);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
 
 void Tensor::abs_(){
     Tensor::abs(this, this);

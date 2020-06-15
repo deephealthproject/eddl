@@ -351,11 +351,6 @@ public:
     static void minimum(Tensor* A, Tensor* B, Tensor* C);
 
     // Math operations (single-value) ************************
-    float prod();
-    static float prod(Tensor* A);
-
-    float mean();
-    static float mean(Tensor* A);
 
     float median();
     static float median(Tensor* A);
@@ -389,6 +384,15 @@ public:
     static float sum_abs(Tensor* A);
     Tensor* sum_abs(vector<int> axis, bool keepdims);
     static void sum_abs(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+
+    float prod();
+    static float prod(Tensor* A);
+    Tensor* prod(vector<int> axis, bool keepdims);
+    static void prod(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+
+    float mean();
+    static float mean(Tensor* A);
+
 
     // Math operations (unary) ************************
     void abs_();

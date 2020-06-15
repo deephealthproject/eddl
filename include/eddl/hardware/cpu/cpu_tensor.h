@@ -137,6 +137,9 @@ void cpu_sum_abs(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 float cpu_sum_abs(float *ptr, int size, int *map);
 
 float cpu_prod(Tensor *A);
+void cpu_prod(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+float cpu_prod(float *ptr, int size, int *map);
+
 float cpu_median(Tensor *A);
 int cpu_mode(Tensor *A);
 float cpu_std(Tensor *A, bool unbiased);

@@ -460,6 +460,33 @@ float cpu_sum_abs(float *ptr, int size, int *map) {
 }
 
 
+float cpu_prod(Tensor *A) {
+    return cpu_prod(A->ptr, A->size, nullptr);
+}
+
+
+void cpu_prod(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+#pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        B->ptr[i] = cpu_prod(A->ptr, rd->index[i].size(), rd->index[i].data());
+    }
+}
+
+float cpu_prod(float *ptr, int size, int *map) {
+    float prod = 1.0f;
+
+    // TODO: I don't like this approach
+    if(map == nullptr){
+#pragma omp parallel for reduction(*:prod)
+        for (int i = 0; i < size; ++i) { prod *= ptr[i]; }
+    }else{
+#pragma omp parallel for reduction(*:prod)
+        for (int i = 0; i < size; ++i) { prod *= ptr[map[i]]; }
+    }
+
+    return prod;
+}
+
 
 float cpu_median(Tensor *A) {
     int midpoint = A->size / 2.0f;
@@ -471,17 +498,6 @@ float cpu_median(Tensor *A) {
     }
 }
 
-
-float cpu_prod(Tensor *A) {
-    float prod = 1.0f;
-
-#pragma omp parallel for reduction(*:prod)
-    for (int i = 0; i < A->size; ++i) {
-        prod *= A->ptr[i];
-    }
-
-    return prod;
-}
 
 int cpu_mode(Tensor *A) {
     std::unordered_map<int, int> table;
