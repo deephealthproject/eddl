@@ -365,10 +365,8 @@ Not yet...
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| sort | ❌ | ❌ |
-| argsort | ❌ | ❌ |
-| argmax | ❌ | ❌ |
-| argmin | ❌ | ❌ |
+| argmax | ✔️ | ❌ |
+| argmin | ✔️ | ❌ |
 | cumprod | ❌ | ❌ |
 | cumsum | ❌ | ❌ |
 | max | ✔️ | ❌ |
