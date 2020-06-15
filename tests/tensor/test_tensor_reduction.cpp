@@ -76,3 +76,23 @@ TEST(TensorTestSuite, tensor_math_reduction_mean) {
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 }
 
+TEST(TensorTestSuite, tensor_math_reduction_var) {
+    // Test #1
+    Tensor *t1_ref = new Tensor({2.0f, 4.5f, 0.5f},  {3}, DEV_CPU);
+    Tensor *t1 = new Tensor({4.0f, 7.0f, 3.0f,
+                             6.0f, 4.0f, 4.0f}, {2, 3}, DEV_CPU);
+
+    Tensor *new_t = t1->var({0}, false, true);
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+}
+
+
+TEST(TensorTestSuite, tensor_math_reduction_std) {
+    // Test #1
+    Tensor *t1_ref = new Tensor({1.4142f, 2.1213f, 0.7071f},  {3}, DEV_CPU);
+    Tensor *t1 = new Tensor({4.0f, 7.0f, 3.0f,
+                             6.0f, 4.0f, 4.0f}, {2, 3}, DEV_CPU);
+
+    Tensor *new_t = t1->std({0}, false, true);
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+}
