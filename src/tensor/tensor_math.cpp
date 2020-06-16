@@ -234,9 +234,7 @@ int Tensor::argmax(Tensor* A){
 #ifdef cGPU
     else if (A->isGPU())
     {
-        msg("Not implemented error", "Tensor::gpu_argmax");
-
-//        return gpu_argmax(A);
+        return gpu_argmax(A);
     }
 #endif
 #ifdef cFPGA

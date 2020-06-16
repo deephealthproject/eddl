@@ -17,6 +17,14 @@
 #include <thrust/reduce.h>
 #include <thrust/functional.h>
 #include <thrust/extrema.h>
+#include <thrust/device_vector.h>
+#include <thrust/tuple.h>
+#include <thrust/reduce.h>
+#include <thrust/fill.h>
+#include <thrust/generate.h>
+#include <thrust/sort.h>
+#include <thrust/sequence.h>
+#include <thrust/copy.h>
 
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_kernels.h"
@@ -52,6 +60,29 @@ struct variance_shift_sum : std::unary_function<float, float>{
         return tmp*tmp;
     }
 };
+
+template <class T>
+struct bigger_tuple {
+    __device__ __host__
+    tuple<T,int> operator()(const tuple<T,int> &a, const tuple<T,int> &b)
+    {
+        if (a > b) return a;
+        else return b;
+    }
+
+};
+
+template <class T>
+int max_index(thrust::device_vector<T>& vec) {
+
+    // create implicit index sequence [0, 1, 2, ... )
+    thrust::counting_iterator<int> begin(0); thrust::counting_iterator<int> end(vec.size());
+    tuple<T,int> init(vec[0],0);
+    tuple<T,int> smallest;
+
+    smallest = reduce(make_zip_iterator(make_tuple(vec.begin(), begin)), make_zip_iterator(make_tuple(vec.end(), end)), init, bigger_tuple<T>());
+    return get<1>(smallest);
+}
 
 // GPU: Math (in-place) ********************************************
 void gpu_abs(Tensor *A, Tensor *B){
@@ -561,7 +592,14 @@ void gpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
 }
 
 int gpu_argmax(Tensor *A){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
 
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    thrust::device_ptr<float> max_ptr = thrust::max_element(dev_ptr, dev_ptr+A->size);
+
+    int index = (max_ptr - dev_ptr);
+    return index;
 }
 
 void gpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
@@ -597,7 +635,14 @@ void gpu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
 }
 
 int gpu_argmin(Tensor *A){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
 
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    thrust::device_ptr<float> min_ptr = thrust::min_element(dev_ptr, dev_ptr+A->size);
+
+    int index = (min_ptr - dev_ptr);
+    return index;
 }
 
 void gpu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
