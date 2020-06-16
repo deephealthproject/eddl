@@ -349,16 +349,20 @@ Not yet...
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| max | ✔️ | ✔️ | |
-| mean | ✔️ | ✔️ | |
-| median | ✔️ | ✔ | |
-| min | ✔️ | ✔️ | |
-| mode | ✔️  | ❌ | |
-| prod | ✔️ | ✔️ | |
-| std |  ✔️ | ✔️ | |
-| sum | ✔️ | ✔️ | |
-| sum_abs | ✔️ | ✔️ |  |
-| var |  ✔️ | ✔️ |  |
+| argmax | ✔️ | ❌️ |
+| argmin | ✔️ | ❌ |
+| max | ✔️ | ✔️ |
+| min | ✔️ | ✔️ |
+| mean | ✔️ | ✔ |
+| median | ✔️ | ✔ |
+| mode | ✔️ | ❌ |
+| norm | ✔ | ✔️ |
+| prod | ✔️ | ✔ |
+| std | ✔ | ✔ |
+| sum | ✔️ |  ✔ |
+| sum_abs | ✔️ |  ✔ |
+| var | ✔️ |  ✔ |
+
 
 
 ### Reductions
