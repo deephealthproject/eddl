@@ -13,11 +13,6 @@
 
 // emulation switches of functions (via cpu)
 // when set the function is run on the cpu
-char fpga_set_cpuemu_all           = 1;
-char fpga_set_cpuemu_any           = 1;
-char fpga_set_cpuemu_isfinite      = 1;
-char fpga_set_cpuemu_isinf         = 1;
-char fpga_set_cpuemu_isnan         = 1;
 char fpga_set_cpuemu_isneginf      = 1;
 char fpga_set_cpuemu_isposinf      = 1;
 char fpga_set_cpuemu_logical_and   = 1;
@@ -50,18 +45,18 @@ bool fpga_cpuemu_all(Tensor *A) {
 bool fpga_all(Tensor *A){
     int ret;
     _profile_fpga(_FPGA_ALL, 0);
-    if (fpga_set_cpuemu_all == 1) {
-        ret = fpga_cpuemu_all(A);
-    } else {
-        cl_int err;
-        cl::Event event;
+#ifndef K_ENABLED_ALL
+    ret = fpga_cpuemu_all(A);
+#else
+    cl_int err;
+    cl::Event event;
 
-        OCL_CHECK(err, err = kernel_all.setArg(0, *(A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_all.setArg(1, (long int)A->size));
+    OCL_CHECK(err, err = kernel_all.setArg(0, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_all.setArg(1, (long int)A->size));
 
-        OCL_CHECK(err, err = q.enqueueTask(kernel_all, NULL, &event));
-        q.finish();
-    }
+    OCL_CHECK(err, err = q.enqueueTask(kernel_all, NULL, &event));
+    q.finish();
+#endif
     _profile_fpga(_FPGA_ALL, 1);
     return ret;
 }
@@ -80,18 +75,18 @@ bool fpga_cpuemu_any(Tensor *A) {
 bool fpga_any(Tensor *A){
     bool res = false;
     _profile_fpga(_FPGA_ANY, 0);
-    if (fpga_set_cpuemu_any == 1) {
-        res = fpga_cpuemu_any(A);
-    } else {
-        cl_int err;
-        cl::Event event;
+#ifndef K_ENABLED_ANY
+    res = fpga_cpuemu_any(A);
+#else
+    cl_int err;
+    cl::Event event;
 
-        OCL_CHECK(err, err = kernel_any.setArg(0, *(A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_any.setArg(1, (long int)A->size));
+    OCL_CHECK(err, err = kernel_any.setArg(0, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_any.setArg(1, (long int)A->size));
 
-        OCL_CHECK(err, err = q.enqueueTask(kernel_any, NULL, &event));
-        q.finish();
-    }
+    OCL_CHECK(err, err = q.enqueueTask(kernel_any, NULL, &event));
+    q.finish();
+#endif
     _profile_fpga(_FPGA_ANY, 1);
     return res;
 }
@@ -113,19 +108,19 @@ void fpga_cpuemu_isfinite(Tensor *A, Tensor *B) {
 
 void fpga_isfinite(Tensor *A, Tensor* B){
     _profile_fpga(_FPGA_ISFINITE, 0);
-    if (fpga_set_cpuemu_isfinite == 1) {
-        fpga_cpuemu_isfinite(A, B);
-    } else {
-        cl_int err;
-        cl::Event event;
+#ifndef K_ENABLED_ISFINITE
+    fpga_cpuemu_isfinite(A, B);
+#else
+    cl_int err;
+    cl::Event event;
 
-        OCL_CHECK(err, err = kernel_isfinite.setArg(0, *(A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_isfinite.setArg(1, *(B->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_isfinite.setArg(2, (long int)A->size));
+    OCL_CHECK(err, err = kernel_isfinite.setArg(0, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_isfinite.setArg(1, *(B->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_isfinite.setArg(2, (long int)A->size));
 
-        OCL_CHECK(err, err = q.enqueueTask(kernel_isfinite, NULL, &event));
-        q.finish();
-    }
+    OCL_CHECK(err, err = q.enqueueTask(kernel_isfinite, NULL, &event));
+    q.finish();
+#endif
     _profile_fpga(_FPGA_ISFINITE, 1);
 }
 
@@ -144,19 +139,19 @@ void fpga_cpuemu_isinf(Tensor *A, Tensor *B) {
 
 void fpga_isinf(Tensor *A, Tensor* B){
     _profile_fpga(_FPGA_ISINF, 0);
-    if (fpga_set_cpuemu_isinf == 1) {
-        fpga_cpuemu_isinf(A, B);
-    } else {
-        cl_int err;
-        cl::Event event;
+#ifndef K_ENABLED_ISINF
+    fpga_cpuemu_isinf(A, B);
+#else
+    cl_int err;
+    cl::Event event;
 
-        OCL_CHECK(err, err = kernel_isinf.setArg(0, *(A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_isinf.setArg(1, *(B->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_isinf.setArg(2, (long int)A->size));
+    OCL_CHECK(err, err = kernel_isinf.setArg(0, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_isinf.setArg(1, *(B->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_isinf.setArg(2, (long int)A->size));
 
-        OCL_CHECK(err, err = q.enqueueTask(kernel_isinf, NULL, &event));
-        q.finish();
-    }
+    OCL_CHECK(err, err = q.enqueueTask(kernel_isinf, NULL, &event));
+    q.finish();
+#endif
     _profile_fpga(_FPGA_ISINF, 1);
 }
 
@@ -175,19 +170,19 @@ void fpga_cpuemu_isnan(Tensor *A, Tensor *B) {
 
 void fpga_isnan(Tensor *A, Tensor* B){
     _profile_fpga(_FPGA_ISNAN, 0);
-    if (fpga_set_cpuemu_isnan == 1) {
-        fpga_cpuemu_isnan(A, B);
-    } else {
-        cl_int err;
-        cl::Event event;
+#ifndef K_ENABLED_ISNAN
+    fpga_cpuemu_isnan(A, B);
+#else
+    cl_int err;
+    cl::Event event;
 
-        OCL_CHECK(err, err = kernel_isnan.setArg(0, *(A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_isnan.setArg(1, *(B->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_isnan.setArg(2, (long int)A->size));
+    OCL_CHECK(err, err = kernel_isnan.setArg(0, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_isnan.setArg(1, *(B->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_isnan.setArg(2, (long int)A->size));
 
-        OCL_CHECK(err, err = q.enqueueTask(kernel_isnan, NULL, &event));
-        q.finish();
-    }
+    OCL_CHECK(err, err = q.enqueueTask(kernel_isnan, NULL, &event));
+    q.finish();
+#endif
     _profile_fpga(_FPGA_ISNAN, 1);
 }
 
