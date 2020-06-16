@@ -838,11 +838,11 @@ void fpga_init(){ // initialize only once
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_SUM2D_ROWWISE
-    OCL_CHECK(err, kernel_sum2D_rowwise = cl::Kernel(program,"k_sum2D_rowwise", &err));
+    OCL_CHECK(err, kernel_sum2D_rowwise = cl::Kernel(program,"k_sum2d_rowwise", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_SUM2D_COLWISE
-    OCL_CHECK(err, kernel_sum2D_colwise = cl::Kernel(program,"k_sum2D_colwise", &err));
+    OCL_CHECK(err, kernel_sum2D_colwise = cl::Kernel(program,"k_sum2d_colwise", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_MAX
