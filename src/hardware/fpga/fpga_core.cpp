@@ -661,8 +661,8 @@ void fpga_init(){ // initialize only once
     OCL_CHECK(err, kernel_reduce_op = cl::Kernel(program,"k_reduce_op", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
-    #ifdef K_ENABLED_reduce_sum2D
-    OCL_CHECK(err, kernel_reduce_sum2D = cl::Kernel(program,"k_reduce_sum2D", &err));
+    #ifdef K_ENABLED_REDUCE_SUM2D
+    OCL_CHECK(err, kernel_reduce_sum2D = cl::Kernel(program,"k_reduce_sum2d", &err));
      if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_REDUCTION

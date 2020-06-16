@@ -2,7 +2,7 @@
 // implemented on the FPGA
 
 //Activations
-#define K_ENABLED_RELU
+//#define K_ENABLED_RELU
 // #define K_ENABLED_D_RELU
 // #define K_ENABLED_THRESHOLDED_RELU
 // #define K_ENABLED_D_TRHESHOLDED_RELU
@@ -150,7 +150,7 @@
 // #define K_ENABLED_REDUCE2
 // #define K_ENABLED_REDUCE_OP
 // #define K_ENABLED_OPT2
-// #define K_ENABLED_REDUCE_SUM2D
+#define K_ENABLED_REDUCE_SUM2D
 // #define K_ENABLED_REDUCTION
 // #define K_ENABLED_REDUCTION_BACK
 
