@@ -2,15 +2,17 @@
 #include <stdio.h>
 extern "C" {
 
-float k_sum(float *A, long int size) {
+void k_sum(float *A, long int size, float *sum) {
 
   #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
   #pragma HLS INTERFACE s_axilite port=A  bundle=control
   #pragma HLS INTERFACE s_axilite port=size bundle=control
-  #pragma HLS INTERFACE s_axilite port=sum bundle=control //return
+  #pragma HLS INTERFACE m_axi port=sum offset=slave bundle=gmem
+  #pragma HLS INTERFACE s_axilite port=sum bundle=control
 
-  float sum = 0.0;
-  for (int i = 0; i < size; ++i) sum += A[i];
-}
+  float local_sum = 0.0;
+  for (int i = 0; i < size; ++i) local_sum += A[i];
+  *sum = local_sum;
+  }
 
 }
