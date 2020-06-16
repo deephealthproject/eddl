@@ -35,6 +35,19 @@ TEST(TensorTestSuite, tensor_math_reduction_max) {
 
     Tensor *new_t2 = t2->max({1}, false);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::randn({10, 10});  // High mismatch CPU/GPU
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    Tensor *t_cpu_max = t_cpu->max({1}, false);
+    Tensor *t_gpu_max = t_gpu->max({1}, false); t_gpu_max->toCPU();
+    t_cpu_max->print();
+    t_gpu_max->print();
+
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_max, t_gpu_max, 10e-4));
+#endif
 }
 
 TEST(TensorTestSuite, tensor_math_reduction_argmax) {
@@ -59,6 +72,19 @@ TEST(TensorTestSuite, tensor_math_reduction_argmax) {
 
     Tensor *new_t2 = t2->argmax({1}, false);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::randn({10, 10});  // High mismatch CPU/GPU
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    Tensor *t_cpu_argmax = t_cpu->argmax({1}, false);
+    Tensor *t_gpu_argmax = t_gpu->argmax({1}, false); t_gpu_argmax->toCPU();
+    t_cpu_argmax->print();
+    t_gpu_argmax->print();
+
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_argmax, t_gpu_argmax, 10e-4));
+#endif
 }
 
 
@@ -84,6 +110,19 @@ TEST(TensorTestSuite, tensor_math_reduction_min) {
 
     Tensor *new_t2 = t2->min({1}, false);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::randn({10, 10});  // High mismatch CPU/GPU
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    Tensor *t_cpu_min = t_cpu->min({1}, false);
+    Tensor *t_gpu_min = t_gpu->min({1}, false); t_gpu_min->toCPU();
+    t_cpu_min->print();
+    t_gpu_min->print();
+
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_min, t_gpu_min, 10e-4));
+#endif
 }
 
 TEST(TensorTestSuite, tensor_math_reduction_argmin) {
@@ -108,6 +147,19 @@ TEST(TensorTestSuite, tensor_math_reduction_argmin) {
 
     Tensor *new_t2 = t2->argmin({1}, false);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::randn({10, 10});  // High mismatch CPU/GPU
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    Tensor *t_cpu_argmin = t_cpu->argmin({1}, false);
+    Tensor *t_gpu_argmin = t_gpu->argmin({1}, false); t_gpu_argmin->toCPU();
+    t_cpu_argmin->print();
+    t_gpu_argmin->print();
+
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_argmin, t_gpu_argmin, 10e-4));
+#endif
 }
 
 TEST(TensorTestSuite, tensor_math_reduction_sum) {
