@@ -365,10 +365,10 @@ Not yet...
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| argmax | ✔️ | ❌ |
-| argmin | ✔️ | ❌ |
-| max | ✔️ | ❌ |
-| min | ✔️ | ❌ |
+| argmax | ✔️ | ✔️ |
+| argmin | ✔️ | ✔️ |
+| max | ✔️ | ✔️ |
+| min | ✔️ | ✔️ |
 | mean | ✔️ | ✔ |
 | median | ❌ | ❌ |
 | mode | ✔️ | ❌ |
