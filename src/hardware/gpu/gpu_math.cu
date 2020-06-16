@@ -852,9 +852,9 @@ void gpu_initialize_rd(ReduceDescriptor2 *rd, Tensor *A, Tensor *B, bool reverse
         check_cuda(cudaDeviceSynchronize(), "copy");
 
         // Delete cpu
-//        if(rd->cpu_addresses != nullptr){
-//            delete rd->cpu_addresses;
-//            rd->cpu_addresses = nullptr;
-//        }
+        if(rd->cpu_addresses != nullptr){
+            delete rd->cpu_addresses;
+            rd->cpu_addresses = nullptr;
+        }
     }
 }
