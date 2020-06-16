@@ -1212,7 +1212,7 @@ TEST(TensorTestSuite, tensor_math_unary_argmax){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
 
     float t_cpu_argmax = t_cpu->argmax();
@@ -1271,7 +1271,7 @@ TEST(TensorTestSuite, tensor_math_unary_argmin){
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randu({3, 1000, 1000});
+    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
 
     float t_cpu_argmin = t_cpu->argmin();

@@ -598,8 +598,9 @@ int gpu_argmax(Tensor *A){
     thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
     thrust::device_ptr<float> max_ptr = thrust::max_element(dev_ptr, dev_ptr+A->size);
 
-    int index = (max_ptr - dev_ptr);
-    return index;
+    //float max = *max_ptr;
+    int argmax = (max_ptr - dev_ptr);
+    return argmax;
 }
 
 void gpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
@@ -641,8 +642,9 @@ int gpu_argmin(Tensor *A){
     thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
     thrust::device_ptr<float> min_ptr = thrust::min_element(dev_ptr, dev_ptr+A->size);
 
-    int index = (min_ptr - dev_ptr);
-    return index;
+//    float min = *min_ptr;
+    int argmin = (min_ptr - dev_ptr);
+    return argmin;
 }
 
 void gpu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
