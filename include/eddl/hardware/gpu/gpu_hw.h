@@ -122,14 +122,38 @@ void gpu_minimum(Tensor* A, Tensor* B, Tensor* C);
 
 // GPU: Should be reductions
 float gpu_max(Tensor *A);
+void gpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+
+int gpu_argmax(Tensor *A);
+void gpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+
 float gpu_min(Tensor *A);
+void gpu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+
+int gpu_argmin(Tensor *A);
+void gpu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+
 float gpu_sum(Tensor *A);
+void gpu_sum(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+
 float gpu_sum_abs(Tensor *A);
+void gpu_sum_abs(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+
 float gpu_prod(Tensor *A);
+void gpu_prod(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+
+float gpu_mean(Tensor *A);
+void gpu_mean(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+
+float gpu_var(Tensor *A, bool unbiased);
+void gpu_var(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased);
+
+float gpu_std(Tensor *A, bool unbiased);
+void gpu_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased);
+
 float gpu_median(Tensor *A);
 int gpu_mode(Tensor *A);  // TODO: Not implemented
-float gpu_std(Tensor *A, bool unbiased);
-float gpu_var(Tensor *A, bool unbiased);
+
 
 // GPU: Reduction
 void gpu_reduce(Tensor *A, Tensor *B,string mode,int* map);
@@ -210,5 +234,6 @@ void gpu_total_sum(Tensor *A, float *tot);
 // GPU: Temp
 int* get_block_dim(int N, int blockSize);
 void copy_cpu2gpu(void* cpu_addresses, void* gpu_addresses, int size, bool delete_cpu);
+void gpu_initialize_rd(ReduceDescriptor2 *rd, Tensor *A, Tensor *B, bool reverse=false);
 
 #endif //EDDL_GPU_HW_H

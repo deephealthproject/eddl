@@ -16,6 +16,120 @@
 
 #include "eddl/hardware/gpu/gpu_kernels.h"
 
+__global__ void gpu_max(float *A, float *B, int *map, int size, int size_reduction, bool argmax){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x<size) {
+        float tmp_max = A[map[thread_id_x*size_reduction+0]];
+        int tmp_argmax = 0;
+
+        float val;
+        for(int i=1; i<size_reduction; i++){
+            val = A[map[thread_id_x*size_reduction+i]];
+            if(val > tmp_max){
+                tmp_max = val;
+                tmp_argmax = i;
+            }
+        }
+        
+        // Choose if we're getting the maximum value or the position
+        if(argmax) {
+            B[thread_id_x] = (float)tmp_argmax;
+        }else{
+            B[thread_id_x] = tmp_max;
+        }
+    }
+}
+
+__global__ void gpu_min(float *A, float *B, int *map, int size, int size_reduction, bool argmin){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x<size) {
+        float tmp_min = A[map[thread_id_x*size_reduction+0]];
+        int tmp_argmin = 0;
+
+        float val;
+        for(int i=1; i<size_reduction; i++){
+            val = A[map[thread_id_x*size_reduction+i]];
+            if(val < tmp_min){
+                tmp_min = val;
+                tmp_argmin = i;
+            }
+        }
+
+        // Choose if we're getting the minimum value or the position
+        if(argmin) {
+            B[thread_id_x] = (float)tmp_argmin;
+        }else{
+            B[thread_id_x] = tmp_min;
+        }
+    }
+}
+
+__global__ void gpu_sum(float *A, float *B, int *map, int size){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x<size) {
+        atomicAdd(&B[map[thread_id_x]], A[thread_id_x]);
+    }
+}
+
+__global__ void gpu_sum_abs(float *A, float *B, int *map, int size){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x<size) {
+        atomicAdd(&B[map[thread_id_x]], abs(A[thread_id_x]));
+    }
+}
+
+__global__ void gpu_prod(float *A, float *B, int *map, int size, int size_reduction){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x<size) {
+        float tmp = 1.0f;
+        for(int i=0; i<size_reduction; i++){
+            tmp *= A[map[thread_id_x*size_reduction+i]];
+        }
+
+        B[thread_id_x] = tmp;
+    }
+}
+
+__global__ void gpu_mean(float *A, float *B, int *map, int size, int size_reduction){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x<size) {
+        float tmp = 0.0f;
+        for(int i=0; i<size_reduction; i++){
+            tmp += A[map[thread_id_x*size_reduction+i]];
+        }
+
+        B[thread_id_x] = tmp/(float)size_reduction;
+    }
+}
+
+__global__ void gpu_var(float *A, float *B, int *map, int size, int size_reduction, bool unbiased){
+    // IMPORTANT TRICK: B ALREADY CONTAINS THE MEAN!!!!!!!
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x<size) {
+        float tmp;
+        float sum = 0.0f;
+        for(int i=0; i<size_reduction; i++){
+            tmp = A[map[thread_id_x*size_reduction+i]] - B[thread_id_x];
+            sum += tmp*tmp;
+        }
+
+        if(unbiased){
+            B[thread_id_x] = sum/((float)size_reduction-1.0f);
+        } else {
+            B[thread_id_x] = sum/(float)size_reduction;
+        }
+    }
+}
+
+
+/* PREVIOUS REDUCES ***********************************/
 
 __global__ void reduce_mean(float *A,float *B,int *map,int size)
 {
@@ -34,8 +148,8 @@ __global__ void reduce_op_sum(float *A,float *B,int *map,int size)
   if (thread_id_x<size) {
     A[thread_id_x]+=B[map[thread_id_x]];
   }
-
 }
+
 __global__ void reduce_op_diff(float *A,float *B,int *map,int size)
 {
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;

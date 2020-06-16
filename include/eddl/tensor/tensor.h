@@ -352,35 +352,64 @@ public:
 
     // Math operations (single-value) ************************
 
-    float max();
-    static float max(Tensor* A);
-
-    float min();
-    static float min(Tensor* A);
-
-    float sum();
-    static float sum(Tensor* A);
-
-    float sum_abs();
-    static float sum_abs(Tensor* A);
-
-    float prod();
-    static float prod(Tensor* A);
-
-    float mean();
-    static float mean(Tensor* A);
-
     float median();
     static float median(Tensor* A);
 
-    int mode();
-    static int mode(Tensor* A);
+    // Math operations (reductions) ************************
+    float max();
+    static float max(Tensor* A);
+    Tensor* max(vector<int> axis, bool keepdims);
+    static void max(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+
+    int argmax();
+    static int argmax(Tensor* A);
+    Tensor* argmax(vector<int> axis, bool keepdims);
+    static void argmax(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+
+    float min();
+    static float min(Tensor* A);
+    Tensor* min(vector<int> axis, bool keepdims);
+    static void min(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+
+    int argmin();
+    static int argmin(Tensor* A);
+    Tensor* argmin(vector<int> axis, bool keepdims);
+    static void argmin(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+
+    float sum();
+    static float sum(Tensor* A);
+    Tensor* sum(vector<int> axis, bool keepdims);
+    static void sum(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+
+    float sum_abs();
+    static float sum_abs(Tensor* A);
+    Tensor* sum_abs(vector<int> axis, bool keepdims);
+    static void sum_abs(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+
+    float prod();
+    static float prod(Tensor* A);
+    Tensor* prod(vector<int> axis, bool keepdims);
+    static void prod(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+
+    float mean();
+    static float mean(Tensor* A);
+    Tensor* mean(vector<int> axis, bool keepdims);
+    static void mean(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
     float std(bool unbiased=true);
     static float std(Tensor* A, bool unbiased=true);
+    Tensor* std(vector<int> axis, bool keepdims, bool unbiased=true);
+    static void std(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased=true);
 
     float var(bool unbiased=true);
     static float var(Tensor* A, bool unbiased=true);
+    Tensor* var(vector<int> axis, bool keepdims, bool unbiased=true);
+    static void var(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased=true);
+
+    int mode();
+    static int mode(Tensor* A);
+    Tensor* mode(vector<int> axis, bool keepdims);
+    static void mode(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
     // Math operations (unary) ************************
     void abs_();
@@ -618,7 +647,8 @@ public:
 
     float norm(string ord="fro");
     static float norm(Tensor *A, string ord="fro");
-
+    Tensor* norm(vector<int> axis, bool keepdims, string ord="fro");
+    static void norm(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, string ord="fro");
 
     // Generating index arrays *****************************
     std::pair<unsigned int*, int> _nonzero();
@@ -865,12 +895,12 @@ public:
     // Math operations: Other ops
     // TODO: cross, einsum, flip, dot, etc
 
-    void sort_(bool descending=false, bool stable=false);
-    Tensor* sort(bool descending=false, bool stable=false);
-    static void sort(Tensor* A, Tensor* B, bool descending=false, bool stable=false);
+    void sort_(bool descending=false, bool stable=true);
+    Tensor* sort(bool descending=false, bool stable=true);
+    static void sort(Tensor* A, Tensor* B, bool descending=false, bool stable=true);
 
-    Tensor* argsort(bool descending=false, bool stable=false);
-    static void argsort(Tensor* A, Tensor* B, bool descending=false, bool stable=false);
+    Tensor* argsort(bool descending=false, bool stable=true);
+    static void argsort(Tensor* A, Tensor* B, bool descending=false, bool stable=true);
 
     // Indexing, Slicing, Joining, Mutating Ops *************
     static Tensor* concat(vector<Tensor*> A, unsigned int axis=0, Tensor* output=nullptr);

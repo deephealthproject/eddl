@@ -32,7 +32,7 @@ MapReduceDescriptor::~MapReduceDescriptor()
 
 ReduceDescriptor::ReduceDescriptor() {}
 
-ReduceDescriptor::ReduceDescriptor(Tensor *A,vector<int> axis, string mode, bool keepdims){
+ReduceDescriptor::ReduceDescriptor(Tensor *A, vector<int> axis, string mode, bool keepdims){
   this->axis=axis;
   this->keepdims=keepdims;
   ind=nullptr;

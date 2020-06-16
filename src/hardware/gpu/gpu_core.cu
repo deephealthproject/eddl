@@ -356,10 +356,10 @@ void gpu_argsort(Tensor *A, Tensor *B, bool descending, bool stable) {
     thrust::sequence(indices, indices+B->size, 0);
 
     // Sort data
-    if(stable) {
+    if(stable){
         if (descending) { thrust::stable_sort_by_key(keys, keys+B->size, indices, order_desc); }
         else { thrust::stable_sort_by_key(keys, keys+B->size, indices, order_asc); }
-    } else{
+    }else{
         if (descending) { thrust::sort_by_key(keys, keys+B->size, indices, order_desc); }
         else { thrust::sort_by_key(keys, keys+B->size, indices, order_asc); }
     }

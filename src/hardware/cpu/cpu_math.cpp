@@ -327,100 +327,314 @@ void cpu_minimum(Tensor* A, Tensor* B, Tensor* C){
 
 // CPU: Should be reductions ***************************
 
-float cpu_max(Tensor *A){
-    float shared_max = MIN_FLOAT;
-#pragma omp parallel
-    {
-        float min = MIN_FLOAT;
 
-#pragma omp for nowait
-        for (int i = 0; i < A->size; ++i)
-        {
-            min = std::max(A->ptr[i], min);
-        }
-
-#pragma omp critical
-        {
-            shared_max = std::max(shared_max, min);
-        }
-    }
-
-    return shared_max;
+float cpu_max(Tensor *A) {
+    auto t = cpu_max(A->ptr, A->size, nullptr);
+    return std::get<0>(t);  // get max
 }
 
 
-float cpu_min(Tensor *A){
+void cpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    #pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        auto t = cpu_max(A->ptr, rd->index[i].size(), rd->index[i].data());
+        B->ptr[i] = std::get<0>(t);  // get max
+    }
+}
+
+int cpu_argmax(Tensor *A) {
+    auto t = cpu_max(A->ptr, A->size, nullptr);
+    return std::get<1>(t);  // get argmax
+}
+
+
+void cpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    #pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        auto t = cpu_max(A->ptr, rd->index[i].size(), rd->index[i].data());
+        B->ptr[i] = std::get<1>(t);  // get argmax
+    }
+}
+
+
+std::tuple<float, int> cpu_max(float *ptr, int size, int *map) {
+    float shared_max = MIN_FLOAT;
+    int shared_argmax = 0;
+
+    #pragma omp parallel
+    {
+        float max = MIN_FLOAT;
+        int argmax = 0;
+
+        // TODO: I don't like this approach
+        if(map == nullptr){
+            #pragma omp for nowait
+            for (int i = 0; i < size; ++i) {
+                if(ptr[i]>max){
+                    max = ptr[i];
+                    argmax = i;
+                }
+            }
+        }else{
+            #pragma omp for nowait
+            for (int i = 0; i < size; ++i) {
+                if(ptr[map[i]]>max){
+                    max = ptr[map[i]];
+                    argmax = i;
+                }
+            }
+        }
+
+        #pragma omp critical
+        {
+            if(max>shared_max){
+                shared_max = max;
+                shared_argmax = argmax;
+            }
+        }
+    }
+
+    return std::make_tuple(shared_max, shared_argmax);
+}
+
+
+float cpu_min(Tensor *A) {
+    auto t = cpu_min(A->ptr, A->size, nullptr);
+    return std::get<0>(t);  // get min
+}
+
+
+void cpu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    #pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        auto t = cpu_min(A->ptr, rd->index[i].size(), rd->index[i].data());
+        B->ptr[i] = std::get<0>(t);  // get min
+    }
+}
+
+
+int cpu_argmin(Tensor *A) {
+    auto t = cpu_min(A->ptr, A->size, nullptr);
+    return std::get<1>(t);  // get argmin
+}
+
+
+void cpu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    #pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        auto t = cpu_min(A->ptr, rd->index[i].size(), rd->index[i].data());
+        B->ptr[i] = std::get<1>(t);  // get argmmin
+    }
+}
+
+
+std::tuple<float, int> cpu_min(float *ptr, int size, int *map) {
     float shared_min = MAX_FLOAT;
-#pragma omp parallel
+    int shared_argmin = 0;
+
+    #pragma omp parallel
     {
         float min = MAX_FLOAT;
+        int argmin = 0;
 
-#pragma omp for nowait
-        for (int i = 0; i < A->size; ++i)
-        {
-            min = std::min(A->ptr[i], min);
+        // TODO: I don't like this approach
+        if(map == nullptr){
+            #pragma omp for nowait
+            for (int i = 0; i < size; ++i) {
+                if(ptr[i]<min){
+                    min = ptr[i];
+                    argmin = i;
+                }
+            }
+        }else{
+            #pragma omp for nowait
+            for (int i = 0; i < size; ++i) {
+                if(ptr[map[i]]<min){
+                    min = ptr[map[i]];
+                    argmin = i;
+                }
+            }
         }
 
-#pragma omp critical
+        #pragma omp critical
         {
-            shared_min = std::min(shared_min, min);
+            if(min<shared_min){
+                shared_min = min;
+                shared_argmin = argmin;
+            }
         }
     }
 
-    return shared_min;
+    return std::make_tuple(shared_min, shared_argmin);
 }
+
 
 
 float cpu_sum(Tensor *A) {
+    return cpu_sum(A->ptr, A->size, nullptr);
+}
+
+
+void cpu_sum(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    #pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        B->ptr[i] = cpu_sum(A->ptr, rd->index[i].size(), rd->index[i].data());
+    }
+}
+
+float cpu_sum(float *ptr, int size, int *map) {
     float sum = 0.0f;
 
-#pragma omp parallel for reduction(+:sum)
-    for (int i = 0; i < A->size; ++i) {
-        sum += A->ptr[i];
+    // TODO: I don't like this approach
+    if(map == nullptr){
+        #pragma omp parallel for reduction(+:sum)
+        for (int i = 0; i < size; ++i) { sum += ptr[i]; }
+    }else{
+        #pragma omp parallel for reduction(+:sum)
+        for (int i = 0; i < size; ++i) { sum += ptr[map[i]]; }
     }
 
     return sum;
 }
+
 
 float cpu_sum_abs(Tensor *A) {
+    return cpu_sum_abs(A->ptr, A->size, nullptr);
+}
+
+
+void cpu_sum_abs(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+#pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        B->ptr[i] = cpu_sum_abs(A->ptr, rd->index[i].size(), rd->index[i].data());
+    }
+}
+
+float cpu_sum_abs(float *ptr, int size, int *map) {
     float sum = 0.0f;
 
+    // TODO: I don't like this approach
+    if(map == nullptr){
 #pragma omp parallel for reduction(+:sum)
-    for (int i = 0; i < A->size; ++i) {
-        sum += ::fabs(A->ptr[i]);
+        for (int i = 0; i < size; ++i) { sum += ::fabs(ptr[i]); }
+    }else{
+#pragma omp parallel for reduction(+:sum)
+        for (int i = 0; i < size; ++i) { sum += ::fabs(ptr[map[i]]); }
     }
 
     return sum;
-}
-
-float cpu_median(Tensor *A) {
-    int midpoint = A->size / 2.0f;
-
-    if(A->size % 2==1 && A->size>1) {
-        return A->ptr[midpoint];
-    }else{
-        return (A->ptr[midpoint-1]+A->ptr[midpoint])/2.0f;
-    }
 }
 
 
 float cpu_prod(Tensor *A) {
+    return cpu_prod(A->ptr, A->size, nullptr);
+}
+
+
+void cpu_prod(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+#pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        B->ptr[i] = cpu_prod(A->ptr, rd->index[i].size(), rd->index[i].data());
+    }
+}
+
+float cpu_prod(float *ptr, int size, int *map) {
     float prod = 1.0f;
 
-    #pragma omp parallel for reduction(*:prod)
-    for (int i = 0; i < A->size; ++i) {
-        prod *= A->ptr[i];
+    // TODO: I don't like this approach
+    if(map == nullptr){
+#pragma omp parallel for reduction(*:prod)
+        for (int i = 0; i < size; ++i) { prod *= ptr[i]; }
+    }else{
+#pragma omp parallel for reduction(*:prod)
+        for (int i = 0; i < size; ++i) { prod *= ptr[map[i]]; }
     }
 
     return prod;
 }
 
+float cpu_mean(Tensor *A) {
+    return cpu_sum(A->ptr, A->size, nullptr) / A->size;
+}
+
+
+void cpu_mean(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    #pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        B->ptr[i] = cpu_sum(A->ptr, rd->index[i].size(), rd->index[i].data()) / rd->index[i].size();
+    }
+}
+
+
+float cpu_var(Tensor *A, bool unbiased){
+    return cpu_var(A->ptr, A->size, nullptr, unbiased);
+}
+
+
+void cpu_var(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
+#pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        B->ptr[i] = cpu_var(A->ptr, rd->index[i].size(), rd->index[i].data(), unbiased);
+    }
+}
+
+float cpu_var(float *ptr, int size, int *map, bool unbiased){
+    float mean = cpu_sum(ptr, size, map) / size;
+    float sum = 0.0f;
+
+    if(map == nullptr) {
+        #pragma omp parallel for reduction(+:sum)
+        for (int i = 0; i < size; ++i) {
+            float tmp = ptr[i] - mean;
+            sum += tmp * tmp;
+        }
+    }else{
+        #pragma omp parallel for reduction(+:sum)
+        for (int i = 0; i < size; ++i) {
+            float tmp = ptr[map[i]] - mean;
+            sum += tmp * tmp;
+        }
+    }
+    if(unbiased){return sum/(size-1.0f);}
+    else {return sum/(size);}
+}
+
+
+float cpu_std(Tensor *A, bool unbiased) {
+    return ::sqrtf(cpu_var(A->ptr, A->size, nullptr, unbiased));
+}
+
+void cpu_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
+#pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        B->ptr[i] = ::sqrtf(cpu_var(A->ptr, rd->index[i].size(), rd->index[i].data(), unbiased));
+    }
+}
+
+
 int cpu_mode(Tensor *A) {
+    return cpu_mode(A->ptr, A->size, nullptr);
+}
+
+
+void cpu_mode(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+#pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        B->ptr[i] = cpu_mode(A->ptr, rd->index[i].size(), rd->index[i].data());
+    }
+}
+
+int cpu_mode(float *ptr, int size, int *map) {
     std::unordered_map<int, int> table;
 
-    // Get frequencies
-    for (int i = 0; i < A->size; ++i){
-        table[(int)A->ptr[i]]++;
+
+    // TODO: I don't like this approach
+    if(map == nullptr){
+        // Get frequencies
+        for (int i = 0; i < size; ++i){ table[(int)ptr[i]]++; }
+    }else{
+        // Get frequencies
+        for (int i = 0; i < size; ++i){ table[(int)ptr[map[i]]]++; }
     }
 
     int mode = 0;
@@ -436,21 +650,16 @@ int cpu_mode(Tensor *A) {
 }
 
 
-float cpu_std(Tensor *A, bool unbiased){
-    return ::sqrtf(cpu_var(A, unbiased));
-}
+float cpu_median(Tensor *A) {
+    int midpoint = A->size / 2.0f;
 
-
-float cpu_var(Tensor *A, bool unbiased){
-    float mean = A->mean();
-    float sum = 0.0f;
-
-    #pragma omp parallel for reduction(+:sum)
-    for (int i = 0; i < A->size; ++i) {
-        float tmp = A->ptr[i] - mean;
-        sum += tmp*tmp;
+    if(A->size % 2==1 && A->size>1) {
+        return A->ptr[midpoint];
+    }else{
+        return (A->ptr[midpoint-1]+A->ptr[midpoint])/2.0f;
     }
-
-    if(unbiased){return sum/(A->size-1.0f);}
-    else {return sum/(A->size);}
 }
+
+
+
+

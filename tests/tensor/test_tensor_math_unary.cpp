@@ -1193,6 +1193,36 @@ TEST(TensorTestSuite, tensor_math_unary_max){
 }
 
 
+TEST(TensorTestSuite, tensor_math_unary_argmax){
+    // Test #1
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = {0.8986, -0.7279,  1.1745,  0.2611};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
+
+    int t1_argmax = t1->argmax();
+    ASSERT_EQ(t1_argmax, 2);
+
+    // Test #2
+    vector<int> t2_shape = {3};
+    vector<float> d_t2 = {-1.0f, 0.0, 1.0f};
+    Tensor* t2 = new Tensor(t2_shape, d_t2.data(), DEV_CPU);
+
+    int t2_argmax = t2->argmax();
+    ASSERT_EQ(t2_argmax, 2);
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    float t_cpu_argmax = t_cpu->argmax();
+    float t_gpu_argmax = t_gpu->argmax(); t_gpu->toCPU();
+
+    ASSERT_NEAR(t_cpu_argmax, t_gpu_argmax, 10e-4f);
+#endif
+}
+
+
 TEST(TensorTestSuite, tensor_math_unary_min){
     // Test #1
     vector<int> t1_shape = {4};
@@ -1222,6 +1252,34 @@ TEST(TensorTestSuite, tensor_math_unary_min){
 #endif
 }
 
+TEST(TensorTestSuite, tensor_math_unary_argmin){
+    // Test #1
+    vector<int> t1_shape = {4};
+    vector<float> d_t1 = {0.8986, -0.7279,  1.1745,  0.2611};
+    Tensor* t1 = new Tensor(t1_shape, d_t1.data(), DEV_CPU);
+
+    int t1_argmin = t1->argmin();
+    ASSERT_EQ(t1_argmin, 1);
+
+    // Test #2
+    vector<int> t2_shape = {3};
+    vector<float> d_t2 = {-1.0f, 0.0, 1.0f};
+    Tensor* t2 = new Tensor(t2_shape, d_t2.data(), DEV_CPU);
+
+    int t2_argmin = t2->argmin();
+    ASSERT_EQ(t2_argmin, 0);
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    float t_cpu_argmin = t_cpu->argmin();
+    float t_gpu_argmin = t_gpu->argmin(); t_gpu->toCPU();
+
+    ASSERT_NEAR(t_cpu_argmin, t_gpu_argmin, 10e-4f);
+#endif
+}
 
 TEST(TensorTestSuite, tensor_math_unary_sum){
     // Test #1

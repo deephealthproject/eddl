@@ -119,16 +119,48 @@ void cpu_maximum(Tensor* A, Tensor* B, Tensor* C);
 void cpu_minimum(Tensor* A, Tensor* B, float v);
 void cpu_minimum(Tensor* A, Tensor* B, Tensor* C);
 
-// CPU: Should be reductions
+// CPU: Math (reductions)
 float cpu_max(Tensor *A);
+void cpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+int cpu_argmax(Tensor *A);
+void cpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+std::tuple<float, int> cpu_max(float *ptr, int size, int *map);
+
 float cpu_min(Tensor *A);
+void cpu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+int cpu_argmin(Tensor *A);
+void cpu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+std::tuple<float, int> cpu_min(float *ptr, int size, int *map);
+
 float cpu_sum(Tensor *A);
+void cpu_sum(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+float cpu_sum(float *ptr, int size, int *map);
+
 float cpu_sum_abs(Tensor *A);
+void cpu_sum_abs(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+float cpu_sum_abs(float *ptr, int size, int *map);
+
 float cpu_prod(Tensor *A);
-float cpu_median(Tensor *A);
-int cpu_mode(Tensor *A);
-float cpu_std(Tensor *A, bool unbiased);
+void cpu_prod(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+float cpu_prod(float *ptr, int size, int *map);
+
+float cpu_mean(Tensor *A);
+void cpu_mean(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+
 float cpu_var(Tensor *A, bool unbiased);
+void cpu_var(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased);
+float cpu_var(float *ptr, int size, int *map, bool unbiased);
+
+float cpu_std(Tensor *A, bool unbiased);
+void cpu_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased);
+
+int cpu_mode(Tensor *A);
+void cpu_mode(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+int cpu_mode(float *ptr, int size, int *map);
+
+// TODO: make them reduction
+float cpu_median(Tensor *A);
+
 
 // CPU: Reduction
 void cpu_reduce(Tensor *A, Tensor *B,string mode,int* map);
@@ -146,6 +178,9 @@ void cpu_reduction_back(ReduceDescriptor *RD);
 
 // CPU: Linear algebra
 float cpu_norm(Tensor *A, string ord);
+void cpu_norm(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, string ord);
+float cpu_norm_(float *ptr, int size, int *map, string ord);
+
 
 // CPU: Logic functions: Truth value testing
 std::pair<unsigned int*, int> cpu_nonzero(Tensor *A);

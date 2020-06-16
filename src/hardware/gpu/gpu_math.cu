@@ -17,6 +17,14 @@
 #include <thrust/reduce.h>
 #include <thrust/functional.h>
 #include <thrust/extrema.h>
+#include <thrust/device_vector.h>
+#include <thrust/tuple.h>
+#include <thrust/reduce.h>
+#include <thrust/fill.h>
+#include <thrust/generate.h>
+#include <thrust/sort.h>
+#include <thrust/sequence.h>
+#include <thrust/copy.h>
 
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_kernels.h"
@@ -52,6 +60,29 @@ struct variance_shift_sum : std::unary_function<float, float>{
         return tmp*tmp;
     }
 };
+
+template <class T>
+struct bigger_tuple {
+    __device__ __host__
+    tuple<T,int> operator()(const tuple<T,int> &a, const tuple<T,int> &b)
+    {
+        if (a > b) return a;
+        else return b;
+    }
+
+};
+
+template <class T>
+int max_index(thrust::device_vector<T>& vec) {
+
+    // create implicit index sequence [0, 1, 2, ... )
+    thrust::counting_iterator<int> begin(0); thrust::counting_iterator<int> end(vec.size());
+    tuple<T,int> init(vec[0],0);
+    tuple<T,int> smallest;
+
+    smallest = reduce(make_zip_iterator(make_tuple(vec.begin(), begin)), make_zip_iterator(make_tuple(vec.end(), end)), init, bigger_tuple<T>());
+    return get<1>(smallest);
+}
 
 // GPU: Math (in-place) ********************************************
 void gpu_abs(Tensor *A, Tensor *B){
@@ -549,6 +580,41 @@ float gpu_max(Tensor *A){
     return *thrust::max_element(dev_ptr, dev_ptr + A->size);
 }
 
+void gpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_max<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, false);
+    check_cuda(cudaDeviceSynchronize(),"reduce_max");
+}
+
+int gpu_argmax(Tensor *A){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    thrust::device_ptr<float> max_ptr = thrust::max_element(dev_ptr, dev_ptr+A->size);
+
+    //float max = *max_ptr;
+    int argmax = (max_ptr - dev_ptr);
+    return argmax;
+}
+
+void gpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_max<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, true);
+    check_cuda(cudaDeviceSynchronize(),"reduce_argmax");
+}
+
+
 float gpu_min(Tensor *A){
     int device=A->gpu_device;
     cudaSetDevice(device);
@@ -558,15 +624,60 @@ float gpu_min(Tensor *A){
 }
 
 
-float gpu_sum(Tensor *A){
+void gpu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_min<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, false);
+    check_cuda(cudaDeviceSynchronize(),"reduce_min");
+}
+
+int gpu_argmin(Tensor *A){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
-    float sum=thrust::reduce(dev_ptr, dev_ptr + A->size);
+    thrust::device_ptr<float> min_ptr = thrust::min_element(dev_ptr, dev_ptr+A->size);
 
-    return sum;
+//    float min = *min_ptr;
+    int argmin = (min_ptr - dev_ptr);
+    return argmin;
 }
+
+void gpu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_min<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, true);
+    check_cuda(cudaDeviceSynchronize(),"reduce_argmin");
+}
+
+float gpu_sum(Tensor *A){
+    int device=A->gpu_device;
+
+    cudaSetDevice(device);
+
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    return thrust::reduce(dev_ptr, dev_ptr + A->size);
+}
+
+void gpu_sum(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B); // Walk through the source tensor
+
+    setDims(A);
+    gpu_sum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, A->size);
+    check_cuda(cudaDeviceSynchronize(),"reduce_sum");
+}
+
 
 float gpu_sum_abs(Tensor *A){
     int device=A->gpu_device;
@@ -574,6 +685,17 @@ float gpu_sum_abs(Tensor *A){
 
     thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
     return thrust::transform_reduce(dev_ptr, dev_ptr + A->size, absolute_value<float>(), 0.0f, thrust::plus<float>());
+}
+
+void gpu_sum_abs(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B);
+
+    setDims(A); // Walk through the source tensor
+    gpu_sum_abs<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, A->size);
+    check_cuda(cudaDeviceSynchronize(),"reduce_sum_abs");
 }
 
 float gpu_prod(Tensor *A){
@@ -585,6 +707,81 @@ float gpu_prod(Tensor *A){
 
     return prod;
 }
+
+void gpu_prod(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_prod<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
+    check_cuda(cudaDeviceSynchronize(),"reduce_prod");
+}
+
+
+float gpu_mean(Tensor *A){
+    int device=A->gpu_device;
+
+    cudaSetDevice(device);
+
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    return thrust::reduce(dev_ptr, dev_ptr + A->size)/(float)A->size;
+}
+
+void gpu_mean(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_mean<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
+    check_cuda(cudaDeviceSynchronize(),"reduce_gpu_mean");
+}
+
+
+float gpu_var(Tensor *A, bool unbiased){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    float mean = thrust::reduce(dev_ptr, dev_ptr + A->size,0.0f, thrust::plus<float>()) / A->size;
+    float sum = thrust::transform_reduce(dev_ptr, dev_ptr + A->size, variance_shift_sum(mean), 0.0f, thrust::plus<float>());
+
+    if(unbiased){return sum/(A->size-1.0f);}
+    else {return sum/(A->size);}
+}
+
+void gpu_var(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_mean<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
+    gpu_var<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, unbiased);
+    check_cuda(cudaDeviceSynchronize(),"reduce_gpu_var");
+}
+
+float gpu_std(Tensor *A, bool unbiased){
+    return ::sqrtf(gpu_var(A, unbiased));
+}
+
+void gpu_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_mean<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
+    gpu_var<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, unbiased);
+    gpu_sqrt<<<dimGrid,dimBlock>>>(B->ptr, B->ptr, B->size);
+    check_cuda(cudaDeviceSynchronize(),"reduce_gpu_std");
+}
+
 
 float gpu_median(Tensor *A){
     int device=A->gpu_device;
@@ -612,22 +809,6 @@ int gpu_mode(Tensor *A){
     // TODO: Not implemented for GPU
 }
 
-float gpu_std(Tensor *A, bool unbiased){
-    return ::sqrtf(gpu_var(A, unbiased));
-}
-
-float gpu_var(Tensor *A, bool unbiased){
-    int device=A->gpu_device;
-    cudaSetDevice(device);
-
-    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
-    float mean = thrust::reduce(dev_ptr, dev_ptr + A->size,0.0f, thrust::plus<float>()) / A->size;
-    float sum = thrust::transform_reduce(dev_ptr, dev_ptr + A->size, variance_shift_sum(mean), 0.0f, thrust::plus<float>());
-
-    if(unbiased){return sum/(A->size-1.0f);}
-    else {return sum/(A->size);}
-}
-
 
 // GPU: Reduction ***************************
 void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC){
@@ -652,5 +833,30 @@ void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC){
         check_cublas(
                 cublasSgeam(hcublas[device], CUBLAS_OP_N, CUBLAS_OP_N, m, n, &alfa, A->ptr, ldA, &beta, B->ptr, ldB,
                             C->ptr, ldC), "sum2D");
+    }
+}
+
+
+void gpu_initialize_rd(ReduceDescriptor2 *rd, Tensor *A, Tensor *B, bool reverse){
+    // TODO: TEMP! I don't like this approach
+    if(rd->gpu_addresses == nullptr){
+        int size = A->size;
+
+        // Build cpu map (if needed)
+        if(rd->cpu_addresses == nullptr){
+            rd->build_map(reverse);
+        }
+
+        check_cuda(cudaMalloc((void**)&(rd->gpu_addresses), size*sizeof(int)),"create map");
+        check_cuda(cudaDeviceSynchronize(), "create");
+
+        check_cuda(cudaMemcpy(rd->gpu_addresses, rd->cpu_addresses, size*sizeof(int),cudaMemcpyHostToDevice),"copy map");
+        check_cuda(cudaDeviceSynchronize(), "copy");
+
+        // Delete cpu
+        if(rd->cpu_addresses != nullptr){
+            delete rd->cpu_addresses;
+            rd->cpu_addresses = nullptr;
+        }
     }
 }

@@ -349,38 +349,39 @@ Not yet...
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| max | ✔️ | ✔️ | |
-| mean | ✔️ | ✔️ | |
-| median | ✔️ | ✔ | |
-| min | ✔️ | ✔️ | |
-| mode | ✔️  | ❌ | |
-| prod | ✔️ | ✔️ | |
-| std |  ✔️ | ✔️ | |
-| sum | ✔️ | ✔️ | |
-| sum_abs | ✔️ | ✔️ |  |
-| var |  ✔️ | ✔️ |  |
+| argmax | ✔️ | ✔️ |
+| argmin | ✔️ | ✔️ |
+| max | ✔️ | ✔️ |
+| min | ✔️ | ✔️ |
+| mean | ✔️ | ✔ |
+| median | ✔️ | ✔ |
+| mode | ✔️ | ❌ |
+| norm | ✔ | ✔️ |
+| prod | ✔️ | ✔ |
+| std | ✔ | ✔ |
+| sum | ✔️ |  ✔ |
+| sum_abs | ✔️ |  ✔ |
+| var | ✔️ |  ✔ |
+
 
 
 ### Reductions
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| argmax | ❌ | ❌ |
-| argmin | ❌ | ❌ |
-| cumprod | ❌ | ❌ |
-| cumsum | ❌ | ❌ |
+| argmax | ✔️ | ✔️ |
+| argmin | ✔️ | ✔️ |
 | max | ✔️ | ✔️ |
 | min | ✔️ | ✔️ |
-| mean | ✔️ | ✔️ |
+| mean | ✔️ | ✔ |
 | median | ❌ | ❌ |
-| mode | ❌ | ❌ |
-| norm | ❌ | ❌ |
-| prod | ❌ | ❌ |
-| std | ❌ | ❌ |
-| sum | ✔️ | ✔️ |
-| prod | ❌ | ❌ |
-| unique | ❌ | ❌ |
-| var | ❌ | ❌ |
+| mode | ✔️ | ❌ |
+| norm | ✔ | ❌ |
+| prod | ✔️ | ✔ |
+| std | ✔ | ✔ |
+| sum | ✔️ |  ✔ |
+| sum_abs | ✔️ |  ✔ |
+| var | ✔️ |  ✔ |
 
 
 
