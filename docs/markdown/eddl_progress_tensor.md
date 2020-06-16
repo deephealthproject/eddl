@@ -349,8 +349,8 @@ Not yet...
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| argmax | ✔️ | ❌️ |
-| argmin | ✔️ | ❌ |
+| argmax | ✔️ | ✔️ |
+| argmin | ✔️ | ✔️ |
 | max | ✔️ | ✔️ |
 | min | ✔️ | ✔️ |
 | mean | ✔️ | ✔ |
