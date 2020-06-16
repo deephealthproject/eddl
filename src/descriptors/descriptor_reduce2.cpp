@@ -92,33 +92,45 @@ void ReduceDescriptor2::build(const vector<int>& t_ishape){
     }
 
     // Check axis to reduce
-    for(int i=0; i<axis.size(); i++)
-        if (this->axis[i] >= ishape.size()) {
-            throw std::runtime_error("axis " + std::to_string(axis[i]-1) + " >= dim=" + std::to_string(ishape.size()-1));
+    for(int i=0; i<this->axis.size(); i++){
+        if (this->axis[i] >= this->ishape.size()) {
+            throw std::runtime_error("axis " + std::to_string(axis[i]-1) + " >= dim=" + std::to_string(this->ishape.size()-1));
         }
+    }
 
     // Compute output dimension
     compute_output();
 
     // Compute indices to reduce
     build_indices();
+
+    // Compute size reduction
+    this->size_reduction = (int)shape2size(this->ishape)/shape2size(this->oshape);
 }
 
 void ReduceDescriptor2::resize(int b){
 
 }
 
-void ReduceDescriptor2::build_map(){
+void ReduceDescriptor2::build_map(bool reverse){
     this->free_memory();
 
     int size = shape2size(this->ishape);
     this->cpu_addresses = new int[size];
 
-    #pragma omp parallel for
-    for(int i=0; i<index.size(); i++) {
-        for(int j=0; j<index[i].size(); j++){
-            cpu_addresses[index[i][j]] = i;  // A[Original address] = reduction address
+    if (!reverse){  // A to B
+        #pragma omp parallel for
+        for(int i=0; i<index.size(); i++) {
+            for(int j=0; j<index[i].size(); j++){
+                cpu_addresses[index[i][j]] = i;  // A[Original address] = reduction address
+            }
+        }
+    }else{ // B to A[0]
+        int k=0;
+        for(int i=0; i<index.size(); i++) {
+            for(int j=0; j<index[i].size(); j++){
+                cpu_addresses[k++] = index[i][j];  // A[reduction address_0] = [idx0_0, idx0_1,...]
+            }
         }
     }
-
 }

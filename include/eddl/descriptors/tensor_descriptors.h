@@ -78,12 +78,13 @@ public:
     vector<vector<int>> index;
     vector<int> ishape;
     vector<int> oshape;
+    int size_reduction;
 
     ReduceDescriptor2(const vector<int>& axis, bool keepdims, int dev=0);
 
     void build(const vector<int>& ishape);
     void resize(int b) override;
-    void build_map();     // TODO: TEMP! I don't like this approach
+    void build_map(bool reverse=false);     // TODO: TEMP! I don't like this approach
 
 };
 

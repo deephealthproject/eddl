@@ -24,6 +24,31 @@ __global__ void gpu_sum(float *A, float *B, int *map, int size){
     }
 }
 
+__global__ void gpu_sum_abs(float *A, float *B, int *map, int size){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x<size) {
+        atomicAdd(&B[map[thread_id_x]], abs(A[thread_id_x]));
+    }
+}
+
+__global__ void gpu_prod(float *A, float *B, int *map, int size, int size_reduction){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x<size) {
+        float tmp = 1.0f;
+        for(int i=0; i<size_reduction; i++){
+            tmp *= A[map[thread_id_x*size_reduction+i]];
+        }
+
+        B[thread_id_x] = tmp;
+    }
+}
+
+
+
+/* PREVIOUS REDUCES ***********************************/
+
 __global__ void reduce_mean(float *A,float *B,int *map,int size)
 {
   long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;

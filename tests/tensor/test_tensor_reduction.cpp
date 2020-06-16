@@ -162,6 +162,19 @@ TEST(TensorTestSuite, tensor_math_reduction_sum_abs) {
 
     Tensor *new_t2 = t2->sum_abs({1}, false);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::ones({10, 10});  // High mismatch CPU/GPU
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    Tensor *t_cpu_sum_abs = t_cpu->sum_abs({1}, false);
+    Tensor *t_gpu_sum_abs = t_gpu->sum_abs({1}, false); t_gpu_sum_abs->toCPU();
+    t_cpu_sum_abs->print();
+    t_gpu_sum_abs->print();
+
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_sum_abs, t_gpu_sum_abs, 10e-4));
+#endif
 }
 
 TEST(TensorTestSuite, tensor_math_reduction_prod) {
@@ -183,6 +196,18 @@ TEST(TensorTestSuite, tensor_math_reduction_prod) {
 
     Tensor *new_t2 = t2->prod({1}, false);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::full({10, 10}, 2.0f);  // High mismatch CPU/GPU
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    Tensor *t_cpu_prod = t_cpu->prod({1}, false);
+    Tensor *t_gpu_prod = t_gpu->prod({1}, false); t_gpu_prod->toCPU();
+    t_cpu_prod->print();
+    t_gpu_prod->print();
+
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_prod, t_gpu_prod, 10e-4));
+#endif
 }
 
 TEST(TensorTestSuite, tensor_math_reduction_mean) {

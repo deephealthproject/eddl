@@ -502,9 +502,7 @@ void Tensor::sum_abs(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
     {
-        msg("Not implemented error", "Tensor::sum_abs");
-
-//        gpu_sum(A, B, rd);
+        gpu_sum_abs(A, B, rd);
     }
 #endif
 #ifdef cFPGA
@@ -560,9 +558,7 @@ void Tensor::prod(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
     {
-        msg("Not implemented error", "Tensor::prod");
-
-//        gpu_sum(A, B, rd);
+        gpu_prod(A, B, rd);
     }
 #endif
 #ifdef cFPGA

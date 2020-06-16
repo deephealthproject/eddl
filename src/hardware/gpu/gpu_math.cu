@@ -576,7 +576,6 @@ float gpu_min(Tensor *A){
 
 float gpu_sum(Tensor *A){
     int device=A->gpu_device;
-    int *gmap;
 
     cudaSetDevice(device);
 
@@ -588,16 +587,11 @@ void gpu_sum(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
-    gpu_initialize_rd(rd, A->size);
-
-    for(int i=0; i<A->size; i++){
-        cout << i << ": " << rd->cpu_addresses[i] << endl;
-    }
+    gpu_initialize_rd(rd, A, B); // Walk through the source tensor
 
     setDims(A);
     gpu_sum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, A->size);
     check_cuda(cudaDeviceSynchronize(),"reduce_sum");
-
 }
 
 
@@ -609,6 +603,17 @@ float gpu_sum_abs(Tensor *A){
     return thrust::transform_reduce(dev_ptr, dev_ptr + A->size, absolute_value<float>(), 0.0f, thrust::plus<float>());
 }
 
+void gpu_sum_abs(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B);
+
+    setDims(A); // Walk through the source tensor
+    gpu_sum_abs<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, A->size);
+    check_cuda(cudaDeviceSynchronize(),"reduce_sum_abs");
+}
+
 float gpu_prod(Tensor *A){
     int device=A->gpu_device;
     cudaSetDevice(device);
@@ -618,6 +623,18 @@ float gpu_prod(Tensor *A){
 
     return prod;
 }
+
+void gpu_prod(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_prod<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
+    check_cuda(cudaDeviceSynchronize(),"reduce_prod");
+}
+
 
 float gpu_median(Tensor *A){
     int device=A->gpu_device;
@@ -689,12 +706,14 @@ void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC){
 }
 
 
-void gpu_initialize_rd(ReduceDescriptor2 *rd, int size){
+void gpu_initialize_rd(ReduceDescriptor2 *rd, Tensor *A, Tensor *B, bool reverse){
     // TODO: TEMP! I don't like this approach
     if(rd->gpu_addresses == nullptr){
+        int size = A->size;
+
         // Build cpu map (if needed)
         if(rd->cpu_addresses == nullptr){
-            rd->build_map();
+            rd->build_map(reverse);
         }
 
         check_cuda(cudaMalloc((void**)&(rd->gpu_addresses), size*sizeof(int)),"create map");
