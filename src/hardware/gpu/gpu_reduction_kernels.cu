@@ -22,7 +22,6 @@ __global__ void gpu_sum(float *A, float *B, int *map, int size){
     if (thread_id_x<size) {
         atomicAdd(&B[map[thread_id_x]], A[thread_id_x]);
     }
-
 }
 
 __global__ void reduce_mean(float *A,float *B,int *map,int size)

@@ -130,6 +130,19 @@ TEST(TensorTestSuite, tensor_math_reduction_sum) {
 
     Tensor *new_t2 = t2->sum({1}, false);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::ones({10, 10});  // High mismatch CPU/GPU
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    Tensor *t_cpu_sum = t_cpu->sum({1}, false);
+    Tensor *t_gpu_sum = t_gpu->sum({1}, false); t_gpu_sum->toCPU();
+    t_cpu_sum->print();
+    t_gpu_sum->print();
+
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_sum, t_gpu_sum, 10e-4));
+#endif
 }
 
 
@@ -272,7 +285,7 @@ TEST(TensorTestSuite, tensor_math_reduction_norm) {
                                     2.0f, 3.0f, 8.0f,
                                     1.0f, 4.0f, 8.0f}, {4, 3}, DEV_CPU);
 
-    Tensor *new_t = t1->norm({0}, false);
+    Tensor *new_t = t1->norm({0}, false, "fro");
     ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
 
     // Test #2
@@ -283,6 +296,6 @@ TEST(TensorTestSuite, tensor_math_reduction_norm) {
                                     2.0f, 3.0f, 8.0f,
                                     1.0f, 4.0f, 8.0f}, {4, 3}, DEV_CPU);
 
-    Tensor *new_t2 = t2->norm({1}, false);
+    Tensor *new_t2 = t2->norm({1}, false, "fro");
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
 }
