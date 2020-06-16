@@ -13,27 +13,27 @@ Constructors
 
 Create an uninitialized tensor
 
-.. doxygenfunction:: Tensor::Tensor()
-.. doxygenfunction:: Tensor::Tensor(const vector<int>&, float *, int)
-.. doxygenfunction:: Tensor::Tensor(const vector<int>&, int)
-.. doxygenfunction:: Tensor::Tensor(const vector<int>&, Tensor * )
+.. doxygenfunction:: eddlT::create(const vector<int>&)
+.. doxygenfunction:: eddlT::create(const vector<int>&, float *, int)
+.. doxygenfunction:: eddlT::create(const vector<int>&, int)
+.. doxygenfunction:: eddlT::create(const vector<int>&, float *)
 
 .. code-block:: c++
 
-    Tensor()
-    Tensor(const vector<int> &shape, float *fptr, int dev=DEV_CPU);
-    Tensor(const vector<int> &shape, int dev=DEV_CPU);
-    Tensor(const vector<int> &shape, Tensor *tensor );
+    create(const vector<int> &shape);
+    create(const vector<int> &shape, float *fptr, int dev=DEV_CPU);
+    create(const vector<int> &shape, int dev=DEV_CPU);
+    create(const vector<int> &shape, Tensor *tensor );
 
-Ones and zeros
---------------
+Constructors & Initializers
+-----------------------------
 
 Create tensor from generators
 
 zeros
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::zeros
+.. doxygenfunction:: eddlT::zeros
 
 .. code-block:: c++
 
@@ -42,7 +42,7 @@ zeros
 ones
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::ones
+.. doxygenfunction:: eddlT::ones
 
 .. code-block:: c++
 
@@ -51,7 +51,7 @@ ones
 full
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::full
+.. doxygenfunction:: eddlT::full
 
 .. code-block:: c++
 
@@ -61,7 +61,7 @@ full
 eye
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::eye
+.. doxygenfunction:: eddlT::eye
 
 .. code-block:: c++
 
@@ -70,7 +70,7 @@ eye
 identity
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::identity
+.. doxygenfunction:: eddlT::identity
 
 .. code-block:: c++
 
@@ -78,16 +78,41 @@ identity
     // empty?
 
 
-From existing data
--------------------
+
+
+Constructors from existing data
+--------------------------------
 
 Create tensor from existing data
 
+Move to CPU
+^^^^^^^^^^^^
+
+.. doxygenfunction:: eddlT::toCPU_
+
+.. doxygenfunction:: eddlT::toCPU
+
+.. code-block:: c++
+
+    void toCPU_(Tensor *A);
+    Tensor* toCPU(Tensor *A);
+
+Move to GPU
+^^^^^^^^^^^^
+
+.. doxygenfunction:: eddlT::toGPU_
+
+.. doxygenfunction:: eddlT::toGPU
+
+.. code-block:: c++
+
+    void toGPU_(Tensor *A);
+    Tensor* toGPU(Tensor *A);
 
 clone
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::clone
+.. doxygenfunction:: eddlT::clone
 
 .. code-block:: c++
 
@@ -97,7 +122,7 @@ clone
 reallocate
 ^^^^^^^^^^^
 
-.. doxygenfunction:: Tensor::reallocate
+.. doxygenfunction:: eddlT::reallocate
 
 .. code-block:: c++
 
@@ -107,13 +132,21 @@ reallocate
 copy
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::copy
+.. doxygenfunction:: eddlT::copyTensor
 
 .. code-block:: c++
 
     static void copy(Tensor *A, Tensor *B);
     //more
 
+select
+^^^^^^^^^
+
+.. doxygenfunction:: eddlT::select
+
+.. code-block:: c++
+
+    Tensor* select(Tensor *A, int i);
 
 Numerical ranges
 -----------------
@@ -157,14 +190,6 @@ logspace
     static Tensor* logspace(float start, float end, int steps=100, float base=10.0f, int dev=DEV_CPU);
  
 
-geomspace
-^^^^^^^^^^
-
-.. code-block:: c++
-
-    static Tensor* geomspace(float start, float end, int steps=100, int dev=DEV_CPU);
-
-
 Random
 -------
 
@@ -174,7 +199,7 @@ Create tensor from generators
 randu
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::randu
+.. doxygenfunction:: eddlT::randu
 
 .. code-block:: c++
 
@@ -183,19 +208,18 @@ randu
 randn
 ^^^^^^^^^
 
-.. doxygenfunction:: Tensor::randn
+.. doxygenfunction:: eddlT::randn
 
 .. code-block:: c++
 
-    static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
+    Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
 
 Build matrices
 -----------------
 
-.. doxygenfunction:: Tensor::diag(Tensor *, int, int)
+.. doxygenfunction:: eddlT::diag(Tensor *, int, int)
 
-Create tensor from generators
 
 Example:
 
