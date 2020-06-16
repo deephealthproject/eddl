@@ -210,9 +210,7 @@ void Tensor::max(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
     {
-        msg("Not implemented error", "Tensor::max");
-
-//        gpu_sum(A, B, rd);
+        gpu_max(A, B, rd);
     }
 #endif
 #ifdef cFPGA
@@ -271,9 +269,7 @@ void Tensor::argmax(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
     {
-        msg("Not implemented error", "Tensor::argmax");
-
-//        gpu_sum(A, B, rd);
+        gpu_argmax(A, B, rd);
     }
 #endif
 #ifdef cFPGA
@@ -328,9 +324,7 @@ void Tensor::min(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
     {
-        msg("Not implemented error", "Tensor::min");
-
-//        gpu_sum(A, B, rd);
+        gpu_min(A, B, rd);
     }
 #endif
 #ifdef cFPGA
@@ -353,9 +347,7 @@ int Tensor::argmin(Tensor* A){
 #ifdef cGPU
     else if (A->isGPU())
     {
-        msg("Not implemented error", "Tensor::gpu_argmin");
-
-//        return gpu_argmin(A);
+        return gpu_argmin(A);
     }
 #endif
 #ifdef cFPGA
@@ -388,9 +380,7 @@ void Tensor::argmin(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
     {
-        msg("Not implemented error", "Tensor::argmin");
-
-//        gpu_sum(A, B, rd);
+        gpu_argmin(A, B, rd);
     }
 #endif
 #ifdef cFPGA

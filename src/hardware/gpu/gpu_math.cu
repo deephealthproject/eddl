@@ -550,7 +550,14 @@ float gpu_max(Tensor *A){
 }
 
 void gpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
 
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_max<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, false);
+    check_cuda(cudaDeviceSynchronize(),"reduce_max");
 }
 
 int gpu_argmax(Tensor *A){
@@ -558,12 +565,16 @@ int gpu_argmax(Tensor *A){
 }
 
 void gpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
 
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_max<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, true);
+    check_cuda(cudaDeviceSynchronize(),"reduce_argmax");
 }
 
-std::tuple<float, int> gpu_max(float *ptr, int size, int *map){
-
-}
 
 float gpu_min(Tensor *A){
     int device=A->gpu_device;
@@ -573,6 +584,32 @@ float gpu_min(Tensor *A){
     return *thrust::min_element(dev_ptr, dev_ptr + A->size);
 }
 
+
+void gpu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_min<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, false);
+    check_cuda(cudaDeviceSynchronize(),"reduce_min");
+}
+
+int gpu_argmin(Tensor *A){
+
+}
+
+void gpu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_min<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, true);
+    check_cuda(cudaDeviceSynchronize(),"reduce_argmin");
+}
 
 float gpu_sum(Tensor *A){
     int device=A->gpu_device;

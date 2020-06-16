@@ -123,11 +123,15 @@ void gpu_minimum(Tensor* A, Tensor* B, Tensor* C);
 // GPU: Should be reductions
 float gpu_max(Tensor *A);
 void gpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+
 int gpu_argmax(Tensor *A);
 void gpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
-std::tuple<float, int> gpu_max(float *ptr, int size, int *map);
 
 float gpu_min(Tensor *A);
+void gpu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+
+int gpu_argmin(Tensor *A);
+void gpu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 
 float gpu_sum(Tensor *A);
 void gpu_sum(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);

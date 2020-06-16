@@ -16,6 +16,56 @@
 
 #include "eddl/hardware/gpu/gpu_kernels.h"
 
+__global__ void gpu_max(float *A, float *B, int *map, int size, int size_reduction, bool argmax){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x<size) {
+        float tmp_max = A[map[thread_id_x*size_reduction+0]];
+        int tmp_argmax = 0;
+
+        float val;
+        for(int i=1; i<size_reduction; i++){
+            val = A[map[thread_id_x*size_reduction+i]];
+            if(val > tmp_max){
+                tmp_max = val;
+                tmp_argmax = i;
+            }
+        }
+        
+        // Choose if we're getting the maximum value or the position
+        if(argmax) {
+            B[thread_id_x] = (float)tmp_argmax;
+        }else{
+            B[thread_id_x] = tmp_max;
+        }
+    }
+}
+
+__global__ void gpu_min(float *A, float *B, int *map, int size, int size_reduction, bool argmin){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x<size) {
+        float tmp_min = A[map[thread_id_x*size_reduction+0]];
+        int tmp_argmin = 0;
+
+        float val;
+        for(int i=1; i<size_reduction; i++){
+            val = A[map[thread_id_x*size_reduction+i]];
+            if(val < tmp_min){
+                tmp_min = val;
+                tmp_argmin = i;
+            }
+        }
+
+        // Choose if we're getting the minimum value or the position
+        if(argmin) {
+            B[thread_id_x] = (float)tmp_argmin;
+        }else{
+            B[thread_id_x] = tmp_min;
+        }
+    }
+}
+
 __global__ void gpu_sum(float *A, float *B, int *map, int size){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
