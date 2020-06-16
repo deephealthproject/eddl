@@ -598,9 +598,7 @@ void Tensor::mean(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
     {
-        msg("Not implemented error", "Tensor::mean");
-
-//        gpu_sum(A, B, rd);
+        gpu_mean(A, B, rd);
     }
 #endif
 #ifdef cFPGA
@@ -658,9 +656,7 @@ void Tensor::std(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
     {
-        msg("Not implemented error", "Tensor::std");
-
-//        gpu_sum(A, B, rd);
+        gpu_std(A, B, rd, unbiased);
     }
 #endif
 #ifdef cFPGA
@@ -717,9 +713,7 @@ void Tensor::var(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
     {
-        msg("Not implemented error", "Tensor::var");
-
-//        gpu_sum(A, B, rd);
+        gpu_var(A, B, rd, unbiased);
     }
 #endif
 #ifdef cFPGA

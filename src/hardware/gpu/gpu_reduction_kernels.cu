@@ -45,6 +45,38 @@ __global__ void gpu_prod(float *A, float *B, int *map, int size, int size_reduct
     }
 }
 
+__global__ void gpu_mean(float *A, float *B, int *map, int size, int size_reduction){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x<size) {
+        float tmp = 0.0f;
+        for(int i=0; i<size_reduction; i++){
+            tmp += A[map[thread_id_x*size_reduction+i]];
+        }
+
+        B[thread_id_x] = tmp/(float)size_reduction;
+    }
+}
+
+__global__ void gpu_var(float *A, float *B, int *map, int size, int size_reduction, bool unbiased){
+    // IMPORTANT TRICK: B ALREADY CONTAINS THE MEAN!!!!!!!
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x<size) {
+        float tmp;
+        float sum = 0.0f;
+        for(int i=0; i<size_reduction; i++){
+            tmp = A[map[thread_id_x*size_reduction+i]] - B[thread_id_x];
+            sum += tmp*tmp;
+        }
+
+        if(unbiased){
+            B[thread_id_x] = sum/((float)size_reduction-1.0f);
+        } else {
+            B[thread_id_x] = sum/(float)size_reduction;
+        }
+    }
+}
 
 
 /* PREVIOUS REDUCES ***********************************/

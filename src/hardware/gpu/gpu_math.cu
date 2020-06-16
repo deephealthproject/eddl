@@ -636,6 +636,69 @@ void gpu_prod(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
 }
 
 
+float gpu_mean(Tensor *A){
+    int device=A->gpu_device;
+
+    cudaSetDevice(device);
+
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    return thrust::reduce(dev_ptr, dev_ptr + A->size)/(float)A->size;
+}
+
+void gpu_mean(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_mean<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
+    check_cuda(cudaDeviceSynchronize(),"reduce_gpu_mean");
+}
+
+
+float gpu_var(Tensor *A, bool unbiased){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    float mean = thrust::reduce(dev_ptr, dev_ptr + A->size,0.0f, thrust::plus<float>()) / A->size;
+    float sum = thrust::transform_reduce(dev_ptr, dev_ptr + A->size, variance_shift_sum(mean), 0.0f, thrust::plus<float>());
+
+    if(unbiased){return sum/(A->size-1.0f);}
+    else {return sum/(A->size);}
+}
+
+void gpu_var(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_mean<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
+    gpu_var<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, unbiased);
+    check_cuda(cudaDeviceSynchronize(),"reduce_gpu_var");
+}
+
+float gpu_std(Tensor *A, bool unbiased){
+    return ::sqrtf(gpu_var(A, unbiased));
+}
+
+void gpu_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_mean<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
+    gpu_var<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, unbiased);
+    gpu_sqrt<<<dimGrid,dimBlock>>>(B->ptr, B->ptr, B->size);
+    check_cuda(cudaDeviceSynchronize(),"reduce_gpu_std");
+}
+
+
 float gpu_median(Tensor *A){
     int device=A->gpu_device;
     cudaSetDevice(device);
@@ -660,22 +723,6 @@ float gpu_median(Tensor *A){
 
 int gpu_mode(Tensor *A){
     // TODO: Not implemented for GPU
-}
-
-float gpu_std(Tensor *A, bool unbiased){
-    return ::sqrtf(gpu_var(A, unbiased));
-}
-
-float gpu_var(Tensor *A, bool unbiased){
-    int device=A->gpu_device;
-    cudaSetDevice(device);
-
-    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
-    float mean = thrust::reduce(dev_ptr, dev_ptr + A->size,0.0f, thrust::plus<float>()) / A->size;
-    float sum = thrust::transform_reduce(dev_ptr, dev_ptr + A->size, variance_shift_sum(mean), 0.0f, thrust::plus<float>());
-
-    if(unbiased){return sum/(A->size-1.0f);}
-    else {return sum/(A->size);}
 }
 
 
