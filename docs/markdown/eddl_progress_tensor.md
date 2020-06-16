@@ -367,20 +367,17 @@ Not yet...
 | ------------- |------| -----| ---------|
 | argmax | ✔️ | ❌ |
 | argmin | ✔️ | ❌ |
-| cumprod | ❌ | ❌ |
-| cumsum | ❌ | ❌ |
 | max | ✔️ | ❌ |
 | min | ✔️ | ❌ |
-| mean | ✔️ | ❌ |
+| mean | ✔️ | ✔ |
 | median | ❌ | ❌ |
 | mode | ✔️ | ❌ |
 | norm | ✔ | ❌ |
-| prod | ✔️ | ❌️ |
-| std | ✔ | ❌ |
-| sum | ✔️ | ❌ |
-| prod | ✔️ | ❌ |
-| unique | ❌ | ❌ |
-| var | ✔️ | ❌ |
+| prod | ✔️ | ✔ |
+| std | ✔ | ✔ |
+| sum | ✔️ |  ✔ |
+| sum_abs | ✔️ |  ✔ |
+| var | ✔️ |  ✔ |
 
 
 
