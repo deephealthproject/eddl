@@ -44,7 +44,13 @@ namespace eddlT{
     */
     Tensor* create(const vector<int> &shape, int dev);
 
-
+    /**
+    *  @brief Constructor of an uninitialized tensor
+    *
+    *  @param shape Vector of ints specifying the shape of the tensor
+    *  @param ptr  memory pointer
+    *  @return a tensor
+    */
     Tensor* create(const vector<int> &shape, float *ptr);
 
     /**
@@ -118,11 +124,31 @@ namespace eddlT{
     */
     Tensor* linspace(float start, float end, int steps, int dev=DEV_CPU);
 
-
+    /**
+    *   @brief Creates a 1-D tensor with a sequence of num  logarithmic spaced values starting at start. If steps > 1, the values in the sequence increase by end - start / steps - 1, so that the last one is exactly end.
+    *   @param start Start value
+    *   @param end  End value
+    *   @param steps  The gap between two values in the tensor.
+    *   @param base  The base of the logarithm to apply.
+    *   @param dev One of ``DEV_CPU``or ``DEV_GPU``
+    *   @return The new tensor
+    */
     Tensor* logspace(float start, float end, int steps, float base, int dev=DEV_CPU);
 
-
+    /**
+    *   @brief Creation of a 2-D squared tensor with ones on the main diagonal and zeroes on the other positions
+    *   @param size size of the tensor (number of rows)
+    *   @param dev One of ``DEV_CPU``or ``DEV_GPU``
+    *   @return The new tensor
+    */
     Tensor* eye(int size, int dev=DEV_CPU);
+
+    /**
+    *   @brief Creation of a tensor with filled with random numbers from the standard normal distribution.
+    *   @brief shape Shape of the tensor to create.
+    *   @param dev One of ``DEV_CPU``or ``DEV_GPU``
+    *   @return The new tensor
+    */
     Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
 
@@ -160,7 +186,12 @@ namespace eddlT{
     */
     Tensor* clone(Tensor *A);
 
-
+    /**
+    *   @brief Obtain the selected position of a tensor in a new tensor
+    *   @param A The input tensor
+    *   @param i The index to retrieve
+    *   @return A new tensor with the selection
+    */
     Tensor* select(Tensor *A, int i);
 
     /**
@@ -202,8 +233,24 @@ namespace eddlT{
     float *getptr(Tensor *A);
 
     // Other functions   ********************************
+
+    /**
+    *   @brief Print contents of a tensor
+    *   @param A The input tensor
+    */
     void print(Tensor *A);
+
+    /**
+    *   @brief Print some information of a tensor
+    *   @param A The input tensor
+    */
     void info(Tensor *A);
+
+    /**
+    *   @brief Obtain the shape of a tensor.
+    *   @param A The input tensor.
+    *   @return The shape of the input tensor.
+    */
     tshape getShape(Tensor *A);
 
     // Serialization ***********************************
@@ -334,13 +381,51 @@ namespace eddlT{
     */
     Tensor* ceil(Tensor *A);
 
+    /**
+    *   @brief Inplace clamp all elements in the input tensor to the range [min, max].
+    *   @param A The tensor where the operation is applied.
+    *   @param min The lower bound of the clamping range.
+    *   @param max The upper bound of the clamping range.
+    */
     void clamp_(Tensor *A,float min, float max);
+
+    /**
+    *   @brief Clamp all elements in the input tensor to the range [min, max].
+    *   @param A The tensor where the operation is applied.
+    *   @param min The lower bound of the clamping range.
+    *   @param max The upper bound of the clamping range.
+    *   @return A new tensor with the clamped values in A.
+    */
     Tensor* clamp(Tensor *A, float min, float max);
 
+    /**
+    *   @brief Inplace clamp all elements in the input tensor to the range [-infty, max].
+    *   @param A The tensor where the operation is applied.
+    *   @param max The upper bound of the clamping range.
+    */
     void clampmax_(Tensor *A,float max);
+
+    /**
+    *   @brief Clamp all elements in the input tensor to the range [-infty, max].
+    *   @param A The tensor where the operation is applied.
+    *   @param max The upper bound of the clamping range.
+    *   @return A new tensor with the clamped values in A.
+    */
     Tensor* clampmax(Tensor *A, float max);
 
+    /**
+    *   @brief Inplace clamp all elements in the input tensor to the range [min, +infty].
+    *   @param A The tensor where the operation is applied.
+    *   @param min The lower bound of the clamping range.
+    */
     void clampmin_(Tensor *A,float min);
+
+    /**
+    *   @brief Clamp all elements in the input tensor to the range [min, +infty].
+    *   @param A The tensor where the operation is applied.
+    *   @param min The lower bound of the clamping range.
+    *   @return A new tensor with the clamped values in A.
+    */
     Tensor* clampmin(Tensor *A, float min);
 
     /**
@@ -369,6 +454,10 @@ namespace eddlT{
     */
     Tensor* cosh(Tensor *A);
 
+    /**
+    *   @brief Inplace element-wise 1/x operation
+    *   @param A The tensor where the operation is applied
+    */
     void inv_(Tensor *A);
 
 
