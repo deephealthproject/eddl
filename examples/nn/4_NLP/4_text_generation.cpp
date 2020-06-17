@@ -16,33 +16,85 @@
 
 using namespace eddl;
 
+
 //////////////////////////////////
 // Text generation
 // Only Decoder
 //////////////////////////////////
 
+layer ResBlock(layer l, int filters,int nconv,int half) {
+  layer in=l;
+
+  if (half)
+      l=ReLu(Conv(l,filters,{3,3},{2,2}));
+  else
+      l=ReLu(Conv(l,filters,{3,3},{1,1}));
+
+
+  for(int i=0;i<nconv-1;i++)
+    l=ReLu(Conv(l,filters,{3,3},{1,1}));
+
+  if (half)
+    return Sum(Conv(in,filters,{1,1},{2,2}),l);
+  else
+    return Sum(l,in);
+}
+
+
+Tensor *onehot(Tensor *in, int vocs)
+{
+  int n=in->shape[0];
+  int l=in->shape[1];
+  int c=0;
+
+  Tensor *out=new Tensor({n,l,vocs});
+  out->fill_(0.0);
+
+  int p=0;
+  for(int i=0;i<n*l;i++,p+=vocs) {
+    int w=in->ptr[i];
+    if (w==0) c++;
+    out->ptr[p+w]=1.0;
+  }
+
+  cout<<"padding="<<(100.0*c)/(n*l)<<"%"<<endl;
+  return out;
+}
+
 int main(int argc, char **argv) {
 
     // Settings
     int epochs = 10;
-    int batch_size = 32;
+    int batch_size = 8;
 
-    int olength=5;
-    int invs=100;
-    int outvs=100;
-    int embedding=64;
+    int olength=20;
+    int outvs=2000;
 
     // Define network
-    layer in = Input({1}); //1 word
+    layer in = Input({3,256,256}); //Image
     layer l = in;
 
-    layer lE = RandomUniform(Embedding(l, invs, 1,embedding),-0.05,0.05);
+    l=ReLu(Conv(l,64,{3,3},{2,2}));
 
-    l = ReLu(Dense(lE,1024));
+    l=ResBlock(l, 64,2,1);//<<<-- output half size
+    l=ResBlock(l, 64,2,0);
+
+    l=ResBlock(l, 128,2,1);//<<<-- output half size
+    l=ResBlock(l, 128,2,0);
+
+    l=ResBlock(l, 256,2,1);//<<<-- output half size
+    l=ResBlock(l, 256,2,0);
+
+    l=ResBlock(l, 512,2,1);//<<<-- output half size
+    l=ResBlock(l, 512,2,0);
+
+    l=GlobalAveragePool(l);
+
+    l=Reshape(l,{-1});
 
     // Decoder
     layer ind = Input({outvs});
-    l = Decoder(LSTM(ind,256),l,"concat");
+    l = Decoder(LSTM(ind,512,true),l,"concat");
 
     layer out = Softmax(Dense(l, outvs));
 
@@ -69,10 +121,13 @@ int main(int argc, char **argv) {
 
 
     // Load dataset
-
-    Tensor *x_train=new Tensor({1000,1});
-    Tensor *y_train=new Tensor({1000,olength*outvs});
-    y_train->reshape_({x_train->shape[0],olength,outvs}); //batch x timesteps x input_dim
+    Tensor *x_train=Tensor::load("flickr_trX.bin","bin");
+    x_train->info();
+    Tensor *y_train=Tensor::load("flickr_trY.bin","bin");
+    y_train->info();
+    //y_train->print();
+    y_train=onehot(y_train,outvs);
+    y_train->reshape_({y_train->shape[0],olength,outvs}); //batch x timesteps x input_dim
 
     // Train model
     for(int i=0;i<epochs;i++) {
