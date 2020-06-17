@@ -411,4 +411,16 @@ TEST(TensorTestSuite, tensor_math_reduction_norm) {
 
     Tensor *new_t2 = t2->norm({1}, false, "fro");
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::randn({10, 10});  // High mismatch CPU/GPU
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    Tensor *t_cpu_norm = t_cpu->norm({1}, false, "fro");
+    Tensor *t_gpu_norm = t_gpu->norm({1}, false, "fro"); t_gpu_norm->toCPU();
+    t_cpu_norm->print();
+    t_gpu_norm->print();
+
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_norm, t_gpu_norm, 10e-4));
+#endif
 }
