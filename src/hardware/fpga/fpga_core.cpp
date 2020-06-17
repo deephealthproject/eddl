@@ -84,14 +84,14 @@ cl::Kernel kernel_reduce, kernel_reduce_op, kernel_reduce_sum2D, kernel_reductio
 // tensor_nn kernels (2)
 cl::Kernel kernel_repeat_nn, kernel_d_repeat_nn;
 
-// math kernels (45)
+// math kernels (46)
 cl::Kernel kernel_abs_,       kernel_acos_,  kernel_add_,      kernel_asin_,       kernel_atan_,      kernel_ceil_,         kernel_clamp_;
 cl::Kernel kernel_cos_,       kernel_cosh_,  kernel_sigmoid_,  kernel_mod_,        kernel_mult_,      kernel_trunc_,        kernel_sum_abs;
 cl::Kernel kernel_exp_,       kernel_floor_, kernel_inv_,      kernel_log_,        kernel_log2_,      kernel_log10_,        kernel_logn_;
 cl::Kernel kernel_normalize_, kernel_pow_,   kernel_powb_,     kernel_reciprocal_, kernel_remainder_, kernel_round_,        kernel_rsqrt_;
 cl::Kernel kernel_sign_,      kernel_sin_,   kernel_sinh_,     kernel_sqr_,        kernel_sqrt_,      kernel_tan_,          kernel_tanh_;
 cl::Kernel kernel_add,        kernel_inc,    kernel_el_div,    kernel_el_mult,     kernel_sign2,      kernel_sum2D_rowwise, kernel_sum2D_colwise;
-cl::Kernel kernel_max,        kernel_min,    kernel_sum;
+cl::Kernel kernel_max,        kernel_min,    kernel_sum,       kernel_mult2D;
 
 
 // profiling
@@ -830,6 +830,10 @@ void fpga_init(){ // initialize only once
     OCL_CHECK(err, kernel_inc = cl::Kernel(program,"k_inc", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
+    #ifdef K_ENABLED_MULT2D
+    OCL_CHECK(err, kernel_mult2D = cl::Kernel(program,"k_mult2d", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
     #ifdef K_ENABLED_EL_DIV
     OCL_CHECK(err, kernel_el_div = cl::Kernel(program,"k_el_div", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
@@ -843,11 +847,11 @@ void fpga_init(){ // initialize only once
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_SUM2D_ROWWISE
-    OCL_CHECK(err, kernel_sum2D_rowwise = cl::Kernel(program,"k_sum2D_rowwise", &err));
+    OCL_CHECK(err, kernel_sum2D_rowwise = cl::Kernel(program,"k_sum2d_rowwise", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_SUM2D_COLWISE
-    OCL_CHECK(err, kernel_sum2D_colwise = cl::Kernel(program,"k_sum2D_colwise", &err));
+    OCL_CHECK(err, kernel_sum2D_colwise = cl::Kernel(program,"k_sum2d_colwise", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_MAX
@@ -875,7 +879,7 @@ void fpga_init(){ // initialize only once
       fpga_free_buffer_pool[e] = 1;
     }
     fpga_num_buffer_pool_slots = 0;
-    // 
+    //
 
     printf("end of fpga_init\n");
 }
@@ -897,7 +901,7 @@ cl::Buffer *fpga_create_tensor(int device, int size)
 #endif
     _profile_fpga_add_tensor(size*sizeof(float));
 
-    // search an available slot 
+    // search an available slot
     int e;
     for (e=0; e<fpga_num_buffer_pool_slots; e++) {
       if (!fpga_inuse_buffer_pool[e] && !fpga_free_buffer_pool[e] & (fpga_size_buffer_pool[e] == size)) break;
@@ -914,7 +918,7 @@ cl::Buffer *fpga_create_tensor(int device, int size)
       printf("Error, too many buffer pools\n");
       exit(1);
     }
-    
+
     // buffer pool slot creation
 #ifdef FPGA_DEBUG
     printf("Creating new buffer pool entry\n");
@@ -1069,7 +1073,7 @@ void fpga_transpose(Tensor * A, Tensor * B) {
     fpga_cpuemu_transpose(A, B);
 #else
     printf("fpga_transpose not implemented yet\n"); exit(1);
-#endif 
+#endif
     _profile_fpga(_FPGA_TRANSPOSE, 1);
 }
 

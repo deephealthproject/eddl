@@ -1,9 +1,7 @@
 #include <math.h>
 #include <stdio.h>
-#include "../../../../include/eddl/hardware/fpga/fpga_enables.h"
 extern "C" {
 
-#ifdef K_ENABLED_SOFTMAX
 void k_softmax(float *A, float *B, int Ashape0, int Ashape1, int Bshape1) {
 
   #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
@@ -47,7 +45,5 @@ void k_softmax(float *A, float *B, int Ashape0, int Ashape1, int Bshape1) {
   //  (*B->ptr2)(j, i) = (*B->ptr2)(j, i) / sum;
   //}
 
+  }
 }
-#endif
-
-} // end extern "C"
