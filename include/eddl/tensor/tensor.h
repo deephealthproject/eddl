@@ -253,6 +253,13 @@ public:
       *  @return     Tensor of the specified shape filled with zeros
      */
     static Tensor* empty(const vector<int> &shape, int dev=DEV_CPU);
+
+    /**
+      *  @brief Create a tensor with the shape and device of another one, but empty
+      *
+      *  @param A  Input tensor from wich to take shape and device.
+      *  @return     Empty initialized A-shaped tensor 
+     */
     static Tensor* empty_like(Tensor *A);
 
 
@@ -264,6 +271,13 @@ public:
       *  @return     Tensor of the specified shape filled with zeros
     */
     static Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
+
+    /**
+      *  @brief Create a tensor with the shape and device of another one, initialized with zeros
+      *
+      *  @param A  Input tensor from wich to take shape and device.
+      *  @return     Zeros initialized A-shaped tensor 
+     */
     static Tensor* zeros_like(Tensor *A);
 
     /**
@@ -274,6 +288,13 @@ public:
       *  @return     Tensor of the specified shape filled with ones
     */
     static Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
+
+    /**
+      *  @brief Create a tensor with the shape and device of another one, initialized with ones
+      *
+      *  @param A  Input tensor from wich to take shape and device.
+      *  @return     Ones initialized A-shaped tensor 
+     */
     static Tensor* ones_like(Tensor *A);
 
     /**
@@ -285,12 +306,67 @@ public:
       *  @return     Tensor of the specified shape filled with the value
     */
     static Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
+
+    /**
+      *  @brief Create a tensor with the shape an device of the input tensor and filled with a specific value.
+      *
+      *  @param A  Input tensor from wich to take shape and device.
+      *  @return     Value initialized A-shaped tensor 
+    */
     static Tensor* full_like(Tensor *A, float value);
 
+    /**
+    *   @brief Create a 1-D tensor of size ceil(end - start) with values from start to end with step step.
+    *
+    *   @param start Start index
+    *   @param end  End index
+    *   @param step  The gap between two values in the tensor.
+    *   @param dev One of ``DEV_CPU``or ``DEV_GPU``
+    *   @return The new tensor
+    */
     static Tensor* arange(float start, float end, float step=1.0f, int dev=DEV_CPU);
+
+    /**
+    *   @brief Creates a 1-D tensor of size floor(end - start)/ + 1 with values from start to end with step step.
+    *
+    *   @param start Start value
+    *   @param end  End value
+    *   @param step  The gap between two values in the tensor.
+    *   @param dev One of ``DEV_CPU``or ``DEV_GPU``
+    *   @return The new tensor
+    */
     static Tensor* range(float start, float end, float step=1.0f, int dev=DEV_CPU);
+
+    /**
+    *   @brief Creates a 1-D tensor with a sequence of num evenly-spaced values starting at start. If steps > 1, the values in the sequence increase by end - start / steps - 1, so that the last one is exactly end.
+    *   @param start Start value
+    *   @param end  End value
+    *   @param steps  The gap between two values in the tensor.
+    *   @param dev One of ``DEV_CPU``or ``DEV_GPU``
+    *   @return The new tensor
+    */
     static Tensor* linspace(float start, float end, int steps=100, int dev=DEV_CPU);
+
+
+    /**
+    *   @brief Creates a 1-D tensor with a sequence of num  logarithmic spaced values starting at start. If steps > 1, the values in the sequence increase by end - start / steps - 1, so that the last one is exactly end.
+    *   @param start Start value
+    *   @param end  End value
+    *   @param steps  The gap between two values in the tensor.
+    *   @param base  The base of the logarithm to apply.
+    *   @param dev One of ``DEV_CPU``or ``DEV_GPU``
+    *   @return The new tensor
+    */
     static Tensor* logspace(float start, float end, int steps=100, float base=10.0f, int dev=DEV_CPU);
+
+    /**
+    *   @brief Creates a 1-D tensor with a sequence of num  geometrically spaced values starting at start. If steps > 1, the values in the sequence increase by end - start / steps - 1, so that the last one is exactly end.
+    *   @param start Start value
+    *   @param end  End value
+    *   @param steps  The gap between two values in the tensor.
+    *   @param dev One of ``DEV_CPU``or ``DEV_GPU``
+    *   @return The new tensor
+    */
     static Tensor* geomspace(float start, float end, int steps=100, int dev=DEV_CPU);
 
     /**
@@ -331,18 +407,77 @@ public:
     */
     static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
+    /**
+      *  @brief Obtain the elements in a squared matrix diagonal. Inplace operation.
+      *
+      *  @param k  Offset. If k=0, main diagonal is selected. If k>0, a diagonal above the main diagonal is selected. If k<0, a diagonal below the main diagonal is selected.
+    */
     void diag_(int k=0);
+
+    /**
+      *  @brief Obtain the elements in a squared matrix diagonal.
+      *
+      *  @param k  Offset. If k=0, main diagonal is selected. If k>0, a diagonal above the main diagonal is selected. If k<0, a diagonal below the main diagonal is selected.
+      *  @return  A new tensor with the elements on the selected diagonal.
+    */
     Tensor* diag(int k=0);
+
+    /**
+      *  @brief Obtain the elements in a squared matrix diagonal.
+      *
+      *  @param A  Input matrix.
+      *  @param B  Output matrix.
+      *  @param k  Offset. If k=0, main diagonal is selected. If k>0, a diagonal above the main diagonal is selected. If k<0, a diagonal below the main diagonal is selected.
+    */
     static void diag(Tensor* A, Tensor* B, int k=0);
 
     // Math operations (Tensor-Tensor, Tensor-float) ************************
+
+    /**
+      *  @brief Apply a lower bound to the elements in a tensor.
+      *
+      *  @param v  Lower bound.
+      *  @return A new tensor with the values lower than v set to v.
+    */
     Tensor* maximum(float v);
+
+    /**
+      *  @brief Apply a lower bound to the elements in a tensor.
+      *
+      *  @param A  Input tensor.
+      *  @param v  Lower bound.
+      *  @return A new tensor with the values of A lower than v set to v.
+    */
     static Tensor* maximum(Tensor* A, float v);
+
+    /**
+      *  @brief Apply a lower bound to the elements in a tensor.
+      *
+      *  @param A  Input tensor.
+      *  @param B  Output tensor.
+      *  @param v  Lower bound.
+    */
     static void maximum(Tensor* A, Tensor* B, float v);
 
+    /**
+      *  @brief Element-wise selection of the maximum values in the same position in two tensors.
+      *
+      *  @param A  Input tensor.
+      *  @param B  Input tensor.
+      *  @return  A tensor with the higher value in the same position between A and B.
+    */
     static Tensor* maximum(Tensor* A, Tensor* B);
+
+    /**
+      *  @brief Element-wise selection of the maximum values in the same position in two tensors.
+      *
+      *  @param A  Input tensor.
+      *  @param B  Input tensor.
+      *  @param C  Output tensor with the higher value in the same position between A and B.
+    */
     static void maximum(Tensor* A, Tensor* B, Tensor* C);
 
+   
     Tensor* minimum(float v);
     static Tensor* minimum(Tensor* A, float v);
     static void minimum(Tensor* A, Tensor* B, float v);
@@ -352,37 +487,155 @@ public:
 
     // Math operations (single-value) ************************
 
+    /**
+      *  @brief Get the median value of all the elements in the tensor.
+      *
+      *  @return The median value of all the elements in the tensor.
+    */
     float median();
+
+    /**
+      *  @brief Get the median value of all the elements in the input tensor.
+      *
+      *  @param A Input tensor.
+      *  @return The median value of all the elements in the input tensor.
+    */
     static float median(Tensor* A);
 
     // Math operations (reductions) ************************
+
+    /**
+    *   @brief Obtain the maximum value in the tensor
+    *   @return float. The maximum value in the tensor
+    */
     float max();
+
+    /**
+    *   @brief Obtain the maximum value in a tensor
+    *   @param A The tensor where the operation is applied
+    *   @return The maximum value in A
+    */
     static float max(Tensor* A);
+
+    /**
+    *   @brief Obtain the maximum value in a tensor
+    *   @param axis Vector with the axis in which to obtain the maximum value
+    *   @param keepdims If true, output tensor will have the same dimentions as input tensor, except from the axis selected where dimension will be 1.
+    *   @return float. The maximum value in A on the selected axis
+    */
     Tensor* max(vector<int> axis, bool keepdims);
+
+
     static void max(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
+    /**
+    *   @brief Obtain the index of the maximum value in the tensor
+    *   @return The desired index.
+    */
     int argmax();
+
+    /**
+    *   @brief Obtain the index of the maximum value in the tensor
+    *   @param A The tensor where the operation is applied.
+    *   @return The desired index.
+    */
     static int argmax(Tensor* A);
+
+    /**
+    *   @brief Obtain the index of the maximum value in a tensor
+    *   @param axis Vector with the axis in which to obtain the maximum value
+    *   @param keepdims If true, output tensor will have the same dimentions as input tensor, except from the axis selected where dimension will be 1.
+    *   @return float. The tensor with the indexes of the maximum values in A on the selected axis
+    */
     Tensor* argmax(vector<int> axis, bool keepdims);
+
     static void argmax(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
+    /**
+    *   @brief Obtain the minimum value in the tensor
+    *   @return float. The minimum value in the tensor
+    */
     float min();
+
+    /**
+    *   @brief Obtain the minimum value in a tensor
+    *   @param A The tensor where the operation is applied
+    *   @return The minimum value in A
+    */
     static float min(Tensor* A);
+
+    /**
+    *   @brief Obtain the minimum value in a tensor
+    *   @param axis Vector with the axis in which to obtain the minimum value
+    *   @param keepdims If true, output tensor will have the same dimentions as input tensor, except from the axis selected where dimension will be 1.
+    *   @return float. The minimum value in A on the selected axis
+    */
     Tensor* min(vector<int> axis, bool keepdims);
     static void min(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
+    /**
+    *   @brief Obtain the index of the minimum value in the tensor
+    *   @return The desired index.
+    */
     int argmin();
+
+    /**
+    *   @brief Obtain the index of the minimum value in the tensor
+    *   @param A The tensor where the operation is applied.
+    *   @return The desired index.
+    */
     static int argmin(Tensor* A);
+
+    /**
+    *   @brief Obtain the index of the minimum value in a tensor
+    *   @param axis Vector with the axis in which to obtain the minimum value
+    *   @param keepdims If true, output tensor will have the same dimentions as input tensor, except from the axis selected where dimension will be 1.
+    *   @return float. The tensor with the indexes of the minimum values in A on the selected axis
+    */
     Tensor* argmin(vector<int> axis, bool keepdims);
     static void argmin(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
+    /**
+    *   @brief Obtain the sum of all the values in the tensor.
+    *   @return The sum of all the elements in the tensor.
+    */
     float sum();
+
+    /**
+    *   @brief Obtain the sum of all the values in a tensor.
+    *   @param A Input tensor.
+    *   @return The sum of all the elements in the input tensor.
+    */
     static float sum(Tensor* A);
+
+    /**
+    *   @brief Obtain the sum of all the element in the tensor
+    *   @param axis Vector with the axis in which to obtain the sum value
+    *   @param keepdims If true, output tensor will have the same dimentions as input tensor, except from the axis selected where dimension will be 1.
+    *   @return float. The tensor with the sum of elements in A on the selected axis.
+    */
     Tensor* sum(vector<int> axis, bool keepdims);
     static void sum(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
+    /**
+    *   @brief Obtain the absolute value sum of all the values in the tensor.
+    *   @return The absolute value sum of all the elements in the tensor.
+    */
     float sum_abs();
+
+    /**
+    *   @brief Obtain the absolute value sum of all the values in a tensor.
+    *   @param A Input tensor.
+    *   @return The absolute value sum of all the elements in the input tensor.
+    */
     static float sum_abs(Tensor* A);
+
+    /**
+    *   @brief Obtain the absolute value sum of all the element in the tensor
+    *   @param axis Vector with the axis in which to obtain the absolute value sum
+    *   @param keepdims If true, output tensor will have the same dimentions as input tensor, except from the axis selected where dimension will be 1.
+    *   @return float. The tensor with the absolute value sum of elements in A on the selected axis.
+    */
     Tensor* sum_abs(vector<int> axis, bool keepdims);
     static void sum_abs(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
