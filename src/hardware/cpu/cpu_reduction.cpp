@@ -56,22 +56,22 @@ void cpu_reduce_op(Tensor *A, Tensor *B,string op,int* map)
   if (op=="sum") {
     #pragma omp parallel for
     for(i=0;i<A->size;i++)
-      A->ptr[i]+=B->ptr[map[i]];
+      B->ptr[map[i]]+=A->ptr[i];
   }
   else if (op=="diff"){
     #pragma omp parallel for
     for(i=0;i<A->size;i++)
-      A->ptr[i]-=B->ptr[map[i]];
+      B->ptr[map[i]]-=A->ptr[i];
   }
   else if (op=="mult"){
     #pragma omp parallel for
     for(i=0;i<A->size;i++)
-      A->ptr[i]*=B->ptr[map[i]];
+      B->ptr[map[i]]*=A->ptr[i];
   }
   else if (op=="div"){
     #pragma omp parallel for
     for(i=0;i<A->size;i++)
-      A->ptr[i]/=B->ptr[map[i]];
+      B->ptr[map[i]]/=A->ptr[i];
   }
   else {
     throw std::invalid_argument("op: " + op + " not yet implemented");
