@@ -639,194 +639,916 @@ public:
     Tensor* sum_abs(vector<int> axis, bool keepdims);
     static void sum_abs(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
+    /**
+    *   @brief Obtain the product of all the values in the tensor.
+    *   @return The product of all the elements in the tensor.
+    */
     float prod();
+
+    /**
+    *   @brief Obtain the product of all the values in a tensor.
+    *   @param A Input tensor.
+    *   @return The product of all the elements in the input tensor.
+    */
     static float prod(Tensor* A);
+
+    /**
+    *   @brief Obtain the product of all the element in the tensor
+    *   @param axis Vector with the axis in which to obtain the product
+    *   @param keepdims If true, output tensor will have the same dimentions as input tensor, except from the axis selected where dimension will be 1.
+    *   @return float. The tensor with the product of elements in A on the selected axis.
+    */
     Tensor* prod(vector<int> axis, bool keepdims);
     static void prod(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
+
+    /**
+    *   @brief Obtain the mean of all the values in the tensor.
+    *   @return The mean of all the elements in the tensor.
+    */
     float mean();
+
+    /**
+    *   @brief Obtain the mean of all the values in a tensor.
+    *   @param A Input tensor.
+    *   @return The mean of all the elements in the input tensor.
+    */
     static float mean(Tensor* A);
+
+    /**
+    *   @brief Obtain the prodmeanuct of all the element in the tensor
+    *   @param axis Vector with the axis in which to obtain the mean
+    *   @param keepdims If true, output tensor will have the same dimentions as input tensor, except from the axis selected where dimension will be 1.
+    *   @return float. The tensor with the mean of elements in A on the selected axis.
+    */
     Tensor* mean(vector<int> axis, bool keepdims);
     static void mean(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
+
+    /**
+    *   @brief Obtain the standard deviation of all the values in the tensor.
+    *   @param ubiased Whether the standard deviation is computed using the unbiased estimation or not.
+    *   @return The standard deviation of all the elements in the tensor.
+    */
     float std(bool unbiased=true);
+
+    /**
+    *   @brief Obtain the standard deviation of all the values in a tensor.
+    *   @param A Input tensor.
+    *   @param ubiased Whether the standard deviation is computed using the unbiased estimation or not.
+    *   @return The standard deviation of all the elements in the input tensor.
+    */
     static float std(Tensor* A, bool unbiased=true);
+
+    /**
+    *   @brief Obtain the standard deviation of all the elements in the tensor
+    *   @param axis Vector with the axis in which to obtain the standard deviation
+    *   @param keepdims If true, output tensor will have the same dimentions as input tensor, except from the axis selected where dimension will be 1.
+    *   @param ubiased Whether the standard deviation is computed using the unbiased estimation or not.
+    *   @return float. The tensor with the standard deviation of elements in A on the selected axis.
+    */
     Tensor* std(vector<int> axis, bool keepdims, bool unbiased=true);
     static void std(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased=true);
 
+    /**
+    *   @brief Obtain the variance of all the values in the tensor.
+    *   @param ubiased Whether the variance is computed using the unbiased estimation or not.
+    *   @return The variance of all the elements in the tensor.
+    */
     float var(bool unbiased=true);
+
+    /**
+    *   @brief Obtain the variance of all the values in a tensor.
+    *   @param A Input tensor.
+    *   @param ubiased Whether the variance is computed using the unbiased estimation or not.
+    *   @return The variance of all the elements in the input tensor.
+    */
     static float var(Tensor* A, bool unbiased=true);
+
+    /**
+    *   @brief Obtain the variance of all the elements in the tensor
+    *   @param axis Vector with the axis in which to obtain the variance.
+    *   @param keepdims If true, output tensor will have the same dimentions as input tensor, except from the axis selected where dimension will be 1.
+    *   @param ubiased Whether the variance is computed using the unbiased estimation or not.
+    *   @return float. The tensor with the variance of elements in A on the selected axis.
+    */
     Tensor* var(vector<int> axis, bool keepdims, bool unbiased=true);
     static void var(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased=true);
 
+    /**
+    *   @brief Obtain the mode of all the values in the tensor.
+    *   @return The mode of all the elements in the tensor.
+    */
     int mode();
+
+    /**
+    *   @brief Obtain the mode of all the values in a tensor.
+    *   @param A Input tensor.
+    *   @return The mode of all the elements in the input tensor.
+    */
     static int mode(Tensor* A);
+
+    /**
+    *   @brief Obtain the mode of all the elements in the tensor
+    *   @param axis Vector with the axis in which to obtain the mode
+    *   @param keepdims If true, output tensor will have the same dimentions as input tensor, except from the axis selected where dimension will be 1.
+    *   @return float. The tensor with the mode of elements in A on the selected axis.
+    */
     Tensor* mode(vector<int> axis, bool keepdims);
     static void mode(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
     // Math operations (unary) ************************
+    /**
+    *   @brief Inplace element-wise abs operation
+    */
     void abs_();
+
+    /**
+    *   @brief Element-wise abs operation
+    *   @param A The tensor where the operation is applied
+    *   @return A new tensor with abs applied over A
+    */
     Tensor* abs();
+
+    /**
+    *   @brief Element-wise abs operation
+    *   @param A The tensor where the operation is applied
+    *   @param B A new tensor with abs applied over A
+    */
     static void abs(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace element-wise acos operation
+    */
     void acos_();
+
+    /**
+    *   @brief Inplace element-wise acos operation
+    *   @param A. The tensor where the operation is applied
+    *   @return A new tensor with abs applied over A
+    */
     Tensor* acos();
+
+    /**
+    *   @brief Element-wise acos operation
+    *   @param A The tensor where the operation is applied
+    *   @param B A new tensor with acos applied over A
+    */
     static void acos(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace element-wise add operation of a tensor and a real value
+    *   @param v. The real number to add
+    */
     void add_(float v);
+
+    /**
+    *   @brief Element-wise add operation of a tensor and a real value
+    *   @param v. The real number to add
+    *   @return A new tensor with the sum
+    */
     Tensor* add(float v);
+
+    /**
+    *   @brief Inplace element-wise add operation of two tensors
+    *   @param A The tensor to be added.
+    */
     void add_(Tensor* A);  // this = this .+ A
+
+    /**
+    *   @brief Element-wise add operation of two tensors
+    *   @param A The tensor to be added
+    *   @return a tensor with the element-wise sum
+    */
     Tensor* add(Tensor* A);  // this = this .+ A
+
+    /**
+    *   @brief Element-wise add operation of a tensor and a real value
+    *   @param A Input tensor
+    *   @param B Output tensor. B = A + v
+    *   @param v Real value to be added to A
+    */
     static void add(Tensor *A, Tensor *B, float v); // B = A + v
 
+    /**
+    *   @brief Inplace element-wise asin operation
+    */
     void asin_();
+
+    /**
+    *   @brief Element-wise asin operation
+    *   @return A new tensor with the result
+    */
     Tensor* asin();
+
+    /**
+    *   @brief Element-wise asin operation
+    *   @param A The tensor where the operation is applied
+    *   @param B A new tensor with asin applied over A
+    */
     static void asin(Tensor *A, Tensor *B);
 
+
+    /**
+    *   @brief Inplace element-wise atan operation
+    */
     void atan_();
+
+    /**
+    *   @brief Element-wise atan operation
+    *   @return A new tensor with the result
+    */
     Tensor* atan();
+
+    /**
+    *   @brief Element-wise atan operation
+    *   @param A The tensor where the operation is applied
+    *   @param B A new tensor with atan applied over A
+    */
     static void atan(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace element-wise ceil operation
+    */
     void ceil_();
+
+    /**
+    *   @brief Element-wise ceil operation
+    *   @return A new tensor with the result
+    */
     Tensor* ceil();
+
+    /**
+    *   @brief Element-wise ceil operation
+    *   @param A The tensor where the operation is applied
+    *   @param B A new tensor with ceil applied over A
+    */
     static void ceil(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace clamp all elements in the input tensor to the range [min, max].
+    *   @param min The lower bound of the clamping range.
+    *   @param max The upper bound of the clamping range.
+    */
     void clamp_(float min, float max);
+
+    /**
+    *   @brief Clamp all elements in the input tensor to the range [min, max].
+    *   @param min The lower bound of the clamping range.
+    *   @param max The upper bound of the clamping range.
+    *   @return A new tensor with the clamped values in the input tensor.
+    */
     Tensor* clamp(float min, float max);
+
+    /**
+    *   @brief Clamp all elements in the input tensor to the range [min, max].
+    *   @param A The tensor where the operation is applied.
+    *   @param B The output tensor with the result.
+    *   @param min The lower bound of the clamping range.
+    *   @param max The upper bound of the clamping range.
+    */
     static void clamp(Tensor *A, Tensor *B, float min, float max);
 
+    /**
+    *   @brief Inplace clamp all elements in the input tensor to the range [-infty, max].
+    *   @param max The upper bound of the clamping range.
+    */
     void clampmax_(float max);
+
+    /**
+    *   @brief Clamp all elements in the input tensor to the range [-infty, max].
+    *   @param max The upper bound of the clamping range.
+    *   @return A new tensor with the clamped values.
+    */
     Tensor* clampmax(float max);
+
+    /**
+    *   @brief Clamp all elements in the input tensor to the range [-infty, max].
+    *   @param A The tensor where the operation is applied.
+    *   @param B The output tensor.
+    *   @param max The upper bound of the clamping range.
+    */
     static void clampmax(Tensor *A, Tensor *B, float max);
 
+    /**
+    *   @brief Inplace clamp all elements in the input tensor to the range [min, +infty].
+    *   @param min The lower bound of the clamping range.
+    */
     void clampmin_(float min);
+
+    /**
+    *   @brief Clamp all elements in the input tensor to the range [min, +infty].
+    *   @param min The lower bound of the clamping range.
+    *   @return A new tensor with the clamped values.
+    */
     Tensor* clampmin(float min);
+
+    /**
+    *   @brief Clamp all elements in the input tensor to the range [min, +infty].
+    *   @param A The tensor where the operation is applied.
+    *   @param B The output tensor.
+    *   @param min The lower bound of the clamping range.
+    */
     static void clampmin(Tensor *A, Tensor *B, float min);
 
+    /**
+    *   @brief Inplace element-wise cos operation
+    */
     void cos_();
+
+    /**
+    *   @brief Element-wise cos operation
+    *   @return A new tensor with cos applied.
+    */
     Tensor* cos();
+
+    /**
+    *   @brief Element-wise cos operation
+    *   @param A The tensor where the operation is applied
+    *   @param B The output tensor.
+    */
     static void cos(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace element-wise cosh operation
+    */
     void cosh_();
+
+    /**
+    *   @brief Element-wise cosh operation
+    *   @return A new tensor with cosh applied.
+    */
     Tensor* cosh();
+
+    /**
+    *   @brief Element-wise cosh operation
+    *   @param A The tensor where the operation is applied
+    *   @param B The output tensor.
+    */
     static void cosh(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace element-wise division operation of a tensor and a real value
+    *   @param v The real number to divide by
+    */
     void div_(float v);
+
+    /**
+    *   @brief Element-wise division operation of a tensor and a real value
+    *   @param v The real number to divide by.
+    *   @return A new tensor with the division.
+    */
     Tensor* div(float v);
+
+    /**
+    *   @brief Inplace element-wise division operation of two tensors
+    *   @param A. The tensor to divide by
+    */
     void div_(Tensor* A); // this = this ./ A
+
+    /**
+    *   @brief Inplace element-wise division operation of two tensors
+    *   @param A The tensor to divide by
+    *   @return A new tensor with the division.
+    */
     Tensor* div(Tensor* A); // this = this ./ A
+
+    /**
+    *   @brief Element-wise division operation of a tensor and a real value.
+    *   @param A The tensor where the operation is applied
+    *   @param B The output tensor. B = A / v
+    *   @param v The real number to divide by.
+    */
     static void div(Tensor *A, Tensor *B, float v); // B = A / v
 
+    /**
+    *   @brief Inplace element-wise exp operation of a tensor
+    */
     void exp_();
+
+    /**
+    *   @brief Element-wise exp operation of a tensor
+    *   @return A new tensor with the exp operation applied
+    */
     Tensor* exp();
+
+    /**
+    *   @brief Element-wise exp operation of a tensor
+    *   @param A The tensor where the operation is applied.
+    *   @param B The output tensor.
+    */
     static void exp(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace element-wise floor operation
+    */
     void floor_();
+
+    /**
+    *   @brief Element-wise floor operation
+    *   @return A new tensor with the floor operation applied.
+    */
     Tensor* floor();
+
+    /**
+    *   @brief Element-wise floor operation.
+    *   @param A. The tensor where the operation is applied.
+    *   @param B The output tensor.
+    */
     static void floor(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace element-wise 1/x operation
+    *   @param v the value multiplying the inverse
+    */
     void inv_(float v=1.0f);
+
+    /**
+    *   @brief Element-wise 1/x operation
+    *   @param v the value multiplying the inverse
+    *   @return A new tensor with the result.
+    */
     Tensor* inv(float v=1.0f);
+
+     /**
+    *   @brief Element-wise 1/x operation
+    *   @param A The input tensor.
+    *   @param B The output tensor.
+    *   @param v the value multiplying the inverse.
+    */
     static void inv(Tensor *A, Tensor *B, float v=1.0f);
 
+    /**
+    *   @brief Inplace element-wise log operation
+    */
     void log_();
+
+    /**
+    *   @brief Element-wise log operation
+    *   @return A new tensor with the log operation applied
+    */
     Tensor* log();
+
+    /**
+    *   @brief Element-wise log operation
+    *   @param A The tensor where the operation is applied
+    *   @param B The output tensor.
+    */
     static void log(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace element-wise log2 operation
+    */
     void log2_();
+
+    /**
+    *   @brief Element-wise log2 operation
+    *   @return A new tensor with the log2 operation applied.
+    */
     Tensor* log2();
+
+    /**
+    *   @brief Element-wise log2 operation.
+    *   @param A The tensor where the operation is applied.
+    *   @param B The output tensor.
+    */
     static void log2(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace element-wise log10 operation
+    */
     void log10_();
+
+    /**
+    *   @brief Element-wise log10 operation
+    *   @return A new tensor with the log10 operation applied.
+    */
     Tensor* log10();
+
+    /**
+    *   @brief Element-wise log10 operation.
+    *   @param A The tensor where the operation is applied.
+    *   @param B The output tensor.
+    */
     static void log10(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace element-wise logn operation.
+    *   @param n The base of the logarithm.
+    */
     void logn_(float n);
+
+    /**
+    *   @brief Element-wise logn operation.
+    *   @param n The base of the logarithm.
+    *   @return A new tensor with the logn operation applied.
+    */
     Tensor* logn(float n);
+
+    /**
+    *   @brief Element-wise logn operation.
+    *   @param A The tensor where the operation is applied.
+    *   @param B The output tensor.
+    *   @param n The base of the logarithm.
+    */
     static void logn(Tensor *A, Tensor *B, float n);
 
+    /**
+    *   @brief Inplace element-wise mod operation.
+    *   @param v The mod operator
+    */
     void mod_(float v);
+
+    /**
+    *   @brief Element-wise mod operation.
+    *   @param v The mod operator
+    *   @return A new tensor with the operation applied.
+    */
     Tensor* mod(float v);
+
+    /**
+    *   @brief Element-wise mod operation.
+    *   @param A The tensor where the operation is applied.
+    *   @param B The output tensor.
+    *   @param v The mod operator.
+    */
     static void mod(Tensor *A, Tensor *B, float v);
 
+    /**
+    *   @brief Inplace multiplication operation of a tensor by a scalar.
+    *   @param v. The value to multiply by
+    */
     void mult_(float v);
+
+    /**
+    *   @brief Multiplication operation of a tensor by a scalar.
+    *   @param v The value to multiply by
+    *   @return A tensor with the result
+    */
     Tensor* mult(float v);
+
+    /**
+    *   @brief Inplace element-wise  multiplication operation of two 1D tensors.
+    *   @param A The tensor to multiply by.
+    */
     void mult_(Tensor* A); // this = this .* A
+
+    /**
+    *   @brief Element-wise multiplication operation of two 1D tensors.
+    *   @param A The tensor to multiply by.
+    *   @return A tensor with the result.
+    */
     Tensor* mult(Tensor* A); // this = this .* A
+
+    /**
+    *   @brief Element-wise multiplication operation of a tensor and a real value.
+    *   @param A The input tensor.
+    *   @param B The output tensor. B = A * v.
+    *   @param v The value to multiply by.
+    */
     static void mult(Tensor *A, Tensor *B, float v); // B = A * v
 
+    /**
+    *   @brief Inplace element-wise change of sign operation.
+    */
     void neg_();
+
+    /**
+    *   @brief Element-wise change of sign operation.
+    *   @return A tensor with the result.
+    */
     Tensor* neg();
+
+    /**
+    *   @brief Element-wise change of sign operation.
+    *   @param A The tensor where the operation is applied.
+    *   @param B A tensor with -A
+    */
     static void neg(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace element-wise normalization of values in a given range.
+    *   @param min. The lower bound of the new range
+    *   @param max. The upper bound of the new range
+    */
     void normalize_(float min=0.0f, float max=1.0f);
+
+    /**
+    *   @brief Inplace element-wise normalization of values in a given range.
+    *   @param min. The lower bound of the new range.
+    *   @param max. The upper bound of the new range.
+    *   @return A tensor with the result.
+    */
     Tensor* normalize(float min=0.0f, float max=1.0f);
+
+    /**
+    *   @brief Inplace element-wise normalization of values in a given range.
+    *   @param A The tensor where the operation is applied.
+    *   @param B The output tensor.
+    *   @param min. The lower bound of the new range
+    *   @param max. The upper bound of the new range
+    */
     static void normalize(Tensor *A, Tensor *B, float min=0.0f, float max=1.0f);
 
+
+    /**
+    *   @brief Inplace element-wise power operation with base e.
+    *   @param exp The exponent
+    */
     void pow_(float exp);
+
+    /**
+    *   @brief Element-wise power operation with base e.
+    *   @param exp. The exponent.
+    *   @return A tensor with the result.
+    */
     Tensor* pow(float exp);
+
+    /**
+    *   @brief Element-wise power operation with base e.
+    *   @param A The tensor where the operation is applied.
+    *   @param B The output tensor.
+    *   @param exp The exponent
+    */
     static void pow(Tensor *A, Tensor *B, float exp);
 
+    /**
+    *   @brief Inplace element-wise power operation.
+    *   @param base The base of the power
+    */
     void powb_(float base);
+
+    /**
+    *   @brief Element-wise power operation.
+    *   @param base The base of the power.
+    *   @return A tensor with the result.
+    */
     Tensor* powb(float base);
+
+    /**
+    *   @brief Element-wise power operation.
+    *   @param A the input tensor.
+    *   @param B The output tensor.
+    *   @param base The base of the power.
+    */
     static void powb(Tensor *A, Tensor *B, float base);
 
+    /**
+    *   @brief Inplace element-wise reciprocal operation.
+    */
     void reciprocal_();
+
+    /**
+    *   @brief Element-wise reciprocal operation.
+    *   @return A tensor with the result
+    */
     Tensor* reciprocal();
+
+    /**
+    *   @brief Element-wise reciprocal operation.
+    *   @param A. The tensor where the operation is applied.
+    *   @param B A tensor with reciprocal(A), element-wise
+    */
     static void reciprocal(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace element-wise reminder operation.
+    *   @param v. The real to divide A by
+    */
     void remainder_(float v);
+
+    /**
+    *   @brief Element-wise reminder operation.
+    *   @param v The real to divide A by
+    *   @return A tensor with A%v
+    */
     Tensor* remainder(float v);  // TODO: difference with mod??
+
+    /**
+    *   @brief Element-wise reminder operation.
+    *   @param A The tensor where the operation is applied.
+    *   @param B The output tensor.
+    *   @param v The real to divide A by.
+    */
     static void remainder(Tensor *A, Tensor *B, float v);
 
+    /**
+    *   @brief Inplace element-wise round operation.
+    */
     void round_();
+
+    /**
+    *   @brief Element-wise round operation.
+    *   @return A tensor with A rounded
+    */
     Tensor* round();
+
+    /**
+    *   @brief Element-wise round operation.
+    *   @param A The tensor where the operation is applied.
+    *   @param B The output tensor.
+    */
     static void round(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace element-wise inverse square root operation.
+    */
     void rsqrt_();
+
+    /**
+    *   @brief Element-wise inverse square root operation.
+    *   @return A tensor with the result
+    */
     Tensor* rsqrt();
+
+    /**
+    *   @brief Element-wise inverse square root operation.
+    *   @param A The tensor where the operation is applied.
+    *   @param B The output tensor.
+    */
     static void rsqrt(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace element-wise sigmoid operation.
+    */
     void sigmoid_();
+
+    /**
+    *   @brief Element-wise sigmoid operation.
+    *   @return A tensor with sigmoid(A)
+    */
     Tensor* sigmoid();
+
+    /**
+    *   @brief Element-wise sigmoid operation.
+    *   @param A The tensor where the operation is applied.
+    *   @param B The output tensor.
+    */
     static void sigmoid(Tensor *A, Tensor *B);
 
     void sign_(float zero_sign=0.0f);
     Tensor* sign(float zero_sign=0.0f);
     static void sign(Tensor *A, Tensor *B, float zero_sign=0.0f);
 
+    /**
+    *   @brief Inplace element-wise sin operation.
+    */
     void sin_();
+
+    /**
+    *   @brief Element-wise sin operation.
+    *   @return A tensor with the result.
+    */
     Tensor* sin();
+
+    /**
+    *   @brief Element-wise sin operation.
+    *   @param A The tensor where the operation is applied.
+    *   @param B The output tensor.
+    */
     static void sin(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace element-wise sinh operation.
+    */
     void sinh_();
+
+    /**
+    *   @brief Element-wise sinh operation.
+    *   @return A tensor with the result.
+    */
     Tensor* sinh();
+
+    /**
+    *   @brief Element-wise sinh operation.
+    *   @param A The tensor where the operation is applied.
+    *   @param B Tensor with the result.
+    */
     static void sinh(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace element-wise square operation. More efficient than using pow_(A, 2).
+    */
     void sqr_();
+
+    /**
+    *   @brief Element-wise square operation. More efficient than using pow(A, 2).
+    *   @return A tensor with the result
+    */
     Tensor* sqr();
+
+    /**
+    *   @brief Element-wise square operation. More efficient than using pow(A, 2).
+    *   @param A The tensor where the operation is applied.
+    *   @param B tensor with the result.
+    */
     static void sqr(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace element-wise square root operation.
+    */
     void sqrt_();
+
+    /**
+    *   @brief Element-wise square operation.
+    *   @return A tensor with the result.
+    */
     Tensor* sqrt();
+
+    /**
+    *   @brief Element-wise square operation.
+    *   @param A The tensor where the operation is applied.
+    *   @param B tensor with the result.
+    */
     static void sqrt(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace element-wise substraction operation of a tensor and a scalar.
+    *   @param v The value to substract to A.
+    */
     void sub_(float v);
+
+
+    /**
+    *   @brief Element-wise substraction operation of a tensor and a scalar.
+    *   @param v The value to substract to the input tensor.
+    *   @return A tensor with the result.
+    */
     Tensor* sub(float v);
+
+    /**
+    *   @brief Inplace element-wise substraction operation of two tensors.
+    *   @param A. The tensor to substract.
+    */
     void sub_(Tensor* A); // this = this .- A
+
+    /**
+    *   @brief Element-wise substraction operation of two tensors.
+    *   @param A The tensor to substract.
+    *   @return A tensor with the result.
+    */
     Tensor* sub(Tensor* A); // this = this .- A
+
+    /**
+    *   @brief Element-wise substraction operation of a tensor and a real value.
+    *   @param A The tensor where the operation is applied.
+    *   @param B The output tensor. B = A - v.
+    *   @param v The real value to substract.
+    */
     static void sub(Tensor *A, Tensor *B, float v);
 
+    /**
+    *   @brief Inplace element-wise tan operation.
+    */
     void tan_();
+
+    /**
+    *   @brief Element-wise tan operation.
+    *   @return A tensor with the result.
+    */
     Tensor* tan();
+
+    /**
+    *   @brief Element-wise tan operation.
+    *   @param A The tensor where the operation is applied.
+    *   @param B A tensor with the result.
+    */
     static void tan(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace element-wise tanh operation.
+    */
     void tanh_();
+
+    /**
+    *   @brief Element-wise tanh operation.
+    *   @return A tensor with the result.
+    */
     Tensor* tanh();
+
+    /**
+    *   @brief Element-wise tanh operation.
+    *   @param A The tensor where the operation is applied.
+    *   @param B A tensor with the result.
+    */
     static void tanh(Tensor *A, Tensor *B);
 
+    /**
+    *   @brief Inplace element-wise truncate operation.
+    */
     void trunc_();
+
+    /**
+    *   @brief Element-wise truncate operation.
+    *   @return A tensor with the result.
+    */
     Tensor* trunc();
+
+    /**
+    *   @brief Element-wise truncate operation.
+    *   @param A The tensor where the operation is applied.
+    *   @param B tensor with the result.
+    */
     static void trunc(Tensor *A, Tensor *B);
 
 
