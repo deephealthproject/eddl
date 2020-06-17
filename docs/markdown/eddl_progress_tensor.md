@@ -376,7 +376,7 @@ Not yet...
 | mean | ✔️ | ✔ |
 | median | ❌ | ❌ |
 | mode | ✔️ | ❌ |
-| norm | ✔ | ❌ |
+| norm | ✔ |  ✔ |
 | prod | ✔️ | ✔ |
 | std | ✔ | ✔ |
 | sum | ✔️ |  ✔ |
