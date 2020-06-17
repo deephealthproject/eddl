@@ -55,15 +55,16 @@ cl::Kernel kernel_transpose,   kernel_copy,        kernel_fill_,      kernel_fil
 cl::Kernel kernel_select,      kernel_select_back, kernel_set_select, kernel_set_select_back;
 cl::Kernel kernel_set_select2, kernel_deselect,    kernel_concat;
 
-// conv kernels (1)
-cl::Kernel kernel_im2col;
+// conv kernels (2)
+cl::Kernel kernel_im2col,      kernel_conv2d;
 
 // create kernels (2)
 cl::Kernel kernel_range, kernel_eye;
 
 // da kernels (6)
 cl::Kernel kernel_single_shift, kernel_single_rotate, kernel_single_scale;
-cl::Kernel kernel_single_flip,  kernel_single_crop,   kernel_single_crop_scale;
+cl::Kernel kernel_single_flip,  kernel_single_crop;
+cl::Kernel kernel_crop_scale_random;
 
 // generator kernels (4)
 cl::Kernel kernel_rand_uniform, kernel_signed_uniform, kernel_rand_binary, kernel_rand_normal;
@@ -289,7 +290,7 @@ void _profile_fpga_tensor(Tensor *T) {
 }
 
 void _show_profile_fpga() {
-#ifdef FPGA_DEBUG
+//#ifdef FPGA_DEBUG
   printf("\n---------------------------------------\nFPGA functions called:\n");
   for (int i=0; i<_NUM_FPGA_FUNCS; i++) {
     if (num_instances_fpga[i] != 0) {
@@ -300,7 +301,7 @@ void _show_profile_fpga() {
   }
   printf("Memory: %f MB\n", mb_memory_needed_fpga);
   printf("---------------------------------------\n");
-#endif
+//#endif
 }
 
 void _profile_fpga_add_tensor(int size) {
@@ -581,6 +582,10 @@ void fpga_init(){ // initialize only once
     OCL_CHECK(err, kernel_im2col = cl::Kernel(program,"k_im2col", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
+    #ifdef K_ENABLED_CONV2D
+    OCL_CHECK(err, kernel_conv2d = cl::Kernel(program,"k_conv2d", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
     #ifdef K_ENABLED_RANGE
     OCL_CHECK(err, kernel_range = cl::Kernel(program,"k_range", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
@@ -609,8 +614,8 @@ void fpga_init(){ // initialize only once
     OCL_CHECK(err, kernel_single_crop = cl::Kernel(program,"k_single_crop", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
-    #ifdef K_ENABLED_SINGLE_CROP_SCALE
-    OCL_CHECK(err, kernel_single_crop_scale = cl::Kernel(program,"k_single_crop_scale", &err));
+    #ifdef K_ENABLED_CROP_SCALE_RANDOM
+    OCL_CHECK(err, kernel_crop_scale_random = cl::Kernel(program,"k_crop_scale_random", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_RAND_UNIFORM

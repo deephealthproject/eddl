@@ -44,15 +44,16 @@ extern cl::Kernel kernel_transpose,   kernel_copy,        kernel_fill_,      ker
 extern cl::Kernel kernel_select,      kernel_select_back, kernel_set_select, kernel_set_select_back;
 extern cl::Kernel kernel_set_select2, kernel_deselect,    kernel_concat;
 
-// conv kernels (1)
-extern cl::Kernel kernel_im2col;
+// conv kernels (2)
+extern cl::Kernel kernel_im2col,      kernel_conv2d;
 
 // create kernels (2)
 extern cl::Kernel kernel_range, kernel_eye;
 
 // da kernels (6)
 extern cl::Kernel kernel_single_shift, kernel_single_rotate, kernel_single_scale;
-extern cl::Kernel kernel_single_flip,  kernel_single_crop,   kernel_single_crop_scale;
+extern cl::Kernel kernel_single_flip,  kernel_single_crop;
+extern cl::Kernel kernel_crop_scale_random;
 
 // generator kernels (4)
 extern cl::Kernel kernel_rand_uniform, kernel_signed_uniform, kernel_rand_binary, kernel_rand_normal;

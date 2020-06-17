@@ -341,11 +341,37 @@ void fpga_cpuemu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, i
 
 void fpga_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant){
     _profile_fpga(_FPGA_CROP_SCALE_RANDOM, 0);
-    if (fpga_set_cpuemu_crop_scale_random == 1) {
-        fpga_cpuemu_crop_scale_random(A, B, factor, mode, constant);
-    } else {
-        printf("fpga_crop_scale_random is not implemented yet\n"); exit(1);
-    }
+#ifndef K_ENABLED_CROP_SCALE_RANDOM
+    fpga_cpuemu_crop_scale_random(A, B, factor, mode, constant);
+#else
+    cl_int err;
+    cl::Event event;
+
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(0, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(1, *(B->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(2, A->shape[0]));
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(3, A->shape[2]));
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(4, A->shape[3]));
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(5, B->shape[0]));
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(6, B->shape[1]));
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(7, B->shape[2]));
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(8, B->shape[3]));
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(9, factor[0]));
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(10, factor[1]));
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(11, A->stride[0]));    
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(12, A->stride[1])); 
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(13, A->stride[2])); 
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(14, A->stride[3])); 
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(15, B->stride[0])); 
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(16, B->stride[1])); 
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(17, B->stride[2])); 
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(18, B->stride[3])); 
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(19, mode));
+    OCL_CHECK(err, err = kernel_crop_scale_random.setArg(20, constant));
+
+    OCL_CHECK(err, err = q.enqueueTask(kernel_crop_scale_random, NULL, &event));
+    q.finish();
+#endif
     _profile_fpga(_FPGA_CROP_SCALE_RANDOM, 1);
 }
 

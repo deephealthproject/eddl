@@ -163,6 +163,10 @@ int main(int argc, char **argv) {
   #ifdef K_ENABLED_IM2COL
   strcpy(szKernels[num_kernels++], "im2col");
   #endif
+  #ifdef K_ENABLED_CONV2D
+  strcpy(szKernels[num_kernels++], "conv2d");
+  #endif
+
 
   // Core
   #ifdef K_ENABLED_FILL_
@@ -219,6 +223,9 @@ int main(int argc, char **argv) {
   #endif
   #ifdef K_ENABLED_SINGLE_CROP_SCALE
   strcpy(szKernels[num_kernels++], "single_crop_scale");
+  #endif
+  #ifdef K_ENABLED_CROP_SCALE_RANDOM
+  strcpy(szKernels[num_kernels++], "crop_scale_random");
   #endif
 
   // Generator
