@@ -724,8 +724,7 @@ int Tensor::mode(Tensor* A){
 #ifdef cGPU
     else if (A->isGPU())
     {
-        msg("Not implemented for GPU", "Tensor::mode");
-        //return gpu_mode(A);
+        return gpu_mode(A);
     }
 #endif
 #ifdef cFPGA
@@ -759,9 +758,7 @@ void Tensor::mode(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
     {
-        msg("Not implemented error", "Tensor::mode");
-
-//        gpu_sum(A, B, rd);
+        gpu_mode(A, B, rd);
     }
 #endif
 #ifdef cFPGA

@@ -143,6 +143,19 @@ __global__ void gpu_norm_fro(float *A, float *B, int *map, int size, int size_re
     }
 }
 
+__global__ void gpu_mode(float *A, float *B, int *map, int size, int size_reduction){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x<size) {
+        float tmp = 1.0f;
+        for(int i=0; i<size_reduction; i++){
+            tmp *= A[map[thread_id_x*size_reduction+i]];
+        }
+
+        B[thread_id_x] = tmp;
+    }
+}
+
 
 /* PREVIOUS REDUCES ***********************************/
 

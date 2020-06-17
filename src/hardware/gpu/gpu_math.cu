@@ -809,6 +809,16 @@ int gpu_mode(Tensor *A){
     // TODO: Not implemented for GPU
 }
 
+void gpu_mode(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_mode<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
+    check_cuda(cudaDeviceSynchronize(),"reduce_mode");
+}
 
 // GPU: Reduction ***************************
 void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC){
