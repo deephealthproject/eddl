@@ -128,6 +128,21 @@ __global__ void gpu_var(float *A, float *B, int *map, int size, int size_reducti
     }
 }
 
+__global__ void gpu_norm_fro(float *A, float *B, int *map, int size, int size_reduction){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+
+    if (thread_id_x<size) {
+        float tmp = 0.0f;
+        float val;
+        for(int i=0; i<size_reduction; i++){
+            val = A[map[thread_id_x*size_reduction+i]];
+            tmp += val*val;
+        }
+
+        B[thread_id_x] = sqrt(tmp);
+    }
+}
+
 
 /* PREVIOUS REDUCES ***********************************/
 

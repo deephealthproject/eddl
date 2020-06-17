@@ -146,7 +146,7 @@ __global__ void reduction_kernel_keep_inc(float *r, float *I, int *ind, int size
 __global__ void reduction_kernel_sum(float *I,float *O,int m, int d,int *ind,int rs);
 
 // GPU: Linear algebra
-__global__ void gpu_norm_fro(float *A, long int size, float *result);
+__global__ void gpu_norm_fro(float *A, float *B, int *map, int size, int size_reduction);
 
 // Generating index arrays *****************************
 __global__ void gpu_where(float *condition, float *A, float *B, float *C, long int size);

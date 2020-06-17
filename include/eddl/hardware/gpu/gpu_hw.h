@@ -152,6 +152,7 @@ float gpu_std(Tensor *A, bool unbiased);
 void gpu_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased);
 
 float gpu_median(Tensor *A);
+
 int gpu_mode(Tensor *A);  // TODO: Not implemented
 
 
@@ -171,6 +172,7 @@ void gpu_reduction_back(ReduceDescriptor *RD);
 
 // GPU: Linear algebra
 float gpu_norm(Tensor *A, string ord);
+void gpu_norm(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, string ord);
 
 // Generating index arrays *****************************
 void gpu_where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C);
