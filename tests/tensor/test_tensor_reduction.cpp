@@ -386,6 +386,18 @@ TEST(TensorTestSuite, tensor_math_reduction_mode) {
 
     Tensor *new_t2 = t2->mode({1}, false);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+
+#ifdef cGPU
+    Tensor* t_cpu = Tensor::randn({10, 10});  t_cpu->round(); // High mismatch CPU/GPU; make either 0 or 1
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    Tensor *t_cpu_mode = t_cpu->mode({1}, false);
+    Tensor *t_gpu_mode = t_gpu->mode({1}, false); t_gpu_mode->toCPU();
+    t_cpu_mode->print();
+    t_gpu_mode->print();
+
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_mode, t_gpu_mode, 10e-4));
+#endif
 }
 
 
