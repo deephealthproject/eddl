@@ -57,6 +57,7 @@
 
 //Conv
 // #define K_ENABLED_IM2COL
+#define K_ENABLED_CONV2D
 
 //Core
 // #define K_ENABLED_FILL_
@@ -79,7 +80,7 @@
 // #define K_ENABLED_SINGLE_SCALE
 // #define K_ENABLED_SINGLE_FLIP
 // #define K_ENABLED_SINGLE_CROP
-// #define K_ENABLED_SINGLE_CROP_SCALE
+//#define K_ENABLED_CROP_SCALE_RANDOM
 
 //Generator
 // #define K_ENABLED_RAND_UNIFORM
@@ -150,7 +151,7 @@
 // #define K_ENABLED_REDUCE2
 // #define K_ENABLED_REDUCE_OP
 // #define K_ENABLED_OPT2
-#define K_ENABLED_REDUCE_SUM2D
+//#define K_ENABLED_REDUCE_SUM2D
 // #define K_ENABLED_REDUCTION
 // #define K_ENABLED_REDUCTION_BACK
 
