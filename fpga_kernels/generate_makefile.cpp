@@ -380,6 +380,9 @@ int main(int argc, char **argv) {
   #ifdef K_ENABLED_SUM_ABS
   strcpy(szKernels[num_kernels++], "sum_abs");
   #endif
+  #ifdef K_ENABLED_MULT2D
+  strcpy(szKernels[num_kernels++], "mult2d");
+  #endif 
 
   // Metrics
   #ifdef K_ENABLED_ACCURACY

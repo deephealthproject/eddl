@@ -91,7 +91,7 @@ cl::Kernel kernel_exp_,       kernel_floor_, kernel_inv_,      kernel_log_,     
 cl::Kernel kernel_normalize_, kernel_pow_,   kernel_powb_,     kernel_reciprocal_, kernel_remainder_, kernel_round_,        kernel_rsqrt_;
 cl::Kernel kernel_sign_,      kernel_sin_,   kernel_sinh_,     kernel_sqr_,        kernel_sqrt_,      kernel_tan_,          kernel_tanh_;
 cl::Kernel kernel_add,        kernel_inc,    kernel_el_div,    kernel_el_mult,     kernel_sign2,      kernel_sum2D_rowwise, kernel_sum2D_colwise;
-cl::Kernel kernel_max,        kernel_min,    kernel_sum,       kernel_mult2D;
+cl::Kernel kernel_max,        kernel_min,    kernel_sum,       kernel_mult2d;
 
 
 // profiling
@@ -831,7 +831,7 @@ void fpga_init(){ // initialize only once
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_MULT2D
-    OCL_CHECK(err, kernel_mult2D = cl::Kernel(program,"k_mult2d", &err));
+    OCL_CHECK(err, kernel_mult2d = cl::Kernel(program,"k_mult2d", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_EL_DIV

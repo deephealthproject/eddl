@@ -1135,18 +1135,18 @@ void fpga_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
     cl_int err;
     cl::Event event;
 
-    OCL_CHECK(err, err = kernel_mult2D.setArg(0, *(A->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_mult2D.setArg(1, *(B->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_mult2D.setArg(2, *(C->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_mult2D.setArg(3, A->shape[0]));
-    OCL_CHECK(err, err = kernel_mult2D.setArg(4, A->shape[1]));
-    OCL_CHECK(err, err = kernel_mult2D.setArg(5, B->shape[0]));
-    OCL_CHECK(err, err = kernel_mult2D.setArg(6, B->shape[1]));
-    OCL_CHECK(err, err = kernel_mult2D.setArg(7, tA));
-    OCL_CHECK(err, err = kernel_mult2D.setArg(8, tB));
-    OCL_CHECK(err, err = kernel_mult2D.setArg(9, incC));
+    OCL_CHECK(err, err = kernel_mult2d.setArg(0, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_mult2d.setArg(1, *(B->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_mult2d.setArg(2, *(C->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_mult2d.setArg(3, A->shape[0]));
+    OCL_CHECK(err, err = kernel_mult2d.setArg(4, A->shape[1]));
+    OCL_CHECK(err, err = kernel_mult2d.setArg(5, B->shape[0]));
+    OCL_CHECK(err, err = kernel_mult2d.setArg(6, B->shape[1]));
+    OCL_CHECK(err, err = kernel_mult2d.setArg(7, tA));
+    OCL_CHECK(err, err = kernel_mult2d.setArg(8, tB));
+    OCL_CHECK(err, err = kernel_mult2d.setArg(9, incC));
 
-    OCL_CHECK(err, err = q.enqueueTask(kernel_mult2D, NULL, &event));
+    OCL_CHECK(err, err = q.enqueueTask(kernel_mult2d, NULL, &event));
     q.finish();
 #endif
     _profile_fpga(_FPGA_MULT2D, 1);

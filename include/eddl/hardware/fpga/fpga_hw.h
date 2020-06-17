@@ -73,14 +73,14 @@ extern cl::Kernel kernel_reduce, kernel_reduce_op, kernel_reduce_sum2D, kernel_r
 // tensor_nn kernels (2)
 extern cl::Kernel kernel_repeat_nn, kernel_d_repeat_nn;
 
-// math kernels (45)
+// math kernels (46)
 extern cl::Kernel kernel_abs_,       kernel_acos_,  kernel_add_,      kernel_asin_,       kernel_atan_,      kernel_ceil_,         kernel_clamp_;
 extern cl::Kernel kernel_cos_,       kernel_cosh_,  kernel_sigmoid_,  kernel_mod_,        kernel_mult_,      kernel_trunc_,        kernel_sum_abs;
 extern cl::Kernel kernel_exp_,       kernel_floor_, kernel_inv_,      kernel_log_,        kernel_log2_,      kernel_log10_,        kernel_logn_;
 extern cl::Kernel kernel_normalize_, kernel_pow_,   kernel_powb_,     kernel_reciprocal_, kernel_remainder_, kernel_round_,        kernel_rsqrt_;
 extern cl::Kernel kernel_sign_,      kernel_sin_,   kernel_sinh_,     kernel_sqr_,        kernel_sqrt_,      kernel_tan_,          kernel_tanh_;
 extern cl::Kernel kernel_add,        kernel_inc,    kernel_el_div,    kernel_el_mult,     kernel_sign2,      kernel_sum2D_rowwise, kernel_sum2D_colwise;
-extern cl::Kernel kernel_max,        kernel_min,    kernel_sum;
+extern cl::Kernel kernel_max,        kernel_min,    kernel_sum,       kernel_mult2d;
 
 #define MAX_FLOAT std::numeric_limits<float>::max()
 #define MIN_FLOAT -std::numeric_limits<float>::max()

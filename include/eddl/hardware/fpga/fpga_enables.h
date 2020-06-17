@@ -57,7 +57,7 @@
 
 //Conv
 // #define K_ENABLED_IM2COL
-#define K_ENABLED_CONV2D
+//#define K_ENABLED_CONV2D
 
 //Core
 // #define K_ENABLED_FILL_
