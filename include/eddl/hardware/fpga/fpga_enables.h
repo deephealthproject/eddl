@@ -127,6 +127,7 @@
 // #define K_ENABLED_TRUNC_
 // #define K_ENABLED_ADD
 // #define K_ENABLED_INC
+#define K_ENABLED_MULT2D
 // #define K_ENABLED_EL_DIV
 // #define K_ENABLED_EL_MULT
 // #define K_ENABLED_SIGN2
