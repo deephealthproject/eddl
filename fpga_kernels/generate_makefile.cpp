@@ -465,6 +465,7 @@ int main(int argc, char **argv) {
   printf("# Host compiler global settings\n");
   printf("# CXXFLAGS += -fmessage-length=0\n");
   printf("# LDFLAGS += -lrt -lstdc++\n");
+  printf("LDCLFLAGS += --profile_kernel data:all:all:all:all --profile_kernel stall:all:all:all --profile_kernel exec:all:all:all\n");
   printf("#\n");
   printf("# Kernel compiler global settings\n");
   printf("CLFLAGS += -t $(TARGET) --platform $(DEVICE) --save-temps\n");
@@ -502,7 +503,7 @@ int main(int argc, char **argv) {
   for (int i=0; i<num_kernels; i++) {
     printf("$(XCLBIN)/kernel_%s.$(TARGET).$(DEVICE).xo: $(SRC_PATH)/kernel_%s.cpp\n", szKernels[i], szKernels[i]);
     printf("	mkdir -p $(XCLBIN) \n");
-    printf("	$(XOCC) $(CLFLAGS) -c -k k_%s -I'$(<D)' -o'$@' kernel_%s.cpp ;\n", szKernels[i], szKernels[i]);
+    printf("	$(XOCC) $(CLFLAGS) -g -c -k k_%s -I'$(<D)' --profile_kernel stall:all:all:all -o'$@' kernel_%s.cpp ;\n", szKernels[i], szKernels[i]);
   }
 
   printf("\n");
