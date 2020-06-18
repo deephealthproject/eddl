@@ -1730,13 +1730,13 @@ public:
     *   @param B Output tensor.
     *   @param shift vector of shifts along the axes.
     *   @param mode Must be one of the following:
-    *        - ...WrappingMode::Constant...: Input extended by the value in ...cval... (v v v v | a b c d | v v v v)
-    *        - ...WrappingMode::Reflect...: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
-    *        - ...WrappingMode::Nearest...: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
-    *        - ...WrappingMode::Mirror...: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
-    *        - ...WrappingMode::Wrap...: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
-    *        - ...WrappingMode::Original...: Input extended by placing the original image in the background.
-    *   @param cval Value to fill past edges of input if mode is ...WrappingMode::Constant....
+    *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
+    *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
     */
     static void shift(Tensor *A,Tensor *B, vector<int> shift, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
 
@@ -1746,13 +1746,13 @@ public:
     *   @param B Output tensor.
     *   @param angle The rotation angle in degrees.
     *   @param mode Must be one of the following:
-    *        - ...WrappingMode::Constant...: Input extended by the value in ...cval... (v v v v | a b c d | v v v v)
-    *        - ...WrappingMode::Reflect...: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
-    *        - ...WrappingMode::Nearest...: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
-    *        - ...WrappingMode::Mirror...: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
-    *        - ...WrappingMode::Wrap...: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
-    *        - ...WrappingMode::Original...: Input extended by placing the original image in the background.
-    *   @param cval Value to fill past edges of input if mode is ...WrappingMode::Constant....
+    *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
+    *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
     */
     static void rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center={0,0}, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
 
@@ -1762,13 +1762,13 @@ public:
     *   @param B Output tensor.
     *   @param new_shape Vector with the target size.
     *   @param mode Must be one of the following:
-    *        - ...WrappingMode::Constant...: Input extended by the value in ...cval... (v v v v | a b c d | v v v v)
-    *        - ...WrappingMode::Reflect...: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
-    *        - ...WrappingMode::Nearest...: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
-    *        - ...WrappingMode::Mirror...: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
-    *        - ...WrappingMode::Wrap...: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
-    *        - ...WrappingMode::Original...: Input extended by placing the original image in the background.
-    *   @param cval Value to fill past edges of input if mode is ...WrappingMode::Constant....
+    *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
+    *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
     */
     static void scale(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mode=WrappingMode::Nearest, float cval=0.0f);
 
@@ -1797,13 +1797,13 @@ public:
     *   @param coords_from Coordinates of the initial point of the crop.
     *   @param coords_to Coordinates of the final point of the crop.
     *   @param mode Must be one of the following:
-    *        - ...WrappingMode::Constant...: Input extended by the value in ...cval... (v v v v | a b c d | v v v v)
-    *        - ...WrappingMode::Reflect...: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
-    *        - ...WrappingMode::Nearest...: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
-    *        - ...WrappingMode::Mirror...: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
-    *        - ...WrappingMode::Wrap...: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
-    *        - ...WrappingMode::Original...: Input extended by placing the original image in the background.
-    *   @param cval Value to fill past edges of input if mode is ...WrappingMode::Constant....
+    *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
+    *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
     */
     static void crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, WrappingMode mode=WrappingMode::Nearest, float cval=0.0f);
 
@@ -1826,13 +1826,13 @@ public:
     *   @param factor_x vector with the lower and upper values for shift in axis x.
     *   @param factor_y vector with the lower and upper values for shift in axis y.
     *   @param mode Must be one of the following:
-    *        - ...WrappingMode::Constant...: Input extended by the value in ...cval... (v v v v | a b c d | v v v v)
-    *        - ...WrappingMode::Reflect...: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
-    *        - ...WrappingMode::Nearest...: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
-    *        - ...WrappingMode::Mirror...: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
-    *        - ...WrappingMode::Wrap...: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
-    *        - ...WrappingMode::Original...: Input extended by placing the original image in the background.
-    *   @param cval Value to fill past edges of input if mode is ...WrappingMode::Constant....
+    *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
+    *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
     */
     static void shift_random(Tensor *A,Tensor *B, vector<float> factor_x, vector<float> factor_y, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
 
@@ -1843,13 +1843,13 @@ public:
     *   @param factor The rotation angle range in degrees.
     *   @param offset_center The center where to perform the rotation
     *   @param mode Must be one of the following:
-    *        - ...WrappingMode::Constant...: Input extended by the value in ...cval... (v v v v | a b c d | v v v v)
-    *        - ...WrappingMode::Reflect...: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
-    *        - ...WrappingMode::Nearest...: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
-    *        - ...WrappingMode::Mirror...: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
-    *        - ...WrappingMode::Wrap...: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
-    *        - ...WrappingMode::Original...: Input extended by placing the original image in the background.
-    *   @param cval Value to fill past edges of input if mode is ...WrappingMode::Constant....
+    *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
+    *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
     */
     static void rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center={0,0}, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
 
@@ -1859,13 +1859,13 @@ public:
     *   @param B Output tensor.
     *   @param factor Vector with minimum and maximum scale factors.
     *   @param mode Must be one of the following:
-    *        - ...WrappingMode::Constant...: Input extended by the value in ...cval... (v v v v | a b c d | v v v v)
-    *        - ...WrappingMode::Reflect...: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
-    *        - ...WrappingMode::Nearest...: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
-    *        - ...WrappingMode::Mirror...: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
-    *        - ...WrappingMode::Wrap...: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
-    *        - ...WrappingMode::Original...: Input extended by placing the original image in the background.
-    *   @param cval Value to fill past edges of input if mode is ...WrappingMode::Constant....
+    *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
+    *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
     */
     static void scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMode mode=WrappingMode::Nearest, float cval=0.0f);
 
@@ -1890,13 +1890,13 @@ public:
     *   @param B Output tensor.
     *   @param factor Vector with minimum and maximum scale factors.
     *   @param mode Must be one of the following:
-    *        - ...WrappingMode::Constant...: Input extended by the value in ...cval... (v v v v | a b c d | v v v v)
-    *        - ...WrappingMode::Reflect...: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
-    *        - ...WrappingMode::Nearest...: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
-    *        - ...WrappingMode::Mirror...: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
-    *        - ...WrappingMode::Wrap...: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
-    *        - ...WrappingMode::Original...: Input extended by placing the original image in the background.
-    *   @param cval Value to fill past edges of input if mode is ...WrappingMode::Constant....
+    *        - ``WrappingMode::Constant``: Input extended by the value in ``cval`` (v v v v | a b c d | v v v v)
+    *        - ``WrappingMode::Reflect``: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ``WrappingMode::Nearest``: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ``WrappingMode::Mirror``: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ``WrappingMode::Wrap``: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ``WrappingMode::Original``: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ``WrappingMode::Constant``
     */
     static void crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMode mode=WrappingMode::Nearest, float cval=0.0f);
 
