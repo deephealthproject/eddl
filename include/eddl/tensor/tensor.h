@@ -1553,29 +1553,121 @@ public:
 
 
     // Math operations (binary) ************************
+
+    /**
+    *   @brief Element-wise add operation of two tensors.
+    *   @param A A tensor.
+    *   @param B Another tensor.
+    *   @return A new tensor C = A + B.
+    */
     static Tensor* add(Tensor *A, Tensor *B); // (new)C = A + B
+
+    /**
+    *   @brief Element-wise add operation of two tensors.
+    *   @param A A tensor.
+    *   @param B Another tensor.
+    *   @param C Output tensor. C = A + B.
+    */
     static void add(Tensor *A, Tensor *B, Tensor *C); // C = A + B
 
+    /**
+    *   @brief Element-wise division operation of two tensors.
+    *   @param A A tensor.
+    *   @param B Another tensor.
+    *   @return A new tensor C = A / B.
+    */
     static Tensor* div(Tensor *A, Tensor *B); // (new)C = A / B
+
+    /**
+    *   @brief Element-wise division operation of two tensors.
+    *   @param A A tensor.
+    *   @param B Another tensor.
+    *   @param C Output tensor. C = A / B.
+    */
     static void div(Tensor *A, Tensor *B, Tensor *C); // C = A / B
 
+    /**
+    *   @brief Element-wise multiplication operation of two tensors.
+    *   @param A A tensor.
+    *   @param B Another tensor.
+    *   @return A new tensor C = A * B.
+    */
     static Tensor* mult(Tensor *A, Tensor *B); // (new)C = A * B
+
+    /**
+    *   @brief Element-wise multiplication operation of two tensors.
+    *   @param A A tensor.
+    *   @param B Another tensor.
+    *   @param C Output tensor. C = A * B.
+    */
     static void mult(Tensor *A, Tensor *B, Tensor *C); // C = A * B
 
+    /**
+    *   @brief Element-wise weighted sum (interpolation) operation of two tensors.
+    *   @param factor1 The weight for first member.
+    *   @param A A tensor.
+    *   @param factor2 The weight for second member.
+    *   @param B Another tensor.
+    *   @return A new tensor C = factor1*A + factor2*B.
+    */
     static Tensor* interpolate(float factor1, Tensor *A, float factor2, Tensor *B); // (new)C = f1*A + f2*B
+
+    /**
+    *   @brief Element-wise weighted sum (interpolation) operation of two tensors.
+    *   @param factor1 The weight for first member.
+    *   @param A A tensor.
+    *   @param factor2 The weight for second member.
+    *   @param B Another tensor.
+    *   @param C Output tensor. C = factor1*A + factor2*B.
+    */
     static void interpolate(float factor1, Tensor *A, float factor2, Tensor *B, Tensor *C);  // C = f1*A + f2*B
 
+    /**
+    *   @brief Element-wise substraction operation of two tensors.
+    *   @param A A tensor.
+    *   @param B Another tensor.
+    *   @return A new tensor C = A - B.
+    */
     static Tensor* sub(Tensor *A, Tensor *B); // (new)C = A - B
+
+    /**
+    *   @brief Element-wise multiplication operation of two tensors.
+    *   @param A A tensor.
+    *   @param B Another tensor.
+    *   @param C Output tensor. C = A - B.
+    */
     static void sub(Tensor *A, Tensor *B, Tensor *C); // C = A - B
 
 
 
     // ***** Core *****************************
+
+    /**
+    *   @brief Fill tensor with a value
+    *   @param v the value to fill the tensor with
+    */
     void fill_(float v);
+
+    /**
+    *   @brief Fill tensor with a value
+    *   @param A The output tensor.
+    *   @param v the value to fill the tensor with
+    */
     static void fill(Tensor* A, float v);
 
+    /**
+    *   @brief Inplace permutation of tensor dimensions
+    *   @param dims A vector containing the new order of the dimensions.
+    */
     void permute_(const vector<int>& dims);
+
+    /**
+    *   @brief Permutation of tensor dimensions
+    *   @param A The output vector where te permutation is stored.
+    *   @param dims A vector containing the new order of the dimensions.
+    */
     static Tensor* permute(Tensor* A, const vector<int>& dims);
+
 
     void moveaxis_(int source, int destination);
     static Tensor* moveaxis(Tensor* A, int source, int destination);
@@ -1583,36 +1675,239 @@ public:
     void swapaxis_(int axis1, int axis2);
     static Tensor* swapaxis(Tensor* A, int axis1, int axis2);
 
+    /**
+    *   @brief Set a new shape to a tensor inplace.
+    *   @param new_shape A vector containing the new shape.
+    */
     void reshape_(const vector<int> &new_shape);
+
+    /**
+    *   @brief Set a new shape to a tensor.
+    *   @param A The output vector where te reshape is stored.
+    *   @param dims A vector containing the new shape.
+    */
     static Tensor* reshape(Tensor *A, const vector<int> &shape);
 
+    /**
+    *   @brief Inplace conversion tensor to a 1D tensor.
+    */
     void flatten_();
+
+    /**
+    *   @brief Conversion tensor to a 1D tensor.
+    *   @param A Output tensor where the flatten is stored.
+    */
     static Tensor* flatten(Tensor *A);
 
+    /**
+    *   @brief Remove all the dimensions of size 1 from the vector.
+    */
     void squeeze_();
+
+    /**
+    *   @brief Remove all the dimensions of size 1 from the vector.
+    *   @param A Output tensor where the squeeze is stored.
+    */
     static Tensor* squeeze(Tensor *A);
 
+    /**
+    *   @brief Add a dimension of size 1 at the beginning of the tensor.
+    */
     void unsqueeze_();
+
+    /**
+    *   @brief Add a dimension of size 1 at the beginning of the tensor.
+    *   @param A Output tensor where the unsqueeze is stored.
+    */
     static Tensor* unsqueeze(Tensor *A);
 
 
     // ***** Transformations *****************************
+
+    /**
+    *   @brief Shift the tensor. The array is shifted using spline interpolation. Points outside the boundaries of the input are filled according to the given mode.
+    *   @param A Input tensor.
+    *   @param B Output tensor.
+    *   @param shift vector of shifts along the axes.
+    *   @param mode Must be one of the following:
+    *        - ...WrappingMode::Constant...: Input extended by the value in ...cval... (v v v v | a b c d | v v v v)
+    *        - ...WrappingMode::Reflect...: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ...WrappingMode::Nearest...: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ...WrappingMode::Mirror...: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ...WrappingMode::Wrap...: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ...WrappingMode::Original...: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ...WrappingMode::Constant....
+    */
     static void shift(Tensor *A,Tensor *B, vector<int> shift, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+
+    /**
+    *   @brief Rotate the tensor. The array is rotated in the plane dfined by the two axes given by the axes parameter using spline interpolation.
+    *   @param A Input tensor.
+    *   @param B Output tensor.
+    *   @param angle The rotation angle in degrees.
+    *   @param mode Must be one of the following:
+    *        - ...WrappingMode::Constant...: Input extended by the value in ...cval... (v v v v | a b c d | v v v v)
+    *        - ...WrappingMode::Reflect...: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ...WrappingMode::Nearest...: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ...WrappingMode::Mirror...: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ...WrappingMode::Wrap...: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ...WrappingMode::Original...: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ...WrappingMode::Constant....
+    */
     static void rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center={0,0}, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+
+    /**
+    *   @brief Scale the tensor. The array is scaled using spline interpolation.
+    *   @param A Input tensor.
+    *   @param B Output tensor.
+    *   @param new_shape Vector with the target size.
+    *   @param mode Must be one of the following:
+    *        - ...WrappingMode::Constant...: Input extended by the value in ...cval... (v v v v | a b c d | v v v v)
+    *        - ...WrappingMode::Reflect...: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ...WrappingMode::Nearest...: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ...WrappingMode::Mirror...: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ...WrappingMode::Wrap...: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ...WrappingMode::Original...: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ...WrappingMode::Constant....
+    */
     static void scale(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mode=WrappingMode::Nearest, float cval=0.0f);
+
+    /**
+    *   @brief Flip the tensor.
+    *   @param A Input tensor.
+    *   @param B Output tensor.
+    *   @param axis The axis used to flip the tensor.
+    */
     static void flip(Tensor *A, Tensor *B, int axis=0);
+
+    /**
+    *   @brief Crop the tensor.
+    *   @param A Input tensor.
+    *   @param B Output tensor.
+    *   @param coords_from Coordinates of the initial point of the crop.
+    *   @param coords_to Coordinates of the final point of the crop.
+    *   @param cval Value to fill past edges.
+    */
     static void crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float cval=0.0f);
+
+    /**
+    *   @brief Crop and scale the tensor. The array is scaled using spline interpolation.
+    *   @param A Input tensor.
+    *   @param B Output tensor.
+    *   @param coords_from Coordinates of the initial point of the crop.
+    *   @param coords_to Coordinates of the final point of the crop.
+    *   @param mode Must be one of the following:
+    *        - ...WrappingMode::Constant...: Input extended by the value in ...cval... (v v v v | a b c d | v v v v)
+    *        - ...WrappingMode::Reflect...: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ...WrappingMode::Nearest...: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ...WrappingMode::Mirror...: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ...WrappingMode::Wrap...: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ...WrappingMode::Original...: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ...WrappingMode::Constant....
+    */
     static void crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, WrappingMode mode=WrappingMode::Nearest, float cval=0.0f);
+
+    /**
+    *   @brief Set to a constant value a region of the tensor.
+    *   @param A Input tensor.
+    *   @param B Output tensor.
+    *   @param coords_from Coordinates of the initial point of the crop.
+    *   @param coords_to Coordinates of the final point of the crop.
+    *   @param cval Value to fill the crop region with.
+    */
     static void cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float cval=0.0f);
 
     // ***** Data augmentation *****************************
+
+    /**
+    *   @brief Shift the tensor with a random shift value taken from a specified range. The array is shifted using spline interpolation. Points outside the boundaries of the input are filled according to the given mode.
+    *   @param A Input tensor.
+    *   @param B Output tensor.
+    *   @param factor_x vector with the lower and upper values for shift in axis x.
+    *   @param factor_y vector with the lower and upper values for shift in axis y.
+    *   @param mode Must be one of the following:
+    *        - ...WrappingMode::Constant...: Input extended by the value in ...cval... (v v v v | a b c d | v v v v)
+    *        - ...WrappingMode::Reflect...: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ...WrappingMode::Nearest...: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ...WrappingMode::Mirror...: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ...WrappingMode::Wrap...: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ...WrappingMode::Original...: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ...WrappingMode::Constant....
+    */
     static void shift_random(Tensor *A,Tensor *B, vector<float> factor_x, vector<float> factor_y, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+
+    /**
+    *   @brief Rotate the tensor with a random angle in a specified range. The array is rotated in the plane dfined by the two axes given by the axes parameter using spline interpolation.
+    *   @param A Input tensor.
+    *   @param B Output tensor.
+    *   @param factor The rotation angle range in degrees.
+    *   @param offset_center The center where to perform the rotation
+    *   @param mode Must be one of the following:
+    *        - ...WrappingMode::Constant...: Input extended by the value in ...cval... (v v v v | a b c d | v v v v)
+    *        - ...WrappingMode::Reflect...: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ...WrappingMode::Nearest...: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ...WrappingMode::Mirror...: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ...WrappingMode::Wrap...: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ...WrappingMode::Original...: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ...WrappingMode::Constant....
+    */
     static void rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center={0,0}, WrappingMode mode=WrappingMode::Constant, float cval=0.0f);
+
+    /**
+    *   @brief Scale the tensor wit a random factor in a specified range. The array is scaled using spline interpolation.
+    *   @param A Input tensor.
+    *   @param B Output tensor.
+    *   @param factor Vector with minimum and maximum scale factors.
+    *   @param mode Must be one of the following:
+    *        - ...WrappingMode::Constant...: Input extended by the value in ...cval... (v v v v | a b c d | v v v v)
+    *        - ...WrappingMode::Reflect...: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ...WrappingMode::Nearest...: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ...WrappingMode::Mirror...: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ...WrappingMode::Wrap...: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ...WrappingMode::Original...: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ...WrappingMode::Constant....
+    */
     static void scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMode mode=WrappingMode::Nearest, float cval=0.0f);
+
+    /**
+    *   @brief Flip the tensor with some probability.
+    *   @param A Input tensor.
+    *   @param B Output tensor.
+    *   @param axis The axis used to flip the tensor.
+    */
     static void flip_random(Tensor *A, Tensor *B, int axis);
 
+    /**
+    *   @brief Crop randomly the tensor.
+    *   @param A Input tensor.
+    *   @param B Output tensor.
+    */
     static void crop_random(Tensor *A, Tensor *B);
+
+    /**
+    *   @brief Crop randomly and scale the tensor with a random factor in a specified range. The array is scaled using spline interpolation.
+    *   @param A Input tensor.
+    *   @param B Output tensor.
+    *   @param factor Vector with minimum and maximum scale factors.
+    *   @param mode Must be one of the following:
+    *        - ...WrappingMode::Constant...: Input extended by the value in ...cval... (v v v v | a b c d | v v v v)
+    *        - ...WrappingMode::Reflect...: Input extended by reflecting about the edge of the last pixel (d c b a | a b c d | d c b a)
+    *        - ...WrappingMode::Nearest...: Input extended by replicating the last pixel (a a a a | a b c d | d d d d)
+    *        - ...WrappingMode::Mirror...: Input extended by reflecting about the center of the las pixel (d c b | a b c d | c b a)
+    *        - ...WrappingMode::Wrap...: Input extended by wrapping around the oposite edge (a b c d | a b c d | a b c d)
+    *        - ...WrappingMode::Original...: Input extended by placing the original image in the background.
+    *   @param cval Value to fill past edges of input if mode is ...WrappingMode::Constant....
+    */
     static void crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMode mode=WrappingMode::Nearest, float cval=0.0f);
+
+    /**
+    *   @brief Set to a constant value a region of the tensor.
+    *   @param A Input tensor.
+    *   @param B Output tensor.
+    *   @param factor_x vector with the lower and upper values for cut in axis x.
+    *   @param factor_y vector with the lower and upper values for cut in axis y.
+    *   @param cval Value to fill the crop region with.
+    */
     static void cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float cval=0.0f);
 
 
