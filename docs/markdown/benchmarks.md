@@ -10,6 +10,45 @@ Benchmarks for development.
 
 ### MNIST MLP (`1_mnist_mlp.cpp`)
 
+#### GPU
+
+**Default flags:**
+
+```
+Setup
+-------
+VERSION: v0.7
+TARGET: CPU
+CORES: 16
+EPOCHS: 1
+C++ flags (release): -O3
+
+Training/Evaluation:
+--------------------
+1 epochs of 600 batches of size 100
+Epoch 1
+Batch 600 softmax4 ( loss[soft_cross_entropy]=0.082 metric[categorical_accuracy]=0.857 ) -- 0.004 secs/batch
+2.606 secs/epoch
+Evaluate with batch size 100
+Batch 100 softmax4 ( loss[soft_cross_entropy]=0.031 metric[categorical_accuracy]=0.949 ) -- 
+
+Memory:
+--------
+  PID USER      PRI  NI  VIRT   RES S CPU% MEM%   TIME+  Command
+22164 salvaca+  20   0 10,463g 585428 190712 S  1590  3,6   1:46.01 mnist_mlp                                                                                                                                          
+
+GPU Memory:
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 440.82       Driver Version: 440.82       CUDA Version: 10.2     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  GeForce GTX 1070    Off  | 00000000:09:00.0  On |                  N/A |
+| 54%   71C    P2    76W / 190W |   1188MiB /  8118MiB |     71%      Default |
++-------------------------------+----------------------+----------------------+
+
+```
 
 #### CPU only
 
@@ -18,6 +57,7 @@ Benchmarks for development.
 ```
 Setup
 -------
+VERSION: v0.7
 TARGET: CPU
 CORES: 16
 EPOCHS: 1
@@ -25,36 +65,108 @@ C++ flags (release): -O3
 
 Training/Evaluation:
 --------------------
-
+1 epochs of 600 batches of size 100
+Epoch 1
+Batch 600 softmax4 ( loss[soft_cross_entropy]=0.083 metric[categorical_accuracy]=0.848 ) -- 0.245 secs/batch
+147.224 secs/epoch
+Evaluate with batch size 100
+Batch 100 softmax4 ( loss[soft_cross_entropy]=0.046 metric[categorical_accuracy]=0.927 ) -- 
 
 Memory:
 --------
   PID USER      PRI  NI  VIRT   RES S CPU% MEM%   TIME+  Command
+15057 salvaca+  20   0 2643176 290468  17128 S  1569  1,8   1:12.03 mnist_mlp                                                                                                                                          
+
 ```
 
 
 **Optimization flags:**
 
+- Test 1: `-Ofast -msse -mfpmath=sse -ffast-math`
+
 ```
 Setup
 -------
+VERSION: v0.7
 TARGET: CPU
 CORES: 16
 EPOCHS: 1
 C++ flags (release): -O3 -Ofast -msse -mfpmath=sse -ffast-math
+=========================> ERROR!
 
 Training/Evaluation:
 --------------------
+1 epochs of 600 batches of size 100
+Epoch 1
+Batch 600 softmax4 ( loss[soft_cross_entropy]=-nan metric[categorical_accuracy]=0.128 ) -- 0.240 secs/batch
+144.023 secs/epoch
+Evaluate with batch size 100
+Batch 100 softmax4 ( loss[soft_cross_entropy]=nan metric[categorical_accuracy]=0.101 ) -- 
+
+Memory:
+--------
+  PID USER      PRI  NI  VIRT   RES S CPU% MEM%   TIME+  Command
+18701 salvaca+  20   0 2643196 290872  17536 S  1581  1,8   2:56.98 mnist_mlp                                                                                                                                          
+```
+
+
+- Test 2: `-mtune=native`
+
+```
+Setup
+-------
+VERSION: v0.7
+TARGET: CPU
+CORES: 16
+EPOCHS: 1
+C++ flags (release): -mtune=native
+=====================> There are problems with this flag
+
+Training/Evaluation:
+--------------------
+1 epochs of 600 batches of size 100
+Epoch 1
+Batch 600 softmax4 ( loss[soft_cross_entropy]=-nan metric[categorical_accuracy]=0.102 ) -- 0.256 secs/batch
+153.884 secs/epoch
+Evaluate with batch size 100
+Batch 100 softmax4 ( loss[soft_cross_entropy]=-nan metric[categorical_accuracy]=0.098 ) -- 
 
 
 Memory:
 --------
   PID USER      PRI  NI  VIRT   RES S CPU% MEM%   TIME+  Command
+ 3690 salvaca+  20   0 2643176 290276  16916 S  1531  1,8   4:06.69 mnist_mlp   
 ```
+
+- Test 3: `-march=native`
+```
+Setup
+-------
+VERSION: v0.7
+TARGET: CPU
+CORES: 16
+EPOCHS: 1
+C++ flags (release): -mtune=native
+=====================> 
+
+
+1 epochs of 500 batches of size 100
+Epoch 1
+
+Process finished with exit code 139 (interrupted by signal 11: SIGSEGV)
+```
+
+
+### CIFAR10 CONV (`1_cifar_conv.cpp`)
+
+#### GPU
+
+**Default flags:**
 
 ```
 Setup
 -------
+VERSION: v0.7
 TARGET: CPU
 CORES: 16
 EPOCHS: 1
@@ -62,32 +174,33 @@ C++ flags (release): -O3
 
 Training/Evaluation:
 --------------------
-
-
-Memory:
---------
-  PID USER      PRI  NI  VIRT   RES S CPU% MEM%   TIME+  Command
-```
-
-```
-Setup
--------
-TARGET: CPU
-CORES: 16
-EPOCHS: 1
-C++ flags (release): -O3 -Ofast -msse -mfpmath=sse -ffast-math
-
-Training/Evaluation:
---------------------
-
+1 epochs of 500 batches of size 100
+Epoch 1
+Batch 500 softmax5 ( loss[soft_cross_entropy]=0.274 metric[categorical_accuracy]=0.318 ) -- 0.014 secs/batch
+7.099 secs/epoch
+Evaluate test:
+Evaluate with batch size 100
+Batch 100 softmax5 ( loss[soft_cross_entropy]=0.230 metric[categorical_accuracy]=0.454 ) -- 
 
 Memory:
 --------
   PID USER      PRI  NI  VIRT   RES S CPU% MEM%   TIME+  Command
+12366 salvaca+  20   0 11,137g 1,011g 191004 R  1562  6,5   0:28.25 cifar_conv                                                                                                                                                                                                                                                                               
+
+GPU Memory:
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 440.82       Driver Version: 440.82       CUDA Version: 10.2     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  GeForce GTX 1070    Off  | 00000000:09:00.0  On |                  N/A |
+| 58%   77C    P2    88W / 190W |   1369MiB /  8118MiB |     94%      Default |
++-------------------------------+----------------------+----------------------+
+
+
 ```
 
-
-### CIFAR10 CONV (`1_cifar_conv.cpp`)
 
 #### CPU only
 
@@ -96,18 +209,104 @@ Memory:
 ```
 Setup
 -------
+VERSION: v0.7
 TARGET: CPU
-CORES: 8
+CORES: 16
 EPOCHS: 1
 C++ flags (release): -O3
 
 Training/Evaluation:
 --------------------
+1 epochs of 500 batches of size 100
+Epoch 1
+Batch 500 softmax5 ( loss[soft_cross_entropy]=0.325 metric[categorical_accuracy]=0.101 ) -- 0.281 secs/batch
+140.446 secs/epoch
+Evaluate test:
+Evaluate with batch size 100
+Batch 100 softmax5 ( loss[soft_cross_entropy]=0.325 metric[categorical_accuracy]=0.100 ) -- 
+
+Memory:
+--------
+  PID USER      PRI  NI  VIRT   RES S CPU% MEM%   TIME+  Command
+13661 salvaca+  20   0 3258216 919352  16960 S  1588  5,6   1:37.88 cifar_conv                                                                                                                                         
+
+```
+
+**Optimization flags:**
+
+- Test 1: `-Ofast -msse -mfpmath=sse -ffast-math`
+
+```
+Setup
+-------
+VERSION: v0.7
+TARGET: CPU
+CORES: 16
+EPOCHS: 1
+C++ flags (release): -O3 -Ofast -msse -mfpmath=sse -ffast-math
+
+Training/Evaluation:
+--------------------
+1 epochs of 500 batches of size 100
+Epoch 1
+Batch 500 softmax5 ( loss[soft_cross_entropy]=0.297 metric[categorical_accuracy]=0.239 ) -- 0.302 secs/batch
+151.189 secs/epoch
+Evaluate test:
+Evaluate with batch size 100
+Batch 100 softmax5 ( loss[soft_cross_entropy]=0.260 metric[categorical_accuracy]=0.369 ) -- 
+
+Memory:
+--------
+  PID USER      PRI  NI  VIRT   RES S CPU% MEM%   TIME+  Command
+20308 salvaca+  20   0 3258236 919972  17584 S  1569  5,6  32:09.53 cifar_conv                                                                                                                                         
+```
+
+- Test 2: `-mtune=native`
+
+```
+Setup
+-------
+VERSION: v0.7
+TARGET: CPU
+CORES: 16
+EPOCHS: 1
+C++ flags (release): -mtune=native
+=====================> There are problems with this flag
+
+Training/Evaluation:
+--------------------
+1 epochs of 500 batches of size 100
+Epoch 1
+Batch 500 softmax5 ( loss[soft_cross_entropy]=0.296 metric[categorical_accuracy]=0.242 ) -- 0.289 secs/batch
+144.295 secs/epoch
+Evaluate test:
+Evaluate with batch size 100
+Batch 100 softmax5 ( loss[soft_cross_entropy]=0.259 metric[categorical_accuracy]=0.373 ) -- 
 
 
 Memory:
 --------
   PID USER      PRI  NI  VIRT   RES S CPU% MEM%   TIME+  Command
+ 5471 salvaca+  20   0 3258216 919248  16848 S  1532  5,6  10:41.81 cifar_conv  
+
+```
+
+- Test 3: `-march=native`
+```
+Setup
+-------
+VERSION: v0.7
+TARGET: CPU
+CORES: 16
+EPOCHS: 1
+C++ flags (release): -mtune=native
+=====================> 
+
+
+1 epochs of 500 batches of size 100
+Epoch 1
+
+Process finished with exit code 139 (interrupted by signal 11: SIGSEGV)
 ```
 
 
