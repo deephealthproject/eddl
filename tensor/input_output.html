@@ -46,13 +46,16 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #185070" >
           
 
           
-            <a href="../index.html" class="icon icon-home"> EDDL
+            <a href="../index.html">
           
 
+          
+            
+            <img src="../_static/logo-eddl-small-white.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -161,7 +164,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#input">Input</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#loadfs">loadfs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#load">load</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#load-from-txt">load_from_txt</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#output">Output</a><ul>
@@ -300,29 +302,6 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="load-from-txt">
-<h3>load_from_txt<a class="headerlink" href="#load-from-txt" title="Permalink to this headline">¶</a></h3>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor13load_from_txtERK6stringKci">
-<span id="_CPPv3N6Tensor13load_from_txtERK6stringKci"></span><span id="_CPPv2N6Tensor13load_from_txtERK6stringKci"></span><span id="Tensor::load_from_txt__stringCR.cC.i"></span><span class="target" id="class_tensor_1a57c711f0db90ffb2fbdb7f60b57a1b72"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">load_from_txt</code><span class="sig-paren">(</span><em class="property">const</em> string &amp;<em>filename</em>, <em class="property">const</em> char <em>delimiter</em> = ',', int <em>headerRows</em> = 1<span class="sig-paren">)</span><br /></dt>
-<dd><p>Load data from a text file. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Tensor </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">filename</span></code>: Name of the file to load the tensor from. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">delimiter</span></code>: Character used to separate the columns of the file. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">headerRows</span></code>: Number of top rows to avoid, generally because they correspond to the header. </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">load_from_txt</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span><span class="o">&amp;</span> <span class="n">filename</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">delimiter</span><span class="o">=</span><span class="sc">&#39;,&#39;</span><span class="p">,</span> <span class="kt">int</span> <span class="n">headerRows</span><span class="o">=</span><span class="mi">1</span><span class="p">);</span>
-</pre></div>
-</div>
-</div>
 </div>
 <div class="section" id="output">
 <h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
@@ -331,9 +310,17 @@
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor6savefsERNSt8ofstreamE6string">
 <span id="_CPPv3N6Tensor6savefsERNSt8ofstreamE6string"></span><span id="_CPPv2N6Tensor6savefsERNSt8ofstreamE6string"></span><span id="Tensor::savefs__std::ofstreamR.string"></span><span class="target" id="class_tensor_1a354d2c0bf6d6a26ffb2068aff10127a1"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">savefs</code><span class="sig-paren">(</span>std::ofstream &amp;<em>ofs</em>, string <em>format</em> = &quot;&quot;<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6savefsERNSt8ofstreamE6string" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Save tensor to a filestream. </p>
+<dd><p>Load data from a text file. </p>
 <p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor Save tensor to a filestream.</p>
+</dd>
 <dt><strong>Return</strong></dt><dd><p>void </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">filename</span></code>: Name of the file to load the tensor from. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delimiter</span></code>: Character used to separate the columns of the file. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">headerRows</span></code>: Number of top rows to avoid, generally because they correspond to the header. </p></li>
+</ul>
 </dd>
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">ofs</span></code>: Filestream. </p></li>

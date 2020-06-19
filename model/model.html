@@ -46,13 +46,16 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #185070" >
           
 
           
-            <a href="../index.html" class="icon icon-home"> EDDL
+            <a href="../index.html">
           
 
+          
+            
+            <img src="../_static/logo-eddl-small-white.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -242,16 +245,22 @@
 <h1>Model<a class="headerlink" href="#model" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="constructor">
 <h2>Constructor<a class="headerlink" href="#constructor" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::Model” with arguments () in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
+<dl class="cpp function">
+<dt id="_CPPv4N4eddl5ModelE6vlayer6vlayer">
+<span id="_CPPv3N4eddl5ModelE6vlayer6vlayer"></span><span id="_CPPv2N4eddl5ModelE6vlayer6vlayer"></span><span id="eddl::Model__vlayer.vlayer"></span><span class="target" id="namespaceeddl_1a20d2dc23c5a0e4511914984336b2575c"></span>model <code class="sig-prename descclassname">eddl<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Model</code><span class="sig-paren">(</span>vlayer <em>in</em>, vlayer <em>out</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Instantiates model, taking two vectors, one of input layers and another of output layers. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Model instance </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">in</span></code>: Vector with model input layers, typically Input({…}) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">out</span></code>: Vector with the ouputs of the model. Example: {Sigmoid(MyModel())} </p></li>
+</ul>
+</dd>
+</dl>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">model</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Model</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Net</span><span class="o">*&gt;</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">model</span> <span class="n">eddl</span><span class="p">::</span><span class="n">Model</span><span class="p">(</span><span class="n">vlayer</span><span class="p">,</span> <span class="n">vlayer</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+</dd></dl>
+
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
@@ -271,16 +280,6 @@ Potential matches:
 </div>
 <div class="section" id="build">
 <h2>Build<a class="headerlink" href="#build" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “eddl::build” with arguments (model, optimizer, CompServ *, bool) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
-Potential matches:
-</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">build</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">CompServ</span><span class="o">*</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">eddl</span><span class="p">::</span><span class="n">build</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="n">CompServ</span><span class="o">*</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>doxygenfunction: Unable to resolve multiple matches for function “eddl::build” with arguments (model, optimizer, const vector&lt;string&gt;&amp;, const vector&lt;string&gt;&amp;, CompServ *, bool) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.

@@ -22,7 +22,7 @@ Affine
 
     **Not implemented yet**
 
-    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-transformations
 
 
 
@@ -71,7 +71,7 @@ ColorJitter
 
     **Not implemented yet**
 
-    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-transformations
 
 
 
@@ -141,7 +141,7 @@ Grayscale
 
     **Not implemented yet**
 
-    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-transformations
  
 
 
@@ -173,7 +173,7 @@ Pad
 
     **Not implemented yet**
 
-    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-transformations
 
 
 
@@ -249,5 +249,5 @@ Normalize
 
     **Not implemented yet**
 
-    Check development progress in https://github.com/deephealthproject/eddl/blob/master/eddl_progress.md#data-transformations
+    Check development progress in https://github.com/deephealthproject/eddl/blob/master/docs/markdown/eddl_progress.md#data-transformations
 

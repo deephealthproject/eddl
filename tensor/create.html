@@ -46,13 +46,16 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #185070" >
           
 
           
-            <a href="../index.html" class="icon icon-home"> EDDL
+            <a href="../index.html">
           
 
+          
+            
+            <img src="../_static/logo-eddl-small-white.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -155,21 +158,27 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Creation Routines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#constructors">Constructors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ones-and-zeros">Ones and zeros</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#constructors-initializers">Constructors &amp; Initializers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#empty">empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#empty-like">empty_like</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zeros">zeros</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zeros-like">zeros_like</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ones">ones</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ones-like">ones_like</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#full">full</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#full-like">full_like</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#eye">eye</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#identity">identity</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#from-existing-data">From existing data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#constructors-from-existing-data">Constructors from existing data</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#clone">clone</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reallocate">reallocate</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#copy">copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#select">select</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#numerical-ranges">Numerical ranges</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#constructors-from-numerical-ranges">Constructors from numerical ranges</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#arange">arange</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#range">range</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#linspace">linspace</a></li>
@@ -177,12 +186,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#geomspace">geomspace</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#random">Random</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#constructors-from-random-generators">Constructors from random generators</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#randu">randu</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#randn">randn</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#build-matrices">Build matrices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#constructors-of-matrices">Constructors of matrices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#destructors">Destructors</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="manipulation.html">Manipulation</a></li>
@@ -271,9 +281,20 @@
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor6TensorEv">
 <span id="_CPPv3N6Tensor6TensorEv"></span><span id="_CPPv2N6Tensor6TensorEv"></span><span id="Tensor::Tensor"></span><span class="target" id="class_tensor_1a4420e3cacf3811f54a0363db56d9379d"></span><code class="sig-prename descclassname"><a class="reference internal" href="#_CPPv4N6Tensor6TensorEv" title="Tensor::Tensor">Tensor</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Tensor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Constructor of an uninitialized tensor in CPU with dimension and size 0. </p>
+<dd><p>Constructor of an uninitialized tensor without shape and in CPU. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor6TensorERK6vectorIiEi">
+<span id="_CPPv3N6Tensor6TensorERK6vectorIiEi"></span><span id="_CPPv2N6Tensor6TensorERK6vectorIiEi"></span><span id="Tensor::Tensor__vector:i:CR.i"></span><span class="target" id="class_tensor_1a48b7318a576e60ebdabd9edb7ca7faee"></span><code class="sig-prename descclassname"><a class="reference internal" href="#_CPPv4N6Tensor6TensorERK6vectorIiEi" title="Tensor::Tensor">Tensor</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Tensor</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><br /></dt>
+<dd><p>Constructor of an uninitialized tensor. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>a tensor </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Vector of ints specifying the shape of the tensor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
+</ul>
 </dd>
 </dl>
 </p>
@@ -285,53 +306,103 @@
 Potential matches:
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">()</span>
+<span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">float</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
 <span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
 <span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="nb">float</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
 <span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<dl class="cpp function">
-<dt id="_CPPv4N6Tensor6TensorERK6vectorIiEi">
-<span id="_CPPv3N6Tensor6TensorERK6vectorIiEi"></span><span id="_CPPv2N6Tensor6TensorERK6vectorIiEi"></span><span id="Tensor::Tensor__vector:i:CR.i"></span><span class="target" id="class_tensor_1a48b7318a576e60ebdabd9edb7ca7faee"></span><code class="sig-prename descclassname"><a class="reference internal" href="#_CPPv4N6Tensor6TensorERK6vectorIiEi" title="Tensor::Tensor">Tensor</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Tensor</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><br /></dt>
-<dd><p>Constructor of an uninitialized tensor. </p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>a tensor </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Vector of ints specifying the shape of the tensor </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: One of DEV_CPU or DEV_GPU </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::Tensor” with arguments (const vector&lt;int&gt;&amp;, Tensor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
 Potential matches:
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">()</span>
+<span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">float</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
 <span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
 <span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="nb">float</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
 <span class="o">-</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;&amp;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">float</span> <span class="o">*</span><span class="n">fptr</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor6TensorERK6vectorIfERK6vectorIiEi">
+<span id="_CPPv3N6Tensor6TensorERK6vectorIfERK6vectorIiEi"></span><span id="_CPPv2N6Tensor6TensorERK6vectorIfERK6vectorIiEi"></span><span id="Tensor::Tensor__vector:float:CR.vector:i:CR.i"></span><span class="target" id="class_tensor_1a807797e2f28e5dc73e8300776cb72c67"></span><code class="sig-prename descclassname"><a class="reference internal" href="#_CPPv4N6Tensor6TensorERK6vectorIfERK6vectorIiEi" title="Tensor::Tensor">Tensor</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Tensor</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;float&gt; &amp;<em>data</em>, <em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><br /></dt>
+<dd><p>Constructor of an uninitialized tensor. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>a tensor </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code>: Vector with the data to initialize the tensor with. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Vector of ints specifying the shape of the tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="p">();</span>
+<span class="n">Tensor</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">float</span> <span class="o">*</span><span class="n">fptr</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">T</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span> <span class="n">data</span><span class="p">,</span> <span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="ones-and-zeros">
-<h2>Ones and zeros<a class="headerlink" href="#ones-and-zeros" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="constructors-initializers">
+<h2>Constructors &amp; Initializers<a class="headerlink" href="#constructors-initializers" title="Permalink to this headline">¶</a></h2>
 <p>Create tensor from generators</p>
+<div class="section" id="empty">
+<h3>empty<a class="headerlink" href="#empty" title="Permalink to this headline">¶</a></h3>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor5emptyERK6vectorIiEi">
+<span id="_CPPv3N6Tensor5emptyERK6vectorIiEi"></span><span id="_CPPv2N6Tensor5emptyERK6vectorIiEi"></span><span id="Tensor::empty__vector:i:CR.i"></span><span class="target" id="class_tensor_1a732ed860cd9231f2a0d95229df884a26"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">empty</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5emptyERK6vectorIiEi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a tensor of the specified shape filled with uninitialized data. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor of the specified shape filled with zeros </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Shape of the tensor to create. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">empty</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="empty-like">
+<h3>empty_like<a class="headerlink" href="#empty-like" title="Permalink to this headline">¶</a></h3>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor10empty_likeEP6Tensor">
+<span id="_CPPv3N6Tensor10empty_likeEP6Tensor"></span><span id="_CPPv2N6Tensor10empty_likeEP6Tensor"></span><span id="Tensor::empty_like__TensorP"></span><span class="target" id="class_tensor_1a43621731327d8adb316ed10fc3684b41"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">empty_like</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10empty_likeEP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a tensor with the shape and device of another one, but empty. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Empty initialized A-shaped tensor </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor from wich to take shape and device. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">empty_like</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="zeros">
 <h3>zeros<a class="headerlink" href="#zeros" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor5zerosERK6vectorIiEi">
 <span id="_CPPv3N6Tensor5zerosERK6vectorIiEi"></span><span id="_CPPv2N6Tensor5zerosERK6vectorIiEi"></span><span id="Tensor::zeros__vector:i:CR.i"></span><span class="target" id="class_tensor_1a369bcb7cffc78d60348b58561d9002c9"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">zeros</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5zerosERK6vectorIiEi" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Create a tensor of the specified shape and fill it with zeros. </p>
+<dd><p>Create a tensor of the specified shape and filled with zeros. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>Tensor of the specified shape filled with zeros </p>
 </dd>
@@ -348,12 +419,33 @@ Potential matches:
 </pre></div>
 </div>
 </div>
+<div class="section" id="zeros-like">
+<h3>zeros_like<a class="headerlink" href="#zeros-like" title="Permalink to this headline">¶</a></h3>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor10empty_likeEP6Tensor">
+<span id="_CPPv3N6Tensor10empty_likeEP6Tensor"></span><span id="_CPPv2N6Tensor10empty_likeEP6Tensor"></span><span class="target" id="class_tensor_1a43621731327d8adb316ed10fc3684b41"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">empty_like</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Create a tensor with the shape and device of another one, but empty. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Empty initialized A-shaped tensor </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor from wich to take shape and device. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">zeros_like</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="ones">
 <h3>ones<a class="headerlink" href="#ones" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor4onesERK6vectorIiEi">
 <span id="_CPPv3N6Tensor4onesERK6vectorIiEi"></span><span id="_CPPv2N6Tensor4onesERK6vectorIiEi"></span><span id="Tensor::ones__vector:i:CR.i"></span><span class="target" id="class_tensor_1a17af99e2d288c01fd64a9ff27f05a124"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ones</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4onesERK6vectorIiEi" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Create a tensor of the specified shape and fill it with ones. </p>
+<dd><p>Create a tensor of the specified shape and filled with ones. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>Tensor of the specified shape filled with ones </p>
 </dd>
@@ -370,12 +462,33 @@ Potential matches:
 </pre></div>
 </div>
 </div>
+<div class="section" id="ones-like">
+<h3>ones_like<a class="headerlink" href="#ones-like" title="Permalink to this headline">¶</a></h3>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor9ones_likeEP6Tensor">
+<span id="_CPPv3N6Tensor9ones_likeEP6Tensor"></span><span id="_CPPv2N6Tensor9ones_likeEP6Tensor"></span><span id="Tensor::ones_like__TensorP"></span><span class="target" id="class_tensor_1a56e6fb11b962f0ab204b069b62988daf"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">ones_like</code><span class="sig-paren">(</span>Tensor *<em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor9ones_likeEP6Tensor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a tensor with the shape and device of another one, initialized with ones. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Ones initialized A-shaped tensor </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor from wich to take shape and device. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">ones_like</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="full">
 <h3>full<a class="headerlink" href="#full" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor4fullERK6vectorIiEfi">
 <span id="_CPPv3N6Tensor4fullERK6vectorIiEfi"></span><span id="_CPPv2N6Tensor4fullERK6vectorIiEfi"></span><span id="Tensor::full__vector:i:CR.float.i"></span><span class="target" id="class_tensor_1ad96f086f07c67e2430053d26121274b6"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">full</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, float <em>value</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor4fullERK6vectorIiEfi" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Create a tensor of the specified shape and fill it with a specific value. </p>
+<dd><p>Create a tensor of the specified shape and filled with a specific value. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>Tensor of the specified shape filled with the value </p>
 </dd>
@@ -390,6 +503,27 @@ Potential matches:
 </dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">full</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">float</span> <span class="n">value</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="full-like">
+<h3>full_like<a class="headerlink" href="#full-like" title="Permalink to this headline">¶</a></h3>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor9full_likeEP6Tensorf">
+<span id="_CPPv3N6Tensor9full_likeEP6Tensorf"></span><span id="_CPPv2N6Tensor9full_likeEP6Tensorf"></span><span id="Tensor::full_like__TensorP.float"></span><span class="target" id="class_tensor_1a6c7eff7cfc1449f6a1e9597573d52155"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">full_like</code><span class="sig-paren">(</span>Tensor *<em>A</em>, float <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor9full_likeEP6Tensorf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a tensor with the shape an device of the input tensor and filled with a specific value. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Value initialized A-shaped tensor </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code>: Input tensor from wich to take shape and device. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">full_like</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -440,20 +574,17 @@ Potential matches:
 </div>
 </div>
 </div>
-<div class="section" id="from-existing-data">
-<h2>From existing data<a class="headerlink" href="#from-existing-data" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="constructors-from-existing-data">
+<h2>Constructors from existing data<a class="headerlink" href="#constructors-from-existing-data" title="Permalink to this headline">¶</a></h2>
 <p>Create tensor from existing data</p>
 <div class="section" id="clone">
 <h3>clone<a class="headerlink" href="#clone" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor5cloneEv">
 <span id="_CPPv3N6Tensor5cloneEv"></span><span id="_CPPv2N6Tensor5cloneEv"></span><span id="Tensor::clone"></span><span class="target" id="class_tensor_1a997099c0f8de3f9b89b61ec279da2d34"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5cloneEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Clone a tensor (same device). </p>
-<p>Obtain a copy of a tensor.</p>
+<dd><p>Clone a tensor (same device). Similar to copy, but returning a new instance. </p>
 <p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>Tensor</p>
-</dd>
-<dt><strong>Return</strong></dt><dd><p>The copied tensor </p>
+<dt><strong>Return</strong></dt><dd><p>Tensor </p>
 </dd>
 </dl>
 </p>
@@ -468,7 +599,13 @@ Potential matches:
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor10reallocateEP6TensorP6vectorIiE">
 <span id="_CPPv3N6Tensor10reallocateEP6TensorP6vectorIiE"></span><span id="_CPPv2N6Tensor10reallocateEP6TensorP6vectorIiE"></span><span id="Tensor::reallocate__TensorP.vector:i:P"></span><span class="target" id="class_tensor_1a941b22232a6a0d46ac89815cd47d933c"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">reallocate</code><span class="sig-paren">(</span>Tensor *<em>old_t</em>, vector&lt;int&gt; *<em>s</em> = nullptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor10reallocateEP6TensorP6vectorIiE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Reallocates a tensor into this one. Deprecated. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p></p>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">reallocate</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">old_t</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">);</span>
 </pre></div>
@@ -497,15 +634,60 @@ Potential matches:
 </pre></div>
 </div>
 </div>
+<div class="section" id="select">
+<h3>select<a class="headerlink" href="#select" title="Permalink to this headline">¶</a></h3>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor6selectERK6vectorI6stringE">
+<span id="_CPPv3N6Tensor6selectERK6vectorI6stringE"></span><span id="_CPPv2N6Tensor6selectERK6vectorI6stringE"></span><span id="Tensor::select__vector:string:CR"></span><span class="target" id="class_tensor_1ae1a8017516f3a368261645b0fd9feaee"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;string&gt; &amp;<em>indices</em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Returns an array with the selected indices of the tensor. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">indices</span></code>: Vector of strings representing the indices to be selected. These indices must follow a Python-like syntax. Some examples: <code class="docutils literal notranslate"><span class="pre">&quot;0&quot;</span></code> , <code class="docutils literal notranslate"><span class="pre">&quot;:5&quot;</span></code> , <code class="docutils literal notranslate"><span class="pre">&quot;:&quot;</span></code> , <code class="docutils literal notranslate"><span class="pre">&quot;3:6&quot;</span></code>. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::select” with arguments (Tensor *, Tensor *, SelDescriptor *) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">select</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">SelDescriptor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+</pre></div>
 </div>
-<div class="section" id="numerical-ranges">
-<h2>Numerical ranges<a class="headerlink" href="#numerical-ranges" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::select” with arguments (Tensor *, Tensor *, vector&lt;int&gt;, int, int, bool) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">select</span><span class="p">(</span><span class="n">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">SelDescriptor</span><span class="o">*</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">select</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="nf">select</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span> <span class="n">indices</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">select</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">SelDescriptor</span> <span class="o">*</span><span class="n">sd</span><span class="p">);</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">select_back</span><span class="p">(</span><span class="n">Tensor</span> <span class="o">*</span><span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">B</span><span class="p">,</span> <span class="n">SelDescriptor</span> <span class="o">*</span><span class="n">sd</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="constructors-from-numerical-ranges">
+<h2>Constructors from numerical ranges<a class="headerlink" href="#constructors-from-numerical-ranges" title="Permalink to this headline">¶</a></h2>
 <p>Create tensor from numerical ranges</p>
 <div class="section" id="arange">
 <h3>arange<a class="headerlink" href="#arange" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N5eddlT6arangeEfffi">
-<span id="_CPPv3N5eddlT6arangeEfffi"></span><span id="_CPPv2N5eddlT6arangeEfffi"></span><span id="eddlT::arange__float.float.float.i"></span><span class="target" id="namespaceeddl_t_1a5316cab90ec8e40797ccb0b5074a3d24"></span>Tensor *<code class="sig-prename descclassname">eddlT<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">arange</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, float <em>step</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5eddlT6arangeEfffi" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6Tensor6arangeEfffi">
+<span id="_CPPv3N6Tensor6arangeEfffi"></span><span id="_CPPv2N6Tensor6arangeEfffi"></span><span id="Tensor::arange__float.float.float.i"></span><span class="target" id="class_tensor_1a6ee1b4958f826a1de286f631842e4aa8"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">arange</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, float <em>step</em> = 1.0f, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor6arangeEfffi" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Create a 1-D tensor of size ceil(end - start) with values from start to end with step step. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>The new tensor </p>
@@ -528,8 +710,8 @@ Potential matches:
 <div class="section" id="range">
 <h3>range<a class="headerlink" href="#range" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N5eddlT5rangeEfffi">
-<span id="_CPPv3N5eddlT5rangeEfffi"></span><span id="_CPPv2N5eddlT5rangeEfffi"></span><span id="eddlT::range__float.float.float.i"></span><span class="target" id="namespaceeddl_t_1aabed9bb805745d203339394ed44ee634"></span>Tensor *<code class="sig-prename descclassname">eddlT<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">range</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, float <em>step</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5eddlT5rangeEfffi" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6Tensor5rangeEfffi">
+<span id="_CPPv3N6Tensor5rangeEfffi"></span><span id="_CPPv2N6Tensor5rangeEfffi"></span><span id="Tensor::range__float.float.float.i"></span><span class="target" id="class_tensor_1af679670e497f8912cdfb28a101a3ea38"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">range</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, float <em>step</em> = 1.0f, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5rangeEfffi" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Creates a 1-D tensor of size floor(end - start)/ + 1 with values from start to end with step step. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>The new tensor </p>
@@ -552,8 +734,8 @@ Potential matches:
 <div class="section" id="linspace">
 <h3>linspace<a class="headerlink" href="#linspace" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N5eddlT8linspaceEffii">
-<span id="_CPPv3N5eddlT8linspaceEffii"></span><span id="_CPPv2N5eddlT8linspaceEffii"></span><span id="eddlT::linspace__float.float.i.i"></span><span class="target" id="namespaceeddl_t_1a78fd8a5e840692640db42d9362846c0a"></span>Tensor *<code class="sig-prename descclassname">eddlT<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">linspace</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, int <em>steps</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5eddlT8linspaceEffii" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6Tensor8linspaceEffii">
+<span id="_CPPv3N6Tensor8linspaceEffii"></span><span id="_CPPv2N6Tensor8linspaceEffii"></span><span id="Tensor::linspace__float.float.i.i"></span><span class="target" id="class_tensor_1ab0abb998c7d097791f23e9bdda8cace0"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">linspace</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, int <em>steps</em> = 100, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8linspaceEffii" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Creates a 1-D tensor with a sequence of num evenly-spaced values starting at start. If steps &gt; 1, the values in the sequence increase by end - start / steps - 1, so that the last one is exactly end. </p>
 <p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>The new tensor </p>
@@ -576,9 +758,23 @@ Potential matches:
 <div class="section" id="logspace">
 <h3>logspace<a class="headerlink" href="#logspace" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
-<dt id="_CPPv4N5eddlT8logspaceEffifi">
-<span id="_CPPv3N5eddlT8logspaceEffifi"></span><span id="_CPPv2N5eddlT8logspaceEffifi"></span><span id="eddlT::logspace__float.float.i.float.i"></span><span class="target" id="namespaceeddl_t_1a56887d52075dd3ff0f496a44ed9ca29e"></span>Tensor *<code class="sig-prename descclassname">eddlT<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">logspace</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, int <em>steps</em>, float <em>base</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5eddlT8logspaceEffifi" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dt id="_CPPv4N6Tensor8logspaceEffifi">
+<span id="_CPPv3N6Tensor8logspaceEffifi"></span><span id="_CPPv2N6Tensor8logspaceEffifi"></span><span id="Tensor::logspace__float.float.i.float.i"></span><span class="target" id="class_tensor_1a6307a5a9387363c168dcd4f644622cf9"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">logspace</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, int <em>steps</em> = 100, float <em>base</em> = 10.0f, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor8logspaceEffifi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Creates a 1-D tensor with a sequence of num logarithmic spaced values starting at start. If steps &gt; 1, the values in the sequence increase by end - start / steps - 1, so that the last one is exactly end. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The new tensor </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code>: Start value </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">end</span></code>: End value </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">steps</span></code>: The gap between two values in the tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">base</span></code>: The base of the logarithm to apply. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code>or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">logspace</span><span class="p">(</span><span class="kt">float</span> <span class="n">start</span><span class="p">,</span> <span class="kt">float</span> <span class="n">end</span><span class="p">,</span> <span class="kt">int</span> <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="kt">float</span> <span class="n">base</span><span class="o">=</span><span class="mf">10.0f</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
@@ -586,24 +782,49 @@ Potential matches:
 </div>
 <div class="section" id="geomspace">
 <h3>geomspace<a class="headerlink" href="#geomspace" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Cannot find function “eddlT::geomspace” in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor9geomspaceEffii">
+<span id="_CPPv3N6Tensor9geomspaceEffii"></span><span id="_CPPv2N6Tensor9geomspaceEffii"></span><span id="Tensor::geomspace__float.float.i.i"></span><span class="target" id="class_tensor_1a7b3b1e649de5d4d2565ed1793c1c5699"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">geomspace</code><span class="sig-paren">(</span>float <em>start</em>, float <em>end</em>, int <em>steps</em> = 100, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor9geomspaceEffii" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Creates a 1-D tensor with a sequence of num geometrically spaced values starting at start. If steps &gt; 1, the values in the sequence increase by end - start / steps - 1, so that the last one is exactly end. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>The new tensor </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code>: Start value </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">end</span></code>: End value </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">steps</span></code>: The gap between two values in the tensor. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: One of <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code>or <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">geomspace</span><span class="p">(</span><span class="kt">float</span> <span class="n">start</span><span class="p">,</span> <span class="kt">float</span> <span class="n">end</span><span class="p">,</span> <span class="kt">int</span> <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="random">
-<h2>Random<a class="headerlink" href="#random" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="constructors-from-random-generators">
+<h2>Constructors from random generators<a class="headerlink" href="#constructors-from-random-generators" title="Permalink to this headline">¶</a></h2>
 <p>Create tensor from generators</p>
 <div class="section" id="randu">
 <h3>randu<a class="headerlink" href="#randu" title="Permalink to this headline">¶</a></h3>
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor5randuERK6vectorIiEi">
 <span id="_CPPv3N6Tensor5randuERK6vectorIiEi"></span><span id="_CPPv2N6Tensor5randuERK6vectorIiEi"></span><span id="Tensor::randu__vector:i:CR.i"></span><span class="target" id="class_tensor_1ace96fede6da7958a824a57df8a366f1a"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">randu</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5randuERK6vectorIiEi" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Initialise a tensor with random values following an uniform distribution. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor of the specified shape filled </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Shape of the tensor to create. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">randu</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
@@ -614,32 +835,85 @@ Potential matches:
 <dl class="cpp function">
 <dt id="_CPPv4N6Tensor5randnERK6vectorIiEi">
 <span id="_CPPv3N6Tensor5randnERK6vectorIiEi"></span><span id="_CPPv2N6Tensor5randnERK6vectorIiEi"></span><span id="Tensor::randn__vector:i:CR.i"></span><span class="target" id="class_tensor_1a7277ccb42afa48c6771d669fe1664a1c"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">randn</code><span class="sig-paren">(</span><em class="property">const</em> vector&lt;int&gt; &amp;<em>shape</em>, int <em>dev</em> = DEV_CPU<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5randnERK6vectorIiEi" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Initialise a tensor with random values following an normal distribution. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Tensor of the specified shape filled </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code>: Shape of the tensor to create. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: Device to use. The possible values are: <code class="docutils literal notranslate"><span class="pre">DEV_CPU</span></code> and <code class="docutils literal notranslate"><span class="pre">DEV_GPU</span></code>. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">randn</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span> <span class="nf">randn</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">shape</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="build-matrices">
-<h2>Build matrices<a class="headerlink" href="#build-matrices" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="constructors-of-matrices">
+<h2>Constructors of matrices<a class="headerlink" href="#constructors-of-matrices" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor5diag_Ei">
+<span id="_CPPv3N6Tensor5diag_Ei"></span><span id="_CPPv2N6Tensor5diag_Ei"></span><span id="Tensor::diag___i"></span><span class="target" id="class_tensor_1a9379cd3d28de50b585e81be4ef7d6fe6"></span>void <code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">diag_</code><span class="sig-paren">(</span>int <em>k</em> = 0<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Tensor5diag_Ei" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Obtain the elements in a squared matrix diagonal. Inplace operation. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">k</span></code>: Offset. If k=0, main diagonal is selected. If k&gt;0, a diagonal above the main diagonal is selected. If k&lt;0, a diagonal below the main diagonal is selected. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6Tensor4diagEi">
+<span id="_CPPv3N6Tensor4diagEi"></span><span id="_CPPv2N6Tensor4diagEi"></span><span id="Tensor::diag__i"></span><span class="target" id="class_tensor_1a63ffb0dbb713eb521b16952877e1225f"></span>Tensor *<code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">diag</code><span class="sig-paren">(</span>int <em>k</em> = 0<span class="sig-paren">)</span><br /></dt>
+<dd><p>Obtain the elements in a squared matrix diagonal. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A new tensor with the elements on the selected diagonal. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">k</span></code>: Offset. If k=0, main diagonal is selected. If k&gt;0, a diagonal above the main diagonal is selected. If k&lt;0, a diagonal below the main diagonal is selected. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::diag” with arguments (Tensor *, int, int) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
+<p>doxygenfunction: Unable to resolve multiple matches for function “Tensor::diag” with arguments (Tensor *, Tensor *, int) in doxygen xml output for project “eddl” from directory: ../../doxygen/build/xml/.
 Potential matches:
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">diag</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">static</span> <span class="nb">int</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">diag</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Tensor</span> <span class="o">*</span><span class="n">Tensor</span><span class="p">::</span><span class="n">diag</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">Tensor</span><span class="p">::</span><span class="n">diag</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>Create tensor from generators</p>
 <p>Example:</p>
 <div class="highlight-c++ notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="k">static</span> <span class="n">Tensor</span><span class="o">*</span> <span class="nf">diag</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="kt">int</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dev</span><span class="o">=</span><span class="n">DEV_CPU</span><span class="p">);</span>
- <span class="c1">// tri?</span>
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="kt">void</span> <span class="nf">diag_</span><span class="p">(</span><span class="kt">int</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">);</span>
+ <span class="n">Tensor</span><span class="o">*</span> <span class="nf">diag</span><span class="p">(</span><span class="kt">int</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">);</span>
+ <span class="k">static</span> <span class="kt">void</span> <span class="nf">diag</span><span class="p">(</span><span class="n">Tensor</span><span class="o">*</span> <span class="n">A</span><span class="p">,</span> <span class="n">Tensor</span><span class="o">*</span> <span class="n">B</span><span class="p">,</span> <span class="kt">int</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">);</span>
 </pre></div>
 </td></tr></table></div>
+</div>
+<div class="section" id="destructors">
+<h2>Destructors<a class="headerlink" href="#destructors" title="Permalink to this headline">¶</a></h2>
+<p>Delete a tensor to free memory</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6TensorD0Ev">
+<span id="_CPPv3N6TensorD0Ev"></span><span id="_CPPv2N6TensorD0Ev"></span><span id="Tensor::~Tensor"></span><span class="target" id="class_tensor_1a55df2819c974d0979b1bd0f47c4e3a17"></span><code class="sig-prename descclassname">Tensor<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">~Tensor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6TensorD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Delete a tensor. </p>
+</dd></dl>
+
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="o">~</span><span class="n">Tensor</span><span class="p">();</span>
+</pre></div>
+</div>
 </div>
 </div>
 
