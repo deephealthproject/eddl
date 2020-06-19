@@ -10,6 +10,7 @@
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/hardware/cpu/cpu_hw.h"
 
+extern cl::Context context;
 extern cl::CommandQueue q;
 extern cl::Kernel mult2D;
 extern cl::Kernel sum2D_rowwise;
@@ -1416,26 +1417,26 @@ float fpga_sum(Tensor *A) {
 #ifndef K_ENABLED_SUM
     ret = fpga_cpuemu_sum(A);
 #else
-    // cl_int err;
-    // cl::Event event, result_ready;
-    // //cl::Context context;
-    //
-    // //float sum = (float) malloc(sizeof(float));
-    // float *sum = 0;
-    // OCL_CHECK(err, cl::Buffer a(context,CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY, sizeof(float) ,sum, &err));
-    //
-    // OCL_CHECK(err, err = kernel_sum.setArg(0, *(A->fpga_ptr)));
-    // OCL_CHECK(err, err = kernel_sum.setArg(1, (long int)A->size));
-    // OCL_CHECK(err, err = kernel_sum.setArg(2, a));
-    // OCL_CHECK(err, err = q.enqueueTask(kernel_sum, NULL, &event));
-    // event.wait();
-    // OCL_CHECK(err, err = q.enqueueMigrateMemObjects({a},CL_MIGRATE_MEM_OBJECT_HOST, NULL, &result_ready));
-    // result_ready.wait();
-    // return *sum;
+    cl_int err;
+    cl::Event event, result_ready;
+
+    float *sum;
+    posix_memalign((void **)&sum,4096,sizeof(float));
+    OCL_CHECK(err, cl::Buffer a(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, sizeof(float), sum, &err));
+
+    OCL_CHECK(err, err = kernel_sum.setArg(0, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_sum.setArg(1, (long int)A->size));
+    OCL_CHECK(err, err = kernel_sum.setArg(2, a));
+    OCL_CHECK(err, err = q.enqueueTask(kernel_sum, NULL, &event));
+
+    q.finish();
+    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({a},CL_MIGRATE_MEM_OBJECT_HOST, NULL, &result_ready));
+    result_ready.wait();
+
 
 #endif
   _profile_fpga(_FPGA_SUM, 1);
-  return ret;
+  return *sum;
 }
 
 // -----------------------------------------------------------------
