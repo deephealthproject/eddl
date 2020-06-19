@@ -355,7 +355,7 @@ Not yet...
 | min | ✔️ | ✔️ |
 | mean | ✔️ | ✔ |
 | median | ✔️ | ✔ |
-| mode | ✔️ | ❌ |
+| mode | ✔️ | ✔️ |
 | norm | ✔ | ✔️ |
 | prod | ✔️ | ✔ |
 | std | ✔ | ✔ |
@@ -375,7 +375,7 @@ Not yet...
 | min | ✔️ | ✔️ |
 | mean | ✔️ | ✔ |
 | median | ❌ | ❌ |
-| mode | ✔️ | ❌ |
+| mode | ✔️ | ✔️ |
 | norm | ✔ |  ✔ |
 | prod | ✔️ | ✔ |
 | std | ✔ | ✔ |
