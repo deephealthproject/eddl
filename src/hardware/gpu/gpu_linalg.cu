@@ -54,9 +54,25 @@ float gpu_norm(Tensor *A, string ord){
 
         return norm;
     }else{
-        msg("Not yet implemented", "cpu_norm");
+        msg("Not yet implemented", "gpu_norm");
     }
 
     return 0.0f;
 }
 
+
+void gpu_norm(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, string ord){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true); // Walk through the source tensor
+    setDims(B);
+
+    if (ord=="fro") {
+        gpu_norm_fro<<<dimGrid, dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
+    }else{
+        msg("Not yet implemented", "gpu_norm");
+    }
+
+    check_cuda(cudaDeviceSynchronize(),"reduce_norm");
+}

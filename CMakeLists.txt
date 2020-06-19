@@ -47,7 +47,7 @@ if(BUILD_SUPERBUILD)
     add_subdirectory(cmake)
 endif()
 # This is executed at compilation time: "make"
-PROJECT(eddl VERSION 0.6 LANGUAGES CXX)
+PROJECT(eddl VERSION 0.7 LANGUAGES CXX)
 
 
 # SET C++ COMPILER STANDARD
@@ -84,13 +84,17 @@ if(BUILD_COVERAGE AND UNIX)
 endif()
 
 if(UNIX)
-# Flags: Optimization
+    # Flags: Optimization
+    # READ THIS: https://wiki.gentoo.org/wiki/GCC_optimization
+
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
     if(BUILD_HPC)
+        #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native -mtune=native")  # This does not work on many machines
         set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -msse -mfpmath=sse -ffast-math")
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -ftree-vectorize")
     endif()
 endif()
 

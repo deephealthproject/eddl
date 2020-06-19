@@ -39,7 +39,7 @@ LSelect::LSelect(Layer *parent, vector<string> indices, string name, int dev, in
 
     // Build descriptor
     vector<int> shape_no_batch(input->shape.begin()+1, input->shape.end());
-    sd = new SelDescriptor(indices);
+    sd = new SelDescriptor(indices, dev);
     sd->build(shape_no_batch);  // Ignore batch
 
     // Set flow tensors

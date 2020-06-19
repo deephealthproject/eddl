@@ -186,7 +186,6 @@ Not yet...
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
 | load          | ✔️    | -    | Images: jpg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm<br />Numpy (removed): npy, npz<br />Text (removed): csv, tsv, txt,...<br />Other: onnx, bin |
-| memmap | ❌    | -    |  Create a memory-map to an array stored in a binary file on disk.                                                            |
 
 ### Output
 
@@ -207,7 +206,6 @@ Not yet...
 | outer      | ❌    |   ❌   |     Compute the outer product of two vectors.                                                         |
 | matmul      | ❌    |   ❌   |           Matrix product of two arrays.                                                   |
 | tensordot      | ❌    |   ❌   |     Compute tensor dot product along specified axes for arrays >= 1-D.                                                         |
-| eigensum      | ❌    |   ❌   |   Evaluates the Einstein summation convention on the operands                                                           |
 | interpolate | ✔️ | ✔️ |  Interpolate two tensors: `c*A + (1-c)*B` |
 
 
@@ -216,14 +214,7 @@ Not yet...
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
 | norm      | ✔️    |  ✔️    |  Matrix or vector norm.                                                 |
-| det      | ❌    |   ❌   |   Compute the determinant of an array.                                                        |
 | trace      | ✔️    |  ✔️    |   Return the sum along diagonals of the array.                                                 |
-
-### Solving equations and inverting matrices
-
-| Functionality | CPU  | GPU  | Comments                                                     |
-| ------------- | ---- | ---- | ------------------------------------------------------------ |
-| inv      | ❌    |  ❌    |  Compute the (multiplicative) inverse of a matrix.                                      |
 
 
 ## Logic functions
@@ -282,10 +273,6 @@ Not yet...
 | sort      | ✔️     |  ✔️️    | Sorts the elements of the input tensor along a given dimension in ascending order by value.  |
 | topk      | ❌    |  ❌ ️    | Returns the k largest elements of the given input tensor along a given dimension.  |
 
-
-## Masked array operations
-
-> To do...
 
 ## Mathematical functions
 
@@ -355,7 +342,7 @@ Not yet...
 | min | ✔️ | ✔️ |
 | mean | ✔️ | ✔ |
 | median | ✔️ | ✔ |
-| mode | ✔️ | ❌ |
+| mode | ✔️ | ✔️ |
 | norm | ✔ | ✔️ |
 | prod | ✔️ | ✔ |
 | std | ✔ | ✔ |
@@ -374,9 +361,9 @@ Not yet...
 | max | ✔️ | ✔️ |
 | min | ✔️ | ✔️ |
 | mean | ✔️ | ✔ |
-| median | ❌ | ❌ |
-| mode | ✔️ | ❌ |
-| norm | ✔ | ❌ |
+| median | ✔️ | ✔ |
+| mode | ✔️ | ✔️ |
+| norm | ✔ |  ✔ |
 | prod | ✔️ | ✔ |
 | std | ✔ | ✔ |
 | sum | ✔️ |  ✔ |

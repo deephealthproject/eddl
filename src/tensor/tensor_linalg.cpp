@@ -55,7 +55,7 @@ float Tensor::norm(Tensor *A, string ord){
 
 Tensor* Tensor::norm(vector<int> axis, bool keepdims, string ord){
     // Build descriptor
-    auto rd = new ReduceDescriptor2(axis, keepdims);
+    auto rd = new ReduceDescriptor2(axis, keepdims, this->device);
     rd->build(this->shape);
 
     // Create output tensor
@@ -73,9 +73,7 @@ void Tensor::norm(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, string ord){
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
     {
-        msg("Not implemented error", "Tensor::norm");
-
-//        gpu_sum(A, B, rd);
+        gpu_norm(A, B, rd, ord);
     }
 #endif
 #ifdef cFPGA
