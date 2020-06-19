@@ -89,13 +89,55 @@ public:
     mutex *tsem;  // Multithreading. Tensor semaphore
 
     // Constructors
+    /**
+    *  @brief Constructor of an uninitialized tensor without shape and in CPU
+    *
+    */
     Tensor();
+
+    /**
+    *  @brief Constructor of an uninitialized tensor
+    *
+    *  @param shape Vector of ints specifying the shape of the tensor
+    *  @param dev  One of ``DEV_CPU`` or ``DEV_GPU``
+    *  @return a tensor
+    */
     explicit Tensor(const vector<int> &shape, int dev=DEV_CPU);
+
+    /**
+    *  @brief Constructor of an uninitialized tensor
+    *
+    *  @param shape Vector of ints specifying the shape of the tensor
+    *  @param fptr  memory pointer
+    *  @param dev  One of ``DEV_CPU`` or ``DEV_GPU``
+    *  @return a tensor
+    */
     Tensor(const vector<int> &shape, float *fptr, int dev);
+
+    /**
+    *  @brief Constructor of an uninitialized tensor
+    *
+    *  @param shape Vector of ints specifying the shape of the tensor.
+    *  @param T  tensor from wich to take the shape and the device.
+    *  @return a tensor
+    */
     Tensor(const vector<int> &shape, Tensor *T);
+
+    /**
+    *  @brief Constructor of an uninitialized tensor
+    *
+    *  @param data Vector with the data to initialize the tensor with.
+    *  @param shape Vector of ints specifying the shape of the tensor.
+    *  @param dev  One of ``DEV_CPU`` or ``DEV_GPU``
+    *  @return a tensor
+    */
     Tensor(const vector<float>& data, const vector<int> &shape, int dev=DEV_CPU);
 
     // Destructors
+
+    /**
+    *  @brief Delete a tensor.
+    */
     ~Tensor();
 
     // Internal methods
@@ -1912,19 +1954,79 @@ public:
 
 
     // Linear algebra *****************************
+
+    /**
+    *   @brief Sum all the elements in a matrix diagonal.
+    *   @param k Offset. Used to select the diagonal to be summed.
+    *   @return The sum of all the elements in the selected diagonal.
+    */
     float trace(int k=0);
+
+    /**
+    *   @brief Sum all the elements in a matrix diagonal.
+    *   @param A Input tensor.
+    *   @param k Offset. Used to select the diagonal to be summed.
+    *   @return The sum of all the elements in the selected diagonal.
+    */
     static float trace(Tensor *A, int k=0);
 
+    /** 
+    *   @brief Compute the norm of a 1-D or 2-D tensor.
+    *   @param ord The order of the norm. One of:
+    *       - "fro": Frobenius norm
+    *   @return The norm of the tensor.
+    */
     float norm(string ord="fro");
+
+    /** 
+    *   @brief Compute the norm of a 1-D or 2-D tensor.
+    *   @param A Input tensor.
+    *   @param ord The order of the norm. One of:
+    *       - "fro": Frobenius norm
+    *   @return The sum of all the elements in the selected diagonal.
+    */
     static float norm(Tensor *A, string ord="fro");
+
+    /** 
+    *   @brief Compute the norm of a selected axis of a tensor.
+    *   @param axis Vector with the axis selected to compute the norm.
+    *   @param keepdims Whether to keep dimensions of the input vector in the output vector.
+    *   @param ord The order of the norm. One of:
+    *       - "fro": Frobenius norm
+    *   @return A tensor with the norms computed over the selected axis.
+    */
     Tensor* norm(vector<int> axis, bool keepdims, string ord="fro");
+
+    
     static void norm(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, string ord="fro");
 
     // Generating index arrays *****************************
     std::pair<unsigned int*, int> _nonzero();
+
+    /** 
+    *   @brief Returns a tensor containing the indices of nonzero elements.
+    *   @param sort_indices Whether to sort the indices or not.
+    *   
+    *   @return A tensor containing the indices of the nonzero elements.
+    */
     Tensor* nonzero(bool sort_indices=false);
 
+    /** 
+    *   @brief Depending on ``condition``, returns a tensor whith elements from ``A`` or ``B``.
+    *   @param condition Tensor with the condition to be accomplished.
+    *   @param A Input tensor.
+    *   @param B Input tensor.
+    *   @return A tensor with the same shape with elements from ``A`` if ``condition`` holds and from ``B`` otherwise..
+    */
     static Tensor* where(Tensor *condition, Tensor *A, Tensor *B);  // where(x > 0, x[random], y[ones])
+
+    /** 
+    *   @brief Depending on ``condition``, returns a tensor whith elements from ``A`` or ``B``.
+    *   @param condition Tensor with the condition to be accomplished.
+    *   @param A Input tensor.
+    *   @param B Input tensor.
+    *   @param C A tensor with elements from ``A`` if ``condition`` holds and from ``B`` otherwise..
+    */
     static void where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C);
 
     Tensor* mask_indices(Tensor *mask, Tensor *A);  // where(x > 0, x[random], y[ones])
@@ -2064,11 +2166,38 @@ public:
     */
     static void isclose(Tensor *A, Tensor *B, Tensor *C, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns a boolean tensor
 
-
+    /**
+      *  @brief Return the truth value of the input elements > ``v`` element-wise. Inplace operation.
+      *
+      *  @param v   Value to make the comparison with.
+      *  @return    void
+    */
     void greater_(float v);
+
+    /**
+      *  @brief Return the truth value of the input elements > ``v`` element-wise.
+      *
+      *  @param v   Value to make the comparison with.
+      *  @return    A tensor with the true values.
+    */
     Tensor* greater(float v);
+
+    /**
+      *  @brief Return the truth value of the input elements > ``v`` element-wise.
+      *
+      *  @param A   Input tensor.
+      *  @param B   Output tensor.
+      *  @param v   Value to make the comparison with.
+      *  @return    void
+    */
     static void greater(Tensor *A, Tensor *B, float v);
 
+    /**
+      *  @brief Return the truth value of ``this > A`` element-wise.
+      *
+      *  @param A   Input tensor.
+      *  @return    A tensor with the true values.
+    */
     Tensor* greater(Tensor *A);
 
     /**
@@ -2077,15 +2206,41 @@ public:
       *  @param A   Tensor
       *  @param B   Tensor
       *  @param C   Tensor store the results of the operation.
-      *  @return    void
     */
     static void greater(Tensor *A, Tensor *B, Tensor *C);
 
-
+    /**
+      *  @brief Return the truth value of the input elements >= ``v`` element-wise. Inplace operation.
+      *
+      *  @param v   Value to make the comparison with.
+      *  @return    void
+    */
     void greater_equal_(float v);
+
+    /**
+      *  @brief Return the truth value of the input elements >= ``v`` element-wise.
+      *
+      *  @param v   Value to make the comparison with.
+      *  @return    A tensor with the true values.
+    */
     Tensor* greater_equal(float v);
+
+    /**
+      *  @brief Return the truth value of the input elements >= ``v`` element-wise.
+      *
+      *  @param A   Input tensor.
+      *  @param B   Output tensor.
+      *  @param v   Value to make the comparison with.
+      *  @return    void
+    */
     static void greater_equal(Tensor *A, Tensor *B, float v);
 
+    /**
+      *  @brief Return the truth value of ``this >= A`` element-wise.
+      *
+      *  @param A   Input tensor.
+      *  @return    A tensor with the true values.
+    */
     Tensor* greater_equal(Tensor *A);
 
     /**
@@ -2098,10 +2253,39 @@ public:
     */
     static void greater_equal(Tensor *A, Tensor *B, Tensor *C);
 
+    /**
+      *  @brief Return the truth value of the input elements < ``v`` element-wise. Inplace operation.
+      *
+      *  @param v   Value to make the comparison with.
+      *  @return    void
+    */
     void less_(float v);
+
+    /**
+      *  @brief Return the truth value of the input elements < ``v`` element-wise.
+      *
+      *  @param v   Value to make the comparison with.
+      *  @return    A tensor with the true values.
+    */
     Tensor* less(float v);
+
+    /**
+      *  @brief Return the truth value of the input elements < ``v`` element-wise.
+      *
+      *  @param A   Input tensor.
+      *  @param B   Output tensor.
+      *  @param v   Value to make the comparison with.
+      *  @return    void
+    */
     static void less(Tensor *A, Tensor *B, float v);
 
+
+    /**
+      *  @brief Return the truth value of ``this < A`` element-wise.
+      *
+      *  @param A   Input tensor.
+      *  @return    A tensor with the true values.
+    */
     Tensor* less(Tensor *A);
 
     /**
@@ -2114,10 +2298,38 @@ public:
     */
     static void less(Tensor *A, Tensor *B, Tensor *C);
 
+    /**
+      *  @brief Return the truth value of the input elements <= ``v`` element-wise. Inplace operation.
+      *
+      *  @param v   Value to make the comparison with.
+      *  @return    void
+    */
     void less_equal_(float v);
+
+     /**
+      *  @brief Return the truth value of the input elements <= ``v`` element-wise.
+      *
+      *  @param v   Value to make the comparison with.
+      *  @return    A tensor with the true values.
+    */
     Tensor* less_equal(float v);
+
+    /**
+      *  @brief Return the truth value of the input elements <= ``v`` element-wise.
+      *
+      *  @param A   Input tensor.
+      *  @param B   Output tensor.
+      *  @param v   Value to make the comparison with.
+      *  @return    void
+    */
     static void less_equal(Tensor *A, Tensor *B, float v);
 
+    /**
+      *  @brief Return the truth value of ``this <= A`` element-wise.
+      *
+      *  @param A   Input tensor.
+      *  @return    A tensor with the true values.
+    */
     Tensor* less_equal(Tensor *A);
 
     /**
@@ -2130,10 +2342,38 @@ public:
     */
     static void less_equal(Tensor *A, Tensor *B, Tensor *C);
 
+    /**
+      *  @brief Return the truth value of the input elements == ``v`` element-wise. Inplace operation.
+      *
+      *  @param v   Value to make the comparison with.
+      *  @return    void
+    */
     void equal_(float v);
+
+    /**
+      *  @brief Return the truth value of the input elements == ``v`` element-wise.
+      *
+      *  @param v   Value to make the comparison with.
+      *  @return    A tensor with the true values.
+    */
     Tensor* equal(float v);
+
+    /**
+      *  @brief Return the truth value of the input elements == ``v`` element-wise.
+      *
+      *  @param A   Input tensor.
+      *  @param B   Output tensor.
+      *  @param v   Value to make the comparison with.
+      *  @return    void
+    */
     static void equal(Tensor *A, Tensor *B, float v);
 
+     /**
+      *  @brief Return the truth value of ``this == A`` element-wise.
+      *
+      *  @param A   Input tensor.
+      *  @return    A tensor with the true values.
+    */
     Tensor* equal(Tensor *A);
 
     /**
@@ -2146,10 +2386,38 @@ public:
     */
     static void equal(Tensor *A, Tensor *B, Tensor *C);
 
+    /**
+      *  @brief Return the truth value of the input elements != ``v`` element-wise. Inplace operation.
+      *
+      *  @param v   Value to make the comparison with.
+      *  @return    void
+    */
     void not_equal_(float v);
+
+    /**
+      *  @brief Return the truth value of the input elements != ``v`` element-wise.
+      *
+      *  @param v   Value to make the comparison with.
+      *  @return    A tensor with the true values.
+    */
     Tensor* not_equal(float v);
+
+    /**
+      *  @brief Return the truth value of the input elements != ``v`` element-wise.
+      *
+      *  @param A   Input tensor.
+      *  @param B   Output tensor.
+      *  @param v   Value to make the comparison with.
+      *  @return    void
+    */
     static void not_equal(Tensor *A, Tensor *B, float v);
 
+    /**
+      *  @brief Return the truth value of ``this != A`` element-wise.
+      *
+      *  @param A   Input tensor.
+      *  @return    A tensor with the true values.
+    */
     Tensor* not_equal(Tensor *A);
 
     /**
@@ -2165,11 +2433,51 @@ public:
     // Math operations: Other ops
     // TODO: cross, einsum, flip, dot, etc
 
+    /**
+      *  @brief Sort a tensor inplace.
+      *
+      *  @param descending   Wether to sort the tensor descending or not.
+      *  @param stable   Wether to use stable sorting or not. Stable sorting keeps the order of equal elements.
+    */
     void sort_(bool descending=false, bool stable=true);
+
+    /**
+      *  @brief Sort a tensor.
+      *
+      *  @param descending   Wether to sort the tensor descending or not.
+      *  @param stable   Wether to use stable sorting or not. Stable sorting keeps the order of equal elements.
+      *  @return    A tensor with the sorted elements.
+    */
     Tensor* sort(bool descending=false, bool stable=true);
+
+    /**
+      *  @brief Sort a tensor.
+      *
+      *  @param A   Input tensor.
+      *  @param B   Output tensor.
+      *  @param descending   Wether to sort the tensor descending or not.
+      *  @param stable   Wether to use stable sorting or not. Stable sorting keeps the order of equal elements.
+    */
     static void sort(Tensor* A, Tensor* B, bool descending=false, bool stable=true);
 
+    /**
+      *  @brief Sort the indices of a tensor according to the elements in each position.
+      *
+      *  @param descending   Wether to sort the tensor descending or not.
+      *  @param stable   Wether to use stable sorting or not. Stable sorting keeps the order of equal elements.
+      *  @return    A tensor with the sorted indices.
+    */
     Tensor* argsort(bool descending=false, bool stable=true);
+
+    /**
+      *  @brief Sort the indices of a tensor according to the elements in each position.
+      *
+      *  @param A   Input tensor.
+      *  @param B   Output tensor.
+      *  @param descending   Wether to sort the tensor descending or not.
+      *  @param stable   Wether to use stable sorting or not. Stable sorting keeps the order of equal elements.
+      *  @return    A tensor with the sorted indices.
+    */
     static void argsort(Tensor* A, Tensor* B, bool descending=false, bool stable=true);
 
     // Indexing, Slicing, Joining, Mutating Ops *************
@@ -2232,9 +2540,35 @@ public:
     // TODO: Rethink names + static
     void rand_bernoulli(); // Todo
     void rand_multinomial(); // Todo
+
+    /**
+      *  @brief Generates uniformly distributed random samples inplace.
+      *
+      *  @param v  Scale factor of the values generated by the uniform distribution.
+    */
     void rand_uniform(float v);
+
+    /**
+      *  @brief Generates signed uniformly distributed random samples inplace.
+      *
+      *  @param v  Scale factor of the values generated by the signed uniform distribution.
+    */
     void rand_signed_uniform(float v);
+
+    /**
+      *  @brief Generates normal distributed random samples inplace.
+      *
+      *  @param m  Mean of the normal distribution.
+      *  @param s  Standard deviation of the normal distribution.
+      *  @param fast_math  Wether to use or not the fast math mode.
+    */
     void rand_normal(float m, float s, bool fast_math=true);
+
+    /**
+      *  @brief Generates binary distributed random samples inplace.
+      *
+      *  @param v  Scale factor of the values generated by the binary distribution.
+    */
     void rand_binary(float v);
 
     // ***** Overload operators *****************************
@@ -2282,23 +2616,116 @@ public:
       *  @return    void
     */
     static void copy(Tensor *A, Tensor *B);
+
+    /**
+    *   @brief Fill tensor with values from another tensor
+    *   @param A The tensor to take values from.
+    *   @param aini Initial position of A.
+    *   @param aend Final position of A.
+    *   @param B The tensor to fill
+    *   @param bini Initial position of B
+    *   @param bend Final position of B
+    *   @param inc step to go from one position to the following one
+    */
     static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
     static void select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool mask_zeros=false);
     static void deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0, bool mask_zeros=false);
     static void tile(Tensor *A, Tensor *B);
 
     // TODO: REFACTOR!!! ************************
+
     static void transpose(Tensor *A, Tensor *B, vector<int> dims);  // TODO: Should be replaced by permute
+    
+    /**
+    *   @brief Weighted element-wise sum of two tensors.
+    *   @param scA Weight of tensor ``A``.
+    *   @param A Input tensor.
+    *   @param scB Weight of tensor ``B``.
+    *   @param B Input tensor.
+    *   @param C Output tensor. C = sc*A + scB*B
+    *   @param incC if ``incC`` is 1, C += sc*A + scB*B
+    */
     static void add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC); // C = a*A+b*B
+    
+    /**
+    *   @brief Increment element-wise one tensors with the values of another.
+    *   @param A Input tensor.
+    *   @param B Output tensor. The incremented tensor with values from ``A``.
+    */
     static void inc(Tensor *A, Tensor *B);
+
+    /**
+    *   @brief Eelement-wise division of two tensors.
+    *   @param A Input tensor.
+    *   @param B Input tensor.
+    *   @param C Output tensor. C = A./B
+    *   @param incC if ``incC`` is 1, C += A./B
+    */
     static void el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
+
+    /**
+    *   @brief Eelement-wise multiplication of two tensors.
+    *   @param A Input tensor.
+    *   @param B Input tensor.
+    *   @param C Output tensor. C = A*B
+    *   @param incC if ``incC`` is 1, C += A*B
+    */
     static void el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
+
+    /**
+    *   @brief Matrix multiplication of two 2D tensors.
+    *   @param A Input tensor.
+    *   @param tA If 1, ``A`` is trasposed.
+    *   @param B Input tensor.
+    *   @param tB If 1, ``B`` is trasposed.
+    *   @param C Output tensor. C = A·B
+    *   @param incC if ``incC`` is 1, C += A·B
+    */
     static void mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
+
+    /**
+    *   @brief Matrix sum row-wise of two 2D tensors.
+    *   @param A Input tensor.
+    *   @param B Input tensor.
+    *   @param C Output tensor. C = A+B, row-wise
+    */
     static void sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
+
+    /**
+    *   @brief Matrix sum column-wise of two 2D tensors.
+    *   @param A Input tensor.
+    *   @param B Input tensor.
+    *   @param C Output tensor. C = A+B, column-wise
+    */
     static void sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
+
+    /**
+    *   @brief Reduction of a matrix to a 1-D tensor.
+    *   @param A Input 2-D tensor.
+    *   @param B Output 1-D tensor.
+    *   @param axis Dimension to be sumed. 
+    *   @param incB if ``incB`` is 1, B += reduce(A)
+    */
     static void reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
+
+    
     static int eqsize(Tensor *A, Tensor *B);  // Legacy
+
+    /**
+    *   @brief Check if two tensors have the same shape.
+    *   @param A Input tensor.
+    *   @param B Input tensor.
+    *   @return 1 if they have the same shape, 0 otherwise.
+    */
     static int sameShape(Tensor *A, Tensor *B);  // Previously named "Tensor::eqsize"
+
+    /**
+    *   @brief Check if two tensors have the same contents given a threshold.
+    *   @param A Input tensor.
+    *   @param B Input tensor.
+    *   @param epsilon Error threshold.
+    *   @return 1 if they are equivalent, 0 otherwise.
+    */
     static int equivalent(Tensor *A, Tensor *B, float epsilon=1e-3);  // Previously named "Tensor::equal2"
 
 };
@@ -2331,6 +2758,13 @@ public:
 
 
 template<typename T>
+
+/**
+  *   @brief Load content from file to a tensor
+  *   @param filename The file path.
+  *   @param format The format of the file. Supported image formats: jpg, jpeg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm, bin, onnx, npy, npz, csv, tsv, txt
+  *   @return The initialized tensor
+*/
 Tensor* Tensor::load(const string& filename, string format){
     // Infer format from filename
     if(format.empty()){
@@ -2365,7 +2799,21 @@ Tensor* Tensor::load(const string& filename, string format){
     return t;
 }
 
+/**
+    *   @brief Check if two tensors are compatible, it is, they are in the same device and have the same shape.
+    *   @param A Input tensor.
+    *   @param B Input tensor.
+    *   @param title A string identifier to append to the output.
+*/
 void checkCompatibility(Tensor *A, Tensor *B, const string &title);
+
+/**
+    *   @brief Check if three tensors are compatible, it is, they are in the same device and have the same shape.
+    *   @param A Input tensor.
+    *   @param B Input tensor.
+    *   @param C Input tensor.
+    *   @param title A string identifier to append to the output.
+*/
 void checkCompatibility(Tensor *A, Tensor *B, Tensor *C, const string &title);
 
 #endif //EDDL_TENSOR_H
