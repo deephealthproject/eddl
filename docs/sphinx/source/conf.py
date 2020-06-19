@@ -59,6 +59,8 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
+html_logo = '_static/images/logos/logo-eddl-small-white.png'
+html_theme_options = {'logo_only':True, 'style_nav_header_background': '#185070'}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

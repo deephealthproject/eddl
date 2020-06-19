@@ -14,21 +14,44 @@ Constructors
 Create an uninitialized tensor
 
 .. doxygenfunction:: Tensor::Tensor()
-.. doxygenfunction:: Tensor::Tensor(const vector<int>&, float *, int)
 .. doxygenfunction:: Tensor::Tensor(const vector<int>&, int)
-.. doxygenfunction:: Tensor::Tensor(const vector<int>&, Tensor * )
+.. doxygenfunction:: Tensor::Tensor(const vector<int>&, float *, int)
+.. doxygenfunction:: Tensor::Tensor(const vector<int>&, Tensor *)
+.. doxygenfunction:: Tensor::Tensor(const vector<float>&, const vector<int>&, int)
 
 .. code-block:: c++
 
-    Tensor()
-    Tensor(const vector<int> &shape, float *fptr, int dev=DEV_CPU);
+    Tensor();
     Tensor(const vector<int> &shape, int dev=DEV_CPU);
-    Tensor(const vector<int> &shape, Tensor *tensor );
+    Tensor(const vector<int> &shape, float *fptr, int dev);
+    Tensor(const vector<int> &shape, Tensor *T);
+    Tensor(const vector<float>& data, const vector<int> &shape, int dev=DEV_CPU);
 
-Ones and zeros
---------------
+
+
+Constructors & Initializers
+-----------------------------
 
 Create tensor from generators
+
+empty
+^^^^^^^^^
+
+.. doxygenfunction:: Tensor::empty
+
+.. code-block:: c++
+
+    static Tensor* empty(const vector<int> &shape, int dev=DEV_CPU);
+
+empty_like
+^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::empty_like
+
+.. code-block:: c++
+
+    static Tensor* empty_like(Tensor *A);
+    
 
 zeros
 ^^^^^^^^^
@@ -38,6 +61,15 @@ zeros
 .. code-block:: c++
 
     static Tensor* zeros(const vector<int> &shape, int dev=DEV_CPU);
+
+zeros_like
+^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::empty_like
+
+.. code-block:: c++
+
+    static Tensor* zeros_like(Tensor *A);
     
 ones
 ^^^^^^^^^
@@ -47,6 +79,15 @@ ones
 .. code-block:: c++
 
     static Tensor* ones(const vector<int> &shape, int dev=DEV_CPU);
+
+ones_like
+^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::ones_like
+
+.. code-block:: c++
+
+    static Tensor* ones_like(Tensor *A);
     
 full
 ^^^^^^^^^
@@ -56,6 +97,15 @@ full
 .. code-block:: c++
 
     static Tensor* full(const vector<int> &shape, float value, int dev=DEV_CPU);
+
+full_like
+^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::full_like
+
+.. code-block:: c++
+
+    static Tensor* full_like(Tensor *A);
 
 
 eye
@@ -78,11 +128,12 @@ identity
     // empty?
 
 
-From existing data
--------------------
+
+
+Constructors from existing data
+--------------------------------
 
 Create tensor from existing data
-
 
 clone
 ^^^^^^^^^
@@ -114,16 +165,29 @@ copy
     static void copy(Tensor *A, Tensor *B);
     //more
 
+select
+^^^^^^^^^
 
-Numerical ranges
------------------
+.. doxygenfunction:: Tensor::select(const vector<string>&)
+.. doxygenfunction:: Tensor::select(Tensor *, Tensor *, SelDescriptor *)
+.. doxygenfunction:: Tensor::select(Tensor *, Tensor *, vector<int>, int, int, bool)
+
+.. code-block:: c++
+
+    Tensor* select(const vector<string>& indices);
+    static void select(Tensor *A, Tensor *B, SelDescriptor *sd);
+    static void select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
+
+
+Constructors from numerical ranges
+------------------------------------
 
 Create tensor from numerical ranges
 
 arange
 ^^^^^^^^^
 
-.. doxygenfunction:: eddlT::arange
+.. doxygenfunction:: Tensor::arange
 
 .. code-block:: c++
 
@@ -132,7 +196,7 @@ arange
 range
 ^^^^^^^^^
 
-.. doxygenfunction:: eddlT::range
+.. doxygenfunction:: Tensor::range
 
 .. code-block:: c++
 
@@ -141,7 +205,7 @@ range
 linspace
 ^^^^^^^^^
 
-.. doxygenfunction:: eddlT::linspace
+.. doxygenfunction:: Tensor::linspace
 
 .. code-block:: c++
 
@@ -150,7 +214,7 @@ linspace
 logspace
 ^^^^^^^^^
 
-.. doxygenfunction:: eddlT::logspace
+.. doxygenfunction:: Tensor::logspace
 
 .. code-block:: c++
 
@@ -158,15 +222,17 @@ logspace
  
 
 geomspace
-^^^^^^^^^^
+^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::geomspace
 
 .. code-block:: c++
 
     static Tensor* geomspace(float start, float end, int steps=100, int dev=DEV_CPU);
+ 
 
-
-Random
--------
+Constructors from random generators
+-------------------------------------
 
 Create tensor from generators
 
@@ -187,20 +253,34 @@ randn
 
 .. code-block:: c++
 
-    static Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
+    Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
 
-Build matrices
------------------
+Constructors of matrices
+-------------------------
 
-.. doxygenfunction:: Tensor::diag(Tensor *, int, int)
+.. doxygenfunction:: Tensor::diag_(int)
+.. doxygenfunction:: Tensor::diag(int)
+.. doxygenfunction:: Tensor::diag(Tensor *, Tensor *, int)
 
-Create tensor from generators
 
 Example:
 
 .. code-block:: c++
    :linenos:
 
-    static Tensor* diag(Tensor* A, int k=0, int dev=DEV_CPU);
-    // tri?
+    void diag_(int k=0);
+    Tensor* diag(int k=0);
+    static void diag(Tensor* A, Tensor* B, int k=0);
+
+
+Destructors
+-------------
+
+Delete a tensor to free memory
+
+.. doxygenfunction:: Tensor::~Tensor()
+
+.. code-block:: c++
+
+    ~Tensor();
