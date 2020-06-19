@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -89,15 +89,21 @@ void LSum::backward() {
 }
 
 Layer *LSum::share(int c, int bs, vector<Layer *> p) {
-  return clone(c,bs,p,dev);
+  LSum *n;
+  if (binary)
+      n = new LSum(p[0], p[1],  "share_"+to_string(c)+name, dev, mem_level);
+  else
+      n = new LSum(p[0], val,  "share_"+to_string(c)+name, dev,mem_level);
+  n->orig = this;
+  return n;
 }
 
 Layer *LSum::clone(int c, int bs, vector<Layer *> p, int todev) {
     LSum *n;
     if (binary)
-        n = new LSum(p[0], p[1],  name, todev,mem_level);
+        n = new LSum(p[0], p[1],  "clone_"+to_string(c)+name, todev,mem_level);
     else
-        n = new LSum(p[0], val,  name, todev,mem_level);
+        n = new LSum(p[0], val,  "clone_"+to_string(c)+name, todev,mem_level);
     n->orig = this;
     return n;
 }

@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -145,10 +145,8 @@ public:
 /// Concat Layer
 class LConcat : public MLayer {
 public:
-    int ndim;
     unsigned int axis;
     vector<int> index;
-    vector<SelDescriptor *> sd;  // TODO: Re-think for a more memory-efficient way
     static int total_layers;
 
     // constructors and clones

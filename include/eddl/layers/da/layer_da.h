@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -41,10 +41,10 @@ class LShift : public LDataAugmentation {
 public:
     static int total_layers;
     vector<int> shift;
-    string da_mode;
-    float constant;
+    WrappingMode da_mode;
+    float cval;
 
-    LShift(Layer *parent, vector<int> shift, string da_mode, float constant, string name, int dev, int mem);
+    LShift(Layer *parent, vector<int> shift, WrappingMode da_mode, float cval, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -64,10 +64,10 @@ public:
     static int total_layers;
     float angle;
     vector<int> offset_center;
-    string da_mode;
-    float constant;
+    WrappingMode da_mode;
+    float cval;
 
-    LRotate(Layer *parent, float angle, vector<int> offset_center, string da_mode, float constant, string name, int dev, int mem);
+    LRotate(Layer *parent, float angle, vector<int> offset_center, WrappingMode da_mode, float cval, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -87,10 +87,10 @@ public:
     static int total_layers;
     vector<int> new_shape;
     bool reshape;
-    string da_mode;
-    float constant;
+    WrappingMode da_mode;
+    float cval;
 
-    LScale(Layer *parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string name, int dev, int mem);
+    LScale(Layer *parent, vector<int> new_shape, bool reshape, WrappingMode da_mode, float cval, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -131,9 +131,9 @@ public:
     vector<int> from_coords;
     vector<int> to_coords;
     bool reshape;
-    float constant;
+    float cval;
 
-    LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool reshape, float constant, string name, int dev, int mem);
+    LCrop(Layer *parent, vector<int> from_coords, vector<int> to_coords, bool reshape, float cval, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -150,12 +150,11 @@ public:
 class LCropScale : public LCrop {
 public:
     static int total_layers;
-    string da_mode;
+    WrappingMode da_mode;
 
-    LCropScale(Layer *parent, vector<int> from_coords, vector<int> to_coords, string da_mode, float constant, string name, int dev, int mem);
+    LCropScale(Layer *parent, vector<int> from_coords, vector<int> to_coords, WrappingMode da_mode, float cval, string name, int dev, int mem);
 
     void forward() override;
-
 };
 
 /// Cutout Layer
@@ -164,7 +163,7 @@ public:
     static int total_layers;
     vector<int> from_coords;
     vector<int> to_coords;
-    float constant;
+    float cval;
 
     LCutout(Layer *parent, vector<int> from_coords, vector<int> to_coords, float constant, string name, int dev, int mem);
 
@@ -187,10 +186,10 @@ public:
     static int total_layers;
     vector<float> factor_x;
     vector<float> factor_y;
-    string da_mode;
-    float constant;
+    WrappingMode da_mode;
+    float cval;
 
-    LShiftRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, string da_mode, float constant, string name, int dev, int mem);
+    LShiftRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, WrappingMode da_mode, float cval, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -210,10 +209,10 @@ public:
     static int total_layers;
     vector<float> factor;
     vector<int> offset_center;
-    string da_mode;
-    float constant;
+    WrappingMode da_mode;
+    float cval;
 
-    LRotateRandom(Layer *parent, vector<float> factor, vector<int> offset_center, string da_mode, float constant, string name, int dev, int mem);
+    LRotateRandom(Layer *parent, vector<float> factor, vector<int> offset_center, WrappingMode da_mode, float cval, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -232,10 +231,10 @@ class LScaleRandom : public LDataAugmentation {
 public:
     static int total_layers;
     vector<float> factor;
-    string da_mode;
-    float constant;
+    WrappingMode da_mode;
+    float cval;
 
-    LScaleRandom(Layer *parent, vector<float> factor, string da_mode, float constant, string name, int dev, int mem);
+    LScaleRandom(Layer *parent, vector<float> factor, WrappingMode da_mode, float cval, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -294,9 +293,9 @@ class LCropScaleRandom : public LDataAugmentation {
 public:
     static int total_layers;
     vector<float> factor;
-    string da_mode;
+    WrappingMode da_mode;
 
-    LCropScaleRandom(Layer *parent, vector<float> factor, string da_mode, string name, int dev, int mem);
+    LCropScaleRandom(Layer *parent, vector<float> factor, WrappingMode da_mode, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -316,9 +315,9 @@ public:
     static int total_layers;
     vector<float> factor_x;
     vector<float> factor_y;
-    float constant;
+    float cval;
 
-    LCutoutRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, float constant, string name, int dev, int mem);
+    LCutoutRandom(Layer *parent, vector<float> factor_x, vector<float> factor_y, float cval, string name, int dev, int mem);
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

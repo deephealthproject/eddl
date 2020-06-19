@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -11,6 +11,10 @@
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
+#include <thrust/sort.h>
+#include <thrust/functional.h>
+#include <thrust/device_ptr.h>
+
 
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_kernels.h"
@@ -30,7 +34,7 @@ int* get_block_dim(int N, int blockSize){
     return res;
 }
 
-void copy_cpu2gpu(void * cpu_addresses, void* gpu_addresses, int size, bool delete_cpu){
+void copy_cpu2gpu(float *cpu_addresses, float* gpu_addresses, int size, bool delete_cpu){
     check_cuda(cudaMalloc((void**)&(gpu_addresses), size), "create address mapping");
     check_cuda(cudaDeviceSynchronize(), "create");
 
@@ -39,7 +43,7 @@ void copy_cpu2gpu(void * cpu_addresses, void* gpu_addresses, int size, bool dele
     check_cuda(cudaDeviceSynchronize(), "copy");
 
     // Free CPU pointer?
-    if (delete_cpu) { delete cpu_addresses; }
+    if (delete_cpu) { delete[] cpu_addresses; }
 }
 
 void gpu_copy_to_gpu(float *nptr,Tensor *A){
@@ -49,7 +53,7 @@ void gpu_copy_to_gpu(float *nptr,Tensor *A){
 }
 
 
-void gpu_copy_from_gpu(Tensor *A,float *nptr){
+void gpu_copy_from_gpu(Tensor *A, float *nptr){
     int device=A->gpu_device;
     cudaSetDevice(device);
     check_cuda(cudaMemcpy(nptr,A->ptr,A->size*sizeof(float),cudaMemcpyDeviceToHost),"gpu_copy_to_gpu");
@@ -62,6 +66,28 @@ void gpu_copy_gpu(Tensor *A,Tensor *B){
     check_cuda(cudaMemcpy(B->ptr,A->ptr,A->size*sizeof(float),cudaMemcpyDeviceToDevice),"gpu_copy_gpu");
 }
 
+
+void cpu2gpu(float *dst, const float *src, unsigned long int size, int gpu_device){
+    cudaSetDevice(gpu_device);
+    check_cuda(cudaMemcpy(dst, src, size*sizeof(float), cudaMemcpyHostToDevice),"cpu2gpu");
+}
+
+void gpu2cpu(float *dst, const float *src, unsigned long int size, int gpu_device){
+    cudaSetDevice(gpu_device);
+    check_cuda(cudaMemcpy(dst, src, size*sizeof(float), cudaMemcpyDeviceToHost),"gpu2cpu");
+}
+
+float* get_gpu_fmem(unsigned long int size, int gpu_device){
+    float* ptr;
+    cudaSetDevice(gpu_device);
+    check_cuda(cudaMalloc((void**)&ptr,size*sizeof(float)),"get_gpu_fmem");
+    return ptr;
+}
+
+void free_gpu_ptr(float *ptr, int gpu_device){
+    cudaSetDevice(gpu_device);
+    check_cuda(cudaFree(ptr),"free_gpu_ptr");
+}
 
 void gpu_fill(Tensor *A,int aini,int aend,Tensor *B,int bini,int bend,int inc){
     int device=A->gpu_device;
@@ -129,7 +155,7 @@ void gpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end, bool m
   cudaMalloc((void **) &ind, sind.size() * sizeof(int));
   cudaMemcpy(ind, &sind[0], sind.size() * sizeof(int), cudaMemcpyHostToDevice);
 
-  
+
 
   int size=sind.size()*(B->shape[1]);
 
@@ -294,5 +320,47 @@ void gpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative
         concat<<<dimGrid,dimBlock>>>(dest, src, t[i]->size, size, steps, derivative);
         check_cuda(cudaDeviceSynchronize(),"gpu_concat");
 
+    }
+}
+
+
+
+void gpu_sort(Tensor *A, Tensor *B, bool descending, bool stable){
+    auto order_desc = thrust::greater<float>();
+    auto order_asc = thrust::less<float>();
+
+    // Copy data from A to B
+    thrust::device_ptr<float> A_d(A->ptr);
+    thrust::device_ptr<float> B_d(B->ptr);
+    thrust::copy(A_d, A_d+A->size, B_d);
+
+    // Sort data
+    if(stable) {
+        if (descending) { thrust::stable_sort(B_d, B_d + B->size, order_desc); }
+        else { thrust::stable_sort(B_d, B_d + B->size, order_asc); }
+    } else{
+        if (descending) { thrust::sort(B_d, B_d+B->size, order_desc); }
+        else { thrust::sort(B_d, B_d+B->size, order_asc); }
+    }
+}
+
+void gpu_argsort(Tensor *A, Tensor *B, bool descending, bool stable) {
+    auto order_desc = thrust::greater<float>();
+    auto order_asc = thrust::less<float>();
+
+    // Copy data from A to B
+    thrust::device_ptr<float> keys(A->ptr);  // add this line before the sort line
+    thrust::device_ptr<float> indices(B->ptr);  // add this line before the sort line
+    
+    // Fill B with indices
+    thrust::sequence(indices, indices+B->size, 0);
+
+    // Sort data
+    if(stable){
+        if (descending) { thrust::stable_sort_by_key(keys, keys+B->size, indices, order_desc); }
+        else { thrust::stable_sort_by_key(keys, keys+B->size, indices, order_asc); }
+    }else{
+        if (descending) { thrust::sort_by_key(keys, keys+B->size, indices, order_desc); }
+        else { thrust::sort_by_key(keys, keys+B->size, indices, order_asc); }
     }
 }

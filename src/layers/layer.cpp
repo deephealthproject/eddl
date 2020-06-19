@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -35,18 +35,26 @@ Layer::Layer(string name, int dev, int mem) {
     isshared=false;
     isnorm=false;
     trainable=true;
+    iscloned=false;
+    isdecoder=false;
 
     orig=nullptr;
     net=nullptr;
 
     reg = nullptr;
     init=new IGlorotNormal(1234);
+    //init=new IGlorotUniform(1234);  // Has problems with the drive dataset
 }
 
 Layer::~Layer(){
     if (output!=nullptr) delete output;
     if (delta!=nullptr) delete delta;
     if (target!=nullptr) delete target;
+
+//    if (orig!=nullptr) delete this->orig;
+//    if (net!=nullptr) delete this->net;
+//    if (reg!=nullptr) delete this->reg;
+//    if (init!=nullptr) delete this->init;
 
     //params if any
     if (!isshared)

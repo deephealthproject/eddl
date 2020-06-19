@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -12,15 +12,15 @@
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
 
-#include "eddl/hardware/gpu/nn/gpu_nn.h"
-#include "eddl/hardware/gpu/nn/gpu_nn_kernels.h"
+#include "eddl/hardware/gpu/nn/gpu_tensor_nn.h"
+#include "eddl/hardware/gpu/nn/gpu_tensor_nn_kernels.h"
 
-#include "eddl/hardware/gpu/gpu_hw.h"
 #include "eddl/hardware/gpu/gpu_tensor.h"
-#include "eddl/hardware/gpu/gpu_kernels.h"
 
 #include "eddl/tensor/tensor.h"
 #include "eddl/descriptors/descriptors.h"
+
+#define PRECISION_FLOAT -std::numeric_limits<float>::max()
 
 
 void gpu_relu(Tensor *A,Tensor *B){
@@ -172,15 +172,15 @@ void gpu_d_linear(Tensor *D,Tensor *I,Tensor *PD,float param) {
   check_cuda(cudaDeviceSynchronize(),"gpu_d_linear");
 }
 
-void gpu_sigmoid(Tensor *A,Tensor *B){
-  int device=A->gpu_device;
-  cudaSetDevice(device);
-
-  setDims(A);
-
-  sigmoid<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->size);
-  check_cuda(cudaDeviceSynchronize(),"gpu_sigmoid");
-}
+//void gpu_sigmoid(Tensor *A,Tensor *B){
+//  int device=A->gpu_device;
+//  cudaSetDevice(device);
+//
+//  setDims(A);
+//
+//  sigmoid<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->size);
+//  check_cuda(cudaDeviceSynchronize(),"gpu_sigmoid");
+//}
 
 void gpu_d_sigmoid(Tensor *D,Tensor *I,Tensor *PD){
   int device=D->gpu_device;
@@ -213,15 +213,15 @@ void gpu_d_hard_sigmoid(Tensor *D,Tensor *I,Tensor *PD){
 }
 
 
-void gpu_exp(Tensor *A,Tensor *B){
-  int device=A->gpu_device;
-  cudaSetDevice(device);
-
-  setDims(A);
-
-  exp<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->size);
-  check_cuda(cudaDeviceSynchronize(),"gpu_exp");
-}
+//void gpu_exp(Tensor *A,Tensor *B){
+//  int device=A->gpu_device;
+//  cudaSetDevice(device);
+//
+//  setDims(A);
+//
+//  exp<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->size);
+//  check_cuda(cudaDeviceSynchronize(),"gpu_exp");
+//}
 
 void gpu_d_exp(Tensor *D,Tensor *I,Tensor *PD){
   int device=D->gpu_device;
@@ -233,15 +233,15 @@ void gpu_d_exp(Tensor *D,Tensor *I,Tensor *PD){
   check_cuda(cudaDeviceSynchronize(),"gpu_d_exp");
 }
 
-void gpu_tanh(Tensor *A,Tensor *B){
-  int device=A->gpu_device;
-  cudaSetDevice(device);
-
-  setDims(A);
-
-  tanh<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->size);
-  check_cuda(cudaDeviceSynchronize(),"gpu_tanh");
-}
+//void gpu_tanh(Tensor *A,Tensor *B){
+//  int device=A->gpu_device;
+//  cudaSetDevice(device);
+//
+//  setDims(A);
+//
+//  tanh<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,A->size);
+//  check_cuda(cudaDeviceSynchronize(),"gpu_tanh");
+//}
 
 void gpu_d_tanh(Tensor *D,Tensor *I,Tensor *PD){
   int device=D->gpu_device;

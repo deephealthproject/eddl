@@ -80,14 +80,16 @@ TEST(ONNXTestSuite, onnx_import){
 //        ASSERT_TRUE(net_export->layers[i]->name == net_import->layers[i]->name);
 
         // Check subclasses
-        ASSERT_TRUE(typeid(*net_export->layers[i]) == typeid(*net_import->layers[i]));
+        auto& _exp = *net_export->layers[i];
+        auto& _imp = *net_import->layers[i];
+        ASSERT_TRUE(typeid(_exp).name() == typeid(_imp).name());
 		for(int j=0; j<net_export->layers[i]->params.size(); j++){
-        	ASSERT_TRUE(Tensor::equal2(net_export->layers[i]->params[j], net_import->layers[i]->params[j]));
+        	ASSERT_TRUE(Tensor::equivalent(net_export->layers[i]->params[j], net_import->layers[i]->params[j]));
 		}
 
         // Check array content
-        //ASSERT_TRUE(Tensor::equal2(net_export->layers[i]->input, net_import->layers[i]->input));
-        //ASSERT_TRUE(Tensor::equal2(net_export->layers[i]->output, net_import->layers[i]->output));
+        //ASSERT_TRUE(Tensor::equivalent(net_export->layers[i]->input, net_import->layers[i]->input));
+        //ASSERT_TRUE(Tensor::equivalent(net_export->layers[i]->output, net_import->layers[i]->output));
     }
 
     // Tests input layers
@@ -97,12 +99,14 @@ TEST(ONNXTestSuite, onnx_import){
 //        ASSERT_TRUE(net_export->lin[i]->name == net_import->lin[i]->name);
 
         // Check subclasses
-        ASSERT_TRUE(typeid(*net_export->lin[i]) == typeid(*net_import->lin[i]));
+        auto& _exp = *net_export->lin[i];
+        auto& _imp = *net_import->lin[i];
+        ASSERT_TRUE(typeid(_exp).name() == typeid(_imp).name());
 
 
         // Check array content
-        //ASSERT_TRUE(Tensor::equal2(net_export->lin[i]->input, net_import->lin[i]->input));
-        //ASSERT_TRUE(Tensor::equal2(net_export->lin[i]->output, net_import->lin[i]->output));
+        //ASSERT_TRUE(Tensor::equivalent(net_export->lin[i]->input, net_import->lin[i]->input));
+        //ASSERT_TRUE(Tensor::equivalent(net_export->lin[i]->output, net_import->lin[i]->output));
     }
 
 
@@ -114,11 +118,13 @@ TEST(ONNXTestSuite, onnx_import){
         ASSERT_TRUE(net_export->lout[i]->name == net_import->lout[i]->name);
 
         // Check subclasses
-        ASSERT_TRUE(typeid(*net_export->lout[i]) == typeid(*net_import->lout[i]));
+        auto& _exp = *net_export->lout[i];
+        auto& _imp = *net_import->lout[i];
+        ASSERT_TRUE(typeid(_exp).name() == typeid(_imp).name());
 
         // Check array content
-        //ASSERT_TRUE(Tensor::equal2(net_export->lout[i]->input, net_import->lout[i]->input));
-        //ASSERT_TRUE(Tensor::equal2(net_export->lout[i]->output, net_import->lout[i]->output));
+        //ASSERT_TRUE(Tensor::equivalent(net_export->lout[i]->input, net_import->lout[i]->input));
+        //ASSERT_TRUE(Tensor::equivalent(net_export->lout[i]->output, net_import->lout[i]->output));
     }
 
 }

@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -51,17 +51,17 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 
     if (affine) {
 
-      bn_g=new Tensor(shape,dev);
-      bn_b=new Tensor(shape,dev);
+        bn_g=new Tensor(shape,dev);
+        bn_b=new Tensor(shape,dev);
 
-      gbn_g=new Tensor(shape,dev);
-      gbn_b=new Tensor(shape,dev);
+        gbn_g=new Tensor(shape,dev);
+        gbn_b=new Tensor(shape,dev);
 
-      params.push_back(bn_g);
-      params.push_back(bn_b);
+        params.push_back(bn_g);
+        params.push_back(bn_b);
 
-      gradients.push_back(gbn_g);
-      gradients.push_back(gbn_b);
+        gradients.push_back(gbn_g);
+        gradients.push_back(gbn_b);
     }
 
     // no trainable:
@@ -76,22 +76,22 @@ LBatchNorm::LBatchNorm(Layer *parent, float momentum, float epsilon, bool affine
 // override functions:
 int LBatchNorm::get_trainable_params_count()
 {
-  if (affine) return 2;  // only 2 trainable params
-  else return 0;  // no trainable params
+    if (affine) return 2;  // only 2 trainable params
+    else return 0;  // no trainable params
 }
 
 void LBatchNorm::initialize() {
-  if (affine) {
-    params[0]->fill_(1.0);
-    params[1]->fill_(0.0);
-  }
+    if (affine) {
+        params[0]->fill_(1.0);
+        params[1]->fill_(0.0);
+    }
 }
 
 void LBatchNorm::resize(int batch){
     if (batch!=output->shape[0]) {
-      opa->reshape_(output->getShape());
-      output->resize(batch);
-      opa->resize(batch);
+        opa->reshape_(output->getShape());
+        output->resize(batch);
+        opa->resize(batch);
     }
 }
 
@@ -99,117 +99,119 @@ void LBatchNorm::resize(int batch){
 // Essentialy 4D Tensors are reshaped as 2D and
 // Permute 4D tensors and set N,M values.
 void LBatchNorm::forward() {
-  // Input = Output = opa = {Batch,Channels,H,W} OR {Batch,Dim}
-  // bn_mean = bn_var = mean = variance = bn_g = bn_b = {Channels} or {Dim}
+    // Input = Output = opa = {Batch,Channels,H,W} OR {Batch,Dim}
+    // bn_mean = bn_var = mean = variance = bn_g = bn_b = {Channels} or {Dim}
 
-  int M,N;
-  int b,z,r,c,d;
-  Tensor *in;
+    int M,N;
+    int b,z,r,c,d;
+    Tensor *in;
 
-  if (input->ndim==2) {
-    N=b=input->shape[0];
-    M=d=input->shape[1];
-    in=input->clone();
-  }
-  else {
-    b=input->shape[0];
-    M=z=input->shape[1];
-    r=input->shape[2];
-    c=input->shape[3];
-    N=b*r*c;
+    if (input->ndim==2) {
+        N=b=input->shape[0];
+        M=d=input->shape[1];
+        in=input->clone();
+    }
+    else {
+        b=input->shape[0];
+        M=z=input->shape[1];
+        r=input->shape[2];
+        c=input->shape[3];
+        N=b*r*c;
 
-    in=new Tensor({b*r*c*z},input->device);
-    permute_channels_last(input,in);
-    in->reshape_({N,M});
-    opa->reshape_({N,M});
-  }
+        in=new Tensor({b*r*c*z},input->device);
+        tensorNN::permute_channels_last(input,in);
+        in->reshape_({N,M});
+        opa->reshape_({N,M});
+    }
 
-  BN_forward(in,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);
-
-
-  Tensor::copy(in,opa);
-  if (affine) {
-    Tensor *var=new Tensor({N,M},input->device);
-    Tensor *ones=new Tensor({N,1},input->device);
-    ones->fill_(1.0);
-
-    // apply affine transform in=gamma*in+beta
-    rmult(in,bn_g,ones,var);
-    rsum(in,bn_b,ones,var);
-    delete var;
-    delete ones;
-  }
-
-  // copy in to ouput
-  if (input->ndim==4) {permute_channels_first(in,output);}
-  else Tensor::copy(in,output);
+    BN_forward(in,bn_mean,bn_var,mean,variance,momentum,epsilon,mode==TRMODE);
 
 
-  delete in;
+    Tensor::copy(in,opa);
+    if (affine) {
+        Tensor *var=new Tensor({N,M},input->device);
+        Tensor *ones=new Tensor({N,1},input->device);
+        ones->fill_(1.0);
+
+        // apply affine transform in=gamma*in+beta
+        rmult(in,bn_g,ones,var);
+        rsum(in,bn_b,ones,var);
+        delete var;
+        delete ones;
+    }
+
+    // copy in to ouput
+    if (input->ndim==4) {
+        tensorNN::permute_channels_first(in,output);
+    }
+    else Tensor::copy(in,output);
+
+
+    delete in;
 }
 
 void LBatchNorm::backward(){
-  int M,N;
-  int b,z,r,c,d;
+    int M,N;
+    int b,z,r,c,d;
 
-  Tensor *dp;
+    Tensor *dp;
 
-  if (input->ndim==2) {
-    N=b=input->shape[0];
-    M=d=input->shape[1];
+    if (input->ndim==2) {
+        N=b=input->shape[0];
+        M=d=input->shape[1];
 
-    dp=delta->clone();
-  }
-  else {
-    b=input->shape[0];
-    M=z=input->shape[1];
-    r=input->shape[2];
-    c=input->shape[3];
+        dp=delta->clone();
+    }
+    else {
+        b=input->shape[0];
+        M=z=input->shape[1];
+        r=input->shape[2];
+        c=input->shape[3];
 
-    N=b*r*c;
+        N=b*r*c;
 
-    // permute input and delta
-    dp=new Tensor({b,r,c,z},input->device);
+        // permute input and delta
+        dp=new Tensor({b,r,c,z},input->device);
 
-    permute_channels_last(delta,dp);
+        tensorNN::permute_channels_last(delta,dp);
 
-    dp->reshape_({N,M});
+        dp->reshape_({N,M});
 
-  }
+    }
 
-  // Affine
-  if (affine) {
-    Tensor *A=new Tensor({N,M},delta->device);
-    Tensor *ones=new Tensor({N},delta->device);
-    ones->fill_(1.0);
-    Tensor *m=new Tensor({1,M},delta->device);
-    //1 gamma
-    Tensor::el_mult(dp,opa,A,0);
-    cmean(A,m,ones);
-    Tensor::add(1,gbn_g,1,m,gbn_g,1);
+    // Affine
+    if (affine) {
+        Tensor *A=new Tensor({N,M},delta->device);
+        Tensor *ones=new Tensor({N},delta->device);
+        ones->fill_(1.0);
+        Tensor *m=new Tensor({1,M},delta->device);
+        //1 gamma
+        Tensor::el_mult(dp,opa,A,0);
+        cmean(A,m,ones);
+        Tensor::add(1,gbn_g,1,m,gbn_g,1);
 
-    //2 Beta
-    cmean(dp,m,ones);
-    Tensor::add(1,gbn_b,1,m,gbn_b,1);
+        //2 Beta
+        cmean(dp,m,ones);
+        Tensor::add(1,gbn_b,1,m,gbn_b,1);
 
-    // delta=dE/dY
-    // Obtain dE/dY from delta:
-    rmult(dp,bn_g,ones,A);
-    delete A;
-    delete ones;
-    delete m;
-  }
+        // delta=dE/dY
+        // Obtain dE/dY from delta:
+        rmult(dp,bn_g,ones,A);
+        delete A;
+        delete ones;
+        delete m;
+    }
 
-  BN_backward(dp,bn_var,opa);
+    BN_backward(dp,bn_var,opa);
 
-  // Inc parent delta
-  if (input->ndim==4) {
-    permute_channels_first(dp,delta);
-    Tensor::inc(delta, parent[0]->delta);
-  }
-  else Tensor::inc(dp, parent[0]->delta);
+    // Inc parent delta
+    if (input->ndim==4) {
+        tensorNN::permute_channels_first(dp,delta);
+        Tensor::inc(delta, parent[0]->delta);
+    }
+    else Tensor::inc(dp, parent[0]->delta);
 
-  delete dp;
+    delete dp;
 
 }
 
@@ -230,15 +232,15 @@ Layer *LBatchNorm::share(int c, int bs, vector<Layer *> p) {
     n->gradients.clear();
 
     if (affine) {
-      n->bn_g=bn_g;
-      n->bn_b=bn_b;
-      n->params.push_back(bn_g);
-      n->params.push_back(bn_b);
+        n->bn_g=bn_g;
+        n->bn_b=bn_b;
+        n->params.push_back(bn_g);
+        n->params.push_back(bn_b);
 
-      n->gbn_g=gbn_g;
-      n->gbn_b=gbn_b;
-      n->gradients.push_back(gbn_g);
-      n->gradients.push_back(gbn_b);
+        n->gbn_g=gbn_g;
+        n->gbn_b=gbn_b;
+        n->gradients.push_back(gbn_g);
+        n->gradients.push_back(gbn_b);
     }
     n->mean=mean;
     n->variance=variance;

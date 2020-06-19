@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -14,7 +14,7 @@
 #include <iostream>
 #include <cuda.h>
 
-#include "eddl/hardware/gpu/nn/gpu_nn_kernels.h"
+#include "eddl/hardware/gpu/nn/gpu_tensor_nn_kernels.h"
 #include "eddl/hardware/gpu/gpu_kernels.h"
 
 
@@ -72,5 +72,46 @@ __global__ void d_repeat_nn_k(float *d, int batch, int depth, int d_rows, int d_
 //        printf("offset_a: %ld, batch: %d, depth: %d, arow_i: %d, acol_i: %d\n", offset_a, batch_i, depth_i, arow_i, acol_i );
 
         atomicAdd(&(a[offset_a]), d[thread_id_x]);
+    }
+}
+
+
+__global__ void gpu_select_nn(float* A, float* B, long int size, int* indices, int A_batch_str, int B_batch_str){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        long int b = thread_id_x / B_batch_str;
+        long int i = thread_id_x % B_batch_str;
+        B[thread_id_x] = A[b*A_batch_str + indices[i]];
+    }
+}
+
+__global__ void gpu_select_back_nn(float* A, float* B, long int size, int* indices, int A_batch_str, int B_batch_str){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        long int b = thread_id_x / A_batch_str;
+        long int i = thread_id_x % A_batch_str;
+        B[b*B_batch_str + indices[i]] += A[thread_id_x];
+    }
+}
+
+__global__ void gpu_set_select_nn(float* A, float* B, long int size, int* indices, int A_batch_str, int B_batch_str){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        int b = thread_id_x / B_batch_str;
+        int i = thread_id_x % B_batch_str;
+        A[b*A_batch_str + indices[i]] = B[thread_id_x];
+    }
+}
+
+__global__ void gpu_set_select_back_nn(float* A, float* B, long int size, int* indices, int A_batch_str, int B_batch_str){
+    long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thread_id_x < size){
+        int b = thread_id_x / B_batch_str;
+        int i = thread_id_x % B_batch_str;
+        B[thread_id_x] += A[b*A_batch_str + indices[i]];
     }
 }

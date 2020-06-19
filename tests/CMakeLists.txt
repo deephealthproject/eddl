@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.9.2)
 
 project(eddl-tests)
 
+
 if(USE_LOCAL_GTEST AND NOT BUILD_SUPERBUILD)
     message(STATUS "Using local GTest...")
 else()
@@ -32,12 +33,19 @@ add_executable(unit_tests ${CPP_TESTS_FILES})
 target_include_directories(unit_tests PUBLIC $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>)  # TODO: Why build interface?
 target_link_directories(unit_tests PUBLIC ${GTEST_LIBRARIES_DIRS})
 if(MSVC)
-    target_link_libraries(unit_tests PRIVATE eddl
+    target_link_libraries(unit_tests PUBLIC eddl
         optimized ${GTEST_BOTH_LIBRARIES}
         debug ${GTEST_BOTH_LIBRARIES_D})
 else()
-    target_link_libraries(unit_tests PRIVATE eddl ${GTEST_BOTH_LIBRARIES})
+    target_link_libraries(unit_tests PUBLIC eddl ${GTEST_BOTH_LIBRARIES})
 endif()
+
+
+# CUDA (set in parent scope)
+if(USE_CUDA)
+    add_definitions(-DcGPU)
+endif()
+
 
 # Add test
 add_test(NAME unit_tests COMMAND unit_tests)
@@ -53,3 +61,8 @@ message(STATUS "GTest library dirs: " ${GTEST_LIBRARIES_DIRS} )
 message(STATUS "GTest libraries: " ${GTEST_BOTH_LIBRARIES} )
 message(STATUS "===========================================" )
 message(STATUS "===========================================" )
+if(USE_CUDA)
+    message(STATUS "CUDA compiler: " ${CMAKE_CUDA_COMPILER})
+    message(STATUS "CUDA flags: " ${CMAKE_CUDA_FLAGS} )
+    message(STATUS "CUDA toolkit: " ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} )
+endif()

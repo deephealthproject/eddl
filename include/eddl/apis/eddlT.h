@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -17,6 +17,11 @@
 
 typedef Tensor* tensor;
 typedef vector<int> tshape;
+
+
+// LEGACY ********************************************************
+// LEGACY ********************************************************
+// LEGACY ********************************************************
 
 namespace eddlT{
 
@@ -39,7 +44,13 @@ namespace eddlT{
     */
     Tensor* create(const vector<int> &shape, int dev);
 
-    
+    /**
+    *  @brief Constructor of an uninitialized tensor
+    *
+    *  @param shape Vector of ints specifying the shape of the tensor
+    *  @param ptr  memory pointer
+    *  @return a tensor
+    */
     Tensor* create(const vector<int> &shape, float *ptr);
 
     /**
@@ -113,11 +124,31 @@ namespace eddlT{
     */
     Tensor* linspace(float start, float end, int steps, int dev=DEV_CPU);
 
-
+    /**
+    *   @brief Creates a 1-D tensor with a sequence of num  logarithmic spaced values starting at start. If steps > 1, the values in the sequence increase by end - start / steps - 1, so that the last one is exactly end.
+    *   @param start Start value
+    *   @param end  End value
+    *   @param steps  The gap between two values in the tensor.
+    *   @param base  The base of the logarithm to apply.
+    *   @param dev One of ``DEV_CPU``or ``DEV_GPU``
+    *   @return The new tensor
+    */
     Tensor* logspace(float start, float end, int steps, float base, int dev=DEV_CPU);
 
-
+    /**
+    *   @brief Creation of a 2-D squared tensor with ones on the main diagonal and zeroes on the other positions
+    *   @param size size of the tensor (number of rows)
+    *   @param dev One of ``DEV_CPU``or ``DEV_GPU``
+    *   @return The new tensor
+    */
     Tensor* eye(int size, int dev=DEV_CPU);
+
+    /**
+    *   @brief Creation of a tensor with filled with random numbers from the standard normal distribution.
+    *   @brief shape Shape of the tensor to create.
+    *   @param dev One of ``DEV_CPU``or ``DEV_GPU``
+    *   @return The new tensor
+    */
     Tensor* randn(const vector<int> &shape, int dev=DEV_CPU);
 
 
@@ -155,7 +186,12 @@ namespace eddlT{
     */
     Tensor* clone(Tensor *A);
 
-
+    /**
+    *   @brief Obtain the selected position of a tensor in a new tensor
+    *   @param A The input tensor
+    *   @param i The index to retrieve
+    *   @return A new tensor with the selection
+    */
     Tensor* select(Tensor *A, int i);
 
     /**
@@ -197,22 +233,40 @@ namespace eddlT{
     float *getptr(Tensor *A);
 
     // Other functions   ********************************
+
+    /**
+    *   @brief Print contents of a tensor
+    *   @param A The input tensor
+    */
     void print(Tensor *A);
+
+    /**
+    *   @brief Print some information of a tensor
+    *   @param A The input tensor
+    */
     void info(Tensor *A);
+
+    /**
+    *   @brief Obtain the shape of a tensor.
+    *   @param A The input tensor.
+    *   @return The shape of the input tensor.
+    */
     tshape getShape(Tensor *A);
 
     // Serialization ***********************************
     /**
     *   @brief Load content from file to a tensor
     *   @param fname. The file path.
-    *   @param format. The format of the file. Supported image formats: jpg, jpeg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm, bin, onnx, npy, npz, csv, tsv, txt 
+    *   @param format. The format of the file. Supported image formats: jpg, jpeg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm, bin, onnx, npy, npz, csv, tsv, txt
     *   @return The initialized tensor
     */
     Tensor* load(string fname, string format="");
 
     template<typename T>
     Tensor* load_from_numpy(const string &filename, const string &format=""){
-        return Tensor::load_from_numpy<T>(filename, format);
+        msg("Format deprecated in favor of python: *.'" + format + "'", "Tensor::load_from_numpy");
+        return nullptr;
+//        return Tensor::load_from_numpy<T>(filename, format);
     }
     template<typename T>
     Tensor* load(const string& filename, string format=""){
@@ -223,7 +277,7 @@ namespace eddlT{
     *   @brief Save content from tensor to a file
     *   @param A. The tensor to save
     *   @param fname. The file path
-    *   @param format. The format of the file. Supported image formats: jpg, jpeg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm, bin, onnx, npy, npz, csv, tsv, txt 
+    *   @param format. The format of the file. Supported image formats: jpg, jpeg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm, bin, onnx, csv, tsv, txt
     *   @return The initialized tensor
     */
     void save(Tensor* A, string fname, string format="");
@@ -327,13 +381,51 @@ namespace eddlT{
     */
     Tensor* ceil(Tensor *A);
 
+    /**
+    *   @brief Inplace clamp all elements in the input tensor to the range [min, max].
+    *   @param A The tensor where the operation is applied.
+    *   @param min The lower bound of the clamping range.
+    *   @param max The upper bound of the clamping range.
+    */
     void clamp_(Tensor *A,float min, float max);
+
+    /**
+    *   @brief Clamp all elements in the input tensor to the range [min, max].
+    *   @param A The tensor where the operation is applied.
+    *   @param min The lower bound of the clamping range.
+    *   @param max The upper bound of the clamping range.
+    *   @return A new tensor with the clamped values in A.
+    */
     Tensor* clamp(Tensor *A, float min, float max);
 
+    /**
+    *   @brief Inplace clamp all elements in the input tensor to the range [-infty, max].
+    *   @param A The tensor where the operation is applied.
+    *   @param max The upper bound of the clamping range.
+    */
     void clampmax_(Tensor *A,float max);
+
+    /**
+    *   @brief Clamp all elements in the input tensor to the range [-infty, max].
+    *   @param A The tensor where the operation is applied.
+    *   @param max The upper bound of the clamping range.
+    *   @return A new tensor with the clamped values in A.
+    */
     Tensor* clampmax(Tensor *A, float max);
 
+    /**
+    *   @brief Inplace clamp all elements in the input tensor to the range [min, +infty].
+    *   @param A The tensor where the operation is applied.
+    *   @param min The lower bound of the clamping range.
+    */
     void clampmin_(Tensor *A,float min);
+
+    /**
+    *   @brief Clamp all elements in the input tensor to the range [min, +infty].
+    *   @param A The tensor where the operation is applied.
+    *   @param min The lower bound of the clamping range.
+    *   @return A new tensor with the clamped values in A.
+    */
     Tensor* clampmin(Tensor *A, float min);
 
     /**
@@ -362,6 +454,10 @@ namespace eddlT{
     */
     Tensor* cosh(Tensor *A);
 
+    /**
+    *   @brief Inplace element-wise 1/x operation
+    *   @param A The tensor where the operation is applied
+    */
     void inv_(Tensor *A);
 
 
@@ -497,14 +593,14 @@ namespace eddlT{
     float min(Tensor *A);
 
     /**
-    *   @brief Inplace element-wise mod operation. 
+    *   @brief Inplace element-wise mod operation.
     *   @param A. The tensor where the operation is applied
     *   @param v. The mod operator
     */
     void mod_(Tensor *A,float v);
 
     /**
-    *   @brief Element-wise mod operation. 
+    *   @brief Element-wise mod operation.
     *   @param A. The tensor where the operation is applied
     *   @param v. The mod operator
     *   @return A tensor with A mod v
@@ -512,14 +608,14 @@ namespace eddlT{
     Tensor* mod(Tensor *A, float v);
 
     /**
-    *   @brief Inplace multiplication operation of a tensor by a scalar. 
+    *   @brief Inplace multiplication operation of a tensor by a scalar.
     *   @param A. The tensor where the operation is applied
     *   @param v. The value to multiply by
     */
     void mult_(Tensor *A,float v);
 
     /**
-    *   @brief Multiplication operation of a tensor by a scalar. 
+    *   @brief Multiplication operation of a tensor by a scalar.
     *   @param A. The tensor where the operation is applied
     *   @param v. The value to multiply by
     *   @return A tensor with A*v
@@ -527,14 +623,14 @@ namespace eddlT{
     Tensor* mult(Tensor *A, float v);
 
     /**
-    *   @brief Inplace element-wise  multiplication operation of two 1D tensors. 
+    *   @brief Inplace element-wise  multiplication operation of two 1D tensors.
     *   @param A. The tensor where the operation is applied
     *   @param B. Another tensor.
     */
     void mult_(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Element-wise multiplication operation of two 1D tensors. 
+    *   @brief Element-wise multiplication operation of two 1D tensors.
     *   @param A. A tensor.
     *   @param B. Another tensor.
     *   @return A tensor with A*B, element-wise
@@ -542,7 +638,7 @@ namespace eddlT{
     Tensor *mult(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Multiplication operation of two 2D tensors. 
+    *   @brief Multiplication operation of two 2D tensors.
     *   @param A. A tensor.
     *   @param B. Another tensor.
     *   @return A tensor with A*B
@@ -550,20 +646,20 @@ namespace eddlT{
     Tensor *mult2D(Tensor *A, Tensor *B);
 
     /**
-    *   @brief Inplace element-wise change of sign operation. 
+    *   @brief Inplace element-wise change of sign operation.
     *   @param A. The tensor where the operation is applied.
     */
     void neg_(Tensor *A);
 
     /**
-    *   @brief Element-wise change of sign operation. 
+    *   @brief Element-wise change of sign operation.
     *   @param A. The tensor where the operation is applied.
     *   @return A tensor with -A
     */
     Tensor* neg(Tensor *A);
 
     /**
-    *   @brief Inplace element-wise normalization of values in a given range. 
+    *   @brief Inplace element-wise normalization of values in a given range.
     *   @param A. The tensor where the operation is applied.
     *   @param min. The lower bound of the new range
     *   @param max. The upper bound of the new range
@@ -571,7 +667,7 @@ namespace eddlT{
     void normalize_(Tensor *A,float min, float max);
 
     /**
-    *   @brief Inplace element-wise normalization of values in a given range. 
+    *   @brief Inplace element-wise normalization of values in a given range.
     *   @param A. The tensor where the operation is applied.
     *   @param min. The lower bound of the new range
     *   @param max. The upper bound of the new range
@@ -580,14 +676,14 @@ namespace eddlT{
     Tensor* normalize(Tensor *A, float min, float max);
 
     /**
-    *   @brief Inplace element-wise power operation. 
+    *   @brief Inplace element-wise power operation.
     *   @param A. The tensor where the operation is applied.
     *   @param exp. The exponent
     */
     void pow_(Tensor *A,float exp);
 
     /**
-    *   @brief Element-wise power operation. 
+    *   @brief Element-wise power operation.
     *   @param A. The tensor where the operation is applied.
     *   @param exp. The exponent
     *   @return A tensor with A^exp, element-wise
@@ -595,27 +691,27 @@ namespace eddlT{
     Tensor* pow(Tensor *A, float exp);
 
     /**
-    *   @brief Inplace element-wise reciprocal operation. 
+    *   @brief Inplace element-wise reciprocal operation.
     *   @param A. The tensor where the operation is applied.
     */
     void reciprocal_(Tensor *A);
 
     /**
-    *   @brief Element-wise power operation. 
+    *   @brief Element-wise power operation.
     *   @param A. The tensor where the operation is applied.
     *   @return A tensor with reciprocal(A), element-wise
     */
     Tensor* reciprocal(Tensor *A);
 
     /**
-    *   @brief Inplace element-wise reminder operation. 
+    *   @brief Inplace element-wise reminder operation.
     *   @param A. The tensor where the operation is applied.
     *   @param v. The real to divide A by
     */
     void remainder_(Tensor *A,float v);
 
     /**
-    *   @brief Element-wise reminder operation. 
+    *   @brief Element-wise reminder operation.
     *   @param A. The tensor where the operation is applied.
     *   @param v. The real to divide A by
     *   @return A tensor with A%v
@@ -623,27 +719,27 @@ namespace eddlT{
     Tensor* remainder(Tensor *A, float v);
 
     /**
-    *   @brief Inplace element-wise round operation. 
+    *   @brief Inplace element-wise round operation.
     *   @param A. The tensor where the operation is applied.
     */
     void round_(Tensor *A);
 
     /**
-    *   @brief Element-wise round operation. 
+    *   @brief Element-wise round operation.
     *   @param A. The tensor where the operation is applied.
     *   @return A tensor with A rounded
     */
     Tensor* round(Tensor *A);
 
     /**
-    *   @brief Inplace element-wise inverse square root operation. 
+    *   @brief Inplace element-wise inverse square root operation.
     *   @param A. The tensor where the operation is applied.
     */
     void rsqrt_(Tensor *A);
 
 
     /**
-    *   @brief Element-wise inverse square root operation. 
+    *   @brief Element-wise inverse square root operation.
     *   @param A. The tensor where the operation is applied.
     *   @return A tensor with 1/sqrt(A)
     */
@@ -652,13 +748,13 @@ namespace eddlT{
 
 
     /**
-    *   @brief Inplace element-wise sigmoid operation. 
+    *   @brief Inplace element-wise sigmoid operation.
     *   @param A. The tensor where the operation is applied.
     */
     void sigmoid_(Tensor *A);
 
     /**
-    *   @brief Element-wise sigmoid operation. 
+    *   @brief Element-wise sigmoid operation.
     *   @param A. The tensor where the operation is applied.
     *   @return A tensor with sigmoid(A)
     */

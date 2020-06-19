@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -33,12 +33,13 @@ void SelDescriptor::resize(int b){
     // Delete previous allocations
     this->free_memory();
 
-    // Update batch of range
-    this->idxs_range[0][1] = b-1;
-
-    // Update shapes
-    this->ishape[0] = b;
-    this->oshape[0] = b;
+    // This is only used if the batch is specified
+//    // Update batch of range
+//    this->idxs_range[0][1] = b-1;
+//
+//    // Update shapes
+//    this->ishape[0] = b;
+//    this->oshape[0] = b;
 
     build_indices();
 }

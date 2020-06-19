@@ -8,18 +8,68 @@ Manipulation
     Read this: https://github.com/deephealthproject/eddl/blob/master/eddl_progress_tensor.md
 
 
-Constructor
-------------
-.. doxygenfunction:: Tensor::Tensor(const vector<int>&, float *, int)
+Devices and information
+--------------------------
 
-Create an uninitialized tensor
+Move to CPU
+^^^^^^^^^^^^
 
-Example:
+.. doxygenfunction:: Tensor::toCPU
 
 .. code-block:: c++
 
-    Tensor(const vector<int> &shape, float *fptr, int dev=DEV_CPU);
+    Tensor* toCPU(Tensor *A);
 
+Move to GPU
+^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::toGPU
+
+.. code-block:: c++
+
+    Tensor* toGPU(Tensor *A);
+
+
+Check tensor device
+^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: Tensor::isCPU
+.. doxygenfunction:: Tensor::isGPU
+.. doxygenfunction:: Tensor::isFPGA
+.. doxygenfunction:: Tensor::getDeviceName
+
+.. code-block:: c++
+
+    int isCPU();
+    int isGPU();
+    int isFPGA();
+    string getDeviceName();
+
+Get information from tensor
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: Tensor::info
+
+.. code-block:: c++
+
+    void info();
+
+
+Print tensor contents
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: Tensor::print
+
+.. code-block:: c++
+
+    void info();
+
+
+Dimension check
+^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: Tensor::isSquared
+
+.. code-block:: c++
+
+    bool isSquared(Tensor* A);
 
 Changing array shape
 ---------------------

@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -10,14 +10,13 @@
 #include <utility>
 
 #include "eddl/tensor/tensor.h"
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 #include "eddl/utils.h"
 #include "eddl/helpers.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
-#include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
 
@@ -34,7 +33,7 @@
 #include "tensor/stb/stb.h"
 
 // Read/Write Numpy
-#include "eddl/tensor/cnpy/cnpy.h"
+//#include "eddl/tensor/cnpy/cnpy.h"
 
 using namespace std;
 
@@ -64,11 +63,12 @@ Tensor* Tensor::loadfs(std::ifstream &ifs, string format) {
     } else if(format=="onnx"){
         return Tensor::load_from_onnx(ifs);
     } else if(format=="csv" || format=="tsv" || format=="txt"){
-        char delimiter;
-        if (format=="csv") {delimiter = ','; }
-        else if (format=="tsv") {delimiter = '\t'; }
-        else { delimiter = ' '; }
-        return Tensor::load_from_txt(ifs, delimiter, 0);
+        msg("Format deprecated in favor of python: *.'" + format + "'", "Tensor::load");
+//        char delimiter;
+//        if (format=="csv") {delimiter = ','; }
+//        else if (format=="tsv") {delimiter = '\t'; }
+//        else { delimiter = ' '; }
+//        return Tensor::load_from_txt(ifs, delimiter, 0);
     }else{
         msg("Format not implemented: *.'" + format + "'", "Tensor::load"); // Exits
     }
@@ -138,59 +138,59 @@ Tensor* Tensor::load_from_img(const string &filename, const string &format){
     return t;
 }
 
-Tensor* Tensor::load_from_txt(std::ifstream &ifs, char delimiter, int headerRows){
-    Tensor* t = nullptr;
-    string line;
-    vector<float> values;
-
-    try {
-        CSVIterator it(ifs, delimiter);
-        headerRows = headerRows>=0 ? headerRows : 0;  // Avoid things like -3
-
-        int rows = 0;
-        int cols = it->size();
-
-        // Parse lines
-        for(int i=0; it != CSVIterator(); ++it, ++i){
-            if((i+1)>headerRows){
-                rows++;  // Increment rows
-                for(int j = 0; j < cols; j++){
-                    float cell = std::stof((*it)[j]);
-                    values.push_back(cell);
-                }
-            }else{
-                // If header is present, consume one line
-                // cout << "Ignoring row #" << (i+1) << " as header" << endl;
-            }
-        }
-
-        // Create tensor
-        t = new Tensor({rows, cols});
-        std::copy(std::begin(values), std::end(values), t->ptr);
-
-    } catch(const std::bad_array_new_length &e) {
-        msg("There was an error opening the file", "Tensor::load_from_txt");
-    }
-
-    return t;
-}
-
-Tensor* Tensor::load_from_txt(const string& filename, const char delimiter, int headerRows){
-    Tensor *t = nullptr;
-
-    // Check if file exists (open file stream)
-    std::ifstream ifs(filename.c_str(), std::ios::in | std::ios::binary);
-    if (!ifs.good()){
-        throw std::runtime_error(std::string("File not found. Check the file name and try again (Tensor::load)"));
-    }
-
-    // Load tensor
-    t = Tensor::load_from_txt(ifs, delimiter, headerRows);
-
-    // Close file stream and return tensor
-    ifs.close();
-    return t;
-}
+//Tensor* Tensor::load_from_txt(std::ifstream &ifs, char delimiter, int headerRows){
+//    Tensor* t = nullptr;
+//    string line;
+//    vector<float> values;
+//
+//    try {
+//        CSVIterator it(ifs, delimiter);
+//        headerRows = headerRows>=0 ? headerRows : 0;  // Avoid things like -3
+//
+//        int rows = 0;
+//        int cols = it->size();
+//
+//        // Parse lines
+//        for(int i=0; it != CSVIterator(); ++it, ++i){
+//            if((i+1)>headerRows){
+//                rows++;  // Increment rows
+//                for(int j = 0; j < cols; j++){
+//                    float cell = std::stof((*it)[j]);
+//                    values.push_back(cell);
+//                }
+//            }else{
+//                // If header is present, consume one line
+//                // cout << "Ignoring row #" << (i+1) << " as header" << endl;
+//            }
+//        }
+//
+//        // Create tensor
+//        t = new Tensor({rows, cols});
+//        std::copy(std::begin(values), std::end(values), t->ptr);
+//
+//    } catch(const std::bad_array_new_length &e) {
+//        msg("There was an error opening the file", "Tensor::load_from_txt");
+//    }
+//
+//    return t;
+//}
+//
+//Tensor* Tensor::load_from_txt(const string& filename, const char delimiter, int headerRows){
+//    Tensor *t = nullptr;
+//
+//    // Check if file exists (open file stream)
+//    std::ifstream ifs(filename.c_str(), std::ios::in | std::ios::binary);
+//    if (!ifs.good()){
+//        throw std::runtime_error(std::string("File not found. Check the file name and try again (Tensor::load)"));
+//    }
+//
+//    // Load tensor
+//    t = Tensor::load_from_txt(ifs, delimiter, headerRows);
+//
+//    // Close file stream and return tensor
+//    ifs.close();
+//    return t;
+//}
 
 
 // ********* SAVE FUNCTIONS *********
@@ -214,7 +214,8 @@ void Tensor::save(const string& filename, string format) {
         Tensor::savefs(ofs, format);
         ofs.close();
     }else if(format=="npy" || format=="npz"){
-        save2numpy(filename, format);
+        msg("Format deprecated in favor of python: *.'" + format + "'", "Tensor::save");
+        //save2numpy(filename, format);
     }else{
         msg("Format not implemented: *.'" + format + "'", "Tensor::save");
     }
@@ -316,13 +317,13 @@ void Tensor::save2img(const string& filename, string format){
     delete t;
 }
 
-void Tensor::save2numpy(const string &filename, string format){
-    vector<size_t> t_shape;
-    for(auto &s : this->shape){
-        t_shape.push_back(s);
-    }
-    cnpy::npy_save(filename, this->ptr, t_shape, "w");
-}
+//void Tensor::save2numpy(const string &filename, string format){
+//    vector<size_t> t_shape;
+//    for(auto &s : this->shape){
+//        t_shape.push_back(s);
+//    }
+//    cnpy::npy_save(filename, this->ptr, t_shape, "w");
+//}
 
 void Tensor::save2txt(std::ofstream &ofs, const char delimiter, const vector<string> &header){
     if(this->ndim!=2){

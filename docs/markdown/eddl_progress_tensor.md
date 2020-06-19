@@ -19,18 +19,23 @@ Numpy-like operations over a raw-tensor object
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- | ---- | ---- | -------- |
-| empty         | ✔️    | ✔️    |   Return a new array of given shape and type, without initializing entries.       |
+| empty         | ✔️    | ✔️    |   Returns a tensor filled with uninitialized data.       |
+| empty_like         | ✔️    | ✔ ️    |   Returns a tensor filled with uninitialized data, with the same size as the input tensor       |
 | eye           | ✔️    | ✔️    |   Return a 2-D array with ones on the diagonal and zeros elsewhere.       |
 | identity      | ✔️    | ✔️    |    Return the identity array (eye with offset=0).      |
 | ones          | ✔️    | ✔️    |    Return a new array of given shape and type, filled with ones.      |
+| ones_like         | ✔️    | ✔    |     Returns a tensor filled with the scalar value 1, with the same size as the input tensor     |
 | zeros         | ✔️    | ✔️    |     Return a new array of given shape and type, filled with zeros.     |
+| zeros_like         | ✔️    | ✔    |     Returns a tensor filled with the scalar value 0, with the same size as the input tensor     |
 | full          | ✔️    | ✔️    |   Return a new array of given shape and type, filled with "value".       |
+| full_like         | ✔️    | ✔    |     Returns a tensor filled with the given scalar value, with the same size as the input tensor     |
 
 
 ### From existing data
 
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
+| Tensor         |  ✔️    | ✔    | Constructs a tensor with data                           |
 | clone         | ✔️    | ✔️    | Creates an identical (but different) tensor from another                           |
 | copy          | ✔️ | ✔️ |  Copy data from Tensor A to B |
 
@@ -63,7 +68,7 @@ Numpy-like operations over a raw-tensor object
 
 | Functionality | CPU  | GPU  | Comments |
 | ------------- | ---- | ---- | -------- |
-| diag      | ❌    | ❌   |  Extract a diagonal or construct a diagonal array.        |
+| diag      | ✔️    | ✔️    |  Extract a diagonal or construct a diagonal array.        |
 | tri      | ❌    | ❌    | An array with ones at and below the given diagonal and zeros elsewhere.         |
 
 
@@ -158,9 +163,9 @@ Not yet...
 
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
-| nonzero          | ❌    | ❌    | Return the indices of the elements that are non-zero.                                      |
-| where          | ❌    | ❌    | Return elements, either from x or y, depending on condition.                                      |
-| mask_indices          | ❌    | ❌    | Return the indices to access (n, n) arrays, given a masking function.                                     |
+| nonzero          | ✔️    | ❌     | Return the indices of the elements that are non-zero.                                      |
+| where          | ✔️    | ✔️    | Return elements, either from x or y, depending on condition.                                      |
+| mask_indices          | ❌    | ❌️      | Return the indices to access (n, n) arrays, given a masking function.                                     |
 
 
 ### Indexing-like operations
@@ -169,8 +174,10 @@ Not yet...
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
 | select          | ✔️    | ✔️    | Returns an array with the selected indices. `Tensor::select(k); k=vector of strings ({"0", ":5", ":", "3:6"})`. _TODO: Accept masks_   |
 | set_select          | ✔️    | ✔️    | Sets the elements in the array using the selected indices        `Tensor::set_select({"0", ":5", ":", "3:6"}, k); //k=float or Tensor                           |
-| get | ✔️ | ✔️ | slow |
-| set | ✔️ | ✔️ | slow |
+| index_select          | ❌    | ❌️    | Returns a new tensor which indexes the input tensor along dimension dim using the entries in index                          |
+| masked_select          | ❌    | ❌️    | Returns a new 1-D tensor which indexes the input tensor according to the boolean mask                           |
+| take          | ❌    | ❌️    | Returns a new tensor with the elements of input at the given indices. The input tensor is treated as if it were viewed as a 1-D tensor.                          |
+
 
 ## Input and output
 
@@ -178,19 +185,15 @@ Not yet...
 
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
-| load          | ✔️    | -    | Images: jpg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm<br />Numpy: npy, npz<br />Text: csv, tsv, txt,...<br />Other: onnx, bin |
-| load<source_type>          | ✔️    | -    | Numpy: npy, npz |
-| load_from_txt | ✔️    | -    |  Load data from a text file.                                                              |
-| memmap | ❌    | -    |  Create a memory-map to an array stored in a binary file on disk.                                                            |
+| load          | ✔️    | -    | Images: jpg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm<br />Numpy (removed): npy, npz<br />Text (removed): csv, tsv, txt,...<br />Other: onnx, bin |
 
 ### Output
 
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
-| save          | ✔️    | -    | Images: jpg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm<br />Numpy: npy, npz<br />Text: csv, tsv, txt,...<br />Other: onnx, bin                                    |
-| save2txt      | ✔️    |      |                                                              |
+| save          | ✔️    | -    | Images: jpg, png, bmp, hdr, psd, tga, gif, pic, pgm, ppm<br />Numpy (removed): npy, npz<br />Text: csv, tsv, txt,...<br />Other: bin                                    |
+| save2txt      | ✔️    | -     |                                                              |
 
-> Note: ONNX not yet supported
 
 ## Linear algebra
 
@@ -203,7 +206,6 @@ Not yet...
 | outer      | ❌    |   ❌   |     Compute the outer product of two vectors.                                                         |
 | matmul      | ❌    |   ❌   |           Matrix product of two arrays.                                                   |
 | tensordot      | ❌    |   ❌   |     Compute tensor dot product along specified axes for arrays >= 1-D.                                                         |
-| eigensum      | ❌    |   ❌   |   Evaluates the Einstein summation convention on the operands                                                           |
 | interpolate | ✔️ | ✔️ |  Interpolate two tensors: `c*A + (1-c)*B` |
 
 
@@ -211,15 +213,8 @@ Not yet...
 
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
-| norm      | ❌    |  ❌    |  Matrix or vector norm.                                                 |
-| det      | ❌    |   ❌   |   Compute the determinant of an array.                                                        |
-| trace      | ❌    |   ❌   |   Return the sum along diagonals of the array.                                                 |
-
-### Solving equations and inverting matrices
-
-| Functionality | CPU  | GPU  | Comments                                                     |
-| ------------- | ---- | ---- | ------------------------------------------------------------ |
-| inv      | ❌    |  ❌    |  Compute the (multiplicative) inverse of a matrix.                                      |
+| norm      | ✔️    |  ✔️    |  Matrix or vector norm.                                                 |
+| trace      | ✔️    |  ✔️    |   Return the sum along diagonals of the array.                                                 |
 
 
 ## Logic functions
@@ -252,30 +247,36 @@ Not yet...
 | logical_not      | ✔️    |  ✔️    | Compute the truth value of NOT x element-wise.  |
 | logical_xor      | ✔️    |  ✔️    |  Compute the truth value of x1 XOR x2, element-wise. |
 
+
 ### Comparison
+
+#### Boolean
 
 | Functionality | CPU  | GPU  | Comments                                                     |
 | ------------- | ---- | ---- | ------------------------------------------------------------ |
 | allclose      | ✔️    |  ✔️    | Returns True if two arrays are element-wise equal within a tolerance.  |
 | isclose      | ✔️    |  ✔️    | Returns a boolean array where two arrays are element-wise equal within a tolerance.  |
-| greater      | ✔️    |  ✔️    | Return the truth value of (x1 > x2) element-wise.  |
-| greater_equal      | ✔️    |  ✔️    | Return the truth value of (x1 >= x2) element-wise.  |
-| less      | ✔️    |  ✔️    | Return the truth value of (x1 < x2) element-wise.  |
-| less_equal      | ✔️    |  ✔️    | Return the truth value of (x1 =< x2) element-wise.  |
-| equal      | ✔️    |  ✔️    | Return (x1 == x2) element-wise.  |
-| not_equal      | ✔️    |  ✔️    | Return (x1 != x2) element-wise.  |
+| greater      | ✔️    |  ✔️    | Return the truth value of (x1 > x2); Tensor-Tensor, Tensor-float  |
+| greater_equal      | ✔️    |  ✔️    | Return the truth value of (x1 >= x2); Tensor-Tensor, Tensor-float  |
+| less      | ✔️    |  ✔️    | Return the truth value of (x1 < x2) element-wise; Tensor-Tensor, Tensor-float  |
+| less_equal      | ✔️    |  ✔️    | Return the truth value of (x1 =< x2) element-wise; Tensor-Tensor, Tensor-float  |
+| equal      | ✔️    |  ✔️    | Return (x1 == x2) element-wise; Tensor-Tensor, Tensor-float  |
+| not_equal      | ✔️    |  ✔️    | Return (x1 != x2) element-wise; Tensor-Tensor, Tensor-float  |
 
 
-## Masked array operations
+#### Indices
 
-> To review...
+| Functionality | CPU  | GPU  | Comments                                                     |
+| ------------- | ---- | ---- | ------------------------------------------------------------ |
+| argsort      | ✔️     |  ✔️ ️    | Returns the indices that sort a tensor along a given dimension in ascending order by value.  |
+| kthvalue      | ❌    |  ❌ ️    | Returns a namedtuple (values, indices) where values is the k th smallest element of each row of the input tensor in the given dimension dim  |
+| sort      | ✔️     |  ✔️️    | Sorts the elements of the input tensor along a given dimension in ascending order by value.  |
+| topk      | ❌    |  ❌ ️    | Returns the k largest elements of the given input tensor along a given dimension.  |
+
 
 ## Mathematical functions
 
-
-### Element-wise
-
-> To review...
+### Point-wise
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
@@ -297,16 +298,12 @@ Not yet...
 | log2 | ✔️ | ✔️ |         |
 | log10 | ✔️ | ✔️ |         |
 | logn | ✔️ | ✔️ |         |
-| max* | ✔️ | ❌ | Not reduced         |
-| mean* | ❌ | ❌ | Not reduced         |
-| median* | ❌ | ❌ | Not reduced         |
-| min* | ✔️ | ❌ | Not reduced         |
 | mod | ✔️ | ✔️ |         |
-| mode* | ✔️ | ❌ | Not reduced         |
 | mult | ✔️ | ✔️ |         |
 | neg | ✔️ | ✔️ |         |
-| normalize* | ✔️ | ✔️ | Not reduced         |
+| normalize | ✔️ | ✔️ |       |
 | pow | ✔️ | ✔️ |         |
+| powb | ✔️ | ✔️ |         |
 | reciprocal | ✔️ | ✔️ |         |
 | remainder | ✔️ | ✔️ |         |
 | round | ✔️ | ✔️ |         |
@@ -317,34 +314,63 @@ Not yet...
 | sinh | ✔️ | ✔️ |         |
 | sqr | ✔️ | ✔️ |         |
 | sqrt | ✔️ | ✔️ |         |
-| std* | ❌ | ❌ | Not reduced         |
 | sub | ✔️ | ✔️ |         |
-| sum* | ✔️ | ✔️ | Not reduced by default         |
 | tan | ✔️ | ✔️ |         |
 | tanh | ✔️ | ✔️ |         |
 | trunc | ✔️ | ✔️ |         |
-| var* | ❌ | ❌ | Not reduced |
+
+
+### Element-wise
+
+| Functionality | CPU | GPU | Comments |
+| ------------- |------| -----| ---------|
+| add | ✔️ | ✔️ | Tensor-Tensor, Tensor-float |
+| div | ✔️ | ✔️ | Tensor-Tensor, Tensor-float |
+| mult | ✔️ | ✔️ | Tensor-Tensor, Tensor-float |
+| sub | ✔️ | ✔️ | Tensor-Tensor, Tensor-float |
+| maximum | ✔️ | ✔️ | Tensor-Tensor, Tensor-float |
+| minimum | ✔️ | ✔️ | Tensor-Tensor, Tensor-float |
+
+
+### Single-value
+
+| Functionality | CPU | GPU | Comments |
+| ------------- |------| -----| ---------|
+| argmax | ✔️ | ✔️ |
+| argmin | ✔️ | ✔️ |
+| max | ✔️ | ✔️ |
+| min | ✔️ | ✔️ |
+| mean | ✔️ | ✔ |
+| median | ✔️ | ✔ |
+| mode | ✔️ | ✔️ |
+| norm | ✔ | ✔️ |
+| prod | ✔️ | ✔ |
+| std | ✔ | ✔ |
+| sum | ✔️ |  ✔ |
+| sum_abs | ✔️ |  ✔ |
+| var | ✔️ |  ✔ |
+
 
 
 ### Reductions
 
 | Functionality | CPU | GPU | Comments |
 | ------------- |------| -----| ---------|
-| argmax | ❌ | ❌ |
-| argmin | ❌ | ❌ |
-| cumprod | ❌ | ❌ |
-| cumsum | ❌ | ❌ |
+| argmax | ✔️ | ✔️ |
+| argmin | ✔️ | ✔️ |
 | max | ✔️ | ✔️ |
 | min | ✔️ | ✔️ |
-| mean | ✔️ | ✔️ |
-| median | ❌ | ❌ |
-| mode | ❌ | ❌ |
-| norm | ❌ | ❌ |
-| prod | ❌ | ❌ |
-| std | ❌ | ❌ |
-| sum | ❌ | ❌ |
-| unique | ❌ | ❌ |
-| var | ❌ | ❌ |
+| mean | ✔️ | ✔ |
+| median | ✔️ | ✔ |
+| mode | ✔️ | ✔️ |
+| norm | ✔ |  ✔ |
+| prod | ✔️ | ✔ |
+| std | ✔ | ✔ |
+| sum | ✔️ |  ✔ |
+| sum_abs | ✔️ |  ✔ |
+| var | ✔️ |  ✔ |
+
+
 
 
 ## Miscellaneous
@@ -361,5 +387,5 @@ Not yet...
 | clone | ✔️ | ✔️ | Clone a tensor (same device) |
 | info | ✔️ | ✔️ | Print shape, device and size information |
 | print | ✔️ | ✔️ | Prints the tensor values |
-| valid_indices | ✔️ | ✔️ | Check if the given indices are valid for this tensor |
-| get_address_rowmajor | ✔️ | ✔️ |  Translate a set of indices to their corresponding address (row-major) |
+| numel |  ✔️ | ✔️ | Returns the total number of elements in the input tensor. |
+

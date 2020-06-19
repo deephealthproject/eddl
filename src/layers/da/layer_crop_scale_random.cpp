@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -20,14 +20,14 @@ using namespace std;
 
 int LCropScaleRandom::total_layers = 0;
 
-LCropScaleRandom::LCropScaleRandom(Layer *parent, vector<float> factor, string da_mode, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
+LCropScaleRandom::LCropScaleRandom(Layer *parent, vector<float> factor, WrappingMode da_mode, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "crop_scale" + to_string(++total_layers);
 
     output = new Tensor(input->shape, dev);
 
     // Params
     this->factor=std::move(factor);
-    this->da_mode=std::move(da_mode);
+    this->da_mode=da_mode;
 
     parent->addchild(this);
     addparent(parent);

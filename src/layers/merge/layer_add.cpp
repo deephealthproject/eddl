@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -29,7 +29,7 @@ LAdd::LAdd(vector<Layer *> parent, string name, int dev, int mem) : MLayer(name,
 
     if (parent.size() > 1)
         for (int i = 0; i < parent.size() - 1; ++i)
-            if (!Tensor::eqsize(parent[i]->output, parent[i + 1]->output)) {
+            if (!Tensor::sameShape(parent[i]->output, parent[i + 1]->output)) {
                 parent[i]->output->info();
                 parent[i + 1]->output->info();
                 msg("Error: LAdd layers with different tensor shape");

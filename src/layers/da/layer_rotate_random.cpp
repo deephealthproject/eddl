@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -19,7 +19,7 @@ using namespace std;
 
 int LRotateRandom::total_layers = 0;
 
-LRotateRandom::LRotateRandom(Layer *parent, vector<float> factor, vector<int> offset_center, string da_mode, float constant, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
+LRotateRandom::LRotateRandom(Layer *parent, vector<float> factor, vector<int> offset_center, WrappingMode da_mode, float cval, string name, int dev, int mem) : LDataAugmentation(parent, name, dev, mem) {
     if(name.empty()) this->name = "rotate_random" + to_string(++total_layers);
 
     output = new Tensor(input->shape, dev);
@@ -28,7 +28,7 @@ LRotateRandom::LRotateRandom(Layer *parent, vector<float> factor, vector<int> of
     this->factor = factor;
     this->offset_center = offset_center;
     this->da_mode = da_mode;
-    this->constant = constant;
+    this->cval = cval;
 
     parent->addchild(this);
     addparent(parent);
@@ -37,11 +37,11 @@ LRotateRandom::LRotateRandom(Layer *parent, vector<float> factor, vector<int> of
 
 
 void LRotateRandom::forward() {
-  if (mode == TRMODE) {
-    Tensor::rotate_random(this->input, this->output, this->factor, this->offset_center, this->da_mode, this->constant);
-  } else {
-    Tensor::copy(input, output);
-  }
+    if (mode == TRMODE) {
+        Tensor::rotate_random(this->input, this->output, this->factor, this->offset_center, this->da_mode, this->cval);
+    } else {
+        Tensor::copy(input, output);
+    }
 }
 
 void LRotateRandom::backward() {
@@ -50,14 +50,14 @@ void LRotateRandom::backward() {
 
 
 Layer *LRotateRandom::share(int c, int bs, vector<Layer *> p) {
-    auto *n = new LRotateRandom(p[0], this->factor, this->offset_center, this->da_mode, this->constant, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
+    auto *n = new LRotateRandom(p[0], this->factor, this->offset_center, this->da_mode, this->cval, "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
 
     return n;
 }
 
 Layer *LRotateRandom::clone(int c, int bs, vector<Layer *> p, int todev) {
-    auto *n = new LRotateRandom(p[0], this->factor, this->offset_center, this->da_mode, this->constant,  name, todev, this->mem_level);
+    auto *n = new LRotateRandom(p[0], this->factor, this->offset_center, this->da_mode, this->cval,  name, todev, this->mem_level);
     n->orig = this;
 
     return n;

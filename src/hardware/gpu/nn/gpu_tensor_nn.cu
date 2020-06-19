@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -14,8 +14,8 @@
 #include <cublas_v2.h>
 
 
-#include "eddl/hardware/gpu/nn/gpu_nn.h"
-#include "eddl/hardware/gpu/nn/gpu_nn_kernels.h"
+#include "eddl/hardware/gpu/nn/gpu_tensor_nn.h"
+#include "eddl/hardware/gpu/nn/gpu_tensor_nn_kernels.h"
 
 #include "eddl/hardware/gpu/gpu_hw.h"
 #include "eddl/hardware/gpu/gpu_tensor.h"
@@ -55,4 +55,86 @@ void gpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
 
     cudaFree(d_size);
     check_cuda(cudaDeviceSynchronize(), "d_repeat_nn_k");
+}
+
+
+void gpu_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    if(sd->gpu_addresses == nullptr){
+        // copy_cpu2gpu(sd->cpu_addresses, sd->gpu_addresses, B->size*sizeof(int), true);
+
+        check_cuda(cudaMalloc((void**)&(sd->gpu_addresses), B->stride[0]*sizeof(int)), "create address mapping");
+        check_cuda(cudaDeviceSynchronize(), "create");
+
+        check_cuda(cudaMemcpy(sd->gpu_addresses, sd->cpu_addresses, B->stride[0]*sizeof(int), cudaMemcpyHostToDevice), "copy address mapping");
+        check_cuda(cudaDeviceSynchronize(), "copy");
+    }
+
+
+    setDims(B);  // B is the small
+    gpu_select_nn<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, sd->gpu_addresses, A->stride[0], B->stride[0]);
+    check_cuda(cudaDeviceSynchronize(), "gpu_select_nn");
+}
+
+void gpu_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    // Copy indices from host to device
+    if(sd->gpu_addresses == nullptr){
+        // copy_cpu2gpu(sd->cpu_addresses, sd->gpu_addresses, A->size*sizeof(int), true);
+
+        check_cuda(cudaMalloc((void**)&(sd->gpu_addresses), A->stride[0]*sizeof(int)), "create address mapping");
+        check_cuda(cudaDeviceSynchronize(), "create");
+
+        check_cuda(cudaMemcpy(sd->gpu_addresses, sd->cpu_addresses, A->stride[0]*sizeof(int), cudaMemcpyHostToDevice), "copy address mapping");
+        check_cuda(cudaDeviceSynchronize(), "copy");
+    }
+
+
+    setDims(A);  // A is the small
+    gpu_select_back_nn<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, sd->gpu_addresses, A->stride[0], B->stride[0]);
+    check_cuda(cudaDeviceSynchronize(), "gpu_select_back_nn");
+}
+
+void gpu_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    // Copy indices from host to device
+    if(sd->gpu_addresses == nullptr){
+        // copy_cpu2gpu(sd->cpu_addresses, sd->gpu_addresses, B->size*sizeof(int), true);
+
+        check_cuda(cudaMalloc((void**)&(sd->gpu_addresses), B->stride[0]*sizeof(int)), "create address mapping");
+        check_cuda(cudaDeviceSynchronize(), "create");
+
+        check_cuda(cudaMemcpy(sd->gpu_addresses, sd->cpu_addresses, B->stride[0]*sizeof(int), cudaMemcpyHostToDevice), "copy address mapping");
+        check_cuda(cudaDeviceSynchronize(), "copy");
+    }
+
+    setDims(B);  // B is the small
+    gpu_set_select_nn<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, sd->gpu_addresses, A->stride[0], B->stride[0]);
+    check_cuda(cudaDeviceSynchronize(), "gpu_set_select_nn");
+}
+
+void gpu_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    // Copy indices from host to device
+    if(sd->gpu_addresses == nullptr){
+        // copy_cpu2gpu(sd->cpu_addresses, sd->gpu_addresses, B->size*sizeof(int), true);
+
+        check_cuda(cudaMalloc((void**)&(sd->gpu_addresses), B->stride[0]*sizeof(int)), "create address mapping");
+        check_cuda(cudaDeviceSynchronize(), "create");
+
+        check_cuda(cudaMemcpy(sd->gpu_addresses, sd->cpu_addresses, B->stride[0]*sizeof(int), cudaMemcpyHostToDevice), "copy address mapping");
+        check_cuda(cudaDeviceSynchronize(), "copy");
+    }
+
+    setDims(B);  // B is the small
+    gpu_set_select_back_nn<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, B->size, sd->gpu_addresses, A->stride[0], B->stride[0]);
+    check_cuda(cudaDeviceSynchronize(), "gpu_set_select_back_nn");
 }

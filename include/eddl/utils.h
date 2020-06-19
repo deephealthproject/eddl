@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -18,7 +18,7 @@ using namespace std;
 
 void msg(const string& text, const string& title="");
 
-float *get_fmem(long int size, const string &str);
+float *get_fmem(unsigned long int size, const string &str);
 
 string bytes2human(unsigned long long int bytes, int decimals=2);
 
@@ -55,5 +55,8 @@ string printVector(vector<T> myvector){
     temp += to_string(myvector[myvector.size()-1]);
     return temp;
 }
+
+enum WrappingMode {Constant=0, Reflect=1, Nearest=2, Mirror=3, Wrap=4, Original=5};
+WrappingMode getWrappingMode(string mode);
 
 #endif //EDDL_UTILS_H

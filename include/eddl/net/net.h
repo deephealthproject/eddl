@@ -1,7 +1,7 @@
 
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -56,12 +56,16 @@ public:
 	bool onnx_pretrained;
   bool isrecurrent;
   bool isbuild;
+	bool isdecoder;
+	bool isencoder;
+  int decsize;
 
 	vector<int> devsel;
 	CompServ *cs;
 
 	vlayer layers;
 	vlayer lin;
+	vlayer din;
 	vlayer lout;
 	vlayer vfts;
 	vlayer vbts;
@@ -88,6 +92,7 @@ public:
 	Net(vector <Net *> vnets);
 	~Net();
 
+
 	void build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize=true);
 	void toGPU(vector<int> g,int lsb,int mem);
 	void toCPU(int t);
@@ -95,8 +100,12 @@ public:
 	void fts();
 	void bts();
 	void split(int c, int todev);
-	Net *unroll(int inl, int outl, bool seq, bool areg);
+	Net *unroll(int inl, int outl);
+	Net *unroll_enc(int inl, int outl);
+	Net *unroll_enc_dec(int inl, int outl);
+	Net *unroll_dec(int inl, int outl);
 	void build_rnet(int inl,int outl);
+	Layer* getLayer(vlayer in);
 
 	int inNet(Layer *l);
 	void walk(Layer *l);
@@ -140,6 +149,7 @@ public:
 	void forward();
 	void forward_recurrent(vector<Tensor*> tin);
 	void reset_loss();
+    float get_metric( const string  layer_name, const string  metric_name );
 	void print_loss(int b);
 	void backward(vector<Tensor *> target);
 	void backward(Layer* (*f)(Layer *),Layer *out);
@@ -155,10 +165,13 @@ public:
 
 
 	void fit(vtensor tin, vtensor tout, int batch_size, int epochs);
+	void prepare_recurrent(vtensor tin, vtensor tout, int &inl, int &outl, vtensor &xt,vtensor &yt,vtensor &tinr,vtensor &toutr);
+
 	void fit_recurrent(vtensor tin, vtensor tout, int batch_size, int epochs);
 	void train_batch(vtensor X, vtensor Y, vind sind, int eval = 0);
 	void evaluate(vtensor tin, vtensor tout);
 	void evaluate_recurrent(vtensor tin, vtensor tout);
+	vtensor predict_recurrent(vtensor tin);
 	vtensor predict(vtensor tin);
 
 

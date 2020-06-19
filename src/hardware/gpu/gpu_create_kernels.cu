@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -31,4 +31,14 @@ __global__ void eye(float* a, long int rows, long int cols, int offset) {
     if (thread_id_x < ops)
         if ((thread_id_x/rows + offset) == (thread_id_x%cols)){ a[thread_id_x] = 1.0f; }
         else { a[thread_id_x] = 0.0f; }
+}
+
+
+__global__ void gpu_diag(float* A, float* B, long int rows, long int cols, int k) {
+    long int ops = rows*cols;
+    long int thread_id_x = blockDim.x*blockIdx.x + threadIdx.x;
+
+    if (thread_id_x < ops)
+        if ((thread_id_x/rows + k) == (thread_id_x%cols)){ B[thread_id_x] = A[thread_id_x]; }
+        else { B[thread_id_x] = 0.0f; }
 }

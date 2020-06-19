@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -58,7 +58,7 @@ float LCrossEntropy::value(Tensor *T, Tensor *Y) {
     Tensor *aux1;
 
     aux1 = new Tensor(T->getShape(), T->device);
-    cent(T, Y, aux1);
+    tensorNN::cent(T, Y, aux1);
     f = aux1->sum();
 
     delete aux1;

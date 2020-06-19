@@ -40,9 +40,9 @@ add
 .. doxygenfunction:: eddlT::add_(Tensor *, float)
 .. doxygenfunction:: eddlT::add_(Tensor *, Tensor *)
 
-.. doxygenfunction:: eddlT::add(float, Tensor *, float, Tensor *, Tensor *, int)
+.. doxygenfunction:: Tensor::add(float, Tensor *, float, Tensor *, Tensor *, int)
 
-.. doxygenfunction:: eddlT::add(Tensor *, Tensor *, Tensor *)
+.. doxygenfunction:: Tensor::add(Tensor *, Tensor *, Tensor *)
 
 .. code-block:: c++
    

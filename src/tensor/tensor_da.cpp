@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -13,19 +13,18 @@
 #include <utility>
 
 #include "eddl/tensor/tensor.h"
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
-#include "eddl/hardware/gpu/nn/gpu_nn.h"
 #endif
 
 
 using namespace std;
 
 
-void Tensor::shift(Tensor *A, Tensor *B, vector<int> shift, string mode, float constant){
+void Tensor::shift(Tensor *A, Tensor *B, vector<int> shift, WrappingMode mode, float cval){
     // shift => {y, x}
     // Parameter check
     if(::abs(shift[0]) >= A->shape[2] || ::abs(shift[1]) >= A->shape[3]){
@@ -40,12 +39,12 @@ void Tensor::shift(Tensor *A, Tensor *B, vector<int> shift, string mode, float c
     }
 
     if (A->isCPU()) {
-        cpu_shift(A, B, std::move(shift), get_mode(std::move(mode)), constant);
+        cpu_shift(A, B, std::move(shift), mode, cval);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_shift(A, B, std::move(shift), get_mode(std::move(mode)), constant);
+        gpu_shift(A, B, std::move(shift), mode, cval);
       }
 #endif
 #ifdef cFPGA
@@ -56,7 +55,7 @@ void Tensor::shift(Tensor *A, Tensor *B, vector<int> shift, string mode, float c
 }
 
 
-void Tensor::rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, string mode, float constant) {
+void Tensor::rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, WrappingMode mode, float cval) {
     // Check dimensions
     if(A->shape!=B->shape){
         msg("Incompatible dimensions", "Tensor::rotate");
@@ -65,12 +64,12 @@ void Tensor::rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center
     }
 
     if (A->isCPU()) {
-        cpu_rotate(A, B, angle, std::move(offset_center), get_mode(std::move(mode)), constant);
+        cpu_rotate(A, B, angle, std::move(offset_center), mode, cval);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_rotate(A, B, angle, std::move(offset_center), get_mode(std::move(mode)), constant);
+        gpu_rotate(A, B, angle, std::move(offset_center), mode, cval);
       }
 #endif
 #ifdef cFPGA
@@ -80,7 +79,7 @@ void Tensor::rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center
 #endif
 }
 
-void Tensor::scale(Tensor *A, Tensor *B, vector<int> new_shape, string mode, float constant) {
+void Tensor::scale(Tensor *A, Tensor *B, vector<int> new_shape, WrappingMode mode, float cval) {
     // new_shape => {y, x}
     // Parameter check
     if(new_shape[0] <= 0 || new_shape[1] <= 0){
@@ -93,12 +92,12 @@ void Tensor::scale(Tensor *A, Tensor *B, vector<int> new_shape, string mode, flo
     }
 
     if (A->isCPU()) {
-        cpu_scale(A, B, std::move(new_shape), get_mode(std::move(mode)), constant);
+        cpu_scale(A, B, std::move(new_shape), mode, cval);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_scale(A, B, std::move(new_shape), get_mode(std::move(mode)), constant);
+        gpu_scale(A, B, std::move(new_shape), mode, cval);
       }
 #endif
 #ifdef cFPGA
@@ -138,7 +137,7 @@ void Tensor::flip(Tensor *A, Tensor *B, int axis) {
 #endif
 }
 
-void Tensor::crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant) {
+void Tensor::crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float cval) {
     // coords => {y, x}
     // Parameter check
     if(coords_from[0] < 0.0f || coords_from[0]>= A->shape[2] ||
@@ -154,12 +153,12 @@ void Tensor::crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coo
     }
 
     if (A->isCPU()) {
-        cpu_crop(A, B, std::move(coords_from), std::move(coords_to), constant, false);
+        cpu_crop(A, B, std::move(coords_from), std::move(coords_to), cval, false);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_crop(A, B, std::move(coords_from), std::move(coords_to), constant, false);
+        gpu_crop(A, B, std::move(coords_from), std::move(coords_to), cval, false);
       }
 #endif
 #ifdef cFPGA
@@ -169,7 +168,7 @@ void Tensor::crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coo
 #endif
 }
 
-void Tensor::crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, string mode, float constant) {
+void Tensor::crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, WrappingMode mode, float cval) {
     // coords => {y, x}
     // Parameter check
     if(coords_from[0] < 0.0f || coords_from[0]>= A->shape[2] ||
@@ -185,12 +184,12 @@ void Tensor::crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<in
     }
 
     if (A->isCPU()) {
-        cpu_crop_scale(A, B, std::move(coords_from), std::move(coords_to), get_mode(std::move(mode)), constant);
+        cpu_crop_scale(A, B, std::move(coords_from), std::move(coords_to), mode, cval);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_crop_scale(A, B, std::move(coords_from), std::move(coords_to), get_mode(std::move(mode)), constant);
+        gpu_crop_scale(A, B, std::move(coords_from), std::move(coords_to), mode, cval);
       }
 #endif
 #ifdef cFPGA
@@ -201,7 +200,7 @@ void Tensor::crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<in
 }
 
 
-void Tensor::cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant) {
+void Tensor::cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float cval) {
     // coords => {y, x}
     // Parameter check
     if(coords_from[0] < 0.0f || coords_from[0]>= A->shape[2] ||
@@ -219,12 +218,12 @@ void Tensor::cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> c
     }
 
     if (A->isCPU()) {
-        cpu_crop(A, B, std::move(coords_from), std::move(coords_to), constant, true);
+        cpu_crop(A, B, std::move(coords_from), std::move(coords_to), cval, true);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_crop(A, B, std::move(coords_from), std::move(coords_to), constant, true);
+        gpu_crop(A, B, std::move(coords_from), std::move(coords_to), cval, true);
       }
 #endif
 #ifdef cFPGA
@@ -237,7 +236,7 @@ void Tensor::cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> c
 
 
 
-void Tensor::shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, string mode, float constant){
+void Tensor::shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, WrappingMode mode, float cval){
     // Parameter check
     if(factor_x[0] < -1.0f || factor_x[0] > 1.0f ||
        factor_x[1] < -1.0f || factor_x[1] > 1.0f ||
@@ -254,12 +253,12 @@ void Tensor::shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<f
     }
 
     if (A->isCPU()) {
-        cpu_shift_random(A, B, std::move(factor_x), std::move(factor_y), get_mode(std::move(mode)), constant);
+        cpu_shift_random(A, B, std::move(factor_x), std::move(factor_y), mode, cval);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_shift_random(A, B, std::move(factor_x), std::move(factor_y), get_mode(std::move(mode)), constant);
+        gpu_shift_random(A, B, std::move(factor_x), std::move(factor_y), mode, cval);
       }
 #endif
 #ifdef cFPGA
@@ -271,7 +270,7 @@ void Tensor::shift_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<f
 
 
 
-void Tensor::rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center, string mode, float constant) {
+void Tensor::rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center, WrappingMode mode, float cval) {
     // Check dimensions
     if(A->shape!=B->shape){
         msg("Incompatible dimensions", "Tensor::rotate_random");
@@ -280,12 +279,12 @@ void Tensor::rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<in
     }
 
     if (A->isCPU()) {
-        cpu_rotate_random(A, B,  std::move(factor), std::move(offset_center), get_mode(std::move(mode)), constant);
+        cpu_rotate_random(A, B,  std::move(factor), std::move(offset_center), mode, cval);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_rotate_random(A, B,  std::move(factor), std::move(offset_center), get_mode(std::move(mode)), constant);
+        gpu_rotate_random(A, B,  std::move(factor), std::move(offset_center), mode, cval);
       }
 #endif
 #ifdef cFPGA
@@ -295,7 +294,7 @@ void Tensor::rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<in
 #endif
 }
 
-void Tensor::scale_random(Tensor *A, Tensor *B, vector<float> factor, string mode, float constant) {
+void Tensor::scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMode mode, float cval) {
     // Parameter check
     if(factor[0] < 0.0f || factor[1] < 0.0f){
         msg("The scaling factor must be a positive number", "Tensor::scale_random");
@@ -307,12 +306,12 @@ void Tensor::scale_random(Tensor *A, Tensor *B, vector<float> factor, string mod
     }
 
     if (A->isCPU()) {
-        cpu_scale_random(A, B, std::move(factor), get_mode(std::move(mode)), constant);
+        cpu_scale_random(A, B, std::move(factor), mode, cval);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_scale_random(A, B, std::move(factor), get_mode(std::move(mode)), constant);
+        gpu_scale_random(A, B, std::move(factor), mode, cval);
       }
 #endif
 #ifdef cFPGA
@@ -374,7 +373,7 @@ void Tensor::crop_random(Tensor *A, Tensor *B) {
 #endif
 }
 
-void Tensor::crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, string mode, float constant) {
+void Tensor::crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, WrappingMode mode, float cval) {
     // Parameter check
     if(factor[0] < 0.0f || factor[0] > 1.0f ||
        factor[1] < 0.0f || factor[1] > 1.0f){
@@ -387,12 +386,12 @@ void Tensor::crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, strin
     }
 
     if (A->isCPU()) {
-        cpu_crop_scale_random(A, B, std::move(factor), get_mode(std::move(mode)), constant);
+        cpu_crop_scale_random(A, B, std::move(factor), mode, cval);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_crop_scale_random(A, B, std::move(factor), get_mode(std::move(mode)), constant);
+        gpu_crop_scale_random(A, B, std::move(factor), mode, cval);
       }
 #endif
 #ifdef cFPGA
@@ -402,7 +401,7 @@ void Tensor::crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, strin
 #endif
 }
 
-void Tensor::cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant) {
+void Tensor::cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float cval) {
     // Parameter check
     if(factor_x[0] < 0.0f || factor_x[0] > 1.0f ||
        factor_x[1] < 0.0f || factor_x[1] > 1.0f ||
@@ -419,12 +418,12 @@ void Tensor::cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<
     }
 
     if (A->isCPU()) {
-        cpu_cutout_random(A, B, std::move(factor_x), std::move(factor_y), constant);
+        cpu_cutout_random(A, B, std::move(factor_x), std::move(factor_y), cval);
     }
 #ifdef cGPU
     else if (A->isGPU())
       {
-        gpu_cutout_random(A, B, std::move(factor_x), std::move(factor_y), constant);
+        gpu_cutout_random(A, B, std::move(factor_x), std::move(factor_y), cval);
       }
 #endif
 #ifdef cFPGA

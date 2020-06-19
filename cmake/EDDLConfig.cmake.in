@@ -7,7 +7,7 @@ SET(USE_PROTOBUF @BUILD_PROTOBUF@)  # Set in parent
 SET(USE_OPENMP @USE_OPENMP@)  # Modified in a subdirectory
 SET(USE_CUDA @USE_CUDA@) # Modified in a subdirectory
 SET(USE_SYSTEM_EIGEN @USE_SYSTEM_EIGEN@) # Modified in a subdirectory
-SET(USE_SYSTEM_ZLIB @USE_SYSTEM_ZLIB@) # Modified in a subdirectory
+#SET(USE_SYSTEM_ZLIB @USE_SYSTEM_ZLIB@) # Modified in a subdirectory
 SET(USE_SYSTEM_PROTOBUF @USE_SYSTEM_PROTOBUF@) # Modified in a subdirectory
 SET(EP_BASE_DIR @EP_BASE_DIR@) # Modified in a subdirectory
 
@@ -34,16 +34,16 @@ if(USE_SUPERBUILD)
         SET(Eigen3_DIR @Eigen3_DIR@) # Modified in a subdirectory
         list(APPEND CMAKE_PREFIX_PATH ${Eigen3_DIR})
     endif()
-    if(NOT USE_SYSTEM_ZLIB)
-        SET(ZLIB_ROOT_PATH @ZLIB_ROOT@) # Modified in a subdirectory
-        SET(ZLIB_BIN @ZLIB_BIN@) # Modified in a subdirectory
-        list(APPEND CMAKE_PREFIX_PATH ${ZLIB_BIN} ${ZLIB_ROOT_PATH})
-    endif()
+#    if(NOT USE_SYSTEM_ZLIB)
+#        SET(ZLIB_ROOT_PATH @ZLIB_ROOT@) # Modified in a subdirectory
+#        SET(ZLIB_BIN @ZLIB_BIN@) # Modified in a subdirectory
+#        list(APPEND CMAKE_PREFIX_PATH ${ZLIB_BIN} ${ZLIB_ROOT_PATH})
+#    endif()
 endif()
     
 # Core dependencies
 find_dependency(Eigen3 REQUIRED NO_MODULE)
-find_dependency(ZLIB REQUIRED)
+#find_dependency(ZLIB REQUIRED)
 
 # Protobuf
 if(USE_PROTOBUF)
@@ -54,7 +54,6 @@ if(USE_PROTOBUF)
         find_dependency(Protobuf REQUIRED)
     endif()
 endif()
-
 
 include("${CMAKE_CURRENT_LIST_DIR}/EDDLTargets.cmake")
 

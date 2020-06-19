@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -9,24 +9,21 @@
 
 
 #include "eddl/random.h"
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 
-void
-cpu_rand_uniform(Tensor * A, float v)
+void cpu_rand_uniform(Tensor * A, float v)
 {
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i) A->ptr[i] = uniform() * v;
 }
 
-void
-cpu_rand_signed_uniform(Tensor * A, float v)
+void cpu_rand_signed_uniform(Tensor * A, float v)
 {
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i) A->ptr[i] = signed_uniform() * v;
 }
 
-void
-cpu_rand_binary(Tensor * A, float v)
+void cpu_rand_binary(Tensor * A, float v)
 {
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i)

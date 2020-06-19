@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -52,11 +52,11 @@ int main(int argc, char **argv) {
     cout << endl;
     cout << "Test: Array contents 1 ********************" << endl;
 
-    t1->set_({0, 0}, 12); // isfinite
-    t1->set_({1, 0}, INFINITY); // isinf
-    t1->set_({2, 0}, NAN); // isnan
-    t1->set_({3, 0}, -INFINITY); // isneginf
-    t1->set_({4, 0}, +INFINITY); // isposinf
+    t1->ptr[0] = 12; // isfinite
+    t1->ptr[1] = INFINITY; // isinf
+    t1->ptr[2] = NAN; // isnan
+    t1->ptr[3] = -INFINITY; // isneginf
+    t1->ptr[4] = +INFINITY; // isposinf
     cout << "New tensor 1: ********************" << endl;
     t1->print();
     cout << endl;

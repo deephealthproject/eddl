@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -17,6 +17,14 @@
 #include <thrust/reduce.h>
 #include <thrust/functional.h>
 #include <thrust/extrema.h>
+#include <thrust/device_vector.h>
+#include <thrust/tuple.h>
+#include <thrust/reduce.h>
+#include <thrust/fill.h>
+#include <thrust/generate.h>
+#include <thrust/sort.h>
+#include <thrust/sequence.h>
+#include <thrust/copy.h>
 
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_kernels.h"
@@ -27,204 +35,245 @@
 
 // GPU: Structs for Thrust ********************************************
 
-struct sum_abs_value : public thrust::unary_function<float, float>
+template<typename T>
+struct absolute_value : public unary_function<T,T>
 {
-    __host__ __device__ float operator()(const float &x) const
+    __host__ __device__ T operator()(const T &x) const
     {
-        return fabsf(x);
+        return x < T(0) ? -x : x;
     }
 };
 
-// GPU: Math (in-place) ********************************************
-void gpu_abs_(Tensor *A){
-    int device=A->gpu_device;
-    cudaSetDevice(device);
 
-    setDims(A);
+/*
+ * @struct varianceshifteop
+ * @brief a unary function that shifts input data
+ * by their mean and computes the squares of them
+ */
+struct variance_shift_sum : std::unary_function<float, float>{
+    const float mean;
 
-    abs_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
-    check_cuda(cudaDeviceSynchronize(), "abs_");
-}
+    variance_shift_sum(float m) : mean(m) { /* empty */ }
 
-void gpu_acos_(Tensor *A){
-    int device=A->gpu_device;
-    cudaSetDevice(device);
-
-    setDims(A);
-
-    acos_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
-    check_cuda(cudaDeviceSynchronize(), "acos_");
-}
-
-void gpu_add_(Tensor *A, float v) {
-  int device=A->gpu_device;
-  cudaSetDevice(device);
-
-  setDims(A);
-
-  add_<<<dimGrid,dimBlock>>>(A->ptr, A->size, v);
-  check_cuda(cudaDeviceSynchronize(), "add_");
-}
-
-void gpu_asin_(Tensor *A){
-    int device=A->gpu_device;
-    cudaSetDevice(device);
-
-    setDims(A);
-
-    asin_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
-    check_cuda(cudaDeviceSynchronize(), "asin_");
-}
-
-void gpu_atan_(Tensor *A){
-    int device=A->gpu_device;
-    cudaSetDevice(device);
-
-    setDims(A);
-
-    atan_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
-    check_cuda(cudaDeviceSynchronize(), "atan_");
-}
-
-void gpu_ceil_(Tensor *A){
-    int device=A->gpu_device;
-    cudaSetDevice(device);
-
-    setDims(A);
-
-    ceil_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
-    check_cuda(cudaDeviceSynchronize(), "ceil_");
-}
-
-void gpu_clamp_(Tensor *A, float min, float max){
-    int device=A->gpu_device;
-    cudaSetDevice(device);
-
-    setDims(A);
-
-    clamp_<<<dimGrid,dimBlock>>>(A->ptr, A->size, min, max);
-    check_cuda(cudaDeviceSynchronize(), "clamp_");
-}
-
-void gpu_cos_(Tensor *A){
-    int device=A->gpu_device;
-    cudaSetDevice(device);
-
-    setDims(A);
-
-    cos_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
-    check_cuda(cudaDeviceSynchronize(), "cos_");
-}
-
-void gpu_cosh_(Tensor *A){
-    int device=A->gpu_device;
-    cudaSetDevice(device);
-
-    setDims(A);
-
-    cosh_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
-    check_cuda(cudaDeviceSynchronize(), "cosh_");
-}
-
-void gpu_exp_(Tensor *A) {
-
-  int device=A->gpu_device;
-  cudaSetDevice(device);
-
-  setDims(A);
-
-  exp_<<<dimGrid,dimBlock>>>(A->ptr,A->size);
-  check_cuda(cudaDeviceSynchronize(),"exp_");
-
-}
-
-void gpu_floor_(Tensor *A){
-    int device=A->gpu_device;
-    cudaSetDevice(device);
-
-    setDims(A);
-
-    floor_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
-    check_cuda(cudaDeviceSynchronize(), "floor_");
-}
-
-
-void gpu_log_(Tensor *A) {
-  int device=A->gpu_device;
-  cudaSetDevice(device);
-
-  setDims(A);
-
-  log_<<<dimGrid,dimBlock>>>(A->ptr,A->size);
-  check_cuda(cudaDeviceSynchronize(), "log_");
-
-}
-
-
-void gpu_log2_(Tensor *A) {
-    int device=A->gpu_device;
-    cudaSetDevice(device);
-
-    setDims(A);
-
-    log2_<<<dimGrid,dimBlock>>>(A->ptr,A->size);
-    check_cuda(cudaDeviceSynchronize(),"log2_");
-}
-
-
-void gpu_log10_(Tensor *A) {
-    int device=A->gpu_device;
-    cudaSetDevice(device);
-
-    setDims(A);
-
-    log10_<<<dimGrid,dimBlock>>>(A->ptr,A->size);
-    check_cuda(cudaDeviceSynchronize(),"log10_");
-}
-
-
-void gpu_logn_(Tensor *A, float n){
-    int device=A->gpu_device;
-    cudaSetDevice(device);
-
-    setDims(A);
-
-    logn_<<<dimGrid,dimBlock>>>(A->ptr, A->size, n);
-    check_cuda(cudaDeviceSynchronize(), "logn_");
+    __host__ __device__ float operator()(float x) const {
+        float tmp = x - mean;
+        return tmp*tmp;
+    }
 };
 
-void gpu_mod_(Tensor *A, float v){
+template <class T>
+struct bigger_tuple {
+    __device__ __host__
+    tuple<T,int> operator()(const tuple<T,int> &a, const tuple<T,int> &b)
+    {
+        if (a > b) return a;
+        else return b;
+    }
+
+};
+
+template <class T>
+int max_index(thrust::device_vector<T>& vec) {
+
+    // create implicit index sequence [0, 1, 2, ... )
+    thrust::counting_iterator<int> begin(0); thrust::counting_iterator<int> end(vec.size());
+    tuple<T,int> init(vec[0],0);
+    tuple<T,int> smallest;
+
+    smallest = reduce(make_zip_iterator(make_tuple(vec.begin(), begin)), make_zip_iterator(make_tuple(vec.end(), end)), init, bigger_tuple<T>());
+    return get<1>(smallest);
+}
+
+// GPU: Math (in-place) ********************************************
+void gpu_abs(Tensor *A, Tensor *B){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     setDims(A);
 
-    mod_<<<dimGrid,dimBlock>>>(A->ptr, A->size, v);
-    check_cuda(cudaDeviceSynchronize(), "mod_");
+    gpu_abs<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "abs");
 }
 
-void gpu_inv_(Tensor *A, float v){
-  int device=A->gpu_device;
-  cudaSetDevice(device);
+void gpu_acos(Tensor *A, Tensor *B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
 
-  setDims(A);
+    setDims(A);
 
-  inv_<<<dimGrid,dimBlock>>>(A->ptr, v, A->size);
-  check_cuda(cudaDeviceSynchronize(),"inv_");
+    gpu_acos<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "acos");
 }
 
-void gpu_mult_(Tensor *A, float v) {
-  int device=A->gpu_device;
-  cudaSetDevice(device);
+void gpu_add(Tensor *A, Tensor *B, float v) {
+    int device=A->gpu_device;
+    cudaSetDevice(device);
 
-  setDims(A);
+    setDims(A);
 
-  mult_<<<dimGrid,dimBlock>>>(A->ptr, A->size, v);
-  check_cuda(cudaDeviceSynchronize(),"mult_");
+    gpu_add<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, v);
+    check_cuda(cudaDeviceSynchronize(), "add");
+}
+
+void gpu_asin(Tensor *A, Tensor *B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_asin<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "asin");
+}
+
+void gpu_atan(Tensor *A, Tensor *B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_atan<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "atan");
+}
+
+void gpu_ceil(Tensor *A, Tensor *B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_ceil<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "ceil");
+}
+
+void gpu_clamp(Tensor *A, Tensor *B, float min, float max){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_clamp<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, min, max);
+    check_cuda(cudaDeviceSynchronize(), "clamp");
+}
+
+void gpu_cos(Tensor *A, Tensor *B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_cos<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "cos");
+}
+
+void gpu_cosh(Tensor *A, Tensor *B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_cosh<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "cosh");
+}
+
+void gpu_exp(Tensor *A, Tensor *B){
+
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_exp<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(),"exp");
 
 }
 
-void gpu_normalize_(Tensor *A, float min, float max){
+void gpu_floor(Tensor *A, Tensor *B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_floor<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "floor");
+}
+
+
+void gpu_log(Tensor *A, Tensor *B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_log<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "log");
+
+}
+
+
+void gpu_log2(Tensor *A, Tensor *B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_log2<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(),"log2");
+}
+
+
+void gpu_log10(Tensor *A, Tensor *B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_log10<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(),"log10");
+}
+
+
+void gpu_logn(Tensor *A, Tensor *B, float n){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_logn<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, n);
+    check_cuda(cudaDeviceSynchronize(), "logn");
+};
+
+void gpu_mod(Tensor *A, Tensor *B, float v){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_mod<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, v);
+    check_cuda(cudaDeviceSynchronize(), "mod");
+}
+
+void gpu_inv(Tensor *A, Tensor *B, float v){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_inv<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, v);
+    check_cuda(cudaDeviceSynchronize(),"inv");
+}
+
+void gpu_mult(Tensor *A, Tensor *B, float v){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_mult<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, v);
+    check_cuda(cudaDeviceSynchronize(),"mult");
+
+}
+
+void gpu_normalize(Tensor *A, Tensor *B, float min, float max){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
@@ -233,264 +282,292 @@ void gpu_normalize_(Tensor *A, float min, float max){
     float min_ori = gpu_min(A);
     float max_ori = gpu_max(A);
 
-    normalize_<<<dimGrid,dimBlock>>>(A->ptr, A->size, min_ori, max_ori, min, max);
-    check_cuda(cudaDeviceSynchronize(), "normalize_");
+    gpu_normalize<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, min_ori, max_ori, min, max);
+    check_cuda(cudaDeviceSynchronize(), "normalize");
 }
 
-void gpu_pow_(Tensor *A, float v){
+void gpu_pow(Tensor *A, Tensor *B, float v){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     setDims(A);
 
-    pow_<<<dimGrid,dimBlock>>>(A->ptr, A->size, v);
-    check_cuda(cudaDeviceSynchronize(), "pow_");
+    gpu_pow<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, v);
+    check_cuda(cudaDeviceSynchronize(), "pow");
 }
 
-void gpu_powb_(Tensor *A, float v){
+void gpu_powb(Tensor *A, Tensor *B, float v){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     setDims(A);
 
-    powb_<<<dimGrid,dimBlock>>>(A->ptr, A->size, v);
-    check_cuda(cudaDeviceSynchronize(), "powb_");
+    gpu_powb<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, v);
+    check_cuda(cudaDeviceSynchronize(), "powb");
 }
 
-
-void gpu_reciprocal_(Tensor *A){
+void gpu_remainder(Tensor *A, Tensor *B, float v){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     setDims(A);
 
-    reciprocal_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
-    check_cuda(cudaDeviceSynchronize(), "reciprocal_");
+    gpu_remainder<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, v);
+    check_cuda(cudaDeviceSynchronize(), "remainder");
 }
 
-void gpu_remainder_(Tensor *A, float v){
+void gpu_round(Tensor *A, Tensor *B){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     setDims(A);
 
-    remainder_<<<dimGrid,dimBlock>>>(A->ptr, A->size, v);
-    check_cuda(cudaDeviceSynchronize(), "remainder_");
+    gpu_round<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "round");
 }
 
-void gpu_round_(Tensor *A){
+void gpu_rsqrt(Tensor *A, Tensor *B){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     setDims(A);
 
-    round_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
-    check_cuda(cudaDeviceSynchronize(), "round_");
+    gpu_rsqrt<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "rsqrt");
 }
 
-void gpu_rsqrt_(Tensor *A){
+void gpu_sigmoid(Tensor *A, Tensor *B){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     setDims(A);
 
-    rsqrt_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
-    check_cuda(cudaDeviceSynchronize(), "rsqrt_");
+    gpu_sigmoid<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "sigmoid");
 }
 
-void gpu_sigmoid_(Tensor *A){
+void gpu_sign(Tensor *A, Tensor *B, float zero_sign){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     setDims(A);
 
-    sigmoid_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
-    check_cuda(cudaDeviceSynchronize(), "sigmoid_");
+    gpu_sign<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size, zero_sign);
+    check_cuda(cudaDeviceSynchronize(), "sign");
 }
 
-void gpu_sign_(Tensor *A){
+void gpu_sin(Tensor *A, Tensor *B){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     setDims(A);
 
-    sign_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
-    check_cuda(cudaDeviceSynchronize(), "sign_");
+    gpu_sin<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "sin");
 }
 
-void gpu_sin_(Tensor *A){
+void gpu_sinh(Tensor *A, Tensor *B){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     setDims(A);
 
-    sin_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
-    check_cuda(cudaDeviceSynchronize(), "sin_");
+    gpu_sinh<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "sinh");
 }
 
-void gpu_sinh_(Tensor *A){
+
+void gpu_sqr(Tensor *A, Tensor *B){
+
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     setDims(A);
 
-    sinh_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
-    check_cuda(cudaDeviceSynchronize(), "sinh_");
-}
-
-
-void gpu_sqr_(Tensor *A) {
-
-  int device=A->gpu_device;
-  cudaSetDevice(device);
-
-  setDims(A);
-
-  sqr_<<<dimGrid,dimBlock>>>(A->ptr,A->size);
-  check_cuda(cudaDeviceSynchronize(),"sqr_");
+    gpu_sqr<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(),"sqr");
 
 }
 
-void gpu_sqrt_(Tensor *A) {
+void gpu_sqrt(Tensor *A, Tensor *B){
 
-  int device=A->gpu_device;
-  cudaSetDevice(device);
-
-  setDims(A);
-
-  sqrt_<<<dimGrid,dimBlock>>>(A->ptr,A->size);
-  check_cuda(cudaDeviceSynchronize(),"sqrt_");
-}
-
-void gpu_tan_(Tensor *A){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     setDims(A);
 
-    tan_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
-    check_cuda(cudaDeviceSynchronize(), "tan_");
+    gpu_sqrt<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(),"sqrt");
 }
 
-void gpu_tanh_(Tensor *A){
+void gpu_tan(Tensor *A, Tensor *B){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     setDims(A);
 
-    tanh_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
-    check_cuda(cudaDeviceSynchronize(), "tanh_");
+    gpu_tan<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "tan");
 }
 
-void gpu_trunc_(Tensor *A){
+void gpu_tanh(Tensor *A, Tensor *B){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     setDims(A);
 
-    trunc_<<<dimGrid,dimBlock>>>(A->ptr, A->size);
-    check_cuda(cudaDeviceSynchronize(), "trunc_");
+    gpu_tanh<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "tanh");
+}
+
+void gpu_trunc(Tensor *A, Tensor *B){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_trunc<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "trunc");
 }
 
 // CPU: Math (static) ********************************************
 
 
-void gpu_addc(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC){
+void gpu_add(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_add<<<dimGrid,dimBlock>>>(scA,A->ptr,scB,B->ptr,C->ptr,incC,A->size);
+    check_cuda(cudaDeviceSynchronize(),"addc");
+}
+
+
+void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    float alfa=1.0;
+    float beta=(float)incC;
+
+    cublasOperation_t trA = CUBLAS_OP_N;
+    cublasOperation_t trB = CUBLAS_OP_N;
+
+    int ldA=A->shape[1];
+    int ldB=B->shape[1];
+    int ldC=B->shape[1];
+    int m=B->shape[1];
+    int n=A->shape[0];
+    int k=B->shape[0];
+
+
+    if (tA)
+    {
+        trA = CUBLAS_OP_T;
+        n=A->shape[1];
+    }
+    if (tB)
+    {
+        trB = CUBLAS_OP_T;
+        m=B->shape[0];
+        k=B->shape[1];
+        ldC=B->shape[0];
+    }
+
+    check_cublas(cublasSgemm(hcublas[device],trB,trA,m,n,k,&alfa,B->ptr,ldB,A->ptr,ldA,&beta,C->ptr,ldC),"mult2D");
+
+}
+
+
+void gpu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_el_div<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,incC,A->size);
+
+    check_cuda(cudaDeviceSynchronize(),"gpu_el_div");
+}
+
+
+void gpu_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_el_mult<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,incC,A->size);
+
+    check_cuda(cudaDeviceSynchronize(),"gpu_el_mult");
+}
+
+
+void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     setDims(A);
 
 
-    addc<<<dimGrid,dimBlock>>>(scA,A->ptr,scB,B->ptr,C->ptr,incC,A->size);
-    check_cuda(cudaDeviceSynchronize(),"addc");
-}
+    gpu_sum2D_rowwise<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,A->shape[0],A->shape[1]);
 
-
-void gpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C,int incC){
-  int device=A->gpu_device;
-  cudaSetDevice(device);
-
-  float alfa=1.0;
-  float beta=(float)incC;
-
-  cublasOperation_t trA = CUBLAS_OP_N;
-  cublasOperation_t trB = CUBLAS_OP_N;
-
-  int ldA=A->shape[1];
-  int ldB=B->shape[1];
-  int ldC=B->shape[1];
-  int m=B->shape[1];
-  int n=A->shape[0];
-  int k=B->shape[0];
-
-
-  if (tA)
-  {
-    trA = CUBLAS_OP_T;
-  	n=A->shape[1];
-  }
-  if (tB)
-    {
-  	trB = CUBLAS_OP_T;
-    m=B->shape[0];
-  	k=B->shape[1];
-    ldC=B->shape[0];
-    }
-
-  check_cublas(cublasSgemm(hcublas[device],trB,trA,m,n,k,&alfa,B->ptr,ldB,A->ptr,ldA,&beta,C->ptr,ldC),"mult2D");
-
-}
-
-
-void gpu_el_div(Tensor *A, Tensor *B, Tensor *C,int incC) {
-  int device=A->gpu_device;
-  cudaSetDevice(device);
-
-  setDims(A);
-
-  el_div<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,incC,A->size);
-
-  check_cuda(cudaDeviceSynchronize(),"gpu_el_div");
-}
-
-
-void gpu_el_mult(Tensor *A, Tensor *B, Tensor *C,int incC){
-  int device=A->gpu_device;
-  cudaSetDevice(device);
-
-  setDims(A);
-
-  el_mult<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,incC,A->size);
-
-  check_cuda(cudaDeviceSynchronize(),"gpu_el_mult");
-}
-
-
-void gpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C){
-  int device=A->gpu_device;
-  cudaSetDevice(device);
-
-  setDims(A);
-
-
-  sum_mat_row<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,A->shape[0],A->shape[1]);
-
-  check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
+    check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
 
 }
 
 
 void gpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C){
-  int device=A->gpu_device;
-  cudaSetDevice(device);
+    int device=A->gpu_device;
+    cudaSetDevice(device);
 
-  setDims(A);
+    setDims(A);
 
-  sum_mat_col<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,A->shape[0],A->shape[1]);
+    gpu_sum2D_colwise<<<dimGrid,dimBlock>>>(A->ptr,B->ptr,C->ptr,A->shape[0],A->shape[1]);
 
-  check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
+    check_cuda(cudaDeviceSynchronize(),"sum2D_rowwise");
 
+}
+
+void gpu_maximum(Tensor* A, Tensor* B, float v){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_maximum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, v, A->size);
+    check_cuda(cudaDeviceSynchronize(), "maximum");
+}
+
+void gpu_maximum(Tensor* A, Tensor* B, Tensor* C){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_maximum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "maximum");
+}
+
+void gpu_minimum(Tensor* A, Tensor* B, float v){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_minimum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, v, A->size);
+    check_cuda(cudaDeviceSynchronize(), "minimum");
+}
+
+void gpu_minimum(Tensor* A, Tensor* B, Tensor* C){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    setDims(A);
+
+    gpu_minimum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, A->size);
+    check_cuda(cudaDeviceSynchronize(), "minimum");
 }
 
 
@@ -503,6 +580,41 @@ float gpu_max(Tensor *A){
     return *thrust::max_element(dev_ptr, dev_ptr + A->size);
 }
 
+void gpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_max<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, false);
+    check_cuda(cudaDeviceSynchronize(),"reduce_max");
+}
+
+int gpu_argmax(Tensor *A){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    thrust::device_ptr<float> max_ptr = thrust::max_element(dev_ptr, dev_ptr+A->size);
+
+    //float max = *max_ptr;
+    int argmax = (max_ptr - dev_ptr);
+    return argmax;
+}
+
+void gpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_max<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, true);
+    check_cuda(cudaDeviceSynchronize(),"reduce_argmax");
+}
+
+
 float gpu_min(Tensor *A){
     int device=A->gpu_device;
     cudaSetDevice(device);
@@ -512,26 +624,248 @@ float gpu_min(Tensor *A){
 }
 
 
-float gpu_sum(Tensor *A){
+void gpu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_min<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, false);
+    check_cuda(cudaDeviceSynchronize(),"reduce_min");
+}
+
+int gpu_argmin(Tensor *A){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
 
     thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
-    float sum=thrust::reduce(dev_ptr, dev_ptr + A->size);
+    thrust::device_ptr<float> min_ptr = thrust::min_element(dev_ptr, dev_ptr+A->size);
 
-    return sum;
+//    float min = *min_ptr;
+    int argmin = (min_ptr - dev_ptr);
+    return argmin;
 }
+
+void gpu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_min<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, true);
+    check_cuda(cudaDeviceSynchronize(),"reduce_argmin");
+}
+
+float gpu_sum(Tensor *A){
+    int device=A->gpu_device;
+
+    cudaSetDevice(device);
+
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    return thrust::reduce(dev_ptr, dev_ptr + A->size);
+}
+
+void gpu_sum(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_sum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
+    check_cuda(cudaDeviceSynchronize(),"reduce_sum");
+}
+
 
 float gpu_sum_abs(Tensor *A){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
     thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
-    //return thrust::transform_reduce(dev_ptr, dev_ptr + A->size, thrust::plus<float>, 0.0f, sum_abs_value);
-    return 0.0f;
+    return thrust::transform_reduce(dev_ptr, dev_ptr + A->size, absolute_value<float>(), 0.0f, thrust::plus<float>());
 }
 
+void gpu_sum_abs(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_sum_abs<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
+    check_cuda(cudaDeviceSynchronize(),"reduce_sum_abs");
+}
+
+float gpu_prod(Tensor *A){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    float prod=thrust::reduce(dev_ptr, dev_ptr + A->size, 1.0f, thrust::multiplies<float>());
+
+    return prod;
+}
+
+void gpu_prod(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_prod<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
+    check_cuda(cudaDeviceSynchronize(),"reduce_prod");
+}
+
+
+float gpu_mean(Tensor *A){
+    int device=A->gpu_device;
+
+    cudaSetDevice(device);
+
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    return thrust::reduce(dev_ptr, dev_ptr + A->size)/(float)A->size;
+}
+
+void gpu_mean(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_mean<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
+    check_cuda(cudaDeviceSynchronize(),"reduce_gpu_mean");
+}
+
+
+float gpu_median(Tensor *A){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    // Copy A data to B to avoid changing the original data when sorting
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    thrust::device_vector<float> dev_ptr_sorted(dev_ptr, dev_ptr+A->size);
+
+    // Sort data (see why below)
+    thrust::sort(dev_ptr_sorted.begin(), dev_ptr_sorted.end());
+
+    // Get median
+    int midpoint = (int)A->size / 2;
+    if(A->size % 2==1 && A->size>1) {
+         return dev_ptr_sorted[midpoint];
+    }else{
+        return (dev_ptr_sorted[midpoint-1]+dev_ptr_sorted[midpoint])/2.0f;
+    }
+
+}
+
+void gpu_median(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    float *d_aux_ptr;
+    check_cuda(cudaMalloc((void**)&(d_aux_ptr), A->size*sizeof(float)),"create map");
+    check_cuda(cudaDeviceSynchronize(), "create");
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_median<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, d_aux_ptr);
+    check_cuda(cudaDeviceSynchronize(),"reduce_median");
+
+    check_cuda(cudaFree(d_aux_ptr),"delete_map");
+}
+
+
+float gpu_var(Tensor *A, bool unbiased){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    float mean = thrust::reduce(dev_ptr, dev_ptr + A->size,0.0f, thrust::plus<float>()) / A->size;
+    float sum = thrust::transform_reduce(dev_ptr, dev_ptr + A->size, variance_shift_sum(mean), 0.0f, thrust::plus<float>());
+
+    if(unbiased){return sum/(A->size-1.0f);}
+    else {return sum/((float)A->size);}
+}
+
+void gpu_var(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_mean<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
+    gpu_var<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, unbiased);
+    check_cuda(cudaDeviceSynchronize(),"reduce_gpu_var");
+}
+
+float gpu_std(Tensor *A, bool unbiased){
+    return ::sqrtf(gpu_var(A, unbiased));
+}
+
+void gpu_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_mean<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
+    gpu_var<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, unbiased);
+    gpu_sqrt<<<dimGrid,dimBlock>>>(B->ptr, B->ptr, B->size);
+    check_cuda(cudaDeviceSynchronize(),"reduce_gpu_std");
+}
+
+
+int gpu_mode(Tensor *A){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    // Copy A data (float) to B (int) for: 1) casting, 2) avoid changing the original data when sorting
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    thrust::device_vector<int> dev_keys(dev_ptr, dev_ptr+A->size);
+
+    // Reserve data for new keys and values
+    thrust::device_vector<int> output_keys(A->size);
+    thrust::device_vector<int> output_freqs(A->size);
+
+    // Create a tensor fill with ones
+    thrust::device_vector<int> dev_ones(A->size);
+    thrust::fill(dev_ones.begin(), dev_ones.end(), 1);
+
+    // Sort data (see why below)
+    thrust::sort(dev_keys.begin(), dev_keys.end());
+
+    // Reduce contiguous keys: [1 3 3 3 2 2 3] => [1 3 2 1] Vs. [1 3 3 3 3 2 2] => [1 4 2]
+    thrust::pair<thrust::device_vector<int>::iterator, thrust::device_vector<int>::iterator> new_end;
+    new_end = thrust::reduce_by_key(dev_keys.begin(), dev_keys.end(), dev_ones.begin(), output_keys.begin(), output_freqs.begin());
+
+    // Get index of the maximum frequency
+    int num_keys = new_end.first  - output_keys.begin();
+    thrust::device_vector<int>::iterator iter = thrust::max_element(output_freqs.begin(), output_freqs.begin() + num_keys);
+    unsigned int index = iter - output_freqs.begin();
+
+    int most_frequent_key = output_keys[index];
+    int most_frequent_val = output_freqs[index];  // Frequencies
+    return most_frequent_key;
+}
+
+void gpu_mode(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_mode<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
+    check_cuda(cudaDeviceSynchronize(),"reduce_mode");
+}
 
 // GPU: Reduction ***************************
 void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC){
@@ -556,5 +890,30 @@ void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC){
         check_cublas(
                 cublasSgeam(hcublas[device], CUBLAS_OP_N, CUBLAS_OP_N, m, n, &alfa, A->ptr, ldA, &beta, B->ptr, ldB,
                             C->ptr, ldC), "sum2D");
+    }
+}
+
+
+void gpu_initialize_rd(ReduceDescriptor2 *rd, Tensor *A, Tensor *B, bool reverse){
+    // TODO: TEMP! I don't like this approach
+    if(rd->gpu_addresses == nullptr){
+        int size = A->size;
+
+        // Build cpu map (if needed)
+        if(rd->cpu_addresses == nullptr){
+            rd->build_map(reverse);
+        }
+
+        check_cuda(cudaMalloc((void**)&(rd->gpu_addresses), size*sizeof(int)),"create map");
+        check_cuda(cudaDeviceSynchronize(), "create");
+
+        check_cuda(cudaMemcpy(rd->gpu_addresses, rd->cpu_addresses, size*sizeof(int),cudaMemcpyHostToDevice),"copy map");
+        check_cuda(cudaDeviceSynchronize(), "copy");
+
+        // Delete cpu
+        if(rd->cpu_addresses != nullptr){
+            delete rd->cpu_addresses;
+            rd->cpu_addresses = nullptr;
+        }
     }
 }

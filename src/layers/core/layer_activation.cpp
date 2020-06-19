@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -37,52 +37,52 @@ LActivation::LActivation(Layer *parent, string act, vector<float> params, string
 void LActivation::forward(){
 
     if (act == "relu"){
-        ReLu(this->input, this->output);
+        tensorNN::ReLu(this->input, this->output);
 
     }else if (act == "thresholded_relu"){
         float alpha = this->params[0];
-        ThresholdedReLu(this->input, this->output, alpha);
+        tensorNN::ThresholdedReLu(this->input, this->output, alpha);
 
     }else if (act == "elu"){
         float alpha = this->params[0];
-        ELu(this->input, this->output, alpha);
+        tensorNN::ELu(this->input, this->output, alpha);
 
     }else if (act == "selu"){
         // https://mlfromscratch.com/activation-functions-explained/#selu
         float alpha = this->params[0];
         float scale = this->params[1];
 
-        ELu(this->input, this->output, alpha);
+        tensorNN::ELu(this->input, this->output, alpha);
         this->output->mult_(scale);
 
     }else if (act == "exp"){
-        Exp(this->input, this->output);
+        tensorNN::Exp(this->input, this->output);
 
     }else if (act == "softplus"){
-        Softplus(this->input, this->output);
+        tensorNN::Softplus(this->input, this->output);
 
     }else if (act == "softsign"){
-        Softsign(this->input, this->output);
+        tensorNN::Softsign(this->input, this->output);
 
     }else if (act == "softmax"){
-        Softmax(this->input, this->output);
+        tensorNN::Softmax(this->input, this->output);
 
     }else if (act == "sigmoid"){
-        Sigmoid(this->input, this->output);
+        tensorNN::Sigmoid(this->input, this->output);
 
     }else if (act == "hard_sigmoid"){
-        HardSigmoid(this->input, this->output);
+        tensorNN::HardSigmoid(this->input, this->output);
 
     }else if (act == "leaky_relu"){
         float alpha = this->params[0];
-        LeakyReLu(this->input, this->output, alpha);
+        tensorNN::LeakyReLu(this->input, this->output, alpha);
 
     }else if (act == "tanh"){
-        Tanh(this->input, this->output);
+        tensorNN::Tanh(this->input, this->output);
 
     }else if (act == "linear"){
         float alpha = this->params[0];
-        Linear(this->input, this->output, alpha);
+        tensorNN::Linear(this->input, this->output, alpha);
     }
 }
 
@@ -92,52 +92,52 @@ void LActivation::backward(){
         Tensor::inc(delta, parent[0]->delta);
     }else {
         if (act == "relu"){
-            D_ReLu(delta, input, parent[0]->delta);
+            tensorNN::D_ReLu(delta, input, parent[0]->delta);
 
         }else if (act == "thresholded_relu"){
             float alpha = this->params[0];
-            D_ThresholdedReLu(delta, input, parent[0]->delta, alpha);
+            tensorNN::D_ThresholdedReLu(delta, input, parent[0]->delta, alpha);
 
         }else if (act == "elu"){
             float alpha = this->params[0];
-            D_ELu(delta, input, parent[0]->delta, alpha);
+            tensorNN::D_ELu(delta, input, parent[0]->delta, alpha);
 
         }else if (act == "selu"){
             // https://mlfromscratch.com/activation-functions-explained/#selu
             float alpha = this->params[0];
             float scale = this->params[1];
 
-            D_ELu(delta, input, parent[0]->delta, alpha);
+            tensorNN::D_ELu(delta, input, parent[0]->delta, alpha);
             this->output->mult_(scale);
 
         }else if (act == "exp"){
-            D_Exp(delta, output, parent[0]->delta);
+            tensorNN::D_Exp(delta, output, parent[0]->delta);
 
         }else if (act == "softplus"){
-            D_softplus(delta, output, parent[0]->delta);
+            tensorNN::D_softplus(delta, output, parent[0]->delta);
 
         }else if (act == "softsign"){
-            D_softsign(delta, output, parent[0]->delta);
+            tensorNN::D_softsign(delta, output, parent[0]->delta);
 
         }else if (act == "softmax"){
-            D_Softmax(delta, output, parent[0]->delta);
+            tensorNN::D_Softmax(delta, output, parent[0]->delta);
 
         }else if (act == "sigmoid"){
-            D_Sigmoid(delta, output, parent[0]->delta);
+            tensorNN::D_Sigmoid(delta, output, parent[0]->delta);
 
         }else if (act == "hard_sigmoid"){
-            D_HardSigmoid(delta, input, parent[0]->delta);
+            tensorNN::D_HardSigmoid(delta, input, parent[0]->delta);
 
         }else if (act == "leaky_relu"){
             float alpha = this->params[0];
-            D_LeakyReLu(delta, input, parent[0]->delta, alpha);
+            tensorNN::D_LeakyReLu(delta, input, parent[0]->delta, alpha);
 
         }else if (act == "tanh"){
-            D_Tanh(delta, output, parent[0]->delta);
+            tensorNN::D_Tanh(delta, output, parent[0]->delta);
 
         }else if (act == "linear"){
             float alpha = this->params[0];
-            D_Linear(delta, input, parent[0]->delta, alpha);
+            tensorNN::D_Linear(delta, input, parent[0]->delta, alpha);
         }
     }
 
@@ -163,7 +163,6 @@ Layer *LActivation::share(int c, int bs, vector<Layer *> p){
 }
 
 Layer *LActivation::clone(int c, int bs, vector<Layer *> p, int todev){
-
 
     LActivation *n = new LActivation(p[0], this->act, this->params,  "clone_" + name, todev, this->mem_level);
     n->orig = this;

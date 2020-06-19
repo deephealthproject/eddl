@@ -36,6 +36,9 @@ file(GLOB_RECURSE CPP_HEADERS "${PROJECT_SOURCE_DIR}/src/*" *.{h, hpp})
 file(GLOB_RECURSE CPP_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cc, cpp})
 file(GLOB_RECURSE CUDA_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cu})
 
+set(CPP_SOURCES ${CPP_SOURCES} ${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx.pb.cc)
+set(CPP_HEADERS ${CPP_HEADERS} ${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx.pb.h)
+
 # Make an automatic library - will be static or dynamic based on user setting
 add_library(${PROJECT_NAME} ${PUBLIC_HEADERS} ${CPP_HEADERS} ${CPP_SOURCES})
 
@@ -48,7 +51,6 @@ target_include_directories(${PROJECT_NAME}
             ${PROJECT_SOURCE_DIR}/src
         )
 
-# TODO: why make cxx_std_11 public?
 # All users of this library will need at least C++11
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
 
@@ -72,7 +74,7 @@ if(UNIX) # Add setup for windows in the windows's section
     target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads) 
 endif()
 
-## Eigen (I have temporally drop this header-only library to "includes/eddl/")
+# Eigen
 if(DEFINED Eigen3_DIR)
     message(STATUS "Using specific Eigen")
 else()
@@ -83,43 +85,32 @@ message(STATUS "Eigen found!")
 target_include_directories(${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only library
 
-# TODO: Too different from the previous. I don't like to hard-code paths here.
-# ZLIB
-if(NOT BUILD_SHARED_LIBS AND WIN32)
-    # FindZLIB does not allow to choose static zlib
-    # Workaround: delete dynamic libraries
-    file(REMOVE ${ZLIB_ROOT}/lib/zlib.lib ${ZLIB_ROOT}/lib/zlibd.lib
-        ${ZLIB_ROOT}/bin/zlib.dll ${ZLIB_ROOT}/bin/zlibd.dll)
-endif()
-if(BUILD_SUPERBUILD AND NOT USE_SYSTEM_ZLIB)
-    message(STATUS "Using specific ZLIB")
-else()
-    message(STATUS "Searching for ZLIB in the system...")
-endif()
-find_package(ZLIB REQUIRED)
-# Check if ZLIB was really found
-if(NOT ZLIB_FOUND)
-    message(FATAL_ERROR "ZLIB was found by CMake but its libraries or includes are missing.
-            Use '-D BUILD_SUPERBUILD=ON', or try with a different ZLIB installation to fix this problem.")
-endif()
-message(STATUS "ZLIB found!")
-target_link_libraries(${PROJECT_NAME} PUBLIC ZLIB::ZLIB)
-# target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIRS}>)
-# target_link_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${ZLIB_LIBRARIES_DIRS}>)
-# target_link_libraries(${PROJECT_NAME} PRIVATE ${ZLIB_LIBRARIES})
+## ZLIB
+#if(DEFINED ZLIB_INCLUDE_DIRS AND DEFINED ZLIB_LIBRARIES_DIRS AND DEFINED ZLIB_LIBRARIES)
+#    message(STATUS "Using specific Zlib")
+#else()
+#    message(STATUS "Searching for ZLIB in the system...")
+#    find_package(ZLIB REQUIRED)  # Problems with: ZLIB_ROOT
+#    message(STATUS "ZLIB found!")
+#
+#    # Check if ZLIB was really found
+#    if(NOT ZLIB_FOUND)
+#        message(FATAL_ERROR "ZLIB was found by CMake but its libraries or includes are missing.
+#                Use '-D BUILD_SUPERBUILD=ON', or try with a different ZLIB installation to fix this problem.")
+#    endif()
+#endif()
+#target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIRS}>)
+## target_include_directories(${PROJECT_NAME} PUBLIC ${ZLIB_INCLUDE_DIRS})
+#target_link_libraries(${PROJECT_NAME} PUBLIC ${ZLIB_LIBRARIES})
+
+
 
 # ONNX files
 if(BUILD_PROTOBUF)
     add_definitions(-DcPROTO)
-
     # Link library
-    if(BUILD_SUPERBUILD AND NOT USE_SYSTEM_PROTOBUF)
+    if(DEFINED Protobuf_DIR AND DEFINED Protobuf_LIBRARIES_DIRS AND DEFINED Protobuf_LIBRARIES)
         message(STATUS "Using specific Protobuf")
-        # TODO: This should have been specified in the superbuild
-        # TODO: Protobuf_DIR not always working
-        SET(CMAKE_PREFIX_PATH "${Protobuf_ROOT}/bin;${CMAKE_PREFIX_PATH}")
-        find_package(Protobuf CONFIG REQUIRED HINTS ${Protobuf_DIR})
-        target_link_libraries(${PROJECT_NAME} PRIVATE protobuf::libprotobuf protobuf::libprotoc)
     else()
         message(STATUS "Searching for Protobuf in the system...")
         find_package(Protobuf REQUIRED)  # Problems with: Protobuf_DIR
@@ -131,11 +122,36 @@ if(BUILD_PROTOBUF)
                     Use '-D BUILD_SUPERBUILD=ON', or try with a different Protobuf installation to fix this problem.
                     Alternatively, you can disable it with '-D BUILD_PROTOBUF=OFF")
         endif()
-        # TODO: This should be common
-        target_include_directories(${PROJECT_NAME} PUBLIC ${Protobuf_INCLUDE_DIRS})  # TODO: Why public? I don't want them to be public
-        target_link_directories(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARIES_DIRS})
-        target_link_libraries(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES})
     endif()
+    # target_include_directories(${PROJECT_NAME} PRIVATE ${Protobuf_INCLUDE_DIRS})
+    target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
+    # target_link_directories(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES_DIRS})
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARIES})
+    
+    
+    # # Link library
+    # if(BUILD_SUPERBUILD AND NOT USE_SYSTEM_PROTOBUF)
+        # message(STATUS "Using specific Protobuf")
+        # # TODO: This should have been specified in the superbuild
+        # # TODO: Protobuf_DIR not always working
+        # find_package(Protobuf CONFIG REQUIRED HINTS ${Protobuf_DIR})
+        # target_link_libraries(${PROJECT_NAME} PRIVATE protobuf::libprotobuf protobuf::libprotoc)
+    # else()
+        # message(STATUS "Searching for Protobuf in the system...")
+        # find_package(Protobuf REQUIRED)  # Problems with: Protobuf_DIR
+        # message(STATUS "Protobuf found! (system)")
+
+        # # Check if Protobuf was really found
+        # if(NOT Protobuf_FOUND)
+            # message(FATAL_ERROR "Protobuf was found by CMake but its libraries or includes are missing.
+                    # Use '-D BUILD_SUPERBUILD=ON', or try with a different Protobuf installation to fix this problem.
+                    # Alternatively, you can disable it with '-D BUILD_PROTOBUF=OFF")
+        # endif()
+        # # TODO: This should be common
+        # target_include_directories(${PROJECT_NAME} PUBLIC ${Protobuf_INCLUDE_DIRS})  # TODO: Why public? I don't want them to be public
+        # target_link_directories(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARIES_DIRS})
+        # target_link_libraries(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES})
+    # endif()
 
     # Create "onnx.pb.cc" and "onnx.pb.h" files (from serialization/onnx)
     # Equivalent to: /usr/local/bin/protoc --cpp_out . onnx.proto
@@ -190,9 +206,9 @@ if(USE_CUDA)
             # so that the static cuda runtime can find it at runtime.
             set_property(TARGET ${PROJECT_NAME} PROPERTY BUILD_RPATH ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
         endif()
-
-        # TODO: Is this really needed?
+        
         if(NOT DEFINED CMAKE_CUDA_STANDARD)
+            # Make EDDL works for cuda 7.5
             set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr -D_MWAITXINTRIN_H_INCLUDED -D_FORCE_INLINES -D__STRICT_ANSI__")
         endif()
     else()
@@ -307,10 +323,10 @@ message(STATUS "-------------------------------------------" )
 message(STATUS "Eigen3 dir: " ${Eigen3_DIR} )
 message(STATUS "Eigen3 include: " ${EIGEN3_INCLUDE_DIR} )
 message(STATUS "-------------------------------------------" )
-message(STATUS "ZLIB root: " ${ZLIB_ROOT} )
-message(STATUS "ZLIB include: " ${ZLIB_INCLUDE_DIRS} )
-message(STATUS "ZLIB libraries: " ${ZLIB_LIBRARIES} )
-message(STATUS "-------------------------------------------" )
+#message(STATUS "ZLIB root: " ${ZLIB_ROOT} )
+#message(STATUS "ZLIB include: " ${ZLIB_INCLUDE_DIRS} )
+#message(STATUS "ZLIB libraries: " ${ZLIB_LIBRARIES} )
+#message(STATUS "-------------------------------------------" )
 message(STATUS "Use Protobuf: " ${BUILD_PROTOBUF} )
 if(BUILD_PROTOBUF)
 message(STATUS "Protobuf dir: " ${Protobuf_DIR} )

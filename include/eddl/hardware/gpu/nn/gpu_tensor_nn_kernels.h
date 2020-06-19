@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -8,8 +8,8 @@
 */
 
 
-#ifndef EDDL_GPU_NN_KERNELS_H
-#define EDDL_GPU_NN_KERNELS_H
+#ifndef EDDL_GPU_TENSOR_NN_KERNELS_H
+#define EDDL_GPU_TENSOR_NN_KERNELS_H
 
 
 #include <cuda.h>
@@ -51,16 +51,18 @@ __global__ void d_exp(float *d,float *i,float *pd,long int size);
 __global__ void tanh(float *a,float *b,long int size);
 __global__ void d_tanh(float *d,float *i,float *pd,long int size);
 
+__global__ void softmax(float* E,float* N,float* auxE ,long int sample_ndim, long int n_vals);
+//__global__ void d_softmax(float *d,float *i,float *pd,long int size);  // TODO: Missing
+
 __global__ void linear(float *a,float *b,float param, long int size);
 __global__ void d_linear(float *d,float *i,float *pd,float param, long int size);
-
-__global__ void softmax(float* E,float* N,float* auxE ,long int sample_ndim, long int n_vals);
 
 // GPU: Losses
 __global__ void cent(float* a, float* b, float* c, long int size);
 
 // GPU: Metrics
 __global__ void accuracy(float* T, float* N,float* acc,long int cols, long int total_ops, int* MC_err);
+__global__ void bin_accuracy(float* T, float* N, int size, int* acc);
 
 // GPU: Conv
 __global__ void gpu_traspose_batch_depth(float *Bptr, float *ptr, int b,int z,int r, int c);
@@ -82,6 +84,12 @@ __global__ void avgpool2d_back(float* D, float* ID, int batch,int irows,int icol
 // GPU: Tensor
 __global__ void repeat_nn_k(float *a, int batch, int depth, int a_rows, int a_cols, float *b, int b_rows, int b_cols, int *size);
 __global__ void d_repeat_nn_k(float *d, int batch, int depth, int d_rows, int d_cols, float *a, int a_rows, int a_cols, int *size);
+
+__global__ void gpu_select_nn(float *A, float* B, long int size, int* indices, int A_batch_str, int B_batch_str);
+__global__ void gpu_select_back_nn(float *A, float* B, long int size, int* indices, int A_batch_str, int B_batch_str);
+
+__global__ void gpu_set_select_nn(float *A, float* B, long int size, int* indices, int A_batch_str, int B_batch_str);
+__global__ void gpu_set_select_back_nn(float *A, float* B, long int size, int* indices, int A_batch_str, int B_batch_str);
 
 // BN
 __global__ void bn_permute_channels_first(float *src, float *dest,int b,int z,int r,int c,long int size);

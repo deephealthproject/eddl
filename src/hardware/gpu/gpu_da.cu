@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -97,7 +97,7 @@ void gpu_crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_
 
     // Compute offsets
     int offsets[2] = {0, 0};
-    if(!Tensor::eqsize(A, B)){
+    if(!Tensor::sameShape(A, B)){
         offsets[0] = coords_from[0];
         offsets[1] = coords_from[1];
     }

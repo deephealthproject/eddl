@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -84,16 +84,16 @@ void LConv::mem_delta(){
 }
 
 void LConv::forward() {
-    Conv2D(this->cd);
+    tensorNN::Conv2D(this->cd);
 }
 
 void LConv::backward() {
     //get gradients with provided delta
-    if (trainable) { Conv2D_grad(this->cd); }
+    if (trainable) { tensorNN::Conv2D_grad(this->cd); }
 
     // backprop delta
     if (this->parent.size()) {
-        Conv2D_back(this->cd);
+        tensorNN::Conv2D_back(this->cd);
     }
 
     // Regularizer
@@ -175,7 +175,7 @@ Layer *LConv::clone(int c, int bs, vector<Layer *> p, int todev) {
 
     LConv *n = new LConv(p[0], cd->ksize, cd->stride, cd->pad,  name, todev, this->mem_level);
     n->trainable = trainable;
-    
+
     n->orig = this;
     n->cd->use_bias=cd->use_bias;
 

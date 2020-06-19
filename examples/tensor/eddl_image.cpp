@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
     // Rotate
     t3 = t2->clone();
-    Tensor::rotate(t2, t3, 60.0f, {0,0}, "original");
+    Tensor::rotate(t2, t3, 60.0f, {0,0}, WrappingMode::Original);
     t3->mult_(0.5f);
     t3->clampmax_(255.0f);
     t1->set_select({":", ":", "-150:-50", "-150:-50"}, t3);  // "Paste" t3 in t1
@@ -59,17 +59,17 @@ int main(int argc, char **argv) {
     t2 = new Tensor(t1->shape);
 
     // [Shift] - Mode = constant
-    Tensor::shift(t1, t2, {50, 100}, "constant", 0.0f);  // {y_offset, x_offset}
+    Tensor::shift(t1, t2, {50, 100}, WrappingMode::Constant, 0.0f);  // {y_offset, x_offset}
     t2->save(output + "example_shift_mode_C.png");
     cout << "Image saved! (shift 1)" << endl;
 
     // [Shift] - Mode = constant
-    Tensor::shift(t1, t2, {50, 100}, "original");  // {y_offset, x_offset}
+    Tensor::shift(t1, t2, {50, 100}, WrappingMode::Original);  // {y_offset, x_offset}
     t2->save(output + "example_shift_mode_O.bmp");
     cout << "Image saved! (shift 2)" << endl;
 
     // [Rotate]
-     Tensor::rotate(t1, t2, 30, {0,0}, "original"); // angle in degrees
+     Tensor::rotate(t1, t2, 30, {0,0}, WrappingMode::Original); // angle in degrees
      t2->save(output + "example_rotate.png");
     cout << "Image saved! (rotate)" << endl;
 

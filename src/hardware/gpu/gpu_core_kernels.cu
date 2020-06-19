@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -86,7 +86,7 @@ __global__ void deselect_rows(float* A, float* B, int rowsize, int size, int* in
 
 }
 
-__global__ void select(float* A, float* B, int size, int* indices){
+__global__ void select(float* A, float* B, long int size, int* indices){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (thread_id_x < size){
@@ -94,7 +94,7 @@ __global__ void select(float* A, float* B, int size, int* indices){
     }
 }
 
-__global__ void select_back(float* A, float* B, int size, int* indices){
+__global__ void select_back(float* A, float* B, long int size, int* indices){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (thread_id_x < size){
@@ -102,7 +102,7 @@ __global__ void select_back(float* A, float* B, int size, int* indices){
     }
 }
 
-__global__ void set_select(float* A, float* B, int size, int* indices){
+__global__ void set_select(float* A, float* B, long int size, int* indices){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (thread_id_x < size){
@@ -110,7 +110,7 @@ __global__ void set_select(float* A, float* B, int size, int* indices){
     }
 }
 
-__global__ void set_select_back(float* A, float* B, int size, int* indices){
+__global__ void set_select_back(float* A, float* B, long int size, int* indices){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (thread_id_x < size){

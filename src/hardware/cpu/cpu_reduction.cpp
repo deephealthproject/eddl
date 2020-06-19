@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -9,7 +9,7 @@
 
 #include <stdexcept>
 
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 
 void cpu_reduce(Tensor *A, Tensor *B,string mode,int* map)
 {
@@ -56,22 +56,22 @@ void cpu_reduce_op(Tensor *A, Tensor *B,string op,int* map)
   if (op=="sum") {
     #pragma omp parallel for
     for(i=0;i<A->size;i++)
-      A->ptr[i]+=B->ptr[map[i]];
+      B->ptr[map[i]]+=A->ptr[i];
   }
   else if (op=="diff"){
     #pragma omp parallel for
     for(i=0;i<A->size;i++)
-      A->ptr[i]-=B->ptr[map[i]];
+      B->ptr[map[i]]-=A->ptr[i];
   }
   else if (op=="mult"){
     #pragma omp parallel for
     for(i=0;i<A->size;i++)
-      A->ptr[i]*=B->ptr[map[i]];
+      B->ptr[map[i]]*=A->ptr[i];
   }
   else if (op=="div"){
     #pragma omp parallel for
     for(i=0;i<A->size;i++)
-      A->ptr[i]/=B->ptr[map[i]];
+      B->ptr[map[i]]/=A->ptr[i];
   }
   else {
     throw std::invalid_argument("op: " + op + " not yet implemented");

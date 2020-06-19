@@ -55,6 +55,10 @@ else()
 endif()
 cmake_minimum_required(VERSION 2.6.4)
 
+if (POLICY CMP0042) # Added by EDDL team
+  cmake_policy(SET CMP0042 NEW)
+endif (POLICY CMP0042)
+
 if (POLICY CMP0063) # Visibility
   cmake_policy(SET CMP0063 NEW)
 endif (POLICY CMP0063)

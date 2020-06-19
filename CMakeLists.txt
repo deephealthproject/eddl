@@ -1,10 +1,5 @@
 cmake_minimum_required(VERSION 3.9.2)
 
-# TODO: Add explanation
-if(POLICY CMP0074)
-	cmake_policy(SET CMP0074 NEW)
-endif()
-
 ###########################################################################
 ################################ OPTIONS ##################################
 ###########################################################################
@@ -21,8 +16,8 @@ option(BUILD_EXAMPLES "Compile examples" ON)
 option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" ON)
 option(BUILD_COVERAGE "Flag to compile for coverage information" OFF)
 
-if(WIN32) # TODO: Why? What I cannot build a shared library in windows?
-    option(BUILD_SHARED_LIBS OFF)
+if(WIN32)
+    option(BUILD_SHARED_LIBS "" OFF) # Prefer lib over dll in windows
 endif()
 
 ###########################################################################
@@ -52,7 +47,7 @@ if(BUILD_SUPERBUILD)
     add_subdirectory(cmake)
 endif()
 # This is executed at compilation time: "make"
-PROJECT(eddl VERSION 0.6 LANGUAGES CXX)
+PROJECT(eddl VERSION 0.7 LANGUAGES CXX)
 
 
 # SET C++ COMPILER STANDARD
@@ -75,25 +70,35 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Flags: Debugging
-if(BUILD_COVERAGE)
+if(BUILD_COVERAGE AND UNIX)
     set(COVERAGE_FLAGS ${CMAKE_CXX_FLAGS} "-O0 -g --coverage")
 
     # Apply coverage flags
     set(CMAKE_EXE_LINKER_FLAGS ${COVERAGE_FLAGS})
     set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${COVERAGE_FLAGS})
+
+    # Add sanitizers
+#    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+#        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak")  # address, leak, thread, undefined, memory
+#    endif()
 endif()
 
-# Flags: Optimization
-if(UNIX) # TODO: This is unix but the above lines aren't?
+if(UNIX)
+    # Flags: Optimization
+    # READ THIS: https://wiki.gentoo.org/wiki/GCC_optimization
+
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+
+    if(BUILD_HPC)
+        #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native -mtune=native")  # This does not work on many machines
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -msse -mfpmath=sse -ffast-math")
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -ftree-vectorize")
+    endif()
 endif()
 
 
-if(BUILD_HPC)  # TODO: Same here. Is this cross-platform?
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -msse -mfpmath=sse -ffast-math")
-endif()
 
 ###########################################################################
 ############################### WINDOWS ###################################

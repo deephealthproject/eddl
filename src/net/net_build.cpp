@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -176,6 +176,21 @@ void Net::toGPU(vector<int> g,int lsb,int mem){
 void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs, bool initialize){
 	onnx_pretrained = !initialize; // For controlling when to copy the weights to the snet
 
+  if (isbuild) return;
+
+
+  for(int i=0;i<layers.size();i++) {
+    if ((layers[i]->orig!=nullptr)&&(layers[i]->orig->net!=this)) {
+      cout<<layers[i]->name<<endl;
+      layers[i]->orig->net->build(opt->clone(),{},{},cs,true);
+    }
+    else if (layers[i]->net!=this) {
+      layers[i]->net->build(opt->clone(),{},{},cs,true);
+    }
+  }
+
+  cout<<"Building "<<name<<endl;
+
   build(opt, lo, me, initialize);
 
   set_compserv(cs);
@@ -204,6 +219,7 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
 
     for(int i=0; i<layers.size(); i++){
         if (layers[i]->isrecurrent) isrecurrent=true;
+        if (layers[i]->isdecoder) isdecoder=true;
 
         // Set device // TODO: Rewrite this
         if (dev == -1) {
@@ -222,13 +238,25 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, bool initialize) {
     optimizer->setlayers(layers);
 
     // set loss functions and create targets tensors
-    this->losses = vloss(lo);
-    for (int i = 0; i < lo.size(); i++) {
-        if (lo[i]->name == "soft_cross_entropy") lout[i]->delta_bp = 1;
+    if (isdecoder) {
+      decsize=lout.size()/lo.size();
+      for(int i=0;i<decsize;i++)
+        for(int j=0;j<lo.size();j++)
+           losses.push_back(lo[j]);
+    }
+    else losses = vloss(lo);
+
+    for (int i = 0; i < lout.size(); i++) {
+        if (losses[i]->name == "soft_cross_entropy") lout[i]->delta_bp = 1;
         lout[i]->target = new Tensor(lout[i]->output->getShape(), dev);
     }
     // set metrics
-    this->metrics = vmetrics(me);
+    if (isdecoder) {
+      for(int i=0;i<decsize;i++)
+        for(int j=0;j<me.size();j++)
+           metrics.push_back(me[j]);
+    }
+    else metrics = vmetrics(me);
 
 
     // forward sort
@@ -264,20 +292,13 @@ void Net::set_compserv(CompServ *cs){
                 Eigen::setNbThreads(nthreads);
 
                 snets.push_back(this);
-                if (mnets.size()){
-                  // comes from a merge of nets
-                  for(int j=0;j<mnets.size();j++) {
-                    if (!mnets[j]->isbuild) {
-                      mnets[j]->build(optimizer->clone(),{},{},cs,true);
-                    }
-                  }
-                }
+
             } else {
                 msg("Net and Layers device missmatch", "Net.set_compserv");
             }
         } else if (todev < DEV_FPGA) {
 #ifndef cGPU
-            msg("EDDLL not compiled for GPU", "Net.set_compserv");
+            msg("EDDL not compiled for GPU", "Net.set_compserv");
 #else
         // split on multiple GPUs
         int ngpus=gpu_devices();
@@ -297,34 +318,16 @@ void Net::set_compserv(CompServ *cs){
             if (VERBOSE) cout<<"GPU ("<<i<<")\n";
           }
 
-
         if (!devsel.size())
           msg("No gpu selected","Net.set_compserv");
 
         if (VERBOSE) cout<<"split into "<<devsel.size()<<" GPUs devices\n";
 
         if (!cs->isshared) {
-          if (mnets.size()){
-            // comes from a merge of nets
-            for(int j=0;j<mnets.size();j++)
-              if (!mnets[j]->isbuild){
-                mnets[j]->build(optimizer->clone(),{},{},cs,true);
-              }
-
-            cout<<"Building merge "<<endl;
-            for(int i=0;i<devsel.size();i++) {
-              vector <Net *>sm;
-              for(int j=0;j<mnets.size();j++) {
-                sm.push_back(mnets[j]->snets[i]);
-              }
-              snets.push_back(new Net(sm));
-              snets[i]->build(optimizer->clone(), losses, metrics);
-            }
-          }
-          else {
             split(devsel.size(),DEV_GPU);
-          }
         }
+
+
 #endif
         } else {
             // split on multiple FPGAs
@@ -332,7 +335,6 @@ void Net::set_compserv(CompServ *cs){
     } else {
         msg("Distributed version not yet implemented", "Net.set_compserv");
     }
-
 
     // create input and output tensors (X,Y)
     for (int i = 0; i < snets.size(); i++) {
@@ -356,6 +358,7 @@ void Net::split(int c, int todev) {
     int bs=1;
     int m=0;
 
+    //clone net into CompServices
     for (i = 0; i < c; i++) {
         if (VERBOSE) cout << "Split " << i << "\n";
 
@@ -364,42 +367,44 @@ void Net::split(int c, int todev) {
         nout.clear();
         if (i == c - 1) bs += m;
 
-        // set inputs
-        for (j = 0; j < lin.size(); j++)  {
-            nin.push_back(lin[j]->clone(c, bs, par, todev + devsel[i]));
-            nlayers.push_back(nin[j]);
-        }
-        // special layers that are not input of net but has not parents
-        // for instance noise generators in GANs
-        for (j = 0; j < layers.size(); j++)
-          if ((layers[j]->lin==0)&&(!isIn(layers[j],lin,ind))) {
-            nlayers.push_back(layers[j]->clone(c, bs, par, todev + devsel[i]));
-          }
-        // rest of layers
-        for (k = 0; k < layers.size(); k++) {
-            for (j = 0; j < layers.size(); j++) {
-                if (!isInorig(layers[j], nlayers, ind)) {
-                    vlayer par;
-                    for (l = 0; l < layers[j]->parent.size(); l++) {
-                        if (!isInorig(layers[j]->parent[l], nlayers, ind)) break;
-                        else {par.push_back(nlayers[ind]);}
-                    }
-                    if (l == layers[j]->parent.size()) {
-                        nlayers.push_back(layers[j]->clone(i, bs, par, todev + devsel[i]));
-                    }
+        //clone layers into CompServices
+        for(int j=0;j<vfts.size();j++) {
+          if (!isInorig(vfts[j], nlayers, ind)) {
+
+              vlayer par;
+              for (l = 0; l < vfts[j]->parent.size(); l++)
+                  if (isInorig(vfts[j]->parent[l], nlayers, ind))
+                    par.push_back(nlayers[ind]);
+
+              Layer *n;
+              if (vfts[j]->isshared) {
+                Layer *on;
+                if (vfts[j]->orig->clones.size()>i) {
+                  on=vfts[j]->orig->clones[i];
                 }
+                else {
+                  // should have been cloned previously in build
+                  msg("error","build");
+                }
+                n=on->share(0,1,par);
+                n->name="share_"+on->name;
+                n->orig=vfts[j];
+              }
+              else {
+                n=vfts[j]->clone(i, bs, par, todev + devsel[i]);
+                n->isdecoder=vfts[j]->isdecoder;
+                n->name="clone_"+to_string(i)+vfts[j]->name;
+                vfts[j]->clones.push_back(n);
+              }
 
-            }
+              nlayers.push_back(n);
+              if (isIn(vfts[j],lin,ind)) nin.push_back(n);
+              if (isIn(vfts[j],lout,ind)) nout.push_back(n);
           }
-
-        // set outputs
-        for (j = 0; j < lout.size(); j++)
-            if (isInorig(lout[j], nlayers, ind))
-                nout.push_back(nlayers[ind]);
+        }
 
         // create twin net on CS device
         snets.push_back(new Net(nin, nout));
-
         // build new net
         char cname[100];
         sprintf(cname,"snet_%d",i);
@@ -412,7 +417,6 @@ void Net::split(int c, int todev) {
                     layers[j]->copy(snets[i]->layers[j]);
         }
         snets[i]->plot("smodel.pdf","LR");
-
     }
 }
 
@@ -444,9 +448,6 @@ void Net::resize(int b)
       layers[j]->resize(batch_size);
   }
 
-
-
-
   for(i=0; i<c; i++) {
     Xs[i].clear();
     Ys[i].clear();
@@ -468,197 +469,54 @@ void Net::resize(int b)
 
 }
 
-bool check_rnn_forward(Layer *l) {
+Layer * Net::getLayer(vlayer in)
+{
+  int i,j,k,l,ind;
+  if (lin.size()!=in.size())
+    msg("Error size of input layers set","Net:Net");
 
-  bool frnn=false;
 
-  for(int i=0;i<l->child.size();i++) {
-    if (l->child[i]->isrecurrent) {frnn=true;break;}
-    else frnn=check_rnn_forward(l->child[i]);
-    if (frnn) break;
+  vlayer nlayers;
+  //input layers
+  for (i = 0; i < lin.size(); i++)  {
+    vlayer par;
+    Layer *n=lin[i]->share(0, 1, par);
+
+    n->name=in[0]->name+n->name;
+    nlayers.push_back(n);
+
+    in[i]->addchild(n);
+    n->addparent(in[i]);
   }
 
-  return frnn;
-}
-
-// Unroll Recurrent net
-Net* Net::unroll(int inl, int outl, bool seq, bool areg) {
-  int i, j, k, l;
-
-  vlayer *nlayers;
-  vlayer *nin;
-  vlayer *nout;
-  int ind;
-  vlayer par;
-  vector<bool> frnn;
-
-
-  // set vfts sort
-  layers.clear();
-  for(int i=0;i<vfts.size();i++)
-    layers.push_back(vfts[i]);
-
-  // check if rnn is in forward path
-  for(int i=0;i<layers.size();i++)
-    if (layers[i]->isrecurrent) frnn.push_back(true);
-    else frnn.push_back(check_rnn_forward(layers[i]));
-
-  // set sort first frnn
-  vlayer lfrnn;
-  for(int i=0;i<layers.size();i++)
-    if (frnn[i]) lfrnn.push_back(layers[i]);
-
-  for(int i=0;i<layers.size();i++)
-    if (!frnn[i]) lfrnn.push_back(layers[i]);
-
-  layers.clear();
-  for(int i=0;i<lfrnn.size();i++)
-    layers.push_back(lfrnn[i]);
-
-
-  // re-check frnn with the new sort
-  frnn.clear();
-  for(int i=0;i<layers.size();i++)
-    if (layers[i]->isrecurrent) frnn.push_back(true);
-    else frnn.push_back(check_rnn_forward(layers[i]));
-
-
-
-  // unroll inputs
-  nin=new vlayer[inl];
-  nlayers=new vlayer[inl];
-  nout=new vlayer[inl];
-
-  for (i = 0; i < inl; i++) {
-    //input layers
-    for (j = 0; j < lin.size(); j++)  {
-      nin[i].push_back(lin[j]->share(i, batch_size, par));
-      nlayers[i].push_back(nin[i][j]);
-    }
-
-    // rest of layers
-    for (j = 0; j < layers.size(); j++) {
-      if ((i>=(inl-outl))||(frnn[j])) {
-        if (!isInorig(layers[j], nlayers[i], ind)) {
-          vlayer par;
-          for (l = 0; l < layers[j]->parent.size(); l++) {
-            if (!isInorig(layers[j]->parent[l], nlayers[i], ind)) break;
-            else par.push_back(nlayers[i][ind]);
+  // rest of layers
+  for (k = 0; k < layers.size(); k++) {
+      for (j = 0; j < layers.size(); j++) {
+          if (!isInorig(layers[j], nlayers, ind)) {
+              vlayer par;
+              for (l = 0; l < layers[j]->parent.size(); l++) {
+                  if (!isInorig(layers[j]->parent[l], nlayers, ind)) break;
+                  else {par.push_back(nlayers[ind]);}
+              }
+              if (l == layers[j]->parent.size()) {
+                  Layer *n;
+                  n=layers[j]->share(0, 1, par);
+                  nlayers.push_back(n);
+                  n->name=in[0]->name+n->name;
+                  n->isshared=true;
+              }
           }
-          if (l == layers[j]->parent.size()) {
-
-            if ((layers[j]->isrecurrent)&&(i>0)) {
-              par.push_back(nlayers[i-1][j]);
-              nlayers[i].push_back(layers[j]->share(i, batch_size, par));
-            }
-            else {
-              nlayers[i].push_back(layers[j]->share(i, batch_size, par));
-            }
-          }
-          else msg("Unexpected error","unroll");
-        }
       }
     }
 
-  // set output layers
-  if (i>=(inl-outl)) {
-    for (j = 0; j < lout.size(); j++)
-      if (isInorig(lout[j], nlayers[i], ind))
-        nout[i].push_back(nlayers[i][ind]);
-  }
+  vlayer nout;
+  // set outputs
+  for (j = 0; j < lout.size(); j++)
+    if (isInorig(lout[j], nlayers, ind))
+        nout.push_back(nlayers[ind]);
 
-}
+  return nout[0];
 
-/////
-vlayer ninl;
-vlayer noutl;
-for (i = 0; i < inl; i++)
-  for (j = 0; j < nin[i].size(); j++)
-    ninl.push_back(nin[i][j]);
-for (i = 0; i < inl; i++)
-  for (j = 0; j < nout[i].size(); j++)
-    noutl.push_back(nout[i][j]);
-
-Net *rnet=new Net(ninl, noutl);
-
-return rnet;
-}
-
-
-void Net::build_rnet(int inl,int outl) {
-  int i, j, k, n;
-  int todev;
-
-  if (cs->local_gpus.size() > 0) todev = DEV_GPU;
-  else if (cs->local_fpgas.size() > 0) todev = DEV_FPGA;
-  else todev = DEV_CPU;
-
-  if ((rnet==nullptr)||(inl!=rnet->lin.size())) {
-
-   if (rnet!=nullptr) delete rnet;
-
-   printf("Recurrent net %d time steps, %d outputs\n",inl,outl);
-
-   // Create an unrolled version on CPU
-   rnet=unroll(inl,outl,false,false);
-
-   rnet->plot("rmodel.pdf","LR");
-
-   for(i=0;i<rnet->layers.size();i++) {
-     rnet->layers[i]->isrecurrent=false;
-     rnet->layers[i]->net=rnet;
-     rnet->layers[i]->orig=rnet->layers[i];
-   }
-   rnet->isrecurrent=false;
-
-   vloss lr;
-   for(i=0;i<losses.size();i++) lr.push_back(losses[i]->clone());
-
-   vmetrics mr;
-   for(i=0;i<metrics.size();i++) mr.push_back(metrics[i]->clone());
-
-   rnet->build(optimizer->share(),lr,mr,cs->share(),false);
-   //cout<<rnet->summary();
-   fflush(stdout);
-   rnet->plot("rmodel.pdf","LR");
-   rnet->name="rnet";
-
-
-   //getchar();
-   //cout<<rnet->summary();
-
-   if (todev!=DEV_CPU) {
-     // unroll CS devices and link
-     for(i=0;i<rnet->snets.size();i++)
-       delete rnet->snets[i];
-     rnet->snets.clear();
-     for(i=0;i<snets.size();i++) {
-     //cout<<snets[i]->summary();
-       rnet->snets.push_back(snets[i]->unroll(inl,outl,false,false));
-       for(j=0;j<rnet->snets[i]->layers.size();j++) {
-             rnet->snets[i]->layers[j]->isrecurrent=false;
-       }
-       rnet->snets[i]->isrecurrent=false;
-
-       rnet->snets[i]->build(snets[i]->optimizer->share(),lr,mr,false);
-       rnet->snets[i]->plot("rsnet.pdf","LR");
-       for(j=0;j<rnet->snets[i]->layers.size();j++) {
-             rnet->snets[i]->layers[j]->orig=rnet->layers[j];
-             rnet->snets[i]->layers[j]->net=rnet;
-       }
-      }
-    }
-
-   rnet->flog_tr=flog_tr;
-   rnet->flog_ts=flog_ts;
-
-   rnet->reset_loss();
-   rnet->reset();
-   rnet->reset_grads();
-
-   fflush(stdout);
-
-  }
 }
 
 

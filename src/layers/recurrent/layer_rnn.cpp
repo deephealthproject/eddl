@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -78,13 +78,13 @@ void LRNN::forward() {
     if (use_bias) Tensor::sum2D_rowwise(preoutput, bias, preoutput);
 
     if (activation == "relu"){
-        ReLu(preoutput, output);
+        tensorNN::ReLu(preoutput, output);
     }else if (activation == "sigmoid"){
-        Sigmoid(preoutput, output);
+        tensorNN::Sigmoid(preoutput, output);
     }else if (activation == "hard_sigmoid"){
-        HardSigmoid(preoutput, output);
+        tensorNN::HardSigmoid(preoutput, output);
     }else if (activation == "tanh"){
-        Tanh(preoutput, output);
+        tensorNN::Tanh(preoutput, output);
     }else if (activation == "none") {
         Tensor::copy(preoutput,output);
     }else {
@@ -99,16 +99,16 @@ void LRNN::backward() {
     daux->fill_(0.0);
 
     if (activation == "relu"){
-        D_ReLu(delta, preoutput, daux);
+        tensorNN::D_ReLu(delta, preoutput, daux);
         Tensor::copy(daux,delta);
     }else if (activation == "sigmoid"){
-        D_Sigmoid(delta, output, daux);
+        tensorNN::D_Sigmoid(delta, output, daux);
         Tensor::copy(daux,delta);
     }else if (activation == "hard_sigmoid"){
-        D_HardSigmoid(delta, preoutput, daux);
+        tensorNN::D_HardSigmoid(delta, preoutput, daux);
         Tensor::copy(daux,delta);
     }else if (activation == "tanh"){
-        D_Tanh(delta, output, daux);
+        tensorNN::D_Tanh(delta, output, daux);
         Tensor::copy(daux,delta);
     }
 
@@ -120,10 +120,12 @@ void LRNN::backward() {
             Tensor::mult2D(parent[1]->output, 1, delta, 0, gWy, 1);
         if (use_bias) Tensor::reduce_sum2D(delta, gbias, 0, 1);
 
-        Tensor::mult2D(delta, 0, Wx, 1, parent[0]->delta, 1);
-        if (parent.size()>1)
-            Tensor::mult2D(delta, 0, Wy, 1, parent[1]->delta, 1);
     }
+
+    Tensor::mult2D(delta, 0, Wx, 1, parent[0]->delta, 1);
+    if (parent.size()>1)
+        Tensor::mult2D(delta, 0, Wy, 1, parent[1]->delta, 1);
+
 
     // Regularizer
     if (trainable) if(reg != nullptr) {reg->apply(this->Wx);reg->apply(this->Wy);}

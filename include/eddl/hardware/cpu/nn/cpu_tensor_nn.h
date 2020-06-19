@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -8,8 +8,8 @@
 */
 
 
-#ifndef EDDL_CPU_NN_H
-#define EDDL_CPU_NN_H
+#ifndef EDDL_CPU_TENSOR_NN_H
+#define EDDL_CPU_TENSOR_NN_H
 
 #include "eddl/tensor/tensor.h"
 #include "eddl/descriptors/descriptors.h"
@@ -57,9 +57,12 @@ void cpu_d_linear(Tensor *D, Tensor *I, Tensor *PD, float param);
 
 // Losses
 void cpu_cent(Tensor *A, Tensor *B, Tensor *C);
+void cpu_bin_cent(Tensor *A, Tensor *B, Tensor *C);
 
 // Metrics
 int cpu_accuracy(Tensor *A, Tensor *B);
+int cpu_bin_accuracy(Tensor *A, Tensor *B);
+
 
 // Conv
 void cpu_conv2D(ConvolDescriptor *D);
@@ -78,9 +81,14 @@ void cpu_avgpool2D_back(PoolDescriptor *D);
 void cpu_repeat_nn(Tensor *A, Tensor *B, vector<int> size);
 void cpu_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size);
 
+void cpu_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+void cpu_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+void cpu_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+void cpu_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+
 // BN
 void cpu_permute_channels_first(Tensor *A,Tensor *B);
 void cpu_permute_channels_last(Tensor *A,Tensor *B);
 void cpu_permute_batch_first(Tensor *A,Tensor *B);
 void cpu_permute_batch_last(Tensor *A,Tensor *B);
-#endif //EDDL_CPU_NN_H
+#endif //EDDL_CPU_TENSOR_NN_H

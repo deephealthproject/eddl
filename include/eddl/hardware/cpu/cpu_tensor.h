@@ -1,14 +1,14 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
 
-#ifndef EDDL_CPU_HW_H
-#define EDDL_CPU_HW_H
+#ifndef EDDL_CPU_TENSOR_H
+#define EDDL_CPU_TENSOR_H
 
 #include "eddl/tensor/tensor.h"
 #include "eddl/tensor/tensor_reduction.h"
@@ -25,23 +25,26 @@ void cpu_copy(Tensor *A, Tensor *B);
 void cpu_fill_(Tensor *A, float v);
 void cpu_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
 
+void _cpu_sort(Tensor *A, Tensor *B, bool descending, bool stable);
+void cpu_sort(Tensor *A, Tensor *B, bool descending, bool stable);
+void cpu_argsort(Tensor *A, Tensor *B, bool descending, bool stable);
+
 void cpu_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 
 void cpu_set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
 void cpu_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
 
-void cpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,bool mask_zeros=false);
-void cpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0,bool mask_zeros=false);
+void cpu_select(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,bool mask_zeros=false); // TODO: Legacy
+void cpu_deselect(Tensor *A, Tensor *B, vector<int> sind, int ini, int end,int inc=0,bool mask_zeros=false); // TODO: Legacy
 
 void cpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative);
-
-void cpu_repeat(Tensor *A, Tensor *B, vector<int> size);
-void cpu_d_repeat(Tensor *D, Tensor *A, vector<int> size);
 
 // CPU: Create
 void cpu_range(Tensor *A, float min, float step);
 void cpu_eye(Tensor *A, int offset);
+
+void cpu_diag(Tensor *A, Tensor *B, int k);
 
 // CPU: Generator
 void cpu_rand_uniform(Tensor *A, float v);
@@ -49,6 +52,7 @@ void cpu_rand_signed_uniform(Tensor *A, float v);
 void cpu_rand_binary(Tensor *A, float v);
 void cpu_rand_normal(Tensor *A, float m, float s, bool fast_math);  // TODO: Don't like it
 
+// CPU: Data transformations (2D Optimized) ********************************************
 // CPU: Data transformations (2D Optimized) ********************************************
 void cpu_shift(Tensor *A, Tensor *B, vector<int> shift, int mode, float constant);
 void cpu_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, int mode, float constant);
@@ -67,40 +71,39 @@ void cpu_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode,
 void cpu_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant);
 
 // CPU: Math (in-place)
-void cpu_abs_(Tensor *A);
-void cpu_acos_(Tensor *A);
-void cpu_add_(Tensor *A, float v);
-void cpu_asin_(Tensor *A);
-void cpu_atan_(Tensor *A);
-void cpu_ceil_(Tensor *A);
-void cpu_clamp_(Tensor *A, float min, float max);
-void cpu_cos_(Tensor *A);
-void cpu_cosh_(Tensor *A);
-void cpu_exp_(Tensor *A);
-void cpu_inv_(Tensor *A, float v);
-void cpu_floor_(Tensor *A);
-void cpu_log_(Tensor *A);
-void cpu_log2_(Tensor *A);
-void cpu_log10_(Tensor *A);
-void cpu_logn_(Tensor *A, float n);
-void cpu_mod_(Tensor *A, float v);
-void cpu_mult_(Tensor *A, float v);
-void cpu_normalize_(Tensor *A, float min, float max);
-void cpu_pow_(Tensor *A, float exp);
-void cpu_powb_(Tensor *A, float base);
-void cpu_reciprocal_(Tensor *A);
-void cpu_remainder_(Tensor *A, float v);
-void cpu_round_(Tensor *A);
-void cpu_rsqrt_(Tensor *A);
-void cpu_sigmoid_(Tensor *A);
-void cpu_sign_(Tensor *A);
-void cpu_sin_(Tensor *A);
-void cpu_sinh_(Tensor *A);
-void cpu_sqr_(Tensor *A);
-void cpu_sqrt_(Tensor *A);
-void cpu_tan_(Tensor *A);
-void cpu_tanh_(Tensor *A);
-void cpu_trunc_(Tensor *A);
+void cpu_abs(Tensor *A, Tensor *B);
+void cpu_acos(Tensor *A, Tensor *B);
+void cpu_add(Tensor *A, Tensor *B, float v);
+void cpu_asin(Tensor *A, Tensor *B);
+void cpu_atan(Tensor *A, Tensor *B);
+void cpu_ceil(Tensor *A, Tensor *B);
+void cpu_clamp(Tensor *A, Tensor *B, float min, float max);
+void cpu_cos(Tensor *A, Tensor *B);
+void cpu_cosh(Tensor *A, Tensor *B);
+void cpu_exp(Tensor *A, Tensor *B);
+void cpu_inv(Tensor *A, Tensor *B, float v);
+void cpu_floor(Tensor *A, Tensor *B);
+void cpu_log(Tensor *A, Tensor *B);
+void cpu_log2(Tensor *A, Tensor *B);
+void cpu_log10(Tensor *A, Tensor *B);
+void cpu_logn(Tensor *A, Tensor *B, float n);
+void cpu_mod(Tensor *A, Tensor *B, float v);
+void cpu_mult(Tensor *A, Tensor *B, float v);
+void cpu_normalize(Tensor *A, Tensor *B, float min, float max);
+void cpu_pow(Tensor *A, Tensor *B, float exp);
+void cpu_powb(Tensor *A, Tensor *B, float base);
+void cpu_remainder(Tensor *A, Tensor *B, float v);
+void cpu_round(Tensor *A, Tensor *B);
+void cpu_rsqrt(Tensor *A, Tensor *B);
+void cpu_sigmoid(Tensor *A, Tensor *B);
+void cpu_sign(Tensor *A, Tensor *B, float zero_sign=0.0f);
+void cpu_sin(Tensor *A, Tensor *B);
+void cpu_sinh(Tensor *A, Tensor *B);
+void cpu_sqr(Tensor *A, Tensor *B);
+void cpu_sqrt(Tensor *A, Tensor *B);
+void cpu_tan(Tensor *A, Tensor *B);
+void cpu_tanh(Tensor *A, Tensor *B);
+void cpu_trunc(Tensor *A, Tensor *B);
 
 // CPU: Math (static)
 void cpu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
@@ -108,15 +111,58 @@ void cpu_inc(Tensor *A, Tensor *B);
 void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
 void cpu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
 void cpu_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
-void cpu_sign2(Tensor *A, Tensor *B); // TODO: Remove
 void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
 void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
 
-// CPU: Should be reductions
+void cpu_maximum(Tensor* A, Tensor* B, float v);
+void cpu_maximum(Tensor* A, Tensor* B, Tensor* C);
+void cpu_minimum(Tensor* A, Tensor* B, float v);
+void cpu_minimum(Tensor* A, Tensor* B, Tensor* C);
+
+// CPU: Math (reductions)
 float cpu_max(Tensor *A);
+void cpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+int cpu_argmax(Tensor *A);
+void cpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+std::tuple<float, int> cpu_max(float *ptr, int size, int *map);
+
 float cpu_min(Tensor *A);
+void cpu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+int cpu_argmin(Tensor *A);
+void cpu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+std::tuple<float, int> cpu_min(float *ptr, int size, int *map);
+
 float cpu_sum(Tensor *A);
+void cpu_sum(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+float cpu_sum(float *ptr, int size, int *map);
+
 float cpu_sum_abs(Tensor *A);
+void cpu_sum_abs(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+float cpu_sum_abs(float *ptr, int size, int *map);
+
+float cpu_prod(Tensor *A);
+void cpu_prod(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+float cpu_prod(float *ptr, int size, int *map);
+
+float cpu_mean(Tensor *A);
+void cpu_mean(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+
+float cpu_median(Tensor *A);
+void cpu_median(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+float cpu_median(float *ptr, int size, int *map);
+
+float cpu_var(Tensor *A, bool unbiased);
+void cpu_var(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased);
+float cpu_var(float *ptr, int size, int *map, bool unbiased);
+
+float cpu_std(Tensor *A, bool unbiased);
+void cpu_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased);
+
+int cpu_mode(Tensor *A);
+void cpu_mode(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+int cpu_mode(float *ptr, int size, int *map);
+
+
 
 // CPU: Reduction
 void cpu_reduce(Tensor *A, Tensor *B,string mode,int* map);
@@ -131,6 +177,16 @@ void cpu_reduction_back(ReduceDescriptor *RD);
 //void cpu_delta_reduce(Tensor *A, Tensor *B, vector<int> axis, string mode, bool keepdims,Tensor *C,int incB);
 //void cpu_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op,Tensor *C,int incC);
 //void cpu_delta_reduced_op(Tensor *A, Tensor *B, vector<int> axis, string op, Tensor *C,int incC);
+
+// CPU: Linear algebra
+float cpu_norm(Tensor *A, string ord);
+void cpu_norm(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, string ord);
+float cpu_norm_(float *ptr, int size, int *map, string ord);
+
+
+// CPU: Logic functions: Truth value testing
+std::pair<unsigned int*, int> cpu_nonzero(Tensor *A);
+void cpu_where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C);
 
 // CPU: Logic functions: Truth value testing
 bool cpu_all(Tensor *A);
@@ -152,11 +208,23 @@ void cpu_logical_xor(Tensor *A, Tensor *B, Tensor *C);
 // CPU: Logic functions: Comparisons
 bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan);
 void cpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool equal_nan);
+
+void cpu_greater(Tensor *A, Tensor *B, float v);
 void cpu_greater(Tensor *A, Tensor *B, Tensor *C);
+
+void cpu_greater_equal(Tensor *A, Tensor *B, float v);
 void cpu_greater_equal(Tensor *A, Tensor *B, Tensor *C);
+
+void cpu_less(Tensor *A, Tensor *B, float v);
 void cpu_less(Tensor *A, Tensor *B, Tensor *C);
+
+void cpu_less_equal(Tensor *A, Tensor *B, float v);
 void cpu_less_equal(Tensor *A, Tensor *B, Tensor *C);
+
+void cpu_equal(Tensor *A, Tensor *B, float v);
 void cpu_equal(Tensor *A, Tensor *B, Tensor *C);
+
+void cpu_not_equal(Tensor *A, Tensor *B, float v);
 void cpu_not_equal(Tensor *A, Tensor *B, Tensor *C);
 
 // Legacy
@@ -164,4 +232,4 @@ int cpu_equal2(Tensor *A, Tensor *B, float epsilon);
 
 
 
-#endif //EDDL_CPU_HW_H
+#endif //EDDL_CPU_TENSOR_H

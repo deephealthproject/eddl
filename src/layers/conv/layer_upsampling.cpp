@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -36,11 +36,11 @@ LUpSampling::LUpSampling(Layer *parent, const vector<int> &size, string interpol
 
 void LUpSampling::forward() {
     //Repeats the rows and columns of the data by size[0] and size[1] respectively.
-    repeat_nn(this->input, this->output, this->size);
+    tensorNN::repeat_nn(this->input, this->output, this->size);
 }
 
 void LUpSampling::backward() {
-    d_repeat_nn(delta, parent[0]->delta, this->size);
+    tensorNN::d_repeat_nn(delta, parent[0]->delta, this->size);
 }
 
 Layer *LUpSampling::share(int c, int bs, vector<Layer *> p) {

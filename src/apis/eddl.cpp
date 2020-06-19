@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -39,6 +39,16 @@ namespace eddl {
       return new Net(vnets);
     }
 
+    void setName(model m, string name)
+    {
+      m->name=name;
+    }
+
+    layer getLayer(model net, vlayer in)
+    {
+      return net->getLayer(in);
+    }
+
     void build(model net, optimizer o, CompServ *cs, bool init_weights){
         // Assign default computing service
         if (cs== nullptr){
@@ -55,10 +65,19 @@ namespace eddl {
         vector<Loss *> l;
         vector<Metric *> m;
 
+        if (lo.size()!=net->lout.size()) {
+          msg("Different number of losses and output layers. Use \"none\"","build");
+        }
+
         // Replace string by functions
         for (const auto &li : lo){
             l.push_back(getLoss(li));
         }
+
+        if (me.size()!=net->lout.size()) {
+          msg("Different number of metrics and output layers. Use \"none\"","build");
+        }
+
         for (const auto &mi : me){
             m.push_back(getMetric(mi));
         }
@@ -376,6 +395,9 @@ namespace eddl {
         else if (type == "dice"){
             return new LDice();
         }
+        else if (type == "none"){
+            return new Loss("none");
+        }
         return nullptr;
     }
 
@@ -392,6 +414,9 @@ namespace eddl {
             return new MMeanSquaredError();
         } else if (type == "categorical_accuracy" || type == "accuracy"){
             return new MCategoricalAccuracy();
+        }
+        else if (type == "binary_accuracy"){
+            return new MBinAccuracy();
         }
         else if (type=="mean_absolute_error"){
             return new MMeanAbsoluteError();
@@ -536,9 +561,6 @@ namespace eddl {
     }
 
 
-
-
-
     layer ConvT(layer parent, int filters, const vector<int> &kernel_size,
                 const vector<int> &output_padding, string padding, const vector<int> &dilation_rate,
                 const vector<int> &strides, bool use_bias, string name){
@@ -597,14 +619,14 @@ namespace eddl {
 
     // Transformation Layers
     layer Shift(layer parent, vector<int> shift, string da_mode, float constant, string name){
-        return new LShift(parent, shift, da_mode, constant, name, DEV_CPU, 0);
+        return new LShift(parent, shift, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
     }
     layer Rotate(layer parent, float angle, vector<int> offset_center, string da_mode, float constant, string name){
-        return new LRotate(parent, angle, offset_center, da_mode, constant, name, DEV_CPU, 0);
+        return new LRotate(parent, angle, offset_center, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
     }
 
     layer Scale(layer parent, vector<int> new_shape, bool reshape, string da_mode, float constant, string name){
-        return new LScale(parent, new_shape, reshape, da_mode, constant, name, DEV_CPU, 0);
+        return new LScale(parent, new_shape, reshape, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
     }
 
     layer Flip(layer parent, int axis, string name){
@@ -638,7 +660,7 @@ namespace eddl {
     }
 
     layer CropScale(layer parent, vector<int> from_coords, vector<int> to_coords, string da_mode, float constant, string name){
-        return new LCropScale(parent, from_coords, to_coords, da_mode, constant, name, DEV_CPU, 0);
+        return new LCropScale(parent, from_coords, to_coords, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
     }
 
     layer Cutout(layer parent, vector<int> from_coords, vector<int> to_coords, float constant, string name){
@@ -647,15 +669,15 @@ namespace eddl {
 
     // Data augmentation Layers
     layer RandomShift(layer parent, vector<float> factor_x, vector<float> factor_y, string da_mode, float constant, string name){
-        return new LShiftRandom(parent, factor_x, factor_y, da_mode, constant, name, DEV_CPU, 0);
+        return new LShiftRandom(parent, factor_x, factor_y, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
     }
 
     layer RandomRotation(layer parent, vector<float> factor, vector<int> offset_center, string da_mode, float constant, string name){
-        return new LRotateRandom(parent, factor, offset_center, da_mode, constant, name, DEV_CPU, 0);
+        return new LRotateRandom(parent, factor, offset_center, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
     }
 
     layer RandomScale(layer parent, vector<float> factor, string da_mode, float constant, string name){
-        return new LScaleRandom(parent, factor, da_mode, constant, name, DEV_CPU, 0);
+        return new LScaleRandom(parent, factor, getWrappingMode(da_mode), constant, name, DEV_CPU, 0);
     }
 
     layer RandomFlip(layer parent, int axis, string name){
@@ -675,7 +697,7 @@ namespace eddl {
     }
 
     layer RandomCropScale(layer parent, vector<float> factor, string da_mode, string name){
-        return new LCropScaleRandom(parent, factor, da_mode, name, DEV_CPU, 0);
+        return new LCropScaleRandom(parent, factor, getWrappingMode(da_mode), name, DEV_CPU, 0);
     }
 
     layer RandomCutout(layer parent, vector<float> factor_x, vector<float> factor_y, float constant, string name){
@@ -838,7 +860,7 @@ namespace eddl {
     }
 
     layer Select(layer l, vector<string> indices, string name){
-        return new LSelect(l, indices, false, name, DEV_CPU, 0);
+        return new LSelect(l, indices, name, DEV_CPU, 0);
     }
 
     layer Permute(layer l, vector<int> dims, string name){
@@ -926,6 +948,77 @@ namespace eddl {
         return new LLSTM({parent}, units, mask_zeros, bidirectional, name, DEV_CPU, 0);
     }
 
+    void setDecoder(layer l)
+    {
+       l->isdecoder=true;
+       for(int i=0;i<l->parent.size();i++)
+         setDecoder(l->parent[i]);
+    }
+
+
+    bool isrec(layer l)
+    {
+      if (l->isrecurrent) return true;
+
+      bool rec=false;
+      for(int i=0;i<l->parent.size();i++) {
+        if (l->parent[i]->isrecurrent) {rec=true;break;}
+        else {
+          if (isrec(l->parent[i])) {rec=true; break;}
+        }
+      }
+
+      return rec;
+    }
+
+    layer Decoder(layer dec, layer enc, string op)
+    {
+
+      bool enrec=isrec(enc);
+
+      if (enrec) {
+        // copy states from encoder
+        cout<<"Enc-Dec\n";
+        layer cps=new LCopyStates({enc},"",DEV_CPU, 0);
+        cps->isdecoder=false;
+
+        setDecoder(dec);
+
+        // clone and link with encoder
+        layer in=dec->parent[0];
+        in->detach(dec);
+
+        layer n=dec->clone(0,1,{in,cps},DEV_CPU);
+        n->orig=nullptr;
+        n->name="dec_"+dec->name;
+        n->isdecoder=true;
+
+        delete dec;
+        return n;
+      }
+      else {
+        cout<<"Dec "<<endl;
+        setDecoder(dec);
+
+        layer in=dec->parent[0];
+        in->detach(dec);
+
+        layer lop;
+        if (op=="concat") lop=Concat({enc,in},1);
+          else if (op=="sum") lop=Sum(enc,in);
+        else {
+          msg("Incorrect operator layer","Decoder");
+        }
+        lop->isdecoder=true;
+
+        layer n=dec->clone(0,1,{lop},DEV_CPU);
+        n->orig=nullptr;
+        n->name="dec_"+dec->name;
+        n->isdecoder=true;
+        delete dec;
+        return n;
+      }
+    }
 
 
     //////////////////////////////
@@ -1110,8 +1203,11 @@ namespace eddl {
             cout<<file[i]<<" x\n";
             cmd = "wget -q --show-progress https://www.dropbox.com/s/"+link[i]+"/"+file[i];
             int status = system(cmd.c_str());
-            if (status != 0){
-                msg("wget must be installed", "eddl.download_"+name);
+            if (status < 0){
+                msg("Error executing wget.  Is it installed?", "eddl.download_"+name);
+            }
+            else if (status > 0){
+                msg("wget failed to download dataset (exit code: " + to_string(status) + "). See previous messages for details.", "eddl.download_"+name);
             }
           }
           else {
@@ -1119,6 +1215,8 @@ namespace eddl {
           }
         }
       }
+
+
 
     void download_mnist(){
       download_dataset("mnist","bin",{"khrb3th2z6owd9t","m82hmmrg46kcugp","7psutd4m4wna2d5","q0tnbjvaenb4tjs"});
@@ -1128,12 +1226,12 @@ namespace eddl {
       download_dataset("cifar","bin",{"wap282xox5ew02d","yxhw99cu1ktiwxq","dh9vqxe9vt7scrp","gdmsve6mbu82ndp"});
     }
 
-    void download_imdb(){
-      download_dataset("imdb","bin",{"snf3vi7e1bjo8k5","c2zgsl2wb39ivlo","lkti7c12yoh18pv","cd1uocgv6abzt32"});
+    void download_imdb_2000(){
+      download_dataset("imdb_2000","bin",{"4m0h8ep53mixq6x","zekpjclm58tdevk","1bgdr8mz1lqkhgi","6cwob77654lruwq"});
     }
 
-    void download_imdb_1000(){
-      download_dataset("imdb_1000","bin",{"q96yf0h84mhcbgy","jfkg2spj7bd0ca8","q2e0atxf30udvlh","wlpc9pajyvmcsiu"});
+    void download_eutrans(){
+      download_dataset("eutrans","bin",{"2w0p7f4un6ci94v","g4k1bc6p4bow9tf","egcfin16gl9t92y","n8ks3lyqyhxx1e8"});
     }
 
     void download_drive(){

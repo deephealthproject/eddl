@@ -1,6 +1,6 @@
 /*
 * EDDL Library - European Distributed Deep Learning Library.
-* Version: 0.6
+* Version: 0.7
 * copyright (c) 2020, Universidad Politécnica de Valencia (UPV), PRHLT Research Centre
 * Date: April 2020
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
@@ -84,9 +84,13 @@ void LEmbedding::forward()
   inputc->toCPU();
 
   for(int i=0;i<b*length;i++) {
-    int val=inputc->get_({i});
+      int val=(int)inputc->ptr[i*inputc->stride[0]];
     //int val=0;
-    if (val>=vocsize) {cout<<"word:"<<val<<endl;msg("word > vocsize","LEmbedding::forward");}
+    if (val>=vocsize) {
+      cout<<"\n Warning word:"<<val<<" out of vocabulary\n";
+      val=0;
+      //msg("word > vocsize","LEmbedding::forward");
+    }
     sind.push_back(val);
   }
 
