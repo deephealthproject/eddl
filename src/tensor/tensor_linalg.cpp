@@ -55,7 +55,7 @@ float Tensor::norm(Tensor *A, string ord){
 
 Tensor* Tensor::norm(vector<int> axis, bool keepdims, string ord){
     // Build descriptor
-    auto rd = new ReduceDescriptor2(axis, keepdims);
+    auto rd = new ReduceDescriptor2(axis, keepdims, this->device);
     rd->build(this->shape);
 
     // Create output tensor

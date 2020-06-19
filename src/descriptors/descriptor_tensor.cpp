@@ -38,7 +38,7 @@ void TensorDescriptor::free_memory() {
 
 #ifdef cGPU
     if (this->gpu_addresses != nullptr){
-        gpu_delete_tensor_int(DEV_GPU, this->gpu_addresses);  // TODO: Ugly hotfix!
+        gpu_delete_tensor_int(this->device, this->gpu_addresses);  // TODO: Ugly hotfix!
       }
 #endif
 

@@ -162,7 +162,7 @@ float Tensor::max(Tensor* A){
 
 Tensor* Tensor::max(vector<int> axis, bool keepdims){
     // Build descriptor
-    auto rd = new ReduceDescriptor2(axis, keepdims);
+    auto rd = new ReduceDescriptor2(axis, keepdims, this->device);
     rd->build(this->shape);
 
     // Create output tensor
@@ -219,7 +219,7 @@ int Tensor::argmax(Tensor* A){
 
 Tensor* Tensor::argmax(vector<int> axis, bool keepdims){
     // Build descriptor
-    auto rd = new ReduceDescriptor2(axis, keepdims);
+    auto rd = new ReduceDescriptor2(axis, keepdims, this->device);
     rd->build(this->shape);
 
     // Create output tensor
@@ -274,7 +274,7 @@ float Tensor::min(Tensor* A){
 
 Tensor* Tensor::min(vector<int> axis, bool keepdims){
     // Build descriptor
-    auto rd = new ReduceDescriptor2(axis, keepdims);
+    auto rd = new ReduceDescriptor2(axis, keepdims, this->device);
     rd->build(this->shape);
 
     // Create output tensor
@@ -330,7 +330,7 @@ int Tensor::argmin(Tensor* A){
 
 Tensor* Tensor::argmin(vector<int> axis, bool keepdims){
     // Build descriptor
-    auto rd = new ReduceDescriptor2(axis, keepdims);
+    auto rd = new ReduceDescriptor2(axis, keepdims, this->device);
     rd->build(this->shape);
 
     // Create output tensor
@@ -386,7 +386,7 @@ float Tensor::sum(Tensor* A){
 
 Tensor* Tensor::sum(vector<int> axis, bool keepdims){
     // Build descriptor
-    auto rd = new ReduceDescriptor2(axis, keepdims);
+    auto rd = new ReduceDescriptor2(axis, keepdims, this->device);
     rd->build(this->shape);
 
     // Create output tensor
@@ -442,7 +442,7 @@ float Tensor::sum_abs(Tensor* A){
 
 Tensor* Tensor::sum_abs(vector<int> axis, bool keepdims){
     // Build descriptor
-    auto rd = new ReduceDescriptor2(axis, keepdims);
+    auto rd = new ReduceDescriptor2(axis, keepdims, this->device);
     rd->build(this->shape);
 
     // Create output tensor
@@ -498,7 +498,7 @@ float Tensor::prod(Tensor* A){  // AKA factorial
 
 Tensor* Tensor::prod(vector<int> axis, bool keepdims){
     // Build descriptor
-    auto rd = new ReduceDescriptor2(axis, keepdims);
+    auto rd = new ReduceDescriptor2(axis, keepdims, this->device);
     rd->build(this->shape);
 
     // Create output tensor
@@ -538,7 +538,7 @@ float Tensor::mean(Tensor* A){
 
 Tensor* Tensor::mean(vector<int> axis, bool keepdims){
     // Build descriptor
-    auto rd = new ReduceDescriptor2(axis, keepdims);
+    auto rd = new ReduceDescriptor2(axis, keepdims, this->device);
     rd->build(this->shape);
 
     // Create output tensor
@@ -600,7 +600,7 @@ float Tensor::median(Tensor* A){
 
 Tensor* Tensor::median(vector<int> axis, bool keepdims){
     // Build descriptor
-    auto rd = new ReduceDescriptor2(axis, keepdims);
+    auto rd = new ReduceDescriptor2(axis, keepdims, this->device);
     rd->build(this->shape);
 
     // Create output tensor
@@ -659,7 +659,7 @@ float Tensor::std(Tensor* A, bool unbiased){
 
 Tensor* Tensor::std(vector<int> axis, bool keepdims, bool unbiased){
     // Build descriptor
-    auto rd = new ReduceDescriptor2(axis, keepdims);
+    auto rd = new ReduceDescriptor2(axis, keepdims, this->device);
     rd->build(this->shape);
 
     // Create output tensor
@@ -716,7 +716,7 @@ float Tensor::var(Tensor* A, bool unbiased){
 
 Tensor* Tensor::var(vector<int> axis, bool keepdims, bool unbiased){
     // Build descriptor
-    auto rd = new ReduceDescriptor2(axis, keepdims);
+    auto rd = new ReduceDescriptor2(axis, keepdims, this->device);
     rd->build(this->shape);
 
     // Create output tensor
@@ -773,7 +773,7 @@ int Tensor::mode(Tensor* A){
 
 Tensor* Tensor::mode(vector<int> axis, bool keepdims){
     // Build descriptor
-    auto rd = new ReduceDescriptor2(axis, keepdims);
+    auto rd = new ReduceDescriptor2(axis, keepdims, this->device);
     rd->build(this->shape);
 
     // Create output tensor

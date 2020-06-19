@@ -237,7 +237,7 @@ void gpu_total_sum(Tensor *A, float *tot);
 
 // GPU: Temp
 int* get_block_dim(int N, int blockSize);
-void copy_cpu2gpu(void* cpu_addresses, void* gpu_addresses, int size, bool delete_cpu);
+void copy_cpu2gpu(float* cpu_addresses, float* gpu_addresses, int size, bool delete_cpu);
 void gpu_initialize_rd(ReduceDescriptor2 *rd, Tensor *A, Tensor *B, bool reverse=false);
 
 #endif //EDDL_GPU_HW_H

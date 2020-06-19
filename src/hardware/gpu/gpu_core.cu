@@ -34,7 +34,7 @@ int* get_block_dim(int N, int blockSize){
     return res;
 }
 
-void copy_cpu2gpu(void * cpu_addresses, void* gpu_addresses, int size, bool delete_cpu){
+void copy_cpu2gpu(float *cpu_addresses, float* gpu_addresses, int size, bool delete_cpu){
     check_cuda(cudaMalloc((void**)&(gpu_addresses), size), "create address mapping");
     check_cuda(cudaDeviceSynchronize(), "create");
 
@@ -43,7 +43,7 @@ void copy_cpu2gpu(void * cpu_addresses, void* gpu_addresses, int size, bool dele
     check_cuda(cudaDeviceSynchronize(), "copy");
 
     // Free CPU pointer?
-    if (delete_cpu) { delete cpu_addresses; }
+    if (delete_cpu) { delete[] cpu_addresses; }
 }
 
 void gpu_copy_to_gpu(float *nptr,Tensor *A){
