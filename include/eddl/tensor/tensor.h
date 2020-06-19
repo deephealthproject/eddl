@@ -350,11 +350,6 @@ public:
     static Tensor* minimum(Tensor* A, Tensor* B);
     static void minimum(Tensor* A, Tensor* B, Tensor* C);
 
-    // Math operations (single-value) ************************
-
-    float median();
-    static float median(Tensor* A);
-
     // Math operations (reductions) ************************
     float max();
     static float max(Tensor* A);
@@ -395,6 +390,11 @@ public:
     static float mean(Tensor* A);
     Tensor* mean(vector<int> axis, bool keepdims);
     static void mean(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+
+    float median();
+    static float median(Tensor* A);
+    Tensor* median(vector<int> axis, bool keepdims);
+    static void median(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
     float std(bool unbiased=true);
     static float std(Tensor* A, bool unbiased=true);

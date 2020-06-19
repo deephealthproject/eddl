@@ -132,36 +132,6 @@ void Tensor::minimum(Tensor* A, Tensor* B, Tensor* C){
 }
 
 
-float Tensor::median(){
-    return Tensor::median(this);
-}
-
-
-float Tensor::median(Tensor* A){
-    float res = 0.0f;
-
-    // Clone tensor (needs to be sorted first)
-    Tensor *tmp = A->clone();
-    tmp->sort_();
-
-    if (tmp->isCPU()) {
-        res = cpu_median(tmp);
-    }
-#ifdef cGPU
-    else if (tmp->isGPU()) {
-        res = gpu_median(tmp);
-    }
-#endif
-#ifdef cFPGA
-    else {
-
-    }
-#endif
-
-    delete tmp;
-    return res;
-}
-
 
 // Math operations (reductions) ************************
 
@@ -595,6 +565,69 @@ void Tensor::mean(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
     }
 #endif
 }
+
+
+
+float Tensor::median(){
+    return Tensor::median(this);
+}
+
+
+float Tensor::median(Tensor* A){
+    float res = 0.0f;
+
+    // Clone tensor (needs to be sorted first)
+    Tensor *tmp = A->clone();
+    tmp->sort_();
+
+    if (tmp->isCPU()) {
+        res = cpu_median(tmp);
+    }
+#ifdef cGPU
+    else if (tmp->isGPU()) {
+        res = gpu_median(tmp);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+
+    delete tmp;
+    return res;
+}
+
+Tensor* Tensor::median(vector<int> axis, bool keepdims){
+    // Build descriptor
+    auto rd = new ReduceDescriptor2(axis, keepdims);
+    rd->build(this->shape);
+
+    // Create output tensor
+    Tensor *t = Tensor::empty(rd->oshape, this->device);
+    Tensor::median(this, t, rd);
+
+    delete rd;
+    return t;
+}
+
+void Tensor::median(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
+    if (A->isCPU() && B->isCPU()) {
+        cpu_median(A, B, rd);
+    }
+#ifdef cGPU
+    else if (A->isGPU() && B->isGPU())
+    {
+        //gpu_median(A, B, rd);
+    }
+#endif
+#ifdef cFPGA
+    else {
+
+    }
+#endif
+}
+
 
 
 

@@ -627,7 +627,6 @@ void cpu_mode(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
 int cpu_mode(float *ptr, int size, int *map) {
     std::unordered_map<int, int> table;
 
-
     // TODO: I don't like this approach
     if(map == nullptr){
         // Get frequencies
@@ -651,15 +650,43 @@ int cpu_mode(float *ptr, int size, int *map) {
 
 
 float cpu_median(Tensor *A) {
-    int midpoint = A->size / 2.0f;
-
-    if(A->size % 2==1 && A->size>1) {
-        return A->ptr[midpoint];
-    }else{
-        return (A->ptr[midpoint-1]+A->ptr[midpoint])/2.0f;
-    }
+    return cpu_median(A->ptr, A->size, nullptr);
 }
 
 
+void cpu_median(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    #pragma omp parallel for
+    for(int i=0; i<rd->index.size(); i++){
+        B->ptr[i] = cpu_median(A->ptr, rd->index[i].size(), rd->index[i].data());
+    }
+}
 
+float cpu_median(float *ptr, int size, int *map) {
+    float median;
+    auto *sorted_data = new float[size];
+
+    // Copy data
+    if(map == nullptr){
+        #pragma omp parallel for
+        for (int i = 0; i < size; ++i) { sorted_data[i] = ptr[i]; }
+    }else{
+        #pragma omp parallel for
+        for (int i = 0; i < size; ++i) { sorted_data[i] = ptr[map[i]]; }
+    }
+
+    // Sort data
+    std::sort(sorted_data, sorted_data+size);
+
+    // Get median
+    int midpoint = size / 2.0f;
+    if(size % 2==1 && size>1) {
+        median = sorted_data[midpoint];
+    }else{
+        median = (sorted_data[midpoint-1]+sorted_data[midpoint])/2.0f;
+    }
+
+    // Delete data and return median
+    delete[] sorted_data;
+    return median;
+}
 
