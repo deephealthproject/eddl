@@ -674,7 +674,7 @@ void gpu_sum(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
     gpu_initialize_rd(rd, A, B, true);
 
     setDims(B);  // Walk through reduced tensor
-    gpu_sum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, A->size, rd->size_reduction);
+    gpu_sum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
     check_cuda(cudaDeviceSynchronize(),"reduce_sum");
 }
 
@@ -694,7 +694,7 @@ void gpu_sum_abs(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
     gpu_initialize_rd(rd, A, B, true);
 
     setDims(B);  // Walk through reduced tensor
-    gpu_sum_abs<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, A->size, rd->size_reduction);
+    gpu_sum_abs<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
     check_cuda(cudaDeviceSynchronize(),"reduce_sum_abs");
 }
 
@@ -734,6 +734,7 @@ void gpu_mean(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
     cudaSetDevice(device);
 
     gpu_initialize_rd(rd, A, B, true);
+
 
     setDims(B);  // Walk through reduced tensor
     gpu_mean<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);

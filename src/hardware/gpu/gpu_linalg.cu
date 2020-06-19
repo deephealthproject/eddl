@@ -69,7 +69,7 @@ void gpu_norm(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, string ord){
     setDims(B);
 
     if (ord=="fro") {
-        gpu_norm_fro<<<dimGrid, dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, A->size, rd->size_reduction);
+        gpu_norm_fro<<<dimGrid, dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
     }else{
         msg("Not yet implemented", "gpu_norm");
     }

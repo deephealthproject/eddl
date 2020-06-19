@@ -126,7 +126,7 @@ __global__ void gpu_mean(float *A, float *B, int *map, int size, int size_reduct
     }
 }
 
-__global__ void gpu_median(float *A, float *B, int *map, int size, int size_reduction){
+__global__ void gpu_median(float *A, float *B, int *map, int size, int size_reduction, float *aux){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x<size) {
@@ -147,7 +147,6 @@ __global__ void gpu_median(float *A, float *B, int *map, int size, int size_redu
             B[thread_id_x] = (values[midpoint-1]+values[midpoint])/2.0f;
         }
 
-        delete[] values;
     }
 }
 
