@@ -467,8 +467,8 @@ TEST(TensorTestSuite, tensor_math_reduction_median) {
 
     Tensor *t_cpu_median = t_cpu->median({1}, false);
     Tensor *t_gpu_median = t_gpu->median({1}, false); t_gpu_median->toCPU();
-    t_cpu_median->print();
-    t_gpu_median->print();
+//    t_cpu_median->print();
+//    t_gpu_median->print();
 
     ASSERT_TRUE(Tensor::equivalent(t_cpu_median, t_gpu_median, 10e-4));
 #endif

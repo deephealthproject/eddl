@@ -126,25 +126,25 @@ __global__ void gpu_mean(float *A, float *B, int *map, int size, int size_reduct
     }
 }
 
-__global__ void gpu_median(float *A, float *B, int *map, int size, int size_reduction){
+__global__ void gpu_median(float *A, float *B, int *map, int size, int size_reduction, float *aux){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x<size) {
         // Copy values
-        auto *values = new float[size_reduction];  // Dynamic allocation is not the best approach
+        long int offset = thread_id_x*size_reduction;
         for(int i=0; i<size_reduction; i++){
-            values[i] = A[map[thread_id_x*size_reduction+i]];
+            aux[offset+i] = A[map[offset+i]];
         }
 
         // Sort data
-        thrust::sort(thrust::seq, values, values + size_reduction);
+        thrust::sort(thrust::device, aux + offset, aux + offset + size_reduction);
 
         // Get median
-        int midpoint = (int)size / 2;
-        if(size % 2==1 && size>1) {
-            B[thread_id_x] = values[midpoint];
+        int midpoint = (int)offset + size_reduction/ 2;
+        if(size_reduction % 2==1 && size_reduction>1) {
+            B[thread_id_x] = aux[midpoint];
         }else{
-            B[thread_id_x] = (values[midpoint-1]+values[midpoint])/2.0f;
+            B[thread_id_x] = (aux[midpoint-1]+aux[midpoint])/2.0f;
         }
 
     }

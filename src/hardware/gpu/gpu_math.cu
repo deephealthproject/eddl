@@ -769,9 +769,15 @@ void gpu_median(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
 
     gpu_initialize_rd(rd, A, B, true);
 
+    float *d_aux_ptr;
+    check_cuda(cudaMalloc((void**)&(d_aux_ptr), A->size*sizeof(float)),"create map");
+    check_cuda(cudaDeviceSynchronize(), "create");
+
     setDims(B);  // Walk through reduced tensor
-    gpu_median<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
+    gpu_median<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, d_aux_ptr);
     check_cuda(cudaDeviceSynchronize(),"reduce_median");
+
+    check_cuda(cudaFree(d_aux_ptr),"delete_map");
 }
 
 
