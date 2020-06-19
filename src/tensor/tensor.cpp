@@ -145,8 +145,9 @@ void Tensor::deleteData(){
 }
 
 void Tensor::updateData(float *fptr){
+    // TODO: What if the new_pointer is the same?
 
-    if (isCPU()) {
+    if (this->isCPU()) {
         // If null => Reserve memory
         // else => point to data
         if (fptr==nullptr) { this->ptr = get_fmem(this->size,"Tensor::updateData"); }
@@ -159,12 +160,12 @@ void Tensor::updateData(float *fptr){
         }
     }
 #ifdef cGPU
-    else if (isGPU())
+    else if (this->isGPU())
     {
-        gpu_device=this->device-DEV_GPU;
-        if (!initcuda[gpu_device]){
-            gpu_init(gpu_device);
-            initcuda[gpu_device]=1;
+        this->gpu_device=this->device-DEV_GPU;
+        if (!initcuda[this->gpu_device]){
+            gpu_init(this->gpu_device);
+            initcuda[this->gpu_device]=1;
         }
 
         // If null => Reserve memory
