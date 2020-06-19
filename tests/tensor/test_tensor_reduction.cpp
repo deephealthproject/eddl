@@ -43,8 +43,8 @@ TEST(TensorTestSuite, tensor_math_reduction_max) {
 
     Tensor *t_cpu_max = t_cpu->max({1}, false);
     Tensor *t_gpu_max = t_gpu->max({1}, false); t_gpu_max->toCPU();
-    t_cpu_max->print();
-    t_gpu_max->print();
+//    t_cpu_max->print();
+//    t_gpu_max->print();
 
     ASSERT_TRUE(Tensor::equivalent(t_cpu_max, t_gpu_max, 10e-4));
 #endif
@@ -80,8 +80,8 @@ TEST(TensorTestSuite, tensor_math_reduction_argmax) {
 
     Tensor *t_cpu_argmax = t_cpu->argmax({1}, false);
     Tensor *t_gpu_argmax = t_gpu->argmax({1}, false); t_gpu_argmax->toCPU();
-    t_cpu_argmax->print();
-    t_gpu_argmax->print();
+//    t_cpu_argmax->print();
+//    t_gpu_argmax->print();
 
     ASSERT_TRUE(Tensor::equivalent(t_cpu_argmax, t_gpu_argmax, 10e-4));
 #endif
@@ -118,8 +118,8 @@ TEST(TensorTestSuite, tensor_math_reduction_min) {
 
     Tensor *t_cpu_min = t_cpu->min({1}, false);
     Tensor *t_gpu_min = t_gpu->min({1}, false); t_gpu_min->toCPU();
-    t_cpu_min->print();
-    t_gpu_min->print();
+//    t_cpu_min->print();
+//    t_gpu_min->print();
 
     ASSERT_TRUE(Tensor::equivalent(t_cpu_min, t_gpu_min, 10e-4));
 #endif
@@ -255,8 +255,8 @@ TEST(TensorTestSuite, tensor_math_reduction_prod) {
 
     Tensor *t_cpu_prod = t_cpu->prod({1}, false);
     Tensor *t_gpu_prod = t_gpu->prod({1}, false); t_gpu_prod->toCPU();
-    t_cpu_prod->print();
-    t_gpu_prod->print();
+//    t_cpu_prod->print();
+//    t_gpu_prod->print();
 
     ASSERT_TRUE(Tensor::equivalent(t_cpu_prod, t_gpu_prod, 10e-4));
 #endif
@@ -288,8 +288,8 @@ TEST(TensorTestSuite, tensor_math_reduction_mean) {
 
     Tensor *t_cpu_mean = t_cpu->mean({1}, false);
     Tensor *t_gpu_mean = t_gpu->mean({1}, false); t_gpu_mean->toCPU();
-    t_cpu_mean->print();
-    t_gpu_mean->print();
+//    t_cpu_mean->print();
+//    t_gpu_mean->print();
 
     ASSERT_TRUE(Tensor::equivalent(t_cpu_mean, t_gpu_mean, 10e-4));
 #endif
@@ -321,8 +321,8 @@ TEST(TensorTestSuite, tensor_math_reduction_var) {
 
     Tensor *t_cpu_var = t_cpu->var({1}, false);
     Tensor *t_gpu_var = t_gpu->var({1}, false); t_gpu_var->toCPU();
-    t_cpu_var->print();
-    t_gpu_var->print();
+//    t_cpu_var->print();
+//    t_gpu_var->print();
 
     ASSERT_TRUE(Tensor::equivalent(t_cpu_var, t_gpu_var, 10e-4));
 #endif
@@ -355,8 +355,8 @@ TEST(TensorTestSuite, tensor_math_reduction_std) {
 
     Tensor *t_cpu_std = t_cpu->std({1}, false);
     Tensor *t_gpu_std = t_gpu->std({1}, false); t_gpu_std->toCPU();
-    t_cpu_std->print();
-    t_gpu_std->print();
+//    t_cpu_std->print();
+//    t_gpu_std->print();
 
     ASSERT_TRUE(Tensor::equivalent(t_cpu_std, t_gpu_std, 10e-4));
 #endif

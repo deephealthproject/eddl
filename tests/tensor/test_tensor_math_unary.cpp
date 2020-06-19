@@ -1409,8 +1409,8 @@ TEST(TensorTestSuite, tensor_math_unary_mode){
     Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
     int t1_cpu_mode = t1_cpu->mode();
     int t1_gpu_mode = t1_gpu->mode(); t1_gpu->toCPU();
-    t1_cpu->print();
-    t1_gpu->print();
+//    t1_cpu->print();
+//    t1_gpu->print();
     ASSERT_EQ(t1_cpu_mode, t1_gpu_mode);
 #endif
 }
