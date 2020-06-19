@@ -14,6 +14,9 @@
 #include <iostream>
 #include <cuda.h>
 
+#include <thrust/sort.h>
+#include <thrust/execution_policy.h>
+
 #include "eddl/hardware/gpu/gpu_kernels.h"
 
 __global__ void gpu_max(float *A, float *B, int *map, int size, int size_reduction, bool argmax){
@@ -147,12 +150,41 @@ __global__ void gpu_mode(float *A, float *B, int *map, int size, int size_reduct
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x<size) {
-        float tmp = 1.0f;
+        // Copy values
+        int *values = new int[size_reduction];  // Dynamic allocation is not the best approach
         for(int i=0; i<size_reduction; i++){
-            tmp *= A[map[thread_id_x*size_reduction+i]];
+            values[i] = (int)A[map[thread_id_x*size_reduction+i]];
         }
 
-        B[thread_id_x] = tmp;
+        // Sort data
+        thrust::sort(thrust::seq, values, values + size_reduction);
+
+        // Get most frequent element
+        int most_frequent_val;
+        int most_frequent_times = 0;
+
+        int val = values[0];
+        int frequency = 1;
+        for(int i=1; i<size_reduction; i++){
+            // Check if the value has change
+            if(val==values[i]){
+                frequency++;
+            }else{
+                val = values[i];
+                frequency = 1;
+            }
+
+            // Check frequency
+            if(frequency>most_frequent_times){
+                most_frequent_val = val;
+                most_frequent_times = frequency;
+            }
+        }
+        // Assign most frequent value
+        B[thread_id_x] = (float)most_frequent_val;
+
+        // Delete temp array
+        delete[] values;
     }
 }
 

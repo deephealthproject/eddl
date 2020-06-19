@@ -806,7 +806,36 @@ float gpu_median(Tensor *A){
 }
 
 int gpu_mode(Tensor *A){
-    // TODO: Not implemented for GPU
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    // Copy A data (float) to B (int) for: 1) casting, 2) avoid changing the original data when sorting
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    thrust::device_vector<int> dev_keys(dev_ptr, dev_ptr+A->size);
+
+    // Reserve data for new keys and values
+    thrust::device_vector<int> output_keys(A->size);
+    thrust::device_vector<int> output_freqs(A->size);
+
+    // Create a tensor fill with ones
+    thrust::device_vector<int> dev_ones(A->size);
+    thrust::fill(dev_ones.begin(), dev_ones.end(), 1);
+
+    // Sort data (see why below)
+    thrust::sort(dev_keys.begin(), dev_keys.end());
+
+    // Reduce contiguous keys: [1 3 3 3 2 2 3] => [1 3 2 1] Vs. [1 3 3 3 3 2 2] => [1 4 2]
+    thrust::pair<thrust::device_vector<int>::iterator, thrust::device_vector<int>::iterator> new_end;
+    new_end = thrust::reduce_by_key(dev_keys.begin(), dev_keys.end(), dev_ones.begin(), output_keys.begin(), output_freqs.begin());
+
+    // Get index of the maximum frequency
+    int num_keys = new_end.first  - output_keys.begin();
+    thrust::device_vector<int>::iterator iter = thrust::max_element(output_freqs.begin(), output_freqs.begin() + num_keys);
+    unsigned int index = iter - output_freqs.begin();
+
+    int most_frequent_key = output_keys[index];
+    int most_frequent_val = output_freqs[index];  // Frequencies
+    return most_frequent_key;
 }
 
 void gpu_mode(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
