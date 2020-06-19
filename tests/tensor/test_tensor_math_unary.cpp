@@ -1398,19 +1398,21 @@ TEST(TensorTestSuite, tensor_math_unary_median){
 
 TEST(TensorTestSuite, tensor_math_unary_mode){
     // Test #1
-    Tensor* t1 = new Tensor({1.0f, 2.0f, 3.0f, 1.0f, 2.0f, 4.0f, 1.0f}, {7}, DEV_CPU);
+    Tensor* t1 = new Tensor({1.0f, 2.0f, 3.0f, 1.0f, 2.0f, 4.0f, 1.0f, 3.0f, 0.0f, 3.0f, 3.0f}, {11}, DEV_GPU);
 
     int t1_mode = t1->mode();
-    ASSERT_EQ(t1_mode, 1);
+    ASSERT_EQ(t1_mode, 3);
 
-//    // Test GPU
-//#ifdef cGPU
-//    Tensor* t1_cpu = Tensor::randn({1000}); t1_cpu->round();
-//    Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
-//    int t1_cpu_mode = t1_cpu->mode();
-//    int t1_gpu_mode = t1_gpu->mode(); t1_gpu->toCPU();
-//    ASSERT_EQ(t1_cpu_mode, t1_gpu_mode);
-//#endif
+    // Test GPU
+#ifdef cGPU
+    Tensor* t1_cpu = Tensor::randn({10}); t1_cpu->round_();
+    Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
+    int t1_cpu_mode = t1_cpu->mode();
+    int t1_gpu_mode = t1_gpu->mode(); t1_gpu->toCPU();
+    t1_cpu->print();
+    t1_gpu->print();
+    ASSERT_EQ(t1_cpu_mode, t1_gpu_mode);
+#endif
 }
 
 
