@@ -145,6 +145,9 @@ void gpu_prod(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 float gpu_mean(Tensor *A);
 void gpu_mean(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 
+float gpu_median(Tensor *A);
+void gpu_median(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+
 float gpu_var(Tensor *A, bool unbiased);
 void gpu_var(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased);
 
@@ -154,7 +157,6 @@ void gpu_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased);
 int gpu_mode(Tensor *A);
 void gpu_mode(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 
-float gpu_median(Tensor *A);
 
 // GPU: Reduction
 void gpu_reduce(Tensor *A, Tensor *B,string mode,int* map);

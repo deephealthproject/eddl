@@ -122,10 +122,11 @@ __global__ void gpu_minimum(float *A, float *B, float *C, long int size);
 // GPU: Reduction
 __global__ void gpu_max(float *A, float *B, int *map, int size, int size_reduction, bool argmax);
 __global__ void gpu_min(float *A, float *B, int *map, int size, int size_reduction, bool argmin);
-__global__ void gpu_sum(float *A,float *B,int *map, int size);
-__global__ void gpu_sum_abs(float *A, float *B, int *map, int size);
+__global__ void gpu_sum(float *A,float *B,int *map, int size, int size_reduction);
+__global__ void gpu_sum_abs(float *A, float *B, int *map, int size, int size_reduction);
 __global__ void gpu_prod(float *A, float *B, int *map, int size, int size_reduction);
 __global__ void gpu_mean(float *A, float *B, int *map, int size, int size_reduction);
+__global__ void gpu_median(float *A, float *B, int *map, int size, int size_reduction);
 __global__ void gpu_var(float *A, float *B, int *map, int size, int size_reduction, bool unbiased);
 __global__ void gpu_mode(float *A, float *B, int *map, int size, int size_reduction);
 

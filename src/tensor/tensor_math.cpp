@@ -618,7 +618,7 @@ void Tensor::median(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #ifdef cGPU
     else if (A->isGPU() && B->isGPU())
     {
-        //gpu_median(A, B, rd);
+        gpu_median(A, B, rd);
     }
 #endif
 #ifdef cFPGA

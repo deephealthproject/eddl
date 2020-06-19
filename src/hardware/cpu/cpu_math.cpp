@@ -678,7 +678,7 @@ float cpu_median(float *ptr, int size, int *map) {
     std::sort(sorted_data, sorted_data+size);
 
     // Get median
-    int midpoint = size / 2.0f;
+    int midpoint = size/2;
     if(size % 2==1 && size>1) {
         median = sorted_data[midpoint];
     }else{
