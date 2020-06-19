@@ -437,3 +437,37 @@ TEST(TensorTestSuite, tensor_math_reduction_norm) {
     ASSERT_TRUE(Tensor::equivalent(t_cpu_norm, t_gpu_norm, 10e-4));
 #endif
 }
+
+
+TEST(TensorTestSuite, tensor_math_reduction_median) {
+    // Test #1
+    Tensor *t1_ref = new Tensor({5.0f, 4.0f, 3.0f},  {3}, DEV_CPU);
+    Tensor *t1 = new Tensor({4.0f, 7.0f, 9.0f,
+                                  6.0f, 4.0f, 1.0f,
+                                  5.0f, 2.0f, 3.0f,}, {3, 3}, DEV_CPU);
+
+    Tensor *new_t = t1->median({0}, false);
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+
+    // Test #2
+    Tensor *t2_ref = new Tensor({ 1.5f, 4.0f, 4.5f},  {4}, DEV_CPU);
+    Tensor *t2 = new Tensor({
+                                    1.0f, 5.0f, 2.0f, 1.0f,
+                                    4.0f, 4.0f, 3.0f, 4.0f,
+                                    4.0f, 5.0f, 8.0f, 1.0f}, {3, 4}, DEV_CPU);
+
+    Tensor *new_t2 = t2->median({1}, false);
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+
+//#ifdef cGPU
+//    Tensor* t_cpu = Tensor::full({10, 10}, 2.0f);  // High mismatch CPU/GPU
+//    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+//
+//    Tensor *t_cpu_median = t_cpu->mean({1}, false);
+//    Tensor *t_gpu_median = t_gpu->mean({1}, false); t_gpu_median->toCPU();
+//    t_cpu_median->print();
+//    t_gpu_median->print();
+//
+//    ASSERT_TRUE(Tensor::equivalent(t_cpu_median, t_gpu_median, 10e-4));
+//#endif
+}
