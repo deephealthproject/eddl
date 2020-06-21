@@ -38,13 +38,13 @@ TEST(TensorTestSuite, tensor_math_reduction_max) {
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({10, 10});  // High mismatch CPU/GPU
+    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});  // High mismatch CPU/GPU
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
 
     Tensor *t_cpu_max = t_cpu->max({1}, false);
     Tensor *t_gpu_max = t_gpu->max({1}, false); t_gpu_max->toCPU();
-    t_cpu_max->print();
-    t_gpu_max->print();
+//    t_cpu_max->print();
+//    t_gpu_max->print();
 
     ASSERT_TRUE(Tensor::equivalent(t_cpu_max, t_gpu_max, 10e-4));
 #endif
@@ -75,13 +75,13 @@ TEST(TensorTestSuite, tensor_math_reduction_argmax) {
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({10, 10});  // High mismatch CPU/GPU
+    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});  // High mismatch CPU/GPU
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
 
     Tensor *t_cpu_argmax = t_cpu->argmax({1}, false);
     Tensor *t_gpu_argmax = t_gpu->argmax({1}, false); t_gpu_argmax->toCPU();
-    t_cpu_argmax->print();
-    t_gpu_argmax->print();
+//    t_cpu_argmax->print();
+//    t_gpu_argmax->print();
 
     ASSERT_TRUE(Tensor::equivalent(t_cpu_argmax, t_gpu_argmax, 10e-4));
 #endif
@@ -113,13 +113,13 @@ TEST(TensorTestSuite, tensor_math_reduction_min) {
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({10, 10});  // High mismatch CPU/GPU
+    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});  // High mismatch CPU/GPU
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
 
     Tensor *t_cpu_min = t_cpu->min({1}, false);
     Tensor *t_gpu_min = t_gpu->min({1}, false); t_gpu_min->toCPU();
-    t_cpu_min->print();
-    t_gpu_min->print();
+//    t_cpu_min->print();
+//    t_gpu_min->print();
 
     ASSERT_TRUE(Tensor::equivalent(t_cpu_min, t_gpu_min, 10e-4));
 #endif
@@ -150,13 +150,13 @@ TEST(TensorTestSuite, tensor_math_reduction_argmin) {
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({10, 10});  // High mismatch CPU/GPU
+    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});  // High mismatch CPU/GPU
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
 
     Tensor *t_cpu_argmin = t_cpu->argmin({1}, false);
     Tensor *t_gpu_argmin = t_gpu->argmin({1}, false); t_gpu_argmin->toCPU();
-    t_cpu_argmin->print();
-    t_gpu_argmin->print();
+//    t_cpu_argmin->print();
+//    t_gpu_argmin->print();
 
     ASSERT_TRUE(Tensor::equivalent(t_cpu_argmin, t_gpu_argmin, 10e-4));
 #endif
@@ -185,13 +185,13 @@ TEST(TensorTestSuite, tensor_math_reduction_sum) {
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::ones({10, 10});  // High mismatch CPU/GPU
+    Tensor* t_cpu = Tensor::ones({3, 1000, 1000});  // High mismatch CPU/GPU
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
 
     Tensor *t_cpu_sum = t_cpu->sum({1}, false);
     Tensor *t_gpu_sum = t_gpu->sum({1}, false); t_gpu_sum->toCPU();
-    t_cpu_sum->print();
-    t_gpu_sum->print();
+//    t_cpu_sum->print();
+//    t_gpu_sum->print();
 
     ASSERT_TRUE(Tensor::equivalent(t_cpu_sum, t_gpu_sum, 10e-4));
 #endif
@@ -217,13 +217,13 @@ TEST(TensorTestSuite, tensor_math_reduction_sum_abs) {
 
     // Test GPU
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::ones({10, 10});  // High mismatch CPU/GPU
+    Tensor* t_cpu = Tensor::ones({3, 1000, 1000});  // High mismatch CPU/GPU
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
 
     Tensor *t_cpu_sum_abs = t_cpu->sum_abs({1}, false);
     Tensor *t_gpu_sum_abs = t_gpu->sum_abs({1}, false); t_gpu_sum_abs->toCPU();
-    t_cpu_sum_abs->print();
-    t_gpu_sum_abs->print();
+//    t_cpu_sum_abs->print();
+//    t_gpu_sum_abs->print();
 
     ASSERT_TRUE(Tensor::equivalent(t_cpu_sum_abs, t_gpu_sum_abs, 10e-4));
 #endif
@@ -255,8 +255,8 @@ TEST(TensorTestSuite, tensor_math_reduction_prod) {
 
     Tensor *t_cpu_prod = t_cpu->prod({1}, false);
     Tensor *t_gpu_prod = t_gpu->prod({1}, false); t_gpu_prod->toCPU();
-    t_cpu_prod->print();
-    t_gpu_prod->print();
+//    t_cpu_prod->print();
+//    t_gpu_prod->print();
 
     ASSERT_TRUE(Tensor::equivalent(t_cpu_prod, t_gpu_prod, 10e-4));
 #endif
@@ -283,13 +283,13 @@ TEST(TensorTestSuite, tensor_math_reduction_mean) {
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
 
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::full({10, 10}, 2.0f);  // High mismatch CPU/GPU
+    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});  // High mismatch CPU/GPU
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
 
     Tensor *t_cpu_mean = t_cpu->mean({1}, false);
     Tensor *t_gpu_mean = t_gpu->mean({1}, false); t_gpu_mean->toCPU();
-    t_cpu_mean->print();
-    t_gpu_mean->print();
+//    t_cpu_mean->print();
+//    t_gpu_mean->print();
 
     ASSERT_TRUE(Tensor::equivalent(t_cpu_mean, t_gpu_mean, 10e-4));
 #endif
@@ -316,13 +316,13 @@ TEST(TensorTestSuite, tensor_math_reduction_var) {
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
 
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({10, 10});  // High mismatch CPU/GPU
+    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});  // High mismatch CPU/GPU
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
 
     Tensor *t_cpu_var = t_cpu->var({1}, false);
     Tensor *t_gpu_var = t_gpu->var({1}, false); t_gpu_var->toCPU();
-    t_cpu_var->print();
-    t_gpu_var->print();
+//    t_cpu_var->print();
+//    t_gpu_var->print();
 
     ASSERT_TRUE(Tensor::equivalent(t_cpu_var, t_gpu_var, 10e-4));
 #endif
@@ -350,13 +350,13 @@ TEST(TensorTestSuite, tensor_math_reduction_std) {
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
 
 #ifdef cGPU
-    Tensor* t_cpu = Tensor::randn({10, 10});  // High mismatch CPU/GPU
+    Tensor* t_cpu = Tensor::randn({3, 1000, 1000});  // High mismatch CPU/GPU
     Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
 
     Tensor *t_cpu_std = t_cpu->std({1}, false);
     Tensor *t_gpu_std = t_gpu->std({1}, false); t_gpu_std->toCPU();
-    t_cpu_std->print();
-    t_gpu_std->print();
+//    t_cpu_std->print();
+//    t_gpu_std->print();
 
     ASSERT_TRUE(Tensor::equivalent(t_cpu_std, t_gpu_std, 10e-4));
 #endif
@@ -386,6 +386,19 @@ TEST(TensorTestSuite, tensor_math_reduction_mode) {
 
     Tensor *new_t2 = t2->mode({1}, false);
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+
+#ifdef cGPU
+    // TODO:: THERE ARE PROBLEMS WITH BIGGER TENSORS
+    Tensor* t_cpu = Tensor::randn({3, 100, 100});  t_cpu->round_(); // High mismatch CPU/GPU; make either 0 or 1
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    Tensor *t_cpu_mode = t_cpu->mode({1}, false);
+    Tensor *t_gpu_mode = t_gpu->mode({1}, false); t_gpu_mode->toCPU();
+//    t_cpu_mode->print();
+//    t_gpu_mode->print();
+
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_mode, t_gpu_mode, 10e-4));
+#endif
 }
 
 
@@ -411,4 +424,52 @@ TEST(TensorTestSuite, tensor_math_reduction_norm) {
 
     Tensor *new_t2 = t2->norm({1}, false, "fro");
     ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+
+#ifdef cGPU
+    // TODO:: THERE ARE PROBLEMS WITH BIGGER TENSORS
+    Tensor* t_cpu = Tensor::randn({3, 100, 100});  // High mismatch CPU/GPU
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    Tensor *t_cpu_norm = t_cpu->norm({1}, false, "fro");
+    Tensor *t_gpu_norm = t_gpu->norm({1}, false, "fro"); t_gpu_norm->toCPU();
+//    t_cpu_norm->print();
+//    t_gpu_norm->print();
+
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_norm, t_gpu_norm, 10e-4));
+#endif
+}
+
+
+TEST(TensorTestSuite, tensor_math_reduction_median) {
+    // Test #1
+    Tensor *t1_ref = new Tensor({5.0f, 4.0f, 3.0f},  {3}, DEV_CPU);
+    Tensor *t1 = new Tensor({4.0f, 7.0f, 9.0f,
+                                  6.0f, 4.0f, 1.0f,
+                                  5.0f, 2.0f, 3.0f,}, {3, 3}, DEV_CPU);
+
+    Tensor *new_t = t1->median({0}, false);
+    ASSERT_TRUE(Tensor::equivalent(t1_ref, new_t, 10e-4));
+
+    // Test #2
+    Tensor *t2_ref = new Tensor({ 1.5f, 4.0f, 4.5f},  {3}, DEV_CPU);
+    Tensor *t2 = new Tensor({
+                                    1.0f, 5.0f, 2.0f, 1.0f,
+                                    4.0f, 4.0f, 3.0f, 4.0f,
+                                    4.0f, 5.0f, 8.0f, 1.0f}, {3, 4}, DEV_CPU);
+
+    Tensor *new_t2 = t2->median({1}, false);
+    ASSERT_TRUE(Tensor::equivalent(t2_ref, new_t2, 10e-4));
+
+#ifdef cGPU
+    // TODO:: THERE ARE PROBLEMS WITH BIGGER TENSORS
+    Tensor* t_cpu = Tensor::randn({3, 100, 100});  // High mismatch CPU/GPU
+    Tensor* t_gpu = t_cpu->clone(); t_gpu->toGPU();
+
+    Tensor *t_cpu_median = t_cpu->median({1}, false);
+    Tensor *t_gpu_median = t_gpu->median({1}, false); t_gpu_median->toCPU();
+//    t_cpu_median->print();
+//    t_gpu_median->print();
+
+    ASSERT_TRUE(Tensor::equivalent(t_cpu_median, t_gpu_median, 10e-4));
+#endif
 }

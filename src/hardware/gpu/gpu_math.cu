@@ -671,10 +671,10 @@ void gpu_sum(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
-    gpu_initialize_rd(rd, A, B); // Walk through the source tensor
+    gpu_initialize_rd(rd, A, B, true);
 
-    setDims(A);
-    gpu_sum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, A->size);
+    setDims(B);  // Walk through reduced tensor
+    gpu_sum<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
     check_cuda(cudaDeviceSynchronize(),"reduce_sum");
 }
 
@@ -691,10 +691,10 @@ void gpu_sum_abs(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
-    gpu_initialize_rd(rd, A, B);
+    gpu_initialize_rd(rd, A, B, true);
 
-    setDims(A); // Walk through the source tensor
-    gpu_sum_abs<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, A->size);
+    setDims(B);  // Walk through reduced tensor
+    gpu_sum_abs<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
     check_cuda(cudaDeviceSynchronize(),"reduce_sum_abs");
 }
 
@@ -735,9 +735,49 @@ void gpu_mean(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
 
     gpu_initialize_rd(rd, A, B, true);
 
+
     setDims(B);  // Walk through reduced tensor
     gpu_mean<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
     check_cuda(cudaDeviceSynchronize(),"reduce_gpu_mean");
+}
+
+
+float gpu_median(Tensor *A){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    // Copy A data to B to avoid changing the original data when sorting
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    thrust::device_vector<float> dev_ptr_sorted(dev_ptr, dev_ptr+A->size);
+
+    // Sort data (see why below)
+    thrust::sort(dev_ptr_sorted.begin(), dev_ptr_sorted.end());
+
+    // Get median
+    int midpoint = (int)A->size / 2;
+    if(A->size % 2==1 && A->size>1) {
+         return dev_ptr_sorted[midpoint];
+    }else{
+        return (dev_ptr_sorted[midpoint-1]+dev_ptr_sorted[midpoint])/2.0f;
+    }
+
+}
+
+void gpu_median(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
+
+    gpu_initialize_rd(rd, A, B, true);
+
+    float *d_aux_ptr;
+    check_cuda(cudaMalloc((void**)&(d_aux_ptr), A->size*sizeof(float)),"create map");
+    check_cuda(cudaDeviceSynchronize(), "create");
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_median<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction, d_aux_ptr);
+    check_cuda(cudaDeviceSynchronize(),"reduce_median");
+
+    check_cuda(cudaFree(d_aux_ptr),"delete_map");
 }
 
 
@@ -750,7 +790,7 @@ float gpu_var(Tensor *A, bool unbiased){
     float sum = thrust::transform_reduce(dev_ptr, dev_ptr + A->size, variance_shift_sum(mean), 0.0f, thrust::plus<float>());
 
     if(unbiased){return sum/(A->size-1.0f);}
-    else {return sum/(A->size);}
+    else {return sum/((float)A->size);}
 }
 
 void gpu_var(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
@@ -783,32 +823,49 @@ void gpu_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
 }
 
 
-float gpu_median(Tensor *A){
+int gpu_mode(Tensor *A){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
-    int size;
-    int midpoint = A->size / 2.0f;
-    if(A->size % 2==1 && A->size>1) { size = 1; }
-    else{ size = 2; midpoint -=1; }
+    // Copy A data (float) to B (int) for: 1) casting, 2) avoid changing the original data when sorting
+    thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(A->ptr);
+    thrust::device_vector<int> dev_keys(dev_ptr, dev_ptr+A->size);
 
-    // Copy (minimum) data to host
-    auto *host_array = new float[size];
-    check_cuda(cudaMemcpy(host_array, A->ptr+midpoint, size*sizeof(float),cudaMemcpyDeviceToHost),"gpu_median");
+    // Reserve data for new keys and values
+    thrust::device_vector<int> output_keys(A->size);
+    thrust::device_vector<int> output_freqs(A->size);
 
-    // Compute median
-    float median = 0.0f;
-    for(int i=0; i<size; i++){median+=host_array[i];}
-    median = median/size;
+    // Create a tensor fill with ones
+    thrust::device_vector<int> dev_ones(A->size);
+    thrust::fill(dev_ones.begin(), dev_ones.end(), 1);
 
-    delete[] host_array;
-    return median;
+    // Sort data (see why below)
+    thrust::sort(dev_keys.begin(), dev_keys.end());
+
+    // Reduce contiguous keys: [1 3 3 3 2 2 3] => [1 3 2 1] Vs. [1 3 3 3 3 2 2] => [1 4 2]
+    thrust::pair<thrust::device_vector<int>::iterator, thrust::device_vector<int>::iterator> new_end;
+    new_end = thrust::reduce_by_key(dev_keys.begin(), dev_keys.end(), dev_ones.begin(), output_keys.begin(), output_freqs.begin());
+
+    // Get index of the maximum frequency
+    int num_keys = new_end.first  - output_keys.begin();
+    thrust::device_vector<int>::iterator iter = thrust::max_element(output_freqs.begin(), output_freqs.begin() + num_keys);
+    unsigned int index = iter - output_freqs.begin();
+
+    int most_frequent_key = output_keys[index];
+    int most_frequent_val = output_freqs[index];  // Frequencies
+    return most_frequent_key;
 }
 
-int gpu_mode(Tensor *A){
-    // TODO: Not implemented for GPU
-}
+void gpu_mode(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+    int device=A->gpu_device;
+    cudaSetDevice(device);
 
+    gpu_initialize_rd(rd, A, B, true);
+
+    setDims(B);  // Walk through reduced tensor
+    gpu_mode<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rd->gpu_addresses, B->size, rd->size_reduction);
+    check_cuda(cudaDeviceSynchronize(),"reduce_mode");
+}
 
 // GPU: Reduction ***************************
 void gpu_sum2D(float scA,Tensor *A, float scB,Tensor *B, Tensor *C,int incC){

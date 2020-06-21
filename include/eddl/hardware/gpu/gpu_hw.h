@@ -145,14 +145,17 @@ void gpu_prod(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 float gpu_mean(Tensor *A);
 void gpu_mean(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 
+float gpu_median(Tensor *A);
+void gpu_median(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+
 float gpu_var(Tensor *A, bool unbiased);
 void gpu_var(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased);
 
 float gpu_std(Tensor *A, bool unbiased);
 void gpu_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased);
 
-float gpu_median(Tensor *A);
-int gpu_mode(Tensor *A);  // TODO: Not implemented
+int gpu_mode(Tensor *A);
+void gpu_mode(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 
 
 // GPU: Reduction
@@ -171,6 +174,7 @@ void gpu_reduction_back(ReduceDescriptor *RD);
 
 // GPU: Linear algebra
 float gpu_norm(Tensor *A, string ord);
+void gpu_norm(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, string ord);
 
 // Generating index arrays *****************************
 void gpu_where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C);
@@ -233,7 +237,7 @@ void gpu_total_sum(Tensor *A, float *tot);
 
 // GPU: Temp
 int* get_block_dim(int N, int blockSize);
-void copy_cpu2gpu(void* cpu_addresses, void* gpu_addresses, int size, bool delete_cpu);
+void copy_cpu2gpu(float* cpu_addresses, float* gpu_addresses, int size, bool delete_cpu);
 void gpu_initialize_rd(ReduceDescriptor2 *rd, Tensor *A, Tensor *B, bool reverse=false);
 
 #endif //EDDL_GPU_HW_H

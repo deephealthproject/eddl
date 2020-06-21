@@ -237,15 +237,15 @@ public:
     static Tensor* load(const string& filename, string format="");
     template<typename T> static Tensor* load(const string& filename, string format="");
 
-//    /**
-//      *  @brief Load data from a text file
-//      *
-//      *  @param filename  Name of the file to load the tensor from.
-//      *  @param delimiter    Character used to separate the columns of the file.
-//      *  @param headerRows   Number of top rows to avoid, generally because they correspond to the header.
-//      *  @return    Tensor
-//    */
-//    static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
+    /**
+      *  @brief Load data from a text file
+      *
+      *  @param filename  Name of the file to load the tensor from.
+      *  @param delimiter    Character used to separate the columns of the file.
+      *  @param headerRows   Number of top rows to avoid, generally because they correspond to the header.
+      *  @return    Tensor
+    */
+    static Tensor* load_from_txt(const string& filename, const char delimiter=',', int headerRows=1);
 
     /**
       *  @brief Save tensor to a filestream.
@@ -300,7 +300,7 @@ public:
       *  @brief Create a tensor with the shape and device of another one, but empty
       *
       *  @param A  Input tensor from wich to take shape and device.
-      *  @return     Empty initialized A-shaped tensor 
+      *  @return     Empty initialized A-shaped tensor
      */
     static Tensor* empty_like(Tensor *A);
 
@@ -318,7 +318,7 @@ public:
       *  @brief Create a tensor with the shape and device of another one, initialized with zeros
       *
       *  @param A  Input tensor from wich to take shape and device.
-      *  @return     Zeros initialized A-shaped tensor 
+      *  @return     Zeros initialized A-shaped tensor
      */
     static Tensor* zeros_like(Tensor *A);
 
@@ -335,7 +335,7 @@ public:
       *  @brief Create a tensor with the shape and device of another one, initialized with ones
       *
       *  @param A  Input tensor from wich to take shape and device.
-      *  @return     Ones initialized A-shaped tensor 
+      *  @return     Ones initialized A-shaped tensor
      */
     static Tensor* ones_like(Tensor *A);
 
@@ -353,7 +353,7 @@ public:
       *  @brief Create a tensor with the shape an device of the input tensor and filled with a specific value.
       *
       *  @param A  Input tensor from wich to take shape and device.
-      *  @return     Value initialized A-shaped tensor 
+      *  @return     Value initialized A-shaped tensor
     */
     static Tensor* full_like(Tensor *A, float value);
 
@@ -519,12 +519,14 @@ public:
     */
     static void maximum(Tensor* A, Tensor* B, Tensor* C);
 
+
     /**
       *  @brief Apply a upper bound to the elements in a tensor.
       *
       *  @param v  Lower bound.
       *  @return A new tensor with the values higher than v set to v.
     */
+
     Tensor* minimum(float v);
 
     /**
@@ -562,23 +564,6 @@ public:
       *  @param C  Output tensor with the lower value in the same position between A and B.
     */
     static void minimum(Tensor* A, Tensor* B, Tensor* C);
-
-    // Math operations (single-value) ************************
-
-    /**
-      *  @brief Get the median value of all the elements in the tensor.
-      *
-      *  @return The median value of all the elements in the tensor.
-    */
-    float median();
-
-    /**
-      *  @brief Get the median value of all the elements in the input tensor.
-      *
-      *  @param A Input tensor.
-      *  @return The median value of all the elements in the input tensor.
-    */
-    static float median(Tensor* A);
 
     // Math operations (reductions) ************************
 
@@ -762,6 +747,10 @@ public:
     Tensor* mean(vector<int> axis, bool keepdims);
     static void mean(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
+    float median();
+    static float median(Tensor* A);
+    Tensor* median(vector<int> axis, bool keepdims);
+    static void median(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
 
     /**
     *   @brief Obtain the standard deviation of all the values in the tensor.
@@ -2006,7 +1995,7 @@ public:
     */
     static float trace(Tensor *A, int k=0);
 
-    /** 
+    /**
     *   @brief Compute the norm of a 1-D or 2-D tensor.
     *   @param ord The order of the norm. One of:
     *       - "fro": Frobenius norm
@@ -2014,7 +2003,7 @@ public:
     */
     float norm(string ord="fro");
 
-    /** 
+    /**
     *   @brief Compute the norm of a 1-D or 2-D tensor.
     *   @param A Input tensor.
     *   @param ord The order of the norm. One of:
@@ -2023,7 +2012,7 @@ public:
     */
     static float norm(Tensor *A, string ord="fro");
 
-    /** 
+    /**
     *   @brief Compute the norm of a selected axis of a tensor.
     *   @param axis Vector with the axis selected to compute the norm.
     *   @param keepdims Whether to keep dimensions of the input vector in the output vector.
@@ -2033,21 +2022,21 @@ public:
     */
     Tensor* norm(vector<int> axis, bool keepdims, string ord="fro");
 
-    
+
     static void norm(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, string ord="fro");
 
     // Generating index arrays *****************************
     std::pair<unsigned int*, int> _nonzero();
 
-    /** 
+    /**
     *   @brief Returns a tensor containing the indices of nonzero elements.
     *   @param sort_indices Whether to sort the indices or not.
-    *   
+    *
     *   @return A tensor containing the indices of the nonzero elements.
     */
     Tensor* nonzero(bool sort_indices=false);
 
-    /** 
+    /**
     *   @brief Depending on ``condition``, returns a tensor whith elements from ``A`` or ``B``.
     *   @param condition Tensor with the condition to be accomplished.
     *   @param A Input tensor.
@@ -2056,7 +2045,7 @@ public:
     */
     static Tensor* where(Tensor *condition, Tensor *A, Tensor *B);  // where(x > 0, x[random], y[ones])
 
-    /** 
+    /**
     *   @brief Depending on ``condition``, returns a tensor whith elements from ``A`` or ``B``.
     *   @param condition Tensor with the condition to be accomplished.
     *   @param A Input tensor.
@@ -2671,7 +2660,7 @@ public:
     // TODO: REFACTOR!!! ************************
 
     static void transpose(Tensor *A, Tensor *B, vector<int> dims);  // TODO: Should be replaced by permute
-    
+
     /**
     *   @brief Weighted element-wise sum of two tensors.
     *   @param scA Weight of tensor ``A``.
@@ -2682,7 +2671,7 @@ public:
     *   @param incC if ``incC`` is 1, C += sc*A + scB*B
     */
     static void add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC); // C = a*A+b*B
-    
+
     /**
     *   @brief Increment element-wise one tensors with the values of another.
     *   @param A Input tensor.
@@ -2739,12 +2728,12 @@ public:
     *   @brief Reduction of a matrix to a 1-D tensor.
     *   @param A Input 2-D tensor.
     *   @param B Output 1-D tensor.
-    *   @param axis Dimension to be sumed. 
+    *   @param axis Dimension to be sumed.
     *   @param incB if ``incB`` is 1, B += reduce(A)
     */
     static void reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB);
 
-    
+
     static int eqsize(Tensor *A, Tensor *B);  // Legacy
 
     /**

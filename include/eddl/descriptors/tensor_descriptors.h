@@ -27,7 +27,7 @@ public:
     int* gpu_addresses;
     int* fpga_addresses;
 
-    TensorDescriptor(int dev=0);
+    TensorDescriptor(int dev);
     ~TensorDescriptor();
 
     // Don't mark as pure virtual because not all methods use the same parameters
@@ -47,7 +47,7 @@ public:
     vector<string> indices;
 
     SelDescriptor(int dev);
-    SelDescriptor(const vector<string>& indices, int dev=0);
+    SelDescriptor(const vector<string>& indices, int dev);
 
     virtual void build(vector<int> ishape);
     void resize(int b) override;
@@ -58,7 +58,7 @@ class PermuteDescriptor : public SelDescriptor {
 public:
     vector<int> dims;
 
-    PermuteDescriptor(const vector<int>& dims, int dev=0);
+    PermuteDescriptor(const vector<int>& dims, int dev);
 
     void build(vector<int> ishape) override;
     void resize(int b) override;
@@ -80,7 +80,7 @@ public:
     vector<int> oshape;
     int size_reduction;
 
-    ReduceDescriptor2(const vector<int>& axis, bool keepdims, int dev=0);
+    ReduceDescriptor2(const vector<int>& axis, bool keepdims, int dev);
 
     void build(const vector<int>& ishape);
     void resize(int b) override;
