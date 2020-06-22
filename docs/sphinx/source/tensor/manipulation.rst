@@ -18,7 +18,9 @@ Move to CPU
 
 .. code-block:: c++
 
-    Tensor* toCPU(Tensor *A);
+    Tensor* tensor1 = Tensor::logspace(0.1, 1.0, 5, 10.0, DEV_GPU); //tensor1 is in GPU
+    Tensor::toCPU(tensor1);
+    // tensor1 is now in CPU
 
 Move to GPU
 ^^^^^^^^^^^^
@@ -27,7 +29,9 @@ Move to GPU
 
 .. code-block:: c++
 
-    Tensor* toGPU(Tensor *A);
+    Tensor* tensor1 = Tensor::logspace(0.1, 1.0, 5, 10.0, DEV_CPU); //tensor1 is in CPU
+    Tensor::toGPU(tensor1);
+    // tensor1 is now in GPU
 
 
 Check tensor device
@@ -40,10 +44,11 @@ Check tensor device
 
 .. code-block:: c++
 
-    int isCPU();
-    int isGPU();
-    int isFPGA();
-    string getDeviceName();
+    Tensor* tensor1 = Tensor::logspace(0.1, 1.0, 5, 10.0, DEV_GPU); //tensor1 is in GPU
+    tensor1->isCPU(); // returns 0
+    tensor1->isGPU(); // returns 1
+    tensor1->isFPGA(); // returns 0
+    tensor1->getDeviceName(); // returns GPU
 
 
 Check compatibility
@@ -66,7 +71,8 @@ Get information from tensor
 
 .. code-block:: c++
 
-    void info();
+    Tensor* tensor1 = Tensor::logspace(0.1, 1.0, 5, 10.0, DEV_GPU); //tensor1 is in GPU
+    tensor1->info(); // prints on standard output the information of tensor1
 
 
 Print tensor contents
