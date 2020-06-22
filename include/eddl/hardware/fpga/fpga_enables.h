@@ -1,9 +1,10 @@
-// In this file we enable the kernels that will be
-// implemented on the FPGA
+// List of EDDL-kernels which can be enabled to be run on the FPGA
+// Uncomment those kernels that will be running on the FPGA
+//
 
 //Activations
 //#define K_ENABLED_RELU
-// #define K_ENABLED_D_RELU
+////#define K_ENABLED_D_RELU
 // #define K_ENABLED_THRESHOLDED_RELU
 // #define K_ENABLED_D_TRHESHOLDED_RELU
 // #define K_ENABLED_LEAKY_RELU
@@ -57,7 +58,7 @@
 
 //Conv
 // #define K_ENABLED_IM2COL
-//#define K_ENABLED_CONV2D
+#define K_ENABLED_CONV2D
 
 //Core
 // #define K_ENABLED_FILL_
@@ -128,7 +129,7 @@
 // #define K_ENABLED_TRUNC_
 // #define K_ENABLED_ADD
 // #define K_ENABLED_INC
-#define K_ENABLED_MULT2D
+//#define K_ENABLED_MULT2D
 // #define K_ENABLED_EL_DIV
 // #define K_ENABLED_EL_MULT
 // #define K_ENABLED_SIGN2

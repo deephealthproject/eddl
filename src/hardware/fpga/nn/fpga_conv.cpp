@@ -26,6 +26,91 @@ char fpga_set_cpuemu_conv2D_back = 1;
 // conv2D
 //
 //
+//
+
+void _init_channel(Tensor *T, int channel, int batch, float value) {
+  int batch_size = T->shape[0];
+  int channels = T->shape[1];
+  int rows = T->shape[2];
+  int cols = T->shape[3];
+  int stride_batch = rows * cols * channels;
+  int stride_channel = rows * cols;
+  int stride_row = cols;
+
+  for (int r=0; r<rows; r++) {
+    for (int c=0; c<cols; c++) {
+      int addr = batch * stride_batch + channel * stride_channel + r * stride_row + c;
+      T->ptr[addr] = value;
+    }
+  }
+
+  fpga_copy_to_fpga(T->ptr, T);
+}
+
+void _init_kernel(Tensor *K, int ichannel, int ochannel, float value) {
+  int ochannels = K->shape[0];
+  int ichannels = K->shape[1];
+  int rows = K->shape[2];
+  int cols = K->shape[3];
+  int stride_ochannel = ichannels * rows * cols;
+  int stride_ichannel = rows * cols;
+  int stride_row = cols;
+
+  for (int r=0; r<rows; r++) {
+    for (int c=0; c<cols; c++) {
+      int addr = ichannel * stride_ichannel + ochannel * stride_ochannel + r * stride_row + c;
+      K->ptr[addr] = value;
+    }
+  }
+  fpga_copy_to_fpga(K->ptr, K);
+}
+
+
+void _print_channel(Tensor *T, int channel, int batch) {
+  int batch_size = T->shape[0];
+  int channels = T->shape[1];
+  int rows = T->shape[2];
+  int cols = T->shape[3];
+  int stride_batch = rows * cols * channels;
+  int stride_channel = rows * cols;
+  int stride_row = cols;
+
+  fpga_copy_from_fpga(T, T->ptr);
+
+  printf("channel %d, batch %d\n", channel, batch);
+  for (int r=0; r<rows; r++) {
+    for (int c=0; c<cols; c++) {
+      int addr = batch * stride_batch + channel * stride_channel + r * stride_row + c;
+      float v = T->ptr[addr];
+      printf("%6.4f ", v);
+    }
+    printf("\n");
+  }
+}
+
+void _print_kernel(Tensor *K, int ichannel, int ochannel) {
+  int ochannels = K->shape[0];
+  int ichannels = K->shape[1];
+  int rows = K->shape[2];
+  int cols = K->shape[3];
+  int stride_ochannel = ichannels * rows * cols;
+  int stride_ichannel = rows * cols;
+  int stride_row = cols;
+
+  fpga_copy_from_fpga(K, K->ptr);
+
+  printf("kernel %d x %dx%d x %d\n", ichannels, rows, cols, ochannels);
+  printf("ichannel %d, ochannel %d\n", ichannel, ochannel);
+  for (int r=0; r<rows; r++) {
+    for (int c=0; c<cols; c++) {
+      int addr = ichannel * stride_ichannel + ochannel * stride_ochannel + r * stride_row + c;
+      float v = K->ptr[addr];
+      printf("%6.4f ", v);
+    }
+    printf("\n");
+  } 
+} 
+
 
 void fpga_cpuemu_conv2D(ConvolDescriptor *D) {
   fpga_copy_from_fpga(D->K, D->K->ptr);
@@ -44,6 +129,8 @@ void fpga_conv2D(ConvolDescriptor *D)
 #else
   cl_int err;
   cl::Event event;
+
+//  printf("conv2d\n");
 
   // conv2D parameters
   int batch_size   = D->I->shape[0];     // batch size
@@ -64,6 +151,19 @@ void fpga_conv2D(ConvolDescriptor *D)
   int padding_cols = D->padcl;           // padding cols (for left and right)
   int stride_rows  = D->sr;              // rows stride
   int stride_cols  = D->sc;              // cols stride
+
+  _init_channel(D->I, 0, 0, 1.0);
+  _init_channel(D->I, 1, 0, 2.0);
+  _init_channel(D->I, 2, 0, 3.0);
+  _init_kernel(D->K, 0, 0, 1.0);
+  _init_kernel(D->K, 1, 0, 1.0);
+  _init_kernel(D->K, 2, 0, 1.0);
+
+  _print_channel(D->I, 0, 0);
+  _print_channel(D->I, 1, 0);
+  _print_channel(D->I, 2, 0);
+
+  _print_kernel(D->K, 0, 0);
 
   OCL_CHECK(err, err = kernel_conv2d.setArg(0, batch_size));
   OCL_CHECK(err, err = kernel_conv2d.setArg(1, I));
@@ -86,6 +186,11 @@ void fpga_conv2D(ConvolDescriptor *D)
 
   OCL_CHECK(err, err = q.enqueueTask(kernel_conv2d, NULL, &event));
   q.finish();
+
+  _print_channel(D->O, 0, 0);
+
+ // printf("exit\n");
+ //exit(1);
 #endif
   _profile_fpga(_FPGA_CONV2D, 1);
 }
