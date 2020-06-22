@@ -18,9 +18,6 @@
 #include "eddl/hardware/gpu/nn/gpu_tensor_nn.h"
 #endif
 
-<<<<<<< HEAD
-namespace tensorNN {
-=======
 #ifdef cFPGA
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
@@ -28,9 +25,7 @@ namespace tensorNN {
 extern int next_fpga_tensor_id;
 #endif
 
-// Resizing tensors
-void Tensor::resize(int b, float *fptr, cl::Buffer *ffpga_ptr){
->>>>>>> 881b9ab250fb4b403e1694817d24ec46acebcfb1
+namespace tensorNN {
 
 
     void repeat_nn(Tensor *A, Tensor *B, vector<int> size) {
@@ -39,28 +34,11 @@ void Tensor::resize(int b, float *fptr, cl::Buffer *ffpga_ptr){
         if ((A->device != B->device)) msg("Tensors in different devices", "Tensor::Repeat_NN");
         if (A->ndim != B->ndim) msg("Incompatible dims", "Tensor::Repeat");
 
-<<<<<<< HEAD
         // Check size
         for (int i = 2; i < A->ndim; i++) {
             if (A->shape[i] * size[i - 2] != B->shape[i]) {
                 msg("Incompatible dimensions (size)", "Tensor::Repeat_NN");
             }
-=======
-    int s=size;
-    stride.clear();
-    for(int i=0;i<ndim;i++) {
-        s/=shape[i];
-        stride.push_back(s);
-    }
-
-    if (isCPU()) {
-        if (fptr==nullptr) {
-          free(ptr);
-          ptr = get_fmem(size,"Tensor::resize");
-	   _profile_add_tensor(size);
-        } else {
-          ptr=fptr;
->>>>>>> 881b9ab250fb4b403e1694817d24ec46acebcfb1
         }
 
         if (A->isCPU() && B->isCPU()) {
@@ -72,38 +50,8 @@ void Tensor::resize(int b, float *fptr, cl::Buffer *ffpga_ptr){
         }
 #endif
 #ifdef cFPGA
-<<<<<<< HEAD
         else {
 
-=======
-    else if (isFPGA())
-        {
-          if (ffpga_ptr==(cl::Buffer *)nullptr) {
-            #ifdef FPGA_DEBUG
-	    printf("    (resize: resize tensor id %d (size %d -> new size %d)\n", fpga_tensor_id, fpga_size, size);
-            #endif
-            fpga_delete_tensor(fpga_device, fpga_ptr, fpga_tensor_id, fpga_size);
-            fpga_ptr=fpga_create_tensor(fpga_device, size);
-	    fpga_size = size;
-	    // we also manage cpu buffers (to ease the cpu emulation flow)
-	    free(ptr);
-	    ptr = get_fmem(size,"Tensor::resize");
-
-          } else {
-            // The data has already been created in CPU, so we need now to write it to the FPGA buffer
-	    printf("    (resize with not-null pointer, tensor id %d with size %d -> new size %d)\n", next_fpga_tensor_id, fpga_size, size);
-	    ptr = fptr;
-	    fpga_ptr = ffpga_ptr;
-	    if (size != fpga_size) {
-	      //fpga_ptr = fpga_create_tensor(fpga_device, size);
-	    }
-	    fpga_size = size;
-          }
-	  // we also manage cpu buffers for eigen, to ease the cpu emulation flow
-          if (ndim == 2) {
-            ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(ptr, shape[1], shape[0]);
-          }
->>>>>>> 881b9ab250fb4b403e1694817d24ec46acebcfb1
         }
 #endif
     }
@@ -112,7 +60,6 @@ void Tensor::resize(int b, float *fptr, cl::Buffer *ffpga_ptr){
         // TODO: Should be for N dimensions, not 2 (...and generic, not just NN)
         if ((D->device != A->device)) msg("Tensors in different devices", "Tensor::D_Repeat_NN");
 
-<<<<<<< HEAD
         if (D->isCPU() && A->isCPU()) {
             cpu_d_repeat_nn(D, A, size);
         }
@@ -127,15 +74,6 @@ void Tensor::resize(int b, float *fptr, cl::Buffer *ffpga_ptr){
         }
 #endif
     }
-=======
-void Tensor::resize(int b) {
-  resize(b,(float *)nullptr, (cl::Buffer *)nullptr);
-}
-
-void Tensor::resize(int b, Tensor *T) {
-  resize(b, T->ptr, T->fpga_ptr);
-}
->>>>>>> 881b9ab250fb4b403e1694817d24ec46acebcfb1
 
 
     void select(Tensor *A, Tensor* B, SelDescriptor *sd){
@@ -185,15 +123,9 @@ void Tensor::resize(int b, Tensor *T) {
         }
 #endif
 #ifdef cFPGA
-<<<<<<< HEAD
         else {
 
     }
-=======
-    else if (A->isFPGA() && B->isFPGA()) {
-        fpga_repeat_nn(A, B, size);
-      }
->>>>>>> 881b9ab250fb4b403e1694817d24ec46acebcfb1
 #endif
     }
 
@@ -209,15 +141,9 @@ void Tensor::resize(int b, Tensor *T) {
         }
 #endif
 #ifdef cFPGA
-<<<<<<< HEAD
         else {
 
     }
-=======
-    else if (D->isFPGA() && A->isFPGA()) {
-        fpga_d_repeat_nn(D, A, size);
-      }
->>>>>>> 881b9ab250fb4b403e1694817d24ec46acebcfb1
 #endif
 
     }

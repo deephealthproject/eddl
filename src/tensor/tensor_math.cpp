@@ -154,29 +154,12 @@ float Tensor::max(Tensor* A){
         return gpu_max(A);
     }
 #endif
-<<<<<<< HEAD
 #ifdef cFPGA
-=======
-
-#ifdef cFPGA
-    else if ((A->isFPGA())&&(B->isFPGA())) {
-        Tensor::add(1,A,1,B,B,0);
-    }
-    else if (((A->isCPU())&&(B->isFPGA()))||((A->isFPGA())&&(B->isCPU())))
+    else if (A->isFPGA())
     {
-        Tensor *n=new Tensor(B->getShape(),B->device);
-        Tensor::copy(A,n);
-        Tensor::add(1,n,1,B,B,0);
-        delete n;
+        return fpga_max(A);
     }
 #endif
->>>>>>> 881b9ab250fb4b403e1694817d24ec46acebcfb1
-    else {
-
-    }
-#endif
-
-    msg("Invalid device", "Tensor::max");
     return 0.0f; // Never used, this is for the compiler warning
 }
 
@@ -370,21 +353,13 @@ void Tensor::argmin(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
     {
         gpu_argmin(A, B, rd);
     }
-<<<<<<< HEAD
 #endif
 #ifdef cFPGA
-    else {
-
+    else if (A->isFPGA() && B->isFPGA())
+    {
+        fpga_argmin(A, B, rd);
     }
 #endif
-=======
-  #endif
-  #ifdef cFPGA
-  else {
-      fpga_inv_(this, v);
-  }
-  #endif
->>>>>>> 881b9ab250fb4b403e1694817d24ec46acebcfb1
 }
 
 
