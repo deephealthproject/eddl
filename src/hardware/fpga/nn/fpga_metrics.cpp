@@ -59,7 +59,7 @@ int fpga_accuracy(Tensor *A, Tensor *B){
 
    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_acc},CL_MIGRATE_MEM_OBJECT_HOST, NULL, &result_ready));
    result_ready.wait();
-   
+     return *accu;
 #endif
-  return *accu;
+
 }

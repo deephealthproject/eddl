@@ -1348,7 +1348,7 @@ float fpga_cpuemu_max(Tensor *A) {
 float fpga_max(Tensor *A){
   float ret;
   _profile_fpga(_FPGA_MAX, 0);
-#ifndef
+#ifndef K_ENABLED_MAX
   ret = fpga_cpuemu_max(A);
 #else
   printf("fpga_max not implemented yet\n"); exit(1);
@@ -1413,6 +1413,7 @@ float fpga_sum(Tensor *A) {
   _profile_fpga_tensor(A);
 #ifndef K_ENABLED_SUM
   ret = fpga_cpuemu_sum(A);
+  return ret;
 #else
   cl_int err;
   cl::Event event, result_ready;
@@ -1429,9 +1430,10 @@ float fpga_sum(Tensor *A) {
   q.finish();
   OCL_CHECK(err, err = q.enqueueMigrateMemObjects({a},CL_MIGRATE_MEM_OBJECT_HOST, NULL, &result_ready));
   result_ready.wait();
+  return *sum;
 #endif
   _profile_fpga(_FPGA_SUM, 1);
-  return *sum;
+
 }
 
 // -----------------------------------------------------------------

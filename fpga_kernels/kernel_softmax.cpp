@@ -11,6 +11,7 @@ void k_softmax(float *A, float *B, int Ashape0, int Ashape1, int Bshape1) {
   #pragma HLS INTERFACE s_axilite port=Ashape0 bundle=control
   #pragma HLS INTERFACE s_axilite port=Ashape1 bundle=control
   #pragma HLS INTERFACE s_axilite port=Bshape1 bundle=control
+  #pragma HLS INTERFACE s_axilite port=return bundle=control
 
   #pragma HLS INLINE
   float max;

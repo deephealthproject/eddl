@@ -11,6 +11,7 @@ void k_d_relu(float *D, float *I, float *PD, long int size) {
   #pragma HLS INTERFACE s_axilite port=I  bundle=control
   #pragma HLS INTERFACE s_axilite port=PD  bundle=control
   #pragma HLS INTERFACE s_axilite port=size bundle=control
+  #pragma HLS INTERFACE s_axilite port=return bundle=control
 
   for (int i = 0; i < size; i++) {
     if (I[i] > 0.0) PD[i] += D[i];  // why += ?
