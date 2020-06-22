@@ -18,6 +18,7 @@
 
 
 void cpu_mpool2D(PoolDescriptor *D){
+    _profile(_CPU_MPOOL2D, 0);
     int isize = D->ir*D->ic*D->iz;
     int irsize = D->ir*D->ic;
 
@@ -52,9 +53,11 @@ void cpu_mpool2D(PoolDescriptor *D){
             } // rows
         } // depth
     } // batch
+    _profile(_CPU_MPOOL2D, 1);
 }
 
 void cpu_mpool2D_back(PoolDescriptor *D){
+    _profile(_CPU_MPOOL2D_BACK, 0);
     int isize = D->ir*D->ic*D->iz;
     int irsize = D->ir*D->ic;
 
@@ -74,9 +77,11 @@ void cpu_mpool2D_back(PoolDescriptor *D){
             } // rows
         } // depth
     } // batch
+    _profile(_CPU_MPOOL2D_BACK, 1);
 }
 
 void cpu_avgpool2D(PoolDescriptor *D){
+    _profile(_CPU_AVGPOOL2D, 0);
     int isize = D->ir*D->ic*D->iz;
     int irsize = D->ir*D->ic;
     int ksize = D->kr*D->kc;
@@ -108,9 +113,11 @@ void cpu_avgpool2D(PoolDescriptor *D){
             } // rows
         } // depth
     } // batch
+    _profile(_CPU_AVGPOOL2D, 1);
 }
 
 void cpu_avgpool2D_back(PoolDescriptor *D){
+    _profile(_CPU_AVGPOOL2D_BACK, 0);
     int isize = D->ir*D->ic*D->iz;
     int irsize = D->ir*D->ic;
     int ksize = D->kr*D->kc;
@@ -134,4 +141,5 @@ void cpu_avgpool2D_back(PoolDescriptor *D){
             } // rows
         } // depth
     } // batch
+    _profile(_CPU_AVGPOOL2D_BACK, 1);
 }

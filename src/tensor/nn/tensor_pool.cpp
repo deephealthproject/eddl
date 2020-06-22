@@ -15,6 +15,11 @@
 #include "eddl/hardware/gpu/nn/gpu_tensor_nn.h"
 #endif
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#include "eddl/hardware/fpga/nn/fpga_nn.h"
+#endif
+
 namespace tensorNN {
 
 
@@ -38,9 +43,10 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else if (D->I->isFPGA())
+      {
+        fpga_mpool2D(D);
+      }
 #endif
         D->O->tsem->unlock();
     }
@@ -65,9 +71,10 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else if (D->I->isFPGA())
+      {
+        fpga_mpool2D_back(D);
+      }
 #endif
         D->ID->tsem->unlock();
     }
@@ -93,9 +100,10 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else if (D->I->isFPGA())
+      {
+        fpga_avgpool2D(D);
+      }
 #endif
         D->O->tsem->unlock();
     }
@@ -120,9 +128,10 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else if (D->I->isFPGA())
+      {
+        fpga_avgpool2D_back(D);
+      }
 #endif
         D->ID->tsem->unlock();
     }

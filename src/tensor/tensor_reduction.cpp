@@ -18,6 +18,10 @@
 #include "eddl/hardware/gpu/gpu_hw.h"
 #endif
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#include "eddl/hardware/fpga/nn/fpga_nn.h"
+#endif
 
 using namespace std;
 
@@ -108,7 +112,12 @@ void reduce(Tensor *A, Tensor *B,string mode,vector<int> axis,int* map)
   else if (A->isGPU()) {
       gpu_reduce(A,B,mode,map);
     }
-    #endif
+  #endif
+  #ifdef cFPGA
+  else if (A->isFPGA()) {
+    fpga_reduce(A,B,mode,map);
+  }
+  #endif
 }
 
 void reduce_mean(Tensor *A, Tensor *B,vector<int> axis,int* map)
@@ -138,6 +147,11 @@ void reduce(Tensor *A, Tensor *B,string mode,MapReduceDescriptor *MD)
   else if (A->isGPU()) {
       gpu_reduce(A,B,mode,MD);
     }
+  #endif
+  #ifdef cFPGA
+  else if (A->isFPGA()) {
+      fpga_reduce(A,B,mode,MD);
+  }
   #endif
 }
 
@@ -190,7 +204,13 @@ void reduce_op(Tensor *A, Tensor *B,string op,vector<int> axis,int* map)
       gpu_reduce_op(A,B,op,map);
     }
   #endif
+  #ifdef cFPGA
+  else if (A->isFPGA()) {
+      fpga_reduce_op(A,B,op,map);
+  }
+  #endif
 }
+
 void reduce_sum(Tensor *A, Tensor *B,vector<int> axis,int* map)
 {
   reduce_op(A,B,"sum",axis,map);
@@ -217,6 +237,11 @@ void reduce_div(Tensor *A, Tensor *B,vector<int> axis,int* map)
   else if (A->isGPU()) {
       gpu_reduce_op(A,B,op,MD);
     }
+  #endif
+  #ifdef cFPGA
+    else if (A->isFPGA()) {
+    fpga_reduce_op(A,B,op,MD);
+  }
   #endif
 
 }
@@ -250,7 +275,7 @@ void reduction(ReduceDescriptor *RD){
     #endif
     #ifdef cFPGA
         else {
-
+        fpga_reduction(RD);
         }
     #endif
 }
@@ -270,7 +295,7 @@ void reduction_back(ReduceDescriptor *RD)
   #endif
   #ifdef cFPGA
       else {
-
+      fpga_reduction_back(RD);
       }
   #endif
 }

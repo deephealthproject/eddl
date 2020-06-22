@@ -12,9 +12,15 @@
 #include <cmath>
 #include <algorithm>
 
+#include "eddl/hardware/cpu/cpu_profile.h"
+
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
+#endif
+
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
 #endif
 
 ConvolDescriptor::ConvolDescriptor() {}
@@ -120,6 +126,7 @@ void ConvolDescriptor::build(Tensor *A) {
     if (I->isCPU()) {
         // mem for ptr, lowering im2col
         ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptor::build");
+	 _profile_add_tensor(A->shape[0] * r * c * kr * kc * kz);
         new(&matK) Eigen::Map<Eigen::MatrixXf>(K->ptr, kr * kc * kz, nk);
         new(&matgK) Eigen::Map<Eigen::MatrixXf>(gK->ptr, kr * kc * kz, nk);
         // convolution: matC=matA*matK
@@ -156,6 +163,19 @@ void ConvolDescriptor::build(Tensor *A) {
         gpu_delete_tensor(gpuI->gpu_device,gpugK->ptr);
     }
 #endif
+
+#ifdef cFPGA
+    if (I->isFPGA()) {
+	// We allocate memory on the FGPA for the im2col buffer
+	fpga_sizeI = A->shape[0] * r * c * kr * kc * kz * sizeof(float);
+	fpga_ptrI = fpga_create_memory(fpga_sizeI);
+	// We allocate also on cpu so to ease the cpuemu flow
+        // mem for ptr, lowering im2col
+        ptrI=get_fmem(A->shape[0] * r * c * kr * kc * kz,"ConvolDescriptor::build");
+        new(&matK) Eigen::Map<Eigen::MatrixXf>(K->ptr, kr * kc * kz, nk);
+        new(&matgK) Eigen::Map<Eigen::MatrixXf>(gK->ptr, kr * kc * kz, nk);
+    }
+#endif
 }
 
 void ConvolDescriptor::resize(int b)
@@ -168,6 +188,7 @@ void ConvolDescriptor::resize(int b)
     if (I->isCPU()) {
         delete ptrI;
         ptrI=get_fmem(b * r * c * kr * kc * kz, "ConvolDescriptor::build");
+	 _profile_add_tensor(b * r * c * kr * kc * kz);
     }
 #ifdef cGPU
     else if (I->isGPU()) {
@@ -179,6 +200,19 @@ void ConvolDescriptor::resize(int b)
         }
     }
 #endif
+
+#ifdef cFPGA
+    else if (I->isFPGA()) {
+        // We reallocate memory on the FGPA for the im2col buffer
+	fpga_destroy_memory(fpga_ptrI);
+	fpga_sizeI = b * r * c * kr * kc * kz * sizeof(float);
+        fpga_ptrI = fpga_create_memory(fpga_sizeI);
+        // We do the same on the CPU side (for smooth cpuemu)
+	delete ptrI;
+        ptrI=get_fmem(b * r * c * kr * kc * kz, "ConvolDescriptor::build");
+    }
+#endif
+
 
 }
 

@@ -10,6 +10,8 @@
 #ifndef EDDL_CPU_TENSOR_H
 #define EDDL_CPU_TENSOR_H
 
+#include "cpu_profile.h"
+
 #include "eddl/tensor/tensor.h"
 #include "eddl/tensor/tensor_reduction.h"
 #include "eddl/descriptors/descriptors.h"

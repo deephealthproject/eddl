@@ -9,6 +9,11 @@
 #include "eddl/tensor/nn/tensor_nn.h"
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#include "eddl/hardware/fpga/nn/fpga_nn.h"
+#endif
+
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
@@ -29,9 +34,9 @@ namespace tensorNN {
             }
 #endif
 #ifdef cFPGA
-        else {
-
-          }
+  else {
+      fpga_permute_channels_last(A, B);
+    }
 #endif
     }
 
@@ -46,9 +51,9 @@ namespace tensorNN {
             }
 #endif
 #ifdef cFPGA
-        else {
-
-          }
+  else {
+      fpga_permute_channels_first(A, B);
+    }
 #endif
     }
 
@@ -64,9 +69,9 @@ namespace tensorNN {
             }
 #endif
 #ifdef cFPGA
-        else {
-
-          }
+  else {
+      fpga_permute_batch_last(A, B);
+    }
 #endif
     }
 
@@ -81,9 +86,9 @@ namespace tensorNN {
             }
 #endif
 #ifdef cFPGA
-        else {
-
-          }
+  else {
+      fpga_permute_batch_first(A, B);
+    }
 #endif
     }
 

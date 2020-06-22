@@ -3,7 +3,7 @@
 ###########################################################################
 
 # USER OPTIONS *******************************
-set(BUILD_TARGET "GPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
+set(BUILD_TARGET "FPGA" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
 option(OVERWRITE_PROTO_FILES "Overwrite Protobuf files (requires a compatible Protobuf compiler)" ON)
 
 # Double checks (restricted args)
@@ -12,18 +12,36 @@ set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
 # Initializations (Local's scope)
 SET(USE_OPENMP OFF)
 SET(USE_CUDA OFF)
+SET(USE_FPGA ON)
 
 # Device specific setup
 string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
 if(${BUILD_TARGET} STREQUAL "CPU")
 elseif(${BUILD_TARGET} STREQUAL "GPU")
     SET(USE_CUDA ON) # Local's scope
+elseif(${BUILD_TARGET} STREQUAL "FPGA")
+    SET(USE_FPGA ON)
 else()
     message(FATAL_ERROR "Build target '${BUILD_TARGET}' not implemented, CMake will exit." )
 endif()
 
 # Force default build type to Release
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel.")
+
+
+if(USE_FPGA)
+    find_package(OpenCL REQUIRED)
+    include_directories(${OpenCL_INCLUDE_DIR})
+    include_directories("$ENV{XILINX_VIVADO}/include")
+    #include_directories("/opt/Xilinx/Vivado/2018.3/include")
+    #target_link_libraries(${PROJECT_NAME} PRIVATE ${OpenCL_LIBRARY})
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
+
+    #if(APPLE)
+    #    target_link_options(${PROJECT_NAME} PUBLIC -framework opencl)
+    #endif()
+endif()
 
 
 ###########################################################################
@@ -72,6 +90,14 @@ if(UNIX) # Add setup for windows in the windows's section
     SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
     find_package(Threads REQUIRED)
     target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads) 
+endif()
+
+if(USE_FPGA)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${OpenCL_LIBRARY})
+
+    if(APPLE)
+        target_link_options(${PROJECT_NAME} PUBLIC -framework opencl)
+    endif()
 endif()
 
 # Eigen
@@ -219,6 +245,11 @@ if(USE_CUDA)
     endif()
 endif()
 SET(USE_CUDA ${USE_CUDA} PARENT_SCOPE)  # Parent's scope
+
+# FPGA
+if (USE_FPGA)
+  add_definitions(-DcFPGA)
+endif()
 
 ###########################################################################
 ################################## WINDOWS ################################
