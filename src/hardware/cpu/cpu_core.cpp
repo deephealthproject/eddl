@@ -7,10 +7,10 @@
 * All rights reserved
 */
 
-
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
+#include <algorithm>
+#include <numeric>
 #include <sys/time.h>
-
 
 int num_instances[_NUM_CPU_FUNCS];
 float mb_memory_needed;

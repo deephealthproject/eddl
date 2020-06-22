@@ -58,6 +58,7 @@ void fpga_cent(Tensor *A, Tensor *B, Tensor *C);
 
 // Metrics
 int fpga_accuracy(Tensor *A, Tensor *B);
+int fpga_bin_accuracy(Tensor *A, Tensor *B);
 
 // Conv
 void fpga_conv2D(ConvolDescriptor *D);

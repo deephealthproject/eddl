@@ -194,24 +194,28 @@ if(USE_FPGA)
 target_link_libraries(sentiment_rnn PRIVATE eddl ${OpenCL_LIBRARY})
 else()
 target_link_libraries(sentiment_rnn eddl)
+endif()
 
 add_executable(sentiment_lstm "nn/4_NLP/2_sentiment_lstm.cpp")
 if(USE_FPGA)
 target_link_libraries(sentiment_lstm PRIVATE eddl ${OpenCL_LIBRARY})
 else()
 target_link_libraries(sentiment_lstm eddl)
+endif()
 
 add_executable(machine_translation "nn/4_NLP/3_machine_translation.cpp")
 if(USE_FPGA)
 target_link_libraries(machine_translation PRIVATE eddl ${OpenCL_LIBRARY})
 else()
 target_link_libraries(machine_translation eddl)
+endif()
 
 add_executable(text_generation "nn/4_NLP/4_text_generation.cpp")
 if(USE_FPGA)
 target_link_libraries(text_generation PRIVATE eddl ${OpenCL_LIBRARY})
 else()
 target_link_libraries(text_generation eddl)
+endif()
 
 
 # EXAMPLES: Tensor ****************************************************

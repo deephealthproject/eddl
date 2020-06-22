@@ -15,7 +15,7 @@
 
 #include "eddl/hardware/fpga/fpga_hw.h"   // for buffer copies
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
-#include "eddl/hardware/cpu/nn/cpu_nn.h"  // for cpu emulation purposes
+#include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"  // for cpu emulation purposes
 
 // emulation switches of functions (via cpu)
 // when set the function is run on the cpu
@@ -35,9 +35,7 @@ char fpga_set_cpuemu_sigmoid            = 1;
 char fpga_set_cpuemu_d_sigmoid          = 1;
 char fpga_set_cpuemu_hard_sigmoid       = 1;
 char fpga_set_cpuemu_d_hard_sigmoid     = 1;
-char fpga_set_cpuemu_exp                = 1;
 char fpga_set_cpuemu_d_exp              = 1;
-char fpga_set_cpuemu_tanh               = 1;
 char fpga_set_cpuemu_d_tanh             = 1;
 char fpga_set_cpuemu_softmax            = 1;
 char fpga_set_cpuemu_d_softmax          = 1;
@@ -648,37 +646,6 @@ void fpga_d_hard_sigmoid(Tensor *D, Tensor *I, Tensor *PD){
 }
 
 // -----------------------------------------------------------------
-// exp
-//
-void fpga_cpuemu_exp(Tensor *A, Tensor *B){
-  int Asize = A->size * sizeof(float);
-  int Bsize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
-  fpga_copy_from_fpga(A, A->ptr);
-  cpu_exp(A, B);
-  fpga_copy_to_fpga(B->ptr, B);
-}
-
-void fpga_exp(Tensor *A, Tensor *B){
-  _profile_fpga(_FPGA_EXP, 0);
-  if (fpga_set_cpuemu_exp == 1) {
-      fpga_cpuemu_exp(A, B);
-  } else {
-      cl_int err;
-      cl::Event event;
-
-      OCL_CHECK(err, err = kernel_exp.setArg(0, *(A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_exp.setArg(1, *(B->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_exp.setArg(2, (long int)A->size));
-
-      OCL_CHECK(err, err = q.enqueueTask(kernel_exp, NULL, &event));
-      q.finish();
-  }
-  _profile_fpga(_FPGA_EXP, 1);
-}
-
-// -----------------------------------------------------------------
 // d_exp
 //
 void fpga_cpuemu_d_exp(Tensor *D, Tensor *I, Tensor *PD){
@@ -711,37 +678,6 @@ void fpga_d_exp(Tensor *D, Tensor *I, Tensor *PD){
       q.finish();
   }
   _profile_fpga(_FPGA_D_EXP, 1);
-}
-
-// -----------------------------------------------------------------
-// tanh
-//
-void fpga_cpuemu_tanh(Tensor *A, Tensor *B){
-  int Asize = A->size * sizeof(float);
-  int Bsize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
-  fpga_copy_from_fpga(A, A->ptr);
-  cpu_tanh(A, B);
-  fpga_copy_to_fpga(B->ptr, B);
-}
-
-void fpga_tanh(Tensor *A, Tensor *B){
-  _profile_fpga(_FPGA_TANH, 0);
-  if (fpga_set_cpuemu_tanh == 1) {
-      fpga_cpuemu_tanh(A, B);
-  } else {
-      cl_int err;
-      cl::Event event;
-
-      OCL_CHECK(err, err = kernel_tanh.setArg(0, *(A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_tanh.setArg(1, *(B->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_tanh.setArg(2, (long int)A->size));
-
-      OCL_CHECK(err, err = q.enqueueTask(kernel_tanh, NULL, &event));
-      q.finish();
-  }
-  _profile_fpga(_FPGA_TANH, 1);
 }
 
 // -----------------------------------------------------------------

@@ -8,7 +8,7 @@
 */
 
 #include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 #include <limits>
 
 // emulation switches of functions (via cpu)

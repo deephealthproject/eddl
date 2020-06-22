@@ -15,7 +15,7 @@
 #include "eddl/descriptors/descriptors.h"
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include <sys/time.h>
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 
 int next_fpga_tensor_id = 1;
 int num_tensors_created = 0;

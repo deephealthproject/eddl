@@ -54,8 +54,8 @@ file(GLOB_RECURSE CPP_HEADERS "${PROJECT_SOURCE_DIR}/src/*" *.{h, hpp})
 file(GLOB_RECURSE CPP_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cc, cpp})
 file(GLOB_RECURSE CUDA_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cu})
 
-set(CPP_SOURCES ${CPP_SOURCES} ${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx.pb.cc)
-set(CPP_HEADERS ${CPP_HEADERS} ${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx.pb.h)
+#set(CPP_SOURCES ${CPP_SOURCES} ${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx.pb.cc)
+#set(CPP_HEADERS ${CPP_HEADERS} ${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx.pb.h)
 
 # Make an automatic library - will be static or dynamic based on user setting
 add_library(${PROJECT_NAME} ${PUBLIC_HEADERS} ${CPP_HEADERS} ${CPP_SOURCES})

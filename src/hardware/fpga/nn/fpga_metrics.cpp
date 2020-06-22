@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
-#include "eddl/hardware/cpu/nn/cpu_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 #include "eddl/hardware/fpga/fpga_hw.h"
 
 extern cl::Kernel kernel_accuracy;
@@ -35,6 +35,7 @@ int fpga_cpuemu_accuracy(Tensor *A, Tensor *B) {
 
 int fpga_accuracy(Tensor *A, Tensor *B){
   int acc;
+  int *accu;
   _profile_fpga(_FPGA_ACCURACY, 0);
 
 #ifndef K_ENABLED_ACCURACY
@@ -44,7 +45,6 @@ int fpga_accuracy(Tensor *A, Tensor *B){
    cl_int err;
    cl::Event event, result_ready;
 
-   int *accu;
    posix_memalign((void **)&accu,4096,sizeof(int));
    OCL_CHECK(err, cl::Buffer buffer_acc(context, CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY, sizeof(int) ,accu, &err));
 

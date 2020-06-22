@@ -16,7 +16,7 @@
 
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/random.h"
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846

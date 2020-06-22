@@ -8,7 +8,7 @@
 */
 
 #include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 
 extern cl::Context context;
 extern cl::CommandQueue q;
@@ -41,7 +41,6 @@ char fpga_set_cpuemu_reciprocal_   = 1;
 char fpga_set_cpuemu_remainder_    = 1;
 char fpga_set_cpuemu_round_        = 1;
 char fpga_set_cpuemu_rsqrt_        = 1;
-char fpga_set_cpuemu_sigmoid_      = 1;
 char fpga_set_cpuemu_sign_         = 1;
 char fpga_set_cpuemu_sin_          = 1;
 char fpga_set_cpuemu_sinh_         = 1;
@@ -68,19 +67,18 @@ char fpga_set_cpuemu_sum_abs       = 1;
 // -----------------------------------------------------------------
 // abs_
 //
-void fpga_cpuemu_abs_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_abs(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_abs_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_abs(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_abs_(Tensor *A) {
+void fpga_abs(Tensor *A, Tensor *B) {
     _profile_fpga(_FPGA_ABS_, 0);
 #ifndef K_ENABLED_ABS_
-    fpga_cpuemu_abs_(A);
+    fpga_cpuemu_abs(A, B);
 #else
+    printf("Añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -96,19 +94,18 @@ void fpga_abs_(Tensor *A) {
 // -----------------------------------------------------------------
 // acos_
 //
-void fpga_cpuemu_acos_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_acos(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_acos_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_acos(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_acos_(Tensor *A){
+void fpga_acos_(Tensor *A, Tensor *B){
     _profile_fpga(_FPGA_ACOS_, 0);
 #ifndef K_ENABLED_ACOS_
-    fpga_cpuemu_acos_(A);
+    fpga_cpuemu_acos(A, B);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -122,23 +119,23 @@ void fpga_acos_(Tensor *A){
 }
 
 // -----------------------------------------------------------------
-// add_
+// add
 //
-void fpga_cpuemu_add_(Tensor *A, float v) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_add(Tensor *A, Tensor *B, float v) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_add_(A, v);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_add(A, B, v);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_add_(Tensor *A, float v) {
+void fpga_add(Tensor *A, Tensor *B, float v) {
     _profile_fpga(_FPGA_ADD_, 0);
 #ifndef K_ENABLED_ADD_
-    fpga_cpuemu_add_(A, v);
+    fpga_cpuemu_add(A, B, v);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
+
 
     OCL_CHECK(err, err = kernel_add_.setArg(0, *(A->fpga_ptr)));
     OCL_CHECK(err, err = kernel_add_.setArg(1, v));
@@ -151,21 +148,20 @@ void fpga_add_(Tensor *A, float v) {
 }
 
 // -----------------------------------------------------------------
-// asin_
+// asin
 //
-void fpga_cpuemu_asin_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_asin(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_asin_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_asin(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_asin_(Tensor *A){
+void fpga_asin(Tensor *A, Tensor *B){
     _profile_fpga(_FPGA_ASIN_, 0);
 #ifndef K_ENABLED_ASIN_
-    fpga_cpuemu_asin_(A);
+    fpga_cpuemu_asin(A, B);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -179,21 +175,20 @@ void fpga_asin_(Tensor *A){
 }
 
 // -----------------------------------------------------------------
-// atan_
+// atan
 //
-void fpga_cpuemu_atan_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_atan(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_atan_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_atan(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_atan_(Tensor *A){
+void fpga_atan(Tensor *A, Tensor *B){
     _profile_fpga(_FPGA_ATAN_, 0);
 #ifndef K_ENABLED_ATAN_
-    fpga_cpuemu_atan_(A);
+    fpga_cpuemu_atan(A, B);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -207,21 +202,20 @@ void fpga_atan_(Tensor *A){
 }
 
 // -----------------------------------------------------------------
-// ceil_
+// ceil
 //
-void fpga_cpuemu_ceil_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_ceil(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_ceil_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_ceil(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_ceil_(Tensor *A){
+void fpga_ceil(Tensor *A, Tensor *B){
     _profile_fpga(_FPGA_CEIL_, 0);
 #ifndef K_ENABLED_CEIL_
-    fpga_cpuemu_ceil_(A);
+    fpga_cpuemu_ceil(A, B);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -235,21 +229,20 @@ void fpga_ceil_(Tensor *A){
 }
 
 // -----------------------------------------------------------------
-// clamp_
+// clamp
 //
-void fpga_cpuemu_clamp_(Tensor *A, float min, float max) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_clamp(Tensor *A, Tensor *B, float min, float max) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_clamp_(A, min, max);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_clamp(A, B, min, max);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_clamp_(Tensor *A, float min, float max){
+void fpga_clamp(Tensor *A, Tensor *B, float min, float max){
     _profile_fpga(_FPGA_CLAMP_, 0);
 #ifndef K_ENABLED_CLAMP_
-    fpga_cpuemu_clamp_(A, min, max);
+    fpga_cpuemu_clamp(A, B, min, max);
 #else
+    printf("añadir tensorB\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -265,21 +258,20 @@ void fpga_clamp_(Tensor *A, float min, float max){
 }
 
 // -----------------------------------------------------------------
-// cos_
+// cos
 //
-void fpga_cpuemu_cos_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_cos(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_cos_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_cos(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_cos_(Tensor *A){
+void fpga_cos(Tensor *A, Tensor *B){
     _profile_fpga(_FPGA_COS_, 0);
 #ifndef K_ENABLED_COS_
-    fpga_cpuemu_cos_(A);
+    fpga_cpuemu_cos(A, B);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -293,21 +285,20 @@ void fpga_cos_(Tensor *A){
 }
 
 // -----------------------------------------------------------------
-// cosh_
+// cosh
 //
-void fpga_cpuemu_cosh_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_cosh(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_cosh_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_cosh(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_cosh_(Tensor *A){
+void fpga_cosh(Tensor *A, Tensor *B){
     _profile_fpga(_FPGA_COSH_, 0);
 #ifndef K_ENABLED_COSH_
-    fpga_cpuemu_cosh_(A);
+    fpga_cpuemu_cosh(A, B);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -321,21 +312,20 @@ void fpga_cosh_(Tensor *A){
 }
 
 // -----------------------------------------------------------------
-// exp_
+// exp
 //
-void fpga_cpuemu_exp_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_exp(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_exp_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_exp(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_exp_(Tensor *A) {
+void fpga_exp(Tensor *A, Tensor *B) {
     _profile_fpga(_FPGA_EXP_, 0);
 #ifndef K_ENABLED_EXP_
-    fpga_cpuemu_exp_(A);
+    fpga_cpuemu_exp(A, B);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -349,21 +339,20 @@ void fpga_exp_(Tensor *A) {
 }
 
 // -----------------------------------------------------------------
-// floor_
+// floor
 //
-void fpga_cpuemu_floor_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_floor(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_floor_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_floor(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_floor_(Tensor *A){
+void fpga_floor(Tensor *A, Tensor *B){
     _profile_fpga(_FPGA_FLOOR_, 0);
 #ifndef K_ENABLED_FLOOR_
-    fpga_cpuemu_floor_(A);
+    fpga_cpuemu_floor(A, B);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -377,21 +366,20 @@ void fpga_floor_(Tensor *A){
 }
 
 // -----------------------------------------------------------------
-// inv_
+// inv
 //
-void fpga_cpuemu_inv_(Tensor *A, float v) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_inv(Tensor *A, Tensor *B, float v) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_inv_(A, v);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_inv(A, B, v);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_inv_(Tensor *A, float v){
+void fpga_inv(Tensor *A, Tensor *B, float v){
     _profile_fpga(_FPGA_INV_, 0);
 #ifndef K_ENABLED_INV_
-    fpga_cpuemu_inv_(A, v);
+    fpga_cpuemu_inv(A, B, v);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -406,21 +394,20 @@ void fpga_inv_(Tensor *A, float v){
 }
 
 // -----------------------------------------------------------------
-// log_
+// log
 //
-void fpga_cpuemu_log_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_log(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_log_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_log(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_log_(Tensor *A) {
+void fpga_log(Tensor *A, Tensor *B) {
     _profile_fpga(_FPGA_LOG_, 0);
 #ifndef K_ENABLED_LOG_
-    fpga_cpuemu_log_(A);
+    fpga_cpuemu_log(A, B);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -434,21 +421,20 @@ void fpga_log_(Tensor *A) {
 }
 
 // -----------------------------------------------------------------
-// log2_
+// log2
 //
-void fpga_cpuemu_log2_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_log2(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_log2_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_log2(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_log2_(Tensor *A) {
+void fpga_log2(Tensor *A, Tensor *B) {
     _profile_fpga(_FPGA_LOG2_, 0);
 #ifndef K_ENABLED_log2_
-    fpga_cpuemu_log2_(A);
+    fpga_cpuemu_log2(A, B);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -462,21 +448,20 @@ void fpga_log2_(Tensor *A) {
 }
 
 // -----------------------------------------------------------------
-// log10_
+// log10
 //
-void fpga_cpuemu_log10_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_log10(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_log10_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_log10(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_log10_(Tensor *A) {
+void fpga_log10(Tensor *A, Tensor *B) {
     _profile_fpga(_FPGA_LOG10_, 0);
 #ifndef K_ENABLED_LOG10_
-    fpga_cpuemu_log10_(A);
+    fpga_cpuemu_log10(A, B);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -490,21 +475,20 @@ void fpga_log10_(Tensor *A) {
 }
 
 // -----------------------------------------------------------------
-// logn_
+// logn
 //
-void fpga_cpuemu_logn_(Tensor *A, float n) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_logn(Tensor *A, Tensor *B, float n) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_logn_(A, n);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_logn(A, B, n);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_logn_(Tensor *A, float n) {
+void fpga_logn(Tensor *A, Tensor *B, float n) {
     _profile_fpga(_FPGA_LOGN_, 0);
 #ifndef K_ENABLED_LOGN_
-    fpga_cpuemu_logn_(A, n);
+    fpga_cpuemu_logn(A, B, n);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -519,21 +503,20 @@ void fpga_logn_(Tensor *A, float n) {
 }
 
 // -----------------------------------------------------------------
-// mod_
+// mod
 //
-void fpga_cpuemu_mod_(Tensor *A, float v) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_mod(Tensor *A, Tensor *B, float v) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_mod_(A, v);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_mod(A, B, v);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_mod_(Tensor *A, float v){
+void fpga_mod(Tensor *A, Tensor *B, float v){
     _profile_fpga(_FPGA_MOD_, 0);
 #ifndef K_ENABLED_MOD_
-    fpga_cpuemu_mod_(A, v);
+    fpga_cpuemu_mod(A, B, v);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -548,22 +531,21 @@ void fpga_mod_(Tensor *A, float v){
 }
 
 // -----------------------------------------------------------------
-// mult_
+// mult
 //
-void fpga_cpuemu_mult_(Tensor *A, float v) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_mult(Tensor *A, Tensor *B, float v) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_mult_(A, v);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_mult(A, B, v);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_mult_(Tensor *A, float v) {
+void fpga_mult(Tensor *A, Tensor *B, float v) {
     _profile_fpga(_FPGA_MULT_, 0);
     _profile_fpga_tensor(A);
 #ifndef K_ENABLED_MULT_
-    fpga_cpuemu_mult_(A, v);
+    fpga_cpuemu_mult(A, B, v);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -578,21 +560,20 @@ void fpga_mult_(Tensor *A, float v) {
 }
 
 // -----------------------------------------------------------------
-// normalize_
+// normalize
 //
-void fpga_cpuemu_normalize_(Tensor *A, float min, float max) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_normalize(Tensor *A, Tensor *B, float min, float max) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_normalize_(A, min, max);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_normalize(A, B, min, max);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_normalize_(Tensor *A, float min, float max){
+void fpga_normalize(Tensor *A, Tensor *B, float min, float max){
     _profile_fpga(_FPGA_NORMALIZE_, 0);
 #ifndef K_ENABLED_NORMALIZE_
-      fpga_cpuemu_normalize_(A, min, max);
+      fpga_cpuemu_normalize(A, B, min, max);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -610,21 +591,20 @@ void fpga_normalize_(Tensor *A, float min, float max){
 }
 
 // -----------------------------------------------------------------
-// pow_
+// pow
 //
-void fpga_cpuemu_pow_(Tensor *A, float exp) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_pow(Tensor *A, Tensor *B, float exp) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_pow_(A, exp);
+  cpu_pow(A, B, exp);
   fpga_copy_to_fpga(A->ptr, A);
 }
 
-void fpga_pow_(Tensor *A, float exp) {
+void fpga_pow(Tensor *A, Tensor *B, float exp) {
     _profile_fpga(_FPGA_POW_, 0);
 #ifndef K_ENABLED_POW_
-    fpga_cpuemu_pow_(A, exp);
+    fpga_cpuemu_pow(A, B, exp);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -639,21 +619,20 @@ void fpga_pow_(Tensor *A, float exp) {
 }
 
 // -----------------------------------------------------------------
-// powb_
+// powb
 //
-void fpga_cpuemu_powb_(Tensor *A, float base) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_powb(Tensor *A, Tensor *B, float base) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_powb_(A, base);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_powb(A, B, base);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_powb_(Tensor *A, float base) {
+void fpga_powb(Tensor *A, Tensor *B, float base) {
     _profile_fpga(_FPGA_POWB_, 0);
 #ifndef K_ENABLED_POWB_
-    fpga_cpuemu_powb_(A, base);
+    fpga_cpuemu_powb(A, B, base);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -670,11 +649,11 @@ void fpga_powb_(Tensor *A, float base) {
 // -----------------------------------------------------------------
 // reciprocal_
 //
-void fpga_cpuemu_reciprocal_(Tensor *A) {
+/*void fpga_cpuemu_reciprocal_(Tensor *A) {
   int Asize = A->size * sizeof(float);
   if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_reciprocal_(A);
+  cpu_reciprocal(A);
   fpga_copy_to_fpga(A->ptr, A);
 }
 
@@ -693,24 +672,23 @@ void fpga_reciprocal_(Tensor *A) {
     q.finish();
 #endif
     _profile_fpga(_FPGA_RECIPROCAL_, 1);
-}
+}*/
 
 // -----------------------------------------------------------------
-// remainder_
+// remainder
 //
-void fpga_cpuemu_remainder_(Tensor *A, float v) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_remainder(Tensor *A, Tensor *B, float v) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_remainder_(A, v);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_remainder(A, B, v);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_remainder_(Tensor *A, float v) {
+void fpga_remainder(Tensor *A, Tensor *B, float v) {
     _profile_fpga(_FPGA_REMAINDER_, 0);
 #ifndef K_ENABLED_REMAINDER_
-    fpga_cpuemu_remainder_(A, v);
+    fpga_cpuemu_remainder(A, B, v);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -725,21 +703,20 @@ void fpga_remainder_(Tensor *A, float v) {
 }
 
 // -----------------------------------------------------------------
-// round_
+// round
 //
-void fpga_cpuemu_round_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_round(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_round_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_round(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_round_(Tensor *A){
+void fpga_round(Tensor *A, Tensor *B){
     _profile_fpga(_FPGA_ROUND_, 0);
 #ifndef K_ENABLED_ROUND_
-    fpga_cpuemu_round_(A);
+    fpga_cpuemu_round(A, B);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -753,21 +730,20 @@ void fpga_round_(Tensor *A){
 }
 
 // -----------------------------------------------------------------
-// rsqrt_
+// rsqrt
 //
-void fpga_cpuemu_rsqrt_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_rsqrt(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_rsqrt_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_rsqrt(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_rsqrt_(Tensor *A){
+void fpga_rsqrt(Tensor *A, Tensor *B){
     _profile_fpga(_FPGA_RSQRT_, 0);
 #ifndef K_ENABLED_RSQRT_
-    fpga_cpuemu_rsqrt_(A);
+    fpga_cpuemu_rsqrt(A, B);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -781,77 +757,20 @@ void fpga_rsqrt_(Tensor *A){
 }
 
 // -----------------------------------------------------------------
-// sigmoid_
+// sin
 //
-void fpga_cpuemu_sigmoid_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_sin(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_sigmoid_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_sin(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_sigmoid_(Tensor *A){
-    _profile_fpga(_FPGA_SIGMOID_, 0);
-#ifndef K_ENABLED_SIGMOID_
-    fpga_cpuemu_sigmoid_(A);
-#else
-    cl_int err;
-    cl::Event event;
-
-    OCL_CHECK(err, err = kernel_sigmoid_.setArg(0, *(A->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_sigmoid_.setArg(1, (long int)A->size));
-
-    OCL_CHECK(err, err = q.enqueueTask(kernel_sigmoid_, NULL, &event));
-    q.finish();
-#endif
-    _profile_fpga(_FPGA_SIGMOID_, 1);
-}
-
-// -----------------------------------------------------------------
-// sign_
-//
-void fpga_cpuemu_sign_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  fpga_copy_from_fpga(A, A->ptr);
-  cpu_sign_(A);
-  fpga_copy_to_fpga(A->ptr, A);
-}
-
-void fpga_sign_(Tensor *A){
-    _profile_fpga(_FPGA_SIGN_, 0);
-#ifndef K_ENABLED_SIGN_
-    fpga_cpuemu_sign_(A);
-#else
-    cl_int err;
-    cl::Event event;
-
-    OCL_CHECK(err, err = kernel_sign_.setArg(0, *(A->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_sign_.setArg(1, (long int)A->size));
-
-    OCL_CHECK(err, err = q.enqueueTask(kernel_sign_, NULL, &event));
-    q.finish();
-#endif
-    _profile_fpga(_FPGA_SIGN_, 1);
-}
-
-// -----------------------------------------------------------------
-// sin_
-//
-void fpga_cpuemu_sin_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  fpga_copy_from_fpga(A, A->ptr);
-  cpu_sin_(A);
-  fpga_copy_to_fpga(A->ptr, A);
-}
-
-void fpga_sin_(Tensor *A){
+void fpga_sin(Tensor *A, Tensor *B){
     _profile_fpga(_FPGA_SIN_, 0);
 #ifndef K_ENABLED_SIN_
-    fpga_cpuemu_sin_(A);
+    fpga_cpuemu_sin(A, B);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -865,21 +784,20 @@ void fpga_sin_(Tensor *A){
 }
 
 // -----------------------------------------------------------------
-// sinh_
+// sinh
 //
-void fpga_cpuemu_sinh_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_sinh(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_sinh_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_sinh(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_sinh_(Tensor *A){
+void fpga_sinh(Tensor *A, Tensor *B){
     _profile_fpga(_FPGA_SINH_, 0);
 #ifndef K_ENABLED_SINH_
-    fpga_cpuemu_sinh_(A);
+    fpga_cpuemu_sinh(A, B);
 #else
+    printf("añadir tensor B\n"); exi(1);
     cl_int err;
     cl::Event event;
 
@@ -893,21 +811,20 @@ void fpga_sinh_(Tensor *A){
 }
 
 // -----------------------------------------------------------------
-// sqr_
+// sqr
 //
-void fpga_cpuemu_sqr_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_sqr(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_sqr_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_sqr(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_sqr_(Tensor *A) {
+void fpga_sqr(Tensor *A, Tensor *B) {
     _profile_fpga(_FPGA_SQR_, 0);
 #ifndef K_ENABLED_SQR_
-    fpga_cpuemu_sqr_(A);
+    fpga_cpuemu_sqr(A, B);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -921,21 +838,20 @@ void fpga_sqr_(Tensor *A) {
 }
 
 // -----------------------------------------------------------------
-// sqrt_
+// sqrt
 //
-void fpga_cpuemu_sqrt_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_sqrt(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_sqrt_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_sqrt(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_sqrt_(Tensor *A) {
+void fpga_sqrt(Tensor *A, Tensor *B) {
     _profile_fpga(_FPGA_SQRT_, 0);
 #ifndef K_ENABLED_SQRT_
-    fpga_cpuemu_sqrt_(A);
+    fpga_cpuemu_sqrt(A, B);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -949,21 +865,20 @@ void fpga_sqrt_(Tensor *A) {
 }
 
 // -----------------------------------------------------------------
-// tan_
+// tan
 //
-void fpga_cpuemu_tan_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_tan(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_tan_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_tan(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_tan_(Tensor *A){
+void fpga_tan(Tensor *A, Tensor *B){
     _profile_fpga(_FPGA_TAN_, 0);
 #ifndef K_ENABLED_TAN_
-    fpga_cpuemu_tan_(A);
+    fpga_cpuemu_tan(A, B);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -977,21 +892,20 @@ void fpga_tan_(Tensor *A){
 }
 
 // -----------------------------------------------------------------
-// tanh_
+// tanh
 //
-void fpga_cpuemu_tanh_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_tanh(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_tanh_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_tanh(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_tanh_(Tensor *A){
+void fpga_tanh(Tensor *A, Tensor *B){
     _profile_fpga(_FPGA_TANH_, 0);
 #ifndef K_ENABLED_TANH_
-    fpga_cpuemu_tanh_(A);
+    fpga_cpuemu_tanh(A, B);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -1007,19 +921,18 @@ void fpga_tanh_(Tensor *A){
 // -----------------------------------------------------------------
 // trunc_
 //
-void fpga_cpuemu_trunc_(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
+void fpga_cpuemu_trunc(Tensor *A, Tensor *B) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_trunc_(A);
-  fpga_copy_to_fpga(A->ptr, A);
+  cpu_trunc(A, B);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_trunc_(Tensor *A){
+void fpga_trunc(Tensor *A, Tensor *B){
     _profile_fpga(_FPGA_TRUNC_, 0);
 #ifndef K_ENABLED_TRUNC_
-    fpga_cpuemu_trunc_(A);
+    fpga_cpuemu_trunc(A, B);
 #else
+    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
@@ -1229,23 +1142,20 @@ void fpga_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
 }
 
 // -----------------------------------------------------------------
-// sign2
+// sign
 //
-void fpga_cpuemu_sign2(Tensor *A, Tensor *B) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
+void fpga_cpuemu_sign(Tensor *A, Tensor *B, float zero_sign) {
   fpga_copy_from_fpga(A, A->ptr);
-  cpu_sign2(A, B);
+  cpu_sign(A, B, zero_sign);
   fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_sign2(Tensor *A, Tensor *B){
+void fpga_sign(Tensor *A, Tensor *B, float zero_sign){
   _profile_fpga(_FPGA_SIGN2, 0);
 #ifndef K_ENABLED_SIGN2
-  fpga_cpuemu_sign2(A, B);
+  fpga_cpuemu_sign(A, B, zero_sign);
 #else
+  printf("añadir zero sign\n"); exit(1);
   cl_int err;
   cl::Event event;
 
@@ -1348,7 +1258,7 @@ float fpga_cpuemu_max(Tensor *A) {
 float fpga_max(Tensor *A){
   float ret;
   _profile_fpga(_FPGA_MAX, 0);
-#ifndef
+#ifndef K_ENABLED_MAX
   ret = fpga_cpuemu_max(A);
 #else
   printf("fpga_max not implemented yet\n"); exit(1);
@@ -1409,6 +1319,7 @@ float fpga_cpuemu_sum(Tensor *A) {
 
 float fpga_sum(Tensor *A) {
   float ret;
+  float *sum;
   _profile_fpga(_FPGA_SUM, 0);
   _profile_fpga_tensor(A);
 #ifndef K_ENABLED_SUM
@@ -1417,7 +1328,6 @@ float fpga_sum(Tensor *A) {
   cl_int err;
   cl::Event event, result_ready;
 
-  float *sum;
   posix_memalign((void **)&sum,4096,sizeof(float));
   OCL_CHECK(err, cl::Buffer a(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, sizeof(float), sum, &err));
 

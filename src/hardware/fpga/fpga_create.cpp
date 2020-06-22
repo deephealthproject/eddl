@@ -9,7 +9,7 @@
 
 #include "eddl/hardware/fpga/fpga_hw.h"
 
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 
 // emulation switches of functions (via cpu)
 // when set the function is run on the cpu

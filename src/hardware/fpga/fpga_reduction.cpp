@@ -11,7 +11,7 @@
 #include <stdexcept>
 
 #include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 
 extern cl::CommandQueue q;
 extern cl::Kernel reduce_sum2D;

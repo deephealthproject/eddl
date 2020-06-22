@@ -149,43 +149,99 @@ void fpga_crop_random(Tensor *A, Tensor *B);
 void fpga_crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, int mode, float constant);
 void fpga_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant);
 
-// CPU: Math (in-place)
-void fpga_abs_(Tensor *A);
-void fpga_acos_(Tensor *A);
-void fpga_add_(Tensor *A, float v);
-void fpga_asin_(Tensor *A);
-void fpga_atan_(Tensor *A);
-void fpga_ceil_(Tensor *A);
-void fpga_clamp_(Tensor *A, float min, float max);
-void fpga_cos_(Tensor *A);
-void fpga_cosh_(Tensor *A);
-void fpga_exp_(Tensor *A);
-void fpga_inv_(Tensor *A, float v);
-void fpga_floor_(Tensor *A);
-void fpga_log_(Tensor *A);
-void fpga_log2_(Tensor *A);
-void fpga_log10_(Tensor *A);
-void fpga_logn_(Tensor *A, float n);
-void fpga_mod_(Tensor *A, float v);
-void fpga_mult_(Tensor *A, float v);
-void fpga_normalize_(Tensor *A, float min, float max);
-void fpga_pow_(Tensor *A, float exp);
-void fpga_powb_(Tensor *A, float base);
-void fpga_reciprocal_(Tensor *A);
-void fpga_remainder_(Tensor *A, float v);
-void fpga_round_(Tensor *A);
-void fpga_rsqrt_(Tensor *A);
-void fpga_sigmoid_(Tensor *A);
-void fpga_sign_(Tensor *A);
-void fpga_sin_(Tensor *A);
-void fpga_sinh_(Tensor *A);
-void fpga_sqr_(Tensor *A);
-void fpga_sqrt_(Tensor *A);
-void fpga_tan_(Tensor *A);
-void fpga_tanh_(Tensor *A);
-void fpga_trunc_(Tensor *A);
+// FPGA: Math (in-place)
+void fpga_abs(Tensor *A, Tensor *B);
+void fpga_acos(Tensor *A, Tensor *B);
+void fpga_add(Tensor *A, Tensor *B, float v);
+void fpga_asin(Tensor *A, Tensor *B);
+void fpga_atan(Tensor *A, Tensor *B);
+void fpga_ceil(Tensor *A, Tensor *B);
+void fpga_clamp(Tensor *A, Tensor *B, float min, float max);
+void fpga_cos(Tensor *A, Tensor *B);
+void fpga_cosh(Tensor *A, Tensor *B);
+void fpga_exp(Tensor *A, Tensor *B);
+void fpga_inv(Tensor *A, Tensor *B, float v);
+void fpga_floor(Tensor *A, Tensor *B);
+void fpga_log(Tensor *A, Tensor *B);
+void fpga_log2(Tensor *A, Tensor *B);
+void fpga_log10(Tensor *A, Tensor *B);
+void fpga_logn(Tensor *A, Tensor *B, float n);
+void fpga_mod(Tensor *A, Tensor *B, float v);
+void fpga_mult(Tensor *A, Tensor *B, float v);
+void fpga_normalize(Tensor *A, Tensor *B, float min, float max);
+void fpga_pow(Tensor *A, Tensor *B, float exp);
+void fpga_powb(Tensor *A, Tensor *B, float base);
+void fpga_remainder(Tensor *A, Tensor *B, float v);
+void fpga_round(Tensor *A, Tensor *B);
+void fpga_rsqrt(Tensor *A, Tensor *B);
+void fpga_sigmoid(Tensor *A, Tensor *B);
+void fpga_sign(Tensor *A, Tensor *B, float zero_sign=0.0f);
+void fpga_sin(Tensor *A, Tensor *B);
+void fpga_sinh(Tensor *A, Tensor *B);
+void fpga_sqr(Tensor *A, Tensor *B);
+void fpga_sqrt(Tensor *A, Tensor *B);
+void fpga_tan(Tensor *A, Tensor *B);
+void fpga_tanh(Tensor *A, Tensor *B);
+void fpga_trunc(Tensor *A, Tensor *B);
 
 // CPU: Math (static)
+void cpu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
+void cpu_inc(Tensor *A, Tensor *B);
+void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
+void cpu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
+void cpu_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
+void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
+void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
+
+void cpu_maximum(Tensor* A, Tensor* B, float v);
+void cpu_maximum(Tensor* A, Tensor* B, Tensor* C);
+void cpu_minimum(Tensor* A, Tensor* B, float v);
+void cpu_minimum(Tensor* A, Tensor* B, Tensor* C);
+
+// CPU: Math (reductions)
+float fpga_max(Tensor *A);
+void fpga_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+int fpga_argmax(Tensor *A);
+void fpga_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+std::tuple<float, int> fpga_max(float *ptr, int size, int *map);
+
+float fpga_min(Tensor *A);
+void fpga_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+int fpga_argmin(Tensor *A);
+void fpga_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+std::tuple<float, int> fpga_min(float *ptr, int size, int *map);
+
+float fpga_sum(Tensor *A);
+void fpga_sum(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+float fpga_sum(float *ptr, int size, int *map);
+
+float fpga_sum_abs(Tensor *A);
+void fpga_sum_abs(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+float fpga_sum_abs(float *ptr, int size, int *map);
+
+float fpga_prod(Tensor *A);
+void fpga_prod(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+float fpga_prod(float *ptr, int size, int *map);
+
+float fpga_mean(Tensor *A);
+void fpga_mean(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+
+float fpga_median(Tensor *A);
+void fpga_median(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+float fpga_median(float *ptr, int size, int *map);
+
+float fpga_var(Tensor *A, bool unbiased);
+void fpga_var(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased);
+float fpga_var(float *ptr, int size, int *map, bool unbiased);
+
+float fpga_std(Tensor *A, bool unbiased);
+void fpga_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased);
+
+int fpga_mode(Tensor *A);
+void fpga_mode(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+int fpga_mode(float *ptr, int size, int *map);
+
+
 void fpga_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
 void fpga_inc(Tensor *A, Tensor *B);
 void fpga_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
@@ -194,6 +250,12 @@ void fpga_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
 void fpga_sign2(Tensor *A, Tensor *B); // TODO: Remove
 void fpga_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
 void fpga_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
+
+void fpga_maximum(Tensor* A, Tensor* B, float v);
+void fpga_maximum(Tensor* A, Tensor* B, Tensor* C);
+void fpga_minimum(Tensor* A, Tensor* B, float v);
+void fpga_minimum(Tensor* A, Tensor* B, Tensor* C);
+
 
 // CPU: Should be reductions
 float fpga_max(Tensor *A);
@@ -238,6 +300,7 @@ void fpga_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool 
 void fpga_greater(Tensor *A, Tensor *B, Tensor *C);
 void fpga_greater_equal(Tensor *A, Tensor *B, Tensor *C);
 void fpga_less(Tensor *A, Tensor *B, Tensor *C);
+void fpga_less(Tensor *A, Tensor *B, float v);
 void fpga_less_equal(Tensor *A, Tensor *B, Tensor *C);
 void fpga_equal(Tensor *A, Tensor *B, Tensor *C);
 void fpga_not_equal(Tensor *A, Tensor *B, Tensor *C);

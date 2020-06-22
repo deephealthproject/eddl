@@ -13,7 +13,7 @@
 #include <iostream>
 
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
-#include "eddl/hardware/cpu/nn/cpu_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 #include "eddl/hardware/fpga/fpga_hw.h"
 
 // emulation switches of functions (via cpu)
