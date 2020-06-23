@@ -767,15 +767,15 @@ void fpga_cpuemu_sin(Tensor *A, Tensor *B) {
 
 void fpga_sin(Tensor *A, Tensor *B){
     _profile_fpga(_FPGA_SIN_, 0);
-#ifndef K_ENABLED_SIN_
+#ifndef K_ENABLED_SIN
     fpga_cpuemu_sin(A, B);
 #else
-    printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
-    OCL_CHECK(err, err = kernel_sin_.setArg(0, *(A->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_sin_.setArg(1, (long int)A->size));
+    OCL_CHECK(err, err = kernel_sin.setArg(0, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_sin.setArg(1, *(B->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_sin.setArg(2, (long int)A->size));
 
     OCL_CHECK(err, err = q.enqueueTask(kernel_sin_, NULL, &event));
     q.finish();

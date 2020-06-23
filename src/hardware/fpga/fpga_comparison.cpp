@@ -35,8 +35,6 @@ char fpga_set_cpuemu_equal2        = 1;
 // all
 //
 bool fpga_cpuemu_all(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
   fpga_copy_from_fpga(A, A->ptr);
   bool ret = cpu_all(A);
   return ret;
@@ -65,8 +63,6 @@ bool fpga_all(Tensor *A){
 // any
 //
 bool fpga_cpuemu_any(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
   fpga_copy_from_fpga(A, A->ptr);
   bool ret = cpu_any(A);
   return ret;
@@ -97,10 +93,6 @@ bool fpga_any(Tensor *A){
 // isfinite
 //
 void fpga_cpuemu_isfinite(Tensor *A, Tensor *B) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
   fpga_copy_from_fpga(A, A->ptr);
   cpu_isfinite(A, B);
   fpga_copy_to_fpga(B->ptr, B);
@@ -128,10 +120,6 @@ void fpga_isfinite(Tensor *A, Tensor* B){
 // isinf
 //
 void fpga_cpuemu_isinf(Tensor *A, Tensor *B) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
   fpga_copy_from_fpga(A, A->ptr);
   cpu_isinf(A, B);
   fpga_copy_to_fpga(B->ptr, B);
@@ -159,10 +147,6 @@ void fpga_isinf(Tensor *A, Tensor* B){
 // isnan
 //
 void fpga_cpuemu_isnan(Tensor *A, Tensor *B) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
   fpga_copy_from_fpga(A, A->ptr);
   cpu_isnan(A, B);
   fpga_copy_to_fpga(B->ptr, B);
@@ -190,10 +174,6 @@ void fpga_isnan(Tensor *A, Tensor* B){
 // isneginf
 //
 void fpga_cpuemu_isneginf(Tensor *A, Tensor *B) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
   fpga_copy_from_fpga(A, A->ptr);
   cpu_isneginf(A, B);
   fpga_copy_to_fpga(B->ptr, B);
@@ -220,10 +200,6 @@ void fpga_isneginf(Tensor *A, Tensor* B){
 // isposinf
 //
 void fpga_cpuemu_isposinf(Tensor *A, Tensor *B) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
   fpga_copy_from_fpga(A, A->ptr);
   cpu_isposinf(A, B);
   fpga_copy_to_fpga(B->ptr, B);
@@ -253,12 +229,6 @@ void fpga_isposinf(Tensor *A, Tensor* B){
 // logical_and
 //
 void fpga_cpuemu_logical_and(Tensor *A, Tensor *B, Tensor *C) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  int Csize = C->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
-  if (C->ptr == NULL) C->ptr = (float *)malloc(Bsize);
   fpga_copy_from_fpga(A, A->ptr);
   fpga_copy_from_fpga(B, B->ptr);
   cpu_logical_and(A, B, C);
@@ -288,12 +258,6 @@ void fpga_logical_and(Tensor *A, Tensor *B, Tensor *C){
 // logical_or
 //
 void fpga_cpuemu_logical_or(Tensor *A, Tensor *B, Tensor *C) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  int Csize = C->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
-  if (C->ptr == NULL) C->ptr = (float *)malloc(Bsize);
   fpga_copy_from_fpga(A, A->ptr);
   fpga_copy_from_fpga(B, B->ptr);
   cpu_logical_or(A, B, C);
@@ -323,10 +287,6 @@ void fpga_logical_or(Tensor *A, Tensor *B, Tensor *C){
 // logical_not
 //
 void fpga_cpuemu_logical_not(Tensor *A, Tensor *B) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
   fpga_copy_from_fpga(A, A->ptr);
   cpu_logical_not(A, B);
   fpga_copy_to_fpga(B->ptr, B);
@@ -354,12 +314,6 @@ void fpga_logical_not(Tensor *A, Tensor *B){
 // logical_xor
 //
 void fpga_cpuemu_logical_xor(Tensor *A, Tensor *B, Tensor *C) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  int Csize = C->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
-  if (C->ptr == NULL) C->ptr = (float *)malloc(Bsize);
   fpga_copy_from_fpga(A, A->ptr);
   fpga_copy_from_fpga(B, B->ptr);
   cpu_logical_xor(A, B, C);
@@ -391,10 +345,6 @@ void fpga_logical_xor(Tensor *A, Tensor *B, Tensor *C){
 // allclose
 //
 bool fpga_cpuemu_allclose(Tensor *A, Tensor *B, float rotl, float atol, bool equal_nan) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
   fpga_copy_from_fpga(A, A->ptr);
   fpga_copy_from_fpga(B, B->ptr);
   bool ret = cpu_allclose(A, B, rotl, atol, equal_nan);
@@ -431,12 +381,6 @@ bool fpga_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan)
 // isclose
 //
 void fpga_cpuemu_isclose(Tensor *A, Tensor *B, Tensor *C, float rotl, float atol, bool equal_nan) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  int Csize = C->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
-  if (C->ptr == NULL) C->ptr = (float *)malloc(Csize);
   fpga_copy_from_fpga(A, A->ptr);
   fpga_copy_from_fpga(B, B->ptr);
   cpu_isclose(A, B, C, rotl, atol, equal_nan);
@@ -469,12 +413,6 @@ void fpga_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool 
 // greater
 //
 void fpga_cpuemu_greater(Tensor *A, Tensor *B, Tensor *C) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  int Csize = C->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
-  if (C->ptr == NULL) C->ptr = (float *)malloc(Csize);
   fpga_copy_from_fpga(A, A->ptr);
   fpga_copy_from_fpga(B, B->ptr);
   cpu_greater(A, B, C);
@@ -504,12 +442,6 @@ void fpga_greater(Tensor *A, Tensor *B, Tensor *C){
 // greater_equal
 //
 void fpga_cpuemu_greater_equal(Tensor *A, Tensor *B, Tensor *C) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  int Csize = C->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
-  if (C->ptr == NULL) C->ptr = (float *)malloc(Csize);
   fpga_copy_from_fpga(A, A->ptr);
   fpga_copy_from_fpga(B, B->ptr);
   cpu_greater_equal(A, B, C);
@@ -548,12 +480,6 @@ void fpga_less(Tensor *A, Tensor *B, float v){
 // less
 //
 void fpga_cpuemu_less(Tensor *A, Tensor *B, Tensor *C) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  int Csize = C->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
-  if (C->ptr == NULL) C->ptr = (float *)malloc(Csize);
   fpga_copy_from_fpga(A, A->ptr);
   fpga_copy_from_fpga(B, B->ptr);
   cpu_less(A, B, C);
@@ -583,12 +509,6 @@ void fpga_less(Tensor *A, Tensor *B, Tensor *C){
 // less_equal
 //
 void fpga_cpuemu_less_equal(Tensor *A, Tensor *B, Tensor *C) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  int Csize = C->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
-  if (C->ptr == NULL) C->ptr = (float *)malloc(Csize);
   fpga_copy_from_fpga(A, A->ptr);
   fpga_copy_from_fpga(B, B->ptr);
   cpu_less_equal(A, B, C);
@@ -618,12 +538,6 @@ void fpga_less_equal(Tensor *A, Tensor *B, Tensor *C){
 // equal
 //
 void fpga_cpuemu_equal(Tensor *A, Tensor *B, Tensor *C) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  int Csize = C->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
-  if (C->ptr == NULL) C->ptr = (float *)malloc(Csize);
   fpga_copy_from_fpga(A, A->ptr);
   fpga_copy_from_fpga(B, B->ptr);
   cpu_equal(A, B, C);
@@ -653,12 +567,6 @@ void fpga_equal(Tensor *A, Tensor *B, Tensor *C){
 // not_equal
 //
 void fpga_cpuemu_not_equal(Tensor *A, Tensor *B, Tensor *C) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  int Csize = C->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
-  if (C->ptr == NULL) C->ptr = (float *)malloc(Csize);
   fpga_copy_from_fpga(A, A->ptr);
   fpga_copy_from_fpga(B, B->ptr);
   cpu_not_equal(A, B, C);
@@ -688,10 +596,6 @@ void fpga_not_equal(Tensor *A, Tensor *B, Tensor *C){
 // equal2
 //
 int fpga_cpuemu_equal2(Tensor *A, Tensor *B, float epsilon) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
   fpga_copy_from_fpga(A, A->ptr);
   fpga_copy_from_fpga(B, B->ptr);
   int ret = cpu_equal2(A, B, epsilon);
