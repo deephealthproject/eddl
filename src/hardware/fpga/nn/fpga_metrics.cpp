@@ -63,3 +63,7 @@ int fpga_accuracy(Tensor *A, Tensor *B){
 #endif
   return *accu;
 }
+
+int fpga_bin_accuracy(Tensor *A, Tensor *B) {
+	printf("fpga_bin_accuracy not implemented yet\n"); exit(1);
+}

@@ -100,7 +100,7 @@ void fpga_cpuemu_acos(Tensor *A, Tensor *B) {
   fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_acos_(Tensor *A, Tensor *B){
+void fpga_acos(Tensor *A, Tensor *B){
     _profile_fpga(_FPGA_ACOS_, 0);
 #ifndef K_ENABLED_ACOS_
     fpga_cpuemu_acos(A, B);
@@ -1272,105 +1272,146 @@ float fpga_max(Tensor *A){
   // q.finish();
 #endif
   _profile_fpga(_FPGA_MAX, 1);
+  printf("please revise return in cpu_max and compare with fpga_max\n");
   return ret;
 }
 
-// -----------------------------------------------------------------
+void fpga_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+	printf("fpga_max not implemented yet\n"); exit(1);
+}
+
+int fpga_argmax(Tensor *A) {printf("fpga_argmax not implemented yet\n"); exit(1);}
+
+
+void fpga_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){printf("fpga_argmax not implemented yet\n"); exit(1);}
+
+std::tuple<float, int> fpga_max(float *ptr, int size, int *map) {printf("fpga_max not implemented yet\n"); exit(1);}
+
+
+// -------------------------------------------------------------------
 // fpga_min
 //
-float fpga_cpuemu_min(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  fpga_copy_from_fpga(A, A->ptr);
-  float ret = cpu_min(A);
-  return ret;
+
+std::tuple<float, int> fpga_min(float *ptr, int size, int *map) {
+  printf("fpga_min(...) not implemented yet\n");
+  exit(1);
 }
 
-float fpga_min(Tensor *A){
-  float ret;
-  _profile_fpga(_FPGA_MIN, 0);
-#ifndef K_ENABLED_MIN
-  ret = fpga_cpuemu_min(A);
-#else
-  printf("fpga_min not implemented yet\n"); exit(1);
-  // cl_int err;
-  // cl::Event event;
-  //
-  // OCL_CHECK(err, err = kernel_min.setArg(0, *(A->fpga_ptr)));
-  // OCL_CHECK(err, err = kernel_min.setArg(1, (long int)A->size));
-  //
-  // OCL_CHECK(err, err = q.enqueueTask(kernel_min, NULL, &event));
-  // q.finish();
-#endif
-  _profile_fpga(_FPGA_MIN, 1);
-  return ret;
+float fpga_min(Tensor *A) {printf("fpga_min not implemented yet\n"); exit(1);}
+
+
+void fpga_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){printf("fpga_min not implemented yet\n"); exit(1);}
+
+int fpga_argmin(Tensor *A) {
+    auto t = fpga_min(A->ptr, A->size, nullptr);
+    return std::get<1>(t);  // get argmin
 }
+
+
+void fpga_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+  printf("fpga_argmin not implemented yet\n");
+  exit(1);
+}
+
 
 // -----------------------------------------------------------------
 // fpga_sum
 //
-float fpga_cpuemu_sum(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  fpga_copy_from_fpga(A, A->ptr);
-  float ret = cpu_sum(A);
-  return ret;
-}
-
-float fpga_sum(Tensor *A) {
-  float ret;
-  float *sum;
-  _profile_fpga(_FPGA_SUM, 0);
-  _profile_fpga_tensor(A);
-#ifndef K_ENABLED_SUM
-  ret = fpga_cpuemu_sum(A);
-#else
-  cl_int err;
-  cl::Event event, result_ready;
-
-  posix_memalign((void **)&sum,4096,sizeof(float));
-  OCL_CHECK(err, cl::Buffer a(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, sizeof(float), sum, &err));
-
-  OCL_CHECK(err, err = kernel_sum.setArg(0, *(A->fpga_ptr)));
-  OCL_CHECK(err, err = kernel_sum.setArg(1, (long int)A->size));
-  OCL_CHECK(err, err = kernel_sum.setArg(2, a));
-  OCL_CHECK(err, err = q.enqueueTask(kernel_sum, NULL, &event));
-
-  q.finish();
-  OCL_CHECK(err, err = q.enqueueMigrateMemObjects({a},CL_MIGRATE_MEM_OBJECT_HOST, NULL, &result_ready));
-  result_ready.wait();
-#endif
-  _profile_fpga(_FPGA_SUM, 1);
-  return *sum;
-}
-
-// -----------------------------------------------------------------
-// sum_abs
 //
-float fpga_cpuemu_sum_abs(Tensor *A) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  fpga_copy_from_fpga(A, A->ptr);
-  float ret = cpu_sum_abs(A);
-  return ret;
-}
+float fpga_sum(Tensor *A) {printf("fpga_sum not implemented yet\n"); exit(1);}
+
+void fpga_sum(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){printf("fpga_sum not implemented yet\n"); exit(1);}
+
+float fpga_sum(float *ptr, int size, int *map) {printf("fpga_sum not implemented yet\n"); exit(1);}
 
 float fpga_sum_abs(Tensor *A) {
-  float ret;
-  _profile_fpga(_FPGA_SUM_ABS, 0);
-#ifndef K_ENABLED_SUM_ABS
-  ret = fpga_cpuemu_sum_abs(A);
-#else
-  printf("fpga_abs not implemented yet\n"); exit(1);
-  // cl_int err;
-  // cl::Event event;
-  //
-  // OCL_CHECK(err, err = kernel_sum_abs.setArg(0, *(A->fpga_ptr)));
-  // OCL_CHECK(err, err = kernel_sum_abs.setArg(1, (long int)A->size));
-  //
-  // OCL_CHECK(err, err = q.enqueueTask(kernel_sum_abs, NULL, &event));
-  // q.finish();
-#endif
-  _profile_fpga(_FPGA_SUM_ABS, 1);
-  return ret;
+	printf("fpga_sum_abs not implemented yet\n"); exit(1);
 }
+
+
+void fpga_sum_abs(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+	printf("fpga_sum_abs not implemented yet\n"); exit(1);
+}
+
+float fpga_sum_abs(float *ptr, int size, int *map) {
+	printf("fpga_sum_abs not implemented yet\n"); exit(1);
+}
+
+float fpga_prod(Tensor *A) {
+	printf("fpga_prod not implemented yet\n"); exit(1);
+}
+
+
+void fpga_prod(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+	printf("fpga_prod not implemented yet\n"); exit(1);
+}
+
+float fpga_prod(float *ptr, int size, int *map) {
+	printf("fpga_prod not implemented yet\n"); exit(1);
+}
+
+
+int fpga_mode(Tensor *A) {
+  printf("fpga_mode not implemented yet\n"); exit(1);
+    return fpga_mode(A->ptr, A->size, nullptr);
+}
+
+
+void fpga_mode(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+  printf("fpga_mode not implmented yet\n"); exit(1);
+}
+
+int fpga_mode(float *ptr, int size, int *map) {
+  printf("fpga_mode not implemented yet\n"); exit(1);
+}
+
+float fpga_mean(Tensor *A) {printf("fpga_mean not implemented yet\n"); exit(1);}
+
+void fpga_mean(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){printf("fpga_mean not implemented yet\n"); exit(1);}
+
+float fpga_var(Tensor *A, bool unbiased){
+	printf("fpga_var not implemented yet\n"); exit(1);
+}
+
+
+void fpga_var(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
+	printf("fpga_var not implemented yet\n"); exit(1);
+}
+
+float fpga_var(float *ptr, int size, int *map, bool unbiased){
+	printf("fpga_var not implemented yet\n"); exit(1);
+}
+
+float fpga_std(Tensor *A, bool unbiased) {printf("fpga_std not implemented yet\n"); exit(1);}
+
+void fpga_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){printf("fpga_std not implemented yet\n"); exit(1);}
+
+float fpga_median(Tensor *A) {
+	printf("fpga_median not implemented yet\n"); exit(1);
+}
+
+
+void fpga_median(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+	printf("fpga_median not implemented yet\n"); exit(1);
+}
+
+float fpga_median(float *ptr, int size, int *map) {
+	printf("fpga_median not implemented yet\n"); exit(1);
+}
+
+void fpga_maximum(Tensor* A, Tensor* B, float v){
+	printf("fpga_maximum not implemented yet\n"); exit(1);
+}
+
+void fpga_maximum(Tensor* A, Tensor* B, Tensor* C){
+	printf("fpga_maximum not implemented yet\n"); exit(1);
+}
+
+void fpga_minimum(Tensor* A, Tensor* B, float v){
+printf("fpga_minimum not implemented yet\n"); exit(1);
+}
+
+void fpga_minimum(Tensor* A, Tensor* B, Tensor* C){
+	printf("fpga_minimum not implemented yet\n"); exit(1);
+}
+

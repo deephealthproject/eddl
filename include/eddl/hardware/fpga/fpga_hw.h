@@ -185,18 +185,18 @@ void fpga_tanh(Tensor *A, Tensor *B);
 void fpga_trunc(Tensor *A, Tensor *B);
 
 // CPU: Math (static)
-void cpu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
-void cpu_inc(Tensor *A, Tensor *B);
-void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
-void cpu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
-void cpu_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
-void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
-void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
+void fpga_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
+void fpga_inc(Tensor *A, Tensor *B);
+void fpga_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
+void fpga_el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
+void fpga_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
+void fpga_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
+void fpga_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
 
-void cpu_maximum(Tensor* A, Tensor* B, float v);
-void cpu_maximum(Tensor* A, Tensor* B, Tensor* C);
-void cpu_minimum(Tensor* A, Tensor* B, float v);
-void cpu_minimum(Tensor* A, Tensor* B, Tensor* C);
+void fpga_maximum(Tensor* A, Tensor* B, float v);
+void fpga_maximum(Tensor* A, Tensor* B, Tensor* C);
+void fpga_minimum(Tensor* A, Tensor* B, float v);
+void fpga_minimum(Tensor* A, Tensor* B, Tensor* C);
 
 // CPU: Math (reductions)
 float fpga_max(Tensor *A);
@@ -240,22 +240,6 @@ void fpga_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased);
 int fpga_mode(Tensor *A);
 void fpga_mode(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 int fpga_mode(float *ptr, int size, int *map);
-
-
-void fpga_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC);
-void fpga_inc(Tensor *A, Tensor *B);
-void fpga_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC);
-void fpga_el_div(Tensor *A, Tensor *B, Tensor *C, int incC);
-void fpga_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC);
-void fpga_sign2(Tensor *A, Tensor *B); // TODO: Remove
-void fpga_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C);
-void fpga_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C);
-
-void fpga_maximum(Tensor* A, Tensor* B, float v);
-void fpga_maximum(Tensor* A, Tensor* B, Tensor* C);
-void fpga_minimum(Tensor* A, Tensor* B, float v);
-void fpga_minimum(Tensor* A, Tensor* B, Tensor* C);
-
 
 // CPU: Should be reductions
 float fpga_max(Tensor *A);

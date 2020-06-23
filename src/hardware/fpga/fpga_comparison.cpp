@@ -535,6 +535,15 @@ void fpga_greater_equal(Tensor *A, Tensor *B, Tensor *C){
     _profile_fpga(_FPGA_GREATER_EQUAL, 1);
 }
 
+// ----------------------------------------------------------------
+// less
+//
+
+void fpga_less(Tensor *A, Tensor *B, float v){
+  printf("fpga_less not implemented yet\n");
+  exit(1);
+}
+
 // -----------------------------------------------------------------
 // less
 //

@@ -48,16 +48,23 @@
 // #define K_ENABLED_ALLCLOSE
 // #define K_ENABLED_ISCLOSE
 // #define K_ENABLED_GREATER
+// #define K_ENABLED_GREATER_VECTOR
 // #define K_ENABLED_GREATER_EQUAL
+// #define K_ENABLED_GREATER_EQUAL_VECTOR
 // #define K_ENABLED_LESS
+// #define K_ENALBED_LESS_VECTOR
 // #define K_ENABLED_LESS_EQUAL
+// #define K_ENALBED_LESS_EQUAL_VECTOR
 // #define K_ENABLED_EQUAL
+// #define K_ENABLED_EQUAL_VECTOR
 // #define K_ENABLED_NOT_EQUAL
+// #define K_ENABLED_NOT_EQUAL_VECTOR
 // #define K_ENABLED_EQUAL2
 
 //Conv
-// #define K_ENABLED_IM2COL
 //#define K_ENABLED_CONV2D
+//#define K_ENALBED_CONV2D_GRAD
+//#define K_ENABLED_CONV2D_BACK
 
 //Core
 // #define K_ENABLED_FILL_
@@ -90,6 +97,7 @@
 
 //Losses
 // #define K_ENABLED_CENT
+// #define K_ENABLED_BIN_CENT
 
 //Math
 // #define K_ENABLED_ABS_
@@ -140,6 +148,7 @@
 
 //Metrics
 // #define K_ENABLED_ACCURACY
+// #define K_ENABLED_BIN_ACCURACY
 
 //Pool
 // #define K_ENABLED_MPOOL2D
@@ -159,3 +168,14 @@
 //Tensor_nn
 // #define K_ENABLED_REPEAT_NN
 // #define K_ENABLED_D_REPEAT_NN
+// #define K_ENALBED_SELECT_NN
+// #define K_ENABLED_SELECT_BACK_NN
+// #define K_ENABLED_SET_SELECT_NN
+// #define K_ENABLED_SET_SELECT_BACK_NN
+//
+//
+
+// others
+// #define K_ENABLED_TRANSPOSE
+// #define K_ENABLED_DIAG
+//
