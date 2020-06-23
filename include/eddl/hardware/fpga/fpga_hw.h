@@ -299,12 +299,12 @@ void fpga_less(Tensor *A, Tensor *B, Tensor *C);
 void fpga_less_equal(Tensor *A, Tensor *B, Tensor *C);
 void fpga_equal(Tensor *A, Tensor *B, Tensor *C);
 void fpga_not_equal(Tensor *A, Tensor *B, Tensor *C);
-void cpu_greater(Tensor *A, Tensor *B, float v);
-void cpu_greater_equal(Tensor *A, Tensor *B, float v);
-void cpu_less(Tensor *A, Tensor *B, float v);
-void cpu_less_equal(Tensor *A, Tensor *B, float v);
-void cpu_equal(Tensor *A, Tensor *B, float v);
-void cpu_not_equal(Tensor *A, Tensor *B, float v);
+void fpga_greater(Tensor *A, Tensor *B, float v);
+void fpga_greater_equal(Tensor *A, Tensor *B, float v);
+void fpga_less(Tensor *A, Tensor *B, float v);
+void fpga_less_equal(Tensor *A, Tensor *B, float v);
+void fpga_equal(Tensor *A, Tensor *B, float v);
+void fpga_not_equal(Tensor *A, Tensor *B, float v);
 
 // Legacy
 int fpga_equal2(Tensor *A, Tensor *B, float epsilon);

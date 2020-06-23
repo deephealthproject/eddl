@@ -185,7 +185,7 @@ void Tensor::diag(Tensor* A, Tensor* B, int k){
     }
 #endif
 #ifdef cFPGA
-    else if (A->ifFPGA() && B->isFPGA())
+    else if (A->isFPGA() && B->isFPGA())
     {
         fpga_diag(A, B, k);
     }

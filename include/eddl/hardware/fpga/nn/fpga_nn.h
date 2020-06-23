@@ -77,6 +77,11 @@ void fpga_avgpool2D_back(PoolDescriptor *D);
 void fpga_repeat_nn(Tensor *A, Tensor *B, vector<int> size);
 void fpga_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size);
 
+void fpga_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+void fpga_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+void fpga_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+void fpga_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+
 // BN
 void fpga_permute_channels_first(Tensor *A,Tensor *B);
 void fpga_permute_channels_last(Tensor *A,Tensor *B);

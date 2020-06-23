@@ -82,7 +82,7 @@ void fpga_cpuemu_diag(Tensor *A, Tensor *B, int k) {
   fpga_copy_to_fpga(B->ptr, B);
 }
 
-void cpu_diag(Tensor *A, Tensor *B, int k){
+void fpga_diag(Tensor *A, Tensor *B, int k){
 #ifndef K_ENABLED_DIAG
   fpga_cpuemu_diag(A, B, k);
 #else
