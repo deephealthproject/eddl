@@ -25,22 +25,22 @@ void fpga_cpuemu_range(Tensor *A, float min, float step) {
 }
 
 void fpga_range(Tensor *A, float min, float step){
-    _profile_fpga(_FPGA_RANGE, 0);
-    if (fpga_set_cpuemu_range_ == 1) {
-        fpga_cpuemu_range(A, min, step);
-    } else {
-        cl_int err;
-        cl::Event event;
+  _profile_fpga(_FPGA_RANGE, 0);
+#ifndef K_ENABLED_RANGE
+  fpga_cpuemu_range(A, min, step);
+#else
+  cl_int err;
+  cl::Event event;
 
-        OCL_CHECK(err, err = kernel_range.setArg(0, *(A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_range.setArg(1, min));
-        OCL_CHECK(err, err = kernel_range.setArg(2, step));
-        OCL_CHECK(err, err = kernel_range.setArg(3, (long int)A->size));
+  OCL_CHECK(err, err = kernel_range.setArg(0, *(A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_range.setArg(1, min));
+  OCL_CHECK(err, err = kernel_range.setArg(2, step));
+  OCL_CHECK(err, err = kernel_range.setArg(3, (long int)A->size));
 
-        OCL_CHECK(err, err = q.enqueueTask(kernel_deselect, NULL, &event));
-        q.finish();
-    }
-    _profile_fpga(_FPGA_RANGE, 1);
+  OCL_CHECK(err, err = q.enqueueTask(kernel_deselect, NULL, &event));
+  q.finish();
+#endif
+  _profile_fpga(_FPGA_RANGE, 1);
 }
 
 // -----------------------------------------------------------------
@@ -54,23 +54,23 @@ void fpga_cpuemu_eye(Tensor *A, int offset) {
 }
 
 void fpga_eye(Tensor *A, int offset){
-    _profile_fpga(_FPGA_EYE, 0);
-    if (fpga_set_cpuemu_eye_ == 1) {
-        fpga_cpuemu_eye(A, offset);
-    } else {
-        cl_int err;
-        cl::Event event;
+  _profile_fpga(_FPGA_EYE, 0);
+#ifndef K_ENABLED_EYE
+  fpga_cpuemu_eye(A, offset);
+#else
+  cl_int err;
+  cl::Event event;
 
-        OCL_CHECK(err, err = kernel_range.setArg(0, *(A->fpga_ptr)));
-        OCL_CHECK(err, err = kernel_range.setArg(1, offset));
-        OCL_CHECK(err, err = kernel_range.setArg(2, (long int)A->size));
-        OCL_CHECK(err, err = kernel_range.setArg(3, (int)A->shape[0]));
-        OCL_CHECK(err, err = kernel_range.setArg(4, (int)A->shape[1]));
+  OCL_CHECK(err, err = kernel_range.setArg(0, *(A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_range.setArg(1, offset));
+  OCL_CHECK(err, err = kernel_range.setArg(2, (long int)A->size));
+  OCL_CHECK(err, err = kernel_range.setArg(3, (int)A->shape[0]));
+  OCL_CHECK(err, err = kernel_range.setArg(4, (int)A->shape[1]));
 
-        OCL_CHECK(err, err = q.enqueueTask(kernel_range, NULL, &event));
-        q.finish();
-    }
-    _profile_fpga(_FPGA_EYE, 1);
+  OCL_CHECK(err, err = q.enqueueTask(kernel_range, NULL, &event));
+  q.finish();
+#endif
+  _profile_fpga(_FPGA_EYE, 1);
 }
 
 // -----------------------------------------------------------------
