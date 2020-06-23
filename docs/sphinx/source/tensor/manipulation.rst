@@ -117,7 +117,21 @@ Dimension check
 
 .. code-block:: c++
 
-    bool isSquared(Tensor* A);
+    vector<int> v {3,3} // Desired shape
+    Tensor* tensor1 = Tensor::full(v, 10, DEV_CPU); // Creates 3x3 tensor filled with 10s
+    //tensor1 => [10,10,10
+    //            10,10,10
+    //            10,10,10]
+
+    bool sq = Tensor::isSquared(tensor1); //sq = true
+
+    vector<int> v2 {3,2} // Desired shape
+    Tensor* tensor2 = Tensor::full(v2, 10, DEV_CPU); // Creates 3x2 tensor filled with 10s
+    //tensor1 => [10,10
+    //            10,10
+    //            10,10]
+
+    bool sq2 = Tensor::isSquared(tensor2); //sq = false
 
 Changing array shape
 ---------------------
@@ -131,8 +145,15 @@ reshape
 
 .. code-block:: c++
 
-    void reshape_(const vector<int> &new_shape);
-    static Tensor* reshape(Tensor *A, const vector<int> &shape);
+    vector<int> v {3} // Initial shape
+    Tensor* tensor1 = Tensor::full(v, 10, DEV_CPU); // Creates 1D tensor filled with 10s
+    //tensor1 => [10,10,10]
+    
+    vector<int> v2 {1,3} // Desired shape
+    Tensor* tensor2 = reshape(tensor1, v2); //tensor2 has dimensions 1x3
+
+    tensor1->reshape_(v2); //Now tensor1 has dimensions 1x3
+    
     
 flatten
 ^^^^^^^^^^^^^^^
@@ -141,9 +162,13 @@ flatten
 .. doxygenfunction:: Tensor::flatten
 
 .. code-block:: c++
-
-    void flatten_();
-    static Tensor* flatten(Tensor *A);
+    
+    vector<int> v1 {1,3} // Desired shape
+    Tensor* tensor1 = Tensor::full(v, 10, DEV_CPU); // Creates 1x3 tensor filled with 10s
+    Tensor* tensor2 = Tensor::flatten(tensor1); //tensor2 is 1D with 3 components
+    
+    tensor1->flatten_(); //tensor1 is now 1D with 3 components
+    
 
 
 resize
@@ -226,7 +251,10 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    static Tensor* concat(const vector<Tensor*> t, unsigned int axis=0, Tensor* output=nullptr);
+   Tensor* t5 = Tensor::range(1, 0+3*2*2, 1.0f); t5->reshape_({3, 2, 2});
+   Tensor* t6 = Tensor::range(11, 10+3*2*2, 1.0f); t6->reshape_({3, 2, 2});
+   Tensor* t7 = Tensor::range(101, 100+3*2*2, 1.0f); t7->reshape_({3, 2, 2});
+   Tensor* t8 = Tensor::concat({t5, t6, t7}, 2); // concat of t5, t6 and t7
     
 
 Rearranging elements and transformations
@@ -238,8 +266,13 @@ shift
 .. doxygenfunction:: Tensor::shift
 
 .. code-block:: c++
+    
+    string fname = "../../examples/data/elephant.jpg";  // Some image
+    Tensor* t1 = Tensor::load(fname);
+    Tensor* t2 = new Tensor(t1->shape);
 
-    static void shift(Tensor *A,Tensor *B, vector<int> shift, string mode="constant", float constant=0.0f);
+    Tensor::shift(t1, t2, {50, 100}, WrappingMode::Constant, 0.0f); // Shifts t1 50 pixels in y and 100 in x.
+
     
 rotate
 ^^^^^^^^^^^^^^^
@@ -248,7 +281,11 @@ rotate
 
 .. code-block:: c++
 
-    static void rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center={0,0}, string mode="constant", float constant=0.0f);
+    string fname = "../../examples/data/elephant.jpg";  // Some image
+    Tensor* t1 = Tensor::load(fname);
+    Tensor* t2 = new Tensor(t1->shape);
+    Tensor* t3 = t2->clone();
+    Tensor::rotate(t2, t3, 60.0f, {0,0}, WrappingMode::Original); //Rotates t2 60 degrees
     
 scale
 ^^^^^^^^^^^^^^^
@@ -257,7 +294,12 @@ scale
 
 .. code-block:: c++
 
-    static void scale(Tensor *A, Tensor *B, vector<int> new_shape, string mode="nearest", float constant=0.0f);
+    string fname = "../../examples/data/elephant.jpg";  // Some image
+    Tensor* t1 = Tensor::load(fname);
+    Tensor* t2 = Tensor::zeros({1, 3, 100, 100});
+    Tensor::scale(t1, t2, {100, 100}); //Scale the image to 100x100 px
+
+    
     
 flip
 ^^^^^^^^^^^^^^^
@@ -266,7 +308,11 @@ flip
 
 .. code-block:: c++
 
-    static void flip(Tensor *A, Tensor *B, int axis=0);
+    string fname = "../../examples/data/elephant.jpg";  // Some image
+    Tensor* t1 = Tensor::load(fname);
+    Tensor* t2 = new Tensor(t1->shape);
+
+    Tensor::flip(t1, t2, 0); // Flip along vertical axis
     
 crop
 ^^^^^^^^^^^^^^^
@@ -275,8 +321,12 @@ crop
 
 .. code-block:: c++
 
-    static void crop(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant=0.0f);
-    
+    string fname = "../../examples/data/elephant.jpg";  // Some image
+    Tensor* t1 = Tensor::load(fname);
+    Tensor* t2 = new Tensor(t1->shape);
+
+    Tensor::crop(t1, t2, {0, 250}, {200, 450}); //Crop the rectangle formed by {0,250} and {200,450}
+
 crop_scale
 ^^^^^^^^^^^^^^^
 
@@ -284,7 +334,13 @@ crop_scale
 
 .. code-block:: c++
 
-    static void crop_scale(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, string mode="nearest", float constant=0.0f);
+
+    string fname = "../../examples/data/elephant.jpg";  // Some image
+    Tensor* t1 = Tensor::load(fname);
+    Tensor* t2 = new Tensor(t1->shape);
+
+    Tensor::crop_scale(t1, t2, {0, 250}, {200, 450});
+    
     
 cutout
 ^^^^^^^^^^^^^^^
@@ -293,7 +349,12 @@ cutout
 
 .. code-block:: c++
 
-    static void cutout(Tensor *A, Tensor *B, vector<int> coords_from, vector<int> coords_to, float constant=0.0f);
+    string fname = "../../examples/data/elephant.jpg";  // Some image
+    Tensor* t1 = Tensor::load(fname);
+    Tensor* t2 = new Tensor(t1->shape);
+
+    Tensor::cutout(t1, t2, {50, 100}, {100, 400});//Fill with zeros the rectangle formed by {50,100} and {100,400}
+
     
 
 Tensor Data Augmentation
@@ -306,7 +367,11 @@ shift_random
 
 .. code-block:: c++
 
-    static void shift_random(Tensor *A,Tensor *B, vector<float> factor_x, vector<float> factor_y, string mode="constant", float constant=0.0f);
+    string fname = "../../examples/data/elephant.jpg";  // Some image
+    Tensor* t1 = Tensor::load(fname);
+    Tensor* t2 = new Tensor(t1->shape);
+
+    Tensor::shift_random(t1, t2, {0,50}, {10,100}); //Shifts t1 with a random shift value in y between 0 and 50 and in x between 10 and 100.
     
 rotate_random
 ^^^^^^^^^^^^^^^
@@ -315,7 +380,11 @@ rotate_random
 
 .. code-block:: c++
 
-    static void rotate_random(Tensor *A, Tensor *B, vector<float> factor, vector<int> offset_center={0,0}, string mode="constant", float constant=0.0f);
+    string fname = "../../examples/data/elephant.jpg";  // Some image
+    Tensor* t1 = Tensor::load(fname);
+    Tensor* t2 = new Tensor(t1->shape);
+
+    static void rotate_random(t1, t2, {30,60}); //Rotate t1 with a random rotation factor between 30 and 60 degrees
     
 scale_random
 ^^^^^^^^^^^^^^^
@@ -324,7 +393,11 @@ scale_random
 
 .. code-block:: c++
 
-    static void scale_random(Tensor *A, Tensor *B, vector<float> factor, string mode="nearest", float constant=0.0f);
+    string fname = "../../examples/data/elephant.jpg";  // Some image
+    Tensor* t1 = Tensor::load(fname);
+    Tensor* t2 = new Tensor(t1->shape);
+
+    Tensor::scale_random(t1, t2, {10,20}); //Scale t1 with a random scale factor between 10 and 20
     
 flip_random
 ^^^^^^^^^^^^^^^
@@ -333,7 +406,11 @@ flip_random
 
 .. code-block:: c++
 
-    static void flip_random(Tensor *A, Tensor *B, int axis);
+    string fname = "../../examples/data/elephant.jpg";  // Some image
+    Tensor* t1 = Tensor::load(fname);
+    Tensor* t2 = new Tensor(t1->shape);
+
+    Tensor::flip_random(t1, t2, 0); //Flip t1 on vertical axis randomly
     
 crop_random
 ^^^^^^^^^^^^^^^
@@ -342,7 +419,11 @@ crop_random
 
 .. code-block:: c++
 
-    static void crop_random(Tensor *A, Tensor *B);
+    string fname = "../../examples/data/elephant.jpg";  // Some image
+    Tensor* t1 = Tensor::load(fname);
+    Tensor* t2 = new Tensor(t1->shape);
+
+    Tensor::crop_random(t1, t2); //Obtain a random crop from t1
     
 crop_scale_random
 ^^^^^^^^^^^^^^^^^^^
@@ -351,7 +432,11 @@ crop_scale_random
 
 .. code-block:: c++
 
-    static void crop_scale_random(Tensor *A, Tensor *B, vector<float> factor, string mode="nearest", float constant=0.0f);
+    string fname = "../../examples/data/elephant.jpg";  // Some image
+    Tensor* t1 = Tensor::load(fname);
+    Tensor* t2 = new Tensor(t1->shape);
+
+    Tensor::crop_scale_random(t1, t2, {10,20}); //Obtain a random crop from t1 and scale it randomly with a factor between 10 and 20
     
 cutout_random
 ^^^^^^^^^^^^^^^
@@ -360,7 +445,11 @@ cutout_random
 
 .. code-block:: c++
 
-    static void cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<float> factor_y, float constant=0.0f);
+    string fname = "../../examples/data/elephant.jpg";  // Some image
+    Tensor* t1 = Tensor::load(fname);
+    Tensor* t2 = new Tensor(t1->shape);
+
+    Tensor::cutout_random(t1, t2, {50,60}, {10,100});//Set to 0 pixels in a rectangle defined by a random height between 50 and 60 and a random width between 10 and 100
 
 Value operations
 -----------------
@@ -373,17 +462,31 @@ fill
 
 .. code-block:: c++
 
-    void fill_(float v);
-    static void fill(Tensor* A, float v);
-    static void fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc);
+    Tensor* t1 = Tensor::ones({3});
+    // t1 => [1,1,1]
 
+    Tensor::fill(t1, 50.0);
+    // t1 => [50,50,50]
+
+    Tensor* t2 = Tensor::zeros({3})
+    // t2 => [0,0,0]
+
+    Tensor::fill(t1, 0, 1, t2, 1, 2, 1);
+    // t2 => [0,50,50]
+
+
+    t2->fill_(3.0);
+    // t2 => [3,3,3]
+    
+    
 rand_uniform
 ^^^^^^^^^^^^^
 .. doxygenfunction:: Tensor::rand_uniform
 
 .. code-block:: c++
 
-    void rand_uniform(float v);
+    Tensor* t1 = Tensor::ones({3});
+    t1->rand_uniform(1.0);//Fills t1 with samples from a uniform distribution.
 
 
 
@@ -393,7 +496,8 @@ rand_signed_uniform
 
 .. code-block:: c++
 
-    void rand_signed_uniform(float v);
+    Tensor* t1 = Tensor::ones({3});
+    t1->rand_signed_uniform(float v);//Fills t1 with samples from a signed uniform distribution.
 
 
 rand_normal
@@ -402,7 +506,8 @@ rand_normal
 
 .. code-block:: c++
 
-    void rand_normal(float m, float s, bool fast_math=true);
+    Tensor* t1 = Tensor::ones({3});
+    t1->rand_normal(0, 1); //Fills t1 with samples from a normal distribution with mean 0 and std 1.
       
 
 
@@ -412,4 +517,5 @@ rand_binary
 
 .. code-block:: c++
 
-    void rand_binary(float v);
+    Tensor* t1 = Tensor::ones({3});
+    t1->rand_binary(1);//Fills t1 with samples from a binary distribution
