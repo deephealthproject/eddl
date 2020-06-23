@@ -47,8 +47,6 @@ void fpga_range(Tensor *A, float min, float step){
 // eye
 //
 void fpga_cpuemu_eye(Tensor *A, int offset) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
   cpu_eye(A, offset);
   fpga_copy_to_fpga(A->ptr, A);
 }
