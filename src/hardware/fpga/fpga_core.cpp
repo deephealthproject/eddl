@@ -58,8 +58,8 @@ cl::Kernel kernel_set_select2, kernel_deselect,    kernel_concat;
 // conv kernels (2)
 cl::Kernel kernel_im2col,      kernel_conv2d;
 
-// create kernels (2)
-cl::Kernel kernel_range, kernel_eye;
+// create kernels (3)
+cl::Kernel kernel_range, kernel_eye, kernel_diag;
 
 // da kernels (6)
 cl::Kernel kernel_single_shift, kernel_single_rotate, kernel_single_scale;
@@ -594,6 +594,10 @@ void fpga_init(){ // initialize only once
     OCL_CHECK(err, kernel_eye = cl::Kernel(program,"k_eye", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
+    #ifdef K_ENABLED_DIAG
+    OCL_CHECK(err, kernel_diag = cl::Kernel(program,"k_diag", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
     #ifdef K_ENABLED_SINGLE_SHIFT
     OCL_CHECK(err, kernel_single_shift = cl::Kernel(program,"k_single_shift", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
@@ -1062,10 +1066,6 @@ void fpga_copy_memory_from_fpga(cl::Buffer *ptr_fpga, void *ptr_cpu, long int si
 // all
 //
 void fpga_cpuemu_transpose(Tensor *A, Tensor *B) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
   fpga_copy_from_fpga(A, A->ptr);
   cpu_transpose(A, B);
   fpga_copy_to_fpga(B->ptr, B);
@@ -1111,8 +1111,6 @@ void fpga_copy(Tensor * A, Tensor * B){
 // fill_
 //
 void fpga_cpuemu_fill_(Tensor *A, float v) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
   cpu_fill_(A, v);
   fpga_copy_to_fpga(A->ptr, A);
 }
@@ -1139,10 +1137,6 @@ void fpga_fill_(Tensor *A, float v){
 // fill
 //
 void fpga_cpuemu_fill(Tensor *A, int aini, int aend, Tensor *B, int bini, int bend, int inc) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
   fpga_copy_from_fpga(A, A->ptr);
   cpu_fill(A, aini, aend, B, bini, bend, inc);
   fpga_copy_to_fpga(B->ptr, B);

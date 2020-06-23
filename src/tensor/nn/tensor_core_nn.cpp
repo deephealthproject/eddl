@@ -87,9 +87,10 @@ namespace tensorNN {
         }
 #endif
 #ifdef cFPGA
-        else {
-
-    }
+        else if (A->isFPGA() && B->isFPGA())
+        {
+            fpga_select_nn(A, B, sd);
+        }
 #endif
 
     }
@@ -105,9 +106,10 @@ namespace tensorNN {
         }
 #endif
 #ifdef cFPGA
-        else {
-
-    }
+        else if (A->isFPGA() && B->isFPGA())
+        {
+           fpga_select_back_nn(A, B, sd);
+        }
 #endif
 
     }
@@ -123,9 +125,10 @@ namespace tensorNN {
         }
 #endif
 #ifdef cFPGA
-        else {
-
-    }
+        else if (A->isFPGA() && B->isFPGA())
+        {
+            fpga_set_select_nn(A, B, sd);
+        }
 #endif
     }
 
@@ -141,9 +144,10 @@ namespace tensorNN {
         }
 #endif
 #ifdef cFPGA
-        else {
-
-    }
+        else if (A->isFPGA() && B->isFPGA())
+        {
+            fpga_set_select_back_nn(A, B, sd);
+        }
 #endif
 
     }

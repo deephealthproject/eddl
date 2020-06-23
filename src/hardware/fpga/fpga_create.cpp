@@ -20,8 +20,6 @@ char fpga_set_cpuemu_eye_       = 1;
 // range
 //
 void fpga_cpuemu_range(Tensor *A, float min, float step) {
-  int Asize = A->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
   cpu_range(A, min, step);
   fpga_copy_to_fpga(A->ptr, A);
 }
@@ -73,4 +71,30 @@ void fpga_eye(Tensor *A, int offset){
         q.finish();
     }
     _profile_fpga(_FPGA_EYE, 1);
+}
+
+// -----------------------------------------------------------------
+// diag
+//
+void fpga_cpuemu_diag(Tensor *A, Tensor *B, int k) {
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_diag(A, B, k);
+  fpga_copy_to_fpga(B->ptr, B);
+}
+
+void cpu_diag(Tensor *A, Tensor *B, int k){
+#ifndef K_ENABLED_DIAG
+  fpga_cpuemu_diag(A, B, k);
+#else
+  cl_int err;
+  cl::Event event;
+
+  OCL_CHECK(err, err = kernel_diag.setArg(0, *(A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_diag.setArg(1, *(B->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_diag.setArg(2, (long int)A->size));
+  OCL_CHECK(err, err = kernel_diag.setArg(3, (int)k);
+
+  OCL_CHECK(err, err = q.enqueueTask(kernel_diag, NULL, &event));
+  q.finish();
+#endif
 }

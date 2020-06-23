@@ -80,3 +80,72 @@ void fpga_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
     }
     _profile_fpga(_FPGA_D_REPEAT_NN, 1);
 }
+i
+// -------------------------------------------------------------------
+// select_nn
+//
+void fpga_cpuemu_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd) {
+  printf("cpuemu_select_nn not implemented yet\n");
+  exit(1);
+}
+
+void fpga_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
+#ifndef K_ENABLED_SELECT_NN
+  fpga_cpuemu_select_nn(A, B, sd);
+#else 
+  printf("fpga_select_nn not implemented yet\n");
+  exit(1);
+#endif
+}
+
+// ------------------------------------------------------------------
+// select_back_nn
+//
+void fpga_cpuemu_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd) {
+  printf("cpuemu_select_back_nn not implemented yet\n");
+  exit(1);
+}
+
+void fpga_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
+#ifndef K_ENABLED_SELECT_BACK_NN
+  fpga_cpuemu_select_back_nn(A, B, sd);
+#else
+  printf("fpga_select_back_nn not implemented yet\n");
+  exit(1);
+#endif
+}
+
+// -----------------------------------------------------------------
+// set_select_nn
+//
+void fpga_cpuemu_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd) {
+  printf("cpuemu_set_select_nn not implemented yet\n");
+  exit(1);
+}
+
+void fpga_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
+#ifndef K_ENABLED_SET_SELECT_NN
+  fpga_cpuemu_set_select_nn(A, B, sd);
+#else
+  printf("fpga_set_select_nn not implemented yet\n");
+  exit(1);
+#endif
+}
+
+// -----------------------------------------------------------------
+// set_select_back_nn
+//
+void fpga_cpuemu_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd) {
+  printf("cpuemu_set_select_back_nn not implemented yet\n");
+  exit(1);
+}
+
+void fpga_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
+#ifndef K_ENABLED_SET_SELECT_BACK_NN
+  fpga_cpuemu_set_select_back_nn(A, B, sd);
+#else
+  printf("fpga_set_select_back_nn not implemented yet\n");
+  exit(1);
+#endif
+}
+

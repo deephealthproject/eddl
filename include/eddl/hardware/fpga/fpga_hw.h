@@ -47,8 +47,8 @@ extern cl::Kernel kernel_set_select2, kernel_deselect,    kernel_concat;
 // conv kernels (2)
 extern cl::Kernel kernel_im2col,      kernel_conv2d;
 
-// create kernels (2)
-extern cl::Kernel kernel_range, kernel_eye;
+// create kernels (3)
+extern cl::Kernel kernel_range, kernel_eye, kernel_diag;
 
 // da kernels (6)
 extern cl::Kernel kernel_single_shift, kernel_single_rotate, kernel_single_scale;
@@ -122,9 +122,16 @@ void fpga_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivativ
 void fpga_repeat(Tensor *A, Tensor *B, vector<int> size);
 void fpga_d_repeat(Tensor *D, Tensor *A, vector<int> size);
 
+void fpga_select(Tensor *A, Tensor *B, SelDescriptor *sd);
+void fpga_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
+
+void fpga_set_select(Tensor *A, Tensor *B, SelDescriptor *sd);
+void fpga_set_select_back(Tensor *A, Tensor *B, SelDescriptor *sd);
+
 // CPU: Create
 void fpga_range(Tensor *A, float min, float step);
 void fpga_eye(Tensor *A, int offset);
+void fpga_diag(Tensor *A, Tensor *B, int k);
 
 // CPU: Generator
 void fpga_rand_uniform(Tensor *A, float v);
