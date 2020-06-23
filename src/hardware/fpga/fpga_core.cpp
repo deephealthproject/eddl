@@ -72,8 +72,8 @@ cl::Kernel kernel_rand_uniform, kernel_signed_uniform, kernel_rand_binary, kerne
 // losses kernels (1)
 cl::Kernel kernel_cent;
 
-// metrics kernels (1)
-cl::Kernel kernel_accuracy;
+// metrics kernels (22)
+cl::Kernel kernel_accuracy, kernel_bin_accuracy;
 
 // pool kernels (4)
 cl::Kernel kernel_mpool2D, kernel_mpool2D_back, kernel_avgpool2D, kernel_avgpool2D_back;
@@ -640,6 +640,10 @@ void fpga_init(){ // initialize only once
     #endif
     #ifdef K_ENABLED_ACCURACY
     OCL_CHECK(err, kernel_accuracy = cl::Kernel(program,"k_accuracy", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_BIN_ACCURACY
+    OCL_CHECK(err, kernel_bin_accuracy = cl::Kernel(program,"k_bin_accuracy", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_MPOOL2D

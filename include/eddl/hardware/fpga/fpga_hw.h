@@ -61,8 +61,8 @@ extern cl::Kernel kernel_rand_uniform, kernel_signed_uniform, kernel_rand_binary
 // losses kernels (1)
 extern cl::Kernel kernel_cent;
 
-// metrics kernels (1)
-extern cl::Kernel kernel_accuracy;
+// metrics kernels (2)
+extern cl::Kernel kernel_accuracy, kernel_bin_accuracy;
 
 // pool kernels (4)
 extern cl::Kernel kernel_mpool2D, kernel_mpool2D_back, kernel_avgpool2D, kernel_avgpool2D_back;
