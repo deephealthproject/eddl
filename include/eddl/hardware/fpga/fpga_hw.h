@@ -38,6 +38,8 @@ extern cl::Kernel kernel_isnan,       kernel_isneginf,   kernel_isposinf,    ker
 extern cl::Kernel kernel_logical_and, kernel_logical_or, kernel_logical_not, kernel_logical_xor;
 extern cl::Kernel kernel_allclose,    kernel_isclose,    kernel_greater,     kernel_greater_equal;
 extern cl::Kernel kernel_less,        kernel_less_equal, kernel_equal,       kernel_not_equal;
+extern cl::Kernel kernel_greater_vector, kernel_greater_equal_vector, kernel_less_vector;
+extern cl::Kernel kernel_less_equal_vector, kernel_equal_vector, kernel_not_equal_vector;
 
 // core kernels (11)
 extern cl::Kernel kernel_transpose,   kernel_copy,        kernel_fill_,      kernel_fill;
@@ -212,6 +214,9 @@ int fpga_argmax(Tensor *A);
 void fpga_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 std::tuple<float, int> fpga_max(float *ptr, int size, int *map);
 
+// FPGA: Logic functions: Truth value testing
+void fpga_where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C);
+
 float fpga_min(Tensor *A);
 void fpga_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 int fpga_argmin(Tensor *A);
@@ -291,10 +296,15 @@ void fpga_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool 
 void fpga_greater(Tensor *A, Tensor *B, Tensor *C);
 void fpga_greater_equal(Tensor *A, Tensor *B, Tensor *C);
 void fpga_less(Tensor *A, Tensor *B, Tensor *C);
-void fpga_less(Tensor *A, Tensor *B, float v);
 void fpga_less_equal(Tensor *A, Tensor *B, Tensor *C);
 void fpga_equal(Tensor *A, Tensor *B, Tensor *C);
 void fpga_not_equal(Tensor *A, Tensor *B, Tensor *C);
+void cpu_greater(Tensor *A, Tensor *B, float v);
+void cpu_greater_equal(Tensor *A, Tensor *B, float v);
+void cpu_less(Tensor *A, Tensor *B, float v);
+void cpu_less_equal(Tensor *A, Tensor *B, float v);
+void cpu_equal(Tensor *A, Tensor *B, float v);
+void cpu_not_equal(Tensor *A, Tensor *B, float v);
 
 // Legacy
 int fpga_equal2(Tensor *A, Tensor *B, float epsilon);

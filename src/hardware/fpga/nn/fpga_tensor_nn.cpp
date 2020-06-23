@@ -80,7 +80,7 @@ void fpga_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
     }
     _profile_fpga(_FPGA_D_REPEAT_NN, 1);
 }
-i
+
 // -------------------------------------------------------------------
 // select_nn
 //

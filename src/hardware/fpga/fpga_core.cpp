@@ -49,6 +49,8 @@ cl::Kernel kernel_isnan,       kernel_isneginf,   kernel_isposinf,    kernel_equ
 cl::Kernel kernel_logical_and, kernel_logical_or, kernel_logical_not, kernel_logical_xor;
 cl::Kernel kernel_allclose,    kernel_isclose,    kernel_greater,     kernel_greater_equal;
 cl::Kernel kernel_less,        kernel_less_equal, kernel_equal,       kernel_not_equal;
+cl::Kernel kernel_greater_vector, kernel_greater_equal_vector, kernel_less_vector;
+cl::Kernel kernel_less_equal_vector, kernel_equal_vector, kernel_not_equal_vector;
 
 // core kernels (11)
 cl::Kernel kernel_transpose,   kernel_copy,        kernel_fill_,      kernel_fill;
@@ -530,6 +532,33 @@ void fpga_init(){ // initialize only once
     OCL_CHECK(err, kernel_not_equal = cl::Kernel(program,"k_not_equal", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
+
+   #ifdef K_ENABLED_GREATER_VECTOR
+    OCL_CHECK(err, kernel_greater_vector = cl::Kernel(program,"k_greater_vector", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_GREATER_EQUAL_VECTOR
+    OCL_CHECK(err, kernel_greater_equal_vector = cl::Kernel(program,"k_greater_equal_vecotr", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_LESS_VECTOR
+    OCL_CHECK(err, kernel_less_vector = cl::Kernel(program,"k_less_vector", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_LESS_EQUAL_VECTOR
+    OCL_CHECK(err, kernel_less_equal_vector = cl::Kernel(program,"k_less_equal_vector", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_EQUAL_VECTOR
+    OCL_CHECK(err, kernel_equal_vector = cl::Kernel(program,"k_equal_vector", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_NOT_EQUAL_VECTOR
+    OCL_CHECK(err, kernel_not_equal_vector = cl::Kernel(program,"k_not_equal_vector", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+
+
     #ifdef K_ENABLED_EQUAL2
     OCL_CHECK(err, kernel_equal2 = cl::Kernel(program,"k_equal2", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
