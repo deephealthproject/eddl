@@ -22,26 +22,10 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-// emulation switches of functions (via cpu)
-// when set the function is run on the cpu
-char fpga_set_cpuemu_shift              = 1;
-char fpga_set_cpuemu_rotate             = 1;
-char fpga_set_cpuemu_scale              = 1;
-char fpga_set_cpuemu_flip               = 1;
-char fpga_set_cpuemu_crop               = 1;
-char fpga_set_cpuemu_crop_scale         = 1;
-char fpga_set_cpuemu_shift_random       = 1;
-char fpga_set_cpuemu_flip_random        = 1;
-char fpga_set_cpuemu_crop_random        = 1;
-char fpga_set_cpuemu_rotate_random      = 1;
-char fpga_set_cpuemu_scale_random       = 1;
-char fpga_set_cpuemu_crop_scale_random  = 1;
-char fpga_set_cpuemu_cutout_random      = 1;
-
 // CPU: Data augmentation (2D Optimized) ********************************************
 
 // -----------------------------------------------------------------
-// single_shift
+// shift
 //
 void fpga_cpuemu_shift(Tensor *A, Tensor *B, vector<int> shift, int mode, float constant) {
   fpga_copy_from_fpga(A, A->ptr);
@@ -54,7 +38,34 @@ void fpga_shift(Tensor *A, Tensor *B, vector<int> shift, int mode, float constan
 #ifndef K_ENABLED_SHIFT
   fpga_cpuemu_shift(A, B, shift, mode, constant);
 #else
-  printf("fpga_shift ate not implemented yet\n"); exit(1);
+  cl_int err;
+  cl::Event event;
+
+  OCL_CHECK(err, err = kernel_shift.setArg(0, *(A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_shift.setArg(1, *(B->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_shift.setArg(2, A->shape[0]));
+  OCL_CHECK(err, err = kernel_shift.setArg(3, A->shape[1]));
+  OCL_CHECK(err, err = kernel_shift.setArg(4, A->shape[2]));
+  OCL_CHECK(err, err = kernel_shift.setArg(5, A->shape[3]));
+  OCL_CHECK(err, err = kernel_shift.setArg(6, B->shape[0]));
+  OCL_CHECK(err, err = kernel_shift.setArg(7, B->shape[1]));
+  OCL_CHECK(err, err = kernel_shift.setArg(8, B->shape[2]));
+  OCL_CHECK(err, err = kernel_shift.setArg(9, B->shape[3]));
+  OCL_CHECK(err, err = kernel_shift.setArg(10, A->stride[0]));
+  OCL_CHECK(err, err = kernel_shift.setArg(11, A->stride[1]));
+  OCL_CHECK(err, err = kernel_shift.setArg(12, A->stride[2]));
+  OCL_CHECK(err, err = kernel_shift.setArg(13, A->stride[3]));
+  OCL_CHECK(err, err = kernel_shift.setArg(14, B->stride[0]));
+  OCL_CHECK(err, err = kernel_shift.setArg(15, B->stride[1]));
+  OCL_CHECK(err, err = kernel_shift.setArg(16, B->stride[2]));
+  OCL_CHECK(err, err = kernel_shift.setArg(17, B->stride[3]));
+  OCL_CHECK(err, err = kernel_shift.setArg(18, shift[0]));
+  OCL_CHECK(err, err = kernel_shift.setArg(19, shift[1]));
+  OCL_CHECK(err, err = kernel_shift.setArg(20, mode));
+  OCL_CHECK(err, err = kernel_shift.setArg(21, constant));
+
+  OCL_CHECK(err, err = q.enqueueTask(kernel_shift, NULL, &event));
+  q.finish();
 #endif
   _profile_fpga(_FPGA_SHIFT, 1);
 }
@@ -73,7 +84,6 @@ void fpga_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, i
 #ifndef K_ENABLED_ROTATE
   fpga_cpuemu_rotate(A, B, angle, offset_center, mode, constant);
 #else
-  printf("fpga_rotate ate not implemented yet\n"); exit(1);
 #endif
   _profile_fpga(_FPGA_ROTATE, 1);
 }

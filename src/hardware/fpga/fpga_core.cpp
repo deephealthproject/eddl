@@ -1105,7 +1105,16 @@ void fpga_transpose(Tensor * A, Tensor * B) {
 #ifndef K_ENABLED_TRANSPOSE
     fpga_cpuemu_transpose(A, B);
 #else
-    printf("fpga_transpose not implemented yet\n"); exit(1);
+    cl_int err;
+    cl::Event event;
+
+    OCL_CHECK(err, err = kernel_transpose.setArg(0, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_transpose.setArg(1, *(B->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_transpose.setArg(2, (long int)A->size));
+
+    OCL_CHECK(err, err = q.enqueueTask(kernel_transpose, NULL, &event));
+    q.finish();
+
 #endif
     _profile_fpga(_FPGA_TRANSPOSE, 1);
 }
@@ -1114,10 +1123,6 @@ void fpga_transpose(Tensor * A, Tensor * B) {
 // copy
 //
 void fpga_cpuemu_copy(Tensor *A, Tensor *B) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
   fpga_copy_from_fpga(A, A->ptr);
   cpu_copy(A, B);
   fpga_copy_to_fpga(B->ptr, B);

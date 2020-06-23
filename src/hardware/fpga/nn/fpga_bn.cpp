@@ -16,13 +16,6 @@
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 #include "eddl/hardware/fpga/fpga_hw.h"
 
-// emulation switches of functions (via cpu)
-// when set the function is run on the cpu
-char fpga_set_cpuemu_permute_channels_last  = 1;
-char fpga_set_cpuemu_permute_channels_first = 1;
-char fpga_set_cpuemu_permute_batch_last     = 1;
-char fpga_set_cpuemu_permute_batch_first    = 1;
-
 // -----------------------------------------------------------------
 // permute_channels_last
 //

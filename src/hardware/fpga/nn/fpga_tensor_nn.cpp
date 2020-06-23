@@ -37,8 +37,11 @@ void fpga_repeat_nn(Tensor *A, Tensor *B, vector<int> size){
 
   OCL_CHECK(err, err = kernel_repeat_nn.setArg(0, *(A->fpga_ptr)));
   OCL_CHECK(err, err = kernel_repeat_nn.setArg(1, *(B->fpga_ptr)));
-  printf("error, parameter fpga\n");
-  // OCL_CHECK(err, err = kernel_repeat_nn.setArg(2, (int)size->fpga_ptr));
+  OCL_CHECK(err, err = kernel_repeat_nn.setArg(2, B->shape[3]));
+  OCL_CHECK(err, err = kernel_repeat_nn.setArg(3, B->size));
+  OCL_CHECK(err, err = kernel_repeat_nn.setArg(4, size[0]));
+  OCL_CHECK(err, err = kernel_repeat_nn.setArg(5, size[1]));
+  OCL_CHECK(err, err = kernel_repeat_nn.setArg(6, A->shape[3]));
 
   OCL_CHECK(err, err = q.enqueueTask(kernel_repeat_nn, NULL, &event));
   q.finish();
@@ -65,8 +68,11 @@ void fpga_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
 
   OCL_CHECK(err, err = kernel_d_repeat_nn.setArg(0, *(D->fpga_ptr)));
   OCL_CHECK(err, err = kernel_d_repeat_nn.setArg(1, *(A->fpga_ptr)));
-  // OCL_CHECK(err, err = kernel_d_repeat_nn.setArg(2, (int)size->fpga_ptr));
-  printf("error, parameter fpga\n");
+  OCL_CHECK(err, err = kernel_d_repeat_nn.setArg(2, D->shape[3]));
+  OCL_CHECK(err, err = kernel_d_repeat_nn.setArg(3, D->size));
+  OCL_CHECK(err, err = kernel_d_repeat_nn.setArg(4, size[0]));
+  OCL_CHECK(err, err = kernel_d_repeat_nn.setArg(5, size[1]));
+  OCL_CHECK(err, err = kernel_d_repeat_nn.setArg(6, A->shape[3]));
   OCL_CHECK(err, err = q.enqueueTask(kernel_d_repeat_nn, NULL, &event));
   q.finish();
 #endif
@@ -77,16 +83,28 @@ void fpga_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size){
 // select_nn
 //
 void fpga_cpuemu_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd) {
-  printf("cpuemu_select_nn not implemented yet\n");
-  exit(1);
+  fpga_copy_from_fpga(A, A->ptr);
+  fpga_copy_memory_from_fpga(sd->addresses_fpga_ptr, sd->cpu_addresses);
+  cpu_select_nn(A, B, sd);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
 #ifndef K_ENABLED_SELECT_NN
   fpga_cpuemu_select_nn(A, B, sd);
 #else
-  printf("fpga_select_nn not implemented yet\n");
-  exit(1);
+  cl_int err;
+  cl::Event event;
+
+  OCL_CHECK(err, err = kernel_select_nn.setArg(0, *A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_select_nn.setArg(1, *B->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_select_nn.setArg(2, B->shape[0]));
+  OCL_CHECK(err, err = kernel_select_nn.setArg(3, A->stride[0]));
+  OCL_CHECK(err, err = kernel_select_nn.setArg(4, B->stride[0]));
+  OCL_CHECK(err, err = kernel_select_nn.setArg(5, *sd->addresses_fpga_ptr));
+
+  OCL_CHECK(err, err = q.enqueueTask(kernel_select_nn, NULL, &event));
+  q.finish();
 #endif
 }
 
@@ -94,16 +112,28 @@ void fpga_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
 // select_back_nn
 //
 void fpga_cpuemu_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd) {
-  printf("cpuemu_select_back_nn not implemented yet\n");
-  exit(1);
+  fpga_copy_from_fpga(A, A->ptr);
+  fpga_copy_memory_from_fpga(sd->addresses_fpga_ptr, sd->cpu_addresses);
+  cpu_select_back_nn(A, B, sd);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
 #ifndef K_ENABLED_SELECT_BACK_NN
   fpga_cpuemu_select_back_nn(A, B, sd);
 #else
-  printf("fpga_select_back_nn not implemented yet\n");
-  exit(1);
+  cl_int err;
+  cl::Event event;
+
+  OCL_CHECK(err, err = kernel_select_back_nn.setArg(0, *A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_select_back_nn.setArg(1, *B->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_select_back_nn.setArg(2, A->shape[0]));
+  OCL_CHECK(err, err = kernel_select_back_nn.setArg(3, A->stride[0]));
+  OCL_CHECK(err, err = kernel_select_back_nn.setArg(4, B->stride[0]));
+  OCL_CHECK(err, err = kernel_select_back_nn.setArg(5, *sd->addresses_fpga_ptr));
+
+  OCL_CHECK(err, err = q.enqueueTask(kernel_select_back_nn, NULL, &event));
+  q.finish();
 #endif
 }
 
@@ -111,16 +141,28 @@ void fpga_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
 // set_select_nn
 //
 void fpga_cpuemu_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd) {
-  printf("cpuemu_set_select_nn not implemented yet\n");
-  exit(1);
+  fpga_copy_from_fpga(A, A->ptr);
+  fpga_copy_memory_from_fpga(sd->addresses_fpga_ptr, sd->cpu_addresses);
+  cpu_set_select_nn(A, B, sd);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
 #ifndef K_ENABLED_SET_SELECT_NN
   fpga_cpuemu_set_select_nn(A, B, sd);
 #else
-  printf("fpga_set_select_nn not implemented yet\n");
-  exit(1);
+  cl_int err;
+  cl::Event event;
+
+  OCL_CHECK(err, err = kernel_set_select_nn.setArg(0, *A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_set_select_nn.setArg(1, *B->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_set_select_nn.setArg(2, B->shape[0]));
+  OCL_CHECK(err, err = kernel_set_select_nn.setArg(3, A->stride[0]));
+  OCL_CHECK(err, err = kernel_set_select_nn.setArg(4, B->stride[0]));
+  OCL_CHECK(err, err = kernel_set_select_nn.setArg(5, *sd->addresses_fpga_ptr));
+
+  OCL_CHECK(err, err = q.enqueueTask(kernel_set_select_nn, NULL, &event));
+  q.finish();
 #endif
 }
 
@@ -128,15 +170,27 @@ void fpga_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
 // set_select_back_nn
 //
 void fpga_cpuemu_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd) {
-  printf("cpuemu_set_select_back_nn not implemented yet\n");
-  exit(1);
+  fpga_copy_from_fpga(A, A->ptr);
+  fpga_copy_memory_from_fpga(sd->addresses_fpga_ptr, sd->cpu_addresses);
+  cpu_select_select_back_nn(A, B, sd);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
 #ifndef K_ENABLED_SET_SELECT_BACK_NN
   fpga_cpuemu_set_select_back_nn(A, B, sd);
 #else
-  printf("fpga_set_select_back_nn not implemented yet\n");
-  exit(1);
+  cl_int err;
+  cl::Event event;
+
+  OCL_CHECK(err, err = kernel_set_select_back_nn.setArg(0, *A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_set_select_back_nn.setArg(1, *B->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_set_select_back_nn.setArg(2, B->shape[0]));
+  OCL_CHECK(err, err = kernel_set_select_back_nn.setArg(3, A->stride[0]));
+  OCL_CHECK(err, err = kernel_set_select_back_nn.setArg(4, B->stride[0]));
+  OCL_CHECK(err, err = kernel_set_select_back_nn.setArg(5, *sd->addresses_fpga_ptr));
+
+  OCL_CHECK(err, err = q.enqueueTask(kernel_set_select_back_nn, NULL, &event));
+  q.finish();
 #endif
 }

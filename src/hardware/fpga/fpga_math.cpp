@@ -950,12 +950,6 @@ void fpga_trunc(Tensor *A, Tensor *B){
 // add
 //
 void fpga_cpuemu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  int Csize = C->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
-  if (C->ptr == NULL) C->ptr = (float *)malloc(Csize);
   fpga_copy_from_fpga(A, A->ptr);
   fpga_copy_from_fpga(B, B->ptr);
   cpu_add(scA, A, scB, B, C, incC);
@@ -988,10 +982,6 @@ void fpga_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
 // inc
 //
 void fpga_cpuemu_inc(Tensor *A, Tensor *B) {
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
   fpga_copy_from_fpga(A, A->ptr);
   cpu_inc(A, B);
   fpga_copy_to_fpga(B->ptr, B);
