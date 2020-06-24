@@ -20,8 +20,9 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    Tensor* nonzero(bool sort_indices=false);
-
+    Tensor* t1 = new Tensor::Tensor({0,10,20,0,50,0}, {6}, DEV_CPU);
+    Tensor* indices = t1->nonzero(true); //Return, sorted, the indices whose values are not zero
+    // indices => [1,2,4]
 
 where
 ^^^^^^^^^
@@ -84,9 +85,18 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    void sort_(bool descending=false, bool stable=true);
-    Tensor* sort(bool descending=false, bool stable=true);
-    static void sort(Tensor* A, Tensor* B, bool descending=false, bool stable=true);
+    Tensor* t1 = new Tensor::Tensor({100,90,0,50,3,1}, {6}, DEV_CPU);
+
+    Tensor* sorted1 = t1->sort(); //Sort ascending
+    // sorted1 => [0,1,3,50,90,100]
+
+    Tensor* sorted2;
+    Tensor::sort(t1, sorted2, true); // Sort descending
+    // sorted2 => [100,90,50,3,1,0]
+
+    t1->sort_();//Sort ascending inplace
+    // t1 => [0,1,3,50,90,100]
+    
 
 
 argsort
@@ -101,8 +111,14 @@ Example:
 .. code-block:: c++
    :linenos:
 
-    void argsort(bool descending=false, bool stable=true);
-    Tensor* argsort(bool descending=false, bool stable=true);
+    Tensor* t1 = new Tensor::Tensor({100,90,0,50,3,1}, {6}, DEV_CPU);
+
+    Tensor* sorted_indices = t1->argsort(); //Sort indices ascending
+    // sorted_indices => [2,5,4,3,1,0]
+
+    Tensor* sorted_indices2;
+    Tensor::argsort(t1, sorted_indices2, true); //Sort indices descending
+    // sorted_indices => [0,1,3,4,5,2]
 
 
 
