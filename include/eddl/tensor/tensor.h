@@ -158,7 +158,7 @@ public:
     void updateShape(const vector<int> &new_shape);
     void updateSize();
     void updateStrides();
-    void updateData(float* ptr);
+    void updateData(float* ptr, void *ptr2=NULL);
     void deleteData();
 
     /**
@@ -2567,7 +2567,7 @@ public:
       *
       *  @return
     */
-    void resize(int b, float *fptr=nullptr);
+    void resize(int b, float *fptr=nullptr, void *fptr2=nullptr);
 
 
     // ***********************************************************
