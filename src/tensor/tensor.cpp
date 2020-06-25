@@ -338,7 +338,7 @@ void Tensor::toGPU(int dev){
 
 void Tensor::toFPGA(int dev){
 #ifdef cFPGA
-    if (isCPU()) {
+    if (this->isCPU()) {
         this->device = dev;
         this->fpga_device = this->device - DEV_FPGA;
 
@@ -355,7 +355,7 @@ void Tensor::toFPGA(int dev){
 	// we do not remove the cpu_ptr as is used for cpuemu mode
         //delete cpu_ptr;
     }
-    else if (isFPGA())
+    else if (this->isFPGA())
     {
 //        printf("Tensor already in FPGA\n");
     }
