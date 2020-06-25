@@ -30,20 +30,42 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options a
 
 
 ###########################################################################
-############################# SET LIBRARY #################################
+############################### GET FILES #################################
 ###########################################################################
 
 # C++ files
 file(GLOB_RECURSE PUBLIC_HEADERS "${PROJECT_SOURCE_DIR}/include/*" *.{h, hpp})
 file(GLOB_RECURSE CPP_HEADERS "${PROJECT_SOURCE_DIR}/src/*" *.{h, hpp})
 file(GLOB_RECURSE CPP_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cc, cpp})
-file(GLOB_RECURSE CUDA_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cu})
 
-set(CPP_SOURCES ${CPP_SOURCES} ${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx.pb.cc)
-set(CPP_HEADERS ${CPP_HEADERS} ${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx.pb.h)
+SET(ALL_FILES ${PUBLIC_HEADERS} ${CPP_HEADERS} ${CPP_SOURCES})
+
+# Setup-dependent  files (dependent on the setup)  ########################
+# ONNX (these files might not exist yet)
+set(ONNX_FILES ${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx.pb.h
+               ${PROJECT_SOURCE_DIR}/src/serialization/onnx/onnx.pb.cc)
+
+# CUDA
+file(GLOB_RECURSE CUDA_HEADERS "${PROJECT_SOURCE_DIR}/include/eddl/hardware/gpu/*" *.{h, hpp})
+file(GLOB_RECURSE CUDA_SOURCES "${PROJECT_SOURCE_DIR}/src/hardware/gpu/*" *.{cu})
+
+# FPGA
+file(GLOB_RECURSE FPGA_HEADERS "${PROJECT_SOURCE_DIR}/include/eddl/hardware/fpga/*" *.{h, hpp})
+file(GLOB_RECURSE FPGA_SOURCES "${PROJECT_SOURCE_DIR}/src/hardware/fpga/*" *.{cc, cpp})
+
+# Remove setup-dependent files (later we'll add the ones we need)
+SET(SPECIAL_FILES ${CUDA_HEADERS} ${CUDA_SOURCES} ${FPGA_HEADERS} ${FPGA_SOURCES})
+FOREACH(item ${SPECIAL_FILES})
+    LIST(REMOVE_ITEM ALL_FILES ${item})
+ENDFOREACH(item)
+
+
+###########################################################################
+############################# SET LIBRARY #################################
+###########################################################################
 
 # Make an automatic library - will be static or dynamic based on user setting
-add_library(${PROJECT_NAME} ${PUBLIC_HEADERS} ${CPP_HEADERS} ${CPP_SOURCES})
+add_library(${PROJECT_NAME} ${ALL_FILES})
 
 # We need this directory, and users of our library will need it too
 target_include_directories(${PROJECT_NAME}
@@ -62,7 +84,7 @@ target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
 
 if(MSVC)
     # Install the debug library with "d" suffix
-    set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d") 
+    set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d")
 endif()
 
 ###########################################################################
@@ -126,6 +148,10 @@ if(BUILD_PROTOBUF)
                     Alternatively, you can disable it with '-D BUILD_PROTOBUF=OFF")
         endif()
     endif()
+
+    # Add extra files
+    target_sources(${PROJECT_NAME} PRIVATE ${ONNX_FILES})
+
     # target_include_directories(${PROJECT_NAME} PRIVATE ${Protobuf_INCLUDE_DIRS})
     target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
     # target_link_directories(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES_DIRS})
@@ -192,7 +218,8 @@ if(USE_CUDA)
         enable_language(CUDA)
         add_definitions(-DcGPU)
 
-        target_sources(${PROJECT_NAME} PRIVATE ${CUDA_SOURCES})
+        # Add extra files
+        target_sources(${PROJECT_NAME} PRIVATE ${CUDA_HEADERS} ${CUDA_SOURCES})
 
         # Target properties
         set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -241,6 +268,9 @@ if(USE_FPGA)
         # TODO: Why this? Flags should be specific
         #set(CMAKE_CXX_FLAGS ${CMAKE_C_FLAGS}")  # DO NOT REPLACE "CMAKE_CXX_FLAGS
         set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS})
+
+        # Add extra files
+        target_sources(${PROJECT_NAME} PRIVATE ${FPGA_HEADERS} ${FPGA_SOURCES})
 
     else()
         message(WARNING "OpenCL not found but requested during compilation. (Falling back to: '-D BUILD_TARGET=CPU')
