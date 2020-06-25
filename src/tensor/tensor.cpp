@@ -266,7 +266,7 @@ void Tensor::updateData(float *fptr){
 }
 
 void Tensor::toCPU(int dev){
-    float *cpu_ptr;
+    float *cpu_ptr = nullptr;
 
 #ifdef cGPU
     if (this->isGPU()){

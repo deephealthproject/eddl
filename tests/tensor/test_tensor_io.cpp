@@ -227,13 +227,15 @@ TEST(TensorTestSuite, tensor_io_bmp)
     Tensor *t_ref = Tensor::concat({t_image, t_image, t_image}); // This jpeg needs 3 channels
     t_ref->reshape_({3, 10, 10});  // This jpeg needs 3 channels
     t_ref->save(fname);  // All values are cast to integers
+    t_ref->print(0);
 
     // Load saved file
     Tensor* t_load = Tensor::load(fname);
+    t_load->print(0);
 
-    // Delete file
-    int hasFailed = std::remove(fname.c_str());
-    if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
+//    // Delete file
+//    int hasFailed = std::remove(fname.c_str());
+//    if(hasFailed) { cout << "Error deleting file: " << fname << endl; }
 
     ASSERT_TRUE(Tensor::equivalent(t_ref, t_load, 10e-0));
 }
