@@ -103,9 +103,11 @@ public:
     Tensor *gpugK; // gradient kernels
     Tensor *gpuD; // Delta
 
+#ifdef cFPGA
     // FPGA implementation
     cl::Buffer *fpga_ptrI;
     long int fpga_sizeI;
+#endif
 
     ConvolDescriptor();
 

@@ -31,7 +31,7 @@ public:
     int* fpga_addresses;  // TODO: Is this used?
 
 // TODO: I don't like this
-#ifdef cGPU
+#ifdef cFPGA
     cl::Buffer *fpga_ptr;
 #endif
 
@@ -89,7 +89,9 @@ public:
     int size_reduction;
 
     // fpga
+    #ifdef cFPGA
     cl::Buffer *fpga_index;
+    #endif
 
     ReduceDescriptor2(const vector<int>& axis, bool keepdims, int dev);
 
