@@ -275,6 +275,16 @@ void Tensor::toCPU(int dev){
 
         // Copy GPU data to CPU
         gpu_copy_from_gpu(this, cpu_ptr);
+
+        // Delete GPU data
+        this->deleteData();
+
+        // Assign CPU pointer
+        this->device = dev;  // Must appear after deleting the data
+        this->ptr = cpu_ptr;
+        if (ndim == 2) {
+            ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(cpu_ptr, shape[1], shape[0]);
+        }
     }
 #endif
 #ifdef cFPGA
@@ -300,14 +310,14 @@ void Tensor::toCPU(int dev){
     }
 #endif
 
-#if defined(cGPU) || defined(cFPGA)
-    // Delete devices data
-    deleteData();
-
-    // Assign CPU pointer
-    updateDevice(dev);  // Must appear after deleting the data
-    updateData(cpu_ptr);
-#endif
+//#if defined(cGPU) || defined(cFPGA)
+//    // Delete devices data
+//    deleteData();
+//
+//    // Assign CPU pointer
+//    updateDevice(dev);  // Must appear after deleting the data
+//    updateData(cpu_ptr);
+//#endif
 }
 
 void Tensor::toGPU(int dev){
