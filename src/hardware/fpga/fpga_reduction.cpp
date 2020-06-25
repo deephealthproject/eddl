@@ -7,11 +7,12 @@
 * All rights reserved
 */
 
+#ifdef cFPGA
 
 #include <stdexcept>
 
 #include "eddl/hardware/fpga/fpga_hw.h"
-#include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/cpu/cpu_tensor.h"
 
 extern cl::CommandQueue q;
 extern cl::Kernel reduce_sum2D;
@@ -28,34 +29,29 @@ char fpga_set_cpuemu_reduction_back  = 1;
 //
 void fpga_cpuemu_reduce(Tensor *A, Tensor *B, string mode, int* map) {
   // TODO: map should be mapped to FPGA
-  int Asize = A->size * sizeof(float);
-  int Bsize = B->size * sizeof(float);
-  if (A->ptr == NULL) A->ptr = (float *)malloc(Asize);
-  if (B->ptr == NULL) B->ptr = (float *)malloc(Bsize);
   fpga_copy_from_fpga(A, A->ptr);
   cpu_reduce(A, B, mode, map);
   fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_reduce(Tensor *A, Tensor *B, string mode, int *map)
-{
+void fpga_reduce(Tensor *A, Tensor *B, string mode, int *map){
   _profile_fpga(_FPGA_REDUCE, 0);
-  if (fpga_set_cpuemu_reduce == 1) {
-      fpga_cpuemu_reduce(A, B, mode, map);
-  } else {
-      cl_int err;
-      cl::Event event;
+#ifndef K_ENABLED_REDUCE
+  fpga_cpuemu_reduce(A, B, mode, map);
+#else
+  cl_int err;
+  cl::Event event;
 
-      OCL_CHECK(err, err = kernel_reduce.setArg(0, *(A->fpga_ptr)));
-      OCL_CHECK(err, err = kernel_reduce.setArg(1, *(B->fpga_ptr)));
-//      OCL_CHECK(err, err = kernel_reduce.setArg(2, (int)mode));
-      printf("Error, mode parameter not passed\n"); exit(1);
-//      OCL_CHECK(err, err = kernel_reduce.setArg(3, (int)map));
-      printf("Error, map pointer not passed\n"); exit(1);
+  OCL_CHECK(err, err = kernel_reduce.setArg(0, *(A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_reduce.setArg(1, *(B->fpga_ptr)));
+  // OCL_CHECK(err, err = kernel_reduce.setArg(2, (int)mode));
+  printf("Error, mode parameter not passed\n"); exit(1);
+  // OCL_CHECK(err, err = kernel_reduce.setArg(3, (int)map));
+  printf("Error, map pointer not passed\n"); exit(1);
 
-      OCL_CHECK(err, err = q.enqueueTask(kernel_reduce, NULL, &event));
-      q.finish();
-  }
+  OCL_CHECK(err, err = q.enqueueTask(kernel_reduce, NULL, &event));
+  q.finish();
+#endif
   _profile_fpga(_FPGA_REDUCE, 1);
 }
 
@@ -202,3 +198,5 @@ void fpga_reduction_back(ReduceDescriptor *RD){
   }
  _profile_fpga(_FPGA_REDUCTION_BACK, 1);
 }
+
+#endif

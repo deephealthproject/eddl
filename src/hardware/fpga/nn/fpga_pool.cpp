@@ -7,6 +7,7 @@
 * All rights reserved
 */
 
+#ifdef cFPGA
 
 #include <cstdio>      /* printf, scanf, NULL */
 #include <cstdlib>     /* malloc, free, rand */
@@ -15,7 +16,7 @@
 
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
-#include "eddl/hardware/cpu/nn/cpu_nn.h"
+#include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 
 // emulation switches of functions (via cpu)
 // when set the function is run on the cpu
@@ -144,3 +145,5 @@ void fpga_avgpool2D_back(PoolDescriptor *D){
     }
     _profile_fpga(_FPGA_AVGPOOL2D_BACK, 1);
 }
+
+#endif

@@ -41,7 +41,7 @@ void Tensor::fill(Tensor* A, float v){
 #endif
 #ifdef cFPGA
     else {
-        fpga_fill_(this,v);
+        fpga_fill_(A,v);
     }
 #endif
 }
@@ -464,7 +464,7 @@ Tensor* Tensor::concat(const vector<Tensor*> A, unsigned int axis, Tensor* outpu
 #endif
 #ifdef cFPGA
     else {
-        fpga_concat(output, t, axis, false);
+        fpga_concat(output, A, axis, false);
     }
 #endif
 

@@ -58,6 +58,7 @@ void fpga_cent(Tensor *A, Tensor *B, Tensor *C);
 
 // Metrics
 int fpga_accuracy(Tensor *A, Tensor *B);
+int fpga_bin_accuracy(Tensor *A, Tensor *B);
 
 // Conv
 void fpga_conv2D(ConvolDescriptor *D);
@@ -75,6 +76,11 @@ void fpga_avgpool2D_back(PoolDescriptor *D);
 // Tensor (special functions that deal with 4D tensors)
 void fpga_repeat_nn(Tensor *A, Tensor *B, vector<int> size);
 void fpga_d_repeat_nn(Tensor *D, Tensor *A, vector<int> size);
+
+void fpga_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+void fpga_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+void fpga_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
+void fpga_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd);
 
 // BN
 void fpga_permute_channels_first(Tensor *A,Tensor *B);

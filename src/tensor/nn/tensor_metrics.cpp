@@ -41,8 +41,8 @@ namespace tensorNN {
         }
 #endif
 #ifdef cFPGA
-        else if (A->ifFPGA()) {
-            fpga_accuracy(A, B, &acc);
+        else if (A->isFPGA()) {
+            acc = fpga_accuracy(A, B);
         }
 #endif
         B->tsem->unlock();
@@ -73,7 +73,7 @@ namespace tensorNN {
 #endif
 #ifdef cFPGA
         else if (A->isFPGA()) {
-            fpga_bin_accuracy(A, B, &acc);
+            acc = fpga_bin_accuracy(A, B);
         }
 #endif
         B->tsem->unlock();

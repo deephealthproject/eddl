@@ -14,6 +14,10 @@
 #include "eddl/hardware/gpu/gpu_hw.h"
 #endif
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#endif
+
 using namespace std;
 
 
@@ -81,8 +85,9 @@ void Tensor::where(Tensor *condition, Tensor *A, Tensor *B, Tensor *C){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (condition->isFPGA() && A->isFPGA() && B->isFPGA())
+      {
+        fpga_where(condition, A, B, C);
+      }
 #endif
 }

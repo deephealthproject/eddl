@@ -88,6 +88,9 @@ public:
     vector<int> oshape;
     int size_reduction;
 
+    // fpga
+    cl::Buffer *fpga_index;
+
     ReduceDescriptor2(const vector<int>& axis, bool keepdims, int dev);
 
     void build(const vector<int>& ishape);

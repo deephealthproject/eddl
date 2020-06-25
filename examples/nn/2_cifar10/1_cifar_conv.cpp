@@ -45,12 +45,19 @@ int main(int argc, char **argv){
   layer in=Input({3,32,32});
   layer l=in;
 
-  l=MaxPool(ReLu(Normalization(Conv(l,32,{3,3},{1,1}))),{2,2});
-  l=MaxPool(ReLu(Normalization(Conv(l,64,{3,3},{1,1}))),{2,2});
-  l=MaxPool(ReLu(Normalization(Conv(l,128,{3,3},{1,1}))),{2,2});
+  l=ReLu(Conv(l,32,{3,3},{1,1}));
+
+  //l=ReLu(Normalization(Conv(l,32,{3,3},{1,1})));
+  //l=ReLu(Normalization(Conv(l,64,{3,3},{1,1})));
+  //l=ReLu(Normalization(Conv(l,128,{3,3},{1,1})));
   //l=MaxPool(ReLu(Normalization(Conv(l,256,{3,3},{1,1}))),{2,2});
 
-  l=GlobalMaxPool(l);
+//  l=MaxPool(ReLu(Normalization(Conv(l,32,{3,3},{1,1}))),{2,2});
+//  l=MaxPool(ReLu(Normalization(Conv(l,64,{3,3},{1,1}))),{2,2});
+//  l=MaxPool(ReLu(Normalization(Conv(l,128,{3,3},{1,1}))),{2,2});
+//  //l=MaxPool(ReLu(Normalization(Conv(l,256,{3,3},{1,1}))),{2,2});
+
+//  l=GlobalMaxPool(l);
 
 
   l=Flatten(l);
@@ -70,7 +77,7 @@ int main(int argc, char **argv){
     {"categorical_accuracy"}, // Metrics
     //CS_GPU({1}) // one GPU
     //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-    //CS_CPU()
+ //   CS_CPU()
     CS_FPGA({1}, 100)
   );
 //    toGPU(net,{1},100,"low_mem"); // In two gpus, syncronize every 100 batches, low_mem setup

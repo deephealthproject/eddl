@@ -222,36 +222,21 @@ void cpu_trunc(Tensor *A, Tensor *B){
 // CPU: Math (static) ***************************
 
 void cpu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
-<<<<<<< HEAD
 #pragma omp parallel for
     for (int i = 0; i < A->size; i++)
         if (incC) C->ptr[i] += scA * A->ptr[i] + scB * B->ptr[i];
         else C->ptr[i] = scA * A->ptr[i] + scB * B->ptr[i];
-=======
-  _profile(_CPU_ADD, 0);
-  #pragma omp parallel for
-  for (int i = 0; i < A->size; i++)
-    if (incC) C->ptr[i] += scA * A->ptr[i] + scB * B->ptr[i];
-    else C->ptr[i] = scA * A->ptr[i] + scB * B->ptr[i];
-    _profile(_CPU_ADD, 1);
->>>>>>> 881b9ab250fb4b403e1694817d24ec46acebcfb1
 }
 
 
 void cpu_inc(Tensor *A, Tensor *B) {
-<<<<<<< HEAD
     B->tsem->lock();
-=======
-  _profile(_CPU_INC, 0);
-  B->tsem->lock();
->>>>>>> 881b9ab250fb4b403e1694817d24ec46acebcfb1
 
 #pragma omp parallel for
     for (int i = 0; i < A->size; i++){
         B->ptr[i] += A->ptr[i];
     }
 
-<<<<<<< HEAD
     B->tsem->unlock();
 }
 
@@ -264,18 +249,6 @@ void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
             if (!incC) *(C->ptr2) = *(B->ptr2) * ((*(A->ptr2)).transpose());
             else *(C->ptr2) += *(B->ptr2) * ((*(A->ptr2)).transpose());
         }
-=======
-  B->tsem->unlock();
-    _profile(_CPU_INC, 1);
-}
-
-void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
-    _profile(_CPU_MULT2D, 0);
-  if (!tB) {
-    if (!tA) {
-      if (!incC) *(C->ptr2) = *(B->ptr2) * (*(A->ptr2));
-      else *(C->ptr2) += *(B->ptr2) * (*(A->ptr2));
->>>>>>> 881b9ab250fb4b403e1694817d24ec46acebcfb1
     } else {
         if (!tA) {
             if (!incC) *(C->ptr2) = (*(B->ptr2)).transpose() * (*(A->ptr2));
@@ -285,7 +258,6 @@ void cpu_mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
             else *(C->ptr2) += (*(B->ptr2)).transpose() * ((*(A->ptr2)).transpose());
         }
     }
-<<<<<<< HEAD
 }
 
 void cpu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
@@ -293,32 +265,10 @@ void cpu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
     for (int i = 0; i < A->size; i++)
         if (incC) C->ptr[i] += A->ptr[i] / B->ptr[i];
         else C->ptr[i] = A->ptr[i] / B->ptr[i];
-=======
-  } else {
-    if (!tA) {
-      if (!incC) *(C->ptr2) = (*(B->ptr2)).transpose() * (*(A->ptr2));
-      else *(C->ptr2) += (*(B->ptr2)).transpose() * (*(A->ptr2));
-    } else {
-      if (!incC) *(C->ptr2) = (*(B->ptr2)).transpose() * ((*(A->ptr2)).transpose());
-      else *(C->ptr2) += (*(B->ptr2)).transpose() * ((*(A->ptr2)).transpose());
-    }
-  }
-    _profile(_CPU_MULT2D, 1);
-}
-
-void cpu_el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
-  _profile(_CPU_EL_DIV, 0);
-  #pragma omp parallel for
-  for (int i = 0; i < A->size; i++)
-    if (incC) C->ptr[i] += A->ptr[i] / B->ptr[i];
-    else C->ptr[i] = A->ptr[i] / B->ptr[i];
-    _profile(_CPU_EL_DIV, 1);
->>>>>>> 881b9ab250fb4b403e1694817d24ec46acebcfb1
 }
 
 
 void cpu_el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
-<<<<<<< HEAD
 #pragma omp parallel for
     for (int i = 0; i < A->size; i++)
         if (incC) C->ptr[i] += A->ptr[i] * B->ptr[i];
@@ -333,43 +283,10 @@ void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
         for (int j = 0; j < A->shape[1]; j++, p++)
             C->ptr[p] = A->ptr[p] + B->ptr[j];
     }
-=======
-  _profile(_CPU_EL_MULT, 0);
-  #pragma omp parallel for
-  for (int i = 0; i < A->size; i++)
-  if (incC) C->ptr[i] += A->ptr[i] * B->ptr[i];
-  else C->ptr[i] = A->ptr[i] * B->ptr[i];
-    _profile(_CPU_EL_MULT, 1);
-}
-
-
-void cpu_sign2(Tensor *A, Tensor *B){
-  _profile(_CPU_SIGN2, 0);
-  // TODO: Remove
-  #pragma omp parallel for
-  for (int i = 0; i < A->size; i++)
-  if (A->ptr[i] < 0) B->ptr[i] = -1.0;
-  else B->ptr[i] = 1.0;
-    _profile(_CPU_SIGN2, 1);
-    
-}
-
-void cpu_sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
-  _profile(_CPU_SUM2D_ROWWISE, 0);
-  #pragma omp parallel for
-  for (int i = 0; i < A->shape[0]; i++) {
-    int p=i*A->shape[1];
-    for (int j = 0; j < A->shape[1]; j++, p++)
-      C->ptr[p] = A->ptr[p] + B->ptr[j];
-  }
-    _profile(_CPU_SUM2D_ROWWISE, 1);
->>>>>>> 881b9ab250fb4b403e1694817d24ec46acebcfb1
 }
 
 void cpu_sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
-    _profile(_CPU_SUM2D_COLWISE, 0);
 
-<<<<<<< HEAD
 #pragma omp parallel for
     for (int i = 0; i < A->shape[0]; i++) {
         int p=i*A->shape[1];
@@ -391,15 +308,6 @@ void cpu_maximum(Tensor* A, Tensor* B, Tensor* C){
     for (int i = 0; i < A->size; ++i) {
         C->ptr[i] = ::max(A->ptr[i], B->ptr[i]);
     }
-=======
-  #pragma omp parallel for
-  for (int i = 0; i < A->shape[0]; i++) {
-    int p=i*A->shape[1];
-    for (int j = 0; j < A->shape[1]; j++, p++)
-    C->ptr[p] = A->ptr[p] + B->ptr[i];
-  }
-    _profile(_CPU_SUM2D_COLWISE, 1);
->>>>>>> 881b9ab250fb4b403e1694817d24ec46acebcfb1
 }
 
 void cpu_minimum(Tensor* A, Tensor* B, float v){
@@ -419,7 +327,6 @@ void cpu_minimum(Tensor* A, Tensor* B, Tensor* C){
 
 // CPU: Should be reductions ***************************
 
-<<<<<<< HEAD
 
 float cpu_max(Tensor *A) {
     auto t = cpu_max(A->ptr, A->size, nullptr);
@@ -447,28 +354,6 @@ void cpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
         auto t = cpu_max(A->ptr, rd->index[i].size(), rd->index[i].data());
         B->ptr[i] = std::get<1>(t);  // get argmax
     }
-=======
-float cpu_max(Tensor *A){
-  _profile(_CPU_MAX, 0);
-  float max = MIN_FLOAT;
-  // todo: #pragma omp parallel for
-  for (int i = 0; i < A->size; ++i) {
-    if (A->ptr[i] > max) { max = A->ptr[i]; }
-  }
-  _profile(_CPU_MAX, 1);
-  return max;
-}
-
-float cpu_min(Tensor *A){
-  _profile(_CPU_MIN, 0);
-  float min = MAX_FLOAT;
-  // todo: #pragma omp parallel for
-  for (int i = 0; i < A->size; ++i) {
-    if (A->ptr[i] < min) { min = A->ptr[i]; }
-  }
-  _profile(_CPU_MIN, 1);
-  return min;
->>>>>>> 881b9ab250fb4b403e1694817d24ec46acebcfb1
 }
 
 
@@ -586,7 +471,6 @@ std::tuple<float, int> cpu_min(float *ptr, int size, int *map) {
 
 
 float cpu_sum(Tensor *A) {
-<<<<<<< HEAD
     return cpu_sum(A->ptr, A->size, nullptr);
 }
 
@@ -611,26 +495,11 @@ float cpu_sum(float *ptr, int size, int *map) {
     }
 
     return sum;
-=======
-  _profile(_CPU_SUM, 0);
-  float sum = 0.0;
-  for (int i = 0; i < A->size; ++i) sum += A->ptr[i];
-  _profile(_CPU_SUM, 1);
-  return sum;
->>>>>>> 881b9ab250fb4b403e1694817d24ec46acebcfb1
 }
 
 
 float cpu_sum_abs(Tensor *A) {
-<<<<<<< HEAD
     return cpu_sum_abs(A->ptr, A->size, nullptr);
-=======
-  _profile(_CPU_SUM_ABS, 0);
-  float sum = 0.0;
-  for (int i = 0; i < A->size; ++i) sum += ::fabs(A->ptr[i]);
-  _profile(_CPU_SUM_ABS, 1);
-  return sum;
->>>>>>> 881b9ab250fb4b403e1694817d24ec46acebcfb1
 }
 
 
