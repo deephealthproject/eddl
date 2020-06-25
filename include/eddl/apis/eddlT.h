@@ -302,7 +302,7 @@ namespace eddlT{
     */
     void acos_(Tensor *A);
 
-     /**
+    /**
     *   @brief Element-wise acos operation
     *   @param A. The tensor where the operation is applied
     *   @return A new tensor with acos applied over A
