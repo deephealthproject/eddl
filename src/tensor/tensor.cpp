@@ -157,7 +157,7 @@ void Tensor::deleteData(){
     }
 }
 
-void Tensor::updateData(float *fptr){
+void Tensor::updateData(float *fptr, void *fptr2){
     // TODO: What if the new_pointer is the same?
 
     if (this->isCPU()) {
@@ -193,12 +193,12 @@ void Tensor::updateData(float *fptr){
     {
         fpga_device = device-DEV_FPGA;
         if (!initfpga[fpga_device]) {
-           #ifdef FPGA_DEBUG
-	   printf("Initializing FPGA device\n");
-           #endif
-           fpga_init(/*fpga_device*/);
-           initfpga[fpga_device]=1;
-         }
+          #ifdef FPGA_DEBUG
+          printf("Initializing FPGA device\n");
+          #endif
+          fpga_init(/*fpga_device*/);
+          initfpga[fpga_device]=1;
+        }
         if (fptr == nullptr) {
           #ifdef FPGA_DEBUG
           printf("  ([updateData fptr==null] creating tensor size %d; id being assigned %d)\n", this->size, next_fpga_tensor_id);
@@ -219,42 +219,12 @@ void Tensor::updateData(float *fptr){
           #ifdef FPGA_DEBUG
           printf("  ([updateData fptr!=null] fptr %p tensor id %d ptr %p fpga_ptr %p size %d fpga_size %d)\n", fptr, this->fpga_tensor_id, this->ptr, this->fpga_ptr, this->size, this->fpga_size);
           #endif
-          if (this->fpga_ptr == (cl::Buffer *)nullptr) {
-            this->fpga_ptr = fpga_create_tensor(fpga_device, this->size);
-            fpga_size = this->size;
-            fpga_copy_to_fpga(fptr, this);
-            this->fpga_tensor_id = next_fpga_tensor_id++;
-            #ifdef FPGA_DEBUG
-            printf("    created tensor id %d fpga_ptr %p\n", this->fpga_tensor_id, this->fpga_ptr);
+          this->fpga_size = this->size;
+          #ifdef FPGA_DEBUG
+          printf("    reallocated tensor id %d new size %d\n", this->fpga_tensor_id, this->fpga_size);
             #endif
-          } else {
-            if (this->size != this->fpga_size) {
-
-	      printf("updateData con size distinto y buffer ya creado previamente\n");
-	      float min = fptr[0]; float max = fptr[0]; float sum = 0.f;
-	      for (int i=0;i < this->size; i++) {
-		      if (fptr[i] > max) max = fptr[i];
-		      if (fptr[i] < min) min = fptr[i];
-		      sum += fptr[i];
-	      }
-	      printf("new data (fptr): min %6.4f max %6.4f avg %6.4f\n", min, max, sum / (float)this->size);
-
-              fpga_delete_tensor(fpga_device, this->fpga_ptr, this->fpga_tensor_id, this->fpga_size);
-              //
-              this->fpga_ptr = fpga_create_tensor(fpga_device, this->size);
-              this->fpga_size = this->size;
-              fpga_copy_to_fpga(fptr, this);
-              #ifdef FPGA_DEBUG
-              printf("    reallocated tensor id %d new size %d\n", this->fpga_tensor_id, this->fpga_size);
-              #endif
-            } else {
-              //fpga_copy_to_fpga(fptr, this);
-              #ifdef FPGA_DEBUG
-              printf("    just updated the info\n");
-              #endif
-            }
-          }
           this->ptr = fptr;
+	  this->fpga_ptr = (cl::Buffer *)fptr2;
         }
         // For 2 dimensions, map to data to Eigen for efficiency
         // Efficient operations will be done over ptr2, which also points to ptr
@@ -522,7 +492,7 @@ bool Tensor::isSquared(Tensor *A){
 }
 
 // Resizing tensors
-void Tensor::resize(int b, float *fptr) {
+void Tensor::resize(int b, float *fptr, void *fptr2) {
     if (b == shape[0]) return;
 
     // Get new shape
@@ -534,6 +504,6 @@ void Tensor::resize(int b, float *fptr) {
     updateSize();
     updateStrides();
     if (fptr == nullptr) deleteData();  // Potential error
-    updateData(fptr);
+    updateData(fptr, fptr2);
 }
 
