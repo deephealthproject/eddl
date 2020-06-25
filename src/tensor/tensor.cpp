@@ -266,29 +266,22 @@ void Tensor::updateData(float *fptr){
 }
 
 void Tensor::toCPU(int dev){
-    float *cpu_ptr = nullptr;
+    if (this->isCPU()) {
+        // printf("Tensor already in CPU\n");
+    }else{
+        float *cpu_ptr = nullptr;
 
 #ifdef cGPU
-    if (this->isGPU()){
-        // Reserve memory for CPU
-        cpu_ptr = get_fmem(size, "Tensor::toCPU");
+        if (this->isGPU()){
+            // Reserve memory for CPU
+            cpu_ptr = get_fmem(size, "Tensor::toCPU");
 
-        // Copy GPU data to CPU
-        gpu_copy_from_gpu(this, cpu_ptr);
-
-        // Delete GPU data
-        this->deleteData();
-
-        // Assign CPU pointer
-        this->device = dev;  // Must appear after deleting the data
-        this->ptr = cpu_ptr;
-        if (ndim == 2) {
-            ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(cpu_ptr, shape[1], shape[0]);
+            // Copy GPU data to CPU
+            gpu_copy_from_gpu(this, cpu_ptr);
         }
-    }
 #endif
 #ifdef cFPGA
-    if (isFPGA())
+        if (isFPGA())
     {
 
         // Reserve memory for CPU
@@ -296,8 +289,10 @@ void Tensor::toCPU(int dev){
 
         // Copy GPU data to CPU
         fpga_copy_from_fpga(this, cpu_ptr);
-
-        // Delete FPGA data
+    }
+#endif
+        // COMMON: Delete data in HW + reassign pointer
+        // Delete data
         this->deleteData();
 
         // Assign CPU pointer
@@ -306,18 +301,9 @@ void Tensor::toCPU(int dev){
         if (ndim == 2) {
             ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(cpu_ptr, shape[1], shape[0]);
         }
-
     }
-#endif
 
-//#if defined(cGPU) || defined(cFPGA)
-//    // Delete devices data
-//    deleteData();
-//
-//    // Assign CPU pointer
-//    updateDevice(dev);  // Must appear after deleting the data
-//    updateData(cpu_ptr);
-//#endif
+
 }
 
 void Tensor::toGPU(int dev){
