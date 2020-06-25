@@ -9,6 +9,10 @@
 #include "eddl/tensor/nn/tensor_nn.h"
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/nn/fpga_nn.h"
+#endif
+
 #ifdef cGPU
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
@@ -35,7 +39,7 @@ namespace tensorNN {
 #endif
 #ifdef cFPGA
         else {
-
+            fpga_relu(A,B);
         }
 #endif
 
@@ -61,9 +65,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_d_relu(D,I,PD);
+    }
 #endif
         PD->tsem->unlock();
     }
@@ -84,9 +88,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_thresholded_relu(A,B,param);
+    }
 #endif
 
         B->tsem->unlock();
@@ -110,9 +114,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_d_thresholded_relu(D, I, PD, param);
+    }
 #endif
         PD->tsem->unlock();
     }
@@ -133,9 +137,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_leaky_relu(A,B,param);
+    }
 #endif
 
         B->tsem->unlock();
@@ -159,9 +163,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_d_leaky_relu(D,I,PD,param);
+    }
 #endif
         PD->tsem->unlock();
     }
@@ -183,9 +187,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_elu(A,B,param);
+    }
 #endif
 
         B->tsem->unlock();
@@ -208,9 +212,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_d_elu(D, I, PD, param);
+    }
 #endif
         PD->tsem->unlock();
     }
@@ -232,9 +236,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_softplus(A, B);
+    }
 #endif
 
         B->tsem->unlock();
@@ -258,9 +262,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_d_softplus(D, I, PD);
+    }
 #endif
         PD->tsem->unlock();
     }
@@ -282,9 +286,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_softsign(A, B);
+    }
 #endif
 
         B->tsem->unlock();
@@ -308,9 +312,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_d_softsign(D, I, PD);
+    }
 #endif
         PD->tsem->unlock();
     }
@@ -331,9 +335,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_linear(A, B, param);
+    }
 #endif
 
         B->tsem->unlock();
@@ -357,9 +361,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_d_linear(D, I, PD, param);
+    }
 #endif
         PD->tsem->unlock();
     }
@@ -380,9 +384,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_sigmoid(A, B);
+    }
 #endif
 
         B->tsem->unlock();
@@ -406,9 +410,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_d_sigmoid(D, I, PD);
+    }
 #endif
         PD->tsem->unlock();
     }
@@ -429,9 +433,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_hard_sigmoid(A, B);
+    }
 #endif
 
         B->tsem->unlock();
@@ -455,9 +459,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_d_hard_sigmoid(D, I, PD);
+    }
 #endif
         PD->tsem->unlock();
     }
@@ -479,9 +483,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_exp(A, B);
+    }
 #endif
 
         B->tsem->unlock();
@@ -503,9 +507,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_d_exp(D, I, PD);
+    }
 #endif
         PD->tsem->unlock();
     }
@@ -526,9 +530,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_tanh(A, B);
+    }
 #endif
 
         B->tsem->unlock();
@@ -552,9 +556,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_d_tanh(D, I, PD);
+    }
 #endif
         PD->tsem->unlock();
     }
@@ -578,9 +582,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_softmax(A, B);
+    }
 #endif
 
         B->tsem->unlock();
@@ -611,9 +615,9 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else {
+        fpga_d_softmax(D, I, PD);
+    }
 #endif
 
     }

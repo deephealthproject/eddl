@@ -15,6 +15,10 @@
 #include "eddl/hardware/gpu/gpu_hw.h"
 #endif
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#include "eddl/hardware/fpga/nn/fpga_nn.h"
+#endif
 
 using namespace std;
 
@@ -30,7 +34,7 @@ void Tensor::rand_uniform(float v) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_rand_uniform(this,v);
     }
 #endif
 
@@ -49,7 +53,7 @@ void Tensor::rand_signed_uniform(float v) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_rand_signed_uniform(this, v);
     }
 #endif
 
@@ -69,7 +73,7 @@ void Tensor::rand_binary(float v) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_rand_binary(this, v);
     }
 #endif
 
@@ -88,7 +92,7 @@ void Tensor::rand_normal(float m, float s, bool fast_math) {
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_rand_normal(this, m, s, fast_math);
     }
 #endif
 

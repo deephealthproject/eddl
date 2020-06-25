@@ -6,6 +6,9 @@
 * Author: PRHLT Research Centre, UPV, (rparedes@prhlt.upv.es), (jon@prhlt.upv.es)
 * All rights reserved
 */
+
+#include <float.h>
+
 #include "eddl/tensor/nn/tensor_nn.h"
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
 
@@ -13,6 +16,13 @@
 #include "eddl/hardware/gpu/gpu_tensor.h"
 #include "eddl/hardware/gpu/gpu_hw.h"
 #include "eddl/hardware/gpu/nn/gpu_tensor_nn.h"
+#endif
+
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#include "eddl/hardware/fpga/nn/fpga_nn.h"
+
+extern int next_fpga_tensor_id;
 #endif
 
 namespace tensorNN {
@@ -77,9 +87,10 @@ namespace tensorNN {
         }
 #endif
 #ifdef cFPGA
-        else {
-
-    }
+        else if (A->isFPGA() && B->isFPGA())
+        {
+            fpga_select_nn(A, B, sd);
+        }
 #endif
 
     }
@@ -95,9 +106,10 @@ namespace tensorNN {
         }
 #endif
 #ifdef cFPGA
-        else {
-
-    }
+        else if (A->isFPGA() && B->isFPGA())
+        {
+           fpga_select_back_nn(A, B, sd);
+        }
 #endif
 
     }
@@ -113,9 +125,10 @@ namespace tensorNN {
         }
 #endif
 #ifdef cFPGA
-        else {
-
-    }
+        else if (A->isFPGA() && B->isFPGA())
+        {
+            fpga_set_select_nn(A, B, sd);
+        }
 #endif
     }
 
@@ -131,9 +144,10 @@ namespace tensorNN {
         }
 #endif
 #ifdef cFPGA
-        else {
-
-    }
+        else if (A->isFPGA() && B->isFPGA())
+        {
+            fpga_set_select_back_nn(A, B, sd);
+        }
 #endif
 
     }

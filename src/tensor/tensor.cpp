@@ -19,10 +19,15 @@
 #include "eddl/hardware/gpu/gpu_hw.h"
 #endif
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#endif
+
 using namespace std;
 
 // TODO: Don't like here
 int initcuda[MAX_GPUS] = {0, 0, 0, 0, 0, 0, 0, 0};
+int initfpga[MAX_FPGAS] = {0, 0, 0, 0, 0, 0, 0, 0};
 int linpos;
 extern ostream &operator<<(ostream &os, const vector<int> shape);
 
@@ -206,7 +211,24 @@ void Tensor::toCPU(int dev){
     }
 #endif
 #ifdef cFPGA
-    else {
+    if (isFPGA())
+    {
+
+        // Reserve memory for CPU
+        float *cpu_ptr = get_fmem(size, "Tensor::toCPU");
+
+        // Copy GPU data to CPU
+        fpga_copy_from_fpga(this, cpu_ptr);
+
+        // Delete FPGA data
+        this->deleteData();
+
+        // Assign CPU pointer
+        this->device = dev;  // Must appear after deleting the data
+        this->ptr = cpu_ptr;
+        if (ndim == 2) {
+            ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(cpu_ptr, shape[1], shape[0]);
+        }
 
     }
 #endif
@@ -236,9 +258,8 @@ void Tensor::toGPU(int dev){
     }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    printf("Error, toGPU with  cFPGA implementation not supported\n");
+    exit(1); 
 #endif
 }
 

@@ -15,6 +15,8 @@
 #include <string>
 #include <mutex>
 
+#include "eddl/hardware/fpga/xcl2.hpp"
+
 
 using namespace std;
 
@@ -26,6 +28,7 @@ public:
     int* cpu_addresses;
     int* gpu_addresses;
     int* fpga_addresses;
+    cl::Buffer *fpga_ptr;
 
     TensorDescriptor(int dev);
     ~TensorDescriptor();

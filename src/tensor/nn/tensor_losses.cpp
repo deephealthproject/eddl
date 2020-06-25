@@ -15,6 +15,11 @@
 #include "eddl/hardware/gpu/nn/gpu_tensor_nn.h"
 #endif
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#include "eddl/hardware/fpga/nn/fpga_nn.h"
+#endif
+
 namespace tensorNN {
 
 
@@ -34,9 +39,10 @@ namespace tensorNN {
           }
 #endif
 #ifdef cFPGA
-        else {
-
-        }
+    else if (A->isFPGA())
+      {
+         fpga_cent(A,B,C);
+      }
 #endif
         C->tsem->unlock();
     }

@@ -18,6 +18,10 @@
 #include "eddl/hardware/gpu/gpu_hw.h"
 #endif
 
+#ifdef cFPGA
+#include "eddl/hardware/fpga/fpga_hw.h"
+#include "eddl/hardware/fpga/nn/fpga_nn.h"
+#endif
 
 using namespace std;
 
@@ -47,7 +51,7 @@ void Tensor::maximum(Tensor* A, Tensor* B, float v){
 #endif
 #ifdef cFPGA
     else {
-
+      fpga_maximum(A, B, v);
     }
 #endif
 
@@ -71,7 +75,7 @@ void Tensor::maximum(Tensor* A, Tensor* B, Tensor* C){
 #endif
 #ifdef cFPGA
     else {
-
+       fpga_maximum(A, B, C);
     }
 #endif
 
@@ -101,7 +105,7 @@ void Tensor::minimum(Tensor* A, Tensor* B, float v){
 #endif
 #ifdef cFPGA
     else {
-
+       fpga_minimum(A, B, v);
     }
 #endif
 
@@ -125,7 +129,7 @@ void Tensor::minimum(Tensor* A, Tensor* B, Tensor* C){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_minimum(A, B, C);
     }
 #endif
 
@@ -151,12 +155,11 @@ float Tensor::max(Tensor* A){
     }
 #endif
 #ifdef cFPGA
-    else {
-
+    else if (A->isFPGA())
+    {
+        return fpga_max(A);
     }
 #endif
-
-    msg("Invalid device", "Tensor::max");
     return 0.0f; // Never used, this is for the compiler warning
 }
 
@@ -185,7 +188,7 @@ void Tensor::max(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_max(A, B, rd);
     }
 #endif
 }
@@ -209,7 +212,7 @@ int Tensor::argmax(Tensor* A){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_argmax(A);
     }
 #endif
 
@@ -242,7 +245,7 @@ void Tensor::argmax(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_argmax(A, B, rd);
     }
 #endif
 }
@@ -264,7 +267,7 @@ float Tensor::min(Tensor* A){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_min(A);
     }
 #endif
 
@@ -297,7 +300,7 @@ void Tensor::min(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_min(A, B, rd);
     }
 #endif
 }
@@ -320,7 +323,7 @@ int Tensor::argmin(Tensor* A){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_argmin(A);
     }
 #endif
 
@@ -352,8 +355,9 @@ void Tensor::argmin(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
     }
 #endif
 #ifdef cFPGA
-    else {
-
+    else if (A->isFPGA() && B->isFPGA())
+    {
+        fpga_argmin(A, B, rd);
     }
 #endif
 }
@@ -376,7 +380,7 @@ float Tensor::sum(Tensor* A){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_sum(A);
     }
 #endif
 
@@ -409,7 +413,7 @@ void Tensor::sum(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_sum(A, B, rd);
     }
 #endif
 }
@@ -431,7 +435,7 @@ float Tensor::sum_abs(Tensor* A){
 #endif
 #ifdef cFPGA
     else {
-
+        return fpga_sum_abs(A);
     }
 #endif
 
@@ -465,7 +469,7 @@ void Tensor::sum_abs(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_sum_abs(A, B, rd);
     }
 #endif
 }
@@ -487,7 +491,7 @@ float Tensor::prod(Tensor* A){  // AKA factorial
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_prod(A);
     }
 #endif
 
@@ -521,7 +525,7 @@ void Tensor::prod(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_prod(A, B, rd);
     }
 #endif
 }
@@ -561,7 +565,7 @@ void Tensor::mean(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_mean(A, B, rd);
     }
 #endif
 }
@@ -590,7 +594,7 @@ float Tensor::median(Tensor* A){
 #endif
 #ifdef cFPGA
     else {
-
+        res = fpga_median(tmp);
     }
 #endif
 
@@ -623,7 +627,7 @@ void Tensor::median(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_median(A, B, rd);
     }
 #endif
 }
@@ -648,7 +652,7 @@ float Tensor::std(Tensor* A, bool unbiased){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_std(A, unbiased);
     }
 #endif
 
@@ -682,7 +686,7 @@ void Tensor::std(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
 #endif
 #ifdef cFPGA
     else {
-
+        fpga_std(A, B, rd, unbiased);
     }
 #endif
 }
@@ -704,8 +708,9 @@ float Tensor::var(Tensor* A, bool unbiased){
     }
 #endif
 #ifdef cFPGA
-    else {
-
+    else if (A->isFPGA())
+    {
+	return fpga_var(A, unbiased);
     }
 #endif
 
@@ -738,8 +743,9 @@ void Tensor::var(Tensor* A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
     }
 #endif
 #ifdef cFPGA
-    else {
-
+    else if (A->isFPGA() && B->isFPGA())
+    {
+        fpga_var(A, B, rd, unbiased);
     }
 #endif
 }
@@ -761,8 +767,9 @@ int Tensor::mode(Tensor* A){
     }
 #endif
 #ifdef cFPGA
-    else {
-
+    else if (A->isFPGA())
+    {
+        return fpga_mode(A);
     }
 #endif
 
@@ -795,8 +802,9 @@ void Tensor::mode(Tensor* A, Tensor *B, ReduceDescriptor2 *rd){
     }
 #endif
 #ifdef cFPGA
-    else {
-
+    else if (A->isFPGA() && B->isFPGA())
+    {
+        fpga_mode(A, B, rd);
     }
 #endif
 }
@@ -823,9 +831,10 @@ void Tensor::abs(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_abs(A, B);
+      }
 #endif
 }
 
@@ -851,9 +860,10 @@ void Tensor::acos(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_acos(A, B);
+      }
 #endif
 }
 
@@ -889,9 +899,10 @@ void Tensor::add(Tensor *A, Tensor *B, float v){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_add(A, B, v);
+      }
 #endif
 }
 
@@ -918,9 +929,10 @@ void Tensor::asin(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_asin(A, B);
+      }
 #endif
 }
 
@@ -948,9 +960,10 @@ void Tensor::atan(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_atan(A, B);
+      }
 #endif
 }
 
@@ -978,9 +991,10 @@ void Tensor::ceil(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_ceil(A, B);
+      }
 #endif
 }
 
@@ -1008,9 +1022,10 @@ void Tensor::clamp(Tensor *A, Tensor *B, float min, float max){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_clamp(A, B, min, max);
+      }
 #endif
 }
 
@@ -1071,9 +1086,10 @@ void Tensor::cos(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_cos(A, B);
+      }
 #endif
 }
 
@@ -1100,9 +1116,10 @@ void Tensor::cosh(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_cosh(A, B);
+      }
 #endif
 }
 
@@ -1159,9 +1176,10 @@ void Tensor::exp(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_exp(A, B);
+      }
 #endif
 }
 
@@ -1189,9 +1207,10 @@ void Tensor::floor(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_floor(A, B);
+      }
 #endif
 }
 
@@ -1219,9 +1238,10 @@ void Tensor::inv(Tensor *A, Tensor *B, float v){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_inv(A, B, v);
+      }
 #endif
 }
 
@@ -1249,9 +1269,10 @@ void Tensor::log(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_log(A, B);
+      }
 #endif
 }
 
@@ -1279,9 +1300,10 @@ void Tensor::log2(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_log2(A, B);
+      }
 #endif
 }
 
@@ -1309,9 +1331,10 @@ void Tensor::log10(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_log10(A, B);
+      }
 #endif
 }
 
@@ -1339,9 +1362,10 @@ void Tensor::logn(Tensor *A, Tensor *B, float n){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_logn(A, B, n);
+      }
 #endif
 }
 
@@ -1369,9 +1393,10 @@ void Tensor::mod(Tensor *A, Tensor *B, float v){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_mod(A, B, v);
+      }
 #endif
 }
 
@@ -1411,9 +1436,10 @@ void Tensor::mult(Tensor *A, Tensor *B, float v){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_mult(A, B, v);
+      }
 #endif
 }
 
@@ -1458,9 +1484,10 @@ void Tensor::normalize(Tensor *A, Tensor *B, float min, float max){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_normalize(A, B, min, max);
+      }
 #endif
 }
 
@@ -1488,9 +1515,10 @@ void Tensor::pow(Tensor *A, Tensor *B, float exp){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_pow(A, B, exp);
+      }
 #endif
 }
 
@@ -1518,9 +1546,10 @@ void Tensor::powb(Tensor *A, Tensor *B, float base){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_powb(A, B, base);
+      }
 #endif
 }
 
@@ -1565,9 +1594,10 @@ void Tensor::remainder(Tensor *A, Tensor *B, float v){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_remainder(A, B, v);
+      }
 #endif
 }
 
@@ -1595,9 +1625,10 @@ void Tensor::round(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_round(A, B);
+      }
 #endif
 }
 
@@ -1625,9 +1656,10 @@ void Tensor::rsqrt(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_rsqrt(A, B);
+      }
 #endif
 }
 
@@ -1655,9 +1687,10 @@ void Tensor::sigmoid(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_sigmoid(A, B);
+      }
 #endif
 }
 
@@ -1685,9 +1718,10 @@ void Tensor::sign(Tensor *A, Tensor *B, float zero_sign) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_sign(A, B, zero_sign);
+      }
 #endif
 }
 
@@ -1715,9 +1749,10 @@ void Tensor::sin(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_sin(A, B);
+      }
 #endif
 }
 
@@ -1745,9 +1780,10 @@ void Tensor::sinh(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_sinh(A, B);
+      }
 #endif
 }
 
@@ -1775,9 +1811,10 @@ void Tensor::sqr(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_sqr(A, B);
+      }
 #endif
 }
 
@@ -1805,9 +1842,10 @@ void Tensor::sqrt(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_sqrt(A, B);
+      }
 #endif
 }
 
@@ -1864,9 +1902,10 @@ void Tensor::tan(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_tan(A, B);
+      }
 #endif
 }
 
@@ -1894,9 +1933,10 @@ void Tensor::tanh(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_tanh(A, B);
+      }
 #endif
 }
 
@@ -1924,9 +1964,10 @@ void Tensor::trunc(Tensor *A, Tensor *B){
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA() && B->isFPGA())
+      {
+        fpga_trunc(A, B);
+      }
 #endif
 }
 
@@ -2141,9 +2182,10 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA())
+      {
+        fpga_add(scA, A, scB, B, C, incC);
+      }
 #endif
 
     C->tsem->unlock();
@@ -2172,9 +2214,15 @@ void Tensor::inc(Tensor *A, Tensor *B) {
         delete n;
     }
 #endif
-    else {
-        fprintf(stderr, "(%d %d)\n", A->device, B->device);
-        msg("unsupported inc between devices", "Tensor::inc");
+    else if ((A->isFPGA())&&(B->isFPGA())) {
+        Tensor::add(1,A,1,B,B,0);
+    }
+    else if (((A->isCPU())&&(B->isFPGA()))||((A->isFPGA())&&(B->isCPU())))
+    {   
+        Tensor *n=new Tensor(B->getShape(),B->device);
+        Tensor::copy(A,n);
+        Tensor::add(1,n,1,B,B,0);
+        delete n;
     }
 }
 
@@ -2202,9 +2250,10 @@ void Tensor::el_div(Tensor *A, Tensor *B, Tensor *C, int incC) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA())
+      {
+        fpga_el_div(A,B,C,incC);
+      }
 #endif
     C->tsem->unlock();
 }
@@ -2253,9 +2302,10 @@ void Tensor::mult2D(Tensor *A, int tA, Tensor *B, int tB, Tensor *C, int incC) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA())
+      {
+        fpga_mult2D(A,tA,B,tB,C,incC);
+      }
 #endif
     C->tsem->unlock();
 }
@@ -2286,9 +2336,10 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA())
+      {
+         fpga_el_mult(A,B,C,incC);
+      }
 #endif
     C->tsem->unlock();
 }
@@ -2317,9 +2368,10 @@ void Tensor::sum2D_rowwise(Tensor *A, Tensor *B, Tensor *C) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA())
+      {
+        fpga_sum2D_rowwise(A,B,C);
+      }
 #endif
     C->tsem->unlock();
 }
@@ -2348,9 +2400,10 @@ void Tensor::reduce_sum2D(Tensor *A, Tensor *B, int axis, int incB) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA())
+      {
+        fpga_reduce_sum2D(A,B,axis,incB);
+      }
 #endif
     B->tsem->unlock();
 }
@@ -2378,9 +2431,10 @@ void Tensor::sum2D_colwise(Tensor *A, Tensor *B, Tensor *C) {
       }
 #endif
 #ifdef cFPGA
-    else {
-
-    }
+    else if (A->isFPGA())
+      {
+        fpga_sum2D_colwise(A,B,C);
+      }
 #endif
     C->tsem->unlock();
 }
