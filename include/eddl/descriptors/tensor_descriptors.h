@@ -15,8 +15,9 @@
 #include <string>
 #include <mutex>
 
+#ifdef cFPGA
 #include "eddl/hardware/fpga/xcl2.hpp"
-
+#endif
 
 using namespace std;
 
@@ -27,8 +28,12 @@ public:
 
     int* cpu_addresses;
     int* gpu_addresses;
-    int* fpga_addresses;
+    int* fpga_addresses;  // TODO: Is this used?
+
+// TODO: I don't like this
+#ifdef cGPU
     cl::Buffer *fpga_ptr;
+#endif
 
     TensorDescriptor(int dev);
     ~TensorDescriptor();

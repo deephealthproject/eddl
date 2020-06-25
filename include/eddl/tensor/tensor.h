@@ -17,7 +17,9 @@
 #include <string>
 #include <mutex>
 
+#ifdef cFPGA
 #include "eddl/hardware/fpga/xcl2.hpp"
+#endif
 
 #include "Eigen/Dense"
 

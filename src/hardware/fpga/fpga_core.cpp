@@ -7,15 +7,18 @@
 * All rights reserved
 */
 
-#include "eddl/hardware/fpga/xcl2.hpp"
 #include <vector>
 #include <math.h>
 #include <float.h>
+#include <sys/time.h>
+
 #include "eddl/tensor/tensor.h"
 #include "eddl/descriptors/descriptors.h"
-#include "eddl/hardware/fpga/fpga_hw.h"
-#include <sys/time.h>
+
 #include "eddl/hardware/cpu/cpu_hw.h"
+#include "eddl/hardware/fpga/fpga_hw.h"
+#include "eddl/hardware/fpga/xcl2.hpp"
+
 
 int next_fpga_tensor_id = 1;
 int num_tensors_created = 0;
