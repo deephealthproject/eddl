@@ -7,6 +7,7 @@
 * All rights reserved
 */
 
+#ifdef cFPGA
 
 #include "eddl/hardware/fpga/nn/fpga_nn.h"
 #include "eddl/hardware/cpu/nn/cpu_tensor_nn.h"
@@ -90,6 +91,7 @@ void fpga_cpuemu_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd) {
 }
 
 void fpga_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
+	printf("select_nn\n");
 #ifndef K_ENABLED_SELECT_NN
   fpga_cpuemu_select_nn(A, B, sd);
 #else
@@ -119,6 +121,7 @@ void fpga_cpuemu_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd) {
 }
 
 void fpga_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
+	printf("select_back_nn\n");
 #ifndef K_ENABLED_SELECT_BACK_NN
   fpga_cpuemu_select_back_nn(A, B, sd);
 #else
@@ -148,6 +151,7 @@ void fpga_cpuemu_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd) {
 }
 
 void fpga_set_select_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
+	printf("set_select_nn\n");
 #ifndef K_ENABLED_SET_SELECT_NN
   fpga_cpuemu_set_select_nn(A, B, sd);
 #else
@@ -177,6 +181,7 @@ void fpga_cpuemu_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd) {
 }
 
 void fpga_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
+	printf("set_select_back_nn\n");
 #ifndef K_ENABLED_SET_SELECT_BACK_NN
   fpga_cpuemu_set_select_back_nn(A, B, sd);
 #else
@@ -194,3 +199,5 @@ void fpga_set_select_back_nn(Tensor *A, Tensor *B, SelDescriptor *sd){
   q.finish();
 #endif
 }
+
+#endif

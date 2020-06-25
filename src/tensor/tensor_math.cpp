@@ -380,7 +380,7 @@ float Tensor::sum(Tensor* A){
 #endif
 #ifdef cFPGA
     else {
-        fpga_sum(A);
+        return fpga_sum(A);
     }
 #endif
 

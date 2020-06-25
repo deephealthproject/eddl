@@ -7,6 +7,8 @@
 * All rights reserved
 */
 
+#ifdef cFPGA
+
 #include "eddl/hardware/fpga/fpga_hw.h"
 #include "eddl/hardware/cpu/cpu_tensor.h"
 
@@ -14,53 +16,6 @@ extern cl::Context context;
 extern cl::CommandQueue q;
 extern cl::Kernel mult2D;
 extern cl::Kernel sum2D_rowwise;
-
-// emulation switches of functions (via cpu)
-// when set the function is run on the cpu
-char fpga_set_cpuemu_abs_          = 1;
-char fpga_set_cpuemu_acos_         = 1;
-char fpga_set_cpuemu_add_          = 1;
-char fpga_set_cpuemu_asin_         = 1;
-char fpga_set_cpuemu_atan_         = 1;
-char fpga_set_cpuemu_ceil_         = 1;
-char fpga_set_cpuemu_clamp_        = 1;
-char fpga_set_cpuemu_cos_          = 1;
-char fpga_set_cpuemu_cosh_         = 1;
-char fpga_set_cpuemu_exp_          = 1;
-char fpga_set_cpuemu_floor_        = 1;
-char fpga_set_cpuemu_inv_          = 1;
-char fpga_set_cpuemu_log_          = 1;
-char fpga_set_cpuemu_log2_         = 1;
-char fpga_set_cpuemu_log10_        = 1;
-char fpga_set_cpuemu_logn_         = 1;
-char fpga_set_cpuemu_mod_          = 1;
-char fpga_set_cpuemu_normalize_    = 1;
-char fpga_set_cpuemu_pow_          = 1;
-char fpga_set_cpuemu_powb_         = 1;
-char fpga_set_cpuemu_reciprocal_   = 1;
-char fpga_set_cpuemu_remainder_    = 1;
-char fpga_set_cpuemu_round_        = 1;
-char fpga_set_cpuemu_rsqrt_        = 1;
-char fpga_set_cpuemu_sign_         = 1;
-char fpga_set_cpuemu_sin_          = 1;
-char fpga_set_cpuemu_sinh_         = 1;
-char fpga_set_cpuemu_sqr_          = 1;
-char fpga_set_cpuemu_sqrt_         = 1;
-char fpga_set_cpuemu_tan_          = 1;
-char fpga_set_cpuemu_tanh_         = 1;
-char fpga_set_cpuemu_trunc_        = 1;
-char fpga_set_cpuemu_add           = 1;
-char fpga_set_cpuemu_inc           = 1;
-char fpga_set_cpuemu_mult2D        = 1;
-char fpga_set_cpuemu_el_div        = 1;
-char fpga_set_cpuemu_el_mult       = 1;
-char fpga_set_cpuemu_sign2         = 1;
-char fpga_set_cpuemu_sum2D_rowwise = 1;
-char fpga_set_cpuemu_sum2D_colwise = 1;
-char fpga_set_cpuemu_max           = 1;
-char fpga_set_cpuemu_min           = 1;
-char fpga_set_cpuemu_sum           = 1;
-char fpga_set_cpuemu_sum_abs       = 1;
 
 // CPU: Math (in-place) ********************************************
 
@@ -74,7 +29,7 @@ void fpga_cpuemu_abs(Tensor *A, Tensor *B) {
 }
 
 void fpga_abs(Tensor *A, Tensor *B) {
-  _profile_fpga(_FPGA_ABS_, 0);
+  _profile_fpga(_FPGA_ABS, 0);
 #ifndef K_ENABLED_ABS
   fpga_cpuemu_abs(A, B);
 #else
@@ -88,7 +43,7 @@ void fpga_abs(Tensor *A, Tensor *B) {
   OCL_CHECK(err, err = q.enqueueTask(kernel_abs, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_ABS_, 1);
+  _profile_fpga(_FPGA_ABS, 1);
 }
 
 // -----------------------------------------------------------------
@@ -101,7 +56,7 @@ void fpga_cpuemu_acos(Tensor *A, Tensor *B) {
 }
 
 void fpga_acos(Tensor *A, Tensor *B){
-  _profile_fpga(_FPGA_ACOS_, 0);
+  _profile_fpga(_FPGA_ACOS, 0);
 #ifndef K_ENABLED_ACOS
   fpga_cpuemu_acos(A, B);
 #else
@@ -115,7 +70,7 @@ void fpga_acos(Tensor *A, Tensor *B){
   OCL_CHECK(err, err = q.enqueueTask(kernel_acos, NULL, &event));
   q.finish();
 #endif
-    _profile_fpga(_FPGA_ACOS_, 1);
+    _profile_fpga(_FPGA_ACOS, 1);
 }
 
 // -----------------------------------------------------------------
@@ -128,7 +83,7 @@ void fpga_cpuemu_add(Tensor *A, Tensor *B, float v) {
 }
 
 void fpga_add(Tensor *A, Tensor *B, float v) {
-  _profile_fpga(_FPGA_ADD_, 0);
+  _profile_fpga(_FPGA_ADD, 0);
 #ifndef K_ENABLED_ADD
   fpga_cpuemu_add(A, B, v);
 #else
@@ -143,7 +98,7 @@ void fpga_add(Tensor *A, Tensor *B, float v) {
   OCL_CHECK(err, err = q.enqueueTask(kernel_add, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_ADD_, 1);
+  _profile_fpga(_FPGA_ADD, 1);
 }
 
 // -----------------------------------------------------------------
@@ -156,7 +111,7 @@ void fpga_cpuemu_asin(Tensor *A, Tensor *B) {
 }
 
 void fpga_asin(Tensor *A, Tensor *B){
-  _profile_fpga(_FPGA_ASIN_, 0);
+  _profile_fpga(_FPGA_ASIN, 0);
 #ifndef K_ENABLED_ASIN
   fpga_cpuemu_asin(A, B);
 #else
@@ -170,7 +125,7 @@ void fpga_asin(Tensor *A, Tensor *B){
   OCL_CHECK(err, err = q.enqueueTask(kernel_asin, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_ASIN_, 1);
+  _profile_fpga(_FPGA_ASIN, 1);
 }
 
 // -----------------------------------------------------------------
@@ -183,7 +138,7 @@ void fpga_cpuemu_atan(Tensor *A, Tensor *B) {
 }
 
 void fpga_atan(Tensor *A, Tensor *B){
-  _profile_fpga(_FPGA_ATAN_, 0);
+  _profile_fpga(_FPGA_ATAN, 0);
 #ifndef K_ENABLED_ATAN
   fpga_cpuemu_atan(A, B);
 #else
@@ -197,7 +152,7 @@ void fpga_atan(Tensor *A, Tensor *B){
   OCL_CHECK(err, err = q.enqueueTask(kernel_atan, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_ATAN_, 1);
+  _profile_fpga(_FPGA_ATAN, 1);
 }
 
 // -----------------------------------------------------------------
@@ -210,7 +165,7 @@ void fpga_cpuemu_ceil(Tensor *A, Tensor *B) {
 }
 
 void fpga_ceil(Tensor *A, Tensor *B){
-  _profile_fpga(_FPGA_CEIL_, 0);
+  _profile_fpga(_FPGA_CEIL, 0);
 #ifndef K_ENABLED_CEIL
   fpga_cpuemu_ceil(A, B);
 #else
@@ -224,7 +179,7 @@ void fpga_ceil(Tensor *A, Tensor *B){
   OCL_CHECK(err, err = q.enqueueTask(kernel_ceil, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_CEIL_, 1);
+  _profile_fpga(_FPGA_CEIL, 1);
 }
 
 // -----------------------------------------------------------------
@@ -237,7 +192,7 @@ void fpga_cpuemu_clamp(Tensor *A, Tensor *B, float min, float max) {
 }
 
 void fpga_clamp(Tensor *A, Tensor *B, float min, float max){
-  _profile_fpga(_FPGA_CLAMP_, 0);
+  _profile_fpga(_FPGA_CLAMP, 0);
 #ifndef K_ENABLED_CLAMP
   fpga_cpuemu_clamp(A, B, min, max);
 #else
@@ -253,7 +208,7 @@ void fpga_clamp(Tensor *A, Tensor *B, float min, float max){
   OCL_CHECK(err, err = q.enqueueTask(kernel_clamp, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_CLAMP_, 1);
+  _profile_fpga(_FPGA_CLAMP, 1);
 }
 
 // -----------------------------------------------------------------
@@ -266,7 +221,7 @@ void fpga_cpuemu_cos(Tensor *A, Tensor *B) {
 }
 
 void fpga_cos(Tensor *A, Tensor *B){
-  _profile_fpga(_FPGA_COS_, 0);
+  _profile_fpga(_FPGA_COS, 0);
 #ifndef K_ENABLED_COS
   fpga_cpuemu_cos(A, B);
 #else
@@ -280,7 +235,7 @@ void fpga_cos(Tensor *A, Tensor *B){
   OCL_CHECK(err, err = q.enqueueTask(kernel_cos, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_COS_, 1);
+  _profile_fpga(_FPGA_COS, 1);
 }
 
 // -----------------------------------------------------------------
@@ -293,7 +248,7 @@ void fpga_cpuemu_cosh(Tensor *A, Tensor *B) {
 }
 
 void fpga_cosh(Tensor *A, Tensor *B){
-  _profile_fpga(_FPGA_COSH_, 0);
+  _profile_fpga(_FPGA_COSH, 0);
 #ifndef K_ENABLED_COSH
   fpga_cpuemu_cosh(A, B);
 #else
@@ -307,7 +262,7 @@ void fpga_cosh(Tensor *A, Tensor *B){
   OCL_CHECK(err, err = q.enqueueTask(kernel_cosh, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_COSH_, 1);
+  _profile_fpga(_FPGA_COSH, 1);
 }
 
 // -----------------------------------------------------------------
@@ -320,7 +275,7 @@ void fpga_cpuemu_exp(Tensor *A, Tensor *B) {
 }
 
 void fpga_exp(Tensor *A, Tensor *B) {
-  _profile_fpga(_FPGA_EXP_, 0);
+  _profile_fpga(_FPGA_EXP, 0);
 #ifndef K_ENABLED_EXP
   fpga_cpuemu_exp(A, B);
 #else
@@ -334,7 +289,7 @@ void fpga_exp(Tensor *A, Tensor *B) {
   OCL_CHECK(err, err = q.enqueueTask(kernel_exp, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_EXP_, 1);
+  _profile_fpga(_FPGA_EXP, 1);
 }
 
 // -----------------------------------------------------------------
@@ -347,7 +302,7 @@ void fpga_cpuemu_floor(Tensor *A, Tensor *B) {
 }
 
 void fpga_floor(Tensor *A, Tensor *B){
-  _profile_fpga(_FPGA_FLOOR_, 0);
+  _profile_fpga(_FPGA_FLOOR, 0);
 #ifndef K_ENABLED_FLOOR
   fpga_cpuemu_floor(A, B);
 #else
@@ -361,7 +316,7 @@ void fpga_floor(Tensor *A, Tensor *B){
   OCL_CHECK(err, err = q.enqueueTask(kernel_floor, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_FLOOR_, 1);
+  _profile_fpga(_FPGA_FLOOR, 1);
 }
 
 // -----------------------------------------------------------------
@@ -374,7 +329,7 @@ void fpga_cpuemu_inv(Tensor *A, Tensor *B, float v) {
 }
 
 void fpga_inv(Tensor *A, Tensor *B, float v){
-  _profile_fpga(_FPGA_INV_, 0);
+  _profile_fpga(_FPGA_INV, 0);
 #ifndef K_ENABLED_INV
   fpga_cpuemu_inv(A, B, v);
 #else
@@ -389,7 +344,7 @@ void fpga_inv(Tensor *A, Tensor *B, float v){
   OCL_CHECK(err, err = q.enqueueTask(kernel_inv, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_INV_, 1);
+  _profile_fpga(_FPGA_INV, 1);
 }
 
 // -----------------------------------------------------------------
@@ -402,7 +357,7 @@ void fpga_cpuemu_log(Tensor *A, Tensor *B) {
 }
 
 void fpga_log(Tensor *A, Tensor *B) {
-  _profile_fpga(_FPGA_LOG_, 0);
+  _profile_fpga(_FPGA_LOG, 0);
 #ifndef K_ENABLED_LOG
   fpga_cpuemu_log(A, B);
 #else
@@ -416,7 +371,7 @@ void fpga_log(Tensor *A, Tensor *B) {
   OCL_CHECK(err, err = q.enqueueTask(kernel_log, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_LOG_, 1);
+  _profile_fpga(_FPGA_LOG, 1);
 }
 
 // -----------------------------------------------------------------
@@ -429,7 +384,7 @@ void fpga_cpuemu_log2(Tensor *A, Tensor *B) {
 }
 
 void fpga_log2(Tensor *A, Tensor *B) {
-    _profile_fpga(_FPGA_LOG2_, 0);
+    _profile_fpga(_FPGA_LOG2, 0);
 #ifndef K_ENABLED_LOG2
     fpga_cpuemu_log2(A, B);
 #else
@@ -443,7 +398,7 @@ void fpga_log2(Tensor *A, Tensor *B) {
     OCL_CHECK(err, err = q.enqueueTask(kernel_log2, NULL, &event));
     q.finish();
 #endif
-    _profile_fpga(_FPGA_LOG2_, 1);
+    _profile_fpga(_FPGA_LOG2, 1);
 }
 
 // -----------------------------------------------------------------
@@ -456,7 +411,7 @@ void fpga_cpuemu_log10(Tensor *A, Tensor *B) {
 }
 
 void fpga_log10(Tensor *A, Tensor *B) {
-  _profile_fpga(_FPGA_LOG10_, 0);
+  _profile_fpga(_FPGA_LOG10, 0);
 #ifndef K_ENABLED_LOG10
   fpga_cpuemu_log10(A, B);
 #else
@@ -470,7 +425,7 @@ void fpga_log10(Tensor *A, Tensor *B) {
   OCL_CHECK(err, err = q.enqueueTask(kernel_log10, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_LOG10_, 1);
+  _profile_fpga(_FPGA_LOG10, 1);
 }
 
 // -----------------------------------------------------------------
@@ -483,7 +438,7 @@ void fpga_cpuemu_logn(Tensor *A, Tensor *B, float n) {
 }
 
 void fpga_logn(Tensor *A, Tensor *B, float n) {
-  _profile_fpga(_FPGA_LOGN_, 0);
+  _profile_fpga(_FPGA_LOGN, 0);
 #ifndef K_ENABLED_LOGN
   fpga_cpuemu_logn(A, B, n);
 #else
@@ -498,7 +453,7 @@ void fpga_logn(Tensor *A, Tensor *B, float n) {
   OCL_CHECK(err, err = q.enqueueTask(kernel_logn, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_LOGN_, 1);
+  _profile_fpga(_FPGA_LOGN, 1);
 }
 
 // -----------------------------------------------------------------
@@ -511,7 +466,7 @@ void fpga_cpuemu_mod(Tensor *A, Tensor *B, float v) {
 }
 
 void fpga_mod(Tensor *A, Tensor *B, float v){
-  _profile_fpga(_FPGA_MOD_, 0);
+  _profile_fpga(_FPGA_MOD, 0);
 #ifndef K_ENABLED_MOD
   fpga_cpuemu_mod(A, B, v);
 #else
@@ -526,7 +481,7 @@ void fpga_mod(Tensor *A, Tensor *B, float v){
   OCL_CHECK(err, err = q.enqueueTask(kernel_mod, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_MOD_, 1);
+  _profile_fpga(_FPGA_MOD, 1);
 }
 
 // -----------------------------------------------------------------
@@ -539,7 +494,7 @@ void fpga_cpuemu_mult(Tensor *A, Tensor *B, float v) {
 }
 
 void fpga_mult(Tensor *A, Tensor *B, float v) {
-  _profile_fpga(_FPGA_MULT_, 0);
+  _profile_fpga(_FPGA_MULT, 0);
   _profile_fpga_tensor(A);
 #ifndef K_ENABLED_MULT
   fpga_cpuemu_mult(A, B, v);
@@ -555,7 +510,7 @@ void fpga_mult(Tensor *A, Tensor *B, float v) {
   OCL_CHECK(err, err = q.enqueueTask(kernel_mult, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_MULT_, 1);
+  _profile_fpga(_FPGA_MULT, 1);
 }
 
 // -----------------------------------------------------------------
@@ -568,7 +523,7 @@ void fpga_cpuemu_normalize(Tensor *A, Tensor *B, float min, float max) {
 }
 
 void fpga_normalize(Tensor *A, Tensor *B, float min, float max){
-  _profile_fpga(_FPGA_NORMALIZE_, 0);
+  _profile_fpga(_FPGA_NORMALIZE, 0);
 #ifndef K_ENABLED_NORMALIZE
   fpga_cpuemu_normalize(A, B, min, max);
 #else
@@ -586,7 +541,7 @@ void fpga_normalize(Tensor *A, Tensor *B, float min, float max){
   OCL_CHECK(err, err = q.enqueueTask(kernel_normalize, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_NORMALIZE_, 1);
+  _profile_fpga(_FPGA_NORMALIZE, 1);
 }
 
 // -----------------------------------------------------------------
@@ -599,7 +554,7 @@ void fpga_cpuemu_pow(Tensor *A, Tensor *B, float exp) {
 }
 
 void fpga_pow(Tensor *A, Tensor *B, float exp) {
-  _profile_fpga(_FPGA_POW_, 0);
+  _profile_fpga(_FPGA_POW, 0);
 #ifndef K_ENABLED_POW
   fpga_cpuemu_pow(A, B, exp);
 #else
@@ -614,7 +569,7 @@ void fpga_pow(Tensor *A, Tensor *B, float exp) {
   OCL_CHECK(err, err = q.enqueueTask(kernel_pow, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_POW_, 1);
+  _profile_fpga(_FPGA_POW, 1);
 }
 
 // -----------------------------------------------------------------
@@ -627,7 +582,7 @@ void fpga_cpuemu_powb(Tensor *A, Tensor *B, float base) {
 }
 
 void fpga_powb(Tensor *A, Tensor *B, float base) {
-  _profile_fpga(_FPGA_POWB_, 0);
+  _profile_fpga(_FPGA_POWB, 0);
 #ifndef K_ENABLED_POWB
   fpga_cpuemu_powb(A, B, base);
 #else
@@ -642,7 +597,7 @@ void fpga_powb(Tensor *A, Tensor *B, float base) {
   OCL_CHECK(err, err = q.enqueueTask(kernel_powb, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_POWB_, 1);
+  _profile_fpga(_FPGA_POWB, 1);
 }
 
 // -----------------------------------------------------------------
@@ -683,7 +638,7 @@ void fpga_cpuemu_remainder(Tensor *A, Tensor *B, float v) {
 }
 
 void fpga_remainder(Tensor *A, Tensor *B, float v) {
-  _profile_fpga(_FPGA_REMAINDER_, 0);
+  _profile_fpga(_FPGA_REMAINDER, 0);
 #ifndef K_ENABLED_REMAINDER
   fpga_cpuemu_remainder(A, B, v);
 #else
@@ -698,7 +653,7 @@ void fpga_remainder(Tensor *A, Tensor *B, float v) {
   OCL_CHECK(err, err = q.enqueueTask(kernel_remainder, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_REMAINDER_, 1);
+  _profile_fpga(_FPGA_REMAINDER, 1);
 }
 
 // -----------------------------------------------------------------
@@ -711,7 +666,7 @@ void fpga_cpuemu_round(Tensor *A, Tensor *B) {
 }
 
 void fpga_round(Tensor *A, Tensor *B){
-  _profile_fpga(_FPGA_ROUND_, 0);
+  _profile_fpga(_FPGA_ROUND, 0);
 #ifndef K_ENABLED_ROUND
   fpga_cpuemu_round(A, B);
 #else
@@ -725,7 +680,7 @@ void fpga_round(Tensor *A, Tensor *B){
   OCL_CHECK(err, err = q.enqueueTask(kernel_round, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_ROUND_, 1);
+  _profile_fpga(_FPGA_ROUND, 1);
 }
 
 // -----------------------------------------------------------------
@@ -738,7 +693,7 @@ void fpga_cpuemu_rsqrt(Tensor *A, Tensor *B) {
 }
 
 void fpga_rsqrt(Tensor *A, Tensor *B){
-  _profile_fpga(_FPGA_RSQRT_, 0);
+  _profile_fpga(_FPGA_RSQRT, 0);
 #ifndef K_ENABLED_RSQRT
   fpga_cpuemu_rsqrt(A, B);
 #else
@@ -752,7 +707,7 @@ void fpga_rsqrt(Tensor *A, Tensor *B){
   OCL_CHECK(err, err = q.enqueueTask(kernel_rsqrt, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_RSQRT_, 1);
+  _profile_fpga(_FPGA_RSQRT, 1);
 }
 
 // -----------------------------------------------------------------
@@ -765,7 +720,7 @@ void fpga_cpuemu_sin(Tensor *A, Tensor *B) {
 }
 
 void fpga_sin(Tensor *A, Tensor *B){
-  _profile_fpga(_FPGA_SIN_, 0);
+  _profile_fpga(_FPGA_SIN, 0);
 #ifndef K_ENABLED_SIN
   fpga_cpuemu_sin(A, B);
 #else
@@ -779,7 +734,7 @@ void fpga_sin(Tensor *A, Tensor *B){
   OCL_CHECK(err, err = q.enqueueTask(kernel_sin, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_SIN_, 1);
+  _profile_fpga(_FPGA_SIN, 1);
 }
 
 // -----------------------------------------------------------------
@@ -792,7 +747,7 @@ void fpga_cpuemu_sinh(Tensor *A, Tensor *B) {
 }
 
 void fpga_sinh(Tensor *A, Tensor *B){
-  _profile_fpga(_FPGA_SINH_, 0);
+  _profile_fpga(_FPGA_SINH, 0);
 #ifndef K_ENABLED_SINH
   fpga_cpuemu_sinh(A, B);
 #else
@@ -806,7 +761,7 @@ void fpga_sinh(Tensor *A, Tensor *B){
   OCL_CHECK(err, err = q.enqueueTask(kernel_sinh, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_SINH_, 1);
+  _profile_fpga(_FPGA_SINH, 1);
 }
 
 // -----------------------------------------------------------------
@@ -819,7 +774,7 @@ void fpga_cpuemu_sqr(Tensor *A, Tensor *B) {
 }
 
 void fpga_sqr(Tensor *A, Tensor *B) {
-  _profile_fpga(_FPGA_SQR_, 0);
+  _profile_fpga(_FPGA_SQR, 0);
 #ifndef K_ENABLED_SQR
   fpga_cpuemu_sqr(A, B);
 #else
@@ -833,7 +788,7 @@ void fpga_sqr(Tensor *A, Tensor *B) {
   OCL_CHECK(err, err = q.enqueueTask(kernel_sqr, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_SQR_, 1);
+  _profile_fpga(_FPGA_SQR, 1);
 }
 
 // -----------------------------------------------------------------
@@ -846,7 +801,7 @@ void fpga_cpuemu_sqrt(Tensor *A, Tensor *B) {
 }
 
 void fpga_sqrt(Tensor *A, Tensor *B) {
-  _profile_fpga(_FPGA_SQRT_, 0);
+  _profile_fpga(_FPGA_SQRT, 0);
 #ifndef K_ENABLED_SQRT
   fpga_cpuemu_sqrt(A, B);
 #else
@@ -860,7 +815,7 @@ void fpga_sqrt(Tensor *A, Tensor *B) {
   OCL_CHECK(err, err = q.enqueueTask(kernel_sqrt, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_SQRT_, 1);
+  _profile_fpga(_FPGA_SQRT, 1);
 }
 
 // -----------------------------------------------------------------
@@ -873,7 +828,7 @@ void fpga_cpuemu_tan(Tensor *A, Tensor *B) {
 }
 
 void fpga_tan(Tensor *A, Tensor *B){
-  _profile_fpga(_FPGA_TAN_, 0);
+  _profile_fpga(_FPGA_TAN, 0);
 #ifndef K_ENABLED_TAN
   fpga_cpuemu_tan(A, B);
 #else
@@ -887,7 +842,7 @@ void fpga_tan(Tensor *A, Tensor *B){
   OCL_CHECK(err, err = q.enqueueTask(kernel_tan, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_TAN_, 1);
+  _profile_fpga(_FPGA_TAN, 1);
 }
 
 // -----------------------------------------------------------------
@@ -900,7 +855,7 @@ void fpga_cpuemu_tanh(Tensor *A, Tensor *B) {
 }
 
 void fpga_tanh(Tensor *A, Tensor *B){
-  _profile_fpga(_FPGA_TANH_, 0);
+  _profile_fpga(_FPGA_TANH, 0);
 #ifndef K_ENABLED_TANH
   fpga_cpuemu_tanh(A, B);
 #else
@@ -914,7 +869,7 @@ void fpga_tanh(Tensor *A, Tensor *B){
   OCL_CHECK(err, err = q.enqueueTask(kernel_tanh, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_TANH_, 1);
+  _profile_fpga(_FPGA_TANH, 1);
 }
 
 // -----------------------------------------------------------------
@@ -927,7 +882,7 @@ void fpga_cpuemu_trunc(Tensor *A, Tensor *B) {
 }
 
 void fpga_trunc(Tensor *A, Tensor *B){
-  _profile_fpga(_FPGA_TRUNC_, 0);
+  _profile_fpga(_FPGA_TRUNC, 0);
 #ifndef K_ENABLED_TRUNC
   fpga_cpuemu_trunc(A, B);
 #else
@@ -941,7 +896,7 @@ void fpga_trunc(Tensor *A, Tensor *B){
   OCL_CHECK(err, err = q.enqueueTask(kernel_trunc, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_TRUNC_, 1);
+  _profile_fpga(_FPGA_TRUNC, 1);
 }
 
 // FPGA: Math (static) ***************************
@@ -1274,6 +1229,7 @@ int fpga_cpuemu_argmax(Tensor *A) {
 
 int fpga_argmax(Tensor *A){
   int ret;
+  printf("fpga_argmax\n");
 #ifndef K_ENABLED_ARGMAX
   ret = fpga_cpuemu_argmax(A);
 #else
@@ -1303,6 +1259,7 @@ void fpga_cpuemu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd) {
 }
 
 void fpga_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+	printf("fpga_argmax\n");
 #ifndef K_ENABLED_ARGMAX_2
   fpga_cpuemu_argmax(A, B, rd);
 #else
@@ -1375,6 +1332,7 @@ void fpga_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
   OCL_CHECK(err, err = q.enqueueTask(kernel_min_2, NULL, &event));
   q.finish();
 #endif
+  _profile_fpga(_FPGA_MIN, 1);
 }
 
 // -----------------------------------------------------------------
@@ -1389,6 +1347,7 @@ int fpga_cpuemu_argmin(Tensor *A) {
 
 int fpga_argmin(Tensor *A){
   int ret;
+  printf("argmin\n");
 #ifndef K_ENABLED_ARGMIN
   ret = fpga_cpuemu_argmin(A);
 #else
@@ -1418,6 +1377,7 @@ void fpga_cpuemu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd) {
 }
 
 void fpga_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
+	printf("argmin\n");
 #ifndef K_ENABLED_ARGMIN_2
   fpga_cpuemu_argmin(A, B, rd);
 #else
@@ -1437,7 +1397,33 @@ void fpga_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
 // fpga_sum
 //
 //
-float fpga_sum(Tensor *A) {printf("fpga_sum not implemented yet\n"); exit(1);}
+float fpga_cpuemu_sum(Tensor *A) {
+  fpga_copy_from_fpga(A, A->ptr);
+  float ret = cpu_sum(A);
+  return ret;
+}
+
+float fpga_sum(Tensor *A) {
+  float ret;
+  _profile_fpga(_FPGA_SUM, 0);
+  _profile_fpga_tensor(A);
+#ifndef K_ENABLED_SUM
+  ret = fpga_cpuemu_sum(A);
+#else
+  cl_int err;
+  cl::Event event;
+
+  OCL_CHECK(err, err = kernel_sum.setArg(0, *(A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_sum.setArg(1, A->size));
+  printf("Error, fpga_sum not properly implemented yet\n");
+  exit(1);
+
+  OCL_CHECK(err, err = q.enqueueTask(kernel_sum, NULL, &event));
+  q.finish();
+#endif
+  _profile_fpga(_FPGA_SUM, 1);
+  return ret;
+}
 
 void fpga_sum(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){printf("fpga_sum not implemented yet\n"); exit(1);}
 
@@ -1533,3 +1519,5 @@ printf("fpga_minimum not implemented yet\n"); exit(1);
 void fpga_minimum(Tensor* A, Tensor* B, Tensor* C){
 	printf("fpga_minimum not implemented yet\n"); exit(1);
 }
+
+#endif

@@ -7,6 +7,8 @@
 * All rights reserved
 */
 
+#ifdef cFPGA
+
 #include "eddl/hardware/fpga/fpga_hw.h"
 
 #include "eddl/hardware/cpu/cpu_tensor.h"
@@ -81,6 +83,7 @@ void fpga_cpuemu_diag(Tensor *A, Tensor *B, int k) {
 }
 
 void fpga_diag(Tensor *A, Tensor *B, int k){
+	printf("fpga_diag\n");
 #ifndef K_ENABLED_DIAG
   fpga_cpuemu_diag(A, B, k);
 #else
@@ -98,3 +101,5 @@ void fpga_diag(Tensor *A, Tensor *B, int k){
   q.finish();
 #endif
 }
+
+#endif

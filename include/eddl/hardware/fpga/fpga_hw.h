@@ -7,6 +7,8 @@
 * All rights reserved
 */
 
+#ifdef cFPGA
+
 #ifndef EDDL_FPGA_HW_H
 #define EDDL_FPGA_HW_H
 
@@ -313,3 +315,5 @@ int fpga_equal2(Tensor *A, Tensor *B, float epsilon);
 
 
 #endif //EDDL_FPGA_HW_H
+
+#endif

@@ -17,7 +17,9 @@
 #include <string>
 #include <mutex>
 
+#ifdef cFPGA
 #include "eddl/hardware/fpga/xcl2.hpp"
+#endif
 
 #include "Eigen/Dense"
 
@@ -91,11 +93,13 @@ public:
     int gpu_device;
     mutex *tsem;  // Multithreading. Tensor semaphore
 
+#ifdef cFPGA
     // fpga-related information
     int fpga_device;         // fpga device
     cl::Buffer *fpga_ptr;     // open-cl buffer pointer to data
     int fpga_tensor_id;      // for debuging and tracking tensors
     long int fpga_size;      // buffer size (in elements)
+#endif
 
     // Constructors
     /**

@@ -70,7 +70,9 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
     }
 #endif
 
+#ifdef cFPGA
     fpga_ptr = (cl::Buffer *)nullptr;
+#endif
 
     // Update values
     updateDevice(dev);
@@ -146,7 +148,7 @@ void Tensor::deleteData(){
 #ifdef cFPGA
         else if (this->isFPGA())
 	{
-            fpga_delete_tensor(this->fpga_device, this->fpga_ptr, this->fpga_tensor_id, this->size);
+            fpga_delete_tensor(this->fpga_device, this->fpga_ptr, this->fpga_tensor_id, this->fpga_size);
 	}
 
       // delete FPGA Tensor
@@ -227,6 +229,16 @@ void Tensor::updateData(float *fptr){
             #endif
           } else {
             if (this->size != this->fpga_size) {
+
+	      printf("updateData con size distinto y buffer ya creado previamente\n");
+	      float min = fptr[0]; float max = fptr[0]; float sum = 0.f;
+	      for (int i=0;i < this->size; i++) {
+		      if (fptr[i] > max) max = fptr[i];
+		      if (fptr[i] < min) min = fptr[i];
+		      sum += fptr[i];
+	      }
+	      printf("new data (fptr): min %6.4f max %6.4f avg %6.4f\n", min, max, sum / (float)this->size);
+
               fpga_delete_tensor(fpga_device, this->fpga_ptr, this->fpga_tensor_id, this->fpga_size);
               //
               this->fpga_ptr = fpga_create_tensor(fpga_device, this->size);
@@ -345,7 +357,8 @@ void Tensor::toFPGA(int dev){
 
         this->fpga_ptr = fpga_ptr;
         fpga_copy_to_fpga(cpu_ptr, this);
-        delete cpu_ptr;
+	// we do not remove the cpu_ptr as is used for cpuemu mode
+        //delete cpu_ptr;
     }
     else if (isFPGA())
     {
@@ -374,6 +387,7 @@ void Tensor::reallocate(Tensor* old_t, vector<int> *s){
         updateStrides();
     }
 
+    printf("no se debe usar\n");
     updateData(old_t->ptr);
 }
 

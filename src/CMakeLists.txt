@@ -3,7 +3,7 @@
 ###########################################################################
 
 # USER OPTIONS *******************************
-set(BUILD_TARGET "FPGA" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
+set(BUILD_TARGET "CPU" CACHE STRING "Compile library for {CPU, GPU, FPGA}")
 option(OVERWRITE_PROTO_FILES "Overwrite Protobuf files (requires a compatible Protobuf compiler)" ON)
 
 # Double checks (restricted args)
@@ -12,7 +12,7 @@ set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU FPGA)
 # Initializations (Local's scope)
 SET(USE_OPENMP OFF)
 SET(USE_CUDA OFF)
-SET(USE_FPGA ON)
+SET(USE_FPGA OFF)
 
 # Device specific setup
 string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
