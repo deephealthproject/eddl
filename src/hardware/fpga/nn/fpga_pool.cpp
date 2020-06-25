@@ -7,6 +7,7 @@
 * All rights reserved
 */
 
+#ifdef cFPGA
 
 #include <cstdio>      /* printf, scanf, NULL */
 #include <cstdlib>     /* malloc, free, rand */
@@ -144,3 +145,5 @@ void fpga_avgpool2D_back(PoolDescriptor *D){
     }
     _profile_fpga(_FPGA_AVGPOOL2D_BACK, 1);
 }
+
+#endif

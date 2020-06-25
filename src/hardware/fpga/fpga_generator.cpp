@@ -7,6 +7,7 @@
 * All rights reserved
 */
 
+#ifdef cFPGA
 
 #include "eddl/random.h"
 #include "eddl/hardware/fpga/fpga_hw.h"
@@ -129,3 +130,5 @@ void fpga_rand_normal(Tensor * A, float m, float s, bool fast_math) {
 #endif
   _profile_fpga(_FPGA_RAND_NORMAL, 0);
 }
+
+#endif

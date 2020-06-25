@@ -7,8 +7,7 @@
 * All rights reserved
 */
 
-
-
+#ifdef cFPGA
 
 #include <iostream>
 #include <utility>
@@ -80,6 +79,7 @@ void fpga_cpuemu_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_ce
 }
 
 void fpga_rotate(Tensor *A, Tensor *B, float angle, vector<int> offset_center, int mode, float constant){
+	printf("fpga_rotate\n");
   _profile_fpga(_FPGA_ROTATE, 0);
 #ifndef K_ENABLED_ROTATE
   fpga_cpuemu_rotate(A, B, angle, offset_center, mode, constant);
@@ -98,6 +98,7 @@ void fpga_cpuemu_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, fl
 }
 
 void fpga_scale(Tensor *A, Tensor *B, vector<int> new_shape, int mode, float constant){
+	printf("fpga_scale\n");
   _profile_fpga(_FPGA_SCALE, 0);
 #ifndef K_ENABLED_SCALE
   fpga_cpuemu_scale(A, B, new_shape, mode, constant);
@@ -326,3 +327,5 @@ void fpga_cutout_random(Tensor *A, Tensor *B, vector<float> factor_x, vector<flo
 #endif
  _profile_fpga(_FPGA_CUTOUT_RANDOM, 0);
 }
+
+#endif

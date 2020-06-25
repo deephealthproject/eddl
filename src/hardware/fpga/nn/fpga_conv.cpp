@@ -7,6 +7,7 @@
 * All rights reserved
 */
 
+#ifdef cFPGA
 
 #include <cstdio>      /* printf, scanf, NULL */
 #include <cstdlib>     /* malloc, free, rand */
@@ -135,3 +136,5 @@ void fpga_conv2D_back(ConvolDescriptor *D)
   }
   _profile_fpga(_FPGA_CONV2D_BACK, 1);
 }
+
+#endif

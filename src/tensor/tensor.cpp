@@ -70,7 +70,9 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
     }
 #endif
 
+#ifdef cFPGA
     fpga_ptr = (cl::Buffer *)nullptr;
+#endif
 
     // Update values
     updateDevice(dev);
@@ -146,7 +148,7 @@ void Tensor::deleteData(){
 #ifdef cFPGA
         else if (this->isFPGA())
 	{
-            fpga_delete_tensor(this->fpga_device, this->fpga_ptr, this->fpga_tensor_id, this->size);
+            fpga_delete_tensor(this->fpga_device, this->fpga_ptr, this->fpga_tensor_id, this->fpga_size);
 	}
 
       // delete FPGA Tensor
@@ -227,6 +229,16 @@ void Tensor::updateData(float *fptr){
             #endif
           } else {
             if (this->size != this->fpga_size) {
+
+	      printf("updateData con size distinto y buffer ya creado previamente\n");
+	      float min = fptr[0]; float max = fptr[0]; float sum = 0.f;
+	      for (int i=0;i < this->size; i++) {
+		      if (fptr[i] > max) max = fptr[i];
+		      if (fptr[i] < min) min = fptr[i];
+		      sum += fptr[i];
+	      }
+	      printf("new data (fptr): min %6.4f max %6.4f avg %6.4f\n", min, max, sum / (float)this->size);
+
               fpga_delete_tensor(fpga_device, this->fpga_ptr, this->fpga_tensor_id, this->fpga_size);
               //
               this->fpga_ptr = fpga_create_tensor(fpga_device, this->size);
@@ -254,30 +266,22 @@ void Tensor::updateData(float *fptr){
 }
 
 void Tensor::toCPU(int dev){
+    if (this->isCPU()) {
+        // printf("Tensor already in CPU\n");
+    }else{
+        float *cpu_ptr = nullptr;
+
 #ifdef cGPU
-    if (isGPU())
-    {
+        if (this->isGPU()){
+            // Reserve memory for CPU
+            cpu_ptr = get_fmem(size, "Tensor::toCPU");
 
-        // Reserve memory for CPU
-        float *cpu_ptr = get_fmem(size, "Tensor::toCPU");
-
-        // Copy GPU data to CPU
-        gpu_copy_from_gpu(this, cpu_ptr);
-
-        // Delete GPU data
-        this->deleteData();
-
-        // Assign CPU pointer
-        this->device = dev;  // Must appear after deleting the data
-        this->ptr = cpu_ptr;
-        if (ndim == 2) {
-            ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(cpu_ptr, shape[1], shape[0]);
+            // Copy GPU data to CPU
+            gpu_copy_from_gpu(this, cpu_ptr);
         }
-
-    }
 #endif
 #ifdef cFPGA
-    if (isFPGA())
+        if (isFPGA())
     {
 
         // Reserve memory for CPU
@@ -285,8 +289,10 @@ void Tensor::toCPU(int dev){
 
         // Copy GPU data to CPU
         fpga_copy_from_fpga(this, cpu_ptr);
-
-        // Delete FPGA data
+    }
+#endif
+        // COMMON: Delete data in HW + reassign pointer
+        // Delete data
         this->deleteData();
 
         // Assign CPU pointer
@@ -295,14 +301,15 @@ void Tensor::toCPU(int dev){
         if (ndim == 2) {
             ptr2=(Eigen::MatrixXf*)new Eigen::Map<Eigen::MatrixXf>(cpu_ptr, shape[1], shape[0]);
         }
-
     }
-#endif
+
+
 }
 
 void Tensor::toGPU(int dev){
+    // TODO: Improve this with existing functions
 #ifdef cGPU
-    if (isCPU()) {
+    if (this->isCPU()) {
         this->device = dev;
         this->gpu_device = this->device - DEV_GPU;
 
@@ -318,7 +325,7 @@ void Tensor::toGPU(int dev){
         gpu_copy_to_gpu(cpu_ptr, this);
         delete cpu_ptr;
     }
-    else if (isGPU())
+    else if (this->isGPU())
     {
 //        printf("Tensor already in GPU\n");
     }
@@ -331,7 +338,7 @@ void Tensor::toGPU(int dev){
 
 void Tensor::toFPGA(int dev){
 #ifdef cFPGA
-    if (isCPU()) {
+    if (this->isCPU()) {
         this->device = dev;
         this->fpga_device = this->device - DEV_FPGA;
 
@@ -345,9 +352,10 @@ void Tensor::toFPGA(int dev){
 
         this->fpga_ptr = fpga_ptr;
         fpga_copy_to_fpga(cpu_ptr, this);
-        delete cpu_ptr;
+	// we do not remove the cpu_ptr as is used for cpuemu mode
+        //delete cpu_ptr;
     }
-    else if (isFPGA())
+    else if (this->isFPGA())
     {
 //        printf("Tensor already in FPGA\n");
     }
@@ -374,6 +382,7 @@ void Tensor::reallocate(Tensor* old_t, vector<int> *s){
         updateStrides();
     }
 
+    printf("no se debe usar\n");
     updateData(old_t->ptr);
 }
 

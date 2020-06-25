@@ -7,6 +7,7 @@
 * All rights reserved
 */
 
+#ifdef cFPGA
 
 #include <cstdio>      /* printf, scanf, NULL */
 #include <cstdlib>     /* malloc, free, rand */
@@ -137,3 +138,5 @@ void fpga_permute_batch_first(Tensor *A,Tensor *B){
 #endif
   _profile_fpga(_FPGA_PERMUTE_BATCH_FIRST, 1);
 }
+
+#endif

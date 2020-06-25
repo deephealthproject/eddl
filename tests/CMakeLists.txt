@@ -31,8 +31,7 @@ file(GLOB_RECURSE CPP_TESTS_FILES "${PROJECT_SOURCE_DIR}/*" *.{h, cpp})
 # Build test and target libraries
 add_executable(unit_tests ${CPP_TESTS_FILES})
 target_include_directories(unit_tests PUBLIC $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>)  # TODO: Why build interface?
-#target_link_directories(unit_tests PUBLIC ${GTEST_LIBRARIES_DIRS})
-link_directories(${GTEST_LIBRARIES_DIRS})
+target_link_directories(unit_tests PUBLIC ${GTEST_LIBRARIES_DIRS})
 if(MSVC)
     target_link_libraries(unit_tests PUBLIC eddl
         optimized ${GTEST_BOTH_LIBRARIES}
@@ -47,6 +46,9 @@ if(USE_CUDA)
     add_definitions(-DcGPU)
 endif()
 
+if (USE_FPGA)
+    add_definitions(-DcFPGA)
+endif()
 
 # Add test
 add_test(NAME unit_tests COMMAND unit_tests)

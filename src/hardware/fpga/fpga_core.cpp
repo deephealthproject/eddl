@@ -7,6 +7,8 @@
 * All rights reserved
 */
 
+#ifdef cFPGA
+
 #include "eddl/hardware/fpga/xcl2.hpp"
 #include <vector>
 #include <math.h>
@@ -159,40 +161,36 @@ void _profile_fpga_funcname(int i, char *name) {
       case _FPGA_RAND_SIGNED_UNIFORM : strcpy(name, "rand_signed_uniform"); break;
       case _FPGA_BINARY           : strcpy(name, "binary"); break;
       case _FPGA_RAND_NORMAL      : strcpy(name, "rand_normal"); break;
-      case _FPGA_ABS_             : strcpy(name, "abs"); break;
-      case _FPGA_ACOS_            : strcpy(name, "acos"); break;
-      case _FPGA_ADD_             : strcpy(name, "add"); break;
-      case _FPGA_ASIN_            : strcpy(name, "asin"); break;
-      case _FPGA_ATAN_            : strcpy(name, "atan"); break;
-      case _FPGA_CEIL_            : strcpy(name, "ceil"); break;
-      case _FPGA_CLAMP_           : strcpy(name, "clamp"); break;
-      case _FPGA_COS_             : strcpy(name, "cos"); break;
-      case _FPGA_COSH_            : strcpy(name, "cosh"); break;
-      case _FPGA_EXP_             : strcpy(name, "exp"); break;
-      case _FPGA_FLOOR_           : strcpy(name, "floor"); break;
-      case _FPGA_INV_             : strcpy(name, "inv"); break;
-      case _FPGA_LOG_             : strcpy(name, "log"); break;
-      case _FPGA_LOG2_            : strcpy(name, "log2"); break;
-      case _FPGA_LOG10_           : strcpy(name, "log10"); break;
-      case _FPGA_LOGN_            : strcpy(name, "logn"); break;
-      case _FPGA_MOD_             : strcpy(name, "mod"); break;
-      case _FPGA_MULT_            : strcpy(name, "mult"); break;
-      case _FPGA_NORMALIZE_       : strcpy(name, "normalize"); break;
-      case _FPGA_POW_             : strcpy(name, "pow"); break;
-      case _FPGA_POWB_            : strcpy(name, "powb"); break;
-      case _FPGA_RECIPROCAL_      : strcpy(name, "reciprocal"); break;
-      case _FPGA_REMAINDER_       : strcpy(name, "remainder"); break;
-      case _FPGA_ROUND_           : strcpy(name, "round"); break;
-      case _FPGA_RSQRT_           : strcpy(name, "rsqrt"); break;
-      case _FPGA_SIGMOID_         : strcpy(name, "sigmoid"); break;
-      case _FPGA_SIGN_            : strcpy(name, "sign"); break;
-      case _FPGA_SIN_             : strcpy(name, "sin"); break;
-      case _FPGA_SINH_            : strcpy(name, "sinh"); break;
-      case _FPGA_SQR_             : strcpy(name, "sqr"); break;
-      case _FPGA_SQRT_            : strcpy(name, "sqrt"); break;
-      case _FPGA_TAN_             : strcpy(name, "tan"); break;
-      case _FPGA_TANH_            : strcpy(name, "tanh"); break;
-      case _FPGA_TRUNC_           : strcpy(name, "trunc"); break;
+      case _FPGA_ABS             : strcpy(name, "abs"); break;
+      case _FPGA_ACOS            : strcpy(name, "acos"); break;
+      case _FPGA_ASIN            : strcpy(name, "asin"); break;
+      case _FPGA_ATAN            : strcpy(name, "atan"); break;
+      case _FPGA_CEIL            : strcpy(name, "ceil"); break;
+      case _FPGA_CLAMP           : strcpy(name, "clamp"); break;
+      case _FPGA_COS             : strcpy(name, "cos"); break;
+      case _FPGA_COSH            : strcpy(name, "cosh"); break;
+      case _FPGA_FLOOR           : strcpy(name, "floor"); break;
+      case _FPGA_INV             : strcpy(name, "inv"); break;
+      case _FPGA_LOG             : strcpy(name, "log"); break;
+      case _FPGA_LOG2            : strcpy(name, "log2"); break;
+      case _FPGA_LOG10           : strcpy(name, "log10"); break;
+      case _FPGA_LOGN            : strcpy(name, "logn"); break;
+      case _FPGA_MOD             : strcpy(name, "mod"); break;
+      case _FPGA_MULT            : strcpy(name, "mult"); break;
+      case _FPGA_NORMALIZE       : strcpy(name, "normalize"); break;
+      case _FPGA_POW             : strcpy(name, "pow"); break;
+      case _FPGA_POWB            : strcpy(name, "powb"); break;
+      case _FPGA_RECIPROCAL      : strcpy(name, "reciprocal"); break;
+      case _FPGA_REMAINDER       : strcpy(name, "remainder"); break;
+      case _FPGA_ROUND           : strcpy(name, "round"); break;
+      case _FPGA_RSQRT           : strcpy(name, "rsqrt"); break;
+      case _FPGA_SIGN            : strcpy(name, "sign"); break;
+      case _FPGA_SIN             : strcpy(name, "sin"); break;
+      case _FPGA_SINH            : strcpy(name, "sinh"); break;
+      case _FPGA_SQR             : strcpy(name, "sqr"); break;
+      case _FPGA_SQRT            : strcpy(name, "sqrt"); break;
+      case _FPGA_TAN             : strcpy(name, "tan"); break;
+      case _FPGA_TRUNC           : strcpy(name, "trunc"); break;
       case _FPGA_ADD              : strcpy(name, "add"); break;
       case _FPGA_INC              : strcpy(name, "inc"); break;
       case _FPGA_MULT2D           : strcpy(name, "mult2D"); break;
@@ -250,6 +248,7 @@ void _profile_fpga_funcname(int i, char *name) {
       case _FPGA_AVGPOOL2D_BACK         : strcpy(name, "avgpool2d_back"); break;
       case _FPGA_REPEAT_NN              : strcpy(name, "repeat_nn"); break;
       case _FPGA_D_REPEAT_NN            : strcpy(name, "d_repeat_nn"); break;
+      case _FPGA_SUM_2                  : strcpy(name, "sum_2"); break;
       default                          : strcpy(name, "?????"); break;
   }
 }
@@ -288,12 +287,12 @@ void _profile_fpga_tensor(Tensor *T) {
     sum += T->ptr[i];
   }
   avg = sum / (float)T->size;
-  printf("  - Tensor id %d size %d shape0 %d shape1 %d (cpu_ptr %p). Min %8.4f Max %8.4f Avg %8.4f\n", T->fpga_tensor_id, T->size, T->shape[0], T->shape[1], T->ptr, min, max, avg);
+  printf("  - Tensor id %d size %d size_fpga %d shape0 %d shape1 %d (cpu_ptr %p). Min %8.4f Max %8.4f Avg %8.4f\n", T->fpga_tensor_id, T->size, T->fpga_size, T->shape[0], T->shape[1], T->ptr, min, max, avg);
 #endif
 }
 
 void _show_profile_fpga() {
-//#ifdef FPGA_DEBUG
+#ifdef FPGA_DEBUG
   printf("\n---------------------------------------\nFPGA functions called:\n");
   for (int i=0; i<_NUM_FPGA_FUNCS; i++) {
     if (num_instances_fpga[i] != 0) {
@@ -304,7 +303,7 @@ void _show_profile_fpga() {
   }
   printf("Memory: %f MB\n", mb_memory_needed_fpga);
   printf("---------------------------------------\n");
-//#endif
+#endif
 }
 
 void _profile_fpga_add_tensor(int size) {
@@ -985,7 +984,7 @@ void fpga_delete_tensor(int device, cl::Buffer *ptr, int fpga_tensor_id_p, int s
     // we just update the buffer pool
     //
     int e;
-//    printf("ptr to delete %p  size %d\n", ptr, size);
+  //  printf("ptr to delete %p  size %d\n", ptr, size);
     for (e=0; e<fpga_num_buffer_pool_slots; e++) {
 //      printf("slot %d: inuse %d free %d size %d ptr %p\n", e, fpga_inuse_buffer_pool[e], fpga_free_buffer_pool[e], fpga_size_buffer_pool[e], fpga_ptr_buffer_pool[e]);
       if (fpga_inuse_buffer_pool[e] && !fpga_free_buffer_pool[e] && (fpga_size_buffer_pool[e] == size) && (fpga_ptr_buffer_pool[e] == ptr)) break;
@@ -1006,7 +1005,6 @@ void fpga_delete_tensor(int device, cl::Buffer *ptr, int fpga_tensor_id_p, int s
 ///////////////////////////////////////////
 void fpga_copy_fpga(Tensor *A, Tensor *B)
 {
-
 #ifdef FPGA_DEBUG
     printf("    (copy fpga: tensor id %d (size %d, ptr %p) -> tensor id %d (size %d, ptr %p))\n", A->fpga_tensor_id, A->size, A->fpga_ptr, B->fpga_tensor_id, B->size, B->fpga_ptr);
 #endif
@@ -1421,3 +1419,5 @@ void fpga_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivativ
 #endif
     _profile_fpga(_FPGA_CONCAT, 1);
 }
+
+#endif

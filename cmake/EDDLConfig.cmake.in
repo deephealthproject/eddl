@@ -6,6 +6,7 @@ SET(USE_SUPERBUILD @BUILD_SUPERBUILD@)  # Set in parent
 SET(USE_PROTOBUF @BUILD_PROTOBUF@)  # Set in parent
 SET(USE_OPENMP @USE_OPENMP@)  # Modified in a subdirectory
 SET(USE_CUDA @USE_CUDA@) # Modified in a subdirectory
+SET(USE_FPGA @USE_FPGA@) # Modified in a subdirectory
 SET(USE_SYSTEM_EIGEN @USE_SYSTEM_EIGEN@) # Modified in a subdirectory
 #SET(USE_SYSTEM_ZLIB @USE_SYSTEM_ZLIB@) # Modified in a subdirectory
 SET(USE_SYSTEM_PROTOBUF @USE_SYSTEM_PROTOBUF@) # Modified in a subdirectory
@@ -26,6 +27,11 @@ endif()
 # CUDA
 if(USE_CUDA)
     enable_language(CUDA)
+endif()
+
+# FPGA
+if(USE_FPGA)
+    find_dependency(OpenCL REQUIRED)
 endif()
 
 if(USE_SUPERBUILD)

@@ -7,6 +7,8 @@
 * All rights reserved
 */
 
+#ifdef cFPGA
+
 #include <cstdio>      /* printf, scanf, NULL */
 #include <cstdlib>     /* malloc, free, rand */
 #include <iostream>
@@ -100,3 +102,5 @@ int fpga_bin_accuracy(Tensor *A, Tensor *B){
 #endif
   return *accu;
 }
+
+#endif
