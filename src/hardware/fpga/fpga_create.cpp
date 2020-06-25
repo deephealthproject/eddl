@@ -92,7 +92,7 @@ void fpga_diag(Tensor *A, Tensor *B, int k){
   OCL_CHECK(err, err = kernel_diag.setArg(2, (long int)A->size));
   OCL_CHECK(err, err = kernel_diag.setArg(3, A->shape[0]));
   OCL_CHECK(err, err = kernel_diag.setArg(4, A->shape[1]));
-  OCL_CHECK(err, err = kernel_diag.setArg(5, (int)k);
+  OCL_CHECK(err, err = kernel_diag.setArg(5, (int)k));
 
   OCL_CHECK(err, err = q.enqueueTask(kernel_diag, NULL, &event));
   q.finish();
