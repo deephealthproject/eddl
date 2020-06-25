@@ -430,17 +430,17 @@ void fpga_cpuemu_log2(Tensor *A, Tensor *B) {
 
 void fpga_log2(Tensor *A, Tensor *B) {
     _profile_fpga(_FPGA_LOG2_, 0);
-#ifndef K_ENABLED_log2_
+#ifndef K_ENABLED_LOG2
     fpga_cpuemu_log2(A, B);
 #else
     printf("añadir tensor B\n"); exit(1);
     cl_int err;
     cl::Event event;
 
-    OCL_CHECK(err, err = kernel_log2_.setArg(0, *(A->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_log2_.setArg(1, (long int)A->size));
+    OCL_CHECK(err, err = kernel_log2.setArg(0, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_log2.setArg(1, (long int)A->size));
 
-    OCL_CHECK(err, err = q.enqueueTask(kernel_log2_, NULL, &event));
+    OCL_CHECK(err, err = q.enqueueTask(kernel_log2, NULL, &event));
     q.finish();
 #endif
     _profile_fpga(_FPGA_LOG2_, 1);
@@ -1238,7 +1238,7 @@ float fpga_max(Tensor *A){
 //
 void fpga_cpuemu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd) {
   fpga_copy_from_fpga(A, A->ptr);
-  fpga_copy_memory_from_fpga(rd->fpga_index, rd->index, rd->index.size());
+  fpga_copy_memory_from_fpga(rd->fpga_index, (void *)&rd->index, rd->index.size());
   // index[i].data must be read from fpga
   printf("Not properly implemented yet (fpga_cpuemu_max\n"); exit(1);
   cpu_max(A, B, rd);
@@ -1295,7 +1295,7 @@ int fpga_argmax(Tensor *A){
 //
 void fpga_cpuemu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd) {
   fpga_copy_from_fpga(A, A->ptr);
-  fpga_copy_memory_from_fpga(rd->fpga_index, rd->index, rd->index.size());
+  fpga_copy_memory_from_fpga(rd->fpga_index, (void *)&rd->index, rd->index.size());
   // index[i].data must be read from fpga
   printf("Not properly implemented yet (fpga_cpuemu_argmax\n"); exit(1);
   cpu_argmax(A, B, rd);
@@ -1353,7 +1353,7 @@ float fpga_min(Tensor *A){
 //
 void fpga_cpuemu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd) {
   fpga_copy_from_fpga(A, A->ptr);
-  fpga_copy_memory_from_fpga(rd->fpga_index, rd->index, rd->index.size());
+  fpga_copy_memory_from_fpga(rd->fpga_index, (void *)&rd->index, rd->index.size());
   // index[i].data must be read from fpga
   printf("Not properly implemented yet (fpga_cpuemu_min\n"); exit(1);
   cpu_min(A, B, rd);
@@ -1410,7 +1410,7 @@ int fpga_argmin(Tensor *A){
 //
 void fpga_cpuemu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd) {
   fpga_copy_from_fpga(A, A->ptr);
-  fpga_copy_memory_from_fpga(rd->fpga_index, rd->index, rd->index.size());
+  fpga_copy_memory_from_fpga(rd->fpga_index, (void *)&rd->index, rd->index.size());
   // index[i].data must be read from fpga
   printf("Not properly implemented yet (fpga_cpuemu_argmin\n"); exit(1);
   cpu_argmin(A, B, rd);

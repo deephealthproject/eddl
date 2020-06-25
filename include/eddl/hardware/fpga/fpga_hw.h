@@ -18,7 +18,7 @@
 
 extern cl::CommandQueue q;
 
-//#define FPGA_DEBUG
+#define FPGA_DEBUG
 
 #include "eddl/hardware/fpga/fpga_enables.h"
 
@@ -45,6 +45,7 @@ extern cl::Kernel kernel_less_equal_vector, kernel_equal_vector, kernel_not_equa
 extern cl::Kernel kernel_transpose,   kernel_copy,        kernel_fill_,      kernel_fill;
 extern cl::Kernel kernel_select,      kernel_select_back, kernel_set_select, kernel_set_select_back;
 extern cl::Kernel kernel_set_select2, kernel_deselect,    kernel_concat;
+extern cl::Kernel kernel_select_nn,   kernel_select_back_nn, kernel_set_select_back_nn, kernel_set_select_nn;
 
 // conv kernels (2)
 extern cl::Kernel kernel_im2col,      kernel_conv2d;
@@ -76,13 +77,13 @@ extern cl::Kernel kernel_reduce, kernel_reduce_op, kernel_reduce_sum2D, kernel_r
 extern cl::Kernel kernel_repeat_nn, kernel_d_repeat_nn;
 
 // math kernels (46)
-extern cl::Kernel kernel_abs_,       kernel_acos_,  kernel_add_,      kernel_asin_,       kernel_atan_,      kernel_ceil_,         kernel_clamp_;
-extern cl::Kernel kernel_cos_,       kernel_cosh_,  kernel_sigmoid_,  kernel_mod_,        kernel_mult_,      kernel_trunc_,        kernel_sum_abs;
-extern cl::Kernel kernel_exp_,       kernel_floor_, kernel_inv_,      kernel_log_,        kernel_log2_,      kernel_log10_,        kernel_logn_;
-extern cl::Kernel kernel_normalize_, kernel_pow_,   kernel_powb_,     kernel_reciprocal_, kernel_remainder_, kernel_round_,        kernel_rsqrt_;
-extern cl::Kernel kernel_sign_,      kernel_sin_,   kernel_sinh_,     kernel_sqr_,        kernel_sqrt_,      kernel_tan_,          kernel_tanh_;
-extern cl::Kernel kernel_add,        kernel_inc,    kernel_el_div,    kernel_el_mult,     kernel_sign2,      kernel_sum2D_rowwise, kernel_sum2D_colwise;
-extern cl::Kernel kernel_max,        kernel_min,    kernel_sum,       kernel_mult2d;
+extern cl::Kernel kernel_abs,       kernel_acos,   kernel_add,      kernel_asin,       kernel_atan,          kernel_ceil,          kernel_clamp;
+extern cl::Kernel kernel_cos,       kernel_cosh,   kernel_mod,      kernel_mult,       kernel_trunc,         kernel_sum_abs;
+extern cl::Kernel kernel_floor,     kernel_inv,    kernel_log,      kernel_log2,       kernel_log10,         kernel_logn;
+extern cl::Kernel kernel_normalize, kernel_pow,    kernel_powb,     kernel_reciprocal, kernel_remainder,     kernel_round,         kernel_rsqrt;
+extern cl::Kernel kernel_sign,      kernel_sin,    kernel_sinh,     kernel_sqr,        kernel_sqrt,          kernel_tan;
+extern cl::Kernel kernel_inc,       kernel_el_div, kernel_el_mult,  kernel_sign2,      kernel_sum2D_rowwise, kernel_sum2D_colwise;
+extern cl::Kernel kernel_max,       kernel_min,    kernel_sum,      kernel_mult2d;
 
 #define MAX_FLOAT std::numeric_limits<float>::max()
 #define MIN_FLOAT -std::numeric_limits<float>::max()

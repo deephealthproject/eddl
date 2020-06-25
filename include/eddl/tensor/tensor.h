@@ -168,6 +168,10 @@ public:
     void toGPU(int dev=DEV_GPU);
 
     /**
+      *  @brief Clone a tensor to the GFPGA.
+    */
+    void toFPGA(int dev=DEV_FPGA);
+    /**
       *  @brief Check if the tensor is in CPU.
       *
       *  @return int

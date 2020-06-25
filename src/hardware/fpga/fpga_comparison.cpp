@@ -717,7 +717,7 @@ void fpga_not_equal(Tensor *A, Tensor *B, float v){
 
   OCL_CHECK(err, err = kernel_not_equal_vector.setArg(0, *(A->fpga_ptr)));
   OCL_CHECK(err, err = kernel_not_equal_vector.setArg(1, *(B->fpga_ptr)));
-  OCL_CHECK(err, err = kernel_not_equal_vector.setArg(2, (float)v);
+  OCL_CHECK(err, err = kernel_not_equal_vector.setArg(2, (float)v));
   OCL_CHECK(err, err = kernel_not_equal_vector.setArg(3, (long int)A->size));
 
   OCL_CHECK(err, err = q.enqueueTask(kernel_not_equal_vector, NULL, &event));

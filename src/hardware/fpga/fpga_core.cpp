@@ -56,6 +56,7 @@ cl::Kernel kernel_less_equal_vector, kernel_equal_vector, kernel_not_equal_vecto
 cl::Kernel kernel_transpose,   kernel_copy,        kernel_fill_,      kernel_fill;
 cl::Kernel kernel_select,      kernel_select_back, kernel_set_select, kernel_set_select_back;
 cl::Kernel kernel_set_select2, kernel_deselect,    kernel_concat;
+cl::Kernel kernel_select_nn,   kernel_select_back_nn, kernel_set_select_nn, kernel_set_select_back_nn;
 
 // conv kernels (2)
 cl::Kernel kernel_im2col,      kernel_conv2d;
@@ -87,13 +88,13 @@ cl::Kernel kernel_reduce, kernel_reduce_op, kernel_reduce_sum2D, kernel_reductio
 cl::Kernel kernel_repeat_nn, kernel_d_repeat_nn;
 
 // math kernels (46)
-cl::Kernel kernel_abs_,       kernel_acos_,  kernel_add_,      kernel_asin_,       kernel_atan_,      kernel_ceil_,         kernel_clamp_;
-cl::Kernel kernel_cos_,       kernel_cosh_,  kernel_sigmoid_,  kernel_mod_,        kernel_mult_,      kernel_trunc_,        kernel_sum_abs;
-cl::Kernel kernel_exp_,       kernel_floor_, kernel_inv_,      kernel_log_,        kernel_log2_,      kernel_log10_,        kernel_logn_;
-cl::Kernel kernel_normalize_, kernel_pow_,   kernel_powb_,     kernel_reciprocal_, kernel_remainder_, kernel_round_,        kernel_rsqrt_;
-cl::Kernel kernel_sign_,      kernel_sin_,   kernel_sinh_,     kernel_sqr_,        kernel_sqrt_,      kernel_tan_,          kernel_tanh_;
-cl::Kernel kernel_add,        kernel_inc,    kernel_el_div,    kernel_el_mult,     kernel_sign2,      kernel_sum2D_rowwise, kernel_sum2D_colwise;
-cl::Kernel kernel_max,        kernel_min,    kernel_sum,       kernel_mult2d;
+cl::Kernel kernel_abs,       kernel_acos,   kernel_add,      kernel_asin,       kernel_atan,          kernel_ceil,          kernel_clamp;
+cl::Kernel kernel_cos,       kernel_cosh,   kernel_mod,      kernel_mult,       kernel_trunc,         kernel_sum_abs;
+cl::Kernel kernel_floor,     kernel_inv,    kernel_log,      kernel_log2,       kernel_log10,         kernel_logn;
+cl::Kernel kernel_normalize, kernel_pow,    kernel_powb,     kernel_reciprocal, kernel_remainder,     kernel_round,         kernel_rsqrt;
+cl::Kernel kernel_sign,      kernel_sin,    kernel_sinh,     kernel_sqr,        kernel_sqrt,          kernel_tan;
+cl::Kernel kernel_inc,       kernel_el_div, kernel_el_mult,  kernel_sign2,      kernel_sum2D_rowwise, kernel_sum2D_colwise;
+cl::Kernel kernel_max,       kernel_min,    kernel_sum,      kernel_mult2d;
 
 
 // profiling
@@ -158,40 +159,40 @@ void _profile_fpga_funcname(int i, char *name) {
       case _FPGA_RAND_SIGNED_UNIFORM : strcpy(name, "rand_signed_uniform"); break;
       case _FPGA_BINARY           : strcpy(name, "binary"); break;
       case _FPGA_RAND_NORMAL      : strcpy(name, "rand_normal"); break;
-      case _FPGA_ABS_             : strcpy(name, "abs_"); break;
-      case _FPGA_ACOS_            : strcpy(name, "acos_"); break;
-      case _FPGA_ADD_             : strcpy(name, "add_"); break;
-      case _FPGA_ASIN_            : strcpy(name, "asin_"); break;
-      case _FPGA_ATAN_            : strcpy(name, "atan_"); break;
-      case _FPGA_CEIL_            : strcpy(name, "ceil_"); break;
-      case _FPGA_CLAMP_           : strcpy(name, "clamp_"); break;
-      case _FPGA_COS_             : strcpy(name, "cos_"); break;
-      case _FPGA_COSH_            : strcpy(name, "cosh_"); break;
-      case _FPGA_EXP_             : strcpy(name, "exp_"); break;
-      case _FPGA_FLOOR_           : strcpy(name, "floor_"); break;
-      case _FPGA_INV_             : strcpy(name, "inv_"); break;
-      case _FPGA_LOG_             : strcpy(name, "log_"); break;
-      case _FPGA_LOG2_            : strcpy(name, "log2_"); break;
-      case _FPGA_LOG10_           : strcpy(name, "log10_"); break;
-      case _FPGA_LOGN_            : strcpy(name, "logn_"); break;
-      case _FPGA_MOD_             : strcpy(name, "mod_"); break;
-      case _FPGA_MULT_            : strcpy(name, "mult_"); break;
-      case _FPGA_NORMALIZE_       : strcpy(name, "normalize_"); break;
-      case _FPGA_POW_             : strcpy(name, "pow_"); break;
-      case _FPGA_POWB_            : strcpy(name, "powb_"); break;
-      case _FPGA_RECIPROCAL_      : strcpy(name, "reciprocal_"); break;
-      case _FPGA_REMAINDER_       : strcpy(name, "remainder_"); break;
-      case _FPGA_ROUND_           : strcpy(name, "round_"); break;
-      case _FPGA_RSQRT_           : strcpy(name, "rsqrt_"); break;
-      case _FPGA_SIGMOID_         : strcpy(name, "sigmoid_"); break;
-      case _FPGA_SIGN_            : strcpy(name, "sign_"); break;
-      case _FPGA_SIN_             : strcpy(name, "sin_"); break;
-      case _FPGA_SINH_            : strcpy(name, "sinh_"); break;
-      case _FPGA_SQR_             : strcpy(name, "sqr_"); break;
-      case _FPGA_SQRT_            : strcpy(name, "sqrt_"); break;
-      case _FPGA_TAN_             : strcpy(name, "tan_"); break;
-      case _FPGA_TANH_            : strcpy(name, "tanh_"); break;
-      case _FPGA_TRUNC_           : strcpy(name, "trunc_"); break;
+      case _FPGA_ABS_             : strcpy(name, "abs"); break;
+      case _FPGA_ACOS_            : strcpy(name, "acos"); break;
+      case _FPGA_ADD_             : strcpy(name, "add"); break;
+      case _FPGA_ASIN_            : strcpy(name, "asin"); break;
+      case _FPGA_ATAN_            : strcpy(name, "atan"); break;
+      case _FPGA_CEIL_            : strcpy(name, "ceil"); break;
+      case _FPGA_CLAMP_           : strcpy(name, "clamp"); break;
+      case _FPGA_COS_             : strcpy(name, "cos"); break;
+      case _FPGA_COSH_            : strcpy(name, "cosh"); break;
+      case _FPGA_EXP_             : strcpy(name, "exp"); break;
+      case _FPGA_FLOOR_           : strcpy(name, "floor"); break;
+      case _FPGA_INV_             : strcpy(name, "inv"); break;
+      case _FPGA_LOG_             : strcpy(name, "log"); break;
+      case _FPGA_LOG2_            : strcpy(name, "log2"); break;
+      case _FPGA_LOG10_           : strcpy(name, "log10"); break;
+      case _FPGA_LOGN_            : strcpy(name, "logn"); break;
+      case _FPGA_MOD_             : strcpy(name, "mod"); break;
+      case _FPGA_MULT_            : strcpy(name, "mult"); break;
+      case _FPGA_NORMALIZE_       : strcpy(name, "normalize"); break;
+      case _FPGA_POW_             : strcpy(name, "pow"); break;
+      case _FPGA_POWB_            : strcpy(name, "powb"); break;
+      case _FPGA_RECIPROCAL_      : strcpy(name, "reciprocal"); break;
+      case _FPGA_REMAINDER_       : strcpy(name, "remainder"); break;
+      case _FPGA_ROUND_           : strcpy(name, "round"); break;
+      case _FPGA_RSQRT_           : strcpy(name, "rsqrt"); break;
+      case _FPGA_SIGMOID_         : strcpy(name, "sigmoid"); break;
+      case _FPGA_SIGN_            : strcpy(name, "sign"); break;
+      case _FPGA_SIN_             : strcpy(name, "sin"); break;
+      case _FPGA_SINH_            : strcpy(name, "sinh"); break;
+      case _FPGA_SQR_             : strcpy(name, "sqr"); break;
+      case _FPGA_SQRT_            : strcpy(name, "sqrt"); break;
+      case _FPGA_TAN_             : strcpy(name, "tan"); break;
+      case _FPGA_TANH_            : strcpy(name, "tanh"); break;
+      case _FPGA_TRUNC_           : strcpy(name, "trunc"); break;
       case _FPGA_ADD              : strcpy(name, "add"); break;
       case _FPGA_INC              : strcpy(name, "inc"); break;
       case _FPGA_MULT2D           : strcpy(name, "mult2D"); break;
@@ -595,6 +596,24 @@ void fpga_init(){ // initialize only once
     OCL_CHECK(err, kernel_set_select_back = cl::Kernel(program,"k_set_select_back", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
+
+    #ifdef K_ENABLED_SELECT_NN
+    OCL_CHECK(err, kernel_select_nn = cl::Kernel(program,"k_select_nn", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SELECT_BACK_NN
+    OCL_CHECK(err, kernel_select_back = cl::Kernel(program,"k_select_back_nn", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SET_SELECT_NN
+    OCL_CHECK(err, kernel_set_select_nn = cl::Kernel(program,"k_set_select_nn", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_SET_SELECT_BACK_NN
+    OCL_CHECK(err, kernel_set_select_back_nn = cl::Kernel(program,"k_set_select_back_nn", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+
     #ifdef K_ENABLED_SET_SELECT2
     OCL_CHECK(err, kernel_set_select2 = cl::Kernel(program,"k_set_select2", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
@@ -632,7 +651,7 @@ void fpga_init(){ // initialize only once
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_SINGLE_ROTATE
-    OCL_CHECK(err, kernel_single_roate = cl::Kernel(program,"k_single_rotate", &err));
+    OCL_CHECK(err, kernel_single_rotate = cl::Kernel(program,"k_single_rotate", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_SINGLE_SCALE
@@ -724,143 +743,127 @@ void fpga_init(){ // initialize only once
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_ABS_
-    OCL_CHECK(err, kernel_abs_ = cl::Kernel(program,"k_abs_", &err));
+    OCL_CHECK(err, kernel_abs = cl::Kernel(program,"k_abs", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_ACOS_
-    OCL_CHECK(err, kernel_acos_ = cl::Kernel(program,"k_acos_", &err));
+    OCL_CHECK(err, kernel_acos = cl::Kernel(program,"k_acos", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_ADD_
-    OCL_CHECK(err, kernel_add_ = cl::Kernel(program,"k_add_", &err));
+    OCL_CHECK(err, kernel_add = cl::Kernel(program,"k_add", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_ASIN_
-    OCL_CHECK(err, kernel_asin_ = cl::Kernel(program,"k_asin_", &err));
+    OCL_CHECK(err, kernel_asin = cl::Kernel(program,"k_asin", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_ATAN_
-    OCL_CHECK(err, kernel_atan_ = cl::Kernel(program,"k_atan_", &err));
+    OCL_CHECK(err, kernel_atan = cl::Kernel(program,"k_atan", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_CEIL_
-    OCL_CHECK(err, kernel_ceil_ = cl::Kernel(program,"k_ceil_", &err));
+    OCL_CHECK(err, kernel_ceil = cl::Kernel(program,"k_ceil", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_CLAMP_
-    OCL_CHECK(err, kernel_clamp_ = cl::Kernel(program,"k_clamp_", &err));
+    OCL_CHECK(err, kernel_clamp = cl::Kernel(program,"k_clamp", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_K_COS_
-    OCL_CHECK(err, kernel_cos_ = cl::Kernel(program,"k_cos_", &err));
+    OCL_CHECK(err, kernel_cos = cl::Kernel(program,"k_cos", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_COSH_
-    OCL_CHECK(err, kernel_cosh_ = cl::Kernel(program,"k_cosh_", &err));
-    if (err != CL_SUCCESS) printf("Error creating kernel\n");
-    #endif
-    #ifdef K_ENABLED_EXP_
-    OCL_CHECK(err, kernel_exp_ = cl::Kernel(program,"k_exp_", &err));
+    OCL_CHECK(err, kernel_cosh = cl::Kernel(program,"k_cosh", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_FLOOR_
-    OCL_CHECK(err, kernel_floor_ = cl::Kernel(program,"k_floor_", &err));
+    OCL_CHECK(err, kernel_floor = cl::Kernel(program,"k_floor", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_INV_
-    OCL_CHECK(err, kernel_inv_ = cl::Kernel(program,"k_inv_", &err));
+    OCL_CHECK(err, kernel_inv = cl::Kernel(program,"k_inv", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_LOG_
-    OCL_CHECK(err, kernel_log_ = cl::Kernel(program,"k_log_", &err));
+    OCL_CHECK(err, kernel_log = cl::Kernel(program,"k_log", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_LOG2_
-    OCL_CHECK(err, kernel_log2_ = cl::Kernel(program,"k_log2_", &err));
+    OCL_CHECK(err, kernel_log2 = cl::Kernel(program,"k_log2", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_LOG10_
-    OCL_CHECK(err, kernel_log10_ = cl::Kernel(program,"k_log10_", &err));
+    OCL_CHECK(err, kernel_log10 = cl::Kernel(program,"k_log10", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_LOGN_
-    OCL_CHECK(err, kernel_logn_ = cl::Kernel(program,"k_logn_", &err));
+    OCL_CHECK(err, kernel_logn = cl::Kernel(program,"k_logn", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_MOD_
-    OCL_CHECK(err, kernel_mod_ = cl::Kernel(program,"k_mod_", &err));
+    OCL_CHECK(err, kernel_mod = cl::Kernel(program,"k_mod", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_MULT_
-    OCL_CHECK(err, kernel_mult_ = cl::Kernel(program,"k_mult_", &err));
+    OCL_CHECK(err, kernel_mult = cl::Kernel(program,"k_mult", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_NORMALIZE_
-    OCL_CHECK(err, kernel_normalize_ = cl::Kernel(program,"k_normalize_", &err));
+    OCL_CHECK(err, kernel_normalize = cl::Kernel(program,"k_normalize", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_POW_
-    OCL_CHECK(err, kernel_pow_ = cl::Kernel(program,"k_pow_", &err));
+    OCL_CHECK(err, kernel_pow = cl::Kernel(program,"k_pow", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_POWB_
-    OCL_CHECK(err, kernel_powb_ = cl::Kernel(program,"k_powb_", &err));
+    OCL_CHECK(err, kernel_powb = cl::Kernel(program,"k_powb", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_RECIPROCAL_
-    OCL_CHECK(err, kernel_reciprocal_ = cl::Kernel(program,"k_reciprocal_", &err));
+    OCL_CHECK(err, kernel_reciprocal = cl::Kernel(program,"k_reciprocal", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_REMAINDER_
-    OCL_CHECK(err, kernel_remainder_ = cl::Kernel(program,"k_remainder_", &err));
+    OCL_CHECK(err, kernel_remainder = cl::Kernel(program,"k_remainder", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_ROUND_
-    OCL_CHECK(err, kernel_round_ = cl::Kernel(program,"k_round_", &err));
+    OCL_CHECK(err, kernel_round = cl::Kernel(program,"k_round", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_RSQRT_
-    OCL_CHECK(err, kernel_rsqrt_ = cl::Kernel(program,"k_rsqrt_", &err));
-    if (err != CL_SUCCESS) printf("Error creating kernel\n");
-    #endif
-    #ifdef K_ENABLED_SIGMOID_
-    OCL_CHECK(err, kernel_sigmoid_ = cl::Kernel(program,"k_sigmoid_", &err));
+    OCL_CHECK(err, kernel_rsqrt = cl::Kernel(program,"k_rsqrt", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_SIGN_
-    OCL_CHECK(err, kernel_sign_ = cl::Kernel(program,"k_sign_", &err));
+    OCL_CHECK(err, kernel_sign = cl::Kernel(program,"k_sign", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_SIN_
-    OCL_CHECK(err, kernel_sin_ = cl::Kernel(program,"k_sin_", &err));
+    OCL_CHECK(err, kernel_sin = cl::Kernel(program,"k_sin", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_SINH_
-    OCL_CHECK(err, kernel_sinh_ = cl::Kernel(program,"k_sinh_", &err));
+    OCL_CHECK(err, kernel_sinh = cl::Kernel(program,"k_sinh", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_SQR_
-    OCL_CHECK(err, kernel_sqr_ = cl::Kernel(program,"k_sqr_", &err));
+    OCL_CHECK(err, kernel_sqr = cl::Kernel(program,"k_sqr", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_SQRT_
-    OCL_CHECK(err, kernel_sqrt_ = cl::Kernel(program,"k_sqrt_", &err));
+    OCL_CHECK(err, kernel_sqrt = cl::Kernel(program,"k_sqrt", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_TAN_
-    OCL_CHECK(err, kernel_tan_ = cl::Kernel(program,"k_tan_", &err));
-    if (err != CL_SUCCESS) printf("Error creating kernel\n");
-    #endif
-    #ifdef K_ENABLED_TANH_
-    OCL_CHECK(err, kernel_tanh_ = cl::Kernel(program,"k_tanh_", &err));
+    OCL_CHECK(err, kernel_tan = cl::Kernel(program,"k_tan", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_TRUNC_
-    OCL_CHECK(err, kernel_trunc_ = cl::Kernel(program,"k_trunc_", &err));
-    if (err != CL_SUCCESS) printf("Error creating kernel\n");
-    #endif
-    #ifdef K_ENABLED_ADD
-    OCL_CHECK(err, kernel_add = cl::Kernel(program,"k_add", &err));
+    OCL_CHECK(err, kernel_trunc = cl::Kernel(program,"k_trunc", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_INC
