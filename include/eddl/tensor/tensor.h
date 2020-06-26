@@ -630,6 +630,7 @@ public:
     Tensor* argmax(vector<int> axis, bool keepdims);
 
     static void argmax(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+    static void argmax_d(Tensor *D, Tensor *O, Tensor *PD);
 
     /**
     *   @brief Obtain the minimum value in the tensor
