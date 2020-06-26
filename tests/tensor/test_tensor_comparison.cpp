@@ -37,7 +37,33 @@ TEST(TensorTestSuite, tensor_comparison_all){
 #endif
 }
 
+TEST(TensorTestSuite, tensor_comparison_any){
+    // Test #1
+    Tensor* t1 = Tensor::ones({3, 3}, DEV_CPU);
+    Tensor* t2 = Tensor::zeros({3, 3}, DEV_CPU);
+    Tensor* t3 = new Tensor({0.0f, 0.0f, 0.0f,
+                                  1.0f, 0.0f, 0.0f,
+                                  0.0f, 1.0f, 1.0f}, {3, 3}, DEV_CPU);
 
+    ASSERT_TRUE(Tensor::any(t1));
+    ASSERT_FALSE(Tensor::any(t2));
+    ASSERT_TRUE(Tensor::any(t3));
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t1_cpu = Tensor::ones({3, 1000, 1000});
+    Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
+    ASSERT_TRUE(Tensor::any(t1_cpu) && Tensor::any(t1_gpu));
+
+    Tensor* t2_cpu = Tensor::zeros({3, 1000, 1000});
+    Tensor* t2_gpu = t2_cpu->clone(); t2_gpu->toGPU();
+    ASSERT_FALSE(Tensor::any(t2_cpu) || Tensor::any(t2_gpu));
+
+    Tensor* t3_cpu = Tensor::zeros({3, 1000, 1000}); t3_cpu->ptr[5] = 1.0f;
+    Tensor* t3_gpu = t3_cpu->clone(); t3_gpu->toGPU();
+    ASSERT_TRUE(Tensor::any(t3_cpu) && Tensor::any(t3_gpu));
+#endif
+}
 
 TEST(TensorTestSuite, tensor_comparison_greaterT){
     // Test #1
