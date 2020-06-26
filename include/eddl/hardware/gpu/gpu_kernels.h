@@ -154,10 +154,6 @@ __global__ void gpu_norm_fro(float *A, float *B, int *map, int size, int size_re
 // Generating index arrays *****************************
 __global__ void gpu_where(float *condition, float *A, float *B, float *C, long int size);
 
-// GPU: Truth value testing
-__global__ void gpu_logical_all(float *A, long int size, bool &result); // TODO: review return
-__global__ void gpu_logical_any(float *A, long int size, bool &result); // TODO: review return
-
 // GPU: Logic functions: Comparisons
 __global__ void gpu_isfinite(float *A, float *B, long int size);
 __global__ void gpu_isinf(float *A, float *B, long int size);
