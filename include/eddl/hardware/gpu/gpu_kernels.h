@@ -120,6 +120,7 @@ __global__ void gpu_minimum(float *A, float *B, float *C, long int size);
 // GPU: Should be reductions
 
 // GPU: Reduction
+__global__ void gpu_max_d(float *D, float *PD, float *map, int size, int reduction_size, bool argmax);
 __global__ void gpu_max(float *A, float *B, int *map, int size, int size_reduction, bool argmax);
 __global__ void gpu_min(float *A, float *B, int *map, int size, int size_reduction, bool argmin);
 __global__ void gpu_sum(float *A,float *B,int *map, int size, int size_reduction);
@@ -153,39 +154,35 @@ __global__ void gpu_norm_fro(float *A, float *B, int *map, int size, int size_re
 // Generating index arrays *****************************
 __global__ void gpu_where(float *condition, float *A, float *B, float *C, long int size);
 
-// GPU: Truth value testing
-__global__ void gpu_logical_all(float *A, int size, bool &result);
-__global__ void gpu_logical_any(float *A, int size, bool &result);
+// GPU: Logic functions: Comparisons
+__global__ void gpu_isfinite(float *A, float *B, long int size);
+__global__ void gpu_isinf(float *A, float *B, long int size);
+__global__ void gpu_isnan(float *A, float *B, long int size);
+__global__ void gpu_isneginf(float *A, float *B, long int size);
+__global__ void gpu_isposinf(float *A, float *B, long int size);
 
 // GPU: Logic functions: Comparisons
-__global__ void gpu_isfinite(float *A, float *B, int size);
-__global__ void gpu_isinf(float *A, float *B, int size);
-__global__ void gpu_isnan(float *A, float *B, int size);
-__global__ void gpu_isneginf(float *A, float *B, int size);
-__global__ void gpu_isposinf(float *A, float *B, int size);
-
-// GPU: Logic functions: Comparisons
-__global__ void gpu_logical_and(float *A, float *B, float *C, int size);
-__global__ void gpu_logical_or(float *A, float *B, float *C, int size);
-__global__ void gpu_logical_not(float *A, float *B, int size);
-__global__ void gpu_logical_xor(float *A, float *B, float *C, int size);
+__global__ void gpu_logical_and(float *A, float *B, float *C, long int size);
+__global__ void gpu_logical_or(float *A, float *B, float *C, long int size);
+__global__ void gpu_logical_not(float *A, float *B, long int size);
+__global__ void gpu_logical_xor(float *A, float *B, float *C, long int size);
 
 // GPU: Logic operations: Comparison ops
-__global__ void gpu_logical_allclose(float *A, float *B, float rtol, float atol, bool equal_nan, int size, bool &close);
-__global__ void gpu_logical_isclose(float *A, float *B, float *C, float rtol, float atol, bool equal_nan, int size);
+__global__ void gpu_allclose(float *A, float *B, float rtol, float atol, bool equal_nan, long int size, bool &close); // TODO: review return
+__global__ void gpu_isclose(float *A, float *B, float *C, float rtol, float atol, bool equal_nan, long int size);
 
-__global__ void gpu_greater(float *A, float *B, float v, int size);
-__global__ void gpu_greater(float *A, float *B, float *C, int size);
-__global__ void gpu_greater_equal(float *A, float *B, float v, int size);
-__global__ void gpu_greater_equal(float *A, float *B, float *C, int size);
-__global__ void gpu_less(float *A, float *B, float v, int size);
-__global__ void gpu_less(float *A, float *B, float *C, int size);
-__global__ void gpu_less_equal(float *A, float *B, float v, int size);
-__global__ void gpu_less_equal(float *A, float *B, float *C, int size);
-__global__ void gpu_equal(float *A, float *B, float v, int size);
-__global__ void gpu_equal(float *A, float *B, float *C, int size);
-__global__ void gpu_not_equal(float *A, float *B, float v, int size);
-__global__ void gpu_not_equal(float *A, float *B, float *C, int size);
+__global__ void gpu_greater(float *A, float *B, float v, long int size);
+__global__ void gpu_greater(float *A, float *B, float *C, long int size);
+__global__ void gpu_greater_equal(float *A, float *B, float v, long int size);
+__global__ void gpu_greater_equal(float *A, float *B, float *C, long int size);
+__global__ void gpu_less(float *A, float *B, float v, long int size);
+__global__ void gpu_less(float *A, float *B, float *C, long int size);
+__global__ void gpu_less_equal(float *A, float *B, float v, long int size);
+__global__ void gpu_less_equal(float *A, float *B, float *C, long int size);
+__global__ void gpu_equal(float *A, float *B, float v, long int size);
+__global__ void gpu_equal(float *A, float *B, float *C, long int size);
+__global__ void gpu_not_equal(float *A, float *B, float v, long int size);
+__global__ void gpu_not_equal(float *A, float *B, float *C, long int size);
 
 
 // Legacy

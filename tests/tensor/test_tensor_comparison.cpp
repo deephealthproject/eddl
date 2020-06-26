@@ -10,6 +10,94 @@
 using namespace std;
 
 
+
+TEST(TensorTestSuite, tensor_comparison_all){
+    // Test #1
+    Tensor* t1 = new Tensor({1.0f, 1.0f, 1.0f,
+                                 1.0f, 1.0f, 1.0f,
+                                 1.0f, 1.0f, 1.0f}, {3, 3}, DEV_CPU);
+
+    Tensor* t2 = new Tensor({1.0f, 1.0f, 1.0f,
+                                  1.0f, 1.0f, 0.0f,
+                                  1.0f, 1.0f, 1.0f}, {3, 3}, DEV_CPU);
+
+    ASSERT_TRUE(Tensor::all(t1));
+    ASSERT_FALSE(Tensor::all(t2));
+
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t1_cpu = Tensor::ones({3, 1000, 1000});
+    Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
+    ASSERT_TRUE(Tensor::all(t1_cpu) && Tensor::all(t1_gpu));
+
+    Tensor* t2_cpu = Tensor::ones({3, 1000, 1000}); t2_cpu->ptr[5] = 0.0f;
+    Tensor* t2_gpu = t2_cpu->clone(); t2_gpu->toGPU();
+    ASSERT_FALSE(Tensor::all(t2_cpu) || Tensor::all(t2_gpu));
+#endif
+}
+
+TEST(TensorTestSuite, tensor_comparison_any){
+    // Test #1
+    Tensor* t1 = Tensor::ones({3, 3}, DEV_CPU);
+    Tensor* t2 = Tensor::zeros({3, 3}, DEV_CPU);
+    Tensor* t3 = new Tensor({0.0f, 0.0f, 0.0f,
+                                  1.0f, 0.0f, 0.0f,
+                                  0.0f, 1.0f, 1.0f}, {3, 3}, DEV_CPU);
+
+    ASSERT_TRUE(Tensor::any(t1));
+    ASSERT_FALSE(Tensor::any(t2));
+    ASSERT_TRUE(Tensor::any(t3));
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t1_cpu = Tensor::ones({3, 1000, 1000});
+    Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
+    ASSERT_TRUE(Tensor::any(t1_cpu) && Tensor::any(t1_gpu));
+
+    Tensor* t2_cpu = Tensor::zeros({3, 1000, 1000});
+    Tensor* t2_gpu = t2_cpu->clone(); t2_gpu->toGPU();
+    ASSERT_FALSE(Tensor::any(t2_cpu) || Tensor::any(t2_gpu));
+
+    Tensor* t3_cpu = Tensor::zeros({3, 1000, 1000}); t3_cpu->ptr[5] = 1.0f;
+    Tensor* t3_gpu = t3_cpu->clone(); t3_gpu->toGPU();
+    ASSERT_TRUE(Tensor::any(t3_cpu) && Tensor::any(t3_gpu));
+#endif
+}
+
+//TEST(TensorTestSuite, tensor_comparison_allclose){
+//    // Test #1
+//    Tensor* t1 = new Tensor({1.0f, 1.0f, 1.0f,
+//                             1.0f, 1.0f, 1.0f,
+//                             1.0f, 1.0f, 1.0f}, {3, 3}, DEV_CPU);
+//
+//    Tensor* t2 = new Tensor({1.0f, 1.0f, 1.0f,
+//                             1.0f, 1.0f, 0.0f,
+//                             1.0f, 1.0f, 1.0f}, {3, 3}, DEV_CPU);
+//
+//    ASSERT_TRUE(Tensor::allclose(t1, t1));
+//    ASSERT_FALSE(Tensor::allclose(t1, t2));
+//
+//
+//    // Test GPU
+//#ifdef cGPU
+//    Tensor* t1_cpu = Tensor::ones({3, 1000, 1000});
+//    Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
+//
+//    Tensor* t2_cpu = Tensor::ones({3, 1000, 1000}); t2_cpu->ptr[5] = 1.0f + 10e-3f;
+//    Tensor* t2_gpu = t2_cpu->clone(); t2_gpu->toGPU();
+//
+//    bool t1_cpu_res = Tensor::allclose(t1_cpu, t2_cpu, 10e-2);
+//    bool t1_gpu_res = Tensor::allclose(t1_gpu, t2_gpu, 10e-2);
+//    ASSERT_TRUE(t1_cpu_res && t1_gpu_res);
+//
+//    bool t2_cpu_res = Tensor::allclose(t1_cpu, t2_cpu, 10e-5);
+//    bool t2_gpu_res = Tensor::allclose(t1_gpu, t2_gpu, 10e-5);
+//    ASSERT_TRUE(t2_cpu_res && t2_gpu_res);
+//#endif
+//}
+
+
 TEST(TensorTestSuite, tensor_comparison_greaterT){
     // Test #1
     vector<int> t1_shape_ref = {2, 2};

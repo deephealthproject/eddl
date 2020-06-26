@@ -252,6 +252,7 @@ public:
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
 };
 
+
 /// Var Layer
 /*class LVar : public OperatorLayer {
 public:

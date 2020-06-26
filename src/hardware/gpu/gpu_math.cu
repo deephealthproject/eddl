@@ -614,6 +614,16 @@ void gpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
     check_cuda(cudaDeviceSynchronize(),"reduce_argmax");
 }
 
+void gpu_argmax_d(Tensor *D, Tensor *O, Tensor *PD){
+    int device=D->gpu_device;
+    cudaSetDevice(device);
+
+    int reduction_size = PD->size/D->size;
+
+    setDims(D);  // Walk through reduced tensor
+    gpu_max_d<<<dimGrid,dimBlock>>>(D->ptr, PD->ptr, O->ptr, D->size, reduction_size, true);
+    check_cuda(cudaDeviceSynchronize(),"reduce_argmax_d");
+}
 
 float gpu_min(Tensor *A){
     int device=A->gpu_device;
