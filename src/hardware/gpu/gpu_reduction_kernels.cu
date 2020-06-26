@@ -19,6 +19,21 @@
 
 #include "eddl/hardware/gpu/gpu_kernels.h"
 
+__global__ void gpu_max_d(float *D, float *PD, float *map, int size, int reduction_size, bool argmax){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+    if (thread_id_x<size) {
+        int offset = thread_id_x*reduction_size;
+
+        // Choose if we're getting the maximum value or the position
+        if(argmax) {
+            int argmax_addr = map[thread_id_x];
+            PD[offset+argmax_addr] += D[thread_id_x];
+        }else{
+            PD[offset+thread_id_x] += D[thread_id_x];;
+        }
+    }
+}
+
 __global__ void gpu_max(float *A, float *B, int *map, int size, int size_reduction, bool argmax){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 

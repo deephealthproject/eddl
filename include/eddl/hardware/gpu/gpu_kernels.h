@@ -120,6 +120,7 @@ __global__ void gpu_minimum(float *A, float *B, float *C, long int size);
 // GPU: Should be reductions
 
 // GPU: Reduction
+__global__ void gpu_max_d(float *D, float *PD, float *map, int size, int reduction_size, bool argmax);
 __global__ void gpu_max(float *A, float *B, int *map, int size, int size_reduction, bool argmax);
 __global__ void gpu_min(float *A, float *B, int *map, int size, int size_reduction, bool argmin);
 __global__ void gpu_sum(float *A,float *B,int *map, int size, int size_reduction);
