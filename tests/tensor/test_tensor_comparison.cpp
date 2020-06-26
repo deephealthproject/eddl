@@ -10,6 +10,35 @@
 using namespace std;
 
 
+
+TEST(TensorTestSuite, tensor_comparison_all){
+    // Test #1
+    Tensor* t1 = new Tensor({1.0f, 1.0f, 1.0f,
+                                 1.0f, 1.0f, 1.0f,
+                                 1.0f, 1.0f, 1.0f}, {3, 3}, DEV_CPU);
+
+    Tensor* t2 = new Tensor({1.0f, 1.0f, 1.0f,
+                                  1.0f, 1.0f, 0.0f,
+                                  1.0f, 1.0f, 1.0f}, {3, 3}, DEV_CPU);
+
+    ASSERT_TRUE(Tensor::all(t1));
+    ASSERT_FALSE(Tensor::all(t2));
+
+
+    // Test GPU
+#ifdef cGPU
+    Tensor* t1_cpu = Tensor::ones({3, 1000, 1000});
+    Tensor* t1_gpu = t1_cpu->clone(); t1_gpu->toGPU();
+    ASSERT_TRUE(Tensor::all(t1_cpu) && Tensor::all(t1_gpu));
+
+    Tensor* t2_cpu = Tensor::ones({3, 1000, 1000}); t2_cpu->ptr[5] = 0.0f;
+    Tensor* t2_gpu = t2_cpu->clone(); t2_gpu->toGPU();
+    ASSERT_FALSE(Tensor::all(t2_cpu) || Tensor::all(t2_gpu));
+#endif
+}
+
+
+
 TEST(TensorTestSuite, tensor_comparison_greaterT){
     // Test #1
     vector<int> t1_shape_ref = {2, 2};
