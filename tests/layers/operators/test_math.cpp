@@ -7,7 +7,11 @@
 
 TEST(MathTestSuite, layer_argmax)
 {
-    vector<int> dev_list = {DEV_CPU, DEV_GPU};
+    vector<int> dev_list = {DEV_CPU};
+
+#ifdef cGPU
+    dev_list.push_back(DEV_GPU);
+#endif
 
     for(auto & dev : dev_list){
         Tensor *input = new Tensor({
