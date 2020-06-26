@@ -88,7 +88,7 @@ __global__ void gpu_logical_xor(float *A, float *B, float *C, long int size){
 }
 
 
-__global__  void gpu_logical_allclose(float *A, float *B, float rtol, float atol, bool equal_nan, long int size, bool &allclose){
+__global__  void gpu_allclose(float *A, float *B, float rtol, float atol, bool equal_nan, long int size, bool &allclose){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 
     // if(!allclose) return;  // Abort if there is a result
@@ -102,7 +102,7 @@ __global__  void gpu_logical_allclose(float *A, float *B, float rtol, float atol
     }
 }
 
-__global__  void gpu_logical_isclose(float *A, float *B, float *C, float rtol, float atol, bool equal_nan, long int size){
+__global__  void gpu_isclose(float *A, float *B, float *C, float rtol, float atol, bool equal_nan, long int size){
     long int thread_id_x = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (thread_id_x < size){

@@ -36,6 +36,20 @@ struct is_positive {
     }
 };
 
+
+struct all_close {
+    const float rtol;
+    const float atol;
+    const bool equal_nan;
+
+    all_close(float rtol_, float atol_, bool equal_nan_) : rtol(rtol_), atol(atol_), equal_nan(equal_nan_)  { /* empty */ }
+
+    __host__ __device__ bool operator()(float x, float y) const {
+        return fabsf(x - y) <= (atol + rtol * fabsf(y));
+    }
+};
+
+
 // CPU: Logic functions: Comparisons
 void gpu_isfinite(Tensor *A, Tensor* B){
     int device=A->gpu_device;
@@ -150,12 +164,15 @@ bool gpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
     int device=A->gpu_device;
     cudaSetDevice(device);
 
-    setDims(A);
 
-    bool close = true;
-    gpu_logical_allclose<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, rtol, atol, equal_nan, A->size, close);
-    check_cuda(cudaDeviceSynchronize(), "allclose");
-    return close;
+    thrust::device_ptr<float> A_dev_ptr = thrust::device_pointer_cast(A->ptr);
+    thrust::device_ptr<float> B_dev_ptr = thrust::device_pointer_cast(B->ptr);
+
+    thrust::device_vector<float> temp(A->size);
+    thrust::transform(A_dev_ptr, A_dev_ptr+A->size, B_dev_ptr, temp.begin(), all_close(rtol, atol, equal_nan));
+    return thrust::reduce(thrust::device, temp.begin(), temp.end(), true, thrust::logical_and<bool>{});
+    // I think transform_reduce only supports one input vector
+    // return thrust::transform_reduce(thrust::device, A_dev_ptr, A_dev_ptr+A->size, B_dev_ptr, all_close(rtol, atol, equal_nan), true, thrust::logical_and<bool>{} );
 }
 
 void gpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool equal_nan){
@@ -164,7 +181,7 @@ void gpu_isclose(Tensor *A, Tensor *B, Tensor *C, float rtol, float atol, bool e
 
     setDims(A);
 
-    gpu_logical_isclose<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, rtol, atol, equal_nan, A->size);
+    gpu_isclose<<<dimGrid,dimBlock>>>(A->ptr, B->ptr, C->ptr, rtol, atol, equal_nan, A->size);
     check_cuda(cudaDeviceSynchronize(), "isclose");
 }
 
