@@ -121,7 +121,6 @@ void ReduceDescriptor2::resize(int b){
 
 void ReduceDescriptor2::build_map(bool reverse){
     this->free_memory();
-    index.clear();
 
     int size = shape2size(this->ishape);
     this->cpu_addresses = new int[size];
