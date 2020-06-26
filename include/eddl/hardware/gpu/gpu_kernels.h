@@ -168,8 +168,8 @@ __global__ void gpu_logical_not(float *A, float *B, long int size);
 __global__ void gpu_logical_xor(float *A, float *B, float *C, long int size);
 
 // GPU: Logic operations: Comparison ops
-__global__ void gpu_logical_allclose(float *A, float *B, float rtol, float atol, bool equal_nan, long int size, bool &close); // TODO: review return
-__global__ void gpu_logical_isclose(float *A, float *B, float *C, float rtol, float atol, bool equal_nan, long int size);
+__global__ void gpu_allclose(float *A, float *B, float rtol, float atol, bool equal_nan, long int size, bool &close); // TODO: review return
+__global__ void gpu_isclose(float *A, float *B, float *C, float rtol, float atol, bool equal_nan, long int size);
 
 __global__ void gpu_greater(float *A, float *B, float v, long int size);
 __global__ void gpu_greater(float *A, float *B, float *C, long int size);
