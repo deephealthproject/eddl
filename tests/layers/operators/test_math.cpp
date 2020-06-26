@@ -7,7 +7,7 @@
 
 TEST(MathTestSuite, layer_argmax)
 {
-    vector<int> dev_list = {DEV_GPU, DEV_CPU};
+    vector<int> dev_list = {DEV_CPU, DEV_GPU};
 
     for(auto & dev : dev_list){
         Tensor *input = new Tensor({
@@ -57,5 +57,4 @@ TEST(MathTestSuite, layer_argmax)
         ASSERT_TRUE((bool) Tensor::equivalent(parent_delta, parent_delta_ref, 10e-5f));
     }
 
-    int asd = 3;
 }
