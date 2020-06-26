@@ -109,11 +109,19 @@ void ReduceDescriptor2::build(const vector<int>& t_ishape){
 }
 
 void ReduceDescriptor2::resize(int b){
+    // Delete previous allocations
+    this->free_memory();
+
+    this->ishape[0] = b;
+    this->oshape[0] = b;
+
+    this->build(this->ishape);
 
 }
 
 void ReduceDescriptor2::build_map(bool reverse){
     this->free_memory();
+    index.clear();
 
     int size = shape2size(this->ishape);
     this->cpu_addresses = new int[size];
