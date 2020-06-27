@@ -145,6 +145,8 @@ void cpu_logical_xor(Tensor *A, Tensor *B, Tensor *C){
 
 bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
     bool allclose = true;
+    int first_idx = -1;
+
     _profile(_CPU_ALLCLOSE, 0);
     #pragma omp parallel for
     for (int i = 0; i < A->size; ++i){
@@ -153,6 +155,8 @@ bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
             #pragma omp critical
             {
                 allclose = false;
+                if(first_idx < 0) { first_idx=i; }
+
             }
 #if OpenMP_VERSION_MAJOR >= 4
             #pragma omp cancel for
@@ -160,6 +164,15 @@ bool cpu_allclose(Tensor *A, Tensor *B, float rtol, float atol, bool equal_nan){
         }
     }
     _profile(_CPU_ALLCLOSE, 1);
+
+//    // TODO: temp!
+//    if(!allclose){
+//        fprintf(stderr, "\n>>>>>>>>>>\n");
+//        fprintf(stderr, "[values]\t\t%f != %f\n", A->ptr[first_idx], B->ptr[first_idx]);
+//        fprintf(stderr, "[diff=\t%f (rtol=%f; atol=%f)]\n", A->ptr[first_idx] - B->ptr[first_idx], rtol, atol);
+//        fprintf(stderr, "<<<<<<<<<<\n");
+//    }
+
     return allclose;
 }
 

@@ -356,6 +356,16 @@ void cpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
     }
 }
 
+void cpu_argmax_d(Tensor *D, Tensor *O, Tensor *PD){
+    int reduction_size = PD->size/D->size;
+    #pragma omp parallel for
+    for (int i = 0; i < D->size; i++){
+        int argmax = (int)O->ptr[i];  // local
+        int offset = i*reduction_size;
+        PD->ptr[offset + argmax] += D->ptr[i];
+    }
+}
+
 
 std::tuple<float, int> cpu_max(float *ptr, int size, int *map) {
     float shared_max = MIN_FLOAT;

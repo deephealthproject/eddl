@@ -126,6 +126,7 @@ void gpu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
 
 int gpu_argmax(Tensor *A);
 void gpu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);
+void gpu_argmax_d(Tensor *D, Tensor *O, Tensor *PD);
 
 float gpu_min(Tensor *A);
 void gpu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd);

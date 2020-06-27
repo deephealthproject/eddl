@@ -137,7 +137,7 @@ void Tensor::deleteData(){
     // Careful, you can't know is a pointer is allocated
     if(this->ptr != nullptr){
         if (this->isCPU()) {
-            delete this->ptr;
+            delete[] this->ptr;
         }
 #ifdef cGPU
         else if (this->isGPU())
@@ -513,7 +513,7 @@ void Tensor::resize(int b, float *fptr, void *fptr2) {
     updateShape(new_shape);
     updateSize();
     updateStrides();
-    if (fptr == nullptr) deleteData();  // Potential error
+    if (fptr != nullptr) deleteData();  // Potential error
     updateData(fptr, fptr2);
 }
 
