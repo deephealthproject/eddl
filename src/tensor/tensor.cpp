@@ -214,17 +214,27 @@ void Tensor::updateData(float *fptr, void *fptr2){
           printf("  ([updateData] ptr %p fpga_ptr %p)\n", this->ptr, this->fpga_ptr);
           #endif
         } else {
-          // The data has already been created in CPU, so we need now to create a buffer in FPGA and write the buffer into it
-          // we first update the cpu buffer
+	  if ((this->fpga_ptr == (cl::Buffer *)nullptr) && (fptr2 == nullptr)) {
+	    this->fpga_ptr = fpga_create_tensor(fpga_device, this->size);
+	    this->fpga_size = this->size;
+	    this->fpga_tensor_id = next_fpga_tensor_id;
+	    next_fpga_tensor_id++;
+	    fpga_copy_to_fpga(fptr, this);
+            #ifdef FPGA_DEBUG
+	    printf("  ([updateData] fpga_ptr and incomming second pointer were null, we create a buffer with tensor id %d\n", this->fpga_tensor_id);
+            #endif
+	  } else if ((this->fpga_ptr == (cl::Buffer *)nullptr) && (fptr2 != nullptr)) {
+		  printf("fpga_ptr null but fptr2 not\n");
+		  this->fpga_size = this->size;
+		  this->fpga_ptr = (cl::Buffer *)fptr2;
+	  } else {
+		  this->fpga_size = this->size;
+		  this->fpga_ptr = (cl::Buffer *)fptr2;
+	  }
           #ifdef FPGA_DEBUG
           printf("  ([updateData fptr!=null] fptr %p tensor id %d ptr %p fpga_ptr %p size %d fpga_size %d)\n", fptr, this->fpga_tensor_id, this->ptr, this->fpga_ptr, this->size, this->fpga_size);
           #endif
-          this->fpga_size = this->size;
-          #ifdef FPGA_DEBUG
-          printf("    reallocated tensor id %d new size %d\n", this->fpga_tensor_id, this->fpga_size);
-            #endif
           this->ptr = fptr;
-	  this->fpga_ptr = (cl::Buffer *)fptr2;
         }
         // For 2 dimensions, map to data to Eigen for efficiency
         // Efficient operations will be done over ptr2, which also points to ptr

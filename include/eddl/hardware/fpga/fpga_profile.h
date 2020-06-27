@@ -155,10 +155,15 @@
 #define _FPGA_REPEAT_NN             144
 #define _FPGA_D_REPEAT_NN           145
 #define _FPGA_FLIP                  146
+#define _FPGA_PROD                  147
+#define _FPGA_PROD_2                148
+#define _FPGA_SUM_2                 149
+#define _FPGA_MAXIMUM               150
+#define _FPGA_MAXIMUM_VECTOR        151
+#define _FPGA_MINIMUM               152
+#define _FPGA_MINIMUM_VECTOR        153
 
-#define _FPGA_SUM_2                 147
-
-#define _NUM_FPGA_FUNCS       148
+#define _NUM_FPGA_FUNCS       154
 extern int num_instances_fpga[_NUM_FPGA_FUNCS];
 void _profile_fpga(int f_id, int end);
 void _profile_fpga_tensor(Tensor *T);

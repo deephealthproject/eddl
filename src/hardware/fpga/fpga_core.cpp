@@ -97,6 +97,7 @@ cl::Kernel kernel_normalize, kernel_pow,    kernel_powb,     kernel_reciprocal, 
 cl::Kernel kernel_sign,      kernel_sin,    kernel_sinh,     kernel_sqr,        kernel_sqrt,          kernel_tan;
 cl::Kernel kernel_inc,       kernel_el_div, kernel_el_mult,  kernel_sign2,      kernel_sum2D_rowwise, kernel_sum2D_colwise;
 cl::Kernel kernel_max,       kernel_min,    kernel_sum,      kernel_mult2d;
+cl::Kernel kernel_maximum,   kernel_maximum_vector, kernel_minimum, kernel_minimum_vector;
 
 
 // profiling
@@ -248,7 +249,14 @@ void _profile_fpga_funcname(int i, char *name) {
       case _FPGA_AVGPOOL2D_BACK         : strcpy(name, "avgpool2d_back"); break;
       case _FPGA_REPEAT_NN              : strcpy(name, "repeat_nn"); break;
       case _FPGA_D_REPEAT_NN            : strcpy(name, "d_repeat_nn"); break;
+      case _FPGA_PROD                   : strcpy(name, "prod"); break;
+      case _FPGA_PROD_2                 : strcpy(name, "prod_2"); break;
       case _FPGA_SUM_2                  : strcpy(name, "sum_2"); break;
+      case _FPGA_MAXIMUM                : strcpy(name, "maximum"); break;
+      case _FPGA_MAXIMUM_VECTOR         : strcpy(name, "maximum_vector"); break;
+      case _FPGA_MINIMUM                : strcpy(name, "minimum"); break;
+      case _FPGA_MINIMUM_VECTOR         : strcpy(name, "minimum vector"); break;
+
       default                          : strcpy(name, "?????"); break;
   }
 }
@@ -327,10 +335,16 @@ void _profile_fpga_remove_tensor(int size) {
 //
 void fpga_init(){ // initialize only once
 
+	printf("init1\n");
     cl_int err;
     std::string binaryFile = "eddl.xclbin";
+    printf("init2\n");
     unsigned fileBufSize;
+
+    printf("init3\n");
     std::vector<cl::Device> devices = xcl::get_xil_devices();
+
+    printf("init4\n");
     cl::Device device = devices[0];
     OCL_CHECK(err, context = cl::Context(device, NULL, NULL, NULL, &err));
     OCL_CHECK(err, q = cl::CommandQueue(context, device, CL_QUEUE_PROFILING_ENABLE | CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, &err));
@@ -907,6 +921,22 @@ void fpga_init(){ // initialize only once
     #endif
     #ifdef K_ENABLED_SUM_ABS
     OCL_CHECK(err, kernel_sum_abs = cl::Kernel(program,"k_sum_abs", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_MAXIMUM
+    OCL_CHECK(err, kernel_maximum = cl::Kernel(program,"k_maximum", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_MAXIMUM_VECTOR
+    OCL_CHECK(err, kernel_maximum_vector = cl::Kernel(program,"k_maximum_vector", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_MINIMUM
+    OCL_CHECK(err, kernel_minimum = cl::Kernel(program,"k_minimum", &err));
+    if (err != CL_SUCCESS) printf("Error creating kernel\n");
+    #endif
+    #ifdef K_ENABLED_MINIMUM_VECTOR
+    OCL_CHECK(err, kernel_minimum_vector = cl::Kernel(program,"k_minimum_vector", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
 
