@@ -86,8 +86,7 @@ extern cl::Kernel kernel_normalize, kernel_pow,    kernel_powb,     kernel_recip
 extern cl::Kernel kernel_sign,      kernel_sin,    kernel_sinh,     kernel_sqr,        kernel_sqrt,          kernel_tan;
 extern cl::Kernel kernel_inc,       kernel_el_div, kernel_el_mult,  kernel_sign2,      kernel_sum2D_rowwise, kernel_sum2D_colwise;
 extern cl::Kernel kernel_max,       kernel_min,    kernel_sum,      kernel_mult2d,     kernel_add_2;
-extern cl::Kernel kernel_maximum,   kernel_maximum_vector, kernel_minimum, kernel_minimum_vector;
-extern cl::Kernel kernel_maximum,   kernel_maximum_vector, kernel_minimum, kernel_minimum_vector;
+extern cl::Kernel kernel_maximum,   kernel_maximum_float, kernel_minimum, kernel_minimum_float;
 
 #define MAX_FLOAT std::numeric_limits<float>::max()
 #define MIN_FLOAT -std::numeric_limits<float>::max()

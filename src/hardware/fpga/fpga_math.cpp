@@ -1203,7 +1203,7 @@ float fpga_max(Tensor *A){
 //
 void fpga_cpuemu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd) {
   fpga_copy_from_fpga(A, A->ptr);
-  for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
+  //for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
   cpu_max(A, B, rd);
   fpga_copy_to_fpga(B->ptr, B);
 }
@@ -1270,7 +1270,7 @@ int fpga_argmax(Tensor *A){
 //
 void fpga_cpuemu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd) {
   fpga_copy_from_fpga(A, A->ptr);
-  for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
+  //for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
   cpu_argmax(A, B, rd);
   fpga_copy_to_fpga(B->ptr, B);
 }
@@ -1337,7 +1337,7 @@ float fpga_min(Tensor *A){
 //
 void fpga_cpuemu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd) {
   fpga_copy_from_fpga(A, A->ptr);
-  for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
+  //for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
   cpu_min(A, B, rd);
   fpga_copy_to_fpga(B->ptr, B);
 }
@@ -1363,6 +1363,13 @@ void fpga_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
 // ------------------------------------------------------------------
 // argmin
 //
+
+int fpga_cpuemu_argmin(Tensor *A) {
+  int ret;
+  fpga_copy_from_fpga(A, A->ptr);
+  ret = cpu_argmin(A);
+  return ret;
+}
 
 int fpga_argmin(Tensor *A){
   int ret;
@@ -1399,7 +1406,7 @@ int fpga_argmin(Tensor *A){
 //
 void fpga_cpuemu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd) {
   fpga_copy_from_fpga(A, A->ptr);
-  for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
+  //for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
   cpu_argmin(A, B, rd);
   fpga_copy_to_fpga(B->ptr, B);
 }
@@ -1662,7 +1669,7 @@ float fpga_var(Tensor *A, bool unbiased) {
 
 void fpga_cpuemu_var(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased) {
   fpga_copy_from_fpga(A, A->ptr);
-  for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
+  //for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
   cpu_var(A, B, rd, unbiased);
   fpga_copy_to_fpga(B->ptr, B);
 }
@@ -1702,7 +1709,6 @@ float fpga_std(Tensor *A, bool unbiased) {
 #ifndef K_ENABLED_STD
   ret = fpga_cpuemu_std(A, unbiased);
 #else
-#else
   cl_int err;
   cl::Event event;
 
@@ -1734,7 +1740,7 @@ float fpga_std(Tensor *A, bool unbiased) {
 
 void fpga_cpuemu_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased) {
   fpga_copy_from_fpga(A, A->ptr);
-  for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
+  //for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
   cpu_std(A, B, rd, unbiased);
   fpga_copy_to_fpga(B->ptr, B);
 }
@@ -1742,7 +1748,7 @@ void fpga_cpuemu_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased)
 void fpga_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased) {
   _profile_fpga(_FPGA_STD_2, 0);
 #ifndef K_ENABLED_STD_2
-  fpga_cpu_emu_std(A, B, rd, unbiased);
+  fpga_cpuemu_std(A, B, rd, unbiased);
 #else
   cl_int err;
   cl::Event event;
@@ -1755,7 +1761,6 @@ void fpga_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased) {
   q.finish();
 #endif
   _profile_fpga(_FPGA_STD_2, 1);
-  return ret;
 }
 
 // -----------------------------------------------------------------------
@@ -1806,7 +1811,7 @@ float fpga_median(Tensor *A) {
 
 void fpga_cpuemu_median(Tensor *A, Tensor *B, ReduceDescriptor2 *rd) {
   fpga_copy_from_fpga(A, A->ptr);
-  for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
+  //for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
   cpu_median(A, B, rd);
   fpga_copy_to_fpga(B->ptr, B);
 }
@@ -1827,7 +1832,6 @@ void fpga_median(Tensor *A, Tensor *B, ReduceDescriptor2 *rd) {
   q.finish();
 #endif
   _profile_fpga(_FPGA_MEDIAN_2, 1);
-  return ret;
 }
 
 // -------------------------------------------------------------------------

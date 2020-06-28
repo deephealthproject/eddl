@@ -101,9 +101,8 @@ void fpga_cpuemu_conv2D_grad(ConvolDescriptor *D) {
 void fpga_conv2D_grad(ConvolDescriptor *D)
 {
   _profile_fpga(_FPGA_CONV2D_GRAD, 0);
-  if (fpga_set_cpuemu_conv2D_grad == 1) {
+#ifndef K_ENABLED_CONV2D_GRAD
     fpga_cpuemu_conv2D_grad(D);
-  } else {
 #else
   cl_int err;
   cl::Event event;
@@ -155,9 +154,8 @@ void fpga_cpuemu_conv2D_back(ConvolDescriptor *D) {
 void fpga_conv2D_back(ConvolDescriptor *D)
 {
   _profile_fpga(_FPGA_CONV2D_BACK, 0);
-  if (fpga_set_cpuemu_conv2D_back == 1) {
-    fpga_cpuemu_conv2D_back(D);
-  } else {
+#ifndef K_ENABLED_CONV2D_BACK
+  fpga_cpuemu_conv2D_back(D);
 #else
   cl_int err;
   cl::Event event;

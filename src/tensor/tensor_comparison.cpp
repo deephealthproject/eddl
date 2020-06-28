@@ -649,9 +649,10 @@ int Tensor::equivalent(Tensor *A, Tensor *B, float atol, float rtol, bool equal_
           }
 #endif
 #ifdef cFPGA
-    else {
-          return fpga_equal2(A, B, epsilon);
-        }
+    else if (A->isGPU() || B->isGPU())
+          {
+          return fpga_allclose(A, B, rtol, atol, equal_nan);
+          }
 #endif
 
     return 1;

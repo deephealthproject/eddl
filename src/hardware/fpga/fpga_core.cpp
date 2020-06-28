@@ -97,7 +97,7 @@ cl::Kernel kernel_normalize, kernel_pow,    kernel_powb,     kernel_reciprocal, 
 cl::Kernel kernel_sign,      kernel_sin,    kernel_sinh,     kernel_sqr,        kernel_sqrt,          kernel_tan;
 cl::Kernel kernel_inc,       kernel_el_div, kernel_el_mult,  kernel_sign2,      kernel_sum2D_rowwise, kernel_sum2D_colwise;
 cl::Kernel kernel_max,       kernel_min,    kernel_sum,      kernel_mult2d,     kernel_add_2;
-cl::Kernel kernel_maximum,   kernel_maximum_vector, kernel_minimum, kernel_minimum_vector;
+cl::Kernel kernel_maximum,   kernel_maximum_float, kernel_minimum, kernel_minimum_float;
 
 
 // profiling
@@ -254,9 +254,18 @@ void _profile_fpga_funcname(int i, char *name) {
       case _FPGA_PROD_2                 : strcpy(name, "prod_2"); break;
       case _FPGA_SUM_2                  : strcpy(name, "sum_2"); break;
       case _FPGA_MAXIMUM                : strcpy(name, "maximum"); break;
-      case _FPGA_MAXIMUM_VECTOR         : strcpy(name, "maximum_vector"); break;
+      case _FPGA_MAXIMUM_FLOAT          : strcpy(name, "maximum_float"); break;
       case _FPGA_MINIMUM                : strcpy(name, "minimum"); break;
-      case _FPGA_MINIMUM_VECTOR         : strcpy(name, "minimum vector"); break;
+      case _FPGA_MINIMUM_FLOAT          : strcpy(name, "minimum_float"); break;
+      case _FPGA_ARGMIN                 : strcpy(name, "argmin"); break;
+      case _FPGA_ARGMAX                 : strcpy(name, "argmax"); break;
+      case _FPGA_VAR                    : strcpy(name, "var"); break;
+      case _FPGA_VAR_2                  : strcpy(name, "var_2"); break;
+      case _FPGA_STD                    : strcpy(name, "std"); break;
+      case _FPGA_STD_2                  : strcpy(name, "std_2"); break;
+      case _FPGA_MEDIAN                 : strcpy(name, "median"); break;
+      case _FPGA_MEDIAN_2               : strcpy(name, "median_2"); break;
+
 
       default                          : strcpy(name, "?????"); break;
   }
@@ -933,7 +942,7 @@ void fpga_init(){ // initialize only once
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_MAXIMUM_VECTOR
-    OCL_CHECK(err, kernel_maximum_vector = cl::Kernel(program,"k_maximum_vector", &err));
+    OCL_CHECK(err, kernel_maximum_float = cl::Kernel(program,"k_maximum_float", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_MINIMUM
@@ -941,7 +950,7 @@ void fpga_init(){ // initialize only once
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
     #ifdef K_ENABLED_MINIMUM_VECTOR
-    OCL_CHECK(err, kernel_minimum_vector = cl::Kernel(program,"k_minimum_vector", &err));
+    OCL_CHECK(err, kernel_minimum_float = cl::Kernel(program,"k_minimum_float", &err));
     if (err != CL_SUCCESS) printf("Error creating kernel\n");
     #endif
 
