@@ -162,8 +162,9 @@
 #define _FPGA_MAXIMUM_VECTOR        151
 #define _FPGA_MINIMUM               152
 #define _FPGA_MINIMUM_VECTOR        153
+#define _FPGA_ADD_2                 154
 
-#define _NUM_FPGA_FUNCS       154
+#define _NUM_FPGA_FUNCS       155
 extern int num_instances_fpga[_NUM_FPGA_FUNCS];
 void _profile_fpga(int f_id, int end);
 void _profile_fpga_tensor(Tensor *T);

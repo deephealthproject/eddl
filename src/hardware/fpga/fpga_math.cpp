@@ -912,25 +912,25 @@ void fpga_cpuemu_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int 
 }
 
 void fpga_add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC) {
-    _profile_fpga(_FPGA_ADD, 0);
-#ifndef K_ENALBED_ADD
+    _profile_fpga(_FPGA_ADD_2, 0);
+#ifndef K_ENABLED_ADD_2
     fpga_cpuemu_add(scA, A, scB, B, C, incC);
 #else
     cl_int err;
     cl::Event event;
 
-    OCL_CHECK(err, err = kernel_add.setArg(0, scA));
-    OCL_CHECK(err, err = kernel_add.setArg(1, *(A->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_add.setArg(2, scB));
-    OCL_CHECK(err, err = kernel_add.setArg(3, *(B->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_add.setArg(4, *(C->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_add.setArg(5, incC));
-    OCL_CHECK(err, err = kernel_add.setArg(6, (long int)A->size));
+    OCL_CHECK(err, err = kernel_add_2.setArg(0, scA));
+    OCL_CHECK(err, err = kernel_add_2.setArg(1, *(A->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_add_2.setArg(2, scB));
+    OCL_CHECK(err, err = kernel_add_2.setArg(3, *(B->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_add_2.setArg(4, *(C->fpga_ptr)));
+    OCL_CHECK(err, err = kernel_add_2.setArg(5, incC));
+    OCL_CHECK(err, err = kernel_add_2.setArg(6, (long int)A->size));
 
-    OCL_CHECK(err, err = q.enqueueTask(kernel_add, NULL, &event));
+    OCL_CHECK(err, err = q.enqueueTask(kernel_add_2, NULL, &event));
     q.finish();
 #endif
-    _profile_fpga(_FPGA_ADD, 1);
+    _profile_fpga(_FPGA_ADD_2, 1);
 }
 
 // -----------------------------------------------------------------
@@ -1174,15 +1174,25 @@ float fpga_max(Tensor *A){
 #ifndef K_ENABLED_MAX
   ret = fpga_cpuemu_max(A);
 #else
-  printf("fpga_max not implemented yet\n"); exit(1);
   cl_int err;
   cl::Event event;
+
+  // return buffer
+  float *max;
+  posix_memalign((void **)&max, 4096, sizeof(float));
+  OCL_CHECK(err, cl::Buffer buff_max(context, CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY, sizeof(float), max, &err));
   
   OCL_CHECK(err, err = kernel_max.setArg(0, *(A->fpga_ptr)));
   OCL_CHECK(err, err = kernel_max.setArg(1, (long int)A->size));
-
+  OCL_CHECK(err, err = kernel_max.setArg(2, buff_max));
   OCL_CHECK(err, err = q.enqueueTask(kernel_max, NULL, &event));
   q.finish();
+
+  // result
+  cl::Event result_ready;
+  OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buf_max}, CL_MIGRATE_MEM_OBJECT_HOST, NULL, &result_ready));
+  result_ready.wait();
+  ret = *max;
 #endif
   _profile_fpga(_FPGA_MAX, 1);
   return ret;
@@ -1193,9 +1203,7 @@ float fpga_max(Tensor *A){
 //
 void fpga_cpuemu_max(Tensor *A, Tensor *B, ReduceDescriptor2 *rd) {
   fpga_copy_from_fpga(A, A->ptr);
-  fpga_copy_memory_from_fpga(rd->fpga_index, (void *)&rd->index, rd->index.size());
-  // index[i].data must be read from fpga
-  printf("Not properly implemented yet (fpga_cpuemu_max\n"); exit(1);
+  for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
   cpu_max(A, B, rd);
   fpga_copy_to_fpga(B->ptr, B);
 }
@@ -1229,19 +1237,30 @@ int fpga_cpuemu_argmax(Tensor *A) {
 
 int fpga_argmax(Tensor *A){
   int ret;
-  printf("fpga_argmax\n");
+  _profile_fpga(_FPGA_ARGMAX, 0);
 #ifndef K_ENABLED_ARGMAX
   ret = fpga_cpuemu_argmax(A);
 #else
-  printf("fpga_max not implemented yet\n"); exit(1);
   cl_int err;
   cl::Event event;
 
+  // return buffer
+  int *max;
+  posix_memalign((void **)&max, 4096, sizeof(int));
+  OCL_CHECK(err, cl::Buffer buff_max(context, CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY, sizeof(float), max, &err));
+
   OCL_CHECK(err, err = kernel_argmax.setArg(0, *(A->fpga_ptr)));
   OCL_CHECK(err, err = kernel_argmax.setArg(1, (long int)A->size));
-  // Jorge, añade parametro de return 
+  OCL_CHECK(err, err = kernel_argmax.setArg(2, buff_max));
+
   OCL_CHECK(err, err = q.enqueueTask(kernel_argmax, NULL, &event));
   q.finish();
+
+  // result
+  cl::Event result_ready;
+  OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buf_max}, CL_MIGRATE_MEM_OBJECT_HOST, NULL, &result_ready));
+  result_ready.wait();
+  ret = *max;
 #endif
   return ret;
 }
@@ -1251,9 +1270,7 @@ int fpga_argmax(Tensor *A){
 //
 void fpga_cpuemu_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd) {
   fpga_copy_from_fpga(A, A->ptr);
-  fpga_copy_memory_from_fpga(rd->fpga_index, (void *)&rd->index, rd->index.size());
-  // index[i].data must be read from fpga
-  printf("Not properly implemented yet (fpga_cpuemu_argmax\n"); exit(1);
+  for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
   cpu_argmax(A, B, rd);
   fpga_copy_to_fpga(B->ptr, B);
 }
@@ -1275,7 +1292,7 @@ void fpga_argmax(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
 #endif
 }
 
-// -------------------------------------------------------------------
+// -----------------------------------------------------------------
 // min
 //
 
@@ -1291,15 +1308,25 @@ float fpga_min(Tensor *A){
 #ifndef K_ENABLED_MIN
   ret = fpga_cpuemu_min(A);
 #else
-  printf("fpga_min not implemented yet\n"); exit(1);
   cl_int err;
   cl::Event event;
 
+  // return buffer
+  float *min;
+  posix_memalign((void **)&min, 4096, sizeof(float));
+  OCL_CHECK(err, cl::Buffer buff_min(context, CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY, sizeof(float), min, &err));
+
   OCL_CHECK(err, err = kernel_min.setArg(0, *(A->fpga_ptr)));
   OCL_CHECK(err, err = kernel_min.setArg(1, (long int)A->size));
-  // Jorge, añade parametro de return
+  OCL_CHECK(err, err = kernel_min.setArg(2, buff_min));
   OCL_CHECK(err, err = q.enqueueTask(kernel_min, NULL, &event));
   q.finish();
+
+  // result
+  cl::Event result_ready;
+  OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buf_min}, CL_MIGRATE_MEM_OBJECT_HOST, NULL, &result_ready));
+  result_ready.wait();
+  ret = *min;
 #endif
   _profile_fpga(_FPGA_MIN, 1);
   return ret;
@@ -1310,9 +1337,7 @@ float fpga_min(Tensor *A){
 //
 void fpga_cpuemu_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd) {
   fpga_copy_from_fpga(A, A->ptr);
-  fpga_copy_memory_from_fpga(rd->fpga_index, (void *)&rd->index, rd->index.size());
-  // index[i].data must be read from fpga
-  printf("Not properly implemented yet (fpga_cpuemu_min\n"); exit(1);
+  for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
   cpu_min(A, B, rd);
   fpga_copy_to_fpga(B->ptr, B);
 }
@@ -1335,31 +1360,36 @@ void fpga_min(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
   _profile_fpga(_FPGA_MIN, 1);
 }
 
-// -----------------------------------------------------------------
+// ------------------------------------------------------------------
 // argmin
 //
 
-int fpga_cpuemu_argmin(Tensor *A) {
-  fpga_copy_from_fpga(A, A->ptr);
-  int ret = cpu_argmin(A);
-  return ret;
-}
-
 int fpga_argmin(Tensor *A){
   int ret;
-  printf("argmin\n");
+  _profile_fpga(_FPGA_ARGMIN, 0);
 #ifndef K_ENABLED_ARGMIN
   ret = fpga_cpuemu_argmin(A);
 #else
-  printf("fpga_min not implemented yet\n"); exit(1);
   cl_int err;
   cl::Event event;
 
+  // return buffer
+  int *min;
+  posix_memalign((void **)&max, 4096, sizeof(int));
+  OCL_CHECK(err, cl::Buffer buff_min(context, CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY, sizeof(float), min, &err));
+
   OCL_CHECK(err, err = kernel_argmin.setArg(0, *(A->fpga_ptr)));
   OCL_CHECK(err, err = kernel_argmin.setArg(1, (long int)A->size));
-  // Jorge, añade parametro de return
+  OCL_CHECK(err, err = kernel_argmin.setArg(2, buff_min));
+
   OCL_CHECK(err, err = q.enqueueTask(kernel_argmin, NULL, &event));
   q.finish();
+
+  // result
+  cl::Event result_ready;
+  OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buf_min}, CL_MIGRATE_MEM_OBJECT_HOST, NULL, &result_ready));
+  result_ready.wait();
+  ret = *min;
 #endif
   return ret;
 }
@@ -1369,15 +1399,12 @@ int fpga_argmin(Tensor *A){
 //
 void fpga_cpuemu_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd) {
   fpga_copy_from_fpga(A, A->ptr);
-  fpga_copy_memory_from_fpga(rd->fpga_index, (void *)&rd->index, rd->index.size());
-  // index[i].data must be read from fpga
-  printf("Not properly implemented yet (fpga_cpuemu_argmin\n"); exit(1);
+  for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
   cpu_argmin(A, B, rd);
   fpga_copy_to_fpga(B->ptr, B);
 }
 
 void fpga_argmin(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
-	printf("argmin\n");
 #ifndef K_ENABLED_ARGMIN_2
   fpga_cpuemu_argmin(A, B, rd);
 #else
@@ -1587,34 +1614,220 @@ float fpga_mean(Tensor *A) {printf("fpga_mean not implemented yet\n"); exit(1);}
 
 void fpga_mean(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){printf("fpga_mean not implemented yet\n"); exit(1);}
 
-float fpga_var(Tensor *A, bool unbiased){
-	printf("fpga_var not implemented yet\n"); exit(1);
+// ------------------------------------------------------------------------
+// var
+//
+
+float fpga_cpuemu_var(Tensor *A, bool unbiased) {
+  float ret;
+  fpga_copy_from_fpga(A, A->ptr);
+  ret = cpu_var(A, unbiased);
+  return ret;
 }
 
+float fpga_var(Tensor *A, bool unbiased) {
+  float ret;
+  _profile_fpga(_FPGA_VAR, 0);
+#ifndef K_ENABLED_VAR
+  ret = fpga_cpuemu_var(A, unbiased);
+#else
+  cl_int err;
+  cl::Event event;
 
-void fpga_var(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){
-	printf("fpga_var not implemented yet\n"); exit(1);
+  // return buffer
+  float *var;
+  posix_memalign((void **)&var, 4096, sizeof(float));
+  OCL_CHECK(err, cl::Buffer buff_var(context, CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY, sizeof(var), prod, &err));
+
+  OCL_CHECK(err, err = kernel_var.setArg(0, *(A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_var.setArg(1, A->size));
+  OCL_CHECK(err, err = kernel_var.setArg(2, buff_var));
+
+  OCL_CHECK(err, err = q.enqueueTask(kernel_var, NULL, &event));
+  q.finish();
+
+  // result
+  cl::Event result_ready;
+  OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buf_var}, CL_MIGRATE_MEM_OBJECT_HOST, NULL, &result_ready));
+  result_ready.wait();
+  ret = *var;
+#endif
+  _profile_fpga(_FPGA_VAR, 1);
+  return ret;
 }
 
-float fpga_var(float *ptr, int size, int *map, bool unbiased){
-	printf("fpga_var not implemented yet\n"); exit(1);
+// -----------------------------------------------------------------------
+// var
+//
+
+void fpga_cpuemu_var(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased) {
+  fpga_copy_from_fpga(A, A->ptr);
+  for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
+  cpu_var(A, B, rd, unbiased);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-float fpga_std(Tensor *A, bool unbiased) {printf("fpga_std not implemented yet\n"); exit(1);}
+void fpga_var(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased) {
+  _profile_fpga(_FPGA_VAR_2, 0);
+#ifndef K_ENABLED_VAR_2
+  fpga_cpuemu_var(A, B, rd, unbiased);
+#else
+  cl_int err;
+  cl::Event event;
 
-void fpga_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased){printf("fpga_std not implemented yet\n"); exit(1);}
+  OCL_CHECK(err, err = kernel_var_2.setArg(0, *(A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_var_2.setArg(1, *(B->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_var_2.setArg(2, A->size));
+
+  OCL_CHECK(err, err = q.enqueueTask(kernel_var_2, NULL, &event));
+  q.finish();
+#endif
+  _profile_fpga(_FPGA_VAR_2, 1);
+}
+
+// -----------------------------------------------------------------------
+// std
+//
+
+float fpga_cpuemu_std(Tensor *A, bool unbiased) {
+  float ret;
+  fpga_copy_from_fpga(A, A->ptr);
+  ret = cpu_std(A, unbiased);
+  return ret;
+}
+
+float fpga_std(Tensor *A, bool unbiased) {
+  float ret;
+  _profile_fpga(_FPGA_STD, 0);
+#ifndef K_ENABLED_STD
+  ret = fpga_cpuemu_std(A, unbiased);
+#else
+#else
+  cl_int err;
+  cl::Event event;
+
+  // return buffer
+  float *std;
+  posix_memalign((void **)&std, 4096, sizeof(float));
+  OCL_CHECK(err, cl::Buffer buff_std(context, CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY, sizeof(std), std, &err));
+
+  OCL_CHECK(err, err = kernel_std.setArg(0, *(A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_std.setArg(1, A->size));
+  OCL_CHECK(err, err = kernel_std.setArg(2, buff_std));
+
+  OCL_CHECK(err, err = q.enqueueTask(kernel_std, NULL, &event));
+  q.finish();
+
+  // result
+  cl::Event result_ready;
+  OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buf_std}, CL_MIGRATE_MEM_OBJECT_HOST, NULL, &result_ready));
+  result_ready.wait();
+  ret = *std;
+#endif
+  _profile_fpga(_FPGA_STD, 1);
+  return ret;
+}  
+
+// -----------------------------------------------------------------------
+// std
+//
+
+void fpga_cpuemu_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased) {
+  fpga_copy_from_fpga(A, A->ptr);
+  for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
+  cpu_std(A, B, rd, unbiased);
+  fpga_copy_to_fpga(B->ptr, B);
+}
+
+void fpga_std(Tensor *A, Tensor *B, ReduceDescriptor2 *rd, bool unbiased) {
+  _profile_fpga(_FPGA_STD_2, 0);
+#ifndef K_ENABLED_STD_2
+  fpga_cpu_emu_std(A, B, rd, unbiased);
+#else
+  cl_int err;
+  cl::Event event;
+
+  OCL_CHECK(err, err = kernel_std_2.setArg(0, *(A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_std_2.setArg(1, *(B->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_std_2.setArg(2, A->size));
+
+  OCL_CHECK(err, err = q.enqueueTask(kernel_std_2, NULL, &event));
+  q.finish();
+#endif
+  _profile_fpga(_FPGA_STD_2, 1);
+  return ret;
+}
+
+// -----------------------------------------------------------------------
+// median
+//
+
+float fpga_cpuemu_median(Tensor *A) {
+  float ret;
+  fpga_copy_from_fpga(A, A->ptr);
+  ret = cpu_median(A);
+  return ret;
+}
 
 float fpga_median(Tensor *A) {
-	printf("fpga_median not implemented yet\n"); exit(1);
+  float ret;
+  _profile_fpga(_FPGA_MEDIAN, 0);
+#ifndef K_ENABLED_MEDIAN
+  ret = fpga_cpuemu_median(A);
+#else
+  cl_int err;
+  cl::Event event;
+
+  // return buffer
+  float *median;
+  posix_memalign((void **)&median, 4096, sizeof(float));
+  OCL_CHECK(err, cl::Buffer buff_median(context, CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY, sizeof(median), prod, &err));
+
+  OCL_CHECK(err, err = kernel_median.setArg(0, *(A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_median.setArg(1, A->size));
+  OCL_CHECK(err, err = kernel_median.setArg(2, buff_median));
+
+  OCL_CHECK(err, err = q.enqueueTask(kernel_median, NULL, &event));
+  q.finish();
+
+  // result
+  cl::Event result_ready;
+  OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buf_median}, CL_MIGRATE_MEM_OBJECT_HOST, NULL, &result_ready));
+  result_ready.wait();
+  ret = *median;
+#endif
+  _profile_fpga(_FPGA_MEDIAN, 1);
+  return ret;
 }
 
+// ------------------------------------------------------------------------
+// median
+//
 
-void fpga_median(Tensor *A, Tensor *B, ReduceDescriptor2 *rd){
-	printf("fpga_median not implemented yet\n"); exit(1);
+void fpga_cpuemu_median(Tensor *A, Tensor *B, ReduceDescriptor2 *rd) {
+  fpga_copy_from_fpga(A, A->ptr);
+  for (int i=0; i<rd->index.size(); i++) fpga_copy_memory_from_fpga(rd->index[i].fpga_ptr, rd->index[i].data());
+  cpu_median(A, B, rd);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-float fpga_median(float *ptr, int size, int *map) {
-	printf("fpga_median not implemented yet\n"); exit(1);
+void fpga_median(Tensor *A, Tensor *B, ReduceDescriptor2 *rd) {
+  _profile_fpga(_FPGA_MEDIAN_2, 0);
+#ifndef K_ENABLED_MEDIAN_2
+  fpga_cpuemu_median(A, B, rd);
+#else
+  cl_int err;
+  cl::Event event;
+
+  OCL_CHECK(err, err = kernel_median_2.setArg(0, *(A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_median_2.setArg(1, *(B->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_median_2.setArg(2, A->size));
+
+  OCL_CHECK(err, err = q.enqueueTask(kernel_median, NULL, &event));
+  q.finish();
+#endif
+  _profile_fpga(_FPGA_MEDIAN_2, 1);
+  return ret;
 }
 
 // -------------------------------------------------------------------------
@@ -1628,21 +1841,21 @@ void fpga_cpuemu_maximum(Tensor *A, Tensor *B, float v) {
 }
 
 void fpga_maximum(Tensor* A, Tensor* B, float v) {
-  _profile_fpga(_FPGA_MAXIMUM_VECTOR, 0);
-#ifdef K_ENABLED_MAXIMUM_VECTOR
+  _profile_fpga(_FPGA_MAXIMUM_FLOAT, 0);
+#ifdef K_ENABLED_MAXIMUM_FLOAT
   fpga_cpuemu_maximum(A, B, v);
 #else
   cl_int err;
   cl::Event event;
 
-  OCL_CHECK(err, err = kernel_maximum_vector.setArg(0, *(A->fpga_ptr)));
-  OCL_CHECK(err, err = kernel_maximum_vector.setArg(1, *(B->fpga_ptr)));
-  OCL_CHECK(err, err = kernel_maximum_vector.setArg(2, A->size));
+  OCL_CHECK(err, err = kernel_maximum_float.setArg(0, *(A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_maximum_float.setArg(1, *(B->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_maximum_float.setArg(2, A->size));
 
-  OCL_CHECK(err, err = q.enqueueTask(kernel_maximum_vector, NULL, &event));
+  OCL_CHECK(err, err = q.enqueueTask(kernel_maximum_float, NULL, &event));
   q.finish();
 #endif
-  _profile_fpga(_FPGA_MAXIMUM_VECTOR, 1);
+  _profile_fpga(_FPGA_MAXIMUM_FLOAT, 1);
 }
 
 // -------------------------------------------------------------------------
@@ -1675,12 +1888,62 @@ void fpga_maximum(Tensor* A, Tensor* B, Tensor* C) {
   _profile_fpga(_FPGA_MAXIMUM, 1);
 }
 
-void fpga_minimum(Tensor* A, Tensor* B, float v){
-printf("fpga_minimum not implemented yet\n"); exit(1);
+// -------------------------------------------------------------------------
+// minimum
+//
+
+void fpga_cpuemu_minimum(Tensor *A, Tensor *B, float v) {
+  fpga_copy_from_fpga(A, A->ptr);
+  cpu_minimum(A, B, v);
+  fpga_copy_to_fpga(B->ptr, B);
 }
 
-void fpga_minimum(Tensor* A, Tensor* B, Tensor* C){
-	printf("fpga_minimum not implemented yet\n"); exit(1);
+void fpga_minimum(Tensor* A, Tensor* B, float v) {
+  _profile_fpga(_FPGA_MINIMUM_FLOAT, 0);
+#ifdef K_ENABLED_MINIMUM_FLOAT
+  fpga_cpuemu_minimum(A, B, v);
+#else
+  cl_int err;
+  cl::Event event;
+
+  OCL_CHECK(err, err = kernel_minimum_float.setArg(0, *(A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_minimum_float.setArg(1, *(B->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_minimum_float.setArg(2, A->size));
+
+  OCL_CHECK(err, err = q.enqueueTask(kernel_minimum_float, NULL, &event));
+  q.finish();
+#endif
+  _profile_fpga(_FPGA_MINIMUM_FLOAT, 1);
+}
+
+// -------------------------------------------------------------------------
+// minimum
+//
+
+void fpga_cpuemu_minimum(Tensor *A, Tensor *B, Tensor *C) {
+  fpga_copy_from_fpga(A, A->ptr);
+  fpga_copy_from_fpga(B, B->ptr);
+  cpu_minimum(A, B, C);
+  fpga_copy_to_fpga(C->ptr, C);
+}
+
+void fpga_minimum(Tensor* A, Tensor* B, Tensor* C) {
+  _profile_fpga(_FPGA_MINIMUM, 0);
+#ifndef K_ENABLED_MINIMUM
+  fpga_cpuemu_minimum(A, B, C);
+#else
+  cl_int err;
+  cl::Event event;
+
+  OCL_CHECK(err, err = kernel_minimum.setArg(0, *(A->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_minimum.setArg(1, *(B->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_minimum.setArg(2, *(C->fpga_ptr)));
+  OCL_CHECK(err, err = kernel_minimum.setArg(3, A->size));
+
+  OCL_CHECK(err, err = q.enqueueTask(kernel_minimum, NULL, &event));
+  q.finish();
+#endif
+  _profile_fpga(_FPGA_MINIMUM, 1);
 }
 
 #endif
