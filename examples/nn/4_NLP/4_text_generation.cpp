@@ -69,6 +69,7 @@ int main(int argc, char **argv) {
 
     int olength=20;
     int outvs=2000;
+    int embdim=32;
 
     // Define network
     layer in = Input({3,256,256}); //Image
@@ -93,8 +94,10 @@ int main(int argc, char **argv) {
     l=Reshape(l,{-1});
 
     // Decoder
-    layer ind = Input({outvs});
-    l = Decoder(LSTM(ind,512,true),l,"concat");
+    layer ldec = Input({outvs});
+    ldec = ReduceArgMax(ldec,{0});
+    ldec = RandomUniform(Embedding(ldec, outvs, 1,embdim),-0.05,0.05);
+    l = Decoder(LSTM(ldec,512,true),l,"concat");
 
     layer out = Softmax(Dense(l, outvs));
 
@@ -111,9 +114,9 @@ int main(int argc, char **argv) {
           opt, // Optimizer
           {"cross_entropy"}, // Losses
           {"accuracy"}, // Metrics
-          CS_GPU({1}) // one GPU
+          //CS_GPU({1}) // one GPU
           //CS_GPU({1,1},100) // two GPU with weight sync every 100 batches
-          //CS_CPU()
+          CS_CPU()
     );
 
     // View model
