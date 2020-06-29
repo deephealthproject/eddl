@@ -50,6 +50,11 @@ void LRArgmax::backward(){
     Tensor::argmax_d(this->delta, this->output, this->parent[0]->delta);
 }
 
+// Temp
+void LRArgmax::mem_delta(){
+    Layer::mem_delta();  // Idea... NOT TESTED. Temp
+}
+
 // virtual
 void LRArgmax::resize(int batch){
     Layer::resize(batch);

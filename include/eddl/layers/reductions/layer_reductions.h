@@ -163,6 +163,8 @@ public:
 
     void backward() override;
 
+    void mem_delta() override;
+
     void resize(int b) override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
