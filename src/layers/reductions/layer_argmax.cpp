@@ -20,7 +20,7 @@ using namespace std;
 
 int LRArgmax::total_layers = 0;
 
-LRArgmax::LRArgmax(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem) : ReductionLayer(name, dev, mem) {
+LRArgmax::LRArgmax(Layer *l, vector<int> axis, bool keepdims, string name, int dev, int mem) : ReductionLayer2(name, dev, mem) {
     if(name.empty()) this->name = "reduction_argmax" + to_string(++total_layers);
 
     input=l->output;
@@ -48,11 +48,6 @@ void LRArgmax::forward(){
 
 void LRArgmax::backward(){
     Tensor::argmax_d(this->delta, this->output, this->parent[0]->delta);
-}
-
-// Temp
-void LRArgmax::mem_delta(){
-    Layer::mem_delta();  // Idea... NOT TESTED. Temp
 }
 
 // virtual
