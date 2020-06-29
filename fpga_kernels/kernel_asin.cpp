@@ -2,20 +2,6 @@
 #include <stdio.h>
 extern "C" {
 
-/*void k_exp(float *A, float *B, long int size){
-
-  #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
-  #pragma HLS INTERFACE m_axi port=B offset=slave bundle=gmem
-  #pragma HLS INTERFACE s_axilite port=A  bundle=control
-  #pragma HLS INTERFACE s_axilite port=B  bundle=control
-  #pragma HLS INTERFACE s_axilite port=size bundle=control
-  #pragma HLS INTERFACE s_axilite port=return bundle=control
-
-  for (int i = 0; i < size; i++) {
-    B[i] = exp(A[i]);
-  }
-}*/
-
 #define DATA_SIZE 4096
 #define BUFFER_SIZE 1024
 
@@ -23,7 +9,7 @@ extern "C" {
 const unsigned int c_chunk_sz = BUFFER_SIZE;
 const unsigned int c_size = DATA_SIZE;
 
-void k_exp(float *A, float *B, long int size){
+void k_asin(float *A, float *B, long int size) {
 
   #pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem
   #pragma HLS INTERFACE m_axi port=B offset=slave bundle=gmem
@@ -50,17 +36,15 @@ void k_exp(float *A, float *B, long int size){
       buffer_a[j] = A[i + j];
     }
 
-    /*for (int i = 0; i < size; i++) {
-      B[i] = exp(A[i]);
-    }*/
-    exp:
+    //for (int i = 0; i < size; ++i) B[i] = asin(A[i]);
+    asin:
     for (int j=0; j<chunk_size; j++) {
       #pragma HLS PIPELINE II=1
       #pragma HLS UNROLL FACTOR=2
       #pragma HLS LOOP_TRIPCOUNT min=c_chunk_sz max=c_chunk_sz
       // perform operation
-      //buffer_b[j] = exp(buffer_a[j]);
-      buffer_b[j] = native_exp(buffer_a[j]);
+      // NO support for native_asin
+      buffer_b[j] = asin(buffer_a[j]);
     }
 
     // burst write the result
@@ -70,6 +54,7 @@ void k_exp(float *A, float *B, long int size){
       B[i+j] = buffer_b[j];
     }
   }
-}
+
+} // end kernel
 
 } // end extern "C"
