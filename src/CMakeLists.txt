@@ -156,8 +156,15 @@ if(BUILD_PROTOBUF)
     target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
     # target_link_directories(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES_DIRS})
     target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARIES})
-    
-    
+
+    if(MSVC)
+        target_link_libraries(${PROJECT_NAME} PUBLIC
+                optimized ${Protobuf_LIBRARY_RELEASE}
+                debug ${Protobuf_LIBRARY_DEBUG})
+    else()
+        target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARIES})
+    endif()
+
     # # Link library
     # if(BUILD_SUPERBUILD AND NOT USE_SYSTEM_PROTOBUF)
         # message(STATUS "Using specific Protobuf")

@@ -630,6 +630,7 @@ public:
     Tensor* argmax(vector<int> axis, bool keepdims);
 
     static void argmax(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+    static void argmax_d(Tensor *D, Tensor *O, Tensor *PD);
 
     /**
     *   @brief Obtain the minimum value in the tensor
@@ -2193,7 +2194,7 @@ public:
       *  @param equal_nan if ``True``, then two ``NaN``s will be considered equal.
       *  @return    void
     */
-    static bool allclose(Tensor *A, Tensor *B, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);  // Returns true or false
+    static bool allclose(Tensor *A, Tensor *B, float rtol=1e-05, float atol=1e-08, bool equal_nan=false);
 
     /**
       *  @brief Returns a boolean array where a position is true if elements in A and B accomplish \f$|A-B| \leq atol+rtol\times|B|\f$
@@ -2768,7 +2769,7 @@ public:
     *   @param epsilon Error threshold.
     *   @return 1 if they are equivalent, 0 otherwise.
     */
-    static int equivalent(Tensor *A, Tensor *B, float epsilon=1e-3);  // Previously named "Tensor::equal2"
+    static int equivalent(Tensor *A, Tensor *B, float atol=1e-08, float rtol=1e-05, bool equal_nan=false);  // Previously named "Tensor::equal2"
 
 };
 

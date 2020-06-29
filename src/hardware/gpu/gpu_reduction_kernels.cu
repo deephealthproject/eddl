@@ -19,16 +19,32 @@
 
 #include "eddl/hardware/gpu/gpu_kernels.h"
 
+__global__ void gpu_max_d(float *D, float *PD, float *map, int size, int reduction_size, bool argmax){
+    long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
+    if (thread_id_x<size) {
+        int offset = thread_id_x*reduction_size;
+
+        // Choose if we're getting the maximum value or the position
+        if(argmax) {
+            int argmax_addr = map[thread_id_x];
+            PD[offset+argmax_addr] += D[thread_id_x];
+        }else{
+            PD[offset+thread_id_x] += D[thread_id_x];;
+        }
+    }
+}
+
 __global__ void gpu_max(float *A, float *B, int *map, int size, int size_reduction, bool argmax){
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x<size) {
-        float tmp_max = A[map[thread_id_x*size_reduction+0]];
+        int *base_addr = &map[thread_id_x*size_reduction+0];
+        float tmp_max = A[*base_addr];
         int tmp_argmax = 0;
 
         float val;
         for(int i=1; i<size_reduction; i++){
-            val = A[map[thread_id_x*size_reduction+i]];
+            val = A[*(base_addr+i)];
             if(val > tmp_max){
                 tmp_max = val;
                 tmp_argmax = i;
@@ -48,12 +64,13 @@ __global__ void gpu_min(float *A, float *B, int *map, int size, int size_reducti
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x<size) {
-        float tmp_min = A[map[thread_id_x*size_reduction+0]];
+        int *base_addr = &map[thread_id_x*size_reduction+0];
+        float tmp_min = A[*base_addr];
         int tmp_argmin = 0;
 
         float val;
         for(int i=1; i<size_reduction; i++){
-            val = A[map[thread_id_x*size_reduction+i]];
+            val = A[*(base_addr+i)];
             if(val < tmp_min){
                 tmp_min = val;
                 tmp_argmin = i;
@@ -73,12 +90,11 @@ __global__ void gpu_sum(float *A, float *B, int *map, int size, int size_reducti
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x<size) {
-        // Not sure if the other "for" approach is better
-        // atomicAdd(&B[map[thread_id_x]], A[thread_id_x]);
+        int *base_addr = &map[thread_id_x*size_reduction+0];
 
         float tmp = 0.0f;
         for(int i=0; i<size_reduction; i++){
-            tmp += A[map[thread_id_x*size_reduction+i]];
+            tmp += A[*(base_addr+i)];
         }
 
         B[thread_id_x] = tmp;
@@ -89,11 +105,11 @@ __global__ void gpu_sum_abs(float *A, float *B, int *map, int size, int size_red
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x<size) {
-        //atomicAdd(&B[map[thread_id_x]], abs(A[thread_id_x]));
+        int *base_addr = &map[thread_id_x*size_reduction+0];
 
         float tmp = 0.0f;
         for(int i=0; i<size_reduction; i++){
-            tmp += abs(A[map[thread_id_x*size_reduction+i]]);
+            tmp += abs(A[*(base_addr+i)]);
         }
 
         B[thread_id_x] = tmp;
@@ -104,9 +120,11 @@ __global__ void gpu_prod(float *A, float *B, int *map, int size, int size_reduct
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x<size) {
+        int *base_addr = &map[thread_id_x*size_reduction+0];
+
         float tmp = 1.0f;
         for(int i=0; i<size_reduction; i++){
-            tmp *= A[map[thread_id_x*size_reduction+i]];
+            tmp *= A[*(base_addr+i)];
         }
 
         B[thread_id_x] = tmp;
@@ -117,9 +135,11 @@ __global__ void gpu_mean(float *A, float *B, int *map, int size, int size_reduct
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x<size) {
+        int *base_addr = &map[thread_id_x*size_reduction+0];
+
         float tmp = 0.0f;
         for(int i=0; i<size_reduction; i++){
-            tmp += A[map[thread_id_x*size_reduction+i]];
+            tmp += A[*(base_addr+i)];
         }
 
         B[thread_id_x] = tmp/(float)size_reduction;
@@ -155,10 +175,12 @@ __global__ void gpu_var(float *A, float *B, int *map, int size, int size_reducti
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x<size) {
+        int *base_addr = &map[thread_id_x*size_reduction+0];
+
         float tmp;
         float sum = 0.0f;
         for(int i=0; i<size_reduction; i++){
-            tmp = A[map[thread_id_x*size_reduction+i]] - B[thread_id_x];
+            tmp = A[*(base_addr+i)] - B[thread_id_x];
             sum += tmp*tmp;
         }
 
@@ -174,10 +196,12 @@ __global__ void gpu_norm_fro(float *A, float *B, int *map, int size, int size_re
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x<size) {
+        int *base_addr = &map[thread_id_x*size_reduction+0];
+
         float tmp = 0.0f;
         float val;
         for(int i=0; i<size_reduction; i++){
-            val = A[map[thread_id_x*size_reduction+i]];
+            val = A[*(base_addr+i)];
             tmp += val*val;
         }
 
@@ -189,10 +213,12 @@ __global__ void gpu_mode(float *A, float *B, int *map, int size, int size_reduct
     long int thread_id_x = threadIdx.x+blockIdx.x*blockDim.x;
 
     if (thread_id_x<size) {
+        int *base_addr = &map[thread_id_x*size_reduction+0];
+
         // Copy values
         int *values = new int[size_reduction];  // Dynamic allocation is not the best approach
         for(int i=0; i<size_reduction; i++){
-            values[i] = (int)A[map[thread_id_x*size_reduction+i]];
+            values[i] = (int)A[*(base_addr+i)];
         }
 
         // Sort data
