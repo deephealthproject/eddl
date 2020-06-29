@@ -61,6 +61,9 @@ int main(int argc, char **argv) {
 
     // Decoder
     layer ld=Input({outvs});
+    ld = ReduceArgMax(ld,{0});
+    ld = RandomUniform(Embedding(ld, outvs, 1,embedding),-0.05,0.05);
+
     l = Decoder(LSTM(ld,128),enc);
     layer out = Softmax(Dense(l, outvs));
 

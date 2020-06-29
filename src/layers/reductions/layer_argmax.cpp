@@ -64,8 +64,9 @@ void LRArgmax::resize(int batch){
 
 Layer *LRArgmax::share(int c, int bs, vector<Layer *> p) {
     LRArgmax *n;
-    n = new LRArgmax(p[0], axis, keepdims,  name, this->dev, this->mem_level);
+    n = new LRArgmax(p[0], axis, keepdims,  "share_"+to_string(c)+this->name, this->dev, this->mem_level);
     n->orig = this;
+    n->isshared=true;
     return n;
 }
 
