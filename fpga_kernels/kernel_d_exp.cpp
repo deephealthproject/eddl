@@ -72,7 +72,7 @@ void k_d_exp(float *D, float *I, float *PD, long int size){
       #pragma HLS UNROLL FACTOR=2
       #pragma HLS LOOP_TRIPCOUNT min=c_chunk_sz max=c_chunk_sz
       // perform operation
-      buffer_pd[j] = buffer_pd[j] + (buffer_d[j] * buffer_i[j]);
+      buffer_pd[j] += buffer_d[j] * buffer_i[j];
     }
 
     // burst write the result

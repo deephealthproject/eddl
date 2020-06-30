@@ -81,8 +81,15 @@ void k_d_elu(float *D, float *I, float *PD, long int size, float param){
       #pragma HLS UNROLL FACTOR=2
       #pragma HLS LOOP_TRIPCOUNT min=c_chunk_sz max=c_chunk_sz
       // perform derived elu
-      if(I[j] > 0) buffer_pd[j] = buffer_pd[j] + buffer_d[j];
-      else buffer_pd[j] = buffer_pd[j] + buffer_d[j] * (param * expf[buffer_i[j]])
+      if(I[j] > 0)
+        buffer_pd[j] = buffer_pd[j] + buffer_d[j];
+      else {
+        #ifdef HLS_NATIVE_FUNCTION_ENABLE
+        buffer_pd[j] = buffer_pd[j] + buffer_d[j] * (param * native_exp[buffer_i[j]]);
+        #else
+        buffer_pd[j] = buffer_pd[j] + buffer_d[j] * (param * exp([buffer_i[j]]));
+        #endif
+      }
     }
 
     // burst write the result

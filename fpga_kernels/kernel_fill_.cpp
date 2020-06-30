@@ -13,12 +13,6 @@ extern "C"{
 }
 */
 
-// from src/harcdware/fpga/fpga_core.cpp
-/*void fpga_fill_(Tensor *A, float v){
-    OCL_CHECK(err, err = kernel_fill_.setArg(0, *(A->fpga_ptr)));
-    OCL_CHECK(err, err = kernel_fill_.setArg(1, v));
-    OCL_CHECK(err, err = kernel_fill_.setArg(2, (long int)A->size));
-*/
 #define DATA_SIZE 4096
 #define BUFFER_SIZE 1024
 

@@ -58,7 +58,11 @@ void k_softsign(float *A, float *B, long int size){
       #pragma HLS UNROLL FACTOR=2
       #pragma HLS LOOP_TRIPCOUNT min=c_chunk_sz max=c_chunk_sz
       // perform operation
+      #ifdef HLS_NATIVE_FUNCTION_ENABLE
+      buffer_b[j] = native_divide(buffer_a [j], (1.0 + fabs(buffer_a[j])));
+      #else
       buffer_b[j] = buffer_a [j] / (1.0 + fabs(buffer_a[j]));
+      #endif
     }
 
     // burst write the result
