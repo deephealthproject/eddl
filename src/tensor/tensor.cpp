@@ -71,7 +71,8 @@ Tensor::Tensor(const vector<int> &shape, float *fptr, int dev){
 #endif
 
 #ifdef cFPGA
-    fpga_ptr = (cl::Buffer *)nullptr;
+    // si está descomentado peta... no entiendo porque...
+    //fpga_ptr = (cl::Buffer *)nullptr;
 #endif
 
     // Update values
@@ -215,6 +216,7 @@ void Tensor::updateData(float *fptr, void *fptr2){
           #endif
         } else {
 	  if ((this->fpga_ptr == (cl::Buffer *)nullptr) && (fptr2 == nullptr)) {
+		  printf("111111111111111111111111111111111111111111111\n");
 	    this->fpga_ptr = fpga_create_tensor(fpga_device, this->size);
 	    this->fpga_size = this->size;
 	    this->fpga_tensor_id = next_fpga_tensor_id;
@@ -224,6 +226,7 @@ void Tensor::updateData(float *fptr, void *fptr2){
 	    printf("  ([updateData] fpga_ptr and incomming second pointer were null, we create a buffer with tensor id %d\n", this->fpga_tensor_id);
             #endif
 	  } else if ((this->fpga_ptr == (cl::Buffer *)nullptr) && (fptr2 != nullptr)) {
+		  printf("222222222222222222222222222222222222222222222\n");
 		  printf("fpga_ptr null but fptr2 not\n");
 		  this->fpga_size = this->size;
 		  this->fpga_ptr = (cl::Buffer *)fptr2;
@@ -261,7 +264,7 @@ void Tensor::toCPU(int dev){
         }
 #endif
 #ifdef cFPGA
-        if (isFPGA())
+        if (this->isFPGA())
     {
 
         // Reserve memory for CPU

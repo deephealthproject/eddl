@@ -82,7 +82,7 @@ void k_d_relu(float *D, float *I, float *PD, long int size){
       #pragma HLS PIPELINE II=1
       #pragma HLS UNROLL FACTOR=2
       #pragma HLS LOOP_TRIPCOUNT min=c_chunk_sz max=c_chunk_sz
-      if (buffer_d[j] < 0.0) buffer_d[j] = 0.f;
+      if (buffer_i[j] <= 0.0) buffer_d[j] = 0.f;
     }
 
     drelu:

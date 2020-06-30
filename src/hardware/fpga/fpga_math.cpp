@@ -1461,7 +1461,7 @@ float fpga_sum(Tensor *A) {
 
   // result
   cl::Event result_ready;
-  OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buf_sum}, CL_MIGRATE_MEM_OBJECT_HOST, NULL, &result_ready));
+  OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buff_sum}, CL_MIGRATE_MEM_OBJECT_HOST, NULL, &result_ready));
   result_ready.wait();
   ret = *sum;
 

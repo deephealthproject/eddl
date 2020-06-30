@@ -9,8 +9,16 @@ int main(int argc, char **argv) {
   char szKernels[200][50];
   int num_kernels = 0;
 
+  if (argc == 1) {
+    printf("Usage: %s <target> <kernel_list>\n", argv[0]);
+    exit(1);
+  }
+
+  printf("Target: %s\n", argv[1]);
+
+  printf("List of kernels to compile:\n");
   for (int i=2; i<argc; i++) {
-  //  printf("kernel: %s\n", argv[i]);
+    printf(" - %s\n", argv[i]);
     strcpy(szKernels[num_kernels++], argv[i]);
   }
 

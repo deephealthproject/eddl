@@ -17,82 +17,90 @@ void k_mult2d(float *A, float *B, float *C, int Ashape0, int Ashape1, int Bshape
 #pragma HLS INTERFACE s_axilite port=tA bundle=control
 #pragma HLS INTERFACE s_axilite port=tB bundle=control
 
-    // Matrix A is nxy and B is yxm --> size
-    // locat variables to bring data to FPGA
 
-    int c_row;//a_row;
-    int c_col;//b_col;
-    int ar;
-    int ac;
-    int br;
-    int bc;
+    if (!tA && !tB) {
+      int ar = Ashape0;
+      int ac = Ashape1;
+      int br = Bshape0;
+      int bc = Bshape1;
+      int cr = Ashape0;
+      int cc = Bshape1;
 
-    if (!tA){
-       c_row = Ashape0;
-       ar = Ashape0;
-       ac = Ashape1;
-       if (!tB) {c_col = Bshape1; br = Bshape0; bc = Bshape1; } else {c_col = Bshape0; br=Bshape1; bc=Bshape0;}
-    } else {
-       ar = Ashape1;
-       ac = Ashape0;
-       c_row = Ashape1;
-       if (!tB) {c_col = Bshape1; br = Bshape0; bc = Bshape1; } else {c_col = Bshape0; br=Bshape1; bc=Bshape0;}
+      for (int r = 0; r < ar; r++) {
+        for (int c = 0; c < bc; c++) {
+          for (int k = 0; k < ac; k++) {
+	    int c_addr = (r * cc) + c;
+	    int a_addr = (r * ac) + k;
+	    int b_addr = (k * bc) + r;
+	    if (incC) C[c_addr] += A[a_addr] * B[b_addr];
+	    else C[c_addr] = A[a_addr] * B[b_addr];
+	  }
+	}
+      }
     }
 
-    if (!tA & !tB) {
-       for (int i = 0; i < ar; i++) {
-          for (int j = 0; j < bc; j++) {
-             for (int k = 0; k < br; k++){
-               if(!incC){
-                C[i*c_col+j]=A[i*ac+k]*B[k*bc+j];
-                }
-                else{C[i*c_col+j]+=A[i*ac+k]*B[k*bc+j];}
-              }
+    if (!tA && tB) {
+      int ar = Ashape0;
+      int ac = Ashape1;
+      int br = Bshape1;
+      int bc = Bshape0;
+      int cr = Ashape0;
+      int cc = Bshape0;
+      
+      for (int r = 0; r < ar; r++) { 
+        for (int c = 0; c < bc; c++) { 
+          for (int k = 0; k < ac; k++) {
+            int c_addr = (r * cc) + c;
+            int a_addr = (r * ac) + k;
+            int b_addr = (r * bc) + k;
+            if (incC) C[c_addr] += A[a_addr] * B[b_addr];
+            else C[c_addr] = A[a_addr] * B[b_addr];
+          }     
+        }       
+      }       
+    }     
+ 
+    if (tA && !tB) {
+      int ar = Ashape1;
+      int ac = Ashape0;
+      int br = Bshape0;
+      int bc = Bshape1;
+      int cr = Ashape1;
+      int cc = Bshape1;
+      
+      for (int r = 0; r < ar; r++) { 
+        for (int c = 0; c < bc; c++) { 
+          for (int k = 0; k < ac; k++) {
+            int c_addr = (r * cc) + c;
+            int a_addr = (k * ac) + r;
+            int b_addr = (k * bc) + r;
+            if (incC) C[c_addr] += A[a_addr] * B[b_addr];
+            else C[c_addr] = A[a_addr] * B[b_addr];
+          }     
+        }       
+      }       
+    }     
+
+    if (tA && tB) {
+      int ar = Ashape1;
+      int ac = Ashape0;
+      int br = Bshape1;
+      int bc = Bshape0;
+      int cr = Ashape1;
+      int cc = Bshape0;
+
+      for (int r = 0; r < ar; r++) {
+        for (int c = 0; c < bc; c++) {
+          for (int k = 0; k < ac; k++) {
+            int c_addr = (r * cc) + c;
+            int a_addr = (k * ac) + r;
+            int b_addr = (r * bc) + k;
+            if (incC) C[c_addr] += A[a_addr] * B[b_addr];
+            else C[c_addr] = A[a_addr] * B[b_addr];
           }
-       }
+        }
+      }
     }
-
-    if (!tA & tB) {
-       for (int i = 0; i < br; i++) {
-          for (int j = 0; j < ac; j++) {
-             for (int k = 0; k < ar; k++){
-               if(!incC){
-                C[i*c_col+j]=A[i*ac+k]*B[k*bc+j];
-                }
-                else{C[i*c_col+j]+=A[i*ac+k]*B[k*bc+j];}
-              }
-          }
-       }
-    }
-
-    if (tA & !tB) {
-       for (int i = 0; i < br; i++) {
-          for (int j = 0; j < ac; j++) {
-             for (int k = 0; k < br; k++){
-               if(!incC){
-                C[i*c_col+j]=B[i*bc+k]*A[k*ac+j];
-                }
-                else{C[i*c_col+j]+=B[i*bc+k]*A[k*ac+j];}
-              }
-          }
-       }
-    }
-
-    if (tA & tB) {
-       for (int i = 0; i < ar; i++) {
-          for (int j = 0; j < bc; j++) {
-             for (int k = 0; k < br; k++){
-               if(!incC){
-                C[j*c_col+i]=A[i*ac+k]*B[k*bc+j];
-                }
-                else{C[j*c_col+i]+=A[i*ac+k]*B[k*bc+j];}
-              }
-          }
-       }
-    }
-
-
-
   }
 }
 

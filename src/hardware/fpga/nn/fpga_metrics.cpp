@@ -33,16 +33,15 @@ int fpga_cpuemu_accuracy(Tensor *A, Tensor *B) {
 
 int fpga_accuracy(Tensor *A, Tensor *B){
   int acc;
-  int *accu;
   _profile_fpga(_FPGA_ACCURACY, 0);
 
 #ifndef K_ENABLED_ACCURACY
   acc = fpga_cpuemu_accuracy(A, B);
-  return acc;
 #else
    cl_int err;
    cl::Event event, result_ready;
 
+   int *accu;
    posix_memalign((void **)&accu,4096,sizeof(int));
    OCL_CHECK(err, cl::Buffer buffer_acc(context, CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY, sizeof(int) ,accu, &err));
 
@@ -57,9 +56,12 @@ int fpga_accuracy(Tensor *A, Tensor *B){
 
    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_acc},CL_MIGRATE_MEM_OBJECT_HOST, NULL, &result_ready));
    result_ready.wait();
+
+   acc = *accu;
    
 #endif
-  return *accu;
+  _profile_fpga(_FPGA_ACCURACY, 1);
+  return acc;
 }
 
 // -----------------------------------------------------------------

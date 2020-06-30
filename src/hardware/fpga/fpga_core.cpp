@@ -311,7 +311,7 @@ void _profile_fpga_tensor(Tensor *T) {
 }
 
 void _show_profile_fpga() {
-#ifdef FPGA_DEBUG
+#ifdef FPGA_SHOW_PROFILE
   printf("\n---------------------------------------\nFPGA functions called:\n");
   for (int i=0; i<_NUM_FPGA_FUNCS; i++) {
     if (num_instances_fpga[i] != 0) {
@@ -346,16 +346,12 @@ void _profile_fpga_remove_tensor(int size) {
 //
 void fpga_init(){ // initialize only once
 
-	printf("init1\n");
     cl_int err;
     std::string binaryFile = "eddl.xclbin";
-    printf("init2\n");
     unsigned fileBufSize;
 
-    printf("init3\n");
     std::vector<cl::Device> devices = xcl::get_xil_devices();
 
-    printf("init4\n");
     cl::Device device = devices[0];
     OCL_CHECK(err, context = cl::Context(device, NULL, NULL, NULL, &err));
     OCL_CHECK(err, q = cl::CommandQueue(context, device, CL_QUEUE_PROFILING_ENABLE | CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, &err));
